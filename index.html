@@ -408,6 +408,31 @@
 // BANCO DE DADOS E LOGOS
 // ==========================================
 
+// --- CONFIGURAÇÕES DE JOGADORES ---
+
+const playerRoles = {
+    "Bops": "GRAN", "Giuh": "RUSH", "But": "RUSH", "MT7": "SUP", "Proxx7": "RUSH",
+    "Pitbull": "RUSH", "PETERxl": "RUSH", "VITINxp": "GRAN", "Motovea7": "SUP", "BYTE333": "RUSH",
+    "PÃO7": "SUP", "Cauã": "GRAN", "JucaW": "RUSH", "LYON": "RUSH",
+    "Lippe!": "GRAN", "ItzKing": "RUSH", "Razure": "RUSH", "Igor7": "SUP", "SASKITO": "RUSH",
+    "HAK": "RUSH", "Nickz7": "RUSH", "Trap": "GRAN", "GUAXA7": "SUP", "bzp10": "RUSH",
+    "Sam7": "GRAN", "JNMVP": "RUSH", "Brisa7": "RUSH", "NeyWP": "SUP", "MitoMvp": "RUSH",
+    "BLACK02": "RUSH", "LC777": "SUP", "Guimerlq": "RUSH", "Prozin10": "GRAN", "MitinX": "RUSH",
+    "Ribgy245": "RUSH", "General": "RUSH", "Raone7": "GRAN", "Yago": "SUP", "mtsexy": "RUSH",
+    "João7": "RUSH", "Kauã7xp": "RUSH", "Gus": "GRAN", "HONEY": "SUP", "WHISKY": "SUP",
+    "Bahiazx": "RUSH", "BielGOD": "RUSH", "rojao10": "GRAN", "Zetsu9": "SUP",
+    "Yann7awp": "SUP", "SOARES": "GRAN", "Redxz7": "RUSH", "Theus": "RUSH", "wLiu": "RUSH",
+    "Luan7": "RUSH", "Erick1ng": "SUP", "STARK7": "GRAN", "Draxx7": "RUSH",
+    "ITALO": "RUSH", "iguiNmvp": "RUSH", "NandoX": "GRAN", "KakaZk": "SUP", "Erick11": "RUSH",
+    "Lost": "RUSH", "Cauan7": "GRAN", "Nikeboy": "SUP", "O Mala": "RUSH", "Shotzz": "RUSH",
+    "Keven7": "RUSH", "Will7": "RUSH", "Destroi7": "GRAN", "Yoko7": "SUP", "MASTER": "RUSH",
+    "DRADE.11": "GRAN", "Seupai": "RUSH", "WM.SUP": "SUP", "NEPO IGN": "RUSH"
+};
+
+const playerPhotos = {
+
+};
+
 const logos = {
     'ALPHA7': 'A7 2.png', 'AXS FUSION': 'AXS BRANCA.png', 'CIVIS': 'Civis.png', 'E1 SPORTS': 'E1.png', 'FLUXO W7M': 'Fluxo 2.png',
     'INFLUENCE RAGE': 'Influence Rage.png', 'INTZ': 'Intz 1.png', 'LOOPS': 'Loops 1.png', 'LOS': 'Los.png', 'LOUD SNICKERS': 'loud 2.png',
@@ -1269,12 +1294,11 @@ function getOverallColor(ovr) {
     return '#cd7f32';               // Bronze
 }
 
-// --- FUNÇÃO ORIGINAL COM O OVERALL ADICIONADO ---
 function openPlayerProfile(playerName) {
     let p = db.players.find(x => x.jogador === playerName);
-    if(!p) return;
+    if (!p) return;
 
-    // --- SEU CÓDIGO ORIGINAL DE PREENCHIMENTO ---
+    // --- 1. PREENCHIMENTO DAS ESTATÍSTICAS (SEU CÓDIGO ORIGINAL) ---
     document.getElementById('pp-name').innerText = p.jogador;
     document.getElementById('pp-team').innerText = p.equipe;
     document.getElementById('pp-team').onclick = () => openTeamProfile(p.equipe);
@@ -1299,42 +1323,81 @@ function openPlayerProfile(playerName) {
     document.getElementById('pp-tot-mvps').innerText = p.mvp;
     document.getElementById('pp-rank-mvps').innerText = `#${p.rankMvp}`;
 
-    // --- LÓGICA DO OVERALL COM ESTRELAS ---
+    // --- 2. PREPARAÇÃO DOS DADOS DA CARTINHA ---
     let ovr = calculateOverall(p);
     let color = getOverallColor(ovr);
+    let role = playerRoles[p.jogador] || "RUSH";
+    let photo = playerPhotos[p.jogador] || "_SILHUETA 1500x1500.png";
+    let teamLogo = logos[p.equipe] || "";
     
+    // Categorias e Estrelas
     let stars = "";
-let category = "";
-if (ovr >= 91) { stars = "⭐⭐⭐⭐⭐"; category = "LENDÁRIO"; }
-else if (ovr >= 86) { stars = "⭐⭐⭐⭐"; category = "ELITE"; }
-else if (ovr >= 81) { stars = "⭐⭐⭐"; category = "MUITO BOM"; }
-else if (ovr >= 75) { stars = "⭐⭐"; category = "PROFISSIONAL"; }
-else { stars = "⭐"; category = "SÉRIE A"; }
+    let category = "";
+    if (ovr >= 91) { stars = "⭐⭐⭐⭐⭐"; category = "LENDÁRIO"; }
+    else if (ovr >= 86) { stars = "⭐⭐⭐⭐"; category = "ELITE"; }
+    else if (ovr >= 81) { stars = "⭐⭐⭐"; category = "MUITO BOM"; }
+    else if (ovr >= 75) { stars = "⭐⭐"; category = "PROFISSIONAL"; }
+    else { stars = "⭐"; category = "SÉRIE A"; }
 
-    let glow = ovr >= 90 ? `box-shadow: 0 0 30px ${color}aa;` : (ovr >= 81 ? `box-shadow: 0 0 15px ${color}33;` : '');
+    let glow = ovr >= 91 ? `box-shadow: 0 0 40px ${color}88;` : '';
 
+    // --- 3. RENDERIZAÇÃO DO HTML DA CARTINHA (ESTILO NEYMAR) ---
     let cardContainer = document.getElementById('player-overall-card'); 
-    if(cardContainer) {
+    if (cardContainer) {
         cardContainer.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 20px; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); margin: 15px 0; flex-wrap: wrap;">
-                <div style="width: 90px; height: 125px; background: linear-gradient(135deg, ${color} 0%, #111 50%, #000 100%); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid ${color}; position: relative; ${glow}">
-                    <div style="font-size: 2.6em; font-weight: 900; color: #fff; line-height: 1; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">${ovr}</div>
-                    <div style="font-size: 0.75em; font-weight: bold; color: ${color}; text-transform: uppercase; letter-spacing: 2px;">OVR</div>
-                    <div style="position: absolute; bottom: 8px; font-size: 0.5em; color: rgba(255,255,255,0.4); font-weight: bold; border-top: 1px solid rgba(255,255,255,0.1); width: 80%; text-align: center; padding-top: 4px;">FFWS 2026</div>
-                </div>
+            <div style="display: flex; gap: 30px; align-items: center; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; flex-wrap: wrap; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05);">
                 
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="color: #666; font-size: 0.75em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Classificação Pro:</div>
-                    <div style="display: flex; flex-direction: column; gap: 5px;">
-                        <div style="font-size: 1.2em;">${stars}</div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <span class="rank-badge" style="background: ${color}22; color: ${color}; border: 1px solid ${color}44; padding: 4px 12px; font-weight: 900; font-size: 0.9em;">
-                                ${category}
-                            </span>
-                            <span style="color: #888; font-size: 0.8em;">Baseado em médias por queda</span>
+                <div style="width: 280px; height: 400px; background: #000; border: 3px solid #d4af37; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow}">
+                    
+                    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
+
+                    <div style="position: absolute; top: 40px; left: 25px; z-index: 3; text-align: center; color: #d4af37;">
+                        <div style="font-size: 58px; font-weight: 900; line-height: 0.8; letter-spacing: -2px;">${ovr}</div>
+                        <div style="font-size: 22px; font-weight: bold; margin-top: 5px; letter-spacing: 1px;">${role}</div>
+                        <div style="margin: 15px auto; width: 40px; height: 2px; background: #d4af37; opacity: 0.6;"></div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width: 35px; border-radius: 2px; display: block; margin: 8px auto;">
+                        <img src="${teamLogo}" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
+                    </div>
+
+                    <img src="${photo}" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; filter: drop-shadow(5px 5px 15px #000);">
+
+                    <div style="position: absolute; top: 265px; width: 100%; text-align: center; z-index: 4;">
+                        <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, #d4af37, transparent);"></div>
+                        <div style="color: #fff; font-size: 26px; font-weight: 900; text-transform: uppercase; padding: 8px 0; text-shadow: 2px 2px 4px #000; letter-spacing: 1px;">
+                            ${p.jogador}
+                        </div>
+                        <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, #d4af37, transparent);"></div>
+                    </div>
+
+                    <div style="position: absolute; bottom: 30px; width: 100%; display: grid; grid-template-columns: 1fr 1px 1fr; padding: 0 25px; color: #fff; z-index: 4; align-items: center;">
+                        <div style="text-align: right; padding-right: 15px; display: flex; flex-direction: column; gap: 5px;">
+                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${(p.abates / p.quedas).toFixed(2)}</span> ABT</div>
+                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${p.mvp}</span> MVP</div>
+                        </div>
+                        
+                        <div style="height: 45px; background: #d4af37; opacity: 0.4;"></div>
+                        
+                        <div style="text-align: left; padding-left: 15px; display: flex; flex-direction: column; gap: 5px;">
+                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${(p.dano / p.quedas).toFixed(0)}</span> DAN</div>
+                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${(p.assists / p.quedas).toFixed(1)}</span> AST</div>
                         </div>
                     </div>
                 </div>
+
+                <div style="flex: 1; min-width: 280px;">
+                    <div style="color: #888; font-size: 0.85em; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">Classificação Pro 2026</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">${stars}</div>
+                    <div style="background: ${color}22; color: ${color}; border: 1px solid ${color}44; padding: 12px 25px; font-weight: 900; display: inline-block; font-size: 1.3em; border-radius: 5px; text-transform: uppercase;">
+                        ${category}
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <p style="color: #aaa; font-size: 0.95em; line-height: 1.6; margin: 0;">
+                            Performance calculada em tempo real.<br>
+                            Especialidade: <strong style="color:#fff">${role}</strong>
+                        </p>
+                    </div>
+                </div>
+
             </div>
         `;
     }
