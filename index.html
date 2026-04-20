@@ -430,7 +430,53 @@ const playerRoles = {
 };
 
 const playerPhotos = {
-
+    // Fluxo W7M
+    "Bops": "silhueta.png", "Giuh": "silhueta.png", "But": "silhueta.png", "MT7": "silhueta.png", "Proxx7": "silhueta.png",
+    
+    // Team Solid
+    "Pitbull": "silhueta.png", "PETERxl": "silhueta.png", "VITINxp": "silhueta.png", "Motovea7": "silhueta.png", "BYTE333": "silhueta.png",
+    
+    // E1 Sports
+    "PÃO7": "silhueta.png", "Cauã": "silhueta.png", "JucaW": "silhueta.png", "LYON": "silhueta.png",
+    
+    // Influence Rage
+    "Lippe!": "silhueta.png", "ItzKing": "silhueta.png", "Razure": "silhueta.png", "Igor7": "silhueta.png", "SASKITO": "silhueta.png",
+    
+    // LOUD
+    "HAK": "silhueta.png", "Nickz7": "silhueta.png", "Trap": "silhueta.png", "GUAXA7": "silhueta.png", "bzp10": "silhueta.png",
+    
+    // Alpha7 Esports
+    "Sam7": "silhueta.png", "JNMVP": "silhueta.png", "Brisa7": "silhueta.png", "NeyWP": "silhueta.png", "MitoMvp": "silhueta.png",
+    
+    // RUSH Gaming
+    "BLACK02": "silhueta.png", "LC777": "silhueta.png", "Guimerlq": "silhueta.png", "Prozin10": "silhueta.png", "MitinX": "silhueta.png",
+    
+    // LOS
+    "Ribgy245": "silhueta.png", "General": "silhueta.png", "Raone7": "silhueta.png", "Yago": "silhueta.png", "mtsexy": "silhueta.png",
+    
+    // INTZ
+    "João7": "silhueta.png", "Kauã7xp": "silhueta.png", "Gus": "silhueta.png", "HONEY": "silhueta.png", "WHISKY": "silhueta.png",
+    
+    // Vasco eSports
+    "Bahiazx": "silhueta.png", "BielGOD": "silhueta.png", "rojao10": "silhueta.png", "Zetsu9": "silhueta.png",
+    
+    // AXS
+    "Yann7awp": "silhueta.png", "SOARES": "silhueta.png", "Redxz7": "silhueta.png", "Theus": "silhueta.png", "wLiu": "silhueta.png",
+    
+    // Lps
+    "Luan7": "silhueta.png", "Erick1ng": "silhueta.png", "STARK7": "silhueta.png", "Draxx7": "silhueta.png",
+    
+    // Rise Gaming
+    "ITALO": "silhueta.png", "iguiNmvp": "silhueta.png", "NandoX": "silhueta.png", "KakaZk": "silhueta.png", "Erick11": "silhueta.png",
+    
+    // Virtus.pro
+    "Lost": "silhueta.png", "Cauan7": "silhueta.png", "Nikeboy": "silhueta.png", "O Mala": "silhueta.png", "Shotzz": "silhueta.png",
+    
+    // Civis
+    "Keven7": "silhueta.png", "Will7": "silhueta.png", "Destroi7": "silhueta.png", "Yoko7": "silhueta.png", "MASTER": "silhueta.png",
+    
+    // Angels Outplay
+    "DRADE.11": "silhueta.png", "Seupai": "silhueta.png", "WM.SUP": "silhueta.png", "NEPO IGN": "silhueta.png"
 };
 
 const logos = {
@@ -1327,9 +1373,14 @@ function openPlayerProfile(playerName) {
     let ovr = calculateOverall(p);
     let color = getOverallColor(ovr);
     let role = playerRoles[p.jogador] || "RUSH";
-    let photo = playerPhotos[p.jogador] || "silhueta.png";
+    
+    // Puxa a foto automaticamente do seu objeto playerPhotos
+    let photo = playerPhotos[p.jogador]; 
     let teamLogo = logos[p.equipe] || "";
     
+    // Formatação do Dano em K (Ex: 93760 vira 94K)
+    let danoK = (p.dano / 1000).toFixed(0) + "K";
+
     // Categorias e Estrelas
     let stars = "";
     let category = "";
@@ -1341,17 +1392,17 @@ function openPlayerProfile(playerName) {
 
     let glow = ovr >= 91 ? `box-shadow: 0 0 40px ${color}88;` : '';
 
-    // --- 3. RENDERIZAÇÃO DO HTML DA CARTINHA (ESTILO NEYMAR) ---
+    // --- 3. RENDERIZAÇÃO DO HTML DA CARTINHA ---
     let cardContainer = document.getElementById('player-overall-card'); 
     if (cardContainer) {
         cardContainer.innerHTML = `
-            <div style="display: flex; gap: 30px; align-items: center; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; flex-wrap: wrap; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; gap: 30px; align-items: center; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; flex-wrap: wrap; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05); justify-content: center;">
                 
-                <div style="width: 280px; height: 400px; background: #000; border: 3px solid #d4af37; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow}">
+                <div style="width: 280px; height: 420px; background: #000; border: 3px solid #d4af37; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow}">
                     
                     <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
 
-                    <div style="position: absolute; top: 40px; left: 25px; z-index: 3; text-align: center; color: #d4af37;">
+                    <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: #d4af37;">
                         <div style="font-size: 58px; font-weight: 900; line-height: 0.8; letter-spacing: -2px;">${ovr}</div>
                         <div style="font-size: 22px; font-weight: bold; margin-top: 5px; letter-spacing: 1px;">${role}</div>
                         <div style="margin: 15px auto; width: 40px; height: 2px; background: #d4af37; opacity: 0.6;"></div>
@@ -1361,25 +1412,26 @@ function openPlayerProfile(playerName) {
 
                     <img src="${photo}" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; filter: drop-shadow(5px 5px 15px #000);">
 
-                    <div style="position: absolute; top: 265px; width: 100%; text-align: center; z-index: 4;">
-                        <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, #d4af37, transparent);"></div>
-                        <div style="color: #fff; font-size: 26px; font-weight: 900; text-transform: uppercase; padding: 8px 0; text-shadow: 2px 2px 4px #000; letter-spacing: 1px;">
-                            ${p.jogador}
+                    <div style="position: absolute; bottom: 0; width: 100%; height: 165px; background: linear-gradient(transparent, #000 40%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 20px;">
+                        
+                        <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+                            <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, #d4af37, transparent);"></div>
+                            <div style="color: #fff; font-size: 26px; font-weight: 900; text-transform: uppercase; padding: 8px 0; text-shadow: 2px 2px 4px #000;">
+                                ${p.jogador}
+                            </div>
+                            <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, #d4af37, transparent);"></div>
                         </div>
-                        <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, #d4af37, transparent);"></div>
-                    </div>
 
-                    <div style="position: absolute; bottom: 30px; width: 100%; display: grid; grid-template-columns: 1fr 1px 1fr; padding: 0 25px; color: #fff; z-index: 4; align-items: center;">
-                        <div style="text-align: right; padding-right: 15px; display: flex; flex-direction: column; gap: 5px;">
-                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${(p.abates / p.quedas).toFixed(2)}</span> ABT</div>
-                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${p.mvp}</span> MVP</div>
-                        </div>
-                        
-                        <div style="height: 45px; background: #d4af37; opacity: 0.4;"></div>
-                        
-                        <div style="text-align: left; padding-left: 15px; display: flex; flex-direction: column; gap: 5px;">
-                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${(p.dano / p.quedas).toFixed(0)}</span> DAN</div>
-                            <div style="font-size: 15px; color: #d4af37; font-weight: bold;"><span style="color: #fff; font-size: 20px; font-weight: 900;">${(p.assists / p.quedas).toFixed(1)}</span> AST</div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; color: #fff; width: 100%; align-items: center; text-transform: uppercase;">
+                            <div style="font-size: 17px; font-weight: bold; letter-spacing: 1px;">
+                                <span style="font-weight: 900; color: #d4af37; font-size: 21px; margin-right: 5px;">${p.abates}</span> ABATES
+                            </div>
+                            <div style="font-size: 17px; font-weight: bold; letter-spacing: 1px;">
+                                <span style="font-weight: 900; color: #d4af37; font-size: 21px; margin-right: 5px;">${p.assists}</span> ASSISTÊNCIAS
+                            </div>
+                            <div style="font-size: 17px; font-weight: bold; letter-spacing: 1px;">
+                                <span style="font-weight: 900; color: #d4af37; font-size: 21px; margin-right: 5px;">${danoK}</span> DANO TOTAL
+                            </div>
                         </div>
                     </div>
                 </div>
