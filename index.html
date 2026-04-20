@@ -156,11 +156,29 @@
     .day-chip:hover { border-color: #66b3ff; }
     .day-chip.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
 
-    /* Estilos do Perfil do Jogador */
+/* O SEU ORIGINAL QUE VOCÊ JÁ TEM (MANTENHA) */
     .player-profile-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
     .rank-badge { background-color: var(--accent); color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; margin-left: 10px; vertical-align: middle; }
     .team-logo { width: 24px; height: 24px; object-fit: contain; vertical-align: middle; margin-right: 8px; border-radius: 4px; }
     .team-cell { display: flex; align-items: center; justify-content: flex-start; text-align: left; }
+
+    /* A MINHA CORREÇÃO (ADICIONE LOGO ABAIXO) */
+    @media (max-width: 768px) {
+        /* Isso aqui impede o cabeçalho de encavalar, jogando um pra baixo do outro */
+        .profile-header-wrapper, .player-profile-header {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 15px;
+        }
+
+        /* Classe para sumir colunas menos importantes e dar espaço aos pontos */
+        .hide-mobile { display: none !important; }
+        
+        /* Ajuste fino na tabela para não precisar de scroll */
+        table { table-layout: fixed; width: 100%; }
+        th, td { padding: 8px 2px !important; font-size: 0.85em; white-space: normal !important; }
+    }
 
     /* Grid de Equipes (Página Equipes) */
     .teams-directory { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
@@ -212,15 +230,15 @@
         </div>
         <div class="table-container">
     <table id="table-teams-full">
-        <thead>
+<thead>
             <tr>
                 <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
                 <th style="text-align:left;" onclick="sortTable('table-teams-full', 1, false)">Equipe ↕</th>
-                <th onclick="sortTable('table-teams-full', 2, false)">Grupo ↕</th>
+                <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">Grupo ↕</th>
                 <th onclick="sortTable('table-teams-full', 3, true)">Pontos ↕</th>
-                <th onclick="sortTable('table-teams-full', 4, true)">Booyah ↕</th>
+                <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">Booyah ↕</th>
                 <th onclick="sortTable('table-teams-full', 5, true)">Abates ↕</th>
-                <th onclick="sortTable('table-teams-full', 6, true)">Quedas ↕</th>
+                <th class="hide-mobile" onclick="sortTable('table-teams-full', 6, true)">Quedas ↕</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -254,16 +272,16 @@
         </div>
         <div class="table-container">
             <table id="table-players">
-                <thead>
+<thead>
                     <tr>
                         <th>#</th>
                         <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">Jogador ↕</th>
-                        <th style="text-align:left;" onclick="sortTable('table-players', 2, false)">Equipe ↕</th>
+                        <th class="hide-mobile" style="text-align:left;" onclick="sortTable('table-players', 2, false)">Equipe ↕</th>
                         <th onclick="sortTable('table-players', 3, true)">Abates ↕</th>
-                        <th onclick="sortTable('table-players', 4, true)">Dano ↕</th>
-                        <th onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
-                        <th onclick="sortTable('table-players', 6, true)">Quedas ↕</th>
-                        <th onclick="sortTable('table-players', 7, true)">MVP ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">Dano ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-players', 6, true)">Quedas ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -513,11 +531,11 @@ const playerRoles = {
 };
 
 const playerPhotos = {
-    "MT7": "mt7.png","Bops": "bops.png", "Giuh": "silhueta.png", "BuTziN": "silhueta.png", "Proxx7": "silhueta.png",
+    "MT7": "mt7.png","Bops": "silhueta.png", "Giuh": "silhueta.png", "BuTziN": "silhueta.png", "Proxx7": "silhueta.png",
     "Pitbull": "silhueta.png", "PETER": "silhueta.png", "vitinxp": "silhueta.png", "Motovea": "silhueta.png", "BYTE333": "silhueta.png",
     "Pão7": "silhueta.png", "Cauã9": "silhueta.png", "Juca10xL": "silhueta.png", "Lyon": "silhueta.png",
     "lippe!": "silhueta.png", "itzking1": "silhueta.png", "Razure": "silhueta.png", "IGOR7": "silhueta.png",
-    "HAK": "silhueta.png", "NICKZ": "silhueta.png", "TRAP": "trap.png", "GUAXA": "silhueta.png", "BZP": "silhueta.png",
+    "HAK": "silhueta.png", "NICKZ": "silhueta.png", "TRAP": "silhueta.png", "GUAXA": "silhueta.png", "BZP": "silhueta.png",
     "Sam7": "silhueta.png", "JNmvp7": "silhueta.png", "Brisa7": "silhueta.png", "NEYawp": "silhueta.png", "MitoMvp": "silhueta.png",
     "BLACK02": "silhueta.png", "LC777": "silhueta.png", "GUIMERLQ": "silhueta.png", "PROZIN": "silhueta.png", "MitinX": "silhueta.png",
     "Rigby245": "silhueta.png", "General!": "silhueta.png", "Raone7": "silhueta.png", "Yago": "silhueta.png", "mtsexy.": "silhueta.png",
@@ -1627,20 +1645,20 @@ function renderFullTeams() {
         let pos = selectedTeamDays.length === 0 ? t.posGeral : (index + 1);
         let logoSrc = logos[t.equipe] ? logos[t.equipe] : '';
         
-        return `<tr>
+return `<tr>
             <td style="color:var(--accent); font-weight:bold;">${pos}º</td>
             <td class="team-cell">
                 <img src="${logoSrc}" class="team-logo" alt="">
                 <span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span>
             </td>
-            <td>${t.grupo}</td>
+            <td class="hide-mobile">${t.grupo}</td>
             <td style="color:#ffaa00; font-weight:bold">${t.pontos}</td>
-            <td>${t.booyah}</td>
+            <td class="hide-mobile">${t.booyah}</td>
             <td>${t.abates}</td>
-            <td>${t.quedas}</td>
+            <td class="hide-mobile">${t.quedas}</td>
         </tr>`;
-    }).join('');
-}
+}).join(''); // Fecha o map e junta as linhas
+} // Fecha a função renderFullTeams
 
 function renderHomeGroups() {
     let container = document.getElementById('groups-container');
@@ -2335,7 +2353,16 @@ function renderAllPlayers() {
     });
     let data = Object.values(aggregated).filter(p => teamFilter === 'all' || p.equipe === teamFilter).filter(p => p.quedas > 0);
     let tbody = document.querySelector('#table-players tbody');
-    tbody.innerHTML = data.sort((a,b) => b.abates - a.abates).map((p, i) => `<tr><td>${i+1}</td><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td class="team-cell"><img src="${logos[p.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${p.equipe}')">${p.equipe}</span></td><td style="color:var(--accent); font-weight:bold">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp}</td></tr>`).join('');
+    tbody.innerHTML = data.sort((a,b) => b.abates - a.abates).map((p, i) => `<tr>
+        <td>${i+1}</td>
+        <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
+        <td class="team-cell hide-mobile"><img src="${logos[p.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${p.equipe}')">${p.equipe}</span></td>
+        <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
+        <td class="hide-mobile">${p.dano}</td>
+        <td class="hide-mobile">${p.assists}</td>
+        <td class="hide-mobile">${p.quedas}</td>
+        <td class="hide-mobile">${p.mvp}</td>
+    </tr>`).join('');
 }
 
 function populateSelects() {
