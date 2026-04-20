@@ -173,26 +173,32 @@
     .team-cell { display: flex; align-items: center; justify-content: flex-start; text-align: left; }
 
 /* A MINHA CORREÇÃO MOBILE */
-/* A MINHA CORREÇÃO MOBILE */
     .hide-on-desktop { display: none; }
     .short-name-mobile { display: none; } /* Esconde o nome curto no PC */
 
-    @media (max-width: 768px) {
+    @@media (max-width: 768px) {
         .hide-on-desktop { display: block; }
         
-        /* Mágica da troca de nome via CSS */
         .full-name-desktop { display: none !important; }
         .short-name-mobile { display: inline !important; }
         
+        /* Esconde os itens com hide-mobile quando a tabela está normal */
         table:not(.full-view) .hide-mobile { display: none !important; }
         
+        /* REGRA NOVA: Esconde a coluna GP (3ª coluna) SEMPRE no mobile */
+        #table-teams-full th:nth-child(3), 
+        #table-teams-full td:nth-child(3) { 
+            display: none !important; 
+        }
+
         table { table-layout: fixed; width: 100%; }
-        th, td { padding: 8px 2px !important; font-size: 0.85em; white-space: normal !important; }
+        th, td { padding: 8px 2px !important; font-size: 0.85em; }
         .table-container { overflow-x: auto; }
         
-        /* Ajuste fino na tabela de times para não encavalar */
+        /* Dá mais espaço para o nome do time agora que o grupo sumiu */
         #table-teams-full td:nth-child(2) {
             text-align: left;
+            width: 35%; /* Ocupa mais espaço na linha */
         }
     }
 
@@ -250,8 +256,7 @@
                     <tr>
                         <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
                         <th style="text-align:left;" onclick="sortTable('table-teams-full', 1, false)">Equipe ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>
-                        <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>                        <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
                         <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">B! ↕</th>
                         <th class="hide-mobile" onclick="sortTable('table-teams-full', 5, true)">K ↕</th> <th onclick="sortTable('table-teams-full', 6, true)">Q ↕</th>
                     </tr>
