@@ -128,6 +128,16 @@
         .compare-box {
             padding: 15px 10px; /* Diminui o respiro interno da caixa */
         }
+#table-teams-full td:nth-child(2) {
+            text-align: left;
+            min-width: 80px; /* Garante um espaço mínimo para o nome/sigla */
+            white-space: nowrap;
+        }
+        
+        /* Ajuste nas colunas para não ficarem grudadas */
+        th, td {
+            padding: 8px 3px !important;
+        }
     }
 
     /* Cronograma */
@@ -162,22 +172,28 @@
     .team-logo { width: 24px; height: 24px; object-fit: contain; vertical-align: middle; margin-right: 8px; border-radius: 4px; }
     .team-cell { display: flex; align-items: center; justify-content: flex-start; text-align: left; }
 
-    /* A MINHA CORREÇÃO (ADICIONE LOGO ABAIXO) */
-    @media (max-width: 768px) {
-        /* Isso aqui impede o cabeçalho de encavalar, jogando um pra baixo do outro */
-        .profile-header-wrapper, .player-profile-header {
-            flex-direction: column !important;
-            align-items: center !important;
-            text-align: center !important;
-            gap: 15px;
-        }
+/* A MINHA CORREÇÃO MOBILE */
+/* A MINHA CORREÇÃO MOBILE */
+    .hide-on-desktop { display: none; }
+    .short-name-mobile { display: none; } /* Esconde o nome curto no PC */
 
-        /* Classe para sumir colunas menos importantes e dar espaço aos pontos */
-        .hide-mobile { display: none !important; }
+    @media (max-width: 768px) {
+        .hide-on-desktop { display: block; }
         
-        /* Ajuste fino na tabela para não precisar de scroll */
+        /* Mágica da troca de nome via CSS */
+        .full-name-desktop { display: none !important; }
+        .short-name-mobile { display: inline !important; }
+        
+        table:not(.full-view) .hide-mobile { display: none !important; }
+        
         table { table-layout: fixed; width: 100%; }
         th, td { padding: 8px 2px !important; font-size: 0.85em; white-space: normal !important; }
+        .table-container { overflow-x: auto; }
+        
+        /* Ajuste fino na tabela de times para não encavalar */
+        #table-teams-full td:nth-child(2) {
+            text-align: left;
+        }
     }
 
     /* Grid de Equipes (Página Equipes) */
@@ -228,22 +244,22 @@
             <label style="color: var(--text-muted); font-weight: bold;">Filtrar por Dias:</label>
             <div class="day-filters" id="team-day-filters"></div>
         </div>
-        <div class="table-container">
-    <table id="table-teams-full">
-<thead>
-            <tr>
-                <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
-                <th style="text-align:left;" onclick="sortTable('table-teams-full', 1, false)">Equipe ↕</th>
-                <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">Grupo ↕</th>
-                <th onclick="sortTable('table-teams-full', 3, true)">Pontos ↕</th>
-                <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">Booyah ↕</th>
-                <th onclick="sortTable('table-teams-full', 5, true)">Abates ↕</th>
-                <th class="hide-mobile" onclick="sortTable('table-teams-full', 6, true)">Quedas ↕</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
+<div class="table-container">
+            <table id="table-teams-full">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
+                        <th style="text-align:left;" onclick="sortTable('table-teams-full', 1, false)">Equipe ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>
+                        <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">B! ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 5, true)">K ↕</th> <th onclick="sortTable('table-teams-full', 6, true)">Q ↕</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button class="btn-action hide-on-desktop" onclick="document.getElementById('table-teams-full').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Tabela Completa' ? 'Ocultar Detalhes' : 'Ver Tabela Completa';" style="width: 100%; margin-top: -15px; margin-bottom: 30px;">Ver Tabela Completa</button>
 
         <h2 style="margin-top: 50px;">Classificação por Grupos</h2>
         <div class="groups-tables-grid" id="groups-tables-grid"></div>
@@ -292,20 +308,20 @@
  <div id="team-profile" class="page">
         <button class="btn-back" onclick="navigate('teams-list')">← Voltar para Equipes</button>
 
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img id="tp-logo" src="" style="width: 60px; height: 60px; object-fit: contain; display: none;">
-                <div>
-                    <h1 id="tp-name" style="margin: 0; font-size: 2.5em; text-transform: uppercase;">NOME DO TIME</h1>
-                    <h3 id="tp-group" style="color: #66b3ff; margin-top: 5px;">Grupo X</h3>
+        <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 20px; text-align: center;">
+            <div style="display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%;">
+                <img id="tp-logo" src="" style="width: 75px; height: 75px; object-fit: contain; display: none;">
+                <div style="text-align: left;">
+                    <h1 id="tp-name" style="margin: 0; font-size: 2.2em; text-transform: uppercase; line-height: 1;">NOME</h1>
+                    <h3 id="tp-group" style="color: #66b3ff; margin-top: 5px; margin-bottom: 0;">Grupo X</h3>
                 </div>
             </div>
             
-            <div id="tp-next-match-container"></div>
-
-            <div style="text-align: right;">
-                <div style="font-size: 1.2em; color: var(--text-muted);">Posição Geral: <strong id="tp-pos" style="color:#ffaa00; font-size: 1.5em;">0º</strong></div>
+            <div style="width: 100%; max-width: 300px; background: var(--panel-bg); border: 1px solid var(--border); padding: 10px; border-radius: 8px;">
+                <div style="font-size: 1.1em; color: var(--text-muted);">Posição Geral: <strong id="tp-pos" style="color:#ffaa00; font-size: 1.4em;">0º</strong></div>
             </div>
+
+            <div id="tp-next-match-container" style="width: 100%;"></div>
         </div>
 
         <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
@@ -339,12 +355,12 @@
             <table id="table-team-players">
                 <thead>
                     <tr>
-                        <th onclick="sortTable('table-team-players', 0, false)">Jogador ↕</th>
-                        <th onclick="sortTable('table-team-players', 1, true)">Abates ↕</th>
-                        <th onclick="sortTable('table-team-players', 2, true)">Dano ↕</th>
-                        <th onclick="sortTable('table-team-players', 3, true)">Assistências ↕</th>
-                        <th onclick="sortTable('table-team-players', 4, true)">Quedas ↕</th>
-                        <th onclick="sortTable('table-team-players', 5, true)">MVPs ↕</th>
+                        <th onclick="sortTable('table-team-players', 0, false)">Jog ↕</th>
+                        <th onclick="sortTable('table-team-players', 1, true)" title="Abates">A ↕</th>
+                        <th onclick="sortTable('table-team-players', 2, true)" title="Dano">D ↕</th>
+                        <th onclick="sortTable('table-team-players', 3, true)" title="Assistências">AS ↕</th>
+                        <th onclick="sortTable('table-team-players', 4, true)" title="Quedas">Q ↕</th>
+                        <th onclick="sortTable('table-team-players', 5, true)" title="MVPs">M ↕</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -1644,21 +1660,23 @@ function renderFullTeams() {
     tbody.innerHTML = tableData.map((t, index) => {
         let pos = selectedTeamDays.length === 0 ? t.posGeral : (index + 1);
         let logoSrc = logos[t.equipe] ? logos[t.equipe] : '';
+        let sName = shortNames[t.equipe] || t.equipe; // Pega o nome curto
         
-return `<tr>
+        return `<tr>
             <td style="color:var(--accent); font-weight:bold;">${pos}º</td>
             <td class="team-cell">
                 <img src="${logoSrc}" class="team-logo" alt="">
-                <span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span>
+                <span class="clickable full-name-desktop" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span>
+                <span class="clickable short-name-mobile" onclick="openTeamProfile('${t.equipe}')">${sName}</span>
             </td>
             <td class="hide-mobile">${t.grupo}</td>
             <td style="color:#ffaa00; font-weight:bold">${t.pontos}</td>
             <td class="hide-mobile">${t.booyah}</td>
-            <td>${t.abates}</td>
-            <td class="hide-mobile">${t.quedas}</td>
+            <td class="hide-mobile">${t.abates}</td>
+            <td>${t.quedas}</td>
         </tr>`;
-}).join(''); // Fecha o map e junta as linhas
-} // Fecha a função renderFullTeams
+    }).join('');
+}
 
 function renderHomeGroups() {
     let container = document.getElementById('groups-container');
