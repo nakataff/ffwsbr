@@ -510,10 +510,15 @@ function renderFullTeams() {
             if (dData) {
                 return { equipe: t.equipe, grupo: t.grupo, pontos: dData.pontos, booyah: dData.booyah, abates: dData.abates, quedas: 6 };
             } else {
-                return { equipe: t.equipe, grupo: t.grupo, pontos: 0, booyah: 0, abates: 0, quedas: 0 };
+                return { equipe: t.equipe, grupo: t.grupo, pontos: 0, booyah: 0, abates: 0, quedas: 0, didNotPlay: true };
             }
         }
     });
+    
+    // Ocultar times que não jogaram no dia selecionado
+    if (dayFilter !== 'all') {
+        tableData = tableData.filter(t => !t.didNotPlay);
+    }
     
     tableData.sort((a, b) => b.pontos - a.pontos);
     
@@ -715,6 +720,9 @@ function renderAllPlayers() {
     
     let dataSource = dayFilter === 'all' ? db.players : db.playerDaily.filter(p => p.dia == dayFilter);
     let data = dataSource.filter(p => teamFilter === 'all' || p.equipe === teamFilter);
+    
+    // Ocultar jogadores que não jogaram (0 quedas)
+    data = data.filter(p => p.quedas > 0);
     
     let tbody = document.querySelector('#table-players tbody');
     
