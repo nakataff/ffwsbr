@@ -1426,6 +1426,9 @@ window.onload = () => {
 };
 
 function navigate(pageId) {
+    // Força a página a voltar para o topo instantaneamente
+    window.scrollTo(0, 0);
+
     // Esconde todas as páginas e tira o destaque dos botões
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
@@ -1437,7 +1440,7 @@ function navigate(pageId) {
     let btn = document.getElementById('nav-' + pageId);
     if(btn) btn.classList.add('active');
     
-    // NOVIDADE: Se estiver no celular, fecha o menu depois de clicar
+    // Fecha o menu no mobile após clicar
     if (window.innerWidth <= 768) {
         document.getElementById('nav-links').classList.remove('active');
     }
