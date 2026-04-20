@@ -203,24 +203,32 @@
         </div>
     </div>
 
-    <!-- PAGE: TEAM PROFILE -->
-    <div id="team-profile" class="page">
+ <div id="team-profile" class="page">
         <button class="btn-back" onclick="navigate('teams-list')">← Voltar para Equipes</button>
+
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <img id="tp-logo" src="" style="width: 50px; height: 50px; object-fit: contain; display: none;">
+                <img id="tp-logo" src="" style="width: 60px; height: 60px; object-fit: contain; display: none;">
                 <div>
-                    <h1 id="tp-name" style="margin: 0; font-size: 2.5em;">NOME DO TIME</h1>
+                    <h1 id="tp-name" style="margin: 0; font-size: 2.5em; text-transform: uppercase;">NOME DO TIME</h1>
                     <h3 id="tp-group" style="color: #66b3ff; margin-top: 5px;">Grupo X</h3>
                 </div>
             </div>
-    <div id="tp-next-match-container"></div>
+            
+            <div id="tp-next-match-container"></div>
+
             <div style="text-align: right;">
                 <div style="font-size: 1.2em; color: var(--text-muted);">Posição Geral: <strong id="tp-pos" style="color:#ffaa00; font-size: 1.5em;">0º</strong></div>
             </div>
         </div>
 
-        <h3 style="margin-top: 25px; border-bottom: 1px solid #333; padding-bottom: 10px;">Desempenho da Equipe</h3>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+
+        <h3 style="color: #fff; margin-bottom: 15px; letter-spacing: 2px;">JOGADORES</h3>
+        <div id="tp-players-cards-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 40px; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+            </div>
+
+        <h3 style="margin-top: 25px; border-bottom: 1px solid #333; padding-bottom: 10px;">DESEMPENHO DA EQUIPE</h3>
         <div class="filters">
             <label style="color: var(--text-muted); font-weight: bold;">Estatísticas do Período:</label>
             <div class="day-filters" id="tp-day-filters"></div>
@@ -228,33 +236,33 @@
         
         <div class="grid-cards" id="tp-stats-container"></div>
 
-        <!-- Desempenho contra Grupos -->
-        <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Desempenho Contra Grupos Oponentes</h3>
+        <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">DESEMPENHO CONTRA GRUPOS OPONENTES</h3>
         <div class="filters">
             <label style="color: var(--text-muted); font-weight: bold;">Selecionar Grupo Oponente:</label>
             <select id="tp-opp-group" onchange="renderTeamConfrontation()"></select>
         </div>
+        
         <div class="grid-cards" id="tp-confrontation-result"></div>
+        
         <div style="text-align: right; margin-top: -10px; margin-bottom: 30px;">
             <button class="btn-action" onclick="openConfrontationModal()" id="btn-confrontation">Ver Ranking do Confronto Completo</button>
         </div>
 
-        <!-- Classificação Interna -->
-        <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Classificação Interna</h3>
+        <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">CLASSIFICAÇÃO INTERNA (NÚMEROS TOTAIS)</h3>
         <div class="table-container">
-<table id="table-team-players">
-    <thead>
-        <tr>
-            <th onclick="sortTable('table-team-players', 0, false)">Jogador ↕</th>
-            <th onclick="sortTable('table-team-players', 1, true)">Quedas ↕</th>
-            <th onclick="sortTable('table-team-players', 2, true)">Abates ↕</th>
-            <th onclick="sortTable('table-team-players', 3, true)">Dano ↕</th>
-            <th onclick="sortTable('table-team-players', 4, true)">Assistências ↕</th>
-            <th onclick="sortTable('table-team-players', 5, true)">MVPs ↕</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+            <table id="table-team-players">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('table-team-players', 0, false)">Jogador ↕</th>
+                        <th onclick="sortTable('table-team-players', 1, true)">Quedas ↕</th>
+                        <th onclick="sortTable('table-team-players', 2, true)">Abates ↕</th>
+                        <th onclick="sortTable('table-team-players', 3, true)">Dano ↕</th>
+                        <th onclick="sortTable('table-team-players', 4, true)">Assistências ↕</th>
+                        <th onclick="sortTable('table-team-players', 5, true)">MVPs ↕</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 
@@ -430,11 +438,11 @@ const playerRoles = {
 };
 
 const playerPhotos = {
-    "MT7": "mt7.png","Bops": "bops.png", "Giuh": "silhueta.png", "BuTziN": "silhueta.png", "Proxx7": "silhueta.png",
+    "MT7": "mt7.png","Bops": "silhueta.png", "Giuh": "silhueta.png", "BuTziN": "silhueta.png", "Proxx7": "silhueta.png",
     "Pitbull": "silhueta.png", "PETER": "silhueta.png", "vitinxp": "silhueta.png", "Motovea": "silhueta.png", "BYTE333": "silhueta.png",
     "Pão7": "silhueta.png", "Cauã9": "silhueta.png", "Juca10xL": "silhueta.png", "Lyon": "silhueta.png",
     "lippe!": "silhueta.png", "itzking1": "silhueta.png", "Razure": "silhueta.png", "IGOR7": "silhueta.png",
-    "HAK": "silhueta.png", "NICKZ": "silhueta.png", "TRAP": "trap.png", "GUAXA": "silhueta.png", "BZP": "silhueta.png",
+    "HAK": "silhueta.png", "NICKZ": "silhueta.png", "TRAP": "silhueta.png", "GUAXA": "silhueta.png", "BZP": "silhueta.png",
     "Sam7": "silhueta.png", "JNmvp7": "silhueta.png", "Brisa7": "silhueta.png", "NEYawp": "silhueta.png", "MitoMvp": "silhueta.png",
     "BLACK02": "silhueta.png", "LC777": "silhueta.png", "GUIMERLQ": "silhueta.png", "PROZIN": "silhueta.png", "MitinX": "silhueta.png",
     "Rigby245": "silhueta.png", "General!": "silhueta.png", "Raone7": "silhueta.png", "Yago": "silhueta.png", "mtsexy.": "silhueta.png",
@@ -993,55 +1001,101 @@ function renderTeamProfileStats() {
     let tName = currentTeamView;
     let t = db.teams.find(x => x.equipe === tName);
     
-    // --- 1. CÁLCULO DE ESTATÍSTICAS GLOBAIS, MÉDIAS E MELHOR/PIOR DIA ---
+    // --- 1. CÁLCULO DE ESTATÍSTICAS GLOBAIS E RANKS (MANTIDO) ---
     let allTeamsStats = [];
     db.teams.forEach(team => {
         let daily = db.teamDaily[team.equipe] || [];
         let pDaily = db.playerDaily.filter(p => p.equipe === team.equipe);
-        
         if (selectedTpDays.length > 0) {
             daily = daily.filter(d => selectedTpDays.includes(String(d.dia)));
             pDaily = pDaily.filter(p => selectedTpDays.includes(String(p.dia)));
         }
-        
         let stats = daily.reduce((acc, curr) => { 
             acc.pontos += curr.pontos; acc.abates += curr.abates; acc.booyah += curr.booyah; return acc; 
         }, {pontos: 0, abates: 0, booyah: 0});
-        
         let dano = pDaily.reduce((sum, p) => sum + p.dano, 0);
-        
-        allTeamsStats.push({
-            equipe: team.equipe,
-            pontos: stats.pontos,
-            abates: stats.abates,
-            pontos_pos: stats.pontos - stats.abates,
-            dano: dano,
-            booyah: stats.booyah,
-            quedas: daily.length * 6,
-            dias: daily.length
-        });
+        allTeamsStats.push({ equipe: team.equipe, pontos: stats.pontos, abates: stats.abates, pontos_pos: stats.pontos - stats.abates, dano: dano, booyah: stats.booyah, quedas: daily.length * 6, dias: daily.length });
     });
 
     const getRank = (field) => {
         let sorted = [...allTeamsStats].sort((a, b) => b[field] - a[field]);
         return sorted.findIndex(x => x.equipe === tName) + 1;
     };
-
     let cur = allTeamsStats.find(x => x.equipe === tName);
 
-    // --- 2. RENDERIZAÇÃO DOS CARDS EM 3 LINHAS ---
+    // --- 2. RENDERIZAÇÃO DAS CARTINHAS (IDÊNTICAS AO PERFIL) ---
+    let pRaw = db.playerDaily.filter(p => p.equipe === tName);
+    if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
+    
+    let agg = {};
+    pRaw.forEach(row => {
+        if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, equipe: row.equipe, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
+        agg[row.jogador].quedas += row.quedas; 
+        agg[row.jogador].abates += row.abates; 
+        agg[row.jogador].dano += row.dano; 
+        agg[row.jogador].assists += row.assists; 
+        agg[row.jogador].mvp += (row.mvp || 0);
+    });
+
+    let players = Object.values(agg);
+    let cardsContainer = document.getElementById('tp-players-cards-container');
+    
+    if (cardsContainer) {
+        cardsContainer.innerHTML = players.sort((a,b) => b.abates - a.abates).map(player => {
+            let ovr = calculateOverall(player);
+            let role = playerRoles[player.jogador] || "RUSH";
+            let photo = playerPhotos[player.jogador] || "silhueta.png";
+            let teamLogo = logos[player.equipe] || "";
+            let danoK = (player.dano / 1000).toFixed(0) + "K";
+            let accentColor = "#cd7f32"; 
+            if (ovr >= 91) accentColor = "#d4af37";
+            else if (ovr >= 86) accentColor = "#c5a028";
+            else if (ovr >= 81) accentColor = "#e5e5e5";
+            else if (ovr >= 75) accentColor = "#a3a3a3";
+
+            let glow = ovr >= 91 ? `box-shadow: 0 0 30px ${accentColor}66;` : '';
+
+            return `
+                <div onclick="openPlayerProfile('${player.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} transform: scale(0.9); margin: -15px;">
+                    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
+                    <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
+                        <div style="font-size: 58px; font-weight: 900; line-height: 0.8; letter-spacing: -2px;">${ovr}</div>
+                        <div style="font-size: 22px; font-weight: bold; margin-top: 5px; letter-spacing: 1px;">${role}</div>
+                        <div style="margin: 15px auto; width: 40px; height: 2px; background: ${accentColor}; opacity: 0.6;"></div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width: 35px; border-radius: 2px; display: block; margin: 8px auto;">
+                        <img src="${teamLogo}" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
+                    </div>
+                    <img src="${photo}" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; filter: drop-shadow(5px 5px 15px #000); -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%); mask-image: linear-gradient(to bottom, black 70%, transparent 100%);">
+                    <div style="position: absolute; bottom: 0; width: 100%; height: 165px; background: linear-gradient(transparent, #000 40%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 20px;">
+                        <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+                            <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
+                            <div style="color: #fff; font-size: 26px; font-weight: 900; text-transform: uppercase; padding: 8px 0; text-shadow: 2px 2px 4px #000;">${player.jogador}</div>
+                            <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; color: #fff; width: 100%; align-items: center; text-transform: uppercase;">
+                            <div style="font-size: 17px; font-weight: bold; letter-spacing: 1px;"><span style="font-weight: 900; color: ${accentColor}; font-size: 21px; margin-right: 5px;">${player.abates}</span> ABATES</div>
+                            <div style="font-size: 17px; font-weight: bold; letter-spacing: 1px;"><span style="font-weight: 900; color: ${accentColor}; font-size: 21px; margin-right: 5px;">${player.assists}</span> ASSISTÊNCIAS</div>
+                            <div style="font-size: 17px; font-weight: bold; letter-spacing: 1px;"><span style="font-weight: 900; color: ${accentColor}; font-size: 21px; margin-right: 5px;">${danoK}</span> DANO TOTAL</div>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    // --- 3. RENDERIZAÇÃO DO PAINEL DE DESEMPENHO (CORRIGIDO) ---
     let container = document.getElementById('tp-stats-container');
     if(container && cur) {
-        container.style.display = "block"; 
+        container.style.display = "block";
         let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));";
         let totalQ = cur.quedas || 1;
+        let totalD = cur.dias || 1;
 
-        // Busca dados para o Melhor/Pior dia (Linha 1)
-        let bwHtml = '';
+        // LINHA 1: Cards de Destaque (Melhor e Pior Dia)
+        let topRowHtml = '';
         if(db.teamDaily[tName] && db.teamDaily[tName].length > 0) {
             let sortedDays = [...db.teamDaily[tName]].sort((a,b) => b.pontos - a.pontos);
             let best = sortedDays[0], worst = sortedDays[sortedDays.length - 1];
-            bwHtml = `
+            topRowHtml = `
                 <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
                     <div class="card" style="flex: 1 1 300px; max-width: 450px; border-left: 4px solid #4caf50;">
                         <h3>🏆 Melhor Dia</h3>
@@ -1056,55 +1110,39 @@ function renderTeamProfileStats() {
                 </div>`;
         }
 
-        container.innerHTML = `
-            ${bwHtml}
+        // LINHA 2: Médias
+        let averagesRowHtml = `
+            <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 20px;">
+                <div class="card"><div class="card-top-border"></div><h3>Média Pts</h3><div class="value">${(cur.pontos/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3><div class="value">${(cur.abates/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Colocação</h3><div class="value">${(cur.pontos_pos/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3><div class="value">${(cur.dano/totalQ).toFixed(0)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Booyah</h3><div class="value">${(cur.booyah/totalD).toFixed(2)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por dia</div></div>
+            </div>`;
 
-            <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 15px;">
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Pts</h3><div class="value">${(cur.pontos/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Abates</h3><div class="value">${(cur.abates/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Colocação</h3><div class="value">${(cur.pontos_pos/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Dano</h3><div class="value">${(cur.dano/totalQ).toFixed(0)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Booyah</h3><div class="value">${cur.dias > 0 ? (cur.booyah/cur.dias).toFixed(2) : 0}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por dia</div></div>
-            </div>
-            
+        // LINHA 3: Totais e Ranks
+        let totalsRowHtml = `
             <div style="display: grid; ${gridCSS} gap: 15px;">
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Pontos Totais</h3><div class="value" style="color:#fff">${cur.pontos}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('pontos')}</span></div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Abates Totais</h3><div class="value" style="color:#fff">${cur.abates}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('abates')}</span></div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Pts Colocação</h3><div class="value" style="color:#fff">${cur.pontos_pos}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('pontos_pos')}</span></div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Dano Acumulado</h3><div class="value" style="color:#fff">${cur.dano}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('dano')}</span></div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Booyahs</h3><div class="value" style="color:#fff">${cur.booyah}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('booyah')}</span></div></div>
-            </div>
-        `;
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Pontos Totais</h3><div class="value" style="color:#fff">${cur.pontos}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('pontos')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Abates Totais</h3><div class="value" style="color:#fff">${cur.abates}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('abates')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Pts Colocação</h3><div class="value" style="color:#fff">${cur.pontos_pos}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('pontos_pos')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Dano Acumulado</h3><div class="value" style="color:#fff">${cur.dano}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('dano')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Booyahs</h3><div class="value" style="color:#fff">${cur.booyah}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('booyah')}</span></div></div>
+            </div>`;
+
+        container.innerHTML = topRowHtml + averagesRowHtml + totalsRowHtml;
     }
 
-    // --- 3. TABELA INTERNA DE JOGADORES ---
-    let pRaw = db.playerDaily.filter(p => p.equipe === tName);
-    if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
-    
-    let agg = {};
-    pRaw.forEach(row => {
-        if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
-        agg[row.jogador].quedas += row.quedas; 
-        agg[row.jogador].abates += row.abates; 
-        agg[row.jogador].dano += row.dano; 
-        agg[row.jogador].assists += row.assists; 
-        agg[row.jogador].mvp += row.mvp;
-    });
-    
+    // --- 4. TABELA INTERNA (MANTIDA) ---
     let tbody = document.querySelector('#table-team-players tbody');
-    let players = Object.values(agg);
-    if (players.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="color:#aaa">Sem dados registrados.</td></tr>`;
-    } else {
-        tbody.innerHTML = players.sort((a,b) => b.abates - a.abates).map(p => `<tr>
-            <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
-            <td style="color:var(--accent); font-weight:bold;">${p.abates}</td>
-            <td style="color:var(--text-muted); font-weight:bold;">${p.quedas}</td>
-            <td>${p.dano}</td>
-            <td>${p.assists}</td>
-            <td>${p.mvp || 0}</td>
-        </tr>`).join('');
-    }
+    tbody.innerHTML = players.sort((a,b) => b.abates - a.abates).map(p => `<tr>
+        <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
+        <td style="color:var(--text-muted); font-weight:bold;">${p.quedas}</td>
+        <td style="color:var(--accent); font-weight:bold;">${p.abates}</td>
+        <td>${p.dano}</td>
+        <td>${p.assists}</td>
+        <td>${p.mvp || 0}</td>
+    </tr>`).join('');
 }
 
 function getConfrontationData() {
@@ -1537,10 +1575,12 @@ function renderCompareTeams() {
 
     document.getElementById('compare-teams-result').innerHTML = `
         <div class="compare-box">
+            <img src="${logos[t1.equipe] || ''}" style="height: 100px; object-fit: contain; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));">
             <h2 style="color:#66b3ff"><span class="clickable" onclick="openTeamProfile('${t1.equipe}')">${t1.equipe}</span></h2>
             <p>Posição Geral: <strong style="color:var(--accent)">${t1.posGeral}º</strong></p>
         </div>
         <div class="compare-box">
+            <img src="${logos[t2.equipe] || ''}" style="height: 100px; object-fit: contain; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));">
             <h2 style="color:#ff6666"><span class="clickable" onclick="openTeamProfile('${t2.equipe}')">${t2.equipe}</span></h2>
             <p>Posição Geral: <strong style="color:var(--accent)">${t2.posGeral}º</strong></p>
         </div>
@@ -1558,45 +1598,63 @@ function renderComparePlayers() {
         p2 = db.players.find(x => x.jogador === document.getElementById('comp-p2').value);
     if(!p1 || !p2) return;
 
-    // Busca as informações da equipe para mostrar a posição geral do time
-    let team1 = db.teams.find(t => t.equipe === p1.equipe);
-    let team2 = db.teams.find(t => t.equipe === p2.equipe);
+    // Função para gerar o HTML da cartinha dentro da comparação
+    const getCardHtml = (p) => {
+        let ovr = calculateOverall(p);
+        let role = playerRoles[p.jogador] || "RUSH";
+        let photo = playerPhotos[p.jogador] || "silhueta.png";
+        let teamLogo = logos[p.equipe] || "";
+        let danoK = (p.dano / 1000).toFixed(0) + "K";
+        
+        let accentColor = "#cd7f32"; 
+        if (ovr >= 91) accentColor = "#d4af37";
+        else if (ovr >= 86) accentColor = "#c5a028";
+        else if (ovr >= 81) accentColor = "#e5e5e5";
+        else if (ovr >= 75) accentColor = "#a3a3a3";
 
-    // Função interna para construir as linhas com badges de rank
+        let glow = ovr >= 91 ? `box-shadow: 0 0 30px ${accentColor}66;` : '';
+
+        return `
+            <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} margin: 0 auto 20px auto;">
+                <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
+                <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
+                    <div style="font-size: 58px; font-weight: 900; line-height: 0.8; letter-spacing: -2px;">${ovr}</div>
+                    <div style="font-size: 22px; font-weight: bold; margin-top: 5px; letter-spacing: 1px;">${role}</div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width: 35px; border-radius: 2px; display: block; margin: 15px auto 8px auto;">
+                    <img src="${teamLogo}" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 0 auto;">
+                </div>
+                <img src="${photo}" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; filter: drop-shadow(5px 5px 15px #000); -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%); mask-image: linear-gradient(to bottom, black 70%, transparent 100%);">
+                <div style="position: absolute; bottom: 0; width: 100%; height: 165px; background: linear-gradient(transparent, #000 40%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 20px;">
+                    <div style="color: #fff; font-size: 26px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; text-shadow: 2px 2px 4px #000;">${p.jogador}</div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; color: #fff; width: 100%; align-items: center; text-transform: uppercase;">
+                        <div style="font-size: 15px;"><span style="font-weight: 900; color: ${accentColor}; font-size: 19px;">${p.abates}</span> ABATES</div>
+                        <div style="font-size: 15px;"><span style="font-weight: 900; color: ${accentColor}; font-size: 19px;">${p.assists}</span> ASSISTÊNCIAS</div>
+                        <div style="font-size: 15px;"><span style="font-weight: 900; color: ${accentColor}; font-size: 19px;">${danoK}</span> DANO</div>
+                    </div>
+                </div>
+            </div>`;
+    };
+
     const buildRow = (label, v1, v2, r1, r2, formatFn = v=>v) => `
         <div class="stat-row">
-            <div class="stat-val ${v1>v2?'winner':(v1<v2?'loser':'')}">
-                ${formatFn(v1)} ${r1 ? `<span class="rank-badge">#${r1}</span>` : ''}
-            </div>
+            <div class="stat-val ${v1>v2?'winner':(v1<v2?'loser':'')}">${formatFn(v1)} ${r1 ? `<span class="rank-badge">#${r1}</span>` : ''}</div>
             <div class="stat-label">${label}</div>
-            <div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">
-                ${formatFn(v2)} ${r2 ? `<span class="rank-badge">#${r2}</span>` : ''}
-            </div>
+            <div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">${formatFn(v2)} ${r2 ? `<span class="rank-badge">#${r2}</span>` : ''}</div>
         </div>`;
 
     document.getElementById('compare-players-result').innerHTML = `
-        <div class="compare-box">
-            <h2 style="color:#66b3ff"><span class="clickable" onclick="openPlayerProfile('${p1.jogador}')">${p1.jogador}</span></h2>
-            <p style="color:#aaa;">
-                <span class="clickable" onclick="openTeamProfile('${p1.equipe}')">${p1.equipe}</span> 
-                (<strong style="color:var(--accent)">${team1.posGeral}º</strong>)
-            </p>
+        <div class="compare-box" style="background:transparent; border:none;">
+            ${getCardHtml(p1)}
         </div>
-        <div class="compare-box">
-            <h2 style="color:#ff6666"><span class="clickable" onclick="openPlayerProfile('${p2.jogador}')">${p2.jogador}</span></h2>
-            <p style="color:#aaa;">
-                <span class="clickable" onclick="openTeamProfile('${p2.equipe}')">${p2.equipe}</span> 
-                (<strong style="color:var(--accent)">${team2.posGeral}º</strong>)
-            </p>
+        <div class="compare-box" style="background:transparent; border:none;">
+            ${getCardHtml(p2)}
         </div>
         <div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
-            ${buildRow('Abates', p1.abates, p2.abates, p1.rankKills, p2.rankKills)}
-            ${buildRow('Dano', p1.dano, p2.dano, p1.rankDmg, p2.rankDmg)}
+            ${buildRow('Abates Totais', p1.abates, p2.abates, p1.rankKills, p2.rankKills)}
+            ${buildRow('Dano Total', p1.dano, p2.dano, p1.rankDmg, p2.rankDmg)}
             ${buildRow('Assistências', p1.assists, p2.assists, p1.rankAssists, p2.rankAssists)}
-            ${buildRow('MVPs', p1.mvp, p2.mvp, p1.rankMvp, p2.rankMvp)}
-            ${buildRow('Quedas Jogadas', p1.quedas, p2.quedas)}
+            ${buildRow('MVPs Recebidos', p1.mvp, p2.mvp, p1.rankMvp, p2.rankMvp)}
             ${buildRow('Kills/Queda', p1.abates/p1.quedas, p2.abates/p2.quedas, null, null, v=>v.toFixed(2))}
-            ${buildRow('Dano/Queda', p1.dano/p1.quedas, p2.dano/p2.quedas, null, null, v=>v.toFixed(2))}
         </div>`;
 }
 </script>
