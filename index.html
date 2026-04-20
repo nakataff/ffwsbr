@@ -363,12 +363,22 @@
     </div>
 
     <!-- PAGE: CRONOGRAMA -->
-    <div id="schedule" class="page">
-        <h2>Cronograma e Próximos Confrontos - FFWS Brasil 2026</h2>
-        <p style="color: var(--text-muted); margin-bottom: 20px;">Acompanhe a agenda oficial das semanas finais e Grande Final do campeonato.</p>
-        <div id="schedule-content"></div>
-    </div>
+<div id="schedule" class="page">
+    <h2>Cronograma e Próximos Confrontos - FFWS Brasil 2026</h2>
+    
+    <div id="next-match-timer" style="background: linear-gradient(90deg, #1c1c20 0%, #26262b 100%); border: 1px solid var(--border); border-left: 4px solid #ff4444; padding: 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+        <div style="min-width: 200px;">
+            <div style="color: var(--text-muted); font-size: 0.85em; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Próxima Transmissão</div>
+            <div id="countdown-display" style="font-size: 1.4em; font-weight: bold; color: #fff;">Carregando...</div>
+        </div>
 
+        <div id="next-match-groups" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
+
+        <a href="https://www.youtube.com/@FFesportsBR" target="_blank" id="live-link" style="font-size: 2.5em; text-decoration: none; transition: 0.3s; filter: grayscale(1); pointer-events: none;">🎥</a>
+    </div>
+    
+    <p style="color: var(--text-muted); margin-bottom: 20px;">Acompanhe a agenda oficial das semanas finais e Grande Final do campeonato.</p>
+    <div id="schedule-content"></div>
 </div>
 
 <!-- Modal para Ranking de Confronto -->
@@ -475,6 +485,8 @@ window.onload = () => {
     renderAllPlayers();
     renderIndividualRecords();
     renderMapData();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 };
 
 function navigate(pageId) {
@@ -483,6 +495,68 @@ function navigate(pageId) {
     document.getElementById(pageId).classList.add('active');
     let btn = document.getElementById('nav-' + pageId);
     if(btn) btn.classList.add('active');
+}
+
+// Função para converter "25 de Abril" em um objeto Date do JS
+function parseMatchDate(dateStr) {
+    const months = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5 };
+    const parts = dateStr.split(" de ");
+    const day = parseInt(parts[0]);
+    const month = months[parts[1]];
+    // Define a data para o ano de 2026, às 13:00:00
+    return new Date(2026, month, day, 13, 0, 0);
+}
+
+function updateCountdown() {
+    const now = new Date();
+    const nextMatch = agenda.find(m => {
+        const mDate = parseMatchDate(m.data);
+        return mDate > now || (mDate.toDateString() === now.toDateString() && now.getHours() < 16);
+    });
+
+    const display = document.getElementById('countdown-display');
+    const liveIcon = document.getElementById('live-link');
+    const groupsContainer = document.getElementById('next-match-groups');
+
+    if (!nextMatch) {
+        display.innerText = "Fim da Fase de Grupos!";
+        groupsContainer.innerHTML = "";
+        return;
+    }
+
+    // --- Lógica do Confronto (Logos e Grupos) ---
+    const groupsHtml = nextMatch.grupos.map(g => {
+        const teamsInGroup = db.teams.filter(t => t.grupo === g);
+        const logosHtml = teamsInGroup.map(t => `<img src="${logos[t.equipe]||''}" class="mini-logo" style="width:20px; height:20px;" title="${t.equipe}">`).join('');
+        return `<div class="group-logos" style="padding: 5px 12px; font-size: 0.9em;"><span class="group-label">Grupo ${g}</span>${logosHtml}</div>`;
+    }).join('<span style="font-weight:bold;color:#555;">VS</span>');
+    
+    groupsContainer.innerHTML = groupsHtml;
+    // --------------------------------------------
+
+    const targetDate = parseMatchDate(nextMatch.data);
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+        display.innerHTML = "<span style='color: #ff4444; animation: pulse 1s infinite;'>A PARTIR DAS 13H!</span>";
+        liveIcon.style.filter = "none";
+        liveIcon.style.pointerEvents = "auto";
+    } else {
+        const weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+        const days = Math.floor((diff / (1000 * 60 * 60 * 24)) % 7);
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / (1000 * 60)) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+
+        let timerStr = "";
+        if (weeks > 0) timerStr += `${weeks}w `;
+        if (days > 0 || weeks > 0) timerStr += `${days}d `;
+        timerStr += `${hours}h ${mins}m ${secs}s`;
+
+        display.innerText = timerStr;
+        liveIcon.style.filter = "grayscale(1)";
+        liveIcon.style.pointerEvents = "none";
+    }
 }
 
 function calculatePlayerRanks() {
