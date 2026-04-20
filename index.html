@@ -1091,17 +1091,75 @@ function renderIndividualRecords() {
 }
 
 function renderCompareTeams() {
-    let t1 = db.teams.find(x => x.equipe === document.getElementById('comp-t1').value), t2 = db.teams.find(x => x.equipe === document.getElementById('comp-t2').value);
+    let t1 = db.teams.find(x => x.equipe === document.getElementById('comp-t1').value), 
+        t2 = db.teams.find(x => x.equipe === document.getElementById('comp-t2').value);
     if(!t1 || !t2) return;
+
     const buildRow = (label, v1, v2) => `<div class="stat-row"><div class="stat-val ${v1>v2?'winner':(v1<v2?'loser':'')}">${v1}</div><div class="stat-label">${label}</div><div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">${v2}</div></div>`;
-    document.getElementById('compare-teams-result').innerHTML = `<div class="compare-box"><h2 style="color:#66b3ff"><span class="clickable" onclick="openTeamProfile('${t1.equipe}')">${t1.equipe}</span></h2><p>Posição Geral: ${t1.posGeral}º</p></div><div class="compare-box"><h2 style="color:#ff6666"><span class="clickable" onclick="openTeamProfile('${t2.equipe}')">${t2.equipe}</span></h2><p>Posição Geral: ${t2.posGeral}º</p></div><div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">${buildRow('Pontos', t1.pontos, t2.pontos)}${buildRow('Abates', t1.abates, t2.abates)}${buildRow('Booyahs', t1.booyah, t2.booyah)}${buildRow('Pts/Queda', (t1.pontos/t1.quedas).toFixed(2), (t2.pontos/t2.quedas).toFixed(2))}</div>`;
+
+    document.getElementById('compare-teams-result').innerHTML = `
+        <div class="compare-box">
+            <h2 style="color:#66b3ff"><span class="clickable" onclick="openTeamProfile('${t1.equipe}')">${t1.equipe}</span></h2>
+            <p>Posição Geral: <strong style="color:var(--accent)">${t1.posGeral}º</strong></p>
+        </div>
+        <div class="compare-box">
+            <h2 style="color:#ff6666"><span class="clickable" onclick="openTeamProfile('${t2.equipe}')">${t2.equipe}</span></h2>
+            <p>Posição Geral: <strong style="color:var(--accent)">${t2.posGeral}º</strong></p>
+        </div>
+        <div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
+            ${buildRow('Pontos', t1.pontos, t2.pontos)}
+            ${buildRow('Abates', t1.abates, t2.abates)}
+            ${buildRow('Booyahs', t1.booyah, t2.booyah)}
+            ${buildRow('Total Quedas', t1.quedas, t2.quedas)}
+            ${buildRow('Pts/Queda', (t1.pontos/t1.quedas).toFixed(2), (t2.pontos/t2.quedas).toFixed(2))}
+        </div>`;
 }
 
 function renderComparePlayers() {
-    let p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value), p2 = db.players.find(x => x.jogador === document.getElementById('comp-p2').value);
+    let p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value), 
+        p2 = db.players.find(x => x.jogador === document.getElementById('comp-p2').value);
     if(!p1 || !p2) return;
-    const buildRow = (label, v1, v2, formatFn = v=>v) => `<div class="stat-row"><div class="stat-val ${v1>v2?'winner':(v1<v2?'loser':'')}">${formatFn(v1)}</div><div class="stat-label">${label}</div><div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">${formatFn(v2)}</div></div>`;
-    document.getElementById('compare-players-result').innerHTML = `<div class="compare-box"><h2 style="color:#66b3ff"><span class="clickable" onclick="openPlayerProfile('${p1.jogador}')">${p1.jogador}</span></h2><p><span class="clickable" style="color:#aaa;" onclick="openTeamProfile('${p1.equipe}')">${p1.equipe}</span></p></div><div class="compare-box"><h2 style="color:#ff6666"><span class="clickable" onclick="openPlayerProfile('${p2.jogador}')">${p2.jogador}</span></h2><p><span class="clickable" style="color:#aaa;" onclick="openTeamProfile('${p2.equipe}')">${p2.equipe}</span></p></div><div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">${buildRow('Abates', p1.abates, p2.abates)}${buildRow('Dano', p1.dano, p2.dano)}${buildRow('Assistências', p1.assists, p2.assists)}${buildRow('Recorde (Dia)', p1.recorde||0, p2.recorde||0)}${buildRow('Kills/Queda', p1.abates/p1.quedas, p2.abates/p2.quedas, v=>v.toFixed(2))}${buildRow('Dano/Queda', p1.dano/p1.quedas, p2.dano/p2.quedas, v=>v.toFixed(2))}</div>`;
+
+    // Busca as informações da equipe para mostrar a posição geral do time
+    let team1 = db.teams.find(t => t.equipe === p1.equipe);
+    let team2 = db.teams.find(t => t.equipe === p2.equipe);
+
+    // Função interna para construir as linhas com badges de rank
+    const buildRow = (label, v1, v2, r1, r2, formatFn = v=>v) => `
+        <div class="stat-row">
+            <div class="stat-val ${v1>v2?'winner':(v1<v2?'loser':'')}">
+                ${formatFn(v1)} ${r1 ? `<span class="rank-badge">#${r1}</span>` : ''}
+            </div>
+            <div class="stat-label">${label}</div>
+            <div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">
+                ${formatFn(v2)} ${r2 ? `<span class="rank-badge">#${r2}</span>` : ''}
+            </div>
+        </div>`;
+
+    document.getElementById('compare-players-result').innerHTML = `
+        <div class="compare-box">
+            <h2 style="color:#66b3ff"><span class="clickable" onclick="openPlayerProfile('${p1.jogador}')">${p1.jogador}</span></h2>
+            <p style="color:#aaa;">
+                <span class="clickable" onclick="openTeamProfile('${p1.equipe}')">${p1.equipe}</span> 
+                (<strong style="color:var(--accent)">${team1.posGeral}º</strong>)
+            </p>
+        </div>
+        <div class="compare-box">
+            <h2 style="color:#ff6666"><span class="clickable" onclick="openPlayerProfile('${p2.jogador}')">${p2.jogador}</span></h2>
+            <p style="color:#aaa;">
+                <span class="clickable" onclick="openTeamProfile('${p2.equipe}')">${p2.equipe}</span> 
+                (<strong style="color:var(--accent)">${team2.posGeral}º</strong>)
+            </p>
+        </div>
+        <div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
+            ${buildRow('Abates', p1.abates, p2.abates, p1.rankKills, p2.rankKills)}
+            ${buildRow('Dano', p1.dano, p2.dano, p1.rankDmg, p2.rankDmg)}
+            ${buildRow('Assistências', p1.assists, p2.assists, p1.rankAssists, p2.rankAssists)}
+            ${buildRow('MVPs', p1.mvp, p2.mvp, p1.rankMvp, p2.rankMvp)}
+            ${buildRow('Quedas Jogadas', p1.quedas, p2.quedas)}
+            ${buildRow('Kills/Queda', p1.abates/p1.quedas, p2.abates/p2.quedas, null, null, v=>v.toFixed(2))}
+            ${buildRow('Dano/Queda', p1.dano/p1.quedas, p2.dano/p2.quedas, null, null, v=>v.toFixed(2))}
+        </div>`;
 }
 </script>
 </body>
