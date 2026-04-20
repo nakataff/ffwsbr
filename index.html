@@ -145,16 +145,15 @@
         <div class="table-container">
             <table id="table-teams-full">
                 <thead>
-                    <tr>
-                        <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
-                        <th style="text-align:left;" onclick="sortTable('table-teams-full', 1, false)">Equipe ↕</th>
-                        <th onclick="sortTable('table-teams-full', 2, false)">Grupo ↕</th>
-                        <th onclick="sortTable('table-teams-full', 3, true)">Pontos ↕</th>
-                        <th onclick="sortTable('table-teams-full', 4, true)">Booyah ↕</th>
-                        <th onclick="sortTable('table-teams-full', 5, true)">Abates ↕</th>
-                        <th onclick="sortTable('table-teams-full', 6, true)">Quedas ↕</th>
-                    </tr>
-                </thead>
+    <tr>
+        <th onclick="sortTable('table-team-players', 0, false)">Jogador ↕</th>
+        <th onclick="sortTable('table-team-players', 1, true)">Abates ↕</th>
+        <th onclick="sortTable('table-team-players', 2, true)">Quedas ↕</th>
+        <th onclick="sortTable('table-team-players', 3, true)">Dano ↕</th>
+        <th onclick="sortTable('table-team-players', 4, true)">Assistências ↕</th>
+        <th onclick="sortTable('table-team-players', 5, true)">MVPs ↕</th>
+    </tr>
+</thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -226,17 +225,7 @@
             <div class="day-filters" id="tp-day-filters"></div>
         </div>
         
-        <div class="grid-cards">
-            <div class="card"><div class="card-top-border"></div><h3>Média Pontos</h3><div class="value" id="tp-avg-pts">0.0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Por queda</div></div>
-            <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3><div class="value" id="tp-avg-kills">0.0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Por queda</div></div>
-            <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3><div class="value" id="tp-avg-dmg">0.0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Por queda</div></div>
-            <div class="card"><div class="card-top-border"></div><h3>Média Booyah</h3><div class="value" id="tp-avg-booyah">0.0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Por dia de jogo</div></div>
-        </div>
-
-        <div class="grid-cards" id="tp-best-worst-cards">
-            <div class="card" style="border-left: 4px solid #4caf50;"><h3>🏆 Melhor Dia</h3><div class="value" style="color:#4caf50" id="tp-best-day">0 pts</div><div id="tp-best-desc" style="color:#aaa;margin-top:5px;">Dia X</div></div>
-            <div class="card" style="border-left: 4px solid #f44336;"><h3>⚠️ Pior Dia</h3><div class="value" style="color:#f44336" id="tp-worst-day">0 pts</div><div id="tp-worst-desc" style="color:#aaa;margin-top:5px;">Dia X</div></div>
-        </div>
+        <div class="grid-cards" id="tp-stats-container"></div>
 
         <!-- Desempenho contra Grupos -->
         <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Desempenho Contra Grupos Oponentes</h3>
@@ -252,18 +241,19 @@
         <!-- Classificação Interna -->
         <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Classificação Interna</h3>
         <div class="table-container">
-            <table id="table-team-players">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable('table-team-players', 0, false)">Jogador ↕</th>
-                        <th onclick="sortTable('table-team-players', 1, true)">Abates ↕</th>
-                        <th onclick="sortTable('table-team-players', 2, true)">Dano ↕</th>
-                        <th onclick="sortTable('table-team-players', 3, true)">Assistências ↕</th>
-                        <th onclick="sortTable('table-team-players', 4, true)">MVPs ↕</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+<table id="table-team-players">
+    <thead>
+        <tr>
+            <th onclick="sortTable('table-team-players', 0, false)">Jogador ↕</th>
+            <th onclick="sortTable('table-team-players', 1, true)">Quedas ↕</th>
+            <th onclick="sortTable('table-team-players', 2, true)">Abates ↕</th>
+            <th onclick="sortTable('table-team-players', 3, true)">Dano ↕</th>
+            <th onclick="sortTable('table-team-players', 4, true)">Assistências ↕</th>
+            <th onclick="sortTable('table-team-players', 5, true)">MVPs ↕</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
         </div>
     </div>
 
@@ -711,13 +701,45 @@ function renderGroupsTables() {
     let container = document.getElementById('groups-tables-grid');
     let html = '';
     let tableData = getAggregatedTeams(selectedTeamDays);
+    
+    // Ordena todos os times primeiro para pegar a posição global real (mesmo se houver filtros ativos)
+    tableData.sort((a, b) => b.pontos - a.pontos);
+    tableData.forEach((t, i) => t.currentPos = i + 1);
+
     ['A', 'B', 'C', 'D'].forEach(g => {
-        let rows = tableData.filter(t => t.grupo === g).sort((a,b) => b.pontos - a.pontos).map((t, index) => {
+        // Como o tableData já está ordenado globalmente, os times dentro do filter já virão na ordem correta de pontos
+        let rows = tableData.filter(t => t.grupo === g).map(t => {
             let sName = shortNames[t.equipe] || t.equipe;
-            return `<tr><td style="padding: 6px; color:#aaa;">${index+1}º</td><td style="padding: 6px; font-weight:bold; text-align:left;"><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${sName}</span></td><td style="padding: 6px; color:var(--accent);">${t.pontos}</td><td style="padding: 6px;">${t.booyah}</td><td style="padding: 6px;">${t.abates}</td></tr>`;
+            return `<tr>
+                        <td style="padding: 6px; color:#aaa; font-weight:bold;">${t.currentPos}º</td>
+                        <td style="padding: 6px; font-weight:bold; text-align:left;"><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${sName}</span></td>
+                        <td style="padding: 6px; color:var(--accent);">${t.pontos}</td>
+                        <td style="padding: 6px;">${t.booyah}</td>
+                        <td style="padding: 6px;">${t.abates}</td>
+                        <td style="padding: 6px; color:var(--text-muted);">${t.quedas}</td>
+                    </tr>`;
         }).join('');
-        html += `<div class="group-table-card"><h3>GRUPO ${g}</h3><div style="overflow-x:auto;"><table style="font-size:0.9em; margin-bottom:0;"><thead><tr><th style="padding:8px">#</th><th style="padding:8px;text-align:left;">TIME</th><th style="padding:8px">PTS</th><th style="padding:8px">BOOYAH</th><th style="padding:8px">KILLS</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+        
+        html += `<div class="group-table-card">
+                    <h3>GRUPO ${g}</h3>
+                    <div style="overflow-x:auto;">
+                        <table style="font-size:0.9em; margin-bottom:0;">
+                            <thead>
+                                <tr>
+                                    <th style="padding:8px" title="Posição Geral">#</th>
+                                    <th style="padding:8px; text-align:left;">TIME</th>
+                                    <th style="padding:8px">PTS</th>
+                                    <th style="padding:8px" title="Booyahs">B!</th>
+                                    <th style="padding:8px">KILLS</th>
+                                    <th style="padding:8px" title="Quedas Jogadas">Q</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                 </div>`;
     });
+    
     container.innerHTML = html;
 }
 
@@ -864,46 +886,118 @@ function renderTeamProfileStats() {
     let tName = currentTeamView;
     let t = db.teams.find(x => x.equipe === tName);
     
-    if(db.teamDaily[tName] && db.teamDaily[tName].length > 0) {
-        let sortedDays = [...db.teamDaily[tName]].sort((a,b) => b.pontos - a.pontos);
-        let best = sortedDays[0], worst = sortedDays[sortedDays.length - 1];
-        document.getElementById('tp-best-day').innerText = `${best.pontos} pts`;
-        document.getElementById('tp-best-desc').innerText = `Dia ${best.dia} (Booyahs: ${best.booyah})`;
-        document.getElementById('tp-worst-day').innerText = `${worst.pontos} pts`;
-        document.getElementById('tp-worst-desc').innerText = `Dia ${worst.dia} (Booyahs: ${worst.booyah})`;
-        document.getElementById('tp-best-worst-cards').style.display = 'grid';
-    } else { document.getElementById('tp-best-worst-cards').style.display = 'none'; }
-
-    let teamPlayersRaw = db.playerDaily.filter(p => p.equipe === tName);
-    let selectedDailyData = db.teamDaily[tName] || [];
-    if (selectedTpDays.length > 0) {
-        selectedDailyData = selectedDailyData.filter(d => selectedTpDays.includes(String(d.dia)));
-        teamPlayersRaw = teamPlayersRaw.filter(p => selectedTpDays.includes(String(p.dia)));
-    }
-
-    let stats = selectedDailyData.reduce((acc, curr) => { acc.pontos+=curr.pontos; acc.abates+=curr.abates; acc.booyah+=curr.booyah; return acc; }, {pontos:0, abates:0, booyah:0});
-    let totalQuedas = selectedDailyData.length * 6;
-    
-    let aggPlayers = {};
-    teamPlayersRaw.forEach(row => {
-        if (!aggPlayers[row.jogador]) aggPlayers[row.jogador] = { jogador: row.jogador, abates: 0, dano: 0, assists: 0, mvp: 0 };
-        aggPlayers[row.jogador].abates += row.abates; aggPlayers[row.jogador].dano += row.dano; aggPlayers[row.jogador].assists += row.assists; aggPlayers[row.jogador].mvp += row.mvp;
+    // --- 1. CÁLCULO DE ESTATÍSTICAS GLOBAIS, MÉDIAS E MELHOR/PIOR DIA ---
+    let allTeamsStats = [];
+    db.teams.forEach(team => {
+        let daily = db.teamDaily[team.equipe] || [];
+        let pDaily = db.playerDaily.filter(p => p.equipe === team.equipe);
+        
+        if (selectedTpDays.length > 0) {
+            daily = daily.filter(d => selectedTpDays.includes(String(d.dia)));
+            pDaily = pDaily.filter(p => selectedTpDays.includes(String(p.dia)));
+        }
+        
+        let stats = daily.reduce((acc, curr) => { 
+            acc.pontos += curr.pontos; acc.abates += curr.abates; acc.booyah += curr.booyah; return acc; 
+        }, {pontos: 0, abates: 0, booyah: 0});
+        
+        let dano = pDaily.reduce((sum, p) => sum + p.dano, 0);
+        
+        allTeamsStats.push({
+            equipe: team.equipe,
+            pontos: stats.pontos,
+            abates: stats.abates,
+            pontos_pos: stats.pontos - stats.abates,
+            dano: dano,
+            booyah: stats.booyah,
+            quedas: daily.length * 6,
+            dias: daily.length
+        });
     });
-    let finalPlayers = Object.values(aggPlayers);
-    let totDano = finalPlayers.reduce((sum, p) => sum + p.dano, 0);
 
-    if (totalQuedas > 0) {
-        document.getElementById('tp-avg-pts').innerText = (stats.pontos / totalQuedas).toFixed(1);
-        document.getElementById('tp-avg-kills').innerText = (stats.abates / totalQuedas).toFixed(1);
-        document.getElementById('tp-avg-dmg').innerText = (totDano / totalQuedas).toFixed(0);
-        document.getElementById('tp-avg-booyah').innerText = selectedDailyData.length > 0 ? (stats.booyah / selectedDailyData.length).toFixed(2) : '0';
-    } else {
-        ['tp-avg-pts', 'tp-avg-kills', 'tp-avg-dmg', 'tp-avg-booyah'].forEach(id => document.getElementById(id).innerText = '-');
+    const getRank = (field) => {
+        let sorted = [...allTeamsStats].sort((a, b) => b[field] - a[field]);
+        return sorted.findIndex(x => x.equipe === tName) + 1;
+    };
+
+    let cur = allTeamsStats.find(x => x.equipe === tName);
+
+    // --- 2. RENDERIZAÇÃO DOS CARDS EM 3 LINHAS ---
+    let container = document.getElementById('tp-stats-container');
+    if(container && cur) {
+        container.style.display = "block"; 
+        let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));";
+        let totalQ = cur.quedas || 1;
+
+        // Busca dados para o Melhor/Pior dia (Linha 1)
+        let bwHtml = '';
+        if(db.teamDaily[tName] && db.teamDaily[tName].length > 0) {
+            let sortedDays = [...db.teamDaily[tName]].sort((a,b) => b.pontos - a.pontos);
+            let best = sortedDays[0], worst = sortedDays[sortedDays.length - 1];
+            bwHtml = `
+                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <div class="card" style="flex: 1 1 300px; max-width: 450px; border-left: 4px solid #4caf50;">
+                        <h3>🏆 Melhor Dia</h3>
+                        <div class="value" style="color:#4caf50">${best.pontos} pts</div>
+                        <div style="color:#aaa;margin-top:5px; font-size:0.9em;">Dia ${best.dia} (Booyahs: ${best.booyah})</div>
+                    </div>
+                    <div class="card" style="flex: 1 1 300px; max-width: 450px; border-left: 4px solid #f44336;">
+                        <h3>⚠️ Pior Dia</h3>
+                        <div class="value" style="color:#f44336">${worst.pontos} pts</div>
+                        <div style="color:#aaa;margin-top:5px; font-size:0.9em;">Dia ${worst.dia} (Booyahs: ${worst.booyah})</div>
+                    </div>
+                </div>`;
+        }
+
+        container.innerHTML = `
+            ${bwHtml}
+
+            <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 15px;">
+                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Pts</h3><div class="value">${(cur.pontos/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Abates</h3><div class="value">${(cur.abates/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Colocação</h3><div class="value">${(cur.pontos_pos/totalQ).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Dano</h3><div class="value">${(cur.dano/totalQ).toFixed(0)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.85em">Média Booyah</h3><div class="value">${cur.dias > 0 ? (cur.booyah/cur.dias).toFixed(2) : 0}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por dia</div></div>
+            </div>
+            
+            <div style="display: grid; ${gridCSS} gap: 15px;">
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Pontos Totais</h3><div class="value" style="color:#fff">${cur.pontos}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('pontos')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Abates Totais</h3><div class="value" style="color:#fff">${cur.abates}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('abates')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Pts Colocação</h3><div class="value" style="color:#fff">${cur.pontos_pos}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('pontos_pos')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Dano Acumulado</h3><div class="value" style="color:#fff">${cur.dano}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('dano')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.85em">Booyahs</h3><div class="value" style="color:#fff">${cur.booyah}</div><div style="margin-top: 10px; font-size:0.85em">Rank: <span class="rank-badge">#${getRank('booyah')}</span></div></div>
+            </div>
+        `;
     }
+
+    // --- 3. TABELA INTERNA DE JOGADORES ---
+    let pRaw = db.playerDaily.filter(p => p.equipe === tName);
+    if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
+    
+    let agg = {};
+    pRaw.forEach(row => {
+        if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
+        agg[row.jogador].quedas += row.quedas; 
+        agg[row.jogador].abates += row.abates; 
+        agg[row.jogador].dano += row.dano; 
+        agg[row.jogador].assists += row.assists; 
+        agg[row.jogador].mvp += row.mvp;
+    });
     
     let tbody = document.querySelector('#table-team-players tbody');
-    if (finalPlayers.length === 0) tbody.innerHTML = `<tr><td colspan="5" style="color:#aaa">Sem dados registrados.</td></tr>`;
-    else tbody.innerHTML = finalPlayers.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.mvp || 0}</td></tr>`).join('');
+    let players = Object.values(agg);
+    if (players.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:#aaa">Sem dados registrados.</td></tr>`;
+    } else {
+        tbody.innerHTML = players.sort((a,b) => b.abates - a.abates).map(p => `<tr>
+            <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
+            <td style="color:var(--accent); font-weight:bold;">${p.abates}</td>
+            <td style="color:var(--text-muted); font-weight:bold;">${p.quedas}</td>
+            <td>${p.dano}</td>
+            <td>${p.assists}</td>
+            <td>${p.mvp || 0}</td>
+        </tr>`).join('');
+    }
 }
 
 function getConfrontationData() {
@@ -932,11 +1026,23 @@ function renderTeamConfrontation() {
     }
     
     btn.style.display = 'inline-block';
+
+    // --- Cálculos Específicos para o Confronto ---
     let stats = db.teamDaily[tName].filter(d => intersectionDays.includes(d.dia)).reduce((acc, curr) => {
-        acc.pontos += curr.pontos; acc.abates += curr.abates; return acc;
-    }, {pontos: 0, abates: 0});
-    let totalQuedas = intersectionDays.length * 6;
+        acc.pontos += curr.pontos; 
+        acc.abates += curr.abates; 
+        acc.booyah += curr.booyah; 
+        return acc;
+    }, {pontos: 0, abates: 0, booyah: 0});
     
+    let pDaily = db.playerDaily.filter(p => p.equipe === tName && intersectionDays.includes(p.dia));
+    let totalDano = pDaily.reduce((sum, p) => sum + p.dano, 0);
+
+    let ptsColocacao = stats.pontos - stats.abates;
+    let totalQuedas = intersectionDays.length * 6;
+    let totalDias = intersectionDays.length;
+    
+    // Calcula Rank no confronto
     let teamsOverallPoints = {};
     db.teams.forEach(tm => {
         if(db.teamDaily[tm.equipe]) {
@@ -948,14 +1054,40 @@ function renderTeamConfrontation() {
     let sortedTeams = Object.keys(teamsOverallPoints).sort((a,b) => teamsOverallPoints[b] - teamsOverallPoints[a]);
     let rankInConfrontation = sortedTeams.indexOf(tName) + 1;
     let totalTeamsMatched = sortedTeams.length;
+
+    // --- RENDERIZAÇÃO EM 3 LINHAS ---
+    container.style.display = "block"; // Reset para organizar as 3 linhas independentes
+    let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));";
     
     container.innerHTML = `
-        <div class="card"><div class="card-top-border"></div><h3>Pontos (vs ${oppGroup})</h3><div class="value">${stats.pontos}</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Total acumulado</div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Média Pontos</h3><div class="value">${(stats.pontos/totalQuedas).toFixed(1)}</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Por queda</div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Abates (vs ${oppGroup})</h3><div class="value">${stats.abates}</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Total acumulado</div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3><div class="value">${(stats.abates/totalQuedas).toFixed(1)}</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Por queda</div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Quedas Jogadas</h3><div class="value">${totalQuedas}</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Em ${intersectionDays.length} dias de jogo</div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Rank no Confronto</h3><div class="value">#${rankInConfrontation} <span style="font-size:0.4em;color:#aaa">de ${totalTeamsMatched}</span></div><div style="color:#888;font-size:0.85em;margin-top:5px;">Posição Geral entre os grupos</div></div>
+        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+            <div class="card" style="flex: 1 1 300px; max-width: 450px; border-left: 4px solid var(--accent);">
+                <h3>Quedas Jogadas</h3>
+                <div class="value">${totalQuedas}</div>
+                <div style="color:#888;font-size:0.85em;margin-top:5px;">Em ${totalDias} dias de jogo contra o Grupo ${oppGroup}</div>
+            </div>
+            <div class="card" style="flex: 1 1 300px; max-width: 450px; border-left: 4px solid #66b3ff;">
+                <h3>Rank no Confronto</h3>
+                <div class="value">#${rankInConfrontation} <span style="font-size:0.4em;color:#aaa">de ${totalTeamsMatched}</span></div>
+                <div style="color:#888;font-size:0.85em;margin-top:5px;">Posição geral entre os grupos no período</div>
+            </div>
+        </div>
+
+        <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 15px;">
+            <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Pts</h3><div class="value">${(stats.pontos/totalQuedas).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+            <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Abates</h3><div class="value">${(stats.abates/totalQuedas).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+            <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Colocação</h3><div class="value">${(ptsColocacao/totalQuedas).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+            <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Dano</h3><div class="value">${(totalDano/totalQuedas).toFixed(0)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
+            <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Booyah</h3><div class="value">${(stats.booyah/totalDias).toFixed(2)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por dia</div></div>
+        </div>
+
+        <div style="display: grid; ${gridCSS} gap: 15px;">
+            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Pontos Totais</h3><div class="value" style="color:#fff">${stats.pontos}</div></div>
+            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Abates Totais</h3><div class="value" style="color:#fff">${stats.abates}</div></div>
+            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Pts Colocação</h3><div class="value" style="color:#fff">${ptsColocacao}</div></div>
+            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Dano Acumulado</h3><div class="value" style="color:#fff">${totalDano}</div></div>
+            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Booyahs Totais</h3><div class="value" style="color:#fff">${stats.booyah}</div></div>
+        </div>
     `;
 }
 
@@ -1086,8 +1218,56 @@ function renderMapData() {
 
 function renderIndividualRecords() {
     let data = db.players;
-    const getTopHtml = (arr, valFn, formatFn) => [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5).map((p, i) => `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:8px; background:rgba(255,255,255,0.03); border-radius:5px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))};"><div style="font-weight:bold; width:25px;">${i===0?'🥇':(i===1?'🥈':(i===2?'🥉':`${i+1}º`))}</div><div style="flex-grow:1; text-align:left; padding-left:10px;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span> <span class="clickable" style="font-size:0.8em;color:#aaa; display:inline-flex; align-items:center; gap:4px; margin-left:5px;" onclick="openTeamProfile('${p.equipe}')"><img src="${logos[p.equipe]||''}" style="width:12px;height:12px;object-fit:contain;">${p.equipe}</span></div><div style="font-weight:bold; color:var(--accent);">${formatFn(valFn(p))}</div></div>`).join('');
-    document.getElementById('records-container').innerHTML = `<div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getTopHtml(data, p => p.recorde || 0, v => v)}</div><div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3>${getTopHtml(data, p => p.abates, v => v)}</div><div class="card"><div class="card-top-border"></div><h3>Dano Total</h3>${getTopHtml(data, p => p.dano, v => v)}</div><div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${getTopHtml(data, p => p.assists, v => v)}</div><div class="card"><div class="card-top-border"></div><h3>Média Kills</h3>${getTopHtml(data, p => p.abates/p.quedas, v => v.toFixed(2))}</div><div class="card"><div class="card-top-border"></div><h3>Média Dano</h3>${getTopHtml(data, p => p.dano/p.quedas, v => v.toFixed(2))}</div>`;
+    
+    // Função auxiliar com label dinâmico para a terceira coluna
+    const getTopHtml = (arr, valFn, formatFn, label) => {
+        const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
+        
+        let html = `
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                <div>Jogador</div>
+                <div>Equipe</div>
+                <div style="text-align: right;">${label}</div>
+            </div>`;
+
+        html += sorted.map((p, i) => `
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span>
+                    <span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span>
+                </div>
+                
+                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;">
+                    <span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span>
+                </div>
+                
+                <div style="font-weight: bold; color: var(--accent); text-align: right;">
+                    ${formatFn(valFn(p))}
+                </div>
+            </div>`).join('');
+        return html;
+    };
+    
+    let container = document.getElementById('records-container');
+    
+    container.style.display = "grid";
+    if (window.innerWidth > 1100) {
+        container.style.gridTemplateColumns = "repeat(3, 1fr)";
+    } else {
+        container.style.gridTemplateColumns = "repeat(auto-fit, minmax(320px, 1fr))";
+    }
+    container.style.gap = "20px";
+
+    // Chamadas com os labels específicos e abreviados
+    container.innerHTML = `
+        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getTopHtml(data, p => p.recorde || 0, v => v, "Abates")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3>${getTopHtml(data, p => p.abates, v => v, "Total")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3>${getTopHtml(data, p => p.dano, v => v, "Dano")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${getTopHtml(data, p => p.assists, v => v, "Assist.")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Média Kills</h3>${getTopHtml(data, p => p.abates / (p.quedas || 1), v => v.toFixed(2), "Média K")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3>${getTopHtml(data, p => p.dano / (p.quedas || 1), v => v.toFixed(0), "Média D")}</div>
+    `;
 }
 
 function renderCompareTeams() {
