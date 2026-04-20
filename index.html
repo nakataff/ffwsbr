@@ -175,7 +175,9 @@
         <h2>Classificação Geral de Jogadores</h2>
         <div class="filters">
             <label style="color: var(--text-muted); font-weight: bold;">Equipe:</label>
-            <select id="filter-team-players" onchange="renderAllPlayers()"><option value="all">Todas</option></select>
+            <select id="filter-team-players" onchange="onPlayerTeamFilterChanged()">
+    <option value="all">Todas</option>
+</select>
             
             <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Dias:</label>
             <div class="day-filters" id="player-day-filters"></div>
@@ -511,34 +513,66 @@ function sortTable(tableId, colIndex, isNumeric) {
     rows.forEach(r => tbody.appendChild(r));
 }
 
+function onPlayerTeamFilterChanged() {
+    selectedPlayerDays = []; // Reseta os dias selecionados ao trocar de time
+    buildDayFilters();       // Reconstrói os chips de dias
+    renderAllPlayers();      // Renderiza a tabela
+}
+
 function buildDayFilters() {
     const buildChips = (containerId, arrSelected, callbackName) => {
         let container = document.getElementById(containerId);
         if(!container) return;
+
+        let availableDays = [];
+        
+        // Lógica específica para o filtro de jogadores
+        if (containerId === 'player-day-filters') {
+            let teamFilter = document.getElementById('filter-team-players').value;
+            if (teamFilter === 'all') {
+                // Se "Todas", mostra de 1 até o TOTAL_DIAS
+                for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
+            } else {
+                // Se um time específico, busca apenas os dias que ele jogou no db.playerDaily
+                availableDays = [...new Set(db.playerDaily
+                    .filter(p => p.equipe === teamFilter)
+                    .map(p => p.dia))].sort((a, b) => a - b);
+            }
+        } else {
+            // Para outros filtros (como o Geral de Times), mantém o padrão de 1 a 10
+            for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
+        }
+
         let isAll = arrSelected.length === 0;
         let html = `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('${containerId}', 'all', ${callbackName})">Todos</div>`;
-        for(let i=1; i<=TOTAL_DIAS; i++) {
-            let isActive = arrSelected.includes(String(i));
-            html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('${containerId}', '${i}', ${callbackName})">Dia ${i}</div>`;
-        }
+        
+        availableDays.forEach(d => {
+            let isActive = arrSelected.includes(String(d));
+            html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('${containerId}', '${d}', ${callbackName})">Dia ${d}</div>`;
+        });
+        
         container.innerHTML = html;
     };
+
     buildChips('team-day-filters', selectedTeamDays, 'onTeamDayFilterChanged');
     buildChips('player-day-filters', selectedPlayerDays, 'onPlayerDayFilterChanged');
     
+    // Filtro do Perfil do Time (TP)
     if(currentTeamView) {
         let tName = currentTeamView;
         let container = document.getElementById('tp-day-filters');
-        let isAll = selectedTpDays.length === 0;
-        let html = `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('tp-day-filters', 'all', onTpDayFilterChanged)">Todos</div>`;
-        if (db.teamDaily[tName]) {
-            let daysPlayed = [...new Set(db.teamDaily[tName].map(d => d.dia))].sort((a,b)=>a-b);
-            daysPlayed.forEach(d => {
-                let isActive = selectedTpDays.includes(String(d));
-                html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('tp-day-filters', '${d}', onTpDayFilterChanged)">Dia ${d}</div>`;
-            });
+        if (container) {
+            let isAll = selectedTpDays.length === 0;
+            let html = `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('tp-day-filters', 'all', onTpDayFilterChanged)">Todos</div>`;
+            if (db.teamDaily[tName]) {
+                let daysPlayed = [...new Set(db.teamDaily[tName].map(d => d.dia))].sort((a,b)=>a-b);
+                daysPlayed.forEach(d => {
+                    let isActive = selectedTpDays.includes(String(d));
+                    html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('tp-day-filters', '${d}', onTpDayFilterChanged)">Dia ${d}</div>`;
+                });
+            }
+            container.innerHTML = html;
         }
-        container.innerHTML = html;
     }
 }
 
