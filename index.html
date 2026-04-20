@@ -128,15 +128,22 @@
         .compare-box {
             padding: 15px 10px; /* Diminui o respiro interno da caixa */
         }
-#table-teams-full td:nth-child(2) {
-            text-align: left;
-            min-width: 80px; /* Garante um espaço mínimo para o nome/sigla */
-            white-space: nowrap;
+/* Esconde o texto do time na tabela geral do mobile */
+        #table-teams-full .full-name-desktop, 
+        #table-teams-full .short-name-mobile { 
+            display: none !important; 
         }
-        
-        /* Ajuste nas colunas para não ficarem grudadas */
-        th, td {
-            padding: 8px 3px !important;
+
+        /* Ajusta a largura das colunas para a logo respirar */
+        #table-teams-full td:nth-child(2) {
+            width: 50px;
+            text-align: center;
+        }
+
+        /* Ajuste fino para o Ranking do Confronto (Modal) não encavalar */
+        #table-modal-ranking th, #table-modal-ranking td {
+            padding: 8px 2px !important;
+            font-size: 0.8em;
         }
     }
 
@@ -252,15 +259,16 @@
         </div>
 <div class="table-container">
             <table id="table-teams-full">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
-                        <th style="text-align:left;" onclick="sortTable('table-teams-full', 1, false)">Equipe ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>                        <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">B! ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-teams-full', 5, true)">K ↕</th> <th onclick="sortTable('table-teams-full', 6, true)">Q ↕</th>
-                    </tr>
-                </thead>
+               <thead>
+            <tr>
+                <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
+                <th style="text-align:center;" onclick="sortTable('table-teams-full', 1, false)">E ↕</th> <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>
+                <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
+                <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">B ↕</th>
+                <th class="hide-mobile" onclick="sortTable('table-teams-full', 5, true)">K ↕</th>
+                <th onclick="sortTable('table-teams-full', 6, true)">Q ↕</th>
+            </tr>
+        </thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -2155,14 +2163,25 @@ function openConfrontationModal() {
     // Ordena o ranking dos 8 times por pontos
     teamsData.sort((a,b) => b.pontos - a.pontos);
     
+    // CORREÇÃO 1: Títulos abreviados no Cabeçalho
+    document.querySelector('#table-modal-ranking thead').innerHTML = `
+        <tr>
+            <th>#</th>
+            <th style="text-align:center;">E</th> <th>G</th> <th>P</th> <th>B</th> <th>K</th> <th>Q</th> </tr>`;
+
     let tbody = document.querySelector('#table-modal-ranking tbody');
     tbody.innerHTML = teamsData.map((tm, index) => {
         let isCurrent = tm.equipe === tName;
         let rowStyle = isCurrent ? "background-color: rgba(255, 170, 0, 0.1);" : "";
         let logoSrc = logos[tm.equipe] ? logos[tm.equipe] : '';
+        let sName = shortNames[tm.equipe] || tm.equipe;
+
         return `<tr style="${rowStyle}">
                     <td style="color:var(--accent); font-weight:bold;">${index+1}º</td>
-                    <td class="team-cell"><img src="${logoSrc}" class="team-logo" alt="">${shortNames[tm.equipe] || tm.equipe}</td>
+                    <td class="team-cell" onclick="openTeamProfile('${tm.equipe}')" style="cursor:pointer; text-align:center;">
+                        <img src="${logoSrc}" class="team-logo" style="margin:0 auto; display:block;">
+                        <span class="hide-mobile" style="font-size:0.8em; margin-top:2px;">${sName}</span>
+                    </td>
                     <td>${tm.grupo}</td>
                     <td style="color:#ffaa00; font-weight:bold">${tm.pontos}</td>
                     <td>${tm.booyah}</td>
@@ -2171,8 +2190,9 @@ function openConfrontationModal() {
                 </tr>`;
     }).join('');
 
-    document.getElementById('modal-title').innerText = `Ranking do Confronto: Grupo ${t.grupo} vs Grupo ${oppGroup}`;
-    document.getElementById('modal-subtitle').innerText = `Mostrando apenas as 8 equipes envolvidas nos ${intersectionDays.length} dias de duelo direto.`;
+    // CORREÇÃO 2: Títulos do modal mais compactos
+    document.getElementById('modal-title').innerText = `Ranking: Gp ${t.grupo} vs ${oppGroup}`;
+    document.getElementById('modal-subtitle').innerText = `${intersectionDays.length} dias de confronto direto.`;
     document.getElementById('confrontation-modal').classList.add('active');
 }
 
