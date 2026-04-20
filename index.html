@@ -242,7 +242,7 @@
         <button onclick="navigate('teams')" class="active" id="nav-teams">Classificação Times</button>
         <button onclick="navigate('players')" id="nav-players">Classificação Jogadores</button>
         <button onclick="navigate('teams-list')" id="nav-teams-list">Equipes</button>
-        <button onclick="navigate('records-ind')" id="nav-records-ind">Recordes Individuais</button>
+        <button onclick="navigate('records-ind')" id="nav-records-ind">Recordes</button>
         <button onclick="navigate('maps')" id="nav-maps">Mapas</button>
         <button onclick="navigate('compare')" id="nav-compare">Comparar 1v1</button>
         <button onclick="navigate('schedule')" id="nav-schedule">Próximos Confrontos</button>
@@ -370,14 +370,24 @@
   <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Classificação Interna</h3>
         <div class="table-container">
             <table id="table-team-players">
-                <thead>
+<thead>
                     <tr>
                         <th onclick="sortTable('table-team-players', 0, false)">Jog ↕</th>
-                        <th onclick="sortTable('table-team-players', 1, true)" title="Abates">A ↕</th>
-                        <th onclick="sortTable('table-team-players', 2, true)" title="Dano">D ↕</th>
-                        <th onclick="sortTable('table-team-players', 3, true)" title="Assistências">AS ↕</th>
-                        <th onclick="sortTable('table-team-players', 4, true)" title="Quedas">Q ↕</th>
-                        <th onclick="sortTable('table-team-players', 5, true)" title="MVPs">M ↕</th>
+                        <th onclick="sortTable('table-team-players', 1, true)" title="Abates">
+                            <span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span> ↕
+                        </th>
+                        <th onclick="sortTable('table-team-players', 2, true)" title="Dano">
+                            <span class="full-name-desktop">Dano</span><span class="short-name-mobile">D</span> ↕
+                        </th>
+                        <th onclick="sortTable('table-team-players', 3, true)" title="Assistências">
+                            <span class="full-name-desktop">Assistências</span><span class="short-name-mobile">AS</span> ↕
+                        </th>
+                        <th onclick="sortTable('table-team-players', 4, true)" title="Quedas">
+                            <span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span> ↕
+                        </th>
+                        <th onclick="sortTable('table-team-players', 5, true)" title="MVPs">
+                            <span class="full-name-desktop">MVPs</span><span class="short-name-mobile">M</span> ↕
+                        </th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -430,8 +440,8 @@
     </div>
 
     <!-- PAGE: RECORDES -->
-    <div id="records-ind" class="page">
-        <h2>Recordes Individuais (Top 5)</h2>
+<div id="records-ind" class="page">
+        <h2>Recordes do Campeonato</h2>
         <div class="grid-cards" id="records-container"></div>
     </div>
     
@@ -1955,7 +1965,7 @@ function renderTeamProfileStats() {
     let tName = currentTeamView;
     let t = db.teams.find(x => x.equipe === tName);
     
-    // --- 1. CÁLCULO DE ESTATÍSTICAS GLOBAIS E RANKS ---
+    // 1. Cálculos de Ranks e Totais
     let allTeamsStats = [];
     db.teams.forEach(team => {
         let daily = db.teamDaily[team.equipe] || [];
@@ -1968,11 +1978,7 @@ function renderTeamProfileStats() {
             acc.pontos += curr.pontos; acc.abates += curr.abates; acc.booyah += curr.booyah; return acc; 
         }, {pontos: 0, abates: 0, booyah: 0});
         let dano = pDaily.reduce((sum, p) => sum + p.dano, 0);
-        allTeamsStats.push({ 
-            equipe: team.equipe, pontos: stats.pontos, abates: stats.abates, 
-            pontos_pos: stats.pontos - stats.abates, dano: dano, 
-            booyah: stats.booyah, quedas: daily.length * 6, dias: daily.length 
-        });
+        allTeamsStats.push({ equipe: team.equipe, pontos: stats.pontos, abates: stats.abates, pontos_pos: stats.pontos - stats.abates, dano: dano, booyah: stats.booyah, quedas: daily.length * 6, dias: daily.length });
     });
 
     const getRank = (field) => {
@@ -1981,65 +1987,51 @@ function renderTeamProfileStats() {
     };
     let cur = allTeamsStats.find(x => x.equipe === tName);
 
-    // --- 2. RENDERIZAÇÃO DAS CARTINHAS (IDÊNTICAS AO PERFIL + CAPITÃO) ---
+    // 2. Cartinhas dos Jogadores (Ativos e Ex)
     let pRaw = db.playerDaily.filter(p => p.equipe === tName);
     if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
-    
     let agg = {};
     pRaw.forEach(row => {
         if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, equipe: row.equipe, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
-        agg[row.jogador].quedas += row.quedas; 
-        agg[row.jogador].abates += row.abates; 
-        agg[row.jogador].dano += row.dano; 
-        agg[row.jogador].assists += row.assists; 
-        agg[row.jogador].mvp += (row.mvp || 0);
+        agg[row.jogador].quedas += row.quedas; agg[row.jogador].abates += row.abates; agg[row.jogador].dano += row.dano; agg[row.jogador].assists += row.assists; agg[row.jogador].mvp += (row.mvp || 0);
     });
 
-    let players = Object.values(agg);
+    let players = Object.values(agg).map(pAgg => {
+        let dbP = db.players.find(x => x.jogador === pAgg.jogador);
+        pAgg.isEx = dbP ? (dbP.isEx || false) : false;
+        return pAgg;
+    });
+
     let cardsContainer = document.getElementById('tp-players-cards-container');
     if (cardsContainer) {
-        // Checa no banco de dados quem é ex-jogador e mescla a informação
-        players = players.map(pAgg => {
-            let dbP = db.players.find(x => x.jogador === pAgg.jogador);
-            pAgg.isEx = dbP ? (dbP.isEx || false) : false;
-            return pAgg;
-        });
-
-        // Separa os jogadores ativos dos inativos
         let ativos = players.filter(p => !p.isEx).sort((a,b) => b.abates - a.abates);
         let inativos = players.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
-
-        // Renderiza os ativos
-        let html = ativos.map(player => createPlayerCardHTML(player, 0.9)).join('');
-        
-        // Se houver ex-jogadores, cria o botão e a aba oculta
+        let html = ativos.map(p => createPlayerCardHTML(p, 0.9)).join('');
         if (inativos.length > 0) {
-            html += `
-            <div style="width: 100%; text-align: center; margin-top: 15px;">
-                <button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button>
-            </div>
-            <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
-                ${inativos.map(player => createPlayerCardHTML(player, 0.9)).join('')}
-            </div>`;
+            html += `<div style="width: 100%; text-align: center; margin-top: 15px;"><button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button></div>
+            <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">${inativos.map(p => createPlayerCardHTML(p, 0.9)).join('')}</div>`;
         }
-        
         cardsContainer.innerHTML = html;
     }
 
-    // --- 3. RENDERIZAÇÃO DO PAINEL DE DESEMPENHO ---
+    // 3. Painel de Desempenho (O CORAÇÃO DO FIX)
     let container = document.getElementById('tp-stats-container');
     if(container && cur) {
-        container.style.display = "block";
+        // Zera o container para evitar lixo de renderizações anteriores
+        container.innerHTML = '';
+        container.style.display = "block"; // Força o display block para anular efeitos de grid indesejados no elemento pai
+
         let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));";
         let totalQ = cur.quedas || 1;
         let totalD = cur.dias || 1;
 
-        let topRowHtml = '';
+        let bestWorstRow = '';
         if(db.teamDaily[tName] && db.teamDaily[tName].length > 0) {
             let sortedDays = [...db.teamDaily[tName]].sort((a,b) => b.pontos - a.pontos);
             let best = sortedDays[0], worst = sortedDays[sortedDays.length - 1];
-            topRowHtml = `
-                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+            // Renderiza o Melhor/Pior Dia usando flexbox
+            bestWorstRow = `
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
                     <div class="card" style="flex: 1 1 300px; max-width: 450px; border-left: 4px solid #4caf50;">
                         <h3>🏆 Melhor Dia</h3>
                         <div class="value" style="color:#4caf50">${best.pontos} pts</div>
@@ -2053,45 +2045,40 @@ function renderTeamProfileStats() {
                 </div>`;
         }
 
-        let averagesRowHtml = `<div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 20px;">
-            <div class="card"><div class="card-top-border"></div><h3>Média Pts</h3><div class="value">${(cur.pontos/totalQ).toFixed(1)}</div></div>
-            <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3><div class="value">${(cur.abates/totalQ).toFixed(1)}</div></div>
-            <div class="card"><div class="card-top-border"></div><h3>Média Colocação</h3><div class="value">${(cur.pontos_pos/totalQ).toFixed(1)}</div></div>
-            <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3><div class="value">${(cur.dano/totalQ).toFixed(0)}</div></div>
-            <div class="card"><div class="card-top-border"></div><h3>Média Booyah</h3><div class="value">${(cur.booyah/totalD).toFixed(2)}</div></div>
-        </div>`;
+        // Renderiza as Médias usando CSS Grid
+        let averagesRow = `
+            <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 20px;">
+                <div class="card"><div class="card-top-border"></div><h3>Média Pts</h3><div class="value">${(cur.pontos/totalQ).toFixed(1)}</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3><div class="value">${(cur.abates/totalQ).toFixed(1)}</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Colocação</h3><div class="value">${(cur.pontos_pos/totalQ).toFixed(1)}</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3><div class="value">${(cur.dano/totalQ).toFixed(0)}</div></div>
+                <div class="card"><div class="card-top-border"></div><h3>Média Booyah</h3><div class="value">${(cur.booyah/totalD).toFixed(2)}</div></div>
+            </div>`;
 
-        let totalsRowHtml = `<div style="display: grid; ${gridCSS} gap: 15px;">
-            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Pontos Totais</h3><div class="value" style="color:#fff">${cur.pontos}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('pontos')}</span></div></div>
-            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Abates Totais</h3><div class="value" style="color:#fff">${cur.abates}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('abates')}</span></div></div>
-            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Pts Colocação</h3><div class="value" style="color:#fff">${cur.pontos_pos}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('pontos_pos')}</span></div></div>
-            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Dano Acumulado</h3><div class="value" style="color:#fff">${cur.dano}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('dano')}</span></div></div>
-            <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Booyahs</h3><div class="value" style="color:#fff">${cur.booyah}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('booyah')}</span></div></div>
-        </div>`;
+        // Renderiza os Totais usando CSS Grid
+        let totalsRow = `
+            <div style="display: grid; ${gridCSS} gap: 15px;">
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Pontos Totais</h3><div class="value" style="color:#fff">${cur.pontos}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('pontos')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Abates Totais</h3><div class="value" style="color:#fff">${cur.abates}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('abates')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Pts Colocação</h3><div class="value" style="color:#fff">${cur.pontos_pos}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('pontos_pos')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Dano Acumulado</h3><div class="value" style="color:#fff">${cur.dano}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('dano')}</span></div></div>
+                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3>Booyahs</h3><div class="value" style="color:#fff">${cur.booyah}</div><div style="margin-top: 5px; font-size:0.8em">Rank: #<span style="color:var(--accent)">${getRank('booyah')}</span></div></div>
+            </div>`;
 
-        container.innerHTML = topRowHtml + averagesRowHtml + totalsRowHtml;
+        // Junta tudo no container
+        container.innerHTML = bestWorstRow + averagesRow + totalsRow;
     }
 
-let tbody = document.querySelector('#table-team-players tbody');
+    // 4. Classificação Interna com suporte a PC e Mobile
+    let tbody = document.querySelector('#table-team-players tbody');
     tbody.innerHTML = players.sort((a,b) => b.abates - a.abates).map(p => {
-        // Se o nome for maior que 6 letras, coloca reticências
-        let nameDisplay = p.jogador.length > 6 ? p.jogador.substring(0, 6) + "..." : p.jogador;
-
-        return `<tr>
-            <td style="text-align:left;">
-                <span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">
-                    ${nameDisplay}
-                </span>
-            </td>
-            <td style="color:var(--accent); font-weight:bold;">${p.abates}</td>
-            <td>${p.dano}</td>
-            <td>${p.assists}</td>
-            <td style="color:var(--text-muted); font-weight:bold;">${p.quedas}</td>
-            <td>${p.mvp || 0}</td>
-        </tr>`;
+        let nameShort = p.jogador.length > 7 ? p.jogador.substring(0, 6) + "..." : p.jogador;
+        return `<tr><td style="text-align:left;">
+            <span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span>
+            <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.jogador}')">${nameShort}</span>
+        </td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td style="color:var(--text-muted); font-weight:bold;">${p.quedas}</td><td>${p.mvp || 0}</td></tr>`;
     }).join('');
 }
-    
 
 function getConfrontationData() {
     let tName = currentTeamView;
@@ -2444,56 +2431,64 @@ function toggleMobileMenu() {
 }
 
 function renderIndividualRecords() {
-    let data = db.players;
+    let pData = db.players;
     
-    // Função auxiliar com label dinâmico para a terceira coluna
-    const getTopHtml = (arr, valFn, formatFn, label) => {
+    // Extrai e junta todas as performances diárias das Equipes
+    let tDailyData = [];
+    for (let team in db.teamDaily) {
+        db.teamDaily[team].forEach(dayPerf => {
+            tDailyData.push({
+                equipe: team, dia: dayPerf.dia, pontos: dayPerf.pontos,
+                abates: dayPerf.abates, booyah: dayPerf.booyah
+            });
+        });
+    }
+    
+    const getPlayerTopHtml = (arr, valFn, formatFn, label) => {
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
-        
-        let html = `
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                <div>Jogador</div>
-                <div>Equipe</div>
-                <div style="text-align: right;">${label}</div>
-            </div>`;
+        let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
+        html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span></div>
+                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
+                <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
+            </div>`).join('');
+        return html;
+    };
 
-        html += sorted.map((p, i) => `
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                    <span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span>
-                    <span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span>
-                </div>
-                
-                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                    <img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;">
-                    <span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span>
-                </div>
-                
-                <div style="font-weight: bold; color: var(--accent); text-align: right;">
-                    ${formatFn(valFn(p))}
-                </div>
+    const getTeamTopHtml = (arr, valFn, formatFn, label) => {
+        const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
+        let html = `<div style="display: grid; grid-template-columns: 1.5fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div>Dia</div><div style="text-align: right;">${label}</div></div>`;
+        html += sorted.map((t, i) => `<div style="display: grid; grid-template-columns: 1.5fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
+                <div class="clickable" onclick="openTeamProfile('${t.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><img src="${logos[t.equipe]||''}" style="width:16px; height:16px; object-fit: contain;"><span style="font-size: 0.95em; font-weight:bold;">${shortNames[t.equipe] || t.equipe}</span></div>
+                <div style="color: #9aa0a6; font-size: 0.9em;">Dia ${t.dia}</div>
+                <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(t))}</div>
             </div>`).join('');
         return html;
     };
     
     let container = document.getElementById('records-container');
-    
     container.style.display = "grid";
-    if (window.innerWidth > 1100) {
-        container.style.gridTemplateColumns = "repeat(3, 1fr)";
-    } else {
-        container.style.gridTemplateColumns = "repeat(auto-fit, minmax(320px, 1fr))";
-    }
+    if (window.innerWidth > 1100) { container.style.gridTemplateColumns = "repeat(3, 1fr)"; } 
+    else { container.style.gridTemplateColumns = "repeat(auto-fit, minmax(320px, 1fr))"; }
     container.style.gap = "20px";
 
-    // Chamadas com os labels específicos e abreviados
     container.innerHTML = `
-        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getTopHtml(data, p => p.recorde || 0, v => v, "Abates")}</div>
-        <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3>${getTopHtml(data, p => p.abates, v => v, "Total")}</div>
-        <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3>${getTopHtml(data, p => p.dano, v => v, "Dano")}</div>
-        <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${getTopHtml(data, p => p.assists, v => v, "Assist.")}</div>
-        <div class="card"><div class="card-top-border"></div><h3>Média Kills</h3>${getTopHtml(data, p => p.abates / (p.quedas || 1), v => v.toFixed(2), "Média K")}</div>
-        <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3>${getTopHtml(data, p => p.dano / (p.quedas || 1), v => v.toFixed(0), "Média D")}</div>
+        <div style="grid-column: 1/-1; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-top: 10px;">
+            <h3 style="color: #fff; margin:0;">Recordes de Equipes (Diários)</h3>
+        </div>
+        <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em 1 Dia</h3>${getTeamTopHtml(tDailyData, t => t.pontos, v => v, "Pts")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Mais Abates em 1 Dia</h3>${getTeamTopHtml(tDailyData, t => t.abates, v => v, "Kills")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Mais Booyahs em 1 Dia</h3>${getTeamTopHtml(tDailyData, t => t.booyah, v => v, "B!")}</div>
+        
+        <div style="grid-column: 1/-1; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-top: 20px;">
+            <h3 style="color: #fff; margin:0;">Recordes Individuais</h3>
+        </div>
+        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getPlayerTopHtml(pData, p => p.recorde || 0, v => v, "Abates")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3>${getPlayerTopHtml(pData, p => p.abates, v => v, "Total")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3>${getPlayerTopHtml(pData, p => p.dano, v => v, "Dano")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${getPlayerTopHtml(pData, p => p.assists, v => v, "Assist.")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Média Kills</h3>${getPlayerTopHtml(pData, p => p.abates / (p.quedas || 1), v => v.toFixed(2), "Média K")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3>${getPlayerTopHtml(pData, p => p.dano / (p.quedas || 1), v => v.toFixed(0), "Média D")}</div>
     `;
 }
 
