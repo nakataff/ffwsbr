@@ -2496,20 +2496,29 @@ function renderComparePlayers() {
             <div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">${formatFn(v2)} <span class="rank-badge" style="font-size:0.7em">#${r2}</span></div>
         </div>`;
 
-    document.getElementById('compare-players-result').innerHTML = `
-        <div class="compare-box" style="background:transparent; border:none; padding:0;">
-            ${getCardHtml(p1)}
+document.getElementById('compare-players-result').innerHTML = `
+    <div class="compare-box" style="background:transparent; border:none; padding:0;">
+        ${getCardHtml(p1)}
+    </div>
+    <div class="compare-box" style="background:transparent; border:none; padding:0;">
+        ${getCardHtml(p2)}
+    </div>
+    <div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
+        ${buildRow('Abates', p1.abates, p2.abates, p1.rankKills, p2.rankKills)}
+        ${buildRow('Dano Total', p1.dano, p2.dano, p1.rankDmg, p2.rankDmg)}
+        ${buildRow('Assistências', p1.assists, p2.assists, p1.rankAssists, p2.rankAssists)}
+        ${buildRow('MVPs', p1.mvp, p2.mvp, p1.rankMvp, p2.rankMvp)}
+        
+        <div class="stat-row">
+            <div class="stat-val ${(p1.abates/p1.quedas) > (p2.abates/p2.quedas) ? 'winner' : 'loser'}">
+                ${(p1.abates/p1.quedas).toFixed(2)}
+            </div>
+            <div class="stat-label">Kills/Queda</div>
+            <div class="stat-val ${(p2.abates/p2.quedas) > (p1.abates/p1.quedas) ? 'winner' : 'loser'}">
+                ${(p2.abates/p2.quedas).toFixed(2)}
+            </div>
         </div>
-        <div class="compare-box" style="background:transparent; border:none; padding:0;">
-            ${getCardHtml(p2)}
-        </div>
-        <div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
-            ${buildRow('Abates', p1.abates, p2.abates, p1.rankKills, p2.rankKills)}
-            ${buildRow('Dano Total', p1.dano, p2.dano, p1.rankDmg, p2.rankDmg)}
-            ${buildRow('Assistências', p1.assists, p2.assists, p1.rankAssists, p2.rankAssists)}
-            ${buildRow('MVPs', p1.mvp, p2.mvp, p1.rankMvp, p2.rankMvp)}
-            ${buildRow('Kills/Queda', p1.abates/p1.quedas, p2.abates/p2.quedas, null, null, v=>v.toFixed(2))}
-        </div>`;
+    </div>`;
 }
 </script>
 </body>
