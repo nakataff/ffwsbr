@@ -417,6 +417,12 @@
 
 // --- CONFIGURAÇÕES DE JOGADORES ---
 
+const playerCaptains = {
+    "Bops": true,
+    "General!": true,
+    "TRAP": true,
+};
+
 const playerRoles = {
     "Bops": "GRAN", "Giuh": "RUSH", "BuTziN": "RUSH", "MT7": "SUP", "Proxx7": "RUSH",
     "Pitbull": "RUSH", "PETER": "RUSH", "vitinxp": "GRAN", "Motovea": "SUP", "BYTE333": "RUSH",
@@ -980,7 +986,7 @@ function renderTeamProfileStats() {
     };
     let cur = allTeamsStats.find(x => x.equipe === tName);
 
-    // --- 2. RENDERIZAÇÃO DAS CARTINHAS (IDÊNTICAS AO PERFIL) ---
+    // --- 2. RENDERIZAÇÃO DAS CARTINHAS (IDÊNTICAS AO PERFIL + CAPITÃO) ---
     let pRaw = db.playerDaily.filter(p => p.equipe === tName);
     if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
     
@@ -1004,6 +1010,11 @@ function renderTeamProfileStats() {
             let photo = playerPhotos[player.jogador] || "silhueta.png";
             let teamLogo = logos[player.equipe] || "";
             let danoK = (player.dano / 1000).toFixed(0) + "K";
+            
+            // Lógica da Braçadeira de Capitão
+            let captainBadge = (typeof playerCaptains !== 'undefined' && playerCaptains[player.jogador]) ? 
+                `<img src="cpt.png" style="position: absolute; top: 20px; right: 15px; z-index: 5; width: 35px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));">` : '';
+
             let accentColor = "#cd7f32"; 
             if (ovr >= 91) accentColor = "#d4af37";
             else if (ovr >= 86) accentColor = "#c5a028";
@@ -1013,6 +1024,9 @@ function renderTeamProfileStats() {
             return `
                 <div onclick="openPlayerProfile('${player.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; transform: scale(0.9); margin: -15px;">
                     <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
+                    
+                    ${captainBadge}
+
                     <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
                         <div style="font-size: 58px; font-weight: 900; line-height: 0.8; letter-spacing: -2px;">${ovr}</div>
                         <div style="font-size: 22px; font-weight: bold; margin-top: 5px; letter-spacing: 1px;">${role}</div>
@@ -1327,6 +1341,10 @@ function openPlayerProfile(playerName) {
     let photo = playerPhotos[p.jogador] || "silhueta.png";
     let teamLogo = logos[p.equipe] || "";
     let danoK = (p.dano / 1000).toFixed(0) + "K";
+    
+    // Lógica da Braçadeira de Capitão
+    let captainBadge = (typeof playerCaptains !== 'undefined' && playerCaptains[p.jogador]) ? 
+        `<img src="cpt.png" style="position: absolute; top: 40px; right: 25px; z-index: 5; width: 45px; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));">` : '';
 
     // --- LÓGICA DE CORES DO ENTORNO (RARIDADE) ---
     let accentColor = "#cd7f32"; // Bronze (Padrão)
@@ -1365,6 +1383,8 @@ function openPlayerProfile(playerName) {
                 <div style="width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow}">
                     
                     <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
+
+                    ${captainBadge}
 
                     <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
                         <div style="font-size: 58px; font-weight: 900; line-height: 0.8; letter-spacing: -2px;">${ovr}</div>
