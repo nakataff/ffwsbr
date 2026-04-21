@@ -255,58 +255,48 @@
     .team-item-card h4 { margin: 10px 0 5px 0; color: #fff; font-size: 1.1em; }
     .team-item-card span { color: var(--accent); font-weight: bold; font-size: 0.9em; }
 
-    /* --- GALERIA DE TROFÉUS --- */
-    .trophy-card {
-        background: linear-gradient(145deg, rgba(30,30,35,1), rgba(15,15,20,1));
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 15px;
-        width: 140px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        transition: 0.3s;
-    }
-    .trophy-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--accent);
-        box-shadow: 0 8px 15px rgba(255,170,0,0.2);
-    }
-    .trophy-card img.trophy-img {
-        height: 65px;
-        object-fit: contain;
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
-    }
-    .trophy-card .event {
-        color: #fff;
-        font-weight: 900;
-        font-size: 0.95em;
-        text-align: center;
-    }
-    .trophy-card .type {
-        color: var(--accent);
-        font-size: 0.75em;
-        text-transform: uppercase;
-        font-weight: bold;
-        text-align: center;
-    }
-    .trophy-card .trophy-team {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(0,0,0,0.4);
-        padding: 4px 8px;
-        border-radius: 20px;
-        font-size: 0.75em;
-        color: #aaa;
-        margin-top: auto;
-    }
-    .trophy-card .trophy-team img {
-        height: 16px;
-        filter: none;
-    }
+   /* --- GALERIA DE TROFÉUS --- */
+.trophy-card {
+    background: linear-gradient(145deg, rgba(30,30,35,1), rgba(15,15,20,1));
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 15px;
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+
+.trophy-card:hover { transform: translateY(-5px); }
+
+/* Cores por Categoria */
+.border-campeao { border-color: #ffd700 !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+.border-mvp { border-color: #a020f0 !important; box-shadow: 0 0 15px rgba(160, 32, 240, 0.2); }
+.border-revelacao { border-color: #90ee90 !important; box-shadow: 0 0 15px rgba(144, 238, 144, 0.2); }
+
+.trophy-card img.trophy-img {
+    height: 60px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+}
+
+.trophy-team {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.4);
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.7em;
+    color: #aaa;
+    margin-top: auto;
+    width: fit-content;
+}
+
+.trophy-team img { width: 14px; height: 14px; object-fit: contain; }
 
     /* Modal */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
@@ -3409,7 +3399,7 @@ function openPlayerProfile(playerName) {
     document.getElementById('pp-hist-quedas').innerText = histQuedas;
     document.getElementById('pp-hist-avg').innerText = histQuedas > 0 ? (histKills / histQuedas).toFixed(2) : "0.00";
 
-  // --- 3. GALERIA DE TROFÉUS E TÍTULOS ---
+ // --- 3. GALERIA DE TROFÉUS E TÍTULOS ---
     let colTitles = titlesData.coletivos.filter(t => t.players.some(pl => checkNameMatch(pl, p.jogador)));
     let indTitles = titlesData.individuais.filter(t => checkNameMatch(t.player, p.jogador));
 
@@ -3420,25 +3410,30 @@ function openPlayerProfile(playerName) {
     let trophiesHtml = '';
 
     if(allTitles.length === 0) {
-        trophiesHtml = '<div style="color:#888; text-align:center; width:100%; padding:20px;">Nenhum título oficial registrado na base de dados.</div>';
+        trophiesHtml = '<div style="color:#888; text-align:center; width:100%; padding:20px;">Nenhum título oficial registrado.</div>';
     } else {
         trophiesHtml = allTitles.map(t => {
-            // Define a logo do torneio automaticamente
+            // Puxa logo do torneio (WB ou LBFF)
             let tournamentImg = t.event.includes("WB") ? "wb.webp" : "lbff.webp";
             
-            // Layout do time que estava quando ganhou
+            // Define a classe de cor da borda
+            let typeUpper = t.type.toUpperCase();
+            let borderClass = 'border-campeao'; // Padrão amarelo
+            if (typeUpper.includes("MVP")) borderClass = 'border-mvp';
+            if (typeUpper.includes("REVELAÇÃO")) borderClass = 'border-revelacao';
+            
             let teamHtml = t.team ? `<div class="trophy-team"><img src="${t.teamImg}"> ${t.team}</div>` : '';
             
             return `
-            <div class="trophy-card">
-                <img src="${tournamentImg}" class="trophy-img" alt="${t.type}">
-                <div class="event">${t.event}</div>
-                <div class="type">${t.type}</div>
+            <div class="trophy-card ${borderClass}">
+                <img src="${tournamentImg}" class="trophy-img">
+                <div class="event" style="font-weight:bold; font-size:0.8em; color:#fff;">${t.event}</div>
+                <div class="type" style="color:var(--accent); font-size:0.75em; font-weight:bold;">${t.type}</div>
                 ${teamHtml}
             </div>`;
         }).join('');
     }
-    document.getElementById('pp-trophies-container').innerHTML = trophiesHtml;;
+    document.getElementById('pp-trophies-container').innerHTML = trophiesHtml;
 
     // --- 4. RENDERIZAÇÃO DA CARTINHA GERAL ---
     let insta = dbSocials[p.jogador];
