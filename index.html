@@ -2685,7 +2685,7 @@ function renderHistoricalRanking() {
             
         let teamHtml = p.isPlaying ? 
             `<div class="team-cell" style="justify-content:center;"><img src="${logos[p.equipe]||''}" class="team-logo"><span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span></div>` : 
-            `<span style="color:#666; font-size:0.8em;">Inativo</span>`;
+            `<span style="color:#666; font-size:0.8em;">🚫</span>`;
 
         return `<tr>
             <td><div style="font-weight:bold; color:var(--accent);">${newPos}º</div>${shiftHtml}</td>
