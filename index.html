@@ -470,30 +470,78 @@
     </div>
 
     <div id="history" class="page">
-        <h2>Top 100 Abates (All-Time WB)</h2>
-        <p style="color: var(--text-muted); margin-bottom: 20px;">
-            Ranking histórico somado em tempo real com o desempenho da edição 2026.<br>
-            <span style="font-size: 0.85em;">* Jogadores inativos não podem ser clicados.</span>
+        <h2>Top 100 Abates (All-Time)</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
+            Ranking histórico somado em tempo real com o desempenho da edição atual.<br>
+            * Jogadores inativos não podem ser clicados.
         </p>
-
+       <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+    <button id="btn-hist-all" class="btn-action" onclick="toggleView('allTime')" style="width: 200px;">Ver Mais</button>
+</div>
         <div class="table-container">
             <table id="table-history">
                 <thead>
                     <tr>
-                        <th title="Posição Atual / Variação" style="width: 60px;">Pos ↕</th>
+                        <th style="width: 60px;">Pos ↕</th>
                         <th style="text-align:left;">Jogador</th>
                         <th>Equipe Atual</th>
-                        <th title="Kills Totais">
-                            <span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span>
-                        </th>
-                        <th title="Total de Quedas">
-                            <span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span>
-                        </th>
-                        <th title="Média K/D Histórica">Média</th>
+                        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+                        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
+                        <th>Média</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
+
+        <h2 style="color: #66b3ff;">Ranking por Edição</h2>
+        <div class="filters">
+            <label style="color: var(--text-muted); font-weight: bold;">Selecione as Edições (Soma automática):</label>
+            <div class="day-filters" id="edition-filters"></div>
+        </div>
+  <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+    <button id="btn-hist-edition" class="btn-action" onclick="toggleView('edition')" style="width: 200px;">Ver Mais</button>
+</div>      
+        <div class="table-container">
+            <table id="table-edition-history">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Pos</th>
+                        <th style="text-align:left;">Jogador</th>
+                        <th>Equipe</th>
+                        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+                        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
+                        <th>Média</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
+
+        <h2 style="color: #ffaa00;">O BRABO: Comparador Histórico 👑</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">Compare o mesmo jogador em edições diferentes, ou dois jogadores na mesma edição.</p>
+        
+        <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
+            <div style="display: grid; grid-template-columns: 1fr 40px 1fr; gap: 15px; align-items: center; margin-bottom: 20px;">
+                
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <select id="hist-comp-p1" onchange="renderHistCompare()"></select>
+                    <select id="hist-comp-ed1" onchange="renderHistCompare()"></select>
+                </div>
+                
+                <div style="text-align: center; font-weight: bold; color: var(--accent); font-size: 1.2em;">VS</div>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <select id="hist-comp-p2" onchange="renderHistCompare()"></select>
+                    <select id="hist-comp-ed2" onchange="renderHistCompare()"></select>
+                </div>
+            </div>
+
+            <div class="compare-container" id="hist-compare-result"></div>
         </div>
     </div>
 
@@ -575,6 +623,358 @@
 
 // --- CONFIGURAÇÕES DE JOGADORES ---
 
+const lbffData = {
+    "JapaBKR": { "LBFF 1": {k:112, q:78}, "LBFF 3": {k:96, q:83}, "LBFF 4": {k:74, q:77}, "LBFF 5": {k:69, q:78}, "LBFF 6": {k:86, q:79}, "LBFF 7": {k:1330, q:1170}, "LBFF 8": {k:620, q:760} },
+    "ShariiN": { "LBFF 1": {k:100, q:84}, "LBFF 3": {k:22, q:35} },
+    "VgzinnN": { "LBFF 1": {k:95, q:72}, "LBFF 4": {k:17, q:44} },
+    "Bradoock": { "LBFF 1": {k:93, q:84} },
+    "Geerty": { "LBFF 1": {k:86, q:84}, "LBFF 3": {k:60, q:80}, "LBFF 4": {k:14, q:40}, "LBFF 5": {k:0, q:0} },
+    "RiccK": { "LBFF 1": {k:85, q:82}, "LBFF 3": {k:65, q:80}, "LBFF 4": {k:62, q:71}, "LBFF 5": {k:56, q:69}, "LBFF 6": {k:69, q:78}, "LBFF 7": {k:710, q:1080} },
+    "Kroonos": { "LBFF 1": {k:85, q:84}, "LBFF 3": {k:28, q:46}, "LBFF 4": {k:69, q:65}, "LBFF 5": {k:73, q:77}, "LBFF 6": {k:60, q:75}, "LBFF 7": {k:1110, q:1090}, "LBFF 8": {k:420, q:610} },
+    "PEU": { "LBFF 1": {k:84, q:82}, "LBFF 4": {k:61, q:74}, "LBFF 5": {k:43, q:65}, "LBFF 6": {k:9, q:15}, "LBFF 7": {k:80, q:260} },
+    "Morato": { "LBFF 1": {k:80, q:82}, "LBFF 3": {k:42, q:50}, "LBFF 4": {k:40, q:60} },
+    "Brabox": { "LBFF 1": {k:80, q:84}, "LBFF 3": {k:47, q:60}, "LBFF 4": {k:14, q:19}, "LBFF 5": {k:26, q:37}, "LBFF 6": {k:15, q:18} },
+    "Lukaskn": { "LBFF 1": {k:78, q:84}, "LBFF 3": {k:66, q:72}, "LBFF 4": {k:45, q:70}, "LBFF 5": {k:31, q:68} },
+    "Alemão": { "LBFF 1": {k:75, q:82}, "LBFF 3": {k:53, q:72}, "LBFF 4": {k:3, q:23} },
+    "Japa04": { "LBFF 1": {k:53, q:74}, "LBFF 3": {k:57, q:76}, "LBFF 4": {k:19, q:48} },
+    "Vinni": { "LBFF 1": {k:53, q:84} },
+    "FLQP": { "LBFF 1": {k:49, q:72}, "LBFF 3": {k:9, q:18} },
+    "HORUS": { "LBFF 1": {k:47, q:82}, "LBFF 3": {k:60, q:69}, "LBFF 4": {k:29, q:52} },
+    "MAMUTEZL": { "LBFF 1": {k:46, q:44}, "LBFF 3": {k:31, q:53}, "LBFF 5": {k:82, q:81}, "LBFF 6": {k:55, q:71}, "LBFF 7": {k:120, q:260}, "LBFF 9": {k:310, q:440} },
+    "CRAZY": { "LBFF 1": {k:46, q:48} },
+    "VnzinnN": { "LBFF 1": {k:41, q:60}, "LBFF 3": {k:30, q:57} },
+    "DEXTER": { "LBFF 1": {k:41, q:66}, "LBFF 3": {k:60, q:70}, "LBFF 4": {k:12, q:26} },
+    "ZIKKA": { "LBFF 1": {k:40, q:54}, "LBFF 3": {k:1, q:4} },
+    "ImJouh": { "LBFF 1": {k:40, q:64} },
+    "MADANZA": { "LBFF 1": {k:40, q:80}, "LBFF 3": {k:29, q:41}, "LBFF 4": {k:10, q:47} },
+    "LEVELUP": { "LBFF 1": {k:39, q:46}, "LBFF 4": {k:1, q:6}, "LBFF 6": {k:13, q:27} },
+    "FOGO": { "LBFF 1": {k:38, q:67} },
+    "NEMO": { "LBFF 1": {k:36, q:66} },
+    "AVENGED": { "LBFF 1": {k:35, q:60} },
+    "VAZILY": { "LBFF 1": {k:34, q:35}, "LBFF 3": {k:46, q:62}, "LBFF 4": {k:35, q:51} },
+    "VitinnN": { "LBFF 1": {k:32, q:60}, "LBFF 3": {k:17, q:35} },
+    "papaX": { "LBFF 1": {k:30, q:62} },
+    "MAXSWELL": { "LBFF 1": {k:29, q:32}, "LBFF 3": {k:21, q:17}, "LBFF 4": {k:40, q:72} },
+    "XABRAU": { "LBFF 1": {k:29, q:67} },
+    "ANON": { "LBFF 1": {k:24, q:28} },
+    "Avenger": { "LBFF 1": {k:23, q:32}, "LBFF 3": {k:20, q:60} },
+    "LukasTD": { "LBFF 1": {k:22, q:36}, "LBFF 3": {k:63, q:80}, "LBFF 4": {k:21, q:36}, "LBFF 5": {k:44, q:55} },
+    "Drzzy": { "LBFF 1": {k:18, q:24}, "LBFF 4": {k:48, q:72}, "LBFF 5": {k:38, q:68}, "LBFF 7": {k:550, q:860} },
+    "L7": { "LBFF 1": {k:18, q:37}, "LBFF 3": {k:0, q:0} },
+    "01pires": { "LBFF 1": {k:16, q:16}, "LBFF 3": {k:11, q:12} },
+    "BOYKA": { "LBFF 1": {k:16, q:29}, "LBFF 3": {k:57, q:69} },
+    "Cauan7": { "LBFF 3": {k:138, q:84}, "LBFF 4": {k:99, q:80}, "LBFF 5": {k:93, q:81}, "LBFF 6": {k:102, q:81}, "LBFF 7": {k:1550, q:1170}, "LBFF 8": {k:1210, q:800}, "LBFF 9": {k:3420, q:2000}, "WB 2024 F1": {k:1890, q:960}, "WB 2024 F2": {k:1990, q:1040}, "WB 2025 S1": {k:1260, q:1040}, "WB 2025 S2": {k:880, q:680} },
+    "mvR": { "LBFF 3": {k:116, q:84}, "LBFF 4": {k:108, q:81}, "LBFF 5": {k:49, q:72}, "LBFF 6": {k:54, q:81}, "LBFF 7": {k:190, q:330}, "LBFF 8": {k:520, q:680} },
+    "MODESTIA": { "LBFF 1": {k:23, q:24}, "LBFF 3": {k:102, q:84}, "LBFF 4": {k:80, q:81}, "LBFF 5": {k:93, q:81}, "LBFF 6": {k:80, q:81}, "LBFF 7": {k:1040, q:1170}, "LBFF 8": {k:990, q:790}, "LBFF 9": {k:2930, q:2000}, "WB 2024 F1": {k:1320, q:960}, "WB 2024 F2": {k:1400, q:1040}, "WB 2025 S1": {k:510, q:460}, "WB 2025 S2": {k:430, q:540} },
+    "PEDRO.RS": { "LBFF 1": {k:28, q:28}, "LBFF 3": {k:94, q:84}, "LBFF 4": {k:45, q:69}, "LBFF 5": {k:19, q:24}, "LBFF 7": {k:590, q:870}, "LBFF 8": {k:0, q:20} },
+    "KaueLOK": { "LBFF 3": {k:93, q:72}, "LBFF 4": {k:69, q:77}, "LBFF 8": {k:1100, q:720}, "LBFF 9": {k:2140, q:1730}, "WB 2024 F1": {k:40, q:160} },
+    "Memgod": { "LBFF 3": {k:93, q:84}, "LBFF 4": {k:90, q:81}, "LBFF 5": {k:89, q:81}, "LBFF 6": {k:53, q:72}, "LBFF 7": {k:890, q:860}, "LBFF 8": {k:380, q:400} },
+    "General": { "LBFF 3": {k:89, q:84}, "LBFF 4": {k:89, q:76}, "LBFF 5": {k:99, q:79}, "LBFF 6": {k:71, q:80}, "LBFF 7": {k:1300, q:1170}, "LBFF 8": {k:1170, q:800}, "LBFF 9": {k:2380, q:2000}, "WB 2024 F1": {k:1280, q:960}, "WB 2024 F2": {k:1280, q:1040}, "WB 2025 S1": {k:1220, q:1010}, "WB 2025 S2": {k:580, q:650} },
+    "one9": { "LBFF 3": {k:86, q:84}, "LBFF 4": {k:86, q:81}, "LBFF 5": {k:58, q:78}, "LBFF 6": {k:38, q:66}, "LBFF 7": {k:830, q:960} },
+    "OTREMBB": { "LBFF 1": {k:20, q:26}, "LBFF 3": {k:82, q:81}, "LBFF 4": {k:28, q:40}, "LBFF 5": {k:33, q:63}, "LBFF 6": {k:9, q:20}, "LBFF 7": {k:150, q:290} },
+    "Jubinha": { "LBFF 1": {k:16, q:24}, "LBFF 3": {k:82, q:83}, "LBFF 4": {k:74, q:72}, "LBFF 5": {k:51, q:69}, "LBFF 6": {k:63, q:76}, "LBFF 7": {k:910, q:1050} },
+    "Martins": { "LBFF 1": {k:70, q:82}, "LBFF 3": {k:67, q:80}, "LBFF 4": {k:10, q:12} },
+    "ViniZx": { "LBFF 1": {k:70, q:84}, "LBFF 3": {k:69, q:70}, "LBFF 4": {k:16, q:18}, "LBFF 5": {k:3, q:5}, "LBFF 9": {k:20, q:130} },
+    "Supreme": { "LBFF 1": {k:69, q:54}, "LBFF 3": {k:25, q:53} },
+    "SOLOTOV": { "LBFF 1": {k:67, q:84} },
+    "LEALS": { "LBFF 1": {k:65, q:70}, "LBFF 3": {k:25, q:55} },
+    "BLACK00": { "LBFF 1": {k:64, q:80}, "LBFF 3": {k:66, q:75}, "LBFF 4": {k:36, q:59}, "LBFF 5": {k:20, q:40} },
+    "D3": { "LBFF 1": {k:64, q:84}, "LBFF 3": {k:20, q:30}, "LBFF 4": {k:29, q:49}, "LBFF 6": {k:30, q:45}, "LBFF 7": {k:80, q:310} },
+    "Raposo": { "LBFF 1": {k:62, q:64}, "LBFF 3": {k:58, q:68}, "LBFF 4": {k:16, q:27} },
+    "Phoenix23": { "LBFF 1": {k:60, q:70}, "LBFF 3": {k:64, q:84}, "LBFF 4": {k:42, q:72}, "LBFF 5": {k:52, q:81}, "LBFF 6": {k:51, q:81}, "LBFF 7": {k:650, q:1170}, "LBFF 8": {k:410, q:800} },
+    "Moreira": { "LBFF 1": {k:59, q:66}, "LBFF 3": {k:39, q:60}, "LBFF 4": {k:41, q:63}, "LBFF 6": {k:50, q:75}, "LBFF 7": {k:610, q:1080} },
+    "LUUUKING": { "LBFF 1": {k:57, q:76}, "LBFF 3": {k:25, q:38}, "LBFF 4": {k:33, q:42}, "LBFF 5": {k:1, q:11} },
+    "Aun": { "LBFF 1": {k:57, q:83}, "LBFF 3": {k:15, q:43} },
+    "Ubita": { "LBFF 1": {k:56, q:52} },
+    "ROFF": { "LBFF 1": {k:54, q:84} },
+    "Antunes22": { "LBFF 1": {k:15, q:20}, "LBFF 3": {k:78, q:77}, "LBFF 4": {k:8, q:22}, "LBFF 7": {k:560, q:870} },
+    "Rood": { "LBFF 1": {k:14, q:21} },
+    "Thiago": { "LBFF 1": {k:14, q:22} },
+    "SÓPAPAI": { "LBFF 1": {k:9, q:18} },
+    "Soares": { "LBFF 1": {k:8, q:12} },
+    "Pedro7": { "LBFF 1": {k:7, q:22} },
+    "Helden": { "LBFF 1": {k:3, q:8} },
+    "SALDANHA": { "LBFF 1": {k:3, q:12} },
+    "JV77": { "LBFF 1": {k:1, q:12} },
+    "CRIAOP": { "LBFF 1": {k:1, q:18} },
+    "Pfonn": { "LBFF 1": {k:0, q:2} },
+    "bema": { "LBFF 1": {k:0, q:4} },
+    "KBÇÃO": { "LBFF 3": {k:63, q:79}, "LBFF 4": {k:42, q:65}, "LBFF 5": {k:3, q:4}, "LBFF 7": {k:80, q:140} },
+    "Wanheda": { "LBFF 3": {k:58, q:84}, "LBFF 4": {k:38, q:66} },
+    "Reei": { "LBFF 3": {k:55, q:79}, "LBFF 4": {k:17, q:34}, "LBFF 6": {k:1, q:9}, "LBFF 9": {k:450, q:910} },
+    "Nappon": { "LBFF 3": {k:51, q:70}, "LBFF 4": {k:0, q:0}, "LBFF 6": {k:68, q:72} },
+    "Ruan": { "LBFF 3": {k:57, q:64}, "LBFF 4": {k:111, q:81}, "LBFF 5": {k:64, q:70}, "LBFF 6": {k:66, q:63}, "LBFF 7": {k:1100, q:1040}, "LBFF 8": {k:30, q:40}, "LBFF 9": {k:1110, q:1270} },
+    "Mts007": { "LBFF 4": {k:99, q:81}, "LBFF 5": {k:117, q:81}, "LBFF 6": {k:136, q:81}, "LBFF 7": {k:1640, q:1170}, "LBFF 8": {k:820, q:780}, "LBFF 9": {k:700, q:740}, "WB 2024 F1": {k:1040, q:920}, "WB 2025 S1": {k:1270, q:1040}, "WB 2025 S2": {k:470, q:540} },
+    "BIELGOD": { "LBFF 3": {k:66, q:80}, "LBFF 4": {k:97, q:81}, "LBFF 5": {k:63, q:81}, "LBFF 6": {k:61, q:72}, "LBFF 8": {k:900, q:780}, "LBFF 9": {k:2080, q:1940}, "WB 2024 F1": {k:1350, q:950}, "WB 2024 F2": {k:1250, q:860}, "WB 2025 S1": {k:1060, q:900}, "WB 2025 S2": {k:380, q:540} },
+    "Will": { "LBFF 1": {k:70, q:84}, "LBFF 3": {k:2, q:6}, "LBFF 4": {k:93, q:77}, "LBFF 5": {k:32, q:50}, "LBFF 6": {k:76, q:79}, "LBFF 7": {k:100, q:270}, "WB 2024 F2": {k:210, q:220} },
+    "Syaz": { "LBFF 4": {k:93, q:78}, "LBFF 5": {k:132, q:81}, "LBFF 6": {k:104, q:81}, "LBFF 7": {k:1630, q:1160}, "LBFF 8": {k:1130, q:800}, "LBFF 9": {k:2890, q:1950} },
+    "Lobato": { "LBFF 3": {k:75, q:83}, "LBFF 4": {k:90, q:81}, "LBFF 5": {k:66, q:81}, "LBFF 6": {k:97, q:81}, "LBFF 7": {k:1110, q:1160}, "LBFF 8": {k:830, q:800}, "LBFF 9": {k:1650, q:1940}, "WB 2024 F1": {k:530, q:590}, "WB 2024 F2": {k:1090, q:960} },
+    "Field": { "LBFF 3": {k:59, q:72}, "LBFF 4": {k:89, q:81}, "LBFF 5": {k:36, q:57}, "LBFF 6": {k:40, q:62}, "LBFF 7": {k:310, q:590} },
+    "CEBOLINHA": { "LBFF 3": {k:70, q:56}, "LBFF 4": {k:84, q:77}, "LBFF 5": {k:62, q:81}, "LBFF 6": {k:38, q:53}, "LBFF 7": {k:900, q:970}, "LBFF 8": {k:80, q:60} },
+    "FON": { "LBFF 4": {k:82, q:80}, "LBFF 5": {k:63, q:72}, "LBFF 6": {k:78, q:72}, "LBFF 7": {k:1270, q:1170}, "LBFF 8": {k:920, q:800}, "LBFF 9": {k:2430, q:1970} },
+    "Lost": { "LBFF 4": {k:82, q:81}, "LBFF 5": {k:67, q:78}, "LBFF 6": {k:72, q:81}, "LBFF 7": {k:1580, q:1100}, "LBFF 8": {k:860, q:730}, "LBFF 9": {k:3580, q:1960}, "WB 2024 F1": {k:1520, q:960}, "WB 2024 F2": {k:1640, q:1040}, "WB 2025 S1": {k:1740, q:1040}, "WB 2025 S2": {k:990, q:650} },
+    "PATO": { "LBFF 3": {k:80, q:81}, "LBFF 4": {k:81, q:81}, "LBFF 5": {k:14, q:15}, "LBFF 7": {k:690, q:930} },
+    "DeadGOD": { "LBFF 1": {k:70, q:82}, "LBFF 3": {k:74, q:75}, "LBFF 4": {k:78, q:81}, "LBFF 5": {k:90, q:79}, "LBFF 6": {k:75, q:76}, "LBFF 7": {k:1190, q:1150}, "LBFF 8": {k:620, q:640}, "LBFF 9": {k:250, q:320} },
+    "Natividade": { "LBFF 3": {k:82, q:84}, "LBFF 4": {k:77, q:78}, "LBFF 5": {k:79, q:81}, "LBFF 6": {k:92, q:81}, "LBFF 7": {k:1010, q:1080}, "LBFF 8": {k:530, q:720}, "LBFF 9": {k:180, q:400} },
+    "OUSADO": { "LBFF 4": {k:77, q:79}, "LBFF 5": {k:100, q:81}, "LBFF 6": {k:91, q:81}, "LBFF 7": {k:1330, q:1170}, "LBFF 8": {k:1190, q:800}, "LBFF 9": {k:2770, q:1820} },
+    "FIXA": { "LBFF 1": {k:62, q:80}, "LBFF 3": {k:41, q:70}, "LBFF 4": {k:72, q:75} },
+    "GØDKILL": { "LBFF 4": {k:71, q:63}, "LBFF 5": {k:30, q:44}, "LBFF 6": {k:35, q:41}, "LBFF 7": {k:590, q:530}, "LBFF 8": {k:530, q:630} },
+    "Noda": { "LBFF 3": {k:44, q:71}, "LBFF 4": {k:71, q:65}, "LBFF 5": {k:64, q:74}, "LBFF 6": {k:74, q:71}, "LBFF 7": {k:920, q:1050}, "LBFF 8": {k:840, q:780}, "LBFF 9": {k:590, q:520}, "WB 2024 F1": {k:500, q:350}, "WB 2024 F2": {k:1890, q:990}, "WB 2025 S1": {k:1320, q:1040}, "WB 2025 S2": {k:710, q:620} },
+    "Nobru": { "LBFF 1": {k:65, q:72}, "LBFF 3": {k:57, q:65}, "LBFF 4": {k:69, q:74}, "LBFF 5": {k:45, q:51}, "LBFF 6": {k:25, q:42}, "LBFF 7": {k:10, q:40} },
+    "Boss": { "LBFF 3": {k:67, q:84}, "LBFF 4": {k:68, q:79}, "LBFF 5": {k:44, q:61}, "LBFF 7": {k:260, q:300}, "LBFF 8": {k:80, q:270} },
+    "TKSHY13": { "LBFF 3": {k:38, q:76}, "LBFF 4": {k:66, q:72} },
+    "R7": { "LBFF 3": {k:77, q:80}, "LBFF 4": {k:66, q:76}, "LBFF 5": {k:63, q:81}, "LBFF 6": {k:70, q:68}, "LBFF 7": {k:1200, q:990}, "LBFF 8": {k:650, q:680}, "LBFF 9": {k:1310, q:1330}, "WB 2024 F1": {k:970, q:950}, "WB 2024 F2": {k:1300, q:960}, "WB 2025 S1": {k:1120, q:980}, "WB 2025 S2": {k:890, q:680} },
+    "Gus": { "LBFF 4": {k:61, q:63}, "LBFF 5": {k:61, q:81}, "LBFF 6": {k:100, q:81}, "LBFF 7": {k:1690, q:1170}, "LBFF 8": {k:920, q:800}, "LBFF 9": {k:2220, q:1520}, "WB 2024 F1": {k:1490, q:960}, "WB 2024 F2": {k:1920, q:1040}, "WB 2025 S1": {k:1470, q:1040}, "WB 2025 S2": {k:910, q:640} },
+    "CAUE": { "LBFF 4": {k:61, q:75}, "LBFF 5": {k:63, q:77}, "LBFF 6": {k:61, q:73}, "LBFF 7": {k:1160, q:1130} },
+    "NICKOLAS": { "LBFF 4": {k:61, q:81}, "LBFF 5": {k:24, q:29}, "LBFF 6": {k:8, q:19} },
+    "ITALO": { "LBFF 3": {k:17, q:33}, "LBFF 4": {k:59, q:72}, "LBFF 5": {k:63, q:72}, "LBFF 7": {k:810, q:870}, "LBFF 8": {k:550, q:750}, "LBFF 9": {k:2410, q:1940}, "WB 2024 F1": {k:1170, q:800}, "WB 2024 F2": {k:130, q:100}, "WB 2025 S1": {k:980, q:1040}, "WB 2025 S2": {k:560, q:540} },
+    "Razure": { "LBFF 4": {k:58, q:78}, "LBFF 5": {k:79, q:81}, "LBFF 6": {k:63, q:68}, "LBFF 7": {k:1070, q:1170}, "LBFF 8": {k:470, q:510}, "LBFF 9": {k:2200, q:1920}, "WB 2024 F1": {k:1280, q:920}, "WB 2024 F2": {k:1570, q:1030}, "WB 2025 S1": {k:360, q:280}, "WB 2025 S2": {k:460, q:540} },
+    "Aranha": { "LBFF 3": {k:42, q:51}, "LBFF 4": {k:56, q:72}, "LBFF 5": {k:58, q:72} },
+    "YAN7": { "LBFF 3": {k:4, q:4}, "LBFF 4": {k:55, q:69}, "LBFF 5": {k:61, q:43}, "LBFF 6": {k:45, q:62} },
+    "VN10": { "LBFF 4": {k:55, q:71}, "LBFF 5": {k:29, q:71} },
+    "LEAL7": { "LBFF 3": {k:32, q:35}, "LBFF 4": {k:53, q:76}, "LBFF 5": {k:34, q:60}, "LBFF 8": {k:420, q:600} },
+    "GUIMONS": { "LBFF 4": {k:53, q:81}, "LBFF 5": {k:22, q:25}, "LBFF 6": {k:25, q:36} },
+    "PÃO7": { "LBFF 3": {k:75, q:83}, "LBFF 4": {k:52, q:81}, "LBFF 5": {k:48, q:63}, "LBFF 6": {k:56, q:81}, "LBFF 7": {k:970, q:1170}, "LBFF 8": {k:820, q:800}, "LBFF 9": {k:2500, q:2000}, "WB 2024 F1": {k:1130, q:960}, "WB 2024 F2": {k:1660, q:1040}, "WB 2025 S1": {k:740, q:610}, "WB 2025 S2": {k:1410, q:680} },
+    "AUTOBOOT": { "LBFF 3": {k:72, q:69}, "LBFF 4": {k:46, q:63}, "LBFF 5": {k:45, q:60}, "LBFF 6": {k:43, q:70} },
+    "PORCÃO": { "LBFF 3": {k:49, q:62}, "LBFF 4": {k:44, q:71} },
+    "IGZINN": { "LBFF 3": {k:46, q:58}, "LBFF 4": {k:45, q:50}, "LBFF 5": {k:36, q:68}, "LBFF 9": {k:280, q:460} },
+    "KAYKE": { "LBFF 3": {k:45, q:54}, "LBFF 4": {k:22, q:35}, "LBFF 5": {k:62, q:71} },
+    "VINNIXL": { "LBFF 3": {k:44, q:72}, "LBFF 6": {k:41, q:64} },
+    "Zenac": { "LBFF 3": {k:42, q:54}, "LBFF 4": {k:25, q:35}, "LBFF 5": {k:52, q:81}, "LBFF 6": {k:53, q:81}, "LBFF 7": {k:290, q:540}, "LBFF 8": {k:470, q:720}, "LBFF 9": {k:1630, q:1920} },
+    "JM777": { "LBFF 3": {k:42, q:69}, "LBFF 4": {k:17, q:39} },
+    "yurik1nG": { "LBFF 3": {k:41, q:61} },
+    "RafaX": { "LBFF 3": {k:41, q:64}, "LBFF 5": {k:47, q:79}, "LBFF 6": {k:21, q:38}, "LBFF 7": {k:850, q:950}, "LBFF 8": {k:620, q:740} },
+    "LUFFYXX": { "LBFF 3": {k:40, q:59}, "LBFF 4": {k:11, q:20} },
+    "BIRI": { "LBFF 3": {k:37, q:72}, "LBFF 5": {k:1, q:5} },
+    "alok10": { "LBFF 3": {k:32, q:46}, "LBFF 4": {k:23, q:38}, "LBFF 6": {k:5, q:16} },
+    "BROCO": { "LBFF 3": {k:32, q:51}, "LBFF 6": {k:46, q:69}, "LBFF 8": {k:20, q:60} },
+    "BRUNO7": { "LBFF 3": {k:30, q:42}, "LBFF 4": {k:2, q:8}, "LBFF 5": {k:0, q:1} },
+    "NEPHIRO": { "LBFF 3": {k:29, q:64} },
+    "Froyd": { "LBFF 3": {k:27, q:48} },
+    "zDaark": { "LBFF 3": {k:24, q:42} },
+    "IGOR3": { "LBFF 3": {k:21, q:33} },
+    "Negoo": { "LBFF 3": {k:19, q:30}, "LBFF 4": {k:17, q:32} },
+    "LZN": { "LBFF 3": {k:19, q:53} },
+    "Argonot": { "LBFF 3": {k:18, q:36} },
+    "VICTOR7": { "LBFF 3": {k:17, q:39}, "LBFF 5": {k:81, q:81}, "LBFF 6": {k:37, q:48}, "LBFF 8": {k:280, q:360}, "LBFF 9": {k:1420, q:1770} },
+    "ChefãoZp": { "LBFF 3": {k:15, q:19}, "LBFF 4": {k:29, q:52} },
+    "Guuh": { "LBFF 3": {k:14, q:27} },
+    "MINUZZI": { "LBFF 3": {k:13, q:19}, "LBFF 4": {k:44, q:62}, "LBFF 5": {k:38, q:63} },
+    "GLXCK": { "LBFF 3": {k:12, q:15} },
+    "MAYKY01": { "LBFF 3": {k:11, q:24} },
+    "Déco": { "LBFF 3": {k:9, q:17}, "LBFF 4": {k:5, q:12} },
+    "PSILVA": { "LBFF 3": {k:6, q:10} },
+    "Taami": { "LBFF 3": {k:5, q:6} },
+    "MISTICO": { "LBFF 3": {k:4, q:7}, "LBFF 4": {k:11, q:23} },
+    "MOGTHBOY": { "LBFF 3": {k:4, q:15} },
+    "Azay": { "LBFF 4": {k:46, q:61}, "LBFF 5": {k:25, q:45}, "LBFF 9": {k:1930, q:1910}, "WB 2024 F1": {k:140, q:200} },
+    "VTRx": { "LBFF 4": {k:34, q:52}, "LBFF 5": {k:37, q:61} },
+    "Fac": { "LBFF 4": {k:31, q:32}, "LBFF 5": {k:62, q:70}, "LBFF 6": {k:75, q:81}, "LBFF 7": {k:1030, q:1140}, "LBFF 8": {k:600, q:600} },
+    "LEE": { "LBFF 4": {k:23, q:35} },
+    "RUSH": { "LBFF 4": {k:21, q:19}, "LBFF 5": {k:48, q:57}, "LBFF 6": {k:36, q:59}, "LBFF 7": {k:650, q:810} },
+    "NANDO9": { "LBFF 5": {k:107, q:81}, "LBFF 6": {k:64, q:78}, "LBFF 7": {k:990, q:1050}, "LBFF 8": {k:1190, q:790}, "LBFF 9": {k:4070, q:2000}, "WB 2024 F1": {k:1690, q:960}, "WB 2024 F2": {k:2070, q:1040}, "WB 2025 S1": {k:1350, q:880}, "WB 2025 S2": {k:970, q:580} },
+    "DRAXX7": { "LBFF 5": {k:59, q:72}, "LBFF 6": {k:38, q:53}, "LBFF 7": {k:1160, q:910}, "LBFF 8": {k:1160, q:800}, "LBFF 9": {k:2600, q:1710}, "WB 2024 F1": {k:1430, q:960}, "WB 2024 F2": {k:1650, q:1040}, "WB 2025 S1": {k:1490, q:1040}, "WB 2025 S2": {k:790, q:680} },
+    "Mike": { "LBFF 5": {k:49, q:72}, "LBFF 7": {k:860, q:1100}, "LBFF 8": {k:440, q:730}, "LBFF 9": {k:1660, q:1990} },
+    "Duduffx!": { "LBFF 5": {k:36, q:58}, "LBFF 7": {k:570, q:810} },
+    "Leozin": { "LBFF 5": {k:10, q:19}, "LBFF 6": {k:10, q:12} },
+    "But": { "LBFF 5": {k:84, q:81}, "LBFF 6": {k:93, q:81}, "LBFF 7": {k:1320, q:1170}, "LBFF 8": {k:810, q:800}, "LBFF 9": {k:2600, q:1860}, "WB 2024 F1": {k:1880, q:960}, "WB 2024 F2": {k:1790, q:1040}, "WB 2025 S1": {k:1470, q:920}, "WB 2025 S2": {k:1330, q:670} },
+    "ROMEUXX": { "LBFF 5": {k:12, q:20}, "LBFF 6": {k:71, q:79}, "LBFF 7": {k:430, q:530}, "LBFF 8": {k:430, q:540} },
+    "JHzz": { "LBFF 5": {k:57, q:68}, "LBFF 6": {k:9, q:23} },
+    "Pec": { "LBFF 5": {k:52, q:69}, "LBFF 6": {k:31, q:65}, "LBFF 7": {k:740, q:730}, "LBFF 8": {k:30, q:70} },
+    "Bops": { "LBFF 5": {k:35, q:57}, "LBFF 6": {k:84, q:62}, "LBFF 7": {k:1560, q:1170}, "LBFF 8": {k:780, q:800}, "LBFF 9": {k:3470, q:2000}, "WB 2024 F1": {k:1500, q:960}, "WB 2024 F2": {k:1960, q:1040}, "WB 2025 S1": {k:1950, q:1040}, "WB 2025 S2": {k:1280, q:680} },
+    "VITINxp": { "LBFF 5": {k:94, q:81}, "LBFF 6": {k:97, q:81}, "LBFF 7": {k:1560, q:1170}, "LBFF 8": {k:910, q:720}, "LBFF 9": {k:2580, q:2000}, "WB 2024 F1": {k:1150, q:960}, "WB 2024 F2": {k:1630, q:1040}, "WB 2025 S1": {k:1560, q:1040}, "WB 2025 S2": {k:1070, q:680} },
+    "Qualy": { "LBFF 5": {k:48, q:73}, "LBFF 6": {k:64, q:81}, "LBFF 7": {k:450, q:640} },
+    "NEYZZIN": { "LBFF 5": {k:17, q:29} },
+    "Bruno 7": { "LBFF 4": {k:19, q:32}, "LBFF 5": {k:10, q:34} },
+    "Guerra": { "LBFF 4": {k:17, q:32}, "LBFF 5": {k:64, q:67} },
+    "Lipaulo": { "LBFF 4": {k:16, q:24} },
+    "VITIN": { "LBFF 4": {k:16, q:27}, "LBFF 5": {k:13, q:31} },
+    "ARRUDA": { "LBFF 4": {k:14, q:15}, "LBFF 5": {k:18, q:27} },
+    "JAPEX10": { "LBFF 4": {k:11, q:19} },
+    "MMHATX": { "LBFF 4": {k:9, q:14} },
+    "NandoX": { "LBFF 4": {k:8, q:20}, "LBFF 9": {k:2780, q:2000}, "WB 2024 F1": {k:1280, q:890}, "WB 2024 F2": {k:1690, q:1040}, "WB 2025 S1": {k:980, q:990}, "WB 2025 S2": {k:810, q:680} },
+    "BIRINO": { "LBFF 4": {k:6, q:9} },
+    "Yago": { "LBFF 4": {k:2, q:5}, "LBFF 5": {k:105, q:81}, "LBFF 6": {k:116, q:78}, "LBFF 7": {k:1700, q:1120}, "LBFF 8": {k:1220, q:800}, "LBFF 9": {k:4680, q:2000}, "WB 2024 F1": {k:1870, q:960}, "WB 2024 F2": {k:2540, q:1040}, "WB 2025 S1": {k:2340, q:1040}, "WB 2025 S2": {k:1280, q:680} },
+    "BONZAI22": { "LBFF 5": {k:10, q:25}, "LBFF 6": {k:6, q:12} },
+    "CHINÊS": { "LBFF 5": {k:73, q:79}, "LBFF 6": {k:105, q:81}, "LBFF 7": {k:1230, q:1080}, "LBFF 8": {k:800, q:800}, "LBFF 9": {k:2260, q:1940}, "WB 2024 F1": {k:1010, q:960}, "WB 2024 F2": {k:1460, q:960} },
+    "LuckyGOD": { "LBFF 5": {k:2, q:12}, "LBFF 7": {k:680, q:910} },
+    "Biel7": { "LBFF 5": {k:15, q:33}, "LBFF 7": {k:250, q:430}, "LBFF 8": {k:90, q:330}, "WB 2024 F1": {k:0, q:0} },
+    "duzzX": { "LBFF 5": {k:30, q:45} },
+    "Astro007": { "LBFF 5": {k:3, q:12} },
+    "Randall": { "LBFF 5": {k:4, q:11} },
+    "Gelo": { "LBFF 5": {k:59, q:61}, "LBFF 6": {k:15, q:20}, "LBFF 7": {k:60, q:90}, "LBFF 8": {k:220, q:280} },
+    "MIGUEL": { "LBFF 5": {k:36, q:54}, "LBFF 7": {k:840, q:1010} },
+    "SPIL": { "LBFF 5": {k:39, q:51}, "LBFF 6": {k:18, q:37}, "LBFF 7": {k:340, q:560} },
+    "stiqzL": { "LBFF 5": {k:25, q:48} },
+    "Ruivo": { "LBFF 5": {k:0, q:9} },
+    "Bolin7": { "LBFF 5": {k:19, q:27}, "LBFF 6": {k:4, q:18}, "LBFF 8": {k:220, q:330} },
+    "Maroto": { "LBFF 5": {k:6, q:9} },
+    "TRIPLOx": { "LBFF 5": {k:5, q:9}, "LBFF 7": {k:280, q:660} },
+    "TATU13": { "LBFF 5": {k:5, q:12}, "LBFF 6": {k:34, q:54}, "LBFF 7": {k:670, q:820}, "LBFF 8": {k:1100, q:800}, "LBFF 9": {k:2100, q:1950}, "WB 2024 F1": {k:1460, q:960}, "WB 2024 F2": {k:1290, q:1040}, "WB 2025 S1": {k:340, q:530} },
+    "VM7": { "LBFF 5": {k:0, q:8}, "LBFF 6": {k:44, q:58}, "LBFF 7": {k:670, q:870}, "LBFF 8": {k:630, q:800} },
+    "PH": { "LBFF 5": {k:0, q:9}, "LBFF 6": {k:2, q:9} },
+    "Diel": { "LBFF 6": {k:58, q:72} },
+    "Salles": { "LBFF 6": {k:45, q:66}, "LBFF 7": {k:640, q:960} },
+    "DIDI_75": { "LBFF 6": {k:41, q:71} },
+    "VINHAL": { "LBFF 6": {k:1, q:10}, "LBFF 8": {k:740, q:610} },
+    "Master": { "LBFF 6": {k:51, q:69} },
+    "BROILO": { "LBFF 6": {k:43, q:68}, "LBFF 7": {k:560, q:1020} },
+    "SEMNOME": { "LBFF 6": {k:2, q:5} },
+    "Brenin7": { "LBFF 6": {k:54, q:69} },
+    "Ângelo7": { "LBFF 6": {k:65, q:72}, "WB 2024 F1": {k:900, q:910}, "WB 2024 F2": {k:390, q:420} },
+    "Luignet": { "LBFF 6": {k:36, q:67} },
+    "Debbszada": { "LBFF 6": {k:2, q:27} },
+    "Prozin10": { "LBFF 6": {k:84, q:78}, "LBFF 7": {k:1010, q:1080}, "LBFF 9": {k:1060, q:1390}, "WB 2025 S2": {k:580, q:440} },
+    "Kiled": { "LBFF 6": {k:93, q:77}, "LBFF 7": {k:1320, q:1080}, "LBFF 8": {k:150, q:200} },
+    "Guiga": { "LBFF 6": {k:74, q:78}, "LBFF 7": {k:1210, q:1170}, "LBFF 8": {k:650, q:690}, "LBFF 9": {k:730, q:850}, "WB 2024 F1": {k:280, q:360} },
+    "Cauã": { "LBFF 6": {k:22, q:41}, "LBFF 9": {k:2340, q:2000}, "WB 2024 F1": {k:1150, q:960}, "WB 2024 F2": {k:1160, q:1040}, "WB 2025 S1": {k:1230, q:1040}, "WB 2025 S2": {k:480, q:510} },
+    "GUSTA": { "LBFF 6": {k:52, q:72} },
+    "Ratiin": { "LBFF 6": {k:25, q:54} },
+    "Bob7": { "LBFF 6": {k:8, q:24}, "LBFF 8": {k:750, q:760} },
+    "HEAD": { "LBFF 6": {k:32, q:68}, "LBFF 7": {k:20, q:140} },
+    "BRABO": { "LBFF 6": {k:37, q:61} },
+    "RIGBY": { "LBFF 6": {k:11, q:22}, "LBFF 7": {k:1310, q:1110}, "LBFF 8": {k:860, q:790}, "LBFF 9": {k:3330, q:1970}, "WB 2024 F1": {k:1950, q:960}, "WB 2024 F2": {k:1950, q:1040}, "WB 2025 S1": {k:2130, q:1040}, "WB 2025 S2": {k:1530, q:680} },
+    "DZNKILL": { "LBFF 6": {k:26, q:53} },
+    "João7": { "LBFF 6": {k:13, q:18}, "LBFF 7": {k:770, q:970}, "LBFF 9": {k:830, q:860}, "WB 2024 F1": {k:1150, q:960}, "WB 2024 F2": {k:1070, q:1040}, "WB 2025 S1": {k:1460, q:1040}, "WB 2025 S2": {k:1090, q:680} },
+    "STRONG": { "LBFF 6": {k:0, q:4} },
+    "Legit": { "LBFF 6": {k:6, q:12} },
+    "RAUL7": { "LBFF 6": {k:2, q:4} },
+    "DORITO": { "LBFF 6": {k:10, q:12}, "LBFF 9": {k:1850, q:1340}, "WB 2024 F1": {k:1010, q:960}, "WB 2024 F2": {k:1190, q:1010}, "WB 2025 S1": {k:240, q:360}, "WB 2025 S2": {k:420, q:410} },
+    "LUCCA9": { "LBFF 6": {k:10, q:21} },
+    "Lapa7": { "LBFF 6": {k:9, q:6}, "LBFF 7": {k:130, q:160}, "LBFF 8": {k:830, q:750} },
+    "Thuzão Do9": { "LBFF 4": {k:2, q:14} },
+    "Marreta": { "LBFF 7": {k:620, q:940}, "LBFF 8": {k:530, q:800}, "LBFF 9": {k:150, q:260} },
+    "ERICKMVP": { "LBFF 7": {k:90, q:130}, "LBFF 8": {k:850, q:700}, "LBFF 9": {k:2150, q:1620}, "WB 2024 F1": {k:1790, q:960}, "WB 2024 F2": {k:1580, q:1040}, "WB 2025 S1": {k:1600, q:1040}, "WB 2025 S2": {k:920, q:680} },
+    "NICOLAS9": { "LBFF 7": {k:380, q:650}, "LBFF 9": {k:1750, q:1480}, "WB 2024 F1": {k:550, q:590}, "WB 2024 F2": {k:890, q:960} },
+    "EASY": { "LBFF 7": {k:1310, q:1170}, "LBFF 8": {k:760, q:720}, "LBFF 9": {k:1630, q:1550}, "WB 2025 S2": {k:500, q:430} },
+    "CHUCKY": { "LBFF 7": {k:840, q:950}, "LBFF 8": {k:440, q:610}, "LBFF 9": {k:1900, q:1840}, "WB 2024 F1": {k:830, q:710}, "WB 2024 F2": {k:1110, q:960} },
+    "HENDER": { "LBFF 7": {k:1420, q:1170}, "LBFF 8": {k:490, q:720}, "LBFF 9": {k:1500, q:2000} },
+    "LENNO": { "LBFF 7": {k:800, q:1140}, "LBFF 8": {k:460, q:720}, "LBFF 9": {k:900, q:1620}, "WB 2025 S1": {k:20, q:20}, "WB 2025 S2": {k:470, q:540} },
+    "TRAP": { "LBFF 7": {k:1430, q:1170}, "LBFF 8": {k:1170, q:800}, "LBFF 9": {k:3180, q:2000}, "WB 2024 F1": {k:2250, q:960}, "WB 2024 F2": {k:1910, q:1040}, "WB 2025 S1": {k:1820, q:1040}, "WB 2025 S2": {k:1400, q:680} },
+    "MENOR10": { "LBFF 7": {k:390, q:540} },
+    "JapaXL": { "LBFF 7": {k:930, q:1060}, "LBFF 8": {k:770, q:800}, "LBFF 9": {k:1640, q:1910}, "WB 2024 F1": {k:370, q:470}, "WB 2024 F2": {k:780, q:960} },
+    "HONEY": { "LBFF 7": {k:650, q:860}, "LBFF 9": {k:1730, q:1860}, "WB 2024 F1": {k:1140, q:880}, "WB 2024 F2": {k:1350, q:1040}, "WB 2025 S1": {k:1660, q:1040}, "WB 2025 S2": {k:990, q:670} },
+    "BAND": { "LBFF 7": {k:720, q:850}, "LBFF 8": {k:190, q:240}, "LBFF 9": {k:2230, q:1890}, "WB 2024 F1": {k:1470, q:960}, "WB 2024 F2": {k:2030, q:1040}, "WB 2025 S2": {k:370, q:380} },
+    "HYPE": { "LBFF 7": {k:360, q:720} },
+    "YDAVI": { "LBFF 7": {k:730, q:1080} },
+    "Erick11": { "LBFF 7": {k:1230, q:1170}, "LBFF 8": {k:1110, q:800}, "LBFF 9": {k:410, q:330}, "WB 2024 F2": {k:1100, q:960}, "WB 2025 S2": {k:500, q:540} },
+    "BUENO": { "LBFF 7": {k:650, q:860}, "LBFF 8": {k:130, q:220} },
+    "Mandela": { "LBFF 7": {k:620, q:860}, "LBFF 8": {k:310, q:430}, "WB 2024 F1": {k:180, q:350} },
+    "GUAXA": { "LBFF 7": {k:400, q:340}, "LBFF 8": {k:770, q:790}, "LBFF 9": {k:1470, q:1920}, "WB 2024 F1": {k:1730, q:960}, "WB 2024 F2": {k:1490, q:1040}, "WB 2025 S1": {k:1390, q:1040}, "WB 2025 S2": {k:550, q:480} },
+    "RENAN": { "LBFF 7": {k:40, q:110} },
+    "LOIRORJ": { "LBFF 7": {k:230, q:250}, "LBFF 8": {k:300, q:650} },
+    "JUNINXL": { "LBFF 7": {k:350, q:520} },
+    "GTECOXC": { "LBFF 7": {k:0, q:40} },
+    "Raone7": { "LBFF 8": {k:1390, q:800}, "LBFF 9": {k:4220, q:2000}, "WB 2024 F1": {k:2060, q:960}, "WB 2024 F2": {k:2150, q:1040}, "WB 2025 S1": {k:2090, q:1040}, "WB 2025 S2": {k:1200, q:680} },
+    "CORUJA": { "LBFF 8": {k:520, q:680} },
+    "Stark7": { "LBFF 8": {k:990, q:800}, "LBFF 9": {k:2400, q:2000}, "WB 2024 F1": {k:1510, q:960}, "WB 2024 F2": {k:1630, q:1040}, "WB 2025 S1": {k:1470, q:1040}, "WB 2025 S2": {k:1010, q:680} },
+    "RBN9": { "LBFF 8": {k:340, q:490} },
+    "Ygorzn7": { "LBFF 8": {k:580, q:720} },
+    "haaxszz": { "LBFF 8": {k:100, q:230} },
+    "Ice77": { "LBFF 8": {k:320, q:500}, "LBFF 9": {k:1390, q:1720}, "WB 2024 F1": {k:740, q:950} },
+    "DANXL7": { "LBFF 8": {k:220, q:380} },
+    "Isopor21": { "LBFF 8": {k:630, q:740}, "LBFF 9": {k:1020, q:1380}, "WB 2024 F1": {k:490, q:600}, "WB 2024 F2": {k:970, q:960} },
+    "Goabe7": { "LBFF 8": {k:460, q:650}, "LBFF 9": {k:1550, q:1840}, "WB 2024 F1": {k:770, q:960}, "WB 2024 F2": {k:440, q:950}, "WB 2025 S1": {k:410, q:670} },
+    "Vrziin": { "LBFF 8": {k:230, q:340} },
+    "Vitin9": { "LBFF 8": {k:670, q:710}, "LBFF 9": {k:1550, q:1500}, "WB 2024 F1": {k:1270, q:960}, "WB 2024 F2": {k:1710, q:1040}, "WB 2025 S1": {k:1490, q:1030}, "WB 2025 S2": {k:1170, q:680} },
+    "Guifox": { "LBFF 8": {k:540, q:690}, "LBFF 9": {k:420, q:420}, "WB 2024 F1": {k:1090, q:920}, "WB 2024 F2": {k:490, q:490}, "WB 2025 S1": {k:700, q:660} },
+    "Ghost7": { "LBFF 8": {k:180, q:180}, "LBFF 9": {k:820, q:540}, "WB 2024 F1": {k:640, q:750}, "WB 2024 F2": {k:270, q:400}, "WB 2025 S2": {k:100, q:170} },
+    "Rocks": { "LBFF 8": {k:320, q:490} },
+    "Federal7": { "LBFF 8": {k:1150, q:740}, "LBFF 9": {k:1990, q:1460} },
+    "TheusL": { "LBFF 8": {k:70, q:140} },
+    "Proxx7": { "LBFF 8": {k:510, q:560}, "LBFF 9": {k:1900, q:1840}, "WB 2024 F1": {k:1580, q:960}, "WB 2024 F2": {k:1760, q:1040}, "WB 2025 S1": {k:170, q:130}, "WB 2025 S2": {k:40, q:40} },
+    "GhostBB": { "LBFF 8": {k:560, q:530}, "LBFF 9": {k:110, q:170} },
+    "Suplay": { "LBFF 8": {k:40, q:90} },
+    "Deley": { "LBFF 8": {k:210, q:240} },
+    "Itachi Fé": { "LBFF 8": {k:130, q:100}, "LBFF 9": {k:1730, q:1870}, "WB 2024 F1": {k:500, q:420} },
+    "Cruel": { "LBFF 8": {k:160, q:240}, "LBFF 9": {k:1330, q:1550}, "WB 2024 F1": {k:1070, q:940}, "WB 2024 F2": {k:420, q:430}, "WB 2025 S2": {k:340, q:430} },
+    "GIUH.87": { "LBFF 8": {k:200, q:220}, "LBFF 9": {k:2420, q:1810}, "WB 2024 F1": {k:1460, q:960}, "WB 2024 F2": {k:1930, q:1040}, "WB 2025 S1": {k:2090, q:1040}, "WB 2025 S2": {k:910, q:650} },
+    "Mexico": { "LBFF 8": {k:210, q:280}, "LBFF 9": {k:2040, q:1810}, "WB 2024 F1": {k:840, q:600}, "WB 2024 F2": {k:1670, q:1040} },
+    "MTS7": { "LBFF 8": {k:210, q:260}, "WB 2024 F1": {k:990, q:890}, "WB 2024 F2": {k:1350, q:960} },
+    "R1": { "LBFF 8": {k:50, q:50}, "LBFF 9": {k:100, q:200} },
+    "MK7": { "LBFF 8": {k:0, q:10} },
+    "MT7": { "LBFF 9": {k:3430, q:1900}, "WB 2024 F1": {k:1540, q:960}, "WB 2024 F2": {k:2010, q:1040}, "WB 2025 S1": {k:2570, q:1040}, "WB 2025 S2": {k:1660, q:680} },
+    "Motovea7": { "LBFF 9": {k:2150, q:1880}, "WB 2024 F1": {k:1490, q:960}, "WB 2024 F2": {k:2480, q:1040}, "WB 2025 S1": {k:1570, q:1040}, "WB 2025 S2": {k:1210, q:680} },
+    "Kozak": { "LBFF 9": {k:2050, q:1820} },
+    "CorumbaX": { "LBFF 9": {k:1830, q:1850} },
+    "Yato7": { "LBFF 9": {k:1770, q:1690}, "WB 2024 F1": {k:1200, q:950}, "WB 2024 F2": {k:1370, q:1040}, "WB 2025 S1": {k:910, q:880} },
+    "LIPPE!": { "LBFF 9": {k:1910, q:1910}, "WB 2025 S1": {k:80, q:180} },
+    "drk": { "LBFF 9": {k:1700, q:1920}, "WB 2024 F1": {k:340, q:380} },
+    "Vodka": { "LBFF 9": {k:1780, q:1810} },
+    "Zetsu9": { "LBFF 9": {k:1480, q:1550}, "WB 2024 F1": {k:1100, q:930}, "WB 2024 F2": {k:260, q:240}, "WB 2025 S1": {k:730, q:620} },
+    "Nickz7": { "LBFF 9": {k:1510, q:1460}, "WB 2024 F1": {k:2090, q:960}, "WB 2024 F2": {k:1810, q:1040}, "WB 2025 S1": {k:1780, q:1040}, "WB 2025 S2": {k:1620, q:620} },
+    "Addy7": { "LBFF 9": {k:1440, q:1740}, "WB 2024 F1": {k:870, q:700}, "WB 2024 F2": {k:1430, q:960}, "WB 2025 S1": {k:1030, q:850} },
+    "GLAUCO7": { "LBFF 9": {k:1260, q:1220}, "WB 2024 F1": {k:450, q:340}, "WB 2024 F2": {k:220, q:210} },
+    "Destroi7": { "LBFF 9": {k:1460, q:1920} },
+    "Biel7|link=Biel7 (Brazilian Player)": { "LBFF 9": {k:1370, q:1700}, "WB 2024 F1": {k:610, q:870}, "WB 2024 F2": {k:250, q:420} },
+    "Lins7": { "LBFF 9": {k:990, q:930}, "WB 2024 F1": {k:610, q:690}, "WB 2024 F2": {k:1340, q:960}, "WB 2025 S1": {k:1110, q:930}, "WB 2025 S2": {k:790, q:680} },
+    "MITOmvp": { "LBFF 9": {k:860, q:1230} },
+    "Redxz7": { "LBFF 9": {k:1180, q:1560}, "WB 2025 S2": {k:770, q:680} },
+    "KMX": { "LBFF 9": {k:1190, q:1270}, "WB 2024 F1": {k:610, q:680}, "WB 2025 S1": {k:750, q:900} },
+    "MICHEL42": { "LBFF 9": {k:560, q:940} },
+    "Will7": { "LBFF 9": {k:560, q:710} },
+    "Hagane10": { "LBFF 9": {k:390, q:640} },
+    "Araujo13": { "LBFF 9": {k:210, q:350} },
+    "BLACK02": { "LBFF 9": {k:190, q:280}, "WB 2025 S1": {k:900, q:940}, "WB 2025 S2": {k:780, q:680} },
+    "KenidyZ": { "LBFF 9": {k:100, q:270} },
+    "Stand7": { "LBFF 9": {k:110, q:270}, "WB 2024 F1": {k:540, q:600}, "WB 2024 F2": {k:790, q:790} },
+    "Muniz": { "LBFF 9": {k:50, q:130} },
+    "ROG5WP": { "LBFF 9": {k:20, q:60} },
+    "PUTSGRILO": { "LBFF 9": {k:10, q:10} },
+    "PETERxl": { "WB 2024 F1": {k:1480, q:770}, "WB 2024 F2": {k:1680, q:980}, "WB 2025 S1": {k:1570, q:1030}, "WB 2025 S2": {k:990, q:620} },
+    "o Mala": { "WB 2024 F1": {k:1440, q:960}, "WB 2024 F2": {k:1970, q:1040}, "WB 2025 S1": {k:1340, q:910}, "WB 2025 S2": {k:840, q:670} },
+    "Hak": { "WB 2024 F1": {k:1150, q:940}, "WB 2024 F2": {k:1510, q:900}, "WB 2025 S1": {k:1230, q:960}, "WB 2025 S2": {k:670, q:540} },
+    "Nikeboy": { "LBFF 8": {k:0, q:0}, "WB 2024 F1": {k:940, q:930}, "WB 2024 F2": {k:1600, q:970}, "WB 2025 S1": {k:520, q:620}, "WB 2025 S2": {k:1070, q:670} },
+    "BRUNO7w": { "WB 2024 F1": {k:660, q:780}, "WB 2024 F2": {k:280, q:330} },
+    "Bahiazx": { "WB 2024 F1": {k:240, q:230}, "WB 2024 F2": {k:200, q:140}, "WB 2025 S1": {k:1150, q:1040}, "WB 2025 S2": {k:640, q:660} },
+    "brota10": { "WB 2024 F1": {k:1120, q:960}, "WB 2024 F2": {k:1580, q:1040}, "WB 2025 S2": {k:560, q:540} },
+    "Luan7": { "WB 2024 F1": {k:650, q:610}, "WB 2024 F2": {k:1050, q:1000}, "WB 2025 S1": {k:1440, q:980}, "WB 2025 S2": {k:180, q:200} },
+    "iguiNmvp": { "WB 2024 F1": {k:610, q:360}, "WB 2024 F2": {k:1360, q:1040}, "WB 2025 S1": {k:1000, q:1020}, "WB 2025 S2": {k:570, q:540} },
+    "Bombom": { "WB 2024 F1": {k:0, q:10} },
+    "Strend7": { "WB 2024 F1": {k:80, q:120} },
+    "MitinX": { "WB 2024 F1": {k:220, q:280}, "WB 2025 S1": {k:1300, q:880}, "WB 2025 S2": {k:600, q:590} },
+    "Kalango7": { "WB 2024 F1": {k:550, q:670}, "WB 2024 F2": {k:800, q:870} },
+    "JOW": { "WB 2024 F1": {k:590, q:700} },
+    "KazumaWP": { "WB 2024 F1": {k:590, q:890} },
+    "whyzer7": { "WB 2024 F1": {k:810, q:950}, "WB 2024 F2": {k:1070, q:960} },
+    "wLiu": { "WB 2024 F1": {k:990, q:960}, "WB 2024 F2": {k:1230, q:960}, "WB 2025 S1": {k:1170, q:1040}, "WB 2025 S2": {k:610, q:680} },
+    "Kauã7xp": { "WB 2024 F1": {k:290, q:320}, "WB 2024 F2": {k:700, q:610}, "WB 2025 S2": {k:210, q:160} },
+    "Se7en": { "WB 2024 F1": {k:990, q:920} },
+    "Drey22": { "WB 2024 F1": {k:940, q:960}, "WB 2024 F2": {k:1200, q:930} },
+    "TREVOR9": { "WB 2024 F1": {k:10, q:80}, "WB 2024 F2": {k:340, q:320}, "WB 2025 S1": {k:420, q:540} },
+    "xGUTO": { "WB 2024 F1": {k:110, q:140}, "WB 2024 F2": {k:1110, q:770}, "WB 2025 S1": {k:730, q:880}, "WB 2025 S2": {k:300, q:360} },
+    "KakaZk": { "WB 2024 F1": {k:1050, q:940}, "WB 2024 F2": {k:1310, q:960}, "WB 2025 S1": {k:530, q:410}, "WB 2025 S2": {k:520, q:240} },
+    "Theus": { "WB 2024 F1": {k:320, q:290}, "WB 2025 S2": {k:1020, q:680} },
+    "MTZIN": { "WB 2024 F1": {k:760, q:770} },
+    "WM.sup": { "WB 2024 F2": {k:120, q:300} },
+    "NANDO7": { "WB 2024 F2": {k:120, q:300} },
+    "Hugo7": { "WB 2024 F2": {k:610, q:630} },
+    "STRIKE": { "WB 2024 F2": {k:670, q:700}, "WB 2025 S1": {k:820, q:780} },
+    "DELTA": { "WB 2024 F2": {k:1080, q:960} },
+    "JucaW": { "WB 2024 F2": {k:1260, q:1040}, "WB 2025 S1": {k:1360, q:1040}, "WB 2025 S2": {k:410, q:330} },
+    "BYTE333": { "WB 2025 S1": {k:140, q:230}, "WB 2025 S2": {k:720, q:680} },
+    "Pollux7": { "WB 2025 S1": {k:1100, q:1040}, "WB 2025 S2": {k:420, q:440} },
+    "Guimerlq": { "WB 2025 S1": {k:880, q:1040}, "WB 2025 S2": {k:880, q:680} },
+    "LucasAWP": { "WB 2025 S1": {k:1170, q:1040}, "WB 2025 S2": {k:360, q:260} },
+    "LYON": { "WB 2025 S1": {k:1330, q:1020}, "WB 2025 S2": {k:990, q:680} },
+    "bzp10": { "WB 2025 S1": {k:1590, q:1040}, "WB 2025 S2": {k:510, q:400} },
+    "LC777": { "WB 2025 S1": {k:940, q:970}, "WB 2025 S2": {k:330, q:280} },
+    "Furiazz7": { "WB 2025 S1": {k:500, q:620}, "WB 2025 S2": {k:100, q:240} },
+    "Joker7": { "WB 2025 S1": {k:350, q:650} },
+    "SOCA": { "WB 2025 S1": {k:230, q:360} },
+    "Shotzz": { "WB 2025 S1": {k:280, q:310}, "WB 2025 S2": {k:90, q:110} },
+    "mtsexy": { "WB 2025 S1": {k:380, q:190}, "WB 2025 S2": {k:230, q:130} },
+    "LopesXL": { "WB 2025 S1": {k:370, q:370} },
+    "Yann7awp": { "WB 2025 S2": {k:860, q:680} },
+    "Erick1ng": { "WB 2025 S2": {k:680, q:580} },
+    "fnx04": { "WB 2025 S2": {k:550, q:640} },
+    "rojao10": { "WB 2025 S2": {k:10, q:40} },
+    "RZN7": { "WB 2025 S2": {k:230, q:280} },
+    "Rennan7": { "WB 2025 S2": {k:390, q:480} },
+    "MitoMvp": { "WB 2025 S2": {k:90, q:100} },
+    "SOARES": { "WB 2025 S2": {k:760, q:680} }
+};
+
 
 
 const playerCaptains = {
@@ -603,14 +1003,14 @@ const playerRoles = {
 };
 
 const playerPhotos = {
-    "MT7": "mt7.png","Bops": "silhueta.png", "Giuh": "silhueta.png", "BuTziN": "silhueta.png", "Proxx7": "silhueta.png",
+    "MT7": "mt7.png","Bops": "bops.png", "Giuh": "silhueta.png", "BuTziN": "silhueta.png", "Proxx7": "silhueta.png",
     "Pitbull": "silhueta.png", "PETER": "silhueta.png", "vitinxp": "silhueta.png", "Motovea": "silhueta.png", "BYTE333": "silhueta.png",
     "Pão7": "silhueta.png", "Cauã9": "silhueta.png", "Juca10xL": "silhueta.png", "Lyon": "silhueta.png",
     "lippe!": "silhueta.png", "itzking1": "silhueta.png", "Razure": "silhueta.png", "IGOR7": "silhueta.png",
-    "HAK": "silhueta.png", "NICKZ": "silhueta.png", "TRAP": "silhueta.png", "GUAXA": "silhueta.png", "BZP": "silhueta.png",
-    "Sam7": "silhueta.png", "JNmvp7": "silhueta.png", "Brisa7": "silhueta.png", "NEYawp": "silhueta.png", "MitoMvp": "silhueta.png",
+    "HAK": "silhueta.png", "NICKZ": "silhueta.png", "TRAP": "trap.png", "GUAXA": "silhueta.png", "BZP": "silhueta.png",
+    "Sam7": "silhueta.png", "JNmvp7": "jnmvp.png", "Brisa7": "silhueta.png", "NEYawp": "silhueta.png", "MitoMvp": "silhueta.png",
     "BLACK02": "silhueta.png", "LC777": "silhueta.png", "GUIMERLQ": "silhueta.png", "PROZIN": "silhueta.png", "MitinX": "silhueta.png",
-    "Rigby245": "silhueta.png", "General!": "silhueta.png", "Raone7": "silhueta.png", "Yago": "silhueta.png", "mtsexy.": "silhueta.png",
+    "Rigby245": "silhueta.png", "General!": "silhueta.png", "Raone7": "silhueta.png", "Yago": "yago.png", "mtsexy.": "silhueta.png",
     "João7": "silhueta.png", "kauãxp": "silhueta.png", "GUS": "silhueta.png", "honeyzL": "silhueta.png",
     "Bahiaz7": "silhueta.png", "BIELGOD": "silhueta.png", "Rojão": "silhueta.png", "ZETSU9": "silhueta.png",
     "Yann7awp": "silhueta.png", "SOARES": "silhueta.png", "Redxzzz": "silhueta.png", "Theus": "silhueta.png", "wLiu": "silhueta.png",
@@ -627,6 +1027,9 @@ const logos = {
     'ANGELS OUTPLAY': 'Outplay.png', 'RISE GAMING': 'Rise 1.png', 'RUSH GAMING': 'Rush.png', 'TEAM SOLID': 'Team Solid 2.png',
     'VASCO ESPORTS': 'Vasco.png', 'VIRTUS PRO': 'Virtus Pro.png'
 };
+
+const allEditions = ["LBFF 1", "LBFF 3", "LBFF 4", "LBFF 5", "LBFF 6", "LBFF 7", "LBFF 8", "LBFF 9", "WB 2024 F1", "WB 2024 F2", "WB 2025 S1", "WB 2025 S2", "WB 2026 S1"];
+let selectedEditions = ["WB 2026 S1"];
 
 const shortNames = {
     'FLUXO W7M': 'FX', 'E1 SPORTS': 'E1', 'AXS FUSION': 'AXS', 'LOOPS': 'LPS',
@@ -1466,6 +1869,20 @@ const agenda = [
     { semana: "10", data: "24 de Maio", grupos: ["D", "A", "B"] }
 ];
 
+// Controle de visibilidade das tabelas históricas
+let isAllTimeExpanded = false;
+let isEditionExpanded = false;
+
+function toggleView(type) {
+    if (type === 'allTime') {
+        isAllTimeExpanded = !isAllTimeExpanded;
+        renderHistoricalRanking();
+    } else {
+        isEditionExpanded = !isEditionExpanded;
+        renderEditionRanking();
+    }
+}
+
 let selectedTeamDays = [];
 let selectedPlayerDays = [];
 let selectedTpDays = [];
@@ -1475,13 +1892,9 @@ let currentTeamNextMatch = null
 const TOTAL_DIAS = 10;
 
 window.onload = () => {
-    // PASSO 1: Calcula todos os totais automaticamente
     autoCalculateTotals(); 
-    
-    // PASSO 2: Ordena os times por pontos e define a Posição Geral
     db.teams.sort((a,b) => b.pontos - a.pontos).forEach((t, i) => t.posGeral = i + 1);
     
-    // PASSO 3: O resto das funções do site
     calculatePlayerRanks();
     buildDayFilters();
     populateSelects();
@@ -1493,9 +1906,15 @@ window.onload = () => {
     renderAllPlayers();
     renderIndividualRecords();
     renderMapData();
-    renderHistoricalRanking(); // <--- INCLUA AQUI
+    
+    // --> FUNÇÕES DA ABA HISTÓRICO <--
+    buildEditionFilters();
+    populateHistSelects();
+    renderEditionRanking();
+    renderHistCompare();
+    renderHistoricalRanking();
+    
     updateCountdown();
-
     setInterval(updateCountdown, 1000);
 };
 
@@ -1518,6 +1937,213 @@ function navigate(pageId) {
     if (window.innerWidth <= 768) {
         document.getElementById('nav-links').classList.remove('active');
     }
+}
+
+// 1. Constrói os botões de filtro de Edição
+function buildEditionFilters() {
+    let container = document.getElementById('edition-filters');
+    if(!container) return;
+    let html = '';
+    allEditions.forEach(ed => {
+        let isActive = selectedEditions.includes(ed);
+        html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleEdition('${ed}')">${ed}</div>`;
+    });
+    container.innerHTML = html;
+}
+
+function toggleEdition(ed) {
+    let idx = selectedEditions.indexOf(ed);
+    if (idx > -1) selectedEditions.splice(idx, 1);
+    else selectedEditions.push(ed);
+    buildEditionFilters();
+    renderEditionRanking();
+}
+
+// 2. Renderiza a tabela filtrada por Edição
+function renderEditionRanking() {
+    let tbody = document.querySelector('#table-edition-history tbody');
+    if(!tbody) return;
+
+    // Caso nenhuma edição esteja marcada nos filtros
+    if(selectedEditions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="color:#aaa; text-align:center; padding: 20px;">Selecione pelo menos uma edição acima para visualizar o ranking.</td></tr>';
+        return;
+    }
+
+    let results = [];
+    for (let playerName in lbffData) {
+        let pData = lbffData[playerName];
+        let totalK = 0;
+        let totalQ = 0;
+        let jogouAlguma = false;
+
+        selectedEditions.forEach(ed => {
+            // Edição Atual (WB 2026 S1): Puxa dados calculados do seu banco db.players
+            if(ed === "WB 2026 S1") {
+                let activeName = historicalAliases[playerName] || playerName;
+                let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+                if(activeP) {
+                    totalK += (activeP.abates || 0);
+                    totalQ += (activeP.quedas || 0);
+                    jogouAlguma = true;
+                }
+            } 
+            // Edições Históricas: Puxa do banco lbffData extraído do seu CSV
+            else if(pData[ed]) {
+                totalK += pData[ed].k;
+                totalQ += pData[ed].q;
+                jogouAlguma = true;
+            }
+        });
+
+        // Filtragem: Aparece apenas se disputou pelo menos uma das edições selecionadas
+        if (jogouAlguma && (totalK > 0 || totalQ > 0)) {
+            let activeName = historicalAliases[playerName] || playerName;
+            let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+            
+            // Jogador só é clicável se estiver jogando ATUALMENTE e não for "Ex-Jogador"
+            let isPlayingNow = activeP && !activeP.isEx;
+
+            results.push({
+                originalName: playerName,
+                activeName: activeName,
+                isPlaying: isPlayingNow,
+                equipe: isPlayingNow ? activeP.equipe : null,
+                k: totalK,
+                q: totalQ,
+                avg: totalQ > 0 ? (totalK / totalQ).toFixed(2) : "0.00"
+            });
+        }
+    }
+
+    // Ordenação do Ranking por Abates
+results.sort((a,b) => b.k - a.k);
+
+    // LÓGICA DE EXPANDIR/RECOLHER
+    let dataToShow = isEditionExpanded ? results : results.slice(0, 10);
+    
+    // Mostra o botão apenas se houver mais de 10 jogadores
+    let btn = document.getElementById('btn-hist-edition');
+    if (results.length > 10) {
+        btn.style.display = 'inline-block';
+        btn.innerText = isEditionExpanded ? 'Recolher' : 'Ver Mais';
+    } else {
+        btn.style.display = 'none';
+    }
+
+    tbody.innerHTML = dataToShow.map((p, i) => {
+        // Lógica de reticências para nomes longos no mobile
+        let nameDisplayShort = p.originalName.length > 7 ? p.originalName.substring(0, 6) + "..." : p.originalName;
+
+        // Nome clicável apenas para jogadores ativos na temporada
+        let nameHtml = p.isPlaying ? 
+            `<span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>
+             <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameDisplayShort}</span>` : 
+            `<span class="full-name-desktop" style="color:#aaa; cursor:not-allowed;">${p.originalName}</span>
+             <span class="short-name-mobile" style="color:#aaa; cursor:not-allowed;">${nameDisplayShort}</span>`;
+            
+        // Coluna Equipe (E): Mostra logo e sigla se ativo, senão sinaliza inatividade
+        let teamHtml = p.isPlaying ? 
+            `<div class="team-cell" style="justify-content:center;">
+                <img src="${logos[p.equipe]||''}" class="team-logo">
+                <span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span>
+             </div>` : 
+            `<span style="color:#666; font-size:0.85em; text-transform:uppercase;">🚫 Inativo</span>`;
+
+        return `<tr>
+            <td style="color:var(--accent); font-weight:bold;">${i+1}º</td>
+            <td style="text-align:left;">${nameHtml}</td>
+            <td>${teamHtml}</td>
+            <td style="color:#fff; font-weight:bold;">${p.k}</td>
+            <td>${p.q}</td>
+            <td style="color:#ffaa00; font-weight:bold;">${p.avg}</td>
+        </tr>`;
+    }).join('');
+}
+
+// Preenche os selects da aba Histórico
+function populateHistSelects() {
+    let p1 = document.getElementById('hist-comp-p1'), p2 = document.getElementById('hist-comp-p2');
+    
+    // 1. Preenche a lista de jogadores (Todos os que temos histórico)
+    let playersSet = Object.keys(lbffData).sort();
+    let playerOptions = playersSet.map(p => `<option value="${p}">${p}</option>`).join('');
+    p1.innerHTML = playerOptions;
+    p2.innerHTML = playerOptions;
+    
+    // 2. Define os eventos de mudança para filtrar as edições
+    p1.onchange = () => { updateEditionOptions('hist-comp-p1', 'hist-comp-ed1'); renderHistCompare(); };
+    p2.onchange = () => { updateEditionOptions('hist-comp-p2', 'hist-comp-ed2'); renderHistCompare(); };
+
+    // 3. Inicializa as edições pela primeira vez
+    updateEditionOptions('hist-comp-p1', 'hist-comp-ed1');
+    updateEditionOptions('hist-comp-p2', 'hist-comp-ed2');
+    
+    p2.selectedIndex = 1; // Seleciona o segundo jogador por padrão
+    updateEditionOptions('hist-comp-p2', 'hist-comp-ed2'); // Atualiza a lista do segundo
+}
+
+// A função do Comparador
+function renderHistCompare() {
+    let p1Name = document.getElementById('hist-comp-p1').value;
+    let p2Name = document.getElementById('hist-comp-p2').value;
+    let ed1 = document.getElementById('hist-comp-ed1').value;
+    let ed2 = document.getElementById('hist-comp-ed2').value;
+
+    const getData = (pName, ed) => {
+        if (ed === "WB 2026 S1") {
+            let activeName = historicalAliases[pName] || pName;
+            let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+            return { k: activeP ? activeP.abates||0 : 0, q: activeP ? activeP.quedas||0 : 0 };
+        }
+        return (lbffData[pName] && lbffData[pName][ed]) ? lbffData[pName][ed] : {k:0, q:0};
+    };
+
+    let d1 = getData(p1Name, ed1);
+    let d2 = getData(p2Name, ed2);
+    
+    let avg1 = d1.q > 0 ? (d1.k/d1.q).toFixed(2) : "0.00";
+    let avg2 = d2.q > 0 ? (d2.k/d2.q).toFixed(2) : "0.00";
+
+    const buildRow = (label, v1, v2) => `
+        <div class="stat-row">
+            <div class="stat-val ${parseFloat(v1)>parseFloat(v2)?'winner':(parseFloat(v1)<parseFloat(v2)?'loser':'')}">${v1}</div>
+            <div class="stat-label">${label}</div>
+            <div class="stat-val ${parseFloat(v2)>parseFloat(v1)?'winner':(parseFloat(v2)<parseFloat(v1)?'loser':'')}">${v2}</div>
+        </div>`;
+
+    document.getElementById('hist-compare-result').innerHTML = `
+        <div class="compare-box">
+            <h2 style="color:#66b3ff; margin-bottom:5px;">${p1Name}</h2>
+            <div style="color:var(--accent); font-weight:bold; font-size:0.9em; text-transform:uppercase;">${ed1}</div>
+        </div>
+        <div class="compare-box">
+            <h2 style="color:#ff6666; margin-bottom:5px;">${p2Name}</h2>
+            <div style="color:var(--accent); font-weight:bold; font-size:0.9em; text-transform:uppercase;">${ed2}</div>
+        </div>
+        <div style="grid-column: 1/-1; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
+            ${buildRow('Abates (Kills)', d1.k, d2.k)}
+            ${buildRow('Quedas Jogadas', d1.q, d2.q)}
+            ${buildRow('Média K/D', avg1, avg2)}
+        </div>`;
+}
+
+function updateEditionOptions(pSelectId, edSelectId) {
+    let playerName = document.getElementById(pSelectId).value;
+    let edSelect = document.getElementById(edSelectId);
+    
+    // Pega as edições que o jogador tem no lbffData (histórico)
+    let availableEds = lbffData[playerName] ? Object.keys(lbffData[playerName]) : [];
+    
+    // Verifica se o jogador está jogando a WB 2026 S1 atual
+    let activeName = historicalAliases[playerName] || playerName;
+    let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+    if (activeP && !availableEds.includes("WB 2026 S1")) {
+        availableEds.push("WB 2026 S1");
+    }
+
+    // Reconstruir o select apenas com as edições que ele realmente jogou
+    edSelect.innerHTML = availableEds.map(ed => `<option value="${ed}">${ed}</option>`).join('');
 }
 
 function renderHistoricalRanking() {
@@ -1546,10 +2172,13 @@ function renderHistoricalRanking() {
     });
 
     // 2. Reordena pelo novo número de kills
-    currentRankData.sort((a, b) => b.totalKills - a.totalKills);
+currentRankData.sort((a, b) => b.totalKills - a.totalKills);
 
-    // 3. Monta o HTML com a variação de posição
-    tbody.innerHTML = currentRankData.map((p, i) => {
+    // LÓGICA DE EXPANDIR/RECOLHER
+    let dataToShow = isAllTimeExpanded ? currentRankData : currentRankData.slice(0, 10);
+    document.getElementById('btn-hist-all').innerText = isAllTimeExpanded ? 'Recolher' : 'Ver Mais';
+
+    tbody.innerHTML = dataToShow.map((p, i) => {
         let newPos = i + 1;
         let diff = p.oldPos - newPos;
         let shiftHtml = '';
