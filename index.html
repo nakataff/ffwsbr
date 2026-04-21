@@ -512,16 +512,20 @@
 
         <div class="table-container">
             <table id="table-history">
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">Pos ↕</th>
-                        <th style="text-align:left;">Jogador</th>
-                        <th>Equipe Atual</th>
-                        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
-                        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
-                        <th>Média</th>
-                    </tr>
-                </thead>
+<thead>
+    <tr>
+        <th style="width: 50px;">#</th>
+        <th style="text-align:left;">
+            <span class="full-name-desktop">Jogador</span><span class="short-name-mobile">J</span>
+        </th>
+        <th>
+            <span class="full-name-desktop">Equipe Atual</span><span class="short-name-mobile">E</span>
+        </th>
+        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
+        <th>Média</th>
+    </tr>
+</thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -540,15 +544,19 @@
         <div class="table-container">
             <table id="table-edition-history">
                 <thead>
-                    <tr>
-                        <th style="width: 60px;">Pos</th>
-                        <th style="text-align:left;">Jogador</th>
-                        <th>Equipe</th>
-                        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
-                        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
-                        <th>Média</th>
-                    </tr>
-                </thead>
+    <tr>
+        <th style="width: 50px;">#</th>
+        <th style="text-align:left;">
+            <span class="full-name-desktop">Jogador</span><span class="short-name-mobile">J</span>
+        </th>
+        <th>
+            <span class="full-name-desktop">Equipe</span><span class="short-name-mobile">E</span>
+        </th>
+        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
+        <th>Média</th>
+    </tr>
+</thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -1073,11 +1081,11 @@ const shortNames = {
 
 // Dicionário para "traduzir" o nome da Liquipedia para o nosso Banco
 const historicalAliases = {
-    "Lost": "Lost21", "NandoX": "Naandox", "But": "BuTziN", "General": "General!",
+    "Lost": "Lost21", "MitoMvp": "MITOmvp", "NandoX": "Naandox", "But": "BuTziN", "General": "General!",
     "VITINxp": "vitinxp", "PÃO7": "Pão7", "DRAXX7": "Draxx7", "Stark7": "Stark", "GIUH.87": "Giuh",
     "Motovea7": "Motovea", "Nickz7": "NICKZ", "HONEY": "honeyzL", "Cauã": "Cauã9", "PETERxl": "PETER",
     "o Mala": "Mala", "Zetsu9": "ZETSU9", "iguiNmvp": "IguiNmvp", "KakaZk": "KaKaZk", "Prozin10": "PROZIN",
-    "Hak": "HAK", "Erick11": "Erick11", "MitoMvp": "MITOmvp"
+    "Hak": "HAK", "Erick11": "Erick11"
 };
 
 // Top 100 Histórico (Extraído da Liquipedia)
@@ -1995,93 +2003,52 @@ function toggleEdition(ed) {
 // 2. Renderiza a tabela filtrada por Edição
 function renderEditionRanking() {
     let tbody = document.querySelector('#table-edition-history tbody');
-    if(!tbody) return;
-
-    // Caso nenhuma edição esteja marcada nos filtros
-    if(selectedEditions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="color:#aaa; text-align:center; padding: 20px;">Selecione pelo menos uma edição acima para visualizar o ranking.</td></tr>';
+    if(!tbody || selectedEditions.length === 0) {
+        if(tbody) tbody.innerHTML = '<tr><td colspan="6" style="color:#aaa; padding:20px;">Selecione uma edição.</td></tr>';
         return;
     }
 
     let results = [];
     for (let playerName in lbffData) {
         let pData = lbffData[playerName];
-        let totalK = 0;
-        let totalQ = 0;
-        let jogouAlguma = false;
+        let totalK = 0, totalQ = 0, jogou = false;
 
         selectedEditions.forEach(ed => {
-            // Edição Atual (WB 2026 S1): Puxa dados calculados do seu banco db.players
             if(ed === "WB 2026 S1") {
                 let activeName = historicalAliases[playerName] || playerName;
                 let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
-                if(activeP) {
-                    totalK += (activeP.abates || 0);
-                    totalQ += (activeP.quedas || 0);
-                    jogouAlguma = true;
-                }
-            } 
-            // Edições Históricas: Puxa do banco lbffData extraído do seu CSV
-            else if(pData[ed]) {
-                totalK += pData[ed].k;
-                totalQ += pData[ed].q;
-                jogouAlguma = true;
-            }
+                if(activeP) { totalK += activeP.abates || 0; totalQ += activeP.quedas || 0; jogou = true; }
+            } else if(pData[ed]) { totalK += pData[ed].k; totalQ += pData[ed].q; jogou = true; }
         });
 
-        // Filtragem: Aparece apenas se disputou pelo menos uma das edições selecionadas
-        if (jogouAlguma && (totalK > 0 || totalQ > 0)) {
+        if (jogou && (totalK > 0 || totalQ > 0)) {
             let activeName = historicalAliases[playerName] || playerName;
             let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
-            
-            // Jogador só é clicável se estiver jogando ATUALMENTE e não for "Ex-Jogador"
-            let isPlayingNow = activeP && !activeP.isEx;
-
             results.push({
-                originalName: playerName,
-                activeName: activeName,
-                isPlaying: isPlayingNow,
-                equipe: isPlayingNow ? activeP.equipe : null,
-                k: totalK,
-                q: totalQ,
-                avg: totalQ > 0 ? (totalK / totalQ).toFixed(2) : "0.00"
+                originalName: playerName, activeName: activeName,
+                isPlaying: activeP && !activeP.isEx,
+                equipe: (activeP && !activeP.isEx) ? activeP.equipe : null,
+                k: totalK, q: totalQ, avg: totalQ > 0 ? (totalK/totalQ).toFixed(2) : "0.00"
             });
         }
     }
 
-    // Ordenação do Ranking por Abates
-results.sort((a,b) => b.k - a.k);
-
-    // LÓGICA DE EXPANDIR/RECOLHER
+    results.sort((a,b) => b.k - a.k);
     let dataToShow = isEditionExpanded ? results : results.slice(0, 10);
-    
-    // Mostra o botão apenas se houver mais de 10 jogadores
     let btn = document.getElementById('btn-hist-edition');
-    if (results.length > 10) {
-        btn.style.display = 'inline-block';
-        btn.innerText = isEditionExpanded ? 'Recolher' : 'Ver Mais';
-    } else {
-        btn.style.display = 'none';
-    }
+    if(btn) { btn.style.display = results.length > 10 ? 'inline-block' : 'none'; btn.innerText = isEditionExpanded ? 'Recolher' : 'Ver Mais'; }
 
     tbody.innerHTML = dataToShow.map((p, i) => {
-        // Lógica de reticências para nomes longos no mobile
-        let nameDisplayShort = p.originalName.length > 7 ? p.originalName.substring(0, 6) + "..." : p.originalName;
-
-        // Nome clicável apenas para jogadores ativos na temporada
+        let nameShort = p.originalName.length > 7 ? p.originalName.substring(0, 6) + "..." : p.originalName;
         let nameHtml = p.isPlaying ? 
             `<span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>
-             <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameDisplayShort}</span>` : 
-            `<span class="full-name-desktop" style="color:#aaa; cursor:not-allowed;">${p.originalName}</span>
-             <span class="short-name-mobile" style="color:#aaa; cursor:not-allowed;">${nameDisplayShort}</span>`;
+             <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameShort}</span>` : 
+            `<span class="full-name-desktop" style="color:#aaa;">${p.originalName}</span>
+             <span class="short-name-mobile" style="color:#aaa;">${nameShort}</span>`;
             
-        // Coluna Equipe (E): Mostra logo e sigla se ativo, senão sinaliza inatividade
         let teamHtml = p.isPlaying ? 
-            `<div class="team-cell" style="justify-content:center;">
-                <img src="${logos[p.equipe]||''}" class="team-logo">
-                <span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span>
-             </div>` : 
-            `<span style="color:#666; font-size:0.85em; text-transform:uppercase;">🚫 Inativo</span>`;
+            `<div class="team-cell" style="justify-content:center;"><img src="${logos[p.equipe]||''}" class="team-logo"><span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span></div>` : 
+            `<span>🚫</span>`;
 
         return `<tr>
             <td style="color:var(--accent); font-weight:bold;">${i+1}º</td>
@@ -2089,7 +2056,7 @@ results.sort((a,b) => b.k - a.k);
             <td>${teamHtml}</td>
             <td style="color:#fff; font-weight:bold;">${p.k}</td>
             <td>${p.q}</td>
-            <td style="color:#ffaa00; font-weight:bold;">${p.avg}</td>
+            <td style="color:#ffaa00;">${p.avg}</td>
         </tr>`;
     }).join('');
 }
@@ -2181,64 +2148,51 @@ function updateEditionOptions(pSelectId, edSelectId) {
 
 function renderHistoricalRanking() {
     let tbody = document.querySelector('#table-history tbody');
-    
-    // 1. Clona e soma as estatísticas atuais
+    if(!tbody) return;
+
     let currentRankData = histData.map((p, index) => {
         let activeName = historicalAliases[p.n] || p.n;
-        
-        // Procura no nosso banco se o cara está jogando
         let activePlayer = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
-        let isPlaying = activePlayer && !activePlayer.isEx; // Checa se tá ativo na WB
-        
-        let currentKills = activePlayer ? (activePlayer.abates || 0) : 0;
-        let currentQuedas = activePlayer ? (activePlayer.quedas || 0) : 0;
-        
+        let isPlaying = activePlayer && !activePlayer.isEx;
         return {
             oldPos: index + 1,
             originalName: p.n,
             activeName: activeName,
             isPlaying: isPlaying,
             equipe: isPlaying ? activePlayer.equipe : null,
-            totalKills: p.k + currentKills,
-            totalQuedas: p.q + currentQuedas
+            totalKills: p.k + (activePlayer ? activePlayer.abates || 0 : 0),
+            totalQuedas: p.q + (activePlayer ? activePlayer.quedas || 0 : 0)
         };
     });
 
-    // 2. Reordena pelo novo número de kills
-currentRankData.sort((a, b) => b.totalKills - a.totalKills);
+    currentRankData.sort((a, b) => b.totalKills - a.totalKills);
 
-    // LÓGICA DE EXPANDIR/RECOLHER
     let dataToShow = isAllTimeExpanded ? currentRankData : currentRankData.slice(0, 10);
     document.getElementById('btn-hist-all').innerText = isAllTimeExpanded ? 'Recolher' : 'Ver Mais';
 
     tbody.innerHTML = dataToShow.map((p, i) => {
         let newPos = i + 1;
         let diff = p.oldPos - newPos;
-        let shiftHtml = '';
-        
-        if (diff > 0) shiftHtml = `<span style="color:#4caf50; font-size:0.8em; font-weight:bold;">▲ ${diff}</span>`;
-        else if (diff < 0) shiftHtml = `<span style="color:#f44336; font-size:0.8em; font-weight:bold;">▼ ${Math.abs(diff)}</span>`;
-        else shiftHtml = `<span style="color:#888; font-size:0.8em; font-weight:bold;">-</span>`;
+        let shiftHtml = diff > 0 ? `<span style="color:#4caf50; font-size:0.8em;">▲${diff}</span>` : (diff < 0 ? `<span style="color:#f44336; font-size:0.8em;">▼${Math.abs(diff)}</span>` : `<span style="color:#888; font-size:0.8em;">-</span>`);
 
-        let avg = (p.totalKills / (p.totalQuedas || 1)).toFixed(2);
-        
-        // Bloqueia o clique se estiver inativo
+        let nameShort = p.originalName.length > 7 ? p.originalName.substring(0, 6) + "..." : p.originalName;
         let nameHtml = p.isPlaying ? 
-            `<span class="clickable" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>` : 
-            `<span style="color:#aaa; cursor:not-allowed;" title="Inativo/Sem Equipe">${p.originalName}</span>`;
+            `<span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>
+             <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameShort}</span>` : 
+            `<span class="full-name-desktop" style="color:#aaa;">${p.originalName}</span>
+             <span class="short-name-mobile" style="color:#aaa;">${nameShort}</span>`;
             
-        // Renderiza o time atual ou "Free Agent"
         let teamHtml = p.isPlaying ? 
             `<div class="team-cell" style="justify-content:center;"><img src="${logos[p.equipe]||''}" class="team-logo"><span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span></div>` : 
-            `<span style="color:#666; font-size:0.85em; text-transform:uppercase;">🚫 Sem Equipe</span>`;
+            `<span>🚫</span>`;
 
         return `<tr>
-            <td><div style="font-size:1.1em; color:var(--accent); font-weight:bold;">${newPos}º</div>${shiftHtml}</td>
+            <td><div style="font-weight:bold; color:var(--accent);">${newPos}º</div>${shiftHtml}</td>
             <td style="text-align:left;">${nameHtml}</td>
             <td>${teamHtml}</td>
-            <td style="color:#fff; font-weight:bold; font-size: 1.1em;">${p.totalKills}</td>
+            <td style="color:#fff; font-weight:bold;">${p.totalKills}</td>
             <td>${p.totalQuedas}</td>
-            <td style="color:#ffaa00; font-weight:bold;">${avg}</td>
+            <td style="color:#ffaa00;">${(p.totalKills / (p.totalQuedas || 1)).toFixed(2)}</td>
         </tr>`;
     }).join('');
 }
