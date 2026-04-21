@@ -430,18 +430,20 @@
         </div>
 </div>
     <!-- PAGE: PLAYER PROFILE -->
-    <div id="player-profile" class="page">
+<div id="player-profile" class="page">
         <button class="btn-back" onclick="navigate('players')">← Voltar</button>
-        <div class="player-profile-header">
+        
+        <div class="player-profile-header" style="align-items: flex-start;">
             <div>
-                <h1 id="pp-name" style="margin: 0; font-size: 2.5em;">NOME DO JOGADOR</h1>
-                <h3 id="pp-team" style="color: #66b3ff; margin-top: 5px; cursor: pointer; display: inline-block;">Equipe X</h3>
+                <h1 id="pp-name" style="margin: 0; font-size: 2.5em; text-transform: uppercase;">NOME DO JOGADOR</h1>
+                <h3 id="pp-team" style="color: #66b3ff; margin-top: 5px; margin-bottom: 15px; cursor: pointer; display: inline-block;">Equipe X</h3>
+                
+                <div id="pp-insta-container"></div>
             </div>
             <div style="text-align: right;">
                 <div style="font-size: 1.2em; color: var(--text-muted);">Quedas Jogadas: <strong id="pp-quedas" style="color:#fff;">0</strong></div>
             </div>
         </div>
-
  <h2 id="pp-name" style="color:#66b3ff"></h2>
 <p id="pp-team" class="clickable" onclick="..." style="color:#aaa"></p>
 
@@ -782,7 +784,7 @@ const dbStaff = [
 
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
 const dbSocials = {
-    "Bops": "fluxo_bops", "MT7": "mt7ff", "LUUUKING": "luuuking", "General!": "general.ff"
+    "Bops": "bopsff", "MT7": "fluxo_mt7ffx", "LUUUKING": "luuuking_", "General!": "generaalxx", "Yago": "yagoexe_"
     // Adicione os outros nomes conforme necessário
 };
 
@@ -2378,16 +2380,10 @@ function createPlayerCardHTML(p, scale = 1) {
     let exBadge = p.isEx ? `<div style="position: absolute; top: 18px; left: -35px; background: #f44336; color: #fff; font-size: 0.7em; font-weight: bold; padding: 5px 35px; transform: rotate(-45deg); z-index: 10; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">Inativo</div>` : '';
     let marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
 
-    // Link do Instagram
-    let instaLink = dbSocials[p.jogador] ? `
-        <a href="https://instagram.com/${dbSocials[p.jogador]}" target="_blank" onclick="event.stopPropagation();" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
-            <img src="instagram.png" style="width: 22px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
-        </a>` : '';
-
     return `
-        <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
+<div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
             <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
-            ${instaLink} ${exBadge} ${captainBadge}
+            ${exBadge} ${captainBadge}
             <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
                 <div style="font-size: 58px; font-weight: 900; line-height: 0.8;">${ovr}</div>
                 <div style="font-size: 22px; font-weight: bold; margin-top: 5px;">${role}</div>
@@ -3180,74 +3176,59 @@ function openPlayerProfile(playerName) {
     let p = db.players.find(x => x.jogador === playerName);
     if (!p) return;
 
-    // --- 1. PREENCHIMENTO DAS ESTATÍSTICAS (MANTIDO ORIGINAL) ---
+    // Preenchimento das estatísticas básicas
     document.getElementById('pp-name').innerText = p.jogador;
     document.getElementById('pp-team').innerText = p.equipe;
     document.getElementById('pp-team').onclick = () => openTeamProfile(p.equipe);
-    document.getElementById('pp-quedas').innerText = p.quedas;
-    document.getElementById('pp-tot-kills').innerText = p.abates;
-    document.getElementById('pp-avg-kills').innerText = (p.abates / (p.quedas || 1)).toFixed(2);
-    document.getElementById('pp-rank-kills').innerText = `#${p.rankKills}`;
+    document.getElementById('pp-quedas').innerText = p.quedas || 0;
+    document.getElementById('pp-tot-kills').innerText = p.abates || 0;
+    document.getElementById('pp-avg-kills').innerText = ((p.abates || 0) / (p.quedas || 1)).toFixed(2);
+    document.getElementById('pp-rank-kills').innerText = `#${p.rankKills || 0}`;
     
     let recorde = p.recorde || 0;
     let rankRecorde = [...db.players].sort((a,b) => (b.recorde||0) - (a.recorde||0)).findIndex(x => x.jogador === p.jogador) + 1;
     document.getElementById('pp-record').innerText = recorde;
     document.getElementById('pp-rank-record').innerText = `#${rankRecorde}`;
     
-    document.getElementById('pp-tot-dmg').innerText = p.dano;
-    document.getElementById('pp-avg-dmg').innerText = (p.dano / (p.quedas || 1)).toFixed(2);
-    document.getElementById('pp-rank-dmg').innerText = `#${p.rankDmg}`;
+    document.getElementById('pp-tot-dmg').innerText = p.dano || 0;
+    document.getElementById('pp-avg-dmg').innerText = ((p.dano || 0) / (p.quedas || 1)).toFixed(2);
+    document.getElementById('pp-rank-dmg').innerText = `#${p.rankDmg || 0}`;
     
-    document.getElementById('pp-tot-assists').innerText = p.assists;
-    document.getElementById('pp-avg-assists').innerText = (p.assists / (p.quedas || 1)).toFixed(2);
-    document.getElementById('pp-rank-assists').innerText = `#${p.rankAssists}`;
+    document.getElementById('pp-tot-assists').innerText = p.assists || 0;
+    document.getElementById('pp-avg-assists').innerText = ((p.assists || 0) / (p.quedas || 1)).toFixed(2);
+    document.getElementById('pp-rank-assists').innerText = `#${p.rankAssists || 0}`;
     
-    document.getElementById('pp-tot-mvps').innerText = p.mvp;
-    document.getElementById('pp-rank-mvps').innerText = `#${p.rankMvp}`;
+    document.getElementById('pp-tot-mvps').innerText = p.mvp || 0;
+    document.getElementById('pp-rank-mvps').innerText = `#${p.rankMvp || 0}`;
 
-    // --- 2. PREPARAÇÃO DOS DADOS DA CARTINHA ---
+    // Limpa o container do cabeçalho (caso tenha sobrado algo da versão anterior)
+    let oldInstaContainer = document.getElementById('pp-insta-container');
+    if(oldInstaContainer) oldInstaContainer.innerHTML = '';
+
+    // --- PREPARAÇÃO DO BOTÃO DO INSTAGRAM ---
+    let insta = dbSocials[p.jogador];
+    let instaButtonHtml = insta ? `
+        <div style="margin-top: 15px;">
+            <a href="https://instagram.com/${insta}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 10px 20px; border-radius: 30px; width: fit-content; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                <img src="instagram.png" style="width: 18px; filter: brightness(0) invert(1);">
+                <span style="color: #fff; font-weight: bold; font-size: 0.9em;">@${insta}</span>
+            </a>
+        </div>` : '';
+
+    // Prepara dados e renderiza a Cartinha com o Instagram embaixo da especialidade
     let ovr = calculateOverall(p);
     let role = playerRoles[p.jogador] || "RUSH";
-    let photo = playerPhotos[p.jogador] || "silhueta.png";
-    let teamLogo = logos[p.equipe] || "";
-    let danoK = (p.dano / 1000).toFixed(0) + "K";
-    
-    // Lógica da Braçadeira de Capitão
-    let captainBadge = (typeof playerCaptains !== 'undefined' && playerCaptains[p.jogador]) ? 
-        `<img src="cpt.png" style="position: absolute; top: 40px; right: 25px; z-index: 5; width: 45px; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));">` : '';
-
-    // --- LÓGICA DE CORES DO ENTORNO (RARIDADE) ---
-    let accentColor = "#cd7f32"; // Bronze (Padrão)
+    let accentColor = "#cd7f32"; 
     let stars = "⭐";
     let category = "SÉRIE A";
 
-    if (ovr >= 91) { 
-        accentColor = "#d4af37"; // Gold Premium
-        stars = "⭐⭐⭐⭐⭐"; 
-        category = "LENDÁRIO"; 
-    }
-    else if (ovr >= 86) { 
-        accentColor = "#c5a028"; // Gold Elite
-        stars = "⭐⭐⭐⭐"; 
-        category = "ELITE"; 
-    }
-    else if (ovr >= 81) { 
-        accentColor = "#e5e5e5"; // Prata/Platina
-        stars = "⭐⭐⭐"; 
-        category = "MUITO BOM"; 
-    }
-    else if (ovr >= 75) { 
-        accentColor = "#a3a3a3"; // Prata Fosco
-        stars = "⭐⭐"; 
-        category = "PROFISSIONAL"; 
-    }
+    if (ovr >= 91) { accentColor = "#d4af37"; stars = "⭐⭐⭐⭐⭐"; category = "LENDÁRIO"; }
+    else if (ovr >= 86) { accentColor = "#c5a028"; stars = "⭐⭐⭐⭐"; category = "ELITE"; }
+    else if (ovr >= 81) { accentColor = "#e5e5e5"; stars = "⭐⭐⭐"; category = "MUITO BOM"; }
+    else if (ovr >= 75) { accentColor = "#a3a3a3"; stars = "⭐⭐"; category = "PROFISSIONAL"; }
 
-    let glow = ovr >= 91 ? `box-shadow: 0 0 40px ${accentColor}66;` : '';
-
-    // --- 3. RENDERIZAÇÃO DO HTML DA CARTINHA ---
     let cardContainer = document.getElementById('player-overall-card'); 
     if (cardContainer) {
-        // Envolve a carta num container flex para alinhar igual estava antes
         cardContainer.innerHTML = `<div style="display: flex; gap: 30px; align-items: center; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; flex-wrap: wrap; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05); justify-content: center;">
             ${createPlayerCardHTML(p, 1)}
             <div style="flex: 1; min-width: 280px;">
@@ -3255,7 +3236,11 @@ function openPlayerProfile(playerName) {
                 <div style="font-size: 2em; margin-bottom: 10px;">${stars}</div>
                 <div style="background: ${accentColor}22; color: ${accentColor}; border: 1px solid ${accentColor}44; padding: 12px 25px; font-weight: 900; display: inline-block; font-size: 1.3em; border-radius: 5px; text-transform: uppercase;">${category}</div>
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-                    <p style="color: #aaa; font-size: 0.95em; line-height: 1.6; margin: 0;">Performance calculada em tempo real.<br>Especialidade: <strong style="color:#fff">${playerRoles[p.jogador] || "RUSH"}</strong></p>
+                    <p style="color: #aaa; font-size: 0.95em; line-height: 1.6; margin: 0;">
+                        Performance calculada em tempo real.<br>
+                        Especialidade: <strong style="color:#fff">${role}</strong>
+                    </p>
+                    ${instaButtonHtml}
                 </div>
             </div>
         </div>`;
