@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PYDZJXJMZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-PYDZJXJMZZ');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FFWS Brasil 2026 - Central Completa</title>
@@ -3912,14 +3921,15 @@ function getDisplayName(name) {
     return cleanName;
 }
 
-
-
 function renderHistoricoEquipes(nome, containerId) {
     let container = document.getElementById(containerId);
     if (!container) return;
 
-    let cleanName = getDisplayName(nome);
-    let hist = typeof dbPassagens !== 'undefined' ? dbPassagens.find(p => p.jogador.toLowerCase() === cleanName.toLowerCase()) : null;
+    // Pega o nome e deixa minúsculo de uma vez só para ficar rápido
+    let cleanName = typeof getDisplayName === 'function' ? getDisplayName(nome) : nome;
+    let targetLower = cleanName.toLowerCase();
+    
+    let hist = typeof dbPassagens !== 'undefined' ? dbPassagens.find(p => p.jogador.toLowerCase() === targetLower) : null;
 
     if (!hist || !hist.passagens || hist.passagens.length === 0) {
         container.innerHTML = '<div style="color:#888; font-size:0.9em; text-align:center; width:100%; font-weight:bold;">Nenhum histórico de equipes registrado no banco de dados.</div>';
@@ -3928,8 +3938,9 @@ function renderHistoricoEquipes(nome, containerId) {
 
     container.innerHTML = hist.passagens.map(passagem => {
         let logoSrc = logos[passagem.equipe] || 'escudo.webp';
+        let equipeUpper = passagem.equipe.toUpperCase();
         
-        let isClickable = db.teams.some(t => t.equipe.toUpperCase() === passagem.equipe.toUpperCase());
+        let isClickable = db.teams.some(t => t.equipe.toUpperCase() === equipeUpper);
         
         let cursorStyle = isClickable ? 'cursor: pointer; transition: 0.2s;' : 'cursor: default; opacity: 0.6; filter: grayscale(0.5);';
         let hoverStyle = isClickable ? 'onmouseover="this.style.borderColor=\'var(--accent)\'; this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.borderColor=\'var(--border)\'; this.style.transform=\'none\'"' : '';
@@ -4147,15 +4158,34 @@ function renderUnifiedTrophies(name, containerId) {
     let container = document.getElementById(containerId);
     if(!container) return;
 
-    let indTitles = titlesData.individuais.filter(t => checkNameMatch(t.player, name));
-    let colAsPlayer = titlesData.coletivos.filter(t => t.players && t.players.some(pl => checkNameMatch(pl, name)));
-    let colAsStaff = titlesData.coletivos.filter(t => t.staff && t.staff.some(st => checkNameMatch(st, name)));
+    // --- OTIMIZAÇÃO MÁXIMA (FIM DOS TRAVAMENTOS) ---
+    // Resolvemos os nomes e apelidos do jogador UMA ÚNICA VEZ
+    let targetNameLower = name.toLowerCase();
+    let validNames = new Set([targetNameLower]);
+    
+    if (typeof historicalAliases !== 'undefined') {
+        if (historicalAliases[name]) validNames.add(historicalAliases[name].toLowerCase());
+        for (let key in historicalAliases) {
+            if (historicalAliases[key].toLowerCase() === targetNameLower) validNames.add(key.toLowerCase());
+        }
+    }
+
+    // Nova função relâmpago: só checa se o nome existe dentro da lista que acabamos de gerar
+    const fastCheck = (n) => n && validNames.has(n.toLowerCase());
+    // ------------------------------------------------
+
+    // Agora os filtros rodam instantaneamente usando o fastCheck
+    let indTitles = titlesData.individuais.filter(t => fastCheck(t.player));
+    let colAsPlayer = titlesData.coletivos.filter(t => t.players && t.players.some(fastCheck));
+    let colAsStaff = titlesData.coletivos.filter(t => t.staff && t.staff.some(fastCheck));
 
     let allTitles = [...indTitles, ...colAsPlayer, ...colAsStaff];
     
     if(containerId === 'pp-trophies-container') {
-        document.getElementById('pp-hist-col').innerText = colAsPlayer.length + colAsStaff.length;
-        document.getElementById('pp-hist-ind').innerText = indTitles.length;
+        let elCol = document.getElementById('pp-hist-col');
+        let elInd = document.getElementById('pp-hist-ind');
+        if(elCol) elCol.innerText = colAsPlayer.length + colAsStaff.length;
+        if(elInd) elInd.innerText = indTitles.length;
     }
 
     if (allTitles.length === 0) {
@@ -4164,31 +4194,34 @@ function renderUnifiedTrophies(name, containerId) {
     }
 
     container.innerHTML = allTitles.map(t => {
-       if (t.event.includes("WB")) {
+        let tournamentImg = "lbff.webp"; // Variável protegida!
+        
+        if (t.event.includes("WB")) {
             tournamentImg = "wb.webp";
         } else if (t.event.includes("C.O.P.A")) {
-            // Se for C.O.P.A, verifica o ano e puxa a logo específica
             if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
             else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
             else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
             else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
             else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
             else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
-            else tournamentImg = "copaff.webp"; // Fallback caso não ache o ano
+            else tournamentImg = "copaff.webp";
         }
+        
         let typeUpper = t.type.toUpperCase();
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
         let roleTag = "";
-        if (t.staff && t.staff.some(st => checkNameMatch(st, name))) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
-        else if (t.players && t.players.some(pl => checkNameMatch(pl, name))) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
+        // Verifica qual foi a função dele no título usando o fastCheck
+        if (t.staff && t.staff.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
+        else if (t.players && t.players.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
 
         return `<div class="trophy-card ${borderClass}">
             <img src="${tournamentImg}" class="trophy-img">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
             ${roleTag}
-<div class="trophy-team">
+            <div class="trophy-team">
                 <img src="${logos[t.team] || 'escudo.webp'}" style="width: 14px; height: 14px; object-fit: contain;"> 
                 ${t.team}
             </div>
