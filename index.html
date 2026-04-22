@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central Free Fire - FFWS BR</title>
-<link rel="icon" type="image/webp" href="freefire.webp">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFWS Brasil 2026 - Central Completa</title>
 <style>
     :root {
         --bg-color: #0f0f11; --panel-bg: #1c1c20; --panel-hover: #26262b;
@@ -74,6 +73,14 @@
         grid-column: span 1 !important;
     }
 }
+
+/* --- CORES DOS TIERS DOS RESULTADOS --- */
+.tier-s { color: #ffd700 !important; font-weight: 900; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); }
+.tier-a { color: #ff4444 !important; font-weight: bold; }
+.tier-b { color: #33ccff !important; font-weight: bold; }
+.tier-c { color: #4caf50 !important; font-weight: bold; }
+.tier-d { color: #aaaaaa !important; font-weight: bold; }
+.row-tier-s { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%); border-left: 3px solid #ffd700; }
     
 /* --- BARRA DE PESQUISA GLOBAL (CORRIGIDA) --- */
     .search-wrapper {
@@ -432,6 +439,7 @@
         <button onclick="navigate('compare')" id="nav-compare">Comparar 1v1</button>
         <button onclick="navigate('schedule')" id="nav-schedule">Datas</button>
         <button onclick="navigate('history')" id="nav-history">Hall da Fama</button>
+       <button onclick="window.location.href='emulador.html'" id="nav-emulador">Emulador</button>
     </div>
 </nav>
 
@@ -480,7 +488,7 @@
             <thead>
                 <tr>
                     <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
-                    <th style="text-align:center;" onclick="sortTable('table-teams-full', 1, false)">E ↕</th> 
+                    <th style="text-align:center;" onclick="sortTable('table-teams-full', 1, true)">E ↕</th> 
                     <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>
                     <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
                     <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">B ↕</th>
@@ -559,6 +567,9 @@
         <div style="width: 100%; max-width: 300px; background: var(--panel-bg); border: 1px solid var(--border); padding: 10px; border-radius: 8px;">
             <div style="font-size: 1.1em; color: var(--text-muted);">Posição Geral: <strong id="tp-pos" style="color:#ffaa00; font-size: 1.4em;">0º</strong></div>
         </div>
+        <button class="btn-action" onclick="openResultsModal()" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: transparent; border: 1px solid #ffd700; color: #ffd700; width: 100%; max-width: 300px; padding: 12px; border-radius: 8px;">
+    🏆 Ver Todos os Resultados
+</button>
         <div id="tp-next-match-container" style="width: 100%;"></div>
     </div>
 
@@ -992,24 +1003,52 @@
 </div>
 
 <!-- Modal para Ranking de Confronto -->
-<div class="modal-overlay" id="confrontation-modal" onclick="closeModal(event)">
-    <div class="modal-content">
+<div class="modal-overlay" id="results-modal" onclick="closeModal(event)">
+    <div class="modal-content" style="max-width: 900px;">
         <div class="modal-header">
-            <h2 id="modal-title">Ranking do Confronto</h2>
-            <button class="close-btn" onclick="document.getElementById('confrontation-modal').classList.remove('active')">&times;</button>
+            <h2 id="results-modal-title" style="color: #ffd700;">Todos os Resultados</h2>
+            <button class="close-btn" onclick="document.getElementById('results-modal').classList.remove('active')">&times;</button>
         </div>
-        <p style="color:#aaa; margin-top:-10px; margin-bottom: 20px;" id="modal-subtitle"></p>
-        <div class="table-container" style="margin-bottom:0;">
-            <table id="table-modal-ranking">
-                <thead>
+        
+<div class="filters" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <label style="color: var(--text-muted); font-weight: bold;">Ano:</label>
+            <select id="filter-results-year" onchange="renderTeamResults()" style="max-width: 100px;">
+                <option value="all">Todos</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+            </select>
+
+            <label style="color: var(--text-muted); font-weight: bold; margin-left: 10px;">Tier:</label>
+            <select id="filter-results-tier" onchange="renderTeamResults()" style="flex: 1; max-width: 150px;">
+                <option value="all">Todos</option>
+                <option value="S-Tier">S-Tier</option>
+                <option value="A-Tier">A-Tier</option>
+                <option value="B-Tier">B-Tier</option>
+                <option value="C-Tier">C-Tier</option>
+                <option value="D-Tier">D-Tier</option>
+                <option value="Showmatch">Showmatch</option>
+                <option value="Weekly">Weekly</option>
+            </select>
+
+            <div id="results-stats" style="margin-left: auto; display: flex; gap: 15px; font-size: 1.2em; background: rgba(0,0,0,0.3); padding: 6px 15px; border-radius: 8px; border: 1px solid var(--border);">
+                <div title="Títulos (1º Lugar)">🥇 <span id="count-1st" style="color: #ffd700; font-weight: 900; text-shadow: 0 0 8px rgba(255,215,0,0.5);">0</span></div>
+                <div title="Vices (2º Lugar)">🥈 <span id="count-2nd" style="color: #c0c0c0; font-weight: bold;">0</span></div>
+                <div title="3º Lugar">🥉 <span id="count-3rd" style="color: #cd7f32; font-weight: bold;">0</span></div>
+            </div>
+        </div>
+
+        <div class="table-container" style="max-height: 60vh; overflow-y: auto;">
+            <table id="table-team-results">
+                <thead style="position: sticky; top: 0; z-index: 10;">
                     <tr>
-                        <th>#</th>
-                        <th style="text-align:left;">Equipe</th>
-                        <th>Grupo</th>
-                        <th>Pontos</th>
-                        <th>Booyah</th>
-                        <th>Abates</th>
-                        <th>Quedas</th>
+                        <th onclick="sortTable('table-team-results', 0, false)">Data ↕</th>
+                        <th onclick="sortTable('table-team-results', 1, false)">Tier ↕</th>
+                        <th onclick="sortTable('table-team-results', 2, true)">Posição ↕</th>
+                        <th style="text-align: left;" onclick="sortTable('table-team-results', 3, false)">Campeonato ↕</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -1296,7 +1335,8 @@ const dbPassagens = [
   {jogador:"BUENO",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"STARS HORIZON",cargo:"Jogador"}]},
   {jogador:"Mandela",passagens:[{equipe:"TROPA",cargo:"Jogador"},{equipe:"MINERS",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
   {jogador:"GUAXA",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"RENAN",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
+  {jogador:"RENAN_Inativo",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
+  {jogador:"Renan_Staff",passagens:[{equipe:"B4 ESPORTS",cargo:"Analista"},{equipe:"MAGIC SQUAD",cargo:"Analista"},{equipe:"FLUXO W7M",cargo:"Analista"}]},
   {jogador:"LOIRORJ",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"}]},
   {jogador:"JUNINXL",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
   {jogador:"GTECOXC",passagens:[{equipe:"REALES",cargo:"Jogador"}]},
@@ -1329,7 +1369,7 @@ const dbPassagens = [
   {jogador:"R1",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
   {jogador:"MK7",passagens:[{equipe:"HUMMER ESPORTS",cargo:"Jogador"}]},
   {jogador:"MT7",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"Motovea7",passagens:[{equipe:"XIS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
+  {jogador:"Motovea",passagens:[{equipe:"XIS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
   {jogador:"Kozak",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
   {jogador:"CorumbaX",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"}]},
   {jogador:"Yato7",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
@@ -1461,9 +1501,9 @@ const staffPhotos = {
 
 const titlesData = {
     coletivos: [
-        { event: "WB 2025 S2", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan"] },
+        { event: "WB 2025 S2", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan_Staff"] },
         { event: "WB 2025 S1", type: "Campeão", team: "LOS", players: ["mtsexy.", "General!", "NANDO9", "Rigby245", "Raone7"], staff: ["LIPÃO", "Jaya"] },
-        { event: "WB 2024", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh"], staff: ["LUUUKING", "Renan"] },
+        { event: "WB 2024", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh"], staff: ["LUUUKING", "Renan_Staff"] },
         { event: "LBFF 9", type: "Campeão", team: "LOUD SNICKERS", players: ["Mexico", "Noda", "Lost21", "Cauan7", "Kroonos"], staff: ["Frois", "Frank"] },
         { event: "LBFF 8", type: "Campeão", team: "VIVO KEYD", players: ["MODESTIA", "General!", "DeadGOD", "NANDO9", "Ghost7"], staff: ["Wanheda"] },
         { event: "LBFF 7", type: "Campeão", team: "LOUD SNICKERS", players: ["Will", "Noda", "Lost21", "Cauan7", "Kroonos"], staff: ["Frois", "Frank"] },
@@ -1474,10 +1514,10 @@ const titlesData = {
         { event: "LBFF 1", type: "Campeão", team: "TEAM LIQUID", players: ["LUUUKING", "Raposo", "LukasTD", "JapaBKR", "PEU"], staff: ["Matheus Souto"] },
         { event: "C.O.P.A. FF 2020", type: "Campeão", team: "BLACK DRAGONS", players: ["Jubinha", "Phoenix23", "Bruno7", "OTREMBB", "PEDRO.RS"], staff: ["Stark"] },
         { event: "C.O.P.A. FF 2022", type: "Campeão", team: "VASCO ESPORTS", players: ["LOIRORJ", "EASY", "LENNO", "HENDER"], staff: ["Izzac"] },
-        { event: "C.O.P.A. FF 2023", type: "Campeão", team: "MAGIC SQUAD", players: ["Bops", "Giuh", "Yago", "BuTziN", "Erick11"], staff: ["LUUUKING", "Renan"] },
+        { event: "C.O.P.A. FF 2023", type: "Campeão", team: "MAGIC SQUAD", players: ["Bops", "Giuh", "Yago", "BuTziN", "Erick11"], staff: ["LUUUKING", "Renan_Staff"] },
         { event: "C.O.P.A. FF 2024", type: "Campeão", team: "TEAM SOLID", players: ["GUAXA", "TRAP", "NICKZ", "TATU13"], staff: ["JOKER", "Jaya"] },
-        { event: "C.O.P.A. FF 2025", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan"] },
-        { event: "C.O.P.A. FF 2026", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan"] }
+        { event: "C.O.P.A. FF 2025", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan_Staff"] },
+        { event: "C.O.P.A. FF 2026", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan_Staff"] }
     ],
     individuais: [
         { event: "WB 2025 S2", type: "MVP Geral", team: "FLUXO W7M", player: "MT7" },
@@ -1746,7 +1786,7 @@ const lbffData = {
     "BUENO": { "LBFF 7": {k:65, q:86}, "LBFF 8": {k:13, q:22} },
     "Mandela": { "LBFF 7": {k:62, q:86}, "LBFF 8": {k:31, q:43}, "WB 2024 F1": {k:18, q:35} },
     "GUAXA": { "LBFF 7": {k:40, q:34}, "LBFF 8": {k:77, q:79}, "LBFF 9": {k:147, q:192}, "WB 2024 F1": {k:173, q:96}, "WB 2024 F2": {k:149, q:104}, "WB 2025 S1": {k:139, q:104}, "WB 2025 S2": {k:55, q:48} },
-    "RENAN": { "LBFF 7": {k:4, q:11} },
+    "RENAN_Inativo": { "LBFF 7": {k:4, q:11} },
     "LOIRORJ": { "LBFF 7": {k:23, q:25}, "LBFF 8": {k:30, q:65} },
     "JUNINXL": { "LBFF 7": {k:35, q:52} },
     "GTECOXC": { "LBFF 7": {k:0, q:4} },
@@ -1779,7 +1819,7 @@ const lbffData = {
     "R1": { "LBFF 8": {k:5, q:5}, "LBFF 9": {k:10, q:20} },
     "MK7": { "LBFF 8": {k:0, q:1} },
     "MT7": { "LBFF 9": {k:343, q:190}, "WB 2024 F1": {k:154, q:96}, "WB 2024 F2": {k:201, q:104}, "WB 2025 S1": {k:257, q:104}, "WB 2025 S2": {k:166, q:68} },
-    "Motovea7": { "LBFF 9": {k:215, q:188}, "WB 2024 F1": {k:149, q:96}, "WB 2024 F2": {k:248, q:104}, "WB 2025 S1": {k:157, q:104}, "WB 2025 S2": {k:121, q:68} },
+    "Motovea": { "LBFF 9": {k:215, q:188}, "WB 2024 F1": {k:149, q:96}, "WB 2024 F2": {k:248, q:104}, "WB 2025 S1": {k:157, q:104}, "WB 2025 S2": {k:121, q:68} },
     "Kozak": { "LBFF 9": {k:205, q:182} },
     "CorumbaX": { "LBFF 9": {k:183, q:185} },
     "Yato7": { "LBFF 9": {k:177, q:169}, "WB 2024 F1": {k:120, q:95}, "WB 2024 F2": {k:137, q:104}, "WB 2025 S1": {k:91, q:88} },
@@ -1910,6 +1950,243 @@ const playerPhotos = {
     "DRADE.11": "drade.webp", "SEU PAI": "seu pai.webp", "WM": "wm.webp", "nepoIGN": "nepo.webp"
 };
 
+// --- NOVOS CAMPEONATOS (Distribuição Automática) ---
+const dbCampeonatos = [
+   /* {
+        torneio: "Exemplo Liga Marinho S4",
+        data: "2026-04-25",
+        tier: "D-Tier",
+        resultados: {
+            "FLUXO W7M": "1st",
+            "LOUD SNICKERS": "2nd",
+            "LOS": "3rd",
+            "TEAM SOLID": "4th",
+            "INTZ": "5th"
+            // Pode colocar quantos times quiser aqui!
+        }
+    }
+        */
+    // Quando tiver um torneio novo, é só colocar uma vírgula e abrir outra chave {} aqui
+];
+
+// --- HISTÓRICO DE RESULTADOS DAS EQUIPES ---
+const dbResults = {
+    "FLUXO W7M": [
+        { data: "2026-04-09", tier: "D-Tier", place: "6th", torneio: "Goat League Season 2" },
+        { data: "2026-04-08", tier: "D-Tier", place: "10th", torneio: "GWL Showdown" },
+        { data: "2026-03-26", tier: "D-Tier", place: "1st", torneio: "Yuta Invitational" },
+        { data: "2026-03-09", tier: "C-Tier", place: "1st", torneio: "CPN Arena 2026" },
+        { data: "2026-03-03", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2026 Stage 1" },
+        { data: "2026-02-22", tier: "A-Tier", place: "1st", torneio: "C.O.P.A. Free Fire 2026" },
+        { data: "2026-02-18", tier: "D-Tier", place: "6th", torneio: "Liga do Rei Elite Mobile 2026" },
+        { data: "2026-01-23", tier: "D-Tier", place: "6th", torneio: "Liga Marinho Season 3" },
+        { data: "2026-01-23", tier: "D-Tier", place: "3rd", torneio: "Liga LPT Season 1" },
+        { data: "2026-01-21", tier: "D-Tier", place: "8th", torneio: "Showmatch do Amoras 2026" },
+        { data: "2026-01-16", tier: "D-Tier", place: "1st", torneio: "Showmatch Yuta 2026" },
+        { data: "2026-01-08", tier: "D-Tier", place: "2nd", torneio: "Showmatch Klaus 2026" },
+        { data: "2025-11-21", tier: "D-Tier", place: "3rd", torneio: "Goat League Season 1" },
+        { data: "2025-11-15", tier: "S-Tier", place: "2nd", torneio: "Free Fire World Series - Global Finals 2025" },
+        { data: "2025-11-14", tier: "S-Tier", place: "2nd", torneio: "Free Fire World Series - Global Finals 2025: Clash Squad" },
+        { data: "2025-10-05", tier: "A-Tier", place: "1st", torneio: "Free Fire World Series - Brazil 2025 Split 2" },
+        { data: "2025-09-25", tier: "B-Tier", place: "9th", torneio: "Lidoma Endless Series 2025 - Americas Intercontinental Clash" },
+        { data: "2025-09-23", tier: "D-Tier", place: "6th", torneio: "Copa All In Mobile Season 1" },
+        { data: "2025-09-17", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2025 Stage 4" },
+        { data: "2025-08-28", tier: "D-Tier", place: "3rd", torneio: "All In Mobile Elite S4" },
+        { data: "2025-08-28", tier: "C-Tier", place: "1st", torneio: "Lidoma Endless Series 2025 - Brazil Regional Championship" },
+        { data: "2025-08-27", tier: "D-Tier", place: "12th", torneio: "Lidoma Endless Series 2025 - Brazil Open Regional Cups" },
+        { data: "2025-08-10", tier: "Showmatch", place: "7th - 8th", torneio: "Free Fire All Stars 2025: Ninja Clash" },
+        { data: "2025-08-01", tier: "D-Tier", place: "6th", torneio: "Liga Doutrina Mobile Season 2" },
+        { data: "2025-07-20", tier: "S-Tier", place: "10th", torneio: "Esports World Cup 2025" },
+        { data: "2025-07-10", tier: "D-Tier", place: "1st", torneio: "Liga Marinho Season 2" },
+        { data: "2025-07-07", tier: "D-Tier", place: "2nd", torneio: "RED Wave Cup Elite Season 2" },
+        { data: "2025-07-07", tier: "D-Tier", place: "7th", torneio: "Copa Davi Season 4" },
+        { data: "2025-07-04", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2025 Stage 3" },
+        { data: "2025-06-22", tier: "A-Tier", place: "2nd", torneio: "Free Fire World Series - Brazil 2025 Split 1" },
+        { data: "2025-06-04", tier: "D-Tier", place: "2nd", torneio: "Liga Do Rei Copa Mobile BoostZone" },
+        { data: "2025-05-30", tier: "D-Tier", place: "2nd", torneio: "Gran Legends Season 1" },
+        { data: "2025-05-28", tier: "D-Tier", place: "1st", torneio: "Liga DS Season 4" },
+        { data: "2025-05-15", tier: "D-Tier", place: "2nd", torneio: "Liga Doutrina Mobile Season 1" },
+        { data: "2025-05-09", tier: "D-Tier", place: "6th", torneio: "Del Rei Season 4" },
+        { data: "2025-05-08", tier: "C-Tier", place: "2nd", torneio: "Copa Amoras Mobile Season 1" },
+        { data: "2025-04-29", tier: "D-Tier", place: "3rd", torneio: "Super Liga UBFF 2025 Split 1" },
+        { data: "2025-04-25", tier: "D-Tier", place: "2nd", torneio: "All In Mobile Elite S3" },
+        { data: "2025-04-25", tier: "D-Tier", place: "1st", torneio: "Copa Davi Season 3" },
+        { data: "2025-04-24", tier: "D-Tier", place: "1st", torneio: "Liga do Rei Elite Mobile 2025" },
+        { data: "2025-04-22", tier: "D-Tier", place: "7th", torneio: "Liga Royals Elite Season 3" },
+        { data: "2025-04-10", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2025 Stage 2" },
+        { data: "2025-03-31", tier: "D-Tier", place: "21st - 22nd", torneio: "La America DS Season 3" },
+        { data: "2025-03-30", tier: "D-Tier", place: "1st", torneio: "Fora da Safe Invitational Mobile 2025 Split 2" },
+        { data: "2025-03-24", tier: "D-Tier", place: "7th", torneio: "RED Wave Cup Elite Season 1" },
+        { data: "2025-03-21", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Season 1" },
+        { data: "2025-03-17", tier: "Showmatch", place: "3rd", torneio: "Copa Amoras 100k" },
+        { data: "2025-03-11", tier: "Weekly", place: "1st", torneio: "Liga Doutrina Mobile 2025 Week 2" },
+        { data: "2025-02-28", tier: "D-Tier", place: "12th", torneio: "Liga Doutrina Loco Season 1" },
+        { data: "2025-02-26", tier: "D-Tier", place: "3rd", torneio: "Del Rei Season 3" },
+        { data: "2025-02-23", tier: "A-Tier", place: "1st", torneio: "C.O.P.A. Free Fire 2025" },
+        { data: "2025-02-12", tier: "Weekly", place: "1st", torneio: "Liga Doutrina Mobile 2025 Week 1" },
+        { data: "2025-02-06", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2025 Stage 1" },
+        { data: "2025-01-31", tier: "D-Tier", place: "2nd", torneio: "Showmatch Alterados League 2025" },
+        { data: "2025-01-22", tier: "D-Tier", place: "1st", torneio: "Fora da Safe Invitational Mobile 2025 Split 1" },
+        { data: "2024-12-09", tier: "D-Tier", place: "5th", torneio: "Del Rei Season 2" },
+        { data: "2024-12-08", tier: "A-Tier", place: "1st", torneio: "ESL Snapdragon Pro Series Season 5: Latin America Challenge" },
+        { data: "2024-12-03", tier: "D-Tier", place: "5th", torneio: "Showmatch dos Campeões GWL" },
+        { data: "2024-11-24", tier: "S-Tier", place: "1st", torneio: "Free Fire World Series - Global Finals 2024" },
+        { data: "2024-09-28", tier: "A-Tier", place: "1st", torneio: "Free Fire World Series - Brazil 2024" },
+        { data: "2024-09-27", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2024 Stage 4" },
+        { data: "2024-09-01", tier: "C-Tier", place: "3rd", torneio: "Copa NFA 2024 - Split 2" },
+        { data: "2024-08-30", tier: "D-Tier", place: "4th", torneio: "Copa Auge Rei dos Coins Season 5" },
+        { data: "2024-08-11", tier: "B-Tier", place: "2nd", torneio: "CPN Favela Gaming Edition 2024" },
+        { data: "2024-07-14", tier: "S-Tier", place: "9th", torneio: "Esports World Cup 2024" },
+        { data: "2024-06-28", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2024 Stage 3" },
+        { data: "2024-05-10", tier: "D-Tier", place: "9th", torneio: "Copa GWL Mobile 2024 Stage 2" },
+        { data: "2024-05-03", tier: "C-Tier", place: "14th", torneio: "Lidoma League 2024" },
+        { data: "2024-04-14", tier: "S-Tier", place: "2nd", torneio: "ESL Snapdragon Pro Series 2024: Mobile Masters" },
+        { data: "2024-04-03", tier: "D-Tier", place: "20th", torneio: "Monte Sinai League Season 1" },
+        { data: "2024-03-29", tier: "C-Tier", place: "3rd", torneio: "Global Games Mobile Season 1" },
+        { data: "2024-03-28", tier: "C-Tier", place: "16th", torneio: "Lidoma Showdown 2024" },
+        { data: "2024-03-24", tier: "A-Tier", place: "4th", torneio: "C.O.P.A. Free Fire 2024" },
+        { data: "2024-01-06", tier: "B-Tier", place: "11th", torneio: "ESL Snapdragon Pro Series Season 4: Brazil Open" },
+        { data: "2023-12-11", tier: "C-Tier", place: "5th", torneio: "Talents Mobile 2023 - Split 4" },
+        { data: "2023-11-20", tier: "C-Tier", place: "3rd", torneio: "Talents Mobile 2023 - Split 3" },
+        { data: "2023-10-10", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2023 Stage 3" },
+        { data: "2023-09-15", tier: "C-Tier", place: "5th", torneio: "Talents Mobile 2023" },
+        { data: "2023-08-05", tier: "A-Tier", place: "4th", torneio: "LBFF 2023" },
+        { data: "2023-06-23", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2023 Stage 1" },
+        { data: "2023-05-25", tier: "C-Tier", place: "5th", torneio: "Copa GWL PRO Season 4" },
+        { data: "2023-03-25", tier: "A-Tier", place: "5th", torneio: "C.O.P.A. Free Fire 2023" },
+        { data: "2022-10-15", tier: "A-Tier", place: "5th", torneio: "LBFF 2022: Series A - Stage 2" },
+        { data: "2022-07-02", tier: "A-Tier", place: "10th", torneio: "C.O.P.A. Free Fire 2022: Corrida do Milhão" },
+        { data: "2022-04-16", tier: "A-Tier", place: "5th", torneio: "Liga Brasileira de Free Fire 2022: Series A - Stage 1" },
+        { data: "2021-10-30", tier: "A-Tier", place: "3rd", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 3" },
+        { data: "2021-07-24", tier: "A-Tier", place: "3rd", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 2" },
+        { data: "2021-05-30", tier: "S-Tier", place: "4th", torneio: "Free Fire World Series 2021 Singapore" },
+        { data: "2021-03-20", tier: "A-Tier", place: "1st", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 1" }
+    ],
+    "LOUD SNICKERS": [
+        { data: "2026-04-09", tier: "D-Tier", place: "4th", torneio: "Goat League Season 2" },
+        { data: "2026-04-08", tier: "D-Tier", place: "2nd", torneio: "GWL Showdown" },
+        { data: "2026-03-26", tier: "D-Tier", place: "4th", torneio: "Yuta Invitational" },
+        { data: "2026-03-09", tier: "C-Tier", place: "3rd", torneio: "CPN Arena 2026" },
+        { data: "2026-03-03", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2026 Stage 1" },
+        { data: "2026-02-22", tier: "A-Tier", place: "4th", torneio: "C.O.P.A. Free Fire 2026" },
+        { data: "2026-02-18", tier: "D-Tier", place: "1st", torneio: "Liga do Rei Elite Mobile 2026" },
+        { data: "2026-01-23", tier: "D-Tier", place: "1st", torneio: "Liga LPT Season 1" },
+        { data: "2026-01-23", tier: "D-Tier", place: "4th", torneio: "Liga Marinho Season 3" },
+        { data: "2026-01-21", tier: "D-Tier", place: "2nd", torneio: "Showmatch do Amoras 2026" },
+        { data: "2026-01-16", tier: "D-Tier", place: "5th", torneio: "Showmatch Yuta 2026" },
+        { data: "2026-01-08", tier: "D-Tier", place: "1st", torneio: "Showmatch Klaus 2026" },
+        { data: "2025-11-21", tier: "D-Tier", place: "10th", torneio: "Goat League Season 1" },
+        { data: "2025-10-05", tier: "A-Tier", place: "4th", torneio: "Free Fire World Series - Brazil 2025 Split 2" },
+        { data: "2025-09-25", tier: "B-Tier", place: "6th", torneio: "Lidoma Endless Series 2025 - Americas Intercontinental Clash" },
+        { data: "2025-09-23", tier: "D-Tier", place: "5th", torneio: "Copa All In Mobile Season 1" },
+        { data: "2025-09-17", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2025 Stage 4" },
+        { data: "2025-08-28", tier: "C-Tier", place: "6th", torneio: "Lidoma Endless Series 2025 - Brazil Regional Championship" },
+        { data: "2025-08-28", tier: "D-Tier", place: "7th", torneio: "All In Mobile Elite S4" },
+        { data: "2025-08-27", tier: "D-Tier", place: "5th", torneio: "Lidoma Endless Series 2025 - Brazil Open Regional Cups" },
+        { data: "2025-08-18", tier: "D-Tier", place: "2nd", torneio: "Fora da Safe Invitational Mobile 2025 Split 3" },
+        { data: "2025-08-12", tier: "D-Tier", place: "13th", torneio: "Copa Auge Elite Season 9" },
+        { data: "2025-08-01", tier: "D-Tier", place: "8th", torneio: "Liga Doutrina Mobile Season 2" },
+        { data: "2025-07-10", tier: "D-Tier", place: "10th", torneio: "Liga Marinho Season 2" },
+        { data: "2025-07-07", tier: "D-Tier", place: "11th", torneio: "Copa Davi Season 4" },
+        { data: "2025-07-07", tier: "D-Tier", place: "4th", torneio: "RED Wave Cup Elite Season 2" },
+        { data: "2025-07-04", tier: "D-Tier", place: "11th", torneio: "Copa GWL Mobile 2025 Stage 3" },
+        { data: "2025-06-22", tier: "A-Tier", place: "7th", torneio: "Free Fire World Series - Brazil 2025 Split 1" },
+        { data: "2025-06-05", tier: "D-Tier", place: "8th", torneio: "Copa Diamond Season 3" },
+        { data: "2025-06-04", tier: "D-Tier", place: "1st", torneio: "Liga Do Rei Copa Mobile BoostZone" },
+        { data: "2025-05-30", tier: "D-Tier", place: "5th", torneio: "Gran Legends Season 1" },
+        { data: "2025-05-28", tier: "D-Tier", place: "6th", torneio: "Liga DS Season 4" },
+        { data: "2025-05-15", tier: "D-Tier", place: "4th", torneio: "Liga Doutrina Mobile Season 1" },
+        { data: "2025-05-09", tier: "D-Tier", place: "5th", torneio: "Del Rei Season 4" },
+        { data: "2025-05-08", tier: "C-Tier", place: "8th", torneio: "Copa Amoras Mobile Season 1" },
+        { data: "2025-05-06", tier: "D-Tier", place: "4th", torneio: "Liga Liberty Challenge Season" },
+        { data: "2025-04-30", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Invitational" },
+        { data: "2025-04-25", tier: "D-Tier", place: "3rd", torneio: "All In Mobile Elite S3" },
+        { data: "2025-04-25", tier: "D-Tier", place: "6th", torneio: "Copa Davi Season 3" },
+        { data: "2025-04-24", tier: "D-Tier", place: "7th", torneio: "Liga do Rei Elite Mobile 2025" },
+        { data: "2025-04-22", tier: "D-Tier", place: "11th", torneio: "Liga Royals Elite Season 3" },
+        { data: "2025-04-10", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2025 Stage 2" },
+        { data: "2025-03-31", tier: "D-Tier", place: "1st", torneio: "La America DS Season 3" },
+        { data: "2025-03-30", tier: "D-Tier", place: "4th", torneio: "Fora da Safe Invitational Mobile 2025 Split 2" },
+        { data: "2025-03-24", tier: "D-Tier", place: "4th", torneio: "RED Wave Cup Elite Season 1" },
+        { data: "2025-03-20", tier: "D-Tier", place: "3rd", torneio: "Copa Diamond Season 2" },
+        { data: "2025-03-14", tier: "D-Tier", place: "13th", torneio: "Liga Marinho Season 1" },
+        { data: "2025-03-11", tier: "Weekly", place: "2nd", torneio: "Liga Doutrina Mobile 2025 Week 2" },
+        { data: "2025-02-28", tier: "D-Tier", place: "8th", torneio: "Liga Doutrina Loco Season 1" },
+        { data: "2025-02-26", tier: "D-Tier", place: "4th", torneio: "Del Rei Season 3" },
+        { data: "2025-02-23", tier: "A-Tier", place: "3rd", torneio: "C.O.P.A. Free Fire 2025" },
+        { data: "2025-02-14", tier: "D-Tier", place: "1st", torneio: "Star Cup Series A Season 3" },
+        { data: "2025-02-12", tier: "Weekly", place: "4th", torneio: "Liga Doutrina Mobile 2025 Week 1" },
+        { data: "2025-02-06", tier: "D-Tier", place: "7th", torneio: "Copa GWL Mobile 2025 Stage 1" },
+        { data: "2025-01-31", tier: "D-Tier", place: "1st", torneio: "Showmatch Alterados League 2025" },
+        { data: "2025-01-24", tier: "Weekly", place: "2nd", torneio: "Grand Slam Super Weekend Mobile Week 2" },
+        { data: "2025-01-22", tier: "D-Tier", place: "9th", torneio: "Fora da Safe Invitational Mobile 2025 Split 1" },
+        { data: "2024-12-08", tier: "A-Tier", place: "3rd", torneio: "ESL Snapdragon Pro Series Season 5: Latin America Challenge" },
+        { data: "2024-12-03", tier: "B-Tier", place: "9th", torneio: "Lidoma Challenge 2024" },
+        { data: "2024-10-30", tier: "D-Tier", place: "2nd", torneio: "Copa Auge Rei dos Coins Season 6" },
+        { data: "2024-10-17", tier: "D-Tier", place: "3rd", torneio: "Showmatch Gran Legends 2024" },
+        { data: "2024-09-28", tier: "A-Tier", place: "7th", torneio: "Free Fire World Series - Brazil 2024" },
+        { data: "2024-09-27", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2024 Stage 4" },
+        { data: "2024-09-01", tier: "C-Tier", place: "6th", torneio: "Copa NFA 2024 - Split 2" },
+        { data: "2024-08-30", tier: "D-Tier", place: "1st", torneio: "Copa Auge Rei dos Coins Season 5" },
+        { data: "2024-08-30", tier: "D-Tier", place: "5th", torneio: "All In Mobile Elite Season 2" },
+        { data: "2024-08-11", tier: "B-Tier", place: "4th", torneio: "CPN Favela Gaming Edition 2024" },
+        { data: "2024-07-14", tier: "S-Tier", place: "6th", torneio: "Esports World Cup 2024" },
+        { data: "2024-06-28", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2024 Stage 3" },
+        { data: "2024-05-23", tier: "C-Tier", place: "8th", torneio: "Esmerald Cup Season 2" },
+        { data: "2024-05-10", tier: "D-Tier", place: "10th", torneio: "Copa GWL Mobile 2024 Stage 2" },
+        { data: "2024-05-03", tier: "C-Tier", place: "9th", torneio: "Lidoma League 2024" },
+        { data: "2024-04-14", tier: "S-Tier", place: "4th", torneio: "ESL Snapdragon Pro Series 2024: Mobile Masters" },
+        { data: "2024-03-29", tier: "C-Tier", place: "1st", torneio: "Global Games Mobile Season 1" },
+        { data: "2024-03-28", tier: "C-Tier", place: "18th", torneio: "Lidoma Showdown 2024" },
+        { data: "2024-03-24", tier: "A-Tier", place: "11th", torneio: "C.O.P.A. Free Fire 2024" },
+        { data: "2024-03-12", tier: "D-Tier", place: "14th", torneio: "Liga Next Season 4" },
+        { data: "2024-03-04", tier: "D-Tier", place: "4th", torneio: "Copa Auge Elite Season 4" },
+        { data: "2024-03-01", tier: "C-Tier", place: "9th", torneio: "Copa NFA 2024 - Split 1" },
+        { data: "2024-02-29", tier: "C-Tier", place: "17th - 18th", torneio: "Lidoma Contenders 2024" },
+        { data: "2024-02-25", tier: "A-Tier", place: "2nd", torneio: "ESL Snapdragon Pro Series Season 4 - Challenge Season" },
+        { data: "2024-02-03", tier: "C-Tier", place: "2nd", torneio: "Lidoma Challenge Season 3" },
+        { data: "2024-01-29", tier: "D-Tier", place: "1st", torneio: "Super Liga Season 2" },
+        { data: "2024-01-25", tier: "D-Tier", place: "12th", torneio: "Copa GWL Mobile 2024 Stage 1" },
+        { data: "2023-11-26", tier: "S-Tier", place: "7th", torneio: "Free Fire World Series 2023" },
+        { data: "2023-10-29", tier: "D-Tier", place: "7th", torneio: "Liga NEXT das Nações LampionsBet" },
+        { data: "2023-10-27", tier: "C-Tier", place: "1st", torneio: "Talents Mobile 2023 - Split 2" },
+        { data: "2023-10-20", tier: "D-Tier", place: "2nd", torneio: "Taça Nacional Ultimate Mobile" },
+        { data: "2023-10-10", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2023 Stage 3" },
+        { data: "2023-10-03", tier: "D-Tier", place: "1st", torneio: "The Citizens Elite - Season 2" },
+        { data: "2023-09-25", tier: "D-Tier", place: "1st", torneio: "Star Cup Serie A - Season 2" },
+        { data: "2023-09-15", tier: "C-Tier", place: "13th", torneio: "Talents Mobile 2023" },
+        { data: "2023-08-19", tier: "D-Tier", place: "8th", torneio: "Master Liga Season 2" },
+        { data: "2023-08-05", tier: "A-Tier", place: "1st", torneio: "LBFF 2023" },
+        { data: "2023-07-21", tier: "C-Tier", place: "6th", torneio: "Lidoma Challenge Season 2" },
+        { data: "2023-07-08", tier: "D-Tier", place: "7th", torneio: "AJF Season Mobile Split 1" },
+        { data: "2023-06-23", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2023 Stage 1" },
+        { data: "2023-05-25", tier: "C-Tier", place: "8th", torneio: "Copa GWL PRO Season 4" },
+        { data: "2023-05-11", tier: "C-Tier", place: "3rd", torneio: "Lidoma Challenge Season 1" },
+        { data: "2023-03-30", tier: "D-Tier", place: "3rd", torneio: "Copa GWL PRO Season 3" },
+        { data: "2023-03-25", tier: "A-Tier", place: "2nd", torneio: "C.O.P.A. Free Fire 2023" },
+        { data: "2023-03-14", tier: "D-Tier", place: "12th", torneio: "AJF All In Season 1" },
+        { data: "2023-03-03", tier: "Qualifier", place: "3rd", torneio: "AJF All In Mobile - Season 1" },
+        { data: "2023-03-02", tier: "B-Tier", place: "2nd", torneio: "CPN Mobile 2023" },
+        { data: "2023-01-31", tier: "D-Tier", place: "1st", torneio: "Copa GWL PRO Season 2" },
+        { data: "2022-10-15", tier: "A-Tier", place: "8th", torneio: "LBFF 2022: Series A - Stage 2" },
+        { data: "2022-07-02", tier: "A-Tier", place: "2nd", torneio: "C.O.P.A. Free Fire 2022: Corrida do Milhão" },
+        { data: "2022-05-21", tier: "S-Tier", place: "7th", torneio: "Free Fire World Series 2022 Sentosa" },
+        { data: "2022-04-16", tier: "A-Tier", place: "1st", torneio: "Liga Brasileira de Free Fire 2022: Series A - Stage 1" },
+        { data: "2021-10-30", tier: "A-Tier", place: "4th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 3" },
+        { data: "2021-07-24", tier: "A-Tier", place: "10th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 2" },
+        { data: "2021-05-30", tier: "S-Tier", place: "2nd", torneio: "Free Fire World Series 2021 Singapore" },
+        { data: "2021-03-20", tier: "A-Tier", place: "2nd", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 1" },
+        { data: "2020-11-07", tier: "Qualifier", place: "1st", torneio: "Liga Brasileira de Free Fire 2021: Promotion - Stage 1" },
+        { data: "2020-11-01", tier: "A-Tier", place: "13th", torneio: "Liga Brasileira de Free Fire 2020: Series A - Stage 3" },
+        { data: "2020-07-19", tier: "A-Tier", place: "11th", torneio: "C.O.P.A. Free Fire 2020" },
+        { data: "2020-03-15", tier: "A-Tier", place: "3rd", torneio: "Liga Brasileira de Free Fire 2020: Series A - Stage 1" },
+        { data: "2020-01-11", tier: "A-Tier", place: "1st", torneio: "Copa America 2020" },
+        { data: "2019-11-16", tier: "S-Tier", place: "9th", torneio: "Free Fire World Series 2019" },
+        { data: "2019-11-09", tier: "A-Tier", place: "2nd", torneio: "Free Fire Pro League Brazil Season 3" },
+        { data: "2019-07-20", tier: "A-Tier", place: "8th", torneio: "Free Fire Pro League Brazil Season 2" }
+    ]
+};
+
 const logos = {
     // === EQUIPES ATUAIS (WB 2026) ===
     'ALPHA7': 'A7 2.png', 
@@ -1974,7 +2251,7 @@ const histData = [
     {n:"General", k:1269, q:1082}, {n:"MODESTIA", k:1240, q:1047}, {n:"VITINxp", k:1237, q:923}, {n:"PÃO7", k:1154, q:1034}, {n:"DRAXX7", k:1125, q:839},
     {n:"MT7", k:1121, q:562}, {n:"R7", k:1020, q:962}, {n:"BIELGOD", k:989, q:911}, {n:"Mts007", k:946, q:762}, {n:"Razure", k:941, q:864},
     {n:"Noda", k:930, q:816}, {n:"Stark7", k:901, q:652}, {n:"GIUH.87", k:901, q:572}, {n:"ERICKMVP", k:898, q:617}, {n:"Syaz", k:894, q:631},
-    {n:"Motovea7", k:890, q:560}, {n:"Nickz7", k:881, q:512}, {n:"CHINÊS", k:854, q:734}, {n:"Lobato", k:849, q:871}, {n:"ITALO", k:800, q:781},
+    {n:"Motovea", k:890, q:560}, {n:"Nickz7", k:881, q:512}, {n:"CHINÊS", k:854, q:734}, {n:"Lobato", k:849, q:871}, {n:"ITALO", k:800, q:781},
     {n:"OUSADO", k:797, q:620}, {n:"Vitin9", k:786, q:592}, {n:"GUAXA", k:780, q:657}, {n:"NandoX", k:762, q:580}, {n:"HONEY", k:752, q:635},
     {n:"TATU13", k:735, q:676}, {n:"BAND", k:701, q:536}, {n:"FON", k:685, q:618}, {n:"Cauã", k:658, q:596}, {n:"João7", k:650, q:573},
     {n:"JapaBKR", k:632, q:588}, {n:"Proxx7", k:596, q:457}, {n:"DeadGOD", k:593, q:604}, {n:"PETERxl", k:572, q:340}, {n:"o Mala", k:559, q:358},
@@ -3539,7 +3816,8 @@ window.onload = () => {
     
     calculatePlayerRanks();
     updateQuedaFilterOptions();
-    renderPlayerStats()
+    renderPlayerStats();
+    distribuirNovosResultados();
     buildDayFilters();
     populateSelects();
     renderFullTeams();
@@ -3600,6 +3878,29 @@ function normalizeMapName(name) {
     return n;
 }
 
+// Função que lê os Novos Campeonatos e distribui para os times
+function distribuirNovosResultados() {
+    dbCampeonatos.forEach(camp => {
+        // Para cada time dentro dos resultados daquele campeonato...
+        for (let equipe in camp.resultados) {
+            let colocacao = camp.resultados[equipe];
+
+            // Se o time ainda não tiver um histórico no dbResults, cria uma lista vazia pra ele
+            if (!dbResults[equipe]) {
+                dbResults[equipe] = [];
+            }
+
+            // Injeta o resultado do campeonato no perfil do time!
+            dbResults[equipe].push({
+                data: camp.data,
+                tier: camp.tier,
+                place: colocacao,
+                torneio: camp.torneio
+            });
+        }
+    });
+}
+
 function getDisplayName(name) {
     if (!name) return "";
     // 1. Remove qualquer sujeira da Liquipedia (ex: "Biel7|link=Biel7...")
@@ -3610,6 +3911,8 @@ function getDisplayName(name) {
     
     return cleanName;
 }
+
+
 
 function renderHistoricoEquipes(nome, containerId) {
     let container = document.getElementById(containerId);
@@ -3998,52 +4301,6 @@ function selectSearchResult(type, name) {
             document.getElementById('search-results').style.display = 'none';
         }
     }
-
-function openStaffProfile(staffName) {
-    let s = dbStaff.find(x => x.nome === staffName);
-    if(!s) return;
-    
-    let t = db.teams.find(x => x.equipe === s.equipe);
-    
-    if(document.getElementById('sp-name')) document.getElementById('sp-name').innerText = s.nome;
-    if(document.getElementById('sp-role')) document.getElementById('sp-role').innerText = s.cargo;
-    
-    // CARREGA A FOTO DO COACH
-    let photoEl = document.getElementById('sp-photo');
-    if(photoEl) {
-        photoEl.src = staffPhotos[s.nome] || 'silhueta.png';
-    }
-
-    let teamNameEl = document.getElementById('sp-team-name');
-    if(teamNameEl) {
-        teamNameEl.innerText = s.equipe;
-        teamNameEl.onclick = () => openTeamProfile(s.equipe);
-    }
-    
-    let logoEl = document.getElementById('sp-team-logo');
-    if(logoEl) logoEl.src = logos[s.equipe] || '';
-    
-    // Preenche as estatísticas da equipe do Coach
-    if(t) {
-        if(document.getElementById('sp-team-pos')) document.getElementById('sp-team-pos').innerText = `${t.posGeral || 0}º`;
-        if(document.getElementById('sp-team-pts')) document.getElementById('sp-team-pts').innerText = t.pontos || 0;
-        if(document.getElementById('sp-team-booyah')) document.getElementById('sp-team-booyah').innerText = t.booyah || 0;
-        if(document.getElementById('sp-team-avg')) document.getElementById('sp-team-avg').innerText = (t.pontos / (t.quedas || 1)).toFixed(1);
-    }
-
-    // Lógica do Instagram
-    let insta = dbSocials[s.nome];
-    let container = document.getElementById('sp-insta-container');
-    if(container) {
-        container.innerHTML = insta ? `
-            <a href="https://instagram.com/${insta}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 12px 25px; border-radius: 30px; margin: 10px auto; width: fit-content; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                <img src="instagram.png" style="width: 18px; filter: brightness(0) invert(1);">
-                <span style="color: #fff; font-weight: bold; font-size: 1.1em;">@${insta}</span>
-            </a>` : '';
-    }
-
-    navigate('staff-profile');
-}
 
 function checkNameMatch(n1, n2) {
     if(!n1 || !n2) return false;
@@ -4951,6 +5208,74 @@ function renderHomeGroups() {
     container.innerHTML = html;
 }
 
+function renderTeamResults() {
+    let tName = currentTeamView;
+    let tbody = document.querySelector('#table-team-results tbody');
+    let tierFilter = document.getElementById('filter-results-tier').value;
+    
+    // Pega o filtro de Ano (se existir)
+    let yearFilterEl = document.getElementById('filter-results-year');
+    let yearFilter = yearFilterEl ? yearFilterEl.value : 'all';
+
+    let results = dbResults[tName] || [];
+
+    // 1. Aplica o filtro de Tier
+    if (tierFilter !== 'all') {
+        results = results.filter(r => r.tier === tierFilter);
+    }
+
+    // 2. Aplica o filtro de Ano (procura o ano no início da data YYYY-MM-DD)
+    if (yearFilter !== 'all') {
+        results = results.filter(r => r.data.startsWith(yearFilter));
+    }
+
+    // 3. Calcula as Medalhas do que sobrou na lista
+    let count1 = 0, count2 = 0, count3 = 0;
+    results.forEach(r => {
+        if (r.place === "1st" || r.place === "1º") count1++;
+        else if (r.place === "2nd" || r.place === "2º") count2++;
+        else if (r.place === "3rd" || r.place === "3º") count3++;
+    });
+
+    // 4. Atualiza os números no Placar do HTML
+    let el1 = document.getElementById('count-1st');
+    let el2 = document.getElementById('count-2nd');
+    let el3 = document.getElementById('count-3rd');
+    if(el1) el1.innerText = count1;
+    if(el2) el2.innerText = count2;
+    if(el3) el3.innerText = count3;
+
+    // 5. Renderiza a tabela
+    if (results.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color:#aaa; padding:30px; text-align:center;">Nenhum resultado encontrado para este filtro.</td></tr>';
+        return;
+    }
+
+    // Ordena por data mais recente por padrão
+    results.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+tbody.innerHTML = results.map(r => {
+        let isSTier = r.tier === 'S-Tier';
+        // Cria a regra: é 1º lugar?
+        let isFirst = r.place === '1st' || r.place === '1º'; 
+        
+        let rowClass = isSTier ? 'row-tier-s' : '';
+        let tierClass = r.tier.toLowerCase().split('-')[0]; 
+        
+        let placeBR = r.place.replace(/st|nd|rd|th/ig, 'º');
+        
+        // MUDANÇA AQUI: Agora a cor dourada é EXCLUSIVA do 1º lugar!
+        let placeStyle = isFirst ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.5);' : '';
+        
+        return `<tr class="${rowClass}">
+            <td style="color: var(--text-muted);">${r.data}</td>
+            <td class="tier-${tierClass}">${r.tier}</td>
+            <td style="font-weight: bold; font-size: 1.1em; ${placeStyle}">${placeBR}</td>
+            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color: #fff;' : ''}">${r.torneio}</td>
+        </tr>`;
+    }).join('');
+}
+
 function renderTeamsDirectory() {
     const container = document.getElementById('teams-directory');
     let html = '';
@@ -5064,6 +5389,24 @@ function openStaffProfile(staffName) {
     renderHistoricoEquipes(s.nome, 'sp-team-history-container'); // <- ADICIONE AQUI
 
     navigate('staff-profile');
+    // Lógica do Instagram
+    let insta = dbSocials[s.nome];
+    let container = document.getElementById('sp-insta-container');
+    if(container) {
+        container.innerHTML = insta ? `
+            <a href="https://instagram.com/${insta}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 12px 25px; border-radius: 30px; margin: 10px auto; width: fit-content; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                <img src="instagram.png" style="width: 18px; filter: brightness(0) invert(1);">
+                <span style="color: #fff; font-weight: bold; font-size: 1.1em;">@${insta}</span>
+            </a>` : '';
+    }
+
+    navigate('staff-profile');
+}
+
+function openResultsModal() {
+    renderTeamResults();
+    document.getElementById('results-modal-title').innerText = `Resultados: ${currentTeamView}`;
+    document.getElementById('results-modal').classList.add('active');
 }
 
 function openTeamProfile(teamName) {
