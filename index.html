@@ -216,6 +216,23 @@
     .winner { color: var(--win-color); }
     .loser { color: var(--lose-color); }
 
+#selection-container.selection-grid {
+            display: flex;
+            flex-wrap: wrap;           /* Permite quebrar linha se não couber tudo */
+            justify-content: center;   /* Centraliza os cards dos jogadores na tela */
+            gap: 25px;                 /* Dá um respiro bem elegante entre os cards */
+            margin-top: 20px;
+        }
+
+        /* RESPONSIVIDADE PARA CELULAR */
+        @media (max-width: 768px) {
+            #selection-container.selection-grid {
+                flex-direction: column; /* Empilha um em cima do outro no mobile */
+                align-items: center;    /* Centraliza a coluna */
+                gap: 15px;              /* Reduz o espaço entre eles no celular */
+            }
+        }
+
     /* Ajustes específicos para Celular (Mobile) */
     @media (max-width: 768px) {
         .compare-container { 
@@ -410,15 +427,14 @@
         <button onclick="navigate('teams-list')" id="nav-teams-list">Equipes</button>
         <button onclick="navigate('selection-wb')" id="nav-selection-wb">Seleção</button>
         <button onclick="navigate('records-ind')" id="nav-records-ind">Recordes</button>
-        <button onclick="navigate('maps')" id="nav-maps">Mapas</button>
+        <button onclick="navigate('maps')" id="nav-maps">Estatísticas</button>
         <button onclick="navigate('compare')" id="nav-compare">Comparar 1v1</button>
         <button onclick="navigate('schedule')" id="nav-schedule">Datas</button>
-        <button onclick="navigate('history')" id="nav-history">História WB</button>
+        <button onclick="navigate('history')" id="nav-history">Hall da Fama</button>
     </div>
 </nav>
 
 <div class="container">
-
     <!-- PAGE: TIMES -->
 <div id="teams" class="page active">
         <h2>Divisão de Grupos</h2>
@@ -574,7 +590,7 @@
         </div>
     </div>
 
-    <div id="selection-wb" class="page">
+<div id="selection-wb" class="page">
         <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="font-size: 3em; color: #ff0000; text-shadow: 0 0 15px rgba(255,0,0,0.5); margin-bottom: 10px;">SELEÇÃO DA SEMANA</h1>
             <p style="color: var(--text-muted);">Os brabos que dominaram o servidor nesta semana.</p>
@@ -664,22 +680,137 @@
     </div>
     
     <!-- PAGE: MAPAS -->
-    <div id="maps" class="page">
-        <h2>Estatísticas por Mapa (Médias por Queda)</h2>
-        <div class="filters">
-            <label>Selecione o Mapa:</label>
-            <select id="filter-map" onchange="renderMapData()">
-                <option value="bermuda">Bermuda</option>
-                <option value="kalahari">Kalahari</option>
-                <option value="purgatorio">Purgatório</option>
-                <option value="nova terra">Nova Terra</option>
-                <option value="solara">Solara</option>
+<div id="maps" class="page">
+        <h2>Estatísticas Avançadas</h2>
+        
+        <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+            <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Filtrar Mapas (Equipas):</label>
+            <select id="stats-map-filter" onchange="renderStatsPage()" style="flex: 1; max-width: 300px;">
+                <option value="all">Visão Geral (Todos os Mapas)</option>
+                <option value="Bermuda">Bermuda</option>
+                <option value="Kalahari">Kalahari</option>
+                <option value="Purgatório">Purgatório</option>
+                <option value="Nova Terra">Nova Terra</option>
+                <option value="Solara">Solara</option>
             </select>
         </div>
+
+        <h3 style="margin-top: 30px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+            Ranking de Médias <span style="font-size: 0.6em; color: #aaa;">(Por Queda)</span>
+        </h3>
         <div class="table-container">
-            <table id="table-maps">
+            <table id="table-stats-avg">
                 <thead>
-                    <tr><th>#</th><th>Equipe</th><th>Média Pts Total</th><th>Média Abates</th><th>Média Pts Posição</th><th>Média Booyah</th></tr>
+                    <tr>
+                        <th onclick="sortTable('table-stats-avg', 0, true)"># ↕</th>
+                        <th style="text-align:left;" onclick="sortTable('table-stats-avg', 1, false)">E ↕</th>
+                        <th onclick="sortTable('table-stats-avg', 2, true)" title="Média de Pontos">
+                            <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
+                        </th>
+                        <th onclick="sortTable('table-stats-avg', 3, true)" title="Média de Abates">
+                            <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                        </th>
+                        <th onclick="sortTable('table-stats-avg', 4, true)" title="Média de Colocação (Menor é melhor)">
+                            <span class="full-name-desktop">POS ↕</span><span class="short-name-mobile">C ↕</span>
+                        </th>
+                        <th class="hide-mobile" title="Quedas Jogadas">Q</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+            Ranking de Totais <span style="font-size: 0.6em; color: #aaa;">(Acumulado)</span>
+        </h3>
+        <div class="table-container">
+            <table id="table-stats-total">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('table-stats-total', 0, true)"># ↕</th>
+                        <th style="text-align:left;" onclick="sortTable('table-stats-total', 1, false)">E ↕</th>
+                        <th onclick="sortTable('table-stats-total', 2, true)">
+                            <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
+                        </th>
+                        <th onclick="sortTable('table-stats-total', 3, true)" title="Booyahs">
+                            <span class="full-name-desktop">BOOYAH ↕</span><span class="short-name-mobile">B ↕</span>
+                        </th>
+                        <th onclick="sortTable('table-stats-total', 4, true)">
+                            <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+            Desempenho Individual
+        </h3>
+
+        <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+            <select id="filter-player-day" onchange="renderPlayerStats()">
+                <option value="all">Todos os Dias</option>
+                <option value="1">Dia 1</option>
+                <option value="2">Dia 2</option>
+                <option value="3">Dia 3</option>
+                <option value="4">Dia 4</option>
+                <option value="5">Dia 5</option>
+                <option value="6">Dia 6</option>
+                <option value="7">Dia 7</option>
+                <option value="8">Dia 8</option>
+                <option value="9">Dia 9</option>
+                <option value="10">Dia 10</option>
+            </select>
+
+            <select id="filter-player-map" onchange="renderPlayerStats()">
+                <option value="all">Todos os Mapas</option>
+                <option value="Bermuda">Bermuda</option>
+                <option value="Kalahari">Kalahari</option>
+                <option value="Purgatório">Purgatório</option>
+                <option value="Nova Terra">Nova Terra</option>
+                <option value="Solara">Solara</option>
+            </select>
+
+            <select id="filter-player-team" onchange="renderPlayerStats()">
+                <option value="all">Todas as Equipas</option>
+                <option value="LOS">LOS</option>
+                <option value="FLUXO W7M">FLUXO W7M</option>
+                <option value="LOUD SNICKERS">LOUD SNICKERS</option>
+                <option value="INTZ">INTZ</option>
+                <option value="TEAM SOLID">TEAM SOLID</option>
+                <option value="LOOPS">LOOPS</option>
+                <option value="RISE GAMING">RISE GAMING</option>
+                <option value="INFLUENCE RAGE">INFLUENCE RAGE</option>
+                <option value="CIVIS">CIVIS</option>
+                <option value="VASCO ESPORTS">VASCO ESPORTS</option>
+                <option value="AXS FUSION">AXS FUSION</option>
+                <option value="E1 SPORTS">E1 SPORTS</option>
+            </select>
+
+            <select id="filter-player-role" onchange="renderPlayerStats()">
+                <option value="all">Todas as Funções</option>
+                <option value="Capitão">Capitão</option>
+                <option value="Rush">Rush</option>
+                <option value="Suporte">Suporte</option>
+                <option value="Granadeiro">Granadeiro</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table id="table-stats-players-detailed">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('table-stats-players-detailed', 0, true)"># ↕</th>
+                        <th style="text-align:left;" onclick="sortTable('table-stats-players-detailed', 1, false)">JOGADOR ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 2, false)">ROLE ↕</th>
+                        <th onclick="sortTable('table-stats-players-detailed', 3, true)" title="Abates">
+                            <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                        </th>
+                        <th onclick="sortTable('table-stats-players-detailed', 4, true)">DANO ↕</th>
+                        <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 5, true)">AST ↕</th>
+                        <th title="Quedas Jogadas" onclick="sortTable('table-stats-players-detailed', 6, true)">Q ↕</th>
+                    </tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -841,7 +972,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <script>
 // ===============================>===========
 // BANCO DE DADOS E LOGOS
@@ -1417,6 +1548,386 @@ const dbQuedas = {
         4: { mapa: "Purgatório", resultados: [ { equipe: "INTZ", kills: 11, posicao: 1, booyah: 1 }, { equipe: "VASCO ESPORTS", kills: 8, posicao: 2, booyah: 0 }, { equipe: "LOS", kills: 8, posicao: 3, booyah: 0 }, { equipe: "RISE GAMING", kills: 7, posicao: 4, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 4, posicao: 5, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 6, posicao: 6, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 7, booyah: 0 }, { equipe: "TEAM SOLID", kills: 8, posicao: 8, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 9, booyah: 0 }, { equipe: "RUSH GAMING", kills: 3, posicao: 10, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 3, posicao: 11, booyah: 0 }, { equipe: "ALPHA7", kills: 2, posicao: 12, booyah: 0 } ] },
         5: { mapa: "Nova Terra", resultados: [ { equipe: "LOUD SNICKERS", kills: 9, posicao: 1, booyah: 1 }, { equipe: "TEAM SOLID", kills: 12, posicao: 2, booyah: 0 }, { equipe: "INTZ", kills: 6, posicao: 3, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 3, posicao: 4, booyah: 0 }, { equipe: "ALPHA7", kills: 7, posicao: 5, booyah: 0 }, { equipe: "LOS", kills: 15, posicao: 6, booyah: 0 }, { equipe: "RUSH GAMING", kills: 6, posicao: 7, booyah: 0 }, { equipe: "RISE GAMING", kills: 9, posicao: 8, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 4, posicao: 9, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 1, posicao: 10, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 4, posicao: 11, booyah: 0 }, { equipe: "CIVIS", kills: 2, posicao: 12, booyah: 0 } ] },
         6: { mapa: "Kalahari", resultados: [ { equipe: "LOUD SNICKERS", kills: 13, posicao: 1, booyah: 1 }, { equipe: "LOS", kills: 12, posicao: 2, booyah: 0 }, { equipe: "INTZ", kills: 10, posicao: 3, booyah: 0 }, { equipe: "RISE GAMING", kills: 3, posicao: 4, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 4, posicao: 5, booyah: 0 }, { equipe: "ALPHA7", kills: 14, posicao: 6, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 1, posicao: 7, booyah: 0 }, { equipe: "TEAM SOLID", kills: 3, posicao: 8, booyah: 0 }, { equipe: "RUSH GAMING", kills: 4, posicao: 9, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 6, posicao: 10, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 2, posicao: 11, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 12, booyah: 0 } ] }
+    }
+    ,
+    // DIA 3
+    3: {
+        1: { mapa: "Kalahari", resultados: [ { equipe: "LOS", kills: 18, posicao: 1, booyah: 1 }, { equipe: "ALPHA7", kills: 6, posicao: 2, booyah: 0 }, { equipe: "LOOPS", kills: 6, posicao: 3, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 4, posicao: 4, booyah: 0 }, { equipe: "RISE GAMING", kills: 8, posicao: 5, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 0, posicao: 6, booyah: 0 }, { equipe: "INTZ", kills: 1, posicao: 7, booyah: 0 }, { equipe: "AXS FUSION", kills: 1, posicao: 8, booyah: 0 }, { equipe: "RUSH GAMING", kills: 3, posicao: 9, booyah: 0 }, { equipe: "E1 SPORTS", kills: 0, posicao: 10, booyah: 0 }, { equipe: "FLUXO W7M", kills: 0, posicao: 11, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 0, posicao: 12, booyah: 0 } ] },
+        2: { mapa: "Solara", resultados: [ { equipe: "INTZ", kills: 13, posicao: 1, booyah: 1 }, { equipe: "FLUXO W7M", kills: 8, posicao: 2, booyah: 0 }, { equipe: "ALPHA7", kills: 2, posicao: 3, booyah: 0 }, { equipe: "RUSH GAMING", kills: 4, posicao: 4, booyah: 0 }, { equipe: "E1 SPORTS", kills: 16, posicao: 5, booyah: 0 }, { equipe: "RISE GAMING", kills: 3, posicao: 6, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 5, posicao: 7, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 5, posicao: 8, booyah: 0 }, { equipe: "LOS", kills: 3, posicao: 9, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 5, posicao: 10, booyah: 0 }, { equipe: "LOOPS", kills: 4, posicao: 11, booyah: 0 }, { equipe: "AXS FUSION", kills: 0, posicao: 12, booyah: 0 } ] },
+        3: { mapa: "Bermuda", resultados: [ { equipe: "INTZ", kills: 15, posicao: 1, booyah: 1 }, { equipe: "AXS FUSION", kills: 3, posicao: 2, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 11, posicao: 3, booyah: 0 }, { equipe: "RUSH GAMING", kills: 7, posicao: 4, booyah: 0 }, { equipe: "LOS", kills: 11, posicao: 5, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 6, posicao: 6, booyah: 0 }, { equipe: "RISE GAMING", kills: 1, posicao: 7, booyah: 0 }, { equipe: "LOOPS", kills: 4, posicao: 8, booyah: 0 }, { equipe: "FLUXO W7M", kills: 4, posicao: 9, booyah: 0 }, { equipe: "E1 SPORTS", kills: 6, posicao: 10, booyah: 0 }, { equipe: "ALPHA7", kills: 3, posicao: 11, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 0, posicao: 12, booyah: 0 } ] },
+        4: { mapa: "Nexterra", resultados: [ { equipe: "LOOPS", kills: 13, posicao: 1, booyah: 1 }, { equipe: "LOUD SNICKERS", kills: 13, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 8, posicao: 3, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 4, posicao: 4, booyah: 0 }, { equipe: "RUSH GAMING", kills: 5, posicao: 5, booyah: 0 }, { equipe: "ALPHA7", kills: 2, posicao: 6, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 7, booyah: 0 }, { equipe: "INTZ", kills: 1, posicao: 8, booyah: 0 }, { equipe: "RISE GAMING", kills: 4, posicao: 9, booyah: 0 }, { equipe: "LOS", kills: 5, posicao: 10, booyah: 0 }, { equipe: "AXS FUSION", kills: 0, posicao: 11, booyah: 0 }, { equipe: "E1 SPORTS", kills: 0, posicao: 12, booyah: 0 } ] },
+        5: { mapa: "Purgatory", resultados: [ { equipe: "LOUD SNICKERS", kills: 8, posicao: 1, booyah: 1 }, { equipe: "E1 SPORTS", kills: 7, posicao: 2, booyah: 0 }, { equipe: "LOS", kills: 9, posicao: 3, booyah: 0 }, { equipe: "FLUXO W7M", kills: 15, posicao: 4, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 2, posicao: 5, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 10, posicao: 6, booyah: 0 }, { equipe: "AXS FUSION", kills: 2, posicao: 7, booyah: 0 }, { equipe: "LOOPS", kills: 6, posicao: 8, booyah: 0 }, { equipe: "ALPHA7", kills: 2, posicao: 9, booyah: 0 }, { equipe: "INTZ", kills: 3, posicao: 10, booyah: 0 }, { equipe: "RISE GAMING", kills: 1, posicao: 11, booyah: 0 }, { equipe: "RUSH GAMING", kills: 0, posicao: 12, booyah: 0 } ] },
+        6: { mapa: "Bermuda", resultados: [ { equipe: "VIRTUS PRO", kills: 11, posicao: 1, booyah: 1 }, { equipe: "E1 SPORTS", kills: 5, posicao: 2, booyah: 0 }, { equipe: "RUSH GAMING", kills: 12, posicao: 3, booyah: 0 }, { equipe: "ALPHA7", kills: 24, posicao: 4, booyah: 0 }, { equipe: "LOOPS", kills: 10, posicao: 5, booyah: 0 }, { equipe: "FLUXO W7M", kills: 10, posicao: 6, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 4, posicao: 7, booyah: 0 }, { equipe: "AXS FUSION", kills: 3, posicao: 8, booyah: 0 }, { equipe: "RISE GAMING", kills: 1, posicao: 9, booyah: 0 }, { equipe: "LOS", kills: 7, posicao: 10, booyah: 0 }, { equipe: "INTZ", kills: 1, posicao: 11, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 0, posicao: 12, booyah: 0 } ] }
+    }
+    ,
+    // DIA 4
+    4: {
+        1: { mapa: "Nexterra", resultados: [ { equipe: "VIRTUS PRO", kills: 8, posicao: 1, booyah: 1 }, { equipe: "TEAM SOLID", kills: 22, posicao: 2, booyah: 0 }, { equipe: "E1 SPORTS", kills: 5, posicao: 3, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 3, posicao: 4, booyah: 0 }, { equipe: "AXS FUSION", kills: 3, posicao: 5, booyah: 0 }, { equipe: "RUSH GAMING", kills: 5, posicao: 6, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 13, posicao: 7, booyah: 0 }, { equipe: "ALPHA7", kills: 7, posicao: 8, booyah: 0 }, { equipe: "FLUXO W7M", kills: 1, posicao: 9, booyah: 0 }, { equipe: "CIVIS", kills: 7, posicao: 10, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 8, posicao: 11, booyah: 0 }, { equipe: "LOOPS", kills: 0, posicao: 12, booyah: 0 } ] },
+        2: { mapa: "Kalahari", resultados: [ { equipe: "INFLUENCE RAGE", kills: 21, posicao: 1, booyah: 1 }, { equipe: "ALPHA7", kills: 6, posicao: 2, booyah: 0 }, { equipe: "RUSH GAMING", kills: 7, posicao: 3, booyah: 0 }, { equipe: "CIVIS", kills: 4, posicao: 4, booyah: 0 }, { equipe: "TEAM SOLID", kills: 2, posicao: 5, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 4, posicao: 6, booyah: 0 }, { equipe: "E1 SPORTS", kills: 10, posicao: 7, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 8, posicao: 8, booyah: 0 }, { equipe: "FLUXO W7M", kills: 4, posicao: 9, booyah: 0 }, { equipe: "LOOPS", kills: 1, posicao: 10, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 3, posicao: 11, booyah: 0 }, { equipe: "AXS FUSION", kills: 1, posicao: 12, booyah: 0 } ] },
+        3: { mapa: "Purgatory", resultados: [ { equipe: "FLUXO W7M", kills: 13, posicao: 1, booyah: 1 }, { equipe: "ALPHA7", kills: 7, posicao: 2, booyah: 0 }, { equipe: "RUSH GAMING", kills: 6, posicao: 3, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 4, posicao: 4, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 5, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 2, posicao: 6, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 1, posicao: 7, booyah: 0 }, { equipe: "TEAM SOLID", kills: 1, posicao: 8, booyah: 0 }, { equipe: "AXS FUSION", kills: 7, posicao: 9, booyah: 0 }, { equipe: "E1 SPORTS", kills: 1, posicao: 10, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 11, booyah: 0 }, { equipe: "LOOPS", kills: 0, posicao: 12, booyah: 0 } ] },
+        4: { mapa: "Bermuda", resultados: [ { equipe: "FLUXO W7M", kills: 9, posicao: 1, booyah: 1 }, { equipe: "INFLUENCE RAGE", kills: 12, posicao: 2, booyah: 0 }, { equipe: "TEAM SOLID", kills: 11, posicao: 3, booyah: 0 }, { equipe: "RUSH GAMING", kills: 9, posicao: 4, booyah: 0 }, { equipe: "E1 SPORTS", kills: 9, posicao: 5, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 5, posicao: 6, booyah: 0 }, { equipe: "ALPHA7", kills: 4, posicao: 7, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 5, posicao: 8, booyah: 0 }, { equipe: "AXS FUSION", kills: 0, posicao: 9, booyah: 0 }, { equipe: "CIVIS", kills: 3, posicao: 10, booyah: 0 }, { equipe: "LOOPS", kills: 3, posicao: 11, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 2, posicao: 12, booyah: 0 } ] },
+        5: { mapa: "Solara", resultados: [ { equipe: "E1 SPORTS", kills: 12, posicao: 1, booyah: 1 }, { equipe: "TEAM SOLID", kills: 3, posicao: 2, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 6, posicao: 3, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 9, posicao: 4, booyah: 0 }, { equipe: "CIVIS", kills: 4, posicao: 5, booyah: 0 }, { equipe: "AXS FUSION", kills: 10, posicao: 6, booyah: 0 }, { equipe: "ALPHA7", kills: 6, posicao: 7, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 1, posicao: 8, booyah: 0 }, { equipe: "FLUXO W7M", kills: 6, posicao: 9, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 10, booyah: 0 }, { equipe: "LOOPS", kills: 2, posicao: 11, booyah: 0 }, { equipe: "RUSH GAMING", kills: 1, posicao: 12, booyah: 0 } ] },
+        6: { mapa: "Solara", resultados: [ { equipe: "ALPHA7", kills: 17, posicao: 1, booyah: 1 }, { equipe: "VIRTUS PRO", kills: 13, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 7, posicao: 3, booyah: 0 }, { equipe: "TEAM SOLID", kills: 12, posicao: 4, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 3, posicao: 5, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 4, posicao: 6, booyah: 0 }, { equipe: "E1 SPORTS", kills: 1, posicao: 7, booyah: 0 }, { equipe: "RUSH GAMING", kills: 2, posicao: 8, booyah: 0 }, { equipe: "AXS FUSION", kills: 2, posicao: 9, booyah: 0 }, { equipe: "CIVIS", kills: 3, posicao: 10, booyah: 0 }, { equipe: "LOOPS", kills: 2, posicao: 11, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 1, posicao: 12, booyah: 0 } ] }
+    }
+    ,
+    // DIA 5
+    5: {
+        1: { mapa: "Bermuda", resultados: [ { equipe: "LOUD SNICKERS", kills: 12, posicao: 1, booyah: 1 }, { equipe: "TEAM SOLID", kills: 6, posicao: 2, booyah: 0 }, { equipe: "LOS", kills: 11, posicao: 3, booyah: 0 }, { equipe: "RUSH GAMING", kills: 7, posicao: 4, booyah: 0 }, { equipe: "ALPHA7", kills: 9, posicao: 5, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 4, posicao: 6, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 5, posicao: 7, booyah: 0 }, { equipe: "RISE GAMING", kills: 1, posicao: 8, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 3, posicao: 9, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 0, posicao: 10, booyah: 0 }, { equipe: "INTZ", kills: 3, posicao: 11, booyah: 0 }, { equipe: "CIVIS", kills: 1, posicao: 12, booyah: 0 } ] },
+        2: { mapa: "Nexterra", resultados: [ { equipe: "LOUD SNICKERS", kills: 13, posicao: 1, booyah: 1 }, { equipe: "RISE GAMING", kills: 19, posicao: 2, booyah: 0 }, { equipe: "TEAM SOLID", kills: 10, posicao: 3, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 5, posicao: 4, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 14, posicao: 5, booyah: 0 }, { equipe: "CIVIS", kills: 6, posicao: 6, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 17, posicao: 7, booyah: 0 }, { equipe: "LOS", kills: 9, posicao: 8, booyah: 0 }, { equipe: "ALPHA7", kills: 5, posicao: 9, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 5, posicao: 10, booyah: 0 }, { equipe: "INTZ", kills: 7, posicao: 11, booyah: 0 }, { equipe: "RUSH GAMING", kills: 2, posicao: 12, booyah: 0 } ] },
+        3: { mapa: "Solara", resultados: [ { equipe: "INTZ", kills: 16, posicao: 1, booyah: 1 }, { equipe: "RISE GAMING", kills: 15, posicao: 2, booyah: 0 }, { equipe: "TEAM SOLID", kills: 10, posicao: 3, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 5, posicao: 4, booyah: 0 }, { equipe: "CIVIS", kills: 1, posicao: 5, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 4, posicao: 6, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 4, posicao: 7, booyah: 0 }, { equipe: "LOS", kills: 3, posicao: 8, booyah: 0 }, { equipe: "RUSH GAMING", kills: 8, posicao: 9, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 11, posicao: 10, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 2, posicao: 11, booyah: 0 }, { equipe: "ALPHA7", kills: 1, posicao: 12, booyah: 0 } ] },
+        4: { mapa: "Kalahari", resultados: [ { equipe: "VIRTUS PRO", kills: 13, posicao: 1, booyah: 1 }, { equipe: "TEAM SOLID", kills: 10, posicao: 2, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 9, posicao: 3, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 6, posicao: 4, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 4, posicao: 5, booyah: 0 }, { equipe: "RISE GAMING", kills: 5, posicao: 6, booyah: 0 }, { equipe: "CIVIS", kills: 1, posicao: 7, booyah: 0 }, { equipe: "INTZ", kills: 0, posicao: 8, booyah: 0 }, { equipe: "LOS", kills: 6, posicao: 9, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 5, posicao: 10, booyah: 0 }, { equipe: "RUSH GAMING", kills: 4, posicao: 11, booyah: 0 }, { equipe: "ALPHA7", kills: 0, posicao: 12, booyah: 0 } ] },
+        5: { mapa: "Purgatório", resultados: [ { equipe: "LOUD SNICKERS", kills: 6, posicao: 1, booyah: 1 }, { equipe: "TEAM SOLID", kills: 11, posicao: 2, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 3, posicao: 3, booyah: 0 }, { equipe: "LOS", kills: 4, posicao: 4, booyah: 0 }, { equipe: "RISE GAMING", kills: 8, posicao: 5, booyah: 0 }, { equipe: "INTZ", kills: 11, posicao: 6, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 13, posicao: 7, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 0, posicao: 8, booyah: 0 }, { equipe: "CIVIS", kills: 3, posicao: 9, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 4, posicao: 10, booyah: 0 }, { equipe: "ALPHA7", kills: 3, posicao: 11, booyah: 0 }, { equipe: "RUSH GAMING", kills: 0, posicao: 12, booyah: 0 } ] },
+        6: { mapa: "Kalahari", resultados: [ { equipe: "INFLUENCE RAGE", kills: 16, posicao: 1, booyah: 1 }, { equipe: "RUSH GAMING", kills: 7, posicao: 2, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 6, posicao: 3, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 11, posicao: 4, booyah: 0 }, { equipe: "INTZ", kills: 5, posicao: 5, booyah: 0 }, { equipe: "TEAM SOLID", kills: 11, posicao: 6, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 7, booyah: 0 }, { equipe: "ALPHA7", kills: 5, posicao: 8, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 6, posicao: 9, booyah: 0 }, { equipe: "LOS", kills: 2, posicao: 10, booyah: 0 }, { equipe: "RISE GAMING", kills: 2, posicao: 11, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 12, booyah: 0 } ] }
+    }
+    ,
+    // DIA 6
+    6: {
+        1: { mapa: "Kalahari", resultados: [ { equipe: "RUSH GAMING", kills: 10, posicao: 1, booyah: 1 }, { equipe: "LOOPS", kills: 15, posicao: 2, booyah: 0 }, { equipe: "ALPHA7", kills: 9, posicao: 3, booyah: 0 }, { equipe: "INTZ", kills: 2, posicao: 4, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 2, posicao: 5, booyah: 0 }, { equipe: "AXS FUSION", kills: 3, posicao: 6, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 3, posicao: 7, booyah: 0 }, { equipe: "LOS", kills: 8, posicao: 8, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 0, posicao: 9, booyah: 0 }, { equipe: "E1 SPORTS", kills: 0, posicao: 10, booyah: 0 }, { equipe: "RISE GAMING", kills: 1, posicao: 11, booyah: 0 }, { equipe: "FLUXO W7M", kills: 0, posicao: 12, booyah: 0 } ] },
+        2: { mapa: "Bermuda", resultados: [ { equipe: "FLUXO W7M", kills: 9, posicao: 1, booyah: 1 }, { equipe: "E1 SPORTS", kills: 10, posicao: 2, booyah: 0 }, { equipe: "RUSH GAMING", kills: 4, posicao: 3, booyah: 0 }, { equipe: "RISE GAMING", kills: 1, posicao: 4, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 0, posicao: 5, booyah: 0 }, { equipe: "INTZ", kills: 11, posicao: 6, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 3, posicao: 7, booyah: 0 }, { equipe: "AXS FUSION", kills: 5, posicao: 8, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 2, posicao: 9, booyah: 0 }, { equipe: "ALPHA7", kills: 6, posicao: 10, booyah: 0 }, { equipe: "LOS", kills: 7, posicao: 11, booyah: 0 }, { equipe: "LOOPS", kills: 5, posicao: 12, booyah: 0 } ] },
+        3: { mapa: "Solara", resultados: [ { equipe: "VIRTUS PRO", kills: 8, posicao: 1, booyah: 1 }, { equipe: "LOS", kills: 11, posicao: 2, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 9, posicao: 3, booyah: 0 }, { equipe: "E1 SPORTS", kills: 7, posicao: 4, booyah: 0 }, { equipe: "RUSH GAMING", kills: 2, posicao: 5, booyah: 0 }, { equipe: "FLUXO W7M", kills: 4, posicao: 6, booyah: 0 }, { equipe: "AXS FUSION", kills: 6, posicao: 7, booyah: 0 }, { equipe: "RISE GAMING", kills: 3, posicao: 8, booyah: 0 }, { equipe: "INTZ", kills: 3, posicao: 9, booyah: 0 }, { equipe: "LOOPS", kills: 0, posicao: 10, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 8, posicao: 11, booyah: 0 }, { equipe: "ALPHA7", kills: 1, posicao: 12, booyah: 0 } ] },
+        4: { mapa: "Nexterra", resultados: [ { equipe: "LOS", kills: 14, posicao: 1, booyah: 1 }, { equipe: "LOOPS", kills: 10, posicao: 2, booyah: 0 }, { equipe: "INTZ", kills: 8, posicao: 3, booyah: 0 }, { equipe: "AXS FUSION", kills: 8, posicao: 4, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 8, posicao: 5, booyah: 0 }, { equipe: "ALPHA7", kills: 9, posicao: 6, booyah: 0 }, { equipe: "FLUXO W7M", kills: 6, posicao: 7, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 5, posicao: 8, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 2, posicao: 9, booyah: 0 }, { equipe: "E1 SPORTS", kills: 1, posicao: 10, booyah: 0 }, { equipe: "RISE GAMING", kills: 4, posicao: 11, booyah: 0 }, { equipe: "RUSH GAMING", kills: 0, posicao: 12, booyah: 0 } ] },
+        5: { mapa: "Purgatory", resultados: [ { equipe: "AXS FUSION", kills: 14, posicao: 1, booyah: 1 }, { equipe: "VIRTUS PRO", kills: 12, posicao: 2, booyah: 0 }, { equipe: "LOS", kills: 5, posicao: 3, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 8, posicao: 4, booyah: 0 }, { equipe: "ALPHA7", kills: 9, posicao: 5, booyah: 0 }, { equipe: "E1 SPORTS", kills: 0, posicao: 6, booyah: 0 }, { equipe: "INTZ", kills: 11, posicao: 7, booyah: 0 }, { equipe: "RISE GAMING", kills: 8, posicao: 8, booyah: 0 }, { equipe: "FLUXO W7M", kills: 0, posicao: 9, booyah: 0 }, { equipe: "RUSH GAMING", kills: 5, posicao: 10, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 11, booyah: 0 }, { equipe: "LOOPS", kills: 1, posicao: 12, booyah: 0 } ] },
+        6: { mapa: "Nexterra", resultados: [ { equipe: "RISE GAMING", kills: 22, posicao: 1, booyah: 1 }, { equipe: "LOOPS", kills: 5, posicao: 2, booyah: 0 }, { equipe: "AXS FUSION", kills: 5, posicao: 3, booyah: 0 }, { equipe: "RUSH GAMING", kills: 1, posicao: 4, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 3, posicao: 5, booyah: 0 }, { equipe: "ALPHA7", kills: 4, posicao: 6, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 7, posicao: 7, booyah: 0 }, { equipe: "E1 SPORTS", kills: 4, posicao: 8, booyah: 0 }, { equipe: "LOS", kills: 23, posicao: 9, booyah: 0 }, { equipe: "INTZ", kills: 13, posicao: 10, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 12, posicao: 11, booyah: 0 }, { equipe: "FLUXO W7M", kills: 7, posicao: 12, booyah: 0 } ] }
+    }
+    ,
+    // DIA 7
+    7: {
+        1: { mapa: "Purgatório", resultados: [ { equipe: "VIRTUS PRO", kills: 11, posicao: 1, booyah: 1 }, { equipe: "INFLUENCE RAGE", kills: 6, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 13, posicao: 3, booyah: 0 }, { equipe: "LOOPS", kills: 7, posicao: 4, booyah: 0 }, { equipe: "RUSH GAMING", kills: 4, posicao: 5, booyah: 0 }, { equipe: "E1 SPORTS", kills: 9, posicao: 6, booyah: 0 }, { equipe: "CIVIS", kills: 5, posicao: 7, booyah: 0 }, { equipe: "TEAM SOLID", kills: 9, posicao: 8, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 9, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 3, posicao: 10, booyah: 0 }, { equipe: "AXS FUSION", kills: 1, posicao: 11, booyah: 0 }, { equipe: "ALPHA7", kills: 0, posicao: 12, booyah: 0 } ] },
+        2: { mapa: "Kalahari", resultados: [ { equipe: "TEAM SOLID", kills: 11, posicao: 1, booyah: 1 }, { equipe: "FLUXO W7M", kills: 6, posicao: 2, booyah: 0 }, { equipe: "CIVIS", kills: 6, posicao: 3, booyah: 0 }, { equipe: "AXS FUSION", kills: 10, posicao: 4, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 5, posicao: 5, booyah: 0 }, { equipe: "E1 SPORTS", kills: 2, posicao: 6, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 6, posicao: 7, booyah: 0 }, { equipe: "RUSH GAMING", kills: 7, posicao: 8, booyah: 0 }, { equipe: "LOOPS", kills: 8, posicao: 9, booyah: 0 }, { equipe: "ALPHA7", kills: 1, posicao: 10, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 11, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 0, posicao: 12, booyah: 0 } ] },
+        3: { mapa: "Solara", resultados: [ { equipe: "E1 SPORTS", kills: 9, posicao: 1, booyah: 1 }, { equipe: "RUSH GAMING", kills: 12, posicao: 2, booyah: 0 }, { equipe: "AXS FUSION", kills: 4, posicao: 3, booyah: 0 }, { equipe: "TEAM SOLID", kills: 2, posicao: 4, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 2, posicao: 5, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 5, posicao: 6, booyah: 0 }, { equipe: "LOOPS", kills: 3, posicao: 7, booyah: 0 }, { equipe: "FLUXO W7M", kills: 11, posicao: 8, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 1, posicao: 9, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 0, posicao: 10, booyah: 0 }, { equipe: "CIVIS", kills: 4, posicao: 11, booyah: 0 }, { equipe: "ALPHA7", kills: 3, posicao: 12, booyah: 0 } ] },
+        4: { mapa: "Nexterra", resultados: [ { equipe: "VIRTUS PRO", kills: 10, posicao: 1, booyah: 1 }, { equipe: "E1 SPORTS", kills: 11, posicao: 2, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 6, posicao: 3, booyah: 0 }, { equipe: "FLUXO W7M", kills: 8, posicao: 4, booyah: 0 }, { equipe: "RUSH GAMING", kills: 8, posicao: 5, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 10, posicao: 6, booyah: 0 }, { equipe: "ALPHA7", kills: 14, posicao: 7, booyah: 0 }, { equipe: "AXS FUSION", kills: 2, posicao: 8, booyah: 0 }, { equipe: "CIVIS", kills: 5, posicao: 9, booyah: 0 }, { equipe: "LOOPS", kills: 9, posicao: 10, booyah: 0 }, { equipe: "TEAM SOLID", kills: 6, posicao: 11, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 0, posicao: 12, booyah: 0 } ] },
+        5: { mapa: "Bermuda", resultados: [ { equipe: "CIVIS", kills: 16, posicao: 1, booyah: 1 }, { equipe: "RUSH GAMING", kills: 17, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 12, posicao: 3, booyah: 0 }, { equipe: "AXS FUSION", kills: 10, posicao: 4, booyah: 0 }, { equipe: "E1 SPORTS", kills: 1, posicao: 5, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 6, posicao: 6, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 6, posicao: 7, booyah: 0 }, { equipe: "LOOPS", kills: 2, posicao: 8, booyah: 0 }, { equipe: "ALPHA7", kills: 2, posicao: 9, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 2, posicao: 10, booyah: 0 }, { equipe: "TEAM SOLID", kills: 5, posicao: 11, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 3, posicao: 12, booyah: 0 } ] },
+        6: { mapa: "Purgatório", resultados: [ { equipe: "FLUXO W7M", kills: 14, posicao: 1, booyah: 1 }, { equipe: "INFLUENCE RAGE", kills: 22, posicao: 2, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 3, posicao: 3, booyah: 0 }, { equipe: "TEAM SOLID", kills: 7, posicao: 4, booyah: 0 }, { equipe: "CIVIS", kills: 8, posicao: 5, booyah: 0 }, { equipe: "LOOPS", kills: 7, posicao: 6, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 4, posicao: 7, booyah: 0 }, { equipe: "AXS FUSION", kills: 3, posicao: 8, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 5, posicao: 9, booyah: 0 }, { equipe: "E1 SPORTS", kills: 0, posicao: 10, booyah: 0 }, { equipe: "ALPHA7", kills: 1, posicao: 11, booyah: 0 }, { equipe: "RUSH GAMING", kills: 1, posicao: 12, booyah: 0 } ] }
+    }
+    ,
+    // DIA 8
+    8: {
+        1: { mapa: "Bermuda", resultados: [ { equipe: "FLUXO W7M", kills: 6, posicao: 1, booyah: 1 }, { equipe: "LOS", kills: 12, posicao: 2, booyah: 0 }, { equipe: "AXS FUSION", kills: 4, posicao: 3, booyah: 0 }, { equipe: "TEAM SOLID", kills: 9, posicao: 4, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 7, posicao: 5, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 8, posicao: 6, booyah: 0 }, { equipe: "LOOPS", kills: 10, posicao: 7, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 3, posicao: 8, booyah: 0 }, { equipe: "INTZ", kills: 7, posicao: 9, booyah: 0 }, { equipe: "RISE GAMING", kills: 6, posicao: 10, booyah: 0 }, { equipe: "CIVIS", kills: 2, posicao: 11, booyah: 0 }, { equipe: "E1 SPORTS", kills: 2, posicao: 12, booyah: 0 } ] },
+        2: { mapa: "Purgatório", resultados: [ { equipe: "FLUXO W7M", kills: 16, posicao: 1, booyah: 1 }, { equipe: "LOS", kills: 16, posicao: 2, booyah: 0 }, { equipe: "INTZ", kills: 6, posicao: 3, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 4, booyah: 0 }, { equipe: "TEAM SOLID", kills: 2, posicao: 5, booyah: 0 }, { equipe: "LOOPS", kills: 6, posicao: 6, booyah: 0 }, { equipe: "E1 SPORTS", kills: 4, posicao: 7, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 0, posicao: 8, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 2, posicao: 9, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 7, posicao: 10, booyah: 0 }, { equipe: "RISE GAMING", kills: 3, posicao: 11, booyah: 0 }, { equipe: "AXS FUSION", kills: 0, posicao: 12, booyah: 0 } ] },
+        3: { mapa: "Solara", resultados: [ { equipe: "LOUD SNICKERS", kills: 9, posicao: 1, booyah: 1 }, { equipe: "LOS", kills: 6, posicao: 2, booyah: 0 }, { equipe: "INTZ", kills: 13, posicao: 3, booyah: 0 }, { equipe: "TEAM SOLID", kills: 7, posicao: 4, booyah: 0 }, { equipe: "E1 SPORTS", kills: 7, posicao: 5, booyah: 0 }, { equipe: "FLUXO W7M", kills: 10, posicao: 6, booyah: 0 }, { equipe: "AXS FUSION", kills: 1, posicao: 7, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 1, posicao: 8, booyah: 0 }, { equipe: "LOOPS", kills: 7, posicao: 9, booyah: 0 }, { equipe: "RISE GAMING", kills: 8, posicao: 10, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 1, posicao: 11, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 12, booyah: 0 } ] },
+        4: { mapa: "Kalahari", resultados: [ { equipe: "AXS FUSION", kills: 8, posicao: 1, booyah: 1 }, { equipe: "LOUD SNICKERS", kills: 4, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 10, posicao: 3, booyah: 0 }, { equipe: "RISE GAMING", kills: 9, posicao: 4, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 1, posicao: 5, booyah: 0 }, { equipe: "LOS", kills: 4, posicao: 6, booyah: 0 }, { equipe: "CIVIS", kills: 4, posicao: 7, booyah: 0 }, { equipe: "E1 SPORTS", kills: 2, posicao: 8, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 0, posicao: 9, booyah: 0 }, { equipe: "INTZ", kills: 11, posicao: 10, booyah: 0 }, { equipe: "TEAM SOLID", kills: 2, posicao: 11, booyah: 0 }, { equipe: "LOOPS", kills: 6, posicao: 12, booyah: 0 } ] },
+        5: { mapa: "Solara", resultados: [ { equipe: "INTZ", kills: 18, posicao: 1, booyah: 1 }, { equipe: "E1 SPORTS", kills: 4, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 6, posicao: 3, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 4, posicao: 4, booyah: 0 }, { equipe: "TEAM SOLID", kills: 2, posicao: 5, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 6, booyah: 0 }, { equipe: "AXS FUSION", kills: 12, posicao: 7, booyah: 0 }, { equipe: "LOOPS", kills: 0, posicao: 8, booyah: 0 }, { equipe: "RISE GAMING", kills: 8, posicao: 9, booyah: 0 }, { equipe: "LOS", kills: 8, posicao: 10, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 11, posicao: 11, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 0, posicao: 12, booyah: 0 } ] },
+        6: { mapa: "Kalahari", resultados: [ { equipe: "LOS", kills: 12, posicao: 1, booyah: 1 }, { equipe: "RISE GAMING", kills: 4, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 7, posicao: 3, booyah: 0 }, { equipe: "E1 SPORTS", kills: 4, posicao: 4, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 4, posicao: 5, booyah: 0 }, { equipe: "INTZ", kills: 9, posicao: 6, booyah: 0 }, { equipe: "TEAM SOLID", kills: 10, posicao: 7, booyah: 0 }, { equipe: "AXS FUSION", kills: 6, posicao: 8, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 5, posicao: 9, booyah: 0 }, { equipe: "LOOPS", kills: 0, posicao: 10, booyah: 0 }, { equipe: "CIVIS", kills: 8, posicao: 11, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 0, posicao: 12, booyah: 0 } ] }
+    }
+    ,
+    // DIA 10
+    10: {
+        1: { mapa: "Nexterra", resultados: [ { equipe: "VIRTUS PRO", kills: 10, posicao: 1, booyah: 1 }, { equipe: "ALPHA7", kills: 22, posicao: 2, booyah: 0 }, { equipe: "FLUXO W7M", kills: 14, posicao: 3, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 11, posicao: 4, booyah: 0 }, { equipe: "LOOPS", kills: 1, posicao: 5, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 0, posicao: 6, booyah: 0 }, { equipe: "AXS FUSION", kills: 5, posicao: 7, booyah: 0 }, { equipe: "E1 SPORTS", kills: 1, posicao: 8, booyah: 0 }, { equipe: "CIVIS", kills: 4, posicao: 9, booyah: 0 }, { equipe: "TEAM SOLID", kills: 5, posicao: 10, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 5, posicao: 11, booyah: 0 }, { equipe: "RUSH GAMING", kills: 1, posicao: 12, booyah: 0 } ] },
+        2: { mapa: "Solara", resultados: [ { equipe: "FLUXO W7M", kills: 18, posicao: 1, booyah: 1 }, { equipe: "VIRTUS PRO", kills: 9, posicao: 2, booyah: 0 }, { equipe: "AXS FUSION", kills: 3, posicao: 3, booyah: 0 }, { equipe: "TEAM SOLID", kills: 5, posicao: 4, booyah: 0 }, { equipe: "ALPHA7", kills: 5, posicao: 5, booyah: 0 }, { equipe: "LOOPS", kills: 2, posicao: 6, booyah: 0 }, { equipe: "E1 SPORTS", kills: 4, posicao: 7, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 4, posicao: 8, booyah: 0 }, { equipe: "RUSH GAMING", kills: 3, posicao: 9, booyah: 0 }, { equipe: "CIVIS", kills: 2, posicao: 10, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 1, posicao: 11, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 0, posicao: 12, booyah: 0 } ] },
+        3: { mapa: "Kalahari", resultados: [ { equipe: "VIRTUS PRO", kills: 13, posicao: 1, booyah: 1 }, { equipe: "TEAM SOLID", kills: 10, posicao: 2, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 9, posicao: 3, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 6, posicao: 4, booyah: 0 }, { equipe: "LOUD SNICKERS", kills: 4, posicao: 5, booyah: 0 }, { equipe: "RISE GAMING", kills: 5, posicao: 6, booyah: 0 }, { equipe: "CIVIS", kills: 1, posicao: 7, booyah: 0 }, { equipe: "INTZ", kills: 0, posicao: 8, booyah: 0 }, { equipe: "LOS", kills: 6, posicao: 9, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 5, posicao: 10, booyah: 0 }, { equipe: "RUSH GAMING", kills: 4, posicao: 11, booyah: 0 }, { equipe: "ALPHA7", kills: 0, posicao: 12, booyah: 0 } ] },
+        4: { mapa: "Bermuda", resultados: [ { equipe: "ALPHA7", kills: 20, posicao: 1, booyah: 1 }, { equipe: "AXS FUSION", kills: 9, posicao: 2, booyah: 0 }, { equipe: "RUSH GAMING", kills: 4, posicao: 3, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 12, posicao: 4, booyah: 0 }, { equipe: "CIVIS", kills: 0, posicao: 5, booyah: 0 }, { equipe: "FLUXO W7M", kills: 5, posicao: 6, booyah: 0 }, { equipe: "E1 SPORTS", kills: 7, posicao: 7, booyah: 0 }, { equipe: "TEAM SOLID", kills: 4, posicao: 8, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 2, posicao: 9, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 9, posicao: 10, booyah: 0 }, { equipe: "LOOPS", kills: 7, posicao: 11, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 1, posicao: 12, booyah: 0 } ] },
+        5: { mapa: "Purgatório", resultados: [ { equipe: "FLUXO W7M", kills: 15, posicao: 1, booyah: 1 }, { equipe: "AXS FUSION", kills: 4, posicao: 2, booyah: 0 }, { equipe: "ALPHA7", kills: 2, posicao: 3, booyah: 0 }, { equipe: "E1 SPORTS", kills: 11, posicao: 4, booyah: 0 }, { equipe: "TEAM SOLID", kills: 2, posicao: 5, booyah: 0 }, { equipe: "LOOPS", kills: 7, posicao: 6, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 14, posicao: 7, booyah: 0 }, { equipe: "CIVIS", kills: 4, posicao: 8, booyah: 0 }, { equipe: "RUSH GAMING", kills: 5, posicao: 9, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 1, posicao: 10, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 2, posicao: 11, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 2, posicao: 12, booyah: 0 } ] },
+        6: { mapa: "Solara", resultados: [ { equipe: "CIVIS", kills: 9, posicao: 1, booyah: 1 }, { equipe: "ALPHA7", kills: 7, posicao: 2, booyah: 0 }, { equipe: "VIRTUS PRO", kills: 11, posicao: 3, booyah: 0 }, { equipe: "INFLUENCE RAGE", kills: 3, posicao: 4, booyah: 0 }, { equipe: "TEAM SOLID", kills: 14, posicao: 5, booyah: 0 }, { equipe: "AXS FUSION", kills: 3, posicao: 6, booyah: 0 }, { equipe: "ANGELS OUTPLAY", kills: 9, posicao: 7, booyah: 0 }, { equipe: "E1 SPORTS", kills: 2, posicao: 8, booyah: 0 }, { equipe: "VASCO ESPORTS", kills: 5, posicao: 9, booyah: 0 }, { equipe: "FLUXO W7M", kills: 5, posicao: 10, booyah: 0 }, { equipe: "RUSH GAMING", kills: 9, posicao: 11, booyah: 0 }, { equipe: "LOOPS", kills: 6, posicao: 12, booyah: 0 } ] }
+    }
+};
+
+// ==========================================
+// BANCO DE DADOS: DESEMPENHO DOS JOGADORES POR QUEDA
+// ==========================================
+
+const dbJogadoresQuedas = {
+    // DIA 1
+    1: {
+        1: [
+            { nome: "Raone7", equipe: "LOS", kills: 8, dano: 3403, assists: 5, mvp: 1 },
+            { nome: "Rigby245", equipe: "LOS", kills: 7, dano: 4215, assists: 8, mvp: 0 },
+            { nome: "TRAP", equipe: "LOUD SNICKERS", kills: 4, dano: 1890, assists: 2, mvp: 0 },
+            { nome: "GUS", equipe: "INTZ", kills: 4, dano: 1130, assists: 4, mvp: 0 },
+            { nome: "Yago", equipe: "LOS", kills: 3, dano: 3771, assists: 6, mvp: 0 },
+            { nome: "Bops", equipe: "FLUXO W7M", kills: 3, dano: 1988, assists: 1, mvp: 0 },
+            { nome: "MT7", equipe: "FLUXO W7M", kills: 3, dano: 1364, assists: 0, mvp: 0 },
+            { nome: "SOARES", equipe: "AXS FUSION", kills: 3, dano: 681, assists: 0, mvp: 0 },
+            { nome: "General!", equipe: "LOS", kills: 2, dano: 2480, assists: 10, mvp: 0 },
+            { nome: "lippe!", equipe: "INFLUENCE RAGE", kills: 2, dano: 1049, assists: 0, mvp: 0 },
+            { nome: "kauãxp", equipe: "INTZ", kills: 2, dano: 922, assists: 2, mvp: 0 },
+            { nome: "João7", equipe: "INTZ", kills: 2, dano: 921, assists: 1, mvp: 0 },
+            { nome: "HAK", equipe: "LOUD SNICKERS", kills: 2, dano: 447, assists: 5, mvp: 0 },
+            { nome: "Naandox", equipe: "RISE GAMING", kills: 1, dano: 1842, assists: 1, mvp: 0 },
+            { nome: "BuTziN", equipe: "FLUXO W7M", kills: 1, dano: 1666, assists: 2, mvp: 0 },
+            { nome: "Motovea", equipe: "TEAM SOLID", kills: 1, dano: 1621, assists: 1, mvp: 0 },
+            { nome: "NICKZ", equipe: "LOUD SNICKERS", kills: 1, dano: 950, assists: 3, mvp: 0 },
+            { nome: "wLiu", equipe: "AXS FUSION", kills: 1, dano: 822, assists: 3, mvp: 0 },
+            { nome: "Giuh", equipe: "FLUXO W7M", kills: 1, dano: 752, assists: 6, mvp: 0 },
+            { nome: "KaKaZk", equipe: "RISE GAMING", kills: 1, dano: 679, assists: 0, mvp: 0 },
+            { nome: "Pitbull", equipe: "TEAM SOLID", kills: 1, dano: 655, assists: 1, mvp: 0 },
+            { nome: "Pão7", equipe: "E1 SPORTS", kills: 1, dano: 403, assists: 0, mvp: 0 },
+            { nome: "Keven7!", equipe: "CIVIS", kills: 1, dano: 384, assists: 0, mvp: 0 },
+            { nome: "Lyon", equipe: "E1 SPORTS", kills: 1, dano: 373, assists: 0, mvp: 0 },
+            { nome: "PETER", equipe: "TEAM SOLID", kills: 1, dano: 230, assists: 1, mvp: 0 },
+            { nome: "Luan7", equipe: "LOOPS", kills: 1, dano: 64, assists: 0, mvp: 0 },
+            { nome: "Mts007", equipe: "VASCO ESPORTS", kills: 0, dano: 958, assists: 0, mvp: 0 },
+            { nome: "Draxx7", equipe: "LOOPS", kills: 0, dano: 909, assists: 1, mvp: 0 },
+            { nome: "IGOR7", equipe: "INFLUENCE RAGE", kills: 0, dano: 879, assists: 1, mvp: 0 },
+            { nome: "itzking1", equipe: "INFLUENCE RAGE", kills: 0, dano: 846, assists: 2, mvp: 0 },
+            { nome: "Erick11", equipe: "RISE GAMING", kills: 0, dano: 823, assists: 1, mvp: 0 },
+            { nome: "Theus", equipe: "AXS FUSION", kills: 0, dano: 817, assists: 3, mvp: 0 },
+            { nome: "BRUNO7w", equipe: "E1 SPORTS", kills: 0, dano: 742, assists: 0, mvp: 0 },
+            { nome: "GUAXA", equipe: "LOUD SNICKERS", kills: 0, dano: 704, assists: 5, mvp: 0 },
+            { nome: "honeyzL", equipe: "INTZ", kills: 0, dano: 469, assists: 1, mvp: 0 },
+            { nome: "Destroi7", equipe: "CIVIS", kills: 0, dano: 445, assists: 1, mvp: 0 },
+            { nome: "YOKO7", equipe: "CIVIS", kills: 0, dano: 445, assists: 0, mvp: 0 },
+            { nome: "Razure", equipe: "INFLUENCE RAGE", kills: 0, dano: 405, assists: 0, mvp: 0 },
+            { nome: "ITAL0$$", equipe: "RISE GAMING", kills: 0, dano: 346, assists: 1, mvp: 0 },
+            { nome: "Juca10xL", equipe: "E1 SPORTS", kills: 0, dano: 334, assists: 0, mvp: 0 },
+            { nome: "Bahiaz7", equipe: "VASCO ESPORTS", kills: 0, dano: 329, assists: 0, mvp: 0 },
+            { nome: "Redxzzz", equipe: "AXS FUSION", kills: 0, dano: 327, assists: 0, mvp: 0 },
+            { nome: "vitinxp", equipe: "TEAM SOLID", kills: 0, dano: 294, assists: 2, mvp: 0 },
+            { nome: "ZETSU9", equipe: "VASCO ESPORTS", kills: 0, dano: 285, assists: 0, mvp: 0 },
+            { nome: "Stark", equipe: "LOOPS", kills: 0, dano: 183, assists: 1, mvp: 0 },
+            { nome: "BIELGOD", equipe: "VASCO ESPORTS", kills: 0, dano: 134, assists: 0, mvp: 0 },
+            { nome: "WillProdigy", equipe: "CIVIS", kills: 0, dano: 76, assists: 0, mvp: 0 },
+            { nome: "Ericking", equipe: "LOOPS", kills: 0, dano: 75, assists: 1, mvp: 0 }
+        ],
+        2: [
+            { nome: "KaKaZk", equipe: "RISE GAMING", kills: 7, dano: 3266, assists: 3, mvp: 1 },
+            { nome: "ITAL0$$", equipe: "RISE GAMING", kills: 6, dano: 2143, assists: 3, mvp: 0 },
+            { nome: "TRAP", equipe: "LOUD SNICKERS", kills: 5, dano: 2896, assists: 6, mvp: 0 },
+            { nome: "GUAXA", equipe: "LOUD SNICKERS", kills: 4, dano: 1455, assists: 3, mvp: 0 },
+            { nome: "Ericking", equipe: "LOOPS", kills: 3, dano: 2137, assists: 2, mvp: 0 },
+            { nome: "IGOR7", equipe: "INFLUENCE RAGE", kills: 3, dano: 1978, assists: 1, mvp: 0 },
+            { nome: "BuTziN", equipe: "FLUXO W7M", kills: 3, dano: 1069, assists: 1, mvp: 0 },
+            { nome: "HAK", equipe: "LOUD SNICKERS", kills: 2, dano: 1504, assists: 7, mvp: 0 },
+            { nome: "Erick11", equipe: "RISE GAMING", kills: 2, dano: 1256, assists: 5, mvp: 0 },
+            { nome: "Rigby245", equipe: "LOS", kills: 2, dano: 1113, assists: 0, mvp: 0 },
+            { nome: "Giuh", equipe: "FLUXO W7M", kills: 2, dano: 939, assists: 3, mvp: 0 },
+            { nome: "Luan7", equipe: "LOOPS", kills: 2, dano: 579, assists: 2, mvp: 0 },
+            { nome: "PETER", equipe: "TEAM SOLID", kills: 1, dano: 1425, assists: 1, mvp: 0 },
+            { nome: "Stark", equipe: "LOOPS", kills: 1, dano: 1048, assists: 3, mvp: 0 },
+            { nome: "lippe!", equipe: "INFLUENCE RAGE", kills: 1, dano: 882, assists: 1, mvp: 0 },
+            { nome: "Redxzzz", equipe: "AXS FUSION", kills: 1, dano: 850, assists: 0, mvp: 0 },
+            { nome: "honeyzL", equipe: "INTZ", kills: 1, dano: 639, assists: 0, mvp: 0 },
+            { nome: "Naandox", equipe: "RISE GAMING", kills: 1, dano: 638, assists: 4, mvp: 0 },
+            { nome: "Theus", equipe: "AXS FUSION", kills: 1, dano: 536, assists: 0, mvp: 0 },
+            { nome: "GUS", equipe: "INTZ", kills: 1, dano: 474, assists: 1, mvp: 0 },
+            { nome: "Motovea", equipe: "TEAM SOLID", kills: 1, dano: 423, assists: 1, mvp: 0 },
+            { nome: "Draxx7", equipe: "LOOPS", kills: 1, dano: 423, assists: 3, mvp: 0 },
+            { nome: "Keven7!", equipe: "CIVIS", kills: 1, dano: 152, assists: 0, mvp: 0 },
+            { nome: "MT7", equipe: "FLUXO W7M", kills: 0, dano: 1504, assists: 5, mvp: 0 },
+            { nome: "NICKZ", equipe: "LOUD SNICKERS", kills: 0, dano: 1342, assists: 6, mvp: 0 },
+            { nome: "Yago", equipe: "LOS", kills: 0, dano: 1341, assists: 1, mvp: 0 },
+            { nome: "YOKO7", equipe: "CIVIS", kills: 0, dano: 1128, assists: 1, mvp: 0 },
+            { nome: "BIELGOD", equipe: "VASCO ESPORTS", kills: 0, dano: 914, assists: 0, mvp: 0 },
+            { nome: "wLiu", equipe: "AXS FUSION", kills: 0, dano: 851, assists: 0, mvp: 0 },
+            { nome: "Razure", equipe: "INFLUENCE RAGE", kills: 0, dano: 845, assists: 1, mvp: 0 },
+            { nome: "Bops", equipe: "FLUXO W7M", kills: 0, dano: 651, assists: 2, mvp: 0 },
+            { nome: "Lyon", equipe: "E1 SPORTS", kills: 0, dano: 640, assists: 0, mvp: 0 },
+            { nome: "itzking1", equipe: "INFLUENCE RAGE", kills: 0, dano: 517, assists: 2, mvp: 0 },
+            { nome: "Pão7", equipe: "E1 SPORTS", kills: 0, dano: 451, assists: 0, mvp: 0 },
+            { nome: "Juca10xL", equipe: "E1 SPORTS", kills: 0, dano: 364, assists: 0, mvp: 0 },
+            { nome: "Destroi7", equipe: "CIVIS", kills: 0, dano: 312, assists: 1, mvp: 0 },
+            { nome: "General!", equipe: "LOS", kills: 0, dano: 311, assists: 0, mvp: 0 },
+            { nome: "João7", equipe: "INTZ", kills: 0, dano: 294, assists: 2, mvp: 0 },
+            { nome: "Bahiaz7", equipe: "VASCO ESPORTS", kills: 0, dano: 226, assists: 0, mvp: 0 },
+            { nome: "Pitbull", equipe: "TEAM SOLID", kills: 0, dano: 112, assists: 1, mvp: 0 },
+            { nome: "Mts007", equipe: "VASCO ESPORTS", kills: 0, dano: 91, assists: 0, mvp: 0 },
+            { nome: "SOARES", equipe: "AXS FUSION", kills: 0, dano: 87, assists: 0, mvp: 0 },
+            { nome: "WillProdigy", equipe: "CIVIS", kills: 0, dano: 42, assists: 0, mvp: 0 },
+            { nome: "BRUNO7w", equipe: "E1 SPORTS", kills: 0, dano: 16, assists: 0, mvp: 0 },
+            { nome: "kauãxp", equipe: "INTZ", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "vitinxp", equipe: "TEAM SOLID", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "ZETSU9", equipe: "VASCO ESPORTS", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "Raone7", equipe: "LOS", kills: 0, dano: 0, assists: 0, mvp: 0 }
+        ],
+        3: [
+            { nome: "MT7", equipe: "FLUXO W7M", kills: 5, dano: 3041, assists: 2, mvp: 1 },
+            { nome: "Rigby245", equipe: "LOS", kills: 4, dano: 1011, assists: 6, mvp: 0 },
+            { nome: "João7", equipe: "INTZ", kills: 3, dano: 1745, assists: 1, mvp: 0 },
+            { nome: "GUAXA", equipe: "LOUD SNICKERS", kills: 3, dano: 1249, assists: 2, mvp: 0 },
+            { nome: "Mts007", equipe: "VASCO ESPORTS", kills: 2, dano: 1485, assists: 3, mvp: 0 },
+            { nome: "ZETSU9", equipe: "VASCO ESPORTS", kills: 2, dano: 1368, assists: 2, mvp: 0 },
+            { nome: "lippe!", equipe: "INFLUENCE RAGE", kills: 2, dano: 1178, assists: 2, mvp: 0 },
+            { nome: "Yago", equipe: "LOS", kills: 2, dano: 1062, assists: 3, mvp: 0 },
+            { nome: "TRAP", equipe: "LOUD SNICKERS", kills: 2, dano: 1038, assists: 3, mvp: 0 },
+            { nome: "Raone7", equipe: "LOS", kills: 2, dano: 1019, assists: 4, mvp: 0 },
+            { nome: "Keven7!", equipe: "CIVIS", kills: 2, dano: 997, assists: 2, mvp: 0 },
+            { nome: "Giuh", equipe: "FLUXO W7M", kills: 2, dano: 989, assists: 5, mvp: 0 },
+            { nome: "IGOR7", equipe: "INFLUENCE RAGE", kills: 2, dano: 974, assists: 0, mvp: 0 },
+            { nome: "YOKO7", equipe: "CIVIS", kills: 2, dano: 892, assists: 1, mvp: 0 },
+            { nome: "BuTziN", equipe: "FLUXO W7M", kills: 2, dano: 841, assists: 4, mvp: 0 },
+            { nome: "General!", equipe: "LOS", kills: 2, dano: 646, assists: 3, mvp: 0 },
+            { nome: "Bahiaz7", equipe: "VASCO ESPORTS", kills: 2, dano: 553, assists: 0, mvp: 0 },
+            { nome: "BIELGOD", equipe: "VASCO ESPORTS", kills: 1, dano: 1530, assists: 4, mvp: 0 },
+            { nome: "Bops", equipe: "FLUXO W7M", kills: 1, dano: 1250, assists: 3, mvp: 0 },
+            { nome: "Stark", equipe: "LOOPS", kills: 1, dano: 1218, assists: 2, mvp: 0 },
+            { nome: "Draxx7", equipe: "LOOPS", kills: 1, dano: 1043, assists: 1, mvp: 0 },
+            { nome: "Ericking", equipe: "LOOPS", kills: 1, dano: 988, assists: 0, mvp: 0 },
+            { nome: "kauãxp", equipe: "INTZ", kills: 1, dano: 976, assists: 1, mvp: 0 },
+            { nome: "Naandox", equipe: "RISE GAMING", kills: 1, dano: 767, assists: 0, mvp: 0 },
+            { nome: "WillProdigy", equipe: "CIVIS", kills: 1, dano: 467, assists: 1, mvp: 0 },
+            { nome: "Luan7", equipe: "LOOPS", kills: 1, dano: 434, assists: 0, mvp: 0 },
+            { nome: "NICKZ", equipe: "LOUD SNICKERS", kills: 1, dano: 300, assists: 2, mvp: 0 },
+            { nome: "SOARES", equipe: "AXS FUSION", kills: 1, dano: 250, assists: 0, mvp: 0 },
+            { nome: "honeyzL", equipe: "INTZ", kills: 0, dano: 1730, assists: 2, mvp: 0 },
+            { nome: "Lyon", equipe: "E1 SPORTS", kills: 0, dano: 595, assists: 0, mvp: 0 },
+            { nome: "BYTE333", equipe: "TEAM SOLID", kills: 0, dano: 539, assists: 0, mvp: 0 },
+            { nome: "Destroi7", equipe: "CIVIS", kills: 0, dano: 422, assists: 0, mvp: 0 },
+            { nome: "KaKaZk", equipe: "RISE GAMING", kills: 0, dano: 384, assists: 1, mvp: 0 },
+            { nome: "PETER", equipe: "TEAM SOLID", kills: 0, dano: 371, assists: 0, mvp: 0 },
+            { nome: "Pitbull", equipe: "TEAM SOLID", kills: 0, dano: 328, assists: 0, mvp: 0 },
+            { nome: "Pão7", equipe: "E1 SPORTS", kills: 0, dano: 280, assists: 0, mvp: 0 },
+            { nome: "GUS", equipe: "INTZ", kills: 0, dano: 272, assists: 4, mvp: 0 },
+            { nome: "Juca10xL", equipe: "E1 SPORTS", kills: 0, dano: 268, assists: 0, mvp: 0 },
+            { nome: "Razure", equipe: "INFLUENCE RAGE", kills: 0, dano: 250, assists: 2, mvp: 0 },
+            { nome: "Erick11", equipe: "RISE GAMING", kills: 0, dano: 242, assists: 0, mvp: 0 },
+            { nome: "ITAL0$$", equipe: "RISE GAMING", kills: 0, dano: 230, assists: 0, mvp: 0 },
+            { nome: "Motovea", equipe: "TEAM SOLID", kills: 0, dano: 228, assists: 0, mvp: 0 },
+            { nome: "itzking1", equipe: "INFLUENCE RAGE", kills: 0, dano: 221, assists: 1, mvp: 0 },
+            { nome: "wLiu", equipe: "AXS FUSION", kills: 0, dano: 183, assists: 0, mvp: 0 },
+            { nome: "Theus", equipe: "AXS FUSION", kills: 0, dano: 126, assists: 0, mvp: 0 },
+            { nome: "Redxzzz", equipe: "AXS FUSION", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "HAK", equipe: "LOUD SNICKERS", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "BRUNO7w", equipe: "E1 SPORTS", kills: 0, dano: 0, assists: 0, mvp: 0 }
+        ],
+        4: [
+            { nome: "Yago", equipe: "LOS", kills: 5, dano: 2996, assists: 4, mvp: 1 },
+            { nome: "NICKZ", equipe: "LOUD SNICKERS", kills: 5, dano: 2184, assists: 0, mvp: 0 },
+            { nome: "Draxx7", equipe: "LOOPS", kills: 4, dano: 1982, assists: 2, mvp: 0 },
+            { nome: "ITAL0$$", equipe: "RISE GAMING", kills: 4, dano: 877, assists: 1, mvp: 0 },
+            { nome: "Pão7", equipe: "E1 SPORTS", kills: 3, dano: 3239, assists: 5, mvp: 0 },
+            { nome: "BRUNO7w", equipe: "E1 SPORTS", kills: 3, dano: 3018, assists: 2, mvp: 0 },
+            { nome: "Raone7", equipe: "LOS", kills: 3, dano: 2397, assists: 6, mvp: 0 },
+            { nome: "MT7", equipe: "FLUXO W7M", kills: 3, dano: 2049, assists: 1, mvp: 0 },
+            { nome: "Giuh", equipe: "FLUXO W7M", kills: 3, dano: 1560, assists: 2, mvp: 0 },
+            { nome: "Erick11", equipe: "RISE GAMING", kills: 3, dano: 1441, assists: 3, mvp: 0 },
+            { nome: "Rigby245", equipe: "LOS", kills: 3, dano: 1035, assists: 5, mvp: 0 },
+            { nome: "Lyon", equipe: "E1 SPORTS", kills: 2, dano: 2472, assists: 2, mvp: 0 },
+            { nome: "GUAXA", equipe: "LOUD SNICKERS", kills: 2, dano: 1377, assists: 3, mvp: 0 },
+            { nome: "honeyzL", equipe: "INTZ", kills: 2, dano: 869, assists: 0, mvp: 0 },
+            { nome: "Stark", equipe: "LOOPS", kills: 2, dano: 764, assists: 1, mvp: 0 },
+            { nome: "kauãxp", equipe: "INTZ", kills: 2, dano: 760, assists: 1, mvp: 0 },
+            { nome: "IGOR7", equipe: "INFLUENCE RAGE", kills: 2, dano: 733, assists: 0, mvp: 0 },
+            { nome: "Naandox", equipe: "RISE GAMING", kills: 1, dano: 3150, assists: 7, mvp: 0 },
+            { nome: "itzking1", equipe: "INFLUENCE RAGE", kills: 1, dano: 1278, assists: 3, mvp: 0 },
+            { nome: "João7", equipe: "INTZ", kills: 1, dano: 1126, assists: 1, mvp: 0 },
+            { nome: "HAK", equipe: "LOUD SNICKERS", kills: 1, dano: 1126, assists: 5, mvp: 0 },
+            { nome: "KaKaZk", equipe: "RISE GAMING", kills: 1, dano: 949, assists: 3, mvp: 0 },
+            { nome: "Bops", equipe: "FLUXO W7M", kills: 1, dano: 807, assists: 2, mvp: 0 },
+            { nome: "WillProdigy", equipe: "CIVIS", kills: 1, dano: 655, assists: 0, mvp: 0 },
+            { nome: "Luan7", equipe: "LOOPS", kills: 1, dano: 596, assists: 2, mvp: 0 },
+            { nome: "Bahiaz7", equipe: "VASCO ESPORTS", kills: 1, dano: 581, assists: 0, mvp: 0 },
+            { nome: "lippe!", equipe: "INFLUENCE RAGE", kills: 1, dano: 239, assists: 1, mvp: 0 },
+            { nome: "General!", equipe: "LOS", kills: 1, dano: 219, assists: 2, mvp: 0 },
+            { nome: "TRAP", equipe: "LOUD SNICKERS", kills: 0, dano: 1611, assists: 4, mvp: 0 },
+            { nome: "Razure", equipe: "INFLUENCE RAGE", kills: 0, dano: 856, assists: 1, mvp: 0 },
+            { nome: "Ericking", equipe: "LOOPS", kills: 0, dano: 504, assists: 0, mvp: 0 },
+            { nome: "Juca10xL", equipe: "E1 SPORTS", kills: 0, dano: 465, assists: 3, mvp: 0 },
+            { nome: "BuTziN", equipe: "FLUXO W7M", kills: 0, dano: 459, assists: 5, mvp: 0 },
+            { nome: "ZETSU9", equipe: "VASCO ESPORTS", kills: 0, dano: 454, assists: 0, mvp: 0 },
+            { nome: "Mts007", equipe: "VASCO ESPORTS", kills: 0, dano: 391, assists: 0, mvp: 0 },
+            { nome: "Redxzzz", equipe: "AXS FUSION", kills: 0, dano: 316, assists: 0, mvp: 0 },
+            { nome: "Pitbull", equipe: "TEAM SOLID", kills: 0, dano: 280, assists: 0, mvp: 0 },
+            { nome: "wLiu", equipe: "AXS FUSION", kills: 0, dano: 271, assists: 0, mvp: 0 },
+            { nome: "Keven7!", equipe: "CIVIS", kills: 0, dano: 242, assists: 1, mvp: 0 },
+            { nome: "BIELGOD", equipe: "VASCO ESPORTS", kills: 0, dano: 180, assists: 0, mvp: 0 },
+            { nome: "PETER", equipe: "TEAM SOLID", kills: 0, dano: 178, assists: 0, mvp: 0 },
+            { nome: "Destroi7", equipe: "CIVIS", kills: 0, dano: 164, assists: 1, mvp: 0 },
+            { nome: "GUS", equipe: "INTZ", kills: 0, dano: 65, assists: 2, mvp: 0 },
+            { nome: "Yann7awp", equipe: "AXS FUSION", kills: 0, dano: 57, assists: 0, mvp: 0 },
+            { nome: "Motovea", equipe: "TEAM SOLID", kills: 0, dano: 48, assists: 0, mvp: 0 },
+            { nome: "YOKO7", equipe: "CIVIS", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "Theus", equipe: "AXS FUSION", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "BYTE333", equipe: "TEAM SOLID", kills: 0, dano: 0, assists: 0, mvp: 0 }
+        ],
+        5: [
+            { nome: "NICKZ", equipe: "LOUD SNICKERS", kills: 6, dano: 2031, assists: 3, mvp: 1 },
+            { nome: "Stark", equipe: "LOOPS", kills: 5, dano: 3571, assists: 2, mvp: 0 },
+            { nome: "TRAP", equipe: "LOUD SNICKERS", kills: 5, dano: 3368, assists: 4, mvp: 0 },
+            { nome: "IGOR7", equipe: "INFLUENCE RAGE", kills: 5, dano: 2006, assists: 1, mvp: 0 },
+            { nome: "Theus", equipe: "AXS FUSION", kills: 5, dano: 1892, assists: 1, mvp: 0 },
+            { nome: "GUAXA", equipe: "LOUD SNICKERS", kills: 4, dano: 2779, assists: 5, mvp: 0 },
+            { nome: "ZETSU9", equipe: "VASCO ESPORTS", kills: 4, dano: 2617, assists: 3, mvp: 0 },
+            { nome: "Pitbull", equipe: "TEAM SOLID", kills: 4, dano: 2568, assists: 6, mvp: 0 },
+            { nome: "BIELGOD", equipe: "VASCO ESPORTS", kills: 4, dano: 2298, assists: 0, mvp: 0 },
+            { nome: "Redxzzz", equipe: "AXS FUSION", kills: 4, dano: 1425, assists: 1, mvp: 0 },
+            { nome: "vitinxp", equipe: "TEAM SOLID", kills: 4, dano: 1340, assists: 4, mvp: 0 },
+            { nome: "Ericking", equipe: "LOOPS", kills: 3, dano: 1281, assists: 1, mvp: 0 },
+            { nome: "PETER", equipe: "TEAM SOLID", kills: 3, dano: 865, assists: 8, mvp: 0 },
+            { nome: "Draxx7", equipe: "LOOPS", kills: 2, dano: 2821, assists: 5, mvp: 0 },
+            { nome: "Razure", equipe: "INFLUENCE RAGE", kills: 2, dano: 1587, assists: 6, mvp: 0 },
+            { nome: "Naandox", equipe: "RISE GAMING", kills: 2, dano: 1550, assists: 0, mvp: 0 },
+            { nome: "Luan7", equipe: "LOOPS", kills: 2, dano: 1418, assists: 3, mvp: 0 },
+            { nome: "Motovea", equipe: "TEAM SOLID", kills: 2, dano: 1373, assists: 4, mvp: 0 },
+            { nome: "João7", equipe: "INTZ", kills: 2, dano: 769, assists: 0, mvp: 0 },
+            { nome: "BuTziN", equipe: "FLUXO W7M", kills: 2, dano: 584, assists: 1, mvp: 0 },
+            { nome: "Yann7awp", equipe: "AXS FUSION", kills: 1, dano: 2143, assists: 5, mvp: 0 },
+            { nome: "wLiu", equipe: "AXS FUSION", kills: 1, dano: 2032, assists: 6, mvp: 0 },
+            { nome: "HAK", equipe: "LOUD SNICKERS", kills: 1, dano: 1705, assists: 11, mvp: 0 },
+            { nome: "lippe!", equipe: "INFLUENCE RAGE", kills: 1, dano: 1279, assists: 4, mvp: 0 },
+            { nome: "Bahiaz7", equipe: "VASCO ESPORTS", kills: 1, dano: 1187, assists: 3, mvp: 0 },
+            { nome: "itzking1", equipe: "INFLUENCE RAGE", kills: 1, dano: 1142, assists: 4, mvp: 0 },
+            { nome: "Mts007", equipe: "VASCO ESPORTS", kills: 1, dano: 971, assists: 2, mvp: 0 },
+            { nome: "kauãxp", equipe: "INTZ", kills: 1, dano: 940, assists: 0, mvp: 0 },
+            { nome: "WillProdigy", equipe: "CIVIS", kills: 1, dano: 639, assists: 0, mvp: 0 },
+            { nome: "ITAL0$$", equipe: "RISE GAMING", kills: 1, dano: 527, assists: 0, mvp: 0 },
+            { nome: "Giuh", equipe: "FLUXO W7M", kills: 1, dano: 443, assists: 1, mvp: 0 },
+            { nome: "Proxx7", equipe: "FLUXO W7M", kills: 1, dano: 425, assists: 0, mvp: 0 },
+            { nome: "Juca10xL", equipe: "E1 SPORTS", kills: 1, dano: 294, assists: 0, mvp: 0 },
+            { nome: "GUS", equipe: "INTZ", kills: 0, dano: 1412, assists: 2, mvp: 0 },
+            { nome: "Keven7!", equipe: "CIVIS", kills: 0, dano: 1127, assists: 1, mvp: 0 },
+            { nome: "Lyon", equipe: "E1 SPORTS", kills: 0, dano: 1104, assists: 1, mvp: 0 },
+            { nome: "BRUNO7w", equipe: "E1 SPORTS", kills: 0, dano: 1084, assists: 0, mvp: 0 },
+            { nome: "YOKO7", equipe: "CIVIS", kills: 0, dano: 839, assists: 0, mvp: 0 },
+            { nome: "Erick11", equipe: "RISE GAMING", kills: 0, dano: 570, assists: 0, mvp: 0 },
+            { nome: "honeyzL", equipe: "INTZ", kills: 0, dano: 554, assists: 1, mvp: 0 },
+            { nome: "Pão7", equipe: "E1 SPORTS", kills: 0, dano: 482, assists: 0, mvp: 0 },
+            { nome: "Bops", equipe: "FLUXO W7M", kills: 0, dano: 436, assists: 2, mvp: 0 },
+            { nome: "Destroi7", equipe: "CIVIS", kills: 0, dano: 422, assists: 1, mvp: 0 },
+            { nome: "KaKaZk", equipe: "RISE GAMING", kills: 0, dano: 417, assists: 1, mvp: 0 },
+            { nome: "Raone7", equipe: "LOS", kills: 0, dano: 146, assists: 0, mvp: 0 },
+            { nome: "Yago", equipe: "LOS", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "Rigby245", equipe: "LOS", kills: 0, dano: 0, assists: 0, mvp: 0 },
+            { nome: "mtsexy.", equipe: "LOS", kills: 0, dano: 0, assists: 0, mvp: 0 }
+        ],
+        6: [
+            { nome: "TRAP", equipe: "LOUD SNICKERS", kills: 6, dano: 5133, assists: 10, mvp: 1 },
+            { nome: "HAK", equipe: "LOUD SNICKERS", kills: 5, dano: 3089, assists: 6, mvp: 0 },
+            { nome: "Draxx7", equipe: "LOOPS", kills: 5, dano: 1750, assists: 2, mvp: 0 },
+            { nome: "Bops", equipe: "FLUXO W7M", kills: 5, dano: 1416, assists: 3, mvp: 0 },
+            { nome: "NICKZ", equipe: "LOUD SNICKERS", kills: 4, dano: 1502, assists: 8, mvp: 0 },
+            { nome: "Pão7", equipe: "E1 SPORTS", kills: 3, dano: 1750, assists: 4, mvp: 0 },
+            { nome: "Juca10xL", equipe: "E1 SPORTS", kills: 3, dano: 1736, assists: 4, mvp: 0 },
+            { nome: "BRUNO7w", equipe: "E1 SPORTS", kills: 3, dano: 1731, assists: 2, mvp: 0 },
+            { nome: "Erick11", equipe: "RISE GAMING", kills: 3, dano: 1690, assists: 1, mvp: 0 },
+            { nome: "Giuh", equipe: "FLUXO W7M", kills: 3, dano: 1293, assists: 3, mvp: 0 },
+            { nome: "Ericking", equipe: "LOOPS", kills: 3, dano: 970, assists: 0, mvp: 0 },
+            { nome: "GUAXA", equipe: "LOUD SNICKERS", kills: 2, dano: 4793, assists: 4, mvp: 0 },
+            { nome: "Yago", equipe: "LOS", kills: 2, dano: 2651, assists: 0, mvp: 0 },
+            { nome: "Luan7", equipe: "LOOPS", kills: 2, dano: 1571, assists: 6, mvp: 0 },
+            { nome: "Stark", equipe: "LOOPS", kills: 2, dano: 1319, assists: 4, mvp: 0 },
+            { nome: "PETER", equipe: "TEAM SOLID", kills: 2, dano: 1131, assists: 3, mvp: 0 },
+            { nome: "Motovea", equipe: "TEAM SOLID", kills: 2, dano: 1016, assists: 1, mvp: 0 },
+            { nome: "Pitbull", equipe: "TEAM SOLID", kills: 2, dano: 965, assists: 0, mvp: 0 },
+            { nome: "KaKaZk", equipe: "RISE GAMING", kills: 2, dano: 957, assists: 0, mvp: 0 },
+            { nome: "Keven7!", equipe: "CIVIS", kills: 2, dano: 234, assists: 0, mvp: 0 },
+            { nome: "wLiu", equipe: "AXS FUSION", kills: 2, dano: 167, assists: 0, mvp: 0 },
+            { nome: "Destroi7", equipe: "CIVIS", kills: 1, dano: 2042, assists: 3, mvp: 0 },
+            { nome: "Lyon", equipe: "E1 SPORTS", kills: 1, dano: 1809, assists: 5, mvp: 0 },
+            { nome: "YOKO7", equipe: "CIVIS", kills: 1, dano: 1671, assists: 4, mvp: 0 },
+            { nome: "MT7", equipe: "FLUXO W7M", kills: 1, dano: 1637, assists: 3, mvp: 0 },
+            { nome: "Naandox", equipe: "RISE GAMING", kills: 1, dano: 1219, assists: 3, mvp: 0 },
+            { nome: "Rigby245", equipe: "LOS", kills: 1, dano: 930, assists: 0, mvp: 0 },
+            { nome: "WillProdigy", equipe: "CIVIS", kills: 1, dano: 684, assists: 1, mvp: 0 },
+            { nome: "ITAL0$$", equipe: "RISE GAMING", kills: 1, dano: 465, assists: 1, mvp: 0 },
+            { nome: "BuTziN", equipe: "FLUXO W7M", kills: 0, dano: 828, assists: 6, mvp: 0 },
+            { nome: "lippe!", equipe: "INFLUENCE RAGE", kills: 0, dano: 808, assists: 0, mvp: 0 },
+            { nome: "Yann7awp", equipe: "AXS FUSION", kills: 0, dano: 730, assists: 0, mvp: 0 },
+            { nome: "itzking1", equipe: "INFLUENCE RAGE", kills: 0, dano: 628, assists: 0, mvp: 0 },
+            { nome: "Raone7", equipe: "LOS", kills: 0, dano: 598, assists: 1, mvp: 0 },
+            { nome: "BIELGOD", equipe: "VASCO ESPORTS", kills: 0, dano: 581, assists: 0, mvp: 0 },
+            { nome: "GUS", equipe: "INTZ", kills: 0, dano: 551, assists: 0, mvp: 0 },
+            { nome: "Razure", equipe: "INFLUENCE RAGE", kills: 0, dano: 520, assists: 0, mvp: 0 },
+            { nome: "honeyzL", equipe: "INTZ", kills: 0, dano: 459, assists: 0, mvp: 0 },
+            { nome: "General!", equipe: "LOS", kills: 0, dano: 405, assists: 2, mvp: 0 },
+            { nome: "vitinxp", equipe: "TEAM SOLID", kills: 0, dano: 327, assists: 1, mvp: 0 },
+            { nome: "kauãxp", equipe: "INTZ", kills: 0, dano: 228, assists: 0, mvp: 0 },
+            { nome: "João7", equipe: "INTZ", kills: 0, dano: 187, assists: 0, mvp: 0 },
+            { nome: "IGOR7", equipe: "INFLUENCE RAGE", kills: 0, dano: 184, assists: 0, mvp: 0 },
+            { nome: "Theus", equipe: "AXS FUSION", kills: 0, dano: 179, assists: 2, mvp: 0 },
+            { nome: "Mts007", equipe: "VASCO ESPORTS", kills: 0, dano: 155, assists: 0, mvp: 0 },
+            { nome: "ZETSU9", equipe: "VASCO ESPORTS", kills: 0, dano: 115, assists: 0, mvp: 0 },
+            { nome: "Redxzzz", equipe: "AXS FUSION", kills: 0, dano: 69, assists: 0, mvp: 0 },
+            { nome: "Bahiaz7", equipe: "VASCO ESPORTS", kills: 0, dano: 50, assists: 0, mvp: 0 }
+        ]
     }
 };
 
@@ -2246,20 +2757,20 @@ window.onload = () => {
     
     calculatePlayerRanks();
     updateQuedaFilterOptions();
+    renderPlayerStats()
     buildDayFilters();
     populateSelects();
     renderFullTeams();
     renderHomeGroups();
+    renderStatsPage();
     renderGroupsTables();
     renderTeamsDirectory();
     renderSchedule();
     renderAllPlayers();
     renderIndividualRecords();
-    renderMapData();
-    
+
     // --> FUNÇÕES DA ABA HISTÓRICO <--
     buildEditionFilters();
-    populateHistSelects();
     renderEditionRanking();
     renderHistCompare();
     renderHistoricalRanking();
@@ -2290,6 +2801,204 @@ function navigate(pageId) {
     // Fecha o menu no mobile após clicar
     if (window.innerWidth <= 768) {
         document.getElementById('nav-links').classList.remove('active');
+    }
+}
+
+// ==========================================
+// PÁGINA DE ESTATÍSTICAS (MÉDIAS E TOTAIS)
+// ==========================================
+
+// Função auxiliar para normalizar mapas
+function normalizeMapName(name) {
+    if(!name) return '';
+    let n = name.toLowerCase().trim();
+    if (n === 'nexterra') return 'nova terra';
+    if (n === 'purgatory') return 'purgatório';
+    return n;
+}
+
+function renderPlayerStats() {
+    let dayFilter = document.getElementById('filter-player-day')?.value || 'all';
+    let mapFilter = document.getElementById('filter-player-map')?.value || 'all';
+    let teamFilter = document.getElementById('filter-player-team')?.value || 'all';
+    let roleFilter = document.getElementById('filter-player-role')?.value || 'all';
+
+    let aggregatedPlayers = {};
+
+    // Navega pelo novo dbJogadoresQuedas
+    for (let d in dbJogadoresQuedas) {
+        if (dayFilter !== 'all' && String(d) !== dayFilter) continue;
+
+        for (let q in dbJogadoresQuedas[d]) {
+            // Descobre qual mapa foi jogado nessa queda consultando o dbQuedas
+            let mapName = dbQuedas[d] && dbQuedas[d][q] ? normalizeMapName(dbQuedas[d][q].mapa) : '';
+            if (mapFilter !== 'all' && mapName !== normalizeMapName(mapFilter)) continue;
+
+            let playersInDrop = dbJogadoresQuedas[d][q];
+            
+            playersInDrop.forEach(p => {
+                if (teamFilter !== 'all' && p.equipe !== teamFilter) return;
+
+// Procura a role do jogador na sua const playerRoles
+let role = "Desconhecida";
+
+// Se a sua const for um Array (tipo [{nome: "Raone7", role: "Rush"}])
+if (Array.isArray(playerRoles)) {
+    let roleData = playerRoles.find(r => r.nome?.trim().toLowerCase() === p.nome.trim().toLowerCase());
+    if (roleData) role = roleData.role || roleData.funcao || "-";
+} 
+// Se a sua const for um Objeto (tipo { "Raone7": "Rush", "Yago": "Suporte" })
+else if (playerRoles && playerRoles[p.nome]) {
+    role = playerRoles[p.nome];
+}
+                
+                if (roleFilter !== 'all' && role.toLowerCase() !== roleFilter.toLowerCase()) return;
+
+                // Se passou por todos os filtros, soma!
+                if (!aggregatedPlayers[p.nome]) {
+                    aggregatedPlayers[p.nome] = { nome: p.nome, equipe: p.equipe, role: role, kills: 0, dano: 0, assists: 0, mvp: 0, quedas: 0 };
+                }
+                
+                aggregatedPlayers[p.nome].kills += p.kills;
+                aggregatedPlayers[p.nome].dano += p.dano;
+                aggregatedPlayers[p.nome].assists += p.assists;
+                aggregatedPlayers[p.nome].mvp += p.mvp;
+                aggregatedPlayers[p.nome].quedas += 1;
+            });
+        }
+    }
+
+    // Transforma em array e ordena por Kills, desempate por Dano
+    let result = Object.values(aggregatedPlayers);
+    result.sort((a, b) => b.kills - a.kills || b.dano - a.dano);
+
+    let tbody = document.querySelector('#table-stats-players-detailed tbody');
+    if (tbody) {
+        tbody.innerHTML = result.map((p, index) => {
+            let sName = shortNames[p.equipe] || p.equipe;
+            return `<tr>
+                <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
+                <td style="text-align:left;">
+                    <span style="font-weight:bold; color:#fff;">${p.nome}</span>
+                    <div style="font-size:0.75em; color:#888;">${sName}</div>
+                </td>
+                <td class="hide-mobile" style="color:#aaa; font-size: 0.9em;">${p.role}</td>
+                <td style="font-weight:bold; color:var(--accent);">${p.kills}</td>
+                <td>${p.dano}</td>
+                <td class="hide-mobile" style="color:#aaa;">${p.assists}</td>
+                <td>${p.quedas}</td>
+            </tr>`;
+        }).join('');
+    }
+}
+
+// Chame renderPlayerStats() no seu window.onload!
+
+function renderStatsPage() {
+    let selectMap = document.getElementById('stats-map-filter');
+    if (!selectMap) return;
+    let targetMap = normalizeMapName(selectMap.value);
+
+    // 1. Coletar e Agregar os Dados dos Times
+    let teamsMapStats = {};
+    db.teams.forEach(t => {
+        teamsMapStats[t.equipe] = { equipe: t.equipe, pontos: 0, kills: 0, booyahs: 0, quedas: 0, somaPosicao: 0 };
+    });
+
+    for (let d in dbQuedas) {
+        for (let q in dbQuedas[d]) {
+            let drop = dbQuedas[d][q];
+            let currentMap = normalizeMapName(drop.mapa);
+
+            if (targetMap === 'all' || currentMap === targetMap) {
+                drop.resultados.forEach(res => {
+                    let tm = teamsMapStats[res.equipe];
+                    if (tm) {
+                        let pts = posPoints[res.posicao] || 0;
+                        tm.pontos += (pts + res.kills);
+                        tm.kills += res.kills;
+                        tm.booyahs += res.booyah;
+                        tm.quedas += 1;
+                        tm.somaPosicao += res.posicao;
+                    }
+                });
+            }
+        }
+    }
+
+    let validTeams = Object.values(teamsMapStats).filter(t => t.quedas > 0);
+
+    // 2. Renderizar Tabela de MÉDIAS
+    // Calcula médias e ordena por Média de Pontos (decrescente)
+    validTeams.forEach(t => {
+        t.avgPts = (t.pontos / t.quedas).toFixed(1);
+        t.avgKills = (t.kills / t.quedas).toFixed(1);
+        t.avgPos = (t.somaPosicao / t.quedas).toFixed(1);
+    });
+    
+    validTeams.sort((a, b) => b.avgPts - a.avgPts);
+
+    let tbodyAvg = document.querySelector('#table-stats-avg tbody');
+    if(tbodyAvg) {
+        tbodyAvg.innerHTML = validTeams.map((t, index) => {
+            let logoSrc = logos[t.equipe] || '';
+            let sName = shortNames[t.equipe] || t.equipe;
+            return `<tr>
+                <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
+                <td class="team-cell">
+                    <img src="${logoSrc}" class="team-logo hide-mobile">
+                    <span class="full-name-desktop">${t.equipe}</span>
+                    <span class="short-name-mobile">${sName}</span>
+                </td>
+                <td style="color:#ffaa00; font-weight:bold">${t.avgPts}</td>
+                <td>${t.avgKills}</td>
+                <td style="color: #aaa;">${t.avgPos}º</td>
+                <td class="hide-mobile">${t.quedas}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // 3. Renderizar Tabela de TOTAIS
+    // Ordena por Pontos Totais (decrescente)
+    validTeams.sort((a, b) => b.pontos - a.pontos);
+
+    let tbodyTotal = document.querySelector('#table-stats-total tbody');
+    if(tbodyTotal) {
+        tbodyTotal.innerHTML = validTeams.map((t, index) => {
+            let logoSrc = logos[t.equipe] || '';
+            let sName = shortNames[t.equipe] || t.equipe;
+            return `<tr>
+                <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
+                <td class="team-cell">
+                    <span class="full-name-desktop">${t.equipe}</span>
+                    <span class="short-name-mobile">${sName}</span>
+                </td>
+                <td style="color:#ffaa00; font-weight:bold">${t.pontos}</td>
+                <td>${t.booyahs}</td>
+                <td>${t.kills}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // 4. Renderizar Tabela de JOGADORES (Dados Gerais)
+// Se está na Visão Geral, mostra os mitos!
+let playersData = db.players.filter(p => p?.isPlaying !== false); // Já botei uma blindagem extra aqui também!
+    playersData.sort((a, b) => b.kills - a.kills); // Ordena por Kills geral
+
+    let tbodyPlayers = document.querySelector('#table-stats-players tbody');
+    if(tbodyPlayers) {
+        tbodyPlayers.innerHTML = playersData.slice(0, 20).map((p, index) => { // Mostra só o TOP 20 para não pesar
+            return `<tr>
+                <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
+                <td style="text-align:left;">
+                    <span style="font-weight:bold;">${p.nome}</span>
+                    <div style="font-size:0.75em; color:var(--text-muted);">${shortNames[p.equipe] || p.equipe}</div>
+                </td>
+                <td style="font-weight:bold; color:#fff;">${p.kills}</td>
+                <td class="hide-mobile" style="color:#aaa;">${p.dano}</td>
+                <td class="hide-mobile" style="color:#aaa;">${p.assists}</td>
+            </tr>`;
+        }).join('');
     }
 }
 
@@ -2611,25 +3320,35 @@ function renderEditionRanking() {
 }
 
 // Preenche os selects da aba Histórico
-function populateHistSelects() {
-    let p1 = document.getElementById('hist-comp-p1'), p2 = document.getElementById('hist-comp-p2');
-    
-    // 1. Preenche a lista de jogadores (Todos os que temos histórico)
-    let playersSet = Object.keys(lbffData).sort();
-    let playerOptions = playersSet.map(p => `<option value="${p}">${p}</option>`).join('');
-    p1.innerHTML = playerOptions;
-    p2.innerHTML = playerOptions;
-    
-    // 2. Define os eventos de mudança para filtrar as edições
-    p1.onchange = () => { updateEditionOptions('hist-comp-p1', 'hist-comp-ed1'); renderHistCompare(); };
-    p2.onchange = () => { updateEditionOptions('hist-comp-p2', 'hist-comp-ed2'); renderHistCompare(); };
+function populateSelects() {
+    // 1. Pegamos todos os possíveis filtros de equipe do seu site
+    let filtroGeral = document.getElementById('filter-equipe'); 
+    let filtroJogadores = document.getElementById('filter-player-team');
+    // Se tiver filtros na aba comparador, você pode adicionar aqui embaixo:
+    let comparador1 = document.getElementById('comp-team1');
+    let comparador2 = document.getElementById('comp-team2');
 
-    // 3. Inicializa as edições pela primeira vez
-    updateEditionOptions('hist-comp-p1', 'hist-comp-ed1');
-    updateEditionOptions('hist-comp-p2', 'hist-comp-ed2');
-    
-    p2.selectedIndex = 1; // Seleciona o segundo jogador por padrão
-    updateEditionOptions('hist-comp-p2', 'hist-comp-ed2'); // Atualiza a lista do segundo
+    // 2. Fazemos o loop nas equipes
+    db.teams.forEach(t => {
+        
+        // A MÁGICA: O 'if' verifica se o filtro existe na tela antes de injetar o HTML
+        if (filtroGeral) {
+            filtroGeral.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
+        }
+        
+        if (filtroJogadores) {
+            filtroJogadores.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
+        }
+
+        if (comparador1) {
+            comparador1.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
+        }
+
+        if (comparador2) {
+            comparador2.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
+        }
+        
+    });
 }
 
 // A função do Comparador
@@ -3195,7 +3914,10 @@ function renderFullTeams() {
     if (selectedTeamDays.length > 0) tableData = tableData.filter(t => !t.didNotPlay);
     
     let quedaSelect = document.getElementById('filter-queda');
+    let mapSelect = document.getElementById('filter-team-map');
+    
     let isSingleDrop = quedaSelect && quedaSelect.value !== 'all';
+    let isMapFilter = mapSelect && mapSelect.value !== 'all';
 
     // Muda o título da coluna dinamicamente
     let thLast = document.getElementById('th-quedas-colocacao');
@@ -3209,11 +3931,16 @@ function renderFullTeams() {
         }
     }
 
+    // SEMPRE ordena por pontos para garantir o ranking correto do filtro atual
     tableData.sort((a, b) => b.pontos - a.pontos);
+    
     let tbody = document.querySelector('#table-teams-full tbody');
     
     tbody.innerHTML = tableData.map((t, index) => {
-        let pos = selectedTeamDays.length === 0 ? t.posGeral : (index + 1);
+        // CORREÇÃO: Se houver filtro de mapa, queda ou dias, a posição é o index + 1
+        // Se estiver em "Todos" (sem nenhum filtro), ele pode usar a posGeral original
+        let pos = (selectedTeamDays.length > 0 || isMapFilter || isSingleDrop) ? (index + 1) : t.posGeral;
+        
         let logoSrc = logos[t.equipe] || '';
         let sName = shortNames[t.equipe] || t.equipe;
         
@@ -4146,6 +4873,7 @@ function renderComparePlayers() {
             </div>
         </div>`;
 }
+
 </script>
 </body>
 </html>
