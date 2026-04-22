@@ -657,12 +657,12 @@
     <div id="player-overall-card"></div>
     
     <h3 id="pp-current-title" style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Desempenho Atual (Temporada)</h3>
-    <div id="pp-current-grid" class="grid-cards">
+<div id="pp-current-grid" class="grid-cards">
         <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3><div class="value" id="pp-tot-kills">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Média: <span id="pp-avg-kills" style="color:#fff;">0.00</span> /queda</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-kills">#0</span></div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates</h3><div class="value" id="pp-record">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Em um único dia</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-record">#0</span></div></div>
         <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3><div class="value" id="pp-tot-dmg">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Média: <span id="pp-avg-dmg" style="color:#fff;">0.00</span> /queda</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-dmg">#0</span></div></div>
         <div class="card"><div class="card-top-border"></div><h3>Assistências</h3><div class="value" id="pp-tot-assists">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Média: <span id="pp-avg-assists" style="color:#fff;">0.00</span> /queda</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-assists">#0</span></div></div>
-        <div class="card"><div class="card-top-border"></div><h3>MVPs Recebidos</h3><div class="value" id="pp-tot-mvps">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">&nbsp;</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-mvps">#0</span></div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates</h3><div class="value" id="pp-record">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Em um único dia</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>MVPs Recebidos</h3><div class="value" id="pp-tot-mvps">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">&nbsp;</div></div>
     </div>
 
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent);">Desempenho Histórico (All-Time)</h3>
@@ -2194,6 +2194,126 @@ const dbResults = {
         { data: "2019-11-16", tier: "S-Tier", place: "9th", torneio: "Free Fire World Series 2019" },
         { data: "2019-11-09", tier: "A-Tier", place: "2nd", torneio: "Free Fire Pro League Brazil Season 3" },
         { data: "2019-07-20", tier: "A-Tier", place: "8th", torneio: "Free Fire Pro League Brazil Season 2" }
+    ]
+    ,
+"LOS": [
+        { data: "2026-04-09", tier: "D-Tier", place: "2nd", torneio: "Goat League Season 2" },
+        { data: "2026-04-08", tier: "D-Tier", place: "6th", torneio: "GWL Showdown" },
+        { data: "2026-03-26", tier: "D-Tier", place: "2nd", torneio: "Yuta Invitational" },
+        { data: "2026-03-09", tier: "C-Tier", place: "2nd", torneio: "CPN Arena 2026" },
+        { data: "2026-03-03", tier: "D-Tier", place: "3rd", torneio: "Copa GWL Mobile 2026 Stage 1" },
+        { data: "2026-02-22", tier: "A-Tier", place: "11th", torneio: "C.O.P.A. Free Fire 2026" },
+        { data: "2026-02-18", tier: "D-Tier", place: "5th", torneio: "Liga do Rei Elite Mobile 2026" },
+        { data: "2026-01-23", tier: "D-Tier", place: "10th", torneio: "Liga LPT Season 1" },
+        { data: "2026-01-23", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Season 3" },
+        { data: "2026-01-21", tier: "D-Tier", place: "1st", torneio: "Showmatch do Amoras 2026" },
+        { data: "2026-01-16", tier: "D-Tier", place: "2nd", torneio: "Showmatch Yuta 2026" },
+        { data: "2025-12-06", tier: "C-Tier", place: "1st", torneio: "Maranhao Gamer Challenge 2025" },
+        { data: "2025-11-19", tier: "D-Tier", place: "15th", torneio: "Goat League Season 1" },
+        { data: "2025-10-31", tier: "D-Tier", place: "3rd", torneio: "Copa Alezin Season 3" },
+        { data: "2025-10-20", tier: "D-Tier", place: "12th", torneio: "Aquecimento do Amoras Pré Mundial" },
+        { data: "2025-10-05", tier: "A-Tier", place: "7th", torneio: "Free Fire World Series - Brazil 2025 Split 2" },
+        { data: "2025-09-25", tier: "B-Tier", place: "1st", torneio: "Lidoma Endless Series 2025 - Americas Intercontinental Clash" },
+        { data: "2025-09-23", tier: "D-Tier", place: "2nd", torneio: "Copa All In Mobile Season 1" },
+        { data: "2025-09-17", tier: "D-Tier", place: "4th", torneio: "Copa GWL Mobile 2025 Stage 4" },
+        { data: "2025-08-28", tier: "C-Tier", place: "5th", torneio: "Lidoma Endless Series 2025 - Brazil Regional Championship" },
+        { data: "2025-08-27", tier: "D-Tier", place: "6th", torneio: "Lidoma Endless Series 2025 - Brazil Open Regional Cups" },
+        { data: "2025-08-18", tier: "D-Tier", place: "8th", torneio: "Fora da Safe Invitational Mobile 2025 Split 3" },
+        { data: "2025-08-12", tier: "D-Tier", place: "21st", torneio: "All In Mobile Elite S4" },
+        { data: "2025-08-10", tier: "Showmatch", place: "3rd - 4th", torneio: "Free Fire All Stars 2025: Ninja Clash" },
+        { data: "2025-08-01", tier: "D-Tier", place: "4th", torneio: "Liga Doutrina Mobile Season 2" },
+        { data: "2025-07-20", tier: "S-Tier", place: "4th", torneio: "Esports World Cup 2025" },
+        { data: "2025-07-10", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Season 2" },
+        { data: "2025-07-07", tier: "D-Tier", place: "2nd", torneio: "Copa Davi Season 4" },
+        { data: "2025-07-07", tier: "D-Tier", place: "5th", torneio: "RED Wave Cup Elite Season 2" },
+        { data: "2025-07-04", tier: "D-Tier", place: "7th", torneio: "Copa GWL Mobile 2025 Stage 3" },
+        { data: "2025-06-22", tier: "A-Tier", place: "1st", torneio: "Free Fire World Series - Brazil 2025 Split 1" },
+        { data: "2025-06-04", tier: "D-Tier", place: "3rd", torneio: "Liga Do Rei Copa Mobile BoostZone" },
+        { data: "2025-06-02", tier: "D-Tier", place: "1st", torneio: "Liga FNT Black Elite Season 11" },
+        { data: "2025-05-30", tier: "D-Tier", place: "6th", torneio: "Gran Legends Season 1" },
+        { data: "2025-05-28", tier: "D-Tier", place: "3rd", torneio: "Liga DS Season 4" },
+        { data: "2025-05-15", tier: "D-Tier", place: "1st", torneio: "Liga Doutrina Mobile Season 1" },
+        { data: "2025-05-09", tier: "D-Tier", place: "1st", torneio: "Del Rei Season 4" },
+        { data: "2025-05-08", tier: "C-Tier", place: "3rd", torneio: "Copa Amoras Mobile Season 1" },
+        { data: "2025-05-06", tier: "D-Tier", place: "5th", torneio: "Liga Liberty Challenge Season" },
+        { data: "2025-04-30", tier: "D-Tier", place: "8th", torneio: "Liga Marinho Invitational" },
+        { data: "2025-04-29", tier: "D-Tier", place: "8th", torneio: "Super Liga UBFF 2025 Split 1" },
+        { data: "2025-04-25", tier: "D-Tier", place: "4th", torneio: "All In Mobile Elite S3" },
+        { data: "2025-04-25", tier: "D-Tier", place: "2nd", torneio: "Copa Davi Season 3" },
+        { data: "2025-04-24", tier: "D-Tier", place: "2nd", torneio: "Liga do Rei Elite Mobile 2025" },
+        { data: "2025-04-22", tier: "D-Tier", place: "4th", torneio: "Liga Royals Elite Season 3" },
+        { data: "2025-04-10", tier: "D-Tier", place: "3rd", torneio: "Copa GWL Mobile 2025 Stage 2" },
+        { data: "2025-03-31", tier: "D-Tier", place: "5th", torneio: "La America DS Season 3" },
+        { data: "2025-03-30", tier: "D-Tier", place: "6th", torneio: "Fora da Safe Invitational Mobile 2025 Split 2" },
+        { data: "2025-03-24", tier: "D-Tier", place: "6th", torneio: "RED Wave Cup Elite Season 1" },
+        { data: "2025-03-21", tier: "D-Tier", place: "6th", torneio: "Liga Marinho Season 1" },
+        { data: "2025-03-20", tier: "D-Tier", place: "2nd", torneio: "Copa Diamond Season 2" },
+        { data: "2025-03-11", tier: "Weekly", place: "4th", torneio: "Liga Doutrina Mobile 2025 Week 2" },
+        { data: "2025-02-28", tier: "D-Tier", place: "6th", torneio: "Liga Doutrina Loco Season 1" },
+        { data: "2025-02-26", tier: "D-Tier", place: "1st", torneio: "Del Rei Season 3" },
+        { data: "2025-02-18", tier: "D-Tier", place: "3rd", torneio: "Liga DS Season 3" },
+        { data: "2025-02-17", tier: "A-Tier", place: "13th", torneio: "C.O.P.A. Free Fire 2025" },
+        { data: "2025-02-17", tier: "D-Tier", place: "7th", torneio: "Liga LSX Season 6" },
+        { data: "2025-02-14", tier: "D-Tier", place: "8th", torneio: "Star Cup Series A Season 3" },
+        { data: "2025-02-12", tier: "Weekly", place: "5th", torneio: "Liga Doutrina Mobile 2025 Week 1" },
+        { data: "2025-02-06", tier: "D-Tier", place: "3rd", torneio: "Copa GWL Mobile 2025 Stage 1" },
+        { data: "2025-01-31", tier: "D-Tier", place: "4th", torneio: "Showmatch Alterados League 2025" },
+        { data: "2025-01-24", tier: "Weekly", place: "7th", torneio: "Grand Slam Super Weekend Mobile Week 2" },
+        { data: "2025-01-22", tier: "D-Tier", place: "15th", torneio: "Fora da Safe Invitational Mobile 2025 Split 1" },
+        { data: "2025-01-17", tier: "Weekly", place: "5th", torneio: "Grand Slam Super Weekend Mobile Week 1" },
+        { data: "2024-12-09", tier: "D-Tier", place: "6th", torneio: "Del Rei Season 2" },
+        { data: "2024-10-30", tier: "D-Tier", place: "6th", torneio: "Copa Auge Rei dos Coins Season 6" },
+        { data: "2024-10-22", tier: "D-Tier", place: "1st", torneio: "Liga LSX Brasileirão" },
+        { data: "2024-10-17", tier: "D-Tier", place: "8th", torneio: "Showmatch Gran Legends 2024" },
+        { data: "2024-09-27", tier: "D-Tier", place: "13th", torneio: "Copa GWL Mobile 2024 Stage 4" },
+        { data: "2024-09-22", tier: "D-Tier", place: "9th", torneio: "Liga Royals Elite Season 2" },
+        { data: "2024-09-16", tier: "A-Tier", place: "17th", torneio: "Free Fire World Series - Brazil 2024" },
+        { data: "2024-09-13", tier: "D-Tier", place: "10th", torneio: "Taça Brasil Season 4" },
+        { data: "2024-09-01", tier: "C-Tier", place: "14th", torneio: "Copa NFA 2024 - Split 2" },
+        { data: "2024-08-30", tier: "D-Tier", place: "13th", torneio: "Copa Auge Rei dos Coins Season 5" },
+        { data: "2024-08-30", tier: "D-Tier", place: "10th", torneio: "All In Mobile Elite Season 2" },
+        { data: "2024-08-23", tier: "D-Tier", place: "12th", torneio: "Alien Cup Season 3" },
+        { data: "2024-08-11", tier: "B-Tier", place: "11th", torneio: "CPN Favela Gaming Edition 2024" },
+        { data: "2024-07-21", tier: "D-Tier", place: "6th", torneio: "CG Series Brazil Season 1" },
+        { data: "2024-07-07", tier: "B-Tier", place: "16th", torneio: "Liga NFA 2024 - Split 1" },
+        { data: "2024-06-28", tier: "D-Tier", place: "19th", torneio: "Copa GWL Mobile 2024 Stage 3" },
+        { data: "2024-06-20", tier: "D-Tier", place: "12th", torneio: "Copa Santos Season 3" },
+        { data: "2024-06-07", tier: "D-Tier", place: "15th", torneio: "All In Elite Season 1" },
+        { data: "2024-05-18", tier: "D-Tier", place: "17th - 18th", torneio: "Taça Brasil Season 2" },
+        { data: "2024-05-13", tier: "D-Tier", place: "13th", torneio: "Copa Auth Especial" },
+        { data: "2024-05-10", tier: "D-Tier", place: "19th", torneio: "Copa GWL Mobile 2024 Stage 2" },
+        { data: "2024-05-09", tier: "D-Tier", place: "19th - 20th", torneio: "Liga Stars Season 1" },
+        { data: "2024-04-04", tier: "D-Tier", place: "20th", torneio: "Copa Theus Season 2" },
+        { data: "2024-03-29", tier: "C-Tier", place: "12th", torneio: "Global Games Mobile Season 1" },
+        { data: "2024-03-24", tier: "A-Tier", place: "9th", torneio: "C.O.P.A. Free Fire 2024" },
+        { data: "2024-03-12", tier: "D-Tier", place: "10th", torneio: "Liga Next Season 4" },
+        { data: "2024-03-04", tier: "D-Tier", place: "13th", torneio: "Copa Auge Elite Season 4" },
+        { data: "2024-02-17", tier: "C-Tier", place: "10th", torneio: "Hype Cup" },
+        { data: "2024-02-03", tier: "C-Tier", place: "13th", torneio: "Lidoma Challenge Season 3" },
+        { data: "2024-01-29", tier: "D-Tier", place: "5th", torneio: "Super Liga Season 2" },
+        { data: "2024-01-25", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2024 Stage 1" },
+        { data: "2024-01-06", tier: "B-Tier", place: "19th - 20th", torneio: "ESL Snapdragon Pro Series Season 4: Brazil Open" },
+        { data: "2023-06-28", tier: "C-Tier", place: "5th", torneio: "GrandSlam Champions 2023" },
+        { data: "2023-03-30", tier: "D-Tier", place: "36th", torneio: "Copa Internacional TK Season 1" },
+        { data: "2023-03-09", tier: "D-Tier", place: "7th", torneio: "Liga Next Season 1" },
+        { data: "2023-03-02", tier: "B-Tier", place: "4th", torneio: "CPN Mobile 2023" },
+        { data: "2022-10-15", tier: "A-Tier", place: "6th", torneio: "LBFF 2022: Series A - Stage 2" },
+        { data: "2022-06-26", tier: "A-Tier", place: "15th", torneio: "C.O.P.A. Free Fire 2022: Corrida do Milhão" },
+        { data: "2022-04-16", tier: "A-Tier", place: "4th", torneio: "Liga Brasileira de Free Fire 2022: Series A - Stage 1" },
+        { data: "2021-10-30", tier: "A-Tier", place: "7th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 3" },
+        { data: "2021-07-24", tier: "A-Tier", place: "11th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 2" },
+        { data: "2021-04-03", tier: "Qualifier", place: "4th", torneio: "Liga Brasileira de Free Fire 2021: Promotion - Stage 2" },
+        { data: "2021-03-28", tier: "B-Tier", place: "6th", torneio: "Liga Brasileira de Free Fire - Series B 2021 Stage 1" },
+        { data: "2021-02-26", tier: "D-Tier", place: "6th", torneio: "Free Fire Talents Open Mobile 6" },
+        { data: "2021-01-23", tier: "C-Tier", place: "1st", torneio: "Liga LBR Mobile Season 1" },
+        { data: "2020-11-01", tier: "A-Tier", place: "18th", torneio: "Liga Brasileira de Free Fire 2020: Series A - Stage 3" },
+        { data: "2020-07-19", tier: "A-Tier", place: "7th", torneio: "C.O.P.A. Free Fire 2020" },
+        { data: "2020-04-05", tier: "B-Tier", place: "5th", torneio: "Liga NFA Season 3" },
+        { data: "2019-12-22", tier: "C-Tier", place: "5th", torneio: "NFA Stars Season 2" },
+        { data: "2019-11-09", tier: "A-Tier", place: "22nd - 24th", torneio: "Free Fire Pro League Brazil Season 3" },
+        { data: "2019-10-31", tier: "Showmatch", place: "7th", torneio: "Proibidão NFA 2019" },
+        { data: "2019-09-29", tier: "B-Tier", place: "6th", torneio: "Liga NFA Season 2" },
+        { data: "2019-07-20", tier: "A-Tier", place: "6th", torneio: "Free Fire Pro League Brazil Season 2" }
     ]
 };
 
@@ -4742,8 +4862,8 @@ function createPlayerCardHTML(p, scale = 1) {
 
     let accentColor = "#cd7f32"; 
     if (ovr >= 91) accentColor = "#d4af37";
-    else if (ovr >= 86) accentColor = "#c5a028";
-    else if (ovr >= 81) accentColor = "#e5e5e5";
+    else if (ovr >= 85) accentColor = "#c5a028";
+    else if (ovr >= 80) accentColor = "#e5e5e5";
     else if (ovr >= 75) accentColor = "#a3a3a3";
 
     let glow = ovr >= 91 ? `box-shadow: 0 0 40px ${accentColor}66;` : '';
@@ -5863,33 +5983,100 @@ function calculateOverall(p) {
     let avgK = p.abates / q;
     let avgD = p.dano / q;
     let avgA = p.assists / q;
-    let avgM = (p.mvp || 0) / q; // Média de MVP por partida
+    let avgM = (p.mvp || 0) / q;
 
-    // 1. CÁLCULO DA NOTA BASE (Peso: Abate 50%, Dano 35%, Assist 15%)
-    // Tetos baseados no MT7 para ele ser a referência do topo
-    let scoreK = Math.min((avgK / 2.7) * 100, 100);
-    let scoreD = Math.min((avgD / 1850) * 100, 100);
-    let scoreA = Math.min((avgA / 1.3) * 100, 100);
+    // Pega a função do jogador para balancear os pesos (sem capitão agora)
+    let role = playerRoles[p.jogador] || "RUSH";
 
-    let baseRaw = (scoreK * 0.50) + (scoreD * 0.35) + (scoreA * 0.15);
-
-    // 2. MAPEAMENTO PARA O RANGE (65 a 91 - deixamos margem para o bônus)
-    // Aqui o máximo sem bônus de MVP seria 91
-    let finalOverall = 65 + (baseRaw / 100) * (91 - 65);
+    // ==========================================
+    // 1. PESOS POR POSIÇÃO
+    // ==========================================
+    let weightK, weightD, weightA;
     
-    // 3. BÔNUS EXTRA DE MVP
-    // Se o jogador tem uma taxa alta de MVP, ele ganha pontos na nota final
-    let bonusMVP = 0;
-    if (avgM >= 0.13) { 
-        bonusMVP = 2; // Elite de MVPs (estilo MT7) ganha +2
-    } else if (avgM >= 0.08) {
-        bonusMVP = 1; // Jogadores que ganham MVPs com frequência ganham +1
+    if (role === "SUP") {
+        weightK = 0.20; weightD = 0.35; weightA = 0.45;
+    } else if (role === "GRAN") {
+        weightK = 0.35; weightD = 0.45; weightA = 0.20;
+    } else { 
+        // RUSH / OUTROS
+        weightK = 0.50; weightD = 0.35; weightA = 0.15;
     }
 
-    let result = Math.round(finalOverall + bonusMVP);
+    let scoreK = Math.min((avgK / 2.6) * 100, 100);
+    let scoreD = Math.min((avgD / 1750) * 100, 100);
+    let scoreA = Math.min((avgA / 1.2) * 100, 100);
 
-    // 4. TRAVAS DE SEGURANÇA (Limite máximo de 93)
-    if (result > 93) result = 93;
+    let baseRaw = (scoreK * weightK) + (scoreD * weightD) + (scoreA * weightA);
+    
+    // Transforma a nota base em um range de 68 a 85 (Deixando espaço para os bônus puxarem pro 90+)
+    let finalOverall = 68 + (baseRaw / 100) * (85 - 68);
+
+    // ==========================================
+    // 2. REPUTAÇÃO POR TÍTULOS (O "Fator Bops")
+    // ==========================================
+    let repBonus = 0;
+
+    if (typeof titlesData !== 'undefined' && typeof checkNameMatch === 'function') {
+        let isWorldChamp = titlesData.coletivos.some(t => t.event.includes("World Series") && t.players && t.players.some(pl => checkNameMatch(pl, p.jogador)));
+        let titulosLocais = titlesData.coletivos.filter(t => !t.event.includes("World Series") && t.players && t.players.some(pl => checkNameMatch(pl, p.jogador))).length;
+
+        if (isWorldChamp) repBonus += 4; // Título Mundial pesa absurdo
+        if (titulosLocais >= 2) repBonus += 2; // Multicampeão
+        else if (titulosLocais === 1) repBonus += 1;
+    }
+
+    // Bônus de Impacto (MVP)
+    if (avgM >= 0.13) repBonus += 3;
+    else if (avgM >= 0.08) repBonus += 2;
+    else if (avgM > 0) repBonus += 1;
+
+    finalOverall += repBonus;
+
+    // ==========================================
+    // 3. O PESO DA CAMISA (Sua ideia de Tiers)
+    // ==========================================
+    let eqUpper = p.equipe ? p.equipe.toUpperCase() : "";
+    
+    // Suas classificações exatas
+    const tierS = ["FLUXO W7M", "LOS", "LOUD SNICKERS"]; 
+    const tierA = ["VIRTUS PRO", "TEAM SOLID", "INTZ"];
+    const tierB = ["E1", "E1 ESPORTS", "ALPHA7"];
+    const tierC = ["AXS", "LOOPS", "RISE", "RISE GAMING", "RUSH", "INFLUENCE RAGE"];
+    const tierD = ["VASCO", "ANGELS", "CIVIS"];
+
+    let minOverall = 65; // O mínimo absoluto para um jogador de Série A
+    let tierBonus = 0;
+
+    if (tierS.includes(eqUpper)) {
+        tierBonus = 3;  // Só de vestir essa camisa ganha +3
+        minOverall = 81; // O "Piso do Proxx"
+    } else if (tierA.includes(eqUpper)) {
+        tierBonus = 2;
+        minOverall = 78;
+    } else if (tierB.includes(eqUpper)) {
+        tierBonus = 1;
+        minOverall = 74;
+    } else if (tierC.includes(eqUpper)) {
+        tierBonus = 0;
+        minOverall = 70;
+    } else if (tierD.includes(eqUpper)) {
+        tierBonus = 0;
+        minOverall = 65;
+    }
+
+    // Adiciona o bônus da camisa aos status do jogador
+    finalOverall += tierBonus;
+
+    // Se mesmo com os bônus o cara ficou abaixo do aceitável para o nível do time dele, a camisa "salva" ele:
+    if (finalOverall < minOverall) {
+        finalOverall = minOverall;
+    }
+
+    // ==========================================
+    // 4. TRAVAS DE SEGURANÇA
+    // ==========================================
+    let result = Math.round(finalOverall);
+    if (result > 96) result = 96; 
     if (result < 65) result = 65;
 
     return result;
@@ -5898,7 +6085,7 @@ function calculateOverall(p) {
 function getOverallColor(ovr) {
     if (ovr >= 90) return '#ffd700'; // Ouro Lendário
     if (ovr >= 85) return '#ffea00'; // Ouro Elite
-    if (ovr >= 81) return '#e5e5e5'; // Prata Brilhante
+    if (ovr >= 80) return '#e5e5e5'; // Prata Brilhante
     if (ovr >= 75) return '#c0c0c0'; // Prata
     return '#cd7f32';               // Bronze
 }
@@ -6022,15 +6209,14 @@ function openPlayerProfile(playerName) {
         document.getElementById('pp-tot-kills').innerText = p.abates || 0;
         document.getElementById('pp-avg-kills').innerText = (p.abates / (p.quedas || 1)).toFixed(2);
         document.getElementById('pp-rank-kills').innerText = `#${p.rankKills || 0}`;
-        document.getElementById('pp-record').innerText = p.recorde || 0;
         document.getElementById('pp-tot-dmg').innerText = p.dano || 0;
         document.getElementById('pp-avg-dmg').innerText = (p.dano / (p.quedas || 1)).toFixed(0);
         document.getElementById('pp-rank-dmg').innerText = `#${p.rankDmg || 0}`;
         document.getElementById('pp-tot-assists').innerText = p.assists || 0;
         document.getElementById('pp-avg-assists').innerText = (p.assists / (p.quedas || 1)).toFixed(2);
         document.getElementById('pp-rank-assists').innerText = `#${p.rankAssists || 0}`;
+        document.getElementById('pp-record').innerText = p.recorde || 0;
         document.getElementById('pp-tot-mvps').innerText = p.mvp || 0;
-        document.getElementById('pp-rank-mvps').innerText = `#${p.rankMvp || 0}`;
 
         renderActivePlayerCard(p);
     }
@@ -6098,9 +6284,9 @@ function renderActivePlayerCard(p) {
 
     let ovr = calculateOverall(p);
     let role = playerRoles[p.jogador] || "RUSH";
-    let category = ovr >= 91 ? "LENDÁRIO" : (ovr >= 86 ? "ELITE" : (ovr >= 81 ? "MUITO BOM" : "PROFISSIONAL"));
-    let accentColor = ovr >= 91 ? "#d4af37" : (ovr >= 86 ? "#c5a028" : (ovr >= 81 ? "#e5e5e5" : "#cd7f32"));
-    let stars = ovr >= 91 ? "⭐⭐⭐⭐⭐" : (ovr >= 86 ? "⭐⭐⭐⭐" : (ovr >= 81 ? "⭐⭐⭐" : "⭐⭐"));
+    let category = ovr >= 91 ? "LENDÁRIO" : (ovr >= 85 ? "ELITE" : (ovr >= 80 ? "MUITO BOM" : "PROFISSIONAL"));
+    let accentColor = ovr >= 91 ? "#d4af37" : (ovr >= 85 ? "#c5a028" : (ovr >= 80 ? "#e5e5e5" : "#cd7f32"));
+    let stars = ovr >= 91 ? "⭐⭐⭐⭐⭐" : (ovr >= 85 ? "⭐⭐⭐⭐" : (ovr >= 80 ? "⭐⭐⭐" : "⭐⭐"));
 
     document.getElementById('player-overall-card').innerHTML = `
         <div style="display: flex; gap: 30px; align-items: center; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; flex-wrap: wrap; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05); justify-content: center;">
