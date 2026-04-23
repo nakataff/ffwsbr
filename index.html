@@ -12,13 +12,13 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FFWS Brasil 2026 - Central Completa</title>
+<title>Central Free Fire - Central Completa</title>
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <style>
     :root {
-        --bg-color: #0f0f11; --panel-bg: #1c1c20; --panel-hover: #26262b;
-        --border: #333338; --accent: #ffaa00; --text: #ffffff;
-        --text-muted: #b0b7be; --win-color: #4caf50; --lose-color: #f44336;
+        --bg-color: #050810; --panel-bg: #0d1220; --panel-hover: #141a2e;
+        --border: #1e2a45; --accent: #00c8ff; --text: #ffffff;
+        --text-muted: #7a9bbf; --win-color: #4caf50; --lose-color: #f44336;
     }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 0; }
     
@@ -215,7 +215,7 @@
     color: var(--accent); 
     margin: 0; 
     padding: 15px;
-    background: #242429; 
+    background: #0d1220; 
     border-bottom: 2px solid var(--border);
     text-transform: uppercase;
     font-size: 0.95em;
@@ -271,7 +271,7 @@
 .old-news-title { padding: 15px; color: #fff; font-weight: bold; font-size: 1.05em; line-height: 1.4; }
 
 /* Navegação */
-    nav { background-color: #050505; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    nav { background-color: #020509; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
     /* Acessibilidade: focus-visible para navegação por teclado */
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -280,11 +280,14 @@
     .skip-link:focus { top: 0; }
 
     /* Skeleton loader para carregamento de tabelas */
-    .skeleton-cell { height: 16px; border-radius: 4px; background: linear-gradient(90deg, #242429 25%, #2d2d33 50%, #242429 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    .skeleton-cell { height: 16px; border-radius: 4px; background: linear-gradient(90deg, #0d1220 25%, #141a2e 50%, #0d1220 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     /* Overflow seguro para tabelas no mobile */
     @media (max-width: 768px) { .table-container { -webkit-overflow-scrolling: touch; } }
+    
+    .nav-header-desktop-brand { display: flex; }
+    @media (max-width: 768px) { .nav-header-desktop-brand { display: none; } }
     
     .nav-header-mobile { display: none; justify-content: space-between; align-items: center; padding: 15px 20px; }
     .nav-header-mobile span { color: var(--accent); font-weight: bold; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px; }
@@ -371,7 +374,7 @@
     .search-wrapper {
         position: relative;
         padding: 12px 20px;
-        background: #0a0a0c;
+        background: #030609;
         display: flex;
         justify-content: center;
         border-bottom: 1px solid var(--border);
@@ -474,8 +477,8 @@ tr:last-child {
     border-bottom: none;
 }
 
-    th { background-color: #242429; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.85em; cursor: pointer; user-select: none; transition: 0.2s; }
-    th:hover { color: var(--accent); background-color: #2d2d33; }
+    th { background-color: #0d1220; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.85em; cursor: pointer; user-select: none; transition: 0.2s; }
+    th:hover { color: var(--accent); background-color: #141a2e; }
     tr:hover { background-color: var(--panel-hover); }
     
     .clickable { cursor: pointer; color: #66b3ff; font-weight: bold; transition: 0.2s; text-decoration: none; }
@@ -491,7 +494,7 @@ tr:last-child {
     /* Grupos Layout Topo */
     .groups-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
     .group-card-simple { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .group-header-simple { background: #242429; padding: 10px; font-weight: bold; text-align: center; font-size: 1.2em; color: var(--accent); border-bottom: 2px solid var(--accent); }
+    .group-header-simple { background: #0d1220; padding: 10px; font-weight: bold; text-align: center; font-size: 1.2em; color: var(--accent); border-bottom: 2px solid var(--accent); }
     .group-list { list-style: none; padding: 0; margin: 0; }
     .group-list li { padding: 12px 20px; border-bottom: 1px solid var(--border); font-size: 1.1em; display: flex; align-items: center; }
     .group-list li:last-child { border-bottom: none; }
@@ -500,7 +503,7 @@ tr:last-child {
     /* Tabelas de Grupos - Nova Seção */
     .groups-tables-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
     .group-table-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .group-table-card h3 { background: #242429; margin: 0; padding: 12px; text-align: center; color: var(--accent); font-size: 1.1em; border-bottom: 2px solid var(--accent); }
+    .group-table-card h3 { background: #0d1220; margin: 0; padding: 12px; text-align: center; color: var(--accent); font-size: 1.1em; border-bottom: 2px solid var(--accent); }
 
     /* Comparação - Layout Atualizado para Mobile */
     .compare-container { 
@@ -586,20 +589,20 @@ tr:last-child {
     
     .match-row { display: flex; align-items: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
     .group-logos { display: flex; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 20px; gap: 8px; border: 1px solid #444; }
-    .group-label { font-weight: bold; color: #ffaa00; min-width: 65px; text-align: center; }
+    .group-label { font-weight: bold; color: var(--accent); min-width: 65px; text-align: center; }
     .mini-logo { width: 24px; height: 24px; object-fit: contain; }
 
     .btn-back { background-color: #333; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 25px; font-weight: bold; }
     .btn-back:hover { background-color: #444; }
     .btn-action { background-color: var(--accent); color: #000; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; margin-top: 15px; font-weight: bold; transition: 0.2s; }
-    .btn-action:hover { background-color: #e69900; }
+    .btn-action:hover { background-color: #009fcc; }
     
     .filters { display: flex; gap: 15px; margin-bottom: 20px; background: var(--panel-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); align-items: center; flex-wrap: wrap; }
-    select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #2a2a2e; color: white; outline: none; }
+    select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none; }
 
     /* Filtro Multi-Dias */
     .day-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-left: 10px; }
-    .day-chip { background: #2a2a2e; border: 1px solid var(--border); padding: 6px 12px; border-radius: 15px; cursor: pointer; color: #fff; font-size: 0.85em; user-select: none; transition: 0.2s; }
+    .day-chip { background: #0d1220; border: 1px solid var(--border); padding: 6px 12px; border-radius: 15px; cursor: pointer; color: #fff; font-size: 0.85em; user-select: none; transition: 0.2s; }
     .day-chip:hover { border-color: #66b3ff; }
     .day-chip.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
 
@@ -734,7 +737,10 @@ tr:last-child {
 <a href="#main-content" class="skip-link">Pular para o conteúdo</a>
 <nav role="navigation" aria-label="Menu principal">
     <div class="nav-header-mobile">
-        <span>FFWS BRASIL 26</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="central free fire.webp" alt="Central Free Fire" style="height: 32px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(0, 200, 255, 0.5));">
+            <span>CENTRAL FREE FIRE</span>
+        </div>
         <div class="actions" style="display: flex; align-items: center; gap: 5px;">
             <button id="search-btn" onclick="toggleMobileSearch()" aria-label="Abrir barra de pesquisa" aria-expanded="false">🔍</button>
             <button id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Abrir menu de navegação" aria-expanded="false">☰</button>
@@ -744,6 +750,11 @@ tr:last-child {
     <div class="search-wrapper" id="search-wrapper">
         <input type="text" id="global-search" placeholder="Pesquisar jogador ou equipe..." onkeyup="handleGlobalSearch()" autocomplete="off" aria-label="Pesquisar jogador ou equipe" aria-controls="search-results" aria-autocomplete="list">
         <div id="search-results" class="search-results-dropdown" role="listbox" aria-label="Resultados da pesquisa"></div>
+    </div>
+
+    <div class="nav-header-desktop-brand" style="align-items: center; justify-content: center; gap: 12px; padding: 10px 20px 0;">
+        <img src="central free fire.webp" alt="Central Free Fire" style="height: 38px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.6));">
+        <span style="color: var(--accent); font-weight: 900; font-size: 1.25em; text-transform: uppercase; letter-spacing: 2px;">CENTRAL FREE FIRE</span>
     </div>
 
     <div class="nav-links" id="nav-links">
@@ -765,12 +776,8 @@ tr:last-child {
 <div class="container">
 <div id="home" class="page active">
     
-    <div class="news-hero" onclick="window.open('https://www.instagram.com/p/DXfKAz3gU-v/', '_blank')">
-        <img src="noticia1.webp" alt="Notícia Principal" onerror="this.src='central free fire.webp'">
-        <div class="news-hero-overlay">
-            <h2 class="news-hero-title">TEAM SOLID É CAMPEÃ DA LIGA MARINHO</h2>
-        </div>
-    </div>
+    <!-- Notícia principal (destaque) carregada do noticias.json -->
+    <div id="news-hero-container"></div>
 
     <div class="home-grid-2" style="margin-top: 25px;">
         
@@ -818,38 +825,21 @@ tr:last-child {
         </div>
     </div>
 
-    <h2 style="margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent);">Últimas Notícias</h2>
-    <div class="old-news-grid">
-        <div class="old-news-card" onclick="window.open('https://instagram.com/nakataff', '_blank')">
-            <img src="noticia2.jpg" alt="Notícia 2" onerror="this.src='central free fire.webp'">
-            <div class="old-news-title">Resumo da Semana: Destaques e Decepções das quedas recentes</div>
-        </div>
-        <div class="old-news-card" onclick="window.open('https://instagram.com/nakataff', '_blank')">
-            <img src="noticia3.jpg" alt="Notícia 3" onerror="this.src='central free fire.webp'">
-            <div class="old-news-title">Entrevista Exclusiva: O segredo por trás do MVP desta rodada</div>
-        </div>
-        <div class="old-news-card" onclick="window.open('https://instagram.com/nakataff', '_blank')">
-            <img src="noticia4.jpg" alt="Notícia 4" onerror="this.src='central free fire.webp'">
-            <div class="old-news-title">Novas estratégias e rotações que dominaram o Mapa Nova Terra</div>
-        </div>
+    <!-- Últimas Notícias (demais notícias do noticias.json) -->
+    <h2 id="ultimas-noticias-titulo" style="display:none; margin-top: 40px; border-bottom: 1px solid #1e2a45; padding-bottom: 10px; color: var(--accent);">Últimas Notícias</h2>
+    <div class="old-news-grid" id="ultimas-noticias-grid"></div>
+
+    <div style="text-align: center; margin-top: 40px; padding-bottom: 20px;">
+        <a href="https://instagram.com/nakataff" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 14px 30px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+            <img src="instagram.png" style="width: 22px;" alt="Instagram">
+            <span style="color: #fff; font-weight: bold; font-size: 1.1em;">Siga no Instagram</span>
+        </a>
     </div>
 </div>
 
     <!-- PAGE: TIMES -->
 <div id="teams" class="page">
     <div style="text-align: center; margin-bottom: 40px; padding-top: 10px;">
-        
-        <div style="margin-bottom: 30px;">
-            <img src="central free fire.webp" alt="Central Free Fire" 
-                 style="width: 100%; max-width: 300px; height: auto; filter: drop-shadow(0 0 20px rgba(0, 200, 255, 0.5));">
-        </div>
-            
-        <a href="https://instagram.com/nakataff" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 12px 25px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <img src="instagram.png" style="width: 20px;" alt="Instagram">
-            <span style="color: #fff; font-weight: bold; font-size: 1.1em;">Siga no Instagram</span>
-        </a>
-    </div>
-        <hr style="border: 0; border-top: 1px solid #333; margin: 30px 0;">
         <h2>Divisão de Grupos</h2>
         <div class="groups-container" id="groups-container"></div>
 
@@ -897,6 +887,7 @@ tr:last-child {
         <h2 style="margin-top: 50px;">Classificação por Grupos</h2>
         <div class="groups-tables-grid" id="groups-tables-grid"></div>
     </div>
+</div>
 
     <!-- NOVA PAGE: EQUIPES -->
     <div id="teams-list" class="page">
@@ -958,7 +949,7 @@ tr:last-child {
             </div>
         </div>
         <div style="width: 100%; max-width: 300px; background: var(--panel-bg); border: 1px solid var(--border); padding: 10px; border-radius: 8px;">
-            <div style="font-size: 1.1em; color: var(--text-muted);">Posição Geral: <strong id="tp-pos" style="color:#ffaa00; font-size: 1.4em;">0º</strong></div>
+            <div style="font-size: 1.1em; color: var(--text-muted);">Posição Geral: <strong id="tp-pos" style="color:var(--accent); font-size: 1.4em;">0º</strong></div>
         </div>
         <button class="btn-action" onclick="openResultsModal()" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: transparent; border: 1px solid #ffd700; color: #ffd700; width: 100%; max-width: 300px; padding: 12px; border-radius: 8px;">
     🏆 Ver Todos os Resultados
@@ -1053,11 +1044,11 @@ tr:last-child {
         <div class="card" style="border-left: 4px solid var(--accent);"><div class="card-top-border"></div><h3>Kills Históricas</h3><div class="value" id="pp-hist-kills" style="color:#fff">0</div></div>
         <div class="card"><div class="card-top-border"></div><h3>Quedas Jogadas</h3><div class="value" id="pp-hist-quedas">0</div></div>
         <div class="card"><div class="card-top-border"></div><h3>Média Histórica</h3><div class="value" id="pp-hist-avg">0.00</div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Títulos Coletivos</h3><div class="value" id="pp-hist-col" style="color:#ffaa00">0</div></div>
-        <div class="card"><div class="card-top-border"></div><h3>Títulos Individuais</h3><div class="value" id="pp-hist-ind" style="color:#ffaa00">0</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Títulos Coletivos</h3><div class="value" id="pp-hist-col" style="color:var(--accent)">0</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Títulos Individuais</h3><div class="value" id="pp-hist-ind" style="color:var(--accent)">0</div></div>
     </div>
 
-    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffaa00; text-transform: uppercase;">Histórico de Equipes</h3>
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); text-transform: uppercase;">Histórico de Equipes</h3>
     <div id="pp-team-history-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);"></div>
 
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700;">Galeria de Troféus</h3>
@@ -1108,7 +1099,7 @@ tr:last-child {
             </div>
         </div>
 
-        <h3 style="margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffaa00; text-transform: uppercase; letter-spacing: 1px; width: 100%; text-align: left;">Histórico de Equipes</h3>
+        <h3 style="margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; width: 100%; text-align: left;">Histórico de Equipes</h3>
         <div id="sp-team-history-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border); width: 100%;"></div>
 
         <h3 style="margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700; text-transform: uppercase; letter-spacing: 1px; width: 100%; text-align: left;">Galeria de Troféus</h3>
@@ -1384,7 +1375,7 @@ tr:last-child {
 
         <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
 
-        <h2 style="color: #ffaa00;">O BRABO: Comparador Histórico 👑</h2>
+        <h2 style="color: var(--accent);">O BRABO: Comparador Histórico 👑</h2>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">Compare o mesmo jogador em edições diferentes, ou dois jogadores na mesma edição.</p>
         
         <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
@@ -6368,6 +6359,10 @@ window.onload = () => {
     renderSchedule();
     renderAllPlayers();
     renderIndividualRecords();
+    
+    // 👇 ADICIONE ESTA LINHA AQUI 👇
+    renderPlayerStats(); 
+    
     buildEditionFilters();
     renderEditionRanking();
     populateHistSelects();
@@ -6381,6 +6376,8 @@ window.onload = () => {
 
     // Carrega as lives do JSON externo
     loadLives();
+    // Carrega as notícias do JSON externo
+    loadNoticias();
 };
 
 function navigate(pageId) {
@@ -6681,14 +6678,14 @@ function renderTop5Stats() {
             <div class="card"><div class="card-top-border"></div><h3>Colocação Média</h3>${getTeamHtmlAsc(validTeams, t=>t.avgPos, v=>v.toFixed(2)+"º", "Pos")}</div>
         </div>
         
-        <h4 style="color:#ffaa00; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Jogador</h4>
+        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Jogador</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Top Abates</h3>${getPlayerHtml(validPlayers, p=>p.kills, v=>v, "Kills")}</div>
             <div class="card"><div class="card-top-border"></div><h3>Top Dano</h3>${getPlayerHtml(validPlayers, p=>p.dano, v=>v, "Dano")}</div>
             <div class="card"><div class="card-top-border"></div><h3>Top Assistências</h3>${getPlayerHtml(validPlayers, p=>p.assists, v=>v, "Ast")}</div>
         </div>
         
-        <h4 style="color:#ffaa00; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Jogador</h4>
+        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Jogador</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
             <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3>${getPlayerHtml(validPlayers, p=>p.avgKills, v=>v.toFixed(2), "Média")}</div>
             <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3>${getPlayerHtml(validPlayers, p=>p.avgDano, v=>v.toFixed(0), "Média")}</div>
@@ -6754,7 +6751,7 @@ function renderTableAvg() {
                     <span class="full-name-desktop">${t.equipe}</span>
                     <span class="short-name-mobile">${sName}</span>
                 </td>
-                <td style="color:#ffaa00; font-weight:bold">${t.avgPts}</td>
+                <td style="color:var(--accent); font-weight:bold">${t.avgPts}</td>
                 <td>${t.avgKills}</td>
                 <td style="color: #aaa;">${t.avgPos}º</td>
                 <td class="hide-mobile">${t.quedas}</td>
@@ -6783,7 +6780,7 @@ function renderTableTotal() {
                     <span class="full-name-desktop">${t.equipe}</span>
                     <span class="short-name-mobile">${sName}</span>
                 </td>
-                <td style="color:#ffaa00; font-weight:bold">${t.pontos}</td>
+                <td style="color:var(--accent); font-weight:bold">${t.pontos}</td>
                 <td>${t.booyahs}</td>
                 <td>${t.kills}</td>
             </tr>`;
@@ -7146,7 +7143,7 @@ function renderEditionRanking() {
             <td>${teamHtml}</td>
             <td style="color:#fff; font-weight:bold;">${p.k}</td>
             <td>${p.q}</td>
-            <td style="color:#ffaa00;">${p.avg}</td>
+            <td style="color:var(--accent);">${p.avg}</td>
         </tr>`;
     }).join('');
 }
@@ -7335,7 +7332,7 @@ function renderHistoricalRanking() {
             <td>${teamHtml}</td>
             <td style="color:#fff; font-weight:bold;">${p.totalKills}</td>
             <td>${p.totalQuedas}</td>
-            <td style="color:#ffaa00;">${(p.totalKills / (p.totalQuedas || 1)).toFixed(2)}</td>
+            <td style="color:var(--accent);">${(p.totalKills / (p.totalQuedas || 1)).toFixed(2)}</td>
         </tr>`;
     }).join('');
 }
@@ -7867,7 +7864,7 @@ function renderFullTeams() {
                 <span class="clickable short-name-mobile" onclick="openTeamProfile('${t.equipe}')">${sName}</span>
             </td>
             <td class="hide-mobile">${t.grupo}</td>
-            <td style="color:#ffaa00; font-weight:bold">${t.pontos}</td>
+            <td style="color:var(--accent); font-weight:bold">${t.pontos}</td>
             <td class="hide-mobile">${t.booyah}</td>
             <td class="hide-mobile">${t.abates}</td>
             <td>${lastColHtml}</td>
@@ -8519,7 +8516,7 @@ function openConfrontationModal() {
                         <span class="hide-mobile" style="font-size:0.8em; margin-top:2px;">${sName}</span>
                     </td>
                     <td>${tm.grupo}</td>
-                    <td style="color:#ffaa00; font-weight:bold">${tm.pontos}</td>
+                    <td style="color:var(--accent); font-weight:bold">${tm.pontos}</td>
                     <td>${tm.booyah}</td>
                     <td>${tm.abates}</td>
                     <td>${tm.quedas}</td>
@@ -8915,7 +8912,7 @@ function renderMapData() {
     let data = db.maps[map];
     let tbody = document.querySelector('#table-maps tbody');
     tbody.innerHTML = '';
-    if(data) [...data].sort((a,b) => b.pontos_total - a.pontos_total).forEach((t, i) => tbody.innerHTML += `<tr><td style="color:var(--accent); font-weight:bold;">${i+1}º</td><td class="team-cell"><img src="${logos[t.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span></td><td style="color:#ffaa00; font-weight:bold">${t.pontos_total.toFixed(2)}</td><td>${t.abates.toFixed(2)}</td><td>${t.pontos_pos.toFixed(2)}</td><td>${t.Booyah.toFixed(2)}</td></tr>`);
+    if(data) [...data].sort((a,b) => b.pontos_total - a.pontos_total).forEach((t, i) => tbody.innerHTML += `<tr><td style="color:var(--accent); font-weight:bold;">${i+1}º</td><td class="team-cell"><img src="${logos[t.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span></td><td style="color:var(--accent); font-weight:bold">${t.pontos_total.toFixed(2)}</td><td>${t.abates.toFixed(2)}</td><td>${t.pontos_pos.toFixed(2)}</td><td>${t.Booyah.toFixed(2)}</td></tr>`);
 }
 
 // Essa função é nova, ela apenas abre/fecha o menu mobile
@@ -9293,7 +9290,7 @@ function renderHomeStats() {
                     </div>
                     <div style="font-size: 0.75em; color: #888; margin-left: 28px;">Grupo ${t.grupo}</div>
                 </td>
-                <td style="color:#ffaa00; font-weight:bold;">${t.pontos}</td>
+                <td style="color:var(--accent); font-weight:bold;">${t.pontos}</td>
             </tr>
         `).join('');
     }
@@ -9309,9 +9306,64 @@ function renderHomeStats() {
                     <span style="font-weight:bold; color:#fff;">${getDisplayName(p.jogador)}</span>
                     <div style="font-size: 0.75em; color: #888;">${p.equipe}</div>
                 </td>
-                <td style="color:#ffaa00; font-weight:bold;">${p.abates}</td>
+                <td style="color:var(--accent); font-weight:bold;">${p.abates}</td>
             </tr>
         `).join('');
+    }
+}
+
+// =============================================
+// SISTEMA DE NOTÍCIAS — carrega de noticias.json
+// Estrutura do noticias.json:
+// [
+//   { "imagem": "noticia1.webp", "titulo": "TÍTULO EM MAIÚSCULAS", "link": "https://...", "destaque": true },
+//   { "imagem": "noticia2.jpg", "titulo": "Título da notícia", "link": "https://...", "destaque": false }
+// ]
+// A notícia com "destaque": true vira o hero (banner grande).
+// As demais aparecem na grade de "Últimas Notícias" abaixo do Top 6.
+// =============================================
+async function loadNoticias() {
+    const heroContainer = document.getElementById('news-hero-container');
+    const grid = document.getElementById('ultimas-noticias-grid');
+    const titulo = document.getElementById('ultimas-noticias-titulo');
+    if (!heroContainer) return;
+
+    try {
+        const res = await fetch('noticias.json?v=' + Date.now());
+        if (!res.ok) throw new Error('noticias.json não encontrado');
+        const noticias = await res.json();
+
+        const destaque = noticias.find(n => n.destaque) || noticias[0];
+        const demais   = noticias.filter(n => n !== destaque);
+
+        // Hero (notícia principal)
+        if (destaque) {
+            heroContainer.innerHTML = `
+            <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')">
+                <img src="${destaque.imagem}" alt="Notícia Principal" onerror="this.src='central free fire.webp'">
+                <div class="news-hero-overlay">
+                    <h2 class="news-hero-title">${destaque.titulo}</h2>
+                </div>
+            </div>`;
+        }
+
+        // Grade de últimas notícias (abaixo do Top 6)
+        if (grid && demais.length > 0) {
+            if (titulo) titulo.style.display = '';
+            grid.innerHTML = demais.map(n => `
+            <div class="old-news-card" onclick="window.open('${n.link}', '_blank')">
+                <img src="${n.imagem}" alt="${n.titulo}" onerror="this.src='central free fire.webp'">
+                <div class="old-news-title">${n.titulo}</div>
+            </div>`).join('');
+        }
+
+    } catch (e) {
+        // Fallback se o arquivo não existir
+        if (heroContainer) heroContainer.innerHTML = `
+        <div style="background: var(--panel-bg); border: 1px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 25px;">
+            <p style="color: var(--text-muted); margin: 0;">Crie o arquivo <code style="color: var(--accent);">noticias.json</code> para exibir as notícias.</p>
+        </div>`;
+        console.warn('[loadNoticias] Erro ao carregar noticias.json:', e);
     }
 }
 
