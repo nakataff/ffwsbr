@@ -1,0 +1,26 @@
+[
+  {
+    "imagem": "noticia1.webp",
+    "titulo": "TEAM SOLID É CAMPEÃ DA LIGA MARINHO",
+    "link": "https://www.instagram.com/p/DXfKAz3gU-v/",
+    "destaque": true
+  },
+  {
+    "imagem": "noticia2.jpg",
+    "titulo": "Resumo da Semana: Destaques e Decepções das quedas recentes",
+    "link": "https://instagram.com/nakataff",
+    "destaque": false
+  },
+  {
+    "imagem": "noticia3.jpg",
+    "titulo": "Entrevista Exclusiva: O segredo por trás do MVP desta rodada",
+    "link": "https://instagram.com/nakataff",
+    "destaque": false
+  },
+  {
+    "imagem": "noticia4.jpg",
+    "titulo": "Novas estratégias e rotações que dominaram o Mapa Nova Terra",
+    "link": "https://instagram.com/nakataff",
+    "destaque": false
+  }
+]
