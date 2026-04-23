@@ -3,13 +3,13 @@
     "imagem": "noticia1.webp",
     "titulo": "TEAM SOLID É CAMPEÃ DA LIGA MARINHO",
     "link": "https://www.instagram.com/p/DXfKAz3gU-v/",
-    "destaque": true
+    "destaque": false
   },
   {
-    "imagem": "noticia2.jpg",
+    "imagem": "laff.webp",
     "titulo": "Resumo da Semana: Destaques e Decepções das quedas recentes",
-    "link": "https://instagram.com/nakataff",
-    "destaque": false
+    "link": "https://www.instagram.com/p/DXfLrJ1Euk-/",
+    "destaque": true
   },
   {
     "imagem": "noticia3.jpg",
