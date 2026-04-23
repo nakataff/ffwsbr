@@ -41,6 +41,20 @@
         .nav-links.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
         .nav-links button { width: 100%; text-align: center; padding: 15px; font-size: 1.05em; }
     }
+
+    /* --- STATUS OUTROS TORNEIOS --- */
+.status-mundial { 
+    border-left: 4px solid #4caf50 !important; 
+    background: linear-gradient(90deg, rgba(76, 175, 80, 0.1) 0%, transparent 100%); 
+}
+.status-final { 
+    border-left: 4px solid #ffd700 !important; 
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%); 
+}
+.status-eliminado { 
+    border-left: 4px solid #f44336 !important; 
+    background: linear-gradient(90deg, rgba(244, 67, 54, 0.1) 0%, transparent 100%); 
+}
     
     /* Container Principal */
     .container { padding: 30px 20px; max-width: 1400px; margin: 0 auto; }
@@ -465,6 +479,7 @@ tr:last-child {
         <button onclick="navigate('compare')" id="nav-compare">Comparar 1v1</button>
         <button onclick="navigate('schedule')" id="nav-schedule">Datas</button>
         <button onclick="navigate('history')" id="nav-history">Hall da Fama</button>
+        <button onclick="navigate('outros-torneios')" id="nav-outros-torneios">Outros Torneios</button>
       <!-- <button onclick="window.location.href='emulador.html'" id="nav-emulador">Emulador</button> -->
     </div>
 </nav>
@@ -921,7 +936,42 @@ tr:last-child {
         </table>
     </div>
 </div>
+<div id="outros-torneios" class="page">
+    
+    <div id="ot-list-view">
+        <h2 style="text-align: center; margin-bottom: 30px;">Arquivo de Torneios</h2>
+        
+        <h3 style="color: #66b3ff; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Mundiais</h3>
+        <div class="grid-cards" id="ot-grid-mundiais" style="margin-bottom: 40px;"></div>
+        
+        <h3 style="color: #90ee90; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Internacionais</h3>
+        <div class="grid-cards" id="ot-grid-internacionais" style="margin-bottom: 40px;"></div>
+        
+        <h3 style="color: #ffd700; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Nacionais</h3>
+        <div class="grid-cards" id="ot-grid-nacionais" style="margin-bottom: 40px;"></div>
+        
+        <h3 style="color: #ff4444; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Amadoras</h3>
+        <div class="grid-cards" id="ot-grid-amadoras" style="margin-bottom: 40px;"></div>
+    </div>
 
+    <div id="ot-details-view" style="display: none;">
+        <button class="btn-back" onclick="closeOtherTournament()">← Voltar para Torneios</button>
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="ot-title" style="font-size: 2.5em; text-transform: uppercase; color: #fff; margin-bottom: 5px;">Nome do Torneio</h1>
+            <div id="ot-year" style="color: var(--accent); font-weight: bold;">202X</div>
+        </div>
+
+        <div class="filters" id="ot-stage-filters" style="justify-content: center;">
+            </div>
+
+        <div id="ot-standings-container"></div>
+        
+        <h3 style="margin-top: 40px; color: #a020f0; border-bottom: 1px solid #333; padding-bottom: 10px;">Corrida pelo MVP</h3>
+        <div id="ot-mvp-container"></div>
+    </div>
+
+</div>
 <div id="history" class="page">
         <h2>Top 100 Abates da história</h2>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
@@ -1005,6 +1055,7 @@ tr:last-child {
             <div class="compare-container" id="hist-compare-result"></div>
         </div>
     </div>
+    </div>
 
     <!-- PAGE: COMPARAR -->
     <div id="compare" class="page">
@@ -1058,7 +1109,7 @@ tr:last-child {
             <button class="close-btn" onclick="document.getElementById('results-modal').classList.remove('active')">&times;</button>
         </div>
         
-<div class="filters" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <div class="filters" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
             <label style="color: var(--text-muted); font-weight: bold;">Ano:</label>
             <select id="filter-results-year" onchange="renderTeamResults()" style="max-width: 100px;">
                 <option value="all">Todos</option>
@@ -1104,6 +1155,17 @@ tr:last-child {
         </div>
     </div>
 </div>
+
+<div class="modal-overlay" id="ot-roster-modal" onclick="closeOtRosterModal(event)">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <div class="modal-header">
+            <h2 id="ot-roster-title" style="color: #fff; margin: 0;">Equipe</h2>
+            <button class="close-btn" onclick="document.getElementById('ot-roster-modal').classList.remove('active')">&times;</button>
+        </div>
+        <img id="ot-roster-logo" src="" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px;">
+        <div id="ot-roster-list" style="display: flex; flex-direction: column; gap: 10px;">
+            </div>
+    </div>
 </div>
 <script>
 // ===============================>===========
@@ -1546,6 +1608,59 @@ const staffPhotos = {
     "LZZ": "lzz.webp",
     "DOODLES": "doodles.webp"*/
 };
+
+const dbOutrosTorneios = [
+    {
+        id: "lbff_8",
+        nome: "LBFF 8",
+        ano: "2022",
+        categoria: "nacionais",
+        mvp_oficial: "NANDO9",
+        fases: {
+            "Classificatória": [
+    { equipe: "TSM", pontos: 812, status: "final" },
+    { equipe: "FLUXO W7M", pontos: 805, status: "final" },
+    { equipe: "LOUD SNICKERS", pontos: 773, status: "final" },
+    { equipe: "VIVO KEYD", pontos: 754, status: "final" },
+    { equipe: "STARS HORIZON", pontos: 666, status: "final" },
+    { equipe: "LOS", pontos: 664, status: "final" },
+    { equipe: "ANGELS OUTPLAY", pontos: 650, status: "final" },
+    { equipe: "MAGIC SQUAD", pontos: 640, status: "final" },
+    { equipe: "GOD ESPORTS", pontos: 634, status: "final" },
+    { equipe: "META GAMING", pontos: 621, status: "final" },
+    { equipe: "TEAM LIQUID", pontos: 616, status: "final" },
+    { equipe: "B4 ESPORTS", pontos: 590, status: "final" },
+    { equipe: "CORINTHIANS", pontos: 575, status: "eliminado" },
+    { equipe: "PAIN GAMING", pontos: 563, status: "eliminado" },
+    { equipe: "HUMMER ESPORTS", pontos: 547, status: "eliminado" },
+    { equipe: "VASCO ESPORTS", pontos: 519, status: "eliminado" },
+    { equipe: "TROPICAOS", pontos: 458, status: "eliminado" },
+    { equipe: "NETSHOES MINERS", pontos: 436, status: "eliminado" }
+            ],
+            "Final": [
+    { equipe: "VIVO KEYD", pontos: 131, status: "mundial" },
+    { equipe: "MAGIC SQUAD", pontos: 88, status: "mundial" },
+    { equipe: "ANGELS OUTPLAY", pontos: 81, status: "" },
+    { equipe: "FLUXO W7M", pontos: 75, status: "" },
+    { equipe: "TSM", pontos: 74, status: "" },
+    { equipe: "TEAM LIQUID", pontos: 66, status: "" },
+    { equipe: "LOS", pontos: 63, status: "" },
+    { equipe: "GOD ESPORTS", pontos: 52, status: "" },
+    { equipe: "LOUD SNICKERS", pontos: 51, status: "" },
+    { equipe: "B4 ESPORTS", pontos: 51, status: "" },
+    { equipe: "META GAMING", pontos: 48, status: "" },
+    { equipe: "STARS HORIZON", pontos: 47, status: "" }
+            ]
+        },
+        ranking_mvp: [
+            { jogador: "NANDO9", equipe: "VIVO KEYD", kills: 119 }
+        ],
+        escalacoes: {
+            "VIVO KEYD": ["MODESTIA", "General!", "DeadGOD", "NANDO9", "Ghost7"],
+            "FLUXO W7M": ["Cruel", "JapaBKR", "Syaz", "Fac", "OUSADO"]
+        }
+    }
+];
 
 const titlesData = {
     coletivos: [
@@ -5870,6 +5985,7 @@ window.onload = () => {
     populateSelects();
     renderFullTeams();
     renderHomeGroups();
+    renderOutrosTorneiosList(); // <-- Adicione essa linha
     
     // SUBSTITUA `renderStatsPage();` POR ESTAS 3 LINHAS:
     renderTop5Stats();
@@ -8545,7 +8661,222 @@ function renderComparePlayers() {
             </div>
         </div>`;
 }
+// ==========================================
+// ABA: OUTROS TORNEIOS
+// ==========================================
 
+let currentOtId = null; // Guarda qual torneio está aberto
+let currentOtStage = null; // Guarda qual fase (Classificatória, Final) está aberta
+
+// 1. Carrega os cards na tela inicial da aba
+function renderOutrosTorneiosList() {
+    const grids = {
+        mundiais: document.getElementById('ot-grid-mundiais'),
+        internacionais: document.getElementById('ot-grid-internacionais'),
+        nacionais: document.getElementById('ot-grid-nacionais'),
+        amadoras: document.getElementById('ot-grid-amadoras')
+    };
+
+    // Limpa os grids
+    for (let key in grids) if(grids[key]) grids[key].innerHTML = '';
+
+    dbOutrosTorneios.forEach(t => {
+        let card = `
+            <div class="card clickable" onclick="openOtherTournament('${t.id}')" style="text-align: center; cursor: pointer; transition: 0.3s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div class="card-top-border"></div>
+                <h3 style="color: #fff; font-size: 1.2em; margin-bottom: 5px;">${t.nome}</h3>
+                <span style="color: var(--accent); font-weight: bold;">${t.ano}</span>
+            </div>
+        `;
+        if (grids[t.categoria]) {
+            grids[t.categoria].innerHTML += card;
+        }
+    });
+
+    // Esconde as categorias que não tem nenhum torneio cadastrado
+    for (let key in grids) {
+        if (grids[key] && grids[key].innerHTML === '') {
+            grids[key].previousElementSibling.style.display = 'none'; // Esconde o <h3>
+            grids[key].style.display = 'none'; // Esconde a div vazia
+        } else if (grids[key]) {
+            grids[key].previousElementSibling.style.display = 'block';
+            grids[key].style.display = 'grid';
+        }
+    }
+}
+
+// 2. Abre a tela de um torneio específico
+function openOtherTournament(id) {
+    let t = dbOutrosTorneios.find(x => x.id === id);
+    if (!t) return;
+
+    currentOtId = id;
+    
+    // Troca as telas
+    document.getElementById('ot-list-view').style.display = 'none';
+    document.getElementById('ot-details-view').style.display = 'block';
+    
+    // Preenche Título e Ano
+    document.getElementById('ot-title').innerText = t.nome;
+    document.getElementById('ot-year').innerText = t.ano;
+
+    // Cria os botões de Filtro das Fases (Ex: Classificatória, Final)
+    let stages = Object.keys(t.fases);
+    currentOtStage = stages[0]; // Seleciona a primeira fase por padrão
+
+    let filtersHtml = stages.map(fase => `
+        <button class="day-chip ${fase === currentOtStage ? 'active' : ''}" onclick="changeOtStage('${fase}')">${fase}</button>
+    `).join('');
+    document.getElementById('ot-stage-filters').innerHTML = filtersHtml;
+
+    renderOtStandings();
+    renderOtMvp();
+    window.scrollTo(0, 0);
+}
+
+// 3. Volta para a lista de torneios
+function closeOtherTournament() {
+    document.getElementById('ot-list-view').style.display = 'block';
+    document.getElementById('ot-details-view').style.display = 'none';
+    currentOtId = null;
+}
+
+// 4. Troca a fase do torneio (ao clicar no botão)
+function changeOtStage(fase) {
+    currentOtStage = fase;
+    // Atualiza a cor dos botões
+    let buttons = document.getElementById('ot-stage-filters').children;
+    for(let b of buttons) {
+        if(b.innerText === fase) b.classList.add('active');
+        else b.classList.remove('active');
+    }
+    renderOtStandings();
+}
+
+// 5. Renderiza a tabela de Classificação (FOCADA APENAS EM PONTOS)
+function renderOtStandings() {
+    let t = dbOutrosTorneios.find(x => x.id === currentOtId);
+    if (!t || !t.fases[currentOtStage]) return;
+
+    let dados = t.fases[currentOtStage];
+    // Ordena por pontos
+    dados.sort((a,b) => b.pontos - a.pontos);
+
+    let tbodyHtml = dados.map((row, index) => {
+        let statusClass = row.status ? `status-${row.status}` : '';
+        let logoSrc = logos[row.equipe] || 'escudo.webp';
+
+        return `
+        <tr class="${statusClass}">
+            <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
+            <td class="clickable team-cell" onclick="openOtTeamRoster('${t.id}', '${row.equipe}')" style="text-align:left; display: flex; align-items: center; gap: 10px;">
+                <img src="${logoSrc}" style="width: 24px; height: 24px; object-fit: contain;">
+                <span style="font-weight:bold; color:#fff;">${row.equipe}</span>
+            </td>
+            <td style="color:var(--accent); font-weight:bold; font-size: 1.1em;">${row.pontos}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('ot-standings-container').innerHTML = `
+        <div class="table-container">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th style="text-align:left;">EQUIPE</th>
+                        <th>PONTOS</th>
+                    </tr>
+                </thead>
+                <tbody>${tbodyHtml}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 7. Abre o Modal com a Escalação
+function openOtTeamRoster(tourneyId, teamName) {
+    let t = dbOutrosTorneios.find(x => x.id === tourneyId);
+    
+    // Se não tivermos anotado a escalação desse time no BD, avisa o usuário
+    if (!t || !t.escalacoes || !t.escalacoes[teamName]) {
+        alert("Escalação não registrada para este time neste torneio.");
+        return;
+    }
+
+    document.getElementById('ot-roster-title').innerText = teamName;
+    document.getElementById('ot-roster-logo').src = logos[teamName] || 'escudo.webp';
+
+    let players = t.escalacoes[teamName];
+    
+    let html = players.map(pName => {
+        // Verifica se o jogador existe no nosso banco (Ativo ou Inativo)
+        let isRegistered = db.players.some(x => checkNameMatch(x.jogador, pName)) ||
+                           (typeof histData !== 'undefined' && histData.some(h => checkNameMatch(h.n, pName))) ||
+                           (typeof lbffData !== 'undefined' && Object.keys(lbffData).some(name => checkNameMatch(name, pName)));
+
+        if (isRegistered) {
+            // Se existe, cria um botão que leva direto pro perfil
+            return `<button class="btn-action" style="width: 100%; margin-top: 0; background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff;" onclick="document.getElementById('ot-roster-modal').classList.remove('active'); openPlayerProfile('${pName}')">${pName} ↗</button>`;
+        } else {
+            // Se NÃO existe, só mostra o nome numa caixinha cinza sem clique
+            return `<div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px; border-radius: 6px; color: #888; font-weight: bold;">${pName}</div>`;
+        }
+    }).join('');
+
+    document.getElementById('ot-roster-list').innerHTML = html;
+    document.getElementById('ot-roster-modal').classList.add('active');
+}
+
+// 8. Fechar o Modal de Escalação clicando fora
+function closeOtRosterModal(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('active');
+    }
+}
+
+// 6. Renderiza o Ranking de MVP
+function renderOtMvp() {
+    let t = dbOutrosTorneios.find(x => x.id === currentOtId);
+    let container = document.getElementById('ot-mvp-container');
+
+    if (!t || !t.ranking_mvp || t.ranking_mvp.length === 0) {
+        container.innerHTML = '<p style="color: #888; text-align: center;">Ranking de MVP não disponível para este torneio.</p>';
+        return;
+    }
+
+    let dados = t.ranking_mvp;
+    dados.sort((a,b) => b.kills - a.kills);
+
+    let tbodyHtml = dados.map((row, index) => {
+        let isMvp = row.jogador === t.mvp_oficial;
+        let mvpIcon = isMvp ? '👑 ' : '';
+        let mvpStyle = isMvp ? 'color: #a020f0; text-shadow: 0 0 5px rgba(160, 32, 240, 0.5);' : 'color: #fff;';
+
+        return `
+        <tr>
+            <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
+            <td style="text-align:left; font-weight:bold; ${mvpStyle}">${mvpIcon}${row.jogador}</td>
+            <td style="color:#aaa;">${row.equipe}</td>
+            <td style="color:var(--accent); font-weight:bold;">${row.kills}</td>
+        </tr>`;
+    }).join('');
+
+    container.innerHTML = `
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th style="text-align:left;">JOGADOR</th>
+                        <th>EQUIPE</th>
+                        <th>KILLS</th>
+                    </tr>
+                </thead>
+                <tbody>${tbodyHtml}</tbody>
+            </table>
+        </div>
+    `;
+}
 </script>
 </body>
 </html>
