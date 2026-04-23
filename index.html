@@ -750,9 +750,16 @@
             <span style="color: var(--text-muted); font-size: 0.95em;">Os dados e estatísticas desta seção ainda estão sendo aprimorados e podem conter erros ou inconsistências no momento.</span>
         </div>
     </div>
-    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Filtrar Mapas (Equipas):</label>
-        <select id="stats-map-filter" onchange="renderStatsPage()" style="flex: 1; max-width: 300px;">
+
+    <h3 style="margin-top: 30px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Recordes por Mapa (Top 5)
+    </h3>
+    <div class="filters" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; align-items: center;">
+        <label style="color: var(--text-muted); font-weight: bold;">Dias:</label>
+        <div class="day-filters" id="top5-day-filters"></div>
+        
+        <label style="color: var(--text-muted); font-weight: bold; margin-left: auto;">Mapa:</label>
+        <select id="top5-map-filter" onchange="renderTop5Stats()" style="flex: 1; max-width: 300px;">
             <option value="all">Visão Geral (Todos os Mapas)</option>
             <option value="Bermuda">Bermuda</option>
             <option value="Kalahari">Kalahari</option>
@@ -761,133 +768,146 @@
             <option value="Solara">Solara</option>
         </select>
     </div>
-
-        <h3 style="margin-top: 30px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-            Ranking de Médias <span style="font-size: 0.6em; color: #aaa;">(Por Queda)</span>
-        </h3>
-        <div class="table-container">
-            <table id="table-stats-avg">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable('table-stats-avg', 0, true)"># ↕</th>
-                        <th style="text-align:left;" onclick="sortTable('table-stats-avg', 1, false)">E ↕</th>
-                        <th onclick="sortTable('table-stats-avg', 2, true)" title="Média de Pontos">
-                            <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
-                        </th>
-                        <th onclick="sortTable('table-stats-avg', 3, true)" title="Média de Abates">
-                            <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
-                        </th>
-                        <th onclick="sortTable('table-stats-avg', 4, true)" title="Média de Colocação (Menor é melhor)">
-                            <span class="full-name-desktop">POS ↕</span><span class="short-name-mobile">C ↕</span>
-                        </th>
-                        <th class="hide-mobile" title="Quedas Jogadas">Q</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-            Ranking de Totais <span style="font-size: 0.6em; color: #aaa;">(Acumulado)</span>
-        </h3>
-        <div class="table-container">
-            <table id="table-stats-total">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable('table-stats-total', 0, true)"># ↕</th>
-                        <th style="text-align:left;" onclick="sortTable('table-stats-total', 1, false)">E ↕</th>
-                        <th onclick="sortTable('table-stats-total', 2, true)">
-                            <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
-                        </th>
-                        <th onclick="sortTable('table-stats-total', 3, true)" title="Booyahs">
-                            <span class="full-name-desktop">BOOYAH ↕</span><span class="short-name-mobile">B ↕</span>
-                        </th>
-                        <th onclick="sortTable('table-stats-total', 4, true)">
-                            <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-            Desempenho Individual
-        </h3>
-
-        <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-            <select id="filter-player-day" onchange="renderPlayerStats()">
-                <option value="all">Todos os Dias</option>
-                <option value="1">Dia 1</option>
-                <option value="2">Dia 2</option>
-                <option value="3">Dia 3</option>
-                <option value="4">Dia 4</option>
-                <option value="5">Dia 5</option>
-                <option value="6">Dia 6</option>
-                <option value="7">Dia 7</option>
-                <option value="8">Dia 8</option>
-                <option value="9">Dia 9</option>
-                <option value="10">Dia 10</option>
-            </select>
-
-            <select id="filter-player-map" onchange="renderPlayerStats()">
-                <option value="all">Todos os Mapas</option>
-                <option value="Bermuda">Bermuda</option>
-                <option value="Kalahari">Kalahari</option>
-                <option value="Purgatório">Purgatório</option>
-                <option value="Nova Terra">Nova Terra</option>
-                <option value="Solara">Solara</option>
-            </select>
-
-            <select id="filter-player-team" onchange="renderPlayerStats()">
-                <option value="all">Todas as Equipas</option>
-                <option value="LOS">LOS</option>
-                <option value="FLUXO W7M">FLUXO W7M</option>
-                <option value="LOUD SNICKERS">LOUD SNICKERS</option>
-                <option value="INTZ">INTZ</option>
-                <option value="TEAM SOLID">TEAM SOLID</option>
-                <option value="LOOPS">LOOPS</option>
-                <option value="RISE GAMING">RISE GAMING</option>
-                <option value="INFLUENCE RAGE">INFLUENCE RAGE</option>
-                <option value="CIVIS">CIVIS</option>
-                <option value="VASCO ESPORTS">VASCO ESPORTS</option>
-                <option value="AXS FUSION">AXS FUSION</option>
-                <option value="E1 SPORTS">E1 SPORTS</option>
-            </select>
-
-            <select id="filter-player-role" onchange="renderPlayerStats()">
-                <option value="all">Todas as Funções</option>
-                <option value="Rush">Rush</option>
-                <option value="SUP">Suporte</option>
-                <option value="GRAN">Granadeiro</option>
-            </select>
-        </div>
-
-        <div class="table-container">
-            <table id="table-stats-players-detailed">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable('table-stats-players-detailed', 0, true)"># ↕</th>
-                        <th style="text-align:left;" onclick="sortTable('table-stats-players-detailed', 1, false)">JOGADOR ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 2, false)">ROLE ↕</th>
-                        <th onclick="sortTable('table-stats-players-detailed', 3, true)" title="Abates">
-                            <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
-                        </th>
-                        <th onclick="sortTable('table-stats-players-detailed', 4, true)">DANO ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 5, true)">AST ↕</th>
-                        <th title="Quedas Jogadas" onclick="sortTable('table-stats-players-detailed', 6, true)">Q ↕</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+    
+<div id="top5-container" style="margin-bottom: 40px;">
     </div>
 
+    <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Ranking de Médias <span style="font-size: 0.6em; color: #aaa;">(Por Queda)</span>
+    </h3>
+    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
+        <div class="day-filters" id="avg-day-filters"></div>
+        <label style="color: var(--text-muted); font-weight: bold; align-self: center; margin-left: auto;">Mapa:</label>
+        <select id="avg-map-filter" onchange="renderTableAvg()" style="max-width: 250px;">
+            <option value="all">Todos os Mapas</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Kalahari">Kalahari</option>
+            <option value="Purgatório">Purgatório</option>
+            <option value="Nova Terra">Nova Terra</option>
+            <option value="Solara">Solara</option>
+        </select>
+    </div>
+    <div class="table-container">
+        <table id="table-stats-avg">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-stats-avg', 0, true)"># ↕</th>
+                    <th style="text-align:left;" onclick="sortTable('table-stats-avg', 1, false)">E ↕</th>
+                    <th onclick="sortTable('table-stats-avg', 2, true)" title="Média de Pontos">
+                        <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-avg', 3, true)" title="Média de Abates">
+                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-avg', 4, true)" title="Média de Colocação (Menor é melhor)">
+                        <span class="full-name-desktop">POS ↕</span><span class="short-name-mobile">C ↕</span>
+                    </th>
+                    <th class="hide-mobile" title="Quedas Jogadas">Q</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Ranking de Totais <span style="font-size: 0.6em; color: #aaa;">(Acumulado)</span>
+    </h3>
+    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
+        <div class="day-filters" id="total-day-filters"></div>
+        <label style="color: var(--text-muted); font-weight: bold; align-self: center; margin-left: auto;">Mapa:</label>
+        <select id="total-map-filter" onchange="renderTableTotal()" style="max-width: 250px;">
+            <option value="all">Todos os Mapas</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Kalahari">Kalahari</option>
+            <option value="Purgatório">Purgatório</option>
+            <option value="Nova Terra">Nova Terra</option>
+            <option value="Solara">Solara</option>
+        </select>
+    </div>
+    <div class="table-container">
+        <table id="table-stats-total">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-stats-total', 0, true)"># ↕</th>
+                    <th style="text-align:left;" onclick="sortTable('table-stats-total', 1, false)">E ↕</th>
+                    <th onclick="sortTable('table-stats-total', 2, true)">
+                        <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-total', 3, true)" title="Booyahs">
+                        <span class="full-name-desktop">BOOYAH ↕</span><span class="short-name-mobile">B ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-total', 4, true)">
+                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Desempenho Individual
+    </h3>
+    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+<select id="filter-player-day" onchange="renderPlayerStats()">
+    <option value="all">Todos os Dias</option>
+    </select>
+        <select id="filter-player-map" onchange="renderPlayerStats()">
+            <option value="all">Todos os Mapas</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Kalahari">Kalahari</option>
+            <option value="Purgatório">Purgatório</option>
+            <option value="Nova Terra">Nova Terra</option>
+            <option value="Solara">Solara</option>
+        </select>
+        <select id="filter-player-team" onchange="renderPlayerStats()">
+            <option value="all">Todas as Equipas</option>
+            <option value="LOS">LOS</option>
+            <option value="FLUXO W7M">FLUXO W7M</option>
+            <option value="LOUD SNICKERS">LOUD SNICKERS</option>
+            <option value="INTZ">INTZ</option>
+            <option value="TEAM SOLID">TEAM SOLID</option>
+            <option value="LOOPS">LOOPS</option>
+            <option value="RISE GAMING">RISE GAMING</option>
+            <option value="INFLUENCE RAGE">INFLUENCE RAGE</option>
+            <option value="CIVIS">CIVIS</option>
+            <option value="VASCO ESPORTS">VASCO ESPORTS</option>
+            <option value="AXS FUSION">AXS FUSION</option>
+            <option value="E1 SPORTS">E1 SPORTS</option>
+        </select>
+        <select id="filter-player-role" onchange="renderPlayerStats()">
+            <option value="all">Todas as Funções</option>
+            <option value="Rush">Rush</option>
+            <option value="SUP">Suporte</option>
+            <option value="GRAN">Granadeiro</option>
+        </select>
+    </div>
+    <div class="table-container">
+        <table id="table-stats-players-detailed">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-stats-players-detailed', 0, true)"># ↕</th>
+                    <th style="text-align:left;" onclick="sortTable('table-stats-players-detailed', 1, false)">JOGADOR ↕</th>
+                    <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 2, false)">ROLE ↕</th>
+                    <th onclick="sortTable('table-stats-players-detailed', 3, true)" title="Abates">
+                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-players-detailed', 4, true)">DANO ↕</th>
+                    <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 5, true)">AST ↕</th>
+                    <th title="Quedas Jogadas" onclick="sortTable('table-stats-players-detailed', 6, true)">Q ↕</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
 <div id="history" class="page">
-        <h2>Top 100 Abates (All-Time)</h2>
+        <h2>Top 100 Abates da história</h2>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
             Ranking histórico somado em tempo real com o desempenho da edição atual.<br>
-            * Jogadores inativos não podem ser clicados.
         </p>
 
         <div class="table-container">
@@ -6361,10 +6381,15 @@ function toggleView(type) {
 let selectedTeamDays = [];
 let selectedPlayerDays = [];
 let selectedTpDays = [];
+// ADICIONE ESSAS DUAS LINHAS:
+let selectedAvgDays = [];
+let selectedTotalDays = [];
+let selectedTop5Days = [];
+
 let currentTeamView = null;
 let currentOppGroup = null;
-let currentTeamNextMatch = null
-const TOTAL_DIAS = 10;
+let currentTeamNextMatch = null;
+const TOTAL_DIAS = Object.keys(dbQuedas).length > 0 ? Math.max(...Object.keys(dbQuedas).map(Number)) : 0;
 
 window.onload = () => {
     autoCalculateTotals(); 
@@ -6378,14 +6403,18 @@ window.onload = () => {
     populateSelects();
     renderFullTeams();
     renderHomeGroups();
-    renderStatsPage();
+    
+    // SUBSTITUA `renderStatsPage();` POR ESTAS 3 LINHAS:
+    renderTop5Stats();
+    renderTableAvg();
+    renderTableTotal();
+    
     renderGroupsTables();
     renderTeamsDirectory();
     renderSchedule();
     renderAllPlayers();
     renderIndividualRecords();
-
-    // --> FUNÇÕES DA ABA HISTÓRICO <--
+   // --> FUNÇÕES DA ABA HISTÓRICO <--
     buildEditionFilters();
     renderEditionRanking();
     populateHistSelects();
@@ -6587,23 +6616,148 @@ else if (playerRoles && playerRoles[p.nome]) {
 
 // Chame renderPlayerStats() no seu window.onload!
 
-function renderStatsPage() {
-    let selectMap = document.getElementById('stats-map-filter');
-    if (!selectMap) return;
-    let targetMap = normalizeMapName(selectMap.value);
+// --- NOVAS FUNÇÕES DA ABA ESTATÍSTICAS ---
 
-    // 1. Coletar e Agregar os Dados dos Times
+// 1. CARDS TOP 5 POR MAPA
+function renderTop5Stats() {
+    buildDayFilters(); // Garante que os botões de dia atualizem o visual
+    let mapFilter = document.getElementById('top5-map-filter').value;
+    let targetMap = mapFilter === 'all' ? 'all' : normalizeMapName(mapFilter);
+
+    let teamStats = {};
+    let playerStats = {};
+
+    db.teams.forEach(t => teamStats[t.equipe] = { equipe: t.equipe, pontos: 0, kills: 0, booyahs: 0, somaPosicao: 0, quedas: 0 });
+
+    for(let d in dbQuedas) {
+        // Filtro de Dia
+        if (selectedTop5Days.length > 0 && !selectedTop5Days.includes(String(d))) continue;
+
+        for (let q in dbQuedas[d]) {
+            let drop = dbQuedas[d][q];
+            let currentMap = normalizeMapName(drop.mapa);
+
+            // Filtro de Mapa
+            if (targetMap !== 'all' && currentMap !== targetMap) continue;
+
+            // Agregação de Times
+            drop.resultados.forEach(res => {
+                let tm = teamStats[res.equipe];
+                if(tm) {
+                    tm.pontos += (posPoints[res.posicao] || 0) + res.kills;
+                    tm.kills += res.kills;
+                    tm.booyahs += res.booyah;
+                    tm.somaPosicao += res.posicao;
+                    tm.quedas += 1;
+                }
+            });
+
+            // Agregação de Jogadores
+            if(dbJogadoresQuedas[d] && dbJogadoresQuedas[d][q]) {
+                dbJogadoresQuedas[d][q].forEach(p => {
+                    if(!playerStats[p.nome]) playerStats[p.nome] = { jogador: p.nome, equipe: p.equipe, kills: 0, dano: 0, assists: 0, quedas: 0 };
+                    playerStats[p.nome].kills += p.kills;
+                    playerStats[p.nome].dano += p.dano;
+                    playerStats[p.nome].assists += p.assists;
+                    playerStats[p.nome].quedas += 1;
+                });
+            }
+        }
+    }
+
+    let validTeams = Object.values(teamStats).filter(t => t.quedas > 0);
+    let validPlayers = Object.values(playerStats).filter(p => p.quedas > 0);
+
+    // Calcula médias
+    validTeams.forEach(t => {
+        t.avgPts = t.pontos / t.quedas;
+        t.avgKills = t.kills / t.quedas;
+        t.avgPos = t.somaPosicao / t.quedas;
+    });
+    validPlayers.forEach(p => {
+        p.avgKills = p.kills / p.quedas;
+        p.avgDano = p.dano / p.quedas;
+        p.avgAssists = p.assists / p.quedas;
+    });
+
+    // Reutilizando as mesmas funções de auxílio para HTML (getTeamHtml, getPlayerHtml, etc.)
+    const getTeamHtml = (arr, valFn, formatFn, label) => {
+        const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
+        let html = `<div style="display: grid; grid-template-columns: 1fr 0.5fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
+        html += sorted.map((t, i) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
+                <div class="clickable" onclick="openTeamProfile('${t.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><img src="${logos[t.equipe]||''}" style="width:16px; height:16px; object-fit: contain;"><span style="font-size: 0.95em; font-weight:bold;">${shortNames[t.equipe] || t.equipe}</span></div>
+                <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(t))}</div>
+            </div>`).join('');
+        return html;
+    };
+
+    const getTeamHtmlAsc = (arr, valFn, formatFn, label) => {
+        const sorted = [...arr].sort((a,b) => valFn(a) - valFn(b)).slice(0, 5);
+        let html = `<div style="display: grid; grid-template-columns: 1fr 0.5fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
+        html += sorted.map((t, i) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
+                <div class="clickable" onclick="openTeamProfile('${t.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><img src="${logos[t.equipe]||''}" style="width:16px; height:16px; object-fit: contain;"><span style="font-size: 0.95em; font-weight:bold;">${shortNames[t.equipe] || t.equipe}</span></div>
+                <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(t))}</div>
+            </div>`).join('');
+        return html;
+    };
+
+    const getPlayerHtml = (arr, valFn, formatFn, label) => {
+        const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
+        let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
+        html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span></div>
+                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
+                <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
+            </div>`).join('');
+        return html;
+    };
+
+    document.getElementById('top5-container').innerHTML = `
+        <h4 style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Equipe</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Top Pontos</h3>${getTeamHtml(validTeams, t=>t.pontos, v=>v, "Pts")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Top Abates</h3>${getTeamHtml(validTeams, t=>t.kills, v=>v, "Kills")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Top Booyahs</h3>${getTeamHtml(validTeams, t=>t.booyahs, v=>v, "B!")}</div>
+        </div>
+        
+        <h4 style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Equipe</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Média Pontos</h3>${getTeamHtml(validTeams, t=>t.avgPts, v=>v.toFixed(2), "Média")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3>${getTeamHtml(validTeams, t=>t.avgKills, v=>v.toFixed(2), "Média")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Colocação Média</h3>${getTeamHtmlAsc(validTeams, t=>t.avgPos, v=>v.toFixed(2)+"º", "Pos")}</div>
+        </div>
+        
+        <h4 style="color:#ffaa00; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Jogador</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Top Abates</h3>${getPlayerHtml(validPlayers, p=>p.kills, v=>v, "Kills")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Top Dano</h3>${getPlayerHtml(validPlayers, p=>p.dano, v=>v, "Dano")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Top Assistências</h3>${getPlayerHtml(validPlayers, p=>p.assists, v=>v, "Ast")}</div>
+        </div>
+        
+        <h4 style="color:#ffaa00; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Jogador</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3>${getPlayerHtml(validPlayers, p=>p.avgKills, v=>v.toFixed(2), "Média")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3>${getPlayerHtml(validPlayers, p=>p.avgDano, v=>v.toFixed(0), "Média")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Média Assistências</h3>${getPlayerHtml(validPlayers, p=>p.avgAssists, v=>v.toFixed(2), "Média")}</div>
+        </div>
+    `;
+}
+
+// 2. FUNÇÃO AUXILIAR PARA AGREGAR DADOS DAS TABELAS
+function getAggregatedTeamsForStats(daysFilter, mapFilter) {
     let teamsMapStats = {};
     db.teams.forEach(t => {
         teamsMapStats[t.equipe] = { equipe: t.equipe, pontos: 0, kills: 0, booyahs: 0, quedas: 0, somaPosicao: 0 };
     });
 
     for (let d in dbQuedas) {
+        if (daysFilter.length > 0 && !daysFilter.includes(String(d))) continue;
+
         for (let q in dbQuedas[d]) {
             let drop = dbQuedas[d][q];
             let currentMap = normalizeMapName(drop.mapa);
 
-            if (targetMap === 'all' || currentMap === targetMap) {
+            if (mapFilter === 'all' || currentMap === mapFilter) {
                 drop.resultados.forEach(res => {
                     let tm = teamsMapStats[res.equipe];
                     if (tm) {
@@ -6618,17 +6772,20 @@ function renderStatsPage() {
             }
         }
     }
+    return Object.values(teamsMapStats).filter(t => t.quedas > 0);
+}
 
-    let validTeams = Object.values(teamsMapStats).filter(t => t.quedas > 0);
+// 3. TABELA DE RANKING DE MÉDIAS
+function renderTableAvg() {
+    buildDayFilters(); // Reconstrói os chips em caso de clique
+    let targetMap = normalizeMapName(document.getElementById('avg-map-filter').value);
+    let validTeams = getAggregatedTeamsForStats(selectedAvgDays, targetMap);
 
-    // 2. Renderizar Tabela de MÉDIAS
-    // Calcula médias e ordena por Média de Pontos (decrescente)
     validTeams.forEach(t => {
         t.avgPts = (t.pontos / t.quedas).toFixed(1);
         t.avgKills = (t.kills / t.quedas).toFixed(1);
         t.avgPos = (t.somaPosicao / t.quedas).toFixed(1);
     });
-    
     validTeams.sort((a, b) => b.avgPts - a.avgPts);
 
     let tbodyAvg = document.querySelector('#table-stats-avg tbody');
@@ -6638,7 +6795,7 @@ function renderStatsPage() {
             let sName = shortNames[t.equipe] || t.equipe;
             return `<tr>
                 <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
-                <td class="team-cell">
+                <td class="team-cell clickable" onclick="openTeamProfile('${t.equipe}')">
                     <img src="${logoSrc}" class="team-logo hide-mobile">
                     <span class="full-name-desktop">${t.equipe}</span>
                     <span class="short-name-mobile">${sName}</span>
@@ -6650,9 +6807,14 @@ function renderStatsPage() {
             </tr>`;
         }).join('');
     }
+}
 
-    // 3. Renderizar Tabela de TOTAIS
-    // Ordena por Pontos Totais (decrescente)
+// 4. TABELA DE RANKING DE TOTAIS
+function renderTableTotal() {
+    buildDayFilters(); // Reconstrói os chips em caso de clique
+    let targetMap = normalizeMapName(document.getElementById('total-map-filter').value);
+    let validTeams = getAggregatedTeamsForStats(selectedTotalDays, targetMap);
+
     validTeams.sort((a, b) => b.pontos - a.pontos);
 
     let tbodyTotal = document.querySelector('#table-stats-total tbody');
@@ -6662,34 +6824,14 @@ function renderStatsPage() {
             let sName = shortNames[t.equipe] || t.equipe;
             return `<tr>
                 <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
-                <td class="team-cell">
+                <td class="team-cell clickable" onclick="openTeamProfile('${t.equipe}')">
+                    <img src="${logoSrc}" class="team-logo hide-mobile">
                     <span class="full-name-desktop">${t.equipe}</span>
                     <span class="short-name-mobile">${sName}</span>
                 </td>
                 <td style="color:#ffaa00; font-weight:bold">${t.pontos}</td>
                 <td>${t.booyahs}</td>
                 <td>${t.kills}</td>
-            </tr>`;
-        }).join('');
-    }
-
-    // 4. Renderizar Tabela de JOGADORES (Dados Gerais)
-// Se está na Visão Geral, mostra os mitos!
-let playersData = db.players.filter(p => p?.isPlaying !== false); // Já botei uma blindagem extra aqui também!
-    playersData.sort((a, b) => b.kills - a.kills); // Ordena por Kills geral
-
-    let tbodyPlayers = document.querySelector('#table-stats-players tbody');
-    if(tbodyPlayers) {
-        tbodyPlayers.innerHTML = playersData.slice(0, 20).map((p, index) => { // Mostra só o TOP 20 para não pesar
-            return `<tr>
-                <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
-                <td style="text-align:left;">
-                    <span style="font-weight:bold;">${p.nome}</span>
-                    <div style="font-size:0.75em; color:var(--text-muted);">${shortNames[p.equipe] || p.equipe}</div>
-                </td>
-                <td style="font-weight:bold; color:#fff;">${p.kills}</td>
-                <td class="hide-mobile" style="color:#aaa;">${p.dano}</td>
-                <td class="hide-mobile" style="color:#aaa;">${p.assists}</td>
             </tr>`;
         }).join('');
     }
@@ -7086,34 +7228,51 @@ function populateHistSelects() {
 
 // Preenche os selects da aba Histórico
 function populateSelects() {
-    // 1. Pegamos todos os possíveis filtros de equipe do seu site
+    // --- 1. PREENCHIMENTO DAS EQUIPES ---
     let filtroGeral = document.getElementById('filter-equipe'); 
     let filtroJogadores = document.getElementById('filter-player-team');
-    // Se tiver filtros na aba comparador, você pode adicionar aqui embaixo:
-    let comparador1 = document.getElementById('comp-team1');
-    let comparador2 = document.getElementById('comp-team2');
+    // IDs corrigidas para bater com o seu HTML original:
+    let comparadorT1 = document.getElementById('comp-t1'); 
+    let comparadorT2 = document.getElementById('comp-t2'); 
 
-    // 2. Fazemos o loop nas equipes
-    db.teams.forEach(t => {
-        
-        // A MÁGICA: O 'if' verifica se o filtro existe na tela antes de injetar o HTML
-        if (filtroGeral) {
-            filtroGeral.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
-        }
-        
-        if (filtroJogadores) {
-            filtroJogadores.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
-        }
+    // Ordenamos em ordem alfabética para ficar organizado
+    let teamsSet = [...new Set(db.teams.map(t => t.equipe))].sort();
 
-        if (comparador1) {
-            comparador1.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
-        }
-
-        if (comparador2) {
-            comparador2.innerHTML += `<option value="${t.equipe}">${t.equipe}</option>`;
-        }
-        
+    teamsSet.forEach(equipe => {
+        let opt = `<option value="${equipe}">${equipe}</option>`;
+        if (filtroGeral) filtroGeral.innerHTML += opt;
+        if (filtroJogadores) filtroJogadores.innerHTML += opt;
+        if (comparadorT1) comparadorT1.innerHTML += opt;
+        if (comparadorT2) comparadorT2.innerHTML += opt;
     });
+
+    // --- 2. PREENCHIMENTO DOS JOGADORES (Aba Comparar) ---
+    let comparadorP1 = document.getElementById('comp-p1');
+    let comparadorP2 = document.getElementById('comp-p2');
+    
+    let playersSet = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador));
+    playersSet.forEach(p => { 
+        let opt = `<option value="${p.jogador}">${p.jogador} (${p.equipe})</option>`; 
+        if (comparadorP1) comparadorP1.innerHTML += opt; 
+        if (comparadorP2) comparadorP2.innerHTML += opt; 
+    });
+
+    // Previne que o comparador comece com o mesmo time/jogador selecionado dos dois lados
+    if (comparadorT2 && comparadorT2.options.length > 1) comparadorT2.selectedIndex = 1; 
+    if (comparadorP2 && comparadorP2.options.length > 1) comparadorP2.selectedIndex = 1;
+
+    // --- 3. PREENCHIMENTO AUTOMÁTICO DOS DIAS (A Mágica) ---
+    let playerDaySelect = document.getElementById('filter-player-day');
+    if (playerDaySelect) {
+        playerDaySelect.innerHTML = '<option value="all">Todos os Dias</option>';
+        for (let i = 1; i <= TOTAL_DIAS; i++) {
+            playerDaySelect.innerHTML += `<option value="${i}">Dia ${i}</option>`;
+        }
+    }
+
+    // --- 4. RENDERIZA OS COMPARADORES PELA PRIMEIRA VEZ ---
+    if (typeof renderCompareTeams === 'function') renderCompareTeams(); 
+    if (typeof renderComparePlayers === 'function') renderComparePlayers();
 }
 
 // A função do Comparador
@@ -7469,23 +7628,7 @@ function buildDayFilters() {
         if(!container) return;
 
         let availableDays = [];
-        
-        // Lógica específica para o filtro de jogadores
-        if (containerId === 'player-day-filters') {
-            let teamFilter = document.getElementById('filter-team-players').value;
-            if (teamFilter === 'all') {
-                // Se "Todas", mostra de 1 até o TOTAL_DIAS
-                for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
-            } else {
-                // Se um time específico, busca apenas os dias que ele jogou no db.playerDaily
-                availableDays = [...new Set(db.playerDaily
-                    .filter(p => p.equipe === teamFilter)
-                    .map(p => p.dia))].sort((a, b) => a - b);
-            }
-        } else {
-            // Para outros filtros (como o Geral de Times), mantém o padrão de 1 a 10
-            for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
-        }
+        for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
 
         let isAll = arrSelected.length === 0;
         let html = `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('${containerId}', 'all', ${callbackName})">Todos</div>`;
@@ -7500,8 +7643,10 @@ function buildDayFilters() {
 
     buildChips('team-day-filters', selectedTeamDays, 'onTeamDayFilterChanged');
     buildChips('player-day-filters', selectedPlayerDays, 'onPlayerDayFilterChanged');
+    buildChips('avg-day-filters', selectedAvgDays, 'renderTableAvg');
+    buildChips('total-day-filters', selectedTotalDays, 'renderTableTotal');
+    buildChips('top5-day-filters', selectedTop5Days, 'renderTop5Stats'); // ADICIONE ESTA LINHA
     
-    // Filtro do Perfil do Time (TP)
     if(currentTeamView) {
         let tName = currentTeamView;
         let container = document.getElementById('tp-day-filters');
@@ -7521,14 +7666,23 @@ function buildDayFilters() {
 }
 
 function toggleDay(containerId, day, callback) {
-    let arr = containerId === 'team-day-filters' ? selectedTeamDays : (containerId === 'player-day-filters' ? selectedPlayerDays : selectedTpDays);
+    let arr;
+    if (containerId === 'team-day-filters') arr = selectedTeamDays;
+    else if (containerId === 'player-day-filters') arr = selectedPlayerDays;
+    else if (containerId === 'avg-day-filters') arr = selectedAvgDays;
+    else if (containerId === 'total-day-filters') arr = selectedTotalDays;
+    else if (containerId === 'top5-day-filters') arr = selectedTop5Days; // ADICIONE ESTA LINHA
+    else arr = selectedTpDays;
+
     if (day === 'all') arr.length = 0;
     else {
         let idx = arr.indexOf(String(day));
         if (idx > -1) arr.splice(idx, 1);
         else arr.push(String(day));
     }
-    callback();
+
+    if(typeof callback === 'function') callback();
+    else window[callback]();
 }
 
 function onTeamDayFilterChanged() { buildDayFilters(); renderFullTeams(); renderGroupsTables(); }
@@ -8761,18 +8915,6 @@ function renderPlayerTrophies(jogador) {
         }).join('');
         
     document.getElementById('pp-trophies-container').innerHTML = trophiesHtml;
-}
-
-function populateSelects() {
-    let teamsSet = [...new Set(db.teams.map(t => t.equipe))].sort();
-    let pFilter = document.getElementById('filter-team-players');
-    let t1 = document.getElementById('comp-t1'), t2 = document.getElementById('comp-t2');
-    let p1 = document.getElementById('comp-p1'), p2 = document.getElementById('comp-p2');
-    teamsSet.forEach(t => { let opt = `<option value="${t}">${t}</option>`; pFilter.innerHTML += opt; t1.innerHTML += opt; t2.innerHTML += opt; });
-    let playersSet = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador));
-    playersSet.forEach(p => { let opt = `<option value="${p.jogador}">${p.jogador} (${p.equipe})</option>`; p1.innerHTML += opt; p2.innerHTML += opt; });
-    t2.selectedIndex = 1; p2.selectedIndex = 1;
-    renderCompareTeams(); renderComparePlayers();
 }
 
 function renderMapData() {
