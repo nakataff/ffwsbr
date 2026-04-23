@@ -18,25 +18,20 @@
     :root {
         --bg-color: #0f0f11; --panel-bg: #1c1c20; --panel-hover: #26262b;
         --border: #333338; --accent: #ffaa00; --text: #ffffff;
-        --text-muted: #9aa0a6; --win-color: #4caf50; --lose-color: #f44336;
+        --text-muted: #b0b7be; --win-color: #4caf50; --lose-color: #f44336;
     }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 0; }
     
 /* --- PÁGINA INICIAL --- */
 .news-hero { position: relative; border-radius: 12px; overflow: hidden; cursor: pointer; margin-bottom: 25px; border: 1px solid var(--border); transition: 0.3s; }
 .news-hero:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-.news-hero img { width: 100%; height: 400px; object-fit: cover; display: block; }
+.news-hero img { width: 100%; height: 400px; max-height: 55vh; object-fit: cover; object-position: center top; display: block; }
 .news-hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9) 80%); padding: 40px 20px 20px; box-sizing: border-box; }
 .news-hero-title { color: #fff; font-size: 2em; font-weight: 900; text-transform: uppercase; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-.page { 
-    display: none !important; 
-}
-.page.active { 
-    display: block !important; 
-}
+/* Regra de visibilidade de páginas consolidada abaixo no bloco principal */
 
-/* Botão Estilizado de Live (Igual ao Amador) */
+/* Botão Estilizado de Live (Oficial) */
 .live-status-btn { 
     padding: 12px 25px; 
     border-radius: 8px; 
@@ -83,7 +78,115 @@
     filter: brightness(0);
 }
 
-.home-grid-2 { 
+/* --- NOVO WIDGET DE LIVES --- */
+.lives-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.live-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    transition: 0.25s;
+    pointer-events: none;
+    opacity: 0.45;
+    color: #fff;
+}
+
+.live-card.ativo {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.live-card.ativo:hover {
+    transform: translateX(4px);
+}
+
+/* Cores por categoria */
+.live-card.ativo.oficial {
+    background: rgba(255, 68, 68, 0.07);
+    border-color: #ff4444;
+    box-shadow: 0 0 12px rgba(255,68,68,0.15);
+}
+.live-card.ativo.oficial:hover { background: rgba(255,68,68,0.18); }
+
+.live-card.ativo.amador {
+    background: rgba(76, 175, 80, 0.07);
+    border-color: #4caf50;
+    box-shadow: 0 0 12px rgba(76,175,80,0.15);
+}
+.live-card.ativo.amador:hover { background: rgba(76,175,80,0.18); }
+
+.live-card.ativo.recomendada {
+    background: rgba(102, 179, 255, 0.07);
+    border-color: #66b3ff;
+    box-shadow: 0 0 12px rgba(102,179,255,0.15);
+}
+.live-card.ativo.recomendada:hover { background: rgba(102,179,255,0.18); }
+
+.live-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #444;
+}
+.live-card.ativo.oficial .live-dot    { background: #ff4444; animation: pulseRed 1.5s infinite; }
+.live-card.ativo.amador .live-dot     { background: #4caf50; animation: pulseGreen 1.5s infinite; }
+.live-card.ativo.recomendada .live-dot { background: #66b3ff; animation: pulseBlue 1.5s infinite; }
+
+@keyframes pulseRed   { 0%,100%{box-shadow:0 0 0 0 rgba(255,68,68,0.5)}  50%{box-shadow:0 0 0 5px rgba(255,68,68,0)} }
+@keyframes pulseGreen { 0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.5)}  50%{box-shadow:0 0 0 5px rgba(76,175,80,0)} }
+@keyframes pulseBlue  { 0%,100%{box-shadow:0 0 0 0 rgba(102,179,255,0.5)} 50%{box-shadow:0 0 0 5px rgba(102,179,255,0)} }
+
+.live-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    flex: 1;
+}
+
+.live-card-titulo {
+    font-weight: bold;
+    font-size: 0.9em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.live-card-canal {
+    font-size: 0.75em;
+    color: var(--text-muted);
+}
+
+.live-card-badge {
+    font-size: 0.65em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.oficial .live-card-badge    { background: rgba(255,68,68,0.2);    color: #ff4444; }
+.amador .live-card-badge     { background: rgba(76,175,80,0.2);    color: #4caf50; }
+.recomendada .live-card-badge { background: rgba(102,179,255,0.2); color: #66b3ff; }
+
+.lives-empty {
+    color: var(--text-muted);
+    font-size: 0.88em;
+    text-align: center;
+    padding: 12px 0;
+}
     display: grid; 
     grid-template-columns: 1fr 1fr; 
     gap: 20px; 
@@ -142,6 +245,19 @@
 
 /* Navegação */
     nav { background-color: #050505; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+    /* Acessibilidade: focus-visible para navegação por teclado */
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    :focus:not(:focus-visible) { outline: none; }
+    .skip-link { position: absolute; top: -100px; left: 20px; background: var(--accent); color: #000; padding: 8px 16px; border-radius: 0 0 8px 8px; font-weight: bold; z-index: 9999; text-decoration: none; transition: top 0.2s; }
+    .skip-link:focus { top: 0; }
+
+    /* Skeleton loader para carregamento de tabelas */
+    .skeleton-cell { height: 16px; border-radius: 4px; background: linear-gradient(90deg, #242429 25%, #2d2d33 50%, #242429 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Overflow seguro para tabelas no mobile */
+    @media (max-width: 768px) { .table-container { -webkit-overflow-scrolling: touch; } }
     
     .nav-header-mobile { display: none; justify-content: space-between; align-items: center; padding: 15px 20px; }
     .nav-header-mobile span { color: var(--accent); font-weight: bold; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px; }
@@ -290,17 +406,29 @@
             padding-top: 0;
             padding-bottom: 0;
             opacity: 0;
-            overflow: hidden; /* Mantém hidden enquanto fechado */
+            overflow: hidden;
             border-bottom: none;
+            transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
         }
         
         .search-wrapper.active {
-            max-height: 100px; 
+            max-height: 80px; 
             padding-top: 12px;
             padding-bottom: 12px;
             opacity: 1;
-            overflow: visible !important; /* ESSENCIAL: Permite que os resultados saiam para fora */
+            overflow: visible !important; /* Permite que o dropdown saia para fora */
             border-bottom: 1px solid var(--border);
+        }
+
+        /* Garante que o dropdown fique acima de tudo no mobile */
+        .search-wrapper.active .search-results-dropdown {
+            position: fixed;
+            top: auto;
+            left: 10px;
+            right: 10px;
+            width: auto;
+            transform: none;
+            max-width: none;
         }
     }
 
@@ -562,29 +690,33 @@ tr:last-child {
 .trophy-team img { width: 14px; height: 14px; object-fit: contain; }
 
     /* Modal */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
-    .modal-content { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+    .modal-overlay.active { display: flex; animation: modalBackdropIn 0.25s ease-out; }
+    @keyframes modalBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-content { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto; animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 25px 60px rgba(0,0,0,0.7); }
+    @keyframes modalSlideIn { from { opacity: 0; transform: scale(0.85) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
     .modal-header h2 { margin: 0; color: var(--accent); }
-    .close-btn { background: transparent; border: none; color: #aaa; font-size: 1.5em; cursor: pointer; }
-    .close-btn:hover { color: #fff; }
+    .close-btn { background: transparent; border: 1px solid transparent; color: #aaa; font-size: 1.5em; cursor: pointer; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: 0.2s; line-height: 1; }
+    .close-btn:hover { color: #fff; border-color: #555; background: rgba(255,255,255,0.05); }
+    .close-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 </style>
 </head>
 <body>
 
-<nav>
+<a href="#main-content" class="skip-link">Pular para o conteúdo</a>
+<nav role="navigation" aria-label="Menu principal">
     <div class="nav-header-mobile">
         <span>FFWS BRASIL 26</span>
         <div class="actions" style="display: flex; align-items: center; gap: 5px;">
-            <button id="search-btn" onclick="toggleMobileSearch()">🔍</button>
-            <button id="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+            <button id="search-btn" onclick="toggleMobileSearch()" aria-label="Abrir barra de pesquisa" aria-expanded="false">🔍</button>
+            <button id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Abrir menu de navegação" aria-expanded="false">☰</button>
         </div>
     </div>
     
     <div class="search-wrapper" id="search-wrapper">
-        <input type="text" id="global-search" placeholder="Pesquisar jogador ou equipe..." onkeyup="handleGlobalSearch()" autocomplete="off">
-        <div id="search-results" class="search-results-dropdown"></div>
+        <input type="text" id="global-search" placeholder="Pesquisar jogador ou equipe..." onkeyup="handleGlobalSearch()" autocomplete="off" aria-label="Pesquisar jogador ou equipe" aria-controls="search-results" aria-autocomplete="list">
+        <div id="search-results" class="search-results-dropdown" role="listbox" aria-label="Resultados da pesquisa"></div>
     </div>
 
     <div class="nav-links" id="nav-links">
@@ -602,6 +734,7 @@ tr:last-child {
       <!-- <button onclick="window.location.href='emulador.html'" id="nav-emulador">Emulador</button> -->
     </div>
 </nav>
+<main id="main-content">
 <div class="container">
 <div id="home" class="page active">
     
@@ -629,14 +762,11 @@ tr:last-child {
             </a>
         </div>
         
-        <div class="home-widget" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-            <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
-                <h3>Torneios Amadores</h3>
-                <p style="color: var(--text-muted); font-size: 0.95em;">Acompanhe o cenário independente de Free Fire.</p>
+        <div class="home-widget" style="display: flex; flex-direction: column; height: 100%;">
+            <h3>Lives 🔴</h3>
+            <div class="lives-widget" id="lives-widget-container">
+                <div class="lives-empty">Carregando lives...</div>
             </div>
-            <!-- LINK PRO CENÁRIO AMADOR -->
- <a href="https://www.youtube.com/watch?v=T10-gkq5M2w" target="_blank" class="amateur-status online" id="amateur-link">ASSISTIR AO VIVO</a>
-<!-- <a href="#" target="_blank" class="amateur-status offline" id="amateur-link"> Sem transmissão disponível </a> -->
         </div>
 
     </div>
@@ -1303,7 +1433,7 @@ tr:last-child {
     <div class="modal-content" style="max-width: 900px;">
         <div class="modal-header">
             <h2 id="results-modal-title" style="color: #ffd700;">Todos os Resultados</h2>
-            <button class="close-btn" onclick="document.getElementById('results-modal').classList.remove('active')">&times;</button>
+            <button class="close-btn" aria-label="Fechar" onclick="document.getElementById('results-modal').classList.remove('active')">&times;</button>
         </div>
         
         <div class="filters" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
@@ -1357,7 +1487,7 @@ tr:last-child {
     <div class="modal-content" style="max-width: 350px; text-align: center;">
         <div class="modal-header">
             <h2 id="ot-roster-title" style="color: #fff; margin: 0;">Equipe</h2>
-            <button class="close-btn" onclick="document.getElementById('ot-roster-modal').classList.remove('active')">&times;</button>
+            <button class="close-btn" aria-label="Fechar" onclick="document.getElementById('ot-roster-modal').classList.remove('active')">&times;</button>
         </div>
         <img id="ot-roster-logo" src="" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px;">
         <div id="ot-roster-list" style="display: flex; flex-direction: column; gap: 10px;">
@@ -6221,6 +6351,9 @@ window.onload = () => {
     
     updateCountdown();
     setInterval(updateCountdown, 1000);
+
+    // Carrega as lives do JSON externo
+    loadLives();
 };
 
 function navigate(pageId) {
@@ -6813,17 +6946,14 @@ function selectSearchResult(type, name) {
     // Função para abrir/fechar a barra de pesquisa no celular
     function toggleMobileSearch() {
         let wrapper = document.getElementById('search-wrapper');
-        
-        // O "toggle" é a mágica: se não tem a classe 'active', ele coloca. Se já tem, ele tira.
+        let btn = document.getElementById('search-btn');
         wrapper.classList.toggle('active');
-        
-        // Ações adicionais
-        if(wrapper.classList.contains('active')) {
-            // Se abriu, foca no campo pra digitar
+        const isOpen = wrapper.classList.contains('active');
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        if(isOpen) {
             document.getElementById('global-search').focus();
             document.getElementById('nav-links').classList.remove('active'); 
         } else {
-            // Se fechou, limpa o que tava escrito
             document.getElementById('global-search').value = '';
             document.getElementById('search-results').style.display = 'none';
         }
@@ -8639,6 +8769,20 @@ function renderAllPlayers() {
     let roleSelect = document.getElementById('filter-role-players');
     let roleFilter = roleSelect ? roleSelect.value : 'all';
 
+    // Mostra skeleton enquanto processa
+    let tbody = document.querySelector('#table-players tbody');
+    tbody.innerHTML = Array(6).fill(0).map(() => `<tr class="skeleton-row">
+        <td><div class="skeleton-cell" style="width:20px;"></div></td>
+        <td><div class="skeleton-cell" style="width:120px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:100px;"></div></td>
+        <td><div class="skeleton-cell" style="width:40px; margin:0 auto;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:50px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:40px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px;"></div></td>
+    </tr>`).join('');
+
+    setTimeout(() => {
     let dataToAggregate = db.playerDaily;
     if (selectedPlayerDays.length > 0) dataToAggregate = dataToAggregate.filter(p => selectedPlayerDays.includes(String(p.dia)));
     
@@ -8654,15 +8798,13 @@ function renderAllPlayers() {
 
     let data = Object.values(aggregated)
         .filter(p => teamFilter === 'all' || p.equipe === teamFilter)
-        // LÓGICA NOVA: Filtra pela Posição
         .filter(p => {
             if (roleFilter === 'all') return true;
-            let currentRole = playerRoles[p.jogador] || "RUSH"; // O padrão é Rush se o cara não tiver no BD
+            let currentRole = playerRoles[p.jogador] || "RUSH";
             return currentRole === roleFilter;
         })
         .filter(p => p.quedas > 0);
 
-    let tbody = document.querySelector('#table-players tbody');
     tbody.innerHTML = data.sort((a,b) => b.abates - a.abates).map((p, i) => `<tr>
         <td>${i+1}</td>
         <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
@@ -8673,6 +8815,7 @@ function renderAllPlayers() {
         <td class="hide-mobile">${p.quedas}</td>
         <td class="hide-mobile">${p.mvp}</td>
     </tr>`).join('');
+    }, 50);
 }
 
 function renderActivePlayerCard(p) {
@@ -8750,7 +8893,11 @@ function renderMapData() {
 
 // Essa função é nova, ela apenas abre/fecha o menu mobile
 function toggleMobileMenu() {
-    document.getElementById('nav-links').classList.toggle('active');
+    const navLinks = document.getElementById('nav-links');
+    const btn = document.getElementById('hamburger-btn');
+    const isOpen = navLinks.classList.toggle('active');
+    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    btn.textContent = isOpen ? '✕' : '☰';
 }
 
 function renderIndividualRecords() {
@@ -9140,6 +9287,66 @@ function renderHomeStats() {
         `).join('');
     }
 }
+
+// =============================================
+// SISTEMA DE LIVES — carrega de lives.json
+// Para ativar uma live: mude "ativo": false → true
+// Para adicionar uma live nova: adicione um objeto ao array
+// =============================================
+async function loadLives() {
+    const container = document.getElementById('lives-widget-container');
+    if (!container) return;
+
+    const BADGE_LABELS = {
+        oficial:    '🔴 Oficial',
+        amador:     '🟢 Amador',
+        recomendada:'🔵 Recomendada'
+    };
+
+    try {
+        // Adiciona cache-bust para garantir leitura do arquivo atualizado
+        const res = await fetch('lives.json?v=' + Date.now());
+        if (!res.ok) throw new Error('Arquivo não encontrado');
+        const lives = await res.json();
+
+        const ativas = lives.filter(l => l.ativo);
+        const todas  = lives; // mostra todas, offline aparece acinzentado
+
+        if (todas.length === 0) {
+            container.innerHTML = '<div class="lives-empty">Nenhuma live configurada.</div>';
+            return;
+        }
+
+        container.innerHTML = todas.map(live => {
+            const cat = live.categoria || 'recomendada';
+            const badge = BADGE_LABELS[cat] || cat;
+            const ativoClass = live.ativo ? 'ativo ' + cat : '';
+            const href = live.ativo ? `href="${live.url}"` : '';
+            const target = live.ativo ? 'target="_blank"' : '';
+            return `
+            <a class="live-card ${ativoClass}" ${href} ${target} aria-label="${live.titulo} — ${live.canal}">
+                <div class="live-dot"></div>
+                <div class="live-card-info">
+                    <div class="live-card-titulo">${live.titulo}</div>
+                    <div class="live-card-canal">${live.canal}</div>
+                </div>
+                <span class="live-card-badge">${live.ativo ? badge : 'Offline'}</span>
+            </a>`;
+        }).join('');
+
+        // Se nenhuma está ativa, mostra aviso sutil abaixo
+        if (ativas.length === 0) {
+            container.innerHTML += '<div class="lives-empty" style="margin-top:6px;">Nenhuma live ao vivo agora.</div>';
+        }
+
+    } catch (e) {
+        // Fallback: arquivo não encontrado ou erro de CORS local
+        container.innerHTML = '<div class="lives-empty">Lives indisponíveis.<br><small style="color:#555;">Verifique se <code>lives.json</code> está no repositório.</small></div>';
+        console.warn('[loadLives] Erro ao carregar lives.json:', e);
+    }
+}
+
 </script>
+</main>
 </body>
 </html>
