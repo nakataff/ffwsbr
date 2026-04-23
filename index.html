@@ -7526,56 +7526,64 @@ function parseMatchDate(dateStr) {
 function updateCountdown() {
     const now = new Date();
     
+    // 1. BUSCA O PRÓXIMO JOGO GERAL (Para Home e Datas)
     const nextMatch = agenda.find(m => {
         const mDate = parseMatchDate(m.data);
         return mDate.getTime() + (6 * 60 * 60 * 1000) > now.getTime();
     });
 
-    if (!nextMatch) return;
+    if (nextMatch) {
+        const targetDate = parseMatchDate(nextMatch.data);
+        const diff = targetDate - now;
+        const isLive = diff <= 0;
 
-    const targetDate = parseMatchDate(nextMatch.data);
-    const diff = targetDate - now;
-    const isLive = diff <= 0;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        const timeStr = `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
 
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const m = Math.floor((diff / (1000 * 60)) % 60);
-    const s = Math.floor((diff / 1000) % 60);
-    const timeStr = `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
+        // Atualiza Home
+        const homeDisplay = document.getElementById('home-next-countdown');
+        if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
 
-    // --- GERAÇÃO VISUAL DOS GRUPOS (Lógica de Prevenção de Imagem Quebrada) ---
-    const groupsHtml = nextMatch.grupos.map(g => {
-        const teamsInGroup = db.teams.filter(t => t.grupo === g);
-        const logosHtml = teamsInGroup.map(t => 
-            // Se a logo não existir no array, ou falhar ao carregar no HTML, puxa a escudo.webp
-            `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
-        ).join('');
-        return `<div class="group-logos"><span class="group-label">GP ${g}</span>${logosHtml}</div>`;
-    }).join('<span style="font-weight:bold; color:#444; margin: 0 5px;">VS</span>');
+        // Atualiza Datas
+        const scheduleDisplay = document.getElementById('countdown-display');
+        if (scheduleDisplay) scheduleDisplay.innerText = isLive ? "AO VIVO" : timeStr;
+    }
 
-    // --- ATUALIZAÇÃO DA PÁGINA INICIAL (HOME) ---
-    const homeDisplay = document.getElementById('home-next-countdown');
-    const homeGroups = document.getElementById('home-next-groups');
-    const homeStatusText = document.getElementById('home-next-status');
+    // 2. LÓGICA DO PERFIL DA EQUIPE (O QUE ESTAVA FALTANDO)
+    const tpDisplay = document.getElementById('tp-countdown-display');
+    if (tpDisplay && currentTeamNextMatch) {
+        const tpTarget = parseMatchDate(currentTeamNextMatch.data);
+        const tpDiff = tpTarget - now;
+        
+        if (tpDiff <= 0) {
+            tpDisplay.innerHTML = "<span style='color: #ff4444;'>AO VIVO AGORA</span>";
+        } else {
+            const tpd = Math.floor(tpDiff / (1000 * 60 * 60 * 24));
+            const tph = Math.floor((tpDiff / (1000 * 60 * 60)) % 24);
+            const tpm = Math.floor((tpDiff / (1000 * 60)) % 60);
+            const tps = Math.floor((tpDiff / 1000) % 60);
+            tpDisplay.innerText = `${tpd > 0 ? tpd + 'd ' : ''}${tph}h ${tpm}m ${tps}s`;
+        }
+    }
+
+    // 3. ATUALIZAÇÃO DOS BOTÕES DE LIVE
+    const checkLiveGlobal = () => {
+        if (!nextMatch) return false;
+        const mDate = parseMatchDate(nextMatch.data);
+        return now >= mDate && now <= (mDate.getTime() + (6 * 60 * 60 * 1000));
+    };
     
-    if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
-    if (homeStatusText) homeStatusText.innerText = isLive ? "Partida em andamento:" : "A transmissão começa em:";
-    if (homeGroups) homeGroups.innerHTML = groupsHtml; // Aplica o visual na Home!
+    const isActuallyLive = checkLiveGlobal();
 
-    // --- ATUALIZAÇÃO DA ABA CRONOGRAMA ---
-    const scheduleDisplay = document.getElementById('countdown-display');
-    const scheduleGroups = document.getElementById('next-match-groups');
-
-    if (scheduleDisplay) scheduleDisplay.innerText = isLive ? "AO VIVO" : timeStr;
-    if (scheduleGroups) scheduleGroups.innerHTML = groupsHtml; // Aplica o mesmo visual no Cronograma!
-
-    // --- LÓGICA DOS BOTÕES DE LIVE (Sincronizados) ---
     const updateBtn = (btnId, textId, defaultText) => {
         const btn = document.getElementById(btnId);
         const txt = document.getElementById(textId);
         if (!btn) return;
 
-        if (isLive) {
+        if (isActuallyLive) {
             btn.classList.remove('offline');
             btn.classList.add('online');
             if (txt) txt.innerText = "ASSISTIR AO VIVO";
