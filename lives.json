@@ -1,0 +1,34 @@
+[
+  {
+    "id": "live-oficial",
+    "categoria": "oficial",
+    "titulo": "FFWS Brasil 2026",
+    "canal": "FF Esports BR",
+    "url": "https://www.youtube.com/@FFesportsBR/live",
+    "ativo": false
+  },
+  {
+    "id": "liga-marinho",
+    "categoria": "amador",
+    "titulo": "Liga Marinho - Final",
+    "canal": "Canal Liga Marinho",
+    "url": "https://www.youtube.com/watch?v=T10-gkq5M2w",
+    "ativo": false
+  },
+  {
+    "id": "copa-nordeste",
+    "categoria": "amador",
+    "titulo": "Copa Nordeste FF",
+    "canal": "Canal Copa NE",
+    "url": "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+    "ativo": false
+  },
+  {
+    "id": "live-recomendada-1",
+    "categoria": "recomendada",
+    "titulo": "Free Fire com NakataFF",
+    "canal": "NakataFF",
+    "url": "https://www.youtube.com/@NakataFF/live",
+    "ativo": false
+  }
+]
