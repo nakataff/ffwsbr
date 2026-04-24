@@ -86,19 +86,67 @@
     width: 100%;
 }
 
+/* Layout Geral */
+.match-hero-section {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.match-hero-content {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.match-countdown-main {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(0, 183, 255, 0.4);
+}
+
+.lives-flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Layout das Lives lado a lado */
+.lives-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 50% cada no PC */
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.lives-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Garante que o card de live dentro da caixinha fique bonito */
 .live-card {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    pointer-events: auto;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
     text-decoration: none;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.03);
-    transition: 0.25s;
-    pointer-events: none;
-    opacity: 0.45;
-    color: #fff;
+    color: var(--text);
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+/* Responsividade: No celular fica um embaixo do outro */
+@media (max-width: 768px) {
+    .lives-split-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Estado Agendado (Aguardando) */
@@ -795,67 +843,72 @@ tr:last-child {
 </nav>
 <main id="main-content">
 <div class="container">
-<div id="home" class="page active">
-    
-    <!-- Notícia principal (destaque) carregada do noticias.json -->
-    <div id="news-hero-container"></div>
+  
+ <div id="home" class="page">
 
-    <div class="home-grid-2" style="margin-top: 25px;">
-        
-        <div class="home-widget">
-            <h3>Próximo Confronto — WB</h3>
-            <div class="home-widget-body">
-                <p style="color: var(--text-muted); font-size: 0.9em; margin: 0;" id="home-next-status">A transmissão começa em:</p>
-                <div id="home-next-countdown" style="font-size: 1.5em; font-weight: bold; color: #fff;">Carregando...</div>
-                <div id="home-next-groups" style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; width: 100%;"></div>
-                <a href="https://www.youtube.com/@FFesportsBR/live" target="_blank" class="live-status-btn offline" id="home-live-btn" style="width: 100%; margin-top: 8px;">
-                    <img src="youtube.webp" alt="">
-                    <span id="home-live-text">Sem transmissão disponível</span>
-                </a>
-            </div>
-        </div>
-        
-        <div class="home-widget">
-            <h3>Próximas Lives</h3>
-            <div class="home-widget-body" style="justify-content: flex-start; align-items: stretch;">
-                <div class="lives-widget" id="lives-widget-container">
-                    <div class="lives-empty">Carregando lives...</div>
-                </div>
-            </div>
-        </div>
+    <div id="news-hero-container" style="margin-bottom: 25px;"></div>
 
-    </div>
-
-    <div class="home-grid-2">
-        <div class="home-widget">
-            <h3>Top 6 Equipes</h3>
-            <table style="width: 100%; font-size: 0.95em; margin-bottom: 0;">
-                <thead><tr><th>#</th><th style="text-align:left;">Equipe</th><th>Pts</th></tr></thead>
-                <tbody id="home-tbody-teams"></tbody>
-            </table>
-            <button class="btn-action" style="width: 90%; margin: 15px auto;" onclick="navigate('teams')">Ver Tabela Completa</button>
-        </div>
-
-        <div class="home-widget">
-            <h3>Top 6 Jogadores</h3>
-            <table style="width: 100%; font-size: 0.95em; margin-bottom: 0;">
-                <thead><tr><th>#</th><th style="text-align:left;">Jogador</th><th>Kills</th></tr></thead>
-                <tbody id="home-tbody-players"></tbody>
-            </table>
-            <button class="btn-action" style="width: 90%; margin: 15px auto;" onclick="navigate('players')">Ver Tabela Completa</button>
+    <div class="home-widget" style="margin-bottom: 25px;">
+        <h3>📅 Próxima Partida</h3>
+        <div class="home-widget-body" style="gap: 12px;">
+            <p id="home-next-status" style="color: var(--text-muted); font-size: 0.9em; margin: 0; text-transform: uppercase; letter-spacing: 1px;">A transmissão começa em:</p>
+            <div id="home-next-countdown" class="match-countdown-main">--:--:--</div>
+            <div id="home-next-groups" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;"></div>
+            <a id="home-live-btn" href="https://www.youtube.com/@centralfreefire" target="_blank" class="live-status-btn offline">
+                <img src="youtube.png" alt="YouTube" onerror="this.style.display='none'">
+                <span id="home-live-text">Sem transmissão disponível</span>
+            </a>
         </div>
     </div>
 
-    <!-- Últimas Notícias (demais notícias do noticias.json) -->
-    <h2 id="ultimas-noticias-titulo" style="display:none; margin-top: 40px; border-bottom: 1px solid #1e2a45; padding-bottom: 10px; color: var(--accent);">Últimas Notícias</h2>
-    <div class="old-news-grid" id="ultimas-noticias-grid"></div>
+    <div class="home-grid-2" style="margin-bottom: 25px;">
+        <div class="home-widget">
+            <h3>🔴 Ao Vivo Agora</h3>
+            <div class="home-widget-body" style="padding: 12px;">
+                <div id="lives-on-container" class="lives-container"></div>
+                <div id="lives-on-empty" class="lives-empty">Nenhuma live no ar agora.</div>
+            </div>
+        </div>
 
-    <div style="text-align: center; margin-top: 40px; padding-bottom: 20px;">
+        <div class="home-widget">
+            <h3>📅 Agendadas / Offline</h3>
+            <div class="home-widget-body" style="padding: 12px;">
+                <div id="lives-upcoming-container" class="lives-container"></div>
+                <div id="lives-up-empty" class="lives-empty">Nenhuma live agendada.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="home-grid-2" style="margin-bottom: 25px;">
+        <div class="home-widget">
+            <h3>🏆 Top 6 Times</h3>
+            <div class="home-widget-body" style="padding: 0;">
+                <table style="width:100%;">
+                    <tbody id="home-tbody-teams"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="home-widget">
+            <h3>🎯 Top 6 Jogadores</h3>
+            <div class="home-widget-body" style="padding: 0;">
+                <table style="width:100%;">
+                    <tbody id="home-tbody-players"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+   <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
+    <div id="ultimas-noticias-grid" class="old-news-grid"></div>
+
+       <div style="text-align: center; margin-bottom: 40px;">
         <a href="https://instagram.com/nakataff" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 14px 30px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
             <img src="instagram.png" style="width: 22px;" alt="Instagram">
             <span style="color: #fff; font-weight: bold; font-size: 1.1em;">Siga no Instagram</span>
         </a>
     </div>
+
 </div>
 
     <!-- PAGE: TIMES -->
@@ -9529,113 +9582,95 @@ async function loadLives() {
     }
 }
 
-// Constrói a "casca" dos botões no HTML
 function buildLivesHTML() {
-    const container = document.getElementById('lives-widget-container');
-    if (!container) return;
+    if (globalLivesData.length === 0) return;
 
-    if (globalLivesData.length === 0) {
-        container.innerHTML = '<div class="lives-empty">Nenhuma live configurada.</div>';
-        return;
-    }
-
-    const html = globalLivesData.map(live => {
-        return `
-        <a id="${live.id}-link" class="live-card offline" aria-label="${live.titulo}">
+    globalLivesData.forEach(live => {
+        const el = document.createElement('a');
+        el.id = `${live.id}-link`;
+        el.className = 'live-card offline';
+        el.target = "_blank";
+        el.innerHTML = `
             <div class="live-dot"></div>
             <div class="live-card-info">
                 <div class="live-card-titulo">${live.titulo}</div>
                 <div class="live-card-canal">${live.canal}</div>
             </div>
-            <span id="${live.id}-badge" class="live-card-badge" style="font-variant-numeric: tabular-nums;">Offline</span>
-        </a>`;
-    }).join('');
-
-    container.innerHTML = html + `<div id="lives-empty-msg" class="lives-empty" style="display:none; margin-top:6px;">Nenhuma live ao vivo no momento.</div>`;
+            <span id="${live.id}-badge" class="live-card-badge">Offline</span>
+        `;
+        live.element = el; // Guarda o elemento para o JS mover depois
+        live.badgeElement = el.querySelector('.live-card-badge');
+    });
 }
 
-// Essa é a função que roda a cada segundo "escondida" fazendo a mágica
 function updateLivesTick() {
     const now = new Date();
-    let ativasCount = 0;
+    const containerOn = document.getElementById('lives-on-container');
+    const containerUp = document.getElementById('lives-upcoming-container');
+    if (!containerOn || !containerUp) return;
+
+    let onCount = 0;
+    let upCount = 0;
     const BADGE_LABELS = { oficial: '🔴 Oficial', amador: '🟢 Amador', recomendada:'🔵 Recomendada' };
 
     globalLivesData.forEach(live => {
-        const linkEl = document.getElementById(`${live.id}-link`);
-        const badgeEl = document.getElementById(`${live.id}-badge`);
+        const linkEl = live.element;
+        const badgeEl = live.badgeElement;
         if (!linkEl || !badgeEl) return;
-
-        const badgeCat = BADGE_LABELS[live.categoria] || '🔵 ' + live.categoria;
-        
-        let statusClass = 'offline';
-        let badgeText = 'Offline';
-        let isClickable = false;
 
         let isAutoLive = false;
         let isScheduled = false;
         let timeStr = "";
 
-        // AUTOMATIZAÇÃO DE DATA E HORA
         if (live.data_hora && live.duracao > 0) {
-            // Converte "2026-04-24 13:00" para "2026-04-24T13:00:00" (Formato que o PC entende)
             let dateStr = live.data_hora.trim().replace(' ', 'T');
             if (dateStr.length === 16) dateStr += ":00"; 
-            
             const startTime = new Date(dateStr);
             const endTime = new Date(startTime.getTime() + (live.duracao * 60 * 60 * 1000));
 
-            if (now >= startTime && now <= endTime) {
-                isAutoLive = true; // Está no horário da live!
-            } else if (now < startTime) {
-                isScheduled = true; // Ainda não começou
-                const diff = startTime - now;
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                const m = Math.floor((diff / (1000 * 60)) % 60);
-                const s = Math.floor((diff / 1000) % 60);
-                
-                // Formata o cronômetro para ficar bonito
-                if (d > 0) {
-                    timeStr = `${d}d ${h}h ${m}m`;
-                } else {
-                    timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                }
-            }
+            if (now >= startTime && now <= endTime) isAutoLive = true;
+else if (now < startTime) {
+    isScheduled = true;
+    const diff = startTime - now;
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24)); // Calcula os dias
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / (1000 * 60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    
+    // Formata a string colocando os zeros à esquerda
+    const hStr = h.toString().padStart(2, '0');
+    const mStr = m.toString().padStart(2, '0');
+    const sStr = s.toString().padStart(2, '0');
+
+    // Se faltar mais de 1 dia, exibe "Xd HH:MM:SS", se não, exibe só "HH:MM:SS"
+    timeStr = d > 0 ? `${d}d ${hStr}:${mStr}:${sStr}` : `${hStr}:${mStr}:${sStr}`;
+}
         }
 
-        // DECIDE QUAL É O ESTADO FINAL
+        // Define Status e move para a caixa correta
         if (live.ativo || isAutoLive) {
-            statusClass = 'ativo ' + live.categoria;
-            badgeText = badgeCat;
-            isClickable = true;
-            ativasCount++;
+            linkEl.className = `live-card ativo ${live.categoria}`;
+            badgeEl.innerText = BADGE_LABELS[live.categoria] || 'AO VIVO';
+            linkEl.href = live.url;
+            if (linkEl.parentElement !== containerOn) containerOn.appendChild(linkEl);
+            onCount++;
         } else if (isScheduled) {
-            statusClass = 'agendado';
-            badgeText = `⏳ ${timeStr}`;
-            isClickable = true; // Permite clicar para ir pra sala de espera do YouTube
-        }
-
-        // APLICA AS MUDANÇAS NO HTML (Apenas se o valor tiver mudado, para evitar travar o PC)
-        if (linkEl.className !== `live-card ${statusClass}`) {
-            linkEl.className = `live-card ${statusClass}`;
-        }
-        if (badgeEl.innerText !== badgeText) {
-            badgeEl.innerText = badgeText;
-        }
-        if (isClickable) {
-            if (linkEl.href !== live.url) linkEl.href = live.url;
-            linkEl.target = "_blank";
+            linkEl.className = 'live-card agendado';
+            badgeEl.innerText = `⏳ ${timeStr}`;
+            linkEl.href = live.url;
+            if (linkEl.parentElement !== containerUp) containerUp.appendChild(linkEl);
+            upCount++;
         } else {
+            linkEl.className = 'live-card offline';
+            badgeEl.innerText = 'Offline';
             linkEl.removeAttribute('href');
-            linkEl.removeAttribute('target');
+            if (linkEl.parentElement !== containerUp) containerUp.appendChild(linkEl);
+            upCount++;
         }
     });
 
-    // Controla a mensagem de "Nenhuma live"
-    const msgEl = document.getElementById('lives-empty-msg');
-    if (msgEl) {
-        msgEl.style.display = ativasCount === 0 ? 'block' : 'none';
-    }
+    document.getElementById('lives-on-empty').style.display = (onCount === 0) ? 'block' : 'none';
+    document.getElementById('lives-up-empty').style.display = (upCount === 0) ? 'block' : 'none';
 }
 
 async function loadSocials() {
