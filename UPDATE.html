@@ -513,18 +513,18 @@ nav {
     color: #fff;
     padding: 7px 40px 7px 15px;
     font-size: 0.85em;
-    width: 0;
-    opacity: 0;
-    pointer-events: none;
+    width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
     outline: none;
     transition: width 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
     position: absolute;
     right: 36px;
 }
 .nav-search-wrapper-desktop.open input {
-    width: 220px;
-    opacity: 1;
-    pointer-events: all;
+    width: 220px !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
 }
 
 /* --- NAVEGAÇÃO MOBILE --- */
@@ -534,6 +534,31 @@ nav {
 .nav-mobile-tabs { display: flex; flex: 1; justify-content: center; gap: 10px; }
 .nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); font-size: 0.95em; font-weight: 800; white-space: nowrap; cursor: pointer; }
 .nav-mobile-tab.active { color: var(--accent); }
+
+.nav-mobile-right { display: flex; align-items: center; gap: 12px; }
+
+/* Barra de busca mobile — escondida por padrão, abre com .active */
+.nav-mobile-search-bar {
+    display: none;
+    padding: 8px 14px 10px;
+    background: #020509;
+    border-top: 1px solid var(--border);
+}
+.nav-mobile-search-bar.active {
+    display: block;
+}
+.nav-mobile-search-bar input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 0.9em;
+    outline: none;
+}
+.nav-mobile-search-bar input:focus { border-color: var(--accent); }
 
 .nav-mobile-right { display: flex; align-items: center; gap: 12px; }
 
@@ -761,15 +786,15 @@ nav {
 .tier-d { color: #aaaaaa !important; font-weight: bold; }
 .row-tier-s { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%); border-left: 3px solid #ffd700; }
     
-/* --- BARRA DE PESQUISA GLOBAL (CORRIGIDA) --- */
+/* --- BARRA DE PESQUISA GLOBAL (LEGADA - MOBILE ONLY) --- */
     .search-wrapper {
         position: relative;
         padding: 12px 20px;
         background: #030609;
-        display: flex;
+        display: none; /* Escondida por padrão — só aparece no mobile via .active */
         justify-content: center;
         border-bottom: 1px solid var(--border);
-        z-index: 1001; /* Aumentado para ficar acima de tudo */
+        z-index: 1001;
         transition: all 0.3s ease-in-out;
     }
     
