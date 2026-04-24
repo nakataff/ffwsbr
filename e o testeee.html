@@ -9336,60 +9336,63 @@ async function loadNoticias() {
     const titulo = document.getElementById('ultimas-noticias-titulo');
     if (!heroContainer) return;
 
-    // Link da sua planilha em formato TSV
     const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
 
     try {
-        // O Date.now() serve para evitar que o navegador use uma versão antiga (cache) da planilha
-        const res = await fetch(SHEET_TSV_URL + '&v=' + Date.now());
+        // Força o navegador a buscar sempre a versão nova com timestamp
+        const res = await fetch(`${SHEET_TSV_URL}&nocache=${new Date().getTime()}`);
         const tsvText = await res.text();
         
-        // Divide o texto por quebras de linha
         const lines = tsvText.split('\n');
         
-        // Pula a primeira linha (cabeçalho) e processa as notícias
         const noticias = lines.slice(1).map(line => {
-            const data = line.split('\t'); // Split por TABULAÇÃO
+            // O .split(/\t/) com regex é mais forte para pegar tabulações
+            const data = line.split('\t'); 
             return {
-                imagem: data[0]?.trim(),
-                titulo: data[1]?.trim(),
-                link: data[2]?.trim(),
-                destaque: data[3]?.trim().toLowerCase() === 'true'
+                // O .replace(/\r/g, "") remove o "Enter" invisível que buga o layout no Windows/Desktop
+                imagem: data[0]?.trim().replace(/\r/g, ""),
+                titulo: data[1]?.trim().replace(/\r/g, ""),
+                link: data[2]?.trim().replace(/\r/g, ""),
+                destaque: data[3]?.trim().toLowerCase().includes('true')
             };
-        }).filter(n => n.titulo && n.titulo.length > 5); // Filtra linhas vazias ou inválidas
+        }).filter(n => n.titulo && n.titulo.length > 2);
+
+        if (noticias.length === 0) return;
 
         const destaque = noticias.find(n => n.destaque) || noticias[0];
-        const demais   = noticias.filter(n => n !== destaque);
+        const demais = noticias.filter(n => n !== destaque);
 
-        // Renderiza a notícia principal (HERO)
-        if (destaque) {
-            heroContainer.innerHTML = `
-            <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')" style="cursor:pointer;">
-                <img src="${destaque.imagem}" alt="Notícia Principal" onerror="this.src='central free fire.webp'">
-                <div class="news-hero-overlay">
-                    <h2 class="news-hero-title">${destaque.titulo}</h2>
-                </div>
-            </div>`;
-        }
+        // Renderiza Destaque
+        heroContainer.innerHTML = `
+        <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')">
+            <img src="${destaque.imagem}" alt="News" onerror="this.src='central free fire.webp'">
+            <div class="news-hero-overlay">
+                <h2 class="news-hero-title">${destaque.titulo}</h2>
+            </div>
+        </div>`;
 
-        // Renderiza as outras notícias na grade
+        // Renderiza Grade de Baixo
         if (grid) {
             if (demais.length > 0) {
-                if (titulo) titulo.style.display = '';
+                if (titulo) titulo.style.display = 'block';
                 grid.innerHTML = demais.map(n => `
-                <div class="old-news-card" onclick="window.open('${n.link}', '_blank')" style="cursor:pointer;">
-                    <img src="${n.imagem}" alt="${n.titulo}" onerror="this.src='central free fire.webp'">
+                <div class="old-news-card" onclick="window.open('${n.link}', '_blank')">
+                    <div style="height: 150px; overflow: hidden;">
+                        <img src="${n.imagem}" alt="${n.titulo}" onerror="this.src='central free fire.webp'" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
                     <div class="old-news-title">${n.titulo}</div>
                 </div>`).join('');
             } else {
-                grid.innerHTML = ''; // Limpa se não houver outras
+                grid.innerHTML = '';
+                if (titulo) titulo.style.display = 'none';
             }
         }
 
     } catch (e) {
-        console.warn('[loadNoticias] Erro ao carregar planilha:', e);
+        console.error('[loadNoticias] Erro:', e);
     }
 }
+
 // =============================================
 // SISTEMA DE LIVES — carrega de lives.json
 // Para ativar uma live: mude "ativo": false → true
