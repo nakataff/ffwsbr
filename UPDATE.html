@@ -489,9 +489,43 @@ nav {
 .nav-desktop-logo img { height: 45px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0,200,255,0.3)); background: none!important; border: none!important; }
 
 /* Direita: Busca */
-.nav-desktop-right { display: flex; justify-content: flex-end; }
+.nav-desktop-right { display: flex; justify-content: flex-end; align-items: center; }
 .nav-search-wrapper-desktop { position: relative; display: flex; align-items: center; }
-.nav-search-wrapper-desktop input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #fff; padding: 7px 40px 7px 15px; font-size: 0.85em; width: 180px; outline: none; }
+
+/* Botão-ícone (sempre visível) */
+.nav-search-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.nav-search-toggle-btn:hover { background: rgba(0,200,255,0.08); }
+
+/* Input escondido por padrão, expande ao abrir */
+.nav-search-wrapper-desktop input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: #fff;
+    padding: 7px 40px 7px 15px;
+    font-size: 0.85em;
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+    outline: none;
+    transition: width 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    position: absolute;
+    right: 36px;
+}
+.nav-search-wrapper-desktop.open input {
+    width: 220px;
+    opacity: 1;
+    pointer-events: all;
+}
 
 /* --- NAVEGAÇÃO MOBILE --- */
 .nav-mobile-bar { display: flex; align-items: center; padding: 0 10px; height: 55px; justify-content: space-between; }
@@ -505,7 +539,7 @@ nav {
 
 /* --- REGRAS DE IMAGENS E LUPA (AZUL E SEM FUNDO) --- */
 .nav-search-icon-desktop { 
-    position: absolute; right: 12px; width: 18px; height: 18px; pointer-events: none; 
+    width: 20px; height: 20px; pointer-events: none; 
     filter: invert(64%) sepia(94%) saturate(4177%) hue-rotate(160deg) brightness(102%) contrast(104%); 
     background: none!important; 
 }
@@ -1141,9 +1175,11 @@ tr:last-child {
         </div>
 
         <div class="nav-desktop-right">
-            <div class="nav-search-wrapper-desktop">
-                <input type="text" id="global-search-desktop" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('desktop')">
-                <img src="lupa.webp" class="nav-search-icon-desktop">
+            <div class="nav-search-wrapper-desktop" id="nav-search-wrapper-desktop">
+                <input type="text" id="global-search-desktop" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('desktop')" autocomplete="off">
+                <button class="nav-search-toggle-btn" onclick="toggleDesktopSearch()" aria-label="Buscar">
+                    <img src="lupa.webp" class="nav-search-icon-desktop">
+                </button>
                 <div id="search-results-desktop" class="search-results-dropdown"></div>
             </div>
         </div>
@@ -7577,6 +7613,15 @@ function selectSearchResult(type, name) {
                 box.style.display = 'none';
             }
         });
+        // Fecha a barra de busca desktop se clicar fora
+        const desktopWrapper = document.getElementById('nav-search-wrapper-desktop');
+        if (desktopWrapper && desktopWrapper.classList.contains('open') && !desktopWrapper.contains(e.target)) {
+            desktopWrapper.classList.remove('open');
+            const inp = document.getElementById('global-search-desktop');
+            if (inp) { inp.value = ''; }
+            const res = document.getElementById('search-results-desktop');
+            if (res) res.style.display = 'none';
+        }
     });
 
 function checkNameMatch(n1, n2) {
@@ -9681,6 +9726,18 @@ function mobileTabClick(pageId, btnEl) {
     else if (pageId === 'players') renderAllPlayers();
     else if (pageId === 'teams-list') renderTeamsDirectory();
     else if (pageId === 'schedule') renderSchedule();
+}
+
+function toggleDesktopSearch() {
+    const wrapper = document.getElementById('nav-search-wrapper-desktop');
+    const input = document.getElementById('global-search-desktop');
+    const isOpen = wrapper.classList.toggle('open');
+    if (isOpen) {
+        setTimeout(() => input.focus(), 300); // aguarda a animação de abertura
+    } else {
+        input.value = '';
+        document.getElementById('search-results-desktop').style.display = 'none';
+    }
 }
 
 function toggleMobileSearch() {
