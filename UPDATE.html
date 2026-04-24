@@ -410,7 +410,7 @@
     .nav-search-wrapper-desktop input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #fff; padding: 7px 34px 7px 14px; font-size: 0.87em; width: 190px; outline: none; transition: border-color 0.2s, width 0.3s; }
     .nav-search-wrapper-desktop input:focus { border-color: var(--accent); width: 250px; }
     .nav-search-wrapper-desktop input::placeholder { color: #5a7a9a; }
-    .nav-search-icon-desktop { position: absolute; right: 12px; width: 16px; height: 16px; pointer-events: none; opacity: 0.6; }
+    .nav-search-icon-desktop { position: absolute; right: 12px; width: 18px; height: 18px; pointer-events: none; filter: invert(64%) sepia(94%) saturate(4177%) hue-rotate(160deg) brightness(102%) contrast(104%); opacity: 0.8; }
 
     /* ---- MOBILE NAV ---- */
     .nav-mobile { display: none; flex-direction: column; }
@@ -427,10 +427,11 @@
 
     /* Lado Direito: Lupa e Home */
     .nav-mobile-right { display: flex; align-items: center; gap: 8px; }
-    .nav-mobile-search-btn, .nav-mobile-home-btn { background: transparent; border: none; padding: 5px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
+    .nav-mobile-search-btn img { width: 22px; height: 22px; filter: invert(64%) sepia(94%) saturate(4177%) hue-rotate(160deg) brightness(102%) contrast(104%); opacity: 0.8; transition: 0.2s; }
     .nav-mobile-search-btn img { width: 22px; height: 22px; opacity: 0.8; }
-    .nav-mobile-home-btn img { width: 26px; height: 26px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(0,200,255,0.5)); }
-    .nav-mobile-search-btn:hover img { opacity: 1; filter: drop-shadow(0 0 5px var(--accent)); }
+    .nav-mobile-home-btn img { width: 26px; height: 26px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(0,200,255,0.5)); transition: 0.2s; }
+    .nav-mobile-home-btn:active img { transform: scale(0.9); }
+    .nav-mobile-search-btn:hover img { opacity: 1; filter: invert(64%) sepia(94%) saturate(4177%) hue-rotate(160deg) brightness(102%) contrast(104%) drop-shadow(0 0 5px var(--accent)); }
 
     /* Barra de busca expansível mobile */
     .nav-mobile-search-bar { display: none; padding: 0 14px 10px; }
