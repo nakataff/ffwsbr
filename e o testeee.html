@@ -86,6 +86,53 @@
     width: 100%;
 }
 
+/* Layout Geral */
+.match-hero-section {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.match-hero-content {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.match-countdown-main {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(0, 183, 255, 0.4);
+}
+
+/* Grid das Lives */
+.lives-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 50/50 no PC */
+    gap: 20px;
+    align-items: stretch; /* Força as duas caixas a terem a mesma altura */
+}
+
+.lives-flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.lives-container {
+    flex-grow: 1; /* Faz o fundo azul do widget preencher o espaço até o final */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Ajuste Mobile */
+@media (max-width: 768px) {
+    .match-countdown-main { font-size: 1.8rem; }
+    .lives-split-grid {
+        grid-template-columns: 1fr; /* Um embaixo do outro no celular */
+    }
+}
+
 .live-card {
     display: flex;
     align-items: center;
@@ -802,29 +849,40 @@ tr:last-child {
 
     <div class="home-grid-2" style="margin-top: 25px;">
         
-        <div class="home-widget">
-            <h3>Próximo Confronto — WB</h3>
-            <div class="home-widget-body">
-                <p style="color: var(--text-muted); font-size: 0.9em; margin: 0;" id="home-next-status">A transmissão começa em:</p>
-                <div id="home-next-countdown" style="font-size: 1.5em; font-weight: bold; color: #fff;">Carregando...</div>
-                <div id="home-next-groups" style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; width: 100%;"></div>
-                <a href="https://www.youtube.com/@FFesportsBR/live" target="_blank" class="live-status-btn offline" id="home-live-btn" style="width: 100%; margin-top: 8px;">
-                    <img src="youtube.webp" alt="">
+<div class="match-hero-section">
+    <div class="widget">
+        <h3 class="widget-title" id="home-next-status">A transmissão começa em:</h3>
+        
+        <div class="match-hero-content">
+            <div id="home-next-countdown" class="match-countdown-main">00h 00m 00s</div>
+            
+            <div id="home-next-groups" class="match-groups-display">
+                </div>
+            
+            <div class="match-actions">
+                <a href="https://www.youtube.com/@LigaMarinho" target="_blank" id="home-live-btn" class="live-btn-main offline">
                     <span id="home-live-text">Sem transmissão disponível</span>
                 </a>
             </div>
         </div>
-        
-        <div class="home-widget">
-            <h3>Lives 🔴</h3>
-            <div class="home-widget-body" style="justify-content: flex-start; align-items: stretch;">
-                <div class="lives-widget" id="lives-widget-container">
-                    <div class="lives-empty">Carregando lives...</div>
-                </div>
-            </div>
-        </div>
-
     </div>
+</div>
+
+<div class="lives-split-grid">
+    <div class="widget lives-flex-column">
+        <h3 class="widget-title">🔴 LIVE ON</h3>
+        <div id="lives-on-container" class="lives-container">
+            <div id="lives-on-empty" class="lives-empty">Nenhuma live ao vivo no momento.</div>
+        </div>
+    </div>
+
+    <div class="widget lives-flex-column">
+        <h3 class="widget-title">📅 PRÓXIMAS LIVES</h3>
+        <div id="lives-upcoming-container" class="lives-container">
+            <div id="lives-up-empty" class="lives-empty">Nenhuma live agendada.</div>
+        </div>
+    </div>
+</div>
 
     <div class="home-grid-2">
         <div class="home-widget">
