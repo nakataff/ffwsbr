@@ -1993,7 +1993,7 @@ let currentSelectionWeek = "5";
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
 let dbSocials = {};
 
-const staffPhotos = {
+let staffPhotos = {
     "LUUUKING": "luuuking.webp",
    /* "Renan_Staff": "renan.webp",
     "PUTSGRILO": "putsgrilo.webp",
@@ -2510,7 +2510,7 @@ const playerRoles = {
     "DRADE.11": "GRAN", "SEU PAI": "RUSH", "WM": "SUP", "nepoIGN": "RUSH"
 };
 
-const playerPhotos = {
+let playerPhotos = {
     "MT7": "mt7.webp","Bops": "bops.webp", "Giuh": "giuh.webp", "BuTziN": "but.webp", "Proxx7": "proxx7.webp",
     "Pitbull": "pitbull.webp", "PETER": "peter.webp", "vitinxp": "vitinxp.webp", "Motovea": "motovea7.webp", "BYTE333": "byte.webp",
     "Pão7": "pao.webp", "Cauã9": "caua.webp", "Juca10xL": "juca.webp", "Lyon": "lyon.webp",
@@ -6474,6 +6474,7 @@ window.onload = () => {
     loadLives();    // Lê a planilha e monta o widget de Lives
     loadNoticias(); // Lê a planilha e monta o banner de Notícias
     loadSocials();  // Lê a planilha e carrega os @ do Instagram
+    loadPhotos();
 
     // ==========================================
     // 5. CRONÔMETROS
@@ -9685,6 +9686,41 @@ else if (now < startTime) {
 
     document.getElementById('lives-on-empty').style.display = (onCount === 0) ? 'block' : 'none';
     document.getElementById('lives-up-empty').style.display = (upCount === 0) ? 'block' : 'none';
+}
+
+async function loadPhotos() {
+    // COLE AQUI O LINK TSV DA SUA ABA DE FOTOS (mude o GID)
+    const PHOTOS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=775988627&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${PHOTOS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        // Opcional: limpa as fotos atuais antes de carregar as novas
+        // playerPhotos = {}; 
+        // staffPhotos = {};
+
+        lines.slice(1).forEach(line => {
+            const data = line.split('\t');
+            const nome = data[0]?.trim().replace(/\r/g, "");
+            const urlFoto = data[1]?.trim().replace(/\r/g, "");
+            const tipo = data[2]?.trim().replace(/\r/g, "").toLowerCase(); // 'player' ou 'staff'
+            
+            if (nome && urlFoto) {
+                if (tipo === 'staff') {
+                    staffPhotos[nome] = urlFoto;
+                } else {
+                    playerPhotos[nome] = urlFoto;
+                }
+            }
+        });
+
+        console.log("Fotos carregadas com sucesso!");
+
+    } catch (e) {
+        console.error('[loadPhotos] Erro ao carregar fotos:', e);
+    }
 }
 
 async function loadSocials() {
