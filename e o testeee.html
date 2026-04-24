@@ -9339,17 +9339,13 @@ async function loadNoticias() {
     const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
 
     try {
-        // Força o navegador a buscar sempre a versão nova com timestamp
         const res = await fetch(`${SHEET_TSV_URL}&nocache=${new Date().getTime()}`);
         const tsvText = await res.text();
-        
         const lines = tsvText.split('\n');
         
         const noticias = lines.slice(1).map(line => {
-            // O .split(/\t/) com regex é mais forte para pegar tabulações
-            const data = line.split('\t'); 
+            const data = line.split('\t');
             return {
-                // O .replace(/\r/g, "") remove o "Enter" invisível que buga o layout no Windows/Desktop
                 imagem: data[0]?.trim().replace(/\r/g, ""),
                 titulo: data[1]?.trim().replace(/\r/g, ""),
                 link: data[2]?.trim().replace(/\r/g, ""),
@@ -9359,28 +9355,37 @@ async function loadNoticias() {
 
         if (noticias.length === 0) return;
 
+        // SEPARAR DESTAQUE DAS DEMAIS
         const destaque = noticias.find(n => n.destaque) || noticias[0];
+        // Se a primeira for destaque, as outras vão para o grid. 
+        // Se NÃO houver nenhuma marcada como destaque, a primeira vira Hero e o resto vai pro grid.
         const demais = noticias.filter(n => n !== destaque);
 
-        // Renderiza Destaque
+        // 1. RENDERIZA NOTÍCIA PRINCIPAL (BANNER GRANDE)
         heroContainer.innerHTML = `
         <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')">
-            <img src="${destaque.imagem}" alt="News" onerror="this.src='central free fire.webp'">
+            <img src="${destaque.imagem}" alt="Destaque" onerror="this.src='central free fire.webp'">
             <div class="news-hero-overlay">
                 <h2 class="news-hero-title">${destaque.titulo}</h2>
             </div>
         </div>`;
 
-        // Renderiza Grade de Baixo
+        // 2. RENDERIZA AS OUTRAS (QUADRADINHOS)
         if (grid) {
             if (demais.length > 0) {
                 if (titulo) titulo.style.display = 'block';
+                
+                // Forçamos o estilo do grid aqui para garantir que sejam quadradinhos
+                grid.style.display = 'grid';
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+                grid.style.gap = '20px';
+
                 grid.innerHTML = demais.map(n => `
-                <div class="old-news-card" onclick="window.open('${n.link}', '_blank')">
-                    <div style="height: 150px; overflow: hidden;">
-                        <img src="${n.imagem}" alt="${n.titulo}" onerror="this.src='central free fire.webp'" style="width:100%; height:100%; object-fit:cover;">
+                <div class="old-news-card" onclick="window.open('${n.link}', '_blank')" style="display: flex; flex-direction: column; height: 100%;">
+                    <div style="width: 100%; height: 160px; overflow: hidden; border-bottom: 1px solid var(--border);">
+                        <img src="${n.imagem}" alt="News" onerror="this.src='central free fire.webp'" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    <div class="old-news-title">${n.titulo}</div>
+                    <div class="old-news-title" style="padding: 12px; font-size: 0.95em; flex-grow: 1;">${n.titulo}</div>
                 </div>`).join('');
             } else {
                 grid.innerHTML = '';
