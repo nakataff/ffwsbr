@@ -9413,26 +9413,44 @@ async function loadLives() {
         recomendada:'🔵 Recomendada'
     };
 
-    try {
-        // Adiciona cache-bust para garantir leitura do arquivo atualizado
-        const res = await fetch('lives.json?v=' + Date.now());
-        if (!res.ok) throw new Error('Arquivo não encontrado');
-        const lives = await res.json();
+    // Seu link da planilha de Lives já integrado
+    const LIVES_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1585079530&single=true&output=tsv';
 
-        const ativas = lives.filter(l => l.ativo);
-        const todas  = lives; // mostra todas, offline aparece acinzentado
+    try {
+        // nocache para garantir que a atualização da planilha apareça na hora
+        const res = await fetch(`${LIVES_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        
+        const lines = tsvText.split('\n');
+        
+        // Converte as linhas da planilha em objetos
+        const todas = lines.slice(1).map(line => {
+            const data = line.split('\t');
+            return {
+                // O .replace(/\r/g, "") limpa caracteres invisíveis do Windows
+                titulo: data[0]?.trim().replace(/\r/g, ""),
+                canal: data[1]?.trim().replace(/\r/g, ""),
+                url: data[2]?.trim().replace(/\r/g, ""),
+                categoria: data[3]?.trim().replace(/\r/g, "").toLowerCase() || 'recomendada',
+                ativo: data[4]?.trim().toLowerCase().includes('true')
+            };
+        }).filter(l => l.titulo && l.titulo.length > 2);
 
         if (todas.length === 0) {
             container.innerHTML = '<div class="lives-empty">Nenhuma live configurada.</div>';
             return;
         }
 
+        const ativas = todas.filter(l => l.ativo);
+
+        // Renderiza o HTML das lives
         container.innerHTML = todas.map(live => {
-            const cat = live.categoria || 'recomendada';
-            const badge = BADGE_LABELS[cat] || cat;
+            const cat = live.categoria;
+            const badge = BADGE_LABELS[cat] || '🔵 ' + cat;
             const ativoClass = live.ativo ? 'ativo ' + cat : '';
             const href = live.ativo ? `href="${live.url}"` : '';
             const target = live.ativo ? 'target="_blank"' : '';
+            
             return `
             <a class="live-card ${ativoClass}" ${href} ${target} aria-label="${live.titulo} — ${live.canal}">
                 <div class="live-dot"></div>
@@ -9444,15 +9462,14 @@ async function loadLives() {
             </a>`;
         }).join('');
 
-        // Se nenhuma está ativa, mostra aviso sutil abaixo
+        // Mensagem caso ninguém esteja online
         if (ativas.length === 0) {
             container.innerHTML += '<div class="lives-empty" style="margin-top:6px;">Nenhuma live ao vivo agora.</div>';
         }
 
     } catch (e) {
-        // Fallback: arquivo não encontrado ou erro de CORS local
-        container.innerHTML = '<div class="lives-empty">Lives indisponíveis.<br><small style="color:#555;">Verifique se <code>lives.json</code> está no repositório.</small></div>';
-        console.warn('[loadLives] Erro ao carregar lives.json:', e);
+        container.innerHTML = '<div class="lives-empty">Erro ao carregar lives.</div>';
+        console.error('[loadLives] Erro:', e);
     }
 }
 
