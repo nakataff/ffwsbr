@@ -3065,7 +3065,6 @@ let logos = {
     'BLACK DRAGONS': 'bd.webp',
     'MAGIC SQUAD': 'magic squad.webp',
     'TSM': 'tsm.webp',
-    'CRUZEIRO': 'cruzeiro.webp',
     'SANTOS': 'santos.webp',
     'ALFA 34': 'a34.webp',
     'LOS GRANDES': 'Los.png', // A antiga Los Grandes puxa a mesma logo da LOS atual
@@ -9787,7 +9786,7 @@ async function loadNoticias() {
 
 async function loadTeamLogos() {
     // Substitua o GID pelo da aba onde estão as logos (Ex: Equipe na Coluna A, Link na Coluna B)
-    const LOGOS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=COLOQUE_O_GID_AQUI&single=true&output=tsv';
+    const LOGOS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv';
 
     try {
         const res = await fetch(`${LOGOS_TSV_URL}&nocache=${new Date().getTime()}`);
