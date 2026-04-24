@@ -7543,16 +7543,32 @@ function updateCountdown() {
         const s = Math.floor((diff / 1000) % 60);
         const timeStr = `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
 
-        // Atualiza Home
-        const homeDisplay = document.getElementById('home-next-countdown');
-        if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
+        // --- GERAÇÃO VISUAL DOS GRUPOS (O QUE TINHA SUMIDO) ---
+        const groupsHtml = nextMatch.grupos.map(g => {
+            const teamsInGroup = db.teams.filter(t => t.grupo === g);
+            const logosHtml = teamsInGroup.map(t => 
+                `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
+            ).join('');
+            return `<div class="group-logos"><span class="group-label">GP ${g}</span>${logosHtml}</div>`;
+        }).join('<span style="font-weight:bold; color:#444; margin: 0 5px;">VS</span>');
 
-        // Atualiza Datas
+        // Atualiza Home (Tempo e Grupos)
+        const homeDisplay = document.getElementById('home-next-countdown');
+        const homeGroups = document.getElementById('home-next-groups');
+        const homeStatusText = document.getElementById('home-next-status');
+        
+        if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
+        if (homeStatusText) homeStatusText.innerText = isLive ? "Partida em andamento:" : "A transmissão começa em:";
+        if (homeGroups) homeGroups.innerHTML = groupsHtml;
+
+        // Atualiza Datas (Tempo e Grupos)
         const scheduleDisplay = document.getElementById('countdown-display');
+        const scheduleGroups = document.getElementById('next-match-groups');
         if (scheduleDisplay) scheduleDisplay.innerText = isLive ? "AO VIVO" : timeStr;
+        if (scheduleGroups) scheduleGroups.innerHTML = groupsHtml;
     }
 
-    // 2. LÓGICA DO PERFIL DA EQUIPE (O QUE ESTAVA FALTANDO)
+    // 2. LÓGICA DO PERFIL DA EQUIPE (Mantendo o que corrigimos antes)
     const tpDisplay = document.getElementById('tp-countdown-display');
     if (tpDisplay && currentTeamNextMatch) {
         const tpTarget = parseMatchDate(currentTeamNextMatch.data);
@@ -7573,6 +7589,7 @@ function updateCountdown() {
     const checkLiveGlobal = () => {
         if (!nextMatch) return false;
         const mDate = parseMatchDate(nextMatch.data);
+        // Está ao vivo se a hora atual passou da hora do jogo, por até 6 horas
         return now >= mDate && now <= (mDate.getTime() + (6 * 60 * 60 * 1000));
     };
     
