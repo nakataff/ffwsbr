@@ -101,6 +101,26 @@
     color: #fff;
 }
 
+/* Estado Agendado (Aguardando) */
+.live-card.agendado {
+    pointer-events: auto; /* Deixa clicar para abrir a sala de espera do YouTube */
+    opacity: 0.85;        /* Um pouco mais vivo que o offline */
+    background: rgba(255, 170, 0, 0.05);
+    border-color: rgba(255, 170, 0, 0.4);
+}
+.live-card.agendado:hover {
+    background: rgba(255, 170, 0, 0.1);
+    transform: translateX(4px);
+}
+.live-card.agendado .live-dot {
+    background: #ffaa00; /* Bolinha Laranja */
+    box-shadow: 0 0 8px rgba(255, 170, 0, 0.6);
+}
+.live-card.agendado .live-card-badge {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+}
+
 .live-card.ativo {
     pointer-events: auto;
     opacity: 1;
@@ -796,7 +816,7 @@ tr:last-child {
         </div>
         
         <div class="home-widget">
-            <h3>Lives 🔴</h3>
+            <h3>Próximas Lives</h3>
             <div class="home-widget-body" style="justify-content: flex-start; align-items: stretch;">
                 <div class="lives-widget" id="lives-widget-container">
                     <div class="lives-empty">Carregando lives...</div>
@@ -9467,73 +9487,154 @@ async function loadNoticias() {
 // Para ativar uma live: mude "ativo": false → true
 // Para adicionar uma live nova: adicione um objeto ao array
 // =============================================
+// Variável global para guardar as lives
+let globalLivesData = [];
+
 async function loadLives() {
-    const container = document.getElementById('lives-widget-container');
-    if (!container) return;
-
-    const BADGE_LABELS = {
-        oficial:    '🔴 Oficial',
-        amador:     '🟢 Amador',
-        recomendada:'🔵 Recomendada'
-    };
-
-    // Seu link da planilha de Lives já integrado
+    // SEU LINK DA PLANILHA (Mantive o que você já mandou)
     const LIVES_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1585079530&single=true&output=tsv';
 
     try {
-        // nocache para garantir que a atualização da planilha apareça na hora
         const res = await fetch(`${LIVES_TSV_URL}&nocache=${new Date().getTime()}`);
         const tsvText = await res.text();
-        
         const lines = tsvText.split('\n');
         
-        // Converte as linhas da planilha em objetos
-        const todas = lines.slice(1).map(line => {
+        // Pega os dados da planilha
+        globalLivesData = lines.slice(1).map((line, index) => {
             const data = line.split('\t');
             return {
-                // O .replace(/\r/g, "") limpa caracteres invisíveis do Windows
+                id: 'live-' + index, // Dá um ID único para o relógio conseguir achar o elemento
                 titulo: data[0]?.trim().replace(/\r/g, ""),
                 canal: data[1]?.trim().replace(/\r/g, ""),
                 url: data[2]?.trim().replace(/\r/g, ""),
                 categoria: data[3]?.trim().replace(/\r/g, "").toLowerCase() || 'recomendada',
-                ativo: data[4]?.trim().toLowerCase().includes('true')
+                ativo: data[4]?.trim().toLowerCase().includes('true'),
+                data_hora: data[5]?.trim().replace(/\r/g, ""), // Ex: 2026-04-24 13:00
+                duracao: parseFloat(data[6]?.trim().replace(/\r/g, "")) || 0 // Ex: 4
             };
         }).filter(l => l.titulo && l.titulo.length > 2);
 
-        if (todas.length === 0) {
-            container.innerHTML = '<div class="lives-empty">Nenhuma live configurada.</div>';
-            return;
+        // 1. Constrói o visual estático das lives
+        buildLivesHTML(); 
+        
+        // 2. Ativa o cronômetro para atualizar o status a cada segundo
+        if (!window.livesInterval) {
+            window.livesInterval = setInterval(updateLivesTick, 1000);
         }
-
-        const ativas = todas.filter(l => l.ativo);
-
-        // Renderiza o HTML das lives
-        container.innerHTML = todas.map(live => {
-            const cat = live.categoria;
-            const badge = BADGE_LABELS[cat] || '🔵 ' + cat;
-            const ativoClass = live.ativo ? 'ativo ' + cat : '';
-            const href = live.ativo ? `href="${live.url}"` : '';
-            const target = live.ativo ? 'target="_blank"' : '';
-            
-            return `
-            <a class="live-card ${ativoClass}" ${href} ${target} aria-label="${live.titulo} — ${live.canal}">
-                <div class="live-dot"></div>
-                <div class="live-card-info">
-                    <div class="live-card-titulo">${live.titulo}</div>
-                    <div class="live-card-canal">${live.canal}</div>
-                </div>
-                <span class="live-card-badge">${live.ativo ? badge : 'Offline'}</span>
-            </a>`;
-        }).join('');
-
-        // Mensagem caso ninguém esteja online
-        if (ativas.length === 0) {
-            container.innerHTML += '<div class="lives-empty" style="margin-top:6px;">Nenhuma live ao vivo agora.</div>';
-        }
+        updateLivesTick(); // Roda a primeira vez na hora para não esperar 1s
 
     } catch (e) {
-        container.innerHTML = '<div class="lives-empty">Erro ao carregar lives.</div>';
+        document.getElementById('lives-widget-container').innerHTML = '<div class="lives-empty">Erro ao carregar lives.</div>';
         console.error('[loadLives] Erro:', e);
+    }
+}
+
+// Constrói a "casca" dos botões no HTML
+function buildLivesHTML() {
+    const container = document.getElementById('lives-widget-container');
+    if (!container) return;
+
+    if (globalLivesData.length === 0) {
+        container.innerHTML = '<div class="lives-empty">Nenhuma live configurada.</div>';
+        return;
+    }
+
+    const html = globalLivesData.map(live => {
+        return `
+        <a id="${live.id}-link" class="live-card offline" aria-label="${live.titulo}">
+            <div class="live-dot"></div>
+            <div class="live-card-info">
+                <div class="live-card-titulo">${live.titulo}</div>
+                <div class="live-card-canal">${live.canal}</div>
+            </div>
+            <span id="${live.id}-badge" class="live-card-badge" style="font-variant-numeric: tabular-nums;">Offline</span>
+        </a>`;
+    }).join('');
+
+    container.innerHTML = html + `<div id="lives-empty-msg" class="lives-empty" style="display:none; margin-top:6px;">Nenhuma live ao vivo no momento.</div>`;
+}
+
+// Essa é a função que roda a cada segundo "escondida" fazendo a mágica
+function updateLivesTick() {
+    const now = new Date();
+    let ativasCount = 0;
+    const BADGE_LABELS = { oficial: '🔴 Oficial', amador: '🟢 Amador', recomendada:'🔵 Recomendada' };
+
+    globalLivesData.forEach(live => {
+        const linkEl = document.getElementById(`${live.id}-link`);
+        const badgeEl = document.getElementById(`${live.id}-badge`);
+        if (!linkEl || !badgeEl) return;
+
+        const badgeCat = BADGE_LABELS[live.categoria] || '🔵 ' + live.categoria;
+        
+        let statusClass = 'offline';
+        let badgeText = 'Offline';
+        let isClickable = false;
+
+        let isAutoLive = false;
+        let isScheduled = false;
+        let timeStr = "";
+
+        // AUTOMATIZAÇÃO DE DATA E HORA
+        if (live.data_hora && live.duracao > 0) {
+            // Converte "2026-04-24 13:00" para "2026-04-24T13:00:00" (Formato que o PC entende)
+            let dateStr = live.data_hora.trim().replace(' ', 'T');
+            if (dateStr.length === 16) dateStr += ":00"; 
+            
+            const startTime = new Date(dateStr);
+            const endTime = new Date(startTime.getTime() + (live.duracao * 60 * 60 * 1000));
+
+            if (now >= startTime && now <= endTime) {
+                isAutoLive = true; // Está no horário da live!
+            } else if (now < startTime) {
+                isScheduled = true; // Ainda não começou
+                const diff = startTime - now;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const m = Math.floor((diff / (1000 * 60)) % 60);
+                const s = Math.floor((diff / 1000) % 60);
+                
+                // Formata o cronômetro para ficar bonito
+                if (d > 0) {
+                    timeStr = `${d}d ${h}h ${m}m`;
+                } else {
+                    timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+            }
+        }
+
+        // DECIDE QUAL É O ESTADO FINAL
+        if (live.ativo || isAutoLive) {
+            statusClass = 'ativo ' + live.categoria;
+            badgeText = badgeCat;
+            isClickable = true;
+            ativasCount++;
+        } else if (isScheduled) {
+            statusClass = 'agendado';
+            badgeText = `⏳ ${timeStr}`;
+            isClickable = true; // Permite clicar para ir pra sala de espera do YouTube
+        }
+
+        // APLICA AS MUDANÇAS NO HTML (Apenas se o valor tiver mudado, para evitar travar o PC)
+        if (linkEl.className !== `live-card ${statusClass}`) {
+            linkEl.className = `live-card ${statusClass}`;
+        }
+        if (badgeEl.innerText !== badgeText) {
+            badgeEl.innerText = badgeText;
+        }
+        if (isClickable) {
+            if (linkEl.href !== live.url) linkEl.href = live.url;
+            linkEl.target = "_blank";
+        } else {
+            linkEl.removeAttribute('href');
+            linkEl.removeAttribute('target');
+        }
+    });
+
+    // Controla a mensagem de "Nenhuma live"
+    const msgEl = document.getElementById('lives-empty-msg');
+    if (msgEl) {
+        msgEl.style.display = ativasCount === 0 ? 'block' : 'none';
     }
 }
 
