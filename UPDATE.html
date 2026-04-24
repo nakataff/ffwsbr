@@ -421,8 +421,8 @@
     .nav-mob-menu-btn:hover { color: var(--accent); }
 
     /* Tabs centrais com texto maior e sem ícones */
-    .nav-mobile-tabs { display: flex; flex: 1; justify-content: center; gap: 2px; }
-    .nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); font-size: 0.85em; font-weight: 800; text-transform: uppercase; white-space: nowrap; padding: 8px 6px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .nav-mobile-tabs { display: flex; flex: 1; justify-content: center; gap: 8px; }
+    .nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); font-size: 0.9em; font-weight: 800; text-transform: uppercase; white-space: nowrap; padding: 8px 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
     .nav-mobile-tab:hover, .nav-mobile-tab.active { color: var(--accent); background: rgba(0,200,255,0.08); }
 
     /* Lado Direito: Lupa e Home */
@@ -1087,7 +1087,6 @@ tr:last-child {
                 <button class="nav-mobile-tab active" id="mob-tab-teams" onclick="mobileTabClick('teams', this)">TABELA</button>
                 <button class="nav-mobile-tab" id="mob-tab-players" onclick="mobileTabClick('players', this)">RANKING</button>
                 <button class="nav-mobile-tab" id="mob-tab-teams-list" onclick="mobileTabClick('teams-list', this)">EQUIPES</button>
-                <button class="nav-mobile-tab" id="mob-tab-schedule" onclick="mobileTabClick('schedule', this)">DATAS</button>
             </div>
 
             <div class="nav-mobile-right">
