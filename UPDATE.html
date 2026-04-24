@@ -424,7 +424,7 @@ nav {
 }
 .nav-teams-dropdown.active { display: block; }
 
-.nav-teams-grid { display: grid; grid-template-columns: repeat(4, 48px); gap: 8px; justify-content: center; }
+.nav-teams-grid { display: grid; grid-template-columns: repeat(4, 48px); gap: 8px; justify-content: center; overflow: visible; padding-top: 6px; }
 
 .nav-team-logo-btn { 
     width: 48px; 
@@ -436,9 +436,53 @@ nav {
     border: 1px solid var(--border)!important; 
     border-radius: 6px; 
     cursor: pointer; 
-    overflow: hidden; /* Esconde qualquer texto/sigla */
+    overflow: visible;
+    position: relative;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
-.nav-team-logo-btn img { width: 32px; height: 32px; object-fit: contain; background: none!important; border: none!important; }
+.nav-team-logo-btn:hover {
+    background: rgba(0, 200, 255, 0.12)!important;
+    border-color: var(--accent)!important;
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 18px rgba(0, 200, 255, 0.25);
+    z-index: 10;
+}
+.nav-team-logo-btn img { 
+    width: 32px; 
+    height: 32px; 
+    object-fit: contain; 
+    background: none!important; 
+    border: none!important;
+    filter: grayscale(0.2) opacity(0.8);
+    transition: filter 0.2s;
+}
+.nav-team-logo-btn:hover img {
+    filter: grayscale(0) opacity(1);
+}
+/* Tooltip do nome da equipe */
+.nav-team-logo-btn::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.85);
+    background: #0d1220;
+    color: var(--accent);
+    font-size: 0.62em;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    border: 1px solid var(--border);
+    letter-spacing: 0.5px;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.nav-team-logo-btn:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
 
 /* Centro: Logo Principal */
 .nav-desktop-logo { display: flex; justify-content: center; cursor: pointer; }
@@ -8296,7 +8340,7 @@ function toggleDay(containerId, day, callback) {
     else window[callback]();
 }
 
-function onTeamDayFilterChanged() { buildDayFilters(); renderFullTeams(); renderGroupsTables(); }
+function onTeamDayFilterChanged_ALIAS() { buildDayFilters(); renderFullTeams(); renderGroupsTables(); } // alias legado — usar onTeamDayFilterChanged abaixo
 function onPlayerDayFilterChanged() { buildDayFilters(); renderAllPlayers(); }
 function onTpDayFilterChanged() { buildDayFilters(); renderTeamProfileStats(); }
 
@@ -9582,7 +9626,12 @@ function renderMapData() {
     let data = db.maps[map];
     let tbody = document.querySelector('#table-maps tbody');
     tbody.innerHTML = '';
-    if(data) [...data].sort((a,b) => b.pontos_total - a.pontos_total).forEach((t, i) => tbody.innerHTML += `<tr><td style="color:var(--accent); font-weight:bold;">${i+1}º</td><td class="team-cell"><img src="${logos[t.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span></td><td style="color:var(--accent); font-weight:bold">${t.pontos_total.toFixed(2)}</td><td>${t.abates.toFixed(2)}</td><td>${t.pontos_pos.toFixed(2)}</td><td>${t.Booyah.toFixed(2)}</td></tr>`);
+    if(data) {
+        const rows = [...data].sort((a,b) => b.pontos_total - a.pontos_total).map((t, i) =>
+            `<tr><td style="color:var(--accent); font-weight:bold;">${i+1}º</td><td class="team-cell"><img src="${logos[t.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span></td><td style="color:var(--accent); font-weight:bold">${t.pontos_total.toFixed(2)}</td><td>${t.abates.toFixed(2)}</td><td>${t.pontos_pos.toFixed(2)}</td><td>${t.Booyah.toFixed(2)}</td></tr>`
+        );
+        tbody.innerHTML = rows.join('');
+    }
 }
 
 // Essa função é nova, ela apenas abre/fecha o menu mobile
@@ -9901,11 +9950,12 @@ function renderOutrosTorneiosList() {
         amadoras: '#ff7f7f'
     };
 
-    // Limpa os grids
+    // Limpa os grids e acumula HTML por categoria
     for (let key in grids) if (grids[key]) grids[key].innerHTML = '';
+    const cardBuffers = { mundiais: [], internacionais: [], nacionais: [], amadoras: [] };
 
     dbOutrosTorneios.forEach(t => {
-        if (!grids[t.categoria]) return;
+        if (!cardBuffers[t.categoria]) return;
 
         // Acha o campeão do torneio (última fase, primeiro colocado)
         let champion = null;
@@ -9938,8 +9988,13 @@ function renderOutrosTorneiosList() {
                 <div class="ot-card-click-hint">Ver tabela completa →</div>
             </div>
         `;
-        grids[t.categoria].innerHTML += card;
+        cardBuffers[t.categoria].push(card);
     });
+
+    // Flush todos de uma vez (1 reflow por categoria em vez de N)
+    for (let key in grids) {
+        if (grids[key]) grids[key].innerHTML = (cardBuffers[key] || []).join('');
+    }
 
     // Esconde as categorias sem torneios
     for (let key in grids) {
