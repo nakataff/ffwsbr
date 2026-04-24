@@ -844,7 +844,15 @@ tr:last-child {
 <main id="main-content">
 <div class="container">
 
-  <div id="home" class="page">
+    <div style="text-align: center; margin-top: 40px; padding-bottom: 20px;">
+        <a href="https://instagram.com/nakataff" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 14px 30px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+            <img src="instagram.png" style="width: 22px;" alt="Instagram">
+            <span style="color: #fff; font-weight: bold; font-size: 1.1em;">Siga no Instagram</span>
+        </a>
+    </div>
+</div>
+
+ <div id="home" class="page">
 
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
 
@@ -899,17 +907,16 @@ tr:last-child {
         </div>
     </div>
 
-
-
-    <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
-    <div id="ultimas-noticias-grid" class="old-news-grid"></div>
-
-       <div style="text-align: center; margin-bottom: 40px;">
+    <div style="text-align: center; margin-bottom: 40px;">
         <a href="https://instagram.com/nakataff" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 14px 30px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
             <img src="instagram.png" style="width: 22px;" alt="Instagram">
             <span style="color: #fff; font-weight: bold; font-size: 1.1em;">Siga no Instagram</span>
         </a>
     </div>
+
+    <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
+    <div id="ultimas-noticias-grid" class="old-news-grid"></div>
+
 </div>
 
     <!-- PAGE: TIMES -->
@@ -9630,15 +9637,22 @@ function updateLivesTick() {
             const endTime = new Date(startTime.getTime() + (live.duracao * 60 * 60 * 1000));
 
             if (now >= startTime && now <= endTime) isAutoLive = true;
-            else if (now < startTime) {
-                isScheduled = true;
-                const diff = startTime - now;
-                const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                const m = Math.floor((diff / (1000 * 60)) % 60);
-                const s = Math.floor((diff / 1000) % 60);
-                timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            }
-        }
+else if (now < startTime) {
+    isScheduled = true;
+    const diff = startTime - now;
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24)); // Calcula os dias
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / (1000 * 60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    
+    // Formata a string colocando os zeros à esquerda
+    const hStr = h.toString().padStart(2, '0');
+    const mStr = m.toString().padStart(2, '0');
+    const sStr = s.toString().padStart(2, '0');
+
+    // Se faltar mais de 1 dia, exibe "Xd HH:MM:SS", se não, exibe só "HH:MM:SS"
+    timeStr = d > 0 ? `${d}d ${hStr}:${mStr}:${sStr}` : `${hStr}:${mStr}:${sStr}`;
+}
 
         // Define Status e move para a caixa correta
         if (live.ativo || isAutoLive) {
