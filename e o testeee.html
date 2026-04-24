@@ -1917,10 +1917,7 @@ const wbWeeks = {
 let currentSelectionWeek = "5";
 
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
-const dbSocials = {
-    "Bops": "bopsff", "MT7": "fluxo_mt7ffx", "LUUUKING": "luuuking_", "General!": "generaalxx", "Yago": "yagoexe_" , "PUTSGRILO": "putsgrilo10",
-    // Adicione os outros nomes conforme necessário
-};
+let dbSocials = {};
 
 const staffPhotos = {
     "LUUUKING": "luuuking.webp",
@@ -6359,10 +6356,11 @@ window.onload = () => {
     renderSchedule();
     renderAllPlayers();
     renderIndividualRecords();
-    
+    distribuirNovosResultados();
     // 👇 ADICIONE ESTA LINHA AQUI 👇
     renderPlayerStats(); 
-    
+    autoCalculateTotals(); 
+    db.teams.sort((a,b) => b.pontos - a.pontos).forEach((t, i) => t.posGeral = i + 1);
     buildEditionFilters();
     renderEditionRanking();
     populateHistSelects();
@@ -6378,6 +6376,7 @@ window.onload = () => {
     loadLives();
     // Carrega as notícias do JSON externo
     loadNoticias();
+    loadSocials();
 };
 
 function navigate(pageId) {
@@ -9487,6 +9486,37 @@ async function loadLives() {
     } catch (e) {
         container.innerHTML = '<div class="lives-empty">Erro ao carregar lives.</div>';
         console.error('[loadLives] Erro:', e);
+    }
+}
+
+async function loadSocials() {
+    // COLE AQUI O LINK TSV DA SUA ABA DE REDES SOCIAIS
+    const SOCIALS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=539927320&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${SOCIALS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        // Limpa o objeto antes de preencher
+        dbSocials = {};
+
+        // Ignora o cabeçalho (linha 0) e processa o resto
+        lines.slice(1).forEach(line => {
+            const data = line.split('\t');
+            const nome = data[0]?.trim().replace(/\r/g, "");
+            const insta = data[1]?.trim().replace(/\r/g, "");
+            
+            // Se tiver nome e instagram preenchidos, adiciona ao nosso banco de dados
+            if (nome && insta) {
+                dbSocials[nome] = insta;
+            }
+        });
+
+        console.log("Redes sociais carregadas com sucesso!", dbSocials);
+
+    } catch (e) {
+        console.error('[loadSocials] Erro ao carregar redes sociais:', e);
     }
 }
 
