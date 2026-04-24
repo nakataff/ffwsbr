@@ -7282,11 +7282,14 @@ function populateHistSelects() {
 }
 
 // Preenche os selects da aba Histórico
+// Preenche os selects da aba Histórico
 function populateSelects() {
     // --- 1. PREENCHIMENTO DAS EQUIPES ---
     let filtroGeral = document.getElementById('filter-equipe'); 
-    let filtroJogadores = document.getElementById('filter-player-team');
-    // IDs corrigidas para bater com o seu HTML original:
+    
+    // CORREÇÃO: O ID exato do HTML para a aba de Jogadores é 'filter-team-players'
+    let filtroJogadores = document.getElementById('filter-team-players'); 
+    
     let comparadorT1 = document.getElementById('comp-t1'); 
     let comparadorT2 = document.getElementById('comp-t2'); 
 
@@ -7296,7 +7299,7 @@ function populateSelects() {
     teamsSet.forEach(equipe => {
         let opt = `<option value="${equipe}">${equipe}</option>`;
         if (filtroGeral) filtroGeral.innerHTML += opt;
-        if (filtroJogadores) filtroJogadores.innerHTML += opt;
+        if (filtroJogadores) filtroJogadores.innerHTML += opt; // Agora ele vai preencher!
         if (comparadorT1) comparadorT1.innerHTML += opt;
         if (comparadorT2) comparadorT2.innerHTML += opt;
     });
@@ -8952,38 +8955,49 @@ function renderAllPlayers() {
     </tr>`).join('');
 
     setTimeout(() => {
-    let dataToAggregate = db.playerDaily;
-    if (selectedPlayerDays.length > 0) dataToAggregate = dataToAggregate.filter(p => selectedPlayerDays.includes(String(p.dia)));
-    
-    let aggregated = {};
-    dataToAggregate.forEach(row => {
-        if (!aggregated[row.jogador]) aggregated[row.jogador] = { jogador: row.jogador, equipe: row.equipe, abates: 0, dano: 0, assists: 0, quedas: 0, mvp: 0 };
-        aggregated[row.jogador].abates += row.abates; 
-        aggregated[row.jogador].dano += row.dano; 
-        aggregated[row.jogador].assists += row.assists; 
-        aggregated[row.jogador].quedas += row.quedas; 
-        aggregated[row.jogador].mvp += row.mvp;
-    });
+        let dataToAggregate = db.playerDaily;
+        if (selectedPlayerDays.length > 0) dataToAggregate = dataToAggregate.filter(p => selectedPlayerDays.includes(String(p.dia)));
+        
+        let aggregated = {};
+        dataToAggregate.forEach(row => {
+            if (!aggregated[row.jogador]) aggregated[row.jogador] = { jogador: row.jogador, equipe: row.equipe, abates: 0, dano: 0, assists: 0, quedas: 0, mvp: 0 };
+            aggregated[row.jogador].abates += row.abates; 
+            aggregated[row.jogador].dano += row.dano; 
+            aggregated[row.jogador].assists += row.assists; 
+            aggregated[row.jogador].quedas += row.quedas; 
+            aggregated[row.jogador].mvp += row.mvp;
+        });
 
-    let data = Object.values(aggregated)
-        .filter(p => teamFilter === 'all' || p.equipe === teamFilter)
-        .filter(p => {
-            if (roleFilter === 'all') return true;
-            let currentRole = playerRoles[p.jogador] || "RUSH";
-            return currentRole === roleFilter;
-        })
-        .filter(p => p.quedas > 0);
+        let data = Object.values(aggregated)
+            .filter(p => {
+                if (teamFilter === 'all') return true;
+                // Busca a equipe oficial do jogador no db.players para garantir
+                let officialTeam = db.players.find(x => x.jogador === p.jogador)?.equipe || p.equipe;
+                // Compara ignorando maiúsculas/minúsculas e espaços extras
+                return officialTeam?.toUpperCase().trim() === teamFilter.toUpperCase().trim() || 
+                       p.equipe?.toUpperCase().trim() === teamFilter.toUpperCase().trim();
+            })
+            .filter(p => {
+                if (roleFilter === 'all') return true;
+                let currentRole = playerRoles[p.jogador] || "RUSH";
+                return currentRole.toUpperCase() === roleFilter.toUpperCase();
+            })
+            .filter(p => p.quedas > 0);
 
-    tbody.innerHTML = data.sort((a,b) => b.abates - a.abates).map((p, i) => `<tr>
-        <td>${i+1}</td>
-        <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
-        <td class="team-cell hide-mobile"><img src="${logos[p.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${p.equipe}')">${p.equipe}</span></td>
-        <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
-        <td class="hide-mobile">${p.dano}</td>
-        <td class="hide-mobile">${p.assists}</td>
-        <td class="hide-mobile">${p.quedas}</td>
-        <td class="hide-mobile">${p.mvp}</td>
-    </tr>`).join('');
+        tbody.innerHTML = data.sort((a,b) => b.abates - a.abates).map((p, i) => {
+            // Usa a equipe oficial para puxar a logo corretamente
+            let officialTeam = db.players.find(x => x.jogador === p.jogador)?.equipe || p.equipe;
+            return `<tr>
+                <td>${i+1}</td>
+                <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
+                <td class="team-cell hide-mobile"><img src="${logos[officialTeam]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${officialTeam}')">${officialTeam}</span></td>
+                <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
+                <td class="hide-mobile">${p.dano}</td>
+                <td class="hide-mobile">${p.assists}</td>
+                <td class="hide-mobile">${p.quedas}</td>
+                <td class="hide-mobile">${p.mvp}</td>
+            </tr>`;
+        }).join('');
     }, 50);
 }
 
