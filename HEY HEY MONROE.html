@@ -6629,16 +6629,20 @@ function normalizeMapName(name) {
 // Função que lê os Novos Campeonatos e distribui para os times
 function distribuirNovosResultados() {
     dbCampeonatos.forEach(camp => {
-        // Para cada time dentro dos resultados daquele campeonato...
         for (let equipe in camp.resultados) {
             let colocacao = camp.resultados[equipe];
 
-            // Se o time ainda não tiver um histórico no dbResults, cria uma lista vazia pra ele
             if (!dbResults[equipe]) {
                 dbResults[equipe] = [];
             }
 
-            // Injeta o resultado do campeonato no perfil do time!
+            // Evita duplicata: só injeta se não existir já um resultado
+            // com a mesma data E o mesmo nome de torneio para este time
+            const jaExiste = dbResults[equipe].some(
+                r => r.data === camp.data && r.torneio === camp.torneio
+            );
+            if (jaExiste) continue;
+
             dbResults[equipe].push({
                 data: camp.data,
                 tier: camp.tier,
