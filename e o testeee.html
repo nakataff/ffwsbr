@@ -9336,41 +9336,35 @@ async function loadNoticias() {
     const titulo = document.getElementById('ultimas-noticias-titulo');
     if (!heroContainer) return;
 
-    // COLE O SEU LINK DA PLANILHA PUBLICADA COMO CSV AQUI
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
+    // Link da sua planilha em formato TSV
+    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
 
     try {
-// ... dentro da função loadNoticias ...
-
-const res = await fetch(SHEET_TSV_URL + '&v=' + Date.now()); // Note que mudei para TSV_URL
-const tsvText = await res.text();
-
-// 1. Converte o TSV em Array de Objetos usando \t
-const lines = tsvText.split('\n');
-
-// Muda o split para \t aqui nos headers
-const headers = lines[0].split('\t').map(h => h.trim()); 
-
-const noticias = lines.slice(1).map(line => {
-    // Muda o split para \t aqui nos dados também
-    const data = line.split('\t'); 
-    
-    return {
-        imagem: data[0]?.trim(),
-        titulo: data[1]?.trim(),
-        link: data[2]?.trim(),
-        destaque: data[3]?.trim().toLowerCase() === 'true'
-    };
-}).filter(n => n.titulo);
-
-// ... resto da função ... // Remove linhas vazias
+        // O Date.now() serve para evitar que o navegador use uma versão antiga (cache) da planilha
+        const res = await fetch(SHEET_TSV_URL + '&v=' + Date.now());
+        const tsvText = await res.text();
+        
+        // Divide o texto por quebras de linha
+        const lines = tsvText.split('\n');
+        
+        // Pula a primeira linha (cabeçalho) e processa as notícias
+        const noticias = lines.slice(1).map(line => {
+            const data = line.split('\t'); // Split por TABULAÇÃO
+            return {
+                imagem: data[0]?.trim(),
+                titulo: data[1]?.trim(),
+                link: data[2]?.trim(),
+                destaque: data[3]?.trim().toLowerCase() === 'true'
+            };
+        }).filter(n => n.titulo && n.titulo.length > 5); // Filtra linhas vazias ou inválidas
 
         const destaque = noticias.find(n => n.destaque) || noticias[0];
         const demais   = noticias.filter(n => n !== destaque);
 
+        // Renderiza a notícia principal (HERO)
         if (destaque) {
             heroContainer.innerHTML = `
-            <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')">
+            <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')" style="cursor:pointer;">
                 <img src="${destaque.imagem}" alt="Notícia Principal" onerror="this.src='central free fire.webp'">
                 <div class="news-hero-overlay">
                     <h2 class="news-hero-title">${destaque.titulo}</h2>
@@ -9378,19 +9372,24 @@ const noticias = lines.slice(1).map(line => {
             </div>`;
         }
 
-        if (grid && demais.length > 0) {
-            if (titulo) titulo.style.display = '';
-            grid.innerHTML = demais.map(n => `
-            <div class="old-news-card" onclick="window.open('${n.link}', '_blank')">
-                <img src="${n.imagem}" alt="${n.titulo}" onerror="this.src='central free fire.webp'">
-                <div class="old-news-title">${n.titulo}</div>
-            </div>`).join('');
+        // Renderiza as outras notícias na grade
+        if (grid) {
+            if (demais.length > 0) {
+                if (titulo) titulo.style.display = '';
+                grid.innerHTML = demais.map(n => `
+                <div class="old-news-card" onclick="window.open('${n.link}', '_blank')" style="cursor:pointer;">
+                    <img src="${n.imagem}" alt="${n.titulo}" onerror="this.src='central free fire.webp'">
+                    <div class="old-news-title">${n.titulo}</div>
+                </div>`).join('');
+            } else {
+                grid.innerHTML = ''; // Limpa se não houver outras
+            }
         }
+
     } catch (e) {
         console.warn('[loadNoticias] Erro ao carregar planilha:', e);
     }
 }
-
 // =============================================
 // SISTEMA DE LIVES — carrega de lives.json
 // Para ativar uma live: mude "ativo": false → true
