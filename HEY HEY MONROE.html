@@ -2631,7 +2631,7 @@ let dbCampeonatos = [];
 
 async function loadCampeonatos() {
     // COLE AQUI O LINK TSV DA SUA ABA DE CAMPEONATOS (mude o GID para a aba certa)
-    const CAMP_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=CAMPEONATOS_GID&single=true&output=tsv';
+    const CAMP_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1701683178&single=true&output=tsv';
 
     try {
         const res = await fetch(`${CAMP_TSV_URL}&nocache=${new Date().getTime()}`);
