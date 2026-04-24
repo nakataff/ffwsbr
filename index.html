@@ -1917,10 +1917,7 @@ const wbWeeks = {
 let currentSelectionWeek = "5";
 
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
-const dbSocials = {
-    "Bops": "bopsff", "MT7": "fluxo_mt7ffx", "LUUUKING": "luuuking_", "General!": "generaalxx", "Yago": "yagoexe_" , "PUTSGRILO": "putsgrilo10",
-    // Adicione os outros nomes conforme necessário
-};
+let dbSocials = {};
 
 const staffPhotos = {
     "LUUUKING": "luuuking.webp",
@@ -6337,47 +6334,79 @@ let currentTeamNextMatch = null;
 const TOTAL_DIAS = Object.keys(dbQuedas).length > 0 ? Math.max(...Object.keys(dbQuedas).map(Number)) : 0;
 
 window.onload = () => {
-    // 1. PRIMEIRO DE TUDO: Define a página inicial para esconder as outras
+    // ==========================================
+    // 1. INICIALIZAÇÃO DA PÁGINA
+    // ==========================================
+    // Garante que o usuário sempre comece na aba "Início" e esconda as outras
     navigate('home'); 
 
-    // 2. Calcula os dados
+    // ==========================================
+    // 2. PREPARAÇÃO E CÁLCULO DE DADOS (DATABASE)
+    // ==========================================
+    // Puxa os resultados extras (dbCampeonatos) e injeta no histórico dos times
+    distribuirNovosResultados(); 
+
+    // Soma os pontos, abates e danos de todas as quedas (Cria o db.teamDaily e db.playerDaily)
     autoCalculateTotals(); 
-    db.teams.sort((a,b) => b.pontos - a.pontos).forEach((t, i) => t.posGeral = i + 1);
     
-    // 3. Renderiza os componentes
+    // Calcula a posição (rank) de cada jogador para exibir nas cartinhas (Top Kills, Dano, etc.)
+    calculatePlayerRanks(); 
+
+    // Ordena as equipes pela pontuação total e define a "posGeral" (1º, 2º, 3º...) de cada uma
+    db.teams.sort((a,b) => b.pontos - a.pontos).forEach((t, i) => t.posGeral = i + 1);
+
+    // ==========================================
+    // 3. RENDERIZAÇÃO DOS COMPONENTES (UI)
+    // ==========================================
+    // -> Aba Início
     renderHomeStats();
+    renderHomeGroups();
+    
+    // -> Filtros e Dropdowns globais
     buildDayFilters();
     populateSelects();
+
+    // -> Aba Times e Equipes
     renderFullTeams();
-    renderHomeGroups();
-    renderOutrosTorneiosList();
+    renderGroupsTables();
+    renderTeamsDirectory();
+
+    // -> Aba Jogadores e Seleção da Semana
+    renderAllPlayers();
+    renderPlayerStats(); 
+    renderSelectionFilters();
+    renderSelection();
+
+    // -> Aba Estatísticas e Top 5
     renderTop5Stats();
     renderTableAvg();
     renderTableTotal();
-    renderGroupsTables();
-    renderTeamsDirectory();
-    renderSchedule();
-    renderAllPlayers();
+
+    // -> Aba Histórico, Recordes e Comparador
     renderIndividualRecords();
-    
-    // 👇 ADICIONE ESTA LINHA AQUI 👇
-    renderPlayerStats(); 
-    
     buildEditionFilters();
     renderEditionRanking();
     populateHistSelects();
     renderHistCompare();
     renderHistoricalRanking();
-    renderSelectionFilters();
-    renderSelection();
-    
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
 
-    // Carrega as lives do JSON externo
-    loadLives();
-    // Carrega as notícias do JSON externo
-    loadNoticias();
+    // -> Aba Outros Torneios e Cronograma
+    renderOutrosTorneiosList();
+    renderSchedule();
+
+    // ==========================================
+    // 4. INTEGRAÇÕES EXTERNAS (GOOGLE SHEETS)
+    // ==========================================
+    loadLives();    // Lê a planilha e monta o widget de Lives
+    loadNoticias(); // Lê a planilha e monta o banner de Notícias
+    loadSocials();  // Lê a planilha e carrega os @ do Instagram
+
+    // ==========================================
+    // 5. CRONÔMETROS
+    // ==========================================
+    // Atualiza o relógio do "Próximo Confronto"
+    updateCountdown();                  // Executa a 1ª vez imediatamente para não ficar vazio
+    setInterval(updateCountdown, 1000); // Continua atualizando a cada 1 segundo
 };
 
 function navigate(pageId) {
@@ -7617,11 +7646,24 @@ function updateCountdown() {
 }
 
 function calculatePlayerRanks() {
+    // 1. Filtra os jogadores que realmente jogaram (evita bugar com jogadores zerados)
+    let ativos = db.players.filter(p => p.quedas > 0);
+
     const setRank = (attrName, rankName) => {
-        let sorted = [...db.players].sort((a, b) => b[attrName] - a[attrName]);
-        sorted.forEach((p, i) => p[rankName] = i + 1);
+        // 2. Ordena do maior para o menor. Se não tiver número, ele trata como 0
+        ativos.sort((a, b) => (b[attrName] || 0) - (a[attrName] || 0));
+        
+        // 3. Distribui as medalhas (1º, 2º, 3º...)
+        ativos.forEach((p, index) => {
+            p[rankName] = index + 1;
+        });
     };
-    setRank('abates', 'rankKills'); setRank('dano', 'rankDmg'); setRank('assists', 'rankAssists'); setRank('mvp', 'rankMvp');
+
+    // Aplica o ranking para cada estatística
+    setRank('abates', 'rankKills'); 
+    setRank('dano', 'rankDmg'); 
+    setRank('assists', 'rankAssists'); 
+    setRank('mvp', 'rankMvp');
 }
 
 function sortTable(tableId, colIndex, isNumeric) {
@@ -9487,6 +9529,37 @@ async function loadLives() {
     } catch (e) {
         container.innerHTML = '<div class="lives-empty">Erro ao carregar lives.</div>';
         console.error('[loadLives] Erro:', e);
+    }
+}
+
+async function loadSocials() {
+    // COLE AQUI O LINK TSV DA SUA ABA DE REDES SOCIAIS
+    const SOCIALS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=539927320&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${SOCIALS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        // Limpa o objeto antes de preencher
+        dbSocials = {};
+
+        // Ignora o cabeçalho (linha 0) e processa o resto
+        lines.slice(1).forEach(line => {
+            const data = line.split('\t');
+            const nome = data[0]?.trim().replace(/\r/g, "");
+            const insta = data[1]?.trim().replace(/\r/g, "");
+            
+            // Se tiver nome e instagram preenchidos, adiciona ao nosso banco de dados
+            if (nome && insta) {
+                dbSocials[nome] = insta;
+            }
+        });
+
+        console.log("Redes sociais carregadas com sucesso!", dbSocials);
+
+    } catch (e) {
+        console.error('[loadSocials] Erro ao carregar redes sociais:', e);
     }
 }
 
