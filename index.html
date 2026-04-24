@@ -2462,7 +2462,7 @@ const playerPhotos = {
 const dbCampeonatos = [
     {
         torneio: "Liga Marinho Season 4",
-        data: "2026-04-25",
+        data: "2026-04-23",
         tier: "D-Tier",
         resultados: {
             "TEAM SOLID": "1st",
@@ -7543,16 +7543,32 @@ function updateCountdown() {
         const s = Math.floor((diff / 1000) % 60);
         const timeStr = `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
 
-        // Atualiza Home
-        const homeDisplay = document.getElementById('home-next-countdown');
-        if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
+        // --- GERAÇÃO VISUAL DOS GRUPOS (O QUE TINHA SUMIDO) ---
+        const groupsHtml = nextMatch.grupos.map(g => {
+            const teamsInGroup = db.teams.filter(t => t.grupo === g);
+            const logosHtml = teamsInGroup.map(t => 
+                `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
+            ).join('');
+            return `<div class="group-logos"><span class="group-label">GP ${g}</span>${logosHtml}</div>`;
+        }).join('<span style="font-weight:bold; color:#444; margin: 0 5px;">VS</span>');
 
-        // Atualiza Datas
+        // Atualiza Home (Tempo e Grupos)
+        const homeDisplay = document.getElementById('home-next-countdown');
+        const homeGroups = document.getElementById('home-next-groups');
+        const homeStatusText = document.getElementById('home-next-status');
+        
+        if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
+        if (homeStatusText) homeStatusText.innerText = isLive ? "Partida em andamento:" : "A transmissão começa em:";
+        if (homeGroups) homeGroups.innerHTML = groupsHtml;
+
+        // Atualiza Datas (Tempo e Grupos)
         const scheduleDisplay = document.getElementById('countdown-display');
+        const scheduleGroups = document.getElementById('next-match-groups');
         if (scheduleDisplay) scheduleDisplay.innerText = isLive ? "AO VIVO" : timeStr;
+        if (scheduleGroups) scheduleGroups.innerHTML = groupsHtml;
     }
 
-    // 2. LÓGICA DO PERFIL DA EQUIPE (O QUE ESTAVA FALTANDO)
+    // 2. LÓGICA DO PERFIL DA EQUIPE (Mantendo o que corrigimos antes)
     const tpDisplay = document.getElementById('tp-countdown-display');
     if (tpDisplay && currentTeamNextMatch) {
         const tpTarget = parseMatchDate(currentTeamNextMatch.data);
@@ -7573,6 +7589,7 @@ function updateCountdown() {
     const checkLiveGlobal = () => {
         if (!nextMatch) return false;
         const mDate = parseMatchDate(nextMatch.data);
+        // Está ao vivo se a hora atual passou da hora do jogo, por até 6 horas
         return now >= mDate && now <= (mDate.getTime() + (6 * 60 * 60 * 1000));
     };
     
@@ -9336,42 +9353,65 @@ async function loadNoticias() {
     const titulo = document.getElementById('ultimas-noticias-titulo');
     if (!heroContainer) return;
 
+    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
+
     try {
-        const res = await fetch('noticias.json?v=' + Date.now());
-        if (!res.ok) throw new Error('noticias.json não encontrado');
-        const noticias = await res.json();
+        const res = await fetch(`${SHEET_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        const noticias = lines.slice(1).map(line => {
+            const data = line.split('\t');
+            return {
+                imagem: data[0]?.trim().replace(/\r/g, ""),
+                titulo: data[1]?.trim().replace(/\r/g, ""),
+                link: data[2]?.trim().replace(/\r/g, ""),
+                destaque: data[3]?.trim().toLowerCase().includes('true')
+            };
+        }).filter(n => n.titulo && n.titulo.length > 2);
 
+        if (noticias.length === 0) return;
+
+        // SEPARAR DESTAQUE DAS DEMAIS
         const destaque = noticias.find(n => n.destaque) || noticias[0];
-        const demais   = noticias.filter(n => n !== destaque);
+        // Se a primeira for destaque, as outras vão para o grid. 
+        // Se NÃO houver nenhuma marcada como destaque, a primeira vira Hero e o resto vai pro grid.
+        const demais = noticias.filter(n => n !== destaque);
 
-        // Hero (notícia principal)
-        if (destaque) {
-            heroContainer.innerHTML = `
-            <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')">
-                <img src="${destaque.imagem}" alt="Notícia Principal" onerror="this.src='central free fire.webp'">
-                <div class="news-hero-overlay">
-                    <h2 class="news-hero-title">${destaque.titulo}</h2>
-                </div>
-            </div>`;
-        }
+        // 1. RENDERIZA NOTÍCIA PRINCIPAL (BANNER GRANDE)
+        heroContainer.innerHTML = `
+        <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')">
+            <img src="${destaque.imagem}" alt="Destaque" onerror="this.src='central free fire.webp'">
+            <div class="news-hero-overlay">
+                <h2 class="news-hero-title">${destaque.titulo}</h2>
+            </div>
+        </div>`;
 
-        // Grade de últimas notícias (abaixo do Top 6)
-        if (grid && demais.length > 0) {
-            if (titulo) titulo.style.display = '';
-            grid.innerHTML = demais.map(n => `
-            <div class="old-news-card" onclick="window.open('${n.link}', '_blank')">
-                <img src="${n.imagem}" alt="${n.titulo}" onerror="this.src='central free fire.webp'">
-                <div class="old-news-title">${n.titulo}</div>
-            </div>`).join('');
+        // 2. RENDERIZA AS OUTRAS (QUADRADINHOS)
+        if (grid) {
+            if (demais.length > 0) {
+                if (titulo) titulo.style.display = 'block';
+                
+                // Forçamos o estilo do grid aqui para garantir que sejam quadradinhos
+                grid.style.display = 'grid';
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+                grid.style.gap = '20px';
+
+                grid.innerHTML = demais.map(n => `
+                <div class="old-news-card" onclick="window.open('${n.link}', '_blank')" style="display: flex; flex-direction: column; height: 100%;">
+                    <div style="width: 100%; height: 160px; overflow: hidden; border-bottom: 1px solid var(--border);">
+                        <img src="${n.imagem}" alt="News" onerror="this.src='central free fire.webp'" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="old-news-title" style="padding: 12px; font-size: 0.95em; flex-grow: 1;">${n.titulo}</div>
+                </div>`).join('');
+            } else {
+                grid.innerHTML = '';
+                if (titulo) titulo.style.display = 'none';
+            }
         }
 
     } catch (e) {
-        // Fallback se o arquivo não existir
-        if (heroContainer) heroContainer.innerHTML = `
-        <div style="background: var(--panel-bg); border: 1px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 25px;">
-            <p style="color: var(--text-muted); margin: 0;">Crie o arquivo <code style="color: var(--accent);">noticias.json</code> para exibir as notícias.</p>
-        </div>`;
-        console.warn('[loadNoticias] Erro ao carregar noticias.json:', e);
+        console.error('[loadNoticias] Erro:', e);
     }
 }
 
@@ -9390,26 +9430,44 @@ async function loadLives() {
         recomendada:'🔵 Recomendada'
     };
 
-    try {
-        // Adiciona cache-bust para garantir leitura do arquivo atualizado
-        const res = await fetch('lives.json?v=' + Date.now());
-        if (!res.ok) throw new Error('Arquivo não encontrado');
-        const lives = await res.json();
+    // Seu link da planilha de Lives já integrado
+    const LIVES_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1585079530&single=true&output=tsv';
 
-        const ativas = lives.filter(l => l.ativo);
-        const todas  = lives; // mostra todas, offline aparece acinzentado
+    try {
+        // nocache para garantir que a atualização da planilha apareça na hora
+        const res = await fetch(`${LIVES_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        
+        const lines = tsvText.split('\n');
+        
+        // Converte as linhas da planilha em objetos
+        const todas = lines.slice(1).map(line => {
+            const data = line.split('\t');
+            return {
+                // O .replace(/\r/g, "") limpa caracteres invisíveis do Windows
+                titulo: data[0]?.trim().replace(/\r/g, ""),
+                canal: data[1]?.trim().replace(/\r/g, ""),
+                url: data[2]?.trim().replace(/\r/g, ""),
+                categoria: data[3]?.trim().replace(/\r/g, "").toLowerCase() || 'recomendada',
+                ativo: data[4]?.trim().toLowerCase().includes('true')
+            };
+        }).filter(l => l.titulo && l.titulo.length > 2);
 
         if (todas.length === 0) {
             container.innerHTML = '<div class="lives-empty">Nenhuma live configurada.</div>';
             return;
         }
 
+        const ativas = todas.filter(l => l.ativo);
+
+        // Renderiza o HTML das lives
         container.innerHTML = todas.map(live => {
-            const cat = live.categoria || 'recomendada';
-            const badge = BADGE_LABELS[cat] || cat;
+            const cat = live.categoria;
+            const badge = BADGE_LABELS[cat] || '🔵 ' + cat;
             const ativoClass = live.ativo ? 'ativo ' + cat : '';
             const href = live.ativo ? `href="${live.url}"` : '';
             const target = live.ativo ? 'target="_blank"' : '';
+            
             return `
             <a class="live-card ${ativoClass}" ${href} ${target} aria-label="${live.titulo} — ${live.canal}">
                 <div class="live-dot"></div>
@@ -9421,15 +9479,14 @@ async function loadLives() {
             </a>`;
         }).join('');
 
-        // Se nenhuma está ativa, mostra aviso sutil abaixo
+        // Mensagem caso ninguém esteja online
         if (ativas.length === 0) {
             container.innerHTML += '<div class="lives-empty" style="margin-top:6px;">Nenhuma live ao vivo agora.</div>';
         }
 
     } catch (e) {
-        // Fallback: arquivo não encontrado ou erro de CORS local
-        container.innerHTML = '<div class="lives-empty">Lives indisponíveis.<br><small style="color:#555;">Verifique se <code>lives.json</code> está no repositório.</small></div>';
-        console.warn('[loadLives] Erro ao carregar lives.json:', e);
+        container.innerHTML = '<div class="lives-empty">Erro ao carregar lives.</div>';
+        console.error('[loadLives] Erro:', e);
     }
 }
 
