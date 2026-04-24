@@ -450,15 +450,16 @@
             border-bottom: 1px solid var(--border);
         }
 
-        /* Garante que o dropdown fique acima de tudo no mobile */
+/* Garante que o dropdown fique abaixo da barra no mobile e não engula o input */
         .search-wrapper.active .search-results-dropdown {
-            position: fixed;
-            top: auto;
-            left: 10px;
-            right: 10px;
-            width: auto;
+            position: absolute; /* Antes estava 'fixed', o que causava o pulo na tela */
+            top: 100%;          /* Gruda a caixa exatamente embaixo do input */
+            left: 0;
+            right: 0;
+            width: 100%;
             transform: none;
             max-width: none;
+            max-height: 50vh;   /* Limita a altura para o teclado não sobrepor */
         }
     }
 
@@ -748,7 +749,7 @@ tr:last-child {
     </div>
     
     <div class="search-wrapper" id="search-wrapper">
-        <input type="text" id="global-search" placeholder="Pesquisar jogador ou equipe..." onkeyup="handleGlobalSearch()" autocomplete="off" aria-label="Pesquisar jogador ou equipe" aria-controls="search-results" aria-autocomplete="list">
+        <input type="text" id="global-search" placeholder="Pesquisar jogador ou equipe..." oninput="handleGlobalSearch()" autocomplete="off" aria-label="Pesquisar jogador ou equipe" aria-controls="search-results" aria-autocomplete="list">
         <div id="search-results" class="search-results-dropdown" role="listbox" aria-label="Resultados da pesquisa"></div>
     </div>
 
@@ -6988,11 +6989,15 @@ function selectSearchResult(type, name) {
         }
     }
 
-    // Esconder o menu de pesquisa se o usuário clicar em qualquer lugar fora dele
+// Esconder o menu de pesquisa se o usuário clicar em qualquer lugar fora dele
     document.addEventListener('click', function(e) {
         let searchWrapper = document.querySelector('.search-wrapper');
-        if (searchWrapper && !searchWrapper.contains(e.target)) {
-            document.getElementById('search-results').style.display = 'none';
+        let searchBtn = document.getElementById('search-btn');
+        
+        // Se clicou fora da barra E fora do botão de lupa, aí sim fecha.
+        if (searchWrapper && !searchWrapper.contains(e.target) && searchBtn && !searchBtn.contains(e.target)) {
+            let resultsBox = document.getElementById('search-results');
+            if (resultsBox) resultsBox.style.display = 'none';
         }
     });
 
