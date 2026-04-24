@@ -3038,7 +3038,7 @@ const dbResults = {
     ],
 };
 
-const logos = {
+let logos = {
     // === EQUIPES ATUAIS (WB 2026) ===
     'ALPHA7': 'A7 2.png', 
     'AXS FUSION': 'AXS BRANCA.png', 
@@ -6474,6 +6474,7 @@ window.onload = () => {
     loadLives();    // Lê a planilha e monta o widget de Lives
     loadNoticias(); // Lê a planilha e monta o banner de Notícias
     loadSocials();  // Lê a planilha e carrega os @ do Instagram
+    loadTeamLogos();
     loadPhotos();
 
     // ==========================================
@@ -6543,13 +6544,99 @@ function distribuirNovosResultados() {
 
 function getDisplayName(name) {
     if (!name) return "";
-    // 1. Remove qualquer sujeira da Liquipedia (ex: "Biel7|link=Biel7...")
+    // Remove sujeiras da Liquipedia e sufixos internos
     let cleanName = name.split('|')[0];
-    
-    // 2. Remove os sufixos invisíveis que vamos usar no banco de dados
     cleanName = cleanName.replace(/_Staff|_Coach|_Inativo|_2/g, "");
-    
     return cleanName;
+}
+
+function openTeamProfile(teamName) {
+    if (!teamName) return;
+    currentTeamView = teamName;
+    selectedTpDays = []; 
+    
+    // 1. Busca o time (ignora espaços e maiúsculas)
+    let t = db.teams.find(x => x.equipe.trim().toUpperCase() === teamName.trim().toUpperCase());
+    
+    // 2. Se for histórico/fora da WB, cria um perfil básico
+    if(!t) {
+        t = { 
+            equipe: teamName, 
+            grupo: "Histórico/Outro", 
+            posGeral: "-", 
+            pontos: 0, booyah: 0, abates: 0, quedas: 0 
+        };
+    }
+
+    // 3. Preenche os textos básicos
+    document.getElementById('tp-name').innerText = t.equipe;
+    document.getElementById('tp-group').innerText = (t.grupo === "Histórico/Outro") ? "EQUIPE HISTÓRICA" : `Grupo ${t.grupo}`;
+    document.getElementById('tp-pos').innerText = (t.posGeral === "-") ? "N/A" : `${t.posGeral}º`;
+    
+    // 4. Logo com fallback (escudo.webp)
+    let logoEl = document.getElementById('tp-logo');
+    if (logoEl) {
+        logoEl.src = logos[t.equipe] || 'escudo.webp';
+        logoEl.style.display = 'block';
+    }
+
+    // 5. Lógica do Próximo Jogo (Apenas para times ativos)
+    const tpContainer = document.getElementById('tp-next-match-container');
+    if (tpContainer) {
+        const now = new Date();
+        currentTeamNextMatch = agenda.find(m => 
+            m.grupos.includes(t.grupo) && 
+            (parseMatchDate(m.data).getTime() + (6 * 60 * 60 * 1000) > now.getTime())
+        );
+
+        if (currentTeamNextMatch && t.grupo !== "Histórico/Outro") {
+            const opponentsHtml = currentTeamNextMatch.grupos
+                .filter(g => g !== t.grupo)
+                .map(g => {
+                    const teamsInGroup = db.teams.filter(tm => tm.grupo === g);
+                    const logosHtml = teamsInGroup.map(tm => 
+                        `<img src="${logos[tm.equipe] || 'escudo.webp'}" class="mini-logo" style="width:18px; height:18px; margin: 0 1px;">`
+                    ).join('');
+                    return `<div style="margin-top:5px; display:flex; align-items:center; gap:8px;">
+                                <span style="font-weight:bold; color:var(--accent); font-size:0.85em;">${g}:</span>
+                                <div style="display:flex;">${logosHtml}</div>
+                            </div>`;
+                }).join('');
+
+            tpContainer.innerHTML = `
+                <div style="background: rgba(255, 170, 0, 0.05); border: 1px solid rgba(255,170,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="color: var(--accent); font-size: 0.75em; font-weight: bold; text-transform: uppercase; letter-spacing:1px; margin-bottom:5px;">Próximo Jogo da Equipe</div>
+                        <div id="tp-countdown-display" style="font-size: 1.2em; font-weight: bold; color:#fff;">Calculando...</div>
+                        <div style="font-size: 0.8em; color: var(--text-muted); margin-top:2px;">${currentTeamNextMatch.data} às 13h</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; border: 1px solid #333;">
+                        <div style="font-size: 0.7em; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;">Enfrenta:</div>
+                        ${opponentsHtml}
+                    </div>
+                </div>`;
+        } else {
+            tpContainer.innerHTML = ""; 
+        }
+    }
+
+    // 6. Limpa e reconstrói os filtros de confronto
+    let oppSelect = document.getElementById('tp-opp-group');
+    if (oppSelect) {
+        oppSelect.innerHTML = '';
+        ['A', 'B', 'C', 'D'].forEach(g => { 
+            if (g !== t.grupo) oppSelect.innerHTML += `<option value="${g}">Grupo ${g}</option>`; 
+        });
+    }
+    
+    // 7. Renderiza as abas de conteúdo
+    if (typeof buildDayFilters === 'function') buildDayFilters();
+    if (typeof renderTeamProfileStats === 'function') renderTeamProfileStats();
+    if (typeof renderTeamConfrontation === 'function') renderTeamConfrontation();
+    
+    // 8. Abre a tela
+    navigate('team-profile');
+    if (typeof updateCountdown === 'function') updateCountdown();
 }
 
 function renderHistoricoEquipes(nome, containerId) {
@@ -7494,44 +7581,59 @@ function createSelectionCardHTML(p) {
 }
 
 function createPlayerCardHTML(p, scale = 1) {
-    let ovr = calculateOverall(p);
-    let role = playerRoles[p.jogador] || "RUSH";
+    // 1. DEFINIÇÃO DO OVERALL (Prioriza o valor de lenda se existir)
+    let ovr = p.ovrOverride ? p.ovrOverride : calculateOverall(p);
+    
+    // 2. LÓGICA DE FOTO (Fallback para silhueta se estiver vazio ou não existir)
     let photoKey = Object.keys(playerPhotos).find(k => k.toLowerCase() === p.jogador.toLowerCase().trim());
-    let photo = photoKey ? playerPhotos[photoKey] : "silhueta.png";
-    let teamLogo = logos[p.equipe] || "";
-    let danoK = (p.dano / 1000).toFixed(0) + "K";
+    let photo = (photoKey && playerPhotos[photoKey]) ? playerPhotos[photoKey] : "silhueta.png";
+    
+    // 3. CORES E ESTILO BASEADO NA NOTA
+    let accentColor = "#cd7f32"; // Bronze (Padrão)
+    if (ovr >= 95) accentColor = "#00c8ff";      // Diamante/Lendário Plus
+    else if (ovr >= 90) accentColor = "#d4af37"; // Ouro Lendário
+    else if (ovr >= 85) accentColor = "#c5a028"; // Ouro Elite
+    else if (ovr >= 80) accentColor = "#e5e5e5"; // Prata Brilhante
+    else if (ovr >= 75) accentColor = "#a3a3a3"; // Prata
+    
+    let glow = ovr >= 90 ? `box-shadow: 0 0 30px ${accentColor}66;` : '';
+    
+    // 4. FORMATAÇÃO DE DADOS
+    let role = playerRoles[p.jogador] || "RUSH";
+    let teamLogo = logos[p.equipe] || "escudo.webp";
+    let danoK = (p.dano / 1000).toFixed(1) + "K";
+    
+    // 5. BADGES (Inativo e Capitão)
+    let exBadge = p.isEx ? `<div style="position: absolute; top: 18px; left: -35px; background: #f44336; color: #fff; font-size: 0.7em; font-weight: bold; padding: 5px 35px; transform: rotate(-45deg); z-index: 10; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">Inativo</div>` : '';
     
     let captainBadge = (typeof playerCaptains !== 'undefined' && playerCaptains[p.jogador]) ? 
         `<img src="cpt.png" style="position: absolute; top: 20px; right: 15px; z-index: 5; width: 35px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));">` : '';
 
-    let accentColor = "#cd7f32"; 
-    if (ovr >= 91) accentColor = "#d4af37";
-    else if (ovr >= 85) accentColor = "#c5a028";
-    else if (ovr >= 80) accentColor = "#e5e5e5";
-    else if (ovr >= 75) accentColor = "#a3a3a3";
-
-    let glow = ovr >= 91 ? `box-shadow: 0 0 40px ${accentColor}66;` : '';
-    let exBadge = p.isEx ? `<div style="position: absolute; top: 18px; left: -35px; background: #f44336; color: #fff; font-size: 0.7em; font-weight: bold; padding: 5px 35px; transform: rotate(-45deg); z-index: 10; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">Inativo</div>` : '';
     let marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
 
     return `
-<div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
+        <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
             <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
-            ${exBadge} ${captainBadge}
+            ${exBadge} 
+            ${captainBadge}
+            
             <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
                 <div style="font-size: 58px; font-weight: 900; line-height: 0.8;">${ovr}</div>
                 <div style="font-size: 22px; font-weight: bold; margin-top: 5px;">${role}</div>
                 <div style="margin: 15px auto; width: 40px; height: 2px; background: ${accentColor}; opacity: 0.6;"></div>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width: 35px; border-radius: 2px; display: block; margin: 8px auto;">
-                <img src="${teamLogo}" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
+                <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
             </div>
-            <img src="${photo}" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);">
+
+            <img src="${photo}" onerror="this.src='silhueta.png'" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);">
+            
             <div style="position: absolute; bottom: 0; width: 100%; height: 185px; background: linear-gradient(transparent, #000 35%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 12px;">
                 <div style="width: 100%; text-align: center; margin-bottom: 8px;">
                     <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
-                    <div style="color: #fff; font-size: 24px; font-weight: 900; text-transform: uppercase; padding: 6px 0;">${p.jogador}</div>
+                    <div style="color: #fff; font-size: 24px; font-weight: 900; text-transform: uppercase; padding: 6px 0;">${getDisplayName(p.jogador)}</div>
                     <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
                 </div>
+                
                 <div style="display: flex; flex-direction: column; gap: 2px; color: #fff; width: 100%; align-items: center; text-transform: uppercase;">
                     <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${p.abates}</span> ABATES</div>
                     <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${p.assists}</span> ASSISTÊNCIAS</div>
@@ -7997,7 +8099,7 @@ function renderFullTeams() {
         // Se estiver em "Todos" (sem nenhum filtro), ele pode usar a posGeral original
         let pos = (selectedTeamDays.length > 0 || isMapFilter || isSingleDrop) ? (index + 1) : t.posGeral;
         
-        let logoSrc = logos[t.equipe] || '';
+        let logoSrc = logos[t.equipe] || 'escudo.webp';
         let sName = shortNames[t.equipe] || t.equipe;
         
         // Define o que aparece na última coluna
@@ -8276,7 +8378,7 @@ function openStaffProfile(staffName) {
     if(container) {
         container.innerHTML = insta ? `
             <a href="https://instagram.com/${insta}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 12px 25px; border-radius: 30px; margin: 10px auto; width: fit-content; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                <img src="instagram.png" style="width: 18px; filter: brightness(0) invert(1);">
+                <img src="instagram.png" style="width: 20px;">
                 <span style="color: #fff; font-weight: bold; font-size: 1.1em;">@${insta}</span>
             </a>` : '';
     }
@@ -8290,212 +8392,318 @@ function openResultsModal() {
     document.getElementById('results-modal').classList.add('active');
 }
 
-function openTeamProfile(teamName) {
-    currentTeamView = teamName;
-    selectedTpDays = []; 
-    let t = db.teams.find(x => x.equipe === teamName);
-    if(!t) return;
-
-    // Dados básicos do perfil
-    document.getElementById('tp-name').innerText = t.equipe;
-    document.getElementById('tp-group').innerText = `Grupo ${t.grupo}`;
-    document.getElementById('tp-pos').innerText = `${t.posGeral}º`;
-    let logoEl = document.getElementById('tp-logo');
-    if (logos[t.equipe]) { logoEl.src = logos[t.equipe]; logoEl.style.display = 'block'; } else logoEl.style.display = 'none';
-
-    // --- LÓGICA CORRIGIDA: Busca o próximo jogo DESTA EQUIPE específica ---
-    const now = new Date();
-    currentTeamNextMatch = agenda.find(m => {
-        const mDate = parseMatchDate(m.data);
-        // Verifica se o grupo do time está na partida E se a partida ainda não acabou (margem de 6h)
-        return m.grupos.includes(t.grupo) && (mDate.getTime() + (6 * 60 * 60 * 1000) > now.getTime());
-    });
-
-    const tpContainer = document.getElementById('tp-next-match-container');
-    if (tpContainer) {
-        if (currentTeamNextMatch) {
-            // Gera os logos dos oponentes específicos deste jogo
-            const opponentsHtml = currentTeamNextMatch.grupos
-                .filter(g => g !== t.grupo)
-                .map(g => {
-                    const teamsInGroup = db.teams.filter(tm => tm.grupo === g);
-                    const logosHtml = teamsInGroup.map(tm => 
-                        `<img src="${logos[tm.equipe] || ''}" class="mini-logo" style="width:18px; height:18px; margin: 0 1px;" title="${tm.equipe}">`
-                    ).join('');
-                    return `<div style="margin-top:5px; display:flex; align-items:center; gap:8px;">
-                                <span style="font-weight:bold; color:var(--accent); font-size:0.85em;">${g}:</span>
-                                <div style="display:flex;">${logosHtml}</div>
-                            </div>`;
-                }).join('');
-
-// Dentro de openTeamProfile, procure a parte que define o tpContainer.innerHTML:
-tpContainer.innerHTML = `
-    <div style="background: rgba(255, 170, 0, 0.05); border: 1px solid rgba(255,170,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-        <div>
-            <div style="color: var(--accent); font-size: 0.75em; font-weight: bold; text-transform: uppercase; letter-spacing:1px; margin-bottom:5px;">Próximo Jogo da Equipe</div>
-            <div id="tp-countdown-display" style="font-size: 1.2em; font-weight: bold; color:#fff;">Calculando...</div>
-            <div style="font-size: 0.8em; color: var(--text-muted); margin-top:2px;">${currentTeamNextMatch.data} às 13h</div>
-        </div>
-        
-        <a href="https://www.youtube.com/@FFesportsBR/live" target="_blank" class="live-status-btn offline" id="tp-live-btn" style="width: auto; margin: 0; padding: 10px 20px;">
-            <img src="youtube.webp" alt="">
-            <span id="tp-live-text" style="font-size: 0.8em;">Transmissão Offline</span>
-        </a>
-
-        <div style="background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; border: 1px solid #333;">
-            <div style="font-size: 0.7em; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;">Enfrenta:</div>
-            ${opponentsHtml}
-        </div>
-    </div>`;
-        } else {
-            tpContainer.innerHTML = ""; 
-        }
+function handleGlobalSearch() {
+    let input = document.getElementById('global-search').value.toLowerCase().trim();
+    let resultsBox = document.getElementById('search-results');
+    
+    if(input.length < 2) { 
+        resultsBox.style.display = 'none'; 
+        return; 
     }
 
-    // Filtros e tabelas
-    let oppSelect = document.getElementById('tp-opp-group');
-    oppSelect.innerHTML = '';
-    ['A', 'B', 'C', 'D'].forEach(g => { if (g !== t.grupo) oppSelect.innerHTML += `<option value="${g}">Grupo ${g}</option>`; });
+    let pool = [];
+    let seen = new Set();
+
+    // 1. ADICIONAR JOGADORES (Ativos e do histórico lbffData)
+    // Primeiro, jogadores cadastrados como ativos
+    db.players.forEach(p => { 
+        let lowerName = p.jogador.toLowerCase();
+        if(!seen.has(lowerName)) {
+            pool.push({ name: p.jogador, sub: p.equipe, type: 'player', isEx: p.isEx }); 
+            seen.add(lowerName);
+        }
+    });
+
+    // Depois, jogadores que só existem no histórico (lbffData)
+    if (typeof lbffData !== 'undefined') {
+        Object.keys(lbffData).forEach(name => {
+            let lowerName = name.toLowerCase();
+            if(!seen.has(lowerName)) {
+                pool.push({ name: name, sub: 'JOGADOR HISTÓRICO', type: 'player', isEx: true });
+                seen.add(lowerName);
+            }
+        });
+    }
+
+    // 2. ADICIONAR COMISSÃO TÉCNICA
+    dbStaff.forEach(s => { 
+        let lowerName = s.nome.toLowerCase();
+        if(!seen.has(lowerName)) { 
+            pool.push({ name: s.nome, sub: `${s.equipe} (${s.cargo})`, type: 'staff' }); 
+            seen.add(lowerName); 
+        }
+    });
+
+    // 3. ADICIONAR TODAS AS EQUIPES (DA PLANILHA E DO CÓDIGO)
+    // Em vez de filtrar db.teams, filtramos as chaves do objeto 'logos'
+    let allTeamNames = Object.keys(logos);
+    let foundTeams = allTeamNames.filter(t => t.toLowerCase().includes(input));
+
+    // Filtrar Jogadores e Staff pelo input
+    let foundPeople = pool.filter(x => getDisplayName(x.name).toLowerCase().includes(input));
+
+    // --- RENDERIZAÇÃO DOS RESULTADOS ---
     
-    buildDayFilters();
-    renderTeamProfileStats();
-    renderTeamConfrontation();
-    navigate('team-profile');
+    // Resultados de Equipes
+    let html = foundTeams.map(tName => {
+        let isWB = db.teams.some(x => x.equipe.toUpperCase() === tName.toUpperCase());
+        let subText = isWB ? "Equipe Competidora" : "Equipe Histórica";
+        return `
+            <div class="search-item" onclick="selectSearchResult('team', '${tName}')">
+                <img src="${logos[tName] || 'escudo.webp'}" onerror="this.src='escudo.webp'">
+                <div>
+                    <span style="font-weight: bold; color: #fff;">${tName}</span><br>
+                    <small style="color: #aaa;">${subText}</small>
+                </div>
+            </div>`;
+    }).join('');
     
-    updateCountdown(); // Atualiza os tempos imediatamente
+    // Resultados de Pessoas (Jogadores/Staff)
+    html += foundPeople.map(p => {
+        let img = p.isEx ? 'silhueta.png' : (p.type === 'staff' ? (staffPhotos[p.name] || 'silhueta.png') : (playerPhotos[p.name] || 'silhueta.png'));
+        
+        return `
+            <div class="search-item" onclick="selectSearchResult('${p.type}', '${p.name}')">
+                <img src="${img}" onerror="this.src='silhueta.png'">
+                <div>
+                    <span style="font-weight: bold; color: #fff;">${getDisplayName(p.name)}</span><br>
+                    <small style="color: #aaa;">${p.sub}</small>
+                </div>
+            </div>`;
+    }).join('');
+
+    resultsBox.innerHTML = html || '<div style="padding:15px; color:#888; text-align:center;">Nenhum resultado encontrado</div>';
+    resultsBox.style.display = 'block';
 }
 
 function renderTeamProfileStats() {
     let tName = currentTeamView;
-    let t = db.teams.find(x => x.equipe === tName);
+    let t = db.teams.find(x => x.equipe.toUpperCase() === tName.toUpperCase());
     
-    let allTeamsStats = [];
-    db.teams.forEach(team => {
-        let daily = db.teamDaily[team.equipe] || [];
-        let pDaily = db.playerDaily.filter(p => p.equipe === team.equipe);
-        if (selectedTpDays.length > 0) {
-            daily = daily.filter(d => selectedTpDays.includes(String(d.dia)));
-            pDaily = pDaily.filter(p => selectedTpDays.includes(String(p.dia)));
-        }
-        let stats = daily.reduce((acc, curr) => { 
-            acc.pontos += curr.pontos; acc.abates += curr.abates; acc.booyah += curr.booyah; acc.quedas += curr.quedas; return acc; 
-        }, {pontos: 0, abates: 0, booyah: 0, quedas: 0});
-        let dano = pDaily.reduce((sum, p) => sum + p.dano, 0);
-        
-        // AQUI ELE PASSA A USAR stats.quedas EM VEZ DA MULTIPLICAÇÃO
-        allTeamsStats.push({ equipe: team.equipe, pontos: stats.pontos, abates: stats.abates, pontos_pos: stats.pontos - stats.abates, dano: dano, booyah: stats.booyah, quedas: stats.quedas, dias: daily.length });
-    });
+    // Se a equipa não for encontrada na WB atual, tratamos como Histórica
+    if(!t) {
+        t = { equipe: tName, grupo: "Histórico/Outro" };
+    }
+    let isHist = t.grupo === "Histórico/Outro";
 
-    let cur = allTeamsStats.find(x => x.equipe === tName);
-    
-    // ... restante da função continua igual ...
-
-    // 1. Renderiza Melhor/Pior Dia
+    // Mapeamento de elementos do DOM
     let bestWorstContainer = document.getElementById('tp-best-worst-container');
-    if(bestWorstContainer) {
-        let htmlBW = '';
-        if(db.teamDaily[tName] && db.teamDaily[tName].length > 0) {
+    let statsContainer = document.getElementById('tp-stats-container');
+    let confResult = document.getElementById('tp-confrontation-result');
+    let btnConf = document.getElementById('btn-confrontation');
+    let cardsContainer = document.getElementById('tp-players-cards-container');
+    let internalTableWrap = document.querySelector('#table-team-players') ? document.querySelector('#table-team-players').parentElement : null;
+    let headers = document.querySelectorAll('#team-profile h3');
+    let filters = document.querySelectorAll('#team-profile .filters');
+
+    if (isHist) {
+        // ==========================================
+        // MODO: EQUIPE HISTÓRICA
+        // ==========================================
+        
+        // 1. Ocultar componentes da temporada ativa
+        if(bestWorstContainer) bestWorstContainer.style.display = 'none';
+        if(statsContainer) statsContainer.style.display = 'none';
+        if(confResult) confResult.style.display = 'none';
+        if(btnConf) btnConf.style.display = 'none';
+        if(internalTableWrap) internalTableWrap.style.display = 'none';
+        filters.forEach(f => { if(!f.id.includes('day-filters')) f.style.display = 'none'; });
+
+        // 2. Ajustar Títulos
+        headers.forEach(h => {
+            let text = h.innerText.toUpperCase();
+            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA')) {
+                h.style.display = 'none';
+            }
+            if(text.includes('JOGADORES E STAFF') || text.includes('JOGADORES NOTÁVEIS')) {
+                h.innerText = 'JOGADORES NOTÁVEIS';
+                h.style.display = 'block';
+            }
+        });
+
+        // 3. Lógica de Jogadores Notáveis (Top 5 Kills da História na Org)
+        let notablePlayers = [];
+        if (typeof dbPassagens !== 'undefined') {
+            let playersWithPassage = dbPassagens.filter(p => 
+                p.passagens.some(pass => pass.equipe.toUpperCase() === tName.toUpperCase() && pass.cargo.toUpperCase() === "JOGADOR")
+            );
+            
+            playersWithPassage.forEach(pt => {
+                let playerName = pt.jogador;
+                let hKills = 0, hQuedas = 0;
+                
+                // Soma dados de lbffData e histData
+                let histRecord = typeof histData !== 'undefined' ? histData.find(h => checkNameMatch(h.n, playerName)) : null;
+                let lbffEntry = typeof lbffData !== 'undefined' ? Object.entries(lbffData).find(([name]) => checkNameMatch(name, playerName)) : null;
+                
+                if (histRecord) {
+                    hKills = histRecord.k; hQuedas = histRecord.q;
+                } else if (lbffEntry) {
+                    for (let ed in lbffEntry[1]) {
+                        hKills += lbffEntry[1][ed].k || 0;
+                        hQuedas += lbffEntry[1][ed].q || 0;
+                    }
+                }
+                
+                // Soma desempenho da temporada atual se estiver ativo
+                let activeName = (typeof historicalAliases !== 'undefined' && historicalAliases[playerName]) || playerName;
+                let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+                if (activeP) {
+                    hKills += (activeP.abates || 0);
+                    hQuedas += (activeP.quedas || 0);
+                }
+
+                if (hKills > 0) {
+                    notablePlayers.push({
+                        jogador: playerName,
+                        equipe: tName,
+                        abates: hKills,
+                        quedas: hQuedas,
+                        dano: hKills * 450, // Estimativa para preenchimento visual
+                        assists: Math.floor(hKills * 0.3),
+                        ovrOverride: 0 // Será calculado abaixo
+                    });
+                }
+            });
+        }
+
+        notablePlayers.sort((a,b) => b.abates - a.abates);
+        let top5 = notablePlayers.slice(0, 5);
+
+        if (cardsContainer) {
+            if (top5.length > 0) {
+                cardsContainer.innerHTML = top5.map(p => {
+                    let pCard = { ...p };
+                    pCard.ovrOverride = calculateHistoricalOverall(p); // Usa o cálculo de lenda
+                    return createPlayerCardHTML(pCard, 0.85);
+                }).join('');
+            } else {
+                cardsContainer.innerHTML = '<div style="color:#888; text-align:center; width:100%; padding: 20px;">Sem registo de jogadores notáveis para esta organização.</div>';
+            }
+        }
+
+    } else {
+        // ==========================================
+        // MODO: EQUIPE ATIVA
+        // ==========================================
+        
+        if(bestWorstContainer) bestWorstContainer.style.display = 'block';
+        if(statsContainer) statsContainer.style.display = 'block'; 
+        if(confResult) confResult.style.display = 'block';
+        if(btnConf) btnConf.style.display = 'inline-block';
+        if(internalTableWrap) internalTableWrap.style.display = 'block';
+        filters.forEach(f => f.style.display = 'flex');
+        
+        headers.forEach(h => {
+            let text = h.innerText.toUpperCase();
+            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA')) h.style.display = 'block';
+            if(text.includes('JOGADORES NOTÁVEIS') || text.includes('JOGADORES E STAFF')) {
+                h.innerText = 'JOGADORES E STAFF';
+                h.style.display = 'block';
+            }
+        });
+
+        // Cálculo de estatísticas da temporada
+        let allTeamsStats = [];
+        db.teams.forEach(team => {
+            let daily = db.teamDaily[team.equipe] || [];
+            let pDaily = db.playerDaily.filter(p => p.equipe === team.equipe);
+            if (selectedTpDays.length > 0) {
+                daily = daily.filter(d => selectedTpDays.includes(String(d.dia)));
+                pDaily = pDaily.filter(p => selectedTpDays.includes(String(p.dia)));
+            }
+            let stats = daily.reduce((acc, curr) => { 
+                acc.pontos += curr.pontos; acc.abates += curr.abates; acc.booyah += curr.booyah; acc.quedas += curr.quedas; return acc; 
+            }, {pontos: 0, abates: 0, booyah: 0, quedas: 0});
+            let danoTotal = pDaily.reduce((sum, p) => sum + p.dano, 0);
+            
+            allTeamsStats.push({ equipe: team.equipe, pontos: stats.pontos, abates: stats.abates, pontos_pos: stats.pontos - stats.abates, dano: danoTotal, booyah: stats.booyah, quedas: stats.quedas, dias: daily.length });
+        });
+
+        let cur = allTeamsStats.find(x => x.equipe === tName);
+        
+        if(bestWorstContainer && db.teamDaily[tName]) {
             let sorted = [...db.teamDaily[tName]].sort((a,b) => b.pontos - a.pontos);
-            htmlBW = `
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <div class="card" style="flex: 1; border-left: 4px solid #4caf50;">
-                        <h3 style="font-size: 0.8em;">🏆 Melhor Desempenho</h3>
-                        <div class="value" style="font-size: 1.5em;">${sorted[0].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[0].dia})</span></div>
-                    </div>
-                    <div class="card" style="flex: 1; border-left: 4px solid #f44336;">
-                        <h3 style="font-size: 0.8em;">⚠️ Pior Desempenho</h3>
-                        <div class="value" style="font-size: 1.5em;">${sorted[sorted.length-1].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[sorted.length-1].dia})</span></div>
-                    </div>
+            if(sorted.length > 0) {
+                bestWorstContainer.innerHTML = `
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div class="card" style="flex: 1; border-left: 4px solid #4caf50;"><h3 style="font-size: 0.8em;">🏆 Melhor Dia</h3><div class="value" style="font-size: 1.5em;">${sorted[0].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[0].dia})</span></div></div>
+                        <div class="card" style="flex: 1; border-left: 4px solid #f44336;"><h3 style="font-size: 0.8em;">⚠️ Pior Dia</h3><div class="value" style="font-size: 1.5em;">${sorted[sorted.length-1].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[sorted.length-1].dia})</span></div></div>
+                    </div>`;
+            }
+        }
+
+        if(statsContainer && cur) {
+            let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));";
+            statsContainer.innerHTML = `
+                <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 15px;">
+                    <div class="card"><div class="card-top-border"></div><h3>Média Pts</h3><div class="value">${(cur.pontos/(cur.quedas||1)).toFixed(1)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Média Kills</h3><div class="value">${(cur.abates/(cur.quedas||1)).toFixed(1)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Média Pos</h3><div class="value">${(cur.pontos_pos/(cur.quedas||1)).toFixed(1)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3><div class="value">${(cur.dano/(cur.quedas||1)).toFixed(0)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Booyahs</h3><div class="value">${cur.booyah}</div></div>
                 </div>`;
         }
-        bestWorstContainer.innerHTML = htmlBW;
-    }
 
-    // 2. Renderiza Grade de Estatísticas (Duas fileiras cravadas)
-    let container = document.getElementById('tp-stats-container');
-    if(container && cur) {
-        container.style.display = "block"; // A MÁGICA PRA EMPILHAR
-        let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));";
-
-        container.innerHTML = `
-            <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 15px;">
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Pts</h3><div class="value">${(cur.pontos/(cur.quedas||1)).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Abates</h3><div class="value">${(cur.abates/(cur.quedas||1)).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Colocação</h3><div class="value">${(cur.pontos_pos/(cur.quedas||1)).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Dano</h3><div class="value">${(cur.dano/(cur.quedas||1)).toFixed(0)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Booyah</h3><div class="value">${(cur.booyah/(cur.dias||1)).toFixed(2)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por dia</div></div>
-            </div>
-
-            <div style="display: grid; ${gridCSS} gap: 15px;">
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Pontos Totais</h3><div class="value" style="color:#fff">${cur.pontos}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Abates Totais</h3><div class="value" style="color:#fff">${cur.abates}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Pts Colocação</h3><div class="value" style="color:#fff">${cur.pontos_pos}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Dano Acumulado</h3><div class="value" style="color:#fff">${cur.dano}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Booyahs Totais</h3><div class="value" style="color:#fff">${cur.booyah}</div></div>
-            </div>`;
-    }
-
-    // 3. Lógica de Jogadores e Staff
-    let pRaw = db.playerDaily.filter(p => p.equipe === tName);
-    if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
-    
-    let agg = {};
-    pRaw.forEach(row => {
-        if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, equipe: row.equipe, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
-        agg[row.jogador].quedas += row.quedas; agg[row.jogador].abates += row.abates; agg[row.jogador].dano += row.dano; agg[row.jogador].assists += row.assists; agg[row.jogador].mvp += (row.mvp || 0);
-    });
-
-    let playersList = Object.values(agg).map(pAgg => {
-        let dbP = db.players.find(x => x.jogador === pAgg.jogador);
-        pAgg.isEx = dbP ? (dbP.isEx || false) : false;
-        return pAgg;
-    });
-
-    let ativos = playersList.filter(p => !p.isEx).sort((a,b) => b.abates - a.abates);
-    let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
-
-    let cardsContainer = document.getElementById('tp-players-cards-container');
-    if (cardsContainer) {
-        let html = ativos.map(p => createPlayerCardHTML(p, 0.85)).join('');
+        // Jogadores Ativos (Top 4)
+        let pRaw = db.playerDaily.filter(p => p.equipe === tName);
+        if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
         
-        if (inativos.length > 0) {
-            html += `
-            <div style="width: 100%; text-align: center; margin-top: 15px;">
-                <button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button>
-            </div>
-            <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
-                ${inativos.map(p => createPlayerCardHTML(p, 0.85)).join('')}
-            </div>`;
+        let agg = {};
+        pRaw.forEach(row => {
+            if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, equipe: row.equipe, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
+            agg[row.jogador].quedas += row.quedas; agg[row.jogador].abates += row.abates; 
+            agg[row.jogador].dano += row.dano; agg[row.jogador].assists += row.assists; 
+            agg[row.jogador].mvp += (row.mvp || 0);
+        });
+
+        let playersList = Object.values(agg).map(p => {
+            let dbP = db.players.find(x => x.jogador === p.jogador);
+            p.isEx = dbP ? (dbP.isEx || false) : false;
+            return p;
+        });
+
+        let ativos = playersList.filter(p => !p.isEx).sort((a,b) => b.abates - a.abates);
+        let top4Ativos = ativos.slice(0, 4);
+        let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
+
+        if (cardsContainer) {
+            let html = top4Ativos.map(p => createPlayerCardHTML(p, 0.85)).join('');
+            
+            if (inativos.length > 0) {
+                html += `
+                <div style="width: 100%; text-align: center; margin-top: 15px;">
+                    <button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button>
+                </div>
+                <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
+                    ${inativos.map(p => createPlayerCardHTML(p, 0.85)).join('')}
+                </div>`;
+            }
+
+            let staffList = dbStaff.filter(s => s.equipe === tName);
+            if (staffList.length > 0) {
+                html += `<div style="width: 100%; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                    ${staffList.map(s => {
+                        let photoKey = Object.keys(staffPhotos).find(k => k.toLowerCase() === s.nome.toLowerCase().trim());
+                        let photo = photoKey ? staffPhotos[photoKey] : 'silhueta.png';
+                        return `
+                        <div onclick="openStaffProfile('${s.nome}')" style="cursor: pointer; background: #1c1c20; border: 1px solid var(--border); padding: 15px; border-radius: 12px; min-width: 160px; text-align: center;">
+                            <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 2px solid var(--accent);"><img src="${photo}" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transform: scale(1.25);"></div>
+                            <div style="color: #fff; font-size: 1em; font-weight: bold;">${s.nome}</div>
+                            <div style="color: var(--accent); font-size: 0.75em; text-transform: uppercase; font-weight: 900;">${s.cargo}</div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            }
+            cardsContainer.innerHTML = html;
         }
 
-// CARDS COM FOTO PARA A COMISSÃO TÉCNICA
-        let staffList = dbStaff.filter(s => s.equipe === tName);
-        if (staffList.length > 0) {
-            html += `<div style="width: 100%; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
-                ${staffList.map(s => {
-                    let photoKey = typeof staffPhotos !== 'undefined' ? (Object.keys(staffPhotos).find(k => k.toLowerCase() === s.nome.toLowerCase().trim()) || null) : null;
-                    let photo = photoKey ? staffPhotos[photoKey] : 'silhueta.png';
-                    return `
-                    <div onclick="openStaffProfile('${s.nome}')" style="cursor: pointer; background: #1c1c20; border: 1px solid var(--border); padding: 15px; border-radius: 12px; min-width: 160px; text-align: center; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                        
-                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 2px solid var(--accent); background: #000;">
-                            <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transform: scale(1.25);">
-                        </div>
-                        
-                        <div style="color: #fff; font-size: 1em; font-weight: bold; text-transform: uppercase;">${s.nome}</div>
-                        <div style="color: var(--accent); font-size: 0.75em; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-top: 2px;">${s.cargo}</div>
-                    </div>`;
-                }).join('')}
-            </div>`;
+        let tbody = document.querySelector('#table-team-players tbody');
+        if(tbody) {
+            tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
         }
-        cardsContainer.innerHTML = html;
     }
 
-    // 4. Classificação Interna
-    let tbody = document.querySelector('#table-team-players tbody');
-    tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
-
-    // 5. Galeria de Troféus da Equipe
     renderTeamTrophies(tName);
 }
 
@@ -8786,6 +8994,33 @@ function calculateOverall(p) {
     if (result < 65) result = 65;
 
     return result;
+}
+
+function calculateHistoricalOverall(p) {
+    let q = p.quedas || 1;
+    let avgK = p.abates / q;
+    
+    // 1. Base pela Média de Kills Histórica (Escala mais rigorosa para lendas)
+    // 1.8 de média histórica é o topo do mundo (equivale a 95 pts)
+    let scoreBase = 70 + (Math.min(avgK / 1.8, 1) * 25);
+
+    // 2. Bônus por Volume Total (O "Fator Legado")
+    let legacyBonus = 0;
+    if (p.abates >= 1000) legacyBonus += 4;      // Clube das 1000 Kills
+    else if (p.abates >= 500) legacyBonus += 2;  // Veterano de Elite
+    
+    // 3. Bônus por Títulos (Puxa do titlesData se o nome bater)
+    let titlesBonus = 0;
+    if (typeof titlesData !== 'undefined') {
+        let titles = titlesData.coletivos.filter(t => t.players?.some(pl => checkNameMatch(pl, p.jogador))).length;
+        titlesBonus = Math.min(titles * 1.5, 5); // Até 5 pontos por ser multicampeão
+    }
+
+    let final = Math.round(scoreBase + legacyBonus + titlesBonus);
+    
+    // Trava para lendas não ficarem abaixo de 80 e não passarem de 99
+    if (final < 80) final = 80;
+    return final > 96 ? 96 : final;
 }
 
 function getOverallColor(ovr) {
@@ -9547,6 +9782,35 @@ async function loadNoticias() {
 
     } catch (e) {
         console.error('[loadNoticias] Erro:', e);
+    }
+}
+
+async function loadTeamLogos() {
+    // Substitua o GID pelo da aba onde estão as logos (Ex: Equipe na Coluna A, Link na Coluna B)
+    const LOGOS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=COLOQUE_O_GID_AQUI&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${LOGOS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        lines.slice(1).forEach(line => {
+            const data = line.split('\t');
+            const nomeEquipe = data[0]?.trim();
+            const urlLogo = data[1]?.trim().replace(/\r/g, "");
+            
+            if (nomeEquipe && urlLogo) {
+                // Se o time já existe no objeto, ele substitui o nome do arquivo pelo link da planilha
+                // Se não existe, ele cria um novo
+                logos[nomeEquipe] = urlLogo;
+            }
+        });
+        console.log("Logos atualizadas via Sheets!");
+        
+        // Após carregar as logos, precisamos atualizar as tabelas da Home para as imagens aparecerem
+        renderHomeStats(); 
+    } catch (e) {
+        console.error('Erro ao carregar logos da planilha:', e);
     }
 }
 
