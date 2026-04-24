@@ -363,62 +363,98 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
 
-    /* ---- DESKTOP NAV (estilo GE Globo) ---- */
-    .nav-desktop { display: flex; align-items: center; padding: 0 20px; height: 54px; gap: 0; }
-    .nav-desktop-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; flex-shrink: 0; padding-right: 18px; border-right: 1px solid var(--border); }
-    .nav-desktop-logo img { height: 30px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(0,200,255,0.5)); }
-    .nav-desktop-logo span { color: var(--accent); font-weight: 900; font-size: 0.95em; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; }
-    .nav-desktop-teams { display: flex; align-items: center; gap: 2px; padding: 0 12px; flex: 1; overflow: hidden; }
-    .nav-team-logo-btn { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 6px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; background: transparent; border: none; padding: 3px; position: relative; }
-    .nav-team-logo-btn img { width: 26px; height: 26px; object-fit: contain; filter: grayscale(0.3) opacity(0.75); transition: filter 0.2s, transform 0.15s; }
-    .nav-team-logo-btn:hover { background: rgba(0,200,255,0.08); }
+/* =============================================
+       NOVA NAVEGAÇÃO E SIDEBAR
+       ============================================= */
+    nav {
+        background-color: #020509;
+        border-bottom: 2px solid var(--accent);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    /* ---- DESKTOP NAV (Logo Centralizada e Menu na Esquerda) ---- */
+    .nav-desktop { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 20px; height: 60px; }
+    
+    /* Lado Esquerdo: Menu e Equipes */
+    .nav-desktop-left { display: flex; align-items: center; gap: 15px; }
+    .nav-desktop-menu-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 6px 10px; border-radius: 6px; font-size: 1.2em; transition: 0.2s; }
+    .nav-desktop-menu-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Botão de Equipes e Grid 4x4 (DESKTOP) */
+    .nav-teams-wrapper { position: relative; display: flex; align-items: center; }
+    .nav-teams-btn { background: transparent; border: 1px solid var(--border); color: var(--text); font-weight: 900; font-size: 0.9em; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+    .nav-teams-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0, 200, 255, 0.05); }
+    
+    .nav-teams-dropdown { display: none; position: absolute; top: 45px; left: 0; background: var(--panel-bg); border: 1px solid var(--accent); border-radius: 8px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 200; }
+    .nav-teams-wrapper:hover .nav-teams-dropdown { display: block; }
+    
+    .nav-teams-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .nav-team-logo-btn { display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; border-radius: 6px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 3px; position: relative; }
+    .nav-team-logo-btn img { width: 32px; height: 32px; object-fit: contain; filter: grayscale(0.3) opacity(0.75); transition: filter 0.2s, transform 0.15s; }
+    .nav-team-logo-btn:hover { background: rgba(0,200,255,0.08); border-color: var(--accent); }
     .nav-team-logo-btn:hover img { filter: grayscale(0) opacity(1); transform: scale(1.15); }
     .nav-team-tooltip { position: absolute; bottom: -26px; left: 50%; transform: translateX(-50%); background: #0d1220; color: var(--accent); font-size: 0.6em; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s; border: 1px solid var(--border); z-index: 200; }
     .nav-team-logo-btn:hover .nav-team-tooltip { opacity: 1; }
-    .nav-desktop-right { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-left: 1px solid var(--border); flex-shrink: 0; }
+    
+    /* Centro: Logo */
+    .nav-desktop-logo { display: flex; justify-content: center; cursor: pointer; transition: 0.2s; }
+    .nav-desktop-logo:hover { transform: scale(1.05); }
+    .nav-desktop-logo img { height: 40px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0,200,255,0.4)); }
+    
+    /* Lado Direito: Busca */
+    .nav-desktop-right { display: flex; justify-content: flex-end; align-items: center; }
     .nav-search-wrapper-desktop { position: relative; display: flex; align-items: center; }
     .nav-search-wrapper-desktop input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #fff; padding: 7px 34px 7px 14px; font-size: 0.87em; width: 190px; outline: none; transition: border-color 0.2s, width 0.3s; }
     .nav-search-wrapper-desktop input:focus { border-color: var(--accent); width: 250px; }
     .nav-search-wrapper-desktop input::placeholder { color: #5a7a9a; }
-    .nav-search-icon-desktop { position: absolute; right: 11px; color: var(--text-muted); pointer-events: none; font-size: 0.9em; }
-    .nav-desktop-menu-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 6px 10px; border-radius: 6px; font-size: 1.05em; transition: 0.2s; }
-    .nav-desktop-menu-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-search-icon-desktop { position: absolute; right: 12px; width: 16px; height: 16px; pointer-events: none; opacity: 0.6; }
 
-    /* Sidebar overlay + panel */
-    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 998; backdrop-filter: blur(3px); }
-    .sidebar-overlay.active { display: block; animation: fadeIn 0.2s; }
-    .sidebar-panel { position: fixed; top: 0; right: -320px; width: 300px; height: 100vh; background: #050810; border-left: 1px solid var(--border); z-index: 999; transition: right 0.3s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; box-shadow: -8px 0 30px rgba(0,0,0,0.6); }
-    .sidebar-panel.active { right: 0; }
-    .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
-    .sidebar-header span { color: var(--accent); font-weight: 900; font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; }
-    .sidebar-close { background: transparent; border: none; color: #888; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px; }
-    .sidebar-close:hover { color: #fff; }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 12px 10px; overflow-y: auto; flex: 1; }
-    .sidebar-nav button { background: transparent; border: none; color: var(--text); padding: 12px 14px; text-align: left; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.95em; font-weight: 600; display: flex; align-items: center; gap: 10px; width: 100%; }
-    .sidebar-nav button:hover, .sidebar-nav button.active { background: rgba(0,200,255,0.08); color: var(--accent); }
-    .sidebar-divider { height: 1px; background: var(--border); margin: 6px 4px; }
-
-    /* ---- MOBILE NAV (estilo HLTV) ---- */
+    /* ---- MOBILE NAV ---- */
     .nav-mobile { display: none; flex-direction: column; }
-    .nav-mobile-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; height: 52px; gap: 4px; }
-    .nav-mobile-logo { display: flex; align-items: center; gap: 7px; cursor: pointer; flex-shrink: 0; }
-    .nav-mobile-logo img { height: 26px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(0,200,255,0.5)); }
-    .nav-mobile-tabs { display: flex; align-items: center; gap: 1px; flex: 1; justify-content: center; }
-    .nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 5px 7px; border-radius: 6px; font-size: 0.65em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 1px; white-space: nowrap; min-width: 48px; }
-    .nav-mobile-tab .tab-icon { font-size: 1.25em; }
+    .nav-mobile-bar { display: flex; align-items: center; padding: 0 10px; height: 55px; gap: 5px; justify-content: space-between; }
+    
+    /* Menu na Esquerda */
+    .nav-mob-menu-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.6em; padding: 5px 10px 5px 5px; cursor: pointer; transition: 0.2s; }
+    .nav-mob-menu-btn:hover { color: var(--accent); }
+
+    /* Tabs centrais com texto maior e sem ícones */
+    .nav-mobile-tabs { display: flex; flex: 1; justify-content: center; gap: 2px; }
+    .nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); font-size: 0.85em; font-weight: 800; text-transform: uppercase; white-space: nowrap; padding: 8px 6px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
     .nav-mobile-tab:hover, .nav-mobile-tab.active { color: var(--accent); background: rgba(0,200,255,0.08); }
-    .nav-mobile-right { display: flex; align-items: center; gap: 4px; }
-    .nav-mobile-search-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15em; padding: 6px 7px; border-radius: 6px; transition: 0.2s; }
-    .nav-mobile-search-btn:hover { color: var(--accent); }
-    .nav-mobile-more { background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 5px 9px; border-radius: 6px; font-size: 1.05em; transition: 0.2s; letter-spacing: 2px; }
-    .nav-mobile-more:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Lado Direito: Lupa e Home */
+    .nav-mobile-right { display: flex; align-items: center; gap: 8px; }
+    .nav-mobile-search-btn, .nav-mobile-home-btn { background: transparent; border: none; padding: 5px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
+    .nav-mobile-search-btn img { width: 22px; height: 22px; opacity: 0.8; }
+    .nav-mobile-home-btn img { width: 26px; height: 26px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(0,200,255,0.5)); }
+    .nav-mobile-search-btn:hover img { opacity: 1; filter: drop-shadow(0 0 5px var(--accent)); }
+
+    /* Barra de busca expansível mobile */
     .nav-mobile-search-bar { display: none; padding: 0 14px 10px; }
     .nav-mobile-search-bar.active { display: block; }
     .nav-mobile-search-bar input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 10px 14px; font-size: 0.95em; outline: none; box-sizing: border-box; }
     .nav-mobile-search-bar input:focus { border-color: var(--accent); }
 
+    /* Sidebar overlay + panel (NA ESQUERDA) */
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 998; backdrop-filter: blur(3px); }
+    .sidebar-overlay.active { display: block; animation: fadeIn 0.2s; }
+    .sidebar-panel { position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; background: #050810; border-right: 1px solid var(--border); z-index: 999; transition: left 0.3s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; box-shadow: 8px 0 30px rgba(0,0,0,0.6); }
+    .sidebar-panel.active { left: 0; }
+    .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+    .sidebar-header span { color: var(--accent); font-weight: 900; font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; }
+    .sidebar-close { background: transparent; border: none; color: #888; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px; }
+    .sidebar-close:hover { color: #fff; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 12px 10px; overflow-y: auto; flex: 1; }
+    .sidebar-nav button { background: transparent; border: none; color: var(--text); padding: 12px 14px; text-align: left; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.95em; font-weight: 600; display: flex; align-items: center; gap: 10px; width: 100%; text-transform: UPPERCASE; }
+    .sidebar-nav button:hover, .sidebar-nav button.active { background: rgba(0,200,255,0.08); color: var(--accent); }
+    .sidebar-divider { height: 1px; background: var(--border); margin: 6px 4px; }
+    .sidebar-category { color: var(--text-muted); font-size: 0.7em; font-weight: 900; padding: 15px 14px 5px; text-transform: uppercase; letter-spacing: 2px; }
+
     /* ---- RESPONSIVE TOGGLE ---- */
-    @media (min-width: 769px) { .nav-desktop { display: flex; } .nav-mobile { display: none; } }
+    @media (min-width: 769px) { .nav-desktop { display: grid; } .nav-mobile { display: none; } }
     @media (max-width: 768px) { .nav-desktop { display: none !important; } .nav-mobile { display: flex; } }
 
     /* =============================================
@@ -990,92 +1026,82 @@ tr:last-child {
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div class="sidebar-panel" id="sidebar-panel">
     <div class="sidebar-header">
-        <span>Menu</span>
+        <span>MENU</span>
         <button class="sidebar-close" onclick="closeSidebar()">✕</button>
     </div>
     <div class="sidebar-nav">
-        <button onclick="navigateAndClose('home')" id="sb-home">🏠 Início</button>
+        <div class="sidebar-category">PRINCIPAL</div>
+        <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
+        <button onclick="navigateAndClose('teams')" id="sb-teams">TABELA (CLASSIFICAÇÃO)</button>
+        <button onclick="navigateAndClose('players')" id="sb-players">RANKING MVP</button>
+        <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">EQUIPES</button>
+        <button onclick="navigateAndClose('schedule')" id="sb-schedule">DATAS</button>
+        
         <div class="sidebar-divider"></div>
-        <button onclick="navigateAndClose('teams')" id="sb-teams">📊 Classificação Times</button>
-        <button onclick="navigateAndClose('players')" id="sb-players">🎯 Ranking MVP (Jogadores)</button>
-        <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">🛡️ Equipes</button>
-        <button onclick="navigateAndClose('schedule')" id="sb-schedule">📅 Datas</button>
+        <div class="sidebar-category">ESTATÍSTICAS</div>
+        <button onclick="navigateAndClose('selection-wb')" id="sb-selection-wb">SELEÇÃO DA SEMANA</button>
+        <button onclick="navigateAndClose('records-ind')" id="sb-records-ind">RECORDES</button>
+        <button onclick="navigateAndClose('maps')" id="sb-maps">ESTATÍSTICAS GERAIS</button>
+        <button onclick="navigateAndClose('compare')" id="sb-compare">COMPARAR 1V1</button>
+        
         <div class="sidebar-divider"></div>
-        <button onclick="navigateAndClose('selection-wb')" id="sb-selection-wb">⭐ Seleção da Semana</button>
-        <button onclick="navigateAndClose('records-ind')" id="sb-records-ind">📈 Recordes</button>
-        <button onclick="navigateAndClose('maps')" id="sb-maps">🗺️ Estatísticas</button>
-        <button onclick="navigateAndClose('compare')" id="sb-compare">⚔️ Comparar 1v1</button>
-        <button onclick="navigateAndClose('history')" id="sb-history">🏅 Hall da Fama</button>
-        <div class="sidebar-divider"></div>
-        <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">🏆 Outros Torneios</button>
-        <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">🔍 Outras Equipes</button>
+        <div class="sidebar-category">HISTÓRICO</div>
+        <button onclick="navigateAndClose('history')" id="sb-history">HALL DA FAMA</button>
+        <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
+        <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
     </div>
 </div>
 
 <nav role="navigation" aria-label="Menu principal">
 
-    <!-- ======================== DESKTOP NAV ======================== -->
     <div class="nav-desktop">
-        <!-- Logo -->
+        <div class="nav-desktop-left">
+            <button class="nav-desktop-menu-btn" onclick="openSidebar()" title="Menu">☰</button>
+            <div class="nav-teams-wrapper">
+                <button class="nav-teams-btn">EQUIPES ▼</button>
+                <div class="nav-teams-dropdown">
+                    <div class="nav-teams-grid" id="nav-desktop-teams">
+                        </div>
+                </div>
+            </div>
+        </div>
+
         <div class="nav-desktop-logo" onclick="navigate('home')">
-            <img src="central free fire.webp" alt="Central Free Fire" onerror="this.style.display='none'">
-            <span>Central FF</span>
+            <img src="central free fire.webp" alt="Central FF">
         </div>
 
-        <!-- Times da WB (logos clicáveis) -->
-        <div class="nav-desktop-teams" id="nav-desktop-teams">
-            <!-- Preenchido pelo JS com os times do db.teams -->
-        </div>
-
-        <!-- Busca + botão menu -->
         <div class="nav-desktop-right">
             <div class="nav-search-wrapper-desktop">
-                <input type="text" id="global-search-desktop" placeholder="🔍  Buscar jogador ou equipe..." oninput="handleGlobalSearchFrom('desktop')" autocomplete="off" aria-label="Pesquisar">
-                <span class="nav-search-icon-desktop">🔍</span>
+                <input type="text" id="global-search-desktop" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('desktop')" autocomplete="off">
+                <img src="lupa.webp" class="nav-search-icon-desktop" alt="Lupa">
                 <div id="search-results-desktop" class="search-results-dropdown" role="listbox"></div>
             </div>
-            <button class="nav-desktop-menu-btn" onclick="openSidebar()" title="Menu completo">☰</button>
         </div>
     </div>
 
-    <!-- ======================== MOBILE NAV ======================== -->
     <div class="nav-mobile">
         <div class="nav-mobile-bar">
-            <!-- Logo → volta para início -->
-            <div class="nav-mobile-logo" onclick="navigate('home')">
-                <img src="central free fire.webp" alt="Central Free Fire" onerror="this.style.display='none'">
-            </div>
+            <button class="nav-mob-menu-btn" onclick="openSidebar()">☰</button>
 
-            <!-- 4 botões fixos -->
             <div class="nav-mobile-tabs">
-                <button class="nav-mobile-tab active" id="mob-tab-teams" onclick="mobileTabClick('teams', this)">
-                    <span class="tab-icon">📊</span>
-                    Classificação
-                </button>
-                <button class="nav-mobile-tab" id="mob-tab-players" onclick="mobileTabClick('players', this)">
-                    <span class="tab-icon">🎯</span>
-                    Ranking MVP
-                </button>
-                <button class="nav-mobile-tab" id="mob-tab-teams-list" onclick="mobileTabClick('teams-list', this)">
-                    <span class="tab-icon">🛡️</span>
-                    Equipes
-                </button>
-                <button class="nav-mobile-tab" id="mob-tab-schedule" onclick="mobileTabClick('schedule', this)">
-                    <span class="tab-icon">📅</span>
-                    Datas
-                </button>
+                <button class="nav-mobile-tab active" id="mob-tab-teams" onclick="mobileTabClick('teams', this)">TABELA</button>
+                <button class="nav-mobile-tab" id="mob-tab-players" onclick="mobileTabClick('players', this)">RANKING</button>
+                <button class="nav-mobile-tab" id="mob-tab-teams-list" onclick="mobileTabClick('teams-list', this)">EQUIPES</button>
+                <button class="nav-mobile-tab" id="mob-tab-schedule" onclick="mobileTabClick('schedule', this)">DATAS</button>
             </div>
 
-            <!-- Busca + "..." -->
             <div class="nav-mobile-right">
-                <button class="nav-mobile-search-btn" onclick="toggleMobileSearch()" aria-label="Buscar">🔍</button>
-                <button class="nav-mobile-more" onclick="openSidebar()" aria-label="Mais opções">···</button>
+                <button class="nav-mobile-search-btn" onclick="toggleMobileSearch()">
+                    <img src="lupa.webp" alt="Buscar">
+                </button>
+                <button class="nav-mobile-home-btn" onclick="navigate('home')">
+                    <img src="central free fire.webp" alt="Início">
+                </button>
             </div>
         </div>
 
-        <!-- Barra de busca expansível -->
         <div class="nav-mobile-search-bar" id="mobile-search-bar">
-            <input type="text" id="global-search-mobile" placeholder="Buscar jogador ou equipe..." oninput="handleGlobalSearchFrom('mobile')" autocomplete="off" aria-label="Pesquisar">
+            <input type="text" id="global-search-mobile" placeholder="BUSCAR JOGADOR OU EQUIPE..." oninput="handleGlobalSearchFrom('mobile')" autocomplete="off">
             <div id="search-results-mobile" class="search-results-dropdown" role="listbox"></div>
         </div>
     </div>
@@ -9659,17 +9685,26 @@ function handleGlobalSearchFrom(source) {
     resultsBox.style.display = 'block';
 }
 
-// Popula a nav desktop com os logos dos times da WB
+// Popula o dropdown desktop com os logos dos times da WB em grid 4x4
 function buildDesktopTeamNav() {
     const container = document.getElementById('nav-desktop-teams');
     if (!container || !db.teams) return;
     
-    const wbTeams = [...db.teams].sort((a,b) => a.equipe.localeCompare(b.equipe));
+    // Força a ordem exata dos grupos A, B, C, D
+    const order = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
+    
+    const wbTeams = [...db.teams].sort((a, b) => {
+        // Ordena por grupo primeiro, depois pelo nome
+        if (order[a.grupo] !== order[b.grupo]) {
+            return order[a.grupo] - order[b.grupo];
+        }
+        return a.equipe.localeCompare(b.equipe);
+    });
     
     container.innerHTML = wbTeams.map(t => {
         const abbr = shortNames[t.equipe] || t.equipe.split(' ').map(w=>w[0]).join('').substring(0,4);
         return `
-            <button class="nav-team-logo-btn" onclick="openTeamProfile('${t.equipe}')" title="${t.equipe}">
+            <button class="nav-team-logo-btn" onclick="openTeamProfile('${t.equipe}')" title="Grupo ${t.grupo}: ${t.equipe}">
                 <img src="${logos[t.equipe] || 'escudo.webp'}" alt="${t.equipe}" onerror="this.src='escudo.webp'">
                 <span class="nav-team-tooltip">${abbr}</span>
             </button>`;
