@@ -7646,11 +7646,24 @@ function updateCountdown() {
 }
 
 function calculatePlayerRanks() {
+    // 1. Filtra os jogadores que realmente jogaram (evita bugar com jogadores zerados)
+    let ativos = db.players.filter(p => p.quedas > 0);
+
     const setRank = (attrName, rankName) => {
-        let sorted = [...db.players].sort((a, b) => b[attrName] - a[attrName]);
-        sorted.forEach((p, i) => p[rankName] = i + 1);
+        // 2. Ordena do maior para o menor. Se não tiver número, ele trata como 0
+        ativos.sort((a, b) => (b[attrName] || 0) - (a[attrName] || 0));
+        
+        // 3. Distribui as medalhas (1º, 2º, 3º...)
+        ativos.forEach((p, index) => {
+            p[rankName] = index + 1;
+        });
     };
-    setRank('abates', 'rankKills'); setRank('dano', 'rankDmg'); setRank('assists', 'rankAssists'); setRank('mvp', 'rankMvp');
+
+    // Aplica o ranking para cada estatística
+    setRank('abates', 'rankKills'); 
+    setRank('dano', 'rankDmg'); 
+    setRank('assists', 'rankAssists'); 
+    setRank('mvp', 'rankMvp');
 }
 
 function sortTable(tableId, colIndex, isNumeric) {
