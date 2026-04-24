@@ -338,9 +338,6 @@
 .old-news-card img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid #333; }
 .old-news-title { padding: 15px; color: #fff; font-weight: bold; font-size: 1.05em; line-height: 1.4; }
 
-/* Navegação */
-    nav { background-color: #020509; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-
     /* Acessibilidade: focus-visible para navegação por teclado */
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     :focus:not(:focus-visible) { outline: none; }
@@ -353,25 +350,376 @@
 
     /* Overflow seguro para tabelas no mobile */
     @media (max-width: 768px) { .table-container { -webkit-overflow-scrolling: touch; } }
-    
-    .nav-header-desktop-brand { display: flex; }
-    @media (max-width: 768px) { .nav-header-desktop-brand { display: none; } }
-    
-    .nav-header-mobile { display: none; justify-content: space-between; align-items: center; padding: 15px 20px; }
-    .nav-header-mobile span { color: var(--accent); font-weight: bold; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px; }
-    #hamburger-btn { background: transparent; color: var(--accent); border: 1px solid var(--accent); font-size: 1.5em; cursor: pointer; padding: 5px 12px; border-radius: 6px; transition: 0.2s; }
-    #hamburger-btn:hover { background: var(--accent); color: #000; }
-    
-    .nav-links { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; padding: 15px 20px; }
-    .nav-links button { background-color: transparent; color: var(--text); border: 1px solid var(--border); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 0.95em; }
-    .nav-links button:hover, .nav-links button.active { background-color: var(--accent); color: #000; border-color: var(--accent); }
 
-    /* Media Query para o Mobile */
+    /* =============================================
+       NOVA NAVEGAÇÃO
+       ============================================= */
+    nav {
+        background-color: #020509;
+        border-bottom: 2px solid var(--accent);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+/* =============================================
+   ESTILIZAÇÃO DA NAVEGAÇÃO (NAV + SIDEBAR)
+   ============================================= */
+
+/* Configurações Gerais do Menu */
+nav {
+    background-color: #020509;
+    border-bottom: 2px solid var(--accent);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    text-transform: UPPERCASE; /* Remove emojis e garante letra maiúscula */
+}
+
+/* --- SIDEBAR (ABRE DA ESQUERDA) --- */
+.sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 998; backdrop-filter: blur(3px); }
+.sidebar-overlay.active { display: block; animation: fadeIn 0.2s; }
+
+.sidebar-panel { position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; background: #050810; border-right: 1px solid var(--border); z-index: 999; transition: left 0.3s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; box-shadow: 8px 0 30px rgba(0,0,0,0.6); }
+.sidebar-panel.active { left: 0; }
+
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+.sidebar-header span { color: var(--accent); font-weight: 900; font-size: 0.85em; letter-spacing: 2px; }
+
+.sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 12px 10px; overflow-y: auto; flex: 1; }
+.sidebar-nav button { background: transparent; border: none; color: var(--text); padding: 12px 14px; text-align: left; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.95em; font-weight: 600; display: flex; align-items: center; gap: 10px; width: 100%; text-transform: UPPERCASE; }
+.sidebar-nav button:hover { background: rgba(0,200,255,0.08); color: var(--accent); }
+
+/* --- NAVEGAÇÃO DESKTOP (LOGO CENTRALIZADA) --- */
+.nav-desktop {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* Força a logo para o centro exato */
+    align-items: center;
+    padding: 0 20px;
+    height: 65px;
+}
+
+/* Esquerda: Menu e Botão de Equipes */
+.nav-desktop-left { display: flex; align-items: center; gap: 15px; }
+.nav-desktop-menu-btn { background: transparent; border: 1px solid var(--border); color: var(--accent); cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 1.2em; transition: 0.2s; }
+
+.nav-teams-wrapper { position: relative; }
+.nav-teams-btn { background: transparent; border: 1px solid var(--border); color: var(--text); font-weight: 900; font-size: 0.85em; padding: 8px 18px; border-radius: 6px; cursor: pointer; letter-spacing: 1px; }
+
+/* Dropdown Equipes 4x4 */
+.nav-teams-dropdown { 
+    display: none; 
+    position: absolute; 
+    top: 50px; 
+    left: 0; 
+    background: #0d1220; 
+    border: 1px solid var(--accent); 
+    border-radius: 8px; 
+    padding: 12px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+    z-index: 200; 
+    width: 230px; 
+}
+.nav-teams-dropdown.active { display: block; }
+
+.nav-teams-grid { display: grid; grid-template-columns: repeat(4, 48px); gap: 8px; justify-content: center; overflow: visible; padding-top: 6px; }
+
+.nav-team-logo-btn { 
+    width: 48px; 
+    height: 48px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: rgba(255,255,255,0.03)!important; 
+    border: 1px solid var(--border)!important; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    overflow: visible;
+    position: relative;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.nav-team-logo-btn:hover {
+    background: rgba(0, 200, 255, 0.12)!important;
+    border-color: var(--accent)!important;
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 18px rgba(0, 200, 255, 0.25);
+    z-index: 10;
+}
+.nav-team-logo-btn img { 
+    width: 32px; 
+    height: 32px; 
+    object-fit: contain; 
+    background: none!important; 
+    border: none!important;
+    filter: grayscale(0.2) opacity(0.8);
+    transition: filter 0.2s;
+}
+.nav-team-logo-btn:hover img {
+    filter: grayscale(0) opacity(1);
+}
+/* Tooltip do nome da equipe */
+.nav-team-logo-btn::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.85);
+    background: #0d1220;
+    color: var(--accent);
+    font-size: 0.62em;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    border: 1px solid var(--border);
+    letter-spacing: 0.5px;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.nav-team-logo-btn:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* Centro: Logo Principal */
+.nav-desktop-logo { display: flex; justify-content: center; cursor: pointer; }
+.nav-desktop-logo img { height: 45px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0,200,255,0.3)); background: none!important; border: none!important; }
+
+/* Direita: Busca */
+.nav-desktop-right { display: flex; justify-content: flex-end; align-items: center; }
+.nav-search-wrapper-desktop { position: relative; display: flex; align-items: center; }
+
+/* Botão-ícone (sempre visível) */
+.nav-search-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.nav-search-toggle-btn:hover { background: rgba(0,200,255,0.08); }
+
+/* Input escondido por padrão, expande ao abrir */
+.nav-search-wrapper-desktop input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: #fff;
+    padding: 7px 40px 7px 15px;
+    font-size: 0.85em;
+    width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    outline: none;
+    transition: width 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    position: absolute;
+    right: 36px;
+}
+.nav-search-wrapper-desktop.open input {
+    width: 220px !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
+/* --- NAVEGAÇÃO MOBILE --- */
+.nav-mobile-bar { display: flex; align-items: center; padding: 0 10px; height: 55px; justify-content: space-between; }
+.nav-mob-menu-btn { background: transparent; border: none; color: var(--accent); font-size: 1.6em; padding: 5px; cursor: pointer; }
+
+.nav-mobile-tabs { display: flex; flex: 1; justify-content: center; gap: 10px; }
+.nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); font-size: 0.95em; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.nav-mobile-tab.active { color: var(--accent); }
+
+.nav-mobile-right { display: flex; align-items: center; gap: 12px; }
+
+/* Barra de busca mobile — escondida por padrão, abre com .active */
+.nav-mobile-search-bar {
+    display: none;
+    padding: 8px 14px 10px;
+    background: #020509;
+    border-top: 1px solid var(--border);
+}
+.nav-mobile-search-bar.active {
+    display: block;
+}
+.nav-mobile-search-bar input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 0.9em;
+    outline: none;
+}
+.nav-mobile-search-bar input:focus { border-color: var(--accent); }
+
+.nav-mobile-right { display: flex; align-items: center; gap: 12px; }
+
+/* --- REGRAS DE IMAGENS E LUPA (AZUL E SEM FUNDO) --- */
+.nav-search-icon-desktop { 
+    width: 20px; height: 20px; pointer-events: none; 
+    filter: invert(64%) sepia(94%) saturate(4177%) hue-rotate(160deg) brightness(102%) contrast(104%); 
+    background: none!important; 
+}
+
+.nav-mobile-search-btn, .nav-mobile-home-btn { background: none!important; border: none!important; padding: 0; cursor: pointer; display: flex; align-items: center; }
+
+.nav-mobile-search-btn img { 
+    width: 24px; height: 24px; 
+    filter: invert(64%) sepia(94%) saturate(4177%) hue-rotate(160deg) brightness(102%) contrast(104%); 
+    background: none!important; 
+}
+
+.nav-mobile-home-btn img { 
+    width: 28px; height: 28px; object-fit: contain; 
+    filter: drop-shadow(0 0 5px rgba(0,200,255,0.5)); 
+    background: none!important; 
+}
+
+.nav-mobile-home-btn:active img { transform: scale(0.9); }
+
+/* --- RESPONSIVIDADE --- */
+@media (min-width: 769px) { .nav-desktop { display: grid; } .nav-mobile { display: none; } }
+@media (max-width: 768px) { .nav-desktop { display: none !important; } .nav-mobile { display: flex; flex-direction: column; } }
+    /* =============================================
+       NOVA ESTÉTICA: ABA DE TORNEIOS
+       ============================================= */
+    .ot-category-header {
+        font-size: 1.05em;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid currentColor;
+        padding-bottom: 10px;
+        margin-bottom: 18px;
+        opacity: 0.9;
+    }
+
+    .ot-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+    }
+
     @media (max-width: 768px) {
-        .nav-header-mobile { display: flex; }
-        .nav-links { display: none; flex-direction: column; padding: 0 20px 15px 20px; }
-        .nav-links.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
-        .nav-links button { width: 100%; text-align: center; padding: 15px; font-size: 1.05em; }
+        .ot-cards-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    }
+
+    .ot-tournament-card {
+        background: var(--panel-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 15px;
+        cursor: pointer;
+        transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ot-tournament-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: var(--card-accent, var(--accent));
+        transition: height 0.2s;
+    }
+
+    .ot-tournament-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .ot-tournament-card:hover::before {
+        height: 5px;
+    }
+
+    .ot-card-img {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        margin-bottom: 4px;
+    }
+
+    .ot-card-name {
+        font-weight: 800;
+        font-size: 0.95em;
+        color: #fff;
+        line-height: 1.3;
+        text-transform: uppercase;
+    }
+
+    .ot-card-year {
+        font-size: 0.8em;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .ot-card-champion {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+        background: rgba(255,215,0,0.06);
+        border: 1px solid rgba(255,215,0,0.15);
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-size: 0.75em;
+        color: #ffd700;
+        font-weight: 700;
+    }
+
+    .ot-card-champion img {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+    }
+
+    .ot-card-click-hint {
+        font-size: 0.7em;
+        color: var(--text-muted);
+        opacity: 0;
+        transition: opacity 0.2s;
+        margin-top: auto;
+    }
+    .ot-tournament-card:hover .ot-card-click-hint { opacity: 1; }
+
+    /* Header de detalhes do torneio */
+    .ot-details-header {
+        background: var(--panel-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 25px 20px;
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ot-details-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: var(--accent);
+    }
+
+    .ot-details-badge {
+        font-size: 0.75em;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        margin-bottom: 8px;
     }
 
     /* --- STATUS OUTROS TORNEIOS --- */
@@ -438,15 +786,15 @@
 .tier-d { color: #aaaaaa !important; font-weight: bold; }
 .row-tier-s { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%); border-left: 3px solid #ffd700; }
     
-/* --- BARRA DE PESQUISA GLOBAL (CORRIGIDA) --- */
+/* --- BARRA DE PESQUISA GLOBAL (LEGADA - MOBILE ONLY) --- */
     .search-wrapper {
         position: relative;
         padding: 12px 20px;
         background: #030609;
-        display: flex;
+        display: none; /* Escondida por padrão — só aparece no mobile via .active */
         justify-content: center;
         border-bottom: 1px solid var(--border);
-        z-index: 1001; /* Aumentado para ficar acima de tudo */
+        z-index: 1001;
         transition: all 0.3s ease-in-out;
     }
     
@@ -804,41 +1152,87 @@ tr:last-child {
 <body>
 
 <a href="#main-content" class="skip-link">Pular para o conteúdo</a>
-<nav role="navigation" aria-label="Menu principal">
-    <div class="nav-header-mobile">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <img src="central free fire.webp" alt="Central Free Fire" style="height: 32px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(0, 200, 255, 0.5));">
-            <span>CENTRAL FREE FIRE</span>
-        </div>
-        <div class="actions" style="display: flex; align-items: center; gap: 5px;">
-            <button id="search-btn" onclick="toggleMobileSearch()" aria-label="Abrir barra de pesquisa" aria-expanded="false">🔍</button>
-            <button id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Abrir menu de navegação" aria-expanded="false">☰</button>
-        </div>
+
+<!-- SIDEBAR (compartilhada desktop + mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar-panel" id="sidebar-panel">
+    <div class="sidebar-header">
+        <span>MENU</span>
+        <button class="sidebar-close" onclick="closeSidebar()">✕</button>
     </div>
-    
-    <div class="search-wrapper" id="search-wrapper">
-        <input type="text" id="global-search" placeholder="Pesquisar jogador ou equipe..." oninput="handleGlobalSearch()" autocomplete="off" aria-label="Pesquisar jogador ou equipe" aria-controls="search-results" aria-autocomplete="list">
-        <div id="search-results" class="search-results-dropdown" role="listbox" aria-label="Resultados da pesquisa"></div>
+    <div class="sidebar-nav">
+        <div class="sidebar-category">PRINCIPAL</div>
+        <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
+        <button onclick="navigateAndClose('teams')" id="sb-teams">TABELA (CLASSIFICAÇÃO)</button>
+        <button onclick="navigateAndClose('players')" id="sb-players">RANKING MVP</button>
+        <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">EQUIPES</button>
+        <button onclick="navigateAndClose('schedule')" id="sb-schedule">DATAS</button>
+        
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">ESTATÍSTICAS</div>
+        <button onclick="navigateAndClose('selection-wb')" id="sb-selection-wb">SELEÇÃO DA SEMANA</button>
+        <button onclick="navigateAndClose('records-ind')" id="sb-records-ind">RECORDES</button>
+        <button onclick="navigateAndClose('maps')" id="sb-maps">ESTATÍSTICAS GERAIS</button>
+        <button onclick="navigateAndClose('compare')" id="sb-compare">COMPARAR 1V1</button>
+        
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">HISTÓRICO</div>
+        <button onclick="navigateAndClose('history')" id="sb-history">HALL DA FAMA</button>
+        <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
+        <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
+    </div>
+</div>
+
+<nav role="navigation">
+    <div class="nav-desktop">
+        <div class="nav-desktop-left">
+            <button class="nav-desktop-menu-btn" onclick="openSidebar()">☰</button>
+            <div class="nav-teams-wrapper">
+                <button class="nav-teams-btn" onclick="toggleTeams(event)">EQUIPES ▼</button>
+                <div class="nav-teams-dropdown" id="teams-drop">
+                    <div class="nav-teams-grid" id="nav-desktop-teams"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-desktop-logo" onclick="navigate('home')">
+            <img src="central free fire.webp" alt="Logo">
+        </div>
+
+        <div class="nav-desktop-right">
+            <div class="nav-search-wrapper-desktop" id="nav-search-wrapper-desktop">
+                <input type="text" id="global-search-desktop" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('desktop')" autocomplete="off">
+                <button class="nav-search-toggle-btn" onclick="toggleDesktopSearch()" aria-label="Buscar">
+                    <img src="lupa.webp" class="nav-search-icon-desktop">
+                </button>
+                <div id="search-results-desktop" class="search-results-dropdown"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="nav-header-desktop-brand" style="align-items: center; justify-content: center; gap: 12px; padding: 10px 20px 0;">
-        <img src="central free fire.webp" alt="Central Free Fire" style="height: 38px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.6));">
-        <span style="color: var(--accent); font-weight: 900; font-size: 1.25em; text-transform: uppercase; letter-spacing: 2px;">CENTRAL FREE FIRE</span>
-    </div>
+    <div class="nav-mobile">
+        <div class="nav-mobile-bar">
+            <button class="nav-mob-menu-btn" onclick="openSidebar()">☰</button>
 
-    <div class="nav-links" id="nav-links">
-        <button onclick="navigate('home')" class="active" id="nav-home">Início</button>
-        <button onclick="navigate('teams')" id="nav-teams">Classificação Times</button>
-        <button onclick="navigate('players')" id="nav-players">Classificação Jogadores</button>
-        <button onclick="navigate('teams-list')" id="nav-teams-list">Equipes</button>
-        <button onclick="navigate('selection-wb')" id="nav-selection-wb">Seleção</button>
-        <button onclick="navigate('records-ind')" id="nav-records-ind">Recordes</button>
-        <button onclick="navigate('maps')" id="nav-maps">Estatísticas</button>
-        <button onclick="navigate('compare')" id="nav-compare">Comparar 1v1</button>
-        <button onclick="navigate('schedule')" id="nav-schedule">Datas</button>
-        <button onclick="navigate('history')" id="nav-history">Hall da Fama</button>
-        <button onclick="navigate('outros-torneios')" id="nav-outros-torneios">Outros Torneios</button>
-      <!-- <button onclick="window.location.href='emulador.html'" id="nav-emulador">Emulador</button> -->
+            <div class="nav-mobile-tabs">
+                <button class="nav-mobile-tab active" id="mob-tab-teams" onclick="mobileTabClick('teams', this)">TABELA</button>
+                <button class="nav-mobile-tab" id="mob-tab-players" onclick="mobileTabClick('players', this)">RANKING</button>
+                <button class="nav-mobile-tab" id="mob-tab-teams-list" onclick="mobileTabClick('teams-list', this)">EQUIPES</button>
+            </div>
+
+            <div class="nav-mobile-right">
+                <button class="nav-mobile-search-btn" onclick="toggleMobileSearch()">
+                    <img src="lupa.webp" alt="Busca">
+                </button>
+                <button class="nav-mobile-home-btn" onclick="navigate('home')">
+                    <img src="central free fire.webp" alt="Home">
+                </button>
+            </div>
+        </div>
+        <div class="nav-mobile-search-bar" id="mobile-search-bar">
+            <input type="text" id="global-search-mobile" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('mobile')">
+            <div id="search-results-mobile" class="search-results-dropdown"></div>
+        </div>
     </div>
 </nav>
 <main id="main-content">
@@ -1354,39 +1748,125 @@ tr:last-child {
 <div id="outros-torneios" class="page">
     
     <div id="ot-list-view">
-        <h2 style="text-align: center; margin-bottom: 30px;">Arquivo de Torneios</h2>
+        <h2 style="text-align: center; margin-bottom: 8px;">🏆 Arquivo de Torneios</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">Explore o histórico de competições baseado na nossa base de dados oficial.</p>
         
-        <h3 style="color: #66b3ff; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Mundiais</h3>
-        <div class="grid-cards" id="ot-grid-mundiais" style="margin-bottom: 40px;"></div>
-        
-        <h3 style="color: #90ee90; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Internacionais</h3>
-        <div class="grid-cards" id="ot-grid-internacionais" style="margin-bottom: 40px;"></div>
-        
-        <h3 style="color: #ffd700; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Nacionais</h3>
-        <div class="grid-cards" id="ot-grid-nacionais" style="margin-bottom: 40px;"></div>
-        
-        <h3 style="color: #ff4444; border-bottom: 1px solid #333; padding-bottom: 10px;">Competições Amadoras</h3>
-        <div class="grid-cards" id="ot-grid-amadoras" style="margin-bottom: 40px;"></div>
+        <div class="filters" style="justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
+            <input type="text" id="ot-search" placeholder="🔍 Pesquisar torneio..." oninput="renderOutrosTorneiosList()" autocomplete="off" style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none; width: 100%; max-width: 300px; font-size: 1em;">
+            
+            <select id="ot-filter-year" onchange="renderOutrosTorneiosList()" style="padding: 10px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none;">
+                <option value="all">Todos os Anos</option>
+            </select>
+
+            <select id="ot-filter-tier" onchange="renderOutrosTorneiosList()" style="padding: 10px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none;">
+                <option value="all">Todos os Tiers</option>
+                <option value="S-Tier">S-Tier</option>
+                <option value="A-Tier">A-Tier</option>
+                <option value="B-Tier">B-Tier</option>
+                <option value="C-Tier">C-Tier</option>
+                <option value="D-Tier">D-Tier</option>
+                <option value="Showmatch">Showmatch</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Qualifier">Qualifier</option>
+            </select>
+        </div>
+
+        <div class="ot-cards-grid" id="ot-grid-torneios"></div>
     </div>
 
     <div id="ot-details-view" style="display: none;">
         <button class="btn-back" onclick="closeOtherTournament()">← Voltar para Torneios</button>
         
-        <div style="text-align: center; margin-bottom: 30px;">
-            <h1 id="ot-title" style="font-size: 2.5em; text-transform: uppercase; color: #fff; margin-bottom: 5px;">Nome do Torneio</h1>
-            <div id="ot-year" style="color: var(--accent); font-weight: bold;">202X</div>
+        <div class="ot-details-header" id="ot-details-header">
+            <div class="ot-details-badge" id="ot-details-badge">Tier</div>
+            <h1 id="ot-title" style="font-size: 2em; text-transform: uppercase; color: #fff; margin: 0 0 4px 0;">Nome do Torneio</h1>
+            <div id="ot-year" style="color: var(--accent); font-weight: bold; font-size: 1.1em;">Ano</div>
         </div>
 
-        <div class="filters" id="ot-stage-filters" style="justify-content: center;">
-            </div>
-
         <div id="ot-standings-container"></div>
-        
-        <h3 style="margin-top: 40px; color: #a020f0; border-bottom: 1px solid #333; padding-bottom: 10px;">Corrida pelo MVP</h3>
-        <div id="ot-mvp-container"></div>
+    </div>
+</div>
+<!-- PAGE: OUTRAS EQUIPES -->
+<div id="outras-equipes" class="page">
+    <h2 style="text-align: center; margin-bottom: 10px;">Outras Equipes</h2>
+    <p style="color: var(--text-muted); text-align: center; margin-bottom: 30px; font-size: 0.9em;">Equipes fora do campeonato principal. Clique em uma equipe para ver seus resultados e títulos.</p>
+
+    <!-- Barra de Busca de Equipes -->
+    <div class="filters" style="margin-bottom: 25px; justify-content: center;">
+        <input type="text" id="outras-equipes-search" placeholder="🔍  Pesquisar equipe..." oninput="renderOutrasEquipesGrid()" autocomplete="off"
+            style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none; width: 100%; max-width: 400px; font-size: 1em;">
     </div>
 
+    <!-- Grid de equipes (sem divisão de grupos) -->
+    <div class="teams-directory" id="outras-equipes-directory" style="margin-bottom: 40px;"></div>
 </div>
+
+<!-- PAGE: PERFIL OUTRA EQUIPE (sub-view inline) -->
+<div id="outras-equipes-profile" class="page">
+    <button class="btn-back" onclick="navigate('outras-equipes')">← Voltar para Outras Equipes</button>
+
+    <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 25px; text-align: center;">
+        <img id="oep-logo" src="escudo.webp" style="width: 90px; height: 90px; object-fit: contain;">
+        <div>
+            <h1 id="oep-name" style="margin: 0; font-size: 2em; text-transform: uppercase;"></h1>
+        </div>
+    </div>
+
+    <!-- Títulos Coletivos -->
+    <div id="oep-titulos-section" style="margin-bottom: 30px; display: none;">
+        <h3 style="color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px;">🏆 Títulos Coletivos</h3>
+        <div id="oep-titulos-container" style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px;"></div>
+    </div>
+
+    <!-- Todos os Resultados -->
+    <h3 style="color: #66b3ff; border-bottom: 1px solid var(--border); padding-bottom: 10px;">📊 Todos os Resultados</h3>
+
+    <div class="filters" style="margin-bottom: 15px; flex-wrap: wrap;">
+        <label style="color: var(--text-muted); font-weight: bold;">Ano:</label>
+        <select id="oep-filter-year" onchange="renderOutraEquipeResultados()" style="max-width: 110px;">
+            <option value="all">Todos</option>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+        </select>
+        <label style="color: var(--text-muted); font-weight: bold; margin-left: 10px;">Tier:</label>
+        <select id="oep-filter-tier" onchange="renderOutraEquipeResultados()" style="max-width: 150px;">
+            <option value="all">Todos</option>
+            <option value="S-Tier">S-Tier</option>
+            <option value="A-Tier">A-Tier</option>
+            <option value="B-Tier">B-Tier</option>
+            <option value="C-Tier">C-Tier</option>
+            <option value="D-Tier">D-Tier</option>
+            <option value="Showmatch">Showmatch</option>
+            <option value="Weekly">Weekly</option>
+        </select>
+        <div id="oep-results-stats" style="margin-left: auto; display: flex; gap: 15px; font-size: 1.2em; background: rgba(0,0,0,0.3); padding: 6px 15px; border-radius: 8px; border: 1px solid var(--border);">
+            <div title="Títulos (1º Lugar)">🥇 <span id="oep-count-1st" style="color: #ffd700; font-weight: 900;">0</span></div>
+            <div title="Vices (2º Lugar)">🥈 <span id="oep-count-2nd" style="color: #c0c0c0; font-weight: bold;">0</span></div>
+            <div title="3º Lugar">🥉 <span id="oep-count-3rd" style="color: #cd7f32; font-weight: bold;">0</span></div>
+        </div>
+    </div>
+
+    <div class="table-container" style="max-height: 60vh; overflow-y: auto;">
+        <table id="table-outra-equipe-results">
+            <thead style="position: sticky; top: 0; z-index: 10;">
+                <tr>
+                    <th>Data</th>
+                    <th>Tier</th>
+                    <th>Posição</th>
+                    <th style="text-align: left;">Campeonato</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
 <div id="history" class="page">
         <h2>Top 100 Abates da história</h2>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
@@ -2025,59 +2505,6 @@ let staffPhotos = {
     "DOODLES": "doodles.webp"*/
 };
 
-const dbOutrosTorneios = [
-    {
-        id: "lbff_8",
-        nome: "LBFF 8",
-        ano: "2022",
-        categoria: "nacionais",
-        mvp_oficial: "NANDO9",
-        fases: {
-            "Classificatória": [
-    { equipe: "TSM", pontos: 812, status: "final" },
-    { equipe: "FLUXO W7M", pontos: 805, status: "final" },
-    { equipe: "LOUD SNICKERS", pontos: 773, status: "final" },
-    { equipe: "VIVO KEYD", pontos: 754, status: "final" },
-    { equipe: "STARS HORIZON", pontos: 666, status: "final" },
-    { equipe: "LOS", pontos: 664, status: "final" },
-    { equipe: "ANGELS OUTPLAY", pontos: 650, status: "final" },
-    { equipe: "MAGIC SQUAD", pontos: 640, status: "final" },
-    { equipe: "GOD ESPORTS", pontos: 634, status: "final" },
-    { equipe: "META GAMING", pontos: 621, status: "final" },
-    { equipe: "TEAM LIQUID", pontos: 616, status: "final" },
-    { equipe: "B4 ESPORTS", pontos: 590, status: "final" },
-    { equipe: "CORINTHIANS", pontos: 575, status: "eliminado" },
-    { equipe: "PAIN GAMING", pontos: 563, status: "eliminado" },
-    { equipe: "HUMMER ESPORTS", pontos: 547, status: "eliminado" },
-    { equipe: "VASCO ESPORTS", pontos: 519, status: "eliminado" },
-    { equipe: "TROPICAOS", pontos: 458, status: "eliminado" },
-    { equipe: "NETSHOES MINERS", pontos: 436, status: "eliminado" }
-            ],
-            "Final": [
-    { equipe: "VIVO KEYD", pontos: 131, status: "mundial" },
-    { equipe: "MAGIC SQUAD", pontos: 88, status: "mundial" },
-    { equipe: "ANGELS OUTPLAY", pontos: 81, status: "" },
-    { equipe: "FLUXO W7M", pontos: 75, status: "" },
-    { equipe: "TSM", pontos: 74, status: "" },
-    { equipe: "TEAM LIQUID", pontos: 66, status: "" },
-    { equipe: "LOS", pontos: 63, status: "" },
-    { equipe: "GOD ESPORTS", pontos: 52, status: "" },
-    { equipe: "LOUD SNICKERS", pontos: 51, status: "" },
-    { equipe: "B4 ESPORTS", pontos: 51, status: "" },
-    { equipe: "META GAMING", pontos: 48, status: "" },
-    { equipe: "STARS HORIZON", pontos: 47, status: "" }
-            ]
-        },
-        ranking_mvp: [
-            { jogador: "NANDO9", equipe: "VIVO KEYD", kills: 119 }
-        ],
-        escalacoes: {
-            "VIVO KEYD": ["MODESTIA", "General!", "DeadGOD", "NANDO9", "Ghost7"],
-            "FLUXO W7M": ["Cruel", "JapaBKR", "Syaz", "Fac", "OUSADO"]
-        }
-    }
-];
-
 const titlesData = {
     coletivos: [
         { event: "WB 2025 S2", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan_Staff"] },
@@ -2530,41 +2957,72 @@ let playerPhotos = {
 };
 
 // --- NOVOS CAMPEONATOS (Distribuição Automática) ---
-const dbCampeonatos = [
-    {
-        torneio: "Liga Marinho Season 4",
-        data: "2026-04-23",
-        tier: "D-Tier",
-        resultados: {
-            "TEAM SOLID": "1st",
-            "LOUD SNICKERS": "2nd",
-            "LOOPS": "3rd",
-            "FLUXO W7M": "4th",
-            "INFLUENCE RAGE": "5th",
-            "G7X": "6th",
-            "ALPHA7": "7th",
-            "E1 SPORTS": "8th",
-            "VIRTUS PRO": "9th",
-            "LOS": "10th",
-            "FURY UNITED": "11th",
-            "RISE GAMING": "12th",
-            "A NOVA ORDEM": "13th",
-            "AXS FUSION": "14th",
-            "HAWK GAMING": "15th",
-            "RUSH GAMING": "16th",
-            "MAZE": "17th",
-            "DEBOXE": "18th",
-            "CHEST KILLS": "19th",
-            "TEN EGGS TROOPS": "20th",
-            "NOVAX GG": "21st",
-            "CRIPZ": "22nd",
-            "ZL MANAUS": "23rd",
-            "LOS COUNTRYS": "24th"
-        }
+// dbCampeonatos é agora carregado dinamicamente via Google Sheets (função loadCampeonatos)
+// A variável começa vazia e é preenchida depois
+let dbCampeonatos = [];
+
+// ==========================================
+// CARREGAR CAMPEONATOS VIA GOOGLE SHEETS
+// ==========================================
+// Formato da aba na planilha:
+//   Coluna A: Tier       (ex: D-Tier)
+//   Coluna B: Data       (ex: 2026-04-23)
+//   Coluna C: Torneio    (ex: Liga Marinho Season 4)
+//   Coluna D: Equipe     (ex: TEAM SOLID)
+//   Coluna E: Posição    (ex: 1st)
+// As linhas de um mesmo torneio devem ter o mesmo Tier, Data e Torneio.
+// A Posição deve estar em ordem crescente (1st, 2nd, 3rd...).
+// Linha 1 = cabeçalho (ignorado). A 1ª linha de dados começa na linha 2.
+
+// ==========================================
+// CARREGAR CAMPEONATOS VIA GOOGLE SHEETS
+// ==========================================
+async function loadCampeonatos() {
+    const CAMP_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1701683178&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${CAMP_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+
+        const torneiMap = {};
+
+        lines.slice(1).forEach(line => {
+            const cols = line.split('\t');
+            const tier    = cols[0]?.trim().replace(/\r/g, '');
+            const data    = cols[1]?.trim().replace(/\r/g, '');
+            const torneio = cols[2]?.trim().replace(/\r/g, '');
+            const equipe  = cols[3]?.trim().replace(/\r/g, '').toUpperCase();
+            const place   = cols[4]?.trim().replace(/\r/g, '');
+
+            if (!tier || !data || !torneio || !equipe || !place) return;
+
+            const key = `${data}__${torneio}`;
+            if (!torneiMap[key]) {
+                // Adicionamos a propriedade "id" para podermos abrir o torneio depois
+                torneiMap[key] = { id: key, torneio, data, tier, resultados: {} };
+            }
+            torneiMap[key].resultados[equipe] = place;
+        });
+
+        dbCampeonatos = Object.values(torneiMap);
+        distribuirNovosResultados();
+        
+        // Renderiza a aba de torneios logo após carregar
+        renderOutrosTorneiosList(); 
+        
+        console.log(`✅ ${dbCampeonatos.length} campeonato(s) carregado(s) via Sheets!`);
+
+    } catch (e) {
+        console.error('[loadCampeonatos] Erro:', e);
     }
-    
-    // Quando tiver um torneio novo, é só colocar uma vírgula e abrir outra chave {} aqui
-];
+}
+
+// ==========================================
+// ABA: OUTROS TORNEIOS (INTEGRADA COM GOOGLE SHEETS)
+// ==========================================
+
+let currentOtData = null; // Guarda qual torneio está aberto
 
 // --- HISTÓRICO DE RESULTADOS DAS EQUIPES ---
 const dbResults = {
@@ -3038,7 +3496,7 @@ const dbResults = {
     ],
 };
 
-const logos = {
+let logos = {
     // === EQUIPES ATUAIS (WB 2026) ===
     'ALPHA7': 'A7 2.png', 
     'AXS FUSION': 'AXS BRANCA.png', 
@@ -3065,7 +3523,6 @@ const logos = {
     'BLACK DRAGONS': 'bd.webp',
     'MAGIC SQUAD': 'magic squad.webp',
     'TSM': 'tsm.webp',
-    'CRUZEIRO': 'cruzeiro.webp',
     'SANTOS': 'santos.webp',
     'ALFA 34': 'a34.webp',
     'LOS GRANDES': 'Los.png', // A antiga Los Grandes puxa a mesma logo da LOS atual
@@ -6467,6 +6924,12 @@ window.onload = () => {
     // -> Aba Outros Torneios e Cronograma
     renderOutrosTorneiosList();
     renderSchedule();
+    
+    // -> Aba Outras Equipes
+    renderOutrasEquipesGrid();
+
+    // -> Nav Desktop com logos dos times
+    buildDesktopTeamNav();
 
     // ==========================================
     // 4. INTEGRAÇÕES EXTERNAS (GOOGLE SHEETS)
@@ -6474,7 +6937,9 @@ window.onload = () => {
     loadLives();    // Lê a planilha e monta o widget de Lives
     loadNoticias(); // Lê a planilha e monta o banner de Notícias
     loadSocials();  // Lê a planilha e carrega os @ do Instagram
+    loadTeamLogos();
     loadPhotos();
+    loadCampeonatos(); // Lê a planilha de campeonatos e injeta nos resultados dos times
 
     // ==========================================
     // 5. CRONÔMETROS
@@ -6490,24 +6955,47 @@ function navigate(pageId) {
 
     // Esconde todas as páginas e tira o destaque dos botões
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
     
     // Mostra a página que você clicou
-    document.getElementById(pageId).classList.add('active');
-    
-    // Destaca o botão correto no menu
-    let btn = document.getElementById('nav-' + pageId);
-    if(btn) btn.classList.add('active');
-    
-    // Fecha o menu no mobile após clicar
-    if (window.innerWidth <= 768) {
-        document.getElementById('nav-links').classList.remove('active');
+    const pageEl = document.getElementById(pageId);
+    if (pageEl) pageEl.classList.add('active');
+
+    // Atualiza estado dos botões do mobile (4 tabs fixas)
+    const mobileTabMap = {
+        'teams': 'mob-tab-teams',
+        'players': 'mob-tab-players',
+        'teams-list': 'mob-tab-teams-list',
+        'schedule': 'mob-tab-schedule'
+    };
+    document.querySelectorAll('.nav-mobile-tab').forEach(b => b.classList.remove('active'));
+    if (mobileTabMap[pageId]) {
+        const activeTab = document.getElementById(mobileTabMap[pageId]);
+        if (activeTab) activeTab.classList.add('active');
     }
+
+    // Atualiza estado dos botões da sidebar
+    document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
+    const sbBtn = document.getElementById('sb-' + pageId);
+    if (sbBtn) sbBtn.classList.add('active');
 }
 
 // ==========================================
 // PÁGINA DE ESTATÍSTICAS (MÉDIAS E TOTAIS)
 // ==========================================
+
+function toggleTeams(e) {
+    e.stopPropagation();
+    const drop = document.getElementById('teams-drop');
+    drop.classList.toggle('active');
+}
+
+// Fecha o menu se clicar fora dele
+window.addEventListener('click', function(e) {
+    const drop = document.getElementById('teams-drop');
+    if (drop && !e.target.matches('.nav-teams-btn') && !drop.contains(e.target)) {
+        drop.classList.remove('active');
+    }
+});
 
 // Função auxiliar para normalizar mapas
 function normalizeMapName(name) {
@@ -6521,16 +7009,20 @@ function normalizeMapName(name) {
 // Função que lê os Novos Campeonatos e distribui para os times
 function distribuirNovosResultados() {
     dbCampeonatos.forEach(camp => {
-        // Para cada time dentro dos resultados daquele campeonato...
         for (let equipe in camp.resultados) {
             let colocacao = camp.resultados[equipe];
 
-            // Se o time ainda não tiver um histórico no dbResults, cria uma lista vazia pra ele
             if (!dbResults[equipe]) {
                 dbResults[equipe] = [];
             }
 
-            // Injeta o resultado do campeonato no perfil do time!
+            // Evita duplicata: só injeta se não existir já um resultado
+            // com a mesma data E o mesmo nome de torneio para este time
+            const jaExiste = dbResults[equipe].some(
+                r => r.data === camp.data && r.torneio === camp.torneio
+            );
+            if (jaExiste) continue;
+
             dbResults[equipe].push({
                 data: camp.data,
                 tier: camp.tier,
@@ -6543,13 +7035,99 @@ function distribuirNovosResultados() {
 
 function getDisplayName(name) {
     if (!name) return "";
-    // 1. Remove qualquer sujeira da Liquipedia (ex: "Biel7|link=Biel7...")
+    // Remove sujeiras da Liquipedia e sufixos internos
     let cleanName = name.split('|')[0];
-    
-    // 2. Remove os sufixos invisíveis que vamos usar no banco de dados
     cleanName = cleanName.replace(/_Staff|_Coach|_Inativo|_2/g, "");
-    
     return cleanName;
+}
+
+function openTeamProfile(teamName) {
+    if (!teamName) return;
+    currentTeamView = teamName;
+    selectedTpDays = []; 
+    
+    // 1. Busca o time (ignora espaços e maiúsculas)
+    let t = db.teams.find(x => x.equipe.trim().toUpperCase() === teamName.trim().toUpperCase());
+    
+    // 2. Se for histórico/fora da WB, cria um perfil básico
+    if(!t) {
+        t = { 
+            equipe: teamName, 
+            grupo: "Histórico/Outro", 
+            posGeral: "-", 
+            pontos: 0, booyah: 0, abates: 0, quedas: 0 
+        };
+    }
+
+    // 3. Preenche os textos básicos
+    document.getElementById('tp-name').innerText = t.equipe;
+    document.getElementById('tp-group').innerText = (t.grupo === "Histórico/Outro") ? "EQUIPE HISTÓRICA" : `Grupo ${t.grupo}`;
+    document.getElementById('tp-pos').innerText = (t.posGeral === "-") ? "N/A" : `${t.posGeral}º`;
+    
+    // 4. Logo com fallback (escudo.webp)
+    let logoEl = document.getElementById('tp-logo');
+    if (logoEl) {
+        logoEl.src = logos[t.equipe] || 'escudo.webp';
+        logoEl.style.display = 'block';
+    }
+
+    // 5. Lógica do Próximo Jogo (Apenas para times ativos)
+    const tpContainer = document.getElementById('tp-next-match-container');
+    if (tpContainer) {
+        const now = new Date();
+        currentTeamNextMatch = agenda.find(m => 
+            m.grupos.includes(t.grupo) && 
+            (parseMatchDate(m.data).getTime() + (6 * 60 * 60 * 1000) > now.getTime())
+        );
+
+        if (currentTeamNextMatch && t.grupo !== "Histórico/Outro") {
+            const opponentsHtml = currentTeamNextMatch.grupos
+                .filter(g => g !== t.grupo)
+                .map(g => {
+                    const teamsInGroup = db.teams.filter(tm => tm.grupo === g);
+                    const logosHtml = teamsInGroup.map(tm => 
+                        `<img src="${logos[tm.equipe] || 'escudo.webp'}" class="mini-logo" style="width:18px; height:18px; margin: 0 1px;">`
+                    ).join('');
+                    return `<div style="margin-top:5px; display:flex; align-items:center; gap:8px;">
+                                <span style="font-weight:bold; color:var(--accent); font-size:0.85em;">${g}:</span>
+                                <div style="display:flex;">${logosHtml}</div>
+                            </div>`;
+                }).join('');
+
+            tpContainer.innerHTML = `
+                <div style="background: rgba(255, 170, 0, 0.05); border: 1px solid rgba(255,170,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="color: var(--accent); font-size: 0.75em; font-weight: bold; text-transform: uppercase; letter-spacing:1px; margin-bottom:5px;">Próximo Jogo da Equipe</div>
+                        <div id="tp-countdown-display" style="font-size: 1.2em; font-weight: bold; color:#fff;">Calculando...</div>
+                        <div style="font-size: 0.8em; color: var(--text-muted); margin-top:2px;">${currentTeamNextMatch.data} às 13h</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; border: 1px solid #333;">
+                        <div style="font-size: 0.7em; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;">Enfrenta:</div>
+                        ${opponentsHtml}
+                    </div>
+                </div>`;
+        } else {
+            tpContainer.innerHTML = ""; 
+        }
+    }
+
+    // 6. Limpa e reconstrói os filtros de confronto
+    let oppSelect = document.getElementById('tp-opp-group');
+    if (oppSelect) {
+        oppSelect.innerHTML = '';
+        ['A', 'B', 'C', 'D'].forEach(g => { 
+            if (g !== t.grupo) oppSelect.innerHTML += `<option value="${g}">Grupo ${g}</option>`; 
+        });
+    }
+    
+    // 7. Renderiza as abas de conteúdo
+    if (typeof buildDayFilters === 'function') buildDayFilters();
+    if (typeof renderTeamProfileStats === 'function') renderTeamProfileStats();
+    if (typeof renderTeamConfrontation === 'function') renderTeamConfrontation();
+    
+    // 8. Abre a tela
+    navigate('team-profile');
+    if (typeof updateCountdown === 'function') updateCountdown();
 }
 
 function renderHistoricoEquipes(nome, containerId) {
@@ -6973,123 +7551,55 @@ function renderUnifiedTrophies(name, containerId) {
     }).join('');
 }
 
+// handleGlobalSearch legada — redireciona para a nova versão unificada
 function handleGlobalSearch() {
-    let input = document.getElementById('global-search').value.toLowerCase();
-    let resultsBox = document.getElementById('search-results');
-    if(input.length < 2) { resultsBox.style.display = 'none'; return; }
-
-    let pool = [];
-    let seen = new Set();
-
-    // 1. Adiciona Jogadores Ativos
-    db.players.forEach(p => { 
-        pool.push({ name: p.jogador, sub: p.equipe, type: 'player', isEx: p.isEx }); 
-        seen.add(p.jogador.toLowerCase()); 
-    });
-
-    // 2. Adiciona Comissão Técnica
-    dbStaff.forEach(s => { 
-        if(!seen.has(s.nome.toLowerCase())) { 
-            pool.push({ name: s.nome, sub: `${s.equipe} (${s.cargo})`, type: 'staff' }); 
-            seen.add(s.nome.toLowerCase()); 
-        }
-    });
-
-    // 3. Adiciona Inativos do Top 100
-    if (typeof histData !== 'undefined') {
-        histData.forEach(h => { 
-            if(!seen.has(h.n.toLowerCase())) { 
-                pool.push({ name: h.n, sub: 'INATIVO', type: 'player', isEx: true }); 
-                seen.add(h.n.toLowerCase()); 
-            }
-        });
-    }
-
-    // 4. Adiciona Inativos do Resto da História (lbffData) -> ISSO AQUI FAZIA FALTA!
-    if (typeof lbffData !== 'undefined') {
-        Object.keys(lbffData).forEach(name => {
-            if(!seen.has(name.toLowerCase())) { 
-                pool.push({ name: name, sub: 'INATIVO', type: 'player', isEx: true }); 
-                seen.add(name.toLowerCase()); 
-            }
-        });
-    }
-
-    // 5. Filtra usando o NOME LIMPO (getDisplayName)
-    let found = pool.filter(x => getDisplayName(x.name).toLowerCase().includes(input));
-    let foundTeams = db.teams.filter(t => t.equipe.toLowerCase().includes(input));
-
-    // Renderiza Equipes
-    let html = foundTeams.map(t => `<div class="search-item" onclick="selectSearchResult('team', '${t.equipe}')"><img src="${logos[t.equipe]||''}"><div><span style="font-weight: bold; color: #fff;">${t.equipe}</span><br><small style="color: #aaa;">Página da Equipe</small></div></div>`).join('');
-    
-    // Renderiza Jogadores e Staff
-    html += found.map(p => {
-        let img = p.isEx ? 'silhueta.png' : (p.type === 'staff' ? (staffPhotos[p.name] || 'silhueta.png') : (playerPhotos[p.name] || 'silhueta.png'));
-        
-        return `<div class="search-item" onclick="selectSearchResult('${p.type}', '${p.name}')"><img src="${img}"><div><span style="font-weight: bold; color: #fff;">${getDisplayName(p.name)}</span><br><small style="color: #aaa;">${p.sub}</small></div></div>`;
-    }).join('');
-
-    resultsBox.innerHTML = html || '<div style="padding:15px; color:#888; text-align:center;">Nenhum resultado encontrado</div>';
-    resultsBox.style.display = 'block';
+    handleGlobalSearchFrom('desktop');
 }
 
     // Ação ao clicar em um resultado
 function selectSearchResult(type, name) {
-    document.getElementById('search-results').style.display = 'none';
-    document.getElementById('global-search').value = '';
+    // Limpa todos os campos e esconde os resultados
+    ['search-results', 'search-results-desktop', 'search-results-mobile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+    ['global-search', 'global-search-desktop', 'global-search-mobile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
     
     if (type === 'staff') {
         openStaffProfile(name);
     } else if (type === 'team') {
-        openTeamProfile(name); // <-- ADICIONAMOS ESSA REGRA AQUI
+        openTeamProfile(name);
     } else {
         openPlayerProfile(name);
     }
 }
 
-    // Função para abrir/fechar a barra de pesquisa no celular
-    function toggleMobileSearch() {
-        let wrapper = document.getElementById('search-wrapper');
-        wrapper.classList.toggle('active');
-        
-        // Se abriu, já coloca o teclado focado pra digitar
-        if(wrapper.classList.contains('active')) {
-            document.getElementById('global-search').focus();
-            document.getElementById('nav-links').classList.remove('active'); // Fecha o outro menu se tiver aberto
-        } else {
-            // Se fechou, limpa o texto digitado e some com os resultados
-            document.getElementById('global-search').value = '';
-            document.getElementById('search-results').style.display = 'none';
-        }
-    }
-
-// Esconder o menu de pesquisa se o usuário clicar em qualquer lugar fora dele
+// Esconder os dropdowns de busca ao clicar fora
     document.addEventListener('click', function(e) {
-        let searchWrapper = document.querySelector('.search-wrapper');
-        let searchBtn = document.getElementById('search-btn');
-        
-        // Se clicou fora da barra E fora do botão de lupa, aí sim fecha.
-        if (searchWrapper && !searchWrapper.contains(e.target) && searchBtn && !searchBtn.contains(e.target)) {
-            let resultsBox = document.getElementById('search-results');
-            if (resultsBox) resultsBox.style.display = 'none';
+        const targets = [
+            { results: 'search-results-desktop', wrapper: '.nav-search-wrapper-desktop' },
+            { results: 'search-results-mobile', wrapper: '.nav-mobile-search-bar' },
+        ];
+        targets.forEach(({ results, wrapper }) => {
+            const box = document.getElementById(results);
+            const wrapperEl = document.querySelector(wrapper);
+            if (box && wrapperEl && !wrapperEl.contains(e.target)) {
+                box.style.display = 'none';
+            }
+        });
+        // Fecha a barra de busca desktop se clicar fora
+        const desktopWrapper = document.getElementById('nav-search-wrapper-desktop');
+        if (desktopWrapper && desktopWrapper.classList.contains('open') && !desktopWrapper.contains(e.target)) {
+            desktopWrapper.classList.remove('open');
+            const inp = document.getElementById('global-search-desktop');
+            if (inp) { inp.value = ''; }
+            const res = document.getElementById('search-results-desktop');
+            if (res) res.style.display = 'none';
         }
     });
-
-    // Função para abrir/fechar a barra de pesquisa no celular
-    function toggleMobileSearch() {
-        let wrapper = document.getElementById('search-wrapper');
-        let btn = document.getElementById('search-btn');
-        wrapper.classList.toggle('active');
-        const isOpen = wrapper.classList.contains('active');
-        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        if(isOpen) {
-            document.getElementById('global-search').focus();
-            document.getElementById('nav-links').classList.remove('active'); 
-        } else {
-            document.getElementById('global-search').value = '';
-            document.getElementById('search-results').style.display = 'none';
-        }
-    }
 
 function checkNameMatch(n1, n2) {
     if(!n1 || !n2) return false;
@@ -7494,44 +8004,59 @@ function createSelectionCardHTML(p) {
 }
 
 function createPlayerCardHTML(p, scale = 1) {
-    let ovr = calculateOverall(p);
-    let role = playerRoles[p.jogador] || "RUSH";
+    // 1. DEFINIÇÃO DO OVERALL (Prioriza o valor de lenda se existir)
+    let ovr = p.ovrOverride ? p.ovrOverride : calculateOverall(p);
+    
+    // 2. LÓGICA DE FOTO (Fallback para silhueta se estiver vazio ou não existir)
     let photoKey = Object.keys(playerPhotos).find(k => k.toLowerCase() === p.jogador.toLowerCase().trim());
-    let photo = photoKey ? playerPhotos[photoKey] : "silhueta.png";
-    let teamLogo = logos[p.equipe] || "";
-    let danoK = (p.dano / 1000).toFixed(0) + "K";
+    let photo = (photoKey && playerPhotos[photoKey]) ? playerPhotos[photoKey] : "silhueta.png";
+    
+    // 3. CORES E ESTILO BASEADO NA NOTA
+    let accentColor = "#cd7f32"; // Bronze (Padrão)
+    if (ovr >= 95) accentColor = "#00c8ff";      // Diamante/Lendário Plus
+    else if (ovr >= 90) accentColor = "#d4af37"; // Ouro Lendário
+    else if (ovr >= 85) accentColor = "#c5a028"; // Ouro Elite
+    else if (ovr >= 80) accentColor = "#e5e5e5"; // Prata Brilhante
+    else if (ovr >= 75) accentColor = "#a3a3a3"; // Prata
+    
+    let glow = ovr >= 90 ? `box-shadow: 0 0 30px ${accentColor}66;` : '';
+    
+    // 4. FORMATAÇÃO DE DADOS
+    let role = playerRoles[p.jogador] || "RUSH";
+    let teamLogo = logos[p.equipe] || "escudo.webp";
+    let danoK = (p.dano / 1000).toFixed(1) + "K";
+    
+    // 5. BADGES (Inativo e Capitão)
+    let exBadge = p.isEx ? `<div style="position: absolute; top: 18px; left: -35px; background: #f44336; color: #fff; font-size: 0.7em; font-weight: bold; padding: 5px 35px; transform: rotate(-45deg); z-index: 10; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">Inativo</div>` : '';
     
     let captainBadge = (typeof playerCaptains !== 'undefined' && playerCaptains[p.jogador]) ? 
         `<img src="cpt.png" style="position: absolute; top: 20px; right: 15px; z-index: 5; width: 35px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));">` : '';
 
-    let accentColor = "#cd7f32"; 
-    if (ovr >= 91) accentColor = "#d4af37";
-    else if (ovr >= 85) accentColor = "#c5a028";
-    else if (ovr >= 80) accentColor = "#e5e5e5";
-    else if (ovr >= 75) accentColor = "#a3a3a3";
-
-    let glow = ovr >= 91 ? `box-shadow: 0 0 40px ${accentColor}66;` : '';
-    let exBadge = p.isEx ? `<div style="position: absolute; top: 18px; left: -35px; background: #f44336; color: #fff; font-size: 0.7em; font-weight: bold; padding: 5px 35px; transform: rotate(-45deg); z-index: 10; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">Inativo</div>` : '';
     let marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
 
     return `
-<div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
+        <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
             <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
-            ${exBadge} ${captainBadge}
+            ${exBadge} 
+            ${captainBadge}
+            
             <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
                 <div style="font-size: 58px; font-weight: 900; line-height: 0.8;">${ovr}</div>
                 <div style="font-size: 22px; font-weight: bold; margin-top: 5px;">${role}</div>
                 <div style="margin: 15px auto; width: 40px; height: 2px; background: ${accentColor}; opacity: 0.6;"></div>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width: 35px; border-radius: 2px; display: block; margin: 8px auto;">
-                <img src="${teamLogo}" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
+                <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
             </div>
-            <img src="${photo}" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);">
+
+            <img src="${photo}" onerror="this.src='silhueta.png'" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);">
+            
             <div style="position: absolute; bottom: 0; width: 100%; height: 185px; background: linear-gradient(transparent, #000 35%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 12px;">
                 <div style="width: 100%; text-align: center; margin-bottom: 8px;">
                     <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
-                    <div style="color: #fff; font-size: 24px; font-weight: 900; text-transform: uppercase; padding: 6px 0;">${p.jogador}</div>
+                    <div style="color: #fff; font-size: 24px; font-weight: 900; text-transform: uppercase; padding: 6px 0;">${getDisplayName(p.jogador)}</div>
                     <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
                 </div>
+                
                 <div style="display: flex; flex-direction: column; gap: 2px; color: #fff; width: 100%; align-items: center; text-transform: uppercase;">
                     <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${p.abates}</span> ABATES</div>
                     <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${p.assists}</span> ASSISTÊNCIAS</div>
@@ -7837,7 +8362,7 @@ function toggleDay(containerId, day, callback) {
     else window[callback]();
 }
 
-function onTeamDayFilterChanged() { buildDayFilters(); renderFullTeams(); renderGroupsTables(); }
+function onTeamDayFilterChanged_ALIAS() { buildDayFilters(); renderFullTeams(); renderGroupsTables(); } // alias legado — usar onTeamDayFilterChanged abaixo
 function onPlayerDayFilterChanged() { buildDayFilters(); renderAllPlayers(); }
 function onTpDayFilterChanged() { buildDayFilters(); renderTeamProfileStats(); }
 
@@ -7997,7 +8522,7 @@ function renderFullTeams() {
         // Se estiver em "Todos" (sem nenhum filtro), ele pode usar a posGeral original
         let pos = (selectedTeamDays.length > 0 || isMapFilter || isSingleDrop) ? (index + 1) : t.posGeral;
         
-        let logoSrc = logos[t.equipe] || '';
+        let logoSrc = logos[t.equipe] || 'escudo.webp';
         let sName = shortNames[t.equipe] || t.equipe;
         
         // Define o que aparece na última coluna
@@ -8290,212 +8815,236 @@ function openResultsModal() {
     document.getElementById('results-modal').classList.add('active');
 }
 
-function openTeamProfile(teamName) {
-    currentTeamView = teamName;
-    selectedTpDays = []; 
-    let t = db.teams.find(x => x.equipe === teamName);
-    if(!t) return;
-
-    // Dados básicos do perfil
-    document.getElementById('tp-name').innerText = t.equipe;
-    document.getElementById('tp-group').innerText = `Grupo ${t.grupo}`;
-    document.getElementById('tp-pos').innerText = `${t.posGeral}º`;
-    let logoEl = document.getElementById('tp-logo');
-    if (logos[t.equipe]) { logoEl.src = logos[t.equipe]; logoEl.style.display = 'block'; } else logoEl.style.display = 'none';
-
-    // --- LÓGICA CORRIGIDA: Busca o próximo jogo DESTA EQUIPE específica ---
-    const now = new Date();
-    currentTeamNextMatch = agenda.find(m => {
-        const mDate = parseMatchDate(m.data);
-        // Verifica se o grupo do time está na partida E se a partida ainda não acabou (margem de 6h)
-        return m.grupos.includes(t.grupo) && (mDate.getTime() + (6 * 60 * 60 * 1000) > now.getTime());
-    });
-
-    const tpContainer = document.getElementById('tp-next-match-container');
-    if (tpContainer) {
-        if (currentTeamNextMatch) {
-            // Gera os logos dos oponentes específicos deste jogo
-            const opponentsHtml = currentTeamNextMatch.grupos
-                .filter(g => g !== t.grupo)
-                .map(g => {
-                    const teamsInGroup = db.teams.filter(tm => tm.grupo === g);
-                    const logosHtml = teamsInGroup.map(tm => 
-                        `<img src="${logos[tm.equipe] || ''}" class="mini-logo" style="width:18px; height:18px; margin: 0 1px;" title="${tm.equipe}">`
-                    ).join('');
-                    return `<div style="margin-top:5px; display:flex; align-items:center; gap:8px;">
-                                <span style="font-weight:bold; color:var(--accent); font-size:0.85em;">${g}:</span>
-                                <div style="display:flex;">${logosHtml}</div>
-                            </div>`;
-                }).join('');
-
-// Dentro de openTeamProfile, procure a parte que define o tpContainer.innerHTML:
-tpContainer.innerHTML = `
-    <div style="background: rgba(255, 170, 0, 0.05); border: 1px solid rgba(255,170,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-        <div>
-            <div style="color: var(--accent); font-size: 0.75em; font-weight: bold; text-transform: uppercase; letter-spacing:1px; margin-bottom:5px;">Próximo Jogo da Equipe</div>
-            <div id="tp-countdown-display" style="font-size: 1.2em; font-weight: bold; color:#fff;">Calculando...</div>
-            <div style="font-size: 0.8em; color: var(--text-muted); margin-top:2px;">${currentTeamNextMatch.data} às 13h</div>
-        </div>
-        
-        <a href="https://www.youtube.com/@FFesportsBR/live" target="_blank" class="live-status-btn offline" id="tp-live-btn" style="width: auto; margin: 0; padding: 10px 20px;">
-            <img src="youtube.webp" alt="">
-            <span id="tp-live-text" style="font-size: 0.8em;">Transmissão Offline</span>
-        </a>
-
-        <div style="background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; border: 1px solid #333;">
-            <div style="font-size: 0.7em; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;">Enfrenta:</div>
-            ${opponentsHtml}
-        </div>
-    </div>`;
-        } else {
-            tpContainer.innerHTML = ""; 
-        }
-    }
-
-    // Filtros e tabelas
-    let oppSelect = document.getElementById('tp-opp-group');
-    oppSelect.innerHTML = '';
-    ['A', 'B', 'C', 'D'].forEach(g => { if (g !== t.grupo) oppSelect.innerHTML += `<option value="${g}">Grupo ${g}</option>`; });
-    
-    buildDayFilters();
-    renderTeamProfileStats();
-    renderTeamConfrontation();
-    navigate('team-profile');
-    
-    updateCountdown(); // Atualiza os tempos imediatamente
-}
+// (handleGlobalSearch redirecionada para handleGlobalSearchFrom — ver acima)
 
 function renderTeamProfileStats() {
     let tName = currentTeamView;
-    let t = db.teams.find(x => x.equipe === tName);
+    let t = db.teams.find(x => x.equipe.toUpperCase() === tName.toUpperCase());
     
-    let allTeamsStats = [];
-    db.teams.forEach(team => {
-        let daily = db.teamDaily[team.equipe] || [];
-        let pDaily = db.playerDaily.filter(p => p.equipe === team.equipe);
-        if (selectedTpDays.length > 0) {
-            daily = daily.filter(d => selectedTpDays.includes(String(d.dia)));
-            pDaily = pDaily.filter(p => selectedTpDays.includes(String(p.dia)));
-        }
-        let stats = daily.reduce((acc, curr) => { 
-            acc.pontos += curr.pontos; acc.abates += curr.abates; acc.booyah += curr.booyah; acc.quedas += curr.quedas; return acc; 
-        }, {pontos: 0, abates: 0, booyah: 0, quedas: 0});
-        let dano = pDaily.reduce((sum, p) => sum + p.dano, 0);
-        
-        // AQUI ELE PASSA A USAR stats.quedas EM VEZ DA MULTIPLICAÇÃO
-        allTeamsStats.push({ equipe: team.equipe, pontos: stats.pontos, abates: stats.abates, pontos_pos: stats.pontos - stats.abates, dano: dano, booyah: stats.booyah, quedas: stats.quedas, dias: daily.length });
-    });
+    // Se a equipa não for encontrada na WB atual, tratamos como Histórica
+    if(!t) {
+        t = { equipe: tName, grupo: "Histórico/Outro" };
+    }
+    let isHist = t.grupo === "Histórico/Outro";
 
-    let cur = allTeamsStats.find(x => x.equipe === tName);
-    
-    // ... restante da função continua igual ...
-
-    // 1. Renderiza Melhor/Pior Dia
+    // Mapeamento de elementos do DOM
     let bestWorstContainer = document.getElementById('tp-best-worst-container');
-    if(bestWorstContainer) {
-        let htmlBW = '';
-        if(db.teamDaily[tName] && db.teamDaily[tName].length > 0) {
+    let statsContainer = document.getElementById('tp-stats-container');
+    let confResult = document.getElementById('tp-confrontation-result');
+    let btnConf = document.getElementById('btn-confrontation');
+    let cardsContainer = document.getElementById('tp-players-cards-container');
+    let internalTableWrap = document.querySelector('#table-team-players') ? document.querySelector('#table-team-players').parentElement : null;
+    let headers = document.querySelectorAll('#team-profile h3');
+    let filters = document.querySelectorAll('#team-profile .filters');
+
+    if (isHist) {
+        // ==========================================
+        // MODO: EQUIPE HISTÓRICA
+        // ==========================================
+        
+        // 1. Ocultar componentes da temporada ativa
+        if(bestWorstContainer) bestWorstContainer.style.display = 'none';
+        if(statsContainer) statsContainer.style.display = 'none';
+        if(confResult) confResult.style.display = 'none';
+        if(btnConf) btnConf.style.display = 'none';
+        if(internalTableWrap) internalTableWrap.style.display = 'none';
+        filters.forEach(f => { if(!f.id.includes('day-filters')) f.style.display = 'none'; });
+
+        // 2. Ajustar Títulos
+        headers.forEach(h => {
+            let text = h.innerText.toUpperCase();
+            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA')) {
+                h.style.display = 'none';
+            }
+            if(text.includes('JOGADORES E STAFF') || text.includes('JOGADORES NOTÁVEIS')) {
+                h.innerText = 'JOGADORES NOTÁVEIS';
+                h.style.display = 'block';
+            }
+        });
+
+        // 3. Lógica de Jogadores Notáveis (Top 5 Kills da História na Org)
+        let notablePlayers = [];
+        if (typeof dbPassagens !== 'undefined') {
+            let playersWithPassage = dbPassagens.filter(p => 
+                p.passagens.some(pass => pass.equipe.toUpperCase() === tName.toUpperCase() && pass.cargo.toUpperCase() === "JOGADOR")
+            );
+            
+            playersWithPassage.forEach(pt => {
+                let playerName = pt.jogador;
+                let hKills = 0, hQuedas = 0;
+                
+                // Soma dados de lbffData e histData
+                let histRecord = typeof histData !== 'undefined' ? histData.find(h => checkNameMatch(h.n, playerName)) : null;
+                let lbffEntry = typeof lbffData !== 'undefined' ? Object.entries(lbffData).find(([name]) => checkNameMatch(name, playerName)) : null;
+                
+                if (histRecord) {
+                    hKills = histRecord.k; hQuedas = histRecord.q;
+                } else if (lbffEntry) {
+                    for (let ed in lbffEntry[1]) {
+                        hKills += lbffEntry[1][ed].k || 0;
+                        hQuedas += lbffEntry[1][ed].q || 0;
+                    }
+                }
+                
+                // Soma desempenho da temporada atual se estiver ativo
+                let activeName = (typeof historicalAliases !== 'undefined' && historicalAliases[playerName]) || playerName;
+                let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+                if (activeP) {
+                    hKills += (activeP.abates || 0);
+                    hQuedas += (activeP.quedas || 0);
+                }
+
+                if (hKills > 0) {
+                    notablePlayers.push({
+                        jogador: playerName,
+                        equipe: tName,
+                        abates: hKills,
+                        quedas: hQuedas,
+                        dano: hKills * 450, // Estimativa para preenchimento visual
+                        assists: Math.floor(hKills * 0.3),
+                        ovrOverride: 0 // Será calculado abaixo
+                    });
+                }
+            });
+        }
+
+        notablePlayers.sort((a,b) => b.abates - a.abates);
+        let top5 = notablePlayers.slice(0, 5);
+
+        if (cardsContainer) {
+            if (top5.length > 0) {
+                cardsContainer.innerHTML = top5.map(p => {
+                    let pCard = { ...p };
+                    pCard.ovrOverride = calculateHistoricalOverall(p); // Usa o cálculo de lenda
+                    return createPlayerCardHTML(pCard, 0.85);
+                }).join('');
+            } else {
+                cardsContainer.innerHTML = '<div style="color:#888; text-align:center; width:100%; padding: 20px;">Sem registo de jogadores notáveis para esta organização.</div>';
+            }
+        }
+
+    } else {
+        // ==========================================
+        // MODO: EQUIPE ATIVA
+        // ==========================================
+        
+        if(bestWorstContainer) bestWorstContainer.style.display = 'block';
+        if(statsContainer) statsContainer.style.display = 'block'; 
+        if(confResult) confResult.style.display = 'block';
+        if(btnConf) btnConf.style.display = 'inline-block';
+        if(internalTableWrap) internalTableWrap.style.display = 'block';
+        filters.forEach(f => f.style.display = 'flex');
+        
+        headers.forEach(h => {
+            let text = h.innerText.toUpperCase();
+            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA')) h.style.display = 'block';
+            if(text.includes('JOGADORES NOTÁVEIS') || text.includes('JOGADORES E STAFF')) {
+                h.innerText = 'JOGADORES E STAFF';
+                h.style.display = 'block';
+            }
+        });
+
+        // Cálculo de estatísticas da temporada
+        let allTeamsStats = [];
+        db.teams.forEach(team => {
+            let daily = db.teamDaily[team.equipe] || [];
+            let pDaily = db.playerDaily.filter(p => p.equipe === team.equipe);
+            if (selectedTpDays.length > 0) {
+                daily = daily.filter(d => selectedTpDays.includes(String(d.dia)));
+                pDaily = pDaily.filter(p => selectedTpDays.includes(String(p.dia)));
+            }
+            let stats = daily.reduce((acc, curr) => { 
+                acc.pontos += curr.pontos; acc.abates += curr.abates; acc.booyah += curr.booyah; acc.quedas += curr.quedas; return acc; 
+            }, {pontos: 0, abates: 0, booyah: 0, quedas: 0});
+            let danoTotal = pDaily.reduce((sum, p) => sum + p.dano, 0);
+            
+            allTeamsStats.push({ equipe: team.equipe, pontos: stats.pontos, abates: stats.abates, pontos_pos: stats.pontos - stats.abates, dano: danoTotal, booyah: stats.booyah, quedas: stats.quedas, dias: daily.length });
+        });
+
+        let cur = allTeamsStats.find(x => x.equipe === tName);
+        
+        if(bestWorstContainer && db.teamDaily[tName]) {
             let sorted = [...db.teamDaily[tName]].sort((a,b) => b.pontos - a.pontos);
-            htmlBW = `
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <div class="card" style="flex: 1; border-left: 4px solid #4caf50;">
-                        <h3 style="font-size: 0.8em;">🏆 Melhor Desempenho</h3>
-                        <div class="value" style="font-size: 1.5em;">${sorted[0].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[0].dia})</span></div>
-                    </div>
-                    <div class="card" style="flex: 1; border-left: 4px solid #f44336;">
-                        <h3 style="font-size: 0.8em;">⚠️ Pior Desempenho</h3>
-                        <div class="value" style="font-size: 1.5em;">${sorted[sorted.length-1].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[sorted.length-1].dia})</span></div>
-                    </div>
+            if(sorted.length > 0) {
+                bestWorstContainer.innerHTML = `
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div class="card" style="flex: 1; border-left: 4px solid #4caf50;"><h3 style="font-size: 0.8em;">🏆 Melhor Dia</h3><div class="value" style="font-size: 1.5em;">${sorted[0].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[0].dia})</span></div></div>
+                        <div class="card" style="flex: 1; border-left: 4px solid #f44336;"><h3 style="font-size: 0.8em;">⚠️ Pior Dia</h3><div class="value" style="font-size: 1.5em;">${sorted[sorted.length-1].pontos} <span style="font-size: 0.5em; color: #888;">PTS (DIA ${sorted[sorted.length-1].dia})</span></div></div>
+                    </div>`;
+            }
+        }
+
+        if(statsContainer && cur) {
+            let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));";
+            statsContainer.innerHTML = `
+                <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 15px;">
+                    <div class="card"><div class="card-top-border"></div><h3>Média Pts</h3><div class="value">${(cur.pontos/(cur.quedas||1)).toFixed(1)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Média Kills</h3><div class="value">${(cur.abates/(cur.quedas||1)).toFixed(1)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Média Pos</h3><div class="value">${(cur.pontos_pos/(cur.quedas||1)).toFixed(1)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3><div class="value">${(cur.dano/(cur.quedas||1)).toFixed(0)}</div></div>
+                    <div class="card"><div class="card-top-border"></div><h3>Booyahs</h3><div class="value">${cur.booyah}</div></div>
                 </div>`;
         }
-        bestWorstContainer.innerHTML = htmlBW;
-    }
 
-    // 2. Renderiza Grade de Estatísticas (Duas fileiras cravadas)
-    let container = document.getElementById('tp-stats-container');
-    if(container && cur) {
-        container.style.display = "block"; // A MÁGICA PRA EMPILHAR
-        let gridCSS = window.innerWidth > 1000 ? "grid-template-columns: repeat(5, 1fr);" : "grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));";
-
-        container.innerHTML = `
-            <div style="display: grid; ${gridCSS} gap: 15px; margin-bottom: 15px;">
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Pts</h3><div class="value">${(cur.pontos/(cur.quedas||1)).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Abates</h3><div class="value">${(cur.abates/(cur.quedas||1)).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Colocação</h3><div class="value">${(cur.pontos_pos/(cur.quedas||1)).toFixed(1)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Dano</h3><div class="value">${(cur.dano/(cur.quedas||1)).toFixed(0)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por queda</div></div>
-                <div class="card"><div class="card-top-border"></div><h3 style="font-size:0.9em">Média Booyah</h3><div class="value">${(cur.booyah/(cur.dias||1)).toFixed(2)}</div><div style="color:#888;font-size:0.8em;margin-top:5px;">Por dia</div></div>
-            </div>
-
-            <div style="display: grid; ${gridCSS} gap: 15px;">
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Pontos Totais</h3><div class="value" style="color:#fff">${cur.pontos}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Abates Totais</h3><div class="value" style="color:#fff">${cur.abates}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Pts Colocação</h3><div class="value" style="color:#fff">${cur.pontos_pos}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Dano Acumulado</h3><div class="value" style="color:#fff">${cur.dano}</div></div>
-                <div class="card" style="background: rgba(255,170,0,0.05); border: 1px solid #444;"><div class="card-top-border" style="background:#888"></div><h3 style="font-size:0.9em">Booyahs Totais</h3><div class="value" style="color:#fff">${cur.booyah}</div></div>
-            </div>`;
-    }
-
-    // 3. Lógica de Jogadores e Staff
-    let pRaw = db.playerDaily.filter(p => p.equipe === tName);
-    if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
-    
-    let agg = {};
-    pRaw.forEach(row => {
-        if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, equipe: row.equipe, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
-        agg[row.jogador].quedas += row.quedas; agg[row.jogador].abates += row.abates; agg[row.jogador].dano += row.dano; agg[row.jogador].assists += row.assists; agg[row.jogador].mvp += (row.mvp || 0);
-    });
-
-    let playersList = Object.values(agg).map(pAgg => {
-        let dbP = db.players.find(x => x.jogador === pAgg.jogador);
-        pAgg.isEx = dbP ? (dbP.isEx || false) : false;
-        return pAgg;
-    });
-
-    let ativos = playersList.filter(p => !p.isEx).sort((a,b) => b.abates - a.abates);
-    let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
-
-    let cardsContainer = document.getElementById('tp-players-cards-container');
-    if (cardsContainer) {
-        let html = ativos.map(p => createPlayerCardHTML(p, 0.85)).join('');
+        // Jogadores Ativos (Top 4)
+        let pRaw = db.playerDaily.filter(p => p.equipe === tName);
+        if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
         
-        if (inativos.length > 0) {
-            html += `
-            <div style="width: 100%; text-align: center; margin-top: 15px;">
-                <button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button>
-            </div>
-            <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
-                ${inativos.map(p => createPlayerCardHTML(p, 0.85)).join('')}
-            </div>`;
+        let agg = {};
+        pRaw.forEach(row => {
+            if (!agg[row.jogador]) agg[row.jogador] = { jogador: row.jogador, equipe: row.equipe, quedas: 0, abates: 0, dano: 0, assists: 0, mvp: 0 };
+            agg[row.jogador].quedas += row.quedas; agg[row.jogador].abates += row.abates; 
+            agg[row.jogador].dano += row.dano; agg[row.jogador].assists += row.assists; 
+            agg[row.jogador].mvp += (row.mvp || 0);
+        });
+
+        let playersList = Object.values(agg).map(p => {
+            let dbP = db.players.find(x => x.jogador === p.jogador);
+            p.isEx = dbP ? (dbP.isEx || false) : false;
+            return p;
+        });
+
+        let ativos = playersList.filter(p => !p.isEx).sort((a,b) => b.abates - a.abates);
+        let top4Ativos = ativos.slice(0, 4);
+        let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
+
+        if (cardsContainer) {
+            let html = top4Ativos.map(p => createPlayerCardHTML(p, 0.85)).join('');
+            
+            if (inativos.length > 0) {
+                html += `
+                <div style="width: 100%; text-align: center; margin-top: 15px;">
+                    <button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button>
+                </div>
+                <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
+                    ${inativos.map(p => createPlayerCardHTML(p, 0.85)).join('')}
+                </div>`;
+            }
+
+            let staffList = dbStaff.filter(s => s.equipe === tName);
+            if (staffList.length > 0) {
+                html += `<div style="width: 100%; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                    ${staffList.map(s => {
+                        let photoKey = Object.keys(staffPhotos).find(k => k.toLowerCase() === s.nome.toLowerCase().trim());
+                        let photo = photoKey ? staffPhotos[photoKey] : 'silhueta.png';
+                        return `
+                        <div onclick="openStaffProfile('${s.nome}')" style="cursor: pointer; background: #1c1c20; border: 1px solid var(--border); padding: 15px; border-radius: 12px; min-width: 160px; text-align: center;">
+                            <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 2px solid var(--accent);"><img src="${photo}" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transform: scale(1.25);"></div>
+                            <div style="color: #fff; font-size: 1em; font-weight: bold;">${s.nome}</div>
+                            <div style="color: var(--accent); font-size: 0.75em; text-transform: uppercase; font-weight: 900;">${s.cargo}</div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            }
+            cardsContainer.innerHTML = html;
         }
 
-// CARDS COM FOTO PARA A COMISSÃO TÉCNICA
-        let staffList = dbStaff.filter(s => s.equipe === tName);
-        if (staffList.length > 0) {
-            html += `<div style="width: 100%; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
-                ${staffList.map(s => {
-                    let photoKey = typeof staffPhotos !== 'undefined' ? (Object.keys(staffPhotos).find(k => k.toLowerCase() === s.nome.toLowerCase().trim()) || null) : null;
-                    let photo = photoKey ? staffPhotos[photoKey] : 'silhueta.png';
-                    return `
-                    <div onclick="openStaffProfile('${s.nome}')" style="cursor: pointer; background: #1c1c20; border: 1px solid var(--border); padding: 15px; border-radius: 12px; min-width: 160px; text-align: center; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                        
-                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 2px solid var(--accent); background: #000;">
-                            <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transform: scale(1.25);">
-                        </div>
-                        
-                        <div style="color: #fff; font-size: 1em; font-weight: bold; text-transform: uppercase;">${s.nome}</div>
-                        <div style="color: var(--accent); font-size: 0.75em; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-top: 2px;">${s.cargo}</div>
-                    </div>`;
-                }).join('')}
-            </div>`;
+        let tbody = document.querySelector('#table-team-players tbody');
+        if(tbody) {
+            tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
         }
-        cardsContainer.innerHTML = html;
     }
 
-    // 4. Classificação Interna
-    let tbody = document.querySelector('#table-team-players tbody');
-    tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
-
-    // 5. Galeria de Troféus da Equipe
     renderTeamTrophies(tName);
 }
 
@@ -8788,6 +9337,33 @@ function calculateOverall(p) {
     return result;
 }
 
+function calculateHistoricalOverall(p) {
+    let q = p.quedas || 1;
+    let avgK = p.abates / q;
+    
+    // 1. Base pela Média de Kills Histórica (Escala mais rigorosa para lendas)
+    // 1.8 de média histórica é o topo do mundo (equivale a 95 pts)
+    let scoreBase = 70 + (Math.min(avgK / 1.8, 1) * 25);
+
+    // 2. Bônus por Volume Total (O "Fator Legado")
+    let legacyBonus = 0;
+    if (p.abates >= 1000) legacyBonus += 4;      // Clube das 1000 Kills
+    else if (p.abates >= 500) legacyBonus += 2;  // Veterano de Elite
+    
+    // 3. Bônus por Títulos (Puxa do titlesData se o nome bater)
+    let titlesBonus = 0;
+    if (typeof titlesData !== 'undefined') {
+        let titles = titlesData.coletivos.filter(t => t.players?.some(pl => checkNameMatch(pl, p.jogador))).length;
+        titlesBonus = Math.min(titles * 1.5, 5); // Até 5 pontos por ser multicampeão
+    }
+
+    let final = Math.round(scoreBase + legacyBonus + titlesBonus);
+    
+    // Trava para lendas não ficarem abaixo de 80 e não passarem de 99
+    if (final < 80) final = 80;
+    return final > 96 ? 96 : final;
+}
+
 function getOverallColor(ovr) {
     if (ovr >= 90) return '#ffd700'; // Ouro Lendário
     if (ovr >= 85) return '#ffea00'; // Ouro Elite
@@ -9072,16 +9648,176 @@ function renderMapData() {
     let data = db.maps[map];
     let tbody = document.querySelector('#table-maps tbody');
     tbody.innerHTML = '';
-    if(data) [...data].sort((a,b) => b.pontos_total - a.pontos_total).forEach((t, i) => tbody.innerHTML += `<tr><td style="color:var(--accent); font-weight:bold;">${i+1}º</td><td class="team-cell"><img src="${logos[t.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span></td><td style="color:var(--accent); font-weight:bold">${t.pontos_total.toFixed(2)}</td><td>${t.abates.toFixed(2)}</td><td>${t.pontos_pos.toFixed(2)}</td><td>${t.Booyah.toFixed(2)}</td></tr>`);
+    if(data) {
+        const rows = [...data].sort((a,b) => b.pontos_total - a.pontos_total).map((t, i) =>
+            `<tr><td style="color:var(--accent); font-weight:bold;">${i+1}º</td><td class="team-cell"><img src="${logos[t.equipe]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${t.equipe}')">${t.equipe}</span></td><td style="color:var(--accent); font-weight:bold">${t.pontos_total.toFixed(2)}</td><td>${t.abates.toFixed(2)}</td><td>${t.pontos_pos.toFixed(2)}</td><td>${t.Booyah.toFixed(2)}</td></tr>`
+        );
+        tbody.innerHTML = rows.join('');
+    }
 }
 
 // Essa função é nova, ela apenas abre/fecha o menu mobile
 function toggleMobileMenu() {
-    const navLinks = document.getElementById('nav-links');
-    const btn = document.getElementById('hamburger-btn');
-    const isOpen = navLinks.classList.toggle('active');
-    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    btn.textContent = isOpen ? '✕' : '☰';
+    // Legacy - agora usa a sidebar
+    openSidebar();
+}
+
+// =============================================
+// NOVA NAVEGAÇÃO — FUNÇÕES DE CONTROLE
+// =============================================
+
+function openSidebar() {
+    document.getElementById('sidebar-panel').classList.add('active');
+    document.getElementById('sidebar-overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    document.getElementById('sidebar-panel').classList.remove('active');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function navigateAndClose(pageId) {
+    navigate(pageId);
+    closeSidebar();
+    // Chamar funções de renderização das páginas
+    if (pageId === 'teams') { renderAllTeams(); renderGroups(); }
+    else if (pageId === 'players') renderAllPlayers();
+    else if (pageId === 'teams-list') renderTeamsDirectory();
+    else if (pageId === 'schedule') renderSchedule();
+    else if (pageId === 'outros-torneios') renderOutrosTorneiosList();
+    else if (pageId === 'outras-equipes') renderOutrasEquipesGrid();
+    else if (pageId === 'history') renderHistoricalRanking();
+    else if (pageId === 'records-ind') renderIndividualRecords();
+    else if (pageId === 'maps') renderMapsStats();
+    else if (pageId === 'compare') { renderCompareTeams(); renderComparePlayers(); }
+    else if (pageId === 'selection-wb') renderSelection();
+    else if (pageId === 'home') renderHomeStats();
+}
+
+function mobileTabClick(pageId, btnEl) {
+    navigate(pageId);
+    // Renderiza a página
+    if (pageId === 'teams') { renderAllTeams(); renderGroups(); }
+    else if (pageId === 'players') renderAllPlayers();
+    else if (pageId === 'teams-list') renderTeamsDirectory();
+    else if (pageId === 'schedule') renderSchedule();
+}
+
+function toggleDesktopSearch() {
+    const wrapper = document.getElementById('nav-search-wrapper-desktop');
+    const input = document.getElementById('global-search-desktop');
+    const isOpen = wrapper.classList.toggle('open');
+    if (isOpen) {
+        setTimeout(() => input.focus(), 300); // aguarda a animação de abertura
+    } else {
+        input.value = '';
+        document.getElementById('search-results-desktop').style.display = 'none';
+    }
+}
+
+function toggleMobileSearch() {
+    const bar = document.getElementById('mobile-search-bar');
+    if (bar) {
+        bar.classList.toggle('active');
+        if (bar.classList.contains('active')) {
+            const input = document.getElementById('global-search-mobile');
+            if (input) setTimeout(() => input.focus(), 100);
+        }
+    }
+}
+
+// Busca unificada (desktop e mobile compartilham o pool, só o container muda)
+function handleGlobalSearchFrom(source) {
+    const inputId = source === 'desktop' ? 'global-search-desktop' : 'global-search-mobile';
+    const resultsId = source === 'desktop' ? 'search-results-desktop' : 'search-results-mobile';
+    
+    let input = document.getElementById(inputId)?.value?.toLowerCase().trim() || '';
+    let resultsBox = document.getElementById(resultsId);
+    
+    if (!resultsBox) return;
+
+    if (input.length < 2) { 
+        resultsBox.style.display = 'none'; 
+        return; 
+    }
+
+    let pool = [];
+    let seen = new Set();
+
+    db.players.forEach(p => { 
+        let lowerName = p.jogador.toLowerCase();
+        if(!seen.has(lowerName)) {
+            pool.push({ name: p.jogador, sub: p.equipe, type: 'player', isEx: p.isEx }); 
+            seen.add(lowerName);
+        }
+    });
+
+    if (typeof lbffData !== 'undefined') {
+        Object.keys(lbffData).forEach(name => {
+            let lowerName = name.toLowerCase();
+            if(!seen.has(lowerName)) {
+                pool.push({ name: name, sub: 'JOGADOR HISTÓRICO', type: 'player', isEx: true });
+                seen.add(lowerName);
+            }
+        });
+    }
+
+    dbStaff.forEach(s => { 
+        let lowerName = s.nome.toLowerCase();
+        if(!seen.has(lowerName)) { 
+            pool.push({ name: s.nome, sub: `${s.equipe} (${s.cargo})`, type: 'staff' }); 
+            seen.add(lowerName); 
+        }
+    });
+
+    let allTeamNames = Object.keys(logos);
+    let foundTeams = allTeamNames.filter(t => t.toLowerCase().includes(input));
+    let foundPeople = pool.filter(x => getDisplayName(x.name).toLowerCase().includes(input));
+
+    let html = foundTeams.map(tName => {
+        let isWB = db.teams.some(x => x.equipe.toUpperCase() === tName.toUpperCase());
+        let subText = isWB ? "Equipe Competidora" : "Equipe Histórica";
+        return `
+            <div class="search-item" onclick="selectSearchResult('team', '${tName}')">
+                <img src="${logos[tName] || 'escudo.webp'}" onerror="this.src='escudo.webp'">
+                <div>
+                    <span style="font-weight: bold; color: #fff;">${tName}</span><br>
+                    <small style="color: #aaa;">${subText}</small>
+                </div>
+            </div>`;
+    }).join('');
+    
+    html += foundPeople.map(p => {
+        let img = p.isEx ? 'silhueta.png' : (p.type === 'staff' ? (staffPhotos[p.name] || 'silhueta.png') : (playerPhotos[p.name] || 'silhueta.png'));
+        return `
+            <div class="search-item" onclick="selectSearchResult('${p.type}', '${p.name}')">
+                <img src="${img}" onerror="this.src='silhueta.png'">
+                <div>
+                    <span style="font-weight: bold; color: #fff;">${getDisplayName(p.name)}</span><br>
+                    <small style="color: #aaa;">${p.sub}</small>
+                </div>
+            </div>`;
+    }).join('');
+
+    resultsBox.innerHTML = html || '<div style="padding:15px; color:#888; text-align:center;">Nenhum resultado encontrado</div>';
+    resultsBox.style.display = 'block';
+}
+
+// Popula o dropdown desktop com os logos dos times da WB em grid 4x4
+function buildDesktopTeamNav() {
+    const container = document.getElementById('nav-desktop-teams');
+    if (!container || !db.teams) return;
+    
+    const order = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
+    const wbTeams = [...db.teams].sort((a, b) => order[a.grupo] - order[b.grupo] || a.equipe.localeCompare(b.equipe));
+    
+    // Removido a <span> que mostrava o nome/sigla ao lado da logo
+    container.innerHTML = wbTeams.map(t => `
+        <button class="nav-team-logo-btn" onclick="openTeamProfile('${t.equipe}')" title="${t.equipe}">
+            <img src="${logos[t.equipe] || 'escudo.webp'}" alt="${t.equipe}" onerror="this.src='escudo.webp'">
+        </button>`).join('');
 }
 
 function renderIndividualRecords() {
@@ -9227,75 +9963,145 @@ let currentOtStage = null; // Guarda qual fase (Classificatória, Final) está a
 
 // 1. Carrega os cards na tela inicial da aba
 function renderOutrosTorneiosList() {
-    const grids = {
-        mundiais: document.getElementById('ot-grid-mundiais'),
-        internacionais: document.getElementById('ot-grid-internacionais'),
-        nacionais: document.getElementById('ot-grid-nacionais'),
-        amadoras: document.getElementById('ot-grid-amadoras')
-    };
+    const container = document.getElementById('ot-grid-torneios');
+    if (!container || dbCampeonatos.length === 0) return;
 
-    // Limpa os grids
-    for (let key in grids) if(grids[key]) grids[key].innerHTML = '';
+    const searchQuery = (document.getElementById('ot-search')?.value || '').toLowerCase().trim();
+    const yearFilter = document.getElementById('ot-filter-year')?.value || 'all';
+    const tierFilter = document.getElementById('ot-filter-tier')?.value || 'all';
 
-    dbOutrosTorneios.forEach(t => {
-        let card = `
-            <div class="card clickable" onclick="openOtherTournament('${t.id}')" style="text-align: center; cursor: pointer; transition: 0.3s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-                <div class="card-top-border"></div>
-                <h3 style="color: #fff; font-size: 1.2em; margin-bottom: 5px;">${t.nome}</h3>
-                <span style="color: var(--accent); font-weight: bold;">${t.ano}</span>
-            </div>
-        `;
-        if (grids[t.categoria]) {
-            grids[t.categoria].innerHTML += card;
-        }
+    // 1. Preencher opções de Ano dinamicamente baseado na planilha
+    const yearSelect = document.getElementById('ot-filter-year');
+    if (yearSelect && yearSelect.options.length <= 1) {
+        const anosUnicos = [...new Set(dbCampeonatos.map(c => c.data.substring(0, 4)))].sort((a,b) => b - a);
+        anosUnicos.forEach(ano => {
+            yearSelect.innerHTML += `<option value="${ano}">${ano}</option>`;
+        });
+    }
+
+    // 2. Filtra os torneios
+    let filtrados = dbCampeonatos.filter(c => {
+        const ano = c.data.substring(0, 4);
+        const matchSearch = c.torneio.toLowerCase().includes(searchQuery);
+        const matchYear = yearFilter === 'all' || ano === yearFilter;
+        const matchTier = tierFilter === 'all' || c.tier === tierFilter;
+        return matchSearch && matchYear && matchTier;
     });
 
-    // Esconde as categorias que não tem nenhum torneio cadastrado
-    for (let key in grids) {
-        if (grids[key] && grids[key].innerHTML === '') {
-            grids[key].previousElementSibling.style.display = 'none'; // Esconde o <h3>
-            grids[key].style.display = 'none'; // Esconde a div vazia
-        } else if (grids[key]) {
-            grids[key].previousElementSibling.style.display = 'block';
-            grids[key].style.display = 'grid';
-        }
+    // Ordena pela data (do mais recente para o mais antigo)
+    filtrados.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    if (filtrados.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Nenhum torneio encontrado com esses filtros.</p>';
+        return;
     }
+
+    // 3. Monta os cards
+    container.innerHTML = filtrados.map(t => {
+        // Encontra o campeão daquele torneio (quem tem "1st" ou "1º")
+        let champion = null;
+        for (let equipe in t.resultados) {
+            let pos = t.resultados[equipe];
+            if (pos === '1st' || pos === '1º') {
+                champion = equipe;
+                break;
+            }
+        }
+
+        let championHtml = champion ? `
+            <div class="ot-card-champion">
+                <img src="${logos[champion] || 'escudo.webp'}" onerror="this.src='escudo.webp'">
+                🏆 ${shortNames[champion] || champion}
+            </div>` : '';
+
+        // Imagem Padrão ou customizada
+        let tournamentImg = 'trofeu.webp'; 
+        let nomeUpper = t.torneio.toUpperCase();
+        if (nomeUpper.includes('WB')) tournamentImg = 'wb.webp';
+        else if (nomeUpper.includes('LBFF')) tournamentImg = 'lbff.webp';
+        else if (nomeUpper.includes('C.O.P.A') || nomeUpper.includes('COPA FF')) tournamentImg = 'copaff.webp';
+
+        const ano = t.data.substring(0, 4);
+
+        // Cores do Tier
+        let tierColor = 'var(--accent)';
+        if(t.tier === 'S-Tier') tierColor = '#ffd700';
+        else if(t.tier === 'A-Tier') tierColor = '#ff4444';
+        else if(t.tier === 'B-Tier') tierColor = '#33ccff';
+        else if(t.tier === 'C-Tier') tierColor = '#4caf50';
+
+        return `
+            <div class="ot-tournament-card" onclick="openOtherTournament('${t.id}')" style="--card-accent: ${tierColor}; border-color: rgba(255, 255, 255, 0.1);">
+                <img class="ot-card-img" src="${tournamentImg}" onerror="this.src='trofeu.webp'">
+                <div class="ot-card-name">${t.torneio}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="ot-card-year">${ano}</div>
+                    <div style="font-size: 0.7em; font-weight: bold; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: ${tierColor}">${t.tier}</div>
+                </div>
+                ${championHtml}
+                <div class="ot-card-click-hint">Ver tabela de classificação →</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Helper: converte hex/named color para rgb
+function hexToRgb(color) {
+    if (color.startsWith('#')) {
+        let hex = color.replace('#', '');
+        if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+        const num = parseInt(hex, 16);
+        return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+    }
+    return '0, 200, 255';
+}
+
+// Helper: retorna imagem do torneio
+function getTournamentImg(t) {
+    if (!t) return 'lbff.webp';
+    if (t.imagem) return t.imagem;
+    const nome = t.nome?.toUpperCase() || '';
+    const id = t.id?.toUpperCase() || '';
+    if (nome.includes('WB') || id.includes('WB')) return 'wb.webp';
+    if (nome.includes('LBFF') || id.includes('LBFF')) return 'lbff.webp';
+    if (nome.includes('C.O.P.A') || nome.includes('COPA')) {
+        if (nome.includes('2020') || t.ano === '2020') return 'copaff20.webp';
+        if (nome.includes('2022') || t.ano === '2022') return 'copaff22.webp';
+        if (nome.includes('2023') || t.ano === '2023') return 'copaff23.webp';
+        if (nome.includes('2024') || t.ano === '2024') return 'copaff24.webp';
+        if (nome.includes('2025') || t.ano === '2025') return 'copaff25.webp';
+        if (nome.includes('2026') || t.ano === '2026') return 'copaff26.webp';
+        return 'copaff.webp';
+    }
+    return 'lbff.webp';
 }
 
 // 2. Abre a tela de um torneio específico
 function openOtherTournament(id) {
-    let t = dbOutrosTorneios.find(x => x.id === id);
+    let t = dbCampeonatos.find(x => x.id === id);
     if (!t) return;
 
-    currentOtId = id;
+    currentOtData = t;
     
     // Troca as telas
     document.getElementById('ot-list-view').style.display = 'none';
     document.getElementById('ot-details-view').style.display = 'block';
     
-    // Preenche Título e Ano
-    document.getElementById('ot-title').innerText = t.nome;
-    document.getElementById('ot-year').innerText = t.ano;
-
-    // Cria os botões de Filtro das Fases (Ex: Classificatória, Final)
-    let stages = Object.keys(t.fases);
-    currentOtStage = stages[0]; // Seleciona a primeira fase por padrão
-
-    let filtersHtml = stages.map(fase => `
-        <button class="day-chip ${fase === currentOtStage ? 'active' : ''}" onclick="changeOtStage('${fase}')">${fase}</button>
-    `).join('');
-    document.getElementById('ot-stage-filters').innerHTML = filtersHtml;
+    // Preenche Título, Ano e Tier
+    document.getElementById('ot-title').innerText = t.torneio;
+    document.getElementById('ot-year').innerText = t.data.substring(0, 4);
+    
+    const badgeEl = document.getElementById('ot-details-badge');
+    if (badgeEl) badgeEl.innerText = t.tier;
 
     renderOtStandings();
-    renderOtMvp();
     window.scrollTo(0, 0);
 }
 
-// 3. Volta para a lista de torneios
 function closeOtherTournament() {
     document.getElementById('ot-list-view').style.display = 'block';
     document.getElementById('ot-details-view').style.display = 'none';
-    currentOtId = null;
+    currentOtData = null;
 }
 
 // 4. Troca a fase do torneio (ao clicar no botão)
@@ -9312,25 +10118,40 @@ function changeOtStage(fase) {
 
 // 5. Renderiza a tabela de Classificação (FOCADA APENAS EM PONTOS)
 function renderOtStandings() {
-    let t = dbOutrosTorneios.find(x => x.id === currentOtId);
-    if (!t || !t.fases[currentOtStage]) return;
+    let t = currentOtData;
+    if (!t) return;
 
-    let dados = t.fases[currentOtStage];
-    // Ordena por pontos
-    dados.sort((a,b) => b.pontos - a.pontos);
+    // Transforma o objeto de resultados { Equipe: "1st" } num Array ordenável
+    let dados = [];
+    for(let equipe in t.resultados) {
+        let placeStr = t.resultados[equipe];
+        // Converte "1st", "2nd", "10º" em números para ordenar direito (1, 2, 10...)
+        let placeNum = parseInt(placeStr.replace(/\D/g, '')) || 999;
+        dados.push({ equipe: equipe, placeStr: placeStr, placeNum: placeNum });
+    }
 
-    let tbodyHtml = dados.map((row, index) => {
-        let statusClass = row.status ? `status-${row.status}` : '';
+    dados.sort((a, b) => a.placeNum - b.placeNum);
+
+    let tbodyHtml = dados.map((row) => {
         let logoSrc = logos[row.equipe] || 'escudo.webp';
+        
+        let isFirst = row.placeNum === 1;
+        let isSecond = row.placeNum === 2;
+        let isThird = row.placeNum === 3;
+
+        let rowStyle = '';
+        if (isFirst) rowStyle = 'color: #ffd700; font-size: 1.1em; text-shadow: 0 0 10px rgba(255,215,0,0.5);';
+        else if (isSecond) rowStyle = 'color: #c0c0c0;';
+        else if (isThird) rowStyle = 'color: #cd7f32;';
+        else rowStyle = 'color: #fff;';
 
         return `
-        <tr class="${statusClass}">
-            <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
-            <td class="clickable team-cell" onclick="openOtTeamRoster('${t.id}', '${row.equipe}')" style="text-align:left; display: flex; align-items: center; gap: 10px;">
-                <img src="${logoSrc}" style="width: 24px; height: 24px; object-fit: contain;">
-                <span style="font-weight:bold; color:#fff;">${row.equipe}</span>
+        <tr>
+            <td style="font-weight:bold; ${rowStyle}">${row.placeStr.replace(/st|nd|rd|th/ig, 'º')}</td>
+            <td class="clickable team-cell" onclick="openTeamProfile('${row.equipe}')" style="text-align:left; display: flex; align-items: center; gap: 10px;">
+                <img src="${logoSrc}" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.src='escudo.webp'">
+                <span style="font-weight:bold; color:#fff;">${shortNames[row.equipe] || row.equipe}</span>
             </td>
-            <td style="color:var(--accent); font-weight:bold; font-size: 1.1em;">${row.pontos}</td>
         </tr>`;
     }).join('');
 
@@ -9339,9 +10160,8 @@ function renderOtStandings() {
             <table style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 50px;">#</th>
+                        <th style="width: 100px;">POSIÇÃO</th>
                         <th style="text-align:left;">EQUIPE</th>
-                        <th>PONTOS</th>
                     </tr>
                 </thead>
                 <tbody>${tbodyHtml}</tbody>
@@ -9548,6 +10368,184 @@ async function loadNoticias() {
     } catch (e) {
         console.error('[loadNoticias] Erro:', e);
     }
+}
+
+async function loadTeamLogos() {
+    // Substitua o GID pelo da aba onde estão as logos (Ex: Equipe na Coluna A, Link na Coluna B)
+    const LOGOS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${LOGOS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        lines.slice(1).forEach(line => {
+            const data = line.split('\t');
+            const nomeEquipe = data[0]?.trim();
+            const urlLogo = data[1]?.trim().replace(/\r/g, "");
+            
+            if (nomeEquipe && urlLogo) {
+                // Se o time já existe no objeto, ele substitui o nome do arquivo pelo link da planilha
+                // Se não existe, ele cria um novo
+                logos[nomeEquipe] = urlLogo;
+            }
+        });
+        console.log("Logos atualizadas via Sheets!");
+        
+        // Após carregar as logos, precisamos atualizar as tabelas da Home para as imagens aparecerem
+        renderHomeStats(); 
+    } catch (e) {
+        console.error('Erro ao carregar logos da planilha:', e);
+    }
+}
+
+// =============================================
+// OUTRAS EQUIPES — equipes fora do db.teams
+// =============================================
+
+// Retorna os nomes das equipes que têm resultados em dbResults mas NÃO estão em db.teams
+function getOutrasEquipes() {
+    const equipesAtivas = new Set(db.teams.map(t => t.equipe.toUpperCase()));
+    return Object.keys(dbResults)
+        .filter(nome => !equipesAtivas.has(nome.toUpperCase()))
+        .sort((a, b) => a.localeCompare(b));
+}
+
+let currentOutraEquipe = null;
+
+function renderOutrasEquipesGrid() {
+    const container = document.getElementById('outras-equipes-directory');
+    if (!container) return;
+
+    const searchInput = document.getElementById('outras-equipes-search');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const equipes = getOutrasEquipes().filter(e => e.toLowerCase().includes(query));
+
+    if (equipes.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Nenhuma equipe encontrada.</p>';
+        return;
+    }
+
+    container.innerHTML = equipes.map(nome => {
+        const logoSrc = logos[nome] || 'escudo.webp';
+        // Conta títulos desta equipe
+        const nTitulos = (titlesData.coletivos || []).filter(t => t.team.toUpperCase() === nome.toUpperCase()).length;
+        const resultados = dbResults[nome] || [];
+        const nTorneios = resultados.length;
+        const badge = nTitulos > 0 ? `<span style="background: rgba(255,215,0,0.15); color: #ffd700; font-size: 0.7em; font-weight: bold; padding: 2px 8px; border-radius: 10px; border: 1px solid #ffd700;">🏆 ${nTitulos} título${nTitulos > 1 ? 's' : ''}</span>` : '';
+        return `
+        <div class="team-item-card" onclick="openOutraEquipe('${nome.replace(/'/g, "\\'")}')">
+            <img src="${logoSrc}" alt="${nome}" onerror="this.src='escudo.webp'">
+            <h4>${nome}</h4>
+            <span>${nTorneios} resultado${nTorneios !== 1 ? 's' : ''}</span>
+            ${badge}
+        </div>`;
+    }).join('');
+}
+
+function openOutraEquipe(nome) {
+    currentOutraEquipe = nome;
+
+    document.getElementById('oep-name').innerText = nome;
+    document.getElementById('oep-logo').src = logos[nome] || 'escudo.webp';
+
+    // Reseta filtros
+    const yearEl = document.getElementById('oep-filter-year');
+    const tierEl = document.getElementById('oep-filter-tier');
+    if (yearEl) yearEl.value = 'all';
+    if (tierEl) tierEl.value = 'all';
+
+    // Títulos coletivos
+    const titulos = (titlesData.coletivos || []).filter(t => t.team.toUpperCase() === nome.toUpperCase());
+    const titulosSection = document.getElementById('oep-titulos-section');
+    const titulosContainer = document.getElementById('oep-titulos-container');
+    if (titulos.length > 0) {
+        titulosSection.style.display = 'block';
+        titulosContainer.innerHTML = titulos.map(t => {
+            let tournamentImg = 'trofeu.webp';
+            if (t.event.includes("WB")) tournamentImg = "wb.webp";
+            else if (t.event.includes("LBFF 9")) tournamentImg = "lbff9.webp";
+            else if (t.event.includes("LBFF 8")) tournamentImg = "lbff8.webp";
+            else if (t.event.includes("LBFF 7")) tournamentImg = "lbff7.webp";
+            else if (t.event.includes("LBFF 6")) tournamentImg = "lbff6.webp";
+            else if (t.event.includes("LBFF 5")) tournamentImg = "lbff5.webp";
+            else if (t.event.includes("LBFF 4")) tournamentImg = "lbff4.webp";
+            else if (t.event.includes("LBFF 3")) tournamentImg = "lbff3.webp";
+            else if (t.event.includes("LBFF 1")) tournamentImg = "lbff1.webp";
+            else if (t.event.includes("C.O.P.A")) {
+                if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
+                else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
+                else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
+                else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
+                else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
+                else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
+                else tournamentImg = "copaff.webp";
+            }
+            return `<div class="trophy-card border-campeao">
+                <img src="${tournamentImg}" class="trophy-img" onerror="this.src='trofeu.webp'">
+                <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
+                <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
+                <div class="trophy-team">
+                    <img src="${logos[t.team] || 'escudo.webp'}" style="width:14px; height:14px; object-fit:contain;" onerror="this.src='escudo.webp'">
+                    ${t.team}
+                </div>
+            </div>`;
+        }).join('');
+    } else {
+        titulosSection.style.display = 'none';
+    }
+
+    renderOutraEquipeResultados();
+    navigate('outras-equipes-profile');
+}
+
+function renderOutraEquipeResultados() {
+    const nome = currentOutraEquipe;
+    if (!nome) return;
+
+    const tbody = document.querySelector('#table-outra-equipe-results tbody');
+    const yearFilter = document.getElementById('oep-filter-year')?.value || 'all';
+    const tierFilter = document.getElementById('oep-filter-tier')?.value || 'all';
+
+    let results = (dbResults[nome] || []).slice();
+
+    if (tierFilter !== 'all') results = results.filter(r => r.tier === tierFilter);
+    if (yearFilter !== 'all') results = results.filter(r => r.data.startsWith(yearFilter));
+
+    // Conta medalhas
+    let c1 = 0, c2 = 0, c3 = 0;
+    results.forEach(r => {
+        if (r.place === '1st' || r.place === '1º') c1++;
+        else if (r.place === '2nd' || r.place === '2º') c2++;
+        else if (r.place === '3rd' || r.place === '3º') c3++;
+    });
+    const el1 = document.getElementById('oep-count-1st');
+    const el2 = document.getElementById('oep-count-2nd');
+    const el3 = document.getElementById('oep-count-3rd');
+    if (el1) el1.innerText = c1;
+    if (el2) el2.innerText = c2;
+    if (el3) el3.innerText = c3;
+
+    if (results.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color:#aaa; padding:30px; text-align:center;">Nenhum resultado encontrado.</td></tr>';
+        return;
+    }
+
+    results.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    tbody.innerHTML = results.map(r => {
+        const isFirst = r.place === '1st' || r.place === '1º';
+        const tierClass = r.tier.toLowerCase().split('-')[0];
+        const isSTier = r.tier === 'S-Tier';
+        const placeBR = r.place.replace(/st|nd|rd|th/ig, 'º');
+        const placeStyle = isFirst ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.5);' : '';
+        return `<tr class="${isSTier ? 'row-tier-s' : ''}">
+            <td style="color: var(--text-muted);">${r.data}</td>
+            <td class="tier-${tierClass}">${r.tier}</td>
+            <td style="font-weight: bold; font-size: 1.1em; ${placeStyle}">${placeBR}</td>
+            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color:#fff;' : ''}">${r.torneio}</td>
+        </tr>`;
+    }).join('');
 }
 
 // =============================================
