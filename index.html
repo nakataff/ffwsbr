@@ -2904,7 +2904,7 @@ let dbCampeonatos = [];
 // ==========================================
 async function loadStaff() {
     // COLE AQUI O LINK TSV DA SUA ABA DE STAFF (Cuidado para manter o formato tsv)
-    const STAFF_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1857830960&single=true&output=tsv;
+    const STAFF_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1857830960&single=true&output=tsv';
 
     try {
         const res = await fetch(`${STAFF_TSV_URL}&nocache=${new Date().getTime()}`);
