@@ -3723,7 +3723,7 @@ let selectedTop5Days = [];
 let currentTeamView = null;
 let currentOppGroup = null;
 let currentTeamNextMatch = null;
-const TOTAL_DIAS = Object.keys(dbQuedas).length > 0 ? Math.max(...Object.keys(dbQuedas).map(Number)) : 0;
+let TOTAL_DIAS = 0;
 
 window.onload = async () => {
     // ==========================================
@@ -3733,9 +3733,13 @@ window.onload = async () => {
         const response = await fetch('dados.json');
         if (!response.ok) throw new Error("Erro ao carregar dados.json");
         
-        const data = await response.json();
+const data = await response.json();
         dbQuedas = data.dbQuedas || {};
         dbJogadoresQuedas = data.dbJogadoresQuedas || {};
+        
+        // ADICIONE ESTA LINHA EXATAMENTE AQUI:
+        TOTAL_DIAS = Object.keys(dbQuedas).length > 0 ? Math.max(...Object.keys(dbQuedas).map(Number)) : 0;
+        
         console.log("Banco de dados JSON carregado com sucesso!");
     } catch (error) {
         console.error(error);
