@@ -2504,53 +2504,9 @@ let staffPhotos = {
     "DOODLES": "doodles.webp"*/
 };
 
-const titlesData = {
-    coletivos: [
-        { event: "WB 2025 S2", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan_Staff"] },
-        { event: "WB 2025 S1", type: "Campeão", team: "LOS", players: ["mtsexy.", "General!", "NANDO9", "Rigby245", "Raone7"], staff: ["LIPÃO", "Jaya"] },
-        { event: "WB 2024", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh"], staff: ["LUUUKING", "Renan_Staff"] },
-        { event: "LBFF 9", type: "Campeão", team: "LOUD SNICKERS", players: ["Mexico", "Noda", "Lost21", "Cauan7", "Kroonos"], staff: ["Frois", "Frank"] },
-        { event: "LBFF 8", type: "Campeão", team: "VIVO KEYD", players: ["MODESTIA", "General!", "DeadGOD", "NANDO9", "Ghost7"], staff: ["Wanheda"] },
-        { event: "LBFF 7", type: "Campeão", team: "LOUD SNICKERS", players: ["Will", "Noda", "Lost21", "Cauan7", "Kroonos"], staff: ["Frois", "Frank"] },
-        { event: "LBFF 6", type: "Campeão", team: "B4 ESPORTS", players: ["Lobato", "Yago", "PROZIN", "Ruan", "Lapa7", "João7"], staff: ["Machado"] },
-        { event: "LBFF 5", type: "Campeão", team: "VIVO KEYD", players: ["MODESTIA", "KBÇÃO", "DeadGOD", "NANDO9", "General!"], staff: ["Stark"] },
-        { event: "LBFF 4", type: "Campeão", team: "FLUXO W7M", players: ["Nobru", "Syaz", "GØDKILL", "Fac", "JapaBKR"], staff: ["K9"] },
-        { event: "LBFF 3", type: "Campeão", team: "SS ESPORTS", players: ["Taami", "Antunes22", "Cauan7", "Aranha", "LEAL7", "Pão7"], staff: ["Metal"] },
-        { event: "LBFF 1", type: "Campeão", team: "TEAM LIQUID", players: ["LUUUKING", "Raposo", "LukasTD", "JapaBKR", "PEU"], staff: ["Matheus Souto"] },
-        { event: "C.O.P.A. FF 2020", type: "Campeão", team: "BLACK DRAGONS", players: ["Jubinha", "Phoenix23", "Bruno7", "OTREMBB", "PEDRO.RS"], staff: ["Stark"] },
-        { event: "C.O.P.A. FF 2022", type: "Campeão", team: "VASCO ESPORTS", players: ["LOIRORJ", "EASY", "LENNO", "HENDER"], staff: ["Izzac"] },
-        { event: "C.O.P.A. FF 2023", type: "Campeão", team: "MAGIC SQUAD", players: ["Bops", "Giuh", "Yago", "BuTziN", "Erick11"], staff: ["LUUUKING", "Renan_Staff"] },
-        { event: "C.O.P.A. FF 2024", type: "Campeão", team: "TEAM SOLID", players: ["GUAXA", "TRAP", "NICKZ", "TATU13"], staff: ["JOKER", "Jaya"] },
-        { event: "C.O.P.A. FF 2025", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan_Staff"] },
-        { event: "C.O.P.A. FF 2026", type: "Campeão", team: "FLUXO W7M", players: ["MT7", "Bops", "BuTziN", "Giuh", "Proxx7"], staff: ["LUUUKING", "Renan_Staff"] }
-    ],
-    individuais: [
-        { event: "WB 2025 S2", type: "MVP Geral", team: "FLUXO W7M", player: "MT7" },
-        { event: "WB 2025 S2", type: "Revelação", team: "VASCO ESPORTS", player: "Yann7awp" },
-        { event: "WB 2025 S1", type: "MVP Geral", team: "FLUXO W7M", player: "MT7" },
-        { event: "WB 2025 S1", type: "Revelação", team: "TEAM SOLID", player: "BZP" },
-        { event: "WB 2024", type: "MVP Final", team: "FLUXO W7M", player: "Bops" },
-        { event: "WB 2024", type: "MVP Grupos", team: "LOUD SNICKERS", player: "Yago" },
-        { event: "LBFF 9", type: "MVP Final", team: "LOUD SNICKERS", player: "Mexico" },
-        { event: "LBFF 9", type: "MVP Grupos", team: "MAGIC SQUAD", player: "Yago" },
-        { event: "LBFF 8", type: "MVP Final", team: "VIVO KEYD", player: "NANDO9" },
-        { event: "LBFF 8", type: "MVP Grupos/Revelação", team: "TSM", player: "Raone7" },
-        { event: "LBFF 7", type: "MVP Final", team: "LOUD SNICKERS", player: "Lost21" },
-        { event: "LBFF 7", type: "MVP Grupos", team: "B4 ESPORTS", player: "Yago" },
-        { event: "LBFF 7", type: "Revelação", team: "CRUZEIRO", player: "TRAP" },
-        { event: "LBFF 6", type: "MVP Geral", team: "SS ESPORTS", player: "Mts007" },
-        { event: "LBFF 5", type: "MVP Geral", team: "FLUXO W7M", player: "Syaz" },
-        { event: "LBFF 4", type: "MVP Geral", team: "SANTOS", player: "Ruan" },
-        { event: "LBFF 3", type: "MVP Geral", team: "SS ESPORTS", player: "Cauan7" },
-        { event: "LBFF 1", type: "MVP Geral", team: "TEAM LIQUID", player: "JapaBKR" },
-        { event: "C.O.P.A. FF 2020", type: "MVP Geral", team: "PAIN GAMING", player: "Geerty" },
-        { event: "C.O.P.A. FF 2022", type: "MVP Geral", team: "TSM", player: "Raone7" },
-        { event: "C.O.P.A. FF 2023", type: "MVP Geral", team: "VIVO KEYD", player: "Raone7" },
-        { event: "C.O.P.A. FF 2024", type: "MVP Geral", team: "TEAM SOLID", player: "TRAP" },
-        { event: "C.O.P.A. FF 2025", type: "MVP Geral", team: "FLUXO W7M", player: "MT7" },
-        { event: "C.O.P.A. FF 2026", type: "MVP Grupos", team: "RUSH GAMING", player: "BLACK02" },
-        { event: "C.O.P.A. FF 2026", type: "MVP Final", team: "ALFA 34", player: "MitinX" }
-    ]
+let titlesData = {
+    coletivos: [],
+    individuais: []
 };
 
 const lbffData = {
@@ -2976,6 +2932,54 @@ let dbCampeonatos = [];
 // ==========================================
 // CARREGAR CAMPEONATOS VIA GOOGLE SHEETS
 // ==========================================
+async function loadTitles() {
+    // ⚠️ SUBSTITUA PELOS SEUS LINKS TSV REAIS GERADOS NO GOOGLE SHEETS ⚠️
+    const TSV_URL_COLETIVOS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1613674157&single=true&output=tsv';
+    const TSV_URL_INDIVIDUAIS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=988693030&single=true&output=tsv';
+
+    try {
+        // 1. CARREGA OS TÍTULOS COLETIVOS
+        const resCol = await fetch(`${TSV_URL_COLETIVOS}&nocache=${new Date().getTime()}`);
+        const textCol = await resCol.text();
+        const linesCol = textCol.split('\n');
+        
+        titlesData.coletivos = linesCol.slice(1).map(line => {
+            const cols = line.split('\t');
+            return {
+                event: cols[0]?.trim().replace(/\r/g, "") || "",
+                type: cols[1]?.trim().replace(/\r/g, "") || "",
+                team: cols[2]?.trim().replace(/\r/g, "") || "",
+                // O .split(',') transforma o texto "MT7, Bops" em um Array ["MT7", "Bops"]
+                players: cols[3] ? cols[3].split(',').map(p => p.trim()) : [],
+                staff: cols[4] ? cols[4].split(',').map(s => s.trim()) : []
+            };
+        }).filter(t => t.event !== ""); // Ignora linhas em branco
+
+        // 2. CARREGA OS TÍTULOS INDIVIDUAIS
+        const resInd = await fetch(`${TSV_URL_INDIVIDUAIS}&nocache=${new Date().getTime()}`);
+        const textInd = await resInd.text();
+        const linesInd = textInd.split('\n');
+
+        titlesData.individuais = linesInd.slice(1).map(line => {
+            const cols = line.split('\t');
+            return {
+                event: cols[0]?.trim().replace(/\r/g, "") || "",
+                type: cols[1]?.trim().replace(/\r/g, "") || "",
+                team: cols[2]?.trim().replace(/\r/g, "") || "",
+                player: cols[3]?.trim().replace(/\r/g, "") || ""
+            };
+        }).filter(t => t.event !== "");
+
+        console.log("🏆 Títulos carregados com sucesso do Sheets!");
+        
+        // Atualiza as telas que dependem dos títulos logo na inicialização
+        renderOutrasEquipesGrid();
+
+    } catch (e) {
+        console.error('[loadTitles] Erro ao carregar os títulos:', e);
+    }
+}
+
 async function loadCampeonatos() {
     const CAMP_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1701683178&single=true&output=tsv';
 
@@ -3802,6 +3806,7 @@ const data = await response.json();
     loadTeamLogos();
     loadPhotos();
     loadCampeonatos(); 
+    loadTitles();
 
     // ==========================================
     // 5. CRONÔMETROS
