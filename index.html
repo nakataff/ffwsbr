@@ -877,6 +877,7 @@ nav {
     max-height: 50vh;
     border-radius: 0;
 }
+    }
 
     /* Tabelas */
     .table-container { overflow-x: auto; background-color: var(--panel-bg); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 30px; }
@@ -1017,7 +1018,7 @@ tr:last-child {
     select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none; }
 
     /* Filtro Multi-Dias */
-    .day-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-left: 10px; }
+    .day-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-left: 10px; align-items: center; }
     .day-chip { background: #0d1220; border: 1px solid var(--border); padding: 6px 12px; border-radius: 15px; cursor: pointer; color: #fff; font-size: 0.85em; user-select: none; transition: 0.2s; }
     .day-chip:hover { border-color: #66b3ff; }
     .day-chip.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
@@ -1032,7 +1033,7 @@ tr:last-child {
     .hide-on-desktop { display: none; }
     .short-name-mobile { display: none; } /* Esconde a sigla no PC */
     .full-name-desktop { display: inline; } /* Mostra o nome longo no PC */
-    .team-logo-mobile-full { display: inline-block; } /* Mostra a logo no PC */
+    .team-logo-mobile-full { display: inline-block; width: 24px; height: 24px; object-fit: contain; } /* Mostra a logo no PC */
 
     /* REGRAS PARA O MOBILE (CELULAR) */
     @media (max-width: 768px) {
@@ -1082,7 +1083,6 @@ tr:last-child {
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-    }
     }
     /* Grid de Equipes (Página Equipes) */
     .teams-directory { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
@@ -1386,21 +1386,21 @@ tr:last-child {
             <span style="margin-left:auto; color:#888; font-size:0.9em;">* Clique no título da coluna para ordenar</span>
         </div>
         <div class="table-container">
-            <table id="table-players">
-<thead>
-                    <tr>
-                        <th>#</th>
-                        <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">Jogador ↕</th>
-                        <th class="hide-mobile" style="text-align:left;" onclick="sortTable('table-players', 2, false)">Equipe ↕</th>
-                        <th onclick="sortTable('table-players', 3, true)">Abates ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">Dano ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-players', 6, true)">Quedas ↕</th>
-                        <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+<table id="table-players">
+    <thead>
+        <tr>
+            <th style="width: 40px;">#</th>
+            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">Jogador ↕</th>
+            <th class="hide-mobile" style="text-align:left;" onclick="sortTable('table-players', 2, false)">Equipe ↕</th>
+            <th style="width: 80px;" onclick="sortTable('table-players', 3, true)">Abates ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">Dano ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 6, true)">Quedas ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
         </div>
     </div>
 
@@ -1481,7 +1481,7 @@ tr:last-child {
     </div>
 
 <div id="player-profile" class="page">
-    <button class="btn-back" onclick="navigate('players')">← Voltar</button>
+   <button class="btn-back" onclick="navigate(lastVisitedPage)">← Voltar</button>
     
     <div id="pp-staff-link-container" style="margin-bottom: 20px; text-align: center;"></div>
 
@@ -6947,10 +6947,19 @@ window.onload = () => {
     updateCountdown();                  // Executa a 1ª vez imediatamente para não ficar vazio
     setInterval(updateCountdown, 1000); // Continua atualizando a cada 1 segundo
 };
+    
+// Fecha o script tag adequadamente
+
+let lastVisitedPage = 'home'; // Memória da última página principal
 
 function navigate(pageId) {
     // Força a página a voltar para o topo instantaneamente
     window.scrollTo(0, 0);
+
+    // Salva a aba atual na memória (ignora se for página de perfil)
+    if (!pageId.includes('profile')) {
+        lastVisitedPage = pageId;
+    }
 
     // Esconde todas as páginas e tira o destaque dos botões
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -7551,11 +7560,6 @@ function renderUnifiedTrophies(name, containerId) {
 }
 
 // handleGlobalSearch legada — redireciona para a nova versão unificada
-function handleGlobalSearch() {
-    handleGlobalSearchFrom('desktop');
-}
-
-    // Ação ao clicar em um resultado
 function selectSearchResult(type, name) {
     // Limpa todos os campos e esconde os resultados
     ['search-results', 'search-results-desktop', 'search-results-mobile'].forEach(id => {
@@ -7567,6 +7571,14 @@ function selectSearchResult(type, name) {
         if (el) el.value = '';
     });
     
+    // NOVA ADIÇÃO: Fecha a barra de pesquisa mobile e desktop corretamente
+    const mobileBar = document.getElementById('mobile-search-bar');
+    if (mobileBar) mobileBar.classList.remove('active');
+    
+    const desktopWrapper = document.getElementById('nav-search-wrapper-desktop');
+    if (desktopWrapper) desktopWrapper.classList.remove('open');
+
+    // Redireciona
     if (type === 'staff') {
         openStaffProfile(name);
     } else if (type === 'team') {
@@ -8659,7 +8671,7 @@ function renderTeamResults() {
     // Ordena por data mais recente por padrão
     results.sort((a, b) => new Date(b.data) - new Date(a.data));
 
-tbody.innerHTML = results.map(r => {
+    tbody.innerHTML = results.map(r => {
         let isSTier = r.tier === 'S-Tier';
         // Cria a regra: é 1º lugar?
         let isFirst = r.place === '1st' || r.place === '1º'; 
