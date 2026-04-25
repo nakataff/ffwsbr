@@ -7630,20 +7630,22 @@ async function loadSocials() {
 // Converte /teams/fluxo_w7m ↔ navigate('team-profile') + openTeamProfile('fluxo_w7m')
 // =============================================
 
-const PAGE_TO_PATH = {
-    'home':                '/',
-    'teams':               '/classificacao',
-    'teams-list':          '/equipes',
-    'players':             '/mvp',
-    'schedule':            '/agenda',
-    'records-ind':         '/recordes',
-    'maps':                '/estatisticas',
-    'history':             '/historia',
-    'compare':             '/compare',
-    'selection-wb':        '/selecao',
-    'outros-torneios':     '/outros-torneios',  // underscore → hífen
-    'outras-equipes':      '/outros-times',     // underscore → hífen
-};
+const Router = (() => {
+    // Mapa de páginas simples (sem parâmetro) → URL
+    const PAGE_TO_PATH = {
+        'home':                '/',
+        'teams':               '/teams',
+        'teams-list':          '/roster',
+        'players':             '/players',
+        'schedule':            '/schedule',
+        'records-ind':         '/records',
+        'maps':                '/stats',
+        'history':             '/history',
+        'compare':             '/compare',
+        'selection-wb':        '/selection',
+        'outros-torneios':     '/tournaments',
+        'outras-equipes':      '/other-teams',
+    };
 
     const PATH_TO_PAGE = Object.fromEntries(
         Object.entries(PAGE_TO_PATH).map(([k, v]) => [v, k])
@@ -7671,43 +7673,43 @@ const PAGE_TO_PATH = {
 
     // Chamado por openTeamProfile()
     function onTeamProfile(teamName) {
-        push('/equipes/' + slugify(teamName));
+        push('/teams/' + slugify(teamName));
     }
 
     // Chamado por openPlayerProfile()
     function onPlayerProfile(playerName) {
-        push('/mvp/' + slugify(playerName));
+        push('/players/' + slugify(playerName));
     }
 
     // Chamado por openStaffProfile()
     function onStaffProfile(staffName) {
-        push('/equipes/' + slugify(staffName));
+        push('/roster/' + slugify(staffName));
     }
 
     // Chamado por openOutraEquipeProfile() / navigate('outras-equipes-profile')
     function onOutrasEquipesProfile(teamName) {
-            if (teamName) push('/outros-times/' + slugify(teamName));
-}
-    
+        if (teamName) push('/other-teams/' + slugify(teamName));
+    }
 
     // Lê a URL atual e aciona a tela certa
     function resolve() {
         const path = window.location.pathname;
 
         // Perfil de time: /teams/fluxo_w7m
-        const teamMatch = path.match(/^\/equipes\/(.+)$/);
+        const teamMatch = path.match(/^\/teams\/(.+)$/);
         if (teamMatch) {
             const slug = teamMatch[1];
             // Espera os dados carregarem antes de tentar abrir o perfil
-waitForDb(() => {
-    const team = db.teams.find(t => slugify(t.equipe) === slug);
-    if (team) openTeamProfile(team.equipe);
-    else window.navigate('equipes');
-}, 'equipes');
+            waitForDb(() => {
+                const team = db.teams.find(t => slugify(t.equipe) === slug);
+                if (team) openTeamProfile(team.equipe);
+                else navigate('teams-list');
+            });
+            return;
         }
 
         // Perfil de jogador: /players/nobru
-        const playerMatch = path.match(/^\/mvp\/(.+)$/);
+        const playerMatch = path.match(/^\/players\/(.+)$/);
         if (playerMatch) {
             const slug = playerMatch[1];
             waitForDb(() => {
@@ -7719,7 +7721,7 @@ waitForDb(() => {
         }
 
         // Perfil de staff/roster: /roster/nome
-        const staffMatch = path.match(/^\/equipes\/(.+)$/);
+        const staffMatch = path.match(/^\/roster\/(.+)$/);
         if (staffMatch) {
             const slug = staffMatch[1];
             waitForDb(() => {
@@ -7735,7 +7737,7 @@ waitForDb(() => {
         }
 
         // Outras equipes: /other-teams/nome
-        const otherTeamMatch = path.match(/^\/outros-times\/(.+)$/);
+        const otherTeamMatch = path.match(/^\/other-teams\/(.+)$/);
         if (otherTeamMatch) {
             const slug = otherTeamMatch[1];
             waitForDb(() => {
@@ -7756,24 +7758,28 @@ waitForDb(() => {
         navigate(pageId);
     }
 
-function waitForDb(cb, fallbackPage = 'home') {
-    if (typeof db !== 'undefined' && db.teams && db.teams.length > 0) {
-        cb();
-    } else {
-        let tries = 0;
-        const interval = setInterval(() => {
-            tries++;
-            if (typeof db !== 'undefined' && db.teams && db.teams.length > 0) {
-                clearInterval(interval);
-                cb();
-            } else if (tries > 50) {
-                clearInterval(interval);
-                // Usa window.navigate para pegar sempre a versão mais atual
-                if (typeof window.navigate === 'function') window.navigate(fallbackPage);
-            }
-        }, 100);
+    // Aguarda o banco de dados estar pronto (window.onload já rodou)
+    function waitForDb(cb) {
+        if (typeof db !== 'undefined' && db.teams && db.teams.length > 0) {
+            cb();
+        } else {
+            // Tenta até 50 vezes (5s) com intervalo de 100ms
+            let tries = 0;
+            const interval = setInterval(() => {
+                tries++;
+                if (typeof db !== 'undefined' && db.teams && db.teams.length > 0) {
+                    clearInterval(interval);
+                    cb();
+                } else if (tries > 50) {
+                    clearInterval(interval);
+                    navigate('home');
+                }
+            }, 100);
+        }
     }
-}
+
+    return { onNavigate, onTeamProfile, onPlayerProfile, onStaffProfile, onOutrasEquipesProfile, resolve, slugify };
+})();
 
 // ── Intercepta navigate() para atualizar a URL ──────────────────────────────
 const _originalNavigate = navigate;
