@@ -354,6 +354,19 @@
     /* =============================================
        NOVA NAVEGAÇÃO
        ============================================= */
+    nav {
+        background-color: #020509;
+        border-bottom: 2px solid var(--accent);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+/* =============================================
+   ESTILIZAÇÃO DA NAVEGAÇÃO (NAV + SIDEBAR)
+   ============================================= */
+
 /* Configurações Gerais do Menu */
 nav {
     background-color: #020509;
@@ -2060,37 +2073,7 @@ tr:last-child {
 // --- CONFIGURAÇÕES DE JOGADORES ---
 
 // --- COMISSÃO TÉCNICA ---
-const dbStaff = [
-    { nome: "LUUUKING", equipe: "FLUXO W7M", cargo: "Head Coach" },
-    { nome: "Renan_Staff", equipe: "FLUXO W7M", cargo: "Analista" },
-    { nome: "PUTSGRILO", equipe: "TEAM SOLID", cargo: "Head Coach" },
-    { nome: "Jhan", equipe: "TEAM SOLID", cargo: "Analista" },
-    { nome: "Ninja", equipe: "E1 SPORTS", cargo: "Head Coach" },
-    { nome: "WF9", equipe: "INFLUENCE RAGE", cargo: "Head Coach" },
-    { nome: "PEDRO", equipe: "INFLUENCE RAGE", cargo: "Analista" },
-    { nome: "JOKER", equipe: "LOUD SNICKERS", cargo: "Head Coach" },
-    { nome: "VIANA", equipe: "LOUD SNICKERS", cargo: "Analista" },
-    { nome: "Queiroz", equipe: "ALPHA7", cargo: "Head Coach" },
-    { nome: "FRANK", equipe: "ALPHA7", cargo: "Analista" },
-    { nome: "Ribas", equipe: "RUSH GAMING", cargo: "Head Coach" },
-    { nome: "C9", equipe: "RUSH GAMING", cargo: "Analista" },
-    { nome: "LIPÃO", equipe: "LOS", cargo: "Head Coach" },
-    { nome: "Jaya", equipe: "LOS", cargo: "Analista" },
-    { nome: "Pereira", equipe: "INTZ", cargo: "Head Coach" },
-    { nome: "Allan", equipe: "INTZ", cargo: "Analista" },
-    { nome: "Butter", equipe: "VASCO ESPORTS", cargo: "Head Coach" },
-    { nome: "TH", equipe: "VASCO ESPORTS", cargo: "Analista" },
-    { nome: "CORREIA", equipe: "AXS FUSION", cargo: "Head Coach" },
-    { nome: "VT", equipe: "LOOPS", cargo: "Head Coach" },
-    { nome: "Bryan", equipe: "LOOPS", cargo: "Analista" },
-    { nome: "Abreu", equipe: "RISE GAMING", cargo: "Head Coach" },
-    { nome: "King9", equipe: "RISE GAMING", cargo: "Analista" },
-    { nome: "Frois", equipe: "VIRTUS PRO", cargo: "Head Coach" },
-    { nome: "K9", equipe: "VIRTUS PRO", cargo: "Analista" },
-    { nome: "CL7", equipe: "CIVIS", cargo: "Head Coach" },
-    { nome: "LZZ", equipe: "CIVIS", cargo: "Analista" },
-    { nome: "DOODLES", equipe: "ANGELS OUTPLAY", cargo: "Head Coach" }
-];
+let dbStaff = [];
 
 const dbPassagens = [
   {jogador:"JapaBKR",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
@@ -2919,6 +2902,32 @@ let dbCampeonatos = [];
 // ==========================================
 // CARREGAR CAMPEONATOS VIA GOOGLE SHEETS
 // ==========================================
+async function loadStaff() {
+    // COLE AQUI O LINK TSV DA SUA ABA DE STAFF (Cuidado para manter o formato tsv)
+    const STAFF_TSV_URL = 'SUA_URL_AQUI';
+
+    try {
+        const res = await fetch(`${STAFF_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        // Pula o cabeçalho e mapeia as linhas para o formato do objeto
+        dbStaff = lines.slice(1).map(line => {
+            const data = line.split('\t');
+            return {
+                nome: data[0]?.trim().replace(/\r/g, ""),
+                equipe: data[1]?.trim().replace(/\r/g, ""),
+                cargo: data[2]?.trim().replace(/\r/g, "")
+            };
+        }).filter(s => s.nome && s.equipe); // Filtra linhas vazias
+
+        console.log("Comissão técnica (Staff) carregada com sucesso!");
+
+    } catch (e) {
+        console.error('[loadStaff] Erro ao carregar staff:', e);
+    }
+}
+
 async function loadTitles() {
     // ⚠️ SUBSTITUA PELOS SEUS LINKS TSV REAIS GERADOS NO GOOGLE SHEETS ⚠️
     const TSV_URL_COLETIVOS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1613674157&single=true&output=tsv';
@@ -3794,6 +3803,7 @@ const data = await response.json();
     loadPhotos();
     loadCampeonatos(); 
     loadTitles();
+    loadStaff();
 
     // ==========================================
     // 5. CRONÔMETROS
@@ -7173,7 +7183,7 @@ async function loadNoticias() {
     const titulo = document.getElementById('ultimas-noticias-titulo');
     if (!heroContainer) return;
 
-    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
+    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1857830960&single=true&output=tsv';
 
     try {
         const res = await fetch(`${SHEET_TSV_URL}&nocache=${new Date().getTime()}`);
