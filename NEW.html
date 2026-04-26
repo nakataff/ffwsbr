@@ -5480,12 +5480,43 @@ function buildDayFilters() {
         let container = document.getElementById(containerId);
         if(!container) return;
 
+        let html = '';
+
+        // REGRA EXCLUSIVA PARA A NOTA CFF
+        if (containerId === 'pp-cff-day-filters') {
+            if (!currentPlayerView) return;
+            
+            let daysPlayed = new Set();
+            // Varre o banco para saber em quais dias esse jogador específico jogou
+            for (let d in dbJogadoresQuedas) {
+                for (let q in dbJogadoresQuedas[d]) {
+                    if (dbJogadoresQuedas[d][q].some(p => checkNameMatch(p.nome, currentPlayerView))) {
+                        daysPlayed.add(Number(d));
+                        break; // Se achou em uma queda, já sabemos que ele jogou no dia
+                    }
+                }
+            }
+            
+            // Transforma em array e ordena do maior pro menor (Ex: 11, 10, 9...)
+            let availableDays = Array.from(daysPlayed).sort((a, b) => b - a);
+            
+            // Cria os botões (SEM o botão "Todos")
+            availableDays.forEach(d => {
+                let isActive = arrSelected.includes(String(d));
+                html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('${containerId}', '${d}', ${callbackName})">Dia ${d}</div>`;
+            });
+            
+            container.innerHTML = html;
+            return; // Interrompe aqui para não executar o código abaixo que tem o "Todos"
+        }
+
+        // === COMPORTAMENTO NORMAL PARA OS OUTROS FILTROS ===
+        let isAll = arrSelected.length === 0;
+        html += `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('${containerId}', 'all', ${callbackName})">Todos</div>`;
+        
         let availableDays = [];
         for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
 
-        let isAll = arrSelected.length === 0;
-        let html = `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('${containerId}', 'all', ${callbackName})">Todos</div>`;
-        
         availableDays.forEach(d => {
             let isActive = arrSelected.includes(String(d));
             html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('${containerId}', '${d}', ${callbackName})">Dia ${d}</div>`;
@@ -5501,46 +5532,40 @@ function buildDayFilters() {
     buildChips('top5-day-filters', selectedTop5Days, 'renderTop5Stats');
     buildChips('pp-cff-day-filters', selectedPpcffDays, 'onPpcffDayFilterChanged');
     
-// Dentro da buildDayFilters, procure a parte que gera o pp-cff-day-filters e substitua por:
-if(currentTeamView || currentPlayerView) {
-    let containerCff = document.getElementById('pp-cff-day-filters');
-    if (containerCff) {
-        let html = '';
-        let availableDays = [];
-        for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
-        
-        // Inverte a ordem: do dia 11 para o 1
-        availableDays.reverse(); 
-
-        availableDays.forEach(d => {
-            let isActive = selectedPpcffDays.includes(String(d));
-            // Note que removemos a parte do "Todos"
-            html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('pp-cff-day-filters', '${d}', onPpcffDayFilterChanged)">Dia ${d}</div>`;
-        });
-        containerCff.innerHTML = html;
+    // Filtro da aba da equipe
+    if(currentTeamView) {
+        let tName = currentTeamView;
+        let container = document.getElementById('tp-day-filters');
+        if (container) {
+            let isAll = selectedTpDays.length === 0;
+            let html = `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('tp-day-filters', 'all', onTpDayFilterChanged)">Todos</div>`;
+            if (db.teamDaily[tName]) {
+                let daysPlayed = [...new Set(db.teamDaily[tName].map(d => d.dia))].sort((a,b)=>a-b);
+                daysPlayed.forEach(d => {
+                    let isActive = selectedTpDays.includes(String(d));
+                    html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('tp-day-filters', '${d}', onTpDayFilterChanged)">Dia ${d}</div>`;
+                });
+            }
+            container.innerHTML = html;
+        }
     }
-}
 }
 
 function toggleDay(containerId, day, callback) {
     let arr;
     if (containerId === 'team-day-filters') arr = selectedTeamDays;
     else if (containerId === 'player-day-filters') arr = selectedPlayerDays;
-    else if (containerId === 'pp-cff-day-filters') {
-        // REGRA ESPECIAL: Limpa o array antes de inserir o novo dia (Seleção Única)
-        selectedPpcffDays = [String(day)]; 
-        arr = selectedPpcffDays;
-    } 
-    // ... outras verificações ...
+    else if (containerId === 'avg-day-filters') arr = selectedAvgDays;
+    else if (containerId === 'total-day-filters') arr = selectedTotalDays;
+    else if (containerId === 'top5-day-filters') arr = selectedTop5Days;
+    else if (containerId === 'pp-cff-day-filters') arr = selectedPpcffDays; // Voltou ao normal!
+    else arr = selectedTpDays;
 
-    // Se for os outros filtros, mantém a lógica de multi-seleção
-    if (containerId !== 'pp-cff-day-filters') {
-        if (day === 'all') arr.length = 0;
-        else {
-            let idx = arr.indexOf(String(day));
-            if (idx > -1) arr.splice(idx, 1);
-            else arr.push(String(day));
-        }
+    if (day === 'all') arr.length = 0;
+    else {
+        let idx = arr.indexOf(String(day));
+        if (idx > -1) arr.splice(idx, 1);
+        else arr.push(String(day));
     }
 
     if(typeof callback === 'function') callback();
@@ -6565,11 +6590,25 @@ function openPlayerProfile(playerName) {
     const isInactive = !p;
     currentPlayerView = p ? p.jogador : safeName; 
 
-    // ALTERAÇÃO AQUI: Em vez de [], colocamos o dia mais recente
-    selectedPpcffDays = [String(TOTAL_DIAS)]; 
+    // --- NOVA LÓGICA DE SELEÇÃO INICIAL ---
+    let daysPlayed = [];
+    for (let d in dbJogadoresQuedas) {
+        for (let q in dbJogadoresQuedas[d]) {
+            if (dbJogadoresQuedas[d][q].some(x => checkNameMatch(x.nome, currentPlayerView))) {
+                daysPlayed.push(Number(d));
+                break;
+            }
+        }
+    }
     
+    // Se ele tiver jogado, seleciona por padrão o maior dia que encontrar
+    if (daysPlayed.length > 0) {
+        selectedPpcffDays = [String(Math.max(...daysPlayed))];
+    } else {
+        selectedPpcffDays = [];
+    }
+
     buildDayFilters();
-    // ===================
 
     // 3. Pega o nome oficial do histórico se ele for inativo
 let officialName = safeName;
