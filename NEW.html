@@ -3102,32 +3102,6 @@ function onPpcffDayFilterChanged() {
     }
 }
 
-// B. Maiores Notas de um Dia (Top 5 Dias com Bônus de Lenda)
-    let dailyRatings = Object.values(playerDailyAggregator).map(day => {
-        let totalKills = day.quedas.reduce((s, q) => s + q.kills, 0);
-        let totalDano = day.quedas.reduce((s, q) => s + q.dano, 0);
-        let totalMvps = day.quedas.filter(q => q.mvp).length;
-        let avgDrops = day.quedas.reduce((s, q) => s + q.nota, 0) / day.quedas.length;
-
-        let notaDia = avgDrops;
-        
-        // As mesmas regras brutas que colocamos na aba do jogador
-        if (totalKills >= 15) notaDia += (totalKills - 14) * 0.10;
-        if (totalKills >= 20) notaDia += (totalKills - 19) * 0.15;
-        if (totalKills >= 25) notaDia += (totalKills - 24) * 0.20;
-        if (totalDano >= 12000) notaDia += 0.2;
-        if (totalDano >= 18000) notaDia += 0.3;
-        if (totalMvps > 0) notaDia += (totalMvps * 0.2);
-        if (totalKills >= 30) notaDia = 10.0;
-
-        return { 
-            nome: day.nome, 
-            equipe: day.equipe, 
-            dia: day.dia, 
-            notaFinal: Math.min(Math.max(notaDia, avgDrops), 10.0) 
-        };
-    }).sort((a,b) => b.notaFinal - a.notaFinal).slice(0, 5);
-
 function renderPlayerCFFRating(playerName) {
     let container = document.getElementById('pp-cff-rating-container');
     let title = document.getElementById('pp-cff-title');
