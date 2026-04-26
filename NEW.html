@@ -3077,28 +3077,20 @@ const historicalAliases = {
 };
 
 // Top 100 Histórico (Extraído da Liquipedia)
-const histData = [
-    {n:"Yago", k:1786, q:928}, {n:"Cauan7", k:1652, q:1095}, {n:"Lost", k:1412, q:988}, {n:"NANDO9", k:1404, q:889}, {n:"Bops", k:1369, q:888},
-    {n:"Rigby245", k:1317, q:781}, {n:"TRAP", k:1316, q:769}, {n:"Raone7", k:1311, q:652}, {n:"BuTziN", k:1297, q:904}, {n:"Gus", k:1284, q:942},
-    {n:"General", k:1269, q:1082}, {n:"MODESTIA", k:1240, q:1047}, {n:"VITINxp", k:1237, q:923}, {n:"PÃO7", k:1154, q:1034}, {n:"DRAXX7", k:1125, q:839},
-    {n:"MT7", k:1121, q:562}, {n:"R7", k:1020, q:962}, {n:"BIELGOD", k:989, q:911}, {n:"Mts007", k:946, q:762}, {n:"Razure", k:941, q:864},
-    {n:"Noda", k:930, q:816}, {n:"Stark7", k:901, q:652}, {n:"GIUH.87", k:901, q:572}, {n:"ERICKMVP", k:898, q:617}, {n:"Syaz", k:894, q:631},
-    {n:"Motovea", k:890, q:560}, {n:"Nickz7", k:881, q:512}, {n:"CHINÊS", k:854, q:734}, {n:"Lobato", k:849, q:871}, {n:"ITALO", k:800, q:781},
-    {n:"OUSADO", k:797, q:620}, {n:"Vitin9", k:786, q:592}, {n:"GUAXA", k:780, q:657}, {n:"NandoX", k:762, q:580}, {n:"HONEY", k:752, q:635},
-    {n:"TATU13", k:735, q:676}, {n:"BAND", k:701, q:536}, {n:"FON", k:685, q:618}, {n:"Cauã", k:658, q:596}, {n:"João7", k:650, q:573},
-    {n:"JapaBKR", k:632, q:588}, {n:"Proxx7", k:596, q:457}, {n:"DeadGOD", k:593, q:604}, {n:"PETERxl", k:572, q:340}, {n:"o Mala", k:559, q:358},
-    {n:"Yato7", k:525, q:456}, {n:"Ruan", k:522, q:513}, {n:"CHUCKY", k:512, q:507}, {n:"Natividade", k:502, q:544}, {n:"KaueLOK", k:490, q:410},
-    {n:"Lins7", k:484, q:419}, {n:"DORITO", k:481, q:420}, {n:"Addy7", k:477, q:425}, {n:"Mexico", k:476, q:373}, {n:"Kroonos", k:468, q:517},
-    {n:"Hak", k:456, q:334}, {n:"Memgod", k:452, q:444}, {n:"JapaXL", k:449, q:520}, {n:"Erick11", k:435, q:380}, {n:"EASY", k:420, q:387},
-    {n:"Nikeboy", k:413, q:319}, {n:"Zenac", k:411, q:569}, {n:"RiccK", k:408, q:488}, {n:"wLiu", k:400, q:364}, {n:"mvR", k:398, q:419},
-    {n:"Jubinha", k:377, q:429}, {n:"Phoenix23", k:375, q:585}, {n:"Goabe7", k:363, q:507}, {n:"Guiga", k:361, q:385}, {n:"NICOLAS9", k:357, q:368},
-    {n:"Zetsu9", k:357, q:334}, {n:"iguiNmvp", k:354, q:296}, {n:"CEBOLINHA", k:352, q:370}, {n:"one9", k:351, q:405}, {n:"Prozin10", k:349, q:369},
-    {n:"Mike", k:345, q:454}, {n:"HENDER", k:341, q:389}, {n:"KakaZk", k:341, q:255}, {n:"Cruel", k:332, q:359}, {n:"Luan7", k:332, q:279},
-    {n:"Fac", k:331, q:357}, {n:"brota10", k:326, q:254}, {n:"Guifox", k:324, q:318}, {n:"Federal7", k:314, q:220}, {n:"Isopor21", k:311, q:368},
-    {n:"VICTOR7", k:305, q:381}, {n:"Will", k:304, q:345}, {n:"JucaW", k:303, q:241}, {n:"CAUE", k:301, q:338}, {n:"Azay", k:278, q:317},
-    {n:"LENNO", k:265, q:404}, {n:"Nobru", k:262, q:308}, {n:"MAMUTEZL", k:257, q:319}, {n:"RafaX", k:256, q:350}, {n:"Field", k:255, q:331},
-    {n:"MTS7", k:255, q:211}, {n:"KMX", k:255, q:285}, {n:"Moreira", k:250, q:372}, {n:"GØDKILL", k:248, q:264}, {n:"PEDRO.RS", k:245, q:294}
-];
+// histData removido — kills históricas calculadas dinamicamente via lbffData
+
+// Função auxiliar: calcula kills e quedas históricas de um jogador via lbffData
+function getHistTotals(playerName) {
+    let totalK = 0, totalQ = 0;
+    let entry = Object.entries(lbffData).find(([name]) => checkNameMatch(name, playerName));
+    if (entry) {
+        for (let ed in entry[1]) {
+            totalK += entry[1][ed].k || 0;
+            totalQ += entry[1][ed].q || 0;
+        }
+    }
+    return { k: totalK, q: totalQ, entry: entry };
+}
 
 // ==========================================
 // BANCO DE DADOS: DESEMPENHO POR QUEDA
@@ -3309,6 +3301,10 @@ const data = await response.json();
     renderTableTotal();
 
     renderIndividualRecords();
+
+    // Carrega dados históricos ANTES de renderizar o Hall da Fama
+    await loadLbffData();
+
     buildEditionFilters();
     renderEditionRanking();
     populateHistSelects();
@@ -4387,18 +4383,21 @@ function renderHistoricalRanking() {
     let tbody = document.querySelector('#table-history tbody');
     if(!tbody) return;
 
-    let currentRankData = histData.map((p, index) => {
-        let activeName = historicalAliases[p.n] || p.n;
+    // Constrói ranking a partir do lbffData, somando todas as edições por jogador
+    let currentRankData = Object.entries(lbffData).map(([name, editions], index) => {
+        let histK = 0, histQ = 0;
+        for (let ed in editions) { histK += editions[ed].k || 0; histQ += editions[ed].q || 0; }
+        let activeName = historicalAliases[name] || name;
         let activePlayer = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
         let isPlaying = activePlayer && !activePlayer.isEx;
         return {
             oldPos: index + 1,
-            originalName: p.n,
+            originalName: name,
             activeName: activeName,
             isPlaying: isPlaying,
             equipe: isPlaying ? activePlayer.equipe : null,
-            totalKills: p.k + (activePlayer ? activePlayer.abates || 0 : 0),
-            totalQuedas: p.q + (activePlayer ? activePlayer.quedas || 0 : 0)
+            totalKills: histK + (activePlayer ? activePlayer.abates || 0 : 0),
+            totalQuedas: histQ + (activePlayer ? activePlayer.quedas || 0 : 0)
         };
     });
 
@@ -5407,17 +5406,12 @@ function renderTeamProfileStats() {
                 let playerName = pt.jogador;
                 let hKills = 0, hQuedas = 0;
                 
-                // Soma dados de lbffData e histData
-                let histRecord = typeof histData !== 'undefined' ? histData.find(h => checkNameMatch(h.n, playerName)) : null;
-                let lbffEntry = typeof lbffData !== 'undefined' ? Object.entries(lbffData).find(([name]) => checkNameMatch(name, playerName)) : null;
+                // Soma dados históricos via lbffData
+                let histRecord = typeof lbffData !== 'undefined' ? getHistTotals(playerName) : { k: 0, q: 0 };
+                let lbffEntry = histRecord.entry;
                 
-                if (histRecord) {
+                if (histRecord.k > 0 || histRecord.q > 0) {
                     hKills = histRecord.k; hQuedas = histRecord.q;
-                } else if (lbffEntry) {
-                    for (let ed in lbffEntry[1]) {
-                        hKills += lbffEntry[1][ed].k || 0;
-                        hQuedas += lbffEntry[1][ed].q || 0;
-                    }
                 }
                 
                 // Soma desempenho da temporada atual se estiver ativo
@@ -5937,13 +5931,8 @@ function openPlayerProfile(playerName) {
     // 3. Pega o nome oficial do histórico se ele for inativo
 let officialName = safeName;
     if (isInactive) {
-        let histRecord = histData.find(h => checkNameMatch(h.n, safeName));
-        if (histRecord) {
-            officialName = histRecord.n;
-        } else {
-            let lbffEntry = Object.keys(lbffData).find(name => checkNameMatch(name, safeName));
-            if (lbffEntry) officialName = lbffEntry;
-        }
+        let lbffEntry = Object.keys(lbffData).find(name => checkNameMatch(name, safeName));
+        if (lbffEntry) officialName = lbffEntry;
         
         // Cria o objeto base com o nome oficial
         p = { jogador: officialName, equipe: "Sem Equipe", abates: 0, quedas: 0, dano: 0, assists: 0, mvp: 0 };
@@ -5963,25 +5952,17 @@ let officialName = safeName;
     // --- CÁLCULO HISTÓRICO ---
     let histKills = 0, histQuedas = 0, lastEd = "N/A";
     
-    let histRecordObj = histData.find(h => checkNameMatch(h.n, p.jogador));
     let playerEntries = Object.entries(lbffData).find(([name]) => checkNameMatch(name, p.jogador));
 
-    if (histRecordObj) {
-        // Se está no Top 100, puxa direto o valor já somado
-        histKills = histRecordObj.k;
-        histQuedas = histRecordObj.q;
-    } else if (playerEntries) {
-        // Se não está no Top 100 mas tem histórico, soma edição por edição manualmente
+    if (playerEntries) {
+        // Soma todas as edições do lbffData
         let editionsData = playerEntries[1];
         for (let ed in editionsData) {
             histKills += editionsData[ed].k || 0;
             histQuedas += editionsData[ed].q || 0;
         }
-    }
-
-    if (playerEntries) {
-        let editions = Object.keys(playerEntries[1]);
-        lastEd = editions[editions.length - 1]; 
+        let editions = Object.keys(editionsData);
+        lastEd = editions[editions.length - 1];
     }
 
     // Soma com a edição atual (se ele estiver jogando)
@@ -6871,7 +6852,6 @@ function openOtTeamRoster(tourneyId, teamName) {
     let html = players.map(pName => {
         // Verifica se o jogador existe no nosso banco (Ativo ou Inativo)
         let isRegistered = db.players.some(x => checkNameMatch(x.jogador, pName)) ||
-                           (typeof histData !== 'undefined' && histData.some(h => checkNameMatch(h.n, pName))) ||
                            (typeof lbffData !== 'undefined' && Object.keys(lbffData).some(name => checkNameMatch(name, pName)));
 
         if (isRegistered) {
