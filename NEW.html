@@ -3032,25 +3032,21 @@ function getCFFBadgeColor(nota) {
 
 // O Cálculo "Rebuscado"
 function calculateCFFNota(kills, dano, assists, mvp) {
-    // A nota interna começa em 5.0 (quem não fez nada na queda)
-    let nota = 5.0;
+    // Nota base interna de 5.5 (para permitir quedas zeradas puxarem a média do dia para baixo)
+    let nota = 5.5;
     
-    // PESOS REBUSCADOS (Destaque: Abates > Dano > Assistência)
-    // Para ganhar +3.5 pontos (chegando perto do 10), precisaria de 12 kills
-    nota += (kills * 0.29); 
+    // Bônus de contribuição mínima (Pega a visão: >200 de dano já sobe a nota)
+    if (dano > 0 && dano < 200) nota += 0.2; // 5.7
+    if (dano >= 200) nota += 0.7;           // 6.2 (o mínimo que você pediu se o cara fizer algo)
     
-    // Para ganhar +1.2 pontos de dano, precisaria de 4000 de dano
-    nota += (dano * 0.0003); 
+    // Pesos Rigorosos para o Crescimento
+    nota += (kills * 0.45);       // Cada abate é muito valioso
+    nota += (dano * 0.0006);      // Dano escala de forma constante
+    nota += (assists * 0.25);     // Assistência é bônus de equipe
+    if (mvp) nota += 0.6;         // MVP da queda pesa mais agora
     
-    // Assistências são bônus de participação
-    nota += (assists * 0.15); 
-    
-    // O MVP é a cereja do bolo, mas não dá a nota sozinho
-    if (mvp) nota += 0.40;
-    
-    // Trava de segurança: Praticamente impossível passar de 10.0
+    // Trava de segurança para a queda (O 10.0 continua difícil aqui)
     if (nota > 10.0) nota = 10.0;
-    if (nota < 1.0) nota = 1.0; 
     
     return parseFloat(nota.toFixed(1));
 }
