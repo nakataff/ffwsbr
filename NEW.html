@@ -3594,36 +3594,81 @@ function renderHistoricoEquipes(nome, containerId) {
     let container = document.getElementById(containerId);
     if (!container) return;
 
-    // Pega o nome e deixa minúsculo de uma vez só para ficar rápido
     let cleanName = typeof getDisplayName === 'function' ? getDisplayName(nome) : nome;
     let targetLower = cleanName.toLowerCase();
     
+    // Busca o histórico do banco de dados antigo
     let hist = typeof dbPassagens !== 'undefined' ? dbPassagens.find(p => p.jogador.toLowerCase() === targetLower) : null;
+    
+    // Clona a array para não modificar o banco original
+    let passagensArray = hist && hist.passagens ? [...hist.passagens] : [];
 
-    if (!hist || !hist.passagens || hist.passagens.length === 0) {
-        container.innerHTML = '<div style="color:#888; font-size:0.9em; text-align:center; width:100%; font-weight:bold;">Nenhum histórico de equipes registrado no banco de dados.</div>';
+    // ========================================================
+    // MÁGICA: VERIFICA SE O JOGADOR ESTÁ ATIVO NA TEMPORADA
+    // ========================================================
+    let activePlayer = typeof db !== 'undefined' && db.players ? db.players.find(p => checkNameMatch(p.jogador, nome)) : null;
+    let activeStaff = typeof dbStaff !== 'undefined' ? dbStaff.find(s => checkNameMatch(s.nome, nome)) : null;
+
+    let currentActiveTeam = null;
+    let currentRole = null;
+
+    // Dá prioridade pro cargo/time atual
+    if (activePlayer && !activePlayer.isEx) {
+        currentActiveTeam = activePlayer.equipe;
+        currentRole = "Jogador";
+    } else if (activeStaff) {
+        currentActiveTeam = activeStaff.equipe;
+        currentRole = activeStaff.cargo || "Staff";
+    }
+
+    // Se o jogador estiver ativo, insere o time novo no final da linha do tempo!
+    if (currentActiveTeam) {
+        let lastPassagem = passagensArray.length > 0 ? passagensArray[passagensArray.length - 1] : null;
+        
+        // Só adiciona se o último time já não for igual ao time atual
+        if (!lastPassagem || lastPassagem.equipe.toUpperCase() !== currentActiveTeam.toUpperCase()) {
+            passagensArray.push({
+                equipe: currentActiveTeam,
+                cargo: currentRole
+            });
+        }
+    }
+
+    if (passagensArray.length === 0) {
+        container.innerHTML = '<div style="color:#888; font-size:0.9em; text-align:center; width:100%; font-weight:bold;">Nenhum histórico de equipes registrado.</div>';
         return;
     }
 
-    container.innerHTML = hist.passagens.map(passagem => {
+    container.innerHTML = passagensArray.map((passagem, index) => {
         let logoSrc = logos[passagem.equipe] || 'escudo.webp';
         let equipeUpper = passagem.equipe.toUpperCase();
         
-        let isClickable = db.teams.some(t => t.equipe.toUpperCase() === equipeUpper);
+        let isClickable = typeof db !== 'undefined' && db.teams && db.teams.some(t => t.equipe.toUpperCase() === equipeUpper);
         
+        // Verifica se essa cartinha é a última e representa a equipe ATUAL
+        let isLast = index === passagensArray.length - 1;
+        let isCurrent = currentActiveTeam && equipeUpper === currentActiveTeam.toUpperCase() && isLast;
+
         let cursorStyle = isClickable ? 'cursor: pointer; transition: 0.2s;' : 'cursor: default; opacity: 0.6; filter: grayscale(0.5);';
         let hoverStyle = isClickable ? 'onmouseover="this.style.borderColor=\'var(--accent)\'; this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.borderColor=\'var(--border)\'; this.style.transform=\'none\'"' : '';
         let clickAction = isClickable ? `onclick="openTeamProfile('${passagem.equipe}')"` : '';
         
-        let sName = shortNames[passagem.equipe] || passagem.equipe;
+        let sName = typeof shortNames !== 'undefined' && shortNames[passagem.equipe] ? shortNames[passagem.equipe] : passagem.equipe;
+
+        // Se for o time atual, damos um destaque neon e escrevemos "ATUAL"
+        let styleHighlight = isCurrent 
+            ? 'border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 200, 255, 0.4); opacity: 1; filter: grayscale(0);' 
+            : 'border-color: var(--border);';
+            
+        let labelCargo = isCurrent ? '<span style="color:#00c8ff;">ATUAL</span>' : passagem.cargo;
 
         return `
         <div style="display: flex; flex-direction: column; align-items: center; width: 90px;">
-            <div style="font-size: 0.55em; color: var(--accent); font-weight: bold; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; text-align: center; height: 12px;">
-                ${passagem.cargo}
+            <div style="font-size: 0.55em; color: var(--text-muted); font-weight: bold; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; text-align: center; height: 12px;">
+                ${labelCargo}
             </div>
             
-            <div ${clickAction} ${hoverStyle} style="width: 60px; height: 60px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); ${cursorStyle}">
+            <div ${clickAction} ${hoverStyle} style="width: 60px; height: 60px; background: rgba(255,255,255,0.02); border: 1px solid; border-radius: 12px; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); ${cursorStyle} ${styleHighlight}">
                 <img src="${logoSrc}" style="width: 40px; height: 40px; object-fit: contain;">
             </div>
             
