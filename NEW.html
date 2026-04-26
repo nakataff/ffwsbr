@@ -5922,7 +5922,9 @@ function _safePPAttr(name) {
 function openPlayerProfile(playerName) {
     if (!playerName) return;
     let safeName = playerName.trim();
-    let p = db.players.find(x => x.jogador.trim().toLowerCase() === safeName.toLowerCase());
+    // Tenta match exato primeiro, depois via alias/checkNameMatch
+    let p = db.players.find(x => x.jogador.trim().toLowerCase() === safeName.toLowerCase())
+          || db.players.find(x => checkNameMatch(x.jogador, safeName));
     
     const isInactive = !p;
     currentPlayerView = p ? p.jogador : safeName; 
@@ -6130,11 +6132,14 @@ function renderAllPlayers() {
             .filter(p => p.quedas > 0);
 
         tbody.innerHTML = data.sort((a,b) => b.abates - a.abates).map((p, i) => {
-            // Usa a equipe oficial para puxar a logo corretamente
-            let officialTeam = db.players.find(x => x.jogador === p.jogador)?.equipe || p.equipe;
+            // Resolve o nome canônico e equipe oficial via db.players (suporta aliases)
+            let dbP = db.players.find(x => x.jogador === p.jogador) 
+                   || db.players.find(x => checkNameMatch(x.jogador, p.jogador));
+            let canonicalName = dbP ? dbP.jogador : p.jogador;
+            let officialTeam = dbP?.equipe || p.equipe;
             return `<tr>
                 <td>${i+1}</td>
-                <td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(p.jogador)}">${p.jogador}</span></td>
+                <td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
                 <td class="team-cell hide-mobile"><img src="${logos[officialTeam]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${officialTeam}')">${officialTeam}</span></td>
                 <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
                 <td class="hide-mobile">${p.dano}</td>
