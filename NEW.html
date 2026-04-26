@@ -2312,7 +2312,7 @@ const dbPassagens = [
   {jogador:"LEE",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"}]},
   {jogador:"RUSH",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"SANREAL",cargo:"Jogador"},{equipe:"TSM",cargo:"Jogador"},{equipe:"CRUZEIRO",cargo:"Jogador"}]},
   {jogador:"NANDO9",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"DRAXX7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
+  {jogador:"Draxx7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
   {jogador:"Mike",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
   {jogador:"Duduffx!",passagens:[{equipe:"SANREAL",cargo:"Jogador"},{equipe:"00 NATION",cargo:"Jogador"}]},
   {jogador:"Leozin",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
@@ -2428,7 +2428,7 @@ const dbPassagens = [
   {jogador:"Deley",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
   {jogador:"Itachi Fé",passagens:[{equipe:"TSM",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
   {jogador:"Cruel",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"GIUH.87",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
+  {jogador:"Giuh",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
   {jogador:"Mexico",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
   {jogador:"MTS7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
   {jogador:"R1",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
@@ -2461,7 +2461,7 @@ const dbPassagens = [
   {jogador:"ROG5WP",passagens:[{equipe:"E1 SPORTS",cargo:"Jogador"}]},
   {jogador:"PUTSGRILO",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Head Coach"}]},
   {jogador:"PETERxl",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"o Mala",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
+  {jogador:"Mala",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
   {jogador:"Hak",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"}]},
   {jogador:"Nikeboy",passagens:[{equipe:"ANGELS OUTPLAY",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"LOOPS",cargo:"Jogador"}]},
   {jogador:"BRUNO7w",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"}]},
@@ -3323,6 +3323,7 @@ const data = await response.json();
     renderSchedule();
     renderOutrasEquipesGrid();
     buildDesktopTeamNav();
+    initSearchListeners();
 
     // ==========================================
     // 4. INTEGRAÇÕES EXTERNAS (GOOGLE SHEETS)
@@ -6399,6 +6400,21 @@ function renderCFFStats() {
     `;
 }
 
+// Listener de busca configurado UMA VEZ — event delegation no container pai.
+// Assim funciona mesmo depois de innerHTML recriar os itens.
+function initSearchListeners() {
+    ['search-results-desktop', 'search-results-mobile'].forEach(id => {
+        const box = document.getElementById(id);
+        if (!box) return;
+        box.addEventListener('click', (e) => {
+            const item = e.target.closest('.search-item[data-name]');
+            if (!item) return;
+            e.stopPropagation();
+            selectSearchResult(item.dataset.type, item.dataset.name);
+        });
+    });
+}
+
 // Busca unificada (desktop e mobile compartilham o pool, só o container muda)
 function handleGlobalSearchFrom(source) {
     const inputId = source === 'desktop' ? 'global-search-desktop' : 'global-search-mobile';
@@ -6472,17 +6488,9 @@ function handleGlobalSearchFrom(source) {
             </div>`;
     }).join('');
 
+    // Só atualiza o HTML — o listener já está no pai (initSearchListeners) e não precisa ser recriado
     resultsBox.innerHTML = html || '<div style="padding:15px; color:#888; text-align:center;">Nenhum resultado encontrado</div>';
     resultsBox.style.display = 'block';
-
-    // Listener delegado no container — stopPropagation impede que o listener global
-    // de "clique fora" esconda o dropdown antes de processar o clique no item
-    resultsBox.querySelectorAll('.search-item[data-name]').forEach(el => {
-        el.addEventListener('click', (e) => {
-            e.stopPropagation();
-            selectSearchResult(el.dataset.type, el.dataset.name);
-        });
-    });
 }
 
 // Popula o dropdown desktop com os logos dos times da WB em grid 4x4
