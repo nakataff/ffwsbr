@@ -3770,7 +3770,7 @@ function renderTop5Stats() {
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
         let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
         html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span></div>
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
                 <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
                 <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
             </div>`).join('');
@@ -4217,8 +4217,8 @@ function renderEditionRanking() {
         
         // Clique liberado para todos (Ativos e Inativos)
         let nameHtml = `
-            <span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>
-            <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameShort}</span>`;
+            <span class="clickable full-name-desktop" onclick="${_safePPAttr(p.activeName)}">${p.originalName}</span>
+            <span class="clickable short-name-mobile" onclick="${_safePPAttr(p.activeName)}">${nameShort}</span>`;
             
         let teamHtml = p.isPlaying ? 
             `<div class="team-cell" style="justify-content:center;"><img src="${logos[p.equipe]||''}" class="team-logo"><span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span></div>` : 
@@ -4436,8 +4436,8 @@ function renderHistoricalRanking() {
         
         // Clique liberado para todos (Ativos e Inativos)
         let nameHtml = `
-            <span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>
-            <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameShort}</span>`;
+            <span class="clickable full-name-desktop" onclick="${_safePPAttr(p.activeName)}">${p.originalName}</span>
+            <span class="clickable short-name-mobile" onclick="${_safePPAttr(p.activeName)}">${nameShort}</span>`;
             
         let teamHtml = p.isPlaying ? 
             `<div class="team-cell" style="justify-content:center;"><img src="${logos[p.equipe]||''}" class="team-logo"><span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span></div>` : 
@@ -4463,7 +4463,7 @@ function createSelectionCardHTML(p) {
     const redAccent = "#ff0000";
 
     return `
-        <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 4px solid ${redAccent}; border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 0 25px rgba(255, 0, 0, 0.5); margin: 0 auto;">
+        <div onclick="${_safePPAttr(p.jogador)}" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 4px solid ${redAccent}; border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 0 25px rgba(255, 0, 0, 0.5); margin: 0 auto;">
             <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #400, #000); opacity: 0.95;"></div>
             
             <div style="position: absolute; top: 15px; left: 15px; z-index: 10; background: ${redAccent}; color: #fff; padding: 4px 12px; border-radius: 4px; font-size: 0.75em; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">
@@ -4531,7 +4531,7 @@ function createPlayerCardHTML(p, scale = 1) {
     let marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
 
     return `
-        <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
+        <div onclick="${_safePPAttr(p.jogador)}" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
             <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
             ${exBadge} 
             ${captainBadge}
@@ -5330,7 +5330,7 @@ function openStaffProfile(staffName) {
     let linkContainer = document.getElementById('sp-player-link-container');
     if(linkContainer) {
         linkContainer.innerHTML = isPlayer ? 
-            `<button class="btn-action" onclick="openPlayerProfile('${s.nome}')" style="background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff; font-size: 0.85em; margin-bottom: 15px; width: 100%;">Ver Carreira como Jogador 🎮</button>` : '';
+            `<button class="btn-action" onclick="${_safePPAttr(s.nome)}" style="background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff; font-size: 0.85em; margin-bottom: 15px; width: 100%;">Ver Carreira como Jogador 🎮</button>` : '';
     }
 
     // Stats da Equipa e Troféus
@@ -5590,7 +5590,7 @@ function renderTeamProfileStats() {
 
         let tbody = document.querySelector('#table-team-players tbody');
         if(tbody) {
-            tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
+            tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(p.jogador)}">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
         }
     }
 
@@ -5908,6 +5908,17 @@ function getOverallColor(ovr) {
     return '#cd7f32';               // Bronze
 }
 
+// Mapa seguro: índice numérico → nome do jogador (evita quebra por apóstrofo/! no onclick)
+let _ppNameMap = [];
+function _openPP(idx) {
+    if (_ppNameMap[idx] !== undefined) openPlayerProfile(_ppNameMap[idx]);
+}
+function _safePPAttr(name) {
+    let idx = _ppNameMap.indexOf(name);
+    if (idx === -1) { idx = _ppNameMap.length; _ppNameMap.push(name); }
+    return `_openPP(${idx})`;
+}
+
 function openPlayerProfile(playerName) {
     if (!playerName) return;
     let safeName = playerName.trim();
@@ -5950,10 +5961,25 @@ let officialName = safeName;
     // NOTA: Certifique-se de que a função getDisplayName() existe no seu código!
     document.getElementById('pp-name').innerText = typeof getDisplayName === 'function' ? getDisplayName(p.jogador) : p.jogador;
     
+    // Detecta equipe ATUAL pelo registro mais recente nas quedas (resolve transferências)
+    let equipeAtual = p.equipe;
+    if (!isInactive) {
+        let lastDay = -1;
+        for (let d in dbJogadoresQuedas) {
+            for (let q in dbJogadoresQuedas[d]) {
+                let entry = dbJogadoresQuedas[d][q].find(x => checkNameMatch(x.nome, p.jogador));
+                if (entry && Number(d) > lastDay) {
+                    lastDay = Number(d);
+                    equipeAtual = entry.equipe;
+                }
+            }
+        }
+    }
+
     const teamEl = document.getElementById('pp-team');
     if (teamEl) {
-        teamEl.innerText = isInactive ? "JOGADOR HISTÓRICO" : p.equipe;
-        teamEl.onclick = isInactive ? null : () => openTeamProfile(p.equipe);
+        teamEl.innerText = isInactive ? "JOGADOR HISTÓRICO" : equipeAtual;
+        teamEl.onclick = isInactive ? null : () => openTeamProfile(equipeAtual);
         teamEl.style.cursor = isInactive ? "default" : "pointer";
     }
 
@@ -6108,7 +6134,7 @@ function renderAllPlayers() {
             let officialTeam = db.players.find(x => x.jogador === p.jogador)?.equipe || p.equipe;
             return `<tr>
                 <td>${i+1}</td>
-                <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
+                <td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(p.jogador)}">${p.jogador}</span></td>
                 <td class="team-cell hide-mobile"><img src="${logos[officialTeam]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${officialTeam}')">${officialTeam}</span></td>
                 <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
                 <td class="hide-mobile">${p.dano}</td>
@@ -6526,7 +6552,7 @@ function renderIndividualRecords() {
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
         let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
         html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span></div>
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
                 <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
                 <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
             </div>`).join('');
@@ -6945,7 +6971,7 @@ function openOtTeamRoster(tourneyId, teamName) {
 
         if (isRegistered) {
             // Se existe, cria um botão que leva direto pro perfil
-            return `<button class="btn-action" style="width: 100%; margin-top: 0; background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff;" onclick="document.getElementById('ot-roster-modal').classList.remove('active'); openPlayerProfile('${pName}')">${pName} ↗</button>`;
+            return `<button class="btn-action" style="width: 100%; margin-top: 0; background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff;" onclick="document.getElementById('ot-roster-modal').classList.remove('active'); ${_safePPAttr(pName)}">${pName} ↗</button>`;
         } else {
             // Se NÃO existe, só mostra o nome numa caixinha cinza sem clique
             return `<div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px; border-radius: 6px; color: #888; font-weight: bold;">${pName}</div>`;
@@ -7034,7 +7060,7 @@ function renderHomeStats() {
         tbodyPlayers.innerHTML = sortedPlayers.map((p, i) => `
             <tr>
                 <td style="color:var(--accent); font-weight:bold;">${i+1}º</td>
-                <td class="clickable" onclick="openPlayerProfile('${p.jogador}')" style="text-align:left; border-bottom: none;">
+                <td class="clickable" onclick="${_safePPAttr(p.jogador)}" style="text-align:left; border-bottom: none;">
                     <span style="font-weight:bold; color:#fff;">${getDisplayName(p.jogador)}</span>
                     <div style="font-size: 0.75em; color: #888;">${p.equipe}</div>
                 </td>
