@@ -125,6 +125,35 @@
     gap: 10px;
 }
 
+/* --- NOTA CFF (ESTILO SOFASCORE) --- */
+.cff-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.95em;
+    padding: 4px 10px;
+    min-width: 35px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+/* Paleta de cores baseada no SofaScore */
+.cff-10  { background-color: #1a4ab0; } /* Azul Escuro (Perfeita) */
+.cff-9   { background-color: #3b7ced; } /* Azul Claro (Excelente) */
+.cff-8   { background-color: #00acc1; } /* Ciano (Ótima) */
+.cff-7   { background-color: #4caf50; } /* Verde (Boa) */
+.cff-6   { background-color: #f09400; color: #000; } /* Laranja (Regular/Base) */
+.cff-5   { background-color: #e55300; } /* Vermelho Alaranjado (Ruim) */
+.cff-min { background-color: #d32f2f; } /* Vermelho Escuro (Mínima) */
+
+.cff-table th, .cff-table td { 
+    padding: 10px 12px; 
+    border-bottom: 1px solid var(--border); 
+    text-align: center;
+}
+.cff-table th { background: transparent; color: var(--text-muted); font-size: 0.8em; }
+
 /* Garante que o card de live dentro da caixinha fique bonito */
 .live-card {
     opacity: 1;
@@ -1496,6 +1525,8 @@ tr:last-child {
     </div>
 
     <div id="player-overall-card"></div>
+
+
     
     <h3 id="pp-current-title" style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Desempenho Atual (Temporada)</h3>
 <div id="pp-current-grid" class="grid-cards">
@@ -1518,6 +1549,18 @@ tr:last-child {
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); text-transform: uppercase;">Histórico de Equipes</h3>
     <div id="pp-team-history-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);"></div>
 
+<h3 id="pp-cff-title" style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+        <span style="background: #1a4ab0; color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: 900; font-size: 0.7em; letter-spacing: 1px;">NOTA CFF</span>
+        Avaliação por Queda (SofaScore)
+    </h3>
+    
+    <div class="filters" id="pp-cff-filters-container" style="display: none; margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Filtrar por Dia:</label>
+        <div class="day-filters" id="pp-cff-day-filters"></div>
+    </div>
+    
+    <div id="pp-cff-rating-container" style="margin-bottom: 40px;"></div>
+    
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700;">Galeria de Troféus</h3>
     <div id="pp-trophies-container" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 40px; background: rgba(255,215,0,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.1);"></div>
 </div>
@@ -2976,6 +3019,249 @@ async function loadTitles() {
     }
 }
 
+// Função para pegar a cor exata baseada na nota
+function getCFFBadgeColor(nota) {
+    if (nota >= 10.0) return 'cff-10';
+    if (nota >= 9.0)  return 'cff-9';
+    if (nota >= 8.0)  return 'cff-8';
+    if (nota >= 7.0)  return 'cff-7';
+    if (nota >= 6.0)  return 'cff-6';
+    if (nota >= 5.0)  return 'cff-5';
+    return 'cff-min';
+}
+// O Cálculo CFF v3
+// Hierarquia clara: Kills > Dano > Assists
+// Kills usam raiz quadrada — retorno decrescente, diferencia bem 3k de 10k
+// Dano split: "convertido" (proporcional aos kills) vs "excedente" (não finalizou — vale pouco)
+// Bônus de posição do time: só ativo quando a nota já não está alta (não infla boas partidas)
+// Nota 10 é excepcional — requer feito histórico (10+ kills com dano alto)
+function calculateCFFNota(kills, dano, assists, mvp, posicaoTime) {
+
+    const contribuiu = kills >= 1 || dano >= 200;
+
+    // Jogador zerou ou quase: nota de 3.0 a 5.9
+    if (!contribuiu) {
+        if (dano === 0 && assists === 0) return 3.0; // zero absoluto
+        let nota = 3.0;
+        if (dano > 0 && dano < 200) nota += 0.8 + (dano / 199) * 0.5; // 3.8 ~ 4.3
+        nota += assists * 0.15;
+        return parseFloat(Math.min(nota, 5.9).toFixed(1));
+    }
+
+    // Jogador que contribuiu: base 6.0
+    let nota = 6.0;
+
+    // ── KILLS: raiz quadrada — diferencia muito mais kills altos de baixos ──
+    // 1k→+0.90 | 3k→+1.56 | 5k→+2.01 | 7k→+2.38 | 10k→+2.85 | 11k→+2.98
+    nota += Math.sqrt(kills) * 0.90;
+
+    // ── DANO: split em convertido vs excedente ──
+    if (kills === 0) {
+        // Sem kill: dano de apoio/pressão pura
+        nota += Math.min(Math.sqrt(dano * 0.25) / 55, 0.65);
+    } else {
+        // Dano esperado por kill (~620): representa eficiência normal
+        let danoEsperado   = kills * 620;
+        let danoConvertido = Math.min(dano, danoEsperado);
+        let danoExcedente  = Math.max(0, dano - danoEsperado);
+
+        // Convertido: peso normal (matou e causou dano proporcional)
+        nota += Math.min(Math.sqrt(danoConvertido) / 90, 0.88);
+        // Excedente: peso muito baixo (causou pressão mas não finalizou)
+        nota += Math.min(Math.sqrt(danoExcedente) / 300, 0.10);
+    }
+
+    // ── ASSISTS: suporte, peso baixo ──
+    nota += Math.min(assists * 0.08, 0.35);
+
+    // ── MVP ──
+    if (mvp) nota += 0.25;
+
+    // ── BÔNUS DE POSIÇÃO DO TIME ──
+    // Só aplica quando a nota ainda está abaixo de 7.5 — não infla partidas já boas
+    let notaSemBonus = nota;
+    if (notaSemBonus < 7.5) {
+        if (posicaoTime === 1)       nota += 0.20; // Booyah/1º
+        else if (posicaoTime <= 3)   nota += 0.10; // Top 3
+        else if (posicaoTime <= 6)   nota += 0.06; // Top 6
+    }
+
+    return parseFloat(Math.min(nota, 10.0).toFixed(1));
+}
+
+
+function onPpcffDayFilterChanged() {
+    buildDayFilters();
+    if (currentPlayerView) {
+        renderPlayerCFFRating(currentPlayerView);
+    }
+}
+
+function renderPlayerCFFRating(playerName) {
+    let container = document.getElementById('pp-cff-rating-container');
+    let title = document.getElementById('pp-cff-title');
+    let filterContainer = document.getElementById('pp-cff-filters-container'); 
+    
+    if (!container || !title) return;
+
+    let diasData = [];
+    
+    // VARIÁVEIS GLOBAIS (Não são afetadas pelo filtro)
+    let globalTotalNotas = 0;
+    let globalTotalQuedas = 0;
+    let playedAnyDay = false; // Verifica se o cara jogou o camp
+    
+    // Varre o banco de quedas diárias do campeonato atual
+    for (let d in dbJogadoresQuedas) {
+        let quedasDoDia = [];
+        
+        for (let q in dbJogadoresQuedas[d]) {
+            let dropInfo = (dbQuedas[d] && dbQuedas[d][q]) ? dbQuedas[d][q] : { mapa: 'Desconhecido' };
+            let playerDrop = dbJogadoresQuedas[d][q].find(p => checkNameMatch(p.nome, playerName));
+            
+            if (playerDrop) {
+                playedAnyDay = true;
+                // Busca posição do time do jogador nesta queda
+                let posicaoTime = 12; // padrão: última posição
+                if (dropInfo.resultados) {
+                    let teamResult = dropInfo.resultados.find(r =>
+                        r.equipe.toUpperCase() === (playerDrop.equipe || '').toUpperCase()
+                    );
+                    if (teamResult) posicaoTime = teamResult.posicao;
+                }
+                
+                let nota = calculateCFFNota(playerDrop.kills, playerDrop.dano, playerDrop.assists, playerDrop.mvp, posicaoTime);
+                
+                // === SOMA NA MÉDIA GERAL (INDEPENDENTE DO FILTRO) ===
+                globalTotalNotas += nota;
+                globalTotalQuedas++;
+
+                quedasDoDia.push({
+                    queda: q,
+                    mapa: dropInfo.mapa,
+                    kills: playerDrop.kills,
+                    dano: playerDrop.dano,
+                    assists: playerDrop.assists,
+                    mvp: playerDrop.mvp,
+                    nota: nota
+                });
+            }
+        }
+        
+        // Finaliza os cálculos do dia e aplica o filtro
+        if (quedasDoDia.length > 0) {
+            let mediaDrops = quedasDoDia.reduce((sum, q) => sum + q.nota, 0) / quedasDoDia.length;
+            let totalKills = quedasDoDia.reduce((sum, q) => sum + q.kills, 0);
+            let totalDano = quedasDoDia.reduce((sum, q) => sum + q.dano, 0);
+            let totalMvps = quedasDoDia.filter(q => q.mvp).length;
+            
+            let notaDia = mediaDrops;
+
+            // Bônus de Lenda do Dia
+            if (totalKills >= 12) notaDia += (totalKills - 11) * 0.15; 
+            if (totalKills >= 20) notaDia += (totalKills - 19) * 0.25; 
+            if (totalDano >= 10000) notaDia += 0.3;
+            if (totalDano >= 15000) notaDia += 0.5;
+            if (totalMvps > 0) notaDia += (totalMvps * 0.4);
+            if (totalKills >= 30) notaDia = 10.0; // O Dia Histórico 
+
+            notaDia = Math.min(Math.max(notaDia, mediaDrops), 10.0);
+
+            // SÓ ADICIONA NO VISUAL SE O DIA PASSAR PELO FILTRO
+            if (selectedPpcffDays.length === 0 || selectedPpcffDays.includes(String(d))) {
+                diasData.push({
+                    dia: Number(d),
+                    quedas: quedasDoDia,
+                    mediaDia: notaDia.toFixed(1)
+                });
+            }
+        }
+    }
+
+    // Se o jogador for Inativo/Histórico, esconde tudo
+    if (!playedAnyDay) {
+        container.style.display = 'none';
+        title.style.display = 'none';
+        if (filterContainer) filterContainer.style.display = 'none'; 
+        return;
+    }
+
+    container.style.display = 'block';
+    title.style.display = 'flex';
+    if (filterContainer) filterContainer.style.display = 'flex'; 
+
+    // Ordena do dia mais recente para o mais antigo no visual
+    diasData.sort((a,b) => b.dia - a.dia);
+
+    let html = diasData.map(diaInfo => {
+        let badgeDia = getCFFBadgeColor(parseFloat(diaInfo.mediaDia));
+        
+        let quedasHtml = diaInfo.quedas.map(q => {
+            // Nota que tiramos as contas globais daqui de dentro!
+            let notaVisual = Math.max(6.0, q.nota);
+            let badgeQueda = getCFFBadgeColor(notaVisual);
+            
+            return `
+            <tr style="background: rgba(255,255,255,0.02);">
+                <td style="text-align:left; color:var(--text-muted); font-weight:bold;">
+                    Queda ${q.queda} <br><span style="font-size:0.75em; color:#888;">${q.mapa.toUpperCase()}</span>
+                </td>
+                <td style="color:#fff;">${q.kills}</td>
+                <td>${q.dano}</td>
+                <td>${q.assists}</td>
+                <td>
+                    <div style="display:flex; align-items:center; justify-content:center;">
+                        <span class="cff-badge ${badgeQueda}">${notaVisual.toFixed(1)}</span>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+
+        return `
+        <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+            <div style="display:flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #0d1220; border-bottom: 1px solid var(--border);">
+                <h4 style="margin: 0; color: #fff;">DIA ${diaInfo.dia}</h4>
+                <div style="display:flex; align-items:center; gap: 10px;">
+                    <span style="font-size: 0.8em; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Nota do Dia</span>
+                    <span class="cff-badge ${badgeDia}" style="font-size: 1.1em;">${diaInfo.mediaDia}</span>
+                </div>
+            </div>
+            <div class="table-container" style="margin-bottom: 0; border: none; border-radius: 0;">
+                <table class="cff-table" style="width: 100%; margin: 0;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">PARTIDA</th>
+                            <th>KILLS</th>
+                            <th>DANO</th>
+                            <th>AST</th>
+                            <th>NOTA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${quedasHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
+    }).join('');
+
+    // CALCULA A MÉDIA GERAL COM AS VARIÁVEIS GLOBAIS ABSOLUTAS
+    let mediaGeral = globalTotalQuedas > 0 ? (globalTotalNotas / globalTotalQuedas).toFixed(1) : "0.0";
+    let badgeGeral = getCFFBadgeColor(parseFloat(mediaGeral));
+
+    let headerHtml = `
+    <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(90deg, #1c1c20 0%, #0d1220 100%); border-left: 4px solid var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border);">
+        <div>
+            <div style="font-size: 0.9em; color: #fff; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Média Geral no Campeonato</div>
+            <div style="font-size: 0.8em; color: #888; margin-top: 4px;">Análise baseada em ${globalTotalQuedas} quedas disputadas.</div>
+        </div>
+        <div class="cff-badge ${badgeGeral}" style="font-size: 2.2em; padding: 5px 20px;">${mediaGeral}</div>
+    </div>
+    `;
+
+    container.innerHTML = headerHtml + html;
+}
+
 async function loadCampeonatos() {
     const CAMP_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1701683178&single=true&output=tsv';
 
@@ -3719,6 +4005,8 @@ let selectedTpDays = [];
 let selectedAvgDays = [];
 let selectedTotalDays = [];
 let selectedTop5Days = [];
+let selectedPpcffDays = []; 
+let currentPlayerView = null;
 
 let currentTeamView = null;
 let currentOppGroup = null;
@@ -5179,12 +5467,43 @@ function buildDayFilters() {
         let container = document.getElementById(containerId);
         if(!container) return;
 
+        let html = '';
+
+        // REGRA EXCLUSIVA PARA A NOTA CFF
+        if (containerId === 'pp-cff-day-filters') {
+            if (!currentPlayerView) return;
+            
+            let daysPlayed = new Set();
+            // Varre o banco para saber em quais dias esse jogador específico jogou
+            for (let d in dbJogadoresQuedas) {
+                for (let q in dbJogadoresQuedas[d]) {
+                    if (dbJogadoresQuedas[d][q].some(p => checkNameMatch(p.nome, currentPlayerView))) {
+                        daysPlayed.add(Number(d));
+                        break; // Se achou em uma queda, já sabemos que ele jogou no dia
+                    }
+                }
+            }
+            
+            // Transforma em array e ordena do maior pro menor (Ex: 11, 10, 9...)
+            let availableDays = Array.from(daysPlayed).sort((a, b) => b - a);
+            
+            // Cria os botões (SEM o botão "Todos")
+            availableDays.forEach(d => {
+                let isActive = arrSelected.includes(String(d));
+                html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('${containerId}', '${d}', ${callbackName})">Dia ${d}</div>`;
+            });
+            
+            container.innerHTML = html;
+            return; // Interrompe aqui para não executar o código abaixo que tem o "Todos"
+        }
+
+        // === COMPORTAMENTO NORMAL PARA OS OUTROS FILTROS ===
+        let isAll = arrSelected.length === 0;
+        html += `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('${containerId}', 'all', ${callbackName})">Todos</div>`;
+        
         let availableDays = [];
         for(let i=1; i<=TOTAL_DIAS; i++) availableDays.push(i);
 
-        let isAll = arrSelected.length === 0;
-        let html = `<div class="day-chip ${isAll ? 'active' : ''}" onclick="toggleDay('${containerId}', 'all', ${callbackName})">Todos</div>`;
-        
         availableDays.forEach(d => {
             let isActive = arrSelected.includes(String(d));
             html += `<div class="day-chip ${isActive ? 'active' : ''}" onclick="toggleDay('${containerId}', '${d}', ${callbackName})">Dia ${d}</div>`;
@@ -5197,8 +5516,10 @@ function buildDayFilters() {
     buildChips('player-day-filters', selectedPlayerDays, 'onPlayerDayFilterChanged');
     buildChips('avg-day-filters', selectedAvgDays, 'renderTableAvg');
     buildChips('total-day-filters', selectedTotalDays, 'renderTableTotal');
-    buildChips('top5-day-filters', selectedTop5Days, 'renderTop5Stats'); // ADICIONE ESTA LINHA
+    buildChips('top5-day-filters', selectedTop5Days, 'renderTop5Stats');
+    buildChips('pp-cff-day-filters', selectedPpcffDays, 'onPpcffDayFilterChanged');
     
+    // Filtro da aba da equipe
     if(currentTeamView) {
         let tName = currentTeamView;
         let container = document.getElementById('tp-day-filters');
@@ -5223,14 +5544,22 @@ function toggleDay(containerId, day, callback) {
     else if (containerId === 'player-day-filters') arr = selectedPlayerDays;
     else if (containerId === 'avg-day-filters') arr = selectedAvgDays;
     else if (containerId === 'total-day-filters') arr = selectedTotalDays;
-    else if (containerId === 'top5-day-filters') arr = selectedTop5Days; // ADICIONE ESTA LINHA
+    else if (containerId === 'top5-day-filters') arr = selectedTop5Days;
+    else if (containerId === 'pp-cff-day-filters') {
+        // REGRA DE SELEÇÃO ÚNICA PARA A NOTA CFF
+        selectedPpcffDays = [String(day)];
+        arr = selectedPpcffDays;
+    } 
     else arr = selectedTpDays;
 
-    if (day === 'all') arr.length = 0;
-    else {
-        let idx = arr.indexOf(String(day));
-        if (idx > -1) arr.splice(idx, 1);
-        else arr.push(String(day));
+    // A lógica de multi-seleção só roda se NÃO for o filtro da nota CFF
+    if (containerId !== 'pp-cff-day-filters') {
+        if (day === 'all') arr.length = 0;
+        else {
+            let idx = arr.indexOf(String(day));
+            if (idx > -1) arr.splice(idx, 1);
+            else arr.push(String(day));
+        }
     }
 
     if(typeof callback === 'function') callback();
@@ -6248,17 +6577,35 @@ function getOverallColor(ovr) {
 }
 
 function openPlayerProfile(playerName) {
-    if (!playerName) return; // Segurança extra
-
-    // 1. Limpa qualquer espaço fantasma acidental (Correção do bug das cartinhas)
+    if (!playerName) return;
     let safeName = playerName.trim();
-
-    // 2. Tenta encontrar o jogador no banco de ativos
     let p = db.players.find(x => x.jogador.trim().toLowerCase() === safeName.toLowerCase());
+    
     const isInactive = !p;
+    currentPlayerView = p ? p.jogador : safeName; 
+
+    // --- NOVA LÓGICA DE SELEÇÃO INICIAL ---
+    let daysPlayed = [];
+    for (let d in dbJogadoresQuedas) {
+        for (let q in dbJogadoresQuedas[d]) {
+            if (dbJogadoresQuedas[d][q].some(x => checkNameMatch(x.nome, currentPlayerView))) {
+                daysPlayed.push(Number(d));
+                break;
+            }
+        }
+    }
+    
+    // Se ele tiver jogado, seleciona por padrão o maior dia que encontrar
+    if (daysPlayed.length > 0) {
+        selectedPpcffDays = [String(Math.max(...daysPlayed))];
+    } else {
+        selectedPpcffDays = [];
+    }
+
+    buildDayFilters();
 
     // 3. Pega o nome oficial do histórico se ele for inativo
-    let officialName = safeName;
+let officialName = safeName;
     if (isInactive) {
         let histRecord = histData.find(h => checkNameMatch(h.n, safeName));
         if (histRecord) {
@@ -6377,6 +6724,7 @@ function openPlayerProfile(playerName) {
 
         renderActivePlayerCard(p);
     }
+if (typeof renderPlayerCFFRating === 'function') renderPlayerCFFRating(p.jogador);
 
     // --- TROFÉUS E HISTÓRICO DE EQUIPES ---
     // NOTA: Certifique-se de que essas duas funções existem no seu JS e os IDs existem no seu HTML!
