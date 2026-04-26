@@ -558,13 +558,13 @@ nav {
 
 /* --- NAVEGAÇÃO MOBILE --- */
 .nav-mobile-bar { display: flex; align-items: center; padding: 0 10px; height: 55px; justify-content: space-between; }
-.nav-mob-menu-btn { background: transparent; border: none; color: var(--accent); font-size: 1.6em; padding: 5px; cursor: pointer; }
+.nav-mob-menu-btn { font-size: 1.4em !important; padding: 4px !important;    } }
 
-.nav-mobile-tabs { display: flex; flex: 1; justify-content: center; gap: 10px; }
-.nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); font-size: 0.95em; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.nav-mobile-tabs { gap: 5px !important; /* Reduz o espaço entre os botões */ }
+.nav-mobile-tab { font-size: 0.75em !important; padding: 4px !important; }
 .nav-mobile-tab.active { color: var(--accent); }
 
-.nav-mobile-right { display: flex; align-items: center; gap: 12px; }
+.nav-mobile-right { gap: 8px !important; }
 
 /* Barra de busca mobile — escondida por padrão, abre com .active */
 .nav-mobile-search-bar {
@@ -1063,6 +1063,22 @@ tr:last-child {
     .short-name-mobile { display: none; } /* Esconde a sigla no PC */
     .full-name-desktop { display: inline; } /* Mostra o nome longo no PC */
     .team-logo-mobile-full { display: inline-block; width: 24px; height: 24px; object-fit: contain; } /* Mostra a logo no PC */
+
+  @media (max-width: 380px) {
+    .nav-mobile-tab { 
+        font-size: 0.65em !important; 
+    }
+    .nav-mobile-tabs { 
+        gap: 2px !important; 
+    }
+    .nav-mobile-right { 
+        gap: 5px !important; 
+    }
+    .nav-mobile-home-btn img { 
+        width: 24px !important; 
+        height: 24px !important; 
+    }
+}
 
     /* REGRAS PARA O MOBILE (CELULAR) */
     @media (max-width: 768px) {
@@ -2383,7 +2399,7 @@ const dbPassagens = [
   {jogador:"Lapa7",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
   {jogador:"Thuzão Do9",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"}]},
   {jogador:"Marreta",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"ANGELS OUTPLAY",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"ERICKMVP",passagens:[{equipe:"00 NATION",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"MIBR",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
+  {jogador:"Pitbull",passagens:[{equipe:"00 NATION",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"MIBR",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
   {jogador:"NICOLAS9",passagens:[{equipe:"00 NATION",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
   {jogador:"EASY",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"AXS FUSION",cargo:"Jogador"}]},
   {jogador:"CHUCKY",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"HUMMER ESPORTS",cargo:"Jogador"},{equipe:"XIS",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"}]},
