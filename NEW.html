@@ -2427,7 +2427,7 @@ const dbPassagens = [
   {jogador:"Deley",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
   {jogador:"Itachi Fé",passagens:[{equipe:"TSM",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
   {jogador:"Cruel",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"GIUH.87",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
+  {jogador:"Giuh",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
   {jogador:"Mexico",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
   {jogador:"MTS7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
   {jogador:"R1",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
@@ -6461,8 +6461,9 @@ function handleGlobalSearchFrom(source) {
     
     html += foundPeople.map(p => {
         let img = p.isEx ? 'silhueta.png' : (p.type === 'staff' ? (staffPhotos[p.name] || 'silhueta.png') : (playerPhotos[p.name] || 'silhueta.png'));
+        // Usa data-attributes para evitar quebra com apóstrofos/aspas no nome
         return `
-            <div class="search-item" onclick="selectSearchResult('${p.type}', '${p.name}')">
+            <div class="search-item" data-type="${p.type}" data-name="${p.name.replace(/"/g, '&quot;')}" style="cursor:pointer;">
                 <img src="${img}" onerror="this.src='silhueta.png'">
                 <div>
                     <span style="font-weight: bold; color: #fff;">${getDisplayName(p.name)}</span><br>
@@ -6473,6 +6474,13 @@ function handleGlobalSearchFrom(source) {
 
     resultsBox.innerHTML = html || '<div style="padding:15px; color:#888; text-align:center;">Nenhum resultado encontrado</div>';
     resultsBox.style.display = 'block';
+
+    // Adiciona os listeners via JS (seguro para qualquer nome, com ou sem apóstrofos)
+    resultsBox.querySelectorAll('.search-item[data-name]').forEach(el => {
+        el.addEventListener('click', () => {
+            selectSearchResult(el.dataset.type, el.dataset.name);
+        });
+    });
 }
 
 // Popula o dropdown desktop com os logos dos times da WB em grid 4x4
@@ -7245,17 +7253,23 @@ async function loadLeagueLogos() {
 // Prioridade: 1) Planilha (leagueLogos)  2) Arquivo local hardcoded  3) Fallback trofeu.webp
 function resolveLeagueLogo(nomeEvento) {
     if (!nomeEvento) return 'trofeu.webp';
-    const upper = nomeEvento.toUpperCase();
+    const upper = nomeEvento.toUpperCase().trim();
 
     // 1. Tenta match exato no dicionário da planilha
     if (leagueLogos[upper]) return leagueLogos[upper];
 
-    // 2. Tenta match parcial (ex: planilha tem "COPA TAL" e evento é "Copa Tal 2025")
+    // 2. Tenta match parcial SEGURO:
+    //    A chave da planilha deve estar CONTIDA no nome do evento (não o contrário)
+    //    E a chave deve ter pelo menos 5 caracteres para evitar matches acidentais
+    let bestMatch = null;
+    let bestLen = 0;
     for (let chave in leagueLogos) {
-        if (upper.includes(chave) || chave.includes(upper)) {
-            return leagueLogos[chave];
+        if (chave.length >= 5 && upper.includes(chave) && chave.length > bestLen) {
+            bestMatch = chave;
+            bestLen = chave.length;
         }
     }
+    if (bestMatch) return leagueLogos[bestMatch];
 
     // 3. Fallback: lógica hardcoded original (WB, Copa FF, LBFF)
     if (upper.includes('WB')) return 'wb.webp';
