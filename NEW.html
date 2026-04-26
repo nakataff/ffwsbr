@@ -3814,7 +3814,7 @@ function renderUnifiedTrophies(name, containerId) {
         else if (t.players && t.players.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
 
 return `<div class="trophy-card ${borderClass}">
-            <img src="${tournamentImg}" class="trophy-img" onerror="this.src='trofeu.webp'">
+            <img class="ot-card-img" src="${tournamentImg}" loading="lazy" onerror="this.src='trofeu.webp'">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
             ${roleTag}
