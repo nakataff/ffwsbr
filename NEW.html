@@ -2619,6 +2619,13 @@ let playerPhotos = {
 
 // --- NOVOS CAMPEONATOS (Distribuição Automática) ---
 // dbCampeonatos é agora carregado dinamicamente via Google Sheets (função loadCampeonatos)
+
+// =============================================
+// LOGOS DE LIGAS/TORNEIOS — carregados do Google Sheets
+// Chave: nome do torneio (ou parte dele) | Valor: URL da imagem
+// =============================================
+let leagueLogos = {};
+
 // A variável começa vazia e é preenchida depois
 let dbCampeonatos = [];
 
@@ -3324,6 +3331,7 @@ const data = await response.json();
     loadSocials();  
     loadTeamLogos();
     loadPhotos();
+    loadLeagueLogos(); // ← Logos de ligas/torneios via Sheets
     loadCampeonatos(); 
     loadTitles();
     loadStaff();
@@ -3472,7 +3480,7 @@ function openTeamProfile(teamName) {
         const now = new Date();
         currentTeamNextMatch = agenda.find(m => 
             m.grupos.includes(t.grupo) && 
-            (parseMatchDate(m.data).getTime() + (6 * 60 * 60 * 1000) > now.getTime())
+            (parseMatchDate(m.data).getTime() + (3.5 * 60 * 60 * 1000) > now.getTime())
         );
 
         if (currentTeamNextMatch && t.grupo !== "Histórico/Outro") {
@@ -3985,21 +3993,8 @@ function renderUnifiedTrophies(name, containerId) {
     }
 
     container.innerHTML = allTitles.map(t => {
-        let tournamentImg = "lbff.webp"; // Variável protegida!
+        let tournamentImg = resolveLeagueLogo(t.event);
         
-        if (t.event.includes("WB")) {
-            tournamentImg = "wb.webp";
-        } else if (t.event.includes("C.O.P.A")) {
-            if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
-            else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
-            else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
-            else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
-            else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
-            else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
-            else tournamentImg = "copaff.webp";
-        }
-        
-        let typeUpper = t.type.toUpperCase();
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
         let roleTag = "";
@@ -4680,7 +4675,7 @@ function updateCountdown() {
     // 1. BUSCA O PRÓXIMO JOGO GERAL (Para Home e Datas)
     const nextMatch = agenda.find(m => {
         const mDate = parseMatchDate(m.data);
-        return mDate.getTime() + (6 * 60 * 60 * 1000) > now.getTime();
+        return mDate.getTime() + (3.5 * 60 * 60 * 1000) > now.getTime();
     });
 
     if (nextMatch) {
@@ -4741,7 +4736,7 @@ function updateCountdown() {
         if (!nextMatch) return false;
         const mDate = parseMatchDate(nextMatch.data);
         // Está ao vivo se a hora atual passou da hora do jogo, por até 6 horas
-        return now >= mDate && now <= (mDate.getTime() + (6 * 60 * 60 * 1000));
+        return now >= mDate && now <= (mDate.getTime() + (3.5 * 60 * 60 * 1000));
     };
     
     const isActuallyLive = checkLiveGlobal();
@@ -5614,20 +5609,7 @@ function renderTeamTrophies(teamName) {
     }
 
     container.innerHTML = teamTitles.map(t => {
-let tournamentImg = "lbff.webp"; 
-        
-        if (t.event.includes("WB")) {
-            tournamentImg = "wb.webp";
-        } else if (t.event.includes("C.O.P.A")) {
-            // Se for C.O.P.A, verifica o ano e puxa a logo específica
-            if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
-            else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
-            else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
-            else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
-            else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
-            else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
-            else tournamentImg = "copaff.webp"; // Fallback caso não ache o ano
-        }
+let tournamentImg = resolveLeagueLogo(t.event);
         return `
         <div class="trophy-card border-campeao">
             <img src="${tournamentImg}" class="trophy-img" style="height: 50px;">
@@ -6180,7 +6162,7 @@ function renderPlayerTrophies(jogador) {
     let trophiesHtml = allTitles.length === 0 ? 
         '<div style="color:#888; text-align:center; width:100%; padding:20px;">Nenhum título oficial registrado na base de dados.</div>' : 
         allTitles.map(t => {
-            let tournamentImg = t.event.includes("WB") ? "wb.webp" : "lbff.webp";
+            let tournamentImg = resolveLeagueLogo(t.event);
             
             let typeUpper = t.type.toUpperCase();
             let borderClass = 'border-campeao';
@@ -6702,12 +6684,8 @@ function renderOutrosTorneiosList() {
                 🏆 ${shortNames[champion] || champion}
             </div>` : '';
 
-        // Imagem Padrão ou customizada
-        let tournamentImg = 'trofeu.webp'; 
-        let nomeUpper = t.torneio.toUpperCase();
-        if (nomeUpper.includes('WB')) tournamentImg = 'wb.webp';
-        else if (nomeUpper.includes('LBFF')) tournamentImg = 'lbff.webp';
-        else if (nomeUpper.includes('C.O.P.A') || nomeUpper.includes('COPA FF')) tournamentImg = 'copaff.webp';
+        // Imagem: consulta planilha primeiro, depois fallback hardcoded
+        let tournamentImg = resolveLeagueLogo(t.torneio);
 
         const ano = t.data.substring(0, 4);
 
@@ -6744,24 +6722,14 @@ function hexToRgb(color) {
     return '0, 200, 255';
 }
 
-// Helper: retorna imagem do torneio
+// Helper: retorna imagem do torneio — usa resolveLeagueLogo (planilha + fallback hardcoded)
 function getTournamentImg(t) {
     if (!t) return 'lbff.webp';
+    // Se a planilha já forneceu uma imagem customizada, usa ela
     if (t.imagem) return t.imagem;
-    const nome = t.nome?.toUpperCase() || '';
-    const id = t.id?.toUpperCase() || '';
-    if (nome.includes('WB') || id.includes('WB')) return 'wb.webp';
-    if (nome.includes('LBFF') || id.includes('LBFF')) return 'lbff.webp';
-    if (nome.includes('C.O.P.A') || nome.includes('COPA')) {
-        if (nome.includes('2020') || t.ano === '2020') return 'copaff20.webp';
-        if (nome.includes('2022') || t.ano === '2022') return 'copaff22.webp';
-        if (nome.includes('2023') || t.ano === '2023') return 'copaff23.webp';
-        if (nome.includes('2024') || t.ano === '2024') return 'copaff24.webp';
-        if (nome.includes('2025') || t.ano === '2025') return 'copaff25.webp';
-        if (nome.includes('2026') || t.ano === '2026') return 'copaff26.webp';
-        return 'copaff.webp';
-    }
-    return 'lbff.webp';
+    // Senão, resolve pelo nome
+    const nome = t.nome || t.event || t.torneio || '';
+    return resolveLeagueLogo(nome);
 }
 
 // 2. Abre a tela de um torneio específico
@@ -7171,25 +7139,7 @@ async function openOutraEquipe(nome) {
     if (titulos.length > 0) {
         titulosSection.style.display = 'block';
         titulosContainer.innerHTML = titulos.map(t => {
-            let tournamentImg = 'trofeu.webp';
-            if (t.event.includes("WB")) tournamentImg = "wb.webp";
-            else if (t.event.includes("LBFF 9")) tournamentImg = "lbff9.webp";
-            else if (t.event.includes("LBFF 8")) tournamentImg = "lbff8.webp";
-            else if (t.event.includes("LBFF 7")) tournamentImg = "lbff7.webp";
-            else if (t.event.includes("LBFF 6")) tournamentImg = "lbff6.webp";
-            else if (t.event.includes("LBFF 5")) tournamentImg = "lbff5.webp";
-            else if (t.event.includes("LBFF 4")) tournamentImg = "lbff4.webp";
-            else if (t.event.includes("LBFF 3")) tournamentImg = "lbff3.webp";
-            else if (t.event.includes("LBFF 1")) tournamentImg = "lbff1.webp";
-            else if (t.event.includes("C.O.P.A")) {
-                if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
-                else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
-                else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
-                else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
-                else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
-                else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
-                else tournamentImg = "copaff.webp";
-            }
+            let tournamentImg = resolveLeagueLogo(t.event);
             return `<div class="trophy-card border-campeao">
                 <img src="${tournamentImg}" class="trophy-img" onerror="this.src='trofeu.webp'">
                 <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
@@ -7255,6 +7205,79 @@ function renderOutraEquipeResultados() {
             <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color:#fff;' : ''}">${r.torneio}</td>
         </tr>`;
     }).join('');
+}
+
+// =============================================
+// LOGOS DE LIGAS — carrega do Google Sheets
+// Aba com colunas: nome_torneio | logo_url
+// "nome_torneio" pode ser o nome completo ou parte dele (ex: "LBFF 8", "Copa Tal 2025")
+// =============================================
+async function loadLeagueLogos() {
+    // TROQUE pelo link TSV da sua aba de logos de torneios (mude o gid= para o ID correto)
+    const LOGOS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1580920081&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${LOGOS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n').slice(1); // Pula o cabeçalho
+
+        leagueLogos = {};
+        lines.forEach(line => {
+            const cols = line.split('\t');
+            const nome = cols[0]?.trim().replace(/\r/g, '').toUpperCase();
+            const url  = cols[1]?.trim().replace(/\r/g, '');
+            if (nome && url) {
+                leagueLogos[nome] = url;
+            }
+        });
+
+        console.log(`✅ ${Object.keys(leagueLogos).length} logo(s) de liga/torneio carregado(s)!`);
+
+        // Re-renderiza as telas que usam logos de torneio, se já estiverem abertas
+        renderOutrosTorneiosList();
+
+    } catch (e) {
+        console.error('[loadLeagueLogos] Erro:', e);
+    }
+}
+
+// Função auxiliar global para resolver a imagem de um torneio.
+// Prioridade: 1) Planilha (leagueLogos)  2) Arquivo local hardcoded  3) Fallback trofeu.webp
+function resolveLeagueLogo(nomeEvento) {
+    if (!nomeEvento) return 'trofeu.webp';
+    const upper = nomeEvento.toUpperCase();
+
+    // 1. Tenta match exato no dicionário da planilha
+    if (leagueLogos[upper]) return leagueLogos[upper];
+
+    // 2. Tenta match parcial (ex: planilha tem "COPA TAL" e evento é "Copa Tal 2025")
+    for (let chave in leagueLogos) {
+        if (upper.includes(chave) || chave.includes(upper)) {
+            return leagueLogos[chave];
+        }
+    }
+
+    // 3. Fallback: lógica hardcoded original (WB, Copa FF, LBFF)
+    if (upper.includes('WB')) return 'wb.webp';
+    if (upper.includes('LBFF 9')) return 'lbff9.webp';
+    if (upper.includes('LBFF 8')) return 'lbff8.webp';
+    if (upper.includes('LBFF 7')) return 'lbff7.webp';
+    if (upper.includes('LBFF 6')) return 'lbff6.webp';
+    if (upper.includes('LBFF 5')) return 'lbff5.webp';
+    if (upper.includes('LBFF 4')) return 'lbff4.webp';
+    if (upper.includes('LBFF 3')) return 'lbff3.webp';
+    if (upper.includes('LBFF 1')) return 'lbff1.webp';
+    if (upper.includes('LBFF')) return 'lbff.webp';
+    if (upper.includes('C.O.P.A') || upper.includes('COPA FF') || upper.includes('COPA FREE')) {
+        if (upper.includes('2020')) return 'copaff20.webp';
+        if (upper.includes('2022')) return 'copaff22.webp';
+        if (upper.includes('2023')) return 'copaff23.webp';
+        if (upper.includes('2024')) return 'copaff24.webp';
+        if (upper.includes('2025')) return 'copaff25.webp';
+        if (upper.includes('2026')) return 'copaff26.webp';
+        return 'copaff.webp';
+    }
+    return 'trofeu.webp';
 }
 
 // =============================================
