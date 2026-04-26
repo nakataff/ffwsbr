@@ -4035,8 +4035,11 @@ const agenda = [
     { semana: "9", data: "16 de Maio", grupos: ["A", "B", "C"] },
     { semana: "9", data: "17 de Maio", grupos: ["B", "C", "D"] },
     { semana: "10", data: "23 de Maio", grupos: ["C", "D", "A"] },
-    { semana: "10", data: "24 de Maio", grupos: ["D", "A", "B"] }
+    { semana: "10", data: "24 de Maio", grupos: ["D", "A", "B"] },
+    { semana: "FINAL", data: "30 de Maio", grupos: ["FINAL"] },
+    { semana: "FINAL", data: "31 de Maio", grupos: ["FINAL"] }
 ];
+
 
 // Controle de visibilidade das tabelas históricas
 let isAllTimeExpanded = false;
@@ -4291,7 +4294,7 @@ function openTeamProfile(teamName) {
         const now = new Date();
         currentTeamNextMatch = agenda.find(m => 
             m.grupos.includes(t.grupo) && 
-            (parseMatchDate(m.data).getTime() + (6 * 60 * 60 * 1000) > now.getTime())
+            (parseMatchDate(m.data).getTime() + (3.5 * 60 * 60 * 1000) > now.getTime())
         );
 
         if (currentTeamNextMatch && t.grupo !== "Histórico/Outro") {
@@ -5471,12 +5474,24 @@ function updateCountdown() {
         const timeStr = `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
 
         // --- GERAÇÃO VISUAL DOS GRUPOS (O QUE TINHA SUMIDO) ---
+// --- GERAÇÃO VISUAL DOS GRUPOS OU FINAL ---
         const groupsHtml = nextMatch.grupos.map(g => {
-            const teamsInGroup = db.teams.filter(t => t.grupo === g);
-            const logosHtml = teamsInGroup.map(t => 
-                `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
-            ).join('');
-            return `<div class="group-logos"><span class="group-label">GP ${g}</span>${logosHtml}</div>`;
+            if (g === "FINAL") {
+                // Se for a Final, puxa os 12 primeiros da tabela automaticamente
+                const top12 = [...db.teams].sort((a,b) => b.pontos - a.pontos).slice(0, 12);
+                const logosHtml = top12.map(t => 
+                    `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
+                ).join('');
+                // Retorna a caixinha com borda dourada
+                return `<div class="group-logos" style="border-color: #ffd700; background: rgba(255,215,0,0.1);"><span class="group-label" style="color: #ffd700;">TOP 12</span>${logosHtml}</div>`;
+            } else {
+                // Lógica normal para Grupos A, B, C, D
+                const teamsInGroup = db.teams.filter(t => t.grupo === g);
+                const logosHtml = teamsInGroup.map(t => 
+                    `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
+                ).join('');
+                return `<div class="group-logos"><span class="group-label">GP ${g}</span>${logosHtml}</div>`;
+            }
         }).join('<span style="font-weight:bold; color:#444; margin: 0 5px;">VS</span>');
 
         // Atualiza Home (Tempo e Grupos)
@@ -5517,7 +5532,7 @@ function updateCountdown() {
         if (!nextMatch) return false;
         const mDate = parseMatchDate(nextMatch.data);
         // Está ao vivo se a hora atual passou da hora do jogo, por até 6 horas
-        return now >= mDate && now <= (mDate.getTime() + (6 * 60 * 60 * 1000));
+        return now >= mDate && now <= (mDate.getTime() + (3.5 * 60 * 60 * 1000));
     };
     
     const isActuallyLive = checkLiveGlobal();
@@ -6051,7 +6066,7 @@ function renderSchedule() {
     let container = document.getElementById('schedule-content');
     let html = '';
     
-    // Group schedule by week
+    // Agrupa a agenda por semana
     let weeks = {};
     agenda.forEach(a => {
         if(!weeks[a.semana]) weeks[a.semana] = [];
@@ -6059,27 +6074,38 @@ function renderSchedule() {
     });
 
     for(let w in weeks) {
-        html += `<div class="schedule-box">
-            <div class="schedule-header"><span class="schedule-title">Semana ${w}</span></div>`;
-        weeks[w].forEach(match => {
+        // Se for a semana da final, faz a caixa dourada
+        let isFinal = w === "FINAL";
+        let boxStyle = isFinal ? 'border-left-color: #ffd700; background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, var(--panel-bg) 100%);' : '';
+        let headerStyle = isFinal ? 'border-bottom-color: rgba(255,215,0,0.3);' : '';
+        let titleStyle = isFinal ? 'color: #ffd700; font-size: 1.5em;' : '';
+        let titleText = isFinal ? '🏆 Grand Finals' : `Semana ${w}`;
+
+        html += `<div class="schedule-box" style="${boxStyle}">
+            <div class="schedule-header" style="${headerStyle}"><span class="schedule-title" style="${titleStyle}">${titleText}</span></div>`;
+            
+        weeks[w].forEach((match, idx) => {
             let groupsHtml = match.grupos.map(g => {
-                let teamsInGroup = db.teams.filter(t => t.grupo === g);
-                let logosHtml = teamsInGroup.map(t => `<img src="${logos[t.equipe]||''}" class="mini-logo" title="${t.equipe}">`).join('');
-                return `<div class="group-logos"><span class="group-label">Grupo ${g}</span>${logosHtml}</div>`;
+                if (g === "FINAL") {
+                    let top12 = [...db.teams].sort((a,b) => b.pontos - a.pontos).slice(0, 12);
+                    let logosHtml = top12.map(t => `<img src="${logos[t.equipe]||''}" class="mini-logo" title="${t.equipe}">`).join('');
+                    return `<div class="group-logos" style="border-color: #ffd700; background: rgba(0,0,0,0.5);"><span class="group-label" style="color: #ffd700;">TOP 12</span>${logosHtml}</div>`;
+                } else {
+                    let teamsInGroup = db.teams.filter(t => t.grupo === g);
+                    let logosHtml = teamsInGroup.map(t => `<img src="${logos[t.equipe]||''}" class="mini-logo" title="${t.equipe}">`).join('');
+                    return `<div class="group-logos"><span class="group-label">Grupo ${g}</span>${logosHtml}</div>`;
+                }
             }).join(' <span style="font-weight:bold;color:#555;">X</span> ');
 
+            let diaLabel = isFinal ? `Dia ${idx + 1}` : match.data;
+
             html += `<div class="match-row">
-                <div style="min-width: 100px; color: var(--text-muted); font-size: 1.1em;"><strong>${match.data}</strong></div>
+                <div style="min-width: 100px; color: var(--text-muted); font-size: 1.1em;"><strong>${diaLabel}</strong></div>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">${groupsHtml}</div>
             </div>`;
         });
         html += `</div>`;
     }
-    
-    html += `<div class="schedule-box" style="border-left-color: #ffd700; background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, var(--panel-bg) 100%);">
-        <div class="schedule-header" style="border-bottom-color: rgba(255,215,0,0.3);"><span class="schedule-title" style="color: #ffd700; font-size: 1.5em;">🏆 Grand Finals</span></div>
-        <div class="schedule-text" style="margin-top:10px;"><strong>30 de Maio:</strong> Dia 1<br><strong>31 de Maio:</strong> Dia 2</div>
-    </div>`;
     
     container.innerHTML = html;
 }
