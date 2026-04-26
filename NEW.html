@@ -3030,36 +3030,57 @@ function getCFFBadgeColor(nota) {
     return 'cff-min';
 }
 
-// O Cálculo "Rebuscado"
-function calculateCFFNota(kills, dano, assists, mvp) {
-    
+// O Cálculo "Rebuscado" v2
+// Hierarquia: Kills > Dano > Assists
+// Dano é dividido em "convertido" (proporcional aos kills) e "excedente" (não finalizou)
+// O excedente vale muito menos — penaliza quem causa dano mas não fecha
+function calculateCFFNota(kills, dano, assists, mvp, posicaoTime) {
+
     const contribuiu = kills >= 1 || dano >= 200;
 
     // Jogador zerou ou quase: nota de 3.0 a 5.9
     if (!contribuiu) {
         if (dano === 0 && assists === 0) return 3.0; // zero absoluto
-        
         let nota = 3.0;
         if (dano > 0 && dano < 200) nota += 0.8 + (dano / 199) * 0.5; // 3.8 ~ 4.3
-        nota += assists * 0.2;
+        nota += assists * 0.15;
         return parseFloat(Math.min(nota, 5.9).toFixed(1));
     }
 
-    // Jogador que contribuiu: começa em 6.1
-    let nota = 6.1;
+    // Jogador que contribuiu: começa em 6.0
+    let nota = 6.0;
 
-    // Kills: peso alto, cap em 3.0 (evita explodir com 11 kills)
-    nota += Math.min(kills * 0.35, 3.0);
+    // ── KILLS: principal fator ──
+    // 0.70 por kill, cap em 3.5 (5 kills já quase satura)
+    nota += Math.min(kills * 0.70, 3.5);
 
-    // Dano: raiz quadrada normalizada — cresce, mas não explode
-    // mediana (845d) → +0.92 | P90 (2163d) → +1.47 | recorde (7139d) → +2.0
-    nota += Math.min(Math.sqrt(dano) / 46, 2.0);
+    // ── DANO: dividido em convertido vs excedente ──
+    if (kills === 0) {
+        // Sem kill: dano de apoio/pressão pura vale pouco
+        nota += Math.min(Math.sqrt(dano * 0.30) / 55, 0.75);
+    } else {
+        // Dano "esperado" por kill (~700 por abate): razoável e eficiente
+        let danoEsperado   = kills * 700;
+        let danoConvertido = Math.min(dano, danoEsperado);
+        let danoExcedente  = Math.max(0, dano - danoEsperado);
 
-    // Assists: bônus de suporte, cap em 1.0
-    nota += Math.min(assists * 0.12, 1.0);
+        // Convertido: peso normal (matou e causou dano proporcional)
+        nota += Math.min(Math.sqrt(danoConvertido) / 65, 1.15);
+        // Excedente: peso muito baixo (causou pressão mas não finalizou)
+        nota += Math.min(Math.sqrt(danoExcedente) / 220, 0.20);
+    }
 
-    // MVP
-    if (mvp) nota += 0.5;
+    // ── ASSISTS: menor que dano, suporte ao time ──
+    nota += Math.min(assists * 0.07, 0.50);
+
+    // ── MVP ──
+    if (mvp) nota += 0.40;
+
+    // ── BÔNUS DE POSIÇÃO DO TIME (pequeno) ──
+    // Recompensa levemente quando o time vai bem na queda
+    if (posicaoTime === 1)       nota += 0.30; // Booyah/1º
+    else if (posicaoTime <= 3)   nota += 0.20; // Top 3
+    else if (posicaoTime <= 6)   nota += 0.10; // Top 6
 
     return parseFloat(Math.min(nota, 10.0).toFixed(1));
 }
@@ -3086,7 +3107,15 @@ function renderPlayerCFFRating(playerName) {
             let playerDrop = dbJogadoresQuedas[d][q].find(p => checkNameMatch(p.nome, playerName));
             
             if (playerDrop) {
-                let nota = calculateCFFNota(playerDrop.kills, playerDrop.dano, playerDrop.assists, playerDrop.mvp);
+                // Busca posição do time do jogador nesta queda
+                let posicaoTime = 12; // padrão: última posição
+                if (dropInfo.resultados) {
+                    let teamResult = dropInfo.resultados.find(r =>
+                        r.equipe.toUpperCase() === (playerDrop.equipe || '').toUpperCase()
+                    );
+                    if (teamResult) posicaoTime = teamResult.posicao;
+                }
+                let nota = calculateCFFNota(playerDrop.kills, playerDrop.dano, playerDrop.assists, playerDrop.mvp, posicaoTime);
                 quedasDoDia.push({
                     queda: q,
                     mapa: dropInfo.mapa,
@@ -3171,7 +3200,7 @@ function renderPlayerCFFRating(playerName) {
                             <th>KILLS</th>
                             <th>DANO</th>
                             <th>AST</th>
-                            <th>AVALIAÇÃO CFF</th>
+                            <th>NOTA</th>
                         </tr>
                     </thead>
                     <tbody>
