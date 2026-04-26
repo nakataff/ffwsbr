@@ -3472,7 +3472,7 @@ function openTeamProfile(teamName) {
         const now = new Date();
         currentTeamNextMatch = agenda.find(m => 
             m.grupos.includes(t.grupo) && 
-            (parseMatchDate(m.data).getTime() + (6 * 60 * 60 * 1000) > now.getTime())
+            (parseMatchDate(m.data).getTime() + (3.5 * 60 * 60 * 1000) > now.getTime())
         );
 
         if (currentTeamNextMatch && t.grupo !== "Histórico/Outro") {
@@ -4680,7 +4680,7 @@ function updateCountdown() {
     // 1. BUSCA O PRÓXIMO JOGO GERAL (Para Home e Datas)
     const nextMatch = agenda.find(m => {
         const mDate = parseMatchDate(m.data);
-        return mDate.getTime() + (6 * 60 * 60 * 1000) > now.getTime();
+        return mDate.getTime() + (3.5 * 60 * 60 * 1000) > now.getTime();
     });
 
     if (nextMatch) {
@@ -4741,7 +4741,7 @@ function updateCountdown() {
         if (!nextMatch) return false;
         const mDate = parseMatchDate(nextMatch.data);
         // Está ao vivo se a hora atual passou da hora do jogo, por até 6 horas
-        return now >= mDate && now <= (mDate.getTime() + (6 * 60 * 60 * 1000));
+        return now >= mDate && now <= (mDate.getTime() + (3.5 * 60 * 60 * 1000));
     };
     
     const isActuallyLive = checkLiveGlobal();
