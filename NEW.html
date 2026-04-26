@@ -4383,23 +4383,42 @@ function renderHistoricalRanking() {
     let tbody = document.querySelector('#table-history tbody');
     if(!tbody) return;
 
+    const CURRENT_EDITION = "WB 2026 S1";
+
     // Constrói ranking a partir do lbffData, somando todas as edições por jogador
-    let currentRankData = Object.entries(lbffData).map(([name, editions], index) => {
+    let currentRankData = Object.entries(lbffData).map(([name, editions]) => {
         let histK = 0, histQ = 0;
-        for (let ed in editions) { histK += editions[ed].k || 0; histQ += editions[ed].q || 0; }
+        let preK = 0, preQ = 0; // kills ANTES da edição atual (para calcular shift)
+        for (let ed in editions) {
+            histK += editions[ed].k || 0;
+            histQ += editions[ed].q || 0;
+            if (ed !== CURRENT_EDITION) {
+                preK += editions[ed].k || 0;
+                preQ += editions[ed].q || 0;
+            }
+        }
         let activeName = historicalAliases[name] || name;
         let activePlayer = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
         let isPlaying = activePlayer && !activePlayer.isEx;
         return {
-            oldPos: index + 1,
             originalName: name,
             activeName: activeName,
             isPlaying: isPlaying,
             equipe: isPlaying ? activePlayer.equipe : null,
             totalKills: histK + (activePlayer ? activePlayer.abates || 0 : 0),
-            totalQuedas: histQ + (activePlayer ? activePlayer.quedas || 0 : 0)
+            totalQuedas: histQ + (activePlayer ? activePlayer.quedas || 0 : 0),
+            preKills: preK  // kills históricas sem a edição atual (para oldPos)
         };
     });
+
+    // Calcula oldPos: posição antes da WB 2026 S1 (só kills históricas anteriores)
+    let preSorted = [...currentRankData]
+        .filter(p => p.preKills > 0)
+        .sort((a, b) => b.preKills - a.preKills);
+    preSorted.forEach((p, i) => { p.oldPos = i + 1; });
+
+    // Jogadores que não tinham kills antes ficam sem referência de posição
+    currentRankData.filter(p => p.preKills === 0).forEach(p => { p.oldPos = null; });
 
     currentRankData.sort((a, b) => b.totalKills - a.totalKills);
 
@@ -4408,8 +4427,13 @@ function renderHistoricalRanking() {
 
     tbody.innerHTML = dataToShow.map((p, i) => {
         let newPos = i + 1;
-        let diff = p.oldPos - newPos;
-        let shiftHtml = diff > 0 ? `<span style="color:#4caf50; font-size:0.8em;">▲${diff}</span>` : (diff < 0 ? `<span style="color:#f44336; font-size:0.8em;">▼${Math.abs(diff)}</span>` : `<span style="color:#888; font-size:0.8em;">-</span>`);
+        let shiftHtml;
+        if (p.oldPos === null) {
+            shiftHtml = `<span style="color:#4caf50; font-size:0.8em;">NOVO</span>`;
+        } else {
+            let diff = p.oldPos - newPos;
+            shiftHtml = diff > 0 ? `<span style="color:#4caf50; font-size:0.8em;">▲${diff}</span>` : (diff < 0 ? `<span style="color:#f44336; font-size:0.8em;">▼${Math.abs(diff)}</span>` : `<span style="color:#888; font-size:0.8em;">-</span>`);
+        }
 
         let nameShort = p.originalName.length > 7 ? p.originalName.substring(0, 6) + "..." : p.originalName;
         
