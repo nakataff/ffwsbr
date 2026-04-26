@@ -3997,6 +3997,9 @@ function renderUnifiedTrophies(name, containerId) {
     container.innerHTML = allTitles.map(t => {
         let tournamentImg = resolveLeagueLogo(t.event);
         
+        // CORREÇÃO: ADICIONAMOS A VARIÁVEL typeUpper AQUI!
+        let typeUpper = t.type ? t.type.toUpperCase() : "";
+        
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
         let roleTag = "";
