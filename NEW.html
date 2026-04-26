@@ -3095,175 +3095,38 @@ function calculateCFFNota(kills, dano, assists, mvp, posicaoTime) {
     return parseFloat(Math.min(nota, 10.0).toFixed(1));
 }
 
-function renderCFFStats() {
-    const container = document.getElementById('cff-records-grid');
-    if (!container) return;
-
-    let allMatchPerformances = [];
-    let playerDailyAggregator = {};
-    let playerCareerAggregator = {};
-
-    // 1. Processar dados de todas as quedas
-    for (let d in dbJogadoresQuedas) {
-        for (let q in dbJogadoresQuedas[d]) {
-            // TRAVA DE SEGURANÇA: Evita que o site crashe se a queda existir mas o mapa não
-            let dropInfo = (dbQuedas[d] && dbQuedas[d][q]) ? dbQuedas[d][q] : { mapa: 'Desconhecido', resultados: [] };
-            
-            dbJogadoresQuedas[d][q].forEach(p => {
-                let posTime = 12;
-                if (dropInfo.resultados) {
-                    let teamRes = dropInfo.resultados.find(r => r.equipe.toUpperCase() === p.equipe.toUpperCase());
-                    if (teamRes) posTime = teamRes.posicao;
-                }
-
-                let notaMatch = calculateCFFNota(p.kills, p.dano, p.assists, p.mvp, posTime);
-
-                allMatchPerformances.push({
-                    jogador: p.nome, equipe: p.equipe, nota: notaMatch, kills: p.kills, dia: d, queda: q
-                });
-
-                let dayKey = `${p.nome}-${d}`;
-                if (!playerDailyAggregator[dayKey]) playerDailyAggregator[dayKey] = { nome: p.nome, equipe: p.equipe, dia: d, quedas: [] };
-                playerDailyAggregator[dayKey].quedas.push({ nota: notaMatch, kills: p.kills, dano: p.dano, mvp: p.mvp });
-
-                if (!playerCareerAggregator[p.nome]) playerCareerAggregator[p.nome] = { nome: p.nome, equipe: p.equipe, somaNotas: 0, totalQuedas: 0 };
-                playerCareerAggregator[p.nome].somaNotas += notaMatch;
-                playerCareerAggregator[p.nome].totalQuedas++;
-            });
-        }
-    }
-
-    let topSingleMatches = allMatchPerformances.sort((a,b) => b.nota - a.nota).slice(0, 5);
-
-    // B. Maiores Notas (Dia) com Bônus
-    let dailyRatings = Object.values(playerDailyAggregator).map(day => {
-        let totalKills = day.quedas.reduce((s, q) => s + q.kills, 0);
-        let totalDano = day.quedas.reduce((s, q) => s + q.dano, 0);
-        let totalMvps = day.quedas.filter(q => q.mvp).length;
-        let avgDrops = day.quedas.reduce((s, q) => s + q.nota, 0) / day.quedas.length;
-
-        let notaDia = avgDrops;
-        if (totalKills >= 12) notaDia += (totalKills - 11) * 0.15;
-        if (totalKills >= 20) notaDia += (totalKills - 19) * 0.25;
-        if (totalDano >= 10000) notaDia += 0.3;
-        if (totalDano >= 15000) notaDia += 0.5;
-        if (totalMvps > 0) notaDia += (totalMvps * 0.4);
-        if (totalKills >= 30) notaDia = 10.0;
-
-        return { nome: day.nome, equipe: day.equipe, dia: day.dia, notaFinal: Math.min(Math.max(notaDia, avgDrops), 10.0) };
-    }).sort((a,b) => b.notaFinal - a.notaFinal).slice(0, 5);
-
-    let topAverages = Object.values(playerCareerAggregator)
-        .filter(p => p.totalQuedas >= 5)
-        .map(p => ({ nome: p.nome, equipe: p.equipe, media: p.somaNotas / p.totalQuedas }))
-        .sort((a,b) => b.media - a.media).slice(0, 5);
-
-    const getRowHtml = (p, valor, infoExtra, onClickType) => {
-        let notaVal = parseFloat(valor).toFixed(1);
-        let badgeClass = getCFFBadgeColor(notaVal);
-        let clickAction = onClickType === 'team' ? `openTeamProfile('${p.equipe}')` : `openPlayerProfile('${p.nome}')`;
-
-        return `
-        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; margin-bottom: 8px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid var(--border); font-size: 0.85em;">
-            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                <span class="clickable" onclick="${clickAction}" style="color:#fff; font-weight:bold;">${p.nome}</span>
-                <div style="font-size:0.75em; color:#888;">${p.equipe} • ${infoExtra}</div>
-            </div>
-            <span class="cff-badge ${badgeClass}" style="min-width: 35px; font-size: 0.85em;">${notaVal}</span>
-        </div>`;
-    };
-
-    container.innerHTML = `
-        <div class="card"><div class="card-top-border"></div><h3>Top Quedas</h3>
-            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Jogador / Localização</div>
-            ${topSingleMatches.map(p => getRowHtml(p, p.nota, `Dia ${p.dia} Q${p.queda} (${p.kills} Kills)`, 'player')).join('')}
-        </div>
-        <div class="card"><div class="card-top-border"></div><h3>Top Dias</h3>
-            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Jogador / Data</div>
-            ${dailyRatings.map(p => getRowHtml(p, p.notaFinal, `Desempenho no Dia ${p.dia}`, 'player')).join('')}
-        </div>
-        <div class="card"><div class="card-top-border"></div><h3>Médias Gerais</h3>
-            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Mínimo 5 Quedas</div>
-            ${topAverages.map(p => getRowHtml(p, p.media, `Média em todo o campeonato`, 'player')).join('')}
-        </div>
-    `;
-}
-
-    // --- CÁLCULOS DOS RANKINGS ---
-
-    // A. Maiores Notas (Queda)
-    let topSingleMatches = allMatchPerformances.sort((a,b) => b.nota - a.nota).slice(0, 5);
-
-    // B. Maiores Notas (Dia) - Aplicando Bônus de Lenda
-    let dailyRatings = Object.values(playerDailyAggregator).map(day => {
-        let totalKills = day.quedas.reduce((s, q) => s + q.kills, 0);
-        let totalDano = day.quedas.reduce((s, q) => s + q.dano, 0);
-        let totalMvps = day.quedas.filter(q => q.mvp).length;
-        let avgDrops = day.quedas.reduce((s, q) => s + q.nota, 0) / day.quedas.length;
-
-        let notaDia = avgDrops;
-        if (totalKills >= 12) notaDia += (totalKills - 11) * 0.15;
-        if (totalKills >= 20) notaDia += (totalKills - 19) * 0.25;
-        if (totalDano >= 10000) notaDia += 0.3;
-        if (totalMvps > 0) notaDia += (totalMvps * 0.4);
-        if (totalKills >= 30) notaDia = 10.0;
-
-        return {
-            nome: day.nome,
-            equipe: day.equipe,
-            dia: day.dia,
-            notaFinal: Math.min(notaDia, 10.0)
-        };
-    }).sort((a,b) => b.notaFinal - a.notaFinal).slice(0, 5);
-
-    // C. Melhores Médias (Geral)
-    let topAverages = Object.values(playerCareerAggregator)
-        .filter(p => p.totalQuedas >= 5) // Mínimo de 5 quedas para entrar no ranking de média
-        .map(p => ({
-            nome: p.nome,
-            equipe: p.equipe,
-            media: p.somaNotas / p.totalQuedas
-        })).sort((a,b) => b.media - a.media).slice(0, 5);
-
-    // --- GERAÇÃO DO HTML (GRID) ---
-
-    const getRowHtml = (p, valor, infoExtra, onClickType) => {
-        let notaVal = parseFloat(valor).toFixed(1);
-        let badgeClass = getCFFBadgeColor(notaVal);
-        let clickAction = onClickType === 'team' ? `openTeamProfile('${p.equipe}')` : `openPlayerProfile('${p.nome}')`;
-
-        return `
-        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; margin-bottom: 8px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid var(--border); font-size: 0.85em;">
-            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                <span class="clickable" onclick="${clickAction}" style="color:#fff; font-weight:bold;">${p.nome}</span>
-                <div style="font-size:0.75em; color:#888;">${p.equipe} • ${infoExtra}</div>
-            </div>
-            <span class="cff-badge ${badgeClass}" style="min-width: 35px; font-size: 0.85em;">${notaVal}</span>
-        </div>`;
-    };
-
-    container.innerHTML = `
-        <div class="card"><div class="card-top-border"></div><h3>Top Quedas</h3>
-            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Jogador / Localização</div>
-            ${topSingleMatches.map(p => getRowHtml(p, p.nota, `Dia ${p.dia} Q${p.queda} (${p.kills} Kills)`, 'player')).join('')}
-        </div>
-        <div class="card"><div class="card-top-border"></div><h3>Top Dias</h3>
-            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Jogador / Data</div>
-            ${dailyRatings.map(p => getRowHtml(p, p.notaFinal, `Desempenho no Dia ${p.dia}`, 'player')).join('')}
-        </div>
-        <div class="card"><div class="card-top-border"></div><h3>Médias Gerais</h3>
-            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Mínimo 5 Quedas</div>
-            ${topAverages.map(p => getRowHtml(p, p.media, `Média em todo o campeonato`, 'player')).join('')}
-        </div>
-    `;
-
-
 function onPpcffDayFilterChanged() {
     buildDayFilters();
     if (currentPlayerView) {
         renderPlayerCFFRating(currentPlayerView);
     }
 }
+
+// B. Maiores Notas de um Dia (Top 5 Dias com Bônus de Lenda)
+    let dailyRatings = Object.values(playerDailyAggregator).map(day => {
+        let totalKills = day.quedas.reduce((s, q) => s + q.kills, 0);
+        let totalDano = day.quedas.reduce((s, q) => s + q.dano, 0);
+        let totalMvps = day.quedas.filter(q => q.mvp).length;
+        let avgDrops = day.quedas.reduce((s, q) => s + q.nota, 0) / day.quedas.length;
+
+        let notaDia = avgDrops;
+        
+        // As mesmas regras brutas que colocamos na aba do jogador
+        if (totalKills >= 15) notaDia += (totalKills - 14) * 0.10;
+        if (totalKills >= 20) notaDia += (totalKills - 19) * 0.15;
+        if (totalKills >= 25) notaDia += (totalKills - 24) * 0.20;
+        if (totalDano >= 12000) notaDia += 0.2;
+        if (totalDano >= 18000) notaDia += 0.3;
+        if (totalMvps > 0) notaDia += (totalMvps * 0.2);
+        if (totalKills >= 30) notaDia = 10.0;
+
+        return { 
+            nome: day.nome, 
+            equipe: day.equipe, 
+            dia: day.dia, 
+            notaFinal: Math.min(Math.max(notaDia, avgDrops), 10.0) 
+        };
+    }).sort((a,b) => b.notaFinal - a.notaFinal).slice(0, 5);
 
 function renderPlayerCFFRating(playerName) {
     let container = document.getElementById('pp-cff-rating-container');
@@ -7124,6 +6987,131 @@ function toggleMobileSearch() {
             if (input) setTimeout(() => input.focus(), 100);
         }
     }
+}
+
+function renderCFFStats() {
+    const container = document.getElementById('cff-records-grid');
+    if (!container) return;
+
+    let allMatchPerformances = [];
+    let playerDailyAggregator = {};
+    let playerCareerAggregator = {};
+
+    // 1. Processar dados de todas as quedas de todos os jogadores
+    for (let d in dbJogadoresQuedas) {
+        for (let q in dbJogadoresQuedas[d]) {
+            // Trava de segurança: evita erros se a queda não tiver dados no dbQuedas
+            let dropInfo = (dbQuedas[d] && dbQuedas[d][q]) ? dbQuedas[d][q] : { mapa: 'Desconhecido', resultados: [] };
+            
+            dbJogadoresQuedas[d][q].forEach(p => {
+                let posTime = 12; // Valor padrão
+                if (dropInfo.resultados) {
+                    let teamRes = dropInfo.resultados.find(r => r.equipe.toUpperCase() === p.equipe.toUpperCase());
+                    if (teamRes) posTime = teamRes.posicao;
+                }
+
+                // Calcula a nota individual da queda
+                let notaMatch = calculateCFFNota(p.kills, p.dano, p.assists, p.mvp, posTime);
+
+                allMatchPerformances.push({
+                    nome: p.nome, equipe: p.equipe, nota: notaMatch, kills: p.kills, dia: d, queda: q
+                });
+
+                // Agregador para notas diárias (com bônus de lenda)
+                let dayKey = `${p.nome}-${d}`;
+                if (!playerDailyAggregator[dayKey]) {
+                    playerDailyAggregator[dayKey] = { nome: p.nome, equipe: p.equipe, dia: d, quedas: [] };
+                }
+                playerDailyAggregator[dayKey].quedas.push({ nota: notaMatch, kills: p.kills, dano: p.dano, mvp: p.mvp });
+
+                // Agregador para a Média Geral (mínimo de quedas)
+                if (!playerCareerAggregator[p.nome]) {
+                    playerCareerAggregator[p.nome] = { nome: p.nome, equipe: p.equipe, somaNotas: 0, totalQuedas: 0 };
+                }
+                playerCareerAggregator[p.nome].somaNotas += notaMatch;
+                playerCareerAggregator[p.nome].totalQuedas++;
+            });
+        }
+    }
+
+    // A. Maiores Notas Individuais (Top 5 Quedas)
+    let topSingleMatches = allMatchPerformances.sort((a,b) => b.nota - a.nota).slice(0, 5);
+
+    // B. Maiores Notas de um Dia (Top 5 Dias com Bônus de Lenda)
+    let dailyRatings = Object.values(playerDailyAggregator).map(day => {
+        let totalKills = day.quedas.reduce((s, q) => s + q.kills, 0);
+        let totalDano = day.quedas.reduce((s, q) => s + q.dano, 0);
+        let totalMvps = day.quedas.filter(q => q.mvp).length;
+        let avgDrops = day.quedas.reduce((s, q) => s + q.nota, 0) / day.quedas.length;
+
+let notaDia = mediaDrops;
+
+            // Bônus MUITO mais rigoroso (Nota 10 só para atuações bizarras)
+            // Só começa a ganhar bônus de volume a partir de 15 kills
+            if (totalKills >= 15) notaDia += (totalKills - 14) * 0.10; 
+            
+            // Recompensa a partir de 20 kills (dificuldade alta)
+            if (totalKills >= 20) notaDia += (totalKills - 19) * 0.15; 
+            
+            // Elite absoluta (O dia de 25+ kills do Yago)
+            if (totalKills >= 25) notaDia += (totalKills - 24) * 0.20;
+
+            // Dano massivo (aumentei a régua)
+            if (totalDano >= 12000) notaDia += 0.2;
+            if (totalDano >= 18000) notaDia += 0.3;
+
+            // Bônus de MVP reduzido pela metade
+            if (totalMvps > 0) notaDia += (totalMvps * 0.2);
+
+            // A REGRA DA LENDA: O dia do MT7 com 30+ kills
+            if (totalKills >= 30) notaDia = 10.0; 
+
+            notaDia = Math.min(Math.max(notaDia, mediaDrops), 10.0);
+
+        return { 
+            nome: day.nome, 
+            equipe: day.equipe, 
+            dia: day.dia, 
+            notaFinal: Math.min(Math.max(notaDia, avgDrops), 10.0) 
+        };
+    }).sort((a,b) => b.notaFinal - a.notaFinal).slice(0, 5);
+
+    // C. Melhores Médias Gerais (Top 5 Médias - Mínimo 5 quedas)
+    let topAverages = Object.values(playerCareerAggregator)
+        .filter(p => p.totalQuedas >= 5)
+        .map(p => ({ nome: p.nome, equipe: p.equipe, media: p.somaNotas / p.totalQuedas }))
+        .sort((a,b) => b.media - a.media).slice(0, 5);
+
+    // Função interna para gerar as linhas visuais
+    const getRowHtml = (p, valor, infoExtra, onClickType) => {
+        let notaVal = parseFloat(valor).toFixed(1);
+        let badgeClass = getCFFBadgeColor(notaVal);
+        let clickAction = onClickType === 'team' ? `openTeamProfile('${p.equipe}')` : `openPlayerProfile('${p.nome}')`;
+
+        return `
+        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; margin-bottom: 8px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid var(--border); font-size: 0.85em;">
+            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <span class="clickable" onclick="${clickAction}" style="color:#fff; font-weight:bold;">${p.nome}</span>
+                <div style="font-size:0.75em; color:#888;">${p.equipe} • ${infoExtra}</div>
+            </div>
+            <span class="cff-badge ${badgeClass}" style="min-width: 35px; font-size: 0.85em;">${notaVal}</span>
+        </div>`;
+    };
+
+    container.innerHTML = `
+        <div class="card"><div class="card-top-border"></div><h3>Top Quedas</h3>
+            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Jogador / Localização</div>
+            ${topSingleMatches.map(p => getRowHtml(p, p.nota, `Dia ${p.dia} Q${p.queda} (${p.kills} Kills)`, 'player')).join('')}
+        </div>
+        <div class="card"><div class="card-top-border"></div><h3>Top Dias</h3>
+            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Jogador / Data</div>
+            ${dailyRatings.map(p => getRowHtml(p, p.notaFinal, `Desempenho no Dia ${p.dia}`, 'player')).join('')}
+        </div>
+        <div class="card"><div class="card-top-border"></div><h3>Médias Gerais</h3>
+            <div style="margin-bottom:10px; font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:1px; padding:0 10px;">Mínimo 5 Quedas</div>
+            ${topAverages.map(p => getRowHtml(p, p.media, `Média em todo o campeonato`, 'player')).join('')}
+        </div>
+    `;
 }
 
 // Busca unificada (desktop e mobile compartilham o pool, só o container muda)
