@@ -1635,6 +1635,12 @@ tr:last-child {
         </div>
     </div>
 
+    <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+    🏆 Recordes de Nota CFF
+</h3>
+<div id="cff-records-grid" class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+    </div>
+
     <h3 style="margin-top: 30px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
         Recordes por Mapa (Top 5)
     </h3>
@@ -1653,11 +1659,7 @@ tr:last-child {
         </select>
     </div>
 
-        <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-    🏆 Recordes de Nota CFF
-</h3>
-<div id="cff-records-grid" class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
-    </div>
+        
     
 <div id="top5-container" style="margin-bottom: 40px;">
     </div>
@@ -7018,7 +7020,7 @@ function renderCFFStats() {
         let totalMvps = day.quedas.filter(q => q.mvp).length;
         let avgDrops = day.quedas.reduce((s, q) => s + q.nota, 0) / day.quedas.length;
 
-let notaDia = mediaDrops;
+let notaDia = avgDrops;
 
             // Bônus MUITO mais rigoroso (Nota 10 só para atuações bizarras)
             // Só começa a ganhar bônus de volume a partir de 15 kills
