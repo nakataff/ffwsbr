@@ -3100,6 +3100,9 @@ function onPpcffDayFilterChanged() {
 function renderPlayerCFFRating(playerName) {
     let container = document.getElementById('pp-cff-rating-container');
     let title = document.getElementById('pp-cff-title');
+    // Adicione a captura do container de filtros aqui:
+    let filterContainer = document.getElementById('pp-cff-filters-container'); 
+    
     if (!container || !title) return;
 
     let diasData = [];
@@ -3135,25 +3138,61 @@ function renderPlayerCFFRating(playerName) {
             }
         }
         
-        if (quedasDoDia.length > 0) {
-            let mediaDia = quedasDoDia.reduce((sum, q) => sum + q.nota, 0) / quedasDoDia.length;
+if (quedasDoDia.length > 0) {
+            // 1. Pega a média base das quedas
+            let mediaDrops = quedasDoDia.reduce((sum, q) => sum + q.nota, 0) / quedasDoDia.length;
+            
+            // 2. Calcula os totais absurdos do dia
+            let totalKills = quedasDoDia.reduce((sum, q) => sum + q.kills, 0);
+            let totalDano = quedasDoDia.reduce((sum, q) => sum + q.dano, 0);
+            let totalMvps = quedasDoDia.filter(q => q.mvp).length;
+            
+            let notaDia = mediaDrops;
+
+            // 3. Aplica os Bônus de Desempenho Diário
+            // Jogador que faz mais de 12 kills no dia já começa a descolar da média
+            if (totalKills >= 12) notaDia += (totalKills - 11) * 0.15; 
+            
+            // Jogador Elite: Bônus extra agressivo para atuações de 20+ kills
+            if (totalKills >= 20) notaDia += (totalKills - 19) * 0.25; 
+            
+            // Dano de suporte massivo (recompensa quem bateu muito mesmo sem roubar a kill)
+            if (totalDano >= 10000) notaDia += 0.3;
+            if (totalDano >= 15000) notaDia += 0.5;
+
+            // Impacto direto em vitórias
+            if (totalMvps > 0) notaDia += (totalMvps * 0.4);
+
+            // 4. A REGRA DA LENDA: Dias Históricos (MT7 com 31 kills)
+            // Se o cara passar de 30 kills no dia, ele "quebra" o sistema e ganha 10 garantido.
+            if (totalKills >= 30) {
+                notaDia = 10.0;
+            }
+
+            // Garante que a nota nunca passe de 10.0 e nunca seja menor que a própria média
+            notaDia = Math.min(Math.max(notaDia, mediaDrops), 10.0);
+
             diasData.push({
                 dia: Number(d),
                 quedas: quedasDoDia,
-                mediaDia: mediaDia.toFixed(1)
+                mediaDia: notaDia.toFixed(1)
             });
         }
     }
 
-    // Se o jogador for Inativo/Histórico e não tiver dados na temporada atual, esconde a seção
+    // Se o jogador for Inativo/Histórico e não tiver dados na temporada atual, esconde a seção e o filtro
     if (diasData.length === 0) {
         container.style.display = 'none';
         title.style.display = 'none';
+        // Adicione isso para esconder o filtro:
+        if (filterContainer) filterContainer.style.display = 'none'; 
         return;
     }
 
     container.style.display = 'block';
     title.style.display = 'flex';
+    // Adicione isso para mostrar o filtro usando flexbox:
+    if (filterContainer) filterContainer.style.display = 'flex';
 
     // Ordena do dia mais recente para o mais antigo
     diasData.sort((a,b) => b.dia - a.dia);
@@ -3172,9 +3211,9 @@ function renderPlayerCFFRating(playerName) {
             // Se a nota for menor que 6, mostramos 6 no visual.
             let notaVisual = Math.max(6.0, q.nota);
             let badgeQueda = getCFFBadgeColor(notaVisual);
-            let mvpIcon = q.mvp ? '<span style="font-size:1.2em;" title="MVP da Queda">👑</span>' : '';
+            let mvpIcon = q.mvp ? '<span title="MVP da Queda" style="position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 10px; background: #ffd700; color: #000; font-size: 0.65em; font-weight: 900; padding: 3px 6px; border-radius: 4px; letter-spacing: 1px; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">MVP</span>' : '';
             
-            return `
+return `
             <tr style="background: rgba(255,255,255,0.02);">
                 <td style="text-align:left; color:var(--text-muted); font-weight:bold;">
                     Queda ${q.queda} <br><span style="font-size:0.75em; color:#888;">${q.mapa.toUpperCase()}</span>
@@ -3183,8 +3222,9 @@ function renderPlayerCFFRating(playerName) {
                 <td>${q.dano}</td>
                 <td>${q.assists}</td>
                 <td>
-                    <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
-                        <span class="cff-badge ${badgeQueda}">${notaVisual.toFixed(1)}</span> ${mvpIcon}
+                    <div style="position: relative; display: inline-flex; align-items: center; justify-content: center;">
+                        <span class="cff-badge ${badgeQueda}">${notaVisual.toFixed(1)}</span>
+                        ${mvpIcon}
                     </div>
                 </td>
             </tr>`;
