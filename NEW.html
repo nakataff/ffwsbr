@@ -557,13 +557,45 @@ nav {
 }
 
 /* --- NAVEGAÇÃO MOBILE --- */
+/* --- NAVEGAÇÃO MOBILE --- */
 .nav-mobile-bar { display: flex; align-items: center; padding: 0 10px; height: 55px; justify-content: space-between; }
-.nav-mob-menu-btn { font-size: 1.4em !important; padding: 4px !important;    } 
-.nav-mobile-tabs { gap: 5px !important; /* Reduz o espaço entre os botões */ }
-.nav-mobile-tab { font-size: 0.75em !important; padding: 4px !important; }
+
+.nav-mob-menu-btn { 
+    color: var(--accent);
+    font-size: 1.4em !important; 
+    padding: 4px !important; 
+    cursor: pointer;
+    background: transparent !important; 
+    border: none !important; 
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+} 
+
+.nav-mobile-tabs { 
+    display: flex; 
+    flex: 1; 
+    justify-content: center;
+    gap: 4px !important; /* Reduz o espaço entre os botões */ 
+}
+
+.nav-mobile-tab { 
+    color: var(--text-muted);
+    font-weight: 800;
+    white-space: nowrap;
+    font-size: 0.75em !important; 
+    padding: 4px 6px !important; 
+    cursor: pointer;
+    background: transparent !important; 
+    border: none !important;                  
+    box-shadow: none !important;              
+    -webkit-appearance: none; 
+    appearance: none;         
+    -webkit-tap-highlight-color: transparent;
+}
 .nav-mobile-tab.active { color: var(--accent); }
 
-.nav-mobile-right { gap: 8px !important; }
+.nav-mobile-right { display: flex; align-items: center; gap: 8px !important; }
 
 /* Barra de busca mobile — escondida por padrão, abre com .active */
 .nav-mobile-search-bar {
@@ -588,8 +620,6 @@ nav {
 }
 .nav-mobile-search-bar input:focus { border-color: var(--accent); }
 
-.nav-mobile-right { display: flex; align-items: center; gap: 12px; }
-
 /* --- REGRAS DE IMAGENS E LUPA (AZUL E SEM FUNDO) --- */
 .nav-search-icon-desktop { 
     width: 20px; height: 20px; pointer-events: none; 
@@ -597,7 +627,17 @@ nav {
     background: none!important; 
 }
 
-.nav-mobile-search-btn, .nav-mobile-home-btn { background: none!important; border: none!important; padding: 0; cursor: pointer; display: flex; align-items: center; }
+.nav-mobile-search-btn, .nav-mobile-home-btn { 
+    background: none!important; 
+    border: none!important; 
+    padding: 0; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+}
 
 .nav-mobile-search-btn img { 
     width: 24px; height: 24px; 
