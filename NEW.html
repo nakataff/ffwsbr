@@ -3032,23 +3032,43 @@ function getCFFBadgeColor(nota) {
 
 // O Cálculo "Rebuscado"
 function calculateCFFNota(kills, dano, assists, mvp) {
-    // Nota base interna de 5.5 (para permitir quedas zeradas puxarem a média do dia para baixo)
-    let nota = 5.5;
     
-    // Bônus de contribuição mínima (Pega a visão: >200 de dano já sobe a nota)
-    if (dano > 0 && dano < 200) nota += 0.2; // 5.7
-    if (dano >= 200) nota += 0.7;           // 6.2 (o mínimo que você pediu se o cara fizer algo)
-    
-    // Pesos Rigorosos para o Crescimento
-    nota += (kills * 0.45);       // Cada abate é muito valioso
-    nota += (dano * 0.0006);      // Dano escala de forma constante
-    nota += (assists * 0.25);     // Assistência é bônus de equipe
-    if (mvp) nota += 0.6;         // MVP da queda pesa mais agora
-    
-    // Trava de segurança para a queda (O 10.0 continua difícil aqui)
-    if (nota > 10.0) nota = 10.0;
-    
-    return parseFloat(nota.toFixed(1));
+    const contribuiu = kills >= 1 || dano >= 200;
+
+    // Jogador zerou ou quase: nota de 3.0 a 5.9
+    if (!contribuiu) {
+        if (dano === 0 && assists === 0) return 3.0; // zero absoluto
+        
+        let nota = 3.0;
+        if (dano > 0 && dano < 200) nota += 0.8 + (dano / 199) * 0.5; // 3.8 ~ 4.3
+        nota += assists * 0.2;
+        return parseFloat(Math.min(nota, 5.9).toFixed(1));
+    }
+
+    // Jogador que contribuiu: começa em 6.1
+    let nota = 6.1;
+
+    // Kills: peso alto, cap em 3.0 (evita explodir com 11 kills)
+    nota += Math.min(kills * 0.35, 3.0);
+
+    // Dano: raiz quadrada normalizada — cresce, mas não explode
+    // mediana (845d) → +0.92 | P90 (2163d) → +1.47 | recorde (7139d) → +2.0
+    nota += Math.min(Math.sqrt(dano) / 46, 2.0);
+
+    // Assists: bônus de suporte, cap em 1.0
+    nota += Math.min(assists * 0.12, 1.0);
+
+    // MVP
+    if (mvp) nota += 0.5;
+
+    return parseFloat(Math.min(nota, 10.0).toFixed(1));
+}
+
+function onPpcffDayFilterChanged() {
+    buildDayFilters();
+    if (currentPlayerView) {
+        renderPlayerCFFRating(currentPlayerView);
+    }
 }
 
 function renderPlayerCFFRating(playerName) {
@@ -6462,9 +6482,13 @@ function openPlayerProfile(playerName) {
     // 2. Tenta encontrar o jogador no banco de ativos
     let p = db.players.find(x => x.jogador.trim().toLowerCase() === safeName.toLowerCase());
     const isInactive = !p;
+    currentPlayerView = p ? p.jogador : safeName; 
+    selectedPpcffDays = []; 
+    buildDayFilters(); 
+    // ===================
 
     // 3. Pega o nome oficial do histórico se ele for inativo
-    let officialName = safeName;
+let officialName = safeName;
     if (isInactive) {
         let histRecord = histData.find(h => checkNameMatch(h.n, safeName));
         if (histRecord) {
