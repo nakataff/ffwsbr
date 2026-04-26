@@ -3649,18 +3649,33 @@ function renderHistoricoEquipes(nome, containerId) {
         let isLast = index === passagensArray.length - 1;
         let isCurrent = currentActiveTeam && equipeUpper === currentActiveTeam.toUpperCase() && isLast;
 
-        let cursorStyle = isClickable ? 'cursor: pointer; transition: 0.2s;' : 'cursor: default; opacity: 0.6; filter: grayscale(0.5);';
-        let hoverStyle = isClickable ? 'onmouseover="this.style.borderColor=\'var(--accent)\'; this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.borderColor=\'var(--border)\'; this.style.transform=\'none\'"' : '';
-        let clickAction = isClickable ? `onclick="openTeamProfile('${passagem.equipe}')"` : '';
+        let cursorStyle = isClickable ? 'cursor: pointer; transition: 0.3s;' : 'cursor: default;';
+        let styleHighlight = '';
+        let hoverStyle = '';
         
+        let clickAction = isClickable ? `onclick="openTeamProfile('${passagem.equipe}')"` : '';
         let sName = typeof shortNames !== 'undefined' && shortNames[passagem.equipe] ? shortNames[passagem.equipe] : passagem.equipe;
+        let labelCargo = passagem.cargo;
 
-        // Se for o time atual, damos um destaque neon e escrevemos "ATUAL"
-        let styleHighlight = isCurrent 
-            ? 'border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 200, 255, 0.4); opacity: 1; filter: grayscale(0);' 
-            : 'border-color: var(--border);';
-            
-        let labelCargo = isCurrent ? '<span style="color:#00c8ff;">ATUAL</span>' : passagem.cargo;
+        // LÓGICA DE CORES E EFEITOS (ATUAL vs ANTIGOS)
+        if (isCurrent) {
+            // Time atual: Brilhando, 100% visível
+            styleHighlight = 'border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 200, 255, 0.4); opacity: 1; filter: grayscale(0);';
+            labelCargo = '<span style="color:#00c8ff;">ATUAL</span>';
+            if (isClickable) {
+                hoverStyle = 'onmouseover="this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.transform=\'none\'"';
+            }
+        } else {
+            // Times antigos: Apagadinhos (Cinza e 50% transparente)
+            if (isClickable) {
+                styleHighlight = 'border-color: var(--border); opacity: 0.5; filter: grayscale(0.8);';
+                // Ao passar o mouse, ele acende e ganha cor
+                hoverStyle = 'onmouseover="this.style.borderColor=\'var(--accent)\'; this.style.transform=\'translateY(-3px)\'; this.style.opacity=\'1\'; this.style.filter=\'grayscale(0)\'" onmouseout="this.style.borderColor=\'var(--border)\'; this.style.transform=\'none\'; this.style.opacity=\'0.5\'; this.style.filter=\'grayscale(0.8)\'"';
+            } else {
+                // Times que não existem mais: Super apagados e sem hover
+                styleHighlight = 'border-color: var(--border); opacity: 0.3; filter: grayscale(1);';
+            }
+        }
 
         return `
         <div style="display: flex; flex-direction: column; align-items: center; width: 90px;">
