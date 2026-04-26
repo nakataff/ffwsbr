@@ -1549,10 +1549,16 @@ tr:last-child {
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); text-transform: uppercase;">Histórico de Equipes</h3>
     <div id="pp-team-history-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);"></div>
 
-    <h3 id="pp-cff-title" style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+<h3 id="pp-cff-title" style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 10px;">
         <span style="background: #1a4ab0; color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: 900; font-size: 0.7em; letter-spacing: 1px;">NOTA CFF</span>
         Avaliação por Queda (SofaScore)
     </h3>
+    
+    <div class="filters" id="pp-cff-filters-container" style="display: none; margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Filtrar por Dia:</label>
+        <div class="day-filters" id="pp-cff-day-filters"></div>
+    </div>
+    
     <div id="pp-cff-rating-container" style="margin-bottom: 40px;"></div>
     
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700;">Galeria de Troféus</h3>
@@ -3026,22 +3032,25 @@ function getCFFBadgeColor(nota) {
 
 // O Cálculo "Rebuscado"
 function calculateCFFNota(kills, dano, assists, mvp) {
-    // A nota inicial (mínima) de uma queda é 6.0
+    // A nota interna começa em 5.0 (quem não fez nada na queda)
     let nota = 5.0;
     
-    // Pesos:
-    // +0.70 por Abate
-    // +0.001 por Dano (Ex: 1000 de dano = +1.0)
-    // +0.25 por Assistência
-    // +0.50 se pegou MVP da queda
-    nota += (kills * 0.70);
-    nota += (dano * 0.001);
-    nota += (assists * 0.25);
-    if (mvp) nota += 0.50;
+    // PESOS REBUSCADOS (Destaque: Abates > Dano > Assistência)
+    // Para ganhar +3.5 pontos (chegando perto do 10), precisaria de 12 kills
+    nota += (kills * 0.29); 
     
-    // Travas de segurança: máximo 10.0, mínimo 3.0 (embora com base 6.0 nunca caia, garante segurança se um dia tiver punição)
+    // Para ganhar +1.2 pontos de dano, precisaria de 4000 de dano
+    nota += (dano * 0.0003); 
+    
+    // Assistências são bônus de participação
+    nota += (assists * 0.15); 
+    
+    // O MVP é a cereja do bolo, mas não dá a nota sozinho
+    if (mvp) nota += 0.40;
+    
+    // Trava de segurança: Praticamente impossível passar de 10.0
     if (nota > 10.0) nota = 10.0;
-    if (nota < 3.0) nota = 3.0;
+    if (nota < 1.0) nota = 1.0; 
     
     return parseFloat(nota.toFixed(1));
 }
@@ -3917,6 +3926,8 @@ let selectedTpDays = [];
 let selectedAvgDays = [];
 let selectedTotalDays = [];
 let selectedTop5Days = [];
+let selectedPpcffDays = []; 
+let currentPlayerView = null;
 
 let currentTeamView = null;
 let currentOppGroup = null;
@@ -5395,7 +5406,8 @@ function buildDayFilters() {
     buildChips('player-day-filters', selectedPlayerDays, 'onPlayerDayFilterChanged');
     buildChips('avg-day-filters', selectedAvgDays, 'renderTableAvg');
     buildChips('total-day-filters', selectedTotalDays, 'renderTableTotal');
-    buildChips('top5-day-filters', selectedTop5Days, 'renderTop5Stats'); // ADICIONE ESTA LINHA
+    buildChips('top5-day-filters', selectedTop5Days, 'renderTop5Stats');
+    buildChips('pp-cff-day-filters', selectedPpcffDays, 'onPpcffDayFilterChanged');
     
     if(currentTeamView) {
         let tName = currentTeamView;
