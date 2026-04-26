@@ -1869,6 +1869,7 @@ tr:last-child {
         </div>
 
         <div id="ot-standings-container"></div>
+        <div id="ot-champions-container" style="display:none;"></div>
     </div>
 </div>
 <!-- PAGE: OUTRAS EQUIPES -->
@@ -2427,7 +2428,7 @@ const dbPassagens = [
   {jogador:"Deley",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
   {jogador:"Itachi Fé",passagens:[{equipe:"TSM",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
   {jogador:"Cruel",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"Giuh",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
+  {jogador:"GIUH.87",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
   {jogador:"Mexico",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
   {jogador:"MTS7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
   {jogador:"R1",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
@@ -6760,12 +6761,91 @@ function openOtherTournament(id) {
     if (badgeEl) badgeEl.innerText = t.tier;
 
     renderOtStandings();
+    renderOtChampions(t); // ← Seção da equipe campeã
     window.scrollTo(0, 0);
+}
+
+// Renderiza a seção da equipe campeã com cartinhas dos jogadores
+function renderOtChampions(t) {
+    const container = document.getElementById('ot-champions-container');
+    if (!container) return;
+
+    // Busca o título coletivo que bate com o nome deste torneio
+    const titulo = titlesData.coletivos.find(tc =>
+        tc.event.toUpperCase().trim() === t.torneio.toUpperCase().trim() ||
+        t.torneio.toUpperCase().includes(tc.event.toUpperCase().trim()) ||
+        tc.event.toUpperCase().includes(t.torneio.toUpperCase().trim())
+    );
+
+    if (!titulo || !titulo.players || titulo.players.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+
+    const teamName = titulo.team;
+    const teamLogo = logos[teamName] || 'escudo.webp';
+
+    // Gera os cards — com dados reais se o jogador existir, genérico se não
+    const cardsHtml = titulo.players.map(pName => {
+        // Tenta achar o jogador no banco atual ou histórico
+        let pObj = db.players.find(x => checkNameMatch(x.jogador, pName));
+
+        if (pObj) {
+            // Card completo com overall real
+            return `<div style="flex-shrink:0;">${createPlayerCardHTML(pObj, 0.85)}</div>`;
+        } else {
+            // Card genérico: silhueta + logo do time + bandeira
+            const photo = playerPhotos[pName] || 'silhueta.png';
+            return `
+            <div data-player="${pName.replace(/"/g,'&quot;')}" class="ot-champ-card" style="cursor:pointer; flex-shrink:0; width:220px; height:330px; background:#000; border:3px solid #888; border-radius:15px; position:relative; overflow:hidden; font-family:sans-serif; margin:0 auto;">
+                <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#222,#000);opacity:0.9;"></div>
+                <div style="position:absolute;top:30px;left:18px;z-index:4;text-align:center;color:#888;">
+                    <div style="font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">CAMPEÃO</div>
+                    <div style="margin:10px auto;width:32px;height:2px;background:#888;opacity:0.6;"></div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width:28px;border-radius:2px;display:block;margin:8px auto;">
+                    <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width:40px;height:40px;object-fit:contain;display:block;margin:10px auto;">
+                </div>
+                <img src="${photo}" onerror="this.src='silhueta.png'" style="position:absolute;top:10px;right:-20px;height:210px;z-index:2;-webkit-mask-image:linear-gradient(to bottom,black 70%,transparent 100%);">
+                <div style="position:absolute;bottom:0;width:100%;height:150px;background:linear-gradient(transparent,#000 35%);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;">
+                    <div style="width:100%;text-align:center;margin-bottom:6px;">
+                        <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
+                        <div style="color:#fff;font-size:18px;font-weight:900;text-transform:uppercase;padding:5px 0;">${pName}</div>
+                        <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
+                    </div>
+                    <div style="color:#aaa;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">${teamName}</div>
+                </div>
+            </div>`;
+        }
+    }).join('');
+
+    container.innerHTML = `
+        <div style="margin-top:30px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px;">
+                <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width:40px;height:40px;object-fit:contain;">
+                <div>
+                    <div style="color:#ffd700;font-weight:900;font-size:1.1em;text-transform:uppercase;letter-spacing:1px;">🏆 Equipe Campeã</div>
+                    <div style="color:#fff;font-size:1.3em;font-weight:bold;">${teamName}</div>
+                </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;">
+                ${cardsHtml}
+            </div>
+        </div>
+    `;
+
+    // Listener seguro para os cards genéricos (evita problema com apóstrofos)
+    container.querySelectorAll('.ot-champ-card[data-player]').forEach(el => {
+        el.addEventListener('click', () => openPlayerProfile(el.dataset.player));
+    });
 }
 
 function closeOtherTournament() {
     document.getElementById('ot-list-view').style.display = 'block';
     document.getElementById('ot-details-view').style.display = 'none';
+    const champEl = document.getElementById('ot-champions-container');
+    if (champEl) { champEl.innerHTML = ''; champEl.style.display = 'none'; }
     currentOtData = null;
 }
 
