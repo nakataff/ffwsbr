@@ -6988,7 +6988,7 @@ function renderCFFStats() {
                 let notaMatch = calculateCFFNota(p.kills, p.dano, p.assists, p.mvp, posTime);
 
                 allMatchPerformances.push({
-                    jogador: p.nome, equipe: p.equipe, nota: notaMatch, kills: p.kills, dia: d, queda: q
+                    nome: p.nome, equipe: p.equipe, nota: notaMatch, kills: p.kills, dia: d, queda: q
                 });
 
                 // Agregador para notas diárias (com bônus de lenda)
@@ -7018,12 +7018,29 @@ function renderCFFStats() {
         let totalMvps = day.quedas.filter(q => q.mvp).length;
         let avgDrops = day.quedas.reduce((s, q) => s + q.nota, 0) / day.quedas.length;
 
-        let notaDia = avgDrops;
-        if (totalKills >= 12) notaDia += (totalKills - 11) * 0.15;
-        if (totalKills >= 20) notaDia += (totalKills - 19) * 0.25;
-        if (totalDano >= 10000) notaDia += 0.3;
-        if (totalMvps > 0) notaDia += (totalMvps * 0.4);
-        if (totalKills >= 30) notaDia = 10.0;
+let notaDia = mediaDrops;
+
+            // Bônus MUITO mais rigoroso (Nota 10 só para atuações bizarras)
+            // Só começa a ganhar bônus de volume a partir de 15 kills
+            if (totalKills >= 15) notaDia += (totalKills - 14) * 0.10; 
+            
+            // Recompensa a partir de 20 kills (dificuldade alta)
+            if (totalKills >= 20) notaDia += (totalKills - 19) * 0.15; 
+            
+            // Elite absoluta (O dia de 25+ kills do Yago)
+            if (totalKills >= 25) notaDia += (totalKills - 24) * 0.20;
+
+            // Dano massivo (aumentei a régua)
+            if (totalDano >= 12000) notaDia += 0.2;
+            if (totalDano >= 18000) notaDia += 0.3;
+
+            // Bônus de MVP reduzido pela metade
+            if (totalMvps > 0) notaDia += (totalMvps * 0.2);
+
+            // A REGRA DA LENDA: O dia do MT7 com 30+ kills
+            if (totalKills >= 30) notaDia = 10.0; 
+
+            notaDia = Math.min(Math.max(notaDia, mediaDrops), 10.0);
 
         return { 
             nome: day.nome, 
