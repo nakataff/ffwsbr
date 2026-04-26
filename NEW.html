@@ -7042,7 +7042,7 @@ let notaDia = avgDrops;
             // A REGRA DA LENDA: O dia do MT7 com 30+ kills
             if (totalKills >= 30) notaDia = 10.0; 
 
-            notaDia = Math.min(Math.max(notaDia, mediaDrops), 10.0);
+            notaDia = Math.min(Math.max(notaDia, avgDrops), 10.0);
 
         return { 
             nome: day.nome, 
