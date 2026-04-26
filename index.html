@@ -2565,357 +2565,7 @@ let titlesData = {
     individuais: []
 };
 
-const lbffData = {
-    "JapaBKR": { "LBFF 1": {k:112, q:78}, "LBFF 3": {k:96, q:83}, "LBFF 4": {k:74, q:77}, "LBFF 5": {k:69, q:78}, "LBFF 6": {k:86, q:79}, "LBFF 7": {k:133, q:117}, "LBFF 8": {k:62, q:76} },
-    "ShariiN": { "LBFF 1": {k:100, q:84}, "LBFF 3": {k:22, q:35} },
-    "VgzinnN": { "LBFF 1": {k:95, q:72}, "LBFF 4": {k:17, q:44} },
-    "Bradoock": { "LBFF 1": {k:93, q:84} },
-    "Geerty": { "LBFF 1": {k:86, q:84}, "LBFF 3": {k:60, q:80}, "LBFF 4": {k:14, q:40}, "LBFF 5": {k:0, q:0} },
-    "RiccK": { "LBFF 1": {k:85, q:82}, "LBFF 3": {k:65, q:80}, "LBFF 4": {k:62, q:71}, "LBFF 5": {k:56, q:69}, "LBFF 6": {k:69, q:78}, "LBFF 7": {k:71, q:108} },
-    "Kroonos": { "LBFF 1": {k:85, q:84}, "LBFF 3": {k:28, q:46}, "LBFF 4": {k:69, q:65}, "LBFF 5": {k:73, q:77}, "LBFF 6": {k:60, q:75}, "LBFF 7": {k:111, q:109}, "LBFF 8": {k:42, q:61} },
-    "PEU": { "LBFF 1": {k:84, q:82}, "LBFF 4": {k:61, q:74}, "LBFF 5": {k:43, q:65}, "LBFF 6": {k:9, q:15}, "LBFF 7": {k:8, q:26} },
-    "Morato": { "LBFF 1": {k:80, q:82}, "LBFF 3": {k:42, q:50}, "LBFF 4": {k:40, q:60} },
-    "Brabox": { "LBFF 1": {k:80, q:84}, "LBFF 3": {k:47, q:60}, "LBFF 4": {k:14, q:19}, "LBFF 5": {k:26, q:37}, "LBFF 6": {k:15, q:18} },
-    "Lukaskn": { "LBFF 1": {k:78, q:84}, "LBFF 3": {k:66, q:72}, "LBFF 4": {k:45, q:70}, "LBFF 5": {k:31, q:68} },
-    "Alemão": { "LBFF 1": {k:75, q:82}, "LBFF 3": {k:53, q:72}, "LBFF 4": {k:3, q:23} },
-    "Japa04": { "LBFF 1": {k:53, q:74}, "LBFF 3": {k:57, q:76}, "LBFF 4": {k:19, q:48} },
-    "Vinni": { "LBFF 1": {k:53, q:84} },
-    "FLQP": { "LBFF 1": {k:49, q:72}, "LBFF 3": {k:9, q:18} },
-    "HORUS": { "LBFF 1": {k:47, q:82}, "LBFF 3": {k:60, q:69}, "LBFF 4": {k:29, q:52} },
-    "MAMUTEZL": { "LBFF 1": {k:46, q:44}, "LBFF 3": {k:31, q:53}, "LBFF 5": {k:82, q:81}, "LBFF 6": {k:55, q:71}, "LBFF 7": {k:12, q:26}, "LBFF 9": {k:31, q:44} },
-    "CRAZY": { "LBFF 1": {k:46, q:48} },
-    "VnzinnN": { "LBFF 1": {k:41, q:60}, "LBFF 3": {k:30, q:57} },
-    "DEXTER": { "LBFF 1": {k:41, q:66}, "LBFF 3": {k:60, q:70}, "LBFF 4": {k:12, q:26} },
-    "ZIKKA": { "LBFF 1": {k:40, q:54}, "LBFF 3": {k:1, q:4} },
-    "ImJouh": { "LBFF 1": {k:40, q:64} },
-    "MADANZA": { "LBFF 1": {k:40, q:80}, "LBFF 3": {k:29, q:41}, "LBFF 4": {k:10, q:47} },
-    "LEVELUP": { "LBFF 1": {k:39, q:46}, "LBFF 4": {k:1, q:6}, "LBFF 6": {k:13, q:27} },
-    "FOGO": { "LBFF 1": {k:38, q:67} },
-    "NEMO": { "LBFF 1": {k:36, q:66} },
-    "AVENGED": { "LBFF 1": {k:35, q:60} },
-    "VAZILY": { "LBFF 1": {k:34, q:35}, "LBFF 3": {k:46, q:62}, "LBFF 4": {k:35, q:51} },
-    "VitinnN": { "LBFF 1": {k:32, q:60}, "LBFF 3": {k:17, q:35} },
-    "papaX": { "LBFF 1": {k:30, q:62} },
-    "MAXSWELL": { "LBFF 1": {k:29, q:32}, "LBFF 3": {k:21, q:17}, "LBFF 4": {k:40, q:72} },
-    "XABRAU": { "LBFF 1": {k:29, q:67} },
-    "ANON": { "LBFF 1": {k:24, q:28} },
-    "Avenger": { "LBFF 1": {k:23, q:32}, "LBFF 3": {k:20, q:60} },
-    "LukasTD": { "LBFF 1": {k:22, q:36}, "LBFF 3": {k:63, q:80}, "LBFF 4": {k:21, q:36}, "LBFF 5": {k:44, q:55} },
-    "Drzzy": { "LBFF 1": {k:18, q:24}, "LBFF 4": {k:48, q:72}, "LBFF 5": {k:38, q:68}, "LBFF 7": {k:55, q:86} },
-    "L7": { "LBFF 1": {k:18, q:37}, "LBFF 3": {k:0, q:0} },
-    "01pires": { "LBFF 1": {k:16, q:16}, "LBFF 3": {k:11, q:12} },
-    "BOYKA": { "LBFF 1": {k:16, q:29}, "LBFF 3": {k:57, q:69} },
-    "Cauan7": { "LBFF 3": {k:138, q:84}, "LBFF 4": {k:99, q:80}, "LBFF 5": {k:93, q:81}, "LBFF 6": {k:102, q:81}, "LBFF 7": {k:155, q:117}, "LBFF 8": {k:121, q:80}, "LBFF 9": {k:342, q:200}, "WB 2024 F1": {k:189, q:96}, "WB 2024 F2": {k:199, q:104}, "WB 2025 S1": {k:126, q:104}, "WB 2025 S2": {k:88, q:68} },
-    "mvR": { "LBFF 3": {k:116, q:84}, "LBFF 4": {k:108, q:81}, "LBFF 5": {k:49, q:72}, "LBFF 6": {k:54, q:81}, "LBFF 7": {k:19, q:33}, "LBFF 8": {k:52, q:68} },
-    "MODESTIA": { "LBFF 1": {k:23, q:24}, "LBFF 3": {k:102, q:84}, "LBFF 4": {k:80, q:81}, "LBFF 5": {k:93, q:81}, "LBFF 6": {k:80, q:81}, "LBFF 7": {k:104, q:117}, "LBFF 8": {k:99, q:79}, "LBFF 9": {k:293, q:200}, "WB 2024 F1": {k:132, q:96}, "WB 2024 F2": {k:140, q:104}, "WB 2025 S1": {k:51, q:46}, "WB 2025 S2": {k:43, q:54} },
-    "PEDRO.RS": { "LBFF 1": {k:28, q:28}, "LBFF 3": {k:94, q:84}, "LBFF 4": {k:45, q:69}, "LBFF 5": {k:19, q:24}, "LBFF 7": {k:59, q:87}, "LBFF 8": {k:0, q:20} },
-    "KaueLOK": { "LBFF 3": {k:93, q:72}, "LBFF 4": {k:69, q:77}, "LBFF 8": {k:110, q:72}, "LBFF 9": {k:214, q:173}, "WB 2024 F1": {k:4, q:16} },
-    "Memgod": { "LBFF 3": {k:93, q:84}, "LBFF 4": {k:90, q:81}, "LBFF 5": {k:89, q:81}, "LBFF 6": {k:53, q:72}, "LBFF 7": {k:89, q:86}, "LBFF 8": {k:38, q:40} },
-    "General": { "LBFF 3": {k:89, q:84}, "LBFF 4": {k:89, q:76}, "LBFF 5": {k:99, q:79}, "LBFF 6": {k:71, q:80}, "LBFF 7": {k:130, q:117}, "LBFF 8": {k:117, q:80}, "LBFF 9": {k:238, q:200}, "WB 2024 F1": {k:128, q:96}, "WB 2024 F2": {k:128, q:104}, "WB 2025 S1": {k:122, q:101}, "WB 2025 S2": {k:58, q:65} },
-    "one9": { "LBFF 3": {k:86, q:84}, "LBFF 4": {k:86, q:81}, "LBFF 5": {k:58, q:78}, "LBFF 6": {k:38, q:66}, "LBFF 7": {k:83, q:96} },
-    "OTREMBB": { "LBFF 1": {k:20, q:26}, "LBFF 3": {k:82, q:81}, "LBFF 4": {k:28, q:40}, "LBFF 5": {k:33, q:63}, "LBFF 6": {k:9, q:20}, "LBFF 7": {k:15, q:29} },
-    "Jubinha": { "LBFF 1": {k:16, q:24}, "LBFF 3": {k:82, q:83}, "LBFF 4": {k:74, q:72}, "LBFF 5": {k:51, q:69}, "LBFF 6": {k:63, q:76}, "LBFF 7": {k:91, q:105} },
-    "Martins": { "LBFF 1": {k:70, q:82}, "LBFF 3": {k:67, q:80}, "LBFF 4": {k:10, q:12} },
-    "ViniZx": { "LBFF 1": {k:70, q:84}, "LBFF 3": {k:69, q:70}, "LBFF 4": {k:16, q:18}, "LBFF 5": {k:3, q:5}, "LBFF 9": {k:2, q:13} },
-    "Supreme": { "LBFF 1": {k:69, q:54}, "LBFF 3": {k:25, q:53} },
-    "SOLOTOV": { "LBFF 1": {k:67, q:84} },
-    "LEALS": { "LBFF 1": {k:65, q:70}, "LBFF 3": {k:25, q:55} },
-    "BLACK00": { "LBFF 1": {k:64, q:80}, "LBFF 3": {k:66, q:75}, "LBFF 4": {k:36, q:59}, "LBFF 5": {k:20, q:40} },
-    "D3": { "LBFF 1": {k:64, q:84}, "LBFF 3": {k:20, q:30}, "LBFF 4": {k:29, q:49}, "LBFF 6": {k:30, q:45}, "LBFF 7": {k:8, q:31} },
-    "Raposo": { "LBFF 1": {k:62, q:64}, "LBFF 3": {k:58, q:68}, "LBFF 4": {k:16, q:27} },
-    "Phoenix23": { "LBFF 1": {k:60, q:70}, "LBFF 3": {k:64, q:84}, "LBFF 4": {k:42, q:72}, "LBFF 5": {k:52, q:81}, "LBFF 6": {k:51, q:81}, "LBFF 7": {k:65, q:117}, "LBFF 8": {k:41, q:80} },
-    "Moreira": { "LBFF 1": {k:59, q:66}, "LBFF 3": {k:39, q:60}, "LBFF 4": {k:41, q:63}, "LBFF 6": {k:50, q:75}, "LBFF 7": {k:61, q:108} },
-    "LUUUKING": { "LBFF 1": {k:57, q:76}, "LBFF 3": {k:25, q:38}, "LBFF 4": {k:33, q:42}, "LBFF 5": {k:1, q:11} },
-    "Aun": { "LBFF 1": {k:57, q:83}, "LBFF 3": {k:15, q:43} },
-    "Ubita": { "LBFF 1": {k:56, q:52} },
-    "ROFF": { "LBFF 1": {k:54, q:84} },
-    "Antunes22": { "LBFF 1": {k:15, q:20}, "LBFF 3": {k:78, q:77}, "LBFF 4": {k:8, q:22}, "LBFF 7": {k:56, q:87} },
-    "Rood": { "LBFF 1": {k:14, q:21} },
-    "Thiago": { "LBFF 1": {k:14, q:22} },
-    "SÓPAPAI": { "LBFF 1": {k:9, q:18} },
-    "Soaress": { "LBFF 1": {k:8, q:12} },
-    "Pedro7": { "LBFF 1": {k:7, q:22} },
-    "Helden": { "LBFF 1": {k:3, q:8} },
-    "SALDANHA": { "LBFF 1": {k:3, q:12} },
-    "JV77": { "LBFF 1": {k:1, q:12} },
-    "CRIAOP": { "LBFF 1": {k:1, q:18} },
-    "Pfonn": { "LBFF 1": {k:0, q:2} },
-    "bema": { "LBFF 1": {k:0, q:4} },
-    "KBÇÃO": { "LBFF 3": {k:63, q:79}, "LBFF 4": {k:42, q:65}, "LBFF 5": {k:3, q:4}, "LBFF 7": {k:8, q:14} },
-    "Wanheda": { "LBFF 3": {k:58, q:84}, "LBFF 4": {k:38, q:66} },
-    "Reei": { "LBFF 3": {k:55, q:79}, "LBFF 4": {k:17, q:34}, "LBFF 6": {k:1, q:9}, "LBFF 9": {k:45, q:91} },
-    "Nappon": { "LBFF 3": {k:51, q:70}, "LBFF 4": {k:0, q:0}, "LBFF 6": {k:68, q:72} },
-    "Ruan": { "LBFF 3": {k:57, q:64}, "LBFF 4": {k:111, q:81}, "LBFF 5": {k:64, q:70}, "LBFF 6": {k:66, q:63}, "LBFF 7": {k:110, q:104}, "LBFF 8": {k:3, q:4}, "LBFF 9": {k:111, q:127} },
-    "Mts007": { "LBFF 4": {k:99, q:81}, "LBFF 5": {k:117, q:81}, "LBFF 6": {k:136, q:81}, "LBFF 7": {k:164, q:117}, "LBFF 8": {k:82, q:78}, "LBFF 9": {k:70, q:74}, "WB 2024 F1": {k:104, q:92}, "WB 2025 S1": {k:127, q:104}, "WB 2025 S2": {k:47, q:54} },
-    "BIELGOD": { "LBFF 3": {k:66, q:80}, "LBFF 4": {k:97, q:81}, "LBFF 5": {k:63, q:81}, "LBFF 6": {k:61, q:72}, "LBFF 8": {k:90, q:78}, "LBFF 9": {k:208, q:194}, "WB 2024 F1": {k:135, q:95}, "WB 2024 F2": {k:125, q:86}, "WB 2025 S1": {k:106, q:90}, "WB 2025 S2": {k:38, q:54} },
-    "Will": { "LBFF 1": {k:70, q:84}, "LBFF 3": {k:2, q:6}, "LBFF 4": {k:93, q:77}, "LBFF 5": {k:32, q:50}, "LBFF 6": {k:76, q:79}, "LBFF 7": {k:10, q:27}, "WB 2024 F2": {k:21, q:22} },
-    "Syaz": { "LBFF 4": {k:93, q:78}, "LBFF 5": {k:132, q:81}, "LBFF 6": {k:104, q:81}, "LBFF 7": {k:163, q:116}, "LBFF 8": {k:113, q:80}, "LBFF 9": {k:289, q:195} },
-    "Lobato": { "LBFF 3": {k:75, q:83}, "LBFF 4": {k:90, q:81}, "LBFF 5": {k:66, q:81}, "LBFF 6": {k:97, q:81}, "LBFF 7": {k:111, q:116}, "LBFF 8": {k:83, q:80}, "LBFF 9": {k:165, q:194}, "WB 2024 F1": {k:53, q:59}, "WB 2024 F2": {k:109, q:96} },
-    "Field": { "LBFF 3": {k:59, q:72}, "LBFF 4": {k:89, q:81}, "LBFF 5": {k:36, q:57}, "LBFF 6": {k:40, q:62}, "LBFF 7": {k:31, q:59} },
-    "CEBOLINHA": { "LBFF 3": {k:70, q:56}, "LBFF 4": {k:84, q:77}, "LBFF 5": {k:62, q:81}, "LBFF 6": {k:38, q:53}, "LBFF 7": {k:90, q:97}, "LBFF 8": {k:8, q:6} },
-    "FON": { "LBFF 4": {k:82, q:80}, "LBFF 5": {k:63, q:72}, "LBFF 6": {k:78, q:72}, "LBFF 7": {k:127, q:117}, "LBFF 8": {k:92, q:80}, "LBFF 9": {k:243, q:197} },
-    "Lost": { "LBFF 4": {k:82, q:81}, "LBFF 5": {k:67, q:78}, "LBFF 6": {k:72, q:81}, "LBFF 7": {k:158, q:110}, "LBFF 8": {k:86, q:73}, "LBFF 9": {k:358, q:196}, "WB 2024 F1": {k:152, q:96}, "WB 2024 F2": {k:164, q:104}, "WB 2025 S1": {k:174, q:104}, "WB 2025 S2": {k:99, q:65} },
-    "PATO": { "LBFF 3": {k:80, q:81}, "LBFF 4": {k:81, q:81}, "LBFF 5": {k:14, q:15}, "LBFF 7": {k:69, q:93} },
-    "DeadGOD": { "LBFF 1": {k:70, q:82}, "LBFF 3": {k:74, q:75}, "LBFF 4": {k:78, q:81}, "LBFF 5": {k:90, q:79}, "LBFF 6": {k:75, q:76}, "LBFF 7": {k:119, q:115}, "LBFF 8": {k:62, q:64}, "LBFF 9": {k:25, q:32} },
-    "Natividade": { "LBFF 3": {k:82, q:84}, "LBFF 4": {k:77, q:78}, "LBFF 5": {k:79, q:81}, "LBFF 6": {k:92, q:81}, "LBFF 7": {k:101, q:108}, "LBFF 8": {k:53, q:72}, "LBFF 9": {k:18, q:40} },
-    "OUSADO": { "LBFF 4": {k:77, q:79}, "LBFF 5": {k:100, q:81}, "LBFF 6": {k:91, q:81}, "LBFF 7": {k:133, q:117}, "LBFF 8": {k:119, q:80}, "LBFF 9": {k:277, q:182} },
-    "FIXA": { "LBFF 1": {k:62, q:80}, "LBFF 3": {k:41, q:70}, "LBFF 4": {k:72, q:75} },
-    "GØDKILL": { "LBFF 4": {k:71, q:63}, "LBFF 5": {k:30, q:44}, "LBFF 6": {k:35, q:41}, "LBFF 7": {k:59, q:53}, "LBFF 8": {k:53, q:63} },
-    "Noda": { "LBFF 3": {k:44, q:71}, "LBFF 4": {k:71, q:65}, "LBFF 5": {k:64, q:74}, "LBFF 6": {k:74, q:71}, "LBFF 7": {k:92, q:105}, "LBFF 8": {k:84, q:78}, "LBFF 9": {k:59, q:52}, "WB 2024 F1": {k:50, q:35}, "WB 2024 F2": {k:189, q:99}, "WB 2025 S1": {k:132, q:104}, "WB 2025 S2": {k:71, q:62} },
-    "Nobru": { "LBFF 1": {k:65, q:72}, "LBFF 3": {k:57, q:65}, "LBFF 4": {k:69, q:74}, "LBFF 5": {k:45, q:51}, "LBFF 6": {k:25, q:42}, "LBFF 7": {k:1, q:4} },
-    "Boss": { "LBFF 3": {k:67, q:84}, "LBFF 4": {k:68, q:79}, "LBFF 5": {k:44, q:61}, "LBFF 7": {k:26, q:30}, "LBFF 8": {k:8, q:27} },
-    "TKSHY13": { "LBFF 3": {k:38, q:76}, "LBFF 4": {k:66, q:72} },
-    "R7": { "LBFF 3": {k:77, q:80}, "LBFF 4": {k:66, q:76}, "LBFF 5": {k:63, q:81}, "LBFF 6": {k:70, q:68}, "LBFF 7": {k:120, q:99}, "LBFF 8": {k:65, q:68}, "LBFF 9": {k:131, q:133}, "WB 2024 F1": {k:97, q:95}, "WB 2024 F2": {k:130, q:96}, "WB 2025 S1": {k:112, q:98}, "WB 2025 S2": {k:89, q:68} },
-    "Gus": { "LBFF 4": {k:61, q:63}, "LBFF 5": {k:61, q:81}, "LBFF 6": {k:100, q:81}, "LBFF 7": {k:169, q:117}, "LBFF 8": {k:92, q:80}, "LBFF 9": {k:222, q:152}, "WB 2024 F1": {k:149, q:96}, "WB 2024 F2": {k:192, q:104}, "WB 2025 S1": {k:147, q:104}, "WB 2025 S2": {k:91, q:64} },
-    "CAUE": { "LBFF 4": {k:61, q:75}, "LBFF 5": {k:63, q:77}, "LBFF 6": {k:61, q:73}, "LBFF 7": {k:116, q:113} },
-    "NICKOLAS": { "LBFF 4": {k:61, q:81}, "LBFF 5": {k:24, q:29}, "LBFF 6": {k:8, q:19} },
-    "ITALO": { "LBFF 3": {k:17, q:33}, "LBFF 4": {k:59, q:72}, "LBFF 5": {k:63, q:72}, "LBFF 7": {k:81, q:87}, "LBFF 8": {k:55, q:75}, "LBFF 9": {k:241, q:194}, "WB 2024 F1": {k:117, q:80}, "WB 2024 F2": {k:13, q:10}, "WB 2025 S1": {k:98, q:104}, "WB 2025 S2": {k:56, q:54} },
-    "Razure": { "LBFF 4": {k:58, q:78}, "LBFF 5": {k:79, q:81}, "LBFF 6": {k:63, q:68}, "LBFF 7": {k:107, q:117}, "LBFF 8": {k:47, q:51}, "LBFF 9": {k:220, q:192}, "WB 2024 F1": {k:128, q:92}, "WB 2024 F2": {k:157, q:103}, "WB 2025 S1": {k:36, q:28}, "WB 2025 S2": {k:46, q:54} },
-    "Aranha": { "LBFF 3": {k:42, q:51}, "LBFF 4": {k:56, q:72}, "LBFF 5": {k:58, q:72} },
-    "YAN7": { "LBFF 3": {k:4, q:4}, "LBFF 4": {k:55, q:69}, "LBFF 5": {k:61, q:43}, "LBFF 6": {k:45, q:62} },
-    "VN10": { "LBFF 4": {k:55, q:71}, "LBFF 5": {k:29, q:71} },
-    "LEAL7": { "LBFF 3": {k:32, q:35}, "LBFF 4": {k:53, q:76}, "LBFF 5": {k:34, q:60}, "LBFF 8": {k:42, q:60} },
-    "GUIMONS": { "LBFF 4": {k:53, q:81}, "LBFF 5": {k:22, q:25}, "LBFF 6": {k:25, q:36} },
-    "PÃO7": { "LBFF 3": {k:75, q:83}, "LBFF 4": {k:52, q:81}, "LBFF 5": {k:48, q:63}, "LBFF 6": {k:56, q:81}, "LBFF 7": {k:97, q:117}, "LBFF 8": {k:82, q:80}, "LBFF 9": {k:250, q:200}, "WB 2024 F1": {k:113, q:96}, "WB 2024 F2": {k:166, q:104}, "WB 2025 S1": {k:74, q:61}, "WB 2025 S2": {k:141, q:68} },
-    "AUTOBOOT": { "LBFF 3": {k:72, q:69}, "LBFF 4": {k:46, q:63}, "LBFF 5": {k:45, q:60}, "LBFF 6": {k:43, q:70} },
-    "PORCÃO": { "LBFF 3": {k:49, q:62}, "LBFF 4": {k:44, q:71} },
-    "IGZINN": { "LBFF 3": {k:46, q:58}, "LBFF 4": {k:45, q:50}, "LBFF 5": {k:36, q:68}, "LBFF 9": {k:28, q:46} },
-    "KAYKE": { "LBFF 3": {k:45, q:54}, "LBFF 4": {k:22, q:35}, "LBFF 5": {k:62, q:71} },
-    "VINNIXL": { "LBFF 3": {k:44, q:72}, "LBFF 6": {k:41, q:64} },
-    "Zenac": { "LBFF 3": {k:42, q:54}, "LBFF 4": {k:25, q:35}, "LBFF 5": {k:52, q:81}, "LBFF 6": {k:53, q:81}, "LBFF 7": {k:29, q:54}, "LBFF 8": {k:47, q:72}, "LBFF 9": {k:163, q:192} },
-    "JM777": { "LBFF 3": {k:42, q:69}, "LBFF 4": {k:17, q:39} },
-    "yurik1nG": { "LBFF 3": {k:41, q:61} },
-    "RafaX": { "LBFF 3": {k:41, q:64}, "LBFF 5": {k:47, q:79}, "LBFF 6": {k:21, q:38}, "LBFF 7": {k:85, q:95}, "LBFF 8": {k:62, q:74} },
-    "LUFFYXX": { "LBFF 3": {k:40, q:59}, "LBFF 4": {k:11, q:20} },
-    "BIRI": { "LBFF 3": {k:37, q:72}, "LBFF 5": {k:1, q:5} },
-    "alok10": { "LBFF 3": {k:32, q:46}, "LBFF 4": {k:23, q:38}, "LBFF 6": {k:5, q:16} },
-    "BROCO": { "LBFF 3": {k:32, q:51}, "LBFF 6": {k:46, q:69}, "LBFF 8": {k:2, q:6} },
-    "BRUNO7": { "LBFF 3": {k:30, q:42}, "LBFF 4": {k:2, q:8}, "LBFF 5": {k:0, q:1} },
-    "NEPHIRO": { "LBFF 3": {k:29, q:64} },
-    "Froyd": { "LBFF 3": {k:27, q:48} },
-    "zDaark": { "LBFF 3": {k:24, q:42} },
-    "IGOR3": { "LBFF 3": {k:21, q:33} },
-    "Negoo": { "LBFF 3": {k:19, q:30}, "LBFF 4": {k:17, q:32} },
-    "LZN": { "LBFF 3": {k:19, q:53} },
-    "Argonot": { "LBFF 3": {k:18, q:36} },
-    "VICTOR7": { "LBFF 3": {k:17, q:39}, "LBFF 5": {k:81, q:81}, "LBFF 6": {k:37, q:48}, "LBFF 8": {k:28, q:36}, "LBFF 9": {k:142, q:177} },
-    "ChefãoZp": { "LBFF 3": {k:15, q:19}, "LBFF 4": {k:29, q:52} },
-    "Guuh": { "LBFF 3": {k:14, q:27} },
-    "MINUZZI": { "LBFF 3": {k:13, q:19}, "LBFF 4": {k:44, q:62}, "LBFF 5": {k:38, q:63} },
-    "GLXCK": { "LBFF 3": {k:12, q:15} },
-    "MAYKY01": { "LBFF 3": {k:11, q:24} },
-    "Déco": { "LBFF 3": {k:9, q:17}, "LBFF 4": {k:5, q:12} },
-    "PSILVA": { "LBFF 3": {k:6, q:10} },
-    "Taami": { "LBFF 3": {k:5, q:6} },
-    "MISTICO": { "LBFF 3": {k:4, q:7}, "LBFF 4": {k:11, q:23} },
-    "MOGTHBOY": { "LBFF 3": {k:4, q:15} },
-    "Azay": { "LBFF 4": {k:46, q:61}, "LBFF 5": {k:25, q:45}, "LBFF 9": {k:193, q:191}, "WB 2024 F1": {k:14, q:20} },
-    "VTRx": { "LBFF 4": {k:34, q:52}, "LBFF 5": {k:37, q:61} },
-    "Fac": { "LBFF 4": {k:31, q:32}, "LBFF 5": {k:62, q:70}, "LBFF 6": {k:75, q:81}, "LBFF 7": {k:103, q:114}, "LBFF 8": {k:60, q:60} },
-    "LEE": { "LBFF 4": {k:23, q:35} },
-    "RUSH": { "LBFF 4": {k:21, q:19}, "LBFF 5": {k:48, q:57}, "LBFF 6": {k:36, q:59}, "LBFF 7": {k:65, q:81} },
-    "NANDO9": { "LBFF 5": {k:107, q:81}, "LBFF 6": {k:64, q:78}, "LBFF 7": {k:99, q:105}, "LBFF 8": {k:119, q:79}, "LBFF 9": {k:407, q:200}, "WB 2024 F1": {k:169, q:96}, "WB 2024 F2": {k:207, q:104}, "WB 2025 S1": {k:135, q:88}, "WB 2025 S2": {k:97, q:58} },
-    "DRAXX7": { "LBFF 5": {k:59, q:72}, "LBFF 6": {k:38, q:53}, "LBFF 7": {k:116, q:91}, "LBFF 8": {k:116, q:80}, "LBFF 9": {k:260, q:171}, "WB 2024 F1": {k:143, q:96}, "WB 2024 F2": {k:165, q:104}, "WB 2025 S1": {k:149, q:104}, "WB 2025 S2": {k:79, q:68} },
-    "Mike": { "LBFF 5": {k:49, q:72}, "LBFF 7": {k:86, q:110}, "LBFF 8": {k:44, q:73}, "LBFF 9": {k:166, q:199} },
-    "Duduffx!": { "LBFF 5": {k:36, q:58}, "LBFF 7": {k:57, q:81} },
-    "Leozin": { "LBFF 5": {k:10, q:19}, "LBFF 6": {k:10, q:12} },
-    "BuTziN": { "LBFF 5": {k:84, q:81}, "LBFF 6": {k:93, q:81}, "LBFF 7": {k:132, q:117}, "LBFF 8": {k:81, q:80}, "LBFF 9": {k:260, q:186}, "WB 2024 F1": {k:188, q:96}, "WB 2024 F2": {k:179, q:104}, "WB 2025 S1": {k:147, q:92}, "WB 2025 S2": {k:133, q:67} },
-    "ROMEUXX": { "LBFF 5": {k:12, q:20}, "LBFF 6": {k:71, q:79}, "LBFF 7": {k:43, q:53}, "LBFF 8": {k:43, q:54} },
-    "JHzz": { "LBFF 5": {k:57, q:68}, "LBFF 6": {k:9, q:23} },
-    "Pec": { "LBFF 5": {k:52, q:69}, "LBFF 6": {k:31, q:65}, "LBFF 7": {k:74, q:73}, "LBFF 8": {k:3, q:7} },
-    "Bops": { "LBFF 5": {k:35, q:57}, "LBFF 6": {k:84, q:62}, "LBFF 7": {k:156, q:117}, "LBFF 8": {k:78, q:80}, "LBFF 9": {k:347, q:200}, "WB 2024 F1": {k:150, q:96}, "WB 2024 F2": {k:196, q:104}, "WB 2025 S1": {k:195, q:104}, "WB 2025 S2":{k:128, q:68} },
-    "VITINxp": { "LBFF 5": {k:94, q:81}, "LBFF 6": {k:97, q:81}, "LBFF 7": {k:156, q:117}, "LBFF 8": {k:91, q:72}, "LBFF 9": {k:258, q:200}, "WB 2024 F1": {k:115, q:96}, "WB 2024 F2": {k:163, q:104}, "WB 2025 S1": {k:156, q:104}, "WB 2025 S2": {k:107, q:68} },
-    "Qualy": { "LBFF 5": {k:48, q:73}, "LBFF 6": {k:64, q:81}, "LBFF 7": {k:45, q:64} },
-    "NEYZZIN": { "LBFF 5": {k:17, q:29} },
-    "Bruno 7": { "LBFF 4": {k:19, q:32}, "LBFF 5": {k:10, q:34} },
-    "Guerra": { "LBFF 4": {k:17, q:32}, "LBFF 5": {k:64, q:67} },
-    "Lipaulo": { "LBFF 4": {k:16, q:24} },
-    "VITIN": { "LBFF 4": {k:16, q:27}, "LBFF 5": {k:13, q:31} },
-    "ARRUDA": { "LBFF 4": {k:14, q:15}, "LBFF 5": {k:18, q:27} },
-    "JAPEX10": { "LBFF 4": {k:11, q:19} },
-    "MMHATX": { "LBFF 4": {k:9, q:14} },
-    "NandoX": { "LBFF 4": {k:8, q:20}, "LBFF 9": {k:278, q:200}, "WB 2024 F1": {k:128, q:89}, "WB 2024 F2": {k:169, q:104}, "WB 2025 S1": {k:98, q:99}, "WB 2025 S2": {k:81, q:68} },
-    "BIRINO": { "LBFF 4": {k:6, q:9} },
-    "Yago": { "LBFF 4": {k:2, q:5}, "LBFF 5": {k:105, q:81}, "LBFF 6": {k:116, q:78}, "LBFF 7": {k:170, q:112}, "LBFF 8": {k:122, q:80}, "LBFF 9": {k:468, q:200}, "WB 2024 F1": {k:187, q:96}, "WB 2024 F2": {k:254, q:104}, "WB 2025 S1": {k:234, q:104}, "WB 2025 S2": {k:128, q:68} },
-    "BONZAI22": { "LBFF 5": {k:10, q:25}, "LBFF 6": {k:6, q:12} },
-    "CHINÊS": { "LBFF 5": {k:73, q:79}, "LBFF 6": {k:105, q:81}, "LBFF 7": {k:123, q:108}, "LBFF 8": {k:80, q:80}, "LBFF 9": {k:226, q:194}, "WB 2024 F1": {k:101, q:96}, "WB 2024 F2": {k:146, q:96} },
-    "LuckyGOD": { "LBFF 5": {k:2, q:12}, "LBFF 7": {k:68, q:91} },
-    "Biel7": { "LBFF 5": {k:15, q:33}, "LBFF 7": {k:25, q:43}, "LBFF 8": {k:9, q:33}, "WB 2024 F1": {k:0, q:0} },
-    "duzzX": { "LBFF 5": {k:30, q:45} },
-    "Astro007": { "LBFF 5": {k:3, q:12} },
-    "Randall": { "LBFF 5": {k:4, q:11} },
-    "Gelo": { "LBFF 5": {k:59, q:61}, "LBFF 6": {k:15, q:20}, "LBFF 7": {k:6, q:9}, "LBFF 8": {k:22, q:28} },
-    "MIGUEL": { "LBFF 5": {k:36, q:54}, "LBFF 7": {k:84, q:101} },
-    "SPIL": { "LBFF 5": {k:39, q:51}, "LBFF 6": {k:18, q:37}, "LBFF 7": {k:34, q:56} },
-    "stiqzL": { "LBFF 5": {k:25, q:48} },
-    "Ruivo": { "LBFF 5": {k:0, q:9} },
-    "Bolin7": { "LBFF 5": {k:19, q:27}, "LBFF 6": {k:4, q:18}, "LBFF 8": {k:22, q:33} },
-    "Maroto": { "LBFF 5": {k:6, q:9} },
-    "TRIPLOx": { "LBFF 5": {k:5, q:9}, "LBFF 7": {k:28, q:66} },
-    "TATU13": { "LBFF 5": {k:5, q:12}, "LBFF 6": {k:34, q:54}, "LBFF 7": {k:67, q:82}, "LBFF 8": {k:110, q:80}, "LBFF 9": {k:210, q:195}, "WB 2024 F2": {k:129, q:104}, "WB 2025 S1": {k:34, q:53} },
-    "VM7": { "LBFF 5": {k:0, q:8}, "LBFF 6": {k:44, q:58}, "LBFF 7": {k:67, q:87}, "LBFF 8": {k:63, q:80} },
-    "PH": { "LBFF 5": {k:0, q:9}, "LBFF 6": {k:2, q:9} },
-    "Diel": { "LBFF 6": {k:58, q:72} },
-    "Salles": { "LBFF 6": {k:45, q:66}, "LBFF 7": {k:64, q:96} },
-    "DIDI_75": { "LBFF 6": {k:41, q:71} },
-    "VINHAL": { "LBFF 6": {k:1, q:10}, "LBFF 8": {k:74, q:61} },
-    "Master": { "LBFF 6": {k:51, q:69} },
-    "BROILO": { "LBFF 6": {k:43, q:68}, "LBFF 7": {k:56, q:102} },
-    "SEMNOME": { "LBFF 6": {k:2, q:5} },
-    "Brenin7": { "LBFF 6": {k:54, q:69} },
-    "Ângelo7": { "LBFF 6": {k:65, q:72}, "WB 2024 F1": {k:90, q:91}, "WB 2024 F2": {k:39, q:42} },
-    "Luignet": { "LBFF 6": {k:36, q:67} },
-    "Debbszada": { "LBFF 6": {k:2, q:27} },
-    "Prozin10": { "LBFF 6": {k:84, q:78}, "LBFF 7": {k:101, q:108}, "LBFF 9": {k:106, q:139}, "WB 2025 S2": {k:58, q:44} },
-    "Kiled": { "LBFF 6": {k:93, q:77}, "LBFF 7": {k:132, q:108}, "LBFF 8": {k:15, q:20} },
-    "Guiga": { "LBFF 6": {k:74, q:78}, "LBFF 7": {k:121, q:117}, "LBFF 8": {k:65, q:69}, "LBFF 9": {k:73, q:85}, "WB 2024 F1": {k:28, q:36} },
-    "Cauã": { "LBFF 6": {k:22, q:41}, "LBFF 9": {k:234, q:200}, "WB 2024 F1": {k:115, q:96}, "WB 2024 F2": {k:116, q:104}, "WB 2025 S1": {k:123, q:104}, "WB 2025 S2": {k:48, q:51} },
-    "GUSTA": { "LBFF 6": {k:52, q:72} },
-    "Ratiin": { "LBFF 6": {k:25, q:54} },
-    "Bob7": { "LBFF 6": {k:8, q:24}, "LBFF 8": {k:75, q:76} },
-    "HEAD": { "LBFF 6": {k:32, q:68}, "LBFF 7": {k:2, q:14} },
-    "BRABO": { "LBFF 6": {k:37, q:61} },
-    "Rigby245": { "LBFF 6": {k:11, q:22}, "LBFF 7": {k:131, q:111}, "LBFF 8": {k:86, q:79}, "LBFF 9": {k:333, q:197}, "WB 2024 F1": {k:195, q:96}, "WB 2024 F2": {k:195, q:104}, "WB 2025 S1": {k:213, q:104}, "WB 2025 S2": {k:153, q:68} },
-    "DZNKILL": { "LBFF 6": {k:26, q:53} },
-    "João7": { "LBFF 6": {k:13, q:18}, "LBFF 7": {k:77, q:97}, "LBFF 9": {k:83, q:86}, "WB 2024 F1": {k:115, q:96}, "WB 2024 F2": {k:107, q:104}, "WB 2025 S1": {k:146, q:104}, "WB 2025 S2": {k:109, q:68} },
-    "STRONG": { "LBFF 6": {k:0, q:4} },
-    "Legit": { "LBFF 6": {k:6, q:12} },
-    "RAUL7": { "LBFF 6": {k:2, q:4} },
-    "DORITO": { "LBFF 6": {k:10, q:12}, "LBFF 9": {k:185, q:134}, "WB 2024 F1": {k:101, q:96}, "WB 2024 F2": {k:119, q:101}, "WB 2025 S1": {k:24, q:36}, "WB 2025 S2": {k:42, q:41} },
-    "LUCCA9": { "LBFF 6": {k:10, q:21} },
-    "Lapa7": { "LBFF 6": {k:9, q:6}, "LBFF 7": {k:13, q:16}, "LBFF 8": {k:83, q:75} },
-    "Thuzão Do9": { "LBFF 4": {k:2, q:14} },
-    "Marreta": { "LBFF 7": {k:62, q:94}, "LBFF 8": {k:53, q:80}, "LBFF 9": {k:15, q:26} },
-    "ERICKMVP": { "LBFF 7": {k:9, q:13}, "LBFF 8": {k:85, q:70}, "LBFF 9": {k:215, q:162}, "WB 2024 F1": {k:179, q:96}, "WB 2024 F2": {k:158, q:104}, "WB 2025 S1": {k:160, q:104}, "WB 2025 S2": {k:92, q:68} },
-    "NICOLAS9": { "LBFF 7": {k:38, q:65}, "LBFF 9": {k:175, q:148}, "WB 2024 F1": {k:55, q:59}, "WB 2024 F2": {k:89, q:96} },
-    "EASY": { "LBFF 7": {k:131, q:117}, "LBFF 8": {k:76, q:72}, "LBFF 9": {k:163, q:155}, "WB 2025 S2": {k:50, q:43} },
-    "CHUCKY": { "LBFF 7": {k:84, q:95}, "LBFF 8": {k:44, q:61}, "LBFF 9": {k:190, q:184}, "WB 2024 F1": {k:83, q:71}, "WB 2024 F2": {k:111, q:96} },
-    "HENDER": { "LBFF 7": {k:142, q:117}, "LBFF 8": {k:49, q:72}, "LBFF 9": {k:150, q:200} },
-    "LENNO": { "LBFF 7": {k:80, q:114}, "LBFF 8": {k:46, q:72}, "LBFF 9": {k:90, q:162}, "WB 2025 S1": {k:2, q:2}, "WB 2025 S2": {k:47, q:54} },
-    "TRAP": { "LBFF 7": {k:143, q:117}, "LBFF 8": {k:117, q:80}, "LBFF 9": {k:318, q:200}, "WB 2024 F1": {k:225, q:96}, "WB 2024 F2": {k:191, q:104}, "WB 2025 S1": {k:182, q:104}, "WB 2025 S2": {k:140, q:68} },
-    "MENOR10": { "LBFF 7": {k:39, q:54} },
-    "JapaXL": { "LBFF 7": {k:93, q:106}, "LBFF 8": {k:77, q:80}, "LBFF 9": {k:164, q:191}, "WB 2024 F1": {k:37, q:47}, "WB 2024 F2": {k:78, q:96} },
-    "HONEY": { "LBFF 7": {k:65, q:86}, "LBFF 9": {k:173, q:186}, "WB 2024 F1": {k:114, q:88}, "WB 2024 F2": {k:135, q:104}, "WB 2025 S1": {k:166, q:104}, "WB 2025 S2": {k:99, q:67} },
-    "BAND": { "LBFF 7": {k:72, q:85}, "LBFF 8": {k:19, q:24}, "LBFF 9": {k:223, q:189}, "WB 2024 F1": {k:147, q:96}, "WB 2024 F2": {k:203, q:104}, "WB 2025 S2": {k:37, q:38} },
-    "HYPE": { "LBFF 7": {k:36, q:72} },
-    "YDAVI": { "LBFF 7": {k:73, q:108} },
-    "Erick11": { "LBFF 7": {k:123, q:117}, "LBFF 8": {k:111, q:80}, "LBFF 9": {k:41, q:33}, "WB 2024 F2": {k:110, q:96}, "WB 2025 S2": {k:50, q:54} },
-    "BUENO": { "LBFF 7": {k:65, q:86}, "LBFF 8": {k:13, q:22} },
-    "Mandela": { "LBFF 7": {k:62, q:86}, "LBFF 8": {k:31, q:43}, "WB 2024 F1": {k:18, q:35} },
-    "GUAXA": { "LBFF 7": {k:40, q:34}, "LBFF 8": {k:77, q:79}, "LBFF 9": {k:147, q:192}, "WB 2024 F1": {k:173, q:96}, "WB 2024 F2": {k:149, q:104}, "WB 2025 S1": {k:139, q:104}, "WB 2025 S2": {k:55, q:48} },
-    "RENAN_Inativo": { "LBFF 7": {k:4, q:11} },
-    "LOIRORJ": { "LBFF 7": {k:23, q:25}, "LBFF 8": {k:30, q:65} },
-    "JUNINXL": { "LBFF 7": {k:35, q:52} },
-    "GTECOXC": { "LBFF 7": {k:0, q:4} },
-    "Raone7": { "LBFF 8": {k:139, q:80}, "LBFF 9": {k:422, q:200}, "WB 2024 F1": {k:206, q:96}, "WB 2024 F2": {k:215, q:104}, "WB 2025 S1": {k:209, q:104}, "WB 2025 S2": {k:120, q:68} },
-    "CORUJA": { "LBFF 8": {k:52, q:68} },
-    "Stark7": { "LBFF 8": {k:99, q:80}, "LBFF 9": {k:240, q:200}, "WB 2024 F1": {k:151, q:96}, "WB 2024 F2": {k:163, q:104}, "WB 2025 S1": {k:147, q:104}, "WB 2025 S2": {k:101, q:68} },
-    "RBN9": { "LBFF 8": {k:34, q:49} },
-    "Ygorzn7": { "LBFF 8": {k:58, q:72} },
-    "haaxszz": { "LBFF 8": {k:10, q:23} },
-    "Ice77": { "LBFF 8": {k:32, q:50}, "LBFF 9": {k:139, q:172}, "WB 2024 F1": {k:74, q:95} },
-    "DANXL7": { "LBFF 8": {k:22, q:38} },
-    "Isopor21": { "LBFF 8": {k:63, q:74}, "LBFF 9": {k:102, q:138}, "WB 2024 F1": {k:49, q:60}, "WB 2024 F2": {k:97, q:96} },
-    "Goabe7": { "LBFF 8": {k:46, q:65}, "LBFF 9": {k:155, q:184}, "WB 2024 F1": {k:77, q:96}, "WB 2024 F2": {k:44, q:95}, "WB 2025 S1": {k:41, q:67} },
-    "Vrziin": { "LBFF 8": {k:23, q:34} },
-    "Vitin9": { "LBFF 8": {k:67, q:71}, "LBFF 9": {k:155, q:150}, "WB 2024 F1": {k:127, q:96}, "WB 2024 F2": {k:171, q:104}, "WB 2025 S1": {k:149, q:103}, "WB 2025 S2": {k:117, q:68} },
-    "Guifox": { "LBFF 8": {k:54, q:69}, "LBFF 9": {k:42, q:42}, "WB 2024 F1": {k:109, q:92}, "WB 2024 F2": {k:49, q:49}, "WB 2025 S1": {k:70, q:66} },
-    "Ghost7": { "LBFF 8": {k:18, q:18}, "LBFF 9": {k:82, q:54}, "WB 2024 F1": {k:64, q:75}, "WB 2024 F2": {k:27, q:40}, "WB 2025 S2": {k:10, q:17} },
-    "Rocks": { "LBFF 8": {k:32, q:49} },
-    "Federal7": { "LBFF 8": {k:115, q:74}, "LBFF 9": {k:199, q:146} },
-    "TheusL": { "LBFF 8": {k:7, q:14} },
-    "Proxx7": { "LBFF 8": {k:51, q:56}, "LBFF 9": {k:190, q:184}, "WB 2024 F1": {k:158, q:96}, "WB 2024 F2": {k:176, q:104}, "WB 2025 S1": {k:17, q:13}, "WB 2025 S2": {k:4, q:4} },
-    "GhostBB": { "LBFF 8": {k:56, q:53}, "LBFF 9": {k:11, q:17} },
-    "Suplay": { "LBFF 8": {k:4, q:9} },
-    "Deley": { "LBFF 8": {k:21, q:24} },
-    "Itachi Fé": { "LBFF 8": {k:13, q:10}, "LBFF 9": {k:173, q:187}, "WB 2024 F1": {k:50, q:42} },
-    "Cruel": { "LBFF 8": {k:16, q:24}, "LBFF 9": {k:133, q:155}, "WB 2024 F1": {k:107, q:94}, "WB 2024 F2": {k:42, q:43}, "WB 2025 S2": {k:34, q:43} },
-    "GIUH.87": { "LBFF 8": {k:20, q:22}, "LBFF 9": {k:242, q:181}, "WB 2024 F1": {k:146, q:96}, "WB 2024 F2": {k:193, q:104}, "WB 2025 S1": {k:209, q:104}, "WB 2025 S2": {k:91, q:65} },
-    "Mexico": { "LBFF 8": {k:21, q:28}, "LBFF 9": {k:204, q:181}, "WB 2024 F1": {k:84, q:60}, "WB 2024 F2": {k:167, q:104} },
-    "MTS7": { "LBFF 8": {k:21, q:26}, "WB 2024 F1": {k:99, q:89}, "WB 2024 F2": {k:135, q:96} },
-    "R1": { "LBFF 8": {k:5, q:5}, "LBFF 9": {k:10, q:20} },
-    "MK7": { "LBFF 8": {k:0, q:1} },
-    "MT7": { "LBFF 9": {k:343, q:190}, "WB 2024 F1": {k:154, q:96}, "WB 2024 F2": {k:201, q:104}, "WB 2025 S1": {k:257, q:104}, "WB 2025 S2": {k:166, q:68} },
-    "Motovea": { "LBFF 9": {k:215, q:188}, "WB 2024 F1": {k:149, q:96}, "WB 2024 F2": {k:248, q:104}, "WB 2025 S1": {k:157, q:104}, "WB 2025 S2": {k:121, q:68} },
-    "Kozak": { "LBFF 9": {k:205, q:182} },
-    "CorumbaX": { "LBFF 9": {k:183, q:185} },
-    "Yato7": { "LBFF 9": {k:177, q:169}, "WB 2024 F1": {k:120, q:95}, "WB 2024 F2": {k:137, q:104}, "WB 2025 S1": {k:91, q:88} },
-    "LIPPE!": { "LBFF 9": {k:191, q:191}, "WB 2025 S1": {k:8, q:18} },
-    "drk": { "LBFF 9": {k:170, q:192}, "WB 2024 F1": {k:34, q:38} },
-    "Vodka": { "LBFF 9": {k:178, q:181} },
-    "Zetsu9": { "LBFF 9": {k:148, q:155}, "WB 2024 F1": {k:110, q:93}, "WB 2024 F2": {k:26, q:24}, "WB 2025 S1": {k:73, q:62} },
-    "Nickz7": { "LBFF 9": {k:151, q:146}, "WB 2024 F1": {k:209, q:96}, "WB 2024 F2": {k:181, q:104}, "WB 2025 S1": {k:178, q:104}, "WB 2025 S2": {k:162, q:62} },
-    "Addy7": { "LBFF 9": {k:144, q:174}, "WB 2024 F1": {k:87, q:70}, "WB 2024 F2": {k:143, q:96}, "WB 2025 S1": {k:103, q:85} },
-    "GLAUCO7": { "LBFF 9": {k:126, q:122}, "WB 2024 F1": {k:45, q:34}, "WB 2024 F2": {k:22, q:21} },
-    "Destroi7": { "LBFF 9": {k:146, q:192} },
-    "Biel7|link=Biel7 (Brazilian Player)": { "LBFF 9": {k:137, q:170}, "WB 2024 F1": {k:61, q:87}, "WB 2024 F2": {k:25, q:42} },
-    "Lins7": { "LBFF 9": {k:99, q:93}, "WB 2024 F1": {k:61, q:69}, "WB 2024 F2": {k:134, q:96}, "WB 2025 S1": {k:111, q:93}, "WB 2025 S2": {k:79, q:68} },
-    "MITOmvp": { "LBFF 9": {k:86, q:123} },
-    "Redxz7": { "LBFF 9": {k:118, q:156}, "WB 2025 S2": {k:77, q:68} },
-    "KMX": { "LBFF 9": {k:119, q:127}, "WB 2024 F1": {k:61, q:68}, "WB 2025 S1": {k:75, q:90} },
-    "MICHEL42": { "LBFF 9": {k:56, q:94} },
-    "Will7": { "LBFF 9": {k:56, q:71} },
-    "Hagane10": { "LBFF 9": {k:39, q:64} },
-    "Araujo13": { "LBFF 9": {k:21, q:35} },
-    "BLACK02": { "LBFF 9": {k:19, q:28}, "WB 2025 S1": {k:90, q:94}, "WB 2025 S2": {k:78, q:68} },
-    "KenidyZ": { "LBFF 9": {k:10, q:27} },
-    "Stand7": { "LBFF 9": {k:11, q:27}, "WB 2024 F1": {k:54, q:60}, "WB 2024 F2": {k:79, q:79} },
-    "Muniz": { "LBFF 9": {k:5, q:13} },
-    "ROG5WP": { "LBFF 9": {k:2, q:6} },
-    "PUTSGRILO": { "LBFF 9": {k:1, q:1} },
-    "PETERxl": { "WB 2024 F1": {k:148, q:77}, "WB 2024 F2": {k:168, q:98}, "WB 2025 S1": {k:157, q:103}, "WB 2025 S2": {k:99, q:62} },
-    "o Mala": { "WB 2024 F1": {k:144, q:96}, "WB 2024 F2": {k:197, q:104}, "WB 2025 S1": {k:134, q:91}, "WB 2025 S2": {k:84, q:67} },
-    "Hak": { "WB 2024 F1": {k:115, q:94}, "WB 2024 F2": {k:151, q:90}, "WB 2025 S1": {k:123, q:96}, "WB 2025 S2": {k:67, q:54} },
-    "Nikeboy": { "LBFF 8": {k:0, q:0}, "WB 2024 F1": {k:94, q:93}, "WB 2024 F2": {k:160, q:97}, "WB 2025 S1": {k:52, q:62}, "WB 2025 S2": {k:107, q:67} },
-    "BRUNO7w": { "WB 2024 F1": {k:66, q:78}, "WB 2024 F2": {k:28, q:33} },
-    "Bahiazx": { "WB 2024 F1": {k:24, q:23}, "WB 2024 F2": {k:20, q:14}, "WB 2025 S1": {k:115, q:104}, "WB 2025 S2": {k:64, q:66} },
-    "brota10": { "WB 2024 F1": {k:112, q:96}, "WB 2024 F2": {k:158, q:104}, "WB 2025 S2": {k:56, q:54} },
-    "Luan7": { "WB 2024 F1": {k:65, q:61}, "WB 2024 F2": {k:105, q:100}, "WB 2025 S1": {k:144, q:98}, "WB 2025 S2": {k:18, q:20} },
-    "iguiNmvp": { "WB 2024 F1": {k:61, q:36}, "WB 2024 F2": {k:136, q:104}, "WB 2025 S1": {k:100, q:102}, "WB 2025 S2": {k:57, q:54} },
-    "Bombom": { "WB 2024 F1": {k:0, q:1} },
-    "Strend7": { "WB 2024 F1": {k:8, q:12} },
-    "MitinX": { "WB 2024 F1": {k:22, q:28}, "WB 2025 S1": {k:130, q:88}, "WB 2025 S2": {k:60, q:59} },
-    "Kalango7": { "WB 2024 F1": {k:55, q:67}, "WB 2024 F2": {k:80, q:87} },
-    "JOW": { "WB 2024 F1": {k:59, q:70} },
-    "KazumaWP": { "WB 2024 F1": {k:59, q:89} },
-    "whyzer7": { "WB 2024 F1": {k:81, q:95}, "WB 2024 F2": {k:107, q:96} },
-    "wLiu": { "WB 2024 F1": {k:99, q:96}, "WB 2024 F2": {k:123, q:96}, "WB 2025 S1": {k:117, q:104}, "WB 2025 S2": {k:61, q:68} },
-    "Kauã7xp": { "WB 2024 F1": {k:29, q:32}, "WB 2024 F2": {k:70, q:61}, "WB 2025 S2": {k:21, q:16} },
-    "Se7en": { "WB 2024 F1": {k:99, q:92} },
-    "Drey22": { "WB 2024 F1": {k:94, q:96}, "WB 2024 F2": {k:120, q:93} },
-    "TREVOR9": { "WB 2024 F1": {k:1, q:8}, "WB 2024 F2": {k:34, q:32}, "WB 2025 S1": {k:42, q:54} },
-    "xGUTO": { "WB 2024 F1": {k:11, q:14}, "WB 2024 F2": {k:111, q:77}, "WB 2025 S1": {k:73, q:88}, "WB 2025 S2": {k:30, q:36} },
-    "KakaZk": { "WB 2024 F1": {k:105, q:94}, "WB 2024 F2": {k:131, q:96}, "WB 2025 S1": {k:53, q:41}, "WB 2025 S2": {k:52, q:24} },
-    "Theus": { "WB 2024 F1": {k:32, q:29}, "WB 2025 S2": {k:102, q:68} },
-    "MTZIN": { "WB 2024 F1": {k:76, q:77} },
-    "WM.sup": { "WB 2024 F2": {k:12, q:30} },
-    "NANDO7": { "WB 2024 F2": {k:12, q:30} },
-    "Hugo7": { "WB 2024 F2": {k:61, q:63} },
-    "STRIKE": { "WB 2024 F2": {k:67, q:70}, "WB 2025 S1": {k:82, q:78} },
-    "DELTA": { "WB 2024 F2": {k:108, q:96} },
-    "JucaW": { "WB 2024 F2": {k:126, q:104}, "WB 2025 S1": {k:136, q:104}, "WB 2025 S2": {k:41, q:33} },
-    "BYTE333": { "WB 2025 S1": {k:14, q:23}, "WB 2025 S2": {k:72, q:68} },
-    "Pollux7": { "WB 2025 S1": {k:110, q:104}, "WB 2025 S2": {k:42, q:44} },
-    "Guimerlq": { "WB 2025 S1": {k:88, q:104}, "WB 2025 S2": {k:88, q:68} },
-    "LucasAWP": { "WB 2025 S1": {k:117, q:104}, "WB 2025 S2": {k:36, q:26} },
-    "LYON": { "WB 2025 S1": {k:133, q:102}, "WB 2025 S2": {k:99, q:68} },
-    "bzp10": { "WB 2025 S1": {k:159, q:104}, "WB 2025 S2": {k:51, q:40} },
-    "LC777": { "WB 2025 S1": {k:94, q:97}, "WB 2025 S2": {k:33, q:28} },
-    "Furiazz7": { "WB 2025 S1": {k:50, q:62}, "WB 2025 S2": {k:10, q:24} },
-    "Joker7": { "WB 2025 S1": {k:35, q:65} },
-    "SOCA": { "WB 2025 S1": {k:23, q:36} },
-    "Shotzz": { "WB 2025 S1": {k:28, q:31}, "WB 2025 S2": {k:9, q:11} },
-    "mtsexy": { "WB 2025 S1": {k:38, q:19}, "WB 2025 S2": {k:23, q:13} },
-    "LopesXL": { "WB 2025 S1": {k:37, q:37} },
-    "Yann7awp": { "WB 2025 S2": {k:86, q:68} },
-    "Erick1ng": { "WB 2025 S2": {k:68, q:58} },
-    "fnx04": { "WB 2025 S2": {k:55, q:64} },
-    "rojao10": { "WB 2025 S2": {k:1, q:4} },
-    "RZN7": { "WB 2025 S2": {k:23, q:28} },
-    "Rennan7": { "WB 2025 S2": {k:39, q:48} },
-    "MitoMvp": { "WB 2025 S2": {k:9, q:10} },
-    "SOARES": { "WB 2025 S2": {k:76, q:68} }
-};
+
 
 const playerCaptains = {
     "Bops": true,
@@ -3364,476 +3014,11 @@ async function loadCampeonatos() {
 let currentOtData = null; // Guarda qual torneio está aberto
 
 // --- HISTÓRICO DE RESULTADOS DAS EQUIPES ---
-const dbResults = {
-    "FLUXO W7M": [
-        { data: "2026-04-09", tier: "D-Tier", place: "6th", torneio: "Goat League Season 2" },
-        { data: "2026-04-08", tier: "D-Tier", place: "10th", torneio: "GWL Showdown" },
-        { data: "2026-03-26", tier: "D-Tier", place: "1st", torneio: "Yuta Invitational" },
-        { data: "2026-03-09", tier: "C-Tier", place: "1st", torneio: "CPN Arena 2026" },
-        { data: "2026-03-03", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2026 Stage 1" },
-        { data: "2026-02-22", tier: "A-Tier", place: "1st", torneio: "C.O.P.A. Free Fire 2026" },
-        { data: "2026-02-18", tier: "D-Tier", place: "6th", torneio: "Liga do Rei Elite Mobile 2026" },
-        { data: "2026-01-23", tier: "D-Tier", place: "6th", torneio: "Liga Marinho Season 3" },
-        { data: "2026-01-23", tier: "D-Tier", place: "3rd", torneio: "Liga LPT Season 1" },
-        { data: "2026-01-21", tier: "D-Tier", place: "8th", torneio: "Showmatch do Amoras 2026" },
-        { data: "2026-01-16", tier: "D-Tier", place: "1st", torneio: "Showmatch Yuta 2026" },
-        { data: "2026-01-08", tier: "D-Tier", place: "2nd", torneio: "Showmatch Klaus 2026" },
-        { data: "2025-11-21", tier: "D-Tier", place: "3rd", torneio: "Goat League Season 1" },
-        { data: "2025-11-15", tier: "S-Tier", place: "2nd", torneio: "Free Fire World Series - Global Finals 2025" },
-        { data: "2025-11-14", tier: "S-Tier", place: "2nd", torneio: "Free Fire World Series - Global Finals 2025: Clash Squad" },
-        { data: "2025-10-05", tier: "A-Tier", place: "1st", torneio: "Free Fire World Series - Brazil 2025 Split 2" },
-        { data: "2025-09-25", tier: "B-Tier", place: "9th", torneio: "Lidoma Endless Series 2025 - Americas Intercontinental Clash" },
-        { data: "2025-09-23", tier: "D-Tier", place: "6th", torneio: "Copa All In Mobile Season 1" },
-        { data: "2025-09-17", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2025 Stage 4" },
-        { data: "2025-08-28", tier: "D-Tier", place: "3rd", torneio: "All In Mobile Elite S4" },
-        { data: "2025-08-28", tier: "C-Tier", place: "1st", torneio: "Lidoma Endless Series 2025 - Brazil Regional Championship" },
-        { data: "2025-08-27", tier: "D-Tier", place: "12th", torneio: "Lidoma Endless Series 2025 - Brazil Open Regional Cups" },
-        { data: "2025-08-10", tier: "Showmatch", place: "7th - 8th", torneio: "Free Fire All Stars 2025: Ninja Clash" },
-        { data: "2025-08-01", tier: "D-Tier", place: "6th", torneio: "Liga Doutrina Mobile Season 2" },
-        { data: "2025-07-20", tier: "S-Tier", place: "10th", torneio: "Esports World Cup 2025" },
-        { data: "2025-07-10", tier: "D-Tier", place: "1st", torneio: "Liga Marinho Season 2" },
-        { data: "2025-07-07", tier: "D-Tier", place: "2nd", torneio: "RED Wave Cup Elite Season 2" },
-        { data: "2025-07-07", tier: "D-Tier", place: "7th", torneio: "Copa Davi Season 4" },
-        { data: "2025-07-04", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2025 Stage 3" },
-        { data: "2025-06-22", tier: "A-Tier", place: "2nd", torneio: "Free Fire World Series - Brazil 2025 Split 1" },
-        { data: "2025-06-04", tier: "D-Tier", place: "2nd", torneio: "Liga Do Rei Copa Mobile BoostZone" },
-        { data: "2025-05-30", tier: "D-Tier", place: "2nd", torneio: "Gran Legends Season 1" },
-        { data: "2025-05-28", tier: "D-Tier", place: "1st", torneio: "Liga DS Season 4" },
-        { data: "2025-05-15", tier: "D-Tier", place: "2nd", torneio: "Liga Doutrina Mobile Season 1" },
-        { data: "2025-05-09", tier: "D-Tier", place: "6th", torneio: "Del Rei Season 4" },
-        { data: "2025-05-08", tier: "C-Tier", place: "2nd", torneio: "Copa Amoras Mobile Season 1" },
-        { data: "2025-04-29", tier: "D-Tier", place: "3rd", torneio: "Super Liga UBFF 2025 Split 1" },
-        { data: "2025-04-25", tier: "D-Tier", place: "2nd", torneio: "All In Mobile Elite S3" },
-        { data: "2025-04-25", tier: "D-Tier", place: "1st", torneio: "Copa Davi Season 3" },
-        { data: "2025-04-24", tier: "D-Tier", place: "1st", torneio: "Liga do Rei Elite Mobile 2025" },
-        { data: "2025-04-22", tier: "D-Tier", place: "7th", torneio: "Liga Royals Elite Season 3" },
-        { data: "2025-04-10", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2025 Stage 2" },
-        { data: "2025-03-31", tier: "D-Tier", place: "21st - 22nd", torneio: "La America DS Season 3" },
-        { data: "2025-03-30", tier: "D-Tier", place: "1st", torneio: "Fora da Safe Invitational Mobile 2025 Split 2" },
-        { data: "2025-03-24", tier: "D-Tier", place: "7th", torneio: "RED Wave Cup Elite Season 1" },
-        { data: "2025-03-21", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Season 1" },
-        { data: "2025-03-17", tier: "Showmatch", place: "3rd", torneio: "Copa Amoras 100k" },
-        { data: "2025-03-11", tier: "Weekly", place: "1st", torneio: "Liga Doutrina Mobile 2025 Week 2" },
-        { data: "2025-02-28", tier: "D-Tier", place: "12th", torneio: "Liga Doutrina Loco Season 1" },
-        { data: "2025-02-26", tier: "D-Tier", place: "3rd", torneio: "Del Rei Season 3" },
-        { data: "2025-02-23", tier: "A-Tier", place: "1st", torneio: "C.O.P.A. Free Fire 2025" },
-        { data: "2025-02-12", tier: "Weekly", place: "1st", torneio: "Liga Doutrina Mobile 2025 Week 1" },
-        { data: "2025-02-06", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2025 Stage 1" },
-        { data: "2025-01-31", tier: "D-Tier", place: "2nd", torneio: "Showmatch Alterados League 2025" },
-        { data: "2025-01-22", tier: "D-Tier", place: "1st", torneio: "Fora da Safe Invitational Mobile 2025 Split 1" },
-        { data: "2024-12-09", tier: "D-Tier", place: "5th", torneio: "Del Rei Season 2" },
-        { data: "2024-12-08", tier: "A-Tier", place: "1st", torneio: "ESL Snapdragon Pro Series Season 5: Latin America Challenge" },
-        { data: "2024-12-03", tier: "D-Tier", place: "5th", torneio: "Showmatch dos Campeões GWL" },
-        { data: "2024-11-24", tier: "S-Tier", place: "1st", torneio: "Free Fire World Series - Global Finals 2024" },
-        { data: "2024-09-28", tier: "A-Tier", place: "1st", torneio: "Free Fire World Series - Brazil 2024" },
-        { data: "2024-09-27", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2024 Stage 4" },
-        { data: "2024-09-01", tier: "C-Tier", place: "3rd", torneio: "Copa NFA 2024 - Split 2" },
-        { data: "2024-08-30", tier: "D-Tier", place: "4th", torneio: "Copa Auge Rei dos Coins Season 5" },
-        { data: "2024-08-11", tier: "B-Tier", place: "2nd", torneio: "CPN Favela Gaming Edition 2024" },
-        { data: "2024-07-14", tier: "S-Tier", place: "9th", torneio: "Esports World Cup 2024" },
-        { data: "2024-06-28", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2024 Stage 3" },
-        { data: "2024-05-10", tier: "D-Tier", place: "9th", torneio: "Copa GWL Mobile 2024 Stage 2" },
-        { data: "2024-05-03", tier: "C-Tier", place: "14th", torneio: "Lidoma League 2024" },
-        { data: "2024-04-14", tier: "S-Tier", place: "2nd", torneio: "ESL Snapdragon Pro Series 2024: Mobile Masters" },
-        { data: "2024-04-03", tier: "D-Tier", place: "20th", torneio: "Monte Sinai League Season 1" },
-        { data: "2024-03-29", tier: "C-Tier", place: "3rd", torneio: "Global Games Mobile Season 1" },
-        { data: "2024-03-28", tier: "C-Tier", place: "16th", torneio: "Lidoma Showdown 2024" },
-        { data: "2024-03-24", tier: "A-Tier", place: "4th", torneio: "C.O.P.A. Free Fire 2024" },
-        { data: "2024-01-06", tier: "B-Tier", place: "11th", torneio: "ESL Snapdragon Pro Series Season 4: Brazil Open" },
-        { data: "2023-12-11", tier: "C-Tier", place: "5th", torneio: "Talents Mobile 2023 - Split 4" },
-        { data: "2023-11-20", tier: "C-Tier", place: "3rd", torneio: "Talents Mobile 2023 - Split 3" },
-        { data: "2023-10-10", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2023 Stage 3" },
-        { data: "2023-09-15", tier: "C-Tier", place: "5th", torneio: "Talents Mobile 2023" },
-        { data: "2023-08-05", tier: "A-Tier", place: "4th", torneio: "LBFF 2023" },
-        { data: "2023-06-23", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2023 Stage 1" },
-        { data: "2023-05-25", tier: "C-Tier", place: "5th", torneio: "Copa GWL PRO Season 4" },
-        { data: "2023-03-25", tier: "A-Tier", place: "5th", torneio: "C.O.P.A. Free Fire 2023" },
-        { data: "2022-10-15", tier: "A-Tier", place: "5th", torneio: "LBFF 2022: Series A - Stage 2" },
-        { data: "2022-07-02", tier: "A-Tier", place: "10th", torneio: "C.O.P.A. Free Fire 2022: Corrida do Milhão" },
-        { data: "2022-04-16", tier: "A-Tier", place: "5th", torneio: "Liga Brasileira de Free Fire 2022: Series A - Stage 1" },
-        { data: "2021-10-30", tier: "A-Tier", place: "3rd", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 3" },
-        { data: "2021-07-24", tier: "A-Tier", place: "3rd", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 2" },
-        { data: "2021-05-30", tier: "S-Tier", place: "4th", torneio: "Free Fire World Series 2021 Singapore" },
-        { data: "2021-03-20", tier: "A-Tier", place: "1st", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 1" }
-    ],
-    "LOUD SNICKERS": [
-        { data: "2026-04-09", tier: "D-Tier", place: "4th", torneio: "Goat League Season 2" },
-        { data: "2026-04-08", tier: "D-Tier", place: "2nd", torneio: "GWL Showdown" },
-        { data: "2026-03-26", tier: "D-Tier", place: "4th", torneio: "Yuta Invitational" },
-        { data: "2026-03-09", tier: "C-Tier", place: "3rd", torneio: "CPN Arena 2026" },
-        { data: "2026-03-03", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2026 Stage 1" },
-        { data: "2026-02-22", tier: "A-Tier", place: "4th", torneio: "C.O.P.A. Free Fire 2026" },
-        { data: "2026-02-18", tier: "D-Tier", place: "1st", torneio: "Liga do Rei Elite Mobile 2026" },
-        { data: "2026-01-23", tier: "D-Tier", place: "1st", torneio: "Liga LPT Season 1" },
-        { data: "2026-01-23", tier: "D-Tier", place: "4th", torneio: "Liga Marinho Season 3" },
-        { data: "2026-01-21", tier: "D-Tier", place: "2nd", torneio: "Showmatch do Amoras 2026" },
-        { data: "2026-01-16", tier: "D-Tier", place: "5th", torneio: "Showmatch Yuta 2026" },
-        { data: "2026-01-08", tier: "D-Tier", place: "1st", torneio: "Showmatch Klaus 2026" },
-        { data: "2025-11-21", tier: "D-Tier", place: "10th", torneio: "Goat League Season 1" },
-        { data: "2025-10-05", tier: "A-Tier", place: "4th", torneio: "Free Fire World Series - Brazil 2025 Split 2" },
-        { data: "2025-09-25", tier: "B-Tier", place: "6th", torneio: "Lidoma Endless Series 2025 - Americas Intercontinental Clash" },
-        { data: "2025-09-23", tier: "D-Tier", place: "5th", torneio: "Copa All In Mobile Season 1" },
-        { data: "2025-09-17", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2025 Stage 4" },
-        { data: "2025-08-28", tier: "C-Tier", place: "6th", torneio: "Lidoma Endless Series 2025 - Brazil Regional Championship" },
-        { data: "2025-08-28", tier: "D-Tier", place: "7th", torneio: "All In Mobile Elite S4" },
-        { data: "2025-08-27", tier: "D-Tier", place: "5th", torneio: "Lidoma Endless Series 2025 - Brazil Open Regional Cups" },
-        { data: "2025-08-18", tier: "D-Tier", place: "2nd", torneio: "Fora da Safe Invitational Mobile 2025 Split 3" },
-        { data: "2025-08-12", tier: "D-Tier", place: "13th", torneio: "Copa Auge Elite Season 9" },
-        { data: "2025-08-01", tier: "D-Tier", place: "8th", torneio: "Liga Doutrina Mobile Season 2" },
-        { data: "2025-07-10", tier: "D-Tier", place: "10th", torneio: "Liga Marinho Season 2" },
-        { data: "2025-07-07", tier: "D-Tier", place: "11th", torneio: "Copa Davi Season 4" },
-        { data: "2025-07-07", tier: "D-Tier", place: "4th", torneio: "RED Wave Cup Elite Season 2" },
-        { data: "2025-07-04", tier: "D-Tier", place: "11th", torneio: "Copa GWL Mobile 2025 Stage 3" },
-        { data: "2025-06-22", tier: "A-Tier", place: "7th", torneio: "Free Fire World Series - Brazil 2025 Split 1" },
-        { data: "2025-06-05", tier: "D-Tier", place: "8th", torneio: "Copa Diamond Season 3" },
-        { data: "2025-06-04", tier: "D-Tier", place: "1st", torneio: "Liga Do Rei Copa Mobile BoostZone" },
-        { data: "2025-05-30", tier: "D-Tier", place: "5th", torneio: "Gran Legends Season 1" },
-        { data: "2025-05-28", tier: "D-Tier", place: "6th", torneio: "Liga DS Season 4" },
-        { data: "2025-05-15", tier: "D-Tier", place: "4th", torneio: "Liga Doutrina Mobile Season 1" },
-        { data: "2025-05-09", tier: "D-Tier", place: "5th", torneio: "Del Rei Season 4" },
-        { data: "2025-05-08", tier: "C-Tier", place: "8th", torneio: "Copa Amoras Mobile Season 1" },
-        { data: "2025-05-06", tier: "D-Tier", place: "4th", torneio: "Liga Liberty Challenge Season" },
-        { data: "2025-04-30", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Invitational" },
-        { data: "2025-04-25", tier: "D-Tier", place: "3rd", torneio: "All In Mobile Elite S3" },
-        { data: "2025-04-25", tier: "D-Tier", place: "6th", torneio: "Copa Davi Season 3" },
-        { data: "2025-04-24", tier: "D-Tier", place: "7th", torneio: "Liga do Rei Elite Mobile 2025" },
-        { data: "2025-04-22", tier: "D-Tier", place: "11th", torneio: "Liga Royals Elite Season 3" },
-        { data: "2025-04-10", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2025 Stage 2" },
-        { data: "2025-03-31", tier: "D-Tier", place: "1st", torneio: "La America DS Season 3" },
-        { data: "2025-03-30", tier: "D-Tier", place: "4th", torneio: "Fora da Safe Invitational Mobile 2025 Split 2" },
-        { data: "2025-03-24", tier: "D-Tier", place: "4th", torneio: "RED Wave Cup Elite Season 1" },
-        { data: "2025-03-20", tier: "D-Tier", place: "3rd", torneio: "Copa Diamond Season 2" },
-        { data: "2025-03-14", tier: "D-Tier", place: "13th", torneio: "Liga Marinho Season 1" },
-        { data: "2025-03-11", tier: "Weekly", place: "2nd", torneio: "Liga Doutrina Mobile 2025 Week 2" },
-        { data: "2025-02-28", tier: "D-Tier", place: "8th", torneio: "Liga Doutrina Loco Season 1" },
-        { data: "2025-02-26", tier: "D-Tier", place: "4th", torneio: "Del Rei Season 3" },
-        { data: "2025-02-23", tier: "A-Tier", place: "3rd", torneio: "C.O.P.A. Free Fire 2025" },
-        { data: "2025-02-14", tier: "D-Tier", place: "1st", torneio: "Star Cup Series A Season 3" },
-        { data: "2025-02-12", tier: "Weekly", place: "4th", torneio: "Liga Doutrina Mobile 2025 Week 1" },
-        { data: "2025-02-06", tier: "D-Tier", place: "7th", torneio: "Copa GWL Mobile 2025 Stage 1" },
-        { data: "2025-01-31", tier: "D-Tier", place: "1st", torneio: "Showmatch Alterados League 2025" },
-        { data: "2025-01-24", tier: "Weekly", place: "2nd", torneio: "Grand Slam Super Weekend Mobile Week 2" },
-        { data: "2025-01-22", tier: "D-Tier", place: "9th", torneio: "Fora da Safe Invitational Mobile 2025 Split 1" },
-        { data: "2024-12-08", tier: "A-Tier", place: "3rd", torneio: "ESL Snapdragon Pro Series Season 5: Latin America Challenge" },
-        { data: "2024-12-03", tier: "B-Tier", place: "9th", torneio: "Lidoma Challenge 2024" },
-        { data: "2024-10-30", tier: "D-Tier", place: "2nd", torneio: "Copa Auge Rei dos Coins Season 6" },
-        { data: "2024-10-17", tier: "D-Tier", place: "3rd", torneio: "Showmatch Gran Legends 2024" },
-        { data: "2024-09-28", tier: "A-Tier", place: "7th", torneio: "Free Fire World Series - Brazil 2024" },
-        { data: "2024-09-27", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2024 Stage 4" },
-        { data: "2024-09-01", tier: "C-Tier", place: "6th", torneio: "Copa NFA 2024 - Split 2" },
-        { data: "2024-08-30", tier: "D-Tier", place: "1st", torneio: "Copa Auge Rei dos Coins Season 5" },
-        { data: "2024-08-30", tier: "D-Tier", place: "5th", torneio: "All In Mobile Elite Season 2" },
-        { data: "2024-08-11", tier: "B-Tier", place: "4th", torneio: "CPN Favela Gaming Edition 2024" },
-        { data: "2024-07-14", tier: "S-Tier", place: "6th", torneio: "Esports World Cup 2024" },
-        { data: "2024-06-28", tier: "D-Tier", place: "1st", torneio: "Copa GWL Mobile 2024 Stage 3" },
-        { data: "2024-05-23", tier: "C-Tier", place: "8th", torneio: "Esmerald Cup Season 2" },
-        { data: "2024-05-10", tier: "D-Tier", place: "10th", torneio: "Copa GWL Mobile 2024 Stage 2" },
-        { data: "2024-05-03", tier: "C-Tier", place: "9th", torneio: "Lidoma League 2024" },
-        { data: "2024-04-14", tier: "S-Tier", place: "4th", torneio: "ESL Snapdragon Pro Series 2024: Mobile Masters" },
-        { data: "2024-03-29", tier: "C-Tier", place: "1st", torneio: "Global Games Mobile Season 1" },
-        { data: "2024-03-28", tier: "C-Tier", place: "18th", torneio: "Lidoma Showdown 2024" },
-        { data: "2024-03-24", tier: "A-Tier", place: "11th", torneio: "C.O.P.A. Free Fire 2024" },
-        { data: "2024-03-12", tier: "D-Tier", place: "14th", torneio: "Liga Next Season 4" },
-        { data: "2024-03-04", tier: "D-Tier", place: "4th", torneio: "Copa Auge Elite Season 4" },
-        { data: "2024-03-01", tier: "C-Tier", place: "9th", torneio: "Copa NFA 2024 - Split 1" },
-        { data: "2024-02-29", tier: "C-Tier", place: "17th - 18th", torneio: "Lidoma Contenders 2024" },
-        { data: "2024-02-25", tier: "A-Tier", place: "2nd", torneio: "ESL Snapdragon Pro Series Season 4 - Challenge Season" },
-        { data: "2024-02-03", tier: "C-Tier", place: "2nd", torneio: "Lidoma Challenge Season 3" },
-        { data: "2024-01-29", tier: "D-Tier", place: "1st", torneio: "Super Liga Season 2" },
-        { data: "2024-01-25", tier: "D-Tier", place: "12th", torneio: "Copa GWL Mobile 2024 Stage 1" },
-        { data: "2023-11-26", tier: "S-Tier", place: "7th", torneio: "Free Fire World Series 2023" },
-        { data: "2023-10-29", tier: "D-Tier", place: "7th", torneio: "Liga NEXT das Nações LampionsBet" },
-        { data: "2023-10-27", tier: "C-Tier", place: "1st", torneio: "Talents Mobile 2023 - Split 2" },
-        { data: "2023-10-20", tier: "D-Tier", place: "2nd", torneio: "Taça Nacional Ultimate Mobile" },
-        { data: "2023-10-10", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2023 Stage 3" },
-        { data: "2023-10-03", tier: "D-Tier", place: "1st", torneio: "The Citizens Elite - Season 2" },
-        { data: "2023-09-25", tier: "D-Tier", place: "1st", torneio: "Star Cup Serie A - Season 2" },
-        { data: "2023-09-15", tier: "C-Tier", place: "13th", torneio: "Talents Mobile 2023" },
-        { data: "2023-08-19", tier: "D-Tier", place: "8th", torneio: "Master Liga Season 2" },
-        { data: "2023-08-05", tier: "A-Tier", place: "1st", torneio: "LBFF 2023" },
-        { data: "2023-07-21", tier: "C-Tier", place: "6th", torneio: "Lidoma Challenge Season 2" },
-        { data: "2023-07-08", tier: "D-Tier", place: "7th", torneio: "AJF Season Mobile Split 1" },
-        { data: "2023-06-23", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2023 Stage 1" },
-        { data: "2023-05-25", tier: "C-Tier", place: "8th", torneio: "Copa GWL PRO Season 4" },
-        { data: "2023-05-11", tier: "C-Tier", place: "3rd", torneio: "Lidoma Challenge Season 1" },
-        { data: "2023-03-30", tier: "D-Tier", place: "3rd", torneio: "Copa GWL PRO Season 3" },
-        { data: "2023-03-25", tier: "A-Tier", place: "2nd", torneio: "C.O.P.A. Free Fire 2023" },
-        { data: "2023-03-14", tier: "D-Tier", place: "12th", torneio: "AJF All In Season 1" },
-        { data: "2023-03-03", tier: "Qualifier", place: "3rd", torneio: "AJF All In Mobile - Season 1" },
-        { data: "2023-03-02", tier: "B-Tier", place: "2nd", torneio: "CPN Mobile 2023" },
-        { data: "2023-01-31", tier: "D-Tier", place: "1st", torneio: "Copa GWL PRO Season 2" },
-        { data: "2022-10-15", tier: "A-Tier", place: "8th", torneio: "LBFF 2022: Series A - Stage 2" },
-        { data: "2022-07-02", tier: "A-Tier", place: "2nd", torneio: "C.O.P.A. Free Fire 2022: Corrida do Milhão" },
-        { data: "2022-05-21", tier: "S-Tier", place: "7th", torneio: "Free Fire World Series 2022 Sentosa" },
-        { data: "2022-04-16", tier: "A-Tier", place: "1st", torneio: "Liga Brasileira de Free Fire 2022: Series A - Stage 1" },
-        { data: "2021-10-30", tier: "A-Tier", place: "4th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 3" },
-        { data: "2021-07-24", tier: "A-Tier", place: "10th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 2" },
-        { data: "2021-05-30", tier: "S-Tier", place: "2nd", torneio: "Free Fire World Series 2021 Singapore" },
-        { data: "2021-03-20", tier: "A-Tier", place: "2nd", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 1" },
-        { data: "2020-11-07", tier: "Qualifier", place: "1st", torneio: "Liga Brasileira de Free Fire 2021: Promotion - Stage 1" },
-        { data: "2020-11-01", tier: "A-Tier", place: "13th", torneio: "Liga Brasileira de Free Fire 2020: Series A - Stage 3" },
-        { data: "2020-07-19", tier: "A-Tier", place: "11th", torneio: "C.O.P.A. Free Fire 2020" },
-        { data: "2020-03-15", tier: "A-Tier", place: "3rd", torneio: "Liga Brasileira de Free Fire 2020: Series A - Stage 1" },
-        { data: "2020-01-11", tier: "A-Tier", place: "1st", torneio: "Copa America 2020" },
-        { data: "2019-11-16", tier: "S-Tier", place: "9th", torneio: "Free Fire World Series 2019" },
-        { data: "2019-11-09", tier: "A-Tier", place: "2nd", torneio: "Free Fire Pro League Brazil Season 3" },
-        { data: "2019-07-20", tier: "A-Tier", place: "8th", torneio: "Free Fire Pro League Brazil Season 2" }
-    ]
-    ,
-"LOS": [
-        { data: "2026-04-09", tier: "D-Tier", place: "2nd", torneio: "Goat League Season 2" },
-        { data: "2026-04-08", tier: "D-Tier", place: "6th", torneio: "GWL Showdown" },
-        { data: "2026-03-26", tier: "D-Tier", place: "2nd", torneio: "Yuta Invitational" },
-        { data: "2026-03-09", tier: "C-Tier", place: "2nd", torneio: "CPN Arena 2026" },
-        { data: "2026-03-03", tier: "D-Tier", place: "3rd", torneio: "Copa GWL Mobile 2026 Stage 1" },
-        { data: "2026-02-22", tier: "A-Tier", place: "11th", torneio: "C.O.P.A. Free Fire 2026" },
-        { data: "2026-02-18", tier: "D-Tier", place: "5th", torneio: "Liga do Rei Elite Mobile 2026" },
-        { data: "2026-01-23", tier: "D-Tier", place: "10th", torneio: "Liga LPT Season 1" },
-        { data: "2026-01-23", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Season 3" },
-        { data: "2026-01-21", tier: "D-Tier", place: "1st", torneio: "Showmatch do Amoras 2026" },
-        { data: "2026-01-16", tier: "D-Tier", place: "2nd", torneio: "Showmatch Yuta 2026" },
-        { data: "2025-12-06", tier: "C-Tier", place: "1st", torneio: "Maranhao Gamer Challenge 2025" },
-        { data: "2025-11-19", tier: "D-Tier", place: "15th", torneio: "Goat League Season 1" },
-        { data: "2025-10-31", tier: "D-Tier", place: "3rd", torneio: "Copa Alezin Season 3" },
-        { data: "2025-10-20", tier: "D-Tier", place: "12th", torneio: "Aquecimento do Amoras Pré Mundial" },
-        { data: "2025-10-05", tier: "A-Tier", place: "7th", torneio: "Free Fire World Series - Brazil 2025 Split 2" },
-        { data: "2025-09-25", tier: "B-Tier", place: "1st", torneio: "Lidoma Endless Series 2025 - Americas Intercontinental Clash" },
-        { data: "2025-09-23", tier: "D-Tier", place: "2nd", torneio: "Copa All In Mobile Season 1" },
-        { data: "2025-09-17", tier: "D-Tier", place: "4th", torneio: "Copa GWL Mobile 2025 Stage 4" },
-        { data: "2025-08-28", tier: "C-Tier", place: "5th", torneio: "Lidoma Endless Series 2025 - Brazil Regional Championship" },
-        { data: "2025-08-27", tier: "D-Tier", place: "6th", torneio: "Lidoma Endless Series 2025 - Brazil Open Regional Cups" },
-        { data: "2025-08-18", tier: "D-Tier", place: "8th", torneio: "Fora da Safe Invitational Mobile 2025 Split 3" },
-        { data: "2025-08-12", tier: "D-Tier", place: "21st", torneio: "All In Mobile Elite S4" },
-        { data: "2025-08-10", tier: "Showmatch", place: "3rd - 4th", torneio: "Free Fire All Stars 2025: Ninja Clash" },
-        { data: "2025-08-01", tier: "D-Tier", place: "4th", torneio: "Liga Doutrina Mobile Season 2" },
-        { data: "2025-07-20", tier: "S-Tier", place: "4th", torneio: "Esports World Cup 2025" },
-        { data: "2025-07-10", tier: "D-Tier", place: "2nd", torneio: "Liga Marinho Season 2" },
-        { data: "2025-07-07", tier: "D-Tier", place: "2nd", torneio: "Copa Davi Season 4" },
-        { data: "2025-07-07", tier: "D-Tier", place: "5th", torneio: "RED Wave Cup Elite Season 2" },
-        { data: "2025-07-04", tier: "D-Tier", place: "7th", torneio: "Copa GWL Mobile 2025 Stage 3" },
-        { data: "2025-06-22", tier: "A-Tier", place: "1st", torneio: "Free Fire World Series - Brazil 2025 Split 1" },
-        { data: "2025-06-04", tier: "D-Tier", place: "3rd", torneio: "Liga Do Rei Copa Mobile BoostZone" },
-        { data: "2025-06-02", tier: "D-Tier", place: "1st", torneio: "Liga FNT Black Elite Season 11" },
-        { data: "2025-05-30", tier: "D-Tier", place: "6th", torneio: "Gran Legends Season 1" },
-        { data: "2025-05-28", tier: "D-Tier", place: "3rd", torneio: "Liga DS Season 4" },
-        { data: "2025-05-15", tier: "D-Tier", place: "1st", torneio: "Liga Doutrina Mobile Season 1" },
-        { data: "2025-05-09", tier: "D-Tier", place: "1st", torneio: "Del Rei Season 4" },
-        { data: "2025-05-08", tier: "C-Tier", place: "3rd", torneio: "Copa Amoras Mobile Season 1" },
-        { data: "2025-05-06", tier: "D-Tier", place: "5th", torneio: "Liga Liberty Challenge Season" },
-        { data: "2025-04-30", tier: "D-Tier", place: "8th", torneio: "Liga Marinho Invitational" },
-        { data: "2025-04-29", tier: "D-Tier", place: "8th", torneio: "Super Liga UBFF 2025 Split 1" },
-        { data: "2025-04-25", tier: "D-Tier", place: "4th", torneio: "All In Mobile Elite S3" },
-        { data: "2025-04-25", tier: "D-Tier", place: "2nd", torneio: "Copa Davi Season 3" },
-        { data: "2025-04-24", tier: "D-Tier", place: "2nd", torneio: "Liga do Rei Elite Mobile 2025" },
-        { data: "2025-04-22", tier: "D-Tier", place: "4th", torneio: "Liga Royals Elite Season 3" },
-        { data: "2025-04-10", tier: "D-Tier", place: "3rd", torneio: "Copa GWL Mobile 2025 Stage 2" },
-        { data: "2025-03-31", tier: "D-Tier", place: "5th", torneio: "La America DS Season 3" },
-        { data: "2025-03-30", tier: "D-Tier", place: "6th", torneio: "Fora da Safe Invitational Mobile 2025 Split 2" },
-        { data: "2025-03-24", tier: "D-Tier", place: "6th", torneio: "RED Wave Cup Elite Season 1" },
-        { data: "2025-03-21", tier: "D-Tier", place: "6th", torneio: "Liga Marinho Season 1" },
-        { data: "2025-03-20", tier: "D-Tier", place: "2nd", torneio: "Copa Diamond Season 2" },
-        { data: "2025-03-11", tier: "Weekly", place: "4th", torneio: "Liga Doutrina Mobile 2025 Week 2" },
-        { data: "2025-02-28", tier: "D-Tier", place: "6th", torneio: "Liga Doutrina Loco Season 1" },
-        { data: "2025-02-26", tier: "D-Tier", place: "1st", torneio: "Del Rei Season 3" },
-        { data: "2025-02-18", tier: "D-Tier", place: "3rd", torneio: "Liga DS Season 3" },
-        { data: "2025-02-17", tier: "A-Tier", place: "13th", torneio: "C.O.P.A. Free Fire 2025" },
-        { data: "2025-02-17", tier: "D-Tier", place: "7th", torneio: "Liga LSX Season 6" },
-        { data: "2025-02-14", tier: "D-Tier", place: "8th", torneio: "Star Cup Series A Season 3" },
-        { data: "2025-02-12", tier: "Weekly", place: "5th", torneio: "Liga Doutrina Mobile 2025 Week 1" },
-        { data: "2025-02-06", tier: "D-Tier", place: "3rd", torneio: "Copa GWL Mobile 2025 Stage 1" },
-        { data: "2025-01-31", tier: "D-Tier", place: "4th", torneio: "Showmatch Alterados League 2025" },
-        { data: "2025-01-24", tier: "Weekly", place: "7th", torneio: "Grand Slam Super Weekend Mobile Week 2" },
-        { data: "2025-01-22", tier: "D-Tier", place: "15th", torneio: "Fora da Safe Invitational Mobile 2025 Split 1" },
-        { data: "2025-01-17", tier: "Weekly", place: "5th", torneio: "Grand Slam Super Weekend Mobile Week 1" },
-        { data: "2024-12-09", tier: "D-Tier", place: "6th", torneio: "Del Rei Season 2" },
-        { data: "2024-10-30", tier: "D-Tier", place: "6th", torneio: "Copa Auge Rei dos Coins Season 6" },
-        { data: "2024-10-22", tier: "D-Tier", place: "1st", torneio: "Liga LSX Brasileirão" },
-        { data: "2024-10-17", tier: "D-Tier", place: "8th", torneio: "Showmatch Gran Legends 2024" },
-        { data: "2024-09-27", tier: "D-Tier", place: "13th", torneio: "Copa GWL Mobile 2024 Stage 4" },
-        { data: "2024-09-22", tier: "D-Tier", place: "9th", torneio: "Liga Royals Elite Season 2" },
-        { data: "2024-09-16", tier: "A-Tier", place: "17th", torneio: "Free Fire World Series - Brazil 2024" },
-        { data: "2024-09-13", tier: "D-Tier", place: "10th", torneio: "Taça Brasil Season 4" },
-        { data: "2024-09-01", tier: "C-Tier", place: "14th", torneio: "Copa NFA 2024 - Split 2" },
-        { data: "2024-08-30", tier: "D-Tier", place: "13th", torneio: "Copa Auge Rei dos Coins Season 5" },
-        { data: "2024-08-30", tier: "D-Tier", place: "10th", torneio: "All In Mobile Elite Season 2" },
-        { data: "2024-08-23", tier: "D-Tier", place: "12th", torneio: "Alien Cup Season 3" },
-        { data: "2024-08-11", tier: "B-Tier", place: "11th", torneio: "CPN Favela Gaming Edition 2024" },
-        { data: "2024-07-21", tier: "D-Tier", place: "6th", torneio: "CG Series Brazil Season 1" },
-        { data: "2024-07-07", tier: "B-Tier", place: "16th", torneio: "Liga NFA 2024 - Split 1" },
-        { data: "2024-06-28", tier: "D-Tier", place: "19th", torneio: "Copa GWL Mobile 2024 Stage 3" },
-        { data: "2024-06-20", tier: "D-Tier", place: "12th", torneio: "Copa Santos Season 3" },
-        { data: "2024-06-07", tier: "D-Tier", place: "15th", torneio: "All In Elite Season 1" },
-        { data: "2024-05-18", tier: "D-Tier", place: "17th - 18th", torneio: "Taça Brasil Season 2" },
-        { data: "2024-05-13", tier: "D-Tier", place: "13th", torneio: "Copa Auth Especial" },
-        { data: "2024-05-10", tier: "D-Tier", place: "19th", torneio: "Copa GWL Mobile 2024 Stage 2" },
-        { data: "2024-05-09", tier: "D-Tier", place: "19th - 20th", torneio: "Liga Stars Season 1" },
-        { data: "2024-04-04", tier: "D-Tier", place: "20th", torneio: "Copa Theus Season 2" },
-        { data: "2024-03-29", tier: "C-Tier", place: "12th", torneio: "Global Games Mobile Season 1" },
-        { data: "2024-03-24", tier: "A-Tier", place: "9th", torneio: "C.O.P.A. Free Fire 2024" },
-        { data: "2024-03-12", tier: "D-Tier", place: "10th", torneio: "Liga Next Season 4" },
-        { data: "2024-03-04", tier: "D-Tier", place: "13th", torneio: "Copa Auge Elite Season 4" },
-        { data: "2024-02-17", tier: "C-Tier", place: "10th", torneio: "Hype Cup" },
-        { data: "2024-02-03", tier: "C-Tier", place: "13th", torneio: "Lidoma Challenge Season 3" },
-        { data: "2024-01-29", tier: "D-Tier", place: "5th", torneio: "Super Liga Season 2" },
-        { data: "2024-01-25", tier: "D-Tier", place: "6th", torneio: "Copa GWL Mobile 2024 Stage 1" },
-        { data: "2024-01-06", tier: "B-Tier", place: "19th - 20th", torneio: "ESL Snapdragon Pro Series Season 4: Brazil Open" },
-        { data: "2023-06-28", tier: "C-Tier", place: "5th", torneio: "GrandSlam Champions 2023" },
-        { data: "2023-03-30", tier: "D-Tier", place: "36th", torneio: "Copa Internacional TK Season 1" },
-        { data: "2023-03-09", tier: "D-Tier", place: "7th", torneio: "Liga Next Season 1" },
-        { data: "2023-03-02", tier: "B-Tier", place: "4th", torneio: "CPN Mobile 2023" },
-        { data: "2022-10-15", tier: "A-Tier", place: "6th", torneio: "LBFF 2022: Series A - Stage 2" },
-        { data: "2022-06-26", tier: "A-Tier", place: "15th", torneio: "C.O.P.A. Free Fire 2022: Corrida do Milhão" },
-        { data: "2022-04-16", tier: "A-Tier", place: "4th", torneio: "Liga Brasileira de Free Fire 2022: Series A - Stage 1" },
-        { data: "2021-10-30", tier: "A-Tier", place: "7th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 3" },
-        { data: "2021-07-24", tier: "A-Tier", place: "11th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 2" },
-        { data: "2021-04-03", tier: "Qualifier", place: "4th", torneio: "Liga Brasileira de Free Fire 2021: Promotion - Stage 2" },
-        { data: "2021-03-28", tier: "B-Tier", place: "6th", torneio: "Liga Brasileira de Free Fire - Series B 2021 Stage 1" },
-        { data: "2021-02-26", tier: "D-Tier", place: "6th", torneio: "Free Fire Talents Open Mobile 6" },
-        { data: "2021-01-23", tier: "C-Tier", place: "1st", torneio: "Liga LBR Mobile Season 1" },
-        { data: "2020-11-01", tier: "A-Tier", place: "18th", torneio: "Liga Brasileira de Free Fire 2020: Series A - Stage 3" },
-        { data: "2020-07-19", tier: "A-Tier", place: "7th", torneio: "C.O.P.A. Free Fire 2020" },
-        { data: "2020-04-05", tier: "B-Tier", place: "5th", torneio: "Liga NFA Season 3" },
-        { data: "2019-12-22", tier: "C-Tier", place: "5th", torneio: "NFA Stars Season 2" },
-        { data: "2019-11-09", tier: "A-Tier", place: "22nd - 24th", torneio: "Free Fire Pro League Brazil Season 3" },
-        { data: "2019-10-31", tier: "Showmatch", place: "7th", torneio: "Proibidão NFA 2019" },
-        { data: "2019-09-29", tier: "B-Tier", place: "6th", torneio: "Liga NFA Season 2" },
-        { data: "2019-07-20", tier: "A-Tier", place: "6th", torneio: "Free Fire Pro League Brazil Season 2" }
-    ],
-"TEAM SOLID": [
-        { data: "2026-04-08", tier: "D-Tier", place: "13th", torneio: "GWL Showdown" },
-        { data: "2026-03-26", tier: "D-Tier", place: "5th", torneio: "Yuta Invitational" },
-        { data: "2026-03-25", tier: "D-Tier", place: "17th", torneio: "Goat League Season 2" },
-        { data: "2026-03-03", tier: "D-Tier", place: "7th", torneio: "Copa GWL Mobile 2026 Stage 1" },
-        { data: "2026-02-22", tier: "A-Tier", place: "3rd", torneio: "C.O.P.A. Free Fire 2026" },
-        { data: "2026-02-18", tier: "D-Tier", place: "4th", torneio: "Liga do Rei Elite Mobile 2026" },
-        { data: "2026-01-23", tier: "D-Tier", place: "2nd", torneio: "Liga LPT Season 1" },
-        { data: "2026-01-23", tier: "D-Tier", place: "5th", torneio: "Liga Marinho Season 3" },
-        { data: "2026-01-21", tier: "D-Tier", place: "6th", torneio: "Showmatch do Amoras 2026" },
-        { data: "2026-01-16", tier: "D-Tier", place: "8th", torneio: "Showmatch Yuta 2026" },
-        { data: "2026-01-08", tier: "D-Tier", place: "8th", torneio: "Showmatch Klaus 2026" },
-        { data: "2025-12-06", tier: "C-Tier", place: "2nd", torneio: "Maranhao Gamer Challenge 2025" },
-        { data: "2025-11-21", tier: "D-Tier", place: "1st", torneio: "Goat League Season 1" },
-        { data: "2025-11-15", tier: "S-Tier", place: "5th", torneio: "Free Fire World Series - Global Finals 2025" },
-        { data: "2025-10-20", tier: "D-Tier", place: "1st", torneio: "Aquecimento do Amoras Pré Mundial" },
-        { data: "2025-10-05", tier: "A-Tier", place: "2nd", torneio: "Free Fire World Series - Brazil 2025 Split 2" },
-        { data: "2025-09-25", tier: "B-Tier", place: "5th", torneio: "Lidoma Endless Series 2025 - Americas Intercontinental Clash" },
-        { data: "2025-09-23", tier: "D-Tier", place: "1st", torneio: "Copa All In Mobile Season 1" },
-        { data: "2025-09-17", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2025 Stage 4" },
-        { data: "2025-08-28", tier: "C-Tier", place: "4th", torneio: "Lidoma Endless Series 2025 - Brazil Regional Championship" },
-        { data: "2025-08-28", tier: "D-Tier", place: "2nd", torneio: "All In Mobile Elite S4" },
-        { data: "2025-08-27", tier: "D-Tier", place: "10th", torneio: "Lidoma Endless Series 2025 - Brazil Open Regional Cups" },
-        { data: "2025-08-18", tier: "D-Tier", place: "4th", torneio: "Fora da Safe Invitational Mobile 2025 Split 3" },
-        { data: "2025-08-12", tier: "D-Tier", place: "8th", torneio: "Copa Auge Elite Season 9" },
-        { data: "2025-08-10", tier: "Showmatch", place: "1st - 2nd", torneio: "Free Fire All Stars 2025: Ninja Clash" },
-        { data: "2025-08-01", tier: "D-Tier", place: "3rd", torneio: "Liga Doutrina Mobile Season 2" },
-        { data: "2025-07-20", tier: "S-Tier", place: "8th", torneio: "Esports World Cup 2025" },
-        { data: "2025-07-10", tier: "D-Tier", place: "5th", torneio: "Liga Marinho Season 2" },
-        { data: "2025-07-07", tier: "D-Tier", place: "3rd", torneio: "RED Wave Cup Elite Season 2" },
-        { data: "2025-07-07", tier: "D-Tier", place: "4th", torneio: "Copa Davi Season 4" },
-        { data: "2025-07-04", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2025 Stage 3" },
-        { data: "2025-06-22", tier: "A-Tier", place: "4th", torneio: "Free Fire World Series - Brazil 2025 Split 1" },
-        { data: "2025-06-05", tier: "D-Tier", place: "1st", torneio: "Copa Diamond Season 3" },
-        { data: "2025-06-04", tier: "D-Tier", place: "4th", torneio: "Liga Do Rei Copa Mobile BoostZone" },
-        { data: "2025-06-02", tier: "D-Tier", place: "3rd", torneio: "Liga FNT Black Elite Season 11" },
-        { data: "2025-05-30", tier: "D-Tier", place: "8th", torneio: "Gran Legends Season 1" },
-        { data: "2025-05-28", tier: "D-Tier", place: "8th", torneio: "Liga DS Season 4" },
-        { data: "2025-05-15", tier: "D-Tier", place: "6th", torneio: "Liga Doutrina Mobile Season 1" },
-        { data: "2025-05-09", tier: "D-Tier", place: "2nd", torneio: "Del Rei Season 4" },
-        { data: "2025-05-08", tier: "C-Tier", place: "4th", torneio: "Copa Amoras Mobile Season 1" },
-        { data: "2025-05-06", tier: "D-Tier", place: "3rd", torneio: "Liga Liberty Challenge Season" },
-        { data: "2025-04-30", tier: "D-Tier", place: "4th", torneio: "Liga Marinho Invitational" },
-        { data: "2025-04-29", tier: "D-Tier", place: "4th", torneio: "Super Liga UBFF 2025 Split 1" },
-        { data: "2025-04-25", tier: "D-Tier", place: "1st", torneio: "All In Mobile Elite S3" },
-        { data: "2025-04-25", tier: "D-Tier", place: "5th", torneio: "Copa Davi Season 3" },
-        { data: "2025-04-24", tier: "D-Tier", place: "5th", torneio: "Liga do Rei Elite Mobile 2025" },
-        { data: "2025-04-22", tier: "D-Tier", place: "3rd", torneio: "Liga Royals Elite Season 3" },
-        { data: "2025-04-10", tier: "D-Tier", place: "4th", torneio: "Copa GWL Mobile 2025 Stage 2" },
-        { data: "2025-03-31", tier: "D-Tier", place: "6th", torneio: "La America DS Season 3" },
-        { data: "2025-03-30", tier: "D-Tier", place: "5th", torneio: "Fora da Safe Invitational Mobile 2025 Split 2" },
-        { data: "2025-03-24", tier: "D-Tier", place: "1st", torneio: "RED Wave Cup Elite Season 1" },
-        { data: "2025-03-21", tier: "D-Tier", place: "5th", torneio: "Liga Marinho Season 1" },
-        { data: "2025-03-20", tier: "D-Tier", place: "1st", torneio: "Copa Diamond Season 2" },
-        { data: "2025-03-11", tier: "Weekly", place: "3rd", torneio: "Liga Doutrina Mobile 2025 Week 2" },
-        { data: "2025-02-28", tier: "D-Tier", place: "3rd", torneio: "Liga Doutrina Loco Season 1" },
-        { data: "2025-02-26", tier: "D-Tier", place: "2nd", torneio: "Del Rei Season 3" },
-        { data: "2025-02-23", tier: "A-Tier", place: "7th", torneio: "C.O.P.A. Free Fire 2025" },
-        { data: "2025-02-18", tier: "D-Tier", place: "2nd", torneio: "Liga DS Season 3" },
-        { data: "2025-02-14", tier: "D-Tier", place: "2nd", torneio: "Star Cup Series A Season 3" },
-        { data: "2025-02-12", tier: "Weekly", place: "2nd", torneio: "Liga Doutrina Mobile 2025 Week 1" },
-        { data: "2025-02-06", tier: "D-Tier", place: "4th", torneio: "Copa GWL Mobile 2025 Stage 1" },
-        { data: "2025-01-31", tier: "D-Tier", place: "8th", torneio: "Showmatch Alterados League 2025" },
-        { data: "2025-01-24", tier: "Weekly", place: "5th", torneio: "Grand Slam Super Weekend Mobile Week 2" },
-        { data: "2025-01-22", tier: "D-Tier", place: "6th", torneio: "Fora da Safe Invitational Mobile 2025 Split 1" },
-        { data: "2025-01-17", tier: "Weekly", place: "2nd", torneio: "Grand Slam Super Weekend Mobile Week 1" },
-        { data: "2024-12-09", tier: "D-Tier", place: "1st", torneio: "Del Rei Season 2" },
-        { data: "2024-12-08", tier: "A-Tier", place: "2nd", torneio: "ESL Snapdragon Pro Series Season 5: Latin America Challenge" },
-        { data: "2024-12-03", tier: "B-Tier", place: "8th", torneio: "Lidoma Challenge 2024" },
-        { data: "2024-10-30", tier: "D-Tier", place: "11th", torneio: "Copa Auge Rei dos Coins Season 6" },
-        { data: "2024-10-22", tier: "D-Tier", place: "8th", torneio: "Liga LSX Brasileirão" },
-        { data: "2024-10-17", tier: "D-Tier", place: "5th", torneio: "Showmatch Gran Legends 2024" },
-        { data: "2024-09-28", tier: "A-Tier", place: "13th", torneio: "Free Fire World Series - Brazil 2024" },
-        { data: "2024-09-27", tier: "D-Tier", place: "11th", torneio: "Copa GWL Mobile 2024 Stage 4" },
-        { data: "2024-09-22", tier: "D-Tier", place: "2nd", torneio: "Liga Royals Elite Season 2" },
-        { data: "2024-09-13", tier: "D-Tier", place: "4th", torneio: "Taça Brasil Season 4" },
-        { data: "2024-09-01", tier: "C-Tier", place: "15th", torneio: "Copa NFA 2024 - Split 2" },
-        { data: "2024-08-30", tier: "D-Tier", place: "6th", torneio: "Copa Auge Rei dos Coins Season 5" },
-        { data: "2024-08-30", tier: "D-Tier", place: "7th", torneio: "All In Mobile Elite Season 2" },
-        { data: "2024-08-23", tier: "D-Tier", place: "4th", torneio: "Alien Cup Season 3" },
-        { data: "2024-08-11", tier: "B-Tier", place: "7th", torneio: "CPN Favela Gaming Edition 2024" },
-        { data: "2024-07-21", tier: "D-Tier", place: "4th", torneio: "CG Series Brazil Season 1" },
-        { data: "2024-07-07", tier: "B-Tier", place: "13th", torneio: "Liga NFA 2024 - Split 1" },
-        { data: "2024-06-28", tier: "D-Tier", place: "4th", torneio: "Copa GWL Mobile 2024 Stage 3" },
-        { data: "2024-06-20", tier: "D-Tier", place: "3rd", torneio: "Copa Santos Season 3" },
-        { data: "2024-06-07", tier: "D-Tier", place: "2nd", torneio: "All In Elite Season 1" },
-        { data: "2024-05-18", tier: "D-Tier", place: "10th", torneio: "Taça Brasil Season 2" },
-        { data: "2024-05-13", tier: "D-Tier", place: "3rd", torneio: "Copa Auth Especial" },
-        { data: "2024-05-10", tier: "D-Tier", place: "3rd", torneio: "Copa GWL Mobile 2024 Stage 2" },
-        { data: "2024-05-09", tier: "D-Tier", place: "14th", torneio: "Liga Stars Season 1" },
-        { data: "2024-05-03", tier: "C-Tier", place: "15th", torneio: "Lidoma League 2024" },
-        { data: "2024-04-04", tier: "D-Tier", place: "3rd", torneio: "Copa Theus Season 2" },
-        { data: "2024-03-29", tier: "C-Tier", place: "15th", torneio: "Global Games Mobile Season 1" },
-        { data: "2024-03-28", tier: "C-Tier", place: "8th", torneio: "Lidoma Showdown 2024" },
-        { data: "2024-03-24", tier: "A-Tier", place: "1st", torneio: "C.O.P.A. Free Fire 2024" },
-        { data: "2024-03-12", tier: "D-Tier", place: "5th", torneio: "Liga Next Season 4" },
-        { data: "2024-03-04", tier: "D-Tier", place: "3rd", torneio: "Copa Auge Elite Season 4" },
-        { data: "2024-03-01", tier: "C-Tier", place: "10th", torneio: "Copa NFA 2024 - Split 1" },
-        { data: "2024-02-29", tier: "C-Tier", place: "9th", torneio: "Lidoma Contenders 2024" },
-        { data: "2024-02-25", tier: "A-Tier", place: "9th", torneio: "ESL Snapdragon Pro Series Season 4 - Challenge Season" },
-        { data: "2024-02-17", tier: "C-Tier", place: "2nd", torneio: "Hype Cup" },
-        { data: "2024-02-03", tier: "C-Tier", place: "3rd", torneio: "Lidoma Challenge Season 3" },
-        { data: "2024-01-29", tier: "D-Tier", place: "22nd", torneio: "Super Liga Season 2" },
-        { data: "2024-01-25", tier: "D-Tier", place: "2nd", torneio: "Copa GWL Mobile 2024 Stage 1" },
-        { data: "2024-01-06", tier: "B-Tier", place: "10th", torneio: "ESL Snapdragon Pro Series Season 4: Brazil Open" },
-        { data: "2023-12-11", tier: "C-Tier", place: "4th", torneio: "Talents Mobile 2023 - Split 4" },
-        { data: "2023-11-20", tier: "C-Tier", place: "7th", torneio: "Talents Mobile 2023 - Split 3" },
-        { data: "2023-10-29", tier: "D-Tier", place: "6th", torneio: "Liga NEXT das Nações LampionsBet" },
-        { data: "2023-10-27", tier: "C-Tier", place: "4th", torneio: "Talents Mobile 2023 - Split 2" },
-        { data: "2023-10-20", tier: "D-Tier", place: "3rd", torneio: "Taça Nacional Ultimate Mobile" },
-        { data: "2023-10-10", tier: "D-Tier", place: "5th", torneio: "Copa GWL Mobile 2023 Stage 3" },
-        { data: "2023-10-03", tier: "D-Tier", place: "3rd", torneio: "The Citizens Elite - Season 2" },
-        { data: "2023-09-25", tier: "D-Tier", place: "3rd", torneio: "Star Cup Serie A - Season 2" },
-        { data: "2023-09-15", tier: "C-Tier", place: "7th", torneio: "Talents Mobile 2023" },
-        { data: "2023-08-19", tier: "D-Tier", place: "5th", torneio: "Master Liga Season 2" },
-        { data: "2023-07-21", tier: "C-Tier", place: "9th", torneio: "Lidoma Challenge Season 2" },
-        { data: "2023-07-08", tier: "D-Tier", place: "14th", torneio: "AJF Season Mobile Split 1" },
-        { data: "2023-06-28", tier: "C-Tier", place: "7th", torneio: "GrandSlam Champions 2023" },
-        { data: "2023-06-23", tier: "D-Tier", place: "8th", torneio: "Copa GWL Mobile 2023 Stage 1" },
-        { data: "2023-05-25", tier: "C-Tier", place: "11th", torneio: "Copa GWL PRO Season 4" },
-        { data: "2023-05-25", tier: "D-Tier", place: "5th", torneio: "Copa EGA GG Season 1" },
-        { data: "2023-05-11", tier: "C-Tier", place: "6th", torneio: "Lidoma Challenge Season 1" },
-        { data: "2023-04-28", tier: "D-Tier", place: "10th", torneio: "Master Liga Season 1" },
-        { data: "2023-04-28", tier: "D-Tier", place: "10th", torneio: "Brasileirão Ultimate Flipped" },
-        { data: "2023-03-30", tier: "D-Tier", place: "9th", torneio: "Copa Internacional TK Season 1" },
-        { data: "2023-03-27", tier: "D-Tier", place: "7th", torneio: "Copa Campeões Free Fire Season 1" },
-        { data: "2023-03-25", tier: "A-Tier", place: "13th", torneio: "C.O.P.A. Free Fire 2023" },
-        { data: "2023-03-03", tier: "Qualifier", place: "8th", torneio: "AJF All In Mobile - Season 1" },
-        { data: "2021-10-30", tier: "A-Tier", place: "12th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 3" },
-        { data: "2021-07-24", tier: "A-Tier", place: "12th", torneio: "Liga Brasileira de Free Fire 2021: Series A - Stage 2" },
-        { data: "2021-03-28", tier: "B-Tier", place: "1st", torneio: "Liga Brasileira de Free Fire - Series B 2021 Stage 1" },
-        { data: "2021-03-27", tier: "B-Tier", place: "5th", torneio: "NEX CUP Season 7" },
-        { data: "2021-03-02", tier: "C-Tier", place: "1st", torneio: "Free Fire Talents Mobile 6" }
-    ],
-};
+let dbResults = {};
+let resultsLoaded = false;
+
+let lbffData = {}; 
+let lbffLoaded = false;
 
 let logos = {
     // === EQUIPES ATUAIS (WB 2026) ===
@@ -3892,28 +3077,20 @@ const historicalAliases = {
 };
 
 // Top 100 Histórico (Extraído da Liquipedia)
-const histData = [
-    {n:"Yago", k:1786, q:928}, {n:"Cauan7", k:1652, q:1095}, {n:"Lost", k:1412, q:988}, {n:"NANDO9", k:1404, q:889}, {n:"Bops", k:1369, q:888},
-    {n:"Rigby245", k:1317, q:781}, {n:"TRAP", k:1316, q:769}, {n:"Raone7", k:1311, q:652}, {n:"BuTziN", k:1297, q:904}, {n:"Gus", k:1284, q:942},
-    {n:"General", k:1269, q:1082}, {n:"MODESTIA", k:1240, q:1047}, {n:"VITINxp", k:1237, q:923}, {n:"PÃO7", k:1154, q:1034}, {n:"DRAXX7", k:1125, q:839},
-    {n:"MT7", k:1121, q:562}, {n:"R7", k:1020, q:962}, {n:"BIELGOD", k:989, q:911}, {n:"Mts007", k:946, q:762}, {n:"Razure", k:941, q:864},
-    {n:"Noda", k:930, q:816}, {n:"Stark7", k:901, q:652}, {n:"GIUH.87", k:901, q:572}, {n:"ERICKMVP", k:898, q:617}, {n:"Syaz", k:894, q:631},
-    {n:"Motovea", k:890, q:560}, {n:"Nickz7", k:881, q:512}, {n:"CHINÊS", k:854, q:734}, {n:"Lobato", k:849, q:871}, {n:"ITALO", k:800, q:781},
-    {n:"OUSADO", k:797, q:620}, {n:"Vitin9", k:786, q:592}, {n:"GUAXA", k:780, q:657}, {n:"NandoX", k:762, q:580}, {n:"HONEY", k:752, q:635},
-    {n:"TATU13", k:735, q:676}, {n:"BAND", k:701, q:536}, {n:"FON", k:685, q:618}, {n:"Cauã", k:658, q:596}, {n:"João7", k:650, q:573},
-    {n:"JapaBKR", k:632, q:588}, {n:"Proxx7", k:596, q:457}, {n:"DeadGOD", k:593, q:604}, {n:"PETERxl", k:572, q:340}, {n:"o Mala", k:559, q:358},
-    {n:"Yato7", k:525, q:456}, {n:"Ruan", k:522, q:513}, {n:"CHUCKY", k:512, q:507}, {n:"Natividade", k:502, q:544}, {n:"KaueLOK", k:490, q:410},
-    {n:"Lins7", k:484, q:419}, {n:"DORITO", k:481, q:420}, {n:"Addy7", k:477, q:425}, {n:"Mexico", k:476, q:373}, {n:"Kroonos", k:468, q:517},
-    {n:"Hak", k:456, q:334}, {n:"Memgod", k:452, q:444}, {n:"JapaXL", k:449, q:520}, {n:"Erick11", k:435, q:380}, {n:"EASY", k:420, q:387},
-    {n:"Nikeboy", k:413, q:319}, {n:"Zenac", k:411, q:569}, {n:"RiccK", k:408, q:488}, {n:"wLiu", k:400, q:364}, {n:"mvR", k:398, q:419},
-    {n:"Jubinha", k:377, q:429}, {n:"Phoenix23", k:375, q:585}, {n:"Goabe7", k:363, q:507}, {n:"Guiga", k:361, q:385}, {n:"NICOLAS9", k:357, q:368},
-    {n:"Zetsu9", k:357, q:334}, {n:"iguiNmvp", k:354, q:296}, {n:"CEBOLINHA", k:352, q:370}, {n:"one9", k:351, q:405}, {n:"Prozin10", k:349, q:369},
-    {n:"Mike", k:345, q:454}, {n:"HENDER", k:341, q:389}, {n:"KakaZk", k:341, q:255}, {n:"Cruel", k:332, q:359}, {n:"Luan7", k:332, q:279},
-    {n:"Fac", k:331, q:357}, {n:"brota10", k:326, q:254}, {n:"Guifox", k:324, q:318}, {n:"Federal7", k:314, q:220}, {n:"Isopor21", k:311, q:368},
-    {n:"VICTOR7", k:305, q:381}, {n:"Will", k:304, q:345}, {n:"JucaW", k:303, q:241}, {n:"CAUE", k:301, q:338}, {n:"Azay", k:278, q:317},
-    {n:"LENNO", k:265, q:404}, {n:"Nobru", k:262, q:308}, {n:"MAMUTEZL", k:257, q:319}, {n:"RafaX", k:256, q:350}, {n:"Field", k:255, q:331},
-    {n:"MTS7", k:255, q:211}, {n:"KMX", k:255, q:285}, {n:"Moreira", k:250, q:372}, {n:"GØDKILL", k:248, q:264}, {n:"PEDRO.RS", k:245, q:294}
-];
+// histData removido — kills históricas calculadas dinamicamente via lbffData
+
+// Função auxiliar: calcula kills e quedas históricas de um jogador via lbffData
+function getHistTotals(playerName) {
+    let totalK = 0, totalQ = 0;
+    let entry = Object.entries(lbffData).find(([name]) => checkNameMatch(name, playerName));
+    if (entry) {
+        for (let ed in entry[1]) {
+            totalK += entry[1][ed].k || 0;
+            totalQ += entry[1][ed].q || 0;
+        }
+    }
+    return { k: totalK, q: totalQ, entry: entry };
+}
 
 // ==========================================
 // BANCO DE DADOS: DESEMPENHO POR QUEDA
@@ -4035,11 +3212,8 @@ const agenda = [
     { semana: "9", data: "16 de Maio", grupos: ["A", "B", "C"] },
     { semana: "9", data: "17 de Maio", grupos: ["B", "C", "D"] },
     { semana: "10", data: "23 de Maio", grupos: ["C", "D", "A"] },
-    { semana: "10", data: "24 de Maio", grupos: ["D", "A", "B"] },
-    { semana: "FINAL", data: "30 de Maio", grupos: ["FINAL"] },
-    { semana: "FINAL", data: "31 de Maio", grupos: ["FINAL"] }
+    { semana: "10", data: "24 de Maio", grupos: ["D", "A", "B"] }
 ];
-
 
 // Controle de visibilidade das tabelas históricas
 let isAllTimeExpanded = false;
@@ -4127,6 +3301,10 @@ const data = await response.json();
     renderTableTotal();
 
     renderIndividualRecords();
+
+    // Carrega dados históricos ANTES de renderizar o Hall da Fama
+    await loadLbffData();
+
     buildEditionFilters();
     renderEditionRanking();
     populateHistSelects();
@@ -4294,7 +3472,7 @@ function openTeamProfile(teamName) {
         const now = new Date();
         currentTeamNextMatch = agenda.find(m => 
             m.grupos.includes(t.grupo) && 
-            (parseMatchDate(m.data).getTime() + (3.5 * 60 * 60 * 1000) > now.getTime())
+            (parseMatchDate(m.data).getTime() + (6 * 60 * 60 * 1000) > now.getTime())
         );
 
         if (currentTeamNextMatch && t.grupo !== "Histórico/Outro") {
@@ -5205,20 +4383,42 @@ function renderHistoricalRanking() {
     let tbody = document.querySelector('#table-history tbody');
     if(!tbody) return;
 
-    let currentRankData = histData.map((p, index) => {
-        let activeName = historicalAliases[p.n] || p.n;
+    const CURRENT_EDITION = "WB 2026 S1";
+
+    // Constrói ranking a partir do lbffData, somando todas as edições por jogador
+    let currentRankData = Object.entries(lbffData).map(([name, editions]) => {
+        let histK = 0, histQ = 0;
+        let preK = 0, preQ = 0; // kills ANTES da edição atual (para calcular shift)
+        for (let ed in editions) {
+            histK += editions[ed].k || 0;
+            histQ += editions[ed].q || 0;
+            if (ed !== CURRENT_EDITION) {
+                preK += editions[ed].k || 0;
+                preQ += editions[ed].q || 0;
+            }
+        }
+        let activeName = historicalAliases[name] || name;
         let activePlayer = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
         let isPlaying = activePlayer && !activePlayer.isEx;
         return {
-            oldPos: index + 1,
-            originalName: p.n,
+            originalName: name,
             activeName: activeName,
             isPlaying: isPlaying,
             equipe: isPlaying ? activePlayer.equipe : null,
-            totalKills: p.k + (activePlayer ? activePlayer.abates || 0 : 0),
-            totalQuedas: p.q + (activePlayer ? activePlayer.quedas || 0 : 0)
+            totalKills: histK + (activePlayer ? activePlayer.abates || 0 : 0),
+            totalQuedas: histQ + (activePlayer ? activePlayer.quedas || 0 : 0),
+            preKills: preK  // kills históricas sem a edição atual (para oldPos)
         };
     });
+
+    // Calcula oldPos: posição antes da WB 2026 S1 (só kills históricas anteriores)
+    let preSorted = [...currentRankData]
+        .filter(p => p.preKills > 0)
+        .sort((a, b) => b.preKills - a.preKills);
+    preSorted.forEach((p, i) => { p.oldPos = i + 1; });
+
+    // Jogadores que não tinham kills antes ficam sem referência de posição
+    currentRankData.filter(p => p.preKills === 0).forEach(p => { p.oldPos = null; });
 
     currentRankData.sort((a, b) => b.totalKills - a.totalKills);
 
@@ -5227,8 +4427,13 @@ function renderHistoricalRanking() {
 
     tbody.innerHTML = dataToShow.map((p, i) => {
         let newPos = i + 1;
-        let diff = p.oldPos - newPos;
-        let shiftHtml = diff > 0 ? `<span style="color:#4caf50; font-size:0.8em;">▲${diff}</span>` : (diff < 0 ? `<span style="color:#f44336; font-size:0.8em;">▼${Math.abs(diff)}</span>` : `<span style="color:#888; font-size:0.8em;">-</span>`);
+        let shiftHtml;
+        if (p.oldPos === null) {
+            shiftHtml = `<span style="color:#4caf50; font-size:0.8em;">NOVO</span>`;
+        } else {
+            let diff = p.oldPos - newPos;
+            shiftHtml = diff > 0 ? `<span style="color:#4caf50; font-size:0.8em;">▲${diff}</span>` : (diff < 0 ? `<span style="color:#f44336; font-size:0.8em;">▼${Math.abs(diff)}</span>` : `<span style="color:#888; font-size:0.8em;">-</span>`);
+        }
 
         let nameShort = p.originalName.length > 7 ? p.originalName.substring(0, 6) + "..." : p.originalName;
         
@@ -5443,6 +4648,22 @@ function autoCalculateTotals() {
     });
 }
 
+async function loadLbffData() {
+    if (lbffLoaded) return; // Se já estiver cheia, não faz nada
+    try {
+        const response = await fetch('lbffData.json');
+        if (!response.ok) throw new Error("Erro ao carregar lbffData.json");
+        
+        // Aqui a mágica acontece: a variável global recebe os dados do arquivo
+        lbffData = await response.json();
+        
+        lbffLoaded = true;
+        console.log("Dados históricos carregados com sucesso!");
+    } catch (e) {
+        console.error("Falha ao carregar LBFF Data:", e);
+    }
+}
+
 // Função para converter "25 de Abril" em um objeto Date do JS
 function parseMatchDate(dateStr) {
     const months = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5 };
@@ -5474,24 +4695,12 @@ function updateCountdown() {
         const timeStr = `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
 
         // --- GERAÇÃO VISUAL DOS GRUPOS (O QUE TINHA SUMIDO) ---
-// --- GERAÇÃO VISUAL DOS GRUPOS OU FINAL ---
         const groupsHtml = nextMatch.grupos.map(g => {
-            if (g === "FINAL") {
-                // Se for a Final, puxa os 12 primeiros da tabela automaticamente
-                const top12 = [...db.teams].sort((a,b) => b.pontos - a.pontos).slice(0, 12);
-                const logosHtml = top12.map(t => 
-                    `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
-                ).join('');
-                // Retorna a caixinha com borda dourada
-                return `<div class="group-logos" style="border-color: #ffd700; background: rgba(255,215,0,0.1);"><span class="group-label" style="color: #ffd700;">TOP 12</span>${logosHtml}</div>`;
-            } else {
-                // Lógica normal para Grupos A, B, C, D
-                const teamsInGroup = db.teams.filter(t => t.grupo === g);
-                const logosHtml = teamsInGroup.map(t => 
-                    `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
-                ).join('');
-                return `<div class="group-logos"><span class="group-label">GP ${g}</span>${logosHtml}</div>`;
-            }
+            const teamsInGroup = db.teams.filter(t => t.grupo === g);
+            const logosHtml = teamsInGroup.map(t => 
+                `<img src="${logos[t.equipe] || 'escudo.webp'}" onerror="this.src='escudo.webp'" class="mini-logo" style="width:22px; height:22px; margin: 0 2px;" title="${t.equipe}">`
+            ).join('');
+            return `<div class="group-logos"><span class="group-label">GP ${g}</span>${logosHtml}</div>`;
         }).join('<span style="font-weight:bold; color:#444; margin: 0 5px;">VS</span>');
 
         // Atualiza Home (Tempo e Grupos)
@@ -5532,7 +4741,7 @@ function updateCountdown() {
         if (!nextMatch) return false;
         const mDate = parseMatchDate(nextMatch.data);
         // Está ao vivo se a hora atual passou da hora do jogo, por até 6 horas
-        return now >= mDate && now <= (mDate.getTime() + (3.5 * 60 * 60 * 1000));
+        return now >= mDate && now <= (mDate.getTime() + (6 * 60 * 60 * 1000));
     };
     
     const isActuallyLive = checkLiveGlobal();
@@ -6066,7 +5275,7 @@ function renderSchedule() {
     let container = document.getElementById('schedule-content');
     let html = '';
     
-    // Agrupa a agenda por semana
+    // Group schedule by week
     let weeks = {};
     agenda.forEach(a => {
         if(!weeks[a.semana]) weeks[a.semana] = [];
@@ -6074,38 +5283,27 @@ function renderSchedule() {
     });
 
     for(let w in weeks) {
-        // Se for a semana da final, faz a caixa dourada
-        let isFinal = w === "FINAL";
-        let boxStyle = isFinal ? 'border-left-color: #ffd700; background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, var(--panel-bg) 100%);' : '';
-        let headerStyle = isFinal ? 'border-bottom-color: rgba(255,215,0,0.3);' : '';
-        let titleStyle = isFinal ? 'color: #ffd700; font-size: 1.5em;' : '';
-        let titleText = isFinal ? '🏆 Grand Finals' : `Semana ${w}`;
-
-        html += `<div class="schedule-box" style="${boxStyle}">
-            <div class="schedule-header" style="${headerStyle}"><span class="schedule-title" style="${titleStyle}">${titleText}</span></div>`;
-            
-        weeks[w].forEach((match, idx) => {
+        html += `<div class="schedule-box">
+            <div class="schedule-header"><span class="schedule-title">Semana ${w}</span></div>`;
+        weeks[w].forEach(match => {
             let groupsHtml = match.grupos.map(g => {
-                if (g === "FINAL") {
-                    let top12 = [...db.teams].sort((a,b) => b.pontos - a.pontos).slice(0, 12);
-                    let logosHtml = top12.map(t => `<img src="${logos[t.equipe]||''}" class="mini-logo" title="${t.equipe}">`).join('');
-                    return `<div class="group-logos" style="border-color: #ffd700; background: rgba(0,0,0,0.5);"><span class="group-label" style="color: #ffd700;">TOP 12</span>${logosHtml}</div>`;
-                } else {
-                    let teamsInGroup = db.teams.filter(t => t.grupo === g);
-                    let logosHtml = teamsInGroup.map(t => `<img src="${logos[t.equipe]||''}" class="mini-logo" title="${t.equipe}">`).join('');
-                    return `<div class="group-logos"><span class="group-label">Grupo ${g}</span>${logosHtml}</div>`;
-                }
+                let teamsInGroup = db.teams.filter(t => t.grupo === g);
+                let logosHtml = teamsInGroup.map(t => `<img src="${logos[t.equipe]||''}" class="mini-logo" title="${t.equipe}">`).join('');
+                return `<div class="group-logos"><span class="group-label">Grupo ${g}</span>${logosHtml}</div>`;
             }).join(' <span style="font-weight:bold;color:#555;">X</span> ');
 
-            let diaLabel = isFinal ? `Dia ${idx + 1}` : match.data;
-
             html += `<div class="match-row">
-                <div style="min-width: 100px; color: var(--text-muted); font-size: 1.1em;"><strong>${diaLabel}</strong></div>
+                <div style="min-width: 100px; color: var(--text-muted); font-size: 1.1em;"><strong>${match.data}</strong></div>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">${groupsHtml}</div>
             </div>`;
         });
         html += `</div>`;
     }
+    
+    html += `<div class="schedule-box" style="border-left-color: #ffd700; background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, var(--panel-bg) 100%);">
+        <div class="schedule-header" style="border-bottom-color: rgba(255,215,0,0.3);"><span class="schedule-title" style="color: #ffd700; font-size: 1.5em;">🏆 Grand Finals</span></div>
+        <div class="schedule-text" style="margin-top:10px;"><strong>30 de Maio:</strong> Dia 1<br><strong>31 de Maio:</strong> Dia 2</div>
+    </div>`;
     
     container.innerHTML = html;
 }
@@ -6167,7 +5365,8 @@ function openStaffProfile(staffName) {
     navigate('staff-profile');
 }
 
-function openResultsModal() {
+async function openResultsModal() {
+    await loadResults(); // <--- Adicionamos essa linha para carregar o arquivo
     renderTeamResults();
     document.getElementById('results-modal-title').innerText = `Resultados: ${currentTeamView}`;
     document.getElementById('results-modal').classList.add('active');
@@ -6231,17 +5430,12 @@ function renderTeamProfileStats() {
                 let playerName = pt.jogador;
                 let hKills = 0, hQuedas = 0;
                 
-                // Soma dados de lbffData e histData
-                let histRecord = typeof histData !== 'undefined' ? histData.find(h => checkNameMatch(h.n, playerName)) : null;
-                let lbffEntry = typeof lbffData !== 'undefined' ? Object.entries(lbffData).find(([name]) => checkNameMatch(name, playerName)) : null;
+                // Soma dados históricos via lbffData
+                let histRecord = typeof lbffData !== 'undefined' ? getHistTotals(playerName) : { k: 0, q: 0 };
+                let lbffEntry = histRecord.entry;
                 
-                if (histRecord) {
+                if (histRecord.k > 0 || histRecord.q > 0) {
                     hKills = histRecord.k; hQuedas = histRecord.q;
-                } else if (lbffEntry) {
-                    for (let ed in lbffEntry[1]) {
-                        hKills += lbffEntry[1][ed].k || 0;
-                        hQuedas += lbffEntry[1][ed].q || 0;
-                    }
                 }
                 
                 // Soma desempenho da temporada atual se estiver ativo
@@ -6761,13 +5955,8 @@ function openPlayerProfile(playerName) {
     // 3. Pega o nome oficial do histórico se ele for inativo
 let officialName = safeName;
     if (isInactive) {
-        let histRecord = histData.find(h => checkNameMatch(h.n, safeName));
-        if (histRecord) {
-            officialName = histRecord.n;
-        } else {
-            let lbffEntry = Object.keys(lbffData).find(name => checkNameMatch(name, safeName));
-            if (lbffEntry) officialName = lbffEntry;
-        }
+        let lbffEntry = Object.keys(lbffData).find(name => checkNameMatch(name, safeName));
+        if (lbffEntry) officialName = lbffEntry;
         
         // Cria o objeto base com o nome oficial
         p = { jogador: officialName, equipe: "Sem Equipe", abates: 0, quedas: 0, dano: 0, assists: 0, mvp: 0 };
@@ -6787,25 +5976,17 @@ let officialName = safeName;
     // --- CÁLCULO HISTÓRICO ---
     let histKills = 0, histQuedas = 0, lastEd = "N/A";
     
-    let histRecordObj = histData.find(h => checkNameMatch(h.n, p.jogador));
     let playerEntries = Object.entries(lbffData).find(([name]) => checkNameMatch(name, p.jogador));
 
-    if (histRecordObj) {
-        // Se está no Top 100, puxa direto o valor já somado
-        histKills = histRecordObj.k;
-        histQuedas = histRecordObj.q;
-    } else if (playerEntries) {
-        // Se não está no Top 100 mas tem histórico, soma edição por edição manualmente
+    if (playerEntries) {
+        // Soma todas as edições do lbffData
         let editionsData = playerEntries[1];
         for (let ed in editionsData) {
             histKills += editionsData[ed].k || 0;
             histQuedas += editionsData[ed].q || 0;
         }
-    }
-
-    if (playerEntries) {
-        let editions = Object.keys(playerEntries[1]);
-        lastEd = editions[editions.length - 1]; 
+        let editions = Object.keys(editionsData);
+        lastEd = editions[editions.length - 1];
     }
 
     // Soma com a edição atual (se ele estiver jogando)
@@ -7695,7 +6876,6 @@ function openOtTeamRoster(tourneyId, teamName) {
     let html = players.map(pName => {
         // Verifica se o jogador existe no nosso banco (Ativo ou Inativo)
         let isRegistered = db.players.some(x => checkNameMatch(x.jogador, pName)) ||
-                           (typeof histData !== 'undefined' && histData.some(h => checkNameMatch(h.n, pName))) ||
                            (typeof lbffData !== 'undefined' && Object.keys(lbffData).some(name => checkNameMatch(name, pName)));
 
         if (isRegistered) {
@@ -7809,6 +6989,28 @@ function renderHomeStats() {
 // A notícia com "destaque": true vira o hero (banner grande).
 // As demais aparecem na grade de "Últimas Notícias" abaixo do Top 6.
 // =============================================
+async function loadResults() {
+    // Se já estiver carregado, não faz nada e sai da função
+    if (resultsLoaded) return;
+
+    try {
+        const response = await fetch('resultados.json');
+        if (!response.ok) throw new Error("Erro ao carregar resultados.json");
+        
+        dbResults = await response.json();
+        
+        // Sincroniza com os novos resultados da planilha
+        if (typeof distribuirNovosResultados === 'function') {
+            distribuirNovosResultados();
+        }
+        
+        resultsLoaded = true; // Ativa a chave: agora está carregado
+        console.log("Histórico de resultados carregado sob demanda!");
+    } catch (e) {
+        console.error("Falha no carregamento do JSON:", e);
+    }
+}
+
 async function loadNoticias() {
     const heroContainer = document.getElementById('news-hero-container');
     const grid = document.getElementById('ultimas-noticias-grid');
@@ -7950,12 +7152,12 @@ function renderOutrasEquipesGrid() {
     }).join('');
 }
 
-function openOutraEquipe(nome) {
+async function openOutraEquipe(nome) {
+    await loadResults(); // <--- Carrega o arquivo ao clicar na equipe
     currentOutraEquipe = nome;
-
     document.getElementById('oep-name').innerText = nome;
     document.getElementById('oep-logo').src = logos[nome] || 'escudo.webp';
-
+  
     // Reseta filtros
     const yearEl = document.getElementById('oep-filter-year');
     const tierEl = document.getElementById('oep-filter-tier');
