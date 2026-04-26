@@ -1670,8 +1670,16 @@ tr:last-child {
     <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
         <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
         <div class="day-filters" id="avg-day-filters"></div>
-        <label style="color: var(--text-muted); font-weight: bold; align-self: center; margin-left: auto;">Mapa:</label>
-        <select id="avg-map-filter" onchange="renderTableAvg()" style="max-width: 250px;">
+        
+        <select id="avg-conf-filter" onchange="renderTableAvg()" style="margin-left: auto; max-width: 200px;">
+            <option value="all">Todos os Confrontos</option>
+            <option value="ABC">Grupos A x B x C</option>
+            <option value="BCD">Grupos B x C x D</option>
+            <option value="CDA">Grupos C x D x A</option>
+            <option value="DAB">Grupos D x A x B</option>
+        </select>
+
+        <select id="avg-map-filter" onchange="renderTableAvg()" style="max-width: 200px;">
             <option value="all">Todos os Mapas</option>
             <option value="Bermuda">Bermuda</option>
             <option value="Kalahari">Kalahari</option>
@@ -1701,15 +1709,26 @@ tr:last-child {
             <tbody></tbody>
         </table>
     </div>
+    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+        <button id="btn-avg-expand" class="btn-action" onclick="toggleAvgTable()" style="width: 200px;">Ver Mais</button>
+    </div>
 
-    <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+<h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
         Ranking de Totais <span style="font-size: 0.6em; color: #aaa;">(Acumulado)</span>
     </h3>
     <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
         <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
         <div class="day-filters" id="total-day-filters"></div>
-        <label style="color: var(--text-muted); font-weight: bold; align-self: center; margin-left: auto;">Mapa:</label>
-        <select id="total-map-filter" onchange="renderTableTotal()" style="max-width: 250px;">
+        
+        <select id="total-conf-filter" onchange="renderTableTotal()" style="margin-left: auto; max-width: 200px;">
+            <option value="all">Todos os Confrontos</option>
+            <option value="ABC">Grupos A x B x C</option>
+            <option value="BCD">Grupos B x C x D</option>
+            <option value="CDA">Grupos C x D x A</option>
+            <option value="DAB">Grupos D x A x B</option>
+        </select>
+
+        <select id="total-map-filter" onchange="renderTableTotal()" style="max-width: 200px;">
             <option value="all">Todos os Mapas</option>
             <option value="Bermuda">Bermuda</option>
             <option value="Kalahari">Kalahari</option>
@@ -1738,14 +1757,26 @@ tr:last-child {
             <tbody></tbody>
         </table>
     </div>
+    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+        <button id="btn-total-expand" class="btn-action" onclick="toggleTotalTable()" style="width: 200px;">Ver Mais</button>
+    </div>
 
-    <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+   <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
         Desempenho Individual
     </h3>
     <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-<select id="filter-player-day" onchange="renderPlayerStats()">
-    <option value="all">Todos os Dias</option>
-    </select>
+        <select id="filter-player-day" onchange="renderPlayerStats()">
+            <option value="all">Todos os Dias</option>
+        </select>
+
+        <select id="filter-player-conf" onchange="renderPlayerStats()">
+            <option value="all">Todos os Confrontos</option>
+            <option value="ABC">Grupos A x B x C</option>
+            <option value="BCD">Grupos B x C x D</option>
+            <option value="CDA">Grupos C x D x A</option>
+            <option value="DAB">Grupos D x A x B</option>
+        </select>
+
         <select id="filter-player-map" onchange="renderPlayerStats()">
             <option value="all">Todos os Mapas</option>
             <option value="Bermuda">Bermuda</option>
@@ -1794,6 +1825,10 @@ tr:last-child {
             <tbody></tbody>
         </table>
     </div>
+    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+        <button id="btn-player-expand" class="btn-action" onclick="togglePlayerTable()" style="width: 200px;">Ver Mais</button>
+    </div>
+
 </div>
 <div id="outros-torneios" class="page">
     
@@ -2488,7 +2523,7 @@ const wbWeeks = {
     "10": [19, 20]
 };
 
-let currentSelectionWeek = "6";
+let currentSelectionWeek = "5";
 
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
 let dbSocials = {};
@@ -3103,6 +3138,18 @@ function onPpcffDayFilterChanged() {
         renderPlayerCFFRating(currentPlayerView);
     }
 }
+
+// --- NOVO BLOCO DE CONTROLE DE CONFRONTOS ---
+const mapConfrontos = {
+    "ABC": ["1", "8", "11", "14", "17"],
+    "BCD": ["2", "5", "12", "15", "18"],
+    "CDA": ["3", "6", "9", "16", "19"],
+    "DAB": ["4", "7", "10", "13", "20"]
+};
+
+let isAvgExpanded = false;
+let isTotalExpanded = false;
+let isPlayerExpanded = false;
 
 function renderPlayerCFFRating(playerName) {
     let container = document.getElementById('pp-cff-rating-container');
@@ -4339,8 +4386,24 @@ function renderHistoricoEquipes(nome, containerId) {
     }).join('<div style="display:flex; align-items:center; color:#444; font-size:1.5em; height: 80px; margin-top: 15px;">➔</div>'); 
 }
 
+function toggleAvgTable() {
+    isAvgExpanded = !isAvgExpanded;
+    renderTableAvg();
+}
+
+function toggleTotalTable() {
+    isTotalExpanded = !isTotalExpanded;
+    renderTableTotal();
+}
+
+function togglePlayerTable() {
+    isPlayerExpanded = !isPlayerExpanded;
+    renderPlayerStats();
+}
+
 function renderPlayerStats() {
     let dayFilter = document.getElementById('filter-player-day')?.value || 'all';
+    let confFilter = document.getElementById('filter-player-conf')?.value || 'all'; // NOVO: Filtro de Confronto
     let mapFilter = document.getElementById('filter-player-map')?.value || 'all';
     let teamFilter = document.getElementById('filter-player-team')?.value || 'all';
     let roleFilter = document.getElementById('filter-player-role')?.value || 'all';
@@ -4350,6 +4413,9 @@ function renderPlayerStats() {
     // Navega pelo novo dbJogadoresQuedas
     for (let d in dbJogadoresQuedas) {
         if (dayFilter !== 'all' && String(d) !== dayFilter) continue;
+
+        // NOVO: Filtro de Confronto (Ignora o dia se não fizer parte do confronto selecionado)
+        if (confFilter !== 'all' && !mapConfrontos[confFilter].includes(String(d))) continue;
 
         for (let q in dbJogadoresQuedas[d]) {
             // Descobre qual mapa foi jogado nessa queda consultando o dbQuedas
@@ -4361,18 +4427,18 @@ function renderPlayerStats() {
             playersInDrop.forEach(p => {
                 if (teamFilter !== 'all' && p.equipe !== teamFilter) return;
 
-// Procura a role do jogador na sua const playerRoles
-let role = "Desconhecida";
+                // Procura a role do jogador na sua const playerRoles
+                let role = "Desconhecida";
 
-// Se a sua const for um Array (tipo [{nome: "Raone7", role: "Rush"}])
-if (Array.isArray(playerRoles)) {
-    let roleData = playerRoles.find(r => r.nome?.trim().toLowerCase() === p.nome.trim().toLowerCase());
-    if (roleData) role = roleData.role || roleData.funcao || "-";
-} 
-// Se a sua const for um Objeto (tipo { "Raone7": "Rush", "Yago": "Suporte" })
-else if (playerRoles && playerRoles[p.nome]) {
-    role = playerRoles[p.nome];
-}
+                // Se a sua const for um Array (tipo [{nome: "Raone7", role: "Rush"}])
+                if (Array.isArray(playerRoles)) {
+                    let roleData = playerRoles.find(r => r.nome?.trim().toLowerCase() === p.nome.trim().toLowerCase());
+                    if (roleData) role = roleData.role || roleData.funcao || "-";
+                } 
+                // Se a sua const for um Objeto (tipo { "Raone7": "Rush", "Yago": "Suporte" })
+                else if (playerRoles && playerRoles[p.nome]) {
+                    role = playerRoles[p.nome];
+                }
                 
                 if (roleFilter !== 'all' && role.toLowerCase() !== roleFilter.toLowerCase()) return;
 
@@ -4394,9 +4460,17 @@ else if (playerRoles && playerRoles[p.nome]) {
     let result = Object.values(aggregatedPlayers);
     result.sort((a, b) => b.kills - a.kills || b.dano - a.dano);
 
+    // LÓGICA DO BOTÃO "VER MAIS" E TOP 6
+    let dataToShow = isPlayerExpanded ? result : result.slice(0, 6);
+    let btn = document.getElementById('btn-player-expand');
+    if(btn) {
+        btn.style.display = result.length > 6 ? 'inline-block' : 'none';
+        btn.innerText = isPlayerExpanded ? 'Ocultar' : 'Ver Mais';
+    }
+
     let tbody = document.querySelector('#table-stats-players-detailed tbody');
     if (tbody) {
-        tbody.innerHTML = result.map((p, index) => {
+        tbody.innerHTML = dataToShow.map((p, index) => {
             let sName = shortNames[p.equipe] || p.equipe;
             return `<tr>
                 <td style="color:var(--accent); font-weight:bold;">${index + 1}º</td>
@@ -4576,10 +4650,26 @@ function getAggregatedTeamsForStats(daysFilter, mapFilter) {
 }
 
 // 3. TABELA DE RANKING DE MÉDIAS
+// 1. TABELA DE RANKING DE MÉDIAS
 function renderTableAvg() {
     buildDayFilters(); // Reconstrói os chips em caso de clique
     let targetMap = normalizeMapName(document.getElementById('avg-map-filter').value);
-    let validTeams = getAggregatedTeamsForStats(selectedAvgDays, targetMap);
+    let confFilter = document.getElementById('avg-conf-filter').value; // NOVO: Filtro de Confronto
+
+    // Lógica para cruzar os Dias Selecionados com o Confronto
+    let finalDays = [...selectedAvgDays];
+    if (confFilter !== 'all') {
+        let diasDoConfronto = mapConfrontos[confFilter] || [];
+        if (finalDays.length === 0) {
+            finalDays = diasDoConfronto; // Se não selecionou dia nenhum, usa os do confronto
+        } else {
+            // Se selecionou dia, checa se ele bate com o confronto
+            finalDays = finalDays.filter(d => diasDoConfronto.includes(String(d)));
+            if (finalDays.length === 0) finalDays = ['999']; // Evita puxar "todos os dias" por engano
+        }
+    }
+
+    let validTeams = getAggregatedTeamsForStats(finalDays, targetMap);
 
     validTeams.forEach(t => {
         t.avgPts = (t.pontos / t.quedas).toFixed(1);
@@ -4588,9 +4678,17 @@ function renderTableAvg() {
     });
     validTeams.sort((a, b) => b.avgPts - a.avgPts);
 
+    // LÓGICA DO BOTÃO "VER MAIS" E TOP 6
+    let dataToShow = isAvgExpanded ? validTeams : validTeams.slice(0, 6);
+    let btn = document.getElementById('btn-avg-expand');
+    if(btn) {
+        btn.style.display = validTeams.length > 6 ? 'inline-block' : 'none';
+        btn.innerText = isAvgExpanded ? 'Ocultar' : 'Ver Mais';
+    }
+
     let tbodyAvg = document.querySelector('#table-stats-avg tbody');
     if(tbodyAvg) {
-        tbodyAvg.innerHTML = validTeams.map((t, index) => {
+        tbodyAvg.innerHTML = dataToShow.map((t, index) => {
             let logoSrc = logos[t.equipe] || '';
             let sName = shortNames[t.equipe] || t.equipe;
             return `<tr>
@@ -4613,13 +4711,36 @@ function renderTableAvg() {
 function renderTableTotal() {
     buildDayFilters(); // Reconstrói os chips em caso de clique
     let targetMap = normalizeMapName(document.getElementById('total-map-filter').value);
-    let validTeams = getAggregatedTeamsForStats(selectedTotalDays, targetMap);
+    let confFilter = document.getElementById('total-conf-filter').value; // NOVO: Filtro de Confronto
+
+    // Lógica para cruzar os Dias Selecionados com o Confronto
+    let finalDays = [...selectedTotalDays];
+    if (confFilter !== 'all') {
+        let diasDoConfronto = mapConfrontos[confFilter] || [];
+        if (finalDays.length === 0) {
+            finalDays = diasDoConfronto; // Se não selecionou dia nenhum, usa os do confronto
+        } else {
+            // Se selecionou dia, checa se ele bate com o confronto
+            finalDays = finalDays.filter(d => diasDoConfronto.includes(String(d)));
+            if (finalDays.length === 0) finalDays = ['999']; // Evita puxar "todos os dias" por engano
+        }
+    }
+
+    let validTeams = getAggregatedTeamsForStats(finalDays, targetMap);
 
     validTeams.sort((a, b) => b.pontos - a.pontos);
 
+    // LÓGICA DO BOTÃO "VER MAIS" E TOP 6
+    let dataToShow = isTotalExpanded ? validTeams : validTeams.slice(0, 6);
+    let btn = document.getElementById('btn-total-expand');
+    if(btn) {
+        btn.style.display = validTeams.length > 6 ? 'inline-block' : 'none';
+        btn.innerText = isTotalExpanded ? 'Ocultar' : 'Ver Mais';
+    }
+
     let tbodyTotal = document.querySelector('#table-stats-total tbody');
     if(tbodyTotal) {
-        tbodyTotal.innerHTML = validTeams.map((t, index) => {
+        tbodyTotal.innerHTML = dataToShow.map((t, index) => {
             let logoSrc = logos[t.equipe] || '';
             let sName = shortNames[t.equipe] || t.equipe;
             return `<tr>
