@@ -6450,7 +6450,7 @@ function handleGlobalSearchFrom(source) {
         let isWB = db.teams.some(x => x.equipe.toUpperCase() === tName.toUpperCase());
         let subText = isWB ? "Equipe Competidora" : "Equipe Histórica";
         return `
-            <div class="search-item" onclick="selectSearchResult('team', '${tName}')">
+            <div class="search-item" data-type="team" data-name="${tName.replace(/"/g, '&quot;')}" style="cursor:pointer;">
                 <img src="${logos[tName] || 'escudo.webp'}" onerror="this.src='escudo.webp'">
                 <div>
                     <span style="font-weight: bold; color: #fff;">${tName}</span><br>
@@ -6461,7 +6461,6 @@ function handleGlobalSearchFrom(source) {
     
     html += foundPeople.map(p => {
         let img = p.isEx ? 'silhueta.png' : (p.type === 'staff' ? (staffPhotos[p.name] || 'silhueta.png') : (playerPhotos[p.name] || 'silhueta.png'));
-        // Usa data-attributes para evitar quebra com apóstrofos/aspas no nome
         return `
             <div class="search-item" data-type="${p.type}" data-name="${p.name.replace(/"/g, '&quot;')}" style="cursor:pointer;">
                 <img src="${img}" onerror="this.src='silhueta.png'">
@@ -6475,9 +6474,11 @@ function handleGlobalSearchFrom(source) {
     resultsBox.innerHTML = html || '<div style="padding:15px; color:#888; text-align:center;">Nenhum resultado encontrado</div>';
     resultsBox.style.display = 'block';
 
-    // Adiciona os listeners via JS (seguro para qualquer nome, com ou sem apóstrofos)
+    // Listener delegado no container — stopPropagation impede que o listener global
+    // de "clique fora" esconda o dropdown antes de processar o clique no item
     resultsBox.querySelectorAll('.search-item[data-name]').forEach(el => {
-        el.addEventListener('click', () => {
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
             selectSearchResult(el.dataset.type, el.dataset.name);
         });
     });
