@@ -3101,6 +3101,8 @@ function renderPlayerCFFRating(playerName) {
     
     // Varre o banco de quedas diárias do campeonato atual
     for (let d in dbJogadoresQuedas) {
+        // Respeita o filtro de dias selecionado
+        if (selectedPpcffDays.length > 0 && !selectedPpcffDays.includes(String(d))) continue;
         let quedasDoDia = [];
         for (let q in dbJogadoresQuedas[d]) {
             let dropInfo = (dbQuedas[d] && dbQuedas[d][q]) ? dbQuedas[d][q] : { mapa: 'Desconhecido' };
@@ -5478,7 +5480,8 @@ function toggleDay(containerId, day, callback) {
     else if (containerId === 'player-day-filters') arr = selectedPlayerDays;
     else if (containerId === 'avg-day-filters') arr = selectedAvgDays;
     else if (containerId === 'total-day-filters') arr = selectedTotalDays;
-    else if (containerId === 'top5-day-filters') arr = selectedTop5Days; // ADICIONE ESTA LINHA
+    else if (containerId === 'top5-day-filters') arr = selectedTop5Days;
+    else if (containerId === 'pp-cff-day-filters') arr = selectedPpcffDays;
     else arr = selectedTpDays;
 
     if (day === 'all') arr.length = 0;
