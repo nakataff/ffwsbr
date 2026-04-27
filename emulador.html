@@ -5320,40 +5320,25 @@ function renderTeamChart() {
                 tension: 0.2 // Deixa a linha suavemente curvada
             }]
         },
-options: {
+        options: {
             responsive: true,
             maintainAspectRatio: false,
-            // 1. ADICIONA UM PADDING INTERNO PARA NÃO CORTAR OS NÚMEROS
-            layout: {
-                padding: {
-                    left: 10,
-                    right: 15
-                }
-            },
             scales: {
                 y: {
                     reverse: isReverse,
                     min: isReverse ? 1 : 0,
+                    max: isReverse && metric === 'pos_queda' ? 12 : undefined,
                     grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { 
-                        color: '#888', 
-                        font: { weight: 'bold' },
-                        // 2. FORÇA A MOSTRAR APENAS NÚMEROS INTEIROS (Sem 1.2, 1.4)
-                        precision: 0,
-                        stepSize: isReverse ? 1 : undefined
-                    }
+                    ticks: { color: '#888', font: { weight: 'bold' } }
                 },
                 x: {
                     grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#888' }
+                    ticks: { color: '#888', autoSkip: true, maxTicksLimit: 15 }
                 }
             },
             plugins: {
-                legend: { 
-                    position: 'top', 
-                    labels: { color: '#fff', font: { weight: 'bold', size: 13 }, usePointStyle: true, boxWidth: 10 } 
-                },
-                tooltip: { backgroundColor: '#0d1220', titleColor: '#fff', bodyColor: '#fff', borderColor: '#333', borderWidth: 1, padding: 12 }
+                legend: { labels: { color: '#fff', font: { weight: 'bold' } } },
+                tooltip: { backgroundColor: '#0d1220', titleColor: chartColor, bodyColor: '#fff', borderColor: '#333', borderWidth: 1 }
             }
         }
     });
@@ -7846,15 +7831,28 @@ function renderMultiTeamChart() {
             labels: labels,
             datasets: datasets
         },
-        options: {
+options: {
             responsive: true,
             maintainAspectRatio: false,
+            // 1. ADICIONA UM PADDING INTERNO PARA NÃO CORTAR OS NÚMEROS
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 15
+                }
+            },
             scales: {
                 y: {
                     reverse: isReverse,
                     min: isReverse ? 1 : 0,
                     grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#888', font: { weight: 'bold' } }
+                    ticks: { 
+                        color: '#888', 
+                        font: { weight: 'bold' },
+                        // 2. FORÇA A MOSTRAR APENAS NÚMEROS INTEIROS (Sem 1.2, 1.4)
+                        precision: 0,
+                        stepSize: isReverse ? 1 : undefined
+                    }
                 },
                 x: {
                     grid: { color: 'rgba(255,255,255,0.05)' },
