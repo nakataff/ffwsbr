@@ -7150,8 +7150,21 @@ async function loadNoticias() {
         
         const noticias = lines.slice(1).map(line => {
             const data = line.split('\t');
+            
+            let urlImagem = data[0]?.trim().replace(/\r/g, "");
+            
+            // --- CONVERSOR AUTOMÁTICO DE LINKS DO GOOGLE DRIVE ---
+            // Transforma o link de visualização em um link de download direto para a <img> renderizar
+            if (urlImagem && urlImagem.includes('drive.google.com')) {
+                const match = urlImagem.match(/\/d\/([a-zA-Z0-9_-]+)/) || urlImagem.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    urlImagem = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                }
+            }
+            // -----------------------------------------------------
+
             return {
-                imagem: data[0]?.trim().replace(/\r/g, ""),
+                imagem: urlImagem,
                 titulo: data[1]?.trim().replace(/\r/g, ""),
                 link: data[2]?.trim().replace(/\r/g, ""),
                 destaque: data[3]?.trim().toLowerCase().includes('true')
@@ -7162,8 +7175,6 @@ async function loadNoticias() {
 
         // SEPARAR DESTAQUE DAS DEMAIS
         const destaque = noticias.find(n => n.destaque) || noticias[0];
-        // Se a primeira for destaque, as outras vão para o grid. 
-        // Se NÃO houver nenhuma marcada como destaque, a primeira vira Hero e o resto vai pro grid.
         const demais = noticias.filter(n => n !== destaque);
 
         // 1. RENDERIZA NOTÍCIA PRINCIPAL (BANNER GRANDE)
@@ -7180,7 +7191,6 @@ async function loadNoticias() {
             if (demais.length > 0) {
                 if (titulo) titulo.style.display = 'block';
                 
-                // Forçamos o estilo do grid aqui para garantir que sejam quadradinhos
                 grid.style.display = 'grid';
                 grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
                 grid.style.gap = '20px';
