@@ -1539,6 +1539,7 @@ tr:last-child {
         <button class="btn-action" onclick="openConfrontationModal()" id="btn-confrontation">Ver Ranking do Confronto Completo</button>
     </div>
 
+<div id="tp-evolution-container">
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">EVOLUÇÃO DA EQUIPE</h3>
     
     <div class="filters" style="margin-bottom: 15px;">
@@ -1556,6 +1557,7 @@ tr:last-child {
     <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
         <canvas id="team-evolution-chart" style="width:100%; max-height:350px;"></canvas>
     </div>
+</div>
 
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Classificação Interna</h3>
     <div class="table-container">
@@ -2844,7 +2846,6 @@ let logos = {
     'TSM': 'tsm.webp',
     'SANTOS': 'santos.webp',
     'ALFA 34': 'a34.webp',
-    'LOS GRANDES': 'Los.png', // A antiga Los Grandes puxa a mesma logo da LOS atual
 
     // === BÔNUS PARA O HISTÓRICO DE EQUIPES (dbPassagens) ===
     // (Basta você ter essas imagens salvas na pasta com esses nomes)
@@ -5188,6 +5189,10 @@ function getGeneralPositionUpToDay(targetDay, teamName) {
 }
 
 function renderTeamChart() {
+    // --- TRAVA DE SEGURANÇA PARA EQUIPES HISTÓRICAS ---
+    let evolutionContainer = document.getElementById('tp-evolution-container');
+    if (!evolutionContainer || evolutionContainer.style.display === 'none') return;
+
     let tName = currentTeamView;
     if (!tName) return;
 
@@ -5264,7 +5269,7 @@ function renderTeamChart() {
     }
 
     // Destroi o gráfico anterior caso ele exista para não sobrepor
-    if (teamChartInstance) {
+    if (typeof teamChartInstance !== 'undefined' && teamChartInstance !== null) {
         teamChartInstance.destroy();
     }
 
@@ -5388,6 +5393,7 @@ function renderTeamProfileStats() {
     let isHist = t.grupo === "Histórico/Outro";
 
     // Mapeamento de elementos do DOM
+    let evolutionContainer = document.getElementById('tp-evolution-container'); // <-- ESSA LINHA FALTAVA
     let bestWorstContainer = document.getElementById('tp-best-worst-container');
     let statsContainer = document.getElementById('tp-stats-container');
     let confResult = document.getElementById('tp-confrontation-result');
@@ -5403,6 +5409,7 @@ function renderTeamProfileStats() {
         // ==========================================
         
         // 1. Ocultar componentes da temporada ativa
+        if(evolutionContainer) evolutionContainer.style.display = 'none';
         if(bestWorstContainer) bestWorstContainer.style.display = 'none';
         if(statsContainer) statsContainer.style.display = 'none';
         if(confResult) confResult.style.display = 'none';
@@ -5413,7 +5420,7 @@ function renderTeamProfileStats() {
         // 2. Ajustar Títulos
         headers.forEach(h => {
             let text = h.innerText.toUpperCase();
-            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA')) {
+            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA') || text.includes('EVOLUÇÃO')) {
                 h.style.display = 'none';
             }
             if(text.includes('JOGADORES E STAFF') || text.includes('JOGADORES NOTÁVEIS')) {
@@ -5483,6 +5490,7 @@ function renderTeamProfileStats() {
         // MODO: EQUIPE ATIVA
         // ==========================================
         
+        if(evolutionContainer) evolutionContainer.style.display = 'block';
         if(bestWorstContainer) bestWorstContainer.style.display = 'block';
         if(statsContainer) statsContainer.style.display = 'block'; 
         if(confResult) confResult.style.display = 'block';
@@ -5492,7 +5500,7 @@ function renderTeamProfileStats() {
         
         headers.forEach(h => {
             let text = h.innerText.toUpperCase();
-            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA')) h.style.display = 'block';
+            if(text.includes('DESEMPENHO') || text.includes('CLASSIFICAÇÃO INTERNA') || text.includes('EVOLUÇÃO')) h.style.display = 'block';
             if(text.includes('JOGADORES NOTÁVEIS') || text.includes('JOGADORES E STAFF')) {
                 h.innerText = 'JOGADORES E STAFF';
                 h.style.display = 'block';
@@ -5598,8 +5606,11 @@ function renderTeamProfileStats() {
         if(tbody) {
             tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(p.jogador)}">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
         }
+        
+        // Aqui garantimos que o gráfico só é gerado e atualizado para equipes ATIVAS
+        renderTeamChart(); 
     }
-    renderTeamChart(); // Chama o gráfico ao carregar os status do time
+    
     renderTeamTrophies(tName);
 }
 
