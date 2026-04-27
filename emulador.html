@@ -5549,7 +5549,7 @@ function renderTeamProfileStats() {
                 </div>`;
         }
 
-        // Jogadores Ativos (Top 4)
+// Jogadores Ativos (Top 5)
         let pRaw = db.playerDaily.filter(p => p.equipe === tName);
         if (selectedTpDays.length > 0) pRaw = pRaw.filter(p => selectedTpDays.includes(String(p.dia)));
         
@@ -5568,11 +5568,13 @@ function renderTeamProfileStats() {
         });
 
         let ativos = playersList.filter(p => !p.isEx).sort((a,b) => b.abates - a.abates);
-        let top4Ativos = ativos.slice(0, 4);
+        // Alterado de 4 para 5 abaixo:
+        let topAtivos = ativos.slice(0, 5); 
         let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
 
         if (cardsContainer) {
-            let html = top4Ativos.map(p => createPlayerCardHTML(p, 0.85)).join('');
+            // Alterado de top4Ativos para topAtivos
+            let html = topAtivos.map(p => createPlayerCardHTML(p, 0.85)).join('');
             
             if (inativos.length > 0) {
                 html += `
