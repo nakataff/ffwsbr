@@ -2422,7 +2422,6 @@ async function loadStaff() {
 }
 
 async function loadTitles() {
-    // ⚠️ SUBSTITUA PELOS SEUS LINKS TSV REAIS GERADOS NO GOOGLE SHEETS ⚠️
     const TSV_URL_COLETIVOS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1613674157&single=true&output=tsv';
     const TSV_URL_INDIVIDUAIS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=988693030&single=true&output=tsv';
 
@@ -2432,24 +2431,32 @@ async function loadTitles() {
         const textCol = await resCol.text();
         const linesCol = textCol.split('\n');
         
-        titlesData.coletivos = linesCol.slice(1).map(line => {
+        let rawColetivos = linesCol.slice(1).map(line => {
             const cols = line.split('\t');
             return {
                 event: cols[0]?.trim().replace(/\r/g, "") || "",
                 type: cols[1]?.trim().replace(/\r/g, "") || "",
                 team: cols[2]?.trim().replace(/\r/g, "") || "",
-                // O .split(',') transforma o texto "MT7, Bops" em um Array ["MT7", "Bops"]
                 players: cols[3] ? cols[3].split(',').map(p => p.trim()) : [],
                 staff: cols[4] ? cols[4].split(',').map(s => s.trim()) : []
             };
-        }).filter(t => t.event !== ""); // Ignora linhas em branco
+        }).filter(t => t.event !== "");
+
+        // FILTRO MÁGICO: Remove linhas duplicadas da planilha automaticamente
+        let vistosCol = new Set();
+        titlesData.coletivos = rawColetivos.filter(t => {
+            let chave = `${t.event}-${t.type}-${t.team}`.toLowerCase();
+            if (vistosCol.has(chave)) return false;
+            vistosCol.add(chave);
+            return true;
+        });
 
         // 2. CARREGA OS TÍTULOS INDIVIDUAIS
         const resInd = await fetch(`${TSV_URL_INDIVIDUAIS}&nocache=${new Date().getTime()}`);
         const textInd = await resInd.text();
         const linesInd = textInd.split('\n');
 
-        titlesData.individuais = linesInd.slice(1).map(line => {
+        let rawIndividuais = linesInd.slice(1).map(line => {
             const cols = line.split('\t');
             return {
                 event: cols[0]?.trim().replace(/\r/g, "") || "",
@@ -2459,9 +2466,16 @@ async function loadTitles() {
             };
         }).filter(t => t.event !== "");
 
-        console.log("🏆 Títulos carregados com sucesso do Sheets!");
-        
-        // Atualiza as telas que dependem dos títulos logo na inicialização
+        // FILTRO MÁGICO: Remove linhas duplicadas da planilha automaticamente
+        let vistosInd = new Set();
+        titlesData.individuais = rawIndividuais.filter(t => {
+            let chave = `${t.event}-${t.type}-${t.team}-${t.player}`.toLowerCase();
+            if (vistosInd.has(chave)) return false;
+            vistosInd.add(chave);
+            return true;
+        });
+
+        console.log("🏆 Títulos carregados e deduplicados com sucesso!");
         renderOutrasEquipesGrid();
 
     } catch (e) {
@@ -3787,16 +3801,18 @@ function renderUnifiedTrophies(name, containerId) {
     // ------------------------------------------------
 
     // Agora os filtros rodam instantaneamente usando o fastCheck
-    let indTitles = titlesData.individuais.filter(t => fastCheck(t.player));
+let indTitles = titlesData.individuais.filter(t => fastCheck(t.player));
     let colAsPlayer = titlesData.coletivos.filter(t => t.players && t.players.some(fastCheck));
     let colAsStaff = titlesData.coletivos.filter(t => t.staff && t.staff.some(fastCheck));
 
-    let allTitles = [...indTitles, ...colAsPlayer, ...colAsStaff];
+    // Junta tudo e remove duplicatas caso o cara seja Player E Staff ao mesmo tempo
+    let allTitles = [...new Set([...indTitles, ...colAsPlayer, ...colAsStaff])];
     
     if(containerId === 'pp-trophies-container') {
         let elCol = document.getElementById('pp-hist-col');
         let elInd = document.getElementById('pp-hist-ind');
-        if(elCol) elCol.innerText = colAsPlayer.length + colAsStaff.length;
+        // Usa o Set para não contar o mesmo título duas vezes nos numerozinhos
+        if(elCol) elCol.innerText = new Set([...colAsPlayer, ...colAsStaff]).size;
         if(elInd) elInd.innerText = indTitles.length;
     }
 
@@ -3807,27 +3823,23 @@ function renderUnifiedTrophies(name, containerId) {
 
     container.innerHTML = allTitles.map(t => {
         let tournamentImg = resolveLeagueLogo(t.event);
-        
-        // CORREÇÃO: ADICIONAMOS A VARIÁVEL typeUpper AQUI!
         let typeUpper = t.type ? t.type.toUpperCase() : "";
-        
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
         let roleTag = "";
-        // Verifica qual foi a função dele no título usando o fastCheck
-        if (t.staff && t.staff.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
-        else if (t.players && t.players.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
+        let isPlayer = t.players && t.players.some(fastCheck);
+        let isStaff = t.staff && t.staff.some(fastCheck);
 
-        const hasTournamentPage = !!findTournamentInDB(t.event);
-        const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;" title="Ver página do torneio"` : '';
-        const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px; letter-spacing:0.5px;">🔗 Ver Torneio</div>` : '';
+        // Verifica a função exata para não duplicar se ele fez os dois papéis
+        if (isPlayer && isStaff) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(JOGADOR E STAFF)</div>`;
+        else if (isStaff) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
+        else if (isPlayer) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
 
-        return `<div class="trophy-card ${borderClass}" ${clickAttr}>
+        return `<div class="trophy-card ${borderClass}">
             <img class="ot-card-img" src="${tournamentImg}" loading="lazy" onerror="this.src='trofeu.webp'">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
             ${roleTag}
-            ${linkIcon}
             <div class="trophy-team">
                 <img src="${logos[t.team] || 'escudo.webp'}" style="width: 14px; height: 14px; object-fit: contain;"> 
                 ${t.team}
