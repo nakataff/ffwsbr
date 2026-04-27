@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYDZJXJMZZ"></script>
 <script>
@@ -1536,6 +1537,24 @@ tr:last-child {
     
     <div style="text-align: right; margin-top: -10px; margin-bottom: 30px;">
         <button class="btn-action" onclick="openConfrontationModal()" id="btn-confrontation">Ver Ranking do Confronto Completo</button>
+    </div>
+
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">EVOLUÇÃO DA EQUIPE</h3>
+    
+    <div class="filters" style="margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Métrica do Gráfico:</label>
+        <select id="chart-metric" onchange="renderTeamChart()" style="max-width: 300px;">
+            <option value="pos_geral_dia">Posição Geral (Acumulada por Dia)</option>
+            <option value="pos_queda">Posição por Queda (1º a 12º)</option>
+            <option value="pontos_dia">Pontos Totais por Dia</option>
+            <option value="pontos_queda">Pontos por Queda</option>
+            <option value="kills_dia">Abates por Dia</option>
+            <option value="kills_queda">Abates por Queda</option>
+        </select>
+    </div>
+    
+    <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+        <canvas id="team-evolution-chart" style="width:100%; max-height:350px;"></canvas>
     </div>
 
     <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Classificação Interna</h3>
@@ -4752,7 +4771,7 @@ function toggleDay(containerId, day, callback) {
 
 function onTeamDayFilterChanged_ALIAS() { buildDayFilters(); renderFullTeams(); renderGroupsTables(); } // alias legado — usar onTeamDayFilterChanged abaixo
 function onPlayerDayFilterChanged() { buildDayFilters(); renderAllPlayers(); }
-function onTpDayFilterChanged() { buildDayFilters(); renderTeamProfileStats(); }
+function onTpDayFilterChanged() { buildDayFilters(); renderTeamProfileStats();renderTeamChart(); }
 
 // --- NOVO SISTEMA DE FILTRO POR QUEDA ---
 
@@ -5145,6 +5164,153 @@ function renderSchedule() {
     container.innerHTML = html;
 }
 
+let teamChartInstance = null;
+
+// Função auxiliar para calcular em qual posição geral o time terminou em cada dia
+function getGeneralPositionUpToDay(targetDay, teamName) {
+    let totals = {};
+    db.teams.forEach(t => totals[t.equipe] = 0);
+    
+    // Soma os pontos de todos os times do Dia 1 até o Dia Alvo
+    for (let d = 1; d <= targetDay; d++) {
+        for (let equipe in db.teamDaily) {
+            let dailyData = db.teamDaily[equipe].find(x => x.dia === d);
+            if (dailyData && totals[equipe] !== undefined) {
+                totals[equipe] += dailyData.pontos;
+            }
+        }
+    }
+    
+    // Faz o ranking e descobre onde o time atual está
+    let ranked = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+    let pos = ranked.findIndex(x => x[0].toUpperCase() === teamName.toUpperCase()) + 1;
+    return pos;
+}
+
+function renderTeamChart() {
+    let tName = currentTeamView;
+    if (!tName) return;
+
+    let metric = document.getElementById('chart-metric').value;
+    let ctx = document.getElementById('team-evolution-chart');
+    if (!ctx) return;
+
+    let labels = [];
+    let dataset = [];
+    let chartLabel = '';
+    let isReverse = false; // Se for ranking, 1º fica no topo
+    let chartColor = '#00c8ff';
+
+    // Se a equipe não tem dados diários gerados, não faz nada
+    if (!db.teamDaily[tName]) return;
+
+    if (metric.includes('dia')) {
+        // --- VISÃO POR DIA ---
+        let dailyStats = [...db.teamDaily[tName]].sort((a, b) => a.dia - b.dia);
+        
+        dailyStats.forEach(d => {
+            // Respeita o filtro de dias selecionado lá em cima
+            if (selectedTpDays.length > 0 && !selectedTpDays.includes(String(d.dia))) return;
+            
+            labels.push(`Dia ${d.dia}`);
+            if (metric === 'pontos_dia') {
+                dataset.push(d.pontos);
+                chartLabel = 'Pontos Conquistados no Dia';
+                chartColor = '#ffd700';
+            } else if (metric === 'kills_dia') {
+                dataset.push(d.abates);
+                chartLabel = 'Abates no Dia';
+                chartColor = '#ff4444';
+            } else if (metric === 'pos_geral_dia') {
+                dataset.push(getGeneralPositionUpToDay(d.dia, tName));
+                chartLabel = 'Posição na Tabela Geral ao Fim do Dia';
+                chartColor = '#00c8ff';
+                isReverse = true;
+            }
+        });
+    } else if (metric.includes('queda')) {
+        // --- VISÃO POR QUEDA ---
+        let dias = Object.keys(dbQuedas).map(Number).sort((a, b) => a - b);
+        
+        dias.forEach(d => {
+            // Respeita o filtro de dias selecionado lá em cima
+            if (selectedTpDays.length > 0 && !selectedTpDays.includes(String(d))) return;
+            
+            let quedas = Object.keys(dbQuedas[d]).map(Number).sort((a, b) => a - b);
+            quedas.forEach(q => {
+                let drop = dbQuedas[d][q];
+                let res = drop.resultados.find(r => r.equipe.toUpperCase() === tName.toUpperCase());
+                
+                if (res) {
+                    labels.push(`D${d}-Q${q}`);
+                    if (metric === 'pos_queda') {
+                        dataset.push(res.posicao);
+                        chartLabel = 'Posição (Sobrevivência)';
+                        chartColor = '#4caf50';
+                        isReverse = true;
+                    } else if (metric === 'kills_queda') {
+                        dataset.push(res.kills);
+                        chartLabel = 'Abates na Queda';
+                        chartColor = '#ff4444';
+                    } else if (metric === 'pontos_queda') {
+                        let pPos = posPoints[res.posicao] || 0;
+                        dataset.push(pPos + res.kills);
+                        chartLabel = 'Pontos Finais (Kills + Posição)';
+                        chartColor = '#ffd700';
+                    }
+                }
+            });
+        });
+    }
+
+    // Destroi o gráfico anterior caso ele exista para não sobrepor
+    if (teamChartInstance) {
+        teamChartInstance.destroy();
+    }
+
+    // Cria o novo gráfico com a paleta de cores do site
+    teamChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: chartLabel,
+                data: dataset,
+                borderColor: chartColor,
+                backgroundColor: chartColor + '22', // Deixa um brilho transparente em baixo
+                borderWidth: 3,
+                pointBackgroundColor: chartColor,
+                pointBorderColor: '#000',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.2 // Deixa a linha suavemente curvada
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    reverse: isReverse,
+                    min: isReverse ? 1 : 0,
+                    max: isReverse && metric === 'pos_queda' ? 12 : undefined,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#888', font: { weight: 'bold' } }
+                },
+                x: {
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#888', autoSkip: true, maxTicksLimit: 15 }
+                }
+            },
+            plugins: {
+                legend: { labels: { color: '#fff', font: { weight: 'bold' } } },
+                tooltip: { backgroundColor: '#0d1220', titleColor: chartColor, bodyColor: '#fff', borderColor: '#333', borderWidth: 1 }
+            }
+        }
+    });
+}
+
 // ============== TEAM PROFILE E MODAL ==============
 function openStaffProfile(staffName) {
     let s = dbStaff.find(x => x.nome === staffName);
@@ -5433,7 +5599,7 @@ function renderTeamProfileStats() {
             tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(p.jogador)}">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
         }
     }
-
+    renderTeamChart(); // Chama o gráfico ao carregar os status do time
     renderTeamTrophies(tName);
 }
 
