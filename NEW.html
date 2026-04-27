@@ -1192,6 +1192,11 @@ tr:last-child {
 }
 
 .trophy-card:hover { transform: translateY(-5px); }
+.trophy-card[onclick]:hover {
+    border-color: var(--accent);
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.25);
+    transform: translateY(-5px) scale(1.03);
+}
 
 /* Cores por Categoria */
 .border-campeao { border-color: #ffd700 !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
@@ -3813,11 +3818,16 @@ function renderUnifiedTrophies(name, containerId) {
         if (t.staff && t.staff.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
         else if (t.players && t.players.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
 
-return `<div class="trophy-card ${borderClass}">
+        const hasTournamentPage = !!findTournamentInDB(t.event);
+        const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;" title="Ver página do torneio"` : '';
+        const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px; letter-spacing:0.5px;">🔗 Ver Torneio</div>` : '';
+
+        return `<div class="trophy-card ${borderClass}" ${clickAttr}>
             <img class="ot-card-img" src="${tournamentImg}" loading="lazy" onerror="this.src='trofeu.webp'">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
             ${roleTag}
+            ${linkIcon}
             <div class="trophy-team">
                 <img src="${logos[t.team] || 'escudo.webp'}" style="width: 14px; height: 14px; object-fit: contain;"> 
                 ${t.team}
@@ -5035,11 +5045,16 @@ function renderTeamResults() {
         // MUDANÇA AQUI: Agora a cor dourada é EXCLUSIVA do 1º lugar!
         let placeStyle = isFirst ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.5);' : '';
         
+        const hasTournamentPage = !!findTournamentInDB(r.torneio);
+        const torneioCell = hasTournamentPage
+            ? `<span onclick="navigateToTournament('${r.torneio.replace(/'/g, "\\'")}')" style="cursor:pointer; color: var(--accent); text-decoration: underline; text-decoration-style: dotted;" title="Ver página do torneio">${r.torneio} 🔗</span>`
+            : r.torneio;
+
         return `<tr class="${rowClass}">
             <td style="color: var(--text-muted);">${r.data}</td>
             <td class="tier-${tierClass}">${r.tier}</td>
             <td style="font-weight: bold; font-size: 1.1em; ${placeStyle}">${placeBR}</td>
-            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color: #fff;' : ''}">${r.torneio}</td>
+            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color: #fff;' : ''}">${torneioCell}</td>
         </tr>`;
     }).join('');
 }
@@ -5421,11 +5436,15 @@ function renderTeamTrophies(teamName) {
 
     container.innerHTML = teamTitles.map(t => {
 let tournamentImg = resolveLeagueLogo(t.event);
+        const hasTournamentPage = !!findTournamentInDB(t.event);
+        const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;" title="Ver página do torneio"` : '';
+        const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px;">🔗 Ver Torneio</div>` : '';
         return `
-        <div class="trophy-card border-campeao">
+        <div class="trophy-card border-campeao" ${clickAttr}>
             <img src="${tournamentImg}" class="trophy-img" style="height: 50px;">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center; margin-top:5px;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-transform:uppercase;">Campeão</div>
+            ${linkIcon}
         </div>`;
     }).join('');
 }
@@ -6644,25 +6663,30 @@ function renderOtChampions(t) {
             // Card completo com overall real
             return `<div style="flex-shrink:0;">${createPlayerCardHTML(pObj, 0.85)}</div>`;
         } else {
-            // Card genérico: silhueta + logo do time + bandeira
+            // Card genérico: MANTÉM AS CORES, MAS COPIA AS DIMENSÕES DO CARD OFICIAL
             const photo = playerPhotos[pName] || 'silhueta.png';
             return `
-            <div data-player="${pName.replace(/"/g,'&quot;')}" class="ot-champ-card" style="cursor:pointer; flex-shrink:0; width:220px; height:330px; background:#000; border:3px solid #888; border-radius:15px; position:relative; overflow:hidden; font-family:sans-serif; margin:0 auto;">
-                <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#222,#000);opacity:0.9;"></div>
-                <div style="position:absolute;top:30px;left:18px;z-index:4;text-align:center;color:#888;">
-                    <div style="font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">CAMPEÃO</div>
-                    <div style="margin:10px auto;width:32px;height:2px;background:#888;opacity:0.6;"></div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width:28px;border-radius:2px;display:block;margin:8px auto;">
-                    <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width:40px;height:40px;object-fit:contain;display:block;margin:10px auto;">
-                </div>
-                <img src="${photo}" onerror="this.src='silhueta.png'" style="position:absolute;top:10px;right:-20px;height:210px;z-index:2;-webkit-mask-image:linear-gradient(to bottom,black 70%,transparent 100%);">
-                <div style="position:absolute;bottom:0;width:100%;height:150px;background:linear-gradient(transparent,#000 35%);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;">
-                    <div style="width:100%;text-align:center;margin-bottom:6px;">
-                        <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
-                        <div style="color:#fff;font-size:18px;font-weight:900;text-transform:uppercase;padding:5px 0;">${pName}</div>
-                        <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
+            <div style="flex-shrink:0;">
+                <div data-player="${pName.replace(/"/g,'&quot;')}" class="ot-champ-card" style="cursor:pointer; width:280px; height:420px; background:#000; border:3px solid #888; border-radius:15px; position:relative; overflow:hidden; font-family:sans-serif; transform: scale(0.85); margin: -15px;">
+                    <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#222,#000);opacity:0.9;"></div>
+                    
+                    <div style="position:absolute;top:40px;left:25px;z-index:4;text-align:center;color:#888;">
+                        <div style="font-size:18px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">CAMPEÃO</div>
+                        <div style="margin:10px auto;width:35px;height:2px;background:#888;opacity:0.6;"></div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width:35px;border-radius:2px;display:block;margin:8px auto;">
+                        <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width:50px;height:50px;object-fit:contain;display:block;margin:10px auto;">
                     </div>
-                    <div style="color:#aaa;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">${teamName}</div>
+                    
+                    <img src="${photo}" onerror="this.src='silhueta.png'" style="position:absolute;top:20px;right:-30px;height:260px;z-index:2;-webkit-mask-image:linear-gradient(to bottom,black 70%,transparent 100%);">
+                    
+                    <div style="position:absolute;bottom:0;width:100%;height:185px;background:linear-gradient(transparent,#000 35%);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;">
+                        <div style="width:100%;text-align:center;margin-bottom:8px;">
+                            <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
+                            <div style="color:#fff;font-size:24px;font-weight:900;text-transform:uppercase;padding:6px 0;">${pName}</div>
+                            <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
+                        </div>
+                        <div style="color:#aaa;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px; margin-bottom: 25px;">${teamName}</div>
+                    </div>
                 </div>
             </div>`;
         }
@@ -7046,12 +7070,12 @@ function renderOutrasEquipesGrid() {
         const nTitulos = (titlesData.coletivos || []).filter(t => t.team.toUpperCase() === nome.toUpperCase()).length;
         const resultados = dbResults[nome] || [];
         const nTorneios = resultados.length;
-        const badge = nTitulos > 0 ? `<span style="background: rgba(255,215,0,0.15); color: #ffd700; font-size: 0.7em; font-weight: bold; padding: 2px 8px; border-radius: 10px; border: 1px solid #ffd700;">🏆 ${nTitulos} título${nTitulos > 1 ? 's' : ''}</span>` : '';
-        return `
+        const badge = nTitulos > 0 ? `<div style="margin-top: 8px;"><span style="background: rgba(255,215,0,0.15); color: #ffd700; font-size: 0.75em; font-weight: bold; padding: 3px 10px; border-radius: 10px; border: 1px solid #ffd700; display: inline-block; white-space: nowrap;">🏆 ${nTitulos} título${nTitulos > 1 ? 's' : ''}</span></div>` : '';
+         return `
         <div class="team-item-card" onclick="openOutraEquipe('${nome.replace(/'/g, "\\'")}')">
             <img src="${logoSrc}" alt="${nome}" onerror="this.src='escudo.webp'">
             <h4>${nome}</h4>
-            <span>${nTorneios} resultado${nTorneios !== 1 ? 's' : ''}</span>
+            <div style="margin-bottom: 2px;"><span>${nTorneios} resultado${nTorneios !== 1 ? 's' : ''}</span></div>
             ${badge}
         </div>`;
     }).join('');
@@ -7077,10 +7101,14 @@ async function openOutraEquipe(nome) {
         titulosSection.style.display = 'block';
         titulosContainer.innerHTML = titulos.map(t => {
             let tournamentImg = resolveLeagueLogo(t.event);
-            return `<div class="trophy-card border-campeao">
+            const hasTournamentPage = !!findTournamentInDB(t.event);
+            const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;" title="Ver página do torneio"` : '';
+            const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px;">🔗 Ver Torneio</div>` : '';
+            return `<div class="trophy-card border-campeao" ${clickAttr}>
                 <img src="${tournamentImg}" class="trophy-img" onerror="this.src='trofeu.webp'">
                 <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
                 <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
+                ${linkIcon}
                 <div class="trophy-team">
                     <img src="${logos[t.team] || 'escudo.webp'}" style="width:14px; height:14px; object-fit:contain;" onerror="this.src='escudo.webp'">
                     ${t.team}
@@ -7135,11 +7163,15 @@ function renderOutraEquipeResultados() {
         const isSTier = r.tier === 'S-Tier';
         const placeBR = r.place.replace(/st|nd|rd|th/ig, 'º');
         const placeStyle = isFirst ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.5);' : '';
+        const hasTournamentPage = !!findTournamentInDB(r.torneio);
+        const torneioCell = hasTournamentPage
+            ? `<span onclick="navigateToTournament('${r.torneio.replace(/'/g, "\\'")}')" style="cursor:pointer; color: var(--accent); text-decoration: underline; text-decoration-style: dotted;" title="Ver página do torneio">${r.torneio} 🔗</span>`
+            : r.torneio;
         return `<tr class="${isSTier ? 'row-tier-s' : ''}">
             <td style="color: var(--text-muted);">${r.data}</td>
             <td class="tier-${tierClass}">${r.tier}</td>
             <td style="font-weight: bold; font-size: 1.1em; ${placeStyle}">${placeBR}</td>
-            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color:#fff;' : ''}">${r.torneio}</td>
+            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color:#fff;' : ''}">${torneioCell}</td>
         </tr>`;
     }).join('');
 }
@@ -7176,6 +7208,33 @@ async function loadLeagueLogos() {
     } catch (e) {
         console.error('[loadLeagueLogos] Erro:', e);
     }
+}
+
+// =============================================
+// NAVEGAÇÃO DIRETA PARA TORNEIO
+// Verifica se o torneio existe em dbCampeonatos e abre ele diretamente
+// =============================================
+function findTournamentInDB(eventName) {
+    if (!eventName || !dbCampeonatos || dbCampeonatos.length === 0) return null;
+    const upper = eventName.toUpperCase().trim();
+    return dbCampeonatos.find(t => {
+        const tUpper = t.torneio.toUpperCase().trim();
+        return tUpper === upper || tUpper.includes(upper) || upper.includes(tUpper);
+    }) || null;
+}
+
+function navigateToTournament(eventName) {
+    const t = findTournamentInDB(eventName);
+    if (!t) return;
+    // Fecha modal de resultados se estiver aberto
+    const modal = document.getElementById('results-modal');
+    if (modal && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+    }
+    navigate('outros-torneios');
+    renderOutrosTorneiosList();
+    // Pequeno delay para garantir que a tela carregou antes de abrir o torneio
+    setTimeout(() => openOtherTournament(t.id), 80);
 }
 
 // Função auxiliar global para resolver a imagem de um torneio.
