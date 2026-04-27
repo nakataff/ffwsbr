@@ -557,14 +557,45 @@ nav {
 }
 
 /* --- NAVEGAÇÃO MOBILE --- */
+/* --- NAVEGAÇÃO MOBILE --- */
 .nav-mobile-bar { display: flex; align-items: center; padding: 0 10px; height: 55px; justify-content: space-between; }
-.nav-mob-menu-btn { background: transparent; border: none; color: var(--accent); font-size: 1.6em; padding: 5px; cursor: pointer; }
 
-.nav-mobile-tabs { display: flex; flex: 1; justify-content: center; gap: 10px; }
-.nav-mobile-tab { background: transparent; border: none; color: var(--text-muted); font-size: 0.95em; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.nav-mob-menu-btn { 
+    color: var(--accent);
+    font-size: 1.4em !important; 
+    padding: 4px !important; 
+    cursor: pointer;
+    background: transparent !important; 
+    border: none !important; 
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+} 
+
+.nav-mobile-tabs { 
+    display: flex; 
+    flex: 1; 
+    justify-content: center;
+    gap: 4px !important; /* Reduz o espaço entre os botões */ 
+}
+
+.nav-mobile-tab { 
+    color: var(--text-muted);
+    font-weight: 800;
+    white-space: nowrap;
+    font-size: 0.75em !important; 
+    padding: 4px 6px !important; 
+    cursor: pointer;
+    background: transparent !important; 
+    border: none !important;                  
+    box-shadow: none !important;              
+    -webkit-appearance: none; 
+    appearance: none;         
+    -webkit-tap-highlight-color: transparent;
+}
 .nav-mobile-tab.active { color: var(--accent); }
 
-.nav-mobile-right { display: flex; align-items: center; gap: 12px; }
+.nav-mobile-right { display: flex; align-items: center; gap: 8px !important; }
 
 /* Barra de busca mobile — escondida por padrão, abre com .active */
 .nav-mobile-search-bar {
@@ -589,8 +620,6 @@ nav {
 }
 .nav-mobile-search-bar input:focus { border-color: var(--accent); }
 
-.nav-mobile-right { display: flex; align-items: center; gap: 12px; }
-
 /* --- REGRAS DE IMAGENS E LUPA (AZUL E SEM FUNDO) --- */
 .nav-search-icon-desktop { 
     width: 20px; height: 20px; pointer-events: none; 
@@ -598,7 +627,17 @@ nav {
     background: none!important; 
 }
 
-.nav-mobile-search-btn, .nav-mobile-home-btn { background: none!important; border: none!important; padding: 0; cursor: pointer; display: flex; align-items: center; }
+.nav-mobile-search-btn, .nav-mobile-home-btn { 
+    background: none!important; 
+    border: none!important; 
+    padding: 0; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+}
 
 .nav-mobile-search-btn img { 
     width: 24px; height: 24px; 
@@ -1063,6 +1102,22 @@ tr:last-child {
     .short-name-mobile { display: none; } /* Esconde a sigla no PC */
     .full-name-desktop { display: inline; } /* Mostra o nome longo no PC */
     .team-logo-mobile-full { display: inline-block; width: 24px; height: 24px; object-fit: contain; } /* Mostra a logo no PC */
+
+  @media (max-width: 380px) {
+    .nav-mobile-tab { 
+        font-size: 0.65em !important; 
+    }
+    .nav-mobile-tabs { 
+        gap: 2px !important; 
+    }
+    .nav-mobile-right { 
+        gap: 5px !important; 
+    }
+    .nav-mobile-home-btn img { 
+        width: 24px !important; 
+        height: 24px !important; 
+    }
+}
 
     /* REGRAS PARA O MOBILE (CELULAR) */
     @media (max-width: 768px) {
@@ -1869,6 +1924,7 @@ tr:last-child {
         </div>
 
         <div id="ot-standings-container"></div>
+        <div id="ot-champions-container" style="display:none;"></div>
     </div>
 </div>
 <!-- PAGE: OUTRAS EQUIPES -->
@@ -2161,353 +2217,7 @@ tr:last-child {
 // --- COMISSÃO TÉCNICA ---
 let dbStaff = [];
 
-const dbPassagens = [
-  {jogador:"JapaBKR",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"ShariiN",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"VgzinnN",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"Bradoock",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"Geerty",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"RiccK",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"Kroonos",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"PEU",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"Morato",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"Brabox",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"Lukaskn",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"Alemão",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"Japa04",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"Vinni",passagens:[{equipe:"PROGAMING",cargo:"Jogador"}]},
-  {jogador:"FLQP",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"KABUM",cargo:"Jogador"}]},
-  {jogador:"HORUS",passagens:[{equipe:"PROGAMING",cargo:"Jogador"},{equipe:"CRUZEIRO",cargo:"Jogador"}]},
-  {jogador:"MAMUTEZL",passagens:[{equipe:"FURIA",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"META GAMING",cargo:"Jogador"},{equipe:"AMAZON CRIPZ",cargo:"Jogador"}]},
-  {jogador:"CRAZY",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"VnzinnN",passagens:[{equipe:"PROGAMING",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"}]},
-  {jogador:"DEXTER",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"ZIKKA",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"SANTOS",cargo:"Jogador"}]},
-  {jogador:"ImJouh",passagens:[{equipe:"FURIA",cargo:"Jogador"}]},
-  {jogador:"MADANZA",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"LEVELUP",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"O BONDE",cargo:"Jogador"}]},
-  {jogador:"FOGO",passagens:[{equipe:"SKS",cargo:"Jogador"}]},
-  {jogador:"NEMO",passagens:[{equipe:"SKS",cargo:"Jogador"}]},
-  {jogador:"AVENGED",passagens:[{equipe:"FURIA",cargo:"Jogador"}]},
-  {jogador:"VAZILY",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"VitinnN",passagens:[{equipe:"PROGAMING",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"}]},
-  {jogador:"papaX",passagens:[{equipe:"SKS",cargo:"Jogador"}]},
-  {jogador:"MAXSWELL",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"SANTOS",cargo:"Jogador"},{equipe:"SS ESPORTS",cargo:"Jogador"}]},
-  {jogador:"XABRAU",passagens:[{equipe:"SKS",cargo:"Jogador"}]},
-  {jogador:"ANON",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Avenger",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"KABUM",cargo:"Jogador"}]},
-  {jogador:"LukasTD",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"}]},
-  {jogador:"Drzzy",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"},{equipe:"T1",cargo:"Jogador"},{equipe:"LIBERTY",cargo:"Jogador"}]},
-  {jogador:"L7",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"01pires",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"BOYKA",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Cauan7",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"mvR",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"TROPICAOS",cargo:"Jogador"}]},
-  {jogador:"MODESTIA",passagens:[{equipe:"SKS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"PEDRO.RS",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"TEAM LIQUID",cargo:"Jogador"}]},
-  {jogador:"KaueLOK",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"Memgod",passagens:[{equipe:"FURIA",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"TROPICAOS",cargo:"Jogador"}]},
-  {jogador:"General",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"one9",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"FURIA",cargo:"Jogador"},{equipe:"O BONDE",cargo:"Jogador"},{equipe:"00 NATION",cargo:"Jogador"}]},
-  {jogador:"OTREMBB",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"Jubinha",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Martins",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"TEAM LIQUID",cargo:"Jogador"}]},
-  {jogador:"ViniZx",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"SÃO PAULO",cargo:"Jogador"}]},
-  {jogador:"Supreme",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"SOLOTOV",passagens:[{equipe:"FURIA",cargo:"Jogador"}]},
-  {jogador:"LEALS",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"}]},
-  {jogador:"BLACK00",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"D3",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"TROPA",cargo:"Jogador"}]},
-  {jogador:"Raposo",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"NEW X",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"Phoenix23",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"TEAM LIQUID",cargo:"Jogador"}]},
-  {jogador:"Moreira",passagens:[{equipe:"INTZ",cargo:"Jogador"},{equipe:"TROPA",cargo:"Jogador"}]},
-  {jogador:"LUUUKING",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Head Coach"},{equipe:"FLUXO W7M",cargo:"Head Coach"}]},
-  {jogador:"Aun",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"Ubita",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"ROFF",passagens:[{equipe:"FURIA",cargo:"Jogador"}]},
-  {jogador:"Antunes22",passagens:[{equipe:"PROGAMING",cargo:"Jogador"},{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"REALES",cargo:"Jogador"}]},
-  {jogador:"Rood",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Thiago",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"}]},
-  {jogador:"SÓPAPAI",passagens:[{equipe:"SKS",cargo:"Jogador"}]},
-  {jogador:"Soares",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"Pedro7",passagens:[{equipe:"PROGAMING",cargo:"Jogador"}]},
-  {jogador:"Helden",passagens:[{equipe:"PROGAMING",cargo:"Jogador"}]},
-  {jogador:"SALDANHA",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
-  {jogador:"JV77",passagens:[{equipe:"SKS",cargo:"Jogador"}]},
-  {jogador:"CRIAOP",passagens:[{equipe:"SKS",cargo:"Jogador"}]},
-  {jogador:"Pfonn",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"bema",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"}]},
-  {jogador:"KBÇÃO",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"}]},
-  {jogador:"Wanheda",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"Reei",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"SÃO PAULO",cargo:"Jogador"}]},
-  {jogador:"Nappon",passagens:[{equipe:"KABUM",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"TSM",cargo:"Jogador"}]},
-  {jogador:"Ruan",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Mts007",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"},{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"AXS FUSION",cargo:"Jogador"}]},
-  {jogador:"BIELGOD",passagens:[{equipe:"FURIA",cargo:"Jogador"},{equipe:"STARS HORIZON",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"Will",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"JUVENTUS",cargo:"Jogador"}]},
-  {jogador:"Syaz",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"Lobato",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
-  {jogador:"Field",passagens:[{equipe:"FEAR",cargo:"Jogador"},{equipe:"FURIA",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"CEBOLINHA",passagens:[{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"}]},
-  {jogador:"FON",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"SANREAL",cargo:"Jogador"},{equipe:"REALES",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"Lost",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"PATO",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"LIBERTY",cargo:"Jogador"}]},
-  {jogador:"DeadGOD",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"Natividade",passagens:[{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"OUSADO",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"FIXA",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"GØDKILL",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"}]},
-  {jogador:"Noda",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Nobru",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"Boss",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"HUMMER ESPORTS",cargo:"Jogador"}]},
-  {jogador:"TKSHY13",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"R7",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"O BONDE",cargo:"Jogador"},{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"}]},
-  {jogador:"Gus",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"CAUE",passagens:[{equipe:"META GAMING",cargo:"Jogador"}]},
-  {jogador:"NICKOLAS",passagens:[{equipe:"META GAMING",cargo:"Jogador"}]},
-  {jogador:"ITALO",passagens:[{equipe:"INTZ",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"ALPHA7",cargo:"Jogador"},{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"Razure",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"Aranha",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"YAN7",passagens:[{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"META GAMING",cargo:"Jogador"}]},
-  {jogador:"VN10",passagens:[{equipe:"T1",cargo:"Jogador"}]},
-  {jogador:"LEAL7",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"META GAMING",cargo:"Jogador"}]},
-  {jogador:"GUIMONS",passagens:[{equipe:"META GAMING",cargo:"Jogador"}]},
-  {jogador:"PÃO7",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"META GAMING",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"AUTOBOOT",passagens:[{equipe:"FEAR",cargo:"Jogador"},{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"SANREAL",cargo:"Jogador"},{equipe:"REALES",cargo:"Jogador"}]},
-  {jogador:"PORCÃO",passagens:[{equipe:"NEW X",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"IGZINN",passagens:[{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"KAYKE",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"VINNIXL",passagens:[{equipe:"KABUM",cargo:"Jogador"},{equipe:"TSM",cargo:"Jogador"}]},
-  {jogador:"Zenac",passagens:[{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"JM777",passagens:[{equipe:"FURIA",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"yurik1nG",passagens:[{equipe:"FURIA",cargo:"Jogador"}]},
-  {jogador:"RafaX",passagens:[{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"META GAMING",cargo:"Jogador"}]},
-  {jogador:"LUFFYXX",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"BIRI",passagens:[{equipe:"FEAR",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"}]},
-  {jogador:"alok10",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"BROCO",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"TSM",cargo:"Jogador"}]},
-  {jogador:"BRUNO7",passagens:[{equipe:"FURIA",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"NEPHIRO",passagens:[{equipe:"NEW X",cargo:"Jogador"}]},
-  {jogador:"Froyd",passagens:[{equipe:"NEW X",cargo:"Jogador"}]},
-  {jogador:"zDaark",passagens:[{equipe:"FEAR",cargo:"Jogador"}]},
-  {jogador:"IGOR3",passagens:[{equipe:"FEAR",cargo:"Jogador"}]},
-  {jogador:"Negoo",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"LZN",passagens:[{equipe:"KABUM",cargo:"Jogador"}]},
-  {jogador:"Argonot",passagens:[{equipe:"NEW X",cargo:"Jogador"}]},
-  {jogador:"VICTOR7",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"NTX10",cargo:"Jogador"},{equipe:"O BONDE",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"ChefãoZp",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"Guuh",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"MINUZZI",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"GLXCK",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"MAYKY01",passagens:[{equipe:"LOS GRANDES",cargo:"Jogador"}]},
-  {jogador:"Déco",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"PSILVA",passagens:[{equipe:"NEW X",cargo:"Jogador"}]},
-  {jogador:"Taami",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"}]},
-  {jogador:"MISTICO",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
-  {jogador:"MOGTHBOY",passagens:[{equipe:"KABUM",cargo:"Jogador"}]},
-  {jogador:"Azay",passagens:[{equipe:"T1",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"VTRx",passagens:[{equipe:"T1",cargo:"Jogador"}]},
-  {jogador:"Fac",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"LEE",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"RUSH",passagens:[{equipe:"SANTOS",cargo:"Jogador"},{equipe:"SANREAL",cargo:"Jogador"},{equipe:"TSM",cargo:"Jogador"},{equipe:"CRUZEIRO",cargo:"Jogador"}]},
-  {jogador:"NANDO9",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"DRAXX7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"Mike",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"Duduffx!",passagens:[{equipe:"SANREAL",cargo:"Jogador"},{equipe:"00 NATION",cargo:"Jogador"}]},
-  {jogador:"Leozin",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"BuTziN",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"},{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"ROMEUXX",passagens:[{equipe:"NTX10",cargo:"Jogador"},{equipe:"NITROXX",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
-  {jogador:"JHzz",passagens:[{equipe:"NTX10",cargo:"Jogador"}]},
-  {jogador:"Pec",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"LIBERTY",cargo:"Jogador"},{equipe:"VASCO ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Bops",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"VITINxp",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"Qualy",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"NITROXX",cargo:"Jogador"}]},
-  {jogador:"NEYZZIN",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"Bruno 7",passagens:[{equipe:"T1",cargo:"Jogador"}]},
-  {jogador:"Guerra",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"Lipaulo",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"VITIN",passagens:[{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"ARRUDA",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"JAPEX10",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"MMHATX",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"NandoX",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"LOOPS",cargo:"Jogador"}]},
-  {jogador:"BIRINO",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Yago",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"TEAM LIQUID",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"BONZAI22",passagens:[{equipe:"NTX10",cargo:"Jogador"}]},
-  {jogador:"CHINÊS",passagens:[{equipe:"NTX10",cargo:"Jogador"},{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"META GAMING",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
-  {jogador:"LuckyGOD",passagens:[{equipe:"SANREAL",cargo:"Jogador"},{equipe:"00 NATION",cargo:"Jogador"}]},
-  {jogador:"Biel7",passagens:[{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"TROPA",cargo:"Jogador"},{equipe:"MINERS",cargo:"Jogador"},{equipe:"XIS",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"}]},
-  {jogador:"duzzX",passagens:[{equipe:"LOS GRANDES",cargo:"Jogador"}]},
-  {jogador:"Astro007",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Randall",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Gelo",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"MIGUEL",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"SPIL",passagens:[{equipe:"NTX10",cargo:"Jogador"},{equipe:"TROPA",cargo:"Jogador"}]},
-  {jogador:"stiqzL",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Ruivo",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"Bolin7",passagens:[{equipe:"FURIA",cargo:"Jogador"},{equipe:"TROPICAOS",cargo:"Jogador"}]},
-  {jogador:"Maroto",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"TRIPLOx",passagens:[{equipe:"T1",cargo:"Jogador"},{equipe:"REALES",cargo:"Jogador"}]},
-  {jogador:"TATU13",passagens:[{equipe:"SANREAL",cargo:"Jogador"},{equipe:"REALES",cargo:"Jogador"},{equipe:"ANGELS OUTPLAY",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"VM7",passagens:[{equipe:"SANREAL",cargo:"Jogador"},{equipe:"REALES",cargo:"Jogador"},{equipe:"ANGELS OUTPLAY",cargo:"Jogador"}]},
-  {jogador:"PH",passagens:[{equipe:"SANREAL",cargo:"Jogador"},{equipe:"REALES",cargo:"Jogador"}]},
-  {jogador:"Diel",passagens:[{equipe:"ACZ",cargo:"Jogador"}]},
-  {jogador:"Salles",passagens:[{equipe:"ACZ",cargo:"Jogador"},{equipe:"NITROXX",cargo:"Jogador"}]},
-  {jogador:"DIDI_75",passagens:[{equipe:"ACZ",cargo:"Jogador"}]},
-  {jogador:"VINHAL",passagens:[{equipe:"ACZ",cargo:"Jogador"},{equipe:"HUMMER ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Master",passagens:[{equipe:"ACZ",cargo:"Jogador"}]},
-  {jogador:"BROILO",passagens:[{equipe:"NETSHOES MINERS",cargo:"Jogador"}]},
-  {jogador:"SEMNOME",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Brenin7",passagens:[{equipe:"XISDE",cargo:"Jogador"}]},
-  {jogador:"Ângelo7",passagens:[{equipe:"XISDE",cargo:"Jogador"},{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"}]},
-  {jogador:"Luignet",passagens:[{equipe:"XISDE",cargo:"Jogador"}]},
-  {jogador:"Debbszada",passagens:[{equipe:"XISDE",cargo:"Jogador"}]},
-  {jogador:"Prozin10",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"NITROXX",cargo:"Jogador"},{equipe:"SÃO PAULO",cargo:"Jogador"},{equipe:"RUSH GAMING",cargo:"Jogador"}]},
-  {jogador:"Kiled",passagens:[{equipe:"TROPA",cargo:"Jogador"},{equipe:"HUMMER ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Guiga",passagens:[{equipe:"TROPA",cargo:"Jogador"},{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"STARS HORIZON",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"Cauã",passagens:[{equipe:"O BONDE",cargo:"Jogador"},{equipe:"AMAZON CRIPZ",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"},{equipe:"ALPHA7",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"GUSTA",passagens:[{equipe:"FURIA",cargo:"Jogador"}]},
-  {jogador:"Ratiin",passagens:[{equipe:"FURIA",cargo:"Jogador"}]},
-  {jogador:"Bob7",passagens:[{equipe:"TSM",cargo:"Jogador"}]},
-  {jogador:"HEAD",passagens:[{equipe:"NTX10",cargo:"Jogador"},{equipe:"NITROXX",cargo:"Jogador"}]},
-  {jogador:"BRABO",passagens:[{equipe:"NTX10",cargo:"Jogador"}]},
-  {jogador:"RIGBY",passagens:[{equipe:"O BONDE",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"MIBR",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"DZNKILL",passagens:[{equipe:"XISDE",cargo:"Jogador"}]},
-  {jogador:"João7",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"NITROXX",cargo:"Jogador"},{equipe:"MIBR",cargo:"Jogador"},{equipe:"ALPHA7",cargo:"Jogador"}]},
-  {jogador:"STRONG",passagens:[{equipe:"O BONDE",cargo:"Jogador"}]},
-  {jogador:"Legit",passagens:[{equipe:"TROPA",cargo:"Jogador"}]},
-  {jogador:"RAUL7",passagens:[{equipe:"REALES",cargo:"Jogador"}]},
-  {jogador:"DORITO",passagens:[{equipe:"O BONDE",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"LUCCA9",passagens:[{equipe:"REALES",cargo:"Jogador"}]},
-  {jogador:"Lapa7",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Thuzão Do9",passagens:[{equipe:"SS ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Marreta",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"ANGELS OUTPLAY",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"Pitbull",passagens:[{equipe:"00 NATION",cargo:"Jogador"},{equipe:"LOS GRANDES",cargo:"Jogador"},{equipe:"MIBR",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"NICOLAS9",passagens:[{equipe:"00 NATION",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
-  {jogador:"EASY",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"AXS FUSION",cargo:"Jogador"}]},
-  {jogador:"CHUCKY",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"HUMMER ESPORTS",cargo:"Jogador"},{equipe:"XIS",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"}]},
-  {jogador:"HENDER",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"}]},
-  {jogador:"LENNO",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"AXS FUSION",cargo:"Jogador"}]},
-  {jogador:"TRAP",passagens:[{equipe:"CRUZEIRO",cargo:"Jogador"},{equipe:"STARS HORIZON",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"MENOR10",passagens:[{equipe:"CRUZEIRO",cargo:"Jogador"}]},
-  {jogador:"JapaXL",passagens:[{equipe:"REALES",cargo:"Jogador"},{equipe:"ANGELS OUTPLAY",cargo:"Jogador"},{equipe:"AMAZON CRIPZ",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
-  {jogador:"HONEY",passagens:[{equipe:"00 NATION",cargo:"Jogador"},{equipe:"SÃO PAULO",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"ALPHA7",cargo:"Jogador"}]},
-  {jogador:"BAND",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"},{equipe:"LOOPS",cargo:"Jogador"}]},
-  {jogador:"HYPE",passagens:[{equipe:"LIBERTY",cargo:"Jogador"}]},
-  {jogador:"YDAVI",passagens:[{equipe:"LIBERTY",cargo:"Jogador"}]},
-  {jogador:"Erick11",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"},{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"BUENO",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"STARS HORIZON",cargo:"Jogador"}]},
-  {jogador:"Mandela",passagens:[{equipe:"TROPA",cargo:"Jogador"},{equipe:"MINERS",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"GUAXA",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"RENAN_Inativo",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Renan_Staff",passagens:[{equipe:"B4 ESPORTS",cargo:"Analista"},{equipe:"MAGIC SQUAD",cargo:"Analista"},{equipe:"FLUXO W7M",cargo:"Analista"}]},
-  {jogador:"LOIRORJ",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"}]},
-  {jogador:"JUNINXL",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"GTECOXC",passagens:[{equipe:"REALES",cargo:"Jogador"}]},
-  {jogador:"Raone7",passagens:[{equipe:"TSM",cargo:"Jogador"},{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"CORUJA",passagens:[{equipe:"MINERS",cargo:"Jogador"}]},
-  {jogador:"Stark7",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"MIBR",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"},{equipe:"ALPHA7",cargo:"Jogador"}]},
-  {jogador:"RBN9",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"Ygorzn7",passagens:[{equipe:"TROPICAOS",cargo:"Jogador"}]},
-  {jogador:"haaxszz",passagens:[{equipe:"TROPICAOS",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"Ice77",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"SÃO PAULO",cargo:"Jogador"},{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"DANXL7",passagens:[{equipe:"TROPICAOS",cargo:"Jogador"}]},
-  {jogador:"Isopor21",passagens:[{equipe:"TSM",cargo:"Jogador"},{equipe:"META GAMING",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"Goabe7",passagens:[{equipe:"HUMMER ESPORTS",cargo:"Jogador"},{equipe:"AMAZON CRIPZ",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"Vrziin",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Vitin9",passagens:[{equipe:"STARS HORIZON",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"Guifox",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"},{equipe:"JUVENTUS",cargo:"Jogador"},{equipe:"SAVEX",cargo:"Jogador"}]},
-  {jogador:"Ghost7",passagens:[{equipe:"VIVO KEYD",cargo:"Jogador"},{equipe:"INTZ",cargo:"Jogador"},{equipe:"JUVENTUS",cargo:"Jogador"},{equipe:"BLACK DRAGONS",cargo:"Jogador"}]},
-  {jogador:"Rocks",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Federal7",passagens:[{equipe:"TSM",cargo:"Jogador"},{equipe:"VIVO KEYD",cargo:"Jogador"}]},
-  {jogador:"TheusL",passagens:[{equipe:"TROPICAOS",cargo:"Jogador"}]},
-  {jogador:"Proxx7",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"GhostBB",passagens:[{equipe:"HUMMER ESPORTS",cargo:"Jogador"},{equipe:"XIS",cargo:"Jogador"}]},
-  {jogador:"Suplay",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Deley",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"Itachi Fé",passagens:[{equipe:"TSM",cargo:"Jogador"},{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"Cruel",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"NETSHOES MINERS",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"GIUH.87",passagens:[{equipe:"MAGIC SQUAD",cargo:"Jogador"},{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"Mexico",passagens:[{equipe:"LOUD SNICKERS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"MTS7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"TEC",cargo:"Jogador"}]},
-  {jogador:"R1",passagens:[{equipe:"B4 ESPORTS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"MK7",passagens:[{equipe:"HUMMER ESPORTS",cargo:"Jogador"}]},
-  {jogador:"MT7",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"}]},
-  {jogador:"Motovea",passagens:[{equipe:"XIS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Kozak",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"}]},
-  {jogador:"CorumbaX",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"Yato7",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"LIPPE!",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"},{equipe:"SAVEX",cargo:"Jogador"}]},
-  {jogador:"drk",passagens:[{equipe:"INTZ",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"Vodka",passagens:[{equipe:"AMAZON CRIPZ",cargo:"Jogador"}]},
-  {jogador:"Zetsu9",passagens:[{equipe:"MIBR",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"},{equipe:"JUVENTUS",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"Nickz7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"Addy7",passagens:[{equipe:"XIS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"JCB",cargo:"Jogador"},{equipe:"SAVEX",cargo:"Jogador"}]},
-  {jogador:"GLAUCO7",passagens:[{equipe:"META GAMING",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"JUVENTUS",cargo:"Jogador"}]},
-  {jogador:"Destroi7",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Lins7",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"},{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"}]},
-  {jogador:"MITOmvp",passagens:[{equipe:"INTZ",cargo:"Jogador"}]},
-  {jogador:"Redxz7",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"KMX",passagens:[{equipe:"SÃO PAULO",cargo:"Jogador"},{equipe:"MGS",cargo:"Jogador"},{equipe:"SAVEX",cargo:"Jogador"}]},
-  {jogador:"MICHEL42",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Will7",passagens:[{equipe:"GOD ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Hagane10",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Araujo13",passagens:[{equipe:"XIS",cargo:"Jogador"}]},
-  {jogador:"BLACK02",passagens:[{equipe:"E1 SPORTS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"RUSH GAMING",cargo:"Jogador"}]},
-  {jogador:"KenidyZ",passagens:[{equipe:"SÃO PAULO",cargo:"Jogador"}]},
-  {jogador:"Stand7",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"},{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"}]},
-  {jogador:"Muniz",passagens:[{equipe:"SÃO PAULO",cargo:"Jogador"}]},
-  {jogador:"ROG5WP",passagens:[{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"PUTSGRILO",passagens:[{equipe:"FLUXO W7M",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Head Coach"}]},
-  {jogador:"PETERxl",passagens:[{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"o Mala",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"Hak",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"Nikeboy",passagens:[{equipe:"ANGELS OUTPLAY",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"LOOPS",cargo:"Jogador"}]},
-  {jogador:"BRUNO7w",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"}]},
-  {jogador:"Bahiazx",passagens:[{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"LOOPS",cargo:"Jogador"}]},
-  {jogador:"brota10",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"Luan7",passagens:[{equipe:"INFLUENCE RAGE",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"LOUD SNICKERS",cargo:"Jogador"}]},
-  {jogador:"iguiNmvp",passagens:[{equipe:"E1 SPORTS",cargo:"Jogador"},{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"Bombom",passagens:[{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"Strend7",passagens:[{equipe:"JCB",cargo:"Jogador"}]},
-  {jogador:"MitinX",passagens:[{equipe:"JCB",cargo:"Jogador"},{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"ALPHA7",cargo:"Jogador"}]},
-  {jogador:"Kalango7",passagens:[{equipe:"JCB",cargo:"Jogador"}]},
-  {jogador:"JOW",passagens:[{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"KazumaWP",passagens:[{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"whyzer7",passagens:[{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"wLiu",passagens:[{equipe:"MGS",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"}]},
-  {jogador:"Kauã7xp",passagens:[{equipe:"MGS",cargo:"Jogador"},{equipe:"PAIN GAMING",cargo:"Jogador"}]},
-  {jogador:"Se7en",passagens:[{equipe:"MGS",cargo:"Jogador"}]},
-  {jogador:"Drey22",passagens:[{equipe:"MGS",cargo:"Jogador"},{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"TREVOR9",passagens:[{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"}]},
-  {jogador:"xGUTO",passagens:[{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"KakaZk",passagens:[{equipe:"INCO GAMING",cargo:"Jogador"},{equipe:"CORINTHIANS",cargo:"Jogador"},{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"Theus",passagens:[{equipe:"INTZ",cargo:"Jogador"},{equipe:"VASCO ESPORTS",cargo:"Jogador"}]},
-  {jogador:"MTZIN",passagens:[{equipe:"TEC",cargo:"Jogador"}]},
-  {jogador:"WM.sup",passagens:[{equipe:"JUVENTUS",cargo:"Jogador"}]},
-  {jogador:"NANDO7",passagens:[{equipe:"JUVENTUS",cargo:"Jogador"}]},
-  {jogador:"Hugo7",passagens:[{equipe:"JCB",cargo:"Jogador"}]},
-  {jogador:"STRIKE",passagens:[{equipe:"INFLUENCE RAGE",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"DELTA",passagens:[{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"JucaW",passagens:[{equipe:"ALFA 34",cargo:"Jogador"},{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"LOOPS",cargo:"Jogador"}]},
-  {jogador:"BYTE333",passagens:[{equipe:"ANTISOCIAL TEAM",cargo:"Jogador"},{equipe:"ALFA 34",cargo:"Jogador"}]},
-  {jogador:"Pollux7",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"Guimerlq",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"},{equipe:"RUSH GAMING",cargo:"Jogador"}]},
-  {jogador:"LucasAWP",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"},{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"LYON",passagens:[{equipe:"VASCO ESPORTS",cargo:"Jogador"},{equipe:"E1 SPORTS",cargo:"Jogador"}]},
-  {jogador:"bzp10",passagens:[{equipe:"TEAM SOLID",cargo:"Jogador"}]},
-  {jogador:"Furiazz7",passagens:[{equipe:"INFLUENCE RAGE",cargo:"Jogador"}]},
-  {jogador:"Joker7",passagens:[{equipe:"SAVEX",cargo:"Jogador"}]},
-  {jogador:"SOCA",passagens:[{equipe:"SAVEX",cargo:"Jogador"}]},
-  {jogador:"Shotzz",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"},{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"mtsexy",passagens:[{equipe:"LOS",cargo:"Jogador"}]},
-  {jogador:"LopesXL",passagens:[{equipe:"FLAMENGO",cargo:"Jogador"}]},
-  {jogador:"Erick1ng",passagens:[{equipe:"W7M ESPORTS",cargo:"Jogador"}]},
-  {jogador:"fnx04",passagens:[{equipe:"RUSH GAMING",cargo:"Jogador"}]},
-  {jogador:"rojao10",passagens:[{equipe:"RED CANIDS",cargo:"Jogador"}]},
-  {jogador:"RZN7",passagens:[{equipe:"INCO GAMING",cargo:"Jogador"}]},
-  {jogador:"Rennan7",passagens:[{equipe:"AXS FUSION",cargo:"Jogador"}]}
-];
+let dbPassagens = [];
 
 // 1. Configuração estendida para 10 semanas (2 dias cada)
 const wbWeeks = {
@@ -2594,7 +2304,7 @@ const playerRoles = {
     "Luan7": "RUSH", "Ericking": "SUP", "Stark": "GRAN", "Draxx7": "RUSH",
     "ITAL0$$": "RUSH", "IguiNmvp": "RUSH", "Naandox": "GRAN", "KaKaZk": "SUP", "Erick11": "RUSH",
     "Lost21": "RUSH", "Cauan7": "GRAN", "Nikeboy": "SUP", "Mala": "RUSH", "Shotzzrx": "RUSH",
-    "Keven7!": "RUSH", "WillProdigy": "RUSH", "Destroi7": "GRAN", "YOKO7": "SUP", "Master77": "RUSH",
+    "Keven7!": "RUSH", "WillProdigy": "RUSH", "Destroi7": "GRAN", "YOKO7": "SUP", "Master77": "RUSH", "LucasAWP": "SUP",
     "DRADE.11": "GRAN", "SEU PAI": "RUSH", "WM": "SUP", "nepoIGN": "RUSH"
 };
 
@@ -2619,6 +2329,13 @@ let playerPhotos = {
 
 // --- NOVOS CAMPEONATOS (Distribuição Automática) ---
 // dbCampeonatos é agora carregado dinamicamente via Google Sheets (função loadCampeonatos)
+
+// =============================================
+// LOGOS DE LIGAS/TORNEIOS — carregados do Google Sheets
+// Chave: nome do torneio (ou parte dele) | Valor: URL da imagem
+// =============================================
+let leagueLogos = {};
+
 // A variável começa vazia e é preenchida depois
 let dbCampeonatos = [];
 
@@ -2638,6 +2355,41 @@ let dbCampeonatos = [];
 // ==========================================
 // CARREGAR CAMPEONATOS VIA GOOGLE SHEETS
 // ==========================================
+async function loadPassagens() {
+    // ⚠️ SUBSTITUA PELO SEU LINK TSV DO GOOGLE SHEETS (Aba de Passagens)
+    const PASSAGENS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=26940419&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${PASSAGENS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n');
+        
+        const tempMap = {};
+
+        // Pula o cabeçalho e processa linha por linha
+        lines.slice(1).forEach(line => {
+            const data = line.split('\t');
+            const jogador = data[0]?.trim().replace(/\r/g, "");
+            const equipe = data[1]?.trim().replace(/\r/g, "");
+            const cargo = data[2]?.trim().replace(/\r/g, "");
+
+            if (jogador && equipe) {
+                if (!tempMap[jogador]) {
+                    tempMap[jogador] = { jogador: jogador, passagens: [] };
+                }
+                tempMap[jogador].passagens.push({ equipe, cargo });
+            }
+        });
+
+        // Converte o mapa de volta para o formato de Array que o site espera
+        dbPassagens = Object.values(tempMap);
+        console.log("Histórico de passagens carregado com sucesso!");
+
+    } catch (e) {
+        console.error('[loadPassagens] Erro:', e);
+    }
+}
+
 async function loadStaff() {
     // COLE AQUI O LINK TSV DA SUA ABA DE STAFF (Cuidado para manter o formato tsv)
     const STAFF_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1857830960&single=true&output=tsv';
@@ -3152,6 +2904,7 @@ const db = {
         { jogador: "Juca10xL", equipe: "E1 SPORTS" },
         { jogador: "KaKaZk", equipe: "RISE GAMING" },
         { jogador: "Keven7!", equipe: "CIVIS" },
+        { jogador: "LucasAWP", equipe: "CIVIS" },
         { jogador: "LC777", equipe: "RUSH GAMING" },
         { jogador: "Lost21", equipe: "VIRTUS PRO" },
         { jogador: "Luan7", equipe: "LOOPS" },
@@ -3315,6 +3068,7 @@ const data = await response.json();
     renderSchedule();
     renderOutrasEquipesGrid();
     buildDesktopTeamNav();
+    initSearchListeners();
 
     // ==========================================
     // 4. INTEGRAÇÕES EXTERNAS (GOOGLE SHEETS)
@@ -3324,9 +3078,11 @@ const data = await response.json();
     loadSocials();  
     loadTeamLogos();
     loadPhotos();
+    loadLeagueLogos(); // ← Logos de ligas/torneios via Sheets
     loadCampeonatos(); 
     loadTitles();
     loadStaff();
+    await loadPassagens();
 
     // ==========================================
     // 5. CRONÔMETROS
@@ -3529,36 +3285,96 @@ function renderHistoricoEquipes(nome, containerId) {
     let container = document.getElementById(containerId);
     if (!container) return;
 
-    // Pega o nome e deixa minúsculo de uma vez só para ficar rápido
     let cleanName = typeof getDisplayName === 'function' ? getDisplayName(nome) : nome;
     let targetLower = cleanName.toLowerCase();
     
+    // Busca o histórico do banco de dados antigo
     let hist = typeof dbPassagens !== 'undefined' ? dbPassagens.find(p => p.jogador.toLowerCase() === targetLower) : null;
+    
+    // Clona a array para não modificar o banco original
+    let passagensArray = hist && hist.passagens ? [...hist.passagens] : [];
 
-    if (!hist || !hist.passagens || hist.passagens.length === 0) {
-        container.innerHTML = '<div style="color:#888; font-size:0.9em; text-align:center; width:100%; font-weight:bold;">Nenhum histórico de equipes registrado no banco de dados.</div>';
+    // ========================================================
+    // MÁGICA: VERIFICA SE O JOGADOR ESTÁ ATIVO NA TEMPORADA
+    // ========================================================
+    let activePlayer = typeof db !== 'undefined' && db.players ? db.players.find(p => checkNameMatch(p.jogador, nome)) : null;
+    let activeStaff = typeof dbStaff !== 'undefined' ? dbStaff.find(s => checkNameMatch(s.nome, nome)) : null;
+
+    let currentActiveTeam = null;
+    let currentRole = null;
+
+    // Dá prioridade pro cargo/time atual
+    if (activePlayer && !activePlayer.isEx) {
+        currentActiveTeam = activePlayer.equipe;
+        currentRole = "Jogador";
+    } else if (activeStaff) {
+        currentActiveTeam = activeStaff.equipe;
+        currentRole = activeStaff.cargo || "Staff";
+    }
+
+    // Se o jogador estiver ativo, insere o time novo no final da linha do tempo!
+    if (currentActiveTeam) {
+        let lastPassagem = passagensArray.length > 0 ? passagensArray[passagensArray.length - 1] : null;
+        
+        // Só adiciona se o último time já não for igual ao time atual
+        if (!lastPassagem || lastPassagem.equipe.toUpperCase() !== currentActiveTeam.toUpperCase()) {
+            passagensArray.push({
+                equipe: currentActiveTeam,
+                cargo: currentRole
+            });
+        }
+    }
+
+    if (passagensArray.length === 0) {
+        container.innerHTML = '<div style="color:#888; font-size:0.9em; text-align:center; width:100%; font-weight:bold;">Nenhum histórico de equipes registrado.</div>';
         return;
     }
 
-    container.innerHTML = hist.passagens.map(passagem => {
+    container.innerHTML = passagensArray.map((passagem, index) => {
         let logoSrc = logos[passagem.equipe] || 'escudo.webp';
         let equipeUpper = passagem.equipe.toUpperCase();
         
-        let isClickable = db.teams.some(t => t.equipe.toUpperCase() === equipeUpper);
+        let isClickable = typeof db !== 'undefined' && db.teams && db.teams.some(t => t.equipe.toUpperCase() === equipeUpper);
         
-        let cursorStyle = isClickable ? 'cursor: pointer; transition: 0.2s;' : 'cursor: default; opacity: 0.6; filter: grayscale(0.5);';
-        let hoverStyle = isClickable ? 'onmouseover="this.style.borderColor=\'var(--accent)\'; this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.borderColor=\'var(--border)\'; this.style.transform=\'none\'"' : '';
+        // Verifica se essa cartinha é a última e representa a equipe ATUAL
+        let isLast = index === passagensArray.length - 1;
+        let isCurrent = currentActiveTeam && equipeUpper === currentActiveTeam.toUpperCase() && isLast;
+
+        let cursorStyle = isClickable ? 'cursor: pointer; transition: 0.3s;' : 'cursor: default;';
+        let styleHighlight = '';
+        let hoverStyle = '';
+        
         let clickAction = isClickable ? `onclick="openTeamProfile('${passagem.equipe}')"` : '';
-        
-        let sName = shortNames[passagem.equipe] || passagem.equipe;
+        let sName = typeof shortNames !== 'undefined' && shortNames[passagem.equipe] ? shortNames[passagem.equipe] : passagem.equipe;
+        let labelCargo = passagem.cargo;
+
+        // LÓGICA DE CORES E EFEITOS (ATUAL vs ANTIGOS)
+        if (isCurrent) {
+            // Time atual: Brilhando, 100% visível
+            styleHighlight = 'border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 200, 255, 0.4); opacity: 1; filter: grayscale(0);';
+            labelCargo = '<span style="color:#00c8ff;">ATUAL</span>';
+            if (isClickable) {
+                hoverStyle = 'onmouseover="this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.transform=\'none\'"';
+            }
+        } else {
+            // Times antigos: Apagadinhos (Cinza e 50% transparente)
+            if (isClickable) {
+                styleHighlight = 'border-color: var(--border); opacity: 0.5; filter: grayscale(0.8);';
+                // Ao passar o mouse, ele acende e ganha cor
+                hoverStyle = 'onmouseover="this.style.borderColor=\'var(--accent)\'; this.style.transform=\'translateY(-3px)\'; this.style.opacity=\'1\'; this.style.filter=\'grayscale(0)\'" onmouseout="this.style.borderColor=\'var(--border)\'; this.style.transform=\'none\'; this.style.opacity=\'0.5\'; this.style.filter=\'grayscale(0.8)\'"';
+            } else {
+                // Times que não existem mais: Super apagados e sem hover
+                styleHighlight = 'border-color: var(--border); opacity: 0.3; filter: grayscale(1);';
+            }
+        }
 
         return `
         <div style="display: flex; flex-direction: column; align-items: center; width: 90px;">
-            <div style="font-size: 0.55em; color: var(--accent); font-weight: bold; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; text-align: center; height: 12px;">
-                ${passagem.cargo}
+            <div style="font-size: 0.55em; color: var(--text-muted); font-weight: bold; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; text-align: center; height: 12px;">
+                ${labelCargo}
             </div>
             
-            <div ${clickAction} ${hoverStyle} style="width: 60px; height: 60px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); ${cursorStyle}">
+            <div ${clickAction} ${hoverStyle} style="width: 60px; height: 60px; background: rgba(255,255,255,0.02); border: 1px solid; border-radius: 12px; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); ${cursorStyle} ${styleHighlight}">
                 <img src="${logoSrc}" style="width: 40px; height: 40px; object-fit: contain;">
             </div>
             
@@ -3760,7 +3576,7 @@ function renderTop5Stats() {
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
         let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
         html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span></div>
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
                 <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
                 <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
             </div>`).join('');
@@ -3985,21 +3801,11 @@ function renderUnifiedTrophies(name, containerId) {
     }
 
     container.innerHTML = allTitles.map(t => {
-        let tournamentImg = "trofeu.webp"; // Variável protegida!
+        let tournamentImg = resolveLeagueLogo(t.event);
         
-        if (t.event.includes("WB")) {
-            tournamentImg = "wb.webp";
-        } else if (t.event.includes("C.O.P.A")) {
-            if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
-            else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
-            else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
-            else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
-            else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
-            else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
-            else tournamentImg = "copaff.webp";
-        }
+        // CORREÇÃO: ADICIONAMOS A VARIÁVEL typeUpper AQUI!
+        let typeUpper = t.type ? t.type.toUpperCase() : "";
         
-        let typeUpper = t.type.toUpperCase();
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
         let roleTag = "";
@@ -4007,8 +3813,8 @@ function renderUnifiedTrophies(name, containerId) {
         if (t.staff && t.staff.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
         else if (t.players && t.players.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
 
-        return `<div class="trophy-card ${borderClass}">
-            <img src="${tournamentImg}" class="trophy-img">
+return `<div class="trophy-card ${borderClass}">
+            <img class="ot-card-img" src="${tournamentImg}" loading="lazy" onerror="this.src='trofeu.webp'">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
             ${roleTag}
@@ -4220,8 +4026,8 @@ function renderEditionRanking() {
         
         // Clique liberado para todos (Ativos e Inativos)
         let nameHtml = `
-            <span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>
-            <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameShort}</span>`;
+            <span class="clickable full-name-desktop" onclick="${_safePPAttr(p.activeName)}">${p.originalName}</span>
+            <span class="clickable short-name-mobile" onclick="${_safePPAttr(p.activeName)}">${nameShort}</span>`;
             
         let teamHtml = p.isPlaying ? 
             `<div class="team-cell" style="justify-content:center;"><img src="${logos[p.equipe]||''}" class="team-logo"><span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span></div>` : 
@@ -4439,8 +4245,8 @@ function renderHistoricalRanking() {
         
         // Clique liberado para todos (Ativos e Inativos)
         let nameHtml = `
-            <span class="clickable full-name-desktop" onclick="openPlayerProfile('${p.activeName}')">${p.originalName}</span>
-            <span class="clickable short-name-mobile" onclick="openPlayerProfile('${p.activeName}')">${nameShort}</span>`;
+            <span class="clickable full-name-desktop" onclick="${_safePPAttr(p.activeName)}">${p.originalName}</span>
+            <span class="clickable short-name-mobile" onclick="${_safePPAttr(p.activeName)}">${nameShort}</span>`;
             
         let teamHtml = p.isPlaying ? 
             `<div class="team-cell" style="justify-content:center;"><img src="${logos[p.equipe]||''}" class="team-logo"><span class="hide-mobile">${shortNames[p.equipe] || p.equipe}</span></div>` : 
@@ -4466,7 +4272,7 @@ function createSelectionCardHTML(p) {
     const redAccent = "#ff0000";
 
     return `
-        <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 4px solid ${redAccent}; border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 0 25px rgba(255, 0, 0, 0.5); margin: 0 auto;">
+        <div onclick="${_safePPAttr(p.jogador)}" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 4px solid ${redAccent}; border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 0 25px rgba(255, 0, 0, 0.5); margin: 0 auto;">
             <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #400, #000); opacity: 0.95;"></div>
             
             <div style="position: absolute; top: 15px; left: 15px; z-index: 10; background: ${redAccent}; color: #fff; padding: 4px 12px; border-radius: 4px; font-size: 0.75em; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">
@@ -4534,7 +4340,7 @@ function createPlayerCardHTML(p, scale = 1) {
     let marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
 
     return `
-        <div onclick="openPlayerProfile('${p.jogador}')" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
+        <div onclick="${_safePPAttr(p.jogador)}" style="cursor:pointer; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; ${glow} ${marginStyle}">
             <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #222, #000); opacity: 0.9;"></div>
             ${exBadge} 
             ${captainBadge}
@@ -5333,7 +5139,7 @@ function openStaffProfile(staffName) {
     let linkContainer = document.getElementById('sp-player-link-container');
     if(linkContainer) {
         linkContainer.innerHTML = isPlayer ? 
-            `<button class="btn-action" onclick="openPlayerProfile('${s.nome}')" style="background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff; font-size: 0.85em; margin-bottom: 15px; width: 100%;">Ver Carreira como Jogador 🎮</button>` : '';
+            `<button class="btn-action" onclick="${_safePPAttr(s.nome)}" style="background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff; font-size: 0.85em; margin-bottom: 15px; width: 100%;">Ver Carreira como Jogador 🎮</button>` : '';
     }
 
     // Stats da Equipa e Troféus
@@ -5593,7 +5399,7 @@ function renderTeamProfileStats() {
 
         let tbody = document.querySelector('#table-team-players tbody');
         if(tbody) {
-            tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
+            tbody.innerHTML = playersList.sort((a,b) => b.abates - a.abates).map(p => `<tr><td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(p.jogador)}">${p.jogador}</span></td><td style="color:var(--accent); font-weight:bold;">${p.abates}</td><td>${p.dano}</td><td>${p.assists}</td><td>${p.quedas}</td><td>${p.mvp || 0}</td></tr>`).join('');
         }
     }
 
@@ -5614,20 +5420,7 @@ function renderTeamTrophies(teamName) {
     }
 
     container.innerHTML = teamTitles.map(t => {
-let tournamentImg = "trofeu.webp"; 
-        
-        if (t.event.includes("WB")) {
-            tournamentImg = "wb.webp";
-        } else if (t.event.includes("C.O.P.A")) {
-            // Se for C.O.P.A, verifica o ano e puxa a logo específica
-            if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
-            else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
-            else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
-            else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
-            else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
-            else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
-            else tournamentImg = "copaff.webp"; // Fallback caso não ache o ano
-        }
+let tournamentImg = resolveLeagueLogo(t.event);
         return `
         <div class="trophy-card border-campeao">
             <img src="${tournamentImg}" class="trophy-img" style="height: 50px;">
@@ -5924,10 +5717,23 @@ function getOverallColor(ovr) {
     return '#cd7f32';               // Bronze
 }
 
+// Mapa seguro: índice numérico → nome do jogador (evita quebra por apóstrofo/! no onclick)
+let _ppNameMap = [];
+function _openPP(idx) {
+    if (_ppNameMap[idx] !== undefined) openPlayerProfile(_ppNameMap[idx]);
+}
+function _safePPAttr(name) {
+    let idx = _ppNameMap.indexOf(name);
+    if (idx === -1) { idx = _ppNameMap.length; _ppNameMap.push(name); }
+    return `_openPP(${idx})`;
+}
+
 function openPlayerProfile(playerName) {
     if (!playerName) return;
     let safeName = playerName.trim();
-    let p = db.players.find(x => x.jogador.trim().toLowerCase() === safeName.toLowerCase());
+    // Tenta match exato primeiro, depois via alias/checkNameMatch
+    let p = db.players.find(x => x.jogador.trim().toLowerCase() === safeName.toLowerCase())
+          || db.players.find(x => checkNameMatch(x.jogador, safeName));
     
     const isInactive = !p;
     currentPlayerView = p ? p.jogador : safeName; 
@@ -5966,10 +5772,25 @@ let officialName = safeName;
     // NOTA: Certifique-se de que a função getDisplayName() existe no seu código!
     document.getElementById('pp-name').innerText = typeof getDisplayName === 'function' ? getDisplayName(p.jogador) : p.jogador;
     
+    // Detecta equipe ATUAL pelo registro mais recente nas quedas (resolve transferências)
+    let equipeAtual = p.equipe;
+    if (!isInactive) {
+        let lastDay = -1;
+        for (let d in dbJogadoresQuedas) {
+            for (let q in dbJogadoresQuedas[d]) {
+                let entry = dbJogadoresQuedas[d][q].find(x => checkNameMatch(x.nome, p.jogador));
+                if (entry && Number(d) > lastDay) {
+                    lastDay = Number(d);
+                    equipeAtual = entry.equipe;
+                }
+            }
+        }
+    }
+
     const teamEl = document.getElementById('pp-team');
     if (teamEl) {
-        teamEl.innerText = isInactive ? "JOGADOR HISTÓRICO" : p.equipe;
-        teamEl.onclick = isInactive ? null : () => openTeamProfile(p.equipe);
+        teamEl.innerText = isInactive ? "JOGADOR HISTÓRICO" : equipeAtual;
+        teamEl.onclick = isInactive ? null : () => openTeamProfile(equipeAtual);
         teamEl.style.cursor = isInactive ? "default" : "pointer";
     }
 
@@ -6120,11 +5941,14 @@ function renderAllPlayers() {
             .filter(p => p.quedas > 0);
 
         tbody.innerHTML = data.sort((a,b) => b.abates - a.abates).map((p, i) => {
-            // Usa a equipe oficial para puxar a logo corretamente
-            let officialTeam = db.players.find(x => x.jogador === p.jogador)?.equipe || p.equipe;
+            // Resolve o nome canônico e equipe oficial via db.players (suporta aliases)
+            let dbP = db.players.find(x => x.jogador === p.jogador) 
+                   || db.players.find(x => checkNameMatch(x.jogador, p.jogador));
+            let canonicalName = dbP ? dbP.jogador : p.jogador;
+            let officialTeam = dbP?.equipe || p.equipe;
             return `<tr>
                 <td>${i+1}</td>
-                <td style="text-align:left;"><span class="clickable" onclick="openPlayerProfile('${p.jogador}')">${p.jogador}</span></td>
+                <td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
                 <td class="team-cell hide-mobile"><img src="${logos[officialTeam]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${officialTeam}')">${officialTeam}</span></td>
                 <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
                 <td class="hide-mobile">${p.dano}</td>
@@ -6180,7 +6004,7 @@ function renderPlayerTrophies(jogador) {
     let trophiesHtml = allTitles.length === 0 ? 
         '<div style="color:#888; text-align:center; width:100%; padding:20px;">Nenhum título oficial registrado na base de dados.</div>' : 
         allTitles.map(t => {
-            let tournamentImg = t.event.includes("WB") ? "wb.webp" : "lbff.webp";
+            let tournamentImg = resolveLeagueLogo(t.event);
             
             let typeUpper = t.type.toUpperCase();
             let borderClass = 'border-campeao';
@@ -6416,6 +6240,21 @@ function renderCFFStats() {
     `;
 }
 
+// Listener de busca configurado UMA VEZ — event delegation no container pai.
+// Assim funciona mesmo depois de innerHTML recriar os itens.
+function initSearchListeners() {
+    ['search-results-desktop', 'search-results-mobile'].forEach(id => {
+        const box = document.getElementById(id);
+        if (!box) return;
+        box.addEventListener('click', (e) => {
+            const item = e.target.closest('.search-item[data-name]');
+            if (!item) return;
+            e.stopPropagation();
+            selectSearchResult(item.dataset.type, item.dataset.name);
+        });
+    });
+}
+
 // Busca unificada (desktop e mobile compartilham o pool, só o container muda)
 function handleGlobalSearchFrom(source) {
     const inputId = source === 'desktop' ? 'global-search-desktop' : 'global-search-mobile';
@@ -6468,7 +6307,7 @@ function handleGlobalSearchFrom(source) {
         let isWB = db.teams.some(x => x.equipe.toUpperCase() === tName.toUpperCase());
         let subText = isWB ? "Equipe Competidora" : "Equipe Histórica";
         return `
-            <div class="search-item" onclick="selectSearchResult('team', '${tName}')">
+            <div class="search-item" data-type="team" data-name="${tName.replace(/"/g, '&quot;')}" style="cursor:pointer;">
                 <img src="${logos[tName] || 'escudo.webp'}" onerror="this.src='escudo.webp'">
                 <div>
                     <span style="font-weight: bold; color: #fff;">${tName}</span><br>
@@ -6480,7 +6319,7 @@ function handleGlobalSearchFrom(source) {
     html += foundPeople.map(p => {
         let img = p.isEx ? 'silhueta.png' : (p.type === 'staff' ? (staffPhotos[p.name] || 'silhueta.png') : (playerPhotos[p.name] || 'silhueta.png'));
         return `
-            <div class="search-item" onclick="selectSearchResult('${p.type}', '${p.name}')">
+            <div class="search-item" data-type="${p.type}" data-name="${p.name.replace(/"/g, '&quot;')}" style="cursor:pointer;">
                 <img src="${img}" onerror="this.src='silhueta.png'">
                 <div>
                     <span style="font-weight: bold; color: #fff;">${getDisplayName(p.name)}</span><br>
@@ -6489,6 +6328,7 @@ function handleGlobalSearchFrom(source) {
             </div>`;
     }).join('');
 
+    // Só atualiza o HTML — o listener já está no pai (initSearchListeners) e não precisa ser recriado
     resultsBox.innerHTML = html || '<div style="padding:15px; color:#888; text-align:center;">Nenhum resultado encontrado</div>';
     resultsBox.style.display = 'block';
 }
@@ -6526,7 +6366,7 @@ function renderIndividualRecords() {
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
         let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
         html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="openPlayerProfile('${p.jogador}')" title="${p.jogador}">${p.jogador}</span></div>
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
                 <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
                 <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
             </div>`).join('');
@@ -6702,12 +6542,8 @@ function renderOutrosTorneiosList() {
                 🏆 ${shortNames[champion] || champion}
             </div>` : '';
 
-        // Imagem Padrão ou customizada
-        let tournamentImg = 'trofeu.webp'; 
-        let nomeUpper = t.torneio.toUpperCase();
-        if (nomeUpper.includes('WB')) tournamentImg = 'wb.webp';
-        else if (nomeUpper.includes('LBFF')) tournamentImg = 'lbff.webp';
-        else if (nomeUpper.includes('C.O.P.A') || nomeUpper.includes('COPA FF')) tournamentImg = 'copaff.webp';
+        // Imagem: consulta planilha primeiro, depois fallback hardcoded
+        let tournamentImg = resolveLeagueLogo(t.torneio);
 
         const ano = t.data.substring(0, 4);
 
@@ -6744,24 +6580,14 @@ function hexToRgb(color) {
     return '0, 200, 255';
 }
 
-// Helper: retorna imagem do torneio
+// Helper: retorna imagem do torneio — usa resolveLeagueLogo (planilha + fallback hardcoded)
 function getTournamentImg(t) {
     if (!t) return 'lbff.webp';
+    // Se a planilha já forneceu uma imagem customizada, usa ela
     if (t.imagem) return t.imagem;
-    const nome = t.nome?.toUpperCase() || '';
-    const id = t.id?.toUpperCase() || '';
-    if (nome.includes('WB') || id.includes('WB')) return 'wb.webp';
-    if (nome.includes('LBFF') || id.includes('LBFF')) return 'lbff.webp';
-    if (nome.includes('C.O.P.A') || nome.includes('COPA')) {
-        if (nome.includes('2020') || t.ano === '2020') return 'copaff20.webp';
-        if (nome.includes('2022') || t.ano === '2022') return 'copaff22.webp';
-        if (nome.includes('2023') || t.ano === '2023') return 'copaff23.webp';
-        if (nome.includes('2024') || t.ano === '2024') return 'copaff24.webp';
-        if (nome.includes('2025') || t.ano === '2025') return 'copaff25.webp';
-        if (nome.includes('2026') || t.ano === '2026') return 'copaff26.webp';
-        return 'copaff.webp';
-    }
-    return 'lbff.webp';
+    // Senão, resolve pelo nome
+    const nome = t.nome || t.event || t.torneio || '';
+    return resolveLeagueLogo(nome);
 }
 
 // 2. Abre a tela de um torneio específico
@@ -6783,12 +6609,91 @@ function openOtherTournament(id) {
     if (badgeEl) badgeEl.innerText = t.tier;
 
     renderOtStandings();
+    renderOtChampions(t); // ← Seção da equipe campeã
     window.scrollTo(0, 0);
+}
+
+// Renderiza a seção da equipe campeã com cartinhas dos jogadores
+function renderOtChampions(t) {
+    const container = document.getElementById('ot-champions-container');
+    if (!container) return;
+
+    // Busca o título coletivo que bate com o nome deste torneio
+    const titulo = titlesData.coletivos.find(tc =>
+        tc.event.toUpperCase().trim() === t.torneio.toUpperCase().trim() ||
+        t.torneio.toUpperCase().includes(tc.event.toUpperCase().trim()) ||
+        tc.event.toUpperCase().includes(t.torneio.toUpperCase().trim())
+    );
+
+    if (!titulo || !titulo.players || titulo.players.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+
+    const teamName = titulo.team;
+    const teamLogo = logos[teamName] || 'escudo.webp';
+
+    // Gera os cards — com dados reais se o jogador existir, genérico se não
+    const cardsHtml = titulo.players.map(pName => {
+        // Tenta achar o jogador no banco atual ou histórico
+        let pObj = db.players.find(x => checkNameMatch(x.jogador, pName));
+
+        if (pObj) {
+            // Card completo com overall real
+            return `<div style="flex-shrink:0;">${createPlayerCardHTML(pObj, 0.85)}</div>`;
+        } else {
+            // Card genérico: silhueta + logo do time + bandeira
+            const photo = playerPhotos[pName] || 'silhueta.png';
+            return `
+            <div data-player="${pName.replace(/"/g,'&quot;')}" class="ot-champ-card" style="cursor:pointer; flex-shrink:0; width:220px; height:330px; background:#000; border:3px solid #888; border-radius:15px; position:relative; overflow:hidden; font-family:sans-serif; margin:0 auto;">
+                <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#222,#000);opacity:0.9;"></div>
+                <div style="position:absolute;top:30px;left:18px;z-index:4;text-align:center;color:#888;">
+                    <div style="font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">CAMPEÃO</div>
+                    <div style="margin:10px auto;width:32px;height:2px;background:#888;opacity:0.6;"></div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width:28px;border-radius:2px;display:block;margin:8px auto;">
+                    <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width:40px;height:40px;object-fit:contain;display:block;margin:10px auto;">
+                </div>
+                <img src="${photo}" onerror="this.src='silhueta.png'" style="position:absolute;top:10px;right:-20px;height:210px;z-index:2;-webkit-mask-image:linear-gradient(to bottom,black 70%,transparent 100%);">
+                <div style="position:absolute;bottom:0;width:100%;height:150px;background:linear-gradient(transparent,#000 35%);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;">
+                    <div style="width:100%;text-align:center;margin-bottom:6px;">
+                        <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
+                        <div style="color:#fff;font-size:18px;font-weight:900;text-transform:uppercase;padding:5px 0;">${pName}</div>
+                        <div style="margin:0 auto;width:85%;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);"></div>
+                    </div>
+                    <div style="color:#aaa;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">${teamName}</div>
+                </div>
+            </div>`;
+        }
+    }).join('');
+
+    container.innerHTML = `
+        <div style="margin-top:30px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px;">
+                <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width:40px;height:40px;object-fit:contain;">
+                <div>
+                    <div style="color:#ffd700;font-weight:900;font-size:1.1em;text-transform:uppercase;letter-spacing:1px;">🏆 Equipe Campeã</div>
+                    <div style="color:#fff;font-size:1.3em;font-weight:bold;">${teamName}</div>
+                </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;">
+                ${cardsHtml}
+            </div>
+        </div>
+    `;
+
+    // Listener seguro para os cards genéricos (evita problema com apóstrofos)
+    container.querySelectorAll('.ot-champ-card[data-player]').forEach(el => {
+        el.addEventListener('click', () => openPlayerProfile(el.dataset.player));
+    });
 }
 
 function closeOtherTournament() {
     document.getElementById('ot-list-view').style.display = 'block';
     document.getElementById('ot-details-view').style.display = 'none';
+    const champEl = document.getElementById('ot-champions-container');
+    if (champEl) { champEl.innerHTML = ''; champEl.style.display = 'none'; }
     currentOtData = null;
 }
 
@@ -6880,7 +6785,7 @@ function openOtTeamRoster(tourneyId, teamName) {
 
         if (isRegistered) {
             // Se existe, cria um botão que leva direto pro perfil
-            return `<button class="btn-action" style="width: 100%; margin-top: 0; background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff;" onclick="document.getElementById('ot-roster-modal').classList.remove('active'); openPlayerProfile('${pName}')">${pName} ↗</button>`;
+            return `<button class="btn-action" style="width: 100%; margin-top: 0; background: rgba(102, 179, 255, 0.1); border: 1px solid #66b3ff; color: #66b3ff;" onclick="document.getElementById('ot-roster-modal').classList.remove('active'); ${_safePPAttr(pName)}">${pName} ↗</button>`;
         } else {
             // Se NÃO existe, só mostra o nome numa caixinha cinza sem clique
             return `<div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px; border-radius: 6px; color: #888; font-weight: bold;">${pName}</div>`;
@@ -6969,7 +6874,7 @@ function renderHomeStats() {
         tbodyPlayers.innerHTML = sortedPlayers.map((p, i) => `
             <tr>
                 <td style="color:var(--accent); font-weight:bold;">${i+1}º</td>
-                <td class="clickable" onclick="openPlayerProfile('${p.jogador}')" style="text-align:left; border-bottom: none;">
+                <td class="clickable" onclick="${_safePPAttr(p.jogador)}" style="text-align:left; border-bottom: none;">
                     <span style="font-weight:bold; color:#fff;">${getDisplayName(p.jogador)}</span>
                     <div style="font-size: 0.75em; color: #888;">${p.equipe}</div>
                 </td>
@@ -7171,25 +7076,7 @@ async function openOutraEquipe(nome) {
     if (titulos.length > 0) {
         titulosSection.style.display = 'block';
         titulosContainer.innerHTML = titulos.map(t => {
-            let tournamentImg = 'trofeu.webp';
-            if (t.event.includes("WB")) tournamentImg = "wb.webp";
-            else if (t.event.includes("LBFF 9")) tournamentImg = "lbff9.webp";
-            else if (t.event.includes("LBFF 8")) tournamentImg = "lbff8.webp";
-            else if (t.event.includes("LBFF 7")) tournamentImg = "lbff7.webp";
-            else if (t.event.includes("LBFF 6")) tournamentImg = "lbff6.webp";
-            else if (t.event.includes("LBFF 5")) tournamentImg = "lbff5.webp";
-            else if (t.event.includes("LBFF 4")) tournamentImg = "lbff4.webp";
-            else if (t.event.includes("LBFF 3")) tournamentImg = "lbff3.webp";
-            else if (t.event.includes("LBFF 1")) tournamentImg = "lbff1.webp";
-            else if (t.event.includes("C.O.P.A")) {
-                if (t.event.includes("2020")) tournamentImg = "copaff20.webp";
-                else if (t.event.includes("2022")) tournamentImg = "copaff22.webp";
-                else if (t.event.includes("2023")) tournamentImg = "copaff23.webp";
-                else if (t.event.includes("2024")) tournamentImg = "copaff24.webp";
-                else if (t.event.includes("2025")) tournamentImg = "copaff25.webp";
-                else if (t.event.includes("2026")) tournamentImg = "copaff26.webp";
-                else tournamentImg = "copaff.webp";
-            }
+            let tournamentImg = resolveLeagueLogo(t.event);
             return `<div class="trophy-card border-campeao">
                 <img src="${tournamentImg}" class="trophy-img" onerror="this.src='trofeu.webp'">
                 <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
@@ -7255,6 +7142,77 @@ function renderOutraEquipeResultados() {
             <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color:#fff;' : ''}">${r.torneio}</td>
         </tr>`;
     }).join('');
+}
+
+// =============================================
+// LOGOS DE LIGAS — carrega do Google Sheets
+// Aba com colunas: nome_torneio | logo_url
+// "nome_torneio" pode ser o nome completo ou parte dele (ex: "LBFF 8", "Copa Tal 2025")
+// =============================================
+async function loadLeagueLogos() {
+    // TROQUE pelo link TSV da sua aba de logos de torneios (mude o gid= para o ID correto)
+    const LOGOS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1580920081&single=true&output=tsv';
+
+    try {
+        const res = await fetch(`${LOGOS_TSV_URL}&nocache=${new Date().getTime()}`);
+        const tsvText = await res.text();
+        const lines = tsvText.split('\n').slice(1); // Pula o cabeçalho
+
+        leagueLogos = {};
+        lines.forEach(line => {
+            const cols = line.split('\t');
+            const nome = cols[0]?.trim().replace(/\r/g, '').toUpperCase();
+            const url  = cols[1]?.trim().replace(/\r/g, '');
+            if (nome && url) {
+                leagueLogos[nome] = url;
+            }
+        });
+
+        console.log(`✅ ${Object.keys(leagueLogos).length} logo(s) de liga/torneio carregado(s)!`);
+
+        // Re-renderiza as telas que usam logos de torneio, se já estiverem abertas
+        renderOutrosTorneiosList();
+
+    } catch (e) {
+        console.error('[loadLeagueLogos] Erro:', e);
+    }
+}
+
+// Função auxiliar global para resolver a imagem de um torneio.
+// Prioridade: 1) Planilha (leagueLogos)  2) Arquivo local hardcoded  3) Fallback trofeu.webp
+function resolveLeagueLogo(nomeEvento) {
+    if (!nomeEvento) return 'trofeu.webp';
+    const upper = nomeEvento.toUpperCase().trim();
+
+    // 1. Tenta match exato no dicionário da planilha
+    if (leagueLogos[upper]) return leagueLogos[upper];
+
+    // 2. Tenta match parcial SEGURO:
+    //    A chave da planilha deve estar CONTIDA no nome do evento (não o contrário)
+    //    E a chave deve ter pelo menos 5 caracteres para evitar matches acidentais
+    let bestMatch = null;
+    let bestLen = 0;
+    for (let chave in leagueLogos) {
+        if (chave.length >= 5 && upper.includes(chave) && chave.length > bestLen) {
+            bestMatch = chave;
+            bestLen = chave.length;
+        }
+    }
+    if (bestMatch) return leagueLogos[bestMatch];
+
+    // 3. Fallback: lógica hardcoded original (WB, Copa FF, LBFF)
+    if (upper.includes('WB')) return 'wb.webp';
+    if (upper.includes('LBFF')) return 'lbff.webp';
+    if (upper.includes('C.O.P.A') || upper.includes('COPA FF') || upper.includes('COPA FREE')) {
+        if (upper.includes('2020')) return 'copaff20.webp';
+        if (upper.includes('2022')) return 'copaff22.webp';
+        if (upper.includes('2023')) return 'copaff23.webp';
+        if (upper.includes('2024')) return 'copaff24.webp';
+        if (upper.includes('2025')) return 'copaff25.webp';
+        if (upper.includes('2026')) return 'copaff26.webp';
+        return 'copaff.webp';
+    }
+    return 'trofeu.webp';
 }
 
 // =============================================
