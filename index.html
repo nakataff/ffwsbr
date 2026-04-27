@@ -1192,6 +1192,11 @@ tr:last-child {
 }
 
 .trophy-card:hover { transform: translateY(-5px); }
+.trophy-card[onclick]:hover {
+    border-color: var(--accent);
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.25);
+    transform: translateY(-5px) scale(1.03);
+}
 
 /* Cores por Categoria */
 .border-campeao { border-color: #ffd700 !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
@@ -2417,7 +2422,6 @@ async function loadStaff() {
 }
 
 async function loadTitles() {
-    // ⚠️ SUBSTITUA PELOS SEUS LINKS TSV REAIS GERADOS NO GOOGLE SHEETS ⚠️
     const TSV_URL_COLETIVOS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1613674157&single=true&output=tsv';
     const TSV_URL_INDIVIDUAIS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=988693030&single=true&output=tsv';
 
@@ -2427,24 +2431,32 @@ async function loadTitles() {
         const textCol = await resCol.text();
         const linesCol = textCol.split('\n');
         
-        titlesData.coletivos = linesCol.slice(1).map(line => {
+        let rawColetivos = linesCol.slice(1).map(line => {
             const cols = line.split('\t');
             return {
                 event: cols[0]?.trim().replace(/\r/g, "") || "",
                 type: cols[1]?.trim().replace(/\r/g, "") || "",
                 team: cols[2]?.trim().replace(/\r/g, "") || "",
-                // O .split(',') transforma o texto "MT7, Bops" em um Array ["MT7", "Bops"]
                 players: cols[3] ? cols[3].split(',').map(p => p.trim()) : [],
                 staff: cols[4] ? cols[4].split(',').map(s => s.trim()) : []
             };
-        }).filter(t => t.event !== ""); // Ignora linhas em branco
+        }).filter(t => t.event !== "");
+
+        // FILTRO MÁGICO: Remove linhas duplicadas da planilha automaticamente
+        let vistosCol = new Set();
+        titlesData.coletivos = rawColetivos.filter(t => {
+            let chave = `${t.event}-${t.type}-${t.team}`.toLowerCase();
+            if (vistosCol.has(chave)) return false;
+            vistosCol.add(chave);
+            return true;
+        });
 
         // 2. CARREGA OS TÍTULOS INDIVIDUAIS
         const resInd = await fetch(`${TSV_URL_INDIVIDUAIS}&nocache=${new Date().getTime()}`);
         const textInd = await resInd.text();
         const linesInd = textInd.split('\n');
 
-        titlesData.individuais = linesInd.slice(1).map(line => {
+        let rawIndividuais = linesInd.slice(1).map(line => {
             const cols = line.split('\t');
             return {
                 event: cols[0]?.trim().replace(/\r/g, "") || "",
@@ -2454,9 +2466,16 @@ async function loadTitles() {
             };
         }).filter(t => t.event !== "");
 
-        console.log("🏆 Títulos carregados com sucesso do Sheets!");
-        
-        // Atualiza as telas que dependem dos títulos logo na inicialização
+        // FILTRO MÁGICO: Remove linhas duplicadas da planilha automaticamente
+        let vistosInd = new Set();
+        titlesData.individuais = rawIndividuais.filter(t => {
+            let chave = `${t.event}-${t.type}-${t.team}-${t.player}`.toLowerCase();
+            if (vistosInd.has(chave)) return false;
+            vistosInd.add(chave);
+            return true;
+        });
+
+        console.log("🏆 Títulos carregados e deduplicados com sucesso!");
         renderOutrasEquipesGrid();
 
     } catch (e) {
@@ -2738,11 +2757,16 @@ async function loadCampeonatos() {
 
             if (!tier || !data || !torneio || !equipe || !place) return;
 
-            const key = `${data}__${torneio}`;
+            // MÁGICA AQUI: A chave agora é SÓ o nome do torneio em maiúsculo.
+            // Isso força o código a juntar tudo que tem o mesmo nome no mesmo card!
+            const key = torneio.toUpperCase().trim();
+
             if (!torneiMap[key]) {
-                // Adicionamos a propriedade "id" para podermos abrir o torneio depois
+                // O ID recebe a chave nova. Isso garante que o clique no card vai continuar funcionando perfeitamente.
                 torneiMap[key] = { id: key, torneio, data, tier, resultados: {} };
             }
+            
+            // Adiciona a equipe e a posição dentro do torneio unificado
             torneiMap[key].resultados[equipe] = place;
         });
 
@@ -3765,8 +3789,6 @@ function renderUnifiedTrophies(name, containerId) {
     let container = document.getElementById(containerId);
     if(!container) return;
 
-    // --- OTIMIZAÇÃO MÁXIMA (FIM DOS TRAVAMENTOS) ---
-    // Resolvemos os nomes e apelidos do jogador UMA ÚNICA VEZ
     let targetNameLower = name.toLowerCase();
     let validNames = new Set([targetNameLower]);
     
@@ -3777,21 +3799,18 @@ function renderUnifiedTrophies(name, containerId) {
         }
     }
 
-    // Nova função relâmpago: só checa se o nome existe dentro da lista que acabamos de gerar
     const fastCheck = (n) => n && validNames.has(n.toLowerCase());
-    // ------------------------------------------------
 
-    // Agora os filtros rodam instantaneamente usando o fastCheck
     let indTitles = titlesData.individuais.filter(t => fastCheck(t.player));
     let colAsPlayer = titlesData.coletivos.filter(t => t.players && t.players.some(fastCheck));
     let colAsStaff = titlesData.coletivos.filter(t => t.staff && t.staff.some(fastCheck));
 
-    let allTitles = [...indTitles, ...colAsPlayer, ...colAsStaff];
+    let allTitles = [...new Set([...indTitles, ...colAsPlayer, ...colAsStaff])];
     
     if(containerId === 'pp-trophies-container') {
         let elCol = document.getElementById('pp-hist-col');
         let elInd = document.getElementById('pp-hist-ind');
-        if(elCol) elCol.innerText = colAsPlayer.length + colAsStaff.length;
+        if(elCol) elCol.innerText = new Set([...colAsPlayer, ...colAsStaff]).size;
         if(elInd) elInd.innerText = indTitles.length;
     }
 
@@ -3802,22 +3821,29 @@ function renderUnifiedTrophies(name, containerId) {
 
     container.innerHTML = allTitles.map(t => {
         let tournamentImg = resolveLeagueLogo(t.event);
-        
-        // CORREÇÃO: ADICIONAMOS A VARIÁVEL typeUpper AQUI!
         let typeUpper = t.type ? t.type.toUpperCase() : "";
-        
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
-        let roleTag = "";
-        // Verifica qual foi a função dele no título usando o fastCheck
-        if (t.staff && t.staff.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
-        else if (t.players && t.players.some(fastCheck)) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
+        // --- MÁGICA PARA O CLIQUE FUNCIONAR ---
+        const hasTournamentPage = !!findTournamentInDB(t.event);
+        const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;"` : '';
+        const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px;">🔗 Ver Torneio</div>` : '';
+        // --------------------------------------
 
-return `<div class="trophy-card ${borderClass}">
+        let roleTag = "";
+        let isPlayer = t.players && t.players.some(fastCheck);
+        let isStaff = t.staff && t.staff.some(fastCheck);
+
+        if (isPlayer && isStaff) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(JOGADOR E STAFF)</div>`;
+        else if (isStaff) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
+        else if (isPlayer) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
+
+        return `<div class="trophy-card ${borderClass}" ${clickAttr}>
             <img class="ot-card-img" src="${tournamentImg}" loading="lazy" onerror="this.src='trofeu.webp'">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
             ${roleTag}
+            ${linkIcon}
             <div class="trophy-team">
                 <img src="${logos[t.team] || 'escudo.webp'}" style="width: 14px; height: 14px; object-fit: contain;"> 
                 ${t.team}
@@ -5035,11 +5061,16 @@ function renderTeamResults() {
         // MUDANÇA AQUI: Agora a cor dourada é EXCLUSIVA do 1º lugar!
         let placeStyle = isFirst ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.5);' : '';
         
+        const hasTournamentPage = !!findTournamentInDB(r.torneio);
+        const torneioCell = hasTournamentPage
+            ? `<span onclick="navigateToTournament('${r.torneio.replace(/'/g, "\\'")}')" style="cursor:pointer; color: var(--accent); text-decoration: underline; text-decoration-style: dotted;" title="Ver página do torneio">${r.torneio} 🔗</span>`
+            : r.torneio;
+
         return `<tr class="${rowClass}">
             <td style="color: var(--text-muted);">${r.data}</td>
             <td class="tier-${tierClass}">${r.tier}</td>
             <td style="font-weight: bold; font-size: 1.1em; ${placeStyle}">${placeBR}</td>
-            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color: #fff;' : ''}">${r.torneio}</td>
+            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color: #fff;' : ''}">${torneioCell}</td>
         </tr>`;
     }).join('');
 }
@@ -5421,11 +5452,15 @@ function renderTeamTrophies(teamName) {
 
     container.innerHTML = teamTitles.map(t => {
 let tournamentImg = resolveLeagueLogo(t.event);
+        const hasTournamentPage = !!findTournamentInDB(t.event);
+        const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;" title="Ver página do torneio"` : '';
+        const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px;">🔗 Ver Torneio</div>` : '';
         return `
-        <div class="trophy-card border-campeao">
+        <div class="trophy-card border-campeao" ${clickAttr}>
             <img src="${tournamentImg}" class="trophy-img" style="height: 50px;">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center; margin-top:5px;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-transform:uppercase;">Campeão</div>
+            ${linkIcon}
         </div>`;
     }).join('');
 }
@@ -7082,10 +7117,14 @@ async function openOutraEquipe(nome) {
         titulosSection.style.display = 'block';
         titulosContainer.innerHTML = titulos.map(t => {
             let tournamentImg = resolveLeagueLogo(t.event);
-            return `<div class="trophy-card border-campeao">
+            const hasTournamentPage = !!findTournamentInDB(t.event);
+            const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;" title="Ver página do torneio"` : '';
+            const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px;">🔗 Ver Torneio</div>` : '';
+            return `<div class="trophy-card border-campeao" ${clickAttr}>
                 <img src="${tournamentImg}" class="trophy-img" onerror="this.src='trofeu.webp'">
                 <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
                 <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
+                ${linkIcon}
                 <div class="trophy-team">
                     <img src="${logos[t.team] || 'escudo.webp'}" style="width:14px; height:14px; object-fit:contain;" onerror="this.src='escudo.webp'">
                     ${t.team}
@@ -7140,11 +7179,15 @@ function renderOutraEquipeResultados() {
         const isSTier = r.tier === 'S-Tier';
         const placeBR = r.place.replace(/st|nd|rd|th/ig, 'º');
         const placeStyle = isFirst ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.5);' : '';
+        const hasTournamentPage = !!findTournamentInDB(r.torneio);
+        const torneioCell = hasTournamentPage
+            ? `<span onclick="navigateToTournament('${r.torneio.replace(/'/g, "\\'")}')" style="cursor:pointer; color: var(--accent); text-decoration: underline; text-decoration-style: dotted;" title="Ver página do torneio">${r.torneio} 🔗</span>`
+            : r.torneio;
         return `<tr class="${isSTier ? 'row-tier-s' : ''}">
             <td style="color: var(--text-muted);">${r.data}</td>
             <td class="tier-${tierClass}">${r.tier}</td>
             <td style="font-weight: bold; font-size: 1.1em; ${placeStyle}">${placeBR}</td>
-            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color:#fff;' : ''}">${r.torneio}</td>
+            <td style="text-align: left; font-weight: ${isSTier ? 'bold' : 'normal'}; ${isSTier ? 'color:#fff;' : ''}">${torneioCell}</td>
         </tr>`;
     }).join('');
 }
@@ -7181,6 +7224,33 @@ async function loadLeagueLogos() {
     } catch (e) {
         console.error('[loadLeagueLogos] Erro:', e);
     }
+}
+
+// =============================================
+// NAVEGAÇÃO DIRETA PARA TORNEIO
+// Verifica se o torneio existe em dbCampeonatos e abre ele diretamente
+// =============================================
+function findTournamentInDB(eventName) {
+    if (!eventName || !dbCampeonatos || dbCampeonatos.length === 0) return null;
+    const upper = eventName.toUpperCase().trim();
+    return dbCampeonatos.find(t => {
+        const tUpper = t.torneio.toUpperCase().trim();
+        return tUpper === upper || tUpper.includes(upper) || upper.includes(tUpper);
+    }) || null;
+}
+
+function navigateToTournament(eventName) {
+    const t = findTournamentInDB(eventName);
+    if (!t) return;
+    // Fecha modal de resultados se estiver aberto
+    const modal = document.getElementById('results-modal');
+    if (modal && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+    }
+    navigate('outros-torneios');
+    renderOutrosTorneiosList();
+    // Pequeno delay para garantir que a tela carregou antes de abrir o torneio
+    setTimeout(() => openOtherTournament(t.id), 80);
 }
 
 // Função auxiliar global para resolver a imagem de um torneio.
