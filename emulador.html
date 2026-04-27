@@ -3789,8 +3789,6 @@ function renderUnifiedTrophies(name, containerId) {
     let container = document.getElementById(containerId);
     if(!container) return;
 
-    // --- OTIMIZAÇÃO MÁXIMA (FIM DOS TRAVAMENTOS) ---
-    // Resolvemos os nomes e apelidos do jogador UMA ÚNICA VEZ
     let targetNameLower = name.toLowerCase();
     let validNames = new Set([targetNameLower]);
     
@@ -3801,22 +3799,17 @@ function renderUnifiedTrophies(name, containerId) {
         }
     }
 
-    // Nova função relâmpago: só checa se o nome existe dentro da lista que acabamos de gerar
     const fastCheck = (n) => n && validNames.has(n.toLowerCase());
-    // ------------------------------------------------
 
-    // Agora os filtros rodam instantaneamente usando o fastCheck
-let indTitles = titlesData.individuais.filter(t => fastCheck(t.player));
+    let indTitles = titlesData.individuais.filter(t => fastCheck(t.player));
     let colAsPlayer = titlesData.coletivos.filter(t => t.players && t.players.some(fastCheck));
     let colAsStaff = titlesData.coletivos.filter(t => t.staff && t.staff.some(fastCheck));
 
-    // Junta tudo e remove duplicatas caso o cara seja Player E Staff ao mesmo tempo
     let allTitles = [...new Set([...indTitles, ...colAsPlayer, ...colAsStaff])];
     
     if(containerId === 'pp-trophies-container') {
         let elCol = document.getElementById('pp-hist-col');
         let elInd = document.getElementById('pp-hist-ind');
-        // Usa o Set para não contar o mesmo título duas vezes nos numerozinhos
         if(elCol) elCol.innerText = new Set([...colAsPlayer, ...colAsStaff]).size;
         if(elInd) elInd.innerText = indTitles.length;
     }
@@ -3831,20 +3824,26 @@ let indTitles = titlesData.individuais.filter(t => fastCheck(t.player));
         let typeUpper = t.type ? t.type.toUpperCase() : "";
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
+        // --- MÁGICA PARA O CLIQUE FUNCIONAR ---
+        const hasTournamentPage = !!findTournamentInDB(t.event);
+        const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;"` : '';
+        const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px;">🔗 Ver Torneio</div>` : '';
+        // --------------------------------------
+
         let roleTag = "";
         let isPlayer = t.players && t.players.some(fastCheck);
         let isStaff = t.staff && t.staff.some(fastCheck);
 
-        // Verifica a função exata para não duplicar se ele fez os dois papéis
         if (isPlayer && isStaff) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(JOGADOR E STAFF)</div>`;
         else if (isStaff) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO STAFF)</div>`;
         else if (isPlayer) roleTag = `<div style="font-size:0.55em; color:#aaa; margin-top:2px;">(COMO JOGADOR)</div>`;
 
-        return `<div class="trophy-card ${borderClass}">
+        return `<div class="trophy-card ${borderClass}" ${clickAttr}>
             <img class="ot-card-img" src="${tournamentImg}" loading="lazy" onerror="this.src='trofeu.webp'">
             <div style="font-weight:bold; font-size:0.75em; color:#fff; text-align:center;">${t.event}</div>
             <div style="color:var(--accent); font-size:0.65em; font-weight:bold; text-align:center;">${t.type}</div>
             ${roleTag}
+            ${linkIcon}
             <div class="trophy-team">
                 <img src="${logos[t.team] || 'escudo.webp'}" style="width: 14px; height: 14px; object-fit: contain;"> 
                 ${t.team}
