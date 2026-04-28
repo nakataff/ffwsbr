@@ -7834,11 +7834,14 @@ function renderMultiTeamChart() {
 options: {
             responsive: true,
             maintainAspectRatio: false,
-            // 1. ADICIONA UM PADDING INTERNO PARA NÃO CORTAR OS NÚMEROS
+            // Adicione clip: false para impedir que as bolinhas sejam cortadas
+            clip: false, 
             layout: {
                 padding: {
                     left: 10,
-                    right: 15
+                    right: 15,
+                    top: 20,    // <-- ADICIONADO: Respiro no topo
+                    bottom: 10  // <-- ADICIONADO: Respiro embaixo
                 }
             },
             scales: {
@@ -7849,7 +7852,6 @@ options: {
                     ticks: { 
                         color: '#888', 
                         font: { weight: 'bold' },
-                        // 2. FORÇA A MOSTRAR APENAS NÚMEROS INTEIROS (Sem 1.2, 1.4)
                         precision: 0,
                         stepSize: isReverse ? 1 : undefined
                     }
