@@ -1748,6 +1748,31 @@ tr:last-child {
     </div>
 
     <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        📈 Comparação de Evolução das Equipes
+    </h3>
+    
+    <div class="filters" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; align-items: flex-start;">
+        <div style="display: flex; gap: 15px; width: 100%; flex-wrap: wrap; align-items: center;">
+            <label style="color: var(--text-muted); font-weight: bold;">Métrica do Gráfico:</label>
+            <select id="multi-chart-metric" onchange="renderMultiTeamChart()" style="max-width: 300px;">
+                <option value="pos_geral_dia">Posição Geral (Acumulada por Dia)</option>
+                <option value="pontos_dia">Pontos Totais por Dia</option>
+                <option value="kills_dia">Abates por Dia</option>
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap; align-items: center;">
+            <label style="color: var(--text-muted); font-weight: bold;">Selecione as Equipes (Max. 5):</label>
+            <div class="day-filters" id="multi-team-filters"></div>
+        </div>
+    </div>
+    
+    <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 40px;">
+        <canvas id="multi-team-evolution-chart" style="width:100%; max-height:400px;"></canvas>
+    </div>
+
+
+    <h3 style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
         Ranking de Médias <span style="font-size: 0.6em; color: #aaa;">(Por Queda)</span>
     </h3>
     <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
@@ -3115,6 +3140,8 @@ const data = await response.json();
     renderOutrasEquipesGrid();
     buildDesktopTeamNav();
     initSearchListeners();
+    buildMultiTeamFilters();
+    renderMultiTeamChart();
 
     // ==========================================
     // 4. INTEGRAÇÕES EXTERNAS (GOOGLE SHEETS)
@@ -7683,6 +7710,179 @@ async function loadSocials() {
     } catch (e) {
         console.error('[loadSocials] Erro ao carregar redes sociais:', e);
     }
+}
+
+// ==========================================
+// GRÁFICO COMPARATIVO DE MÚLTIPLAS EQUIPES
+// ==========================================
+let selectedCompareTeams = [];
+let multiTeamChartInstance = null;
+
+// Uma paleta de cores fortes para não confundir as linhas
+const multiChartColors = ['#00c8ff', '#ff4444', '#ffd700', '#4caf50', '#a020f0'];
+
+function buildMultiTeamFilters() {
+    let container = document.getElementById('multi-team-filters');
+    if(!container) return;
+    
+    let html = '';
+    let sortedTeams = [...db.teams].sort((a,b) => a.equipe.localeCompare(b.equipe));
+    
+    // Auto-seleciona os 2 primeiros times do ranking geral para o gráfico não vir vazio
+    if(selectedCompareTeams.length === 0 && sortedTeams.length >= 2) {
+        let topTeams = [...db.teams].sort((a,b) => b.pontos - a.pontos).slice(0, 2);
+        selectedCompareTeams = topTeams.map(t => t.equipe);
+    }
+
+    sortedTeams.forEach(t => {
+        let sName = shortNames[t.equipe] || t.equipe;
+        let isActive = selectedCompareTeams.includes(t.equipe);
+        
+        // Estilo especial para os selecionados (pega a cor da linha deles)
+        let idx = selectedCompareTeams.indexOf(t.equipe);
+        let colorStyle = isActive ? `background-color: ${multiChartColors[idx]}; color: #000; font-weight: bold; border-color: ${multiChartColors[idx]};` : '';
+        
+        html += `<div class="day-chip" style="${colorStyle}" onclick="toggleCompareTeam('${t.equipe}')">${sName}</div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+function toggleCompareTeam(teamName) {
+    let idx = selectedCompareTeams.indexOf(teamName);
+    if (idx > -1) {
+        // Remove se já estiver selecionado
+        selectedCompareTeams.splice(idx, 1);
+    } else {
+        // Adiciona limitando a 5 para o gráfico não virar uma bagunça
+        if(selectedCompareTeams.length >= 5) {
+            alert('Você pode selecionar no máximo 5 equipes simultâneas para manter a clareza do gráfico.');
+            return;
+        }
+        selectedCompareTeams.push(teamName);
+    }
+    
+    buildMultiTeamFilters();
+    renderMultiTeamChart();
+}
+
+function renderMultiTeamChart() {
+    let ctx = document.getElementById('multi-team-evolution-chart');
+    if (!ctx) return;
+    
+    let metric = document.getElementById('multi-chart-metric').value;
+    let isReverse = false;
+
+    // Descobre todos os dias para criar o Eixo X
+    let allDays = new Set();
+    
+    if (metric === 'pos_geral_dia') {
+        // Se for Posição Geral, pega TODOS os dias do campeonato
+        for (let i = 1; i <= TOTAL_DIAS; i++) {
+            allDays.add(i);
+        }
+    } else {
+        // Se for Pontos ou Kills, pega só os dias que os times selecionados jogaram
+        selectedCompareTeams.forEach(tName => {
+            if(db.teamDaily[tName]) {
+                db.teamDaily[tName].forEach(d => allDays.add(d.dia));
+            }
+        });
+    }
+    
+    let sortedDays = Array.from(allDays).sort((a,b) => a - b);
+    let labels = sortedDays.map(d => `Dia ${d}`);
+    let datasets = [];
+
+    // Cria as linhas do gráfico para cada equipe selecionada
+    selectedCompareTeams.forEach((tName, index) => {
+        if (!db.teamDaily[tName]) return;
+        
+        let teamColor = multiChartColors[index];
+        let dataPoints = [];
+
+        sortedDays.forEach(d => {
+            let dInfo = db.teamDaily[tName].find(x => x.dia === d);
+            
+            if (metric === 'pontos_dia') {
+                dataPoints.push(dInfo ? dInfo.pontos : null);
+            } else if (metric === 'kills_dia') {
+                dataPoints.push(dInfo ? dInfo.abates : null);
+            } else if (metric === 'pos_geral_dia') {
+                isReverse = true;
+                // Calcula a posição GERAL até aquele dia, MESMO SE O TIME NÃO JOGOU!
+                dataPoints.push(getGeneralPositionUpToDay(d, tName));
+            }
+        });
+
+        datasets.push({
+            label: shortNames[tName] || tName,
+            data: dataPoints,
+            borderColor: teamColor,
+            backgroundColor: teamColor + '33', // Transparência embaixo da linha
+            borderWidth: 3,
+            pointBackgroundColor: teamColor,
+            pointBorderColor: '#000',
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            tension: 0.2,
+            spanGaps: true // Conecta a linha mesmo se faltar dado em um dia
+        });
+    });
+
+    // ... Resto do código continua igualzinho (multiTeamChartInstance.destroy(), etc) ...
+
+    // Destroi o gráfico anterior caso exista
+    if (multiTeamChartInstance) {
+        multiTeamChartInstance.destroy();
+    }
+
+    // Renderiza o novo
+    multiTeamChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            // Adicione clip: false para impedir que as bolinhas sejam cortadas
+            clip: false, 
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 15,
+                    top: 20,    // <-- ADICIONADO: Respiro no topo
+                    bottom: 10  // <-- ADICIONADO: Respiro embaixo
+                }
+            },
+            scales: {
+                y: {
+                    reverse: isReverse,
+                    min: isReverse ? 1 : 0,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { 
+                        color: '#888', 
+                        font: { weight: 'bold' },
+                        precision: 0,
+                        stepSize: isReverse ? 1 : undefined
+                    }
+                },
+                x: {
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#888' }
+                }
+            },
+            plugins: {
+                legend: { 
+                    position: 'top', 
+                    labels: { color: '#fff', font: { weight: 'bold', size: 13 }, usePointStyle: true, boxWidth: 10 } 
+                },
+                tooltip: { backgroundColor: '#0d1220', titleColor: '#fff', bodyColor: '#fff', borderColor: '#333', borderWidth: 1, padding: 12 }
+            }
+        }
+    });
 }
 
 </script>
