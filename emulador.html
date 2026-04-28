@@ -7772,13 +7772,22 @@ function renderMultiTeamChart() {
     let metric = document.getElementById('multi-chart-metric').value;
     let isReverse = false;
 
-    // Descobre todos os dias jogados pelas equipes selecionadas para criar o Eixo X
+    // Descobre todos os dias para criar o Eixo X
     let allDays = new Set();
-    selectedCompareTeams.forEach(tName => {
-        if(db.teamDaily[tName]) {
-            db.teamDaily[tName].forEach(d => allDays.add(d.dia));
+    
+    if (metric === 'pos_geral_dia') {
+        // Se for Posição Geral, pega TODOS os dias do campeonato
+        for (let i = 1; i <= TOTAL_DIAS; i++) {
+            allDays.add(i);
         }
-    });
+    } else {
+        // Se for Pontos ou Kills, pega só os dias que os times selecionados jogaram
+        selectedCompareTeams.forEach(tName => {
+            if(db.teamDaily[tName]) {
+                db.teamDaily[tName].forEach(d => allDays.add(d.dia));
+            }
+        });
+    }
     
     let sortedDays = Array.from(allDays).sort((a,b) => a - b);
     let labels = sortedDays.map(d => `Dia ${d}`);
@@ -7800,7 +7809,8 @@ function renderMultiTeamChart() {
                 dataPoints.push(dInfo ? dInfo.abates : null);
             } else if (metric === 'pos_geral_dia') {
                 isReverse = true;
-                dataPoints.push(dInfo ? getGeneralPositionUpToDay(d, tName) : null);
+                // Calcula a posição GERAL até aquele dia, MESMO SE O TIME NÃO JOGOU!
+                dataPoints.push(getGeneralPositionUpToDay(d, tName));
             }
         });
 
@@ -7818,6 +7828,8 @@ function renderMultiTeamChart() {
             spanGaps: true // Conecta a linha mesmo se faltar dado em um dia
         });
     });
+
+    // ... Resto do código continua igualzinho (multiTeamChartInstance.destroy(), etc) ...
 
     // Destroi o gráfico anterior caso exista
     if (multiTeamChartInstance) {
