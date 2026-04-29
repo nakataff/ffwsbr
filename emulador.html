@@ -3704,13 +3704,22 @@ function renderTop5Stats() {
         let page = window._top5Pages[cardId] || 0;
         let totalPages = Math.ceil(sortedAll.length / pageSize);
         if(page >= totalPages) page = 0;
+        if(page < 0) page = 0;
         let slice = sortedAll.slice(page * pageSize, page * pageSize + pageSize);
         let rows = slice.map((item, i) => rowFn(item, page * pageSize + i)).join('');
+        let isFirst = page === 0;
+        let isLast  = page >= totalPages - 1;
+        let btnLeft  = isFirst
+            ? `<button disabled style="background:rgba(255,255,255,0.02); border:1px solid #222; color:#333; border-radius:50%; width:26px; height:26px; cursor:default; font-size:1em; display:flex; align-items:center; justify-content:center;">&#8249;</button>`
+            : `<button onclick="event.stopPropagation(); _top5PageNav('${cardId}', -1)" style="background:rgba(255,255,255,0.07); border:1px solid #333; color:#aaa; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:1em; display:flex; align-items:center; justify-content:center;">&#8249;</button>`;
+        let btnRight = isLast
+            ? `<button onclick="event.stopPropagation(); _top5PageNav('${cardId}', 'reset')" title="Voltar ao inicio" style="background:rgba(255,255,255,0.07); border:1px solid #333; color:var(--accent); border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:0.85em; display:flex; align-items:center; justify-content:center;">&#8635;</button>`
+            : `<button onclick="event.stopPropagation(); _top5PageNav('${cardId}', 1)" style="background:rgba(255,255,255,0.07); border:1px solid #333; color:#aaa; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:1em; display:flex; align-items:center; justify-content:center;">&#8250;</button>`;
         let nav = totalPages > 1 ? `
             <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px; padding-top:8px; border-top:1px solid #222;">
-                <button onclick="event.stopPropagation(); _top5PageNav('${cardId}', -1)" style="background:rgba(255,255,255,0.07); border:1px solid #333; color:#aaa; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:1em; line-height:1; display:flex; align-items:center; justify-content:center;">‹</button>
-                <span style="font-size:0.75em; color:#666;">Top ${page*pageSize+1}–${Math.min((page+1)*pageSize, sortedAll.length)}</span>
-                <button onclick="event.stopPropagation(); _top5PageNav('${cardId}', 1)" style="background:rgba(255,255,255,0.07); border:1px solid #333; color:#aaa; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:1em; line-height:1; display:flex; align-items:center; justify-content:center;">›</button>
+                ${btnLeft}
+                <span style="font-size:0.75em; color:#666;">Top ${page*pageSize+1}&#8211;${Math.min((page+1)*pageSize, sortedAll.length)}</span>
+                ${btnRight}
             </div>` : '';
         return headerHtml + rows + nav;
     };
@@ -3777,20 +3786,23 @@ function renderTop5Stats() {
             <div class="card"><div class="card-top-border"></div><h3>Média Assistências</h3>${getPlayerHtml('pl-avgast', validPlayers, p=>p.avgAssists, v=>v.toFixed(2), "Média")}</div>
         </div>
 
-        <h4 style="color:#a78bfa; margin: 0 0 5px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">🎯 Participação Relativa à Equipe <span style="font-size:0.6em; color:#666; text-transform: none; font-weight: normal;">(média % de contribuição por queda — mín. 3 quedas)</span></h4>
-        <p style="color: var(--text-muted); font-size: 0.82em; margin: 0 0 18px 0;">Mostra qual jogador mais contribuiu, em média, para o total da sua equipe em cada queda.</p>
+        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Participacao Relativa a Equipe <span style="font-size:0.6em; color:#666; text-transform: none; font-weight: normal;">(media % de contribuicao por queda — min. 3 quedas)</span></h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
-            <div class="card"><div class="card-top-border" style="background:#a78bfa;"></div><h3 style="color:#a78bfa;">🔫 Part. Kills</h3>${getPlayerHtml('pl-partkills', validPart, p=>p.avgPartKills, v=>v.toFixed(1)+"%", "%")}</div>
-            <div class="card"><div class="card-top-border" style="background:#a78bfa;"></div><h3 style="color:#a78bfa;">💥 Part. Dano</h3>${getPlayerHtml('pl-partdano', validPart, p=>p.avgPartDano, v=>v.toFixed(1)+"%", "%")}</div>
-            <div class="card"><div class="card-top-border" style="background:#a78bfa;"></div><h3 style="color:#a78bfa;">🤝 Part. Assists</h3>${getPlayerHtml('pl-partast', validPart, p=>p.avgPartAssists, v=>v.toFixed(1)+"%", "%")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Part. Kills</h3>${getPlayerHtml('pl-partkills', validPart, p=>p.avgPartKills, v=>v.toFixed(1)+"%", "%")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Part. Dano</h3>${getPlayerHtml('pl-partdano', validPart, p=>p.avgPartDano, v=>v.toFixed(1)+"%", "%")}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Part. Assists</h3>${getPlayerHtml('pl-partast', validPart, p=>p.avgPartAssists, v=>v.toFixed(1)+"%", "%")}</div>
         </div>
     `;
 }
 
-// Função de navegação de página dos cards de ranking
+// Funcao de navegacao de pagina dos cards de ranking
 function _top5PageNav(cardId, dir) {
     if(!window._top5Pages) window._top5Pages = {};
-    window._top5Pages[cardId] = (window._top5Pages[cardId] || 0) + dir;
+    if(dir === 'reset') {
+        window._top5Pages[cardId] = 0;
+    } else {
+        window._top5Pages[cardId] = (window._top5Pages[cardId] || 0) + dir;
+    }
     renderTop5Stats();
 }
 
