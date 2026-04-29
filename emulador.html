@@ -3640,33 +3640,9 @@ function renderTop5Stats() {
         p.avgAssists = p.assists / p.quedas;
     });
 
-    // ---- Calcula participação relativa por equipe (média por queda) ----
-    // Para cada jogador, calcula o total de kills/dano/assists da equipe dele nas quedas em que ele participou
-    let teamTotalsPerDrop = {}; // key: "equipe|dia|queda" => {kills, dano, assists}
-    for(let d in dbQuedas) {
-        if (selectedTop5Days.length > 0 && !selectedTop5Days.includes(String(d))) continue;
-        for (let q in dbQuedas[d]) {
-            let drop = dbQuedas[d][q];
-            let currentMap = normalizeMapName(drop.mapa);
-            if (targetMap !== 'all' && currentMap !== targetMap) continue;
-            if(dbJogadoresQuedas[d] && dbJogadoresQuedas[d][q]) {
-                // Agrupa por equipe nessa queda
-                let equipeDropTotals = {};
-                dbJogadoresQuedas[d][q].forEach(p => {
-                    if(!equipeDropTotals[p.equipe]) equipeDropTotals[p.equipe] = {kills:0, dano:0, assists:0};
-                    equipeDropTotals[p.equipe].kills += p.kills;
-                    equipeDropTotals[p.equipe].dano += p.dano;
-                    equipeDropTotals[p.equipe].assists += p.assists;
-                });
-                Object.keys(equipeDropTotals).forEach(eq => {
-                    teamTotalsPerDrop[`${eq}|${d}|${q}`] = equipeDropTotals[eq];
-                });
-            }
-        }
-    }
-
-    // Recalcula participação relativa por jogador (média % de participação nas quedas)
+    // Calcula participacao relativa: total acumulado do jogador / total acumulado da equipe
     let partStats = {};
+    let teamAccTotals = {};
     for(let d in dbQuedas) {
         if (selectedTop5Days.length > 0 && !selectedTop5Days.includes(String(d))) continue;
         for (let q in dbQuedas[d]) {
@@ -3676,23 +3652,25 @@ function renderTop5Stats() {
             if(dbJogadoresQuedas[d] && dbJogadoresQuedas[d][q]) {
                 dbJogadoresQuedas[d][q].forEach(p => {
                     let key = p.nome;
-                    let teamDrop = teamTotalsPerDrop[`${p.equipe}|${d}|${q}`];
-                    if(!partStats[key]) partStats[key] = { jogador: p.nome, equipe: p.equipe, sumPartKills: 0, sumPartDano: 0, sumPartAssists: 0, quedas: 0 };
-                    if(teamDrop) {
-                        partStats[key].sumPartKills   += teamDrop.kills   > 0 ? (p.kills   / teamDrop.kills)   * 100 : 0;
-                        partStats[key].sumPartDano     += teamDrop.dano     > 0 ? (p.dano     / teamDrop.dano)     * 100 : 0;
-                        partStats[key].sumPartAssists  += teamDrop.assists  > 0 ? (p.assists  / teamDrop.assists)  * 100 : (teamDrop.assists === 0 && p.assists === 0 ? 0 : 0);
-                    }
-                    partStats[key].quedas += 1;
+                    if(!partStats[key]) partStats[key] = { jogador: p.nome, equipe: p.equipe, kills: 0, dano: 0, assists: 0, quedas: 0 };
+                    partStats[key].kills   += p.kills;
+                    partStats[key].dano    += p.dano;
+                    partStats[key].assists += p.assists;
+                    partStats[key].quedas  += 1;
+                    if(!teamAccTotals[p.equipe]) teamAccTotals[p.equipe] = { kills: 0, dano: 0, assists: 0 };
+                    teamAccTotals[p.equipe].kills   += p.kills;
+                    teamAccTotals[p.equipe].dano    += p.dano;
+                    teamAccTotals[p.equipe].assists += p.assists;
                 });
             }
         }
     }
     let validPart = Object.values(partStats).filter(p => p.quedas >= 3);
     validPart.forEach(p => {
-        p.avgPartKills   = p.sumPartKills   / p.quedas;
-        p.avgPartDano    = p.sumPartDano    / p.quedas;
-        p.avgPartAssists = p.sumPartAssists / p.quedas;
+        let tt = teamAccTotals[p.equipe] || { kills: 0, dano: 0, assists: 0 };
+        p.avgPartKills   = tt.kills   > 0 ? (p.kills   / tt.kills)   * 100 : 0;
+        p.avgPartDano    = tt.dano    > 0 ? (p.dano    / tt.dano)    * 100 : 0;
+        p.avgPartAssists = tt.assists > 0 ? (p.assists / tt.assists) * 100 : 0;
     });
 
     // ---- Funções auxiliares de renderização com paginação ----
