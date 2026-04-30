@@ -1462,17 +1462,30 @@ tr:last-child {
 @media (max-width: 768px) {
     .mercado-card {
         grid-template-columns: 44px 1fr auto;
-        grid-template-rows: auto auto;
-        gap: 10px 12px;
+        grid-template-rows: auto auto auto;
+        gap: 8px 12px;
     }
+    .mercado-card-avatar { width: 44px; height: 44px; grid-column: 1; grid-row: 1 / 3; }
+    .mercado-card-info { grid-column: 2; grid-row: 1; }
     .mercado-card-status { flex-direction: row; min-width: unset; grid-column: 2; grid-row: 2; }
     .mercado-status-icon { width: 22px; height: 22px; }
     .mercado-card-clubs { grid-column: 3; grid-row: 1 / 3; }
-    .mercado-card-votes { display: none; }
-    .mercado-card-info { grid-column: 2; grid-row: 1; }
     .mercado-club img { width: 30px; height: 30px; }
     .mercado-club-name { font-size: 0.62em; max-width: 70px; }
-    .mercado-card-avatar { width: 44px; height: 44px; grid-row: 1 / 3; }
+    .mercado-card-votes {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        grid-column: 1 / -1;
+        grid-row: 3;
+        min-width: unset;
+        padding-top: 6px;
+        border-top: 1px solid var(--border);
+    }
+    .mercado-card-votes .vote-bar-wrap {
+        flex: 1;
+    }
 }
 </style>
 </head>
@@ -1734,7 +1747,7 @@ tr:last-child {
     </div>
 
  <div id="team-profile" class="page">
-    <button class="btn-back" onclick="navigate('teams-list')">← Voltar para Equipes</button>
+    <button class="btn-back" onclick="navigate(lastVisitedPage)">← Voltar</button>
     
     <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 20px; text-align: center;">
         <div style="display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%;">
