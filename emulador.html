@@ -1326,7 +1326,7 @@ tr:last-child {
     display: grid;
     grid-template-columns: 56px 110px 1fr auto auto;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
     transition: 0.25s;
     position: relative;
     overflow: hidden;
@@ -1382,7 +1382,7 @@ tr:last-child {
 .mercado-card-clubs {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     flex-shrink: 0;
 }
 .mercado-club {
@@ -1405,7 +1405,7 @@ tr:last-child {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     text-align: center;
-    max-width: 60px;
+    max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1461,7 +1461,7 @@ tr:last-child {
     .mercado-card-votes { display: none; }
     .mercado-card-info { grid-column: 2; grid-row: 1; }
     .mercado-club img { width: 30px; height: 30px; }
-    .mercado-club-name { font-size: 0.62em; max-width: 46px; }
+    .mercado-club-name { font-size: 0.62em; max-width: 70px; }
     .mercado-card-avatar { width: 44px; height: 44px; grid-row: 1 / 3; }
 }
 </style>
@@ -8271,6 +8271,37 @@ let mercadoFilter = 'all';
 // Votos salvos localmente por sessão: { "NomeJogador": { up: N, down: N, voted: 'up'|'down'|null } }
 let mercadoVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
 
+/**
+ * Resolve o escudo de um time.
+ * Prioridade:
+ *   1. Valor direto da planilha (link http/https ou caminho de arquivo)
+ *   2. Busca automática pelo nome do time nos dados já carregados (teamsData)
+ *   3. Fallback para 'escudo.webp'
+ */
+function resolveEscudo(escudoCell, nomeTime) {
+    // 1. Se a planilha forneceu algum valor, usa direto
+    if (escudoCell && escudoCell.trim()) {
+        return escudoCell.trim();
+    }
+    // 2. Tenta achar o time pelo nome nos dados do site (teamsData / allTeams)
+    if (nomeTime) {
+        const nomeLower = nomeTime.trim().toLowerCase();
+        // teamsData é o array global que o site já usa para times
+        const fonte = (typeof teamsData !== 'undefined' && teamsData.length)
+            ? teamsData
+            : (typeof allTeams !== 'undefined' && allTeams.length ? allTeams : []);
+        for (const t of fonte) {
+            const nomeT = (t.nome || t.team || t.name || '').toLowerCase();
+            if (nomeT && nomeT === nomeLower) {
+                const logo = t.escudo || t.logo || t.shield || '';
+                if (logo) return logo;
+            }
+        }
+    }
+    // 3. Fallback
+    return 'escudo.webp';
+}
+
 async function loadMercado() {
     try {
         const res = await fetch(`${MERCADO_TSV_URL}&nocache=${Date.now()}`);
@@ -8331,8 +8362,8 @@ function renderMercado() {
         const pct = total ? Math.round((v.up / total) * 100) : 50;
 
         const avatarSrc = d.foto || 'silhueta.png';
-        const escudoOrigem = d.escudoOrigem || 'escudo.webp';
-        const escudoDestino = d.escudoDestino || 'escudo.webp';
+        const escudoOrigem = resolveEscudo(d.escudoOrigem, d.timeOrigem);
+        const escudoDestino = resolveEscudo(d.escudoDestino, d.timeDestino);
         const nomeOrigem = d.timeOrigem || 'Sem Clube';
         const nomeDestino = d.timeDestino || '?';
 
