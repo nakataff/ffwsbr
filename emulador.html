@@ -8512,33 +8512,46 @@ function voteMercado(e, key, dir) {
     e.stopPropagation();
     if (!mercadoVotes[key]) mercadoVotes[key] = { up: 0, down: 0, voted: null };
     const v = mercadoVotes[key];
+    const previousDir = v.voted;
 
+    // Lógica matemática do voto local
     if (v.voted === dir) {
-        // toggle off
+        // Clicou de novo no mesmo = tira o voto (toggle off)
         v[dir]--;
         v.voted = null;
     } else {
         if (v.voted && v.voted !== dir) {
+            // Tinha votado no outro, então remove o voto antigo
             v[v.voted]--;
         }
+        // Adiciona o voto novo
         v[dir]++;
         v.voted = dir;
     }
 
+    // Salva no navegador do usuário
     sessionStorage.setItem('mercadoVotes', JSON.stringify(mercadoVotes));
 
-    const safeKey = key.replace(/\s/g, '_');
+    // A MÁGICA QUE FALTAVA: Chama a função do Firebase lá de baixo!
+    if (typeof window.fbVote === 'function') {
+        window.fbVote(key, v.voted, previousDir);
+    }
+
+    // Atualiza a barrinha e os números na hora (Feedback visual imediato)
+    const safeKey = key.replace(/[\s.#$/[\]]/g, '_'); // Limpeza padrão do Firebase
     const total = v.up + v.down;
     const pct = total ? Math.round((v.up / total) * 100) : 50;
 
     const bar = document.getElementById(`vbar-${safeKey}`);
     const vuEl = document.getElementById(`vu-${safeKey}`);
     const vdEl = document.getElementById(`vd-${safeKey}`);
+    
     if (bar) bar.style.width = pct + '%';
-if (vuEl) vuEl.textContent  = data.up   > 0 ? data.up   : '';
-if (vdEl) vdEl.textContent  = data.down > 0 ? data.down : '';
+    // Corrigido de "data.up" para "v.up"
+    if (vuEl) vuEl.textContent  = v.up   > 0 ? v.up   : '';
+    if (vdEl) vdEl.textContent  = v.down > 0 ? v.down : '';
 
-    // Update button classes
+    // Troca as cores dos botões
     const card = e.target.closest('.mercado-card');
     if (card) {
         card.querySelectorAll('.vote-btn').forEach(btn => btn.classList.remove('voted-up', 'voted-down'));
