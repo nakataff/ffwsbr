@@ -8621,10 +8621,12 @@ document.addEventListener('DOMContentLoaded', () => {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE",
     authDomain: "central-free-fire.firebaseapp.com",
+    databaseURL: "https://central-free-fire-default-rtdb.firebaseio.com",
     projectId: "central-free-fire",
     storageBucket: "central-free-fire.firebasestorage.app",
     messagingSenderId: "372535002832",
@@ -8632,15 +8634,50 @@ document.addEventListener('DOMContentLoaded', () => {
     measurementId: "G-4C7B7TJ2RS"
   };
 
-  // Inicializa o Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+  const database = getDatabase(app);
+  window.firebaseApp = app;
 
-  // MÁGICA: Isso permite que seu outro script use o Firebase
-  window.firebaseApp = app; 
-  
-  console.log("Firebase conectado e pronto para uso!");
+  // ✅ Define a função que voteMercado() chama
+  window.fbVote = function(key, newDir, previousDir) {
+    const safeKey = key.replace(/[\s.#$/\[\]]/g, '_');
+    const votesRef = ref(database, `mercadoVotes/${safeKey}`);
+
+    runTransaction(votesRef, (current) => {
+      const data = current || { up: 0, down: 0 };
+
+      // Remove voto anterior se existia
+      if (previousDir === 'up')   data.up   = Math.max(0, (data.up   || 0) - 1);
+      if (previousDir === 'down') data.down = Math.max(0, (data.down || 0) - 1);
+
+      // Adiciona voto novo (null = toggle off, não adiciona nada)
+      if (newDir === 'up')   data.up   = (data.up   || 0) + 1;
+      if (newDir === 'down') data.down = (data.down || 0) + 1;
+
+      return data;
+    });
+  };
+
+  // ✅ Carrega votos do Firebase ao iniciar (substitui os do sessionStorage)
+  window.fbLoadVotes = function() {
+    const votesRef = ref(database, 'mercadoVotes');
+    onValue(votesRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      Object.entries(data).forEach(([safeKey, counts]) => {
+        const originalKey = Object.keys(mercadoVotes).find(k =>
+          k.replace(/[\s.#$/\[\]]/g, '_') === safeKey
+        );
+        const k = originalKey || safeKey;
+        if (!mercadoVotes[k]) mercadoVotes[k] = { up: 0, down: 0, voted: null };
+        mercadoVotes[k].up   = counts.up   || 0;
+        mercadoVotes[k].down = counts.down || 0;
+      });
+      renderMercado();
+    }, { onlyOnce: true });
+  };
+
+  console.log("Firebase conectado com votos do mercado!");
 </script>
-
 </body>
 </html>
