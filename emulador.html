@@ -8535,8 +8535,8 @@ function voteMercado(e, key, dir) {
     const vuEl = document.getElementById(`vu-${safeKey}`);
     const vdEl = document.getElementById(`vd-${safeKey}`);
     if (bar) bar.style.width = pct + '%';
-    if (vuEl) vuEl.textContent = v.up > 0 ? v.up + ' 👍' : '';
-    if (vdEl) vdEl.textContent = v.down > 0 ? v.down + ' 👎' : '';
+if (vuEl) vuEl.textContent  = data.up   > 0 ? data.up   : '';
+if (vdEl) vdEl.textContent  = data.down > 0 ? data.down : '';
 
     // Update button classes
     const card = e.target.closest('.mercado-card');
