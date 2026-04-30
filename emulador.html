@@ -5,17 +5,9 @@
 <meta name="theme-color" content="#00c8ff">
 <link rel="apple-touch-icon" href="central free fire.webp">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PYDZJXJMZZ"></script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3351547915606735"
+<!-- ADSNSE -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3351547915606735"
      crossorigin="anonymous"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-PYDZJXJMZZ');
-</script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -1490,6 +1482,7 @@ tr:last-child {
 </style>
 </head>
 <body>
+
 
 <a href="#main-content" class="skip-link">Pular para o conteúdo</a>
 
@@ -8568,7 +8561,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
 </script>
 </main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE",
+    authDomain: "central-free-fire.firebaseapp.com",
+    projectId: "central-free-fire",
+    storageBucket: "central-free-fire.firebasestorage.app",
+    messagingSenderId: "372535002832",
+    appId: "1:372535002832:web:37e938fec2b05eb560c0d5",
+    measurementId: "G-4C7B7TJ2RS"
+  };
+
+  // Inicializa o Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  // MÁGICA: Isso permite que seu outro script use o Firebase
+  window.firebaseApp = app; 
+  
+  console.log("Firebase conectado e pronto para uso!");
+</script>
+
 </body>
 </html>
