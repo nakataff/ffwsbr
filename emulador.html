@@ -1453,30 +1453,68 @@ tr:last-child {
 
 @media (max-width: 768px) {
     .mercado-card {
-        grid-template-columns: 44px 1fr auto;
-        grid-template-rows: auto auto auto;
-        gap: 8px 12px;
+        grid-template-columns: 52px 1fr; /* Apenas 2 colunas no topo */
+        grid-template-rows: auto auto auto auto; /* 4 linhas de conteúdo */
+        gap: 10px 15px;
+        padding: 15px;
     }
-    .mercado-card-avatar { width: 44px; height: 44px; grid-column: 1; grid-row: 1 / 3; }
-    .mercado-card-info { grid-column: 2; grid-row: 1; }
-    .mercado-card-status { flex-direction: row; min-width: unset; grid-column: 2; grid-row: 2; }
-    .mercado-status-icon { width: 22px; height: 22px; }
-    .mercado-card-clubs { grid-column: 3; grid-row: 1 / 3; }
-    .mercado-club img { width: 30px; height: 30px; }
-    .mercado-club-name { font-size: 0.62em; max-width: 70px; }
+    
+    /* 1. Linha de Cima: Foto e Info do Jogador */
+    .mercado-card-avatar { 
+        width: 52px; 
+        height: 52px; 
+        grid-column: 1; 
+        grid-row: 1; 
+        margin: auto 0;
+    }
+    .mercado-card-info { 
+        grid-column: 2; 
+        grid-row: 1; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    /* 2. Segunda Linha: Status (Negociando/Fechado) */
+    .mercado-card-status { 
+        grid-column: 1 / 3; 
+        grid-row: 2;
+        flex-direction: row; 
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed var(--border);
+        padding: 8px;
+        border-radius: 8px;
+        min-width: unset;
+    }
+    .mercado-status-icon { width: 18px; height: 18px; }
+    .mercado-status-label { font-size: 0.8em; }
+    
+    /* 3. Terceira Linha: Os Clubes centralizados */
+    .mercado-card-clubs { 
+        grid-column: 1 / 3; 
+        grid-row: 3;
+        justify-content: center;
+        gap: 25px; /* Espaço maior entre a setinha e os times */
+        padding: 5px 0;
+    }
+    .mercado-club img { width: 42px; height: 42px; }
+    .mercado-club-name { font-size: 0.68em; max-width: 100px; }
+    
+    /* 4. Quarta Linha: Votos */
     .mercado-card-votes {
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 8px;
-        grid-column: 1 / -1;
-        grid-row: 3;
+        gap: 12px;
+        grid-column: 1 / 3;
+        grid-row: 4;
         min-width: unset;
-        padding-top: 6px;
+        padding-top: 15px;
         border-top: 1px solid var(--border);
     }
     .mercado-card-votes .vote-bar-wrap {
-        flex: 1;
+        flex: 1; /* Faz a barra de progresso ocupar todo o espaço do meio */
     }
 }
 </style>
