@@ -5,17 +5,9 @@
 <meta name="theme-color" content="#00c8ff">
 <link rel="apple-touch-icon" href="central free fire.webp">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PYDZJXJMZZ"></script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3351547915606735"
+<!-- ADSNSE -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3351547915606735"
      crossorigin="anonymous"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-PYDZJXJMZZ');
-</script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -44,7 +36,20 @@
 /* --- PÁGINA INICIAL --- */
 .news-hero { position: relative; border-radius: 12px; overflow: hidden; cursor: pointer; margin-bottom: 25px; border: 1px solid var(--border); transition: 0.3s; }
 .news-hero:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-.news-hero img { width: 100%; aspect-ratio: 3000 / 2237; height: auto; object-fit: cover; object-position: center top; display: block; }
+.news-hero img { 
+    width: 100%; 
+    /* Removemos o aspect-ratio antigo e forçamos uma altura máxima no PC */
+    height: 450px; 
+    object-fit: cover; 
+    /* O object-position centraliza a foto para não cortar a cabeça do jogador */
+    object-position: center 25%; 
+    display: block; 
+}
+
+/* No celular, deixamos ela um pouco mais quadrada para não ficar exprimida */
+@media (max-width: 768px) { 
+    .news-hero img { height: 250px; }
+}
 .news-hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9) 80%); padding: 40px 20px 20px; box-sizing: border-box; }
 .news-hero-title { color: #fff; font-size: 2em; font-weight: 900; text-transform: uppercase; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
@@ -1254,9 +1259,281 @@ tr:last-child {
     .close-btn { background: transparent; border: 1px solid transparent; color: #aaa; font-size: 1.5em; cursor: pointer; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: 0.2s; line-height: 1; }
     .close-btn:hover { color: #fff; border-color: #555; background: rgba(255,255,255,0.05); }
     .close-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* =============================================
+   MERCADO DA BOLA
+   ============================================= */
+.mercado-header {
+    text-align: center;
+    padding: 10px 0 30px;
+    position: relative;
+}
+.mercado-title {
+    font-size: clamp(2em, 6vw, 3.5em);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #4caf50 0%, #00c8ff 50%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    line-height: 1.1;
+    text-shadow: none;
+}
+.mercado-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.mercado-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 25px;
+    align-items: center;
+}
+.mercado-filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--panel-bg);
+    color: var(--text-muted);
+    font-size: 0.82em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+.mercado-filter-chip img { width: 18px; height: 18px; object-fit: contain; }
+.mercado-filter-chip:hover { border-color: var(--accent); color: #fff; }
+.mercado-filter-chip.active { background: rgba(0,200,255,0.1); border-color: var(--accent); color: var(--accent); }
+.mercado-filter-chip.active-rumor { background: rgba(255,170,0,0.12); border-color: #ffaa00; color: #ffaa00; }
+.mercado-filter-chip.active-negociando { background: rgba(0,200,255,0.12); border-color: #00c8ff; color: #00c8ff; }
+.mercado-filter-chip.active-fechado { background: rgba(76,175,80,0.12); border-color: #4caf50; color: #4caf50; }
+.mercado-filter-chip.active-melou { background: rgba(244,67,54,0.12); border-color: #f44336; color: #f44336; }
+
+.mercado-list { display: flex; flex-direction: column; gap: 14px; }
+
+.mercado-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 56px 110px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    transition: 0.25s;
+    position: relative;
+    overflow: hidden;
+}
+.mercado-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 12px 0 0 12px;
+}
+.mercado-card.status-rumor::before { background: #ffaa00; }
+.mercado-card.status-negociando::before { background: #00c8ff; }
+.mercado-card.status-fechado::before { background: #4caf50; }
+.mercado-card.status-melou::before { background: #f44336; }
+
+.mercado-card:hover { border-color: #2e3d5e; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+
+.mercado-card-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    background: #0d1220;
+    flex-shrink: 0;
+}
+
+.mercado-card-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 90px;
+}
+.mercado-status-icon { width: 32px; height: 32px; object-fit: contain; }
+.mercado-status-label {
+    font-size: 0.72em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.status-rumor .mercado-status-label { color: #ffaa00; }
+.status-negociando .mercado-status-label { color: #00c8ff; }
+.status-fechado .mercado-status-label { color: #4caf50; }
+.status-melou .mercado-status-label { color: #f44336; }
+
+.mercado-card-info { min-width: 0; }
+.mercado-card-name { font-weight: 900; font-size: 1.05em; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.mercado-card-meta { color: var(--text-muted); font-size: 0.78em; }
+.mercado-card-meta span { color: #aaa; }
+
+.mercado-card-clubs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.mercado-club {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 52px;
+}
+.mercado-club img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+.mercado-club-name {
+    font-size: 0.68em;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.mercado-club[onclick]:hover img {
+    filter: brightness(1.2) drop-shadow(0 0 6px rgba(0,200,255,0.5));
+    transform: scale(1.1);
+}
+.mercado-club[onclick]:hover .mercado-club-name {
+    color: var(--accent);
+}
+.mercado-club img {
+    transition: filter 0.2s, transform 0.2s;
+}
+.mercado-arrow { font-size: 1.2em; color: #555; flex-shrink: 0; }
+
+.mercado-card-votes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    min-width: 60px;
+}
+.vote-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-size: 0.8em;
+    font-weight: 700;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.vote-btn:hover { border-color: #555; color: #fff; }
+.vote-btn.voted-up { background: rgba(76,175,80,0.15); border-color: #4caf50; color: #4caf50; }
+.vote-btn.voted-down { background: rgba(244,67,54,0.15); border-color: #f44336; color: #f44336; }
+.vote-btn .vote-icon { font-size: 1em; }
+.vote-bar-wrap { width: 100%; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.vote-bar-fill { height: 100%; background: #4caf50; border-radius: 2px; transition: width 0.4s; }
+
+.mercado-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 1em;
+}
+
+@media (max-width: 768px) {
+    .mercado-card {
+        grid-template-columns: 52px 1fr; /* Apenas 2 colunas no topo */
+        grid-template-rows: auto auto auto auto; /* 4 linhas de conteúdo */
+        gap: 10px 15px;
+        padding: 15px;
+    }
+    
+    /* 1. Linha de Cima: Foto e Info do Jogador */
+    .mercado-card-avatar { 
+        width: 52px; 
+        height: 52px; 
+        grid-column: 1; 
+        grid-row: 1; 
+        margin: auto 0;
+    }
+    .mercado-card-info { 
+        grid-column: 2; 
+        grid-row: 1; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    /* 2. Segunda Linha: Status (Negociando/Fechado) */
+    .mercado-card-status { 
+        grid-column: 1 / 3; 
+        grid-row: 2;
+        flex-direction: row; 
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed var(--border);
+        padding: 8px;
+        border-radius: 8px;
+        min-width: unset;
+    }
+    .mercado-status-icon { width: 18px; height: 18px; }
+    .mercado-status-label { font-size: 0.8em; }
+    
+    /* 3. Terceira Linha: Os Clubes centralizados */
+    .mercado-card-clubs { 
+        grid-column: 1 / 3; 
+        grid-row: 3;
+        justify-content: center;
+        gap: 25px; /* Espaço maior entre a setinha e os times */
+        padding: 5px 0;
+    }
+    .mercado-club img { width: 42px; height: 42px; }
+    .mercado-club-name { font-size: 0.68em; max-width: 100px; }
+    
+    /* 4. Quarta Linha: Votos */
+    .mercado-card-votes {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        grid-column: 1 / 3;
+        grid-row: 4;
+        min-width: unset;
+        padding-top: 15px;
+        border-top: 1px solid var(--border);
+    }
+    .mercado-card-votes .vote-bar-wrap {
+        flex: 1; /* Faz a barra de progresso ocupar todo o espaço do meio */
+    }
+}
 </style>
 </head>
 <body>
+
 
 <a href="#main-content" class="skip-link">Pular para o conteúdo</a>
 
@@ -1273,6 +1550,7 @@ tr:last-child {
         <button onclick="navigateAndClose('teams')" id="sb-teams">TABELA (CLASSIFICAÇÃO)</button>
         <button onclick="navigateAndClose('players')" id="sb-players">RANKING MVP</button>
         <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">EQUIPES</button>
+        <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
         <button onclick="navigateAndClose('schedule')" id="sb-schedule">DATAS</button>
         
         <div class="sidebar-divider"></div>
@@ -1513,7 +1791,7 @@ tr:last-child {
     </div>
 
  <div id="team-profile" class="page">
-    <button class="btn-back" onclick="navigate('teams-list')">← Voltar para Equipes</button>
+    <button class="btn-back" onclick="navigate(lastVisitedPage)">← Voltar</button>
     
     <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 20px; text-align: center;">
         <div style="display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%;">
@@ -1596,6 +1874,41 @@ tr:last-child {
 
     <h3 style="margin-top: 50px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700;">Galeria de Troféus Coletivos</h3>
     <div id="tp-trophies-container" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; margin-bottom: 40px; background: rgba(255,215,0,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.1);">
+    </div>
+</div>
+
+<!-- PAGE: MERCADO DA BOLA -->
+<div id="mercado" class="page">
+    <div class="mercado-header">
+        <h1 class="mercado-title">Mercado da Bala</h1>
+        <p class="mercado-subtitle">Transferências · Negociações · Rumores</p>
+    </div>
+
+    <div class="mercado-filters" id="mercado-filters">
+        <div class="mercado-filter-chip active" data-filter="all" onclick="filterMercado(this, 'all')">📋 Todos</div>
+        <div class="mercado-filter-chip" data-filter="rumor" onclick="filterMercado(this, 'rumor')">
+            <img src="rumor.webp" onerror="this.style.display='none'"> Rumor
+        </div>
+        <div class="mercado-filter-chip" data-filter="negociando" onclick="filterMercado(this, 'negociando')">
+            <img src="negociando.webp" onerror="this.style.display='none'"> Negociando
+        </div>
+        <div class="mercado-filter-chip" data-filter="fechado" onclick="filterMercado(this, 'fechado')">
+            <img src="fechado.webp" onerror="this.style.display='none'"> Fechado
+        </div>
+        <div class="mercado-filter-chip" data-filter="melou" onclick="filterMercado(this, 'melou')">
+            <img src="melou.webp" onerror="this.style.display='none'"> Melou
+        </div>
+    </div>
+
+    <div class="filters" style="justify-content: center; margin-bottom: 25px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Envolvendo a Equipe:</label>
+        <select id="mercado-team-filter" onchange="renderMercado()" style="max-width: 300px; padding: 10px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none;">
+            <option value="all">Todas as Equipes</option>
+        </select>
+    </div>
+
+    <div id="mercado-list" class="mercado-list">
+        <div class="mercado-empty">Carregando negociações...</div>
     </div>
 </div>
 
@@ -5731,11 +6044,14 @@ function renderTeamProfileStats() {
 
         let ativos = playersList.filter(p => !p.isEx).sort((a,b) => b.abates - a.abates);
         // Alterado de 4 para 5 abaixo:
-        let topAtivos = ativos.slice(0, 5); 
+        let topAtivos = ativos.slice(0, 6); 
         let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
 
-        if (cardsContainer) {
-            // Alterado de top4Ativos para topAtivos
+if (cardsContainer) {
+            // Limita a largura para caber exatamente 3 cards lado a lado e centraliza o bloco
+            cardsContainer.style.maxWidth = "850px";
+            cardsContainer.style.margin = "0 auto 30px auto";
+            
             let html = topAtivos.map(p => createPlayerCardHTML(p, 0.85)).join('');
             
             if (inativos.length > 0) {
@@ -8018,7 +8334,387 @@ options: {
     });
 }
 
+// ==========================================
+// MERCADO DA BOLA
+// ==========================================
+
+// SUBSTITUA pelo link TSV publicado da sua aba "mercado" no Google Sheets
+// Colunas esperadas (ordem): jogador | foto | status | time_origem | escudo_origem | time_destino | escudo_destino | ultima_atualizacao
+// Onde "status" é: rumor / negociando / fechado / melou
+const MERCADO_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1638412483&single=true&output=tsv';
+
+let mercadoData = [];
+let mercadoFilter = 'all';
+// Votos salvos localmente por sessão: { "NomeJogador": { up: N, down: N, voted: 'up'|'down'|null } }
+let mercadoVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
+
+/**
+ * Resolve o escudo de um time.
+ * Prioridade:
+ *   1. Valor direto da planilha (link http/https ou caminho de arquivo)
+ *   2. Busca automática pelo nome do time no objeto `logos` já usado pelo site
+ *   3. Fallback para 'escudo.webp'
+ */
+function resolveEscudo(escudoCell, nomeTime) {
+    // 1. Se a planilha forneceu algum valor, usa direto
+    if (escudoCell && escudoCell.trim()) {
+        return escudoCell.trim();
+    }
+    // 2. Busca no objeto `logos` pelo nome do time (case-insensitive)
+    if (nomeTime && typeof logos !== 'undefined') {
+        const nomeLower = nomeTime.trim().toUpperCase();
+        // Tenta exato primeiro
+        if (logos[nomeLower]) return logos[nomeLower];
+        // Tenta match parcial/case-insensitive
+        const chave = Object.keys(logos).find(k => k.toUpperCase() === nomeLower);
+        if (chave) return logos[chave];
+    }
+    // 3. Fallback
+    return 'escudo.webp';
+}
+
+/**
+ * Verifica se um time tem página clicável (time ativo ou histórico).
+ * Retorna o onclick adequado ou null.
+ */
+function resolveTeamClick(nomeTime) {
+    if (!nomeTime || nomeTime === '?' || nomeTime === 'Sem Clube') return null;
+    const nomeUpper = nomeTime.trim().toUpperCase();
+    // Time ativo (tem página de perfil)
+    if (typeof db !== 'undefined' && db.teams) {
+        const ativo = db.teams.find(t => t.equipe.trim().toUpperCase() === nomeUpper);
+        if (ativo) return `openTeamProfile('${ativo.equipe.replace(/'/g, "\\'")}')`;
+    }
+    // Time histórico (tem página em outras-equipes)
+    if (typeof dbResults !== 'undefined') {
+        const hist = Object.keys(dbResults).find(k => k.trim().toUpperCase() === nomeUpper);
+        if (hist) return `openOutraEquipe('${hist.replace(/'/g, "\\'")}')`;
+    }
+    return null;
+}
+
+async function loadMercado() {
+    try {
+        const res = await fetch(`${MERCADO_TSV_URL}&nocache=${Date.now()}`);
+        if (!res.ok) throw new Error('Falha ao buscar planilha');
+        const text = await res.text();
+        const lines = text.trim().split('\n');
+        
+        mercadoData = lines.slice(1).map(line => {
+            const cols = line.split('\t').map(c => c.trim().replace(/\r/g, ''));
+            return {
+                jogador:       cols[0] || '',
+                foto:          cols[1] || '',
+                status:        (cols[2] || 'rumor').toLowerCase(),
+                timeOrigem:    cols[3] || '',
+                escudoOrigem:  cols[4] || '',
+                timeDestino:   cols[5] || '',
+                escudoDestino: cols[6] || '',
+                atualizacao:   cols[7] || '',
+                role:          cols[8] || '', // <-- CAPTURA A ROLE DA COLUNA I
+            };
+        }).filter(d => d.jogador);
+
+        // --- LÓGICA PARA PREENCHER O FILTRO DE EQUIPES ---
+        let uniqueTeams = new Set();
+        mercadoData.forEach(d => {
+            if(d.timeOrigem && d.timeOrigem !== '?' && d.timeOrigem !== 'Sem Clube') uniqueTeams.add(d.timeOrigem);
+            if(d.timeDestino && d.timeDestino !== '?' && d.timeDestino !== 'Sem Clube') uniqueTeams.add(d.timeDestino);
+        });
+        
+const teamSelect = document.getElementById('mercado-team-filter');
+        if (teamSelect) {
+            let selectHtml = '<option value="all">Todas as Equipes</option>';
+            // Transforma o Set em Array, ordena alfabeticamente e cria as opções
+            [...uniqueTeams].sort().forEach(t => {
+                selectHtml += `<option value="${t}">${t}</option>`;
+            });
+            teamSelect.innerHTML = selectHtml;
+        }
+
+        renderMercado(); // Renderiza primeiro com o cache local (para ser rápido)
+
+        // ✅ CHAMA O FIREBASE PARA ATUALIZAR COM OS VOTOS GLOBAIS
+        if (typeof window.fbLoadVotes === 'function') {
+            window.fbLoadVotes();
+        }
+
+    } catch (e) {
+        document.getElementById('mercado-list').innerHTML =
+            `<div class="mercado-empty">⚠️ Não foi possível carregar os dados.<br><small style="color:#555">Verifique a conexão ou o link da planilha.</small></div>`;
+        console.error("Erro ao carregar mercado:", e);
+    }
+}
+
+function filterMercado(el, filter) {
+    mercadoFilter = filter;
+    document.querySelectorAll('.mercado-filter-chip').forEach(chip => {
+        chip.classList.remove('active', 'active-rumor', 'active-negociando', 'active-fechado', 'active-melou');
+    });
+    if (filter === 'all') {
+        el.classList.add('active');
+    } else {
+        el.classList.add('active-' + filter);
+    }
+    renderMercado();
+}
+
+function renderMercado() {
+    const list = document.getElementById('mercado-list');
+    
+    // Puxa o valor do filtro de equipe
+    const teamFilter = document.getElementById('mercado-team-filter')?.value || 'all';
+
+    // Filtra pelo Status (Rumor, Fechado, etc) E pela Equipe (Origem ou Destino)
+    const filtered = mercadoData.filter(d => {
+        const passStatus = mercadoFilter === 'all' || d.status === mercadoFilter;
+        const passTeam = teamFilter === 'all' || 
+                         (d.timeOrigem && d.timeOrigem.toUpperCase() === teamFilter.toUpperCase()) || 
+                         (d.timeDestino && d.timeDestino.toUpperCase() === teamFilter.toUpperCase());
+        return passStatus && passTeam;
+    });
+
+    if (!filtered.length) {
+        list.innerHTML = '<div class="mercado-empty">Nenhuma negociação encontrada com estes filtros no momento.</div>';
+        return;
+    }
+
+    const statusLabels = { rumor: 'Rumor', negociando: 'Negociando', fechado: 'Fechado', melou: 'Melou' };
+
+    list.innerHTML = filtered.map((d, idx) => {
+        const key = d.jogador;
+        if (!mercadoVotes[key]) mercadoVotes[key] = { up: 0, down: 0, voted: null };
+        const v = mercadoVotes[key];
+        const total = v.up + v.down;
+        const pct = total ? Math.round((v.up / total) * 100) : 50;
+
+        // Busca a foto no repositório (playerPhotos) caso a planilha do mercado não tenha
+        let repoPhoto = null;
+        if (typeof playerPhotos !== 'undefined') {
+            const photoKey = Object.keys(playerPhotos).find(k => k.toLowerCase() === d.jogador.toLowerCase().trim());
+            if (photoKey) repoPhoto = playerPhotos[photoKey];
+        }
+
+        const avatarSrc = d.foto || repoPhoto || 'silhueta.png';
+        const escudoOrigem = resolveEscudo(d.escudoOrigem, d.timeOrigem);
+        const escudoDestino = resolveEscudo(d.escudoDestino, d.timeDestino);
+        const nomeOrigem = d.timeOrigem || 'Sem Clube';
+        const nomeDestino = d.timeDestino || '?';
+
+        const clickOrigem = resolveTeamClick(d.timeOrigem);
+        const clickDestino = resolveTeamClick(d.timeDestino);
+        const clubeOrigemAttr = clickOrigem
+            ? `onclick="${clickOrigem}" style="cursor:pointer;" title="Ver ${nomeOrigem}"`
+            : '';
+        const clubeDestinoAttr = clickDestino
+            ? `onclick="${clickDestino}" style="cursor:pointer;" title="Ver ${nomeDestino}"`
+            : '';
+
+        const votedUpClass = v.voted === 'up' ? 'voted-up' : '';
+        const votedDownClass = v.voted === 'down' ? 'voted-down' : '';
+        const safeId = key.replace(/[\s.#$/[\]]/g, '_');
+        return `
+        <div class="mercado-card status-${d.status}" data-status="${d.status}">
+            <img class="mercado-card-avatar"
+                 src="${avatarSrc}"
+                 onerror="this.src='silhueta.png'"
+                 alt="${d.jogador}">
+
+            <div class="mercado-card-status">
+                <img class="mercado-status-icon"
+                     src="${d.status}.webp"
+                     onerror="this.style.display='none'"
+                     alt="${d.status}">
+                <span class="mercado-status-label">${statusLabels[d.status] || d.status}</span>
+            </div>
+
+            <div class="mercado-card-info">
+                <div class="mercado-card-name">${d.jogador}</div>
+                <div class="mercado-card-meta">
+                    ${d.role ? `<span style="color: var(--accent); font-weight: 800; font-size: 0.9em; text-transform: uppercase;">${d.role}</span><br>` : ''}
+                    ${d.atualizacao ? `Atualizado: <span>${d.atualizacao}</span>` : ''}
+                </div>
+            </div>
+
+            <div class="mercado-card-clubs">
+                <div class="mercado-club" ${clubeOrigemAttr}>
+                    <img src="${escudoOrigem}" onerror="this.src='escudo.webp'" alt="${nomeOrigem}">
+                    <span class="mercado-club-name">${nomeOrigem}</span>
+                </div>
+                <span class="mercado-arrow">→</span>
+                <div class="mercado-club" ${clubeDestinoAttr}>
+                    <img src="${escudoDestino}" onerror="this.src='escudo.webp'" alt="${nomeDestino}">
+                    <span class="mercado-club-name">${nomeDestino}</span>
+                </div>
+            </div>
+
+<div class="mercado-card-votes">
+    <button class="vote-btn ${votedUpClass}" onclick="voteMercado(event, '${key}', 'up')">
+        <span class="vote-icon">👍</span> <span id="vu-${safeId}">${v.up > 0 ? v.up : ''}</span>
+    </button>
+    
+    <div class="vote-bar-wrap">
+        <div class="vote-bar-fill" id="vbar-${safeId}" style="width:${pct}%"></div>
+    </div>
+    
+    <button class="vote-btn ${votedDownClass}" onclick="voteMercado(event, '${key}', 'down')">
+        <span class="vote-icon">👎</span> <span id="vd-${safeId}">${v.down > 0 ? v.down : ''}</span>
+    </button>
+</div>
+        </div>`;
+    }).join('');
+}
+
+function voteMercado(e, key, dir) {
+    e.stopPropagation();
+    if (!mercadoVotes[key]) mercadoVotes[key] = { up: 0, down: 0, voted: null };
+    const v = mercadoVotes[key];
+    const previousDir = v.voted;
+
+    // Lógica matemática do voto local
+    if (v.voted === dir) {
+        // Clicou de novo no mesmo = tira o voto (toggle off)
+        v[dir]--;
+        v.voted = null;
+    } else {
+        if (v.voted && v.voted !== dir) {
+            // Tinha votado no outro, então remove o voto antigo
+            v[v.voted]--;
+        }
+        // Adiciona o voto novo
+        v[dir]++;
+        v.voted = dir;
+    }
+
+    // Salva no navegador do usuário
+    sessionStorage.setItem('mercadoVotes', JSON.stringify(mercadoVotes));
+
+    // A MÁGICA QUE FALTAVA: Chama a função do Firebase lá de baixo!
+    if (typeof window.fbVote === 'function') {
+        window.fbVote(key, v.voted, previousDir);
+    }
+
+    // Atualiza a barrinha e os números na hora (Feedback visual imediato)
+    const safeKey = key.replace(/[\s.#$/[\]]/g, '_'); // Limpeza padrão do Firebase
+    const total = v.up + v.down;
+    const pct = total ? Math.round((v.up / total) * 100) : 50;
+
+    const bar = document.getElementById(`vbar-${safeKey}`);
+    const vuEl = document.getElementById(`vu-${safeKey}`);
+    const vdEl = document.getElementById(`vd-${safeKey}`);
+    
+    if (bar) bar.style.width = pct + '%';
+    // Corrigido de "data.up" para "v.up"
+    if (vuEl) vuEl.textContent  = v.up   > 0 ? v.up   : '';
+    if (vdEl) vdEl.textContent  = v.down > 0 ? v.down : '';
+
+    // Troca as cores dos botões
+    const card = e.target.closest('.mercado-card');
+    if (card) {
+        card.querySelectorAll('.vote-btn').forEach(btn => btn.classList.remove('voted-up', 'voted-down'));
+        if (v.voted === 'up') card.querySelectorAll('.vote-btn')[0].classList.add('voted-up');
+        if (v.voted === 'down') card.querySelectorAll('.vote-btn')[1].classList.add('voted-down');
+    }
+}
+
+// Hook into the navigate function to lazy-load when entering mercado page
+const _origNavigate = typeof navigate === 'function' ? navigate : null;
+document.addEventListener('DOMContentLoaded', () => {
+    // patch navigate to trigger loadMercado on first visit
+    let mercadoLoaded = false;
+    const navButtons = document.querySelectorAll('[onclick*="mercado"]');
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!mercadoLoaded) {
+                mercadoLoaded = true;
+                loadMercado();
+            }
+        });
+    });
+});
+
+
 </script>
 </main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE",
+    authDomain: "central-free-fire.firebaseapp.com",
+    databaseURL: "https://central-free-fire-default-rtdb.firebaseio.com",
+    projectId: "central-free-fire",
+    storageBucket: "central-free-fire.firebasestorage.app",
+    messagingSenderId: "372535002832",
+    appId: "1:372535002832:web:37e938fec2b05eb560c0d5",
+    measurementId: "G-4C7B7TJ2RS"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const database = getDatabase(app);
+  window.firebaseApp = app;
+
+  // ✅ Define a função que voteMercado() chama
+  window.fbVote = function(key, newDir, previousDir) {
+    const safeKey = key.replace(/[\s.#$/\[\]]/g, '_');
+    const votesRef = ref(database, `mercadoVotes/${safeKey}`);
+
+    runTransaction(votesRef, (current) => {
+      const data = current || { up: 0, down: 0 };
+
+      // Remove voto anterior se existia
+      if (previousDir === 'up')   data.up   = Math.max(0, (data.up   || 0) - 1);
+      if (previousDir === 'down') data.down = Math.max(0, (data.down || 0) - 1);
+
+      // Adiciona voto novo (null = toggle off, não adiciona nada)
+      if (newDir === 'up')   data.up   = (data.up   || 0) + 1;
+      if (newDir === 'down') data.down = (data.down || 0) + 1;
+
+      return data;
+    });
+  };
+
+  // ✅ Carrega votos do Firebase ao iniciar (substitui os do sessionStorage)
+window.fbLoadVotes = function() {
+    const votesRef = ref(database, 'mercadoVotes');
+    
+    // onValue em vez de onlyOnce para atualizar em tempo real se alguém votar!
+    onValue(votesRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const localVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
+
+      // Pega todos os nomes reais que vieram da sua planilha TSV
+      const realNames = typeof mercadoData !== 'undefined' ? mercadoData.map(d => d.jogador) : [];
+
+      Object.entries(data).forEach(([safeKey, counts]) => {
+        // Acha o nome original comparando a versão "limpa" (safeKey) com os nomes reais da planilha
+        const originalKey = realNames.find(name =>
+          name.replace(/[\s.#$/\[\]]/g, '_') === safeKey
+        ) || safeKey;
+
+        // Pega o "voted" local para manter o botão colorido corretamente para quem votou
+        const localVoted = localVotes[originalKey]?.voted || null;
+
+        // Sobrescreve a variável global com os dados reais do Firebase
+        mercadoVotes[originalKey] = {
+          up: counts.up || 0,
+          down: counts.down || 0,
+          voted: localVoted 
+        };
+      });
+
+      // Renderiza a tela novamente agora com os dados globais corretos
+      if (typeof renderMercado === 'function') {
+          renderMercado();
+      }
+    });
+  };
+
+  console.log("Firebase conectado com votos do mercado!");
+</script>
 </body>
 </html>
