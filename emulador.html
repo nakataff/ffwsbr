@@ -1410,6 +1410,16 @@ tr:last-child {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.mercado-club[onclick]:hover img {
+    filter: brightness(1.2) drop-shadow(0 0 6px rgba(0,200,255,0.5));
+    transform: scale(1.1);
+}
+.mercado-club[onclick]:hover .mercado-club-name {
+    color: var(--accent);
+}
+.mercado-club img {
+    transition: filter 0.2s, transform 0.2s;
+}
 .mercado-arrow { font-size: 1.2em; color: #555; flex-shrink: 0; }
 
 .mercado-card-votes {
@@ -8275,7 +8285,7 @@ let mercadoVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
  * Resolve o escudo de um time.
  * Prioridade:
  *   1. Valor direto da planilha (link http/https ou caminho de arquivo)
- *   2. Busca automática pelo nome do time nos dados já carregados (teamsData)
+ *   2. Busca automática pelo nome do time no objeto `logos` já usado pelo site
  *   3. Fallback para 'escudo.webp'
  */
 function resolveEscudo(escudoCell, nomeTime) {
@@ -8283,23 +8293,37 @@ function resolveEscudo(escudoCell, nomeTime) {
     if (escudoCell && escudoCell.trim()) {
         return escudoCell.trim();
     }
-    // 2. Tenta achar o time pelo nome nos dados do site (teamsData / allTeams)
-    if (nomeTime) {
-        const nomeLower = nomeTime.trim().toLowerCase();
-        // teamsData é o array global que o site já usa para times
-        const fonte = (typeof teamsData !== 'undefined' && teamsData.length)
-            ? teamsData
-            : (typeof allTeams !== 'undefined' && allTeams.length ? allTeams : []);
-        for (const t of fonte) {
-            const nomeT = (t.nome || t.team || t.name || '').toLowerCase();
-            if (nomeT && nomeT === nomeLower) {
-                const logo = t.escudo || t.logo || t.shield || '';
-                if (logo) return logo;
-            }
-        }
+    // 2. Busca no objeto `logos` pelo nome do time (case-insensitive)
+    if (nomeTime && typeof logos !== 'undefined') {
+        const nomeLower = nomeTime.trim().toUpperCase();
+        // Tenta exato primeiro
+        if (logos[nomeLower]) return logos[nomeLower];
+        // Tenta match parcial/case-insensitive
+        const chave = Object.keys(logos).find(k => k.toUpperCase() === nomeLower);
+        if (chave) return logos[chave];
     }
     // 3. Fallback
     return 'escudo.webp';
+}
+
+/**
+ * Verifica se um time tem página clicável (time ativo ou histórico).
+ * Retorna o onclick adequado ou null.
+ */
+function resolveTeamClick(nomeTime) {
+    if (!nomeTime || nomeTime === '?' || nomeTime === 'Sem Clube') return null;
+    const nomeUpper = nomeTime.trim().toUpperCase();
+    // Time ativo (tem página de perfil)
+    if (typeof db !== 'undefined' && db.teams) {
+        const ativo = db.teams.find(t => t.equipe.trim().toUpperCase() === nomeUpper);
+        if (ativo) return `openTeamProfile('${ativo.equipe.replace(/'/g, "\\'")}')`;
+    }
+    // Time histórico (tem página em outras-equipes)
+    if (typeof dbResults !== 'undefined') {
+        const hist = Object.keys(dbResults).find(k => k.trim().toUpperCase() === nomeUpper);
+        if (hist) return `openOutraEquipe('${hist.replace(/'/g, "\\'")}')`;
+    }
+    return null;
 }
 
 async function loadMercado() {
@@ -8367,6 +8391,15 @@ function renderMercado() {
         const nomeOrigem = d.timeOrigem || 'Sem Clube';
         const nomeDestino = d.timeDestino || '?';
 
+        const clickOrigem = resolveTeamClick(d.timeOrigem);
+        const clickDestino = resolveTeamClick(d.timeDestino);
+        const clubeOrigemAttr = clickOrigem
+            ? `onclick="${clickOrigem}" style="cursor:pointer;" title="Ver ${nomeOrigem}"`
+            : '';
+        const clubeDestinoAttr = clickDestino
+            ? `onclick="${clickDestino}" style="cursor:pointer;" title="Ver ${nomeDestino}"`
+            : '';
+
         const votedUpClass = v.voted === 'up' ? 'voted-up' : '';
         const votedDownClass = v.voted === 'down' ? 'voted-down' : '';
 
@@ -8393,12 +8426,12 @@ function renderMercado() {
             </div>
 
             <div class="mercado-card-clubs">
-                <div class="mercado-club">
+                <div class="mercado-club" ${clubeOrigemAttr}>
                     <img src="${escudoOrigem}" onerror="this.src='escudo.webp'" alt="${nomeOrigem}">
                     <span class="mercado-club-name">${nomeOrigem}</span>
                 </div>
                 <span class="mercado-arrow">→</span>
-                <div class="mercado-club">
+                <div class="mercado-club" ${clubeDestinoAttr}>
                     <img src="${escudoDestino}" onerror="this.src='escudo.webp'" alt="${nomeDestino}">
                     <span class="mercado-club-name">${nomeDestino}</span>
                 </div>
