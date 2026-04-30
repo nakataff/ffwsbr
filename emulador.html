@@ -8660,22 +8660,33 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // ✅ Carrega votos do Firebase ao iniciar (substitui os do sessionStorage)
-  window.fbLoadVotes = function() {
+window.fbLoadVotes = function() {
     const votesRef = ref(database, 'mercadoVotes');
     onValue(votesRef, (snapshot) => {
       const data = snapshot.val() || {};
+
+      // Pega o que o usuário já votou localmente (para manter o highlight do botão)
+      const localVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
+
       Object.entries(data).forEach(([safeKey, counts]) => {
         const originalKey = Object.keys(mercadoVotes).find(k =>
           k.replace(/[\s.#$/\[\]]/g, '_') === safeKey
-        );
-        const k = originalKey || safeKey;
-        if (!mercadoVotes[k]) mercadoVotes[k] = { up: 0, down: 0, voted: null };
-        mercadoVotes[k].up   = counts.up   || 0;
-        mercadoVotes[k].down = counts.down || 0;
+        ) || safeKey;
+
+        // Pega o "voted" local para manter o botão marcado corretamente
+        const localVoted = localVotes[originalKey]?.voted || null;
+
+        // ✅ Sobrescreve TUDO com os dados reais do Firebase
+        mercadoVotes[originalKey] = {
+          up: counts.up || 0,
+          down: counts.down || 0,
+          voted: localVoted  // mantém apenas qual botão está marcado
+        };
       });
+
       renderMercado();
     }, { onlyOnce: true });
-  };
+};
 
   console.log("Firebase conectado com votos do mercado!");
 </script>
