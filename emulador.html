@@ -1843,6 +1843,13 @@ tr:last-child {
         </div>
     </div>
 
+    <div class="filters" style="justify-content: center; margin-bottom: 25px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Envolvendo a Equipe:</label>
+        <select id="mercado-team-filter" onchange="renderMercado()" style="max-width: 300px; padding: 10px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none;">
+            <option value="all">Todas as Equipes</option>
+        </select>
+    </div>
+
     <div id="mercado-list" class="mercado-list">
         <div class="mercado-empty">Carregando negociações...</div>
     </div>
@@ -8370,12 +8377,21 @@ function filterMercado(el, filter) {
 
 function renderMercado() {
     const list = document.getElementById('mercado-list');
-    const filtered = mercadoFilter === 'all'
-        ? mercadoData
-        : mercadoData.filter(d => d.status === mercadoFilter);
+    
+    // Puxa o valor do filtro de equipe
+    const teamFilter = document.getElementById('mercado-team-filter')?.value || 'all';
+
+    // Filtra pelo Status (Rumor, Fechado, etc) E pela Equipe (Origem ou Destino)
+    const filtered = mercadoData.filter(d => {
+        const passStatus = mercadoFilter === 'all' || d.status === mercadoFilter;
+        const passTeam = teamFilter === 'all' || 
+                         (d.timeOrigem && d.timeOrigem.toUpperCase() === teamFilter.toUpperCase()) || 
+                         (d.timeDestino && d.timeDestino.toUpperCase() === teamFilter.toUpperCase());
+        return passStatus && passTeam;
+    });
 
     if (!filtered.length) {
-        list.innerHTML = '<div class="mercado-empty">Nenhuma negociação neste status no momento.</div>';
+        list.innerHTML = '<div class="mercado-empty">Nenhuma negociação encontrada com estes filtros no momento.</div>';
         return;
     }
 
@@ -8389,13 +8405,13 @@ function renderMercado() {
         const pct = total ? Math.round((v.up / total) * 100) : 50;
 
         // Busca a foto no repositório (playerPhotos) caso a planilha do mercado não tenha
-let repoPhoto = null;
-if (typeof playerPhotos !== 'undefined') {
-    const photoKey = Object.keys(playerPhotos).find(k => k.toLowerCase() === d.jogador.toLowerCase().trim());
-    if (photoKey) repoPhoto = playerPhotos[photoKey];
-}
+        let repoPhoto = null;
+        if (typeof playerPhotos !== 'undefined') {
+            const photoKey = Object.keys(playerPhotos).find(k => k.toLowerCase() === d.jogador.toLowerCase().trim());
+            if (photoKey) repoPhoto = playerPhotos[photoKey];
+        }
 
-       const avatarSrc = d.foto || repoPhoto || 'silhueta.png';
+        const avatarSrc = d.foto || repoPhoto || 'silhueta.png';
         const escudoOrigem = resolveEscudo(d.escudoOrigem, d.timeOrigem);
         const escudoDestino = resolveEscudo(d.escudoDestino, d.timeDestino);
         const nomeOrigem = d.timeOrigem || 'Sem Clube';
@@ -8431,6 +8447,7 @@ if (typeof playerPhotos !== 'undefined') {
             <div class="mercado-card-info">
                 <div class="mercado-card-name">${d.jogador}</div>
                 <div class="mercado-card-meta">
+                    ${d.role ? `<span style="color: var(--accent); font-weight: 800; font-size: 0.9em; text-transform: uppercase;">${d.role}</span><br>` : ''}
                     ${d.atualizacao ? `Atualizado: <span>${d.atualizacao}</span>` : ''}
                 </div>
             </div>
