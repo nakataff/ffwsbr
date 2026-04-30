@@ -8491,17 +8491,19 @@ function renderMercado() {
                 </div>
             </div>
 
-            <div class="mercado-card-votes">
-                <button class="vote-btn ${votedUpClass}" onclick="voteMercado(event, '${key}', 'up')">
-                    <span class="vote-icon">👍</span> <span id="vu-${key.replace(/\s/g,'_')}">${v.up > 0 ? v.up + '%' : ''}</span>
-                </button>
-                <div class="vote-bar-wrap">
-                    <div class="vote-bar-fill" id="vbar-${key.replace(/\s/g,'_')}" style="width:${pct}%"></div>
-                </div>
-                <button class="vote-btn ${votedDownClass}" onclick="voteMercado(event, '${key}', 'down')">
-                    <span class="vote-icon">👎</span> <span id="vd-${key.replace(/\s/g,'_')}">${v.down > 0 ? v.down + '%' : ''}</span>
-                </button>
-            </div>
+<div class="mercado-card-votes">
+    <button class="vote-btn ${votedUpClass}" onclick="voteMercado(event, '${key}', 'up')">
+        <span class="vote-icon">👍</span> <span id="vu-${safeId}">${v.up > 0 ? v.up : ''}</span>
+    </button>
+    
+    <div class="vote-bar-wrap">
+        <div class="vote-bar-fill" id="vbar-${safeId}" style="width:${pct}%"></div>
+    </div>
+    
+    <button class="vote-btn ${votedDownClass}" onclick="voteMercado(event, '${key}', 'down')">
+        <span class="vote-icon">👎</span> <span id="vd-${safeId}">${v.down > 0 ? v.down : ''}</span>
+    </button>
+</div>
         </div>`;
     }).join('');
 }
