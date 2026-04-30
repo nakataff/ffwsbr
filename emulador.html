@@ -8409,7 +8409,7 @@ async function loadMercado() {
             if(d.timeDestino && d.timeDestino !== '?' && d.timeDestino !== 'Sem Clube') uniqueTeams.add(d.timeDestino);
         });
         
-        const teamSelect = document.getElementById('mercado-team-filter');
+const teamSelect = document.getElementById('mercado-team-filter');
         if (teamSelect) {
             let selectHtml = '<option value="all">Todas as Equipes</option>';
             // Transforma o Set em Array, ordena alfabeticamente e cria as opções
@@ -8419,7 +8419,13 @@ async function loadMercado() {
             teamSelect.innerHTML = selectHtml;
         }
 
-        renderMercado();
+        renderMercado(); // Renderiza primeiro com o cache local (para ser rápido)
+
+        // ✅ CHAMA O FIREBASE PARA ATUALIZAR COM OS VOTOS GLOBAIS
+        if (typeof window.fbLoadVotes === 'function') {
+            window.fbLoadVotes();
+        }
+
     } catch (e) {
         document.getElementById('mercado-list').innerHTML =
             `<div class="mercado-empty">⚠️ Não foi possível carregar os dados.<br><small style="color:#555">Verifique a conexão ou o link da planilha.</small></div>`;
@@ -8662,31 +8668,38 @@ document.addEventListener('DOMContentLoaded', () => {
   // ✅ Carrega votos do Firebase ao iniciar (substitui os do sessionStorage)
 window.fbLoadVotes = function() {
     const votesRef = ref(database, 'mercadoVotes');
+    
+    // onValue em vez de onlyOnce para atualizar em tempo real se alguém votar!
     onValue(votesRef, (snapshot) => {
       const data = snapshot.val() || {};
-
-      // Pega o que o usuário já votou localmente (para manter o highlight do botão)
       const localVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
 
+      // Pega todos os nomes reais que vieram da sua planilha TSV
+      const realNames = typeof mercadoData !== 'undefined' ? mercadoData.map(d => d.jogador) : [];
+
       Object.entries(data).forEach(([safeKey, counts]) => {
-        const originalKey = Object.keys(mercadoVotes).find(k =>
-          k.replace(/[\s.#$/\[\]]/g, '_') === safeKey
+        // Acha o nome original comparando a versão "limpa" (safeKey) com os nomes reais da planilha
+        const originalKey = realNames.find(name =>
+          name.replace(/[\s.#$/\[\]]/g, '_') === safeKey
         ) || safeKey;
 
-        // Pega o "voted" local para manter o botão marcado corretamente
+        // Pega o "voted" local para manter o botão colorido corretamente para quem votou
         const localVoted = localVotes[originalKey]?.voted || null;
 
-        // ✅ Sobrescreve TUDO com os dados reais do Firebase
+        // Sobrescreve a variável global com os dados reais do Firebase
         mercadoVotes[originalKey] = {
           up: counts.up || 0,
           down: counts.down || 0,
-          voted: localVoted  // mantém apenas qual botão está marcado
+          voted: localVoted 
         };
       });
 
-      renderMercado();
-    }, { onlyOnce: true });
-};
+      // Renderiza a tela novamente agora com os dados globais corretos
+      if (typeof renderMercado === 'function') {
+          renderMercado();
+      }
+    });
+  };
 
   console.log("Firebase conectado com votos do mercado!");
 </script>
