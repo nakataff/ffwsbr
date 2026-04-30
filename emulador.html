@@ -1336,6 +1336,14 @@ tr:last-child {
     position: relative;
     overflow: hidden;
 }
+
+/* Desktop: centraliza a seção de clubes no espaço do meio */
+@media (min-width: 769px) {
+    .mercado-card-clubs {
+        justify-self: center;
+        margin: 0 auto;
+    }
+}
 .mercado-card::before {
     content: '';
     position: absolute;
@@ -1425,7 +1433,24 @@ tr:last-child {
 .mercado-club img {
     transition: filter 0.2s, transform 0.2s;
 }
-.mercado-arrow { font-size: 1.2em; color: #555; flex-shrink: 0; }
+.mercado-arrow {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+/* Verde: sem clube → time */
+.mercado-arrow.arrow-green {
+    filter: brightness(0) saturate(100%) invert(60%) sepia(80%) saturate(400%) hue-rotate(90deg) brightness(1.1);
+}
+/* Vermelho: time → sem clube */
+.mercado-arrow.arrow-red {
+    filter: brightness(0) saturate(100%) invert(30%) sepia(100%) saturate(600%) hue-rotate(330deg) brightness(1.1);
+}
+/* Branco: time → time */
+.mercado-arrow.arrow-white {
+    filter: brightness(0) invert(1);
+}
 
 .mercado-card-votes {
     display: flex;
@@ -8510,6 +8535,13 @@ function renderMercado() {
             ? `onclick="${clickDestino}" style="cursor:pointer;" title="Ver ${nomeDestino}"`
             : '';
 
+        const hasOrigem = d.timeOrigem && d.timeOrigem.trim() !== '';
+        const hasDestino = d.timeDestino && d.timeDestino.trim() !== '' && d.timeDestino !== '?';
+
+        let arrowClass = 'arrow-white';
+        if (!hasOrigem && hasDestino) arrowClass = 'arrow-green';       // sem clube → time
+        else if (hasOrigem && !hasDestino) arrowClass = 'arrow-red';    // time → sem clube
+        else arrowClass = 'arrow-white';                                 // time → time
         const votedUpClass = v.voted === 'up' ? 'voted-up' : '';
         const votedDownClass = v.voted === 'down' ? 'voted-down' : '';
         const safeId = key.replace(/[\s.#$/[\]]/g, '_');
@@ -8541,7 +8573,7 @@ function renderMercado() {
                     <img src="${escudoOrigem}" onerror="this.src='escudo.webp'" alt="${nomeOrigem}">
                     <span class="mercado-club-name">${nomeOrigem}</span>
                 </div>
-                <span class="mercado-arrow">→</span>
+                <img class="mercado-arrow ${arrowClass}" src="seta.webp" alt="→">
                 <div class="mercado-club" ${clubeDestinoAttr}>
                     <img src="${escudoDestino}" onerror="this.src='escudo.webp'" alt="${nomeDestino}">
                     <span class="mercado-club-name">${nomeDestino}</span>
