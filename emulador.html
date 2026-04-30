@@ -5983,8 +5983,11 @@ function renderTeamProfileStats() {
         let topAtivos = ativos.slice(0, 6); 
         let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
 
-        if (cardsContainer) {
-            // Alterado de top4Ativos para topAtivos
+if (cardsContainer) {
+            // Limita a largura para caber exatamente 3 cards lado a lado e centraliza o bloco
+            cardsContainer.style.maxWidth = "850px";
+            cardsContainer.style.margin = "0 auto 30px auto";
+            
             let html = topAtivos.map(p => createPlayerCardHTML(p, 0.85)).join('');
             
             if (inativos.length > 0) {
