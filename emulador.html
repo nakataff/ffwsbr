@@ -8455,7 +8455,7 @@ function renderMercado() {
 
         const votedUpClass = v.voted === 'up' ? 'voted-up' : '';
         const votedDownClass = v.voted === 'down' ? 'voted-down' : '';
-
+        const safeId = key.replace(/[\s.#$/[\]]/g, '_');
         return `
         <div class="mercado-card status-${d.status}" data-status="${d.status}">
             <img class="mercado-card-avatar"
