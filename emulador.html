@@ -8493,39 +8493,57 @@ function renderMercado() {
 
             <div class="mercado-card-votes">
                 <button class="vote-btn ${votedUpClass}" onclick="voteMercado(event, '${key}', 'up')">
-                    <span class="vote-icon">👍</span> <span id="vu-${key.replace(/\s/g,'_')}">${v.up > 0 ? v.up : ''}</span>
+                    <span class="vote-icon">👍</span> <span id="vu-${key.replace(/\s/g,'_')}">${v.up > 0 ? v.up + '%' : ''}</span>
                 </button>
                 <div class="vote-bar-wrap">
                     <div class="vote-bar-fill" id="vbar-${key.replace(/\s/g,'_')}" style="width:${pct}%"></div>
                 </div>
                 <button class="vote-btn ${votedDownClass}" onclick="voteMercado(event, '${key}', 'down')">
-                    <span class="vote-icon">👎</span> <span id="vd-${key.replace(/\s/g,'_')}">${v.down > 0 ? v.down : ''}</span>
+                    <span class="vote-icon">👎</span> <span id="vd-${key.replace(/\s/g,'_')}">${v.down > 0 ? v.down + '%' : ''}</span>
                 </button>
             </div>
         </div>`;
     }).join('');
-
-    // Liga o listener do Firebase para cada card renderizado
-    if (typeof window.fbListenVotes === 'function') {
-        filtered.forEach(d => window.fbListenVotes(d.jogador));
-    }
 }
+
+function voteMercado(e, key, dir) {
     e.stopPropagation();
     if (!mercadoVotes[key]) mercadoVotes[key] = { up: 0, down: 0, voted: null };
     const v = mercadoVotes[key];
-    const previousDir = v.voted;
-    const newDir = (v.voted === dir) ? null : dir;
-    v.voted = newDir;
+
+    if (v.voted === dir) {
+        // toggle off
+        v[dir]--;
+        v.voted = null;
+    } else {
+        if (v.voted && v.voted !== dir) {
+            v[v.voted]--;
+        }
+        v[dir]++;
+        v.voted = dir;
+    }
+
     sessionStorage.setItem('mercadoVotes', JSON.stringify(mercadoVotes));
-    if (typeof window.fbVote === 'function') window.fbVote(key, newDir, previousDir);
+
+    const safeKey = key.replace(/\s/g, '_');
+    const total = v.up + v.down;
+    const pct = total ? Math.round((v.up / total) * 100) : 50;
+
+    const bar = document.getElementById(`vbar-${safeKey}`);
+    const vuEl = document.getElementById(`vu-${safeKey}`);
+    const vdEl = document.getElementById(`vd-${safeKey}`);
+    if (bar) bar.style.width = pct + '%';
+    if (vuEl) vuEl.textContent = v.up > 0 ? v.up + ' 👍' : '';
+    if (vdEl) vdEl.textContent = v.down > 0 ? v.down + ' 👎' : '';
+
+    // Update button classes
     const card = e.target.closest('.mercado-card');
     if (card) {
         card.querySelectorAll('.vote-btn').forEach(btn => btn.classList.remove('voted-up', 'voted-down'));
-        if (v.voted === 'up')   card.querySelectorAll('.vote-btn')[0].classList.add('voted-up');
+        if (v.voted === 'up') card.querySelectorAll('.vote-btn')[0].classList.add('voted-up');
         if (v.voted === 'down') card.querySelectorAll('.vote-btn')[1].classList.add('voted-down');
     }
 }
-
 
 // Hook into the navigate function to lazy-load when entering mercado page
 const _origNavigate = typeof navigate === 'function' ? navigate : null;
@@ -8550,12 +8568,10 @@ document.addEventListener('DOMContentLoaded', () => {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
-  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE",
     authDomain: "central-free-fire.firebaseapp.com",
-    databaseURL: "https://central-free-fire-default-rtdb.firebaseio.com",
     projectId: "central-free-fire",
     storageBucket: "central-free-fire.firebasestorage.app",
     messagingSenderId: "372535002832",
@@ -8563,55 +8579,14 @@ document.addEventListener('DOMContentLoaded', () => {
     measurementId: "G-4C7B7TJ2RS"
   };
 
+  // Inicializa o Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-  const db = getDatabase(app);
 
-  window.firebaseApp = app;
-
-  // ─── VOTOS: ESCREVER ─────────────────────────────────────────────────────────
-  // Chamado quando o usuário clica em 👍 ou 👎
-  window.fbVote = async function(key, dir, previousDir) {
-    const safeKey = key.replace(/[.#$/[\]]/g, '_');
-    const votesRef = ref(db, 'mercadoVotes/' + safeKey);
-
-    await runTransaction(votesRef, (current) => {
-      if (!current) current = { up: 0, down: 0 };
-      // Remove voto anterior se existia
-      if (previousDir) current[previousDir] = Math.max(0, (current[previousDir] || 0) - 1);
-      // Adiciona novo voto (se não for toggle-off)
-      if (dir) current[dir] = (current[dir] || 0) + 1;
-      return current;
-    });
-  };
-
-  // ─── VOTOS: OUVIR ────────────────────────────────────────────────────────────
-  // Escuta mudanças em tempo real e atualiza a UI de todos os usuários
-  window.fbListenVotes = function(key) {
-    const safeKey = key.replace(/[.#$/[\]]/g, '_');
-    const votesRef = ref(db, 'mercadoVotes/' + safeKey);
-
-    onValue(votesRef, (snapshot) => {
-      const data = snapshot.val() || { up: 0, down: 0 };
-      const total = data.up + data.down;
-      const pct = total ? Math.round((data.up / total) * 100) : 50;
-
-      const bar  = document.getElementById('vbar-' + safeKey);
-      const vuEl = document.getElementById('vu-'   + safeKey);
-      const vdEl = document.getElementById('vd-'   + safeKey);
-
-      if (bar)  bar.style.width   = pct + '%';
-      if (vuEl) vuEl.textContent  = data.up   > 0 ? data.up   : '';
-      if (vdEl) vdEl.textContent  = data.down > 0 ? data.down : '';
-
-      // Atualiza o objeto local para manter consistência com o voto do usuário
-      if (!window.mercadoVotes[key]) window.mercadoVotes[key] = { up: 0, down: 0, voted: null };
-      window.mercadoVotes[key].up   = data.up;
-      window.mercadoVotes[key].down = data.down;
-    });
-  };
-
-  console.log("Firebase Realtime Database conectado!");
+  // MÁGICA: Isso permite que seu outro script use o Firebase
+  window.firebaseApp = app; 
+  
+  console.log("Firebase conectado e pronto para uso!");
 </script>
 
 </body>
