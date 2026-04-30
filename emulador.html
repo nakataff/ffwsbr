@@ -8342,6 +8342,7 @@ async function loadMercado() {
         if (!res.ok) throw new Error('Falha ao buscar planilha');
         const text = await res.text();
         const lines = text.trim().split('\n');
+        
         mercadoData = lines.slice(1).map(line => {
             const cols = line.split('\t').map(c => c.trim().replace(/\r/g, ''));
             return {
@@ -8353,12 +8354,32 @@ async function loadMercado() {
                 timeDestino:   cols[5] || '',
                 escudoDestino: cols[6] || '',
                 atualizacao:   cols[7] || '',
+                role:          cols[8] || '', // <-- CAPTURA A ROLE DA COLUNA I
             };
         }).filter(d => d.jogador);
+
+        // --- LÓGICA PARA PREENCHER O FILTRO DE EQUIPES ---
+        let uniqueTeams = new Set();
+        mercadoData.forEach(d => {
+            if(d.timeOrigem && d.timeOrigem !== '?' && d.timeOrigem !== 'Sem Clube') uniqueTeams.add(d.timeOrigem);
+            if(d.timeDestino && d.timeDestino !== '?' && d.timeDestino !== 'Sem Clube') uniqueTeams.add(d.timeDestino);
+        });
+        
+        const teamSelect = document.getElementById('mercado-team-filter');
+        if (teamSelect) {
+            let selectHtml = '<option value="all">Todas as Equipes</option>';
+            // Transforma o Set em Array, ordena alfabeticamente e cria as opções
+            [...uniqueTeams].sort().forEach(t => {
+                selectHtml += `<option value="${t}">${t}</option>`;
+            });
+            teamSelect.innerHTML = selectHtml;
+        }
+
         renderMercado();
     } catch (e) {
         document.getElementById('mercado-list').innerHTML =
-            `<div class="mercado-empty">⚠️ Não foi possível carregar os dados.<br><small style="color:#555">Configure o link TSV da planilha no código.</small></div>`;
+            `<div class="mercado-empty">⚠️ Não foi possível carregar os dados.<br><small style="color:#555">Verifique a conexão ou o link da planilha.</small></div>`;
+        console.error("Erro ao carregar mercado:", e);
     }
 }
 
