@@ -1254,6 +1254,216 @@ tr:last-child {
     .close-btn { background: transparent; border: 1px solid transparent; color: #aaa; font-size: 1.5em; cursor: pointer; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: 0.2s; line-height: 1; }
     .close-btn:hover { color: #fff; border-color: #555; background: rgba(255,255,255,0.05); }
     .close-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* =============================================
+   MERCADO DA BOLA
+   ============================================= */
+.mercado-header {
+    text-align: center;
+    padding: 10px 0 30px;
+    position: relative;
+}
+.mercado-title {
+    font-size: clamp(2em, 6vw, 3.5em);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #4caf50 0%, #00c8ff 50%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    line-height: 1.1;
+    text-shadow: none;
+}
+.mercado-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.mercado-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 25px;
+    align-items: center;
+}
+.mercado-filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--panel-bg);
+    color: var(--text-muted);
+    font-size: 0.82em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+.mercado-filter-chip img { width: 18px; height: 18px; object-fit: contain; }
+.mercado-filter-chip:hover { border-color: var(--accent); color: #fff; }
+.mercado-filter-chip.active { background: rgba(0,200,255,0.1); border-color: var(--accent); color: var(--accent); }
+.mercado-filter-chip.active-rumor { background: rgba(255,170,0,0.12); border-color: #ffaa00; color: #ffaa00; }
+.mercado-filter-chip.active-negociando { background: rgba(0,200,255,0.12); border-color: #00c8ff; color: #00c8ff; }
+.mercado-filter-chip.active-fechado { background: rgba(76,175,80,0.12); border-color: #4caf50; color: #4caf50; }
+.mercado-filter-chip.active-melou { background: rgba(244,67,54,0.12); border-color: #f44336; color: #f44336; }
+
+.mercado-list { display: flex; flex-direction: column; gap: 14px; }
+
+.mercado-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 56px 110px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    transition: 0.25s;
+    position: relative;
+    overflow: hidden;
+}
+.mercado-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 12px 0 0 12px;
+}
+.mercado-card.status-rumor::before { background: #ffaa00; }
+.mercado-card.status-negociando::before { background: #00c8ff; }
+.mercado-card.status-fechado::before { background: #4caf50; }
+.mercado-card.status-melou::before { background: #f44336; }
+
+.mercado-card:hover { border-color: #2e3d5e; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+
+.mercado-card-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    background: #0d1220;
+    flex-shrink: 0;
+}
+
+.mercado-card-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 90px;
+}
+.mercado-status-icon { width: 32px; height: 32px; object-fit: contain; }
+.mercado-status-label {
+    font-size: 0.72em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.status-rumor .mercado-status-label { color: #ffaa00; }
+.status-negociando .mercado-status-label { color: #00c8ff; }
+.status-fechado .mercado-status-label { color: #4caf50; }
+.status-melou .mercado-status-label { color: #f44336; }
+
+.mercado-card-info { min-width: 0; }
+.mercado-card-name { font-weight: 900; font-size: 1.05em; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.mercado-card-meta { color: var(--text-muted); font-size: 0.78em; }
+.mercado-card-meta span { color: #aaa; }
+
+.mercado-card-clubs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+.mercado-club {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 52px;
+}
+.mercado-club img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+.mercado-club-name {
+    font-size: 0.68em;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.mercado-arrow { font-size: 1.2em; color: #555; flex-shrink: 0; }
+
+.mercado-card-votes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    min-width: 60px;
+}
+.vote-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-size: 0.8em;
+    font-weight: 700;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.vote-btn:hover { border-color: #555; color: #fff; }
+.vote-btn.voted-up { background: rgba(76,175,80,0.15); border-color: #4caf50; color: #4caf50; }
+.vote-btn.voted-down { background: rgba(244,67,54,0.15); border-color: #f44336; color: #f44336; }
+.vote-btn .vote-icon { font-size: 1em; }
+.vote-bar-wrap { width: 100%; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.vote-bar-fill { height: 100%; background: #4caf50; border-radius: 2px; transition: width 0.4s; }
+
+.mercado-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 1em;
+}
+
+@media (max-width: 768px) {
+    .mercado-card {
+        grid-template-columns: 44px 1fr auto;
+        grid-template-rows: auto auto;
+        gap: 10px 12px;
+    }
+    .mercado-card-status { flex-direction: row; min-width: unset; grid-column: 2; grid-row: 2; }
+    .mercado-status-icon { width: 22px; height: 22px; }
+    .mercado-card-clubs { grid-column: 3; grid-row: 1 / 3; }
+    .mercado-card-votes { display: none; }
+    .mercado-card-info { grid-column: 2; grid-row: 1; }
+    .mercado-club img { width: 30px; height: 30px; }
+    .mercado-club-name { font-size: 0.62em; max-width: 46px; }
+    .mercado-card-avatar { width: 44px; height: 44px; grid-row: 1 / 3; }
+}
 </style>
 </head>
 <body>
@@ -1273,6 +1483,7 @@ tr:last-child {
         <button onclick="navigateAndClose('teams')" id="sb-teams">TABELA (CLASSIFICAÇÃO)</button>
         <button onclick="navigateAndClose('players')" id="sb-players">RANKING MVP</button>
         <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">EQUIPES</button>
+        <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
         <button onclick="navigateAndClose('schedule')" id="sb-schedule">DATAS</button>
         
         <div class="sidebar-divider"></div>
@@ -1596,6 +1807,34 @@ tr:last-child {
 
     <h3 style="margin-top: 50px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700;">Galeria de Troféus Coletivos</h3>
     <div id="tp-trophies-container" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; margin-bottom: 40px; background: rgba(255,215,0,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.1);">
+    </div>
+</div>
+
+<!-- PAGE: MERCADO DA BOLA -->
+<div id="mercado" class="page">
+    <div class="mercado-header">
+        <h1 class="mercado-title">Mercado da Bala</h1>
+        <p class="mercado-subtitle">Transferências · Negociações · Rumores</p>
+    </div>
+
+    <div class="mercado-filters" id="mercado-filters">
+        <div class="mercado-filter-chip active" data-filter="all" onclick="filterMercado(this, 'all')">📋 Todos</div>
+        <div class="mercado-filter-chip" data-filter="rumor" onclick="filterMercado(this, 'rumor')">
+            <img src="rumor.webp" onerror="this.style.display='none'"> Rumor
+        </div>
+        <div class="mercado-filter-chip" data-filter="negociando" onclick="filterMercado(this, 'negociando')">
+            <img src="negociando.webp" onerror="this.style.display='none'"> Negociando
+        </div>
+        <div class="mercado-filter-chip" data-filter="fechado" onclick="filterMercado(this, 'fechado')">
+            <img src="fechado.webp" onerror="this.style.display='none'"> Fechado
+        </div>
+        <div class="mercado-filter-chip" data-filter="melou" onclick="filterMercado(this, 'melou')">
+            <img src="melou.webp" onerror="this.style.display='none'"> Melou
+        </div>
+    </div>
+
+    <div id="mercado-list" class="mercado-list">
+        <div class="mercado-empty">Carregando negociações...</div>
     </div>
 </div>
 
@@ -8017,6 +8256,192 @@ options: {
         }
     });
 }
+
+// ==========================================
+// MERCADO DA BOLA
+// ==========================================
+
+// SUBSTITUA pelo link TSV publicado da sua aba "mercado" no Google Sheets
+// Colunas esperadas (ordem): jogador | foto | status | time_origem | escudo_origem | time_destino | escudo_destino | ultima_atualizacao
+// Onde "status" é: rumor / negociando / fechado / melou
+const MERCADO_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/SEU_ID_AQUI/pub?gid=SEU_GID_AQUI&single=true&output=tsv';
+
+let mercadoData = [];
+let mercadoFilter = 'all';
+// Votos salvos localmente por sessão: { "NomeJogador": { up: N, down: N, voted: 'up'|'down'|null } }
+let mercadoVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
+
+async function loadMercado() {
+    try {
+        const res = await fetch(`${MERCADO_TSV_URL}&nocache=${Date.now()}`);
+        if (!res.ok) throw new Error('Falha ao buscar planilha');
+        const text = await res.text();
+        const lines = text.trim().split('\n');
+        mercadoData = lines.slice(1).map(line => {
+            const cols = line.split('\t').map(c => c.trim().replace(/\r/g, ''));
+            return {
+                jogador:       cols[0] || '',
+                foto:          cols[1] || '',
+                status:        (cols[2] || 'rumor').toLowerCase(),
+                timeOrigem:    cols[3] || '',
+                escudoOrigem:  cols[4] || '',
+                timeDestino:   cols[5] || '',
+                escudoDestino: cols[6] || '',
+                atualizacao:   cols[7] || '',
+            };
+        }).filter(d => d.jogador);
+        renderMercado();
+    } catch (e) {
+        document.getElementById('mercado-list').innerHTML =
+            `<div class="mercado-empty">⚠️ Não foi possível carregar os dados.<br><small style="color:#555">Configure o link TSV da planilha no código.</small></div>`;
+    }
+}
+
+function filterMercado(el, filter) {
+    mercadoFilter = filter;
+    document.querySelectorAll('.mercado-filter-chip').forEach(chip => {
+        chip.classList.remove('active', 'active-rumor', 'active-negociando', 'active-fechado', 'active-melou');
+    });
+    if (filter === 'all') {
+        el.classList.add('active');
+    } else {
+        el.classList.add('active-' + filter);
+    }
+    renderMercado();
+}
+
+function renderMercado() {
+    const list = document.getElementById('mercado-list');
+    const filtered = mercadoFilter === 'all'
+        ? mercadoData
+        : mercadoData.filter(d => d.status === mercadoFilter);
+
+    if (!filtered.length) {
+        list.innerHTML = '<div class="mercado-empty">Nenhuma negociação neste status no momento.</div>';
+        return;
+    }
+
+    const statusLabels = { rumor: 'Rumor', negociando: 'Negociando', fechado: 'Fechado', melou: 'Melou' };
+
+    list.innerHTML = filtered.map((d, idx) => {
+        const key = d.jogador;
+        if (!mercadoVotes[key]) mercadoVotes[key] = { up: 0, down: 0, voted: null };
+        const v = mercadoVotes[key];
+        const total = v.up + v.down;
+        const pct = total ? Math.round((v.up / total) * 100) : 50;
+
+        const avatarSrc = d.foto || 'silhueta.png';
+        const escudoOrigem = d.escudoOrigem || 'escudo.webp';
+        const escudoDestino = d.escudoDestino || 'escudo.webp';
+        const nomeOrigem = d.timeOrigem || 'Sem Clube';
+        const nomeDestino = d.timeDestino || '?';
+
+        const votedUpClass = v.voted === 'up' ? 'voted-up' : '';
+        const votedDownClass = v.voted === 'down' ? 'voted-down' : '';
+
+        return `
+        <div class="mercado-card status-${d.status}" data-status="${d.status}">
+            <img class="mercado-card-avatar"
+                 src="${avatarSrc}"
+                 onerror="this.src='silhueta.png'"
+                 alt="${d.jogador}">
+
+            <div class="mercado-card-status">
+                <img class="mercado-status-icon"
+                     src="${d.status}.webp"
+                     onerror="this.style.display='none'"
+                     alt="${d.status}">
+                <span class="mercado-status-label">${statusLabels[d.status] || d.status}</span>
+            </div>
+
+            <div class="mercado-card-info">
+                <div class="mercado-card-name">${d.jogador}</div>
+                <div class="mercado-card-meta">
+                    ${d.atualizacao ? `Atualizado: <span>${d.atualizacao}</span>` : ''}
+                </div>
+            </div>
+
+            <div class="mercado-card-clubs">
+                <div class="mercado-club">
+                    <img src="${escudoOrigem}" onerror="this.src='escudo.webp'" alt="${nomeOrigem}">
+                    <span class="mercado-club-name">${nomeOrigem}</span>
+                </div>
+                <span class="mercado-arrow">→</span>
+                <div class="mercado-club">
+                    <img src="${escudoDestino}" onerror="this.src='escudo.webp'" alt="${nomeDestino}">
+                    <span class="mercado-club-name">${nomeDestino}</span>
+                </div>
+            </div>
+
+            <div class="mercado-card-votes">
+                <button class="vote-btn ${votedUpClass}" onclick="voteMercado(event, '${key}', 'up')">
+                    <span class="vote-icon">👍</span> <span id="vu-${key.replace(/\s/g,'_')}">${v.up > 0 ? v.up + '%' : ''}</span>
+                </button>
+                <div class="vote-bar-wrap">
+                    <div class="vote-bar-fill" id="vbar-${key.replace(/\s/g,'_')}" style="width:${pct}%"></div>
+                </div>
+                <button class="vote-btn ${votedDownClass}" onclick="voteMercado(event, '${key}', 'down')">
+                    <span class="vote-icon">👎</span> <span id="vd-${key.replace(/\s/g,'_')}">${v.down > 0 ? v.down + '%' : ''}</span>
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function voteMercado(e, key, dir) {
+    e.stopPropagation();
+    if (!mercadoVotes[key]) mercadoVotes[key] = { up: 0, down: 0, voted: null };
+    const v = mercadoVotes[key];
+
+    if (v.voted === dir) {
+        // toggle off
+        v[dir]--;
+        v.voted = null;
+    } else {
+        if (v.voted && v.voted !== dir) {
+            v[v.voted]--;
+        }
+        v[dir]++;
+        v.voted = dir;
+    }
+
+    sessionStorage.setItem('mercadoVotes', JSON.stringify(mercadoVotes));
+
+    const safeKey = key.replace(/\s/g, '_');
+    const total = v.up + v.down;
+    const pct = total ? Math.round((v.up / total) * 100) : 50;
+
+    const bar = document.getElementById(`vbar-${safeKey}`);
+    const vuEl = document.getElementById(`vu-${safeKey}`);
+    const vdEl = document.getElementById(`vd-${safeKey}`);
+    if (bar) bar.style.width = pct + '%';
+    if (vuEl) vuEl.textContent = v.up > 0 ? v.up + ' 👍' : '';
+    if (vdEl) vdEl.textContent = v.down > 0 ? v.down + ' 👎' : '';
+
+    // Update button classes
+    const card = e.target.closest('.mercado-card');
+    if (card) {
+        card.querySelectorAll('.vote-btn').forEach(btn => btn.classList.remove('voted-up', 'voted-down'));
+        if (v.voted === 'up') card.querySelectorAll('.vote-btn')[0].classList.add('voted-up');
+        if (v.voted === 'down') card.querySelectorAll('.vote-btn')[1].classList.add('voted-down');
+    }
+}
+
+// Hook into the navigate function to lazy-load when entering mercado page
+const _origNavigate = typeof navigate === 'function' ? navigate : null;
+document.addEventListener('DOMContentLoaded', () => {
+    // patch navigate to trigger loadMercado on first visit
+    let mercadoLoaded = false;
+    const navButtons = document.querySelectorAll('[onclick*="mercado"]');
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!mercadoLoaded) {
+                mercadoLoaded = true;
+                loadMercado();
+            }
+        });
+    });
+});
 
 </script>
 </main>
