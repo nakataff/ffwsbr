@@ -1337,18 +1337,20 @@ tr:last-child {
     overflow: hidden;
 }
 
-/* Desktop: redefine o grid para centralizar clubs no meio exato */
+/* Desktop: clubs fixos no centro absoluto do card via position absolute */
 @media (min-width: 769px) {
     .mercado-card {
-        grid-template-columns: 56px 110px 1fr 220px 80px;
+        grid-template-columns: 56px 110px 1fr auto;
+        position: relative;
     }
     .mercado-card-clubs {
-        grid-column: 4;
-        justify-self: center;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        justify-self: unset;
     }
     .mercado-card-votes {
-        grid-column: 5;
-        justify-self: center;
+        grid-column: 4;
     }
 }
 .mercado-card::before {
@@ -8530,8 +8532,12 @@ function renderMercado() {
         const avatarSrc = d.foto || repoPhoto || 'silhueta.png';
         const escudoOrigem = resolveEscudo(d.escudoOrigem, d.timeOrigem);
         const escudoDestino = resolveEscudo(d.escudoDestino, d.timeDestino);
-        const nomeOrigem = d.timeOrigem || 'Sem Clube';
-        const nomeDestino = d.timeDestino || '?';
+
+        const hasOrigem = d.timeOrigem && d.timeOrigem.trim() !== '';
+        const hasDestino = d.timeDestino && d.timeDestino.trim() !== '' && d.timeDestino !== '?';
+
+        const nomeOrigem = hasOrigem ? d.timeOrigem : 'Sem Clube';
+        const nomeDestino = hasDestino ? d.timeDestino : 'Sem Clube';
 
         const clickOrigem = resolveTeamClick(d.timeOrigem);
         const clickDestino = resolveTeamClick(d.timeDestino);
@@ -8541,9 +8547,6 @@ function renderMercado() {
         const clubeDestinoAttr = clickDestino
             ? `onclick="${clickDestino}" style="cursor:pointer;" title="Ver ${nomeDestino}"`
             : '';
-
-        const hasOrigem = d.timeOrigem && d.timeOrigem.trim() !== '';
-        const hasDestino = d.timeDestino && d.timeDestino.trim() !== '' && d.timeDestino !== '?';
 
         let arrowClass = 'arrow-white';
         if (!hasOrigem && hasDestino) arrowClass = 'arrow-green';       // sem clube → time
