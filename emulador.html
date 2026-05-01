@@ -8555,6 +8555,15 @@ function renderMercado() {
         const votedUpClass = v.voted === 'up' ? 'voted-up' : '';
         const votedDownClass = v.voted === 'down' ? 'voted-down' : '';
         const safeId = key.replace(/[\s.#$/[\]]/g, '_');
+        // ✅ VERIFICA SE O JOGADOR EXISTE NO BANCO DE DADOS (Ativo ou Histórico)
+        const nomeSafe = d.jogador.trim().toLowerCase();
+        const temPerfil = db.players.some(x => x.jogador.toLowerCase() === nomeSafe || checkNameMatch(x.jogador, d.jogador)) || 
+                          (typeof lbffData !== 'undefined' && Object.keys(lbffData).some(name => name.toLowerCase() === nomeSafe || checkNameMatch(name, d.jogador)));
+                          
+        // Se tiver perfil, cria um link com hover e o ícone de link. Se não, exibe só o texto normal.
+        const nomeHtml = temPerfil 
+            ? `<span onclick="${_safePPAttr(d.jogador)}" title="Ver perfil do jogador" style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='inherit'">${d.jogador} 🔗</span>`
+            : d.jogador;
         return `
         <div class="mercado-card status-${d.status}" data-status="${d.status}">
             <img class="mercado-card-avatar"
@@ -8571,7 +8580,7 @@ function renderMercado() {
             </div>
 
             <div class="mercado-card-info">
-                <div class="mercado-card-name">${d.jogador}</div>
+                <div class="mercado-card-name">${nomeHtml}</div>
                 <div class="mercado-card-meta">
                     ${d.role ? `<span style="color: var(--accent); font-weight: 800; font-size: 0.9em; text-transform: uppercase;">${d.role}</span><br>` : ''}
                     ${d.atualizacao ? `Atualizado: <span>${d.atualizacao}</span>` : ''}
