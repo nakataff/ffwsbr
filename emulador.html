@@ -1336,6 +1336,23 @@ tr:last-child {
     position: relative;
     overflow: hidden;
 }
+
+/* Desktop: clubs fixos no centro absoluto do card via position absolute */
+@media (min-width: 769px) {
+    .mercado-card {
+        grid-template-columns: 56px 110px 1fr auto;
+        position: relative;
+    }
+    .mercado-card-clubs {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        justify-self: unset;
+    }
+    .mercado-card-votes {
+        grid-column: 4;
+    }
+}
 .mercado-card::before {
     content: '';
     position: absolute;
@@ -1395,7 +1412,7 @@ tr:last-child {
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    min-width: 52px;
+    width: 100px; /* A mágica: Força o lado esquerdo e direito a terem a mesma largura exata */
 }
 .mercado-club img {
     width: 38px;
@@ -1425,7 +1442,24 @@ tr:last-child {
 .mercado-club img {
     transition: filter 0.2s, transform 0.2s;
 }
-.mercado-arrow { font-size: 1.2em; color: #555; flex-shrink: 0; }
+.mercado-arrow {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+/* Verde: sem clube → time */
+.mercado-arrow.arrow-green {
+    filter: brightness(0) saturate(100%) invert(60%) sepia(80%) saturate(400%) hue-rotate(90deg) brightness(1.1);
+}
+/* Vermelho: time → sem clube */
+.mercado-arrow.arrow-red {
+    filter: brightness(0) saturate(100%) invert(30%) sepia(100%) saturate(600%) hue-rotate(330deg) brightness(1.1);
+}
+/* Branco: time → time */
+.mercado-arrow.arrow-white {
+    filter: brightness(0) invert(1);
+}
 
 .mercado-card-votes {
     display: flex;
@@ -8498,8 +8532,12 @@ function renderMercado() {
         const avatarSrc = d.foto || repoPhoto || 'silhueta.png';
         const escudoOrigem = resolveEscudo(d.escudoOrigem, d.timeOrigem);
         const escudoDestino = resolveEscudo(d.escudoDestino, d.timeDestino);
-        const nomeOrigem = d.timeOrigem || 'Sem Clube';
-        const nomeDestino = d.timeDestino || '?';
+
+        const hasOrigem = d.timeOrigem && d.timeOrigem.trim() !== '';
+        const hasDestino = d.timeDestino && d.timeDestino.trim() !== '' && d.timeDestino !== '?';
+
+        const nomeOrigem = hasOrigem ? d.timeOrigem : 'Sem Clube';
+        const nomeDestino = hasDestino ? d.timeDestino : 'Sem Clube';
 
         const clickOrigem = resolveTeamClick(d.timeOrigem);
         const clickDestino = resolveTeamClick(d.timeDestino);
@@ -8510,9 +8548,22 @@ function renderMercado() {
             ? `onclick="${clickDestino}" style="cursor:pointer;" title="Ver ${nomeDestino}"`
             : '';
 
+        let arrowClass = 'arrow-white';
+        if (!hasOrigem && hasDestino) arrowClass = 'arrow-green';       // sem clube → time
+        else if (hasOrigem && !hasDestino) arrowClass = 'arrow-red';    // time → sem clube
+        else arrowClass = 'arrow-white';                                 // time → time
         const votedUpClass = v.voted === 'up' ? 'voted-up' : '';
         const votedDownClass = v.voted === 'down' ? 'voted-down' : '';
         const safeId = key.replace(/[\s.#$/[\]]/g, '_');
+        // ✅ VERIFICA SE O JOGADOR EXISTE NO BANCO DE DADOS (Ativo ou Histórico)
+        const nomeSafe = d.jogador.trim().toLowerCase();
+        const temPerfil = db.players.some(x => x.jogador.toLowerCase() === nomeSafe || checkNameMatch(x.jogador, d.jogador)) || 
+                          (typeof lbffData !== 'undefined' && Object.keys(lbffData).some(name => name.toLowerCase() === nomeSafe || checkNameMatch(name, d.jogador)));
+                          
+        // Se tiver perfil, cria um link com hover e o ícone de link. Se não, exibe só o texto normal.
+        const nomeHtml = temPerfil 
+            ? `<span onclick="${_safePPAttr(d.jogador)}" title="Ver perfil do jogador" style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='inherit'">${d.jogador} 🔗</span>`
+            : d.jogador;
         return `
         <div class="mercado-card status-${d.status}" data-status="${d.status}">
             <img class="mercado-card-avatar"
@@ -8529,7 +8580,7 @@ function renderMercado() {
             </div>
 
             <div class="mercado-card-info">
-                <div class="mercado-card-name">${d.jogador}</div>
+                <div class="mercado-card-name">${nomeHtml}</div>
                 <div class="mercado-card-meta">
                     ${d.role ? `<span style="color: var(--accent); font-weight: 800; font-size: 0.9em; text-transform: uppercase;">${d.role}</span><br>` : ''}
                     ${d.atualizacao ? `Atualizado: <span>${d.atualizacao}</span>` : ''}
@@ -8541,7 +8592,7 @@ function renderMercado() {
                     <img src="${escudoOrigem}" onerror="this.src='escudo.webp'" alt="${nomeOrigem}">
                     <span class="mercado-club-name">${nomeOrigem}</span>
                 </div>
-                <span class="mercado-arrow">→</span>
+                <img class="mercado-arrow ${arrowClass}" src="seta.webp" alt="→">
                 <div class="mercado-club" ${clubeDestinoAttr}>
                     <img src="${escudoDestino}" onerror="this.src='escudo.webp'" alt="${nomeDestino}">
                     <span class="mercado-club-name">${nomeDestino}</span>
