@@ -6109,17 +6109,17 @@ if (cardsContainer) {
             
             if (inativos.length > 0) {
                 html += `
-                <div style="width: 100%; text-align: center; margin-top: 15px;">
+                <div style="width: 100%; grid-column: 1 / -1; text-align: center; margin-top: 15px;">
                     <button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button>
                 </div>
-                <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
+                <div id="ex-players-div" style="display: none; width: 100%; grid-column: 1 / -1; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
                     ${inativos.map(p => createPlayerCardHTML(p, 0.85)).join('')}
                 </div>`;
             }
 
             let staffList = dbStaff.filter(s => s.equipe === tName);
             if (staffList.length > 0) {
-                html += `<div style="width: 100%; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                html += `<div style="width: 100%; grid-column: 1 / -1; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
                     ${staffList.map(s => {
                         let photoKey = Object.keys(staffPhotos).find(k => k.toLowerCase() === s.nome.toLowerCase().trim());
                         let photo = photoKey ? staffPhotos[photoKey] : 'silhueta.png';
