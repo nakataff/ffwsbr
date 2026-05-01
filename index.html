@@ -1847,7 +1847,7 @@ tr:last-child {
     <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
 
     <h3 style="color: #fff; margin-bottom: 15px; letter-spacing: 2px;">JOGADORES E STAFF</h3>
-    <div id="tp-players-cards-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 30px;"></div>
+    <div id="tp-players-cards-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 30px; max-width: none;"></div>
 
     <div id="tp-best-worst-container" style="margin-bottom: 30px;"></div>
 
@@ -6082,25 +6082,44 @@ function renderTeamProfileStats() {
         let inativos = playersList.filter(p => p.isEx).sort((a,b) => b.abates - a.abates);
 
 if (cardsContainer) {
-            // Limita a largura para caber exatamente 3 cards lado a lado e centraliza o bloco
-            cardsContainer.style.maxWidth = "850px";
+            // Grid: até 5 jogadores = 1 linha com 5; mais de 5 = 2 linhas com 3
+            const numAtivos = topAtivos.length;
+            if (window.innerWidth > 768) {
+                if (numAtivos <= 5) {
+                    cardsContainer.style.display = "grid";
+                    cardsContainer.style.gridTemplateColumns = `repeat(${numAtivos}, auto)`;
+                    cardsContainer.style.justifyContent = "center";
+                    cardsContainer.style.gap = "20px";
+                } else {
+                    cardsContainer.style.display = "grid";
+                    cardsContainer.style.gridTemplateColumns = "repeat(3, auto)";
+                    cardsContainer.style.justifyContent = "center";
+                    cardsContainer.style.gap = "20px";
+                }
+            } else {
+                cardsContainer.style.display = "flex";
+                cardsContainer.style.flexWrap = "wrap";
+                cardsContainer.style.justifyContent = "center";
+                cardsContainer.style.gap = "20px";
+            }
+            cardsContainer.style.maxWidth = "none";
             cardsContainer.style.margin = "0 auto 30px auto";
             
             let html = topAtivos.map(p => createPlayerCardHTML(p, 0.85)).join('');
             
             if (inativos.length > 0) {
                 html += `
-                <div style="width: 100%; text-align: center; margin-top: 15px;">
+                <div style="width: 100%; grid-column: 1 / -1; text-align: center; margin-top: 15px;">
                     <button class="btn-action" onclick="let c = document.getElementById('ex-players-div'); if(c.style.display==='none'){c.style.display='flex'; this.innerText='Ocultar Ex-Jogadores';}else{c.style.display='none'; this.innerText='Ver Ex-Jogadores';}" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85em; padding: 8px 15px;">Ver Ex-Jogadores</button>
                 </div>
-                <div id="ex-players-div" style="display: none; width: 100%; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
+                <div id="ex-players-div" style="display: none; width: 100%; grid-column: 1 / -1; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; padding-top: 25px; border-top: 1px dashed #333;">
                     ${inativos.map(p => createPlayerCardHTML(p, 0.85)).join('')}
                 </div>`;
             }
 
             let staffList = dbStaff.filter(s => s.equipe === tName);
             if (staffList.length > 0) {
-                html += `<div style="width: 100%; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                html += `<div style="width: 100%; grid-column: 1 / -1; display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
                     ${staffList.map(s => {
                         let photoKey = Object.keys(staffPhotos).find(k => k.toLowerCase() === s.nome.toLowerCase().trim());
                         let photo = photoKey ? staffPhotos[photoKey] : 'silhueta.png';
