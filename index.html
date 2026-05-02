@@ -23,8 +23,47 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Central Free Fire - Central Completa</title>
+<title>Central Free Fire - Tabela WB, Ranking MVP, Estatísticas e mais</title>
 <link rel="icon" type="image/webp" href="central free fire.webp">
+
+<!-- SEO: Meta Tags Básicas -->
+<meta name="description" content="A central completa do Free Fire Brasil. Tabela WB atualizada, ranking MVP, classificação das equipes, mercado da bala, estatísticas gerais, hall da fama e muito mais. Loud Free Fire, Fluxo Free Fire, LBFF e WB.">
+<meta name="keywords" content="tabela wb, tabela free fire brasil, free fire brasil, flxuo free fire, loud free fire, ranking wb, tabela atualizada wb, classificação wb, LBFF, WB 2026, free fire competitivo, mercado da bala free fire, ranking mvp free fire, estatísticas free fire, equipes free fire brasil, campeonato free fire, seleção da semana free fire, recordes free fire">
+<meta name="author" content="Central Free Fire">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://centralfreefire.com.br/">
+
+<!-- SEO: Open Graph (WhatsApp, Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Central Free Fire">
+<meta property="og:title" content="Central Free Fire - Tabela WB, Ranking MVP e Estatísticas">
+<meta property="og:description" content="A central completa do Free Fire Brasil. Tabela WB atualizada, ranking MVP, mercado da bala, hall da fama e muito mais.">
+<meta property="og:image" content="central free fire.webp">
+<meta property="og:url" content="https://centralfreefire.com.br/">
+<meta property="og:locale" content="pt_BR">
+
+<!-- SEO: Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Central Free Fire - Tabela WB Atualizada">
+<meta name="twitter:description" content="Tabela WB, ranking MVP, mercado da bala, estatísticas e muito mais do Free Fire Brasil.">
+<meta name="twitter:image" content="central free fire.webp">
+
+<!-- SEO: Schema.org JSON-LD (Google Rich Results) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Central Free Fire",
+  "alternateName": ["Tabela WB", "Free Fire Brasil", "Central FF"],
+  "url": "https://centralfreefire.com.br/",
+  "description": "A central completa do Free Fire Brasil com tabela WB atualizada, ranking MVP, estatísticas, mercado da bala e hall da fama.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://centralfreefire.com.br/#busca={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 <style>
 :root { --bg-color: #050810; --panel-bg: #0d1220; --panel-hover: #141a2e; --border: #1e2a45; --accent: #00c8ff; --text: #ffffff; --text-muted: #7a9bbf; --win-color: #4caf50; --lose-color: #f44336; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 0; }
@@ -2514,6 +2553,42 @@ const data = await response.json();
 
 let lastVisitedPage = 'home'; // Memória da última página principal
 
+// --- HASH ROUTING: mapeia URL amigável → ID interno da página ---
+const PAGE_URL_MAP = {
+    'home':            '',           // / (raiz)
+    'teams':           'tabela',
+    'players':         'mvp',
+    'teams-list':      'equipes',
+    'mercado':         'mercado-da-bala',
+    'schedule':        'datas',
+    'selection-wb':    'selecao-da-semana',
+    'records-ind':     'recordes',
+    'maps':            'stats',
+    'compare':         'comparar',
+    'history':         'hall-da-fama',
+    'outros-torneios': 'outros-torneios',
+    'outras-equipes':  'outras-equipes'
+};
+// Inverso: slug → pageId
+const URL_PAGE_MAP = Object.fromEntries(Object.entries(PAGE_URL_MAP).map(([k,v]) => [v, k]));
+
+// Títulos SEO por página
+const PAGE_TITLES = {
+    'home':            'Central Free Fire - Tabela WB, Ranking MVP e Estatísticas',
+    'teams':           'Tabela WB Atualizada | Classificação Free Fire Brasil',
+    'players':         'Ranking MVP Free Fire | Melhores Jogadores WB',
+    'teams-list':      'Equipes Free Fire Brasil | Loud, Fluxo e mais | WB',
+    'mercado':         'Mercado da Bala Free Fire | Transferências e Rumores WB',
+    'schedule':        'Datas e Calendário WB Free Fire Brasil 2026',
+    'selection-wb':    'Seleção da Semana Free Fire | Melhores da Rodada WB',
+    'records-ind':     'Recordes Free Fire Brasil | Melhores Desempenhos WB',
+    'maps':            'Estatísticas Gerais Free Fire | Dados e Análises WB',
+    'compare':         'Comparar Jogadores 1v1 Free Fire | Estatísticas WB',
+    'history':         'Hall da Fama Free Fire Brasil | Histórico de Campeões',
+    'outros-torneios': 'Outros Torneios Free Fire Brasil | LBFF e Mais',
+    'outras-equipes':  'Outras Equipes Free Fire Brasil | Histórico de Times'
+};
+
 function navigate(pageId) {
     // Força a página a voltar para o topo instantaneamente
     window.scrollTo(0, 0);
@@ -2547,7 +2622,35 @@ function navigate(pageId) {
     document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
     const sbBtn = document.getElementById('sb-' + pageId);
     if (sbBtn) sbBtn.classList.add('active');
+
+    // --- HASH ROUTING: atualiza URL e título da aba ---
+    if (!pageId.includes('profile')) {
+        const slug = PAGE_URL_MAP[pageId];
+        const newHash = slug ? '#' + slug : '#';
+        if (window.location.hash !== newHash) {
+            history.pushState({ pageId }, '', newHash === '#' ? window.location.pathname : newHash);
+        }
+        if (PAGE_TITLES[pageId]) {
+            document.title = PAGE_TITLES[pageId];
+        }
+    }
 }
+
+// Ao clicar em Voltar/Avançar do navegador, navega para a página correta
+window.addEventListener('popstate', function(e) {
+    const hash = window.location.hash.replace('#', '');
+    const pageId = URL_PAGE_MAP[hash] || 'home';
+    navigate(pageId);
+});
+
+// Ao carregar o site, verifica se há um hash na URL e abre a página correspondente
+window.addEventListener('DOMContentLoaded', function() {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && URL_PAGE_MAP[hash]) {
+        // Navega para a página do hash depois de um pequeno delay (para os dados carregarem)
+        setTimeout(() => navigate(URL_PAGE_MAP[hash]), 100);
+    }
+});
 
 // PÁGINA DE ESTATÍSTICAS (MÉDIAS E TOTAIS)
 
