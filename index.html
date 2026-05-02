@@ -695,6 +695,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-teams"></tbody>
                 </table>
             </div>
+            <button onclick="navigate('teams')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
 
         <div class="home-widget">
@@ -704,6 +705,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-players"></tbody>
                 </table>
             </div>
+            <button onclick="navigate('players')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
     </div>
 
@@ -748,6 +750,8 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             </select>
         </div>
 
+        <button class="btn-action hide-on-desktop" onclick="document.getElementById('table-teams-full').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Tabela Completa' ? 'Ocultar Detalhes' : 'Ver Tabela Completa';" style="width: 100%; margin-bottom: 12px;">Ver Tabela Completa</button>
+
         <div class="table-container">
 <table id="table-teams-full">
             <thead>
@@ -764,7 +768,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             <tbody></tbody>
         </table>
         </div>
-        <button class="btn-action hide-on-desktop" onclick="document.getElementById('table-teams-full').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Tabela Completa' ? 'Ocultar Detalhes' : 'Ver Tabela Completa';" style="width: 100%; margin-top: -15px; margin-bottom: 30px;">Ver Tabela Completa</button>
 
         <h2 style="margin-top: 50px;">Classificação por Grupos</h2>
         <div class="groups-tables-grid" id="groups-tables-grid"></div>
@@ -800,18 +803,19 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
             <span style="margin-left:auto; color:#888; font-size:0.9em;">* Clique no título da coluna para ordenar</span>
         </div>
+        <button class="btn-action hide-on-desktop" id="btn-players-details" onclick="document.getElementById('table-players').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Detalhes' ? 'Ocultar Detalhes' : 'Ver Detalhes';" style="width: 100%; margin-bottom: 12px;">Ver Detalhes</button>
         <div class="table-container">
 <table id="table-players">
     <thead>
         <tr>
-            <th style="width: 40px;">#</th>
-            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">Jogador ↕</th>
-            <th class="hide-mobile" style="text-align:left;" onclick="sortTable('table-players', 2, false)">Equipe ↕</th>
-            <th style="width: 80px;" onclick="sortTable('table-players', 3, true)">Abates ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">Dano ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 6, true)">Quedas ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
+            <th style="width: 24px;">#</th>
+            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">J ↕</th>
+            <th onclick="sortTable('table-players', 2, false)">E ↕</th>
+            <th onclick="sortTable('table-players', 3, true)">K ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">D ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">A ↕</th>
+            <th onclick="sortTable('table-players', 6, true)">Q ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">👑</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -5591,14 +5595,14 @@ function renderAllPlayers() {
     // Mostra skeleton enquanto processa
     let tbody = document.querySelector('#table-players tbody');
     tbody.innerHTML = Array(6).fill(0).map(() => `<tr class="skeleton-row">
-        <td><div class="skeleton-cell" style="width:20px;"></div></td>
-        <td><div class="skeleton-cell" style="width:120px;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:100px;"></div></td>
-        <td><div class="skeleton-cell" style="width:40px; margin:0 auto;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:50px;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:40px;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px;"></div></td>
+        <td><div class="skeleton-cell" style="width:16px;"></div></td>
+        <td><div class="skeleton-cell" style="width:80px;"></div></td>
+        <td><div class="skeleton-cell" style="width:22px; height:22px; border-radius:50%; margin:0 auto;"></div></td>
+        <td><div class="skeleton-cell" style="width:30px; margin:0 auto;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:40px; margin:0 auto;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px; margin:0 auto;"></div></td>
+        <td><div class="skeleton-cell" style="width:24px; margin:0 auto;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:24px; margin:0 auto;"></div></td>
     </tr>`).join('');
 
     setTimeout(() => {
@@ -5637,15 +5641,16 @@ function renderAllPlayers() {
                    || db.players.find(x => checkNameMatch(x.jogador, p.jogador));
             let canonicalName = dbP ? dbP.jogador : p.jogador;
             let officialTeam = dbP?.equipe || p.equipe;
+            let danoFmt = p.dano >= 1000 ? Math.floor(p.dano / 1000) + 'k' : p.dano;
             return `<tr>
-                <td>${i+1}</td>
-                <td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
-                <td class="team-cell hide-mobile"><img src="${logos[officialTeam]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${officialTeam}')">${officialTeam}</span></td>
-                <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
-                <td class="hide-mobile">${p.dano}</td>
-                <td class="hide-mobile">${p.assists}</td>
-                <td class="hide-mobile">${p.quedas}</td>
-                <td class="hide-mobile">${p.mvp}</td>
+                <td style="font-size:0.8em; color:var(--text-muted);">${i+1}</td>
+                <td style="text-align:left; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" style="font-size:0.9em;" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
+                <td style="text-align:center;"><img src="${logos[officialTeam]||''}" class="team-logo" alt="${officialTeam}" title="${officialTeam}" style="cursor:pointer; width:22px; height:22px; object-fit:contain;" onclick="openTeamProfile('${officialTeam}')"></td>
+                <td style="color:var(--accent); font-weight:bold; font-size:0.9em;">${p.abates}</td>
+                <td class="hide-mobile" style="font-size:0.9em;">${danoFmt}</td>
+                <td class="hide-mobile" style="font-size:0.9em;">${p.assists}</td>
+                <td style="font-size:0.9em;">${p.quedas}</td>
+                <td class="hide-mobile" style="font-size:0.9em;">${p.mvp}</td>
             </tr>`;
         }).join('');
     }, 50);
