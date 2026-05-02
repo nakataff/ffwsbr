@@ -808,14 +808,14 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 <table id="table-players">
     <thead>
         <tr>
-            <th style="width: 28px;">#</th>
-            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)"><span class="full-name-desktop">Jogador</span><span class="short-name-mobile">Jogador</span> ↕</th>
-            <th class="hide-mobile" style="text-align:left;" onclick="sortTable('table-players', 2, false)">Equipe ↕</th>
-            <th onclick="sortTable('table-players', 3, true)"><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)"><span class="full-name-desktop">Dano</span><span class="short-name-mobile">D</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)"><span class="full-name-desktop">Assistências</span><span class="short-name-mobile">Ast</span> ↕</th>
+            <th style="width: 24px;">#</th>
+            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">J ↕</th>
+            <th onclick="sortTable('table-players', 2, false)">E ↕</th>
+            <th onclick="sortTable('table-players', 3, true)">K ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">D ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">A ↕</th>
             <th onclick="sortTable('table-players', 6, true)">Q ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">👑</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -5595,14 +5595,14 @@ function renderAllPlayers() {
     // Mostra skeleton enquanto processa
     let tbody = document.querySelector('#table-players tbody');
     tbody.innerHTML = Array(6).fill(0).map(() => `<tr class="skeleton-row">
-        <td><div class="skeleton-cell" style="width:20px;"></div></td>
-        <td><div class="skeleton-cell" style="width:120px;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:100px;"></div></td>
-        <td><div class="skeleton-cell" style="width:40px; margin:0 auto;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:50px;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:40px;"></div></td>
+        <td><div class="skeleton-cell" style="width:16px;"></div></td>
+        <td><div class="skeleton-cell" style="width:80px;"></div></td>
+        <td><div class="skeleton-cell" style="width:22px; height:22px; border-radius:50%; margin:0 auto;"></div></td>
         <td><div class="skeleton-cell" style="width:30px; margin:0 auto;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:40px; margin:0 auto;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px; margin:0 auto;"></div></td>
+        <td><div class="skeleton-cell" style="width:24px; margin:0 auto;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:24px; margin:0 auto;"></div></td>
     </tr>`).join('');
 
     setTimeout(() => {
@@ -5643,14 +5643,14 @@ function renderAllPlayers() {
             let officialTeam = dbP?.equipe || p.equipe;
             let danoFmt = p.dano >= 1000 ? (p.dano / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : p.dano;
             return `<tr>
-                <td>${i+1}</td>
-                <td style="text-align:left; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
-                <td class="team-cell hide-mobile"><img src="${logos[officialTeam]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${officialTeam}')">${officialTeam}</span></td>
-                <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
-                <td class="hide-mobile">${danoFmt}</td>
-                <td class="hide-mobile">${p.assists}</td>
-                <td>${p.quedas}</td>
-                <td class="hide-mobile">${p.mvp}</td>
+                <td style="font-size:0.8em; color:var(--text-muted);">${i+1}</td>
+                <td style="text-align:left; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" style="font-size:0.9em;" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
+                <td style="text-align:center;"><img src="${logos[officialTeam]||''}" class="team-logo" alt="${officialTeam}" title="${officialTeam}" style="cursor:pointer; width:22px; height:22px; object-fit:contain;" onclick="openTeamProfile('${officialTeam}')"></td>
+                <td style="color:var(--accent); font-weight:bold; font-size:0.9em;">${p.abates}</td>
+                <td class="hide-mobile" style="font-size:0.9em;">${danoFmt}</td>
+                <td class="hide-mobile" style="font-size:0.9em;">${p.assists}</td>
+                <td style="font-size:0.9em;">${p.quedas}</td>
+                <td class="hide-mobile" style="font-size:0.9em;">${p.mvp}</td>
             </tr>`;
         }).join('');
     }, 50);
