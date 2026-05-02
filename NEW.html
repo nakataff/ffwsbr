@@ -5641,7 +5641,7 @@ function renderAllPlayers() {
                    || db.players.find(x => checkNameMatch(x.jogador, p.jogador));
             let canonicalName = dbP ? dbP.jogador : p.jogador;
             let officialTeam = dbP?.equipe || p.equipe;
-            let danoFmt = p.dano >= 1000 ? (p.dano / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : p.dano;
+            let danoFmt = p.dano >= 1000 ? Math.floor(p.dano / 1000) + 'k' : p.dano;
             return `<tr>
                 <td style="font-size:0.8em; color:var(--text-muted);">${i+1}</td>
                 <td style="text-align:left; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" style="font-size:0.9em;" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
