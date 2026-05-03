@@ -23,47 +23,8 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Central Free Fire - Tabela WB, Ranking MVP, Estatísticas e mais</title>
+<title>Central Free Fire - Central Completa</title>
 <link rel="icon" type="image/webp" href="central free fire.webp">
-
-<!-- SEO: Meta Tags Básicas -->
-<meta name="description" content="A central completa do Free Fire Brasil. Tabela WB atualizada, ranking MVP, classificação das equipes, mercado da bala, estatísticas gerais, hall da fama e muito mais. Loud Free Fire, Fluxo Free Fire, LBFF e WB.">
-<meta name="keywords" content="tabela wb, tabela free fire brasil, free fire brasil, flxuo free fire, loud free fire, ranking wb, tabela atualizada wb, classificação wb, LBFF, WB 2026, free fire competitivo, mercado da bala free fire, ranking mvp free fire, estatísticas free fire, equipes free fire brasil, campeonato free fire, seleção da semana free fire, recordes free fire">
-<meta name="author" content="Central Free Fire">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://centralfreefire.com.br/">
-
-<!-- SEO: Open Graph (WhatsApp, Facebook) -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Central Free Fire">
-<meta property="og:title" content="Central Free Fire - Tabela WB, Ranking MVP e Estatísticas">
-<meta property="og:description" content="A central completa do Free Fire Brasil. Tabela WB atualizada, ranking MVP, mercado da bala, hall da fama e muito mais.">
-<meta property="og:image" content="central free fire.webp">
-<meta property="og:url" content="https://centralfreefire.com.br/">
-<meta property="og:locale" content="pt_BR">
-
-<!-- SEO: Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Central Free Fire - Tabela WB Atualizada">
-<meta name="twitter:description" content="Tabela WB, ranking MVP, mercado da bala, estatísticas e muito mais do Free Fire Brasil.">
-<meta name="twitter:image" content="central free fire.webp">
-
-<!-- SEO: Schema.org JSON-LD (Google Rich Results) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Central Free Fire",
-  "alternateName": ["Tabela WB", "Free Fire Brasil", "Central FF"],
-  "url": "https://centralfreefire.com.br/",
-  "description": "A central completa do Free Fire Brasil com tabela WB atualizada, ranking MVP, estatísticas, mercado da bala e hall da fama.",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://centralfreefire.com.br/#busca={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
-</script>
 <style>
 :root { --bg-color: #050810; --panel-bg: #0d1220; --panel-hover: #141a2e; --border: #1e2a45; --accent: #00c8ff; --text: #ffffff; --text-muted: #7a9bbf; --win-color: #4caf50; --lose-color: #f44336; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 0; }
@@ -479,6 +440,8 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
     /* PADRÕES PARA DESKTOP (PC) */
 .hide-on-desktop { display: none; }
+.show-mobile-only { display: none; } /* Esconde sigla mobile no PC */
+.hide-on-mobile-text { display: inline; } /* Mostra texto completo no PC */
 .short-name-mobile { display: none; } /* Esconde a sigla no PC */
 .full-name-desktop { display: inline; } /* Mostra o nome longo no PC */
 .team-logo-mobile-full { display: inline-block; width: 24px; height: 24px; object-fit: contain; } /* Mostra a logo no PC */
@@ -488,7 +451,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
     /* REGRAS PARA O MOBILE (CELULAR) */
     @media (max-width: 768px) {
-.hide-on-desktop { display: block; } .full-name-desktop { display: none !important; } .short-name-mobile { display: inline !important; font-size: 0.9em; margin-left: 4px; } .team-logo-mobile-full { display: inline-block !important; } .full-view .short-name-mobile { display: none !important; } .full-view .team-logo-mobile-full { display: block !important; margin: 0 auto; } table:not(.full-view) .hide-mobile { display: none !important; } #table-teams-full th:nth-child(3), #table-teams-full td:nth-child(3) { display: none !important; } table { table-layout: fixed; width: 100%; box-sizing: border-box; } th, td { padding: 8px 2px !important; font-size: 0.85em; } .table-container { overflow-x: auto; } #table-teams-full td:nth-child(2) { text-align: center; width: 75px; } #table-teams-full .team-cell { justify-content: center; } #table-team-players td:first-child, #table-players td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+.hide-on-desktop { display: block; } .full-name-desktop { display: none !important; } .short-name-mobile { display: inline !important; font-size: 0.9em; margin-left: 4px; } .team-logo-mobile-full { display: inline-block !important; } .full-view .short-name-mobile { display: none !important; } .full-view .team-logo-mobile-full { display: block !important; margin: 0 auto; } table:not(.full-view) .hide-mobile { display: none !important; } .show-mobile-only { display: inline !important; } .hide-on-mobile-text { display: none !important; } #table-teams-full th:nth-child(3), #table-teams-full td:nth-child(3) { display: none !important; } table { table-layout: fixed; width: 100%; box-sizing: border-box; } th, td { padding: 8px 2px !important; font-size: 0.85em; } .table-container { overflow-x: auto; } #table-teams-full td:nth-child(2) { text-align: center; width: 75px; } #table-teams-full .team-cell { justify-content: center; } #table-team-players td:first-child, #table-players td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
     /* Grid de Equipes (Página Equipes) */
 .teams-directory { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
 .team-item-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
@@ -848,13 +811,13 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     <thead>
         <tr>
             <th style="width: 24px;">#</th>
-            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">J ↕</th>
-            <th onclick="sortTable('table-players', 2, false)">E ↕</th>
-            <th onclick="sortTable('table-players', 3, true)">K ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">D ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">A ↕</th>
-            <th onclick="sortTable('table-players', 6, true)">Q ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">👑</th>
+            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)"><span class="hide-mobile">Jogador</span><span class="show-mobile-only">J</span> ↕</th>
+            <th onclick="sortTable('table-players', 2, false)"><span class="hide-mobile">Equipe</span><span class="show-mobile-only">E</span> ↕</th>
+            <th onclick="sortTable('table-players', 3, true)"><span class="hide-mobile">Abates</span><span class="show-mobile-only">K</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">Dano ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
+            <th onclick="sortTable('table-players', 6, true)"><span class="hide-mobile">Quedas</span><span class="show-mobile-only">Q</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -2553,42 +2516,6 @@ const data = await response.json();
 
 let lastVisitedPage = 'home'; // Memória da última página principal
 
-// --- HASH ROUTING: mapeia URL amigável → ID interno da página ---
-const PAGE_URL_MAP = {
-    'home':            '',           // / (raiz)
-    'teams':           'tabela',
-    'players':         'mvp',
-    'teams-list':      'equipes',
-    'mercado':         'mercado-da-bala',
-    'schedule':        'datas',
-    'selection-wb':    'selecao-da-semana',
-    'records-ind':     'recordes',
-    'maps':            'stats',
-    'compare':         'comparar',
-    'history':         'hall-da-fama',
-    'outros-torneios': 'outros-torneios',
-    'outras-equipes':  'outras-equipes'
-};
-// Inverso: slug → pageId
-const URL_PAGE_MAP = Object.fromEntries(Object.entries(PAGE_URL_MAP).map(([k,v]) => [v, k]));
-
-// Títulos SEO por página
-const PAGE_TITLES = {
-    'home':            'Central Free Fire - Tabela WB, Ranking MVP e Estatísticas',
-    'teams':           'Tabela WB Atualizada | Classificação Free Fire Brasil',
-    'players':         'Ranking MVP Free Fire | Melhores Jogadores WB',
-    'teams-list':      'Equipes Free Fire Brasil | Loud, Fluxo e mais | WB',
-    'mercado':         'Mercado da Bala Free Fire | Transferências e Rumores WB',
-    'schedule':        'Datas e Calendário WB Free Fire Brasil 2026',
-    'selection-wb':    'Seleção da Semana Free Fire | Melhores da Rodada WB',
-    'records-ind':     'Recordes Free Fire Brasil | Melhores Desempenhos WB',
-    'maps':            'Estatísticas Gerais Free Fire | Dados e Análises WB',
-    'compare':         'Comparar Jogadores 1v1 Free Fire | Estatísticas WB',
-    'history':         'Hall da Fama Free Fire Brasil | Histórico de Campeões',
-    'outros-torneios': 'Outros Torneios Free Fire Brasil | LBFF e Mais',
-    'outras-equipes':  'Outras Equipes Free Fire Brasil | Histórico de Times'
-};
-
 function navigate(pageId) {
     // Força a página a voltar para o topo instantaneamente
     window.scrollTo(0, 0);
@@ -2622,35 +2549,7 @@ function navigate(pageId) {
     document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
     const sbBtn = document.getElementById('sb-' + pageId);
     if (sbBtn) sbBtn.classList.add('active');
-
-    // --- HASH ROUTING: atualiza URL e título da aba ---
-    if (!pageId.includes('profile')) {
-        const slug = PAGE_URL_MAP[pageId];
-        const newHash = slug ? '#' + slug : '#';
-        if (window.location.hash !== newHash) {
-            history.pushState({ pageId }, '', newHash === '#' ? window.location.pathname : newHash);
-        }
-        if (PAGE_TITLES[pageId]) {
-            document.title = PAGE_TITLES[pageId];
-        }
-    }
 }
-
-// Ao clicar em Voltar/Avançar do navegador, navega para a página correta
-window.addEventListener('popstate', function(e) {
-    const hash = window.location.hash.replace('#', '');
-    const pageId = URL_PAGE_MAP[hash] || 'home';
-    navigate(pageId);
-});
-
-// Ao carregar o site, verifica se há um hash na URL e abre a página correspondente
-window.addEventListener('DOMContentLoaded', function() {
-    const hash = window.location.hash.replace('#', '');
-    if (hash && URL_PAGE_MAP[hash]) {
-        // Navega para a página do hash depois de um pequeno delay (para os dados carregarem)
-        setTimeout(() => navigate(URL_PAGE_MAP[hash]), 100);
-    }
-});
 
 // PÁGINA DE ESTATÍSTICAS (MÉDIAS E TOTAIS)
 
@@ -5744,13 +5643,14 @@ function renderAllPlayers() {
                    || db.players.find(x => checkNameMatch(x.jogador, p.jogador));
             let canonicalName = dbP ? dbP.jogador : p.jogador;
             let officialTeam = dbP?.equipe || p.equipe;
-            let danoFmt = p.dano >= 1000 ? Math.floor(p.dano / 1000) + 'k' : p.dano;
+            let danoFmt = Math.floor(p.dano / 1000) + 'k';
+            let danoFull = p.dano >= 1000 ? p.dano.toLocaleString('pt-BR') : p.dano;
             return `<tr>
                 <td style="font-size:0.8em; color:var(--text-muted);">${i+1}</td>
                 <td style="text-align:left; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" style="font-size:0.9em;" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
                 <td style="text-align:center;"><img src="${logos[officialTeam]||''}" class="team-logo" alt="${officialTeam}" title="${officialTeam}" style="cursor:pointer; width:22px; height:22px; object-fit:contain;" onclick="openTeamProfile('${officialTeam}')"></td>
                 <td style="color:var(--accent); font-weight:bold; font-size:0.9em;">${p.abates}</td>
-                <td class="hide-mobile" style="font-size:0.9em;">${danoFmt}</td>
+                <td class="hide-mobile"><span class="hide-on-mobile-text">${danoFull}</span><span class="show-mobile-only">${danoFmt}</span></td>
                 <td class="hide-mobile" style="font-size:0.9em;">${p.assists}</td>
                 <td style="font-size:0.9em;">${p.quedas}</td>
                 <td class="hide-mobile" style="font-size:0.9em;">${p.mvp}</td>
