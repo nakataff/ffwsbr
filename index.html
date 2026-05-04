@@ -2523,6 +2523,8 @@ function navigate(pageId) {
     // Salva a aba atual na memória (ignora se for página de perfil)
     if (!pageId.includes('profile')) {
         lastVisitedPage = pageId;
+        // Atualiza o hash na URL sem causar scroll forçado
+        history.replaceState(null, '', '#' + pageId);
     }
 
     // Esconde todas as páginas e tira o destaque dos botões
@@ -2550,6 +2552,14 @@ function navigate(pageId) {
     const sbBtn = document.getElementById('sb-' + pageId);
     if (sbBtn) sbBtn.classList.add('active');
 }
+
+// Ao carregar, verifica se a URL já tem um hash e navega direto para a página
+document.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) {
+        navigate(hash);
+    }
+});
 
 // PÁGINA DE ESTATÍSTICAS (MÉDIAS E TOTAIS)
 
