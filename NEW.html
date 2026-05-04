@@ -6108,20 +6108,19 @@ function renderIndividualRecords() {
     // Versão especial do ranking que mostra o dia do recorde
     const getPlayerDailyTopHtml = (arr, valFn, formatFn, label) => {
         const isMob = window.innerWidth <= 768;
-        const labelShort = 'K';
-        const cols   = isMob ? '1fr 22px 0.5fr 0.4fr' : '1.2fr 0.8fr 0.7fr 0.5fr';
+        const cols = isMob ? '1fr 24px 36px 28px' : '2fr 1fr 60px 55px';
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
-        let html = `<div style="display:grid;grid-template-columns:${cols};padding:0 10px 8px 10px;font-size:0.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">
+        let html = `<div style="display:grid;grid-template-columns:${cols};column-gap:12px;padding:0 10px 8px 10px;font-size:0.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">
             <div>${isMob ? 'J' : 'Jogador'}</div>
-            <div>${isMob ? 'E' : 'Equipe'}</div>
-            <div style="text-align:right;">${isMob ? labelShort : label}</div>
-            <div style="text-align:center;">${isMob ? '#' : 'Dia'}</div>
+            <div style="text-align:center;">${isMob ? 'E' : 'Equipe'}</div>
+            <div style="text-align:right;">${isMob ? 'K' : label}</div>
+            <div style="text-align:right;">${isMob ? 'Dia' : 'Dia'}</div>
         </div>`;
-        html += sorted.map((p, i) => `<div style="display:grid;grid-template-columns:${cols};align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:4px;border-left:3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))};font-size:0.85em;">
-                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="font-weight:bold;color:#555;margin-right:4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
-                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display:flex;align-items:center;gap:4px;color:#9aa0a6;overflow:hidden;white-space:nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;">${isMob ? '' : `<span style="font-size:0.9em;overflow:hidden;text-overflow:ellipsis;">${shortNames[p.equipe]||p.equipe}</span>`}</div>
+        html += sorted.map((p, i) => `<div style="display:grid;grid-template-columns:${cols};column-gap:12px;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:4px;border-left:3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))};font-size:0.85em;">
+                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;"><span style="font-weight:bold;color:#555;margin-right:4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
+                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display:flex;align-items:center;justify-content:center;gap:4px;color:#9aa0a6;min-width:0;"><img src="${logos[p.equipe]||''}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;">${isMob ? '' : `<span style="font-size:0.9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${shortNames[p.equipe]||p.equipe}</span>`}</div>
                 <div style="font-weight:bold;color:var(--accent);text-align:right;">${formatFn(valFn(p))}</div>
-                <div style="color:#9aa0a6;font-size:0.9em;text-align:center;">${isMob ? p.dia : 'Dia '+p.dia}</div>
+                <div style="color:#9aa0a6;font-size:0.9em;text-align:right;">${isMob ? p.dia : 'Dia '+p.dia}</div>
             </div>`).join('');
         return html;
     };
