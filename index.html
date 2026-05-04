@@ -578,22 +578,22 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     <div class="sidebar-nav">
         <div class="sidebar-category">PRINCIPAL</div>
         <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
-        <button onclick="navigateAndClose('teams')" id="sb-teams">TABELA (CLASSIFICAÇÃO)</button>
-        <button onclick="navigateAndClose('players')" id="sb-players">RANKING MVP</button>
-        <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">EQUIPES</button>
+        <button onclick="navigateAndClose('tabela')" id="sb-tabela">TABELA (CLASSIFICAÇÃO)</button>
+        <button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button>
+        <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
-        <button onclick="navigateAndClose('schedule')" id="sb-schedule">DATAS</button>
+        <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
         
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">ESTATÍSTICAS</div>
-        <button onclick="navigateAndClose('selection-wb')" id="sb-selection-wb">SELEÇÃO DA SEMANA</button>
-        <button onclick="navigateAndClose('records-ind')" id="sb-records-ind">RECORDES</button>
-        <button onclick="navigateAndClose('maps')" id="sb-maps">ESTATÍSTICAS GERAIS</button>
-        <button onclick="navigateAndClose('compare')" id="sb-compare">COMPARAR 1V1</button>
+        <button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÃO DA SEMANA</button>
+        <button onclick="navigateAndClose('recordes')" id="sb-recordes">RECORDES</button>
+        <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
+        <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
         
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">HISTÓRICO</div>
-        <button onclick="navigateAndClose('history')" id="sb-history">HALL DA FAMA</button>
+        <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
         <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
         <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
     </div>
@@ -631,9 +631,9 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             <button class="nav-mob-menu-btn" onclick="openSidebar()">☰</button>
 
             <div class="nav-mobile-tabs">
-                <button class="nav-mobile-tab active" id="mob-tab-teams" onclick="mobileTabClick('teams', this)">TABELA</button>
-                <button class="nav-mobile-tab" id="mob-tab-players" onclick="mobileTabClick('players', this)">RANKING</button>
-                <button class="nav-mobile-tab" id="mob-tab-teams-list" onclick="mobileTabClick('teams-list', this)">EQUIPES</button>
+                <button class="nav-mobile-tab active" id="mob-tab-tabela" onclick="mobileTabClick('tabela', this)">TABELA</button>
+                <button class="nav-mobile-tab" id="mob-tab-mvp" onclick="mobileTabClick('mvp', this)">RANKING</button>
+                <button class="nav-mobile-tab" id="mob-tab-equipes" onclick="mobileTabClick('equipes', this)">EQUIPES</button>
             </div>
 
             <div class="nav-mobile-right">
@@ -697,7 +697,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-teams"></tbody>
                 </table>
             </div>
-            <button onclick="navigate('teams')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
+            <button onclick="navigate('tabela')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
 
         <div class="home-widget">
@@ -707,7 +707,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-players"></tbody>
                 </table>
             </div>
-            <button onclick="navigate('players')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
+            <button onclick="navigate('mvp')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
     </div>
 
@@ -724,7 +724,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- PAGE: TIMES -->
-<div id="teams" class="page">
+<div id="tabela" class="page">
     <div style="text-align: center; margin-bottom: 40px; padding-top: 10px;">
         <h2>Divisão de Grupos</h2>
         <div class="groups-container" id="groups-container"></div>
@@ -777,14 +777,14 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- NOVA PAGE: EQUIPES -->
-    <div id="teams-list" class="page">
+    <div id="equipes" class="page">
         <h2>Diretório de Equipes</h2>
         <p style="color: var(--text-muted); margin-bottom: 30px;">Selecione uma equipe para ver estatísticas detalhadas e desempenho individual.</p>
         <div class="teams-directory" id="teams-directory"></div>
     </div>
 
     <!-- PAGE: JOGADORES -->
-    <div id="players" class="page">
+    <div id="mvp" class="page">
         <h2>Classificação Geral de Jogadores</h2>
  <div class="filters">
             <label style="color: var(--text-muted); font-weight: bold;">Equipe:</label>
@@ -947,7 +947,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 </div>
 
-<div id="selection-wb" class="page">
+<div id="selecao-da-semana" class="page">
         <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="font-size: 3em; color: #ff0000; text-shadow: 0 0 15px rgba(255,0,0,0.5); margin-bottom: 10px;">SELEÇÃO DA SEMANA</h1>
             <p style="color: var(--text-muted);">Os brabos que dominaram o servidor nesta semana.</p>
@@ -1012,7 +1012,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
 <div id="staff-profile" class="page">
-    <button class="btn-back" onclick="navigate('teams-list')">← Voltar para Equipes</button>
+    <button class="btn-back" onclick="navigate('equipes')">← Voltar para Equipes</button>
     
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding-top: 20px;">
         
@@ -1064,13 +1064,13 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- PAGE: RECORDES -->
-<div id="records-ind" class="page">
+<div id="recordes" class="page">
         <h2>Recordes do Campeonato</h2>
         <div class="grid-cards" id="records-container"></div>
     </div>
     
     <!-- PAGE: MAPAS -->
-<div id="maps" class="page">
+<div id="stats" class="page">
     <h2>Estatísticas Avançadas</h2>
 
     <div style="background: rgba(255, 170, 0, 0.1); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
@@ -1437,7 +1437,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 </div>
 
-<div id="history" class="page">
+<div id="hall-da-fama" class="page">
         <h2>Top 100 Abates da história</h2>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
             Ranking histórico somado em tempo real com o desempenho da edição atual.<br>
@@ -1523,7 +1523,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
     <!-- PAGE: COMPARAR -->
-    <div id="compare" class="page">
+    <div id="comparar-1v1" class="page">
         <h2>Comparar Times e Jogadores</h2>
         
         <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
@@ -1548,7 +1548,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
     <!-- PAGE: CRONOGRAMA -->
-<div id="schedule" class="page">
+<div id="datas" class="page">
     <h2>Cronograma e Próximos Confrontos - FFWS Brasil 2026</h2>
     
     <div id="next-match-timer" style="background: linear-gradient(90deg, #1c1c20 0%, #26262b 100%); border: 1px solid var(--border); border-left: 4px solid #ff4444; padding: 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
@@ -1661,7 +1661,7 @@ const wbWeeks = {
     "10": [19, 20]
 };
 
-let currentSelectionWeek = "5";
+let currentSelectionWeek = "5"; // será sobrescrito automaticamente após carregar os dados
 
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
 let dbSocials = {};
@@ -2469,6 +2469,14 @@ const data = await response.json();
 
     renderAllPlayers();
     renderPlayerStats();
+    // Auto-seleciona a semana mais recente com dados
+    const _weeksWithData = Object.keys(wbWeeks).filter(w => {
+        const days = wbWeeks[w];
+        return db.playerDaily.some(d => days.includes(Number(d.dia)));
+    });
+    if (_weeksWithData.length > 0) {
+        currentSelectionWeek = _weeksWithData[_weeksWithData.length - 1];
+    }
     renderSelectionFilters();
     renderSelection();
 
@@ -2536,10 +2544,10 @@ function navigate(pageId) {
 
     // Atualiza estado dos botões do mobile (4 tabs fixas)
     const mobileTabMap = {
-        'teams': 'mob-tab-teams',
-        'players': 'mob-tab-players',
-        'teams-list': 'mob-tab-teams-list',
-        'schedule': 'mob-tab-schedule'
+        'tabela': 'mob-tab-tabela',
+        'mvp': 'mob-tab-mvp',
+        'equipes': 'mob-tab-equipes',
+        'datas': 'mob-tab-schedule'
     };
     document.querySelectorAll('.nav-mobile-tab').forEach(b => b.classList.remove('active'));
     if (mobileTabMap[pageId]) {
@@ -5772,33 +5780,33 @@ function navigateAndClose(pageId) {
     closeSidebar();
 
     // Nomes corrigidos para não dar crash!
-    if (pageId === 'teams') { renderFullTeams(); renderGroupsTables(); }
-    else if (pageId === 'players') renderAllPlayers();
-    else if (pageId === 'teams-list') renderTeamsDirectory();
-    else if (pageId === 'schedule') renderSchedule();
+    if (pageId === 'tabela') { renderFullTeams(); renderGroupsTables(); }
+    else if (pageId === 'mvp') renderAllPlayers();
+    else if (pageId === 'equipes') renderTeamsDirectory();
+    else if (pageId === 'datas') renderSchedule();
     else if (pageId === 'outros-torneios') renderOutrosTorneiosList();
     else if (pageId === 'outras-equipes') renderOutrasEquipesGrid();
-    else if (pageId === 'history') renderHistoricalRanking();
-    else if (pageId === 'records-ind') renderIndividualRecords();
-    else if (pageId === 'maps') {
+    else if (pageId === 'hall-da-fama') renderHistoricalRanking();
+    else if (pageId === 'recordes') renderIndividualRecords();
+    else if (pageId === 'stats') {
         renderTop5Stats();
         renderTableAvg();
         renderTableTotal();
         renderCFFStats();
         renderPlayerStats();
     }
-    else if (pageId === 'compare') { renderCompareTeams(); renderComparePlayers(); }
-    else if (pageId === 'selection-wb') renderSelection();
+    else if (pageId === 'comparar-1v1') { renderCompareTeams(); renderComparePlayers(); }
+    else if (pageId === 'selecao-da-semana') renderSelection();
     else if (pageId === 'home') { renderHomeStats(); renderHomeGroups(); }
 }
 
 function mobileTabClick(pageId, btnEl) {
     navigate(pageId);
     // Nomes corrigidos!
-    if (pageId === 'teams') { renderFullTeams(); renderGroupsTables(); }
-    else if (pageId === 'players') renderAllPlayers();
-    else if (pageId === 'teams-list') renderTeamsDirectory();
-    else if (pageId === 'schedule') renderSchedule();
+    if (pageId === 'tabela') { renderFullTeams(); renderGroupsTables(); }
+    else if (pageId === 'mvp') renderAllPlayers();
+    else if (pageId === 'equipes') renderTeamsDirectory();
+    else if (pageId === 'datas') renderSchedule();
 }
 
 function toggleDesktopSearch() {
@@ -6108,7 +6116,7 @@ function renderIndividualRecords() {
         <div style="grid-column: 1/-1; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-top: 20px;">
             <h3 style="color: #fff; margin:0;">Recordes Individuais</h3>
         </div>
-        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getPlayerTopHtml(pData, p => p.recorde || 0, v => v, "Abates")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getPlayerTopHtml(db.playerDaily, p => p.abates || 0, v => v, "Abates")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3>${getPlayerTopHtml(pData, p => p.abates, v => v, "Total")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3>${getPlayerTopHtml(pData, p => p.dano, v => v, "Dano")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${getPlayerTopHtml(pData, p => p.assists, v => v, "Assist.")}</div>
