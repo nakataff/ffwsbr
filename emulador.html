@@ -23,47 +23,8 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Central Free Fire - Tabela WB, Ranking MVP, Estatísticas e mais</title>
+<title>Central Free Fire - Central Completa</title>
 <link rel="icon" type="image/webp" href="central free fire.webp">
-
-<!-- SEO: Meta Tags Básicas -->
-<meta name="description" content="A central completa do Free Fire Brasil. Tabela WB atualizada, ranking MVP, classificação das equipes, mercado da bala, estatísticas gerais, hall da fama e muito mais. Loud Free Fire, Fluxo Free Fire, LBFF e WB.">
-<meta name="keywords" content="tabela wb, tabela free fire brasil, free fire brasil, flxuo free fire, loud free fire, ranking wb, tabela atualizada wb, classificação wb, LBFF, WB 2026, free fire competitivo, mercado da bala free fire, ranking mvp free fire, estatísticas free fire, equipes free fire brasil, campeonato free fire, seleção da semana free fire, recordes free fire">
-<meta name="author" content="Central Free Fire">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://centralfreefire.com.br/">
-
-<!-- SEO: Open Graph (WhatsApp, Facebook) -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Central Free Fire">
-<meta property="og:title" content="Central Free Fire - Tabela WB, Ranking MVP e Estatísticas">
-<meta property="og:description" content="A central completa do Free Fire Brasil. Tabela WB atualizada, ranking MVP, mercado da bala, hall da fama e muito mais.">
-<meta property="og:image" content="central free fire.webp">
-<meta property="og:url" content="https://centralfreefire.com.br/">
-<meta property="og:locale" content="pt_BR">
-
-<!-- SEO: Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Central Free Fire - Tabela WB Atualizada">
-<meta name="twitter:description" content="Tabela WB, ranking MVP, mercado da bala, estatísticas e muito mais do Free Fire Brasil.">
-<meta name="twitter:image" content="central free fire.webp">
-
-<!-- SEO: Schema.org JSON-LD (Google Rich Results) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Central Free Fire",
-  "alternateName": ["Tabela WB", "Free Fire Brasil", "Central FF"],
-  "url": "https://centralfreefire.com.br/",
-  "description": "A central completa do Free Fire Brasil com tabela WB atualizada, ranking MVP, estatísticas, mercado da bala e hall da fama.",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://centralfreefire.com.br/#busca={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
-</script>
 <style>
 :root { --bg-color: #050810; --panel-bg: #0d1220; --panel-hover: #141a2e; --border: #1e2a45; --accent: #00c8ff; --text: #ffffff; --text-muted: #7a9bbf; --win-color: #4caf50; --lose-color: #f44336; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 0; }
@@ -479,6 +440,8 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
     /* PADRÕES PARA DESKTOP (PC) */
 .hide-on-desktop { display: none; }
+.show-mobile-only { display: none; } /* Esconde sigla mobile no PC */
+.hide-on-mobile-text { display: inline; } /* Mostra texto completo no PC */
 .short-name-mobile { display: none; } /* Esconde a sigla no PC */
 .full-name-desktop { display: inline; } /* Mostra o nome longo no PC */
 .team-logo-mobile-full { display: inline-block; width: 24px; height: 24px; object-fit: contain; } /* Mostra a logo no PC */
@@ -488,7 +451,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
     /* REGRAS PARA O MOBILE (CELULAR) */
     @media (max-width: 768px) {
-.hide-on-desktop { display: block; } .full-name-desktop { display: none !important; } .short-name-mobile { display: inline !important; font-size: 0.9em; margin-left: 4px; } .team-logo-mobile-full { display: inline-block !important; } .full-view .short-name-mobile { display: none !important; } .full-view .team-logo-mobile-full { display: block !important; margin: 0 auto; } table:not(.full-view) .hide-mobile { display: none !important; } #table-teams-full th:nth-child(3), #table-teams-full td:nth-child(3) { display: none !important; } table { table-layout: fixed; width: 100%; box-sizing: border-box; } th, td { padding: 8px 2px !important; font-size: 0.85em; } .table-container { overflow-x: auto; } #table-teams-full td:nth-child(2) { text-align: center; width: 75px; } #table-teams-full .team-cell { justify-content: center; } #table-team-players td:first-child, #table-players td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+.hide-on-desktop { display: block; } .full-name-desktop { display: none !important; } .short-name-mobile { display: inline !important; font-size: 0.9em; margin-left: 4px; } .team-logo-mobile-full { display: inline-block !important; } .full-view .short-name-mobile { display: none !important; } .full-view .team-logo-mobile-full { display: block !important; margin: 0 auto; } table:not(.full-view) .hide-mobile { display: none !important; } .show-mobile-only { display: inline !important; } .hide-on-mobile-text { display: none !important; } #table-teams-full th:nth-child(3), #table-teams-full td:nth-child(3) { display: none !important; } table { table-layout: fixed; width: 100%; box-sizing: border-box; } th, td { padding: 8px 2px !important; font-size: 0.85em; } .table-container { overflow-x: auto; } #table-teams-full td:nth-child(2) { text-align: center; width: 75px; } #table-teams-full .team-cell { justify-content: center; } #table-team-players td:first-child, #table-players td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
     /* Grid de Equipes (Página Equipes) */
 .teams-directory { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
 .team-item-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
@@ -599,6 +562,28 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
 @media (max-width: 768px) {
 .mercado-card { grid-template-columns: 52px 1fr; /* Apenas 2 colunas no topo */ grid-template-rows: auto auto auto auto; /* 4 linhas de conteúdo */ gap: 10px 15px; padding: 15px; } .mercado-card-avatar { width: 52px; height: 52px; grid-column: 1; grid-row: 1; margin: auto 0; } .mercado-card-info { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; justify-content: center; } .mercado-card-status { grid-column: 1 / 3; grid-row: 2; flex-direction: row; justify-content: center; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border); padding: 8px; border-radius: 8px; min-width: unset; } .mercado-status-icon { width: 18px; height: 18px; } .mercado-status-label { font-size: 0.8em; } .mercado-card-clubs { grid-column: 1 / 3; grid-row: 3; justify-content: center; gap: 25px; padding: 5px 0; } .mercado-club img { width: 42px; height: 42px; } .mercado-club-name { font-size: 0.68em; max-width: 100px; } /* 4. Quarta Linha: Votos */ .mercado-card-votes { display: flex; flex-direction: row; align-items: center; gap: 12px; grid-column: 1 / 3; grid-row: 4; min-width: unset; padding-top: 15px; border-top: 1px solid var(--border); } .mercado-card-votes .vote-bar-wrap { flex: 1; } }
+
+
+/* =============================================
+   INTERNACIONAL
+   ============================================= */
+.internacional-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 0 0 25px; }
+.internacional-tab { background: var(--panel-bg); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; font-weight: 900; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.7px; }
+.internacional-tab:hover, .internacional-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 200, 255, 0.08); }
+.internacional-hero { background: linear-gradient(135deg, rgba(0,200,255,0.12), rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; margin-bottom: 24px; text-align: center; }
+.internacional-hero h1 { margin: 0 0 8px; color: #fff; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: 1px; }
+.internacional-hero p { margin: 0; color: var(--text-muted); }
+.int-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+.int-section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
+.int-section-title h2 { margin: 0; color: var(--accent); font-size: 1.2em; text-transform: uppercase; }
+.int-updated { color: var(--text-muted); font-size: 0.8em; }
+.int-empty { background: var(--panel-bg); border: 1px dashed var(--border); border-radius: 12px; padding: 45px 20px; text-align: center; color: var(--text-muted); }
+.int-empty strong { color: var(--accent); display: block; font-size: 1.4em; margin-bottom: 8px; text-transform: uppercase; }
+.int-loading, .int-error { padding: 22px; color: var(--text-muted); text-align: center; }
+.int-error { color: #ff7777; }
+.int-team-name { color: #fff; font-weight: 800; }
+@media (max-width: 768px) { .internacional-tab { width: 100%; } .int-section-title { flex-direction: column; align-items: flex-start; } }
+
 </style>
 </head>
 <body>
@@ -615,22 +600,27 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     <div class="sidebar-nav">
         <div class="sidebar-category">PRINCIPAL</div>
         <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
-        <button onclick="navigateAndClose('teams')" id="sb-teams">TABELA (CLASSIFICAÇÃO)</button>
-        <button onclick="navigateAndClose('players')" id="sb-players">RANKING MVP</button>
-        <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">EQUIPES</button>
+        <button onclick="navigateAndClose('tabela')" id="sb-tabela">TABELA (CLASSIFICAÇÃO)</button>
+        <button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button>
+        <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
-        <button onclick="navigateAndClose('schedule')" id="sb-schedule">DATAS</button>
+        <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
         
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">ESTATÍSTICAS</div>
-        <button onclick="navigateAndClose('selection-wb')" id="sb-selection-wb">SELEÇÃO DA SEMANA</button>
-        <button onclick="navigateAndClose('records-ind')" id="sb-records-ind">RECORDES</button>
-        <button onclick="navigateAndClose('maps')" id="sb-maps">ESTATÍSTICAS GERAIS</button>
-        <button onclick="navigateAndClose('compare')" id="sb-compare">COMPARAR 1V1</button>
+        <button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÃO DA SEMANA</button>
+        <button onclick="navigateAndClose('recordes')" id="sb-recordes">RECORDES</button>
+        <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
+        <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
         
         <div class="sidebar-divider"></div>
+        <div class="sidebar-category">INTERNACIONAL</div>
+        <button onclick="navigateAndClose('ffws-sea-2026-s1')" id="sb-ffws-sea-2026-s1">FFWS SEA 2026 S1</button>
+        <button onclick="navigateAndClose('ffws-latam-s1')" id="sb-ffws-latam-s1">FFWS LATAM S1</button>
+
+        <div class="sidebar-divider"></div>
         <div class="sidebar-category">HISTÓRICO</div>
-        <button onclick="navigateAndClose('history')" id="sb-history">HALL DA FAMA</button>
+        <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
         <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
         <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
     </div>
@@ -668,9 +658,9 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             <button class="nav-mob-menu-btn" onclick="openSidebar()">☰</button>
 
             <div class="nav-mobile-tabs">
-                <button class="nav-mobile-tab active" id="mob-tab-teams" onclick="mobileTabClick('teams', this)">TABELA</button>
-                <button class="nav-mobile-tab" id="mob-tab-players" onclick="mobileTabClick('players', this)">RANKING</button>
-                <button class="nav-mobile-tab" id="mob-tab-teams-list" onclick="mobileTabClick('teams-list', this)">EQUIPES</button>
+                <button class="nav-mobile-tab active" id="mob-tab-tabela" onclick="mobileTabClick('tabela', this)">TABELA</button>
+                <button class="nav-mobile-tab" id="mob-tab-mvp" onclick="mobileTabClick('mvp', this)">RANKING</button>
+                <button class="nav-mobile-tab" id="mob-tab-equipes" onclick="mobileTabClick('equipes', this)">EQUIPES</button>
             </div>
 
             <div class="nav-mobile-right">
@@ -734,7 +724,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-teams"></tbody>
                 </table>
             </div>
-            <button onclick="navigate('teams')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
+            <button onclick="navigate('tabela')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
 
         <div class="home-widget">
@@ -744,7 +734,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-players"></tbody>
                 </table>
             </div>
-            <button onclick="navigate('players')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
+            <button onclick="navigate('mvp')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
     </div>
 
@@ -761,7 +751,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- PAGE: TIMES -->
-<div id="teams" class="page">
+<div id="tabela" class="page">
     <div style="text-align: center; margin-bottom: 40px; padding-top: 10px;">
         <h2>Divisão de Grupos</h2>
         <div class="groups-container" id="groups-container"></div>
@@ -814,14 +804,14 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- NOVA PAGE: EQUIPES -->
-    <div id="teams-list" class="page">
+    <div id="equipes" class="page">
         <h2>Diretório de Equipes</h2>
         <p style="color: var(--text-muted); margin-bottom: 30px;">Selecione uma equipe para ver estatísticas detalhadas e desempenho individual.</p>
         <div class="teams-directory" id="teams-directory"></div>
     </div>
 
     <!-- PAGE: JOGADORES -->
-    <div id="players" class="page">
+    <div id="mvp" class="page">
         <h2>Classificação Geral de Jogadores</h2>
  <div class="filters">
             <label style="color: var(--text-muted); font-weight: bold;">Equipe:</label>
@@ -848,13 +838,13 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     <thead>
         <tr>
             <th style="width: 24px;">#</th>
-            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">J ↕</th>
-            <th onclick="sortTable('table-players', 2, false)">E ↕</th>
-            <th onclick="sortTable('table-players', 3, true)">K ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">D ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">A ↕</th>
-            <th onclick="sortTable('table-players', 6, true)">Q ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">👑</th>
+            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)"><span class="hide-mobile">Jogador</span><span class="show-mobile-only">J</span> ↕</th>
+            <th onclick="sortTable('table-players', 2, false)"><span class="hide-mobile">Equipe</span><span class="show-mobile-only">E</span> ↕</th>
+            <th onclick="sortTable('table-players', 3, true)"><span class="hide-mobile">Abates</span><span class="show-mobile-only">K</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">Dano ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
+            <th onclick="sortTable('table-players', 6, true)"><span class="hide-mobile">Quedas</span><span class="show-mobile-only">Q</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -984,7 +974,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 </div>
 
-<div id="selection-wb" class="page">
+<div id="selecao-da-semana" class="page">
         <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="font-size: 3em; color: #ff0000; text-shadow: 0 0 15px rgba(255,0,0,0.5); margin-bottom: 10px;">SELEÇÃO DA SEMANA</h1>
             <p style="color: var(--text-muted);">Os brabos que dominaram o servidor nesta semana.</p>
@@ -1049,7 +1039,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
 <div id="staff-profile" class="page">
-    <button class="btn-back" onclick="navigate('teams-list')">← Voltar para Equipes</button>
+    <button class="btn-back" onclick="navigate('equipes')">← Voltar para Equipes</button>
     
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding-top: 20px;">
         
@@ -1101,13 +1091,13 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- PAGE: RECORDES -->
-<div id="records-ind" class="page">
+<div id="recordes" class="page">
         <h2>Recordes do Campeonato</h2>
         <div class="grid-cards" id="records-container"></div>
     </div>
     
     <!-- PAGE: MAPAS -->
-<div id="maps" class="page">
+<div id="stats" class="page">
     <h2>Estatísticas Avançadas</h2>
 
     <div style="background: rgba(255, 170, 0, 0.1); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
@@ -1393,6 +1383,67 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <div id="ot-champions-container" style="display:none;"></div>
     </div>
 </div>
+
+
+<!-- PAGE: INTERNACIONAL - FFWS SEA 2026 S1 -->
+<div id="ffws-sea-2026-s1" class="page">
+    <div class="internacional-hero">
+        <h1>🌏 FFWS SEA 2026 S1</h1>
+        <p>Classificação e ranking de abates carregados automaticamente das planilhas publicadas.</p>
+    </div>
+
+    <div class="internacional-tabs">
+        <button class="internacional-tab active" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
+        <button class="internacional-tab" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
+    </div>
+
+    <div class="int-grid">
+        <section>
+            <div class="int-section-title">
+                <h2>Classificação</h2>
+                <span class="int-updated" id="sea-classificacao-updated">Atualizando...</span>
+            </div>
+            <div class="table-container">
+                <table id="table-sea-classificacao">
+                    <thead></thead>
+                    <tbody><tr><td class="int-loading">Carregando classificação...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <div class="int-section-title">
+                <h2>Ranking de Abates</h2>
+                <span class="int-updated" id="sea-abates-updated">Atualizando...</span>
+            </div>
+            <div class="table-container">
+                <table id="table-sea-abates">
+                    <thead></thead>
+                    <tbody><tr><td class="int-loading">Carregando ranking de abates...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- PAGE: INTERNACIONAL - FFWS LATAM S1 -->
+<div id="ffws-latam-s1" class="page">
+    <div class="internacional-hero">
+        <h1>🌎 FFWS LATAM S1</h1>
+        <p>Área internacional preparada para receber os dados da LATAM.</p>
+    </div>
+
+    <div class="internacional-tabs">
+        <button class="internacional-tab" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
+        <button class="internacional-tab active" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
+    </div>
+
+    <div class="int-empty">
+        <strong>Em breve</strong>
+        A página da FFWS LATAM S1 já está criada, mas ainda sem dados cadastrados.
+    </div>
+</div>
+
 <!-- PAGE: OUTRAS EQUIPES -->
 <div id="outras-equipes" class="page">
     <h2 style="text-align: center; margin-bottom: 10px;">Outras Equipes</h2>
@@ -1474,7 +1525,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 </div>
 
-<div id="history" class="page">
+<div id="hall-da-fama" class="page">
         <h2>Top 100 Abates da história</h2>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
             Ranking histórico somado em tempo real com o desempenho da edição atual.<br>
@@ -1560,7 +1611,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
     <!-- PAGE: COMPARAR -->
-    <div id="compare" class="page">
+    <div id="comparar-1v1" class="page">
         <h2>Comparar Times e Jogadores</h2>
         
         <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
@@ -1585,7 +1636,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
     <!-- PAGE: CRONOGRAMA -->
-<div id="schedule" class="page">
+<div id="datas" class="page">
     <h2>Cronograma e Próximos Confrontos - FFWS Brasil 2026</h2>
     
     <div id="next-match-timer" style="background: linear-gradient(90deg, #1c1c20 0%, #26262b 100%); border: 1px solid var(--border); border-left: 4px solid #ff4444; padding: 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
@@ -1698,7 +1749,7 @@ const wbWeeks = {
     "10": [19, 20]
 };
 
-let currentSelectionWeek = "5";
+let currentSelectionWeek = "5"; // será sobrescrito automaticamente após carregar os dados
 
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
 let dbSocials = {};
@@ -2506,6 +2557,14 @@ const data = await response.json();
 
     renderAllPlayers();
     renderPlayerStats();
+    // Auto-seleciona a semana mais recente com dados
+    const _weeksWithData = Object.keys(wbWeeks).filter(w => {
+        const days = wbWeeks[w];
+        return db.playerDaily.some(d => days.includes(Number(d.dia)));
+    });
+    if (_weeksWithData.length > 0) {
+        currentSelectionWeek = _weeksWithData[_weeksWithData.length - 1];
+    }
     renderSelectionFilters();
     renderSelection();
 
@@ -2527,6 +2586,7 @@ const data = await response.json();
     renderOutrosTorneiosList();
     renderSchedule();
     renderOutrasEquipesGrid();
+    loadSEAData();
     buildDesktopTeamNav();
     initSearchListeners();
     buildMultiTeamFilters();
@@ -2553,42 +2613,6 @@ const data = await response.json();
 
 let lastVisitedPage = 'home'; // Memória da última página principal
 
-// --- HASH ROUTING: mapeia URL amigável → ID interno da página ---
-const PAGE_URL_MAP = {
-    'home':            '',           // / (raiz)
-    'teams':           'tabela',
-    'players':         'mvp',
-    'teams-list':      'equipes',
-    'mercado':         'mercado-da-bala',
-    'schedule':        'datas',
-    'selection-wb':    'selecao-da-semana',
-    'records-ind':     'recordes',
-    'maps':            'stats',
-    'compare':         'comparar',
-    'history':         'hall-da-fama',
-    'outros-torneios': 'outros-torneios',
-    'outras-equipes':  'outras-equipes'
-};
-// Inverso: slug → pageId
-const URL_PAGE_MAP = Object.fromEntries(Object.entries(PAGE_URL_MAP).map(([k,v]) => [v, k]));
-
-// Títulos SEO por página
-const PAGE_TITLES = {
-    'home':            'Central Free Fire - Tabela WB, Ranking MVP e Estatísticas',
-    'teams':           'Tabela WB Atualizada | Classificação Free Fire Brasil',
-    'players':         'Ranking MVP Free Fire | Melhores Jogadores WB',
-    'teams-list':      'Equipes Free Fire Brasil | Loud, Fluxo e mais | WB',
-    'mercado':         'Mercado da Bala Free Fire | Transferências e Rumores WB',
-    'schedule':        'Datas e Calendário WB Free Fire Brasil 2026',
-    'selection-wb':    'Seleção da Semana Free Fire | Melhores da Rodada WB',
-    'records-ind':     'Recordes Free Fire Brasil | Melhores Desempenhos WB',
-    'maps':            'Estatísticas Gerais Free Fire | Dados e Análises WB',
-    'compare':         'Comparar Jogadores 1v1 Free Fire | Estatísticas WB',
-    'history':         'Hall da Fama Free Fire Brasil | Histórico de Campeões',
-    'outros-torneios': 'Outros Torneios Free Fire Brasil | LBFF e Mais',
-    'outras-equipes':  'Outras Equipes Free Fire Brasil | Histórico de Times'
-};
-
 function navigate(pageId) {
     // Força a página a voltar para o topo instantaneamente
     window.scrollTo(0, 0);
@@ -2596,6 +2620,8 @@ function navigate(pageId) {
     // Salva a aba atual na memória (ignora se for página de perfil)
     if (!pageId.includes('profile')) {
         lastVisitedPage = pageId;
+        // Atualiza o hash na URL sem causar scroll forçado
+        history.replaceState(null, '', '#' + pageId);
     }
 
     // Esconde todas as páginas e tira o destaque dos botões
@@ -2607,10 +2633,10 @@ function navigate(pageId) {
 
     // Atualiza estado dos botões do mobile (4 tabs fixas)
     const mobileTabMap = {
-        'teams': 'mob-tab-teams',
-        'players': 'mob-tab-players',
-        'teams-list': 'mob-tab-teams-list',
-        'schedule': 'mob-tab-schedule'
+        'tabela': 'mob-tab-tabela',
+        'mvp': 'mob-tab-mvp',
+        'equipes': 'mob-tab-equipes',
+        'datas': 'mob-tab-schedule'
     };
     document.querySelectorAll('.nav-mobile-tab').forEach(b => b.classList.remove('active'));
     if (mobileTabMap[pageId]) {
@@ -2622,33 +2648,13 @@ function navigate(pageId) {
     document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
     const sbBtn = document.getElementById('sb-' + pageId);
     if (sbBtn) sbBtn.classList.add('active');
-
-    // --- HASH ROUTING: atualiza URL e título da aba ---
-    if (!pageId.includes('profile')) {
-        const slug = PAGE_URL_MAP[pageId];
-        const newHash = slug ? '#' + slug : '#';
-        if (window.location.hash !== newHash) {
-            history.pushState({ pageId }, '', newHash === '#' ? window.location.pathname : newHash);
-        }
-        if (PAGE_TITLES[pageId]) {
-            document.title = PAGE_TITLES[pageId];
-        }
-    }
 }
 
-// Ao clicar em Voltar/Avançar do navegador, navega para a página correta
-window.addEventListener('popstate', function(e) {
+// Ao carregar, verifica se a URL já tem um hash e navega direto para a página
+document.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash.replace('#', '');
-    const pageId = URL_PAGE_MAP[hash] || 'home';
-    navigate(pageId);
-});
-
-// Ao carregar o site, verifica se há um hash na URL e abre a página correspondente
-window.addEventListener('DOMContentLoaded', function() {
-    const hash = window.location.hash.replace('#', '');
-    if (hash && URL_PAGE_MAP[hash]) {
-        // Navega para a página do hash depois de um pequeno delay (para os dados carregarem)
-        setTimeout(() => navigate(URL_PAGE_MAP[hash]), 100);
+    if (hash && document.getElementById(hash)) {
+        navigate(hash);
     }
 });
 
@@ -5744,13 +5750,14 @@ function renderAllPlayers() {
                    || db.players.find(x => checkNameMatch(x.jogador, p.jogador));
             let canonicalName = dbP ? dbP.jogador : p.jogador;
             let officialTeam = dbP?.equipe || p.equipe;
-            let danoFmt = p.dano >= 1000 ? Math.floor(p.dano / 1000) + 'k' : p.dano;
+            let danoFmt = Math.floor(p.dano / 1000) + 'k';
+            let danoFull = p.dano >= 1000 ? p.dano.toLocaleString('pt-BR') : p.dano;
             return `<tr>
                 <td style="font-size:0.8em; color:var(--text-muted);">${i+1}</td>
                 <td style="text-align:left; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" style="font-size:0.9em;" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
                 <td style="text-align:center;"><img src="${logos[officialTeam]||''}" class="team-logo" alt="${officialTeam}" title="${officialTeam}" style="cursor:pointer; width:22px; height:22px; object-fit:contain;" onclick="openTeamProfile('${officialTeam}')"></td>
                 <td style="color:var(--accent); font-weight:bold; font-size:0.9em;">${p.abates}</td>
-                <td class="hide-mobile" style="font-size:0.9em;">${danoFmt}</td>
+                <td class="hide-mobile"><span class="hide-on-mobile-text">${danoFull}</span><span class="show-mobile-only">${danoFmt}</span></td>
                 <td class="hide-mobile" style="font-size:0.9em;">${p.assists}</td>
                 <td style="font-size:0.9em;">${p.quedas}</td>
                 <td class="hide-mobile" style="font-size:0.9em;">${p.mvp}</td>
@@ -5862,33 +5869,35 @@ function navigateAndClose(pageId) {
     closeSidebar();
 
     // Nomes corrigidos para não dar crash!
-    if (pageId === 'teams') { renderFullTeams(); renderGroupsTables(); }
-    else if (pageId === 'players') renderAllPlayers();
-    else if (pageId === 'teams-list') renderTeamsDirectory();
-    else if (pageId === 'schedule') renderSchedule();
+    if (pageId === 'tabela') { renderFullTeams(); renderGroupsTables(); }
+    else if (pageId === 'mvp') renderAllPlayers();
+    else if (pageId === 'equipes') renderTeamsDirectory();
+    else if (pageId === 'datas') renderSchedule();
     else if (pageId === 'outros-torneios') renderOutrosTorneiosList();
     else if (pageId === 'outras-equipes') renderOutrasEquipesGrid();
-    else if (pageId === 'history') renderHistoricalRanking();
-    else if (pageId === 'records-ind') renderIndividualRecords();
-    else if (pageId === 'maps') {
+    else if (pageId === 'ffws-sea-2026-s1') loadSEAData();
+    else if (pageId === 'ffws-latam-s1') { /* Página preparada: em breve */ }
+    else if (pageId === 'hall-da-fama') renderHistoricalRanking();
+    else if (pageId === 'recordes') renderIndividualRecords();
+    else if (pageId === 'stats') {
         renderTop5Stats();
         renderTableAvg();
         renderTableTotal();
         renderCFFStats();
         renderPlayerStats();
     }
-    else if (pageId === 'compare') { renderCompareTeams(); renderComparePlayers(); }
-    else if (pageId === 'selection-wb') renderSelection();
+    else if (pageId === 'comparar-1v1') { renderCompareTeams(); renderComparePlayers(); }
+    else if (pageId === 'selecao-da-semana') renderSelection();
     else if (pageId === 'home') { renderHomeStats(); renderHomeGroups(); }
 }
 
 function mobileTabClick(pageId, btnEl) {
     navigate(pageId);
     // Nomes corrigidos!
-    if (pageId === 'teams') { renderFullTeams(); renderGroupsTables(); }
-    else if (pageId === 'players') renderAllPlayers();
-    else if (pageId === 'teams-list') renderTeamsDirectory();
-    else if (pageId === 'schedule') renderSchedule();
+    if (pageId === 'tabela') { renderFullTeams(); renderGroupsTables(); }
+    else if (pageId === 'mvp') renderAllPlayers();
+    else if (pageId === 'equipes') renderTeamsDirectory();
+    else if (pageId === 'datas') renderSchedule();
 }
 
 function toggleDesktopSearch() {
@@ -6160,12 +6169,18 @@ function renderIndividualRecords() {
     }
 
     const getPlayerTopHtml = (arr, valFn, formatFn, label) => {
+        const isMob = window.innerWidth <= 768;
+        const labelShort = {'Total':'K','Dano':'D','Assist.':'A','Média K':'MdK','Média D':'MdD'}[label] || label;
+        const colHdr = isMob ? 'J' : 'Jogador';
+        const eqHdr  = isMob ? 'E' : 'Equipe';
+        const valHdr = isMob ? labelShort : label;
+        const cols   = isMob ? '1fr 22px 0.6fr' : '1.2fr 1fr 0.7fr';
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
-        let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
-        html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
-                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
-                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
-                <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
+        let html = `<div style="display:grid;grid-template-columns:${cols};padding:0 10px 8px 10px;font-size:0.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px;"><div>${colHdr}</div><div>${eqHdr}</div><div style="text-align:right;">${valHdr}</div></div>`;
+        html += sorted.map((p, i) => `<div style="display:grid;grid-template-columns:${cols};align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:4px;border-left:3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))};font-size:0.85em;">
+                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="font-weight:bold;color:#555;margin-right:4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
+                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display:flex;align-items:center;gap:4px;color:#9aa0a6;overflow:hidden;white-space:nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;">${isMob ? '' : `<span style="font-size:0.9em;overflow:hidden;text-overflow:ellipsis;">${shortNames[p.equipe]||p.equipe}</span>`}</div>
+                <div style="font-weight:bold;color:var(--accent);text-align:right;">${formatFn(valFn(p))}</div>
             </div>`).join('');
         return html;
     };
@@ -6177,6 +6192,26 @@ function renderIndividualRecords() {
                 <div class="clickable" onclick="openTeamProfile('${t.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><img src="${logos[t.equipe]||''}" style="width:16px; height:16px; object-fit: contain;"><span style="font-size: 0.95em; font-weight:bold;">${shortNames[t.equipe] || t.equipe}</span></div>
                 <div style="color: #9aa0a6; font-size: 0.9em;">Dia ${t.dia}</div>
                 <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(t))}</div>
+            </div>`).join('');
+        return html;
+    };
+
+    // Versão especial do ranking que mostra o dia do recorde
+    const getPlayerDailyTopHtml = (arr, valFn, formatFn, label) => {
+        const isMob = window.innerWidth <= 768;
+        const cols = isMob ? '1fr 24px 36px 28px' : '2fr 1fr 60px 55px';
+        const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
+        let html = `<div style="display:grid;grid-template-columns:${cols};column-gap:12px;padding:0 10px 8px 10px;font-size:0.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">
+            <div>${isMob ? 'J' : 'Jogador'}</div>
+            <div style="text-align:center;">${isMob ? 'E' : 'Equipe'}</div>
+            <div style="text-align:right;">${isMob ? 'K' : label}</div>
+            <div style="text-align:right;">${isMob ? 'Dia' : 'Dia'}</div>
+        </div>`;
+        html += sorted.map((p, i) => `<div style="display:grid;grid-template-columns:${cols};column-gap:12px;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:4px;border-left:3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))};font-size:0.85em;">
+                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;"><span style="font-weight:bold;color:#555;margin-right:4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
+                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display:flex;align-items:center;justify-content:center;gap:4px;color:#9aa0a6;min-width:0;"><img src="${logos[p.equipe]||''}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;">${isMob ? '' : `<span style="font-size:0.9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${shortNames[p.equipe]||p.equipe}</span>`}</div>
+                <div style="font-weight:bold;color:var(--accent);text-align:right;">${formatFn(valFn(p))}</div>
+                <div style="color:#9aa0a6;font-size:0.9em;text-align:right;">${isMob ? p.dia : 'Dia '+p.dia}</div>
             </div>`).join('');
         return html;
     };
@@ -6198,7 +6233,7 @@ function renderIndividualRecords() {
         <div style="grid-column: 1/-1; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-top: 20px;">
             <h3 style="color: #fff; margin:0;">Recordes Individuais</h3>
         </div>
-        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getPlayerTopHtml(pData, p => p.recorde || 0, v => v, "Abates")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getPlayerDailyTopHtml(db.playerDaily, p => p.abates || 0, v => v, "Abates")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3>${getPlayerTopHtml(pData, p => p.abates, v => v, "Total")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3>${getPlayerTopHtml(pData, p => p.dano, v => v, "Dano")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${getPlayerTopHtml(pData, p => p.assists, v => v, "Assist.")}</div>
@@ -7737,6 +7772,149 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+/* =============================================
+   INTERNACIONAL - FFWS SEA 2026 S1
+   ============================================= */
+const SEA_CLASSIFICACAO_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=2075306919&single=true&output=tsv';
+const SEA_ABATES_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1306410351&single=true&output=tsv';
+
+const SEA_TEAM_NAME_MAP = {
+    'BURIRAM': 'Buriram United', 'BRU': 'Buriram United', 'BURIRAM UNITED': 'Buriram United',
+    'RRQ': 'RRQ Kazu', 'RRQ KAZU': 'RRQ Kazu',
+    'AG': 'All Gamers', 'ALL GAMERS': 'All Gamers',
+    'BTR': 'Bigetron by Vitality', 'BIGETRON': 'Bigetron by Vitality', 'BIGETRON BY VITALITY': 'Bigetron by Vitality', 'VITALITY': 'Bigetron by Vitality',
+    'TM': 'Twisted Minds', 'TWI': 'Twisted Minds', 'TWIS': 'Twisted Minds', 'TWISTED MINDS': 'Twisted Minds',
+    'HV': 'Heavy', 'HEV': 'Heavy', 'HEAVY': 'Heavy',
+    'FLCN': 'Team Falcons', 'FALCONS': 'Team Falcons', 'TEAM FALCONS': 'Team Falcons',
+    'FL': 'Team Flash', 'FLASH': 'Team Flash', 'TEAM FLASH': 'Team Flash',
+    'ONIC': 'ONIC Olympus', 'ONIC OLYMPUS': 'ONIC Olympus',
+    'WAG': 'WAG',
+    'AUR': 'Aurora Gaming', 'AURORA': 'Aurora Gaming', 'AURORA GAMING': 'Aurora Gaming',
+    'ACD': 'ACD',
+    'GOW': 'GOW',
+    'SE': 'Shadow Esports', 'SHADOW': 'Shadow Esports', 'SHADOW ESPORTS': 'Shadow Esports',
+    'AVIDA': 'Avida', 'AVD': 'Avida',
+    'EVOS': 'EVOS Divine', 'EVOS DIVINE': 'EVOS Divine',
+    'PE': 'P Esports', 'P ESPORTS': 'P Esports',
+    'MQ': 'Maqna Esports', 'MAQNA': 'Maqna Esports', 'MAQNA ESPORTS': 'Maqna Esports'
+};
+
+let seaDataLoaded = false;
+
+function normalizeSEAKey(value) {
+    return String(value || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9 ]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toUpperCase();
+}
+
+function getSEATeamFullName(value) {
+    const original = String(value || '').trim();
+    if (!original) return original;
+    const clean = normalizeSEAKey(original);
+    return SEA_TEAM_NAME_MAP[clean] || original;
+}
+
+function parseTSV(text) {
+    const lines = String(text || '').replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim() !== '');
+    if (!lines.length) return { headers: [], rows: [] };
+    const headers = lines[0].split('\t').map(h => h.trim());
+    const rows = lines.slice(1).map(line => {
+        const cells = line.split('\t');
+        const obj = {};
+        headers.forEach((h, i) => obj[h || `COL_${i + 1}`] = (cells[i] || '').trim());
+        return obj;
+    });
+    return { headers, rows };
+}
+
+function shouldConvertSEATeamColumn(header) {
+    const h = normalizeSEAKey(header);
+    return ['SIGLA', 'TAG', 'TIME', 'TIMES', 'EQUIPE', 'EQUIPES', 'TEAM', 'TEAMS', 'CLUBE', 'ORGANIZACAO', 'ORG'].some(key => h.includes(key));
+}
+
+function isProbablyNumericColumn(header) {
+    const h = normalizeSEAKey(header);
+    return /(POS|RANK|PONT|PTS|BOOYAH|ABATE|KILL|DANO|DAMAGE|QUEDA|MEDIA|AVG|MVP|AST|ASSIST|VITORIA|VIT)/.test(h);
+}
+
+function escapeHtml(value) {
+    return String(value || '').replace(/[&<>'"]/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[char]));
+}
+
+function formatSEAValue(header, value) {
+    const text = String(value || '').trim();
+    if (shouldConvertSEATeamColumn(header)) {
+        return `<span class="int-team-name">${escapeHtml(getSEATeamFullName(text))}</span>`;
+    }
+    return escapeHtml(text);
+}
+
+function renderSEATable(tableId, parsed, emptyMessage) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const thead = table.querySelector('thead');
+    const tbody = table.querySelector('tbody');
+
+    if (!parsed.headers.length || !parsed.rows.length) {
+        thead.innerHTML = '';
+        tbody.innerHTML = `<tr><td class="int-loading">${emptyMessage}</td></tr>`;
+        return;
+    }
+
+    thead.innerHTML = `<tr>${parsed.headers.map((h, i) => `<th onclick="sortTable('${tableId}', ${i}, ${isProbablyNumericColumn(h)})">${escapeHtml(h || '-')} ↕</th>`).join('')}</tr>`;
+    tbody.innerHTML = parsed.rows.map(row => `<tr>${parsed.headers.map(h => `<td>${formatSEAValue(h, row[h])}</td>`).join('')}</tr>`).join('');
+}
+
+async function fetchSEAData(url) {
+    const res = await fetch(`${url}&nocache=${Date.now()}`);
+    if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
+    return parseTSV(await res.text());
+}
+
+async function loadSEAData(force = false) {
+    if (seaDataLoaded && !force) return;
+
+    const classUpdated = document.getElementById('sea-classificacao-updated');
+    const killsUpdated = document.getElementById('sea-abates-updated');
+    if (classUpdated) classUpdated.textContent = 'Atualizando...';
+    if (killsUpdated) killsUpdated.textContent = 'Atualizando...';
+
+    try {
+        const [classificacao, abates] = await Promise.all([
+            fetchSEAData(SEA_CLASSIFICACAO_TSV_URL),
+            fetchSEAData(SEA_ABATES_TSV_URL)
+        ]);
+
+        renderSEATable('table-sea-classificacao', classificacao, 'Nenhum dado de classificação encontrado.');
+        renderSEATable('table-sea-abates', abates, 'Nenhum dado de abates encontrado.');
+
+        const now = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+        if (classUpdated) classUpdated.textContent = `Atualizado: ${now}`;
+        if (killsUpdated) killsUpdated.textContent = `Atualizado: ${now}`;
+        seaDataLoaded = true;
+    } catch (error) {
+        console.error('Erro ao carregar FFWS SEA:', error);
+        ['table-sea-classificacao', 'table-sea-abates'].forEach(id => {
+            const table = document.getElementById(id);
+            if (!table) return;
+            table.querySelector('thead').innerHTML = '';
+            table.querySelector('tbody').innerHTML = '<tr><td class="int-error">Não foi possível carregar os dados da planilha agora. Confira se o link publicado continua ativo.</td></tr>';
+        });
+        if (classUpdated) classUpdated.textContent = 'Erro ao atualizar';
+        if (killsUpdated) killsUpdated.textContent = 'Erro ao atualizar';
+    }
+}
 </script>
 </main>
 
