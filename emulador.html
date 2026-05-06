@@ -584,7 +584,10 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 .int-empty strong { color: var(--accent); display: block; font-size: 1.4em; margin-bottom: 8px; text-transform: uppercase; }
 .int-loading, .int-error { padding: 22px; color: var(--text-muted); text-align: center; }
 .int-error { color: #ff7777; }
-.int-team-name { color: #fff; font-weight: 800; }
+.int-rank-cell { color: var(--accent); font-weight: 900; }
+.int-player-name, .int-team-name, .int-kill-value, .int-points-value { color: var(--accent); font-weight: 900; }
+#table-sea-abates td:nth-child(2) { text-align: left; }
+#table-sea-classificacao .int-team-name { font-size: 1.02em; }
 @media (max-width: 768px) { .internacional-tab { width: 100%; } .int-section-title { flex-direction: column; align-items: flex-start; } }
 
 </style>
@@ -4256,6 +4259,9 @@ function sortTable(tableId, colIndex, isNumeric) {
         }
     });
     rows.forEach(r => tbody.appendChild(r));
+    if (tableId === 'table-sea-abates' && typeof refreshSEAAbatesRankColumn === 'function') {
+        refreshSEAAbatesRankColumn();
+    }
 }
 
 function onPlayerTeamFilterChanged() {
@@ -7802,9 +7808,9 @@ const SEA_TEAM_NAME_MAP = {
     'BURIRAM': 'Buriram United', 'BRU': 'Buriram United', 'BURIRAM UNITED': 'Buriram United',
     'RRQ': 'RRQ Kazu', 'RRQ KAZU': 'RRQ Kazu',
     'AG': 'All Gamers', 'ALL GAMERS': 'All Gamers',
-    'BTR': 'Bigetron by Vitality', 'BIGETRON': 'Bigetron by Vitality', 'BIGETRON BY VITALITY': 'Bigetron by Vitality', 'VITALITY': 'Bigetron by Vitality',
+    'BTR': 'Bigetron by Vitality', 'BGT': 'Bigetron by Vitality', 'BGV': 'Bigetron by Vitality', 'BV': 'Bigetron by Vitality', 'BIGETRON': 'Bigetron by Vitality', 'BIGETRON BY VITALITY': 'Bigetron by Vitality', 'VITALITY': 'Bigetron by Vitality',
     'TM': 'Twisted Minds', 'TWI': 'Twisted Minds', 'TWIS': 'Twisted Minds', 'TWISTED MINDS': 'Twisted Minds',
-    'HV': 'Heavy', 'HEV': 'Heavy', 'HEAVY': 'Heavy',
+    'HV': 'Heavy', 'HEV': 'Heavy', 'HEA': 'Heavy', 'HEAVY': 'Heavy',
     'FLCN': 'Team Falcons', 'FALCONS': 'Team Falcons', 'TEAM FALCONS': 'Team Falcons',
     'FL': 'Team Flash', 'FLASH': 'Team Flash', 'TEAM FLASH': 'Team Flash',
     'ONIC': 'ONIC Olympus', 'ONIC OLYMPUS': 'ONIC Olympus',
@@ -7815,8 +7821,8 @@ const SEA_TEAM_NAME_MAP = {
     'SE': 'Shadow Esports', 'SHADOW': 'Shadow Esports', 'SHADOW ESPORTS': 'Shadow Esports',
     'AVIDA': 'Avida', 'AVD': 'Avida',
     'EVOS': 'EVOS Divine', 'EVOS DIVINE': 'EVOS Divine',
-    'PE': 'P Esports', 'P ESPORTS': 'P Esports',
-    'MQ': 'Maqna Esports', 'MAQNA': 'Maqna Esports', 'MAQNA ESPORTS': 'Maqna Esports'
+    'PE': 'P Esports', 'PES': 'P Esports', 'P ESPORTS': 'P Esports',
+    'MQ': 'Maqna Esports', 'MGE': 'Maqna Esports', 'MAQ': 'Maqna Esports', 'MAQNA': 'Maqna Esports', 'MAQNA ESPORTS': 'Maqna Esports'
 };
 
 let seaDataLoaded = false;
@@ -7848,6 +7854,26 @@ function cleanSEAPlayerName(value) {
         return parts.length ? parts[parts.length - 1] : original;
     }
     return original;
+}
+
+function getSEAPlayerTeamSigla(value) {
+    const original = String(value || '').trim();
+    if (!original || !original.includes('.')) return '';
+    const prefix = original.split('.')[0].trim();
+    return normalizeSEAKey(prefix);
+}
+
+function getSEAPlayerTeamFullName(value) {
+    const sigla = getSEAPlayerTeamSigla(value);
+    return sigla ? getSEATeamFullName(sigla) : '';
+}
+
+function getSEARowTeamName(row, playerHeader, teamHeader) {
+    // Na planilha de abates da SEA o time vem no começo do nick: BRU.JOENA, RRQ.DUTTZ etc.
+    // Então o filtro de time deve priorizar essa sigla antes do ponto.
+    const fromPlayer = playerHeader ? getSEAPlayerTeamFullName(row[playerHeader]) : '';
+    if (fromPlayer) return fromPlayer;
+    return teamHeader ? getSEATeamFullName(row[teamHeader]) : '';
 }
 
 function getSEAFunctionName(value) {
@@ -7906,6 +7932,27 @@ function isProbablyNumericColumn(header) {
     return /(POS|RANK|PONT|PTS|BOOYAH|ABATE|KILL|DANO|DAMAGE|QUEDA|MEDIA|AVG|MVP|AST|ASSIST|VITORIA|VIT)/.test(h);
 }
 
+function parseSEANumber(value) {
+    const normalized = String(value || '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+    return parseFloat(normalized) || 0;
+}
+
+function findSEAAbatesHeader(headers) {
+    return (headers || []).find(header => {
+        const h = normalizeSEAKey(header);
+        return h === 'ABATES' || h === 'KILLS' || h === 'KILL' || h.includes('ABATE') || h.includes('KILL');
+    }) || null;
+}
+
+function sortSEARowsByAbatesDesc(parsed) {
+    const killHeader = findSEAAbatesHeader(parsed.headers);
+    if (!killHeader) return parsed;
+    return {
+        headers: parsed.headers,
+        rows: [...parsed.rows].sort((a, b) => parseSEANumber(b[killHeader]) - parseSEANumber(a[killHeader]))
+    };
+}
+
 function escapeHtml(value) {
     return String(value || '').replace(/[&<>'"]/g, char => ({
         '&': '&amp;',
@@ -7916,18 +7963,49 @@ function escapeHtml(value) {
     }[char]));
 }
 
-function formatSEAValue(header, value) {
+function isSEAKillColumn(header) {
+    const h = normalizeSEAKey(header);
+    return h === 'ABATES' || h === 'KILLS' || h === 'KILL' || h.includes('ABATE') || h.includes('KILL');
+}
+
+function isSEAPointsColumn(header) {
+    const h = normalizeSEAKey(header);
+    return h === 'PTS' || h === 'PONTOS' || h === 'PONTO' || h.includes('PONTOS');
+}
+
+function formatSEAValue(header, value, tableId = '') {
     const text = String(value || '').trim();
     if (shouldConvertSEATeamColumn(header)) {
         return `<span class="int-team-name">${escapeHtml(getSEATeamFullName(text))}</span>`;
     }
     if (shouldCleanSEAPlayerColumn(header)) {
-        return escapeHtml(cleanSEAPlayerName(text));
+        return `<span class="int-player-name">${escapeHtml(cleanSEAPlayerName(text))}</span>`;
     }
     if (shouldConvertSEAFunctionColumn(header)) {
         return escapeHtml(getSEAFunctionName(text));
     }
+    if (tableId === 'table-sea-abates' && isSEAKillColumn(header)) {
+        return `<span class="int-kill-value">${escapeHtml(text)}</span>`;
+    }
+    if (tableId === 'table-sea-classificacao' && isSEAPointsColumn(header)) {
+        return `<span class="int-points-value">${escapeHtml(text)}</span>`;
+    }
     return escapeHtml(text);
+}
+
+function formatOrdinalRank(index) {
+    return `${index + 1}º`;
+}
+
+function refreshSEAAbatesRankColumn() {
+    const table = document.getElementById('table-sea-abates');
+    if (!table) return;
+    Array.from(table.querySelectorAll('tbody tr')).forEach((row, index) => {
+        const firstCell = row.cells[0];
+        if (firstCell && firstCell.classList.contains('int-rank-cell')) {
+            firstCell.textContent = formatOrdinalRank(index);
+        }
+    });
 }
 
 function renderSEATable(tableId, parsed, emptyMessage) {
@@ -7935,6 +8013,7 @@ function renderSEATable(tableId, parsed, emptyMessage) {
     if (!table) return;
     const thead = table.querySelector('thead');
     const tbody = table.querySelector('tbody');
+    const hasDynamicRank = tableId === 'table-sea-abates';
 
     if (!parsed.headers.length || !parsed.rows.length) {
         thead.innerHTML = '';
@@ -7942,8 +8021,19 @@ function renderSEATable(tableId, parsed, emptyMessage) {
         return;
     }
 
-    thead.innerHTML = `<tr>${parsed.headers.map((h, i) => `<th onclick="sortTable('${tableId}', ${i}, ${isProbablyNumericColumn(h)})">${escapeHtml(h || '-')} ↕</th>`).join('')}</tr>`;
-    tbody.innerHTML = parsed.rows.map(row => `<tr>${parsed.headers.map(h => `<td>${formatSEAValue(h, row[h])}</td>`).join('')}</tr>`).join('');
+    const rankHeader = hasDynamicRank ? '<th>#</th>' : '';
+    thead.innerHTML = `<tr>${rankHeader}${parsed.headers.map((h, i) => {
+        const colIndex = hasDynamicRank ? i + 1 : i;
+        return `<th onclick="sortTable('${tableId}', ${colIndex}, ${isProbablyNumericColumn(h)})">${escapeHtml(h || '-')} ↕</th>`;
+    }).join('')}</tr>`;
+
+    tbody.innerHTML = parsed.rows.map((row, index) => {
+        const rankCell = hasDynamicRank ? `<td class="int-rank-cell">${formatOrdinalRank(index)}</td>` : '';
+        const cells = parsed.headers.map(h => `<td>${formatSEAValue(h, row[h], tableId)}</td>`).join('');
+        return `<tr>${rankCell}${cells}</tr>`;
+    }).join('');
+
+    if (hasDynamicRank) refreshSEAAbatesRankColumn();
 }
 
 
@@ -7952,15 +8042,17 @@ function renderSEAAbatesFilters(parsed) {
     const roleSelect = document.getElementById('sea-filter-role');
     if (!teamSelect || !roleSelect || !parsed?.headers?.length) return;
 
+    const playerHeader = findSEAHeader(parsed.headers, shouldCleanSEAPlayerColumn);
     const teamHeader = findSEAHeader(parsed.headers, shouldConvertSEATeamColumn);
     const roleHeader = findSEAHeader(parsed.headers, shouldConvertSEAFunctionColumn);
 
     const previousTeam = teamSelect.value || 'all';
     const previousRole = roleSelect.value || 'all';
 
-    const teams = teamHeader
-        ? [...new Set(parsed.rows.map(row => getSEATeamFullName(row[teamHeader])).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
-        : [];
+    const teams = [...new Set(parsed.rows
+        .map(row => getSEARowTeamName(row, playerHeader, teamHeader))
+        .filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
     const roles = roleHeader
         ? [...new Set(parsed.rows.map(row => getSEAFunctionName(row[roleHeader])).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
         : [];
@@ -7971,7 +8063,7 @@ function renderSEAAbatesFilters(parsed) {
     teamSelect.value = teams.includes(previousTeam) ? previousTeam : 'all';
     roleSelect.value = roles.includes(previousRole) ? previousRole : 'all';
 
-    teamSelect.disabled = !teamHeader;
+    teamSelect.disabled = !teams.length;
     roleSelect.disabled = !roleHeader;
 }
 
@@ -7980,16 +8072,21 @@ function applySEAAbatesFilters() {
 
     const teamValue = document.getElementById('sea-filter-team')?.value || 'all';
     const roleValue = document.getElementById('sea-filter-role')?.value || 'all';
+    const playerHeader = findSEAHeader(seaAbatesParsed.headers, shouldCleanSEAPlayerColumn);
     const teamHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEATeamColumn);
     const roleHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEAFunctionColumn);
 
     const filteredRows = seaAbatesParsed.rows.filter(row => {
-        const teamOk = teamValue === 'all' || (teamHeader && getSEATeamFullName(row[teamHeader]) === teamValue);
+        const rowTeam = getSEARowTeamName(row, playerHeader, teamHeader);
+        const teamOk = teamValue === 'all' || rowTeam === teamValue;
         const roleOk = roleValue === 'all' || (roleHeader && getSEAFunctionName(row[roleHeader]) === roleValue);
         return teamOk && roleOk;
     });
 
-    renderSEATable('table-sea-abates', { headers: seaAbatesParsed.headers, rows: filteredRows }, 'Nenhum jogador encontrado com esses filtros.');
+    const sortedFilteredRows = sortSEARowsByAbatesDesc({ headers: seaAbatesParsed.headers, rows: filteredRows }).rows;
+    renderSEATable('table-sea-abates', { headers: seaAbatesParsed.headers, rows: sortedFilteredRows }, 'Nenhum jogador encontrado com esses filtros.');
+    const table = document.getElementById('table-sea-abates');
+    if (table) table.setAttribute('data-sort-dir', 'desc');
 }
 
 function clearSEAAbatesFilters() {
@@ -8021,7 +8118,7 @@ async function loadSEAData(force = false) {
         ]);
 
         seaClassificacaoParsed = classificacao;
-        seaAbatesParsed = abates;
+        seaAbatesParsed = sortSEARowsByAbatesDesc(abates);
 
         renderSEATable('table-sea-classificacao', seaClassificacaoParsed, 'Nenhum dado de classificação encontrado.');
         renderSEAAbatesFilters(seaAbatesParsed);
