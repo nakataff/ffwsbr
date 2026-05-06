@@ -573,6 +573,9 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 .internacional-hero { background: linear-gradient(135deg, rgba(0,200,255,0.12), rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; margin-bottom: 24px; text-align: center; }
 .internacional-hero h1 { margin: 0 0 8px; color: #fff; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: 1px; }
 .internacional-hero p { margin: 0; color: var(--text-muted); }
+.int-filters { margin-top: -6px; margin-bottom: 16px; }
+.int-filters label { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; font-size: 0.82em; }
+.int-filters select { min-width: 170px; }
 .int-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
 .int-section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
 .int-section-title h2 { margin: 0; color: var(--accent); font-size: 1.2em; text-transform: uppercase; }
@@ -1416,6 +1419,21 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                 <h2>Ranking de Abates</h2>
                 <span class="int-updated" id="sea-abates-updated">Atualizando...</span>
             </div>
+
+            <div class="filters int-filters">
+                <label>Time:
+                    <select id="sea-filter-team" onchange="applySEAAbatesFilters()">
+                        <option value="all">Todos os times</option>
+                    </select>
+                </label>
+                <label>Função:
+                    <select id="sea-filter-role" onchange="applySEAAbatesFilters()">
+                        <option value="all">Todas as funções</option>
+                    </select>
+                </label>
+                <button class="btn-action" type="button" onclick="clearSEAAbatesFilters()" style="margin-top: 0;">Limpar filtros</button>
+            </div>
+
             <div class="table-container">
                 <table id="table-sea-abates">
                     <thead></thead>
@@ -7802,6 +7820,8 @@ const SEA_TEAM_NAME_MAP = {
 };
 
 let seaDataLoaded = false;
+let seaClassificacaoParsed = { headers: [], rows: [] };
+let seaAbatesParsed = { headers: [], rows: [] };
 
 function normalizeSEAKey(value) {
     return String(value || '')
@@ -7817,6 +7837,36 @@ function getSEATeamFullName(value) {
     if (!original) return original;
     const clean = normalizeSEAKey(original);
     return SEA_TEAM_NAME_MAP[clean] || original;
+}
+
+function cleanSEAPlayerName(value) {
+    const original = String(value || '').trim();
+    if (!original) return original;
+    // Exemplo: RRQ.DUTTZ vira DUTTZ. Mantém nomes sem prefixo intactos.
+    if (original.includes('.')) {
+        const parts = original.split('.').map(part => part.trim()).filter(Boolean);
+        return parts.length ? parts[parts.length - 1] : original;
+    }
+    return original;
+}
+
+function getSEAFunctionName(value) {
+    const clean = normalizeSEAKey(value);
+    const roleMap = {
+        'BOMBER': 'Granadeiro',
+        'GRENADEIRO': 'Granadeiro',
+        'GRANADEIRO': 'Granadeiro',
+        'SNIPER': 'Suporte',
+        'SUPORTE': 'Suporte',
+        'SUPPORT': 'Rush',
+        'RUSHER': 'Rush',
+        'RUSH': 'Rush',
+        'RIFLER': '3º homem',
+        '3 HOMEM': '3º homem',
+        '3º HOMEM': '3º homem',
+        'TERCEIRO HOMEM': '3º homem'
+    };
+    return roleMap[clean] || String(value || '').trim();
 }
 
 function parseTSV(text) {
@@ -7835,6 +7885,20 @@ function parseTSV(text) {
 function shouldConvertSEATeamColumn(header) {
     const h = normalizeSEAKey(header);
     return ['SIGLA', 'TAG', 'TIME', 'TIMES', 'EQUIPE', 'EQUIPES', 'TEAM', 'TEAMS', 'CLUBE', 'ORGANIZACAO', 'ORG'].some(key => h.includes(key));
+}
+
+function shouldCleanSEAPlayerColumn(header) {
+    const h = normalizeSEAKey(header);
+    return ['JOGADOR', 'PLAYER', 'NICK', 'NOME', 'NAME', 'APELIDO'].some(key => h.includes(key)) && !shouldConvertSEATeamColumn(header);
+}
+
+function shouldConvertSEAFunctionColumn(header) {
+    const h = normalizeSEAKey(header);
+    return ['FUNCAO', 'FUNÇÃO', 'ROLE', 'POSICAO', 'POSIÇÃO', 'POSITION'].some(key => h.includes(key));
+}
+
+function findSEAHeader(headers, matcher) {
+    return (headers || []).find(h => matcher(h)) || null;
 }
 
 function isProbablyNumericColumn(header) {
@@ -7857,6 +7921,12 @@ function formatSEAValue(header, value) {
     if (shouldConvertSEATeamColumn(header)) {
         return `<span class="int-team-name">${escapeHtml(getSEATeamFullName(text))}</span>`;
     }
+    if (shouldCleanSEAPlayerColumn(header)) {
+        return escapeHtml(cleanSEAPlayerName(text));
+    }
+    if (shouldConvertSEAFunctionColumn(header)) {
+        return escapeHtml(getSEAFunctionName(text));
+    }
     return escapeHtml(text);
 }
 
@@ -7874,6 +7944,60 @@ function renderSEATable(tableId, parsed, emptyMessage) {
 
     thead.innerHTML = `<tr>${parsed.headers.map((h, i) => `<th onclick="sortTable('${tableId}', ${i}, ${isProbablyNumericColumn(h)})">${escapeHtml(h || '-')} ↕</th>`).join('')}</tr>`;
     tbody.innerHTML = parsed.rows.map(row => `<tr>${parsed.headers.map(h => `<td>${formatSEAValue(h, row[h])}</td>`).join('')}</tr>`).join('');
+}
+
+
+function renderSEAAbatesFilters(parsed) {
+    const teamSelect = document.getElementById('sea-filter-team');
+    const roleSelect = document.getElementById('sea-filter-role');
+    if (!teamSelect || !roleSelect || !parsed?.headers?.length) return;
+
+    const teamHeader = findSEAHeader(parsed.headers, shouldConvertSEATeamColumn);
+    const roleHeader = findSEAHeader(parsed.headers, shouldConvertSEAFunctionColumn);
+
+    const previousTeam = teamSelect.value || 'all';
+    const previousRole = roleSelect.value || 'all';
+
+    const teams = teamHeader
+        ? [...new Set(parsed.rows.map(row => getSEATeamFullName(row[teamHeader])).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+        : [];
+    const roles = roleHeader
+        ? [...new Set(parsed.rows.map(row => getSEAFunctionName(row[roleHeader])).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+        : [];
+
+    teamSelect.innerHTML = '<option value="all">Todos os times</option>' + teams.map(team => `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`).join('');
+    roleSelect.innerHTML = '<option value="all">Todas as funções</option>' + roles.map(role => `<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('');
+
+    teamSelect.value = teams.includes(previousTeam) ? previousTeam : 'all';
+    roleSelect.value = roles.includes(previousRole) ? previousRole : 'all';
+
+    teamSelect.disabled = !teamHeader;
+    roleSelect.disabled = !roleHeader;
+}
+
+function applySEAAbatesFilters() {
+    if (!seaAbatesParsed.headers.length) return;
+
+    const teamValue = document.getElementById('sea-filter-team')?.value || 'all';
+    const roleValue = document.getElementById('sea-filter-role')?.value || 'all';
+    const teamHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEATeamColumn);
+    const roleHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEAFunctionColumn);
+
+    const filteredRows = seaAbatesParsed.rows.filter(row => {
+        const teamOk = teamValue === 'all' || (teamHeader && getSEATeamFullName(row[teamHeader]) === teamValue);
+        const roleOk = roleValue === 'all' || (roleHeader && getSEAFunctionName(row[roleHeader]) === roleValue);
+        return teamOk && roleOk;
+    });
+
+    renderSEATable('table-sea-abates', { headers: seaAbatesParsed.headers, rows: filteredRows }, 'Nenhum jogador encontrado com esses filtros.');
+}
+
+function clearSEAAbatesFilters() {
+    const teamSelect = document.getElementById('sea-filter-team');
+    const roleSelect = document.getElementById('sea-filter-role');
+    if (teamSelect) teamSelect.value = 'all';
+    if (roleSelect) roleSelect.value = 'all';
+    applySEAAbatesFilters();
 }
 
 async function fetchSEAData(url) {
@@ -7896,8 +8020,12 @@ async function loadSEAData(force = false) {
             fetchSEAData(SEA_ABATES_TSV_URL)
         ]);
 
-        renderSEATable('table-sea-classificacao', classificacao, 'Nenhum dado de classificação encontrado.');
-        renderSEATable('table-sea-abates', abates, 'Nenhum dado de abates encontrado.');
+        seaClassificacaoParsed = classificacao;
+        seaAbatesParsed = abates;
+
+        renderSEATable('table-sea-classificacao', seaClassificacaoParsed, 'Nenhum dado de classificação encontrado.');
+        renderSEAAbatesFilters(seaAbatesParsed);
+        applySEAAbatesFilters();
 
         const now = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
         if (classUpdated) classUpdated.textContent = `Atualizado: ${now}`;
