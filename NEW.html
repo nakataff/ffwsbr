@@ -562,6 +562,11 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
 @media (max-width: 768px) {
 .mercado-card { grid-template-columns: 52px 1fr; /* Apenas 2 colunas no topo */ grid-template-rows: auto auto auto auto; /* 4 linhas de conteúdo */ gap: 10px 15px; padding: 15px; } .mercado-card-avatar { width: 52px; height: 52px; grid-column: 1; grid-row: 1; margin: auto 0; } .mercado-card-info { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; justify-content: center; } .mercado-card-status { grid-column: 1 / 3; grid-row: 2; flex-direction: row; justify-content: center; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border); padding: 8px; border-radius: 8px; min-width: unset; } .mercado-status-icon { width: 18px; height: 18px; } .mercado-status-label { font-size: 0.8em; } .mercado-card-clubs { grid-column: 1 / 3; grid-row: 3; justify-content: center; gap: 25px; padding: 5px 0; } .mercado-club img { width: 42px; height: 42px; } .mercado-club-name { font-size: 0.68em; max-width: 100px; } /* 4. Quarta Linha: Votos */ .mercado-card-votes { display: flex; flex-direction: row; align-items: center; gap: 12px; grid-column: 1 / 3; grid-row: 4; min-width: unset; padding-top: 15px; border-top: 1px solid var(--border); } .mercado-card-votes .vote-bar-wrap { flex: 1; } }
+
+/* --- SEA TAB BUTTONS --- */
+.sea-tab-btn { background: rgba(0,200,255,0.06); border: 1px solid rgba(0,200,255,0.2); color: var(--text-muted); padding: 7px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; font-weight: 700; transition: 0.2s; white-space: nowrap; }
+.sea-tab-btn:hover { background: rgba(0,200,255,0.15); color: var(--accent); }
+.sea-tab-btn.active { background: rgba(0,200,255,0.18); border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body>
@@ -591,6 +596,11 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
         <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
         
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">INTERNACIONAL</div>
+        <button onclick="navigateAndClose('ffws-sea')" id="sb-ffws-sea">🌏 FFWS SEA 2026 S1</button>
+        <button onclick="navigateAndClose('ffws-latam')" id="sb-ffws-latam">🌎 FFWS LATAM S1</button>
+
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">HISTÓRICO</div>
         <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
@@ -1314,6 +1324,59 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
 </div>
+<!-- PAGE: FFWS SEA 2026 S1 -->
+<div id="ffws-sea" class="page">
+    <div style="text-align:center; margin-bottom: 25px;">
+        <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 2em;">🌏</span>
+            <h2 style="margin:0; font-size: 1.8em; text-transform: uppercase; color: #fff;">FFWS SEA 2026 S1</h2>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9em; margin:0;">Free Fire World Series — Southeast Asia | Season 1 2026</p>
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; padding: 12px 14px; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 10px; align-items: center;">
+        <span style="color: var(--text-muted); font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-right: 6px;">VER:</span>
+        <button class="sea-tab-btn active" id="sea-tab-classif" onclick="seaShowTab('classif')">🏆 Classificação</button>
+        <button class="sea-tab-btn" id="sea-tab-abates" onclick="seaShowTab('abates')">⚔️ Abates</button>
+    </div>
+
+    <div id="sea-view-classif">
+        <div class="table-container">
+            <table class="stats-table">
+                <thead><tr><th>#</th><th>TIME</th><th>PTS</th><th>BOOYAH</th><th>ABATES</th><th>PARTIDAS</th></tr></thead>
+                <tbody id="sea-classif-tbody"><tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">Carregando dados...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="sea-view-abates" style="display:none;">
+        <div class="table-container">
+            <table class="stats-table">
+                <thead><tr><th>#</th><th>JOGADOR</th><th>TIME</th><th>FUNÇÃO</th><th>ABATES</th><th>DANO</th><th>ASSISTS</th><th>PARTIDAS</th><th>MVP</th></tr></thead>
+                <tbody id="sea-abates-tbody"><tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">Carregando dados...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+    <p style="text-align:center; color:#444; font-size:0.75em; margin-top:30px;">Dados atualizados automaticamente via planilha oficial</p>
+</div>
+
+<!-- PAGE: FFWS LATAM S1 -->
+<div id="ffws-latam" class="page">
+    <div style="text-align:center; margin-bottom: 25px;">
+        <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 2em;">🌎</span>
+            <h2 style="margin:0; font-size: 1.8em; text-transform: uppercase; color: #fff;">FFWS LATAM S1</h2>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9em; margin:0;">Free Fire World Series — Latin America | Season 1 2026</p>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; gap:20px; background:var(--panel-bg); border:1px solid var(--border); border-radius:12px; padding:40px;">
+        <div style="font-size:4em;">🔜</div>
+        <h3 style="margin:0; color:var(--accent); font-size:1.4em; text-transform:uppercase; letter-spacing:1px;">Em Breve</h3>
+        <p style="color:var(--text-muted); text-align:center; max-width:400px; line-height:1.6; margin:0;">Os dados do FFWS LATAM S1 serão disponibilizados em breve. Fique ligado nas atualizações!</p>
+        <span style="background:rgba(0,200,255,0.1); border:1px solid rgba(0,200,255,0.3); color:var(--accent); padding:6px 14px; border-radius:20px; font-size:0.8em; font-weight:bold; text-transform:uppercase; margin-top:10px;">Coming Soon</span>
+    </div>
+</div>
+
 <div id="outros-torneios" class="page">
     
     <div id="ot-list-view">
@@ -5784,6 +5847,8 @@ function navigateAndClose(pageId) {
     else if (pageId === 'mvp') renderAllPlayers();
     else if (pageId === 'equipes') renderTeamsDirectory();
     else if (pageId === 'datas') renderSchedule();
+    else if (pageId === 'ffws-sea') loadSeaData();
+    else if (pageId === 'ffws-latam') {} // Coming soon
     else if (pageId === 'outros-torneios') renderOutrosTorneiosList();
     else if (pageId === 'outras-equipes') renderOutrasEquipesGrid();
     else if (pageId === 'hall-da-fama') renderHistoricalRanking();
@@ -7681,6 +7746,174 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+</script>
+
+<script>
+// ============================================================
+// FFWS SEA 2026 S1 — Carrega dados das planilhas TSV
+// ============================================================
+const SEA_TEAM_NAMES = {
+    'BRU':  'Buriram United',
+    'RRQ':  'RRQ Kazu',
+    'AG':   'All Gamers',
+    'BTR':  'Bigetron by Vitality',
+    'TWIS': 'Twisted Minds',
+    'HEV':  'Heavy',
+    'FLCN': 'Team Falcons',
+    'FL':   'Team Flash',
+    'ONIC': 'ONIC Olympus',
+    'WAG':  'WAG',
+    'AUR':  'Aurora Gaming',
+    'ACD':  'ACD',
+    'GOW':  'GOW',
+    'SHD':  'Shadow Esports',
+    'AVD':  'Avida',
+    'EVD':  'EVOS Divine',
+    'PE':   'P Esports',
+    'MQN':  'Maqna Esports'
+};
+
+function seaGetTeamName(sigla) {
+    // Tenta encontrar pelo prefixo antes do ponto (ex: RRQ.DUTZZ -> RRQ)
+    const prefix = sigla.split('.')[0].toUpperCase();
+    return SEA_TEAM_NAMES[prefix] || SEA_TEAM_NAMES[sigla.toUpperCase()] || sigla;
+}
+
+function seaGetTeamFromPlayer(playerSigla) {
+    // Ex: RRQ.DUTZZ -> RRQ -> RRQ Kazu
+    const prefix = playerSigla.split('.')[0].toUpperCase();
+    return SEA_TEAM_NAMES[prefix] || prefix;
+}
+
+const SEA_TSV_CLASSIF = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=2075306919&single=true&output=tsv';
+const SEA_TSV_ABATES  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1306410351&single=true&output=tsv';
+
+let seaClassifData = null;
+let seaAbatesData  = null;
+let seaLoaded      = false;
+
+async function loadSeaData() {
+    if (seaLoaded) return;
+    try {
+        const [rC, rA] = await Promise.all([
+            fetch(SEA_TSV_CLASSIF),
+            fetch(SEA_TSV_ABATES)
+        ]);
+        const tsvC = await rC.text();
+        const tsvA = await rA.text();
+
+        seaClassifData = parseTSV(tsvC);
+        seaAbatesData  = parseTSV(tsvA);
+        seaLoaded = true;
+        renderSeaClassif();
+        renderSeaAbates();
+    } catch(e) {
+        document.getElementById('sea-classif-tbody').innerHTML =
+            '<tr><td colspan="6" style="text-align:center;padding:30px;color:#f44336;">Erro ao carregar dados. Tente novamente.</td></tr>';
+    }
+}
+
+function parseTSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split('\t').map(h => h.trim().toLowerCase()
+        .replace('ç','c').replace('ã','a').replace('ê','e').replace('á','a')
+        .replace('assistencias','assists').replace('assistências','assists')
+        .replace('abates','abates').replace('função','funcao').replace('caídas','quedas').replace('quedas','quedas'));
+    return lines.slice(1).map(line => {
+        const vals = line.split('\t');
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+        return obj;
+    }).filter(r => Object.values(r).some(v => v));
+}
+
+// Medal emojis
+const MEDALS = ['🥇','🥈','🥉'];
+
+function renderSeaClassif() {
+    if (!seaClassifData) return;
+    // Sort by pontos desc, then booyah desc
+    const sorted = [...seaClassifData].sort((a,b) => {
+        const dp = parseInt(b.pontos||0) - parseInt(a.pontos||0);
+        return dp !== 0 ? dp : parseInt(b.booyah||0) - parseInt(a.booyah||0);
+    });
+
+    const tbody = document.getElementById('sea-classif-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = sorted.map((r, i) => {
+        const pos = i + 1;
+        const medal = MEDALS[i] || '';
+        const sigla = (r.time || '').toUpperCase();
+        const nomeCompleto = SEA_TEAM_NAMES[sigla] || sigla;
+        const partidas = parseInt(r.quedas || r.partidas || 24);
+        const pts = parseInt(r.pontos || 0);
+        const booyah = parseInt(r.booyah || 0);
+        const abates = parseInt(r.abates || 0);
+
+        // Highlight top 3
+        const rowStyle = pos <= 3 ? 'background: rgba(0,200,255,0.04);' : '';
+        const posStyle = pos === 1 ? 'color:#ffd700;font-weight:900;' : pos === 2 ? 'color:#c0c0c0;font-weight:900;' : pos === 3 ? 'color:#cd7f32;font-weight:900;' : 'color:var(--text-muted);';
+
+        return `<tr style="${rowStyle}">
+            <td style="${posStyle}">${medal || pos}</td>
+            <td style="font-weight:700; text-align:left;">
+                <span style="color:var(--text-muted); font-size:0.8em; margin-right:6px;">${sigla}</span>${nomeCompleto}
+            </td>
+            <td style="color:var(--accent); font-weight:900; font-size:1.05em;">${pts}</td>
+            <td>${booyah}</td>
+            <td>${abates}</td>
+            <td style="color:var(--text-muted);">${partidas}</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderSeaAbates() {
+    if (!seaAbatesData) return;
+    // Sort by abates desc
+    const sorted = [...seaAbatesData].sort((a,b) => parseInt(b.abates||0) - parseInt(a.abates||0));
+
+    const tbody = document.getElementById('sea-abates-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = sorted.map((r, i) => {
+        const pos = i + 1;
+        const medal = MEDALS[i] || '';
+        const jogador = r.jogador || '';
+        const time = seaGetTeamFromPlayer(jogador);
+        const funcao = r.funcao || r['função'] || r.função || '-';
+        const abates = parseInt(r.abates || 0);
+        const dano = parseInt(r.dano || 0);
+        const assists = parseInt(r.assists || r.assistencias || r.assistências || 0);
+        const partidas = parseInt(r.quedas || r.partidas || 24);
+        const mvp = parseInt(r.mvp || 0);
+
+        const rowStyle = pos <= 3 ? 'background: rgba(0,200,255,0.04);' : '';
+        const posStyle = pos === 1 ? 'color:#ffd700;font-weight:900;' : pos === 2 ? 'color:#c0c0c0;font-weight:900;' : pos === 3 ? 'color:#cd7f32;font-weight:900;' : 'color:var(--text-muted);';
+
+        return `<tr style="${rowStyle}">
+            <td style="${posStyle}">${medal || pos}</td>
+            <td style="font-weight:700; text-align:left;">${jogador}</td>
+            <td style="color:var(--text-muted); font-size:0.9em;">${time}</td>
+            <td style="font-size:0.85em; color:var(--text-muted);">${funcao}</td>
+            <td style="color:var(--accent); font-weight:900; font-size:1.05em;">${abates}</td>
+            <td>${dano.toLocaleString('pt-BR')}</td>
+            <td>${assists}</td>
+            <td style="color:var(--text-muted);">${partidas}</td>
+            <td>${mvp > 0 ? '⭐'.repeat(Math.min(mvp,3)) + (mvp > 3 ? ' x'+mvp : '') : '-'}</td>
+        </tr>`;
+    }).join('');
+}
+
+function seaShowTab(tab) {
+    document.getElementById('sea-view-classif').style.display = tab === 'classif' ? '' : 'none';
+    document.getElementById('sea-view-abates').style.display  = tab === 'abates'  ? '' : 'none';
+    document.getElementById('sea-tab-classif').classList.toggle('active', tab === 'classif');
+    document.getElementById('sea-tab-abates').classList.toggle('active',  tab === 'abates');
+}
+
+// Auto-load if navigating directly via hash
+if (window.location.hash === '#ffws-sea') loadSeaData();
 </script>
 </main>
 
