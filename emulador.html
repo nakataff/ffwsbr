@@ -1651,6 +1651,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                 <select id="comp-player-region" onchange="switchComparePlayerRegion()">
                     <option value="nacional">NACIONAL</option>
                     <option value="internacional">INTERNACIONAL</option>
+                    <option value="brxgringos">BR X GRINGOS</option>
                 </select>
                 <select id="comp-p1" onchange="renderComparePlayers()"></select>
                 <span style="font-weight:bold; color:var(--accent);">VS</span>
@@ -3746,6 +3747,23 @@ function populateComparePlayerSelects(region = 'nacional') {
             comparadorP1.innerHTML += opt;
             comparadorP2.innerHTML += opt;
         });
+    } else if (region === 'brxgringos') {
+        const brPlayers = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
+        const seaPlayers = buildSEAComparePlayers().sort((a, b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
+
+        if (!seaPlayers.length) {
+            comparadorP1.innerHTML = '<option value="">Carregando FFWS BR...</option>';
+            comparadorP2.innerHTML = '<option value="">Carregando FFWS SEA...</option>';
+            return;
+        }
+
+        brPlayers.forEach(p => {
+            comparadorP1.innerHTML += `<option value="${escapeHtml(p.jogador)}">🇧🇷 ${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
+        });
+
+        seaPlayers.forEach(p => {
+            comparadorP2.innerHTML += `<option value="${escapeHtml(p.id)}">🌏 ${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
+        });
     } else {
         playersSet = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
         playersSet.forEach(p => {
@@ -3764,7 +3782,7 @@ async function switchComparePlayerRegion() {
     const region = document.getElementById('comp-player-region')?.value || 'nacional';
     const result = document.getElementById('compare-players-result');
 
-    if (region === 'internacional' && !seaDataLoaded) {
+    if ((region === 'internacional' || region === 'brxgringos') && !seaDataLoaded) {
         if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Carregando jogadores da FFWS SEA...</div>';
         await loadSEAData(true);
     }
@@ -6422,34 +6440,32 @@ function getSEAComparePlayerById(id) {
 
 function createSEAPlayerCardHTML(p, scale = 1) {
     const safeName = escapeHtml(p.jogador || '-');
-    const safeTeam = escapeHtml(p.equipe || 'SEA');
-    const role = escapeHtml(p.role || 'Rush');
+    const role = escapeHtml((p.role || 'RUSH').toUpperCase());
     const kills = p.abates || 0;
     const assists = p.assists || 0;
     const danoK = ((p.dano || 0) / 1000).toFixed(1) + 'K';
     const quedas = p.quedas || 0;
     const accentColor = '#00c8ff';
+    const teamLogo = logos[p.equipe] || 'escudo.webp';
     const marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
 
     return `
         <div style="cursor:default; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; box-shadow: 0 0 30px ${accentColor}55; ${marginStyle}">
-            <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #082033, #000); opacity: 0.95;"></div>
+            <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #0b2941, #000); opacity: 0.92;"></div>
 
-            <div style="position:absolute; top:14px; right:14px; z-index:8; background:rgba(0,200,255,0.14); border:1px solid rgba(0,200,255,0.55); color:#fff; padding:5px 9px; border-radius:999px; font-size:0.78em; font-weight:900; letter-spacing:1px;">
+            <div style="position:absolute; top:14px; right:14px; z-index:8; background:rgba(0,200,255,0.14); border:1px solid rgba(0,200,255,0.55); color:#fff; padding:5px 10px; border-radius:999px; font-size:0.78em; font-weight:900; letter-spacing:1px;">
                 🌏 SEA
             </div>
 
-            <div style="position: absolute; top: 42px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
+            <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
                 <div style="font-size: 48px; font-weight: 900; line-height: 0.85;">INT</div>
-                <div style="font-size: 20px; font-weight: bold; margin-top: 7px; text-transform:uppercase;">${role}</div>
+                <div style="font-size: 22px; font-weight: bold; margin-top: 5px; text-transform:uppercase;">${role}</div>
                 <div style="margin: 15px auto; width: 40px; height: 2px; background: ${accentColor}; opacity: 0.6;"></div>
                 <div style="font-size: 34px; line-height:1; filter: drop-shadow(0 0 8px rgba(0,200,255,.55));">🌏</div>
-                <div style="margin-top:12px; color:#fff; font-size:0.75em; font-weight:900; max-width:92px; line-height:1.15; text-transform:uppercase;">${safeTeam}</div>
+                <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
             </div>
 
-            <div style="position:absolute; top:78px; right:20px; z-index:2; width:145px; height:180px; border-radius:18px; background:linear-gradient(135deg, rgba(0,200,255,.18), rgba(255,255,255,.04)); border:1px solid rgba(0,200,255,.28); display:flex; align-items:center; justify-content:center; font-size:74px;">
-                🎮
-            </div>
+            <img src="silhueta.png" onerror="this.src='silhueta.png'" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%); opacity: 0.95;">
 
             <div style="position: absolute; bottom: 0; width: 100%; height: 185px; background: linear-gradient(transparent, #000 35%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 12px;">
                 <div style="width: 100%; text-align: center; margin-bottom: 8px;">
@@ -6480,6 +6496,13 @@ function renderComparePlayers() {
         }
         p1 = getSEAComparePlayerById(document.getElementById('comp-p1').value);
         p2 = getSEAComparePlayerById(document.getElementById('comp-p2').value);
+    } else if (region === 'brxgringos') {
+        if (!seaDataLoaded && !seaAbatesParsed.rows.length) {
+            if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Escolha BR X GRINGOS e aguarde carregar os dados da FFWS SEA.</div>';
+            return;
+        }
+        p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value);
+        p2 = getSEAComparePlayerById(document.getElementById('comp-p2').value);
     } else {
         p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value);
         p2 = db.players.find(x => x.jogador === document.getElementById('comp-p2').value);
@@ -6487,7 +6510,7 @@ function renderComparePlayers() {
 
     if(!p1 || !p2 || !result) return;
 
-    const getCardHtml = (p) => region === 'internacional' ? createSEAPlayerCardHTML(p, 1) : createPlayerCardHTML(p, 1);
+    const getCardHtml = (p) => p?.isSEA ? createSEAPlayerCardHTML(p, 1) : createPlayerCardHTML(p, 1);
     const safeRank = (rank) => rank ? ` <span class="rank-badge" style="font-size:0.7em">#${rank}</span>` : '';
 
     const buildRow = (label, v1, v2, r1, r2, formatFn = v=>v) => `
@@ -8065,20 +8088,20 @@ function getSEARowTeamName(row, playerHeader, teamHeader) {
 function getSEAFunctionName(value) {
     const clean = normalizeSEAKey(value);
     const roleMap = {
-        'BOMBER': 'Granadeiro',
-        'GRENADEIRO': 'Granadeiro',
-        'GRANADEIRO': 'Granadeiro',
-        'SNIPER': 'Suporte',
-        'SUPORTE': 'Suporte',
-        'SUPPORT': 'Rush',
-        'RUSHER': 'Rush',
-        'RUSH': 'Rush',
-        'RIFLER': '3º homem',
-        '3 HOMEM': '3º homem',
-        '3º HOMEM': '3º homem',
-        'TERCEIRO HOMEM': '3º homem'
+        'BOMBER': 'GRAN',
+        'GRENADEIRO': 'GRAN',
+        'GRANADEIRO': 'GRAN',
+        'SNIPER': 'SUP',
+        'SUPORTE': 'SUP',
+        'SUPPORT': 'RUSH',
+        'RUSHER': 'RUSH',
+        'RUSH': 'RUSH',
+        'RIFLER': '3º H',
+        '3 HOMEM': '3º H',
+        '3º HOMEM': '3º H',
+        'TERCEIRO HOMEM': '3º H'
     };
-    return roleMap[clean] || String(value || '').trim();
+    return roleMap[clean] || String(value || '').trim().toUpperCase();
 }
 
 function parseTSV(text) {
