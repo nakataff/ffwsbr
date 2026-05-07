@@ -7306,7 +7306,7 @@ async function loadNoticias() {
     // id | titulo | imagem | resumo | conteudo | data | autor | destaque | link_original
     // Para aparecer no hero/carrossel, marque destaque como TRUE.
     // Os 3 primeiros destaques viram os slides principais.
-    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=SEU_GID_NOTICIAS_AQUI&single=true&output=tsv'; // ⚠️ TROQUE 'SEU_GID_NOTICIAS_AQUI' pelo GID correto da sua aba de Notícias!
+    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pubhtml?gid=0&single=true'; // ⚠️ TROQUE 'SEU_GID_NOTICIAS_AQUI' pelo GID correto da sua aba de Notícias!
 
     function escapeHTML(value) {
         return String(value ?? '').replace(/[&<>"']/g, char => ({
