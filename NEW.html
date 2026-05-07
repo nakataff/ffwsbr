@@ -7092,8 +7092,12 @@ async function loadTeamLogos() {
 
             if (nomeEquipe && urlLogo) {
                 // Se o time já existe no objeto, ele substitui o nome do arquivo pelo link da planilha
-                // Se não existe, ele cria um novo
+                // Se não existe, ele cria um novo. Também cria chaves normalizadas para bater com FFWS SEA.
                 logos[nomeEquipe] = urlLogo;
+                logos[nomeEquipe.toUpperCase().trim()] = urlLogo;
+                if (typeof normalizeSEAKey === 'function') {
+                    logos[normalizeSEAKey(nomeEquipe)] = urlLogo;
+                }
             }
         });
         console.log("Logos atualizadas via Sheets!");
@@ -8287,12 +8291,34 @@ function isSEAPointsColumn(header) {
     return h === 'PTS' || h === 'PONTOS' || h === 'PONTO' || h.includes('PONTOS');
 }
 
+function resolveSEATeamLogo(value) {
+    const original = String(value || '').trim();
+    const fullName = getSEATeamFullName(original);
+    const sigla = getSEATeamSigla(original);
+    const candidates = [
+        original,
+        fullName,
+        sigla,
+        original.toUpperCase().trim(),
+        fullName.toUpperCase().trim(),
+        normalizeSEAKey(original),
+        normalizeSEAKey(fullName),
+        normalizeSEAKey(sigla)
+    ].filter(Boolean);
+
+    for (const key of candidates) {
+        if (logos[key]) return logos[key];
+    }
+    return 'escudo.webp';
+}
+
 function formatSEAValue(header, value, tableId = '') {
     const text = String(value || '').trim();
     if (shouldConvertSEATeamColumn(header)) {
         const fullName = getSEATeamFullName(text);
         const sigla = getSEATeamSigla(text);
-        return `<span class="int-team-name"><span class="sea-desktop-only">${escapeHtml(fullName)}</span><span class="sea-mobile-only">${escapeHtml(sigla)}</span></span>`;
+        const logoSrc = resolveSEATeamLogo(text);
+        return `<span class="int-team-name" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;"><img src="${escapeHtml(logoSrc)}" onerror="this.src='escudo.webp'" class="team-logo" style="width:22px;height:22px;object-fit:contain;margin:0;"><span class="sea-desktop-only">${escapeHtml(fullName)}</span><span class="sea-mobile-only">${escapeHtml(sigla)}</span></span>`;
     }
     if (shouldCleanSEAPlayerColumn(header)) {
         return `<span class="int-player-name">${escapeHtml(cleanSEAPlayerName(text))}</span>`;
