@@ -7405,23 +7405,21 @@ async function loadNoticias() {
         const noticias = parseNoticiasTSV(tsvText);
         if (noticias.length === 0) return;
 
-        const destaques = noticias.filter(n => n.destaque).slice(0, 3);
-        // Se tiver 2 ou 3 notícias marcadas como destaque, usa elas.
-        // Se tiver só 1 destaque, completa o carrossel com as primeiras notícias da planilha.
-        // Assim o hero sempre vira carrossel quando existirem pelo menos 2 notícias cadastradas.
-        let slides = destaques.length >= 2 ? [...destaques] : [...noticias.slice(0, 3)];
-        if (destaques.length === 1) {
-            const ids = new Set(slides.map(n => n.id));
-            noticias.forEach(n => {
-                if (slides.length < 3 && !ids.has(n.id)) {
-                    slides.push(n);
-                    ids.add(n.id);
-                }
-            });
-        }
-        slides = slides.slice(0, Math.min(3, noticias.length));
-        const slideIds = new Set(slides.map(n => n.id));
-        const demais = noticias.filter(n => !slideIds.has(n.id));
+        // Hero/carrossel: pega até 3 destaques.
+        // Se a planilha/cache retornar menos de 3 destaques, completa com as primeiras notícias.
+        // Isso evita o bug de ficar com só 1 slide e esconder as setas.
+        const destaques = noticias.filter(n => n.destaque);
+        const slides = [];
+        const slideIds = new Set();
+
+        [...destaques, ...noticias].forEach(n => {
+            const key = n.id || n.titulo;
+            if (!key || slideIds.has(key) || slides.length >= 3) return;
+            slides.push(n);
+            slideIds.add(key);
+        });
+
+        const demais = noticias.filter(n => !slideIds.has(n.id || n.titulo));
 
         heroContainer.innerHTML = `
         <section class="news-hero-carousel" id="news-hero-carousel" aria-label="Notícias principais">
