@@ -8,7 +8,6 @@
   <meta name="theme-color" content="#00c8ff">
   <link rel="icon" type="image/webp" href="central free fire.webp">
 
-  <!-- Open Graph padrão. O JS atualiza depois que carregar a notícia -->
   <meta property="og:type" content="article">
   <meta property="og:title" content="Notícia - Central Free Fire">
   <meta property="og:description" content="Leia a notícia completa na Central Free Fire.">
@@ -115,16 +114,6 @@
       background: var(--accent);
     }
 
-    .hero-img {
-      width: 100%;
-      height: min(52vw, 460px);
-      min-height: 240px;
-      object-fit: cover;
-      display: block;
-      background: #080d18;
-      border-bottom: 1px solid var(--border);
-    }
-
     .article-content {
       padding: clamp(20px, 4vw, 42px);
     }
@@ -177,23 +166,17 @@
       margin: 0 0 20px;
     }
 
-    .body h2,
-    .body h3,
-    .body h4,
-    .body h5,
-    .body h6 {
+    /* Estilo para todos os níveis de cabeçalho no corpo */
+    .body h2, .body h3, .body h4, .body h5, .body h6 {
       color: var(--accent);
       margin: 34px 0 14px;
       line-height: 1.18;
       text-transform: uppercase;
-      font-weight: 900;
     }
-
     .body h2 { font-size: 1.35rem; }
     .body h3 { font-size: 1.25rem; }
     .body h4 { font-size: 1.15rem; }
     .body h5 { font-size: 1.05rem; }
-    .body h6 { font-size: 1rem; }
 
     .body img.inline-img {
       display: block;
@@ -306,7 +289,6 @@
       .back-btn { padding: 7px 10px; font-size: .72rem; }
       .wrap { padding: 18px 10px 42px; }
       .article-content { padding: 20px 16px 26px; }
-      .hero-img { min-height: 210px; }
       .body { font-size: 1rem; }
       .meta { font-size: .72rem; }
     }
@@ -337,7 +319,6 @@
   </main>
 
   <script>
-    // MESMA PLANILHA/ABA QUE VOCÊ JÁ USA PARA AS NOTÍCIAS
     const NOTICIAS_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
 
     function escapeHTML(value) {
@@ -370,64 +351,40 @@
     }
 
     function parseTSV(text) {
-      // Parser TSV mais seguro: preserva quebras de linha dentro de células entre aspas
       const rows = [];
       let row = [];
       let cell = '';
       let inQuotes = false;
-
       const source = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
       for (let i = 0; i < source.length; i++) {
         const char = source[i];
         const next = source[i + 1];
-
         if (char === '"') {
-          if (inQuotes && next === '"') {
-            cell += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
+          if (inQuotes && next === '"') { cell += '"'; i++; } else { inQuotes = !inQuotes; }
         } else if (char === '\t' && !inQuotes) {
-          row.push(cell.trim());
-          cell = '';
+          row.push(cell.trim()); cell = '';
         } else if (char === '\n' && !inQuotes) {
           row.push(cell.trim());
           if (row.some(v => v !== '')) rows.push(row);
-          row = [];
-          cell = '';
-        } else {
-          cell += char;
-        }
+          row = []; cell = '';
+        } else { cell += char; }
       }
-
       row.push(cell.trim());
       if (row.some(v => v !== '')) rows.push(row);
 
       if (!rows.length) return [];
-
       const headers = rows[0].map(h => h.trim().toLowerCase());
-      const hasNewHeaders = headers.includes('id') || headers.includes('conteudo') || headers.includes('resumo');
+      const hasNewHeaders = headers.includes('id') || headers.includes('conteudo');
 
       return rows.slice(1).map((cells) => {
         let item = {};
-
         if (hasNewHeaders) {
           headers.forEach((h, i) => item[h] = cells[i] || '');
         } else {
-          // Compatibilidade com a estrutura antiga:
-          // imagem | titulo | link | destaque
-          item = {
-            imagem: cells[0] || '',
-            titulo: cells[1] || '',
-            link_original: cells[2] || '',
-            destaque: cells[3] || ''
-          };
+          item = { imagem: cells[0] || '', titulo: cells[1] || '', link_original: cells[2] || '', destaque: cells[3] || '' };
         }
-
         item.imagem = convertDriveImage(item.imagem);
-        item.imagem_meio = convertDriveImage(item.imagem_meio || item['imagem meio'] || '');
         item.titulo = item.titulo || '';
         item.id = item.id || slugify(item.titulo);
         item.resumo = item.resumo || '';
@@ -435,8 +392,6 @@
         item.data = item.data || '';
         item.autor = item.autor || 'Central Free Fire';
         item.link_original = item.link_original || item.link || '';
-        item.destaque = String(item.destaque || '').toLowerCase().includes('true');
-
         return item;
       }).filter(n => n.titulo && n.titulo.length > 2);
     }
@@ -444,38 +399,11 @@
     function formatDate(dateText) {
       if (!dateText) return '';
       const raw = String(dateText).trim();
-
-      // Aceita formato brasileiro: 07/05/2026
       const br = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (br) {
-        const [, d, m, y] = br;
-        return `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`;
-      }
-
-      // Aceita formato ISO: 2026-05-07
+      if (br) return `${br[1].padStart(2, '0')}/${br[2].padStart(2, '0')}/${br[3]}`;
       const iso = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-      if (iso) {
-        const [, y, m, d] = iso;
-        return `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`;
-      }
-
+      if (iso) return `${iso[3].padStart(2, '0')}/${iso[2].padStart(2, '0')}/${iso[1]}`;
       return raw;
-    }
-
-    function getISODate(dateText) {
-      if (!dateText) return new Date().toISOString();
-      const raw = String(dateText).trim();
-
-      const br = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (br) {
-        const [, d, m, y] = br;
-        return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-      }
-
-      const iso = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-      if (iso) return raw;
-
-      return new Date().toISOString();
     }
 
     function renderBody(noticia) {
@@ -483,61 +411,29 @@
 
       function pushParagraph(text) {
         const clean = String(text || '').trim();
-        if (!clean) return;
-        parts.push(`<p>${escapeHTML(clean)}</p>`);
+        if (clean) parts.push(`<p>${escapeHTML(clean)}</p>`);
       }
 
       function pushImage(src) {
         const cleanSrc = convertDriveImage(String(src || '').trim());
-        if (!cleanSrc) return;
-        parts.push(`<img class="inline-img" src="${escapeHTML(cleanSrc)}" alt="${escapeHTML(noticia.titulo)}" onerror="this.src='central free fire.webp'">`);
-      }
-
-      function pushHeading(level, text) {
-        const clean = String(text || '').trim();
-        if (!clean) return;
-
-        const safeLevel = ['H2', 'H3', 'H4', 'H5', 'H6'].includes(String(level).toUpperCase())
-          ? String(level).toLowerCase()
-          : 'h2';
-
-        parts.push(`<${safeLevel}>${escapeHTML(clean)}</${safeLevel}>`);
+        if (cleanSrc) parts.push(`<img class="inline-img" src="${escapeHTML(cleanSrc)}" alt="${escapeHTML(noticia.titulo)}" onerror="this.src='central free fire.webp'">`);
       }
 
       function pushQuote(text) {
         const clean = String(text || '').trim();
-        if (!clean) return;
-        parts.push(`<blockquote>${escapeHTML(clean)}</blockquote>`);
+        if (clean) parts.push(`<blockquote>${escapeHTML(clean)}</blockquote>`);
       }
 
       function renderRichContent(rawContent) {
-        let text = String(rawContent || '')
-          .replace(/
-/g, '\n')
-          .replace(/
-/g, '\n')
-          .replace(/\\n/g, '\n');
+        let text = String(rawContent || '').replace(/\\n/g, '\n');
 
-        // Comandos aceitos dentro da célula da planilha:
-        // [P] ou <br>      = separa parágrafo
-        // [IMG: link]      = imagem no meio da notícia
-        // [H2: texto]      = subtítulo grande
-        // [H3: texto]      = subtítulo médio
-        // [H4: texto]      = subtítulo menor
-        // [H5: texto]      = subtítulo menor
-        // [QUOTE: texto]   = citação/destaque
+        // Normalização de quebras e tags de cabeçalho H2 até H6
         text = text
-          .replace(/\s*\[P\]\s*/gi, '\n[P]\n')
-          .replace(/\s*<br\s*\/?\s*>\s*/gi, '\n[P]\n')
-          .replace(/\s*\[(IMG|H2|H3|H4|H5|H6|QUOTE):/gi, '\n[$1:')
+          .replace(/\s*\[P\]\s*/gi, '\n\n')
+          .replace(/\s*\[(IMG|H[2-6]|QUOTE):/gi, '\n[$1:')
           .replace(/\]\s*/g, ']\n');
 
-        // Também aceita sem colchetes: IMG:, H2:, H3:, H4:, H5:, H6:, QUOTE:
-        text = text
-          .replace(/\s+(IMG:https?:\/\/)/gi, '\n$1')
-          .replace(/\s+(H2:|H3:|H4:|H5:|H6:|QUOTE:)/gi, '\n$1');
-
-        const lines = text.split('\n').map(l => l.trim());
+        const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
         let paragraphBuffer = [];
 
         function flushParagraph() {
@@ -548,145 +444,60 @@
         }
 
         lines.forEach(line => {
-          // Linha vazia ou [P] vira parágrafo novo
-          if (!line || /^\[P\]$/i.test(line)) {
-            flushParagraph();
-            return;
-          }
-
-          // Formato com colchetes: [IMG: link], [H2: texto], [H3: texto]...
-          const bracketMatch = line.match(/^\[(IMG|H2|H3|H4|H5|H6|QUOTE):([\s\S]+)\]$/i);
+          // Detecta formatos com colchetes: [IMG:...], [H2:...], [H3:...], etc.
+          let bracketMatch = line.match(/^\[(IMG|H[2-6]|QUOTE):([\s\S]+)\]$/i);
           if (bracketMatch) {
             flushParagraph();
-
             const type = bracketMatch[1].toUpperCase();
             const value = bracketMatch[2].trim();
-
             if (type === 'IMG') pushImage(value);
             else if (type === 'QUOTE') pushQuote(value);
-            else pushHeading(type, value);
-
+            else if (type.startsWith('H')) {
+              const hTag = type.toLowerCase();
+              parts.push(`<${hTag}>${escapeHTML(value)}</${hTag}>`);
+            }
             return;
           }
 
-          // Formato sem colchetes: IMG: link, H2: texto, H3: texto...
-          const simpleMatch = line.match(/^(IMG|H2|H3|H4|H5|H6|QUOTE):([\s\S]+)$/i);
-          if (simpleMatch) {
+          // Detecta formatos sem colchetes: IMG:..., H2:..., etc.
+          if (/^IMG:/i.test(line)) { flushParagraph(); pushImage(line.replace(/^IMG:/i, '').trim()); return; }
+          if (/^QUOTE:/i.test(line)) { flushParagraph(); pushQuote(line.replace(/^QUOTE:/i, '').trim()); return; }
+          if (/^H[2-6]:/i.test(line)) {
             flushParagraph();
-
-            const type = simpleMatch[1].toUpperCase();
-            const value = simpleMatch[2].trim();
-
-            if (type === 'IMG') pushImage(value);
-            else if (type === 'QUOTE') pushQuote(value);
-            else pushHeading(type, value);
-
+            const hTag = line.match(/^H[2-6]/i)[0].toLowerCase();
+            const hVal = line.replace(/^H[2-6]:/i, '').trim();
+            parts.push(`<${hTag}>${escapeHTML(hVal)}</${hTag}>`);
             return;
           }
 
           paragraphBuffer.push(line);
         });
-
         flushParagraph();
       }
 
-      // Prioridade 1: coluna "conteudo"
-      if (noticia.conteudo) {
-        renderRichContent(noticia.conteudo);
-      }
-
-      // Prioridade 2: colunas separadas
-      const texto1 = noticia.texto1 || noticia['texto 1'] || '';
-      const texto2 = noticia.texto2 || noticia['texto 2'] || '';
-
-      if (!parts.length && texto1) {
-        renderRichContent(texto1);
-      }
-
-      if (!parts.length && noticia.resumo) {
-        pushParagraph(noticia.resumo);
-      }
-
-      if (noticia.imagem_meio) {
-        pushImage(noticia.imagem_meio);
-      }
-
-      if (texto2) {
-        renderRichContent(texto2);
-      }
-
-      if (!parts.length) {
-        parts.push('<p>Essa notícia ainda não tem texto completo cadastrado na planilha.</p>');
-      }
-
+      if (noticia.conteudo) renderRichContent(noticia.conteudo);
+      else if (noticia.resumo) pushParagraph(noticia.resumo);
+      
+      if (!parts.length) parts.push('<p>Conteúdo não disponível.</p>');
       return parts.join('');
     }
 
     function updateMeta(noticia) {
       document.title = `${noticia.titulo} - Central Free Fire`;
-
-      const description = noticia.resumo || noticia.conteudo.split(/\n/)[0] || 'Leia a notícia completa na Central Free Fire.';
-      const image = noticia.imagem || 'central free fire.webp';
-      const currentUrl = window.location.href;
-
+      const description = noticia.resumo || 'Leia a notícia completa.';
       const setMeta = (selector, attr, value) => {
         let el = document.querySelector(selector);
-        if (!el) {
-          el = document.createElement('meta');
-          if (selector.includes('property=')) {
-            el.setAttribute('property', selector.match(/property="([^"]+)"/)?.[1] || '');
-          } else {
-            el.setAttribute('name', selector.match(/name="([^"]+)"/)?.[1] || '');
-          }
-          document.head.appendChild(el);
-        }
-        el.setAttribute(attr, value);
+        if (el) el.setAttribute(attr, value);
       };
-
       setMeta('meta[name="description"]', 'content', description);
       setMeta('meta[property="og:title"]', 'content', noticia.titulo);
       setMeta('meta[property="og:description"]', 'content', description);
-      setMeta('meta[property="og:image"]', 'content', image);
-      setMeta('meta[property="og:url"]', 'content', currentUrl);
-
-      const oldJsonLd = document.getElementById('article-jsonld');
-      if (oldJsonLd) oldJsonLd.remove();
-
-      const jsonLd = document.createElement('script');
-      jsonLd.type = 'application/ld+json';
-      jsonLd.id = 'article-jsonld';
-      jsonLd.textContent = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        "headline": noticia.titulo,
-        "description": description,
-        "image": [image],
-        "datePublished": getISODate(noticia.data),
-        "dateModified": getISODate(noticia.data),
-        "author": {
-          "@type": "Organization",
-          "name": noticia.autor || "Central Free Fire"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Central Free Fire",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "central free fire.webp"
-          }
-        },
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": currentUrl
-        }
-      });
-      document.head.appendChild(jsonLd);
+      setMeta('meta[property="og:image"]', 'content', noticia.imagem || 'central free fire.webp');
     }
 
     function renderArticle(noticia) {
       const root = document.getElementById('noticia-root');
       updateMeta(noticia);
-
       root.className = 'article-shell';
       root.innerHTML = `
         <article>
@@ -695,12 +506,12 @@
             <h1>${escapeHTML(noticia.titulo)}</h1>
             ${noticia.resumo ? `<p class="summary">${escapeHTML(noticia.resumo)}</p>` : ''}
             <div class="meta">
-              ${noticia.data ? `<span>${escapeHTML(formatDate(noticia.data))}</span>` : ''}
-              <span>${escapeHTML(noticia.autor || 'Central Free Fire')}</span>
+              <span>${formatDate(noticia.data)}</span>
+              <span>${escapeHTML(noticia.autor)}</span>
             </div>
             <div class="body">
               ${renderBody(noticia)}
-              ${noticia.link_original ? `<a class="original-link" href="${escapeHTML(noticia.link_original)}" target="_blank" rel="noopener">Ver publicação original</a>` : ''}
+              ${noticia.link_original ? `<a class="original-link" href="${escapeHTML(noticia.link_original)}" target="_blank">Ver original</a>` : ''}
             </div>
           </div>
         </article>
@@ -710,14 +521,11 @@
     function renderMoreNews(allNews, currentId) {
       const more = allNews.filter(n => n.id !== currentId).slice(0, 6);
       const section = document.getElementById('more-news');
-      const grid = document.getElementById('more-grid');
-
       if (!more.length) return;
-
       section.style.display = 'block';
-      grid.innerHTML = more.map(n => `
+      document.getElementById('more-grid').innerHTML = more.map(n => `
         <a class="more-card" href="noticia.html?id=${encodeURIComponent(n.id)}">
-          <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" alt="${escapeHTML(n.titulo)}" onerror="this.src='central free fire.webp'">
+          <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" onerror="this.src='central free fire.webp'">
           <div class="more-card-title">${escapeHTML(n.titulo)}</div>
         </a>
       `).join('');
@@ -727,45 +535,19 @@
       const root = document.getElementById('noticia-root');
       const params = new URLSearchParams(window.location.search);
       const requestedId = params.get('id');
-
       try {
         const response = await fetch(`${NOTICIAS_TSV_URL}&nocache=${Date.now()}`);
-        if (!response.ok) throw new Error('Não foi possível carregar a planilha de notícias.');
-
         const tsv = await response.text();
         const noticias = parseTSV(tsv);
-
-        if (!noticias.length) throw new Error('Nenhuma notícia foi encontrada na planilha.');
-
-        const noticia = requestedId
-          ? noticias.find(n => n.id === requestedId || slugify(n.titulo) === requestedId)
-          : noticias[0];
-
-        if (!noticia) {
-          root.className = 'error';
-          root.innerHTML = `
-            <strong>Notícia não encontrada</strong>
-            Confira se o ID da notícia está igual ao ID cadastrado na planilha.
-            <br><br>
-            <a class="back-btn" href="index.html">Voltar ao site</a>
-          `;
-          return;
-        }
-
+        const noticia = requestedId ? noticias.find(n => n.id === requestedId) : noticias[0];
+        if (!noticia) throw new Error('Notícia não encontrada.');
         renderArticle(noticia);
         renderMoreNews(noticias, noticia.id);
-      } catch (error) {
-        console.error('[noticia.html]', error);
+      } catch (e) {
         root.className = 'error';
-        root.innerHTML = `
-          <strong>Erro ao carregar notícia</strong>
-          ${escapeHTML(error.message || 'Tente novamente em alguns instantes.')}
-          <br><br>
-          <a class="back-btn" href="index.html">Voltar ao site</a>
-        `;
+        root.innerHTML = `<strong>Erro</strong>${e.message}<br><a href="index.html" class="back-btn">Voltar</a>`;
       }
     }
-
     loadNoticia();
   </script>
 </body>
