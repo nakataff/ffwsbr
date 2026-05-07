@@ -7293,18 +7293,20 @@ async function loadNoticias() {
     const titulo = document.getElementById('ultimas-noticias-titulo');
     if (!heroContainer) return;
 
-    heroContainer.innerHTML = `<div class="news-hero-carousel" style="min-height:220px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:1px;">Carregando notícias...</div>`;
-
     // Aba de notícias publicada como TSV.
-    // Colunas: id | titulo | imagem | resumo | conteudo | data | autor | destaque | link_original
+    // Colunas recomendadas:
+    // id | titulo | imagem | resumo | conteudo | data | autor | destaque | link_original
     // Para aparecer no hero/carrossel, marque destaque como TRUE.
+    // Os 3 primeiros destaques viram os slides principais.
     const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=64226688&single=true&output=tsv';
-    const LOCAL_TSV_URL = 'DADOS DO SITE - Notícias(1).tsv';
-    const EMBEDDED_NOTICIAS_TSV = "id\ttitulo\timagem\tresumo\tconteudo\tdata\tautor\tdestaque\tlink_original\n\tMT7 E SAIFA, VEJA A COMPARAÇÃO DOS MVP DO BRASIL E SEA\thttps://i.postimg.cc/j5FJ4BVb/MT7.webp\tComparação entre o MVP da FFWS Brasil e o destaque da SEA.\tDE OLHO NOS GRINGOS!  Veja a comparação entre o MVP atual da FFWS Brasil com o da SEA.  [IMG:https://i.postimg.cc/j5FJ4BVb/MT7.webp]  [H2:Brasil x SEA]  MT7 tem maior destaque individual, mas Saifa mostra que os rushers estão jogando muito no outro lado do mundo.  QUOTE:Esse pode ser um dos confrontos mais interessantes do internacional.  Como será esse embate quando chegar o EWC? 👀🔥\t07/05/2026\tNAKATA\tTRUE\t\n\tLOUD E VIRTUS PRO ESTÃO ZERADOS DE TOP 12 NO SPLIT\thttps://i.postimg.cc/yx1X7VX8/noticia.webp\t\t\t\t\tFALSE\t\n\tVITIN9 É NOVO REFORÇO DA LOOPS\thttps://i.postimg.cc/QdmbQswx/vitin9.webp\t\t\t\t\tFALSE\t\n\tYAGO SE APROXIMA DOS 2000 ABATES NA WB\thttps://i.postimg.cc/QxtBfPNT/HG71Ol5a-AAEWEH0.jpg\t\t\t\t\tFALSE\t\n\tTEAM SOLID É CAMPEÃ DA LIGA MARINHO\t\t\t\t\t\tFALSE\t\n\tGARENA ANUNCIA DATA DE RETORNO DA LAFF\t\t\t\t\t\tFALSE\t";
 
     function escapeHTML(value) {
         return String(value ?? '').replace(/[&<>"']/g, char => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
         }[char]));
     }
 
@@ -7332,66 +7334,46 @@ async function loadNoticias() {
         return ['true', 'sim', 's', '1', 'yes', 'destaque'].includes(v);
     }
 
-    function parseTSVLine(line) {
-        return String(line || '').replace(/\r/g, '').split('\t').map(cell => cell.trim());
-    }
-
     function parseNoticiasTSV(tsvText) {
-        const lines = String(tsvText || '')
-            .replace(/^\uFEFF/, '')
-            .split(/\r?\n/)
-            .filter(line => line.trim().length > 0);
+        const rows = String(tsvText || '')
+            .trim()
+            .split(/\n/)
+            .map(row => row.split('\t').map(cell => cell.trim().replace(/\r/g, '')));
 
-        if (!lines.length) return [];
+        if (!rows.length) return [];
 
-        const headers = parseTSVLine(lines[0]).map(h => h.trim().toLowerCase());
-        const temCabecalhoNovo = headers.includes('titulo') || headers.includes('imagem') || headers.includes('destaque');
+        const headers = rows[0].map(h => h.trim().toLowerCase());
+        const temCabecalhoNovo = headers.includes('id') || headers.includes('conteudo') || headers.includes('resumo') || headers.includes('link_original');
 
-        return lines.slice(1).map((line, index) => {
-            const cells = parseTSVLine(line);
+        return rows.slice(1).map((cells, index) => {
             let noticia = {};
 
             if (temCabecalhoNovo) {
                 headers.forEach((h, i) => noticia[h] = cells[i] || '');
             } else {
                 noticia = {
-                    imagem: cells[0] || '', titulo: cells[1] || '', link_original: cells[2] || '', destaque: cells[3] || ''
+                    imagem: cells[0] || '',
+                    titulo: cells[1] || '',
+                    link_original: cells[2] || '',
+                    destaque: cells[3] || ''
                 };
             }
 
-            noticia.titulo = noticia.titulo || noticia.title || '';
+            noticia.titulo = noticia.titulo || '';
             noticia.id = noticia.id || slugify(noticia.titulo || `noticia-${index + 1}`);
-            noticia.imagem = convertDriveImage(noticia.imagem || noticia.image || noticia.foto || '');
-            noticia.resumo = noticia.resumo || noticia.subtitulo || noticia.descricao || '';
-            noticia.link_original = noticia.link_original || noticia.link || noticia.url || '';
-            noticia.destaque = isTrue(noticia.destaque || noticia.hero || noticia.principal);
-            noticia.urlInterna = noticia.link_original || `noticia.html?id=${encodeURIComponent(noticia.id)}`;
+            noticia.imagem = convertDriveImage(noticia.imagem);
+            noticia.resumo = noticia.resumo || '';
+            noticia.link_original = noticia.link_original || noticia.link || '';
+            noticia.destaque = isTrue(noticia.destaque);
+            noticia.urlInterna = `noticia.html?id=${encodeURIComponent(noticia.id)}`;
 
             return noticia;
         }).filter(n => n.titulo && n.titulo.length > 2);
     }
 
-    async function fetchFirstWorkingTSV() {
-        const urls = [`${SHEET_TSV_URL}&cacheBust=${Date.now()}`, SHEET_TSV_URL, LOCAL_TSV_URL];
-
-        for (const url of urls) {
-            try {
-                const res = await fetch(url, { cache: 'no-store' });
-                if (!res.ok) continue;
-                const text = await res.text();
-                if (text && text.includes('\t') && text.toLowerCase().includes('titulo')) return text;
-            } catch (err) {
-                console.warn('[loadNoticias] tentativa falhou:', url, err);
-            }
-        }
-
-        return EMBEDDED_NOTICIAS_TSV;
-    }
-
     function initHeroCarousel() {
         const carousel = document.getElementById('news-hero-carousel');
-        if (!carousel || carousel.dataset.ready === 'true') return;
-        carousel.dataset.ready = 'true';
+        if (!carousel) return;
 
         const slides = Array.from(carousel.querySelectorAll('.news-hero-slide'));
         const dots = Array.from(carousel.querySelectorAll('.news-hero-dot'));
@@ -7410,21 +7392,36 @@ async function loadNoticias() {
         if (next) next.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(current + 1); };
         dots.forEach((dot, i) => dot.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(i); });
 
-        if (slides.length > 1) setInterval(() => showSlide(current + 1), 6500);
+        if (slides.length > 1) {
+            setInterval(() => showSlide(current + 1), 6500);
+        }
     }
 
-    function renderNoticias(noticias) {
-        if (!noticias.length) {
-            heroContainer.innerHTML = `<div class="home-widget" style="padding:25px;text-align:center;color:var(--text-muted);font-weight:800;">Nenhuma notícia encontrada na planilha.</div>`;
-            if (grid) grid.innerHTML = '';
-            if (titulo) titulo.style.display = 'none';
-            return;
-        }
+    try {
+        const res = await fetch(`${SHEET_TSV_URL}&nocache=${Date.now()}`);
+        if (!res.ok) throw new Error('Erro ao carregar a aba de notícias.');
+
+        const tsvText = await res.text();
+        const noticias = parseNoticiasTSV(tsvText);
+        if (noticias.length === 0) return;
 
         const destaques = noticias.filter(n => n.destaque).slice(0, 3);
-        const slides = (destaques.length ? destaques : noticias.slice(0, 3));
-        const slideKeys = new Set(slides.map((n, i) => n.id || n.titulo || String(i)));
-        const demais = noticias.filter((n, i) => !slideKeys.has(n.id || n.titulo || String(i)));
+        // Se tiver 2 ou 3 notícias marcadas como destaque, usa elas.
+        // Se tiver só 1 destaque, completa o carrossel com as primeiras notícias da planilha.
+        // Assim o hero sempre vira carrossel quando existirem pelo menos 2 notícias cadastradas.
+        let slides = destaques.length >= 2 ? [...destaques] : [...noticias.slice(0, 3)];
+        if (destaques.length === 1) {
+            const ids = new Set(slides.map(n => n.id));
+            noticias.forEach(n => {
+                if (slides.length < 3 && !ids.has(n.id)) {
+                    slides.push(n);
+                    ids.add(n.id);
+                }
+            });
+        }
+        slides = slides.slice(0, Math.min(3, noticias.length));
+        const slideIds = new Set(slides.map(n => n.id));
+        const demais = noticias.filter(n => !slideIds.has(n.id));
 
         heroContainer.innerHTML = `
         <section class="news-hero-carousel" id="news-hero-carousel" aria-label="Notícias principais">
@@ -7448,37 +7445,30 @@ async function loadNoticias() {
 
         initHeroCarousel();
 
-        if (!grid) return;
-        if (demais.length > 0) {
-            if (titulo) titulo.style.display = 'block';
-            grid.style.display = 'grid';
-            grid.innerHTML = demais.map(n => `
-            <a class="old-news-card" href="${escapeHTML(n.urlInterna)}" style="display:flex; flex-direction:column; height:100%; text-decoration:none; color:inherit;">
-                <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" alt="${escapeHTML(n.titulo)}" onerror="this.src='central free fire.webp'">
-                <div class="old-news-title">${escapeHTML(n.titulo)}</div>
-            </a>`).join('');
-        } else {
-            grid.innerHTML = '';
-            if (titulo) titulo.style.display = 'none';
-        }
-    }
+        if (grid) {
+            if (demais.length > 0) {
+                if (titulo) titulo.style.display = 'block';
+                grid.style.display = 'grid';
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+                grid.style.gap = '20px';
 
-    try {
-        const tsvText = await fetchFirstWorkingTSV();
-        renderNoticias(parseNoticiasTSV(tsvText));
+                grid.innerHTML = demais.map(n => `
+                <a class="old-news-card" href="${escapeHTML(n.urlInterna)}" style="display:flex; flex-direction:column; height:100%; text-decoration:none; color:inherit;">
+                    <div style="width:100%; height:160px; overflow:hidden; border-bottom:1px solid var(--border);">
+                        <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" alt="${escapeHTML(n.titulo)}" onerror="this.src='central free fire.webp'" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                    <div class="old-news-title" style="padding:12px; font-size:0.95em; flex-grow:1;">${escapeHTML(n.titulo)}</div>
+                </a>`).join('');
+            } else {
+                grid.innerHTML = '';
+                if (titulo) titulo.style.display = 'none';
+            }
+        }
+
     } catch (e) {
-        console.error('[loadNoticias] Erro final:', e);
-        renderNoticias(parseNoticiasTSV(EMBEDDED_NOTICIAS_TSV));
+        console.error('[loadNoticias] Erro:', e);
     }
 }
-
-// Garante que as notícias carreguem mesmo se alguma função pesada do site falhar antes do fim do window.onload.
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        const hero = document.getElementById('news-hero-container');
-        if (hero && !hero.querySelector('#news-hero-carousel')) loadNoticias();
-    }, 400);
-});
 
 async function loadSobre() {
     const page = document.getElementById('sobre');
