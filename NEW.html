@@ -489,6 +489,69 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 .close-btn:hover { color: #fff; border-color: #555; background: rgba(255,255,255,0.05); }
 .close-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+
+/* =============================================
+   VOTAÇÃO DO DIA - HOME
+   ============================================= */
+.day-vote-card {
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 200, 255, 0.22);
+    background: linear-gradient(135deg, rgba(0,200,255,0.08), rgba(255,255,255,0.025));
+    border-radius: 12px;
+}
+.day-vote-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+.day-vote-title { color: #fff; font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.2; }
+.day-vote-subtitle { color: var(--text-muted); font-size: 0.74em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+.day-vote-total { color: var(--accent); font-size: 0.78em; font-weight: 900; white-space: nowrap; text-transform: uppercase; }
+.day-vote-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 9px; }
+.day-vote-team {
+    border: 1px solid var(--border);
+    background: rgba(5, 8, 16, 0.72);
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    text-align: left;
+}
+.day-vote-team:hover { border-color: var(--accent); transform: translateY(-2px); background: rgba(0,200,255,0.08); }
+.day-vote-team.voted { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(0,200,255,0.25), 0 0 18px rgba(0,200,255,0.12); }
+.day-vote-team img { width: 32px; height: 32px; object-fit: contain; }
+.day-vote-name { font-weight: 900; font-size: 0.82em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.day-vote-percent { color: var(--accent); font-weight: 900; font-size: 0.86em; }
+.day-vote-bar { grid-column: 1 / 4; height: 5px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+.day-vote-bar-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 999px; transition: width 0.35s ease; }
+.day-vote-count { grid-column: 1 / 4; color: var(--text-muted); font-size: 0.7em; font-weight: 700; text-align: right; }
+.day-vote-empty { color: var(--text-muted); text-align: center; padding: 12px 4px; font-size: 0.85em; }
+@media (min-width: 769px) {
+    .day-vote-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+    .day-vote-team { grid-template-columns: 30px 1fr; min-height: 82px; padding: 9px 8px; align-content: center; }
+    .day-vote-team img { width: 28px; height: 28px; }
+    .day-vote-name { font-size: 0.72em; }
+    .day-vote-percent { grid-column: 1 / 3; font-size: 0.78em; text-align: left; }
+    .day-vote-bar, .day-vote-count { grid-column: 1 / 3; }
+    .day-vote-count { text-align: left; font-size: 0.62em; }
+}
+@media (max-width: 768px) {
+    .day-vote-card { padding: 12px; }
+    .day-vote-header { align-items: flex-start; flex-direction: column; gap: 4px; }
+    .day-vote-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .day-vote-team { grid-template-columns: 28px 1fr; padding: 9px 8px; min-height: 70px; }
+    .day-vote-team img { width: 27px; height: 27px; }
+    .day-vote-name { font-size: 0.68em; }
+    .day-vote-percent { grid-column: 1 / 3; font-size: 0.8em; }
+    .day-vote-bar, .day-vote-count { grid-column: 1 / 3; }
+    .day-vote-count { text-align: left; font-size: 0.64em; }
+}
+
 /* =============================================
    MERCADO DA BOLA
    ============================================= */
@@ -732,6 +795,19 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                 <img src="youtube.webp" alt="YouTube" onerror="this.style.display='none'">
                 <span id="home-live-text">Sem transmissão disponível</span>
             </a>
+
+            <div id="day-vote-card" class="day-vote-card">
+                <div class="day-vote-header">
+                    <div>
+                        <div class="day-vote-title">Quem vai ser o melhor do dia?</div>
+                        <div id="day-vote-subtitle" class="day-vote-subtitle">Votação da próxima rodada</div>
+                    </div>
+                    <div id="day-vote-total" class="day-vote-total">0 votos</div>
+                </div>
+                <div id="day-vote-grid" class="day-vote-grid">
+                    <div class="day-vote-empty">Carregando times...</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -4226,6 +4302,131 @@ function parseMatchDate(dateStr) {
     return new Date(2026, month, day, 13, 0, 0);
 }
 
+
+// =============================================
+// VOTAÇÃO DO DIA - HOME
+// =============================================
+let dayVoteMatchKey = null;
+let dayVoteTeams = [];
+let dayVoteCounts = {};
+let dayVoteFirebaseKeyLoaded = null;
+let dayVoteLocal = JSON.parse(localStorage.getItem('cffDayVotes') || '{}');
+
+function safeFirebaseKey(value) {
+    return String(value || '').trim().replace(/[.#$/\[\]]/g, '_').replace(/\s+/g, '_');
+}
+
+function buildDayVoteMatchKey(match) {
+    if (!match) return null;
+    return safeFirebaseKey(`WB_2026_S1_${match.data}_GP_${match.grupos.join('_')}`);
+}
+
+function getTeamsFromMatch(match) {
+    if (!match || !match.grupos) return [];
+    return db.teams
+        .filter(t => match.grupos.includes(t.grupo))
+        .sort((a, b) => a.grupo.localeCompare(b.grupo) || a.equipe.localeCompare(b.equipe));
+}
+
+function getTeamLogoSrc(teamName) {
+    if (!teamName) return 'escudo.webp';
+    if (logos[teamName]) return logos[teamName];
+    const key = Object.keys(logos).find(k => k.trim().toUpperCase() === teamName.trim().toUpperCase());
+    return key ? logos[key] : 'escudo.webp';
+}
+
+function renderDayVote(match) {
+    const card = document.getElementById('day-vote-card');
+    const grid = document.getElementById('day-vote-grid');
+    const subtitle = document.getElementById('day-vote-subtitle');
+    const totalEl = document.getElementById('day-vote-total');
+    if (!card || !grid) return;
+
+    const matchKey = buildDayVoteMatchKey(match);
+    if (!matchKey) {
+        grid.innerHTML = '<div class="day-vote-empty">Nenhuma rodada encontrada no momento.</div>';
+        if (totalEl) totalEl.textContent = '0 votos';
+        return;
+    }
+
+    const teams = getTeamsFromMatch(match);
+    const localVoted = dayVoteLocal[matchKey] || null;
+    const total = teams.reduce((sum, team) => sum + (dayVoteCounts[safeFirebaseKey(team.equipe)] || 0), 0);
+
+    if (subtitle) subtitle.textContent = `${match.data} • Grupos ${match.grupos.join(' x ')}`;
+    if (totalEl) totalEl.textContent = `${total} voto${total === 1 ? '' : 's'}`;
+
+    if (!teams.length) {
+        grid.innerHTML = '<div class="day-vote-empty">Times da rodada não encontrados.</div>';
+        return;
+    }
+
+    grid.innerHTML = teams.map(team => {
+        const teamKey = safeFirebaseKey(team.equipe);
+        const count = dayVoteCounts[teamKey] || 0;
+        const pct = total ? Math.round((count / total) * 100) : 0;
+        const votedClass = localVoted === teamKey ? 'voted' : '';
+        const teamNameSafe = team.equipe.replace(/'/g, "\\'");
+        return `
+            <button class="day-vote-team ${votedClass}" onclick="voteDayTeam('${teamNameSafe}')" title="Votar em ${team.equipe}">
+                <img src="${getTeamLogoSrc(team.equipe)}" onerror="this.src='escudo.webp'" alt="${team.equipe}">
+                <span class="day-vote-name">${team.equipe}</span>
+                <span class="day-vote-percent">${pct}%</span>
+                <span class="day-vote-bar"><span class="day-vote-bar-fill" style="width:${pct}%"></span></span>
+                <span class="day-vote-count">${count} voto${count === 1 ? '' : 's'}</span>
+            </button>`;
+    }).join('');
+}
+
+function setupDayVoteForMatch(match) {
+    const matchKey = buildDayVoteMatchKey(match);
+    if (!matchKey) return;
+
+    const changedMatch = dayVoteMatchKey !== matchKey;
+    if (changedMatch) {
+        dayVoteMatchKey = matchKey;
+        window.currentDayVoteMatchKey = matchKey;
+        dayVoteTeams = getTeamsFromMatch(match);
+        dayVoteCounts = {};
+        renderDayVote(match);
+    } else {
+        renderDayVote(match);
+    }
+
+    if (typeof window.fbLoadDayVotes === 'function' && dayVoteFirebaseKeyLoaded !== matchKey) {
+        dayVoteFirebaseKeyLoaded = matchKey;
+        window.fbLoadDayVotes(matchKey);
+    }
+}
+
+function voteDayTeam(teamName) {
+    if (!dayVoteMatchKey) return;
+    const teamKey = safeFirebaseKey(teamName);
+    const previousTeamKey = dayVoteLocal[dayVoteMatchKey] || null;
+    const newTeamKey = previousTeamKey === teamKey ? null : teamKey;
+
+    // Feedback local imediato
+    if (previousTeamKey) dayVoteCounts[previousTeamKey] = Math.max(0, (dayVoteCounts[previousTeamKey] || 0) - 1);
+    if (newTeamKey) dayVoteCounts[newTeamKey] = (dayVoteCounts[newTeamKey] || 0) + 1;
+
+    if (newTeamKey) dayVoteLocal[dayVoteMatchKey] = newTeamKey;
+    else delete dayVoteLocal[dayVoteMatchKey];
+    localStorage.setItem('cffDayVotes', JSON.stringify(dayVoteLocal));
+
+    if (typeof window.fbDayVote === 'function') {
+        window.fbDayVote(dayVoteMatchKey, newTeamKey, previousTeamKey);
+    }
+
+    const match = agenda.find(m => buildDayVoteMatchKey(m) === dayVoteMatchKey);
+    renderDayVote(match);
+}
+
+window.applyDayVoteCounts = function(matchKey, counts) {
+    dayVoteCounts = counts || {};
+    const match = agenda.find(m => buildDayVoteMatchKey(m) === matchKey);
+    renderDayVote(match);
+};
+
 function updateCountdown() {
     const now = new Date();
 
@@ -4263,6 +4464,7 @@ function updateCountdown() {
         if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
         if (homeStatusText) homeStatusText.innerText = isLive ? "Partida em andamento:" : "A transmissão começa em:";
         if (homeGroups) homeGroups.innerHTML = groupsHtml;
+        setupDayVoteForMatch(nextMatch);
 
         // Atualiza Datas (Tempo e Grupos)
         const scheduleDisplay = document.getElementById('countdown-display');
@@ -8502,7 +8704,7 @@ async function loadSEAData(force = false) {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
-  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+  import { getDatabase, ref, runTransaction, onValue, off } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE",
@@ -8576,7 +8778,50 @@ window.fbLoadVotes = function() {
     });
   };
 
-  console.log("Firebase conectado com votos do mercado!");
+
+
+  // ✅ Votação do dia na página inicial
+  let currentDayVotesRef = null;
+
+  window.fbDayVote = function(matchKey, newTeamKey, previousTeamKey) {
+    const votesRef = ref(database, `dayVotes/${matchKey}/teams`);
+
+    runTransaction(votesRef, (current) => {
+      const data = current || {};
+
+      if (previousTeamKey) {
+        data[previousTeamKey] = Math.max(0, (data[previousTeamKey] || 0) - 1);
+      }
+
+      if (newTeamKey) {
+        data[newTeamKey] = (data[newTeamKey] || 0) + 1;
+      }
+
+      return data;
+    });
+  };
+
+  window.fbLoadDayVotes = function(matchKey) {
+    if (!matchKey) return;
+
+    if (currentDayVotesRef) {
+      off(currentDayVotesRef);
+    }
+
+    currentDayVotesRef = ref(database, `dayVotes/${matchKey}/teams`);
+    onValue(currentDayVotesRef, (snapshot) => {
+      const counts = snapshot.val() || {};
+      if (typeof window.applyDayVoteCounts === 'function') {
+        window.applyDayVoteCounts(matchKey, counts);
+      }
+    });
+  };
+
+  if (window.currentDayVoteMatchKey && typeof window.fbLoadDayVotes === 'function') {
+    window.fbLoadDayVotes(window.currentDayVoteMatchKey);
+  }
+
+  console.log("Firebase conectado com votos do mercado e votação do dia!");
 </script>
 </body>
 </html>
