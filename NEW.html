@@ -563,10 +563,50 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 @media (max-width: 768px) {
 .mercado-card { grid-template-columns: 52px 1fr; /* Apenas 2 colunas no topo */ grid-template-rows: auto auto auto auto; /* 4 linhas de conteúdo */ gap: 10px 15px; padding: 15px; } .mercado-card-avatar { width: 52px; height: 52px; grid-column: 1; grid-row: 1; margin: auto 0; } .mercado-card-info { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; justify-content: center; } .mercado-card-status { grid-column: 1 / 3; grid-row: 2; flex-direction: row; justify-content: center; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border); padding: 8px; border-radius: 8px; min-width: unset; } .mercado-status-icon { width: 18px; height: 18px; } .mercado-status-label { font-size: 0.8em; } .mercado-card-clubs { grid-column: 1 / 3; grid-row: 3; justify-content: center; gap: 25px; padding: 5px 0; } .mercado-club img { width: 42px; height: 42px; } .mercado-club-name { font-size: 0.68em; max-width: 100px; } /* 4. Quarta Linha: Votos */ .mercado-card-votes { display: flex; flex-direction: row; align-items: center; gap: 12px; grid-column: 1 / 3; grid-row: 4; min-width: unset; padding-top: 15px; border-top: 1px solid var(--border); } .mercado-card-votes .vote-bar-wrap { flex: 1; } }
 
-/* --- SEA TAB BUTTONS --- */
-.sea-tab-btn { background: rgba(0,200,255,0.06); border: 1px solid rgba(0,200,255,0.2); color: var(--text-muted); padding: 7px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; font-weight: 700; transition: 0.2s; white-space: nowrap; }
-.sea-tab-btn:hover { background: rgba(0,200,255,0.15); color: var(--accent); }
-.sea-tab-btn.active { background: rgba(0,200,255,0.18); border-color: var(--accent); color: var(--accent); }
+
+/* =============================================
+   INTERNACIONAL
+   ============================================= */
+.internacional-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 0 0 25px; }
+.internacional-tab { background: var(--panel-bg); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; font-weight: 900; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.7px; }
+.internacional-tab:hover, .internacional-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 200, 255, 0.08); }
+.internacional-hero { background: linear-gradient(135deg, rgba(0,200,255,0.12), rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; margin-bottom: 24px; text-align: center; }
+.internacional-hero h1 { margin: 0 0 8px; color: #fff; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: 1px; }
+.internacional-hero p { margin: 0; color: var(--text-muted); }
+.int-filters { margin-top: -6px; margin-bottom: 16px; }
+.int-filters label { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; font-size: 0.82em; }
+.int-filters select { min-width: 170px; }
+.int-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+.int-section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
+.int-section-title h2 { margin: 0; color: var(--accent); font-size: 1.2em; text-transform: uppercase; }
+.int-updated { color: var(--text-muted); font-size: 0.8em; }
+.int-empty { background: var(--panel-bg); border: 1px dashed var(--border); border-radius: 12px; padding: 45px 20px; text-align: center; color: var(--text-muted); }
+.int-empty strong { color: var(--accent); display: block; font-size: 1.4em; margin-bottom: 8px; text-transform: uppercase; }
+.int-loading, .int-error { padding: 22px; color: var(--text-muted); text-align: center; }
+.int-error { color: #ff7777; }
+.int-rank-cell { color: var(--accent); font-weight: 900; }
+.int-player-name, .int-team-name, .int-kill-value, .int-points-value { color: var(--accent); font-weight: 900; }
+#table-sea-abates td:nth-child(2) { text-align: left; }
+#table-sea-classificacao .int-team-name { font-size: 1.02em; }
+.sea-mobile-only { display: none; }
+.sea-desktop-only { display: inline; }
+@media (max-width: 768px) {
+.internacional-tab { width: 100%; }
+.int-section-title { flex-direction: column; align-items: flex-start; }
+#ffws-sea-2026-s1 .table-container { overflow-x: hidden; }
+#ffws-sea-2026-s1 table { table-layout: auto; width: 100%; white-space: nowrap; }
+#ffws-sea-2026-s1 th, #ffws-sea-2026-s1 td { padding: 8px 4px !important; font-size: 0.72em; }
+#ffws-sea-2026-s1 .int-rank-cell { width: 32px; }
+#ffws-sea-2026-s1 .sea-desktop-only { display: none !important; }
+#ffws-sea-2026-s1 .sea-mobile-only { display: inline !important; }
+#ffws-sea-2026-s1 .int-team-name { font-size: 1em; letter-spacing: 0.3px; }
+#ffws-sea-2026-s1 .int-player-name { max-width: 72px; display: inline-block; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+#ffws-sea-2026-s1 .int-filters { gap: 8px; padding: 10px; }
+#ffws-sea-2026-s1 .int-filters label { font-size: 0.72em; }
+#ffws-sea-2026-s1 .int-filters select { min-width: 120px; max-width: 150px; font-size: 0.8em; }
+#ffws-sea-2026-s1 .btn-action { padding: 8px 10px; font-size: 0.78em; }
+}
+
 </style>
 </head>
 <body>
@@ -598,8 +638,8 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">INTERNACIONAL</div>
-        <button onclick="navigateAndClose('ffws-sea')" id="sb-ffws-sea">🌏 FFWS SEA 2026 S1</button>
-        <button onclick="navigateAndClose('ffws-latam')" id="sb-ffws-latam">🌎 FFWS LATAM S1</button>
+        <button onclick="navigateAndClose('ffws-sea-2026-s1')" id="sb-ffws-sea-2026-s1">FFWS SEA 2026 S1</button>
+        <button onclick="navigateAndClose('ffws-latam-s1')" id="sb-ffws-latam-s1">FFWS LATAM S1</button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">HISTÓRICO</div>
@@ -1324,59 +1364,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
 </div>
-<!-- PAGE: FFWS SEA 2026 S1 -->
-<div id="ffws-sea" class="page">
-    <div style="text-align:center; margin-bottom: 25px;">
-        <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 2em;">🌏</span>
-            <h2 style="margin:0; font-size: 1.8em; text-transform: uppercase; color: #fff;">FFWS SEA 2026 S1</h2>
-        </div>
-        <p style="color: var(--text-muted); font-size: 0.9em; margin:0;">Free Fire World Series — Southeast Asia | Season 1 2026</p>
-    </div>
-
-    <div style="display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; padding: 12px 14px; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 10px; align-items: center;">
-        <span style="color: var(--text-muted); font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-right: 6px;">VER:</span>
-        <button class="sea-tab-btn active" id="sea-tab-classif" onclick="seaShowTab('classif')">🏆 Classificação</button>
-        <button class="sea-tab-btn" id="sea-tab-abates" onclick="seaShowTab('abates')">⚔️ Abates</button>
-    </div>
-
-    <div id="sea-view-classif">
-        <div class="table-container">
-            <table class="stats-table">
-                <thead><tr><th>#</th><th>TIME</th><th>PTS</th><th>BOOYAH</th><th>ABATES</th><th>PARTIDAS</th></tr></thead>
-                <tbody id="sea-classif-tbody"><tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">Carregando dados...</td></tr></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="sea-view-abates" style="display:none;">
-        <div class="table-container">
-            <table class="stats-table">
-                <thead><tr><th>#</th><th>JOGADOR</th><th>TIME</th><th>FUNÇÃO</th><th>ABATES</th><th>DANO</th><th>ASSISTS</th><th>PARTIDAS</th><th>MVP</th></tr></thead>
-                <tbody id="sea-abates-tbody"><tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">Carregando dados...</td></tr></tbody>
-            </table>
-        </div>
-    </div>
-    <p style="text-align:center; color:#444; font-size:0.75em; margin-top:30px;">Dados atualizados automaticamente via planilha oficial</p>
-</div>
-
-<!-- PAGE: FFWS LATAM S1 -->
-<div id="ffws-latam" class="page">
-    <div style="text-align:center; margin-bottom: 25px;">
-        <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 2em;">🌎</span>
-            <h2 style="margin:0; font-size: 1.8em; text-transform: uppercase; color: #fff;">FFWS LATAM S1</h2>
-        </div>
-        <p style="color: var(--text-muted); font-size: 0.9em; margin:0;">Free Fire World Series — Latin America | Season 1 2026</p>
-    </div>
-    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; gap:20px; background:var(--panel-bg); border:1px solid var(--border); border-radius:12px; padding:40px;">
-        <div style="font-size:4em;">🔜</div>
-        <h3 style="margin:0; color:var(--accent); font-size:1.4em; text-transform:uppercase; letter-spacing:1px;">Em Breve</h3>
-        <p style="color:var(--text-muted); text-align:center; max-width:400px; line-height:1.6; margin:0;">Os dados do FFWS LATAM S1 serão disponibilizados em breve. Fique ligado nas atualizações!</p>
-        <span style="background:rgba(0,200,255,0.1); border:1px solid rgba(0,200,255,0.3); color:var(--accent); padding:6px 14px; border-radius:20px; font-size:0.8em; font-weight:bold; text-transform:uppercase; margin-top:10px;">Coming Soon</span>
-    </div>
-</div>
-
 <div id="outros-torneios" class="page">
     
     <div id="ot-list-view">
@@ -1419,6 +1406,82 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <div id="ot-champions-container" style="display:none;"></div>
     </div>
 </div>
+
+
+<!-- PAGE: INTERNACIONAL - FFWS SEA 2026 S1 -->
+<div id="ffws-sea-2026-s1" class="page">
+    <div class="internacional-hero">
+        <h1>🌏 FFWS SEA 2026 S1</h1>
+        <p>Classificação e ranking de abates carregados automaticamente das planilhas publicadas.</p>
+    </div>
+
+    <div class="internacional-tabs">
+        <button class="internacional-tab active" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
+        <button class="internacional-tab" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
+    </div>
+
+    <div class="int-grid">
+        <section>
+            <div class="int-section-title">
+                <h2>Classificação</h2>
+                <span class="int-updated" id="sea-classificacao-updated">Atualizando...</span>
+            </div>
+            <div class="table-container">
+                <table id="table-sea-classificacao">
+                    <thead></thead>
+                    <tbody><tr><td class="int-loading">Carregando classificação...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <div class="int-section-title">
+                <h2>Ranking de Abates</h2>
+                <span class="int-updated" id="sea-abates-updated">Atualizando...</span>
+            </div>
+
+            <div class="filters int-filters">
+                <label>Time:
+                    <select id="sea-filter-team" onchange="applySEAAbatesFilters()">
+                        <option value="all">Todos os times</option>
+                    </select>
+                </label>
+                <label>Função:
+                    <select id="sea-filter-role" onchange="applySEAAbatesFilters()">
+                        <option value="all">Todas as funções</option>
+                    </select>
+                </label>
+                <button class="btn-action" type="button" onclick="clearSEAAbatesFilters()" style="margin-top: 0;">Limpar filtros</button>
+            </div>
+
+            <div class="table-container">
+                <table id="table-sea-abates">
+                    <thead></thead>
+                    <tbody><tr><td class="int-loading">Carregando ranking de abates...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- PAGE: INTERNACIONAL - FFWS LATAM S1 -->
+<div id="ffws-latam-s1" class="page">
+    <div class="internacional-hero">
+        <h1>🌎 FFWS LATAM S1</h1>
+        <p>Área internacional preparada para receber os dados da LATAM.</p>
+    </div>
+
+    <div class="internacional-tabs">
+        <button class="internacional-tab" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
+        <button class="internacional-tab active" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
+    </div>
+
+    <div class="int-empty">
+        <strong>Em breve</strong>
+        A página da FFWS LATAM S1 já está criada, mas ainda sem dados cadastrados.
+    </div>
+</div>
+
 <!-- PAGE: OUTRAS EQUIPES -->
 <div id="outras-equipes" class="page">
     <h2 style="text-align: center; margin-bottom: 10px;">Outras Equipes</h2>
@@ -1602,6 +1665,11 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
             <h3 style="margin-top:0; color:#fff">Confronto de Jogadores</h3>
             <div class="filters" style="background:transparent; border:none; padding:0; margin-bottom:10px;">
+                <select id="comp-player-region" onchange="switchComparePlayerRegion()">
+                    <option value="nacional">NACIONAL</option>
+                    <option value="internacional">INTERNACIONAL</option>
+                    <option value="brxgringos">BR X GRINGOS</option>
+                </select>
                 <select id="comp-p1" onchange="renderComparePlayers()"></select>
                 <span style="font-weight:bold; color:var(--accent);">VS</span>
                 <select id="comp-p2" onchange="renderComparePlayers()"></select>
@@ -2561,6 +2629,7 @@ const data = await response.json();
     renderOutrosTorneiosList();
     renderSchedule();
     renderOutrasEquipesGrid();
+    loadSEAData();
     buildDesktopTeamNav();
     initSearchListeners();
     buildMultiTeamFilters();
@@ -3670,6 +3739,75 @@ function populateHistSelects() {
     updateEditionOptions('hist-comp-p2', 'hist-comp-ed2');
 }
 
+
+function populateComparePlayerSelects(region = 'nacional') {
+    const comparadorP1 = document.getElementById('comp-p1');
+    const comparadorP2 = document.getElementById('comp-p2');
+    if (!comparadorP1 || !comparadorP2) return;
+
+    const previousP1 = comparadorP1.value;
+    const previousP2 = comparadorP2.value;
+    comparadorP1.innerHTML = '';
+    comparadorP2.innerHTML = '';
+
+    let playersSet = [];
+
+    if (region === 'internacional') {
+        playersSet = buildSEAComparePlayers().sort((a, b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
+        if (!playersSet.length) {
+            comparadorP1.innerHTML = '<option value="">Carregando FFWS SEA...</option>';
+            comparadorP2.innerHTML = '<option value="">Carregando FFWS SEA...</option>';
+            return;
+        }
+        playersSet.forEach(p => {
+            const opt = `<option value="${escapeHtml(p.id)}">${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)}) 🌏</option>`;
+            comparadorP1.innerHTML += opt;
+            comparadorP2.innerHTML += opt;
+        });
+    } else if (region === 'brxgringos') {
+        const brPlayers = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
+        const seaPlayers = buildSEAComparePlayers().sort((a, b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
+
+        if (!seaPlayers.length) {
+            comparadorP1.innerHTML = '<option value="">Carregando FFWS BR...</option>';
+            comparadorP2.innerHTML = '<option value="">Carregando FFWS SEA...</option>';
+            return;
+        }
+
+        brPlayers.forEach(p => {
+            comparadorP1.innerHTML += `<option value="${escapeHtml(p.jogador)}">🇧🇷 ${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
+        });
+
+        seaPlayers.forEach(p => {
+            comparadorP2.innerHTML += `<option value="${escapeHtml(p.id)}">🌏 ${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
+        });
+    } else {
+        playersSet = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
+        playersSet.forEach(p => {
+            const opt = `<option value="${escapeHtml(p.jogador)}">${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
+            comparadorP1.innerHTML += opt;
+            comparadorP2.innerHTML += opt;
+        });
+    }
+
+    if ([...comparadorP1.options].some(o => o.value === previousP1)) comparadorP1.value = previousP1;
+    if ([...comparadorP2.options].some(o => o.value === previousP2)) comparadorP2.value = previousP2;
+    if (comparadorP2.options.length > 1 && comparadorP1.value === comparadorP2.value) comparadorP2.selectedIndex = 1;
+}
+
+async function switchComparePlayerRegion() {
+    const region = document.getElementById('comp-player-region')?.value || 'nacional';
+    const result = document.getElementById('compare-players-result');
+
+    if ((region === 'internacional' || region === 'brxgringos') && !seaDataLoaded) {
+        if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Carregando jogadores da FFWS SEA...</div>';
+        await loadSEAData(true);
+    }
+
+    populateComparePlayerSelects(region);
+    renderComparePlayers();
+}
+
 // Preenche os selects da aba Histórico
 // Preenche os selects da aba Histórico
 function populateSelects() {
@@ -3694,19 +3832,13 @@ function populateSelects() {
     });
 
     // --- 2. PREENCHIMENTO DOS JOGADORES (Aba Comparar) ---
+    populateComparePlayerSelects(document.getElementById('comp-player-region')?.value || 'nacional');
     let comparadorP1 = document.getElementById('comp-p1');
     let comparadorP2 = document.getElementById('comp-p2');
 
-    let playersSet = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador));
-    playersSet.forEach(p => {
-        let opt = `<option value="${p.jogador}">${p.jogador} (${p.equipe})</option>`;
-        if (comparadorP1) comparadorP1.innerHTML += opt;
-        if (comparadorP2) comparadorP2.innerHTML += opt;
-    });
-
     // Previne que o comparador comece com o mesmo time/jogador selecionado dos dois lados
     if (comparadorT2 && comparadorT2.options.length > 1) comparadorT2.selectedIndex = 1;
-    if (comparadorP2 && comparadorP2.options.length > 1) comparadorP2.selectedIndex = 1;
+    if (comparadorP2 && comparadorP2.options.length > 1 && comparadorP1?.value === comparadorP2.value) comparadorP2.selectedIndex = 1;
 
     // --- 3. PREENCHIMENTO AUTOMÁTICO DOS DIAS (A Mágica) ---
     let playerDaySelect = document.getElementById('filter-player-day');
@@ -4212,6 +4344,9 @@ function sortTable(tableId, colIndex, isNumeric) {
         }
     });
     rows.forEach(r => tbody.appendChild(r));
+    if (tableId === 'table-sea-abates' && typeof refreshSEAAbatesRankColumn === 'function') {
+        refreshSEAAbatesRankColumn();
+    }
 }
 
 function onPlayerTeamFilterChanged() {
@@ -5847,10 +5982,10 @@ function navigateAndClose(pageId) {
     else if (pageId === 'mvp') renderAllPlayers();
     else if (pageId === 'equipes') renderTeamsDirectory();
     else if (pageId === 'datas') renderSchedule();
-    else if (pageId === 'ffws-sea') loadSeaData();
-    else if (pageId === 'ffws-latam') {} // Coming soon
     else if (pageId === 'outros-torneios') renderOutrosTorneiosList();
     else if (pageId === 'outras-equipes') renderOutrasEquipesGrid();
+    else if (pageId === 'ffws-sea-2026-s1') loadSEAData();
+    else if (pageId === 'ffws-latam-s1') { /* Página preparada: em breve */ }
     else if (pageId === 'hall-da-fama') renderHistoricalRanking();
     else if (pageId === 'recordes') renderIndividualRecords();
     else if (pageId === 'stats') {
@@ -6249,22 +6384,163 @@ function renderCompareTeams() {
         </div>`;
 }
 
-function renderComparePlayers() {
-    let p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value),
-        p2 = db.players.find(x => x.jogador === document.getElementById('comp-p2').value);
-    if(!p1 || !p2) return;
 
-    // Vê como agora ela chama a função mestra e não tem mais o resto do código da carta aqui?
-    const getCardHtml = (p) => createPlayerCardHTML(p, 1);
+function findSEAStatHeader(headers, patterns) {
+    return (headers || []).find(header => {
+        const h = normalizeSEAKey(header);
+        return patterns.some(pattern => h === pattern || h.includes(pattern));
+    }) || null;
+}
+
+function getSEAComparePlayerId(rawName, index) {
+    const teamSigla = getSEAPlayerTeamSigla(rawName) || 'SEA';
+    return `${teamSigla}__${cleanSEAPlayerName(rawName) || index}`;
+}
+
+function buildSEAComparePlayers() {
+    if (!seaAbatesParsed?.headers?.length || !seaAbatesParsed?.rows?.length) return [];
+
+    const headers = seaAbatesParsed.headers;
+    const playerHeader = findSEAHeader(headers, shouldCleanSEAPlayerColumn) || headers[0];
+    const teamHeader = findSEAHeader(headers, shouldConvertSEATeamColumn);
+    const roleHeader = findSEAHeader(headers, shouldConvertSEAFunctionColumn);
+    const killsHeader = findSEAAbatesHeader(headers);
+    const damageHeader = findSEAStatHeader(headers, ['DANO', 'DAMAGE', 'DMG']);
+    const assistsHeader = findSEAStatHeader(headers, ['ASSISTENCIAS', 'ASSISTENCIA', 'ASSISTS', 'ASSIST']);
+    const dropsHeader = findSEAStatHeader(headers, ['QUEDAS', 'QUEDA', 'Q', 'GP', 'PARTIDAS', 'MATCHES']);
+    const mvpHeader = findSEAStatHeader(headers, ['MVP', 'MVPS']);
+
+    const players = seaAbatesParsed.rows.map((row, index) => {
+        const rawName = row[playerHeader] || '';
+        const jogador = cleanSEAPlayerName(rawName);
+        const equipe = getSEARowTeamName(row, playerHeader, teamHeader) || 'SEA';
+        const abates = killsHeader ? parseSEANumber(row[killsHeader]) : 0;
+        const dano = damageHeader ? parseSEANumber(row[damageHeader]) : 0;
+        const assists = assistsHeader ? parseSEANumber(row[assistsHeader]) : 0;
+        const quedas = dropsHeader ? parseSEANumber(row[dropsHeader]) : 0;
+        const mvp = mvpHeader ? parseSEANumber(row[mvpHeader]) : 0;
+        const role = roleHeader ? getSEAFunctionName(row[roleHeader]) : 'Rush';
+
+        return {
+            id: getSEAComparePlayerId(rawName, index),
+            jogador,
+            rawJogador: rawName,
+            equipe,
+            abates,
+            dano,
+            assists,
+            quedas,
+            mvp,
+            role,
+            region: 'SEA',
+            isSEA: true
+        };
+    }).filter(p => p.jogador);
+
+    const setRank = (metric, rankKey) => {
+        [...players].sort((a, b) => (b[metric] || 0) - (a[metric] || 0)).forEach((player, index) => {
+            player[rankKey] = index + 1;
+        });
+    };
+
+    setRank('abates', 'rankKills');
+    setRank('dano', 'rankDmg');
+    setRank('assists', 'rankAssists');
+    setRank('mvp', 'rankMvp');
+
+    return players;
+}
+
+function getSEAComparePlayerById(id) {
+    return buildSEAComparePlayers().find(p => p.id === id) || null;
+}
+
+function createSEAPlayerCardHTML(p, scale = 1) {
+    const safeName = escapeHtml(p.jogador || '-');
+    const role = escapeHtml((p.role || 'RUSH').toUpperCase());
+    const kills = p.abates || 0;
+    const assists = p.assists || 0;
+    const danoK = ((p.dano || 0) / 1000).toFixed(1) + 'K';
+    const quedas = p.quedas || 0;
+    const accentColor = '#00c8ff';
+    const teamLogo = logos[p.equipe] || 'escudo.webp';
+    const marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
+
+    return `
+        <div style="cursor:default; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; box-shadow: 0 0 30px ${accentColor}55; ${marginStyle}">
+            <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #0b2941, #000); opacity: 0.92;"></div>
+
+            <div style="position:absolute; top:14px; right:14px; z-index:8; background:rgba(0,200,255,0.14); border:1px solid rgba(0,200,255,0.55); color:#fff; padding:5px 10px; border-radius:999px; font-size:0.78em; font-weight:900; letter-spacing:1px;">
+                🌏 SEA
+            </div>
+
+            <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
+                <div style="font-size: 48px; font-weight: 900; line-height: 0.85;">INT</div>
+                <div style="font-size: 22px; font-weight: bold; margin-top: 5px; text-transform:uppercase;">${role}</div>
+                <div style="margin: 15px auto; width: 40px; height: 2px; background: ${accentColor}; opacity: 0.6;"></div>
+                <div style="font-size: 34px; line-height:1; filter: drop-shadow(0 0 8px rgba(0,200,255,.55));">🌏</div>
+                <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
+            </div>
+
+            <img src="silhueta.png" onerror="this.src='silhueta.png'" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%); opacity: 0.95;">
+
+            <div style="position: absolute; bottom: 0; width: 100%; height: 185px; background: linear-gradient(transparent, #000 35%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 12px;">
+                <div style="width: 100%; text-align: center; margin-bottom: 8px;">
+                    <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
+                    <div style="color: #fff; font-size: 24px; font-weight: 900; text-transform: uppercase; padding: 6px 0;">${safeName}</div>
+                    <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 2px; color: #fff; width: 100%; align-items: center; text-transform: uppercase;">
+                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${kills}</span> ABATES</div>
+                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${assists}</span> ASSISTÊNCIAS</div>
+                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${danoK}</span> DANO</div>
+                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${quedas}</span> QUEDAS</div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function renderComparePlayers() {
+    const region = document.getElementById('comp-player-region')?.value || 'nacional';
+    const result = document.getElementById('compare-players-result');
+    let p1, p2;
+
+    if (region === 'internacional') {
+        if (!seaDataLoaded && !seaAbatesParsed.rows.length) {
+            if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Escolha INTERNACIONAL e aguarde carregar os dados da FFWS SEA.</div>';
+            return;
+        }
+        p1 = getSEAComparePlayerById(document.getElementById('comp-p1').value);
+        p2 = getSEAComparePlayerById(document.getElementById('comp-p2').value);
+    } else if (region === 'brxgringos') {
+        if (!seaDataLoaded && !seaAbatesParsed.rows.length) {
+            if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Escolha BR X GRINGOS e aguarde carregar os dados da FFWS SEA.</div>';
+            return;
+        }
+        p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value);
+        p2 = getSEAComparePlayerById(document.getElementById('comp-p2').value);
+    } else {
+        p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value);
+        p2 = db.players.find(x => x.jogador === document.getElementById('comp-p2').value);
+    }
+
+    if(!p1 || !p2 || !result) return;
+
+    const getCardHtml = (p) => p?.isSEA ? createSEAPlayerCardHTML(p, 1) : createPlayerCardHTML(p, 1);
+    const safeRank = (rank) => rank ? ` <span class="rank-badge" style="font-size:0.7em">#${rank}</span>` : '';
 
     const buildRow = (label, v1, v2, r1, r2, formatFn = v=>v) => `
         <div class="stat-row">
-            <div class="stat-val ${v1>v2?'winner':(v1<v2?'loser':'')}">${formatFn(v1)} <span class="rank-badge" style="font-size:0.7em">#${r1}</span></div>
+            <div class="stat-val ${Number(v1)>Number(v2)?'winner':(Number(v1)<Number(v2)?'loser':'')}">${formatFn(v1)}${safeRank(r1)}</div>
             <div class="stat-label">${label}</div>
-            <div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">${formatFn(v2)} <span class="rank-badge" style="font-size:0.7em">#${r2}</span></div>
+            <div class="stat-val ${Number(v2)>Number(v1)?'winner':(Number(v2)<Number(v1)?'loser':'')}">${formatFn(v2)}${safeRank(r2)}</div>
         </div>`;
 
-    document.getElementById('compare-players-result').innerHTML = `
+    const kq1 = (p1.quedas || 0) > 0 ? (p1.abates / p1.quedas) : 0;
+    const kq2 = (p2.quedas || 0) > 0 ? (p2.abates / p2.quedas) : 0;
+
+    result.innerHTML = `
         <div class="compare-box" style="background:transparent; border:none; padding:0;">
             ${getCardHtml(p1)}
         </div>
@@ -6272,18 +6548,18 @@ function renderComparePlayers() {
             ${getCardHtml(p2)}
         </div>
         <div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
-            ${buildRow('Abates', p1.abates, p2.abates, p1.rankKills, p2.rankKills)}
-            ${buildRow('Dano Total', p1.dano, p2.dano, p1.rankDmg, p2.rankDmg)}
-            ${buildRow('Assistências', p1.assists, p2.assists, p1.rankAssists, p2.rankAssists)}
-            ${buildRow('MVPs', p1.mvp, p2.mvp, p1.rankMvp, p2.rankMvp)}
+            ${buildRow('Abates', p1.abates || 0, p2.abates || 0, p1.rankKills, p2.rankKills)}
+            ${buildRow('Dano Total', p1.dano || 0, p2.dano || 0, p1.rankDmg, p2.rankDmg)}
+            ${buildRow('Assistências', p1.assists || 0, p2.assists || 0, p1.rankAssists, p2.rankAssists)}
+            ${buildRow('MVPs', p1.mvp || 0, p2.mvp || 0, p1.rankMvp, p2.rankMvp)}
 
             <div class="stat-row">
-                <div class="stat-val ${(p1.abates/p1.quedas) > (p2.abates/p2.quedas) ? 'winner' : 'loser'}">
-                    ${(p1.abates/p1.quedas).toFixed(2)}
+                <div class="stat-val ${kq1 > kq2 ? 'winner' : (kq1 < kq2 ? 'loser' : '')}">
+                    ${kq1.toFixed(2)}
                 </div>
                 <div class="stat-label">Kills/Queda</div>
-                <div class="stat-val ${(p2.abates/p2.quedas) > (p1.abates/p1.quedas) ? 'winner' : 'loser'}">
-                    ${(p2.abates/p2.quedas).toFixed(2)}
+                <div class="stat-val ${kq2 > kq1 ? 'winner' : (kq2 < kq1 ? 'loser' : '')}">
+                    ${kq2.toFixed(2)}
                 </div>
             </div>
         </div>`;
@@ -7746,174 +8022,440 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-</script>
 
-<script>
-// ============================================================
-// FFWS SEA 2026 S1 — Carrega dados das planilhas TSV
-// ============================================================
-const SEA_TEAM_NAMES = {
-    'BRU':  'Buriram United',
-    'RRQ':  'RRQ Kazu',
-    'AG':   'All Gamers',
-    'BTR':  'Bigetron by Vitality',
-    'TWIS': 'Twisted Minds',
-    'HEV':  'Heavy',
-    'FLCN': 'Team Falcons',
-    'FL':   'Team Flash',
-    'ONIC': 'ONIC Olympus',
-    'WAG':  'WAG',
-    'AUR':  'Aurora Gaming',
-    'ACD':  'ACD',
-    'GOW':  'GOW',
-    'SHD':  'Shadow Esports',
-    'AVD':  'Avida',
-    'EVD':  'EVOS Divine',
-    'PE':   'P Esports',
-    'MQN':  'Maqna Esports'
+
+/* =============================================
+   INTERNACIONAL - FFWS SEA 2026 S1
+   ============================================= */
+const SEA_CLASSIFICACAO_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=2075306919&single=true&output=tsv';
+const SEA_ABATES_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1306410351&single=true&output=tsv';
+
+const SEA_TEAM_NAME_MAP = {
+    'BURIRAM': 'Buriram United', 'BRU': 'Buriram United', 'BURIRAM UNITED': 'Buriram United',
+    'RRQ': 'RRQ Kazu', 'RRQ KAZU': 'RRQ Kazu',
+    'AG': 'All Gamers', 'ALL GAMERS': 'All Gamers',
+    'BTR': 'Bigetron by Vitality', 'BGT': 'Bigetron by Vitality', 'BGV': 'Bigetron by Vitality', 'BV': 'Bigetron by Vitality', 'BIGETRON': 'Bigetron by Vitality', 'BIGETRON BY VITALITY': 'Bigetron by Vitality', 'VITALITY': 'Bigetron by Vitality',
+    'TM': 'Twisted Minds', 'TWI': 'Twisted Minds', 'TWIS': 'Twisted Minds', 'TWISTED MINDS': 'Twisted Minds',
+    'HV': 'Heavy', 'HEV': 'Heavy', 'HEA': 'Heavy', 'HEAVY': 'Heavy',
+    'FLCN': 'Team Falcons', 'FALCONS': 'Team Falcons', 'TEAM FALCONS': 'Team Falcons',
+    'FL': 'Team Flash', 'FLASH': 'Team Flash', 'TEAM FLASH': 'Team Flash',
+    'ONIC': 'ONIC Olympus', 'ONIC OLYMPUS': 'ONIC Olympus',
+    'WAG': 'WAG',
+    'AUR': 'Aurora Gaming', 'AURORA': 'Aurora Gaming', 'AURORA GAMING': 'Aurora Gaming',
+    'ACD': 'ACD',
+    'GOW': 'GOW',
+    'SE': 'Shadow Esports', 'SHADOW': 'Shadow Esports', 'SHADOW ESPORTS': 'Shadow Esports',
+    'AVIDA': 'Avida', 'AVD': 'Avida',
+    'EVOS': 'EVOS Divine', 'EVOS DIVINE': 'EVOS Divine',
+    'PE': 'P Esports', 'PES': 'P Esports', 'P ESPORTS': 'P Esports',
+    'MQ': 'Maqna Esports', 'MGE': 'Maqna Esports', 'MAQ': 'Maqna Esports', 'MAQNA': 'Maqna Esports', 'MAQNA ESPORTS': 'Maqna Esports'
 };
 
-function seaGetTeamName(sigla) {
-    // Tenta encontrar pelo prefixo antes do ponto (ex: RRQ.DUTZZ -> RRQ)
-    const prefix = sigla.split('.')[0].toUpperCase();
-    return SEA_TEAM_NAMES[prefix] || SEA_TEAM_NAMES[sigla.toUpperCase()] || sigla;
+const SEA_TEAM_SIGLA_MAP = {
+    'BURIRAM UNITED': 'BRU',
+    'BRU': 'BRU',
+    'BURIRAM': 'BRU',
+    'RRQ KAZU': 'RRQ',
+    'RRQ': 'RRQ',
+    'ALL GAMERS': 'AG',
+    'AG': 'AG',
+    'BIGETRON BY VITALITY': 'BTR',
+    'BIGETRON': 'BTR',
+    'VITALITY': 'BTR',
+    'BTR': 'BTR',
+    'BGT': 'BTR',
+    'BGV': 'BTR',
+    'BV': 'BTR',
+    'TWISTED MINDS': 'TM',
+    'TM': 'TM',
+    'TWI': 'TM',
+    'TWIS': 'TM',
+    'HEAVY': 'HV',
+    'HV': 'HV',
+    'HEV': 'HV',
+    'HEA': 'HV',
+    'TEAM FALCONS': 'FLCN',
+    'FALCONS': 'FLCN',
+    'FLCN': 'FLCN',
+    'TEAM FLASH': 'FL',
+    'FLASH': 'FL',
+    'FL': 'FL',
+    'ONIC OLYMPUS': 'ONIC',
+    'ONIC': 'ONIC',
+    'WAG': 'WAG',
+    'AURORA GAMING': 'AUR',
+    'AURORA': 'AUR',
+    'AUR': 'AUR',
+    'ACD': 'ACD',
+    'GOW': 'GOW',
+    'SHADOW ESPORTS': 'SE',
+    'SHADOW': 'SE',
+    'SE': 'SE',
+    'AVIDA': 'AVD',
+    'AVD': 'AVD',
+    'EVOS DIVINE': 'EVOS',
+    'EVOS': 'EVOS',
+    'P ESPORTS': 'PE',
+    'PES': 'PE',
+    'PE': 'PE',
+    'MAQNA ESPORTS': 'MQ',
+    'MAQNA': 'MQ',
+    'MGE': 'MQ',
+    'MAQ': 'MQ',
+    'MQ': 'MQ'
+};
+
+let seaDataLoaded = false;
+let seaClassificacaoParsed = { headers: [], rows: [] };
+let seaAbatesParsed = { headers: [], rows: [] };
+
+function normalizeSEAKey(value) {
+    return String(value || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9 ]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toUpperCase();
 }
 
-function seaGetTeamFromPlayer(playerSigla) {
-    // Ex: RRQ.DUTZZ -> RRQ -> RRQ Kazu
-    const prefix = playerSigla.split('.')[0].toUpperCase();
-    return SEA_TEAM_NAMES[prefix] || prefix;
+function getSEATeamFullName(value) {
+    const original = String(value || '').trim();
+    if (!original) return original;
+    const clean = normalizeSEAKey(original);
+    return SEA_TEAM_NAME_MAP[clean] || original;
 }
 
-const SEA_TSV_CLASSIF = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=2075306919&single=true&output=tsv';
-const SEA_TSV_ABATES  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1306410351&single=true&output=tsv';
+function getSEATeamSigla(value) {
+    const original = String(value || '').trim();
+    if (!original) return original;
+    const cleanOriginal = normalizeSEAKey(original);
+    const fullName = getSEATeamFullName(original);
+    const cleanFull = normalizeSEAKey(fullName);
+    return SEA_TEAM_SIGLA_MAP[cleanOriginal] || SEA_TEAM_SIGLA_MAP[cleanFull] || cleanOriginal.split(' ')[0].slice(0, 4);
+}
 
-let seaClassifData = null;
-let seaAbatesData  = null;
-let seaLoaded      = false;
-
-async function loadSeaData() {
-    if (seaLoaded) return;
-    try {
-        const [rC, rA] = await Promise.all([
-            fetch(SEA_TSV_CLASSIF),
-            fetch(SEA_TSV_ABATES)
-        ]);
-        const tsvC = await rC.text();
-        const tsvA = await rA.text();
-
-        seaClassifData = parseTSV(tsvC);
-        seaAbatesData  = parseTSV(tsvA);
-        seaLoaded = true;
-        renderSeaClassif();
-        renderSeaAbates();
-    } catch(e) {
-        document.getElementById('sea-classif-tbody').innerHTML =
-            '<tr><td colspan="6" style="text-align:center;padding:30px;color:#f44336;">Erro ao carregar dados. Tente novamente.</td></tr>';
+function cleanSEAPlayerName(value) {
+    const original = String(value || '').trim();
+    if (!original) return original;
+    // Exemplo: RRQ.DUTTZ vira DUTTZ. Mantém nomes sem prefixo intactos.
+    if (original.includes('.')) {
+        const parts = original.split('.').map(part => part.trim()).filter(Boolean);
+        return parts.length ? parts[parts.length - 1] : original;
     }
+    return original;
+}
+
+function getSEAPlayerTeamSigla(value) {
+    const original = String(value || '').trim();
+    if (!original || !original.includes('.')) return '';
+    const prefix = original.split('.')[0].trim();
+    return normalizeSEAKey(prefix);
+}
+
+function getSEAPlayerTeamFullName(value) {
+    const sigla = getSEAPlayerTeamSigla(value);
+    return sigla ? getSEATeamFullName(sigla) : '';
+}
+
+function getSEARowTeamName(row, playerHeader, teamHeader) {
+    // Na planilha de abates da SEA o time vem no começo do nick: BRU.JOENA, RRQ.DUTTZ etc.
+    // Então o filtro de time deve priorizar essa sigla antes do ponto.
+    const fromPlayer = playerHeader ? getSEAPlayerTeamFullName(row[playerHeader]) : '';
+    if (fromPlayer) return fromPlayer;
+    return teamHeader ? getSEATeamFullName(row[teamHeader]) : '';
+}
+
+function getSEAFunctionName(value) {
+    const clean = normalizeSEAKey(value);
+    const roleMap = {
+        'BOMBER': 'GRAN',
+        'GRENADEIRO': 'GRAN',
+        'GRANADEIRO': 'GRAN',
+        'SNIPER': 'SUP',
+        'SUPORTE': 'SUP',
+        'SUPPORT': 'RUSH',
+        'RUSHER': 'RUSH',
+        'RUSH': 'RUSH',
+        'RIFLER': '3º H',
+        '3 HOMEM': '3º H',
+        '3º HOMEM': '3º H',
+        'TERCEIRO HOMEM': '3º H'
+    };
+    return roleMap[clean] || String(value || '').trim().toUpperCase();
 }
 
 function parseTSV(text) {
-    const lines = text.trim().split('\n');
-    const headers = lines[0].split('\t').map(h => h.trim().toLowerCase()
-        .replace('ç','c').replace('ã','a').replace('ê','e').replace('á','a')
-        .replace('assistencias','assists').replace('assistências','assists')
-        .replace('abates','abates').replace('função','funcao').replace('caídas','quedas').replace('quedas','quedas'));
-    return lines.slice(1).map(line => {
-        const vals = line.split('\t');
+    const lines = String(text || '').replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim() !== '');
+    if (!lines.length) return { headers: [], rows: [] };
+    const headers = lines[0].split('\t').map(h => h.trim());
+    const rows = lines.slice(1).map(line => {
+        const cells = line.split('\t');
         const obj = {};
-        headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+        headers.forEach((h, i) => obj[h || `COL_${i + 1}`] = (cells[i] || '').trim());
         return obj;
-    }).filter(r => Object.values(r).some(v => v));
+    });
+    return { headers, rows };
 }
 
-// Medal emojis
-const MEDALS = ['🥇','🥈','🥉'];
+function shouldConvertSEATeamColumn(header) {
+    const h = normalizeSEAKey(header);
+    return ['SIGLA', 'TAG', 'TIME', 'TIMES', 'EQUIPE', 'EQUIPES', 'TEAM', 'TEAMS', 'CLUBE', 'ORGANIZACAO', 'ORG'].some(key => h.includes(key));
+}
 
-function renderSeaClassif() {
-    if (!seaClassifData) return;
-    // Sort by pontos desc, then booyah desc
-    const sorted = [...seaClassifData].sort((a,b) => {
-        const dp = parseInt(b.pontos||0) - parseInt(a.pontos||0);
-        return dp !== 0 ? dp : parseInt(b.booyah||0) - parseInt(a.booyah||0);
+function shouldCleanSEAPlayerColumn(header) {
+    const h = normalizeSEAKey(header);
+    return ['JOGADOR', 'PLAYER', 'NICK', 'NOME', 'NAME', 'APELIDO'].some(key => h.includes(key)) && !shouldConvertSEATeamColumn(header);
+}
+
+function shouldConvertSEAFunctionColumn(header) {
+    const h = normalizeSEAKey(header);
+    return ['FUNCAO', 'FUNÇÃO', 'ROLE', 'POSICAO', 'POSIÇÃO', 'POSITION'].some(key => h.includes(key));
+}
+
+function findSEAHeader(headers, matcher) {
+    return (headers || []).find(h => matcher(h)) || null;
+}
+
+function isProbablyNumericColumn(header) {
+    const h = normalizeSEAKey(header);
+    return /(POS|RANK|PONT|PTS|BOOYAH|ABATE|KILL|DANO|DAMAGE|QUEDA|MEDIA|AVG|MVP|AST|ASSIST|VITORIA|VIT)/.test(h);
+}
+
+function parseSEANumber(value) {
+    const normalized = String(value || '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+    return parseFloat(normalized) || 0;
+}
+
+function findSEAAbatesHeader(headers) {
+    return (headers || []).find(header => {
+        const h = normalizeSEAKey(header);
+        return h === 'ABATES' || h === 'KILLS' || h === 'KILL' || h.includes('ABATE') || h.includes('KILL');
+    }) || null;
+}
+
+function sortSEARowsByAbatesDesc(parsed) {
+    const killHeader = findSEAAbatesHeader(parsed.headers);
+    if (!killHeader) return parsed;
+    return {
+        headers: parsed.headers,
+        rows: [...parsed.rows].sort((a, b) => parseSEANumber(b[killHeader]) - parseSEANumber(a[killHeader]))
+    };
+}
+
+function escapeHtml(value) {
+    return String(value || '').replace(/[&<>'"]/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[char]));
+}
+
+function getSEAMobileHeader(header) {
+    const h = normalizeSEAKey(header);
+    if (!h) return '-';
+    if (h === 'POSICAO' || h === 'POSICAO GERAL' || h === 'RANK' || h.includes('POS')) return 'P';
+    if (shouldCleanSEAPlayerColumn(header)) return 'J';
+    if (shouldConvertSEATeamColumn(header)) return 'E';
+    if (shouldConvertSEAFunctionColumn(header)) return 'F';
+    if (h.includes('BOOYAH')) return 'B';
+    if (h.includes('ABATE') || h.includes('KILL')) return 'K';
+    if (h.includes('PONTO') || h === 'PTS') return 'PTS';
+    if (h.includes('QUEDA') || h === 'Q') return 'Q';
+    if (h.includes('DANO') || h.includes('DAMAGE')) return 'DMG';
+    if (h.includes('ASSIST')) return 'AST';
+    if (h.includes('MEDIA') || h.includes('AVG')) return 'M';
+    if (h.includes('MVP')) return 'MVP';
+    if (h.includes('VITORIA') || h.includes('VIT')) return 'V';
+    return h.slice(0, 3);
+}
+
+function renderSEAHeaderCell(tableId, header, colIndex) {
+    const safeHeader = escapeHtml(header || '-');
+    const mobileHeader = escapeHtml(getSEAMobileHeader(header));
+    return `<th onclick="sortTable('${tableId}', ${colIndex}, ${isProbablyNumericColumn(header)})"><span class="sea-desktop-only">${safeHeader}</span><span class="sea-mobile-only">${mobileHeader}</span> ↕</th>`;
+}
+
+function isSEAKillColumn(header) {
+    const h = normalizeSEAKey(header);
+    return h === 'ABATES' || h === 'KILLS' || h === 'KILL' || h.includes('ABATE') || h.includes('KILL');
+}
+
+function isSEAPointsColumn(header) {
+    const h = normalizeSEAKey(header);
+    return h === 'PTS' || h === 'PONTOS' || h === 'PONTO' || h.includes('PONTOS');
+}
+
+function formatSEAValue(header, value, tableId = '') {
+    const text = String(value || '').trim();
+    if (shouldConvertSEATeamColumn(header)) {
+        const fullName = getSEATeamFullName(text);
+        const sigla = getSEATeamSigla(text);
+        return `<span class="int-team-name"><span class="sea-desktop-only">${escapeHtml(fullName)}</span><span class="sea-mobile-only">${escapeHtml(sigla)}</span></span>`;
+    }
+    if (shouldCleanSEAPlayerColumn(header)) {
+        return `<span class="int-player-name">${escapeHtml(cleanSEAPlayerName(text))}</span>`;
+    }
+    if (shouldConvertSEAFunctionColumn(header)) {
+        return escapeHtml(getSEAFunctionName(text));
+    }
+    if (tableId === 'table-sea-abates' && isSEAKillColumn(header)) {
+        return `<span class="int-kill-value">${escapeHtml(text)}</span>`;
+    }
+    if (tableId === 'table-sea-classificacao' && isSEAPointsColumn(header)) {
+        return `<span class="int-points-value">${escapeHtml(text)}</span>`;
+    }
+    return escapeHtml(text);
+}
+
+function formatOrdinalRank(index) {
+    return `${index + 1}º`;
+}
+
+function refreshSEAAbatesRankColumn() {
+    const table = document.getElementById('table-sea-abates');
+    if (!table) return;
+    Array.from(table.querySelectorAll('tbody tr')).forEach((row, index) => {
+        const firstCell = row.cells[0];
+        if (firstCell && firstCell.classList.contains('int-rank-cell')) {
+            firstCell.textContent = formatOrdinalRank(index);
+        }
+    });
+}
+
+function renderSEATable(tableId, parsed, emptyMessage) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const thead = table.querySelector('thead');
+    const tbody = table.querySelector('tbody');
+    const hasDynamicRank = tableId === 'table-sea-abates';
+
+    if (!parsed.headers.length || !parsed.rows.length) {
+        thead.innerHTML = '';
+        tbody.innerHTML = `<tr><td class="int-loading">${emptyMessage}</td></tr>`;
+        return;
+    }
+
+    const rankHeader = hasDynamicRank ? '<th>#</th>' : '';
+    thead.innerHTML = `<tr>${rankHeader}${parsed.headers.map((h, i) => {
+        const colIndex = hasDynamicRank ? i + 1 : i;
+        return renderSEAHeaderCell(tableId, h, colIndex);
+    }).join('')}</tr>`;
+
+    tbody.innerHTML = parsed.rows.map((row, index) => {
+        const rankCell = hasDynamicRank ? `<td class="int-rank-cell">${formatOrdinalRank(index)}</td>` : '';
+        const cells = parsed.headers.map(h => `<td>${formatSEAValue(h, row[h], tableId)}</td>`).join('');
+        return `<tr>${rankCell}${cells}</tr>`;
+    }).join('');
+
+    if (hasDynamicRank) refreshSEAAbatesRankColumn();
+}
+
+
+function renderSEAAbatesFilters(parsed) {
+    const teamSelect = document.getElementById('sea-filter-team');
+    const roleSelect = document.getElementById('sea-filter-role');
+    if (!teamSelect || !roleSelect || !parsed?.headers?.length) return;
+
+    const playerHeader = findSEAHeader(parsed.headers, shouldCleanSEAPlayerColumn);
+    const teamHeader = findSEAHeader(parsed.headers, shouldConvertSEATeamColumn);
+    const roleHeader = findSEAHeader(parsed.headers, shouldConvertSEAFunctionColumn);
+
+    const previousTeam = teamSelect.value || 'all';
+    const previousRole = roleSelect.value || 'all';
+
+    const teams = [...new Set(parsed.rows
+        .map(row => getSEARowTeamName(row, playerHeader, teamHeader))
+        .filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    const roles = roleHeader
+        ? [...new Set(parsed.rows.map(row => getSEAFunctionName(row[roleHeader])).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+        : [];
+
+    teamSelect.innerHTML = '<option value="all">Todos os times</option>' + teams.map(team => `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`).join('');
+    roleSelect.innerHTML = '<option value="all">Todas as funções</option>' + roles.map(role => `<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('');
+
+    teamSelect.value = teams.includes(previousTeam) ? previousTeam : 'all';
+    roleSelect.value = roles.includes(previousRole) ? previousRole : 'all';
+
+    teamSelect.disabled = !teams.length;
+    roleSelect.disabled = !roleHeader;
+}
+
+function applySEAAbatesFilters() {
+    if (!seaAbatesParsed.headers.length) return;
+
+    const teamValue = document.getElementById('sea-filter-team')?.value || 'all';
+    const roleValue = document.getElementById('sea-filter-role')?.value || 'all';
+    const playerHeader = findSEAHeader(seaAbatesParsed.headers, shouldCleanSEAPlayerColumn);
+    const teamHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEATeamColumn);
+    const roleHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEAFunctionColumn);
+
+    const filteredRows = seaAbatesParsed.rows.filter(row => {
+        const rowTeam = getSEARowTeamName(row, playerHeader, teamHeader);
+        const teamOk = teamValue === 'all' || rowTeam === teamValue;
+        const roleOk = roleValue === 'all' || (roleHeader && getSEAFunctionName(row[roleHeader]) === roleValue);
+        return teamOk && roleOk;
     });
 
-    const tbody = document.getElementById('sea-classif-tbody');
-    if (!tbody) return;
-
-    tbody.innerHTML = sorted.map((r, i) => {
-        const pos = i + 1;
-        const medal = MEDALS[i] || '';
-        const sigla = (r.time || '').toUpperCase();
-        const nomeCompleto = SEA_TEAM_NAMES[sigla] || sigla;
-        const partidas = parseInt(r.quedas || r.partidas || 24);
-        const pts = parseInt(r.pontos || 0);
-        const booyah = parseInt(r.booyah || 0);
-        const abates = parseInt(r.abates || 0);
-
-        // Highlight top 3
-        const rowStyle = pos <= 3 ? 'background: rgba(0,200,255,0.04);' : '';
-        const posStyle = pos === 1 ? 'color:#ffd700;font-weight:900;' : pos === 2 ? 'color:#c0c0c0;font-weight:900;' : pos === 3 ? 'color:#cd7f32;font-weight:900;' : 'color:var(--text-muted);';
-
-        return `<tr style="${rowStyle}">
-            <td style="${posStyle}">${medal || pos}</td>
-            <td style="font-weight:700; text-align:left;">
-                <span style="color:var(--text-muted); font-size:0.8em; margin-right:6px;">${sigla}</span>${nomeCompleto}
-            </td>
-            <td style="color:var(--accent); font-weight:900; font-size:1.05em;">${pts}</td>
-            <td>${booyah}</td>
-            <td>${abates}</td>
-            <td style="color:var(--text-muted);">${partidas}</td>
-        </tr>`;
-    }).join('');
+    const sortedFilteredRows = sortSEARowsByAbatesDesc({ headers: seaAbatesParsed.headers, rows: filteredRows }).rows;
+    renderSEATable('table-sea-abates', { headers: seaAbatesParsed.headers, rows: sortedFilteredRows }, 'Nenhum jogador encontrado com esses filtros.');
+    const table = document.getElementById('table-sea-abates');
+    if (table) table.setAttribute('data-sort-dir', 'desc');
 }
 
-function renderSeaAbates() {
-    if (!seaAbatesData) return;
-    // Sort by abates desc
-    const sorted = [...seaAbatesData].sort((a,b) => parseInt(b.abates||0) - parseInt(a.abates||0));
-
-    const tbody = document.getElementById('sea-abates-tbody');
-    if (!tbody) return;
-
-    tbody.innerHTML = sorted.map((r, i) => {
-        const pos = i + 1;
-        const medal = MEDALS[i] || '';
-        const jogador = r.jogador || '';
-        const time = seaGetTeamFromPlayer(jogador);
-        const funcao = r.funcao || r['função'] || r.função || '-';
-        const abates = parseInt(r.abates || 0);
-        const dano = parseInt(r.dano || 0);
-        const assists = parseInt(r.assists || r.assistencias || r.assistências || 0);
-        const partidas = parseInt(r.quedas || r.partidas || 24);
-        const mvp = parseInt(r.mvp || 0);
-
-        const rowStyle = pos <= 3 ? 'background: rgba(0,200,255,0.04);' : '';
-        const posStyle = pos === 1 ? 'color:#ffd700;font-weight:900;' : pos === 2 ? 'color:#c0c0c0;font-weight:900;' : pos === 3 ? 'color:#cd7f32;font-weight:900;' : 'color:var(--text-muted);';
-
-        return `<tr style="${rowStyle}">
-            <td style="${posStyle}">${medal || pos}</td>
-            <td style="font-weight:700; text-align:left;">${jogador}</td>
-            <td style="color:var(--text-muted); font-size:0.9em;">${time}</td>
-            <td style="font-size:0.85em; color:var(--text-muted);">${funcao}</td>
-            <td style="color:var(--accent); font-weight:900; font-size:1.05em;">${abates}</td>
-            <td>${dano.toLocaleString('pt-BR')}</td>
-            <td>${assists}</td>
-            <td style="color:var(--text-muted);">${partidas}</td>
-            <td>${mvp > 0 ? '⭐'.repeat(Math.min(mvp,3)) + (mvp > 3 ? ' x'+mvp : '') : '-'}</td>
-        </tr>`;
-    }).join('');
+function clearSEAAbatesFilters() {
+    const teamSelect = document.getElementById('sea-filter-team');
+    const roleSelect = document.getElementById('sea-filter-role');
+    if (teamSelect) teamSelect.value = 'all';
+    if (roleSelect) roleSelect.value = 'all';
+    applySEAAbatesFilters();
 }
 
-function seaShowTab(tab) {
-    document.getElementById('sea-view-classif').style.display = tab === 'classif' ? '' : 'none';
-    document.getElementById('sea-view-abates').style.display  = tab === 'abates'  ? '' : 'none';
-    document.getElementById('sea-tab-classif').classList.toggle('active', tab === 'classif');
-    document.getElementById('sea-tab-abates').classList.toggle('active',  tab === 'abates');
+async function fetchSEAData(url) {
+    const res = await fetch(`${url}&nocache=${Date.now()}`);
+    if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
+    return parseTSV(await res.text());
 }
 
-// Auto-load if navigating directly via hash
-if (window.location.hash === '#ffws-sea') loadSeaData();
+async function loadSEAData(force = false) {
+    if (seaDataLoaded && !force) return;
+
+    const classUpdated = document.getElementById('sea-classificacao-updated');
+    const killsUpdated = document.getElementById('sea-abates-updated');
+    if (classUpdated) classUpdated.textContent = 'Atualizando...';
+    if (killsUpdated) killsUpdated.textContent = 'Atualizando...';
+
+    try {
+        const [classificacao, abates] = await Promise.all([
+            fetchSEAData(SEA_CLASSIFICACAO_TSV_URL),
+            fetchSEAData(SEA_ABATES_TSV_URL)
+        ]);
+
+        seaClassificacaoParsed = classificacao;
+        seaAbatesParsed = sortSEARowsByAbatesDesc(abates);
+
+        renderSEATable('table-sea-classificacao', seaClassificacaoParsed, 'Nenhum dado de classificação encontrado.');
+        renderSEAAbatesFilters(seaAbatesParsed);
+        applySEAAbatesFilters();
+
+        const now = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+        if (classUpdated) classUpdated.textContent = `Atualizado: ${now}`;
+        if (killsUpdated) killsUpdated.textContent = `Atualizado: ${now}`;
+        seaDataLoaded = true;
+    } catch (error) {
+        console.error('Erro ao carregar FFWS SEA:', error);
+        ['table-sea-classificacao', 'table-sea-abates'].forEach(id => {
+            const table = document.getElementById(id);
+            if (!table) return;
+            table.querySelector('thead').innerHTML = '';
+            table.querySelector('tbody').innerHTML = '<tr><td class="int-error">Não foi possível carregar os dados da planilha agora. Confira se o link publicado continua ativo.</td></tr>';
+        });
+        if (classUpdated) classUpdated.textContent = 'Erro ao atualizar';
+        if (killsUpdated) killsUpdated.textContent = 'Erro ao atualizar';
+    }
+}
 </script>
 </main>
 
