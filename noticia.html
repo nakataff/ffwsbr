@@ -100,11 +100,19 @@
     }
 
     .article-shell {
+      position: relative;
       background: rgba(13, 18, 32, 0.78);
       border: 1px solid var(--border);
       border-radius: 18px;
       overflow: hidden;
       box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+    }
+
+    .article-shell::before {
+      content: "";
+      display: block;
+      height: 4px;
+      background: var(--accent);
     }
 
     .hero-img {
@@ -658,7 +666,6 @@
       root.className = 'article-shell';
       root.innerHTML = `
         <article>
-          <img class="hero-img" src="${escapeHTML(noticia.imagem || 'central free fire.webp')}" alt="${escapeHTML(noticia.titulo)}" onerror="this.src='central free fire.webp'">
           <div class="article-content">
             <div class="kicker">Notícia</div>
             <h1>${escapeHTML(noticia.titulo)}</h1>
