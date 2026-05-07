@@ -166,7 +166,6 @@
       margin: 0 0 20px;
     }
 
-    /* Estilo para todos os níveis de cabeçalho no corpo */
     .body h2, .body h3, .body h4, .body h5, .body h6 {
       color: var(--accent);
       margin: 34px 0 14px;
@@ -375,7 +374,9 @@
 
       if (!rows.length) return [];
       const headers = rows[0].map(h => h.trim().toLowerCase());
-      const hasNewHeaders = headers.includes('id') || headers.includes('conteudo');
+      
+      // Procura qualquer uma dessas colunas para garantir que acha o texto
+      const hasNewHeaders = headers.some(h => ['id', 'conteudo', 'texto 1', 'texto1', 'resumo'].includes(h));
 
       return rows.slice(1).map((cells) => {
         let item = {};
@@ -427,27 +428,21 @@
       function renderRichContent(rawContent) {
         let text = String(rawContent || '').replace(/\\n/g, '\n');
 
-        // Normalização de quebras e tags de cabeçalho H2 até H6
+        // 1. Força a quebra de linha real onde tiver a tag [P]
+        text = text.replace(/\s*\[P\]\s*/gi, '\n\n');
+
+        // 2. Garante que as imagens e títulos fiquem isolados nas suas próprias linhas
         text = text
-          .replace(/\s*\[P\]\s*/gi, '\n\n')
           .replace(/\s*\[(IMG|H[2-6]|QUOTE):/gi, '\n[$1:')
           .replace(/\]\s*/g, ']\n');
 
-        const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
-        let paragraphBuffer = [];
+        // 3. Divide o texto inteiro separando bloco por bloco
+        const blocks = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
 
-        function flushParagraph() {
-          if (paragraphBuffer.length) {
-            pushParagraph(paragraphBuffer.join(' '));
-            paragraphBuffer = [];
-          }
-        }
-
-        lines.forEach(line => {
-          // Detecta formatos com colchetes: [IMG:...], [H2:...], [H3:...], etc.
-          let bracketMatch = line.match(/^\[(IMG|H[2-6]|QUOTE):([\s\S]+)\]$/i);
+        blocks.forEach(block => {
+          // Detecta formatos exatos com colchetes
+          let bracketMatch = block.match(/^\[(IMG|H[2-6]|QUOTE):([\s\S]+)\]$/i);
           if (bracketMatch) {
-            flushParagraph();
             const type = bracketMatch[1].toUpperCase();
             const value = bracketMatch[2].trim();
             if (type === 'IMG') pushImage(value);
@@ -459,26 +454,34 @@
             return;
           }
 
-          // Detecta formatos sem colchetes: IMG:..., H2:..., etc.
-          if (/^IMG:/i.test(line)) { flushParagraph(); pushImage(line.replace(/^IMG:/i, '').trim()); return; }
-          if (/^QUOTE:/i.test(line)) { flushParagraph(); pushQuote(line.replace(/^QUOTE:/i, '').trim()); return; }
-          if (/^H[2-6]:/i.test(line)) {
-            flushParagraph();
-            const hTag = line.match(/^H[2-6]/i)[0].toLowerCase();
-            const hVal = line.replace(/^H[2-6]:/i, '').trim();
+          // Formatos sem colchetes (fallback)
+          if (/^IMG:/i.test(block)) { pushImage(block.replace(/^IMG:/i, '').trim()); return; }
+          if (/^QUOTE:/i.test(block)) { pushQuote(block.replace(/^QUOTE:/i, '').trim()); return; }
+          if (/^H[2-6]:/i.test(block)) {
+            const hTag = block.match(/^H[2-6]/i)[0].toLowerCase();
+            const hVal = block.replace(/^H[2-6]:/i, '').trim();
             parts.push(`<${hTag}>${escapeHTML(hVal)}</${hTag}>`);
             return;
           }
 
-          paragraphBuffer.push(line);
+          // Se não for nenhuma tag especial, é um parágrafo normal
+          pushParagraph(block);
         });
-        flushParagraph();
       }
 
-      if (noticia.conteudo) renderRichContent(noticia.conteudo);
-      else if (noticia.resumo) pushParagraph(noticia.resumo);
-      
-      if (!parts.length) parts.push('<p>Conteúdo não disponível.</p>');
+      // Se a notícia não tiver "conteudo", procura em "texto 1"
+      const texto1 = noticia.texto1 || noticia['texto 1'] || '';
+      let mainText = noticia.conteudo || texto1 || '';
+
+      if (mainText) {
+        renderRichContent(mainText);
+      } else if (noticia.resumo) {
+        // Se ainda não tiver texto principal, imprime o resumo no corpo
+        pushParagraph(noticia.resumo);
+      } else {
+        parts.push('<p>Conteúdo não disponível.</p>');
+      }
+
       return parts.join('');
     }
 
@@ -496,6 +499,12 @@
     }
 
     function renderArticle(noticia) {
+      // PREVENÇÃO DE ERRO: Se a pessoa colou o texto inteiro no Resumo da planilha sem querer
+      if (!noticia.conteudo && noticia.resumo && noticia.resumo.includes('[P]')) {
+        noticia.conteudo = noticia.resumo;
+        noticia.resumo = ''; // Limpa o resumo para não duplicar o texto gigante lá no topo
+      }
+
       const root = document.getElementById('noticia-root');
       updateMeta(noticia);
       root.className = 'article-shell';
