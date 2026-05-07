@@ -23,8 +23,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Central Free Fire reúne estatísticas, rankings, notícias, comparação de jogadores, tabelas e dados do competitivo de Free Fire.">
-<title>Central Free Fire - Estatísticas, Notícias e Rankings de Free Fire</title>
+<title>Central Free Fire - Central Completa</title>
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <style>
 :root { --bg-color: #050810; --panel-bg: #0d1220; --panel-hover: #141a2e; --border: #1e2a45; --accent: #00c8ff; --text: #ffffff; --text-muted: #7a9bbf; --win-color: #4caf50; --lose-color: #f44336; }
@@ -39,6 +38,44 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 .news-hero img { height: 250px; } }
 .news-hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9) 80%); padding: 40px 20px 20px; box-sizing: border-box; }
 .news-hero-title { color: #fff; font-size: 2em; font-weight: 900; text-transform: uppercase; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+/* --- HERO CARROSSEL DE NOTÍCIAS --- */
+.news-hero-carousel { position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border); background: var(--panel-bg); }
+.news-hero-track { position: relative; min-height: 450px; }
+.news-hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.35s ease; text-decoration: none; color: inherit; display: block; }
+.news-hero-slide.active { opacity: 1; pointer-events: auto; }
+.news-hero-slide img { width: 100%; height: 450px; object-fit: cover; object-position: center 25%; display: block; }
+.news-hero-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.55); color: #fff; font-size: 1.6rem; font-weight: 900; cursor: pointer; z-index: 5; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.news-hero-nav:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+.news-hero-prev { left: 14px; }
+.news-hero-next { right: 14px; }
+.news-hero-dots { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 8px; z-index: 6; }
+.news-hero-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.55); background: rgba(255,255,255,0.25); cursor: pointer; padding: 0; }
+.news-hero-dot.active { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px rgba(0,200,255,0.7); }
+
+/* --- PÁGINA SOBRE / CONTATO --- */
+.about-hero { border: 1px solid var(--border); border-radius: 16px; padding: clamp(22px, 4vw, 42px); background: linear-gradient(135deg, rgba(0,200,255,0.12), rgba(255,255,255,0.025)); overflow: hidden; position: relative; }
+.about-hero::before { content: ''; position: absolute; inset: -80px -120px auto auto; width: 260px; height: 260px; border-radius: 50%; background: rgba(0,200,255,0.12); filter: blur(10px); }
+.about-kicker { color: var(--accent); font-size: 0.78em; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; position: relative; }
+.about-title { color: #fff; font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 950; line-height: 1; text-transform: uppercase; margin: 0 0 14px; position: relative; }
+.about-text { color: #d7ecff; font-size: 1.02em; line-height: 1.75; max-width: 900px; position: relative; }
+.about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 20px; }
+.about-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.about-card-label { color: var(--text-muted); font-size: 0.72em; font-weight: 900; text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 6px; }
+.about-card-value, .about-card-value a { color: #fff; font-weight: 800; text-decoration: none; word-break: break-word; }
+.about-card-value a:hover { color: var(--accent); }
+.about-columns-help { margin-top: 24px; color: var(--text-muted); font-size: 0.9em; line-height: 1.6; }
+.about-columns-help code { color: var(--accent); background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.18); padding: 2px 6px; border-radius: 6px; }
+
+@media (max-width: 768px) {
+.news-hero-track { min-height: 250px; }
+.news-hero-slide img { height: 250px; }
+.news-hero-nav { width: 34px; height: 34px; font-size: 1.25rem; }
+.news-hero-prev { left: 8px; }
+.news-hero-next { right: 8px; }
+.news-hero-dots { bottom: 9px; }
+}
+
 
 /* Botão Estilizado de Live (Oficial) */
 .live-status-btn { padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; width: 80%; margin-top: 15px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
@@ -653,204 +690,40 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 #table-sea-abates td:nth-child(2) { text-align: left; }
 #table-sea-classificacao .int-team-name { font-size: 1.02em; }
 
-/* Alinhamento FFWS SEA igual à classificação principal */
+/* Alinhamento FFWS SEA */
+#table-sea-classificacao { table-layout: fixed; width: 100%; }
 #table-sea-classificacao th:first-child,
-#table-sea-classificacao td:first-child { width: 70px; min-width: 70px; max-width: 70px; text-align: center; }
+#table-sea-classificacao td:first-child { width: auto; min-width: 0; max-width: none; text-align: left; }
 #table-sea-classificacao th:nth-child(2),
-#table-sea-classificacao td:nth-child(2) { text-align: left; }
-.sea-team-cell { display: inline-flex; align-items: center; justify-content: flex-start; gap: 10px; }
+#table-sea-classificacao td:nth-child(2) { width: 95px; min-width: 95px; max-width: 95px; text-align: center; }
+#table-sea-classificacao .int-points-value { display: inline-block; min-width: 42px; text-align: center; }
+.sea-team-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; min-width: 0; }
 .sea-team-cell .team-logo { width: 24px; height: 24px; object-fit: contain; margin: 0; flex: 0 0 24px; }
+.sea-team-cell .sea-desktop-only,
+.sea-team-cell .sea-mobile-only { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sea-mobile-only { display: none; }
 .sea-desktop-only { display: inline; }
 @media (max-width: 768px) {
 .internacional-tab { width: 100%; }
 .int-section-title { flex-direction: column; align-items: flex-start; }
 #ffws-sea-2026-s1 .table-container { overflow-x: hidden; }
-#ffws-sea-2026-s1 table { table-layout: auto; width: 100%; white-space: nowrap; }
+#ffws-sea-2026-s1 table { table-layout: fixed; width: 100%; white-space: nowrap; }
 #ffws-sea-2026-s1 th, #ffws-sea-2026-s1 td { padding: 8px 4px !important; font-size: 0.72em; }
 #ffws-sea-2026-s1 .int-rank-cell { width: 32px; }
 #ffws-sea-2026-s1 .sea-desktop-only { display: none !important; }
 #ffws-sea-2026-s1 .sea-mobile-only { display: inline !important; }
 #ffws-sea-2026-s1 .int-team-name { font-size: 1em; letter-spacing: 0.3px; }
 #table-sea-classificacao th:first-child,
-#table-sea-classificacao td:first-child { width: 55px; min-width: 55px; max-width: 55px; }
+#table-sea-classificacao td:first-child { width: auto !important; min-width: 0 !important; max-width: none !important; text-align: left !important; overflow: hidden; }
 #table-sea-classificacao th:nth-child(2),
-#table-sea-classificacao td:nth-child(2) { text-align: left !important; }
-#table-sea-classificacao .sea-team-cell { gap: 8px; }
+#table-sea-classificacao td:nth-child(2) { width: 68px !important; min-width: 68px !important; max-width: 68px !important; text-align: center !important; }
+#table-sea-classificacao .sea-team-cell { gap: 8px; width: 100%; }
 #table-sea-classificacao .sea-team-cell .team-logo { width: 22px; height: 22px; flex-basis: 22px; }
 #ffws-sea-2026-s1 .int-player-name { max-width: 72px; display: inline-block; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 #ffws-sea-2026-s1 .int-filters { gap: 8px; padding: 10px; }
 #ffws-sea-2026-s1 .int-filters label { font-size: 0.72em; }
 #ffws-sea-2026-s1 .int-filters select { min-width: 120px; max-width: 150px; font-size: 0.8em; }
 #ffws-sea-2026-s1 .btn-action { padding: 8px 10px; font-size: 0.78em; }
-}
-
-
-
-/* =============================================
-   HOME MAIS CONVIDATIVA / SEO
-   ============================================= */
-.home-welcome {
-    margin-bottom: 25px;
-    display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-    gap: 18px;
-    align-items: stretch;
-}
-.home-welcome-main, .home-welcome-side {
-    background: linear-gradient(135deg, rgba(0,200,255,0.10), rgba(255,255,255,0.025));
-    border: 1px solid rgba(0,200,255,0.22);
-    border-radius: 16px;
-    padding: 22px;
-    position: relative;
-    overflow: hidden;
-}
-.home-welcome-main::before, .home-welcome-side::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--accent);
-}
-.home-welcome-kicker {
-    color: var(--accent);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1.6px;
-    font-size: 0.78em;
-    margin-bottom: 10px;
-}
-.home-welcome-title {
-    color: #fff;
-    font-size: clamp(1.6rem, 4vw, 3.2rem);
-    line-height: 1.02;
-    text-transform: uppercase;
-    font-weight: 950;
-    margin: 0 0 12px;
-    letter-spacing: -0.8px;
-}
-.home-welcome-text {
-    color: #c8d9ec;
-    font-size: 1.02rem;
-    line-height: 1.55;
-    max-width: 850px;
-    margin: 0 0 18px;
-}
-.home-cta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-.home-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: rgba(0,200,255,0.07);
-    color: var(--accent);
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 0.78rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    transition: 0.2s;
-}
-.home-cta:hover {
-    border-color: var(--accent);
-    background: rgba(0,200,255,0.16);
-    transform: translateY(-2px);
-}
-.home-cta.primary {
-    background: var(--accent);
-    color: #001018;
-    border-color: var(--accent);
-}
-.home-mini-stats {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    height: 100%;
-}
-.home-mini-stat {
-    background: rgba(5,8,16,0.72);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-}
-.home-mini-stat strong {
-    display: block;
-    color: #fff;
-    font-size: 1.65rem;
-    line-height: 1;
-}
-.home-mini-stat span {
-    display: block;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    margin-top: 6px;
-}
-.home-section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 12px;
-    margin: 8px 0 14px;
-}
-.home-section-head h2 {
-    margin: 0;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-size: 1.15rem;
-}
-.home-section-head p {
-    margin: 4px 0 0;
-    color: var(--text-muted);
-    font-size: 0.86rem;
-}
-.home-about-strip {
-    margin: 0 0 32px;
-    background: linear-gradient(135deg, rgba(0,200,255,0.08), rgba(255,255,255,0.02));
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 16px;
-    align-items: center;
-}
-.home-about-strip h2 {
-    color: #fff;
-    margin: 0 0 6px;
-    text-transform: uppercase;
-    font-size: 1.25rem;
-}
-.home-about-strip p {
-    margin: 0;
-    color: var(--text-muted);
-    line-height: 1.5;
-}
-@media (max-width: 900px) {
-    .home-welcome { grid-template-columns: 1fr; }
-    .home-mini-stats { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 768px) {
-    .home-welcome-main, .home-welcome-side { padding: 18px 14px; }
-    .home-mini-stats { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .home-mini-stat { padding: 11px 9px; }
-    .home-mini-stat strong { font-size: 1.25rem; }
-    .home-mini-stat span { font-size: 0.58rem; }
-    .home-section-head { align-items: flex-start; flex-direction: column; }
-    .home-about-strip { grid-template-columns: 1fr; padding: 16px; }
 }
 
 </style>
@@ -874,7 +747,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
         <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
-        <button onclick="window.location.href='sobre.html'" id="sb-sobre">SOBRE A CENTRAL</button>
         
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">ESTATÍSTICAS</div>
@@ -893,6 +765,10 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
         <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
         <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">CONTATO</div>
+        <button onclick="navigateAndClose('sobre')" id="sb-sobre">SOBRE</button>
     </div>
 </div>
 
@@ -954,29 +830,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
  <div id="home" class="page">
 
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
-
-    <section class="home-welcome" aria-label="Apresentação da Central Free Fire">
-        <div class="home-welcome-main">
-            <div class="home-welcome-kicker">Central do competitivo</div>
-            <h1 class="home-welcome-title">Dados, notícias e rankings do Free Fire em um só lugar</h1>
-            <p class="home-welcome-text">
-                Acompanhe tabela, MVP, recordes, confrontos, mercado da bala, torneios e comparação de jogadores com atualizações puxadas direto das planilhas do site.
-            </p>
-            <div class="home-cta-row">
-                <button class="home-cta primary" onclick="navigate('tabela')">Ver classificação</button>
-                <button class="home-cta" onclick="navigate('mvp')">Ranking MVP</button>
-                <button class="home-cta" onclick="navigate('comparar-1v1')">Comparar jogadores</button>
-                <a class="home-cta" href="sobre.html">Sobre o projeto</a>
-            </div>
-        </div>
-        <aside class="home-welcome-side" aria-label="Resumo do site">
-            <div class="home-mini-stats">
-                <div class="home-mini-stat"><strong>WB</strong><span>Dados por queda</span></div>
-                <div class="home-mini-stat"><strong>BR + SEA</strong><span>Internacional</span></div>
-                <div class="home-mini-stat"><strong>AO VIVO</strong><span>Lives e calendário</span></div>
-            </div>
-        </aside>
-    </section>
 
     <div class="home-widget" style="margin-bottom: 25px;">
         <h3>📅 Próxima Partida</h3>
@@ -1044,23 +897,8 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         </div>
     </div>
 
-   <div class="home-section-head" id="ultimas-noticias-head" style="display:none;">
-        <div>
-            <h2>Últimas notícias</h2>
-            <p>Matérias internas da Central Free Fire, com texto, imagem e contexto para acompanhar o cenário.</p>
-        </div>
-        <a class="home-cta" href="sobre.html">Conheça a Central</a>
-    </div>
-    <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
+   <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
     <div id="ultimas-noticias-grid" class="old-news-grid"></div>
-
-       <section class="home-about-strip">
-        <div>
-            <h2>Por que a Central Free Fire existe?</h2>
-            <p>O projeto organiza dados do competitivo em uma experiência simples para quem acompanha a cena: rankings, estatísticas, notícias, torneios e histórico em um só painel.</p>
-        </div>
-        <a class="home-cta primary" href="sobre.html">Ler sobre a Central</a>
-    </section>
 
        <div style="text-align: center; margin-bottom: 40px;">
         <a href="https://instagram.com/nakataff" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 14px 30px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
@@ -1975,6 +1813,31 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             <div class="compare-container" id="compare-players-result"></div>
         </div>
     </div>
+
+    <!-- PAGE: SOBRE / CONTATO -->
+<div id="sobre" class="page">
+    <section class="about-hero">
+        <div class="about-kicker" id="sobre-kicker">CONTATO</div>
+        <h1 class="about-title" id="sobre-titulo">Sobre a Central Free Fire</h1>
+        <div class="about-text" id="sobre-texto">
+            A Central Free Fire acompanha estatísticas, notícias, rankings e informações do cenário competitivo de Free Fire.
+        </div>
+    </section>
+
+    <div class="about-grid" id="sobre-contatos" aria-live="polite"></div>
+
+    <div class="home-widget" style="margin-top: 24px;">
+        <h3>📌 Colunas recomendadas para a aba SOBRE</h3>
+        <div class="home-widget-body" style="align-items:flex-start; justify-content:flex-start;">
+            <div class="about-columns-help">
+                Use uma linha principal na planilha com estas colunas: 
+                <code>titulo</code>, <code>subtitulo</code>, <code>texto</code>, <code>contato</code>, <code>email</code>, <code>instagram</code>, <code>whatsapp</code>, <code>discord</code>, <code>imagem</code>, <code>botao_texto</code>, <code>botao_link</code>.
+                <br><br>
+                O site aceita deixar campos vazios. Se quiser mais de um contato, coloque novas linhas com <code>label</code>, <code>valor</code> e <code>link</code>.
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- PAGE: CRONOGRAMA -->
 <div id="datas" class="page">
@@ -2936,6 +2799,7 @@ const data = await response.json();
     // 4. INTEGRAÇÕES EXTERNAS (GOOGLE SHEETS)
     loadLives();
     loadNoticias();
+    loadSobre();
     loadSocials();
     loadTeamLogos();
     loadPhotos();
@@ -7430,11 +7294,11 @@ async function loadNoticias() {
     if (!heroContainer) return;
 
     // Aba de notícias publicada como TSV.
-    // Recomendado usar colunas:
+    // Colunas recomendadas:
     // id | titulo | imagem | resumo | conteudo | data | autor | destaque | link_original
-    // Também continua aceitando o formato antigo:
-    // imagem | titulo | link | destaque
-    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
+    // Para aparecer no hero/carrossel, marque destaque como TRUE.
+    // Os 3 primeiros destaques viram os slides principais.
+    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=64226688&single=true&output=tsv';
 
     function escapeHTML(value) {
         return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -7458,15 +7322,16 @@ async function loadNoticias() {
     function convertDriveImage(url) {
         url = String(url || '').trim().replace(/\r/g, '');
         if (!url) return '';
-
-        // Converte link do Google Drive para a tag <img> conseguir renderizar.
         if (url.includes('drive.google.com')) {
             const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-            }
+            if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
         }
         return url;
+    }
+
+    function isTrue(value) {
+        const v = String(value || '').trim().toLowerCase();
+        return ['true', 'sim', 's', '1', 'yes', 'destaque'].includes(v);
     }
 
     function parseNoticiasTSV(tsvText) {
@@ -7480,14 +7345,12 @@ async function loadNoticias() {
         const headers = rows[0].map(h => h.trim().toLowerCase());
         const temCabecalhoNovo = headers.includes('id') || headers.includes('conteudo') || headers.includes('resumo') || headers.includes('link_original');
 
-        return rows.slice(1).map(cells => {
+        return rows.slice(1).map((cells, index) => {
             let noticia = {};
 
             if (temCabecalhoNovo) {
                 headers.forEach((h, i) => noticia[h] = cells[i] || '');
             } else {
-                // Compatibilidade com a estrutura antiga:
-                // imagem | titulo | link | destaque
                 noticia = {
                     imagem: cells[0] || '',
                     titulo: cells[1] || '',
@@ -7497,15 +7360,41 @@ async function loadNoticias() {
             }
 
             noticia.titulo = noticia.titulo || '';
-            noticia.id = noticia.id || slugify(noticia.titulo);
+            noticia.id = noticia.id || slugify(noticia.titulo || `noticia-${index + 1}`);
             noticia.imagem = convertDriveImage(noticia.imagem);
             noticia.resumo = noticia.resumo || '';
             noticia.link_original = noticia.link_original || noticia.link || '';
-            noticia.destaque = String(noticia.destaque || '').toLowerCase().includes('true');
+            noticia.destaque = isTrue(noticia.destaque);
             noticia.urlInterna = `noticia.html?id=${encodeURIComponent(noticia.id)}`;
 
             return noticia;
         }).filter(n => n.titulo && n.titulo.length > 2);
+    }
+
+    function initHeroCarousel() {
+        const carousel = document.getElementById('news-hero-carousel');
+        if (!carousel) return;
+
+        const slides = Array.from(carousel.querySelectorAll('.news-hero-slide'));
+        const dots = Array.from(carousel.querySelectorAll('.news-hero-dot'));
+        const prev = carousel.querySelector('.news-hero-prev');
+        const next = carousel.querySelector('.news-hero-next');
+        let current = 0;
+
+        function showSlide(index) {
+            if (!slides.length) return;
+            current = (index + slides.length) % slides.length;
+            slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+        }
+
+        if (prev) prev.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(current - 1); };
+        if (next) next.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(current + 1); };
+        dots.forEach((dot, i) => dot.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(i); });
+
+        if (slides.length > 1) {
+            setInterval(() => showSlide(current + 1), 6500);
+        }
     }
 
     try {
@@ -7514,28 +7403,38 @@ async function loadNoticias() {
 
         const tsvText = await res.text();
         const noticias = parseNoticiasTSV(tsvText);
-
         if (noticias.length === 0) return;
 
-        // SEPARAR DESTAQUE DAS DEMAIS
-        const destaque = noticias.find(n => n.destaque) || noticias[0];
-        const demais = noticias.filter(n => n !== destaque);
+        const destaques = noticias.filter(n => n.destaque).slice(0, 3);
+        const slides = (destaques.length ? destaques : noticias.slice(0, 3));
+        const slideIds = new Set(slides.map(n => n.id));
+        const demais = noticias.filter(n => !slideIds.has(n.id));
 
-        // 1. RENDERIZA NOTÍCIA PRINCIPAL (BANNER GRANDE)
         heroContainer.innerHTML = `
-        <a class="news-hero" href="${escapeHTML(destaque.urlInterna)}" style="display:block; text-decoration:none; color:inherit;">
-            <img src="${escapeHTML(destaque.imagem || 'central free fire.webp')}" alt="${escapeHTML(destaque.titulo)}" onerror="this.src='central free fire.webp'">
-            <div class="news-hero-overlay">
-                <h2 class="news-hero-title">${escapeHTML(destaque.titulo)}</h2>
-                ${destaque.resumo ? `<p style="margin:8px 0 0; color:#d7ecff; font-weight:600; max-width:760px;">${escapeHTML(destaque.resumo)}</p>` : ''}
+        <section class="news-hero-carousel" id="news-hero-carousel" aria-label="Notícias principais">
+            <div class="news-hero-track">
+                ${slides.map((n, i) => `
+                <a class="news-hero-slide ${i === 0 ? 'active' : ''}" href="${escapeHTML(n.urlInterna)}">
+                    <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" alt="${escapeHTML(n.titulo)}" onerror="this.src='central free fire.webp'">
+                    <div class="news-hero-overlay">
+                        <h2 class="news-hero-title">${escapeHTML(n.titulo)}</h2>
+                        ${n.resumo ? `<p style="margin:8px 0 0; color:#d7ecff; font-weight:600; max-width:760px;">${escapeHTML(n.resumo)}</p>` : ''}
+                    </div>
+                </a>`).join('')}
             </div>
-        </a>`;
+            ${slides.length > 1 ? `
+                <button class="news-hero-nav news-hero-prev" type="button" aria-label="Notícia anterior">‹</button>
+                <button class="news-hero-nav news-hero-next" type="button" aria-label="Próxima notícia">›</button>
+                <div class="news-hero-dots">
+                    ${slides.map((_, i) => `<button class="news-hero-dot ${i === 0 ? 'active' : ''}" type="button" aria-label="Ir para notícia ${i + 1}"></button>`).join('')}
+                </div>` : ''}
+        </section>`;
 
-        // 2. RENDERIZA AS OUTRAS (CARDS)
+        initHeroCarousel();
+
         if (grid) {
             if (demais.length > 0) {
                 if (titulo) titulo.style.display = 'block';
-
                 grid.style.display = 'grid';
                 grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
                 grid.style.gap = '20px';
@@ -7555,6 +7454,86 @@ async function loadNoticias() {
 
     } catch (e) {
         console.error('[loadNoticias] Erro:', e);
+    }
+}
+
+async function loadSobre() {
+    const page = document.getElementById('sobre');
+    if (!page) return;
+
+    // Publique uma aba SOBRE em TSV e troque o GID abaixo pelo GID dela se for diferente.
+    // Colunas recomendadas: titulo | subtitulo | texto | contato | email | instagram | whatsapp | discord | imagem | botao_texto | botao_link
+    // Para cards extras: label | valor | link
+    const SOBRE_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=64226688&single=true&output=tsv';
+
+    const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[char]));
+
+    const normalizeUrl = (value, type = '') => {
+        const raw = String(value || '').trim();
+        if (!raw) return '';
+        if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('mailto:')) return raw;
+        if (type === 'email') return `mailto:${raw}`;
+        if (type === 'instagram') return `https://instagram.com/${raw.replace('@', '')}`;
+        if (type === 'whatsapp') return `https://wa.me/${raw.replace(/\D/g, '')}`;
+        return raw;
+    };
+
+    const addCard = (cards, label, value, link = '') => {
+        if (!value) return;
+        cards.push({ label, value, link });
+    };
+
+    try {
+        const res = await fetch(`${SOBRE_TSV_URL}&nocache=${Date.now()}`);
+        if (!res.ok) throw new Error('Erro ao carregar a aba SOBRE.');
+        const tsvText = await res.text();
+        const rows = String(tsvText || '').trim().split(/\n/).map(r => r.split('\t').map(c => c.trim().replace(/\r/g, '')));
+        if (rows.length < 2) return;
+
+        const headers = rows[0].map(h => h.toLowerCase());
+        const data = rows.slice(1).map(cells => {
+            const item = {};
+            headers.forEach((h, i) => item[h] = cells[i] || '');
+            return item;
+        });
+
+        const main = data.find(row => row.titulo || row.texto || row.contato || row.instagram || row.email) || data[0];
+        if (!main) return;
+
+        const kicker = document.getElementById('sobre-kicker');
+        const title = document.getElementById('sobre-titulo');
+        const text = document.getElementById('sobre-texto');
+        const contacts = document.getElementById('sobre-contatos');
+
+        if (kicker && main.subtitulo) kicker.textContent = main.subtitulo;
+        if (title && main.titulo) title.textContent = main.titulo;
+        if (text && main.texto) text.innerHTML = escapeHTML(main.texto).replace(/\n/g, '<br>');
+
+        const cards = [];
+        addCard(cards, 'Contato', main.contato, main.botao_link || '');
+        addCard(cards, 'Instagram', main.instagram, normalizeUrl(main.instagram, 'instagram'));
+        addCard(cards, 'E-mail', main.email, normalizeUrl(main.email, 'email'));
+        addCard(cards, 'WhatsApp', main.whatsapp, normalizeUrl(main.whatsapp, 'whatsapp'));
+        addCard(cards, 'Discord', main.discord, main.discord_link || '');
+
+        data.forEach(row => {
+            if (row.label && row.valor) addCard(cards, row.label, row.valor, row.link || '');
+        });
+
+        if (contacts && cards.length) {
+            contacts.innerHTML = cards.map(card => `
+                <div class="about-card">
+                    <div class="about-card-label">${escapeHTML(card.label)}</div>
+                    <div class="about-card-value">
+                        ${card.link ? `<a href="${escapeHTML(card.link)}" target="_blank" rel="noopener">${escapeHTML(card.value)}</a>` : escapeHTML(card.value)}
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (e) {
+        console.error('[loadSobre] Erro:', e);
     }
 }
 
