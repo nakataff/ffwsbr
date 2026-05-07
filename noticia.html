@@ -177,13 +177,23 @@
       margin: 0 0 20px;
     }
 
-    .body h2 {
+    .body h2,
+    .body h3,
+    .body h4,
+    .body h5,
+    .body h6 {
       color: var(--accent);
       margin: 34px 0 14px;
       line-height: 1.18;
       text-transform: uppercase;
-      font-size: 1.35rem;
+      font-weight: 900;
     }
+
+    .body h2 { font-size: 1.35rem; }
+    .body h3 { font-size: 1.25rem; }
+    .body h4 { font-size: 1.15rem; }
+    .body h5 { font-size: 1.05rem; }
+    .body h6 { font-size: 1rem; }
 
     .body img.inline-img {
       display: block;
@@ -483,10 +493,15 @@
         parts.push(`<img class="inline-img" src="${escapeHTML(cleanSrc)}" alt="${escapeHTML(noticia.titulo)}" onerror="this.src='central free fire.webp'">`);
       }
 
-      function pushH2(text) {
+      function pushHeading(level, text) {
         const clean = String(text || '').trim();
         if (!clean) return;
-        parts.push(`<h2>${escapeHTML(clean)}</h2>`);
+
+        const safeLevel = ['H2', 'H3', 'H4', 'H5', 'H6'].includes(String(level).toUpperCase())
+          ? String(level).toLowerCase()
+          : 'h2';
+
+        parts.push(`<${safeLevel}>${escapeHTML(clean)}</${safeLevel}>`);
       }
 
       function pushQuote(text) {
@@ -497,27 +512,32 @@
 
       function renderRichContent(rawContent) {
         let text = String(rawContent || '')
-          .replace(/\r\n/g, '\n')
-          .replace(/\r/g, '\n')
+          .replace(/
+/g, '\n')
+          .replace(/
+/g, '\n')
           .replace(/\\n/g, '\n');
 
-        // Aceita marcadores colados no texto:
-        // [IMG:https://...]
-        // [H2:Subtítulo]
-        // [QUOTE:Frase]
-        // [P]
+        // Comandos aceitos dentro da célula da planilha:
+        // [P] ou <br>      = separa parágrafo
+        // [IMG: link]      = imagem no meio da notícia
+        // [H2: texto]      = subtítulo grande
+        // [H3: texto]      = subtítulo médio
+        // [H4: texto]      = subtítulo menor
+        // [H5: texto]      = subtítulo menor
+        // [QUOTE: texto]   = citação/destaque
         text = text
-          .replace(/\s*\[P\]\s*/gi, '\n\n')
-          .replace(/\s*\[(IMG|H2|QUOTE):/gi, '\n[$1:')
+          .replace(/\s*\[P\]\s*/gi, '\n[P]\n')
+          .replace(/\s*<br\s*\/?\s*>\s*/gi, '\n[P]\n')
+          .replace(/\s*\[(IMG|H2|H3|H4|H5|H6|QUOTE):/gi, '\n[$1:')
           .replace(/\]\s*/g, ']\n');
 
-        // Aceita também IMG:, H2: e QUOTE: mesmo sem estar em linha separada
+        // Também aceita sem colchetes: IMG:, H2:, H3:, H4:, H5:, H6:, QUOTE:
         text = text
           .replace(/\s+(IMG:https?:\/\/)/gi, '\n$1')
-          .replace(/\s+(H2:)/gi, '\n$1')
-          .replace(/\s+(QUOTE:)/gi, '\n$1');
+          .replace(/\s+(H2:|H3:|H4:|H5:|H6:|QUOTE:)/gi, '\n$1');
 
-        const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+        const lines = text.split('\n').map(l => l.trim());
         let paragraphBuffer = [];
 
         function flushParagraph() {
@@ -528,35 +548,39 @@
         }
 
         lines.forEach(line => {
-          // Formato com colchetes
-          let bracketMatch = line.match(/^\[(IMG|H2|QUOTE):([\s\S]+)\]$/i);
+          // Linha vazia ou [P] vira parágrafo novo
+          if (!line || /^\[P\]$/i.test(line)) {
+            flushParagraph();
+            return;
+          }
+
+          // Formato com colchetes: [IMG: link], [H2: texto], [H3: texto]...
+          const bracketMatch = line.match(/^\[(IMG|H2|H3|H4|H5|H6|QUOTE):([\s\S]+)\]$/i);
           if (bracketMatch) {
             flushParagraph();
+
             const type = bracketMatch[1].toUpperCase();
             const value = bracketMatch[2].trim();
 
             if (type === 'IMG') pushImage(value);
-            if (type === 'H2') pushH2(value);
-            if (type === 'QUOTE') pushQuote(value);
+            else if (type === 'QUOTE') pushQuote(value);
+            else pushHeading(type, value);
+
             return;
           }
 
-          // Formato sem colchetes
-          if (/^IMG:/i.test(line)) {
+          // Formato sem colchetes: IMG: link, H2: texto, H3: texto...
+          const simpleMatch = line.match(/^(IMG|H2|H3|H4|H5|H6|QUOTE):([\s\S]+)$/i);
+          if (simpleMatch) {
             flushParagraph();
-            pushImage(line.replace(/^IMG:/i, '').trim());
-            return;
-          }
 
-          if (/^H2:/i.test(line)) {
-            flushParagraph();
-            pushH2(line.replace(/^H2:/i, '').trim());
-            return;
-          }
+            const type = simpleMatch[1].toUpperCase();
+            const value = simpleMatch[2].trim();
 
-          if (/^QUOTE:/i.test(line)) {
-            flushParagraph();
-            pushQuote(line.replace(/^QUOTE:/i, '').trim());
+            if (type === 'IMG') pushImage(value);
+            else if (type === 'QUOTE') pushQuote(value);
+            else pushHeading(type, value);
+
             return;
           }
 
