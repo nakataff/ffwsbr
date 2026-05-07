@@ -588,6 +588,14 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 .int-player-name, .int-team-name, .int-kill-value, .int-points-value { color: var(--accent); font-weight: 900; }
 #table-sea-abates td:nth-child(2) { text-align: left; }
 #table-sea-classificacao .int-team-name { font-size: 1.02em; }
+
+/* Alinhamento FFWS SEA igual à classificação principal */
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child { width: 70px; min-width: 70px; max-width: 70px; text-align: center; }
+#table-sea-classificacao th:nth-child(2),
+#table-sea-classificacao td:nth-child(2) { text-align: left; }
+.sea-team-cell { display: inline-flex; align-items: center; justify-content: flex-start; gap: 10px; }
+.sea-team-cell .team-logo { width: 24px; height: 24px; object-fit: contain; margin: 0; flex: 0 0 24px; }
 .sea-mobile-only { display: none; }
 .sea-desktop-only { display: inline; }
 @media (max-width: 768px) {
@@ -600,6 +608,12 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 #ffws-sea-2026-s1 .sea-desktop-only { display: none !important; }
 #ffws-sea-2026-s1 .sea-mobile-only { display: inline !important; }
 #ffws-sea-2026-s1 .int-team-name { font-size: 1em; letter-spacing: 0.3px; }
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child { width: 55px; min-width: 55px; max-width: 55px; }
+#table-sea-classificacao th:nth-child(2),
+#table-sea-classificacao td:nth-child(2) { text-align: left !important; }
+#table-sea-classificacao .sea-team-cell { gap: 8px; }
+#table-sea-classificacao .sea-team-cell .team-logo { width: 22px; height: 22px; flex-basis: 22px; }
 #ffws-sea-2026-s1 .int-player-name { max-width: 72px; display: inline-block; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 #ffws-sea-2026-s1 .int-filters { gap: 8px; padding: 10px; }
 #ffws-sea-2026-s1 .int-filters label { font-size: 0.72em; }
@@ -8318,7 +8332,7 @@ function formatSEAValue(header, value, tableId = '') {
         const fullName = getSEATeamFullName(text);
         const sigla = getSEATeamSigla(text);
         const logoSrc = resolveSEATeamLogo(text);
-        return `<span class="int-team-name" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;"><img src="${escapeHtml(logoSrc)}" onerror="this.src='escudo.webp'" class="team-logo" style="width:22px;height:22px;object-fit:contain;margin:0;"><span class="sea-desktop-only">${escapeHtml(fullName)}</span><span class="sea-mobile-only">${escapeHtml(sigla)}</span></span>`;
+        return `<span class="int-team-name sea-team-cell"><img src="${escapeHtml(logoSrc)}" onerror="this.onerror=null;this.src='escudo.webp'" class="team-logo" alt="${escapeHtml(fullName)}"><span class="sea-desktop-only">${escapeHtml(fullName)}</span><span class="sea-mobile-only">${escapeHtml(sigla)}</span></span>`;
     }
     if (shouldCleanSEAPlayerColumn(header)) {
         return `<span class="int-player-name">${escapeHtml(cleanSEAPlayerName(text))}</span>`;
