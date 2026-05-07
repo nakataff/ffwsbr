@@ -7221,34 +7221,91 @@ async function loadNoticias() {
     const titulo = document.getElementById('ultimas-noticias-titulo');
     if (!heroContainer) return;
 
+    // Aba de notícias publicada como TSV.
+    // Recomendado usar colunas:
+    // id | titulo | imagem | resumo | conteudo | data | autor | destaque | link_original
+    // Também continua aceitando o formato antigo:
+    // imagem | titulo | link | destaque
     const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
 
-    try {
-        const res = await fetch(`${SHEET_TSV_URL}&nocache=${new Date().getTime()}`);
-        const tsvText = await res.text();
-        const lines = tsvText.split('\n');
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
+    }
 
-        const noticias = lines.slice(1).map(line => {
-            const data = line.split('\t');
+    function slugify(text) {
+        return String(text || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
 
-            let urlImagem = data[0]?.trim().replace(/\r/g, "");
+    function convertDriveImage(url) {
+        url = String(url || '').trim().replace(/\r/g, '');
+        if (!url) return '';
 
-            // --- CONVERSOR AUTOMÁTICO DE LINKS DO GOOGLE DRIVE ---
-            // Transforma o link de visualização em um link de download direto para a <img> renderizar
-            if (urlImagem && urlImagem.includes('drive.google.com')) {
-                const match = urlImagem.match(/\/d\/([a-zA-Z0-9_-]+)/) || urlImagem.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    urlImagem = `https://drive.google.com/uc?export=view&id=${match[1]}`;
-                }
+        // Converte link do Google Drive para a tag <img> conseguir renderizar.
+        if (url.includes('drive.google.com')) {
+            const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+            }
+        }
+        return url;
+    }
+
+    function parseNoticiasTSV(tsvText) {
+        const rows = String(tsvText || '')
+            .trim()
+            .split(/\n/)
+            .map(row => row.split('\t').map(cell => cell.trim().replace(/\r/g, '')));
+
+        if (!rows.length) return [];
+
+        const headers = rows[0].map(h => h.trim().toLowerCase());
+        const temCabecalhoNovo = headers.includes('id') || headers.includes('conteudo') || headers.includes('resumo') || headers.includes('link_original');
+
+        return rows.slice(1).map(cells => {
+            let noticia = {};
+
+            if (temCabecalhoNovo) {
+                headers.forEach((h, i) => noticia[h] = cells[i] || '');
+            } else {
+                // Compatibilidade com a estrutura antiga:
+                // imagem | titulo | link | destaque
+                noticia = {
+                    imagem: cells[0] || '',
+                    titulo: cells[1] || '',
+                    link_original: cells[2] || '',
+                    destaque: cells[3] || ''
+                };
             }
 
-            return {
-                imagem: urlImagem,
-                titulo: data[1]?.trim().replace(/\r/g, ""),
-                link: data[2]?.trim().replace(/\r/g, ""),
-                destaque: data[3]?.trim().toLowerCase().includes('true')
-            };
+            noticia.titulo = noticia.titulo || '';
+            noticia.id = noticia.id || slugify(noticia.titulo);
+            noticia.imagem = convertDriveImage(noticia.imagem);
+            noticia.resumo = noticia.resumo || '';
+            noticia.link_original = noticia.link_original || noticia.link || '';
+            noticia.destaque = String(noticia.destaque || '').toLowerCase().includes('true');
+            noticia.urlInterna = `noticia.html?id=${encodeURIComponent(noticia.id)}`;
+
+            return noticia;
         }).filter(n => n.titulo && n.titulo.length > 2);
+    }
+
+    try {
+        const res = await fetch(`${SHEET_TSV_URL}&nocache=${Date.now()}`);
+        if (!res.ok) throw new Error('Erro ao carregar a aba de notícias.');
+
+        const tsvText = await res.text();
+        const noticias = parseNoticiasTSV(tsvText);
 
         if (noticias.length === 0) return;
 
@@ -7258,14 +7315,15 @@ async function loadNoticias() {
 
         // 1. RENDERIZA NOTÍCIA PRINCIPAL (BANNER GRANDE)
         heroContainer.innerHTML = `
-        <div class="news-hero" onclick="window.open('${destaque.link}', '_blank')">
-            <img src="${destaque.imagem}" alt="Destaque" onerror="this.src='central free fire.webp'">
+        <a class="news-hero" href="${escapeHTML(destaque.urlInterna)}" style="display:block; text-decoration:none; color:inherit;">
+            <img src="${escapeHTML(destaque.imagem || 'central free fire.webp')}" alt="${escapeHTML(destaque.titulo)}" onerror="this.src='central free fire.webp'">
             <div class="news-hero-overlay">
-                <h2 class="news-hero-title">${destaque.titulo}</h2>
+                <h2 class="news-hero-title">${escapeHTML(destaque.titulo)}</h2>
+                ${destaque.resumo ? `<p style="margin:8px 0 0; color:#d7ecff; font-weight:600; max-width:760px;">${escapeHTML(destaque.resumo)}</p>` : ''}
             </div>
-        </div>`;
+        </a>`;
 
-        // 2. RENDERIZA AS OUTRAS (QUADRADINHOS)
+        // 2. RENDERIZA AS OUTRAS (CARDS)
         if (grid) {
             if (demais.length > 0) {
                 if (titulo) titulo.style.display = 'block';
@@ -7275,12 +7333,12 @@ async function loadNoticias() {
                 grid.style.gap = '20px';
 
                 grid.innerHTML = demais.map(n => `
-                <div class="old-news-card" onclick="window.open('${n.link}', '_blank')" style="display: flex; flex-direction: column; height: 100%;">
-                    <div style="width: 100%; height: 160px; overflow: hidden; border-bottom: 1px solid var(--border);">
-                        <img src="${n.imagem}" alt="News" onerror="this.src='central free fire.webp'" style="width: 100%; height: 100%; object-fit: cover;">
+                <a class="old-news-card" href="${escapeHTML(n.urlInterna)}" style="display:flex; flex-direction:column; height:100%; text-decoration:none; color:inherit;">
+                    <div style="width:100%; height:160px; overflow:hidden; border-bottom:1px solid var(--border);">
+                        <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" alt="${escapeHTML(n.titulo)}" onerror="this.src='central free fire.webp'" style="width:100%; height:100%; object-fit:cover;">
                     </div>
-                    <div class="old-news-title" style="padding: 12px; font-size: 0.95em; flex-grow: 1;">${n.titulo}</div>
-                </div>`).join('');
+                    <div class="old-news-title" style="padding:12px; font-size:0.95em; flex-grow:1;">${escapeHTML(n.titulo)}</div>
+                </a>`).join('');
             } else {
                 grid.innerHTML = '';
                 if (titulo) titulo.style.display = 'none';
