@@ -652,30 +652,34 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 #table-sea-abates td:nth-child(2) { text-align: left; }
 #table-sea-classificacao .int-team-name { font-size: 1.02em; }
 
-/* Alinhamento FFWS SEA igual à classificação principal */
+/* Alinhamento FFWS SEA */
+#table-sea-classificacao { table-layout: fixed; width: 100%; }
 #table-sea-classificacao th:first-child,
-#table-sea-classificacao td:first-child { width: 70px; min-width: 70px; max-width: 70px; text-align: center; }
+#table-sea-classificacao td:first-child { width: auto; min-width: 0; max-width: none; text-align: left; }
 #table-sea-classificacao th:nth-child(2),
-#table-sea-classificacao td:nth-child(2) { text-align: left; }
-.sea-team-cell { display: inline-flex; align-items: center; justify-content: flex-start; gap: 10px; }
+#table-sea-classificacao td:nth-child(2) { width: 95px; min-width: 95px; max-width: 95px; text-align: center; }
+#table-sea-classificacao .int-points-value { display: inline-block; min-width: 42px; text-align: center; }
+.sea-team-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; min-width: 0; }
 .sea-team-cell .team-logo { width: 24px; height: 24px; object-fit: contain; margin: 0; flex: 0 0 24px; }
+.sea-team-cell .sea-desktop-only,
+.sea-team-cell .sea-mobile-only { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sea-mobile-only { display: none; }
 .sea-desktop-only { display: inline; }
 @media (max-width: 768px) {
 .internacional-tab { width: 100%; }
 .int-section-title { flex-direction: column; align-items: flex-start; }
 #ffws-sea-2026-s1 .table-container { overflow-x: hidden; }
-#ffws-sea-2026-s1 table { table-layout: auto; width: 100%; white-space: nowrap; }
+#ffws-sea-2026-s1 table { table-layout: fixed; width: 100%; white-space: nowrap; }
 #ffws-sea-2026-s1 th, #ffws-sea-2026-s1 td { padding: 8px 4px !important; font-size: 0.72em; }
 #ffws-sea-2026-s1 .int-rank-cell { width: 32px; }
 #ffws-sea-2026-s1 .sea-desktop-only { display: none !important; }
 #ffws-sea-2026-s1 .sea-mobile-only { display: inline !important; }
 #ffws-sea-2026-s1 .int-team-name { font-size: 1em; letter-spacing: 0.3px; }
 #table-sea-classificacao th:first-child,
-#table-sea-classificacao td:first-child { width: 55px; min-width: 55px; max-width: 55px; }
+#table-sea-classificacao td:first-child { width: auto !important; min-width: 0 !important; max-width: none !important; text-align: left !important; overflow: hidden; }
 #table-sea-classificacao th:nth-child(2),
-#table-sea-classificacao td:nth-child(2) { text-align: left !important; }
-#table-sea-classificacao .sea-team-cell { gap: 8px; }
+#table-sea-classificacao td:nth-child(2) { width: 68px !important; min-width: 68px !important; max-width: 68px !important; text-align: center !important; }
+#table-sea-classificacao .sea-team-cell { gap: 8px; width: 100%; }
 #table-sea-classificacao .sea-team-cell .team-logo { width: 22px; height: 22px; flex-basis: 22px; }
 #ffws-sea-2026-s1 .int-player-name { max-width: 72px; display: inline-block; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 #ffws-sea-2026-s1 .int-filters { gap: 8px; padding: 10px; }
