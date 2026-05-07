@@ -40,7 +40,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 .news-hero-title { color: #fff; font-size: 2em; font-weight: 900; text-transform: uppercase; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
 /* --- HERO CARROSSEL DE NOTÍCIAS --- */
-.news-hero-carousel { position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border); background: var(--panel-bg); }
+.news-hero-carousel { position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border); background: var(--panel-bg); touch-action: pan-y; }
 .news-hero-track { position: relative; min-height: 450px; }
 .news-hero-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.35s ease; text-decoration: none; color: inherit; display: block; }
 .news-hero-slide.active { opacity: 1; pointer-events: auto; }
@@ -7302,11 +7302,13 @@ async function loadNoticias() {
     if (!heroContainer) return;
 
     // Aba de notícias publicada como TSV.
-    // Colunas recomendadas:
+    // Colunas aceitas:
     // id | titulo | imagem | resumo | conteudo | data | autor | destaque | link_original
-    // Para aparecer no hero/carrossel, marque destaque como TRUE.
-    // Os 3 primeiros destaques viram os slides principais.
+    // Para entrar no carrossel, marque destaque como TRUE. Se tiver menos de 3 TRUE,
+    // o código completa automaticamente com as notícias mais recentes.
     const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=64226688&single=true&output=tsv';
+
+    const FALLBACK_IMG = 'central free fire.webp';
 
     function escapeHTML(value) {
         return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -7324,7 +7326,7 @@ async function loadNoticias() {
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+            .replace(/^-+|-+$/g, '') || ('noticia-' + Date.now());
     }
 
     function convertDriveImage(url) {
@@ -7342,16 +7344,58 @@ async function loadNoticias() {
         return ['true', 'sim', 's', '1', 'yes', 'destaque'].includes(v);
     }
 
-    function parseNoticiasTSV(tsvText) {
-        const rows = String(tsvText || '')
-            .trim()
-            .split(/\n/)
-            .map(row => row.split('\t').map(cell => cell.trim().replace(/\r/g, '')));
+    // Parser TSV mais seguro: suporta aspas e quebras de linha dentro de célula.
+    // Isso evita a Home sumir quando a coluna "conteudo" da notícia fica grande.
+    function parseTSV(text) {
+        const rows = [];
+        let row = [];
+        let cell = '';
+        let inQuotes = false;
+        const src = String(text || '').replace(/^\uFEFF/, '');
 
+        for (let i = 0; i < src.length; i++) {
+            const char = src[i];
+            const next = src[i + 1];
+
+            if (char === '"') {
+                if (inQuotes && next === '"') {
+                    cell += '"';
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+                continue;
+            }
+
+            if (char === '\t' && !inQuotes) {
+                row.push(cell.trim());
+                cell = '';
+                continue;
+            }
+
+            if ((char === '\n' || char === '\r') && !inQuotes) {
+                if (char === '\r' && next === '\n') i++;
+                row.push(cell.trim());
+                if (row.some(v => String(v).trim() !== '')) rows.push(row);
+                row = [];
+                cell = '';
+                continue;
+            }
+
+            cell += char;
+        }
+
+        row.push(cell.trim());
+        if (row.some(v => String(v).trim() !== '')) rows.push(row);
+        return rows;
+    }
+
+    function parseNoticiasTSV(tsvText) {
+        const rows = parseTSV(tsvText);
         if (!rows.length) return [];
 
         const headers = rows[0].map(h => h.trim().toLowerCase());
-        const temCabecalhoNovo = headers.includes('id') || headers.includes('conteudo') || headers.includes('resumo') || headers.includes('link_original');
+        const temCabecalhoNovo = headers.includes('titulo') || headers.includes('conteudo') || headers.includes('resumo') || headers.includes('link_original');
 
         return rows.slice(1).map((cells, index) => {
             let noticia = {};
@@ -7367,10 +7411,10 @@ async function loadNoticias() {
                 };
             }
 
-            noticia.titulo = noticia.titulo || '';
-            noticia.id = noticia.id || slugify(noticia.titulo || `noticia-${index + 1}`);
+            noticia.titulo = String(noticia.titulo || '').trim();
+            noticia.id = String(noticia.id || '').trim() || slugify(noticia.titulo || `noticia-${index + 1}`);
             noticia.imagem = convertDriveImage(noticia.imagem);
-            noticia.resumo = noticia.resumo || '';
+            noticia.resumo = String(noticia.resumo || '').trim();
             noticia.link_original = noticia.link_original || noticia.link || '';
             noticia.destaque = isTrue(noticia.destaque);
             noticia.urlInterna = `noticia.html?id=${encodeURIComponent(noticia.id)}`;
@@ -7381,13 +7425,18 @@ async function loadNoticias() {
 
     function initHeroCarousel() {
         const carousel = document.getElementById('news-hero-carousel');
-        if (!carousel) return;
+        if (!carousel || carousel.dataset.ready === '1') return;
+        carousel.dataset.ready = '1';
 
         const slides = Array.from(carousel.querySelectorAll('.news-hero-slide'));
         const dots = Array.from(carousel.querySelectorAll('.news-hero-dot'));
         const prev = carousel.querySelector('.news-hero-prev');
         const next = carousel.querySelector('.news-hero-next');
         let current = 0;
+        let timer = null;
+        let startX = 0;
+        let startY = 0;
+        let isDragging = false;
 
         function showSlide(index) {
             if (!slides.length) return;
@@ -7396,26 +7445,77 @@ async function loadNoticias() {
             dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
         }
 
-        if (prev) prev.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(current - 1); };
-        if (next) next.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(current + 1); };
-        dots.forEach((dot, i) => dot.onclick = (event) => { event.preventDefault(); event.stopPropagation(); showSlide(i); });
-
-        if (slides.length > 1) {
-            setInterval(() => showSlide(current + 1), 6500);
+        function restartTimer() {
+            if (timer) clearInterval(timer);
+            if (slides.length > 1) timer = setInterval(() => showSlide(current + 1), 6500);
         }
+
+        function goTo(index) {
+            showSlide(index);
+            restartTimer();
+        }
+
+        if (prev) prev.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            goTo(current - 1);
+        });
+
+        if (next) next.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            goTo(current + 1);
+        });
+
+        dots.forEach((dot, i) => dot.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            goTo(i);
+        }));
+
+        carousel.addEventListener('touchstart', event => {
+            if (!event.touches || !event.touches.length) return;
+            startX = event.touches[0].clientX;
+            startY = event.touches[0].clientY;
+            isDragging = true;
+        }, { passive: true });
+
+        carousel.addEventListener('touchend', event => {
+            if (!isDragging || !event.changedTouches || !event.changedTouches.length) return;
+            isDragging = false;
+            const endX = event.changedTouches[0].clientX;
+            const endY = event.changedTouches[0].clientY;
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+
+            // Só troca se for arraste horizontal de verdade, para não atrapalhar o scroll vertical.
+            if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.2) {
+                goTo(diffX < 0 ? current + 1 : current - 1);
+            }
+        }, { passive: true });
+
+        carousel.addEventListener('mouseenter', () => { if (timer) clearInterval(timer); });
+        carousel.addEventListener('mouseleave', restartTimer);
+
+        showSlide(0);
+        restartTimer();
     }
 
+    heroContainer.innerHTML = `
+        <section class="news-hero-carousel" aria-label="Carregando notícias">
+            <div style="min-height:220px; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">
+                Carregando notícias...
+            </div>
+        </section>`;
+
     try {
-        const res = await fetch(`${SHEET_TSV_URL}&nocache=${Date.now()}`);
+        const res = await fetch(`${SHEET_TSV_URL}&nocache=${Date.now()}`, { cache: 'no-store' });
         if (!res.ok) throw new Error('Erro ao carregar a aba de notícias.');
 
         const tsvText = await res.text();
         const noticias = parseNoticiasTSV(tsvText);
-        if (noticias.length === 0) return;
+        if (!noticias.length) throw new Error('A planilha de notícias está vazia ou sem coluna de título.');
 
-        // Hero/carrossel: pega até 3 destaques.
-        // Se a planilha/cache retornar menos de 3 destaques, completa com as primeiras notícias.
-        // Isso evita o bug de ficar com só 1 slide e esconder as setas.
         const destaques = noticias.filter(n => n.destaque);
         const slides = [];
         const slideIds = new Set();
@@ -7427,16 +7527,12 @@ async function loadNoticias() {
             slideIds.add(key);
         });
 
-        // Últimas notícias: mantém a lista completa para não esconder as notícias principais.
-        // O hero já destaca 3 matérias, mas os cards abaixo continuam úteis como arquivo/listagem.
-        const demais = noticias;
-
         heroContainer.innerHTML = `
         <section class="news-hero-carousel" id="news-hero-carousel" aria-label="Notícias principais">
             <div class="news-hero-track">
                 ${slides.map((n, i) => `
                 <a class="news-hero-slide ${i === 0 ? 'active' : ''}" href="${escapeHTML(n.urlInterna)}">
-                    <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" alt="${escapeHTML(n.titulo)}" onerror="this.src='central free fire.webp'">
+                    <img src="${escapeHTML(n.imagem || FALLBACK_IMG)}" alt="${escapeHTML(n.titulo)}" onerror="this.src='${FALLBACK_IMG}'">
                     <div class="news-hero-overlay">
                         <h2 class="news-hero-title">${escapeHTML(n.titulo)}</h2>
                         ${n.resumo ? `<p style="margin:8px 0 0; color:#d7ecff; font-weight:600; max-width:760px;">${escapeHTML(n.resumo)}</p>` : ''}
@@ -7454,27 +7550,31 @@ async function loadNoticias() {
         initHeroCarousel();
 
         if (grid) {
-            if (demais.length > 0) {
-                if (titulo) titulo.style.display = 'block';
-                grid.style.display = 'grid';
-                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
-                grid.style.gap = '20px';
+            if (titulo) titulo.style.display = 'block';
+            grid.style.display = 'grid';
+            grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+            grid.style.gap = '20px';
 
-                grid.innerHTML = demais.map(n => `
+            grid.innerHTML = noticias.map(n => `
                 <a class="old-news-card" href="${escapeHTML(n.urlInterna)}" style="display:flex; flex-direction:column; height:100%; text-decoration:none; color:inherit;">
                     <div style="width:100%; height:160px; overflow:hidden; border-bottom:1px solid var(--border);">
-                        <img src="${escapeHTML(n.imagem || 'central free fire.webp')}" alt="${escapeHTML(n.titulo)}" onerror="this.src='central free fire.webp'" style="width:100%; height:100%; object-fit:cover;">
+                        <img src="${escapeHTML(n.imagem || FALLBACK_IMG)}" alt="${escapeHTML(n.titulo)}" onerror="this.src='${FALLBACK_IMG}'" style="width:100%; height:100%; object-fit:cover;">
                     </div>
                     <div class="old-news-title" style="padding:12px; font-size:0.95em; flex-grow:1;">${escapeHTML(n.titulo)}</div>
                 </a>`).join('');
-            } else {
-                grid.innerHTML = '';
-                if (titulo) titulo.style.display = 'none';
-            }
         }
 
     } catch (e) {
         console.error('[loadNoticias] Erro:', e);
+        heroContainer.innerHTML = `
+            <section class="news-hero-carousel" aria-label="Erro ao carregar notícias">
+                <div style="min-height:220px; display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center; text-align:center; padding:20px; color:var(--text-muted);">
+                    <strong style="color:#fff; text-transform:uppercase;">Notícias indisponíveis no momento</strong>
+                    <span style="font-size:0.9em;">Confira se a planilha publicada está acessível e se existe a coluna titulo.</span>
+                </div>
+            </section>`;
+        if (grid) grid.innerHTML = '';
+        if (titulo) titulo.style.display = 'none';
     }
 }
 
