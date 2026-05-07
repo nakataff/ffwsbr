@@ -352,13 +352,47 @@
     }
 
     function parseTSV(text) {
-      const rows = String(text || '').trim().split(/\n/).map(row => row.split('\t').map(cell => cell.trim().replace(/\r/g, '')));
+      // Parser TSV mais seguro: preserva quebras de linha dentro de células entre aspas
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let inQuotes = false;
+
+      const source = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+      for (let i = 0; i < source.length; i++) {
+        const char = source[i];
+        const next = source[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === '\t' && !inQuotes) {
+          row.push(cell.trim());
+          cell = '';
+        } else if (char === '\n' && !inQuotes) {
+          row.push(cell.trim());
+          if (row.some(v => v !== '')) rows.push(row);
+          row = [];
+          cell = '';
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell.trim());
+      if (row.some(v => v !== '')) rows.push(row);
+
       if (!rows.length) return [];
 
       const headers = rows[0].map(h => h.trim().toLowerCase());
       const hasNewHeaders = headers.includes('id') || headers.includes('conteudo') || headers.includes('resumo');
 
-      return rows.slice(1).map((cells, index) => {
+      return rows.slice(1).map((cells) => {
         let item = {};
 
         if (hasNewHeaders) {
@@ -429,22 +463,104 @@
     function renderBody(noticia) {
       const parts = [];
 
-      // Prioridade 1: coluna "conteudo" com linhas normais e IMG:
-      if (noticia.conteudo) {
-        const lines = noticia.conteudo.split(/\n+/).map(l => l.trim()).filter(Boolean);
+      function pushParagraph(text) {
+        const clean = String(text || '').trim();
+        if (!clean) return;
+        parts.push(`<p>${escapeHTML(clean)}</p>`);
+      }
+
+      function pushImage(src) {
+        const cleanSrc = convertDriveImage(String(src || '').trim());
+        if (!cleanSrc) return;
+        parts.push(`<img class="inline-img" src="${escapeHTML(cleanSrc)}" alt="${escapeHTML(noticia.titulo)}" onerror="this.src='central free fire.webp'">`);
+      }
+
+      function pushH2(text) {
+        const clean = String(text || '').trim();
+        if (!clean) return;
+        parts.push(`<h2>${escapeHTML(clean)}</h2>`);
+      }
+
+      function pushQuote(text) {
+        const clean = String(text || '').trim();
+        if (!clean) return;
+        parts.push(`<blockquote>${escapeHTML(clean)}</blockquote>`);
+      }
+
+      function renderRichContent(rawContent) {
+        let text = String(rawContent || '')
+          .replace(/\r\n/g, '\n')
+          .replace(/\r/g, '\n')
+          .replace(/\\n/g, '\n');
+
+        // Aceita marcadores colados no texto:
+        // [IMG:https://...]
+        // [H2:Subtítulo]
+        // [QUOTE:Frase]
+        // [P]
+        text = text
+          .replace(/\s*\[P\]\s*/gi, '\n\n')
+          .replace(/\s*\[(IMG|H2|QUOTE):/gi, '\n[$1:')
+          .replace(/\]\s*/g, ']\n');
+
+        // Aceita também IMG:, H2: e QUOTE: mesmo sem estar em linha separada
+        text = text
+          .replace(/\s+(IMG:https?:\/\/)/gi, '\n$1')
+          .replace(/\s+(H2:)/gi, '\n$1')
+          .replace(/\s+(QUOTE:)/gi, '\n$1');
+
+        const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+        let paragraphBuffer = [];
+
+        function flushParagraph() {
+          if (paragraphBuffer.length) {
+            pushParagraph(paragraphBuffer.join(' '));
+            paragraphBuffer = [];
+          }
+        }
 
         lines.forEach(line => {
-          if (/^IMG:/i.test(line)) {
-            const src = convertDriveImage(line.replace(/^IMG:/i, '').trim());
-            if (src) parts.push(`<img class="inline-img" src="${escapeHTML(src)}" alt="${escapeHTML(noticia.titulo)}" onerror="this.src='central free fire.webp'">`);
-          } else if (/^H2:/i.test(line)) {
-            parts.push(`<h2>${escapeHTML(line.replace(/^H2:/i, '').trim())}</h2>`);
-          } else if (/^QUOTE:/i.test(line)) {
-            parts.push(`<blockquote>${escapeHTML(line.replace(/^QUOTE:/i, '').trim())}</blockquote>`);
-          } else {
-            parts.push(`<p>${escapeHTML(line)}</p>`);
+          // Formato com colchetes
+          let bracketMatch = line.match(/^\[(IMG|H2|QUOTE):([\s\S]+)\]$/i);
+          if (bracketMatch) {
+            flushParagraph();
+            const type = bracketMatch[1].toUpperCase();
+            const value = bracketMatch[2].trim();
+
+            if (type === 'IMG') pushImage(value);
+            if (type === 'H2') pushH2(value);
+            if (type === 'QUOTE') pushQuote(value);
+            return;
           }
+
+          // Formato sem colchetes
+          if (/^IMG:/i.test(line)) {
+            flushParagraph();
+            pushImage(line.replace(/^IMG:/i, '').trim());
+            return;
+          }
+
+          if (/^H2:/i.test(line)) {
+            flushParagraph();
+            pushH2(line.replace(/^H2:/i, '').trim());
+            return;
+          }
+
+          if (/^QUOTE:/i.test(line)) {
+            flushParagraph();
+            pushQuote(line.replace(/^QUOTE:/i, '').trim());
+            return;
+          }
+
+          paragraphBuffer.push(line);
         });
+
+        flushParagraph();
+      }
+
+      // Prioridade 1: coluna "conteudo"
+      if (noticia.conteudo) {
+        renderRichContent(noticia.conteudo);
       }
 
       // Prioridade 2: colunas separadas
@@ -452,19 +568,19 @@
       const texto2 = noticia.texto2 || noticia['texto 2'] || '';
 
       if (!parts.length && texto1) {
-        parts.push(`<p>${escapeHTML(texto1)}</p>`);
+        renderRichContent(texto1);
       }
 
       if (!parts.length && noticia.resumo) {
-        parts.push(`<p>${escapeHTML(noticia.resumo)}</p>`);
+        pushParagraph(noticia.resumo);
       }
 
       if (noticia.imagem_meio) {
-        parts.push(`<img class="inline-img" src="${escapeHTML(noticia.imagem_meio)}" alt="${escapeHTML(noticia.titulo)}" onerror="this.src='central free fire.webp'">`);
+        pushImage(noticia.imagem_meio);
       }
 
       if (texto2) {
-        parts.push(`<p>${escapeHTML(texto2)}</p>`);
+        renderRichContent(texto2);
       }
 
       if (!parts.length) {
