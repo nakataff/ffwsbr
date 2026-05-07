@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00c8ff">
+<link rel="apple-touch-icon" href="central free fire.webp">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogador - Central Free Fire</title>
+<meta name="description" content="Perfil do jogador na Central Free Fire, com estatísticas, função, equipe e desempenho atualizado.">
+<link rel="icon" type="image/webp" href="central free fire.webp">
+<style>
+:root {
+  --bg:#050810; --panel:#0d1220; --panel2:#141a2e; --border:#1e2a45; --accent:#00c8ff;
+  --text:#fff; --muted:#7a9bbf; --gold:#d4af37; --green:#4caf50; --red:#f44336;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top left,rgba(0,200,255,.12),transparent 34%),var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
+a{color:inherit}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(2,5,9,.92);backdrop-filter:blur(10px);border-bottom:2px solid var(--accent);}
+.topbar-inner{max-width:1280px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;text-transform:uppercase;letter-spacing:.8px}
+.brand img{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(0,200,255,.4))}
+.nav-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{border:1px solid var(--border);background:rgba(0,200,255,.07);color:var(--accent);border-radius:999px;padding:8px 13px;font-weight:900;text-decoration:none;text-transform:uppercase;font-size:.78rem;transition:.2s;cursor:pointer}
+.btn:hover{border-color:var(--accent);background:rgba(0,200,255,.14);transform:translateY(-1px)}
+.wrap{max-width:1280px;margin:0 auto;padding:26px 18px 60px}
+.player-hero{position:relative;border:1px solid var(--border);border-radius:22px;overflow:hidden;background:linear-gradient(135deg,rgba(0,200,255,.08),rgba(255,255,255,.02));box-shadow:0 18px 60px rgba(0,0,0,.35);}
+.player-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,rgba(0,200,255,.22),transparent 25%),radial-gradient(circle at 85% 20%,rgba(212,175,55,.16),transparent 25%);pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:360px 1fr;gap:28px;padding:30px;align-items:center}
+.ff-card{width:300px;height:450px;margin:0 auto;background:#000;border:3px solid var(--gold);border-radius:18px;position:relative;overflow:hidden;box-shadow:0 0 34px rgba(212,175,55,.33)}
+.ff-card-bg{position:absolute;inset:0;background:radial-gradient(circle at 32% 18%,#252525,#000 62%)}
+.ff-rating{position:absolute;top:36px;left:26px;z-index:3;color:var(--gold);text-align:center}
+.ff-rating .ovr{font-size:62px;line-height:.82;font-weight:950}
+.ff-rating .role{font-size:22px;font-weight:900;margin-top:6px}
+.ff-rating .line{width:44px;height:2px;background:var(--gold);margin:15px auto;opacity:.75}
+.ff-rating img{display:block;margin:9px auto;object-fit:contain}
+.ff-photo{position:absolute;top:18px;right:-38px;height:275px;z-index:2;-webkit-mask-image:linear-gradient(to bottom,black 70%,transparent 100%);mask-image:linear-gradient(to bottom,black 70%,transparent 100%)}
+.ff-bottom{position:absolute;left:0;right:0;bottom:0;z-index:4;height:190px;background:linear-gradient(transparent,#000 35%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 18px 16px}
+.ff-name{font-size:29px;font-weight:950;text-transform:uppercase;color:#fff;text-align:center;width:100%;border-top:1px solid rgba(212,175,55,.25);padding-top:12px;line-height:1}
+.ff-stats{display:grid;grid-template-columns:1fr;gap:2px;margin-top:12px;text-align:center;font-weight:900}
+.ff-stats span{color:var(--gold)}
+.hero-info h1{margin:0;color:#fff;font-size:clamp(2.2rem,6vw,5rem);line-height:.95;text-transform:uppercase;letter-spacing:-1.5px}
+.team-line{margin-top:10px;display:flex;align-items:center;gap:10px;color:#66b3ff;font-size:1.2rem;font-weight:900;text-transform:uppercase;text-decoration:none;width:max-content}
+.team-line img{width:34px;height:34px;object-fit:contain}
+.badge-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.badge{border:1px solid var(--border);background:rgba(255,255,255,.04);border-radius:999px;padding:7px 12px;color:var(--muted);font-weight:900;text-transform:uppercase;font-size:.78rem}
+.badge strong{color:#fff}
+.class-box{margin-top:24px;border-top:1px solid var(--border);padding-top:22px}
+.stars{font-size:2rem;letter-spacing:3px;margin:8px 0 12px;filter:drop-shadow(0 0 5px rgba(212,175,55,.6))}
+.tier{display:inline-block;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.38);color:var(--gold);font-weight:950;text-transform:uppercase;border-radius:8px;padding:12px 22px;font-size:1.1rem}
+.section-title{margin:30px 0 14px;color:var(--accent);text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:10px;letter-spacing:.8px}
+.stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:16px;position:relative;overflow:hidden}
+.stat-card:before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+.stat-card h3{margin:0 0 10px;color:var(--muted);text-transform:uppercase;font-size:.78rem}
+.stat-value{font-size:2rem;font-weight:950;color:var(--accent)}
+.stat-sub{font-size:.82rem;color:var(--muted);margin-top:5px}
+.content-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.panel-head{padding:14px 16px;border-bottom:1px solid var(--border);color:var(--accent);font-weight:950;text-transform:uppercase}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th,td{padding:11px 12px;text-align:center;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-size:.78rem;text-transform:uppercase;background:#0a0f1c}
+td:first-child,th:first-child{text-align:left}
+.side-list{padding:12px;display:flex;flex-direction:column;gap:8px}
+.side-player{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:12px;text-decoration:none;background:rgba(255,255,255,.025);transition:.2s}
+.side-player:hover{border-color:var(--accent);background:rgba(0,200,255,.08)}
+.side-player img{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#000}
+.side-player strong{font-size:.9rem;text-transform:uppercase}
+.side-player span{display:block;color:var(--muted);font-size:.75rem}
+.loading,.error{text-align:center;padding:70px 20px;border:1px dashed var(--border);border-radius:18px;color:var(--muted);background:rgba(13,18,32,.8)}
+.loading strong,.error strong{display:block;color:var(--accent);font-size:1.2rem;text-transform:uppercase;margin-bottom:8px}
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr;padding:20px}
+  .hero-info{text-align:center}
+  .team-line{margin-left:auto;margin-right:auto}
+  .badge-row{justify-content:center}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .content-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .topbar-inner{align-items:flex-start;flex-direction:column}
+  .wrap{padding:14px 10px 40px}
+  .ff-card{transform:scale(.88);margin:-25px auto}
+  .stat-grid{grid-template-columns:1fr}
+  th,td{padding:9px 8px;font-size:.82rem}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img src="central free fire.webp" alt=""><span>Central Free Fire</span></a>
+    <div class="nav-actions">
+      <a class="btn" href="index.html">Início</a>
+      <a class="btn" href="index.html#jogadores">Jogadores</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="root" class="loading"><strong>Carregando jogador</strong>Buscando dados atualizados...</div>
+</main>
+
+<script>
+const playerRoles = {
+    "Bops": "GRAN", "Giuh": "RUSH", "BuTziN": "RUSH", "MT7": "SUP", "Proxx7": "RUSH",
+    "Pitbull": "RUSH", "PETER": "RUSH", "vitinxp": "GRAN", "Motovea": "SUP", "BYTE333": "RUSH",
+    "Pão7": "SUP", "Cauã9": "GRAN", "Juca10xL": "RUSH", "Lyon": "RUSH",
+    "lippe!": "GRAN", "itzking1": "RUSH", "Razure": "RUSH", "IGOR7": "SUP", "SASKITO": "RUSH",
+    "HAK": "RUSH", "NICKZ": "RUSH", "TRAP": "GRAN", "GUAXA": "SUP", "BZP": "RUSH",
+    "Sam7": "GRAN", "JNmvp7": "RUSH", "Brisa7": "RUSH", "NEYawp": "SUP", "MitoMvp": "RUSH",
+    "BLACK02": "RUSH", "LC777": "SUP", "GUIMERLQ": "RUSH", "PROZIN": "GRAN", "MitinX": "RUSH",
+    "Rigby245": "RUSH", "General!": "RUSH", "Raone7": "GRAN", "Yago": "SUP", "mtsexy.": "RUSH",
+    "João7": "RUSH", "kauãxp": "RUSH", "GUS": "GRAN", "honeyzL": "SUP", "WHISKY": "SUP",
+    "Bahiaz7": "RUSH", "BIELGOD": "RUSH", "Rojão": "GRAN", "ZETSU9": "SUP",
+    "Yann7awp": "SUP", "SOARES": "GRAN", "Redxzzz": "RUSH", "Theus": "RUSH", "wLiu": "RUSH",
+    "Luan7": "RUSH", "Ericking": "SUP", "Stark": "GRAN", "Draxx7": "RUSH",
+    "ITAL0$$": "RUSH", "IguiNmvp": "RUSH", "Naandox": "GRAN", "KaKaZk": "SUP", "Erick11": "RUSH",
+    "Lost21": "RUSH", "Cauan7": "GRAN", "Nikeboy": "SUP", "Mala": "RUSH", "Shotzzrx": "RUSH",
+    "Keven7!": "RUSH", "WillProdigy": "RUSH", "Destroi7": "GRAN", "YOKO7": "SUP", "Master77": "RUSH", "LucasAWP": "SUP",
+    "DRADE.11": "GRAN", "SEU PAI": "RUSH", "WM": "SUP", "nepoIGN": "RUSH"
+};
+
+let playerPhotos = {
+    "MT7": "mt7.webp","Bops": "bops.webp", "Giuh": "giuh.webp", "BuTziN": "but.webp", "Proxx7": "proxx7.webp",
+    "Pitbull": "pitbull.webp", "PETER": "peter.webp", "vitinxp": "vitinxp.webp", "Motovea": "motovea7.webp", "BYTE333": "byte.webp",
+    "Pão7": "pao.webp", "Cauã9": "caua.webp", "Juca10xL": "juca.webp", "Lyon": "lyon.webp",
+    "lippe!": "lippe.webp", "itzking1": "itzking.webp", "Razure": "razure.webp", "IGOR7": "igor7.webp",
+    "HAK": "hak.webp", "NICKZ": "nickz7.webp", "TRAP": "trap.png", "GUAXA": "guaxa.webp", "BZP": "bzp.webp",
+    "Sam7": "sam7.webp", "JNmvp7": "jnmvp.webp", "Brisa7": "brisa7.webp", "NEYawp": "neyawp.webp", "MitoMvp": "mitomvp.webp",
+    "BLACK02": "black02.webp", "LC777": "lc.webp", "GUIMERLQ": "guime.webp", "PROZIN": "prozin.webp", "MitinX": "mitin.webp",
+    "Rigby245": "rigby.webp", "General!": "general.webp", "Raone7": "raone7.webp", "Yago": "yago.webp", "mtsexy.": "mtsexy.webp",
+    "João7": "joao.webp", "kauãxp": "xp.webp", "GUS": "gus.webp", "honeyzL": "honey.webp", "WHISKY": "whisky.webp",
+    "Bahiaz7": "bahia.webp", "BIELGOD": "bielgod.webp", "Rojão": "silhueta.png", "ZETSU9": "zetsu.webp", "Mts007": "mts007.webp",
+    "Yann7awp": "yan7.webp", "SOARES": "soares.webp", "Redxzzz": "redxz.webp", "Theus": "theus.webp", "wLiu": "wliu.webp",
+    "Luan7": "luan.webp", "Ericking": "eric.webp", "Stark": "stark.webp", "Draxx7": "drax.webp",
+    "ITAL0$$": "italo.webp", "IguiNmvp": "iguin.webp", "Naandox": "nandox.webp", "KaKaZk": "kakazk.webp", "Erick11": "erick11.webp",
+    "Lost21": "lost21.webp", "Cauan7": "cauan7.webp", "Nikeboy": "nikeboy.webp", "Mala": "mala.webp", "Shotzzrx": "shotzzrx.webp",
+    "Keven7!": "keven.webp", "WillProdigy": "will.webp", "Destroi7": "destroi.webp", "YOKO7": "yoko.webp", "Master77": "master.webp",
+    "DRADE.11": "drade.webp", "SEU PAI": "seu pai.webp", "WM": "wm.webp", "nepoIGN": "nepo.webp"
+};
+
+let logos = {
+    // === EQUIPES ATUAIS (WB 2026) ===
+    'ALPHA7': 'A7 2.png',
+    'AXS FUSION': 'AXS BRANCA.png',
+    'CIVIS': 'Civis.png',
+    'E1 SPORTS': 'E1.png',
+    'FLUXO W7M': 'Fluxo 2.png',
+    'INFLUENCE RAGE': 'Influence Rage.png',
+    'INTZ': 'Intz 1.png',
+    'LOOPS': 'Loops 1.png',
+    'LOS': 'Los.png',
+    'LOUD SNICKERS': 'loud 2.png',
+    'ANGELS OUTPLAY': 'Outplay.png',
+    'RISE GAMING': 'Rise 1.png',
+    'RUSH GAMING': 'Rush.png',
+    'TEAM SOLID': 'Team Solid 2.png',
+    'VASCO ESPORTS': 'Vasco.png',
+    'VIRTUS PRO': 'Virtus Pro.png',
+
+    // === EQUIPES HISTÓRICAS (Retiradas do titlesData) ===
+    'VIVO KEYD': 'keyd.webp',
+    'B4 ESPORTS': 'b4.webp',
+    'SS ESPORTS': 'ss esports.webp',
+    'TEAM LIQUID': 'tl.webp',
+    'BLACK DRAGONS': 'bd.webp',
+    'MAGIC SQUAD': 'magic squad.webp',
+    'TSM': 'tsm.webp',
+    'SANTOS': 'santos.webp',
+    'ALFA 34': 'a34.webp',
+
+    // === BÔNUS PARA O HISTÓRICO DE EQUIPES (dbPassagens) ===
+    // (Basta você ter essas imagens salvas na pasta com esses nomes)
+    'PAIN GAMING': 'pain.webp', 'CORINTHIANS': 'sccp.webp', 'FLAMENGO': 'fla.webp', 'NETSHOES MINERS': 'miners.webp', 'RED CANIDS': 'red.webp', 'ANTISOCIAL TEAM': 'ast.webp',
+    'FURIA': 'furia.webp',
+};
+
+const db = {
+    teams: [
+        { equipe: 'FLUXO W7M', grupo: 'A' },
+        { equipe: 'VIRTUS PRO', grupo: 'D' },
+        { equipe: 'LOS', grupo: 'C' },
+        { equipe: 'LOUD SNICKERS', grupo: 'C' },
+        { equipe: 'ALPHA7', grupo: 'D' },
+        { equipe: 'TEAM SOLID', grupo: 'B' },
+        { equipe: 'INTZ', grupo: 'C' },
+        { equipe: 'E1 SPORTS', grupo: 'A' },
+        { equipe: 'AXS FUSION', grupo: 'A' },
+        { equipe: 'LOOPS', grupo: 'A' },
+        { equipe: 'RISE GAMING', grupo: 'C' },
+        { equipe: 'RUSH GAMING', grupo: 'D' },
+        { equipe: 'INFLUENCE RAGE', grupo: 'B' },
+        { equipe: 'VASCO ESPORTS', grupo: 'B' },
+        { equipe: 'ANGELS OUTPLAY', grupo: 'D' },
+        { equipe: 'CIVIS', grupo: 'B' }
+    ],
+    players: [
+        { jogador: "BIELGOD", equipe: "VASCO ESPORTS" },
+        { jogador: "BLACK02", equipe: "RUSH GAMING" },
+        { jogador: "BRUNO7w", equipe: "E1 SPORTS", isEx: true },
+        { jogador: "BYTE333", equipe: "TEAM SOLID" },
+        { jogador: "BZP", equipe: "LOUD SNICKERS" },
+        { jogador: "Bahiaz7", equipe: "VASCO ESPORTS" },
+        { jogador: "Bops", equipe: "FLUXO W7M" },
+        { jogador: "Brisa7", equipe: "ALPHA7" },
+        { jogador: "BuTziN", equipe: "FLUXO W7M" },
+        { jogador: "Cauan7", equipe: "VIRTUS PRO" },
+        { jogador: "Cauã9", equipe: "E1 SPORTS" },
+        { jogador: "DRADE.11", equipe: "ANGELS OUTPLAY" },
+        { jogador: "Destroi7", equipe: "CIVIS" },
+        { jogador: "Draxx7", equipe: "LOOPS" },
+        { jogador: "Erick11", equipe: "RISE GAMING" },
+        { jogador: "Ericking", equipe: "LOOPS" },
+        { jogador: "Fixa.10", equipe: "ANGELS OUTPLAY", isEx: true },
+        { jogador: "GUAXA", equipe: "LOUD SNICKERS" },
+        { jogador: "GUIMERLQ", equipe: "RUSH GAMING" },
+        { jogador: "GUS", equipe: "INTZ" },
+        { jogador: "General!", equipe: "LOS" },
+        { jogador: "Giuh", equipe: "FLUXO W7M" },
+        { jogador: "HAK", equipe: "LOUD SNICKERS" },
+        { jogador: "IGOR7", equipe: "INFLUENCE RAGE" },
+        { jogador: "ITAL0$$", equipe: "RISE GAMING" },
+        { jogador: "IguiNmvp", equipe: "RISE GAMING" },
+        { jogador: "JNmvp7", equipe: "ALPHA7" },
+        { jogador: "João7", equipe: "INTZ" },
+        { jogador: "Juca10xL", equipe: "E1 SPORTS" },
+        { jogador: "KaKaZk", equipe: "RISE GAMING" },
+        { jogador: "Keven7!", equipe: "CIVIS" },
+        { jogador: "LucasAWP", equipe: "CIVIS" },
+        { jogador: "LC777", equipe: "RUSH GAMING" },
+        { jogador: "Lost21", equipe: "VIRTUS PRO" },
+        { jogador: "Luan7", equipe: "LOOPS" },
+        { jogador: "Lyon", equipe: "E1 SPORTS" },
+        { jogador: "MT7", equipe: "FLUXO W7M" },
+        { jogador: "Mala", equipe: "VIRTUS PRO" },
+        { jogador: "Master77", equipe: "CIVIS" },
+        { jogador: "MitinX", equipe: "RUSH GAMING" },
+        { jogador: "MitoMvp", equipe: "ALPHA7" },
+        { jogador: "Motovea", equipe: "TEAM SOLID" },
+        { jogador: "Mts007", equipe: "VASCO ESPORTS", isEx: true },
+        { jogador: "NEYawp", equipe: "ALPHA7" },
+        { jogador: "NICKZ", equipe: "LOUD SNICKERS" },
+        { jogador: "Naandox", equipe: "RISE GAMING" },
+        { jogador: "Nikeboy", equipe: "VIRTUS PRO" },
+        { jogador: "PETER", equipe: "TEAM SOLID" },
+        { jogador: "PROZIN", equipe: "RUSH GAMING" },
+        { jogador: "Pitbull", equipe: "TEAM SOLID" },
+        { jogador: "Proxx7", equipe: "FLUXO W7M" },
+        { jogador: "Pão7", equipe: "E1 SPORTS" },
+        { jogador: "Raone7", equipe: "LOS" },
+        { jogador: "Razure", equipe: "INFLUENCE RAGE" },
+        { jogador: "Redxzzz", equipe: "AXS FUSION" },
+        { jogador: "Rick9z", equipe: "ANGELS OUTPLAY", isEx: true },
+        { jogador: "Rigby245", equipe: "LOS" },
+        { jogador: "Rojão", equipe: "VASCO ESPORTS" },
+        { jogador: "SEU PAI", equipe: "ANGELS OUTPLAY" },
+        { jogador: "SEU TIO", equipe: "ANGELS OUTPLAY", isEx: true },
+        { jogador: "SOARES", equipe: "AXS FUSION" },
+        { jogador: "Sam7", equipe: "ALPHA7" },
+        { jogador: "Shotzzrx", equipe: "VIRTUS PRO" },
+        { jogador: "Stark", equipe: "LOOPS" },
+        { jogador: "TRAP", equipe: "LOUD SNICKERS" },
+        { jogador: "Theus", equipe: "AXS FUSION" },
+        { jogador: "WM", equipe: "ANGELS OUTPLAY" },
+        { jogador: "WillProdigy", equipe: "CIVIS" },
+        { jogador: "YOKO7", equipe: "CIVIS" },
+        { jogador: "Yago", equipe: "LOS" },
+        { jogador: "Yann7awp", equipe: "AXS FUSION" },
+        { jogador: "ZETSU9", equipe: "VASCO ESPORTS" },
+        { jogador: "honeyzL", equipe: "INTZ" },
+        { jogador: "itzking1", equipe: "INFLUENCE RAGE" },
+        { jogador: "kauãxp", equipe: "INTZ" },
+        { jogador: "lippe!", equipe: "INFLUENCE RAGE" },
+        { jogador: "mtsexy.", equipe: "LOS" },
+        { jogador: "nepoIGN", equipe: "ANGELS OUTPLAY" },
+        { jogador: "vitinxp", equipe: "TEAM SOLID" },
+        { jogador: "wLiu", equipe: "AXS FUSION" }
+    ]
+};
+
+function slugify(text) {
+  return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+function cleanName(name) {
+  return String(name || '').split('|')[0].replace(/_Staff|_Coach|_Inativo|_2/g,'').trim();
+}
+function findLogo(team) {
+  if (!team) return 'escudo.webp';
+  if (logos[team]) return logos[team];
+  const key = Object.keys(logos).find(k => k.trim().toUpperCase() === String(team).trim().toUpperCase());
+  return key ? logos[key] : 'escudo.webp';
+}
+function findPhoto(name) {
+  const key = Object.keys(playerPhotos).find(k => slugify(k) === slugify(name) || k.toLowerCase().trim() === String(name).toLowerCase().trim());
+  return key ? playerPhotos[key] : 'silhueta.png';
+}
+function fmt(num) { return Number(num || 0).toLocaleString('pt-BR'); }
+function fmtK(num) {
+  num = Number(num || 0);
+  return num >= 1000 ? (num/1000).toFixed(1).replace('.', ',') + 'K' : String(num);
+}
+function calculateOverall(p) {
+  const q = Math.max(1, Number(p.quedas || 0));
+  const avgK = (p.abates || 0) / q;
+  const avgD = (p.dano || 0) / q;
+  const avgA = (p.assists || 0) / q;
+  const avgM = (p.mvp || 0) / q;
+  const score = 55 + Math.min(22, avgK * 6.2) + Math.min(12, avgD / 230) + Math.min(7, avgA * 2.2) + Math.min(4, avgM * 15);
+  return Math.max(60, Math.min(99, Math.round(score)));
+}
+function classify(ovr) {
+  if (ovr >= 93) return ['LENDÁRIO', '⭐⭐⭐⭐⭐'];
+  if (ovr >= 88) return ['ELITE', '⭐⭐⭐⭐'];
+  if (ovr >= 82) return ['MUITO BOM', '⭐⭐⭐'];
+  if (ovr >= 75) return ['PRO', '⭐⭐'];
+  return ['PROMESSA', '⭐'];
+}
+function safeTeamUrl(team) { return 'team.html?id=' + encodeURIComponent(slugify(team)); }
+function safePlayerUrl(name) { return 'player.html?id=' + encodeURIComponent(slugify(name)); }
+
+function aggregatePlayers(dbJogadoresQuedas) {
+  const map = {};
+  const daily = {};
+  Object.entries(dbJogadoresQuedas || {}).forEach(([dia, quedas]) => {
+    Object.entries(quedas || {}).forEach(([queda, arr]) => {
+      (arr || []).forEach(entry => {
+        const name = cleanName(entry.nome || entry.jogador);
+        if (!name) return;
+        const key = slugify(name);
+        if (!map[key]) map[key] = { jogador:name, equipe:entry.equipe || '', abates:0, dano:0, assists:0, mvp:0, quedas:0, recorde:0, dias:new Set(), latestDay:-1 };
+        const p = map[key];
+        const kills = Number(entry.kills ?? entry.abates ?? 0);
+        const dano = Number(entry.dano ?? 0);
+        const assists = Number(entry.assists ?? entry.assistencias ?? 0);
+        const mvp = Number(entry.mvp ?? 0);
+        p.abates += kills; p.dano += dano; p.assists += assists; p.mvp += mvp; p.quedas += 1;
+        p.recorde = Math.max(p.recorde, kills);
+        p.dias.add(Number(dia));
+        if (Number(dia) >= p.latestDay) { p.latestDay = Number(dia); p.equipe = entry.equipe || p.equipe; }
+
+        const dkey = key + '::' + dia;
+        if (!daily[dkey]) daily[dkey] = { dia:Number(dia), jogador:name, equipe:entry.equipe || '', abates:0, dano:0, assists:0, mvp:0, quedas:0 };
+        daily[dkey].abates += kills; daily[dkey].dano += dano; daily[dkey].assists += assists; daily[dkey].mvp += mvp; daily[dkey].quedas += 1;
+      });
+    });
+  });
+  Object.values(map).forEach(p => p.dias = [...p.dias].sort((a,b)=>a-b));
+  return { players:Object.values(map), daily:Object.values(daily) };
+}
+
+function rankPlayers(players) {
+  const rankBy = (field, rankName) => {
+    [...players].sort((a,b)=>(b[field]||0)-(a[field]||0)).forEach((p,i)=>p[rankName]=i+1);
+  };
+  rankBy('abates','rankKills'); rankBy('dano','rankDmg'); rankBy('assists','rankAssists'); rankBy('mvp','rankMvp');
+}
+
+function updateMeta(p) {
+  const title = `${cleanName(p.jogador)} - Estatísticas, Overall e Perfil | Central Free Fire`;
+  const desc = `${cleanName(p.jogador)} atua pela ${p.equipe || 'equipe'} com ${p.abates || 0} abates, ${p.quedas || 0} quedas e overall atualizado na Central Free Fire.`;
+  document.title = title;
+  document.querySelector('meta[name="description"]').setAttribute('content', desc);
+
+  const meta = (prop, value) => {
+    let el = document.querySelector(`meta[property="${prop}"]`);
+    if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
+    el.setAttribute('content', value);
+  };
+  meta('og:title', title);
+  meta('og:description', desc);
+  meta('og:image', findPhoto(p.jogador));
+}
+
+function renderPlayer(p, daily, allPlayers) {
+  updateMeta(p);
+  const root = document.getElementById('root');
+  const role = playerRoles[p.jogador] || playerRoles[cleanName(p.jogador)] || 'RUSH';
+  const photo = findPhoto(p.jogador);
+  const teamLogo = findLogo(p.equipe);
+  const ovr = calculateOverall(p);
+  const [tier, stars] = classify(ovr);
+  const q = Math.max(1, p.quedas || 0);
+  const teamMates = allPlayers.filter(x => x.equipe === p.equipe && slugify(x.jogador) !== slugify(p.jogador)).sort((a,b)=>b.abates-a.abates).slice(0,8);
+  const playerDaily = daily.filter(d => slugify(d.jogador) === slugify(p.jogador)).sort((a,b)=>b.dia-a.dia);
+
+  root.className = '';
+  root.innerHTML = `
+    <section class="player-hero">
+      <div class="hero-grid">
+        <div class="ff-card">
+          <div class="ff-card-bg"></div>
+          <div class="ff-rating">
+            <div class="ovr">${ovr}</div>
+            <div class="role">${role}</div>
+            <div class="line"></div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" style="width:38px;border-radius:3px" alt="Brasil">
+            <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width:54px;height:54px" alt="${p.equipe}">
+          </div>
+          <img class="ff-photo" src="${photo}" onerror="this.src='silhueta.png'" alt="${cleanName(p.jogador)}">
+          <div class="ff-bottom">
+            <div class="ff-name">${cleanName(p.jogador)}</div>
+            <div class="ff-stats">
+              <div><span>${fmt(p.abates)}</span> ABATES</div>
+              <div><span>${fmt(p.assists)}</span> ASSISTÊNCIAS</div>
+              <div><span>${fmtK(p.dano)}</span> DANO</div>
+              <div><span>${fmt(p.quedas)}</span> QUEDAS</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-info">
+          <h1>${cleanName(p.jogador)}</h1>
+          <a class="team-line" href="${safeTeamUrl(p.equipe)}"><img src="${teamLogo}" onerror="this.src='escudo.webp'" alt="">${p.equipe || 'SEM EQUIPE'}</a>
+          <div class="badge-row">
+            <div class="badge">Função <strong>${role}</strong></div>
+            <div class="badge">Quedas <strong>${fmt(p.quedas)}</strong></div>
+            <div class="badge">Média K/Q <strong>${(p.abates/q).toFixed(2)}</strong></div>
+            <div class="badge">Dano/Q <strong>${(p.dano/q).toFixed(0)}</strong></div>
+          </div>
+          <div class="class-box">
+            <div style="color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:2px">Classificação Pro 2026</div>
+            <div class="stars">${stars}</div>
+            <div class="tier">${tier}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="section-title">Desempenho atual</h2>
+    <section class="stat-grid">
+      <div class="stat-card"><h3>Abates totais</h3><div class="stat-value">${fmt(p.abates)}</div><div class="stat-sub">Rank #${p.rankKills || '-'}</div></div>
+      <div class="stat-card"><h3>Dano total</h3><div class="stat-value">${fmtK(p.dano)}</div><div class="stat-sub">Rank #${p.rankDmg || '-'}</div></div>
+      <div class="stat-card"><h3>Assistências</h3><div class="stat-value">${fmt(p.assists)}</div><div class="stat-sub">Rank #${p.rankAssists || '-'}</div></div>
+      <div class="stat-card"><h3>MVPs</h3><div class="stat-value">${fmt(p.mvp)}</div><div class="stat-sub">Rank #${p.rankMvp || '-'}</div></div>
+      <div class="stat-card"><h3>Recorde em queda</h3><div class="stat-value">${fmt(p.recorde)}</div><div class="stat-sub">Maior marca em uma queda</div></div>
+    </section>
+
+    <section class="content-grid">
+      <div>
+        <h2 class="section-title">Evolução por dia</h2>
+        <div class="panel">
+          <div class="panel-head">Histórico da temporada</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Dia</th><th>Equipe</th><th>Quedas</th><th>Abates</th><th>K/Q</th><th>Dano</th><th>Assist.</th><th>MVP</th></tr></thead>
+              <tbody>
+                ${playerDaily.length ? playerDaily.map(d => `<tr><td>Dia ${d.dia}</td><td>${d.equipe || p.equipe}</td><td>${d.quedas}</td><td style="color:var(--accent);font-weight:900">${d.abates}</td><td>${(d.abates/Math.max(1,d.quedas)).toFixed(2)}</td><td>${fmt(d.dano)}</td><td>${d.assists}</td><td>${d.mvp}</td></tr>`).join('') : `<tr><td colspan="8">Sem dados por dia encontrados.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <aside>
+        <h2 class="section-title">Mesmo time</h2>
+        <div class="panel">
+          <div class="panel-head">${p.equipe || 'Equipe'}</div>
+          <div class="side-list">
+            ${teamMates.length ? teamMates.map(tm => `<a class="side-player" href="${safePlayerUrl(tm.jogador)}"><img src="${findPhoto(tm.jogador)}" onerror="this.src='silhueta.png'" alt=""><div><strong>${cleanName(tm.jogador)}</strong><span>${playerRoles[tm.jogador] || 'RUSH'} • ${tm.abates || 0} abates</span></div></a>`).join('') : `<div style="color:var(--muted);padding:10px">Nenhum companheiro encontrado.</div>`}
+          </div>
+        </div>
+      </aside>
+    </section>
+  `;
+}
+
+async function init() {
+  const root = document.getElementById('root');
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id') || '';
+
+  try {
+    const res = await fetch('dados.json?v=' + Date.now());
+    if (!res.ok) throw new Error('Não consegui carregar dados.json');
+    const data = await res.json();
+    const aggregated = aggregatePlayers(data.dbJogadoresQuedas || {});
+
+    // Junta a base fixa do index com os dados calculados do JSON
+    const basePlayers = db.players.map(p => ({...p}));
+    const bySlug = {};
+    basePlayers.forEach(p => bySlug[slugify(p.jogador)] = {...p, abates:0,dano:0,assists:0,mvp:0,quedas:0,recorde:0});
+    aggregated.players.forEach(p => bySlug[slugify(p.jogador)] = {...(bySlug[slugify(p.jogador)] || {}), ...p});
+    const allPlayers = Object.values(bySlug);
+    rankPlayers(allPlayers);
+
+    const player = allPlayers.find(p => slugify(p.jogador) === id || slugify(cleanName(p.jogador)) === id);
+    if (!player) {
+      root.className = 'error';
+      root.innerHTML = `<strong>Jogador não encontrado</strong>Confira se o ID está correto. Exemplo: player.html?id=mt7<br><br><a class="btn" href="index.html">Voltar</a>`;
+      return;
+    }
+
+    renderPlayer(player, aggregated.daily, allPlayers);
+  } catch (err) {
+    console.error(err);
+    root.className = 'error';
+    root.innerHTML = `<strong>Erro ao carregar</strong>${err.message}<br>Este arquivo precisa estar no mesmo repositório do index.html e do dados.json.<br><br><a class="btn" href="index.html">Voltar</a>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
