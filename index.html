@@ -565,8 +565,8 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 .day-vote-team img { width: 32px; height: 32px; object-fit: contain; }
 .day-vote-name { font-weight: 900; font-size: 0.82em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .day-vote-percent { color: var(--accent); font-weight: 900; font-size: 0.86em; }
-.day-vote-bar { grid-column: 1 / 4; height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; border: 1px solid rgba(0,200,255,0.16); }
-.day-vote-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, rgba(0,200,255,0.55), #00c8ff); border-radius: 999px; transition: width 0.35s ease; box-shadow: 0 0 10px rgba(0,200,255,0.45); }
+.day-vote-bar { grid-column: 1 / 4; height: 10px; background: rgba(255,255,255,0.10); border-radius: 999px; overflow: hidden; border: 1px solid rgba(0,200,255,0.25); }
+.day-vote-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #0090c8, #00c8ff); border-radius: 999px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 14px rgba(0,200,255,0.7); }
 .day-vote-count { grid-column: 1 / 4; color: var(--text-muted); font-size: 0.7em; font-weight: 700; text-align: right; }
 .day-vote-rank { color: var(--accent); font-weight: 900; font-size: 0.72em; opacity: 0.9; }
 .day-vote-empty { color: var(--text-muted); text-align: center; padding: 12px 4px; font-size: 0.85em; }
@@ -7306,7 +7306,7 @@ async function loadNoticias() {
     // id | titulo | imagem | resumo | conteudo | data | autor | destaque | link_original
     // Para aparecer no hero/carrossel, marque destaque como TRUE.
     // Os 3 primeiros destaques viram os slides principais.
-    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=64226688&single=true&output=tsv';
+    const SHEET_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=SEU_GID_NOTICIAS_AQUI&single=true&output=tsv'; // ⚠️ TROQUE 'SEU_GID_NOTICIAS_AQUI' pelo GID correto da sua aba de Notícias!
 
     function escapeHTML(value) {
         return String(value ?? '').replace(/[&<>"']/g, char => ({
