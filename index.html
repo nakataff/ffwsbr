@@ -727,6 +727,143 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 #ffws-sea-2026-s1 .btn-action { padding: 8px 10px; font-size: 0.78em; }
 }
 
+
+
+/* =============================================
+   AJUSTES FFWS SEA - MOBILE / POSIÇÃO / DANO
+   ============================================= */
+#table-sea-classificacao .int-rank-cell,
+#table-sea-abates .int-rank-cell {
+    width: 38px;
+    min-width: 38px;
+    text-align: center;
+    color: var(--accent);
+    font-weight: 900;
+}
+
+#table-sea-abates td.sea-col-player { text-align: left; }
+
+#table-sea-classificacao th.sea-col-points,
+#table-sea-classificacao td.sea-col-points {
+    width: 68px;
+    min-width: 68px;
+    max-width: 68px;
+    text-align: center;
+}
+
+#table-sea-classificacao th.sea-col-booyah,
+#table-sea-classificacao td.sea-col-booyah {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    text-align: center;
+}
+
+#table-sea-classificacao .sea-team-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+#table-sea-classificacao .sea-team-cell .team-logo {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+}
+
+@media (max-width: 768px) {
+    #table-sea-abates th.sea-col-role,
+    #table-sea-abates td.sea-col-role {
+        display: none !important;
+    }
+
+    #table-sea-classificacao .sea-team-cell {
+        gap: 6px !important;
+    }
+
+    #table-sea-classificacao .sea-team-cell .team-logo {
+        width: 20px !important;
+        height: 20px !important;
+        flex-basis: 20px !important;
+    }
+
+    #ffws-sea-2026-s1 .sea-mobile-only {
+        display: inline !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: nowrap !important;
+    }
+
+    #ffws-sea-2026-s1 .int-team-name {
+        font-size: 0.95em !important;
+        letter-spacing: 0 !important;
+    }
+
+    #table-sea-classificacao th.sea-col-booyah,
+    #table-sea-classificacao td.sea-col-booyah {
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+    }
+
+    #table-sea-classificacao th.sea-col-points,
+    #table-sea-classificacao td.sea-col-points {
+        width: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+    }
+}
+
+
+
+/* Correção final: depois que a coluna # foi adicionada, a coluna TIME virou a 2ª.
+   Essas regras anulam os nth-child antigos da classificação SEA. */
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child,
+#table-sea-abates th:first-child,
+#table-sea-abates td:first-child {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    text-align: center !important;
+}
+
+#table-sea-classificacao th.sea-col-team,
+#table-sea-classificacao td.sea-col-team {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    text-align: left !important;
+    overflow: hidden !important;
+}
+
+#table-sea-classificacao th.sea-col-points,
+#table-sea-classificacao td.sea-col-points {
+    width: 68px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+    text-align: center !important;
+}
+
+@media (max-width: 768px) {
+    #table-sea-classificacao th:first-child,
+    #table-sea-classificacao td:first-child,
+    #table-sea-abates th:first-child,
+    #table-sea-abates td:first-child {
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+    }
+
+    #table-sea-classificacao th.sea-col-team,
+    #table-sea-classificacao td.sea-col-team {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -4624,26 +4761,28 @@ function calculatePlayerRanks() {
 
 function sortTable(tableId, colIndex, isNumeric) {
     let table = document.getElementById(tableId);
+    if (!table) return;
     let tbody = table.querySelector("tbody");
     let rows = Array.from(tbody.querySelectorAll("tr"));
     let isAsc = table.getAttribute("data-sort-dir") === "asc";
     table.setAttribute("data-sort-dir", isAsc ? "desc" : "asc");
     rows.sort((a, b) => {
-        let valA = a.cells[colIndex].innerText.trim();
-        let valB = b.cells[colIndex].innerText.trim();
+        let valA = a.cells[colIndex]?.innerText.trim() || '';
+        let valB = b.cells[colIndex]?.innerText.trim() || '';
         if (isNumeric) {
-            valA = parseFloat(valA.replace(/[^\d.-]/g, '')) || 0;
-            valB = parseFloat(valB.replace(/[^\d.-]/g, '')) || 0;
+            valA = parseSortNumber(valA);
+            valB = parseSortNumber(valB);
             return isAsc ? valA - valB : valB - valA;
         } else {
             return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
     });
     rows.forEach(r => tbody.appendChild(r));
-    if (tableId === 'table-sea-abates' && typeof refreshSEAAbatesRankColumn === 'function') {
-        refreshSEAAbatesRankColumn();
+    if ((tableId === 'table-sea-abates' || tableId === 'table-sea-classificacao') && typeof refreshSEADynamicRankColumn === 'function') {
+        refreshSEADynamicRankColumn(tableId);
     }
 }
+
 
 function onPlayerTeamFilterChanged() {
     selectedPlayerDays = []; // Reseta os dias selecionados ao trocar de time
@@ -8812,6 +8951,75 @@ function parseSEANumber(value) {
     return parseFloat(normalized) || 0;
 }
 
+
+function isSEADamageColumn(header) {
+    const h = normalizeSEAKey(header);
+    return h === 'DANO' || h === 'DAMAGE' || h.includes('DANO') || h.includes('DAMAGE');
+}
+
+function isSEABooyahColumn(header) {
+    const h = normalizeSEAKey(header);
+    return h.includes('BOOYAH') || h === 'BOOYAH' || h === 'BOOYAHS' || h === 'B';
+}
+
+function isSEAPositionColumn(header) {
+    const h = normalizeSEAKey(header);
+    return h === '#' || h === 'POS' || h === 'POSICAO' || h === 'POSICAO GERAL' || h === 'RANK' || h.includes('POSICAO');
+}
+
+function formatCompactSEADamage(value) {
+    const num = parseSEANumber(value);
+    if (num >= 1000) return `${Math.round(num / 1000)}k`;
+    return String(num || 0);
+}
+
+function getSEAColumnClass(header, tableId = '') {
+    const classes = [];
+    if (shouldCleanSEAPlayerColumn(header)) classes.push('sea-col-player');
+    if (shouldConvertSEATeamColumn(header)) classes.push('sea-col-team');
+    if (shouldConvertSEAFunctionColumn(header)) classes.push('sea-col-role');
+    if (isSEADamageColumn(header)) classes.push('sea-col-dano');
+    if (isSEABooyahColumn(header)) classes.push('sea-col-booyah');
+    if (tableId === 'table-sea-classificacao' && isSEAPointsColumn(header)) classes.push('sea-col-points');
+    return classes.join(' ');
+}
+
+function stripSEAPositionColumns(parsed) {
+    const headers = (parsed.headers || []).filter(h => !isSEAPositionColumn(h));
+    const rows = (parsed.rows || []).map(row => {
+        const cleanRow = {};
+        headers.forEach(h => cleanRow[h] = row[h]);
+        return cleanRow;
+    });
+    return { headers, rows };
+}
+
+function parseSortNumber(value) {
+    const raw = String(value || '').trim().toLowerCase();
+    if (!raw) return 0;
+
+    const hasK = raw.includes('k');
+    const cleaned = raw
+        .replace(/\.(?=\d{3}(\D|$))/g, '')
+        .replace(',', '.')
+        .replace(/[^\dk.-]/g, '');
+
+    let num = parseFloat(cleaned.replace('k', '')) || 0;
+    if (hasK) num *= 1000;
+    return num;
+}
+
+function refreshSEADynamicRankColumn(tableId) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    Array.from(table.querySelectorAll('tbody tr')).forEach((row, index) => {
+        const firstCell = row.cells[0];
+        if (firstCell && firstCell.classList.contains('int-rank-cell')) {
+            firstCell.textContent = `${index + 1}º`;
+        }
+    });
+}
+
 function findSEAAbatesHeader(headers) {
     return (headers || []).find(header => {
         const h = normalizeSEAKey(header);
@@ -8860,7 +9068,8 @@ function getSEAMobileHeader(header) {
 function renderSEAHeaderCell(tableId, header, colIndex) {
     const safeHeader = escapeHtml(header || '-');
     const mobileHeader = escapeHtml(getSEAMobileHeader(header));
-    return `<th onclick="sortTable('${tableId}', ${colIndex}, ${isProbablyNumericColumn(header)})"><span class="sea-desktop-only">${safeHeader}</span><span class="sea-mobile-only">${mobileHeader}</span> ↕</th>`;
+    const colClass = getSEAColumnClass(header, tableId);
+    return `<th class="${colClass}" onclick="sortTable('${tableId}', ${colIndex}, ${isProbablyNumericColumn(header)})"><span class="sea-desktop-only">${safeHeader}</span><span class="sea-mobile-only">${mobileHeader}</span> ↕</th>`;
 }
 
 function isSEAKillColumn(header) {
@@ -8908,6 +9117,9 @@ function formatSEAValue(header, value, tableId = '') {
     if (shouldConvertSEAFunctionColumn(header)) {
         return escapeHtml(getSEAFunctionName(text));
     }
+    if (isSEADamageColumn(header)) {
+        return escapeHtml(formatCompactSEADamage(text));
+    }
     if (tableId === 'table-sea-abates' && isSEAKillColumn(header)) {
         return `<span class="int-kill-value">${escapeHtml(text)}</span>`;
     }
@@ -8922,14 +9134,7 @@ function formatOrdinalRank(index) {
 }
 
 function refreshSEAAbatesRankColumn() {
-    const table = document.getElementById('table-sea-abates');
-    if (!table) return;
-    Array.from(table.querySelectorAll('tbody tr')).forEach((row, index) => {
-        const firstCell = row.cells[0];
-        if (firstCell && firstCell.classList.contains('int-rank-cell')) {
-            firstCell.textContent = formatOrdinalRank(index);
-        }
-    });
+    refreshSEADynamicRankColumn('table-sea-abates');
 }
 
 function renderSEATable(tableId, parsed, emptyMessage) {
@@ -8937,28 +9142,33 @@ function renderSEATable(tableId, parsed, emptyMessage) {
     if (!table) return;
     const thead = table.querySelector('thead');
     const tbody = table.querySelector('tbody');
-    const hasDynamicRank = tableId === 'table-sea-abates';
+    const normalizedParsed = stripSEAPositionColumns(parsed);
+    const hasDynamicRank = tableId === 'table-sea-abates' || tableId === 'table-sea-classificacao';
 
-    if (!parsed.headers.length || !parsed.rows.length) {
+    if (!normalizedParsed.headers.length || !normalizedParsed.rows.length) {
         thead.innerHTML = '';
         tbody.innerHTML = `<tr><td class="int-loading">${emptyMessage}</td></tr>`;
         return;
     }
 
     const rankHeader = hasDynamicRank ? '<th>#</th>' : '';
-    thead.innerHTML = `<tr>${rankHeader}${parsed.headers.map((h, i) => {
+    thead.innerHTML = `<tr>${rankHeader}${normalizedParsed.headers.map((h, i) => {
         const colIndex = hasDynamicRank ? i + 1 : i;
         return renderSEAHeaderCell(tableId, h, colIndex);
     }).join('')}</tr>`;
 
-    tbody.innerHTML = parsed.rows.map((row, index) => {
-        const rankCell = hasDynamicRank ? `<td class="int-rank-cell">${formatOrdinalRank(index)}</td>` : '';
-        const cells = parsed.headers.map(h => `<td>${formatSEAValue(h, row[h], tableId)}</td>`).join('');
+    tbody.innerHTML = normalizedParsed.rows.map((row, index) => {
+        const rankCell = hasDynamicRank ? `<td class="int-rank-cell">${index + 1}º</td>` : '';
+        const cells = normalizedParsed.headers.map(h => {
+            const colClass = getSEAColumnClass(h, tableId);
+            return `<td class="${colClass}">${formatSEAValue(h, row[h], tableId)}</td>`;
+        }).join('');
         return `<tr>${rankCell}${cells}</tr>`;
     }).join('');
 
-    if (hasDynamicRank) refreshSEAAbatesRankColumn();
+    if (hasDynamicRank) refreshSEADynamicRankColumn(tableId);
 }
+
 
 
 function renderSEAAbatesFilters(parsed) {
@@ -9028,166 +9238,4 @@ async function fetchSEAData(url) {
 }
 
 async function loadSEAData(force = false) {
-    if (seaDataLoaded && !force) return;
-
-    const classUpdated = document.getElementById('sea-classificacao-updated');
-    const killsUpdated = document.getElementById('sea-abates-updated');
-    if (classUpdated) classUpdated.textContent = 'Atualizando...';
-    if (killsUpdated) killsUpdated.textContent = 'Atualizando...';
-
-    try {
-        const [classificacao, abates] = await Promise.all([
-            fetchSEAData(SEA_CLASSIFICACAO_TSV_URL),
-            fetchSEAData(SEA_ABATES_TSV_URL)
-        ]);
-
-        seaClassificacaoParsed = classificacao;
-        seaAbatesParsed = sortSEARowsByAbatesDesc(abates);
-
-        renderSEATable('table-sea-classificacao', seaClassificacaoParsed, 'Nenhum dado de classificação encontrado.');
-        renderSEAAbatesFilters(seaAbatesParsed);
-        applySEAAbatesFilters();
-
-        const now = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-        if (classUpdated) classUpdated.textContent = `Atualizado: ${now}`;
-        if (killsUpdated) killsUpdated.textContent = `Atualizado: ${now}`;
-        seaDataLoaded = true;
-    } catch (error) {
-        console.error('Erro ao carregar FFWS SEA:', error);
-        ['table-sea-classificacao', 'table-sea-abates'].forEach(id => {
-            const table = document.getElementById(id);
-            if (!table) return;
-            table.querySelector('thead').innerHTML = '';
-            table.querySelector('tbody').innerHTML = '<tr><td class="int-error">Não foi possível carregar os dados da planilha agora. Confira se o link publicado continua ativo.</td></tr>';
-        });
-        if (classUpdated) classUpdated.textContent = 'Erro ao atualizar';
-        if (killsUpdated) killsUpdated.textContent = 'Erro ao atualizar';
-    }
-}
-</script>
-</main>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
-  import { getDatabase, ref, runTransaction, onValue, off } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE",
-    authDomain: "central-free-fire.firebaseapp.com",
-    databaseURL: "https://central-free-fire-default-rtdb.firebaseio.com",
-    projectId: "central-free-fire",
-    storageBucket: "central-free-fire.firebasestorage.app",
-    messagingSenderId: "372535002832",
-    appId: "1:372535002832:web:37e938fec2b05eb560c0d5",
-    measurementId: "G-4C7B7TJ2RS"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const database = getDatabase(app);
-  window.firebaseApp = app;
-
-  // ✅ Define a função que voteMercado() chama
-  window.fbVote = function(key, newDir, previousDir) {
-    const safeKey = key.replace(/[\s.#$/\[\]]/g, '_');
-    const votesRef = ref(database, `mercadoVotes/${safeKey}`);
-
-    runTransaction(votesRef, (current) => {
-      const data = current || { up: 0, down: 0 };
-
-      // Remove voto anterior se existia
-      if (previousDir === 'up')   data.up   = Math.max(0, (data.up   || 0) - 1);
-      if (previousDir === 'down') data.down = Math.max(0, (data.down || 0) - 1);
-
-      // Adiciona voto novo (null = toggle off, não adiciona nada)
-      if (newDir === 'up')   data.up   = (data.up   || 0) + 1;
-      if (newDir === 'down') data.down = (data.down || 0) + 1;
-
-      return data;
-    });
-  };
-
-  // ✅ Carrega votos do Firebase ao iniciar (substitui os do sessionStorage)
-window.fbLoadVotes = function() {
-    const votesRef = ref(database, 'mercadoVotes');
-    
-    // onValue em vez de onlyOnce para atualizar em tempo real se alguém votar!
-    onValue(votesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      const localVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
-
-      // Pega todos os nomes reais que vieram da sua planilha TSV
-      const realNames = typeof mercadoData !== 'undefined' ? mercadoData.map(d => d.jogador) : [];
-
-      Object.entries(data).forEach(([safeKey, counts]) => {
-        // Acha o nome original comparando a versão "limpa" (safeKey) com os nomes reais da planilha
-        const originalKey = realNames.find(name =>
-          name.replace(/[\s.#$/\[\]]/g, '_') === safeKey
-        ) || safeKey;
-
-        // Pega o "voted" local para manter o botão colorido corretamente para quem votou
-        const localVoted = localVotes[originalKey]?.voted || null;
-
-        // Sobrescreve a variável global com os dados reais do Firebase
-        mercadoVotes[originalKey] = {
-          up: counts.up || 0,
-          down: counts.down || 0,
-          voted: localVoted 
-        };
-      });
-
-      // Renderiza a tela novamente agora com os dados globais corretos
-      if (typeof renderMercado === 'function') {
-          renderMercado();
-      }
-    });
-  };
-
-
-
-  // ✅ Votação do dia na página inicial
-  let currentDayVotesRef = null;
-
-  window.fbDayVote = function(matchKey, newTeamKey, previousTeamKey) {
-    const votesRef = ref(database, `dayVotes/${matchKey}/teams`);
-
-    runTransaction(votesRef, (current) => {
-      const data = current || {};
-
-      if (previousTeamKey) {
-        data[previousTeamKey] = Math.max(0, (data[previousTeamKey] || 0) - 1);
-      }
-
-      if (newTeamKey) {
-        data[newTeamKey] = (data[newTeamKey] || 0) + 1;
-      }
-
-      return data;
-    });
-  };
-
-  window.fbLoadDayVotes = function(matchKey) {
-    if (!matchKey) return;
-
-    if (currentDayVotesRef) {
-      off(currentDayVotesRef);
-    }
-
-    currentDayVotesRef = ref(database, `dayVotes/${matchKey}/teams`);
-    onValue(currentDayVotesRef, (snapshot) => {
-      const counts = snapshot.val() || {};
-      if (typeof window.applyDayVoteCounts === 'function') {
-        window.applyDayVoteCounts(matchKey, counts);
-      }
-    });
-  };
-
-  if (window.currentDayVoteMatchKey && typeof window.fbLoadDayVotes === 'function') {
-    window.fbLoadDayVotes(window.currentDayVoteMatchKey);
-  }
-
-  console.log("Firebase conectado com votos do mercado e votação do dia!");
-</script>
-</body>
-</html>
+    if (seaDataLoaded && !force)
