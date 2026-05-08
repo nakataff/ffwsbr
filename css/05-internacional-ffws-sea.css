@@ -1,0 +1,282 @@
+/* Página internacional, FFWS SEA, classificação e ranking de abates. */
+/* =============================================
+   INTERNACIONAL
+   ============================================= */
+.internacional-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 0 0 25px; }
+.internacional-tab { background: var(--panel-bg); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; font-weight: 900; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.7px; }
+.internacional-tab:hover, .internacional-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 200, 255, 0.08); }
+.internacional-hero { background: linear-gradient(135deg, rgba(0,200,255,0.12), rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; margin-bottom: 24px; text-align: center; }
+.internacional-hero h1 { margin: 0 0 8px; color: #fff; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: 1px; }
+.internacional-hero p { margin: 0; color: var(--text-muted); }
+.int-filters { margin-top: -6px; margin-bottom: 16px; }
+.int-filters label { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; font-size: 0.82em; }
+.int-filters select { min-width: 170px; }
+.int-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+.int-section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
+.int-section-title h2 { margin: 0; color: var(--accent); font-size: 1.2em; text-transform: uppercase; }
+.int-updated { color: var(--text-muted); font-size: 0.8em; }
+.int-empty { background: var(--panel-bg); border: 1px dashed var(--border); border-radius: 12px; padding: 45px 20px; text-align: center; color: var(--text-muted); }
+.int-empty strong { color: var(--accent); display: block; font-size: 1.4em; margin-bottom: 8px; text-transform: uppercase; }
+.int-loading, .int-error { padding: 22px; color: var(--text-muted); text-align: center; }
+.int-error { color: #ff7777; }
+.int-rank-cell { color: var(--accent); font-weight: 900; }
+.int-player-name, .int-team-name, .int-kill-value, .int-points-value { color: var(--accent); font-weight: 900; }
+#table-sea-abates td:nth-child(2) { text-align: left; }
+#table-sea-classificacao .int-team-name { font-size: 1.02em; }
+
+/* Alinhamento FFWS SEA */
+#table-sea-classificacao { table-layout: fixed; width: 100%; }
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child { width: auto; min-width: 0; max-width: none; text-align: left; }
+#table-sea-classificacao th:nth-child(2),
+#table-sea-classificacao td:nth-child(2) { width: 95px; min-width: 95px; max-width: 95px; text-align: center; }
+#table-sea-classificacao .int-points-value { display: inline-block; min-width: 42px; text-align: center; }
+.sea-team-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; min-width: 0; }
+.sea-team-cell .team-logo { width: 24px; height: 24px; object-fit: contain; margin: 0; flex: 0 0 24px; }
+.sea-team-cell .sea-desktop-only,
+.sea-team-cell .sea-mobile-only { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sea-mobile-only { display: none; }
+.sea-desktop-only { display: inline; }
+@media (max-width: 768px) {
+.internacional-tab { width: 100%; }
+.int-section-title { flex-direction: column; align-items: flex-start; }
+#ffws-sea-2026-s1 .table-container { overflow-x: hidden; }
+#ffws-sea-2026-s1 table { table-layout: fixed; width: 100%; white-space: nowrap; }
+#ffws-sea-2026-s1 th, #ffws-sea-2026-s1 td { padding: 8px 4px !important; font-size: 0.72em; }
+#ffws-sea-2026-s1 .int-rank-cell { width: 32px; }
+#ffws-sea-2026-s1 .sea-desktop-only { display: none !important; }
+#ffws-sea-2026-s1 .sea-mobile-only { display: inline !important; }
+#ffws-sea-2026-s1 .int-team-name { font-size: 1em; letter-spacing: 0.3px; }
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child { width: auto !important; min-width: 0 !important; max-width: none !important; text-align: left !important; overflow: hidden; }
+#table-sea-classificacao th:nth-child(2),
+#table-sea-classificacao td:nth-child(2) { width: 68px !important; min-width: 68px !important; max-width: 68px !important; text-align: center !important; }
+#table-sea-classificacao .sea-team-cell { gap: 8px; width: 100%; }
+#table-sea-classificacao .sea-team-cell .team-logo { width: 22px; height: 22px; flex-basis: 22px; }
+#ffws-sea-2026-s1 .int-player-name { max-width: 72px; display: inline-block; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+#ffws-sea-2026-s1 .int-filters { gap: 8px; padding: 10px; }
+#ffws-sea-2026-s1 .int-filters label { font-size: 0.72em; }
+#ffws-sea-2026-s1 .int-filters select { min-width: 120px; max-width: 150px; font-size: 0.8em; }
+#ffws-sea-2026-s1 .btn-action { padding: 8px 10px; font-size: 0.78em; }
+}
+
+
+
+/* =============================================
+   AJUSTES FFWS SEA - MOBILE / POSIÇÃO / DANO
+   ============================================= */
+#table-sea-classificacao .int-rank-cell,
+#table-sea-abates .int-rank-cell {
+    width: 38px;
+    min-width: 38px;
+    text-align: center;
+    color: var(--accent);
+    font-weight: 900;
+}
+
+#table-sea-abates td.sea-col-player { text-align: left; }
+
+#table-sea-classificacao th.sea-col-points,
+#table-sea-classificacao td.sea-col-points {
+    width: 68px;
+    min-width: 68px;
+    max-width: 68px;
+    text-align: center;
+}
+
+#table-sea-classificacao th.sea-col-booyah,
+#table-sea-classificacao td.sea-col-booyah {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    text-align: center;
+}
+
+#table-sea-classificacao .sea-team-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+#table-sea-classificacao .sea-team-cell .team-logo {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+}
+
+@media (max-width: 768px) {
+    #table-sea-abates th.sea-col-role,
+    #table-sea-abates td.sea-col-role {
+        display: none !important;
+    }
+
+    #table-sea-classificacao .sea-team-cell {
+        gap: 6px !important;
+    }
+
+    #table-sea-classificacao .sea-team-cell .team-logo {
+        width: 20px !important;
+        height: 20px !important;
+        flex-basis: 20px !important;
+    }
+
+    #ffws-sea-2026-s1 .sea-mobile-only {
+        display: inline !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: nowrap !important;
+    }
+
+    #ffws-sea-2026-s1 .int-team-name {
+        font-size: 0.95em !important;
+        letter-spacing: 0 !important;
+    }
+
+    #table-sea-classificacao th.sea-col-booyah,
+    #table-sea-classificacao td.sea-col-booyah {
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+    }
+
+    #table-sea-classificacao th.sea-col-points,
+    #table-sea-classificacao td.sea-col-points {
+        width: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+    }
+}
+
+
+
+/* Correção final: depois que a coluna # foi adicionada, a coluna TIME virou a 2ª.
+   Essas regras anulam os nth-child antigos da classificação SEA. */
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child,
+#table-sea-abates th:first-child,
+#table-sea-abates td:first-child {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    text-align: center !important;
+}
+
+#table-sea-classificacao th.sea-col-team,
+#table-sea-classificacao td.sea-col-team {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    text-align: left !important;
+    overflow: hidden !important;
+}
+
+#table-sea-classificacao th.sea-col-points,
+#table-sea-classificacao td.sea-col-points {
+    width: 68px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+    text-align: center !important;
+}
+
+@media (max-width: 768px) {
+    #table-sea-classificacao th:first-child,
+    #table-sea-classificacao td:first-child,
+    #table-sea-abates th:first-child,
+    #table-sea-abates td:first-child {
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+    }
+
+    #table-sea-classificacao th.sea-col-team,
+    #table-sea-classificacao td.sea-col-team {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+}
+
+
+
+/* =============================================
+   CORREÇÃO FFWS SEA ABATES - NOME DO JOGADOR NÃO INVADIR KILLS
+   ============================================= */
+#table-sea-abates {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#table-sea-abates th.sea-col-player,
+#table-sea-abates td.sea-col-player {
+    text-align: left !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+#table-sea-abates .int-player-name {
+    display: block !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    line-height: 1.15 !important;
+}
+
+@media (max-width: 768px) {
+    #table-sea-abates th:first-child,
+    #table-sea-abates td:first-child {
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+    }
+
+    #table-sea-abates th.sea-col-player,
+    #table-sea-abates td.sea-col-player {
+        width: auto !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    #table-sea-abates th.sea-col-role,
+    #table-sea-abates td.sea-col-role,
+    #table-sea-abates th.sea-col-team,
+    #table-sea-abates td.sea-col-team {
+        display: none !important;
+    }
+
+    #table-sea-abates th:not(:first-child):not(.sea-col-player):not(.sea-col-role):not(.sea-col-team),
+    #table-sea-abates td:not(:first-child):not(.sea-col-player):not(.sea-col-role):not(.sea-col-team) {
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+        text-align: center !important;
+    }
+
+    #table-sea-abates th.sea-col-dano,
+    #table-sea-abates td.sea-col-dano {
+        width: 52px !important;
+        min-width: 52px !important;
+        max-width: 52px !important;
+    }
+
+    #table-sea-abates .int-player-name {
+        font-size: 0.92em !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    #table-sea-abates .int-player-name.sea-player-name-medium {
+        font-size: 0.82em !important;
+        letter-spacing: 0 !important;
+    }
+
+    #table-sea-abates .int-player-name.sea-player-name-long {
+        font-size: 0.74em !important;
+        letter-spacing: -0.2px !important;
+    }
+}
