@@ -591,6 +591,43 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     .day-vote-count { text-align: left; font-size: 0.64em; }
 }
 
+
+
+/* Correções mobile: ranking MVP e votação da home */
+#table-players .player-name-cell {
+    text-align: left;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#table-players .player-name-cell .player-name-link {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+#table-players .player-name-link.name-long { font-size: 0.82em !important; letter-spacing: -0.2px; }
+#table-players .player-name-link.name-very-long { font-size: 0.74em !important; letter-spacing: -0.35px; }
+.day-vote-team { position: relative; }
+.day-vote-team.voted { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(0,200,255,0.32), 0 0 18px rgba(0,200,255,0.14); }
+.day-vote-team:focus:not(:focus-visible) { outline: none; }
+
+@media (max-width: 768px) {
+    #table-players { table-layout: fixed; width: 100%; }
+    #table-players th:nth-child(1), #table-players td:nth-child(1) { width: 26px !important; max-width: 26px !important; }
+    #table-players th:nth-child(2), #table-players td:nth-child(2) { width: auto !important; min-width: 0 !important; }
+    #table-players th:nth-child(3), #table-players td:nth-child(3) { width: 38px !important; max-width: 38px !important; }
+    #table-players th:nth-child(4), #table-players td:nth-child(4) { width: 42px !important; max-width: 42px !important; }
+    #table-players th:nth-child(7), #table-players td:nth-child(7) { width: 36px !important; max-width: 36px !important; }
+    #table-players .player-name-cell { max-width: none !important; padding-right: 3px !important; }
+    #table-players .player-name-link { font-size: 0.86em !important; }
+    #table-players .player-name-link.name-long { font-size: 0.74em !important; }
+    #table-players .player-name-link.name-very-long { font-size: 0.66em !important; }
+}
+
 /* =============================================
    MERCADO DA BOLA
    ============================================= */
@@ -4521,6 +4558,9 @@ let dayVoteTeams = [];
 let dayVoteCounts = {};
 let dayVoteFirebaseKeyLoaded = null;
 let dayVoteLocal = JSON.parse(localStorage.getItem('cffDayVotes') || '{}');
+let lastHomeGroupsHtml = '';
+let lastScheduleGroupsHtml = '';
+let lastDayVoteRenderedSignature = '';
 
 function safeFirebaseKey(value) {
     return String(value || '').trim().replace(/[.#$/\[\]]/g, '_').replace(/\s+/g, '_');
@@ -4543,6 +4583,19 @@ function getTeamLogoSrc(teamName) {
     if (logos[teamName]) return logos[teamName];
     const key = Object.keys(logos).find(k => k.trim().toUpperCase() === teamName.trim().toUpperCase());
     return key ? logos[key] : 'escudo.webp';
+}
+
+
+function syncDayVoteSelectedState(matchKey) {
+    const grid = document.getElementById('day-vote-grid');
+    if (!grid || !matchKey) return;
+    const selectedKey = dayVoteLocal[matchKey] || null;
+
+    grid.querySelectorAll('.day-vote-team').forEach(btn => {
+        const isSelected = selectedKey && btn.dataset.teamKey === selectedKey;
+        btn.classList.toggle('voted', !!isSelected);
+        btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+    });
 }
 
 function renderDayVote(match) {
@@ -4583,9 +4636,8 @@ function renderDayVote(match) {
         const count = dayVoteCounts[teamKey] || 0;
         const pct = total ? Math.round((count / total) * 100) : 0;
         const votedClass = localVoted === teamKey ? 'voted' : '';
-        const teamNameSafe = team.equipe.replace(/'/g, "\'");
         return `
-            <button class="day-vote-team ${votedClass}" onclick="voteDayTeam('${teamNameSafe}')" title="Votar em ${team.equipe}">
+            <button class="day-vote-team ${votedClass}" data-team-key="${teamKey}" aria-pressed="${localVoted === teamKey ? 'true' : 'false'}" onclick="voteDayTeamByKey('${teamKey}')" title="Votar em ${team.equipe}">
                 <img src="${getTeamLogoSrc(team.equipe)}" onerror="this.src='escudo.webp'" alt="${team.equipe}">
                 <span class="day-vote-name"><span class="day-vote-rank">${index + 1}º</span> ${team.equipe}</span>
                 <span class="day-vote-percent">${pct}%</span>
@@ -4593,6 +4645,8 @@ function renderDayVote(match) {
                 <span class="day-vote-count">${count} voto${count === 1 ? '' : 's'}</span>
             </button>`;
     }).join('');
+
+    syncDayVoteSelectedState(matchKey);
 }
 
 function setupDayVoteForMatch(match) {
@@ -4605,8 +4659,7 @@ function setupDayVoteForMatch(match) {
         window.currentDayVoteMatchKey = matchKey;
         dayVoteTeams = getTeamsFromMatch(match);
         dayVoteCounts = {};
-        renderDayVote(match);
-    } else {
+        lastDayVoteRenderedSignature = '';
         renderDayVote(match);
     }
 
@@ -4616,9 +4669,9 @@ function setupDayVoteForMatch(match) {
     }
 }
 
-function voteDayTeam(teamName) {
-    if (!dayVoteMatchKey) return;
-    const teamKey = safeFirebaseKey(teamName);
+function voteDayTeamByKey(teamKey) {
+    if (!dayVoteMatchKey || !teamKey) return;
+
     const previousTeamKey = dayVoteLocal[dayVoteMatchKey] || null;
     const newTeamKey = previousTeamKey === teamKey ? null : teamKey;
 
@@ -4636,12 +4689,19 @@ function voteDayTeam(teamName) {
 
     const match = agenda.find(m => buildDayVoteMatchKey(m) === dayVoteMatchKey);
     renderDayVote(match);
+    syncDayVoteSelectedState(dayVoteMatchKey);
+}
+
+function voteDayTeam(teamName) {
+    voteDayTeamByKey(safeFirebaseKey(teamName));
 }
 
 window.applyDayVoteCounts = function(matchKey, counts) {
+    if (matchKey !== dayVoteMatchKey) return;
     dayVoteCounts = counts || {};
     const match = agenda.find(m => buildDayVoteMatchKey(m) === matchKey);
     renderDayVote(match);
+    syncDayVoteSelectedState(matchKey);
 };
 
 function updateCountdown() {
@@ -4680,14 +4740,20 @@ function updateCountdown() {
 
         if (homeDisplay) homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
         if (homeStatusText) homeStatusText.innerText = isLive ? "Partida em andamento:" : "A transmissão começa em:";
-        if (homeGroups) homeGroups.innerHTML = groupsHtml;
+        if (homeGroups && groupsHtml !== lastHomeGroupsHtml) {
+            homeGroups.innerHTML = groupsHtml;
+            lastHomeGroupsHtml = groupsHtml;
+        }
         setupDayVoteForMatch(nextMatch);
 
         // Atualiza Datas (Tempo e Grupos)
         const scheduleDisplay = document.getElementById('countdown-display');
         const scheduleGroups = document.getElementById('next-match-groups');
         if (scheduleDisplay) scheduleDisplay.innerText = isLive ? "AO VIVO" : timeStr;
-        if (scheduleGroups) scheduleGroups.innerHTML = groupsHtml;
+        if (scheduleGroups && groupsHtml !== lastScheduleGroupsHtml) {
+            scheduleGroups.innerHTML = groupsHtml;
+            lastScheduleGroupsHtml = groupsHtml;
+        }
     }
 
     // 2. LÓGICA DO PERFIL DA EQUIPE (Mantendo o que corrigimos antes)
@@ -6238,6 +6304,14 @@ if (typeof renderPlayerCFFRating === 'function') renderPlayerCFFRating(p.jogador
     navigate('player-profile');
 }
 
+
+function getPlayerNameSizeClass(name) {
+    const len = String(name || '').trim().length;
+    if (len >= 13) return 'name-very-long';
+    if (len >= 10) return 'name-long';
+    return '';
+}
+
 function renderAllPlayers() {
     let teamFilter = document.getElementById('filter-team-players').value;
 
@@ -6298,7 +6372,7 @@ function renderAllPlayers() {
             let danoFull = p.dano >= 1000 ? p.dano.toLocaleString('pt-BR') : p.dano;
             return `<tr>
                 <td style="font-size:0.8em; color:var(--text-muted);">${i+1}</td>
-                <td style="text-align:left; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" style="font-size:0.9em;" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
+                <td class="player-name-cell"><span class="clickable player-name-link ${getPlayerNameSizeClass(canonicalName)}" onclick="${_safePPAttr(canonicalName)}" title="${canonicalName}">${canonicalName}</span></td>
                 <td style="text-align:center;"><img src="${logos[officialTeam]||''}" class="team-logo" alt="${officialTeam}" title="${officialTeam}" style="cursor:pointer; width:22px; height:22px; object-fit:contain;" onclick="openTeamProfile('${officialTeam}')"></td>
                 <td style="color:var(--accent); font-weight:bold; font-size:0.9em;">${p.abates}</td>
                 <td class="hide-mobile"><span class="hide-on-mobile-text">${danoFull}</span><span class="show-mobile-only">${danoFmt}</span></td>
