@@ -628,7 +628,7 @@
 
 #table-sea-classificacao td.int-rank-cell.sea-rank-marker {
     font-weight: 1000 !important;
-    text-shadow: 0 0 10px currentColor;
+    text-shadow: 0 0 4px currentColor;
 }
 
 #table-sea-classificacao td.int-rank-cell.sea-rank-marker::before {
