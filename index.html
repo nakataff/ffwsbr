@@ -667,6 +667,50 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     }
 }
 
+
+
+/* FIX V4: remove o anel azul fantasma que o Safari/Chrome mobile mantém na posição antiga após reordenar os cards */
+.day-vote-team,
+.day-vote-team:focus,
+.day-vote-team:focus-visible,
+.day-vote-team:active {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.day-vote-team:not(.voted):focus,
+.day-vote-team:not(.voted):focus-visible,
+.day-vote-team:not(.voted):active {
+    border-color: var(--border) !important;
+    box-shadow: none !important;
+    background: rgba(5, 8, 16, 0.72) !important;
+    transform: none !important;
+}
+
+@media (hover: none), (pointer: coarse) {
+    .day-vote-team:not(.voted),
+    .day-vote-team:not(.voted):hover,
+    .day-vote-team:not(.voted):active,
+    .day-vote-team:not(.voted):focus,
+    .day-vote-team:not(.voted):focus-visible {
+        border-color: var(--border) !important;
+        box-shadow: none !important;
+        background: rgba(5, 8, 16, 0.72) !important;
+        transform: none !important;
+    }
+
+    .day-vote-team.voted,
+    .day-vote-team.voted:hover,
+    .day-vote-team.voted:active,
+    .day-vote-team.voted:focus,
+    .day-vote-team.voted:focus-visible {
+        border-color: var(--accent) !important;
+        background: rgba(0,200,255,0.10) !important;
+        box-shadow: 0 0 0 1px rgba(0,200,255,0.45), 0 0 18px rgba(0,200,255,0.16) !important;
+        transform: none !important;
+    }
+}
+
 /* =============================================
    MERCADO DA BOLA
    ============================================= */
@@ -4637,6 +4681,20 @@ function syncDayVoteSelectedState(matchKey) {
     });
 }
 
+function clearDayVoteGhostFocus() {
+    if (document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('day-vote-team')) {
+        document.activeElement.blur();
+    }
+
+    const grid = document.getElementById('day-vote-grid');
+    if (!grid) return;
+
+    grid.querySelectorAll('.day-vote-team').forEach(btn => {
+        btn.blur();
+        btn.classList.remove('force-focus-clean');
+    });
+}
+
 function renderDayVote(match) {
     const card = document.getElementById('day-vote-card');
     const grid = document.getElementById('day-vote-grid');
@@ -4676,7 +4734,7 @@ function renderDayVote(match) {
         const pct = total ? Math.round((count / total) * 100) : 0;
         const votedClass = localVoted === teamKey ? 'voted' : '';
         return `
-            <button class="day-vote-team ${votedClass}" data-team-key="${teamKey}" aria-pressed="${localVoted === teamKey ? 'true' : 'false'}" onclick="voteDayTeamByKey('${teamKey}')" title="Votar em ${team.equipe}">
+            <button class="day-vote-team ${votedClass}" data-team-key="${teamKey}" aria-pressed="${localVoted === teamKey ? 'true' : 'false'}" onclick="voteDayTeamByKey('${teamKey}', this)" title="Votar em ${team.equipe}">
                 <img src="${getTeamLogoSrc(team.equipe)}" onerror="this.src='escudo.webp'" alt="${team.equipe}">
                 <span class="day-vote-name"><span class="day-vote-rank">${index + 1}º</span> ${team.equipe}</span>
                 <span class="day-vote-percent">${pct}%</span>
@@ -4686,6 +4744,7 @@ function renderDayVote(match) {
     }).join('');
 
     syncDayVoteSelectedState(matchKey);
+    requestAnimationFrame(() => clearDayVoteGhostFocus());
 }
 
 function setupDayVoteForMatch(match) {
@@ -4708,14 +4767,13 @@ function setupDayVoteForMatch(match) {
     }
 }
 
-function voteDayTeamByKey(teamKey) {
+function voteDayTeamByKey(teamKey, clickedButton = null) {
     if (!dayVoteMatchKey || !teamKey) return;
 
-    // Mobile: remove o foco/hover do botão clicado antes de reordenar os cards.
-    // Sem isso, o Safari/Chrome pode deixar o destaque azul na posição antiga.
-    if (document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('day-vote-team')) {
-        document.activeElement.blur();
-    }
+    // Mobile: remove qualquer foco/anel azul antes de reordenar os cards.
+    // Safari/Chrome podem manter foco visual na posição antiga do grid.
+    if (clickedButton && typeof clickedButton.blur === 'function') clickedButton.blur();
+    clearDayVoteGhostFocus();
 
     const previousTeamKey = dayVoteLocal[dayVoteMatchKey] || null;
     const newTeamKey = previousTeamKey === teamKey ? null : teamKey;
@@ -4735,6 +4793,9 @@ function voteDayTeamByKey(teamKey) {
     const match = agenda.find(m => buildDayVoteMatchKey(m) === dayVoteMatchKey);
     renderDayVote(match);
     syncDayVoteSelectedState(dayVoteMatchKey);
+    clearDayVoteGhostFocus();
+    requestAnimationFrame(() => clearDayVoteGhostFocus());
+    setTimeout(() => clearDayVoteGhostFocus(), 80);
 }
 
 function voteDayTeam(teamName) {
