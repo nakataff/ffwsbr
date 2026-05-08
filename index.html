@@ -984,6 +984,90 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     }
 }
 
+
+
+/* =============================================
+   CORREÇÃO FFWS SEA ABATES - NOME DO JOGADOR NÃO INVADIR KILLS
+   ============================================= */
+#table-sea-abates {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#table-sea-abates th.sea-col-player,
+#table-sea-abates td.sea-col-player {
+    text-align: left !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+#table-sea-abates .int-player-name {
+    display: block !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    line-height: 1.15 !important;
+}
+
+@media (max-width: 768px) {
+    #table-sea-abates th:first-child,
+    #table-sea-abates td:first-child {
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+    }
+
+    #table-sea-abates th.sea-col-player,
+    #table-sea-abates td.sea-col-player {
+        width: auto !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    #table-sea-abates th.sea-col-role,
+    #table-sea-abates td.sea-col-role,
+    #table-sea-abates th.sea-col-team,
+    #table-sea-abates td.sea-col-team {
+        display: none !important;
+    }
+
+    #table-sea-abates th:not(:first-child):not(.sea-col-player):not(.sea-col-role):not(.sea-col-team),
+    #table-sea-abates td:not(:first-child):not(.sea-col-player):not(.sea-col-role):not(.sea-col-team) {
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+        text-align: center !important;
+    }
+
+    #table-sea-abates th.sea-col-dano,
+    #table-sea-abates td.sea-col-dano {
+        width: 52px !important;
+        min-width: 52px !important;
+        max-width: 52px !important;
+    }
+
+    #table-sea-abates .int-player-name {
+        font-size: 0.92em !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    #table-sea-abates .int-player-name.sea-player-name-medium {
+        font-size: 0.82em !important;
+        letter-spacing: 0 !important;
+    }
+
+    #table-sea-abates .int-player-name.sea-player-name-long {
+        font-size: 0.74em !important;
+        letter-spacing: -0.2px !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -9292,7 +9376,9 @@ function formatSEAValue(header, value, tableId = '') {
         return `<span class="int-team-name sea-team-cell"><img src="${escapeHtml(logoSrc)}" onerror="this.onerror=null;this.src='escudo.webp'" class="team-logo" alt="${escapeHtml(fullName)}"><span class="sea-desktop-only">${escapeHtml(fullName)}</span><span class="sea-mobile-only">${escapeHtml(sigla)}</span></span>`;
     }
     if (shouldCleanSEAPlayerColumn(header)) {
-        return `<span class="int-player-name">${escapeHtml(cleanSEAPlayerName(text))}</span>`;
+        const playerName = cleanSEAPlayerName(text);
+        const playerLenClass = playerName.length >= 10 ? ' sea-player-name-long' : (playerName.length >= 8 ? ' sea-player-name-medium' : '');
+        return `<span class="int-player-name${playerLenClass}" title="${escapeHtml(playerName)}">${escapeHtml(playerName)}</span>`;
     }
     if (shouldConvertSEAFunctionColumn(header)) {
         return escapeHtml(getSEAFunctionName(text));
