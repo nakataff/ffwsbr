@@ -628,6 +628,45 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     #table-players .player-name-link.name-very-long { font-size: 0.66em !important; }
 }
 
+
+/* FIX DEFINITIVO MOBILE: evita hover/focus grudado no card errado depois que a votação reordena */
+@media (hover: hover) and (pointer: fine) {
+    .day-vote-team:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        background: rgba(0,200,255,0.08);
+    }
+}
+
+@media (hover: none), (pointer: coarse) {
+    .day-vote-team:hover,
+    .day-vote-team:active,
+    .day-vote-team:focus {
+        background: rgba(5, 8, 16, 0.72) !important;
+        transform: none !important;
+    }
+
+    .day-vote-team.voted {
+        border-color: var(--accent) !important;
+        background: rgba(0,200,255,0.10) !important;
+        box-shadow: 0 0 0 1px rgba(0,200,255,0.45), 0 0 18px rgba(0,200,255,0.16) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #table-players .player-name-cell {
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+    #table-players .player-name-link {
+        max-width: 100% !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        display: inline-block !important;
+    }
+}
+
 /* =============================================
    MERCADO DA BOLA
    ============================================= */
@@ -4592,8 +4631,8 @@ function syncDayVoteSelectedState(matchKey) {
     const selectedKey = dayVoteLocal[matchKey] || null;
 
     grid.querySelectorAll('.day-vote-team').forEach(btn => {
-        const isSelected = selectedKey && btn.dataset.teamKey === selectedKey;
-        btn.classList.toggle('voted', !!isSelected);
+        const isSelected = !!(selectedKey && btn.dataset.teamKey === selectedKey);
+        btn.classList.toggle('voted', isSelected);
         btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
     });
 }
@@ -4671,6 +4710,12 @@ function setupDayVoteForMatch(match) {
 
 function voteDayTeamByKey(teamKey) {
     if (!dayVoteMatchKey || !teamKey) return;
+
+    // Mobile: remove o foco/hover do botão clicado antes de reordenar os cards.
+    // Sem isso, o Safari/Chrome pode deixar o destaque azul na posição antiga.
+    if (document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('day-vote-team')) {
+        document.activeElement.blur();
+    }
 
     const previousTeamKey = dayVoteLocal[dayVoteMatchKey] || null;
     const newTeamKey = previousTeamKey === teamKey ? null : teamKey;
