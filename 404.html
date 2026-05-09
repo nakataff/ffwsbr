@@ -1,9 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
+  <title>Redirecionando...</title>
+
   <script>
-    sessionStorage.setItem('redirect', window.location.pathname);
-    window.location.replace('/');
+    (function () {
+      const path = window.location.pathname;
+
+      // Fallback para notícias estáticas:
+      // /noticias/slug-da-noticia/
+      // vira:
+      // /noticia.html?id=slug-da-noticia
+      const noticiaMatch = path.match(/^\/noticias\/([^\/]+)\/?$/);
+
+      if (noticiaMatch && noticiaMatch[1]) {
+        const slug = decodeURIComponent(noticiaMatch[1]);
+        window.location.replace('/noticia.html?id=' + encodeURIComponent(slug));
+        return;
+      }
+
+      // Mantém seu comportamento antigo para outras páginas
+      sessionStorage.setItem('redirect', path);
+      window.location.replace('/');
+    })();
   </script>
 </head>
+<body>
+  <p>Redirecionando...</p>
+</body>
 </html>
