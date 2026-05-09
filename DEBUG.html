@@ -167,6 +167,177 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 .skeleton-cell { height: 16px; border-radius: 4px; background: linear-gradient(90deg, #0d1220 25%, #141a2e 50%, #0d1220 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+/* =============================================
+   VOTACAO - PROXIMO CONFRONTO
+   ============================================= */
+.vote-section {
+    width: 100%;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    padding-top: 16px;
+}
+.vote-section-label {
+    font-size: 0.72em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 14px;
+}
+.vote-teams-row {
+    display: grid;
+    grid-template-columns: 1fr 32px 1fr;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 12px;
+}
+.vote-team-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 14px 10px;
+    background: rgba(255,255,255,0.03);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    position: relative;
+}
+.vote-team-btn:hover {
+    border-color: var(--accent);
+    background: rgba(0,200,255,0.07);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 16px rgba(0,200,255,0.15);
+}
+.vote-team-btn.voted-winner {
+    border-color: var(--accent);
+    background: rgba(0,200,255,0.1);
+    box-shadow: 0 0 18px rgba(0,200,255,0.2);
+}
+.vote-team-btn.voted-winner::after {
+    content: 'Seu voto';
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    font-size: 0.58em;
+    font-weight: 800;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.vote-team-btn.voted-loser {
+    opacity: 0.45;
+}
+.vote-team-logo-vote {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    transition: transform 0.2s;
+}
+.vote-team-btn:hover .vote-team-logo-vote { transform: scale(1.1); }
+.vote-team-name-vote {
+    font-size: 0.75em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    text-align: center;
+    line-height: 1.2;
+}
+.vote-team-pct-vote {
+    font-size: 1.2em;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+}
+.vote-team-count-vote {
+    font-size: 0.65em;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+}
+.vote-vs-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(0,200,255,0.07);
+    border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 50%;
+    font-size: 0.68em;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+.vote-split-bar {
+    display: flex;
+    height: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+    width: 100%;
+    margin-bottom: 8px;
+}
+.vote-split-bar-a {
+    background: var(--accent);
+    transition: width 0.5s ease;
+    border-radius: 3px 0 0 3px;
+}
+.vote-split-bar-b {
+    background: #ff4444;
+    transition: width 0.5s ease;
+    border-radius: 0 3px 3px 0;
+}
+.vote-total-txt {
+    font-size: 0.68em;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+/* RANKING */
+.vote-ranking-wrap {
+    width: 100%;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-top: 4px;
+}
+.vote-ranking-lbl {
+    font-size: 0.68em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-align: left;
+}
+.vote-rank-row {
+    display: grid;
+    grid-template-columns: 18px 26px 1fr 44px;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 7px;
+}
+.vote-rank-pos { font-size: 0.68em; font-weight: 800; color: #555; text-align: right; }
+.vote-rank-logo { width: 22px; height: 22px; object-fit: contain; }
+.vote-rank-bar-bg { height: 5px; background: rgba(255,255,255,0.04); border-radius: 3px; overflow: hidden; }
+.vote-rank-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.6s ease; }
+.vote-rank-row:nth-child(2) .vote-rank-bar-fill { background: #5abfdf; }
+.vote-rank-row:nth-child(3) .vote-rank-bar-fill { background: #4090aa; }
+.vote-rank-row:nth-child(4) .vote-rank-bar-fill { background: #2f6880; }
+.vote-rank-row:nth-child(5) .vote-rank-bar-fill { background: #224d5e; }
+.vote-rank-num { font-size: 0.68em; font-weight: 700; color: #aaa; text-align: right; white-space: nowrap; }
+@media (max-width: 480px) {
+    .vote-team-logo-vote { width: 46px; height: 46px; }
+    .vote-team-pct-vote  { font-size: 1em; }
+}
+
     @media (max-width: 768px) { .table-container { -webkit-overflow-scrolling: touch; } }
 
     /* =============================================
@@ -440,8 +611,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
     /* PADRÕES PARA DESKTOP (PC) */
 .hide-on-desktop { display: none; }
-.show-mobile-only { display: none; } /* Esconde sigla mobile no PC */
-.hide-on-mobile-text { display: inline; } /* Mostra texto completo no PC */
 .short-name-mobile { display: none; } /* Esconde a sigla no PC */
 .full-name-desktop { display: inline; } /* Mostra o nome longo no PC */
 .team-logo-mobile-full { display: inline-block; width: 24px; height: 24px; object-fit: contain; } /* Mostra a logo no PC */
@@ -451,7 +620,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
     /* REGRAS PARA O MOBILE (CELULAR) */
     @media (max-width: 768px) {
-.hide-on-desktop { display: block; } .full-name-desktop { display: none !important; } .short-name-mobile { display: inline !important; font-size: 0.9em; margin-left: 4px; } .team-logo-mobile-full { display: inline-block !important; } .full-view .short-name-mobile { display: none !important; } .full-view .team-logo-mobile-full { display: block !important; margin: 0 auto; } table:not(.full-view) .hide-mobile { display: none !important; } .show-mobile-only { display: inline !important; } .hide-on-mobile-text { display: none !important; } #table-teams-full th:nth-child(3), #table-teams-full td:nth-child(3) { display: none !important; } table { table-layout: fixed; width: 100%; box-sizing: border-box; } th, td { padding: 8px 2px !important; font-size: 0.85em; } .table-container { overflow-x: auto; } #table-teams-full td:nth-child(2) { text-align: center; width: 75px; } #table-teams-full .team-cell { justify-content: center; } #table-team-players td:first-child, #table-players td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+.hide-on-desktop { display: block; } .full-name-desktop { display: none !important; } .short-name-mobile { display: inline !important; font-size: 0.9em; margin-left: 4px; } .team-logo-mobile-full { display: inline-block !important; } .full-view .short-name-mobile { display: none !important; } .full-view .team-logo-mobile-full { display: block !important; margin: 0 auto; } table:not(.full-view) .hide-mobile { display: none !important; } #table-teams-full th:nth-child(3), #table-teams-full td:nth-child(3) { display: none !important; } table { table-layout: fixed; width: 100%; box-sizing: border-box; } th, td { padding: 8px 2px !important; font-size: 0.85em; } .table-container { overflow-x: auto; } #table-teams-full td:nth-child(2) { text-align: center; width: 75px; } #table-teams-full .team-cell { justify-content: center; } #table-team-players td:first-child, #table-players td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
     /* Grid de Equipes (Página Equipes) */
 .teams-directory { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
 .team-item-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
@@ -562,34 +731,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
 @media (max-width: 768px) {
 .mercado-card { grid-template-columns: 52px 1fr; /* Apenas 2 colunas no topo */ grid-template-rows: auto auto auto auto; /* 4 linhas de conteúdo */ gap: 10px 15px; padding: 15px; } .mercado-card-avatar { width: 52px; height: 52px; grid-column: 1; grid-row: 1; margin: auto 0; } .mercado-card-info { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; justify-content: center; } .mercado-card-status { grid-column: 1 / 3; grid-row: 2; flex-direction: row; justify-content: center; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border); padding: 8px; border-radius: 8px; min-width: unset; } .mercado-status-icon { width: 18px; height: 18px; } .mercado-status-label { font-size: 0.8em; } .mercado-card-clubs { grid-column: 1 / 3; grid-row: 3; justify-content: center; gap: 25px; padding: 5px 0; } .mercado-club img { width: 42px; height: 42px; } .mercado-club-name { font-size: 0.68em; max-width: 100px; } /* 4. Quarta Linha: Votos */ .mercado-card-votes { display: flex; flex-direction: row; align-items: center; gap: 12px; grid-column: 1 / 3; grid-row: 4; min-width: unset; padding-top: 15px; border-top: 1px solid var(--border); } .mercado-card-votes .vote-bar-wrap { flex: 1; } }
-
-
-/* =============================================
-   INTERNACIONAL
-   ============================================= */
-.internacional-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 0 0 25px; }
-.internacional-tab { background: var(--panel-bg); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; font-weight: 900; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.7px; }
-.internacional-tab:hover, .internacional-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 200, 255, 0.08); }
-.internacional-hero { background: linear-gradient(135deg, rgba(0,200,255,0.12), rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; margin-bottom: 24px; text-align: center; }
-.internacional-hero h1 { margin: 0 0 8px; color: #fff; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: 1px; }
-.internacional-hero p { margin: 0; color: var(--text-muted); }
-.int-filters { margin-top: -6px; margin-bottom: 16px; }
-.int-filters label { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; font-size: 0.82em; }
-.int-filters select { min-width: 170px; }
-.int-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
-.int-section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
-.int-section-title h2 { margin: 0; color: var(--accent); font-size: 1.2em; text-transform: uppercase; }
-.int-updated { color: var(--text-muted); font-size: 0.8em; }
-.int-empty { background: var(--panel-bg); border: 1px dashed var(--border); border-radius: 12px; padding: 45px 20px; text-align: center; color: var(--text-muted); }
-.int-empty strong { color: var(--accent); display: block; font-size: 1.4em; margin-bottom: 8px; text-transform: uppercase; }
-.int-loading, .int-error { padding: 22px; color: var(--text-muted); text-align: center; }
-.int-error { color: #ff7777; }
-.int-rank-cell { color: var(--accent); font-weight: 900; }
-.int-player-name, .int-team-name, .int-kill-value, .int-points-value { color: var(--accent); font-weight: 900; }
-#table-sea-abates td:nth-child(2) { text-align: left; }
-#table-sea-classificacao .int-team-name { font-size: 1.02em; }
-@media (max-width: 768px) { .internacional-tab { width: 100%; } .int-section-title { flex-direction: column; align-items: flex-start; } }
-
 </style>
 </head>
 <body>
@@ -606,27 +747,22 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     <div class="sidebar-nav">
         <div class="sidebar-category">PRINCIPAL</div>
         <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
-        <button onclick="navigateAndClose('tabela')" id="sb-tabela">TABELA (CLASSIFICAÇÃO)</button>
-        <button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button>
-        <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
+        <button onclick="navigateAndClose('teams')" id="sb-teams">TABELA (CLASSIFICAÇÃO)</button>
+        <button onclick="navigateAndClose('players')" id="sb-players">RANKING MVP</button>
+        <button onclick="navigateAndClose('teams-list')" id="sb-teams-list">EQUIPES</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
-        <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
+        <button onclick="navigateAndClose('schedule')" id="sb-schedule">DATAS</button>
         
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">ESTATÍSTICAS</div>
-        <button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÃO DA SEMANA</button>
-        <button onclick="navigateAndClose('recordes')" id="sb-recordes">RECORDES</button>
-        <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
-        <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
+        <button onclick="navigateAndClose('selection-wb')" id="sb-selection-wb">SELEÇÃO DA SEMANA</button>
+        <button onclick="navigateAndClose('records-ind')" id="sb-records-ind">RECORDES</button>
+        <button onclick="navigateAndClose('maps')" id="sb-maps">ESTATÍSTICAS GERAIS</button>
+        <button onclick="navigateAndClose('compare')" id="sb-compare">COMPARAR 1V1</button>
         
         <div class="sidebar-divider"></div>
-        <div class="sidebar-category">INTERNACIONAL</div>
-        <button onclick="navigateAndClose('ffws-sea-2026-s1')" id="sb-ffws-sea-2026-s1">FFWS SEA 2026 S1</button>
-        <button onclick="navigateAndClose('ffws-latam-s1')" id="sb-ffws-latam-s1">FFWS LATAM S1</button>
-
-        <div class="sidebar-divider"></div>
         <div class="sidebar-category">HISTÓRICO</div>
-        <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
+        <button onclick="navigateAndClose('history')" id="sb-history">HALL DA FAMA</button>
         <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
         <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
     </div>
@@ -664,9 +800,9 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             <button class="nav-mob-menu-btn" onclick="openSidebar()">☰</button>
 
             <div class="nav-mobile-tabs">
-                <button class="nav-mobile-tab active" id="mob-tab-tabela" onclick="mobileTabClick('tabela', this)">TABELA</button>
-                <button class="nav-mobile-tab" id="mob-tab-mvp" onclick="mobileTabClick('mvp', this)">RANKING</button>
-                <button class="nav-mobile-tab" id="mob-tab-equipes" onclick="mobileTabClick('equipes', this)">EQUIPES</button>
+                <button class="nav-mobile-tab active" id="mob-tab-teams" onclick="mobileTabClick('teams', this)">TABELA</button>
+                <button class="nav-mobile-tab" id="mob-tab-players" onclick="mobileTabClick('players', this)">RANKING</button>
+                <button class="nav-mobile-tab" id="mob-tab-teams-list" onclick="mobileTabClick('teams-list', this)">EQUIPES</button>
             </div>
 
             <div class="nav-mobile-right">
@@ -697,6 +833,37 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             <p id="home-next-status" style="color: var(--text-muted); font-size: 0.9em; margin: 0; text-transform: uppercase; letter-spacing: 1px;">A transmissão começa em:</p>
             <div id="home-next-countdown" class="match-countdown-main">--:--:--</div>
             <div id="home-next-groups" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;"></div>
+
+            <!-- VOTACAO DO CONFRONTO -->
+            <div class="vote-section" id="vote-section" style="display:none;">
+                <div class="vote-section-label">Qual sera a melhor equipe do dia</div>
+                <div class="vote-teams-row" id="vote-teams-row">
+                    <button class="vote-team-btn" id="vote-btn-a" onclick="window._voteConfronto('a')">
+                        <img class="vote-team-logo-vote" id="vote-logo-a" src="escudo.webp" alt="">
+                        <span class="vote-team-name-vote" id="vote-name-a">--</span>
+                        <span class="vote-team-pct-vote" id="vote-pct-a">50%</span>
+                        <span class="vote-team-count-vote" id="vote-count-a">0 votos</span>
+                    </button>
+                    <div class="vote-vs-circle">VS</div>
+                    <button class="vote-team-btn" id="vote-btn-b" onclick="window._voteConfronto('b')">
+                        <img class="vote-team-logo-vote" id="vote-logo-b" src="escudo.webp" alt="">
+                        <span class="vote-team-name-vote" id="vote-name-b">--</span>
+                        <span class="vote-team-pct-vote" id="vote-pct-b">50%</span>
+                        <span class="vote-team-count-vote" id="vote-count-b">0 votos</span>
+                    </button>
+                </div>
+                <div class="vote-split-bar">
+                    <div class="vote-split-bar-a" id="vote-bar-a" style="width:50%;"></div>
+                    <div class="vote-split-bar-b" id="vote-bar-b" style="width:50%;"></div>
+                </div>
+                <div class="vote-total-txt" id="vote-total-txt">Carregando votos...</div>
+                <!-- RANKING -->
+                <div class="vote-ranking-wrap" id="vote-ranking-wrap" style="display:none;">
+                    <div class="vote-ranking-lbl">Ranking de votos</div>
+                    <div id="vote-ranking-list"></div>
+                </div>
+            </div>
+
             <a id="home-live-btn" href="https://www.youtube.com/watch?v=YZ7YCaDxK8I" target="_blank" class="live-status-btn offline">
                 <img src="youtube.webp" alt="YouTube" onerror="this.style.display='none'">
                 <span id="home-live-text">Sem transmissão disponível</span>
@@ -730,7 +897,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-teams"></tbody>
                 </table>
             </div>
-            <button onclick="navigate('tabela')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
 
         <div class="home-widget">
@@ -740,7 +906,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
                     <tbody id="home-tbody-players"></tbody>
                 </table>
             </div>
-            <button onclick="navigate('mvp')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
         </div>
     </div>
 
@@ -757,7 +922,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- PAGE: TIMES -->
-<div id="tabela" class="page">
+<div id="teams" class="page">
     <div style="text-align: center; margin-bottom: 40px; padding-top: 10px;">
         <h2>Divisão de Grupos</h2>
         <div class="groups-container" id="groups-container"></div>
@@ -785,8 +950,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             </select>
         </div>
 
-        <button class="btn-action hide-on-desktop" onclick="document.getElementById('table-teams-full').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Tabela Completa' ? 'Ocultar Detalhes' : 'Ver Tabela Completa';" style="width: 100%; margin-bottom: 12px;">Ver Tabela Completa</button>
-
         <div class="table-container">
 <table id="table-teams-full">
             <thead>
@@ -803,6 +966,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
             <tbody></tbody>
         </table>
         </div>
+        <button class="btn-action hide-on-desktop" onclick="document.getElementById('table-teams-full').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Tabela Completa' ? 'Ocultar Detalhes' : 'Ver Tabela Completa';" style="width: 100%; margin-top: -15px; margin-bottom: 30px;">Ver Tabela Completa</button>
 
         <h2 style="margin-top: 50px;">Classificação por Grupos</h2>
         <div class="groups-tables-grid" id="groups-tables-grid"></div>
@@ -810,14 +974,14 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- NOVA PAGE: EQUIPES -->
-    <div id="equipes" class="page">
+    <div id="teams-list" class="page">
         <h2>Diretório de Equipes</h2>
         <p style="color: var(--text-muted); margin-bottom: 30px;">Selecione uma equipe para ver estatísticas detalhadas e desempenho individual.</p>
         <div class="teams-directory" id="teams-directory"></div>
     </div>
 
     <!-- PAGE: JOGADORES -->
-    <div id="mvp" class="page">
+    <div id="players" class="page">
         <h2>Classificação Geral de Jogadores</h2>
  <div class="filters">
             <label style="color: var(--text-muted); font-weight: bold;">Equipe:</label>
@@ -838,18 +1002,17 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 
             <span style="margin-left:auto; color:#888; font-size:0.9em;">* Clique no título da coluna para ordenar</span>
         </div>
-        <button class="btn-action hide-on-desktop" id="btn-players-details" onclick="document.getElementById('table-players').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Detalhes' ? 'Ocultar Detalhes' : 'Ver Detalhes';" style="width: 100%; margin-bottom: 12px;">Ver Detalhes</button>
         <div class="table-container">
 <table id="table-players">
     <thead>
         <tr>
-            <th style="width: 24px;">#</th>
-            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)"><span class="hide-mobile">Jogador</span><span class="show-mobile-only">J</span> ↕</th>
-            <th onclick="sortTable('table-players', 2, false)"><span class="hide-mobile">Equipe</span><span class="show-mobile-only">E</span> ↕</th>
-            <th onclick="sortTable('table-players', 3, true)"><span class="hide-mobile">Abates</span><span class="show-mobile-only">K</span> ↕</th>
+            <th style="width: 40px;">#</th>
+            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)">Jogador ↕</th>
+            <th class="hide-mobile" style="text-align:left;" onclick="sortTable('table-players', 2, false)">Equipe ↕</th>
+            <th style="width: 80px;" onclick="sortTable('table-players', 3, true)">Abates ↕</th>
             <th class="hide-mobile" onclick="sortTable('table-players', 4, true)">Dano ↕</th>
             <th class="hide-mobile" onclick="sortTable('table-players', 5, true)">Assistências ↕</th>
-            <th onclick="sortTable('table-players', 6, true)"><span class="hide-mobile">Quedas</span><span class="show-mobile-only">Q</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 6, true)">Quedas ↕</th>
             <th class="hide-mobile" onclick="sortTable('table-players', 7, true)">MVP ↕</th>
         </tr>
     </thead>
@@ -980,7 +1143,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 </div>
 
-<div id="selecao-da-semana" class="page">
+<div id="selection-wb" class="page">
         <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="font-size: 3em; color: #ff0000; text-shadow: 0 0 15px rgba(255,0,0,0.5); margin-bottom: 10px;">SELEÇÃO DA SEMANA</h1>
             <p style="color: var(--text-muted);">Os brabos que dominaram o servidor nesta semana.</p>
@@ -1045,7 +1208,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
 <div id="staff-profile" class="page">
-    <button class="btn-back" onclick="navigate('equipes')">← Voltar para Equipes</button>
+    <button class="btn-back" onclick="navigate('teams-list')">← Voltar para Equipes</button>
     
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding-top: 20px;">
         
@@ -1097,13 +1260,13 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 </div>
 
     <!-- PAGE: RECORDES -->
-<div id="recordes" class="page">
+<div id="records-ind" class="page">
         <h2>Recordes do Campeonato</h2>
         <div class="grid-cards" id="records-container"></div>
     </div>
     
     <!-- PAGE: MAPAS -->
-<div id="stats" class="page">
+<div id="maps" class="page">
     <h2>Estatísticas Avançadas</h2>
 
     <div style="background: rgba(255, 170, 0, 0.1); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
@@ -1389,82 +1552,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <div id="ot-champions-container" style="display:none;"></div>
     </div>
 </div>
-
-
-<!-- PAGE: INTERNACIONAL - FFWS SEA 2026 S1 -->
-<div id="ffws-sea-2026-s1" class="page">
-    <div class="internacional-hero">
-        <h1>🌏 FFWS SEA 2026 S1</h1>
-        <p>Classificação e ranking de abates carregados automaticamente das planilhas publicadas.</p>
-    </div>
-
-    <div class="internacional-tabs">
-        <button class="internacional-tab active" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
-        <button class="internacional-tab" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
-    </div>
-
-    <div class="int-grid">
-        <section>
-            <div class="int-section-title">
-                <h2>Classificação</h2>
-                <span class="int-updated" id="sea-classificacao-updated">Atualizando...</span>
-            </div>
-            <div class="table-container">
-                <table id="table-sea-classificacao">
-                    <thead></thead>
-                    <tbody><tr><td class="int-loading">Carregando classificação...</td></tr></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section>
-            <div class="int-section-title">
-                <h2>Ranking de Abates</h2>
-                <span class="int-updated" id="sea-abates-updated">Atualizando...</span>
-            </div>
-
-            <div class="filters int-filters">
-                <label>Time:
-                    <select id="sea-filter-team" onchange="applySEAAbatesFilters()">
-                        <option value="all">Todos os times</option>
-                    </select>
-                </label>
-                <label>Função:
-                    <select id="sea-filter-role" onchange="applySEAAbatesFilters()">
-                        <option value="all">Todas as funções</option>
-                    </select>
-                </label>
-                <button class="btn-action" type="button" onclick="clearSEAAbatesFilters()" style="margin-top: 0;">Limpar filtros</button>
-            </div>
-
-            <div class="table-container">
-                <table id="table-sea-abates">
-                    <thead></thead>
-                    <tbody><tr><td class="int-loading">Carregando ranking de abates...</td></tr></tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-</div>
-
-<!-- PAGE: INTERNACIONAL - FFWS LATAM S1 -->
-<div id="ffws-latam-s1" class="page">
-    <div class="internacional-hero">
-        <h1>🌎 FFWS LATAM S1</h1>
-        <p>Área internacional preparada para receber os dados da LATAM.</p>
-    </div>
-
-    <div class="internacional-tabs">
-        <button class="internacional-tab" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
-        <button class="internacional-tab active" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
-    </div>
-
-    <div class="int-empty">
-        <strong>Em breve</strong>
-        A página da FFWS LATAM S1 já está criada, mas ainda sem dados cadastrados.
-    </div>
-</div>
-
 <!-- PAGE: OUTRAS EQUIPES -->
 <div id="outras-equipes" class="page">
     <h2 style="text-align: center; margin-bottom: 10px;">Outras Equipes</h2>
@@ -1546,7 +1633,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 </div>
 
-<div id="hall-da-fama" class="page">
+<div id="history" class="page">
         <h2>Top 100 Abates da história</h2>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
             Ranking histórico somado em tempo real com o desempenho da edição atual.<br>
@@ -1632,7 +1719,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
     <!-- PAGE: COMPARAR -->
-    <div id="comparar-1v1" class="page">
+    <div id="compare" class="page">
         <h2>Comparar Times e Jogadores</h2>
         
         <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
@@ -1648,11 +1735,6 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
         <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
             <h3 style="margin-top:0; color:#fff">Confronto de Jogadores</h3>
             <div class="filters" style="background:transparent; border:none; padding:0; margin-bottom:10px;">
-                <select id="comp-player-region" onchange="switchComparePlayerRegion()">
-                    <option value="nacional">NACIONAL</option>
-                    <option value="internacional">INTERNACIONAL</option>
-                    <option value="brxgringos">BR X GRINGOS</option>
-                </select>
                 <select id="comp-p1" onchange="renderComparePlayers()"></select>
                 <span style="font-weight:bold; color:var(--accent);">VS</span>
                 <select id="comp-p2" onchange="renderComparePlayers()"></select>
@@ -1662,7 +1744,7 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
     </div>
 
     <!-- PAGE: CRONOGRAMA -->
-<div id="datas" class="page">
+<div id="schedule" class="page">
     <h2>Cronograma e Próximos Confrontos - FFWS Brasil 2026</h2>
     
     <div id="next-match-timer" style="background: linear-gradient(90deg, #1c1c20 0%, #26262b 100%); border: 1px solid var(--border); border-left: 4px solid #ff4444; padding: 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
@@ -1775,7 +1857,7 @@ const wbWeeks = {
     "10": [19, 20]
 };
 
-let currentSelectionWeek = "5"; // será sobrescrito automaticamente após carregar os dados
+let currentSelectionWeek = "5";
 
 // Mapeamento de Instagram (Exemplo: adicione o @ de cada um aqui)
 let dbSocials = {};
@@ -2504,6 +2586,9 @@ const db = {
     ]
 };
 const agenda = [
+    { semana: "6", data: "25 de Abril", grupos: ["A", "B", "C"] },
+    { semana: "6", data: "26 de Abril", grupos: ["B", "C", "D"] },
+    { semana: "7", data: "02 de Maio", grupos: ["D", "A", "B"] },
     { semana: "7", data: "03 de Maio", grupos: ["A", "B", "C"] },
     { semana: "8", data: "09 de Maio", grupos: ["B", "C", "D"] },
     { semana: "8", data: "10 de Maio", grupos: ["C", "D", "A"] },
@@ -2583,14 +2668,6 @@ const data = await response.json();
 
     renderAllPlayers();
     renderPlayerStats();
-    // Auto-seleciona a semana mais recente com dados
-    const _weeksWithData = Object.keys(wbWeeks).filter(w => {
-        const days = wbWeeks[w];
-        return db.playerDaily.some(d => days.includes(Number(d.dia)));
-    });
-    if (_weeksWithData.length > 0) {
-        currentSelectionWeek = _weeksWithData[_weeksWithData.length - 1];
-    }
     renderSelectionFilters();
     renderSelection();
 
@@ -2612,7 +2689,6 @@ const data = await response.json();
     renderOutrosTorneiosList();
     renderSchedule();
     renderOutrasEquipesGrid();
-    loadSEAData();
     buildDesktopTeamNav();
     initSearchListeners();
     buildMultiTeamFilters();
@@ -2646,8 +2722,6 @@ function navigate(pageId) {
     // Salva a aba atual na memória (ignora se for página de perfil)
     if (!pageId.includes('profile')) {
         lastVisitedPage = pageId;
-        // Atualiza o hash na URL sem causar scroll forçado
-        history.replaceState(null, '', '#' + pageId);
     }
 
     // Esconde todas as páginas e tira o destaque dos botões
@@ -2659,10 +2733,10 @@ function navigate(pageId) {
 
     // Atualiza estado dos botões do mobile (4 tabs fixas)
     const mobileTabMap = {
-        'tabela': 'mob-tab-tabela',
-        'mvp': 'mob-tab-mvp',
-        'equipes': 'mob-tab-equipes',
-        'datas': 'mob-tab-schedule'
+        'teams': 'mob-tab-teams',
+        'players': 'mob-tab-players',
+        'teams-list': 'mob-tab-teams-list',
+        'schedule': 'mob-tab-schedule'
     };
     document.querySelectorAll('.nav-mobile-tab').forEach(b => b.classList.remove('active'));
     if (mobileTabMap[pageId]) {
@@ -2675,14 +2749,6 @@ function navigate(pageId) {
     const sbBtn = document.getElementById('sb-' + pageId);
     if (sbBtn) sbBtn.classList.add('active');
 }
-
-// Ao carregar, verifica se a URL já tem um hash e navega direto para a página
-document.addEventListener('DOMContentLoaded', () => {
-    const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById(hash)) {
-        navigate(hash);
-    }
-});
 
 // PÁGINA DE ESTATÍSTICAS (MÉDIAS E TOTAIS)
 
@@ -3722,75 +3788,6 @@ function populateHistSelects() {
     updateEditionOptions('hist-comp-p2', 'hist-comp-ed2');
 }
 
-
-function populateComparePlayerSelects(region = 'nacional') {
-    const comparadorP1 = document.getElementById('comp-p1');
-    const comparadorP2 = document.getElementById('comp-p2');
-    if (!comparadorP1 || !comparadorP2) return;
-
-    const previousP1 = comparadorP1.value;
-    const previousP2 = comparadorP2.value;
-    comparadorP1.innerHTML = '';
-    comparadorP2.innerHTML = '';
-
-    let playersSet = [];
-
-    if (region === 'internacional') {
-        playersSet = buildSEAComparePlayers().sort((a, b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
-        if (!playersSet.length) {
-            comparadorP1.innerHTML = '<option value="">Carregando FFWS SEA...</option>';
-            comparadorP2.innerHTML = '<option value="">Carregando FFWS SEA...</option>';
-            return;
-        }
-        playersSet.forEach(p => {
-            const opt = `<option value="${escapeHtml(p.id)}">${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)}) 🌏</option>`;
-            comparadorP1.innerHTML += opt;
-            comparadorP2.innerHTML += opt;
-        });
-    } else if (region === 'brxgringos') {
-        const brPlayers = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
-        const seaPlayers = buildSEAComparePlayers().sort((a, b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
-
-        if (!seaPlayers.length) {
-            comparadorP1.innerHTML = '<option value="">Carregando FFWS BR...</option>';
-            comparadorP2.innerHTML = '<option value="">Carregando FFWS SEA...</option>';
-            return;
-        }
-
-        brPlayers.forEach(p => {
-            comparadorP1.innerHTML += `<option value="${escapeHtml(p.jogador)}">🇧🇷 ${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
-        });
-
-        seaPlayers.forEach(p => {
-            comparadorP2.innerHTML += `<option value="${escapeHtml(p.id)}">🌏 ${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
-        });
-    } else {
-        playersSet = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador, 'pt-BR'));
-        playersSet.forEach(p => {
-            const opt = `<option value="${escapeHtml(p.jogador)}">${escapeHtml(p.jogador)} (${escapeHtml(p.equipe)})</option>`;
-            comparadorP1.innerHTML += opt;
-            comparadorP2.innerHTML += opt;
-        });
-    }
-
-    if ([...comparadorP1.options].some(o => o.value === previousP1)) comparadorP1.value = previousP1;
-    if ([...comparadorP2.options].some(o => o.value === previousP2)) comparadorP2.value = previousP2;
-    if (comparadorP2.options.length > 1 && comparadorP1.value === comparadorP2.value) comparadorP2.selectedIndex = 1;
-}
-
-async function switchComparePlayerRegion() {
-    const region = document.getElementById('comp-player-region')?.value || 'nacional';
-    const result = document.getElementById('compare-players-result');
-
-    if ((region === 'internacional' || region === 'brxgringos') && !seaDataLoaded) {
-        if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Carregando jogadores da FFWS SEA...</div>';
-        await loadSEAData(true);
-    }
-
-    populateComparePlayerSelects(region);
-    renderComparePlayers();
-}
-
 // Preenche os selects da aba Histórico
 // Preenche os selects da aba Histórico
 function populateSelects() {
@@ -3815,13 +3812,19 @@ function populateSelects() {
     });
 
     // --- 2. PREENCHIMENTO DOS JOGADORES (Aba Comparar) ---
-    populateComparePlayerSelects(document.getElementById('comp-player-region')?.value || 'nacional');
     let comparadorP1 = document.getElementById('comp-p1');
     let comparadorP2 = document.getElementById('comp-p2');
 
+    let playersSet = [...db.players].sort((a,b) => a.jogador.localeCompare(b.jogador));
+    playersSet.forEach(p => {
+        let opt = `<option value="${p.jogador}">${p.jogador} (${p.equipe})</option>`;
+        if (comparadorP1) comparadorP1.innerHTML += opt;
+        if (comparadorP2) comparadorP2.innerHTML += opt;
+    });
+
     // Previne que o comparador comece com o mesmo time/jogador selecionado dos dois lados
     if (comparadorT2 && comparadorT2.options.length > 1) comparadorT2.selectedIndex = 1;
-    if (comparadorP2 && comparadorP2.options.length > 1 && comparadorP1?.value === comparadorP2.value) comparadorP2.selectedIndex = 1;
+    if (comparadorP2 && comparadorP2.options.length > 1) comparadorP2.selectedIndex = 1;
 
     // --- 3. PREENCHIMENTO AUTOMÁTICO DOS DIAS (A Mágica) ---
     let playerDaySelect = document.getElementById('filter-player-day');
@@ -4233,6 +4236,20 @@ function updateCountdown() {
         if (homeStatusText) homeStatusText.innerText = isLive ? "Partida em andamento:" : "A transmissão começa em:";
         if (homeGroups) homeGroups.innerHTML = groupsHtml;
 
+        // Exibe o widget de votacao e configura os times do confronto
+        const voteSection = document.getElementById('vote-section');
+        if (voteSection && typeof window._initVoteConfronto === 'function') {
+            // Pega os dois primeiros grupos que vao jogar e escolhe 1 time de cada como representante
+            const grupos = nextMatch.grupos || [];
+            const teamA = grupos[0] ? db.teams.filter(t => t.grupo === grupos[0]).sort((a,b) => b.pontos - a.pontos)[0] : null;
+            const teamB = grupos[1] ? db.teams.filter(t => t.grupo === grupos[1]).sort((a,b) => b.pontos - a.pontos)[0]
+                        : (grupos[0] ? db.teams.filter(t => t.grupo === grupos[0]).sort((a,b) => b.pontos - a.pontos)[1] : null);
+            if (teamA && teamB) {
+                window._initVoteConfronto(teamA.equipe, teamB.equipe, nextMatch.data);
+                voteSection.style.display = 'block';
+            }
+        }
+
         // Atualiza Datas (Tempo e Grupos)
         const scheduleDisplay = document.getElementById('countdown-display');
         const scheduleGroups = document.getElementById('next-match-groups');
@@ -4327,9 +4344,6 @@ function sortTable(tableId, colIndex, isNumeric) {
         }
     });
     rows.forEach(r => tbody.appendChild(r));
-    if (tableId === 'table-sea-abates' && typeof refreshSEAAbatesRankColumn === 'function') {
-        refreshSEAAbatesRankColumn();
-    }
 }
 
 function onPlayerTeamFilterChanged() {
@@ -5796,14 +5810,14 @@ function renderAllPlayers() {
     // Mostra skeleton enquanto processa
     let tbody = document.querySelector('#table-players tbody');
     tbody.innerHTML = Array(6).fill(0).map(() => `<tr class="skeleton-row">
-        <td><div class="skeleton-cell" style="width:16px;"></div></td>
-        <td><div class="skeleton-cell" style="width:80px;"></div></td>
-        <td><div class="skeleton-cell" style="width:22px; height:22px; border-radius:50%; margin:0 auto;"></div></td>
-        <td><div class="skeleton-cell" style="width:30px; margin:0 auto;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:40px; margin:0 auto;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px; margin:0 auto;"></div></td>
-        <td><div class="skeleton-cell" style="width:24px; margin:0 auto;"></div></td>
-        <td class="hide-mobile"><div class="skeleton-cell" style="width:24px; margin:0 auto;"></div></td>
+        <td><div class="skeleton-cell" style="width:20px;"></div></td>
+        <td><div class="skeleton-cell" style="width:120px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:100px;"></div></td>
+        <td><div class="skeleton-cell" style="width:40px; margin:0 auto;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:50px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:40px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px;"></div></td>
+        <td class="hide-mobile"><div class="skeleton-cell" style="width:30px;"></div></td>
     </tr>`).join('');
 
     setTimeout(() => {
@@ -5842,17 +5856,15 @@ function renderAllPlayers() {
                    || db.players.find(x => checkNameMatch(x.jogador, p.jogador));
             let canonicalName = dbP ? dbP.jogador : p.jogador;
             let officialTeam = dbP?.equipe || p.equipe;
-            let danoFmt = Math.floor(p.dano / 1000) + 'k';
-            let danoFull = p.dano >= 1000 ? p.dano.toLocaleString('pt-BR') : p.dano;
             return `<tr>
-                <td style="font-size:0.8em; color:var(--text-muted);">${i+1}</td>
-                <td style="text-align:left; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="clickable" style="font-size:0.9em;" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
-                <td style="text-align:center;"><img src="${logos[officialTeam]||''}" class="team-logo" alt="${officialTeam}" title="${officialTeam}" style="cursor:pointer; width:22px; height:22px; object-fit:contain;" onclick="openTeamProfile('${officialTeam}')"></td>
-                <td style="color:var(--accent); font-weight:bold; font-size:0.9em;">${p.abates}</td>
-                <td class="hide-mobile"><span class="hide-on-mobile-text">${danoFull}</span><span class="show-mobile-only">${danoFmt}</span></td>
-                <td class="hide-mobile" style="font-size:0.9em;">${p.assists}</td>
-                <td style="font-size:0.9em;">${p.quedas}</td>
-                <td class="hide-mobile" style="font-size:0.9em;">${p.mvp}</td>
+                <td>${i+1}</td>
+                <td style="text-align:left;"><span class="clickable" onclick="${_safePPAttr(canonicalName)}">${canonicalName}</span></td>
+                <td class="team-cell hide-mobile"><img src="${logos[officialTeam]||''}" class="team-logo" alt=""><span class="clickable" onclick="openTeamProfile('${officialTeam}')">${officialTeam}</span></td>
+                <td style="color:var(--accent); font-weight:bold">${p.abates}</td>
+                <td class="hide-mobile">${p.dano}</td>
+                <td class="hide-mobile">${p.assists}</td>
+                <td class="hide-mobile">${p.quedas}</td>
+                <td class="hide-mobile">${p.mvp}</td>
             </tr>`;
         }).join('');
     }, 50);
@@ -5961,35 +5973,33 @@ function navigateAndClose(pageId) {
     closeSidebar();
 
     // Nomes corrigidos para não dar crash!
-    if (pageId === 'tabela') { renderFullTeams(); renderGroupsTables(); }
-    else if (pageId === 'mvp') renderAllPlayers();
-    else if (pageId === 'equipes') renderTeamsDirectory();
-    else if (pageId === 'datas') renderSchedule();
+    if (pageId === 'teams') { renderFullTeams(); renderGroupsTables(); }
+    else if (pageId === 'players') renderAllPlayers();
+    else if (pageId === 'teams-list') renderTeamsDirectory();
+    else if (pageId === 'schedule') renderSchedule();
     else if (pageId === 'outros-torneios') renderOutrosTorneiosList();
     else if (pageId === 'outras-equipes') renderOutrasEquipesGrid();
-    else if (pageId === 'ffws-sea-2026-s1') loadSEAData();
-    else if (pageId === 'ffws-latam-s1') { /* Página preparada: em breve */ }
-    else if (pageId === 'hall-da-fama') renderHistoricalRanking();
-    else if (pageId === 'recordes') renderIndividualRecords();
-    else if (pageId === 'stats') {
+    else if (pageId === 'history') renderHistoricalRanking();
+    else if (pageId === 'records-ind') renderIndividualRecords();
+    else if (pageId === 'maps') {
         renderTop5Stats();
         renderTableAvg();
         renderTableTotal();
         renderCFFStats();
         renderPlayerStats();
     }
-    else if (pageId === 'comparar-1v1') { renderCompareTeams(); renderComparePlayers(); }
-    else if (pageId === 'selecao-da-semana') renderSelection();
+    else if (pageId === 'compare') { renderCompareTeams(); renderComparePlayers(); }
+    else if (pageId === 'selection-wb') renderSelection();
     else if (pageId === 'home') { renderHomeStats(); renderHomeGroups(); }
 }
 
 function mobileTabClick(pageId, btnEl) {
     navigate(pageId);
     // Nomes corrigidos!
-    if (pageId === 'tabela') { renderFullTeams(); renderGroupsTables(); }
-    else if (pageId === 'mvp') renderAllPlayers();
-    else if (pageId === 'equipes') renderTeamsDirectory();
-    else if (pageId === 'datas') renderSchedule();
+    if (pageId === 'teams') { renderFullTeams(); renderGroupsTables(); }
+    else if (pageId === 'players') renderAllPlayers();
+    else if (pageId === 'teams-list') renderTeamsDirectory();
+    else if (pageId === 'schedule') renderSchedule();
 }
 
 function toggleDesktopSearch() {
@@ -6261,18 +6271,12 @@ function renderIndividualRecords() {
     }
 
     const getPlayerTopHtml = (arr, valFn, formatFn, label) => {
-        const isMob = window.innerWidth <= 768;
-        const labelShort = {'Total':'K','Dano':'D','Assist.':'A','Média K':'MdK','Média D':'MdD'}[label] || label;
-        const colHdr = isMob ? 'J' : 'Jogador';
-        const eqHdr  = isMob ? 'E' : 'Equipe';
-        const valHdr = isMob ? labelShort : label;
-        const cols   = isMob ? '1fr 22px 0.6fr' : '1.2fr 1fr 0.7fr';
         const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
-        let html = `<div style="display:grid;grid-template-columns:${cols};padding:0 10px 8px 10px;font-size:0.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px;"><div>${colHdr}</div><div>${eqHdr}</div><div style="text-align:right;">${valHdr}</div></div>`;
-        html += sorted.map((p, i) => `<div style="display:grid;grid-template-columns:${cols};align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:4px;border-left:3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))};font-size:0.85em;">
-                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="font-weight:bold;color:#555;margin-right:4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
-                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display:flex;align-items:center;gap:4px;color:#9aa0a6;overflow:hidden;white-space:nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;">${isMob ? '' : `<span style="font-size:0.9em;overflow:hidden;text-overflow:ellipsis;">${shortNames[p.equipe]||p.equipe}</span>`}</div>
-                <div style="font-weight:bold;color:var(--accent);text-align:right;">${formatFn(valFn(p))}</div>
+        let html = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${label}</div></div>`;
+        html += sorted.map((p, i) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))}; font-size: 0.85em;">
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
+                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #9aa0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><img src="${logos[p.equipe]||''}" style="width:14px; height:14px; object-fit: contain;"><span style="font-size: 0.9em;">${shortNames[p.equipe] || p.equipe}</span></div>
+                <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(p))}</div>
             </div>`).join('');
         return html;
     };
@@ -6284,26 +6288,6 @@ function renderIndividualRecords() {
                 <div class="clickable" onclick="openTeamProfile('${t.equipe}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${i+1}º</span><img src="${logos[t.equipe]||''}" style="width:16px; height:16px; object-fit: contain;"><span style="font-size: 0.95em; font-weight:bold;">${shortNames[t.equipe] || t.equipe}</span></div>
                 <div style="color: #9aa0a6; font-size: 0.9em;">Dia ${t.dia}</div>
                 <div style="font-weight: bold; color: var(--accent); text-align: right;">${formatFn(valFn(t))}</div>
-            </div>`).join('');
-        return html;
-    };
-
-    // Versão especial do ranking que mostra o dia do recorde
-    const getPlayerDailyTopHtml = (arr, valFn, formatFn, label) => {
-        const isMob = window.innerWidth <= 768;
-        const cols = isMob ? '1fr 24px 36px 28px' : '2fr 1fr 60px 55px';
-        const sorted = [...arr].sort((a,b) => valFn(b) - valFn(a)).slice(0, 5);
-        let html = `<div style="display:grid;grid-template-columns:${cols};column-gap:12px;padding:0 10px 8px 10px;font-size:0.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">
-            <div>${isMob ? 'J' : 'Jogador'}</div>
-            <div style="text-align:center;">${isMob ? 'E' : 'Equipe'}</div>
-            <div style="text-align:right;">${isMob ? 'K' : label}</div>
-            <div style="text-align:right;">${isMob ? 'Dia' : 'Dia'}</div>
-        </div>`;
-        html += sorted.map((p, i) => `<div style="display:grid;grid-template-columns:${cols};column-gap:12px;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:4px;border-left:3px solid ${i===0?'#ffd700':(i===1?'#c0c0c0':(i===2?'#cd7f32':'#888'))};font-size:0.85em;">
-                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;"><span style="font-weight:bold;color:#555;margin-right:4px;">${i+1}º</span><span class="clickable" onclick="${_safePPAttr(p.jogador)}" title="${p.jogador}">${p.jogador}</span></div>
-                <div class="clickable" onclick="openTeamProfile('${p.equipe}')" style="display:flex;align-items:center;justify-content:center;gap:4px;color:#9aa0a6;min-width:0;"><img src="${logos[p.equipe]||''}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;">${isMob ? '' : `<span style="font-size:0.9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${shortNames[p.equipe]||p.equipe}</span>`}</div>
-                <div style="font-weight:bold;color:var(--accent);text-align:right;">${formatFn(valFn(p))}</div>
-                <div style="color:#9aa0a6;font-size:0.9em;text-align:right;">${isMob ? p.dia : 'Dia '+p.dia}</div>
             </div>`).join('');
         return html;
     };
@@ -6325,7 +6309,7 @@ function renderIndividualRecords() {
         <div style="grid-column: 1/-1; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-top: 20px;">
             <h3 style="color: #fff; margin:0;">Recordes Individuais</h3>
         </div>
-        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getPlayerDailyTopHtml(db.playerDaily, p => p.abates || 0, v => v, "Abates")}</div>
+        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates (Dia)</h3>${getPlayerTopHtml(pData, p => p.recorde || 0, v => v, "Abates")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3>${getPlayerTopHtml(pData, p => p.abates, v => v, "Total")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3>${getPlayerTopHtml(pData, p => p.dano, v => v, "Dano")}</div>
         <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${getPlayerTopHtml(pData, p => p.assists, v => v, "Assist.")}</div>
@@ -6367,163 +6351,22 @@ function renderCompareTeams() {
         </div>`;
 }
 
-
-function findSEAStatHeader(headers, patterns) {
-    return (headers || []).find(header => {
-        const h = normalizeSEAKey(header);
-        return patterns.some(pattern => h === pattern || h.includes(pattern));
-    }) || null;
-}
-
-function getSEAComparePlayerId(rawName, index) {
-    const teamSigla = getSEAPlayerTeamSigla(rawName) || 'SEA';
-    return `${teamSigla}__${cleanSEAPlayerName(rawName) || index}`;
-}
-
-function buildSEAComparePlayers() {
-    if (!seaAbatesParsed?.headers?.length || !seaAbatesParsed?.rows?.length) return [];
-
-    const headers = seaAbatesParsed.headers;
-    const playerHeader = findSEAHeader(headers, shouldCleanSEAPlayerColumn) || headers[0];
-    const teamHeader = findSEAHeader(headers, shouldConvertSEATeamColumn);
-    const roleHeader = findSEAHeader(headers, shouldConvertSEAFunctionColumn);
-    const killsHeader = findSEAAbatesHeader(headers);
-    const damageHeader = findSEAStatHeader(headers, ['DANO', 'DAMAGE', 'DMG']);
-    const assistsHeader = findSEAStatHeader(headers, ['ASSISTENCIAS', 'ASSISTENCIA', 'ASSISTS', 'ASSIST']);
-    const dropsHeader = findSEAStatHeader(headers, ['QUEDAS', 'QUEDA', 'Q', 'GP', 'PARTIDAS', 'MATCHES']);
-    const mvpHeader = findSEAStatHeader(headers, ['MVP', 'MVPS']);
-
-    const players = seaAbatesParsed.rows.map((row, index) => {
-        const rawName = row[playerHeader] || '';
-        const jogador = cleanSEAPlayerName(rawName);
-        const equipe = getSEARowTeamName(row, playerHeader, teamHeader) || 'SEA';
-        const abates = killsHeader ? parseSEANumber(row[killsHeader]) : 0;
-        const dano = damageHeader ? parseSEANumber(row[damageHeader]) : 0;
-        const assists = assistsHeader ? parseSEANumber(row[assistsHeader]) : 0;
-        const quedas = dropsHeader ? parseSEANumber(row[dropsHeader]) : 0;
-        const mvp = mvpHeader ? parseSEANumber(row[mvpHeader]) : 0;
-        const role = roleHeader ? getSEAFunctionName(row[roleHeader]) : 'Rush';
-
-        return {
-            id: getSEAComparePlayerId(rawName, index),
-            jogador,
-            rawJogador: rawName,
-            equipe,
-            abates,
-            dano,
-            assists,
-            quedas,
-            mvp,
-            role,
-            region: 'SEA',
-            isSEA: true
-        };
-    }).filter(p => p.jogador);
-
-    const setRank = (metric, rankKey) => {
-        [...players].sort((a, b) => (b[metric] || 0) - (a[metric] || 0)).forEach((player, index) => {
-            player[rankKey] = index + 1;
-        });
-    };
-
-    setRank('abates', 'rankKills');
-    setRank('dano', 'rankDmg');
-    setRank('assists', 'rankAssists');
-    setRank('mvp', 'rankMvp');
-
-    return players;
-}
-
-function getSEAComparePlayerById(id) {
-    return buildSEAComparePlayers().find(p => p.id === id) || null;
-}
-
-function createSEAPlayerCardHTML(p, scale = 1) {
-    const safeName = escapeHtml(p.jogador || '-');
-    const role = escapeHtml((p.role || 'RUSH').toUpperCase());
-    const kills = p.abates || 0;
-    const assists = p.assists || 0;
-    const danoK = ((p.dano || 0) / 1000).toFixed(1) + 'K';
-    const quedas = p.quedas || 0;
-    const accentColor = '#00c8ff';
-    const teamLogo = logos[p.equipe] || 'escudo.webp';
-    const marginStyle = scale !== 1 ? `transform: scale(${scale}); margin: -15px;` : `margin: 0 auto;`;
-
-    return `
-        <div style="cursor:default; width: 280px; height: 420px; background: #000; border: 3px solid ${accentColor}; border-radius: 15px; position: relative; overflow: hidden; font-family: sans-serif; box-shadow: 0 0 30px ${accentColor}55; ${marginStyle}">
-            <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #0b2941, #000); opacity: 0.92;"></div>
-
-            <div style="position:absolute; top:14px; right:14px; z-index:8; background:rgba(0,200,255,0.14); border:1px solid rgba(0,200,255,0.55); color:#fff; padding:5px 10px; border-radius:999px; font-size:0.78em; font-weight:900; letter-spacing:1px;">
-                🌏 SEA
-            </div>
-
-            <div style="position: absolute; top: 40px; left: 25px; z-index: 4; text-align: center; color: ${accentColor};">
-                <div style="font-size: 48px; font-weight: 900; line-height: 0.85;">INT</div>
-                <div style="font-size: 22px; font-weight: bold; margin-top: 5px; text-transform:uppercase;">${role}</div>
-                <div style="margin: 15px auto; width: 40px; height: 2px; background: ${accentColor}; opacity: 0.6;"></div>
-                <div style="font-size: 34px; line-height:1; filter: drop-shadow(0 0 8px rgba(0,200,255,.55));">🌏</div>
-                <img src="${teamLogo}" onerror="this.src='escudo.webp'" style="width: 50px; height: 50px; object-fit: contain; display: block; margin: 10px auto;">
-            </div>
-
-            <img src="silhueta.png" onerror="this.src='silhueta.png'" style="position: absolute; top: 20px; right: -30px; height: 260px; z-index: 2; -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%); opacity: 0.95;">
-
-            <div style="position: absolute; bottom: 0; width: 100%; height: 185px; background: linear-gradient(transparent, #000 35%); z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 12px;">
-                <div style="width: 100%; text-align: center; margin-bottom: 8px;">
-                    <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
-                    <div style="color: #fff; font-size: 24px; font-weight: 900; text-transform: uppercase; padding: 6px 0;">${safeName}</div>
-                    <div style="margin: 0 auto; width: 85%; height: 1px; background: linear-gradient(90deg, transparent, ${accentColor}, transparent);"></div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 2px; color: #fff; width: 100%; align-items: center; text-transform: uppercase;">
-                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${kills}</span> ABATES</div>
-                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${assists}</span> ASSISTÊNCIAS</div>
-                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${danoK}</span> DANO</div>
-                    <div style="font-size: 13px; font-weight: bold;"><span style="font-weight: 900; color: ${accentColor}; font-size: 16px;">${quedas}</span> QUEDAS</div>
-                </div>
-            </div>
-        </div>`;
-}
-
 function renderComparePlayers() {
-    const region = document.getElementById('comp-player-region')?.value || 'nacional';
-    const result = document.getElementById('compare-players-result');
-    let p1, p2;
-
-    if (region === 'internacional') {
-        if (!seaDataLoaded && !seaAbatesParsed.rows.length) {
-            if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Escolha INTERNACIONAL e aguarde carregar os dados da FFWS SEA.</div>';
-            return;
-        }
-        p1 = getSEAComparePlayerById(document.getElementById('comp-p1').value);
-        p2 = getSEAComparePlayerById(document.getElementById('comp-p2').value);
-    } else if (region === 'brxgringos') {
-        if (!seaDataLoaded && !seaAbatesParsed.rows.length) {
-            if (result) result.innerHTML = '<div class="compare-box" style="grid-column:1/-1; color:var(--text-muted);">Escolha BR X GRINGOS e aguarde carregar os dados da FFWS SEA.</div>';
-            return;
-        }
-        p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value);
-        p2 = getSEAComparePlayerById(document.getElementById('comp-p2').value);
-    } else {
-        p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value);
+    let p1 = db.players.find(x => x.jogador === document.getElementById('comp-p1').value),
         p2 = db.players.find(x => x.jogador === document.getElementById('comp-p2').value);
-    }
+    if(!p1 || !p2) return;
 
-    if(!p1 || !p2 || !result) return;
-
-    const getCardHtml = (p) => p?.isSEA ? createSEAPlayerCardHTML(p, 1) : createPlayerCardHTML(p, 1);
-    const safeRank = (rank) => rank ? ` <span class="rank-badge" style="font-size:0.7em">#${rank}</span>` : '';
+    // Vê como agora ela chama a função mestra e não tem mais o resto do código da carta aqui?
+    const getCardHtml = (p) => createPlayerCardHTML(p, 1);
 
     const buildRow = (label, v1, v2, r1, r2, formatFn = v=>v) => `
         <div class="stat-row">
-            <div class="stat-val ${Number(v1)>Number(v2)?'winner':(Number(v1)<Number(v2)?'loser':'')}">${formatFn(v1)}${safeRank(r1)}</div>
+            <div class="stat-val ${v1>v2?'winner':(v1<v2?'loser':'')}">${formatFn(v1)} <span class="rank-badge" style="font-size:0.7em">#${r1}</span></div>
             <div class="stat-label">${label}</div>
-            <div class="stat-val ${Number(v2)>Number(v1)?'winner':(Number(v2)<Number(v1)?'loser':'')}">${formatFn(v2)}${safeRank(r2)}</div>
+            <div class="stat-val ${v2>v1?'winner':(v2<v1?'loser':'')}">${formatFn(v2)} <span class="rank-badge" style="font-size:0.7em">#${r2}</span></div>
         </div>`;
 
-    const kq1 = (p1.quedas || 0) > 0 ? (p1.abates / p1.quedas) : 0;
-    const kq2 = (p2.quedas || 0) > 0 ? (p2.abates / p2.quedas) : 0;
-
-    result.innerHTML = `
+    document.getElementById('compare-players-result').innerHTML = `
         <div class="compare-box" style="background:transparent; border:none; padding:0;">
             ${getCardHtml(p1)}
         </div>
@@ -6531,18 +6374,18 @@ function renderComparePlayers() {
             ${getCardHtml(p2)}
         </div>
         <div style="grid-column: span 2; background:var(--panel-bg); border-radius:8px; padding:15px; border:1px solid var(--border);">
-            ${buildRow('Abates', p1.abates || 0, p2.abates || 0, p1.rankKills, p2.rankKills)}
-            ${buildRow('Dano Total', p1.dano || 0, p2.dano || 0, p1.rankDmg, p2.rankDmg)}
-            ${buildRow('Assistências', p1.assists || 0, p2.assists || 0, p1.rankAssists, p2.rankAssists)}
-            ${buildRow('MVPs', p1.mvp || 0, p2.mvp || 0, p1.rankMvp, p2.rankMvp)}
+            ${buildRow('Abates', p1.abates, p2.abates, p1.rankKills, p2.rankKills)}
+            ${buildRow('Dano Total', p1.dano, p2.dano, p1.rankDmg, p2.rankDmg)}
+            ${buildRow('Assistências', p1.assists, p2.assists, p1.rankAssists, p2.rankAssists)}
+            ${buildRow('MVPs', p1.mvp, p2.mvp, p1.rankMvp, p2.rankMvp)}
 
             <div class="stat-row">
-                <div class="stat-val ${kq1 > kq2 ? 'winner' : (kq1 < kq2 ? 'loser' : '')}">
-                    ${kq1.toFixed(2)}
+                <div class="stat-val ${(p1.abates/p1.quedas) > (p2.abates/p2.quedas) ? 'winner' : 'loser'}">
+                    ${(p1.abates/p1.quedas).toFixed(2)}
                 </div>
                 <div class="stat-label">Kills/Queda</div>
-                <div class="stat-val ${kq2 > kq1 ? 'winner' : (kq2 < kq1 ? 'loser' : '')}">
-                    ${kq2.toFixed(2)}
+                <div class="stat-val ${(p2.abates/p2.quedas) > (p1.abates/p1.quedas) ? 'winner' : 'loser'}">
+                    ${(p2.abates/p2.quedas).toFixed(2)}
                 </div>
             </div>
         </div>`;
@@ -8005,350 +7848,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
-
-/* =============================================
-   INTERNACIONAL - FFWS SEA 2026 S1
-   ============================================= */
-const SEA_CLASSIFICACAO_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=2075306919&single=true&output=tsv';
-const SEA_ABATES_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1306410351&single=true&output=tsv';
-
-const SEA_TEAM_NAME_MAP = {
-    'BURIRAM': 'Buriram United', 'BRU': 'Buriram United', 'BURIRAM UNITED': 'Buriram United',
-    'RRQ': 'RRQ Kazu', 'RRQ KAZU': 'RRQ Kazu',
-    'AG': 'All Gamers', 'ALL GAMERS': 'All Gamers',
-    'BTR': 'Bigetron by Vitality', 'BGT': 'Bigetron by Vitality', 'BGV': 'Bigetron by Vitality', 'BV': 'Bigetron by Vitality', 'BIGETRON': 'Bigetron by Vitality', 'BIGETRON BY VITALITY': 'Bigetron by Vitality', 'VITALITY': 'Bigetron by Vitality',
-    'TM': 'Twisted Minds', 'TWI': 'Twisted Minds', 'TWIS': 'Twisted Minds', 'TWISTED MINDS': 'Twisted Minds',
-    'HV': 'Heavy', 'HEV': 'Heavy', 'HEA': 'Heavy', 'HEAVY': 'Heavy',
-    'FLCN': 'Team Falcons', 'FALCONS': 'Team Falcons', 'TEAM FALCONS': 'Team Falcons',
-    'FL': 'Team Flash', 'FLASH': 'Team Flash', 'TEAM FLASH': 'Team Flash',
-    'ONIC': 'ONIC Olympus', 'ONIC OLYMPUS': 'ONIC Olympus',
-    'WAG': 'WAG',
-    'AUR': 'Aurora Gaming', 'AURORA': 'Aurora Gaming', 'AURORA GAMING': 'Aurora Gaming',
-    'ACD': 'ACD',
-    'GOW': 'GOW',
-    'SE': 'Shadow Esports', 'SHADOW': 'Shadow Esports', 'SHADOW ESPORTS': 'Shadow Esports',
-    'AVIDA': 'Avida', 'AVD': 'Avida',
-    'EVOS': 'EVOS Divine', 'EVOS DIVINE': 'EVOS Divine',
-    'PE': 'P Esports', 'PES': 'P Esports', 'P ESPORTS': 'P Esports',
-    'MQ': 'Maqna Esports', 'MGE': 'Maqna Esports', 'MAQ': 'Maqna Esports', 'MAQNA': 'Maqna Esports', 'MAQNA ESPORTS': 'Maqna Esports'
-};
-
-let seaDataLoaded = false;
-let seaClassificacaoParsed = { headers: [], rows: [] };
-let seaAbatesParsed = { headers: [], rows: [] };
-
-function normalizeSEAKey(value) {
-    return String(value || '')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-zA-Z0-9 ]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .toUpperCase();
-}
-
-function getSEATeamFullName(value) {
-    const original = String(value || '').trim();
-    if (!original) return original;
-    const clean = normalizeSEAKey(original);
-    return SEA_TEAM_NAME_MAP[clean] || original;
-}
-
-function cleanSEAPlayerName(value) {
-    const original = String(value || '').trim();
-    if (!original) return original;
-    // Exemplo: RRQ.DUTTZ vira DUTTZ. Mantém nomes sem prefixo intactos.
-    if (original.includes('.')) {
-        const parts = original.split('.').map(part => part.trim()).filter(Boolean);
-        return parts.length ? parts[parts.length - 1] : original;
-    }
-    return original;
-}
-
-function getSEAPlayerTeamSigla(value) {
-    const original = String(value || '').trim();
-    if (!original || !original.includes('.')) return '';
-    const prefix = original.split('.')[0].trim();
-    return normalizeSEAKey(prefix);
-}
-
-function getSEAPlayerTeamFullName(value) {
-    const sigla = getSEAPlayerTeamSigla(value);
-    return sigla ? getSEATeamFullName(sigla) : '';
-}
-
-function getSEARowTeamName(row, playerHeader, teamHeader) {
-    // Na planilha de abates da SEA o time vem no começo do nick: BRU.JOENA, RRQ.DUTTZ etc.
-    // Então o filtro de time deve priorizar essa sigla antes do ponto.
-    const fromPlayer = playerHeader ? getSEAPlayerTeamFullName(row[playerHeader]) : '';
-    if (fromPlayer) return fromPlayer;
-    return teamHeader ? getSEATeamFullName(row[teamHeader]) : '';
-}
-
-function getSEAFunctionName(value) {
-    const clean = normalizeSEAKey(value);
-    const roleMap = {
-        'BOMBER': 'GRAN',
-        'GRENADEIRO': 'GRAN',
-        'GRANADEIRO': 'GRAN',
-        'SNIPER': 'SUP',
-        'SUPORTE': 'SUP',
-        'SUPPORT': 'RUSH',
-        'RUSHER': 'RUSH',
-        'RUSH': 'RUSH',
-        'RIFLER': '3º H',
-        '3 HOMEM': '3º H',
-        '3º HOMEM': '3º H',
-        'TERCEIRO HOMEM': '3º H'
-    };
-    return roleMap[clean] || String(value || '').trim().toUpperCase();
-}
-
-function parseTSV(text) {
-    const lines = String(text || '').replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim() !== '');
-    if (!lines.length) return { headers: [], rows: [] };
-    const headers = lines[0].split('\t').map(h => h.trim());
-    const rows = lines.slice(1).map(line => {
-        const cells = line.split('\t');
-        const obj = {};
-        headers.forEach((h, i) => obj[h || `COL_${i + 1}`] = (cells[i] || '').trim());
-        return obj;
-    });
-    return { headers, rows };
-}
-
-function shouldConvertSEATeamColumn(header) {
-    const h = normalizeSEAKey(header);
-    return ['SIGLA', 'TAG', 'TIME', 'TIMES', 'EQUIPE', 'EQUIPES', 'TEAM', 'TEAMS', 'CLUBE', 'ORGANIZACAO', 'ORG'].some(key => h.includes(key));
-}
-
-function shouldCleanSEAPlayerColumn(header) {
-    const h = normalizeSEAKey(header);
-    return ['JOGADOR', 'PLAYER', 'NICK', 'NOME', 'NAME', 'APELIDO'].some(key => h.includes(key)) && !shouldConvertSEATeamColumn(header);
-}
-
-function shouldConvertSEAFunctionColumn(header) {
-    const h = normalizeSEAKey(header);
-    return ['FUNCAO', 'FUNÇÃO', 'ROLE', 'POSICAO', 'POSIÇÃO', 'POSITION'].some(key => h.includes(key));
-}
-
-function findSEAHeader(headers, matcher) {
-    return (headers || []).find(h => matcher(h)) || null;
-}
-
-function isProbablyNumericColumn(header) {
-    const h = normalizeSEAKey(header);
-    return /(POS|RANK|PONT|PTS|BOOYAH|ABATE|KILL|DANO|DAMAGE|QUEDA|MEDIA|AVG|MVP|AST|ASSIST|VITORIA|VIT)/.test(h);
-}
-
-function parseSEANumber(value) {
-    const normalized = String(value || '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
-    return parseFloat(normalized) || 0;
-}
-
-function findSEAAbatesHeader(headers) {
-    return (headers || []).find(header => {
-        const h = normalizeSEAKey(header);
-        return h === 'ABATES' || h === 'KILLS' || h === 'KILL' || h.includes('ABATE') || h.includes('KILL');
-    }) || null;
-}
-
-function sortSEARowsByAbatesDesc(parsed) {
-    const killHeader = findSEAAbatesHeader(parsed.headers);
-    if (!killHeader) return parsed;
-    return {
-        headers: parsed.headers,
-        rows: [...parsed.rows].sort((a, b) => parseSEANumber(b[killHeader]) - parseSEANumber(a[killHeader]))
-    };
-}
-
-function escapeHtml(value) {
-    return String(value || '').replace(/[&<>'"]/g, char => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        "'": '&#39;',
-        '"': '&quot;'
-    }[char]));
-}
-
-function isSEAKillColumn(header) {
-    const h = normalizeSEAKey(header);
-    return h === 'ABATES' || h === 'KILLS' || h === 'KILL' || h.includes('ABATE') || h.includes('KILL');
-}
-
-function isSEAPointsColumn(header) {
-    const h = normalizeSEAKey(header);
-    return h === 'PTS' || h === 'PONTOS' || h === 'PONTO' || h.includes('PONTOS');
-}
-
-function formatSEAValue(header, value, tableId = '') {
-    const text = String(value || '').trim();
-    if (shouldConvertSEATeamColumn(header)) {
-        return `<span class="int-team-name">${escapeHtml(getSEATeamFullName(text))}</span>`;
-    }
-    if (shouldCleanSEAPlayerColumn(header)) {
-        return `<span class="int-player-name">${escapeHtml(cleanSEAPlayerName(text))}</span>`;
-    }
-    if (shouldConvertSEAFunctionColumn(header)) {
-        return escapeHtml(getSEAFunctionName(text));
-    }
-    if (tableId === 'table-sea-abates' && isSEAKillColumn(header)) {
-        return `<span class="int-kill-value">${escapeHtml(text)}</span>`;
-    }
-    if (tableId === 'table-sea-classificacao' && isSEAPointsColumn(header)) {
-        return `<span class="int-points-value">${escapeHtml(text)}</span>`;
-    }
-    return escapeHtml(text);
-}
-
-function formatOrdinalRank(index) {
-    return `${index + 1}º`;
-}
-
-function refreshSEAAbatesRankColumn() {
-    const table = document.getElementById('table-sea-abates');
-    if (!table) return;
-    Array.from(table.querySelectorAll('tbody tr')).forEach((row, index) => {
-        const firstCell = row.cells[0];
-        if (firstCell && firstCell.classList.contains('int-rank-cell')) {
-            firstCell.textContent = formatOrdinalRank(index);
-        }
-    });
-}
-
-function renderSEATable(tableId, parsed, emptyMessage) {
-    const table = document.getElementById(tableId);
-    if (!table) return;
-    const thead = table.querySelector('thead');
-    const tbody = table.querySelector('tbody');
-    const hasDynamicRank = tableId === 'table-sea-abates';
-
-    if (!parsed.headers.length || !parsed.rows.length) {
-        thead.innerHTML = '';
-        tbody.innerHTML = `<tr><td class="int-loading">${emptyMessage}</td></tr>`;
-        return;
-    }
-
-    const rankHeader = hasDynamicRank ? '<th>#</th>' : '';
-    thead.innerHTML = `<tr>${rankHeader}${parsed.headers.map((h, i) => {
-        const colIndex = hasDynamicRank ? i + 1 : i;
-        return `<th onclick="sortTable('${tableId}', ${colIndex}, ${isProbablyNumericColumn(h)})">${escapeHtml(h || '-')} ↕</th>`;
-    }).join('')}</tr>`;
-
-    tbody.innerHTML = parsed.rows.map((row, index) => {
-        const rankCell = hasDynamicRank ? `<td class="int-rank-cell">${formatOrdinalRank(index)}</td>` : '';
-        const cells = parsed.headers.map(h => `<td>${formatSEAValue(h, row[h], tableId)}</td>`).join('');
-        return `<tr>${rankCell}${cells}</tr>`;
-    }).join('');
-
-    if (hasDynamicRank) refreshSEAAbatesRankColumn();
-}
-
-
-function renderSEAAbatesFilters(parsed) {
-    const teamSelect = document.getElementById('sea-filter-team');
-    const roleSelect = document.getElementById('sea-filter-role');
-    if (!teamSelect || !roleSelect || !parsed?.headers?.length) return;
-
-    const playerHeader = findSEAHeader(parsed.headers, shouldCleanSEAPlayerColumn);
-    const teamHeader = findSEAHeader(parsed.headers, shouldConvertSEATeamColumn);
-    const roleHeader = findSEAHeader(parsed.headers, shouldConvertSEAFunctionColumn);
-
-    const previousTeam = teamSelect.value || 'all';
-    const previousRole = roleSelect.value || 'all';
-
-    const teams = [...new Set(parsed.rows
-        .map(row => getSEARowTeamName(row, playerHeader, teamHeader))
-        .filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const roles = roleHeader
-        ? [...new Set(parsed.rows.map(row => getSEAFunctionName(row[roleHeader])).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
-        : [];
-
-    teamSelect.innerHTML = '<option value="all">Todos os times</option>' + teams.map(team => `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`).join('');
-    roleSelect.innerHTML = '<option value="all">Todas as funções</option>' + roles.map(role => `<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('');
-
-    teamSelect.value = teams.includes(previousTeam) ? previousTeam : 'all';
-    roleSelect.value = roles.includes(previousRole) ? previousRole : 'all';
-
-    teamSelect.disabled = !teams.length;
-    roleSelect.disabled = !roleHeader;
-}
-
-function applySEAAbatesFilters() {
-    if (!seaAbatesParsed.headers.length) return;
-
-    const teamValue = document.getElementById('sea-filter-team')?.value || 'all';
-    const roleValue = document.getElementById('sea-filter-role')?.value || 'all';
-    const playerHeader = findSEAHeader(seaAbatesParsed.headers, shouldCleanSEAPlayerColumn);
-    const teamHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEATeamColumn);
-    const roleHeader = findSEAHeader(seaAbatesParsed.headers, shouldConvertSEAFunctionColumn);
-
-    const filteredRows = seaAbatesParsed.rows.filter(row => {
-        const rowTeam = getSEARowTeamName(row, playerHeader, teamHeader);
-        const teamOk = teamValue === 'all' || rowTeam === teamValue;
-        const roleOk = roleValue === 'all' || (roleHeader && getSEAFunctionName(row[roleHeader]) === roleValue);
-        return teamOk && roleOk;
-    });
-
-    const sortedFilteredRows = sortSEARowsByAbatesDesc({ headers: seaAbatesParsed.headers, rows: filteredRows }).rows;
-    renderSEATable('table-sea-abates', { headers: seaAbatesParsed.headers, rows: sortedFilteredRows }, 'Nenhum jogador encontrado com esses filtros.');
-    const table = document.getElementById('table-sea-abates');
-    if (table) table.setAttribute('data-sort-dir', 'desc');
-}
-
-function clearSEAAbatesFilters() {
-    const teamSelect = document.getElementById('sea-filter-team');
-    const roleSelect = document.getElementById('sea-filter-role');
-    if (teamSelect) teamSelect.value = 'all';
-    if (roleSelect) roleSelect.value = 'all';
-    applySEAAbatesFilters();
-}
-
-async function fetchSEAData(url) {
-    const res = await fetch(`${url}&nocache=${Date.now()}`);
-    if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
-    return parseTSV(await res.text());
-}
-
-async function loadSEAData(force = false) {
-    if (seaDataLoaded && !force) return;
-
-    const classUpdated = document.getElementById('sea-classificacao-updated');
-    const killsUpdated = document.getElementById('sea-abates-updated');
-    if (classUpdated) classUpdated.textContent = 'Atualizando...';
-    if (killsUpdated) killsUpdated.textContent = 'Atualizando...';
-
-    try {
-        const [classificacao, abates] = await Promise.all([
-            fetchSEAData(SEA_CLASSIFICACAO_TSV_URL),
-            fetchSEAData(SEA_ABATES_TSV_URL)
-        ]);
-
-        seaClassificacaoParsed = classificacao;
-        seaAbatesParsed = sortSEARowsByAbatesDesc(abates);
-
-        renderSEATable('table-sea-classificacao', seaClassificacaoParsed, 'Nenhum dado de classificação encontrado.');
-        renderSEAAbatesFilters(seaAbatesParsed);
-        applySEAAbatesFilters();
-
-        const now = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-        if (classUpdated) classUpdated.textContent = `Atualizado: ${now}`;
-        if (killsUpdated) killsUpdated.textContent = `Atualizado: ${now}`;
-        seaDataLoaded = true;
-    } catch (error) {
-        console.error('Erro ao carregar FFWS SEA:', error);
-        ['table-sea-classificacao', 'table-sea-abates'].forEach(id => {
-            const table = document.getElementById(id);
-            if (!table) return;
-            table.querySelector('thead').innerHTML = '';
-            table.querySelector('tbody').innerHTML = '<tr><td class="int-error">Não foi possível carregar os dados da planilha agora. Confira se o link publicado continua ativo.</td></tr>';
-        });
-        if (classUpdated) classUpdated.textContent = 'Erro ao atualizar';
-        if (killsUpdated) killsUpdated.textContent = 'Erro ao atualizar';
-    }
-}
 </script>
 </main>
 
@@ -8431,5 +7930,160 @@ window.fbLoadVotes = function() {
 
   console.log("Firebase conectado com votos do mercado!");
 </script>
-</body>
+
+<!-- SCRIPT DE VOTACAO DO PROXIMO CONFRONTO -->
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE",
+    authDomain: "central-free-fire.firebaseapp.com",
+    databaseURL: "https://central-free-fire-default-rtdb.firebaseio.com",
+    projectId: "central-free-fire",
+    storageBucket: "central-free-fire.firebasestorage.app",
+    messagingSenderId: "372535002832",
+    appId: "1:372535002832:web:37e938fec2b05eb560c0d5"
+  };
+
+  const existingApps = getApps();
+  const app = existingApps.find(a => a.name === 'vote-app') || initializeApp(firebaseConfig, 'vote-app');
+  const db2 = getDatabase(app);
+
+  let _voteKey    = null;
+  let _teamA      = null;
+  let _teamB      = null;
+  let _userVote   = null;
+  let _unsubscribe = null;
+
+  function _logo(nome) {
+    if (typeof logos !== 'undefined') {
+      if (logos[nome]) return logos[nome];
+      const k = Object.keys(logos).find(x => x.toUpperCase() === nome.toUpperCase());
+      if (k) return logos[k];
+    }
+    return 'escudo.webp';
+  }
+
+  function _short(nome) {
+    if (typeof shortNames !== 'undefined') return shortNames[nome] || nome;
+    return nome;
+  }
+
+  function _refreshUI(data) {
+    const total = (data.a || 0) + (data.b || 0);
+    const pctA  = total ? Math.round(((data.a || 0) / total) * 100) : 50;
+    const pctB  = 100 - pctA;
+
+    const el = id => document.getElementById(id);
+
+    // Porcentagens e contagens
+    if (el('vote-pct-a'))   el('vote-pct-a').textContent   = pctA + '%';
+    if (el('vote-pct-b'))   el('vote-pct-b').textContent   = pctB + '%';
+    if (el('vote-count-a')) el('vote-count-a').textContent = `${data.a||0} voto${(data.a||0)!==1?'s':''}`;
+    if (el('vote-count-b')) el('vote-count-b').textContent = `${data.b||0} voto${(data.b||0)!==1?'s':''}`;
+
+    // Barra
+    if (el('vote-bar-a')) el('vote-bar-a').style.width = pctA + '%';
+    if (el('vote-bar-b')) el('vote-bar-b').style.width = pctB + '%';
+
+    // Total
+    if (el('vote-total-txt')) {
+      el('vote-total-txt').textContent = total > 0
+        ? `${total} voto${total!==1?'s':''} registrado${total!==1?'s':''}`
+        : 'Seja o primeiro a votar';
+    }
+
+    // Destaque dos botoes
+    const btnA = el('vote-btn-a');
+    const btnB = el('vote-btn-b');
+    if (btnA && btnB) {
+      btnA.className = 'vote-team-btn' + (_userVote === 'a' ? ' voted-winner' : (_userVote === 'b' ? ' voted-loser' : ''));
+      btnB.className = 'vote-team-btn' + (_userVote === 'b' ? ' voted-winner' : (_userVote === 'a' ? ' voted-loser' : ''));
+    }
+
+    // Ranking
+    _refreshRanking(data);
+  }
+
+  function _refreshRanking(data) {
+    const wrap = document.getElementById('vote-ranking-wrap');
+    const list = document.getElementById('vote-ranking-list');
+    if (!wrap || !list) return;
+
+    const entries = [
+      { name: _teamA, count: data.a || 0 },
+      { name: _teamB, count: data.b || 0 }
+    ].filter(e => e.count > 0).sort((a, b) => b.count - a.count);
+
+    if (entries.length === 0) { wrap.style.display = 'none'; return; }
+
+    const max = entries[0].count;
+    wrap.style.display = 'block';
+    list.innerHTML = entries.map((e, i) => {
+      const pct = max > 0 ? Math.round((e.count / max) * 100) : 0;
+      return `
+        <div class="vote-rank-row">
+          <span class="vote-rank-pos">${i+1}.</span>
+          <img class="vote-rank-logo" src="${_logo(e.name)}" alt="${_short(e.name)}" onerror="this.src='escudo.webp'">
+          <div class="vote-rank-bar-bg"><div class="vote-rank-bar-fill" style="width:${pct}%;"></div></div>
+          <span class="vote-rank-num">${e.count} voto${e.count!==1?'s':''}</span>
+        </div>`;
+    }).join('');
+  }
+
+  // Inicializa o widget com os dois times do proximo confronto
+  window._initVoteConfronto = function(nomeA, nomeB, dataPartida) {
+    // Chave unica por partida — zera automaticamente quando a data muda
+    const novaKey = 'confronto_' + dataPartida.replace(/\s/g,'_').replace(/\//g,'-');
+
+    // Se ja esta rodando para o mesmo confronto, nao reinicializa
+    if (novaKey === _voteKey) return;
+
+    _voteKey  = novaKey;
+    _teamA    = nomeA;
+    _teamB    = nomeB;
+    _userVote = sessionStorage.getItem(`vote_${_voteKey}`) || null;
+
+    // Preenche logos e nomes
+    const el = id => document.getElementById(id);
+    if (el('vote-logo-a')) { el('vote-logo-a').src = _logo(nomeA); el('vote-logo-a').alt = _short(nomeA); }
+    if (el('vote-logo-b')) { el('vote-logo-b').src = _logo(nomeB); el('vote-logo-b').alt = _short(nomeB); }
+    if (el('vote-name-a')) el('vote-name-a').textContent = _short(nomeA);
+    if (el('vote-name-b')) el('vote-name-b').textContent = _short(nomeB);
+
+    // Cancela listener anterior se existir
+    if (_unsubscribe) _unsubscribe();
+
+    // Escuta em tempo real
+    const voteRef = ref(db2, `confrontoVotes/${_voteKey}`);
+    _unsubscribe = onValue(voteRef, snap => {
+      _refreshUI(snap.val() || { a: 0, b: 0 });
+    });
+  };
+
+  // Funcao de voto exposta globalmente
+  window._voteConfronto = function(side) {
+    if (!_voteKey) return;
+    const prev = _userVote;
+
+    const voteRef = ref(db2, `confrontoVotes/${_voteKey}`);
+    runTransaction(voteRef, current => {
+      const data = current || { a: 0, b: 0 };
+      // Remove voto anterior
+      if (prev === 'a') data.a = Math.max(0, (data.a||0) - 1);
+      if (prev === 'b') data.b = Math.max(0, (data.b||0) - 1);
+      // Toggle: clicou no mesmo = cancela; clicou no outro = vota
+      if (prev !== side) {
+        data[side] = (data[side]||0) + 1;
+        _userVote = side;
+        sessionStorage.setItem(`vote_${_voteKey}`, side);
+      } else {
+        _userVote = null;
+        sessionStorage.removeItem(`vote_${_voteKey}`);
+      }
+      return data;
+    });
+  };
+</script>
 </html>
