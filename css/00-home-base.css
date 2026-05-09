@@ -451,7 +451,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
 .home-summary-table th:nth-child(1),
 .home-summary-table td:nth-child(1) {
-    width: 42px;
+    width: 25px;
 }
 
 .home-summary-table th:nth-child(2),
@@ -536,7 +536,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
     .home-summary-table th:nth-child(1),
     .home-summary-table td:nth-child(1) {
-        width: 34px;
+        width: 25px;
     }
 
     .home-summary-table td:nth-child(n+3),
@@ -573,7 +573,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
     .home-summary-table th:nth-child(1),
     .home-summary-table td:nth-child(1) {
-        width: 30px;
+        width: 22px;
     }
 
     .home-summary-team-cell img {
