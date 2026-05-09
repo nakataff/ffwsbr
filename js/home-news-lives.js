@@ -1119,7 +1119,7 @@ function renderHomeConfrontoResumoModalContent() {
 
     if (playersEl) {
         playersEl.innerHTML = data.topPlayersKills.slice(0, 5).map((p, index) => `
-            <div class="home-confronto-row" onclick="${_cffOpenPlayerAction(p.nome)}">
+            <div class="home-confronto-row home-confronto-player-row" onclick="${_cffOpenPlayerAction(p.nome)}">
                 <div class="home-confronto-rank">${index + 1}º</div>
                 <div class="home-confronto-main">
                     <strong>${_cffEscapeHtml(p.nome)}</strong>
@@ -1135,7 +1135,7 @@ function renderHomeConfrontoResumoModalContent() {
 
     if (teamsEl) {
         teamsEl.innerHTML = data.topTeams.slice(0, 5).map((t, index) => `
-            <div class="home-confronto-row" onclick="openTeamProfile('${String(t.equipe).replace(/'/g, "\\'")}')">
+            <div class="home-confronto-row home-confronto-team-row" onclick="openTeamProfile('${String(t.equipe).replace(/'/g, "\\'")}')">
                 <div class="home-confronto-rank">${index + 1}º</div>
                 <img src="${_cffEscapeHtml(_cffTeamLogo(t.equipe))}" class="home-confronto-logo" onerror="this.src='escudo.webp'" alt="">
                 <div class="home-confronto-main">
