@@ -364,3 +364,109 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
     .home-confronto-logo { display: none; }
     .home-confronto-stats { grid-column: 1 / -1; justify-content: end; margin-top: 6px; }
 }
+
+
+/* =============================================
+   HOME - RESUMO DO CONFRONTO - CORREÇÃO DE LAYOUT
+   ============================================= */
+.home-confronto-player-row {
+    grid-template-columns: 42px minmax(0, 1fr) minmax(128px, auto) !important;
+}
+
+.home-confronto-team-row {
+    grid-template-columns: 42px 34px minmax(0, 1fr) minmax(170px, auto) !important;
+}
+
+.home-confronto-team-row .home-confronto-logo {
+    display: block;
+    width: 28px;
+    height: 28px;
+    justify-self: center;
+}
+
+.home-confronto-row .home-confronto-main strong {
+    max-width: 100%;
+}
+
+.home-confronto-stats {
+    justify-self: end;
+    align-self: center;
+}
+
+.home-confronto-stats.team-stats {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(42px, auto)) !important;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 3px;
+    text-align: center;
+}
+
+.home-confronto-stats.team-stats b {
+    grid-row: 1;
+    font-size: 1.05em;
+}
+
+.home-confronto-stats.team-stats small {
+    grid-row: 2;
+}
+
+.home-confronto-stats:not(.team-stats) {
+    grid-template-columns: repeat(2, minmax(58px, auto)) !important;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 3px;
+    text-align: center;
+}
+
+.home-confronto-stats:not(.team-stats) b {
+    grid-row: 1;
+}
+
+.home-confronto-stats:not(.team-stats) small {
+    grid-row: 2;
+}
+
+@media (max-width: 768px) {
+    .home-confronto-row {
+        gap: 8px !important;
+    }
+
+    .home-confronto-player-row {
+        grid-template-columns: 34px minmax(0, 1fr) !important;
+    }
+
+    .home-confronto-team-row {
+        grid-template-columns: 34px 28px minmax(0, 1fr) !important;
+    }
+
+    .home-confronto-team-row .home-confronto-logo {
+        display: block !important;
+        width: 24px;
+        height: 24px;
+    }
+
+    .home-confronto-player-row .home-confronto-stats,
+    .home-confronto-team-row .home-confronto-stats {
+        grid-column: 2 / -1;
+        justify-self: stretch;
+        justify-content: start;
+        margin-top: 6px;
+        text-align: left;
+    }
+
+    .home-confronto-team-row .home-confronto-stats {
+        grid-column: 1 / -1;
+        padding-left: 42px;
+    }
+
+    .home-confronto-stats.team-stats {
+        grid-template-columns: repeat(3, minmax(48px, auto)) !important;
+        justify-content: start;
+    }
+
+    .home-confronto-stats:not(.team-stats) {
+        grid-template-columns: repeat(2, minmax(72px, auto)) !important;
+        justify-content: start;
+    }
+}
