@@ -475,3 +475,51 @@ select { padding: 8px; border-radius: 6px; border: 1px solid var(--border); back
 #table-teams-full tbody tr.br-row-ewc {
     background-image: linear-gradient(90deg, rgba(74,168,255,0.075), transparent 38%);
 }
+
+
+/* =============================================
+   AJUSTE: coluna de posição menor na tabela geral
+   ============================================= */
+#table-teams-full th:first-child,
+#table-teams-full td:first-child {
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    text-align: center !important;
+}
+
+#table-teams-full td.br-rank-marker {
+    position: relative;
+    overflow: visible !important;
+    padding-left: 8px !important;
+    padding-right: 4px !important;
+    font-weight: 1000 !important;
+    text-align: center !important;
+    text-shadow: 0 0 1px currentColor;
+}
+
+#table-teams-full td.br-rank-marker::before {
+    left: 0;
+}
+
+@media (max-width: 768px) {
+    #table-teams-full th:first-child,
+    #table-teams-full td:first-child {
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+    }
+
+    #table-teams-full td.br-rank-marker {
+        padding-left: 7px !important;
+        padding-right: 3px !important;
+    }
+
+    #table-teams-full td.br-rank-marker::before {
+        width: 5px;
+    }
+}
