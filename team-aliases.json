@@ -30,9 +30,19 @@
     "E1",
     "E1 SPORTS"
   ],
+  "GOD E-SPORTS": [
+    "GOD UNIDAS",
+    "GOD",
+    "GOD E-SPORTS"
+  ],
   "AXS FUSION": [
     "AXS",
     "AXS FUSION"
+  ],
+  "NEWX GAMING": [
+    "NewX Gaming",
+    "NEWX GAMING",
+    "NEWX"
   ],
   "RISE GAMING": [
     "RISE",
@@ -57,11 +67,18 @@
   ],
   "LOS": [
     "LGD",
-    "LOS GRANDES"
+    "LOS GRANDES",
+    "LG"
   ],
   "BD LOS GRANDES": [
     "BD LOS",
+  "BD LOS GRANDES",
     "BD LGD"
+  ],
+  "BLACK DRAGONS": [
+    "BD",
+    "Black Dragons e-Sports",
+    "BLACK DRAGONS"
   ],
   "RED CANIDS": [
     "RED",
@@ -102,6 +119,7 @@
   ],
   "FEAR": [
     "fear (Brazilian Team)",
+    "Fear",
     "FEAR"
   ],
   "B4 ESPORTS": [
