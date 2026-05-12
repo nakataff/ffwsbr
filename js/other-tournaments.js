@@ -67,8 +67,16 @@ function otGetMobileTeamName(teamName) {
 }
 
 function otTeamNameHTML(teamName) {
-    const full = String(teamName || '').trim();
+    const raw = String(teamName || '').trim();
+    
+    // Passa o nome pelas etapas de transformação
+    const normalized = otNormalizeTeamFromAliases(raw);
+    const current = otResolveCurrentTeamName(normalized);
+    
+    // Define 'full' como o nome já convertido (current). Se falhar, usa o original (raw).
+    const full = current || raw; 
     const short = otGetMobileTeamName(full);
+    
     return `<span class="ot-team-full">${otEscapeHTML(full)}</span><span class="ot-team-short">${otEscapeHTML(short)}</span>`;
 }
 
