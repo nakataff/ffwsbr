@@ -567,7 +567,9 @@ function openOtherTournament(id) {
     if (!t) return;
 
     currentOtData = t;
-    currentOtTab = otGetStandings(t).length ? 'standings' : (t.final ? 'final' : 'teams');
+currentOtTab = t.final
+    ? 'final'
+    : (otGetStandings(t).length ? 'standings' : 'teams');
 
     document.getElementById('ot-list-view').style.display = 'none';
     document.getElementById('ot-details-view').style.display = 'block';
