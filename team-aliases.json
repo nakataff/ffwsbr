@@ -55,9 +55,13 @@
     "PAIN GAMING",
     "PNG"
   ],
+  "LOS": [
+    "LGD",
+    "LOS GRANDES"
+  ],
   "BD LOS GRANDES": [
-    "BD",
-    "BD LOS GRANDES"
+    "BD LOS",
+    "BD LGD"
   ],
   "RED CANIDS": [
     "RED",
@@ -83,7 +87,22 @@
   "VIVO KEYD": [
     "KEYD",
     "KEYD STARS",
+    "VK",
     "VIVO KEYD"
+  ],
+  "KaBuM! e-Sports": [
+    "KaBuM",
+    "KaBuM! e-Sports",
+    "KABUM",
+    "KBM"
+  ],
+  "CRUZEIRO ESPORTS": [
+    "CRUZEIRO",
+    "CRZ"
+  ],
+  "FEAR": [
+    "fear (Brazilian Team)",
+    "FEAR"
   ],
   "B4 ESPORTS": [
     "B4 ESPORTS",
