@@ -7,6 +7,30 @@ var otShowRosters = window.otShowRosters || false;
 var otFinalMatchFilter = window.otFinalMatchFilter || 'all';
 var otMobileTeamShortNames = window.otMobileTeamShortNames || {};
 var otMobileShortNamesLoaded = window.otMobileShortNamesLoaded || false;
+var globalTeamAliasesMap = window.globalTeamAliasesMap || null;
+
+async function loadTeamAliases() {
+    if (globalTeamAliasesMap) return;
+    try {
+        const res = await fetch(withCacheBuster('team-aliases.json'));
+        if (!res.ok) throw new Error('Falha ao carregar team-aliases.json');
+        const data = await res.json();
+        
+        globalTeamAliasesMap = {};
+        // Transforma o JSON em um dicionário rápido de busca (Alias -> Nome Canônico)
+        for (const [canonical, aliases] of Object.entries(data)) {
+            globalTeamAliasesMap[otNormalizeKey(canonical)] = canonical;
+            aliases.forEach(alias => {
+                globalTeamAliasesMap[otNormalizeKey(alias)] = canonical;
+            });
+        }
+        window.globalTeamAliasesMap = globalTeamAliasesMap;
+        console.log('✅ team-aliases.json carregado!');
+    } catch (e) {
+        console.warn('[Outros Torneios] Erro ao carregar team-aliases.json:', e);
+        globalTeamAliasesMap = {}; // Evita tentar carregar de novo se der erro
+    }
+}
 
 function otEscapeHTML(value) {
     return String(value ?? '').replace(/[&<>'"]/g, ch => ({
@@ -68,12 +92,10 @@ function otGetMobileTeamName(teamName) {
 
 function otTeamNameHTML(teamName) {
     const raw = String(teamName || '').trim();
-    
-    // Passa o nome pelas etapas de transformação
     const normalized = otNormalizeTeamFromAliases(raw);
     const current = otResolveCurrentTeamName(normalized);
     
-    // Define 'full' como o nome já convertido (current). Se falhar, usa o original (raw).
+    // Usa o nome convertido; se falhar, usa o original
     const full = current || raw; 
     const short = otGetMobileTeamName(full);
     
@@ -250,57 +272,35 @@ function otResolveCurrentTeamName(teamName) {
         : null;
     if (direct) return direct.equipe;
 
-    const historicalToCurrent = {
-        'LOUD': 'LOUD SNICKERS',
-        'LOUD SNICKERS': 'LOUD SNICKERS',
-        'KEYD': 'VIVO KEYD',
-        'KEYD STARS': 'VIVO KEYD',
-        'VIVO KEYD': 'VIVO KEYD',
-        'FLUXO': 'FLUXO W7M',
-        'FX': 'FLUXO W7M',
-        'FX W7M': 'FLUXO W7M',
-        'FLUXO W7M': 'FLUXO W7M',
-        'TS': 'TEAM SOLID',
-        'TEAM SOLID': 'TEAM SOLID',
-        'A7': 'ALPHA7',
-        'ALPHA7': 'ALPHA7',
-        'CRVG': 'VASCO ESPORTS',
-        'VASCO': 'VASCO ESPORTS',
-        'VASCO ESPORTS': 'VASCO ESPORTS',
-        'INF': 'INFLUENCE RAGE',
-        'INFLUENCE RAGE': 'INFLUENCE RAGE',
-        'E1': 'E1 SPORTS',
-        'E1 SPORTS': 'E1 SPORTS',
-        'AXS': 'AXS FUSION',
-        'AXS FUSION': 'AXS FUSION',
-        'RISE': 'RISE GAMING',
-        'RISE GAMING': 'RISE GAMING',
-        'RUSH': 'RUSH GAMING',
-        'RUSH GAMING': 'RUSH GAMING',
-        'LOOPS': 'LOOPS',
-        'LOS': 'LOS',
-        'INTZ': 'INTZ',
-        'CIVIS': 'CIVIS',
-        'A34': 'ALFA 34',
-        'ALFA 34': 'ALFA 34',
-        'W7M': 'W7M ESPORTS',
-        'W7M ESPORTS': 'W7M ESPORTS',
-        'PNG': 'PAIN GAMING',
-        'PAIN': 'PAIN GAMING',
-        'PAIN GAMING': 'PAIN GAMING',
-        'LPS': 'LOOPS',
-        'RSH M': 'RUSH GAMING',
-        'INCO': 'INCO GAMING',
-        'NEWX GAMING': 'NEWX GAMING',
-        'SS': 'SS E-SPORTS',
-        'SS E-SPORTS': 'SS E-SPORTS'
-    };
-
     const mapped = historicalToCurrent[raw.toUpperCase()];
     if (mapped && typeof db !== 'undefined' && Array.isArray(db.teams)) {
         const exists = db.teams.find(t => otNormalizeKey(t.equipe) === otNormalizeKey(mapped));
         if (exists) return exists.equipe;
     }
+
+    return raw;
+}
+
+function otResolveCurrentTeamName(teamName) {
+    let raw = String(teamName || '').trim();
+    if (!raw) return '';
+
+    if (typeof getTeamCanonicalName === 'function') {
+        raw = getTeamCanonicalName(raw);
+    }
+
+    // Busca no JSON externo de Aliases
+    if (globalTeamAliasesMap) {
+        const mapped = globalTeamAliasesMap[otNormalizeKey(raw)];
+        if (mapped) raw = mapped;
+    }
+
+    // Verifica se o nome resolvido existe no DB principal de times
+    const direct = (typeof db !== 'undefined' && Array.isArray(db.teams))
+        ? db.teams.find(t => otNormalizeKey(t.equipe) === otNormalizeKey(raw))
+        : null;
+    
+    if (direct) return direct.equipe;
 
     return raw;
 }
@@ -448,6 +448,7 @@ async function loadNovosTorneios() {
     }
 
     await loadOtMobileTeamShortNames();
+    await loadTeamAliases(); // <-- Chamada adicionada aqui!
 
     dbNovosTorneios = loaded.sort((a, b) => {
         const ya = Number(otGetTournamentYear(a)) || 0;
