@@ -60,6 +60,254 @@ function otParseSimpleTSV(text) {
     });
 }
 
+
+function otNormalizeSlotStage(stage) {
+    const key = otNormalizeFilterValue(stage);
+    if (!key) return '';
+    if (key.includes('final')) return 'final';
+    if (key.includes('grand')) return 'final';
+    if (key.includes('grupo')) return 'group';
+    if (key.includes('group')) return 'group';
+    if (key.includes('classific')) return 'group';
+    if (key.includes('regular')) return 'group';
+    if (key.includes('league')) return 'group';
+    return key;
+}
+
+function otNormalizeSlotType(type) {
+    const key = otNormalizeFilterValue(type).replace(/\s+/g, '');
+    if (!key) return '';
+    if (['up', 'blue', 'azul', 'qualificado', 'qualified', 'classificado', 'classifica'].includes(key)) return 'up';
+    if (['stayup', 'stayup', 'verde', 'green', 'secured', 'seguro', 'vaga', 'mantemvaga', 'mantem'].includes(key)) return 'stayup';
+    if (['stay', 'yellow', 'amarelo', 'neutro'].includes(key)) return 'stay';
+    if (['staydown', 'orange', 'laranja', 'promotion', 'promocao', 'promocao', 'repescagem'].includes(key)) return 'staydown';
+    if (['down', 'red', 'vermelho', 'relegated', 'rebaixado', 'eliminated', 'eliminado'].includes(key)) return 'down';
+    return key;
+}
+
+function otParseSlotRange(rangeText) {
+    const raw = String(rangeText || '').trim();
+    const nums = raw.match(/\d+/g) || [];
+    if (!nums.length) return null;
+    const from = Number(nums[0]);
+    const to = Number(nums.length > 1 ? nums[1] : nums[0]);
+    if (!Number.isFinite(from) || !Number.isFinite(to)) return null;
+    return { from: Math.min(from, to), to: Math.max(from, to) };
+}
+
+function otParseSlotRule(rule, defaultStage = 'group') {
+    if (!rule) return null;
+
+    if (typeof rule === 'object') {
+        const range = otParseSlotRange(rule.range || rule.pos || rule.position || rule.positions || `${rule.from || rule.start || ''}-${rule.to || rule.end || rule.from || rule.start || ''}`);
+        if (!range) return null;
+        const type = otNormalizeSlotType(rule.type || rule.status || rule.color || rule.cor || rule.slot || '');
+        if (!type) return null;
+        return {
+            stage: otNormalizeSlotStage(rule.stage || rule.fase || defaultStage) || defaultStage,
+            from: range.from,
+            to: range.to,
+            type,
+            label: String(rule.label || rule.text || rule.destino || rule.destination || rule.name || '').trim()
+        };
+    }
+
+    let raw = String(rule || '').trim();
+    if (!raw) return null;
+
+    let stage = defaultStage;
+    const colon = raw.indexOf(':');
+    if (colon > -1) {
+        const possibleStage = raw.slice(0, colon).trim();
+        const normalizedStage = otNormalizeSlotStage(possibleStage);
+        if (normalizedStage) {
+            stage = normalizedStage;
+            raw = raw.slice(colon + 1).trim();
+        }
+    }
+
+    let rangePart = '';
+    let typePart = '';
+    let labelPart = '';
+
+    if (raw.includes(';')) {
+        const parts = raw.split(';').map(x => x.trim()).filter(Boolean);
+        rangePart = parts[0] || '';
+        typePart = parts[1] || '';
+        labelPart = parts.slice(2).join(' ; ');
+    } else if (raw.includes('=')) {
+        const parts = raw.split('=').map(x => x.trim());
+        rangePart = parts[0] || '';
+        const rest = parts.slice(1).join('=').trim();
+        const restParts = rest.split(/\s*[,|]\s*/).filter(Boolean);
+        typePart = restParts[0] || rest;
+        labelPart = restParts.slice(1).join(' ');
+    } else {
+        const parts = raw.split(/\s+-\s+|\s+\|\s+|\s{2,}/).map(x => x.trim()).filter(Boolean);
+        rangePart = parts[0] || '';
+        typePart = parts[1] || '';
+        labelPart = parts.slice(2).join(' ');
+    }
+
+    const range = otParseSlotRange(rangePart);
+    const type = otNormalizeSlotType(typePart);
+    if (!range || !type) return null;
+
+    return { stage, from: range.from, to: range.to, type, label: labelPart };
+}
+
+function otSplitSlotCell(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return [];
+    return raw
+        .split(/\r?\n|<br\s*\/?\s*>/i)
+        .flatMap(part => part.split(/\s*\/\s*(?=\d)/))
+        .map(x => x.trim())
+        .filter(Boolean);
+}
+
+function otFindRowValue(row, names) {
+    const normalizedNames = names.map(n => otNormalizeFilterValue(n));
+    for (const [key, value] of Object.entries(row || {})) {
+        const nk = otNormalizeFilterValue(key);
+        if (normalizedNames.includes(nk)) return value;
+    }
+    return '';
+}
+
+async function otLoadSlotsSheet() {
+    if (otSlotsSheetLoaded) return;
+    otSlotsSheetLoaded = true;
+    otSlotsSheetMap = otSlotsSheetMap || {};
+
+    if (!OT_SLOTS_SHEET_URL) {
+        window.otSlotsSheetLoaded = otSlotsSheetLoaded;
+        window.otSlotsSheetMap = otSlotsSheetMap;
+        return;
+    }
+
+    try {
+        const res = await fetch(withCacheBuster(OT_SLOTS_SHEET_URL));
+        if (!res.ok) throw new Error(`Erro ${res.status}`);
+        const rows = otParseSimpleTSV(await res.text());
+
+        rows.forEach(row => {
+            const competition = otFindRowValue(row, ['competição', 'competicao', 'competition', 'torneio', 'tournament', 'id']);
+            if (!competition) return;
+
+            const groupSlots = otFindRowValue(row, ['slots de grupos', 'slots dos grupos', 'slots grupo', 'group slots', 'group stage', 'fase de grupos']);
+            const finalSlots = otFindRowValue(row, ['slots da final', 'slots final', 'final slots', 'final']);
+            const rules = [];
+
+            otSplitSlotCell(groupSlots).forEach(item => {
+                const parsed = otParseSlotRule(item, 'group');
+                if (parsed) rules.push(parsed);
+            });
+            otSplitSlotCell(finalSlots).forEach(item => {
+                const parsed = otParseSlotRule(item, 'final');
+                if (parsed) rules.push(parsed);
+            });
+
+            if (!rules.length) return;
+            const keys = [competition, otNormalizeKey(competition), otNormalizeFilterValue(competition)].filter(Boolean);
+            keys.forEach(key => {
+                otSlotsSheetMap[key] = (otSlotsSheetMap[key] || []).concat(rules);
+            });
+        });
+
+        window.otSlotsSheetMap = otSlotsSheetMap;
+        window.otSlotsSheetLoaded = otSlotsSheetLoaded;
+        console.log(`✅ ${Object.keys(otSlotsSheetMap).length} chaves de slots carregadas!`);
+    } catch (e) {
+        console.warn('[Outros Torneios] Falha ao carregar planilha de slots:', e);
+        window.otSlotsSheetMap = otSlotsSheetMap;
+        window.otSlotsSheetLoaded = otSlotsSheetLoaded;
+    }
+}
+
+function otGetJsonSlotRules(t) {
+    const raw = [];
+    if (Array.isArray(t?.slots)) raw.push(...t.slots);
+    if (Array.isArray(t?.slotRules)) raw.push(...t.slotRules);
+    if (Array.isArray(t?.spots)) raw.push(...t.spots);
+    if (t?.slots && typeof t.slots === 'object' && !Array.isArray(t.slots)) {
+        if (Array.isArray(t.slots.group)) raw.push(...t.slots.group.map(x => `group stage: ${x}`));
+        if (Array.isArray(t.slots.final)) raw.push(...t.slots.final.map(x => `final: ${x}`));
+    }
+    return raw.map(item => otParseSlotRule(item)).filter(Boolean);
+}
+
+function otGetSheetSlotRules(t) {
+    if (!t) return [];
+    const candidates = [
+        t.id,
+        t.slug,
+        t.name,
+        t.nome,
+        `${t.name || t.nome || ''} ${t.year || t.ano || ''}`,
+        String(t.name || t.nome || '').replace(/\s+/g, ''),
+    ].filter(Boolean);
+
+    const found = [];
+    candidates.forEach(value => {
+        const keys = [value, otNormalizeKey(value), otNormalizeFilterValue(value)].filter(Boolean);
+        keys.forEach(key => {
+            if (Array.isArray(otSlotsSheetMap?.[key])) found.push(...otSlotsSheetMap[key]);
+        });
+    });
+
+    return found;
+}
+
+function otGetSlotRules(t, stage) {
+    const wantedStage = otNormalizeSlotStage(stage || 'group');
+    const all = [...otGetJsonSlotRules(t), ...otGetSheetSlotRules(t)];
+    const seen = new Set();
+    return all.filter(rule => {
+        if (!rule) return false;
+        if (wantedStage && otNormalizeSlotStage(rule.stage) !== wantedStage) return false;
+        const key = `${rule.stage}|${rule.from}|${rule.to}|${rule.type}|${rule.label}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    }).sort((a, b) => a.from - b.from || a.to - b.to);
+}
+
+function otFindSpotRule(t, table, position, stage = 'group') {
+    const pos = Number(String(position || '').replace(/[^0-9.-]/g, ''));
+    if (!Number.isFinite(pos)) return null;
+    const explicitStage = table?.slotStage || table?.stage || stage;
+    return otGetSlotRules(t, explicitStage).find(rule => pos >= rule.from && pos <= rule.to) || null;
+}
+
+function otSpotClass(ruleOrType) {
+    const type = typeof ruleOrType === 'string' ? otNormalizeSlotType(ruleOrType) : otNormalizeSlotType(ruleOrType?.type || '');
+    return type ? `ot-spot-${type}` : '';
+}
+
+function otSlotRangeLabel(rule) {
+    if (!rule) return '';
+    return rule.from === rule.to ? `${rule.from}º` : `${rule.from}º-${rule.to}º`;
+}
+
+function otRenderSpotLegend(t, table, stage = 'group') {
+    const rules = otGetSlotRules(t, table?.slotStage || table?.stage || stage);
+    if (!rules.length) return '';
+
+    return `
+        <div class="ot-spot-legend">
+            <div class="ot-spot-legend-title">Vagas / posições</div>
+            ${rules.map(rule => `
+                <div class="ot-spot-legend-row ${otSpotClass(rule)}">
+                    <span class="ot-spot-legend-bar"></span>
+                    <strong>${otEscapeHTML(otSlotRangeLabel(rule))}</strong>
+                    <span>${otEscapeHTML(rule.label || rule.type || '')}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
 async function loadOtMobileTeamShortNames() {
     if (otMobileShortNamesLoaded) return;
     otMobileShortNamesLoaded = true;
