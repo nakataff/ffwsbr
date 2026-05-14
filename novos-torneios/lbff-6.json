@@ -147,8 +147,8 @@
         ],
         [
           5,
-          "TROPA (MOBILE)",
-          "TROPA (MOBILE)",
+          "TROPA",
+          "TROPA",
           650,
           [
             0,
@@ -801,7 +801,7 @@
             "f": "br",
             "r": "",
             "t": "player",
-            "l": "PROZIN (Mobile Player)"
+            "l": "PROZIN"
           },
           {
             "n": "Ruan",
@@ -1620,8 +1620,8 @@
       ],
       [
         5,
-        "TROPA (MOBILE)",
-        "TROPA (MOBILE)",
+        "TROPA",
+        "TROPA",
         6
       ],
       [
@@ -2369,8 +2369,8 @@
       ],
       [
         8,
-        "TROPA (MOBILE)",
-        "TROPA (MOBILE)",
+        "TROPA",
+        "TROPA",
         6,
         25,
         35,
