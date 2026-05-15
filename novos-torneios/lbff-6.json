@@ -8,7 +8,11 @@
     "Exemplo: group stage: 1 ; up ; FFWS GLOBAL 2020",
     "Exemplo: final: 1-2 ; up ; FFWS GLOBAL 2020"
   ],
-  "slots": [],
+  "slots": [
+  "group stage: 1-12 ; stayup ; Final",
+  "group stage: 13-16 ; stay ; Grupo de Acesso",
+  "group stage: 17-18 ; down ; Rebaixado"
+],
   "standings": [
     {
       "type": "standings",
