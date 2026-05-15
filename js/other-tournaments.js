@@ -161,7 +161,8 @@ function otSplitSlotCell(value) {
     if (!raw) return [];
     return raw
         .split(/\r?\n|<br\s*\/?\s*>/i)
-        .flatMap(part => part.split(/\s*\/\s*(?=\d)/))
+        // Agora o código divide corretamente por vírgula, barra ou ponto-e-vírgula antes dos números!
+        .flatMap(part => part.split(/\s*[,;/]\s*(?=\d)/))
         .map(x => x.trim())
         .filter(Boolean);
 }
@@ -261,14 +262,23 @@ function otGetSheetSlotRules(t) {
 
 function otGetSlotRules(t, stage) {
     const wantedStage = otNormalizeSlotStage(stage || 'group');
-    const all = [...otGetJsonSlotRules(t), ...otGetSheetSlotRules(t)];
-    const seen = new Set();
+    
+    // Filtra regras da planilha e do JSON apenas para a fase que está sendo renderizada
+    const sheetRules = otGetSheetSlotRules(t).filter(r => !wantedStage || otNormalizeSlotStage(r.stage) === wantedStage);
+    const jsonRules = otGetJsonSlotRules(t).filter(r => !wantedStage || otNormalizeSlotStage(r.stage) === wantedStage);
+    
+    // PRIORIDADE MÁXIMA PARA A PLANILHA: Se vier do Sheets, usa só do Sheets.
+    const all = sheetRules.length > 0 ? sheetRules : jsonRules;
+    
+    const seenPositions = new Set();
     return all.filter(rule => {
         if (!rule) return false;
-        if (wantedStage && otNormalizeSlotStage(rule.stage) !== wantedStage) return false;
-        const key = `${rule.stage}|${rule.from}|${rule.to}|${rule.type}|${rule.label}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
+        
+        // Evita duplicar posições se você escrever regras conflitantes
+        const posKey = `${rule.stage}|${rule.from}-${rule.to}`;
+        if (seenPositions.has(posKey)) return false;
+        seenPositions.add(posKey);
+        
         return true;
     }).sort((a, b) => a.from - b.from || a.to - b.to);
 }
