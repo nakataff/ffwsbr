@@ -2,10 +2,10 @@
   "schema": 1,
   "id": "lbff-7",
   "name": "LBFF 7",
-  "year": "2022",
+  "year": "2020",
   "tier": "A",
-  "region": "Brasil",
-  "status": "Oficial",
+  "region": "BRASIL",
+  "status": "OFICIAL",
   "format": "Série A - Etapa 1: 5 de fevereiro a 16 de abril, Brasil\n12 melhores equipes da Etapa 3A\n4 melhores equipes da Promoção\n2 melhores equipes da Etapa 3B\n\nTemporada Regular: Brasil Online\n18 equipes divididas em três grupos de 6, todos contra todos em formato de liga\n12 melhores classificadas para a Fase Final e garantiram vagas na Etapa 2A de 2022\n13 melhores classificadas garantiram vaga na Etapa 2A de 2022\n14º ao 17º classificados entraram na Série de Promoção\n18º rebaixado para a Série B\n\nFinais: 16 de abril nos Estúdios Quanta, São Paulo, Brasil",
   "standings": [
     {
@@ -51,8 +51,8 @@
         ],
         [
           2,
-          "MGS",
-          "MGS",
+          "MAGIC SQUAD",
+          "MAGIC SQUAD",
           1086,
           [
             116,
@@ -136,8 +136,8 @@
         ],
         [
           7,
-          "TLQ",
-          "TLQ",
+          "TEAM LIQUID",
+          "TEAM LIQUID",
           965,
           [
             84,
@@ -187,8 +187,8 @@
         ],
         [
           10,
-          "CRU",
-          "CRU",
+          "CRUZEIRO ESPORTS",
+          "CRUZEIRO ESPORTS",
           952,
           [
             87,
@@ -289,8 +289,8 @@
         ],
         [
           16,
-          "REAL",
-          "REAL",
+          "REAL E-SPORTS",
+          "REAL E-SPORTS",
           757,
           [
             56,
@@ -1403,8 +1403,8 @@
       ],
       [
         2,
-        "MGS",
-        "MGS",
+        "MAGIC SQUAD",
+        "MAGIC SQUAD",
         9
       ],
       [
@@ -1433,8 +1433,8 @@
       ],
       [
         7,
-        "TLQ",
-        "TLQ",
+        "TEAM LIQUID",
+        "TEAM LIQUID",
         4
       ],
       [
@@ -1451,8 +1451,8 @@
       ],
       [
         10,
-        "CRU",
-        "CRU",
+        "CRUZEIRO ESPORTS",
+        "CRUZEIRO ESPORTS",
         1
       ],
       [
@@ -1472,7 +1472,10 @@
   "prizePool": {
     "type": "teamPrizePool",
     "source": "liquipedia",
-    "format": "teamPrizePool",
+    "format": "teamPrizePoolSlots",
+    "localCurrency": "brl",
+    "localcurrency": "brl",
+    "currency": "BRL",
     "cols": [
       "pos",
       "teamOriginal",
@@ -1480,7 +1483,135 @@
       "prize",
       "usdPrize"
     ],
-    "rows": []
+    "rows": [
+      [
+        1,
+        "LOUD SNICKERS",
+        "LOUD SNICKERS",
+        105000,
+        ""
+      ],
+      [
+        2,
+        "KEYD STARS",
+        "KEYD STARS",
+        85000,
+        ""
+      ],
+      [
+        3,
+        "MAGIC SQUAD",
+        "MAGIC SQUAD",
+        75000,
+        ""
+      ],
+      [
+        4,
+        "LOS",
+        "LOS",
+        53333,
+        ""
+      ],
+      [
+        5,
+        "FLUXO W7M",
+        "FLUXO W7M",
+        53333,
+        ""
+      ],
+      [
+        6,
+        "CORINTHIANS",
+        "CORINTHIANS",
+        53333,
+        ""
+      ],
+      [
+        7,
+        "CRUZEIRO ESPORTS",
+        "CRUZEIRO ESPORTS",
+        53333,
+        ""
+      ],
+      [
+        8,
+        "GOD E-SPORTS",
+        "GOD E-SPORTS",
+        53333,
+        ""
+      ],
+      [
+        9,
+        "META GAMING",
+        "META GAMING",
+        53333,
+        ""
+      ],
+      [
+        10,
+        "TEAM LIQUID",
+        "TEAM LIQUID",
+        53333,
+        ""
+      ],
+      [
+        11,
+        "B4 ESPORTS",
+        "B4 ESPORTS",
+        53333,
+        ""
+      ],
+      [
+        12,
+        "BD VASCO",
+        "BD VASCO",
+        53333,
+        ""
+      ],
+      [
+        13,
+        "TROPA",
+        "TROPA",
+        0,
+        ""
+      ],
+      [
+        14,
+        "NITROXX ESPORTS",
+        "NITROXX ESPORTS",
+        0,
+        ""
+      ],
+      [
+        15,
+        "00 NATION",
+        "00 NATION",
+        0,
+        ""
+      ],
+      [
+        16,
+        "REAL E-SPORTS",
+        "REAL E-SPORTS",
+        0,
+        ""
+      ],
+      [
+        17,
+        "NETSHOES MINERS",
+        "NETSHOES MINERS",
+        0,
+        ""
+      ],
+      [
+        18,
+        "LIBERTY",
+        "LIBERTY",
+        0,
+        ""
+      ]
+    ],
+    "warnings": []
   },
   "awardPrizePool": {
     "type": "awardPrizePool",
@@ -1772,8 +1903,8 @@
       ],
       [
         3,
-        "MGS",
-        "MGS",
+        "MAGIC SQUAD",
+        "MAGIC SQUAD",
         9,
         null,
         null,
@@ -2367,8 +2498,8 @@
       ],
       [
         10,
-        "TLQ",
-        "TLQ",
+        "TEAM LIQUID",
+        "TEAM LIQUID",
         4,
         null,
         null,
