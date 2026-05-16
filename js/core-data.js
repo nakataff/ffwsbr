@@ -1060,10 +1060,6 @@ const db = {
     ]
 };
 const agenda = [
-    { semana: "7", data: "03 de Maio", grupos: ["A", "B", "C"] },
-    { semana: "8", data: "09 de Maio", grupos: ["B", "C", "D"] },
-    { semana: "8", data: "10 de Maio", grupos: ["C", "D", "A"] },
-    { semana: "9", data: "16 de Maio", grupos: ["A", "B", "C"] },
     { semana: "9", data: "17 de Maio", grupos: ["B", "C", "D"] },
     { semana: "10", data: "23 de Maio", grupos: ["C", "D", "A"] },
     { semana: "10", data: "24 de Maio", grupos: ["D", "A", "B"] }
