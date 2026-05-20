@@ -1,111 +1,206 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
-  import { getDatabase, ref, runTransaction, onValue, off } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  off,
+  set
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
-  const firebaseConfig = window.CFF_CONFIG.firebase;
+import {
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const database = getDatabase(app);
-  window.firebaseApp = app;
+const firebaseConfig = window.CFF_CONFIG.firebase;
 
-  // ✅ Define a função que voteMercado() chama
-  window.fbVote = function(key, newDir, previousDir) {
-    const safeKey = key.replace(/[\s.#$/\[\]]/g, '_');
-    const votesRef = ref(database, `mercadoVotes/${safeKey}`);
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const database = getDatabase(app);
+const auth = getAuth(app);
 
-    runTransaction(votesRef, (current) => {
-      const data = current || { up: 0, down: 0 };
+window.firebaseApp = app;
 
-      // Remove voto anterior se existia
-      if (previousDir === 'up')   data.up   = Math.max(0, (data.up   || 0) - 1);
-      if (previousDir === 'down') data.down = Math.max(0, (data.down || 0) - 1);
+let currentUser = null;
+let authReadyPromise = null;
+let currentDayVotesRef = null;
 
-      // Adiciona voto novo (null = toggle off, não adiciona nada)
-      if (newDir === 'up')   data.up   = (data.up   || 0) + 1;
-      if (newDir === 'down') data.down = (data.down || 0) + 1;
+function safeFirebaseKey(value) {
+  return String(value || "")
+    .trim()
+    .replace(/[\s.#$/\[\]]/g, "_")
+    .slice(0, 100);
+}
 
-      return data;
+function waitForAuth() {
+  if (authReadyPromise) return authReadyPromise;
+
+  authReadyPromise = new Promise((resolve) => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        resolve(user);
+        return;
+      }
+
+      try {
+        const result = await signInAnonymously(auth);
+        currentUser = result.user;
+        resolve(result.user);
+      } catch (error) {
+        console.error("Erro ao autenticar anonimamente no Firebase:", error);
+        resolve(null);
+      }
     });
-  };
+  });
 
-  // ✅ Carrega votos do Firebase ao iniciar (substitui os do sessionStorage)
-window.fbLoadVotes = function() {
-    const votesRef = ref(database, 'mercadoVotes');
-    
-    // onValue em vez de onlyOnce para atualizar em tempo real se alguém votar!
-    onValue(votesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      const localVotes = JSON.parse(sessionStorage.getItem('mercadoVotes') || '{}');
+  return authReadyPromise;
+}
 
-      // Pega todos os nomes reais que vieram da sua planilha TSV
-      const realNames = typeof mercadoData !== 'undefined' ? mercadoData.map(d => d.jogador) : [];
+function getMercadoOriginalKeyFromSafeKey(safeKey) {
+  const realNames = typeof mercadoData !== "undefined"
+    ? mercadoData.map(d => d.jogador)
+    : [];
 
-      Object.entries(data).forEach(([safeKey, counts]) => {
-        // Acha o nome original comparando a versão "limpa" (safeKey) com os nomes reais da planilha
-        const originalKey = realNames.find(name =>
-          name.replace(/[\s.#$/\[\]]/g, '_') === safeKey
-        ) || safeKey;
+  return realNames.find(name => safeFirebaseKey(name) === safeKey) || safeKey;
+}
 
-        // Pega o "voted" local para manter o botão colorido corretamente para quem votou
-        const localVoted = localVotes[originalKey]?.voted || null;
+function countMercadoVotes(data) {
+  const result = {};
 
-        // Sobrescreve a variável global com os dados reais do Firebase
-        mercadoVotes[originalKey] = {
-          up: counts.up || 0,
-          down: counts.down || 0,
-          voted: localVoted 
+  Object.entries(data || {}).forEach(([safeKey, users]) => {
+    const originalKey = getMercadoOriginalKeyFromSafeKey(safeKey);
+
+    result[originalKey] = {
+      up: 0,
+      down: 0,
+      voted: null
+    };
+
+    Object.entries(users || {}).forEach(([uid, vote]) => {
+      if (vote === "up") result[originalKey].up += 1;
+      if (vote === "down") result[originalKey].down += 1;
+
+      if (currentUser && uid === currentUser.uid) {
+        result[originalKey].voted = vote;
+      }
+    });
+  });
+
+  return result;
+}
+
+function countDayVotes(data) {
+  const counts = {};
+
+  Object.values(data || {}).forEach((teamKey) => {
+    if (!teamKey) return;
+    counts[teamKey] = (counts[teamKey] || 0) + 1;
+  });
+
+  return counts;
+}
+
+// Curtidas / descurtidas do mercado
+window.fbVote = async function(key, newDir, previousDir) {
+  const user = await waitForAuth();
+
+  if (!user) {
+    console.warn("Usuário anônimo não autenticado. Voto não enviado.");
+    return;
+  }
+
+  const safeKey = safeFirebaseKey(key);
+  const voteRef = ref(database, `mercadoUserVotes/${safeKey}/${user.uid}`);
+
+  // newDir pode ser "up", "down" ou null
+  if (newDir === "up" || newDir === "down") {
+    await set(voteRef, newDir);
+  } else {
+    await set(voteRef, null);
+  }
+};
+
+window.fbLoadVotes = async function() {
+  await waitForAuth();
+
+  const votesRef = ref(database, "mercadoUserVotes");
+
+  onValue(votesRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    const countedVotes = countMercadoVotes(data);
+
+    Object.keys(mercadoVotes || {}).forEach((key) => {
+      if (!countedVotes[key]) {
+        countedVotes[key] = {
+          up: 0,
+          down: 0,
+          voted: null
         };
-      });
-
-      // Renderiza a tela novamente agora com os dados globais corretos
-      if (typeof renderMercado === 'function') {
-          renderMercado();
       }
     });
-  };
 
+    window.mercadoVotes = countedVotes;
 
-
-  // ✅ Votação do dia na página inicial
-  let currentDayVotesRef = null;
-
-  window.fbDayVote = function(matchKey, newTeamKey, previousTeamKey) {
-    const votesRef = ref(database, `dayVotes/${matchKey}/teams`);
-
-    runTransaction(votesRef, (current) => {
-      const data = current || {};
-
-      if (previousTeamKey) {
-        data[previousTeamKey] = Math.max(0, (data[previousTeamKey] || 0) - 1);
-      }
-
-      if (newTeamKey) {
-        data[newTeamKey] = (data[newTeamKey] || 0) + 1;
-      }
-
-      return data;
-    });
-  };
-
-  window.fbLoadDayVotes = function(matchKey) {
-    if (!matchKey) return;
-
-    if (currentDayVotesRef) {
-      off(currentDayVotesRef);
+    if (typeof mercadoVotes !== "undefined") {
+      Object.keys(mercadoVotes).forEach(k => delete mercadoVotes[k]);
+      Object.assign(mercadoVotes, countedVotes);
     }
 
-    currentDayVotesRef = ref(database, `dayVotes/${matchKey}/teams`);
-    onValue(currentDayVotesRef, (snapshot) => {
-      const counts = snapshot.val() || {};
-      if (typeof window.applyDayVoteCounts === 'function') {
-        window.applyDayVoteCounts(matchKey, counts);
-      }
-    });
-  };
+    if (typeof renderMercado === "function") {
+      renderMercado();
+    }
+  });
+};
 
-  if (window.currentDayVoteMatchKey && typeof window.fbLoadDayVotes === 'function') {
+// Votação do melhor time do dia
+window.fbDayVote = async function(matchKey, newTeamKey, previousTeamKey) {
+  const user = await waitForAuth();
+
+  if (!user) {
+    console.warn("Usuário anônimo não autenticado. Voto do dia não enviado.");
+    return;
+  }
+
+  const safeMatchKey = safeFirebaseKey(matchKey);
+  const voteRef = ref(database, `dayUserVotes/${safeMatchKey}/${user.uid}`);
+
+  if (newTeamKey) {
+    await set(voteRef, String(newTeamKey).slice(0, 80));
+  } else {
+    await set(voteRef, null);
+  }
+};
+
+window.fbLoadDayVotes = async function(matchKey) {
+  if (!matchKey) return;
+
+  await waitForAuth();
+
+  const safeMatchKey = safeFirebaseKey(matchKey);
+
+  if (currentDayVotesRef) {
+    off(currentDayVotesRef);
+  }
+
+  currentDayVotesRef = ref(database, `dayUserVotes/${safeMatchKey}`);
+
+  onValue(currentDayVotesRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    const counts = countDayVotes(data);
+
+    if (typeof window.applyDayVoteCounts === "function") {
+      window.applyDayVoteCounts(matchKey, counts);
+    }
+  });
+};
+
+waitForAuth().then(() => {
+  if (window.currentDayVoteMatchKey && typeof window.fbLoadDayVotes === "function") {
     window.fbLoadDayVotes(window.currentDayVoteMatchKey);
   }
 
-  console.log("Firebase conectado com votos do mercado e votação do dia!");
+  console.log("Firebase conectado com votos seguros por usuário anônimo!");
+});
