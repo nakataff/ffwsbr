@@ -1,0 +1,1107 @@
+/* Página internacional, FFWS SEA, classificação e ranking de abates. */
+/* =============================================
+   INTERNACIONAL
+   ============================================= */
+.internacional-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 0 0 25px; }
+.internacional-tab { background: var(--panel-bg); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; font-weight: 900; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.7px; }
+.internacional-tab:hover, .internacional-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 200, 255, 0.08); }
+.internacional-hero { background: linear-gradient(135deg, rgba(0,200,255,0.12), rgba(255,255,255,0.03)); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; margin-bottom: 24px; text-align: center; }
+.internacional-hero h1 { margin: 0 0 8px; color: #fff; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: 1px; }
+.internacional-hero p { margin: 0; color: var(--text-muted); }
+.int-filters { margin-top: -6px; margin-bottom: 16px; }
+.int-filters label { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; font-size: 0.82em; }
+.int-filters select { min-width: 170px; }
+.int-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+.int-section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
+.int-section-title h2 { margin: 0; color: var(--accent); font-size: 1.2em; text-transform: uppercase; }
+.int-updated { color: var(--text-muted); font-size: 0.8em; }
+.int-empty { background: var(--panel-bg); border: 1px dashed var(--border); border-radius: 12px; padding: 45px 20px; text-align: center; color: var(--text-muted); }
+.int-empty strong { color: var(--accent); display: block; font-size: 1.4em; margin-bottom: 8px; text-transform: uppercase; }
+.int-loading, .int-error { padding: 22px; color: var(--text-muted); text-align: center; }
+.int-error { color: #ff7777; }
+.int-rank-cell { color: var(--accent); font-weight: 900; }
+.int-player-name, .int-team-name, .int-kill-value, .int-points-value { color: var(--accent); font-weight: 900; }
+#table-sea-abates td:nth-child(2) { text-align: left; }
+#table-sea-classificacao .int-team-name { font-size: 1.02em; }
+
+/* Alinhamento FFWS SEA */
+#table-sea-classificacao { table-layout: fixed; width: 100%; }
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child { width: auto; min-width: 0; max-width: none; text-align: left; }
+#table-sea-classificacao th:nth-child(2),
+#table-sea-classificacao td:nth-child(2) { width: 95px; min-width: 95px; max-width: 95px; text-align: center; }
+#table-sea-classificacao .int-points-value { display: inline-block; min-width: 42px; text-align: center; }
+.sea-team-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; min-width: 0; }
+.sea-team-cell .team-logo { width: 24px; height: 24px; object-fit: contain; margin: 0; flex: 0 0 24px; }
+.sea-team-cell .sea-desktop-only,
+.sea-team-cell .sea-mobile-only { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sea-mobile-only { display: none; }
+.sea-desktop-only { display: inline; }
+@media (max-width: 768px) {
+.internacional-tab { width: 100%; }
+.int-section-title { flex-direction: column; align-items: flex-start; }
+#ffws-sea-2026-s1 .table-container { overflow-x: hidden; }
+#ffws-sea-2026-s1 table { table-layout: fixed; width: 100%; white-space: nowrap; }
+#ffws-sea-2026-s1 th, #ffws-sea-2026-s1 td { padding: 8px 4px !important; font-size: 0.72em; }
+#ffws-sea-2026-s1 .int-rank-cell { width: 32px; }
+#ffws-sea-2026-s1 .sea-desktop-only { display: none !important; }
+#ffws-sea-2026-s1 .sea-mobile-only { display: inline !important; }
+#ffws-sea-2026-s1 .int-team-name { font-size: 1em; letter-spacing: 0.3px; }
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child { width: auto !important; min-width: 0 !important; max-width: none !important; text-align: left !important; overflow: hidden; }
+#table-sea-classificacao th:nth-child(2),
+#table-sea-classificacao td:nth-child(2) { width: 68px !important; min-width: 68px !important; max-width: 68px !important; text-align: center !important; }
+#table-sea-classificacao .sea-team-cell { gap: 8px; width: 100%; }
+#table-sea-classificacao .sea-team-cell .team-logo { width: 22px; height: 22px; flex-basis: 22px; }
+#ffws-sea-2026-s1 .int-player-name { max-width: 72px; display: inline-block; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+#ffws-sea-2026-s1 .int-filters { gap: 8px; padding: 10px; }
+#ffws-sea-2026-s1 .int-filters label { font-size: 0.72em; }
+#ffws-sea-2026-s1 .int-filters select { min-width: 120px; max-width: 150px; font-size: 0.8em; }
+#ffws-sea-2026-s1 .btn-action { padding: 8px 10px; font-size: 0.78em; }
+}
+
+
+
+/* =============================================
+   AJUSTES FFWS SEA - MOBILE / POSIÇÃO / DANO
+   ============================================= */
+#table-sea-classificacao .int-rank-cell,
+#table-sea-abates .int-rank-cell {
+    width: 38px;
+    min-width: 38px;
+    text-align: center;
+    color: var(--accent);
+    font-weight: 900;
+}
+
+#table-sea-abates td.sea-col-player { text-align: left; }
+
+#table-sea-classificacao th.sea-col-points,
+#table-sea-classificacao td.sea-col-points {
+    width: 68px;
+    min-width: 68px;
+    max-width: 68px;
+    text-align: center;
+}
+
+#table-sea-classificacao th.sea-col-booyah,
+#table-sea-classificacao td.sea-col-booyah {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    text-align: center;
+}
+
+#table-sea-classificacao .sea-team-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+#table-sea-classificacao .sea-team-cell .team-logo {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+}
+
+@media (max-width: 768px) {
+    #table-sea-abates th.sea-col-role,
+    #table-sea-abates td.sea-col-role {
+        display: none !important;
+    }
+
+    #table-sea-classificacao .sea-team-cell {
+        gap: 6px !important;
+    }
+
+    #table-sea-classificacao .sea-team-cell .team-logo {
+        width: 20px !important;
+        height: 20px !important;
+        flex-basis: 20px !important;
+    }
+
+    #ffws-sea-2026-s1 .sea-mobile-only {
+        display: inline !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: nowrap !important;
+    }
+
+    #ffws-sea-2026-s1 .int-team-name {
+        font-size: 0.95em !important;
+        letter-spacing: 0 !important;
+    }
+
+    #table-sea-classificacao th.sea-col-booyah,
+    #table-sea-classificacao td.sea-col-booyah {
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+    }
+
+    #table-sea-classificacao th.sea-col-points,
+    #table-sea-classificacao td.sea-col-points {
+        width: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+    }
+}
+
+
+
+/* Correção final: depois que a coluna # foi adicionada, a coluna TIME virou a 2ª.
+   Essas regras anulam os nth-child antigos da classificação SEA. */
+#table-sea-classificacao th:first-child,
+#table-sea-classificacao td:first-child,
+#table-sea-abates th:first-child,
+#table-sea-abates td:first-child {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    text-align: center !important;
+}
+
+#table-sea-classificacao th.sea-col-team,
+#table-sea-classificacao td.sea-col-team {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    text-align: left !important;
+    overflow: hidden !important;
+}
+
+#table-sea-classificacao th.sea-col-points,
+#table-sea-classificacao td.sea-col-points {
+    width: 68px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+    text-align: center !important;
+}
+
+@media (max-width: 768px) {
+    #table-sea-classificacao th:first-child,
+    #table-sea-classificacao td:first-child,
+    #table-sea-abates th:first-child,
+    #table-sea-abates td:first-child {
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+    }
+
+    #table-sea-classificacao th.sea-col-team,
+    #table-sea-classificacao td.sea-col-team {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+}
+
+
+
+/* =============================================
+   CORREÇÃO FFWS SEA ABATES - NOME DO JOGADOR NÃO INVADIR KILLS
+   ============================================= */
+#table-sea-abates {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#table-sea-abates th.sea-col-player,
+#table-sea-abates td.sea-col-player {
+    text-align: left !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+#table-sea-abates .int-player-name {
+    display: block !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    line-height: 1.15 !important;
+}
+
+@media (max-width: 768px) {
+    #table-sea-abates th:first-child,
+    #table-sea-abates td:first-child {
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+    }
+
+    #table-sea-abates th.sea-col-player,
+    #table-sea-abates td.sea-col-player {
+        width: auto !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    #table-sea-abates th.sea-col-role,
+    #table-sea-abates td.sea-col-role,
+    #table-sea-abates th.sea-col-team,
+    #table-sea-abates td.sea-col-team {
+        display: none !important;
+    }
+
+    #table-sea-abates th:not(:first-child):not(.sea-col-player):not(.sea-col-role):not(.sea-col-team),
+    #table-sea-abates td:not(:first-child):not(.sea-col-player):not(.sea-col-role):not(.sea-col-team) {
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+        text-align: center !important;
+    }
+
+    #table-sea-abates th.sea-col-dano,
+    #table-sea-abates td.sea-col-dano {
+        width: 52px !important;
+        min-width: 52px !important;
+        max-width: 52px !important;
+    }
+
+    #table-sea-abates .int-player-name {
+        font-size: 0.92em !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    #table-sea-abates .int-player-name.sea-player-name-medium {
+        font-size: 0.82em !important;
+        letter-spacing: 0 !important;
+    }
+
+    #table-sea-abates .int-player-name.sea-player-name-long {
+        font-size: 0.74em !important;
+        letter-spacing: -0.2px !important;
+    }
+}
+
+/* =============================================
+   FFWS SEA - FASES, FORMATO E LEGENDA
+   ============================================= */
+.sea-phase-panel {
+    margin: 0 0 24px;
+}
+
+.sea-phase-switch {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.sea-phase-btn {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 999px;
+    padding: 10px 22px;
+    cursor: pointer;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    transition: 0.2s ease;
+}
+
+.sea-phase-btn:hover,
+.sea-phase-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0, 200, 255, 0.09);
+    box-shadow: 0 0 16px rgba(0, 200, 255, 0.12);
+}
+
+.sea-phase-card {
+    background: linear-gradient(135deg, rgba(0, 200, 255, 0.08), rgba(255, 255, 255, 0.025));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.sea-phase-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.sea-phase-current-title {
+    color: #fff;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1.1em;
+}
+
+.sea-phase-current-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-top: 4px;
+    line-height: 1.45;
+}
+
+.sea-phase-stage-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.82em;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.sea-phase-stage-wrap select {
+    min-width: 170px;
+}
+
+.sea-format-title {
+    color: var(--accent);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.sea-phase-format ul {
+    margin: 8px 0 14px 18px;
+    padding: 0;
+    color: var(--text-muted);
+    line-height: 1.48;
+    font-size: 0.9em;
+}
+
+.sea-phase-format li { margin-bottom: 5px; }
+.sea-phase-format strong { color: #fff; }
+
+.sea-phase-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.sea-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    color: #fff;
+    font-size: 0.84em;
+    font-weight: 750;
+}
+
+.sea-legend-item strong { font-weight: 950; }
+.sea-legend-icon { font-size: 1.05em; font-weight: 950; }
+.sea-qualified { background: rgba(0, 130, 40, 0.34); border-color: rgba(60, 220, 110, 0.35); }
+.sea-next { background: rgba(140, 108, 0, 0.28); border-color: rgba(255, 210, 80, 0.32); }
+.sea-eliminated { background: rgba(130, 0, 0, 0.28); border-color: rgba(255, 80, 80, 0.34); }
+
+.sea-pool-badge {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-weight: 950;
+    color: #001018;
+    background: var(--accent);
+}
+
+.sea-pool-a { background: rgba(0, 200, 255, 0.10); border-color: rgba(0, 200, 255, 0.35); }
+.sea-pool-b { background: rgba(120, 160, 255, 0.10); border-color: rgba(120, 160, 255, 0.35); }
+.sea-pool-c { background: rgba(255, 195, 80, 0.10); border-color: rgba(255, 195, 80, 0.35); }
+.sea-pool-d { background: rgba(255, 100, 100, 0.10); border-color: rgba(255, 100, 100, 0.35); }
+
+#table-sea-classificacao th.sea-col-status,
+#table-sea-classificacao td.sea-col-status {
+    width: 132px !important;
+    min-width: 132px !important;
+    max-width: 132px !important;
+    text-align: center !important;
+}
+
+.sea-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 86px;
+    border-radius: 999px;
+    padding: 5px 8px;
+    font-size: 0.72em;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.sea-status-pool-a { color: #69e5ff; background: rgba(0, 200, 255, 0.10); border-color: rgba(0, 200, 255, 0.32); }
+.sea-status-pool-b { color: #a8bcff; background: rgba(120, 160, 255, 0.10); border-color: rgba(120, 160, 255, 0.32); }
+.sea-status-pool-c { color: #ffd06a; background: rgba(255, 195, 80, 0.12); border-color: rgba(255, 195, 80, 0.32); }
+.sea-status-pool-d { color: #ff8a8a; background: rgba(255, 100, 100, 0.12); border-color: rgba(255, 100, 100, 0.32); }
+.sea-status-qualified { color: #80ffad; background: rgba(0, 160, 70, 0.16); border-color: rgba(80, 255, 150, 0.38); }
+.sea-status-next { color: #ffe07a; background: rgba(180, 140, 0, 0.16); border-color: rgba(255, 220, 100, 0.38); }
+.sea-status-eliminated { color: #ff8d8d; background: rgba(160, 0, 0, 0.16); border-color: rgba(255, 100, 100, 0.38); }
+
+#table-sea-classificacao tr.sea-row-qualified { background: linear-gradient(90deg, rgba(0, 160, 70, 0.08), transparent); }
+#table-sea-classificacao tr.sea-row-next { background: linear-gradient(90deg, rgba(180, 140, 0, 0.055), transparent); }
+#table-sea-classificacao tr.sea-row-eliminated { background: linear-gradient(90deg, rgba(160, 0, 0, 0.08), transparent); }
+
+@media (max-width: 768px) {
+    .sea-phase-card { padding: 14px; }
+    .sea-phase-card-head { flex-direction: column; }
+    .sea-phase-btn { flex: 1 1 120px; padding: 10px 12px; }
+    .sea-phase-stage-wrap { width: 100%; align-items: flex-start; flex-direction: column; }
+    .sea-phase-stage-wrap select { width: 100%; min-width: 0; }
+    .sea-phase-format ul { font-size: 0.82em; margin-left: 16px; }
+    .sea-phase-legend { display: grid; grid-template-columns: 1fr; }
+    .sea-legend-item { font-size: 0.8em; }
+
+    #table-sea-classificacao th.sea-col-status,
+    #table-sea-classificacao td.sea-col-status {
+        width: 74px !important;
+        min-width: 74px !important;
+        max-width: 74px !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+    }
+
+    .sea-status-badge {
+        min-width: 0;
+        width: 100%;
+        font-size: 0.58em;
+        padding: 4px 3px;
+        letter-spacing: 0;
+    }
+}
+
+
+/* =============================================
+   FFWS SEA - STATUS ESTILO LIQUIPEDIA
+   Barra lateral colorida na coluna de posição
+   ============================================= */
+
+#table-sea-classificacao th.sea-col-status,
+#table-sea-classificacao td.sea-col-status {
+    display: none !important;
+}
+
+#table-sea-classificacao tbody tr {
+    position: relative;
+}
+
+#table-sea-classificacao td.int-rank-cell.sea-rank-marker {
+    position: relative;
+    overflow: visible !important;
+    padding-left: 16px !important;
+}
+
+#table-sea-classificacao td.int-rank-cell.sea-rank-marker::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -1px;
+    bottom: -1px;
+    width: 5px;
+    border-radius: 0 4px 4px 0;
+    background: transparent;
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.0);
+}
+
+/* Fase 1 — Pools */
+#table-sea-classificacao td.sea-status-pool-a::before,
+.sea-mini-line.sea-line-pool-a {
+    background: #168a3a;
+}
+
+#table-sea-classificacao td.sea-status-pool-b::before,
+.sea-mini-line.sea-line-pool-b {
+    background: #a88413;
+}
+
+#table-sea-classificacao td.sea-status-pool-c::before,
+.sea-mini-line.sea-line-pool-c {
+    background: #8a5bd6;
+}
+
+#table-sea-classificacao td.sea-status-pool-d::before,
+.sea-mini-line.sea-line-pool-d {
+    background: #b33a3a;
+}
+
+/* Fase 2 — destinos */
+#table-sea-classificacao td.sea-status-qualified::before,
+.sea-mini-line.sea-line-qualified {
+    background: #19b957;
+    box-shadow: 0 0 10px rgba(25, 185, 87, 0.35);
+}
+
+#table-sea-classificacao td.sea-status-next::before,
+.sea-mini-line.sea-line-next {
+    background: #d4a81f;
+}
+
+#table-sea-classificacao td.sea-status-eliminated::before,
+.sea-mini-line.sea-line-eliminated {
+    background: #d63737;
+}
+
+.sea-legend-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    align-items: center;
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 0.82em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.sea-legend-inline span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.sea-mini-line {
+    display: inline-block;
+    width: 5px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--accent);
+}
+
+#table-sea-classificacao tbody tr.sea-row-qualified,
+#table-sea-classificacao tbody tr.sea-row-pool-a {
+    background-image: linear-gradient(90deg, rgba(25, 185, 87, 0.08), transparent 42%);
+}
+
+#table-sea-classificacao tbody tr.sea-row-next,
+#table-sea-classificacao tbody tr.sea-row-pool-b {
+    background-image: linear-gradient(90deg, rgba(212, 168, 31, 0.08), transparent 42%);
+}
+
+#table-sea-classificacao tbody tr.sea-row-pool-c {
+    background-image: linear-gradient(90deg, rgba(138, 91, 214, 0.08), transparent 42%);
+}
+
+#table-sea-classificacao tbody tr.sea-row-eliminated,
+#table-sea-classificacao tbody tr.sea-row-pool-d {
+    background-image: linear-gradient(90deg, rgba(214, 55, 55, 0.08), transparent 42%);
+}
+
+@media (max-width: 768px) {
+    #table-sea-classificacao td.int-rank-cell.sea-rank-marker {
+        padding-left: 12px !important;
+    }
+
+    #table-sea-classificacao td.int-rank-cell.sea-rank-marker::before {
+        width: 4px;
+    }
+
+    .sea-legend-inline {
+        font-size: 0.72em;
+        gap: 8px 10px;
+    }
+
+    .sea-mini-line {
+        height: 15px;
+    }
+}
+
+
+/* =============================================
+   FFWS SEA - CORES MAIS FORTES NA POSIÇÃO
+   ============================================= */
+
+#table-sea-classificacao td.int-rank-cell.sea-rank-marker {
+    font-weight: 1000 !important;
+    text-shadow: 0 0 1px currentColor;
+}
+
+#table-sea-classificacao td.int-rank-cell.sea-rank-marker::before {
+    width: 7px !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 6px 6px 0 !important;
+}
+
+/* Pool A / Grande Final - verde forte */
+#table-sea-classificacao td.sea-status-pool-a,
+#table-sea-classificacao td.sea-status-qualified {
+    color: #42ff7b !important;
+    background: linear-gradient(90deg, rgba(66, 255, 123, 0.24), rgba(66, 255, 123, 0.05) 72%, transparent) !important;
+    border-left-color: #42ff7b !important;
+}
+
+#table-sea-classificacao td.sea-status-pool-a::before,
+#table-sea-classificacao td.sea-status-qualified::before,
+.sea-mini-line.sea-line-pool-a,
+.sea-mini-line.sea-line-qualified {
+    background: #42ff7b !important;
+    box-shadow: 0 0 14px rgba(66, 255, 123, 0.75) !important;
+}
+
+/* Pool B / Próximo dia - amarelo forte */
+#table-sea-classificacao td.sea-status-pool-b,
+#table-sea-classificacao td.sea-status-next {
+    color: #ffd84a !important;
+    background: linear-gradient(90deg, rgba(255, 216, 74, 0.24), rgba(255, 216, 74, 0.05) 72%, transparent) !important;
+}
+
+#table-sea-classificacao td.sea-status-pool-b::before,
+#table-sea-classificacao td.sea-status-next::before,
+.sea-mini-line.sea-line-pool-b,
+.sea-mini-line.sea-line-next {
+    background: #ffd84a !important;
+    box-shadow: 0 0 14px rgba(255, 216, 74, 0.72) !important;
+}
+
+/* Pool C - roxo forte */
+#table-sea-classificacao td.sea-status-pool-c {
+    color: #b98cff !important;
+    background: linear-gradient(90deg, rgba(185, 140, 255, 0.24), rgba(185, 140, 255, 0.05) 72%, transparent) !important;
+}
+
+#table-sea-classificacao td.sea-status-pool-c::before,
+.sea-mini-line.sea-line-pool-c {
+    background: #b98cff !important;
+    box-shadow: 0 0 14px rgba(185, 140, 255, 0.7) !important;
+}
+
+/* Pool D / Eliminado - vermelho forte */
+#table-sea-classificacao td.sea-status-pool-d,
+#table-sea-classificacao td.sea-status-eliminated {
+    color: #ff5f5f !important;
+    background: linear-gradient(90deg, rgba(255, 95, 95, 0.24), rgba(255, 95, 95, 0.05) 72%, transparent) !important;
+}
+
+#table-sea-classificacao td.sea-status-pool-d::before,
+#table-sea-classificacao td.sea-status-eliminated::before,
+.sea-mini-line.sea-line-pool-d,
+.sea-mini-line.sea-line-eliminated {
+    background: #ff5f5f !important;
+    box-shadow: 0 0 14px rgba(255, 95, 95, 0.72) !important;
+}
+
+#table-sea-classificacao tbody tr.sea-row-pool-a,
+#table-sea-classificacao tbody tr.sea-row-qualified {
+    background-image: linear-gradient(90deg, rgba(66, 255, 123, 0.10), transparent 40%) !important;
+}
+
+#table-sea-classificacao tbody tr.sea-row-pool-b,
+#table-sea-classificacao tbody tr.sea-row-next {
+    background-image: linear-gradient(90deg, rgba(255, 216, 74, 0.10), transparent 40%) !important;
+}
+
+#table-sea-classificacao tbody tr.sea-row-pool-c {
+    background-image: linear-gradient(90deg, rgba(185, 140, 255, 0.10), transparent 40%) !important;
+}
+
+#table-sea-classificacao tbody tr.sea-row-pool-d,
+#table-sea-classificacao tbody tr.sea-row-eliminated {
+    background-image: linear-gradient(90deg, rgba(255, 95, 95, 0.10), transparent 40%) !important;
+}
+
+@media (max-width: 768px) {
+    #table-sea-classificacao td.int-rank-cell.sea-rank-marker::before {
+        width: 6px !important;
+    }
+
+    #table-sea-classificacao td.int-rank-cell.sea-rank-marker {
+        text-shadow: 0 0 8px currentColor;
+    }
+}
+
+/* =============================================
+   FFWS SEA - GRANDE FINAL / RESULTADOS DA FASE 2
+   ============================================= */
+.sea-finals-panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.sea-finals-card {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.sea-grand-final-card {
+    background: linear-gradient(135deg, rgba(25, 185, 87, 0.11), rgba(0, 200, 255, 0.04));
+    border-color: rgba(80, 255, 150, 0.26);
+}
+
+.sea-finals-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.sea-finals-card-head h3 {
+    margin: 0;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-size: 1.02em;
+}
+
+.sea-finals-card-head p {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 0.86em;
+    line-height: 1.35;
+}
+
+.sea-finals-count {
+    flex: 0 0 auto;
+    color: #80ffad;
+    border: 1px solid rgba(80, 255, 150, 0.35);
+    background: rgba(0, 160, 70, 0.16);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.76em;
+    font-weight: 950;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.sea-finals-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sea-finals-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.sea-finals-table th,
+.sea-finals-table td {
+    padding: 10px 9px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    text-align: center;
+    color: var(--text);
+    font-size: 0.88em;
+}
+
+.sea-finals-table th {
+    background: rgba(255, 255, 255, 0.055);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.76em;
+    letter-spacing: 0.55px;
+}
+
+.sea-finals-table th:nth-child(1),
+.sea-finals-table td:nth-child(1) { width: 44px; }
+.sea-finals-table th:nth-child(2),
+.sea-finals-table td:nth-child(2) { text-align: left; width: auto; }
+.sea-finals-table th:nth-child(3),
+.sea-finals-table td:nth-child(3) { width: 116px; }
+.sea-finals-table th:nth-child(4),
+.sea-finals-table td:nth-child(4) { width: 54px; }
+.sea-finals-table th:nth-child(5),
+.sea-finals-table td:nth-child(5) { width: 62px; }
+
+.sea-finals-rank {
+    color: var(--accent) !important;
+    font-weight: 950;
+}
+
+.sea-summary-team {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+    color: var(--accent);
+    font-weight: 900;
+}
+
+.sea-summary-team img {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    object-fit: contain;
+}
+
+.sea-summary-team span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sea-stage-results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.sea-stage-result-card {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.sea-stage-result-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 11px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sea-stage-result-head strong {
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.sea-stage-result-head span {
+    color: var(--text-muted);
+    font-size: 0.74em;
+    text-align: right;
+}
+
+.sea-stage-result-list {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.sea-stage-result-row {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 48px 74px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+    font-size: 0.82em;
+}
+
+.sea-stage-result-row:last-child { border-bottom: 0; }
+
+.sea-stage-pos {
+    color: var(--text-muted);
+    font-weight: 900;
+    text-align: center;
+}
+
+.sea-stage-pts {
+    color: #fff;
+    font-weight: 950;
+    text-align: center;
+}
+
+.sea-stage-status {
+    border-radius: 999px;
+    padding: 4px 6px;
+    text-align: center;
+    font-size: 0.7em;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+.sea-summary-status-final .sea-stage-status {
+    color: #80ffad;
+    background: rgba(0, 160, 70, 0.18);
+    border: 1px solid rgba(80, 255, 150, 0.30);
+}
+
+.sea-summary-status-next .sea-stage-status {
+    color: #ffe07a;
+    background: rgba(180, 140, 0, 0.16);
+    border: 1px solid rgba(255, 220, 100, 0.28);
+}
+
+.sea-summary-status-out .sea-stage-status {
+    color: #ff8d8d;
+    background: rgba(160, 0, 0, 0.16);
+    border: 1px solid rgba(255, 100, 100, 0.28);
+}
+
+@media (max-width: 768px) {
+    .sea-finals-card { padding: 12px; }
+    .sea-finals-card-head { flex-direction: column; }
+    .sea-finals-count { align-self: flex-start; }
+
+    .sea-finals-table th,
+    .sea-finals-table td {
+        padding: 8px 5px;
+        font-size: 0.72em;
+    }
+
+    .sea-finals-table th:nth-child(1),
+    .sea-finals-table td:nth-child(1) { width: 32px; }
+    .sea-finals-table th:nth-child(3),
+    .sea-finals-table td:nth-child(3) { width: 78px; }
+    .sea-finals-table th:nth-child(4),
+    .sea-finals-table td:nth-child(4) { width: 42px; }
+    .sea-finals-table th:nth-child(5),
+    .sea-finals-table td:nth-child(5) { width: 44px; }
+
+    .sea-summary-team { gap: 5px; }
+    .sea-summary-team img {
+        width: 19px;
+        height: 19px;
+        flex-basis: 19px;
+    }
+
+    .sea-stage-results-grid { grid-template-columns: 1fr; }
+    .sea-stage-result-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .sea-stage-result-head span { text-align: left; }
+    .sea-stage-result-row {
+        grid-template-columns: 30px minmax(0, 1fr) 42px 64px;
+        gap: 5px;
+        padding: 7px 6px;
+        font-size: 0.72em;
+    }
+    .sea-stage-status {
+        font-size: 0.62em;
+        padding: 3px 4px;
+    }
+}
+
+/* Ajuste FFWS SEA: sub-abas da Fase 2 e Finais */
+.sea-phase-note {
+    margin: 4px 0 14px;
+    color: var(--text-muted);
+    line-height: 1.45;
+    font-size: 0.9em;
+}
+
+.sea-stage-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 4px;
+}
+
+.sea-stage-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 999px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: 0.2s ease;
+}
+
+.sea-stage-btn:hover,
+.sea-stage-btn.active {
+    color: #fff;
+    border-color: var(--accent);
+    background: rgba(0, 200, 255, 0.12);
+    box-shadow: 0 0 14px rgba(0, 200, 255, 0.12);
+}
+
+@media (max-width: 768px) {
+    .sea-stage-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sea-stage-btn {
+        width: 100%;
+        padding: 9px 8px;
+        font-size: 0.75em;
+    }
+}
+
+/* =============================================
+   FFWS SEA - FILTROS DO RANKING DE ABATES POR ETAPA
+   ============================================= */
+.sea-abates-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.sea-abates-filters label {
+    flex: 1 1 160px;
+    min-width: 150px;
+}
+
+.sea-abates-filters select {
+    width: 100%;
+    min-width: 0;
+}
+
+#table-sea-abates th,
+#table-sea-abates td {
+    vertical-align: middle;
+}
+
+#table-sea-abates th.sea-col-dano,
+#table-sea-abates td.sea-col-dano {
+    width: 74px;
+    min-width: 74px;
+    max-width: 74px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .sea-abates-filters {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px !important;
+    }
+
+    .sea-abates-filters label {
+        min-width: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 5px !important;
+    }
+
+    .sea-abates-filters .btn-action {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    #table-sea-abates th,
+    #table-sea-abates td {
+        font-size: 0.68em !important;
+    }
+
+    #table-sea-abates th.sea-col-dano,
+    #table-sea-abates td.sea-col-dano {
+        width: 54px !important;
+        min-width: 54px !important;
+        max-width: 54px !important;
+    }
+}
