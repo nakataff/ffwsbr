@@ -1,0 +1,20 @@
+{
+  "__meta": {
+    "stage": "final",
+    "championPoint": 160,
+    "totalDrops": 16,
+    "dropsByDay": {
+      "1": 6,
+      "2": 10
+    },
+    "observacao": "Preencha seguindo o mesmo formato do dados.json. Dia 1 = 6 quedas; Dia 2 = 10 quedas. Champion Point: 160 pontos."
+  },
+  "dbQuedas": {
+    "1": {},
+    "2": {}
+  },
+  "dbJogadoresQuedas": {
+    "1": {},
+    "2": {}
+  }
+}
