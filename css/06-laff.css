@@ -1,0 +1,418 @@
+/* =============================================
+   LAFF 2026 S1
+   ============================================= */
+.laff-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 24px;
+    border: 1px solid rgba(255, 213, 74, 0.32);
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at top left, rgba(255, 213, 74, 0.18), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.laff-hero-main {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.laff-hero-main img {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.35));
+}
+
+.laff-kicker {
+    color: #ffd54a;
+    font-size: .78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    margin-bottom: 4px;
+}
+
+.laff-hero h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    line-height: .95;
+    text-transform: uppercase;
+}
+
+.laff-hero p {
+    margin: 8px 0 0;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.laff-hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.laff-hero-badges span {
+    border: 1px solid rgba(255, 213, 74, 0.3);
+    background: rgba(255, 213, 74, 0.08);
+    color: #ffd54a;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: .78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.laff-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.laff-tab {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    color: #fff;
+    padding: 11px 16px;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.laff-tab.active,
+.laff-tab:hover {
+    border-color: #ffd54a;
+    color: #111;
+    background: #ffd54a;
+}
+
+.laff-panel {
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: rgba(255,255,255,0.025);
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+.laff-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.laff-section-head h2,
+.laff-profile-section h2 {
+    margin: 0 0 6px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.laff-section-head p,
+.laff-profile-section p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.laff-updated {
+    color: #ffd54a;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.laff-search {
+    width: min(320px, 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(0,0,0,0.25);
+    color: #fff;
+    padding: 12px 14px;
+    font-weight: 700;
+}
+
+.laff-teams-grid,
+.laff-players-grid,
+.laff-format-grid,
+.laff-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
+}
+
+.laff-team-card,
+.laff-player-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    text-align: left;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(8, 11, 20, 0.78);
+    color: #fff;
+    padding: 14px;
+    cursor: pointer;
+    transition: transform .15s, border-color .15s, background .15s;
+}
+
+.laff-team-card:hover,
+.laff-player-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 213, 74, .7);
+    background: rgba(255, 213, 74, 0.07);
+}
+
+.laff-team-card > img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.laff-team-card-body,
+.laff-player-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.laff-team-card-body strong,
+.laff-player-info strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-size: .98rem;
+}
+
+.laff-team-card-body span,
+.laff-player-info span,
+.laff-player-info small,
+.laff-team-card-meta small {
+    display: block;
+    color: var(--text-muted);
+    font-size: .78rem;
+    font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.laff-team-card-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+    max-width: 96px;
+}
+
+.laff-player-photo {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ffd54a;
+    background: #080b14;
+    flex-shrink: 0;
+}
+
+.laff-player-info span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.laff-player-info span img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.laff-group-block { margin-top: 18px; }
+.laff-group-block:first-child { margin-top: 0; }
+.laff-group-block h3 {
+    margin: 0 0 10px;
+    color: #ffd54a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.laff-empty,
+.laff-loading {
+    grid-column: 1/-1;
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    color: var(--text-muted);
+    text-align: center;
+    background: rgba(255,255,255,0.02);
+}
+
+.laff-format-card,
+.laff-stat-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    background: rgba(255,255,255,0.03);
+}
+
+.laff-format-card strong {
+    display: block;
+    color: #ffd54a;
+    text-transform: uppercase;
+    font-size: .78rem;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.laff-format-card span {
+    color: #fff;
+    font-weight: 900;
+}
+
+.laff-profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border: 1px solid rgba(255, 213, 74, 0.3);
+    border-radius: 22px;
+    padding: 22px;
+    background: linear-gradient(135deg, rgba(255,213,74,0.1), rgba(255,255,255,0.03));
+    margin-bottom: 18px;
+    min-width: 0;
+}
+
+.laff-profile-logo {
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.laff-profile-player-photo {
+    width: 108px;
+    height: 108px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ffd54a;
+    background: #080b14;
+    flex-shrink: 0;
+}
+
+.laff-profile-hero h1 {
+    margin: 0;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    line-height: .95;
+    color: #fff;
+    text-transform: uppercase;
+    word-break: break-word;
+}
+
+.laff-profile-hero p {
+    margin: 8px 0 0;
+    color: var(--text-muted);
+    font-weight: 800;
+}
+
+.laff-team-mini-link {
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.laff-team-mini-link img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.laff-trophy-empty {
+    border: 1px dashed rgba(255, 213, 74, .35);
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+    color: #ffd54a;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: rgba(255,213,74,.06);
+}
+
+.laff-main-link { width: 100%; max-width: 320px; }
+.laff-stat-sub { color: var(--text-muted); font-size: .82rem; margin-top: 4px; }
+
+@media (max-width: 760px) {
+    #laff-2026-s1,
+    #laff-team-profile,
+    #laff-player-profile { overflow-x: hidden; }
+
+    .laff-hero,
+    .laff-section-head,
+    .laff-profile-hero {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .laff-hero-main {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .laff-hero-badges { justify-content: center; }
+
+    .laff-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .laff-tab { padding: 10px 8px; font-size: .78rem; }
+
+    .laff-panel { padding: 14px; border-radius: 16px; }
+    .laff-teams-grid,
+    .laff-players-grid,
+    .laff-format-grid,
+    .laff-stats-grid { grid-template-columns: 1fr; gap: 10px; }
+
+    .laff-team-card,
+    .laff-player-card {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .laff-team-card > img,
+    .laff-player-photo {
+        width: 46px;
+        height: 46px;
+    }
+
+    .laff-team-card-body strong,
+    .laff-player-info strong { font-size: .9rem; }
+
+    .laff-team-card-meta {
+        max-width: 72px;
+        font-size: .72rem;
+    }
+
+    .laff-profile-logo { width: 82px; height: 82px; align-self: center; }
+    .laff-profile-player-photo { width: 96px; height: 96px; align-self: center; }
+    .laff-team-mini-link { justify-content: center; width: 100%; }
+}
+
+@media (max-width: 380px) {
+    .laff-tabs { grid-template-columns: 1fr; }
+    .laff-team-card-meta { display: none; }
+}
