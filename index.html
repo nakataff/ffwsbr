@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00c8ff">
+<link rel="apple-touch-icon" href="central free fire.webp">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- ADSNSE -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3351547915606735"
+     crossorigin="anonymous"></script>
+<script src="js/config.js?v=20260520-auto-cache-v2"></script>
+<!-- Limpa service workers/caches antigos para evitar site travado no mobile -->
+<script src="js/service-worker-register.js?v=20260520-auto-cache-v2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central Free Fire - Central Completa</title>
+<link rel="icon" type="image/webp" href="central free fire.webp">
+<link rel="stylesheet" href="css/00-home-base.css?v=20260525-mercado-elenco-v1">
+<link rel="stylesheet" href="css/01-navigation.css?v=20260525-mobile-mvp-v1">
+<link rel="stylesheet" href="css/02-layout-torneios-tabelas.css?v=20260525-season-selections-v1">
+<link rel="stylesheet" href="css/03-day-vote.css?v=20260520-auto-cache-v2">
+<link rel="stylesheet" href="css/04-mercado.css?v=20260525-mercado-saida-coletiva-v1">
+<link rel="stylesheet" href="css/05-internacional-ffws-sea.css?v=20260525-sea-mobile-fix-v1">
+</head>
+<body>
+
+<div id="site-maintenance-overlay" aria-live="polite">
+    <div class="site-maintenance-card">
+        <div class="site-maintenance-kicker">Central Free Fire</div>
+        <h1>Página em manutenção</h1>
+        <p>Estamos atualizando o site ou corrigindo uma falha de carregamento. Tente novamente em alguns minutos.</p>
+        <button type="button" onclick="window.location.reload()">Tentar novamente</button>
+    </div>
+</div>
+
+<a href="#main-content" class="skip-link">Pular para o conteúdo</a>
+
+<!-- SIDEBAR (compartilhada desktop + mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar-panel" id="sidebar-panel">
+    <div class="sidebar-header">
+        <span>MENU</span>
+        <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+    </div>
+    <div class="sidebar-nav">
+        <div class="sidebar-category">PRINCIPAL</div>
+        <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
+        <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">FFWS BR 2026 S1</div>
+        <button onclick="navigateAndClose('tabela')" id="sb-tabela">CLASSIFICATÓRIA</button>
+        <button onclick="navigateAndClose('final')" id="sb-final">FINAL</button>
+        <button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button>
+        <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
+        <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
+        <button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÕES DA SEASON</button>
+        <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
+        <button onclick="navigateAndClose('notas-cff')" id="sb-notas-cff">NOTAS CFF</button>
+        <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">INTERNACIONAL</div>
+        <button onclick="navigateAndClose('ffws-sea-2026-s1')" id="sb-ffws-sea-2026-s1">FFWS SEA 2026 S1</button>
+        <button onclick="navigateAndClose('ffws-latam-s1')" id="sb-ffws-latam-s1">FFWS LATAM S1</button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">HISTÓRICO</div>
+        <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
+        <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
+        <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">CONTATO</div>
+        <button onclick="navigateAndClose('sobre')" id="sb-sobre">SOBRE</button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-category">SISTEMA</div>
+        <button onclick="purgeSiteCache()" id="sb-purge-cache">ATUALIZAR DADOS</button>
+    </div>
+</div>
+
+<nav role="navigation">
+    <div class="nav-desktop">
+        <div class="nav-desktop-left">
+            <button class="nav-desktop-menu-btn" onclick="openSidebar()">☰</button>
+            <div class="nav-teams-wrapper">
+                <button class="nav-teams-btn" onclick="toggleTeams(event)">EQUIPES ▼</button>
+                <div class="nav-teams-dropdown" id="teams-drop">
+                    <div class="nav-teams-grid" id="nav-desktop-teams"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-desktop-logo" onclick="navigate('home')">
+            <img src="central free fire.webp" alt="Logo">
+        </div>
+
+        <div class="nav-desktop-right">
+            <div class="nav-search-wrapper-desktop" id="nav-search-wrapper-desktop">
+                <input type="text" id="global-search-desktop" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('desktop')" autocomplete="off">
+                <button class="nav-search-toggle-btn" onclick="toggleDesktopSearch()" aria-label="Buscar">
+                    <img src="lupa.webp" class="nav-search-icon-desktop">
+                </button>
+                <div id="search-results-desktop" class="search-results-dropdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-mobile">
+        <div class="nav-mobile-bar">
+            <button class="nav-mob-menu-btn" onclick="openSidebar()">☰</button>
+
+            <div class="nav-mobile-tabs">
+                <button class="nav-mobile-tab active" id="mob-tab-tabela" onclick="mobileTabClick('tabela', this)">CLASSIF.</button>
+                <button class="nav-mobile-tab" id="mob-tab-final" onclick="mobileTabClick('final', this)">FINAL</button>
+                <button class="nav-mobile-tab" id="mob-tab-mvp" onclick="mobileTabClick('mvp', this)">MVP</button>
+                <button class="nav-mobile-tab" id="mob-tab-equipes" onclick="mobileTabClick('equipes', this)">EQUIPES</button>
+            </div>
+
+            <div class="nav-mobile-right">
+                <button class="nav-mobile-search-btn" onclick="toggleMobileSearch()">
+                    <img src="lupa.webp" alt="Busca">
+                </button>
+                <button class="nav-mobile-home-btn" onclick="navigate('home')">
+                    <img src="central free fire.webp" alt="Home">
+                </button>
+            </div>
+        </div>
+        <div class="nav-mobile-search-bar" id="mobile-search-bar">
+            <input type="text" id="global-search-mobile" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('mobile')">
+            <div id="search-results-mobile" class="search-results-dropdown"></div>
+        </div>
+    </div>
+</nav>
+<main id="main-content">
+<div class="container">
+  
+ <div id="home" class="page">
+
+    <div id="news-hero-container" style="margin-bottom: 25px;"></div>
+
+    <div class="home-widget" style="margin-bottom: 25px;">
+        <h3>📅 Próxima Partida</h3>
+        <div class="home-widget-body" style="gap: 12px;">
+            <p id="home-next-status" style="color: var(--text-muted); font-size: 0.9em; margin: 0; text-transform: uppercase; letter-spacing: 1px;">A transmissão começa em:</p>
+            <div id="home-next-countdown" class="match-countdown-main">--:--:--</div>
+            <div id="home-next-groups" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;"></div>
+            <a id="home-live-btn" href="https://www.youtube.com/@ffesportsbr" target="_blank" class="live-status-btn offline">
+                <img src="youtube.webp" alt="YouTube" onerror="this.style.display='none'">
+                <span id="home-live-text">Sem transmissão disponível</span>
+            </a>
+
+            <button id="home-confrontation-main-btn" class="home-confrontation-summary-btn" onclick="navigate('final'); if (typeof renderFinalPossibilities === 'function') renderFinalPossibilities();">🏆 VER FINAL</button>
+
+            <div id="day-vote-card" class="day-vote-card">
+                <div class="day-vote-header">
+                    <div>
+                        <div class="day-vote-title">Quem vai ser o campeão?</div>
+                        <div id="day-vote-subtitle" class="day-vote-subtitle">Votação da grande final</div>
+                    </div>
+                    <div id="day-vote-total" class="day-vote-total">0 votos</div>
+                </div>
+                <div id="day-vote-grid" class="day-vote-grid">
+                    <div class="day-vote-empty">Carregando times...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="home-live-market-grid" style="margin-bottom: 25px;">
+        <div class="home-widget">
+            <h3>🔴 Ao Vivo Agora</h3>
+            <div class="home-widget-body" style="padding: 12px;">
+                <div id="lives-on-container" class="lives-container"></div>
+                <div id="lives-on-empty" class="lives-empty">Nenhuma live no ar agora.</div>
+            </div>
+        </div>
+
+        <div class="home-widget">
+            <h3>📅 Próximas Lives</h3>
+            <div class="home-widget-body" style="padding: 12px;">
+                <div id="lives-upcoming-container" class="lives-container"></div>
+                <div id="lives-up-empty" class="lives-empty">Nenhuma próxima live agendada.</div>
+            </div>
+        </div>
+
+        <div class="home-widget home-mercado-widget">
+            <h3>🔁 Mercado da Bala</h3>
+            <div class="home-widget-body home-mercado-body">
+                <div id="home-mercado-list" class="home-mercado-list">
+                    <div class="home-mercado-empty">Carregando transferências...</div>
+                </div>
+            </div>
+            <button onclick="navigate('mercado')" class="home-widget-link-btn">Ver Mercado Completo →</button>
+        </div>
+    </div>
+
+    <div class="home-grid-2" style="margin-bottom: 25px;">
+        <div class="home-widget">
+            <h3>🏆 Top 6 Times</h3>
+            <div class="home-widget-body" style="padding: 0;">
+                <table style="width:100%;">
+                    <tbody id="home-tbody-teams"></tbody>
+                </table>
+            </div>
+            <button onclick="navigate('tabela')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Classificatória →</button>
+        </div>
+
+        <div class="home-widget">
+            <h3>🎯 Top 6 Jogadores</h3>
+            <div class="home-widget-body" style="padding: 0;">
+                <table style="width:100%;">
+                    <tbody id="home-tbody-players"></tbody>
+                </table>
+            </div>
+            <button onclick="navigate('mvp')" style="width:100%; padding: 11px; background: rgba(0,200,255,0.07); border: none; border-top: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.18)'" onmouseout="this.style.background='rgba(0,200,255,0.07)'">Ver Tabela Completa →</button>
+        </div>
+    </div>
+
+   <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
+    <div id="ultimas-noticias-grid" class="old-news-grid"></div>
+
+       <div style="text-align: center; margin-bottom: 40px;">
+        <a href="https://instagram.com/nakataff" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 14px 30px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+            <img src="instagram.png" style="width: 22px;" alt="Instagram">
+            <span style="color: #fff; font-weight: bold; font-size: 1.1em;">Siga no Instagram</span>
+        </a>
+    </div>
+
+</div>
+
+    <!-- PAGE: TIMES -->
+<div id="tabela" class="page">
+    <div style="text-align: center; margin-bottom: 40px; padding-top: 10px;">
+        <h2>Divisão de Grupos</h2>
+        <div class="groups-container" id="groups-container"></div>
+        <div id="br-stage-format-panel" class="br-stage-format-panel">
+            <div class="br-stage-format-head">
+                <div>
+                    <div class="br-stage-kicker">FFWS BR 2026 S1</div>
+                    <h3>Formato da fase de grupos</h3>
+                    <p>21 de março a 24 de maio de 2026 • 16 equipes divididas em 4 grupos • 10 semanas, com rodadas aos sábados e domingos • 120 quedas em 20 dias de jogo • cada equipe joga 90 quedas.</p>
+                </div>
+            </div>
+
+            <div class="br-stage-legend">
+                <div class="br-legend-row br-legend-ewc"><span class="br-legend-line"></span><strong>1º</strong> avança para a Grand Finals e garante vaga na Esports World Cup</div>
+                <div class="br-legend-row br-legend-final"><span class="br-legend-line"></span><strong>2º ao 12º</strong> avançam para a Grand Finals</div>
+                <div class="br-legend-row br-legend-eliminated"><span class="br-legend-line"></span><strong>13º ao 14º</strong> estão eliminados</div>
+                <div class="br-legend-row br-legend-relegated"><span class="br-legend-line"></span><strong>15º ao 16º</strong> estão rebaixados para a LAFF</div>
+            </div>
+
+            <details class="br-champion-rush-box">
+                <summary>Ver detalhes do Champion Rush</summary>
+                <div class="br-champion-rush-content">
+                    <p><strong>Grand Finals:</strong> 30 e 31 de maio de 2026, com 12 equipes.</p>
+                    <ul>
+                        <li>Na Grand Finals, as equipes jogam normalmente até uma delas alcançar a pontuação pré-definida chamada <strong>Champion Rush Point</strong>.</li>
+                        <li>Depois que uma equipe atinge o <strong>Champion Rush Point</strong>, as próximas quedas passam a ser <strong>Champion Rush Point Eligible</strong> para essa equipe.</li>
+                        <li>A primeira equipe a fazer um Booyah enquanto estiver <strong>Champion Rush Point Eligible</strong> será coroada campeã automaticamente.</li>
+                        <li>O máximo da final é de <strong>16 quedas</strong>. Se ninguém fechar o Champion Rush com Booyah, vence a equipe com mais pontos ao final das quedas.</li>
+                        <li>O <strong>Champion Rush Point</strong> deste torneio é <strong>160</strong>.</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+
+        <h2 style="margin-top: 40px;">Classificação Geral</h2>
+        <div class="filters">
+            <label style="color: var(--text-muted); font-weight: bold;">Filtrar por Dias:</label>
+            <div class="day-filters" id="team-day-filters"></div>
+            
+            <label style="color: var(--text-muted); font-weight: bold; margin-left: auto;">Mapa:</label>
+            <select id="filter-team-map" onchange="onMapFilterChanged()">
+                <option value="all">Todos os Mapas</option>
+                <option value="Bermuda">Bermuda</option>
+                <option value="Kalahari">Kalahari</option>
+                <option value="Purgatório">Purgatório</option>
+                <option value="Nova Terra">Nova Terra</option>
+                <option value="Solara">Solara</option>
+            </select>
+        </div>
+        
+        <div class="filters" id="queda-filter-container" style="margin-top: -10px; display: none;">
+            <label style="color: var(--accent); font-weight: bold;">Queda Específica:</label>
+            <select id="filter-queda" onchange="onQuedaFilterChanged()" style="flex: 1; max-width: 300px;">
+                <option value="all">Todas as Quedas do Período</option>
+            </select>
+        </div>
+
+        <button class="btn-action hide-on-desktop" onclick="document.getElementById('table-teams-full').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Tabela Completa' ? 'Ocultar Detalhes' : 'Ver Tabela Completa';" style="width: 100%; margin-bottom: 12px;">Ver Tabela Completa</button>
+
+        <div class="table-container">
+<table id="table-teams-full">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
+                    <th style="text-align:center;" onclick="sortTable('table-teams-full', 1, true)">E ↕</th> 
+                    <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>
+                    <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
+                    <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">B ↕</th>
+                    <th class="hide-mobile" onclick="sortTable('table-teams-full', 5, true)">K ↕</th>
+                    <th id="th-quedas-colocacao" onclick="sortTable('table-teams-full', 6, true)" title="Quedas Jogadas">Q ↕</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </div>
+
+        <h2 style="margin-top: 50px;">Classificação por Grupos</h2>
+        <div class="groups-tables-grid" id="groups-tables-grid"></div>
+    </div>
+</div>
+
+    <!-- NOVA PAGE: EQUIPES -->
+    <div id="equipes" class="page">
+        <h2>Diretório de Equipes</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Selecione uma equipe para ver estatísticas detalhadas e desempenho individual.</p>
+        <div class="teams-directory" id="teams-directory"></div>
+    </div>
+
+    <!-- PAGE: JOGADORES -->
+    <div id="mvp" class="page">
+        <h2>Classificação Geral de Jogadores</h2>
+ <div class="filters">
+            <label style="color: var(--text-muted); font-weight: bold;">Etapa:</label>
+            <select id="filter-stage-players" onchange="onPlayerStageFilterChanged()">
+                <option value="classificatoria">Classificatória</option>
+                <option value="final">Final</option>
+                <option value="geral">Geral</option>
+            </select>
+
+            <label style="color: var(--text-muted); font-weight: bold;">Equipe:</label>
+            <select id="filter-team-players" onchange="onPlayerTeamFilterChanged()">
+                <option value="all">Todas</option>
+            </select>
+
+            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Posição:</label>
+            <select id="filter-role-players" onchange="renderAllPlayers()">
+                <option value="all">Todas</option>
+                <option value="RUSH">Rush</option>
+                <option value="SUP">Suporte</option>
+                <option value="GRAN">Granadeiro</option>
+            </select>
+
+            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Novatos:</label>
+            <select id="filter-rookie-players" onchange="renderAllPlayers()">
+                <option value="all">Todos os Jogadores</option>
+                <option value="rookies">Apenas Novatos</option>
+            </select>
+            
+            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Dias:</label>
+            <div class="day-filters" id="player-day-filters"></div>
+
+            <span style="margin-left:auto; color:#888; font-size:0.9em;">* Clique no título da coluna para ordenar</span>
+        </div>
+        <button class="btn-action hide-on-desktop" id="btn-players-details" onclick="document.getElementById('table-players').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Detalhes' ? 'Ocultar Detalhes' : 'Ver Detalhes';" style="width: 100%; margin-bottom: 12px;">Ver Detalhes</button>
+        <div class="table-container">
+<table id="table-players">
+    <thead>
+        <tr>
+            <th style="width: 24px;">#</th>
+            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)"><span class="full-name-desktop">Jogador</span><span class="show-mobile-only">J</span> ↕</th>
+            <th onclick="sortTable('table-players', 2, false)"><span class="full-name-desktop">Equipe</span><span class="show-mobile-only">E</span> ↕</th>
+            <th onclick="sortTable('table-players', 3, true)"><span class="full-name-desktop">Abates</span><span class="show-mobile-only">K</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)"><span class="full-name-desktop">Dano</span><span class="show-mobile-only">D</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)"><span class="full-name-desktop">Assistências</span><span class="show-mobile-only">A</span> ↕</th>
+            <th onclick="sortTable('table-players', 6, true)"><span class="full-name-desktop">Quedas</span><span class="show-mobile-only">Q</span> ↕</th>
+            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)"><span class="full-name-desktop">MVP</span><span class="show-mobile-only">👑</span> ↕</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+        </div>
+    </div>
+
+ <div id="team-profile" class="page">
+    <button class="btn-back" onclick="navigate(lastVisitedPage)">← Voltar</button>
+    
+    <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 20px; text-align: center;">
+        <div style="display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%;">
+            <img id="tp-logo" src="" style="width: 75px; height: 75px; object-fit: contain; display: none;">
+            <div style="text-align: left;">
+                <h1 id="tp-name" style="margin: 0; font-size: 2.2em; text-transform: uppercase; line-height: 1;">NOME</h1>
+                <h3 id="tp-group" style="color: #66b3ff; margin-top: 5px; margin-bottom: 0;">Grupo X</h3>
+            </div>
+        </div>
+        <div style="width: 100%; max-width: 300px; background: var(--panel-bg); border: 1px solid var(--border); padding: 10px; border-radius: 8px;">
+            <div style="font-size: 1.1em; color: var(--text-muted);">Posição Geral: <strong id="tp-pos" style="color:var(--accent); font-size: 1.4em;">0º</strong></div>
+        </div>
+        <button class="btn-action" onclick="openResultsModal()" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; background: transparent; border: 1px solid #ffd700; color: #ffd700; width: 100%; max-width: 300px; padding: 12px; border-radius: 8px;">
+    🏆 Ver Todos os Resultados
+</button>
+        <div id="tp-next-match-container" style="width: 100%;"></div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+
+    <h3 style="color: #fff; margin-bottom: 15px; letter-spacing: 2px;">JOGADORES E STAFF</h3>
+    <div id="tp-players-cards-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 30px; max-width: none;"></div>
+
+    <div id="tp-best-worst-container" style="margin-bottom: 30px;"></div>
+
+    <h3 style="margin-top: 25px; border-bottom: 1px solid #333; padding-bottom: 10px;">DESEMPENHO DA EQUIPE</h3>
+    <div class="filters">
+        <label style="color: var(--text-muted); font-weight: bold;">Estatísticas do Período:</label>
+        <div class="day-filters" id="tp-day-filters"></div>
+    </div>
+    <div class="grid-cards" id="tp-stats-container"></div>
+
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">DESEMPENHO CONTRA GRUPOS OPONENTES</h3>
+    <div class="filters">
+        <label style="color: var(--text-muted); font-weight: bold;">Selecionar Grupo Oponente:</label>
+        <select id="tp-opp-group" onchange="renderTeamConfrontation()"></select>
+    </div>
+    <div class="grid-cards" id="tp-confrontation-result"></div>
+    
+    <div style="text-align: right; margin-top: -10px; margin-bottom: 30px;">
+        <button class="btn-action" onclick="openConfrontationModal()" id="btn-confrontation">Ver Ranking do Confronto Completo</button>
+    </div>
+
+<div id="tp-evolution-container">
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">EVOLUÇÃO DA EQUIPE</h3>
+    
+    <div class="filters" style="margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Métrica do Gráfico:</label>
+        <select id="chart-metric" onchange="renderTeamChart()" style="max-width: 300px;">
+            <option value="pos_geral_dia">Posição Geral (Acumulada por Dia)</option>
+            <option value="pos_queda">Posição por Queda (1º a 12º)</option>
+            <option value="pontos_dia">Pontos Totais por Dia</option>
+            <option value="pontos_queda">Pontos por Queda</option>
+            <option value="kills_dia">Abates por Dia</option>
+            <option value="kills_queda">Abates por Queda</option>
+        </select>
+    </div>
+    
+    <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+        <canvas id="team-evolution-chart" style="width:100%; max-height:350px;"></canvas>
+        <button type="button" class="chart-summary-toggle" onclick="toggleChartSummary('team-chart-summary')">Ver legenda do gráfico</button>
+        <div id="team-chart-summary" class="chart-summary-panel" hidden></div>
+    </div>
+</div>
+
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Classificação Interna</h3>
+    <div class="table-container">
+        <table id="table-team-players">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-team-players', 0, false)"><span class="team-th-full">Jogadores</span><span class="team-th-mobile">J</span> ↕</th>
+                    <th onclick="sortTable('table-team-players', 1, true)"><span class="team-th-full">Abates</span><span class="team-th-mobile">K</span> ↕</th>
+                    <th onclick="sortTable('table-team-players', 2, true)"><span class="team-th-full">Dano</span><span class="team-th-mobile">D</span> ↕</th>
+                    <th onclick="sortTable('table-team-players', 3, true)"><span class="team-th-full">Assist.</span><span class="team-th-mobile">A</span> ↕</th>
+                    <th onclick="sortTable('table-team-players', 4, true)"><span class="team-th-full">Quedas</span><span class="team-th-mobile">Q</span> ↕</th>
+                    <th onclick="sortTable('table-team-players', 5, true)"><span class="team-th-full">MVPs</span><span class="team-th-mobile">👑</span> ↕</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="tp-player-history-mount"></div>
+
+    <h3 style="margin-top: 50px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700;">Galeria de Troféus</h3>
+    <div id="tp-trophies-container" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; margin-bottom: 40px; background: rgba(255,215,0,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.1);">
+    </div>
+</div>
+
+<!-- PAGE: MERCADO DA BOLA -->
+<div id="mercado" class="page">
+    <div class="mercado-header">
+        <h1 class="mercado-title">Mercado da Bala</h1>
+        <p class="mercado-subtitle">Transferências · Negociações · Rumores</p>
+    </div>
+
+    <div class="mercado-filters" id="mercado-filters">
+        <div class="mercado-filter-chip active" data-filter="all" onclick="filterMercado(this, 'all')">📋 Todos</div>
+        <div class="mercado-filter-chip" data-filter="rumor" onclick="filterMercado(this, 'rumor')">
+            <img src="rumor.webp" onerror="this.style.display='none'"> Rumor
+        </div>
+        <div class="mercado-filter-chip" data-filter="negociando" onclick="filterMercado(this, 'negociando')">
+            <img src="negociando.webp" onerror="this.style.display='none'"> Negociando
+        </div>
+        <div class="mercado-filter-chip" data-filter="fechado" onclick="filterMercado(this, 'fechado')">
+            <img src="fechado.webp" onerror="this.style.display='none'"> Fechado
+        </div>
+        <div class="mercado-filter-chip" data-filter="melou" onclick="filterMercado(this, 'melou')">
+            <img src="melou.webp" onerror="this.style.display='none'"> Melou
+        </div>
+    </div>
+
+    <div class="filters" style="justify-content: center; margin-bottom: 25px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Envolvendo a Equipe:</label>
+        <select id="mercado-team-filter" onchange="renderMercado()" style="max-width: 300px; padding: 10px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none;">
+            <option value="all">Todas as Equipes</option>
+        </select>
+    </div>
+
+    <div id="mercado-list" class="mercado-list">
+        <div class="mercado-empty">Carregando negociações...</div>
+    </div>
+</div>
+
+<div id="selecao-da-semana" class="page">
+        <div class="season-selection-hero">
+            <div class="season-selection-kicker">FFWS BR 2026 S1</div>
+            <h1>SELEÇÕES DA SEASON</h1>
+            <p>Os melhores jogadores por função: seleções semanais, classificatória, final e torneio.</p>
+        </div>
+
+        <div class="season-selection-tabs" id="selection-season-tabs"></div>
+
+        <section class="season-selection-panel season-selection-panel-week" id="selection-week-panel">
+            <div class="season-selection-section-head">
+                <div>
+                    <span class="season-selection-tag">Times da semana</span>
+                    <h2>Seleções semanais</h2>
+                </div>
+                <p>Escolha a semana para ver os destaques por posição.</p>
+            </div>
+            <div class="season-selection-filters" id="selection-week-filters"></div>
+            <div id="selection-week-container" class="selection-grid season-selection-grid"></div>
+        </section>
+
+        <section class="season-selection-panel season-selection-panel-classificatoria" id="selection-classificatoria-panel">
+            <div class="season-selection-section-head">
+                <div>
+                    <span class="season-selection-tag">Classificatória</span>
+                    <h2>Seleção da classificatória</h2>
+                </div>
+                <p>Melhores de cada posição levando em conta todos os dados da classificatória.</p>
+            </div>
+            <div id="selection-classificatoria-container" class="selection-grid season-selection-grid"></div>
+        </section>
+
+        <section class="season-selection-panel season-selection-panel-final" id="selection-final-panel">
+            <div class="season-selection-section-head">
+                <div>
+                    <span class="season-selection-tag">Final</span>
+                    <h2>Seleção da final</h2>
+                </div>
+                <p>Será liberada após o fim das quedas da final.</p>
+            </div>
+            <div id="selection-final-container" class="selection-grid season-selection-grid"></div>
+        </section>
+
+        <section class="season-selection-panel season-selection-panel-torneio" id="selection-torneio-panel">
+            <div class="season-selection-section-head">
+                <div>
+                    <span class="season-selection-tag">Torneio</span>
+                    <h2>Seleção do torneio</h2>
+                </div>
+                <p>Leva em conta classificatória + final e será liberada após o fim da final.</p>
+            </div>
+            <div id="selection-torneio-container" class="selection-grid season-selection-grid"></div>
+        </section>
+    </div>
+
+<div id="player-profile" class="page">
+   <button class="btn-back" onclick="navigate(lastVisitedPage)">← Voltar</button>
+    
+    <div id="pp-staff-link-container" style="margin-bottom: 20px; text-align: center;"></div>
+
+    <div class="player-profile-header" style="align-items: flex-start;">
+        <div>
+            <h1 id="pp-name" style="margin: 0; font-size: 2.5em; text-transform: uppercase;">NOME DO JOGADOR</h1>
+            <h3 id="pp-team" style="color: #66b3ff; margin-top: 5px; margin-bottom: 15px; cursor: pointer; display: inline-block;">Equipe X</h3>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 1.2em; color: var(--text-muted);">Quedas Atuais: <strong id="pp-quedas" style="color:#fff;">0</strong></div>
+        </div>
+    </div>
+
+    <div id="player-overall-card"></div>
+
+    
+    <h3 id="pp-current-title" style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px;">Desempenho Atual (Temporada)</h3>
+<div id="pp-current-grid" class="grid-cards">
+        <div class="card"><div class="card-top-border"></div><h3>Abates Totais</h3><div class="value" id="pp-tot-kills">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Média: <span id="pp-avg-kills" style="color:#fff;">0.00</span> /queda</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-kills">#0</span></div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Dano Total</h3><div class="value" id="pp-tot-dmg">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Média: <span id="pp-avg-dmg" style="color:#fff;">0.00</span> /queda</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-dmg">#0</span></div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Assistências</h3><div class="value" id="pp-tot-assists">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Média: <span id="pp-avg-assists" style="color:#fff;">0.00</span> /queda</div><div style="margin-top: 10px;">Posição: <span class="rank-badge" id="pp-rank-assists">#0</span></div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Recorde Abates</h3><div class="value" id="pp-record">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">Em um único dia</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>MVPs Recebidos</h3><div class="value" id="pp-tot-mvps">0</div><div style="color:#888;font-size:0.85em;margin-top:5px;">&nbsp;</div></div>
+    </div>
+
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent);">Desempenho Histórico (All-Time)</h3>
+    <div class="grid-cards">
+        <div class="card" style="border-left: 4px solid var(--accent);"><div class="card-top-border"></div><h3>Kills Históricas</h3><div class="value" id="pp-hist-kills" style="color:#fff">0</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Quedas Jogadas</h3><div class="value" id="pp-hist-quedas">0</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Média Histórica</h3><div class="value" id="pp-hist-avg">0.00</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Títulos Coletivos</h3><div class="value" id="pp-hist-col" style="color:var(--accent)">0</div></div>
+        <div class="card"><div class="card-top-border"></div><h3>Títulos Individuais</h3><div class="value" id="pp-hist-ind" style="color:var(--accent)">0</div></div>
+    </div>
+
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); text-transform: uppercase;">Histórico de Equipes</h3>
+    <div id="pp-team-history-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);"></div>
+
+<h3 id="pp-cff-title" style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+        <span style="background: #1a4ab0; color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: 900; font-size: 0.7em; letter-spacing: 1px;">NOTA CFF</span>
+        Avaliação por Queda (SofaScore)
+    </h3>
+    
+    <div class="filters" id="pp-cff-filters-container" style="display: none; margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold;">Filtrar por Dia:</label>
+        <div class="day-filters" id="pp-cff-day-filters"></div>
+    </div>
+    
+    <div id="pp-cff-rating-container" style="margin-bottom: 40px;"></div>
+    
+    <h3 style="margin-top: 35px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700;">Galeria de Troféus</h3>
+    <div id="pp-trophies-container" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 40px; background: rgba(255,215,0,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.1);"></div>
+</div>
+
+<div id="staff-profile" class="page">
+    <button class="btn-back" onclick="navigate('equipes')">← Voltar para Equipes</button>
+    
+    <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding-top: 20px;">
+        
+        <div id="sp-player-link-container" style="width: 100%; max-width: 400px;"></div>
+
+        <div style="position: relative; display: inline-block;">
+            <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 3px solid var(--accent); background: #1c1c20; box-shadow: 0 0 20px rgba(255, 170, 0, 0.2);">
+                <img id="sp-photo" src="silhueta.png" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transform: scale(1.25);">
+            </div>
+            <img id="sp-team-logo" src="" style="width: 50px; height: 50px; object-fit: contain; position: absolute; bottom: -5px; right: -5px; background: #000; border-radius: 50%; padding: 5px; border: 2px solid var(--border); z-index: 2;">
+        </div>
+
+        <div>
+            <h1 id="sp-name" style="margin: 0; font-size: 2.8em; color: #fff; text-transform: uppercase; letter-spacing: 1px;">NOME</h1>
+            <h3 id="sp-role" style="color: var(--accent); margin-top: 5px; text-transform: uppercase; letter-spacing: 2px; font-weight: 900;">CARGO</h3>
+            <p id="sp-team-name" class="clickable" style="color: #66b3ff; font-weight: bold; font-size: 1.2em; margin-top: 10px;"></p>
+        </div>
+        
+        <div id="sp-insta-container"></div>
+
+        <div style="width: 100%; max-width: 800px; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <h3 style="color: #fff; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; text-transform: uppercase; font-size: 1.1em;">Desempenho da Equipe Sob Comando</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; text-align: left;">
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.75em; text-transform: uppercase; font-weight: bold;">Posição Geral</div>
+                    <strong id="sp-team-pos" style="color: var(--accent); font-size: 1.6em;">0º</strong>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.75em; text-transform: uppercase; font-weight: bold;">Pontos Totais</div>
+                    <strong id="sp-team-pts" style="color: #fff; font-size: 1.6em;">0</strong>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.75em; text-transform: uppercase; font-weight: bold;">Booyahs</div>
+                    <strong id="sp-team-booyah" style="color: #fff; font-size: 1.6em;">0</strong>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.75em; text-transform: uppercase; font-weight: bold;">Méd. Pts/Queda</div>
+                    <strong id="sp-team-avg" style="color: #fff; font-size: 1.6em;">0.0</strong>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; width: 100%; text-align: left;">Histórico de Equipes</h3>
+        <div id="sp-team-history-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border); width: 100%;"></div>
+
+        <h3 style="margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #ffd700; text-transform: uppercase; letter-spacing: 1px; width: 100%; text-align: left;">Galeria de Troféus</h3>
+        <div id="sp-trophies-container" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 40px; background: rgba(255,215,0,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.1); width: 100%; box-sizing: border-box;"></div>
+    </div>
+</div>
+
+    <!-- PAGE: RECORDES -->
+<div id="recordes" class="page">
+        <h2>Recordes do Campeonato</h2>
+        <div class="grid-cards" id="records-container"></div>
+    </div>
+    
+    <!-- PAGE: NOTAS CFF -->
+<div id="notas-cff" class="page">
+    <div class="cff-page-hero">
+        <div>
+            <div class="cff-page-kicker">Sistema de avaliação</div>
+            <h2>Notas CFF</h2>
+            <p>Veja a avaliação dos jogadores na FFWS Brasil por dia e queda. <button class="cff-learn-link" onclick="openNotasCFFInfoModal()">Saiba mais...</button></p>
+        </div>
+    </div>
+
+    <div id="cff-info-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content cff-info-box">
+            <button class="modal-close" onclick="closeNotasCFFInfoModal()">×</button>
+            <h2>Como a Nota CFF é calculada?</h2>
+            <p>A nota de queda combina impacto individual e contexto da partida: abates, dano, assistências, MVP e posição final da equipe.</p>
+            <p>Na nota de dia, o sistema soma o desempenho das quedas jogadas no dia e aplica uma curva para destacar atuações históricas, principalmente grandes volumes de abates, dano alto e MVPs.</p>
+            <p>As médias gerais consideram apenas jogadores com participação mínima suficiente para evitar ranking inflado por poucas quedas.</p>
+        </div>
+    </div>
+
+    <h3 id="anchor-recordes-nota" class="cff-section-title">Recordes de Nota CFF</h3>
+    <div id="cff-records-grid" class="grid-cards cff-records-grid"></div>
+    <div class="cff-records-pager">
+        <button class="cff-record-pager-btn" onclick="cffMoveRecordsPage(-1)">‹</button>
+        <span id="cff-records-page-label">Recordes 1–4</span>
+        <button class="cff-record-pager-btn" onclick="cffMoveRecordsPage(1)">›</button>
+    </div>
+
+    <h3 class="cff-section-title">Ranking de Melhores Notas</h3>
+
+    <div class="filters cff-filters">
+        <label>Equipe:
+            <select id="cff-filter-team" onchange="renderNotasCFFRanking()">
+                <option value="all">Todas</option>
+            </select>
+        </label>
+        <label>Role:
+            <select id="cff-filter-role" onchange="renderNotasCFFRanking()">
+                <option value="all">Todas</option>
+                <option value="RUSH">Rush</option>
+                <option value="SUP">Sup</option>
+                <option value="GRAN">Gran</option>
+            </select>
+        </label>
+        <label>Novatos:
+            <select id="cff-filter-rookie" onchange="renderNotasCFFRanking()">
+                <option value="all">Todos os Jogadores</option>
+                <option value="rookies">Apenas Estreantes</option>
+            </select>
+        </label>
+        <label>Confronto:
+            <select id="cff-filter-conf" onchange="renderNotasCFFRanking()">
+                <option value="all">Todos</option>
+                <option value="ABC">A x B x C</option>
+                <option value="BCD">B x C x D</option>
+                <option value="CDA">C x D x A</option>
+                <option value="DAB">D x A x B</option>
+            </select>
+        </label>
+        <label>Mapa:
+            <select id="cff-filter-map" onchange="renderNotasCFFRanking()">
+                <option value="all">Todos</option>
+                <option value="Bermuda">Bermuda</option>
+                <option value="Kalahari">Kalahari</option>
+                <option value="Purgatório">Purgatório</option>
+                <option value="Nova Terra">Nova Terra</option>
+                <option value="Solara">Solara</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="cff-day-filter-box">
+        <span class="cff-filter-label">Dias:</span>
+        <div id="cff-day-buttons" class="cff-day-buttons"></div>
+    </div>
+
+    <div id="cff-drop-filter-wrap" class="cff-drop-filter-wrap" style="display:none;">
+        <button class="cff-drop-toggle" type="button" onclick="cffToggleDropFilter()">Todas as quedas</button>
+        <div id="cff-drop-menu" class="cff-drop-menu" style="display:none;"></div>
+    </div>
+
+    <div class="cff-ranking-helper"><span id="cff-ranking-count">0</span> jogadores encontrados · Clique no nome da coluna para ordenar</div>
+
+    <div class="table-container cff-table-wrap">
+        <table id="table-notas-cff" class="cff-ranking-table">
+            <thead>
+                <tr>
+                    <th class="cff-sortable-th" onclick="setNotasCFFSort('rank')"># <span data-sort-icon="rank"></span></th>
+                    <th class="cff-sortable-th" style="text-align:left;" onclick="setNotasCFFSort('jogador')"><span class="desktop-label">Jogador</span><span class="mobile-label">J</span> <span data-sort-icon="jogador"></span></th>
+                    <th class="cff-sortable-th" onclick="setNotasCFFSort('equipe')"><span class="desktop-label">Equipe</span><span class="mobile-label">E</span> <span data-sort-icon="equipe"></span></th>
+                    <th class="cff-sortable-th" onclick="setNotasCFFSort('nota')">Nota <span data-sort-icon="nota">↓</span></th>
+                    <th class="cff-sortable-th" title="Abates" onclick="setNotasCFFSort('kills')"><span class="desktop-label">Abates</span><span class="mobile-label">K</span> <span data-sort-icon="kills"></span></th>
+                    <th class="cff-sortable-th" title="Assistências" onclick="setNotasCFFSort('assists')"><span class="desktop-label">Assistências</span><span class="mobile-label">A</span> <span data-sort-icon="assists"></span></th>
+                    <th class="cff-sortable-th" title="Dano" onclick="setNotasCFFSort('dano')"><span class="desktop-label">Dano</span><span class="mobile-label">D</span> <span data-sort-icon="dano"></span></th>
+                    <th class="cff-sortable-th" title="Quedas" onclick="setNotasCFFSort('quedas')"><span class="desktop-label">Quedas</span><span class="mobile-label">Q</span> <span data-sort-icon="quedas"></span></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+    <!-- PAGE: MAPAS -->
+<div id="stats" class="page">
+    <h2>Estatísticas Avançadas</h2>
+
+    <div style="background: rgba(255, 170, 0, 0.1); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+        <span style="font-size: 1.8em;">⚠️</span>
+        <div>
+            <strong style="color: var(--accent); display: block; margin-bottom: 3px; font-size: 1.1em;">Aviso: Página em Construção</strong>
+            <span style="color: var(--text-muted); font-size: 0.95em;">Os dados e estatísticas desta seção ainda estão sendo aprimorados e podem conter erros ou inconsistências no momento.</span>
+        </div>
+    </div>
+
+    <h3 id="anchor-recordes-mapa" style="margin-top: 30px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Estastíticas Aprofundadas
+    </h3>
+
+    <!-- ATALHOS DE NAVEGAÇÃO DA PÁGINA -->
+    <div id="stats-page-nav" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; padding: 14px 16px; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 10px; align-items: center;">
+        <span style="color: var(--text-muted); font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; flex-shrink: 0;">Ir para:</span>
+        <button onclick="document.getElementById('anchor-recordes-mapa').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Recordes por Mapa</button>
+        <button onclick="document.getElementById('anchor-totais-equipe').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Totais por Equipe</button>
+        <button onclick="document.getElementById('anchor-medias-equipe').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Médias por Equipe</button>
+        <button onclick="document.getElementById('anchor-top3-equipe').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Equipes Por Queda</button>
+        <button onclick="document.getElementById('anchor-evolucao').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Evolução das Equipes</button>
+        <button onclick="document.getElementById('anchor-ranking-medias').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Ranking de Médias</button>
+        <button onclick="document.getElementById('anchor-ranking-totais').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Ranking de Totais</button>
+        <button onclick="document.getElementById('anchor-individual').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Desempenho Individual</button>
+    </div>
+    <div class="filters stage-filter-bar" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; align-items: center;">
+        <label style="color: var(--text-muted); font-weight: bold;">Etapa:</label>
+        <select id="filter-stage-stats" onchange="onStatsStageFilterChanged()" style="max-width: 220px;">
+            <option value="classificatoria">Classificatória</option>
+            <option value="final">Final</option>
+            <option value="geral">Geral</option>
+        </select>
+
+        <label style="color: var(--text-muted); font-weight: bold;">Dias:</label>
+        <div class="day-filters" id="top5-day-filters"></div>
+        
+        <label style="color: var(--text-muted); font-weight: bold; margin-left: auto;">Mapa:</label>
+        <select id="top5-map-filter" onchange="renderTop5Stats()" style="flex: 1; max-width: 300px;">
+            <option value="all">Visão Geral (Todos os Mapas)</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Kalahari">Kalahari</option>
+            <option value="Purgatório">Purgatório</option>
+            <option value="Nova Terra">Nova Terra</option>
+            <option value="Solara">Solara</option>
+        </select>
+    </div>
+
+        
+    
+<div id="top5-container" style="margin-bottom: 40px;">
+    </div>
+
+    <h3 id="anchor-evolucao" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Comparação de Evolução das Equipes
+    </h3>
+    
+    <div class="filters" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; align-items: flex-start;">
+        <div style="display: flex; gap: 15px; width: 100%; flex-wrap: wrap; align-items: center;">
+            <label style="color: var(--text-muted); font-weight: bold;">Métrica do Gráfico:</label>
+            <select id="multi-chart-metric" onchange="renderMultiTeamChart()" style="max-width: 300px;">
+                <option value="pos_geral_dia">Posição Geral (Acumulada por Dia)</option>
+                <option value="pontos_dia">Pontos Totais por Dia</option>
+                <option value="kills_dia">Abates por Dia</option>
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap; align-items: center;">
+            <label style="color: var(--text-muted); font-weight: bold;">Selecione as Equipes (Max. 5):</label>
+            <div class="day-filters" id="multi-team-filters"></div>
+        </div>
+    </div>
+    
+    <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 40px;">
+        <canvas id="multi-team-evolution-chart" style="width:100%; max-height:400px;"></canvas>
+        <button type="button" class="chart-summary-toggle" onclick="toggleChartSummary('multi-team-chart-summary')">Ver legenda do gráfico</button>
+        <div id="multi-team-chart-summary" class="chart-summary-panel" hidden></div>
+    </div>
+
+    <h3 id="anchor-ranking-medias" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Ranking de Médias <span style="font-size: 0.6em; color: #aaa;">(Por Queda)</span>
+    </h3>
+    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
+        <div class="day-filters" id="avg-day-filters"></div>
+        
+        <select id="avg-conf-filter" onchange="renderTableAvg()" style="margin-left: auto; max-width: 200px;">
+            <option value="all">Todos os Confrontos</option>
+            <option value="ABC">Grupos A x B x C</option>
+            <option value="BCD">Grupos B x C x D</option>
+            <option value="CDA">Grupos C x D x A</option>
+            <option value="DAB">Grupos D x A x B</option>
+        </select>
+
+        <select id="avg-map-filter" onchange="renderTableAvg()" style="max-width: 200px;">
+            <option value="all">Todos os Mapas</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Kalahari">Kalahari</option>
+            <option value="Purgatório">Purgatório</option>
+            <option value="Nova Terra">Nova Terra</option>
+            <option value="Solara">Solara</option>
+        </select>
+    </div>
+    <div class="table-container">
+        <table id="table-stats-avg">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-stats-avg', 0, true)"># ↕</th>
+                    <th style="text-align:left;" onclick="sortTable('table-stats-avg', 1, false)">E ↕</th>
+                    <th onclick="sortTable('table-stats-avg', 2, true)" title="Média de Pontos">
+                        <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-avg', 3, true)" title="Média de Abates">
+                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-avg', 4, true)" title="Média de Colocação (Menor é melhor)">
+                        <span class="full-name-desktop">POS ↕</span><span class="short-name-mobile">C ↕</span>
+                    </th>
+                    <th class="hide-mobile" title="Quedas Jogadas">Q</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+        <button id="btn-avg-expand" class="btn-action" onclick="toggleAvgTable()" style="width: 200px;">Ver Mais</button>
+    </div>
+
+<h3 id="anchor-ranking-totais" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Ranking de Totais <span style="font-size: 0.6em; color: #aaa;">(Acumulado)</span>
+    </h3>
+    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
+        <div class="day-filters" id="total-day-filters"></div>
+        
+        <select id="total-conf-filter" onchange="renderTableTotal()" style="margin-left: auto; max-width: 200px;">
+            <option value="all">Todos os Confrontos</option>
+            <option value="ABC">Grupos A x B x C</option>
+            <option value="BCD">Grupos B x C x D</option>
+            <option value="CDA">Grupos C x D x A</option>
+            <option value="DAB">Grupos D x A x B</option>
+        </select>
+
+        <select id="total-map-filter" onchange="renderTableTotal()" style="max-width: 200px;">
+            <option value="all">Todos os Mapas</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Kalahari">Kalahari</option>
+            <option value="Purgatório">Purgatório</option>
+            <option value="Nova Terra">Nova Terra</option>
+            <option value="Solara">Solara</option>
+        </select>
+    </div>
+    <div class="table-container">
+        <table id="table-stats-total">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-stats-total', 0, true)"># ↕</th>
+                    <th style="text-align:left;" onclick="sortTable('table-stats-total', 1, false)">E ↕</th>
+                    <th onclick="sortTable('table-stats-total', 2, true)">
+                        <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-total', 3, true)" title="Booyahs">
+                        <span class="full-name-desktop">BOOYAH ↕</span><span class="short-name-mobile">B ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-total', 4, true)">
+                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+        <button id="btn-total-expand" class="btn-action" onclick="toggleTotalTable()" style="width: 200px;">Ver Mais</button>
+    </div>
+
+   <h3 id="anchor-individual" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        Desempenho Individual
+    </h3>
+    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+        <select id="filter-player-day" onchange="renderPlayerStats()">
+            <option value="all">Todos os Dias</option>
+        </select>
+
+        <select id="filter-player-conf" onchange="renderPlayerStats()">
+            <option value="all">Todos os Confrontos</option>
+            <option value="ABC">Grupos A x B x C</option>
+            <option value="BCD">Grupos B x C x D</option>
+            <option value="CDA">Grupos C x D x A</option>
+            <option value="DAB">Grupos D x A x B</option>
+        </select>
+
+        <select id="filter-player-map" onchange="renderPlayerStats()">
+            <option value="all">Todos os Mapas</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Kalahari">Kalahari</option>
+            <option value="Purgatório">Purgatório</option>
+            <option value="Nova Terra">Nova Terra</option>
+            <option value="Solara">Solara</option>
+        </select>
+        <select id="filter-player-team" onchange="renderPlayerStats()">
+            <option value="all">Todas as Equipas</option>
+            <option value="LOS">LOS</option>
+            <option value="FLUXO W7M">FLUXO W7M</option>
+            <option value="LOUD SNICKERS">LOUD SNICKERS</option>
+            <option value="INTZ">INTZ</option>
+            <option value="TEAM SOLID">TEAM SOLID</option>
+            <option value="LOOPS">LOOPS</option>
+            <option value="RISE GAMING">RISE GAMING</option>
+            <option value="INFLUENCE RAGE">INFLUENCE RAGE</option>
+            <option value="CIVIS">CIVIS</option>
+            <option value="VASCO ESPORTS">VASCO ESPORTS</option>
+            <option value="AXS FUSION">AXS FUSION</option>
+            <option value="E1 SPORTS">E1 SPORTS</option>
+        </select>
+        <select id="filter-player-role" onchange="renderPlayerStats()">
+            <option value="all">Todas as Funções</option>
+            <option value="Rush">Rush</option>
+            <option value="SUP">Suporte</option>
+            <option value="GRAN">Granadeiro</option>
+        </select>
+
+        <select id="filter-player-rookie" onchange="renderPlayerStats()">
+            <option value="all">Todos os Jogadores</option>
+            <option value="rookies">Apenas Novatos</option>
+        </select>
+    </div>
+    <div class="table-container">
+        <table id="table-stats-players-detailed">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('table-stats-players-detailed', 0, true)"># ↕</th>
+                    <th style="text-align:left;" onclick="sortTable('table-stats-players-detailed', 1, false)">JOGADOR ↕</th>
+                    <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 2, false)">ROLE ↕</th>
+                    <th onclick="sortTable('table-stats-players-detailed', 3, true)" title="Abates">
+                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
+                    </th>
+                    <th onclick="sortTable('table-stats-players-detailed', 4, true)">DANO ↕</th>
+                    <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 5, true)">AST ↕</th>
+                    <th title="Quedas Jogadas" onclick="sortTable('table-stats-players-detailed', 6, true)">Q ↕</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
+        <button id="btn-player-expand" class="btn-action" onclick="togglePlayerTable()" style="width: 200px;">Ver Mais</button>
+    </div>
+
+</div>
+<div id="outros-torneios" class="page">
+    <div id="ot-list-view">
+        <div class="ot-hero-new">
+            <div class="ot-hero-kicker">Arquivo histórico</div>
+            <h2>Outros Torneios</h2>
+            <p>Veja informações sobre os principais torneios do cenário de Free Fire.</p>
+            <div class="ot-hero-warning">
+                <strong>Aviso:</strong> arquivo histórico é alimentado periodicamente e pode conter pequenos erros.
+            </div>
+        </div>
+
+        <div class="filters ot-filters-new">
+            <input type="text" id="ot-search" placeholder="Pesquisar por torneio, ano, equipe, campeão ou região..." oninput="renderOutrosTorneiosList()" autocomplete="off">
+            <select id="ot-filter-year" onchange="renderOutrosTorneiosList()">
+                <option value="all">Todos os anos</option>
+            </select>
+            <select id="ot-filter-tier" onchange="renderOutrosTorneiosList()">
+                <option value="all">Todos os tiers</option>
+            </select>
+            <select id="ot-filter-region" onchange="renderOutrosTorneiosList()">
+                <option value="all">Todas as regiões</option>
+            </select>
+        </div>
+
+        <div class="ot-cards-grid" id="ot-grid-torneios"></div>
+    </div>
+
+    <div id="ot-details-view" style="display: none;">
+        <button class="btn-back" onclick="closeOtherTournament()">← Voltar para Torneios</button>
+
+        <div class="ot-details-header ot-details-header-new" id="ot-details-header">
+            <div class="ot-details-main">
+                <img id="ot-details-logo" src="trofeu.webp" onerror="this.src='trofeu.webp'" alt="Logo do torneio">
+                <div>
+                    <div class="ot-details-badge" id="ot-details-badge">Tier</div>
+                    <h1 id="ot-title">Nome do Torneio</h1>
+                    <div id="ot-year" class="ot-details-meta">Ano</div>
+                </div>
+            </div>
+            <div class="ot-details-stats" id="ot-details-stats"></div>
+        </div>
+
+        <div class="ot-tabs" id="ot-details-tabs"></div>
+        <div id="ot-dynamic-container"></div>
+    </div>
+</div>
+
+<!-- PAGE: INTERNACIONAL - FFWS SEA 2026 S1 -->
+<div id="ffws-sea-2026-s1" class="page">
+    <div class="internacional-hero">
+        <h1>🌏 FFWS SEA 2026 S1</h1>
+        <p>Classificação e ranking de abates carregados semanalmente.</p>
+    </div>
+
+    <div class="internacional-tabs">
+        <button class="internacional-tab active" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
+        <button class="internacional-tab" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
+    </div>
+
+    <div class="int-grid">
+        <section>
+            <div class="int-section-title">
+                <h2>Classificação</h2>
+                <span class="int-updated" id="sea-classificacao-updated">Atualizando...</span>
+            </div>
+            <div class="table-container">
+                <table id="table-sea-classificacao">
+                    <thead></thead>
+                    <tbody><tr><td class="int-loading">Carregando classificação...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <div class="int-section-title">
+                <h2>Ranking de Abates</h2>
+                <span class="int-updated" id="sea-abates-updated">Atualizando...</span>
+            </div>
+
+            <div class="filters int-filters sea-abates-filters">
+                <label>Etapa:
+                    <select id="sea-filter-stage" onchange="setSEAAbatesStage(this.value)">
+                        <option value="phase1">Fase 1</option>
+                        <option value="fase2-dia1">Fase 2 - Dia 1</option>
+                        <option value="fase2-dia2">Fase 2 - Dia 2</option>
+                        <option value="fase2-dia3">Fase 2 - Dia 3</option>
+                        <option value="last-chance">Last Chance</option>
+                        <option value="geral">Geral</option>
+                    </select>
+                </label>
+                <label>Tipo:
+                    <select id="sea-filter-mode" onchange="setSEAAbatesMode(this.value)">
+                        <option value="total">Total</option>
+                        <option value="media">Média por queda</option>
+                    </select>
+                </label>
+                <label>Time:
+                    <select id="sea-filter-team" onchange="applySEAAbatesFilters()">
+                        <option value="all">Todos os times</option>
+                    </select>
+                </label>
+                <label>Função:
+                    <select id="sea-filter-role" onchange="applySEAAbatesFilters()">
+                        <option value="all">Todas as funções</option>
+                    </select>
+                </label>
+                <button class="btn-action" type="button" onclick="clearSEAAbatesFilters()" style="margin-top: 0;">Limpar filtros</button>
+            </div>
+
+            <div class="sea-abates-mobile-details">
+                <button class="btn-action sea-abates-details-toggle" id="sea-abates-details-btn" type="button" onclick="toggleSEAAbatesDetails()">Ver detalhes</button>
+            </div>
+
+            <div class="table-container">
+                <table id="table-sea-abates">
+                    <thead></thead>
+                    <tbody><tr><td class="int-loading">Carregando ranking de abates...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- PAGE: PERFIL DE JOGADOR - FFWS SEA -->
+<div id="sea-player-profile" class="page">
+    <button class="btn-back" onclick="navigate('ffws-sea-2026-s1')">← Voltar para FFWS SEA</button>
+    <div id="sea-player-profile-content"></div>
+</div>
+
+<!-- PAGE: PERFIL DE EQUIPE - FFWS SEA -->
+<div id="sea-team-profile" class="page">
+    <button class="btn-back" onclick="navigate('ffws-sea-2026-s1')">← Voltar para FFWS SEA</button>
+    <div id="sea-team-profile-content"></div>
+</div>
+
+<!-- PAGE: INTERNACIONAL - FFWS LATAM S1 -->
+<div id="ffws-latam-s1" class="page">
+    <div class="internacional-hero">
+        <h1>🌎 FFWS LATAM S1</h1>
+        <p>Área internacional preparada para receber os dados da LATAM.</p>
+    </div>
+
+    <div class="internacional-tabs">
+        <button class="internacional-tab" onclick="navigateAndClose('ffws-sea-2026-s1')">FFWS SEA 2026 S1</button>
+        <button class="internacional-tab active" onclick="navigateAndClose('ffws-latam-s1')">FFWS LATAM S1</button>
+    </div>
+
+    <div class="int-empty">
+        <strong>Em breve</strong>
+        A página da FFWS LATAM S1 já está criada, mas ainda sem dados cadastrados.
+    </div>
+</div>
+
+<!-- PAGE: OUTRAS EQUIPES -->
+<div id="outras-equipes" class="page">
+    <h2 style="text-align: center; margin-bottom: 10px;">Outras Equipes</h2>
+    <p style="color: var(--text-muted); text-align: center; margin-bottom: 30px; font-size: 0.9em;">Equipes fora do campeonato principal. Clique em uma equipe para ver seus resultados e títulos.</p>
+
+    <!-- Barra de Busca de Equipes -->
+    <div class="filters" style="margin-bottom: 25px; justify-content: center;">
+        <input type="text" id="outras-equipes-search" placeholder="🔍  Pesquisar equipe..." oninput="renderOutrasEquipesGrid()" autocomplete="off"
+            style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none; width: 100%; max-width: 400px; font-size: 1em;">
+    </div>
+
+    <!-- Grid de equipes (sem divisão de grupos) -->
+    <div class="teams-directory" id="outras-equipes-directory" style="margin-bottom: 40px;"></div>
+</div>
+
+<!-- PAGE: PERFIL OUTRA EQUIPE (sub-view inline) -->
+<div id="outras-equipes-profile" class="page">
+    <button class="btn-back" onclick="navigate('outras-equipes')">← Voltar para Outras Equipes</button>
+
+    <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 25px; text-align: center;">
+        <img id="oep-logo" src="escudo.webp" style="width: 90px; height: 90px; object-fit: contain;">
+        <div>
+            <h1 id="oep-name" style="margin: 0; font-size: 2em; text-transform: uppercase;"></h1>
+        </div>
+    </div>
+
+    <!-- Títulos Coletivos -->
+    <div id="oep-titulos-section" style="margin-bottom: 30px; display: none;">
+        <h3 style="color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Galeria de Troféus</h3>
+        <div id="oep-titulos-container" style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px;"></div>
+    </div>
+
+    <!-- Todos os Resultados -->
+    <h3 style="color: #66b3ff; border-bottom: 1px solid var(--border); padding-bottom: 10px;">📊 Todos os Resultados</h3>
+
+    <div class="filters" style="margin-bottom: 15px; flex-wrap: wrap;">
+        <label style="color: var(--text-muted); font-weight: bold;">Ano:</label>
+        <select id="oep-filter-year" onchange="renderOutraEquipeResultados()" style="max-width: 110px;">
+            <option value="all">Todos</option>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+        </select>
+        <label style="color: var(--text-muted); font-weight: bold; margin-left: 10px;">Tier:</label>
+        <select id="oep-filter-tier" onchange="renderOutraEquipeResultados()" style="max-width: 150px;">
+            <option value="all">Todos</option>
+            <option value="S-Tier">S-Tier</option>
+            <option value="A-Tier">A-Tier</option>
+            <option value="B-Tier">B-Tier</option>
+            <option value="C-Tier">C-Tier</option>
+            <option value="D-Tier">D-Tier</option>
+            <option value="Showmatch">Showmatch</option>
+            <option value="Weekly">Weekly</option>
+        </select>
+        <div id="oep-results-stats" style="margin-left: auto; display: flex; gap: 15px; font-size: 1.2em; background: rgba(0,0,0,0.3); padding: 6px 15px; border-radius: 8px; border: 1px solid var(--border);">
+            <div title="Títulos (1º Lugar)">🥇 <span id="oep-count-1st" style="color: #ffd700; font-weight: 900;">0</span></div>
+            <div title="Vices (2º Lugar)">🥈 <span id="oep-count-2nd" style="color: #c0c0c0; font-weight: bold;">0</span></div>
+            <div title="3º Lugar">🥉 <span id="oep-count-3rd" style="color: #cd7f32; font-weight: bold;">0</span></div>
+        </div>
+    </div>
+
+    <div class="table-container" style="max-height: 60vh; overflow-y: auto;">
+        <table id="table-outra-equipe-results">
+            <thead style="position: sticky; top: 0; z-index: 10;">
+                <tr>
+                    <th>Data</th>
+                    <th>Tier</th>
+                    <th>Posição</th>
+                    <th style="text-align: left;">Campeonato</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="hall-da-fama" class="page">
+        <h2>Top 100 Abates da história</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">
+            Ranking histórico somado em tempo real com o desempenho da edição atual.<br>
+        </p>
+
+        <div class="filters hall-filters">
+            <label style="color: var(--text-muted); font-weight: bold;">Ordenar por:</label>
+            <select onchange="setHallAllTimeSort(this.value)">
+                <option value="kills">Abates</option>
+                <option value="team">Equipe</option>
+                <option value="quedas">Quedas</option>
+                <option value="media">Média</option>
+            </select>
+            <input id="hist-all-player-search" class="hall-search-input" type="search" placeholder="Pesquisar jogador..." onkeydown="handleHallAllTimeSearchKey(event)">
+            <input id="hist-all-team-search" class="hall-search-input" type="search" placeholder="Pesquisar por equipe em que atuou..." onkeydown="handleHallAllTimeSearchKey(event)">
+            <button class="btn-action" type="button" onclick="applyHallAllTimeSearch()">Procurar</button>
+        </div>
+
+        <div class="table-container">
+            <table id="table-history">
+<thead>
+    <tr>
+        <th style="width: 50px;">#</th>
+        <th style="text-align:left;">
+            <span class="full-name-desktop">Jogador</span><span class="short-name-mobile">J</span>
+        </th>
+        <th>
+            <span class="full-name-desktop">Equipe Atual</span><span class="short-name-mobile">E</span>
+        </th>
+        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
+        <th>Média</th>
+    </tr>
+</thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="hist-all-range-info" class="hall-range-info"></div>
+        <div class="hall-actions">
+            <button id="btn-hist-all-less" class="btn-action" onclick="changeHallAllTimeLimit('less')" style="display:none;">Ver menos</button>
+            <button id="btn-hist-all-more" class="btn-action" onclick="changeHallAllTimeLimit('more')">Ver do Top 10 ao 50</button>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
+
+        <h2 style="color: #66b3ff;">Ranking por Edição</h2>
+        <div class="filters">
+            <label style="color: var(--text-muted); font-weight: bold;">Selecione as Edições (Soma automática):</label>
+            <div class="day-filters" id="edition-filters"></div>
+        </div>
+        <div class="filters hall-filters">
+            <label style="color: var(--text-muted); font-weight: bold;">Ordenar por:</label>
+            <select onchange="setHallEditionSort(this.value)">
+                <option value="kills">Abates</option>
+                <option value="team">Equipe</option>
+                <option value="quedas">Quedas</option>
+                <option value="media">Média</option>
+            </select>
+            <input class="hall-search-input" type="search" placeholder="Pesquisar jogador..." oninput="setHallEditionPlayerSearch(this.value)">
+        </div>
+        
+        <div class="table-container">
+            <table id="table-edition-history">
+                <thead>
+    <tr>
+        <th style="width: 50px;">#</th>
+        <th style="text-align:left;">
+            <span class="full-name-desktop">Jogador</span><span class="short-name-mobile">J</span>
+        </th>
+        <th>
+            <span class="full-name-desktop">Equipe</span><span class="short-name-mobile">E</span>
+        </th>
+        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
+        <th>Média</th>
+    </tr>
+</thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="hist-edition-range-info" class="hall-range-info"></div>
+        <div class="hall-actions">
+            <button id="btn-hist-edition-less" class="btn-action" onclick="changeHallEditionLimit('less')" style="display:none;">Ver menos</button>
+            <button id="btn-hist-edition-more" class="btn-action" onclick="changeHallEditionLimit('more')">Ver do Top 10 ao 50</button>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
+
+        <h2 style="color: var(--accent);">O BRABO: Comparador Histórico 👑</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9em;">Compare o mesmo jogador em edições diferentes, ou dois jogadores na mesma edição.</p>
+        
+        <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
+<div class="hist-selector-grid">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <select id="hist-comp-p1" onchange="updateEditionOptions('hist-comp-p1', 'hist-comp-ed1'); renderHistCompare()"></select>
+        <select id="hist-comp-ed1" onchange="renderHistCompare()"></select>
+    </div>
+    
+    <div style="text-align: center; font-weight: bold; color: var(--accent); font-size: 1.2em;">VS</div>
+    
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <select id="hist-comp-p2" onchange="updateEditionOptions('hist-comp-p2', 'hist-comp-ed2'); renderHistCompare()"></select>
+        <select id="hist-comp-ed2" onchange="renderHistCompare()"></select>
+    </div>
+</div>
+
+            <div class="compare-container" id="hist-compare-result"></div>
+        </div>
+    </div>
+    </div>
+
+    <!-- PAGE: COMPARAR -->
+    
+<div id="busca-global" class="page">
+    <div class="global-search-page">
+        <div class="global-search-hero">
+            <div>
+                <div class="section-kicker">Busca do site</div>
+                <h2 id="global-search-page-title">Busca completa</h2>
+                <p>Resultados exatos, aproximados e relacionados em jogadores, equipes, torneios e notícias.</p>
+            </div>
+            <form class="global-search-page-form" onsubmit="handleGlobalSearchPageSubmit(event)">
+                <input type="text" id="global-search-page-input" placeholder="Digite jogador, equipe, torneio ou notícia..." autocomplete="off">
+                <button type="submit">Procurar</button>
+            </form>
+        </div>
+        <div id="global-search-results-container" class="global-search-results-container">
+            <div class="global-search-empty">Use a busca do topo ou digite acima para ver todos os resultados.</div>
+        </div>
+    </div>
+</div>
+
+<div id="comparar-1v1" class="page">
+        <h2>Comparar Times e Jogadores</h2>
+        
+        <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
+            <h3 style="margin-top:0; color:#fff">Confronto de Times</h3>
+            <div class="filters" style="background:transparent; border:none; padding:0; margin-bottom:10px;">
+                <select id="comp-t1" onchange="renderCompareTeams()"></select>
+                <span style="font-weight:bold; color:var(--accent);">VS</span>
+                <select id="comp-t2" onchange="renderCompareTeams()"></select>
+            </div>
+            <div class="compare-container" id="compare-teams-result"></div>
+        </div>
+
+        <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+            <h3 style="margin-top:0; color:#fff">Confronto de Jogadores</h3>
+            <div class="filters" style="background:transparent; border:none; padding:0; margin-bottom:10px;">
+                <select id="comp-player-region" onchange="switchComparePlayerRegion()">
+                    <option value="nacional">NACIONAL</option>
+                    <option value="internacional">INTERNACIONAL</option>
+                    <option value="brxgringos">BR X GRINGOS</option>
+                </select>
+                <select id="comp-p1" onchange="renderComparePlayers()"></select>
+                <span style="font-weight:bold; color:var(--accent);">VS</span>
+                <select id="comp-p2" onchange="renderComparePlayers()"></select>
+            </div>
+            <div class="compare-container" id="compare-players-result"></div>
+        </div>
+    </div>
+
+    <!-- PAGE: SOBRE / CONTATO -->
+<div id="sobre" class="page">
+    <section class="about-hero">
+        <div class="about-kicker" id="sobre-kicker">CONTATO</div>
+        <h1 class="about-title" id="sobre-titulo">Sobre a Central Free Fire</h1>
+        <div class="about-text" id="sobre-texto">
+            A Central Free Fire acompanha estatísticas, notícias, rankings e informações do cenário competitivo de Free Fire.
+        </div>
+    </section>
+
+    <div class="about-grid" id="sobre-contatos" aria-live="polite"></div>
+
+    <div class="home-widget" style="margin-top: 24px;">
+        <h3>📌 Colunas recomendadas para a aba SOBRE</h3>
+        <div class="home-widget-body" style="align-items:flex-start; justify-content:flex-start;">
+            <div class="about-columns-help">
+                Use uma linha principal na planilha com estas colunas: 
+                <code>titulo</code>, <code>subtitulo</code>, <code>texto</code>, <code>contato</code>, <code>email</code>, <code>instagram</code>, <code>whatsapp</code>, <code>discord</code>, <code>imagem</code>, <code>botao_texto</code>, <code>botao_link</code>.
+                <br><br>
+                O site aceita deixar campos vazios. Se quiser mais de um contato, coloque novas linhas com <code>label</code>, <code>valor</code> e <code>link</code>.
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- PAGE: CRONOGRAMA -->
+<div id="datas" class="page">
+    <h2>Cronograma e Próximos Confrontos - FFWS Brasil 2026</h2>
+    
+    <div id="next-match-timer" style="background: linear-gradient(90deg, #1c1c20 0%, #26262b 100%); border: 1px solid var(--border); border-left: 4px solid #ff4444; padding: 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+        
+        <div style="min-width: 200px;">
+            <div style="color: var(--text-muted); font-size: 0.85em; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Próxima Transmissão</div>
+            <div id="countdown-display" style="font-size: 1.4em; font-weight: bold; color: #fff;">Carregando...</div>
+        </div>
+
+        <div id="next-match-groups" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
+
+        <a href="https://www.youtube.com/@FFesportsBR/live" target="_blank" class="live-status-btn offline" id="schedule-live-btn" style="width: auto; margin: 0; min-width: 200px;">
+            <img src="youtube.webp" alt="YouTube" onerror="this.style.display='none'">
+            <span id="schedule-live-text">Aguardando Início</span>
+        </a>
+
+    </div> <p style="color: var(--text-muted); margin-bottom: 20px;">Acompanhe a agenda oficial das semanas finais e Grande Final do campeonato.</p>
+    
+    <div id="schedule-content"></div>
+</div>
+
+<div id="final" class="page">
+    <button class="btn-back" onclick="navigate('home')">← Voltar</button>
+
+    <section class="final-hero-panel">
+        <div class="section-kicker">GRANDE FINAL</div>
+        <h1>Formato da final</h1>
+        <div class="final-format-grid">
+            <div class="final-format-item"><strong>Dia 1</strong><span>6 quedas</span></div>
+            <div class="final-format-item"><strong>Dia 2</strong><span>10 quedas</span></div>
+            <div class="final-format-item"><strong>Total</strong><span>16 quedas</span></div>
+            <div class="final-format-item"><strong>Champion Point</strong><span>160 pts</span></div>
+        </div>
+        <div class="final-rules-box">
+            Ao chegar em 160 pontos, a equipe fica apta ao título se vencer a próxima queda. Se nenhuma equipe confirmar o Champion Point com Booyah, o campeão será definido pela maior pontuação ao final das 16 quedas.
+        </div>
+        <button class="final-groups-table-btn" onclick="navigate('tabela')">Ver tabela da classificatória</button>
+    </section>
+
+    <section class="final-section-card">
+        <div class="final-section-head">
+            <div>
+                <span>Classificação</span>
+                <h2>Tabela da final</h2>
+            </div>
+        </div>
+        <div class="filters final-live-filters">
+            <label>Dia:</label>
+            <select id="final-day-filter" onchange="renderFinalPossibilities()">
+                <option value="all">Geral</option>
+                <option value="1">Dia 1</option>
+                <option value="2">Dia 2</option>
+            </select>
+            <label>Mapa:</label>
+            <select id="final-map-filter" onchange="renderFinalPossibilities()">
+                <option value="all">Todos os mapas</option>
+                <option value="Bermuda">Bermuda</option>
+                <option value="Kalahari">Kalahari</option>
+                <option value="Purgatório">Purgatório</option>
+                <option value="Nova Terra">Nova Terra</option>
+                <option value="Solara">Solara</option>
+            </select>
+        </div>
+        <div id="final-live-summary" class="final-live-summary"></div>
+        <div class="table-container final-table-wrap">
+            <table id="final-teams-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th style="text-align:left;">Eqp</th>
+                        <th>Pts</th>
+                        <th>K</th>
+                        <th>B</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="final-section-card">
+        <div class="final-section-head">
+            <div>
+                <span>Possibilidades</span>
+                <h2>Possibilidades da final</h2>
+            </div>
+            <small>Atualiza conforme a pontuação</small>
+        </div>
+        <div id="final-probability-grid" class="final-probability-grid">
+            <div class="home-confrontation-empty">Carregando possibilidades...</div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para Ranking de Confronto -->
+<div class="modal-overlay" id="results-modal" onclick="closeModal(event)">
+    <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-header">
+            <h2 id="results-modal-title" style="color: #ffd700;">Todos os Resultados</h2>
+            <button class="close-btn" aria-label="Fechar" onclick="document.getElementById('results-modal').classList.remove('active')">&times;</button>
+        </div>
+        
+        <div class="filters" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <label style="color: var(--text-muted); font-weight: bold;">Ano:</label>
+            <select id="filter-results-year" onchange="renderTeamResults()" style="max-width: 100px;">
+                <option value="all">Todos</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+            </select>
+
+            <label style="color: var(--text-muted); font-weight: bold; margin-left: 10px;">Tier:</label>
+            <select id="filter-results-tier" onchange="renderTeamResults()" style="flex: 1; max-width: 150px;">
+                <option value="all">Todos</option>
+                <option value="S-Tier">S-Tier</option>
+                <option value="A-Tier">A-Tier</option>
+                <option value="B-Tier">B-Tier</option>
+                <option value="C-Tier">C-Tier</option>
+                <option value="D-Tier">D-Tier</option>
+                <option value="Showmatch">Showmatch</option>
+                <option value="Weekly">Weekly</option>
+            </select>
+
+            <div id="results-stats" style="margin-left: auto; display: flex; gap: 15px; font-size: 1.2em; background: rgba(0,0,0,0.3); padding: 6px 15px; border-radius: 8px; border: 1px solid var(--border);">
+                <div title="Títulos (1º Lugar)">🥇 <span id="count-1st" style="color: #ffd700; font-weight: 900; text-shadow: 0 0 8px rgba(255,215,0,0.5);">0</span></div>
+                <div title="Vices (2º Lugar)">🥈 <span id="count-2nd" style="color: #c0c0c0; font-weight: bold;">0</span></div>
+                <div title="3º Lugar">🥉 <span id="count-3rd" style="color: #cd7f32; font-weight: bold;">0</span></div>
+            </div>
+        </div>
+
+        <div class="table-container" style="max-height: 60vh; overflow-y: auto;">
+            <table id="table-team-results">
+                <thead style="position: sticky; top: 0; z-index: 10;">
+                    <tr>
+                        <th onclick="sortTable('table-team-results', 0, false)">Data ↕</th>
+                        <th onclick="sortTable('table-team-results', 1, false)">Tier ↕</th>
+                        <th onclick="sortTable('table-team-results', 2, true)">Posição ↕</th>
+                        <th style="text-align: left;" onclick="sortTable('table-team-results', 3, false)">Campeonato ↕</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="ot-roster-modal" onclick="closeOtRosterModal(event)">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <div class="modal-header">
+            <h2 id="ot-roster-title" style="color: #fff; margin: 0;">Equipe</h2>
+            <button class="close-btn" aria-label="Fechar" onclick="document.getElementById('ot-roster-modal').classList.remove('active')">&times;</button>
+        </div>
+        <img id="ot-roster-logo" src="" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px;">
+        <div id="ot-roster-list" style="display: flex; flex-direction: column; gap: 10px;">
+            </div>
+    </div>
+</div>
+<script src="js/core-data.js?v=20260524-final-public-v2"></script>
+<script src="js/stats-rankings.js?v=20260525-mercado-elenco-v1"></script>
+<script src="js/search-history-compare.js?v=20260525-season-selections-v1"></script>
+<script src="js/day-vote.js?v=20260524-final-public-v2"></script>
+<script src="js/filters-results.js?v=20260525-chart-summary-v1"></script>
+<script src="js/team-profile.js?v=20260525-mercado-elenco-v1"></script>
+<script src="js/notas-cff.js?v=20260525-equipes-hash-v1"></script>
+<script src="js/navigation-search.js?v=20260525-sea-search-dedupe-v2"></script>
+<script src="js/other-tournaments.js?v=20260520-auto-cache-v2"></script>
+<script src="js/home-news-lives.js?v=20260525-sea-logos-v1"></script>
+<script src="js/charts-market.js?v=20260525-mercado-elenco-v1"></script>
+<script src="js/ffws-sea.js?v=20260525-sea-logo-resolve-v1"></script>
+<script src="js/sea-profiles.js?v=20260525-sea-logos-search-v1"></script>
+</main>
+
+<script type="module" src="js/firebase-votes.js?v=20260520-votes-public-final"></script>
+</body>
+</html>
