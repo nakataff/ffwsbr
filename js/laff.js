@@ -1,11 +1,11 @@
 /* =============================================
    LAFF 2026 S1 - Liga Ascensão de Free Fire
-   Páginas alimentadas por planilhas + dados-laff.json
+   VERSÃO OTIMIZADA COM CACHE E LAZY LOADING
    ============================================= */
 (function () {
     const CFG = window.CFF_CONFIG || {};
-    const LAFF_TEAMS_URL = CFG.sheets?.laffEquipes || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1173171217&single=true&output=tsv';
-    const LAFF_PLAYERS_URL = CFG.sheets?.laffJogadores || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=260123003&single=true&output=tsv';
+    const LAFF_TEAMS_URL = CFG.sheets?.laffEquipes || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=117317[...]
+    const LAFF_PLAYERS_URL = CFG.sheets?.laffJogadores || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=26[...]
     const LAFF_RESULTS_URL = CFG.sheets?.laffDados || 'dados-laff.json';
 
     let laffLoaded = false;
@@ -16,6 +16,17 @@
     let laffPlayerIndex = new Map();
     let laffResults = { dbQuedas: {}, dbJogadoresQuedas: {} };
     let laffResultsLoaded = false;
+
+    // ===== CACHE DE COMPUTAÇÃO =====
+    let _playerStatsCache = null;
+    let _lastPlayerStatsTime = 0;
+    let _teamStatsCache = null;
+    let _lastTeamStatsTime = 0;
+    const CACHE_DURATION = 5000; // 5 segundos
+
+    function isCacheValid(lastTime) {
+        return (Date.now() - lastTime) < CACHE_DURATION;
+    }
 
     function norm(value) {
         return String(value || '')
@@ -277,6 +288,9 @@
                 dbJogadoresQuedas: json.dbJogadoresQuedas || {}
             };
             laffResultsLoaded = true;
+            // Limpa cache de computação ao carregar novos resultados
+            _playerStatsCache = null;
+            _teamStatsCache = null;
         } catch (e) {
             laffResults = { dbQuedas: {}, dbJogadoresQuedas: {} };
             laffResultsLoaded = false;
@@ -302,7 +316,13 @@
         return table[Number(pos)] || 0;
     }
 
-    function computeTeamStats() {
+    // ===== COMPUTAÇÃO COM CACHE =====
+    function computeTeamStats(forceRefresh = false) {
+        const now = Date.now();
+        if (_teamStatsCache && !forceRefresh && isCacheValid(_lastTeamStatsTime)) {
+            return _teamStatsCache;
+        }
+
         const byTeam = new Map();
         laffTeams.forEach(t => byTeam.set(key(t.name), { team: t.name, logo: t.logo, grupo: t.grupo, origem: t.origem, pontos: 0, kills: 0, booyah: 0, quedas: 0 }));
         getAllDrops().forEach(drop => {
@@ -311,7 +331,7 @@
                 if (!teamName) return;
                 const k = key(teamName);
                 const team = getLAFFTeamByName(teamName);
-                const stat = byTeam.get(k) || byTeam.get(key(team?.name)) || { team: team?.name || teamName, logo: getTeamLogo(teamName), grupo: team?.grupo || '', origem: team?.origem || '', pontos: 0, kills: 0, booyah: 0, quedas: 0 };
+                const stat = byTeam.get(k) || byTeam.get(key(team?.name)) || { team: team?.name || teamName, logo: getTeamLogo(teamName), grupo: team?.grupo || '', origem: team?.origem || '', pontos[...]
                 stat.kills += Number(r.kills || r.abates || 0);
                 stat.booyah += Number(r.booyah || 0);
                 stat.pontos += Number(r.pontos || r.total || 0) || (Number(r.kills || r.abates || 0) + getPlacementPoints(r.posicao));
@@ -319,10 +339,19 @@
                 byTeam.set(key(stat.team), stat);
             });
         });
-        return [...byTeam.values()].sort((a, b) => b.pontos - a.pontos || b.booyah - a.booyah || b.kills - a.kills || a.team.localeCompare(b.team, 'pt-BR'));
+
+        const result = [...byTeam.values()].sort((a, b) => b.pontos - a.pontos || b.booyah - a.booyah || b.kills - a.kills || a.team.localeCompare(b.team, 'pt-BR'));
+        _teamStatsCache = result;
+        _lastTeamStatsTime = now;
+        return result;
     }
 
-    function computePlayerStats() {
+    function computePlayerStats(forceRefresh = false) {
+        const now = Date.now();
+        if (_playerStatsCache && !forceRefresh && isCacheValid(_lastPlayerStatsTime)) {
+            return _playerStatsCache;
+        }
+
         const byPlayer = new Map();
         Object.values(laffResults.dbJogadoresQuedas || {}).forEach(day => {
             Object.values(day || {}).forEach(players => {
@@ -341,7 +370,11 @@
                 });
             });
         });
-        return [...byPlayer.values()].sort((a,b)=>b.mvp-a.mvp || b.kills-a.kills || b.dano-a.dano || a.name.localeCompare(b.name,'pt-BR'));
+
+        const result = [...byPlayer.values()].sort((a,b)=>b.mvp-a.mvp || b.kills-a.kills || b.dano-a.dano || a.name.localeCompare(b.name,'pt-BR'));
+        _playerStatsCache = result;
+        _lastPlayerStatsTime = now;
+        return result;
     }
 
     function getLAFFTeamByName(name) {
@@ -391,14 +424,14 @@
     }
 
     function laffHero(title, subtitle = '') {
-        return `<div class="laff-hero"><div class="laff-hero-main"><img src="laff.webp" onerror="this.onerror=null;this.src='trofeu.webp'" alt="Logo LAFF"><div><div class="laff-kicker">Liga Ascensão de Free Fire</div><h1>${escape(title)}</h1>${subtitle ? `<p>${escape(subtitle)}</p>` : ''}</div></div><div class="laff-hero-badges"><span>2 vagas FFWS BR S2</span><span>12 a 28 de junho</span></div></div>`;
+        return `<div class="laff-hero"><div class="laff-hero-main"><img src="laff.webp" onerror="this.onerror=null;this.src='trofeu.webp'" alt="Logo LAFF"><div><div class="laff-kicker">Liga Ascen[...]
     }
 
     function renderTeamCard(team) {
         const playersCount = team.players.length;
         const group = String(team.grupo || '').trim();
         const origin = getShortOrigin(team.origem);
-        return `<button class="laff-team-card" type="button" onclick="openLAFFTeamProfile(${escape(jsArg(team.name))})"><img src="${escape(team.logo || 'escudo.webp')}" onerror="this.onerror=null;this.src='escudo.webp'" alt="${escape(team.name)}"><div class="laff-team-card-body"><strong>${renderResponsiveTeamName(team)}</strong><span>${escape(origin)}</span></div><div class="laff-team-card-meta">${group ? `<small>Grupo ${escape(group)}</small>` : `<small>Grupo em breve</small>`}<small>${playersCount} jogador${playersCount === 1 ? '' : 'es'}</small></div></button>`;
+        return `<button class="laff-team-card" type="button" onclick="openLAFFTeamProfile(${escape(jsArg(team.name))})"><img src="${escape(team.logo || 'escudo.webp')}" onerror="this.onerror=null[...]
     }
 
     function renderPlayerCard(player) {
@@ -406,7 +439,7 @@
         const teamLogo = team?.logo || getTeamLogo(player.team);
         const roleFull = formatLAFFRole(player.funcao, false);
         const roleShort = formatLAFFRole(player.funcao, true);
-        return `<button class="laff-player-card" type="button" onclick="openLAFFPlayerProfile(${escape(jsArg(player.name))})"><img class="laff-player-photo" src="${escape(player.photo || 'silhueta.png')}" onerror="this.onerror=null;this.src='silhueta.png'" alt="${escape(player.name)}"><div class="laff-player-info"><strong>${escape(player.name)}</strong><span><img src="${escape(teamLogo || 'escudo.webp')}" onerror="this.onerror=null;this.src='escudo.webp'" alt=""> ${renderResponsiveTeamName(team || player.team || 'Equipe a confirmar')}</span><small><span class="laff-role-full">${escape(roleFull)}</span><span class="laff-role-short">${escape(roleShort)}</span></small></div></button>`;
+        return `<button class="laff-player-card" type="button" onclick="openLAFFPlayerProfile(${escape(jsArg(player.name))})"><img class="laff-player-photo" src="${escape(player.photo || 'silhuet[...]
     }
 
     function renderTeamsGrid(containerId = 'laff-teams-wrap') {
@@ -416,7 +449,7 @@
         const hasGroups = laffTeams.some(t => String(t.grupo || '').trim());
         if (!hasGroups) { wrap.innerHTML = `<div class="laff-teams-grid">${laffTeams.map(renderTeamCard).join('')}</div>`; return; }
         const grouped = laffTeams.reduce((acc, team) => { const group = String(team.grupo || '').trim() || 'Sem grupo'; (acc[group] ||= []).push(team); return acc; }, {});
-        wrap.innerHTML = Object.keys(grouped).sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true})).map(group => `<section class="laff-group-block"><h3>${escape(group === 'Sem grupo' ? 'Sem grupo definido' : `Grupo ${group}`)}</h3><div class="laff-teams-grid">${grouped[group].map(renderTeamCard).join('')}</div></section>`).join('');
+        wrap.innerHTML = Object.keys(grouped).sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true})).map(group => `<section class="laff-group-block"><h3>${escape(group === 'Sem grupo' ? 'Sem grup[...]
     }
 
     function renderLAFFTeams() { renderTeamsGrid('laff-teams-wrap'); }
@@ -446,9 +479,9 @@
                 return `<tr onclick="openLAFFPlayerProfile(${escape(jsArg(p.name))})" style="cursor:pointer;">
                     <td>${i + 1}</td>
                     <td style="text-align:left;"><span class="laff-table-player-name">${escape(p.name)}</span></td>
-                    <td><img src="${escape(tLogo || 'escudo.webp')}" onerror="this.onerror=null;this.src='escudo.webp'" alt="" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:5px;"> <span class="hide-mobile">${escape(p.team || '—')}</span><span class="laff-team-name-short">${escape(getLAFFTeamShortName(team || p.team || '—'))}</span></td>
+                    <td><img src="${escape(tLogo || 'escudo.webp')}" onerror="this.onerror=null;this.src='escudo.webp'" alt="" style="width:18px;height:18px;object-fit:contain;vertical-align:midd[...]
                     <td class="hide-mobile">${escape(formatLAFFRole(p.funcao, false))}</td>
-                    ${started && cur ? `<td>${cur.kills}</td><td class="hide-mobile">${cur.dano}</td><td class="hide-mobile">${cur.quedas}</td><td>${cur.mvp}</td>` : started ? `<td>—</td><td class="hide-mobile">—</td><td class="hide-mobile">—</td><td>—</td>` : ''}
+                    ${started && cur ? `<td>${cur.kills}</td><td class="hide-mobile">${cur.dano}</td><td class="hide-mobile">${cur.quedas}</td><td>${cur.mvp}</td>` : started ? `<td>—</td><td cl[...]
                     <td><span class="laff-nota-breve">Em breve</span></td>
                 </tr>`;
             }).join('')}</tbody>
@@ -460,8 +493,8 @@
         if (!root) return;
         const stats = computeTeamStats();
         root.innerHTML = `${laffHero('Classificatória', 'Tabela da LAFF 2026 Split 1')}
-            <section class="laff-panel"><div class="laff-section-head"><div><h2>Classificação</h2><p>${hasLAFFDrops() ? 'Tabela atualizada conforme as quedas da LAFF.' : 'A classificação será atualizada quando o torneio começar.'}</p></div><span class="laff-updated">${stats.length} equipe(s)</span></div>
-            <div class="table-container"><table class="laff-table"><thead><tr><th>#</th><th>Eqp</th><th>PTS</th><th>K</th><th>B!</th><th class="hide-mobile">Origem</th></tr></thead><tbody>${stats.map((s, i) => `<tr onclick="openLAFFTeamProfile(${escape(jsArg(s.team))})"><td>${i + 1}</td><td class="laff-table-team"><img src="${escape(s.logo || 'escudo.webp')}" onerror="this.src='escudo.webp'" alt=""> <span>${escape(s.team)}</span></td><td>${s.pontos}</td><td>${s.kills}</td><td>${s.booyah}</td><td class="hide-mobile">${escape(getShortOrigin(s.origem))}</td></tr>`).join('')}</tbody></table></div></section>`;
+            <section class="laff-panel"><div class="laff-section-head"><div><h2>Classificação</h2><p>${hasLAFFDrops() ? 'Tabela atualizada conforme as quedas da LAFF.' : 'A classificação ser�[...]
+            <div class="table-container"><table class="laff-table"><thead><tr><th>#</th><th>Eqp</th><th>PTS</th><th>K</th><th>B!</th><th class="hide-mobile">Origem</th></tr></thead><tbody>${stats[...]
     }
 
     function renderLAFFEquipesPage() {
@@ -471,7 +504,7 @@
             ? `<option value="all">Todas as equipes</option>` + laffTeams.map(t => `<option value="${escape(t.name)}">${escape(t.name)}</option>`).join('')
             : `<option value="all">Todas as equipes</option>`;
         root.innerHTML = `${laffHero('Equipes', 'Equipes confirmadas na LAFF')}
-            <section class="laff-panel"><div class="laff-section-head"><div><h2>Equipes confirmadas</h2><p>Lista atualizada conforme os anúncios oficiais.</p></div><span class="laff-updated">${laffTeams.length} equipe(s)</span></div><div id="laff-teams-wrap"></div></section>
+            <section class="laff-panel"><div class="laff-section-head"><div><h2>Equipes confirmadas</h2><p>Lista atualizada conforme os anúncios oficiais.</p></div><span class="laff-updated">${l[...]
             <section class="laff-panel"><div class="laff-section-head"><div><h2>Jogadores inscritos</h2><p>As notas CFF serão atribuídas após o início do torneio.</p></div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
                 <input id="laff-player-search" class="laff-search" type="text" placeholder="Buscar jogador..." oninput="renderLAFFPlayers()" style="flex:1;min-width:140px;">
@@ -487,8 +520,8 @@
         if (!root) return;
         const stats = computePlayerStats();
         root.innerHTML = `${laffHero('Ranking MVP', 'Ranking de jogadores da LAFF')}
-            <section class="laff-panel"><div class="laff-section-head"><div><h2>MVP da LAFF</h2><p>${stats.length ? 'Ranking atualizado com os dados das quedas.' : 'O ranking será atualizado após as primeiras quedas.'}</p></div></div>
-            ${stats.length ? `<div class="table-container"><table class="laff-table"><thead><tr><th>#</th><th>J</th><th>K</th><th>MVP</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Equipe</th></tr></thead><tbody>${stats.map((p,i)=>`<tr onclick="openLAFFPlayerProfile(${escape(jsArg(p.name))})"><td>${i+1}</td><td>${escape(p.name)}</td><td>${p.kills}</td><td>${p.mvp}</td><td class="hide-mobile">${p.dano}</td><td class="hide-mobile">${escape(p.team)}</td></tr>`).join('')}</tbody></table></div>` : `<div class="laff-empty">O ranking será exibido aqui quando o torneio começar.</div>`}</section>`;
+            <section class="laff-panel"><div class="laff-section-head"><div><h2>MVP da LAFF</h2><p>${stats.length ? 'Ranking atualizado com os dados das quedas.' : 'O ranking será atualizado ap�[...]
+            ${stats.length ? `<div class="table-container"><table class="laff-table"><thead><tr><th>#</th><th>J</th><th>K</th><th>MVP</th><th class="hide-mobile">Dano</th><th class="hide-mobile">[...]
     }
 
     function renderLAFFStats() {
@@ -504,8 +537,8 @@
                 ${statCard('Quedas', drops)}
                 ${statCard('Vagas', '2', 'FFWS BR S2')}
             </div></section>
-            <section class="laff-panel"><div class="laff-section-head"><div><h2>Destaques estatísticos</h2><p>${drops ? 'Líderes atuais do torneio.' : 'Os destaques serão exibidos após as primeiras quedas.'}</p></div></div>
-                ${drops ? `<div class="grid-cards laff-stats-grid">${statCard('Líder em pontos', teams[0]?.team || '-')} ${statCard('Líder em kills', players[0]?.name || '-')} ${statCard('Mais booyahs', [...teams].sort((a,b)=>b.booyah-a.booyah)[0]?.team || '-')}</div>` : `<div class="laff-empty">Estatísticas em breve.</div>`}
+            <section class="laff-panel"><div class="laff-section-head"><div><h2>Destaques estatísticos</h2><p>${drops ? 'Líderes atuais do torneio.' : 'Os destaques serão exibidos após as pri[...]
+                ${drops ? `<div class="grid-cards laff-stats-grid">${statCard('Líder em pontos', teams[0]?.team || '-')} ${statCard('Líder em kills', players[0]?.name || '-')} ${statCard('Mais [...]
             </section>`;
     }
 
@@ -525,7 +558,7 @@
         const root = document.getElementById('laff-selecoes-content');
         if (!root) return;
         root.innerHTML = `${laffHero('Seleções da LAFF', 'Melhores jogadores da competição')}
-            <section class="laff-panel"><div class="laff-section-head"><div><h2>Seleção da LAFF</h2><p>A seleção será montada quando houver dados suficientes do torneio.</p></div></div><div class="laff-empty">Seleção em breve.</div></section>`;
+            <section class="laff-panel"><div class="laff-section-head"><div><h2>Seleção da LAFF</h2><p>A seleção será montada quando houver dados suficientes do torneio.</p></div></div><div [...]
     }
 
     function renderLAFFPageIfVisible() {
@@ -545,7 +578,7 @@
     }
 
     function statCard(label, value, sub = '') {
-        return `<div class="card laff-stat-card"><div class="card-top-border"></div><h3>${escape(label)}</h3><div class="value">${escape(value)}</div>${sub ? `<div class="laff-stat-sub">${escape(sub)}</div>` : ''}</div>`;
+        return `<div class="card laff-stat-card"><div class="card-top-border"></div><h3>${escape(label)}</h3><div class="value">${escape(value)}</div>${sub ? `<div class="laff-stat-sub">${escape([...]
     }
 
     function getHistoricalStats(playerName) {
@@ -662,7 +695,7 @@
         if (!all.length) return `<div class="laff-empty">Histórico será exibido conforme os jogadores forem confirmados.</div>`;
         return `<div class="laff-team-history-grid">${all.map(p => {
             const currentTeam = p.team && p.state !== 'ATUAL' ? getLAFFTeamByName(p.team) : null;
-            const logo = currentTeam ? `<span class="laff-history-current-logo" title="Atual: ${escape(p.team)}"><img src="${escape(currentTeam.logo || getTeamLogo(p.team))}" onerror="this.style.display='none'" alt=""></span>` : '';
+            const logo = currentTeam ? `<span class="laff-history-current-logo" title="Atual: ${escape(p.team)}"><img src="${escape(currentTeam.logo || getTeamLogo(p.team))}" onerror="this.style.[...]
             return `<button type="button" class="laff-history-player-card ${p.state === 'ATUAL' ? 'is-current' : 'is-ex'}" onclick="openLAFFPlayerProfile(${escape(jsArg(p.name))})">
                 <span class="laff-history-avatar">${logo}<img src="${escape(p.photo || 'silhueta.png')}" onerror="this.src='silhueta.png'" alt="${escape(p.name)}"></span>
                 <strong>${escape(p.name)}</strong><small>${escape(p.state)}</small>
@@ -707,11 +740,11 @@
         const group = String(team.grupo || '').trim();
         const teamStats = computeTeamStats().find(s => teamMatches(s.team, team.name));
         const started = hasLAFFDrops() && teamStats && teamStats.quedas > 0;
-        root.innerHTML = `<section class="laff-profile-hero"><img class="laff-profile-logo" src="${escape(team.logo || 'escudo.webp')}" onerror="this.onerror=null;this.src='escudo.webp'" alt="${escape(team.name)}"><div><div class="laff-kicker">LAFF 2026 Split 1</div><h1>${escape(team.name)}</h1><p>${escape(getShortOrigin(team.origem))}${group ? ` • Grupo ${escape(group)}` : ''}</p></div></section>
-            <section class="laff-panel laff-profile-section"><h2>Elenco atual</h2><div class="laff-players-grid laff-team-current-roster">${team.players.length ? team.players.map(renderPlayerCard).join('') : `<div class="laff-empty">Elenco será exibido conforme os jogadores forem confirmados.</div>`}</div></section>
+        root.innerHTML = `<section class="laff-profile-hero"><img class="laff-profile-logo" src="${escape(team.logo || 'escudo.webp')}" onerror="this.onerror=null;this.src='escudo.webp'" alt="${e[...]
+            <section class="laff-panel laff-profile-section"><h2>Elenco atual</h2><div class="laff-players-grid laff-team-current-roster">${team.players.length ? team.players.map(renderPlayerCard[...]
             <section class="laff-panel laff-profile-section"><h2>Histórico de jogadores</h2>${buildLAFFTeamPlayerHistory(team)}</section>
-            <section class="laff-panel laff-profile-section"><h2>Informações da equipe</h2><div class="grid-cards laff-stats-grid">${statCard('Jogadores', team.players.length)}${statCard('Grupo', group || 'Em breve')}${statCard('Origem', getShortOrigin(team.origem))}</div></section>
-            ${started ? `<section class="laff-panel laff-profile-section"><h2>Desempenho atual</h2><div class="grid-cards laff-stats-grid">${statCard('Pontos', teamStats.pontos)}${statCard('Abates', teamStats.kills)}${statCard('Booyahs', teamStats.booyah)}${statCard('Quedas', teamStats.quedas)}</div></section>` : ''}
+            <section class="laff-panel laff-profile-section"><h2>Informações da equipe</h2><div class="grid-cards laff-stats-grid">${statCard('Jogadores', team.players.length)}${statCard('Grupo[...]
+            ${started ? `<section class="laff-panel laff-profile-section"><h2>Desempenho atual</h2><div class="grid-cards laff-stats-grid">${statCard('Pontos', teamStats.pontos)}${statCard('Abate[...]
             <section class="laff-panel laff-profile-section"><h2>Desempenho histórico</h2><div class="laff-empty">Sem informação.</div></section>
             <section class="laff-panel laff-profile-section"><h2>Galeria de troféus</h2><div class="laff-trophy-empty">EM BREVE</div></section>
             <button class="btn-action laff-main-link" type="button" onclick="navigate('laff-equipes')">Ir para a página da LAFF</button>`;
@@ -722,8 +755,6 @@
         const player = getLAFFPlayerByName(name);
         if (!player) { alert('Jogador LAFF não encontrado.'); return; }
 
-        // A página de jogador da LAFF usa o mesmo layout da página tradicional.
-        // A camada LAFF em team-profile.js informa equipe atual, elenco, função e histórico.
         if (typeof openPlayerProfile === 'function') {
             return openPlayerProfile(player.name);
         }
@@ -748,7 +779,10 @@
         const originalNavigate = window.navigate;
         window.navigate = function(pageId) {
             const out = typeof originalNavigate === 'function' ? originalNavigate(pageId) : null;
-            if (String(pageId || '').startsWith('laff-')) loadLAFFData().then(renderLAFFPageIfVisible).catch(()=>{});
+            if (String(pageId || '').startsWith('laff-')) {
+                // Carrega LAFF em paralelo sem bloquear
+                loadLAFFData().then(renderLAFFPageIfVisible).catch(()=>{});
+            }
             return out;
         };
 
@@ -769,15 +803,14 @@
             });
             return base.concat(laff);
         };
-        // Nota: jogadores LAFF são inseridos diretamente em navBuildPeopleSearchPool
-        // (navigation-search.js) via window.getLAFFPlayers(), evitando perfis duplicados
-        // para jogadores que jogam na WB e na LAFF ao mesmo tempo.
+        
         const originalSelect = window.selectSearchResult;
         window.selectSearchResult = function (type, name) {
             if (type === 'laff-team') { if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI(); return openLAFFTeamProfile(name); }
             if (type === 'laff-player') { if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI(); return openLAFFPlayerProfile(name); }
             return typeof originalSelect === 'function' ? originalSelect(type, name) : null;
         };
+        
         const originalResolve = window.cffResolveHashRoute;
         window.cffResolveHashRoute = function (hash) {
             const clean = String(hash || '').replace(/^#/, '').trim();
