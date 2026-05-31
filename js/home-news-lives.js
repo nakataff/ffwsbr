@@ -1,5 +1,16 @@
 // --- FUNÇÕES DA PÁGINA INICIAL ---
 function renderHomeStats() {
+    // A Home já deve usar os dados da Final nos rankings.
+    // Apenas a área Ao Vivo / Lives troca para campeão + vagas EWC quando a Final terminar.
+    if (typeof cffHomeRenderFinalStats === 'function') {
+        cffHomeRenderFinalStats();
+        if (typeof cffHomeRenderPostFinalSpotlight === 'function') cffHomeRenderPostFinalSpotlight();
+        return;
+    }
+
+    cffHomeSetWidgetTitle('home-tbody-teams', '🏆 Top 6 Times');
+    cffHomeSetWidgetTitle('home-tbody-players', '🎯 Top 6 Jogadores');
+
     // Top 6 Teams
     let sortedTeams = [...db.teams].sort((a,b) => b.pontos - a.pontos).slice(0, 6);
     let tbodyTeams = document.getElementById('home-tbody-teams');
@@ -2255,3 +2266,228 @@ window.cffFinalToggleDropFilter = cffFinalToggleDropFilter;
 window.cffFinalSelectAllDrops = cffFinalSelectAllDrops;
 window.cffFinalSelectOnlyDrop = cffFinalSelectOnlyDrop;
 window.renderFinalPossibilities = renderFinalPossibilities;
+
+
+// =============================================
+// HOME PÓS-FINAL - DADOS DA FINAL + EWC 2026
+// =============================================
+function cffHomeSetWidgetTitle(tbodyId, title) {
+    const tbody = document.getElementById(tbodyId);
+    const widget = tbody?.closest('.home-widget');
+    const h3 = widget?.querySelector('h3');
+    if (h3) h3.textContent = title;
+}
+
+function cffHomeGetFinalDropsPlayed() {
+    const rawDrops = (typeof cffFinalGetRawDrops === 'function') ? cffFinalGetRawDrops() : {};
+    return Object.values(rawDrops || {}).reduce((sum, day) => sum + Object.keys(day || {}).length, 0);
+}
+
+function cffHomeIsFinalFinished() {
+    const rawDrops = (typeof cffFinalGetRawDrops === 'function') ? cffFinalGetRawDrops() : {};
+    if (!rawDrops || !Object.keys(rawDrops).length) return false;
+    const champion = (typeof cffFinalSimulateChampion === 'function') ? cffFinalSimulateChampion(rawDrops) : null;
+    if (champion?.equipe) return true;
+    const totalDrops = (typeof CFF_FINAL_RULES !== 'undefined' && CFF_FINAL_RULES.totalDrops) ? Number(CFF_FINAL_RULES.totalDrops) : 16;
+    return cffHomeGetFinalDropsPlayed() >= totalDrops;
+}
+
+function cffHomeAggregateFinalRows() {
+    const rawDrops = (typeof cffFinalGetRawDrops === 'function') ? cffFinalGetRawDrops() : {};
+    const qualified = (typeof cffFinalGetQualifiedTeams === 'function') ? cffFinalGetQualifiedTeams() : [];
+    const allowed = new Set(qualified.map(t => String(t.equipe || '').toUpperCase()));
+    const rows = {};
+
+    qualified.forEach(t => {
+        rows[t.equipe] = { equipe: t.equipe, pontos: 0, abates: 0, booyah: 0, quedas: 0, avg: 0, source: 'final' };
+    });
+
+    Object.keys(rawDrops || {}).sort((a, b) => Number(a) - Number(b)).forEach(day => {
+        Object.keys(rawDrops[day] || {}).sort((a, b) => Number(a) - Number(b)).forEach(round => {
+            const drop = rawDrops[day][round] || {};
+            (drop.resultados || []).forEach(res => {
+                const team = res.equipe;
+                if (!allowed.has(String(team || '').toUpperCase())) return;
+                if (!rows[team]) rows[team] = { equipe: team, pontos: 0, abates: 0, booyah: 0, quedas: 0, avg: 0, source: 'final' };
+                rows[team].pontos += (Number(posPoints[res.posicao]) || 0) + (Number(res.kills) || 0);
+                rows[team].abates += Number(res.kills) || 0;
+                rows[team].booyah += Number(res.booyah) || 0;
+                rows[team].quedas += 1;
+            });
+        });
+    });
+
+    return Object.values(rows)
+        .map(t => ({ ...t, avg: t.quedas ? t.pontos / t.quedas : 0 }))
+        .sort((a, b) => b.pontos - a.pontos || b.booyah - a.booyah || b.abates - a.abates)
+        .map((t, idx) => ({ ...t, rank: idx + 1 }));
+}
+
+function cffHomeGetFinalDisplayRows() {
+    const rawDrops = (typeof cffFinalGetRawDrops === 'function') ? cffFinalGetRawDrops() : {};
+    const rows = cffHomeAggregateFinalRows();
+    const champion = (typeof cffFinalSimulateChampion === 'function') ? cffFinalSimulateChampion(rawDrops) : null;
+    const championTeam = champion?.equipe || '';
+
+    let ordered = rows;
+    if (championTeam && typeof cffFinalIsSameTeam === 'function') {
+        const championRow = rows.find(t => cffFinalIsSameTeam(t.equipe, championTeam));
+        if (championRow) ordered = [championRow, ...rows.filter(t => !cffFinalIsSameTeam(t.equipe, championTeam))];
+    }
+
+    return ordered.map((t, idx) => ({ ...t, rank: idx + 1, isChampion: championTeam && typeof cffFinalIsSameTeam === 'function' ? cffFinalIsSameTeam(t.equipe, championTeam) : idx === 0 }));
+}
+
+function cffHomeBuildFinalPlayerRows() {
+    const data = (typeof dbFinalJogadoresQuedas !== 'undefined') ? dbFinalJogadoresQuedas : {};
+    const totals = {};
+
+    Object.keys(data || {}).forEach(day => {
+        Object.keys(data[day] || {}).forEach(round => {
+            (data[day][round] || []).forEach(p => {
+                const jogador = p.nome || p.jogador || p.player;
+                if (!jogador) return;
+                const key = `${String(jogador).toUpperCase()}__${String(p.equipe || '').toUpperCase()}`;
+                if (!totals[key]) {
+                    totals[key] = { jogador, equipe: p.equipe || '', abates: 0, dano: 0, assists: 0, quedas: 0, mvp: 0 };
+                }
+                totals[key].abates += Number(p.kills ?? p.abates) || 0;
+                totals[key].dano += Number(p.dano) || 0;
+                totals[key].assists += Number(p.assists ?? p.assistencias) || 0;
+                totals[key].mvp += Number(p.mvp) || 0;
+                totals[key].quedas += 1;
+            });
+        });
+    });
+
+    return Object.values(totals)
+        .sort((a, b) => b.abates - a.abates || b.dano - a.dano || b.assists - a.assists)
+        .slice(0, 6);
+}
+
+function cffHomeRenderFinalStats() {
+    const teamsBody = document.getElementById('home-tbody-teams');
+    const playersBody = document.getElementById('home-tbody-players');
+    const teamRows = cffHomeGetFinalDisplayRows().slice(0, 6);
+    const playerRows = cffHomeBuildFinalPlayerRows();
+
+    cffHomeSetWidgetTitle('home-tbody-teams', '🏆 Top 6 Times da Final');
+    cffHomeSetWidgetTitle('home-tbody-players', '🎯 Top 6 Jogadores da Final');
+
+    const teamWidget = teamsBody?.closest('.home-widget');
+    const teamBtn = teamWidget?.querySelector('button');
+    if (teamBtn) {
+        teamBtn.textContent = 'Ver Final →';
+        teamBtn.setAttribute('onclick', "navigate('final')");
+    }
+
+    const playerWidget = playersBody?.closest('.home-widget');
+    const playerBtn = playerWidget?.querySelector('button');
+    if (playerBtn) {
+        playerBtn.textContent = 'Ver Ranking MVP →';
+        playerBtn.setAttribute('onclick', "navigate('mvp')");
+    }
+
+    if (teamsBody) {
+        teamsBody.innerHTML = teamRows.map((t, i) => `
+            <tr>
+                <td style="color:var(--accent); font-weight:bold;">${i + 1}º</td>
+                <td class="clickable" onclick="openTeamProfile('${cffFinalEscapeTeamForClick(t.equipe)}')" style="text-align:left; border-bottom: none;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="${getTeamLogoByAliases(t.equipe)}" onerror="this.src='escudo.webp'" style="width:20px; height:20px; object-fit:contain;">
+                        <span style="font-weight:bold; color:#fff;">${cffHomeEscapeHTML(shortNames[t.equipe] || t.equipe)}</span>
+                    </div>
+                    <div style="font-size: 0.75em; color: #888; margin-left: 28px;">${Number(t.booyah) || 0} B! • ${Number(t.abates) || 0} K • ${Number(t.quedas) || 0} Q</div>
+                </td>
+                <td style="color:var(--accent); font-weight:bold;">${Number(t.pontos) || 0}</td>
+            </tr>
+        `).join('');
+    }
+
+    if (playersBody) {
+        playersBody.innerHTML = playerRows.length ? playerRows.map((p, i) => `
+            <tr>
+                <td style="color:var(--accent); font-weight:bold;">${i + 1}º</td>
+                <td class="clickable" onclick="${_safePPAttr(p.jogador)}" style="text-align:left; border-bottom: none;">
+                    <span style="font-weight:bold; color:#fff;">${getDisplayName(p.jogador)}</span>
+                    <div style="font-size: 0.75em; color: #888;">${cffHomeEscapeHTML(p.equipe || '-')} • ${Number(p.quedas) || 0} Q</div>
+                </td>
+                <td style="color:var(--accent); font-weight:bold;">${Number(p.abates) || 0}</td>
+            </tr>
+        `).join('') : '<tr><td colspan="3" style="color:var(--text-muted); text-align:center; padding:14px;">Dados de jogadores da final ainda não encontrados.</td></tr>';
+    }
+}
+
+function cffHomeFinalTeamCard(team, opts = {}) {
+    if (!team) return '';
+    const logo = (typeof getTeamLogoByAliases === 'function') ? getTeamLogoByAliases(team.equipe) : (logos[team.equipe] || 'escudo.webp');
+    const title = cffHomeEscapeHTML(shortNames[team.equipe] || team.equipe);
+    const badge = opts.badge ? `<span style="font-size:.68rem; font-weight:950; color:${opts.badgeColor || '#4aa8ff'}; border:1px solid rgba(74,168,255,.35); border-radius:999px; padding:3px 8px; background:rgba(74,168,255,.08);">${opts.badge}</span>` : '';
+    return `
+        <button type="button" onclick="openTeamProfile('${cffFinalEscapeTeamForClick(team.equipe)}')" style="width:100%; display:flex; align-items:center; gap:12px; text-align:left; padding:${opts.big ? '16px' : '12px'}; border:1px solid rgba(74,168,255,.20); border-radius:16px; background:${opts.big ? 'linear-gradient(135deg, rgba(74,168,255,.16), rgba(255,215,0,.09))' : 'rgba(255,255,255,.035)'}; color:#fff; cursor:pointer;">
+            <img src="${logo}" onerror="this.src='escudo.webp'" alt="${title}" style="width:${opts.big ? '54px' : '38px'}; height:${opts.big ? '54px' : '38px'}; object-fit:contain; flex:0 0 auto;">
+            <span style="display:flex; flex-direction:column; gap:4px; min-width:0; flex:1;">
+                <strong style="font-size:${opts.big ? '1.05rem' : '.92rem'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${title}</strong>
+                <small style="color:var(--text-muted); font-weight:800;">${Number(team.pontos) || 0} pts • ${Number(team.booyah) || 0} B! • ${Number(team.abates) || 0} K</small>
+            </span>
+            ${badge}
+        </button>`;
+}
+
+function cffHomeRenderPostFinalSpotlight() {
+    if (!cffHomeIsFinalFinished()) return false;
+
+    const grid = document.querySelector('.home-live-market-grid');
+    if (!grid) return false;
+    grid.classList.add('home-post-final-grid');
+
+    const widgets = Array.from(grid.querySelectorAll(':scope > .home-widget'));
+    const championWidget = widgets[0];
+    const ewcWidget = widgets[1];
+    if (!championWidget || !ewcWidget) return false;
+
+    const rawDrops = (typeof cffFinalGetRawDrops === 'function') ? cffFinalGetRawDrops() : {};
+    const champion = (typeof cffFinalSimulateChampion === 'function') ? cffFinalSimulateChampion(rawDrops) : null;
+    const rows = cffHomeGetFinalDisplayRows();
+    const championRow = rows.find(t => cffFinalIsSameTeam(t.equipe, champion?.equipe)) || rows[0];
+    const ewcSet = (typeof cffFinalGetEwcHighlightedTeams === 'function') ? cffFinalGetEwcHighlightedTeams(rows, champion) : new Set();
+    const otherEwc = rows
+        .filter(t => ewcSet.has(normalizeTeamAlias(t.equipe)) && !cffFinalIsSameTeam(t.equipe, championRow?.equipe))
+        .slice(0, 2);
+
+    championWidget.querySelector('h3').textContent = '🏆 Campeão da Final';
+    championWidget.querySelector('.home-widget-body').innerHTML = `
+        <div style="display:grid; gap:12px; width:100%;">
+            ${cffHomeFinalTeamCard(championRow, { big: true, badge: 'CAMPEÃO', badgeColor: '#ffd700' })}
+            <button onclick="navigate('final')" class="home-widget-link-btn" style="border-radius:14px; border:1px solid rgba(74,168,255,.22);">Ver tabela da Final →</button>
+        </div>
+    `;
+
+    ewcWidget.querySelector('h3').textContent = '🌍 EWC 2026';
+    ewcWidget.querySelector('.home-widget-body').innerHTML = `
+        <div style="display:grid; gap:10px; width:100%;">
+            <div style="color:var(--text-muted); font-size:.78rem; font-weight:800; letter-spacing:.7px; text-transform:uppercase;">Outras vagas da final</div>
+            ${otherEwc.length ? otherEwc.map(t => cffHomeFinalTeamCard(t, { badge: 'EWC' })).join('') : '<div class="lives-empty">Aguardando definição das vagas.</div>'}
+        </div>
+    `;
+
+    const topLiveBtn = document.getElementById('home-live-btn');
+    if (topLiveBtn) {
+        topLiveBtn.className = 'live-status-btn ativo';
+        topLiveBtn.href = '#final';
+        topLiveBtn.onclick = function (ev) { ev.preventDefault(); navigate('final'); };
+        const text = document.getElementById('home-live-text');
+        if (text) text.textContent = 'Final encerrada — ver classificação';
+    }
+
+    const status = document.getElementById('home-next-status');
+    if (status) status.textContent = 'Grande Final encerrada';
+    const countdown = document.getElementById('home-next-countdown');
+    if (countdown) countdown.textContent = 'CAMPEÃO DEFINIDO';
+
+    return true;
+}
+
+setTimeout(function () {
+    if (typeof cffHomeRenderPostFinalSpotlight === 'function') cffHomeRenderPostFinalSpotlight();
+}, 1500);
