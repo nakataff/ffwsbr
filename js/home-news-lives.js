@@ -1793,11 +1793,13 @@ function cffFinalHasRealData() {
     return cffHasDrops(cffFinalGetRawDrops());
 }
 
+let cffFinalSelectedDrop = 'all';
+
 function cffFinalGetFilterValues() {
     return {
         day: document.getElementById('final-day-filter')?.value || 'all',
         map: normalizeMapName(document.getElementById('final-map-filter')?.value || 'all'),
-        drop: document.getElementById('final-drop-filter')?.value || 'all'
+        drop: cffFinalSelectedDrop || 'all'
     };
 }
 
@@ -1826,23 +1828,72 @@ function cffFinalGetOrderedDropList() {
 }
 
 function cffFinalUpdateDropFilterOptions(keepCurrent = true) {
-    const select = document.getElementById('final-drop-filter');
-    if (!select) return;
+    const menu = document.getElementById('final-drop-menu');
+    const btn = document.getElementById('final-drop-toggle');
+    if (!menu || !btn) return;
 
-    const currentValue = keepCurrent ? select.value : 'all';
     const selectedDay = document.getElementById('final-day-filter')?.value || 'all';
     const drops = cffFinalGetOrderedDropList().filter(drop => selectedDay === 'all' || drop.day === String(selectedDay));
+    const validValues = new Set(drops.map(drop => drop.value));
 
-    select.innerHTML = '<option value="all">Todas as quedas do período</option>';
+    if (!keepCurrent || (cffFinalSelectedDrop !== 'all' && !validValues.has(cffFinalSelectedDrop))) {
+        cffFinalSelectedDrop = 'all';
+    }
+
+    btn.textContent = cffFinalSelectedDrop === 'all'
+        ? 'Todas as quedas'
+        : (() => {
+            const selected = drops.find(drop => drop.value === cffFinalSelectedDrop);
+            return selected ? `Dia ${selected.day} - Queda ${selected.round}` : 'Todas as quedas';
+        })();
+
+    const allChecked = cffFinalSelectedDrop === 'all' ? 'checked' : '';
+    const rows = [`
+        <div class="cff-drop-menu-actions">
+            <button type="button" onclick="cffFinalSelectAllDrops()">Fechar ×</button>
+        </div>
+        <label class="cff-drop-option final-drop-option">
+            <input type="checkbox" ${allChecked} onchange="cffFinalSelectAllDrops()">
+            <span>Todas as quedas</span>
+        </label>
+    `];
+
     drops.forEach(drop => {
-        const opt = document.createElement('option');
-        opt.value = drop.value;
-        opt.textContent = `Dia ${drop.day} - Queda ${drop.round}${drop.mapa ? ` (${drop.mapa})` : ''}`;
-        select.appendChild(opt);
+        const checked = cffFinalSelectedDrop === drop.value ? 'checked' : '';
+        const label = `Dia ${drop.day} - Queda ${drop.round}${drop.mapa ? ` (${drop.mapa})` : ''}`;
+        rows.push(`
+            <label class="cff-drop-option final-drop-option">
+                <input type="checkbox" value="${cffHomeEscapeHTML(drop.value)}" ${checked} onchange="cffFinalSelectOnlyDrop('${cffHomeEscapeHTML(drop.value)}')">
+                <span>${cffHomeEscapeHTML(label)}</span>
+                <button type="button" class="cff-only-btn" onclick="event.preventDefault(); event.stopPropagation(); cffFinalSelectOnlyDrop('${cffHomeEscapeHTML(drop.value)}')">SOMENTE</button>
+            </label>
+        `);
     });
 
-    const hasCurrent = Array.from(select.options).some(opt => opt.value === currentValue);
-    select.value = hasCurrent ? currentValue : 'all';
+    menu.innerHTML = rows.join('');
+}
+
+function cffFinalToggleDropFilter() {
+    const menu = document.getElementById('final-drop-menu');
+    if (menu) menu.style.display = menu.style.display === 'none' ? 'grid' : 'none';
+}
+
+function cffFinalSelectAllDrops() {
+    cffFinalSelectedDrop = 'all';
+    cffFinalUpdateDropFilterOptions(true);
+    const menu = document.getElementById('final-drop-menu');
+    if (menu) menu.style.display = 'none';
+    renderFinalPossibilities();
+}
+
+function cffFinalSelectOnlyDrop(value) {
+    cffFinalSelectedDrop = String(value || 'all');
+    const mapSelect = document.getElementById('final-map-filter');
+    if (cffFinalSelectedDrop !== 'all' && mapSelect) mapSelect.value = 'all';
+    cffFinalUpdateDropFilterOptions(true);
+    const menu = document.getElementById('final-drop-menu');
+    if (menu) menu.style.display = 'none';
+    renderFinalPossibilities();
 }
 
 function cffFinalOnDayFilterChanged() {
@@ -1851,15 +1902,12 @@ function cffFinalOnDayFilterChanged() {
 }
 
 function cffFinalOnMapFilterChanged() {
-    const dropSelect = document.getElementById('final-drop-filter');
-    if (dropSelect) dropSelect.value = 'all';
+    cffFinalSelectedDrop = 'all';
+    cffFinalUpdateDropFilterOptions(true);
     renderFinalPossibilities();
 }
 
 function cffFinalOnDropFilterChanged() {
-    const dropSelect = document.getElementById('final-drop-filter');
-    const mapSelect = document.getElementById('final-map-filter');
-    if (dropSelect && dropSelect.value !== 'all' && mapSelect) mapSelect.value = 'all';
     renderFinalPossibilities();
 }
 
@@ -2203,4 +2251,7 @@ function renderFinalPossibilities() {
 window.cffFinalOnDayFilterChanged = cffFinalOnDayFilterChanged;
 window.cffFinalOnMapFilterChanged = cffFinalOnMapFilterChanged;
 window.cffFinalOnDropFilterChanged = cffFinalOnDropFilterChanged;
+window.cffFinalToggleDropFilter = cffFinalToggleDropFilter;
+window.cffFinalSelectAllDrops = cffFinalSelectAllDrops;
+window.cffFinalSelectOnlyDrop = cffFinalSelectOnlyDrop;
 window.renderFinalPossibilities = renderFinalPossibilities;
