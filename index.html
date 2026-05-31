@@ -1566,9 +1566,10 @@
                 <option value="2">Dia 2</option>
             </select>
             <label>Queda:</label>
-            <select id="final-drop-filter" onchange="cffFinalOnDropFilterChanged()">
-                <option value="all">Todas as quedas do período</option>
-            </select>
+            <div id="final-drop-filter-wrap" class="cff-drop-filter-wrap final-drop-filter-wrap">
+                <button id="final-drop-toggle" class="cff-drop-toggle" type="button" onclick="cffFinalToggleDropFilter()">Todas as quedas</button>
+                <div id="final-drop-menu" class="cff-drop-menu final-drop-menu" style="display:none;"></div>
+            </div>
             <label>Mapa:</label>
             <select id="final-map-filter" onchange="cffFinalOnMapFilterChanged()">
                 <option value="all">Todos os mapas</option>
