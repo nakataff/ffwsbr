@@ -1560,13 +1560,17 @@
         </div>
         <div class="filters final-live-filters">
             <label>Dia:</label>
-            <select id="final-day-filter" onchange="renderFinalPossibilities()">
+            <select id="final-day-filter" onchange="cffFinalOnDayFilterChanged()">
                 <option value="all">Geral</option>
                 <option value="1">Dia 1</option>
                 <option value="2">Dia 2</option>
             </select>
+            <label>Queda:</label>
+            <select id="final-drop-filter" onchange="cffFinalOnDropFilterChanged()">
+                <option value="all">Todas as quedas do período</option>
+            </select>
             <label>Mapa:</label>
-            <select id="final-map-filter" onchange="renderFinalPossibilities()">
+            <select id="final-map-filter" onchange="cffFinalOnMapFilterChanged()">
                 <option value="all">Todos os mapas</option>
                 <option value="Bermuda">Bermuda</option>
                 <option value="Kalahari">Kalahari</option>
@@ -1583,8 +1587,9 @@
                         <th>#</th>
                         <th style="text-align:left;">Eqp</th>
                         <th>Pts</th>
+                        <th>B!</th>
                         <th>K</th>
-                        <th>B</th>
+                        <th>Q</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
