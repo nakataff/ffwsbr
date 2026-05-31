@@ -396,22 +396,25 @@ function getSelectionPlayerRole(playerName) {
     return 'RUSH';
 }
 
-function getSelectionScore(p) {
-    const avgKills = p.quedas ? p.abates / p.quedas : 0;
-    const avgDamage = p.quedas ? p.dano / p.quedas : 0;
-    const avgAssists = p.quedas ? p.assists / p.quedas : 0;
-    const avgMvp = p.quedas ? p.mvp / p.quedas : 0;
-    return (avgKills * 120) + (avgDamage / 18) + (avgAssists * 35) + (avgMvp * 80) + (p.abates * 2);
+function getSelectionScore(p, phase = 'semanal') {
+    const abates = Number(p.abates) || 0;
+    const dano = Number(p.dano) || 0;
+    const assists = Number(p.assists) || 0;
+    const mvp = Number(p.mvp) || 0;
+
+    // Todas as seleções precisam privilegiar volume total de kills.
+    // Dano, assistências e MVP entram só como desempate/peso secundário.
+    return (abates * 1000000) + (dano * 10) + (assists * 1000) + (mvp * 5000);
 }
 
-function buildSelectionLineup(players) {
+function buildSelectionLineup(players, phase = 'semanal') {
     const picked = new Set();
     const getTop = (roleList, count) => {
         const roleKeys = roleList.map(r => String(r).toUpperCase());
         const selected = players
             .filter(p => !picked.has(p.jogador))
             .filter(p => roleKeys.includes(String(getSelectionPlayerRole(p.jogador) || 'RUSH').toUpperCase()))
-            .sort((a,b) => getSelectionScore(b) - getSelectionScore(a))
+            .sort((a,b) => getSelectionScore(b, phase) - getSelectionScore(a, phase))
             .slice(0, count);
         selected.forEach(p => picked.add(p.jogador));
         return selected;
@@ -427,7 +430,7 @@ function buildSelectionLineup(players) {
     if (selecionados.length < 4) {
         const rest = players
             .filter(p => !picked.has(p.jogador))
-            .sort((a,b) => getSelectionScore(b) - getSelectionScore(a))
+            .sort((a,b) => getSelectionScore(b, phase) - getSelectionScore(a, phase))
             .slice(0, 4 - selecionados.length);
         selecionados = selecionados.concat(rest);
     }
@@ -441,7 +444,6 @@ function renderSelectionLocked(container, phase) {
         <div class="season-selection-locked" style="--selection-color:${cfg.color}">
             <div class="season-selection-lock-icon">🔒</div>
             <h3>${phase === 'final' ? 'Seleção da final' : 'Seleção do torneio'} em breve</h3>
-            <p>Essa seleção será liberada depois do fim das quedas da final.</p>
         </div>`;
 }
 
@@ -472,7 +474,7 @@ function renderSelection() {
     }
 
     const players = getSelectionPlayersForPhase(phase);
-    const selecionados = buildSelectionLineup(players);
+    const selecionados = buildSelectionLineup(players, phase);
 
     if(selecionados.length === 0) {
         renderSelectionEmpty(container, phase);
