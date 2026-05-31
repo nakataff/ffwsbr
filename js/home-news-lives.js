@@ -1807,10 +1807,126 @@ function cffFinalQualifiedBaseRows() {
         pontos: 0,
         abates: 0,
         booyah: 0,
+        quedas: 0,
         avg: 0,
         probability: 0,
         source: 'pre-final'
     }));
+}
+
+function cffFinalIsFluxoW7M(team) {
+    return normalizeTeamAlias(team) === normalizeTeamAlias('FLUXO W7M') ||
+        normalizeTeamAlias(team) === normalizeTeamAlias('FLUXO') ||
+        normalizeTeamAlias(team) === normalizeTeamAlias('FX W7M') ||
+        normalizeTeamAlias(team) === normalizeTeamAlias('FX');
+}
+
+function cffFinalIsSameTeam(a, b) {
+    if (!a || !b) return false;
+    return normalizeTeamAlias(a) === normalizeTeamAlias(b);
+}
+
+function cffFinalGetEwcHighlightedTeams(rows, champion) {
+    const highlights = new Set();
+    const list = Array.isArray(rows) ? rows : [];
+
+    const fluxo = list.find(t => cffFinalIsFluxoW7M(t.equipe));
+    if (fluxo) highlights.add(normalizeTeamAlias(fluxo.equipe));
+
+    const championTeam = champion?.equipe || '';
+    if (championTeam) highlights.add(normalizeTeamAlias(championTeam));
+
+    const nonFluxo = list.filter(t => !cffFinalIsFluxoW7M(t.equipe) && !cffFinalIsSameTeam(t.equipe, championTeam));
+    const extraSlots = championTeam ? 1 : 2;
+    nonFluxo.slice(0, extraSlots).forEach(t => highlights.add(normalizeTeamAlias(t.equipe)));
+
+    return highlights;
+}
+
+function cffFinalBuildDisplayRows(rows, champion) {
+    const list = Array.isArray(rows) ? rows : [];
+    const championTeam = champion?.equipe || '';
+    const filters = cffFinalGetFilterValues();
+    const canForceChampionFirst = championTeam && filters.day === 'all' && filters.map === 'all';
+
+    let ordered = list;
+    if (canForceChampionFirst) {
+        const championRow = list.find(t => cffFinalIsSameTeam(t.equipe, championTeam));
+        if (championRow) {
+            ordered = [championRow, ...list.filter(t => !cffFinalIsSameTeam(t.equipe, championTeam))];
+        }
+    }
+
+    return ordered.map((t, idx) => ({ ...t, rank: idx + 1, isChampion: cffFinalIsSameTeam(t.equipe, championTeam) }));
+}
+
+function cffFinalEnsureTableLayout() {
+    const table = document.getElementById('final-teams-table');
+    if (!table) return;
+
+    const headRow = table.querySelector('thead tr');
+    if (headRow && !headRow.dataset.finalV4) {
+        headRow.innerHTML = `
+            <th>#</th>
+            <th style="text-align:left;">Eqp</th>
+            <th>Pts</th>
+            <th>B!</th>
+            <th>K</th>
+            <th>Q</th>
+        `;
+        headRow.dataset.finalV4 = '1';
+    }
+
+    if (!document.getElementById('cff-final-ewc-style')) {
+        const style = document.createElement('style');
+        style.id = 'cff-final-ewc-style';
+        style.textContent = `
+            #final-teams-table td.final-ewc-marker {
+                color: #4aa8ff !important;
+                position: relative;
+                font-weight: 950 !important;
+                padding-left: 12px !important;
+            }
+            #final-teams-table td.final-ewc-marker::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 5px;
+                border-radius: 0 999px 999px 0;
+                background: #4aa8ff;
+                box-shadow: 0 0 10px rgba(74,168,255,.6);
+            }
+            #final-teams-table tbody tr.final-row-ewc {
+                background-image: linear-gradient(90deg, rgba(74,168,255,.075), transparent 40%);
+            }
+            #final-teams-table tbody tr.final-row-champion .team-cell::after {
+                content: 'CAMPEÃO';
+                margin-left: 8px;
+                padding: 3px 7px;
+                border-radius: 999px;
+                border: 1px solid rgba(74,168,255,.45);
+                background: rgba(74,168,255,.12);
+                color: #4aa8ff;
+                font-size: .62rem;
+                font-weight: 950;
+                letter-spacing: .5px;
+            }
+            @media (max-width: 768px) {
+                #final-teams-table th:nth-child(3),
+                #final-teams-table td:nth-child(3),
+                #final-teams-table th:nth-child(4),
+                #final-teams-table td:nth-child(4),
+                #final-teams-table th:nth-child(5),
+                #final-teams-table td:nth-child(5),
+                #final-teams-table th:nth-child(6),
+                #final-teams-table td:nth-child(6) { width: 38px !important; }
+                #final-teams-table tbody tr.final-row-champion .team-cell::after { display: none; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
 
 function cffFinalSimulateChampion(rawDrops) {
@@ -1966,14 +2082,21 @@ function renderFinalPossibilities() {
     const tableBody = document.querySelector('#final-teams-table tbody');
     if (!probGrid && !tableBody) return;
 
+    cffFinalEnsureTableLayout();
+
     const hasFinalData = cffFinalHasRealData();
+    const rawDrops = cffFinalGetRawDrops();
     const rows = hasFinalData ? cffFinalAggregateRows() : cffFinalQualifiedBaseRows();
+    const champion = hasFinalData ? cffFinalSimulateChampion(rawDrops) : null;
+    const displayRows = cffFinalBuildDisplayRows(rows, champion);
+    const ewcHighlights = cffFinalGetEwcHighlightedTeams(displayRows, champion);
+
     if (!rows.length) {
         if (probGrid) probGrid.innerHTML = '<div class="home-confrontation-empty">Ainda não foi possível montar a final.</div>';
         return;
     }
 
-    cffFinalRenderSummary(rows);
+    cffFinalRenderSummary(displayRows);
 
     if (probGrid) {
         const probRows = cffFinalCalculateLivePossibilities(rows);
@@ -1984,7 +2107,7 @@ function renderFinalPossibilities() {
                 <img src="${getTeamLogoByAliases(t.equipe)}" onerror="this.src='escudo.webp'" alt="${cffHomeEscapeHTML(t.equipe)}">
                 <div class="final-prob-info">
                     <strong>${cffHomeEscapeHTML(shortNames[t.equipe] || t.equipe)}</strong>
-                    <span>${Number(t.pontos) || 0} pts • ${Number(t.abates) || 0} K • ${Number(t.booyah) || 0} B</span>
+                    <span>${Number(t.pontos) || 0} pts • ${Number(t.booyah) || 0} B! • ${Number(t.abates) || 0} K • ${Number(t.quedas) || 0} Q</span>
                     <div class="final-prob-bar"><i style="width:${Math.min(100, pct).toFixed(1)}%"></i></div>
                 </div>
                 <b>${pct.toFixed(1)}%</b>
@@ -1993,13 +2116,18 @@ function renderFinalPossibilities() {
     }
 
     if (tableBody) {
-        tableBody.innerHTML = rows.map(t => `<tr>
-            <td style="color:var(--accent); font-weight:900;">${t.rank}º</td>
-            <td style="text-align:left;"><span class="team-cell clickable" onclick="openTeamProfile('${cffFinalEscapeTeamForClick(t.equipe)}')"><img class="team-logo" src="${getTeamLogoByAliases(t.equipe)}" onerror="this.src='escudo.webp'"><span class="full-name-desktop">${cffHomeEscapeHTML(t.equipe)}</span><span class="short-name-mobile">${cffHomeEscapeHTML(shortNames[t.equipe] || t.equipe)}</span></span></td>
-            <td><strong>${Number(t.pontos) || 0}</strong></td>
-            <td>${Number(t.abates) || 0}</td>
-            <td>${Number(t.booyah) || 0}</td>
-        </tr>`).join('');
+        tableBody.innerHTML = displayRows.map(t => {
+            const isEwc = ewcHighlights.has(normalizeTeamAlias(t.equipe));
+            const rowClass = `${isEwc ? 'final-row-ewc' : ''} ${t.isChampion ? 'final-row-champion' : ''}`.trim();
+            return `<tr class="${rowClass}">
+                <td class="${isEwc ? 'final-ewc-marker' : ''}" style="color:${isEwc ? '#4aa8ff' : 'var(--accent)'}; font-weight:900;" title="${isEwc ? 'Vaga/slot EWC' : ''}">${t.rank}º</td>
+                <td style="text-align:left;"><span class="team-cell clickable" onclick="openTeamProfile('${cffFinalEscapeTeamForClick(t.equipe)}')"><img class="team-logo" src="${getTeamLogoByAliases(t.equipe)}" onerror="this.src='escudo.webp'"><span class="full-name-desktop">${cffHomeEscapeHTML(t.equipe)}</span><span class="short-name-mobile">${cffHomeEscapeHTML(shortNames[t.equipe] || t.equipe)}</span></span></td>
+                <td><strong>${Number(t.pontos) || 0}</strong></td>
+                <td>${Number(t.booyah) || 0}</td>
+                <td>${Number(t.abates) || 0}</td>
+                <td>${Number(t.quedas) || 0}</td>
+            </tr>`;
+        }).join('');
     }
 }
 
