@@ -3602,3 +3602,65 @@ button.ot-roster-line:hover {
         white-space: nowrap;
     }
 }
+
+/* Ajuste filtro de queda da Final */
+.final-drop-filter-wrap {
+    margin: 0;
+    min-width: 260px;
+}
+.final-live-filters .final-drop-filter-wrap {
+    display: inline-block;
+}
+.final-drop-menu {
+    min-width: 320px;
+    max-height: 360px;
+    overflow-y: auto;
+}
+.cff-drop-menu-actions {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+.cff-drop-menu-actions button {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: #111827;
+    border-radius: 2px;
+    padding: 3px 8px;
+    cursor: pointer;
+}
+.cff-drop-option.final-drop-option {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+}
+.cff-drop-option.final-drop-option input {
+    accent-color: var(--accent);
+}
+.cff-only-btn {
+    border: 1px solid rgba(0, 212, 255, .45);
+    background: rgba(0, 212, 255, .08);
+    color: var(--accent);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: .72em;
+    font-weight: 900;
+    letter-spacing: .04em;
+    cursor: pointer;
+}
+.cff-only-btn:hover {
+    background: rgba(0, 212, 255, .18);
+}
+@media (max-width: 768px) {
+    .final-live-filters .final-drop-filter-wrap,
+    .final-drop-filter-wrap,
+    #final-drop-toggle {
+        width: 100%;
+    }
+    .final-drop-menu {
+        min-width: 100%;
+        width: 100%;
+    }
+}
