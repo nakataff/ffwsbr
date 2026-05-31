@@ -1796,8 +1796,71 @@ function cffFinalHasRealData() {
 function cffFinalGetFilterValues() {
     return {
         day: document.getElementById('final-day-filter')?.value || 'all',
-        map: normalizeMapName(document.getElementById('final-map-filter')?.value || 'all')
+        map: normalizeMapName(document.getElementById('final-map-filter')?.value || 'all'),
+        drop: document.getElementById('final-drop-filter')?.value || 'all'
     };
+}
+
+function cffFinalHasActiveTableFilter() {
+    const filters = cffFinalGetFilterValues();
+    return filters.day !== 'all' || filters.map !== 'all' || filters.drop !== 'all';
+}
+
+function cffFinalGetOrderedDropList() {
+    const rawDrops = cffFinalGetRawDrops();
+    const drops = [];
+
+    Object.keys(rawDrops || {}).sort((a, b) => Number(a) - Number(b)).forEach(day => {
+        Object.keys(rawDrops[day] || {}).sort((a, b) => Number(a) - Number(b)).forEach(round => {
+            const drop = rawDrops[day][round] || {};
+            drops.push({
+                day: String(day),
+                round: String(round),
+                value: `${day}-${round}`,
+                mapa: drop.mapa || ''
+            });
+        });
+    });
+
+    return drops;
+}
+
+function cffFinalUpdateDropFilterOptions(keepCurrent = true) {
+    const select = document.getElementById('final-drop-filter');
+    if (!select) return;
+
+    const currentValue = keepCurrent ? select.value : 'all';
+    const selectedDay = document.getElementById('final-day-filter')?.value || 'all';
+    const drops = cffFinalGetOrderedDropList().filter(drop => selectedDay === 'all' || drop.day === String(selectedDay));
+
+    select.innerHTML = '<option value="all">Todas as quedas do período</option>';
+    drops.forEach(drop => {
+        const opt = document.createElement('option');
+        opt.value = drop.value;
+        opt.textContent = `Dia ${drop.day} - Queda ${drop.round}${drop.mapa ? ` (${drop.mapa})` : ''}`;
+        select.appendChild(opt);
+    });
+
+    const hasCurrent = Array.from(select.options).some(opt => opt.value === currentValue);
+    select.value = hasCurrent ? currentValue : 'all';
+}
+
+function cffFinalOnDayFilterChanged() {
+    cffFinalUpdateDropFilterOptions(false);
+    renderFinalPossibilities();
+}
+
+function cffFinalOnMapFilterChanged() {
+    const dropSelect = document.getElementById('final-drop-filter');
+    if (dropSelect) dropSelect.value = 'all';
+    renderFinalPossibilities();
+}
+
+function cffFinalOnDropFilterChanged() {
+    const dropSelect = document.getElementById('final-drop-filter');
+    const mapSelect = document.getElementById('final-map-filter');
+    if (dropSelect && dropSelect.value !== 'all' && mapSelect) mapSelect.value = 'all';
+    renderFinalPossibilities();
 }
 
 function cffFinalQualifiedBaseRows() {
@@ -1846,8 +1909,7 @@ function cffFinalGetEwcHighlightedTeams(rows, champion) {
 function cffFinalBuildDisplayRows(rows, champion) {
     const list = Array.isArray(rows) ? rows : [];
     const championTeam = champion?.equipe || '';
-    const filters = cffFinalGetFilterValues();
-    const canForceChampionFirst = championTeam && filters.day === 'all' && filters.map === 'all';
+    const canForceChampionFirst = championTeam && !cffFinalHasActiveTableFilter();
 
     let ordered = list;
     if (canForceChampionFirst) {
@@ -1857,7 +1919,8 @@ function cffFinalBuildDisplayRows(rows, champion) {
         }
     }
 
-    return ordered.map((t, idx) => ({ ...t, rank: idx + 1, isChampion: cffFinalIsSameTeam(t.equipe, championTeam) }));
+    const showChampionBadge = championTeam && !cffFinalHasActiveTableFilter();
+    return ordered.map((t, idx) => ({ ...t, rank: idx + 1, isChampion: showChampionBadge && cffFinalIsSameTeam(t.equipe, championTeam) }));
 }
 
 function cffFinalEnsureTableLayout() {
@@ -1896,10 +1959,6 @@ function cffFinalEnsureTableLayout() {
                 width: 5px;
                 border-radius: 0 999px 999px 0;
                 background: #4aa8ff;
-                box-shadow: 0 0 10px rgba(74,168,255,.6);
-            }
-            #final-teams-table tbody tr.final-row-ewc {
-                background-image: linear-gradient(90deg, rgba(74,168,255,.075), transparent 40%);
             }
             #final-teams-table tbody tr.final-row-champion .team-cell::after {
                 content: 'CAMPEÃO';
@@ -2037,22 +2096,31 @@ function cffFinalAggregateRows() {
         rows[t.equipe] = { equipe: t.equipe, pontos: 0, abates: 0, booyah: 0, quedas: 0, source: 'final' };
     });
 
-    Object.keys(rawDrops).sort((a, b) => Number(a) - Number(b)).forEach(day => {
-        if (filters.day !== 'all' && String(day) !== String(filters.day)) return;
-        Object.keys(rawDrops[day] || {}).sort((a, b) => Number(a) - Number(b)).forEach(round => {
-            const drop = rawDrops[day][round];
-            const mapName = normalizeMapName(drop?.mapa || '');
-            if (filters.map !== 'all' && mapName !== filters.map) return;
-            (drop?.resultados || []).forEach(res => {
-                if (!allowed.has(String(res.equipe || '').toUpperCase())) return;
-                if (!rows[res.equipe]) rows[res.equipe] = { equipe: res.equipe, pontos: 0, abates: 0, booyah: 0, quedas: 0, source: 'final' };
-                rows[res.equipe].pontos += (Number(posPoints[res.posicao]) || 0) + (Number(res.kills) || 0);
-                rows[res.equipe].abates += Number(res.kills) || 0;
-                rows[res.equipe].booyah += Number(res.booyah) || 0;
-                rows[res.equipe].quedas += 1;
+    const addDropToRows = (drop) => {
+        (drop?.resultados || []).forEach(res => {
+            if (!allowed.has(String(res.equipe || '').toUpperCase())) return;
+            if (!rows[res.equipe]) rows[res.equipe] = { equipe: res.equipe, pontos: 0, abates: 0, booyah: 0, quedas: 0, source: 'final' };
+            rows[res.equipe].pontos += (Number(posPoints[res.posicao]) || 0) + (Number(res.kills) || 0);
+            rows[res.equipe].abates += Number(res.kills) || 0;
+            rows[res.equipe].booyah += Number(res.booyah) || 0;
+            rows[res.equipe].quedas += 1;
+        });
+    };
+
+    if (filters.drop !== 'all') {
+        const [selectedDay, selectedRound] = String(filters.drop).split('-');
+        addDropToRows(rawDrops?.[selectedDay]?.[selectedRound]);
+    } else {
+        Object.keys(rawDrops).sort((a, b) => Number(a) - Number(b)).forEach(day => {
+            if (filters.day !== 'all' && String(day) !== String(filters.day)) return;
+            Object.keys(rawDrops[day] || {}).sort((a, b) => Number(a) - Number(b)).forEach(round => {
+                const drop = rawDrops[day][round];
+                const mapName = normalizeMapName(drop?.mapa || '');
+                if (filters.map !== 'all' && mapName !== filters.map) return;
+                addDropToRows(drop);
             });
         });
-    });
+    }
 
     return Object.values(rows)
         .map(t => {
@@ -2083,13 +2151,14 @@ function renderFinalPossibilities() {
     if (!probGrid && !tableBody) return;
 
     cffFinalEnsureTableLayout();
+    cffFinalUpdateDropFilterOptions(true);
 
     const hasFinalData = cffFinalHasRealData();
     const rawDrops = cffFinalGetRawDrops();
     const rows = hasFinalData ? cffFinalAggregateRows() : cffFinalQualifiedBaseRows();
     const champion = hasFinalData ? cffFinalSimulateChampion(rawDrops) : null;
     const displayRows = cffFinalBuildDisplayRows(rows, champion);
-    const ewcHighlights = cffFinalGetEwcHighlightedTeams(displayRows, champion);
+    const ewcHighlights = cffFinalHasActiveTableFilter() ? new Set() : cffFinalGetEwcHighlightedTeams(displayRows, champion);
 
     if (!rows.length) {
         if (probGrid) probGrid.innerHTML = '<div class="home-confrontation-empty">Ainda não foi possível montar a final.</div>';
@@ -2131,4 +2200,7 @@ function renderFinalPossibilities() {
     }
 }
 
+window.cffFinalOnDayFilterChanged = cffFinalOnDayFilterChanged;
+window.cffFinalOnMapFilterChanged = cffFinalOnMapFilterChanged;
+window.cffFinalOnDropFilterChanged = cffFinalOnDropFilterChanged;
 window.renderFinalPossibilities = renderFinalPossibilities;
