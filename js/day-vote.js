@@ -279,27 +279,34 @@ function updateCountdown() {
     const groupsHtml = buildFinalTeamsLogosHtml();
 
     // Atualiza Home: tempo + 12 classificados.
+    // Depois que a final termina, quem manda no card "Próxima Partida" é o banner campeão/EWC
+    // criado em home-news-lives.js. Sem este bloqueio, o contador antigo sobrescrevia o banner
+    // a cada tick e deixava a seção quebrada/vazia.
+    const homePostFinalActive = (typeof cffHomeIsFinalFinished === 'function' && cffHomeIsFinalFinished() && typeof cffHomeRenderPostFinalSpotlight === 'function');
     const homeDisplay = document.getElementById('home-next-countdown');
     const homeGroups = document.getElementById('home-next-groups');
     const homeStatusText = document.getElementById('home-next-status');
 
-    if (homeDisplay) {
-        if (isFinished) homeDisplay.innerHTML = "<span style='color: var(--text-muted);'>FINAL ENCERRADA</span>";
-        else homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
+    if (homePostFinalActive) {
+        cffHomeRenderPostFinalSpotlight();
+    } else {
+        if (homeDisplay) {
+            if (isFinished) homeDisplay.innerHTML = "<span style='color: var(--text-muted);'>FINAL ENCERRADA</span>";
+            else homeDisplay.innerHTML = isLive ? "<span style='color: #ff4444;'>AO VIVO AGORA</span>" : timeStr;
+        }
+
+        if (homeStatusText) {
+            if (isFinished) homeStatusText.innerText = 'Grande Final encerrada:';
+            else homeStatusText.innerText = isLive ? `${nextMatch.etapa || 'Grande Final'} em andamento:` : `${nextMatch.etapa || 'Grande Final'} começa em:`;
+        }
+
+        if (homeGroups && groupsHtml !== lastHomeGroupsHtml) {
+            homeGroups.innerHTML = groupsHtml;
+            lastHomeGroupsHtml = groupsHtml;
+        }
     }
 
-    if (homeStatusText) {
-        if (isFinished) homeStatusText.innerText = 'Grande Final encerrada:';
-        else homeStatusText.innerText = isLive ? `${nextMatch.etapa || 'Grande Final'} em andamento:` : `${nextMatch.etapa || 'Grande Final'} começa em:`;
-    }
-
-    if (homeGroups && groupsHtml !== lastHomeGroupsHtml) {
-        homeGroups.innerHTML = groupsHtml;
-        lastHomeGroupsHtml = groupsHtml;
-    }
-
-    // Votação fixa: campeão da final.
-    setupDayVoteForMatch(nextMatch);
+    // A Home não usa mais votação de campeão.
 
     // Atualiza página de agenda, se estiver aberta.
     const scheduleDisplay = document.getElementById('countdown-display');
