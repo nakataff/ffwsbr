@@ -1,0 +1,271 @@
+{
+  "version": "20260601-webp-v1",
+  "png_total_bytes": 6471626,
+  "webp_total_bytes": 1314112,
+  "saved_bytes_if_png_replaced": 5157514,
+  "saved_pct_if_png_replaced": 79.7,
+  "converted": [
+    {
+      "png": "A7 2.png",
+      "webp": "A7 2.webp",
+      "png_bytes": 248375,
+      "webp_bytes": 26884,
+      "saved_bytes": 221491,
+      "saved_pct": 89.2,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "AXS BRANCA.png",
+      "webp": "AXS BRANCA.webp",
+      "png_bytes": 34859,
+      "webp_bytes": 13846,
+      "saved_bytes": 21013,
+      "saved_pct": 60.3,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Civis.png",
+      "webp": "Civis.webp",
+      "png_bytes": 109697,
+      "webp_bytes": 35624,
+      "saved_bytes": 74073,
+      "saved_pct": 67.5,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "E1.png",
+      "webp": "E1.webp",
+      "png_bytes": 307865,
+      "webp_bytes": 17852,
+      "saved_bytes": 290013,
+      "saved_pct": 94.2,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Fluxo 2.png",
+      "webp": "Fluxo 2.webp",
+      "png_bytes": 307734,
+      "webp_bytes": 63952,
+      "saved_bytes": 243782,
+      "saved_pct": 79.2,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Free_Fire_World_Series_Brazil_icon_allmode.png",
+      "webp": "Free_Fire_World_Series_Brazil_icon_allmode.webp",
+      "png_bytes": 40370,
+      "webp_bytes": 18366,
+      "saved_bytes": 22004,
+      "saved_pct": 54.5,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Influence Rage.png",
+      "webp": "Influence Rage.webp",
+      "png_bytes": 480019,
+      "webp_bytes": 85612,
+      "saved_bytes": 394407,
+      "saved_pct": 82.2,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Intz 1.png",
+      "webp": "Intz 1.webp",
+      "png_bytes": 121201,
+      "webp_bytes": 27470,
+      "saved_bytes": 93731,
+      "saved_pct": 77.3,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Loops 1.png",
+      "webp": "Loops 1.webp",
+      "png_bytes": 151123,
+      "webp_bytes": 46032,
+      "saved_bytes": 105091,
+      "saved_pct": 69.5,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Los.png",
+      "webp": "Los.webp",
+      "png_bytes": 22781,
+      "webp_bytes": 10154,
+      "saved_bytes": 12627,
+      "saved_pct": 55.4,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "MX.png",
+      "webp": "MX.webp",
+      "png_bytes": 667,
+      "webp_bytes": 268,
+      "saved_bytes": 399,
+      "saved_pct": 59.8,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Outplay.png",
+      "webp": "Outplay.webp",
+      "png_bytes": 235572,
+      "webp_bytes": 68518,
+      "saved_bytes": 167054,
+      "saved_pct": 70.9,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Rise 1.png",
+      "webp": "Rise 1.webp",
+      "png_bytes": 188255,
+      "webp_bytes": 54960,
+      "saved_bytes": 133295,
+      "saved_pct": 70.8,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Rush.png",
+      "webp": "Rush.webp",
+      "png_bytes": 269718,
+      "webp_bytes": 64118,
+      "saved_bytes": 205600,
+      "saved_pct": 76.2,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Team Solid 2.png",
+      "webp": "Team Solid 2.webp",
+      "png_bytes": 39839,
+      "webp_bytes": 17788,
+      "saved_bytes": 22051,
+      "saved_pct": 55.4,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Vasco.png",
+      "webp": "Vasco.webp",
+      "png_bytes": 165839,
+      "webp_bytes": 21136,
+      "saved_bytes": 144703,
+      "saved_pct": 87.3,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "Virtus Pro.png",
+      "webp": "Virtus Pro.webp",
+      "png_bytes": 133941,
+      "webp_bytes": 36260,
+      "saved_bytes": 97681,
+      "saved_pct": 72.9,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "bops.png",
+      "webp": "bops.webp",
+      "png_bytes": 646942,
+      "webp_bytes": 139310,
+      "saved_bytes": 507632,
+      "saved_pct": 78.5,
+      "status": "existing_reused"
+    },
+    {
+      "png": "br.png",
+      "webp": "br.webp",
+      "png_bytes": 665,
+      "webp_bytes": 286,
+      "saved_bytes": 379,
+      "saved_pct": 57.0,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "cpt.png",
+      "webp": "cpt.webp",
+      "png_bytes": 18857,
+      "webp_bytes": 7920,
+      "saved_bytes": 10937,
+      "saved_pct": 58.0,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "instagram.png",
+      "webp": "instagram.webp",
+      "png_bytes": 1335709,
+      "webp_bytes": 221438,
+      "saved_bytes": 1114271,
+      "saved_pct": 83.4,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "loud 2.png",
+      "webp": "loud 2.webp",
+      "png_bytes": 55827,
+      "webp_bytes": 16030,
+      "saved_bytes": 39797,
+      "saved_pct": 71.3,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "mt7.png",
+      "webp": "mt7.webp",
+      "png_bytes": 663204,
+      "webp_bytes": 154614,
+      "saved_bytes": 508590,
+      "saved_pct": 76.7,
+      "status": "existing_reused"
+    },
+    {
+      "png": "silhueta.png",
+      "webp": "silhueta.webp",
+      "png_bytes": 619418,
+      "webp_bytes": 64506,
+      "saved_bytes": 554912,
+      "saved_pct": 89.6,
+      "status": "created_or_replaced"
+    },
+    {
+      "png": "trap.png",
+      "webp": "trap.webp",
+      "png_bytes": 273149,
+      "webp_bytes": 101168,
+      "saved_bytes": 171981,
+      "saved_pct": 63.0,
+      "status": "created_or_replaced"
+    }
+  ],
+  "patch_files": [
+    "A7 2.webp",
+    "AXS BRANCA.webp",
+    "Civis.webp",
+    "E1.webp",
+    "Fluxo 2.webp",
+    "Free_Fire_World_Series_Brazil_icon_allmode.webp",
+    "Influence Rage.webp",
+    "Intz 1.webp",
+    "Loops 1.webp",
+    "Los.webp",
+    "MX.webp",
+    "Outplay.webp",
+    "Rise 1.webp",
+    "Rush.webp",
+    "Team Solid 2.webp",
+    "Vasco.webp",
+    "Virtus Pro.webp",
+    "br.webp",
+    "cpt.webp",
+    "image-webp-map.json",
+    "index.html",
+    "instagram.webp",
+    "js/charts-market.js",
+    "js/core-data.js",
+    "js/image-optimizer.js",
+    "js/laff.js",
+    "js/navigation-search.js",
+    "js/other-tournaments.js",
+    "js/sea-profiles.js",
+    "js/search-history-compare.js",
+    "js/team-profile.js",
+    "loud 2.webp",
+    "player-flags.json",
+    "silhueta.webp",
+    "trap.webp"
+  ]
+}
