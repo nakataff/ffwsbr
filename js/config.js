@@ -16,7 +16,7 @@ window.CFF_CONFIG = {
     redesSociais: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=539927320&single=true&output=tsv",
     novatos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=900212530&single=true&output=tsv",
     jogadoresStatus: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1910071024&single=true&output=tsv",
-    mercado: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1638412483&single=true&output=tsv",
+    mercado: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzmMqkaFbG5U8VH40i7CNI1xMyaHkJh7xaBZ7PcRD5I7Td7kaLzxM0Gx0fr0Hszxu3v3tQ6rhQ3PRZ/pub?gid=0&single=true&output=tsv",
     seaClassificacao: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=2075306919&single=true&output=tsv",
     seaClassificacaoFase2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1461107201&single=true&output=tsv",
     seaAbates: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1306410351&single=true&output=tsv",
