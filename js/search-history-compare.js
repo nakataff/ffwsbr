@@ -637,6 +637,91 @@ function getHallAverage(row) {
     return quedas > 0 ? kills / quedas : 0;
 }
 
+
+const HALL_CURRENT_EDITION = "WB 2026 S1";
+
+function getHallCurrentEditionDailyRows(stage = 'geral') {
+    if (typeof cffGetPlayerDailyByStage === 'function') {
+        const rows = cffGetPlayerDailyByStage(stage);
+        return Array.isArray(rows) ? rows : [];
+    }
+    return Array.isArray(db?.playerDaily) ? db.playerDaily : [];
+}
+
+function getHallPlayerAliasesForMatch(playerName) {
+    const names = new Set();
+    const add = (value) => { if (value) names.add(String(value)); };
+    add(playerName);
+    if (typeof getCanonicalPlayerName === 'function') add(getCanonicalPlayerName(playerName));
+    else if (typeof historicalAliases !== 'undefined' && historicalAliases[playerName]) add(historicalAliases[playerName]);
+    if (typeof getPlayerAliasList === 'function') {
+        getPlayerAliasList(playerName).forEach(add);
+    }
+    return Array.from(names).filter(Boolean);
+}
+
+function hallNamesMatch(nameA, nameB) {
+    if (!nameA || !nameB) return false;
+    if (typeof checkNameMatch === 'function' && checkNameMatch(nameA, nameB)) return true;
+    return normalizeHallText(nameA) === normalizeHallText(nameB);
+}
+
+function getHallCurrentEditionTotals(playerName, stage = 'geral') {
+    const aliases = getHallPlayerAliasesForMatch(playerName);
+    const rows = getHallCurrentEditionDailyRows(stage);
+    const totals = rows.reduce((acc, row) => {
+        const rowName = row?.jogador || row?.nome || '';
+        if (!aliases.some(alias => hallNamesMatch(alias, rowName))) return acc;
+        acc.k += Number(row.abates ?? row.kills ?? 0) || 0;
+        acc.q += Number(row.quedas ?? 0) || 0;
+        acc.dano += Number(row.dano ?? 0) || 0;
+        acc.assists += Number(row.assists ?? 0) || 0;
+        acc.mvp += Number(row.mvp ?? 0) || 0;
+        if (row.equipe) acc.equipe = row.equipe;
+        return acc;
+    }, { k: 0, q: 0, dano: 0, assists: 0, mvp: 0, equipe: null });
+
+    // Fallback para builds antigas: db.players normalmente só traz a classificatória.
+    // Só usa quando o agregador por etapa ainda não está disponível.
+    if (!totals.k && !totals.q && (!rows || rows.length === 0) && Array.isArray(db?.players)) {
+        const activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : playerName;
+        const activeP = db.players.find(x => hallNamesMatch(x.jogador, activeName));
+        if (activeP) {
+            totals.k = Number(activeP.abates || 0);
+            totals.q = Number(activeP.quedas || 0);
+            totals.dano = Number(activeP.dano || 0);
+            totals.assists = Number(activeP.assists || 0);
+            totals.mvp = Number(activeP.mvp || 0);
+            totals.equipe = activeP.equipe || null;
+        }
+    }
+
+    return totals;
+}
+
+function getHallCurrentEditionPlayerNames(stage = 'geral') {
+    const names = new Set();
+    getHallCurrentEditionDailyRows(stage).forEach(row => {
+        const name = row?.jogador || row?.nome;
+        if (name) {
+            const canonical = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(name) : name;
+            names.add(canonical || name);
+        }
+    });
+    if (Array.isArray(db?.players)) {
+        db.players.forEach(p => {
+            if (p?.jogador) names.add(typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(p.jogador) : p.jogador);
+        });
+    }
+    return names;
+}
+
+function findHallActivePlayer(playerName) {
+    if (!Array.isArray(db?.players)) return null;
+    const aliases = getHallPlayerAliasesForMatch(playerName);
+    return db.players.find(p => aliases.some(alias => hallNamesMatch(alias, p.jogador))) || null;
+}
+
 function filterHallByPlayer(rows, searchValue) {
     const query = normalizeHallText(searchValue);
     if (!query) return rows;
@@ -797,32 +882,40 @@ function renderEditionRanking() {
     }
 
     let results = [];
-    for (let playerName in lbffData) {
-        let pData = lbffData[playerName];
+    const editionPlayerNames = new Set(Object.keys(lbffData || {}));
+    if (selectedEditions.includes(HALL_CURRENT_EDITION) || selectedEditions.includes("WB 2026 S1")) {
+        getHallCurrentEditionPlayerNames('geral').forEach(name => editionPlayerNames.add(name));
+    }
+
+    editionPlayerNames.forEach(playerName => {
+        let pData = (lbffData && lbffData[playerName]) ? lbffData[playerName] : {};
         let totalK = 0, totalQ = 0, jogou = false;
 
         selectedEditions.forEach(ed => {
-            if(ed === "WB 2026 S1") {
-                let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : (historicalAliases[playerName] || playerName);
-                let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
-                if(activeP) { totalK += activeP.abates || 0; totalQ += activeP.quedas || 0; jogou = true; }
-            } else if(pData[ed]) { totalK += pData[ed].k; totalQ += pData[ed].q; jogou = true; }
+            if (ed === HALL_CURRENT_EDITION || ed === "WB 2026 S1") {
+                const currentTotals = getHallCurrentEditionTotals(playerName, 'geral');
+                if (currentTotals.k > 0 || currentTotals.q > 0) {
+                    totalK += currentTotals.k;
+                    totalQ += currentTotals.q;
+                    jogou = true;
+                }
+            } else if(pData[ed]) { totalK += pData[ed].k || 0; totalQ += pData[ed].q || 0; jogou = true; }
         });
 
         if (jogou && (totalK > 0 || totalQ > 0)) {
             let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : (historicalAliases[playerName] || playerName);
-            let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+            let activeP = findHallActivePlayer(activeName || playerName);
             results.push({
                 originalName: playerName,
                 activeName: activeName,
                 isPlaying: activeP && !activeP.isEx,
-                equipe: (activeP && !activeP.isEx) ? activeP.equipe : null,
+                equipe: (activeP && !activeP.isEx) ? activeP.equipe : (getHallCurrentEditionTotals(playerName, 'geral').equipe || null),
                 k: totalK,
                 q: totalQ,
                 avg: totalQ > 0 ? (totalK/totalQ).toFixed(2) : "0.00"
             });
         }
-    }
+    });
 
     results = filterHallByPlayer(results, hallEditionPlayerSearch);
     results = sortHallRows(results, hallEditionSort);
@@ -849,8 +942,8 @@ function renderEditionRanking() {
 // Preenche os selects do Comparador Histórico
 function getHistoricalComparePlayers() {
     let allHistoricalPlayers = new Set([
-        ...Object.keys(lbffData),
-        ...db.players.map(p => typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(p.jogador) : (historicalAliases[p.jogador] || p.jogador))
+        ...Object.keys(lbffData || {}),
+        ...getHallCurrentEditionPlayerNames('geral')
     ]);
 
     return [...allHistoricalPlayers]
@@ -1035,10 +1128,8 @@ function renderHistCompare() {
     let ed2 = document.getElementById('hist-comp-ed2').value;
 
     const getData = (pName, ed) => {
-        if (ed === "WB 2026 S1") {
-            let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(pName) : (historicalAliases[pName] || pName);
-            let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
-            return { k: activeP ? activeP.abates||0 : 0, q: activeP ? activeP.quedas||0 : 0 };
+        if (ed === HALL_CURRENT_EDITION || ed === "WB 2026 S1") {
+            return getHallCurrentEditionTotals(pName, 'geral');
         }
         return (lbffData[pName] && lbffData[pName][ed]) ? lbffData[pName][ed] : {k:0, q:0};
     };
@@ -1080,14 +1171,13 @@ function updateEditionOptions(pSelectId, edSelectId) {
     let playerName = playerSelect.value;
     let availableEds = lbffData[playerName] ? Object.keys(lbffData[playerName]) : [];
 
-    let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : (historicalAliases[playerName] || playerName);
-    let activeP = db.players.find(x => x.jogador.toLowerCase() === String(activeName).toLowerCase());
-    if (activeP && !availableEds.includes("WB 2026 S1")) {
-        availableEds.push("WB 2026 S1");
+    const currentTotals = getHallCurrentEditionTotals(playerName, 'geral');
+    if ((currentTotals.k > 0 || currentTotals.q > 0) && !availableEds.includes(HALL_CURRENT_EDITION)) {
+        availableEds.push(HALL_CURRENT_EDITION);
     }
 
     if (availableEds.length === 0) {
-        availableEds = ["WB 2026 S1"];
+        availableEds = [HALL_CURRENT_EDITION];
     }
 
     const previousValue = edSelect.value;
@@ -1099,28 +1189,35 @@ function renderHistoricalRanking() {
     let tbody = document.querySelector('#table-history tbody');
     if(!tbody) return;
 
-    const CURRENT_EDITION = "WB 2026 S1";
+    const CURRENT_EDITION = HALL_CURRENT_EDITION;
 
-    let currentRankData = Object.entries(lbffData).map(([name, editions]) => {
+    const hallPlayerNames = new Set([
+        ...Object.keys(lbffData || {}),
+        ...getHallCurrentEditionPlayerNames('geral')
+    ]);
+
+    let currentRankData = Array.from(hallPlayerNames).map((name) => {
+        const editions = (lbffData && lbffData[name]) ? lbffData[name] : {};
         let histK = 0, histQ = 0;
         let preK = 0;
         for (let ed in editions) {
+            if (ed === CURRENT_EDITION) continue; // evita contar base antiga duplicada, se existir
             histK += editions[ed].k || 0;
             histQ += editions[ed].q || 0;
-            if (ed !== CURRENT_EDITION) {
-                preK += editions[ed].k || 0;
-            }
+            preK += editions[ed].k || 0;
         }
+
+        const currentTotals = getHallCurrentEditionTotals(name, 'geral');
         let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(name) : (historicalAliases[name] || name);
-        let activePlayer = db.players.find(x => x.jogador.toLowerCase() === String(activeName).toLowerCase());
+        let activePlayer = findHallActivePlayer(activeName || name);
         let isPlaying = activePlayer && !activePlayer.isEx;
         return {
             originalName: name,
             activeName: activeName,
             isPlaying: isPlaying,
-            equipe: isPlaying ? activePlayer.equipe : null,
-            totalKills: histK + (activePlayer ? activePlayer.abates || 0 : 0),
-            totalQuedas: histQ + (activePlayer ? activePlayer.quedas || 0 : 0),
+            equipe: isPlaying ? activePlayer.equipe : (currentTotals.equipe || null),
+            totalKills: histK + currentTotals.k,
+            totalQuedas: histQ + currentTotals.q,
             preKills: preK
         };
     }).filter(p => p.totalKills > 0 || p.totalQuedas > 0);
