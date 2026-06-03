@@ -61,7 +61,6 @@ function renderUnifiedTrophies(name, containerId) {
         let typeUpper = t.type ? t.type.toUpperCase() : "";
         let borderClass = typeUpper.includes("MVP") ? 'border-mvp' : (typeUpper.includes("REVELAÇÃO") ? 'border-revelacao' : 'border-campeao');
 
-        // --- MÁGICA PARA O CLIQUE FUNCIONAR ---
         const hasTournamentPage = !!findTournamentInDB(t.event);
         const clickAttr = hasTournamentPage ? `onclick="navigateToTournament('${t.event.replace(/'/g, "\\'")}')" style="cursor:pointer;"` : '';
         const linkIcon = hasTournamentPage ? `<div style="font-size:0.55em; color:var(--accent); margin-top:3px;">🔗 Ver Torneio</div>` : '';
@@ -94,10 +93,8 @@ function renderUnifiedTrophies(name, containerId) {
 
 // handleGlobalSearch legada — redireciona para a nova versão unificada
 function selectSearchResult(type, name) {
-    // Limpa todos os campos e esconde os resultados
     if (typeof navCloseSearchUI === 'function') navCloseSearchUI();
 
-    // Redireciona
     if (type === 'search-all') {
         if (typeof openGlobalSearchResults === 'function') openGlobalSearchResults(name);
     } else if (type === 'news') {
@@ -128,28 +125,27 @@ function selectSearchResult(type, name) {
 }
 
 // Esconder os dropdowns de busca ao clicar fora
-    document.addEventListener('click', function(e) {
-        const targets = [
-            { results: 'search-results-desktop', wrapper: '.nav-search-wrapper-desktop' },
-            { results: 'search-results-mobile', wrapper: '.nav-mobile-search-bar' },
-        ];
-        targets.forEach(({ results, wrapper }) => {
-            const box = document.getElementById(results);
-            const wrapperEl = document.querySelector(wrapper);
-            if (box && wrapperEl && !wrapperEl.contains(e.target)) {
-                box.style.display = 'none';
-            }
-        });
-        // Fecha a barra de busca desktop se clicar fora
-        const desktopWrapper = document.getElementById('nav-search-wrapper-desktop');
-        if (desktopWrapper && desktopWrapper.classList.contains('open') && !desktopWrapper.contains(e.target)) {
-            desktopWrapper.classList.remove('open');
-            const inp = document.getElementById('global-search-desktop');
-            if (inp) { inp.value = ''; }
-            const res = document.getElementById('search-results-desktop');
-            if (res) res.style.display = 'none';
+document.addEventListener('click', function(e) {
+    const targets = [
+        { results: 'search-results-desktop', wrapper: '.nav-search-wrapper-desktop' },
+        { results: 'search-results-mobile', wrapper: '.nav-mobile-search-bar' },
+    ];
+    targets.forEach(({ results, wrapper }) => {
+        const box = document.getElementById(results);
+        const wrapperEl = document.querySelector(wrapper);
+        if (box && wrapperEl && !wrapperEl.contains(e.target)) {
+            box.style.display = 'none';
         }
     });
+    const desktopWrapper = document.getElementById('nav-search-wrapper-desktop');
+    if (desktopWrapper && desktopWrapper.classList.contains('open') && !desktopWrapper.contains(e.target)) {
+        desktopWrapper.classList.remove('open');
+        const inp = document.getElementById('global-search-desktop');
+        if (inp) { inp.value = ''; }
+        const res = document.getElementById('search-results-desktop');
+        if (res) res.style.display = 'none';
+    }
+});
 
 function checkNameMatch(n1, n2) {
     if (!n1 || !n2) return false;
@@ -163,8 +159,6 @@ function checkNameMatch(n1, n2) {
         ? normalizePlayerAliasKey(value)
         : String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
 
-    // Chave mais tolerante para nomes importados de bases antigas.
-    // Ex.: ITAL0$$ vira ITALO, então consegue bater com o alias/canônico ITALO.
     const looseKeyOf = (value) => keyOf(value).replace(/0/g, 'O');
 
     const key1 = keyOf(raw1);
@@ -180,7 +174,6 @@ function checkNameMatch(n1, n2) {
     if (canonKey1 && canonKey1 === canonKey2) return true;
     if (looseKeyOf(canon1) && looseKeyOf(canon1) === looseKeyOf(canon2)) return true;
 
-    // Checa lista completa de aliases dos dois lados, inclusive o player-aliases.json.
     const aliases1 = typeof getPlayerAliasList === 'function' ? getPlayerAliasList(raw1) : [raw1, canon1];
     const aliases2 = typeof getPlayerAliasList === 'function' ? getPlayerAliasList(raw2) : [raw2, canon2];
     return aliases1.some(a => aliases2.some(b => {
@@ -213,38 +206,10 @@ function toggleEdition(ed) {
 let currentSelectionSeasonTab = 'semanal';
 
 const CFF_SELECTION_PHASES = {
-    semanal: {
-        label: 'Times da semana',
-        short: 'Semana',
-        color: '#ff0000',
-        containerId: 'selection-week-container',
-        panelId: 'selection-week-panel',
-        accentClass: 'week'
-    },
-    classificatoria: {
-        label: 'Classificatória',
-        short: 'Classif.',
-        color: '#00c8ff',
-        containerId: 'selection-classificatoria-container',
-        panelId: 'selection-classificatoria-panel',
-        accentClass: 'classificatoria'
-    },
-    final: {
-        label: 'Final',
-        short: 'Final',
-        color: '#ffd166',
-        containerId: 'selection-final-container',
-        panelId: 'selection-final-panel',
-        accentClass: 'final'
-    },
-    torneio: {
-        label: 'Torneio',
-        short: 'Torneio',
-        color: '#a855f7',
-        containerId: 'selection-torneio-container',
-        panelId: 'selection-torneio-panel',
-        accentClass: 'torneio'
-    }
+    semanal: { label: 'Times da semana', short: 'Semana', color: '#ff0000', containerId: 'selection-week-container', panelId: 'selection-week-panel', accentClass: 'week' },
+    classificatoria: { label: 'Classificatória', short: 'Classif.', color: '#00c8ff', containerId: 'selection-classificatoria-container', panelId: 'selection-classificatoria-panel', accentClass: 'classificatoria' },
+    final: { label: 'Final', short: 'Final', color: '#ffd166', containerId: 'selection-final-container', panelId: 'selection-final-panel', accentClass: 'final' },
+    torneio: { label: 'Torneio', short: 'Torneio', color: '#a855f7', containerId: 'selection-torneio-container', panelId: 'selection-torneio-panel', accentClass: 'torneio' }
 };
 
 function getSelectionPhaseConfig(phase = 'semanal') {
@@ -263,8 +228,6 @@ function isSelectionFinalComplete() {
     if (typeof cffGetStageJogadoresQuedas !== 'function') return false;
     const finalDrops = countSelectionDrops(cffGetStageJogadoresQuedas('final'));
 
-    // A final pode acabar antes das 16 quedas quando alguém fecha o Champion Point.
-    // Nesse caso, Seleção da Final e Seleção do Torneio já devem liberar.
     try {
         if (typeof cffFinalGetRawDrops === 'function' && typeof cffFinalSimulateChampion === 'function') {
             const champion = cffFinalSimulateChampion(cffFinalGetRawDrops());
@@ -402,8 +365,6 @@ function getSelectionScore(p, phase = 'semanal') {
     const assists = Number(p.assists) || 0;
     const mvp = Number(p.mvp) || 0;
 
-    // Todas as seleções precisam privilegiar volume total de kills.
-    // Dano, assistências e MVP entram só como desempate/peso secundário.
     return (abates * 1000000) + (dano * 10) + (assists * 1000) + (mvp * 5000);
 }
 
@@ -426,7 +387,6 @@ function buildSelectionLineup(players, phase = 'semanal') {
         ...getTop(['SUP'], 1)
     ];
 
-    // Fallback: se faltar jogador por função cadastrada, completa com os melhores restantes.
     if (selecionados.length < 4) {
         const rest = players
             .filter(p => !picked.has(p.jogador))
@@ -484,7 +444,6 @@ function renderSelection() {
     container.innerHTML = selecionados.map(p => createSelectionCardHTML(p, phase)).join('');
 }
 
-
 // --- Hall da Fama: filtros, ordenação e paginação progressiva ---
 let hallAllTimeLimit = 10;
 let hallEditionLimit = 10;
@@ -493,76 +452,49 @@ let hallEditionSort = 'kills';
 let hallAllTimePlayerSearch = '';
 let hallAllTimeTeamSearch = '';
 let hallEditionPlayerSearch = '';
-let hallEditionTeamSearch = ''; // Mantido só por compatibilidade com HTML antigo/cache
+let hallEditionTeamSearch = ''; 
 const HALL_LIMIT_STEPS = [10, 50, 100];
 let hallPassageCacheSignature = '';
 const hallPassageCache = new Map();
 const hallPlayerSearchCache = new Map();
 const hallTeamSearchCache = new Map();
 
-// Hall da Fama: soma segura da Final FFWS BR 2026 S1 sem alterar a base do site.
-const CFF_HALL_CURRENT_EDITION = "WB 2026 S1";
+const HALL_CURRENT_EDITION = "WB 2026 S1";
+const CFF_HALL_CURRENT_EDITION = "WB 2026 S1"; 
 
-function cffHallNormalizePlayerName(value) {
-    const raw = String(value || '').trim();
-    if (!raw) return '';
-    try {
-        if (typeof normalizePlayerAliasKey === 'function') return normalizePlayerAliasKey(raw);
-    } catch (e) {}
-    return raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
-}
+function cffHallCurrentTotalsForPlayer(playerName) {
+    let k = 0, q = 0, equipe = null, isPlaying = false;
 
-function cffHallPlayerAliases(name) {
-    const list = new Set();
-    const raw = String(name || '').trim();
-    if (raw) list.add(raw);
-    try {
-        const canon = (typeof getCanonicalPlayerName === 'function') ? getCanonicalPlayerName(raw) : ((typeof historicalAliases !== 'undefined' && historicalAliases[raw]) ? historicalAliases[raw] : raw);
-        if (canon) list.add(canon);
-    } catch (e) {}
-    try {
-        if (typeof getPlayerAliasList === 'function') {
-            getPlayerAliasList(raw).forEach(alias => { if (alias) list.add(alias); });
-        }
-    } catch (e) {}
-    try {
-        if (typeof historicalAliases !== 'undefined' && historicalAliases) {
-            Object.entries(historicalAliases).forEach(([alias, canon]) => {
-                const targetKey = cffHallNormalizePlayerName(raw);
-                if (cffHallNormalizePlayerName(alias) === targetKey || cffHallNormalizePlayerName(canon) === targetKey) {
-                    if (alias) list.add(alias);
-                    if (canon) list.add(canon);
-                }
-            });
-        }
-    } catch (e) {}
-    return Array.from(list).map(cffHallNormalizePlayerName).filter(Boolean);
-}
+    // 1. Tenta achar o nome canônico e se ele jogou a Classificatória (dados.json já processado no db.players)
+    let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : ((typeof historicalAliases !== 'undefined' && historicalAliases[playerName]) ? historicalAliases[playerName] : playerName);
+    let activeP = (typeof db !== 'undefined' && db.players) ? db.players.find(x => x.jogador.toLowerCase() === String(activeName).toLowerCase() || x.jogador.toLowerCase() === String(playerName).toLowerCase()) : null;
 
-function cffHallFinalTotalsForPlayer(name) {
-    const keys = new Set(cffHallPlayerAliases(name));
-    const finalData = (typeof dbFinalJogadoresQuedas !== 'undefined' && dbFinalJogadoresQuedas) ? dbFinalJogadoresQuedas : {};
-    let k = 0;
-    let q = 0;
-    Object.values(finalData || {}).forEach(day => {
-        Object.values(day || {}).forEach(drop => {
-            (Array.isArray(drop) ? drop : []).forEach(player => {
-                const playerName = player && (player.nome || player.jogador || player.player);
-                if (!playerName || !keys.has(cffHallNormalizePlayerName(playerName))) return;
-                k += Number(player.kills ?? player.abates ?? player.k ?? 0) || 0;
-                q += 1;
+    if (activeP) {
+        k += Number(activeP.abates || 0);
+        q += Number(activeP.quedas || 0);
+        equipe = activeP.equipe;
+        isPlaying = !activeP.isEx;
+    }
+
+    // 2. Soma as quedas e abates diretamente da Final (dados-final.json)
+    if (typeof dbFinalJogadoresQuedas !== 'undefined' && dbFinalJogadoresQuedas) {
+        Object.values(dbFinalJogadoresQuedas).forEach(day => {
+            Object.values(day).forEach(drop => {
+                (Array.isArray(drop) ? drop : []).forEach(p => {
+                    let dropName = p.nome || p.jogador || p.player || '';
+                    let dropCanon = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(dropName) : dropName;
+                    
+                    if (String(dropCanon).toLowerCase() === String(activeName).toLowerCase() || String(dropName).toLowerCase() === String(playerName).toLowerCase()) {
+                        k += Number(p.kills ?? p.abates ?? p.k ?? 0) || 0;
+                        q += 1;
+                        if (!equipe && p.equipe) equipe = p.equipe;
+                    }
+                });
             });
         });
-    });
-    return { k, q };
-}
+    }
 
-function cffHallCurrentTotalsForPlayer(name, activePlayer) {
-    const finalTotals = cffHallFinalTotalsForPlayer(name);
-    return {
-        k: (activePlayer ? (Number(activePlayer.abates || 0) || 0) : 0) + finalTotals.k,
-        q: (activePlayer ? (Number(activePlayer.quedas || 0) || 0) : 0) + finalTotals.q
-    };
+    return { k, q, equipe, isPlaying, activeName, activeP };
 }
 
 function getHallCacheSignature() {
@@ -688,7 +620,6 @@ function getHallPassageTeamSearchValue(row) {
         });
     }
 
-    // Fallback para não deixar o jogador atual invisível caso a planilha de passagens ainda não tenha carregado.
     addTeam(row?.equipe);
 
     const value = Array.from(teams).join(' ');
@@ -833,7 +764,6 @@ function setHallEditionPlayerSearch(value) {
 }
 
 function setHallEditionTeamSearch(value) {
-    // Compatibilidade com versões antigas do HTML/cache: agora o ranking por edição filtra por jogador.
     setHallEditionPlayerSearch(value);
 }
 
@@ -852,7 +782,6 @@ function renderHallPlayerName(row) {
         <span class="clickable short-name-mobile" onclick="${_safePPAttr(row.activeName)}">${nameShort}</span>`;
 }
 
-// 2. Renderiza a tabela filtrada por Edição
 function renderEditionRanking() {
     let tbody = document.querySelector('#table-edition-history tbody');
     if(!tbody || selectedEditions.length === 0) {
@@ -862,33 +791,46 @@ function renderEditionRanking() {
     }
 
     let results = [];
-    for (let playerName in lbffData) {
-        let pData = lbffData[playerName];
+    
+    // MÁGICA: Puxa todo mundo, tanto das edições velhas quanto os novatos da edição atual
+    let allPlayerNames = new Set([
+        ...Object.keys(typeof lbffData !== 'undefined' ? lbffData : {}),
+        ...(typeof db !== 'undefined' && db.players ? db.players.map(p => typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(p.jogador) : p.jogador) : [])
+    ]);
+
+    allPlayerNames.forEach(playerName => {
+        let pData = (typeof lbffData !== 'undefined' && lbffData[playerName]) ? lbffData[playerName] : {};
         let totalK = 0, totalQ = 0, jogou = false;
+        let currentStats = null;
 
         selectedEditions.forEach(ed => {
-            if(ed === "WB 2026 S1") {
-                let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : (historicalAliases[playerName] || playerName);
-                let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
-                const currentTotals = cffHallCurrentTotalsForPlayer(playerName, activeP);
-                if(currentTotals.k > 0 || currentTotals.q > 0) { totalK += currentTotals.k; totalQ += currentTotals.q; jogou = true; }
-            } else if(pData[ed]) { totalK += pData[ed].k; totalQ += pData[ed].q; jogou = true; }
+            if(ed === HALL_CURRENT_EDITION) {
+                currentStats = cffHallCurrentTotalsForPlayer(playerName);
+                if(currentStats.k > 0 || currentStats.q > 0) { 
+                    totalK += currentStats.k; 
+                    totalQ += currentStats.q; 
+                    jogou = true; 
+                }
+            } else if(pData[ed]) { 
+                totalK += pData[ed].k || 0; 
+                totalQ += pData[ed].q || 0; 
+                jogou = true; 
+            }
         });
 
         if (jogou && (totalK > 0 || totalQ > 0)) {
-            let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : (historicalAliases[playerName] || playerName);
-            let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
+            if (!currentStats) currentStats = cffHallCurrentTotalsForPlayer(playerName);
             results.push({
                 originalName: playerName,
-                activeName: activeName,
-                isPlaying: activeP && !activeP.isEx,
-                equipe: (activeP && !activeP.isEx) ? activeP.equipe : null,
+                activeName: currentStats.activeName,
+                isPlaying: currentStats.isPlaying,
+                equipe: currentStats.equipe,
                 k: totalK,
                 q: totalQ,
                 avg: totalQ > 0 ? (totalK/totalQ).toFixed(2) : "0.00"
             });
         }
-    }
+    });
 
     results = filterHallByPlayer(results, hallEditionPlayerSearch);
     results = sortHallRows(results, hallEditionSort);
@@ -912,11 +854,10 @@ function renderEditionRanking() {
         </tr>`).join('');
 }
 
-// Preenche os selects do Comparador Histórico
 function getHistoricalComparePlayers() {
     let allHistoricalPlayers = new Set([
-        ...Object.keys(lbffData),
-        ...db.players.map(p => typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(p.jogador) : (historicalAliases[p.jogador] || p.jogador))
+        ...Object.keys(typeof lbffData !== 'undefined' ? lbffData : {}),
+        ...(typeof db !== 'undefined' && db.players ? db.players.map(p => typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(p.jogador) : (historicalAliases[p.jogador] || p.jogador)) : [])
     ]);
 
     return [...allHistoricalPlayers]
@@ -977,7 +918,6 @@ function syncHistCompareSearch(selectId, inputId) {
     const input = document.getElementById(inputId);
     if (select && input) input.value = select.value || '';
 }
-
 
 function populateComparePlayerSelects(region = 'nacional') {
     const comparadorP1 = document.getElementById('comp-p1');
@@ -1047,39 +987,29 @@ async function switchComparePlayerRegion() {
     renderComparePlayers();
 }
 
-// Preenche os selects da aba Histórico
-// Preenche os selects da aba Histórico
 function populateSelects() {
-    // --- 1. PREENCHIMENTO DAS EQUIPES ---
     let filtroGeral = document.getElementById('filter-equipe');
-
-    // CORREÇÃO: O ID exato do HTML para a aba de Jogadores é 'filter-team-players'
     let filtroJogadores = document.getElementById('filter-team-players');
-
     let comparadorT1 = document.getElementById('comp-t1');
     let comparadorT2 = document.getElementById('comp-t2');
 
-    // Ordenamos em ordem alfabética para ficar organizado
     let teamsSet = [...new Set(db.teams.map(t => t.equipe))].sort();
 
     teamsSet.forEach(equipe => {
         let opt = `<option value="${equipe}">${equipe}</option>`;
         if (filtroGeral) filtroGeral.innerHTML += opt;
-        if (filtroJogadores) filtroJogadores.innerHTML += opt; // Agora ele vai preencher!
+        if (filtroJogadores) filtroJogadores.innerHTML += opt;
         if (comparadorT1) comparadorT1.innerHTML += opt;
         if (comparadorT2) comparadorT2.innerHTML += opt;
     });
 
-    // --- 2. PREENCHIMENTO DOS JOGADORES (Aba Comparar) ---
     populateComparePlayerSelects(document.getElementById('comp-player-region')?.value || 'nacional');
     let comparadorP1 = document.getElementById('comp-p1');
     let comparadorP2 = document.getElementById('comp-p2');
 
-    // Previne que o comparador comece com o mesmo time/jogador selecionado dos dois lados
     if (comparadorT2 && comparadorT2.options.length > 1) comparadorT2.selectedIndex = 1;
     if (comparadorP2 && comparadorP2.options.length > 1 && comparadorP1?.value === comparadorP2.value) comparadorP2.selectedIndex = 1;
 
-    // --- 3. PREENCHIMENTO AUTOMÁTICO DOS DIAS (A Mágica) ---
     let playerDaySelect = document.getElementById('filter-player-day');
     if (playerDaySelect) {
         playerDaySelect.innerHTML = '<option value="all">Todos os Dias</option>';
@@ -1088,12 +1018,10 @@ function populateSelects() {
         }
     }
 
-    // --- 4. RENDERIZA OS COMPARADORES PELA PRIMEIRA VEZ ---
     if (typeof renderCompareTeams === 'function') renderCompareTeams();
     if (typeof renderComparePlayers === 'function') renderComparePlayers();
 }
 
-// A função do Comparador
 function renderHistCompare() {
     let p1Name = document.getElementById('hist-comp-p1').value;
     let p2Name = document.getElementById('hist-comp-p2').value;
@@ -1101,12 +1029,10 @@ function renderHistCompare() {
     let ed2 = document.getElementById('hist-comp-ed2').value;
 
     const getData = (pName, ed) => {
-        if (ed === "WB 2026 S1") {
-            let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(pName) : (historicalAliases[pName] || pName);
-            let activeP = db.players.find(x => x.jogador.toLowerCase() === activeName.toLowerCase());
-            return cffHallCurrentTotalsForPlayer(pName, activeP);
+        if (ed === HALL_CURRENT_EDITION || ed === "WB 2026 S1") {
+            return cffHallCurrentTotalsForPlayer(pName);
         }
-        return (lbffData[pName] && lbffData[pName][ed]) ? lbffData[pName][ed] : {k:0, q:0};
+        return (typeof lbffData !== 'undefined' && lbffData[pName] && lbffData[pName][ed]) ? lbffData[pName][ed] : {k:0, q:0};
     };
 
     let d1 = getData(p1Name, ed1);
@@ -1144,17 +1070,15 @@ function updateEditionOptions(pSelectId, edSelectId) {
     if (!playerSelect || !edSelect) return;
 
     let playerName = playerSelect.value;
-    let availableEds = lbffData[playerName] ? Object.keys(lbffData[playerName]) : [];
+    let availableEds = (typeof lbffData !== 'undefined' && lbffData[playerName]) ? Object.keys(lbffData[playerName]) : [];
 
-    let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(playerName) : (historicalAliases[playerName] || playerName);
-    let activeP = db.players.find(x => x.jogador.toLowerCase() === String(activeName).toLowerCase());
-    const currentTotals = cffHallCurrentTotalsForPlayer(playerName, activeP);
-    if ((activeP || currentTotals.k > 0 || currentTotals.q > 0) && !availableEds.includes(CFF_HALL_CURRENT_EDITION)) {
-        availableEds.push(CFF_HALL_CURRENT_EDITION);
+    const currentTotals = cffHallCurrentTotalsForPlayer(playerName);
+    if ((currentTotals.k > 0 || currentTotals.q > 0) && !availableEds.includes(HALL_CURRENT_EDITION)) {
+        availableEds.push(HALL_CURRENT_EDITION);
     }
 
     if (availableEds.length === 0) {
-        availableEds = [CFF_HALL_CURRENT_EDITION];
+        availableEds = [HALL_CURRENT_EDITION];
     }
 
     const previousValue = edSelect.value;
@@ -1166,28 +1090,32 @@ function renderHistoricalRanking() {
     let tbody = document.querySelector('#table-history tbody');
     if(!tbody) return;
 
-    const CURRENT_EDITION = "WB 2026 S1";
+    let allPlayerNames = new Set([
+        ...Object.keys(typeof lbffData !== 'undefined' ? lbffData : {}),
+        ...(typeof db !== 'undefined' && db.players ? db.players.map(p => typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(p.jogador) : p.jogador) : [])
+    ]);
 
-    let currentRankData = Object.entries(lbffData).map(([name, editions]) => {
-        let histK = 0, histQ = 0;
-        let preK = 0;
+    let currentRankData = Array.from(allPlayerNames).map(name => {
+        let editions = (typeof lbffData !== 'undefined' && lbffData[name]) ? lbffData[name] : {};
+        let histK = 0, histQ = 0, preK = 0;
+        
         for (let ed in editions) {
-            histK += editions[ed].k || 0;
-            histQ += editions[ed].q || 0;
-            if (ed !== CURRENT_EDITION) {
+            if (ed !== HALL_CURRENT_EDITION) {
+                histK += editions[ed].k || 0;
+                histQ += editions[ed].q || 0;
                 preK += editions[ed].k || 0;
             }
         }
-        let activeName = typeof getCanonicalPlayerName === 'function' ? getCanonicalPlayerName(name) : (historicalAliases[name] || name);
-        let activePlayer = db.players.find(x => x.jogador.toLowerCase() === String(activeName).toLowerCase());
-        let isPlaying = activePlayer && !activePlayer.isEx;
+        
+        let currentStats = cffHallCurrentTotalsForPlayer(name);
+        
         return {
             originalName: name,
-            activeName: activeName,
-            isPlaying: isPlaying,
-            equipe: isPlaying ? activePlayer.equipe : null,
-            totalKills: histK + cffHallCurrentTotalsForPlayer(name, activePlayer).k,
-            totalQuedas: histQ + cffHallCurrentTotalsForPlayer(name, activePlayer).q,
+            activeName: currentStats.activeName,
+            isPlaying: currentStats.isPlaying,
+            equipe: currentStats.equipe,
+            totalKills: histK + currentStats.k,
+            totalQuedas: histQ + currentStats.q,
             preKills: preK
         };
     }).filter(p => p.totalKills > 0 || p.totalQuedas > 0);
@@ -1234,7 +1162,6 @@ function renderHistoricalRanking() {
     }).join('');
 }
 
-// Cartinha Especial Vermelha Seleção WB
 function createSelectionCardHTML(p, phase = 'semanal') {
     const cfg = getSelectionPhaseConfig(phase);
     const role = getSelectionPlayerRole(p.jogador);
@@ -1281,24 +1208,20 @@ function createSelectionCardHTML(p, phase = 'semanal') {
 }
 
 function createPlayerCardHTML(p, scale = 1) {
-    // 1. DEFINIÇÃO DO OVERALL (Prioriza o valor de lenda se existir)
     let ovr = p.ovrOverride ? p.ovrOverride : calculateOverall(p);
 
-    // 2. LÓGICA DE FOTO (Fallback para silhueta se estiver vazio ou não existir)
     let photoKey = Object.keys(playerPhotos).find(k => k.toLowerCase() === p.jogador.toLowerCase().trim());
     let photo = (photoKey && playerPhotos[photoKey]) ? playerPhotos[photoKey] : "silhueta.webp";
 
-    // 3. CORES E ESTILO BASEADO NA NOTA
-    let accentColor = "#cd7f32"; // Bronze (Padrão)
-    if (ovr >= 95) accentColor = "#00c8ff";      // Diamante/Lendário Plus
-    else if (ovr >= 90) accentColor = "#d4af37"; // Ouro Lendário
-    else if (ovr >= 85) accentColor = "#c5a028"; // Ouro Elite
-    else if (ovr >= 80) accentColor = "#e5e5e5"; // Prata Brilhante
-    else if (ovr >= 75) accentColor = "#a3a3a3"; // Prata
+    let accentColor = "#cd7f32"; 
+    if (ovr >= 95) accentColor = "#00c8ff";      
+    else if (ovr >= 90) accentColor = "#d4af37"; 
+    else if (ovr >= 85) accentColor = "#c5a028"; 
+    else if (ovr >= 80) accentColor = "#e5e5e5"; 
+    else if (ovr >= 75) accentColor = "#a3a3a3"; 
 
     let glow = ovr >= 90 ? `box-shadow: 0 0 30px ${accentColor}66;` : '';
 
-    // 4. FORMATAÇÃO DE DADOS
     let role = (typeof cffNormalizeRoleCardLabel === "function" ? cffNormalizeRoleCardLabel(playerRoles[p.jogador] || "RUSH") : (playerRoles[p.jogador] || "RUSH"));
     let teamLogo = logos[p.equipe] || "escudo.webp";
     let flagSrc = "br.webp";
@@ -1309,7 +1232,6 @@ function createPlayerCardHTML(p, scale = 1) {
     }
     let danoK = (p.dano / 1000).toFixed(1) + "K";
 
-    // 5. BADGES (Inativo e Capitão)
     let exBadge = p.isEx ? `<div style="position: absolute; top: 18px; left: -35px; background: #f44336; color: #fff; font-size: 0.7em; font-weight: bold; padding: 5px 35px; transform: rotate(-45deg); z-index: 10; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">Inativo</div>` : '';
 
     let captainBadge = (typeof playerCaptains !== 'undefined' && playerCaptains[p.jogador]) ?
@@ -1351,11 +1273,9 @@ function createPlayerCardHTML(p, scale = 1) {
 }
 
 function autoCalculateTotals() {
-    // 0. Garante que as listas existam dentro do db
     db.teamDaily = {};
     db.playerDaily = [];
 
-    // 1. GERA O db.teamDaily A PARTIR DO dbQuedas
     for (let dia in dbQuedas) {
         for (let queda in dbQuedas[dia]) {
             let drop = dbQuedas[dia][queda];
@@ -1374,19 +1294,18 @@ function autoCalculateTotals() {
                         pontos: ptsTotal,
                         booyah: res.booyah,
                         abates: res.kills,
-                        quedas: 1 // AGORA ELE COMEÇA CONTANDO 1 QUEDA
+                        quedas: 1 
                     });
                 } else {
                     dayEntry.pontos += ptsTotal;
                     dayEntry.booyah += res.booyah;
                     dayEntry.abates += res.kills;
-                    dayEntry.quedas += 1; // E VAI SOMANDO 1 A CADA MAPA
+                    dayEntry.quedas += 1; 
                 }
             });
         }
     }
 
-    // 2. GERA O db.playerDaily A PARTIR DO dbJogadoresQuedas
     let playerAggregator = {};
 
     for (let dia in dbJogadoresQuedas) {
@@ -1409,7 +1328,6 @@ function autoCalculateTotals() {
     }
     db.playerDaily = Object.values(playerAggregator);
 
-    // 3. ATUALIZA OS TOTAIS GERAIS (db.players e db.teams)
     db.players.forEach(p => {
         const dailyData = db.playerDaily.filter(d => d.jogador === p.jogador);
         const totals = dailyData.reduce((acc, curr) => {
@@ -1425,7 +1343,7 @@ function autoCalculateTotals() {
         const daily = db.teamDaily[t.equipe] || [];
         const totals = daily.reduce((acc, curr) => {
             acc.pontos += curr.pontos; acc.booyah += curr.booyah;
-            acc.abates += curr.abates; acc.quedas += curr.quedas; // USA AS QUEDAS REAIS AQUI
+            acc.abates += curr.abates; acc.quedas += curr.quedas; 
             return acc;
         }, { pontos: 0, booyah: 0, abates: 0, quedas: 0 });
         Object.assign(t, totals);
@@ -1433,12 +1351,11 @@ function autoCalculateTotals() {
 }
 
 async function loadLbffData() {
-    if (lbffLoaded) return; // Se já estiver cheia, não faz nada
+    if (lbffLoaded) return; 
     try {
         const response = await fetch(typeof withCacheBuster === 'function' ? withCacheBuster('lbffData.json') : `lbffData.json?nocache=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) throw new Error("Erro ao carregar lbffData.json");
 
-        // Aqui a mágica acontece: a variável global recebe os dados do arquivo
         lbffData = await response.json();
 
         lbffLoaded = true;
@@ -1448,14 +1365,10 @@ async function loadLbffData() {
     }
 }
 
-// Função para converter "25 de Abril" em um objeto Date do JS
 function parseMatchDate(dateStr) {
     const months = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5 };
     const parts = dateStr.split(" de ");
     const day = parseInt(parts[0]);
     const month = months[parts[1]];
-    // Define a data para o ano de 2026, às 13:00:00
     return new Date(2026, month, day, 13, 0, 0);
 }
-
-
