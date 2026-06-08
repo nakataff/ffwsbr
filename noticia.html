@@ -14,7 +14,7 @@
   <meta name="description" content="Notícia da Central Free Fire.">
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/bundle.min.css">
-  <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v1"></script>
+  <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v2"></script>
   <style>
     body { background: var(--bg, #07101f); color: var(--text, #f5f8ff); }
     .news-page-shell { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
@@ -31,6 +31,10 @@
     .news-meta { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; color:#8fb3dc; font-size:.85rem; font-weight:850; }
     .news-body { margin-top:26px; color:#eaf4ff; font-size:1.04rem; line-height:1.8; }
     .news-body p { margin:0 0 18px; }
+    .news-inline-image { margin:24px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.035); }
+    .news-inline-image img { width:100%; display:block; object-fit:cover; }
+    .news-inline-image figcaption { padding:9px 12px; color:#9db9d6; font-size:.82rem; font-weight:750; }
+    .news-body .news-break { height:8px; }
     .news-body a, .news-original-link { color:var(--accent, #00c8ff); font-weight:900; }
     .news-original-link { display:inline-flex; margin-top:18px; text-decoration:none; border:1px solid rgba(0,200,255,.22); padding:10px 13px; border-radius:12px; background:rgba(0,200,255,.06); }
     .news-state { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; color:#8fb3dc; font-weight:900; }
@@ -145,13 +149,71 @@
       }).filter(item => item.titulo && item.id);
     }
 
-    function paragraphs(text) {
+    function renderParagraph(text) {
       const clean = String(text || '').trim();
       if (!clean) return '';
-      return clean.split(/\n{2,}|\r\n{2,}/).map(part => {
-        const lines = part.split(/\n|\r\n/).map(escapeHTML).join('<br>');
-        return `<p>${lines}</p>`;
-      }).join('');
+      const lines = clean.split(/
+?
+/).map(escapeHTML).join('<br>');
+      return `<p>${lines}</p>`;
+    }
+
+    function renderInlineImage(url, caption) {
+      const cleanUrl = driveImage(String(url || '').trim());
+      if (!cleanUrl) return '';
+      const cleanCaption = String(caption || '').trim();
+      return `<figure class="news-inline-image"><img src="${escapeHTML(cleanUrl)}" alt="Imagem da notícia" loading="lazy" onerror="this.closest('figure').remove()">${cleanCaption ? `<figcaption>${escapeHTML(cleanCaption)}</figcaption>` : ''}</figure>`;
+    }
+
+    function renderNewsBody(text) {
+      let src = String(text || '').replace(/
+/g, '\n').trim();
+      if (!src) return '';
+
+      // Códigos aceitos na planilha:
+      // [P] cria uma quebra de parágrafo.
+      // [IMG: https://site/imagem.webp] insere imagem no corpo.
+      // [IMG: https://site/imagem.webp | legenda opcional] insere imagem com legenda.
+      src = src
+        .replace(//g, '\n')
+        .replace(//g, '\n')
+        .replace(//g, '')
+        .replace(/	/g, ' ');
+
+      const tokenRegex = /\[(P|PARAGRAFO|PARÁGRAFO|BR)\]|\[IMG\s*:\s*([^\]]+)\]/gi;
+      let html = '';
+      let buffer = '';
+      let lastIndex = 0;
+      let match;
+
+      function flushParagraph() {
+        const paragraph = buffer.trim();
+        if (paragraph) html += renderParagraph(paragraph);
+        buffer = '';
+      }
+
+      while ((match = tokenRegex.exec(src)) !== null) {
+        buffer += src.slice(lastIndex, match.index);
+        flushParagraph();
+
+        if (match[1]) {
+          html += '<div class="news-break" aria-hidden="true"></div>';
+        } else if (match[2]) {
+          const parts = String(match[2]).split('|');
+          const url = parts.shift() || '';
+          const caption = parts.join('|').trim();
+          html += renderInlineImage(url, caption);
+        }
+        lastIndex = tokenRegex.lastIndex;
+      }
+
+      buffer += src.slice(lastIndex);
+      flushParagraph();
+
+      if (!html) {
+        html = src.split(/\n{2,}/).map(renderParagraph).join('');
+      }
+      return html;
     }
 
     function setMeta(title, description, image) {
@@ -180,7 +242,7 @@
     function renderNews(item) {
       const image = item.imagem || fallbackImage;
       setMeta(item.titulo, item.resumo, image);
-      const body = paragraphs(item.conteudo || item.resumo || 'Conteúdo ainda não preenchido na planilha.');
+      const body = renderNewsBody(item.conteudo || item.resumo || 'Conteúdo ainda não preenchido na planilha.');
       const meta = [item.data, item.autor].filter(Boolean).map(escapeHTML).join(' • ');
       root.innerHTML = `
         <img class="news-cover" src="${escapeHTML(image)}" alt="${escapeHTML(item.titulo)}" onerror="this.src='${fallbackImage}'">
