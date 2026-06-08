@@ -14,7 +14,7 @@
   <meta name="description" content="Notícia da Central Free Fire.">
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/bundle.min.css">
-  <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v2"></script>
+  <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v3"></script>
   <style>
     body { background: var(--bg, #07101f); color: var(--text, #f5f8ff); }
     .news-page-shell { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
@@ -37,7 +37,7 @@
     .news-body .news-break { height:8px; }
     .news-body a, .news-original-link { color:var(--accent, #00c8ff); font-weight:900; }
     .news-original-link { display:inline-flex; margin-top:18px; text-decoration:none; border:1px solid rgba(0,200,255,.22); padding:10px 13px; border-radius:12px; background:rgba(0,200,255,.06); }
-    .news-state { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; color:#8fb3dc; font-weight:900; }
+    .news-state { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; color:#8fb3dc; font-weight:900; padding:20px; }
     @media (max-width: 680px) {
       .news-page-shell { width: min(100% - 18px, 980px); padding-top:14px; }
       .news-topbar { align-items:flex-start; flex-direction:column-reverse; }
@@ -64,9 +64,9 @@
     const root = document.getElementById('noticia-dinamica');
 
     function escapeHTML(value) {
-      return String(value ?? '').replace(/[&<>"']/g, char => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-      }[char]));
+      return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char];
+      });
     }
 
     function slugify(value) {
@@ -78,26 +78,31 @@
 
     function parseTSV(text) {
       const rows = [];
-      let row = [], cell = '', quoted = false;
+      let row = [];
+      let cell = '';
+      let quoted = false;
       const src = String(text || '').replace(/^\uFEFF/, '');
       for (let i = 0; i < src.length; i++) {
-        const char = src[i], next = src[i + 1];
+        const char = src[i];
+        const next = src[i + 1];
         if (char === '"') {
           if (quoted && next === '"') { cell += '"'; i++; }
           else quoted = !quoted;
         } else if (char === '\t' && !quoted) {
-          row.push(cell.trim()); cell = '';
+          row.push(cell.trim());
+          cell = '';
         } else if ((char === '\n' || char === '\r') && !quoted) {
           if (char === '\r' && next === '\n') i++;
           row.push(cell.trim());
-          if (row.some(item => String(item).trim() !== '')) rows.push(row);
-          row = []; cell = '';
+          if (row.some(function (item) { return String(item).trim() !== ''; })) rows.push(row);
+          row = [];
+          cell = '';
         } else {
           cell += char;
         }
       }
       row.push(cell.trim());
-      if (row.some(item => String(item).trim() !== '')) rows.push(row);
+      if (row.some(function (item) { return String(item).trim() !== ''; })) rows.push(row);
       return rows;
     }
 
@@ -110,9 +115,9 @@
     function driveImage(url) {
       let value = String(url || '').trim().replace(/\r/g, '');
       if (!value) return '';
-      if (value.includes('drive.google.com')) {
+      if (value.indexOf('drive.google.com') !== -1) {
         const match = value.match(/\/d\/([a-zA-Z0-9_-]+)/) || value.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-        if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+        if (match && match[1]) return 'https://drive.google.com/uc?export=view&id=' + match[1];
       }
       return value;
     }
@@ -130,55 +135,43 @@
       if (!rows.length) return [];
       const headers = rows[0].map(normalizeHeader);
       const hasHeaders = headers.includes('titulo') || headers.includes('conteudo') || headers.includes('resumo') || headers.includes('link_original');
-      return rows.slice(1).map((cols, index) => {
+      return rows.slice(1).map(function (cols, index) {
         const raw = {};
-        if (hasHeaders) headers.forEach((header, i) => raw[header] = cols[i] || '');
-        else Object.assign(raw, { imagem: cols[0] || '', titulo: cols[1] || '', link_original: cols[2] || '', destaque: cols[3] || '' });
+        if (hasHeaders) headers.forEach(function (header, i) { raw[header] = cols[i] || ''; });
+        else Object.assign(raw, { imagem: cols[0] || '', titulo: cols[1] || '', link_original: cols[2] || '', destaque: cols[3] || '', conteudo: cols[4] || '' });
         const titulo = firstField(raw, ['titulo', 'title', 'manchete']);
-        const id = firstField(raw, ['id', 'slug']) || slugify(titulo || `noticia-${index + 1}`);
+        const id = firstField(raw, ['id', 'slug']) || slugify(titulo || ('noticia-' + (index + 1)));
         return {
-          id,
-          titulo,
+          id: id,
+          titulo: titulo,
           imagem: driveImage(firstField(raw, ['imagem', 'image', 'foto', 'capa', 'thumb'])),
           resumo: firstField(raw, ['resumo', 'subtitulo', 'descricao', 'description']),
-          conteudo: firstField(raw, ['conteudo', 'texto', 'materia', 'noticia', 'body', 'article']),
+          conteudo: firstField(raw, ['conteudo', 'texto', 'materia', 'matéria', 'noticia', 'notícia', 'body', 'article']),
           data: firstField(raw, ['data', 'date', 'publicado_em']),
           autor: firstField(raw, ['autor', 'author', 'fonte']),
           linkOriginal: firstField(raw, ['link_original', 'link', 'url', 'instagram'])
         };
-      }).filter(item => item.titulo && item.id);
+      }).filter(function (item) { return item.titulo && item.id; });
     }
 
     function renderParagraph(text) {
       const clean = String(text || '').trim();
       if (!clean) return '';
-      const lines = clean.split(/
-?
-/).map(escapeHTML).join('<br>');
-      return `<p>${lines}</p>`;
+      const lines = clean.split(/\r?\n/).map(escapeHTML).join('<br>');
+      return '<p>' + lines + '</p>';
     }
 
     function renderInlineImage(url, caption) {
       const cleanUrl = driveImage(String(url || '').trim());
       if (!cleanUrl) return '';
       const cleanCaption = String(caption || '').trim();
-      return `<figure class="news-inline-image"><img src="${escapeHTML(cleanUrl)}" alt="Imagem da notícia" loading="lazy" onerror="this.closest('figure').remove()">${cleanCaption ? `<figcaption>${escapeHTML(cleanCaption)}</figcaption>` : ''}</figure>`;
+      return '<figure class="news-inline-image"><img src="' + escapeHTML(cleanUrl) + '" alt="Imagem da notícia" loading="lazy" onerror="this.closest(\'figure\').remove()">' + (cleanCaption ? '<figcaption>' + escapeHTML(cleanCaption) + '</figcaption>' : '') + '</figure>';
     }
 
     function renderNewsBody(text) {
-      let src = String(text || '').replace(/
-/g, '\n').trim();
+      let src = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
       if (!src) return '';
-
-      // Códigos aceitos na planilha:
-      // [P] cria uma quebra de parágrafo.
-      // [IMG: https://site/imagem.webp] insere imagem no corpo.
-      // [IMG: https://site/imagem.webp | legenda opcional] insere imagem com legenda.
-      src = src
-        .replace(//g, '\n')
-        .replace(//g, '\n')
-        .replace(//g, '')
-        .replace(/	/g, ' ');
+      src = src.replace(/\u000b/g, '\n').replace(/\u000c/g, '\n').replace(/\u0008/g, '').replace(/\t/g, ' ');
 
       const tokenRegex = /\[(P|PARAGRAFO|PARÁGRAFO|BR)\]|\[IMG\s*:\s*([^\]]+)\]/gi;
       let html = '';
@@ -195,7 +188,6 @@
       while ((match = tokenRegex.exec(src)) !== null) {
         buffer += src.slice(lastIndex, match.index);
         flushParagraph();
-
         if (match[1]) {
           html += '<div class="news-break" aria-hidden="true"></div>';
         } else if (match[2]) {
@@ -206,29 +198,26 @@
         }
         lastIndex = tokenRegex.lastIndex;
       }
-
       buffer += src.slice(lastIndex);
       flushParagraph();
 
-      if (!html) {
-        html = src.split(/\n{2,}/).map(renderParagraph).join('');
-      }
+      if (!html) html = src.split(/\n{2,}/).map(renderParagraph).join('');
       return html;
     }
 
     function setMeta(title, description, image) {
-      document.title = `${title} | Central Free Fire`;
+      document.title = title + ' | Central Free Fire';
       const desc = document.querySelector('meta[name="description"]');
       if (desc) desc.setAttribute('content', description || title);
-      const ensure = (attr, key, content) => {
-        let el = document.querySelector(`meta[${attr}="${key}"]`);
+      function ensure(attr, key, content) {
+        let el = document.querySelector('meta[' + attr + '="' + key + '"]');
         if (!el) {
           el = document.createElement('meta');
           el.setAttribute(attr, key);
           document.head.appendChild(el);
         }
         el.setAttribute('content', content);
-      };
+      }
       ensure('property', 'og:title', title);
       ensure('property', 'og:description', description || title);
       ensure('property', 'og:image', image || fallbackImage);
@@ -244,16 +233,15 @@
       setMeta(item.titulo, item.resumo, image);
       const body = renderNewsBody(item.conteudo || item.resumo || 'Conteúdo ainda não preenchido na planilha.');
       const meta = [item.data, item.autor].filter(Boolean).map(escapeHTML).join(' • ');
-      root.innerHTML = `
-        <img class="news-cover" src="${escapeHTML(image)}" alt="${escapeHTML(item.titulo)}" onerror="this.src='${fallbackImage}'">
-        <div class="news-content">
-          <div class="news-kicker">Notícia</div>
-          <h1 class="news-title">${escapeHTML(item.titulo)}</h1>
-          ${item.resumo ? `<p class="news-summary">${escapeHTML(item.resumo)}</p>` : ''}
-          ${meta ? `<div class="news-meta">${meta}</div>` : ''}
-          <div class="news-body">${body}</div>
-          ${item.linkOriginal ? `<a class="news-original-link" href="${escapeHTML(item.linkOriginal)}" target="_blank" rel="noopener noreferrer">Ver publicação original →</a>` : ''}
-        </div>`;
+      root.innerHTML = '<img class="news-cover" src="' + escapeHTML(image) + '" alt="' + escapeHTML(item.titulo) + '" onerror="this.src=\'' + fallbackImage + '\'">' +
+        '<div class="news-content">' +
+        '<div class="news-kicker">Notícia</div>' +
+        '<h1 class="news-title">' + escapeHTML(item.titulo) + '</h1>' +
+        (item.resumo ? '<p class="news-summary">' + escapeHTML(item.resumo) + '</p>' : '') +
+        (meta ? '<div class="news-meta">' + meta + '</div>' : '') +
+        '<div class="news-body">' + body + '</div>' +
+        (item.linkOriginal ? '<a class="news-original-link" href="' + escapeHTML(item.linkOriginal) + '" target="_blank" rel="noopener noreferrer">Ver publicação original →</a>' : '') +
+        '</div>';
     }
 
     async function init() {
@@ -261,22 +249,28 @@
         const params = new URLSearchParams(location.search);
         const wanted = decodeURIComponent(params.get('id') || params.get('slug') || '').trim();
         if (!wanted) return renderNotFound();
+
         let wait = 0;
         while ((!window.CFF_CONFIG || !window.CFF_CONFIG.sheets) && wait < 80) {
-          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise(function (resolve) { setTimeout(resolve, 50); });
           wait++;
         }
         const sheetUrl = window.CFF_CONFIG && window.CFF_CONFIG.sheets && window.CFF_CONFIG.sheets.noticias;
         if (!sheetUrl) throw new Error('Configuração da planilha de notícias não encontrada.');
-        const response = await fetch(`${sheetUrl}&v=${Math.floor(Date.now() / 300000)}`, { cache: 'default' });
+
+        const joiner = sheetUrl.indexOf('?') === -1 ? '?' : '&';
+        const response = await fetch(sheetUrl + joiner + 'v=' + Math.floor(Date.now() / 300000), { cache: 'default' });
         if (!response.ok) throw new Error('Não foi possível carregar a planilha de notícias.');
+
         const noticias = parseNoticias(await response.text());
         const wantedSlug = slugify(wanted);
-        const item = noticias.find(news => news.id === wanted || slugify(news.id) === wantedSlug || slugify(news.titulo) === wantedSlug);
+        const item = noticias.find(function (news) {
+          return news.id === wanted || slugify(news.id) === wantedSlug || slugify(news.titulo) === wantedSlug;
+        });
         if (!item) return renderNotFound();
         renderNews(item);
       } catch (error) {
-        root.innerHTML = '<div class="news-state">Erro ao carregar a notícia da planilha.</div>';
+        root.innerHTML = '<div class="news-state">Erro ao carregar a notícia da planilha.<br>Abra o console para ver o detalhe técnico.</div>';
         console.error(error);
       }
     }
