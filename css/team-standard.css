@@ -144,13 +144,29 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 12px;
-    margin-top: 18px;
+    gap: 16px;
+    margin-top: 34px;
+    padding-top: 22px;
+    border-top: 1px dashed rgba(255, 255, 255, .14);
+    position: relative;
+    clear: both;
+    width: 100%;
+}
+
+.team-standard-staff-title {
+    width: 100%;
+    color: var(--text-muted);
+    font-size: .76rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: -4px;
 }
 
 .team-standard-staff {
     width: 132px;
-    padding: 12px 8px;
+    padding: 14px 8px 12px;
 }
 
 .team-standard-staff .team-standard-avatar {
@@ -257,6 +273,148 @@
     margin-top: 4px;
 }
 
+.team-standard-competition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.team-standard-competition-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel-bg);
+    overflow: hidden;
+}
+
+.team-standard-competition-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    padding: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.team-standard-competition-toggle strong,
+.team-standard-competition-toggle small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-standard-competition-toggle strong {
+    font-size: .92rem;
+    white-space: nowrap;
+}
+
+.team-standard-competition-toggle small {
+    color: var(--text-muted);
+    font-size: .74rem;
+    margin-top: 4px;
+}
+
+.team-standard-competition-toggle b {
+    flex: 0 0 auto;
+    color: var(--accent);
+    font-size: .72rem;
+    text-transform: uppercase;
+}
+
+.team-standard-competition-details {
+    border-top: 1px solid var(--border);
+    padding: 12px;
+}
+
+.team-standard-result-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.team-standard-result-details div {
+    background: rgba(255, 255, 255, .025);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.team-standard-result-details small {
+    display: block;
+    color: var(--text-muted);
+    font-size: .66rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.team-standard-result-details strong {
+    color: #fff;
+    font-size: .9rem;
+    word-break: break-word;
+}
+
+.team-standard-trophy-group + .team-standard-trophy-group {
+    margin-top: 18px;
+}
+
+.team-standard-trophy-group h4 {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    font-size: .86rem;
+    margin: 0 0 10px;
+}
+
+.team-standard-trophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.team-standard-trophy-card {
+    border: 1px solid rgba(255, 215, 0, .2);
+    background: linear-gradient(180deg, rgba(255, 215, 0, .07), rgba(255, 255, 255, .018));
+    border-radius: 10px;
+    padding: 14px;
+    min-height: 112px;
+}
+
+.team-standard-trophy-icon {
+    display: block;
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.team-standard-trophy-card strong,
+.team-standard-trophy-card small,
+.team-standard-trophy-card em {
+    display: block;
+}
+
+.team-standard-trophy-card strong {
+    color: #ffd700;
+    text-transform: uppercase;
+    font-size: .88rem;
+}
+
+.team-standard-trophy-card small {
+    color: #fff;
+    margin-top: 5px;
+    line-height: 1.35;
+}
+
+.team-standard-trophy-card em {
+    color: var(--text-muted);
+    font-style: normal;
+    margin-top: 7px;
+    font-size: .78rem;
+}
+
 @media (max-width: 768px) {
     .team-standard-hero {
         padding: 22px 12px 18px;
@@ -271,6 +429,16 @@
     .team-standard-roster {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
+    }
+
+    .team-standard-staff-grid {
+        margin-top: 30px;
+        gap: 12px;
+    }
+
+    .team-standard-staff {
+        width: calc(50% - 10px);
+        max-width: 150px;
     }
 
     .team-standard-section-head {
