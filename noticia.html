@@ -31,6 +31,8 @@
     .news-meta { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; color:#8fb3dc; font-size:.85rem; font-weight:850; }
     .news-body { margin-top:26px; color:#eaf4ff; font-size:1.04rem; line-height:1.8; }
     .news-body p { margin:0 0 18px; }
+    .news-body h2 { margin:30px 0 12px; color:#fff; font-size:clamp(1.35rem, 3.2vw, 1.9rem); line-height:1.18; font-weight:1000; letter-spacing:.01em; }
+    .news-body h3 { margin:24px 0 10px; color:#dff4ff; font-size:clamp(1.12rem, 2.5vw, 1.45rem); line-height:1.25; font-weight:950; }
     .news-inline-image { margin:24px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.035); }
     .news-inline-image img { width:100%; display:block; object-fit:cover; }
     .news-inline-image figcaption { padding:9px 12px; color:#9db9d6; font-size:.82rem; font-weight:750; }
@@ -173,7 +175,7 @@
       if (!src) return '';
       src = src.replace(/\u000b/g, '\n').replace(/\u000c/g, '\n').replace(/\u0008/g, '').replace(/\t/g, ' ');
 
-      const tokenRegex = /\[(P|PARAGRAFO|PARÁGRAFO|BR)\]|\[IMG\s*:\s*([^\]]+)\]/gi;
+      const tokenRegex = /\[(P|PARAGRAFO|PARÁGRAFO|BR)\]|\[IMG\s*:\s*([^\]]+)\]|\[(H2|H3)\s*:?\s*([^\]]*)\]/gi;
       let html = '';
       let buffer = '';
       let lastIndex = 0;
@@ -195,6 +197,10 @@
           const url = parts.shift() || '';
           const caption = parts.join('|').trim();
           html += renderInlineImage(url, caption);
+        } else if (match[3]) {
+          const level = String(match[3]).toLowerCase();
+          const title = String(match[4] || '').trim();
+          if (title) html += '<' + level + '>' + escapeHTML(title) + '</' + level + '>';
         }
         lastIndex = tokenRegex.lastIndex;
       }
@@ -233,8 +239,7 @@
       setMeta(item.titulo, item.resumo, image);
       const body = renderNewsBody(item.conteudo || item.resumo || 'Conteúdo ainda não preenchido na planilha.');
       const meta = [item.data, item.autor].filter(Boolean).map(escapeHTML).join(' • ');
-      root.innerHTML = '<img class="news-cover" src="' + escapeHTML(image) + '" alt="' + escapeHTML(item.titulo) + '" onerror="this.src=\'' + fallbackImage + '\'">' +
-        '<div class="news-content">' +
+      root.innerHTML = '<div class="news-content">' +
         '<div class="news-kicker">Notícia</div>' +
         '<h1 class="news-title">' + escapeHTML(item.titulo) + '</h1>' +
         (item.resumo ? '<p class="news-summary">' + escapeHTML(item.resumo) + '</p>' : '') +
