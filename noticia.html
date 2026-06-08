@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <script>
+  (function () {
+    if (location.protocol === 'http:' && !/^(localhost|127\.0\.0\.1)$/i.test(location.hostname)) {
+      location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+    }
+  })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notícia | Central Free Fire</title>
+  <meta name="description" content="Notícia da Central Free Fire.">
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/bundle.min.css">
+  <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v1"></script>
+  <style>
+    body { background: var(--bg, #07101f); color: var(--text, #f5f8ff); }
+    .news-page-shell { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
+    .news-topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; }
+    .news-back { border:1px solid rgba(0,200,255,.25); background:rgba(0,200,255,.07); color:#fff; border-radius:999px; padding:10px 14px; font-weight:900; text-decoration:none; }
+    .news-brand { display:flex; align-items:center; gap:10px; color:#8fb3dc; font-size:.82rem; font-weight:950; letter-spacing:1.2px; text-transform:uppercase; }
+    .news-brand img { width:32px; height:32px; object-fit:contain; border-radius:8px; }
+    .news-article { border:1px solid rgba(0,200,255,.16); border-radius:24px; background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02)); overflow:hidden; box-shadow:0 22px 80px rgba(0,0,0,.25); }
+    .news-cover { width:100%; max-height:480px; object-fit:cover; display:block; background:#081323; }
+    .news-content { padding: clamp(18px, 4vw, 38px); }
+    .news-kicker { color:var(--accent, #00c8ff); font-size:.78rem; font-weight:1000; letter-spacing:1.8px; text-transform:uppercase; margin-bottom:10px; }
+    .news-title { margin:0; color:#fff; font-size:clamp(1.9rem, 5vw, 3.25rem); line-height:1.02; font-weight:1000; letter-spacing:.02em; }
+    .news-summary { color:#d7ecff; margin:14px 0 0; font-size:1.08rem; line-height:1.55; font-weight:650; }
+    .news-meta { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; color:#8fb3dc; font-size:.85rem; font-weight:850; }
+    .news-body { margin-top:26px; color:#eaf4ff; font-size:1.04rem; line-height:1.8; }
+    .news-body p { margin:0 0 18px; }
+    .news-body a, .news-original-link { color:var(--accent, #00c8ff); font-weight:900; }
+    .news-original-link { display:inline-flex; margin-top:18px; text-decoration:none; border:1px solid rgba(0,200,255,.22); padding:10px 13px; border-radius:12px; background:rgba(0,200,255,.06); }
+    .news-state { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; color:#8fb3dc; font-weight:900; }
+    @media (max-width: 680px) {
+      .news-page-shell { width: min(100% - 18px, 980px); padding-top:14px; }
+      .news-topbar { align-items:flex-start; flex-direction:column-reverse; }
+      .news-cover { max-height:300px; }
+      .news-content { padding:18px; }
+      .news-title { font-size:2rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="news-page-shell">
+    <div class="news-topbar">
+      <a class="news-back" href="/">← Voltar para a home</a>
+      <div class="news-brand"><img src="central free fire.webp" alt="Central Free Fire">Central Free Fire</div>
+    </div>
+    <article id="noticia-dinamica" class="news-article">
+      <div class="news-state">Carregando notícia...</div>
+    </article>
+  </main>
+
+  <script>
+  (function () {
+    const fallbackImage = 'central free fire.webp';
+    const root = document.getElementById('noticia-dinamica');
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      }[char]));
+    }
+
+    function slugify(value) {
+      return String(value || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function parseTSV(text) {
+      const rows = [];
+      let row = [], cell = '', quoted = false;
+      const src = String(text || '').replace(/^\uFEFF/, '');
+      for (let i = 0; i < src.length; i++) {
+        const char = src[i], next = src[i + 1];
+        if (char === '"') {
+          if (quoted && next === '"') { cell += '"'; i++; }
+          else quoted = !quoted;
+        } else if (char === '\t' && !quoted) {
+          row.push(cell.trim()); cell = '';
+        } else if ((char === '\n' || char === '\r') && !quoted) {
+          if (char === '\r' && next === '\n') i++;
+          row.push(cell.trim());
+          if (row.some(item => String(item).trim() !== '')) rows.push(row);
+          row = []; cell = '';
+        } else {
+          cell += char;
+        }
+      }
+      row.push(cell.trim());
+      if (row.some(item => String(item).trim() !== '')) rows.push(row);
+      return rows;
+    }
+
+    function normalizeHeader(value) {
+      return String(value || '').trim()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/\s+/g, '_');
+    }
+
+    function driveImage(url) {
+      let value = String(url || '').trim().replace(/\r/g, '');
+      if (!value) return '';
+      if (value.includes('drive.google.com')) {
+        const match = value.match(/\/d\/([a-zA-Z0-9_-]+)/) || value.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      }
+      return value;
+    }
+
+    function firstField(item, keys) {
+      for (const key of keys) {
+        const normalized = normalizeHeader(key);
+        if (item[normalized] != null && String(item[normalized]).trim()) return String(item[normalized]).trim();
+      }
+      return '';
+    }
+
+    function parseNoticias(text) {
+      const rows = parseTSV(text);
+      if (!rows.length) return [];
+      const headers = rows[0].map(normalizeHeader);
+      const hasHeaders = headers.includes('titulo') || headers.includes('conteudo') || headers.includes('resumo') || headers.includes('link_original');
+      return rows.slice(1).map((cols, index) => {
+        const raw = {};
+        if (hasHeaders) headers.forEach((header, i) => raw[header] = cols[i] || '');
+        else Object.assign(raw, { imagem: cols[0] || '', titulo: cols[1] || '', link_original: cols[2] || '', destaque: cols[3] || '' });
+        const titulo = firstField(raw, ['titulo', 'title', 'manchete']);
+        const id = firstField(raw, ['id', 'slug']) || slugify(titulo || `noticia-${index + 1}`);
+        return {
+          id,
+          titulo,
+          imagem: driveImage(firstField(raw, ['imagem', 'image', 'foto', 'capa', 'thumb'])),
+          resumo: firstField(raw, ['resumo', 'subtitulo', 'descricao', 'description']),
+          conteudo: firstField(raw, ['conteudo', 'texto', 'materia', 'noticia', 'body', 'article']),
+          data: firstField(raw, ['data', 'date', 'publicado_em']),
+          autor: firstField(raw, ['autor', 'author', 'fonte']),
+          linkOriginal: firstField(raw, ['link_original', 'link', 'url', 'instagram'])
+        };
+      }).filter(item => item.titulo && item.id);
+    }
+
+    function paragraphs(text) {
+      const clean = String(text || '').trim();
+      if (!clean) return '';
+      return clean.split(/\n{2,}|\r\n{2,}/).map(part => {
+        const lines = part.split(/\n|\r\n/).map(escapeHTML).join('<br>');
+        return `<p>${lines}</p>`;
+      }).join('');
+    }
+
+    function setMeta(title, description, image) {
+      document.title = `${title} | Central Free Fire`;
+      const desc = document.querySelector('meta[name="description"]');
+      if (desc) desc.setAttribute('content', description || title);
+      const ensure = (attr, key, content) => {
+        let el = document.querySelector(`meta[${attr}="${key}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute(attr, key);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      };
+      ensure('property', 'og:title', title);
+      ensure('property', 'og:description', description || title);
+      ensure('property', 'og:image', image || fallbackImage);
+      ensure('property', 'og:type', 'article');
+    }
+
+    function renderNotFound() {
+      root.innerHTML = '<div class="news-state">Notícia não encontrada na planilha.<br>Confira se o ID/slug da notícia está igual ao link.</div>';
+    }
+
+    function renderNews(item) {
+      const image = item.imagem || fallbackImage;
+      setMeta(item.titulo, item.resumo, image);
+      const body = paragraphs(item.conteudo || item.resumo || 'Conteúdo ainda não preenchido na planilha.');
+      const meta = [item.data, item.autor].filter(Boolean).map(escapeHTML).join(' • ');
+      root.innerHTML = `
+        <img class="news-cover" src="${escapeHTML(image)}" alt="${escapeHTML(item.titulo)}" onerror="this.src='${fallbackImage}'">
+        <div class="news-content">
+          <div class="news-kicker">Notícia</div>
+          <h1 class="news-title">${escapeHTML(item.titulo)}</h1>
+          ${item.resumo ? `<p class="news-summary">${escapeHTML(item.resumo)}</p>` : ''}
+          ${meta ? `<div class="news-meta">${meta}</div>` : ''}
+          <div class="news-body">${body}</div>
+          ${item.linkOriginal ? `<a class="news-original-link" href="${escapeHTML(item.linkOriginal)}" target="_blank" rel="noopener noreferrer">Ver publicação original →</a>` : ''}
+        </div>`;
+    }
+
+    async function init() {
+      try {
+        const params = new URLSearchParams(location.search);
+        const wanted = decodeURIComponent(params.get('id') || params.get('slug') || '').trim();
+        if (!wanted) return renderNotFound();
+        let wait = 0;
+        while ((!window.CFF_CONFIG || !window.CFF_CONFIG.sheets) && wait < 80) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+          wait++;
+        }
+        const sheetUrl = window.CFF_CONFIG && window.CFF_CONFIG.sheets && window.CFF_CONFIG.sheets.noticias;
+        if (!sheetUrl) throw new Error('Configuração da planilha de notícias não encontrada.');
+        const response = await fetch(`${sheetUrl}&v=${Math.floor(Date.now() / 300000)}`, { cache: 'default' });
+        if (!response.ok) throw new Error('Não foi possível carregar a planilha de notícias.');
+        const noticias = parseNoticias(await response.text());
+        const wantedSlug = slugify(wanted);
+        const item = noticias.find(news => news.id === wanted || slugify(news.id) === wantedSlug || slugify(news.titulo) === wantedSlug);
+        if (!item) return renderNotFound();
+        renderNews(item);
+      } catch (error) {
+        root.innerHTML = '<div class="news-state">Erro ao carregar a notícia da planilha.</div>';
+        console.error(error);
+      }
+    }
+
+    init();
+  })();
+  </script>
+</body>
+</html>
