@@ -20,8 +20,11 @@
      crossorigin="anonymous"></script>
 <script defer src="js/config.min.js?v=20260520-auto-cache-v2"></script>
 <!-- Limpa service workers/caches antigos para evitar site travado no mobile -->
-<script defer src="js/service-worker-register.min.js?v=20260607-cache-once-v1"></script>
+<script defer src="js/service-worker-register.min.js?v=20260610-wb-standalone-v2"></script>
 <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central Free Fire | Estatísticas Competitivas de Free Fire</title>
 <meta name="description" content="Central completa de estatísticas do competitivo de Free Fire: rankings MVP, equipes, jogadores, mercado da bala, torneios, histórico e comparações.">
@@ -150,7 +153,7 @@
         <div class="sidebar-category">PRINCIPAL</div>
         <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
-        <button onclick="window.location.href='https://centralfreefire.com.br/#wbamanger'" id="sb-wbamanger">WB MANAGER BETA</button>
+        <button onclick="window.location.href='manager.html?v=20260610-wb-standalone-v2'" id="sb-wbamanger">WB MANAGER BETA</button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">FFWS BR 2026 S1</div>
@@ -347,7 +350,7 @@
    <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
     <div id="ultimas-noticias-grid" class="old-news-grid"></div>
 
-    <a class="home-wb-manager-beta" href="https://centralfreefire.com.br/#wbamanger">
+    <a class="home-wb-manager-beta" href="manager.html?v=20260610-wb-standalone-v2">
         <span>
             <small>WB Manager - versão beta</small>
             <strong>Monte, simule, conquiste!</strong>
@@ -512,8 +515,12 @@
 
 <div id="wbamanger" class="page">
     <button class="btn-back" onclick="navigate('home')">← Voltar</button>
-    <section class="wb-manager-page-shell">
-        <iframe src="manager.html?v=20260610-wb-manager-fix-v1" title="WB Manager - Versão Beta"></iframe>
+    <section class="wb-manager-page-shell" style="min-height:260px; display:flex; align-items:center; justify-content:center; text-align:center; padding:30px;">
+        <div>
+            <h2 style="color:#ffc226; margin-bottom:12px;">WB Manager agora abre em página própria</h2>
+            <p style="color:#aaa; margin-bottom:18px;">Clique abaixo para abrir sem o layout do site.</p>
+            <a class="btn-action" href="manager.html?v=20260610-wb-standalone-v2">Abrir WB Manager</a>
+        </div>
     </section>
 </div>
 
@@ -1851,7 +1858,7 @@
             </div>
     </div>
 </div>
-<script defer src="js/core-data.min.js?v=20260601-webp-fix-v2"></script>
+<script defer src="js/core-data.min.js?v=20260610-wb-standalone-v2"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
 <script defer src="js/search-history-compare.min.js?v=20260603-hall-lbff-final-v1"></script>
