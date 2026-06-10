@@ -54,6 +54,65 @@
 .home-ffws-badge.ewc { color: #64b5ff; border: 1px solid rgba(100,181,255,.35); background: rgba(100,181,255,.08); }
 .home-ffws-ewc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; width: 100%; }
 .home-ffws-final-link { border-radius: 16px !important; border: 1px solid rgba(0,200,255,.25) !important; margin-top: 2px; }
+.home-wb-manager-beta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin: 18px 0 34px;
+  padding: 22px;
+  border: 1px solid rgba(255, 194, 38, .34);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255,194,38,.16), rgba(0,200,255,.05));
+  text-decoration: none;
+  color: #fff;
+}
+.home-wb-manager-beta:hover { border-color: #ffc226; transform: translateY(-1px); }
+.home-wb-manager-beta small {
+  color: #ffc226;
+  font-weight: 950;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+.home-wb-manager-beta strong {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(1.3rem, 3vw, 2.1rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.home-wb-manager-beta span {
+  color: #d7ecff;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+.home-wb-manager-beta b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #ffc226;
+  color: #0a0702;
+  font-weight: 1000;
+  white-space: nowrap;
+}
+.wb-manager-page-shell {
+  min-height: calc(100vh - 90px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #0d0a03;
+}
+.wb-manager-page-shell iframe {
+  width: 100%;
+  min-height: calc(100vh - 96px);
+  border: 0;
+  display: block;
+  background: #0d0a03;
+}
 @media (max-width: 720px) {
   .home-ffws-champion-body { padding: 18px 12px !important; }
   .home-ffws-ewc-grid { grid-template-columns: 1fr; }
@@ -62,6 +121,8 @@
   .home-ffws-team-card img, .home-ffws-team-card-champion img { width: 46px; height: 46px; }
   .home-ffws-team-info small { font-size: .78rem; }
   .home-ffws-badge { padding: 6px 10px; font-size: .7rem; }
+  .home-wb-manager-beta { grid-template-columns: 1fr; padding: 18px; }
+  .home-wb-manager-beta b { width: 100%; }
 }
 </style>
 </head>
@@ -89,6 +150,7 @@
         <div class="sidebar-category">PRINCIPAL</div>
         <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
+        <button onclick="window.location.href='https://centralfreefire.com.br/#wbamanger'" id="sb-wbamanger">WB MANAGER BETA</button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">FFWS BR 2026 S1</div>
@@ -285,6 +347,14 @@
    <h2 id="ultimas-noticias-titulo" style="display:none;">Últimas Notícias</h2>
     <div id="ultimas-noticias-grid" class="old-news-grid"></div>
 
+    <a class="home-wb-manager-beta" href="https://centralfreefire.com.br/#wbamanger">
+        <span>
+            <small>WB Manager - versão beta</small>
+            <strong>Monte, simule, conquiste!</strong>
+        </span>
+        <b>Jogar agora</b>
+    </a>
+
        <div style="text-align: center; margin-bottom: 40px;">
         <a href="https://instagram.com/nakataff" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 14px 30px; border-radius: 30px; width: fit-content; margin: 0 auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
             <img decoding="async" loading="lazy" src="instagram.webp" style="width: 22px;" alt="Instagram">
@@ -438,9 +508,16 @@
     <tbody></tbody>
 </table>
         </div>
-    </div>
+</div>
 
- <div id="team-profile" class="page">
+<div id="wbamanger" class="page">
+    <button class="btn-back" onclick="navigate('home')">← Voltar</button>
+    <section class="wb-manager-page-shell">
+        <iframe src="manager.html" title="WB Manager - Versão Beta" loading="lazy"></iframe>
+    </section>
+</div>
+
+<div id="team-profile" class="page">
     <button class="btn-back" onclick="navigate(lastVisitedPage)">← Voltar</button>
     
     <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 20px; text-align: center;">

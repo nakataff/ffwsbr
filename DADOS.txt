@@ -1,0 +1,3195 @@
+LBFF 1:
+{{TeamParticipants
+|{{Opponent|Team Liquid|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|LUUUKING|flag=br}}
+    |{{Person|raposo|flag=br}}
+    |{{Person|PEU|flag=br}}
+    |{{Person|JapaBKR|flag=br}}
+    |{{Person|LukasTD|flag=br}}
+    
+    |{{Person|Souto|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|paiN Gaming|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|BLACK00|flag=br}}
+    |{{Person|Ubita|flag=br}}
+    |{{Person|VgzinnN|flag=br}}
+    |{{Person|Geerty|flag=br}}
+    |{{Person|ANON|flag=br}}
+    |{{Person|Rood|flag=br}}
+    
+    |{{Person|Coronel|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|INTZ|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|L7|flag=br}}
+    |{{Person|Lukaskn|flag=br}}
+    |{{Person|Soares|flag=br}}
+    |{{Person|Aun|flag=br}}
+    |{{Person|Supreme|flag=br}}
+    |{{Person|Moreira|flag=br}}
+    
+    |{{Person|Batman|flag=br|link=Batman (Brazilian Coach)|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Corinthians|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Fixa|flag=br}}
+    |{{Person|Nobru|flag=br}}
+    |{{Person|LEVELUP|flag=br}}
+    |{{Person|JAPA04|flag=br}}
+    |{{Person|CRAZY|flag=br}}
+    |{{Person|01pires|flag=br}}
+    
+    |{{Person|chefe_xl|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|BD Los Grandes|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|RiccK|flag=br}}
+    |{{Person|MAXSWELL|flag=br}}
+    |{{Person|LEALS|flag=br}}
+    |{{Person|Phoenix23|flag=br}}
+    |{{Person|Pedro.RS|flag=br}}
+    |{{Person|OTREMBB|flag=br}}
+    |{{Person|Jubinha|flag=br}}
+    |{{Person|berna|flag=br}}
+    
+    |{{Person|Stark|flag=|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|FURIA Esports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|AVENGED|flag=br}}
+    |{{Person|ImJouh|flag=br}}
+    |{{Person|ROFF|flag=br}}
+    |{{Person|SOLOTOV|flag=br}}
+    |{{Person|MAMUTEZL|flag=br}}
+    
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|B4stardos|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|ZIKKA|flag=br}}
+    |{{Person|DeadGOD|flag=br}}
+    |{{Person|FLQP|flag=br}}
+    |{{Person|D3|flag=br}}
+    |{{Person|Avenger|flag=br}}
+    |{{Person|SALDANHA|flag=br}}
+    
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|RED Canids|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Alemão|flag=br}}
+    |{{Person|Dexter|flag=br}}
+    |{{Person|Morato|flag=br}}
+    |{{Person|Madanza|flag=br}}
+    |{{Person|Drzzy|flag=br}}
+    |{{Person|Pfonn|flag=br}}
+    
+    |{{Person|Kaiszera|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Prodigy Esports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Helden|flag=br}}
+    |{{Person|HORUS|flag=br}}
+    |{{Person|Vinni|flag=br}}
+    |{{Person|Antunes22|flag=br}}
+    |{{Person|VnzinnN|flag=br}}
+    |{{Person|VitinnN|flag=br}}
+    |{{Person|Pedro7|flag=br}}
+    
+    |{{Person|WALTER|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Special Killer Service|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|FOGO|flag=br}}
+    |{{Person|NEMO|flag=br}}
+    |{{Person|papaX|flag=br}}
+    |{{Person|XABRAU|flag=br}}
+    |{{Person|MODESTIA|flag=br}}
+    |{{Person|SÓPAPAI|flag=br}}
+    |{{Person|JV77|flag=br}}
+    |{{Person|CRIAOP|flag=br}}
+    
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|LOUD|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Bradoock|flag=}}
+    |{{Person|ShariiN|flag=}}
+    |{{Person|Will|flag=}}
+    |{{Person|ViniZx|flag=}}
+    
+    |{{Person|Wanheda|flag=|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Keyd|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Martins|flag=br}}
+    |{{Person|Kroonos|flag=br}}
+    |{{Person|Brabox|flag=br}}
+    |{{Person|Thiago|flag=br}}
+    |{{Person|VAZILY|flag=br}}
+    |{{Person|BOYKA|flag=br}}
+    
+    |{{Person|K9|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+}}
+
+LBFF 3:
+==Participants==
+{{TeamParticipants
+|{{Opponent|Black Dragons e-Sports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Jubinha|flag=br}}
+    |{{Person|Phoenix23|flag=br}}
+    |{{Person|PEDRO.RS|flag=br}}
+    |{{Person|OTREMBB|flag=br}}
+    |{{Person|YAN7|flag=br}}
+    
+    |{{Person|Stark|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|God E-Sports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|GNERALXX|flag=br}}
+    |{{Person|alok10|flag=br}}
+    |{{Person|PATO|flag=br}}
+    |{{Person|LUFFYXX|flag=br}}
+    |{{Person|BROCO|flag=br}}
+    |{{Person|GLXCK|flag=br}}
+    
+    |{{Person|Zultra|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Los Grandes|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|VitinnN|flag=br}}
+    |{{Person|VnzinnN|flag=br}}
+    |{{Person|LEALS|flag=br}}
+    |{{Person|RafaX|flag=br}}
+    |{{Person|MAMUTEZL|flag=br}}
+    |{{Person|MAYKY01|flag=br}}
+    
+    |{{Person|WALTER|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|FURIA Esports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|JM777|flag=br}}
+    |{{Person|memgod|flag=br}}
+    |{{Person|yurik1nG|flag=br}}
+    |{{Person|BIEL7|flag=br}}
+    |{{Person|Bruno7|flag=br}}
+    
+    |{{Person|PDRM|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Santos e-Sports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|LOBATO4x|flag=br}}
+    |{{Person|one9|flag=br}}
+    |{{Person|ZIKKA|flag=br}}
+    |{{Person|mvR|flag=br}}
+    |{{Person|RUANx5|flag=br}}
+    |{{Person|MAXSWELL|flag=br}}
+    
+    |{{Person|Cauan|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|SS Esports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Taami|flag=br}}
+    |{{Person|Antunes22|flag=br}}
+    |{{Person|Cauan7|flag=br}}
+    |{{Person|Aranha|flag=br}}
+    |{{Person|LEAL7|flag=br}}
+    |{{Person|PÃO7|flag=br}}
+    
+    |{{Person|Metal|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|paiN Gaming|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|BLACK00|flag=br}}
+    |{{Person|Geerty|flag=br}}
+    |{{Person|D3|flag=br}}
+    |{{Person|RiccK|flag=br}}
+    |{{Person|déco|flag=br}}
+    |{{Person|KAYKE|flag=br}}
+    
+    |{{Person|Coronel|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|LOUD|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Will|flag=br}}
+    |{{Person|ViniZx|flag=br}}
+    |{{Person|ShariiN|flag=br}}
+    |{{Person|Noda|flag=br}}
+    |{{Person|Brabox|flag=br}}
+    |{{Person|Kroonos|flag=br}}
+    
+    |{{Person|Cururu|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Flamengo B4|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|DeadGOD|flag=br}}
+    |{{Person|KaueLOK|flag=br}}
+    |{{Person|MODESTIA|flag=br}}
+    |{{Person|Reei|flag=br}}
+    |{{Person|MINUZZI|flag=br}}
+    |{{Person|MISTICO|flag=br}}
+    
+    |{{Person|MACHADO|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|KaBuM! e-Sports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|LAGA_HAIRON|flag=br}}
+    |{{Person|MOGTHBOY|flag=br}}
+    |{{Person|VINNIXL|flag=br}}
+    |{{Person|LZN|flag=br}}
+    |{{Person|Nappon|flag=br}}
+    |{{Person|Avenger|flag=br}}
+    |{{Person|FLQP|flag=br}}
+    
+    |{{Person|METEBALA|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Team Liquid|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|LUUUKING|flag=br}}
+    |{{Person|Boss|flag=br}}
+    |{{Person|MARTINS|flag=br}}
+    |{{Person|LukasTD|flag=br}}
+    |{{Person|Zenac|flag=br}}
+    
+    |{{Person|Matheus Souto|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Fear|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|zDaark|flag=br}}
+    |{{Person|Field|flag=br}}
+    |{{Person|IGOR3|flag=br}}
+    |{{Person|BIRI|flag=br}}
+    |{{Person|AUTOBOOT|flag=br}}
+    
+    |{{Person|BUTTER|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|RED Canids|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Alemão|flag=br}}
+    |{{Person|DEXTER|flag=br}}
+    |{{Person|Morato|flag=br}}
+    |{{Person|Wanheda|flag=br}}
+    |{{Person|MADANZA|flag=br}}
+    |{{Person|ChefãoZp|flag=br}}
+    
+    |{{Person|ZnZ|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Cruzeiro eSports|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|NATIVA|flag=br}}
+    |{{Person|CEBOLINHA|flag=br}}
+    |{{Person|BOYKA|flag=br}}
+    |{{Person|IGZINN|flag=br}}
+    |{{Person|HORUS|flag=br}}
+    
+    |{{Person|DogBlack|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|INTZ|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|Guuh|flag=br}}
+    |{{Person|Lukaskn|flag=br}}
+    |{{Person|Supreme|flag=br}}
+    |{{Person|Moreira|flag=br}}
+    |{{Person|Aun|flag=br}}
+    |{{Person|L7|flag=br}}
+    |{{Person|ITALO.$|flag=br}}
+    
+    |{{Person|Batman|flag=br|link=Batman (Brazilian Coach)|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Keyd|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|TKSHY13|flag=br}}
+    |{{Person|R7xy|flag=br}}
+    |{{Person|KBÇÃO|flag=br}}
+    |{{Person|VAZILY|flag=br}}
+    |{{Person|VICTOR7|flag=br}}
+    
+    |{{Person|K9|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|Corinthians|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|FIXA|flag=br}}
+    |{{Person|Nobru|flag=br}}
+    |{{Person|Negoo|flag=br}}
+    |{{Person|JapaBKR|flag=br}}
+    |{{Person|JAPA04|flag=br}}
+    |{{Person|01pires|flag=br}}
+    
+    |{{Person|Chefe_XL|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+|{{Opponent|NewX Gaming|qualification={{Qualification|method=invite|text=Invited}}
+  |players={{Persons
+    |{{Person|NEPHIRO|flag=br}}
+    |{{Person|Argonot|flag=br}}
+    |{{Person|Raposo|flag=}}
+    |{{Person|PORCÃO|flag=br}}
+    |{{Person|PSILVA|flag=br}}
+    |{{Person|Froyd|flag=br}}
+    
+    |{{Person|KROATA|flag=br|role=head coach|type=staff}}
+    |{{Person||flag=br|role=analyst|type=staff}}
+  }}
+}}
+}}
+
+{{NoteBig
+|n1='''[[Team Rush]]''' league spot is acquired by '''[[NewX Gaming]].'''<ref>{{cite web|url=https://www.ffesports.com.br/2020/08/04/ggeasy-conta-tudo-sobre-o-retorno-da-new-x-gaming/|date=2020-08-04|title=NewX Gaming takes Tropa Rush place |publisher=[[Garena]]}}</ref>
+|n2=Announced partnership between '''[[B4 eSports]]''' and '''[[Flamengo Esports]].''' The New team will bem called [[Flamengo B4]].<ref>{{cite web|url=https://www.ffesports.com.br/2020/08/19/flamengo-se-une-a-b4-e-chega-no-free-fire/|date=2020-08-19|title=FLAMENGO SE UNE A B4 E CHEGA NO FREE FIRE |publisher=[[Garena]]}}</ref>
+}}
+
+
+LBFF 4:
+==Participants==
+{{TeamCardToggleButton|tcht=230}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Black Dragons e-Sports
+|p1=Jubinha
+|p2=Phoenix23
+|p3=PEDRO.RS
+|p4=YAN7|p4flag=br
+|p5=Nappon
+|p6=LEVELUP
+|c=|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=January 16th - [[OTREMBB]] left the team.<ref name="otrembb out">{{cite web|url=https://twitter.com/blackdragonsBR/status/1350458188693463050|title=O Trem está partindo! Após quase 1 ano juntos anunciamos a saída do @OTREMBBff|language={{Flag|br}} Portuguese|publisher=Black Dragons e-Sports|author=|date=2021-01-16}}</ref>
+|n2=January 18th - [[LEVELUP]] joins.<ref name="levelup bd in">{{cite web|url=https://ffesportsnews.com.br/2021/01/18/mercado-da-bala-black-dragons-anuncia-levelup007-e-fecha-elenco-para-a-proxima-lbff/|title=Mercado da Bala: Black Dragons anuncia LevelUp007 e fecha elenco para a próxima LBFF|language={{Flag|br}} Portuguese|publisher=Free Fire Esports News|author=|date=2021-01-18}}</ref>
+|n3=March 6th - [[LEVELUP]] leaves.<ref name="levelupout">{{cite web|url=https://twitter.com/blackdragonsBR/status/1368185008737882119|title=Vamos ter que nos despedir dessa lenda do Frifas, @LevelUP_007|language={{Flag|br}} Portuguese |publisher=Black Dragons e-Sports |author=|date=2021-03-06}}</ref>
+|n4=March 10th - [[Nappon]] joins.<ref name="napponbdin">{{cite web|url=https://tropafreefire.com.br/noticia/nappon-sera-jogador-da-black-dragons/|title=Nappon será jogador da Black Dragons|language={{Flag|br}} Portuguese |publisher=Tropa Free Fire |author=Edmilson Junior|date=2021-03-10}}</ref>
+}}
+}}
+{{TeamCard
+|team=God E-Sports
+|p1=GNERALXX
+|p2=alok10
+|p3=PATO
+|p4=LUFFYXX
+|p5=JAPEX10|p5flag=br
+|p6=FIXA
+|p7=ARRUDA|p7flag=br
+|c=Zultra|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=December 13th - [[BROCO]] left the team.<ref name="broco out">{{cite web|url=https://www.instagram.com/p/CIwFXyYg1f-/?igshid=jnoh8h75f3ou|title=Hoje nos despedimos do nosso atleta @broco_ff|language={{Flag|br}} Portuguese|publisher=GOD E-Sports|author=|date=2020-12-13}}</ref>
+|n2=December 27th - [[GLXCK]] left the team.
+|n3=January 14th - [[FIXA]] and [[JAPEX10]] join. <ref name="fixajapex">{{cite web|url=https://www.instagram.com/p/CKCYvD1r--z/|title=Sejam muito bem-vindos ao Olimpo DEUSES @fixa.10 e @japexff10|language={{Flag|br}} Portuguese|publisher=GOD E-Sports|author=|date=2021-01-14}}</ref>
+|n4=March 10th - [[ARRUDA]] join. <ref name="arrudain">{{cite web|url=https://twitter.com/CentraIFreeFire/status/1369837485510033408|title=A Garena atualizou algumas informações - em seu site - sobre a #LBFF e é possível ver que algumas equipes aparecem com novos jogadores em suas escalações.|language={{Flag|br}} Portuguese|publisher=Central Free Fire|author=|date=2021-03-10}}</ref>
+}}
+}}
+{{TeamCard
+|team=FURIA Esports
+|p1=one9|p1flag=br
+|p2=memgod
+|p3=Field|p3flag=br
+|p4=BIEL7|p4flag=br
+|p5=Bolin7|p5flag=br
+|c=Zaraki|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=November 26th - [[JM777]], [[yurik1nG]] and [[BRUNO7]] leave. <ref name="3 leave">{{cite web|url=https://tropafreefire.com.br/noticia/jm777-nao-faz-mais-parte-da-furia/|title=JM777 não faz mais parte da FURIA|publisher=Tropa Free Fire|author='''Edmilson Junior'''|date=2020-10-27}}</ref>
+|n2=December 24th - [[one9]] joins. <ref name="one9 out"/>
+|n3=January 18th - [[Field]] joins. [[Zaraki]] joins as coach. <ref name="2 join">{{cite web|url=https://twitter.com/furia_live/status/1351218810821484548|publisher= FURIA Live|author=|date=2021-01-18}}</ref>
+|n4=January 20th - Roster is officially announced with [[Bolin7]] <ref name="bolin fur">{{cite web|url=https://www.ffesports.com.br/times/furia/|title=FURIA - Free Fire|language={{Flag|br}} Portuguese|publisher=Free Fire Esports - Brasil|author=|date=2021-01-20}}</ref> 
+}}
+}}
+{{TeamCard
+|team=Fluxo
+|p1=Nobru
+|p2=JapaBKR
+|p3=Syaz|p3flag=br
+|p4=GØDKILL|p4flag=br
+|p5=F4K
+|c=K9
+
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=January 12th - Announced partnership between '''[[Santos e-Sports]]''' and '''[[Real e-Sports]].''' '''Santos''' sold their old spot to [[Fluxo]] and takes '''Real's''' spot on the league. <ref name="santos real"/>
+|n2=January 18th - Fluxo is officially announced. [[Nobru]] joins. <ref name="fluxo debut">{{cite web|url=https://www.tropafreefire.com.br/noticia/nobru-e-cerol-criam-fluxo-para-disputa-da-serie-a-da-lbff/|title=Nobru e Cerol criam Fluxo para disputa da Série A da LBFF|language={{Flag|br}} Portuguese|publisher=Tropa Free Fire|author=Filipe Carbone|date=2021-01-18}}</ref>
+|n3=January 20th - [[JapaBKR]], [[Syaz]], [[Paidafac]] and [[GØDKILL]] join. [[K9]] joins as coach. <ref name="1st roster">{{cite web|url=https://twitter.com/fluxo_gg/status/1351927043768922115|title=A mais nova jornada, agora está completa!|language={{Flag|br}} Portuguese|publisher=Fluxo|author=|date=2021-01-20}}</ref>
+}}
+}}
+{{TeamCard
+|team=SS Esports
+|p1=THUZÃO9|p1flag=br
+|p2=MAXSWELL
+|p3=Aranha
+|p4=LEAL7
+|p5=Mts007|p5flag=br
+|p6=BIRINO|p6flag=br
+|c=Metal
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=December 31st - [[Taami]]<ref name="taami out">{{cite web|url=https://twitter.com/ss_tamii/status/1344521599152775169?s=19|title=Só para avisar, meu contrato como jogadora da SS acabou, não renovamos|language={{Flag|br}} Portuguese|publisher=Taami|author=|date=2020-12-31}}</ref>, [[Antunes22]]<ref name="antunes out">{{cite web|url=https://www.instagram.com/p/CJe2T7_LBxO/|title=Hoje encerro meu ciclo na @ssofc_|language={{Flag|br}} Portuguese|publisher=Antunes22|author=|date=2020-12-31}}</ref> and [[PÃO7]]<ref name="pao out">{{cite web|url=https://www.instagram.com/p/CJe5VqHrvqg/|title=Agradeço pela oportunidade que vocês me deram, pela confiança que colocaram e mim e por todos sentimentos juntos. 2020 foi um ano sensacional, muitas vitórias e algumas derrotas mas nunca nos abalamos, e sempre voltamos mais fortes. Obrigado por tudo, eterna gratidão , @ssofc_|language={{Flag|br}} Portuguese|publisher=Pão7|author=|date=2020-12-31}}</ref> left the team.
+|n2=January 12th - [[Mts007]]<ref name="mts ss in">{{cite web|url=https://www.instagram.com/p/CJ9Zoc0rAVH/?igshid=1i6wmmavvsd63|title=Hoje anunciamos nosso primeiro reforço, Mateus da Silva "MTS"|language={{Flag|br}} Portuguese|publisher=SS|author=|date=2021-01-12}}</ref> and [[THUZÃO9]] join. <ref name="thuzao9 ss in">{{cite web|url=https://www.instagram.com/p/CJ9tNJaLlPk/?igshid=ccxdosqskiuf|title=Nosso segundo reforço chegou!|language={{Flag|br}} Portuguese|publisher=SS|author=|date=2021-01-12}}</ref>
+|n3=January 13th - [[MAXSWELL]] <ref name="max ss in">{{cite web|url=https://www.instagram.com/p/CJ__i_lrLsT/|title=Para fechar nosso time, Maxswell Carlos ,nascido em Major Sales/RN, 17 anos|language={{Flag|br}} Portuguese|publisher=SS|author=|date=2021-01-13}}</ref> and [[BIRINO]] join. <ref name="birino ss in">{{cite web|url=https://www.instagram.com/p/CJ_fzUfrWeZ/|title=Mais uma novidade, nosso terceiro reforço, Isaque Birino!|language={{Flag|br}} Portuguese|publisher=SS|author=|date=2021-01-13}}</ref>
+|n4=January 19th - [[Cauan7]] signed by [[LOUD]] <ref name="cauan loud in"/>
+}}
+}}
+{{TeamCard
+|team=paiN Gaming
+|p1=BLACK00
+|p2=Geerty
+|p3=D3
+|p4=RiccK
+|p5=déco
+|p6=KAYKE
+|p7=Antunes22
+|c=Avenger
+
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=January 18th - [[Avenger]] announced as coach <ref name="avg in">{{cite web|url=https://twitter.com/AvgOfc/status/1351311237808857090|date=2021-01-18|title=Enfim acabou o mistério! 
+AGORA EU SOU @paiNGamingBR|language={{Flag|br}} Portuguese|publisher=[[Avenger]]}}</ref>
+|n2=January 19th - [[Antunes22]] joins <ref name="antunes22 pain in">{{cite web|url=https://www.instagram.com/p/CKPoEcNF_mn/|date=2021-01-19|title=Enfim, tropa!! @antunesvinte2 veio com bagagem de sobra pra reforçar nosso time. |language={{Flag|br}} Portuguese|publisher=paiN Gaming}}</ref>
+}}
+}}
+{{TeamCard
+|team=B4 eSports
+|p1=R7xy
+|p2=KaueLOK
+|p3=PÃO7
+|p4=MINUZZI
+|p5=MISTICO|p5flag=br
+|p6=Yago|p6flag=br
+|c=MACHADO|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=December 31st - The partnership between '''[[B4 eSports]]''' and '''[[Flamengo Esports]]''', called [[Flamengo B4]], has ended. [[B4 eSports]] stays with the spot on the league <ref>{{cite web|url=https://twitter.com/flaesports/status/1344675589614141440?s=19|date=2020-12-31|title=Em um ano repleto de desafios, certamente um dos maiores que encaramos foi entrar em uma segunda modalidade de esports. O #FFla nasceu em parceria com a @b4ofc1 e foi um grande aprendizado. 
+Nossa parceria se encerra ao fim deste ano e gostaríamos de agradecer a todos... |publisher=[[Flamengo Esports]]}}</ref>
+|n2=December 31st - [[MODESTIA]]<ref name="modestia out">{{cite web|url=https://www.instagram.com/p/CJeJtIZDX_k/|title=Hoje venho me despedir, sim me despedir dessas pessoas que fizeram parte do ano mais abençoado da minha vida. É bem difícil pra mim saber que não estaremos todos juntos mais uma vez, mas para todo fim um recomeço.
+Não faço mais parte do FLA infelizmente...|language={{Flag|br}} Portuguese|publisher=MODESTIA|author=|date=2020-12-31}}</ref>, [[DeadGOD]]<ref name="deadgod out">{{cite web|url=https://www.instagram.com/p/CJecnP1rNj5/|title=É isso tropa, oficialmente não faço mais parte da @b4ofc and @flaesports|language={{Flag|br}} Portuguese|publisher=DeadGOD|author=|date=2020-12-31}}</ref> and [[Reei]]<ref name="reei out">{{cite web|url=https://twitter.com/reeinevidaaa/status/1344729514820173826?s=19|title=não faço mais parte da B4, nem do FLA.|language={{Flag|br}} Portuguese|publisher=Reei|author=|date=2020-12-31}}</ref> left the team.
+|n3=January 14th - [[PÃO7]] and [[R7xy]] join. <ref name="2 joins">{{cite web|url=https://twitter.com/b4ofc1/status/1349833184377188358|title=CHEGAMOS PRA FICAR!Vamos fazer história em 2021 com nossa seleção: @kaueloki @ff_r7xy @misticoff1 @minuzziff Vocês estão prontos para sentir a força de um B4stardo?|language={{Flag|br}} Portuguese|publisher=B4 eSports|author=|date=2021-01-14}}</ref>
+|n4=March 19th - [[Yago]] joins. <ref name="yagob4in">{{cite web|url=https://twitter.com/b4ofc/status/1373016628967923720 |title=ELEMENTO SURPRESA DA B4! |language={{Flag|br}} Portuguese |publisher=B4 eSports |author= |date=2021-03-19}}</ref>
+}}
+}}
+{{TeamCard
+|team=Team Liquid
+|p1=LUUUKING
+|p2=Boss
+|p3=MARTINS
+|p4=LukasTD
+|p5=mvR
+|p6=PEU
+|c=Souto
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=January 12th - [[mvR]] joins.<ref name="mvr in">{{cite web|url=https://twitter.com/TeamLiquidBR/status/1349098876226174977|title=Tem cria novo na casa. Com um 2020 cheio de conquistas, os caminhos foram abertos pra 2021. Seja bem-vindo, @mvr_ff
+!|language={{Flag|br}} Portuguese|publisher=Team Liquid|author=|date=2021-01-12}}</ref>
+|n2=January 20th - Roster is officially announced without [[Zenac]] <ref name="zenac no lbff">{{cite web|url=https://twitter.com/EsportsFreeFire/status/1351948030350667777|title=Team Liquid|language={{Flag|br}} Portuguese|publisher=Free Fire Esports - Brasil|author=|date=2021-01-20}}</ref> 
+}}
+}}
+{{TeamCard
+|team=RED Canids
+|p1=Alemão
+|p2=DEXTER
+|p3=Morato
+|p4=Wanheda
+|p5=MADANZA
+|p6=ChefãoZp
+|p7=MMHATX|p7flag=br
+|c=Bandera|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=February 10th - Signed [[MMHATX]] as coach <ref name="mmhin">{{cite web|url=https://twitter.com/mmhatx_/status/1359515674687778821|title=Atual Campeão do Majestade do Solo agr é da @REDCanids!|publisher=MMHATX|date=2021-02-10}}</ref>.
+|n2=February 27th - Signed [[Bandera]] <ref name="banderain">{{cite web|url=https://twitter.com/REDCanids/status/1365686399857532933|title=Mais um reforço pra line-up de #FreeFire!|publisher=RED Canids|date=2021-02-27}}</ref> as coach. [[MMHATX]] became player <ref name="mmhplyin">{{cite web|url=https://twitter.com/REDCanids/status/1365678426296885251|title=Hoje damos as boas-vindas ao nosso novo reforço no #FreeFire!|publisher=RED Canids|date=2021-02-27}}</ref>
+}}
+}}
+{{TeamCard
+|team=Cruzeiro eSports
+|p1=NATIVA
+|p2=CEBOLINHA
+|p3=OTREMBB 
+|p4=IGZINN
+|p5=HORUS
+|p6=VITTIN|p6flag=br
+|c=DogBlack|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=December 13th - [[BOYKA]] left. <ref name="boyka out">{{cite web|url=https://www.instagram.com/p/CItMfqXALtj/|title=Comunicamos a saída do atleta @boykaffbr da nossa Line Mobile de Freefire.|language={{Flag|br}} Portuguese|trans_title=We announce the departure of the athlete @boykaffbr from our Freefire Line Mobile.||publisher=Cruzeiro|author=|date=2020-12-13}}</ref>
+|n2=January 19th - [[OTREMBB]] and [[VITTIN]] join. <ref name="2 cru join">{{cite web|url=https://twitter.com/CruzeiroeSports/status/1351625309695700994|title=[#FF] O MISTÉRIO MISTERIOSO ACABOU! Sim, aquilo que vocês tanto perguntaram agora tem resposta!Boas vindas ............. #GoCRZ|publisher=Cruzeiro|author=|date=2021-01-19}}</ref>
+}}
+}}
+{{TeamCard
+|team=Keyd
+|p1=AUTOBOOT|p1flag=br
+|p2=KBÇÃO
+|p3=DeadGOD
+|p4=Reei
+|p5=MODESTIA
+|c=BUTTER|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=December 15th - [[K9]] leaves <ref name="k9 out">{{cite web|url=https://twitter.com/VivoKeyd/status/1338877094865080327|title=Hoje nos despedimos do nosso querido coach @K9treinador. |language={{Flag|br}} Portuguese|trans_title=Today we say goodbye to our dear coach @ K9treinador. |publisher=Keyd|author=|date=2020-12-15}}</ref>
+|n2=January 2nd - [[R7xy]] and [[VAZILY]] left the team <ref name="r7vazily out">{{cite web|url=https://www.instagram.com/p/CJjGuMesgUQ/|title=Tivemos uma caminhada linda juntos mas alguns ciclos chegam ao fim. Hoje nos despedimos do @vazily.vk e @vk.r7xy.Tivemos uma caminhada linda juntos mas alguns ciclos chegam ao fim. Hoje nos despedimos do @vazily.vk e @vk.r7xy. |language={{Flag|br}} Portuguese|trans_title=|publisher=Keyd|author=|date=2021-01-02}}</ref>
+|n3=January 3rd - [[TKSHY13]] and [[VICTOR7]] left the team <ref name="tkshy13victor7">{{cite web|url=https://twitter.com/VivoKeyd/status/1345803426467348482|title= |language={{Flag|br}} Portuguese|trans_title=|publisher=Keyd|author=|date=2021-01-03}}</ref>
+|n4=January 4th - [[AUTOBOOT]] joins <ref name="autoboot in">{{cite web|url=https://twitter.com/VivoKeyd/status/1346124298608644098?s=19|title=E VAMOS DE NOVIDADES! 🗣️
+Toda história precisa de um começo! E para o inicio dessa, temos o orgulho de anunciar o nosso mais novo guerreiro! SEJA BEM VINDO, @autobootofc!|language={{Flag|br}} Portuguese|trans_title=|publisher=Keyd|author=|date=2021-01-04}}</ref>
+|n5=January 5th - [[BUTTER]] joins as coach <ref name="butter in">{{cite web|url=https://twitter.com/VivoKeyd/status/1346547148234625026?s=19|title=Sabemos como os ensinamentos são importantes. Por isso, trouxemos você para fazer parte da nossa família! Com muito orgulho anunciamos o nosso novo coach para essa #LBFF!
+Seja bem-vindo, @uButter1!|language={{Flag|br}} Portuguese|trans_title=|publisher=Keyd|author=|date=2021-01-05}}</ref>
+|n6=January 6th - [[DeadGOD]] joins <ref name="deadgod in">{{cite web|url=https://twitter.com/VivoKeyd/status/1346849039594254338?s=19|title=As nossas batalhas cada vez serão árduas!
+Contamos com você para nos ajudar a enfrentar elas como um verdadeiro guerreiro! Que essa mira apelona fique mais forte ainda junto de nós!
+Seja bem-vindo, @DeeadGOD!|language={{Flag|br}} Portuguese|trans_title=|publisher=Keyd|author=|date=2021-01-06}}</ref>
+|n7=January 7th - [[Reei]] joins <ref name="reei in">{{cite web|url=https://twitter.com/VivoKeyd/status/1347211436934762496?s=19|title=ATENÇÃO! Todos saúdem o REI!|language={{Flag|br}} Portuguese|trans_title=|publisher=Keyd|author=|date=2021-01-07}}</ref>
+|n8=January 8th - [[MODESTIA]] joins <ref name="modestia in">{{cite web|url=https://twitter.com/VivoKeyd/status/1347558735988858882?s=19|title=VOCÊ ACHOU QUE IAM SEPARAR A DUPLA NÉ?
+ACHOU ERRADO|language={{Flag|br}} Portuguese|trans_title=|publisher=Keyd|author=|date=2021-01-08}}</ref>
+}}
+}}
+{{TeamCard
+|team=Corinthians
+|p1=OUSADO
+|p2=Razure
+|p3=nathan
+|p4=VgzinnN
+|p5=JAPA04
+|p6=Zenac
+|p7=Bruno7|p7flag=br
+|c=Kied|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Stage_3/Series_A|Stage 3A]]
+
+|inotes={{NoteBig
+|n1=January 6th - [[Nobru]], [[FIXA]], [[01pires]] and [[JapaBKR]] left. <ref name="4sccp out">{{cite web|url=https://twitter.com/corinthians_ff/status/1346884700799979521?s=19|title=Nem sempre queremos dizer adeus, mas entendemos que as vezes é preciso. Obrigado pelas memórias criadas e os patamares alcançados, boa sorte em suas novas jornadas |language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-01-06}}</ref>
+|n2=January 6th - [[OUSADO]] and [[Razure]] join. <ref name="razous in">{{cite web|url=https://twitter.com/corinthians_ff/status/1346909685400522754|title=Se falar que já sabia mentiu Vocês estão ouvindo falar deles faz tempo Fiel mas agora é oficial! Bem vindos @ousadincpt e @razureff|language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-01-06}}</ref>
+|n3=January 7th - [[VgzinnN]] joins. <ref name="vgzinnn in">{{cite web|url=https://twitter.com/corinthians_ff/status/1347271976323346449?s=19|title=Se você é um fã raiz do competitivo você já conhece essa lenda, mas se você ainda não o viu, se prepara que você vai ver muita bala tensa no lobby do Timão!
+Bem vindo @vgzinnn18, temos certeza que conquistaremos muito juntos|language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-01-07}}</ref>
+|n4=January 8th - [[Chefe XL]] became a Content creator.<ref name="chefe cc">{{cite web|url=https://t.co/GbubNLwaov|title=Junto a essa notícia anunciamos que o nosso ChefeXL será o novo Influenciador da equipe!|language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-01-08}}</ref> [[Kied]] signed as coach. <ref name="kied coach">{{cite web|url=https://twitter.com/corinthians_ff/status/1347634141798551559?s=19|title=Temos orgulho de anunciar @sccpkied como novo técnico do Timão!|language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-01-08}}</ref>
+|n5=February 22nd - Sign [[Bruno7]] and [[Zenac]] <ref name="brunac">{{cite web|url=https://twitter.com/corinthians_ff/status/1363978566434717698|title=Os misteriosos mais misteriosos do Free Fire acabaram de chegar para reforçar o nosso squad!|language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-02-22}}</ref>
+}}
+}}
+{{TeamCard
+|team=LOUD
+|p1=Will
+|p2=ViniZx
+|p3=Cauan7
+|p4=Noda
+|p5=Brabox
+|p6=Kroonos
+|c=Frois
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Promotion|Promotion]]
+
+|inotes={{NoteBig
+|n1=January 11th - [[Frois]] announced as coach. <ref name="frois cm">{{cite web|url=https://tropafreefire.com.br/noticia/frois-sera-treinador-da-equipe-mobile-da-loud|title=Frois será treinador da equipe mobile da LOUD|language={{Flag|br}} Portuguese|trans_title=||publisher=Tropa Free Fire|author=Edmilson Junior|date=2021-01-12}}</ref>
+|n2=January 19th - [[Cauan7]] joins. <ref name="cauan loud in">{{cite web|url=https://twitter.com/LOUDgg/status/1351666617529327618|title=Deem as boas-vindas para o 
+@LOUD_cauan1|language={{Flag|br}} Portuguese|trans_title=||publisher=LOUD|author=|date=2021-01-19}}</ref>
+|n3=January 20th - Roster is officially announced without [[ShariiN]] <ref name="shariin no lbff">{{cite web|url=https://www.ffesports.com.br/times/loud|title=LOUD|language={{Flag|br}} Portuguese|publisher=Free Fire Esports - Brasil|author=|date=2021-01-20}}</ref>
+}}
+}}
+{{TeamCard
+|team=Meta Gaming
+|p1=NICKOLAS|p1flag=br
+|p2=CAUE|p2flag=br
+|p3=LOST21|p3flag=br
+|p4=GUIMONS|p4flag=br
+|p5=PARANHOS|p5flag=br
+|p6=Pedro|p6flag=br
+|c=Nabozny|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Promotion|Promotion]]
+
+|inotes={{NoteBig
+|n1=December 1st - [[NACHOS]] signed by [[Los Grandes]]. <ref>{{cite web|url=https://www.instagram.com/p/CIRPLcwlXup/|title=Chegou o brabo! @lgd_nachos é a renovação da Los Grandes em comissão técnica e filosofia de trabalho competitivo.|date=2020-12-01|author=|publisher=Los Grandes}}</ref>
+|n2=March 10th - [[Pedro]] joins. <ref>{{cite web|url=https://twitter.com/CentraIFreeFire/status/1369837485510033408|title=A Garena atualizou algumas informações - em seu site - sobre a #LBFF e é possível ver que algumas equipes aparecem com novos jogadores em suas escalações. |date=2021-03-10|author=|publisher=Central Free Fire}}</ref>
+}}
+}}
+{{TeamCard
+|team=Flamengo Esports
+|p1=TKSHY13
+|p2=Raposo
+|p3=PORCÃO|p3flag=br
+|p4=NandoX|p4flag=br
+|p5=LIP4ULO|p5flag=br
+|p6=JM777|p6flag=br
+|p7=LEE|p7flag=br
+|c=TTT|cflag=br
+
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=January 14th - Announced partnership between '''[[KPA E-SPORTS]]''' and '''[[Flamengo Esports]]'''.  '''Flamengo''' takes '''KPA's''' spot on the league. TTT will be the Head Coach <ref name="flakpa">{{cite web|url=https://www.terra.com.br/esportes/lance/flamengo-fecha-parceria-para-a-disputa-da-serie-a-da-liga-brasileira-de-free-fire-em-2021,cedd369cdf9cb84122f4a832f45c02d1jvbiwinh.html|title=Flamengo fecha parceria para a disputa da Série A da Liga Brasileira de Free Fire em 2021|language={{Flag|br}} Portuguese|publisher=LANCE!|author=|date=2021-01-14}}</ref>
+|n2=January 20th - [[TKSHY13]], [[Raposo]], [[PORCÃO]], [[NandoX]], [[JM777]] and [[LIP4ULO]] join <ref name="fla debut">{{cite web|url=https://twitter.com/flaesports/status/1351909032374788098|title=Chegou a hora de conhecer nossos coringas!|language={{Flag|br}} Portuguese|publisher=Flamengo Esports|author=|date=2021-01-20}}</ref>
+|n3=February 21st - Sign [[LEE]]<ref name="leein">{{cite web|url=https://twitter.com/flaesports/status/1363460956521693184|title=Hoje também tem #TropaDoMengão na #LBFF, e com novidade. Seja bem-vindo e boa estreia, Lee!|language={{Flag|br}} Portuguese|publisher=Flamengo Esports|author=|date=2021-02-21}}</ref>
+}}
+}}
+{{TeamCard
+|team=INTZ
+|p1=VAZILY
+|p2=Lukaskn
+|p3=ITALO.$ |p3flag=br
+|p4=Moreira
+|p5=Guerra|p5flag=br
+|c=Batman|clink=Batman (Brazilian Coach)|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Promotion|Promotion]]
+
+|inotes={{NoteBig
+|n1=December 27th - [[Supreme]] left the team. <ref>{{cite web|url=https://twitter.com/supremee_ff/status/1343259257869840386|title=Anúncio que meu contrato com a INTZ acaba esse fim de ano, e que não haverá renovação.|language={{Flag|br}} Portuguese|date=2020-12-27|author=|publisher=Supreme}}</ref>
+|n2=January 18th - [[VAZILY]] and [[Guerra]] join. Roster is officially announced without [[Guuh]], [[Aun]] and [[L7]]. <ref>{{cite web|url=https://twitter.com/INTZ/status/13512731888278159376|title=A SELEÇÃO TÁ ESCALADA.
+Deem boas-vindas ao squad mais intrépido da #LBFF|language={{Flag|br}} Portuguese|date=2021-01-18|author=|publisher=INTZ}}</ref>
+}}
+}}
+{{TeamCard
+|team=Team One
+|p1=Bruno 7|p1flag=br
+|p2=VN10|p2flag=br
+|p3=VTRx|p3flag=br
+|p4=Drzzy|p4flag=br
+|p5=Azay|p5flag=br
+|c=GENERALtv|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Series_B|Series B]]
+
+|inotes={{NoteBig
+|n1=January 7th - [[TREM22]] left the team.
+}}
+}}
+{{TeamCard
+|team=Santos e-Sports
+|p1=LOBATO4x|p1flag=br
+|p2=FON|p2flag=br
+|p3=RUSH|p3flag=br
+|p4=RUANx5|p4flag=br
+|p5=GUSZ|p5flag=br
+|p6=PHELIPE|p6flag=br
+|c=Cauan|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2020/Series_B|Series B]]
+
+|inotes={{NoteBig
+|n1=December 24th - [[one9]] leaves. <ref name="one9 out">{{cite web|url=https://twitter.com/furia_live/status/1342102662729375744|title=Anunciamos o nosso mais novo jogador de Free Fire!|language={{Flag|br}} Portuguese|publisher=FURIA Live|author=|date=2020-12-24}}</ref>
+|n2=January 5th - [[ZIKKA]] left. <ref name="zikka out">{{cite web|url=https://ffesportsnews.com.br/2021/01/05/mercado-da-bala-apos-dois-splits-na-equipe-zikka-deixa-o-time-de-free-fire-do-santos-hotforex/|title=Mercado da Bala: Após dois splits na equipe, Zikka deixa o time de Free Fire do Santos HotForex|language={{Flag|br}} Portuguese|publisher=Free Fire Esports News|author=|date=2021-01-05}}</ref>
+|n3=January 12th - [[mvR]] and [[MAXSWELL]] leave. <ref name="mvrell out">{{cite web|url=https://twitter.com/SantosFCeSports/status/1349040190313160706?s=19|title=[FF] E vamos de mais despedidas. Hoje nos despedimos de Zika, One9, MVR e MAX.|language={{Flag|br}} Portuguese|publisher=Santos|author=|date=2021-01-12}}</ref>
+|n4=January 12th - Announced partnership between '''[[Santos e-Sports]]''' and '''[[Real e-Sports]].''' '''Santos''' sold their old spot to [[Fluxo]] and takes '''Real's''' spot on the league. <ref name="santos real">{{cite web|url=https://twitter.com/SantosFCeSports/status/1349098844403822592?s=19|title=[FF] E A BOMBA QUE TODO MUNDO ESPERAVA. Para 2021, fechamos parceria com a Real eSports, pra trazer o troféu pra vila e continuar na Série A do maior campeonato de Free Fire do Brasil!|language={{Flag|br}} Portuguese|publisher=Santos|author=|date=2021-01-12}}</ref>
+|n5=January 20th - [[FON]], [[RUSH]] and [[GUSZ]] join <ref name="frg san">{{cite web|url=https://twitter.com/SantosFCeSports/status/1351948408634961920|title=[FF] ENTÃO ANUNCIEI|language={{Flag|br}} Portuguese|publisher=Santos|author=|date=2021-01-20}}</ref>
+|n6=February 24th - Sign [[PHELIPE]] <ref name="phin">{{cite web|url=https://twitter.com/FFesportsBR/status/1366010267029635074|title=E atenção para os novos inscritos na #LBFF!|language={{Flag|br}} Portuguese|publisher=FF Esports BR|author=|date=2021-01-28}}</ref>
+}}
+}}
+{{TeamCard columns end}}
+
+===Group Draw===
+<section begin="Group Draw"/>
+{| class="wikitable" style="text-align:left; margin-top: 0px;"
+|-
+!width=240px|Group A
+!width=240px|Group B
+!width=240px|Group C 
+|-
+|{{Team|ss}} 
+|{{Team|keyd}}   
+|{{Team|liquid}}
+|-
+|{{Team|cruzeiro}}  
+|{{Team|sccp}} 
+|{{Team|red}} 
+|-
+|{{Team|intz}}   
+|{{Team|t1}}   
+|{{Team|santos}}  
+|-
+|{{Team|b4e}} 
+|{{Team|bd}}   
+|{{Team|pain}}
+|-
+|{{Team|loud}}  
+|{{Team|furia}} 
+|{{Team|god}} 
+|-
+|{{Team|fluxo}}   
+|{{Team|fla}}   
+|{{Team|metagg}}  
+|}
+<section end="Group Draw"/>
+
+
+LBFF 5:
+==Participants==
+{{TeamCardToggleButton|tcht=240|playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Santos/Real
+|p1=PH|p1flag=br
+|p2=FON|p2flag=br
+|p3=RUSH|p3flag=br
+|p4=Duduffx|p4flag=br
+|p5=LuckyGOD|p5flag=br
+|p6=MCMAELLEN|p6flag=br
+|p7=AUTOBOOT
+|p8=TATU13|p8flag=br
+|p9=VM7|p9flag=br
+|c=Profeta|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=April 13th - [[LOBATO4x]] leaves. <ref name="lobatooutgod">{{cite web|url=https://twitter.com/SantosFCeSports/status/1381939179114872832 |title=Despedidas são difíceis, mas hoje chegou a vez de dar tchau ao @Lobato4xff! |language={{Flag|br}} Portuguese||trans_title=Goodbyes are difficult, but today it's time to say goodbye to @ Lobato4xff! |publisher=Santos|date=2021-04-19}}</ref>
+|n2=April 21st - Coach [[Cauan]] leaves. <ref name="cauansntout">{{cite web|url=https://twitter.com/SantosFCeSports/status/1384930389286920201 |title=Hoje nos despedimos de uma importante peça na construção do nosso FF |language={{Flag|br}} Portuguese||trans_title=Today we say goodbye to an important piece in the construction of our FF  |publisher=Santos|date=2021-04-21}}</ref>
+|n3=April 25th - [[Ruan]] leaves. <ref name="ruansntout">{{cite web|url=https://twitter.com/SantosFCeSports/status/1386304183352143872 |title=Há 1 ano e meio chegava na Vila mais um menino, que aqui cresceu, nos ergueu à LBFF e se tornou o nosso MVP! |language={{Flag|br}} Portuguese ||trans_title=One and a half years ago another boy arrived in the village, who grew up here, raised us to LBFF and became our MVP!  |publisher=Santos|date=2021-04-25}}</ref>
+|n4=May 10th - [[GUSZ]] leaves. <ref name="guszsntout">{{cite web|url=https://twitter.com/SantosFCeSports/status/1391726803874729987 |title=Obrigado, Menino da Vila! |language={{Flag|br}} Portuguese ||transtitle=Thank you, Menino da Vila! |publisher=Santos|date=2021-05-10}}</ref>
+|n5=May 31st - [[Duduffx]] and [[LuckyGOD]] joins. <ref name="duduinsnts">{{cite web|url=https://twitter.com/SantosFCeSports/status/1399463941152165893 |title=E é anúncio que vocês queriam né? |language={{Flag|br}} Portuguese ||trans_title=And it's an announcement you wanted, right? |publisher=Santos|date=2021-05-31}}</ref> <ref name="lucksntin">{{cite web|url=https://twitter.com/SantosFCeSports/status/1399516182986829832 |title=O Deus mais sortudo do cenário é nosso! |language={{Flag|br}} Portuguese ||trans_title=The luckiest god on the scene is ours! |publisher=Santos|date=2021-05-31}}</ref>
+|n6=June 3rd - [[MCMAELLEN]] and [[AUTOBOOT]] join. <ref name="maelleninsnt">{{cite web|url=https://twitter.com/Maellennn/status/1400483507999330307 |title=Vai ter mulher na LBFF SÉRIE A SIMMMMMMM! |language={{Flag|br}} Portuguese ||trans_title=There will be a woman at LBFF SERIES A |publisher=Maellen |date=2021-06-03}}</ref> <ref name="autosntin">{{cite web|url=https://twitter.com/realesports_gg/status/1400536296192348163 |title=Ooo! O Autoboot Chego... |language={{Flag|br}} Portuguese ||trans_title=|publisher=Real e-Sports |date=2021-06-03}}</ref>
+|n7=June 4th - Coach [[Profeta]] joins. <ref name="profstin">{{cite web|url=https://twitter.com/realesports_gg/status/1400895117330980864 |title=O Profeta é nosso! |language={{Flag|br}} Portuguese ||trans_title=Profeta is ours! |publisher=Real e-Sports |date=2021-06-04}}</ref>
+}}
+}}
+{{TeamCard
+|team=Fluxo
+|p1=Nobru
+|p2=JapaBKR
+|p3=Syaz|p3flag=br
+|p4=GØDKILL|p4flag=br
+|p5=F4K
+|c=K9
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=FURIA Esports
+|p1=one9|p1flag=br
+|p2=memgod
+|p3=Field|p3flag=br
+|p4=BIEL7|p4flag=br
+|p5=Bolin7|p5flag=br
+|c=ALTMAN|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=April 21st - [[Zaraki]] was moved from the main squad. <ref name="zarakiinactivefuria">{{cite web|url=https://twitter.com/ZarakiGG/status/1384896524459589636|publisher=Zaraki|author=|date=2021-04-21}}</ref>
+|n2=May 19th - [[ALTMAN]] joins as coach. <ref name="altmanfuriain">{{cite web|url=https://twitter.com/FURIA/status/1395085568657301513 |title=agora é oficial, o @altmancoach é FURIA! |language={{Flag|br}} Portuguese||trans_title=now it's official, the @altmancoach it's FURIA! |publisher=Furia|date=2021-05-19}}</ref>
+}}
+}}
+{{TeamCard
+|team=LOUD
+|p1=Will
+|p2=ViniZx
+|p3=Cauan7
+|p4=Noda
+|p5=Brabox
+|p6=Kroonos
+|c=Frois
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=God E-Sports
+|p1=Bops|p1flag=br
+|p2=ARRUDA|p2flag=br
+|p3=MINUZZI
+|p4=Mike|p4flag=br
+|p5=MIGUELx|p5flag=br
+|p6=PATO
+|c=Zultra|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=March 22nd - [[alok10]] leaves. <ref name="alokoutgod">{{cite web|url=https://www.instagram.com/p/CMu5GSiL8z_/|title=Gostaríamos de agradecer muito e de coração o @alok10ff que se despede hoje da GOD.|language={{Flag|br}} Portuguese|publisher=God|author=|date=2021-03-22}}</ref>
+|n2=March 24th - [[JAPEX10]] leaves. <ref name="japexoutgod">{{cite web|url=https://www.instagram.com/p/CM47abbLjO7/|title=Agradecemos muito ao @japexff10 que hoje se despede do Olimpo.|language={{Flag|br}} Portuguese|publisher=God|author=|date=2021-03-24}}</ref>
+|n3=April 6th - [[LUFFYXX]] leaves. <ref name="luffyoutgod">{{cite web|url=https://www.instagram.com/p/CNVa4pfLRhW/|title=Foi uma bela jornada até aqui, mas chegou a hora de seguirmos caminhos diferentes...|language={{Flag|br}} Portuguese|publisher=God|author=|date=2021-04-06}}</ref>
+|n4=May 6th - [[GNERALXX]] leaves. <ref name="generaloutgod">{{cite web|url=https://www.instagram.com/p/COjBxzQLdrj/ |title=Hoje o @generalxx_ff e a GOD vão seguir caminhos diferentes... |language={{Flag|br}} Portuguese |trans_title=Today @generalxx_ff and GOD will follow different paths ... |publisher=God|author=|date=2021-05-06}}</ref>
+|n5=May 10th - [[Bops]] and [[Mike]] join. <ref name="bopsingod">{{cite web|url=https://www.instagram.com/p/COtLTMIrZdh/ |title=Estamos muito felizes em anunciar a chegada do @bopsff, seja muito bem-vindo ao Olimpo! |language={{Flag|br}} Portuguese |trans_title=We are very happy to announce the arrival of @bopsff, and welcome to Olympus! |publisher=God|author=|date=2021-05-10}}</ref> <ref name="mikeingod">{{cite web|url=https://www.instagram.com/p/COtOsboLk88/ |title=Pode entrar @mikebala_ff! Seja muito bem-vindo a GOD UNIDAS. #VAMOSJUNTOS buscar muitas conquistas! |language={{Flag|br}} Portuguese |trans_title=You can enter @mikebala_ff! Welcome to GOD UNIDAS. #LETSTOGETHER seek many achievements! |publisher=God|author=|date=2021-05-10}}</ref>
+|n6=May 20th - [[MINUZZI]] joins. <ref name="minuzzigoin">{{cite web|url=https://twitter.com/GodUnidas/status/1395484764182831104 |title=A lenda da sensi mais invejada? |language={{Flag|br}} Portuguese |trans_title=The legend of the most envied sensi? |publisher=God|author=|date=2021-05-20}}</ref>
+}}
+}}
+{{TeamCard
+|team=Team Liquid
+|p1=LUUUKING
+|p2=Boss
+|p3=LukasTD
+|p4=mvR
+|p5=PEU
+|p6=PEDRO.RS
+|c=Souto
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Miners.gg
+|p1=NATIVA
+|p2=CEBOLINHA
+|p3=OTREMBB 
+|p4=IGZINN
+|p5=VITIN|p5flag=br
+|c=DogBlack|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=March 23rd - [[E-Flix eSports]] ends partnership with [[Cruzeiro eSports]]. [[E-Flix eSports]] stays with the spot on the league. <ref>{{cite web|url=https://news.e-flix.pro/e-flix-esports-encerra-parceria-com-cruzeiro/|date=2021-03-23|title=E-Flix Esports encerra parceria com Cruzeiro |language={{Flag|br}} Portuguese |trans_title=E-Flix Esports ends partnership with Cruzeiro |publisher=E-Flix}}</ref>
+|n2=May 24th - [[E-Flix eSports]] rebranded to [[Miners.gg]]. <ref name="eflixMiners.gg">{{cite web|url=https://twitter.com/Minersgg/status/1396839459925151749 |title=SEGUE O TREM, CAMBADA! |language={{Flag|br}} Portuguese |trans_title=FOLLOW THE TRAIN, CAMBADA! |publisher=Miners.gg|author=|date=2021-05-24}}</ref>
+}}
+}}
+{{TeamCard
+|team=SS Esports
+|p1=Mts007|p1flag=br
+|p2=BuToN007|p2flag=br
+|p3=Astro007|p3flag=br
+|p4=Phoenix23
+|p5=Jubinha
+|c=GENERALtv|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=April 14th - [[LEAL7]], [[BIRINO]], [[THUZÃO9]], [[MAXSWELL]] and [[Metal]] leave. <ref name="ap5out">{{cite web|url=https://twitter.com/babblerfreefire/status/1382381238066032645|title=O perfil oficial da 
+@ssofc__ acabou de anunciar a saída dos jogadores e coach da equipe.|language={{Flag|br}} Portuguese|trans_title=The official profile of @ssofc__ just announced the departure of the players and coach of the team. ||publisher=Babbler Free Fire|author=|date=2021-04-14}}</ref>
+|n2=April 29th - [[Aranha]] leaves. <ref name="aranhaout">{{cite web|url=https://twitter.com/ss_aranha/status/1387905205602328588|title=Não faço mais parte da SS rapaziada |language={{Flag|br}} Portuguese|trans_title=I am no longer part of the SS guys ||publisher=Aranha|author=|date=2021-04-29}}</ref>
+|n3=May 25th - Coach [[GENERALtv]] joins. <ref name="genin">{{cite web|url=https://www.instagram.com/p/CPULSeDLNlB/ |title=Para começar com o pé direito nessa LBFF, vamos começar anunciando nosso novo coach @generaltv_ . |language={{Flag|br}} Portuguese|trans_title=To start off on the right foot in this LBFF, let's start by announcing our new coach @generaltv_. ||publisher=SS Esports|author=|date=2021-05-25}}</ref>
+|n4=May 26th - [[BuToN007]] joins. <ref name="butoninss">{{cite web|url=https://tropafreefire.com.br/noticia/ss-anuncia-buton007-como-seu-mais-novo-jogador/ |title=SS anuncia BuToN007 como seu mais novo jogador |language={{Flag|br}} Portuguese|trans_title=SS announces BuToN007 as its newest player ||publisher=Tropa Free Fire |author=Edmilson Junior |date=2021-05-26}}</ref>
+|n5=May 27th - [[Astro007]] and [[Phoenix23]] join. <ref name="astroinss">{{cite web|url=https://freefiremais.com.br/apos-buton-astro007-tambem-e-anunciado-pela-ss-e-sports/ |title=Após BuToN, Astro007 também é anunciado pela SS e-Sports |language={{Flag|br}} Portuguese|trans_title=After BuToN, Astro007 is also announced by SS e-Sports ||publisher=Free Fire Mais |author=|date=2021-05-27}}</ref> <ref name="phxinss">{{cite web|url=https://tropafreefire.com.br/noticia/ss-esports-apresenta-phoenix-e-butter-para-a-proxima-temporada-da-lbff/ |title=SS Esports apresenta Phoenix e Butter para a próxima temporada da LBFF |language={{Flag|br}} Portuguese|trans_title=SS Esports introduces Phoenix and Butter for the next LBFF season ||publisher=Tropa Free Fire |author=Filipe Carbone |date=2021-05-28}}</ref>
+|n6=May 28th - [[Jubinha]] joins. <ref name="jubinss">{{cite web|url=https://www.instagram.com/p/CPa9UWkLc84/ |title=E para finalizar essa seleção, nosso ultimo nome é o homem, a lenda @jubinhaff_ |language={{Flag|br}} Portuguese|trans_title=And to finish this selection, our last name is the man, the legend @jubinhaff_ ||publisher=SS |author=|date=2021-05-28}}</ref>
+}}
+}}
+{{TeamCard
+|team=B4 eSports
+|p1=R7xy
+|p2=Yago|p2flag=br
+|p3=RANDALL|p3flag=br
+|p4=Ruan
+|p5=LOBATO4x
+|c=MACHADO|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=April 16th - [[KaueLOK]] left the team <ref name="kaueb4out">{{cite web|url=https://www.instagram.com/p/CNvJMDyrUIV/ |title=Salve rapaziada, venho aqui comunicar vocês sobre minha saída da @b4ofc . |language={{Flag|br}} Portuguese|trans_title=Hail guys, I come here to tell you about my departure from @ b4ofc. |publisher=Kauelok |author= |date=2021-04-16}}</ref>
+|n2=May 1st - [[PÃO7]] leaves. <ref name="paob4leaves">{{cite web|url=https://www.instagram.com/p/COWDmQvrRfi/|title=Obrigado por todos momentos que vivemos juntos|language={{Flag|br}} Portuguese|trans_title=Thank you for all the moments we have lived together||publisher=PÃO7|author=|date=2021-05-01}}</ref>
+|n3=May 6th - [[MINUZZI]] leaves. <ref name="minuzzib4leaves">{{cite web|url=https://www.instagram.com/p/COi86hlLU-z/ |title=Salve tropa, venho aqui comunicar vocês que o meu ciclo na @b4ofc se encerra hoje. |language={{Flag|br}} Portuguese|trans_title=I come here to inform you that my cycle at @ b4ofc ends today.||publisher=Minuzzi|author=|date=2021-05-06}}</ref>
+|n4=May 29th - Annouced the new roster <ref name="split2">{{cite web|url=https://www.youtube.com/watch?v=voIcHU0SK84 |title=TROPA DA B4 - Boelter ft. SQUAD B4 |language={{Flag|br}} Portuguese|trans_title=||publisher=B4|author=|date=2021-05-29}}</ref>
+}}
+}}
+{{TeamCard
+|team=Keyd
+|p1=MODESTIA
+|p2=KBÇÃO
+|p3=DeadGOD
+|p4=NANDO9|p4flag=br
+|p5=GNERALXX
+|c=Stark|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=April 24th - Coach [[BUTTER]] leaves. <ref name="butterkeydout">{{cite web |url=https://twitter.com/VivoKeyd/status/1385986896334147585 |title=Hoje nos despedimos desse grande professor que esteve do nosso lado até aqui! |language={{Flag|br}} Portuguese |trans_title=Today we say goodbye to this great teacher who has been on our side until now! |publisher=Keyd |author=|date=2021-04-24}}</ref>
+|n2=May 11th - [[AUTOBOOT]] leaves. <ref name="autolevkeyd">{{cite web |url=https://twitter.com/VivoKeyd/status/1392157402779340805 |title=É dia de despedida! |language={{Flag|br}} Portuguese |trans_title=It's farewell day! |publisher=Keyd |author=|date=2021-05-11}}</ref>
+|n3=May 14th - [[GNERALXX]] and [[NANDO9]] join. <ref name="gnrlnand">{{cite web |url=https://twitter.com/VivoKeyd/status/1393234661594177537?s=19 |title=O MISTÉRIO ACABOU! |language={{Flag|br}} Portuguese |trans_title=THE MYSTERY IS OVER! |publisher=Keyd |author=|date=2021-05-14}}</ref>
+|n4=May 21st - Coach [[Stark]] joins. <ref name="starkvkjon">{{cite web |url=https://www.instagram.com/p/CPI-y_KlGNQ/ |title=Bem-vindo, Stark! |language={{Flag|br}} Portuguese |trans_title=Welcome Stark! |publisher=Keyd |author=|date=2021-05-21}}</ref>
+|n5=[[Reei]] became influencer.
+}}
+}}
+{{TeamCard
+|team=Meta Gaming
+|p1=NICKOLAS|p1flag=br
+|p2=CAUE|p2flag=br
+|p3=LOST21|p3flag=br
+|p4=GUIMONS|p4flag=br
+|p5=DRAXX7|p5flag=br
+|p6=YAN7|p6flag=br
+|c=Nabozny|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=June 4th - [[Draxler]] and [[YAN7]] joins. <ref name="drxyan">{{cite web |url=https://www.instagram.com/p/CPtp5PTny-D/ |title=Esses são os novos integrantes do nosso time e levarão consigo as nossas cores! |language={{Flag|br}} Portuguese |trans_title=These are the new members of our team and will take our colors with them! |publisher=Meta Gaming |author=|date=2021-06-04}}</ref>
+}}
+}}
+{{TeamCard
+|team=Corinthians
+|p1=OUSADO
+|p2=Razure
+|p3=Bruno7|p3flag=br
+|p4=GELO7|p4flag=br
+|p5=Zenac
+|p6=Leozin|p6flag=br
+|c=Kied|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=May 4th - [[VgzinnN]] leaves <ref name="vgsccpout">{{cite web|url=https://twitter.com/corinthians_ff/status/1389671258296668161 |title=Hoje nos despedimos do VG |language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-05-04}}</ref>
+|n2=May 6th - [[Japa04]] leaves <ref name="japa04out">{{cite web|url=https://twitter.com/corinthians_ff/status/1390396196494135299 |title=No Corinthians Free Fire sempre buscamos o melhor para os nossos jogadores e com isso em mente hoje anunciamos a saída do @Japa04ff a pedido dele. |language={{Flag|br}} Portuguese|trans_title=||publisher=Corinthians FF|author=|date=2021-05-06}}</ref>
+|n3=May 20th - [[nathan]] was moved from the main squad. <ref name="nathaninactive">{{cite web|url=https://www.instagram.com/p/CPG56HPnEHF/ |title=Anunciamos hoje que o jogador Nego não faz mais parte da equipe ativa do Corinthians Free Fire mas que ainda representará o Timão. |language={{Flag|br}} Portuguese|trans_title=We announced today that the player Nego is no longer part of the Corinthians Free Fire active team but that he will still represent Timão.||publisher=Corinthians FF|author=|date=2021-05-20}}</ref>
+|n4=May 24th - [[GELO7]] and [[Leozin]] join. <ref name="geleco">{{cite web|url=https://twitter.com/corinthians_ff/status/1396919231585955845 |title=Agora é oficial! Bem-vindos @Gelo7ff e @leozinn7ff ao Timão |language={{Flag|br}} Portuguese|trans_title=Now it's official! Welcome @ Gelo7ff and @ leozinn7ff to Timão ||publisher=Corinthians FF|author=|date=2021-05-24}}</ref>
+}}
+}}
+{{TeamCard
+|team=INTZ
+|p1=Aranha
+|p2=Lukaskn
+|p3=ITALO.$ |p3flag=br
+|p4=Guerra|p4flag=br
+|p5=Ruivo|p5flag=br
+|c=VAZILY|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=April 20th - [[Batman]] leaves. <ref name="batmanintzout">{{cite web|url=https://twitter.com/CoachBatman_/status/1384534600395988994|title=Queria informar que não faço mais parte do @INTZ |language={{Flag|br}} Portuguese|publisher=Batman|date=2021-04-20}}</ref>
+|n2=April 21st - [[Moreira]] was moved from the main squad. <ref name="moreiraintzinactive">{{cite web|url=https://twitter.com/moreiraaff/status/1384883942638096395|title=Venho anunciar que ainda estou sob contrato com a 
+@INTZ porém aberto a propostas para o próximo split da LBFF |language={{Flag|br}} Portuguese|publisher=Moreira|date=2021-04-21}}</ref>
+|n3=June 7th - [[Ruivo]] and [[Aranha]] join. [[VAZILY]] becames coach. <ref name="lineupintzlbff5">{{cite web|url=https://www.instagram.com/p/CP1caNwJppW/|title=Com vocês, nossa nova formação de Free Fire. Nossa seleção intrépida está formada para a #LBFF e a tropa vem forte para amassar tudo e todos! #GoINTZ |language={{Flag|br}} Portuguese|publisher=INTZ|date=2021-06-07}}</ref>
+}}
+}}
+{{TeamCard
+|team=Team One
+|p1=Bruno 7|p1flag=br
+|p2=VN10|p2flag=br
+|p3=VTRx|p3flag=br
+|p4=Drzzy|p4flag=br
+|p5=Azay|p5flag=br
+|p6=TRIPLOx|p6flag=br
+|c=Dilons|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=April 8th - [[GENERALtv]] leaves. <ref name="generaloutt1">{{cite web|url=https://www.instagram.com/p/CNasiO9prjY/ |title=Hoje nos despedimos do @generaltv_ |language={{Flag|br}} Portuguese|publisher=Team One|author=|date=2021-04-08}}</ref>
+|n2=June 1st - Coach [[Dilons]] joins. <ref name="dilonsint1">{{cite web|url=https://twitter.com/teamoneesports/status/1399834114371510274 |title=TEM NOVIDADE POR AQUI |language={{Flag|br}} Portuguese|publisher=Team One |author=|date=2021-06-01}}</ref>
+}}
+}}
+{{TeamCard
+|team=paiN Gaming
+|p1=BLACK00
+|p2=stiqzL|p2flag=br
+|p3=KAYKE
+|p4=RiccK
+|p5=LEAL7
+|c=Metal
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=April 19th - [[Déco]] leaves <ref name="decoout">{{cite web|url=https://twitter.com/paiNGamingBR/status/1384295754488033281|date=2021-04-19|title=Hoje nos despedimos desse brabo, família |language={{Flag|br}} Portuguese|publisher=paiN Gaming}}</ref>
+|n2=April 20th - [[D3]] leaves <ref name="d3out">{{cite web|url=https://twitter.com/paiNGamingBR/status/1384656878907523073 |date=2021-04-20 |title=Tem mais gente deixando a org, fml! |language={{Flag|br}} Portuguese|publisher=paiN Gaming}}</ref>
+|n3=April 28th - [[Antunes22]] leaves <ref name="antunesout">{{cite web|url=https://twitter.com/paiNGamingBR/status/1387558795669393411|date=2021-04-28|title=dia de despedida, tropa |language={{Flag|br}} Portuguese|publisher=paiN Gaming}}</ref>
+|n4=May 22nd - Coach [[Avenger]] leaves <ref name="avgoutp">{{cite web|url=https://twitter.com/AvgOfc/status/1396128629386616833 |date=2021-05-22 |title=Tem mais gente deixando a org, fml! |language={{Flag|br}} Portuguese|publisher=Avenger}}</ref>
+|n5=May 31st - [[LEAL7]] joins. <ref name="leal7pin">{{cite web|url=https://twitter.com/paiNGamingBR/status/1399518683442126852 |title=O REFORÇO TÁ EM CASA! |language={{Flag|br}} Portuguese ||trans_title=THE REINFORCEMENT IS AT HOME! |publisher=paiN Gaming |date=2021-05-31}}</ref>
+|n6=June 1st - Coach [[Metal]] joins. <ref name="metalpin">{{cite web|url=https://twitter.com/paiNGamingBR/status/1399764182443102215 |title=A @BMWBrasil TROUXE O CÉREBRO IN GAME RAPEIZE |language={{Flag|br}} Portuguese ||trans_title=|publisher=paiN Gaming |date=2021-06-01}}</ref>
+|n7=July 7th - [[Geerty]] leaves. <ref name="geeout">{{cite web|url=https://twitter.com/paiNGamingBR/status/1412803683457372165 |title=hj nos despedimos do @Getidoiskk paiNzetes |language={{Flag|br}} Portuguese ||trans_title=|publisher=paiN Gaming |date=2021-07-07}}</ref>
+}}
+}}
+{{TeamCard
+|team=Los Grandes
+|p1=BIRI|p1flag=br
+|p2=Biel7|p2flag=br
+|p3=MAMUTEZL
+|p4=RafaX
+|p5=duzzX|p5flag=br
+|p6=GUSZ|p6flag=br
+|c=Cauan|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=April 20th - [[NACHOS]] becames analyst <ref name="nachosanalyst">{{cite web|url=https://twitter.com/dionesff/status/1384627461024014336|title=Galera, a título de informação o Nachos será nosso analista no próximo split|publisher=Diones|author=|date=2021-04-20}}</ref>
+|n2=April 21st - Signed [[Cauan]] as coach <ref name="cauanlgin">{{cite web|url=https://www.youtube.com/watch?v=r5bg__ojdJ4|title=ELE VEIO! NOVO COACH PARA A LBFF!! |publisher=Los Grandes|author=|date=2021-04-21}}</ref>
+|n3=May 10th - [[GUSZ]] joins. <ref name="guszlgin">{{cite web|url=https://twitter.com/losgrandesgg/status/1391802078062841864 |title=Era anúncio que vocês queriam? Então toma! |language={{Flag|br}} Portuguese ||trans_title=Was it an announcement you wanted? Then take it! |publisher=Los Grandes|date=2021-05-10}}</ref>
+}}
+}}
+{{TeamCard
+|team=Team Solid
+|p1=VITINxp|p1flag=br
+|p2=NEYZZIN|p2flag=br
+|p3=Qualy|p3flag=br
+|p4=MAROTO7|p4flag=br
+|p5=Pec|p5flag=br
+|p6=PÃO7
+|c=CROFT|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 1/Series_B|Stage 1B]]
+|inotes={{NoteBig
+|n1=May 12th - [[GOHAN oN]] leaves. <ref name="gohanoutsolid">{{cite web|url=https://twitter.com/danielmacoy1/status/1387517036918714368 |title=Passando aqui para informar a todos que o jogador Victor “GOHAN” Marinho não é mais jogador da @teamsolidof. |language={{Flag|br}} Portuguese||trans_title=Passing here to inform everyone that the player Victor “GOHAN” Marinho is no longer an @teamsolidof player. |publisher=Daniel Macoy|date=2021-04-28}}</ref>
+|n2=[[PÃO7]] joins. <ref name="pao7solidin">{{cite web|url=https://www.instagram.com/p/CPZApGin1DE/ |title=Vocês cumpriram nosso desafio e o anunciado da vez dispensa apresentações. |language={{Flag|br}} Portuguese||trans_title=You fulfilled our challenge and the announcement of the time needs no introduction. |publisher=Team Solid|date=2021-05-27}}</ref>
+}}
+}}
+{{TeamCard
+|team=Nitroxx Top10
+|p1=CHINÊS|p1flag=br
+|p2=JHzz|p2flag=br
+|p3=ROMEUXX|p3flag=br
+|p4=BONZAI22|p4flag=br
+|p5=SPIL|p5flag=br
+|p6=VICTOR7
+|c=CapGui63|cflag=br
+|players=9
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 1/Series_B|Stage 1B]]
+|inotes={{NoteBig
+|n1=May 12th - [[GOHAN oN]] leaves. <ref name="gohanoutsolid">{{cite web|url=https://twitter.com/danielmacoy1/status/1387517036918714368 |title=Passando aqui para informar a todos que o jogador Victor “GOHAN” Marinho não é mais jogador da @teamsolidof. |language={{Flag|br}} Portuguese||trans_title=Passing here to inform everyone that the player Victor “GOHAN” Marinho is no longer an @teamsolidof player. |publisher=Daniel Macoy|date=2021-04-28}}</ref>
+|n2=May 30th - Announced partnership between Nitroxx eSports and Top10 e-Sports. The New team will bem called Nitroxx Top10. <ref name="pao7solidin">{{cite web|url=https://www.instagram.com/p/CPZApGin1DE/ |title=Vocês cumpriram nosso desafio e o anunciado da vez dispensa apresentações. |language={{Flag|br}} Portuguese||trans_title=You fulfilled our challenge and the announcement of the time needs no introduction. |publisher=Team Solid|date=2021-05-27}}</ref>
+}}
+}}
+{{TeamCard columns end}}
+
+===Group Draw===
+<section begin="Group Draw"/>
+{| class="wikitable" style="text-align:left; margin-top: 0px;"
+|-
+!width=240px|Group A
+!width=240px|Group B
+!width=240px|Group C 
+|-
+|{{Team|fluxo}} 
+|{{Team|god}}   
+|{{Team|b4e}}
+|-
+|{{Team|los grandes}}  
+|{{Team|intz}} 
+|{{Team|sccp}} 
+|-
+|{{Team|metagg}}   
+|{{Team|loud}}   
+|{{Team|Miners.gg}}  
+|-
+|{{Team|pain}} 
+|{{Team|nitroxx top10}}   
+|{{Team|furia}}
+|-
+|{{Team|sanreal}}  
+|{{Team|ss}} 
+|{{Team|team solid}} 
+|-
+|{{Team|keyd}}   
+|{{Team|team liquid}}   
+|{{Team|t1}}  
+|}
+<section end="Group Draw"/>
+
+
+LBFF 6:
+==Participants==
+{{TeamCardToggleButton|tcht=220 |playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Keyd
+|p1=MODESTIA
+|p2=General
+|p3=DeadGOD
+|p4=NANDO9
+|p5=Reei
+|c=Stark|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=August 10th - [[KBÇÃO]] leaves. <ref name="kbout">{{cite web|url=https://freefiremais.com.br/atual-campeao-da-lbff-kbcao-anuncia-saida-do-vivo-keyd/ |title=Atual campeão da LBFF, KBÇÃO anuncia saída do Vivo Keyd |language={{Flag|br}} Portuguese||trans_title=Current LBFF champion, KBÇÃO announces exit from Vivo Keyd |publisher=Free Fire Mais |date=2021-08-10}}</ref>
+|n2=August 23rd - [[Reei]] is back for main roster. <ref name="reiback">{{cite web|url=https://twitter.com/VivoKeyd/status/1429901255627853836 |title=ATENÇÃO! |language={{Flag|br}} Portuguese||trans_title=|publisher=Keyd |date=2021-08-23}}</ref>
+}}
+}}
+{{TeamCard
+|team=Corinthians
+|p1=OUSADO
+|p2=Razure
+|p3=Bops7|p3flag=br
+|p4=GELO7|p4flag=br
+|p5=Zenac
+|p6=Leozin|p6flag=br
+|c=Kied|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+}}
+{{TeamCard
+|team=Fluxo
+|p1=Nobru
+|p2=JapaBKR
+|p3=Syaz|p3flag=br
+|p4=GØDKILL|p4flag=br
+|p5=F4K
+|c=K9
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+}}
+{{TeamCard
+|team=SS Esports
+|p1=Mts007|p1flag=br
+|p2=BuToN007|p2flag=br
+|p3=SEMNOME|p3flag=br
+|p4=Phoenix23
+|p5=Jubinha
+|c=Butter|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=July 28th - Coach [[GENERALtv]] leaves. <ref name="generalout">{{cite web|url=https://twitter.com/babblerfreefire/status/1420482786696237061 |title=Via instagram stories o perfil oficial da @ssofc__ se despediu do general |language={{Flag|br}} Portuguese||trans_title=Via Instagram Stories the official profile of @ssofc__ said goodbye to the general |publisher=Babbler Free Fire |date=2021-07-28}}</ref>
+}}
+}}
+{{TeamCard
+|team=B4 eSports
+|p1=LOBATO4x
+|p2=Yago|p2flag=br
+|p3=PROZIN|p3flag=br|p3link=PROZIN (Mobile Player)
+|p4=Ruan
+|p5=Lapa7|p5flag=br
+|p6=João7|p6flag=br
+|c=MACHADO|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=August 13th - [[R7xy]] leaves. <ref name="r7out">{{cite web|url=https://twitter.com/ff_r7xy/status/1426170555963781127 |title=Meu ciclo na b4 se encerra hoje |language={{Flag|br}} Portuguese|trans_title=My cycle at b4 ends today ||publisher=R7 |author=|date=2021-08-13}}</ref>
+|n2=August 22nd - [[PROZIN]] joins. <ref name="proin">{{cite web|url=https://twitter.com/b4ofc/status/1429549183573372930 |title=Agora a tropa tá formada e pronta pra dar 100% nessa competição |language={{Flag|br}} Portuguese|trans_title= ||publisher=B4 |author=|date=2021-08-22}}</ref>
+}}
+}}
+{{TeamCard
+|team=Team Solid
+|p1=VITINxp|p1flag=br
+|p2=alok10
+|p3=Qualy|p3flag=br
+|p4=PÃO7
+|p5=Pec|p5flag=br
+|c=Blake|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=August 17th - [[CROFT]] leaves the position of coach. <ref name="crout">{{cite web|url=https://twitter.com/croftff/status/1427649520561704961 |title=É família, venho hoje anunciar minha saída como coach da LBFF |language={{Flag|br}} Portuguese|trans_title=I come today to announce my departure as LBFF coach ||publisher=CROFT |date=2021-08-17}}</ref>
+|n2=August 23rd - [[alok10]] joins. <ref name="alokin">{{cite web|url=https://www.instagram.com/p/CS7RVIVnmcT/ |title=E tem novo jogador na área. |language={{Flag|br}} Portuguese|trans_title=||publisher=Team Solid|date=2021-08-23}}</ref>
+}}
+}}
+{{TeamCard
+|team=Meta Gaming
+|p1=NICKOLAS|p1flag=br
+|p2=CAUE|p2flag=br
+|p3=LOST21|p3flag=br
+|p4=GUIMONS|p4flag=br
+|p5=DRAXX7|p5flag=br
+|p6=YAN7|p6flag=br
+|c=Nabozny|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+}}
+{{TeamCard
+|team=LOUD
+|p1=Will
+|p2=Kroonos
+|p3=Cauan7
+|p4=Noda
+|p5=Brabox
+|c=Frois
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+}}
+{{TeamCard
+|team=Nitroxx Top10
+|p1=CHINÊS|p1flag=br
+|p2=JHzz|p2flag=br
+|p3=ROMEUXX|p3flag=br
+|p4=BONZAI22|p4flag=br
+|p5=BRABO|p5flag=br
+|p6=HEAD|p6flag=br
+|c=HELIO|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=August 21st - Coach [[CapGui63]], [[VICTOR7]] and [[SPIL]] leave. <ref name="t103">{{cite web|url=https://twitter.com/narito89/status/1429503839577821186 |title=Passaram o rato na T10? |language={{Flag|br}} Portuguese||trans_title=|publisher=Narito |date=2021-08-21}}</ref>
+|n2=August 27th - [[HEAD]] and [[BRABO]] join. [[KROATA]] joins as Coach. <ref name="hco">{{cite web|url=https://www.instagram.com/p/CTC0Ve3ASiF/?utm_medium=copy_link |title=O JOGO COMEÇOU |language={{Flag|br}} Portuguese||trans_title=|publisher=nitroxxesports |date=2021-08-27}}</ref>
+}}
+}}
+{{TeamCard
+|team=FURIA Esports
+|p1=Bolin7|p1flag=br
+|p2=memgod
+|p3=BIEL7|p3flag=br
+|p4=Ratin|p4flag=br
+|p5=Gusta|p5flag=br
+|c=ALTMAN|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=August 16th - [[one9]] leaves. <ref name="onout">{{cite web|url=https://twitter.com/one9ff_/status/1427372483934568449 |title=Venho comunicar que estou me desligando da Fúria |language={{Flag|br}} Portuguese||trans_title=I come to communicate that I am disconnecting from the Furia |publisher=one9 |date=2021-08-16}}</ref>
+|n2=August 19th - [[Field]] leaves. <ref name="fieldout">{{cite web|url=https://twitter.com/FURIA/status/1428376888972558344 |title=Hoje a #FURIAFF se despede oficialmente do @fieldff_ e do @one9ff_. |language={{Flag|br}} Portuguese||trans_title=Today #FURIAFF officially says goodbye to @fieldff_ and @one9ff_. |publisher=Furia |date=2021-08-19}}</ref>
+|n3=August 21st - [[Ratin]] and [[Gusta]] join. <ref name="rusta">{{cite web|url=https://twitter.com/FURIA/status/1429122957012520969 |title=Aí @ratiinff e @ffgustaxt, chega mais que agora vocês são FURIA |language={{Flag|br}} Portuguese||trans_title=|publisher=Furia |date=2021-08-21}}</ref>
+}}
+}}
+{{TeamCard
+|team=Los Grandes
+|p1=GUSZ|p1flag=br
+|p2=RafaX
+|p3=MAMUTEZL
+|p4=mvR
+|p5=CEBOLINHA
+|p6=|p6flag=
+|c=Cauan|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=August 6th - [[duzzX]], [[BIRI]] and [[Biel7]] leave. <ref name="dbbout">{{cite web|url=https://twitter.com/losgrandesgg/status/1423736647255052291 |title=COMUNICADO |language={{Flag|br}} Portuguese ||trans_title=RELEASE |publisher=Los Grandes|date=2021-08-06}}</ref>
+|n2=August 16th - [[mvR]] joins. <ref name="mvin">{{cite web|url=https://twitter.com/losgrandesgg/status/1427390307532935170 |title=ELE CHEGOU! SEJA BEM-VINDO |language={{Flag|br}} Portuguese ||trans_title=HE ARRIVED! WELCOME |publisher=Los Grandes|date=2021-08-16}}</ref>
+|n3=August 18th - [[CEBOLINHA]] joins. <ref name="cebolin">{{cite web|url=https://twitter.com/losgrandesgg/status/1428114766539771910 |title=Dizem que um bom filho a casa torna... |language={{Flag|br}} Portuguese ||trans_title=They say that a good child makes the house... |publisher=Los Grandes|date=2021-08-18}}</ref>
+}}
+}}
+{{TeamCard
+|team=Miners.gg
+|p1=Natividade
+|p2=BROILO|p2flag=br
+|p3=OTREMBB 
+|p4=Field|p4flag=br
+|p5=PEU
+|p6=RiccK
+|c=DogBlack|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_2/Series_A|Stage 2A]]
+|inotes={{NoteBig
+|n1=August 11th - [[VITIN]] leaves. <ref name="vitinout">{{cite web|url=https://freefiremais.com.br/apos-sete-meses-vittin-anuncia-saida-da-netshoes-miners/ |title=Após sete meses, Vittin anuncia saída da Netshoes Miners |language={{Flag|br}} Portuguese ||trans_title=After seven months, Vittin announces departure from Netshoes Miners |publisher=Free Fire Mais |date=2021-08-11}}</ref>
+|n2=August 17th - [[CEBOLINHA]] and [[IGZINN]] leave. <ref name="iglinha">{{cite web|url=https://twitter.com/minersgg/status/1427726622044696586 |title=hoje a gente se despede desses meus meninos do frifas |language={{Flag|br}} Portuguese ||trans_title=today we say goodbye to my boys from frifas |publisher=Miners |date=2021-08-17}}</ref>
+|n3=August 25th - [[BROILO]], [[Field]], [[PEU]] and [[RiccK]] join. <ref name="brfpr">{{cite web|url=https://twitter.com/minersgg/status/1430643154915667969 |title=meus menino curtiram as férias e tão prontos pra mais uma LBFF |language={{Flag|br}} Portuguese ||trans_title=|publisher=Miners |date=2021-08-25}}</ref>
+}}
+}}
+{{TeamCard
+|team=Real e-Sports
+|p1=FON|p1flag=br
+|p2=PH|p2flag=br
+|p3=AUTOBOOT 
+|p4=VM7|p4flag=br
+|p5=TATU13|p5flag=br
+|p6=LUCCA9|p6flag=br
+|p7=RAUL7|p7flag=br
+|c=Profeta|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 3/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=August 20th - The partnership between '''[[Real e-Sports]]''' and '''[[Santos e-Sports]]''', called [[Santos/Real]], has ended. The league spot stay with Real. <ref name="sanreal">{{cite web|url=https://twitter.com/SantosFCeSports/status/1428703451001892865?s=19 |title=Meus peixes, esse é o comunicado oficial que eu estava devendo a vocês. Leiam com carinho. |language={{Flag|br}} Portuguese ||trans_title=My fish, this is the official statement I owed you. Read it with love. |publisher=Santos |date=2021-08-20}}</ref>
+}}
+}}
+{{TeamCard
+|team=Tropa
+|link=Tropa (Mobile)
+|p1=D3
+|p2=GUIGA|p2flag=br
+|p3=Moreira
+|p4=KILEDy|p4flag=br
+|p5=SPIL|p5flag=br
+|p6=Legit|p6flag=br
+|p7=SAIMONrx|p7flag=br
+|p8=Preguiça|p8flag=br
+|c=CapGui63|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 3/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=August 22nd - Tropa announces it will be in Serie A after partnering with [[Voltz Gaming]]. <ref name="trolpz">{{cite web|url=https://youtu.be/mkBRvPzbRJk |title=1 MILHÃO?! A TROPA ESTÁ NA SÉRIE A DA LBFF NO FREE FIRE! |language={{Flag|br}} Portuguese ||trans_title=1 MILLION?! TROPA IS IN THE LBFF SERIES A ON FREE FIRE! |publisher=Tropa |date=2021-08-22}}</ref>
+}}
+}}
+{{TeamCard
+|team=Amazon Cripz
+|p1=DIDI_75|p1flag=br
+|p2=DielN7|p2flag=br
+|p3=MASTER51|p3flag=br
+|p4=Vinhaal|p4flag=br
+|p5=Salles|p5flag=br
+|c=Apache|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 3/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=August 23rd - [[Vinhal]] joins. <ref name="vin">{{cite web|url=https://twitter.com/goAmazonCripz/status/1429914056115298304 |title=ACABOU O MISTÉRIO! |language={{Flag|br}} Portuguese ||trans_title=|publisher=Amazon Cripz |date=2021-08-23}}</ref>
+}}
+}}
+{{TeamCard
+|team=Xisde
+|p1=Angelo7|p1flag=br
+|p2=DZNKILL|p2flag=br
+|p3=Brenin7|p3flag=br
+|p4=Debbs|p4flag=br
+|p5=Luignet|p5flag=br
+|c=|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 3/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=August 23rd - Equipe X rebranded to Xisde. <ref name="xisde">{{cite web|url=https://tropafreefire.com.br/noticia/equipe-x-e-anunciada-como-xisde-e-apresenta-time-que-estara-na-serie-a-da-lbff/ |title=Equipe X é anunciada como Xisde e apresenta time que estará na Série A da LBFF |language={{Flag|br}} Portuguese||trans_title=|publisher=Tropa Free Fire |author=Filipe Carbone |date=2021-08-23}}</ref>
+|n2=September 22nd - Coach [[Reiner]] leaves. <ref name="reinout">{{cite web|url=https://twitter.com/xisde_gg/status/1440724402144833538 |title=COMUNICADO OFICIAL |language={{Flag|br}} Portuguese||trans_title=|publisher=XISDE |author=|date=2021-09-25}}</ref>
+}}
+}}
+{{TeamCard
+|team=Bonde
+|p1=LEVELUP
+|p2=Cauã|p2flag=br
+|p3=RIGBY|p3flag=br
+|p4=STRONG|p4flag=br
+|p5=DORITO|p5flag=br
+|p6=R7xy
+|p7=VICTOR7
+|p8=one9
+|c=KYM|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 2/Series_B|Stage 2B]]
+|inotes={{NoteBig
+|n1=August 14th - [[W7M Gaming]] sold their league spot. <ref name="w7out">{{cite web|url=https://freefiremais.com.br/w7m-gaming-se-pronuncia-apos-venda-de-vaga-na-lbff/ |title=W7M Gaming se pronuncia após venda de vaga na LBFF |language={{Flag|br}} Portuguese||trans_title=W7M Gaming speaks out after LBFF spot sale |publisher=Free Fire Mais |date=2021-08-14}}</ref>
+}}
+}}
+{{TeamCard
+|team=TSM
+|link=TSM BR
+|p1=Nappon
+|p2=BROCO
+|p3=BOB7|p3flag=br
+|p4=RUSH|p4flag=br
+|p5=VINNIXL
+|c=Elias|cflag=br
+|players=8
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 2/Series_B|Stage 2B]]
+|inotes={{NoteBig
+|n1=August 17th - [[Black Dragons e-Sports]] sold their league spot. <ref name="bdout">{{cite web|url=https://twitter.com/blackdragonsBR/status/1427732670377865216 |title=VOLTAREMOS COM TUDO! |language={{Flag|br}} Portuguese||trans_title=WE WILL BACK! |publisher=Black Dragons e-Sports |date=2021-08-17}}</ref>
+|n2=August 23rd - TSM announced roster for LBFF <ref name="tsm">{{cite web|url=https://twitter.com/TSM_BR/status/1429851348124815363 |title=Apresentamos nossa line oficial para a LBFF 6 |language={{Flag|br}} Portuguese||trans_title=|publisher=TSM BR |date=2021-08-23}}</ref>
+}}
+}}
+{{TeamCard columns end}}
+
+===Group Draw===
+<section begin="Group Draw"/>
+{| class="wikitable" style="text-align:left; margin-top: 0px;"
+|-
+!width=240px|Group A
+!width=240px|Group B
+!width=240px|Group C 
+|-
+|{{Team|bonde}} 
+|{{Team|acz}}   
+|{{Team|b4e}}
+|-
+|{{Team|sccp}} 
+|{{Team|fluxo}}   
+|{{Team|furia}}
+|-
+|{{Team|ntx10}} 
+|{{Team|lg}}   
+|{{Team|loud}}
+|-
+|{{Team|team solid}} 
+|{{Team|miners}}   
+|{{Team|metagg}}
+|-
+|{{Team|tsm br}} 
+|{{Team|ss}}   
+|{{Team|reales}}
+|-
+|{{Team|keyd}} 
+|{{Team|xisde}}   
+|{{Team|tropa (mobile)}}
+|}
+<section end="Group Draw"/>
+
+
+LBFF 7:
+==Participants==
+{{TeamCardToggleButton |tcht=220}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=B4 eSports
+|p1=Lobato
+|p2=Yago
+|p3=Lapa7
+|p4=CHINÊS|
+|p5=Renan22|p5flag=br
+|p6=Jubinha
+|c=MACHADO
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=December 8th - [[Ruan]] leaves. <ref name="runout">{{cite web|url=https://twitter.com/b4ofc/status/1468686827238400007 |title=Hoje nos despedimos de um dos maiores nomes que já passaram por aqui |language={{Flag|br}} Portuguese|trans_title= ||publisher=B4 |author=|date=2021-12-08}}</ref>
+|n2=December 16th - [[PROZIN]] leaves. <ref name="porzout">{{cite web|url=https://twitter.com/b4ofc/status/1471513387544809472 |title=Por um lado, sentimos um aperto ao nos despedirmos |language={{Flag|br}} Portuguese|trans_title= ||publisher=B4 |author=|date=2021-12-16}}</ref>
+|n3=December 17th - [[João7]] leaves. <ref name="jout">{{cite web|url=https://twitter.com/babblerfreefire/status/1471883700233281536 |title=Machado, coach da B4, respondeu algumas perguntas referentes a saída de alguns jogadores |language={{Flag|br}} Portuguese|trans_title= ||publisher=Babbler Free Fire |author=|date=2021-12-17}}</ref>
+|n4=January 10th - [[CHINÊS]], [[Renan22]] and [[Jubinha]] join. <ref name="b42022">{{cite web|url=https://www.instagram.com/p/CYkNiMwPTQE/ |title=Chocando o total de 0 pessoas, apresentamos a nossa nova line de FreeFire |language={{Flag|br}} Portuguese||trans_title=|publisher=B4 eSPORTS |date=2022-01-10}}</ref>
+}}
+}}
+{{TeamCard
+|team=Team Liquid
+|p1=Boss|p1flag=br|p1link=Boss (Brazilian Player)
+|p2=PEDRO.RS
+|p3=BuToN007
+|p4=Mts007
+|p5=Phoenix23
+|c=Souto
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=January 10th - Team Liquid acquires [[SS Esports]] spot. <ref name="liquiss">{{cite web|url=https://twitter.com/TeamLiquidBR/status/1480555074254512137 |title=Nossa história na Série A não terminou, apenas ganhou um novo capítulo. |language={{Flag|br}} Portuguese||trans_title=|publisher=Team Liquid BR |date=2022-01-10}}</ref>
+|n2=January 11th - Lineup announced. <ref name="wbsa">{{cite web|url=https://twitter.com/TeamLiquidBR/status/1480932637321703430 |title=Viemos da Elite. Voltamos à Elite |language={{Flag|br}} Portuguese |publisher=Team Liquid Brasil |date=2022-01-11}}</ref>
+}}
+}}
+{{TeamCard
+|team=Fluxo
+|p1=Nobru
+|p2=JapaBKR
+|p3=Syaz
+|p4=Fac
+|p5=OUSADO
+|c=K9
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=January 5th - [[GØDKILL]] leaves. <ref name="godbye">{{cite web|url=https://twitter.com/fluxogg/status/1478758231463890959 |title=Despedidas nunca são legais, ciclos precisam acontecer e o nosso chegou ao fim |language={{Flag|br}} Portuguese||trans_title=|publisher=Fluxo |date=2022-01-05}}</ref>
+|n2=January 10th - [[OUSADO]] joins. <ref name="ousadin">{{cite web|url=https://twitter.com/fluxogg/status/1480622136297508872 |title=Eu sei que vocês estavam indo a loucura, mas calma que a ansiedade terminou, ou está apenas começando rsrs… |language={{Flag|br}} Portuguese||trans_title=|publisher=Fluxo |date=2022-01-10}}</ref>
+}}
+}}
+{{TeamCard
+|team=Corinthians
+|p1=memgod
+|p2=Razure
+|p3=VITINxp
+|p4=Band|p4flag=br
+|p5=
+|c=Kied|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=November 5th - [[Leozin]] leaves. <ref name="leout">{{cite web|url=https://www.meutimao.com.br/noticias-do-corinthians/396495/leozin-deixa-equipe-de-free-fire-do-corinthians-reuniao-nesta-sexta-define-chegadas-e-saidas |title=LEOZIN DEIXA EQUIPE DE FREE FIRE DO CORINTHIANS; REUNIÃO NESTA SEXTA DEFINE CHEGADAS E SAÍDAS |language={{Flag|br}} Portuguese|publisher=Meu Timão |date=2021-11-05}}</ref>
+|n2=December 16th - [[OUSADO]] leaves. <ref name="ousout">{{cite web|url=https://twitter.com/corinthians_ff/status/1471569840938921992 |title=Você foi muito importante em toda nossa caminhada, mas agora seguiremos caminhos diferentes. |language={{Flag|br}} Portuguese|publisher=Corinthians Free Fire |date=2021-12-16}}</ref>
+|n3=January 3rd - [[Bops]] leaves. <ref name="bopsout">{{cite web|url=https://twitter.com/corinthians_ff/status/1477977565465882629 |title=É dia de despedida, Fiel |language={{Flag|br}} Portuguese|publisher=Corinthians Free Fire |date=2022-01-03}}</ref>
+|n4=January 11th - [[Band]], [[VITINxp]] and [[memgod]] join. <ref name="banvitme">{{cite web|url=https://youtu.be/7R3dRprOxhU |title=UM NOVO COMEÇO - CORINTHIANS FREE FIRE 2022 |language={{Flag|br}} Portuguese|publisher=Corinthians Free Fire |date=2022-01-11}}</ref>
+}}
+}}
+{{TeamCard
+|team=Tropa
+|link=Tropa (Mobile)
+|class=Tropa (Mobile)
+|image=Tropa logo.png
+|p1=Moreira
+|p2=KILEDy|p2flag=br
+|p3=SPIL|p3flag=br
+|p4=MANDELA|p4flag=br
+|p5=Biel7|p5flag=br
+|p6=Preguiça|p6flag=br
+|p7=D3
+|c=CapGui63|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=January 5th - [[GUIGA]] leaves. <ref name="guigout">{{cite web|url=https://twitter.com/guigaff1/status/1478746953735417862 |title=Só tenho a agradecer por tudo que vivenciei aqui, que org foda!! |language={{Flag|br}} Portuguese|publisher=guiga_awp |date=2022-01-05}}</ref>
+|n2=January 9th - [[Legit]] leaves. <ref name="legitout">{{cite web|url=https://www.instagram.com/p/CYhd0BUvFMN/ |title=Muito obrigado, @legit7_ |language={{Flag|br}} Portuguese|publisher=Tropa |date=2022-01-09}}</ref>
+|n3=January 12th - [[Mandela]] and [[Biel7]] join. <ref name="manielin">{{cite web|url=https://www.instagram.com/p/CYoZ1E-oaJN/ |title=Tropa, vamos decolar! |language={{Flag|br}} Portuguese|publisher=Tropa |date=2022-01-12}}</ref>
+}}
+}}
+{{TeamCard
+|team=LOUD
+|p1=Will
+|p2=Noda
+|p3=Lost|p3flag=br
+|p4=Cauan7
+|p5=Kroonos
+|c=Frois
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|players=6
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=December 3rd - [[Brabox]] took a break from the competitive scene. <ref name="braboxcc">{{cite web|url=https://twitter.com/loud_braboxp/status/1466878012117467137 |title=Minhas vidas, lembram que eu falei sobre uma decisão importante? |language={{Flag|br}} Portuguese|trans_title=||publisher=Brabox |author=|date=2021-12-03}}</ref>
+|n2=January 17th - [[Lost]] joins. <ref name="lostin">{{cite web|url=https://twitter.com/LOUDgg/status/1483197530619977730 |title=SAI DA FRENTE QUE O @LOUD_LOST21 CHEGOU! |language={{Flag|br}} Portuguese|trans_title=||publisher=LOUD |author=|date=2022-01-17}}</ref>
+}}
+}}
+{{TeamCard
+|team=Nitroxx eSports
+|p1=ROMEUXX|p1flag=br
+|p2=HEAD|p2flag=br
+|p3=PROZIN|p3flag=br|p3link=PROZIN (Mobile Player)
+|p4=João7|p4flag=br
+|p5=Salles|p5flag=br
+|p6=Qualy|p6flag=br
+|c=Nite7|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=November 22nd - [[BONZAI22]] leaves. <ref name="bonzout">{{cite web|url=https://twitter.com/bonzai22_/status/1462849089394163716 |title=Fala rapaziada, venho através dessa publicação comunicar que estou aberto a qualquer tipo de propostas, free agent |language={{Flag|br}} Portuguese||trans_title=|publisher=BONZAI|date=2021-11-22}}</ref>
+|n2=December 27th - [[BRABO]] leaves. <ref name="brabount">{{cite web|url=https://www.instagram.com/p/CX_vlHjLKuD/ |title=Hoje nos despedimos desses monstros |language={{Flag|br}} Portuguese||trans_title=|publisher=Nitroxx eSports |date=2021-11-27}}</ref>
+|n3=January 3rd - [[JHzz]] leaves. <ref name="jhzzout">{{cite web|url=https://twitter.com/jhzzff_/status/1478037396868501508 |title=Estou Aberto a proposta A/B n faço mais parte da @NitroxxeSports |language={{Flag|br}} Portuguese||trans_title=|publisher=NNT10 JHZZ|date=2022-01-03}}</ref>
+|n4=Partnership between [[Nitroxx eSports]] and [[Top10 e-Sports]] called [[Nitroxx Top10]] has ended.
+|n5=January 10th - [[CHINÊS]] signed by [[B4 eSports]]. <ref name="b42022"/>
+|n6=January 12th - [[PROZIN]], [[João7]], [[Salles]], [[Qualy]] and coach [[Nite7]] join. <ref name="nitvd">{{cite web|url=https://www.instagram.com/p/CYoZMa3LdMj/ |title=Se liga na seleção que montamos |language={{Flag|br}} Portuguese||trans_title=|publisher=Nitroxx eSports|date=2022-01-12}}</ref>
+}}
+}}
+{{TeamCard
+|team=Miners.gg
+|p1=NATIVA
+|p2=BROILO|p2flag=br
+|p3=OTREMBB 
+|p4=Field|p4flag=br
+|p5=PEU
+|p6=RiccK
+|c=DogBlack|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+}}
+{{TeamCard
+|team=Keyd
+|p1=MODESTIA
+|p2=GNERALXX
+|p3=DeadGOD
+|p4=NANDO9
+|p5=KBÇÃO
+|c=Stark
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=November 8th - [[Reei]] moved to inactive. <ref name="reictive">{{cite web|url=https://twitter.com/reeinevidaaa/status/1457749268517818378 |title=triste em ter que se separar dos meus irmões dps de tanto tempo juntos |language={{Flag|br}} Portuguese||trans_title=|publisher=Reei |date=2021-11-08}}</ref>
+|n2=January 5th - [[KBÇÃO]] joins. <ref name="kbcin">{{cite web|url=https://twitter.com/VivoKeyd/status/1478743726856060933 |title=AGORA O TREM ESTÁ SEM FREIO! |language={{Flag|br}} Portuguese||trans_title=|publisher=Vivo Keyd |date=2022-01-05}}</ref>
+}}
+}}
+{{TeamCard
+|team=Cruzeiro eSports
+|p1=GUIGA|p1flag=br
+|p2=menork1ng|p2flag=br
+|p3=XTRAP7|p3flag=br
+|p4=RUSH|p4flag=br
+|p5=R7|p5flag=br
+|c=Nabozny|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=January 10th - Cruzeiro acquires [[Team Solid]] spot. Lineup announced <ref name="cruback">{{cite web|url=https://twitter.com/CruzeiroEsports/status/1480539937028018177 |title=O Cruzeiro Esports está elite do Free Fire! |language={{Flag|br}} Portuguese||trans_title=|publisher=Cruzeiro Esports |date=2022-01-10}}</ref>
+}}
+}}
+{{TeamCard
+|team=Los Grandes
+|p1=Gus|p1flag=br
+|p2=mvR
+|p3=CEBOLINHA
+|p4=Ruan
+|p5=FON|p5flag=br
+|c=Butter|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=November 27th - [[MAMUTEZL]] leaves. <ref name="mamout">{{cite web|url=https://twitter.com/losgrandesgg/status/1464327507834982415 |title=Hoje um ciclo chega ao fim e nos despedimos do @el_mamutezl! |language={{Flag|br}} Portuguese ||trans_title=|publisher=Los Grandes|date=2021-11-26}}</ref>
+|n2=November 29th - [[RafaX]] leaves. <ref name="rafout">{{cite web|url=https://twitter.com/losgrandesgg/status/1465405002894221322 |title=Hoje nos despedimos do @el_rafaxis! |language={{Flag|br}} Portuguese ||trans_title=|publisher=Los Grandes|date=2021-11-29}}</ref>
+|n3=January 13th - [[Ruan]], [[FON]] and coach [[Butter]] join. [[Cauan]] became analyst. <ref name="rfbin">{{cite web|url=https://www.youtube.com/watch?v=5-iCFIS8ENE |title=CONHEÇA TODAS AS LINES DE 2022 |language={{Flag|br}} Portuguese ||trans_title=|publisher=Los Grandes|date=2022-01-13}}</ref>
+}}
+}}
+{{TeamCard
+|team=Meta Gaming
+|p1=CAUE|p1flag=br
+|p2=ERICK11|p2flag=br
+|p3=RafaX
+|p4=MAMUTEZL
+|p5=PÃO7
+|c=ALTMAN|cflag=br
+|t2title=Staff
+|t2c1=Izuki|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage_3/Series_A|Stage 3A]]
+|inotes={{NoteBig
+|n1=November 19th - [[YAN7]] and [[GUIMONS]] leave. <ref name="yout">{{cite web|url=https://twitter.com/ffyan7/status/1461716612185313281 |title=Salve rapaziada, estou free agent |language={{Flag|br}} Portuguese||trans_title=|publisher=YAN7 |date=2021-11-19}}</ref> <ref name="gout">{{cite web|url=https://twitter.com/guimonszin/status/1461765312861413388 |title=Salve tropa, vindo aqui informar pra vocês que estou free agent |language={{Flag|br}} Portuguese||trans_title=|publisher=GUIMONS |date=2021-11-19}}</ref>
+|n2=December 7th - [[LOST21]] leaves. <ref name="loust">{{cite web|url=https://twitter.com/TheRadioativo/status/1468145100974919688 |title=Lost, acaba de informar que não tem mais contrato |language={{Flag|br}} Portuguese||trans_title=|publisher=The Radioativo |date=2021-12-07}}</ref>
+|n3=January 10th - Coach [[Nabozny]] signed by [[Cruzeiro eSports]]. <ref name="cruback"/> [[DRAXX7]] signed by [[Magic Squad (Brazilian Team)|Magic Squad]]. <ref name="godraxpob"/> [[NICKOLAS]] leaves. <ref name="nicklout">{{cite web|url=https://twitter.com/MetaGamingpy/status/1480596888093179911 |title=Es lunes y hoy mas que nunca queremos agradecerle a este increíble grupo que empezó desde abajo y llego a las más grandes instancias, dejaron mas que solo su huella dentro de Meta y LBFF |language={{Flag|br}} Portuguese||trans_title=|publisher=Meta Gaming |date=2022-01-10}}</ref>
+|n4=January 16th - [[ERICK11]], [[RafaX]], [[MAMUTEZL]], [[PÃO7]] and coach [[ALTMAN]] join. <ref name="metanews">{{cite web|url=https://twitter.com/MetaGamingpy/status/1482783495801999365 |title=Falta pouco para que comece o próximo split da lbff e junto com ele nos renovamos também |language={{Flag|br}} Portuguese||trans_title=|publisher=Meta Gaming |date=2022-01-16}}</ref>
+}}
+}}
+{{TeamCard
+|team=God E-Sports
+|p1=JuninXL|p1flag=br
+|p2=Marreta|p2flag=br
+|p3=MIGUELx|p3flag=br
+|p4=Mike|p4flag=br
+|p5=RIGBY|p5flag=br
+|c=Ninja|cflag=br|clink=Ninja (Brazilian Coach)
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 1/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=January 12th - [[RIGBY]] joins. <ref name="rigbyin">{{cite web|url=https://www.instagram.com/p/CYo_JF7pcrK/ |title=Chega de mistério! |language={{Flag|br}} Portuguese |trans_title=|publisher=GOD |author=|date=2022-01-12}}</ref>
+|n2=January 13th - [[PATO]] leaves the main roster. <ref name="patoutdd">{{cite web|url=https://www.instagram.com/p/CYrwwPoPH5f/ |title=Nossos meninos já estão reunidos no Olimpo para se prepararem para Série A! |language={{Flag|br}} Portuguese |trans_title=|publisher=GOD |author=|date=2022-01-13}}</ref>
+}}
+}}
+{{TeamCard
+|team=Magic Squad
+|link=Magic Squad (Brazilian Team)
+|class=Magic Squad (Brazilian Team)
+|image=Magic Squad lightmode.png
+|p1=XGUAXA7|p1flag=br
+|p2=BUENO|p2flag=br
+|p3=GØDKILL
+|p4=DRAXX7|p4flag=br
+|p5=Bops|p5flag=br
+|p6=ITALO|p6flag=br
+|c=LUUUKING
+|t2title=Staff
+|t2c1=PUTSGRILO|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|players=6
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 1/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=December 31st - [[DANXL7]] and [[xMEC7]] leave. <ref name="danmec">{{cite web|url=https://twitter.com/babblerfreefire/status/1477000066728661003 |title=Os jogadores DanXL e MECx divulgaram em seus perfis que estão Free Agent para o próximo split |language={{Flag|br}} Portuguese||trans_title=|publisher=Babbler Free Fire |date=2021-12-31}}</ref>
+|n2=January 10th - [[TROPA DO BRUXO E-SPORTS]] rebranded to [[Magic Squad]]. [[XTRAP7]] signed by [[Cruzeiro eSports]]. <ref name="cruback"/> [[GØDKILL]], [[DRAXX7]] and [[Bops]] join. <ref name="godraxpob">{{cite web|url=https://www.instagram.com/p/CYkR_HjF0g1/ |title=A Magic Squad chegou na LBFF7 |language={{Flag|br}} Portuguese||trans_title=|publisher=Magic Squad |date=2022-01-10}}</ref>
+}}
+}}
+{{TeamCard
+|team=Liberty
+|p1=Drzzy|p1flag=br
+|p2=HYPE|p2flag=br
+|p3=YDAVI|p3flag=br
+|p4=SOUZA|p4flag=br
+|p5=Pec|p5flag=br
+|p6=PATO
+|c=D7|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 1/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=November 30th - [[Azay]] moved to inactive. [[KBÇÃO]] and coach [[ad4mzera]] leave. <ref name="azayctive">{{cite web|url=https://freefiremais.com.br/azay-da-havan-liberty-revela-estar-aberto-a-receber-propostas/ |title=Azay, da Havan Liberty, revela estar aberto a receber propostas |language={{Flag|br}} Portuguese||trans_title=|publisher=Free Fire Mais |date=2021-11-30}}</ref>
+}}
+}}
+{{TeamCard
+|team=Real e-Sports
+|p1=TATU13|p1flag=br
+|p2=VM7|p2flag=br
+|p3=JAPAXL|p3flag=br|p3link=Japaxl
+|p4=TRIPLOx|p4flag=br
+|p5=Antunes22
+|c=Blake|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 1/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=December 15th - [[AUTOBOOT]] moved to inactive. <ref name="autorealinat">{{cite web|url=https://twitter.com/autobootofc/status/1471173929779793923 |title=estou aberto a propostas só entrar em contato |language={{Flag|br}} Portuguese||trans_title=|publisher=Autoboot |date=2021-12-15}}</ref>
+|n2=January 10th - Coach [[Profeta]] leaves. <ref name="profout">{{cite web|url=https://www.instagram.com/p/CYjmZkFLNaE/ |title=Com a chegada de um novo ano iniciamos a reformulação de nossa equipe para o cenário em 2022. |language={{Flag|br}} Portuguese||trans_title=|publisher=Real e-Sports |date=2022-01-10}}</ref>
+|n3=January 11th - [[PH]] leaves. <ref name="phout">{{cite web|url=https://www.instagram.com/p/CYjmZkFLNaE/ |title=Mais um Adeus! |language={{Flag|br}} Portuguese||trans_title=|publisher=Real e-Sports |date=2022-01-11}}</ref>
+|n4=January 12th - [[FON]] leaves. <ref name="fonout">{{cite web|url=https://www.instagram.com/p/CYpN_cjJHMK/ |title=Por fim, um ícone na historia da Realeza se despede. |language={{Flag|br}} Portuguese||trans_title=|publisher=Real e-Sports |date=2022-01-12}}</ref>
+|n5=January 13th - Coach [[Blake]], [[TRIPLOx]] and [[JAPAXL]] join. <ref name="blakein">{{cite web|url=https://twitter.com/blakecoach_/status/1481708153167355908 |title=novo ciclo, nova caminhada |language={{Flag|br}} Portuguese||trans_title=|publisher=blake da realeza |date=2022-01-13}}</ref> <ref name="triplin">{{cite web|url=https://www.instagram.com/p/CYrb5XuLBPn/ |title=É pra Deus todas as glórias |language={{Flag|br}} Portuguese||trans_title=|publisher=TRIPLOx |date=2022-01-13}}</ref> <ref name="japxllin">{{cite web|url=https://twitter.com/japaxl7_/status/1481695563603132427 |title=Hoje se inicia um novo ciclo |language={{Flag|br}} Portuguese||trans_title=|publisher=JAPAXL |date=2022-01-13}}</ref>
+|n6=January 17th - [[Antunes22]] joins. <ref name="antuninre">{{cite web|url=https://www.instagram.com/p/CY1d0SLrDE6/ |title=A @realesports_gg permaneceu com os jogadores @vm7.ofc e @tatuff13 e contou com as chegadas do @_fftriplox , @antunesvinte2 , @ff_japaxl7 e o @blakecoach |language={{Flag|br}} Portuguese||trans_title=|publisher=I Love Frifas |date=2022-01-17}}</ref>
+}}
+}}
+{{TeamCard
+|team=BD Vasco
+|p1=CHUCKY|p1flag=br
+|p2=EASY|p2flag=br
+|p3=LENNO|p3flag=br
+|p4=HENDER|p4flag=br
+|p5=Loiro RJ|p5flag=br
+|c=DG|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 3/Series_B|Stage 3B]]
+|inotes={{NoteBig
+|n1=January 10th - Announced partnership between [[Black Dragons e-Sports]] and [[Vasco eSports]]. <ref name="bdvasco">{{cite web|url=https://www.instagram.com/p/CYjfUZeBS3N/ |title=Em 2022, a nossa jornada toma um novo rumo. |language={{Flag|br}} Portuguese||trans_title=|publisher=Black Dragons e-Sports |date=2022-01-10}}</ref>
+|n2=January 13th - Lineup announced with [[Loiro RJ]]. <ref name="bdvascolrj">{{cite web|url=https://twitter.com/blackdragonsBR/status/1481644334520799240 |title=REVELAMOS AS CARTAS! |language={{Flag|br}} Portuguese||trans_title=|publisher=Black Dragons e-Sports |date=2022-01-13}}</ref>
+}}
+}}
+{{TeamCard
+|team=00 Nation
+|p1=one9
+|p2=Nicolas9
+|p3=Duduffx|p3flag=br
+|p4=erickmvp
+|p5=HONEY
+|p6=LuckyGOD|p6flag=br
+|c=Zaraki|cflag=br
+|players=7
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2021/Stage 3/Series_B|Stage 3B]]
+|inotes={{NoteBig
+|n1=January 10th - 00 Nation acquires [[Santos e-Sports]] spot.
+}}
+}}
+{{TeamCard columns end}}
+
+===Group Draw===
+<section begin="Group Draw"/>
+{| class="wikitable" style="text-align:left; margin-top: 0px;"
+|-
+!width=240px|Group A
+!width=240px|Group B
+!width=240px|Group C 
+|-
+|{{Team|b4e}} 
+|{{Team|fluxo}}   
+|{{Team|sccp}}
+|-
+|{{Team|keyd}} 
+|{{Team|loud}}   
+|{{Team|lg}}
+|-
+|{{Team|Nitroxx eSports}} 
+|{{Team|reales}}   
+|{{Team|metagg}}
+|-
+|{{Team|miners}} 
+|{{Team|bd vasco}}   
+|{{Team|tropa (mobile)}}
+|-
+|{{Team|liquid}} 
+|{{Team|00 nation}}   
+|{{Team|msquad}}
+|-
+|{{Team|cruzeiro}} 
+|{{Team|god}}   
+|{{Team|liberty}}
+|}
+<section end="Group Draw"/>
+
+
+LBFF 8:
+==Participants==
+{{TeamCardToggleButton|tcht=220}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=B4 eSports
+|p1=Ice77|p1flag=br
+|p2=R1|p2flag=br 
+|p3=Lapa7|p3flag=br
+|p4=CHINÊS|p4flag=br
+|p5=Romeu|p5flag=br
+|p6=Proxx7|p6flag=br
+|c=MACHADO|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Magic Squad
+|link=Magic Squad (Brazilian Team)
+|class=Magic Squad (Brazilian Team)
+|image=Magic Squad lightmode.png
+|p1=Dani Molo|p1flag=br
+|p2=ITALO|p2flag=br
+|p3=GØDKILL
+|p4=DRAXX7|p4flag=br
+|p5=Bops|p5flag=br
+|p6=Giuh.87|p6flag=br
+|c=LUUUKING
+|t2title=Staff
+|t2c1=Renan|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Los Grandes
+|p1=GUSZ|p1flag=br
+|p2=FON|p2flag=br
+|p3=CEBOLINHA
+|p4=Erickmvp |p4flag=br
+|p5=LOBATO4x
+|p6=Ruan
+|c=Butter|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=LOUD
+|p1=Mexico|p1flag=br
+|p2=Noda
+|p3=Lost
+|p4=Cauan7
+|p5=Kroonos
+|c=Frois
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Fluxo
+|p1=Cruel|p1flag=br
+|p2=JapaBKR
+|p3=Syaz
+|p4=Fac
+|p5=OUSADO
+|c=K9
+|t2title=Staff
+|t2c1=PUTSGRILO|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Corinthians
+|p1=R7
+|p2=Razure
+|p3=VITINxp
+|p4=Band|p4flag=br
+|p5=Deley|p5flag=br
+|p6=RBN011|p6flag=br
+|c=Stark
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Team Liquid
+|p1=Yago
+|p2=PEDRO.RS
+|p3=BuToN007
+|p4=Mts007
+|p5=Phoenix23 
+|c=Souto|c2=KNIGHT
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=God E-Sports
+|p1=STARK7|p1flag=br
+|p2=Mike|p2flag=br
+|p3=RIGBY|p3flag=br
+|p4=suplay|p4flag=br
+|p5=GUAXA7|p5flag=br
+|c=Ninja|cflag=br|clink=Ninja (Brazilian Coach)
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=BD Vasco
+|p1=Loiro RJ|p1flag=br
+|p2=EASY|p2flag=br
+|p3=LENNO|p3flag=br
+|p4=HENDER|p4flag=br
+|p5=Peczin|p5flag=br
+|c=Izzac|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Stars Horizon
+|p1=Bueno|p1flag=br
+|p2=Guiga|p2flag=br
+|p3=Vitin9|p3flag=br
+|p4=Trap|p4flag=br
+|p5=Nabozny|p5flag=br
+|p6=Bielgod|p6flag=br
+|c=Allan|cflag=br|c2=Nabozny|cflag2=br
+|t2title=Staff
+|t2c1=Pereira|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=July 19th - [[Stars Horizon]] acquired a Series A spot. <ref name="Equipes">{{cite web|url=https://www.ffesportsbr.com.br/fftimes/seriea/ |title=Equipes |publisher=LBFF |date=2022-07-19}}</ref>
+}}
+}}
+{{TeamCard
+|team=Meta Gaming
+|p1=Frankk|p1flag=br
+|p2=ERICK11|p2flag=br
+|p3=RafaX
+|p4=LEAL7
+|p5=PÃO7 
+|p6=MTS7|p6flag=br
+|c=ALTMAN|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=Keyd
+|p1=MODESTIA
+|p2=General
+|p3=DeadGOD 
+|p4=NANDO9 
+|p5=GHOST7 |p5flag=br
+|c=Wanheda |cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Stage 1A]]
+}}
+{{TeamCard
+|team=HUMMER Esports
+|p1=Chucky|p1flag=br
+|p2=Goabe7|p2flag=br
+|p3=Kiledy|p3flag=br|p3link=KILEDy
+|p4=Vinhaal|p4flag=br
+|p5=Leluszin|p5flag=br
+|p6=Ghostbb|p6flag=br
+|p7=Bossw|p7flag=br
+|c=Capgui|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 1/Series_A|Stage 1A]]
+|inotes={{NoteBig
+|n1=June 15th - [[Tropa (Mobile)|Tropa]] is suspended indefinitely from the LBFF and Garena's system tournaments.<ref>{{cite web|url=https://www.ffesportsbr.com.br/2022/05/10/comunicado-10/ |title=A organização Tropa está suspensa da LBFF por tempo indeterminado.|author=Free Fire Esports Brasil|date=2022-05-10}}</ref>
+|n2=July 19th - [[HUMMER Esports]] acquired a Series A spot. <ref name="Equipes"/>
+}}
+}}
+{{TeamCard
+|team=TSM
+|link=TSM BR
+|p1=BROCO|p1flag=br
+|p2=BOB7|p2flag=br
+|p3=FEDERAL7|p3flag=br
+|p4=ISOPOR21|p4flag=br
+|p5=RAONE7|p5flag=br
+|p6=Itachi7|p6flag=br
+|c=LIPÃOx|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage_2/Promotion|Promotion]]
+}}
+{{TeamCard
+|team=TropiCaos
+|p1=Danxl7|p1flag=br
+|p2=TheusL|p2flag=br
+|p3=mvR
+|p4=Ygorzn7|p4flag=br
+|p5=Haaxszz|p5flag=br
+|p6=memgod|p6flag=br
+|p7=Bolin7|p7flag=br
+|c=Dilons|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 2/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=July 19th - [[TropiCaos]] acquired a Series A spot. <ref name="Equipes"/>
+}}
+}}
+{{TeamCard
+|team=Miners.gg
+|p1=NATIVA
+|p2=BIEL|p2flag=br
+|p3=Zenac
+|p4=MANDELA|p4flag=br
+|p5=CORUJA|p5flag=br
+|c=Siqueira|cflag=br
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 2/Promotion|Promotion]]
+}}
+{{TeamCard
+|team=Angels
+|link=Angels (Mobile)
+|p1=Bodão13|p1flag=br
+|p2=Japaxl|p2flag=br
+|p3=VM7|p3flag=br
+|p4=Marreta98|p4flag=br
+|p5=Nikeboy|p5flag=br
+|p6=Tatu13|p6flag=br
+|c=Trap|cflag=br|clink=Trap (Brazilian Coach)
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 2/Promotion|Promotion]]
+|inotes={{NoteBig
+|n1=July 24th - [[Real e-Sports]] transfers Series A spot to [[Angels (Mobile)|Angels]] <ref>{{cite web|url=https://twitter.com/realesports_gg/status/1551221234947575808?t=LmGhWWlpLvRqIpWabvKauQ&s=19 |title=A logo da Real e-Sports estava ausente na apresentação oficial das 18 equipes que disputarão a LBFF 8, atuaremos através da representação da marca ANGELS.|publisher=Real e-Sports |date=2022-07-24}}</ref>
+}}
+}}
+{{TeamCard
+|team=paiN Gaming
+|p1=ROCKSx|p1flag=br
+|p2=VrziinX|p2flag=br
+|p3=GELO7
+|p4=KaueLOK
+|p5=GUIFOX|p5flag=br
+|p6=VICTOR7
+|c=Metal
+|qualifier=[[Liga_Brasileira_de_Free_Fire/2022/Stage 1/Series_B|Stage 1B]]
+}}
+{{TeamCard columns end}}
+
+LBFF 9:
+==Participants==
+{{TeamCardToggleButton|tcht=220|playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Fluxo
+|p1=MT7|p1flag=br
+|p2=MODESTIA|p2flag=br
+|p3=Syaz|p3flag=br
+|p4=OUSADO|p4flag=br
+|p5=DeadGOD|p5flag=br
+|p6=PUTSGRILO|p6flag=br
+|c=Wanheda|cflag=br
+|t2title=Staff
+|t2c1=PUTSGRILO|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Magic Squad
+|link=Magic Squad BR
+|p1=Yago|p1flag=br
+|p2=Erick11|p2flag=br
+|p3=Bops|p3flag=br
+|p4=Giuh|p4flag=br
+|p5=But|p5flag=br
+|p6=Dani Molo|p6flag=br|p6dnp=true
+|c=LUUUKING|cflag=br
+|t2title=Staff
+|t2c1=Renan|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=God E-Sports
+|p1=GUAXA|p1flag=br
+|p2=Ruan|p2flag=br
+|p3=Lippe!|p3flag=br
+|p4=ItachiXL|p4flag=br
+|p5=Will7|p5flag=br
+|c=SURTA|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=MIBR
+|p1=RIGBY|p1flag=br
+|p2=Pitbull|p2flag=br|p2link=Pitbull (Erickmvp)
+|p3=Zetsu9|p3flag=br
+|p4=STARK7|p4flag=br
+|p5=João7|p5flag=br
+|c=S1NK|cflag=br
+|t2title=Staff
+|t2c1=CORREIA|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Amazon Cripz
+|p1=Cauã|p1flag=br
+|p2=Vodka|p2flag=br
+|p3=MAMUTEZL|p3flag=br
+|p4=Japaxl|p4flag=br
+|p5=Goabe7|p5flag=br
+|c=Trap|clink=Trap (Brazilian Coach)|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=LOUD
+|p1=Lost|p1flag=br
+|p2=Cauan7|p2flag=br
+|p3=Noda|p3flag=br
+|p4=Draxx|p4flag=br
+|p5=México|p5flag=br
+|c=Frois|cflag=br
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=paiN Gaming
+|p1=Gus|p1flag=br
+|p2=Proxx|p2flag=br
+|p3=ITALO|p3flag=br
+|p4=Mts007|p4flag=br
+|p5=GUIFOX|p5flag=br
+|p6=DORITO|p6flag=br
+|f1leave=true|f1=R1
+|c=Ikas|cflag=br
+|fc=Nite7|fcflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Corinthians
+|p1=VITINxp|p1flag=br
+|p2=Kozak|p2flag=br
+|p3=Marreta|p3flag=br
+|p4=FON|p4flag=br
+|p5=Tatu13|p5flag=br
+|c=Izzac|cflag=br
+|fc=KNIGHT|fcflag=br
+|t3title=Staff
+|t3c1=Machado|t3c1flag=br|t3c1pos={{Abbr|A|Assistant Coach}}
+|t3c2=Breno|t3c2flag=br|t3c2pos={{Abbr|A|Analst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Keyd Stars
+|p1=General|p1flag=br
+|p2=NANDO9|p2flag=br
+|p3=Raone7|p3flag=br
+|p4=Federal7|p4flag=br
+|p5=GHOST7|p5flag=br
+|c=K9
+|fc=LIPÃO|fcflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=INTZ
+|p1=DRK10|p1flag=br
+|p2=Victor7|p2flag=br
+|p3=MITOmvp|p3flag=br
+|p4=Azay|p4flag=br
+|p5=Invisible|p5flag=br|p5link=INVISIBLE
+|p6=GUIGA
+|c=Stark|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Black Dragons
+|p1=R7|p1flag=br
+|p2=LENNO|p2flag=br
+|p3=EASY|p3flag=br
+|p4=HENDER|p4flag=br
+|p5=Vitin9|p5flag=br
+|p6=Visk|p6flag=br
+|c=ZeroXP|cflag=br
+|t2title=Staff
+|t2c1=Visk|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Miners.gg
+|p1=Razure|p1flag=br
+|p2=Zenac|p2flag=br
+|p3=Natividade|p3flag=br
+|p4=Band|p4flag=br
+|p5=Cruel|p5flag=br
+|c=Butter|cflag=br
+|t2title=Staff
+|t2c1=SIQUEIRA|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=W7M eSports
+|p1=MICHEL42|p1flag=br
+|p2=Lins7|p2flag=br
+|p3=Redxz7|p3flag=br
+|p4=Destroi7|p4flag=br
+|p5=Yato7|p5flag=br
+|p6=Hagane10|p6flag=br
+|c=DG|clink=DG (Brazilian Coach)|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=XIS
+|p1=Addy7|p1flag=br
+|p2=Biel7|p2flag=br|p2link=Biel7 (Brazilian Player)
+|p3=Motovea7|p3flag=br
+|p4=Chucky|p4flag=br
+|p5=Araujo13|p5flag=br
+|p6=Ghostbb|p6flag=br
+|c=SABOTA|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=E1 SPORTS
+|p1=IGZINN|p1flag=br
+|p2=NandoX|p2flag=br
+|p3=BLACK02|p3flag=br
+|p4=Mike|p4flag=br
+|p5=ROG5WP|p5flag=br
+|p6=KaueLOK|p6flag=br
+|p7=Nicolas9|p7flag=br
+|c=NINJA|clink=Ninja (Brazilian Coach)|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Team Solid
+|p1=Trap7|p1flag=br
+|p2=BIELGOD|p2flag=br
+|p3=CorumbaX|p3flag=br
+|p4=Lobato|p4flag=br
+|p5=Stand7|p5flag=br
+|fc=VinyCrz|fcflag=br
+|fc2=LIPÃO
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Meta Gaming
+|p1=Nickz7|p1flag=br
+|p2=PÃO7|p2flag=br
+|p3=GLAUCO7|p3flag=br
+|p4=CHINÊS|p4flag=br
+|p5=ISOPOR21|p5flag=br
+|c=ALTMAN|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=São Paulo eSports
+|p1=ViniZx|p1flag=br
+|p2=Reei|p2flag=br
+|p3=Ice77|p3flag=br
+|p4=HONEY|p4flag=br
+|p5=KMX|p5flag=br
+|p6=PROZIN|p6link=PROZIN (Mobile Player)
+|c=Allan|cflag=br
+|t2title=Staff
+|t2c1=Pereira|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|fcleave=true|fc=Batman|fclink=Batman (Brazilian Coach)
+|fc2leave=true|fc2=Valleska|fc2flag=br
+|f1leave=true|f1=KenidyZ|f1flag=br
+|f2leave=true|f2=Muniz|f2flag=br
+|qualifier=Invited
+}}
+{{TeamCard columns end}}
+
+FFWS 2024:
+==Participants==
+{{TeamCardToggleButton|tcht=240|playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Alfa 34
+|p1=Yato7|p1flag=br
+|p2=Nicolas9|p2flag=br
+|p3=JucaW|p3flag=br
+|p4=honeyzL|p4flag=br|p4link=HONEY
+|c=PUTSGRILO|cflag=br
+
+|f1=Goabe7  |f1leave=true
+|f2=CHUCKY  |f2leave=true
+|f3=GLAUCO7 |f3leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Tec Toy Cripz
+|p1=Chinês|p1flag=br
+|p2=MTS7|p2flag=br
+|p3=Lobato|p3flag=br
+|p4=Japaxl
+|c=MARVZERA|cflag=br
+
+|f1=KaueLOK|f1flag=br|f1leave=true
+|f2=Nicolas9|f2flag=br|f2leave=true
+|f3=MTZIN|f3flag=br|f3leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Antisocial Team
+|p1=BRUNO7w|p1flag=br
+|p2=BYTE333|p2flag=br
+|p3=R7xy|p3flag=br
+|p4=Ângelo7|p4flag=br
+|p5=Lins7|p5flag=br
+|p6=TREVOR9|p6flag=br
+|c=SANTIAGO|cflag=br
+|c2=Lipee|c2flag=br
+
+|f1=Stand7  |f1flag=br|f1leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Corinthians
+|p1=NandoX|p1flag=br
+|p2=o Mala|p2flag=br
+|p3=Hak|p3flag=br
+|p4=Nikeboy|p4flag=br
+|p5=Bahiazx|p5flag=br
+|c=Abreu
+
+|t2c1=WF9|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1leave=true
+|f1=BRUNO7w|f1flag=br|f1leave=true
+
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=E1 Sports
+|p1=VITINxp|p1flag=br
+|p2=PÃO7|p2flag=br
+|p3=iguiNmvp|p3flag=br
+|p4=Vitin9
+|p5=Bombom|p5flag=br
+|c=Ninja|cflag=br|clink=Ninja (Brazilian Coach)
+|t3title=Staff
+|t3c1=Jhan|t3c1flag=br|t3c1pos={{Abbr|A|Analyst}}
+
+|f1=Lobato|f1leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Flamengo eSports
+|p1=Mexico|p1flag=br
+|p2=MODESTIA|p2flag=br
+|p3=Band|p3flag=br
+|p4=brota10|p4flag=br
+|p5=ITACHI FÉ|p5flag=
+|c=S1NK
+
+|f1=Guiga|f1flag=br|f1leave=true
+|f2=Azay |f2flag=br|f2leave=true
+|f3=Addy7 |f3flag=br|f3leave=true
+|f4=ISOPOR21|f4leave=true
+|t2title=Former
+|t2c1=LIPÃOx|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Fluxo
+|p1=MT7|p1flag=br
+|p2=Bops|p2flag=br
+|p3=But|p3flag=br
+|p4=Giuh|p4flag=br
+|t2title=Staff
+|t2c1=Renan|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|c=LUUUKING|cflag=br
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Influence Rage
+|p1=Cauã|p1flag=br
+|p2=DORITO|p2flag=br
+|p3=Luan7|p3flag=br
+|p4=STRIKE|p4flag=br
+|c=Stark|cflag=br
+
+|f1=MODESTIA|f1leave=true
+|f2=DRK10|f2flag=br|f2leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=iNCO Gaming
+|p1=BielGOD|p1flag=br
+|p2=Razure|p2flag=br
+|p3=Goabe7|p3flag=br
+|p4=KakaZk|p4flag=br
+|p5=xGUTO|p5flag=br
+|c=ALLAN|cflag=br
+
+|f1=NandoX|f1leave=true
+|t3title=Staff
+|t3c1=JOHN79|t3c1flag=br|t3c1pos={{Abbr|C|Analyst}}|t2c1leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Juve
+|p1=WM.Sup|p1flag=br
+|p2=GHOST7|p2flag=br
+|p3=GUIFOX|p3flag=br
+|p4=NANDO7|p4flag=br
+|p5=GLAUCO7|p5flag=br
+|c=DOODLES|cflag=br
+|f1=GHOST7|f1flag=br|f1team=intz|f1leave=true
+|f2=Mts007|f2flag=br|f2team=intz|f2leave=true
+|f3=GUIFOX|f3flag=br|f3team=intz|f3leave=true
+|f4=DORITO|f4flag=br|f4team=intz|f4leave=true
+|f6=Zetsu9|f6leave=true
+|f7=Will|f7leave=true
+|f5=Theus|f5flag=br|f5team=intz|f5leave=true
+|t2c1=Ikas|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1leave=true|t2c1team=intz
+|inotes={{NoteBig
+|n1={{team|Juve}} acquired {{team|intz}} spot.<ref>{{cite web|url=https://x.com/FFesportsBR/status/1815809548520984971|title=Nessa segunda etapa da WB, tivemos mudanças de times: nos despedimos dos intrépidos da @INTZ e damos as boas-vindas a JUVE!|publisher=Free Fire Esports Brasil|date=2024-07-24}}</ref>
+|n2={{team|Juve}} is disqualified from the league.<ref name="juve disqualified"/>
+}}|qualifier=Invited
+}}
+{{TeamCard
+|team=Jacobina EC E-Sports
+|p1=CHUCKY|p1flag=br
+|p2=Biel7|p2flag=br|p2link=Biel7 (Brazilian Player)
+|p3=Addy7|p3flag=br
+|p4=Kalango7|p4flag=br
+|p5=Hugo7|p5flag=br
+|c=RASHID|cflag=br
+
+|f1=Strend7|f1flag=br |f1leave=true
+|f2=Band              |f2leave=true
+|f3=MitinX |f3flag=br |f3leave=true
+|f4=Cruel  |f4flag=br |f4leave=true
+|t2c1=SABOTA|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=LOUD
+|p1=Yago|p1flag=br
+|p2=Lost|p2flag=br
+|p3=Cauan7|p3flag=br
+|p4=Draxx7|p4flag=br
+|p5=|p5flag=br
+|c=Frois|cflag=br
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard
+|team=LOS
+|p1=ISOPOR21|p1flag=br
+|p2=whyzer7|p2flag=br
+|p3=ERICK11|p3flag=br
+|p4=DELTA|p4flag=br
+|c=Izuki|cflag=br
+|t3title=Staff
+|t3c1=FON|t3c1flag=br|t3c1pos={{Abbr|A|Analyst}}
+
+|f1=JOW|f1flag=br    |f1leave=true
+|f2=Ice77            |f2leave=true
+|f3=MANDELA|f3flag=br|f3leave=true
+|f4=KazumaWP|f4leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Magic Squad
+|link=mgs
+|p1=Drey22|p1flag=br
+|p2=Stand7|p2flag=br
+|p3=Se7en|p3flag=br
+|p4=wLiu|p4flag=br
+|p5=Kauã7xp|p5flag=br
+|c=Pereira|cflag=br
+
+|f1=KMX|f1flag=br|f1leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=MIBR
+|p1=João7|p1flag=br
+|p2=STARK7|p2flag=br
+|p3=Rigby|p3flag=br
+|p4=Pitbull|p4flag=br|p4link=Pitbull_(Mobile_Player)
+|c=LIPÃOx
+
+|t3title=Staff
+|t3c1=CORREIA|t3c1flag=br|t3c1pos={{Abbr|A|Analyst}}
+|t2c1=S1NK|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1leave=true
+
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Miners.gg
+|p1=General|p1flag=
+|p2=Proxx7|p2flag=
+|p3=Raone7|p3flag=
+|p4=NANDO9|p4flag=
+|c=K9|cflag=
+|qualifier=Invited
+}}
+{{TeamCard
+|team=paiN Gaming
+|p1=PETERxl|p1flag=br
+|p2=Gus|p2flag=br
+|p3=ITALO7|p3flag=br
+|p4=Motovea7|p4flag=br
+|p5=NODA|p5flag=br
+|c=Trap|cflag=br|clink=Trap (Brazilian Coach)
+|qualifier=Invited
+}}
+{{TeamCard
+|team=Team Solid
+|p1=Guaxa7|p1flag=br
+|p2=Trap|p2flag=br
+|p3=Nickz7|p3flag=br
+|p4=Tatu13|p4flag=br
+|p5=|p5flag=br
+|c=JOKER|cflag=br
+|t2title=Staff
+|t2c1=Jaya|t2c1flag=br|t2c1link=Jaya (Analyst)|t2c1pos={{Abbr|A|Analyst}}
+|qualifier=Invited
+}}
+{{TeamCard columns end}}
+
+
+FFWS 2025 SPLIT 1:
+==Participants==
+{{TeamCardToggleButton|tcht=210|playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Fluxo
+|p1=MT7|p1flag=br
+|p2=Bops|p2flag=br
+|p3=But|p3flag=br
+|p4=Giuh|p4flag=br
+|p5=Proxx7|p5flag=br
+|t2title=Staff
+|t2c1=LUUUKING|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Renan|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Saymon|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}
+|qualifier=
+}}
+{{TeamCard
+|team=Influence Rage
+|p1=Yato7|p1flag=br
+|p2=Goabe7|p2flag=br
+|p3=Furiazz7|p3flag=br
+|p4=DORITO|p4flag=br
+|p5=Tatu13|p5flag=br
+|p6=Drey22|p6flag=br
+|t2title=Staff
+|t2c1=Pereira|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Capgui|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=Flamengo eSports
+|p1=BLACK02|p1flag=br
+|p2=LopesXL|p2flag=br
+|p3=Shotzz|p3flag=br
+|p4=MitinX|p4flag=br
+|p5=Bahiazx|p5flag=br
+|p6=Nikeboy|p6flag=br
+|t2title=Staff
+|t2c1=Abreu|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=VIANA|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Lira|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}
+|qualifier=
+}}
+{{TeamCard
+|team=W7M Esports
+|p1=Guimerlq|p1flag=br
+|p2=STARK7|p2flag=br
+|p3=LucasAWP|p3flag=br
+|p4=ErickPitbull|p4flag=br
+|p5=|p5flag=br
+|t2title=Staff
+|t2c1=Trap|t2c1link=Trap (Brazilian Coach)|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=VM7|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Xuliana|t2c3flag=br|t2c3pos={{Abbr|A|Manager}}
+|qualifier=
+}}
+{{TeamCard
+|team=paiN Gaming
+|p1=Noda|p1flag=br
+|p2=PETERxl|p2flag=br
+|p3=Gus|p3flag=br
+|p4=Motovea7|p4flag=br
+|p5=|p5flag=br
+|t2title=Staff
+|t2c1=PUTSGRILO|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Sbriça|t2c2flag=br|t2c2pos={{Abbr|M|Manager}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=LOUD
+|p1=Yago|p1flag=br
+|p2=Lost|p2flag=br
+|p3=Cauan7|p3flag=br
+|p4=Draxx7|p4flag=br
+|p5=|p5flag=br
+|t2title=Staff
+|t2c1=K9|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=VT|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=SAVEX Gaming
+|p1=Addy7|p1flag=br
+|p2=Lippe!|p2flag=br
+|p3=KMX|p3flag=br
+|p4=Joker7|p4flag=br
+|p5=SOCA|p5flag=br
+|p6=Guifox7|p6flag=br|p6link=GUIFOX
+|t2title=Staff
+|t2c1=Rashid|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=KaduKOT|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=iNCO Gaming
+|p1=BielGOD|p1flag=br
+|p2=Strike|p2flag=br
+|p3=xGUTO|p3flag=br
+|p4=Zetsu9|p4flag=br
+|p5=MODESTIA|p5flag=br
+|t2title=Staff
+|t2c1=Allan|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=Alpha7
+|p1=João7|p1flag=br
+|p2=Cauã|p2flag=br
+|p3=ITALO|p3flag=br
+|p4=HONEY|p4flag=br
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=E1 Sports
+|p1=VITINxp|p1flag=br
+|p2=LC777|p2flag=br
+|p3=iguiNmvp|p3flag=br
+|p4=Vitin9
+|p5=Bombom|p5flag=br
+|p6=Band
+|t2title=Staff
+|t2c1=Ninja|t2c1link=Ninja (Brazilian Coach)|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=Corinthians
+|p1=NandoX|p1flag=br
+|p2=o Mala|p2flag=br
+|p3=Hak|p3flag=br
+|p4=KakaZk|p4flag=br
+|p5=PÃO7|p5flag=br
+|p6=Razure
+|t2title=Staff
+|t2c1=Frois|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=JOHN79|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=Alfa 34
+|p1=Lins7|p1flag=br
+|p2=wLiu|p2flag=br
+|p3=BYTE333|p3flag=br
+|p4=R7xy|p4flag=br
+|p5=Luan7|p5flag=br
+|t2title=Staff
+|t2c1=BRN|t2c1flag=br|t2c1lin=BRN (Brazilian Coach)|t2c1pos={{Abbr|C|Coach}}
+|t2c2=CORREIA|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=LOS
+|p1=Rigby|p1flag=br
+|p2=NANDO9|p2flag=br
+|p3=Raone7|p3flag=br
+|p4=General|p4flag=br
+|p5=mtsexy|p5flag=br
+|t2title=Staff
+|t2c1=LIPÃOx|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Jaya|t2c2link=Jaya (Analyst)|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Icaro|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}
+|qualifier=
+}}
+{{TeamCard
+|team=Vasco eSports
+|p1=LENNO|p1flag=br
+|p2=JucaW|p2flag=br
+|p3=Mts007|p3flag=br
+|p4=Pollux7|p4flag=br
+|p5=LYON|p5flag=br|p5link=LYON (Brazilian Player)
+|t2title=Staff
+|t2c1=Butter|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=Team Solid
+|p1=Guaxa7|p1flag=br
+|p2=Trap|p2flag=br
+|p3=Nickz7|p3flag=br
+|p4=bzp10|p4flag=br
+|p5=|p5flag=br
+|t2title=Staff
+|t2c1=JOKER|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Jhan|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Stormi|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}
+|qualifier=
+}}
+{{TeamCard columns end}}
+
+===Roster Moves===
+{{Transfer List
+|title=Roster moves during the season
+|sdate=2025-04-05
+|edate=2025-06-15
+|team=fluxo
+|team2=loud
+|team3=inco
+|team4=savex
+|team5=a7
+|team6=inco
+|team7=team solid
+|team8=inf
+|team9=corinthians
+|team10=pain gaming
+|team11=w7m
+|team12=crvg
+|team13=los
+|team14=fla
+|team15=a34
+}}
+{{Transfer List
+|title=Roster moves during the off-season
+|sdate=2024-09-09
+|edate=2025-04-04
+|team=fluxo
+|team2=loud
+|team3=inco
+|team4=savex
+|team5=a7
+|team6=inco
+|team7=team solid
+|team8=inf
+|team9=corinthians
+|team10=pain gaming
+|team11=w7m
+|team12=crvg
+|team13=los
+|team14=fla
+|team15=a34
+}}
+
+
+FFWS 2025 SPLIT 2:
+==Participants==
+{{TeamCardToggleButton|tcht=210|playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=paiN Gaming
+|p1=Noda|p1wins=2
+|p2=PETERxl
+|p3=Gus
+|p4=Motovea7
+|p5=Kauã7xp|p5flag=br
+|t2title=Staff
+|t2c1=PUTSGRILO|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Sbriça|t2c2flag=br|t2c2pos={{Abbr|M|Manager}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=Alfa 34
+|p1=Lins7
+|p2=wLiu
+|p3=BYTE333
+|p4=R7xy
+|t2title=Staff
+|t2c1=BRN|t2c1flag=br|t2c1lin=BRN (Brazilian Coach)|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=E1 Sports
+|p1=VITINxp
+|p2=LYON|p2link=LYON (Brazilian Player)
+|p3=PÃO7|p3wins=1
+|p4=Vitin9
+|p5=Bombom
+|t2title=Staff
+|t2c1=Ninja|t2c1link=Ninja (Brazilian Coach)|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=VIANA|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=LOUD
+|p1=Draxx7|p1wins=2
+|p2=Lost21|p2wins=2
+|p3=Yago|p3wins=1
+|p4=Luan7
+|p5=Cauã
+|t2title=Staff
+|t2c1=K9|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1winsc=1
+|t2c2=VT|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=W7M eSports
+|p1=O Mala
+|p2=Pitbull|p2link=Pitbull (Mobile Player)
+|p3=Cauan7|p3wins=3
+|p4=Erick1ng|p4flag=br
+|p5=Shotzz|p5flag=br
+|t2title=Staff
+|t2c1=Trap|t2c1link=Trap (Brazilian Coach)|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Xuliana|t2c2flag=br|t2c2pos={{Abbr|A|Manager}}
+|qualifier=
+}}
+{{TeamCard
+|team=AXS
+|p1=EASY
+|p2=Mts007
+|p3=LENNO
+|p4=Rennan7|p4flag=br
+|p5=GHOST7|p5wins=1
+|t2title=Staff
+|t2c1=Fix9|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|qualifier=
+}}
+{{TeamCard
+|team=Alpha7
+|p1=HONEY
+|p2=João7|p2wins=1
+|p3=STARK7
+|p4=MitinX|p4flag=br
+|p5=MitoMvp|p5flag=br
+|t2title=Staff
+|t2c1=CORREIA|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=FRANK|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=RUSH Gaming
+|link=rush gaming (mobile)
+|p1=Guimerlq|p1flag=br
+|p2=BLACK02
+|p3=fnx04|p3flag=br
+|p4=LC777|p4flag=br
+|p5=Prozin10|p5flag=br|p5wins=1
+|t2title=Staff
+|t2c1=Kadu KOT|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Celo|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=
+}}
+{{TeamCard
+|team=Influence Rage
+|p1=Furiazz7|p1flag=br
+|p2=Cruel
+|p3=Modestia|p3wins=2
+|p4=DORITO|p4flag=br
+|p5=brota10|p5flag=br
+|t2title=Staff
+|t2c1=WF9|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=Vasco eSports
+|p1=Yann7awp|p1flag=br
+|p2=Theus|p2flag=br
+|p3=Redxz7|p3flag=br
+|p4=SOARES|p4flag=br
+|p5=|p5flag=br
+|t2title=Staff
+|t2c1=Lipe7w|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=iNCO Gaming
+|p1=Razure
+|p2=xGUTO7|p2flag=br
+|p3=BielGOD
+|p4=Pollux7|p4flag=br
+|p5=RZN7|p5flag=br
+|t2title=Staff
+|t2c1=JOHN79|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Rak|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Victória Bispo|t2c3flag=br|t2c3pos={{Abbr|A|Manager}}
+|qualifier=
+}}
+{{TeamCard
+|team=RED Canids
+|p1=ITALO
+|p2=IguiNmvp
+|p3=ERICK11
+|p4=LucasAWP|p4flag=br|p4leave=true
+|p5=rojao10|p5flag=br
+|p6=KakaZk|p6flag=br
+|t2title=Staff
+|t2c1=Abreu|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}-->
+|qualifier=
+}}
+{{TeamCard
+|team=Team Solid
+|p1=Guaxa
+|p2=Trap
+|p3=Nickz7
+|p4=bzp10
+|p5=Hak
+|t2title=Staff
+|t2c1=JOKER|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Jhan|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Stormi|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}
+|qualifier=
+}}
+{{TeamCard
+|team=LOS
+|p1=Rigby|p1wins=1
+|p2=NANDO9|p2wins=3
+|p3=Raone7|p3wins=1
+|p4=General|p4wins=3
+|p5=mtsexy|p5wins=1
+|t2title=Staff
+|t2c1=LIPÃOx|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1winsc=1
+|t2c2=Jaya|t2c2link=Jaya (Analyst)|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}|t2c2winsc=1
+|t2c3=Icaro|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}|t2c3winsc=1
+|qualifier=
+}}
+{{TeamCard
+|team=Fluxo
+|p1=MT7|p1wins=1
+|p2=Bops|p2wins=1
+|p3=But|p3wins=1
+|p4=Giuh|p4wins=1
+|p5=Proxx7
+|t2title=Staff
+|t2c1=LUUUKING|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1winsc=1
+|t2c2=Renan|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}|t2c2winsc=1
+|t2c3=Saymon|t2c2flag=br|t2c2pos={{Abbr|M|Manager}}|t2c3winsc=2
+|qualifier=
+}}
+{{TeamCard
+|team=Loops Esports
+|p1=Nikeboy
+|p2=NandoX
+|p3=JucaW|p3flag=br
+|p4=Bahiazx
+|p5=Band
+|t2title=Staff
+|t2c1=Butter|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|qualifier=
+}}
+{{TeamCard columns end}}
+
+===Roster Moves===
+{{Transfer List
+|title=Roster moves during the off-season
+|sdate=2025-06-23
+|edate=2025-08-21
+|team=fluxo
+|team2=loud
+|team3=inco
+|team4=red
+|team5=a7
+|team6=inco
+|team7=team solid
+|team8=inf
+|team9=rush
+|team10=pain gaming
+|team11=w7m
+|team12=crvg
+|team13=los
+|team14=fla
+|team15=a34
+|team16=axs
+}}
+{{Transfer List
+|title=Roster moves during the season
+|sdate=2025-08-22
+|edate=2025-10-15
+|team=fluxo
+|team2=loud
+|team3=inco
+|team4=red
+|team5=a7
+|team6=inco
+|team7=team solid
+|team8=inf
+|team9=rush
+|team10=pain gaming
+|team11=w7m
+|team12=crvg
+|team13=los
+|team14=fla
+|team15=a34
+|team16=axs
+}}
+
+
+FFWS 2026 SPLIT 1:
+==Participants==
+{{TeamParticipantsControls|showplayerinfo=true}}
+{{TeamParticipants|minimumplayers=4
+|{{Opponent|Fluxo W7M
+	|players={{Persons
+    |{{Person|Bops|flag=br|role=bomber|role2=captain|trophies=2}}
+	|{{Person|Giuh|flag=br|role=support|trophies=2}}
+	|{{Person|But|flag=br|role=rusher|trophies=2}}
+	|{{Person|MT7|flag=br|role=sniper|trophies=2}}
+	|{{Person|Proxx7|flag=br|role=rusher|trophies=1}}
+	
+	|{{Person|LUUUKING|flag=br|role=head coach|type=staff}}
+	|{{Person|Renan|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Team Solid
+	|players={{Persons
+    |{{Person|Pitbull|link=Pitbull (Mobile Player)|flag=br|role=rusher}}
+	|{{Person|PETERxl|flag=br|role=rusher}}
+	|{{Person|VITINxp|flag=br|role=bomber}}
+	|{{Person|Motovea7|flag=br|role=sniper}}
+	|{{Person|BYTE333|flag=br|role=support}}
+	
+	|{{Person|PUTSGRILO|flag=br|role=head coach|type=staff}}
+	|{{Person|Jhan|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|E1 Sports
+	|players={{Persons
+    |{{Person|PÃO7|flag=br|role=sniper}}
+	|{{Person|Cauã|flag=br|role=bomber}}
+	|{{Person|JucaW|flag=br|role=support}}
+	|{{Person|LYON|flag=br|role=rusher}}
+	
+	|{{Person|BRUNO7w|flag=br|leave=true|status=former}}
+
+    |{{Person|Ninja|link= Ninja (Brazilian Coach)|flag=br|role=head coach|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Influence Rage
+	|players={{Persons
+    |{{Person|Lippe!|flag=br|role=bomber}}
+	|{{Person|ItzKing|flag=br|role=rusher}}
+	|{{Person|Razure|flag=br|role=support}}
+	|{{Person|Igor7|flag=br|role=sniper}}
+	|{{Person|SASKITO|flag=br}}
+	
+	|{{Person|WF9|flag=br|role=head coach|type=staff}}
+	|{{Person|PEDRO|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|LOUD
+	|players={{Persons
+    |{{Person|HAK|flag=br|role=support}}
+	|{{Person|Nickz7|flag=br|role=rusher}}
+	|{{Person|Trap|flag=br|role=bomber}}
+	|{{Person|GUAXA7|flag=br|role=sniper}}
+	|{{Person|bzp10|flag=br|role=support}}
+	
+	|{{Person|JOKER|flag=br|role=head coach|type=staff}}
+	|{{Person|VIANA|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Alpha7 Esports
+	|players={{Persons
+    |{{Person|Sam7|flag=br|role=bomber}}
+	|{{Person|JNMVP|flag=br|role=rusher}}
+	|{{Person|Brisa7|flag=br|role=support}}
+	|{{Person|NeyWP|flag=br|role=sniper}}
+	|{{Person|MitoMvp|flag=br|role=rusher}}
+	
+	|{{Person|Queiroz|flag=br|role=head coach|type=staff}}
+	|{{Person|FRANK|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|RUSH Gaming (Mobile)
+	|players={{Persons
+    |{{Person|BLACK02|flag=br|role=rusher}}
+	|{{Person|LC777|flag=br|role=sniper}}
+	|{{Person|Guimerlq|flag=br|role=support}}
+	|{{Person|Prozin10|flag=br|role=bomber|trophies=1}}
+	|{{Person|MitinX|flag=br|role=rusher}}
+	
+	|{{Person|Ribas|flag=br|role=head coach|type=staff}}
+	|{{Person|C9|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|LOS
+	|players={{Persons
+    |{{Person|Rigby245|flag=br|role=rusher|trophies=1}}
+	|{{Person|General|flag=br|role=support|trophies=3}}
+	|{{Person|Raone7|flag=br|role=bomber|trophies=1}}
+	|{{Person|Yago|flag=br|role=sniper|trophies=1}}
+	|{{Person|mtsexy|flag=br|role=rusher|trophies=1}}
+	
+	|{{Person|LIPÃO|flag=br|role=head coach|type=staff}}
+	|{{Person|Jaya|link=Jaya (Analyst)|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|INTZ
+	|players={{Persons
+    |{{Person|João7|flag=br|role=rusher}}
+	|{{Person|Kauã7xp|flag=br|role=support}}
+	|{{Person|Gus|flag=br|role=bomber}}
+	|{{Person|HONEY|flag=br|role=sniper}}
+	|{{Person|WHISKY|flag=br|role=sniper}}
+	
+	|{{Person|Pereira|flag=br|role=head coach|type=staff}}
+	|{{Person|Allan|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Vasco eSports
+	|players={{Persons
+    |{{Person|Bahiazx|flag=br|role=support}}
+	|{{Person|BielGOD|flag=br|role=rusher}}
+	|{{Person|rojao10|flag=br|role=bomber}}
+	|{{Person|Zetsu9|flag=br|role=sniper}}
+	
+	|{{Person|Mts007|flag=br|leave=true|status=former}}
+	
+	|{{Person|Butter|flag=br|role=head coach|type=staff}}
+	|{{Person|TH|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|AXS|import=true
+	|players={{Persons
+    |{{Person|Yann7awp|flag=br|role=sniper}}
+	|{{Person|SOARES|flag=br|role=bomber}}
+	|{{Person|Redxz7|flag=br|role=support}}
+	|{{Person|Theus|flag=br|role=rusher}}
+	|{{Person|wLiu|flag=br|role=support}}
+	|{{Person|Yuna7|flag=br|dnp=true}}
+	
+    |{{Person|CORREIA|flag=br|role=head coach|type=staff}}
+	|{{Person||flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Lps
+	|players={{Persons
+    |{{Person|Luan7|flag=br|role=support}}
+	|{{Person|Erick1ng|flag=br|role=sniper}}
+	|{{Person|STARK7|flag=br|role=bomber}}
+	|{{Person|Draxx7|flag=br|role=rusher|trophies=1}}
+	|{{Person|Vitin9|flag=br|role=rusher}}
+	
+	|{{Person|VT|flag=br|role=head coach|type=staff}}
+	|{{Person|Bryan|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Rise Gaming
+	|players={{Persons
+    |{{Person|ITALO|flag=br|role=rusher}}
+	|{{Person|iguiNmvp|flag=br|role=support}}
+	|{{Person|NandoX|flag=br|role=bomber}}
+	|{{Person|KakaZk|flag=br|role=sniper}}
+	|{{Person|Erick11|flag=br|role=support}}
+	
+	|{{Person|Abreu|flag=br|role=head coach|type=staff}}
+	|{{Person|King9|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Virtus.pro
+	|players={{Persons
+    |{{Person|Lost|flag=br|role=rusher|trophies=1}}
+	|{{Person|Cauan7|flag=br|role=bomber|trophies=3}}
+	|{{Person|Nikeboy|flag=br|role=sniper}}
+	|{{Person|O Mala|flag=br|role=support}}
+	|{{Person|Shotzz|flag=br|role=rusher}}
+	
+	|{{Person|Frois|flag=br|role=head coach|type=staff}}
+	|{{Person|K9|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=invite|text=Invited}}
+	}}
+}}
+|{{Opponent|Civis
+	|players={{Persons
+    |{{Person|Keven7|flag=br|role=support}}
+	|{{Person|Will7|flag=br|role=rusher}}
+	|{{Person|Destroi7|flag=br|role=bomber}}
+	|{{Person|Yoko7|flag=br|role=sniper}}
+	|{{Person|MASTER|flag=br|role=support}}
+	|{{Person|LucasAWP|flag=br|role=sniper}}
+
+	
+	|{{Person|CL7|flag=br|role=head coach|type=staff}}
+	|{{Person|LZZ|flag=br|role=analyst|type=staff}}
+	|qualification={{Qualification|method=qual|page=Liga_Ascensao_de_Free_Fire/2025|text=LAFF|placement=1}}
+	}}
+}}
+|{{Opponent|Angels Outplay
+	|players={{Persons
+	|{{Person|DRADE.11|flag=br|role=bomber}}
+	|{{Person|Seupai|flag=br|role=support}}
+	|{{Person|WM.SUP|flag=br|role=sniper}}
+	|{{Person|NEPO IGN|flag=br|role=rusher}}
+	|{{Person|Rick9z|flag=br|role=rusher}}
+	
+	|{{Person|FIXA|flag=br|status=former}}
+	|{{Person|Seutio|flag=br|status=former}}
+
+	|{{Person|DOODLES|flag=br|role=head coach|type=staff}}
+	|qualification={{Qualification|method=qual|page=Liga_Ascensao_de_Free_Fire/2025|text=LAFF|placement=2}}
+	}}
+}}
+}}
+
+===Roster Transfers===
+{{Transfer List
+|title=Transfers during the season
+|page={{PAGENAME}}
+|sdate=2026-03-21 |edate=2026-05-31
+}}
+{{Transfer List
+|title=Transfers during the off-season
+|page={{PAGENAME}}
+|sdate=2025-10-06|edate=2026-03-20
+}}
+
+
+
+
+
+
+

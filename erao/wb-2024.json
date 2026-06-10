@@ -1,0 +1,3470 @@
+{
+  "schema": 1,
+  "id": "wb-2024",
+  "name": "WB 2024",
+  "year": "2024",
+  "tier": "A",
+  "region": "BRASIL",
+  "status": "OFICIAL",
+  "format": "WB 2024 teve Fase 1 e Fase 2 na fase de grupos. Cada fase gerou pontos para a classificação anual, que definiu vagas na Grande Final e no Mundial. A Grande Final teve 12 equipes e 8 quedas.",
+  "standings": [
+    {
+      "type": "standings",
+      "source": "liquipedia",
+      "format": "ffaStandings",
+      "title": "Classificação Anual - Fase de Grupos",
+      "rounds": [
+        "Fase 1",
+        "Fase 2"
+      ],
+      "cols": [
+        "pos",
+        "teamOriginal",
+        "team",
+        "points",
+        "results"
+      ],
+      "rows": [
+        [
+          1,
+          "FLUXO W7M",
+          "FLUXO W7M",
+          35,
+          [
+            17,
+            18
+          ]
+        ],
+        [
+          2,
+          "PAIN GAMING",
+          "PAIN GAMING",
+          31,
+          [
+            14,
+            17
+          ]
+        ],
+        [
+          3,
+          "ALFA 34",
+          "ALFA 34",
+          19,
+          [
+            11,
+            8
+          ]
+        ],
+        [
+          4,
+          "INFLUENCE RAGE",
+          "INFLUENCE RAGE",
+          16,
+          [
+            10,
+            6
+          ]
+        ],
+        [
+          5,
+          "TEC TOY CRIPZ",
+          "TEC TOY CRIPZ",
+          7,
+          [
+            2,
+            5
+          ]
+        ],
+        [
+          6,
+          "MAGIC SQUAD",
+          "MAGIC SQUAD",
+          9,
+          [
+            5,
+            4
+          ]
+        ],
+        [
+          7,
+          "MIBR",
+          "MIBR",
+          23,
+          [
+            13,
+            10
+          ]
+        ],
+        [
+          8,
+          "LOUD",
+          "LOUD",
+          30,
+          [
+            15,
+            15
+          ]
+        ],
+        [
+          9,
+          "INCO GAMING",
+          "INCO GAMING",
+          21,
+          [
+            12,
+            9
+          ]
+        ],
+        [
+          10,
+          "E1 SPORTS",
+          "E1 SPORTS",
+          20,
+          [
+            9,
+            11
+          ]
+        ],
+        [
+          11,
+          "JUVE",
+          "JUVE",
+          3,
+          [
+            3,
+            0
+          ]
+        ],
+        [
+          12,
+          "JACOBINA",
+          "JACOBINA",
+          6,
+          [
+            4,
+            2
+          ]
+        ],
+        [
+          13,
+          "TEAM SOLID",
+          "TEAM SOLID",
+          31,
+          [
+            18,
+            13
+          ]
+        ],
+        [
+          14,
+          "NETSHOES MINERS",
+          "NETSHOES MINERS",
+          32,
+          [
+            16,
+            16
+          ]
+        ],
+        [
+          15,
+          "LOS",
+          "LOS",
+          4,
+          [
+            1,
+            3
+          ]
+        ],
+        [
+          16,
+          "ANTISOCIAL TEAM",
+          "ANTISOCIAL TEAM",
+          13,
+          [
+            6,
+            7
+          ]
+        ],
+        [
+          17,
+          "FLAMENGO ESPORTS",
+          "FLAMENGO ESPORTS",
+          22,
+          [
+            8,
+            14
+          ]
+        ],
+        [
+          18,
+          "CORINTHIANS",
+          "CORINTHIANS",
+          19,
+          [
+            7,
+            12
+          ]
+        ]
+      ],
+      "slotStage": "group"
+    },
+    {
+      "type": "standings",
+      "source": "liquipedia",
+      "format": "ffaStandings",
+      "title": "Fase 1 - Pontuação Semanal",
+      "rounds": [
+        "Semana 1",
+        "Semana 2",
+        "Semana 3",
+        "Semana 4",
+        "Semana 5",
+        "Semana 6",
+        "Semana 7",
+        "Semana 8"
+      ],
+      "cols": [
+        "pos",
+        "teamOriginal",
+        "team",
+        "total",
+        "results"
+      ],
+      "rows": [
+        [
+          1,
+          "ALFA 34",
+          "ALFA 34",
+          915,
+          [
+            120,
+            106,
+            98,
+            162,
+            82,
+            110,
+            142,
+            95
+          ]
+        ],
+        [
+          2,
+          "LOUD",
+          "LOUD",
+          1259,
+          [
+            155,
+            169,
+            150,
+            129,
+            185,
+            185,
+            142,
+            144
+          ]
+        ],
+        [
+          3,
+          "JACOBINA",
+          "JACOBINA",
+          737,
+          [
+            139,
+            120,
+            66,
+            120,
+            69,
+            76,
+            62,
+            85
+          ]
+        ],
+        [
+          4,
+          "CORINTHIANS",
+          "CORINTHIANS",
+          809,
+          [
+            83,
+            79,
+            104,
+            123,
+            112,
+            86,
+            127,
+            95
+          ]
+        ],
+        [
+          5,
+          "FLAMENGO ESPORTS",
+          "FLAMENGO ESPORTS",
+          859,
+          [
+            104,
+            99,
+            64,
+            90,
+            99,
+            136,
+            121,
+            146
+          ]
+        ],
+        [
+          6,
+          "MIBR",
+          "MIBR",
+          1123,
+          [
+            122,
+            124,
+            163,
+            154,
+            150,
+            97,
+            164,
+            149
+          ]
+        ],
+        [
+          7,
+          "TEC TOY CRIPZ",
+          "TEC TOY CRIPZ",
+          652,
+          [
+            54,
+            100,
+            83,
+            84,
+            113,
+            62,
+            90,
+            66
+          ]
+        ],
+        [
+          8,
+          "INTZ",
+          "INTZ",
+          718,
+          [
+            81,
+            90,
+            93,
+            67,
+            89,
+            126,
+            66,
+            106
+          ]
+        ],
+        [
+          9,
+          "FLUXO W7M",
+          "FLUXO W7M",
+          1310,
+          [
+            163,
+            161,
+            221,
+            183,
+            146,
+            137,
+            147,
+            152
+          ]
+        ],
+        [
+          10,
+          "INFLUENCE RAGE",
+          "INFLUENCE RAGE",
+          895,
+          [
+            93,
+            127,
+            121,
+            96,
+            93,
+            106,
+            124,
+            135
+          ]
+        ],
+        [
+          11,
+          "ANTISOCIAL TEAM",
+          "ANTISOCIAL TEAM",
+          806,
+          [
+            105,
+            83,
+            97,
+            113,
+            98,
+            122,
+            78,
+            110
+          ]
+        ],
+        [
+          12,
+          "NETSHOES MINERS",
+          "NETSHOES MINERS",
+          1305,
+          [
+            131,
+            138,
+            164,
+            215,
+            156,
+            203,
+            176,
+            122
+          ]
+        ],
+        [
+          13,
+          "E1 SPORTS",
+          "E1 SPORTS",
+          883,
+          [
+            137,
+            99,
+            76,
+            103,
+            85,
+            126,
+            97,
+            160
+          ]
+        ],
+        [
+          14,
+          "MAGIC SQUAD",
+          "MAGIC SQUAD",
+          770,
+          [
+            102,
+            87,
+            94,
+            94,
+            106,
+            119,
+            80,
+            88
+          ]
+        ],
+        [
+          15,
+          "PAIN GAMING",
+          "PAIN GAMING",
+          1202,
+          [
+            183,
+            170,
+            138,
+            115,
+            121,
+            154,
+            120,
+            201
+          ]
+        ],
+        [
+          16,
+          "TEAM SOLID",
+          "TEAM SOLID",
+          1402,
+          [
+            155,
+            171,
+            218,
+            166,
+            207,
+            172,
+            196,
+            117
+          ]
+        ],
+        [
+          17,
+          "INCO GAMING",
+          "INCO GAMING",
+          955,
+          [
+            165,
+            100,
+            141,
+            89,
+            118,
+            88,
+            122,
+            132
+          ]
+        ],
+        [
+          18,
+          "LOS",
+          "LOS",
+          541,
+          [
+            69,
+            82,
+            35,
+            37,
+            83,
+            67,
+            71,
+            97
+          ]
+        ]
+      ],
+      "slotStage": "phase1"
+    },
+    {
+      "type": "standings",
+      "source": "liquipedia",
+      "format": "ffaStandings",
+      "title": "Fase 2 - Pontuação Semanal",
+      "rounds": [
+        "Semana 1",
+        "Semana 2",
+        "Semana 3",
+        "Semana 4",
+        "Semana 5",
+        "Semana 6",
+        "Semana 7",
+        "Semana 8"
+      ],
+      "cols": [
+        "pos",
+        "teamOriginal",
+        "team",
+        "total",
+        "results"
+      ],
+      "rows": [
+        [
+          1,
+          "FLUXO W7M",
+          "FLUXO W7M",
+          1436,
+          [
+            150,
+            211,
+            128,
+            202,
+            179,
+            164,
+            194,
+            208
+          ]
+        ],
+        [
+          2,
+          "PAIN GAMING",
+          "PAIN GAMING",
+          1375,
+          [
+            159,
+            194,
+            192,
+            178,
+            172,
+            184,
+            145,
+            151
+          ]
+        ],
+        [
+          3,
+          "ALFA 34",
+          "ALFA 34",
+          890,
+          [
+            81,
+            108,
+            116,
+            132,
+            161,
+            82,
+            111,
+            99
+          ]
+        ],
+        [
+          4,
+          "INFLUENCE RAGE",
+          "INFLUENCE RAGE",
+          831,
+          [
+            123,
+            138,
+            92,
+            110,
+            96,
+            77,
+            57,
+            138
+          ]
+        ],
+        [
+          5,
+          "TEC TOY CRIPZ",
+          "TEC TOY CRIPZ",
+          822,
+          [
+            117,
+            75,
+            95,
+            81,
+            125,
+            93,
+            121,
+            115
+          ]
+        ],
+        [
+          6,
+          "MAGIC SQUAD",
+          "MAGIC SQUAD",
+          808,
+          [
+            161,
+            77,
+            88,
+            105,
+            102,
+            100,
+            91,
+            84
+          ]
+        ],
+        [
+          7,
+          "MIBR",
+          "MIBR",
+          1024,
+          [
+            139,
+            94,
+            145,
+            145,
+            97,
+            125,
+            151,
+            128
+          ]
+        ],
+        [
+          8,
+          "LOUD",
+          "LOUD",
+          1316,
+          [
+            202,
+            156,
+            178,
+            162,
+            144,
+            168,
+            143,
+            163
+          ]
+        ],
+        [
+          9,
+          "INCO GAMING",
+          "INCO GAMING",
+          1015,
+          [
+            106,
+            130,
+            110,
+            116,
+            135,
+            174,
+            141,
+            103
+          ]
+        ],
+        [
+          10,
+          "E1 SPORTS",
+          "E1 SPORTS",
+          1032,
+          [
+            121,
+            134,
+            136,
+            115,
+            152,
+            107,
+            138,
+            129
+          ]
+        ],
+        [
+          11,
+          "JUVE",
+          "JUVE",
+          280,
+          [
+            86,
+            88,
+            0,
+            40,
+            46,
+            20,
+            0,
+            0
+          ]
+        ],
+        [
+          12,
+          "JACOBINA",
+          "JACOBINA",
+          726,
+          [
+            87,
+            80,
+            75,
+            123,
+            85,
+            103,
+            90,
+            83
+          ]
+        ],
+        [
+          13,
+          "TEAM SOLID",
+          "TEAM SOLID",
+          1158,
+          [
+            141,
+            165,
+            109,
+            135,
+            192,
+            136,
+            158,
+            122
+          ]
+        ],
+        [
+          14,
+          "NETSHOES MINERS",
+          "NETSHOES MINERS",
+          1334,
+          [
+            176,
+            175,
+            171,
+            145,
+            163,
+            172,
+            131,
+            201
+          ]
+        ],
+        [
+          15,
+          "CORINTHIANS",
+          "CORINTHIANS",
+          1128,
+          [
+            118,
+            163,
+            196,
+            103,
+            148,
+            105,
+            181,
+            114
+          ]
+        ],
+        [
+          16,
+          "ANTISOCIAL TEAM",
+          "ANTISOCIAL TEAM",
+          884,
+          [
+            123,
+            111,
+            109,
+            100,
+            103,
+            87,
+            103,
+            148
+          ]
+        ],
+        [
+          17,
+          "FLAMENGO ESPORTS",
+          "FLAMENGO ESPORTS",
+          1189,
+          [
+            128,
+            143,
+            169,
+            168,
+            105,
+            166,
+            148,
+            162
+          ]
+        ],
+        [
+          18,
+          "LOS",
+          "LOS",
+          786,
+          [
+            67,
+            90,
+            85,
+            120,
+            103,
+            127,
+            109,
+            85
+          ]
+        ]
+      ],
+      "slotStage": "phase2"
+    }
+  ],
+  "teams": {
+    "type": "teams",
+    "source": "liquipedia",
+    "format": "teamCardParticipants",
+    "items": [
+      {
+        "id": "alfa-34",
+        "o": "ALFA 34",
+        "n": "ALFA 34",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "Yato7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Nicolas9",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "JucaW",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "honeyzL",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "PUTSGRILO",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "tec-toy-cripz",
+        "o": "Tec Toy Cripz",
+        "n": "Tec Toy Cripz",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "Chinês",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "MTS7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Lobato",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Japaxl",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "MARVZERA",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "antisocial-team",
+        "o": "ANTISOCIAL TEAM",
+        "n": "ANTISOCIAL TEAM",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "BRUNO7w",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "BYTE333",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "R7xy",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Ângelo7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Lins7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "TREVOR9",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "SANTIAGO",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "Lipee",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "corinthians",
+        "o": "Corinthians",
+        "n": "Corinthians",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "NandoX",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "o Mala",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Hak",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Nikeboy",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Bahiazx",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Abreu",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "WF9",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "e1-sports",
+        "o": "E1 Sports",
+        "n": "E1 Sports",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "VITINxp",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "PÃO7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "iguiNmvp",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Vitin9",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Bombom",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Ninja",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "Jhan",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "flamengo-esports",
+        "o": "Flamengo eSports",
+        "n": "Flamengo eSports",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "Mexico",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "MODESTIA",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Band",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "brota10",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "ITACHI FÉ",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "S1NK",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "LIPÃO",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "fluxo-w7m",
+        "o": "Fluxo",
+        "n": "FLUXO W7M",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "MT7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Bops",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "But",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Giuh",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Renan",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "LUUUKING",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "influence-rage",
+        "o": "Influence Rage",
+        "n": "Influence Rage",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "Cauã",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "DORITO",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Luan7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "STRIKE",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Stark",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "inco-gaming",
+        "o": "iNCO Gaming",
+        "n": "iNCO Gaming",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "BielGOD",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Razure",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Goabe7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "KakaZk",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "xGUTO",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "ALLAN",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "JOHN79",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "juve",
+        "o": "JUVE",
+        "n": "JUVE",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "WM.Sup",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "GHOST7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "GUIFOX",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "NANDO7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "GLAUCO7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "DOODLES",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "Ikas",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "jacobina-ec-e-sports",
+        "o": "JACOBINA",
+        "n": "JACOBINA",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "CHUCKY",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Biel7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Addy7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Kalango7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Hugo7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "RASHID",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "SABOTA",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "loud",
+        "o": "LOUD",
+        "n": "LOUD",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "Yago",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Lost",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Cauan7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Draxx7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Frois",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "FRANK",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "los",
+        "o": "LOS",
+        "n": "LOS",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "ISOPOR21",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "whyzer7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "ERICK11",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "DELTA",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Izuki",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "FON",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "magic-squad",
+        "o": "MAGIC SQUAD",
+        "n": "MAGIC SQUAD",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "Drey22",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Stand7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Se7en",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "wLiu",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Kauã7xp",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Pereira",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "mibr",
+        "o": "MIBR",
+        "n": "MIBR",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "João7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "STARK7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Rigby",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Pitbull",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "LIPÃO",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "CORREIA",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "S1NK",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "miners-gg",
+        "o": "Miners.gg",
+        "n": "Miners.gg",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "General",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Proxx7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Raone7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "NANDO9",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "K9",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "pain-gaming",
+        "o": "paiN Gaming",
+        "n": "paiN Gaming",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "PETERxl",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Gus",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "ITALO7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Motovea7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "NODA",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "Trap",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      },
+      {
+        "id": "team-solid",
+        "o": "Team Solid",
+        "n": "Team Solid",
+        "q": "Invited",
+        "p": [
+          {
+            "n": "Guaxa7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Trap",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Nickz7",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          },
+          {
+            "n": "Tatu13",
+            "f": "br",
+            "r": "",
+            "t": "player",
+            "l": ""
+          }
+        ],
+        "s": [
+          {
+            "n": "JOKER",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          },
+          {
+            "n": "Jaya",
+            "f": "br",
+            "r": "staff",
+            "t": "staff",
+            "l": ""
+          }
+        ]
+      }
+    ]
+  },
+  "final": {
+    "type": "final",
+    "source": "liquipedia",
+    "format": "matchlist",
+    "scoreMode": "pointsOnly",
+    "title": "Grande Final",
+    "killPoint": 1,
+    "placementPoints": {},
+    "mapCols": [
+      "n",
+      "map",
+      "date",
+      "vod"
+    ],
+    "maps": [
+      [
+        1,
+        "",
+        "",
+        ""
+      ],
+      [
+        2,
+        "",
+        "",
+        ""
+      ],
+      [
+        3,
+        "",
+        "",
+        ""
+      ],
+      [
+        4,
+        "",
+        "",
+        ""
+      ],
+      [
+        5,
+        "",
+        "",
+        ""
+      ],
+      [
+        6,
+        "",
+        "",
+        ""
+      ],
+      [
+        7,
+        "",
+        "",
+        ""
+      ],
+      [
+        8,
+        "",
+        "",
+        ""
+      ]
+    ],
+    "cols": [
+      "pos",
+      "teamOriginal",
+      "team",
+      "headstart",
+      "kills",
+      "placementPts",
+      "killPts",
+      "finalPts",
+      "total",
+      "matches"
+    ],
+    "matchCols": [
+      "match",
+      "placement",
+      "kills",
+      "placementPts",
+      "killPts",
+      "total"
+    ],
+    "rows": [
+      [
+        1,
+        "FLUXO W7M",
+        "FLUXO W7M",
+        12,
+        null,
+        null,
+        null,
+        134,
+        146,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            19
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            11
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            8
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            25
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            26
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            26
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            8
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            11
+          ]
+        ]
+      ],
+      [
+        2,
+        "PAIN GAMING",
+        "PAIN GAMING",
+        0,
+        null,
+        null,
+        null,
+        100,
+        100,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            10
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            19
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            7
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            16
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            12
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            10
+          ]
+        ]
+      ],
+      [
+        3,
+        "CORINTHIANS",
+        "CORINTHIANS",
+        0,
+        null,
+        null,
+        null,
+        99,
+        99,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            28
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            16
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            3
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            12
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            12
+          ]
+        ]
+      ],
+      [
+        4,
+        "E1 SPORTS",
+        "E1 SPORTS",
+        2,
+        null,
+        null,
+        null,
+        92,
+        94,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            3
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            16
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            26
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            4
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            8
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            19
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            1
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            15
+          ]
+        ]
+      ],
+      [
+        5,
+        "NETSHOES MINERS",
+        "NETSHOES MINERS",
+        9,
+        null,
+        null,
+        null,
+        81,
+        90,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            1
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            11
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            10
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            15
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            10
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            30
+          ]
+        ]
+      ],
+      [
+        6,
+        "TEAM SOLID",
+        "TEAM SOLID",
+        7,
+        null,
+        null,
+        null,
+        66,
+        73,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            3
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            12
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            8
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            1
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            12
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            11
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            6
+          ]
+        ]
+      ],
+      [
+        7,
+        "LOUD",
+        "LOUD",
+        6,
+        null,
+        null,
+        null,
+        63,
+        69,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            12
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            5
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            8
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            0
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            5
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            6
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            14
+          ]
+        ]
+      ],
+      [
+        8,
+        "INFLUENCE RAGE",
+        "INFLUENCE RAGE",
+        0,
+        null,
+        null,
+        null,
+        63,
+        63,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            6
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            15
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            3
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            12
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            8
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            11
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            6
+          ]
+        ]
+      ],
+      [
+        9,
+        "FLAMENGO ESPORTS",
+        "FLAMENGO ESPORTS",
+        4,
+        null,
+        null,
+        null,
+        57,
+        61,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            10
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            3
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            1
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            8
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            11
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            5
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            6
+          ]
+        ]
+      ],
+      [
+        10,
+        "MIBR",
+        "MIBR",
+        5,
+        null,
+        null,
+        null,
+        56,
+        61,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            5
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            0
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            0
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            9
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            4
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            34
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            2
+          ]
+        ]
+      ],
+      [
+        11,
+        "ALFA 34",
+        "ALFA 34",
+        1,
+        null,
+        null,
+        null,
+        51,
+        52,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            0
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            10
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            0
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            0
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            7
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            5
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            16
+          ]
+        ]
+      ],
+      [
+        12,
+        "INCO GAMING",
+        "INCO GAMING",
+        3,
+        null,
+        null,
+        null,
+        44,
+        47,
+        [
+          [
+            1,
+            null,
+            null,
+            null,
+            null,
+            13
+          ],
+          [
+            2,
+            null,
+            null,
+            null,
+            null,
+            1
+          ],
+          [
+            3,
+            null,
+            null,
+            null,
+            null,
+            5
+          ],
+          [
+            4,
+            null,
+            null,
+            null,
+            null,
+            2
+          ],
+          [
+            5,
+            null,
+            null,
+            null,
+            null,
+            14
+          ],
+          [
+            6,
+            null,
+            null,
+            null,
+            null,
+            1
+          ],
+          [
+            7,
+            null,
+            null,
+            null,
+            null,
+            4
+          ],
+          [
+            8,
+            null,
+            null,
+            null,
+            null,
+            4
+          ]
+        ]
+      ]
+    ]
+  },
+  "headstart": {
+    "type": "headstart",
+    "source": "liquipedia",
+    "format": "headstart",
+    "title": "Pontos iniciais da final",
+    "cols": [
+      "pos",
+      "teamOriginal",
+      "team",
+      "points"
+    ],
+    "rows": [
+      [
+        1,
+        "FLUXO W7M",
+        "FLUXO W7M",
+        12
+      ],
+      [
+        4,
+        "E1 SPORTS",
+        "E1 SPORTS",
+        2
+      ],
+      [
+        5,
+        "NETSHOES MINERS",
+        "NETSHOES MINERS",
+        9
+      ],
+      [
+        6,
+        "TEAM SOLID",
+        "TEAM SOLID",
+        7
+      ],
+      [
+        7,
+        "LOUD",
+        "LOUD",
+        6
+      ],
+      [
+        9,
+        "FLAMENGO ESPORTS",
+        "FLAMENGO ESPORTS",
+        4
+      ],
+      [
+        10,
+        "MIBR",
+        "MIBR",
+        5
+      ],
+      [
+        11,
+        "ALFA 34",
+        "ALFA 34",
+        1
+      ],
+      [
+        12,
+        "INCO GAMING",
+        "INCO GAMING",
+        3
+      ]
+    ]
+  },
+  "prizePool": {
+    "type": "prizePool",
+    "source": "liquipedia",
+    "format": "teamPrizePool",
+    "currency": "BRL",
+    "cols": [
+      "pos",
+      "teamOriginal",
+      "team",
+      "prize"
+    ],
+    "rows": [
+      [
+        1,
+        "FLUXO W7M",
+        "FLUXO W7M",
+        280000
+      ],
+      [
+        2,
+        "PAIN GAMING",
+        "PAIN GAMING",
+        175000
+      ],
+      [
+        3,
+        "CORINTHIANS",
+        "CORINTHIANS",
+        140000
+      ],
+      [
+        4,
+        "E1 SPORTS",
+        "E1 SPORTS",
+        70000
+      ],
+      [
+        5,
+        "NETSHOES MINERS",
+        "NETSHOES MINERS",
+        35000
+      ],
+      [
+        6,
+        "TEAM SOLID",
+        "TEAM SOLID",
+        0
+      ],
+      [
+        7,
+        "LOUD",
+        "LOUD",
+        0
+      ],
+      [
+        8,
+        "INFLUENCE RAGE",
+        "INFLUENCE RAGE",
+        0
+      ],
+      [
+        9,
+        "MIBR",
+        "MIBR",
+        0
+      ],
+      [
+        10,
+        "FLAMENGO ESPORTS",
+        "FLAMENGO ESPORTS",
+        0
+      ],
+      [
+        11,
+        "ALFA 34",
+        "ALFA 34",
+        0
+      ],
+      [
+        12,
+        "INCO GAMING",
+        "INCO GAMING",
+        0
+      ],
+      [
+        13,
+        "ANTISOCIAL TEAM",
+        "ANTISOCIAL TEAM",
+        0
+      ],
+      [
+        14,
+        "MAGIC SQUAD",
+        "MAGIC SQUAD",
+        0
+      ],
+      [
+        15,
+        "TEC TOY CRIPZ",
+        "TEC TOY CRIPZ",
+        0
+      ],
+      [
+        16,
+        "JACOBINA",
+        "JACOBINA",
+        0
+      ],
+      [
+        17,
+        "LOS",
+        "LOS",
+        0
+      ],
+      [
+        18,
+        "JUVE",
+        "JUVE",
+        0
+      ]
+    ]
+  },
+  "awards": {
+    "type": "awards",
+    "source": "liquipedia",
+    "format": "dailyAwards",
+    "cols": [
+      "award",
+      "player",
+      "team",
+      "date"
+    ],
+    "rows": [
+      [
+        "MVP Dia 1",
+        "Yago",
+        "LOUD",
+        "2024-04-20"
+      ],
+      [
+        "MVA Dia 1",
+        "HONEY",
+        "ALFA 34",
+        "2024-04-20"
+      ],
+      [
+        "MVP Dia 2",
+        "Trap",
+        "TEAM SOLID",
+        "2024-04-21"
+      ],
+      [
+        "MVA Dia 2",
+        "Guaxa",
+        "TEAM SOLID",
+        "2024-04-21"
+      ],
+      [
+        "MVP Dia 3",
+        "Bops",
+        "FLUXO W7M",
+        "2024-04-22"
+      ],
+      [
+        "MVA Dia 3",
+        "Raone7",
+        "NETSHOES MINERS",
+        "2024-04-22"
+      ],
+      [
+        "MVP Dia 4",
+        "Trap",
+        "TEAM SOLID",
+        "2024-04-27"
+      ],
+      [
+        "MVA Dia 4",
+        "Guaxa",
+        "TEAM SOLID",
+        "2024-04-27"
+      ],
+      [
+        "MVP Dia 5",
+        "Band",
+        "JACOBINA",
+        "2024-04-28"
+      ],
+      [
+        "MVA Dia 5",
+        "Yago",
+        "LOUD",
+        "2024-04-28"
+      ],
+      [
+        "MVP Dia 6",
+        "Nickz7",
+        "TEAM SOLID",
+        "2024-04-29"
+      ],
+      [
+        "MVA Dia 6",
+        "Trap",
+        "TEAM SOLID",
+        "2024-04-29"
+      ],
+      [
+        "MVP Dia 7",
+        "Trap",
+        "TEAM SOLID",
+        "2024-05-04"
+      ],
+      [
+        "MVA Dia 7",
+        "Tatu13",
+        "TEAM SOLID",
+        "2024-05-04"
+      ],
+      [
+        "MVP Dia 8",
+        "Nickz7",
+        "TEAM SOLID",
+        "2024-05-05"
+      ],
+      [
+        "MVA Dia 8",
+        "Bops",
+        "FLUXO W7M",
+        "2024-05-05"
+      ],
+      [
+        "MVP Dia 9",
+        "Pitbull",
+        "MIBR",
+        "2024-05-06"
+      ],
+      [
+        "MVA Dia 9",
+        "Pitbull",
+        "MIBR",
+        "2024-05-06"
+      ],
+      [
+        "MVP Dia 10",
+        "CHUCKY",
+        "ALFA 34",
+        "2024-05-11"
+      ],
+      [
+        "MVA Dia 10",
+        "But",
+        "FLUXO W7M",
+        "2024-05-11"
+      ],
+      [
+        "MVP Dia 11",
+        "Rigby",
+        "MIBR",
+        "2024-05-12"
+      ],
+      [
+        "MVA Dia 11",
+        "João7",
+        "MIBR",
+        "2024-05-12"
+      ],
+      [
+        "MVP Dia 12",
+        "Raone7",
+        "NETSHOES MINERS",
+        "2024-05-13"
+      ],
+      [
+        "MVA Dia 12",
+        "General",
+        "NETSHOES MINERS",
+        "2024-05-13"
+      ],
+      [
+        "MVP Dia 13",
+        "Nickz7",
+        "TEAM SOLID",
+        "2024-05-18"
+      ],
+      [
+        "MVA Dia 13",
+        "Guaxa7",
+        "TEAM SOLID",
+        "2024-05-18"
+      ],
+      [
+        "MVP Dia 14",
+        "DORITO",
+        "INTZ",
+        "2024-05-19"
+      ],
+      [
+        "MVA Dia 14",
+        "Yago",
+        "LOUD",
+        "2024-05-19"
+      ],
+      [
+        "MVP Dia 15",
+        "Trap",
+        "TEAM SOLID",
+        "2024-05-20"
+      ],
+      [
+        "MVA Dia 15",
+        "Yago",
+        "LOUD",
+        "2024-05-20"
+      ],
+      [
+        "MVP Dia 16",
+        "Trap",
+        "TEAM SOLID",
+        "2024-05-25"
+      ],
+      [
+        "MVA Dia 16",
+        "Yago",
+        "LOUD",
+        "2024-05-25"
+      ],
+      [
+        "MVP Dia 17",
+        "Trap",
+        "TEAM SOLID",
+        "2024-05-26"
+      ],
+      [
+        "MVA Dia 17",
+        "Raone7",
+        "NETSHOES MINERS",
+        "2024-05-26"
+      ],
+      [
+        "MVP Dia 18",
+        "Raone7",
+        "NETSHOES MINERS",
+        "2024-05-27"
+      ],
+      [
+        "MVA Dia 18",
+        "Yago",
+        "LOUD",
+        "2024-05-27"
+      ],
+      [
+        "MVP Dia 19",
+        "General",
+        "NETSHOES MINERS",
+        "2024-05-31"
+      ],
+      [
+        "MVA Dia 19",
+        "Raone7",
+        "NETSHOES MINERS",
+        "2024-05-31"
+      ],
+      [
+        "MVP Dia 20",
+        "Trap",
+        "TEAM SOLID",
+        "2024-06-01"
+      ],
+      [
+        "MVA Dia 20",
+        "Stark7",
+        "MIBR",
+        "2024-06-01"
+      ],
+      [
+        "MVP Dia 21",
+        "Trap",
+        "TEAM SOLID",
+        "2024-06-02"
+      ],
+      [
+        "MVA Dia 21",
+        "Tatu13",
+        "TEAM SOLID",
+        "2024-06-02"
+      ],
+      [
+        "MVP Dia 22",
+        "PETERxl",
+        "PAIN GAMING",
+        "2024-06-08"
+      ],
+      [
+        "MVA Dia 22",
+        "Motovea7",
+        "PAIN GAMING",
+        "2024-06-08"
+      ],
+      [
+        "MVP Dia 23",
+        "Rigby",
+        "MIBR",
+        "2024-06-09"
+      ],
+      [
+        "MVA Dia 23",
+        "GHOST7",
+        "INTZ",
+        "2024-06-09"
+      ],
+      [
+        "MVP Dia 24",
+        "brota10",
+        "FLAMENGO ESPORTS",
+        "2024-06-10"
+      ],
+      [
+        "MVA Dia 24",
+        "PÃO7",
+        "E1 SPORTS",
+        "2024-06-10"
+      ],
+      [
+        "MVP Dia 25",
+        "Lost21",
+        "LOUD",
+        "2024-07-27"
+      ],
+      [
+        "MVP Dia 26",
+        "NANDO9",
+        "NETSHOES MINERS",
+        "2024-07-28"
+      ],
+      [
+        "MVP Dia 27",
+        "Yago",
+        "LOUD",
+        "2024-07-29"
+      ],
+      [
+        "MVP Dia 28",
+        "Nikeboy",
+        "CORINTHIANS",
+        "2024-08-03"
+      ],
+      [
+        "MVP Dia 29",
+        "But",
+        "FLUXO W7M",
+        "2024-08-04"
+      ],
+      [
+        "MVP Dia 30",
+        "Giuh",
+        "FLUXO W7M",
+        "2024-08-05"
+      ],
+      [
+        "MVP Dia 31",
+        "Motovea7",
+        "PAIN GAMING",
+        "2024-08-10"
+      ],
+      [
+        "MVP Dia 32",
+        "Yago",
+        "LOUD",
+        "2024-08-11"
+      ],
+      [
+        "MVP Dia 33",
+        "RIGBY",
+        "MIBR",
+        "2024-08-12"
+      ],
+      [
+        "MVP Dia 34",
+        "HONEY",
+        "ALFA 34",
+        "2024-08-17"
+      ],
+      [
+        "MVP Dia 35",
+        "MT7",
+        "FLUXO W7M",
+        "2024-08-18"
+      ],
+      [
+        "MVP Dia 36",
+        "Yago",
+        "LOUD",
+        "2024-08-19"
+      ],
+      [
+        "MVP Dia 37",
+        "o Mala",
+        "CORINTHIANS",
+        "2024-08-24"
+      ],
+      [
+        "MVP Dia 38",
+        "Razure",
+        "INCO GAMING",
+        "2024-08-25"
+      ],
+      [
+        "MVP Dia 39",
+        "Raone7",
+        "NETSHOES MINERS",
+        "2024-08-26"
+      ],
+      [
+        "MVP Dia 40",
+        "Gus",
+        "PAIN GAMING",
+        "2024-08-31"
+      ],
+      [
+        "MVP Dia 41",
+        "Raone7",
+        "NETSHOES MINERS",
+        "2024-09-01"
+      ],
+      [
+        "MVP Dia 42",
+        "RIGBY",
+        "MIBR",
+        "2024-09-02"
+      ],
+      [
+        "MVP Dia 43",
+        "Motovea7",
+        "PAIN GAMING",
+        "2024-09-07"
+      ],
+      [
+        "MVP Dia 44",
+        "Bops",
+        "FLUXO W7M",
+        "2024-09-08"
+      ],
+      [
+        "MVP Dia 45",
+        "Stark7",
+        "MIBR",
+        "2024-09-09"
+      ],
+      [
+        "MVP Dia 46",
+        "PÃO7",
+        "E1 SPORTS",
+        "2024-09-14"
+      ],
+      [
+        "MVP Dia 47",
+        "Bops",
+        "FLUXO W7M",
+        "2024-09-15"
+      ],
+      [
+        "MVP Dia 48",
+        "Mexico",
+        "FLAMENGO ESPORTS",
+        "2024-09-16"
+      ]
+    ]
+  },
+  "spotRules": [
+    "group:1;seedup;Vaga no Mundial + Final",
+    "group:2-12;up;Grande Final",
+    "group:13-17;down;Eliminado",
+    "group:18;down;Desclassificado"
+  ]
+}

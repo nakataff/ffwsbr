@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WB Manager</title>
+  <link rel="icon" type="image/webp" href="freefire.webp">
+  <link rel="stylesheet" href="manager.css">
+</head>
+<body>
+  <section class="start-screen" id="startScreen">
+    <div class="start-copy">
+      <p>WB Manager - 2021 a 2026</p>
+      <h2>Monte seu elenco.<br>Domine a WB.</h2>
+      <span>Escolha o modo, faca o draft e simule uma temporada com classificatoria, transferencias, final e estatisticas completas.</span>
+      <button id="startGameBtn" class="primary">Jogar agora -></button>
+    </div>
+    <div class="start-arena">
+      <div><b>99</b><small>MT7</small></div>
+      <div><b>94</b><small>Yago</small></div>
+      <div><b>92</b><small>Trap</small></div>
+      <div><b>93</b><small>Rigby</small></div>
+      <span>WB DRAFT ARENA</span>
+    </div>
+  </section>
+
+  <header class="topbar">
+    <div class="brand">
+      <h1>WB Manager</h1>
+      <p>Monte. Simule. Champion Rush.</p>
+    </div>
+    <div class="status-strip">
+      <span id="gamePhase">APOIE O PROJETO! PIX: NAKATEAMGG@GMAIL.COM</span>
+      <a href="https://centralfreefire.com.br/#home" target="_blank" rel="noopener">CENTRALFREEFIRE.COM.BR</a>
+      <button id="resetGameBtn" class="admin-trigger">RESETAR</button>
+      <button id="adminBtn" class="admin-trigger">(ADMIN)</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="panel draft-panel">
+      <section class="manager-setup" id="managerSetup">
+        <label>Nome do time<input id="teamNameInput" maxlength="24" placeholder="Ex: Tropa WB"></label>
+        <label>Manager<input id="managerNameInput" maxlength="24" placeholder="Seu nome"></label>
+        <label>Dificuldade<select id="difficultySelect">
+          <option value="easy">Elencos aleatorios - facil</option>
+          <option value="hard">Melhores elencos - dificil</option>
+          <option value="champions">Campeoes - muito dificil</option>
+        </select></label>
+        <label>Formato<select id="gameModeSelect">
+          <option value="draft">Draft historico (manager)</option>
+          <option value="specific">Draft em LBFF/WB especifica</option>
+          <option value="historical">Time historico</option>
+        </select></label>
+        <label class="inline-toggle"><input id="duplicateTeamsInput" type="checkbox"> Permitir times repetidos</label>
+        <label id="specificEditionWrap">Edicao<select id="editionSelect"></select></label>
+        <div class="original-picker" id="originalPicker">
+          <strong>Escolha seu time historico</strong>
+          <label>Edicao<select id="originalEditionSelect"></select></label>
+          <label>Time<select id="originalTeamSelect"></select></label>
+          <button id="useOriginalTeamBtn" type="button">Confirmar time historico</button>
+        </div>
+        <button id="confirmSetupBtn" type="button" class="primary">Confirmar e abrir sorteio</button>
+      </section>
+      <div class="panel-title">
+        <span id="sidePanelTitle">Sorteio</span>
+        <strong id="refreshCount">3 refresh</strong>
+      </div>
+
+      <section class="draw-card" id="drawCard">
+        <div class="draw-empty">Clique em sortear para revelar uma equipe.</div>
+      </section>
+
+      <div class="button-row" id="drawButtons">
+        <button id="rollAnyBtn" class="primary">Sortear</button>
+        <button id="rollEditionBtn">Mesma edicao</button>
+      </div>
+
+      <div class="mini-help" id="draftHelp">
+        Depois de cada escolha, outra equipe aparece automaticamente. Use refresh so quando quiser trocar o time sorteado.
+      </div>
+    </aside>
+
+    <section class="stage">
+      <nav class="tabs" aria-label="Etapas">
+        <button class="tab active" data-view="groupsView">Classificacao</button>
+        <button class="tab" data-view="finalView">Final</button>
+        <button class="tab" data-view="squadView">Elenco</button>
+        <button class="tab" data-view="splitView">Estatisticas</button>
+        <button class="tab" data-view="transferView">Transferencias</button>
+      </nav>
+
+      <section id="squadView" class="view">
+        <div class="arena">
+          <div class="slot player" data-slot="0"><span>Titular 1</span></div>
+          <div class="slot player" data-slot="1"><span>Titular 2</span></div>
+          <div class="slot player" data-slot="2"><span>Titular 3</span></div>
+          <div class="slot player" data-slot="3"><span>Titular 4</span></div>
+          <div class="slot coach"><span>Coach</span></div>
+          <div class="slot bench"><span>Reserva</span></div>
+          <div class="slot bench"><span>Reserva</span></div>
+        </div>
+        <div class="squad-summary">
+          <div><span>Overall</span><strong id="teamOverall">--</strong></div>
+          <div><span>Reservas</span><strong id="benchCount">0/2</strong></div>
+          <div><span>Elenco</span><strong id="teamSize">0/7</strong></div>
+        </div>
+        <label class="bench-toggle"><input id="autoBenchInput" type="checkbox"> Banco automatico no fim do dia</label>
+      </section>
+
+      <section id="transferView" class="view">
+        <div class="sim-controls">
+          <div>
+            <h2>Transferencias</h2>
+            <p>A janela abre depois da rodada 11. Arraste para trocar titulares ou compre para o banco.</p>
+          </div>
+          <div class="button-row">
+            <button id="rollMarketBtn" class="primary">Sortear mercado</button>
+          </div>
+        </div>
+        <div id="transferBoard"></div>
+      </section>
+
+      <section id="groupsView" class="view active">
+        <div class="sim-controls">
+          <div>
+            <h2>Fase de grupos</h2>
+            <p>16 times, 4 grupos de agenda e uma classificatoria geral. Cada dia tem 6 quedas.</p>
+          </div>
+          <div class="button-row">
+            <button id="startGroupsBtn" class="primary">Iniciar</button>
+            <button id="simMatchBtn">Simular queda</button>
+            <button id="simDayBtn">Simular dia</button>
+            <button id="simAllBtn">Instantaneo</button>
+          </div>
+        </div>
+        <div class="subtabs">
+          <button class="subtab" data-group-tab="day">Tabela do dia</button>
+          <button class="subtab active" data-group-tab="overall">Classificatoria geral</button>
+        </div>
+        <div id="groupsGrid"></div>
+        <div class="mvp-board">
+          <div class="mvp-head">
+            <h2>Ranking MVP</h2>
+            <div class="subtabs compact">
+              <button class="subtab active" data-mvp-filter="all">Geral</button>
+              <button class="subtab" data-mvp-filter="mine">Meu time</button>
+            </div>
+          </div>
+          <div class="table-wrap" id="mvpTable"></div>
+        </div>
+      </section>
+
+      <section id="finalView" class="view">
+        <div class="sim-controls">
+          <div>
+            <h2>Grande Final</h2>
+            <p>12 times, 16 quedas em 2 dias. Bateu 160 pontos, precisa de Booyah para fechar.</p>
+          </div>
+          <div class="button-row">
+            <button id="startFinalBtn" class="primary">Classificar final</button>
+            <button id="simFinalMatchBtn">Simular queda</button>
+            <button id="simFinalDayBtn">Simular dia</button>
+            <button id="simFinalAllBtn">Instantaneo</button>
+          </div>
+        </div>
+        <div class="champion-banner" id="championBanner">A final ainda nao comecou.</div>
+        <div class="subtabs">
+          <button class="subtab" data-final-tab="drop">Tabela da queda</button>
+          <button class="subtab active" data-final-tab="overall">Tabela da final</button>
+        </div>
+        <div id="finalDropRank"></div>
+        <div class="table-wrap" id="finalOverallWrap">
+          <table>
+            <thead><tr><th>#</th><th>Time</th><th>Edicao</th><th>Pts</th><th>Booyah</th><th>Abates</th><th>Quedas</th><th>CP</th></tr></thead>
+            <tbody id="finalTable"></tbody>
+          </table>
+        </div>
+        <div class="mvp-board">
+          <div class="mvp-head">
+            <h2>Ranking MVP da Final</h2>
+            <div class="subtabs compact">
+              <button class="subtab active" data-mvp-filter="all">Geral</button>
+              <button class="subtab" data-mvp-filter="mine">Meu time</button>
+            </div>
+          </div>
+          <div class="table-wrap" id="finalMvpTable"></div>
+        </div>
+      </section>
+
+      <section id="splitView" class="view">
+        <div class="sim-controls">
+          <div>
+            <h2>Estatisticas</h2>
+            <p>Mapas, jogadores, campanha, campeao, MVP e selecao do torneio.</p>
+          </div>
+        </div>
+        <div id="splitSummary"></div>
+      </section>
+    </section>
+
+    <aside class="panel board-panel">
+      <div class="panel-title">
+        <span>Box score</span>
+        <strong id="roundBadge">0/120</strong>
+      </div>
+      <div class="log" id="matchLog"></div>
+    </aside>
+  </main>
+
+  <section class="admin-panel" id="adminPanel" aria-hidden="true">
+    <div class="admin-card">
+      <div class="admin-head">
+        <div>
+          <h2>Admin</h2>
+          <p id="overallSource">Overalls: automatico</p>
+        </div>
+        <button id="closeAdminBtn">Fechar</button>
+      </div>
+      <div id="adminTeams"></div>
+    </div>
+  </section>
+
+  <script src="manager.js"></script>
+</body>
+</html>
+

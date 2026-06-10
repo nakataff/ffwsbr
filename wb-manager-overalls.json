@@ -1,0 +1,1492 @@
+{
+  "version": 1,
+  "exportedAt": "2026-06-10T05:24:21.941Z",
+  "overallOverrides": {
+    "WANHEDA": {
+      "LBFF 1": 82,
+      "LBFF 3": 76,
+      "LBFF 9": 84,
+      "LBFF 8": 83
+    },
+    "VINIZX": {
+      "LBFF 1": 84,
+      "LBFF 4": 76,
+      "LBFF 3": 81,
+      "LBFF 5": 75
+    },
+    "IMJOUH": {
+      "LBFF 1": 75
+    },
+    "ROFF": {
+      "LBFF 1": 72
+    },
+    "RAPOSO": {
+      "LBFF 1": 84,
+      "LBFF 3": 76
+    },
+    "LUKASTD": {
+      "LBFF 1": 73,
+      "LBFF 3": 79,
+      "LBFF 4": 75
+    },
+    "UBITA": {
+      "LBFF 1": 86
+    },
+    "CORONEL": {
+      "LBFF 1": 82,
+      "LBFF 3": 83
+    },
+    "D3": {
+      "LBFF 1": 84,
+      "LBFF 3": 78,
+      "LBFF 4": 71,
+      "LBFF 6": 74,
+      "LBFF 7": 66
+    },
+    "GEERTY": {
+      "LBFF 1": 85,
+      "LBFF 3": 78,
+      "LBFF 4": 72
+    },
+    "RICCK": {
+      "LBFF 1": 84,
+      "LBFF 3": 78,
+      "LBFF 4": 78
+    },
+    "MAXSWELL": {
+      "LBFF 1": 79,
+      "LBFF 4": 75
+    },
+    "PHOENIX23": {
+      "LBFF 1": 81,
+      "LBFF 3": 80,
+      "LBFF 4": 78,
+      "LBFF 8": 77,
+      "LBFF 6": 82,
+      "LBFF 7": 77
+    },
+    "BLACK00": {
+      "LBFF 1": 79,
+      "LBFF 3": 82,
+      "LBFF 4": 74
+    },
+    "MODESTIA": {
+      "LBFF 1": 75,
+      "LBFF 3": 87,
+      "LBFF 5": 84,
+      "LBFF 7": 82,
+      "WB 2025 S1": 81,
+      "LBFF 8": 86,
+      "WB 2025 S2": 76
+    },
+    "SHARIIN": {
+      "LBFF 1": 86,
+      "LBFF 3": 75
+    },
+    "KROONOS": {
+      "LBFF 1": 90,
+      "LBFF 4": 83,
+      "LBFF 3": 76,
+      "LBFF 5": 82,
+      "LBFF 8": 78,
+      "LBFF 7": 80
+    },
+    "THIAGO": {
+      "LBFF 1": 76
+    },
+    "VAZILY": {
+      "LBFF 1": 83,
+      "LBFF 3": 80,
+      "LBFF 4": 73,
+      "LBFF 5": 76
+    },
+    "BOYKA": {
+      "LBFF 1": 77,
+      "LBFF 3": 79
+    },
+    "K9": {
+      "LBFF 1": 83,
+      "LBFF 4": 86,
+      "LBFF 3": 87,
+      "WB 2026 S1": 69,
+      "LBFF 9": 85,
+      "LBFF 8": 84,
+      "LBFF 7": 83
+    },
+    "DEXTER": {
+      "LBFF 1": 75,
+      "LBFF 3": 81
+    },
+    "DRZZY": {
+      "LBFF 1": 76,
+      "LBFF 4": 74,
+      "LBFF 7": 72
+    },
+    "MADANZA": {
+      "LBFF 1": 74,
+      "LBFF 3": 78
+    },
+    "ZIKKA": {
+      "LBFF 1": 77,
+      "LBFF 3": 78
+    },
+    "DEADGOD": {
+      "LBFF 1": 82,
+      "LBFF 3": 85,
+      "LBFF 5": 83,
+      "LBFF 9": 80,
+      "LBFF 7": 81,
+      "LBFF 8": 81
+    },
+    "FLQP": {
+      "LBFF 1": 77
+    },
+    "AVENGER": {
+      "LBFF 1": 76,
+      "LBFF 4": 75
+    },
+    "TAAMI": {
+      "LBFF 3": 73
+    },
+    "PAO7": {
+      "LBFF 3": 83,
+      "LBFF 4": 77,
+      "LBFF 5": 78,
+      "LBFF 9": 89,
+      "WB 2026 S1": 87,
+      "LBFF 7": 74,
+      "WB 2024": 83,
+      "WB 2025 S1": 82,
+      "LBFF 8": 79,
+      "WB 2025 S2": 89
+    },
+    "LEAL7": {
+      "LBFF 3": 82,
+      "LBFF 4": 73,
+      "LBFF 8": 73
+    },
+    "ARANHA": {
+      "LBFF 3": 88,
+      "LBFF 4": 80,
+      "LBFF 5": 78
+    },
+    "METAL": {
+      "LBFF 3": 86,
+      "LBFF 4": 82
+    },
+    "CAUAN": {
+      "LBFF 3": 83,
+      "LBFF 4": 81,
+      "LBFF 6": 80
+    },
+    "YAN7": {
+      "LBFF 3": 79,
+      "LBFF 5": 82,
+      "LBFF 4": 77
+    },
+    "STARK": {
+      "LBFF 3": 83,
+      "LBFF 5": 86,
+      "LBFF 9": 74,
+      "LBFF 7": 85,
+      "WB 2024": 83
+    },
+    "REEI": {
+      "LBFF 3": 81
+    },
+    "MINUZZI": {
+      "LBFF 3": 76,
+      "LBFF 4": 77
+    },
+    "MACHADO": {
+      "LBFF 3": 86,
+      "LBFF 5": 83,
+      "LBFF 4": 80,
+      "LBFF 7": 84,
+      "LBFF 8": 81,
+      "LBFF 9": 80
+    },
+    "MISTICO": {
+      "LBFF 3": 75,
+      "LBFF 4": 73
+    },
+    "NEGOO": {
+      "LBFF 3": 76
+    },
+    "JAPA04": {
+      "LBFF 3": 78,
+      "LBFF 1": 81
+    },
+    "01PIRES": {
+      "LBFF 3": 78,
+      "LBFF 1": 81
+    },
+    "CHEFE_XL": {
+      "LBFF 3": 80,
+      "LBFF 1": 84
+    },
+    "YURIK1NG": {
+      "LBFF 3": 79
+    },
+    "JM777": {
+      "LBFF 3": 78
+    },
+    "BRUNO7": {
+      "LBFF 3": 74,
+      "LBFF 5": 71
+    },
+    "BIEL7": {
+      "LBFF 3": 80,
+      "LBFF 5": 79,
+      "LBFF 4": 82,
+      "LBFF 7": 70
+    },
+    "NATIVA": {
+      "LBFF 3": 84,
+      "LBFF 4": 83,
+      "LBFF 8": 73
+    },
+    "HORUS": {
+      "LBFF 3": 79,
+      "LBFF 4": 77
+    },
+    "IGZINN": {
+      "LBFF 3": 77,
+      "LBFF 4": 82,
+      "LBFF 9": 74
+    },
+    "DOGBLACK": {
+      "LBFF 3": 81,
+      "LBFF 4": 83,
+      "LBFF 7": 68
+    },
+    "CEBOLINHA": {
+      "LBFF 3": 82,
+      "LBFF 4": 81,
+      "LBFF 8": 77,
+      "LBFF 6": 78
+    },
+    "GNERALXX": {
+      "LBFF 3": 85,
+      "LBFF 4": 84,
+      "LBFF 5": 89
+    },
+    "LUFFYXX": {
+      "LBFF 3": 75
+    },
+    "ALOK10": {
+      "LBFF 3": 76
+    },
+    "BROCO": {
+      "LBFF 3": 77,
+      "LBFF 8": 77
+    },
+    "ZULTRA": {
+      "LBFF 3": 82,
+      "LBFF 4": 79
+    },
+    "KAYKE": {
+      "LBFF 3": 79,
+      "LBFF 4": 71
+    },
+    "DECO": {
+      "LBFF 3": 76,
+      "LBFF 4": 72
+    },
+    "MARTINS": {
+      "LBFF 3": 82,
+      "LBFF 4": 75
+    },
+    "BOSS": {
+      "LBFF 3": 79,
+      "LBFF 4": 77,
+      "LBFF 7": 77
+    },
+    "ZENAC": {
+      "LBFF 3": 80,
+      "LBFF 4": 74,
+      "LBFF 5": 77,
+      "LBFF 6": 76
+    },
+    "LUUUKING": {
+      "LBFF 3": 78,
+      "LBFF 4": 74,
+      "WB 2026 S1": 88,
+      "LBFF 1": 82,
+      "LBFF 9": 88,
+      "LBFF 8": 86,
+      "LBFF 7": 87,
+      "WB 2024": 89,
+      "WB 2025 S1": 89,
+      "WB 2025 S2": 86
+    },
+    "MATHEUS SOUTO": {
+      "LBFF 3": 84
+    },
+    "ZNZ": {
+      "LBFF 3": 82
+    },
+    "CHEFAOZP": {
+      "LBFF 3": 80
+    },
+    "ALEMAO": {
+      "LBFF 3": 77
+    },
+    "JAPABKR": {
+      "LBFF 4": 85,
+      "LBFF 5": 83,
+      "LBFF 3": 85,
+      "LBFF 1": 96,
+      "LBFF 8": 82,
+      "LBFF 7": 81
+    },
+    "GØDKILL": {
+      "LBFF 4": 81,
+      "LBFF 5": 77,
+      "LBFF 8": 82
+    },
+    "NOBRU": {
+      "LBFF 4": 83,
+      "LBFF 1": 88,
+      "LBFF 3": 83,
+      "LBFF 7": 73
+    },
+    "WILL": {
+      "LBFF 4": 82,
+      "LBFF 1": 82,
+      "LBFF 3": 78,
+      "LBFF 5": 76,
+      "LBFF 7": 74
+    },
+    "NODA": {
+      "LBFF 4": 81,
+      "LBFF 3": 76,
+      "LBFF 5": 80,
+      "LBFF 9": 84,
+      "LBFF 8": 81,
+      "LBFF 7": 83,
+      "WB 2024": 87,
+      "WB 2025 S1": 82,
+      "WB 2025 S2": 81
+    },
+    "BRABOX": {
+      "LBFF 4": 79,
+      "LBFF 3": 77,
+      "LBFF 5": 77
+    },
+    "FROIS": {
+      "LBFF 4": 84,
+      "LBFF 5": 80,
+      "WB 2026 S1": 83,
+      "LBFF 8": 83
+    },
+    "LOBATO4X": {
+      "LBFF 4": 85,
+      "LBFF 8": 80
+    },
+    "FON": {
+      "LBFF 4": 83,
+      "LBFF 5": 77,
+      "LBFF 8": 81,
+      "LBFF 9": 82
+    },
+    "GUSZ": {
+      "LBFF 4": 82,
+      "LBFF 5": 76,
+      "LBFF 8": 82,
+      "LBFF 6": 79
+    },
+    "PHELIPE": {
+      "LBFF 4": 75
+    },
+    "OTREMBB": {
+      "LBFF 4": 77,
+      "LBFF 1": 76
+    },
+    "MTS007": {
+      "LBFF 4": 87,
+      "WB 2026 S1": 73,
+      "LBFF 8": 82,
+      "LBFF 7": 83,
+      "WB 2025 S1": 80,
+      "LBFF 9": 77
+    },
+    "ITALO.$": {
+      "LBFF 4": 77,
+      "LBFF 3": 72,
+      "LBFF 5": 77
+    },
+    "KAUELOK": {
+      "LBFF 4": 83,
+      "LBFF 9": 84
+    },
+    "R7XY": {
+      "LBFF 4": 80,
+      "LBFF 5": 78,
+      "LBFF 3": 83,
+      "WB 2025 S1": 81
+    },
+    "YAGO": {
+      "LBFF 4": 74,
+      "LBFF 5": 84,
+      "WB 2024": 95,
+      "LBFF 9": 95,
+      "WB 2026 S1": 96
+    },
+    "ZDAARK": {
+      "LBFF 3": 72
+    },
+    "FIELD": {
+      "LBFF 3": 80,
+      "LBFF 5": 76,
+      "LBFF 4": 80
+    },
+    "AUTOBOOT": {
+      "LBFF 3": 80,
+      "LBFF 5": 76
+    },
+    "BIRI": {
+      "LBFF 3": 73
+    },
+    "IGOR3": {
+      "LBFF 3": 73
+    },
+    "BUTTER": {
+      "LBFF 3": 78,
+      "WB 2026 S1": 71,
+      "LBFF 9": 75,
+      "LBFF 8": 82,
+      "WB 2025 S1": 82
+    },
+    "MORATO": {
+      "LBFF 3": 78,
+      "LBFF 4": 71
+    },
+    "LUKASKN": {
+      "LBFF 3": 81,
+      "LBFF 4": 73,
+      "LBFF 5": 74
+    },
+    "VITTIN": {
+      "LBFF 4": 79
+    },
+    "OUSADO": {
+      "LBFF 4": 84,
+      "LBFF 8": 85,
+      "LBFF 6": 82,
+      "LBFF 7": 82
+    },
+    "RAZURE": {
+      "LBFF 4": 78,
+      "LBFF 5": 83,
+      "LBFF 6": 80,
+      "WB 2025 S2": 78
+    },
+    "KIED": {
+      "LBFF 4": 84,
+      "LBFF 6": 82,
+      "LBFF 7": 81
+    },
+    "BIRINO": {
+      "LBFF 4": 75
+    },
+    "CAUE": {
+      "LBFF 4": 78,
+      "LBFF 5": 80,
+      "LBFF 7": 78
+    },
+    "SEUPAI": {
+      "WB 2026 S1": 80
+    },
+    "WM.SUP": {
+      "WB 2026 S1": 67
+    },
+    "KBCAO": {
+      "LBFF 5": 79,
+      "LBFF 3": 81,
+      "LBFF 7": 76
+    },
+    "NANDO9": {
+      "LBFF 5": 91,
+      "LBFF 7": 83,
+      "WB 2025 S1": 88,
+      "LBFF 8": 89,
+      "WB 2025 S2": 88
+    },
+    "F4K": {
+      "LBFF 5": 81,
+      "LBFF 4": 80
+    },
+    "SYAZ": {
+      "LBFF 5": 92,
+      "LBFF 8": 85,
+      "LBFF 7": 85
+    },
+    "DRAXX7": {
+      "LBFF 5": 82,
+      "LBFF 8": 88,
+      "WB 2025 S2": 80
+    },
+    "GUIMONS": {
+      "LBFF 5": 78,
+      "LBFF 4": 74
+    },
+    "NICKOLAS": {
+      "LBFF 5": 78,
+      "LBFF 4": 75
+    },
+    "LOST21": {
+      "LBFF 5": 82,
+      "LBFF 4": 82,
+      "WB 2025 S2": 83
+    },
+    "RANDALL": {
+      "LBFF 5": 72
+    },
+    "RUAN": {
+      "LBFF 5": 81,
+      "LBFF 9": 77,
+      "LBFF 8": 79
+    },
+    "CAPGUI63": {
+      "LBFF 5": 82,
+      "LBFF 7": 65
+    },
+    "CHINES": {
+      "LBFF 5": 78,
+      "LBFF 9": 83,
+      "LBFF 7": 83,
+      "LBFF 8": 82
+    },
+    "JHZZ": {
+      "LBFF 5": 72
+    },
+    "ROMEUXX": {
+      "LBFF 5": 68,
+      "LBFF 7": 72
+    },
+    "BONZAI22": {
+      "LBFF 5": 66
+    },
+    "MEMGOD": {
+      "LBFF 5": 83,
+      "LBFF 4": 83,
+      "LBFF 8": 77
+    },
+    "ONE9": {
+      "LBFF 5": 76,
+      "LBFF 4": 81
+    },
+    "ALTMAN": {
+      "LBFF 5": 79,
+      "LBFF 9": 77,
+      "LBFF 7": 77
+    },
+    "BOLIN7": {
+      "LBFF 5": 78,
+      "LBFF 8": 73
+    },
+    "ANON": {
+      "LBFF 1": 79
+    },
+    "ROOD": {
+      "LBFF 1": 73
+    },
+    "L7": {
+      "LBFF 1": 74
+    },
+    "AUN": {
+      "LBFF 1": 78
+    },
+    "SUPREME": {
+      "LBFF 1": 84,
+      "LBFF 3": 72
+    },
+    "MOREIRA": {
+      "LBFF 1": 79,
+      "LBFF 3": 73,
+      "LBFF 4": 75,
+      "LBFF 7": 71
+    },
+    "BATMAN": {
+      "LBFF 1": 82,
+      "LBFF 4": 77
+    },
+    "FIXA": {
+      "LBFF 1": 82,
+      "LBFF 3": 74,
+      "LBFF 4": 78,
+      "WB 2026 S1": 66
+    },
+    "LEVELUP": {
+      "LBFF 1": 85,
+      "LBFF 4": 73
+    },
+    "CRAZY": {
+      "LBFF 1": 82
+    },
+    "JUBINHA": {
+      "LBFF 1": 76,
+      "LBFF 4": 79,
+      "LBFF 6": 79,
+      "LBFF 7": 79
+    },
+    "MAMUTEZL": {
+      "LBFF 1": 80,
+      "LBFF 5": 81,
+      "LBFF 9": 75,
+      "LBFF 6": 81,
+      "LBFF 7": 68
+    },
+    "SOLOTOV": {
+      "LBFF 1": 78
+    },
+    "ANTUNES22": {
+      "LBFF 1": 75,
+      "LBFF 4": 67
+    },
+    "CAUAN7": {
+      "LBFF 3": 94,
+      "LBFF 5": 87,
+      "WB 2026 S1": 88,
+      "LBFF 9": 92,
+      "LBFF 8": 86,
+      "LBFF 7": 88,
+      "WB 2025 S1": 84
+    },
+    "TKSHY13": {
+      "LBFF 3": 75
+    },
+    "VICTOR7": {
+      "LBFF 3": 76,
+      "LBFF 9": 76
+    },
+    "PATO": {
+      "LBFF 3": 82,
+      "LBFF 4": 80
+    },
+    "CURURU": {
+      "LBFF 3": 77
+    },
+    "PDRM": {
+      "LBFF 3": 78
+    },
+    "PORCAO": {
+      "LBFF 3": 77
+    },
+    "GUUH": {
+      "LBFF 3": 69
+    },
+    "NABOZNY": {
+      "LBFF 4": 78
+    },
+    "PEDRO": {
+      "LBFF 4": 75
+    },
+    "MVR": {
+      "LBFF 4": 85,
+      "LBFF 6": 77,
+      "LBFF 8": 76
+    },
+    "PEU": {
+      "LBFF 4": 76,
+      "LBFF 1": 90
+    },
+    "ZARAKI": {
+      "LBFF 4": 83,
+      "LBFF 7": 73
+    },
+    "ARRUDA": {
+      "LBFF 4": 76
+    },
+    "PEDRO.RS": {
+      "LBFF 4": 74,
+      "LBFF 8": 75,
+      "LBFF 7": 76
+    },
+    "GUERRA": {
+      "LBFF 4": 71,
+      "LBFF 5": 82
+    },
+    "AZAY": {
+      "LBFF 4": 77,
+      "LBFF 9": 79
+    },
+    "BRUNO 7": {
+      "LBFF 4": 72
+    },
+    "VN10": {
+      "LBFF 4": 73
+    },
+    "VTRX": {
+      "LBFF 4": 71
+    },
+    "LEOZIN": {
+      "LBFF 5": 74,
+      "LBFF 6": 75
+    },
+    "GELO7": {
+      "LBFF 5": 81,
+      "LBFF 6": 78
+    },
+    "LIP4ULO": {
+      "LBFF 4": 69
+    },
+    "GENERALTV": {
+      "LBFF 5": 82
+    },
+    "RAFAX": {
+      "LBFF 5": 75,
+      "LBFF 7": 75,
+      "LBFF 8": 75
+    },
+    "DUZZX": {
+      "LBFF 5": 76
+    },
+    "PEC": {
+      "LBFF 5": 79,
+      "LBFF 7": 77
+    },
+    "MAROTO7": {
+      "LBFF 5": 75
+    },
+    "VITINXP": {
+      "LBFF 5": 84,
+      "WB 2024": 84,
+      "LBFF 9": 81,
+      "WB 2026 S1": 84
+    },
+    "NEYZZIN": {
+      "LBFF 5": 75
+    },
+    "QUALY": {
+      "LBFF 5": 76,
+      "LBFF 7": 74
+    },
+    "CROFT": {
+      "LBFF 5": 80
+    },
+    "RUSH": {
+      "LBFF 5": 75,
+      "LBFF 7": 78
+    },
+    "BIELGOD": {
+      "WB 2026 S1": 79,
+      "LBFF 9": 79,
+      "WB 2025 S1": 80,
+      "LBFF 8": 81,
+      "WB 2025 S2": 74
+    },
+    "ZETSU9": {
+      "WB 2026 S1": 77,
+      "LBFF 9": 81,
+      "WB 2025 S1": 79
+    },
+    "TH": {
+      "WB 2026 S1": 65
+    },
+    "NIKEBOY": {
+      "WB 2026 S1": 85,
+      "WB 2024": 85,
+      "WB 2025 S1": 79
+    },
+    "O MALA": {
+      "WB 2026 S1": 81,
+      "WB 2024": 87,
+      "WB 2025 S2": 80
+    },
+    "DRADE.11": {
+      "WB 2026 S1": 74
+    },
+    "NEPO IGN": {
+      "WB 2026 S1": 79
+    },
+    "RICK9Z": {
+      "WB 2026 S1": 67
+    },
+    "SEUTIO": {
+      "WB 2026 S1": 65
+    },
+    "DOODLES": {
+      "WB 2026 S1": 65,
+      "WB 2024": 77
+    },
+    "BLACK02": {
+      "WB 2026 S1": 86,
+      "LBFF 9": 75,
+      "WB 2025 S1": 77,
+      "WB 2025 S2": 79
+    },
+    "LC777": {
+      "WB 2026 S1": 82,
+      "WB 2025 S1": 79,
+      "WB 2025 S2": 80
+    },
+    "GUIMERLQ": {
+      "WB 2026 S1": 86,
+      "WB 2025 S1": 78,
+      "WB 2025 S2": 81
+    },
+    "MITINX": {
+      "WB 2026 S1": 83,
+      "WB 2025 S2": 77
+    },
+    "RIBAS": {
+      "WB 2026 S1": 88
+    },
+    "C9": {
+      "WB 2026 S1": 74
+    },
+    "PROZIN10": {
+      "WB 2026 S1": 83,
+      "WB 2025 S2": 84
+    },
+    "ADDY7": {
+      "LBFF 9": 74,
+      "WB 2024": 80,
+      "WB 2025 S1": 81
+    },
+    "MOTOVEA7": {
+      "LBFF 9": 82,
+      "WB 2026 S1": 85,
+      "WB 2024": 93,
+      "WB 2025 S1": 89,
+      "WB 2025 S2": 94
+    },
+    "CHUCKY": {
+      "LBFF 9": 78,
+      "LBFF 7": 77
+    },
+    "ARAUJO13": {
+      "LBFF 9": 67
+    },
+    "GHOSTBB": {
+      "LBFF 9": 67
+    },
+    "SABOTA": {
+      "LBFF 9": 74
+    },
+    "NICKZ7": {
+      "LBFF 9": 79,
+      "WB 2026 S1": 92,
+      "WB 2025 S2": 93,
+      "WB 2024": 88
+    },
+    "GLAUCO7": {
+      "LBFF 9": 78
+    },
+    "ISOPOR21": {
+      "LBFF 9": 77,
+      "WB 2024": 76
+    },
+    "LOST": {
+      "WB 2026 S1": 84,
+      "LBFF 9": 92,
+      "LBFF 8": 84,
+      "LBFF 7": 87,
+      "WB 2024": 85
+    },
+    "SHOTZZ": {
+      "WB 2026 S1": 75,
+      "WB 2025 S1": 78,
+      "WB 2025 S2": 75
+    },
+    "AVENGED": {
+      "LBFF 1": 74
+    },
+    "BAHIAZX": {
+      "WB 2026 S1": 74,
+      "WB 2024": 82,
+      "WB 2025 S1": 78,
+      "WB 2025 S2": 78
+    },
+    "LYON": {
+      "WB 2026 S1": 81,
+      "WB 2025 S1": 84
+    },
+    "JUCAW": {
+      "WB 2026 S1": 78,
+      "WB 2025 S1": 82,
+      "WB 2025 S2": 80
+    },
+    "JNMVP": {
+      "WB 2026 S1": 93
+    },
+    "BRISA7": {
+      "WB 2026 S1": 78
+    },
+    "KAUA7XP": {
+      "WB 2026 S1": 79,
+      "WB 2025 S2": 79
+    },
+    "TRAP": {
+      "WB 2026 S1": 93,
+      "WB 2024": 90,
+      "WB 2025 S1": 83,
+      "LBFF 8": 83,
+      "WB 2025 S2": 91
+    },
+    "GUAXA7": {
+      "WB 2026 S1": 86,
+      "WB 2024": 88,
+      "LBFF 8": 79
+    },
+    "HAK": {
+      "WB 2026 S1": 83,
+      "WB 2024": 88,
+      "WB 2025 S2": 83
+    },
+    "GENERAL": {
+      "WB 2026 S1": 84,
+      "LBFF 9": 85,
+      "WB 2024": 83,
+      "WB 2025 S1": 89,
+      "WB 2025 S2": 84
+    },
+    "MTSEXY": {
+      "WB 2026 S1": 78,
+      "WB 2025 S1": 83,
+      "WB 2025 S2": 80
+    },
+    "PROXX7": {
+      "WB 2026 S1": 78,
+      "WB 2025 S2": 82,
+      "WB 2025 S1": 82,
+      "LBFF 8": 78
+    },
+    "BUT": {
+      "WB 2026 S1": 91,
+      "WB 2025 S2": 92,
+      "LBFF 9": 89,
+      "WB 2024": 93,
+      "WB 2025 S1": 90
+    },
+    "BOPS": {
+      "WB 2026 S1": 87,
+      "WB 2025 S2": 93,
+      "LBFF 9": 91,
+      "LBFF 8": 86
+    },
+    "RIGBY": {
+      "WB 2025 S2": 94,
+      "LBFF 9": 91,
+      "WB 2024": 90,
+      "WB 2025 S1": 94,
+      "LBFF 8": 80
+    },
+    "MT7": {
+      "WB 2025 S2": 95,
+      "WB 2025 S1": 94,
+      "WB 2026 S1": 99
+    },
+    "GIUH": {
+      "WB 2025 S2": 88,
+      "LBFF 9": 87,
+      "WB 2024": 89
+    },
+    "JOKER": {
+      "WB 2026 S1": 89,
+      "WB 2024": 82,
+      "WB 2025 S1": 83,
+      "WB 2025 S2": 86
+    },
+    "LIPAO": {
+      "WB 2026 S1": 88
+    },
+    "PUTSGRILO": {
+      "WB 2026 S1": 85,
+      "WB 2025 S1": 84,
+      "WB 2025 S2": 83
+    },
+    "PEREIRA": {
+      "WB 2026 S1": 83,
+      "WB 2024": 75,
+      "WB 2025 S1": 71
+    },
+    "WF9": {
+      "WB 2026 S1": 82
+    },
+    "SASKITO": {
+      "WB 2026 S1": 78
+    },
+    "IGOR7": {
+      "WB 2026 S1": 83
+    },
+    "NANDOX": {
+      "WB 2026 S1": 82,
+      "LBFF 9": 83,
+      "WB 2024": 88,
+      "WB 2025 S1": 79,
+      "WB 2025 S2": 79
+    },
+    "ITALO": {
+      "WB 2026 S1": 78,
+      "LBFF 8": 84,
+      "WB 2025 S1": 77
+    },
+    "ABREU": {
+      "WB 2026 S1": 79,
+      "WB 2024": 85,
+      "WB 2025 S1": 78
+    },
+    "CAUA": {
+      "WB 2026 S1": 78,
+      "WB 2025 S1": 82,
+      "WB 2025 S2": 79
+    },
+    "REDXZ7": {
+      "WB 2026 S1": 75,
+      "WB 2025 S2": 79
+    },
+    "WLIU": {
+      "WB 2026 S1": 79,
+      "WB 2025 S1": 83,
+      "WB 2025 S2": 79
+    },
+    "YANN7AWP": {
+      "WB 2026 S1": 80,
+      "WB 2025 S2": 81
+    },
+    "STARK7": {
+      "WB 2026 S1": 79,
+      "LBFF 9": 85,
+      "WB 2024": 82,
+      "LBFF 8": 82
+    },
+    "ERICK1NG": {
+      "WB 2026 S1": 77,
+      "WB 2025 S2": 79
+    },
+    "SANTIAGO": {
+      "WB 2024": 76
+    },
+    "RASHID": {
+      "WB 2024": 73,
+      "WB 2025 S1": 71
+    },
+    "WHYZER7": {
+      "WB 2024": 78
+    },
+    "ERICK11": {
+      "WB 2024": 79,
+      "LBFF 9": 83,
+      "LBFF 7": 79,
+      "LBFF 8": 82
+    },
+    "DELTA": {
+      "WB 2024": 77
+    },
+    "IZUKI": {
+      "WB 2024": 71
+    },
+    "SOUTO": {
+      "LBFF 1": 88,
+      "LBFF 8": 82,
+      "LBFF 7": 80
+    },
+    "GUAXA": {
+      "LBFF 9": 76,
+      "WB 2025 S2": 83
+    },
+    "LIPPE!": {
+      "LBFF 9": 76
+    },
+    "WILL7": {
+      "LBFF 9": 69
+    },
+    "SURTA": {
+      "LBFF 9": 74
+    },
+    "ITACHIXL": {
+      "LBFF 9": 75
+    },
+    "ALLAN": {
+      "LBFF 9": 75,
+      "WB 2025 S1": 69
+    },
+    "DG": {
+      "LBFF 9": 76,
+      "LBFF 7": 79
+    },
+    "JAPAXL": {
+      "LBFF 9": 77,
+      "LBFF 8": 81
+    },
+    "GOABE7": {
+      "LBFF 9": 79
+    },
+    "VITIN9": {
+      "LBFF 9": 80,
+      "WB 2024": 84,
+      "WB 2025 S1": 85,
+      "LBFF 8": 81,
+      "WB 2025 S2": 85
+    },
+    "R7": {
+      "LBFF 9": 79,
+      "LBFF 7": 81
+    },
+    "LENNO": {
+      "LBFF 9": 72,
+      "LBFF 7": 76,
+      "WB 2025 S1": 75
+    },
+    "EASY": {
+      "LBFF 9": 79,
+      "LBFF 7": 82
+    },
+    "HENDER": {
+      "LBFF 9": 78,
+      "LBFF 7": 82
+    },
+    "ZEROXP": {
+      "LBFF 9": 77
+    },
+    "FEDERAL7": {
+      "LBFF 9": 87,
+      "LBFF 8": 88
+    },
+    "DRAXX": {
+      "LBFF 9": 89
+    },
+    "MEXICO": {
+      "LBFF 9": 88,
+      "LBFF 8": 79,
+      "WB 2024": 82
+    },
+    "PITBULL": {
+      "LBFF 9": 84,
+      "WB 2024": 84,
+      "WB 2026 S1": 90
+    },
+    "JOAO7": {
+      "LBFF 9": 85,
+      "LBFF 7": 77,
+      "WB 2024": 81,
+      "WB 2025 S1": 84
+    },
+    "TRAP7": {
+      "LBFF 9": 91
+    },
+    "MIKE": {
+      "LBFF 9": 77,
+      "LBFF 8": 75
+    },
+    "BOB7": {
+      "LBFF 8": 85
+    },
+    "ITACHI7": {
+      "LBFF 8": 79
+    },
+    "GIUH.87": {
+      "LBFF 8": 85
+    },
+    "BUTON007": {
+      "LBFF 8": 84,
+      "LBFF 6": 85,
+      "LBFF 7": 84
+    },
+    "FAC": {
+      "LBFF 8": 83,
+      "LBFF 7": 79
+    },
+    "CRUEL": {
+      "LBFF 8": 78,
+      "WB 2025 S2": 74
+    },
+    "TTT": {
+      "LBFF 4": 68
+    },
+    "GUIGA": {
+      "LBFF 6": 79,
+      "LBFF 7": 78,
+      "LBFF 8": 79,
+      "LBFF 9": 78
+    },
+    "BOPS7": {
+      "LBFF 6": 83
+    },
+    "NATIVIDADE": {
+      "LBFF 6": 78
+    },
+    "MENORK1NG": {
+      "LBFF 7": 75
+    },
+    "XTRAP7": {
+      "LBFF 7": 82
+    },
+    "LOBATO": {
+      "LBFF 7": 84
+    },
+    "LAPA7": {
+      "LBFF 7": 75,
+      "LBFF 8": 79
+    },
+    "LOIRO RJ": {
+      "LBFF 7": 78
+    },
+    "SPIL": {
+      "LBFF 7": 71
+    },
+    "MANDELA": {
+      "LBFF 7": 75,
+      "LBFF 8": 72
+    },
+    "PROZIN": {
+      "LBFF 7": 77,
+      "LBFF 9": 78
+    },
+    "SALLES": {
+      "LBFF 7": 73
+    },
+    "NITE7": {
+      "LBFF 7": 74
+    },
+    "BLAKE": {
+      "LBFF 7": 72
+    },
+    "D7": {
+      "LBFF 7": 71
+    },
+    "TATU13": {
+      "WB 2024": 83,
+      "WB 2025 S1": 74,
+      "LBFF 8": 83,
+      "LBFF 9": 79
+    },
+    "S1NK": {
+      "WB 2024": 80
+    },
+    "BAND": {
+      "WB 2024": 86,
+      "WB 2025 S1": 78,
+      "WB 2025 S2": 79
+    },
+    "ITACHI FE": {
+      "WB 2024": 78
+    },
+    "ANGELO7": {
+      "WB 2024": 76
+    },
+    "RAONE7": {
+      "WB 2024": 92,
+      "WB 2025 S2": 89
+    },
+    "YATO7": {
+      "WB 2025 S1": 79
+    },
+    "PETERXL": {
+      "WB 2025 S1": 84,
+      "WB 2025 S2": 86,
+      "WB 2026 S1": 81
+    },
+    "LINS7": {
+      "WB 2025 S1": 82,
+      "WB 2025 S2": 82
+    },
+    "BYTE333": {
+      "WB 2025 S1": 77,
+      "WB 2025 S2": 79,
+      "WB 2026 S1": 79
+    },
+    "HONEY": {
+      "WB 2025 S1": 85,
+      "LBFF 9": 77
+    },
+    "FRANK": {
+      "WB 2025 S1": 82
+    },
+    "POLLUX7": {
+      "WB 2025 S1": 78,
+      "WB 2025 S2": 78
+    },
+    "KAKAZK": {
+      "WB 2025 S1": 80
+    },
+    "LUCASAWP": {
+      "WB 2025 S1": 78,
+      "WB 2026 S1": 82
+    },
+    "ERICKPITBULL": {
+      "WB 2025 S1": 86
+    },
+    "IGUINMVP": {
+      "WB 2025 S1": 78
+    },
+    "LOPESXL": {
+      "WB 2025 S1": 77
+    },
+    "STRIKE": {
+      "WB 2025 S1": 78
+    },
+    "XGUTO": {
+      "WB 2025 S1": 76
+    },
+    "SOCA": {
+      "WB 2025 S1": 72
+    },
+    "JOKER7": {
+      "WB 2025 S1": 71
+    },
+    "FURIAZZ7": {
+      "WB 2025 S1": 76,
+      "WB 2025 S2": 71
+    },
+    "DORITO": {
+      "WB 2025 S1": 71,
+      "LBFF 9": 83,
+      "WB 2025 S2": 78
+    },
+    "DREY22": {
+      "WB 2025 S1": 75
+    },
+    "GHOST7": {
+      "LBFF 8": 79
+    },
+    "VM7": {
+      "LBFF 8": 78
+    },
+    "MARRETA98": {
+      "LBFF 8": 79
+    },
+    "NINJA": {
+      "LBFF 8": 83,
+      "WB 2026 S1": 80
+    },
+    "BUENO": {
+      "LBFF 8": 74
+    },
+    "ICE77": {
+      "LBFF 8": 76,
+      "LBFF 9": 75
+    },
+    "R1": {
+      "LBFF 8": 75
+    },
+    "ROMEU": {
+      "LBFF 8": 77
+    },
+    "MTS7": {
+      "LBFF 8": 77
+    },
+    "SIQUEIRA": {
+      "LBFF 8": 70
+    },
+    "BIEL": {
+      "LBFF 8": 76
+    },
+    "HAAXSZZ": {
+      "LBFF 8": 70
+    },
+    "YGORZN7": {
+      "LBFF 8": 75
+    },
+    "DILONS": {
+      "LBFF 8": 70
+    },
+    "PROXX": {
+      "LBFF 9": 79
+    },
+    "GUS": {
+      "LBFF 9": 85,
+      "WB 2025 S2": 86
+    },
+    "IKAS": {
+      "LBFF 9": 80
+    },
+    "IZZAC": {
+      "LBFF 9": 80
+    },
+    "DRK10": {
+      "LBFF 9": 75
+    },
+    "KMX": {
+      "LBFF 9": 78
+    },
+    "LUAN7": {
+      "WB 2025 S2": 78
+    },
+    "FNX04": {
+      "WB 2025 S2": 76
+    },
+    "KADU KOT": {
+      "WB 2025 S2": 80
+    },
+    "XGUTO7": {
+      "WB 2025 S2": 75
+    },
+    "RZN7": {
+      "WB 2025 S2": 76
+    },
+    "THEUS": {
+      "WB 2025 S2": 82
+    },
+    "BROTA10": {
+      "WB 2025 S2": 79
+    },
+    "BZP10": {
+      "WB 2025 S2": 84,
+      "WB 2026 S1": 88
+    },
+    "SAM7": {
+      "WB 2026 S1": 83
+    },
+    "KEVEN7": {
+      "WB 2026 S1": 77
+    },
+    "MASTER": {
+      "WB 2026 S1": 77
+    },
+    "VT": {
+      "WB 2026 S1": 78
+    },
+    "BRUNO7W": {
+      "WB 2026 S1": 77
+    },
+    "MITOMVP": {
+      "WB 2025 S2": 76
+    },
+    "LIPAOX": {
+      "WB 2025 S2": 85
+    }
+  },
+  "statOverrides": {
+    "SEUPAI": {
+      "WB 2026 S1": {
+        "k": 125,
+        "q": 90
+      }
+    },
+    "WM.SUP": {
+      "WB 2026 S1": {
+        "k": 14,
+        "q": 34
+      }
+    },
+    "NEPO IGN": {
+      "WB 2026 S1": {
+        "k": 111,
+        "q": 83
+      }
+    },
+    "RUANX5": {
+      "LBFF 3": {
+        "k": 57,
+        "q": 64
+      }
+    },
+    "F4K": {
+      "LBFF 5": {
+        "k": 62,
+        "q": 70
+      }
+    },
+    "GUSZ": {
+      "LBFF 5": {
+        "k": 61,
+        "q": 81
+      }
+    }
+  },
+  "activeEditions": []
+}
