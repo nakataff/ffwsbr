@@ -128,6 +128,25 @@
   .home-wb-manager-beta b { width: 100%; }
 }
 </style>
+
+<style id="hall-fame-extra-css">
+.hall-extra-section{margin:34px 0;padding:22px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(135deg,rgba(0,200,255,.055),rgba(255,255,255,.025));}
+.hall-extra-title{margin:0 0 8px;color:var(--accent);font-size:1.45rem;font-weight:1000;text-transform:uppercase;letter-spacing:.04em;}
+.hall-extra-subtitle{margin:0 0 18px;color:var(--text-muted);font-size:.92rem;line-height:1.55;}
+.hall-summary-search-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;margin-bottom:16px;}
+.hall-summary-search-row input{width:100%;min-width:0;box-sizing:border-box;}
+.hall-player-summary-card{border:1px solid rgba(0,200,255,.18);border-radius:12px;background:rgba(0,0,0,.18);overflow:hidden;}
+.hall-player-summary-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px;border-bottom:1px solid var(--border);}
+.hall-player-summary-name{margin:0;color:#fff;font-size:1.35rem;font-weight:1000;text-transform:uppercase;letter-spacing:.04em;}
+.hall-player-summary-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:16px 18px;}
+.hall-player-summary-mini span{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-height:72px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(255,255,255,.035);}
+.hall-player-summary-mini strong{color:#fff;font-size:1.35rem;font-weight:1000;line-height:1;}
+.hall-player-summary-mini small{color:var(--text-muted);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;text-align:center;}
+.hall-player-summary-empty{color:var(--text-muted);padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:10px;background:rgba(0,0,0,.12);}
+#table-hall-player-summary th,#table-hall-edition-leaders th{white-space:nowrap;}
+@media(max-width:768px){.hall-extra-section{padding:16px;margin:26px 0;}.hall-extra-title{font-size:1.12rem;}.hall-summary-search-row{grid-template-columns:1fr;}.hall-summary-search-row .btn-action{width:100%;}.hall-player-summary-head{align-items:flex-start;flex-direction:column;padding:14px;}.hall-player-summary-name{font-size:1.05rem;}.hall-player-summary-mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;}.hall-player-summary-mini span{min-height:64px;padding:8px 4px;}.hall-player-summary-mini strong{font-size:1.05rem;}.hall-player-summary-mini small{font-size:.58rem;}.hall-extra-section .table-container{overflow-x:auto;}#table-hall-player-summary th,#table-hall-player-summary td,#table-hall-edition-leaders th,#table-hall-edition-leaders td{padding:9px 8px;font-size:.82rem;}#table-hall-player-summary th:first-child,#table-hall-player-summary td:first-child,#table-hall-edition-leaders th:first-child,#table-hall-edition-leaders td:first-child{min-width:92px;text-align:left;}}
+</style>
+
 </head>
 <body>
 
@@ -1526,7 +1545,7 @@
         <th>
             <span class="full-name-desktop">Equipe Atual</span><span class="short-name-mobile">E</span>
         </th>
-        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></th>
         <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
         <th>Média</th>
     </tr>
@@ -1539,6 +1558,17 @@
             <button id="btn-hist-all-less" class="btn-action" onclick="changeHallAllTimeLimit('less')" style="display:none;">Ver menos</button>
             <button id="btn-hist-all-more" class="btn-action" onclick="changeHallAllTimeLimit('more')">Ver do Top 10 ao 50</button>
         </div>
+
+        <section class="hall-extra-section" id="hall-player-summary-section">
+            <h2 class="hall-extra-title">Resumo do Jogador</h2>
+            <p class="hall-extra-subtitle">Pesquise um jogador para ver o total histórico e o desempenho separado por torneio.</p>
+            <form class="hall-summary-search-row" onsubmit="cffHallRenderPlayerSummary(event)">
+                <input id="hall-player-summary-input" class="hall-search-input" type="search" placeholder="Digite o nome do jogador..." list="hall-player-summary-list" autocomplete="off">
+                <datalist id="hall-player-summary-list"></datalist>
+                <button class="btn-action" type="submit">Procurar</button>
+            </form>
+            <div id="hall-player-summary-result" class="hall-player-summary-empty">Digite um nome para carregar o resumo do jogador.</div>
+        </section>
 
         <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
 
@@ -1569,7 +1599,7 @@
         <th>
             <span class="full-name-desktop">Equipe</span><span class="short-name-mobile">E</span>
         </th>
-        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">A</span></th>
+        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></th>
         <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
         <th>Média</th>
     </tr>
@@ -1582,6 +1612,27 @@
             <button id="btn-hist-edition-less" class="btn-action" onclick="changeHallEditionLimit('less')" style="display:none;">Ver menos</button>
             <button id="btn-hist-edition-more" class="btn-action" onclick="changeHallEditionLimit('more')">Ver do Top 10 ao 50</button>
         </div>
+
+        <section class="hall-extra-section" id="hall-edition-leaders-section">
+            <h2 class="hall-extra-title">Líderes por Edição</h2>
+            <p class="hall-extra-subtitle">Jogador com mais abates em cada edição cadastrada, da LBFF 1 até a WB 2026 S1.</p>
+            <div class="table-container">
+                <table id="table-hall-edition-leaders">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Torneio</th>
+                            <th style="text-align:left;"><span class="full-name-desktop">Nome</span><span class="short-name-mobile">J</span></th>
+                            <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></th>
+                            <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
+                            <th><span class="full-name-desktop">Média de Kills</span><span class="short-name-mobile">Média</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="color:#aaa; padding:20px;">Carregando líderes por edição...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
         <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
 
@@ -1863,6 +1914,7 @@
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
 <script defer src="js/search-history-compare.min.js?v=20260603-hall-lbff-final-v1"></script>
+<script defer src="js/hall-fame-extras.min.js?v=20260626-hall-resumo-v1"></script>
 <script defer src="js/day-vote.min.js?v=20260601-team-stage-days-v1"></script>
 <script defer src="js/filters-results.min.js?v=20260601-team-chart-stage-v1"></script>
 <script defer src="js/team-profile.min.js?v=20260607-history-notables-v1"></script>
@@ -1873,7 +1925,7 @@
 <script defer src="js/home-news-lives.min.js?v=20260607-news-header-v1"></script>
 <script defer src="js/charts-market.min.js?v=20260604-player-fix-v1"></script>
 <script defer src="js/ffws-sea.min.js?v=20260611-sea-point-rush-v1"></script>
-<script defer src="js/laff.min.js?v=20260626-laff-tabela-fases-v2"></script>
+<script defer src="js/laff.min.js?v=20260626-laff-abates-fases-v3"></script>
 <script defer src="js/sea-profiles.min.js?v=20260525-sea-logos-search-v1"></script>
 <script defer src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
 </main>
