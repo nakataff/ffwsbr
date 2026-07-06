@@ -39,9 +39,14 @@
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="dns-prefetch" href="https://docs.google.com">
-<link rel="stylesheet" href="css/bundle.min.css?v=20260706-sidebar-news-v1">
+<link rel="stylesheet" href="css/bundle.min.css?v=20260706-laff-final-v1">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
   <style id="home-ffws-champion-fixed-css">
+.home-champions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; margin-bottom: 25px; }
+.home-champions-grid > .home-widget { margin-bottom: 0 !important; min-width: 0; }
+.home-laff-champion-widget .home-ffws-champion-title { font-size: clamp(1.75rem, 4vw, 3.4rem); }
+.home-laff-team-logo { background: rgba(255,255,255,.04); border-radius: 50%; }
+@media (max-width: 980px) { .home-champions-grid { grid-template-columns: 1fr; } }
 .home-ffws-champion-body { gap: 18px; padding: 24px clamp(14px, 4vw, 34px) !important; }
 .home-ffws-champion-kicker { color: #8fb3dc; font-size: .86rem; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; text-align: center; }
 .home-ffws-champion-title { color: #f7fbff; font-size: clamp(2rem, 5vw, 4.05rem); line-height: 1; font-weight: 1000; letter-spacing: .04em; text-align: center; text-shadow: 0 0 24px rgba(0,200,255,.12); }
@@ -318,43 +323,43 @@
 
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
 
-    <div class="home-widget home-ffws-champion-widget" style="margin-bottom: 25px;">
-        <h3>🏆 FFWS BRASIL 2026 S1</h3>
-        <div class="home-widget-body home-ffws-champion-body">
-            <div class="home-ffws-champion-kicker">GRANDE FINAL ENCERRADA</div>
-            <div class="home-ffws-champion-title">CAMPEÃO DEFINIDO</div>
-
-            <div class="home-ffws-section-label">🏆 CAMPEÃO DA FINAL</div>
-            <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openTeamProfile('LOUD SNICKERS')">
-                <img decoding="async" loading="lazy" src="loud 2.webp" alt="LOUD SNICKERS" onerror="this.src='escudo.webp'">
-                <span class="home-ffws-team-info">
-                    <strong>LOUD</strong>
-                    <small>193 pts • 2 B! • 100 K</small>
-                </span>
-                <span class="home-ffws-badge champion">CAMPEÃO</span>
-            </button>
-
-            <div class="home-ffws-section-label">✈️ CLASSIFICADOS PARA A EWC 2026</div>
-            <div class="home-ffws-ewc-grid">
-                <button type="button" class="home-ffws-team-card" onclick="openTeamProfile('LOS')">
-                    <img decoding="async" loading="lazy" src="Los.webp" alt="LOS" onerror="this.src='escudo.webp'">
-                    <span class="home-ffws-team-info">
-                        <strong>LOS</strong>
-                        <small>208 pts • 4 B! • 104 K</small>
-                    </span>
-                    <span class="home-ffws-badge ewc">✈️ EWC</span>
+    <div class="home-champions-grid">
+        <div class="home-widget home-ffws-champion-widget">
+            <h3>🏆 FFWS BRASIL 2026 S1</h3>
+            <div class="home-widget-body home-ffws-champion-body">
+                <div class="home-ffws-champion-kicker">GRANDE FINAL ENCERRADA</div>
+                <div class="home-ffws-champion-title">CAMPEÃO DEFINIDO</div>
+                <div class="home-ffws-section-label">🏆 CAMPEÃO DA FINAL</div>
+                <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openTeamProfile('LOUD SNICKERS')">
+                    <img decoding="async" loading="lazy" src="loud 2.webp" alt="LOUD SNICKERS" onerror="this.src='escudo.webp'">
+                    <span class="home-ffws-team-info"><strong>LOUD</strong><small>193 pts • 2 B! • 100 K</small></span>
+                    <span class="home-ffws-badge champion">CAMPEÃO</span>
                 </button>
-                <button type="button" class="home-ffws-team-card" onclick="openTeamProfile('FLUXO W7M')">
-                    <img decoding="async" loading="lazy" src="Fluxo 2.webp" alt="FLUXO W7M" onerror="this.src='escudo.webp'">
-                    <span class="home-ffws-team-info">
-                        <strong>FX</strong>
-                        <small>170 pts • 2 B! • 84 K</small>
-                    </span>
-                    <span class="home-ffws-badge ewc">✈️ EWC</span>
-                </button>
+                <div class="home-ffws-section-label">✈️ CLASSIFICADOS PARA A EWC 2026</div>
+                <div class="home-ffws-ewc-grid">
+                    <button type="button" class="home-ffws-team-card" onclick="openTeamProfile('LOS')"><img decoding="async" loading="lazy" src="Los.webp" alt="LOS" onerror="this.src='escudo.webp'"><span class="home-ffws-team-info"><strong>LOS</strong><small>208 pts • 4 B! • 104 K</small></span><span class="home-ffws-badge ewc">✈️ EWC</span></button>
+                    <button type="button" class="home-ffws-team-card" onclick="openTeamProfile('FLUXO W7M')"><img decoding="async" loading="lazy" src="Fluxo 2.webp" alt="FLUXO W7M" onerror="this.src='escudo.webp'"><span class="home-ffws-team-info"><strong>FX</strong><small>170 pts • 2 B! • 84 K</small></span><span class="home-ffws-badge ewc">✈️ EWC</span></button>
+                </div>
+                <button type="button" onclick="navigate('final')" class="home-widget-link-btn home-ffws-final-link">VER TABELA DA FINAL →</button>
             </div>
-
-            <button type="button" onclick="navigate('final')" class="home-widget-link-btn home-ffws-final-link">VER TABELA DA FINAL →</button>
+        </div>
+        <div class="home-widget home-ffws-champion-widget home-laff-champion-widget">
+            <h3>🏆 LAFF 2026 S1</h3>
+            <div class="home-widget-body home-ffws-champion-body">
+                <div class="home-ffws-champion-kicker">FINAL ENCERRADA</div>
+                <div class="home-ffws-champion-title home-laff-champion-title">CAMPEÃO DEFINIDO</div>
+                <div class="home-ffws-section-label">🏆 CAMPEÃO DA LAFF</div>
+                <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openLAFFTeamProfile('CPT VOX')">
+                    <img class="home-laff-team-logo" data-cff-team-logo="CPT VOX" decoding="async" loading="lazy" src="cpt.webp" alt="CPT VOX" onerror="this.src='escudo.webp'">
+                    <span class="home-ffws-team-info"><strong>CPT VOX</strong><small>200 pts • 3 B! • 112 K</small></span><span class="home-ffws-badge champion">CAMPEÃO</span>
+                </button>
+                <div class="home-ffws-section-label">⬆️ CLASSIFICADOS PARA FFWS BR 2026 S2</div>
+                <button type="button" class="home-ffws-team-card" onclick="openLAFFTeamProfile('SX GG')">
+                    <img class="home-laff-team-logo" data-cff-team-logo="SX GG" decoding="async" loading="lazy" src="escudo.webp" alt="SX GG" onerror="this.src='escudo.webp'">
+                    <span class="home-ffws-team-info"><strong>SX GG</strong><small>192 pts • 2 B! • 121 K</small></span><span class="home-ffws-badge ewc">FFWS BR S2</span>
+                </button>
+                <button type="button" onclick="navigate('laff-classificatoria')" class="home-widget-link-btn home-ffws-final-link">VER RESULTADOS DA LAFF →</button>
+            </div>
         </div>
     </div>
 
@@ -1952,22 +1957,22 @@
             </div>
     </div>
 </div>
-<script defer src="js/core-data.min.js?v=20260706-news-priority-v1"></script>
+<script defer src="js/core-data.min.js?v=20260706-laff-final-v1"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
 <script defer src="js/search-history-compare.min.js?v=20260603-hall-lbff-final-v1"></script>
 <script defer src="js/hall-fame-extras.min.js?v=20260626-hall-resumo-hotfix-v2"></script>
 <script defer src="js/day-vote.min.js?v=20260601-team-stage-days-v1"></script>
 <script defer src="js/filters-results.min.js?v=20260601-team-chart-stage-v1"></script>
-<script defer src="js/team-profile.min.js?v=20260607-history-notables-v1"></script>
-<script defer src="js/player-profile.min.js?v=20260604-player-fix-v1"></script>
+<script defer src="js/team-profile.min.js?v=20260706-wb-status-v1"></script>
+<script defer src="js/player-profile.min.js?v=20260706-laff-stats-v1"></script>
 <script defer src="js/notas-cff.min.js?v=20260531-notas-stage-v1"></script>
 <script defer src="js/navigation-search.min.js?v=20260706-sidebar-accordion-v1"></script>
 <script defer src="js/other-tournaments.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260706-news-priority-v1"></script>
 <script defer src="js/charts-market.min.js?v=20260604-player-fix-v1"></script>
 <script defer src="js/ffws-sea.min.js?v=20260611-sea-point-rush-v1"></script>
-<script defer src="js/laff.min.js?v=20260629-laff-json-v7"></script>
+<script defer src="js/laff.min.js?v=20260706-laff-selections-v1"></script>
 <script defer src="js/sea-profiles.min.js?v=20260525-sea-logos-search-v1"></script>
 <script defer src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
 </main>
