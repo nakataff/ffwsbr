@@ -37,7 +37,9 @@
 <meta property="og:image" content="https://centralfreefire.com.br/central%20free%20fire.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/webp" href="central free fire.webp">
-<link rel="stylesheet" href="css/bundle.min.css">
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="dns-prefetch" href="https://docs.google.com">
+<link rel="stylesheet" href="css/bundle.min.css?v=20260706-sidebar-news-v1">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
   <style id="home-ffws-champion-fixed-css">
 .home-ffws-champion-body { gap: 18px; padding: 24px clamp(14px, 4vw, 34px) !important; }
@@ -169,46 +171,86 @@
         <button class="sidebar-close" onclick="closeSidebar()">✕</button>
     </div>
     <div class="sidebar-nav">
-        <div class="sidebar-category">PRINCIPAL</div>
+        <div class="sidebar-category sidebar-category-fixed">PRINCIPAL</div>
         <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
         <button onclick="window.location.href='manager.html?v=20260610-wb-standalone-v2'" id="sb-wbamanger">WB MANAGER BETA</button>
 
         <div class="sidebar-divider"></div>
-        <div class="sidebar-category">FFWS BR 2026 S1</div>
-        <button onclick="navigateAndClose('tabela')" id="sb-tabela">CLASSIFICATÓRIA</button>
-        <button onclick="navigateAndClose('final')" id="sb-final">FINAL</button>
-        <button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button>
-        <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
-        <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
-        <button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÕES DA SEASON</button>
-        <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
-        <button onclick="navigateAndClose('notas-cff')" id="sb-notas-cff">NOTAS CFF</button>
-        <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
+        <section class="sidebar-section is-open" id="sidebar-section-ffws-br" data-section-key="ffws-br">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ffws-br')" aria-expanded="true" aria-controls="sidebar-content-ffws-br">
+                <span>FFWS BR 2026 S1</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="sidebar-section-content" id="sidebar-content-ffws-br">
+                <div>
+                    <button onclick="navigateAndClose('tabela')" id="sb-tabela">CLASSIFICATÓRIA</button>
+                    <button onclick="navigateAndClose('final')" id="sb-final">FINAL</button>
+                    <button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button>
+                    <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
+                    <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
+                    <button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÕES DA SEASON</button>
+                    <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
+                    <button onclick="navigateAndClose('notas-cff')" id="sb-notas-cff">NOTAS CFF</button>
+                    <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
+                </div>
+            </div>
+        </section>
 
         <div class="sidebar-divider"></div>
-        <div class="sidebar-category">LAFF 2026 S1</div>
-        <button onclick="navigateAndClose('laff-classificatoria')" id="sb-laff-classificatoria">TABELA</button>
-        <button onclick="navigateAndClose('laff-mvp')" id="sb-laff-mvp">RANKING KILLS</button>
-        <button onclick="navigateAndClose('laff-equipes')" id="sb-laff-equipes">EQUIPES</button>
-        <button onclick="navigateAndClose('laff-datas')" id="sb-laff-datas">DATAS</button>
-        <button onclick="navigateAndClose('laff-selecoes')" id="sb-laff-selecoes">SELEÇÕES</button>
-        <button onclick="navigateAndClose('laff-stats')" id="sb-laff-stats">ESTATÍSTICAS GERAIS</button>
+        <section class="sidebar-section" id="sidebar-section-laff" data-section-key="laff">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('laff')" aria-expanded="false" aria-controls="sidebar-content-laff">
+                <span>LAFF 2026 S1</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="sidebar-section-content" id="sidebar-content-laff">
+                <div>
+                    <button onclick="navigateAndClose('laff-classificatoria')" id="sb-laff-classificatoria">TABELA</button>
+                    <button onclick="navigateAndClose('laff-mvp')" id="sb-laff-mvp">RANKING KILLS</button>
+                    <button onclick="navigateAndClose('laff-equipes')" id="sb-laff-equipes">EQUIPES</button>
+                    <button onclick="navigateAndClose('laff-datas')" id="sb-laff-datas">DATAS</button>
+                    <button onclick="navigateAndClose('laff-selecoes')" id="sb-laff-selecoes">SELEÇÕES</button>
+                    <button onclick="navigateAndClose('laff-stats')" id="sb-laff-stats">ESTATÍSTICAS GERAIS</button>
+                </div>
+            </div>
+        </section>
 
         <div class="sidebar-divider"></div>
-        <div class="sidebar-category">INTERNACIONAL</div>
-        <button onclick="navigateAndClose('ffws-sea-2026-s1')" id="sb-ffws-sea-2026-s1">FFWS SEA 2026 S1</button>
-        <button onclick="navigateAndClose('ffws-latam-s1')" id="sb-ffws-latam-s1">FFWS LATAM S1</button>
+        <section class="sidebar-section" id="sidebar-section-internacional" data-section-key="internacional">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('internacional')" aria-expanded="false" aria-controls="sidebar-content-internacional">
+                <span>INTERNACIONAL</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="sidebar-section-content" id="sidebar-content-internacional">
+                <div>
+                    <button onclick="navigateAndClose('ffws-sea-2026-s1')" id="sb-ffws-sea-2026-s1">FFWS SEA 2026 S1</button>
+                    <button onclick="navigateAndClose('ffws-latam-s1')" id="sb-ffws-latam-s1">FFWS LATAM S1</button>
+                </div>
+            </div>
+        </section>
 
         <div class="sidebar-divider"></div>
-        <div class="sidebar-category">HISTÓRICO</div>
-        <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
-        <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
-        <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
+        <section class="sidebar-section" id="sidebar-section-historico" data-section-key="historico">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('historico')" aria-expanded="false" aria-controls="sidebar-content-historico">
+                <span>HISTÓRICO</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="sidebar-section-content" id="sidebar-content-historico">
+                <div>
+                    <button onclick="navigateAndClose('hall-da-fama')" id="sb-hall-da-fama">HALL DA FAMA</button>
+                    <button onclick="navigateAndClose('outros-torneios')" id="sb-outros-torneios">OUTROS TORNEIOS</button>
+                    <button onclick="navigateAndClose('outras-equipes')" id="sb-outras-equipes">OUTRAS EQUIPES</button>
+                </div>
+            </div>
+        </section>
 
         <div class="sidebar-divider"></div>
-        <div class="sidebar-category">CONTATO</div>
-        <button onclick="navigateAndClose('sobre')" id="sb-sobre">SOBRE</button>
+        <section class="sidebar-section" id="sidebar-section-contato" data-section-key="contato">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('contato')" aria-expanded="false" aria-controls="sidebar-content-contato">
+                <span>CONTATO</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="sidebar-section-content" id="sidebar-content-contato">
+                <div>
+                    <button onclick="navigateAndClose('sobre')" id="sb-sobre">SOBRE</button>
+                </div>
+            </div>
+        </section>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-category">SISTEMA</div>
@@ -1910,7 +1952,7 @@
             </div>
     </div>
 </div>
-<script defer src="js/core-data.min.js?v=20260610-wb-standalone-v2"></script>
+<script defer src="js/core-data.min.js?v=20260706-news-priority-v1"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
 <script defer src="js/search-history-compare.min.js?v=20260603-hall-lbff-final-v1"></script>
@@ -1920,9 +1962,9 @@
 <script defer src="js/team-profile.min.js?v=20260607-history-notables-v1"></script>
 <script defer src="js/player-profile.min.js?v=20260604-player-fix-v1"></script>
 <script defer src="js/notas-cff.min.js?v=20260531-notas-stage-v1"></script>
-<script defer src="js/navigation-search.min.js?v=20260607-furia-dedupe-v1"></script>
+<script defer src="js/navigation-search.min.js?v=20260706-sidebar-accordion-v1"></script>
 <script defer src="js/other-tournaments.min.js?v=20260601-webp-fix-v2"></script>
-<script defer src="js/home-news-lives.min.js?v=20260607-news-header-v1"></script>
+<script defer src="js/home-news-lives.min.js?v=20260706-news-priority-v1"></script>
 <script defer src="js/charts-market.min.js?v=20260604-player-fix-v1"></script>
 <script defer src="js/ffws-sea.min.js?v=20260611-sea-point-rush-v1"></script>
 <script defer src="js/laff.min.js?v=20260629-laff-json-v7"></script>
