@@ -14,7 +14,21 @@
 <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
 <link rel="dns-prefetch" href="//docs.google.com">
 <link rel="dns-prefetch" href="//drive.google.com">
-<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+window.cffLoadChartJS=window.cffLoadChartJS||function(){
+    if(window.Chart)return Promise.resolve(window.Chart);
+    if(window.__cffChartPromise)return window.__cffChartPromise;
+    window.__cffChartPromise=new Promise(function(resolve,reject){
+        var script=document.createElement("script");
+        script.src="https://cdn.jsdelivr.net/npm/chart.js";
+        script.async=true;
+        script.onload=function(){resolve(window.Chart)};
+        script.onerror=function(){window.__cffChartPromise=null;reject(new Error("Falha ao carregar gráficos"))};
+        document.head.appendChild(script);
+    });
+    return window.__cffChartPromise;
+};
+</script>
 <!-- ADSNSE -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.min.js?client=ca-pub-3351547915606735"
      crossorigin="anonymous"></script>
@@ -1957,23 +1971,23 @@
             </div>
     </div>
 </div>
-<script defer src="js/core-data.min.js?v=20260706-laff-final-v1"></script>
+<script defer src="js/core-data.min.js?v=20260713-performance-v1"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
 <script defer src="js/search-history-compare.min.js?v=20260603-hall-lbff-final-v1"></script>
 <script defer src="js/hall-fame-extras.min.js?v=20260626-hall-resumo-hotfix-v2"></script>
 <script defer src="js/day-vote.min.js?v=20260601-team-stage-days-v1"></script>
-<script defer src="js/filters-results.min.js?v=20260601-team-chart-stage-v1"></script>
+<script defer src="js/filters-results.min.js?v=20260713-performance-v1"></script>
 <script defer src="js/team-profile.min.js?v=20260706-wb-status-v1"></script>
 <script defer src="js/player-profile.min.js?v=20260706-laff-stats-v1"></script>
 <script defer src="js/notas-cff.min.js?v=20260531-notas-stage-v1"></script>
 <script defer src="js/navigation-search.min.js?v=20260706-sidebar-accordion-v1"></script>
 <script defer src="js/other-tournaments.min.js?v=20260601-webp-fix-v2"></script>
-<script defer src="js/home-news-lives.min.js?v=20260706-news-priority-v1"></script>
-<script defer src="js/charts-market.min.js?v=20260604-player-fix-v1"></script>
+<script defer src="js/home-news-lives.min.js?v=20260713-performance-v1"></script>
+<script defer src="js/charts-market.min.js?v=20260713-performance-v1"></script>
 <script defer src="js/ffws-sea.min.js?v=20260611-sea-point-rush-v1"></script>
-<script defer src="js/laff.min.js?v=20260706-laff-selections-v1"></script>
-<script defer src="js/sea-profiles.min.js?v=20260525-sea-logos-search-v1"></script>
+<script defer src="js/laff.min.js?v=20260713-performance-v1"></script>
+<script defer src="js/sea-profiles.min.js?v=20260713-performance-v1"></script>
 <script defer src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
 </main>
 
