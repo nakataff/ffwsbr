@@ -37,6 +37,16 @@
     final: { day: 'all', drop: 'all' }
   };
 
+  const statsFilters = {
+    stage: 'general',
+    day: 'all',
+    map: 'all',
+    confrontation: 'all',
+    totalMode: 'total'
+  };
+
+  const statsExpanded = { avg: false, total: false };
+  let activeGroup = 'A';
   let teams = [];
   let groupData = { rows: [], groups: {} };
   let survivalData = { rows: [], teams: [] };
@@ -142,6 +152,8 @@
 
   function teamAbbreviation(teamName) {
     const team = teamByName(teamName);
+    const survivalSlot = String(teamName || '').match(/^REPESCAGEM\s*#\s*(\d+)$/i);
+    if (survivalSlot) return `REP #${survivalSlot[1]}`;
     return team?.abbreviation || String(teamName || '').slice(0, 4).toUpperCase();
   }
 
@@ -305,13 +317,14 @@
   }
 
   function teamCell(teamName) {
+    const team = teamByName(teamName);
     const flag = resolveTeamFlag(teamName);
     const full = teamDisplayName(teamName);
     const short = teamAbbreviation(teamName);
     return `<td class="ewc-team-cell">
       <span class="ewc-team-visuals">
+        ${flag ? `<img class="ewc-team-country" src="${escapeHtml(flag)}" alt="${escapeHtml(team?.countryName || '')}" title="${escapeHtml(team?.countryName || '')}" onerror="this.style.display='none'">` : '<span class="ewc-team-country-placeholder" aria-hidden="true"></span>'}
         <img class="ewc-team-logo" src="${escapeHtml(resolveLogo(teamName))}" alt="${escapeHtml(full)}" onerror="this.onerror=null;this.src='escudo.webp'">
-        ${flag ? `<img class="ewc-team-country" src="${escapeHtml(flag)}" alt="${escapeHtml(teamByName(teamName)?.countryName || '')}" title="${escapeHtml(teamByName(teamName)?.countryName || '')}" onerror="this.style.display='none'">` : ''}
       </span>
       <span class="ewc-team-name-full">${escapeHtml(full)}</span>
       <span class="ewc-team-name-short">${escapeHtml(short)}</span>
@@ -437,7 +450,7 @@
   }
 
   function standingsTable(rows, options) {
-    const settings = Object.assign({ status: false, origin: false }, options || {});
+    const settings = Object.assign({ status: false, origin: false, rowClass: null }, options || {});
     return `<div class="table-container ewc-table-wrap"><table class="ewc-table">
       <thead><tr>
         <th>#</th>
@@ -448,7 +461,11 @@
       </tr></thead>
       <tbody>${rows.map(row => {
         const hasMatches = Number(row.matches) > 0;
-        return `<tr class="${settings.status ? `ewc-row-${statusType(row)}` : ''}" data-clickable="true" onclick="openEWCTeamProfile(${jsString(row.team)})">
+        const knownTeam = Boolean(teamByName(row.team));
+        const type = typeof settings.rowClass === 'function' ? settings.rowClass(row) : (settings.status ? statusType(row) : '');
+        const rowClass = type ? `ewc-row-${type}` : '';
+        const clickAttrs = knownTeam ? `data-clickable="true" onclick="openEWCTeamProfile(${jsString(row.team)})"` : 'data-placeholder="true"';
+        return `<tr class="${rowClass}" ${clickAttrs}>
           <td class="ewc-rank">${Number(row.position) || '—'}</td>
           ${teamCell(row.team)}
           ${settings.origin ? `<td class="ewc-hide-mobile">Grupo ${escapeHtml(row.group || '—')}</td>` : ''}
@@ -464,18 +481,20 @@
     const root = document.getElementById('ewc-grupos-content');
     if (!root) return;
     const groupNames = Object.keys(groupData.groups || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    if (!groupNames.includes(activeGroup)) activeGroup = groupNames[0] || 'A';
+    const rows = groupRows(activeGroup);
     root.innerHTML = `<div class="ewc-shell">
       ${hero('Fase de grupos', 'Grupos A e B • 12 quedas por grupo')}
+      <div class="ewc-stage-tabs" role="tablist" aria-label="Grupos da EWC 2026">
+        ${groupNames.map(groupName => `<button type="button" role="tab" aria-selected="${groupName === activeGroup ? 'true' : 'false'}" class="ewc-stage-tab${groupName === activeGroup ? ' active' : ''}" onclick="setEWCGroupTab('${escapeHtml(groupName)}')">GRUPO ${escapeHtml(groupName)}</button>`).join('')}
+      </div>
       ${filtersMarkup(groupData, 'groups', true)}
       <div class="ewc-filter-summary">${escapeHtml(filterSummary(groupData, 'groups', true))}</div>
       <div class="ewc-stage-legend"><span class="final">Final • 1º ao 4º</span><span class="survival">Repescagem • 5º ao 10º</span><span class="eliminated">Eliminado • 11º e 12º</span></div>
-      ${groupNames.map(groupName => {
-        const rows = groupRows(groupName);
-        return `<section class="ewc-panel"><div class="ewc-panel-inner">
-          <div class="ewc-section-head"><div><h2>Grupo ${escapeHtml(groupName)}</h2><p>Os quatro melhores avançaram diretamente para a Final.</p></div><span class="ewc-updated">${rows.length} equipes</span></div>
-          ${standingsTable(rows, { status: true })}
-        </div></section>`;
-      }).join('')}
+      <section class="ewc-panel"><div class="ewc-panel-inner">
+        <div class="ewc-section-head"><div><h2>Grupo ${escapeHtml(activeGroup)}</h2><p>Os quatro melhores avançaram diretamente para a Final.</p></div><span class="ewc-updated">${rows.length} equipes</span></div>
+        ${standingsTable(rows, { rowClass: row => Number(row.position) <= 4 ? 'final' : (Number(row.position) <= 10 ? 'survival' : 'eliminated') })}
+      </div></section>
     </div>`;
   }
 
@@ -484,14 +503,208 @@
     if (!root) return;
     const rows = stageRows(payload, filterKey);
     const count = rows.length;
+    const isSurvival = filterKey === 'survival';
+    const legend = isSurvival
+      ? '<div class="ewc-stage-legend"><span class="final">Final • 1º ao 4º</span><span class="eliminated">Eliminado • 5º ao 12º</span></div>'
+      : '';
     root.innerHTML = `<div class="ewc-shell">
       ${hero(title, subtitle)}
       ${filtersMarkup(payload, filterKey, false)}
       <div class="ewc-filter-summary">${escapeHtml(filterSummary(payload, filterKey, false))}</div>
+      ${legend}
       <section class="ewc-panel"><div class="ewc-panel-inner">
         <div class="ewc-section-head"><div><h2>${escapeHtml(title)}</h2><p>${escapeHtml(payload.description || 'Equipes confirmadas para esta etapa.')}</p></div><span class="ewc-updated">${count} equipes</span></div>
-        ${standingsTable(rows, { origin: true })}
+        ${standingsTable(rows, { rowClass: isSurvival ? row => Number(row.position) <= 4 ? 'final' : 'eliminated' : null })}
       </div></section>
+    </div>`;
+  }
+
+  function statsContexts() {
+    return [
+      { key: 'group-a', stage: 'groups', confrontation: 'group-a', label: 'Grupo A', teams: groupData.groups?.A?.teams || [] },
+      { key: 'group-b', stage: 'groups', confrontation: 'group-b', label: 'Grupo B', teams: groupData.groups?.B?.teams || [] },
+      { key: 'survival', stage: 'survival', confrontation: 'survival', label: 'Repescagem', teams: survivalData.teams || [] },
+      { key: 'final', stage: 'final', confrontation: 'final', label: 'Final', teams: finalData.teams || [] }
+    ];
+  }
+
+  function selectedStatsContexts() {
+    return statsContexts().filter(context => {
+      const stageOk = statsFilters.stage === 'general' || context.stage === statsFilters.stage;
+      const confrontationOk = statsFilters.confrontation === 'all' || context.confrontation === statsFilters.confrontation;
+      return stageOk && confrontationOk;
+    });
+  }
+
+  function statsFilterOptions() {
+    const matches = selectedStatsContexts().flatMap(context => (context.teams || []).flatMap(team => team.matches || []));
+    const days = [...new Set(matches.map(match => Number(match.day)).filter(Boolean))].sort((a, b) => a - b);
+    const maps = [...new Set(matches.map(match => String(match.map || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    if (statsFilters.day !== 'all' && !days.some(day => String(day) === String(statsFilters.day))) statsFilters.day = 'all';
+    if (statsFilters.map !== 'all' && !maps.includes(statsFilters.map)) statsFilters.map = 'all';
+    return { days, maps };
+  }
+
+  function statsFiltersMarkup() {
+    const options = statsFilterOptions();
+    return `<div class="filters ewc-live-filters ewc-stats-filters">
+      <label><span>Etapa:</span>
+        <select onchange="setEWCStatsFilter('stage', this.value)">
+          <option value="groups"${statsFilters.stage === 'groups' ? ' selected' : ''}>Fase de grupos</option>
+          <option value="survival"${statsFilters.stage === 'survival' ? ' selected' : ''}>Repescagem</option>
+          <option value="final"${statsFilters.stage === 'final' ? ' selected' : ''}>Final</option>
+          <option value="general"${statsFilters.stage === 'general' ? ' selected' : ''}>Geral</option>
+        </select>
+      </label>
+      <label><span>Dias:</span>
+        <select onchange="setEWCStatsFilter('day', this.value)">
+          <option value="all"${statsFilters.day === 'all' ? ' selected' : ''}>Todos os dias</option>
+          ${options.days.map(day => `<option value="${day}"${String(statsFilters.day) === String(day) ? ' selected' : ''}>Dia ${day}</option>`).join('')}
+        </select>
+      </label>
+      <label><span>Confrontos:</span>
+        <select onchange="setEWCStatsFilter('confrontation', this.value)">
+          <option value="all"${statsFilters.confrontation === 'all' ? ' selected' : ''}>Geral</option>
+          <option value="group-a"${statsFilters.confrontation === 'group-a' ? ' selected' : ''}>Grupo A</option>
+          <option value="group-b"${statsFilters.confrontation === 'group-b' ? ' selected' : ''}>Grupo B</option>
+          <option value="survival"${statsFilters.confrontation === 'survival' ? ' selected' : ''}>Repescagem</option>
+          <option value="final"${statsFilters.confrontation === 'final' ? ' selected' : ''}>Final</option>
+        </select>
+      </label>
+      <label><span>Mapas:</span>
+        <select onchange="setEWCStatsFilter('map', this.value)">
+          <option value="all"${statsFilters.map === 'all' ? ' selected' : ''}>Todos os mapas</option>
+          ${options.maps.map(map => `<option value="${escapeHtml(map)}"${statsFilters.map === map ? ' selected' : ''}>${escapeHtml(map)}</option>`).join('')}
+        </select>
+      </label>
+    </div>`;
+  }
+
+  function aggregateStatsTeams() {
+    const aggregated = new Map();
+    selectedStatsContexts().forEach(context => {
+      (context.teams || []).forEach(entry => {
+        const name = entry.team;
+        const team = teamByName(name);
+        if (!name || !team) return;
+        const canonicalName = team.name;
+        const canonicalKey = normalize(canonicalName);
+        if (!aggregated.has(canonicalKey)) {
+          aggregated.set(canonicalKey, {
+            team: canonicalName, matches: 0, points: 0, kills: 0, booyahs: 0,
+            placementPoints: 0, placementSum: 0, top3: 0, last: 0, days: new Set()
+          });
+        }
+        const row = aggregated.get(canonicalKey);
+        (entry.matches || []).forEach(match => {
+          if (statsFilters.day !== 'all' && String(match.day) !== String(statsFilters.day)) return;
+          if (statsFilters.map !== 'all' && String(match.map || '') !== String(statsFilters.map)) return;
+          row.matches += 1;
+          row.points += Number(match.points) || 0;
+          row.kills += Number(match.kills) || 0;
+          row.booyahs += match.booyah ? 1 : 0;
+          row.placementPoints += Number(match.placementPoints) || 0;
+          row.placementSum += Number(match.placement) || 0;
+          if (Number(match.placement) <= 3) row.top3 += 1;
+          if (Number(match.placement) === 12) row.last += 1;
+          row.days.add(String(match.date || `${context.key}-dia-${match.day || 0}`));
+        });
+      });
+    });
+
+    return [...aggregated.values()].filter(row => row.matches > 0).map(row => ({
+      ...row,
+      dayCount: Math.max(1, row.days.size),
+      avgPoints: row.points / row.matches,
+      avgKills: row.kills / row.matches,
+      avgPlacement: row.placementSum / row.matches,
+      top3Rate: row.top3 / row.matches * 100
+    }));
+  }
+
+  function formatDecimal(value, digits) {
+    return Number(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  }
+
+  function statsCard(label, value, detail) {
+    return `<article class="ewc-stat-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong>${detail ? `<small>${escapeHtml(detail)}</small>` : ''}</article>`;
+  }
+
+  function leaderCardValue(row, metric, suffix) {
+    if (!row) return '—';
+    return `${teamAbbreviation(row.team)} • ${metric}${suffix || ''}`;
+  }
+
+  function averageRankingTable(rows) {
+    const sorted = [...rows].sort((a, b) => b.avgPoints - a.avgPoints || b.avgKills - a.avgKills || a.avgPlacement - b.avgPlacement);
+    const visible = statsExpanded.avg ? sorted : sorted.slice(0, 6);
+    return `<div class="table-container ewc-table-wrap"><table class="ewc-table ewc-stats-ranking-table">
+      <thead><tr><th>#</th><th><span class="desktop-label">Equipe</span><span class="mobile-label">E</span></th><th>PTS</th><th>KILLS</th><th>POS</th><th class="ewc-hide-mobile">Q</th></tr></thead>
+      <tbody>${visible.map((row, index) => `<tr data-clickable="true" onclick="openEWCTeamProfile(${jsString(row.team)})"><td class="ewc-rank">${index + 1}º</td>${teamCell(row.team)}<td class="ewc-stat-primary">${formatDecimal(row.avgPoints, 1)}</td><td>${formatDecimal(row.avgKills, 1)}</td><td>${formatDecimal(row.avgPlacement, 1)}º</td><td class="ewc-hide-mobile">${row.matches}</td></tr>`).join('')}</tbody>
+    </table></div>${sorted.length > 6 ? `<button type="button" class="ewc-expand-button" onclick="toggleEWCStatsRanking('avg')">${statsExpanded.avg ? 'Ocultar' : 'Ver mais'}</button>` : ''}`;
+  }
+
+  function totalRankingTable(rows) {
+    const mode = statsFilters.totalMode;
+    const ranked = rows.map(row => ({
+      ...row,
+      displayPoints: mode === 'day-average' ? row.points / row.dayCount : row.points,
+      displayBooyahs: mode === 'day-average' ? row.booyahs / row.dayCount : row.booyahs,
+      displayKills: mode === 'day-average' ? row.kills / row.dayCount : row.kills
+    })).sort((a, b) => b.displayPoints - a.displayPoints || b.displayKills - a.displayKills || b.points - a.points);
+    const visible = statsExpanded.total ? ranked : ranked.slice(0, 6);
+    const format = value => mode === 'day-average' ? formatDecimal(value, 1) : String(Math.round(value));
+    return `<div class="table-container ewc-table-wrap"><table class="ewc-table ewc-stats-ranking-table">
+      <thead><tr><th>#</th><th><span class="desktop-label">Equipe</span><span class="mobile-label">E</span></th><th>${mode === 'day-average' ? 'PTS/DIA' : 'PTS'}</th><th>${mode === 'day-average' ? 'B!/DIA' : 'BOOYAH'}</th><th>${mode === 'day-average' ? 'K/DIA' : 'KILLS'}</th></tr></thead>
+      <tbody>${visible.map((row, index) => `<tr data-clickable="true" onclick="openEWCTeamProfile(${jsString(row.team)})"><td class="ewc-rank">${index + 1}º</td>${teamCell(row.team)}<td class="ewc-stat-primary">${format(row.displayPoints)}</td><td>${format(row.displayBooyahs)}</td><td>${format(row.displayKills)}</td></tr>`).join('')}</tbody>
+    </table></div>${ranked.length > 6 ? `<button type="button" class="ewc-expand-button" onclick="toggleEWCStatsRanking('total')">${statsExpanded.total ? 'Ocultar' : 'Ver mais'}</button>` : ''}`;
+  }
+
+  function renderStats() {
+    const root = document.getElementById('ewc-stats-content');
+    if (!root) return;
+    const filtersHtml = statsFiltersMarkup();
+    const rows = aggregateStatsTeams();
+    const totals = rows.reduce((acc, row) => {
+      acc.points += row.points; acc.kills += row.kills; acc.booyahs += row.booyahs;
+      acc.matches += row.matches; acc.placementSum += row.placementSum;
+      return acc;
+    }, { points: 0, kills: 0, booyahs: 0, matches: 0, placementSum: 0 });
+    const teamCount = rows.length;
+    const top3Leader = [...rows].sort((a, b) => b.top3 - a.top3 || b.top3Rate - a.top3Rate)[0];
+    const top3RateLeader = [...rows].sort((a, b) => b.top3Rate - a.top3Rate || b.top3 - a.top3)[0];
+    const lastLeader = [...rows].sort((a, b) => b.last - a.last || b.matches - a.matches)[0];
+    const empty = !rows.length;
+
+    root.innerHTML = `<div class="ewc-shell">
+      ${hero('Estatísticas gerais', 'Desempenho coletivo das equipes na EWC 2026')}
+      ${filtersHtml}
+      ${empty ? '<div class="ewc-empty">Ainda não há resultados para esta combinação de filtros.</div>' : `
+        <section class="ewc-stats-section"><h2>Totais</h2><div class="ewc-stat-cards">
+          ${statsCard('Total de pontos', totals.points.toLocaleString('pt-BR'))}
+          ${statsCard('Total de abates', totals.kills.toLocaleString('pt-BR'))}
+          ${statsCard('Total de booyahs', totals.booyahs.toLocaleString('pt-BR'))}
+        </div></section>
+        <section class="ewc-stats-section"><h2>Médias</h2><div class="ewc-stat-cards">
+          ${statsCard('PTS por equipe', formatDecimal(teamCount ? totals.points / teamCount : 0, 1), `${teamCount} equipes`)}
+          ${statsCard('Abates por equipe', formatDecimal(teamCount ? totals.kills / teamCount : 0, 1), `${teamCount} equipes`)}
+          ${statsCard('Colocação média', `${formatDecimal(totals.matches ? totals.placementSum / totals.matches : 0, 1)}º`, `${totals.matches} quedas de equipe`)}
+        </div></section>
+        <section class="ewc-stats-section"><h2>Destaques</h2><div class="ewc-stat-cards">
+          ${statsCard('Mais vezes no Top 3', leaderCardValue(top3Leader, top3Leader?.top3 || 0, 'x'), top3Leader ? teamDisplayName(top3Leader.team) : '')}
+          ${statsCard('Maior média de Top 3', leaderCardValue(top3RateLeader, formatDecimal(top3RateLeader?.top3Rate || 0, 1), '%'), top3RateLeader ? teamDisplayName(top3RateLeader.team) : '')}
+          ${statsCard('Mais vezes em 12º', leaderCardValue(lastLeader, lastLeader?.last || 0, 'x'), lastLeader ? teamDisplayName(lastLeader.team) : '')}
+        </div></section>
+        <section class="ewc-panel ewc-ranking-section"><div class="ewc-panel-inner">
+          <div class="ewc-ranking-head"><div><h2>Ranking de Médias <small>(por queda)</small></h2><p>PTS, kills e colocação média de cada equipe.</p></div></div>
+          ${averageRankingTable(rows)}
+        </div></section>
+        <section class="ewc-panel ewc-ranking-section"><div class="ewc-panel-inner">
+          <div class="ewc-ranking-head"><div><h2>Ranking de Totais <small>(acumulado)</small></h2><p>Pontuação, booyahs e kills no recorte selecionado.</p></div>
+            <select class="ewc-ranking-mode" onchange="setEWCTotalMode(this.value)"><option value="total"${statsFilters.totalMode === 'total' ? ' selected' : ''}>TOTAL</option><option value="day-average"${statsFilters.totalMode === 'day-average' ? ' selected' : ''}>MÉDIA POR DIA</option></select>
+          </div>
+          ${totalRankingTable(rows)}
+        </div></section>`}
     </div>`;
   }
 
@@ -605,10 +818,10 @@
     id = PAGE_ALIASES[id] || id;
     if (id === 'ewc-grupos') renderGroups();
     if (id === 'ewc-repescagem') renderStage('ewc-repescagem-content', survivalData, 'survival', 'Repescagem', 'Equipes que disputam as vagas restantes na Final');
-    if (id === 'ewc-final') renderStage('ewc-final-content', finalData, 'final', 'Final', 'Oito equipes classificadas diretamente pela fase de grupos');
+    if (id === 'ewc-final') renderStage('ewc-final-content', finalData, 'final', 'Final', 'Oito classificados diretos e quatro vagas da Repescagem');
     if (id === 'ewc-mvp') comingSoon('ewc-mvp-content', 'Ranking MVP', 'Destaques individuais da EWC 2026');
     if (id === 'ewc-equipes') renderTeams();
-    if (id === 'ewc-stats') comingSoon('ewc-stats-content', 'Estatísticas gerais', 'Resumo completo da competição');
+    if (id === 'ewc-stats') renderStats();
     if (id === 'ewc-team-profile' || id === 'ewc-player-profile') resolveHash(location.hash);
   }
 
@@ -638,6 +851,42 @@
   function setDropFilter(key, value) {
     if (!filters[key]) return;
     filters[key].drop = String(value || 'all');
+    renderActivePage();
+  }
+
+  function setGroupTab(groupName) {
+    activeGroup = String(groupName || 'A').toUpperCase();
+    renderActivePage();
+  }
+
+  function setStatsFilter(key, value) {
+    if (!Object.prototype.hasOwnProperty.call(statsFilters, key)) return;
+    statsFilters[key] = String(value || 'all');
+    if (key === 'stage') {
+      statsFilters.day = 'all';
+      statsFilters.map = 'all';
+      statsFilters.confrontation = 'all';
+    }
+    if (key === 'confrontation') {
+      statsFilters.day = 'all';
+      statsFilters.map = 'all';
+      if (statsFilters.confrontation === 'group-a' || statsFilters.confrontation === 'group-b') statsFilters.stage = 'groups';
+      if (statsFilters.confrontation === 'survival') statsFilters.stage = 'survival';
+      if (statsFilters.confrontation === 'final') statsFilters.stage = 'final';
+    }
+    statsExpanded.avg = false;
+    statsExpanded.total = false;
+    renderActivePage();
+  }
+
+  function setTotalMode(value) {
+    statsFilters.totalMode = value === 'day-average' ? 'day-average' : 'total';
+    renderActivePage();
+  }
+
+  function toggleStatsRanking(type) {
+    if (!Object.prototype.hasOwnProperty.call(statsExpanded, type)) return;
+    statsExpanded[type] = !statsExpanded[type];
     renderActivePage();
   }
 
@@ -701,6 +950,10 @@
   window.openEWCPlayerProfile = openPlayerProfile;
   window.setEWCDayFilter = setDayFilter;
   window.setEWCDropFilter = setDropFilter;
+  window.setEWCGroupTab = setGroupTab;
+  window.setEWCStatsFilter = setStatsFilter;
+  window.setEWCTotalMode = setTotalMode;
+  window.toggleEWCStatsRanking = toggleStatsRanking;
 
   document.addEventListener('DOMContentLoaded', () => {
     patchNavigation();

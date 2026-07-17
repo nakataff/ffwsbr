@@ -3,7 +3,7 @@
   "stage": "Final",
   "updatedAt": "2026-07-17",
   "finished": false,
-  "description": "Os quatro melhores de cada grupo garantiram vaga direta na Final.",
+  "description": "Oito equipes classificadas diretamente e quatro vagas reservadas para a Repescagem.",
   "format": {
     "days": 0,
     "matches": 0,
@@ -120,6 +120,54 @@
       "placementPoints": 0,
       "points": 0,
       "status": "Em breve"
+    },
+    {
+      "position": 9,
+      "team": "REPESCAGEM #1",
+      "group": "",
+      "sourcePosition": 1,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "A definir"
+    },
+    {
+      "position": 10,
+      "team": "REPESCAGEM #2",
+      "group": "",
+      "sourcePosition": 2,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "A definir"
+    },
+    {
+      "position": 11,
+      "team": "REPESCAGEM #3",
+      "group": "",
+      "sourcePosition": 3,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "A definir"
+    },
+    {
+      "position": 12,
+      "team": "REPESCAGEM #4",
+      "group": "",
+      "sourcePosition": 4,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "A definir"
     }
   ],
   "teams": [
@@ -168,6 +216,30 @@
     {
       "team": "Fluxo w7m",
       "sourceGroup": "B",
+      "sourcePosition": 4,
+      "matches": []
+    },
+    {
+      "team": "REPESCAGEM #1",
+      "sourceGroup": "Repescagem",
+      "sourcePosition": 1,
+      "matches": []
+    },
+    {
+      "team": "REPESCAGEM #2",
+      "sourceGroup": "Repescagem",
+      "sourcePosition": 2,
+      "matches": []
+    },
+    {
+      "team": "REPESCAGEM #3",
+      "sourceGroup": "Repescagem",
+      "sourcePosition": 3,
+      "matches": []
+    },
+    {
+      "team": "REPESCAGEM #4",
+      "sourceGroup": "Repescagem",
       "sourcePosition": 4,
       "matches": []
     }

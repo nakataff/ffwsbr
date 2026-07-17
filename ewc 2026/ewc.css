@@ -440,3 +440,159 @@
   .ewc-team-cell { width: 96px; }
   .ewc-team-cell .ewc-team-name-short { max-width: 29px; font-size: .60rem; }
 }
+
+/* Ajustes de classificação e estatísticas — EWC 2026 */
+.ewc-stage-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 6px;
+  border: 1px solid var(--ewc-border);
+  border-radius: 14px;
+  background: rgba(13, 18, 32, .92);
+}
+.ewc-stage-tab {
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #8fa0b8;
+  font-size: .78rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: .18s ease;
+}
+.ewc-stage-tab:hover { color: #fff; background: rgba(255,255,255,.04); }
+.ewc-stage-tab.active {
+  border-color: rgba(0, 200, 255, .34);
+  background: rgba(0, 200, 255, .10);
+  color: var(--accent);
+  box-shadow: inset 0 -2px 0 rgba(0, 200, 255, .58);
+}
+.ewc-table tbody tr[data-placeholder="true"] { cursor: default; }
+.ewc-table tbody tr[data-placeholder="true"]:hover { background: transparent; }
+.ewc-team-country-placeholder {
+  width: 22px;
+  height: 15px;
+  flex: 0 0 22px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.035);
+}
+.ewc-row-final { background: rgba(84, 217, 135, .025); }
+.ewc-row-eliminated { background: rgba(255, 107, 121, .018); }
+
+.ewc-stats-filters { flex-wrap: wrap; }
+.ewc-stats-filters label { min-width: 160px; flex: 1 1 190px; }
+.ewc-stats-section { display: grid; gap: 10px; }
+.ewc-stats-section > h2 {
+  margin: 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  color: var(--accent);
+  font-size: .94rem;
+  text-transform: uppercase;
+}
+.ewc-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.ewc-stat-card {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid var(--ewc-border);
+  border-radius: 12px;
+  background: rgba(13, 18, 32, .92);
+}
+.ewc-stat-card > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #8fa0b8;
+  font-size: .70rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.ewc-stat-card > strong {
+  display: block;
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(1.15rem, 2.6vw, 1.75rem);
+  font-weight: 1000;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ewc-stat-card > small {
+  display: block;
+  overflow: hidden;
+  margin-top: 6px;
+  color: #8fa0b8;
+  font-size: .70rem;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ewc-ranking-section { overflow: hidden; }
+.ewc-ranking-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.ewc-ranking-head h2 {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-size: 1rem;
+}
+.ewc-ranking-head h2 small { color: #dbe6f6; font-size: .62em; }
+.ewc-ranking-head p { margin: 0; color: #8fa0b8; font-size: .78rem; }
+.ewc-ranking-mode {
+  min-width: 160px;
+  min-height: 38px;
+  padding: 0 34px 0 11px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 8px;
+  background: #0a0f1c;
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 900;
+}
+.ewc-stats-ranking-table .ewc-stat-primary { color: var(--accent); }
+.ewc-expand-button {
+  display: block;
+  min-width: 125px;
+  margin: 12px auto 0;
+  padding: 9px 16px;
+  border: 1px solid rgba(0, 200, 255, .28);
+  border-radius: 999px;
+  background: rgba(0, 200, 255, .08);
+  color: var(--accent);
+  font-size: .72rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.ewc-expand-button:hover { background: rgba(0, 200, 255, .15); }
+
+@media (max-width: 680px) {
+  .ewc-stage-tab { min-height: 40px; font-size: .70rem; }
+  .ewc-team-country-placeholder { width: 18px; height: 12px; flex-basis: 18px; }
+  .ewc-stats-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ewc-stats-filters label { min-width: 0; }
+  .ewc-stat-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ewc-stat-card { padding: 13px; }
+  .ewc-stat-card > strong { font-size: 1.15rem; }
+  .ewc-ranking-head { align-items: stretch; flex-direction: column; }
+  .ewc-ranking-mode { width: 100%; }
+  .ewc-stats-ranking-table th:nth-child(2),
+  .ewc-stats-ranking-table td:nth-child(2) { width: 104px; }
+}
+
+@media (max-width: 430px) {
+  .ewc-stats-filters { grid-template-columns: 1fr; }
+  .ewc-stat-cards { grid-template-columns: 1fr; }
+  .ewc-team-country-placeholder { width: 16px; height: 11px; flex-basis: 16px; }
+  .ewc-stats-ranking-table th:nth-child(2),
+  .ewc-stats-ranking-table td:nth-child(2) { width: 96px; }
+}
