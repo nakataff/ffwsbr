@@ -1,0 +1,32 @@
+{
+  "tournament": "EWC 2026",
+  "location": "Paris, França",
+  "startDate": "2026-07-15",
+  "endDate": "2026-07-18",
+  "days": [
+    {
+      "date": "2026-07-15",
+      "label": "15 de julho",
+      "stage": "Fase de Grupos — Dia 1 • Grupos A e B",
+      "status": "Encerrado"
+    },
+    {
+      "date": "2026-07-16",
+      "label": "16 de julho",
+      "stage": "Fase de Grupos — Dia 2 • Grupos A e B",
+      "status": "Encerrado"
+    },
+    {
+      "date": "2026-07-17",
+      "label": "17 de julho",
+      "stage": "Survival Stage",
+      "status": "Agendado"
+    },
+    {
+      "date": "2026-07-18",
+      "label": "18 de julho",
+      "stage": "Grande Final",
+      "status": "Agendado"
+    }
+  ]
+}

@@ -1,0 +1,1146 @@
+{
+  "tournament": "EWC 2026",
+  "teams": [
+    {
+      "name": "EVOS Divine",
+      "qualification": "2025 Defending Champion",
+      "players": [
+        {
+          "name": "Koceel",
+          "country": "id",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Rasyah",
+          "country": "id",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "AbaaaX",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "AimGOD",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Reyyy",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Leem",
+          "country": "id",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "Team Secret VN orig",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "HoangM",
+          "country": "vn",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Shiryu",
+          "country": "vn",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "PLS1",
+          "country": "vn",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "TQuy",
+          "country": "vn",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Nhan7",
+          "country": "vn",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "TheGhost",
+          "country": "vn",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "All Gamers Global",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "NAMELESS",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "SAIFA",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "DEW",
+          "country": "th",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "TEAMSR",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "BAROS",
+          "country": "th",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "Twisted Minds",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "DIAMOND",
+          "country": "th",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "XPOZY",
+          "country": "th",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "JUMP",
+          "country": "th",
+          "role": "3º HOMEM",
+          "roleShort": "3º",
+          "staff": false
+        },
+        {
+          "name": "THEBAS",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "COUGAR",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "NAMO",
+          "country": "",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Aurora Gaming",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "TheAxel",
+          "country": "my",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Jun",
+          "country": "my",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Zuezz",
+          "country": "my",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "AzrieL",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Yasta",
+          "country": "my",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "MyPutra",
+          "country": "id",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "Buriram United Esports",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "WASSANA",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "JOENA",
+          "country": "th",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "MOSHI",
+          "country": "th",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "GETHIGH",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "TERNA",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "D_LONG",
+          "country": "th",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "RRQ",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "Dutzz",
+          "country": "id",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Abay",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Maal",
+          "country": "id",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "Deer",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Ranz",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Adyy",
+          "country": "id",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        },
+        {
+          "name": "Lorenz",
+          "country": "id",
+          "role": "ANALISTA",
+          "roleShort": "ANL",
+          "staff": true
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Bigetron By Vitality",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "Kojaa",
+          "country": "id",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Dhikz",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Kyongg",
+          "country": "id",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "C1b3nk",
+          "country": "id",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "Jooeel",
+          "country": "id",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "Chrisjo",
+          "country": "",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Team Falcons",
+      "qualification": "FFWS Southeast Asia",
+      "players": [
+        {
+          "name": "LIMIT",
+          "country": "th",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "ONFIRE",
+          "country": "th",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "PEENA",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "KERORO",
+          "country": "th",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "RATCHA",
+          "country": "th",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "CONAN",
+          "country": "th",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "LOUD",
+      "qualification": "FFWS Brazil - Finals",
+      "players": [
+        {
+          "name": "HAK",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Nickz7",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Trap",
+          "country": "br",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "GUAXA7",
+          "country": "br",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "bzp10",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "JOKER",
+          "country": "br",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        },
+        {
+          "name": "VIANA",
+          "country": "br",
+          "role": "ANALISTA",
+          "roleShort": "ANL",
+          "staff": true
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "MIBR LOS",
+      "qualification": "FFWS Brazil - Finals",
+      "players": [
+        {
+          "name": "Rigby245",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "General",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Raone7",
+          "country": "br",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Yago",
+          "country": "br",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "mtsexy",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "LIPÃO",
+          "country": "br",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        },
+        {
+          "name": "Jaya",
+          "country": "br",
+          "role": "ANALISTA",
+          "roleShort": "ANL",
+          "staff": true
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Fluxo w7m",
+      "qualification": "FFWS Brazil - Grp.S",
+      "players": [
+        {
+          "name": "Bops",
+          "country": "br",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Giuh",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Butzin",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "MT7",
+          "country": "br",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "Proxx7",
+          "country": "br",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "LUUUKING",
+          "country": "br",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        },
+        {
+          "name": "Renan",
+          "country": "br",
+          "role": "ANALISTA",
+          "roleShort": "ANL",
+          "staff": true
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "GunDynasty",
+      "qualification": "FFWS LATAM - Finals",
+      "players": [
+        {
+          "name": "Shyro",
+          "country": "co",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "David444",
+          "country": "do",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Vene",
+          "country": "ve",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "BNL",
+          "country": "ar",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "VegaTHK",
+          "country": "co",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Rusito",
+          "country": "cr",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "LYON",
+      "qualification": "FFWS LATAM - Regular Phase",
+      "players": [
+        {
+          "name": "Haax",
+          "country": "br",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "Gamezking",
+          "country": "cl",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "SoyDella",
+          "country": "ar",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Joker",
+          "country": "",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "Joacozd",
+          "country": "cl",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "Benja",
+          "country": "",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Mia Corp",
+      "qualification": "FFWS USA",
+      "players": [
+        {
+          "name": "Capaxz",
+          "country": "ve",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Nickz7",
+          "country": "ve",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Bíblico",
+          "country": "ve",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "Draite",
+          "country": "ve",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "Joshver",
+          "country": "do",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Straw Hats Esports",
+      "qualification": "FFWS Bangladesh",
+      "players": [
+        {
+          "name": "SHOCKED",
+          "country": "bd",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "NILL",
+          "country": "bd",
+          "role": "3º HOMEM",
+          "roleShort": "3º",
+          "staff": false
+        },
+        {
+          "name": "WHOO",
+          "country": "bd",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "XTROV",
+          "country": "bd",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "PLABON",
+          "country": "bd",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Titan Esports Club",
+      "qualification": "FFWS Bangladesh",
+      "players": [
+        {
+          "name": "BLADE",
+          "country": "bd",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "KUTTUSH",
+          "country": "bd",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "RAHAT",
+          "country": "bd",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "NEJAD",
+          "country": "bd",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "KAAFI",
+          "country": "bd",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "DUKER",
+          "country": "in",
+          "role": "TÉCNICO",
+          "roleShort": "TEC",
+          "staff": true
+        },
+        {
+          "name": "Shahriar Shishier",
+          "country": "bd",
+          "role": "MANAGER",
+          "roleShort": "MGR",
+          "staff": true
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "Demons Pride",
+      "qualification": "FFWS Pakistan",
+      "players": [
+        {
+          "name": "MADARA",
+          "country": "pk",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "TOP",
+          "country": "pk",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "JAZZY",
+          "country": "pk",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "SHARIF",
+          "country": "pk",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "ASWAB",
+          "country": "pk",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "DRS Gaming",
+      "qualification": "FFWS Nepal",
+      "players": [
+        {
+          "name": "AALUU",
+          "country": "np",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "BABIN",
+          "country": "np",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "PRATIK",
+          "country": "np",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "STROEX",
+          "country": "np",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "THAKURI",
+          "country": "np",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "Al Ahli Esports",
+      "qualification": "FFWS MENA",
+      "players": [
+        {
+          "name": "REMIND",
+          "country": "tn",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "SIFOUX",
+          "country": "dz",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "SIMOX",
+          "country": "dz",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "HAWK",
+          "country": "eg",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "YASSER",
+          "country": "dz",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Paradox Gaming",
+      "qualification": "FFWS Africa",
+      "players": [
+        {
+          "name": "SNIPE",
+          "country": "za",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "WINDY",
+          "country": "za",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "SNEAKY",
+          "country": "za",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "L2K",
+          "country": "za",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "DENRIQUE",
+          "country": "za",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "Team Apex Gaming",
+      "qualification": "India Cup",
+      "players": [
+        {
+          "name": "KD",
+          "country": "in",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "SAHIL",
+          "country": "in",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "WOLVIN",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "SHOTO",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "LOUIS",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        }
+      ],
+      "group": "A"
+    },
+    {
+      "name": "S8UL Esports",
+      "qualification": "India Cup",
+      "players": [
+        {
+          "name": "BUNNY",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "JACK07",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "NOOR18",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "TROLL",
+          "country": "in",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "STIVEN",
+          "country": "in",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        }
+      ],
+      "group": "B"
+    },
+    {
+      "name": "Total Gaming Esports",
+      "qualification": "India Cup",
+      "players": [
+        {
+          "name": "AZTEC",
+          "country": "in",
+          "role": "GRANADEIRO",
+          "roleShort": "GRAN",
+          "staff": false
+        },
+        {
+          "name": "MAFIA",
+          "country": "in",
+          "role": "SUPORTE",
+          "roleShort": "SUP",
+          "staff": false
+        },
+        {
+          "name": "WOTA",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "SHANKY",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        },
+        {
+          "name": "FOZYAJAY",
+          "country": "in",
+          "role": "RUSH",
+          "roleShort": "RUSH",
+          "staff": false
+        }
+      ],
+      "group": "B"
+    }
+  ]
+}

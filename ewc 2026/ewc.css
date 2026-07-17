@@ -1,0 +1,272 @@
+:root {
+  --ewc-accent: #ffd34d;
+  --ewc-accent-2: #8c6cff;
+  --ewc-panel: rgba(14, 20, 36, .92);
+  --ewc-border: rgba(140, 108, 255, .24);
+}
+
+.ewc-shell { display: grid; gap: 22px; }
+.ewc-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 28px;
+  border: 1px solid var(--ewc-border);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(140,108,255,.20), transparent 34%),
+    linear-gradient(135deg, rgba(255,211,77,.08), rgba(13,19,34,.96) 52%);
+}
+.ewc-hero-main { display: flex; align-items: center; gap: 18px; min-width: 0; }
+.ewc-hero-icon {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  border: 1px solid rgba(255,211,77,.35);
+  border-radius: 20px;
+  background: rgba(255,211,77,.08);
+  font-size: 2rem;
+}
+.ewc-kicker { color: var(--ewc-accent); font-size: .76rem; font-weight: 1000; letter-spacing: .16em; text-transform: uppercase; }
+.ewc-hero h1 { margin: 5px 0 4px; color: #fff; font-size: clamp(1.8rem, 5vw, 3.1rem); line-height: .98; text-transform: uppercase; }
+.ewc-hero p { margin: 0; color: #a8b5cc; font-weight: 700; }
+.ewc-hero-badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.ewc-hero-badges span {
+  padding: 8px 11px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+  color: #eaf2ff;
+  font-size: .74rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.ewc-panel {
+  border: 1px solid var(--ewc-border);
+  border-radius: 18px;
+  background: var(--ewc-panel);
+  overflow: hidden;
+}
+.ewc-panel-inner { padding: 22px; }
+.ewc-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.ewc-section-head h2 { margin: 0 0 5px; color: #fff; font-size: 1.35rem; text-transform: uppercase; }
+.ewc-section-head p { margin: 0; color: #8fa0b8; line-height: 1.5; }
+.ewc-updated {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(255,211,77,.22);
+  border-radius: 999px;
+  color: var(--ewc-accent);
+  font-size: .72rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.ewc-empty {
+  padding: 28px 18px;
+  border: 1px dashed rgba(255,255,255,.13);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+  color: #9ba9bc;
+  text-align: center;
+  font-weight: 750;
+}
+
+.ewc-table-wrap { overflow-x: auto; }
+.ewc-table { width: 100%; border-collapse: collapse; }
+.ewc-table th,
+.ewc-table td { padding: 12px 11px; border-bottom: 1px solid rgba(255,255,255,.07); text-align: center; white-space: nowrap; }
+.ewc-table th { color: #8fa0b8; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+.ewc-table td { color: #eef5ff; font-weight: 800; }
+.ewc-table tbody tr { transition: background .16s ease; }
+.ewc-table tbody tr[data-clickable="true"] { cursor: pointer; }
+.ewc-table tbody tr[data-clickable="true"]:hover { background: rgba(140,108,255,.08); }
+.ewc-team-cell { display: flex; align-items: center; gap: 9px; min-width: 210px; text-align: left !important; }
+.ewc-team-cell img { width: 28px; height: 28px; object-fit: contain; flex: 0 0 28px; }
+.ewc-team-cell span { overflow: hidden; text-overflow: ellipsis; }
+.ewc-rank { color: var(--ewc-accent) !important; }
+.ewc-status-badge { display: inline-flex; padding: 4px 7px; border-radius: 999px; background: rgba(140,108,255,.11); color: #c8bbff; font-size: .68rem; font-weight: 900; }
+
+.ewc-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.ewc-search {
+  width: min(420px, 100%);
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  background: rgba(0,0,0,.20);
+  color: #fff;
+  outline: none;
+}
+.ewc-search:focus { border-color: rgba(140,108,255,.62); box-shadow: 0 0 0 3px rgba(140,108,255,.10); }
+
+.ewc-participants-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.ewc-participant-card { min-width: 0; border: 1px solid rgba(255,255,255,.09); border-radius: 15px; background: rgba(255,255,255,.025); overflow: hidden; }
+.ewc-participant-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 48px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(135deg, rgba(140,108,255,.10), rgba(255,211,77,.035));
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+.ewc-participant-logo { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,.04); }
+.ewc-participant-logo img { width: 40px; height: 40px; object-fit: contain; }
+.ewc-participant-title { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ewc-participant-title strong { overflow: hidden; color: #fff; font-size: .98rem; text-overflow: ellipsis; white-space: nowrap; }
+.ewc-participant-title small { overflow: hidden; color: #a9b4c8; font-size: .72rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.ewc-participant-count { color: var(--ewc-accent); font-size: .72rem; font-weight: 1000; }
+.ewc-participant-roster { padding: 13px; }
+.ewc-subhead { display: flex; align-items: center; justify-content: space-between; margin: 2px 0 8px; color: #8796ac; font-size: .68rem; font-weight: 1000; letter-spacing: .10em; text-transform: uppercase; }
+.ewc-subhead.staff { margin-top: 14px; }
+.ewc-people { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px; }
+.ewc-person {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 9px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  background: rgba(0,0,0,.15);
+  color: #f5f8ff;
+  text-align: left;
+  cursor: pointer;
+}
+.ewc-person.staff { cursor: default; }
+.ewc-flag { display: inline-grid; place-items: center; width: 24px; height: 20px; font-size: 1rem; }
+.ewc-person-name { overflow: hidden; font-size: .80rem; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.ewc-role { color: #9fafff; font-size: .62rem; font-weight: 1000; white-space: nowrap; }
+.ewc-role-short { display: none; }
+
+.ewc-stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+.ewc-stat-card { min-width: 0; padding: 18px; border: 1px solid rgba(255,255,255,.09); border-radius: 14px; background: rgba(255,255,255,.03); }
+.ewc-stat-card small { display: block; margin-bottom: 8px; color: #8796ac; font-size: .68rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.ewc-stat-card strong { display: block; overflow: hidden; color: #fff; font-size: clamp(1.25rem, 3vw, 2rem); text-overflow: ellipsis; white-space: nowrap; }
+.ewc-stat-card em { display: block; margin-top: 7px; color: var(--ewc-accent); font-size: .72rem; font-style: normal; font-weight: 850; }
+
+.ewc-dates-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+.ewc-date-card { position: relative; min-height: 140px; padding: 18px; border: 1px solid rgba(255,255,255,.09); border-radius: 14px; background: rgba(255,255,255,.03); }
+.ewc-date-card time { color: var(--ewc-accent); font-size: .77rem; font-weight: 1000; letter-spacing: .08em; text-transform: uppercase; }
+.ewc-date-card strong { display: block; margin-top: 12px; color: #fff; font-size: 1rem; line-height: 1.25; }
+.ewc-date-card span { position: absolute; right: 14px; bottom: 14px; color: #8c9bb0; font-size: .68rem; font-weight: 850; }
+
+.ewc-profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 24px;
+  border: 1px solid var(--ewc-border);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(140,108,255,.13), rgba(255,211,77,.04));
+}
+.ewc-profile-logo { width: 84px; height: 84px; object-fit: contain; flex: 0 0 84px; }
+.ewc-profile-flag { display: grid; place-items: center; width: 74px; height: 74px; border: 1px solid rgba(255,255,255,.09); border-radius: 50%; background: rgba(255,255,255,.04); font-size: 2.1rem; }
+.ewc-profile-hero h1 { margin: 4px 0; color: #fff; font-size: clamp(1.7rem, 5vw, 2.7rem); line-height: 1; }
+.ewc-profile-hero p { margin: 0; color: #a8b5c8; font-weight: 750; }
+.ewc-profile-section { margin-bottom: 16px; }
+.ewc-profile-section h2 { margin: 0 0 14px; color: #fff; font-size: 1.15rem; text-transform: uppercase; }
+.ewc-profile-roster { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.ewc-profile-person { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; background: rgba(255,255,255,.025); color: #fff; }
+.ewc-profile-person .ewc-profile-copy { min-width: 0; flex: 1; }
+.ewc-profile-person strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ewc-profile-person small { color: #9fafff; font-weight: 850; }
+.ewc-profile-back { margin-top: 8px; }
+
+@media (max-width: 980px) {
+  .ewc-participants-grid { grid-template-columns: 1fr; }
+  .ewc-stats-grid, .ewc-dates-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .ewc-profile-roster { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+@media (max-width: 680px) {
+  .ewc-hero { align-items: flex-start; flex-direction: column; padding: 18px; }
+  .ewc-hero-main { align-items: flex-start; }
+  .ewc-hero-icon { width: 56px; height: 56px; flex-basis: 56px; border-radius: 15px; font-size: 1.5rem; }
+  .ewc-hero-badges { justify-content: flex-start; }
+  .ewc-panel-inner { padding: 14px; }
+  .ewc-section-head, .ewc-tools { align-items: stretch; flex-direction: column; }
+  .ewc-updated { align-self: flex-start; }
+  .ewc-people { grid-template-columns: 1fr; }
+  .ewc-role-full { display: none; }
+  .ewc-role-short { display: inline; }
+  .ewc-stats-grid, .ewc-dates-grid { grid-template-columns: 1fr 1fr; }
+  .ewc-profile-hero { align-items: flex-start; padding: 18px; }
+  .ewc-profile-logo { width: 64px; height: 64px; flex-basis: 64px; }
+  .ewc-profile-flag { width: 60px; height: 60px; font-size: 1.7rem; }
+  .ewc-profile-roster { grid-template-columns: 1fr; }
+  .ewc-table th, .ewc-table td { padding: 10px 8px; font-size: .80rem; }
+  .ewc-table .ewc-hide-mobile { display: none; }
+  .ewc-team-cell { min-width: 82px; justify-content: center; }
+  .ewc-team-cell span { display: none; }
+  .ewc-team-cell img { width: 32px; height: 32px; }
+}
+
+@media (max-width: 430px) {
+  .ewc-participant-head { grid-template-columns: 42px minmax(0,1fr) auto; padding: 12px; }
+  .ewc-participant-logo { width: 42px; height: 42px; }
+  .ewc-participant-logo img { width: 34px; height: 34px; }
+  .ewc-stats-grid, .ewc-dates-grid { grid-template-columns: 1fr; }
+}
+
+/* Fase de grupos EWC 2026 */
+.ewc-stage-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 13px 15px;
+  border: 1px solid var(--ewc-border);
+  border-radius: 14px;
+  background: rgba(14, 20, 36, .72);
+}
+.ewc-stage-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #dbe6f6;
+  font-size: .72rem;
+  font-weight: 900;
+}
+.ewc-stage-legend span::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8c9bb0;
+}
+.ewc-stage-legend .final::before { background: #54d987; }
+.ewc-stage-legend .survival::before { background: #ffd34d; }
+.ewc-stage-legend .eliminated::before { background: #ff6b79; }
+.ewc-status-badge.final { background: rgba(84,217,135,.12); color: #77e8a1; }
+.ewc-status-badge.survival { background: rgba(255,211,77,.12); color: #ffe072; }
+.ewc-status-badge.eliminated { background: rgba(255,107,121,.12); color: #ff8f9b; }
+.ewc-status-short { display: none; }
+.ewc-row-final td:first-child { box-shadow: inset 3px 0 0 rgba(84,217,135,.78); }
+.ewc-row-survival td:first-child { box-shadow: inset 3px 0 0 rgba(255,211,77,.72); }
+.ewc-row-eliminated td:first-child { box-shadow: inset 3px 0 0 rgba(255,107,121,.72); }
+
+@media (max-width: 680px) {
+  .ewc-stage-legend { align-items: flex-start; flex-direction: column; }
+  .ewc-status-full { display: none; }
+  .ewc-status-short { display: inline; }
+  .ewc-status-badge { padding: 4px 6px; font-size: .60rem; }
+}
