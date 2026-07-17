@@ -149,6 +149,199 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
   .home-wb-manager-beta { grid-template-columns: 1fr; padding: 18px; }
   .home-wb-manager-beta b { width: 100%; }
 }
+
+
+/* EWC 2026 — contador da Grande Final na home */
+.home-ewc-final-countdown {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 25px;
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid rgba(0, 200, 255, .28);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(0, 200, 255, .10), rgba(10, 16, 31, .96) 46%, rgba(255, 255, 255, .025));
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .18);
+}
+.home-ewc-final-countdown::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), rgba(100, 181, 255, .45), transparent 82%);
+}
+.home-ewc-final-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+}
+.home-ewc-final-copy { min-width: 0; }
+.home-ewc-final-kicker {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 1000;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+.home-ewc-final-title {
+  margin: 0;
+  color: #f7fbff;
+  font-size: clamp(1.55rem, 3.4vw, 2.7rem);
+  line-height: 1.05;
+  font-weight: 1000;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+.home-ewc-final-date {
+  display: block;
+  margin-top: 10px;
+  color: #a8c8e8;
+  font-size: .9rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.home-ewc-final-clock {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(62px, 1fr));
+  gap: 8px;
+  min-width: 330px;
+}
+.home-ewc-final-unit {
+  display: flex;
+  min-height: 78px;
+  padding: 10px 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(100, 181, 255, .20);
+  border-radius: 12px;
+  background: rgba(3, 8, 20, .58);
+}
+.home-ewc-final-unit strong {
+  color: #fff;
+  font-size: clamp(1.45rem, 3vw, 2.1rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 1000;
+  line-height: 1;
+}
+.home-ewc-final-unit small {
+  margin-top: 7px;
+  color: #78a8d6;
+  font-size: .62rem;
+  font-weight: 1000;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.home-ewc-final-teams-label {
+  margin: 22px 0 10px;
+  color: #8fb3dc;
+  font-size: .72rem;
+  font-weight: 1000;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+.home-ewc-final-teams {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 8px;
+}
+.home-ewc-final-team {
+  min-width: 0;
+  padding: 8px 4px 7px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .025);
+  color: #fff;
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+.home-ewc-final-team:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 200, 255, .42);
+  background: rgba(0, 200, 255, .055);
+}
+.home-ewc-final-team img {
+  display: block;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+.home-ewc-final-team span {
+  display: block;
+  margin-top: 6px;
+  overflow: hidden;
+  color: #dfeeff;
+  font-size: .63rem;
+  font-weight: 1000;
+  letter-spacing: .04em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-ewc-final-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.home-ewc-final-watch,
+.home-ewc-final-page-link {
+  display: inline-flex;
+  min-height: 42px;
+  padding: 0 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  font-size: .78rem;
+  font-weight: 1000;
+  letter-spacing: .06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.home-ewc-final-watch {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #03101a;
+}
+.home-ewc-final-watch:hover { filter: brightness(1.08); }
+.home-ewc-final-page-link {
+  border: 1px solid rgba(100, 181, 255, .25);
+  background: rgba(100, 181, 255, .07);
+  color: #9ed0ff;
+  cursor: pointer;
+}
+.home-ewc-final-countdown.is-live {
+  border-color: rgba(255, 68, 68, .42);
+  background: linear-gradient(135deg, rgba(255, 48, 48, .10), rgba(10, 16, 31, .96) 46%, rgba(255, 255, 255, .025));
+}
+.home-ewc-final-countdown.is-live::before { background: linear-gradient(90deg, #ff4343, rgba(255, 104, 104, .45), transparent 82%); }
+.home-ewc-final-countdown.is-live .home-ewc-final-kicker { color: #ff6767; }
+@media (max-width: 1100px) {
+  .home-ewc-final-top { grid-template-columns: 1fr; }
+  .home-ewc-final-clock { min-width: 0; width: min(100%, 470px); }
+  .home-ewc-final-teams { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .home-ewc-final-countdown { padding: 17px 12px; border-radius: 14px; }
+  .home-ewc-final-copy { text-align: center; }
+  .home-ewc-final-title { font-size: 1.45rem; }
+  .home-ewc-final-date { font-size: .75rem; }
+  .home-ewc-final-clock { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+  .home-ewc-final-unit { min-height: 64px; padding: 8px 3px; border-radius: 9px; }
+  .home-ewc-final-unit strong { font-size: 1.35rem; }
+  .home-ewc-final-unit small { font-size: .52rem; }
+  .home-ewc-final-teams { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .home-ewc-final-team { padding: 7px 3px 6px; }
+  .home-ewc-final-team img { width: 36px; height: 36px; }
+  .home-ewc-final-team span { font-size: .56rem; }
+  .home-ewc-final-actions { display: grid; grid-template-columns: 1fr; }
+  .home-ewc-final-watch, .home-ewc-final-page-link { width: 100%; min-height: 44px; box-sizing: border-box; }
+}
+
 </style>
 
 <style id="hall-fame-extra-css">
@@ -353,6 +546,78 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
  <div id="home" class="page">
 
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
+
+    <section class="home-ewc-final-countdown" id="home-ewc-final-countdown" aria-labelledby="home-ewc-final-title">
+        <div class="home-ewc-final-top">
+            <div class="home-ewc-final-copy">
+                <div class="home-ewc-final-kicker" id="home-ewc-final-kicker">EWC 2026 • GRANDE FINAL</div>
+                <h2 class="home-ewc-final-title" id="home-ewc-final-title">CONTAGEM REGRESSIVA PARA A FINAL</h2>
+                <time class="home-ewc-final-date" datetime="2026-07-18T07:30:00-03:00">18 DE JULHO • 07:30 (BRT)</time>
+            </div>
+            <div class="home-ewc-final-clock" id="home-ewc-final-clock" role="timer" aria-live="polite" aria-label="Tempo restante para a final da EWC 2026">
+                <span class="home-ewc-final-unit"><strong id="home-ewc-days">00</strong><small>Dias</small></span>
+                <span class="home-ewc-final-unit"><strong id="home-ewc-hours">00</strong><small>Horas</small></span>
+                <span class="home-ewc-final-unit"><strong id="home-ewc-minutes">00</strong><small>Min</small></span>
+                <span class="home-ewc-final-unit"><strong id="home-ewc-seconds">00</strong><small>Seg</small></span>
+            </div>
+        </div>
+        <div class="home-ewc-final-teams-label">12 EQUIPES NA DISPUTA PELO TÍTULO</div>
+        <div class="home-ewc-final-teams" aria-label="Equipes participantes da final">
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Buriram United Esports')" title="Buriram United Esports">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/RhXdSRq0/bru.webp" alt="Logo da Buriram United Esports" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>BRU</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('EVOS Divine')" title="EVOS Divine">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/VkrkZ6mw/evos.webp" alt="Logo da EVOS Divine" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>EVOS</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('All Gamers Global')" title="All Gamers Global">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/XJpvJ5XN/agg.webp" alt="Logo da All Gamers Global" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>AGAL</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('LOUD')" title="LOUD">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/rF6pVKTr/loud.webp" alt="Logo da LOUD" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>LOUD</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Twisted Minds')" title="Twisted Minds">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/fbvn8ntJ/twisted-minds.webp" alt="Logo da Twisted Minds" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>TWIS</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('MIBR LOS')" title="MIBR LOS">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/x1nTmhqR/mibr-los.webp" alt="Logo da MIBR LOS" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>LOS</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('RRQ')" title="RRQ">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/vHpsBvFh/rrq.webp" alt="Logo da RRQ" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>RRQ</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Fluxo w7m')" title="Fluxo w7m">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/mDD42WFN/fluxo-w7m-allmode.png" alt="Logo da Fluxo w7m" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>FX</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('LYON')" title="LYON">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/XYGTQnxR/inco.webp" alt="Logo da LYON" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>LYON</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Team Apex Gaming')" title="Team Apex Gaming">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/Kct25f6q/apex.webp" alt="Logo da Team Apex Gaming" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>TAG</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Team Falcons')" title="Team Falcons">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/8CbQZQF3/falcons.webp" alt="Logo da Team Falcons" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>FALC</span>
+            </button>
+            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('S8UL Esports')" title="S8UL Esports">
+                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/FsZXMRsq/s8ul.webp" alt="Logo da S8UL Esports" onerror="this.onerror=null;this.src='escudo.webp'">
+                <span>S8UL</span>
+            </button>
+        </div>
+        <div class="home-ewc-final-actions">
+            <button type="button" class="home-ewc-final-page-link" onclick="navigate('ewc-final')">VER PÁGINA DA FINAL</button>
+            <a class="home-ewc-final-watch" id="home-ewc-final-watch" href="https://www.youtube.com/watch?v=4_O5oWb22C8" target="_blank" rel="noopener noreferrer">ASSISTIR À FINAL ↗</a>
+        </div>
+    </section>
+
 
     <div class="home-champions-grid">
         <div class="home-widget home-ffws-champion-widget">
@@ -2025,6 +2290,66 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             </div>
     </div>
 </div>
+
+<script id="home-ewc-final-countdown-script">
+(function () {
+  'use strict';
+  const targetTime = Date.parse('2026-07-18T07:30:00-03:00');
+  let timerId = null;
+
+  function pad(value) {
+    return String(Math.max(0, value)).padStart(2, '0');
+  }
+
+  function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  }
+
+  function updateEwcFinalCountdown() {
+    const card = document.getElementById('home-ewc-final-countdown');
+    if (!card) {
+      if (timerId) window.clearInterval(timerId);
+      return;
+    }
+
+    const remaining = targetTime - Date.now();
+    if (remaining <= 0) {
+      setText('home-ewc-days', '00');
+      setText('home-ewc-hours', '00');
+      setText('home-ewc-minutes', '00');
+      setText('home-ewc-seconds', '00');
+      setText('home-ewc-final-kicker', 'EWC 2026 • FINAL AO VIVO');
+      setText('home-ewc-final-title', 'A GRANDE FINAL JÁ COMEÇOU');
+      setText('home-ewc-final-watch', 'ASSISTIR AGORA ↗');
+      card.classList.add('is-live');
+      if (timerId) window.clearInterval(timerId);
+      return;
+    }
+
+    const days = Math.floor(remaining / 86400000);
+    const hours = Math.floor((remaining % 86400000) / 3600000);
+    const minutes = Math.floor((remaining % 3600000) / 60000);
+    const seconds = Math.floor((remaining % 60000) / 1000);
+    setText('home-ewc-days', pad(days));
+    setText('home-ewc-hours', pad(hours));
+    setText('home-ewc-minutes', pad(minutes));
+    setText('home-ewc-seconds', pad(seconds));
+  }
+
+  function startEwcFinalCountdown() {
+    updateEwcFinalCountdown();
+    timerId = window.setInterval(updateEwcFinalCountdown, 1000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startEwcFinalCountdown, { once: true });
+  } else {
+    startEwcFinalCountdown();
+  }
+})();
+</script>
+
 <script defer src="js/core-data.min.js?v=20260713-performance-v1"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
