@@ -48,7 +48,18 @@
           "staff": true
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "EVOS",
+      "countryName": "Indonésia",
+      "countryKey": "indonesia",
+      "countryFlag": "flags/indonesia.png",
+      "logo": "https://i.postimg.cc/VkrkZ6mw/evos.webp",
+      "dataName": "EVOS DIVINE",
+      "aliases": [
+        "EVOS",
+        "EVOS Divine",
+        "EVOS DIVINE"
+      ]
     },
     {
       "name": "Team Secret VN orig",
@@ -97,7 +108,19 @@
           "staff": true
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "TS",
+      "countryName": "Vietnã",
+      "countryKey": "vietna",
+      "countryFlag": "flags/vietnam.png",
+      "logo": "https://i.postimg.cc/g00zShV8/team-secret.webp",
+      "dataName": "TEAM SECRET",
+      "aliases": [
+        "TEAM SECRET",
+        "Team Secret VN orig",
+        "TEAM SECRET VN ORIG",
+        "TS"
+      ]
     },
     {
       "name": "All Gamers Global",
@@ -139,7 +162,19 @@
           "staff": false
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "AGAL",
+      "countryName": "Tailândia",
+      "countryKey": "tailandia",
+      "countryFlag": "flags/tailandia.png",
+      "logo": "https://i.postimg.cc/XJpvJ5XN/agg.webp",
+      "dataName": "AG GLOBAL",
+      "aliases": [
+        "AG GLOBAL",
+        "AGAL",
+        "ALL GAMERS GLOBAL",
+        "All Gamers Global"
+      ]
     },
     {
       "name": "Twisted Minds",
@@ -188,7 +223,18 @@
           "staff": true
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "TWIS",
+      "countryName": "Tailândia",
+      "countryKey": "tailandia",
+      "countryFlag": "flags/tailandia.png",
+      "logo": "https://i.postimg.cc/fbvn8ntJ/twisted-minds.webp",
+      "dataName": "TWISTED MINDS",
+      "aliases": [
+        "TWIS",
+        "Twisted Minds",
+        "TWISTED MINDS"
+      ]
     },
     {
       "name": "Aurora Gaming",
@@ -237,7 +283,18 @@
           "staff": true
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "AUR",
+      "countryName": "Malásia",
+      "countryKey": "malasia",
+      "countryFlag": "flags/malasia.png",
+      "logo": "https://i.postimg.cc/rpY8vpgc/aurora.webp",
+      "dataName": "AURORA GAMING",
+      "aliases": [
+        "AUR",
+        "Aurora Gaming",
+        "AURORA GAMING"
+      ]
     },
     {
       "name": "Buriram United Esports",
@@ -286,7 +343,19 @@
           "staff": true
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "BRU",
+      "countryName": "Tailândia",
+      "countryKey": "tailandia",
+      "countryFlag": "flags/tailandia.png",
+      "logo": "https://i.postimg.cc/RhXdSRq0/bru.webp",
+      "dataName": "BURIRAM",
+      "aliases": [
+        "BRU",
+        "BURIRAM",
+        "BURIRAM UNITED ESPORTS",
+        "Buriram United Esports"
+      ]
     },
     {
       "name": "RRQ",
@@ -342,7 +411,17 @@
           "staff": true
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "RRQ",
+      "countryName": "Indonésia",
+      "countryKey": "indonesia",
+      "countryFlag": "flags/indonesia.png",
+      "logo": "https://i.postimg.cc/vHpsBvFh/rrq.webp",
+      "dataName": "RRQ KAZU",
+      "aliases": [
+        "RRQ",
+        "RRQ KAZU"
+      ]
     },
     {
       "name": "Bigetron By Vitality",
@@ -391,7 +470,19 @@
           "staff": true
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "VIT",
+      "countryName": "Indonésia",
+      "countryKey": "indonesia",
+      "countryFlag": "flags/indonesia.png",
+      "logo": "https://i.postimg.cc/cLh1Bhny/vitality.webp",
+      "dataName": "TEAM VITALITY",
+      "aliases": [
+        "BIGETRON BY VITALITY",
+        "Bigetron By Vitality",
+        "TEAM VITALITY",
+        "VIT"
+      ]
     },
     {
       "name": "Team Falcons",
@@ -440,7 +531,18 @@
           "staff": true
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "FALC",
+      "countryName": "Tailândia",
+      "countryKey": "tailandia",
+      "countryFlag": "flags/tailandia.png",
+      "logo": "https://i.postimg.cc/8CbQZQF3/falcons.webp",
+      "dataName": "TEAM FALCONS",
+      "aliases": [
+        "FALC",
+        "TEAM FALCONS",
+        "Team Falcons"
+      ]
     },
     {
       "name": "LOUD",
@@ -496,7 +598,17 @@
           "staff": true
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "LOUD",
+      "countryName": "Brasil",
+      "countryKey": "brasil",
+      "countryFlag": "flags/brasil.png",
+      "logo": "https://i.postimg.cc/rF6pVKTr/loud.webp",
+      "dataName": "LOUD SNICKERS",
+      "aliases": [
+        "LOUD",
+        "LOUD SNICKERS"
+      ]
     },
     {
       "name": "MIBR LOS",
@@ -552,7 +664,17 @@
           "staff": true
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "LOS",
+      "countryName": "Brasil",
+      "countryKey": "brasil",
+      "countryFlag": "flags/brasil.png",
+      "logo": "https://i.postimg.cc/x1nTmhqR/mibr-los.webp",
+      "dataName": "MIBR LOS",
+      "aliases": [
+        "LOS",
+        "MIBR LOS"
+      ]
     },
     {
       "name": "Fluxo w7m",
@@ -608,7 +730,18 @@
           "staff": true
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "FX",
+      "countryName": "Brasil",
+      "countryKey": "brasil",
+      "countryFlag": "flags/brasil.png",
+      "logo": "https://i.postimg.cc/mDD42WFN/fluxo-w7m-allmode.png",
+      "dataName": "FLUXO W7M",
+      "aliases": [
+        "Fluxo w7m",
+        "FLUXO W7M",
+        "FX"
+      ]
     },
     {
       "name": "GunDynasty",
@@ -657,7 +790,18 @@
           "staff": true
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "GD",
+      "countryName": "México",
+      "countryKey": "mexico",
+      "countryFlag": "flags/mexico.png",
+      "logo": "https://i.postimg.cc/MHBK087H/gund.webp",
+      "dataName": "GUNDYNASTY",
+      "aliases": [
+        "GD",
+        "GunDynasty",
+        "GUNDYNASTY"
+      ]
     },
     {
       "name": "LYON",
@@ -706,7 +850,16 @@
           "staff": true
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "LYON",
+      "countryName": "México",
+      "countryKey": "mexico",
+      "countryFlag": "flags/mexico.png",
+      "logo": "https://i.postimg.cc/XYGTQnxR/inco.webp",
+      "dataName": "LYON",
+      "aliases": [
+        "LYON"
+      ]
     },
     {
       "name": "Mia Corp",
@@ -748,7 +901,18 @@
           "staff": false
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "MIA",
+      "countryName": "Estados Unidos",
+      "countryKey": "estados-unidos",
+      "countryFlag": "flags/estados-unidos.png",
+      "logo": "https://i.postimg.cc/rwfcrpBq/mia.webp",
+      "dataName": "MIA CORP",
+      "aliases": [
+        "MIA",
+        "Mia Corp",
+        "MIA CORP"
+      ]
     },
     {
       "name": "Straw Hats Esports",
@@ -790,7 +954,19 @@
           "staff": false
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "SH",
+      "countryName": "Bangladesh",
+      "countryKey": "bangladesh",
+      "countryFlag": "flags/bangladesh.png",
+      "logo": "https://i.postimg.cc/T1nfLJxd/straw-hats.webp",
+      "dataName": "STRAW HATS",
+      "aliases": [
+        "SH",
+        "STRAW HATS",
+        "STRAW HATS ESPORTS",
+        "Straw Hats Esports"
+      ]
     },
     {
       "name": "Titan Esports Club",
@@ -846,7 +1022,19 @@
           "staff": true
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "TEC",
+      "countryName": "Bangladesh",
+      "countryKey": "bangladesh",
+      "countryFlag": "flags/bangladesh.png",
+      "logo": "https://i.postimg.cc/HxqTkPfw/titan-esports-club.webp",
+      "dataName": "TITAN ESPORTS",
+      "aliases": [
+        "TEC",
+        "TITAN ESPORTS",
+        "Titan Esports Club",
+        "TITAN ESPORTS CLUB"
+      ]
     },
     {
       "name": "Demons Pride",
@@ -888,7 +1076,18 @@
           "staff": false
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "DP",
+      "countryName": "Paquistão",
+      "countryKey": "paquistao",
+      "countryFlag": "flags/paquistao.png",
+      "logo": "https://i.postimg.cc/FzXQ4kLp/demons-pride.webp",
+      "dataName": "DEMONS PRIDE",
+      "aliases": [
+        "DEMONS PRIDE",
+        "Demons Pride",
+        "DP"
+      ]
     },
     {
       "name": "DRS Gaming",
@@ -930,7 +1129,18 @@
           "staff": false
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "DRS",
+      "countryName": "Nepal",
+      "countryKey": "nepal",
+      "countryFlag": "flags/nepal.png",
+      "logo": "https://i.postimg.cc/g05WgTkk/drs.webp",
+      "dataName": "DRS GAMING",
+      "aliases": [
+        "DRS",
+        "DRS GAMING",
+        "DRS Gaming"
+      ]
     },
     {
       "name": "Al Ahli Esports",
@@ -972,7 +1182,19 @@
           "staff": false
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "AHL",
+      "countryName": "Arábia Saudita",
+      "countryKey": "arabia-saudita",
+      "countryFlag": "flags/arabia-saudita.png",
+      "logo": "https://i.postimg.cc/zX1Jm6wN/al-ahli.webp",
+      "dataName": "AL AHLI",
+      "aliases": [
+        "AHL",
+        "AL AHLI",
+        "AL AHLI ESPORTS",
+        "Al Ahli Esports"
+      ]
     },
     {
       "name": "Paradox Gaming",
@@ -1014,7 +1236,18 @@
           "staff": false
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "PDX",
+      "countryName": "África do Sul",
+      "countryKey": "africa-do-sul",
+      "countryFlag": "flags/africa-do-sul.png",
+      "logo": "https://i.postimg.cc/m2NTTjV5/paradox.webp",
+      "dataName": "PARADOX GAMING",
+      "aliases": [
+        "Paradox Gaming",
+        "PARADOX GAMING",
+        "PDX"
+      ]
     },
     {
       "name": "Team Apex Gaming",
@@ -1056,7 +1289,19 @@
           "staff": false
         }
       ],
-      "group": "A"
+      "group": "A",
+      "abbreviation": "TAG",
+      "countryName": "Índia",
+      "countryKey": "india",
+      "countryFlag": "flags/india.png",
+      "logo": "https://i.postimg.cc/Kct25f6q/apex.webp",
+      "dataName": "APEX GAMING",
+      "aliases": [
+        "APEX GAMING",
+        "TAG",
+        "TEAM APEX GAMING",
+        "Team Apex Gaming"
+      ]
     },
     {
       "name": "S8UL Esports",
@@ -1098,7 +1343,18 @@
           "staff": false
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "S8UL",
+      "countryName": "Índia",
+      "countryKey": "india",
+      "countryFlag": "flags/india.png",
+      "logo": "https://i.postimg.cc/FsZXMRsq/s8ul.webp",
+      "dataName": "S8UL ESPORTS",
+      "aliases": [
+        "S8UL",
+        "S8UL ESPORTS",
+        "S8UL Esports"
+      ]
     },
     {
       "name": "Total Gaming Esports",
@@ -1140,7 +1396,19 @@
           "staff": false
         }
       ],
-      "group": "B"
+      "group": "B",
+      "abbreviation": "TGE",
+      "countryName": "Índia",
+      "countryKey": "india",
+      "countryFlag": "flags/india.png",
+      "logo": "https://i.postimg.cc/NfYwCTY2/total-gaming.webp",
+      "dataName": "TOTAL GAMING",
+      "aliases": [
+        "TGE",
+        "TOTAL GAMING",
+        "Total Gaming Esports",
+        "TOTAL GAMING ESPORTS"
+      ]
     }
   ]
 }

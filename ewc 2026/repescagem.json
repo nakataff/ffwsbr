@@ -1,0 +1,247 @@
+{
+  "tournament": "EWC 2026",
+  "stage": "Repescagem",
+  "updatedAt": "2026-07-17",
+  "finished": false,
+  "description": "Equipes classificadas entre o 5º e o 10º lugar dos Grupos A e B.",
+  "format": {
+    "days": 0,
+    "matches": 0,
+    "killPoints": 1,
+    "placementPoints": {
+      "1": 12,
+      "2": 9,
+      "3": 8,
+      "4": 7,
+      "5": 6,
+      "6": 5,
+      "7": 4,
+      "8": 3,
+      "9": 2,
+      "10": 1,
+      "11": 0,
+      "12": 0
+    }
+  },
+  "maps": [],
+  "rows": [
+    {
+      "position": 1,
+      "team": "Team Falcons",
+      "group": "A",
+      "sourcePosition": 5,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 2,
+      "team": "GunDynasty",
+      "group": "A",
+      "sourcePosition": 6,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 3,
+      "team": "Team Apex Gaming",
+      "group": "A",
+      "sourcePosition": 7,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 4,
+      "team": "Aurora Gaming",
+      "group": "A",
+      "sourcePosition": 8,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 5,
+      "team": "DRS Gaming",
+      "group": "A",
+      "sourcePosition": 9,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 6,
+      "team": "Titan Esports Club",
+      "group": "A",
+      "sourcePosition": 10,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 7,
+      "team": "Bigetron By Vitality",
+      "group": "B",
+      "sourcePosition": 5,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 8,
+      "team": "LYON",
+      "group": "B",
+      "sourcePosition": 6,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 9,
+      "team": "Team Secret VN orig",
+      "group": "B",
+      "sourcePosition": 7,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 10,
+      "team": "Total Gaming Esports",
+      "group": "B",
+      "sourcePosition": 8,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 11,
+      "team": "Straw Hats Esports",
+      "group": "B",
+      "sourcePosition": 9,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 12,
+      "team": "S8UL Esports",
+      "group": "B",
+      "sourcePosition": 10,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    }
+  ],
+  "teams": [
+    {
+      "team": "Team Falcons",
+      "sourceGroup": "A",
+      "sourcePosition": 5,
+      "matches": []
+    },
+    {
+      "team": "GunDynasty",
+      "sourceGroup": "A",
+      "sourcePosition": 6,
+      "matches": []
+    },
+    {
+      "team": "Team Apex Gaming",
+      "sourceGroup": "A",
+      "sourcePosition": 7,
+      "matches": []
+    },
+    {
+      "team": "Aurora Gaming",
+      "sourceGroup": "A",
+      "sourcePosition": 8,
+      "matches": []
+    },
+    {
+      "team": "DRS Gaming",
+      "sourceGroup": "A",
+      "sourcePosition": 9,
+      "matches": []
+    },
+    {
+      "team": "Titan Esports Club",
+      "sourceGroup": "A",
+      "sourcePosition": 10,
+      "matches": []
+    },
+    {
+      "team": "Bigetron By Vitality",
+      "sourceGroup": "B",
+      "sourcePosition": 5,
+      "matches": []
+    },
+    {
+      "team": "LYON",
+      "sourceGroup": "B",
+      "sourcePosition": 6,
+      "matches": []
+    },
+    {
+      "team": "Team Secret VN orig",
+      "sourceGroup": "B",
+      "sourcePosition": 7,
+      "matches": []
+    },
+    {
+      "team": "Total Gaming Esports",
+      "sourceGroup": "B",
+      "sourcePosition": 8,
+      "matches": []
+    },
+    {
+      "team": "Straw Hats Esports",
+      "sourceGroup": "B",
+      "sourcePosition": 9,
+      "matches": []
+    },
+    {
+      "team": "S8UL Esports",
+      "sourceGroup": "B",
+      "sourcePosition": 10,
+      "matches": []
+    }
+  ]
+}

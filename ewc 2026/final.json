@@ -1,0 +1,175 @@
+{
+  "tournament": "EWC 2026",
+  "stage": "Final",
+  "updatedAt": "2026-07-17",
+  "finished": false,
+  "description": "Os quatro melhores de cada grupo garantiram vaga direta na Final.",
+  "format": {
+    "days": 0,
+    "matches": 0,
+    "killPoints": 1,
+    "placementPoints": {
+      "1": 12,
+      "2": 9,
+      "3": 8,
+      "4": 7,
+      "5": 6,
+      "6": 5,
+      "7": 4,
+      "8": 3,
+      "9": 2,
+      "10": 1,
+      "11": 0,
+      "12": 0
+    }
+  },
+  "maps": [],
+  "rows": [
+    {
+      "position": 1,
+      "team": "Buriram United Esports",
+      "group": "A",
+      "sourcePosition": 1,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 2,
+      "team": "EVOS Divine",
+      "group": "A",
+      "sourcePosition": 2,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 3,
+      "team": "All Gamers Global",
+      "group": "A",
+      "sourcePosition": 3,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 4,
+      "team": "LOUD",
+      "group": "A",
+      "sourcePosition": 4,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 5,
+      "team": "Twisted Minds",
+      "group": "B",
+      "sourcePosition": 1,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 6,
+      "team": "MIBR LOS",
+      "group": "B",
+      "sourcePosition": 2,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 7,
+      "team": "RRQ",
+      "group": "B",
+      "sourcePosition": 3,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    },
+    {
+      "position": 8,
+      "team": "Fluxo w7m",
+      "group": "B",
+      "sourcePosition": 4,
+      "matches": 0,
+      "booyahs": 0,
+      "kills": 0,
+      "placementPoints": 0,
+      "points": 0,
+      "status": "Em breve"
+    }
+  ],
+  "teams": [
+    {
+      "team": "Buriram United Esports",
+      "sourceGroup": "A",
+      "sourcePosition": 1,
+      "matches": []
+    },
+    {
+      "team": "EVOS Divine",
+      "sourceGroup": "A",
+      "sourcePosition": 2,
+      "matches": []
+    },
+    {
+      "team": "All Gamers Global",
+      "sourceGroup": "A",
+      "sourcePosition": 3,
+      "matches": []
+    },
+    {
+      "team": "LOUD",
+      "sourceGroup": "A",
+      "sourcePosition": 4,
+      "matches": []
+    },
+    {
+      "team": "Twisted Minds",
+      "sourceGroup": "B",
+      "sourcePosition": 1,
+      "matches": []
+    },
+    {
+      "team": "MIBR LOS",
+      "sourceGroup": "B",
+      "sourcePosition": 2,
+      "matches": []
+    },
+    {
+      "team": "RRQ",
+      "sourceGroup": "B",
+      "sourcePosition": 3,
+      "matches": []
+    },
+    {
+      "team": "Fluxo w7m",
+      "sourceGroup": "B",
+      "sourcePosition": 4,
+      "matches": []
+    }
+  ]
+}

@@ -55,7 +55,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <link rel="dns-prefetch" href="https://docs.google.com">
 <link rel="stylesheet" href="css/bundle.min.css?v=20260706-laff-final-v1">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
-<link rel="stylesheet" href="ewc%202026/ewc.css?v=20260717-ewc-groups-v1">
+<link rel="stylesheet" href="ewc%202026/ewc.css?v=20260717-ewc-stages-v2">
   <style id="home-ffws-champion-fixed-css">
 .home-champions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; margin-bottom: 25px; }
 .home-champions-grid > .home-widget { margin-bottom: 0 !important; min-width: 0; }
@@ -197,6 +197,23 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         <button onclick="window.location.href='manager.html?v=20260610-wb-standalone-v2'" id="sb-wbamanger">WB MANAGER BETA</button>
 
         <div class="sidebar-divider"></div>
+        <section class="sidebar-section" id="sidebar-section-ewc" data-section-key="ewc">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ewc')" aria-expanded="false" aria-controls="sidebar-content-ewc">
+                <span>EWC 2026</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="sidebar-section-content" id="sidebar-content-ewc">
+                <div>
+                    <button onclick="navigateAndClose('ewc-grupos')" id="sb-ewc-grupos">FASE DE GRUPOS</button>
+                    <button onclick="navigateAndClose('ewc-repescagem')" id="sb-ewc-repescagem">REPESCAGEM</button>
+                    <button onclick="navigateAndClose('ewc-final')" id="sb-ewc-final">FINAL</button>
+                    <button onclick="navigateAndClose('ewc-mvp')" id="sb-ewc-mvp">RANKING MVP</button>
+                    <button onclick="navigateAndClose('ewc-equipes')" id="sb-ewc-equipes">EQUIPES</button>
+                    <button onclick="navigateAndClose('ewc-stats')" id="sb-ewc-stats">ESTATÍSTICAS GERAIS</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="sidebar-divider"></div>
         <section class="sidebar-section is-open" id="sidebar-section-ffws-br" data-section-key="ffws-br">
             <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ffws-br')" aria-expanded="true" aria-controls="sidebar-content-ffws-br">
                 <span>FFWS BR 2026 S1</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
@@ -232,23 +249,6 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 </div>
             </div>
         </section>
-
-        <div class="sidebar-divider"></div>
-        <section class="sidebar-section" id="sidebar-section-ewc" data-section-key="ewc">
-            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ewc')" aria-expanded="false" aria-controls="sidebar-content-ewc">
-                <span>EWC 2026</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
-            </button>
-            <div class="sidebar-section-content" id="sidebar-content-ewc">
-                <div>
-                    <button onclick="navigateAndClose('ewc-tabela')" id="sb-ewc-tabela">TABELA</button>
-                    <button onclick="navigateAndClose('ewc-kills')" id="sb-ewc-kills">RANKING DE KILLS</button>
-                    <button onclick="navigateAndClose('ewc-equipes')" id="sb-ewc-equipes">EQUIPES</button>
-                    <button onclick="navigateAndClose('ewc-datas')" id="sb-ewc-datas">DATAS</button>
-                    <button onclick="navigateAndClose('ewc-stats')" id="sb-ewc-stats">ESTATÍSTICAS GERAIS</button>
-                </div>
-            </div>
-        </section>
-
         <div class="sidebar-divider"></div>
         <section class="sidebar-section" id="sidebar-section-internacional" data-section-key="internacional">
             <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('internacional')" aria-expanded="false" aria-controls="sidebar-content-internacional">
@@ -1410,20 +1410,24 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     <div class="ewc-empty">Abrindo EWC 2026...</div>
 </div>
 
-<div id="ewc-tabela" class="page">
-    <div id="ewc-tabela-content"></div>
+<div id="ewc-grupos" class="page">
+    <div id="ewc-grupos-content"></div>
 </div>
 
-<div id="ewc-kills" class="page">
-    <div id="ewc-kills-content"></div>
+<div id="ewc-repescagem" class="page">
+    <div id="ewc-repescagem-content"></div>
+</div>
+
+<div id="ewc-final" class="page">
+    <div id="ewc-final-content"></div>
+</div>
+
+<div id="ewc-mvp" class="page">
+    <div id="ewc-mvp-content"></div>
 </div>
 
 <div id="ewc-equipes" class="page">
     <div id="ewc-equipes-content"></div>
-</div>
-
-<div id="ewc-datas" class="page">
-    <div id="ewc-datas-content"></div>
 </div>
 
 <div id="ewc-stats" class="page">
@@ -2038,8 +2042,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/ffws-sea.min.js?v=20260611-sea-point-rush-v1"></script>
 <script defer src="js/laff.min.js?v=20260713-performance-v1"></script>
 <script defer src="js/sea-profiles.min.js?v=20260713-performance-v1"></script>
-<script defer src="ewc%202026/config.js?v=20260717-ewc-groups-v1"></script>
-<script defer src="ewc%202026/ewc.js?v=20260717-ewc-groups-v1"></script>
+<script defer src="ewc%202026/config.js?v=20260717-ewc-stages-v2"></script>
+<script defer src="ewc%202026/ewc.js?v=20260717-ewc-stages-v2"></script>
 <script defer src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
 </main>
 

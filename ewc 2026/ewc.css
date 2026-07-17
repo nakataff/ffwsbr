@@ -270,3 +270,173 @@
   .ewc-status-short { display: inline; }
   .ewc-status-badge { padding: 4px 6px; font-size: .60rem; }
 }
+
+/* Etapas, filtros e bandeiras — EWC 2026 */
+.ewc-live-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 0;
+  padding: 15px;
+  border: 1px solid var(--ewc-border);
+  border-radius: 14px;
+  background: rgba(13, 18, 32, .92);
+}
+.ewc-live-filters label {
+  display: grid;
+  gap: 7px;
+  min-width: 180px;
+  color: #8fa0b8;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.ewc-live-filters select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 38px 0 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 9px;
+  background: #0a0f1c;
+  color: #fff;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 800;
+  outline: none;
+}
+.ewc-live-filters select:focus { border-color: rgba(0,200,255,.68); box-shadow: 0 0 0 3px rgba(0,200,255,.09); }
+.ewc-live-filters select:disabled { opacity: .55; cursor: not-allowed; }
+.ewc-filter-summary {
+  margin-top: -12px;
+  color: #8fa0b8;
+  font-size: .72rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+.ewc-table { table-layout: auto; }
+.ewc-table th:first-child, .ewc-table td:first-child { width: 42px; }
+.ewc-table .mobile-label { display: none; }
+.ewc-team-cell {
+  min-width: 210px;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.ewc-team-visuals {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+.ewc-team-cell .ewc-team-logo {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  object-fit: contain;
+}
+.ewc-team-cell .ewc-team-country {
+  width: 22px;
+  height: 15px;
+  flex: 0 0 22px;
+  border-radius: 2px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.13);
+}
+.ewc-team-name-full { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ewc-team-name-short { display: none; }
+.ewc-card-country {
+  width: 18px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 2px;
+  object-fit: cover;
+  vertical-align: -2px;
+}
+
+.ewc-profile-team-visual { position: relative; display: inline-flex; flex: 0 0 auto; }
+.ewc-profile-country {
+  position: absolute;
+  right: -7px;
+  bottom: -3px;
+  width: 30px;
+  height: 20px;
+  border: 2px solid #101728;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.ewc-coming-soon {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 28px;
+  text-align: center;
+}
+.ewc-coming-soon span {
+  padding: 6px 11px;
+  border: 1px solid rgba(0,200,255,.24);
+  border-radius: 999px;
+  background: rgba(0,200,255,.08);
+  color: var(--ewc-accent);
+  font-size: .68rem;
+  font-weight: 1000;
+  letter-spacing: .14em;
+}
+.ewc-coming-soon strong { color: #fff; font-size: clamp(1.4rem, 4vw, 2.2rem); text-transform: uppercase; }
+.ewc-coming-soon p { margin: 0; color: #8fa0b8; font-weight: 750; }
+
+@media (max-width: 680px) {
+  .ewc-live-filters { align-items: stretch; gap: 9px; padding: 11px; }
+  .ewc-live-filters label { min-width: 0; flex: 1 1 0; }
+  .ewc-live-filters select { min-height: 40px; padding-left: 9px; font-size: .74rem; }
+  .ewc-filter-summary { margin-top: -14px; font-size: .64rem; }
+  .ewc-table-wrap { overflow-x: hidden; }
+  .ewc-table { width: 100%; table-layout: fixed; }
+  .ewc-table th, .ewc-table td { padding: 9px 4px; font-size: .73rem; }
+  .ewc-table .desktop-label { display: none; }
+  .ewc-table .mobile-label { display: inline; }
+  .ewc-table th:first-child, .ewc-table td:first-child { width: 28px; }
+  .ewc-team-cell { min-width: 0; width: 78px; justify-content: flex-start; gap: 4px; text-align: left !important; }
+  .ewc-team-cell .ewc-team-logo { width: 27px; height: 27px; flex-basis: 27px; }
+  .ewc-team-cell .ewc-team-country { width: 18px; height: 12px; flex-basis: 18px; }
+  .ewc-team-name-full { display: none !important; }
+  .ewc-team-name-short { display: none; }
+  .ewc-status-badge { max-width: 47px; justify-content: center; }
+  .ewc-status-full { display: none; }
+  .ewc-status-short { display: inline; }
+  .ewc-table th:last-child, .ewc-table td:last-child { width: 50px; }
+}
+
+@media (max-width: 430px) {
+  .ewc-live-filters { flex-direction: column; }
+  .ewc-filter-summary { margin-top: -13px; text-align: left; }
+  .ewc-table th, .ewc-table td { padding: 8px 3px; font-size: .68rem; }
+  .ewc-team-cell { width: 68px; }
+  .ewc-team-cell .ewc-team-logo { width: 24px; height: 24px; flex-basis: 24px; }
+  .ewc-team-cell .ewc-team-country { width: 16px; height: 11px; flex-basis: 16px; }
+}
+
+@media (max-width: 680px) {
+  .ewc-team-cell .ewc-team-visuals { display: inline-flex; }
+}
+
+@media (max-width: 680px) {
+  .ewc-team-cell { width: 104px; }
+  .ewc-team-cell .ewc-team-name-short {
+    display: inline;
+    max-width: 34px;
+    overflow: hidden;
+    color: #eef5ff;
+    font-size: .65rem;
+    font-weight: 950;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 430px) {
+  .ewc-team-cell { width: 96px; }
+  .ewc-team-cell .ewc-team-name-short { max-width: 29px; font-size: .60rem; }
+}
