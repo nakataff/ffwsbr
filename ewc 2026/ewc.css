@@ -596,3 +596,233 @@
   .ewc-stats-ranking-table th:nth-child(2),
   .ewc-stats-ranking-table td:nth-child(2) { width: 96px; }
 }
+
+/* EWC 2026 — destaques por equipe no padrão da página #stats */
+.ewc-stats-filter-section,
+.ewc-leader-section {
+  display: grid;
+  gap: 14px;
+}
+.ewc-stats-filter-section > h2,
+.ewc-leader-section > h2 {
+  margin: 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+  color: #66b3ff;
+  font-size: 1rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.ewc-leader-section > h2 small {
+  color: #7f8b9d;
+  font-size: .58em;
+  font-weight: 650;
+  text-transform: none;
+}
+.ewc-leader-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.ewc-leader-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 26px;
+  border: 1px solid rgba(107, 127, 163, .34);
+  border-radius: 12px;
+  background: rgba(15, 19, 29, .97);
+}
+.ewc-leader-card-border {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--accent);
+}
+.ewc-leader-card h3 {
+  margin: 0 0 20px;
+  color: #78aee9;
+  font-size: 1.05rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.ewc-leader-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 0 12px 10px;
+  color: #6e7a8f;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ewc-leader-columns span:last-child { text-align: right; }
+.ewc-leader-list { display: grid; gap: 7px; }
+.ewc-leader-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 42px;
+  padding: 7px 12px;
+  border-left: 3px solid #78818f;
+  border-radius: 5px;
+  background: rgba(255,255,255,.025);
+}
+.ewc-leader-row.rank-1 { border-left-color: #ffd700; }
+.ewc-leader-row.rank-2 { border-left-color: #c9ced6; }
+.ewc-leader-row.rank-3 { border-left-color: #d9872e; }
+.ewc-leader-rank {
+  color: #5f6877;
+  font-size: .9rem;
+  font-weight: 950;
+}
+.ewc-leader-team {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 950;
+  text-align: left;
+  cursor: pointer;
+}
+.ewc-leader-team:hover { color: var(--accent); }
+.ewc-leader-visuals {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+.ewc-leader-flag,
+.ewc-leader-flag-placeholder {
+  width: 18px;
+  height: 12px;
+  flex: 0 0 18px;
+  border-radius: 2px;
+  object-fit: cover;
+}
+.ewc-leader-flag-placeholder { background: rgba(255,255,255,.04); }
+.ewc-leader-logo {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  object-fit: contain;
+}
+.ewc-leader-name-full,
+.ewc-leader-name-short {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ewc-leader-name-short { display: none; }
+.ewc-leader-value {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 52px;
+  margin-left: 9px;
+  text-align: right;
+}
+.ewc-leader-value strong {
+  color: var(--accent);
+  font-size: .93rem;
+  font-weight: 1000;
+}
+.ewc-leader-value small {
+  margin-top: 1px;
+  color: #687488;
+  font-size: .60rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+.ewc-leader-empty {
+  padding: 18px 10px;
+  color: #7e8a9e;
+  font-size: .78rem;
+  text-align: center;
+}
+.ewc-leader-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 13px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.ewc-leader-pagination button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 50%;
+  background: rgba(255,255,255,.055);
+  color: #b7c3d6;
+  font-size: 1.08rem;
+  cursor: pointer;
+}
+.ewc-leader-pagination button:hover:not(:disabled) {
+  border-color: rgba(0,200,255,.35);
+  color: var(--accent);
+}
+.ewc-leader-pagination button:disabled {
+  opacity: .28;
+  cursor: default;
+}
+.ewc-leader-pagination span {
+  color: #7b8799;
+  font-size: .72rem;
+}
+.ewc-summary-section { margin-top: 2px; }
+.ewc-summary-section .ewc-stat-cards {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.ewc-summary-section .ewc-stat-card { padding: 13px; }
+.ewc-summary-section .ewc-stat-card > strong { font-size: 1.12rem; }
+.ewc-ranking-filters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(145px, 1fr));
+  margin: 0 0 14px;
+}
+.ewc-ranking-filters label { min-width: 0; }
+
+@media (max-width: 1180px) {
+  .ewc-leader-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ewc-summary-section .ewc-stat-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ewc-ranking-filters { grid-template-columns: repeat(3, minmax(150px, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .ewc-leader-grid { grid-template-columns: 1fr; gap: 14px; }
+  .ewc-leader-card { padding: 20px 14px 16px; }
+  .ewc-leader-card h3 { margin-bottom: 15px; font-size: .92rem; }
+  .ewc-leader-row { grid-template-columns: 29px minmax(0, 1fr) auto; padding: 7px 9px; }
+  .ewc-leader-rank { font-size: .80rem; }
+  .ewc-leader-name-full { display: none; }
+  .ewc-leader-name-short { display: inline; }
+  .ewc-leader-team { font-size: .79rem; }
+  .ewc-leader-flag,
+  .ewc-leader-flag-placeholder { width: 16px; height: 11px; flex-basis: 16px; }
+  .ewc-leader-logo { width: 17px; height: 17px; flex-basis: 17px; }
+  .ewc-summary-section .ewc-stat-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ewc-ranking-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 430px) {
+  .ewc-leader-row { grid-template-columns: 27px minmax(0, 1fr) auto; }
+  .ewc-leader-visuals { gap: 4px; }
+  .ewc-leader-value { min-width: 44px; margin-left: 5px; }
+  .ewc-leader-value strong { font-size: .85rem; }
+  .ewc-summary-section .ewc-stat-cards,
+  .ewc-ranking-filters { grid-template-columns: 1fr; }
+}

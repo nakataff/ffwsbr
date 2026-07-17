@@ -41,11 +41,16 @@
     stage: 'general',
     day: 'all',
     map: 'all',
-    confrontation: 'all',
-    totalMode: 'total'
+    confrontation: 'all'
+  };
+
+  const statsRankingFilters = {
+    avg: { stage: 'general', day: 'all', map: 'all', confrontation: 'all' },
+    total: { stage: 'general', day: 'all', map: 'all', confrontation: 'all', totalMode: 'total' }
   };
 
   const statsExpanded = { avg: false, total: false };
+  const statsCardPages = Object.create(null);
   let activeGroup = 'A';
   let teams = [];
   let groupData = { rows: [], groups: {} };
@@ -528,33 +533,45 @@
     ];
   }
 
-  function selectedStatsContexts() {
+  function selectedStatsContexts(filterState) {
+    const current = filterState || statsFilters;
     return statsContexts().filter(context => {
-      const stageOk = statsFilters.stage === 'general' || context.stage === statsFilters.stage;
-      const confrontationOk = statsFilters.confrontation === 'all' || context.confrontation === statsFilters.confrontation;
+      const stageOk = current.stage === 'general' || context.stage === current.stage;
+      const confrontationOk = current.confrontation === 'all' || context.confrontation === current.confrontation;
       return stageOk && confrontationOk;
     });
   }
 
-  function statsFilterOptions() {
-    const matches = selectedStatsContexts().flatMap(context => (context.teams || []).flatMap(team => team.matches || []));
+  function statsFilterOptions(filterState) {
+    const current = filterState || statsFilters;
+    const matches = selectedStatsContexts(current).flatMap(context => (context.teams || []).flatMap(team => team.matches || []));
     const days = [...new Set(matches.map(match => Number(match.day)).filter(Boolean))].sort((a, b) => a - b);
     const maps = [...new Set(matches.map(match => String(match.map || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    if (statsFilters.day !== 'all' && !days.some(day => String(day) === String(statsFilters.day))) statsFilters.day = 'all';
-    if (statsFilters.map !== 'all' && !maps.includes(statsFilters.map)) statsFilters.map = 'all';
+    if (current.day !== 'all' && !days.some(day => String(day) === String(current.day))) current.day = 'all';
+    if (current.map !== 'all' && !maps.includes(current.map)) current.map = 'all';
     return { days, maps };
   }
 
+  function statsStageOptions(current) {
+    return `<option value="groups"${current.stage === 'groups' ? ' selected' : ''}>Fase de grupos</option>
+      <option value="survival"${current.stage === 'survival' ? ' selected' : ''}>Repescagem</option>
+      <option value="final"${current.stage === 'final' ? ' selected' : ''}>Final</option>
+      <option value="general"${current.stage === 'general' ? ' selected' : ''}>Geral</option>`;
+  }
+
+  function statsConfrontationOptions(current) {
+    return `<option value="all"${current.confrontation === 'all' ? ' selected' : ''}>Geral</option>
+      <option value="group-a"${current.confrontation === 'group-a' ? ' selected' : ''}>Grupo A</option>
+      <option value="group-b"${current.confrontation === 'group-b' ? ' selected' : ''}>Grupo B</option>
+      <option value="survival"${current.confrontation === 'survival' ? ' selected' : ''}>Repescagem</option>
+      <option value="final"${current.confrontation === 'final' ? ' selected' : ''}>Final</option>`;
+  }
+
   function statsFiltersMarkup() {
-    const options = statsFilterOptions();
+    const options = statsFilterOptions(statsFilters);
     return `<div class="filters ewc-live-filters ewc-stats-filters">
       <label><span>Etapa:</span>
-        <select onchange="setEWCStatsFilter('stage', this.value)">
-          <option value="groups"${statsFilters.stage === 'groups' ? ' selected' : ''}>Fase de grupos</option>
-          <option value="survival"${statsFilters.stage === 'survival' ? ' selected' : ''}>Repescagem</option>
-          <option value="final"${statsFilters.stage === 'final' ? ' selected' : ''}>Final</option>
-          <option value="general"${statsFilters.stage === 'general' ? ' selected' : ''}>Geral</option>
-        </select>
+        <select onchange="setEWCStatsFilter('stage', this.value)">${statsStageOptions(statsFilters)}</select>
       </label>
       <label><span>Dias:</span>
         <select onchange="setEWCStatsFilter('day', this.value)">
@@ -563,13 +580,7 @@
         </select>
       </label>
       <label><span>Confrontos:</span>
-        <select onchange="setEWCStatsFilter('confrontation', this.value)">
-          <option value="all"${statsFilters.confrontation === 'all' ? ' selected' : ''}>Geral</option>
-          <option value="group-a"${statsFilters.confrontation === 'group-a' ? ' selected' : ''}>Grupo A</option>
-          <option value="group-b"${statsFilters.confrontation === 'group-b' ? ' selected' : ''}>Grupo B</option>
-          <option value="survival"${statsFilters.confrontation === 'survival' ? ' selected' : ''}>Repescagem</option>
-          <option value="final"${statsFilters.confrontation === 'final' ? ' selected' : ''}>Final</option>
-        </select>
+        <select onchange="setEWCStatsFilter('confrontation', this.value)">${statsConfrontationOptions(statsFilters)}</select>
       </label>
       <label><span>Mapas:</span>
         <select onchange="setEWCStatsFilter('map', this.value)">
@@ -580,9 +591,37 @@
     </div>`;
   }
 
-  function aggregateStatsTeams() {
+  function rankingFiltersMarkup(type) {
+    const current = statsRankingFilters[type];
+    const options = statsFilterOptions(current);
+    const isTotal = type === 'total';
+    return `<div class="filters ewc-live-filters ewc-ranking-filters">
+      <label><span>Etapa:</span>
+        <select onchange="setEWCRankingFilter('${type}', 'stage', this.value)">${statsStageOptions(current)}</select>
+      </label>
+      <label><span>Dias:</span>
+        <select onchange="setEWCRankingFilter('${type}', 'day', this.value)">
+          <option value="all"${current.day === 'all' ? ' selected' : ''}>Todos os dias</option>
+          ${options.days.map(day => `<option value="${day}"${String(current.day) === String(day) ? ' selected' : ''}>Dia ${day}</option>`).join('')}
+        </select>
+      </label>
+      ${isTotal ? `<label><span>Exibição:</span><select onchange="setEWCTotalMode(this.value)"><option value="total"${current.totalMode === 'total' ? ' selected' : ''}>TOTAL</option><option value="day-average"${current.totalMode === 'day-average' ? ' selected' : ''}>MÉDIA POR DIA</option></select></label>` : ''}
+      <label><span>Confrontos:</span>
+        <select onchange="setEWCRankingFilter('${type}', 'confrontation', this.value)">${statsConfrontationOptions(current)}</select>
+      </label>
+      <label><span>Mapas:</span>
+        <select onchange="setEWCRankingFilter('${type}', 'map', this.value)">
+          <option value="all"${current.map === 'all' ? ' selected' : ''}>Todos os mapas</option>
+          ${options.maps.map(map => `<option value="${escapeHtml(map)}"${current.map === map ? ' selected' : ''}>${escapeHtml(map)}</option>`).join('')}
+        </select>
+      </label>
+    </div>`;
+  }
+
+  function aggregateStatsTeams(filterState) {
+    const current = filterState || statsFilters;
     const aggregated = new Map();
-    selectedStatsContexts().forEach(context => {
+    selectedStatsContexts(current).forEach(context => {
       (context.teams || []).forEach(entry => {
         const name = entry.team;
         const team = teamByName(name);
@@ -597,8 +636,8 @@
         }
         const row = aggregated.get(canonicalKey);
         (entry.matches || []).forEach(match => {
-          if (statsFilters.day !== 'all' && String(match.day) !== String(statsFilters.day)) return;
-          if (statsFilters.map !== 'all' && String(match.map || '') !== String(statsFilters.map)) return;
+          if (current.day !== 'all' && String(match.day) !== String(current.day)) return;
+          if (current.map !== 'all' && String(match.map || '') !== String(current.map)) return;
           row.matches += 1;
           row.points += Number(match.points) || 0;
           row.kills += Number(match.kills) || 0;
@@ -630,14 +669,90 @@
     return `<article class="ewc-stat-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong>${detail ? `<small>${escapeHtml(detail)}</small>` : ''}</article>`;
   }
 
-  function leaderCardValue(row, metric, suffix) {
-    if (!row) return '—';
-    return `${teamAbbreviation(row.team)} • ${metric}${suffix || ''}`;
+  function statsTeamIdentity(teamName) {
+    const team = teamByName(teamName);
+    const flag = resolveTeamFlag(teamName);
+    const full = teamDisplayName(teamName);
+    const short = teamAbbreviation(teamName);
+    return `<button type="button" class="ewc-leader-team" onclick="openEWCTeamProfile(${jsString(teamName)})" title="${escapeHtml(full)}">
+      <span class="ewc-leader-visuals">
+        ${flag ? `<img class="ewc-leader-flag" src="${escapeHtml(flag)}" alt="${escapeHtml(team?.countryName || '')}" onerror="this.style.display='none'">` : '<span class="ewc-leader-flag-placeholder" aria-hidden="true"></span>'}
+        <img class="ewc-leader-logo" src="${escapeHtml(resolveLogo(teamName))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'">
+      </span>
+      <span class="ewc-leader-name-full">${escapeHtml(full)}</span>
+      <span class="ewc-leader-name-short">${escapeHtml(short)}</span>
+    </button>`;
+  }
+
+  function statsLeaderboardCard(id, title, rows, metric, formatter, valueLabel, options) {
+    const settings = Object.assign({ ascending: false, detail: null }, options || {});
+    const sorted = [...rows].sort((a, b) => {
+      const difference = Number(metric(a) || 0) - Number(metric(b) || 0);
+      if (difference) return settings.ascending ? difference : -difference;
+      return Number(b.points || 0) - Number(a.points || 0) || Number(b.kills || 0) - Number(a.kills || 0);
+    });
+    const pageSize = 4;
+    const pageCount = Math.max(1, Math.ceil(sorted.length / pageSize));
+    let page = Math.max(0, Math.min(pageCount - 1, Number(statsCardPages[id]) || 0));
+    statsCardPages[id] = page;
+    const start = page * pageSize;
+    const visible = sorted.slice(start, start + pageSize);
+    const rowsHtml = visible.length ? visible.map((row, offset) => {
+      const rank = start + offset + 1;
+      const detail = typeof settings.detail === 'function' ? settings.detail(row) : '';
+      return `<div class="ewc-leader-row rank-${Math.min(rank, 4)}">
+        <span class="ewc-leader-rank">${rank}º</span>
+        ${statsTeamIdentity(row.team)}
+        <span class="ewc-leader-value"><strong>${escapeHtml(formatter(metric(row), row))}</strong>${detail ? `<small>${escapeHtml(detail)}</small>` : ''}</span>
+      </div>`;
+    }).join('') : '<div class="ewc-leader-empty">Sem resultados neste recorte.</div>';
+    const pagination = sorted.length > pageSize ? `<div class="ewc-leader-pagination">
+      <button type="button" ${page === 0 ? 'disabled' : ''} onclick="setEWCStatsCardPage('${id}', -1)" aria-label="Página anterior">‹</button>
+      <span>Top ${start + 1}–${Math.min(start + pageSize, sorted.length)}</span>
+      <button type="button" ${page >= pageCount - 1 ? 'disabled' : ''} onclick="setEWCStatsCardPage('${id}', 1)" aria-label="Próxima página">›</button>
+    </div>` : '';
+    return `<article class="ewc-leader-card">
+      <div class="ewc-leader-card-border"></div>
+      <h3>${escapeHtml(title)}</h3>
+      <div class="ewc-leader-columns"><span>Equipe</span><span>${escapeHtml(valueLabel)}</span></div>
+      <div class="ewc-leader-list">${rowsHtml}</div>
+      ${pagination}
+    </article>`;
+  }
+
+  function statsLeaderSections(rows) {
+    const integer = value => Math.round(Number(value || 0)).toLocaleString('pt-BR');
+    const oneDecimal = value => formatDecimal(value, 1);
+    return `<section class="ewc-leader-section">
+      <h2>Totais por equipe</h2>
+      <div class="ewc-leader-grid">
+        ${statsLeaderboardCard('points', 'Top Pontos', rows, row => row.points, integer, 'PTS')}
+        ${statsLeaderboardCard('kills', 'Top Abates', rows, row => row.kills, integer, 'KILLS')}
+        ${statsLeaderboardCard('booyahs', 'Top Booyahs', rows, row => row.booyahs, integer, 'B!')}
+      </div>
+    </section>
+    <section class="ewc-leader-section">
+      <h2>Médias por equipe</h2>
+      <div class="ewc-leader-grid">
+        ${statsLeaderboardCard('avg-points', 'Média de Pontos', rows, row => row.avgPoints, oneDecimal, 'MÉDIA')}
+        ${statsLeaderboardCard('avg-kills', 'Média de Abates', rows, row => row.avgKills, oneDecimal, 'MÉDIA')}
+        ${statsLeaderboardCard('avg-placement', 'Colocação Média', rows, row => row.avgPlacement, value => `${oneDecimal(value)}º`, 'POS', { ascending: true })}
+      </div>
+    </section>
+    <section class="ewc-leader-section">
+      <h2>Top 3 e último lugar por equipe <small>(número de quedas ao lado)</small></h2>
+      <div class="ewc-leader-grid">
+        ${statsLeaderboardCard('top3-count', '+ Vezes no Top 3', rows, row => row.top3, integer, 'TOP 3', { detail: row => `${row.matches} Q` })}
+        ${statsLeaderboardCard('top3-rate', 'Maior Média de Top 3', rows, row => row.top3Rate, value => `${oneDecimal(value)}%`, '% TOP 3', { detail: row => `${row.top3}x` })}
+        ${statsLeaderboardCard('last-count', '+ Vezes em Último (12º)', rows, row => row.last, integer, '12º', { detail: row => `${row.matches} Q` })}
+      </div>
+    </section>`;
   }
 
   function averageRankingTable(rows) {
     const sorted = [...rows].sort((a, b) => b.avgPoints - a.avgPoints || b.avgKills - a.avgKills || a.avgPlacement - b.avgPlacement);
     const visible = statsExpanded.avg ? sorted : sorted.slice(0, 6);
+    if (!sorted.length) return '<div class="ewc-empty">Ainda não há resultados para estes filtros.</div>';
     return `<div class="table-container ewc-table-wrap"><table class="ewc-table ewc-stats-ranking-table">
       <thead><tr><th>#</th><th><span class="desktop-label">Equipe</span><span class="mobile-label">E</span></th><th>PTS</th><th>KILLS</th><th>POS</th><th class="ewc-hide-mobile">Q</th></tr></thead>
       <tbody>${visible.map((row, index) => `<tr data-clickable="true" onclick="openEWCTeamProfile(${jsString(row.team)})"><td class="ewc-rank">${index + 1}º</td>${teamCell(row.team)}<td class="ewc-stat-primary">${formatDecimal(row.avgPoints, 1)}</td><td>${formatDecimal(row.avgKills, 1)}</td><td>${formatDecimal(row.avgPlacement, 1)}º</td><td class="ewc-hide-mobile">${row.matches}</td></tr>`).join('')}</tbody>
@@ -645,7 +760,7 @@
   }
 
   function totalRankingTable(rows) {
-    const mode = statsFilters.totalMode;
+    const mode = statsRankingFilters.total.totalMode;
     const ranked = rows.map(row => ({
       ...row,
       displayPoints: mode === 'day-average' ? row.points / row.dayCount : row.points,
@@ -653,6 +768,7 @@
       displayKills: mode === 'day-average' ? row.kills / row.dayCount : row.kills
     })).sort((a, b) => b.displayPoints - a.displayPoints || b.displayKills - a.displayKills || b.points - a.points);
     const visible = statsExpanded.total ? ranked : ranked.slice(0, 6);
+    if (!ranked.length) return '<div class="ewc-empty">Ainda não há resultados para estes filtros.</div>';
     const format = value => mode === 'day-average' ? formatDecimal(value, 1) : String(Math.round(value));
     return `<div class="table-container ewc-table-wrap"><table class="ewc-table ewc-stats-ranking-table">
       <thead><tr><th>#</th><th><span class="desktop-label">Equipe</span><span class="mobile-label">E</span></th><th>${mode === 'day-average' ? 'PTS/DIA' : 'PTS'}</th><th>${mode === 'day-average' ? 'B!/DIA' : 'BOOYAH'}</th><th>${mode === 'day-average' ? 'K/DIA' : 'KILLS'}</th></tr></thead>
@@ -663,48 +779,44 @@
   function renderStats() {
     const root = document.getElementById('ewc-stats-content');
     if (!root) return;
-    const filtersHtml = statsFiltersMarkup();
-    const rows = aggregateStatsTeams();
+    const rows = aggregateStatsTeams(statsFilters);
+    const averageRows = aggregateStatsTeams(statsRankingFilters.avg);
+    const totalRows = aggregateStatsTeams(statsRankingFilters.total);
     const totals = rows.reduce((acc, row) => {
-      acc.points += row.points; acc.kills += row.kills; acc.booyahs += row.booyahs;
-      acc.matches += row.matches; acc.placementSum += row.placementSum;
+      acc.points += row.points;
+      acc.kills += row.kills;
+      acc.booyahs += row.booyahs;
+      acc.matches += row.matches;
+      acc.placementSum += row.placementSum;
       return acc;
     }, { points: 0, kills: 0, booyahs: 0, matches: 0, placementSum: 0 });
     const teamCount = rows.length;
-    const top3Leader = [...rows].sort((a, b) => b.top3 - a.top3 || b.top3Rate - a.top3Rate)[0];
-    const top3RateLeader = [...rows].sort((a, b) => b.top3Rate - a.top3Rate || b.top3 - a.top3)[0];
-    const lastLeader = [...rows].sort((a, b) => b.last - a.last || b.matches - a.matches)[0];
-    const empty = !rows.length;
 
     root.innerHTML = `<div class="ewc-shell">
-      ${hero('Estatísticas gerais', 'Desempenho coletivo das equipes na EWC 2026')}
-      ${filtersHtml}
-      ${empty ? '<div class="ewc-empty">Ainda não há resultados para esta combinação de filtros.</div>' : `
-        <section class="ewc-stats-section"><h2>Totais</h2><div class="ewc-stat-cards">
+      ${hero('Estatísticas gerais', 'Melhores equipes e rankings coletivos da EWC 2026')}
+      <section class="ewc-stats-filter-section">
+        <h2>Filtros dos destaques</h2>
+        ${statsFiltersMarkup()}
+      </section>
+      ${rows.length ? `${statsLeaderSections(rows)}
+        <section class="ewc-stats-section ewc-summary-section"><h2>Resumo geral do recorte</h2><div class="ewc-stat-cards">
           ${statsCard('Total de pontos', totals.points.toLocaleString('pt-BR'))}
           ${statsCard('Total de abates', totals.kills.toLocaleString('pt-BR'))}
           ${statsCard('Total de booyahs', totals.booyahs.toLocaleString('pt-BR'))}
-        </div></section>
-        <section class="ewc-stats-section"><h2>Médias</h2><div class="ewc-stat-cards">
-          ${statsCard('PTS por equipe', formatDecimal(teamCount ? totals.points / teamCount : 0, 1), `${teamCount} equipes`)}
+          ${statsCard('Pontos por equipe', formatDecimal(teamCount ? totals.points / teamCount : 0, 1), `${teamCount} equipes`)}
           ${statsCard('Abates por equipe', formatDecimal(teamCount ? totals.kills / teamCount : 0, 1), `${teamCount} equipes`)}
           ${statsCard('Colocação média', `${formatDecimal(totals.matches ? totals.placementSum / totals.matches : 0, 1)}º`, `${totals.matches} quedas de equipe`)}
-        </div></section>
-        <section class="ewc-stats-section"><h2>Destaques</h2><div class="ewc-stat-cards">
-          ${statsCard('Mais vezes no Top 3', leaderCardValue(top3Leader, top3Leader?.top3 || 0, 'x'), top3Leader ? teamDisplayName(top3Leader.team) : '')}
-          ${statsCard('Maior média de Top 3', leaderCardValue(top3RateLeader, formatDecimal(top3RateLeader?.top3Rate || 0, 1), '%'), top3RateLeader ? teamDisplayName(top3RateLeader.team) : '')}
-          ${statsCard('Mais vezes em 12º', leaderCardValue(lastLeader, lastLeader?.last || 0, 'x'), lastLeader ? teamDisplayName(lastLeader.team) : '')}
-        </div></section>
-        <section class="ewc-panel ewc-ranking-section"><div class="ewc-panel-inner">
-          <div class="ewc-ranking-head"><div><h2>Ranking de Médias <small>(por queda)</small></h2><p>PTS, kills e colocação média de cada equipe.</p></div></div>
-          ${averageRankingTable(rows)}
-        </div></section>
-        <section class="ewc-panel ewc-ranking-section"><div class="ewc-panel-inner">
-          <div class="ewc-ranking-head"><div><h2>Ranking de Totais <small>(acumulado)</small></h2><p>Pontuação, booyahs e kills no recorte selecionado.</p></div>
-            <select class="ewc-ranking-mode" onchange="setEWCTotalMode(this.value)"><option value="total"${statsFilters.totalMode === 'total' ? ' selected' : ''}>TOTAL</option><option value="day-average"${statsFilters.totalMode === 'day-average' ? ' selected' : ''}>MÉDIA POR DIA</option></select>
-          </div>
-          ${totalRankingTable(rows)}
-        </div></section>`}
+        </div></section>` : '<div class="ewc-empty">Ainda não há resultados para esta combinação de filtros.</div>'}
+      <section class="ewc-panel ewc-ranking-section"><div class="ewc-panel-inner">
+        <div class="ewc-ranking-head"><div><h2>Ranking de Médias <small>(por queda)</small></h2><p>PTS, kills e colocação média de cada equipe.</p></div></div>
+        ${rankingFiltersMarkup('avg')}
+        ${averageRankingTable(averageRows)}
+      </div></section>
+      <section class="ewc-panel ewc-ranking-section"><div class="ewc-panel-inner">
+        <div class="ewc-ranking-head"><div><h2>Ranking de Totais <small>(acumulado)</small></h2><p>Pontuação, booyahs e kills no recorte selecionado.</p></div></div>
+        ${rankingFiltersMarkup('total')}
+        ${totalRankingTable(totalRows)}
+      </div></section>
     </div>`;
   }
 
@@ -859,28 +971,45 @@
     renderActivePage();
   }
 
-  function setStatsFilter(key, value) {
-    if (!Object.prototype.hasOwnProperty.call(statsFilters, key)) return;
-    statsFilters[key] = String(value || 'all');
+  function applyStatsFilterChange(target, key, value) {
+    if (!target || !Object.prototype.hasOwnProperty.call(target, key)) return false;
+    target[key] = String(value || 'all');
     if (key === 'stage') {
-      statsFilters.day = 'all';
-      statsFilters.map = 'all';
-      statsFilters.confrontation = 'all';
+      target.day = 'all';
+      target.map = 'all';
+      target.confrontation = 'all';
     }
     if (key === 'confrontation') {
-      statsFilters.day = 'all';
-      statsFilters.map = 'all';
-      if (statsFilters.confrontation === 'group-a' || statsFilters.confrontation === 'group-b') statsFilters.stage = 'groups';
-      if (statsFilters.confrontation === 'survival') statsFilters.stage = 'survival';
-      if (statsFilters.confrontation === 'final') statsFilters.stage = 'final';
+      target.day = 'all';
+      target.map = 'all';
+      if (target.confrontation === 'group-a' || target.confrontation === 'group-b') target.stage = 'groups';
+      if (target.confrontation === 'survival') target.stage = 'survival';
+      if (target.confrontation === 'final') target.stage = 'final';
     }
-    statsExpanded.avg = false;
-    statsExpanded.total = false;
+    return true;
+  }
+
+  function setStatsFilter(key, value) {
+    if (!applyStatsFilterChange(statsFilters, key, value)) return;
+    Object.keys(statsCardPages).forEach(pageKey => { statsCardPages[pageKey] = 0; });
+    renderActivePage();
+  }
+
+  function setRankingFilter(type, key, value) {
+    const target = statsRankingFilters[type];
+    if (!target || !applyStatsFilterChange(target, key, value)) return;
+    statsExpanded[type] = false;
     renderActivePage();
   }
 
   function setTotalMode(value) {
-    statsFilters.totalMode = value === 'day-average' ? 'day-average' : 'total';
+    statsRankingFilters.total.totalMode = value === 'day-average' ? 'day-average' : 'total';
+    statsExpanded.total = false;
+    renderActivePage();
+  }
+
+  function setStatsCardPage(id, delta) {
+    statsCardPages[id] = Math.max(0, (Number(statsCardPages[id]) || 0) + Number(delta || 0));
     renderActivePage();
   }
 
@@ -952,7 +1081,9 @@
   window.setEWCDropFilter = setDropFilter;
   window.setEWCGroupTab = setGroupTab;
   window.setEWCStatsFilter = setStatsFilter;
+  window.setEWCRankingFilter = setRankingFilter;
   window.setEWCTotalMode = setTotalMode;
+  window.setEWCStatsCardPage = setStatsCardPage;
   window.toggleEWCStatsRanking = toggleStatsRanking;
 
   document.addEventListener('DOMContentLoaded', () => {
