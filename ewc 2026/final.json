@@ -3,7 +3,7 @@
   "stage": "Final",
   "updatedAt": "2026-07-17",
   "finished": false,
-  "description": "Oito equipes classificadas diretamente e quatro vagas reservadas para a Repescagem.",
+  "description": "Doze equipes classificadas: oito vieram diretamente da fase de grupos e quatro avançaram pela Repescagem.",
   "format": {
     "days": 0,
     "matches": 0,
@@ -123,51 +123,51 @@
     },
     {
       "position": 9,
-      "team": "REPESCAGEM #1",
-      "group": "",
+      "team": "LYON",
+      "group": "Repescagem",
       "sourcePosition": 1,
       "matches": 0,
       "booyahs": 0,
       "kills": 0,
       "placementPoints": 0,
       "points": 0,
-      "status": "A definir"
+      "status": "Classificado"
     },
     {
       "position": 10,
-      "team": "REPESCAGEM #2",
-      "group": "",
+      "team": "Team Apex Gaming",
+      "group": "Repescagem",
       "sourcePosition": 2,
       "matches": 0,
       "booyahs": 0,
       "kills": 0,
       "placementPoints": 0,
       "points": 0,
-      "status": "A definir"
+      "status": "Classificado"
     },
     {
       "position": 11,
-      "team": "REPESCAGEM #3",
-      "group": "",
+      "team": "Team Falcons",
+      "group": "Repescagem",
       "sourcePosition": 3,
       "matches": 0,
       "booyahs": 0,
       "kills": 0,
       "placementPoints": 0,
       "points": 0,
-      "status": "A definir"
+      "status": "Classificado"
     },
     {
       "position": 12,
-      "team": "REPESCAGEM #4",
-      "group": "",
+      "team": "S8UL Esports",
+      "group": "Repescagem",
       "sourcePosition": 4,
       "matches": 0,
       "booyahs": 0,
       "kills": 0,
       "placementPoints": 0,
       "points": 0,
-      "status": "A definir"
+      "status": "Classificado"
     }
   ],
   "teams": [
@@ -220,25 +220,25 @@
       "matches": []
     },
     {
-      "team": "REPESCAGEM #1",
+      "team": "LYON",
       "sourceGroup": "Repescagem",
       "sourcePosition": 1,
       "matches": []
     },
     {
-      "team": "REPESCAGEM #2",
+      "team": "Team Apex Gaming",
       "sourceGroup": "Repescagem",
       "sourcePosition": 2,
       "matches": []
     },
     {
-      "team": "REPESCAGEM #3",
+      "team": "Team Falcons",
       "sourceGroup": "Repescagem",
       "sourcePosition": 3,
       "matches": []
     },
     {
-      "team": "REPESCAGEM #4",
+      "team": "S8UL Esports",
       "sourceGroup": "Repescagem",
       "sourcePosition": 4,
       "matches": []

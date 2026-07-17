@@ -930,7 +930,7 @@
     id = PAGE_ALIASES[id] || id;
     if (id === 'ewc-grupos') renderGroups();
     if (id === 'ewc-repescagem') renderStage('ewc-repescagem-content', survivalData, 'survival', 'Repescagem', 'Equipes que disputam as vagas restantes na Final');
-    if (id === 'ewc-final') renderStage('ewc-final-content', finalData, 'final', 'Final', 'Oito classificados diretos e quatro vagas da Repescagem');
+    if (id === 'ewc-final') renderStage('ewc-final-content', finalData, 'final', 'Final', 'Doze equipes classificadas para a Grande Final');
     if (id === 'ewc-mvp') comingSoon('ewc-mvp-content', 'Ranking MVP', 'Destaques individuais da EWC 2026');
     if (id === 'ewc-equipes') renderTeams();
     if (id === 'ewc-stats') renderStats();
