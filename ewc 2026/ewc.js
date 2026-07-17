@@ -57,6 +57,11 @@
   let survivalData = { rows: [], teams: [] };
   let finalData = { rows: [], teams: [] };
   let kills = [];
+  let killEntries = [];
+  let killsLoaded = false;
+  let killsPromise = null;
+  const playerRankingFilters = { stage: 'general', team: 'all', role: 'all', day: 'all' };
+  const playerRankingSort = { key: 'kills', direction: 'desc' };
   let ewcLogoMap = {};
   let loaded = false;
   let loadPromise = null;
@@ -259,14 +264,12 @@
       json(`${BASE}times.json`),
       json(CONFIG.groupJsonUrl || `${BASE}classificacao.json`).catch(() => ({ rows: [], groups: {} })),
       json(CONFIG.survivalJsonUrl || `${BASE}repescagem.json`).catch(() => ({ rows: [], teams: [] })),
-      json(CONFIG.finalJsonUrl || `${BASE}final.json`).catch(() => ({ rows: [], teams: [] })),
-      json(CONFIG.killsJsonUrl || `${BASE}abates.json`).catch(() => ({ players: [] }))
-    ]).then(([teamsPayload, groupsPayload, survivalPayload, finalPayload, killsPayload]) => {
+      json(CONFIG.finalJsonUrl || `${BASE}final.json`).catch(() => ({ rows: [], teams: [] }))
+    ]).then(([teamsPayload, groupsPayload, survivalPayload, finalPayload]) => {
       teams = Array.isArray(teamsPayload.teams) ? teamsPayload.teams : [];
       groupData = groupsPayload || { rows: [], groups: {} };
       survivalData = survivalPayload || { rows: [], teams: [] };
       finalData = finalPayload || { rows: [], teams: [] };
-      kills = Array.isArray(killsPayload.players) ? killsPayload.players : [];
       loaded = true;
       patchGlobalSearch();
       refreshLogoData(false).catch(() => {});
@@ -276,9 +279,25 @@
     return loadPromise;
   }
 
-  function playerByName(name) {
+  async function loadKillsData() {
+    if (killsLoaded) return true;
+    if (killsPromise) return killsPromise;
+    killsPromise = json(CONFIG.killsJsonUrl || `${BASE}abates.json`)
+      .then(payload => {
+        kills = Array.isArray(payload?.players) ? payload.players : [];
+        killEntries = Array.isArray(payload?.entries) ? payload.entries : [];
+        killsLoaded = true;
+        return true;
+      })
+      .finally(() => { killsPromise = null; });
+    return killsPromise;
+  }
+
+  function playerByName(name, teamName) {
     const target = normalize(name);
+    const wantedTeam = normalize(teamName);
     for (const team of teams) {
+      if (wantedTeam && !teamAliases(team).some(alias => normalize(alias) === wantedTeam)) continue;
       const person = (team.players || []).find(item => normalize(item.name) === target);
       if (person) return { ...person, team: team.name, qualification: team.qualification };
     }
@@ -289,8 +308,8 @@
     return (groupData.rows || []).find(row => teamByName(row.team) === teamByName(teamName)) || null;
   }
 
-  function killsForPlayer(playerName) {
-    return kills.find(row => normalize(row.name) === normalize(playerName)) || null;
+  function killsForPlayer(playerName, teamName) {
+    return kills.find(row => normalize(row.name) === normalize(playerName) && (!teamName || normalize(row.team) === normalize(teamName))) || null;
   }
 
   function hero(title, subtitle) {
@@ -829,8 +848,8 @@
     </div>`;
   }
 
-  function personButton(person) {
-    const click = person.staff ? '' : `onclick="openEWCPlayerProfile(${jsString(person.name)})"`;
+  function personButton(person, teamName) {
+    const click = person.staff ? '' : `onclick="openEWCPlayerProfile(${jsString(person.name)}, ${jsString(teamName)})"`;
     return `<button type="button" class="ewc-person${person.staff ? ' staff' : ''}" ${click}>${flagMarkup(person.country)}<span class="ewc-person-name">${escapeHtml(person.name)}</span>${roleMarkup(person)}</button>`;
   }
 
@@ -846,8 +865,8 @@
       </button>
       <div class="ewc-participant-roster">
         <div class="ewc-subhead"><span>Jogadores</span><small>${players.length}</small></div>
-        <div class="ewc-people">${players.map(personButton).join('')}</div>
-        ${staff.length ? `<div class="ewc-subhead staff"><span>Staff</span><small>${staff.length}</small></div><div class="ewc-people">${staff.map(personButton).join('')}</div>` : ''}
+        <div class="ewc-people">${players.map(person => personButton(person, team.name)).join('')}</div>
+        ${staff.length ? `<div class="ewc-subhead staff"><span>Staff</span><small>${staff.length}</small></div><div class="ewc-people">${staff.map(person => personButton(person, team.name)).join('')}</div>` : ''}
       </div>
     </article>`;
   }
@@ -873,13 +892,155 @@
     </div>`;
   }
 
-  function profilePersonCard(person) {
-    const click = person.staff ? '' : `onclick="openEWCPlayerProfile(${jsString(person.name)})" style="cursor:pointer"`;
+  function profilePersonCard(person, teamName) {
+    const click = person.staff ? '' : `onclick="openEWCPlayerProfile(${jsString(person.name)}, ${jsString(teamName)})" style="cursor:pointer"`;
     return `<div class="ewc-profile-person" ${click}>${flagMarkup(person.country)}<div class="ewc-profile-copy"><strong>${escapeHtml(person.name)}</strong><small>${escapeHtml(person.role)}</small></div></div>`;
   }
 
   function statCard(label, value, detail) {
     return `<article class="ewc-stat-card"><small>${escapeHtml(label)}</small><strong>${escapeHtml(value)}</strong>${detail ? `<em>${escapeHtml(detail)}</em>` : ''}</article>`;
+  }
+
+  function playerStageLabel(value) {
+    return ({ groups: 'Fase de grupos', survival: 'Repescagem', final: 'Final', general: 'Geral' })[value] || 'Geral';
+  }
+
+  function playerRoleKey(value) {
+    const clean = normalize(value);
+    if (clean.includes('GRAN')) return 'GRAN';
+    if (clean.includes('3') || clean.includes('HOMEM') || clean.includes('RIFLER')) return '3';
+    if (clean.includes('SUP')) return 'SUP';
+    if (clean.includes('RUSH')) return 'RUSH';
+    return clean;
+  }
+
+  function filteredPlayerEntries() {
+    const selected = playerRankingFilters;
+    return killEntries.filter(entry => {
+      if (selected.stage !== 'general' && entry.stage !== selected.stage) return false;
+      if (selected.team !== 'all' && normalize(entry.team) !== normalize(selected.team)) return false;
+      if (selected.role !== 'all' && playerRoleKey(entry.roleShort || entry.role) !== selected.role) return false;
+      if (selected.day !== 'all' && String(entry.day) !== String(selected.day)) return false;
+      return true;
+    });
+  }
+
+  function aggregatePlayerEntries(entries) {
+    const rows = new Map();
+    entries.forEach(entry => {
+      const key = `${normalize(entry.name)}__${normalize(entry.team)}`;
+      if (!rows.has(key)) rows.set(key, {
+        name: entry.name, team: entry.team, country: entry.country || '',
+        role: entry.role || 'JOGADOR', roleShort: entry.roleShort || entry.role || 'JOG',
+        kills: 0, damage: 0, assists: 0, matches: 0
+      });
+      const row = rows.get(key);
+      row.kills += Number(entry.kills) || 0;
+      row.damage += Number(entry.damage) || 0;
+      row.assists += Number(entry.assists) || 0;
+      row.matches += Number(entry.matches) || 1;
+    });
+    return [...rows.values()];
+  }
+
+  function availablePlayerDays() {
+    const stage = playerRankingFilters.stage;
+    return [...new Set(killEntries
+      .filter(entry => stage === 'general' || entry.stage === stage)
+      .map(entry => Number(entry.day)).filter(Boolean))].sort((a, b) => a - b);
+  }
+
+  function availablePlayerTeams() {
+    const stage = playerRankingFilters.stage;
+    return [...new Set(killEntries
+      .filter(entry => stage === 'general' || entry.stage === stage)
+      .map(entry => teamDisplayName(entry.team)).filter(Boolean))]
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }
+
+  function playerSortLabel(key, desktop, mobile) {
+    const active = playerRankingSort.key === key;
+    const arrow = active ? (playerRankingSort.direction === 'asc' ? ' ↑' : ' ↓') : ' ↕';
+    return `<button type="button" class="ewc-sort-button" onclick="setEWCPlayerSort('${key}')"><span class="desktop-label">${desktop}</span><span class="mobile-label">${mobile}</span>${arrow}</button>`;
+  }
+
+  function renderPlayerRanking() {
+    const root = document.getElementById('ewc-mvp-content');
+    if (!root) return;
+    if (!killsLoaded) {
+      root.innerHTML = `<div class="ewc-shell">${hero('Ranking MVP', 'Desempenho individual dos jogadores')}<div class="ewc-empty">Carregando estatísticas dos jogadores...</div></div>`;
+      loadKillsData().then(renderPlayerRanking).catch(() => {
+        root.innerHTML = `<div class="ewc-shell">${hero('Ranking MVP', 'Desempenho individual dos jogadores')}<div class="ewc-empty">Não foi possível carregar os dados individuais agora.</div></div>`;
+      });
+      return;
+    }
+
+    const days = availablePlayerDays();
+    if (playerRankingFilters.day !== 'all' && !days.includes(Number(playerRankingFilters.day))) playerRankingFilters.day = 'all';
+    const teamOptions = availablePlayerTeams();
+    if (playerRankingFilters.team !== 'all' && !teamOptions.some(team => normalize(team) === normalize(playerRankingFilters.team))) playerRankingFilters.team = 'all';
+
+    const rows = aggregatePlayerEntries(filteredPlayerEntries());
+    const key = playerRankingSort.key;
+    const direction = playerRankingSort.direction === 'asc' ? 1 : -1;
+    rows.sort((a, b) => {
+      const first = key === 'name' || key === 'team'
+        ? String(a[key] || '').localeCompare(String(b[key] || ''), 'pt-BR')
+        : (Number(a[key]) || 0) - (Number(b[key]) || 0);
+      if (first) return first * direction;
+      return b.kills - a.kills || b.damage - a.damage || a.name.localeCompare(b.name, 'pt-BR');
+    });
+
+    const stageHasData = killEntries.some(entry => playerRankingFilters.stage === 'general' || entry.stage === playerRankingFilters.stage);
+    const stageDescription = playerRankingFilters.stage === 'general'
+      ? 'Fase de grupos e Repescagem'
+      : playerStageLabel(playerRankingFilters.stage);
+
+    root.innerHTML = `<div class="ewc-shell">
+      ${hero('Ranking MVP', 'Abates, dano, assistências e quedas dos jogadores')}
+      <section class="ewc-panel"><div class="ewc-panel-inner">
+        <div class="ewc-section-head"><div><h2>Classificação Geral de Jogadores</h2><p>${escapeHtml(stageDescription)}</p></div><span class="ewc-updated">${rows.length} jogadores</span></div>
+        <div class="filters ewc-live-filters ewc-player-filters">
+          <label><span>Etapa:</span><select onchange="setEWCPlayerFilter('stage', this.value)">
+            <option value="general"${playerRankingFilters.stage === 'general' ? ' selected' : ''}>Geral</option>
+            <option value="groups"${playerRankingFilters.stage === 'groups' ? ' selected' : ''}>Fase de grupos</option>
+            <option value="survival"${playerRankingFilters.stage === 'survival' ? ' selected' : ''}>Repescagem</option>
+            <option value="final"${playerRankingFilters.stage === 'final' ? ' selected' : ''}>Final</option>
+          </select></label>
+          <label><span>Equipe:</span><select onchange="setEWCPlayerFilter('team', this.value)">
+            <option value="all">Todas</option>${teamOptions.map(team => `<option value="${escapeHtml(team)}"${normalize(playerRankingFilters.team) === normalize(team) ? ' selected' : ''}>${escapeHtml(teamAbbreviation(team))}</option>`).join('')}
+          </select></label>
+          <label><span>Posição:</span><select onchange="setEWCPlayerFilter('role', this.value)">
+            <option value="all"${playerRankingFilters.role === 'all' ? ' selected' : ''}>Todas as posições</option>
+            <option value="RUSH"${playerRankingFilters.role === 'RUSH' ? ' selected' : ''}>Rush</option>
+            <option value="SUP"${playerRankingFilters.role === 'SUP' ? ' selected' : ''}>Suporte</option>
+            <option value="GRAN"${playerRankingFilters.role === 'GRAN' ? ' selected' : ''}>Granadeiro</option>
+            <option value="3"${playerRankingFilters.role === '3' ? ' selected' : ''}>3º homem</option>
+          </select></label>
+          <label><span>Novatos:</span><select disabled title="Os dados oficiais não identificam novatos"><option>Todos os jogadores</option></select></label>
+          <label><span>Dias:</span><select onchange="setEWCPlayerFilter('day', this.value)"${days.length ? '' : ' disabled'}>
+            <option value="all"${playerRankingFilters.day === 'all' ? ' selected' : ''}>Todos os dias</option>
+            ${days.map(day => `<option value="${day}"${String(playerRankingFilters.day) === String(day) ? ' selected' : ''}>Dia ${day}</option>`).join('')}
+          </select></label>
+        </div>
+        <button type="button" class="btn-action ewc-player-details-toggle" onclick="toggleEWCPlayerDetails(this)">Ver detalhes</button>
+        <div class="table-container ewc-table-wrap ewc-player-table-wrap" id="ewc-player-table-wrap">
+          <table class="ewc-table ewc-player-table"><thead><tr>
+            <th>#</th><th class="ewc-player-name-head">${playerSortLabel('name', 'Jogador', 'J')}</th><th>${playerSortLabel('team', 'Equipe', 'E')}</th>
+            <th>${playerSortLabel('kills', 'Abates', 'K')}</th><th class="ewc-player-detail-col">${playerSortLabel('damage', 'Dano', 'D')}</th>
+            <th class="ewc-player-detail-col">${playerSortLabel('assists', 'Assistências', 'A')}</th><th>${playerSortLabel('matches', 'Quedas', 'Q')}</th>
+          </tr></thead><tbody>
+            ${rows.length ? rows.map((row, index) => `<tr>
+              <td class="ewc-rank">${index + 1}º</td>
+              <td class="ewc-player-name-cell"><button type="button" onclick="openEWCPlayerProfile(${jsString(row.name)}, ${jsString(row.team)})">${escapeHtml(row.name)}</button><small>${escapeHtml(row.roleShort || row.role)}</small></td>
+              <td><button type="button" class="ewc-player-team" onclick="openEWCTeamProfile(${jsString(row.team)})"><img src="${escapeHtml(resolveLogo(row.team))}" alt="${escapeHtml(row.team)}" onerror="this.onerror=null;this.src='escudo.webp'"><span class="ewc-player-team-full">${escapeHtml(teamDisplayName(row.team))}</span><span class="ewc-player-team-short">${escapeHtml(teamAbbreviation(row.team))}</span></button></td>
+              <td class="ewc-player-kills">${row.kills}</td><td class="ewc-player-detail-col">${row.damage.toLocaleString('pt-BR')}</td>
+              <td class="ewc-player-detail-col">${row.assists}</td><td>${row.matches}</td>
+            </tr>`).join('') : `<tr><td colspan="7"><div class="ewc-empty ewc-player-empty">${stageHasData ? 'Nenhum jogador encontrado para os filtros selecionados.' : 'A Final ainda não possui dados individuais.'}</div></td></tr>`}
+          </tbody></table>
+        </div>
+      </div></section>
+    </div>`;
   }
 
   async function openTeamProfile(name) {
@@ -900,27 +1061,28 @@
         <span class="ewc-profile-team-visual"><img class="ewc-profile-logo" src="${escapeHtml(resolveLogo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'">${countryFlag ? `<img class="ewc-profile-country" src="${escapeHtml(countryFlag)}" alt="${escapeHtml(team.countryName || '')}">` : ''}</span>
         <div><div class="ewc-kicker">EWC 2026</div><h1>${escapeHtml(team.name)}</h1><p>${escapeHtml(`${team.countryName ? `${team.countryName} • ` : ''}${team.qualification || 'A confirmar'}`)}</p></div>
       </section>
-      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Elenco</h2><div class="ewc-profile-roster">${players.map(profilePersonCard).join('')}</div></div></section>
-      ${staff.length ? `<section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Staff</h2><div class="ewc-profile-roster">${staff.map(profilePersonCard).join('')}</div></div></section>` : ''}
+      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Elenco</h2><div class="ewc-profile-roster">${players.map(person => profilePersonCard(person, team.name)).join('')}</div></div></section>
+      ${staff.length ? `<section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Staff</h2><div class="ewc-profile-roster">${staff.map(person => profilePersonCard(person, team.name)).join('')}</div></div></section>` : ''}
       <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Informações da equipe</h2><div class="ewc-stats-grid">${statCard('Jogadores', players.length)}${team.group ? statCard('Grupo', team.group) : ''}${statCard('Classificação', team.qualification || 'A confirmar')}${current ? statCard('Fase de grupos', `${current.position}º`, `${current.points} PTS • ${current.kills} K`) : ''}</div></div></section>
       <button class="btn-action ewc-profile-back" type="button" onclick="navigate('ewc-equipes')">← Voltar para equipes da EWC</button>
     </div>`;
   }
 
-  async function openPlayerProfile(name) {
+  async function openPlayerProfile(name, teamName) {
     await loadData();
-    const player = playerByName(name);
+    await loadKillsData().catch(() => false);
+    const player = playerByName(name, teamName);
     if (!player) return;
     if (document.querySelector('.page.active')?.id !== 'ewc-player-profile' && typeof window.navigate === 'function') window.navigate('ewc-player-profile');
-    history.replaceState(null, '', `#ewc-player-${slug(player.name)}`);
+    history.replaceState(null, '', `#ewc-player-${slug(player.name)}-${slug(player.team)}`);
     const root = document.getElementById('ewc-player-profile-content');
     if (!root) return;
-    const stats = killsForPlayer(player.name);
+    const stats = killsForPlayer(player.name, player.team);
     const country = COUNTRY_NAMES[player.country] || String(player.country || '').toUpperCase() || 'País não informado';
     root.innerHTML = `<div class="ewc-shell">
       <section class="ewc-profile-hero"><div class="ewc-profile-flag">${flagEmoji(player.country) || '—'}</div><div><div class="ewc-kicker">Jogador • EWC 2026</div><h1>${escapeHtml(player.name)}</h1><p>${escapeHtml(country)} • ${escapeHtml(player.role)}</p></div></section>
       <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Equipe</h2><button type="button" class="ewc-participant-head" onclick="openEWCTeamProfile(${jsString(player.team)})"><span class="ewc-participant-logo"><img src="${escapeHtml(resolveLogo(player.team))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"></span><span class="ewc-participant-title"><strong>${escapeHtml(player.team)}</strong><small>${escapeHtml(player.qualification || '')}</small></span><span class="ewc-participant-count">ABRIR</span></button></div></section>
-      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Informações</h2><div class="ewc-stats-grid">${statCard('Posição', player.role)}${statCard('Bandeira', country)}${stats && Number(stats.kills) ? statCard('Kills', Number(stats.kills)) : ''}</div></div></section>
+      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Informações</h2><div class="ewc-stats-grid">${statCard('Posição', player.role)}${statCard('Bandeira', country)}${stats && Number(stats.matches) ? `${statCard('Abates', Number(stats.kills) || 0)}${statCard('Dano', Number(stats.damage || 0).toLocaleString('pt-BR'))}${statCard('Assistências', Number(stats.assists) || 0)}${statCard('Quedas', Number(stats.matches) || 0)}` : ''}</div></div></section>
       <button class="btn-action ewc-profile-back" type="button" onclick="navigate('ewc-equipes')">← Voltar para equipes da EWC</button>
     </div>`;
   }
@@ -931,7 +1093,7 @@
     if (id === 'ewc-grupos') renderGroups();
     if (id === 'ewc-repescagem') renderStage('ewc-repescagem-content', survivalData, 'survival', 'Repescagem', 'Equipes que disputam as vagas restantes na Final');
     if (id === 'ewc-final') renderStage('ewc-final-content', finalData, 'final', 'Final', 'Doze equipes classificadas para a Grande Final');
-    if (id === 'ewc-mvp') comingSoon('ewc-mvp-content', 'Ranking MVP', 'Destaques individuais da EWC 2026');
+    if (id === 'ewc-mvp') renderPlayerRanking();
     if (id === 'ewc-equipes') renderTeams();
     if (id === 'ewc-stats') renderStats();
     if (id === 'ewc-team-profile' || id === 'ewc-player-profile') resolveHash(location.hash);
@@ -947,8 +1109,10 @@
     }
     if (hash.startsWith('ewc-player-')) {
       const wanted = hash.slice('ewc-player-'.length);
-      const player = teams.flatMap(team => team.players || []).find(item => slug(item.name) === wanted);
-      if (player) { openPlayerProfile(player.name); return true; }
+      for (const team of teams) {
+        const player = (team.players || []).find(item => `${slug(item.name)}-${slug(team.name)}` === wanted || slug(item.name) === wanted);
+        if (player) { openPlayerProfile(player.name, team.name); return true; }
+      }
     }
     return false;
   }
@@ -1019,6 +1183,33 @@
     renderActivePage();
   }
 
+  function setPlayerRankingFilter(key, value) {
+    if (!Object.prototype.hasOwnProperty.call(playerRankingFilters, key)) return;
+    playerRankingFilters[key] = String(value || 'all');
+    if (key === 'stage') {
+      playerRankingFilters.day = 'all';
+      playerRankingFilters.team = 'all';
+    }
+    renderActivePage();
+  }
+
+  function setPlayerRankingSort(key) {
+    if (!['name', 'team', 'kills', 'damage', 'assists', 'matches'].includes(key)) return;
+    if (playerRankingSort.key === key) playerRankingSort.direction = playerRankingSort.direction === 'desc' ? 'asc' : 'desc';
+    else {
+      playerRankingSort.key = key;
+      playerRankingSort.direction = key === 'name' || key === 'team' ? 'asc' : 'desc';
+    }
+    renderActivePage();
+  }
+
+  function togglePlayerDetails(button) {
+    const wrap = document.getElementById('ewc-player-table-wrap');
+    if (!wrap) return;
+    const open = wrap.classList.toggle('show-details');
+    if (button) button.textContent = open ? 'Ocultar detalhes' : 'Ver detalhes';
+  }
+
   function patchNavigation() {
     if (window.__cffEWCPatchedNavigation) return;
     window.__cffEWCPatchedNavigation = true;
@@ -1058,7 +1249,7 @@
     window.navBuildPeopleSearchPool = function () {
       const base = typeof originalPeoplePool === 'function' ? originalPeoplePool() : [];
       return base.concat(teams.flatMap(team => (team.players || []).filter(person => !person.staff).map(person => ({
-        type: 'ewc-player', name: person.name, title: person.name, sub: `${team.name} • EWC 2026`,
+        type: 'ewc-player', name: `${person.name}|||${team.name}`, title: person.name, sub: `${team.name} • EWC 2026`,
         img: 'silhueta.webp', priority: 8,
         haystack: `${person.name} ${teamAliases(team).join(' ')} ${person.role} ewc 2026`.toLowerCase()
       }))));
@@ -1066,7 +1257,11 @@
     const originalSelect = window.selectSearchResult;
     window.selectSearchResult = function (type, name) {
       if (type === 'ewc-team') { if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI(); return openTeamProfile(name); }
-      if (type === 'ewc-player') { if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI(); return openPlayerProfile(name); }
+      if (type === 'ewc-player') {
+        if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI();
+        const [playerName, teamName] = String(name || '').split('|||');
+        return openPlayerProfile(playerName, teamName || '');
+      }
       return typeof originalSelect === 'function' ? originalSelect(type, name) : null;
     };
   }
@@ -1085,6 +1280,9 @@
   window.setEWCTotalMode = setTotalMode;
   window.setEWCStatsCardPage = setStatsCardPage;
   window.toggleEWCStatsRanking = toggleStatsRanking;
+  window.setEWCPlayerFilter = setPlayerRankingFilter;
+  window.setEWCPlayerSort = setPlayerRankingSort;
+  window.toggleEWCPlayerDetails = togglePlayerDetails;
 
   document.addEventListener('DOMContentLoaded', () => {
     patchNavigation();
