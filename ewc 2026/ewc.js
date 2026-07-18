@@ -7,6 +7,7 @@
     survivalJsonUrl: `${BASE}repescagem.json`,
     finalJsonUrl: `${BASE}final.json`,
     killsJsonUrl: `${BASE}abates.json`,
+    teamProfilesJsonUrl: `${BASE}team-profiles.json`,
     teamLogosTsvUrl: '',
     logoCacheMinutes: 30
   }, window.EWC_2026_CONFIG || {});
@@ -66,6 +67,8 @@
   let loaded = false;
   let loadPromise = null;
   let teamsPromise = null;
+  let teamProfiles = [];
+  let teamProfilesPromise = null;
 
   function escapeHtml(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
@@ -266,6 +269,35 @@
       return true;
     }).finally(() => { teamsPromise = null; });
     return teamsPromise;
+  }
+
+  async function loadTeamProfilesData() {
+    if (teamProfiles.length) return true;
+    if (teamProfilesPromise) return teamProfilesPromise;
+    teamProfilesPromise = json(CONFIG.teamProfilesJsonUrl || `${BASE}team-profiles.json`)
+      .then(payload => {
+        teamProfiles = Array.isArray(payload?.teams) ? payload.teams : [];
+        return true;
+      })
+      .finally(() => { teamProfilesPromise = null; });
+    return teamProfilesPromise;
+  }
+
+  function teamProfileSummary(teamName) {
+    const wanted = normalize(teamName);
+    return teamProfiles.find(item => normalize(item.name) === wanted || (item.aliases || []).some(alias => normalize(alias) === wanted)) || null;
+  }
+
+  function hasStandardTeamProfile(team) {
+    const aliases = teamAliases(team).map(normalize);
+    const rows = typeof db !== 'undefined' && Array.isArray(db?.teams) ? db.teams : [];
+    return rows.some(row => aliases.some(alias => {
+      const name = row?.equipe || '';
+      if (typeof sameTeamName === 'function') {
+        try { return sameTeamName(name, alias) || teamAliases(team).some(candidate => sameTeamName(name, candidate)); } catch (error) {}
+      }
+      return normalize(name) === alias;
+    }));
   }
 
   async function loadData() {
@@ -1053,10 +1085,37 @@
     </div>`;
   }
 
+  function stageResultCard(label, stage, extra) {
+    if (!stage || !Number(stage.matches)) return '';
+    const champion = label === 'Final' && Number(stage.position) === 1;
+    return `<div class="ewc-profile-stage-card${champion ? ' champion' : ''}">
+      <span>${champion ? '🏆 ' : ''}${escapeHtml(label)}</span>
+      <strong>${Number(stage.position) || '—'}º</strong>
+      <small>${Number(stage.points) || 0} PTS • ${Number(stage.booyahs) || 0} B! • ${Number(stage.kills) || 0} K • ${Number(stage.matches) || 0} Q${extra ? ` • ${escapeHtml(extra)}` : ''}</small>
+    </div>`;
+  }
+
+  function teamPlayersStatsTable(summary, teamName) {
+    const rows = Array.isArray(summary?.players) ? summary.players : [];
+    if (!rows.length) return '<div class="ewc-empty">As estatísticas individuais desta equipe ainda não foram cadastradas.</div>';
+    return `<div class="table-container ewc-table-wrap"><table class="ewc-table ewc-profile-player-stats">
+      <thead><tr><th><span class="desktop-label">Jogador</span><span class="mobile-label">J</span></th><th>K</th><th>Q</th><th><span class="desktop-label">Média</span><span class="mobile-label">Méd.</span></th></tr></thead>
+      <tbody>${rows.map(player => `<tr>
+        <td class="ewc-player-name-cell"><button type="button" onclick="openEWCPlayerProfile(${jsString(player.name)}, ${jsString(teamName)})">${escapeHtml(player.name)}</button></td>
+        <td class="ewc-player-kills">${Number(player.kills) || 0}</td>
+        <td>${Number(player.matches) || 0}</td>
+        <td>${Number(player.average || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
   async function openTeamProfile(name) {
-    await loadData();
+    await Promise.all([loadTeamsData(), loadTeamProfilesData().catch(() => false)]);
     const team = teamByName(name);
     if (!team) return;
+    if (hasStandardTeamProfile(team) && typeof window.openTeamProfile === 'function') {
+      return window.openTeamProfile(team.name);
+    }
     if (document.querySelector('.page.active')?.id !== 'ewc-team-profile' && typeof window.navigate === 'function') window.navigate('ewc-team-profile');
     history.replaceState(null, '', `#ewc-team-${slug(team.name)}`);
     const root = document.getElementById('ewc-team-profile-content');
@@ -1064,21 +1123,28 @@
 
     const players = (team.players || []).filter(person => !person.staff);
     const staff = (team.players || []).filter(person => person.staff);
-    const current = standingForTeam(team.name);
+    const summary = teamProfileSummary(team.name);
+    const stages = summary?.stages || {};
+    const groupStage = stages.groups || null;
+    const survivalStage = stages.survival || null;
+    const finalStage = stages.final || null;
     const countryFlag = team.countryFlag ? `${BASE}${team.countryFlag}` : '';
-    let competitionResults = '';
-    if (typeof window.cffBuildTeamResults2026HTML === 'function') {
-      try { competitionResults = await window.cffBuildTeamResults2026HTML(team.name); } catch (error) { console.error('[EWC team results]', error); }
-    }
+    const stageCards = [
+      stageResultCard('Fase de grupos', groupStage, groupStage?.group ? `Grupo ${groupStage.group}` : ''),
+      stageResultCard('Repescagem', survivalStage, ''),
+      stageResultCard('Final', finalStage, '')
+    ].filter(Boolean).join('');
+
     root.innerHTML = `<div class="ewc-shell">
       <section class="ewc-profile-hero">
         <span class="ewc-profile-team-visual"><img class="ewc-profile-logo" src="${escapeHtml(resolveLogo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'">${countryFlag ? `<img class="ewc-profile-country" src="${escapeHtml(countryFlag)}" alt="${escapeHtml(team.countryName || '')}">` : ''}</span>
         <div><div class="ewc-kicker">EWC 2026</div><h1>${escapeHtml(team.name)}</h1><p>${escapeHtml(`${team.countryName ? `${team.countryName} • ` : ''}${team.qualification || 'A confirmar'}`)}</p></div>
       </section>
+      ${stageCards ? `<section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Campanha na EWC 2026</h2><div class="ewc-profile-stage-grid">${stageCards}</div></div></section>` : ''}
       <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Elenco</h2><div class="ewc-profile-roster">${players.map(person => profilePersonCard(person, team.name)).join('')}</div></div></section>
+      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><div class="ewc-section-head"><div><h2>Estatísticas dos jogadores</h2><p>Dados acumulados na EWC 2026.</p></div></div>${teamPlayersStatsTable(summary, team.name)}</div></section>
       ${staff.length ? `<section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Staff</h2><div class="ewc-profile-roster">${staff.map(person => profilePersonCard(person, team.name)).join('')}</div></div></section>` : ''}
-      ${competitionResults}
-      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Informações da equipe</h2><div class="ewc-stats-grid">${statCard('Jogadores', players.length)}${team.group ? statCard('Grupo', team.group) : ''}${statCard('Classificação', team.qualification || 'A confirmar')}${current ? statCard('Fase de grupos', `${current.position}º`, `${current.points} PTS • ${current.kills} K`) : ''}</div></div></section>
+      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Informações da equipe</h2><div class="ewc-stats-grid">${statCard('Jogadores', players.length)}${team.group ? statCard('Grupo', team.group) : ''}${statCard('Classificação', team.qualification || 'A confirmar')}${finalStage ? statCard('Final', `${finalStage.position}º`, `${finalStage.points} PTS • ${finalStage.kills} K`) : groupStage ? statCard('Fase de grupos', `${groupStage.position}º`, `${groupStage.points} PTS • ${groupStage.kills} K`) : ''}</div></div></section>
       <button class="btn-action ewc-profile-back" type="button" onclick="navigate('ewc-equipes')">← Voltar para equipes da EWC</button>
     </div>`;
   }
@@ -1254,11 +1320,12 @@
     const originalTeamPool = window.navBuildTeamSearchPool;
     window.navBuildTeamSearchPool = function () {
       const base = typeof originalTeamPool === 'function' ? originalTeamPool() : [];
-      return base.concat(teams.map(team => ({
+      const additions = teams.filter(team => !hasStandardTeamProfile(team)).map(team => ({
         type: 'ewc-team', name: team.name, title: team.name,
         sub: `${team.countryName || 'Equipe'} • EWC 2026`, img: resolveLogo(team.name), priority: 11,
         haystack: `${teamAliases(team).join(' ')} ${team.countryName || ''} ${team.qualification || ''} ewc 2026`.toLowerCase()
-      })));
+      }));
+      return base.concat(additions);
     };
     const originalPeoplePool = window.navBuildPeopleSearchPool;
     window.navBuildPeopleSearchPool = function () {
@@ -1271,7 +1338,12 @@
     };
     const originalSelect = window.selectSearchResult;
     window.selectSearchResult = function (type, name) {
-      if (type === 'ewc-team') { if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI(); return openTeamProfile(name); }
+      if (type === 'ewc-team') {
+        if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI();
+        const team = teamByName(name);
+        if (team && hasStandardTeamProfile(team) && typeof window.openTeamProfile === 'function') return window.openTeamProfile(team.name);
+        return openTeamProfile(name);
+      }
       if (type === 'ewc-player') {
         if (typeof window.navCloseSearchUI === 'function') window.navCloseSearchUI();
         const [playerName, teamName] = String(name || '').split('|||');
@@ -1308,6 +1380,6 @@
       if (!resolveHash(hash)) renderActivePage();
     }).catch(() => renderLoadError(activeId));
     if (shouldLoadNow) init();
-    else (window.cffRunWhenIdle || function (callback) { return setTimeout(callback, 5000); })(() => loadTeamsData().catch(() => {}), 5000);
+    else (window.cffRunWhenIdle || function (callback) { return setTimeout(callback, 1200); })(() => loadTeamsData().catch(() => {}), 1200);
   });
 })();
