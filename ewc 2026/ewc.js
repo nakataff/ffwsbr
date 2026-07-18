@@ -1192,7 +1192,7 @@
       const wanted = hash.slice('ewc-player-'.length);
       for (const team of teams) {
         const player = (team.players || []).find(item => `${slug(item.name)}-${slug(team.name)}` === wanted || slug(item.name) === wanted);
-        if (player) { openPlayerProfile(player.name, team.name); return true; }
+        if (player) { if (typeof window.openEWCPlayerProfile === 'function') window.openEWCPlayerProfile(player.name, team.name); else openPlayerProfile(player.name, team.name); return true; }
       }
     }
     return false;
