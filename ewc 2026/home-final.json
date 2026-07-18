@@ -1,0 +1,121 @@
+{
+  "updatedAt": "2026-07-18",
+  "teams": [
+    {
+      "team": "LYON",
+      "abbreviation": "LYON",
+      "logo": "https://i.postimg.cc/XYGTQnxR/inco.webp",
+      "position": 1,
+      "points": 155,
+      "booyahs": 2,
+      "kills": 101,
+      "matches": 7
+    },
+    {
+      "team": "All Gamers Global",
+      "abbreviation": "AGAL",
+      "logo": "https://i.postimg.cc/XJpvJ5XN/agg.webp",
+      "position": 2,
+      "points": 122,
+      "booyahs": 1,
+      "kills": 79,
+      "matches": 7
+    },
+    {
+      "team": "LOUD",
+      "abbreviation": "LOUD",
+      "logo": "https://i.postimg.cc/rF6pVKTr/loud.webp",
+      "position": 3,
+      "points": 111,
+      "booyahs": 1,
+      "kills": 56,
+      "matches": 7
+    },
+    {
+      "team": "Twisted Minds",
+      "abbreviation": "TWIS",
+      "logo": "https://i.postimg.cc/fbvn8ntJ/twisted-minds.webp",
+      "position": 4,
+      "points": 103,
+      "booyahs": 1,
+      "kills": 57,
+      "matches": 7
+    },
+    {
+      "team": "Fluxo w7m",
+      "abbreviation": "FX",
+      "logo": "https://i.postimg.cc/mDD42WFN/fluxo-w7m-allmode.png",
+      "position": 5,
+      "points": 91,
+      "booyahs": 0,
+      "kills": 57,
+      "matches": 7
+    },
+    {
+      "team": "Team Falcons",
+      "abbreviation": "FALC",
+      "logo": "https://i.postimg.cc/8CbQZQF3/falcons.webp",
+      "position": 6,
+      "points": 81,
+      "booyahs": 1,
+      "kills": 45,
+      "matches": 7
+    }
+  ],
+  "players": [
+    {
+      "name": "DEW",
+      "team": "All Gamers Global",
+      "kills": 32,
+      "damage": 19997,
+      "assists": 16,
+      "matches": 7,
+      "teamAbbreviation": "AGAL"
+    },
+    {
+      "name": "Joker",
+      "team": "LYON",
+      "kills": 29,
+      "damage": 18357,
+      "assists": 22,
+      "matches": 7,
+      "teamAbbreviation": "LYON"
+    },
+    {
+      "name": "Gamezking",
+      "team": "LYON",
+      "kills": 27,
+      "damage": 17943,
+      "assists": 30,
+      "matches": 7,
+      "teamAbbreviation": "LYON"
+    },
+    {
+      "name": "SAIFA",
+      "team": "All Gamers Global",
+      "kills": 27,
+      "damage": 13665,
+      "assists": 30,
+      "matches": 7,
+      "teamAbbreviation": "AGAL"
+    },
+    {
+      "name": "Joacozd",
+      "team": "LYON",
+      "kills": 24,
+      "damage": 18578,
+      "assists": 23,
+      "matches": 7,
+      "teamAbbreviation": "LYON"
+    },
+    {
+      "name": "JOENA",
+      "team": "Buriram United Esports",
+      "kills": 23,
+      "damage": 12656,
+      "assists": 12,
+      "matches": 7,
+      "teamAbbreviation": "BRU"
+    }
+  ]
+}

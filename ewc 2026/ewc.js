@@ -65,6 +65,7 @@
   let ewcLogoMap = {};
   let loaded = false;
   let loadPromise = null;
+  let teamsPromise = null;
 
   function escapeHtml(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
@@ -256,22 +257,31 @@
     return true;
   }
 
+  async function loadTeamsData() {
+    if (teams.length) return true;
+    if (teamsPromise) return teamsPromise;
+    teamsPromise = json(`${BASE}times.json`).then(teamsPayload => {
+      teams = Array.isArray(teamsPayload.teams) ? teamsPayload.teams : [];
+      patchGlobalSearch();
+      return true;
+    }).finally(() => { teamsPromise = null; });
+    return teamsPromise;
+  }
+
   async function loadData() {
     if (loaded) return true;
     if (loadPromise) return loadPromise;
 
     loadPromise = Promise.all([
-      json(`${BASE}times.json`),
+      loadTeamsData(),
       json(CONFIG.groupJsonUrl || `${BASE}classificacao.json`).catch(() => ({ rows: [], groups: {} })),
       json(CONFIG.survivalJsonUrl || `${BASE}repescagem.json`).catch(() => ({ rows: [], teams: [] })),
       json(CONFIG.finalJsonUrl || `${BASE}final.json`).catch(() => ({ rows: [], teams: [] }))
-    ]).then(([teamsPayload, groupsPayload, survivalPayload, finalPayload]) => {
-      teams = Array.isArray(teamsPayload.teams) ? teamsPayload.teams : [];
+    ]).then(([, groupsPayload, survivalPayload, finalPayload]) => {
       groupData = groupsPayload || { rows: [], groups: {} };
       survivalData = survivalPayload || { rows: [], teams: [] };
       finalData = finalPayload || { rows: [], teams: [] };
       loaded = true;
-      patchGlobalSearch();
       refreshLogoData(false).catch(() => {});
       return true;
     }).finally(() => { loadPromise = null; });
@@ -1056,6 +1066,10 @@
     const staff = (team.players || []).filter(person => person.staff);
     const current = standingForTeam(team.name);
     const countryFlag = team.countryFlag ? `${BASE}${team.countryFlag}` : '';
+    let competitionResults = '';
+    if (typeof window.cffBuildTeamResults2026HTML === 'function') {
+      try { competitionResults = await window.cffBuildTeamResults2026HTML(team.name); } catch (error) { console.error('[EWC team results]', error); }
+    }
     root.innerHTML = `<div class="ewc-shell">
       <section class="ewc-profile-hero">
         <span class="ewc-profile-team-visual"><img class="ewc-profile-logo" src="${escapeHtml(resolveLogo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'">${countryFlag ? `<img class="ewc-profile-country" src="${escapeHtml(countryFlag)}" alt="${escapeHtml(team.countryName || '')}">` : ''}</span>
@@ -1063,6 +1077,7 @@
       </section>
       <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Elenco</h2><div class="ewc-profile-roster">${players.map(person => profilePersonCard(person, team.name)).join('')}</div></div></section>
       ${staff.length ? `<section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Staff</h2><div class="ewc-profile-roster">${staff.map(person => profilePersonCard(person, team.name)).join('')}</div></div></section>` : ''}
+      ${competitionResults}
       <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Informações da equipe</h2><div class="ewc-stats-grid">${statCard('Jogadores', players.length)}${team.group ? statCard('Grupo', team.group) : ''}${statCard('Classificação', team.qualification || 'A confirmar')}${current ? statCard('Fase de grupos', `${current.position}º`, `${current.points} PTS • ${current.kills} K`) : ''}</div></div></section>
       <button class="btn-action ewc-profile-back" type="button" onclick="navigate('ewc-equipes')">← Voltar para equipes da EWC</button>
     </div>`;
@@ -1293,6 +1308,6 @@
       if (!resolveHash(hash)) renderActivePage();
     }).catch(() => renderLoadError(activeId));
     if (shouldLoadNow) init();
-    else (window.cffRunWhenIdle || function (callback) { return setTimeout(callback, 4500); })(init, 4500);
+    else (window.cffRunWhenIdle || function (callback) { return setTimeout(callback, 5000); })(() => loadTeamsData().catch(() => {}), 5000);
   });
 })();

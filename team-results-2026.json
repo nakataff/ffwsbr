@@ -1,0 +1,1389 @@
+{
+  "updatedAt": "2026-07-18",
+  "teams": [
+    {
+      "canonical": "ALPHA7",
+      "aliases": [
+        "A7",
+        "ALPHA7"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 7,
+              "points": 977,
+              "kills": 570,
+              "booyahs": 5,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 9,
+              "points": 123,
+              "kills": 82,
+              "booyahs": 0,
+              "matches": 14,
+              "status": "9º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "ANGELS OUTPLAY",
+      "aliases": [
+        "ANGELS OUTPLAY",
+        "OUTPLAY"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 16,
+              "points": 589,
+              "kills": 354,
+              "booyahs": 0,
+              "matches": 90,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "AXS FUSION",
+      "aliases": [
+        "AXS",
+        "AXS FUSION"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 12,
+              "points": 853,
+              "kills": 404,
+              "booyahs": 5,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 12,
+              "points": 78,
+              "kills": 47,
+              "booyahs": 0,
+              "matches": 14,
+              "status": "12º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Al Ahli Esports",
+      "aliases": [
+        "AHL",
+        "AL AHLI",
+        "AL AHLI ESPORTS",
+        "Al Ahli Esports"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 11,
+              "points": 107,
+              "kills": 61,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "All Gamers Global",
+      "aliases": [
+        "AG GLOBAL",
+        "AGAL",
+        "ALL GAMERS GLOBAL",
+        "All Gamers Global"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 3,
+              "points": 219,
+              "kills": 148,
+              "booyahs": 2,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 2,
+              "points": 122,
+              "kills": 79,
+              "booyahs": 1,
+              "matches": 7,
+              "status": "2º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Aurora Gaming",
+      "aliases": [
+        "AUR",
+        "AURORA GAMING",
+        "Aurora Gaming"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 8,
+              "points": 125,
+              "kills": 84,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 8,
+              "points": 113,
+              "kills": 74,
+              "booyahs": 2,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Bigetron By Vitality",
+      "aliases": [
+        "BIGETRON BY VITALITY",
+        "Bigetron By Vitality",
+        "TEAM VITALITY",
+        "VIT"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 5,
+              "points": 163,
+              "kills": 97,
+              "booyahs": 2,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 5,
+              "points": 148,
+              "kills": 98,
+              "booyahs": 1,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Buriram United Esports",
+      "aliases": [
+        "BRU",
+        "BURIRAM",
+        "BURIRAM UNITED ESPORTS",
+        "Buriram United Esports"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 1,
+              "points": 236,
+              "kills": 138,
+              "booyahs": 3,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 7,
+              "points": 78,
+              "kills": 55,
+              "booyahs": 1,
+              "matches": 7,
+              "status": "7º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "CIVIS",
+      "aliases": [
+        "CIVIS"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 14,
+              "points": 693,
+              "kills": 356,
+              "booyahs": 4,
+              "matches": 90,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "DRS Gaming",
+      "aliases": [
+        "DRS",
+        "DRS GAMING",
+        "DRS Gaming"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 9,
+              "points": 109,
+              "kills": 68,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 9,
+              "points": 105,
+              "kills": 65,
+              "booyahs": 0,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Demons Pride",
+      "aliases": [
+        "DEMONS PRIDE",
+        "DP",
+        "Demons Pride"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 11,
+              "points": 67,
+              "kills": 34,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "E1 SPORTS",
+      "aliases": [
+        "E1",
+        "E1 SPORTS"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 11,
+              "points": 903,
+              "kills": 477,
+              "booyahs": 3,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 8,
+              "points": 128,
+              "kills": 63,
+              "booyahs": 1,
+              "matches": 14,
+              "status": "8º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "EVOS Divine",
+      "aliases": [
+        "EVOS",
+        "EVOS DIVINE",
+        "EVOS Divine"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 2,
+              "points": 229,
+              "kills": 134,
+              "booyahs": 3,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 10,
+              "points": 56,
+              "kills": 31,
+              "booyahs": 0,
+              "matches": 7,
+              "status": "10º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Fluxo w7m",
+      "aliases": [
+        "FLUXO W7M",
+        "FX",
+        "FX W7M",
+        "Fluxo w7m"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 4,
+              "points": 171,
+              "kills": 102,
+              "booyahs": 2,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 5,
+              "points": 91,
+              "kills": 57,
+              "booyahs": 0,
+              "matches": 7,
+              "status": "5º lugar",
+              "champion": false
+            }
+          ]
+        },
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 1,
+              "points": 1379,
+              "kills": 775,
+              "booyahs": 23,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 4,
+              "points": 170,
+              "kills": 84,
+              "booyahs": 2,
+              "matches": 14,
+              "status": "4º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "GunDynasty",
+      "aliases": [
+        "GD",
+        "GUNDYNASTY",
+        "GunDynasty"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 6,
+              "points": 162,
+              "kills": 111,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 6,
+              "points": 132,
+              "kills": 84,
+              "booyahs": 0,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "INFLUENCE RAGE",
+      "aliases": [
+        "INFLUENCE",
+        "INFLUENCE RAGE"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 8,
+              "points": 956,
+              "kills": 505,
+              "booyahs": 5,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 10,
+              "points": 113,
+              "kills": 54,
+              "booyahs": 0,
+              "matches": 14,
+              "status": "10º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "INTZ",
+      "aliases": [
+        "INTZ"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 5,
+              "points": 1051,
+              "kills": 616,
+              "booyahs": 9,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 6,
+              "points": 130,
+              "kills": 71,
+              "booyahs": 2,
+              "matches": 14,
+              "status": "6º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "LOOPS",
+      "aliases": [
+        "LOOPS"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 13,
+              "points": 808,
+              "kills": 456,
+              "booyahs": 4,
+              "matches": 90,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "LOS",
+      "aliases": [
+        "LOS",
+        "MIBR LOS",
+        "MIBR.LOS"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 2,
+              "points": 189,
+              "kills": 110,
+              "booyahs": 3,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 8,
+              "points": 58,
+              "kills": 38,
+              "booyahs": 0,
+              "matches": 7,
+              "status": "8º lugar",
+              "champion": false
+            }
+          ]
+        },
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 2,
+              "points": 1282,
+              "kills": 733,
+              "booyahs": 17,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 1,
+              "points": 208,
+              "kills": 104,
+              "booyahs": 4,
+              "matches": 14,
+              "status": "Campeão",
+              "champion": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "LOUD SNICKERS",
+      "aliases": [
+        "LOUD",
+        "LOUD SNICKERS"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 4,
+              "points": 206,
+              "kills": 115,
+              "booyahs": 2,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 3,
+              "points": 111,
+              "kills": 56,
+              "booyahs": 1,
+              "matches": 7,
+              "status": "3º lugar",
+              "champion": false
+            }
+          ]
+        },
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 3,
+              "points": 1271,
+              "kills": 646,
+              "booyahs": 18,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 2,
+              "points": 193,
+              "kills": 100,
+              "booyahs": 2,
+              "matches": 14,
+              "status": "2º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "LYON",
+      "aliases": [
+        "LYON"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 6,
+              "points": 153,
+              "kills": 96,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 1,
+              "points": 185,
+              "kills": 127,
+              "booyahs": 1,
+              "matches": 10,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 1,
+              "points": 155,
+              "kills": 101,
+              "booyahs": 2,
+              "matches": 7,
+              "status": "Campeão",
+              "champion": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Mia Corp",
+      "aliases": [
+        "MIA",
+        "MIA CORP",
+        "Mia Corp"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 12,
+              "points": 89,
+              "kills": 51,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Paradox Gaming",
+      "aliases": [
+        "PARADOX GAMING",
+        "PDX",
+        "Paradox Gaming"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 12,
+              "points": 65,
+              "kills": 39,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "RISE GAMING",
+      "aliases": [
+        "RISE",
+        "RISE GAMING"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 10,
+              "points": 923,
+              "kills": 533,
+              "booyahs": 4,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 7,
+              "points": 130,
+              "kills": 82,
+              "booyahs": 0,
+              "matches": 14,
+              "status": "7º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "RRQ",
+      "aliases": [
+        "RRQ",
+        "RRQ KAZU"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 3,
+              "points": 173,
+              "kills": 116,
+              "booyahs": 2,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 9,
+              "points": 56,
+              "kills": 37,
+              "booyahs": 0,
+              "matches": 7,
+              "status": "9º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "RUSH GAMING",
+      "aliases": [
+        "RUSH",
+        "RUSH GAMING"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 9,
+              "points": 927,
+              "kills": 543,
+              "booyahs": 3,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 3,
+              "points": 185,
+              "kills": 95,
+              "booyahs": 1,
+              "matches": 14,
+              "status": "3º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "S8UL Esports",
+      "aliases": [
+        "S8UL",
+        "S8UL ESPORTS",
+        "S8UL Esports"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 10,
+              "points": 109,
+              "kills": 55,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 4,
+              "points": 151,
+              "kills": 94,
+              "booyahs": 2,
+              "matches": 10,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 11,
+              "points": 54,
+              "kills": 32,
+              "booyahs": 0,
+              "matches": 7,
+              "status": "11º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Straw Hats Esports",
+      "aliases": [
+        "SH",
+        "STRAW HATS",
+        "STRAW HATS ESPORTS",
+        "Straw Hats Esports"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 9,
+              "points": 115,
+              "kills": 63,
+              "booyahs": 1,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 12,
+              "points": 64,
+              "kills": 38,
+              "booyahs": 0,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "TEAM SOLID",
+      "aliases": [
+        "SOLID",
+        "TEAM SOLID"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 6,
+              "points": 1042,
+              "kills": 597,
+              "booyahs": 3,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 5,
+              "points": 156,
+              "kills": 78,
+              "booyahs": 2,
+              "matches": 14,
+              "status": "5º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Team Apex Gaming",
+      "aliases": [
+        "APEX GAMING",
+        "TAG",
+        "TEAM APEX GAMING",
+        "Team Apex Gaming"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 7,
+              "points": 140,
+              "kills": 89,
+              "booyahs": 2,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 2,
+              "points": 165,
+              "kills": 103,
+              "booyahs": 1,
+              "matches": 10,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 12,
+              "points": 41,
+              "kills": 19,
+              "booyahs": 0,
+              "matches": 7,
+              "status": "12º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Team Falcons",
+      "aliases": [
+        "FALC",
+        "TEAM FALCONS",
+        "Team Falcons"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 5,
+              "points": 169,
+              "kills": 124,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 3,
+              "points": 160,
+              "kills": 105,
+              "booyahs": 1,
+              "matches": 10,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 6,
+              "points": 81,
+              "kills": 45,
+              "booyahs": 1,
+              "matches": 7,
+              "status": "6º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Team Secret VN orig",
+      "aliases": [
+        "TEAM SECRET",
+        "TEAM SECRET VN ORIG",
+        "TS",
+        "Team Secret VN orig"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 7,
+              "points": 125,
+              "kills": 81,
+              "booyahs": 1,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 7,
+              "points": 119,
+              "kills": 81,
+              "booyahs": 0,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Titan Esports Club",
+      "aliases": [
+        "TEC",
+        "TITAN ESPORTS",
+        "TITAN ESPORTS CLUB",
+        "Titan Esports Club"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo A",
+              "position": 10,
+              "points": 96,
+              "kills": 55,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 10,
+              "points": 105,
+              "kills": 55,
+              "booyahs": 0,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Total Gaming Esports",
+      "aliases": [
+        "TGE",
+        "TOTAL GAMING",
+        "TOTAL GAMING ESPORTS",
+        "Total Gaming Esports"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 8,
+              "points": 125,
+              "kills": 71,
+              "booyahs": 0,
+              "matches": 12,
+              "status": "Repescagem"
+            },
+            {
+              "id": "survival",
+              "label": "Repescagem",
+              "position": 11,
+              "points": 98,
+              "kills": 51,
+              "booyahs": 2,
+              "matches": 10,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "Twisted Minds",
+      "aliases": [
+        "TWIS",
+        "TWISTED MINDS",
+        "Twisted Minds"
+      ],
+      "tournaments": [
+        {
+          "id": "ewc-2026",
+          "name": "EWC 2026",
+          "stages": [
+            {
+              "id": "groups",
+              "label": "Fase de grupos — Grupo B",
+              "position": 1,
+              "points": 191,
+              "kills": 123,
+              "booyahs": 1,
+              "matches": 12,
+              "status": "Final"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 4,
+              "points": 103,
+              "kills": 57,
+              "booyahs": 1,
+              "matches": 7,
+              "status": "4º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "VASCO ESPORTS",
+      "aliases": [
+        "VASCO",
+        "VASCO ESPORTS"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 15,
+              "points": 604,
+              "kills": 370,
+              "booyahs": 0,
+              "matches": 90,
+              "status": "Eliminado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical": "VIRTUS PRO",
+      "aliases": [
+        "VIRTUS PRO",
+        "VP"
+      ],
+      "tournaments": [
+        {
+          "id": "ffws-br-2026-s1",
+          "name": "FFWS Brasil 2026 S1",
+          "stages": [
+            {
+              "id": "classificatoria",
+              "label": "Classificatória",
+              "position": 4,
+              "points": 1159,
+              "kills": 642,
+              "booyahs": 17,
+              "matches": 90,
+              "status": "Finalista"
+            },
+            {
+              "id": "final",
+              "label": "Final",
+              "position": 11,
+              "points": 104,
+              "kills": 60,
+              "booyahs": 0,
+              "matches": 14,
+              "status": "11º lugar",
+              "champion": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
