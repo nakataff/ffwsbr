@@ -993,7 +993,7 @@
 
     const stageHasData = killEntries.some(entry => playerRankingFilters.stage === 'general' || entry.stage === playerRankingFilters.stage);
     const stageDescription = playerRankingFilters.stage === 'general'
-      ? 'Fase de grupos e Repescagem'
+      ? 'Fase de grupos, Repescagem e Final'
       : playerStageLabel(playerRankingFilters.stage);
 
     root.innerHTML = `<div class="ewc-shell">

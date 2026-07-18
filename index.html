@@ -151,6 +151,105 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 }
 
 
+
+/* EWC 2026 — banner de campeã na home */
+.home-ewc-champion-banner {
+  display: grid;
+  gap: 18px;
+}
+.home-ewc-champion-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+.home-ewc-champion-copy {
+  min-width: 0;
+}
+.home-ewc-champion-kicker {
+  color: #22c7ff;
+  font-size: .86rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.home-ewc-champion-title {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.85rem);
+  line-height: 1.02;
+  font-weight: 900;
+  color: #ffffff;
+}
+.home-ewc-champion-subtitle {
+  margin: 10px 0 0;
+  color: #d9ecff;
+  font-size: 1rem;
+}
+.home-ewc-champion-logo {
+  width: 112px;
+  height: 112px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(7,18,42,.92), rgba(10,30,71,.88));
+  border: 1px solid rgba(62, 197, 255, .28);
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+  flex: 0 0 auto;
+}
+.home-ewc-champion-logo img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.26));
+}
+.home-ewc-champion-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.home-ewc-champion-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 13px;
+  border-radius: 999px;
+  background: rgba(7, 19, 48, .72);
+  border: 1px solid rgba(62, 197, 255, .16);
+  color: #f5fbff;
+  font-weight: 700;
+}
+.home-ewc-champion-chip strong {
+  color: #22c7ff;
+  font-size: 1.02rem;
+}
+.home-ewc-champion-roster-wrap {
+  padding: 15px 16px;
+  border-radius: 18px;
+  background: rgba(6, 17, 44, .56);
+  border: 1px solid rgba(62, 197, 255, .11);
+}
+.home-ewc-champion-roster-label {
+  color: #7cc8ff;
+  font-size: .8rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.home-ewc-champion-roster {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+@media (max-width: 720px) {
+  .home-ewc-champion-top { align-items: flex-start; }
+  .home-ewc-champion-logo { width: 86px; height: 86px; border-radius: 20px; }
+  .home-ewc-champion-logo img { width: 58px; height: 58px; }
+  .home-ewc-champion-roster { font-size: .95rem; }
+}
+
 /* EWC 2026 — contador da Grande Final na home */
 .home-ewc-final-countdown {
   position: relative;
@@ -547,74 +646,30 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
 
-    <section class="home-ewc-final-countdown" id="home-ewc-final-countdown" aria-labelledby="home-ewc-final-title">
-        <div class="home-ewc-final-top">
-            <div class="home-ewc-final-copy">
-                <div class="home-ewc-final-kicker" id="home-ewc-final-kicker">EWC 2026 • GRANDE FINAL</div>
-                <h2 class="home-ewc-final-title" id="home-ewc-final-title">CONTAGEM REGRESSIVA PARA A FINAL</h2>
-                <time class="home-ewc-final-date" datetime="2026-07-18T07:30:00-03:00">18 DE JULHO • 07:30 (BRT)</time>
+    <section class="home-ewc-final-countdown home-ewc-champion-banner" id="home-ewc-champion-banner" aria-labelledby="home-ewc-champion-title">
+        <div class="home-ewc-champion-top">
+            <div class="home-ewc-champion-copy">
+                <div class="home-ewc-champion-kicker">EWC 2026 • GRANDE FINAL ENCERRADA</div>
+                <h2 class="home-ewc-champion-title" id="home-ewc-champion-title">LYON CAMPEÃ DA EWC 2026</h2>
+                <p class="home-ewc-champion-subtitle">Título confirmado com a melhor campanha da decisão: <strong>155 pts</strong>, <strong>2 B!</strong> e <strong>101 K</strong>.</p>
             </div>
-            <div class="home-ewc-final-clock" id="home-ewc-final-clock" role="timer" aria-live="polite" aria-label="Tempo restante para a final da EWC 2026">
-                <span class="home-ewc-final-unit"><strong id="home-ewc-days">00</strong><small>Dias</small></span>
-                <span class="home-ewc-final-unit"><strong id="home-ewc-hours">00</strong><small>Horas</small></span>
-                <span class="home-ewc-final-unit"><strong id="home-ewc-minutes">00</strong><small>Min</small></span>
-                <span class="home-ewc-final-unit"><strong id="home-ewc-seconds">00</strong><small>Seg</small></span>
-            </div>
+            <button type="button" class="home-ewc-champion-logo" onclick="openEWCTeamProfile('LYON')" title="Abrir perfil da LYON">
+                <img decoding="async" loading="lazy" src="lyon.webp" alt="Logo da LYON" onerror="this.onerror=null;this.src='escudo.webp'">
+            </button>
         </div>
-        <div class="home-ewc-final-teams-label">12 EQUIPES NA DISPUTA PELO TÍTULO</div>
-        <div class="home-ewc-final-teams" aria-label="Equipes participantes da final">
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Buriram United Esports')" title="Buriram United Esports">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/RhXdSRq0/bru.webp" alt="Logo da Buriram United Esports" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>BRU</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('EVOS Divine')" title="EVOS Divine">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/VkrkZ6mw/evos.webp" alt="Logo da EVOS Divine" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>EVOS</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('All Gamers Global')" title="All Gamers Global">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/XJpvJ5XN/agg.webp" alt="Logo da All Gamers Global" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>AGAL</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('LOUD')" title="LOUD">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/rF6pVKTr/loud.webp" alt="Logo da LOUD" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>LOUD</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Twisted Minds')" title="Twisted Minds">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/fbvn8ntJ/twisted-minds.webp" alt="Logo da Twisted Minds" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>TWIS</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('MIBR LOS')" title="MIBR LOS">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/x1nTmhqR/mibr-los.webp" alt="Logo da MIBR LOS" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>LOS</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('RRQ')" title="RRQ">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/vHpsBvFh/rrq.webp" alt="Logo da RRQ" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>RRQ</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Fluxo w7m')" title="Fluxo w7m">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/mDD42WFN/fluxo-w7m-allmode.png" alt="Logo da Fluxo w7m" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>FX</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('LYON')" title="LYON">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/XYGTQnxR/inco.webp" alt="Logo da LYON" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>LYON</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Team Apex Gaming')" title="Team Apex Gaming">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/Kct25f6q/apex.webp" alt="Logo da Team Apex Gaming" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>TAG</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('Team Falcons')" title="Team Falcons">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/8CbQZQF3/falcons.webp" alt="Logo da Team Falcons" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>FALC</span>
-            </button>
-            <button type="button" class="home-ewc-final-team" onclick="openEWCTeamProfile('S8UL Esports')" title="S8UL Esports">
-                <img decoding="async" loading="lazy" fetchpriority="low" src="https://i.postimg.cc/FsZXMRsq/s8ul.webp" alt="Logo da S8UL Esports" onerror="this.onerror=null;this.src='escudo.webp'">
-                <span>S8UL</span>
-            </button>
+        <div class="home-ewc-champion-metrics" aria-label="Números da equipe campeã">
+            <span class="home-ewc-champion-chip"><small>PONTOS</small><strong>155</strong></span>
+            <span class="home-ewc-champion-chip"><small>BOOYAH</small><strong>2</strong></span>
+            <span class="home-ewc-champion-chip"><small>ABATES</small><strong>101</strong></span>
+            <span class="home-ewc-champion-chip"><small>COLOCAÇÃO</small><strong>1º</strong></span>
+        </div>
+        <div class="home-ewc-champion-roster-wrap">
+            <div class="home-ewc-champion-roster-label">Elenco campeão</div>
+            <div class="home-ewc-champion-roster">Haax • Gamezking • SoyDella • Joker • Joacozd</div>
         </div>
         <div class="home-ewc-final-actions">
-            <button type="button" class="home-ewc-final-page-link" onclick="navigate('ewc-final')">VER PÁGINA DA FINAL</button>
-            <a class="home-ewc-final-watch" id="home-ewc-final-watch" href="https://www.youtube.com/watch?v=4_O5oWb22C8" target="_blank" rel="noopener noreferrer">ASSISTIR À FINAL ↗</a>
+            <button type="button" class="home-ewc-final-page-link" onclick="navigate('ewc-final')">VER RESULTADOS DA FINAL</button>
+            <a class="home-ewc-final-watch" href="https://www.youtube.com/watch?v=4_O5oWb22C8" target="_blank" rel="noopener noreferrer">VER TRANSMISSÃO ↗</a>
         </div>
     </section>
 
