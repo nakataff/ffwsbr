@@ -231,13 +231,13 @@
     }
 
     function renderNotFound() {
-      root.innerHTML = '<div class="news-state">Notícia não encontrada na planilha.<br>Confira se o ID/slug da notícia está igual ao link.</div>';
+      root.innerHTML = '<div class="news-state">Notícia não encontrada.<br>Confira o endereço ou volte para a página inicial.</div>';
     }
 
     function renderNews(item) {
       const image = item.imagem || fallbackImage;
       setMeta(item.titulo, item.resumo, image);
-      const body = renderNewsBody(item.conteudo || item.resumo || 'Conteúdo ainda não preenchido na planilha.');
+      const body = renderNewsBody(item.conteudo || item.resumo || 'Conteúdo em atualização.');
       const meta = [item.data, item.autor].filter(Boolean).map(escapeHTML).join(' • ');
       root.innerHTML = '<div class="news-content">' +
         '<div class="news-kicker">Notícia</div>' +
@@ -275,7 +275,7 @@
         if (!item) return renderNotFound();
         renderNews(item);
       } catch (error) {
-        root.innerHTML = '<div class="news-state">Erro ao carregar a notícia da planilha.<br>Abra o console para ver o detalhe técnico.</div>';
+        root.innerHTML = '<div class="news-state">Não foi possível carregar esta notícia agora.<br>Tente novamente em instantes.</div>';
         console.error(error);
       }
     }
