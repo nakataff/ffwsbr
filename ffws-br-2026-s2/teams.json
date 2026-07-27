@@ -1,0 +1,20 @@
+{
+  "tournament": "FFWS Brasil 2026 Split 2",
+  "updatedAt": "2026-07-27",
+  "teams": [
+    {"name":"AFROGAMES","abbreviation":"AFRO","country":"br","logo":"escudo.webp","logoPending":true,"players":[]},
+    {"name":"ALPHA7","abbreviation":"A7","country":"br","logo":"A7 2.webp","players":[]},
+    {"name":"CIVIS","abbreviation":"CIV","country":"br","logo":"Civis.webp","players":[]},
+    {"name":"CPT VOX","abbreviation":"CPT","country":"br","logo":"escudo.webp","logoPending":true,"players":[]},
+    {"name":"FLUXO W7M","abbreviation":"FX","country":"br","logo":"Fluxo 2.webp","players":[]},
+    {"name":"INFLUENCE RAGE","abbreviation":"IR","country":"br","logo":"Influence Rage.webp","players":[]},
+    {"name":"INTZ","abbreviation":"INTZ","country":"br","logo":"Intz 1.webp","players":[]},
+    {"name":"LOOPS","abbreviation":"LOOPS","country":"br","logo":"Loops 1.webp","players":[]},
+    {"name":"LOS","abbreviation":"LOS","country":"br","logo":"Los.webp","players":[]},
+    {"name":"LOUD SNICKERS","abbreviation":"LOUD","country":"br","logo":"loud 2.webp","players":[]},
+    {"name":"RISE GAMING","abbreviation":"RISE","country":"br","logo":"Rise 1.webp","players":[]},
+    {"name":"RUSH GAMING","abbreviation":"RUSH","country":"br","logo":"Rush.webp","players":[]},
+    {"name":"SX TET","abbreviation":"SXT","country":"br","logo":"escudo.webp","logoPending":true,"players":[]},
+    {"name":"TEAM SOLID","abbreviation":"TS","country":"br","logo":"Team Solid 2.webp","players":[]}
+  ]
+}

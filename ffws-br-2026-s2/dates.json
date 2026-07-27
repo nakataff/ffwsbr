@@ -1,0 +1,9 @@
+{
+  "tournament": "FFWS Brasil 2026 Split 2",
+  "updatedAt": "2026-07-27",
+  "stages": [
+    {"key":"classificatoria","name":"Classificatória","summary":"14 rodadas • 14 equipes • um time descansa por rodada","date":"A definir","status":"Em breve"},
+    {"key":"segundaFase","name":"Segunda Fase","summary":"6 rodadas • 12 equipes • bônus da primeira fase","date":"A definir","status":"Em breve"},
+    {"key":"final","name":"Final","summary":"2 dias • 12 equipes • Champion Rush 160","date":"A definir","status":"Em breve"}
+  ]
+}

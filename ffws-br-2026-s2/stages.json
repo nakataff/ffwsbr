@@ -1,0 +1,47 @@
+{
+  "tournament": "FFWS Brasil 2026 Split 2",
+  "updatedAt": "2026-07-27",
+  "format": {
+    "classificatoria": {
+      "label": "Classificatória",
+      "teams": 14,
+      "rounds": 14,
+      "restPerRound": 1,
+      "advance": 12,
+      "relegated": 2,
+      "description": "Quatorze equipes disputam 14 rodadas. Um time descansa por rodada; os 12 melhores avançam e os dois últimos são rebaixados diretamente."
+    },
+    "segundaFase": {
+      "label": "Segunda Fase",
+      "teams": 12,
+      "rounds": 6,
+      "hasBonus": true,
+      "worldSlots": 2,
+      "description": "As 12 equipes carregam bônus baseado na primeira fase e disputam seis rodadas. O Top 1 e o Top 2 garantem vaga no Mundial."
+    },
+    "final": {
+      "label": "Final",
+      "teams": 12,
+      "days": 2,
+      "championRush": 160,
+      "description": "Final em dois dias no formato Champion Rush, com linha de chegada em 160 pontos. O campeão garante vaga no Mundial; caso já esteja classificado pelo Top 2 da Segunda Fase, a vaga passa ao próximo melhor colocado elegível da Final."
+    }
+  },
+  "classificatoria": {
+    "finished": false,
+    "rounds": [],
+    "rows": []
+  },
+  "segundaFase": {
+    "finished": false,
+    "bonus": [],
+    "rounds": [],
+    "rows": []
+  },
+  "final": {
+    "finished": false,
+    "worldQualifiedFromStage2": [],
+    "days": [],
+    "rows": []
+  }
+}

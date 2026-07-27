@@ -1,0 +1,20 @@
+PATCH — FFWS BRASIL 2026 SPLIT 2
+
+Adicionado ao menu lateral, acima da FFWS BR 2026 S1:
+- Classificatória
+- Segunda Fase
+- Final
+- Ranking MVP
+- Equipes
+- Datas
+- Seleções da Season
+- Estatísticas Gerais
+- Notas CFF
+- Comparar 1V1
+
+Formato configurado:
+- Classificatória: 14 equipes, 14 rodadas, 1 descanso por rodada, Top 12 avança e Bottom 2 rebaixa.
+- Segunda Fase: 12 equipes, 6 rodadas, bônus da primeira fase e Top 2 no Mundial.
+- Final: 12 equipes, 2 dias, Champion Rush de 160 pontos.
+
+Os resultados, datas e jogadores estão em arquivos JSON separados para facilitar atualizações futuras sem aumentar o carregamento da home.
