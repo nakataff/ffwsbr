@@ -1,0 +1,731 @@
+{
+  "tournament": "FFWS Brasil 2026 Split 2",
+  "updatedAt": "2026-07-28",
+  "notes": [
+    "canonicalName usa o nome já existente no site quando houve correspondência confirmada.",
+    "rookie não copia cegamente a coluna Estreante; registros anteriores removem a marca.",
+    "LC777, JNmvp7, TREVOR9 e Ângelo7 foram corrigidos para não estreantes."
+  ],
+  "rows": [
+    {
+      "team": "AFROGAMES",
+      "sourceName": "AFG Nielffx",
+      "canonicalName": "Nielffx",
+      "aliases": [
+        "AFG Nielffx"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "AFROGAMES",
+      "sourceName": "AFG Braboxx7",
+      "canonicalName": "BRABOXX7",
+      "aliases": [
+        "AFG Braboxx7",
+        "Braboxx7"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "AFROGAMES",
+      "sourceName": "AFG gbzinn7$",
+      "canonicalName": "gbzinn7",
+      "aliases": [
+        "AFG gbzinn7$",
+        "gbzinn7$"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "AFROGAMES",
+      "sourceName": "AFG Sant10$",
+      "canonicalName": "Sant10s",
+      "aliases": [
+        "AFG Sant10$",
+        "Sant10$"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "AFROGAMES",
+      "sourceName": "AFG dnsetzz",
+      "canonicalName": "dnsetzz",
+      "aliases": [
+        "AFG dnsetzz"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "AFROGAMES",
+      "sourceName": "AFG  PETER",
+      "canonicalName": "PETER",
+      "aliases": [
+        "AFG  PETER"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "ALPHA7",
+      "sourceName": "Sam7",
+      "canonicalName": "Sam7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "ALPHA7",
+      "sourceName": "Brisa7",
+      "canonicalName": "Brisa7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "ALPHA7",
+      "sourceName": "MitoMvp",
+      "canonicalName": "MitoMvp",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "ALPHA7",
+      "sourceName": "Lc777",
+      "canonicalName": "LC777",
+      "aliases": [
+        "Lc777"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": false,
+      "rookieDecision": "Correção: a planilha marcou como estreante, mas o jogador já disputou edição anterior da elite brasileira."
+    },
+    {
+      "team": "ALPHA7",
+      "sourceName": "JNmvp7",
+      "canonicalName": "JNmvp7",
+      "aliases": [],
+      "sourceRookieFlag": true,
+      "rookie": false,
+      "rookieDecision": "Correção: a planilha marcou como estreante, mas o jogador já disputou edição anterior da elite brasileira."
+    },
+    {
+      "team": "CIVIS",
+      "sourceName": "Hugo7",
+      "canonicalName": "Hugo7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "CIVIS",
+      "sourceName": "SoaresXJ",
+      "canonicalName": "SOARES",
+      "aliases": [
+        "SoaresXJ"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "CIVIS",
+      "sourceName": "Destroi7",
+      "canonicalName": "Destroi7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "CIVIS",
+      "sourceName": "Neywp",
+      "canonicalName": "NEYawp",
+      "aliases": [
+        "Neywp"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "CIVIS",
+      "sourceName": "Henry10",
+      "canonicalName": "Henry10",
+      "aliases": [],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "CIVIS",
+      "sourceName": "LukaSZ",
+      "canonicalName": "LukaSZ",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "CPT VOX",
+      "sourceName": "Gbtrem22",
+      "canonicalName": "Gbtrem22",
+      "aliases": [],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "CPT VOX",
+      "sourceName": "Bad9",
+      "canonicalName": "bad9",
+      "aliases": [
+        "Bad9"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "CPT VOX",
+      "sourceName": "Trevor9",
+      "canonicalName": "TREVOR9",
+      "aliases": [
+        "Trevor9"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": false,
+      "rookieDecision": "Correção: a planilha marcou como estreante, mas o jogador já disputou edição anterior da elite brasileira."
+    },
+    {
+      "team": "CPT VOX",
+      "sourceName": "Ângelo7",
+      "canonicalName": "Ângelo7",
+      "aliases": [],
+      "sourceRookieFlag": true,
+      "rookie": false,
+      "rookieDecision": "Correção: a planilha marcou como estreante, mas o jogador já disputou edição anterior da elite brasileira."
+    },
+    {
+      "team": "CPT VOX",
+      "sourceName": "Seven",
+      "canonicalName": "Seven7zk",
+      "aliases": [
+        "Seven"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "FLUXO W7M",
+      "sourceName": "Bops",
+      "canonicalName": "Bops",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "FLUXO W7M",
+      "sourceName": "BuTziN",
+      "canonicalName": "BuTziN",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "FLUXO W7M",
+      "sourceName": "Giuh",
+      "canonicalName": "Giuh",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "FLUXO W7M",
+      "sourceName": "MT7",
+      "canonicalName": "MT7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "FLUXO W7M",
+      "sourceName": "Proxx7",
+      "canonicalName": "Proxx7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INFLUENCE RAGE",
+      "sourceName": "lippe!",
+      "canonicalName": "lippe!",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INFLUENCE RAGE",
+      "sourceName": "IGOR7",
+      "canonicalName": "IGOR7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INFLUENCE RAGE",
+      "sourceName": "InepoIGN",
+      "canonicalName": "nepoIGN",
+      "aliases": [
+        "InepoIGN"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INFLUENCE RAGE",
+      "sourceName": "LYON",
+      "canonicalName": "Lyon",
+      "aliases": [
+        "LYON"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INFLUENCE RAGE",
+      "sourceName": "saskito!",
+      "canonicalName": "saskito!",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INTZ",
+      "sourceName": "INTZ Gus",
+      "canonicalName": "GUS",
+      "aliases": [
+        "INTZ Gus",
+        "Gus"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INTZ",
+      "sourceName": "INTZ joão7",
+      "canonicalName": "João7",
+      "aliases": [
+        "INTZ joão7",
+        "joão7"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INTZ",
+      "sourceName": "INTZ honeyzL",
+      "canonicalName": "honeyzL",
+      "aliases": [
+        "INTZ honeyzL"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INTZ",
+      "sourceName": "INTZ kauãxp",
+      "canonicalName": "kauãxp",
+      "aliases": [
+        "INTZ kauãxp"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "INTZ",
+      "sourceName": "INTZ PEREIRA",
+      "canonicalName": "PEREIRA",
+      "aliases": [
+        "INTZ PEREIRA"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOOPS",
+      "sourceName": "LPS Stark10",
+      "canonicalName": "Stark",
+      "aliases": [
+        "LPS Stark10",
+        "Stark10"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOOPS",
+      "sourceName": "LPS Draxx7",
+      "canonicalName": "Draxx7",
+      "aliases": [
+        "LPS Draxx7"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOOPS",
+      "sourceName": "LPS  Vitin9",
+      "canonicalName": "Vitin9",
+      "aliases": [
+        "LPS  Vitin9"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOOPS",
+      "sourceName": "LPS Pão7",
+      "canonicalName": "Pão7",
+      "aliases": [
+        "LPS Pão7"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOOPS",
+      "sourceName": "LPS  Luan7",
+      "canonicalName": "Luan7",
+      "aliases": [
+        "LPS  Luan7"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOS",
+      "sourceName": "Raone7",
+      "canonicalName": "Raone7",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOS",
+      "sourceName": "General!",
+      "canonicalName": "General!",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOS",
+      "sourceName": "Rigby245",
+      "canonicalName": "Rigby245",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOS",
+      "sourceName": "Yago",
+      "canonicalName": "Yago",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOS",
+      "sourceName": "mtsexy.",
+      "canonicalName": "mtsexy.",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "sourceName": "TRAP",
+      "canonicalName": "TRAP",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "sourceName": "NICKZ",
+      "canonicalName": "NICKZ",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "sourceName": "BZP",
+      "canonicalName": "BZP",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "sourceName": "GUAXA",
+      "canonicalName": "GUAXA",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "sourceName": "HAK",
+      "canonicalName": "HAK",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RISE GAMING",
+      "sourceName": "Mala",
+      "canonicalName": "Mala",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RISE GAMING",
+      "sourceName": "Erick11",
+      "canonicalName": "Erick11",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RISE GAMING",
+      "sourceName": "Carioca",
+      "canonicalName": "Carioca",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RISE GAMING",
+      "sourceName": "Nandox",
+      "canonicalName": "Naandox",
+      "aliases": [
+        "Nandox"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RISE GAMING",
+      "sourceName": "KaKaZk",
+      "canonicalName": "KaKaZk",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RUSH GAMING",
+      "sourceName": "BLACK02",
+      "canonicalName": "BLACK02",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RUSH GAMING",
+      "sourceName": "Guimerlq",
+      "canonicalName": "GUIMERLQ",
+      "aliases": [
+        "Guimerlq"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RUSH GAMING",
+      "sourceName": "ERICKING",
+      "canonicalName": "Ericking",
+      "aliases": [
+        "ERICKING"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RUSH GAMING",
+      "sourceName": "Prozin",
+      "canonicalName": "PROZIN",
+      "aliases": [
+        "Prozin"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "RUSH GAMING",
+      "sourceName": "MitinX",
+      "canonicalName": "MitinX",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "SX TET",
+      "sourceName": "IsackSRTT",
+      "canonicalName": "IsackSR",
+      "aliases": [
+        "IsackSRTT"
+      ],
+      "sourceRookieFlag": true,
+      "rookie": true,
+      "rookieDecision": "Estreante confirmado: marcado na planilha e sem participação anterior registrada na elite brasileira."
+    },
+    {
+      "team": "SX TET",
+      "sourceName": "Furiazz7TT",
+      "canonicalName": "Furiazz7",
+      "aliases": [
+        "Furiazz7TT"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "SX TET",
+      "sourceName": "RedxzzzTT",
+      "canonicalName": "Redxzzz",
+      "aliases": [
+        "RedxzzzTT"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "SX TET",
+      "sourceName": "Yato7TT",
+      "canonicalName": "Yato7",
+      "aliases": [
+        "Yato7TT"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "SX TET",
+      "sourceName": "NikeboyTT",
+      "canonicalName": "Nikeboy",
+      "aliases": [
+        "NikeboyTT"
+      ],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "TEAM SOLID",
+      "sourceName": "Motovea",
+      "canonicalName": "Motovea",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "TEAM SOLID",
+      "sourceName": "vitinxp",
+      "canonicalName": "vitinxp",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "TEAM SOLID",
+      "sourceName": "Pitbull",
+      "canonicalName": "Pitbull",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "TEAM SOLID",
+      "sourceName": "BYTE333",
+      "canonicalName": "BYTE333",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    },
+    {
+      "team": "TEAM SOLID",
+      "sourceName": "Sbriça",
+      "canonicalName": "Sbriça",
+      "aliases": [],
+      "sourceRookieFlag": false,
+      "rookie": false,
+      "rookieDecision": "Não marcado como estreante na planilha."
+    }
+  ]
+}

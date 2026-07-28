@@ -1,20 +1,193 @@
 {
   "tournament": "FFWS Brasil 2026 Split 2",
-  "updatedAt": "2026-07-27",
+  "updatedAt": "2026-07-28",
   "teams": [
-    {"name":"AFROGAMES","abbreviation":"AFRO","country":"br","logo":"escudo.webp","logoPending":true,"players":[]},
-    {"name":"ALPHA7","abbreviation":"A7","country":"br","logo":"A7 2.webp","players":[]},
-    {"name":"CIVIS","abbreviation":"CIV","country":"br","logo":"Civis.webp","players":[]},
-    {"name":"CPT VOX","abbreviation":"CPT","country":"br","logo":"escudo.webp","logoPending":true,"players":[]},
-    {"name":"FLUXO W7M","abbreviation":"FX","country":"br","logo":"Fluxo 2.webp","players":[]},
-    {"name":"INFLUENCE RAGE","abbreviation":"IR","country":"br","logo":"Influence Rage.webp","players":[]},
-    {"name":"INTZ","abbreviation":"INTZ","country":"br","logo":"Intz 1.webp","players":[]},
-    {"name":"LOOPS","abbreviation":"LOOPS","country":"br","logo":"Loops 1.webp","players":[]},
-    {"name":"LOS","abbreviation":"LOS","country":"br","logo":"Los.webp","players":[]},
-    {"name":"LOUD SNICKERS","abbreviation":"LOUD","country":"br","logo":"loud 2.webp","players":[]},
-    {"name":"RISE GAMING","abbreviation":"RISE","country":"br","logo":"Rise 1.webp","players":[]},
-    {"name":"RUSH GAMING","abbreviation":"RUSH","country":"br","logo":"Rush.webp","players":[]},
-    {"name":"SX TET","abbreviation":"SXT","country":"br","logo":"escudo.webp","logoPending":true,"players":[]},
-    {"name":"TEAM SOLID","abbreviation":"TS","country":"br","logo":"Team Solid 2.webp","players":[]}
+    {
+      "name": "AFROGAMES",
+      "abbreviation": "AFRO",
+      "country": "br",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [
+        "Nielffx",
+        "BRABOXX7",
+        "gbzinn7",
+        "Sant10s",
+        "dnsetzz",
+        "PETER"
+      ]
+    },
+    {
+      "name": "ALPHA7",
+      "abbreviation": "A7",
+      "country": "br",
+      "logo": "A7 2.webp",
+      "players": [
+        "Sam7",
+        "Brisa7",
+        "MitoMvp",
+        "LC777",
+        "JNmvp7"
+      ]
+    },
+    {
+      "name": "CIVIS",
+      "abbreviation": "CIV",
+      "country": "br",
+      "logo": "Civis.webp",
+      "players": [
+        "Hugo7",
+        "SOARES",
+        "Destroi7",
+        "NEYawp",
+        "Henry10",
+        "LukaSZ"
+      ]
+    },
+    {
+      "name": "CPT VOX",
+      "abbreviation": "CPT",
+      "country": "br",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [
+        "Gbtrem22",
+        "bad9",
+        "TREVOR9",
+        "Ângelo7",
+        "Seven7zk"
+      ]
+    },
+    {
+      "name": "FLUXO W7M",
+      "abbreviation": "FX",
+      "country": "br",
+      "logo": "Fluxo 2.webp",
+      "players": [
+        "Bops",
+        "BuTziN",
+        "Giuh",
+        "MT7",
+        "Proxx7"
+      ]
+    },
+    {
+      "name": "INFLUENCE RAGE",
+      "abbreviation": "IR",
+      "country": "br",
+      "logo": "Influence Rage.webp",
+      "players": [
+        "lippe!",
+        "IGOR7",
+        "nepoIGN",
+        "Lyon",
+        "saskito!"
+      ]
+    },
+    {
+      "name": "INTZ",
+      "abbreviation": "INTZ",
+      "country": "br",
+      "logo": "Intz 1.webp",
+      "players": [
+        "GUS",
+        "João7",
+        "honeyzL",
+        "kauãxp",
+        "PEREIRA"
+      ]
+    },
+    {
+      "name": "LOOPS",
+      "abbreviation": "LOOPS",
+      "country": "br",
+      "logo": "Loops 1.webp",
+      "players": [
+        "Stark",
+        "Draxx7",
+        "Vitin9",
+        "Pão7",
+        "Luan7"
+      ]
+    },
+    {
+      "name": "LOS",
+      "abbreviation": "LOS",
+      "country": "br",
+      "logo": "Los.webp",
+      "players": [
+        "Raone7",
+        "General!",
+        "Rigby245",
+        "Yago",
+        "mtsexy."
+      ]
+    },
+    {
+      "name": "LOUD SNICKERS",
+      "abbreviation": "LOUD",
+      "country": "br",
+      "logo": "loud 2.webp",
+      "players": [
+        "TRAP",
+        "NICKZ",
+        "BZP",
+        "GUAXA",
+        "HAK"
+      ]
+    },
+    {
+      "name": "RISE GAMING",
+      "abbreviation": "RISE",
+      "country": "br",
+      "logo": "Rise 1.webp",
+      "players": [
+        "Mala",
+        "Erick11",
+        "Carioca",
+        "Naandox",
+        "KaKaZk"
+      ]
+    },
+    {
+      "name": "RUSH GAMING",
+      "abbreviation": "RUSH",
+      "country": "br",
+      "logo": "Rush.webp",
+      "players": [
+        "BLACK02",
+        "GUIMERLQ",
+        "Ericking",
+        "PROZIN",
+        "MitinX"
+      ]
+    },
+    {
+      "name": "SX TET",
+      "abbreviation": "SXT",
+      "country": "br",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [
+        "IsackSR",
+        "Furiazz7",
+        "Redxzzz",
+        "Yato7",
+        "Nikeboy"
+      ]
+    },
+    {
+      "name": "TEAM SOLID",
+      "abbreviation": "TS",
+      "country": "br",
+      "logo": "Team Solid 2.webp",
+      "players": [
+        "Motovea",
+        "vitinxp",
+        "Pitbull",
+        "BYTE333",
+        "Sbriça"
+      ]
+    }
   ]
 }

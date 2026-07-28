@@ -16,6 +16,8 @@
   const state = {
     loading: null,
     loaded: false,
+    playersLoading: null,
+    playersLoaded: false,
     teams: [],
     stages: null,
     players: { players: [], entries: [] },
@@ -26,7 +28,7 @@
       final: { period: 'all', map: 'all', drop: 'all' }
     },
     selectionTab: 'classificatoria',
-    playerFilters: { stage: [], team: [], role: [], country: [], day: [] },
+    playerFilters: { stage: [], team: [], role: [], rookie: [], day: [] },
     statsStage: 'geral'
   };
 
@@ -48,17 +50,26 @@
     state.loading = Promise.all([
       getJson(CONFIG.teamsUrl),
       getJson(CONFIG.stagesUrl),
-      getJson(CONFIG.playersUrl),
       getJson(CONFIG.datesUrl)
-    ]).then(([teams, stages, players, dates]) => {
+    ]).then(([teams, stages, dates]) => {
       state.teams = Array.isArray(teams?.teams) ? teams.teams : [];
       state.stages = stages || {};
-      state.players = players || { players: [], entries: [] };
       state.dates = dates || { stages: [] };
       state.loaded = true;
       return state;
     }).finally(() => { state.loading = null; });
     return state.loading;
+  }
+
+  function loadPlayersData() {
+    if (state.playersLoaded) return Promise.resolve(state.players);
+    if (state.playersLoading) return state.playersLoading;
+    state.playersLoading = getJson(CONFIG.playersUrl).then(players => {
+      state.players = players || { players: [], entries: [] };
+      state.playersLoaded = true;
+      return state.players;
+    }).finally(() => { state.playersLoading = null; });
+    return state.playersLoading;
   }
 
   function hero(title, subtitle) {
@@ -94,6 +105,45 @@
 
   function abbreviation(teamName) {
     return teamByName(teamName)?.abbreviation || String(teamName || '—');
+  }
+
+  function rosterPlayers() {
+    return Array.isArray(state.players?.players) ? state.players.players : [];
+  }
+
+  function playersForTeam(teamName) {
+    return rosterPlayers()
+      .filter(player => normalize(player.team) === normalize(teamName))
+      .sort((a, b) => Number(b.starter) - Number(a.starter)
+        || Number(b.captain) - Number(a.captain)
+        || number(a.order) - number(b.order)
+        || String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR'));
+  }
+
+  function rosterPlayerByName(name, teamName = '') {
+    const nameKey = normalize(name);
+    const teamKey = normalize(teamName);
+    return rosterPlayers().find(player => {
+      const aliases = [player.name, player.sourceName, ...(Array.isArray(player.aliases) ? player.aliases : [])];
+      const nameMatch = aliases.some(alias => normalize(alias) === nameKey);
+      return nameMatch && (!teamKey || normalize(player.team) === teamKey);
+    }) || null;
+  }
+
+  function playerRoleLabel(player) {
+    const role = String(player?.roleShort || player?.role || '').toUpperCase();
+    if (role === 'GRAN') return 'Granadeiro';
+    if (role === 'SUP') return 'Suporte';
+    if (role === '3') return '3º homem';
+    return role === 'RUSH' ? 'Rush' : (player?.role || 'Função não informada');
+  }
+
+  function playerBadges(player) {
+    const badges = [];
+    if (player?.captain) badges.push('<span class="ffws-s2-roster-badge captain">Capitão</span>');
+    if (player?.rookie) badges.push('<span class="ffws-s2-roster-badge rookie">Estreante</span>');
+    if (player?.highlight) badges.push('<span class="ffws-s2-roster-badge highlight">Destaque</span>');
+    return badges.join('');
   }
 
   function teamCell(teamName, subtitle = '') {
@@ -365,14 +415,15 @@
 
   function playerFilterOptions() {
     const entries = allPlayerEntries();
-    const teams = [...new Set((entries.length ? entries.map(entry => entry.team) : state.teams.map(team => team.name)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const countries = [...new Set(entries.map(entry => entry.country).filter(Boolean))].sort();
+    const roster = rosterPlayers();
+    const playerSource = entries.length ? entries : roster;
+    const teams = [...new Set((playerSource.length ? playerSource.map(entry => entry.team) : state.teams.map(team => team.name)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
     const days = [...new Set(entries.map(entry => number(entry.day)).filter(Boolean))].sort((a, b) => a - b);
     return {
       stage: [{ value: 'classificatoria', label: 'Classificatória' }, { value: 'segundaFase', label: 'Segunda Fase' }, { value: 'final', label: 'Final' }],
       team: teams.map(team => ({ value: team, label: team })),
       role: [{ value: 'RUSH', label: 'Rush' }, { value: 'SUP', label: 'Suporte' }, { value: 'GRAN', label: 'Granadeiro' }, { value: '3', label: '3º homem' }],
-      country: countries.map(country => ({ value: country, label: country === 'br' ? 'Brasil' : country.toUpperCase(), flag: country === 'br' ? '🇧🇷' : '🌐' })),
+      rookie: [{ value: 'rookie', label: 'Apenas estreantes' }, { value: 'veteran', label: 'Sem estreantes' }],
       day: days.map(day => ({ value: String(day), label: `Dia ${day}` }))
     };
   }
@@ -380,10 +431,15 @@
   function filteredPlayers() {
     const entries = allPlayerEntries().filter(entry => {
       const f = state.playerFilters;
+      const meta = rosterPlayerByName(entry.name || entry.player, entry.team);
+      const isRookie = Boolean(meta?.rookie ?? entry.rookie);
+      const rookieMatch = !f.rookie.length
+        || (f.rookie.includes('rookie') && isRookie)
+        || (f.rookie.includes('veteran') && !isRookie);
       return (!f.stage.length || f.stage.includes(String(entry.stage)))
         && (!f.team.length || f.team.some(team => normalize(team) === normalize(entry.team)))
-        && (!f.role.length || f.role.includes(String(entry.roleShort || entry.role || '').toUpperCase()))
-        && (!f.country.length || f.country.includes(String(entry.country || '').toLowerCase()))
+        && (!f.role.length || f.role.includes(String(entry.roleShort || entry.role || meta?.roleShort || '').toUpperCase()))
+        && rookieMatch
         && (!f.day.length || f.day.includes(String(entry.day)));
     });
     const aggregate = new Map();
@@ -408,9 +464,9 @@
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Ranking MVP', 'Classificação individual da FFWS Brasil 2026 Split 2')}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner">
         <div class="ffws-s2-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtros múltiplos preparados para combinar etapas, equipes, posições, países e dias.</p></div><span class="ffws-s2-badge">${rows.length} jogadores</span></div>
-        <div class="ffws-s2-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('country', 'País', options.country)}${multiFilter('day', 'Dias', options.day)}</div>
+        <div class="ffws-s2-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('rookie', 'Novatos', options.rookie)}${multiFilter('day', 'Dias', options.day)}</div>
         <div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th class="team-col">Jogador</th><th>Equipe</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th></tr></thead><tbody>
-        ${rows.length ? rows.map((row, index) => `<tr><td class="ffws-s2-rank">${index + 1}º</td><td class="team-col"><strong>${escapeHtml(row.name)}</strong></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td></tr>`).join('') : '<tr><td colspan="8"><div class="ffws-s2-empty"><div><strong>Participantes em breve</strong>O ranking será preenchido quando os elencos e as estatísticas forem enviados.</div></div></td></tr>'}
+        ${rows.length ? rows.map((row, index) => `<tr><td class="ffws-s2-rank">${index + 1}º</td><td class="team-col"><strong>${escapeHtml(row.name)}</strong></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td></tr>`).join('') : '<tr><td colspan="8"><div class="ffws-s2-empty"><div><strong>Estatísticas em breve</strong>Os 72 participantes já estão cadastrados; o ranking será preenchido quando as primeiras quedas forem importadas.</div></div></td></tr>'}
         </tbody></table></div>
       </div></section></div>`;
   }
@@ -418,9 +474,21 @@
   function renderTeams() {
     const root = document.getElementById('ffws-br-s2-equipes-content');
     if (!root) return;
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Equipes', 'As 14 organizações participantes da FFWS Brasil 2026 Split 2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Diretório de Equipes</h2><p>Os elencos serão inseridos quando a lista oficial de participantes for enviada.</p></div><span class="ffws-s2-badge">14 equipes</span></div>
-      <div class="ffws-s2-teams-grid">${state.teams.map(team => `<article class="ffws-s2-team-card"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.abbreviation)} • Brasil</small><small class="${team.logoPending ? 'ffws-s2-logo-pending' : ''}">${team.logoPending ? 'Logo pendente • ' : ''}Elenco em breve</small></div></article>`).join('')}</div>
+    const totalPlayers = rosterPlayers().length;
+    const totalRookies = rosterPlayers().filter(player => player.rookie).length;
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Equipes', 'As 14 organizações e os elencos da FFWS Brasil 2026 Split 2')}
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Diretório de Equipes</h2><p>Os nicknames foram padronizados com os nomes já usados no site. A marca de estreante considera apenas quem ainda não disputou uma edição anterior da elite brasileira.</p></div><span class="ffws-s2-badge">${totalPlayers} jogadores • ${totalRookies} estreantes</span></div>
+      <div class="ffws-s2-teams-grid ffws-s2-rosters-grid">${state.teams.map(team => {
+        const roster = playersForTeam(team.name);
+        const starters = roster.filter(player => player.starter).length;
+        return `<article class="ffws-s2-team-card ffws-s2-team-roster-card">
+          <header class="ffws-s2-team-roster-head"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.abbreviation)} • Brasil</small><small class="${team.logoPending ? 'ffws-s2-logo-pending' : ''}">${team.logoPending ? 'Logo pendente • ' : ''}${starters} titulares • ${Math.max(0, roster.length - starters)} reservas</small></div></header>
+          <div class="ffws-s2-roster-list">${roster.length ? roster.map(player => `<div class="ffws-s2-roster-player${player.starter ? '' : ' reserve'}">
+            <div class="ffws-s2-roster-player-main"><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(playerRoleLabel(player))} • ${escapeHtml(player.rosterStatus)}</small></div>
+            <div class="ffws-s2-roster-badges">${playerBadges(player)}</div>
+          </div>`).join('') : '<div class="ffws-s2-roster-empty">Elenco ainda não cadastrado.</div>'}</div>
+        </article>`;
+      }).join('')}</div>
       </div></section></div>`;
   }
 
@@ -468,8 +536,10 @@
   function renderCompare() {
     const root = document.getElementById('ffws-br-s2-comparar-content');
     if (!root) return;
+    const players = rosterPlayers().slice().sort((a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR'));
+    const options = players.map(player => `<option value="${escapeHtml(player.name)}">${escapeHtml(player.name)} • ${escapeHtml(abbreviation(player.team))}</option>`).join('');
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Comparar 1V1', 'Compare dois jogadores da FFWS Brasil 2026 Split 2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-compare"><div class="ffws-s2-compare-card"><strong>Jogador 1</strong><select disabled><option>Participantes em breve</option></select></div><div class="ffws-s2-vs">VS</div><div class="ffws-s2-compare-card"><strong>Jogador 2</strong><select disabled><option>Participantes em breve</option></select></div></div><div class="ffws-s2-empty" style="margin-top:16px;min-height:100px"><div><strong>Comparação indisponível</strong>Envie os participantes para liberar o comparador.</div></div></div></section></div>`;
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-compare"><div class="ffws-s2-compare-card"><strong>Jogador 1</strong><select disabled><option>${players.length} participantes cadastrados</option>${options}</select></div><div class="ffws-s2-vs">VS</div><div class="ffws-s2-compare-card"><strong>Jogador 2</strong><select disabled><option>Estatísticas em breve</option>${options}</select></div></div><div class="ffws-s2-empty" style="margin-top:16px;min-height:100px"><div><strong>Elencos cadastrados</strong>A comparação será liberada quando as primeiras estatísticas da temporada forem importadas.</div></div></div></section></div>`;
   }
 
   function renderPage(pageId) {
@@ -495,9 +565,13 @@
       root.dataset.s2Loading = '1';
       root.innerHTML = '<div class="ffws-s2-empty"><div><strong>Carregando FFWS BR 2026 S2...</strong></div></div>';
     }
-    loadData().then(() => renderPage(pageId)).catch(error => {
-      if (root) root.innerHTML = `<div class="ffws-s2-empty"><div><strong>Não foi possível carregar a página</strong>${escapeHtml(error.message)}</div></div>`;
-    });
+    const needsPlayers = new Set(['ffws-br-s2-mvp', 'ffws-br-s2-equipes', 'ffws-br-s2-selecoes', 'ffws-br-s2-notas', 'ffws-br-s2-comparar']).has(pageId);
+    loadData()
+      .then(() => needsPlayers ? loadPlayersData() : null)
+      .then(() => renderPage(pageId))
+      .catch(error => {
+        if (root) root.innerHTML = `<div class="ffws-s2-empty"><div><strong>Não foi possível carregar a página</strong>${escapeHtml(error.message)}</div></div>`;
+      });
   }
 
   window.setFFWSS2StageFilter = (stageKey, type, value) => {

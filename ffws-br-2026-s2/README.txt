@@ -33,3 +33,9 @@ Formato esperado de uma rodada em stages.json:
 }
 
 Na Final, use days[].matches[] para manter os filtros por dia, mapa e queda.
+
+ELENCOS E NOMES CANÔNICOS
+- players.json contém 72 jogadores e os campos de titularidade, função, capitão, destaque e estreante.
+- player-name-map.json registra o comparativo entre o nickname da planilha e o nome canônico usado no site.
+- A marca de estreante não copia cegamente a planilha: LC777, JNmvp7, TREVOR9 e Ângelo7 foram removidos por já terem disputado a elite brasileira.
+- Estreantes confirmados da S2: Nielffx, BRABOXX7, gbzinn7, Sant10s, dnsetzz, Henry10, Gbtrem22, bad9, Seven7zk e IsackSR.
