@@ -29,12 +29,10 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     return window.__cffChartPromise;
 };
 </script>
-<!-- ADSNSE -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.min.js?client=ca-pub-3351547915606735"
-     crossorigin="anonymous"></script>
+<!-- ADSENSE: carregado após a home ficar interativa -->
 <script defer src="js/config.min.js?v=20260629-laff-json-v1"></script>
 <!-- Limpa service workers/caches antigos para evitar site travado no mobile -->
-<script defer src="js/service-worker-register.min.js?v=20260610-wb-standalone-v2"></script>
+<script defer src="js/service-worker-register.min.js?v=20260729-fast-shell-v1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central Free Fire | Estatísticas Competitivas de Free Fire</title>
@@ -50,19 +48,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="dns-prefetch" href="https://docs.google.com">
-<script id="cff-essential-data-preload">
-(() => {
-  const version = `20260520-auto-cache-v2-${Math.floor(Date.now() / 300000)}`;
-  ['dados.json', 'dados-final.json', 'player-aliases.json'].forEach(file => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'fetch';
-    link.href = `${file}?v=${encodeURIComponent(version)}`;
-    link.fetchPriority = 'high';
-    document.head.appendChild(link);
-  });
-})();
-</script>
+<!-- Dados históricos são carregados sob demanda para não bloquear a home. -->
 <link rel="stylesheet" href="css/bundle.min.css?v=20260721-layout-performance-v1">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/home-ffws-s2.css?v=20260728-home-cards-v2">
@@ -383,7 +369,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
         <div class="nav-desktop-right">
             <div class="nav-search-wrapper-desktop" id="nav-search-wrapper-desktop">
-                <input type="text" id="global-search-desktop" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('desktop')" autocomplete="off">
+                <input type="text" id="global-search-desktop" placeholder="BUSCAR..." autocomplete="off">
                 <button class="nav-search-toggle-btn" onclick="toggleDesktopSearch()" aria-label="Buscar">
                     <img decoding="async" loading="lazy" src="lupa.webp" class="nav-search-icon-desktop">
                 </button>
@@ -413,7 +399,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             </div>
         </div>
         <div class="nav-mobile-search-bar" id="mobile-search-bar">
-            <input type="text" id="global-search-mobile" placeholder="BUSCAR..." oninput="handleGlobalSearchFrom('mobile')">
+            <input type="text" id="global-search-mobile" placeholder="BUSCAR...">
             <div id="search-results-mobile" class="search-results-dropdown"></div>
         </div>
     </div>
@@ -2080,37 +2066,12 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </div>
 
 
+<script defer src="js/site-shell-fast.min.js?v=20260729-fast-shell-v1"></script>
+<script defer src="js/search-fast.min.js?v=20260729-fast-search-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260728-calendar-v1"></script>
-<script defer src="js/ffws-br-season-layout.min.js?v=20260728-shared-v1"></script>
-<script defer src="js/navigation-search.min.js?v=20260729-current-season-v1"></script>
-<script defer src="js/search-history-compare.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer src="js/current-season-nav.min.js?v=20260729-current-season-v1"></script>
-<script defer src="js/home-news-lives.min.js?v=20260728-home-s2-v2"></script>
+<script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
 <script defer src="js/home-current-results.min.js?v=20260729-current-season-v1"></script>
-<script defer src="js/core-data.min.js?v=20260729-interaction-yield-v1"></script>
-<script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
-<script defer src="js/mercado-status-performance-hotfix.min.js?v=20260728-home-fix-v2"></script>
-<script defer src="ffws-br-2026-s2/config.js?v=20260728-calendar-v1"></script>
-<script defer src="ffws-br-2026-s2/s2.js?v=20260728-calendar-v1"></script>
-<script defer fetchpriority="low" src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
-<script defer fetchpriority="low" src="js/hall-fame-extras.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer fetchpriority="low" src="js/day-vote.min.js?v=20260601-team-stage-days-v1"></script>
-<script defer fetchpriority="low" src="js/filters-results.min.js?v=20260713-performance-v1"></script>
-<script defer fetchpriority="low" src="js/team-profile.min.js?v=20260706-wb-status-v1"></script>
-<script defer fetchpriority="low" src="js/player-profile.min.js?v=20260722-mvp-split-team-v1"></script>
-<script defer fetchpriority="low" src="js/notas-cff.min.js?v=20260531-notas-stage-v1"></script>
-<script defer fetchpriority="low" src="js/other-tournaments.min.js?v=20260601-webp-fix-v2"></script>
-<script defer fetchpriority="low" src="js/charts-market.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer fetchpriority="low" src="js/ffws-sea.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer fetchpriority="low" src="js/laff.min.js?v=20260722-mvp-split-team-v1"></script>
-<script defer fetchpriority="low" src="js/sea-profiles.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer fetchpriority="low" src="ewc%202026/config.js?v=20260718-team-profile-light-v2"></script>
-<script defer fetchpriority="low" src="ewc%202026/ewc.js?v=20260720-multiselect-v1"></script>
-<script defer fetchpriority="low" src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
-<script defer fetchpriority="low" src="js/team-profile-routing-hotfix.min.js?v=20260718-search-results-v2"></script>
-<script defer fetchpriority="low" src="js/player-profile-performance-hotfix.min.js?v=20260718-player-profile-v2"></script>
 </main>
 
-<script type="module" src="js/firebase-votes.min.js?v=20260520-votes-public-final"></script>
 </body>
 </html>

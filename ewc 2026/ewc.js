@@ -1201,22 +1201,8 @@
   }
 
   async function openPlayerProfile(name, teamName) {
-    await loadData();
-    await loadKillsData().catch(() => false);
-    const player = playerByName(name, teamName);
-    if (!player) return;
-    if (document.querySelector('.page.active')?.id !== 'ewc-player-profile' && typeof window.navigate === 'function') window.navigate('ewc-player-profile');
-    history.replaceState(null, '', `#ewc-player-${slug(player.name)}-${slug(player.team)}`);
-    const root = document.getElementById('ewc-player-profile-content');
-    if (!root) return;
-    const stats = killsForPlayer(player.name, player.team);
-    const country = COUNTRY_NAMES[player.country] || String(player.country || '').toUpperCase() || 'País não informado';
-    root.innerHTML = `<div class="ewc-shell">
-      <section class="ewc-profile-hero"><div class="ewc-profile-flag">${flagEmoji(player.country) || '—'}</div><div><div class="ewc-kicker">Jogador • EWC 2026</div><h1>${escapeHtml(player.name)}</h1><p>${escapeHtml(country)} • ${escapeHtml(player.role)}</p></div></section>
-      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Equipe</h2><button type="button" class="ewc-participant-head" onclick="openEWCTeamProfile(${jsString(player.team)})"><span class="ewc-participant-logo"><img src="${escapeHtml(resolveLogo(player.team))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"></span><span class="ewc-participant-title"><strong>${escapeHtml(player.team)}</strong><small>${escapeHtml(player.qualification || '')}</small></span><span class="ewc-participant-count">ABRIR</span></button></div></section>
-      <section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Informações</h2><div class="ewc-stats-grid">${statCard('Posição', player.role)}${statCard('Bandeira', country)}${stats && Number(stats.matches) ? `${statCard('Abates', Number(stats.kills) || 0)}${statCard('Dano', Number(stats.damage || 0).toLocaleString('pt-BR'))}${statCard('Assistências', Number(stats.assists) || 0)}${statCard('Quedas', Number(stats.matches) || 0)}` : ''}</div></div></section>
-      <button class="btn-action ewc-profile-back" type="button" onclick="navigate('ewc-equipes')">← Voltar para equipes da EWC</button>
-    </div>`;
+    const query = new URLSearchParams({ jogador: String(name || ''), time: String(teamName || '') });
+    window.location.href = `jogador.html?${query.toString()}`;
   }
 
   function renderActivePage() {
