@@ -27,10 +27,12 @@
       segundaFase: { period: 'all', map: 'all', drop: 'all' },
       final: { period: 'all', map: 'all', drop: 'all' }
     },
-    selectionTab: 'classificatoria',
+    selectionWeek: '1',
     playerFilters: { stage: [], team: [], role: [], rookie: [], day: [] },
     statsStage: 'geral'
   };
+
+  const S2_WEEKS = { '1': [1, 2], '2': [3, 4], '3': [5, 6], '4': [7, 8], '5': [9, 10], '6': [11, 12], '7': [13, 14] };
 
   const escapeHtml = value => String(value ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -145,6 +147,12 @@
     if (player?.rookie) badges.push('<span class="ffws-s2-roster-badge rookie">Estreante</span>');
     if (player?.highlight) badges.push('<span class="ffws-s2-roster-badge highlight">Destaque</span>');
     return badges.join('');
+  }
+
+  function playerPhoto(player) {
+    const explicit = player?.photo || player?.image || '';
+    if (typeof window.cffResolvePlayerPhoto === 'function') return window.cffResolvePlayerPhoto(player?.name || player?.player, explicit);
+    return explicit || 'silhueta.webp';
   }
 
   function teamCell(teamName, subtitle = '') {
@@ -485,6 +493,7 @@
         return `<article class="ffws-s2-team-card ffws-s2-team-roster-card" role="button" tabindex="0" onclick="openCurrentSeasonTeam('${jsAttr(team.name)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCurrentSeasonTeam('${jsAttr(team.name)}')}">
           <header class="ffws-s2-team-roster-head"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.abbreviation)} • Brasil</small><small class="${team.logoPending ? 'ffws-s2-logo-pending' : ''}">${team.logoPending ? 'Logo pendente • ' : ''}${starters} titulares • ${Math.max(0, roster.length - starters)} reservas</small></div></header>
           <div class="ffws-s2-roster-list">${roster.length ? roster.map(player => `<button type="button" class="ffws-s2-roster-player${player.starter ? '' : ' reserve'}" onclick="event.stopPropagation();openCurrentSeasonPlayer('${jsAttr(player.name)}', '${jsAttr(player.team)}')">
+            <img class="ffws-s2-roster-player-avatar" loading="lazy" decoding="async" src="${escapeHtml(playerPhoto(player))}" alt="${escapeHtml(player.name)}" onerror="this.onerror=null;this.src='silhueta.webp'">
             <span class="ffws-s2-roster-player-main"><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(playerRoleLabel(player))} • ${escapeHtml(player.rosterStatus)}</small></span>
             <span class="ffws-s2-roster-badges">${playerBadges(player)}</span>
           </button>`).join('') : '<div class="ffws-s2-roster-empty">Elenco ainda não cadastrado.</div>'}</div>
@@ -571,16 +580,81 @@
     </div>`;
   }
 
+  function selectionEntryDay(entry) {
+    return number(entry?.day ?? entry?.dia ?? entry?.round ?? entry?.rodada);
+  }
+
+  function selectionEntryIsClassificatoria(entry) {
+    const stage = normalize(entry?.stage || entry?.etapa || 'classificatoria');
+    return !stage || stage === 'CLASSIFICATORIA' || stage === 'CLASSIFICATORIA1';
+  }
+
+  function selectionRowsForWeek(week) {
+    const days = S2_WEEKS[String(week)] || [];
+    const aggregate = new Map();
+    allPlayerEntries().filter(entry => selectionEntryIsClassificatoria(entry) && days.includes(selectionEntryDay(entry))).forEach(entry => {
+      const name = entry.name || entry.player || entry.jogador;
+      if (!name) return;
+      const team = entry.team || entry.equipe || '';
+      const key = `${normalize(name)}__${normalize(team)}`;
+      const meta = rosterPlayerByName(name, team);
+      if (!aggregate.has(key)) aggregate.set(key, { name, team, meta, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
+      const row = aggregate.get(key);
+      row.kills += number(entry.kills ?? entry.abates);
+      row.damage += number(entry.damage ?? entry.dano);
+      row.assists += number(entry.assists ?? entry.assistencias);
+      row.matches += number(entry.matches ?? entry.quedas) || 1;
+      row.mvps += number(entry.mvp ?? entry.mvps);
+    });
+    return [...aggregate.values()].sort((a, b) => b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
+  }
+
+  function selectionRole(row) {
+    const raw = String(row?.meta?.roleShort || row?.meta?.role || row?.roleShort || row?.role || 'RUSH').toUpperCase();
+    if (raw.includes('GRAN')) return 'GRAN';
+    if (raw.includes('SUP')) return 'SUP';
+    if (raw === '3' || raw.includes('3º')) return '3';
+    return 'RUSH';
+  }
+
+  function buildWeeklySelection(rows) {
+    const used = new Set();
+    const take = (roles, amount) => rows.filter(row => !used.has(row) && roles.includes(selectionRole(row))).slice(0, amount).map(row => (used.add(row), row));
+    let lineup = [...take(['RUSH', '3'], 2), ...take(['GRAN'], 1), ...take(['SUP'], 1)];
+    if (lineup.length < 4) lineup = lineup.concat(rows.filter(row => !used.has(row)).slice(0, 4 - lineup.length));
+    return lineup;
+  }
+
+  function selectionScheduleLabel(week) {
+    const days = S2_WEEKS[String(week)] || [];
+    const rounds = Array.isArray(state.dates?.rounds) ? state.dates.rounds : [];
+    const labels = rounds.filter(item => item.stage === 'classificatoria' && days.includes(number(item.round))).map(item => item.dateLabel);
+    return labels.length ? labels.join(' e ') : `Rodadas ${days.join(' e ')}`;
+  }
+
+  function selectionCard(row, role) {
+    if (!row) return `<article class="ffws-s2-selection-card is-empty"><span>${escapeHtml(role)}</span><strong>Participante a definir</strong><small>Aguardando resultados da semana</small></article>`;
+    const meta = row.meta || rosterPlayerByName(row.name, row.team) || { name: row.name };
+    const avg = row.matches ? (row.kills / row.matches).toFixed(2) : '0.00';
+    return `<button type="button" class="ffws-s2-selection-card" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">
+      <span class="ffws-s2-selection-role">${escapeHtml(role)}</span>
+      <img class="ffws-s2-selection-photo" loading="lazy" decoding="async" src="${escapeHtml(playerPhoto(meta))}" alt="${escapeHtml(row.name)}" onerror="this.onerror=null;this.src='silhueta.webp'">
+      <div class="ffws-s2-selection-copy"><img src="${escapeHtml(logo(row.team))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.team)}</small></div></div>
+      <div class="ffws-s2-selection-stats"><span><b>${row.kills}</b>K</span><span><b>${row.damage.toLocaleString('pt-BR')}</b>DANO</span><span><b>${avg}</b>MÉDIA</span></div>
+    </button>`;
+  }
+
   function renderSelections() {
     const root = document.getElementById('ffws-br-s2-selecoes-content');
     if (!root) return;
-    const tabs = [
-      ['classificatoria', 'Classificatória'], ['segundaFase', 'Segunda Fase'], ['final', 'Final'], ['torneio', 'Torneio']
-    ];
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Seleções da Season', 'Destaques por posição e etapa da temporada')}
-      <div class="ffws-s2-stage-tabs">${tabs.map(([key, label]) => `<button type="button" class="ffws-s2-stage-tab${state.selectionTab === key ? ' active' : ''}" onclick="setFFWSS2SelectionTab('${key}')">${escapeHtml(label)}</button>`).join('')}</div>
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>${escapeHtml(tabs.find(tab => tab[0] === state.selectionTab)?.[1] || 'Seleção')}</h2><p>Melhores jogadores por função, seguindo o padrão da FFWS BR 2026 S1.</p></div><span class="ffws-s2-badge">Em breve</span></div>
-      <div class="ffws-s2-selection-grid">${['Rush', 'Rush', 'Granadeiro', 'Suporte'].map(role => `<div class="ffws-s2-selection-card"><div><strong>${escapeHtml(role)}</strong><br>Participante a definir</div></div>`).join('')}</div></div></section></div>`;
+    const week = String(state.selectionWeek || '1');
+    const rows = selectionRowsForWeek(week);
+    const lineup = buildWeeklySelection(rows);
+    const roles = ['Rush', 'Rush', 'Granadeiro', 'Suporte'];
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Seleções da Season', 'Uma seleção por semana da Classificatória')}
+      <div class="ffws-s2-stage-tabs ffws-s2-week-tabs">${Object.keys(S2_WEEKS).map(key => `<button type="button" class="ffws-s2-stage-tab${week === key ? ' active' : ''}" onclick="setFFWSS2SelectionWeek('${key}')">SEMANA ${key}</button>`).join('')}</div>
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Time da Semana ${escapeHtml(week)}</h2><p>${escapeHtml(selectionScheduleLabel(week))} • dois Rush, um Granadeiro e um Suporte.</p></div><span class="ffws-s2-badge">${rows.length ? `${lineup.length} selecionados` : 'Aguardando resultados'}</span></div>
+      <div class="ffws-s2-selection-grid">${roles.map((role, index) => selectionCard(lineup[index], role)).join('')}</div></div></section></div>`;
   }
 
   function renderStats() {
@@ -636,8 +710,10 @@
       root.innerHTML = '<div class="ffws-s2-empty"><div><strong>Carregando FFWS BR 2026 S2...</strong></div></div>';
     }
     const needsPlayers = new Set(['ffws-br-s2-mvp', 'ffws-br-s2-equipes', 'ffws-br-s2-selecoes', 'ffws-br-s2-notas', 'ffws-br-s2-comparar']).has(pageId);
+    const needsPhotos = new Set(['ffws-br-s2-equipes', 'ffws-br-s2-selecoes']).has(pageId);
     loadData()
       .then(() => needsPlayers ? loadPlayersData() : null)
+      .then(() => needsPhotos && typeof window.cffLoadPlayerPhotoMap === 'function' ? window.cffLoadPlayerPhotoMap().catch(() => null) : null)
       .then(() => renderPage(pageId))
       .catch(error => {
         if (root) root.innerHTML = `<div class="ffws-s2-empty"><div><strong>Não foi possível carregar a página</strong>${escapeHtml(error.message)}</div></div>`;
@@ -650,7 +726,7 @@
     const map = { classificatoria: 'ffws-br-s2-classificatoria', segundaFase: 'ffws-br-s2-segunda-fase', final: 'ffws-br-s2-final' };
     renderPage(map[stageKey]);
   };
-  window.setFFWSS2SelectionTab = key => { state.selectionTab = key; renderSelections(); };
+  window.setFFWSS2SelectionWeek = week => { state.selectionWeek = String(week || '1'); renderSelections(); };
   window.setFFWSS2StatsStage = value => { state.statsStage = value; };
   window.toggleFFWSS2Multi = key => {
     document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-multi-${key}`) menu.hidden = true; });

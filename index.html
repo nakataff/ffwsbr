@@ -52,6 +52,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <link rel="stylesheet" href="css/bundle.min.css?v=20260721-layout-performance-v1">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/home-ffws-s2.css?v=20260728-home-cards-v2">
+<link rel="stylesheet" href="css/search-fast.css?v=20260728-search-layout-v1">
 <link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1" media="print" onload="this.media='all'">
   <style id="home-ffws-champion-fixed-css">
 .home-champions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; margin-bottom: 25px; align-items: stretch; }
@@ -198,12 +199,12 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </style>
 
     <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-calendar-v1" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-weekly-team-photo-v1" media="print" onload="this.media='all'">
 <noscript id="cff-page-css-noscript">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
 <link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1">
 <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1">
-<link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-calendar-v1">
+<link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-weekly-team-photo-v1">
 </noscript>
 </head>
 <body>
@@ -233,23 +234,6 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         <button onclick="window.location.href='manager.html?v=20260610-wb-standalone-v2'" id="sb-wbamanger">WB MANAGER BETA</button>
 
         <div class="sidebar-divider"></div>
-        <section class="sidebar-section" id="sidebar-section-ewc" data-section-key="ewc">
-            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ewc')" aria-expanded="false" aria-controls="sidebar-content-ewc">
-                <span>EWC 2026</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
-            </button>
-            <div class="sidebar-section-content" id="sidebar-content-ewc">
-                <div>
-                    <button onclick="navigateAndClose('ewc-grupos')" id="sb-ewc-grupos">FASE DE GRUPOS</button>
-                    <button onclick="navigateAndClose('ewc-repescagem')" id="sb-ewc-repescagem">REPESCAGEM</button>
-                    <button onclick="navigateAndClose('ewc-final')" id="sb-ewc-final">FINAL</button>
-                    <button onclick="navigateAndClose('ewc-mvp')" id="sb-ewc-mvp">RANKING MVP</button>
-                    <button onclick="navigateAndClose('ewc-equipes')" id="sb-ewc-equipes">EQUIPES</button>
-                    <button onclick="navigateAndClose('ewc-stats')" id="sb-ewc-stats">ESTATÍSTICAS GERAIS</button>
-                </div>
-            </div>
-        </section>
-
-        <div class="sidebar-divider"></div>
         <section class="sidebar-section is-open" id="sidebar-section-ffws-br-s2" data-section-key="ffws-br-s2">
             <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ffws-br-s2')" aria-expanded="true" aria-controls="sidebar-content-ffws-br-s2">
                 <span>FFWS BR 2026 S2</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
@@ -266,6 +250,23 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                     <button onclick="navigateAndClose('ffws-br-s2-stats')" id="sb-ffws-br-s2-stats">ESTATÍSTICAS GERAIS</button>
                     <button onclick="navigateAndClose('ffws-br-s2-notas')" id="sb-ffws-br-s2-notas">NOTAS CFF</button>
                     <button onclick="navigateAndClose('ffws-br-s2-comparar')" id="sb-ffws-br-s2-comparar">COMPARAR 1V1</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="sidebar-divider"></div>
+        <section class="sidebar-section" id="sidebar-section-ewc" data-section-key="ewc">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ewc')" aria-expanded="false" aria-controls="sidebar-content-ewc">
+                <span>EWC 2026</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="sidebar-section-content" id="sidebar-content-ewc">
+                <div>
+                    <button onclick="navigateAndClose('ewc-grupos')" id="sb-ewc-grupos">FASE DE GRUPOS</button>
+                    <button onclick="navigateAndClose('ewc-repescagem')" id="sb-ewc-repescagem">REPESCAGEM</button>
+                    <button onclick="navigateAndClose('ewc-final')" id="sb-ewc-final">FINAL</button>
+                    <button onclick="navigateAndClose('ewc-mvp')" id="sb-ewc-mvp">RANKING MVP</button>
+                    <button onclick="navigateAndClose('ewc-equipes')" id="sb-ewc-equipes">EQUIPES</button>
+                    <button onclick="navigateAndClose('ewc-stats')" id="sb-ewc-stats">ESTATÍSTICAS GERAIS</button>
                 </div>
             </div>
         </section>
@@ -2066,8 +2067,9 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </div>
 
 
-<script defer src="js/site-shell-fast.min.js?v=20260729-fast-shell-v1"></script>
-<script defer src="js/search-fast.min.js?v=20260729-grouped-v2"></script>
+<script defer src="js/player-photo-resolver.min.js?v=20260728-photo-map-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260728-menu-team-photo-v1"></script>
+<script defer src="js/search-fast.min.js?v=20260728-search-layout-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260728-calendar-v1"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
 <script defer src="js/home-current-results.min.js?v=20260729-current-season-v1"></script>
