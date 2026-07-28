@@ -175,7 +175,7 @@
       if (!src) return '';
       src = src.replace(/\u000b/g, '\n').replace(/\u000c/g, '\n').replace(/\u0008/g, '').replace(/\t/g, ' ');
 
-      const tokenRegex = /\[(P|PARAGRAFO|PARÁGRAFO|BR)\]|\[IMG\s*:\s*([^\]]+)\]|\[(H2|H3)\s*:?\s*([^\]]*)\]/gi;
+      const tokenRegex = /\[(P|PARAGRAFO|PARÁGRAFO|BR)\]|\[IMG\s*:\s*([^\]]+)\]|\[(HEAD|H2|H3|H)\s*:?\s*([^\]]*)\]/gi;
       let html = '';
       let buffer = '';
       let lastIndex = 0;
@@ -198,7 +198,8 @@
           const caption = parts.join('|').trim();
           html += renderInlineImage(url, caption);
         } else if (match[3]) {
-          const level = String(match[3]).toLowerCase();
+          const headingToken = String(match[3]).toLowerCase();
+          const level = headingToken === 'h3' ? 'h3' : 'h2';
           const title = String(match[4] || '').trim();
           if (title) html += '<' + level + '>' + escapeHTML(title) + '</' + level + '>';
         }
