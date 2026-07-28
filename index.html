@@ -458,7 +458,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 @media(max-width:768px){.hall-extra-section{padding:16px;margin:26px 0;}.hall-extra-title{font-size:1.12rem;}.hall-summary-search-row{grid-template-columns:1fr;}.hall-summary-search-row .btn-action{width:100%;}.hall-player-summary-head{align-items:flex-start;flex-direction:column;padding:14px;}.hall-player-summary-name{font-size:1.05rem;}.hall-player-summary-mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;}.hall-player-summary-mini span{min-height:64px;padding:8px 4px;}.hall-player-summary-mini strong{font-size:1.05rem;}.hall-player-summary-mini small{font-size:.58rem;}.hall-extra-section .table-container{overflow-x:auto;}#table-hall-player-summary th,#table-hall-player-summary td,#table-hall-edition-leaders th,#table-hall-edition-leaders td{padding:9px 8px;font-size:.82rem;}#table-hall-player-summary th:first-child,#table-hall-player-summary td:first-child,#table-hall-edition-leaders th:first-child,#table-hall-edition-leaders td:first-child{min-width:92px;text-align:left;}}
 </style>
 
-    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260727-s2-v1">
+    <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1">
+    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-shared-v1">
 </head>
 <body>
 
@@ -804,86 +805,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
     <!-- PAGE: TIMES -->
 <div id="tabela" class="page">
-    <div style="text-align: center; margin-bottom: 40px; padding-top: 10px;">
-        <h2>Divisão de Grupos</h2>
-        <div class="groups-container" id="groups-container"></div>
-        <div id="br-stage-format-panel" class="br-stage-format-panel">
-            <div class="br-stage-format-head">
-                <div>
-                    <div class="br-stage-kicker">FFWS BR 2026 S1</div>
-                    <h3>Formato da fase de grupos</h3>
-                    <p>21 de março a 24 de maio de 2026 • 16 equipes divididas em 4 grupos • 10 semanas, com rodadas aos sábados e domingos • 120 quedas em 20 dias de jogo • cada equipe joga 90 quedas.</p>
-                </div>
-            </div>
-
-            <div class="br-stage-legend">
-                <div class="br-legend-row br-legend-ewc"><span class="br-legend-line"></span><strong>1º</strong> avança para a Grand Finals e garante vaga na Esports World Cup</div>
-                <div class="br-legend-row br-legend-final"><span class="br-legend-line"></span><strong>2º ao 12º</strong> avançam para a Grand Finals</div>
-                <div class="br-legend-row br-legend-eliminated"><span class="br-legend-line"></span><strong>13º ao 14º</strong> estão eliminados</div>
-                <div class="br-legend-row br-legend-relegated"><span class="br-legend-line"></span><strong>15º ao 16º</strong> estão rebaixados para a LAFF</div>
-            </div>
-
-            <details class="br-champion-rush-box">
-                <summary>Ver detalhes do Champion Rush</summary>
-                <div class="br-champion-rush-content">
-                    <p><strong>Grand Finals:</strong> 30 e 31 de maio de 2026, com 12 equipes.</p>
-                    <ul>
-                        <li>Na Grand Finals, as equipes jogam normalmente até uma delas alcançar a pontuação pré-definida chamada <strong>Champion Rush Point</strong>.</li>
-                        <li>Depois que uma equipe atinge o <strong>Champion Rush Point</strong>, as próximas quedas passam a ser <strong>Champion Rush Point Eligible</strong> para essa equipe.</li>
-                        <li>A primeira equipe a fazer um Booyah enquanto estiver <strong>Champion Rush Point Eligible</strong> será coroada campeã automaticamente.</li>
-                        <li>O máximo da final é de <strong>16 quedas</strong>. Se ninguém fechar o Champion Rush com Booyah, vence a equipe com mais pontos ao final das quedas.</li>
-                        <li>O <strong>Champion Rush Point</strong> deste torneio é <strong>160</strong>.</li>
-                    </ul>
-                </div>
-            </details>
-        </div>
-
-
-        <h2 style="margin-top: 40px;">Classificação Geral</h2>
-        <div class="filters">
-            <label style="color: var(--text-muted); font-weight: bold;">Filtrar por Dias:</label>
-            <div class="day-filters" id="team-day-filters"></div>
-            
-            <label style="color: var(--text-muted); font-weight: bold; margin-left: auto;">Mapa:</label>
-            <select id="filter-team-map" onchange="onMapFilterChanged()">
-                <option value="all">Todos os Mapas</option>
-                <option value="Bermuda">Bermuda</option>
-                <option value="Kalahari">Kalahari</option>
-                <option value="Purgatório">Purgatório</option>
-                <option value="Nova Terra">Nova Terra</option>
-                <option value="Solara">Solara</option>
-            </select>
-        </div>
-        
-        <div class="filters" id="queda-filter-container" style="margin-top: -10px; display: none;">
-            <label style="color: var(--accent); font-weight: bold;">Queda Específica:</label>
-            <select id="filter-queda" onchange="onQuedaFilterChanged()" style="flex: 1; max-width: 300px;">
-                <option value="all">Todas as Quedas do Período</option>
-            </select>
-        </div>
-
-        <button class="btn-action hide-on-desktop" onclick="document.getElementById('table-teams-full').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Tabela Completa' ? 'Ocultar Detalhes' : 'Ver Tabela Completa';" style="width: 100%; margin-bottom: 12px;">Ver Tabela Completa</button>
-
-        <div class="table-container">
-<table id="table-teams-full">
-            <thead>
-                <tr>
-                    <th onclick="sortTable('table-teams-full', 0, true)"># ↕</th>
-                    <th style="text-align:center;" onclick="sortTable('table-teams-full', 1, true)">E ↕</th> 
-                    <th class="hide-mobile" onclick="sortTable('table-teams-full', 2, false)">GP ↕</th>
-                    <th onclick="sortTable('table-teams-full', 3, true)">PTS ↕</th>
-                    <th class="hide-mobile" onclick="sortTable('table-teams-full', 4, true)">B ↕</th>
-                    <th class="hide-mobile" onclick="sortTable('table-teams-full', 5, true)">K ↕</th>
-                    <th id="th-quedas-colocacao" onclick="sortTable('table-teams-full', 6, true)" title="Quedas Jogadas">Q ↕</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        </div>
-
-        <h2 style="margin-top: 50px;">Classificação por Grupos</h2>
-        <div class="groups-tables-grid" id="groups-tables-grid"></div>
-    </div>
+    <div id="ffws-br-s1-classificatoria-root"></div>
 </div>
 
     <!-- NOVA PAGE: EQUIPES -->
@@ -2442,6 +2364,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 })();
 </script>
 
+<script defer src="js/ffws-br-season-layout.min.js?v=20260728-shared-v1"></script>
 <script defer src="js/core-data.min.js?v=20260721-performance-checkup-v1"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
@@ -2461,8 +2384,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/laff.min.js?v=20260722-mvp-split-team-v1"></script>
 <script defer src="js/sea-profiles.min.js?v=20260721-cache-checkup-v1"></script>
 <script defer src="ewc%202026/config.js?v=20260718-team-profile-light-v2"></script>
-<script defer src="ffws-br-2026-s2/config.js?v=20260727-s2-v1"></script>
-<script defer src="ffws-br-2026-s2/s2.js?v=20260727-s2-v1"></script>
+<script defer src="ffws-br-2026-s2/config.js?v=20260728-shared-v1"></script>
+<script defer src="ffws-br-2026-s2/s2.js?v=20260728-shared-v1"></script>
 
 <script defer src="ewc%202026/ewc.js?v=20260720-multiselect-v1"></script>
 <script defer src="ewc%202026/home-rankings.js?v=20260718-ewc-final-v1"></script>

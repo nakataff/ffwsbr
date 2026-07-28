@@ -1,0 +1,27 @@
+/* Layout reutilizável das temporadas FFWS Brasil. O visual-base vem da FFWS BR 2026 S1. */
+.ffws-season-classification-page{padding-bottom:28px}
+.ffws-season-centered{text-align:center;margin-bottom:40px;padding-top:10px}
+.ffws-season-classification-title{margin-top:40px}
+.ffws-season-participants-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 32px}
+.ffws-season-participant-card{width:100%;padding:0;font:inherit;border-color:var(--border);color:inherit;cursor:pointer;text-align:left}
+.ffws-season-participant-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.ffws-season-participant-card .group-list li{gap:10px;padding:12px 14px;font-size:.95rem;font-weight:850;color:#66b3ff}
+.ffws-season-participant-card .team-logo{width:25px!important;height:25px!important;margin:0!important;flex:0 0 auto}
+.ffws-season-participant-full{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ffws-season-participant-short{display:none}
+.ffws-season-filters select{min-width:170px}
+.ffws-season-classification-page .table-container{margin-top:0}
+.ffws-season-classification-page table{width:100%}
+.ffws-season-classification-page table .team-cell{min-width:170px}
+.ffws-season-classification-page table td,.ffws-season-classification-page table th{text-align:center}
+@media(max-width:900px){.ffws-season-participants-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+  .ffws-season-participants-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .ffws-season-participant-card .group-list li{padding:10px 8px;font-size:.82rem}
+  .ffws-season-participant-card .team-logo{width:22px!important;height:22px!important}
+  .ffws-season-participant-full{display:none}.ffws-season-participant-short{display:inline}
+  .ffws-season-filters{display:grid;grid-template-columns:1fr}
+  .ffws-season-filters label,.ffws-season-map-label{margin:0!important;text-align:left}
+  .ffws-season-filters select{width:100%;max-width:none}
+  .ffws-season-classification-page table .team-cell{min-width:0}
+}

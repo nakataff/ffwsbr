@@ -33,7 +33,6 @@
   const escapeHtml = value => String(value ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-  const jsString = value => JSON.stringify(String(value ?? '')).replace(/</g, '\\u003c');
   const number = value => Number(value) || 0;
   const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
 
@@ -265,7 +264,79 @@
     </div><div class="ffws-s2-filter-summary">${selected.period === 'all' ? 'Classificação geral' : `${label} ${selected.period}`}${selected.map !== 'all' ? ` • ${escapeHtml(selected.map)}` : ''}${selected.drop !== 'all' ? ` • Queda ${escapeHtml(selected.drop)}` : ''}.</div>`;
   }
 
+
+  function renderClassificatoria(rootId) {
+    const layoutApi = window.FFWSBRSeasonLayout;
+    const root = document.getElementById(rootId);
+    if (!root) return;
+    if (!layoutApi || typeof layoutApi.renderClassification !== 'function') {
+      root.innerHTML = '<div class="ffws-s2-empty"><div><strong>Layout compartilhado indisponível</strong>Atualize os arquivos da temporada.</div></div>';
+      return;
+    }
+
+    const layout = CONFIG.layout?.classificatoria || {};
+    const selected = state.stageFilter.classificatoria || { period: 'all', map: 'all', drop: 'all' };
+    const events = stageEvents('classificatoria');
+    const eventMaps = [...new Set(events.map(event => String(event.map || event.mapa || '').trim()).filter(Boolean))];
+    const mapOptions = eventMaps.length
+      ? eventMaps.map(map => ({ value: map, label: map }))
+      : (layout.defaultMaps || []);
+    const drops = [...new Set(events.map((event, index) => number(event.drop) || number(event.queda) || number(event.number) || index + 1).filter(Boolean))].sort((a, b) => a - b);
+    const rows = filterStageRows('classificatoria');
+
+    layoutApi.renderClassification({
+      rootId,
+      pageClass: 'ffws-s2-classificatoria-page',
+      participants: {
+        mode: 'teams',
+        title: layout.participantsTitle || 'Times Participantes',
+        teams: state.teams,
+        nameResolver: team => team?.name || 'A definir',
+        shortResolver: team => team?.abbreviation || team?.name || '—',
+        logoResolver: full => logo(full)
+      },
+      format: layout.format || {},
+      classificationTitle: layout.classificationTitle || 'Classificação Geral',
+      filters: {
+        period: {
+          id: 'ffws-s2-filter-round', label: 'Filtrar por Rodadas:',
+          onchange: "setFFWSS2StageFilter('classificatoria','period',this.value)", selected: selected.period,
+          options: [{ value: 'all', label: 'Todas as rodadas' }].concat(Array.from({ length: 14 }, (_, index) => ({ value: String(index + 1), label: `Rodada ${index + 1}` })))
+        },
+        map: {
+          id: 'ffws-s2-filter-map', label: 'Mapa:',
+          onchange: "setFFWSS2StageFilter('classificatoria','map',this.value)", selected: selected.map,
+          options: [{ value: 'all', label: 'Todos os Mapas' }].concat(mapOptions)
+        },
+        drop: {
+          containerId: 'ffws-s2-drop-filter-container', id: 'ffws-s2-filter-drop', label: 'Queda Específica:',
+          onchange: "setFFWSS2StageFilter('classificatoria','drop',this.value)", selected: selected.drop,
+          visible: drops.length > 0,
+          options: [{ value: 'all', label: 'Todas as Quedas do Período' }].concat(drops.map(drop => ({ value: String(drop), label: `Queda ${drop}` })))
+        }
+      },
+      table: {
+        id: 'ffws-s2-classificatoria-table',
+        autoRank: true,
+        zones: layout.zones || [],
+        rows,
+        resolveTeamName: teamName => teamByName(teamName)?.name || teamName,
+        resolveShortName: teamName => abbreviation(teamName),
+        resolveLogo: teamName => logo(teamName),
+        columns: [
+          { key: 'position', label: '#' },
+          { key: 'team', label: 'E', numeric: false },
+          { key: 'points', label: 'PTS', accent: true },
+          { key: 'booyahs', label: 'B', hideMobile: true },
+          { key: 'kills', label: 'K', hideMobile: true },
+          { key: 'matches', label: 'Q', title: 'Quedas Jogadas' }
+        ]
+      }
+    });
+  }
+
   function renderStage(stageKey, rootId, title, subtitle) {
+    if (stageKey === 'classificatoria') return renderClassificatoria(rootId);
     const root = document.getElementById(rootId);
     if (!root) return;
     const rows = filterStageRows(stageKey);
