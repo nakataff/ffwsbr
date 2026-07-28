@@ -37,6 +37,7 @@
     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   const number = value => Number(value) || 0;
   const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
+  const jsAttr = value => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
   async function getJson(url) {
     const response = await fetch(url, { cache: 'default' });
@@ -466,7 +467,7 @@
         <div class="ffws-s2-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtros múltiplos preparados para combinar etapas, equipes, posições, países e dias.</p></div><span class="ffws-s2-badge">${rows.length} jogadores</span></div>
         <div class="ffws-s2-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('rookie', 'Novatos', options.rookie)}${multiFilter('day', 'Dias', options.day)}</div>
         <div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th class="team-col">Jogador</th><th>Equipe</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th></tr></thead><tbody>
-        ${rows.length ? rows.map((row, index) => `<tr><td class="ffws-s2-rank">${index + 1}º</td><td class="team-col"><strong>${escapeHtml(row.name)}</strong></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td></tr>`).join('') : '<tr><td colspan="8"><div class="ffws-s2-empty"><div><strong>Estatísticas em breve</strong>Os 72 participantes já estão cadastrados; o ranking será preenchido quando as primeiras quedas forem importadas.</div></div></td></tr>'}
+        ${rows.length ? rows.map((row, index) => `<tr><td class="ffws-s2-rank">${index + 1}º</td><td class="team-col"><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td></tr>`).join('') : '<tr><td colspan="8"><div class="ffws-s2-empty"><div><strong>Estatísticas em breve</strong>Os 72 participantes já estão cadastrados; o ranking será preenchido quando as primeiras quedas forem importadas.</div></div></td></tr>'}
         </tbody></table></div>
       </div></section></div>`;
   }
@@ -481,12 +482,12 @@
       <div class="ffws-s2-teams-grid ffws-s2-rosters-grid">${state.teams.map(team => {
         const roster = playersForTeam(team.name);
         const starters = roster.filter(player => player.starter).length;
-        return `<article class="ffws-s2-team-card ffws-s2-team-roster-card">
+        return `<article class="ffws-s2-team-card ffws-s2-team-roster-card" role="button" tabindex="0" onclick="openCurrentSeasonTeam('${jsAttr(team.name)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCurrentSeasonTeam('${jsAttr(team.name)}')}">
           <header class="ffws-s2-team-roster-head"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.abbreviation)} • Brasil</small><small class="${team.logoPending ? 'ffws-s2-logo-pending' : ''}">${team.logoPending ? 'Logo pendente • ' : ''}${starters} titulares • ${Math.max(0, roster.length - starters)} reservas</small></div></header>
-          <div class="ffws-s2-roster-list">${roster.length ? roster.map(player => `<div class="ffws-s2-roster-player${player.starter ? '' : ' reserve'}">
-            <div class="ffws-s2-roster-player-main"><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(playerRoleLabel(player))} • ${escapeHtml(player.rosterStatus)}</small></div>
-            <div class="ffws-s2-roster-badges">${playerBadges(player)}</div>
-          </div>`).join('') : '<div class="ffws-s2-roster-empty">Elenco ainda não cadastrado.</div>'}</div>
+          <div class="ffws-s2-roster-list">${roster.length ? roster.map(player => `<button type="button" class="ffws-s2-roster-player${player.starter ? '' : ' reserve'}" onclick="event.stopPropagation();openCurrentSeasonPlayer('${jsAttr(player.name)}', '${jsAttr(player.team)}')">
+            <span class="ffws-s2-roster-player-main"><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(playerRoleLabel(player))} • ${escapeHtml(player.rosterStatus)}</small></span>
+            <span class="ffws-s2-roster-badges">${playerBadges(player)}</span>
+          </button>`).join('') : '<div class="ffws-s2-roster-empty">Elenco ainda não cadastrado.</div>'}</div>
         </article>`;
       }).join('')}</div>
       </div></section></div>`;
