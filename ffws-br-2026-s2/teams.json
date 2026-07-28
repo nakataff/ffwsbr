@@ -6,8 +6,8 @@
       "name": "AFROGAMES",
       "abbreviation": "AFRO",
       "country": "br",
-      "logo": "escudo.webp",
-      "logoPending": true,
+      "logo": "afg.webp",
+      "logoPending": false,
       "players": [
         "Nielffx",
         "BRABOXX7",
@@ -48,8 +48,8 @@
       "name": "CPT VOX",
       "abbreviation": "CPT",
       "country": "br",
-      "logo": "escudo.webp",
-      "logoPending": true,
+      "logo": "cpt vox.webp",
+      "logoPending": false,
       "players": [
         "Gbtrem22",
         "bad9",
@@ -166,8 +166,8 @@
       "name": "SX TET",
       "abbreviation": "SXT",
       "country": "br",
-      "logo": "escudo.webp",
-      "logoPending": true,
+      "logo": "sx tet.webp",
+      "logoPending": false,
       "players": [
         "IsackSR",
         "Furiazz7",

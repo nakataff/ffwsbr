@@ -52,18 +52,19 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <link rel="dns-prefetch" href="https://docs.google.com">
 <link rel="stylesheet" href="css/bundle.min.css?v=20260721-layout-performance-v1">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
-<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260728-home-v1">
+<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260728-home-cards-v2">
 <link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1">
   <style id="home-ffws-champion-fixed-css">
-.home-champions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; margin-bottom: 25px; }
-.home-champions-grid > .home-widget { margin-bottom: 0 !important; min-width: 0; }
-.home-laff-champion-widget .home-ffws-champion-title { font-size: clamp(1.75rem, 4vw, 3.4rem); }
+.home-champions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; margin-bottom: 25px; align-items: stretch; }
+.home-champions-grid > .home-widget { margin-bottom: 0 !important; min-width: 0; height: 100%; display: flex; flex-direction: column; }
+.home-champions-grid > .home-widget > h3 { min-height: 58px; box-sizing: border-box; display: flex; align-items: center; }
+.home-champions-grid .home-widget-body { flex: 1; justify-content: flex-start; }
 .home-laff-team-logo { background: rgba(255,255,255,.04); border-radius: 50%; }
 @media (max-width: 1200px) { .home-champions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 760px) { .home-champions-grid { grid-template-columns: 1fr; } }
-.home-ffws-champion-body { gap: 18px; padding: 24px clamp(14px, 4vw, 34px) !important; }
-.home-ffws-champion-kicker { color: #8fb3dc; font-size: .86rem; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; text-align: center; }
-.home-ffws-champion-title { color: #f7fbff; font-size: clamp(2rem, 5vw, 4.05rem); line-height: 1; font-weight: 1000; letter-spacing: .04em; text-align: center; text-shadow: 0 0 24px rgba(0,200,255,.12); }
+@media (max-width: 760px) { .home-champions-grid { grid-template-columns: 1fr; gap: 16px; } }
+.home-ffws-champion-body { gap: 18px; padding: 24px clamp(14px, 3vw, 28px) !important; }
+.home-ffws-champion-kicker { min-height: 18px; color: #8fb3dc; font-size: .82rem; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; text-align: center; }
+.home-ffws-champion-title { min-height: 2em; display: flex; align-items: center; justify-content: center; color: #f7fbff; font-size: clamp(2rem, 4.2vw, 3.55rem); line-height: 1; font-weight: 1000; letter-spacing: .04em; text-align: center; text-shadow: 0 0 24px rgba(0,200,255,.12); }
 .home-ffws-section-label { color: var(--accent); font-size: .82rem; font-weight: 1000; letter-spacing: 2px; text-transform: uppercase; text-align: center; margin-top: 2px; }
 .home-ffws-team-card { width: 100%; display: flex; align-items: center; gap: 16px; text-align: left; padding: 18px 22px; border: 1px solid rgba(74,168,255,.20); border-radius: 18px; background: rgba(255,255,255,.035); color: #fff; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
 .home-ffws-team-card:hover { transform: translateY(-2px); border-color: rgba(0,200,255,.55); background: rgba(0,200,255,.06); }
@@ -71,13 +72,29 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .home-ffws-team-card img { width: 46px; height: 46px; object-fit: contain; flex: 0 0 auto; }
 .home-ffws-team-card-champion img { width: 74px; height: 74px; }
 .home-ffws-team-info { display: flex; flex-direction: column; gap: 7px; min-width: 0; flex: 1; }
-.home-ffws-team-info strong { color: #fff; font-size: clamp(1.05rem, 2vw, 1.55rem); font-weight: 1000; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.home-ffws-team-info strong { color: #fff; font-size: clamp(1.02rem, 1.65vw, 1.45rem); font-weight: 1000; letter-spacing: .06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.home-ffws-team-card-champion .home-ffws-team-info strong { white-space: normal; overflow: visible; text-overflow: clip; }
 .home-ffws-team-info small { color: #8fb3dc; font-size: .92rem; font-weight: 850; letter-spacing: .04em; }
 .home-ffws-badge { flex: 0 0 auto; border-radius: 999px; padding: 7px 13px; font-size: .78rem; font-weight: 1000; letter-spacing: .06em; }
 .home-ffws-badge.champion { color: #ffd700; border: 1px solid rgba(255,215,0,.35); background: rgba(255,215,0,.08); }
 .home-ffws-badge.ewc { color: #64b5ff; border: 1px solid rgba(100,181,255,.35); background: rgba(100,181,255,.08); }
 .home-ffws-ewc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; width: 100%; }
-.home-ffws-final-link { border-radius: 16px !important; border: 1px solid rgba(0,200,255,.25) !important; margin-top: 2px; }
+.home-ffws-final-link { width: 100%; box-sizing: border-box; border-radius: 16px !important; border: 1px solid rgba(0,200,255,.25) !important; margin-top: auto !important; }
+@media (max-width: 760px) {
+  .home-champions-grid > .home-widget > h3 { min-height: 50px; }
+  .home-ffws-champion-body { padding: 20px 14px !important; gap: 14px; }
+  .home-ffws-champion-title { min-height: 0; font-size: clamp(2rem, 12vw, 3.05rem); }
+  .home-ffws-team-card { gap: 12px; padding: 14px; border-radius: 15px; }
+  .home-ffws-team-card-champion { min-height: 102px; }
+  .home-ffws-team-card img { width: 40px; height: 40px; }
+  .home-ffws-team-card-champion img { width: 58px; height: 58px; }
+  .home-ffws-team-info { gap: 5px; }
+  .home-ffws-team-info strong { font-size: 1rem; letter-spacing: .04em; }
+  .home-ffws-team-info small { font-size: .78rem; line-height: 1.35; }
+  .home-ffws-badge { padding: 6px 9px; font-size: .66rem; }
+  .home-ffws-ewc-grid { grid-template-columns: 1fr; gap: 10px; }
+  .home-ffws-section-label { font-size: .72rem; line-height: 1.4; letter-spacing: 1.4px; }
+}
 .home-wb-manager-beta {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -172,7 +189,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </style>
 
     <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1">
-    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-rosters-v2">
+    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-shared-v1">
 </head>
 <body>
 
@@ -429,16 +446,16 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         <div class="home-widget home-ffws-champion-widget home-laff-champion-widget">
             <h3>🏆 LAFF 2026 S1</h3>
             <div class="home-widget-body home-ffws-champion-body">
-                <div class="home-ffws-champion-kicker">FINAL ENCERRADA</div>
-                <div class="home-ffws-champion-title home-laff-champion-title">CAMPEÃO DEFINIDO</div>
+                <div class="home-ffws-champion-kicker">GRANDE FINAL ENCERRADA</div>
+                <div class="home-ffws-champion-title">CAMPEÃO DEFINIDO</div>
                 <div class="home-ffws-section-label">🏆 CAMPEÃO DA LAFF</div>
                 <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openLAFFTeamProfile('CPT VOX')">
-                    <img class="home-laff-team-logo" data-cff-team-logo="CPT VOX" decoding="async" loading="lazy" src="escudo.webp" alt="CPT VOX" onerror="this.src='escudo.webp'">
+                    <img class="home-laff-team-logo" data-cff-team-logo="CPT VOX" decoding="async" loading="lazy" src="cpt vox.webp" alt="CPT VOX" onerror="this.src='escudo.webp'">
                     <span class="home-ffws-team-info"><strong>CPT VOX</strong><small>200 pts • 3 B! • 112 K</small></span><span class="home-ffws-badge champion">CAMPEÃO</span>
                 </button>
                 <div class="home-ffws-section-label">⬆️ CLASSIFICADOS PARA FFWS BR 2026 S2</div>
                 <button type="button" class="home-ffws-team-card" onclick="openLAFFTeamProfile('SX GG')">
-                    <img class="home-laff-team-logo" data-cff-team-logo="SX GG" decoding="async" loading="lazy" src="escudo.webp" alt="SX GG" onerror="this.src='escudo.webp'">
+                    <img class="home-laff-team-logo" data-cff-team-logo="SX GG" decoding="async" loading="lazy" src="sx tet.webp" alt="SX GG" onerror="this.src='escudo.webp'">
                     <span class="home-ffws-team-info"><strong>SX GG</strong><small>192 pts • 2 B! • 121 K</small></span><span class="home-ffws-badge ewc">FFWS BR S2</span>
                 </button>
                 <button type="button" onclick="navigate('laff-classificatoria')" class="home-widget-link-btn home-ffws-final-link">VER RESULTADOS DA LAFF →</button>
@@ -448,13 +465,14 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             <h3>🏆 EWC 2026</h3>
             <div class="home-widget-body home-ffws-champion-body">
                 <div class="home-ffws-champion-kicker">GRANDE FINAL ENCERRADA</div>
-                <div class="home-ffws-champion-title home-lyon-champion-title">LYON CAMPEÃ</div>
-                <div class="home-ffws-section-label">🌍 CLASSIFICADA PARA A FFWS GLOBAL SERIES 2026</div>
+                <div class="home-ffws-champion-title">CAMPEÃO DEFINIDO</div>
+                <div class="home-ffws-section-label">🏆 CAMPEÃ DA EWC</div>
                 <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openEWCTeamProfile('LYON')">
                     <img decoding="async" loading="lazy" src="https://i.postimg.cc/XYGTQnxR/inco.webp" alt="LYON" onerror="this.src='escudo.webp'">
                     <span class="home-ffws-team-info"><strong>LYON</strong><small>155 pts • 2 B! • 101 K</small></span>
                     <span class="home-ffws-badge champion">CAMPEÃ</span>
                 </button>
+                <div class="home-ffws-section-label">🌍 LYON CLASSIFICADA PARA A FFWS GLOBAL SERIES 2026</div>
                 <button type="button" onclick="navigate('ewc-final')" class="home-widget-link-btn home-ffws-final-link">VER FINAL DA EWC →</button>
             </div>
         </div>
@@ -2033,7 +2051,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </div>
 
 
-<script defer src="js/home-ffws-s2.min.js?v=20260728-home-v1"></script>
+<script defer src="js/home-ffws-s2.min.js?v=20260728-home-cards-v2"></script>
 <script defer src="js/ffws-br-season-layout.min.js?v=20260728-shared-v1"></script>
 <script defer src="js/core-data.min.js?v=20260721-performance-checkup-v1"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
@@ -2054,8 +2072,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/laff.min.js?v=20260722-mvp-split-team-v1"></script>
 <script defer src="js/sea-profiles.min.js?v=20260721-cache-checkup-v1"></script>
 <script defer src="ewc%202026/config.js?v=20260718-team-profile-light-v2"></script>
-<script defer src="ffws-br-2026-s2/config.js?v=20260728-rosters-v2"></script>
-<script defer src="ffws-br-2026-s2/s2.js?v=20260728-rosters-v2"></script>
+<script defer src="ffws-br-2026-s2/config.js?v=20260728-shared-v1"></script>
+<script defer src="ffws-br-2026-s2/s2.js?v=20260728-shared-v1"></script>
 
 <script defer src="ewc%202026/ewc.js?v=20260720-multiselect-v1"></script>
 <script defer src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
