@@ -50,13 +50,26 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="dns-prefetch" href="https://docs.google.com">
+<script id="cff-essential-data-preload">
+(() => {
+  const version = `20260520-auto-cache-v2-${Math.floor(Date.now() / 300000)}`;
+  ['dados.json', 'dados-final.json', 'player-aliases.json'].forEach(file => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'fetch';
+    link.href = `${file}?v=${encodeURIComponent(version)}`;
+    link.fetchPriority = 'high';
+    document.head.appendChild(link);
+  });
+})();
+</script>
 <link rel="stylesheet" href="css/bundle.min.css?v=20260721-layout-performance-v1">
-<link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
+<link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/home-ffws-s2.css?v=20260728-home-cards-v2">
-<link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1">
+<link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1" media="print" onload="this.media='all'">
   <style id="home-ffws-champion-fixed-css">
 .home-champions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; margin-bottom: 25px; align-items: stretch; }
-.home-champions-grid > .home-widget { margin-bottom: 0 !important; min-width: 0; height: 100%; display: flex; flex-direction: column; }
+.home-champions-grid > .home-widget { margin-bottom: 0 !important; min-width: 0; height: 100%; display: flex; flex-direction: column; container-type: inline-size; }
 .home-champions-grid > .home-widget > h3 { min-height: 58px; box-sizing: border-box; display: flex; align-items: center; }
 .home-champions-grid .home-widget-body { flex: 1; justify-content: flex-start; }
 .home-laff-team-logo { background: rgba(255,255,255,.04); border-radius: 50%; }
@@ -64,9 +77,9 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 @media (max-width: 760px) { .home-champions-grid { grid-template-columns: 1fr; gap: 16px; } }
 .home-ffws-champion-body { gap: 18px; padding: 24px clamp(14px, 3vw, 28px) !important; }
 .home-ffws-champion-kicker { min-height: 18px; color: #8fb3dc; font-size: .82rem; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; text-align: center; }
-.home-ffws-champion-title { min-height: 2em; display: flex; align-items: center; justify-content: center; color: #f7fbff; font-size: clamp(2rem, 4.2vw, 3.55rem); line-height: 1; font-weight: 1000; letter-spacing: .04em; text-align: center; text-shadow: 0 0 24px rgba(0,200,255,.12); }
+.home-ffws-champion-title { min-height: 2em; display: flex; align-items: center; justify-content: center; color: #f7fbff; font-size: clamp(1.9rem, 10cqi, 3.1rem); line-height: 1; font-weight: 1000; letter-spacing: .04em; text-align: center; text-shadow: 0 0 24px rgba(0,200,255,.12); overflow-wrap: anywhere; }
 .home-ffws-section-label { color: var(--accent); font-size: .82rem; font-weight: 1000; letter-spacing: 2px; text-transform: uppercase; text-align: center; margin-top: 2px; }
-.home-ffws-team-card { width: 100%; display: flex; align-items: center; gap: 16px; text-align: left; padding: 18px 22px; border: 1px solid rgba(74,168,255,.20); border-radius: 18px; background: rgba(255,255,255,.035); color: #fff; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+.home-ffws-team-card { width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; text-align: left; padding: 18px 22px; border: 1px solid rgba(74,168,255,.20); border-radius: 18px; background: rgba(255,255,255,.035); color: #fff; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
 .home-ffws-team-card:hover { transform: translateY(-2px); border-color: rgba(0,200,255,.55); background: rgba(0,200,255,.06); }
 .home-ffws-team-card-champion { min-height: 118px; background: linear-gradient(135deg, rgba(0,200,255,.14), rgba(255,215,0,.08)); }
 .home-ffws-team-card img { width: 46px; height: 46px; object-fit: contain; flex: 0 0 auto; }
@@ -74,17 +87,21 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .home-ffws-team-info { display: flex; flex-direction: column; gap: 7px; min-width: 0; flex: 1; }
 .home-ffws-team-info strong { color: #fff; font-size: clamp(1.02rem, 1.65vw, 1.45rem); font-weight: 1000; letter-spacing: .06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .home-ffws-team-card-champion .home-ffws-team-info strong { white-space: normal; overflow: visible; text-overflow: clip; }
-.home-ffws-team-info small { color: #8fb3dc; font-size: .92rem; font-weight: 850; letter-spacing: .04em; }
+.home-ffws-team-info small { color: #8fb3dc; font-size: .92rem; line-height: 1.4; font-weight: 850; letter-spacing: .04em; white-space: normal; overflow-wrap: anywhere; }
 .home-ffws-badge { flex: 0 0 auto; border-radius: 999px; padding: 7px 13px; font-size: .78rem; font-weight: 1000; letter-spacing: .06em; }
 .home-ffws-badge.champion { color: #ffd700; border: 1px solid rgba(255,215,0,.35); background: rgba(255,215,0,.08); }
 .home-ffws-badge.ewc { color: #64b5ff; border: 1px solid rgba(100,181,255,.35); background: rgba(100,181,255,.08); }
-.home-ffws-ewc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; width: 100%; }
+.home-ffws-ewc-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; width: 100%; }
+.home-ffws-ewc-grid .home-ffws-team-card { min-height: 78px; padding: 14px 16px; }
+.home-ffws-ewc-grid .home-ffws-team-info strong { font-size: 1.02rem; }
+.home-ffws-ewc-grid .home-ffws-team-info small { font-size: .82rem; }
+.home-champions-grid, .home-live-market-grid, #home .home-grid-2 { content-visibility: auto; contain-intrinsic-size: 700px; }
 .home-ffws-final-link { width: 100%; box-sizing: border-box; border-radius: 16px !important; border: 1px solid rgba(0,200,255,.25) !important; margin-top: auto !important; }
 @media (max-width: 760px) {
   .home-champions-grid > .home-widget > h3 { min-height: 50px; }
   .home-ffws-champion-body { padding: 20px 14px !important; gap: 14px; }
   .home-ffws-champion-title { min-height: 0; font-size: clamp(2rem, 12vw, 3.05rem); }
-  .home-ffws-team-card { gap: 12px; padding: 14px; border-radius: 15px; }
+  .home-ffws-team-card { grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; padding: 14px; border-radius: 15px; }
   .home-ffws-team-card-champion { min-height: 102px; }
   .home-ffws-team-card img { width: 40px; height: 40px; }
   .home-ffws-team-card-champion img { width: 58px; height: 58px; }
@@ -167,6 +184,12 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 }
 
 
+@media (max-width: 430px) {
+  .home-ffws-team-card { grid-template-columns: auto minmax(0, 1fr); }
+  .home-ffws-team-card .home-ffws-badge { grid-column: 2; justify-self: start; }
+  .home-ffws-team-card-champion .home-ffws-badge { grid-column: auto; justify-self: end; }
+  .home-ffws-team-card-champion { grid-template-columns: auto minmax(0, 1fr) auto; }
+}
 
 </style>
 
@@ -188,8 +211,14 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 @media(max-width:768px){.hall-extra-section{padding:16px;margin:26px 0;}.hall-extra-title{font-size:1.12rem;}.hall-summary-search-row{grid-template-columns:1fr;}.hall-summary-search-row .btn-action{width:100%;}.hall-player-summary-head{align-items:flex-start;flex-direction:column;padding:14px;}.hall-player-summary-name{font-size:1.05rem;}.hall-player-summary-mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;}.hall-player-summary-mini span{min-height:64px;padding:8px 4px;}.hall-player-summary-mini strong{font-size:1.05rem;}.hall-player-summary-mini small{font-size:.58rem;}.hall-extra-section .table-container{overflow-x:auto;}#table-hall-player-summary th,#table-hall-player-summary td,#table-hall-edition-leaders th,#table-hall-edition-leaders td{padding:9px 8px;font-size:.82rem;}#table-hall-player-summary th:first-child,#table-hall-player-summary td:first-child,#table-hall-edition-leaders th:first-child,#table-hall-edition-leaders td:first-child{min-width:92px;text-align:left;}}
 </style>
 
-    <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1">
-    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-shared-v1">
+    <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-shared-v1" media="print" onload="this.media='all'">
+<noscript id="cff-page-css-noscript">
+<link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
+<link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1">
+<link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1">
+<link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260728-shared-v1">
+</noscript>
 </head>
 <body>
 
@@ -392,7 +421,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <main id="main-content">
 <div class="container">
   
- <div id="home" class="page">
+ <div id="home" class="page active">
 
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
     <section class="home-s2-broadcast" id="home-s2-broadcast" aria-labelledby="home-s2-broadcast-title">
@@ -2055,30 +2084,30 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/ffws-br-season-layout.min.js?v=20260728-shared-v1"></script>
 <script defer src="js/core-data.min.js?v=20260721-performance-checkup-v1"></script>
 <script defer src="js/image-optimizer.min.js?v=20260601-webp-fix-v2"></script>
-<script defer src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
-<script defer src="js/search-history-compare.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer src="js/hall-fame-extras.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer src="js/day-vote.min.js?v=20260601-team-stage-days-v1"></script>
-<script defer src="js/filters-results.min.js?v=20260713-performance-v1"></script>
-<script defer src="js/team-profile.min.js?v=20260706-wb-status-v1"></script>
-<script defer src="js/player-profile.min.js?v=20260722-mvp-split-team-v1"></script>
-<script defer src="js/notas-cff.min.js?v=20260531-notas-stage-v1"></script>
+<script defer fetchpriority="low" src="js/stats-rankings.min.js?v=20260601-team-final-profile-v3"></script>
+<script defer fetchpriority="low" src="js/search-history-compare.min.js?v=20260721-cache-checkup-v1"></script>
+<script defer fetchpriority="low" src="js/hall-fame-extras.min.js?v=20260721-cache-checkup-v1"></script>
+<script defer fetchpriority="low" src="js/day-vote.min.js?v=20260601-team-stage-days-v1"></script>
+<script defer fetchpriority="low" src="js/filters-results.min.js?v=20260713-performance-v1"></script>
+<script defer fetchpriority="low" src="js/team-profile.min.js?v=20260706-wb-status-v1"></script>
+<script defer fetchpriority="low" src="js/player-profile.min.js?v=20260722-mvp-split-team-v1"></script>
+<script defer fetchpriority="low" src="js/notas-cff.min.js?v=20260531-notas-stage-v1"></script>
 <script defer src="js/navigation-search.min.js?v=20260706-sidebar-accordion-v1"></script>
-<script defer src="js/other-tournaments.min.js?v=20260601-webp-fix-v2"></script>
+<script defer fetchpriority="low" src="js/other-tournaments.min.js?v=20260601-webp-fix-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260728-home-s2-v2"></script>
-<script defer src="js/charts-market.min.js?v=20260721-cache-checkup-v1"></script>
+<script defer fetchpriority="low" src="js/charts-market.min.js?v=20260721-cache-checkup-v1"></script>
 <script defer src="js/mercado-status-performance-hotfix.min.js?v=20260728-home-fix-v2"></script>
-<script defer src="js/ffws-sea.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer src="js/laff.min.js?v=20260722-mvp-split-team-v1"></script>
-<script defer src="js/sea-profiles.min.js?v=20260721-cache-checkup-v1"></script>
-<script defer src="ewc%202026/config.js?v=20260718-team-profile-light-v2"></script>
-<script defer src="ffws-br-2026-s2/config.js?v=20260728-shared-v1"></script>
-<script defer src="ffws-br-2026-s2/s2.js?v=20260728-shared-v1"></script>
+<script defer fetchpriority="low" src="js/ffws-sea.min.js?v=20260721-cache-checkup-v1"></script>
+<script defer fetchpriority="low" src="js/laff.min.js?v=20260722-mvp-split-team-v1"></script>
+<script defer fetchpriority="low" src="js/sea-profiles.min.js?v=20260721-cache-checkup-v1"></script>
+<script defer fetchpriority="low" src="ewc%202026/config.js?v=20260718-team-profile-light-v2"></script>
+<script defer fetchpriority="low" src="ffws-br-2026-s2/config.js?v=20260728-shared-v1"></script>
+<script defer fetchpriority="low" src="ffws-br-2026-s2/s2.js?v=20260728-shared-v1"></script>
 
-<script defer src="ewc%202026/ewc.js?v=20260720-multiselect-v1"></script>
-<script defer src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
-<script defer src="js/team-profile-routing-hotfix.min.js?v=20260718-search-results-v2"></script>
-<script defer src="js/player-profile-performance-hotfix.min.js?v=20260718-player-profile-v2"></script>
+<script defer fetchpriority="low" src="ewc%202026/ewc.js?v=20260720-multiselect-v1"></script>
+<script defer fetchpriority="low" src="js/team-standard.min.js?v=20260608-team-standard-v5"></script>
+<script defer fetchpriority="low" src="js/team-profile-routing-hotfix.min.js?v=20260718-search-results-v2"></script>
+<script defer fetchpriority="low" src="js/player-profile-performance-hotfix.min.js?v=20260718-player-profile-v2"></script>
 </main>
 
 <script type="module" src="js/firebase-votes.min.js?v=20260520-votes-public-final"></script>
