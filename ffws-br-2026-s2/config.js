@@ -1,8 +1,8 @@
 window.FFWS_BR_2026_S2_CONFIG = Object.freeze({
-  teamsUrl: 'ffws-br-2026-s2/teams.json?v=20260728-rosters-v2',
-  stagesUrl: 'ffws-br-2026-s2/stages.json?v=20260728-rosters-v2',
+  teamsUrl: 'ffws-br-2026-s2/teams.json?v=20260728-calendar-v1',
+  stagesUrl: 'ffws-br-2026-s2/stages.json?v=20260728-calendar-v1',
   playersUrl: 'ffws-br-2026-s2/players.json?v=20260728-rosters-v2',
-  datesUrl: 'ffws-br-2026-s2/dates.json?v=20260728-rosters-v2',
+  datesUrl: 'ffws-br-2026-s2/dates.json?v=20260728-calendar-v1',
   layout: {
     classificatoria: {
       participantsTitle: 'Times Participantes',
@@ -10,7 +10,7 @@ window.FFWS_BR_2026_S2_CONFIG = Object.freeze({
       format: {
         kicker: 'FFWS BR 2026 S2',
         title: 'Formato da Classificatória',
-        description: '14 equipes • 14 rodadas • um time descansa por rodada • os 12 melhores avançam para a Segunda Fase • os dois últimos são rebaixados.',
+        description: '14 equipes • 14 rodadas • duas equipes ficam de folga por rodada • os 12 melhores avançam para a Segunda Fase • os dois últimos são rebaixados.',
         legends: [
           { className: 'br-legend-final', range: '1º ao 12º', label: 'avançam para a Segunda Fase' },
           { className: 'br-legend-relegated', range: '13º ao 14º', label: 'são rebaixados diretamente' }

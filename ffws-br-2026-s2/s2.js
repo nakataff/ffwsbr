@@ -164,7 +164,7 @@
         <div><h2>Formato da Classificatória</h2><p>${escapeHtml(format.description || '')}</p></div>
         <div class="ffws-s2-format-grid">
           <div class="ffws-s2-format-card"><small>Equipes</small><strong>14</strong><span>Participantes na primeira fase</span></div>
-          <div class="ffws-s2-format-card"><small>Rodadas</small><strong>14</strong><span>Um time descansa por rodada</span></div>
+          <div class="ffws-s2-format-card"><small>Rodadas</small><strong>14</strong><span>Duas equipes ficam de folga por rodada</span></div>
           <div class="ffws-s2-format-card"><small>Avançam</small><strong>12</strong><span>Classificados à Segunda Fase</span></div>
           <div class="ffws-s2-format-card"><small>Rebaixados</small><strong>2</strong><span>13º e 14º colocados</span></div>
         </div>
@@ -493,13 +493,82 @@
       </div></section></div>`;
   }
 
+  function scheduleStart(item) {
+    const time = String(item?.time24 || '13:00');
+    const parsed = Date.parse(`${String(item?.date || '')}T${time}:00-03:00`);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function scheduleStageMeta(stageKey) {
+    const map = {
+      classificatoria: {
+        title: '1ª Fase • Classificatória',
+        description: '14 rodadas. Em cada dia, 12 equipes jogam e duas ficam de folga.',
+        badge: '14 rodadas'
+      },
+      segundaFase: {
+        title: '2ª Fase • Rumo ao Mundial',
+        description: 'As 12 classificadas disputam seis rodadas com bônus de pontuação da fase anterior.',
+        badge: '6 rodadas'
+      },
+      final: {
+        title: '3ª Fase • Grande Final',
+        description: 'Dois dias de decisão no formato Champion Rush, com linha de chegada em 160 pontos.',
+        badge: '2 dias'
+      }
+    };
+    return map[stageKey] || { title: stageKey, description: '', badge: '' };
+  }
+
+  function renderScheduleSection(stageKey, rounds, nextKey, liveKey) {
+    const meta = scheduleStageMeta(stageKey);
+    const rows = rounds.filter(item => item.stage === stageKey);
+    if (!rows.length) return '';
+    return `<section class="ffws-s2-panel ffws-s2-calendar-stage ffws-s2-calendar-${escapeHtml(stageKey)}">
+      <div class="ffws-s2-panel-inner">
+        <div class="ffws-s2-panel-head">
+          <div><h2>${escapeHtml(meta.title)}</h2><p>${escapeHtml(meta.description)}</p></div>
+          <span class="ffws-s2-badge">${escapeHtml(meta.badge)}</span>
+        </div>
+        <div class="ffws-s2-calendar-list">
+          ${rows.map(item => {
+            const isLive = item.key === liveKey;
+            const isNext = item.key === nextKey;
+            const isPast = scheduleStart(item) + (6 * 60 * 60 * 1000) < Date.now();
+            const status = isLive ? 'AO VIVO' : isNext ? 'PRÓXIMA' : isPast ? 'ENCERRADA' : 'AGENDADA';
+            const resting = Array.isArray(item.restingTeams) ? item.restingTeams : [];
+            const detail = stageKey === 'classificatoria'
+              ? `<span class="ffws-s2-calendar-rest${resting.length ? '' : ' is-empty'}"><b>Folga:</b> ${resting.length ? resting.map(escapeHtml).join(' e ') : 'Nenhuma equipe'}</span>`
+              : stageKey === 'segundaFase'
+                ? '<span class="ffws-s2-calendar-rest"><b>Formato:</b> 12 equipes</span>'
+                : '<span class="ffws-s2-calendar-rest"><b>Formato:</b> Champion Rush 160</span>';
+            return `<article class="ffws-s2-calendar-row${isLive ? ' is-live' : ''}${isNext ? ' is-next' : ''}${isPast ? ' is-past' : ''}">
+              <span class="ffws-s2-calendar-status">${status}</span>
+              <strong>${escapeHtml(item.label)}</strong>
+              <time datetime="${escapeHtml(item.date)}T${escapeHtml(item.time24 || '13:00')}:00-03:00">${escapeHtml(item.dateLabel)} • ${escapeHtml(item.time || '13h')}</time>
+              ${detail}
+            </article>`;
+          }).join('')}
+        </div>
+      </div>
+    </section>`;
+  }
+
   function renderDates() {
     const root = document.getElementById('ffws-br-s2-datas-content');
     if (!root) return;
     const stages = Array.isArray(state.dates?.stages) ? state.dates.stages : [];
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Datas', 'Calendário e etapas da FFWS Brasil 2026 Split 2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Cronograma</h2><p>As datas exatas ainda não foram informadas. O formato de cada etapa já está registrado.</p></div><span class="ffws-s2-badge">3 etapas</span></div>
-      <div class="ffws-s2-dates">${stages.map(stage => `<article class="ffws-s2-date-card"><span>${escapeHtml(stage.status)}</span><h3>${escapeHtml(stage.name)}</h3><p>${escapeHtml(stage.summary)}</p><b>${escapeHtml(stage.date)}</b></article>`).join('')}</div></div></section></div>`;
+    const rounds = Array.isArray(state.dates?.rounds) ? state.dates.rounds : [];
+    const now = Date.now();
+    const live = rounds.find(item => now >= scheduleStart(item) && now < scheduleStart(item) + (6 * 60 * 60 * 1000));
+    const next = rounds.find(item => scheduleStart(item) > now);
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Datas', 'Calendário oficial da FFWS Brasil 2026 Split 2')}
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Cronograma Geral</h2><p>Todos os dias começam às 13h, no horário de Brasília. Durante a Classificatória, as equipes indicadas ficam de folga naquela rodada.</p></div><span class="ffws-s2-badge">22 dias de competição</span></div>
+      <div class="ffws-s2-dates">${stages.map(stage => `<article class="ffws-s2-date-card"><span>${escapeHtml(stage.status)}</span><h3>${escapeHtml(stage.name)}</h3><p>${escapeHtml(stage.summary)}</p><b>${escapeHtml(stage.date)}</b></article>`).join('')}</div></div></section>
+      ${renderScheduleSection('classificatoria', rounds, next?.key, live?.key)}
+      ${renderScheduleSection('segundaFase', rounds, next?.key, live?.key)}
+      ${renderScheduleSection('final', rounds, next?.key, live?.key)}
+    </div>`;
   }
 
   function renderSelections() {

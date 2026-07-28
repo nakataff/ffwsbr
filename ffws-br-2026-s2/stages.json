@@ -9,7 +9,7 @@
       "restPerRound": 1,
       "advance": 12,
       "relegated": 2,
-      "description": "Quatorze equipes disputam 14 rodadas. Um time descansa por rodada; os 12 melhores avançam e os dois últimos são rebaixados diretamente."
+      "description": "Quatorze equipes disputam 14 rodadas. Duas equipes ficam de folga por rodada; os 12 melhores avançam e os dois últimos são rebaixados diretamente."
     },
     "segundaFase": {
       "label": "Segunda Fase",
