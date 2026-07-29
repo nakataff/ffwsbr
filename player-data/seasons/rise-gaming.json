@@ -1,0 +1,70 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "RISE GAMING",
+  "players": {
+    "mala": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 122,
+        "damage": 77551,
+        "assists": 260,
+        "matches": 95,
+        "mvp": 0,
+        "record": 5,
+        "team": "VIRTUS PRO",
+        "rankKills": 40,
+        "rankDamage": 45,
+        "rankAssists": 6
+      }
+    },
+    "erick11": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 150,
+        "damage": 94333,
+        "assists": 142,
+        "matches": 96,
+        "mvp": 1,
+        "record": 7,
+        "team": "RISE GAMING",
+        "rankKills": 25,
+        "rankDamage": 33,
+        "rankAssists": 39
+      }
+    },
+    "naandox": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 143,
+        "damage": 107330,
+        "assists": 205,
+        "matches": 102,
+        "mvp": 1,
+        "record": 8,
+        "team": "RISE GAMING",
+        "rankKills": 26,
+        "rankDamage": 24,
+        "rankAssists": 14
+      }
+    },
+    "kakazk": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 193,
+        "damage": 165856,
+        "assists": 159,
+        "matches": 103,
+        "mvp": 5,
+        "record": 8,
+        "team": "RISE GAMING",
+        "rankKills": 10,
+        "rankDamage": 3,
+        "rankAssists": 31
+      }
+    }
+  }
+}

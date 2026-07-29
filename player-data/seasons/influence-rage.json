@@ -1,0 +1,107 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "INFLUENCE RAGE",
+  "players": {
+    "lippe": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 130,
+        "damage": 102332,
+        "assists": 189,
+        "matches": 104,
+        "mvp": 0,
+        "record": 6,
+        "team": "INFLUENCE RAGE",
+        "rankKills": 36,
+        "rankDamage": 27,
+        "rankAssists": 18
+      }
+    },
+    "igor7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 161,
+        "damage": 138933,
+        "assists": 127,
+        "matches": 104,
+        "mvp": 4,
+        "record": 5,
+        "team": "INFLUENCE RAGE",
+        "rankKills": 20,
+        "rankDamage": 13,
+        "rankAssists": 49
+      }
+    },
+    "nepoign": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 111,
+        "damage": 74139,
+        "assists": 54,
+        "matches": 83,
+        "mvp": 0,
+        "record": 5,
+        "team": "ANGELS OUTPLAY",
+        "rankKills": 45,
+        "rankDamage": 49,
+        "rankAssists": 68
+      },
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "ANTISOCIAL TEAM",
+        "kills": 40,
+        "matches": 16,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 2.5,
+        "stages": {
+          "classificatoria": {
+            "kills": 11,
+            "matches": 7
+          },
+          "final": {
+            "kills": 29,
+            "matches": 9
+          }
+        }
+      }
+    },
+    "lyon": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 134,
+        "damage": 100883,
+        "assists": 189,
+        "matches": 104,
+        "mvp": 2,
+        "record": 9,
+        "team": "E1 SPORTS",
+        "rankKills": 33,
+        "rankDamage": 28,
+        "rankAssists": 19
+      }
+    },
+    "saskito": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 4,
+        "damage": 963,
+        "assists": 2,
+        "matches": 1,
+        "mvp": 0,
+        "record": 4,
+        "team": "INFLUENCE RAGE",
+        "rankKills": 81,
+        "rankDamage": 82,
+        "rankAssists": 81
+      }
+    }
+  }
+}

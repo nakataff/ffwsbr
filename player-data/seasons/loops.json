@@ -1,0 +1,86 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "LOOPS",
+  "players": {
+    "stark": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 116,
+        "damage": 77680,
+        "assists": 139,
+        "matches": 90,
+        "mvp": 0,
+        "record": 5,
+        "team": "LOOPS",
+        "rankKills": 44,
+        "rankDamage": 44,
+        "rankAssists": 43
+      }
+    },
+    "draxx7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 135,
+        "damage": 87295,
+        "assists": 140,
+        "matches": 90,
+        "mvp": 0,
+        "record": 6,
+        "team": "LOOPS",
+        "rankKills": 31,
+        "rankDamage": 36,
+        "rankAssists": 42
+      }
+    },
+    "vitin9": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 44,
+        "damage": 25444,
+        "assists": 46,
+        "matches": 36,
+        "mvp": 0,
+        "record": 4,
+        "team": "LOOPS",
+        "rankKills": 68,
+        "rankDamage": 69,
+        "rankAssists": 70
+      }
+    },
+    "pa-o7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 182,
+        "damage": 159604,
+        "assists": 106,
+        "matches": 104,
+        "mvp": 5,
+        "record": 12,
+        "team": "E1 SPORTS",
+        "rankKills": 15,
+        "rankDamage": 6,
+        "rankAssists": 54
+      }
+    },
+    "luan7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 75,
+        "damage": 42970,
+        "assists": 130,
+        "matches": 64,
+        "mvp": 0,
+        "record": 4,
+        "team": "LOOPS",
+        "rankKills": 59,
+        "rankDamage": 61,
+        "rankAssists": 47
+      }
+    }
+  }
+}

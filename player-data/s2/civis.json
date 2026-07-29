@@ -28,8 +28,6 @@
         "birthDate": "2004-08-27",
         "state": "Paraná"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -87,7 +85,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2"
+      ]
     },
     "soares": {
       "id": "soares",
@@ -115,19 +115,6 @@
         "birthDate": "2002-09-17",
         "state": "Amapá"
       },
-      "ffws": {
-        "kills": 98,
-        "damage": 49783,
-        "assists": 148,
-        "matches": 94,
-        "mvp": 1,
-        "record": 6,
-        "team": "AXS FUSION",
-        "rankKills": 48,
-        "rankDamage": 59,
-        "rankAssists": 37
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -205,7 +192,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "destroi7": {
       "id": "destroi7",
@@ -232,19 +222,6 @@
         "birthDate": "2000-08-16",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 58,
-        "damage": 55233,
-        "assists": 110,
-        "matches": 86,
-        "mvp": 0,
-        "record": 4,
-        "team": "CIVIS",
-        "rankKills": 65,
-        "rankDamage": 57,
-        "rankAssists": 51
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -316,7 +293,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "neyawp": {
       "id": "neyawp",
@@ -346,19 +326,6 @@
         "birthDate": "2003-08-16",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 97,
-        "damage": 74342,
-        "assists": 82,
-        "matches": 79,
-        "mvp": 0,
-        "record": 4,
-        "team": "ALPHA7",
-        "rankKills": 49,
-        "rankDamage": 48,
-        "rankAssists": 60
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -419,7 +386,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "henry10": {
       "id": "henry10",
@@ -446,8 +416,6 @@
         "birthDate": "2010-05-30",
         "state": "Amapá"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -487,7 +455,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2"
+      ]
     },
     "lukasz": {
       "id": "lukasz",
@@ -514,8 +484,6 @@
         "birthDate": "1989-04-15",
         "state": "Amapá"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -555,7 +523,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2"
+      ]
     }
   }
 }

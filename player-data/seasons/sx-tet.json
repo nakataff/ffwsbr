@@ -1,0 +1,105 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "SX TET",
+  "players": {
+    "isacksr": {
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "SX GG",
+        "kills": 60,
+        "matches": 31,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 1.94,
+        "stages": {
+          "classificatoria": {
+            "kills": 42,
+            "matches": 18
+          },
+          "final": {
+            "kills": 18,
+            "matches": 13
+          }
+        }
+      }
+    },
+    "furiazz7": {
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "SX GG",
+        "kills": 82,
+        "matches": 31,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 2.65,
+        "stages": {
+          "classificatoria": {
+            "kills": 40,
+            "matches": 18
+          },
+          "final": {
+            "kills": 42,
+            "matches": 13
+          }
+        }
+      }
+    },
+    "redxzzz": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 20,
+        "damage": 13413,
+        "assists": 13,
+        "matches": 23,
+        "mvp": 0,
+        "record": 4,
+        "team": "AXS FUSION",
+        "rankKills": 75,
+        "rankDamage": 76,
+        "rankAssists": 79
+      },
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "SX GG",
+        "kills": 78,
+        "matches": 31,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 2.52,
+        "stages": {
+          "classificatoria": {
+            "kills": 47,
+            "matches": 18
+          },
+          "final": {
+            "kills": 31,
+            "matches": 13
+          }
+        }
+      }
+    },
+    "nikeboy": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 176,
+        "damage": 161275,
+        "assists": 157,
+        "matches": 94,
+        "mvp": 5,
+        "record": 9,
+        "team": "VIRTUS PRO",
+        "rankKills": 17,
+        "rankDamage": 5,
+        "rankAssists": 34
+      }
+    }
+  }
+}

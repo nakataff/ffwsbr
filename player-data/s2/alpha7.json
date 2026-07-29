@@ -28,19 +28,6 @@
         "birthDate": "2008-08-16",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 138,
-        "damage": 108588,
-        "assists": 188,
-        "matches": 104,
-        "mvp": 2,
-        "record": 7,
-        "team": "ALPHA7",
-        "rankKills": 30,
-        "rankDamage": 23,
-        "rankAssists": 23
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -95,7 +82,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "brisa7": {
       "id": "brisa7",
@@ -122,19 +112,6 @@
         "birthDate": "2003-12-02",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 25,
-        "damage": 18026,
-        "assists": 76,
-        "matches": 27,
-        "mvp": 0,
-        "record": 5,
-        "team": "ALPHA7",
-        "rankKills": 73,
-        "rankDamage": 73,
-        "rankAssists": 61
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -189,7 +166,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "mitomvp": {
       "id": "mitomvp",
@@ -217,19 +197,6 @@
         "birthDate": "2009-02-03",
         "state": "Minas Gerais"
       },
-      "ffws": {
-        "kills": 154,
-        "damage": 102796,
-        "assists": 160,
-        "matches": 102,
-        "mvp": 1,
-        "record": 7,
-        "team": "ALPHA7",
-        "rankKills": 23,
-        "rankDamage": 26,
-        "rankAssists": 30
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -312,7 +279,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "lc777": {
       "id": "lc777",
@@ -340,19 +310,6 @@
         "birthDate": "2008-06-07",
         "state": "Rio de janeiro"
       },
-      "ffws": {
-        "kills": 140,
-        "damage": 142755,
-        "assists": 141,
-        "matches": 85,
-        "mvp": 3,
-        "record": 7,
-        "team": "RUSH GAMING",
-        "rankKills": 28,
-        "rankDamage": 9,
-        "rankAssists": 40
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -435,7 +392,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "jnmvp7": {
       "id": "jnmvp7",
@@ -462,19 +422,6 @@
         "birthDate": "2009-03-10",
         "state": "Rio de janeiro"
       },
-      "ffws": {
-        "kills": 238,
-        "damage": 133023,
-        "assists": 171,
-        "matches": 104,
-        "mvp": 7,
-        "record": 11,
-        "team": "ALPHA7",
-        "rankKills": 3,
-        "rankDamage": 14,
-        "rankAssists": 29
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -535,7 +482,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     }
   }
 }

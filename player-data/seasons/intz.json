@@ -1,0 +1,70 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "INTZ",
+  "players": {
+    "guszx": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 194,
+        "damage": 120469,
+        "assists": 248,
+        "matches": 104,
+        "mvp": 6,
+        "record": 7,
+        "team": "INTZ",
+        "rankKills": 9,
+        "rankDamage": 18,
+        "rankAssists": 10
+      }
+    },
+    "joao7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 168,
+        "damage": 96733,
+        "assists": 234,
+        "matches": 104,
+        "mvp": 1,
+        "record": 8,
+        "team": "INTZ",
+        "rankKills": 19,
+        "rankDamage": 31,
+        "rankAssists": 11
+      }
+    },
+    "honeyzl": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 183,
+        "damage": 141429,
+        "assists": 147,
+        "matches": 101,
+        "mvp": 3,
+        "record": 7,
+        "team": "INTZ",
+        "rankKills": 14,
+        "rankDamage": 10,
+        "rankAssists": 38
+      }
+    },
+    "kauaxp": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 135,
+        "damage": 84041,
+        "assists": 190,
+        "matches": 104,
+        "mvp": 0,
+        "record": 6,
+        "team": "INTZ",
+        "rankKills": 32,
+        "rankDamage": 40,
+        "rankAssists": 16
+      }
+    }
+  }
+}

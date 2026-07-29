@@ -32,19 +32,6 @@
         "birthDate": "2004-03-27",
         "state": "Rio de Janeiro"
       },
-      "ffws": {
-        "kills": 116,
-        "damage": 77680,
-        "assists": 139,
-        "matches": 90,
-        "mvp": 0,
-        "record": 5,
-        "team": "LOOPS",
-        "rankKills": 44,
-        "rankDamage": 44,
-        "rankAssists": 43
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -189,7 +176,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "draxx7": {
       "id": "draxx7",
@@ -218,19 +208,6 @@
         "birthDate": "2005-05-05",
         "state": "Mato Grosso"
       },
-      "ffws": {
-        "kills": 135,
-        "damage": 87295,
-        "assists": 140,
-        "matches": 90,
-        "mvp": 0,
-        "record": 6,
-        "team": "LOOPS",
-        "rankKills": 31,
-        "rankDamage": 36,
-        "rankAssists": 42
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -402,7 +379,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "vitin9": {
       "id": "vitin9",
@@ -430,19 +410,6 @@
         "birthDate": "2005-06-19",
         "state": "Paraiba"
       },
-      "ffws": {
-        "kills": 44,
-        "damage": 25444,
-        "assists": 46,
-        "matches": 36,
-        "mvp": 0,
-        "record": 4,
-        "team": "LOOPS",
-        "rankKills": 68,
-        "rankDamage": 69,
-        "rankAssists": 70
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -581,7 +548,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "pa-o7": {
       "id": "pa-o7",
@@ -611,19 +581,6 @@
         "birthDate": "2002-07-28",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 182,
-        "damage": 159604,
-        "assists": 106,
-        "matches": 104,
-        "mvp": 5,
-        "record": 12,
-        "team": "E1 SPORTS",
-        "rankKills": 15,
-        "rankDamage": 6,
-        "rankAssists": 54
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -835,7 +792,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "luan7": {
       "id": "luan7",
@@ -863,19 +823,6 @@
         "birthDate": "2006-07-08",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 75,
-        "damage": 42970,
-        "assists": 130,
-        "matches": 64,
-        "mvp": 0,
-        "record": 4,
-        "team": "LOOPS",
-        "rankKills": 59,
-        "rankDamage": 61,
-        "rankAssists": 47
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -992,7 +939,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     }
   }
 }

@@ -1,0 +1,86 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "RUSH GAMING",
+  "players": {
+    "black02": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 140,
+        "damage": 94802,
+        "assists": 184,
+        "matches": 97,
+        "mvp": 1,
+        "record": 6,
+        "team": "RUSH GAMING",
+        "rankKills": 27,
+        "rankDamage": 32,
+        "rankAssists": 24
+      }
+    },
+    "guimerlq": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 124,
+        "damage": 65924,
+        "assists": 132,
+        "matches": 81,
+        "mvp": 0,
+        "record": 6,
+        "team": "RUSH GAMING",
+        "rankKills": 39,
+        "rankDamage": 53,
+        "rankAssists": 46
+      }
+    },
+    "ericking": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 86,
+        "damage": 89276,
+        "assists": 104,
+        "matches": 80,
+        "mvp": 0,
+        "record": 5,
+        "team": "LOOPS",
+        "rankKills": 54,
+        "rankDamage": 35,
+        "rankAssists": 56
+      }
+    },
+    "prozin": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 117,
+        "damage": 83225,
+        "assists": 159,
+        "matches": 86,
+        "mvp": 2,
+        "record": 7,
+        "team": "RUSH GAMING",
+        "rankKills": 42,
+        "rankDamage": 41,
+        "rankAssists": 32
+      }
+    },
+    "mitinx": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 117,
+        "damage": 68017,
+        "assists": 91,
+        "matches": 67,
+        "mvp": 1,
+        "record": 11,
+        "team": "RUSH GAMING",
+        "rankKills": 41,
+        "rankDamage": 51,
+        "rankAssists": 58
+      }
+    }
+  }
+}

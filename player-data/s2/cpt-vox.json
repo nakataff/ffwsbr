@@ -28,8 +28,6 @@
         "birthDate": "2005-09-20",
         "state": "Rio de janeiro"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -69,28 +67,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "CPT VOX",
-          "kills": 47,
-          "matches": 27,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 1.74,
-          "stages": {
-            "classificatoria": {
-              "kills": 18,
-              "matches": 14
-            },
-            "final": {
-              "kills": 29,
-              "matches": 13
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "laff"
       ]
     },
     "bad9": {
@@ -119,8 +98,6 @@
         "birthDate": "2004-07-24",
         "state": "São Paulo"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -160,28 +137,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "CPT VOX",
-          "kills": 48,
-          "matches": 31,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 1.55,
-          "stages": {
-            "classificatoria": {
-              "kills": 27,
-              "matches": 18
-            },
-            "final": {
-              "kills": 21,
-              "matches": 13
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "laff"
       ]
     },
     "trevor9": {
@@ -210,8 +168,6 @@
         "birthDate": "2008-02-19",
         "state": "São Paulo"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -291,28 +247,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "CPT VOX",
-          "kills": 95,
-          "matches": 31,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 3.06,
-          "stages": {
-            "classificatoria": {
-              "kills": 57,
-              "matches": 18
-            },
-            "final": {
-              "kills": 38,
-              "matches": 13
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "laff"
       ]
     },
     "angelo7": {
@@ -340,8 +277,6 @@
         "birthDate": "2003-09-16",
         "state": "Rio de janeiro"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -427,28 +362,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "CPT VOX",
-          "kills": 68,
-          "matches": 31,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 2.19,
-          "stages": {
-            "classificatoria": {
-              "kills": 44,
-              "matches": 18
-            },
-            "final": {
-              "kills": 24,
-              "matches": 13
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "laff"
       ]
     },
     "seven7zk": {
@@ -477,8 +393,6 @@
         "birthDate": "2009-09-11",
         "state": "Parana"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -518,24 +432,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "CPT VOX",
-          "kills": 11,
-          "matches": 4,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 2.75,
-          "stages": {
-            "classificatoria": {
-              "kills": 11,
-              "matches": 4
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "laff"
       ]
     }
   }

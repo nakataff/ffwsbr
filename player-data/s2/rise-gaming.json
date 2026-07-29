@@ -30,19 +30,6 @@
         "birthDate": "2005-06-30",
         "state": "Minas Gerais"
       },
-      "ffws": {
-        "kills": 122,
-        "damage": 77551,
-        "assists": 260,
-        "matches": 95,
-        "mvp": 0,
-        "record": 5,
-        "team": "VIRTUS PRO",
-        "rankKills": 40,
-        "rankDamage": 45,
-        "rankAssists": 6
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -159,7 +146,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "erick11": {
       "id": "erick11",
@@ -187,19 +177,6 @@
         "birthDate": "2005-07-25",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 150,
-        "damage": 94333,
-        "assists": 142,
-        "matches": 96,
-        "mvp": 1,
-        "record": 7,
-        "team": "RISE GAMING",
-        "rankKills": 25,
-        "rankDamage": 33,
-        "rankAssists": 39
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -339,7 +316,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "carioca": {
       "id": "carioca",
@@ -366,8 +346,6 @@
         "birthDate": "1989-02-11",
         "state": "Rio de Janeiro"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -407,7 +385,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2"
+      ]
     },
     "naandox": {
       "id": "naandox",
@@ -436,19 +416,6 @@
         "birthDate": "2002-04-19",
         "state": "Pernambuco"
       },
-      "ffws": {
-        "kills": 143,
-        "damage": 107330,
-        "assists": 205,
-        "matches": 102,
-        "mvp": 1,
-        "record": 8,
-        "team": "RISE GAMING",
-        "rankKills": 26,
-        "rankDamage": 24,
-        "rankAssists": 14
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -599,7 +566,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "kakazk": {
       "id": "kakazk",
@@ -627,19 +597,6 @@
         "birthDate": "2006-04-03",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 193,
-        "damage": 165856,
-        "assists": 159,
-        "matches": 103,
-        "mvp": 5,
-        "record": 8,
-        "team": "RISE GAMING",
-        "rankKills": 10,
-        "rankDamage": 3,
-        "rankAssists": 31
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -756,7 +713,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     }
   }
 }

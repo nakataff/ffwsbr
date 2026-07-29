@@ -1,0 +1,130 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "AFROGAMES",
+  "players": {
+    "nielffx": {
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "AFROGAMES",
+        "kills": 43,
+        "matches": 37,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 1.16,
+        "stages": {
+          "classificatoria": {
+            "kills": 17,
+            "matches": 18
+          },
+          "repescagem": {
+            "kills": 9,
+            "matches": 6
+          },
+          "final": {
+            "kills": 17,
+            "matches": 13
+          }
+        }
+      }
+    },
+    "braboxx7": {
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "AFROGAMES",
+        "kills": 90,
+        "matches": 37,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 2.43,
+        "stages": {
+          "classificatoria": {
+            "kills": 48,
+            "matches": 18
+          },
+          "repescagem": {
+            "kills": 12,
+            "matches": 6
+          },
+          "final": {
+            "kills": 30,
+            "matches": 13
+          }
+        }
+      }
+    },
+    "gbzinn7": {
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "AFROGAMES",
+        "kills": 89,
+        "matches": 37,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 2.41,
+        "stages": {
+          "classificatoria": {
+            "kills": 40,
+            "matches": 18
+          },
+          "repescagem": {
+            "kills": 19,
+            "matches": 6
+          },
+          "final": {
+            "kills": 30,
+            "matches": 13
+          }
+        }
+      }
+    },
+    "sant10s": {
+      "laff": {
+        "key": "laff-2026-s1",
+        "name": "LAFF 2026 S1",
+        "team": "AFROGAMES",
+        "kills": 48,
+        "matches": 33,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 1.45,
+        "stages": {
+          "classificatoria": {
+            "kills": 17,
+            "matches": 14
+          },
+          "repescagem": {
+            "kills": 10,
+            "matches": 6
+          },
+          "final": {
+            "kills": 21,
+            "matches": 13
+          }
+        }
+      }
+    },
+    "peter": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 69,
+        "damage": 35290,
+        "assists": 141,
+        "matches": 45,
+        "mvp": 0,
+        "record": 6,
+        "team": "TEAM SOLID",
+        "rankKills": 61,
+        "rankDamage": 63,
+        "rankAssists": 41
+      }
+    }
+  }
+}

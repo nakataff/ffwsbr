@@ -1,0 +1,70 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "TEAM SOLID",
+  "players": {
+    "motovea": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 174,
+        "damage": 151736,
+        "assists": 172,
+        "matches": 104,
+        "mvp": 2,
+        "record": 8,
+        "team": "TEAM SOLID",
+        "rankKills": 18,
+        "rankDamage": 8,
+        "rankAssists": 28
+      }
+    },
+    "vitinxp": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 155,
+        "damage": 110504,
+        "assists": 252,
+        "matches": 102,
+        "mvp": 3,
+        "record": 7,
+        "team": "TEAM SOLID",
+        "rankKills": 21,
+        "rankDamage": 22,
+        "rankAssists": 8
+      }
+    },
+    "pitbull": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 213,
+        "damage": 121195,
+        "assists": 190,
+        "matches": 104,
+        "mvp": 3,
+        "record": 8,
+        "team": "TEAM SOLID",
+        "rankKills": 7,
+        "rankDamage": 17,
+        "rankAssists": 17
+      }
+    },
+    "byte333": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 64,
+        "damage": 34295,
+        "assists": 128,
+        "matches": 61,
+        "mvp": 1,
+        "record": 5,
+        "team": "TEAM SOLID",
+        "rankKills": 63,
+        "rankDamage": 66,
+        "rankAssists": 48
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "CIVIS",
+  "players": {
+    "soares": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 98,
+        "damage": 49783,
+        "assists": 148,
+        "matches": 94,
+        "mvp": 1,
+        "record": 6,
+        "team": "AXS FUSION",
+        "rankKills": 48,
+        "rankDamage": 59,
+        "rankAssists": 37
+      }
+    },
+    "destroi7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 58,
+        "damage": 55233,
+        "assists": 110,
+        "matches": 86,
+        "mvp": 0,
+        "record": 4,
+        "team": "CIVIS",
+        "rankKills": 65,
+        "rankDamage": 57,
+        "rankAssists": 51
+      }
+    },
+    "neyawp": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 97,
+        "damage": 74342,
+        "assists": 82,
+        "matches": 79,
+        "mvp": 0,
+        "record": 4,
+        "team": "ALPHA7",
+        "rankKills": 49,
+        "rankDamage": 48,
+        "rankAssists": 60
+      }
+    }
+  }
+}

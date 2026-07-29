@@ -31,19 +31,6 @@
         "birthDate": "2004-05-30",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 194,
-        "damage": 120469,
-        "assists": 248,
-        "matches": 104,
-        "mvp": 6,
-        "record": 7,
-        "team": "INTZ",
-        "rankKills": 9,
-        "rankDamage": 18,
-        "rankAssists": 10
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -226,7 +213,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "joao7": {
       "id": "joao7",
@@ -255,19 +245,6 @@
         "birthDate": "2005-05-04",
         "state": "Santa Catarina"
       },
-      "ffws": {
-        "kills": 168,
-        "damage": 96733,
-        "assists": 234,
-        "matches": 104,
-        "mvp": 1,
-        "record": 8,
-        "team": "INTZ",
-        "rankKills": 19,
-        "rankDamage": 31,
-        "rankAssists": 11
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -423,7 +400,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "honeyzl": {
       "id": "honeyzl",
@@ -452,19 +432,6 @@
         "birthDate": "2005-06-26",
         "state": "Bahia"
       },
-      "ffws": {
-        "kills": 183,
-        "damage": 141429,
-        "assists": 147,
-        "matches": 101,
-        "mvp": 3,
-        "record": 7,
-        "team": "INTZ",
-        "rankKills": 14,
-        "rankDamage": 10,
-        "rankAssists": 38
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -609,7 +576,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "kauaxp": {
       "id": "kauaxp",
@@ -639,19 +609,6 @@
         "birthDate": "2007-06-10",
         "state": "Rio Grande do Sul"
       },
-      "ffws": {
-        "kills": 135,
-        "damage": 84041,
-        "assists": 190,
-        "matches": 104,
-        "mvp": 0,
-        "record": 6,
-        "team": "INTZ",
-        "rankKills": 32,
-        "rankDamage": 40,
-        "rankAssists": 16
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -751,7 +708,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "pereira": {
       "id": "pereira",
@@ -779,8 +739,6 @@
         "birthDate": "2001-05-24",
         "state": "Amazonas"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -820,7 +778,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2"
+      ]
     }
   }
 }

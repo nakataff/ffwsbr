@@ -1,0 +1,178 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "FLUXO W7M",
+  "players": {
+    "bops": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 154,
+        "damage": 121669,
+        "assists": 318,
+        "matches": 104,
+        "mvp": 2,
+        "record": 6,
+        "team": "FLUXO W7M",
+        "rankKills": 22,
+        "rankDamage": 16,
+        "rankAssists": 1
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "Fluxo w7m",
+        "kills": 27,
+        "damage": 21928,
+        "assists": 78,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 17,
+            "damage": 14838,
+            "assists": 52,
+            "matches": 12
+          },
+          "final": {
+            "kills": 10,
+            "damage": 7090,
+            "assists": 26,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "butzin": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 189,
+        "damage": 118449,
+        "assists": 302,
+        "matches": 104,
+        "mvp": 0,
+        "record": 7,
+        "team": "FLUXO W7M",
+        "rankKills": 12,
+        "rankDamage": 19,
+        "rankAssists": 2
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "Fluxo w7m",
+        "kills": 45,
+        "damage": 23405,
+        "assists": 53,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 26,
+            "damage": 13024,
+            "assists": 31,
+            "matches": 12
+          },
+          "final": {
+            "kills": 19,
+            "damage": 10381,
+            "assists": 22,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "giuh": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 185,
+        "damage": 111889,
+        "assists": 262,
+        "matches": 104,
+        "mvp": 3,
+        "record": 8,
+        "team": "FLUXO W7M",
+        "rankKills": 13,
+        "rankDamage": 21,
+        "rankAssists": 5
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "Fluxo w7m",
+        "kills": 37,
+        "damage": 22554,
+        "assists": 46,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 23,
+            "damage": 14701,
+            "assists": 32,
+            "matches": 12
+          },
+          "final": {
+            "kills": 14,
+            "damage": 7853,
+            "assists": 14,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "mt7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 330,
+        "damage": 217410,
+        "assists": 154,
+        "matches": 101,
+        "mvp": 20,
+        "record": 10,
+        "team": "FLUXO W7M",
+        "rankKills": 1,
+        "rankDamage": 1,
+        "rankAssists": 36
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "Fluxo w7m",
+        "kills": 50,
+        "damage": 43757,
+        "assists": 36,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 36,
+            "damage": 29233,
+            "assists": 21,
+            "matches": 12
+          },
+          "final": {
+            "kills": 14,
+            "damage": 14524,
+            "assists": 15,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "proxx7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 1,
+        "damage": 618,
+        "assists": 0,
+        "matches": 3,
+        "mvp": 0,
+        "record": 1,
+        "team": "FLUXO W7M",
+        "rankKills": 82,
+        "rankDamage": 83,
+        "rankAssists": 83
+      }
+    }
+  }
+}

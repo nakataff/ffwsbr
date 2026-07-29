@@ -29,8 +29,6 @@
         "birthDate": "2000-05-10",
         "state": "Minas gerais"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -70,28 +68,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "SX GG",
-          "kills": 60,
-          "matches": 31,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 1.94,
-          "stages": {
-            "classificatoria": {
-              "kills": 42,
-              "matches": 18
-            },
-            "final": {
-              "kills": 18,
-              "matches": 13
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "laff"
       ]
     },
     "furiazz7": {
@@ -120,8 +99,6 @@
         "birthDate": "2006-09-29",
         "state": "Minas gerais"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -190,28 +167,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "SX GG",
-          "kills": 82,
-          "matches": 31,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 2.65,
-          "stages": {
-            "classificatoria": {
-              "kills": 40,
-              "matches": 18
-            },
-            "final": {
-              "kills": 42,
-              "matches": 13
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "laff"
       ]
     },
     "redxzzz": {
@@ -242,19 +200,6 @@
         "birthDate": "2006-07-17",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 20,
-        "damage": 13413,
-        "assists": 13,
-        "matches": 23,
-        "mvp": 0,
-        "record": 4,
-        "team": "AXS FUSION",
-        "rankKills": 75,
-        "rankDamage": 76,
-        "rankAssists": 79
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -349,28 +294,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "laff-2026-s1",
-          "name": "LAFF 2026 S1",
-          "team": "SX GG",
-          "kills": 78,
-          "matches": 31,
-          "damage": 0,
-          "assists": 0,
-          "mvp": 0,
-          "avg": 2.52,
-          "stages": {
-            "classificatoria": {
-              "kills": 47,
-              "matches": 18
-            },
-            "final": {
-              "kills": 31,
-              "matches": 13
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "s1",
+        "laff"
       ]
     },
     "yato7": {
@@ -399,8 +326,6 @@
         "birthDate": "2004-03-15",
         "state": "Bahia"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -503,7 +428,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2"
+      ]
     },
     "nikeboy": {
       "id": "nikeboy",
@@ -531,19 +458,6 @@
         "birthDate": "2006-07-19",
         "state": "São Paulo"
       },
-      "ffws": {
-        "kills": 176,
-        "damage": 161275,
-        "assists": 157,
-        "matches": 94,
-        "mvp": 5,
-        "record": 9,
-        "team": "VIRTUS PRO",
-        "rankKills": 17,
-        "rankDamage": 5,
-        "rankAssists": 34
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -683,7 +597,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     }
   }
 }

@@ -29,19 +29,6 @@
         "birthDate": "2006-03-02",
         "state": "Paraná"
       },
-      "ffws": {
-        "kills": 174,
-        "damage": 151736,
-        "assists": 172,
-        "matches": 104,
-        "mvp": 2,
-        "record": 8,
-        "team": "TEAM SOLID",
-        "rankKills": 18,
-        "rankDamage": 8,
-        "rankAssists": 28
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -163,7 +150,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "vitinxp": {
       "id": "vitinxp",
@@ -191,19 +181,6 @@
         "birthDate": "2004-01-16",
         "state": "Rio Grande do Norte"
       },
-      "ffws": {
-        "kills": 155,
-        "damage": 110504,
-        "assists": 252,
-        "matches": 102,
-        "mvp": 3,
-        "record": 7,
-        "team": "TEAM SOLID",
-        "rankKills": 21,
-        "rankDamage": 22,
-        "rankAssists": 8
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -369,7 +346,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "pitbull": {
       "id": "pitbull",
@@ -398,19 +378,6 @@
         "birthDate": "2005-06-10",
         "state": "Alagoas"
       },
-      "ffws": {
-        "kills": 213,
-        "damage": 121195,
-        "assists": 190,
-        "matches": 104,
-        "mvp": 3,
-        "record": 8,
-        "team": "TEAM SOLID",
-        "rankKills": 7,
-        "rankDamage": 17,
-        "rankAssists": 17
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -566,7 +533,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "byte333": {
       "id": "byte333",
@@ -593,19 +563,6 @@
         "birthDate": "2004-12-08",
         "state": "Pernambuco"
       },
-      "ffws": {
-        "kills": 64,
-        "damage": 34295,
-        "assists": 128,
-        "matches": 61,
-        "mvp": 1,
-        "record": 5,
-        "team": "TEAM SOLID",
-        "rankKills": 63,
-        "rankDamage": 66,
-        "rankAssists": 48
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -694,7 +651,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     },
     "sbrica": {
       "id": "sbrica",
@@ -721,8 +681,6 @@
         "birthDate": "2000-07-11",
         "state": "São Paulo"
       },
-      "ffws": null,
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -762,7 +720,9 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2"
+      ]
     }
   }
 }

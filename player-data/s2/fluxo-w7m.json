@@ -28,40 +28,6 @@
         "birthDate": "2005-03-07",
         "state": "Mato Grosso"
       },
-      "ffws": {
-        "kills": 154,
-        "damage": 121669,
-        "assists": 318,
-        "matches": 104,
-        "mvp": 2,
-        "record": 6,
-        "team": "FLUXO W7M",
-        "rankKills": 22,
-        "rankDamage": 16,
-        "rankAssists": 1
-      },
-      "ewc": {
-        "name": "Bops",
-        "team": "Fluxo w7m",
-        "kills": 27,
-        "damage": 21928,
-        "assists": 78,
-        "matches": 19,
-        "stages": {
-          "groups": {
-            "kills": 17,
-            "damage": 14838,
-            "assists": 52,
-            "matches": 12
-          },
-          "final": {
-            "kills": 10,
-            "damage": 7090,
-            "assists": 26,
-            "matches": 7
-          }
-        }
-      },
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -242,32 +208,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "ewc-2026",
-          "name": "EWC 2026",
-          "team": "Fluxo w7m",
-          "kills": 27,
-          "matches": 19,
-          "damage": 21928,
-          "assists": 78,
-          "mvp": 0,
-          "avg": 1.42,
-          "stages": {
-            "groups": {
-              "kills": 17,
-              "damage": 14838,
-              "assists": 52,
-              "matches": 12
-            },
-            "final": {
-              "kills": 10,
-              "damage": 7090,
-              "assists": 26,
-              "matches": 7
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "s1",
+        "ewc"
       ]
     },
     "butzin": {
@@ -296,40 +240,6 @@
         "age": 21,
         "birthDate": "2005-05-14",
         "state": "São Paulo"
-      },
-      "ffws": {
-        "kills": 189,
-        "damage": 118449,
-        "assists": 302,
-        "matches": 104,
-        "mvp": 0,
-        "record": 7,
-        "team": "FLUXO W7M",
-        "rankKills": 12,
-        "rankDamage": 19,
-        "rankAssists": 2
-      },
-      "ewc": {
-        "name": "Butzin",
-        "team": "Fluxo w7m",
-        "kills": 45,
-        "damage": 23405,
-        "assists": 53,
-        "matches": 19,
-        "stages": {
-          "groups": {
-            "kills": 26,
-            "damage": 13024,
-            "assists": 31,
-            "matches": 12
-          },
-          "final": {
-            "kills": 19,
-            "damage": 10381,
-            "assists": 22,
-            "matches": 7
-          }
-        }
       },
       "s2": {
         "edition": "WB 2026 S2",
@@ -511,32 +421,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "ewc-2026",
-          "name": "EWC 2026",
-          "team": "Fluxo w7m",
-          "kills": 45,
-          "matches": 19,
-          "damage": 23405,
-          "assists": 53,
-          "mvp": 0,
-          "avg": 2.37,
-          "stages": {
-            "groups": {
-              "kills": 26,
-              "damage": 13024,
-              "assists": 31,
-              "matches": 12
-            },
-            "final": {
-              "kills": 19,
-              "damage": 10381,
-              "assists": 22,
-              "matches": 7
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "s1",
+        "ewc"
       ]
     },
     "giuh": {
@@ -564,40 +452,6 @@
         "age": 20,
         "birthDate": "2006-04-11",
         "state": "Mato Grosso do Sul"
-      },
-      "ffws": {
-        "kills": 185,
-        "damage": 111889,
-        "assists": 262,
-        "matches": 104,
-        "mvp": 3,
-        "record": 8,
-        "team": "FLUXO W7M",
-        "rankKills": 13,
-        "rankDamage": 21,
-        "rankAssists": 5
-      },
-      "ewc": {
-        "name": "Giuh",
-        "team": "Fluxo w7m",
-        "kills": 37,
-        "damage": 22554,
-        "assists": 46,
-        "matches": 19,
-        "stages": {
-          "groups": {
-            "kills": 23,
-            "damage": 14701,
-            "assists": 32,
-            "matches": 12
-          },
-          "final": {
-            "kills": 14,
-            "damage": 7853,
-            "assists": 14,
-            "matches": 7
-          }
-        }
       },
       "s2": {
         "edition": "WB 2026 S2",
@@ -734,32 +588,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "ewc-2026",
-          "name": "EWC 2026",
-          "team": "Fluxo w7m",
-          "kills": 37,
-          "matches": 19,
-          "damage": 22554,
-          "assists": 46,
-          "mvp": 0,
-          "avg": 1.95,
-          "stages": {
-            "groups": {
-              "kills": 23,
-              "damage": 14701,
-              "assists": 32,
-              "matches": 12
-            },
-            "final": {
-              "kills": 14,
-              "damage": 7853,
-              "assists": 14,
-              "matches": 7
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "s1",
+        "ewc"
       ]
     },
     "mt7": {
@@ -786,40 +618,6 @@
         "age": 19,
         "birthDate": "2006-11-21",
         "state": "Rio de Janeiro"
-      },
-      "ffws": {
-        "kills": 330,
-        "damage": 217410,
-        "assists": 154,
-        "matches": 101,
-        "mvp": 20,
-        "record": 10,
-        "team": "FLUXO W7M",
-        "rankKills": 1,
-        "rankDamage": 1,
-        "rankAssists": 36
-      },
-      "ewc": {
-        "name": "MT7",
-        "team": "Fluxo w7m",
-        "kills": 50,
-        "damage": 43757,
-        "assists": 36,
-        "matches": 19,
-        "stages": {
-          "groups": {
-            "kills": 36,
-            "damage": 29233,
-            "assists": 21,
-            "matches": 12
-          },
-          "final": {
-            "kills": 14,
-            "damage": 14524,
-            "assists": 15,
-            "matches": 7
-          }
-        }
       },
       "s2": {
         "edition": "WB 2026 S2",
@@ -939,32 +737,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": [
-        {
-          "key": "ewc-2026",
-          "name": "EWC 2026",
-          "team": "Fluxo w7m",
-          "kills": 50,
-          "matches": 19,
-          "damage": 43757,
-          "assists": 36,
-          "mvp": 0,
-          "avg": 2.63,
-          "stages": {
-            "groups": {
-              "kills": 36,
-              "damage": 29233,
-              "assists": 21,
-              "matches": 12
-            },
-            "final": {
-              "kills": 14,
-              "damage": 14524,
-              "assists": 15,
-              "matches": 7
-            }
-          }
-        }
+      "availableSeasons": [
+        "s2",
+        "s1",
+        "ewc"
       ]
     },
     "proxx7": {
@@ -992,19 +768,6 @@
         "birthDate": "2004-09-28",
         "state": "Paraná"
       },
-      "ffws": {
-        "kills": 1,
-        "damage": 618,
-        "assists": 0,
-        "matches": 3,
-        "mvp": 0,
-        "record": 1,
-        "team": "FLUXO W7M",
-        "rankKills": 82,
-        "rankDamage": 83,
-        "rankAssists": 83
-      },
-      "ewc": null,
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
@@ -1143,7 +906,10 @@
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
-      "competitions": []
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ]
     }
   }
 }

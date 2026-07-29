@@ -1,0 +1,178 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "LOUD SNICKERS",
+  "players": {
+    "trap": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 214,
+        "damage": 165705,
+        "assists": 265,
+        "matches": 104,
+        "mvp": 8,
+        "record": 9,
+        "team": "LOUD SNICKERS",
+        "rankKills": 6,
+        "rankDamage": 4,
+        "rankAssists": 4
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "LOUD",
+        "kills": 62,
+        "damage": 35318,
+        "assists": 37,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 43,
+            "damage": 22008,
+            "assists": 24,
+            "matches": 12
+          },
+          "final": {
+            "kills": 19,
+            "damage": 13310,
+            "assists": 13,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "nickz": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 191,
+        "damage": 115889,
+        "assists": 233,
+        "matches": 101,
+        "mvp": 5,
+        "record": 7,
+        "team": "LOUD SNICKERS",
+        "rankKills": 11,
+        "rankDamage": 20,
+        "rankAssists": 12
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "LOUD",
+        "kills": 36,
+        "damage": 24189,
+        "assists": 56,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 21,
+            "damage": 16128,
+            "assists": 40,
+            "matches": 12
+          },
+          "final": {
+            "kills": 15,
+            "damage": 8061,
+            "assists": 16,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "bzp": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 131,
+        "damage": 86038,
+        "assists": 188,
+        "matches": 73,
+        "mvp": 0,
+        "record": 5,
+        "team": "LOUD SNICKERS",
+        "rankKills": 34,
+        "rankDamage": 38,
+        "rankAssists": 21
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "LOUD",
+        "kills": 38,
+        "damage": 27121,
+        "assists": 57,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 24,
+            "damage": 17448,
+            "assists": 37,
+            "matches": 12
+          },
+          "final": {
+            "kills": 14,
+            "damage": 9673,
+            "assists": 20,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "guaxa": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 153,
+        "damage": 153662,
+        "assists": 180,
+        "matches": 95,
+        "mvp": 1,
+        "record": 6,
+        "team": "LOUD SNICKERS",
+        "rankKills": 24,
+        "rankDamage": 7,
+        "rankAssists": 26
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "LOUD",
+        "kills": 35,
+        "damage": 36749,
+        "assists": 46,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 27,
+            "damage": 27326,
+            "assists": 33,
+            "matches": 12
+          },
+          "final": {
+            "kills": 8,
+            "damage": 9423,
+            "assists": 13,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "hak": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 57,
+        "damage": 35265,
+        "assists": 135,
+        "matches": 43,
+        "mvp": 0,
+        "record": 5,
+        "team": "LOUD SNICKERS",
+        "rankKills": 66,
+        "rankDamage": 64,
+        "rankAssists": 45
+      }
+    }
+  }
+}

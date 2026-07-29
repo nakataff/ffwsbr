@@ -1,0 +1,201 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "LOS",
+  "players": {
+    "raone7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 230,
+        "damage": 139707,
+        "assists": 269,
+        "matches": 104,
+        "mvp": 8,
+        "record": 8,
+        "team": "LOS",
+        "rankKills": 4,
+        "rankDamage": 12,
+        "rankAssists": 3
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "MIBR LOS",
+        "kills": 32,
+        "damage": 22851,
+        "assists": 52,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 24,
+            "damage": 17259,
+            "assists": 37,
+            "matches": 12
+          },
+          "final": {
+            "kills": 8,
+            "damage": 5592,
+            "assists": 15,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "general": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 82,
+        "damage": 60837,
+        "assists": 249,
+        "matches": 93,
+        "mvp": 0,
+        "record": 5,
+        "team": "LOS",
+        "rankKills": 55,
+        "rankDamage": 54,
+        "rankAssists": 9
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "MIBR LOS",
+        "kills": 18,
+        "damage": 13332,
+        "assists": 67,
+        "matches": 17,
+        "stages": {
+          "groups": {
+            "kills": 14,
+            "damage": 8984,
+            "assists": 45,
+            "matches": 11
+          },
+          "final": {
+            "kills": 4,
+            "damage": 4348,
+            "assists": 22,
+            "matches": 6
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "rigby245": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 230,
+        "damage": 128534,
+        "assists": 253,
+        "matches": 104,
+        "mvp": 1,
+        "record": 10,
+        "team": "LOS",
+        "rankKills": 5,
+        "rankDamage": 15,
+        "rankAssists": 7
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "MIBR LOS",
+        "kills": 51,
+        "damage": 26200,
+        "assists": 38,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 34,
+            "damage": 16886,
+            "assists": 25,
+            "matches": 12
+          },
+          "final": {
+            "kills": 17,
+            "damage": 9314,
+            "assists": 13,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "yago": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 283,
+        "damage": 199700,
+        "assists": 180,
+        "matches": 104,
+        "mvp": 11,
+        "record": 10,
+        "team": "LOS",
+        "rankKills": 2,
+        "rankDamage": 2,
+        "rankAssists": 27
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "MIBR LOS",
+        "kills": 47,
+        "damage": 44615,
+        "assists": 33,
+        "matches": 19,
+        "stages": {
+          "groups": {
+            "kills": 38,
+            "damage": 33808,
+            "assists": 23,
+            "matches": 12
+          },
+          "final": {
+            "kills": 9,
+            "damage": 10807,
+            "assists": 10,
+            "matches": 7
+          }
+        },
+        "key": "ewc"
+      }
+    },
+    "mtsexy": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 12,
+        "damage": 6166,
+        "assists": 15,
+        "matches": 11,
+        "mvp": 0,
+        "record": 4,
+        "team": "LOS",
+        "rankKills": 78,
+        "rankDamage": 79,
+        "rankAssists": 78
+      },
+      "ewc": {
+        "name": "EWC 2026",
+        "team": "MIBR LOS",
+        "kills": 0,
+        "damage": 910,
+        "assists": 5,
+        "matches": 2,
+        "stages": {
+          "groups": {
+            "kills": 0,
+            "damage": 506,
+            "assists": 4,
+            "matches": 1
+          },
+          "final": {
+            "kills": 0,
+            "damage": 404,
+            "assists": 1,
+            "matches": 1
+          }
+        },
+        "key": "ewc"
+      }
+    }
+  }
+}
