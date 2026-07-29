@@ -1,1 +1,96 @@
-{"updatedAt":"2026-07-28","team":"CPT VOX","history":{"players":[{"id":"angelo7","name":"Ângelo7","photo":"silhueta.webp","currentTeam":"CPT VOX","isCurrent":true,"kills":194,"matches":205,"avg":0.95,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]},{"id":"trevor9","name":"TREVOR9","photo":"silhueta.webp","currentTeam":"CPT VOX","isCurrent":true,"kills":77,"matches":94,"avg":0.82,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]},{"id":"bad9","name":"bad9","photo":"silhueta.webp","currentTeam":"CPT VOX","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]},{"id":"gbtrem22","name":"Gbtrem22","photo":"silhueta.webp","currentTeam":"CPT VOX","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]},{"id":"seven7zk","name":"Seven7zk","photo":"silhueta.webp","currentTeam":"CPT VOX","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]}],"currentCount":5,"formerCount":0},"titles":[],"results":[]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "CPT VOX",
+  "history": {
+    "players": [
+      {
+        "id": "gbtrem22",
+        "name": "Gbtrem22",
+        "photo": "silhueta.webp",
+        "currentTeam": "CPT VOX",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "bad9",
+        "name": "bad9",
+        "photo": "silhueta.webp",
+        "currentTeam": "CPT VOX",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "trevor9",
+        "name": "TREVOR9",
+        "photo": "silhueta.webp",
+        "currentTeam": "CPT VOX",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 77,
+        "matches": 94,
+        "avg": 0.82,
+        "editions": [
+          "WB 2024 F2",
+          "WB 2025 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "angelo7",
+        "name": "Ângelo7",
+        "photo": "silhueta.webp",
+        "currentTeam": "CPT VOX",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 194,
+        "matches": 205,
+        "avg": 0.95,
+        "editions": [
+          "WB 2024 F1",
+          "WB 2024 F2",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "seven7zk",
+        "name": "Seven7zk",
+        "photo": "silhueta.webp",
+        "currentTeam": "CPT VOX",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 0
+  },
+  "titles": [],
+  "results": []
+}

@@ -1,1 +1,826 @@
-{"updatedAt":"2026-07-29","team":"INTZ","profileType":"full","players":{"guszx":{"id":"guszx","name":"GUSZX","aliases":["GUSZX","GUS","INTZ Gus","Gus"],"photo":"gus.webp","country":"br","role":"GRANADEIRO","currentTeam":"INTZ","currentTeamLogo":"Intz 1.webp","currentRoster":{"team":"INTZ","role":"GRANADEIRO","roleShort":"GRAN","starter":true,"rosterStatus":"Titular","captain":true,"rookie":false,"highlight":true,"fullName":"Gustavo Costa Souza","age":22,"birthDate":"2004-05-30","state":"São Paulo"},"ffws":{"kills":194,"damage":120469,"assists":248,"matches":104,"mvp":6,"record":7,"team":"INTZ","rankKills":9,"rankDamage":18,"rankAssists":10},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"LBFF 4":{"kills":61,"matches":63},"LBFF 5":{"kills":61,"matches":81},"LBFF 6":{"kills":100,"matches":81},"LBFF 7":{"kills":169,"matches":117},"LBFF 8":{"kills":92,"matches":80},"LBFF 9":{"kills":222,"matches":152},"WB 2024 F1":{"kills":149,"matches":96},"WB 2024 F2":{"kills":192,"matches":104},"WB 2025 S1":{"kills":147,"matches":104},"WB 2025 S2":{"kills":91,"matches":64},"WB 2026 S1":{"kills":194,"matches":104}},"editions":[{"edition":"LBFF 4","kills":61,"matches":63,"avg":0.97,"team":""},{"edition":"LBFF 5","kills":61,"matches":81,"avg":0.75,"team":""},{"edition":"LBFF 6","kills":100,"matches":81,"avg":1.23,"team":""},{"edition":"LBFF 7","kills":169,"matches":117,"avg":1.44,"team":""},{"edition":"LBFF 8","kills":92,"matches":80,"avg":1.15,"team":""},{"edition":"LBFF 9","kills":222,"matches":152,"avg":1.46,"team":""},{"edition":"WB 2024 F1","kills":149,"matches":96,"avg":1.55,"team":""},{"edition":"WB 2024 F2","kills":192,"matches":104,"avg":1.85,"team":""},{"edition":"WB 2025 S1","kills":147,"matches":104,"avg":1.41,"team":""},{"edition":"WB 2025 S2","kills":91,"matches":64,"avg":1.42,"team":""},{"edition":"WB 2026 S1","kills":194,"matches":104,"avg":1.87,"team":""},{"edition":"FFWS BR 2026 S1","kills":194,"matches":104,"avg":1.87,"team":"INTZ","damage":120469,"assists":248,"mvp":6},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"INTZ","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"INTZ","logo":"Intz 1.webp"},{"edition":"FFWS BR 2026 S1","team":"INTZ","logo":"escudo.webp"}],"allTime":{"kills":1672,"matches":1150,"damage":120469,"assists":248,"mvp":6,"avg":1.45},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"joao7":{"id":"joao7","name":"João7","aliases":["João7","INTZ joão7","joão7"],"photo":"joao.webp","country":"br","role":"RUSH","currentTeam":"INTZ","currentTeamLogo":"Intz 1.webp","currentRoster":{"team":"INTZ","role":"RUSH","roleShort":"RUSH","starter":true,"rosterStatus":"Titular","captain":false,"rookie":false,"highlight":false,"fullName":"João Victor Soares","age":21,"birthDate":"2005-05-04","state":"Santa Catarina"},"ffws":{"kills":168,"damage":96733,"assists":234,"matches":104,"mvp":1,"record":8,"team":"INTZ","rankKills":19,"rankDamage":31,"rankAssists":11},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"LBFF 6":{"kills":13,"matches":18},"LBFF 7":{"kills":77,"matches":97},"LBFF 9":{"kills":83,"matches":86},"WB 2024 F1":{"kills":115,"matches":96},"WB 2024 F2":{"kills":107,"matches":104},"WB 2025 S1":{"kills":146,"matches":104},"WB 2025 S2":{"kills":109,"matches":68},"WB 2026 S1":{"kills":168,"matches":104}},"editions":[{"edition":"LBFF 6","kills":13,"matches":18,"avg":0.72,"team":""},{"edition":"LBFF 7","kills":77,"matches":97,"avg":0.79,"team":""},{"edition":"LBFF 9","kills":83,"matches":86,"avg":0.97,"team":""},{"edition":"WB 2024 F1","kills":115,"matches":96,"avg":1.2,"team":""},{"edition":"WB 2024 F2","kills":107,"matches":104,"avg":1.03,"team":""},{"edition":"WB 2025 S1","kills":146,"matches":104,"avg":1.4,"team":""},{"edition":"WB 2025 S2","kills":109,"matches":68,"avg":1.6,"team":""},{"edition":"WB 2026 S1","kills":168,"matches":104,"avg":1.62,"team":""},{"edition":"FFWS BR 2026 S1","kills":168,"matches":104,"avg":1.62,"team":"INTZ","damage":96733,"assists":234,"mvp":1},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"INTZ","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"INTZ","logo":"Intz 1.webp"},{"edition":"FFWS BR 2026 S1","team":"INTZ","logo":"escudo.webp"}],"allTime":{"kills":986,"matches":781,"damage":96733,"assists":234,"mvp":1,"avg":1.26},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"honeyzl":{"id":"honeyzl","name":"honeyzL","aliases":["honeyzL","INTZ honeyzL","HONEY"],"photo":"honey.webp","country":"br","role":"SUPORTE","currentTeam":"INTZ","currentTeamLogo":"Intz 1.webp","currentRoster":{"team":"INTZ","role":"SUPORTE","roleShort":"SUP","starter":true,"rosterStatus":"Titular","captain":false,"rookie":false,"highlight":false,"fullName":"João Lucas de Jesus Pedrao","age":21,"birthDate":"2005-06-26","state":"Bahia"},"ffws":{"kills":183,"damage":141429,"assists":147,"matches":101,"mvp":3,"record":7,"team":"INTZ","rankKills":14,"rankDamage":10,"rankAssists":38},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"LBFF 7":{"kills":65,"matches":86},"LBFF 9":{"kills":173,"matches":186},"WB 2024 F1":{"kills":114,"matches":88},"WB 2024 F2":{"kills":135,"matches":104},"WB 2025 S1":{"kills":166,"matches":104},"WB 2025 S2":{"kills":99,"matches":67},"WB 2026 S1":{"kills":183,"matches":101}},"editions":[{"edition":"LBFF 7","kills":65,"matches":86,"avg":0.76,"team":""},{"edition":"LBFF 9","kills":173,"matches":186,"avg":0.93,"team":""},{"edition":"WB 2024 F1","kills":114,"matches":88,"avg":1.3,"team":""},{"edition":"WB 2024 F2","kills":135,"matches":104,"avg":1.3,"team":""},{"edition":"WB 2025 S1","kills":166,"matches":104,"avg":1.6,"team":""},{"edition":"WB 2025 S2","kills":99,"matches":67,"avg":1.48,"team":""},{"edition":"WB 2026 S1","kills":183,"matches":101,"avg":1.81,"team":""},{"edition":"FFWS BR 2026 S1","kills":183,"matches":101,"avg":1.81,"team":"INTZ","damage":141429,"assists":147,"mvp":3},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"INTZ","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"INTZ","logo":"Intz 1.webp"},{"edition":"FFWS BR 2026 S1","team":"INTZ","logo":"escudo.webp"}],"allTime":{"kills":1118,"matches":837,"damage":141429,"assists":147,"mvp":3,"avg":1.34},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"kauaxp":{"id":"kauaxp","name":"kauãxp","aliases":["kauãxp","INTZ kauãxp","Kaua7xp","Kauã7xp"],"photo":"xp.webp","country":"br","role":"RUSH","currentTeam":"INTZ","currentTeamLogo":"Intz 1.webp","currentRoster":{"team":"INTZ","role":"RUSH","roleShort":"RUSH","starter":true,"rosterStatus":"Titular","captain":false,"rookie":false,"highlight":false,"fullName":"Kauã Bittencourt Bitencourt","age":19,"birthDate":"2007-06-10","state":"Rio Grande do Sul"},"ffws":{"kills":135,"damage":84041,"assists":190,"matches":104,"mvp":0,"record":6,"team":"INTZ","rankKills":32,"rankDamage":40,"rankAssists":16},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"WB 2024 F1":{"kills":29,"matches":32},"WB 2024 F2":{"kills":70,"matches":61},"WB 2025 S2":{"kills":21,"matches":16},"WB 2026 S1":{"kills":135,"matches":104}},"editions":[{"edition":"WB 2024 F1","kills":29,"matches":32,"avg":0.91,"team":""},{"edition":"WB 2024 F2","kills":70,"matches":61,"avg":1.15,"team":""},{"edition":"WB 2025 S2","kills":21,"matches":16,"avg":1.31,"team":""},{"edition":"WB 2026 S1","kills":135,"matches":104,"avg":1.3,"team":""},{"edition":"FFWS BR 2026 S1","kills":135,"matches":104,"avg":1.3,"team":"INTZ","damage":84041,"assists":190,"mvp":0},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"INTZ","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"INTZ","logo":"Intz 1.webp"},{"edition":"FFWS BR 2026 S1","team":"INTZ","logo":"escudo.webp"}],"allTime":{"kills":390,"matches":317,"damage":84041,"assists":190,"mvp":0,"avg":1.23},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"pereira":{"id":"pereira","name":"PEREIRA","aliases":["PEREIRA","INTZ PEREIRA"],"photo":"silhueta.webp","country":"br","role":"RUSH","currentTeam":"INTZ","currentTeamLogo":"Intz 1.webp","currentRoster":{"team":"INTZ","role":"RUSH","roleShort":"RUSH","starter":false,"rosterStatus":"Reserva","captain":false,"rookie":false,"highlight":false,"fullName":"Rayneu Pereira Evangelista Junior","age":25,"birthDate":"2001-05-24","state":"Amazonas"},"ffws":null,"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{},"editions":[{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"INTZ","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"INTZ","logo":"Intz 1.webp"}],"allTime":{"kills":0,"matches":0,"damage":0,"assists":0,"mvp":0,"avg":0},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]}}}
+{
+  "updatedAt": "2026-07-28",
+  "team": "INTZ",
+  "profileType": "full",
+  "players": {
+    "guszx": {
+      "id": "guszx",
+      "name": "GUS",
+      "aliases": [
+        "GUSZX",
+        "GUS",
+        "INTZ Gus",
+        "Gus"
+      ],
+      "photo": "gus.webp",
+      "country": "br",
+      "role": "GRANADEIRO",
+      "currentTeam": "INTZ",
+      "currentTeamLogo": "Intz 1.webp",
+      "currentRoster": {
+        "team": "INTZ",
+        "role": "GRANADEIRO",
+        "roleShort": "GRAN",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": true,
+        "rookie": false,
+        "highlight": true,
+        "fullName": "Gustavo Costa Souza",
+        "age": 22,
+        "birthDate": "2004-05-30",
+        "state": "São Paulo"
+      },
+      "ffws": {
+        "kills": 194,
+        "damage": 120469,
+        "assists": 248,
+        "matches": 104,
+        "mvp": 6,
+        "record": 7,
+        "team": "INTZ",
+        "rankKills": 9,
+        "rankDamage": 18,
+        "rankAssists": 10
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "LBFF 4": {
+          "kills": 61,
+          "matches": 63
+        },
+        "LBFF 5": {
+          "kills": 61,
+          "matches": 81
+        },
+        "LBFF 6": {
+          "kills": 100,
+          "matches": 81
+        },
+        "LBFF 7": {
+          "kills": 169,
+          "matches": 117
+        },
+        "LBFF 8": {
+          "kills": 92,
+          "matches": 80
+        },
+        "LBFF 9": {
+          "kills": 222,
+          "matches": 152
+        },
+        "WB 2024 F1": {
+          "kills": 149,
+          "matches": 96
+        },
+        "WB 2024 F2": {
+          "kills": 192,
+          "matches": 104
+        },
+        "WB 2025 S1": {
+          "kills": 147,
+          "matches": 104
+        },
+        "WB 2025 S2": {
+          "kills": 91,
+          "matches": 64
+        },
+        "WB 2026 S1": {
+          "kills": 194,
+          "matches": 104
+        }
+      },
+      "editions": [
+        {
+          "edition": "LBFF 4",
+          "kills": 61,
+          "matches": 63,
+          "avg": 0.97,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 5",
+          "kills": 61,
+          "matches": 81,
+          "avg": 0.75,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 6",
+          "kills": 100,
+          "matches": 81,
+          "avg": 1.23,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 7",
+          "kills": 169,
+          "matches": 117,
+          "avg": 1.44,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 8",
+          "kills": 92,
+          "matches": 80,
+          "avg": 1.15,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 9",
+          "kills": 222,
+          "matches": 152,
+          "avg": 1.46,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F1",
+          "kills": 149,
+          "matches": 96,
+          "avg": 1.55,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 192,
+          "matches": 104,
+          "avg": 1.85,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S1",
+          "kills": 147,
+          "matches": 104,
+          "avg": 1.41,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 91,
+          "matches": 64,
+          "avg": 1.42,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 194,
+          "matches": 104,
+          "avg": 1.87,
+          "team": "INTZ",
+          "damage": 120469,
+          "assists": 248,
+          "mvp": 6
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "INTZ",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "SANTOS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "LOS",
+          "cargo": "Jogador",
+          "logo": "Los.webp",
+          "edition": ""
+        },
+        {
+          "team": "PAIN GAMING",
+          "cargo": "Jogador",
+          "logo": "pain.webp",
+          "edition": ""
+        },
+        {
+          "team": "INTZ",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 1672,
+        "matches": 1150,
+        "damage": 120469,
+        "assists": 248,
+        "mvp": 6,
+        "avg": 1.45
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "joao7": {
+      "id": "joao7",
+      "name": "João7",
+      "aliases": [
+        "João7",
+        "INTZ joão7",
+        "joão7"
+      ],
+      "photo": "joao.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "INTZ",
+      "currentTeamLogo": "Intz 1.webp",
+      "currentRoster": {
+        "team": "INTZ",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "João Victor Soares",
+        "age": 21,
+        "birthDate": "2005-05-04",
+        "state": "Santa Catarina"
+      },
+      "ffws": {
+        "kills": 168,
+        "damage": 96733,
+        "assists": 234,
+        "matches": 104,
+        "mvp": 1,
+        "record": 8,
+        "team": "INTZ",
+        "rankKills": 19,
+        "rankDamage": 31,
+        "rankAssists": 11
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "LBFF 6": {
+          "kills": 13,
+          "matches": 18
+        },
+        "LBFF 7": {
+          "kills": 77,
+          "matches": 97
+        },
+        "LBFF 9": {
+          "kills": 83,
+          "matches": 86
+        },
+        "WB 2024 F1": {
+          "kills": 115,
+          "matches": 96
+        },
+        "WB 2024 F2": {
+          "kills": 107,
+          "matches": 104
+        },
+        "WB 2025 S1": {
+          "kills": 146,
+          "matches": 104
+        },
+        "WB 2025 S2": {
+          "kills": 109,
+          "matches": 68
+        },
+        "WB 2026 S1": {
+          "kills": 168,
+          "matches": 104
+        }
+      },
+      "editions": [
+        {
+          "edition": "LBFF 6",
+          "kills": 13,
+          "matches": 18,
+          "avg": 0.72,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 7",
+          "kills": 77,
+          "matches": 97,
+          "avg": 0.79,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 9",
+          "kills": 83,
+          "matches": 86,
+          "avg": 0.97,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F1",
+          "kills": 115,
+          "matches": 96,
+          "avg": 1.2,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 107,
+          "matches": 104,
+          "avg": 1.03,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S1",
+          "kills": 146,
+          "matches": 104,
+          "avg": 1.4,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 109,
+          "matches": 68,
+          "avg": 1.6,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 168,
+          "matches": 104,
+          "avg": 1.62,
+          "team": "INTZ",
+          "damage": 96733,
+          "assists": 234,
+          "mvp": 1
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "INTZ",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "B4 ESPORTS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "NITROXX",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "MIBR",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "A7 2.webp",
+          "edition": ""
+        },
+        {
+          "team": "INTZ",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 986,
+        "matches": 781,
+        "damage": 96733,
+        "assists": 234,
+        "mvp": 1,
+        "avg": 1.26
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "honeyzl": {
+      "id": "honeyzl",
+      "name": "honeyzL",
+      "aliases": [
+        "honeyzL",
+        "INTZ honeyzL",
+        "HONEY"
+      ],
+      "photo": "honey.webp",
+      "country": "br",
+      "role": "SUPORTE",
+      "currentTeam": "INTZ",
+      "currentTeamLogo": "Intz 1.webp",
+      "currentRoster": {
+        "team": "INTZ",
+        "role": "SUPORTE",
+        "roleShort": "SUP",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "João Lucas de Jesus Pedrao",
+        "age": 21,
+        "birthDate": "2005-06-26",
+        "state": "Bahia"
+      },
+      "ffws": {
+        "kills": 183,
+        "damage": 141429,
+        "assists": 147,
+        "matches": 101,
+        "mvp": 3,
+        "record": 7,
+        "team": "INTZ",
+        "rankKills": 14,
+        "rankDamage": 10,
+        "rankAssists": 38
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "LBFF 7": {
+          "kills": 65,
+          "matches": 86
+        },
+        "LBFF 9": {
+          "kills": 173,
+          "matches": 186
+        },
+        "WB 2024 F1": {
+          "kills": 114,
+          "matches": 88
+        },
+        "WB 2024 F2": {
+          "kills": 135,
+          "matches": 104
+        },
+        "WB 2025 S1": {
+          "kills": 166,
+          "matches": 104
+        },
+        "WB 2025 S2": {
+          "kills": 99,
+          "matches": 67
+        },
+        "WB 2026 S1": {
+          "kills": 183,
+          "matches": 101
+        }
+      },
+      "editions": [
+        {
+          "edition": "LBFF 7",
+          "kills": 65,
+          "matches": 86,
+          "avg": 0.76,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 9",
+          "kills": 173,
+          "matches": 186,
+          "avg": 0.93,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F1",
+          "kills": 114,
+          "matches": 88,
+          "avg": 1.3,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 135,
+          "matches": 104,
+          "avg": 1.3,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S1",
+          "kills": 166,
+          "matches": 104,
+          "avg": 1.6,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 99,
+          "matches": 67,
+          "avg": 1.48,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 183,
+          "matches": 101,
+          "avg": 1.81,
+          "team": "INTZ",
+          "damage": 141429,
+          "assists": 147,
+          "mvp": 3
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "INTZ",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "00 NATION",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "SÃO PAULO",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "ALFA 34",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "A7 2.webp",
+          "edition": ""
+        },
+        {
+          "team": "INTZ",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 1118,
+        "matches": 837,
+        "damage": 141429,
+        "assists": 147,
+        "mvp": 3,
+        "avg": 1.34
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "kauaxp": {
+      "id": "kauaxp",
+      "name": "kauãxp",
+      "aliases": [
+        "kauãxp",
+        "INTZ kauãxp",
+        "Kaua7xp",
+        "Kauã7xp"
+      ],
+      "photo": "xp.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "INTZ",
+      "currentTeamLogo": "Intz 1.webp",
+      "currentRoster": {
+        "team": "INTZ",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Kauã Bittencourt Bitencourt",
+        "age": 19,
+        "birthDate": "2007-06-10",
+        "state": "Rio Grande do Sul"
+      },
+      "ffws": {
+        "kills": 135,
+        "damage": 84041,
+        "assists": 190,
+        "matches": 104,
+        "mvp": 0,
+        "record": 6,
+        "team": "INTZ",
+        "rankKills": 32,
+        "rankDamage": 40,
+        "rankAssists": 16
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "WB 2024 F1": {
+          "kills": 29,
+          "matches": 32
+        },
+        "WB 2024 F2": {
+          "kills": 70,
+          "matches": 61
+        },
+        "WB 2025 S2": {
+          "kills": 21,
+          "matches": 16
+        },
+        "WB 2026 S1": {
+          "kills": 135,
+          "matches": 104
+        }
+      },
+      "editions": [
+        {
+          "edition": "WB 2024 F1",
+          "kills": 29,
+          "matches": 32,
+          "avg": 0.91,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 70,
+          "matches": 61,
+          "avg": 1.15,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 21,
+          "matches": 16,
+          "avg": 1.31,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 135,
+          "matches": 104,
+          "avg": 1.3,
+          "team": "INTZ",
+          "damage": 84041,
+          "assists": 190,
+          "mvp": 0
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "INTZ",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "MGS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "PAIN GAMING",
+          "cargo": "Jogador",
+          "logo": "pain.webp",
+          "edition": ""
+        },
+        {
+          "team": "INTZ",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 390,
+        "matches": 317,
+        "damage": 84041,
+        "assists": 190,
+        "mvp": 0,
+        "avg": 1.23
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "pereira": {
+      "id": "pereira",
+      "name": "PEREIRA",
+      "aliases": [
+        "PEREIRA",
+        "INTZ PEREIRA"
+      ],
+      "photo": "silhueta.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "INTZ",
+      "currentTeamLogo": "Intz 1.webp",
+      "currentRoster": {
+        "team": "INTZ",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": false,
+        "rosterStatus": "Reserva",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Rayneu Pereira Evangelista Junior",
+        "age": 25,
+        "birthDate": "2001-05-24",
+        "state": "Amazonas"
+      },
+      "ffws": null,
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {},
+      "editions": [
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "INTZ",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "INTZ",
+          "cargo": "Jogador",
+          "logo": "Intz 1.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 0,
+        "matches": 0,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 0
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    }
+  }
+}

@@ -1,1 +1,133 @@
-{"updatedAt":"2026-07-28","team":"RUSH GAMING","history":{"players":[{"id":"prozin","name":"PROZIN","photo":"prozin.webp","currentTeam":"RUSH GAMING","isCurrent":true,"kills":583,"matches":541,"avg":1.08,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"black02","name":"BLACK02","photo":"black02.webp","currentTeam":"RUSH GAMING","isCurrent":true,"kills":467,"matches":384,"avg":1.22,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"mitinx","name":"MitinX","photo":"mitin.webp","currentTeam":"RUSH GAMING","isCurrent":true,"kills":446,"matches":309,"avg":1.44,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"guimerlq","name":"GUIMERLQ","photo":"guime.webp","currentTeam":"RUSH GAMING","isCurrent":true,"kills":424,"matches":334,"avg":1.27,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"ericking","name":"Ericking","photo":"eric.webp","currentTeam":"RUSH GAMING","isCurrent":true,"kills":172,"matches":160,"avg":1.07,"editions":["FFWS BR 2026 S2"]},{"id":"lc777","name":"LC777","photo":"lc.webp","currentTeam":"ALPHA7","isCurrent":false,"kills":407,"matches":295,"avg":1.38,"editions":["FFWS BR 2026 S1"]}],"currentCount":5,"formerCount":1},"titles":[],"results":[]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "RUSH GAMING",
+  "history": {
+    "players": [
+      {
+        "id": "black02",
+        "name": "BLACK02",
+        "photo": "black02.webp",
+        "currentTeam": "RUSH GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 467,
+        "matches": 384,
+        "avg": 1.22,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "guimerlq",
+        "name": "GUIMERLQ",
+        "photo": "guime.webp",
+        "currentTeam": "RUSH GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 424,
+        "matches": 334,
+        "avg": 1.27,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "ericking",
+        "name": "Ericking",
+        "photo": "eric.webp",
+        "currentTeam": "RUSH GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 172,
+        "matches": 160,
+        "avg": 1.07,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "prozin",
+        "name": "PROZIN",
+        "photo": "prozin.webp",
+        "currentTeam": "RUSH GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 583,
+        "matches": 541,
+        "avg": 1.08,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "mitinx",
+        "name": "MitinX",
+        "photo": "mitin.webp",
+        "currentTeam": "RUSH GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 446,
+        "matches": 309,
+        "avg": 1.44,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "fnx04",
+        "name": "fnx04",
+        "photo": "silhueta.webp",
+        "currentTeam": "ANTISOCIAL TEAM",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 52,
+        "matches": 28,
+        "avg": 1.86,
+        "editions": [],
+        "passageOrder": 1
+      },
+      {
+        "id": "lc777",
+        "name": "LC777",
+        "photo": "lc.webp",
+        "currentTeam": "ALPHA7",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 407,
+        "matches": 295,
+        "avg": 1.38,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 2
+  },
+  "titles": [],
+  "results": []
+}

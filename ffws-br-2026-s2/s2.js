@@ -401,7 +401,7 @@
     const rows = filterStageRows(stageKey);
     root.innerHTML = `<div class="ffws-s2-shell">${hero(title, subtitle)}${formatPanel(stageKey)}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner">
-        <div class="ffws-s2-panel-head"><div><h2>Classificação</h2><p>Tabela preparada no padrão da FFWS BR 2026 S1 para receber os resultados por rodada, mapa e queda.</p></div><span class="ffws-s2-badge">${rows.length} equipes</span></div>
+        <div class="ffws-s2-panel-head"><div><h2>Classificação</h2><p>Tabela preparada no padrão da WB 2026 S1 para receber os resultados por rodada, mapa e queda.</p></div><span class="ffws-s2-badge">${rows.length} equipes</span></div>
         ${stageFilters(stageKey)}${stageTable(stageKey)}
       </div></section></div>`;
   }
@@ -470,7 +470,7 @@
     if (!root) return;
     const options = playerFilterOptions();
     const rows = filteredPlayers();
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Ranking MVP', 'Classificação individual da FFWS Brasil 2026 Split 2')}
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Ranking MVP', 'Classificação individual da WB 2026 S2')}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner">
         <div class="ffws-s2-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtros múltiplos preparados para combinar etapas, equipes, posições, países e dias.</p></div><span class="ffws-s2-badge">${rows.length} jogadores</span></div>
         <div class="ffws-s2-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('rookie', 'Novatos', options.rookie)}${multiFilter('day', 'Dias', options.day)}</div>
@@ -485,7 +485,7 @@
     if (!root) return;
     const totalPlayers = rosterPlayers().length;
     const totalRookies = rosterPlayers().filter(player => player.rookie).length;
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Equipes', 'As 14 organizações e os elencos da FFWS Brasil 2026 Split 2')}
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Equipes', 'As 14 organizações e os elencos da WB 2026 S2')}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Diretório de Equipes</h2><p>Os nicknames foram padronizados com os nomes já usados no site. A marca de estreante considera apenas quem ainda não disputou uma edição anterior da elite brasileira.</p></div><span class="ffws-s2-badge">${totalPlayers} jogadores • ${totalRookies} estreantes</span></div>
       <div class="ffws-s2-teams-grid ffws-s2-rosters-grid">${state.teams.map(team => {
         const roster = playersForTeam(team.name);
@@ -571,7 +571,7 @@
     const now = Date.now();
     const live = rounds.find(item => now >= scheduleStart(item) && now < scheduleStart(item) + (6 * 60 * 60 * 1000));
     const next = rounds.find(item => scheduleStart(item) > now);
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Datas', 'Calendário oficial da FFWS Brasil 2026 Split 2')}
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Datas', 'Calendário oficial da WB 2026 S2')}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Cronograma Geral</h2><p>Todos os dias começam às 13h, no horário de Brasília. Durante a Classificatória, as equipes indicadas ficam de folga naquela rodada.</p></div><span class="ffws-s2-badge">22 dias de competição</span></div>
       <div class="ffws-s2-dates">${stages.map(stage => `<article class="ffws-s2-date-card"><span>${escapeHtml(stage.status)}</span><h3>${escapeHtml(stage.name)}</h3><p>${escapeHtml(stage.summary)}</p><b>${escapeHtml(stage.date)}</b></article>`).join('')}</div></div></section>
       ${renderScheduleSection('classificatoria', rounds, next?.key, live?.key)}
@@ -660,8 +660,8 @@
   function renderStats() {
     const root = document.getElementById('ffws-br-s2-stats-content');
     if (!root) return;
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Brasil 2026 Split 2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Estrutura baseada na página de Estatísticas Gerais da FFWS BR 2026 S1.</p></div><span class="ffws-s2-badge">Aguardando dados</span></div>
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da WB 2026 S2')}
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Estrutura baseada na página de Estatísticas Gerais da WB 2026 S1.</p></div><span class="ffws-s2-badge">Aguardando dados</span></div>
       <div class="ffws-s2-filters"><label class="ffws-s2-filter"><span>Etapa:</span><select onchange="setFFWSS2StatsStage(this.value)"><option value="geral">Geral</option><option value="classificatoria">Classificatória</option><option value="segundaFase">Segunda Fase</option><option value="final">Final</option></select></label><label class="ffws-s2-filter"><span>Dias:</span><select disabled><option>Todos os dias</option></select></label><label class="ffws-s2-filter"><span>Confrontos:</span><select disabled><option>Geral</option></select></label><label class="ffws-s2-filter"><span>Mapa:</span><select disabled><option>Todos os mapas</option></select></label></div>
       <div class="ffws-s2-stats-grid">${[['Total de pontos','—'],['Total de abates','—'],['Total de booyahs','—'],['Média de pontos','—'],['Média de abates','—'],['Colocação média','—']].map(([label, value]) => `<div class="ffws-s2-stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div></div></section>
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Melhores equipes por quesito</h2><p>Top 4 em pontos, abates, booyahs e médias.</p></div></div><div class="ffws-s2-top-grid">${['Top Pontos','Top Abates','Top Booyahs','Média de Pontos','Média de Abates','Colocação Média'].map(title => `<div class="ffws-s2-top-card"><h3>${title}</h3>${Array.from({length:4},(_,i)=>`<div class="ffws-s2-top-slot"><b>${i+1}º</b><span>Aguardando resultados</span></div>`).join('')}</div>`).join('')}</div></div></section>
@@ -682,7 +682,7 @@
     if (!root) return;
     const players = rosterPlayers().slice().sort((a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR'));
     const options = players.map(player => `<option value="${escapeHtml(player.name)}">${escapeHtml(player.name)} • ${escapeHtml(abbreviation(player.team))}</option>`).join('');
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Comparar 1V1', 'Compare dois jogadores da FFWS Brasil 2026 Split 2')}
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Comparar 1V1', 'Compare dois jogadores da WB 2026 S2')}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-compare"><div class="ffws-s2-compare-card"><strong>Jogador 1</strong><select disabled><option>${players.length} participantes cadastrados</option>${options}</select></div><div class="ffws-s2-vs">VS</div><div class="ffws-s2-compare-card"><strong>Jogador 2</strong><select disabled><option>Estatísticas em breve</option>${options}</select></div></div><div class="ffws-s2-empty" style="margin-top:16px;min-height:100px"><div><strong>Elencos cadastrados</strong>A comparação será liberada quando as primeiras estatísticas da temporada forem importadas.</div></div></div></section></div>`;
   }
 
@@ -707,7 +707,7 @@
     const root = document.getElementById(`${pageId}-content`);
     if (root && !root.dataset.s2Loading) {
       root.dataset.s2Loading = '1';
-      root.innerHTML = '<div class="ffws-s2-empty"><div><strong>Carregando FFWS BR 2026 S2...</strong></div></div>';
+      root.innerHTML = '<div class="ffws-s2-empty"><div><strong>Carregando WB 2026 S2...</strong></div></div>';
     }
     const needsPlayers = new Set(['ffws-br-s2-mvp', 'ffws-br-s2-equipes', 'ffws-br-s2-selecoes', 'ffws-br-s2-notas', 'ffws-br-s2-comparar']).has(pageId);
     const needsPhotos = new Set(['ffws-br-s2-equipes', 'ffws-br-s2-selecoes']).has(pageId);

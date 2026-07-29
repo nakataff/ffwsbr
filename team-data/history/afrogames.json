@@ -1,1 +1,110 @@
-{"updatedAt":"2026-07-28","team":"AFROGAMES","history":{"players":[{"id":"peter","name":"PETER","photo":"peter.webp","currentTeam":"AFROGAMES","isCurrent":true,"kills":710,"matches":430,"avg":1.65,"editions":["FFWS BR 2026 S2"]},{"id":"braboxx7","name":"BRABOXX7","photo":"silhueta.webp","currentTeam":"AFROGAMES","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]},{"id":"dnsetzz","name":"dnsetzz","photo":"silhueta.webp","currentTeam":"AFROGAMES","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2"]},{"id":"gbzinn7","name":"gbzinn7","photo":"silhueta.webp","currentTeam":"AFROGAMES","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]},{"id":"nielffx","name":"Nielffx","photo":"silhueta.webp","currentTeam":"AFROGAMES","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]},{"id":"sant10s","name":"Sant10s","photo":"silhueta.webp","currentTeam":"AFROGAMES","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2","LAFF 2026 S1"]}],"currentCount":6,"formerCount":0},"titles":[],"results":[]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "AFROGAMES",
+  "history": {
+    "players": [
+      {
+        "id": "nielffx",
+        "name": "Nielffx",
+        "photo": "silhueta.webp",
+        "currentTeam": "AFROGAMES",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "braboxx7",
+        "name": "BRABOXX7",
+        "photo": "silhueta.webp",
+        "currentTeam": "AFROGAMES",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "gbzinn7",
+        "name": "gbzinn7",
+        "photo": "silhueta.webp",
+        "currentTeam": "AFROGAMES",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "sant10s",
+        "name": "Sant10s",
+        "photo": "silhueta.webp",
+        "currentTeam": "AFROGAMES",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "dnsetzz",
+        "name": "dnsetzz",
+        "photo": "silhueta.webp",
+        "currentTeam": "AFROGAMES",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "peter",
+        "name": "PETER",
+        "photo": "peter.webp",
+        "currentTeam": "AFROGAMES",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 710,
+        "matches": 430,
+        "avg": 1.65,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      }
+    ],
+    "currentCount": 6,
+    "formerCount": 0
+  },
+  "titles": [],
+  "results": []
+}

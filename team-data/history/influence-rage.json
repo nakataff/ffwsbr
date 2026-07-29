@@ -1,1 +1,359 @@
-{"updatedAt":"2026-07-28","team":"INFLUENCE RAGE","history":{"players":[{"id":"lyon","name":"Lyon","photo":"lyon.webp","currentTeam":"INFLUENCE RAGE","isCurrent":true,"kills":500,"matches":378,"avg":1.32,"editions":["FFWS BR 2026 S2"]},{"id":"lippe","name":"lippe!","photo":"lippe.webp","currentTeam":"INFLUENCE RAGE","isCurrent":true,"kills":459,"matches":417,"avg":1.1,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"igor7","name":"IGOR7","photo":"igor7.webp","currentTeam":"INFLUENCE RAGE","isCurrent":true,"kills":322,"matches":208,"avg":1.55,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"nepoign","name":"nepoIGN","photo":"nepo.webp","currentTeam":"INFLUENCE RAGE","isCurrent":true,"kills":222,"matches":166,"avg":1.34,"editions":["FFWS BR 2026 S2"]},{"id":"saskito","name":"saskito!","photo":"silhueta.webp","currentTeam":"INFLUENCE RAGE","isCurrent":true,"kills":8,"matches":2,"avg":4.0,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"razure","name":"Razure","photo":"razure.webp","currentTeam":"","isCurrent":false,"kills":1219,"matches":1072,"avg":1.14,"editions":["FFWS BR 2026 S1"]},{"id":"itzking1","name":"itzking1","photo":"itzking.webp","currentTeam":"","isCurrent":false,"kills":250,"matches":206,"avg":1.21,"editions":["FFWS BR 2026 S1"]}],"currentCount":5,"formerCount":2},"titles":[],"results":[]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "INFLUENCE RAGE",
+  "history": {
+    "players": [
+      {
+        "id": "lippe",
+        "name": "lippe!",
+        "photo": "lippe.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 459,
+        "matches": 417,
+        "avg": 1.1,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "igor7",
+        "name": "IGOR7",
+        "photo": "igor7.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 322,
+        "matches": 208,
+        "avg": 1.55,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "nepoign",
+        "name": "nepoIGN",
+        "photo": "nepo.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 222,
+        "matches": 166,
+        "avg": 1.34,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "lyon",
+        "name": "Lyon",
+        "photo": "lyon.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 500,
+        "matches": 378,
+        "avg": 1.32,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "saskito",
+        "name": "saskito!",
+        "photo": "silhueta.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 8,
+        "matches": 2,
+        "avg": 4.0,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "tatu13",
+        "name": "TATU13",
+        "photo": "silhueta.webp",
+        "currentTeam": "XLD GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 37,
+        "matches": 24,
+        "avg": 1.54,
+        "editions": [],
+        "passageOrder": 6
+      },
+      {
+        "id": "goabe7",
+        "name": "Goabe7",
+        "photo": "silhueta.webp",
+        "currentTeam": "A NOVA ORDEM",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 40,
+        "matches": 31,
+        "avg": 1.29,
+        "editions": [],
+        "passageOrder": 5
+      },
+      {
+        "id": "modestia",
+        "name": "MODESTIA",
+        "photo": "silhueta.webp",
+        "currentTeam": "INCO GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1240,
+        "matches": 1047,
+        "avg": 1.18,
+        "editions": [
+          "WB 2024 F2",
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ],
+        "passageOrder": 5
+      },
+      {
+        "id": "cruel",
+        "name": "Cruel",
+        "photo": "silhueta.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 332,
+        "matches": 359,
+        "avg": 0.92,
+        "editions": [
+          "WB 2024 F1",
+          "WB 2024 F2",
+          "WB 2025 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "dorito",
+        "name": "DORITO",
+        "photo": "silhueta.webp",
+        "currentTeam": "KOD ROYALS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 55,
+        "matches": 37,
+        "avg": 1.49,
+        "editions": [],
+        "passageOrder": 4
+      },
+      {
+        "id": "razure",
+        "name": "Razure",
+        "photo": "razure.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1219,
+        "matches": 1072,
+        "avg": 1.14,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "caua-9",
+        "name": "Cauã9",
+        "photo": "caua.webp",
+        "currentTeam": "E1 SPORTS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 838,
+        "matches": 768,
+        "avg": 1.09,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "yato7",
+        "name": "Yato7",
+        "photo": "silhueta.webp",
+        "currentTeam": "SX TET",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 525,
+        "matches": 456,
+        "avg": 1.15,
+        "editions": [
+          "WB 2024 F2",
+          "WB 2025 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "brota10",
+        "name": "brota10",
+        "photo": "silhueta.webp",
+        "currentTeam": "HAWK GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 58,
+        "matches": 31,
+        "avg": 1.87,
+        "editions": [],
+        "passageOrder": 2
+      },
+      {
+        "id": "drey22",
+        "name": "Drey22",
+        "photo": "silhueta.webp",
+        "currentTeam": "KABUM! FDS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 59,
+        "matches": 24,
+        "avg": 2.46,
+        "editions": [],
+        "passageOrder": 2
+      },
+      {
+        "id": "drk",
+        "name": "drk",
+        "photo": "silhueta.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 204,
+        "matches": 230,
+        "avg": 0.89,
+        "editions": [
+          "LBFF 9",
+          "WB 2024 F1"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "zetsu9",
+        "name": "ZETSU9",
+        "photo": "zetsu.webp",
+        "currentTeam": "HAWK GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 65,
+        "matches": 31,
+        "avg": 2.1,
+        "editions": [],
+        "passageOrder": 2
+      },
+      {
+        "id": "furiazz7",
+        "name": "Furiazz7",
+        "photo": "silhueta.webp",
+        "currentTeam": "SX TET",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 60,
+        "matches": 86,
+        "avg": 0.7,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "itzking1",
+        "name": "itzking1",
+        "photo": "itzking.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 250,
+        "matches": 206,
+        "avg": 1.21,
+        "editions": [
+          "WB 2026 S1"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "luan7",
+        "name": "Luan7",
+        "photo": "luan.webp",
+        "currentTeam": "LOOPS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 482,
+        "matches": 407,
+        "avg": 1.18,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "strike",
+        "name": "STRIKE",
+        "photo": "silhueta.webp",
+        "currentTeam": "INCO GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 149,
+        "matches": 148,
+        "avg": 1.01,
+        "editions": [
+          "WB 2024 F2",
+          "WB 2025 S1"
+        ],
+        "passageOrder": 1
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 16
+  },
+  "titles": [],
+  "results": []
+}

@@ -1,1 +1,611 @@
-{"updatedAt":"2026-07-29","team":"AFROGAMES","profileType":"full","players":{"nielffx":{"id":"nielffx","name":"Nielffx","aliases":["Nielffx","AFG Nielffx"],"photo":"silhueta.webp","country":"br","role":"GRANADEIRO","currentTeam":"AFROGAMES","currentTeamLogo":"afg.webp","currentRoster":{"team":"AFROGAMES","role":"GRANADEIRO","roleShort":"GRAN","starter":true,"rosterStatus":"Titular","captain":true,"rookie":true,"highlight":false,"fullName":"Daniel Costa da Silva","age":21,"birthDate":"2005-03-24","state":"Rio de Janeiro"},"ffws":null,"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{},"editions":[{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"AFROGAMES","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"AFROGAMES","logo":"afg.webp"}],"allTime":{"kills":0,"matches":0,"damage":0,"assists":0,"mvp":0,"avg":0},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[{"key":"laff-2026-s1","name":"LAFF 2026 S1","team":"AFROGAMES","kills":43,"matches":37,"damage":0,"assists":0,"mvp":0,"avg":1.16,"stages":{"classificatoria":{"kills":17,"matches":18},"repescagem":{"kills":9,"matches":6},"final":{"kills":17,"matches":13}}}]},"braboxx7":{"id":"braboxx7","name":"BRABOXX7","aliases":["BRABOXX7","AFG Braboxx7","Braboxx7"],"photo":"silhueta.webp","country":"br","role":"RUSH","currentTeam":"AFROGAMES","currentTeamLogo":"afg.webp","currentRoster":{"team":"AFROGAMES","role":"RUSH","roleShort":"RUSH","starter":true,"rosterStatus":"Titular","captain":false,"rookie":true,"highlight":true,"fullName":"Kayky Florentino Landes","age":18,"birthDate":"2008-01-23","state":"Rio de Janeiro"},"ffws":null,"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{},"editions":[{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"AFROGAMES","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"AFROGAMES","logo":"afg.webp"}],"allTime":{"kills":0,"matches":0,"damage":0,"assists":0,"mvp":0,"avg":0},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[{"key":"laff-2026-s1","name":"LAFF 2026 S1","team":"AFROGAMES","kills":90,"matches":37,"damage":0,"assists":0,"mvp":0,"avg":2.43,"stages":{"classificatoria":{"kills":48,"matches":18},"repescagem":{"kills":12,"matches":6},"final":{"kills":30,"matches":13}}}]},"gbzinn7":{"id":"gbzinn7","name":"gbzinn7","aliases":["gbzinn7","AFG gbzinn7$","gbzinn7$"],"photo":"silhueta.webp","country":"br","role":"SUPORTE","currentTeam":"AFROGAMES","currentTeamLogo":"afg.webp","currentRoster":{"team":"AFROGAMES","role":"SUPORTE","roleShort":"SUP","starter":true,"rosterStatus":"Titular","captain":false,"rookie":true,"highlight":false,"fullName":"Gabriel Menendes Faustino","age":19,"birthDate":"2007-07-16","state":"Rio de Janeiro"},"ffws":null,"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{},"editions":[{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"AFROGAMES","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"AFROGAMES","logo":"afg.webp"}],"allTime":{"kills":0,"matches":0,"damage":0,"assists":0,"mvp":0,"avg":0},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[{"key":"laff-2026-s1","name":"LAFF 2026 S1","team":"AFROGAMES","kills":89,"matches":37,"damage":0,"assists":0,"mvp":0,"avg":2.41,"stages":{"classificatoria":{"kills":40,"matches":18},"repescagem":{"kills":19,"matches":6},"final":{"kills":30,"matches":13}}}]},"sant10s":{"id":"sant10s","name":"Sant10s","aliases":["Sant10s","AFG Sant10$","Sant10$"],"photo":"silhueta.webp","country":"br","role":"SUPORTE","currentTeam":"AFROGAMES","currentTeamLogo":"afg.webp","currentRoster":{"team":"AFROGAMES","role":"SUPORTE","roleShort":"SUP","starter":false,"rosterStatus":"Reserva","captain":false,"rookie":true,"highlight":false,"fullName":"Kayquy Eduardo Costa dos Santos","age":18,"birthDate":"2008-01-23","state":"Rio de Janeiro"},"ffws":null,"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{},"editions":[{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"AFROGAMES","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"AFROGAMES","logo":"afg.webp"}],"allTime":{"kills":0,"matches":0,"damage":0,"assists":0,"mvp":0,"avg":0},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[{"key":"laff-2026-s1","name":"LAFF 2026 S1","team":"AFROGAMES","kills":48,"matches":33,"damage":0,"assists":0,"mvp":0,"avg":1.45,"stages":{"classificatoria":{"kills":17,"matches":14},"repescagem":{"kills":10,"matches":6},"final":{"kills":21,"matches":13}}}]},"dnsetzz":{"id":"dnsetzz","name":"dnsetzz","aliases":["dnsetzz","AFG dnsetzz"],"photo":"silhueta.webp","country":"br","role":"RUSH","currentTeam":"AFROGAMES","currentTeamLogo":"afg.webp","currentRoster":{"team":"AFROGAMES","role":"RUSH","roleShort":"RUSH","starter":false,"rosterStatus":"Reserva","captain":false,"rookie":true,"highlight":false,"fullName":"Daniel Henrique Valadares Gomes","age":20,"birthDate":"2006-01-06","state":"Rio de Janeiro"},"ffws":null,"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{},"editions":[{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"AFROGAMES","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"AFROGAMES","logo":"afg.webp"}],"allTime":{"kills":0,"matches":0,"damage":0,"assists":0,"mvp":0,"avg":0},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"peter":{"id":"peter","name":"PETER","aliases":["PETER","AFG  PETER","PETERxl"],"photo":"peter.webp","country":"br","role":"RUSH","currentTeam":"AFROGAMES","currentTeamLogo":"afg.webp","currentRoster":{"team":"AFROGAMES","role":"RUSH","roleShort":"RUSH","starter":true,"rosterStatus":"Titular","captain":false,"rookie":false,"highlight":false,"fullName":"Pablo Roberto Medeiros De França","age":19,"birthDate":"2006-11-12","state":"Rio Grande do Norte"},"ffws":{"kills":69,"damage":35290,"assists":141,"matches":45,"mvp":0,"record":6,"team":"TEAM SOLID","rankKills":61,"rankDamage":63,"rankAssists":41},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"WB 2024 F1":{"kills":148,"matches":77},"WB 2024 F2":{"kills":168,"matches":98},"WB 2025 S1":{"kills":157,"matches":103},"WB 2025 S2":{"kills":99,"matches":62},"WB 2026 S1":{"kills":69,"matches":45}},"editions":[{"edition":"WB 2024 F1","kills":148,"matches":77,"avg":1.92,"team":""},{"edition":"WB 2024 F2","kills":168,"matches":98,"avg":1.71,"team":""},{"edition":"WB 2025 S1","kills":157,"matches":103,"avg":1.52,"team":""},{"edition":"WB 2025 S2","kills":99,"matches":62,"avg":1.6,"team":""},{"edition":"WB 2026 S1","kills":69,"matches":45,"avg":1.53,"team":""},{"edition":"FFWS BR 2026 S1","kills":69,"matches":45,"avg":1.53,"team":"TEAM SOLID","damage":35290,"assists":141,"mvp":0},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"AFROGAMES","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"AFROGAMES","logo":"afg.webp"},{"edition":"FFWS BR 2026 S1","team":"TEAM SOLID","logo":"escudo.webp"}],"allTime":{"kills":710,"matches":430,"damage":35290,"assists":141,"mvp":0,"avg":1.65},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]}}}
+{
+  "updatedAt": "2026-07-28",
+  "team": "AFROGAMES",
+  "profileType": "full",
+  "players": {
+    "nielffx": {
+      "id": "nielffx",
+      "name": "Nielffx",
+      "aliases": [
+        "Nielffx",
+        "AFG Nielffx"
+      ],
+      "photo": "silhueta.webp",
+      "country": "br",
+      "role": "GRANADEIRO",
+      "currentTeam": "AFROGAMES",
+      "currentTeamLogo": "afg.webp",
+      "currentRoster": {
+        "team": "AFROGAMES",
+        "role": "GRANADEIRO",
+        "roleShort": "GRAN",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": true,
+        "rookie": true,
+        "highlight": false,
+        "fullName": "Daniel Costa da Silva",
+        "age": 21,
+        "birthDate": "2005-03-24",
+        "state": "Rio de Janeiro"
+      },
+      "ffws": null,
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {},
+      "editions": [
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "AFROGAMES",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "AFROGAMES",
+          "cargo": "Jogador",
+          "logo": "afg.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 0,
+        "matches": 0,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 0
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": [
+        {
+          "key": "laff-2026-s1",
+          "name": "LAFF 2026 S1",
+          "team": "AFROGAMES",
+          "kills": 43,
+          "matches": 37,
+          "damage": 0,
+          "assists": 0,
+          "mvp": 0,
+          "avg": 1.16,
+          "stages": {
+            "classificatoria": {
+              "kills": 17,
+              "matches": 18
+            },
+            "repescagem": {
+              "kills": 9,
+              "matches": 6
+            },
+            "final": {
+              "kills": 17,
+              "matches": 13
+            }
+          }
+        }
+      ]
+    },
+    "braboxx7": {
+      "id": "braboxx7",
+      "name": "BRABOXX7",
+      "aliases": [
+        "BRABOXX7",
+        "AFG Braboxx7",
+        "Braboxx7"
+      ],
+      "photo": "silhueta.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "AFROGAMES",
+      "currentTeamLogo": "afg.webp",
+      "currentRoster": {
+        "team": "AFROGAMES",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": true,
+        "highlight": true,
+        "fullName": "Kayky Florentino Landes",
+        "age": 18,
+        "birthDate": "2008-01-23",
+        "state": "Rio de Janeiro"
+      },
+      "ffws": null,
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {},
+      "editions": [
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "AFROGAMES",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "AFROGAMES",
+          "cargo": "Jogador",
+          "logo": "afg.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 0,
+        "matches": 0,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 0
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": [
+        {
+          "key": "laff-2026-s1",
+          "name": "LAFF 2026 S1",
+          "team": "AFROGAMES",
+          "kills": 90,
+          "matches": 37,
+          "damage": 0,
+          "assists": 0,
+          "mvp": 0,
+          "avg": 2.43,
+          "stages": {
+            "classificatoria": {
+              "kills": 48,
+              "matches": 18
+            },
+            "repescagem": {
+              "kills": 12,
+              "matches": 6
+            },
+            "final": {
+              "kills": 30,
+              "matches": 13
+            }
+          }
+        }
+      ]
+    },
+    "gbzinn7": {
+      "id": "gbzinn7",
+      "name": "gbzinn7",
+      "aliases": [
+        "gbzinn7",
+        "AFG gbzinn7$",
+        "gbzinn7$"
+      ],
+      "photo": "silhueta.webp",
+      "country": "br",
+      "role": "SUPORTE",
+      "currentTeam": "AFROGAMES",
+      "currentTeamLogo": "afg.webp",
+      "currentRoster": {
+        "team": "AFROGAMES",
+        "role": "SUPORTE",
+        "roleShort": "SUP",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": true,
+        "highlight": false,
+        "fullName": "Gabriel Menendes Faustino",
+        "age": 19,
+        "birthDate": "2007-07-16",
+        "state": "Rio de Janeiro"
+      },
+      "ffws": null,
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {},
+      "editions": [
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "AFROGAMES",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "AFROGAMES",
+          "cargo": "Jogador",
+          "logo": "afg.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 0,
+        "matches": 0,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 0
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": [
+        {
+          "key": "laff-2026-s1",
+          "name": "LAFF 2026 S1",
+          "team": "AFROGAMES",
+          "kills": 89,
+          "matches": 37,
+          "damage": 0,
+          "assists": 0,
+          "mvp": 0,
+          "avg": 2.41,
+          "stages": {
+            "classificatoria": {
+              "kills": 40,
+              "matches": 18
+            },
+            "repescagem": {
+              "kills": 19,
+              "matches": 6
+            },
+            "final": {
+              "kills": 30,
+              "matches": 13
+            }
+          }
+        }
+      ]
+    },
+    "sant10s": {
+      "id": "sant10s",
+      "name": "Sant10s",
+      "aliases": [
+        "Sant10s",
+        "AFG Sant10$",
+        "Sant10$"
+      ],
+      "photo": "silhueta.webp",
+      "country": "br",
+      "role": "SUPORTE",
+      "currentTeam": "AFROGAMES",
+      "currentTeamLogo": "afg.webp",
+      "currentRoster": {
+        "team": "AFROGAMES",
+        "role": "SUPORTE",
+        "roleShort": "SUP",
+        "starter": false,
+        "rosterStatus": "Reserva",
+        "captain": false,
+        "rookie": true,
+        "highlight": false,
+        "fullName": "Kayquy Eduardo Costa dos Santos",
+        "age": 18,
+        "birthDate": "2008-01-23",
+        "state": "Rio de Janeiro"
+      },
+      "ffws": null,
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {},
+      "editions": [
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "AFROGAMES",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "AFROGAMES",
+          "cargo": "Jogador",
+          "logo": "afg.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 0,
+        "matches": 0,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 0
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": [
+        {
+          "key": "laff-2026-s1",
+          "name": "LAFF 2026 S1",
+          "team": "AFROGAMES",
+          "kills": 48,
+          "matches": 33,
+          "damage": 0,
+          "assists": 0,
+          "mvp": 0,
+          "avg": 1.45,
+          "stages": {
+            "classificatoria": {
+              "kills": 17,
+              "matches": 14
+            },
+            "repescagem": {
+              "kills": 10,
+              "matches": 6
+            },
+            "final": {
+              "kills": 21,
+              "matches": 13
+            }
+          }
+        }
+      ]
+    },
+    "dnsetzz": {
+      "id": "dnsetzz",
+      "name": "dnsetzz",
+      "aliases": [
+        "dnsetzz",
+        "AFG dnsetzz"
+      ],
+      "photo": "silhueta.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "AFROGAMES",
+      "currentTeamLogo": "afg.webp",
+      "currentRoster": {
+        "team": "AFROGAMES",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": false,
+        "rosterStatus": "Reserva",
+        "captain": false,
+        "rookie": true,
+        "highlight": false,
+        "fullName": "Daniel Henrique Valadares Gomes",
+        "age": 20,
+        "birthDate": "2006-01-06",
+        "state": "Rio de Janeiro"
+      },
+      "ffws": null,
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {},
+      "editions": [
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "AFROGAMES",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "AFROGAMES",
+          "cargo": "Jogador",
+          "logo": "afg.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 0,
+        "matches": 0,
+        "damage": 0,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 0
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "peter": {
+      "id": "peter",
+      "name": "PETER",
+      "aliases": [
+        "PETER",
+        "AFG  PETER",
+        "PETERxl"
+      ],
+      "photo": "peter.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "AFROGAMES",
+      "currentTeamLogo": "afg.webp",
+      "currentRoster": {
+        "team": "AFROGAMES",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Pablo Roberto Medeiros De França",
+        "age": 19,
+        "birthDate": "2006-11-12",
+        "state": "Rio Grande do Norte"
+      },
+      "ffws": {
+        "kills": 69,
+        "damage": 35290,
+        "assists": 141,
+        "matches": 45,
+        "mvp": 0,
+        "record": 6,
+        "team": "TEAM SOLID",
+        "rankKills": 61,
+        "rankDamage": 63,
+        "rankAssists": 41
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "WB 2024 F1": {
+          "kills": 148,
+          "matches": 77
+        },
+        "WB 2024 F2": {
+          "kills": 168,
+          "matches": 98
+        },
+        "WB 2025 S1": {
+          "kills": 157,
+          "matches": 103
+        },
+        "WB 2025 S2": {
+          "kills": 99,
+          "matches": 62
+        },
+        "WB 2026 S1": {
+          "kills": 69,
+          "matches": 45
+        }
+      },
+      "editions": [
+        {
+          "edition": "WB 2024 F1",
+          "kills": 148,
+          "matches": 77,
+          "avg": 1.92,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 168,
+          "matches": 98,
+          "avg": 1.71,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S1",
+          "kills": 157,
+          "matches": 103,
+          "avg": 1.52,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 99,
+          "matches": 62,
+          "avg": 1.6,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 69,
+          "matches": 45,
+          "avg": 1.53,
+          "team": "TEAM SOLID",
+          "damage": 35290,
+          "assists": 141,
+          "mvp": 0
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "AFROGAMES",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "PAIN GAMING",
+          "cargo": "Jogador",
+          "logo": "pain.webp",
+          "edition": ""
+        },
+        {
+          "team": "TEAM SOLID",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        },
+        {
+          "team": "AFROGAMES",
+          "cargo": "Jogador",
+          "logo": "afg.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 710,
+        "matches": 430,
+        "damage": 35290,
+        "assists": 141,
+        "mvp": 0,
+        "avg": 1.65
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    }
+  }
+}

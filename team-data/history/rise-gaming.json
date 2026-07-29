@@ -1,1 +1,136 @@
-{"updatedAt":"2026-07-28","team":"RISE GAMING","history":{"players":[{"id":"naandox","name":"Naandox","photo":"nandox.webp","currentTeam":"RISE GAMING","isCurrent":true,"kills":1048,"matches":784,"avg":1.34,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"mala","name":"Mala","photo":"mala.webp","currentTeam":"RISE GAMING","isCurrent":true,"kills":803,"matches":548,"avg":1.47,"editions":["FFWS BR 2026 S2"]},{"id":"erick11","name":"Erick11","photo":"erick11.webp","currentTeam":"RISE GAMING","isCurrent":true,"kills":753,"matches":576,"avg":1.31,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"kakazk","name":"KaKaZk","photo":"kakazk.webp","currentTeam":"RISE GAMING","isCurrent":true,"kills":727,"matches":461,"avg":1.58,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"carioca","name":"Carioca","photo":"silhueta.webp","currentTeam":"RISE GAMING","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2"]},{"id":"italo","name":"ITALO","photo":"italo.webp","currentTeam":"","isCurrent":false,"kills":936,"matches":921,"avg":1.02,"editions":["FFWS BR 2026 S1"]},{"id":"iguinmvp","name":"IguiNmvp","photo":"iguin.webp","currentTeam":"","isCurrent":false,"kills":476,"matches":386,"avg":1.23,"editions":["FFWS BR 2026 S1"]}],"currentCount":5,"formerCount":2},"titles":[],"results":[]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "RISE GAMING",
+  "history": {
+    "players": [
+      {
+        "id": "mala",
+        "name": "Mala",
+        "photo": "mala.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 803,
+        "matches": 548,
+        "avg": 1.47,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "erick11",
+        "name": "Erick11",
+        "photo": "erick11.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 753,
+        "matches": 576,
+        "avg": 1.31,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 6
+      },
+      {
+        "id": "carioca",
+        "name": "Carioca",
+        "photo": "silhueta.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "naandox",
+        "name": "Naandox",
+        "photo": "nandox.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1048,
+        "matches": 784,
+        "avg": 1.34,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 6
+      },
+      {
+        "id": "kakazk",
+        "name": "KaKaZk",
+        "photo": "kakazk.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 727,
+        "matches": 461,
+        "avg": 1.58,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "italo",
+        "name": "ITALO",
+        "photo": "italo.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 936,
+        "matches": 921,
+        "avg": 1.02,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 6
+      },
+      {
+        "id": "iguinmvp",
+        "name": "IguiNmvp",
+        "photo": "iguin.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 476,
+        "matches": 386,
+        "avg": 1.23,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 3
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 2
+  },
+  "titles": [],
+  "results": []
+}

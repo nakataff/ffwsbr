@@ -1,1 +1,571 @@
-{"updatedAt":"2026-07-28","team":"LOUD SNICKERS","history":{"players":[{"id":"trap","name":"TRAP","photo":"trap.webp","currentTeam":"LOUD SNICKERS","isCurrent":true,"kills":1806,"matches":996,"avg":1.81,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]},{"id":"nickz","name":"NICKZ","photo":"nickz7.webp","currentTeam":"LOUD SNICKERS","isCurrent":true,"kills":1299,"matches":733,"avg":1.77,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]},{"id":"guaxa","name":"GUAXA","photo":"guaxa.webp","currentTeam":"LOUD SNICKERS","isCurrent":true,"kills":1121,"matches":866,"avg":1.29,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]},{"id":"hak","name":"HAK","photo":"hak.webp","currentTeam":"LOUD SNICKERS","isCurrent":true,"kills":570,"matches":420,"avg":1.36,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"bzp","name":"BZP","photo":"bzp.webp","currentTeam":"LOUD SNICKERS","isCurrent":true,"kills":510,"matches":309,"avg":1.65,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]}],"currentCount":5,"formerCount":0},"titles":[{"event":"Liga do Rei Elite Mobile 2026","type":"Campeão","date":"2026-02-18","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Liga LPT Season 1","type":"Campeão","date":"2026-01-23","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Showmatch Klaus 2026","type":"Campeão","date":"2026-01-08","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Liga Do Rei Copa Mobile BoostZone","type":"Campeão","date":"2025-06-04","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Copa GWL Mobile 2025 Stage 2","type":"Campeão","date":"2025-04-10","tier":"D-Tier","logo":"trofeu.webp"},{"event":"La America DS Season 3","type":"Campeão","date":"2025-03-31","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Star Cup Series A Season 3","type":"Campeão","date":"2025-02-14","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Showmatch Alterados League 2025","type":"Campeão","date":"2025-01-31","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Copa Auge Rei dos Coins Season 5","type":"Campeão","date":"2024-08-30","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Copa GWL Mobile 2024 Stage 3","type":"Campeão","date":"2024-06-28","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Global Games Mobile Season 1","type":"Campeão","date":"2024-03-29","tier":"C-Tier","logo":"trofeu.webp"},{"event":"Super Liga Season 2","type":"Campeão","date":"2024-01-29","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Talents Mobile 2023 - Split 2","type":"Campeão","date":"2023-10-27","tier":"C-Tier","logo":"trofeu.webp"},{"event":"The Citizens Elite - Season 2","type":"Campeão","date":"2023-10-03","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Star Cup Serie A - Season 2","type":"Campeão","date":"2023-09-25","tier":"D-Tier","logo":"trofeu.webp"},{"event":"LBFF 2023","type":"Campeão","date":"2023-08-05","tier":"A-Tier","logo":"trofeu.webp"},{"event":"Copa GWL PRO Season 2","type":"Campeão","date":"2023-01-31","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Liga Brasileira de Free Fire 2022: Series A - Stage 1","type":"Campeão","date":"2022-04-16","tier":"A-Tier","logo":"trofeu.webp"},{"event":"Liga Brasileira de Free Fire 2021: Promotion - Stage 1","type":"Campeão","date":"2020-11-07","tier":"Qualifier","logo":"trofeu.webp"},{"event":"Copa America 2020","type":"Campeão","date":"2020-01-11","tier":"A-Tier","logo":"trofeu.webp"}],"results":[{"data":"2026-07-18","tier":"S-Tier","place":"3º","torneio":"EWC 2026 - Final"},{"data":"2026-05-31","tier":"S-Tier","place":"2º","torneio":"FFWS BR 2026 S1 - Final"},{"data":"2026-04-09","tier":"D-Tier","place":"4th","torneio":"Goat League Season 2"},{"data":"2026-04-08","tier":"D-Tier","place":"2nd","torneio":"GWL Showdown"},{"data":"2026-03-26","tier":"D-Tier","place":"4th","torneio":"Yuta Invitational"},{"data":"2026-03-09","tier":"C-Tier","place":"3rd","torneio":"CPN Arena 2026"},{"data":"2026-03-03","tier":"D-Tier","place":"6th","torneio":"Copa GWL Mobile 2026 Stage 1"},{"data":"2026-02-18","tier":"D-Tier","place":"1st","torneio":"Liga do Rei Elite Mobile 2026"},{"data":"2026-01-23","tier":"D-Tier","place":"1st","torneio":"Liga LPT Season 1"},{"data":"2026-01-23","tier":"D-Tier","place":"4th","torneio":"Liga Marinho Season 3"},{"data":"2026-01-21","tier":"D-Tier","place":"2nd","torneio":"Showmatch do Amoras 2026"},{"data":"2026-01-16","tier":"D-Tier","place":"5th","torneio":"Showmatch Yuta 2026"}]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "LOUD SNICKERS",
+  "history": {
+    "players": [
+      {
+        "id": "trap",
+        "name": "TRAP",
+        "photo": "trap.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1806,
+        "matches": 996,
+        "avg": 1.81,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "nickz",
+        "name": "NICKZ",
+        "photo": "nickz7.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1299,
+        "matches": 733,
+        "avg": 1.77,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "bzp",
+        "name": "BZP",
+        "photo": "bzp.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 510,
+        "matches": 309,
+        "avg": 1.65,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "guaxa",
+        "name": "GUAXA",
+        "photo": "guaxa.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1121,
+        "matches": 866,
+        "avg": 1.29,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "hak",
+        "name": "HAK",
+        "photo": "hak.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 570,
+        "matches": 420,
+        "avg": 1.36,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "caua-9",
+        "name": "Cauã9",
+        "photo": "caua.webp",
+        "currentTeam": "E1 SPORTS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 838,
+        "matches": 768,
+        "avg": 1.09,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 5
+      },
+      {
+        "id": "yago",
+        "name": "Yago",
+        "photo": "yago.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 2399,
+        "matches": 1155,
+        "avg": 2.08,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "draxx7",
+        "name": "Draxx7",
+        "photo": "drax.webp",
+        "currentTeam": "LOOPS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1395,
+        "matches": 1019,
+        "avg": 1.37,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "luan7",
+        "name": "Luan7",
+        "photo": "luan.webp",
+        "currentTeam": "LOOPS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 482,
+        "matches": 407,
+        "avg": 1.18,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "brabox",
+        "name": "Brabox",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 182,
+        "matches": 218,
+        "avg": 0.83,
+        "editions": [
+          "LBFF 4",
+          "LBFF 5",
+          "LBFF 6"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "cauan7",
+        "name": "Cauan7",
+        "photo": "cauan7.webp",
+        "currentTeam": "VIRTUS PRO",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 2046,
+        "matches": 1303,
+        "avg": 1.57,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "frois",
+        "name": "Frois",
+        "photo": "silhueta.webp",
+        "currentTeam": "",
+        "isCurrent": false,
+        "hasProfile": false,
+        "cargo": "Coach",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [],
+        "passageOrder": 2
+      },
+      {
+        "id": "kroonos",
+        "name": "Kroonos",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 468,
+        "matches": 517,
+        "avg": 0.91,
+        "editions": [
+          "LBFF 6",
+          "LBFF 7",
+          "LBFF 8"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "lost21",
+        "name": "Lost21",
+        "photo": "lost21.webp",
+        "currentTeam": "VIRTUS PRO",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1770,
+        "matches": 1196,
+        "avg": 1.48,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "bradoock",
+        "name": "Bradoock",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 93,
+        "matches": 84,
+        "avg": 1.11,
+        "editions": [
+          "LBFF 1"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "mexico",
+        "name": "Mexico",
+        "photo": "silhueta.webp",
+        "currentTeam": "SX GG",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 86,
+        "matches": 31,
+        "avg": 2.77,
+        "editions": [],
+        "passageOrder": 1
+      },
+      {
+        "id": "noda",
+        "name": "Noda",
+        "photo": "silhueta.webp",
+        "currentTeam": "MAZE",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 47,
+        "matches": 24,
+        "avg": 1.96,
+        "editions": [],
+        "passageOrder": 1
+      },
+      {
+        "id": "shariin",
+        "name": "ShariiN",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOUD SNICKERS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 122,
+        "matches": 119,
+        "avg": 1.03,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "vinizx",
+        "name": "ViniZx",
+        "photo": "silhueta.webp",
+        "currentTeam": "SÃO PAULO",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 160,
+        "matches": 190,
+        "avg": 0.84,
+        "editions": [
+          "LBFF 4",
+          "LBFF 5",
+          "LBFF 9"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "will",
+        "name": "Will",
+        "photo": "silhueta.webp",
+        "currentTeam": "JUVENTUS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 304,
+        "matches": 345,
+        "avg": 0.88,
+        "editions": [
+          "LBFF 6",
+          "LBFF 7",
+          "WB 2024 F2"
+        ],
+        "passageOrder": 1
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 15
+  },
+  "titles": [
+    {
+      "event": "Liga do Rei Elite Mobile 2026",
+      "type": "Campeão",
+      "date": "2026-02-18",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga LPT Season 1",
+      "type": "Campeão",
+      "date": "2026-01-23",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Showmatch Klaus 2026",
+      "type": "Campeão",
+      "date": "2026-01-08",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga Do Rei Copa Mobile BoostZone",
+      "type": "Campeão",
+      "date": "2025-06-04",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Copa GWL Mobile 2025 Stage 2",
+      "type": "Campeão",
+      "date": "2025-04-10",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "La America DS Season 3",
+      "type": "Campeão",
+      "date": "2025-03-31",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Star Cup Series A Season 3",
+      "type": "Campeão",
+      "date": "2025-02-14",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Showmatch Alterados League 2025",
+      "type": "Campeão",
+      "date": "2025-01-31",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Copa Auge Rei dos Coins Season 5",
+      "type": "Campeão",
+      "date": "2024-08-30",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Copa GWL Mobile 2024 Stage 3",
+      "type": "Campeão",
+      "date": "2024-06-28",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Global Games Mobile Season 1",
+      "type": "Campeão",
+      "date": "2024-03-29",
+      "tier": "C-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Super Liga Season 2",
+      "type": "Campeão",
+      "date": "2024-01-29",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Talents Mobile 2023 - Split 2",
+      "type": "Campeão",
+      "date": "2023-10-27",
+      "tier": "C-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "The Citizens Elite - Season 2",
+      "type": "Campeão",
+      "date": "2023-10-03",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Star Cup Serie A - Season 2",
+      "type": "Campeão",
+      "date": "2023-09-25",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "LBFF 2023",
+      "type": "Campeão",
+      "date": "2023-08-05",
+      "tier": "A-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Copa GWL PRO Season 2",
+      "type": "Campeão",
+      "date": "2023-01-31",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga Brasileira de Free Fire 2022: Series A - Stage 1",
+      "type": "Campeão",
+      "date": "2022-04-16",
+      "tier": "A-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga Brasileira de Free Fire 2021: Promotion - Stage 1",
+      "type": "Campeão",
+      "date": "2020-11-07",
+      "tier": "Qualifier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Copa America 2020",
+      "type": "Campeão",
+      "date": "2020-01-11",
+      "tier": "A-Tier",
+      "logo": "trofeu.webp"
+    }
+  ],
+  "results": [
+    {
+      "data": "2026-07-18",
+      "tier": "S-Tier",
+      "place": "3º",
+      "torneio": "EWC 2026 - Final"
+    },
+    {
+      "data": "2026-05-31",
+      "tier": "S-Tier",
+      "place": "2º",
+      "torneio": "WB 2026 S1 - Final"
+    },
+    {
+      "data": "2026-04-09",
+      "tier": "D-Tier",
+      "place": "4th",
+      "torneio": "Goat League Season 2"
+    },
+    {
+      "data": "2026-04-08",
+      "tier": "D-Tier",
+      "place": "2nd",
+      "torneio": "GWL Showdown"
+    },
+    {
+      "data": "2026-03-26",
+      "tier": "D-Tier",
+      "place": "4th",
+      "torneio": "Yuta Invitational"
+    },
+    {
+      "data": "2026-03-09",
+      "tier": "C-Tier",
+      "place": "3rd",
+      "torneio": "CPN Arena 2026"
+    },
+    {
+      "data": "2026-03-03",
+      "tier": "D-Tier",
+      "place": "6th",
+      "torneio": "Copa GWL Mobile 2026 Stage 1"
+    },
+    {
+      "data": "2026-02-18",
+      "tier": "D-Tier",
+      "place": "1st",
+      "torneio": "Liga do Rei Elite Mobile 2026"
+    },
+    {
+      "data": "2026-01-23",
+      "tier": "D-Tier",
+      "place": "1st",
+      "torneio": "Liga LPT Season 1"
+    },
+    {
+      "data": "2026-01-23",
+      "tier": "D-Tier",
+      "place": "4th",
+      "torneio": "Liga Marinho Season 3"
+    },
+    {
+      "data": "2026-01-21",
+      "tier": "D-Tier",
+      "place": "2nd",
+      "torneio": "Showmatch do Amoras 2026"
+    },
+    {
+      "data": "2026-01-16",
+      "tier": "D-Tier",
+      "place": "5th",
+      "torneio": "Showmatch Yuta 2026"
+    }
+  ]
+}

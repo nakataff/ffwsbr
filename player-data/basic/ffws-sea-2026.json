@@ -1,1 +1,2663 @@
-{"updatedAt":"2026-07-29","profileType":"basic","source":"ffws-sea-2026","players":{"mufasa":{"id":"mufasa","profileType":"basic","name":"MUFASA","aliases":["MUFASA","HEV.MUFASA"],"photo":"silhueta.webp","country":"vn","role":"SUPORTE","currentTeam":"Heavy","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Heavy","kills":49,"matches":36,"damage":31156,"assists":66,"mvp":1,"avg":1.36,"stages":{"fase2-dia1":{"kills":8,"damage":3686,"assists":11,"matches":6,"mvp":0},"fase2-dia2":{"kills":7,"damage":3000,"assists":8,"matches":6,"mvp":0},"fase2-dia3":{"kills":5,"damage":5462,"assists":16,"matches":6,"mvp":0},"last-chance":{"kills":29,"damage":19008,"assists":31,"matches":18,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":49,"matches":36,"damage":31156,"assists":66,"mvp":1,"avg":1.36}},"alan":{"id":"alan","profileType":"basic","name":"ALAN","aliases":["ALAN","HEV.ALAN"],"photo":"silhueta.webp","country":"vn","role":"GRANADEIRO","currentTeam":"Heavy","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Heavy","kills":49,"matches":36,"damage":37865,"assists":62,"mvp":0,"avg":1.36,"stages":{"fase2-dia1":{"kills":8,"damage":6104,"assists":11,"matches":6,"mvp":0},"fase2-dia2":{"kills":7,"damage":5175,"assists":9,"matches":6,"mvp":0},"fase2-dia3":{"kills":9,"damage":6916,"assists":12,"matches":6,"mvp":0},"last-chance":{"kills":25,"damage":19670,"assists":30,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":49,"matches":36,"damage":37865,"assists":62,"mvp":0,"avg":1.36}},"dontcry":{"id":"dontcry","profileType":"basic","name":"DONTCRY","aliases":["DONTCRY","HEV.DONTCRY"],"photo":"silhueta.webp","country":"vn","role":"RUSH","currentTeam":"Heavy","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Heavy","kills":44,"matches":36,"damage":37361,"assists":61,"mvp":0,"avg":1.22,"stages":{"fase2-dia1":{"kills":5,"damage":5505,"assists":12,"matches":6,"mvp":0},"fase2-dia2":{"kills":4,"damage":4477,"assists":9,"matches":6,"mvp":0},"fase2-dia3":{"kills":12,"damage":9375,"assists":10,"matches":6,"mvp":0},"last-chance":{"kills":23,"damage":18004,"assists":30,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":44,"matches":36,"damage":37361,"assists":61,"mvp":0,"avg":1.22}},"thegod":{"id":"thegod","profileType":"basic","name":"THEGOD","aliases":["THEGOD","FL.THEGOD"],"photo":"silhueta.webp","country":"vn","role":"SUPORTE","currentTeam":"Team Flash","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Team Flash","kills":84,"matches":36,"damage":73527,"assists":80,"mvp":2,"avg":2.33,"stages":{"fase2-dia1":{"kills":13,"damage":10509,"assists":18,"matches":6,"mvp":0},"fase2-dia2":{"kills":7,"damage":7639,"assists":12,"matches":6,"mvp":0},"fase2-dia3":{"kills":8,"damage":9255,"assists":4,"matches":6,"mvp":0},"last-chance":{"kills":56,"damage":46124,"assists":46,"matches":18,"mvp":2}}}],"teamHistory":[],"allTime":{"kills":84,"matches":36,"damage":73527,"assists":80,"mvp":2,"avg":2.33}},"minkcuog":{"id":"minkcuog","profileType":"basic","name":"MINKCUOG","aliases":["MINKCUOG","FL.MINKCUOG"],"photo":"silhueta.webp","country":"vn","role":"SUPORTE","currentTeam":"Team Flash","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Team Flash","kills":47,"matches":36,"damage":34211,"assists":128,"mvp":1,"avg":1.31,"stages":{"fase2-dia1":{"kills":4,"damage":4375,"assists":33,"matches":6,"mvp":0},"fase2-dia2":{"kills":9,"damage":4279,"assists":13,"matches":6,"mvp":0},"fase2-dia3":{"kills":8,"damage":4789,"assists":10,"matches":6,"mvp":0},"last-chance":{"kills":26,"damage":20768,"assists":72,"matches":18,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":47,"matches":36,"damage":34211,"assists":128,"mvp":1,"avg":1.31}},"adam":{"id":"adam","profileType":"basic","name":"ADAM","aliases":["ADAM","ONIC.ADAM"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"ONIC Olympus","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ONIC Olympus","kills":42,"matches":36,"damage":32145,"assists":62,"mvp":1,"avg":1.17,"stages":{"fase2-dia1":{"kills":12,"damage":7370,"assists":12,"matches":6,"mvp":0},"fase2-dia2":{"kills":2,"damage":2448,"assists":6,"matches":6,"mvp":0},"fase2-dia3":{"kills":7,"damage":8873,"assists":19,"matches":6,"mvp":1},"last-chance":{"kills":21,"damage":13454,"assists":25,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":42,"matches":36,"damage":32145,"assists":62,"mvp":1,"avg":1.17}},"xyro":{"id":"xyro","profileType":"basic","name":"XYRO","aliases":["XYRO","ONIC.XYRO"],"photo":"silhueta.webp","country":"id","role":"3º HOMEM","currentTeam":"ONIC Olympus","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ONIC Olympus","kills":30,"matches":34,"damage":26712,"assists":59,"mvp":0,"avg":0.88,"stages":{"fase2-dia1":{"kills":6,"damage":3992,"assists":14,"matches":6,"mvp":0},"fase2-dia2":{"kills":5,"damage":5897,"assists":7,"matches":6,"mvp":0},"fase2-dia3":{"kills":8,"damage":5834,"assists":13,"matches":6,"mvp":0},"last-chance":{"kills":11,"damage":10989,"assists":25,"matches":16,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":30,"matches":34,"damage":26712,"assists":59,"mvp":0,"avg":0.88}},"putra":{"id":"putra","profileType":"basic","name":"PUTRA","aliases":["PUTRA","ONIC.PUTRA"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"ONIC Olympus","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ONIC Olympus","kills":7,"matches":6,"damage":4217,"assists":11,"mvp":0,"avg":1.17,"stages":{"fase2-dia1":{"kills":7,"damage":4217,"assists":11,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":7,"matches":6,"damage":4217,"assists":11,"mvp":0,"avg":1.17}},"crime":{"id":"crime","profileType":"basic","name":"CRIME","aliases":["CRIME","ONIC.CRIME"],"photo":"silhueta.webp","country":"id","role":"SUPORTE","currentTeam":"ONIC Olympus","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ONIC Olympus","kills":54,"matches":36,"damage":38677,"assists":26,"mvp":0,"avg":1.5,"stages":{"fase2-dia1":{"kills":7,"damage":6186,"assists":8,"matches":6,"mvp":0},"fase2-dia2":{"kills":7,"damage":5233,"assists":3,"matches":6,"mvp":0},"fase2-dia3":{"kills":11,"damage":6613,"assists":1,"matches":6,"mvp":0},"last-chance":{"kills":29,"damage":20645,"assists":14,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":54,"matches":36,"damage":38677,"assists":26,"mvp":0,"avg":1.5}},"18deer":{"id":"18deer","profileType":"basic","name":"18DEER","aliases":["18DEER","RRQ.18DEER"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"RRQ","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"RRQ","kills":3,"matches":6,"damage":4184,"assists":13,"mvp":0,"avg":0.5,"stages":{"fase2-dia1":{"kills":3,"damage":4184,"assists":13,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":3,"matches":6,"damage":4184,"assists":13,"mvp":0,"avg":0.5}},"trapz":{"id":"trapz","profileType":"basic","name":"TRAPZ","aliases":["TRAPZ","ACD.TRAPZ"],"photo":"silhueta.webp","country":"my","role":"GRANADEIRO","currentTeam":"ACD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ACD","kills":22,"matches":36,"damage":18605,"assists":40,"mvp":0,"avg":0.61,"stages":{"fase2-dia1":{"kills":5,"damage":4287,"assists":12,"matches":6,"mvp":0},"fase2-dia2":{"kills":3,"damage":2266,"assists":9,"matches":6,"mvp":0},"fase2-dia3":{"kills":4,"damage":2880,"assists":4,"matches":6,"mvp":0},"last-chance":{"kills":10,"damage":9172,"assists":15,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":22,"matches":36,"damage":18605,"assists":40,"mvp":0,"avg":0.61}},"nokii10":{"id":"nokii10","profileType":"basic","name":"NOKII10","aliases":["NOKII10","ACD.NOKII10"],"photo":"silhueta.webp","country":"my","role":"RUSH","currentTeam":"ACD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ACD","kills":9,"matches":6,"damage":4029,"assists":12,"mvp":0,"avg":1.5,"stages":{"fase2-dia1":{"kills":9,"damage":4029,"assists":12,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":9,"matches":6,"damage":4029,"assists":12,"mvp":0,"avg":1.5}},"faizz":{"id":"faizz","profileType":"basic","name":"FAIZZ","aliases":["FAIZZ","ACD.FAIZZ"],"photo":"silhueta.webp","country":"my","role":"SUPORTE","currentTeam":"ACD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ACD","kills":41,"matches":36,"damage":38924,"assists":36,"mvp":0,"avg":1.14,"stages":{"fase2-dia1":{"kills":10,"damage":8386,"assists":7,"matches":6,"mvp":0},"fase2-dia2":{"kills":4,"damage":5274,"assists":11,"matches":6,"mvp":0},"fase2-dia3":{"kills":4,"damage":5773,"assists":6,"matches":6,"mvp":0},"last-chance":{"kills":23,"damage":19491,"assists":12,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":41,"matches":36,"damage":38924,"assists":36,"mvp":0,"avg":1.14}},"aliff":{"id":"aliff","profileType":"basic","name":"ALIFF","aliases":["ALIFF","ACD.ALIFF"],"photo":"silhueta.webp","country":"my","role":"RUSH","currentTeam":"ACD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ACD","kills":36,"matches":36,"damage":25595,"assists":42,"mvp":0,"avg":1.0,"stages":{"fase2-dia1":{"kills":9,"damage":5298,"assists":9,"matches":6,"mvp":0},"fase2-dia2":{"kills":6,"damage":3862,"assists":8,"matches":6,"mvp":0},"fase2-dia3":{"kills":5,"damage":4161,"assists":6,"matches":6,"mvp":0},"last-chance":{"kills":16,"damage":12274,"assists":19,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":36,"matches":36,"damage":25595,"assists":42,"mvp":0,"avg":1.0}},"ctuan":{"id":"ctuan","profileType":"basic","name":"CTUAN","aliases":["CTUAN","HEV.CTUAN"],"photo":"silhueta.webp","country":"vn","role":"SUPORTE","currentTeam":"Heavy","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Heavy","kills":52,"matches":31,"damage":40237,"assists":38,"mvp":1,"avg":1.68,"stages":{"fase2-dia1":{"kills":14,"damage":7959,"assists":7,"matches":6,"mvp":1},"fase2-dia2":{"kills":7,"damage":6152,"assists":6,"matches":6,"mvp":0},"fase2-dia3":{"kills":6,"damage":6328,"assists":6,"matches":5,"mvp":0},"last-chance":{"kills":25,"damage":19798,"assists":19,"matches":14,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":52,"matches":31,"damage":40237,"assists":38,"mvp":1,"avg":1.68}},"abcd":{"id":"abcd","profileType":"basic","name":"ABCD","aliases":["ABCD","FL.ABCD"],"photo":"silhueta.webp","country":"vn","role":"RUSH","currentTeam":"Team Flash","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Team Flash","kills":67,"matches":36,"damage":37661,"assists":61,"mvp":1,"avg":1.86,"stages":{"fase2-dia1":{"kills":21,"damage":8615,"assists":6,"matches":6,"mvp":1},"fase2-dia2":{"kills":6,"damage":4333,"assists":14,"matches":6,"mvp":0},"fase2-dia3":{"kills":7,"damage":5467,"assists":8,"matches":6,"mvp":0},"last-chance":{"kills":33,"damage":19246,"assists":33,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":67,"matches":36,"damage":37661,"assists":61,"mvp":1,"avg":1.86}},"thezom":{"id":"thezom","profileType":"basic","name":"THEZOM","aliases":["THEZOM","FL.THEZOM"],"photo":"silhueta.webp","country":"vn","role":"GRANADEIRO","currentTeam":"Team Flash","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Team Flash","kills":72,"matches":36,"damage":54171,"assists":91,"mvp":4,"avg":2.0,"stages":{"fase2-dia1":{"kills":9,"damage":7357,"assists":17,"matches":6,"mvp":1},"fase2-dia2":{"kills":11,"damage":5754,"assists":12,"matches":6,"mvp":1},"fase2-dia3":{"kills":8,"damage":8426,"assists":9,"matches":6,"mvp":0},"last-chance":{"kills":44,"damage":32634,"assists":53,"matches":18,"mvp":2}}}],"teamHistory":[],"allTime":{"kills":72,"matches":36,"damage":54171,"assists":91,"mvp":4,"avg":2.0}},"demon":{"id":"demon","profileType":"basic","name":"DEMON","aliases":["DEMON","GOW.DEMON"],"photo":"silhueta.webp","country":"vn","role":"RUSH","currentTeam":"GOW","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"GOW","kills":15,"matches":6,"damage":7364,"assists":14,"mvp":0,"avg":2.5,"stages":{"fase2-dia2":{"kills":15,"damage":7364,"assists":14,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":15,"matches":6,"damage":7364,"assists":14,"mvp":0,"avg":2.5}},"gocu":{"id":"gocu","profileType":"basic","name":"GOCU","aliases":["GOCU","GOW.GOCU"],"photo":"silhueta.webp","country":"vn","role":"RUSH","currentTeam":"GOW","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"GOW","kills":9,"matches":6,"damage":6274,"assists":13,"mvp":0,"avg":1.5,"stages":{"fase2-dia2":{"kills":9,"damage":6274,"assists":13,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":9,"matches":6,"damage":6274,"assists":13,"mvp":0,"avg":1.5}},"putra-2":{"id":"putra-2","profileType":"basic","name":"PUTRA","aliases":["PUTRA","ONIC.PUTRA"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"ONIC Olympus","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ONIC Olympus","kills":4,"matches":4,"damage":1227,"assists":1,"mvp":0,"avg":1.0,"stages":{"fase2-dia2":{"kills":4,"damage":1227,"assists":1,"matches":4,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":4,"matches":4,"damage":1227,"assists":1,"mvp":0,"avg":1.0}},"demonz":{"id":"demonz","profileType":"basic","name":"DEMONZ","aliases":["DEMONZ","ONIC.DEMONZ"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"ONIC Olympus","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ONIC Olympus","kills":9,"matches":10,"damage":5662,"assists":16,"mvp":0,"avg":0.9,"stages":{"fase2-dia2":{"kills":1,"damage":711,"assists":2,"matches":2,"mvp":0},"fase2-dia3":{"kills":8,"damage":4502,"assists":12,"matches":6,"mvp":0},"last-chance":{"kills":0,"damage":449,"assists":2,"matches":2,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":9,"matches":10,"damage":5662,"assists":16,"mvp":0,"avg":0.9}},"18deer-2":{"id":"18deer-2","profileType":"basic","name":"18DEER","aliases":["18DEER","RRQ.18DEER"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"RRQ","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"RRQ","kills":0,"matches":1,"damage":93,"assists":0,"mvp":0,"avg":0.0,"stages":{"fase2-dia2":{"kills":0,"damage":93,"assists":0,"matches":1,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":0,"matches":1,"damage":93,"assists":0,"mvp":0,"avg":0.0}},"ranzeieii":{"id":"ranzeieii","profileType":"basic","name":"RANZEIEII","aliases":["RANZEIEII","RRQ.RANZEIEII"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"RRQ","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"RRQ","kills":15,"matches":5,"damage":6571,"assists":11,"mvp":0,"avg":3.0,"stages":{"fase2-dia2":{"kills":15,"damage":6571,"assists":11,"matches":5,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":15,"matches":5,"damage":6571,"assists":11,"mvp":0,"avg":3.0}},"juann":{"id":"juann","profileType":"basic","name":"JUANN","aliases":["JUANN","SE.JUANN"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"SE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"SE","kills":38,"matches":30,"damage":21964,"assists":36,"mvp":0,"avg":1.27,"stages":{"fase2-dia2":{"kills":9,"damage":6353,"assists":11,"matches":6,"mvp":0},"fase2-dia3":{"kills":11,"damage":4938,"assists":5,"matches":6,"mvp":0},"last-chance":{"kills":18,"damage":10673,"assists":20,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":38,"matches":30,"damage":21964,"assists":36,"mvp":0,"avg":1.27}},"rynnn":{"id":"rynnn","profileType":"basic","name":"RYNNN","aliases":["RYNNN","SE.RYNNN"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"SE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"SE","kills":31,"matches":30,"damage":22768,"assists":43,"mvp":1,"avg":1.03,"stages":{"fase2-dia2":{"kills":6,"damage":3553,"assists":8,"matches":6,"mvp":0},"fase2-dia3":{"kills":5,"damage":6117,"assists":13,"matches":6,"mvp":0},"last-chance":{"kills":20,"damage":13098,"assists":22,"matches":18,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":31,"matches":30,"damage":22768,"assists":43,"mvp":1,"avg":1.03}},"cillzyy":{"id":"cillzyy","profileType":"basic","name":"CILLZYY","aliases":["CILLZYY","SE.CILLZYY"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"SE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"SE","kills":20,"matches":30,"damage":15220,"assists":44,"mvp":0,"avg":0.67,"stages":{"fase2-dia2":{"kills":3,"damage":2524,"assists":8,"matches":6,"mvp":0},"fase2-dia3":{"kills":6,"damage":4093,"assists":14,"matches":6,"mvp":0},"last-chance":{"kills":11,"damage":8603,"assists":22,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":20,"matches":30,"damage":15220,"assists":44,"mvp":0,"avg":0.67}},"sh1nzy":{"id":"sh1nzy","profileType":"basic","name":"SH1NZY","aliases":["SH1NZY","SE.SH1NZY"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"SE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"SE","kills":19,"matches":30,"damage":12825,"assists":53,"mvp":0,"avg":0.63,"stages":{"fase2-dia2":{"kills":7,"damage":2282,"assists":13,"matches":6,"mvp":0},"fase2-dia3":{"kills":1,"damage":3035,"assists":14,"matches":6,"mvp":0},"last-chance":{"kills":11,"damage":7508,"assists":26,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":19,"matches":30,"damage":12825,"assists":53,"mvp":0,"avg":0.63}},"nokii10-2":{"id":"nokii10-2","profileType":"basic","name":"NOKII10","aliases":["NOKII10","ACD.NOKII10"],"photo":"silhueta.webp","country":"my","role":"RUSH","currentTeam":"ACD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ACD","kills":7,"matches":6,"damage":3512,"assists":5,"mvp":0,"avg":1.17,"stages":{"fase2-dia2":{"kills":7,"damage":3512,"assists":5,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":7,"matches":6,"damage":3512,"assists":5,"mvp":0,"avg":1.17}},"dyan":{"id":"dyan","profileType":"basic","name":"DYAN","aliases":["DYAN","GOW.DYAN"],"photo":"silhueta.webp","country":"vn","role":"GRANADEIRO","currentTeam":"GOW","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"GOW","kills":9,"matches":6,"damage":10866,"assists":18,"mvp":1,"avg":1.5,"stages":{"fase2-dia2":{"kills":9,"damage":10866,"assists":18,"matches":6,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":9,"matches":6,"damage":10866,"assists":18,"mvp":1,"avg":1.5}},"death":{"id":"death","profileType":"basic","name":"DEATH","aliases":["DEATH","GOW.DEATH"],"photo":"silhueta.webp","country":"vn","role":"SUPORTE","currentTeam":"GOW","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"GOW","kills":15,"matches":6,"damage":12685,"assists":12,"mvp":1,"avg":2.5,"stages":{"fase2-dia2":{"kills":15,"damage":12685,"assists":12,"matches":6,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":15,"matches":6,"damage":12685,"assists":12,"mvp":1,"avg":2.5}},"longkong":{"id":"longkong","profileType":"basic","name":"LONGKONG","aliases":["LONGKONG","AVD.LONGKONG"],"photo":"silhueta.webp","country":"th","role":"GRANADEIRO","currentTeam":"AVD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"AVD","kills":37,"matches":22,"damage":24783,"assists":46,"mvp":1,"avg":1.68,"stages":{"fase2-dia3":{"kills":6,"damage":6444,"assists":16,"matches":6,"mvp":0},"last-chance":{"kills":31,"damage":18339,"assists":30,"matches":16,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":37,"matches":22,"damage":24783,"assists":46,"mvp":1,"avg":1.68}},"pablo":{"id":"pablo","profileType":"basic","name":"PABLO","aliases":["PABLO","AVD.PABLO"],"photo":"silhueta.webp","country":"th","role":"SUPORTE","currentTeam":"AVD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"AVD","kills":46,"matches":24,"damage":25021,"assists":59,"mvp":0,"avg":1.92,"stages":{"fase2-dia3":{"kills":16,"damage":6350,"assists":15,"matches":6,"mvp":0},"last-chance":{"kills":30,"damage":18671,"assists":44,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":46,"matches":24,"damage":25021,"assists":59,"mvp":0,"avg":1.92}},"anusit":{"id":"anusit","profileType":"basic","name":"ANUSIT","aliases":["ANUSIT","AVD.ANUSIT"],"photo":"silhueta.webp","country":"th","role":"SUPORTE","currentTeam":"AVD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"AVD","kills":29,"matches":24,"damage":24238,"assists":33,"mvp":0,"avg":1.21,"stages":{"fase2-dia3":{"kills":10,"damage":6768,"assists":5,"matches":6,"mvp":0},"last-chance":{"kills":19,"damage":17470,"assists":28,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":29,"matches":24,"damage":24238,"assists":33,"mvp":0,"avg":1.21}},"tawan":{"id":"tawan","profileType":"basic","name":"TAWAN","aliases":["TAWAN","AVD.TAWAN"],"photo":"silhueta.webp","country":"th","role":"RUSH","currentTeam":"AVD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"AVD","kills":36,"matches":24,"damage":26053,"assists":61,"mvp":0,"avg":1.5,"stages":{"fase2-dia3":{"kills":12,"damage":7373,"assists":19,"matches":6,"mvp":0},"last-chance":{"kills":24,"damage":18680,"assists":42,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":36,"matches":24,"damage":26053,"assists":61,"mvp":0,"avg":1.5}},"bhuy":{"id":"bhuy","profileType":"basic","name":"BHUY","aliases":["BHUY","HEV.BHUY"],"photo":"silhueta.webp","country":"vn","role":"SUPORTE","currentTeam":"Heavy","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Heavy","kills":4,"matches":5,"damage":4106,"assists":4,"mvp":0,"avg":0.8,"stages":{"fase2-dia3":{"kills":1,"damage":1839,"assists":4,"matches":1,"mvp":0},"last-chance":{"kills":3,"damage":2267,"assists":0,"matches":4,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":4,"matches":5,"damage":4106,"assists":4,"mvp":0,"avg":0.8}},"koceel":{"id":"koceel","profileType":"basic","name":"KOCEEL","aliases":["KOCEEL","EVOS.KOCEEL"],"photo":"silhueta.webp","country":"id","role":"GRANADEIRO","currentTeam":"EVOS","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"EVOS","kills":35,"matches":24,"damage":24325,"assists":64,"mvp":0,"avg":1.46,"stages":{"fase2-dia3":{"kills":12,"damage":7922,"assists":21,"matches":6,"mvp":0},"last-chance":{"kills":23,"damage":16403,"assists":43,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":35,"matches":24,"damage":24325,"assists":64,"mvp":0,"avg":1.46}},"nokii10-3":{"id":"nokii10-3","profileType":"basic","name":"NOKII10","aliases":["NOKII10","ACD.NOKII10"],"photo":"silhueta.webp","country":"my","role":"RUSH","currentTeam":"ACD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ACD","kills":6,"matches":6,"damage":3287,"assists":8,"mvp":0,"avg":1.0,"stages":{"fase2-dia3":{"kills":6,"damage":3287,"assists":8,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":6,"matches":6,"damage":3287,"assists":8,"mvp":0,"avg":1.0}},"terna":{"id":"terna","profileType":"basic","name":"TERNA","aliases":["TERNA","BRU.TERNA"],"photo":"silhueta.webp","country":"th","role":"SUPORTE","currentTeam":"Buriram United Esports","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"Buriram United Esports","kills":9,"matches":6,"damage":4849,"assists":7,"mvp":0,"avg":1.5,"stages":{"last-chance":{"kills":9,"damage":4849,"assists":7,"matches":6,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":9,"matches":6,"damage":4849,"assists":7,"mvp":0,"avg":1.5}},"winter":{"id":"winter","profileType":"basic","name":"WINTER","aliases":["WINTER","AVD.WINTER"],"photo":"silhueta.webp","country":"th","role":"SUPORTE","currentTeam":"AVD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"AVD","kills":2,"matches":2,"damage":896,"assists":2,"mvp":0,"avg":1.0,"stages":{"last-chance":{"kills":2,"damage":896,"assists":2,"matches":2,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":2,"matches":2,"damage":896,"assists":2,"mvp":0,"avg":1.0}},"lbt":{"id":"lbt","profileType":"basic","name":"LBT","aliases":["LBT","PE.LBT"],"photo":"silhueta.webp","country":"vn","role":"RUSH","currentTeam":"PE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"PE","kills":32,"matches":18,"damage":18521,"assists":33,"mvp":0,"avg":1.78,"stages":{"last-chance":{"kills":32,"damage":18521,"assists":33,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":32,"matches":18,"damage":18521,"assists":33,"mvp":0,"avg":1.78}},"nolan":{"id":"nolan","profileType":"basic","name":"NOLAN","aliases":["NOLAN","PE.NOLAN"],"photo":"silhueta.webp","country":"vn","role":"RUSH","currentTeam":"PE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"PE","kills":18,"matches":14,"damage":11060,"assists":30,"mvp":0,"avg":1.29,"stages":{"last-chance":{"kills":18,"damage":11060,"assists":30,"matches":14,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":18,"matches":14,"damage":11060,"assists":30,"mvp":0,"avg":1.29}},"putra-3":{"id":"putra-3","profileType":"basic","name":"PUTRA","aliases":["PUTRA","ONIC.PUTRA"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"ONIC Olympus","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ONIC Olympus","kills":15,"matches":18,"damage":10364,"assists":22,"mvp":0,"avg":0.83,"stages":{"last-chance":{"kills":15,"damage":10364,"assists":22,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":15,"matches":18,"damage":10364,"assists":22,"mvp":0,"avg":0.83}},"nokii10-4":{"id":"nokii10-4","profileType":"basic","name":"NOKII10","aliases":["NOKII10","ACD.NOKII10"],"photo":"silhueta.webp","country":"my","role":"RUSH","currentTeam":"ACD","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"ACD","kills":16,"matches":18,"damage":9987,"assists":27,"mvp":0,"avg":0.89,"stages":{"last-chance":{"kills":16,"damage":9987,"assists":27,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":16,"matches":18,"damage":9987,"assists":27,"mvp":0,"avg":0.89}},"yannz":{"id":"yannz","profileType":"basic","name":"YANNZ","aliases":["YANNZ","MEC.YANNZ"],"photo":"silhueta.webp","country":"my","role":"SUPORTE","currentTeam":"MEC","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"MEC","kills":10,"matches":18,"damage":12704,"assists":30,"mvp":0,"avg":0.56,"stages":{"last-chance":{"kills":10,"damage":12704,"assists":30,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":10,"matches":18,"damage":12704,"assists":30,"mvp":0,"avg":0.56}},"driann":{"id":"driann","profileType":"basic","name":"DRIANN","aliases":["DRIANN","MEC.DRIANN"],"photo":"silhueta.webp","country":"id","role":"SUPORTE","currentTeam":"MEC","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"MEC","kills":25,"matches":18,"damage":16587,"assists":31,"mvp":0,"avg":1.39,"stages":{"last-chance":{"kills":25,"damage":16587,"assists":31,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":25,"matches":18,"damage":16587,"assists":31,"mvp":0,"avg":1.39}},"viruzz":{"id":"viruzz","profileType":"basic","name":"VIRUZZ","aliases":["VIRUZZ","MEC.VIRUZZ"],"photo":"silhueta.webp","country":"id","role":"RUSH","currentTeam":"MEC","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"MEC","kills":21,"matches":18,"damage":18203,"assists":19,"mvp":0,"avg":1.17,"stages":{"last-chance":{"kills":21,"damage":18203,"assists":19,"matches":18,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":21,"matches":18,"damage":18203,"assists":19,"mvp":0,"avg":1.17}},"dmh":{"id":"dmh","profileType":"basic","name":"DMH","aliases":["DMH","PE.DMH"],"photo":"silhueta.webp","country":"vn","role":"JOGADOR","currentTeam":"PE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"PE","kills":1,"matches":4,"damage":850,"assists":8,"mvp":0,"avg":0.25,"stages":{"last-chance":{"kills":1,"damage":850,"assists":8,"matches":4,"mvp":0}}}],"teamHistory":[],"allTime":{"kills":1,"matches":4,"damage":850,"assists":8,"mvp":0,"avg":0.25}},"nero":{"id":"nero","profileType":"basic","name":"NERO","aliases":["NERO","PE.NERO"],"photo":"silhueta.webp","country":"vn","role":"GRANADEIRO","currentTeam":"PE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"PE","kills":35,"matches":18,"damage":26082,"assists":43,"mvp":1,"avg":1.94,"stages":{"last-chance":{"kills":35,"damage":26082,"assists":43,"matches":18,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":35,"matches":18,"damage":26082,"assists":43,"mvp":1,"avg":1.94}},"laoho":{"id":"laoho","profileType":"basic","name":"LAOHO","aliases":["LAOHO","PE.LAOHO"],"photo":"silhueta.webp","country":"vn","role":"SUPORTE","currentTeam":"PE","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"PE","kills":22,"matches":18,"damage":25370,"assists":30,"mvp":1,"avg":1.22,"stages":{"last-chance":{"kills":22,"damage":25370,"assists":30,"matches":18,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":22,"matches":18,"damage":25370,"assists":30,"mvp":1,"avg":1.22}},"getbu":{"id":"getbu","profileType":"basic","name":"GETBU","aliases":["GETBU","MEC.GETBU"],"photo":"silhueta.webp","country":"my","role":"RUSH","currentTeam":"MEC","currentTeamLogo":"escudo.webp","competitions":[{"key":"ffws-sea-2026","name":"FFWS SEA 2026","team":"MEC","kills":19,"matches":18,"damage":11861,"assists":27,"mvp":1,"avg":1.06,"stages":{"last-chance":{"kills":19,"damage":11861,"assists":27,"matches":18,"mvp":1}}}],"teamHistory":[],"allTime":{"kills":19,"matches":18,"damage":11861,"assists":27,"mvp":1,"avg":1.06}}}}
+{
+  "updatedAt": "2026-07-28",
+  "profileType": "basic",
+  "source": "ffws-sea-2026",
+  "players": {
+    "mufasa": {
+      "id": "mufasa",
+      "profileType": "basic",
+      "name": "MUFASA",
+      "aliases": [
+        "MUFASA",
+        "HEV.MUFASA"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "SUPORTE",
+      "currentTeam": "Heavy",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Heavy",
+          "kills": 49,
+          "matches": 36,
+          "damage": 31156,
+          "assists": 66,
+          "mvp": 1,
+          "avg": 1.36,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 8,
+              "damage": 3686,
+              "assists": 11,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 7,
+              "damage": 3000,
+              "assists": 8,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 5,
+              "damage": 5462,
+              "assists": 16,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 29,
+              "damage": 19008,
+              "assists": 31,
+              "matches": 18,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 49,
+        "matches": 36,
+        "damage": 31156,
+        "assists": 66,
+        "mvp": 1,
+        "avg": 1.36
+      }
+    },
+    "alan": {
+      "id": "alan",
+      "profileType": "basic",
+      "name": "ALAN",
+      "aliases": [
+        "ALAN",
+        "HEV.ALAN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "GRANADEIRO",
+      "currentTeam": "Heavy",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Heavy",
+          "kills": 49,
+          "matches": 36,
+          "damage": 37865,
+          "assists": 62,
+          "mvp": 0,
+          "avg": 1.36,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 8,
+              "damage": 6104,
+              "assists": 11,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 7,
+              "damage": 5175,
+              "assists": 9,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 9,
+              "damage": 6916,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 25,
+              "damage": 19670,
+              "assists": 30,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 49,
+        "matches": 36,
+        "damage": 37865,
+        "assists": 62,
+        "mvp": 0,
+        "avg": 1.36
+      }
+    },
+    "dontcry": {
+      "id": "dontcry",
+      "profileType": "basic",
+      "name": "DONTCRY",
+      "aliases": [
+        "DONTCRY",
+        "HEV.DONTCRY"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "RUSH",
+      "currentTeam": "Heavy",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Heavy",
+          "kills": 44,
+          "matches": 36,
+          "damage": 37361,
+          "assists": 61,
+          "mvp": 0,
+          "avg": 1.22,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 5,
+              "damage": 5505,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 4,
+              "damage": 4477,
+              "assists": 9,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 12,
+              "damage": 9375,
+              "assists": 10,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 23,
+              "damage": 18004,
+              "assists": 30,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 44,
+        "matches": 36,
+        "damage": 37361,
+        "assists": 61,
+        "mvp": 0,
+        "avg": 1.22
+      }
+    },
+    "thegod": {
+      "id": "thegod",
+      "profileType": "basic",
+      "name": "THEGOD",
+      "aliases": [
+        "THEGOD",
+        "FL.THEGOD"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "SUPORTE",
+      "currentTeam": "Team Flash",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Team Flash",
+          "kills": 84,
+          "matches": 36,
+          "damage": 73527,
+          "assists": 80,
+          "mvp": 2,
+          "avg": 2.33,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 13,
+              "damage": 10509,
+              "assists": 18,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 7,
+              "damage": 7639,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 8,
+              "damage": 9255,
+              "assists": 4,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 56,
+              "damage": 46124,
+              "assists": 46,
+              "matches": 18,
+              "mvp": 2
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 84,
+        "matches": 36,
+        "damage": 73527,
+        "assists": 80,
+        "mvp": 2,
+        "avg": 2.33
+      }
+    },
+    "minkcuog": {
+      "id": "minkcuog",
+      "profileType": "basic",
+      "name": "MINKCUOG",
+      "aliases": [
+        "MINKCUOG",
+        "FL.MINKCUOG"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "SUPORTE",
+      "currentTeam": "Team Flash",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Team Flash",
+          "kills": 47,
+          "matches": 36,
+          "damage": 34211,
+          "assists": 128,
+          "mvp": 1,
+          "avg": 1.31,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 4,
+              "damage": 4375,
+              "assists": 33,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 9,
+              "damage": 4279,
+              "assists": 13,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 8,
+              "damage": 4789,
+              "assists": 10,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 26,
+              "damage": 20768,
+              "assists": 72,
+              "matches": 18,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 47,
+        "matches": 36,
+        "damage": 34211,
+        "assists": 128,
+        "mvp": 1,
+        "avg": 1.31
+      }
+    },
+    "adam": {
+      "id": "adam",
+      "profileType": "basic",
+      "name": "ADAM",
+      "aliases": [
+        "ADAM",
+        "ONIC.ADAM"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "ONIC Olympus",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ONIC Olympus",
+          "kills": 42,
+          "matches": 36,
+          "damage": 32145,
+          "assists": 62,
+          "mvp": 1,
+          "avg": 1.17,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 12,
+              "damage": 7370,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 2,
+              "damage": 2448,
+              "assists": 6,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 7,
+              "damage": 8873,
+              "assists": 19,
+              "matches": 6,
+              "mvp": 1
+            },
+            "last-chance": {
+              "kills": 21,
+              "damage": 13454,
+              "assists": 25,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 42,
+        "matches": 36,
+        "damage": 32145,
+        "assists": 62,
+        "mvp": 1,
+        "avg": 1.17
+      }
+    },
+    "xyro": {
+      "id": "xyro",
+      "profileType": "basic",
+      "name": "XYRO",
+      "aliases": [
+        "XYRO",
+        "ONIC.XYRO"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "3º HOMEM",
+      "currentTeam": "ONIC Olympus",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ONIC Olympus",
+          "kills": 30,
+          "matches": 34,
+          "damage": 26712,
+          "assists": 59,
+          "mvp": 0,
+          "avg": 0.88,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 6,
+              "damage": 3992,
+              "assists": 14,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 5,
+              "damage": 5897,
+              "assists": 7,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 8,
+              "damage": 5834,
+              "assists": 13,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 11,
+              "damage": 10989,
+              "assists": 25,
+              "matches": 16,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 30,
+        "matches": 34,
+        "damage": 26712,
+        "assists": 59,
+        "mvp": 0,
+        "avg": 0.88
+      }
+    },
+    "putra": {
+      "id": "putra",
+      "profileType": "basic",
+      "name": "PUTRA",
+      "aliases": [
+        "PUTRA",
+        "ONIC.PUTRA"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "ONIC Olympus",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ONIC Olympus",
+          "kills": 7,
+          "matches": 6,
+          "damage": 4217,
+          "assists": 11,
+          "mvp": 0,
+          "avg": 1.17,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 7,
+              "damage": 4217,
+              "assists": 11,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 7,
+        "matches": 6,
+        "damage": 4217,
+        "assists": 11,
+        "mvp": 0,
+        "avg": 1.17
+      }
+    },
+    "crime": {
+      "id": "crime",
+      "profileType": "basic",
+      "name": "CRIME",
+      "aliases": [
+        "CRIME",
+        "ONIC.CRIME"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "SUPORTE",
+      "currentTeam": "ONIC Olympus",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ONIC Olympus",
+          "kills": 54,
+          "matches": 36,
+          "damage": 38677,
+          "assists": 26,
+          "mvp": 0,
+          "avg": 1.5,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 7,
+              "damage": 6186,
+              "assists": 8,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 7,
+              "damage": 5233,
+              "assists": 3,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 11,
+              "damage": 6613,
+              "assists": 1,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 29,
+              "damage": 20645,
+              "assists": 14,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 54,
+        "matches": 36,
+        "damage": 38677,
+        "assists": 26,
+        "mvp": 0,
+        "avg": 1.5
+      }
+    },
+    "18deer": {
+      "id": "18deer",
+      "profileType": "basic",
+      "name": "18DEER",
+      "aliases": [
+        "18DEER",
+        "RRQ.18DEER"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "RRQ",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "RRQ",
+          "kills": 3,
+          "matches": 6,
+          "damage": 4184,
+          "assists": 13,
+          "mvp": 0,
+          "avg": 0.5,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 3,
+              "damage": 4184,
+              "assists": 13,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 3,
+        "matches": 6,
+        "damage": 4184,
+        "assists": 13,
+        "mvp": 0,
+        "avg": 0.5
+      }
+    },
+    "trapz": {
+      "id": "trapz",
+      "profileType": "basic",
+      "name": "TRAPZ",
+      "aliases": [
+        "TRAPZ",
+        "ACD.TRAPZ"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "GRANADEIRO",
+      "currentTeam": "ACD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ACD",
+          "kills": 22,
+          "matches": 36,
+          "damage": 18605,
+          "assists": 40,
+          "mvp": 0,
+          "avg": 0.61,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 5,
+              "damage": 4287,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 3,
+              "damage": 2266,
+              "assists": 9,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 4,
+              "damage": 2880,
+              "assists": 4,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 10,
+              "damage": 9172,
+              "assists": 15,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 22,
+        "matches": 36,
+        "damage": 18605,
+        "assists": 40,
+        "mvp": 0,
+        "avg": 0.61
+      }
+    },
+    "nokii10": {
+      "id": "nokii10",
+      "profileType": "basic",
+      "name": "NOKII10",
+      "aliases": [
+        "NOKII10",
+        "ACD.NOKII10"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "RUSH",
+      "currentTeam": "ACD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ACD",
+          "kills": 9,
+          "matches": 6,
+          "damage": 4029,
+          "assists": 12,
+          "mvp": 0,
+          "avg": 1.5,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 9,
+              "damage": 4029,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 9,
+        "matches": 6,
+        "damage": 4029,
+        "assists": 12,
+        "mvp": 0,
+        "avg": 1.5
+      }
+    },
+    "faizz": {
+      "id": "faizz",
+      "profileType": "basic",
+      "name": "FAIZZ",
+      "aliases": [
+        "FAIZZ",
+        "ACD.FAIZZ"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "SUPORTE",
+      "currentTeam": "ACD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ACD",
+          "kills": 41,
+          "matches": 36,
+          "damage": 38924,
+          "assists": 36,
+          "mvp": 0,
+          "avg": 1.14,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 10,
+              "damage": 8386,
+              "assists": 7,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 4,
+              "damage": 5274,
+              "assists": 11,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 4,
+              "damage": 5773,
+              "assists": 6,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 23,
+              "damage": 19491,
+              "assists": 12,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 41,
+        "matches": 36,
+        "damage": 38924,
+        "assists": 36,
+        "mvp": 0,
+        "avg": 1.14
+      }
+    },
+    "aliff": {
+      "id": "aliff",
+      "profileType": "basic",
+      "name": "ALIFF",
+      "aliases": [
+        "ALIFF",
+        "ACD.ALIFF"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "RUSH",
+      "currentTeam": "ACD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ACD",
+          "kills": 36,
+          "matches": 36,
+          "damage": 25595,
+          "assists": 42,
+          "mvp": 0,
+          "avg": 1.0,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 9,
+              "damage": 5298,
+              "assists": 9,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia2": {
+              "kills": 6,
+              "damage": 3862,
+              "assists": 8,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 5,
+              "damage": 4161,
+              "assists": 6,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 16,
+              "damage": 12274,
+              "assists": 19,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 36,
+        "matches": 36,
+        "damage": 25595,
+        "assists": 42,
+        "mvp": 0,
+        "avg": 1.0
+      }
+    },
+    "ctuan": {
+      "id": "ctuan",
+      "profileType": "basic",
+      "name": "CTUAN",
+      "aliases": [
+        "CTUAN",
+        "HEV.CTUAN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "SUPORTE",
+      "currentTeam": "Heavy",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Heavy",
+          "kills": 52,
+          "matches": 31,
+          "damage": 40237,
+          "assists": 38,
+          "mvp": 1,
+          "avg": 1.68,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 14,
+              "damage": 7959,
+              "assists": 7,
+              "matches": 6,
+              "mvp": 1
+            },
+            "fase2-dia2": {
+              "kills": 7,
+              "damage": 6152,
+              "assists": 6,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 6,
+              "damage": 6328,
+              "assists": 6,
+              "matches": 5,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 25,
+              "damage": 19798,
+              "assists": 19,
+              "matches": 14,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 52,
+        "matches": 31,
+        "damage": 40237,
+        "assists": 38,
+        "mvp": 1,
+        "avg": 1.68
+      }
+    },
+    "abcd": {
+      "id": "abcd",
+      "profileType": "basic",
+      "name": "ABCD",
+      "aliases": [
+        "ABCD",
+        "FL.ABCD"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "RUSH",
+      "currentTeam": "Team Flash",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Team Flash",
+          "kills": 67,
+          "matches": 36,
+          "damage": 37661,
+          "assists": 61,
+          "mvp": 1,
+          "avg": 1.86,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 21,
+              "damage": 8615,
+              "assists": 6,
+              "matches": 6,
+              "mvp": 1
+            },
+            "fase2-dia2": {
+              "kills": 6,
+              "damage": 4333,
+              "assists": 14,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 7,
+              "damage": 5467,
+              "assists": 8,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 33,
+              "damage": 19246,
+              "assists": 33,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 67,
+        "matches": 36,
+        "damage": 37661,
+        "assists": 61,
+        "mvp": 1,
+        "avg": 1.86
+      }
+    },
+    "thezom": {
+      "id": "thezom",
+      "profileType": "basic",
+      "name": "THEZOM",
+      "aliases": [
+        "THEZOM",
+        "FL.THEZOM"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "GRANADEIRO",
+      "currentTeam": "Team Flash",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Team Flash",
+          "kills": 72,
+          "matches": 36,
+          "damage": 54171,
+          "assists": 91,
+          "mvp": 4,
+          "avg": 2.0,
+          "stages": {
+            "fase2-dia1": {
+              "kills": 9,
+              "damage": 7357,
+              "assists": 17,
+              "matches": 6,
+              "mvp": 1
+            },
+            "fase2-dia2": {
+              "kills": 11,
+              "damage": 5754,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 1
+            },
+            "fase2-dia3": {
+              "kills": 8,
+              "damage": 8426,
+              "assists": 9,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 44,
+              "damage": 32634,
+              "assists": 53,
+              "matches": 18,
+              "mvp": 2
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 72,
+        "matches": 36,
+        "damage": 54171,
+        "assists": 91,
+        "mvp": 4,
+        "avg": 2.0
+      }
+    },
+    "demon": {
+      "id": "demon",
+      "profileType": "basic",
+      "name": "DEMON",
+      "aliases": [
+        "DEMON",
+        "GOW.DEMON"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "RUSH",
+      "currentTeam": "GOW",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "GOW",
+          "kills": 15,
+          "matches": 6,
+          "damage": 7364,
+          "assists": 14,
+          "mvp": 0,
+          "avg": 2.5,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 15,
+              "damage": 7364,
+              "assists": 14,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 15,
+        "matches": 6,
+        "damage": 7364,
+        "assists": 14,
+        "mvp": 0,
+        "avg": 2.5
+      }
+    },
+    "gocu": {
+      "id": "gocu",
+      "profileType": "basic",
+      "name": "GOCU",
+      "aliases": [
+        "GOCU",
+        "GOW.GOCU"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "RUSH",
+      "currentTeam": "GOW",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "GOW",
+          "kills": 9,
+          "matches": 6,
+          "damage": 6274,
+          "assists": 13,
+          "mvp": 0,
+          "avg": 1.5,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 9,
+              "damage": 6274,
+              "assists": 13,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 9,
+        "matches": 6,
+        "damage": 6274,
+        "assists": 13,
+        "mvp": 0,
+        "avg": 1.5
+      }
+    },
+    "putra-2": {
+      "id": "putra-2",
+      "profileType": "basic",
+      "name": "PUTRA",
+      "aliases": [
+        "PUTRA",
+        "ONIC.PUTRA"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "ONIC Olympus",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ONIC Olympus",
+          "kills": 4,
+          "matches": 4,
+          "damage": 1227,
+          "assists": 1,
+          "mvp": 0,
+          "avg": 1.0,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 4,
+              "damage": 1227,
+              "assists": 1,
+              "matches": 4,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 4,
+        "matches": 4,
+        "damage": 1227,
+        "assists": 1,
+        "mvp": 0,
+        "avg": 1.0
+      }
+    },
+    "demonz": {
+      "id": "demonz",
+      "profileType": "basic",
+      "name": "DEMONZ",
+      "aliases": [
+        "DEMONZ",
+        "ONIC.DEMONZ"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "ONIC Olympus",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ONIC Olympus",
+          "kills": 9,
+          "matches": 10,
+          "damage": 5662,
+          "assists": 16,
+          "mvp": 0,
+          "avg": 0.9,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 1,
+              "damage": 711,
+              "assists": 2,
+              "matches": 2,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 8,
+              "damage": 4502,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 0,
+              "damage": 449,
+              "assists": 2,
+              "matches": 2,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 9,
+        "matches": 10,
+        "damage": 5662,
+        "assists": 16,
+        "mvp": 0,
+        "avg": 0.9
+      }
+    },
+    "18deer-2": {
+      "id": "18deer-2",
+      "profileType": "basic",
+      "name": "18DEER",
+      "aliases": [
+        "18DEER",
+        "RRQ.18DEER"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "RRQ",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "RRQ",
+          "kills": 0,
+          "matches": 1,
+          "damage": 93,
+          "assists": 0,
+          "mvp": 0,
+          "avg": 0.0,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 0,
+              "damage": 93,
+              "assists": 0,
+              "matches": 1,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 0,
+        "matches": 1,
+        "damage": 93,
+        "assists": 0,
+        "mvp": 0,
+        "avg": 0.0
+      }
+    },
+    "ranzeieii": {
+      "id": "ranzeieii",
+      "profileType": "basic",
+      "name": "RANZEIEII",
+      "aliases": [
+        "RANZEIEII",
+        "RRQ.RANZEIEII"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "RRQ",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "RRQ",
+          "kills": 15,
+          "matches": 5,
+          "damage": 6571,
+          "assists": 11,
+          "mvp": 0,
+          "avg": 3.0,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 15,
+              "damage": 6571,
+              "assists": 11,
+              "matches": 5,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 15,
+        "matches": 5,
+        "damage": 6571,
+        "assists": 11,
+        "mvp": 0,
+        "avg": 3.0
+      }
+    },
+    "juann": {
+      "id": "juann",
+      "profileType": "basic",
+      "name": "JUANN",
+      "aliases": [
+        "JUANN",
+        "SE.JUANN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "SE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "SE",
+          "kills": 38,
+          "matches": 30,
+          "damage": 21964,
+          "assists": 36,
+          "mvp": 0,
+          "avg": 1.27,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 9,
+              "damage": 6353,
+              "assists": 11,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 11,
+              "damage": 4938,
+              "assists": 5,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 18,
+              "damage": 10673,
+              "assists": 20,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 38,
+        "matches": 30,
+        "damage": 21964,
+        "assists": 36,
+        "mvp": 0,
+        "avg": 1.27
+      }
+    },
+    "rynnn": {
+      "id": "rynnn",
+      "profileType": "basic",
+      "name": "RYNNN",
+      "aliases": [
+        "RYNNN",
+        "SE.RYNNN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "SE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "SE",
+          "kills": 31,
+          "matches": 30,
+          "damage": 22768,
+          "assists": 43,
+          "mvp": 1,
+          "avg": 1.03,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 6,
+              "damage": 3553,
+              "assists": 8,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 5,
+              "damage": 6117,
+              "assists": 13,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 20,
+              "damage": 13098,
+              "assists": 22,
+              "matches": 18,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 31,
+        "matches": 30,
+        "damage": 22768,
+        "assists": 43,
+        "mvp": 1,
+        "avg": 1.03
+      }
+    },
+    "cillzyy": {
+      "id": "cillzyy",
+      "profileType": "basic",
+      "name": "CILLZYY",
+      "aliases": [
+        "CILLZYY",
+        "SE.CILLZYY"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "SE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "SE",
+          "kills": 20,
+          "matches": 30,
+          "damage": 15220,
+          "assists": 44,
+          "mvp": 0,
+          "avg": 0.67,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 3,
+              "damage": 2524,
+              "assists": 8,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 6,
+              "damage": 4093,
+              "assists": 14,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 11,
+              "damage": 8603,
+              "assists": 22,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 20,
+        "matches": 30,
+        "damage": 15220,
+        "assists": 44,
+        "mvp": 0,
+        "avg": 0.67
+      }
+    },
+    "sh1nzy": {
+      "id": "sh1nzy",
+      "profileType": "basic",
+      "name": "SH1NZY",
+      "aliases": [
+        "SH1NZY",
+        "SE.SH1NZY"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "SE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "SE",
+          "kills": 19,
+          "matches": 30,
+          "damage": 12825,
+          "assists": 53,
+          "mvp": 0,
+          "avg": 0.63,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 7,
+              "damage": 2282,
+              "assists": 13,
+              "matches": 6,
+              "mvp": 0
+            },
+            "fase2-dia3": {
+              "kills": 1,
+              "damage": 3035,
+              "assists": 14,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 11,
+              "damage": 7508,
+              "assists": 26,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 19,
+        "matches": 30,
+        "damage": 12825,
+        "assists": 53,
+        "mvp": 0,
+        "avg": 0.63
+      }
+    },
+    "nokii10-2": {
+      "id": "nokii10-2",
+      "profileType": "basic",
+      "name": "NOKII10",
+      "aliases": [
+        "NOKII10",
+        "ACD.NOKII10"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "RUSH",
+      "currentTeam": "ACD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ACD",
+          "kills": 7,
+          "matches": 6,
+          "damage": 3512,
+          "assists": 5,
+          "mvp": 0,
+          "avg": 1.17,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 7,
+              "damage": 3512,
+              "assists": 5,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 7,
+        "matches": 6,
+        "damage": 3512,
+        "assists": 5,
+        "mvp": 0,
+        "avg": 1.17
+      }
+    },
+    "dyan": {
+      "id": "dyan",
+      "profileType": "basic",
+      "name": "DYAN",
+      "aliases": [
+        "DYAN",
+        "GOW.DYAN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "GRANADEIRO",
+      "currentTeam": "GOW",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "GOW",
+          "kills": 9,
+          "matches": 6,
+          "damage": 10866,
+          "assists": 18,
+          "mvp": 1,
+          "avg": 1.5,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 9,
+              "damage": 10866,
+              "assists": 18,
+              "matches": 6,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 9,
+        "matches": 6,
+        "damage": 10866,
+        "assists": 18,
+        "mvp": 1,
+        "avg": 1.5
+      }
+    },
+    "death": {
+      "id": "death",
+      "profileType": "basic",
+      "name": "DEATH",
+      "aliases": [
+        "DEATH",
+        "GOW.DEATH"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "SUPORTE",
+      "currentTeam": "GOW",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "GOW",
+          "kills": 15,
+          "matches": 6,
+          "damage": 12685,
+          "assists": 12,
+          "mvp": 1,
+          "avg": 2.5,
+          "stages": {
+            "fase2-dia2": {
+              "kills": 15,
+              "damage": 12685,
+              "assists": 12,
+              "matches": 6,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 15,
+        "matches": 6,
+        "damage": 12685,
+        "assists": 12,
+        "mvp": 1,
+        "avg": 2.5
+      }
+    },
+    "longkong": {
+      "id": "longkong",
+      "profileType": "basic",
+      "name": "LONGKONG",
+      "aliases": [
+        "LONGKONG",
+        "AVD.LONGKONG"
+      ],
+      "photo": "silhueta.webp",
+      "country": "th",
+      "role": "GRANADEIRO",
+      "currentTeam": "AVD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "AVD",
+          "kills": 37,
+          "matches": 22,
+          "damage": 24783,
+          "assists": 46,
+          "mvp": 1,
+          "avg": 1.68,
+          "stages": {
+            "fase2-dia3": {
+              "kills": 6,
+              "damage": 6444,
+              "assists": 16,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 31,
+              "damage": 18339,
+              "assists": 30,
+              "matches": 16,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 37,
+        "matches": 22,
+        "damage": 24783,
+        "assists": 46,
+        "mvp": 1,
+        "avg": 1.68
+      }
+    },
+    "pablo": {
+      "id": "pablo",
+      "profileType": "basic",
+      "name": "PABLO",
+      "aliases": [
+        "PABLO",
+        "AVD.PABLO"
+      ],
+      "photo": "silhueta.webp",
+      "country": "th",
+      "role": "SUPORTE",
+      "currentTeam": "AVD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "AVD",
+          "kills": 46,
+          "matches": 24,
+          "damage": 25021,
+          "assists": 59,
+          "mvp": 0,
+          "avg": 1.92,
+          "stages": {
+            "fase2-dia3": {
+              "kills": 16,
+              "damage": 6350,
+              "assists": 15,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 30,
+              "damage": 18671,
+              "assists": 44,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 46,
+        "matches": 24,
+        "damage": 25021,
+        "assists": 59,
+        "mvp": 0,
+        "avg": 1.92
+      }
+    },
+    "anusit": {
+      "id": "anusit",
+      "profileType": "basic",
+      "name": "ANUSIT",
+      "aliases": [
+        "ANUSIT",
+        "AVD.ANUSIT"
+      ],
+      "photo": "silhueta.webp",
+      "country": "th",
+      "role": "SUPORTE",
+      "currentTeam": "AVD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "AVD",
+          "kills": 29,
+          "matches": 24,
+          "damage": 24238,
+          "assists": 33,
+          "mvp": 0,
+          "avg": 1.21,
+          "stages": {
+            "fase2-dia3": {
+              "kills": 10,
+              "damage": 6768,
+              "assists": 5,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 19,
+              "damage": 17470,
+              "assists": 28,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 29,
+        "matches": 24,
+        "damage": 24238,
+        "assists": 33,
+        "mvp": 0,
+        "avg": 1.21
+      }
+    },
+    "tawan": {
+      "id": "tawan",
+      "profileType": "basic",
+      "name": "TAWAN",
+      "aliases": [
+        "TAWAN",
+        "AVD.TAWAN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "th",
+      "role": "RUSH",
+      "currentTeam": "AVD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "AVD",
+          "kills": 36,
+          "matches": 24,
+          "damage": 26053,
+          "assists": 61,
+          "mvp": 0,
+          "avg": 1.5,
+          "stages": {
+            "fase2-dia3": {
+              "kills": 12,
+              "damage": 7373,
+              "assists": 19,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 24,
+              "damage": 18680,
+              "assists": 42,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 36,
+        "matches": 24,
+        "damage": 26053,
+        "assists": 61,
+        "mvp": 0,
+        "avg": 1.5
+      }
+    },
+    "bhuy": {
+      "id": "bhuy",
+      "profileType": "basic",
+      "name": "BHUY",
+      "aliases": [
+        "BHUY",
+        "HEV.BHUY"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "SUPORTE",
+      "currentTeam": "Heavy",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Heavy",
+          "kills": 4,
+          "matches": 5,
+          "damage": 4106,
+          "assists": 4,
+          "mvp": 0,
+          "avg": 0.8,
+          "stages": {
+            "fase2-dia3": {
+              "kills": 1,
+              "damage": 1839,
+              "assists": 4,
+              "matches": 1,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 3,
+              "damage": 2267,
+              "assists": 0,
+              "matches": 4,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 4,
+        "matches": 5,
+        "damage": 4106,
+        "assists": 4,
+        "mvp": 0,
+        "avg": 0.8
+      }
+    },
+    "koceel": {
+      "id": "koceel",
+      "profileType": "basic",
+      "name": "KOCEEL",
+      "aliases": [
+        "KOCEEL",
+        "EVOS.KOCEEL"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "GRANADEIRO",
+      "currentTeam": "EVOS",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "EVOS",
+          "kills": 35,
+          "matches": 24,
+          "damage": 24325,
+          "assists": 64,
+          "mvp": 0,
+          "avg": 1.46,
+          "stages": {
+            "fase2-dia3": {
+              "kills": 12,
+              "damage": 7922,
+              "assists": 21,
+              "matches": 6,
+              "mvp": 0
+            },
+            "last-chance": {
+              "kills": 23,
+              "damage": 16403,
+              "assists": 43,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 35,
+        "matches": 24,
+        "damage": 24325,
+        "assists": 64,
+        "mvp": 0,
+        "avg": 1.46
+      }
+    },
+    "nokii10-3": {
+      "id": "nokii10-3",
+      "profileType": "basic",
+      "name": "NOKII10",
+      "aliases": [
+        "NOKII10",
+        "ACD.NOKII10"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "RUSH",
+      "currentTeam": "ACD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ACD",
+          "kills": 6,
+          "matches": 6,
+          "damage": 3287,
+          "assists": 8,
+          "mvp": 0,
+          "avg": 1.0,
+          "stages": {
+            "fase2-dia3": {
+              "kills": 6,
+              "damage": 3287,
+              "assists": 8,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 6,
+        "matches": 6,
+        "damage": 3287,
+        "assists": 8,
+        "mvp": 0,
+        "avg": 1.0
+      }
+    },
+    "terna": {
+      "id": "terna",
+      "profileType": "basic",
+      "name": "TERNA",
+      "aliases": [
+        "TERNA",
+        "BRU.TERNA"
+      ],
+      "photo": "silhueta.webp",
+      "country": "th",
+      "role": "SUPORTE",
+      "currentTeam": "Buriram United Esports",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "Buriram United Esports",
+          "kills": 9,
+          "matches": 6,
+          "damage": 4849,
+          "assists": 7,
+          "mvp": 0,
+          "avg": 1.5,
+          "stages": {
+            "last-chance": {
+              "kills": 9,
+              "damage": 4849,
+              "assists": 7,
+              "matches": 6,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 9,
+        "matches": 6,
+        "damage": 4849,
+        "assists": 7,
+        "mvp": 0,
+        "avg": 1.5
+      }
+    },
+    "winter": {
+      "id": "winter",
+      "profileType": "basic",
+      "name": "WINTER",
+      "aliases": [
+        "WINTER",
+        "AVD.WINTER"
+      ],
+      "photo": "silhueta.webp",
+      "country": "th",
+      "role": "SUPORTE",
+      "currentTeam": "AVD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "AVD",
+          "kills": 2,
+          "matches": 2,
+          "damage": 896,
+          "assists": 2,
+          "mvp": 0,
+          "avg": 1.0,
+          "stages": {
+            "last-chance": {
+              "kills": 2,
+              "damage": 896,
+              "assists": 2,
+              "matches": 2,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 2,
+        "matches": 2,
+        "damage": 896,
+        "assists": 2,
+        "mvp": 0,
+        "avg": 1.0
+      }
+    },
+    "lbt": {
+      "id": "lbt",
+      "profileType": "basic",
+      "name": "LBT",
+      "aliases": [
+        "LBT",
+        "PE.LBT"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "RUSH",
+      "currentTeam": "PE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "PE",
+          "kills": 32,
+          "matches": 18,
+          "damage": 18521,
+          "assists": 33,
+          "mvp": 0,
+          "avg": 1.78,
+          "stages": {
+            "last-chance": {
+              "kills": 32,
+              "damage": 18521,
+              "assists": 33,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 32,
+        "matches": 18,
+        "damage": 18521,
+        "assists": 33,
+        "mvp": 0,
+        "avg": 1.78
+      }
+    },
+    "nolan": {
+      "id": "nolan",
+      "profileType": "basic",
+      "name": "NOLAN",
+      "aliases": [
+        "NOLAN",
+        "PE.NOLAN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "RUSH",
+      "currentTeam": "PE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "PE",
+          "kills": 18,
+          "matches": 14,
+          "damage": 11060,
+          "assists": 30,
+          "mvp": 0,
+          "avg": 1.29,
+          "stages": {
+            "last-chance": {
+              "kills": 18,
+              "damage": 11060,
+              "assists": 30,
+              "matches": 14,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 18,
+        "matches": 14,
+        "damage": 11060,
+        "assists": 30,
+        "mvp": 0,
+        "avg": 1.29
+      }
+    },
+    "putra-3": {
+      "id": "putra-3",
+      "profileType": "basic",
+      "name": "PUTRA",
+      "aliases": [
+        "PUTRA",
+        "ONIC.PUTRA"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "ONIC Olympus",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ONIC Olympus",
+          "kills": 15,
+          "matches": 18,
+          "damage": 10364,
+          "assists": 22,
+          "mvp": 0,
+          "avg": 0.83,
+          "stages": {
+            "last-chance": {
+              "kills": 15,
+              "damage": 10364,
+              "assists": 22,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 15,
+        "matches": 18,
+        "damage": 10364,
+        "assists": 22,
+        "mvp": 0,
+        "avg": 0.83
+      }
+    },
+    "nokii10-4": {
+      "id": "nokii10-4",
+      "profileType": "basic",
+      "name": "NOKII10",
+      "aliases": [
+        "NOKII10",
+        "ACD.NOKII10"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "RUSH",
+      "currentTeam": "ACD",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "ACD",
+          "kills": 16,
+          "matches": 18,
+          "damage": 9987,
+          "assists": 27,
+          "mvp": 0,
+          "avg": 0.89,
+          "stages": {
+            "last-chance": {
+              "kills": 16,
+              "damage": 9987,
+              "assists": 27,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 16,
+        "matches": 18,
+        "damage": 9987,
+        "assists": 27,
+        "mvp": 0,
+        "avg": 0.89
+      }
+    },
+    "yannz": {
+      "id": "yannz",
+      "profileType": "basic",
+      "name": "YANNZ",
+      "aliases": [
+        "YANNZ",
+        "MEC.YANNZ"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "SUPORTE",
+      "currentTeam": "MEC",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "MEC",
+          "kills": 10,
+          "matches": 18,
+          "damage": 12704,
+          "assists": 30,
+          "mvp": 0,
+          "avg": 0.56,
+          "stages": {
+            "last-chance": {
+              "kills": 10,
+              "damage": 12704,
+              "assists": 30,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 10,
+        "matches": 18,
+        "damage": 12704,
+        "assists": 30,
+        "mvp": 0,
+        "avg": 0.56
+      }
+    },
+    "driann": {
+      "id": "driann",
+      "profileType": "basic",
+      "name": "DRIANN",
+      "aliases": [
+        "DRIANN",
+        "MEC.DRIANN"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "SUPORTE",
+      "currentTeam": "MEC",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "MEC",
+          "kills": 25,
+          "matches": 18,
+          "damage": 16587,
+          "assists": 31,
+          "mvp": 0,
+          "avg": 1.39,
+          "stages": {
+            "last-chance": {
+              "kills": 25,
+              "damage": 16587,
+              "assists": 31,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 25,
+        "matches": 18,
+        "damage": 16587,
+        "assists": 31,
+        "mvp": 0,
+        "avg": 1.39
+      }
+    },
+    "viruzz": {
+      "id": "viruzz",
+      "profileType": "basic",
+      "name": "VIRUZZ",
+      "aliases": [
+        "VIRUZZ",
+        "MEC.VIRUZZ"
+      ],
+      "photo": "silhueta.webp",
+      "country": "id",
+      "role": "RUSH",
+      "currentTeam": "MEC",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "MEC",
+          "kills": 21,
+          "matches": 18,
+          "damage": 18203,
+          "assists": 19,
+          "mvp": 0,
+          "avg": 1.17,
+          "stages": {
+            "last-chance": {
+              "kills": 21,
+              "damage": 18203,
+              "assists": 19,
+              "matches": 18,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 21,
+        "matches": 18,
+        "damage": 18203,
+        "assists": 19,
+        "mvp": 0,
+        "avg": 1.17
+      }
+    },
+    "dmh": {
+      "id": "dmh",
+      "profileType": "basic",
+      "name": "DMH",
+      "aliases": [
+        "DMH",
+        "PE.DMH"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "JOGADOR",
+      "currentTeam": "PE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "PE",
+          "kills": 1,
+          "matches": 4,
+          "damage": 850,
+          "assists": 8,
+          "mvp": 0,
+          "avg": 0.25,
+          "stages": {
+            "last-chance": {
+              "kills": 1,
+              "damage": 850,
+              "assists": 8,
+              "matches": 4,
+              "mvp": 0
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 1,
+        "matches": 4,
+        "damage": 850,
+        "assists": 8,
+        "mvp": 0,
+        "avg": 0.25
+      }
+    },
+    "nero": {
+      "id": "nero",
+      "profileType": "basic",
+      "name": "NERO",
+      "aliases": [
+        "NERO",
+        "PE.NERO"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "GRANADEIRO",
+      "currentTeam": "PE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "PE",
+          "kills": 35,
+          "matches": 18,
+          "damage": 26082,
+          "assists": 43,
+          "mvp": 1,
+          "avg": 1.94,
+          "stages": {
+            "last-chance": {
+              "kills": 35,
+              "damage": 26082,
+              "assists": 43,
+              "matches": 18,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 35,
+        "matches": 18,
+        "damage": 26082,
+        "assists": 43,
+        "mvp": 1,
+        "avg": 1.94
+      }
+    },
+    "laoho": {
+      "id": "laoho",
+      "profileType": "basic",
+      "name": "LAOHO",
+      "aliases": [
+        "LAOHO",
+        "PE.LAOHO"
+      ],
+      "photo": "silhueta.webp",
+      "country": "vn",
+      "role": "SUPORTE",
+      "currentTeam": "PE",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "PE",
+          "kills": 22,
+          "matches": 18,
+          "damage": 25370,
+          "assists": 30,
+          "mvp": 1,
+          "avg": 1.22,
+          "stages": {
+            "last-chance": {
+              "kills": 22,
+              "damage": 25370,
+              "assists": 30,
+              "matches": 18,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 22,
+        "matches": 18,
+        "damage": 25370,
+        "assists": 30,
+        "mvp": 1,
+        "avg": 1.22
+      }
+    },
+    "getbu": {
+      "id": "getbu",
+      "profileType": "basic",
+      "name": "GETBU",
+      "aliases": [
+        "GETBU",
+        "MEC.GETBU"
+      ],
+      "photo": "silhueta.webp",
+      "country": "my",
+      "role": "RUSH",
+      "currentTeam": "MEC",
+      "currentTeamLogo": "escudo.webp",
+      "competitions": [
+        {
+          "key": "ffws-sea-2026",
+          "name": "FFWS SEA 2026",
+          "team": "MEC",
+          "kills": 19,
+          "matches": 18,
+          "damage": 11861,
+          "assists": 27,
+          "mvp": 1,
+          "avg": 1.06,
+          "stages": {
+            "last-chance": {
+              "kills": 19,
+              "damage": 11861,
+              "assists": 27,
+              "matches": 18,
+              "mvp": 1
+            }
+          }
+        }
+      ],
+      "teamHistory": [],
+      "allTime": {
+        "kills": 19,
+        "matches": 18,
+        "damage": 11861,
+        "assists": 27,
+        "mvp": 1,
+        "avg": 1.06
+      }
+    }
+  }
+}

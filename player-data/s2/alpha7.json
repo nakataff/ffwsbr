@@ -1,1 +1,541 @@
-{"updatedAt":"2026-07-29","team":"ALPHA7","profileType":"full","players":{"sam7":{"id":"sam7","name":"Sam7","aliases":["Sam7"],"photo":"sam7.webp","country":"br","role":"GRANADEIRO","currentTeam":"ALPHA7","currentTeamLogo":"A7 2.webp","currentRoster":{"team":"ALPHA7","role":"GRANADEIRO","roleShort":"GRAN","starter":true,"rosterStatus":"Titular","captain":true,"rookie":false,"highlight":false,"fullName":"Otávio Augusto Fernandes","age":17,"birthDate":"2008-08-16","state":"São Paulo"},"ffws":{"kills":138,"damage":108588,"assists":188,"matches":104,"mvp":2,"record":7,"team":"ALPHA7","rankKills":30,"rankDamage":23,"rankAssists":23},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"WB 2026 S1":{"kills":138,"matches":104}},"editions":[{"edition":"WB 2026 S1","kills":138,"matches":104,"avg":1.33,"team":""},{"edition":"FFWS BR 2026 S1","kills":138,"matches":104,"avg":1.33,"team":"ALPHA7","damage":108588,"assists":188,"mvp":2},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"ALPHA7","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"ALPHA7","logo":"A7 2.webp"},{"edition":"FFWS BR 2026 S1","team":"ALPHA7","logo":"escudo.webp"}],"allTime":{"kills":276,"matches":208,"damage":108588,"assists":188,"mvp":2,"avg":1.33},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"brisa7":{"id":"brisa7","name":"Brisa7","aliases":["Brisa7"],"photo":"brisa7.webp","country":"br","role":"RUSH","currentTeam":"ALPHA7","currentTeamLogo":"A7 2.webp","currentRoster":{"team":"ALPHA7","role":"RUSH","roleShort":"RUSH","starter":false,"rosterStatus":"Reserva","captain":false,"rookie":false,"highlight":false,"fullName":"Eduardo Alves de Souza","age":22,"birthDate":"2003-12-02","state":"São Paulo"},"ffws":{"kills":25,"damage":18026,"assists":76,"matches":27,"mvp":0,"record":5,"team":"ALPHA7","rankKills":73,"rankDamage":73,"rankAssists":61},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"WB 2026 S1":{"kills":25,"matches":27}},"editions":[{"edition":"WB 2026 S1","kills":25,"matches":27,"avg":0.93,"team":""},{"edition":"FFWS BR 2026 S1","kills":25,"matches":27,"avg":0.93,"team":"ALPHA7","damage":18026,"assists":76,"mvp":0},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"ALPHA7","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"ALPHA7","logo":"A7 2.webp"},{"edition":"FFWS BR 2026 S1","team":"ALPHA7","logo":"escudo.webp"}],"allTime":{"kills":50,"matches":54,"damage":18026,"assists":76,"mvp":0,"avg":0.93},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"mitomvp":{"id":"mitomvp","name":"MITOmvp","aliases":["MITOmvp","MitoMvp"],"photo":"mitomvp.webp","country":"br","role":"RUSH","currentTeam":"ALPHA7","currentTeamLogo":"A7 2.webp","currentRoster":{"team":"ALPHA7","role":"RUSH","roleShort":"RUSH","starter":true,"rosterStatus":"Titular","captain":false,"rookie":false,"highlight":false,"fullName":"Gabriel Ribeiro de Pina","age":17,"birthDate":"2009-02-03","state":"Minas Gerais"},"ffws":{"kills":154,"damage":102796,"assists":160,"matches":102,"mvp":1,"record":7,"team":"ALPHA7","rankKills":23,"rankDamage":26,"rankAssists":30},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"LBFF 9":{"kills":86,"matches":123},"WB 2026 S1":{"kills":154,"matches":102},"WB 2025 S2":{"kills":9,"matches":10}},"editions":[{"edition":"LBFF 9","kills":86,"matches":123,"avg":0.7,"team":""},{"edition":"WB 2026 S1","kills":154,"matches":102,"avg":1.51,"team":""},{"edition":"WB 2025 S2","kills":9,"matches":10,"avg":0.9,"team":""},{"edition":"FFWS BR 2026 S1","kills":154,"matches":102,"avg":1.51,"team":"ALPHA7","damage":102796,"assists":160,"mvp":1},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"ALPHA7","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"ALPHA7","logo":"A7 2.webp"},{"edition":"FFWS BR 2026 S1","team":"ALPHA7","logo":"escudo.webp"}],"allTime":{"kills":403,"matches":337,"damage":102796,"assists":160,"mvp":1,"avg":1.2},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"lc777":{"id":"lc777","name":"LC777","aliases":["LC777","Lc777"],"photo":"lc.webp","country":"br","role":"SUPORTE","currentTeam":"ALPHA7","currentTeamLogo":"A7 2.webp","currentRoster":{"team":"ALPHA7","role":"SUPORTE","roleShort":"SUP","starter":true,"rosterStatus":"Titular","captain":false,"rookie":false,"highlight":false,"fullName":"Lucas Garcia de Albuquerque","age":18,"birthDate":"2008-06-07","state":"Rio de janeiro"},"ffws":{"kills":140,"damage":142755,"assists":141,"matches":85,"mvp":3,"record":7,"team":"RUSH GAMING","rankKills":28,"rankDamage":9,"rankAssists":40},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"WB 2025 S1":{"kills":94,"matches":97},"WB 2025 S2":{"kills":33,"matches":28},"WB 2026 S1":{"kills":140,"matches":85}},"editions":[{"edition":"WB 2025 S1","kills":94,"matches":97,"avg":0.97,"team":""},{"edition":"WB 2025 S2","kills":33,"matches":28,"avg":1.18,"team":""},{"edition":"WB 2026 S1","kills":140,"matches":85,"avg":1.65,"team":""},{"edition":"FFWS BR 2026 S1","kills":140,"matches":85,"avg":1.65,"team":"RUSH GAMING","damage":142755,"assists":141,"mvp":3},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"ALPHA7","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"ALPHA7","logo":"A7 2.webp"},{"edition":"FFWS BR 2026 S1","team":"RUSH GAMING","logo":"escudo.webp"}],"allTime":{"kills":407,"matches":295,"damage":142755,"assists":141,"mvp":3,"avg":1.38},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]},"jnmvp7":{"id":"jnmvp7","name":"JNmvp7","aliases":["JNmvp7"],"photo":"jnmvp.webp","country":"br","role":"RUSH","currentTeam":"ALPHA7","currentTeamLogo":"A7 2.webp","currentRoster":{"team":"ALPHA7","role":"RUSH","roleShort":"RUSH","starter":true,"rosterStatus":"Titular","captain":false,"rookie":false,"highlight":true,"fullName":"Jonatas Henrique Nascimento de Souza","age":17,"birthDate":"2009-03-10","state":"Rio de janeiro"},"ffws":{"kills":238,"damage":133023,"assists":171,"matches":104,"mvp":7,"record":11,"team":"ALPHA7","rankKills":3,"rankDamage":14,"rankAssists":29},"ewc":null,"s2":{"edition":"FFWS BR 2026 S2","kills":0,"damage":0,"assists":0,"matches":0,"mvp":0},"historical":{"WB 2026 S1":{"kills":238,"matches":104}},"editions":[{"edition":"WB 2026 S1","kills":238,"matches":104,"avg":2.29,"team":""},{"edition":"FFWS BR 2026 S1","kills":238,"matches":104,"avg":2.29,"team":"ALPHA7","damage":133023,"assists":171,"mvp":7},{"edition":"FFWS BR 2026 S2","kills":0,"matches":0,"avg":0,"team":"ALPHA7","damage":0,"assists":0,"status":"Ainda não iniciada"}],"teamHistory":[{"edition":"FFWS BR 2026 S2","team":"ALPHA7","logo":"A7 2.webp"},{"edition":"FFWS BR 2026 S1","team":"ALPHA7","logo":"escudo.webp"}],"allTime":{"kills":476,"matches":208,"damage":133023,"assists":171,"mvp":7,"avg":2.29},"profileType":"full","dataSource":"FFWS BR 2026 S2","competitions":[]}}}
+{
+  "updatedAt": "2026-07-28",
+  "team": "ALPHA7",
+  "profileType": "full",
+  "players": {
+    "sam7": {
+      "id": "sam7",
+      "name": "Sam7",
+      "aliases": [
+        "Sam7"
+      ],
+      "photo": "sam7.webp",
+      "country": "br",
+      "role": "GRANADEIRO",
+      "currentTeam": "ALPHA7",
+      "currentTeamLogo": "A7 2.webp",
+      "currentRoster": {
+        "team": "ALPHA7",
+        "role": "GRANADEIRO",
+        "roleShort": "GRAN",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": true,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Otávio Augusto Fernandes",
+        "age": 17,
+        "birthDate": "2008-08-16",
+        "state": "São Paulo"
+      },
+      "ffws": {
+        "kills": 138,
+        "damage": 108588,
+        "assists": 188,
+        "matches": 104,
+        "mvp": 2,
+        "record": 7,
+        "team": "ALPHA7",
+        "rankKills": 30,
+        "rankDamage": 23,
+        "rankAssists": 23
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "WB 2026 S1": {
+          "kills": 138,
+          "matches": 104
+        }
+      },
+      "editions": [
+        {
+          "edition": "WB 2026 S1",
+          "kills": 138,
+          "matches": 104,
+          "avg": 1.33,
+          "team": "ALPHA7",
+          "damage": 108588,
+          "assists": 188,
+          "mvp": 2
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "ALPHA7",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 276,
+        "matches": 208,
+        "damage": 108588,
+        "assists": 188,
+        "mvp": 2,
+        "avg": 1.33
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "brisa7": {
+      "id": "brisa7",
+      "name": "Brisa7",
+      "aliases": [
+        "Brisa7"
+      ],
+      "photo": "brisa7.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "ALPHA7",
+      "currentTeamLogo": "A7 2.webp",
+      "currentRoster": {
+        "team": "ALPHA7",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": false,
+        "rosterStatus": "Reserva",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Eduardo Alves de Souza",
+        "age": 22,
+        "birthDate": "2003-12-02",
+        "state": "São Paulo"
+      },
+      "ffws": {
+        "kills": 25,
+        "damage": 18026,
+        "assists": 76,
+        "matches": 27,
+        "mvp": 0,
+        "record": 5,
+        "team": "ALPHA7",
+        "rankKills": 73,
+        "rankDamage": 73,
+        "rankAssists": 61
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "WB 2026 S1": {
+          "kills": 25,
+          "matches": 27
+        }
+      },
+      "editions": [
+        {
+          "edition": "WB 2026 S1",
+          "kills": 25,
+          "matches": 27,
+          "avg": 0.93,
+          "team": "ALPHA7",
+          "damage": 18026,
+          "assists": 76,
+          "mvp": 0
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "ALPHA7",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 50,
+        "matches": 54,
+        "damage": 18026,
+        "assists": 76,
+        "mvp": 0,
+        "avg": 0.93
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "mitomvp": {
+      "id": "mitomvp",
+      "name": "MITOmvp",
+      "aliases": [
+        "MITOmvp",
+        "MitoMvp"
+      ],
+      "photo": "mitomvp.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "ALPHA7",
+      "currentTeamLogo": "A7 2.webp",
+      "currentRoster": {
+        "team": "ALPHA7",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Gabriel Ribeiro de Pina",
+        "age": 17,
+        "birthDate": "2009-02-03",
+        "state": "Minas Gerais"
+      },
+      "ffws": {
+        "kills": 154,
+        "damage": 102796,
+        "assists": 160,
+        "matches": 102,
+        "mvp": 1,
+        "record": 7,
+        "team": "ALPHA7",
+        "rankKills": 23,
+        "rankDamage": 26,
+        "rankAssists": 30
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "LBFF 9": {
+          "kills": 86,
+          "matches": 123
+        },
+        "WB 2026 S1": {
+          "kills": 154,
+          "matches": 102
+        },
+        "WB 2025 S2": {
+          "kills": 9,
+          "matches": 10
+        }
+      },
+      "editions": [
+        {
+          "edition": "LBFF 9",
+          "kills": 86,
+          "matches": 123,
+          "avg": 0.7,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 154,
+          "matches": 102,
+          "avg": 1.51,
+          "team": "ALPHA7",
+          "damage": 102796,
+          "assists": 160,
+          "mvp": 1
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 9,
+          "matches": 10,
+          "avg": 0.9,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "ALPHA7",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "INTZ",
+          "cargo": "Jogador",
+          "logo": "Intz 1.webp",
+          "edition": ""
+        },
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 403,
+        "matches": 337,
+        "damage": 102796,
+        "assists": 160,
+        "mvp": 1,
+        "avg": 1.2
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "lc777": {
+      "id": "lc777",
+      "name": "LC777",
+      "aliases": [
+        "LC777",
+        "Lc777"
+      ],
+      "photo": "lc.webp",
+      "country": "br",
+      "role": "SUPORTE",
+      "currentTeam": "ALPHA7",
+      "currentTeamLogo": "A7 2.webp",
+      "currentRoster": {
+        "team": "ALPHA7",
+        "role": "SUPORTE",
+        "roleShort": "SUP",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Lucas Garcia de Albuquerque",
+        "age": 18,
+        "birthDate": "2008-06-07",
+        "state": "Rio de janeiro"
+      },
+      "ffws": {
+        "kills": 140,
+        "damage": 142755,
+        "assists": 141,
+        "matches": 85,
+        "mvp": 3,
+        "record": 7,
+        "team": "RUSH GAMING",
+        "rankKills": 28,
+        "rankDamage": 9,
+        "rankAssists": 40
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "WB 2025 S1": {
+          "kills": 94,
+          "matches": 97
+        },
+        "WB 2025 S2": {
+          "kills": 33,
+          "matches": 28
+        },
+        "WB 2026 S1": {
+          "kills": 140,
+          "matches": 85
+        }
+      },
+      "editions": [
+        {
+          "edition": "WB 2025 S1",
+          "kills": 94,
+          "matches": 97,
+          "avg": 0.97,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 33,
+          "matches": 28,
+          "avg": 1.18,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 140,
+          "matches": 85,
+          "avg": 1.65,
+          "team": "RUSH GAMING",
+          "damage": 142755,
+          "assists": 141,
+          "mvp": 3
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "ALPHA7",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "RUSH GAMING",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        },
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "A7 2.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 407,
+        "matches": 295,
+        "damage": 142755,
+        "assists": 141,
+        "mvp": 3,
+        "avg": 1.38
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    },
+    "jnmvp7": {
+      "id": "jnmvp7",
+      "name": "JNmvp7",
+      "aliases": [
+        "JNmvp7"
+      ],
+      "photo": "jnmvp.webp",
+      "country": "br",
+      "role": "RUSH",
+      "currentTeam": "ALPHA7",
+      "currentTeamLogo": "A7 2.webp",
+      "currentRoster": {
+        "team": "ALPHA7",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": false,
+        "rookie": false,
+        "highlight": true,
+        "fullName": "Jonatas Henrique Nascimento de Souza",
+        "age": 17,
+        "birthDate": "2009-03-10",
+        "state": "Rio de janeiro"
+      },
+      "ffws": {
+        "kills": 238,
+        "damage": 133023,
+        "assists": 171,
+        "matches": 104,
+        "mvp": 7,
+        "record": 11,
+        "team": "ALPHA7",
+        "rankKills": 3,
+        "rankDamage": 14,
+        "rankAssists": 29
+      },
+      "ewc": null,
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0
+      },
+      "historical": {
+        "WB 2026 S1": {
+          "kills": 238,
+          "matches": 104
+        }
+      },
+      "editions": [
+        {
+          "edition": "WB 2026 S1",
+          "kills": 238,
+          "matches": 104,
+          "avg": 2.29,
+          "team": "ALPHA7",
+          "damage": 133023,
+          "assists": 171,
+          "mvp": 7
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "ALPHA7",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada"
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "OUTPLAY",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 476,
+        "matches": 208,
+        "damage": 133023,
+        "assists": 171,
+        "mvp": 7,
+        "avg": 2.29
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "competitions": []
+    }
+  }
+}

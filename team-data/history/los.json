@@ -1,1 +1,669 @@
-{"updatedAt":"2026-07-28","team":"LOS","history":{"players":[{"id":"yago","name":"Yago","photo":"yago.webp","currentTeam":"LOS","isCurrent":true,"kills":2399,"matches":1155,"avg":2.08,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]},{"id":"rigby245","name":"Rigby245","photo":"rigby.webp","currentTeam":"LOS","isCurrent":true,"kills":1828,"matches":1008,"avg":1.81,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]},{"id":"raone7","name":"Raone7","photo":"raone7.webp","currentTeam":"LOS","isCurrent":true,"kills":1803,"matches":879,"avg":2.05,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]},{"id":"general","name":"General!","photo":"general.webp","currentTeam":"LOS","isCurrent":true,"kills":1451,"matches":1285,"avg":1.13,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]},{"id":"mtsexy","name":"mtsexy.","photo":"mtsexy.webp","currentTeam":"LOS","isCurrent":true,"kills":85,"matches":56,"avg":1.52,"editions":["FFWS BR 2026 S1","EWC 2026","FFWS BR 2026 S2"]}],"currentCount":5,"formerCount":0},"titles":[{"event":"FFWS BR 2026 S1 - Final","type":"Campeão","date":"2026-05-31","tier":"S-Tier","logo":"trofeu.webp"},{"event":"Showmatch do Amoras 2026","type":"Campeão","date":"2026-01-21","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Maranhao Gamer Challenge 2025","type":"Campeão","date":"2025-12-06","tier":"C-Tier","logo":"trofeu.webp"},{"event":"Lidoma Endless Series 2025 - Americas Intercontinental Clash","type":"Campeão","date":"2025-09-25","tier":"B-Tier","logo":"trofeu.webp"},{"event":"Liga FNT Black Elite Season 11","type":"Campeão","date":"2025-06-02","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Liga Doutrina Mobile Season 1","type":"Campeão","date":"2025-05-15","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Del Rei Season 4","type":"Campeão","date":"2025-05-09","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Del Rei Season 3","type":"Campeão","date":"2025-02-26","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Liga LSX Brasileirão","type":"Campeão","date":"2024-10-22","tier":"D-Tier","logo":"trofeu.webp"},{"event":"Liga LBR Mobile Season 1","type":"Campeão","date":"2021-01-23","tier":"C-Tier","logo":"trofeu.webp"}],"results":[{"data":"2026-07-18","tier":"S-Tier","place":"8º","torneio":"EWC 2026 - Final"},{"data":"2026-05-31","tier":"S-Tier","place":"1º","torneio":"FFWS BR 2026 S1 - Final"},{"data":"2026-04-09","tier":"D-Tier","place":"2nd","torneio":"Goat League Season 2"},{"data":"2026-04-08","tier":"D-Tier","place":"6th","torneio":"GWL Showdown"},{"data":"2026-03-26","tier":"D-Tier","place":"2nd","torneio":"Yuta Invitational"},{"data":"2026-03-09","tier":"C-Tier","place":"2nd","torneio":"CPN Arena 2026"},{"data":"2026-03-03","tier":"D-Tier","place":"3rd","torneio":"Copa GWL Mobile 2026 Stage 1"},{"data":"2026-02-18","tier":"D-Tier","place":"5th","torneio":"Liga do Rei Elite Mobile 2026"},{"data":"2026-01-23","tier":"D-Tier","place":"10th","torneio":"Liga LPT Season 1"},{"data":"2026-01-23","tier":"D-Tier","place":"2nd","torneio":"Liga Marinho Season 3"},{"data":"2026-01-21","tier":"D-Tier","place":"1st","torneio":"Showmatch do Amoras 2026"},{"data":"2026-01-16","tier":"D-Tier","place":"2nd","torneio":"Showmatch Yuta 2026"}]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "LOS",
+  "history": {
+    "players": [
+      {
+        "id": "raone7",
+        "name": "Raone7",
+        "photo": "raone7.webp",
+        "currentTeam": "LOS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1803,
+        "matches": 879,
+        "avg": 2.05,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "general",
+        "name": "General!",
+        "photo": "general.webp",
+        "currentTeam": "LOS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1451,
+        "matches": 1285,
+        "avg": 1.13,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "rigby245",
+        "name": "Rigby245",
+        "photo": "rigby.webp",
+        "currentTeam": "LOS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1828,
+        "matches": 1008,
+        "avg": 1.81,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "yago",
+        "name": "Yago",
+        "photo": "yago.webp",
+        "currentTeam": "LOS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 2399,
+        "matches": 1155,
+        "avg": 2.08,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 5
+      },
+      {
+        "id": "mtsexy",
+        "name": "mtsexy.",
+        "photo": "mtsexy.webp",
+        "currentTeam": "LOS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 85,
+        "matches": 56,
+        "avg": 1.52,
+        "editions": [
+          "WB 2026 S1",
+          "EWC 2026",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "bielgod",
+        "name": "BIELGOD",
+        "photo": "bielgod.webp",
+        "currentTeam": "GOD E-SPORTS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 24,
+        "matches": 23,
+        "avg": 1.04,
+        "editions": [],
+        "passageOrder": 5
+      },
+      {
+        "id": "fon",
+        "name": "FON",
+        "photo": "silhueta.webp",
+        "currentTeam": "CORINTHIANS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 685,
+        "matches": 618,
+        "avg": 1.11,
+        "editions": [
+          "LBFF 7",
+          "LBFF 8",
+          "LBFF 9"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "cebolinha",
+        "name": "CEBOLINHA",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 352,
+        "matches": 370,
+        "avg": 0.95,
+        "editions": [
+          "LBFF 6",
+          "LBFF 7",
+          "LBFF 8"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "erick11",
+        "name": "Erick11",
+        "photo": "erick11.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 753,
+        "matches": 576,
+        "avg": 1.31,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "ice77",
+        "name": "Ice77",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 245,
+        "matches": 317,
+        "avg": 0.77,
+        "editions": [
+          "LBFF 8",
+          "LBFF 9",
+          "WB 2024 F1"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "lobato",
+        "name": "Lobato",
+        "photo": "silhueta.webp",
+        "currentTeam": "TEC",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 849,
+        "matches": 871,
+        "avg": 0.97,
+        "editions": [
+          "LBFF 9",
+          "WB 2024 F1",
+          "WB 2024 F2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "mandela",
+        "name": "Mandela",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 111,
+        "matches": 164,
+        "avg": 0.68,
+        "editions": [
+          "LBFF 7",
+          "LBFF 8",
+          "WB 2024 F1"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "mvr",
+        "name": "mvR",
+        "photo": "silhueta.webp",
+        "currentTeam": "TROPICAOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 398,
+        "matches": 419,
+        "avg": 0.95,
+        "editions": [
+          "LBFF 6",
+          "LBFF 7",
+          "LBFF 8"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "nando9",
+        "name": "NANDO9",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1404,
+        "matches": 889,
+        "avg": 1.58,
+        "editions": [
+          "WB 2024 F2",
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "ruan",
+        "name": "Ruan",
+        "photo": "silhueta.webp",
+        "currentTeam": "GOD ESPORTS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 522,
+        "matches": 513,
+        "avg": 1.02,
+        "editions": [
+          "LBFF 7",
+          "LBFF 8",
+          "LBFF 9"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "biri",
+        "name": "BIRI",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 38,
+        "matches": 77,
+        "avg": 0.49,
+        "editions": [
+          "LBFF 3",
+          "LBFF 5"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "guszx",
+        "name": "GUSZX",
+        "photo": "gus.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1672,
+        "matches": 1150,
+        "avg": 1.45,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "jaya",
+        "name": "Jaya",
+        "photo": "silhueta.webp",
+        "currentTeam": "",
+        "isCurrent": false,
+        "hasProfile": false,
+        "cargo": "Analista",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [],
+        "passageOrder": 2
+      },
+      {
+        "id": "leals",
+        "name": "LEALS",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 90,
+        "matches": 125,
+        "avg": 0.72,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "mamutezl",
+        "name": "MAMUTEZL",
+        "photo": "silhueta.webp",
+        "currentTeam": "AMAZON CRIPZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 257,
+        "matches": 319,
+        "avg": 0.81,
+        "editions": [
+          "LBFF 6",
+          "LBFF 7",
+          "LBFF 9"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "pitbull",
+        "name": "Pitbull",
+        "photo": "pitbull.webp",
+        "currentTeam": "TEAM SOLID",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1324,
+        "matches": 825,
+        "avg": 1.6,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "vitinnn",
+        "name": "VitinnN",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 49,
+        "matches": 95,
+        "avg": 0.52,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "vnzinnn",
+        "name": "VnzinnN",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 71,
+        "matches": 117,
+        "avg": 0.61,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "delta",
+        "name": "DELTA",
+        "photo": "silhueta.webp",
+        "currentTeam": "MAZE",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 11,
+        "matches": 9,
+        "avg": 1.22,
+        "editions": [],
+        "passageOrder": 1
+      },
+      {
+        "id": "duzzx",
+        "name": "duzzX",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 30,
+        "matches": 45,
+        "avg": 0.67,
+        "editions": [
+          "LBFF 5"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "jow",
+        "name": "JOW",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 59,
+        "matches": 70,
+        "avg": 0.84,
+        "editions": [
+          "WB 2024 F1"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "kazumawp",
+        "name": "KazumaWP",
+        "photo": "silhueta.webp",
+        "currentTeam": "FURY UNITED",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 37,
+        "matches": 24,
+        "avg": 1.54,
+        "editions": [],
+        "passageOrder": 1
+      },
+      {
+        "id": "mayky01",
+        "name": "MAYKY01",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 11,
+        "matches": 24,
+        "avg": 0.46,
+        "editions": [
+          "LBFF 3"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "rafax",
+        "name": "RafaX",
+        "photo": "silhueta.webp",
+        "currentTeam": "META GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 256,
+        "matches": 350,
+        "avg": 0.73,
+        "editions": [
+          "LBFF 6",
+          "LBFF 7",
+          "LBFF 8"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "whyzer7",
+        "name": "whyzer7",
+        "photo": "silhueta.webp",
+        "currentTeam": "LOS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 188,
+        "matches": 191,
+        "avg": 0.98,
+        "editions": [
+          "WB 2024 F1",
+          "WB 2024 F2"
+        ],
+        "passageOrder": 1
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 25
+  },
+  "titles": [
+    {
+      "event": "WB 2026 S1 - Final",
+      "type": "Campeão",
+      "date": "2026-05-31",
+      "tier": "S-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Showmatch do Amoras 2026",
+      "type": "Campeão",
+      "date": "2026-01-21",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Maranhao Gamer Challenge 2025",
+      "type": "Campeão",
+      "date": "2025-12-06",
+      "tier": "C-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Lidoma Endless Series 2025 - Americas Intercontinental Clash",
+      "type": "Campeão",
+      "date": "2025-09-25",
+      "tier": "B-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga FNT Black Elite Season 11",
+      "type": "Campeão",
+      "date": "2025-06-02",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga Doutrina Mobile Season 1",
+      "type": "Campeão",
+      "date": "2025-05-15",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Del Rei Season 4",
+      "type": "Campeão",
+      "date": "2025-05-09",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Del Rei Season 3",
+      "type": "Campeão",
+      "date": "2025-02-26",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga LSX Brasileirão",
+      "type": "Campeão",
+      "date": "2024-10-22",
+      "tier": "D-Tier",
+      "logo": "trofeu.webp"
+    },
+    {
+      "event": "Liga LBR Mobile Season 1",
+      "type": "Campeão",
+      "date": "2021-01-23",
+      "tier": "C-Tier",
+      "logo": "trofeu.webp"
+    }
+  ],
+  "results": [
+    {
+      "data": "2026-07-18",
+      "tier": "S-Tier",
+      "place": "8º",
+      "torneio": "EWC 2026 - Final"
+    },
+    {
+      "data": "2026-05-31",
+      "tier": "S-Tier",
+      "place": "1º",
+      "torneio": "WB 2026 S1 - Final"
+    },
+    {
+      "data": "2026-04-09",
+      "tier": "D-Tier",
+      "place": "2nd",
+      "torneio": "Goat League Season 2"
+    },
+    {
+      "data": "2026-04-08",
+      "tier": "D-Tier",
+      "place": "6th",
+      "torneio": "GWL Showdown"
+    },
+    {
+      "data": "2026-03-26",
+      "tier": "D-Tier",
+      "place": "2nd",
+      "torneio": "Yuta Invitational"
+    },
+    {
+      "data": "2026-03-09",
+      "tier": "C-Tier",
+      "place": "2nd",
+      "torneio": "CPN Arena 2026"
+    },
+    {
+      "data": "2026-03-03",
+      "tier": "D-Tier",
+      "place": "3rd",
+      "torneio": "Copa GWL Mobile 2026 Stage 1"
+    },
+    {
+      "data": "2026-02-18",
+      "tier": "D-Tier",
+      "place": "5th",
+      "torneio": "Liga do Rei Elite Mobile 2026"
+    },
+    {
+      "data": "2026-01-23",
+      "tier": "D-Tier",
+      "place": "10th",
+      "torneio": "Liga LPT Season 1"
+    },
+    {
+      "data": "2026-01-23",
+      "tier": "D-Tier",
+      "place": "2nd",
+      "torneio": "Liga Marinho Season 3"
+    },
+    {
+      "data": "2026-01-21",
+      "tier": "D-Tier",
+      "place": "1st",
+      "torneio": "Showmatch do Amoras 2026"
+    },
+    {
+      "data": "2026-01-16",
+      "tier": "D-Tier",
+      "place": "2nd",
+      "torneio": "Showmatch Yuta 2026"
+    }
+  ]
+}

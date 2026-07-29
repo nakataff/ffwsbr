@@ -1,1 +1,495 @@
-{"updatedAt":"2026-07-28","team":"INTZ","history":{"players":[{"id":"guszx","name":"GUSZX","photo":"gus.webp","currentTeam":"INTZ","isCurrent":true,"kills":1672,"matches":1150,"avg":1.45,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"honeyzl","name":"honeyzL","photo":"honey.webp","currentTeam":"INTZ","isCurrent":true,"kills":1118,"matches":837,"avg":1.34,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"joao7","name":"João7","photo":"joao.webp","currentTeam":"INTZ","isCurrent":true,"kills":986,"matches":781,"avg":1.26,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"kauaxp","name":"kauãxp","photo":"xp.webp","currentTeam":"INTZ","isCurrent":true,"kills":390,"matches":317,"avg":1.23,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"pereira","name":"PEREIRA","photo":"silhueta.webp","currentTeam":"INTZ","isCurrent":true,"kills":0,"matches":0,"avg":0,"editions":["FFWS BR 2026 S2"]},{"id":"whiskyx","name":"WHISKYx","photo":"whisky.webp","currentTeam":"","isCurrent":false,"kills":14,"matches":6,"avg":2.33,"editions":["FFWS BR 2026 S1"]}],"currentCount":5,"formerCount":1},"titles":[],"results":[]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "INTZ",
+  "history": {
+    "players": [
+      {
+        "id": "guszx",
+        "name": "GUS",
+        "photo": "gus.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1672,
+        "matches": 1150,
+        "avg": 1.45,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "joao7",
+        "name": "João7",
+        "photo": "joao.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 986,
+        "matches": 781,
+        "avg": 1.26,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 5
+      },
+      {
+        "id": "honeyzl",
+        "name": "honeyzL",
+        "photo": "honey.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1118,
+        "matches": 837,
+        "avg": 1.34,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 5
+      },
+      {
+        "id": "kauaxp",
+        "name": "kauãxp",
+        "photo": "xp.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 390,
+        "matches": 317,
+        "avg": 1.23,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "pereira",
+        "name": "PEREIRA",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "victor7",
+        "name": "VICTOR7",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 305,
+        "matches": 381,
+        "avg": 0.8,
+        "editions": [
+          "LBFF 6",
+          "LBFF 8",
+          "LBFF 9"
+        ],
+        "passageOrder": 5
+      },
+      {
+        "id": "guiga",
+        "name": "Guiga",
+        "photo": "silhueta.webp",
+        "currentTeam": "FLAMENGO",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 361,
+        "matches": 385,
+        "avg": 0.94,
+        "editions": [
+          "LBFF 8",
+          "LBFF 9",
+          "WB 2024 F1"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "mts007",
+        "name": "Mts007",
+        "photo": "mts007.webp",
+        "currentTeam": "AXS FUSION",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1010,
+        "matches": 834,
+        "avg": 1.21,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "dorito",
+        "name": "DORITO",
+        "photo": "silhueta.webp",
+        "currentTeam": "KOD ROYALS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 55,
+        "matches": 37,
+        "avg": 1.49,
+        "editions": [],
+        "passageOrder": 3
+      },
+      {
+        "id": "aranha",
+        "name": "Aranha",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 156,
+        "matches": 195,
+        "avg": 0.8,
+        "editions": [
+          "LBFF 3",
+          "LBFF 4",
+          "LBFF 5"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "azay",
+        "name": "Azay",
+        "photo": "silhueta.webp",
+        "currentTeam": "FLAMENGO",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 278,
+        "matches": 317,
+        "avg": 0.88,
+        "editions": [
+          "LBFF 5",
+          "LBFF 9",
+          "WB 2024 F1"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "ghost7",
+        "name": "Ghost7",
+        "photo": "silhueta.webp",
+        "currentTeam": "FURY UNITED",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 33,
+        "matches": 24,
+        "avg": 1.38,
+        "editions": [],
+        "passageOrder": 2
+      },
+      {
+        "id": "guifox",
+        "name": "Guifox",
+        "photo": "silhueta.webp",
+        "currentTeam": "SAVEX",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 324,
+        "matches": 318,
+        "avg": 1.02,
+        "editions": [
+          "WB 2024 F1",
+          "WB 2024 F2",
+          "WB 2025 S1"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "vazily",
+        "name": "VAZILY",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 115,
+        "matches": 148,
+        "avg": 0.78,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3",
+          "LBFF 4"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "aun",
+        "name": "Aun",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 72,
+        "matches": 126,
+        "avg": 0.57,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "drk",
+        "name": "drk",
+        "photo": "silhueta.webp",
+        "currentTeam": "INFLUENCE RAGE",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 204,
+        "matches": 230,
+        "avg": 0.89,
+        "editions": [
+          "LBFF 9",
+          "WB 2024 F1"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "guerra",
+        "name": "Guerra",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 81,
+        "matches": 99,
+        "avg": 0.82,
+        "editions": [
+          "LBFF 4",
+          "LBFF 5"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "guuh",
+        "name": "Guuh",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 14,
+        "matches": 27,
+        "avg": 0.52,
+        "editions": [
+          "LBFF 3"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "italo",
+        "name": "ITALO",
+        "photo": "italo.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 936,
+        "matches": 921,
+        "avg": 1.02,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "l7",
+        "name": "L7",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 18,
+        "matches": 37,
+        "avg": 0.49,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "lukaskn",
+        "name": "Lukaskn",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 220,
+        "matches": 294,
+        "avg": 0.75,
+        "editions": [
+          "LBFF 3",
+          "LBFF 4",
+          "LBFF 5"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "mitomvp",
+        "name": "MITOmvp",
+        "photo": "mitomvp.webp",
+        "currentTeam": "ALPHA7",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 403,
+        "matches": 337,
+        "avg": 1.2,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2025 S2",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "moreira",
+        "name": "Moreira",
+        "photo": "silhueta.webp",
+        "currentTeam": "TROPA",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 250,
+        "matches": 372,
+        "avg": 0.67,
+        "editions": [
+          "LBFF 4",
+          "LBFF 6",
+          "LBFF 7"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "ruivo",
+        "name": "Ruivo",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 0,
+        "matches": 9,
+        "avg": 0.0,
+        "editions": [
+          "LBFF 5"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "soares",
+        "name": "SOARES",
+        "photo": "soares.webp",
+        "currentTeam": "CIVIS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 272,
+        "matches": 256,
+        "avg": 1.06,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "supreme",
+        "name": "Supreme",
+        "photo": "silhueta.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 94,
+        "matches": 107,
+        "avg": 0.88,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "theus",
+        "name": "Theus",
+        "photo": "theus.webp",
+        "currentTeam": "AXS FUSION",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 396,
+        "matches": 305,
+        "avg": 1.3,
+        "editions": [
+          "WB 2024 F1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "whiskyx",
+        "name": "WHISKYx",
+        "photo": "whisky.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 14,
+        "matches": 6,
+        "avg": 2.33,
+        "editions": [
+          "WB 2026 S1"
+        ],
+        "passageOrder": 1
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 23
+  },
+  "titles": [],
+  "results": []
+}

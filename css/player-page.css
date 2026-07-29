@@ -6,3 +6,6 @@
 @media(max-width:640px){.current-grid,.historical-grid,.basic-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stage-list{overflow-x:auto}.stage-row{min-width:590px}.trophy-grid{grid-template-columns:1fr}}
 .historical-grid.compact-history{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:640px){.historical-grid.compact-history{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Passagens cronológicas */
+.team-history-card{position:relative}.team-history-card:not(:last-child):after{content:'›';position:absolute;right:-9px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:1.25rem;font-weight:950;z-index:2}@media(max-width:640px){.team-history-card:not(:last-child):after{content:'↓';right:auto;left:50%;top:auto;bottom:-16px;transform:translateX(-50%)}}

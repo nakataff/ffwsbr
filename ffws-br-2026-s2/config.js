@@ -8,7 +8,7 @@ window.FFWS_BR_2026_S2_CONFIG = Object.freeze({
       participantsTitle: 'Times Participantes',
       classificationTitle: 'Classificação Geral',
       format: {
-        kicker: 'FFWS BR 2026 S2',
+        kicker: 'WB 2026 S2',
         title: 'Formato da Classificatória',
         description: '14 equipes • 14 rodadas • duas equipes ficam de folga por rodada • os 12 melhores avançam para a Segunda Fase • os dois últimos são rebaixados.',
         legends: [

@@ -1,1 +1,238 @@
-{"updatedAt":"2026-07-28","team":"ALPHA7","history":{"players":[{"id":"jnmvp7","name":"JNmvp7","photo":"jnmvp.webp","currentTeam":"ALPHA7","isCurrent":true,"kills":476,"matches":208,"avg":2.29,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"lc777","name":"LC777","photo":"lc.webp","currentTeam":"ALPHA7","isCurrent":true,"kills":407,"matches":295,"avg":1.38,"editions":["FFWS BR 2026 S2"]},{"id":"mitomvp","name":"MITOmvp","photo":"mitomvp.webp","currentTeam":"ALPHA7","isCurrent":true,"kills":403,"matches":337,"avg":1.2,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"sam7","name":"Sam7","photo":"sam7.webp","currentTeam":"ALPHA7","isCurrent":true,"kills":276,"matches":208,"avg":1.33,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"brisa7","name":"Brisa7","photo":"brisa7.webp","currentTeam":"ALPHA7","isCurrent":true,"kills":50,"matches":54,"avg":0.93,"editions":["FFWS BR 2026 S1","FFWS BR 2026 S2"]},{"id":"neyawp","name":"NEYAWP","photo":"neyawp.webp","currentTeam":"CIVIS","isCurrent":false,"kills":194,"matches":158,"avg":1.23,"editions":["FFWS BR 2026 S1"]}],"currentCount":5,"formerCount":1},"titles":[],"results":[]}
+{
+  "updatedAt": "2026-07-28",
+  "team": "ALPHA7",
+  "history": {
+    "players": [
+      {
+        "id": "sam7",
+        "name": "Sam7",
+        "photo": "sam7.webp",
+        "currentTeam": "ALPHA7",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 276,
+        "matches": 208,
+        "avg": 1.33,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "brisa7",
+        "name": "Brisa7",
+        "photo": "brisa7.webp",
+        "currentTeam": "ALPHA7",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 50,
+        "matches": 54,
+        "avg": 0.93,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "mitomvp",
+        "name": "MITOmvp",
+        "photo": "mitomvp.webp",
+        "currentTeam": "ALPHA7",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 403,
+        "matches": 337,
+        "avg": 1.2,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2025 S2",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "lc777",
+        "name": "LC777",
+        "photo": "lc.webp",
+        "currentTeam": "ALPHA7",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 407,
+        "matches": 295,
+        "avg": 1.38,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "jnmvp7",
+        "name": "JNmvp7",
+        "photo": "jnmvp.webp",
+        "currentTeam": "ALPHA7",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 476,
+        "matches": 208,
+        "avg": 2.29,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 2
+      },
+      {
+        "id": "caua-9",
+        "name": "Cauã9",
+        "photo": "caua.webp",
+        "currentTeam": "E1 SPORTS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 838,
+        "matches": 768,
+        "avg": 1.09,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "honeyzl",
+        "name": "honeyzL",
+        "photo": "honey.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1118,
+        "matches": 837,
+        "avg": 1.34,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "italo",
+        "name": "ITALO",
+        "photo": "italo.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 936,
+        "matches": 921,
+        "avg": 1.02,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "joao7",
+        "name": "João7",
+        "photo": "joao.webp",
+        "currentTeam": "INTZ",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 986,
+        "matches": 781,
+        "avg": 1.26,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "stark",
+        "name": "Stark",
+        "photo": "stark.webp",
+        "currentTeam": "LOOPS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1133,
+        "matches": 832,
+        "avg": 1.36,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "frois",
+        "name": "Frois",
+        "photo": "silhueta.webp",
+        "currentTeam": "",
+        "isCurrent": false,
+        "hasProfile": false,
+        "cargo": "Coach",
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
+        "editions": [],
+        "passageOrder": 3
+      },
+      {
+        "id": "mitinx",
+        "name": "MitinX",
+        "photo": "mitin.webp",
+        "currentTeam": "RUSH GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 446,
+        "matches": 309,
+        "avg": 1.44,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "neyawp",
+        "name": "NEYAWP",
+        "photo": "neyawp.webp",
+        "currentTeam": "CIVIS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 194,
+        "matches": 158,
+        "avg": 1.23,
+        "editions": [
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      }
+    ],
+    "currentCount": 5,
+    "formerCount": 8
+  },
+  "titles": [],
+  "results": []
+}
