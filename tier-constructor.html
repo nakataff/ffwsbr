@@ -7,10 +7,10 @@
   <title>Tier Constructor | Central Free Fire</title>
   <meta name="description" content="Monte tier lists de times e jogadores de Free Fire e exporte em PNG.">
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/tier-constructor.css?v=20260801-share-v2">
+  <link rel="stylesheet" href="css/tier-constructor.css?v=20260801-tier-v3">
   <link rel="stylesheet" href="css/public-shell.css?v=20260801-tier-constructor-v1">
   <script defer src="js/public-shell.min.js?v=20260801-tier-constructor-v1"></script>
-  <script defer src="js/tier-constructor.js?v=20260801-share-v2"></script>
+  <script defer src="js/tier-constructor.js?v=20260801-tier-v3"></script>
 </head>
 <body class="tier-constructor-page">
 
@@ -83,28 +83,33 @@
       </section>
 
 
-      <section class="panel tier-site-library" id="tierSiteLibrary">
-        <div class="tier-library-head">
+      <details class="panel tier-site-library" id="tierSiteLibrary">
+        <summary class="tier-library-summary">
           <div>
             <span class="field-label">Biblioteca do site</span>
-            <h2>Times e jogadores</h2>
+            <h2>Buscar times e jogadores</h2>
           </div>
-          <span id="tierAssetCount" class="count">Carrega ao pesquisar</span>
-        </div>
-        <div class="tier-library-controls">
-          <div class="segmented tier-library-tabs" id="tierAssetTypeButtons" aria-label="Tipo de imagem">
-            <button type="button" class="active" data-value="team">Times</button>
-            <button type="button" data-value="player">Jogadores</button>
+          <div class="tier-library-summary-meta">
+            <span id="tierAssetCount" class="count">Busca sob demanda</span>
+            <span class="tier-library-chevron" aria-hidden="true">▾</span>
           </div>
-          <label class="tier-library-search">
-            <span class="hidden">Buscar na biblioteca</span>
-            <input id="tierAssetSearch" type="search" placeholder="Busque LOUD, Buriram, Trap..." autocomplete="off" />
-          </label>
-          <button id="tierAssetAddVisible" type="button">Adicionar exibidos</button>
+        </summary>
+        <div class="tier-library-body">
+          <div class="tier-library-controls">
+            <div class="segmented tier-library-tabs" id="tierAssetTypeButtons" aria-label="Tipo de imagem">
+              <button type="button" class="active" data-value="team">Times</button>
+              <button type="button" data-value="player">Jogadores</button>
+            </div>
+            <label class="tier-library-search">
+              <span class="hidden">Buscar na biblioteca</span>
+              <input id="tierAssetSearch" type="search" placeholder="Digite LOUD, Buriram, Trap..." autocomplete="off" />
+            </label>
+            <button id="tierAssetAddVisible" type="button" disabled>Adicionar resultados</button>
+          </div>
+          <div id="tierAssetStatus" class="tier-library-status" aria-live="polite">Digite um nome para pesquisar. Nenhuma logo é carregada enquanto o campo estiver vazio.</div>
+          <div id="tierAssetResults" class="tier-library-results"></div>
         </div>
-        <div id="tierAssetStatus" class="tier-library-status" aria-live="polite">Digite para buscar ou veja os primeiros itens.</div>
-        <div id="tierAssetResults" class="tier-library-results"></div>
-      </section>
+      </details>
 
       <section class="panel board-scroll">
         <div id="tierExport" class="tier-export">
@@ -125,7 +130,7 @@
 
         <details id="trashPanel" class="trash-panel">
           <summary>🗑 Logos ocultas <span id="archivedCount" class="count">0 imagens</span></summary>
-          <div id="archivedBank" class="image-bank archived-bank">
+          <div id="archivedBank" class="image-bank archived-bank trash-dropzone" data-zone="archive" aria-label="Lixeira de logos">
             <div class="empty-hint">Nenhuma logo está oculta.</div>
           </div>
         </details>

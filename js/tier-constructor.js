@@ -24,7 +24,9 @@
       const BROWSER_AUTOSAVE_NAME = "__tierlist_autosave__";
       const CURRENT_PROJECT_KEY = "tierlist_current_browser_project";
 
-      const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20260801-v1";
+      const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20260801-v2";
+      const TIER_DEFAULT_PRESET_URL = "tier-constructor/default-wb-2026-s2.json?v=20260801-v1";
+      const TIER_LOGO_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv";
       const TIER_SHARE_HASH_KEY = "tier";
       const TIER_SHARE_VERSION = 1;
       const TIER_SHARE_SAFE_URL_LENGTH = 12000;
@@ -34,6 +36,7 @@
       let tierAssetType = "team";
       let tierAssetQuery = "";
       let tierAssetTimer = null;
+      let tierLiveLogoPromise = null;
       let tierVisibleAssets = [];
       const tierAssetSourceCache = new Map();
 
@@ -144,6 +147,87 @@
         return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
       }
 
+      function tierAssetSlug(value) {
+        return tierNormalizeSearch(value).replace(/\s+/g, "-") || "item";
+      }
+
+      function tierRefreshAssetIndex(data) {
+        const assets = Array.isArray(data?.assets) ? data.assets : [];
+        assets.forEach(asset => {
+          asset._search = tierNormalizeSearch([asset.name, asset.subtitle, ...(asset.aliases || [])].join(" "));
+          asset._title = tierNormalizeSearch(asset.name);
+        });
+        data.assets = assets;
+        data.assetMap = new Map(assets.map(asset => [asset.id, asset]));
+        data.counts = {
+          teams: assets.filter(asset => asset.type === "team").length,
+          players: assets.filter(asset => asset.type === "player").length
+        };
+        const count = document.getElementById("tierAssetCount");
+        if (count) count.textContent = `${data.counts.teams} times · ${data.counts.players} jogadores`;
+      }
+
+      function tierParseLogoSheet(tsv) {
+        const lines = String(tsv || "").replace(/^\uFEFF/, "").split(/\r?\n/).filter(Boolean);
+        if (lines.length < 2) return [];
+        const headers = lines.shift().split("\t").map(tierNormalizeSearch);
+        const nameIndex = headers.findIndex(value => ["equipe", "time", "team", "nome"].includes(value));
+        const logoIndex = headers.findIndex(value => ["logo", "imagem", "image", "url"].includes(value));
+        if (nameIndex < 0 || logoIndex < 0) return [];
+        return lines.map(line => {
+          const cells = line.split("\t");
+          return { name: String(cells[nameIndex] || "").trim(), image: String(cells[logoIndex] || "").trim() };
+        }).filter(item => item.name && /^https?:\/\//i.test(item.image));
+      }
+
+      function tierMergeLiveTeamLogos(rows) {
+        if (!tierAssetData || !rows.length) return 0;
+        const teamAssets = tierAssetData.assets.filter(asset => asset.type === "team");
+        let changed = 0;
+        rows.forEach(row => {
+          const normalized = tierNormalizeSearch(row.name);
+          let asset = teamAssets.find(item => item._title === normalized || (item.aliases || []).some(alias => tierNormalizeSearch(alias) === normalized));
+          if (asset) {
+            if (asset.image !== row.image) {
+              asset.image = row.image;
+              changed += 1;
+            }
+            if (!(asset.aliases || []).some(alias => tierNormalizeSearch(alias) === normalized) && asset._title !== normalized) {
+              asset.aliases = [...(asset.aliases || []), row.name];
+              changed += 1;
+            }
+            return;
+          }
+          const base = `team:sheet-${tierAssetSlug(row.name)}`;
+          let id = base;
+          let suffix = 2;
+          while (tierAssetData.assets.some(item => item.id === id)) id = `${base}-${suffix++}`;
+          const newAsset = { id, type: "team", name: row.name, subtitle: "Banco de logos", image: row.image, aliases: [] };
+          tierAssetData.assets.push(newAsset);
+          teamAssets.push(newAsset);
+          changed += 1;
+        });
+        if (changed) tierRefreshAssetIndex(tierAssetData);
+        return changed;
+      }
+
+      function loadLiveTeamLogos() {
+        if (tierAssetType !== "team" || !tierNormalizeSearch(tierAssetQuery)) return Promise.resolve(0);
+        if (tierLiveLogoPromise) return tierLiveLogoPromise;
+        tierLiveLogoPromise = fetch(TIER_LOGO_SHEET_URL, { cache: "no-store", mode: "cors" })
+          .then(response => {
+            if (!response.ok) throw new Error("Planilha de logos indisponível");
+            return response.text();
+          })
+          .then(tierParseLogoSheet)
+          .then(tierMergeLiveTeamLogos)
+          .catch(error => {
+            console.warn("Não foi possível sincronizar a planilha de logos", error);
+            return 0;
+          });
+        return tierLiveLogoPromise;
+      }
+
       function loadTierAssetData() {
         if (tierAssetData) return Promise.resolve(tierAssetData);
         if (tierAssetPromise) return tierAssetPromise;
@@ -155,16 +239,8 @@
             return response.json();
           })
           .then(data => {
-            const assets = Array.isArray(data.assets) ? data.assets : [];
-            assets.forEach(asset => {
-              asset._search = tierNormalizeSearch([asset.name, asset.subtitle, ...(asset.aliases || [])].join(" "));
-              asset._title = tierNormalizeSearch(asset.name);
-            });
-            data.assets = assets;
-            data.assetMap = new Map(assets.map(asset => [asset.id, asset]));
             tierAssetData = data;
-            const count = document.getElementById("tierAssetCount");
-            if (count) count.textContent = `${data.counts?.teams || 0} times · ${data.counts?.players || 0} jogadores`;
+            tierRefreshAssetIndex(data);
             renderTierAssetResults();
             return data;
           })
@@ -196,13 +272,21 @@
           return;
         }
         const query = tierNormalizeSearch(tierAssetQuery);
+        const addVisibleButton = document.getElementById("tierAssetAddVisible");
+        if (!query) {
+          tierVisibleAssets = [];
+          root.replaceChildren();
+          if (status) status.textContent = "Digite um nome para pesquisar. Nenhuma logo é carregada enquanto o campo estiver vazio.";
+          if (addVisibleButton) addVisibleButton.disabled = true;
+          return;
+        }
         const tokens = query.split(" ").filter(Boolean);
         tierVisibleAssets = tierAssetData.assets
           .filter(asset => asset.type === tierAssetType)
           .map(asset => ({ asset, score: tierAssetScore(asset, query, tokens) }))
           .filter(entry => entry.score >= 0)
           .sort((a, b) => b.score - a.score || a.asset.name.localeCompare(b.asset.name, "pt-BR"))
-          .slice(0, query ? 60 : 36)
+          .slice(0, 40)
           .map(entry => entry.asset);
 
         root.innerHTML = "";
@@ -212,6 +296,7 @@
           empty.textContent = "Nenhum item encontrado.";
           root.appendChild(empty);
           if (status) status.textContent = "Tente outro nome ou apelido.";
+          if (addVisibleButton) addVisibleButton.disabled = true;
           return;
         }
         const fragment = document.createDocumentFragment();
@@ -248,7 +333,8 @@
           fragment.appendChild(button);
         });
         root.appendChild(fragment);
-        if (status) status.textContent = `${tierVisibleAssets.length} ${tierAssetType === "team" ? "times" : "jogadores"} exibidos.`;
+        if (addVisibleButton) addVisibleButton.disabled = false;
+        if (status) status.textContent = `${tierVisibleAssets.length} ${tierAssetType === "team" ? "times" : "jogadores"} encontrados.`;
       }
 
       function tierBlobToDataUrl(blob) {
@@ -341,36 +427,27 @@
         return state.bank.length || state.archived.length || Object.keys(state.images).length || state.rows.some(row => row.images?.length) || state.caption || state.background;
       }
 
-      async function loadTierPreset(presetId) {
-        const data = await loadTierAssetData();
-        const preset = (data.presets || []).find(item => item.id === presetId);
-        if (!preset) return;
-        if (tierProjectHasContent() && !confirm(`Abrir “${preset.name}”? O projeto atual será substituído.`)) return;
+      async function applyTierPreset(preset, assets, options = {}) {
+        if (!preset) return false;
+        const { skipConfirm = false, silent = false } = options;
+        if (!skipConfirm && tierProjectHasContent() && !confirm(`Abrir “${preset.name}”? O projeto atual será substituído.`)) return false;
         const status = document.getElementById("tierPresetStatus");
         const buttons = [...document.querySelectorAll("[data-tier-preset]")];
         buttons.forEach(button => button.disabled = true);
-        if (status) status.textContent = "Carregando projeto...";
+        if (status && !silent) status.textContent = "Carregando projeto...";
         try {
-          state.rows = (preset.rows || []).map(row => ({
-            id: crypto.randomUUID(),
-            name: row.name,
-            color: row.color,
-            images: [],
-            height: DEFAULT_SETTINGS.rowMinHeight
-          }));
+          state.rows = (preset.rows || []).map(row => ({ id: crypto.randomUUID(), name: row.name, color: row.color, images: [], height: DEFAULT_SETTINGS.rowMinHeight }));
           state.images = {};
           state.bank = [];
           state.archived = [];
           state.caption = preset.caption || preset.name || "";
-          state.captionImage = "";
-          state.background = "";
+          state.captionImage = preset.captionImage || "";
+          state.background = preset.background || "";
           state.settings = { ...DEFAULT_SETTINGS, ...(preset.settings || {}) };
           els.captionInput.value = state.caption;
-          const assets = (preset.assetIds || []).map(id => data.assetMap.get(id)).filter(Boolean);
           for (let i = 0; i < assets.length; i += 5) {
             await Promise.all(assets.slice(i, i + 5).map(registerTierAsset));
             render();
-            if (status) status.textContent = `${Math.min(i + 5, assets.length)} de ${assets.length} imagens`;
             await new Promise(resolve => setTimeout(resolve, 0));
           }
           currentBrowserProjectName = "";
@@ -379,12 +456,28 @@
           historyIndex = -1;
           render();
           pushHistory(true);
-          closeProjectMenu();
-          showToast(`${preset.name} aberto.`);
-          if (status) status.textContent = "Projeto pronto.";
+          if (status && !silent) status.textContent = `${assets.length} imagens prontas para classificar.`;
+          if (!silent) showToast(`${preset.name} aberto.`);
+          document.getElementById("projectMenu")?.removeAttribute("open");
+          return true;
         } finally {
           buttons.forEach(button => button.disabled = false);
         }
+      }
+
+      async function loadTierPreset(presetId, options = {}) {
+        const data = await loadTierAssetData();
+        const preset = (data.presets || []).find(item => item.id === presetId);
+        if (!preset) return false;
+        const assets = (preset.assetIds || []).map(id => data.assetMap.get(id)).filter(Boolean);
+        return applyTierPreset(preset, assets, options);
+      }
+
+      async function loadDefaultTierPreset() {
+        const response = await fetch(TIER_DEFAULT_PRESET_URL, { cache: "default" });
+        if (!response.ok) throw new Error("Projeto padrão indisponível");
+        const preset = await response.json();
+        return applyTierPreset(preset, Array.isArray(preset.assets) ? preset.assets : [], { skipConfirm: true, silent: true });
       }
 
       function defaultImageEdit() {
@@ -569,13 +662,13 @@
 
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = zoneId === "bank" ? "archive-image" : "remove-image";
-        remove.title = zoneId === "bank" ? "Ocultar na lixeira" : "Excluir imagem";
-        remove.textContent = zoneId === "bank" ? "🗑" : "×";
+        remove.className = "archive-image";
+        remove.title = "Mover para a lixeira";
+        remove.setAttribute("aria-label", "Mover imagem para a lixeira");
+        remove.textContent = "🗑";
         remove.addEventListener("click", (event) => {
           event.stopPropagation();
-          if (zoneId === "bank") archiveImage(imageId);
-          else deleteImage(imageId);
+          archiveImage(imageId);
         });
 
         actions.append(edit, remove);
@@ -697,6 +790,44 @@
         els.archivedCount.textContent = `${state.archived.length} ${state.archived.length === 1 ? "imagem" : "imagens"}`;
       }
 
+      function setupTrashDropzone() {
+        const panel = document.getElementById("trashPanel");
+        if (!panel || !els.archivedBank) return;
+        let openTimer = null;
+        const activate = event => {
+          if (!draggedImageId) return;
+          event.preventDefault();
+          panel.classList.add("drag-over");
+          clearTimeout(openTimer);
+          openTimer = setTimeout(() => { panel.open = true; }, 180);
+        };
+        const deactivate = event => {
+          if (event && panel.contains(event.relatedTarget)) return;
+          clearTimeout(openTimer);
+          panel.classList.remove("drag-over");
+        };
+        panel.addEventListener("dragenter", activate);
+        panel.addEventListener("dragover", activate);
+        panel.addEventListener("dragleave", deactivate);
+        panel.addEventListener("drop", event => {
+          if (!draggedImageId) return;
+          event.preventDefault();
+          clearTimeout(openTimer);
+          panel.classList.remove("drag-over");
+          const imageId = draggedImageId;
+          draggedImageId = null;
+          archiveImage(imageId);
+        });
+        els.archivedBank.addEventListener("click", event => {
+          if (!isMobileInteractionMode() || !touchSelectedImageId) return;
+          if (event.target.closest(".image-card") || event.target.closest("button")) return;
+          event.preventDefault();
+          const imageId = touchSelectedImageId;
+          touchSelectedImageId = null;
+          archiveImage(imageId);
+        });
+      }
+
       function createTierRow(row, index) {
         const rowEl = document.createElement("div");
         rowEl.className = "tier-row";
@@ -731,8 +862,11 @@
         const up = miniButton("↑", "Mover row para cima", () => moveRow(index, -1));
         const down = miniButton("↓", "Mover row para baixo", () => moveRow(index, 1));
         const clear = miniButton("⌫", "Mover imagens desta row para o banco", () => clearRow(row.id));
-        const del = miniButton("×", "Excluir row", () => deleteRow(row.id));
-        tools.append(up, down, clear, del);
+        tools.append(up, down, clear);
+
+        const rowDelete = miniButton("×", `Excluir row ${row.name}`, () => deleteRow(row.id));
+        rowDelete.classList.add("row-delete-button");
+        rowDelete.setAttribute("aria-label", `Excluir row ${row.name}`);
 
         const color = document.createElement("input");
         color.type = "color";
@@ -746,7 +880,7 @@
           scheduleHistoryPush();
         });
 
-        label.append(name, tools, color);
+        label.append(rowDelete, name, tools, color);
 
         const zone = document.createElement("div");
         zone.className = "dropzone";
@@ -1044,10 +1178,16 @@
         }
         const index = state.rows.findIndex(row => row.id === rowId);
         if (index < 0) return;
-        state.bank.push(...state.rows[index].images);
+        const row = state.rows[index];
+        const message = row.images.length
+          ? `Excluir a row “${row.name}”? As ${row.images.length} imagens voltarão para a área não classificada.`
+          : `Excluir a row “${row.name}”?`;
+        if (!confirm(message)) return;
+        state.bank.push(...row.images);
         state.rows.splice(index, 1);
         render();
         pushHistory();
+        showToast("Row excluída.");
       }
 
       function renderRowManager() {
@@ -3424,18 +3564,40 @@
 
 
       const tierAssetSearchInput = document.getElementById("tierAssetSearch");
-      tierAssetSearchInput?.addEventListener("focus", () => loadTierAssetData().catch(() => {}), { once: true });
       tierAssetSearchInput?.addEventListener("input", event => {
         tierAssetQuery = event.target.value;
         clearTimeout(tierAssetTimer);
-        tierAssetTimer = setTimeout(() => loadTierAssetData().then(renderTierAssetResults).catch(() => {}), 45);
+        if (!tierNormalizeSearch(tierAssetQuery)) {
+          renderTierAssetResults();
+          return;
+        }
+        tierAssetTimer = setTimeout(async () => {
+          try {
+            await loadTierAssetData();
+            renderTierAssetResults();
+            if (tierAssetType === "team") {
+              await loadLiveTeamLogos();
+              renderTierAssetResults();
+            }
+          } catch (_) {}
+        }, 70);
       });
       document.getElementById("tierAssetTypeButtons")?.addEventListener("click", event => {
         const button = event.target.closest("button[data-value]");
         if (!button) return;
         tierAssetType = button.dataset.value;
         document.querySelectorAll("#tierAssetTypeButtons button[data-value]").forEach(item => item.classList.toggle("active", item === button));
-        loadTierAssetData().then(renderTierAssetResults).catch(() => {});
+        if (!tierNormalizeSearch(tierAssetQuery)) {
+          renderTierAssetResults();
+          return;
+        }
+        loadTierAssetData().then(async () => {
+          renderTierAssetResults();
+          if (tierAssetType === "team") {
+            await loadLiveTeamLogos();
+            renderTierAssetResults();
+          }
+        }).catch(() => {});
       });
       document.getElementById("tierAssetResults")?.addEventListener("click", event => {
         const button = event.target.closest("[data-asset-id]");
@@ -3444,11 +3606,14 @@
         if (asset) addTierAsset(asset).catch(() => showToast("Não foi possível adicionar a imagem."));
       });
       document.getElementById("tierAssetAddVisible")?.addEventListener("click", () => {
+        if (!tierNormalizeSearch(tierAssetQuery)) return;
         loadTierAssetData().then(addVisibleTierAssets).catch(() => showToast("Biblioteca indisponível."));
       });
       document.querySelectorAll("[data-tier-preset]").forEach(button => {
         button.addEventListener("click", () => loadTierPreset(button.dataset.tierPreset).catch(() => showToast("Não foi possível abrir o projeto.")));
       });
+
+      setupTrashDropzone();
 
       const initializeBlankProject = () => {
         els.captionInput.value = state.caption;
@@ -3479,11 +3644,22 @@
             updateHistoryButtons();
             showToast("Projeto recuperado do navegador.");
           } else {
-            initializeBlankProject();
+            try {
+              const loaded = await loadDefaultTierPreset();
+              if (!loaded) initializeBlankProject();
+            } catch (error) {
+              console.warn("Não foi possível abrir o projeto padrão da WB 2026 S2", error);
+              initializeBlankProject();
+            }
           }
         } catch (error) {
           console.warn("Não foi possível recuperar o projeto do navegador", error);
-          initializeBlankProject();
+          try {
+            const loaded = await loadDefaultTierPreset();
+            if (!loaded) initializeBlankProject();
+          } catch (_) {
+            initializeBlankProject();
+          }
         }
       })();
     })();

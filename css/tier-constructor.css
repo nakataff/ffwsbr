@@ -511,6 +511,9 @@
     }
 
     .image-card .remove-image,
+    .image-card .archive-image,
+    .image-card .restore-image,
+    .image-card .delete-forever-image,
     .image-card .edit-image {
       width: 24px;
       height: 24px;
@@ -524,6 +527,9 @@
       transform: none;
       font-weight: 900;
     }
+
+    .image-card:hover .card-actions,
+    .image-card:focus-within .card-actions { opacity: 1; }
 
     .image-card.touch-selected {
       outline: 3px solid #ffd84d;
@@ -1381,6 +1387,9 @@
       button:hover { transform: none; }
       .image-card .card-actions { opacity: 1; }
       .image-card .remove-image,
+      .image-card .archive-image,
+      .image-card .restore-image,
+      .image-card .delete-forever-image,
       .image-card .edit-image { width: 28px; height: 28px; }
       .dropzone { -webkit-tap-highlight-color: transparent; }
     }
@@ -1437,3 +1446,29 @@ body.tier-constructor-page{background:#050810}
 .share-project-status.error{color:#ffb6b6}
 .share-project-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;padding-top:2px}
 @media(max-width:760px){.share-project-dialog{width:98vw;max-width:98vw}.share-project-link-row{grid-template-columns:1fr}.share-project-actions{display:grid;grid-template-columns:1fr}.share-project-actions button{width:100%}}
+
+
+/* Tier Constructor UX refinements */
+.row-delete-button{position:absolute;top:6px;left:6px;z-index:4;width:25px;height:25px;min-width:25px;padding:0;display:grid;place-items:center;border:1px solid rgba(0,0,0,.28);border-radius:7px;color:#fff!important;background:rgba(145,18,18,.86)!important;opacity:.76;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.row-delete-button:hover,.row-delete-button:focus-visible{opacity:1;background:#b21f2d!important}
+.row-tools{z-index:3}
+.image-card .card-actions{z-index:6}
+.image-card .archive-image,.image-card .restore-image,.image-card .delete-forever-image{width:24px;height:24px;padding:0;display:grid;place-items:center;border:0;border-radius:50%;color:#fff;background:rgba(0,0,0,.78);transform:none;font-weight:900;line-height:1}
+.image-card .archive-image{font-size:12px}
+.trash-panel{transition:border-color .15s ease,background .15s ease,box-shadow .15s ease}
+.trash-panel.drag-over{border-color:#ffcc33;background:rgba(255,204,51,.08);box-shadow:inset 0 0 0 2px rgba(255,204,51,.22)}
+.trash-panel.drag-over>summary{color:#ffe28a}
+.trash-dropzone{transition:background .15s ease,outline-color .15s ease}
+.tier-site-library{content-visibility:auto;contain-intrinsic-size:92px;padding:0;overflow:hidden}
+.tier-library-summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;cursor:pointer;list-style:none;user-select:none}
+.tier-library-summary::-webkit-details-marker{display:none}
+.tier-library-summary h2{margin:2px 0 0;font-size:20px}
+.tier-library-summary .field-label{margin:0}
+.tier-library-summary-meta{display:flex;align-items:center;gap:10px;white-space:nowrap}
+.tier-library-chevron{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#101725;color:#8edcff;transition:transform .18s ease}
+.tier-site-library[open] .tier-library-chevron{transform:rotate(180deg)}
+.tier-library-body{padding:0 14px 14px;border-top:1px solid #21324f}
+.tier-library-controls{padding-top:14px}
+.tier-library-results:empty{display:none}
+.tier-library-status{min-height:22px}
+@media(max-width:760px){.tier-library-summary{align-items:flex-start}.tier-library-summary-meta{align-items:flex-end;flex-direction:column-reverse;gap:5px}.row-delete-button{width:28px;height:28px;min-width:28px;opacity:1}}
