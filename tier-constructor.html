@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050810">
+  <title>Tier Constructor | Central Free Fire</title>
+  <meta name="description" content="Monte tier lists de times e jogadores de Free Fire e exporte em PNG.">
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/tier-constructor.css?v=20260801-v1">
+  <link rel="stylesheet" href="css/public-shell.css?v=20260801-tier-constructor-v1">
+  <script defer src="js/public-shell.min.js?v=20260801-tier-constructor-v1"></script>
+  <script defer src="js/tier-constructor.js?v=20260801-v1"></script>
+</head>
+<body class="tier-constructor-page">
+
+<header class="cff-public-topbar">
+  <div class="cff-public-left"><button class="cff-public-menu-button" id="cff-public-menu-open" type="button" aria-label="Abrir menu">☰</button><a class="cff-public-back" href="index.html">← VOLTAR</a></div>
+  <a class="cff-public-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>CENTRAL FREE FIRE</span></a>
+  <div class="cff-public-search"><div class="cff-public-search-row"><input id="cff-public-search-input" type="search" placeholder="BUSCAR JOGADOR, EQUIPE OU PÁGINA..." autocomplete="off" aria-label="Buscar no site"><button id="cff-public-search-submit" type="button" aria-label="Buscar">⌕</button></div><div id="cff-public-search-results" class="cff-public-search-results"></div></div>
+</header>
+<div class="cff-public-overlay" id="cff-public-overlay"></div><aside class="cff-public-sidebar" id="cff-public-sidebar" aria-label="Menu lateral"><div class="cff-public-sidebar-head"><span>MENU</span><button class="cff-public-sidebar-close" id="cff-public-menu-close" type="button" aria-label="Fechar menu">✕</button></div><nav class="cff-public-sidebar-nav" id="cff-public-sidebar-nav"></nav></aside>
+
+<div class="app tier-constructor-app">
+    <header class="topbar">
+      <div class="brand">TIER CONSTRUCTOR</div>
+      <div class="topbar-group">
+        <button id="addImagesBtn" class="primary">＋ Adicionar imagens</button>
+        <button id="addRowBtn">＋ Nova row</button>
+        <button id="undoBtn" class="icon" title="Desfazer (Ctrl+Z)">↶</button>
+        <button id="redoBtn" class="icon" title="Refazer (Ctrl+Y)">↷</button>
+        <div class="quick-position" title="Liga ou desliga o modo posição">
+          <span id="quickPositionDot" class="quick-status-dot"></span>
+          <span class="quick-position-label">Posição</span>
+          <div class="segmented" id="quickPositionButtons">
+            <button type="button" data-value="true">Ativado</button>
+            <button type="button" data-value="false">Desativado</button>
+          </div>
+        </div>
+        <button id="settingsBtn" class="toolbar-btn" title="Configurações">⚙ <span>Configurações</span></button>
+        <details class="project-menu" id="projectMenu">
+          <summary>Configurações de projeto ▾</summary>
+          <div class="project-menu-panel">
+            <small>Salve no navegador, abra projetos salvos, comece um projeto novo ou use backup por JSON.</small>
+            <div class="tier-preset-projects">
+              <strong>Projetos prontos</strong>
+              <button type="button" data-tier-preset="wb-2026-s1">WB 2026 S1 — Equipes</button>
+              <button type="button" data-tier-preset="wb-2026-s2">WB 2026 S2 — Equipes</button>
+              <button type="button" data-tier-preset="ewc-2026">EWC 2026 — Equipes</button>
+              <small id="tierPresetStatus" aria-live="polite"></small>
+            </div>
+
+            <button id="browserSaveBtn" class="primary" type="button">Salvar projeto no navegador</button>
+            <div class="project-menu-actions">
+              <button id="browserProjectsBtn" type="button">Projetos salvos</button>
+              <button id="newProjectBtn" type="button">Começar novo</button>
+              <button id="saveBtn" type="button">Baixar JSON</button>
+              <button id="loadBtn" type="button">Importar JSON</button>
+            </div>
+          </div>
+        </details>
+        <button id="exportBtn" class="toolbar-btn">Exportar PNG</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="panel caption-panel">
+        <div class="section-head">
+          <label class="field-label" for="captionInput">Legenda acima do tier</label>
+          <button id="toggleCaptionPanelBtn" class="collapse-btn" type="button" aria-expanded="true">▾</button>
+        </div>
+        <div id="captionPanelBody" class="caption-panel-body">
+          <div>
+            <textarea id="captionInput" placeholder="Ex.: MELHORES TIMES DA TEMPORADA"></textarea>
+          </div>
+          <div class="caption-actions">
+            <button id="captionImageBtn">Imagem da legenda</button>
+            <button id="removeCaptionImageBtn" class="danger">Remover imagem</button>
+            <button id="clearAllBtn" class="danger">Tirar as imagens das tiers</button>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="panel tier-site-library" id="tierSiteLibrary">
+        <div class="tier-library-head">
+          <div>
+            <span class="field-label">Biblioteca do site</span>
+            <h2>Times e jogadores</h2>
+          </div>
+          <span id="tierAssetCount" class="count">Carrega ao pesquisar</span>
+        </div>
+        <div class="tier-library-controls">
+          <div class="segmented tier-library-tabs" id="tierAssetTypeButtons" aria-label="Tipo de imagem">
+            <button type="button" class="active" data-value="team">Times</button>
+            <button type="button" data-value="player">Jogadores</button>
+          </div>
+          <label class="tier-library-search">
+            <span class="hidden">Buscar na biblioteca</span>
+            <input id="tierAssetSearch" type="search" placeholder="Busque LOUD, Buriram, Trap..." autocomplete="off" />
+          </label>
+          <button id="tierAssetAddVisible" type="button">Adicionar exibidos</button>
+        </div>
+        <div id="tierAssetStatus" class="tier-library-status" aria-live="polite">Digite para buscar ou veja os primeiros itens.</div>
+        <div id="tierAssetResults" class="tier-library-results"></div>
+      </section>
+
+      <section class="panel board-scroll">
+        <div id="tierExport" class="tier-export">
+          <div id="tierCaption" class="tier-caption"></div>
+          <div id="tierBoard" class="tier-board"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="bank-title">
+          <h2>Imagens ainda não classificadas</h2>
+          <span id="bankCount" class="count">0 imagens</span>
+        </div>
+        <div class="mobile-drag-tip">No mobile: toque em uma imagem para selecionar e depois toque em uma row ou em outra imagem para mover.</div>
+        <div id="imageBank" class="dropzone image-bank" data-zone="bank">
+          <div class="empty-hint">Adicione imagens e arraste para qualquer row.</div>
+        </div>
+
+        <details id="trashPanel" class="trash-panel">
+          <summary>🗑 Logos ocultas <span id="archivedCount" class="count">0 imagens</span></summary>
+          <div id="archivedBank" class="image-bank archived-bank">
+            <div class="empty-hint">Nenhuma logo está oculta.</div>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <input id="imageInput" type="file" accept="image/*" multiple class="hidden" />
+  <input id="projectInput" type="file" accept=".json,application/json" class="hidden" />
+  <input id="backgroundInput" type="file" accept="image/*" class="hidden" />
+  <input id="captionImageInput" type="file" accept="image/*" class="hidden" />
+  <input id="editorBgInput" type="file" accept="image/*" class="hidden" />
+  <input id="editorPipInput" type="file" accept="image/*" class="hidden" />
+  <input id="applyAllBgInput" type="file" accept="image/*" class="hidden" />
+
+  <dialog id="browserProjectsDialog">
+    <div class="modal-header">
+      <h2>Projetos salvos no navegador</h2>
+      <button id="closeBrowserProjectsBtn" class="icon" title="Fechar">×</button>
+    </div>
+    <div class="browser-project-form">
+      <input id="browserProjectNameInput" type="text" maxlength="80" placeholder="Nome do projeto" />
+      <button id="saveNamedBrowserProjectBtn" class="primary">Salvar</button>
+    </div>
+    <div id="browserProjectsList" class="browser-projects-list"></div>
+  </dialog>
+
+  <dialog id="settingsDialog" class="settings-drawer">
+    <div class="modal-header">
+      <h2>Configurações</h2>
+      <button id="closeSettingsBtn" class="icon">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-grid">
+        <section class="settings-section">
+          <h3>Layout da tier</h3>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Largura da coluna das rows</strong>
+              <small>Área colorida onde fica o nome.</small>
+            </div>
+            <div class="setting-control">
+              <input id="labelWidthRange" type="range" min="80" max="420" step="5" />
+              <div class="unit-input"><input id="labelWidthNumber" type="number" min="80" max="420" step="5" /><span>px</span></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Largura total da tier</strong>
+              <small>Aumenta ou diminui a área das imagens.</small>
+            </div>
+            <div class="setting-control">
+              <input id="boardWidthRange" type="range" min="600" max="2200" step="10" />
+              <div class="unit-input"><input id="boardWidthNumber" type="number" min="600" max="2200" step="10" /><span>px</span></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Tamanho das imagens</strong>
+              <small>As imagens permanecem quadradas.</small>
+            </div>
+            <div class="setting-control">
+              <input id="imageSizeRange" type="range" min="48" max="220" step="2" />
+              <div class="unit-input"><input id="imageSizeNumber" type="number" min="48" max="220" step="2" /><span>px</span></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Espaço invisível entre imagens</strong>
+              <small>Evita que uma imagem fique grudada na outra.</small>
+            </div>
+            <div class="setting-control">
+              <input id="gapRange" type="range" min="0" max="40" step="1" />
+              <div class="unit-input"><input id="gapNumber" type="number" min="0" max="40" step="1" /><span>px</span></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Moldura das imagens</strong>
+              <small>Por padrão as logos ficam sem quadrado. Ative para mostrar a moldura.</small>
+            </div>
+            <div class="setting-control">
+              <div class="segmented" id="imageFrameButtons">
+                <button type="button" data-value="false">Oculta</button>
+                <button type="button" data-value="true">Mostrar</button>
+              </div>
+              <div></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Altura mínima das rows</strong>
+              <small>A row cresce automaticamente ao quebrar linha.</small>
+            </div>
+            <div class="setting-control">
+              <input id="rowHeightRange" type="range" min="60" max="320" step="5" />
+              <div class="unit-input"><input id="rowHeightNumber" type="number" min="60" max="320" step="5" /><span>px</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section" data-highlight-target="caption">
+          <h3>Texto da legenda do topo</h3>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Tamanho da legenda</strong><small>Aumenta ou diminui apenas o texto acima da tier.</small></div>
+            <div class="setting-control"><input id="captionFontSizeRange" type="range" min="14" max="80" step="1" /><div class="unit-input"><input id="captionFontSizeNumber" type="number" min="14" max="80" step="1" /><span>px</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Fonte da legenda</strong><small>Escolha a fonte do título acima da tier.</small></div>
+            <div class="setting-control"><select id="captionFontFamily"><option value='Inter, Arial, sans-serif'>Inter / Arial</option><option value='Arial Black, Arial, sans-serif'>Arial Black</option><option value='Trebuchet MS, Arial, sans-serif'>Trebuchet</option><option value='Verdana, Arial, sans-serif'>Verdana</option><option value='Georgia, serif'>Georgia</option><option value='Times New Roman, serif'>Times New Roman</option><option value='Courier New, monospace'>Courier New</option><option value='Impact, Haettenschweiler, sans-serif'>Impact</option></select><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Alinhamento da legenda</strong><small>Esquerda, centro ou direita.</small></div>
+            <div class="setting-control"><div class="segmented" id="captionAlignButtons"><button type="button" data-value="left">Esq.</button><button type="button" data-value="center">Centro</button><button type="button" data-value="right">Dir.</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Cor do texto da legenda</strong><small>Cor usada somente no texto acima da tier.</small></div>
+            <div class="setting-control"><input id="captionColorInput" type="color" /><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Fundo da legenda</strong><small>Cor do fundo exclusivo da legenda.</small></div>
+            <div class="setting-control"><input id="captionBgColorInput" type="color" /><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Opacidade do fundo da legenda</strong><small>Deixa o fundo mais sólido ou transparente.</small></div>
+            <div class="setting-control"><input id="captionBgOpacityRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="captionBgOpacityNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Posição da imagem da legenda</strong><small>Escolha onde a imagem fica em relação ao texto.</small></div>
+            <div class="setting-control"><select id="captionImagePosition"><option value="top">Acima do texto</option><option value="left">Ao lado esquerdo</option><option value="right">Ao lado direito</option><option value="bottom">Abaixo do texto</option></select><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Tamanho da imagem da legenda</strong><small>Aumenta ou diminui somente a imagem da legenda.</small></div>
+            <div class="setting-control"><input id="captionImageSizeRange" type="range" min="40" max="320" step="1" /><div class="unit-input"><input id="captionImageSizeNumber" type="number" min="40" max="320" step="1" /><span>px</span></div></div>
+          </div>
+        </section>
+
+        <section class="settings-section" data-highlight-target="rows">
+          <h3>Texto das rows</h3>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Tamanho do texto das rows</strong><small>Controla apenas o texto dentro das colunas coloridas.</small></div>
+            <div class="setting-control"><input id="rowFontSizeRange" type="range" min="12" max="60" step="1" /><div class="unit-input"><input id="rowFontSizeNumber" type="number" min="12" max="60" step="1" /><span>px</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Fonte das rows</strong><small>Escolha a fonte dos nomes das tiers.</small></div>
+            <div class="setting-control"><select id="rowFontFamily"><option value='Inter, Arial, sans-serif'>Inter / Arial</option><option value='Arial Black, Arial, sans-serif'>Arial Black</option><option value='Trebuchet MS, Arial, sans-serif'>Trebuchet</option><option value='Verdana, Arial, sans-serif'>Verdana</option><option value='Georgia, serif'>Georgia</option><option value='Times New Roman, serif'>Times New Roman</option><option value='Courier New, monospace'>Courier New</option><option value='Impact, Haettenschweiler, sans-serif'>Impact</option></select><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Alinhamento horizontal das rows</strong><small>Esquerda, centro ou direita.</small></div>
+            <div class="setting-control"><div class="segmented" id="rowAlignButtons"><button type="button" data-value="left">Esq.</button><button type="button" data-value="center">Centro</button><button type="button" data-value="right">Dir.</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Alinhamento vertical das rows</strong><small>Topo, centro ou parte de baixo.</small></div>
+            <div class="setting-control"><div class="segmented" id="rowVerticalButtons"><button type="button" data-value="top">Topo</button><button type="button" data-value="center">Centro</button><button type="button" data-value="bottom">Baixo</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Padding horizontal da row</strong><small>Espaço interno nas laterais do texto.</small></div>
+            <div class="setting-control"><input id="rowPaddingXRange" type="range" min="6" max="90" step="1" /><div class="unit-input"><input id="rowPaddingXNumber" type="number" min="6" max="90" step="1" /><span>px</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Padding vertical da row</strong><small>Espaço interno acima e abaixo do texto.</small></div>
+            <div class="setting-control"><input id="rowPaddingYRange" type="range" min="0" max="50" step="1" /><div class="unit-input"><input id="rowPaddingYNumber" type="number" min="0" max="50" step="1" /><span>px</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Ajuste automático da fonte</strong><small>Reduz a fonte quando o texto não cabe.</small></div>
+            <div class="setting-control"><div class="segmented" id="rowAutoFitButtons"><button type="button" data-value="true">Ligado</button><button type="button" data-value="false">Desligado</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Altura automática pelo texto</strong><small>Faz a row crescer quando o texto precisa de espaço.</small></div>
+            <div class="setting-control"><div class="segmented" id="rowAutoHeightButtons"><button type="button" data-value="true">Ligado</button><button type="button" data-value="false">Desligado</button></div><div></div></div>
+          </div>
+        </section>
+
+        <section class="settings-section" data-highlight-target="positions">
+          <h3>Modo posição</h3>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Mostrar posição nas imagens</strong><small>Exibe [1º], [2º], [3º] sobre as imagens.</small></div>
+            <div class="setting-control"><div class="segmented" id="positionModeButtons"><button type="button" data-value="true">Ligado</button><button type="button" data-value="false">Desligado</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Contagem da posição</strong><small>No geral da tier inteira ou reiniciando em cada row.</small></div>
+            <div class="setting-control"><div class="segmented" id="positionScopeButtons"><button type="button" data-value="global">No geral</button><button type="button" data-value="row">Por row</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Posição horizontal</strong><small>Escolha esquerda ou direita.</small></div>
+            <div class="setting-control"><div class="segmented" id="positionHorizontalButtons"><button type="button" data-value="left">Esquerda</button><button type="button" data-value="right">Direita</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Posição vertical</strong><small>Escolha em cima ou embaixo.</small></div>
+            <div class="setting-control"><div class="segmented" id="positionVerticalButtons"><button type="button" data-value="top">Em cima</button><button type="button" data-value="bottom">Embaixo</button></div><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Tamanho da posição</strong><small>Define o tamanho do texto [1º].</small></div>
+            <div class="setting-control"><input id="positionFontSizeRange" type="range" min="10" max="40" step="1" /><div class="unit-input"><input id="positionFontSizeNumber" type="number" min="10" max="40" step="1" /><span>px</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Fonte da posição</strong><small>Escolha a fonte do marcador.</small></div>
+            <div class="setting-control"><select id="positionFontFamily"><option value='Inter, Arial, sans-serif'>Inter / Arial</option><option value='Arial Black, Arial, sans-serif'>Arial Black</option><option value='Trebuchet MS, Arial, sans-serif'>Trebuchet</option><option value='Verdana, Arial, sans-serif'>Verdana</option><option value='Georgia, serif'>Georgia</option><option value='Times New Roman, serif'>Times New Roman</option><option value='Courier New, monospace'>Courier New</option><option value='Impact, Haettenschweiler, sans-serif'>Impact</option></select><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Cor do texto</strong><small>Cor principal do [1º].</small></div>
+            <div class="setting-control"><input id="positionTextColorInput" type="color" /><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Cor do quadrado sólido</strong><small>O quadrado continua sólido; esta é a cor dele.</small></div>
+            <div class="setting-control"><input id="positionBgColorInput" type="color" /><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Contorno do texto</strong><small>Espessura do contorno somente nas letras.</small></div>
+            <div class="setting-control"><input id="positionTextStrokeRange" type="range" min="0" max="8" step="1" /><div class="unit-input"><input id="positionTextStrokeNumber" type="number" min="0" max="8" step="1" /><span>px</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Cor do contorno do texto</strong><small>Cor aplicada apenas ao contorno das letras.</small></div>
+            <div class="setting-control"><input id="positionTextStrokeColorInput" type="color" /><div></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Sombra do texto</strong><small>Tamanho da sombra aplicada ao [1º].</small></div>
+            <div class="setting-control"><input id="positionShadowSizeRange" type="range" min="0" max="24" step="1" /><div class="unit-input"><input id="positionShadowSizeNumber" type="number" min="0" max="24" step="1" /><span>px</span></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info"><strong>Cor da sombra</strong><small>Cor da sombra do texto da posição.</small></div>
+            <div class="setting-control"><input id="positionShadowColorInput" type="color" /><div></div></div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h3>Imagem de fundo da coluna das imagens</h3>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Escurecimento do fundo</strong>
+              <small>Ajuda as imagens a continuarem visíveis.</small>
+            </div>
+            <div class="setting-control">
+              <input id="overlayRange" type="range" min="0" max="90" step="1" />
+              <div class="unit-input"><input id="overlayNumber" type="number" min="0" max="90" step="1" /><span>%</span></div>
+            </div>
+          </div>
+
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Espessura das linhas</strong>
+              <small>Controla as divisórias horizontais e a separação da coluna das rows.</small>
+            </div>
+            <div class="setting-control">
+              <input id="separatorWidthRange" type="range" min="0" max="8" step="1" />
+              <div class="unit-input"><input id="separatorWidthNumber" type="number" min="0" max="8" step="1" /><span>px</span></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Cor das linhas</strong>
+              <small>Escolha a cor das divisórias da tier.</small>
+            </div>
+            <div class="setting-control">
+              <input id="separatorColorInput" type="color" />
+              <div></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Cor base do fundo</strong>
+              <small>Define a cor da área das imagens por trás da imagem de fundo.</small>
+            </div>
+            <div class="setting-control">
+              <input id="backgroundColorInput" type="color" />
+              <div></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Ajuste do fundo</strong>
+              <small>Escolha como a imagem será encaixada.</small>
+            </div>
+            <div class="setting-control">
+              <select id="backgroundFit">
+                <option value="cover">Preencher a área</option>
+                <option value="contain">Mostrar a imagem inteira</option>
+                <option value="stretch">Esticar</option>
+                <option value="custom">Modo livre</option>
+              </select>
+              <div></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Zoom do fundo</strong>
+              <small>No modo livre, você controla melhor a escala.</small>
+            </div>
+            <div class="setting-control">
+              <input id="backgroundZoomRange" type="range" min="20" max="300" step="1" />
+              <div class="unit-input"><input id="backgroundZoomNumber" type="number" min="20" max="300" step="1" /><span>%</span></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Posição horizontal do fundo</strong>
+              <small>Move a imagem para a esquerda ou direita.</small>
+            </div>
+            <div class="setting-control">
+              <input id="backgroundPosXRange" type="range" min="0" max="100" step="1" />
+              <div class="unit-input"><input id="backgroundPosXNumber" type="number" min="0" max="100" step="1" /><span>%</span></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Posição vertical do fundo</strong>
+              <small>Move a imagem para cima ou para baixo.</small>
+            </div>
+            <div class="setting-control">
+              <input id="backgroundPosYRange" type="range" min="0" max="100" step="1" />
+              <div class="unit-input"><input id="backgroundPosYNumber" type="number" min="0" max="100" step="1" /><span>%</span></div>
+            </div>
+          </div>
+
+          <div>
+            <label class="field-label">Imagem de fundo</label>
+            <div class="background-actions">
+              <button id="backgroundBtn">Escolher imagem</button>
+              <button id="removeBackgroundBtn" class="danger">Remover fundo</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h3>Visual em lote das imagens</h3>
+          <div class="setting">
+            <div class="setting-info">
+              <strong>Ações rápidas</strong>
+              <small>Use a imagem editada para replicar fundo ou efeitos nas outras imagens.</small>
+            </div>
+            <div class="setting-control">
+              <div class="background-actions">
+                <button id="chooseAllBgBtn">Escolher fundo para todas</button>
+                <button id="removeAllBgBtn">Remover fundo de todas</button>
+                <button id="applyLastBgAllBtn">Usar fundo da imagem aberta</button>
+                <button id="applyLastEffectsAllBtn">Aplicar último efeito em todas</button>
+                <button id="clearAllImageEffectsBtn" class="danger">Limpar edições de todas</button>
+              </div>
+              <div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h3>Gerenciar rows</h3>
+          <div id="rowManager" class="row-manager"></div>
+        </section>
+      </div>
+
+      <div class="modal-actions">
+        <button id="resetLayoutBtn" class="danger">Restaurar tamanhos</button>
+        <button id="doneSettingsBtn" class="primary">Concluir</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="imageEditorDialog" class="dialog editor-drawer">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2>Editar imagem</h2>
+        <button id="closeEditorBtn" class="icon" title="Fechar">×</button>
+      </div>
+      <div class="editor-layout">
+        <div class="editor-preview-panel">
+          <canvas id="editorCanvas" width="512" height="512"></canvas>
+          <div class="editor-preview-help">As alterações aparecem em tempo real na imagem da tier. Você também pode arrastar texto e PiP dentro do preview.</div>
+        </div>
+        <div class="editor-controls">
+          <div class="editor-tabbar">
+            <button type="button" class="active" data-editor-tab-button="image">Imagem</button>
+            <button type="button" data-editor-tab-button="background">Fundo</button>
+            <button type="button" data-editor-tab-button="text">Texto</button>
+            <button type="button" data-editor-tab-button="pip">PiP</button>
+            <button type="button" data-editor-tab-button="actions">Ações</button>
+          </div>
+
+          <section class="settings-section editor-section" data-editor-tab="image">
+            <h3>Imagem principal</h3>
+            <div class="setting"><div class="setting-info"><strong>Zoom</strong><small>Aumenta ou diminui a imagem principal.</small></div><div class="setting-control"><input id="editorMainScaleRange" type="range" min="50" max="300" step="1" /><div class="unit-input"><input id="editorMainScaleNumber" type="number" min="50" max="300" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição horizontal</strong><small>Move a imagem para esquerda ou direita.</small></div><div class="setting-control"><input id="editorMainOffsetXRange" type="range" min="-100" max="100" step="1" /><div class="unit-input"><input id="editorMainOffsetXNumber" type="number" min="-100" max="100" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição vertical</strong><small>Move a imagem para cima ou para baixo.</small></div><div class="setting-control"><input id="editorMainOffsetYRange" type="range" min="-100" max="100" step="1" /><div class="unit-input"><input id="editorMainOffsetYNumber" type="number" min="-100" max="100" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Contorno da imagem</strong><small>Espessura do contorno em volta do PNG/logo.</small></div><div class="setting-control"><input id="editorOutlineSizeRange" type="range" min="0" max="24" step="1" /><div class="unit-input"><input id="editorOutlineSizeNumber" type="number" min="0" max="24" step="1" /><span>px</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Cor do contorno</strong><small>Escolha a cor do contorno.</small></div><div class="setting-control"><input id="editorOutlineColor" type="color" /><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Sombra da imagem</strong><small>Força da sombra/halo.</small></div><div class="setting-control"><input id="editorShadowSizeRange" type="range" min="0" max="40" step="1" /><div class="unit-input"><input id="editorShadowSizeNumber" type="number" min="0" max="40" step="1" /><span>px</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Cor da sombra</strong><small>Escolha a cor da sombra.</small></div><div class="setting-control"><input id="editorShadowColor" type="color" /><div></div></div></div>
+          </section>
+
+          <section class="settings-section editor-section" data-editor-tab="background" hidden>
+            <h3>Fundo da imagem</h3>
+            <div class="setting"><div class="setting-info"><strong>Tipo de fundo</strong><small>Escolha entre nenhum, cor sólida ou imagem.</small></div><div class="setting-control"><select id="editorBgMode"><option value="none">Sem fundo</option><option value="color">Cor sólida</option><option value="image">Imagem</option></select><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Cor do fundo</strong><small>Cor usada atrás do personagem/logo.</small></div><div class="setting-control"><input id="editorBgColor" type="color" /><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Imagem de fundo</strong><small>Escolha uma imagem para ficar atrás do personagem/logo.</small></div><div class="setting-control"><div class="editor-actions-inline"><button id="editorChooseBgBtn" type="button">Escolher imagem</button><button id="editorRemoveBgBtn" type="button" class="danger">Remover fundo</button></div><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Ajuste do fundo</strong><small>Como a imagem será encaixada.</small></div><div class="setting-control"><select id="editorBgFit"><option value="cover">Preencher</option><option value="contain">Mostrar inteira</option></select><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Opacidade do fundo</strong><small>Controla a transparência do fundo.</small></div><div class="setting-control"><input id="editorBgOpacityRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorBgOpacityNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Zoom do fundo</strong><small>Aumenta ou diminui a imagem de fundo.</small></div><div class="setting-control"><input id="editorBgZoomRange" type="range" min="20" max="300" step="1" /><div class="unit-input"><input id="editorBgZoomNumber" type="number" min="20" max="300" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição horizontal do fundo</strong><small>Move a imagem de fundo na horizontal.</small></div><div class="setting-control"><input id="editorBgPosXRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorBgPosXNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição vertical do fundo</strong><small>Move a imagem de fundo na vertical.</small></div><div class="setting-control"><input id="editorBgPosYRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorBgPosYNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+          </section>
+
+          <section class="settings-section editor-section" data-editor-tab="text" hidden>
+            <h3>Faixa / retângulo inferior</h3>
+            <div class="setting"><div class="setting-info"><strong>Mostrar faixa</strong><small>Cria um retângulo na parte inferior.</small></div><div class="setting-control"><div class="segmented" id="editorBannerEnabledButtons"><button type="button" data-value="true">Ligado</button><button type="button" data-value="false">Desligado</button></div><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Altura da faixa</strong><small>Controla a altura do retângulo.</small></div><div class="setting-control"><input id="editorBannerHeightRange" type="range" min="0" max="220" step="1" /><div class="unit-input"><input id="editorBannerHeightNumber" type="number" min="0" max="220" step="1" /><span>px</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Cor da faixa</strong><small>Escolha a cor da faixa.</small></div><div class="setting-control"><input id="editorBannerColor" type="color" /><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Opacidade da faixa</strong><small>Deixa a faixa mais sólida ou transparente.</small></div><div class="setting-control"><input id="editorBannerOpacityRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorBannerOpacityNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+            <h3>Texto</h3>
+            <div><label class="field-label" for="editorText">Texto</label><textarea id="editorText" class="editor-compact-input" placeholder="Ex.: Nome do jogador"></textarea></div>
+            <div class="setting"><div class="setting-info"><strong>Tamanho do texto</strong><small>Ajusta o tamanho do texto.</small></div><div class="setting-control"><input id="editorTextSizeRange" type="range" min="10" max="96" step="1" /><div class="unit-input"><input id="editorTextSizeNumber" type="number" min="10" max="96" step="1" /><span>px</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Cor do texto</strong><small>Cor principal do texto.</small></div><div class="setting-control"><input id="editorTextColor" type="color" /><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Alinhamento do texto</strong><small>Posiciona à esquerda, centro ou direita.</small></div><div class="setting-control"><div class="segmented" id="editorTextAlignButtons"><button type="button" data-value="left">Esq.</button><button type="button" data-value="center">Centro</button><button type="button" data-value="right">Dir.</button></div><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição horizontal do texto</strong><small>Move o texto lateralmente.</small></div><div class="setting-control"><input id="editorTextXRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorTextXNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição vertical do texto</strong><small>Move o texto na vertical.</small></div><div class="setting-control"><input id="editorTextYRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorTextYNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Contorno do texto</strong><small>Espessura do contorno.</small></div><div class="setting-control"><input id="editorTextStrokeRange" type="range" min="0" max="12" step="1" /><div class="unit-input"><input id="editorTextStrokeNumber" type="number" min="0" max="12" step="1" /><span>px</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Cor do contorno</strong><small>Cor usada no contorno.</small></div><div class="setting-control"><input id="editorTextStrokeColor" type="color" /><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Sombra do texto</strong><small>Deixa o texto mais destacado.</small></div><div class="setting-control"><div class="segmented" id="editorTextShadowButtons"><button type="button" data-value="true">Ligada</button><button type="button" data-value="false">Desligada</button></div><div></div></div></div>
+          </section>
+
+          <section class="settings-section editor-section" data-editor-tab="pip" hidden>
+            <h3>Picture in Picture</h3>
+            <div class="setting"><div class="setting-info"><strong>Imagem extra</strong><small>Adiciona uma segunda imagem por cima.</small></div><div class="setting-control"><div class="editor-actions-inline"><button id="editorChoosePipBtn" type="button">Escolher imagem</button><button id="editorRemovePipBtn" type="button" class="danger">Remover PiP</button></div><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Mostrar PiP</strong><small>Ativa ou desativa a imagem extra.</small></div><div class="setting-control"><div class="segmented" id="editorPipEnabledButtons"><button type="button" data-value="true">Ligado</button><button type="button" data-value="false">Desligado</button></div><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Tamanho do PiP</strong><small>Controla o tamanho.</small></div><div class="setting-control"><input id="editorPipSizeRange" type="range" min="8" max="80" step="1" /><div class="unit-input"><input id="editorPipSizeNumber" type="number" min="8" max="80" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição horizontal do PiP</strong><small>Move a imagem extra na horizontal.</small></div><div class="setting-control"><input id="editorPipXRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorPipXNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Posição vertical do PiP</strong><small>Move a imagem extra na vertical.</small></div><div class="setting-control"><input id="editorPipYRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorPipYNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+          </section>
+
+          <section class="settings-section editor-section" data-editor-tab="actions" hidden>
+            <h3>Ações rápidas</h3>
+            <div class="setting"><div class="setting-info"><strong>Aplicar em lote</strong><small>Replica o estilo da imagem atual para outras imagens.</small></div><div class="setting-control editor-wide-control"><div class="editor-actions-inline"><button id="editorApplyBgAllBtn" type="button">Aplicar fundo em todas</button><button id="editorApplyEffectsAllBtn" type="button">Aplicar efeitos em todas</button><button id="editorApplyAllAllBtn" type="button">Aplicar estilo completo</button></div></div></div>
+          </section>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="resetEditorBtn" class="danger">Resetar edições</button>
+        <button id="cancelEditorBtn">Cancelar</button>
+        <button id="saveEditorBtn" class="primary">Salvar imagem</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+</body>
+</html>
