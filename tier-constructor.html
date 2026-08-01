@@ -7,10 +7,10 @@
   <title>Tier Constructor | Central Free Fire</title>
   <meta name="description" content="Monte tier lists de times e jogadores de Free Fire e exporte em PNG.">
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/tier-constructor.css?v=20260801-v1">
+  <link rel="stylesheet" href="css/tier-constructor.css?v=20260801-share-v2">
   <link rel="stylesheet" href="css/public-shell.css?v=20260801-tier-constructor-v1">
   <script defer src="js/public-shell.min.js?v=20260801-tier-constructor-v1"></script>
-  <script defer src="js/tier-constructor.js?v=20260801-v1"></script>
+  <script defer src="js/tier-constructor.js?v=20260801-share-v2"></script>
 </head>
 <body class="tier-constructor-page">
 
@@ -59,6 +59,7 @@
             </div>
           </div>
         </details>
+        <button id="shareLinkBtn" class="toolbar-btn">Compartilhar link</button>
         <button id="exportBtn" class="toolbar-btn">Exportar PNG</button>
       </div>
     </header>
@@ -139,6 +140,27 @@
   <input id="editorBgInput" type="file" accept="image/*" class="hidden" />
   <input id="editorPipInput" type="file" accept="image/*" class="hidden" />
   <input id="applyAllBgInput" type="file" accept="image/*" class="hidden" />
+
+  <dialog id="shareProjectDialog" class="share-project-dialog">
+    <div class="modal-header">
+      <h2>Compartilhar tier</h2>
+      <button id="closeShareProjectBtn" class="icon" type="button" title="Fechar">×</button>
+    </div>
+    <div class="share-project-body">
+      <p>Quem abrir o link recebe esta tier pronta e pode continuar editando.</p>
+      <label class="field-label" for="shareProjectUrl">Link compartilhável</label>
+      <div class="share-project-link-row">
+        <input id="shareProjectUrl" type="text" readonly autocomplete="off" spellcheck="false" />
+        <button id="copyShareProjectBtn" class="primary" type="button">Copiar link</button>
+      </div>
+      <div id="shareProjectStatus" class="share-project-status" aria-live="polite"></div>
+      <div class="share-project-actions">
+        <button id="nativeShareProjectBtn" type="button">Compartilhar</button>
+        <button id="downloadShareProjectBtn" type="button">Baixar JSON</button>
+        <button id="doneShareProjectBtn" type="button">Concluir</button>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="browserProjectsDialog">
     <div class="modal-header">

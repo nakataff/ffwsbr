@@ -1339,6 +1339,7 @@
       #addImagesBtn,
       .quick-position,
       #settingsBtn,
+      #shareLinkBtn,
       #exportBtn,
       .project-menu { grid-column: 1 / -1; }
       .quick-position { justify-content: space-between; flex-wrap: wrap; }
@@ -1424,3 +1425,15 @@ body.tier-constructor-page{background:#050810}
 .tier-constructor-app input[type="search"]{width:100%;color:var(--text);background:#0f1115;border:1px solid var(--border);border-radius:10px;padding:10px 12px;outline:none}
 .tier-constructor-app input[type="search"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(110,124,255,.15)}
 @media(max-width:760px){.tier-constructor-app #addRowBtn{grid-column:1/-1}.tier-constructor-app .project-menu>summary{width:100%;justify-content:center}}
+
+
+/* Link compartilhável */
+.share-project-dialog{width:min(94vw,760px)}
+.share-project-body{display:grid;gap:13px;padding:18px}
+.share-project-body p{margin:0;color:#c3cfdf;line-height:1.5}
+.share-project-link-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px}
+.share-project-link-row input{min-width:0;font-size:13px}
+.share-project-status{min-height:20px;color:#91a6c2;font-size:13px;line-height:1.45}
+.share-project-status.error{color:#ffb6b6}
+.share-project-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;padding-top:2px}
+@media(max-width:760px){.share-project-dialog{width:98vw;max-width:98vw}.share-project-link-row{grid-template-columns:1fr}.share-project-actions{display:grid;grid-template-columns:1fr}.share-project-actions button{width:100%}}

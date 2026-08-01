@@ -25,6 +25,10 @@
       const CURRENT_PROJECT_KEY = "tierlist_current_browser_project";
 
       const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20260801-v1";
+      const TIER_SHARE_HASH_KEY = "tier";
+      const TIER_SHARE_VERSION = 1;
+      const TIER_SHARE_SAFE_URL_LENGTH = 12000;
+      const TIER_SHARE_MAX_PAYLOAD_LENGTH = 120000;
       let tierAssetData = null;
       let tierAssetPromise = null;
       let tierAssetType = "team";
@@ -106,6 +110,7 @@
         editorPipInput: document.getElementById("editorPipInput"),
         settingsDialog: document.getElementById("settingsDialog"),
         browserProjectsDialog: document.getElementById("browserProjectsDialog"),
+        shareProjectDialog: document.getElementById("shareProjectDialog"),
         imageEditorDialog: document.getElementById("imageEditorDialog"),
         rowManager: document.getElementById("rowManager"),
         toast: document.getElementById("toast"),
@@ -1185,6 +1190,259 @@
         };
         downloadBlob(JSON.stringify(project, null, 2), "tier-list-projeto.json", "application/json");
         showToast("Projeto salvo.");
+      }
+
+
+      function compactChangedValues(source, defaults) {
+        const compact = {};
+        for (const [key, value] of Object.entries(source || {})) {
+          if (JSON.stringify(value) !== JSON.stringify(defaults?.[key])) compact[key] = value;
+        }
+        return compact;
+      }
+
+      function createShareSnapshot() {
+        const snapshot = snapshotState();
+        const images = {};
+        for (const [id, image] of Object.entries(snapshot.images || {})) {
+          const originalSrc = image.originalSrc || image.src || "";
+          images[id] = {
+            id,
+            name: image.name || "Imagem",
+            src: image.sourceAssetId ? `asset:${image.sourceAssetId}` : originalSrc,
+            sourceAssetId: image.sourceAssetId || "",
+            sourceType: image.sourceType || "",
+            sourceSubtitle: image.sourceSubtitle || "",
+            edit: compactChangedValues(image.edit || {}, defaultImageEdit())
+          };
+        }
+        return {
+          rows: snapshot.rows,
+          images,
+          bank: snapshot.bank,
+          archived: snapshot.archived,
+          caption: snapshot.caption,
+          captionImage: snapshot.captionImage,
+          background: snapshot.background,
+          settings: compactChangedValues(snapshot.settings || {}, DEFAULT_SETTINGS)
+        };
+      }
+
+      function bytesToBase64Url(bytes) {
+        let binary = "";
+        const chunkSize = 0x8000;
+        for (let index = 0; index < bytes.length; index += chunkSize) {
+          binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+        }
+        return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+      }
+
+      function base64UrlToBytes(value) {
+        const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+        const binary = atob(padded);
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+        return bytes;
+      }
+
+      async function streamBytes(bytes, StreamType) {
+        const stream = new Blob([bytes]).stream().pipeThrough(new StreamType("gzip"));
+        return new Uint8Array(await new Response(stream).arrayBuffer());
+      }
+
+      async function encodeShareProject() {
+        const packageData = {
+          version: TIER_SHARE_VERSION,
+          createdAt: new Date().toISOString(),
+          state: createShareSnapshot()
+        };
+        const rawBytes = new TextEncoder().encode(JSON.stringify(packageData));
+        let mode = "r";
+        let payloadBytes = rawBytes;
+        if (typeof CompressionStream === "function") {
+          try {
+            const compressed = await streamBytes(rawBytes, CompressionStream);
+            if (compressed.length < rawBytes.length) {
+              mode = "g";
+              payloadBytes = compressed;
+            }
+          } catch (error) {
+            console.warn("Compressão do link indisponível", error);
+          }
+        }
+        return `${mode}.${bytesToBase64Url(payloadBytes)}`;
+      }
+
+      async function decodeShareProject(payload) {
+        if (!payload || payload.length > TIER_SHARE_MAX_PAYLOAD_LENGTH) throw new Error("Link muito grande ou inválido.");
+        const separator = payload.indexOf(".");
+        if (separator <= 0) throw new Error("Formato de link inválido.");
+        const mode = payload.slice(0, separator);
+        let bytes = base64UrlToBytes(payload.slice(separator + 1));
+        if (mode === "g") {
+          if (typeof DecompressionStream !== "function") throw new Error("Este navegador não consegue abrir o link compactado.");
+          bytes = await streamBytes(bytes, DecompressionStream);
+        } else if (mode !== "r") {
+          throw new Error("Versão de link não reconhecida.");
+        }
+        const json = new TextDecoder().decode(bytes);
+        if (json.length > 2_000_000) throw new Error("Projeto compartilhado grande demais.");
+        const project = JSON.parse(json);
+        if (project?.version !== TIER_SHARE_VERSION || !project?.state) throw new Error("Projeto compartilhado inválido.");
+        return project;
+      }
+
+      async function hydrateSharedProject(project) {
+        const rawState = project?.state || project;
+        const rawImages = rawState?.images && typeof rawState.images === "object" ? rawState.images : {};
+        const needsAssets = Object.values(rawImages).some(image => image?.sourceAssetId && String(image.src || "").startsWith("asset:"));
+        let assetMap = null;
+        if (needsAssets) {
+          const data = await loadTierAssetData();
+          assetMap = data.assetMap;
+        }
+        for (const image of Object.values(rawImages)) {
+          if (!image?.sourceAssetId || !String(image.src || "").startsWith("asset:")) continue;
+          const asset = assetMap?.get(image.sourceAssetId);
+          if (!asset?.image) throw new Error(`Imagem não encontrada: ${image.name || image.sourceAssetId}`);
+          const source = await tierAssetSource(asset);
+          image.src = source;
+          image.originalSrc = source;
+          image.previewSrc = source;
+        }
+        return normalizeLegacyProject({ state: rawState });
+      }
+
+      function imageEditHasChanges(edit) {
+        const defaults = defaultImageEdit();
+        return Object.keys(defaults).some(key => JSON.stringify(edit?.[key]) !== JSON.stringify(defaults[key]));
+      }
+
+      async function rebuildSharedImagePreviews() {
+        const entries = Object.entries(state.images).filter(([, image]) => imageEditHasChanges(image.edit));
+        for (let index = 0; index < entries.length; index += 1) {
+          const [id, image] = entries[index];
+          try {
+            const canvas = await renderImageComposition(image, image.edit, 512);
+            image.previewSrc = canvas.toDataURL("image/png");
+            syncEditedImageCard(id, image.previewSrc);
+          } catch (error) {
+            console.warn("Não foi possível reconstruir uma edição compartilhada", error);
+          }
+          if (index % 3 === 2) await new Promise(resolve => setTimeout(resolve, 0));
+        }
+      }
+
+      function buildShareUrl(payload) {
+        const url = new URL(window.location.href);
+        url.hash = `${TIER_SHARE_HASH_KEY}=${payload}`;
+        return url.toString();
+      }
+
+      function setShareDialogState({ url = "", message = "", error = false } = {}) {
+        const input = document.getElementById("shareProjectUrl");
+        const status = document.getElementById("shareProjectStatus");
+        const copyButton = document.getElementById("copyShareProjectBtn");
+        const nativeButton = document.getElementById("nativeShareProjectBtn");
+        if (input) input.value = url;
+        if (status) {
+          status.textContent = message;
+          status.classList.toggle("error", error);
+        }
+        if (copyButton) copyButton.disabled = !url;
+        if (nativeButton) nativeButton.disabled = !url || typeof navigator.share !== "function";
+      }
+
+      async function openShareProjectDialog() {
+        const button = document.getElementById("shareLinkBtn");
+        if (button) button.disabled = true;
+        setShareDialogState({ message: "Preparando link..." });
+        if (!els.shareProjectDialog.open) els.shareProjectDialog.showModal();
+        try {
+          const payload = await encodeShareProject();
+          const url = buildShareUrl(payload);
+          if (url.length > TIER_SHARE_SAFE_URL_LENGTH) {
+            setShareDialogState({
+              message: "Esta tier usa imagens enviadas do aparelho e ficou grande demais para um link confiável. Use Baixar JSON ou substitua essas imagens por itens da biblioteca do site.",
+              error: true
+            });
+            return;
+          }
+          setShareDialogState({ url, message: "Link pronto. Quem abrir poderá editar uma cópia da tier." });
+        } catch (error) {
+          console.error("Falha ao criar link compartilhável", error);
+          setShareDialogState({ message: error.message || "Não foi possível criar o link.", error: true });
+        } finally {
+          if (button) button.disabled = false;
+        }
+      }
+
+      async function copyShareProjectLink() {
+        const input = document.getElementById("shareProjectUrl");
+        if (!input?.value) return;
+        try {
+          await navigator.clipboard.writeText(input.value);
+          showToast("Link copiado.");
+        } catch (error) {
+          input.focus();
+          input.select();
+          const copied = document.execCommand("copy");
+          showToast(copied ? "Link copiado." : "Selecione e copie o link.");
+        }
+      }
+
+      async function nativeShareProjectLink() {
+        const url = document.getElementById("shareProjectUrl")?.value;
+        if (!url || typeof navigator.share !== "function") return;
+        try {
+          await navigator.share({ title: state.caption || "Tier Constructor", text: "Abra esta tier e continue editando:", url });
+        } catch (error) {
+          if (error?.name !== "AbortError") showToast("Não foi possível compartilhar agora.");
+        }
+      }
+
+      async function loadSharedProjectFromLocation() {
+        const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
+        if (!hash) return false;
+        const params = new URLSearchParams(hash);
+        const payload = params.get(TIER_SHARE_HASH_KEY);
+        if (!payload) return false;
+        try {
+          const project = await decodeShareProject(payload);
+          const loaded = await hydrateSharedProject(project);
+          isRestoringHistory = true;
+          state.rows = loaded.rows;
+          state.images = loaded.images && typeof loaded.images === "object" ? loaded.images : {};
+          state.bank = Array.isArray(loaded.bank) ? loaded.bank : [];
+          state.archived = Array.isArray(loaded.archived) ? loaded.archived : [];
+          state.caption = loaded.caption || "";
+          state.captionImage = loaded.captionImage || "";
+          state.background = loaded.background || "";
+          state.settings = { ...DEFAULT_SETTINGS, ...(loaded.settings || {}) };
+          normalizeStateImages();
+          currentBrowserProjectName = "";
+          localStorage.removeItem(CURRENT_PROJECT_KEY);
+          els.captionInput.value = state.caption;
+          render();
+          isRestoringHistory = false;
+          historyStack = [];
+          historyIndex = -1;
+          pushHistory(true);
+          saveAutosave();
+          history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+          showToast("Tier compartilhada carregada.");
+          const schedule = window.requestIdleCallback || (callback => setTimeout(callback, 80));
+          schedule(() => rebuildSharedImagePreviews());
+          return true;
+        } catch (error) {
+          console.error("Falha ao abrir tier compartilhada", error);
+          history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+          showToast(error.message || "Link compartilhado inválido.");
+          return false;
+        } finally {
+          isRestoringHistory = false;
+        }
       }
 
       function legacyValue(source, keys, fallback = undefined) {
@@ -2765,6 +3023,12 @@
         closeProjectMenu();
         saveProject();
       });
+      document.getElementById("shareLinkBtn").addEventListener("click", openShareProjectDialog);
+      document.getElementById("closeShareProjectBtn").addEventListener("click", () => els.shareProjectDialog.close());
+      document.getElementById("doneShareProjectBtn").addEventListener("click", () => els.shareProjectDialog.close());
+      document.getElementById("copyShareProjectBtn").addEventListener("click", copyShareProjectLink);
+      document.getElementById("nativeShareProjectBtn").addEventListener("click", nativeShareProjectLink);
+      document.getElementById("downloadShareProjectBtn").addEventListener("click", saveProject);
       document.getElementById("loadBtn").addEventListener("click", () => {
         closeProjectMenu();
         els.projectInput.click();
@@ -3134,6 +3398,10 @@
         event.preventDefault();
         els.browserProjectsDialog.close();
       });
+      els.shareProjectDialog.addEventListener("cancel", event => {
+        event.preventDefault();
+        els.shareProjectDialog.close();
+      });
       els.settingsDialog.addEventListener("close", () => document.body.classList.remove("settings-open"));
 
 
@@ -3191,30 +3459,31 @@
         updateHistoryButtons();
       };
 
-      if (loadAutosave()) {
-        els.captionInput.value = state.caption;
-        pushHistory(true);
-        updateHistoryButtons();
-      } else {
-        (async () => {
-          try {
-            let record = await getBrowserProject(BROWSER_AUTOSAVE_NAME);
-            if (!record && currentBrowserProjectName) {
-              record = await getBrowserProject(currentBrowserProjectName);
-            }
-            if (record?.snapshot) {
-              restoreSnapshot(JSON.parse(JSON.stringify(record.snapshot)));
-              els.captionInput.value = state.caption;
-              pushHistory(true);
-              updateHistoryButtons();
-              showToast("Projeto recuperado do navegador.");
-            } else {
-              initializeBlankProject();
-            }
-          } catch (error) {
-            console.warn("Não foi possível recuperar o projeto do navegador", error);
+      (async () => {
+        if (await loadSharedProjectFromLocation()) return;
+        if (loadAutosave()) {
+          els.captionInput.value = state.caption;
+          pushHistory(true);
+          updateHistoryButtons();
+          return;
+        }
+        try {
+          let record = await getBrowserProject(BROWSER_AUTOSAVE_NAME);
+          if (!record && currentBrowserProjectName) {
+            record = await getBrowserProject(currentBrowserProjectName);
+          }
+          if (record?.snapshot) {
+            restoreSnapshot(JSON.parse(JSON.stringify(record.snapshot)));
+            els.captionInput.value = state.caption;
+            pushHistory(true);
+            updateHistoryButtons();
+            showToast("Projeto recuperado do navegador.");
+          } else {
             initializeBlankProject();
           }
-        })();
-      }
+        } catch (error) {
+          console.warn("Não foi possível recuperar o projeto do navegador", error);
+          initializeBlankProject();
+        }
+      })();
     })();
