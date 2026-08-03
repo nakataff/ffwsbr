@@ -28,6 +28,7 @@
       final: { period: 'all', map: 'all', drop: 'all' }
     },
     selectionWeek: '1',
+    selectionTab: 'semanal',
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
     statsFilters: { stage: 'classificatoria', days: [], confrontations: [], maps: [] },
     notesFilters: { stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all' },
@@ -645,35 +646,164 @@
     return labels.length ? labels.join(' e ') : `Rodadas ${days.join(' e ')}`;
   }
 
-  function selectionCard(row, role) {
-    if (!row) return `<article class="ffws-s2-selection-card is-empty"><span>${escapeHtml(role)}</span><strong>Participante a definir</strong><small>Aguardando resultados da semana</small></article>`;
+  const S2_SELECTION_PHASES = {
+    semanal: { label: 'TIMES DA SEMANA', short: 'SEMANA', color: '#ff0000', panelClass: 'week', title: 'Seleções semanais' },
+    classificatoria: { label: 'CLASSIFICATÓRIA', short: 'CLASSIF.', color: '#00c8ff', panelClass: 'classificatoria', title: 'Seleção da classificatória' },
+    final: { label: 'FINAL', short: 'FINAL', color: '#ffd166', panelClass: 'final', title: 'Seleção da final' },
+    torneio: { label: 'TORNEIO', short: 'TORNEIO', color: '#a855f7', panelClass: 'torneio', title: 'Seleção do torneio' }
+  };
+
+  function selectionPhaseConfig(key = 'semanal') {
+    return S2_SELECTION_PHASES[key] || S2_SELECTION_PHASES.semanal;
+  }
+
+  function selectionFinalComplete() {
+    const finalEntries = allPlayerEntries().filter(entry => normalize(entry?.stage || entry?.etapa) === 'FINAL');
+    return finalEntries.length >= 16 * 48;
+  }
+
+  function availableSelectionWeeks() {
+    const entries = allPlayerEntries().filter(selectionEntryIsClassificatoria);
+    const available = Object.keys(S2_WEEKS).filter(key => {
+      const days = S2_WEEKS[key] || [];
+      return entries.some(entry => days.includes(selectionEntryDay(entry)));
+    });
+    return available.length ? available : ['1'];
+  }
+
+  function selectionTabsHtml() {
+    const finalUnlocked = selectionFinalComplete();
+    return Object.entries(S2_SELECTION_PHASES).map(([key, config]) => {
+      const unlocked = key === 'semanal' || key === 'classificatoria' || finalUnlocked;
+      const active = state.selectionTab === key;
+      return `<button type="button" class="season-selection-tab ${active ? 'active' : ''} ${unlocked ? '' : 'locked'}" style="--selection-color:${config.color}" onclick="setFFWSS2SelectionTab('${key}')">
+        <span>${config.label}</span>${unlocked ? '' : '<small>EM BREVE</small>'}
+      </button>`;
+    }).join('');
+  }
+
+  function selectionGlow(color) {
+    if (color === '#00c8ff') return 'rgba(0,200,255,.48)';
+    if (color === '#ffd166') return 'rgba(255,209,102,.45)';
+    if (color === '#a855f7') return 'rgba(168,85,247,.45)';
+    return 'rgba(255,0,0,.50)';
+  }
+
+  function selectionBackdrop(color) {
+    if (color === '#00c8ff') return '#06283a';
+    if (color === '#ffd166') return '#3b2d05';
+    if (color === '#a855f7') return '#2b123e';
+    return '#400';
+  }
+
+  function selectionCard(row, phaseKey = 'semanal') {
+    if (!row) return '';
+    const config = selectionPhaseConfig(phaseKey);
     const meta = row.meta || rosterPlayerByName(row.name, row.team) || { name: row.name };
-    const avg = row.matches ? (row.kills / row.matches).toFixed(2) : '0.00';
-    return `<button type="button" class="ffws-s2-selection-card" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">
-      <span class="ffws-s2-selection-role">${escapeHtml(role)}</span>
-      <img class="ffws-s2-selection-photo" loading="lazy" decoding="async" src="${escapeHtml(playerPhoto(meta))}" alt="${escapeHtml(row.name)}" onerror="this.onerror=null;this.src='silhueta.webp'">
-      <div class="ffws-s2-selection-copy"><img src="${escapeHtml(logo(row.team))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.team)}</small></div></div>
-      <div class="ffws-s2-selection-stats"><span><b>${row.kills}</b>K</span><span><b>${row.damage.toLocaleString('pt-BR')}</b>DANO</span><span><b>${avg}</b>MÉDIA</span></div>
-    </button>`;
+    const role = selectionRole(row);
+    const photo = playerPhoto(meta);
+    const teamLogo = logo(row.team);
+    const damage = `${(row.damage / 1000).toFixed(1)}K`;
+    const glow = selectionGlow(config.color);
+    const backdrop = selectionBackdrop(config.color);
+    return `<div class="ffws-s2-s1-selection-card" role="button" tabindex="0" aria-label="Abrir perfil de ${escapeHtml(row.name)}" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')}">
+      <div style="cursor:pointer;width:280px;height:420px;background:#000;border:4px solid ${config.color};border-radius:15px;position:relative;overflow:hidden;box-shadow:0 0 25px ${glow};margin:0 auto;box-sizing:border-box;">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,${backdrop},#000);opacity:.95;"></div>
+        <div style="position:absolute;top:15px;left:15px;z-index:10;background:${config.color};color:#fff;padding:4px 12px;border-radius:4px;font-size:.75em;font-weight:900;text-transform:uppercase;letter-spacing:1px;">${config.short}</div>
+        <div style="position:absolute;top:50px;left:25px;z-index:4;text-align:center;color:${config.color};">
+          <div style="font-size:22px;font-weight:900;">${escapeHtml(role)}</div>
+          <div style="margin:8px auto;width:35px;height:3px;background:${config.color};"></div>
+          <img src="${escapeHtml(teamLogo)}" alt="${escapeHtml(row.team)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='escudo.webp'" style="width:50px;height:50px;object-fit:contain;margin-top:5px;filter:drop-shadow(0 0 5px ${glow});">
+        </div>
+        <img src="${escapeHtml(photo)}" alt="${escapeHtml(row.name)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'" style="position:absolute;top:20px;right:-35px;height:270px;max-width:245px;object-fit:contain;object-position:right bottom;z-index:2;filter:drop-shadow(5px 5px 15px #000);-webkit-mask-image:linear-gradient(to bottom,#000 75%,transparent 100%);">
+        <div style="position:absolute;bottom:0;width:100%;height:170px;background:linear-gradient(transparent,#000 45%);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:20px;box-sizing:border-box;">
+          <div style="color:#fff;font-size:24px;font-weight:900;text-transform:uppercase;padding:6px 10px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;">${escapeHtml(row.name)}</div>
+          <div style="display:flex;justify-content:space-around;width:90%;color:#fff;border-top:1px solid color-mix(in srgb,${config.color} 38%,transparent);padding-top:10px;">
+            <div style="text-align:center;"><div style="font-size:.65em;color:#888;">KILLS</div><div style="font-size:1.1em;font-weight:900;color:${config.color};">${row.kills}</div></div>
+            <div style="text-align:center;"><div style="font-size:.65em;color:#888;">DANO</div><div style="font-size:1.1em;font-weight:900;">${damage}</div></div>
+            <div style="text-align:center;"><div style="font-size:.65em;color:#888;">QUEDAS</div><div style="font-size:1.1em;font-weight:900;">${row.matches}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function selectionLockedHtml(phaseKey) {
+    const config = selectionPhaseConfig(phaseKey);
+    return `<div class="season-selection-locked" style="--selection-color:${config.color}"><div class="season-selection-lock-icon">🔒</div><h3>${config.title} em breve</h3></div>`;
+  }
+
+  function selectionEmptyHtml(phaseKey, week = '') {
+    const config = selectionPhaseConfig(phaseKey);
+    const text = phaseKey === 'semanal' ? `Nenhum dado disponível para a Semana ${week}.` : 'Ainda não há dados suficientes para montar essa seleção.';
+    return `<div class="season-selection-empty" style="--selection-color:${config.color}"><p>${text}</p></div>`;
   }
 
   function renderSelections() {
     const root = document.getElementById('ffws-br-s2-selecoes-content');
     if (!root) return;
-    const week = String(state.selectionWeek || '1');
-    const weekRows = selectionRowsForWeek(week);
-    const weekLineup = buildWeeklySelection(weekRows);
-    const classificationRows = selectionRowsForDays([]);
-    const classificationLineup = buildWeeklySelection(classificationRows);
-    const roles = ['Rush', 'Rush', 'Granadeiro', 'Suporte'];
-    const locked = (title, text, tag) => `<section class="ffws-s2-panel ffws-s2-selection-locked"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><span class="ffws-s2-selection-section-tag">${tag}</span><h2>${title}</h2><p>${text}</p></div><span class="ffws-s2-badge">Em breve</span></div></div></section>`;
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Seleções da Season', 'Os destaques por função ao longo da WB 2026 S2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><span class="ffws-s2-selection-section-tag">Times da Semana</span><h2>Time da Semana ${escapeHtml(week)}</h2><p>${escapeHtml(selectionScheduleLabel(week))} • dois Rush, um Granadeiro e um Suporte.</p></div><span class="ffws-s2-badge">${weekRows.length ? `${weekLineup.length} selecionados` : 'Próxima semana'}</span></div>
-      <div class="ffws-s2-stage-tabs ffws-s2-week-tabs">${Object.keys(S2_WEEKS).map(key => `<button type="button" class="ffws-s2-stage-tab${week === key ? ' active' : ''}" onclick="setFFWSS2SelectionWeek('${key}')">SEMANA ${key}</button>`).join('')}</div>
-      <div class="ffws-s2-selection-grid">${roles.map((role, index) => selectionCard(weekLineup[index], role)).join('')}</div></div></section>
-      <section class="ffws-s2-panel ffws-s2-selection-classification"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><span class="ffws-s2-selection-section-tag">Classificatória</span><h2>Seleção da Classificatória</h2><p>Melhores de cada posição considerando todas as quedas disputadas até agora.</p></div><span class="ffws-s2-badge">Atualizada após o Dia 2</span></div><div class="ffws-s2-selection-grid">${roles.map((role, index) => selectionCard(classificationLineup[index], role)).join('')}</div></div></section>
-      ${locked('Seleção da Final', 'Será liberada quando a Final tiver uma amostra suficiente de quedas.', 'Final')}
-      ${locked('Seleção do Torneio', 'Será definida após o encerramento da temporada, considerando todas as etapas.', 'Torneio')}
+    const phaseKey = state.selectionTab || 'semanal';
+    const config = selectionPhaseConfig(phaseKey);
+    const availableWeeks = availableSelectionWeeks();
+    if (!availableWeeks.includes(String(state.selectionWeek))) state.selectionWeek = availableWeeks[0];
+    const week = String(state.selectionWeek || availableWeeks[0] || '1');
+    const finalUnlocked = selectionFinalComplete();
+
+    let rows = [];
+    let title = config.title;
+    let description = '';
+    let filters = '';
+    let content = '';
+
+    if (phaseKey === 'semanal') {
+      rows = selectionRowsForWeek(week);
+      const lineup = buildWeeklySelection(rows);
+      title = 'Seleções semanais';
+      description = 'Escolha a semana para ver os destaques por posição.';
+      filters = `<div class="season-selection-filters">${availableWeeks.map(key => `<button type="button" class="btn-day ${week === key ? 'active' : ''}" onclick="setFFWSS2SelectionWeek('${key}')" style="${week === key ? 'background:#ff0000;border-color:#ff0000;color:#fff;' : ''}">SEMANA ${key}</button>`).join('')}</div>`;
+      content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey, week);
+    } else if (phaseKey === 'classificatoria') {
+      rows = selectionRowsForDays([]);
+      const lineup = buildWeeklySelection(rows);
+      description = 'Melhores de cada posição levando em conta todos os dados da classificatória.';
+      content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey);
+    } else if (!finalUnlocked) {
+      description = phaseKey === 'final' ? 'A seleção será liberada quando a Final tiver dados suficientes.' : 'A seleção será definida depois do encerramento da temporada.';
+      content = selectionLockedHtml(phaseKey);
+    } else {
+      const targetStage = phaseKey === 'final' ? 'FINAL' : '';
+      const phaseEntries = allPlayerEntries().filter(entry => !targetStage || normalize(entry?.stage || entry?.etapa) === targetStage);
+      const aggregate = new Map();
+      phaseEntries.forEach(entry => {
+        const name = entry.name || entry.player || entry.jogador;
+        const team = entry.team || entry.equipe || '';
+        if (!name) return;
+        const key = `${normalize(name)}__${normalize(team)}`;
+        if (!aggregate.has(key)) aggregate.set(key, { name, team, meta: rosterPlayerByName(name, team), kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
+        const row = aggregate.get(key);
+        row.kills += number(entry.kills ?? entry.abates);
+        row.damage += number(entry.damage ?? entry.dano);
+        row.assists += number(entry.assists ?? entry.assistencias);
+        row.matches += number(entry.matches ?? entry.quedas) || 1;
+        row.mvps += number(entry.mvp ?? entry.mvps);
+      });
+      const lineup = buildWeeklySelection([...aggregate.values()].sort((a, b) => b.kills - a.kills || b.damage - a.damage));
+      description = phaseKey === 'final' ? 'Melhores de cada posição considerando somente a Final.' : 'Melhores de cada posição considerando toda a temporada.';
+      content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey);
+    }
+
+    root.innerHTML = `<div class="ffws-s2-selection-page">
+      <div class="season-selection-hero">
+        <div class="season-selection-kicker">WB 2026 S2</div>
+        <h1>SELEÇÕES DA SEASON</h1>
+        <p>Os melhores jogadores por função: seleções semanais, classificatória, final e torneio.</p>
+      </div>
+      <div class="season-selection-tabs">${selectionTabsHtml()}</div>
+      <section class="season-selection-panel season-selection-panel-${config.panelClass}">
+        <div class="season-selection-section-head"><div><span class="season-selection-tag">${escapeHtml(config.label)}</span><h2>${escapeHtml(title)}</h2></div><p>${escapeHtml(description)}</p></div>
+        ${filters}
+        <div class="selection-grid season-selection-grid">${content}</div>
+      </section>
     </div>`;
   }
 
@@ -974,7 +1104,8 @@
     const map = { classificatoria: 'ffws-br-s2-classificatoria', segundaFase: 'ffws-br-s2-segunda-fase', final: 'ffws-br-s2-final' };
     renderPage(map[stageKey]);
   };
-  window.setFFWSS2SelectionWeek = week => { state.selectionWeek = String(week || '1'); renderSelections(); };
+  window.setFFWSS2SelectionWeek = week => { state.selectionTab = 'semanal'; state.selectionWeek = String(week || '1'); renderSelections(); };
+  window.setFFWSS2SelectionTab = tab => { state.selectionTab = S2_SELECTION_PHASES[tab] ? tab : 'semanal'; renderSelections(); };
   window.setFFWSS2StatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.confrontations = []; state.statsFilters.maps = []; renderStats(); };
   window.toggleFFWSS2StatsMulti = key => { document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-stats-multi-${key}`) menu.hidden = true; }); const menu = document.getElementById(`ffws-s2-stats-multi-${key}`); if (menu) menu.hidden = !menu.hidden; };
   window.clearFFWSS2StatsMulti = key => { state.statsFilters[key] = []; renderStats(); };
