@@ -1,7 +1,120 @@
 {
   "tournament": "WB 2026 S2",
-  "updatedAt": "2026-07-29",
-  "status": "upcoming",
-  "teams": [],
-  "players": []
+  "updatedAt": "2026-08-03",
+  "status": "live",
+  "stage": "classificatoria",
+  "daysCompleted": 2,
+  "matchesCompleted": 12,
+  "teams": [
+    {
+      "team": "LOS",
+      "position": 1,
+      "points": 189,
+      "booyahs": 0,
+      "kills": 112,
+      "matches": 12
+    },
+    {
+      "team": "FLUXO W7M",
+      "position": 2,
+      "points": 164,
+      "booyahs": 4,
+      "kills": 91,
+      "matches": 12
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "position": 3,
+      "points": 152,
+      "booyahs": 2,
+      "kills": 72,
+      "matches": 12
+    },
+    {
+      "team": "TEAM SOLID",
+      "position": 4,
+      "points": 150,
+      "booyahs": 3,
+      "kills": 81,
+      "matches": 12
+    },
+    {
+      "team": "INFLUENCE RAGE",
+      "position": 5,
+      "points": 131,
+      "booyahs": 1,
+      "kills": 75,
+      "matches": 12
+    },
+    {
+      "team": "ALPHA7",
+      "position": 6,
+      "points": 130,
+      "booyahs": 0,
+      "kills": 74,
+      "matches": 12
+    }
+  ],
+  "players": [
+    {
+      "name": "Yago",
+      "team": "LOS",
+      "kills": 37,
+      "damage": 26775,
+      "assists": 18,
+      "matches": 12,
+      "mvp": 2,
+      "player": "Yago"
+    },
+    {
+      "name": "Rigby245",
+      "team": "LOS",
+      "kills": 36,
+      "damage": 18456,
+      "assists": 39,
+      "matches": 12,
+      "mvp": 3,
+      "player": "Rigby245"
+    },
+    {
+      "name": "Pitbull",
+      "team": "TEAM SOLID",
+      "kills": 30,
+      "damage": 15628,
+      "assists": 25,
+      "matches": 12,
+      "mvp": 1,
+      "player": "Pitbull"
+    },
+    {
+      "name": "KaKaZk",
+      "team": "RISE GAMING",
+      "kills": 27,
+      "damage": 18776,
+      "assists": 16,
+      "matches": 12,
+      "mvp": 0,
+      "player": "KaKaZk"
+    },
+    {
+      "name": "TRAP",
+      "team": "LOUD SNICKERS",
+      "kills": 25,
+      "damage": 15644,
+      "assists": 15,
+      "matches": 12,
+      "mvp": 0,
+      "player": "TRAP"
+    },
+    {
+      "name": "Bops",
+      "team": "FLUXO W7M",
+      "kills": 25,
+      "damage": 14648,
+      "assists": 26,
+      "matches": 12,
+      "mvp": 0,
+      "player": "Bops"
+    }
+  ]
 }
