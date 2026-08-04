@@ -225,13 +225,13 @@
       ],
       "photo": "silhueta.webp",
       "country": "br",
-      "role": "SUPORTE",
+      "role": "RUSH",
       "currentTeam": "AFROGAMES",
       "currentTeamLogo": "afg.webp",
       "currentRoster": {
         "team": "AFROGAMES",
-        "role": "SUPORTE",
-        "roleShort": "SUP",
+        "role": "RUSH",
+        "roleShort": "RUSH",
         "starter": false,
         "rosterStatus": "Reserva",
         "captain": false,
@@ -376,7 +376,7 @@
         "rosterStatus": "Titular",
         "captain": false,
         "rookie": false,
-        "highlight": false,
+        "highlight": true,
         "fullName": "Pablo Roberto Medeiros De França",
         "age": 19,
         "birthDate": "2006-11-12",
@@ -495,7 +495,8 @@
       "availableSeasons": [
         "s2",
         "s1"
-      ]
+      ],
+      "highlight": true
     }
   }
 }
