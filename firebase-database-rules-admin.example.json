@@ -2,7 +2,6 @@
   "rules": {
     ".read": false,
     ".write": false,
-
     "adminNews": {
       ".read": true,
       "$slug": {
@@ -10,9 +9,6 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['id','titulo','conteudo','status']) && newData.child('id').isString() && newData.child('id').val() == $slug && newData.child('titulo').isString() && newData.child('titulo').val().length > 2 && newData.child('titulo').val().length <= 180 && newData.child('conteudo').isString() && newData.child('status').isString() && (newData.child('status').val() == 'published' || newData.child('status').val() == 'draft'))"
       }
     },
-
-
-
     "adminDrafts": {
       ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
       "$slug": {
@@ -20,7 +16,6 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['id','titulo','conteudo','status']) && newData.child('id').isString() && newData.child('id').val() == $slug && newData.child('titulo').isString() && newData.child('titulo').val().length > 2 && newData.child('titulo').val().length <= 180 && newData.child('conteudo').isString() && newData.child('status').val() == 'draft')"
       }
     },
-
     "newsMetrics": {
       ".read": true,
       "$slug": {
@@ -30,20 +25,22 @@
         "likes": {
           ".write": "newData.isNumber() && newData.val() >= 0 && ((!data.exists() && newData.val() == 1) || (data.isNumber() && (newData.val() == data.val() + 1 || newData.val() == data.val() - 1)))"
         },
-        "$other": { ".validate": false }
+        "$other": {
+          ".validate": false
+        }
       }
     },
-
     "siteAnalytics": {
       ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
       "pages": {
         "$page": {
           ".write": "newData.hasChildren(['path','title','views','lastViewedAt']) && newData.child('path').isString() && newData.child('path').val().length <= 300 && newData.child('title').isString() && newData.child('title').val().length <= 160 && newData.child('views').isNumber() && ((!data.exists() && newData.child('views').val() == 1) || (data.child('views').isNumber() && newData.child('views').val() == data.child('views').val() + 1)) && (!data.exists() || newData.child('path').val() == data.child('path').val()) && newData.child('lastViewedAt').isNumber() && newData.child('lastViewedAt').val() <= now && newData.child('lastViewedAt').val() >= now - 60000",
-          "$other": { ".validate": false }
+          "$other": {
+            ".validate": false
+          }
         }
       }
     },
-
     "mercadoUserVotes": {
       ".read": true,
       "$item": {
@@ -53,7 +50,6 @@
         }
       }
     },
-
     "dayUserVotes": {
       ".read": true,
       "$match": {
@@ -61,6 +57,13 @@
           ".write": true,
           ".validate": "!newData.exists() || (newData.isString() && newData.val().length <= 80)"
         }
+      }
+    },
+    "adminHiddenNews": {
+      ".read": true,
+      "$slug": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "!newData.exists() || newData.val() == true"
       }
     }
   }

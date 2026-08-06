@@ -15,9 +15,9 @@
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/bundle.min.css">
   <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v3"></script>
-  <script defer src="js/news-admin-provider.js?v=20260806-admin-v1"></script>
-  <script defer src="js/news-engagement.js?v=20260806-admin-v1"></script>
-  <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
+  <script defer src="js/news-admin-provider.js?v=20260806-admin-v2"></script>
+  <script defer src="js/news-engagement.js?v=20260806-admin-v2"></script>
+  <script defer src="js/site-analytics.js?v=20260806-admin-v2"></script>
   <style>
     body { background: var(--bg, #07101f); color: var(--text, #f5f8ff); }
     .news-page-shell { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
@@ -162,8 +162,7 @@
     function renderParagraph(text) {
       const clean = String(text || '').trim();
       if (!clean) return '';
-      const lines = clean.split(/\r?\n/).map(escapeHTML).join('<br>');
-      return '<p>' + lines + '</p>';
+      return '<p>' + escapeHTML(clean) + '</p>';
     }
 
     function renderInlineImage(url, caption) {
@@ -173,45 +172,61 @@
       return '<figure class="news-inline-image"><img src="' + escapeHTML(cleanUrl) + '" alt="Imagem da notícia" loading="lazy" onerror="this.closest(\'figure\').remove()">' + (cleanCaption ? '<figcaption>' + escapeHTML(cleanCaption) + '</figcaption>' : '') + '</figure>';
     }
 
+    function prepareNewsContent(text, currentImage) {
+      let src = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+      let image = driveImage(currentImage || '');
+      let firstImageHandled = false;
+      src = src.replace(/\[IMG\s*:\s*([^\]]+)\]/i, function (full, payload) {
+        const url = String(payload || '').split('|')[0].trim();
+        if (!image) image = driveImage(url);
+        firstImageHandled = true;
+        return '\n';
+      });
+      src = src.replace(/\[(?:P|PARAGRAFO|PARÁGRAFO|BR)\]/gi, '\n');
+      let headline = '';
+      src = src.replace(/^\s*\[(?:HEAD|H2|H)\s*:?\s*([^\]]+)\]\s*/i, function (full, title) {
+        headline = String(title || '').trim();
+        return '';
+      });
+      return { content: src, image: image, headline: headline, extractedImage: firstImageHandled };
+    }
+
     function renderNewsBody(text) {
       let src = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
       if (!src) return '';
       src = src.replace(/\u000b/g, '\n').replace(/\u000c/g, '\n').replace(/\u0008/g, '').replace(/\t/g, ' ');
+      src = src.replace(/\[(?:P|PARAGRAFO|PARÁGRAFO|BR)\]/gi, '\n');
 
-      const tokenRegex = /\[(P|PARAGRAFO|PARÁGRAFO|BR)\]|\[IMG\s*:\s*([^\]]+)\]|\[(HEAD|H2|H3|H)\s*:?\s*([^\]]*)\]/gi;
+      const tokenRegex = /\[IMG\s*:\s*([^\]]+)\]|\[(HEAD|H2|H3|H4|H)\s*:?\s*([^\]]*)\]/gi;
       let html = '';
       let buffer = '';
       let lastIndex = 0;
       let match;
 
-      function flushParagraph() {
-        const paragraph = buffer.trim();
-        if (paragraph) html += renderParagraph(paragraph);
+      function flushParagraphs() {
+        const pieces = buffer.split(/\n+/).map(function (part) { return part.trim(); }).filter(Boolean);
+        pieces.forEach(function (piece) { html += renderParagraph(piece); });
         buffer = '';
       }
 
       while ((match = tokenRegex.exec(src)) !== null) {
         buffer += src.slice(lastIndex, match.index);
-        flushParagraph();
+        flushParagraphs();
         if (match[1]) {
-          html += '<div class="news-break" aria-hidden="true"></div>';
-        } else if (match[2]) {
-          const parts = String(match[2]).split('|');
+          const parts = String(match[1]).split('|');
           const url = parts.shift() || '';
           const caption = parts.join('|').trim();
           html += renderInlineImage(url, caption);
-        } else if (match[3]) {
-          const headingToken = String(match[3]).toLowerCase();
-          const level = headingToken === 'h3' ? 'h3' : 'h2';
-          const title = String(match[4] || '').trim();
+        } else if (match[2]) {
+          const headingToken = String(match[2]).toLowerCase();
+          const level = headingToken === 'h3' || headingToken === 'h4' ? 'h3' : 'h2';
+          const title = String(match[3] || '').trim();
           if (title) html += '<' + level + '>' + escapeHTML(title) + '</' + level + '>';
         }
         lastIndex = tokenRegex.lastIndex;
       }
       buffer += src.slice(lastIndex);
-      flushParagraph();
-
-      if (!html) html = src.split(/\n{2,}/).map(renderParagraph).join('');
+      flushParagraphs();
       return html;
     }
 
@@ -239,18 +254,23 @@
     }
 
     function renderNews(item) {
-      const image = item.imagem || fallbackImage;
-      setMeta(item.titulo, item.resumo, image);
-      const body = renderNewsBody(item.conteudo || item.resumo || 'Conteúdo em atualização.');
+      const prepared = prepareNewsContent(item.conteudo || item.resumo || 'Conteúdo em atualização.', item.imagem);
+      const image = prepared.image || fallbackImage;
+      const displayTitle = prepared.headline || item.titulo;
+      setMeta(displayTitle, item.resumo, image);
+      const body = renderNewsBody(prepared.content);
       const meta = [item.data, item.autor].filter(Boolean).map(escapeHTML).join(' • ');
-      root.innerHTML = '<div class="news-content">' +
+      root.innerHTML = '<img class="news-cover" src="' + escapeHTML(image) + '" alt="' + escapeHTML(displayTitle) + '" fetchpriority="high">' +
+        '<div class="news-content">' +
         '<div class="news-kicker">Notícia</div>' +
-        '<h1 class="news-title">' + escapeHTML(item.titulo) + '</h1>' +
+        '<h1 class="news-title">' + escapeHTML(displayTitle) + '</h1>' +
         (item.resumo ? '<p class="news-summary">' + escapeHTML(item.resumo) + '</p>' : '') +
         (meta ? '<div class="news-meta">' + meta + '</div>' : '') +
         '<div class="news-body">' + body + '</div>' +
         (item.linkOriginal ? '<a class="news-original-link" href="' + escapeHTML(item.linkOriginal) + '" target="_blank" rel="noopener noreferrer">Ver publicação original →</a>' : '') +
         '</div>';
+      const coverElement = root.querySelector('.news-cover');
+      if (coverElement) coverElement.addEventListener('error', function () { this.src = fallbackImage; }, { once: true });
       if (window.CFF_NEWS_ENGAGEMENT) {
         window.CFF_NEWS_ENGAGEMENT.mount(item.id, root.querySelector('.news-meta') || root.querySelector('.news-summary'));
       }

@@ -1,0 +1,22 @@
+PATCH PAINEL ADMIN V2
+
+ARQUIVOS ALTERADOS/CRIADOS:
+- admin.html
+- css/admin.css
+- js/admin.js
+- js/news-admin-provider.js
+- noticia.html
+- noticias-painel.json (12 notícias importadas do TSV enviado)
+- GOOGLE_ANALYTICS_SETUP.txt
+
+MUDANÇAS:
+- Google Analytics 4 dentro do painel via OAuth da conta Google
+- dados de usuários, sessões, visualizações, tempo real e páginas mais vistas
+- cada Enter no editor cria um parágrafo; [P] não é mais necessário
+- botão para transformar texto selecionado em [H: TEXTO] ou [H3: TEXTO]
+- primeira marcação [IMG: URL] vira imagem principal automaticamente
+- campo próprio para colar o link da imagem principal
+- imagem principal aparece no topo da notícia
+- notícias do arquivo TSV incluídas localmente no site
+- botão para importar as notícias locais para o Firebase/painel
+- planilha continua como fonte complementar/fallback

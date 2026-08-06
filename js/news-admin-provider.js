@@ -2,6 +2,7 @@
   'use strict';
 
   const FALLBACK_IMAGE = 'central free fire.webp';
+  const LOCAL_NEWS_URL = 'noticias-painel.json?v=20260806-admin-v2';
   const CACHE_KEY = 'cff_news_cache_admin_v1';
   const CACHE_MAX_AGE = 30 * 60 * 1000;
 
@@ -105,6 +106,28 @@
     }).filter(function (item) { return item.titulo && item.id; });
   }
 
+  function prepareContentAndImage(content, currentImage) {
+    let src = String(content || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+    let image = driveImage(currentImage || '');
+    let handled = false;
+    src = src.replace(/\[IMG\s*:\s*([^\]]+)\]/i, function (full, payload) {
+      const url = String(payload || '').split('|')[0].trim();
+      if (!image) image = driveImage(url);
+      handled = true;
+      return '\n';
+    });
+    src = src.replace(/\[(?:P|PARAGRAFO|PARÁGRAFO|BR)\]/gi, '\n');
+    src = src.split('\n').map(function (line) { return line.replace(/[ \t]+/g, ' ').trim(); }).filter(Boolean).join('\n');
+    return { content: src, image: image, extractedImage: handled };
+  }
+
+  function parseLocalNews(data) {
+    const list = Array.isArray(data) ? data : Object.values(data || {});
+    return list.map(function (item) {
+      return normalizeNews(Object.assign({ source: 'local', status: 'published' }, item || {}));
+    }).filter(function (item) { return item.titulo && item.id; });
+  }
+
   function booleanValue(value) {
     if (typeof value === 'boolean') return value;
     return ['true', 'sim', 's', '1', 'yes', 'destaque'].includes(String(value || '').trim().toLowerCase());
@@ -113,12 +136,13 @@
   function normalizeNews(raw) {
     const titulo = String(raw && raw.titulo || '').trim();
     const id = String(raw && (raw.id || raw.slug) || '').trim() || slugify(titulo);
+    const prepared = prepareContentAndImage(raw && raw.conteudo || '', raw && raw.imagem || '');
     return {
       id: id,
       titulo: titulo,
-      imagem: driveImage(raw && raw.imagem || ''),
+      imagem: prepared.image,
       resumo: String(raw && raw.resumo || '').trim(),
-      conteudo: String(raw && raw.conteudo || '').trim(),
+      conteudo: prepared.content,
       data: String(raw && raw.data || '').trim(),
       autor: String(raw && raw.autor || '').trim(),
       link_original: String(raw && (raw.link_original || raw.linkOriginal || raw.link) || '').trim(),
@@ -138,10 +162,12 @@
     }).filter(function (item) { return item.status === 'published' && item.titulo && item.id; });
   }
 
-  function mergeNews(adminNews, sheetNews) {
+  function mergeNews(localNews, sheetNews, adminNews, hiddenNews) {
     const map = new Map();
+    localNews.forEach(function (item) { map.set(item.id, item); });
     sheetNews.forEach(function (item) { map.set(item.id, item); });
     adminNews.forEach(function (item) { map.set(item.id, item); });
+    Object.keys(hiddenNews || {}).forEach(function (id) { if (hiddenNews[id]) map.delete(id); });
     return Array.from(map.values()).sort(function (a, b) {
       const aTime = a.updatedAt || a.createdAt || Date.parse(a.data) || 0;
       const bTime = b.updatedAt || b.createdAt || Date.parse(b.data) || 0;
@@ -265,17 +291,21 @@
     const base = databaseBase();
     const sheetUrl = config().sheets && config().sheets.noticias;
     const tasks = [];
+    tasks.push(getJSON(LOCAL_NEWS_URL).then(parseLocalNews).catch(function () { return []; }));
     tasks.push(base ? getJSON(base + '/adminNews.json').then(objectValues).catch(function () { return []; }) : Promise.resolve([]));
     tasks.push(sheetUrl ? getText(sheetUrl + (sheetUrl.includes('?') ? '&' : '?') + 'v=' + Math.floor(Date.now() / 300000)).then(parseSheetNews).catch(function () { return []; }) : Promise.resolve([]));
     tasks.push(base ? getJSON(base + '/newsMetrics.json').catch(function () { return {}; }) : Promise.resolve({}));
+    tasks.push(base ? getJSON(base + '/adminHiddenNews.json').catch(function () { return {}; }) : Promise.resolve({}));
     const result = await Promise.all(tasks);
-    return { items: mergeNews(result[0], result[1]), metrics: result[2] || {} };
+    return { items: mergeNews(result[0], result[2], result[1], result[4]), metrics: result[3] || {} };
   }
 
   window.CFF_NEWS_PROVIDER = {
     parseTSV: parseTSV,
     parseSheetNews: parseSheetNews,
     normalizeNews: normalizeNews,
+    prepareContentAndImage: prepareContentAndImage,
+    parseLocalNews: parseLocalNews,
     loadAllNews: loadAllNews,
     loadOne: async function (wanted) {
       const data = await loadAllNews();

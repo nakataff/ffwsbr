@@ -6,9 +6,9 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260806-admin-v1">
+  <link rel="stylesheet" href="css/admin.css?v=20260806-admin-v2">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin.js?v=20260806-admin-v1"></script>
+  <script type="module" src="js/admin.js?v=20260806-admin-v2"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -60,23 +60,62 @@
         </section>
       </div>
 
+      <section class="admin-panel admin-ga-panel">
+        <div class="admin-panel-head admin-panel-head-wrap">
+          <div><p class="admin-eyebrow">Google Analytics 4</p><h2>Audiência oficial do site</h2><p class="admin-muted">Conecte sua conta Google para consultar os dados da propriedade sem colocar senha ou segredo no código</p></div>
+          <div class="admin-inline-actions">
+            <button id="ga-refresh" class="admin-btn admin-btn-ghost" type="button" disabled>↻ Atualizar</button>
+            <button id="ga-connect" class="admin-btn admin-btn-primary" type="button">Conectar Google Analytics</button>
+          </div>
+        </div>
+        <div class="admin-ga-settings">
+          <div class="admin-field"><label for="ga-client-id">OAuth Client ID</label><input id="ga-client-id" autocomplete="off" placeholder="000000000000-xxxx.apps.googleusercontent.com"></div>
+          <div class="admin-field"><label for="ga-property-id">ID numérico da propriedade GA4</label><input id="ga-property-id" inputmode="numeric" autocomplete="off" placeholder="123456789"></div>
+          <div class="admin-field"><label for="ga-period">Período</label><select id="ga-period"><option value="7">Últimos 7 dias</option><option value="28" selected>Últimos 28 dias</option><option value="90">Últimos 90 dias</option></select></div>
+          <div class="admin-field admin-ga-save-field"><button id="ga-save-settings" class="admin-btn admin-btn-ghost" type="button">Salvar configuração</button></div>
+        </div>
+        <p id="ga-message" class="admin-message" aria-live="polite">Preencha o Client ID e o ID da propriedade para conectar</p>
+        <div id="ga-results" hidden>
+          <div class="admin-stat-grid admin-ga-stat-grid">
+            <article class="admin-stat-card"><span>Usuários ativos</span><strong id="ga-active-users">0</strong><small>No período selecionado</small></article>
+            <article class="admin-stat-card"><span>Sessões</span><strong id="ga-sessions">0</strong><small>No período selecionado</small></article>
+            <article class="admin-stat-card"><span>Visualizações</span><strong id="ga-page-views">0</strong><small>No período selecionado</small></article>
+            <article class="admin-stat-card"><span>Agora no site</span><strong id="ga-realtime-users">0</strong><small>Usuários ativos em tempo real</small></article>
+          </div>
+          <div class="admin-ga-ranking-wrap">
+            <div class="admin-panel-head"><div><p class="admin-eyebrow">Google Analytics</p><h3>Páginas mais vistas no período</h3></div></div>
+            <div id="ga-top-pages" class="admin-ranking"><div class="admin-empty">Conecte o Analytics para carregar os dados</div></div>
+          </div>
+        </div>
+      </section>
+
       <section class="admin-panel admin-editor-panel">
         <div class="admin-panel-head admin-panel-head-wrap">
           <div><p class="admin-eyebrow">Editor</p><h2 id="editor-title">Nova notícia</h2></div>
           <div class="admin-inline-actions">
-            <button id="admin-import-sheet" class="admin-btn admin-btn-ghost" type="button">Importar da planilha</button>
+            <button id="admin-import-local" class="admin-btn admin-btn-ghost" type="button">Importar notícias do arquivo</button>
+            <button id="admin-import-sheet" class="admin-btn admin-btn-ghost" type="button">Sincronizar planilha</button>
             <button id="admin-new-news" class="admin-btn admin-btn-ghost" type="button">+ Nova notícia</button>
           </div>
         </div>
 
         <form id="admin-news-form" class="admin-news-form">
           <input id="news-original-id" type="hidden">
-          <div class="admin-field admin-field-wide"><label for="news-title">Título</label><input id="news-title" maxlength="180" required placeholder="Ex.: LOUD DOMINA A GRANDE FINAL"></div>
+          <div class="admin-field admin-field-wide"><label for="news-title">Título do card/chamada</label><input id="news-title" maxlength="180" required placeholder="Ex.: HÁ 3 ANOS, LOUD ERA CAMPEÃ"><small>Se o conteúdo começar com [H: ...], esse texto será o título grande dentro da matéria</small></div>
           <div class="admin-field"><label for="news-slug">Identificador/slug</label><input id="news-slug" maxlength="160" required placeholder="loud-domina-a-grande-final"></div>
           <div class="admin-field"><label for="news-date">Data</label><input id="news-date" type="date"></div>
-          <div class="admin-field admin-field-wide"><label for="news-image">Imagem de capa</label><input id="news-image" type="url" placeholder="https://... ou link do Google Drive"></div>
+          <div class="admin-field admin-field-wide"><label for="news-image">Imagem principal da notícia</label><input id="news-image" type="url" placeholder="Cole o link direto da imagem ou do Google Drive"><small>Ela aparecerá no topo da notícia. Também é possível colar <strong>[IMG: URL]</strong> no conteúdo: a primeira imagem vira a capa automaticamente</small></div>
           <div class="admin-field admin-field-wide"><label for="news-summary">Resumo</label><textarea id="news-summary" rows="3" maxlength="500" placeholder="Texto curto exibido abaixo do título"></textarea></div>
-          <div class="admin-field admin-field-wide"><label for="news-content">Conteúdo</label><textarea id="news-content" rows="14" required placeholder="Use [P] para parágrafo, [IMG: URL] para imagem e [H: TÍTULO] ou [H3: SUBTÍTULO] para tópicos"></textarea><small>Os marcadores continuam iguais aos utilizados atualmente no site</small></div>
+          <div class="admin-field admin-field-wide admin-content-field">
+            <label for="news-content">Conteúdo</label>
+            <div class="admin-editor-toolbar" role="toolbar" aria-label="Formatação do texto">
+              <button class="admin-editor-tool" type="button" data-editor-format="h2" title="Transformar o texto selecionado em título">Título de tópico</button>
+              <button class="admin-editor-tool" type="button" data-editor-format="h3" title="Transformar o texto selecionado em subtítulo">Subtítulo</button>
+              <button id="admin-insert-image" class="admin-editor-tool" type="button" title="Inserir outra imagem dentro do texto">Imagem no texto</button>
+            </div>
+            <textarea id="news-content" rows="16" required placeholder="Digite o texto normalmente. Cada Enter cria um novo parágrafo."></textarea>
+            <small>Não precisa mais usar [P]. Selecione um texto e aperte “Título de tópico” para gerar [H: TEXTO]. Os marcadores antigos continuam funcionando</small>
+          </div>
           <div class="admin-field"><label for="news-author">Autor</label><input id="news-author" value="Central Free Fire" maxlength="100"></div>
           <div class="admin-field"><label for="news-original-link">Link original</label><input id="news-original-link" type="url" placeholder="https://instagram.com/..."></div>
           <div class="admin-field"><label for="news-status">Status</label><select id="news-status"><option value="published">Publicada</option><option value="draft">Rascunho</option></select></div>
