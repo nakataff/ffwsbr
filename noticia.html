@@ -15,6 +15,9 @@
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/bundle.min.css">
   <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v3"></script>
+  <script defer src="js/news-admin-provider.js?v=20260806-admin-v1"></script>
+  <script defer src="js/news-engagement.js?v=20260806-admin-v1"></script>
+  <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
   <style>
     body { background: var(--bg, #07101f); color: var(--text, #f5f8ff); }
     .news-page-shell { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
@@ -248,6 +251,9 @@
         '<div class="news-body">' + body + '</div>' +
         (item.linkOriginal ? '<a class="news-original-link" href="' + escapeHTML(item.linkOriginal) + '" target="_blank" rel="noopener noreferrer">Ver publicação original →</a>' : '') +
         '</div>';
+      if (window.CFF_NEWS_ENGAGEMENT) {
+        window.CFF_NEWS_ENGAGEMENT.mount(item.id, root.querySelector('.news-meta') || root.querySelector('.news-summary'));
+      }
     }
 
     async function init() {
@@ -257,17 +263,23 @@
         if (!wanted) return renderNotFound();
 
         let wait = 0;
-        while ((!window.CFF_CONFIG || !window.CFF_CONFIG.sheets) && wait < 80) {
+        while ((!window.CFF_CONFIG || !window.CFF_CONFIG.sheets || !window.CFF_NEWS_PROVIDER) && wait < 100) {
           await new Promise(function (resolve) { setTimeout(resolve, 50); });
           wait++;
         }
+
+        if (window.CFF_NEWS_PROVIDER) {
+          const providerItem = await window.CFF_NEWS_PROVIDER.loadOne(wanted);
+          if (!providerItem) return renderNotFound();
+          renderNews(providerItem);
+          return;
+        }
+
         const sheetUrl = window.CFF_CONFIG && window.CFF_CONFIG.sheets && window.CFF_CONFIG.sheets.noticias;
         if (!sheetUrl) throw new Error('Configuração da planilha de notícias não encontrada.');
-
         const joiner = sheetUrl.indexOf('?') === -1 ? '?' : '&';
         const response = await fetch(sheetUrl + joiner + 'v=' + Math.floor(Date.now() / 300000), { cache: 'default' });
         if (!response.ok) throw new Error('Não foi possível carregar a planilha de notícias.');
-
         const noticias = parseNoticias(await response.text());
         const wantedSlug = slugify(wanted);
         const item = noticias.find(function (news) {

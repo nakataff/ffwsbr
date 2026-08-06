@@ -1,0 +1,38 @@
+CONFIGURAÇÃO DO PAINEL ADMINISTRATIVO - CENTRAL FREE FIRE
+
+IMPORTANTE
+A senha NÃO fica no código do site. Ela deve ser cadastrada no Firebase Authentication, que faz a validação do login. Não coloque a senha em nenhum arquivo do repositório.
+
+1. ATIVAR LOGIN POR SENHA
+- Abra o Firebase Console do projeto central-free-fire.
+- Entre em Authentication > Sign-in method.
+- Ative Email/Password.
+- Em Authentication > Users, crie o usuário:
+  E-mail: admin@centralfreefire.com.br
+  Senha: use a senha escolhida pelo proprietário do site.
+
+2. REGRAS DO REALTIME DATABASE
+- Abra Realtime Database > Rules.
+- Não deixe uma regra geral como ".write": true na raiz, pois ela anula a proteção das regras mais específicas.
+- Mescle os blocos de firebase-database-rules-admin.example.json com as regras atuais do projeto.
+- Teste as regras no simulador antes de publicar.
+
+3. ARQUIVOS DO PAINEL
+Acesse pelo endereço:
+https://centralfreefire.com.br/admin.html
+
+4. NOTÍCIAS
+- As notícias publicadas são salvas em /adminNews e os rascunhos ficam em /adminDrafts, acessíveis somente após o login.
+- O site junta as notícias do painel com as notícias antigas da planilha.
+- Em caso de ID/slug repetido, a versão do painel tem prioridade.
+- O botão "Importar da planilha" copia para o painel apenas as notícias ainda inexistentes.
+- O campo conteúdo aceita os marcadores atuais: [P], [IMG: URL], [H: TÍTULO], [H2: TÍTULO], [HEAD: TÍTULO] e [H3: SUBTÍTULO].
+
+5. CONTADORES
+- Visualização de notícia: conta uma vez por sessão do navegador em cada notícia.
+- Curtida: fica marcada no navegador do leitor e pode ser removida clicando novamente.
+- Páginas mais vistas: conta uma vez por sessão em cada página ou seção/hash visitado.
+- Esses números são métricas simples e podem incluir bots ou manipulação. Para métricas auditáveis, use Analytics com backend/API de relatórios.
+
+6. LIMITAÇÃO DE SEO
+As notícias publicadas pelo painel aparecem imediatamente na home e em noticia.html?id=SLUG, mas este painel estático não cria automaticamente uma nova pasta /noticias/SLUG/, nem atualiza sitemap.xml/news-sitemap.xml. Automatizar isso exige uma função de servidor ou um fluxo de build seguro, sem token do GitHub exposto no navegador.

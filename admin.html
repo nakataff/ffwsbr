@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Painel Administrativo | Central Free Fire</title>
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/admin.css?v=20260806-admin-v1">
+  <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
+  <script type="module" src="js/admin.js?v=20260806-admin-v1"></script>
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <a class="admin-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
+      <div class="admin-header-actions">
+        <a class="admin-btn admin-btn-ghost" href="index.html">Ver site</a>
+        <button id="admin-logout" class="admin-btn admin-btn-danger" type="button" hidden>Sair</button>
+      </div>
+    </header>
+
+    <section id="admin-login" class="admin-login-card">
+      <div class="admin-login-icon">🔒</div>
+      <p class="admin-eyebrow">Acesso restrito</p>
+      <h1>Painel administrativo</h1>
+      <p class="admin-muted">Digite a senha cadastrada no Firebase Authentication</p>
+      <form id="admin-login-form" class="admin-login-form">
+        <label for="admin-password">Senha</label>
+        <div class="admin-password-row">
+          <input id="admin-password" name="password" type="password" autocomplete="current-password" minlength="6" required autofocus>
+          <button id="admin-toggle-password" class="admin-btn admin-btn-ghost" type="button">Mostrar</button>
+        </div>
+        <button class="admin-btn admin-btn-primary admin-btn-block" type="submit">Entrar</button>
+        <p id="admin-login-message" class="admin-message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="admin-dashboard" hidden>
+      <div class="admin-welcome">
+        <div><p class="admin-eyebrow">Visão geral</p><h1>Painel da Central Free Fire</h1><p class="admin-muted">Dados de acesso, engajamento e publicação das notícias</p></div>
+        <button id="admin-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button>
+      </div>
+
+      <div class="admin-stat-grid">
+        <article class="admin-stat-card"><span>Visualizações do site</span><strong id="stat-page-views">0</strong><small>Somadas por página e seção</small></article>
+        <article class="admin-stat-card"><span>Visualizações das notícias</span><strong id="stat-news-views">0</strong><small>Uma por sessão em cada notícia</small></article>
+        <article class="admin-stat-card"><span>Curtidas nas notícias</span><strong id="stat-news-likes">0</strong><small>Curtidas registradas pelos leitores</small></article>
+        <article class="admin-stat-card"><span>Notícias no painel</span><strong id="stat-news-count">0</strong><small>Publicadas e rascunhos</small></article>
+      </div>
+
+      <div class="admin-dashboard-grid">
+        <section class="admin-panel">
+          <div class="admin-panel-head"><div><p class="admin-eyebrow">Audiência</p><h2>Páginas mais vistas</h2></div></div>
+          <div id="admin-top-pages" class="admin-ranking"><div class="admin-empty">Ainda não há visualizações registradas</div></div>
+        </section>
+        <section class="admin-panel">
+          <div class="admin-panel-head"><div><p class="admin-eyebrow">Conteúdo</p><h2>Últimas atualizações</h2></div></div>
+          <div id="admin-latest-updates" class="admin-updates"><div class="admin-empty">Nenhuma atualização pelo painel</div></div>
+        </section>
+      </div>
+
+      <section class="admin-panel admin-editor-panel">
+        <div class="admin-panel-head admin-panel-head-wrap">
+          <div><p class="admin-eyebrow">Editor</p><h2 id="editor-title">Nova notícia</h2></div>
+          <div class="admin-inline-actions">
+            <button id="admin-import-sheet" class="admin-btn admin-btn-ghost" type="button">Importar da planilha</button>
+            <button id="admin-new-news" class="admin-btn admin-btn-ghost" type="button">+ Nova notícia</button>
+          </div>
+        </div>
+
+        <form id="admin-news-form" class="admin-news-form">
+          <input id="news-original-id" type="hidden">
+          <div class="admin-field admin-field-wide"><label for="news-title">Título</label><input id="news-title" maxlength="180" required placeholder="Ex.: LOUD DOMINA A GRANDE FINAL"></div>
+          <div class="admin-field"><label for="news-slug">Identificador/slug</label><input id="news-slug" maxlength="160" required placeholder="loud-domina-a-grande-final"></div>
+          <div class="admin-field"><label for="news-date">Data</label><input id="news-date" type="date"></div>
+          <div class="admin-field admin-field-wide"><label for="news-image">Imagem de capa</label><input id="news-image" type="url" placeholder="https://... ou link do Google Drive"></div>
+          <div class="admin-field admin-field-wide"><label for="news-summary">Resumo</label><textarea id="news-summary" rows="3" maxlength="500" placeholder="Texto curto exibido abaixo do título"></textarea></div>
+          <div class="admin-field admin-field-wide"><label for="news-content">Conteúdo</label><textarea id="news-content" rows="14" required placeholder="Use [P] para parágrafo, [IMG: URL] para imagem e [H: TÍTULO] ou [H3: SUBTÍTULO] para tópicos"></textarea><small>Os marcadores continuam iguais aos utilizados atualmente no site</small></div>
+          <div class="admin-field"><label for="news-author">Autor</label><input id="news-author" value="Central Free Fire" maxlength="100"></div>
+          <div class="admin-field"><label for="news-original-link">Link original</label><input id="news-original-link" type="url" placeholder="https://instagram.com/..."></div>
+          <div class="admin-field"><label for="news-status">Status</label><select id="news-status"><option value="published">Publicada</option><option value="draft">Rascunho</option></select></div>
+          <div class="admin-field admin-check-field"><label><input id="news-featured" type="checkbox"> Colocar em destaque</label></div>
+          <div class="admin-form-actions admin-field-wide">
+            <button id="admin-preview-news" class="admin-btn admin-btn-ghost" type="button">Visualizar</button>
+            <button class="admin-btn admin-btn-primary" type="submit">Salvar notícia</button>
+          </div>
+          <p id="admin-form-message" class="admin-message admin-field-wide" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="admin-panel">
+        <div class="admin-panel-head"><div><p class="admin-eyebrow">Gerenciamento</p><h2>Notícias cadastradas no painel</h2></div><input id="admin-news-search" class="admin-search" type="search" placeholder="Buscar notícia"></div>
+        <div id="admin-news-list" class="admin-news-list"><div class="admin-empty">Nenhuma notícia cadastrada pelo painel</div></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="admin-preview-dialog" class="admin-preview-dialog">
+    <button id="admin-close-preview" class="admin-preview-close" type="button" aria-label="Fechar">×</button>
+    <article id="admin-preview-content" class="admin-preview-content"></article>
+  </dialog>
+</body>
+</html>
