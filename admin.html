@@ -6,9 +6,9 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260806-admin-v2">
+  <link rel="stylesheet" href="css/admin.css?v=20260806-admin-v3">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin.js?v=20260806-admin-v2"></script>
+  <script type="module" src="js/admin.js?v=20260806-admin-v3"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -46,7 +46,7 @@
         <article class="admin-stat-card"><span>Visualizações do site</span><strong id="stat-page-views">0</strong><small>Somadas por página e seção</small></article>
         <article class="admin-stat-card"><span>Visualizações das notícias</span><strong id="stat-news-views">0</strong><small>Uma por sessão em cada notícia</small></article>
         <article class="admin-stat-card"><span>Curtidas nas notícias</span><strong id="stat-news-likes">0</strong><small>Curtidas registradas pelos leitores</small></article>
-        <article class="admin-stat-card"><span>Notícias no painel</span><strong id="stat-news-count">0</strong><small>Publicadas e rascunhos</small></article>
+        <article class="admin-stat-card"><span>Notícias gerenciadas</span><strong id="stat-news-count">0</strong><small>Arquivo, planilha, publicadas e rascunhos</small></article>
       </div>
 
       <div class="admin-dashboard-grid">
@@ -100,7 +100,7 @@
         </div>
 
         <form id="admin-news-form" class="admin-news-form">
-          <input id="news-original-id" type="hidden">
+          <input id="news-original-id" type="hidden"><input id="news-origin" type="hidden" value="admin">
           <div class="admin-field admin-field-wide"><label for="news-title">Título do card/chamada</label><input id="news-title" maxlength="180" required placeholder="Ex.: HÁ 3 ANOS, LOUD ERA CAMPEÃ"><small>Se o conteúdo começar com [H: ...], esse texto será o título grande dentro da matéria</small></div>
           <div class="admin-field"><label for="news-slug">Identificador/slug</label><input id="news-slug" maxlength="160" required placeholder="loud-domina-a-grande-final"></div>
           <div class="admin-field"><label for="news-date">Data</label><input id="news-date" type="date"></div>
@@ -113,7 +113,7 @@
               <button class="admin-editor-tool" type="button" data-editor-format="h3" title="Transformar o texto selecionado em subtítulo">Subtítulo</button>
               <button id="admin-insert-image" class="admin-editor-tool" type="button" title="Inserir outra imagem dentro do texto">Imagem no texto</button>
             </div>
-            <textarea id="news-content" rows="16" required placeholder="Digite o texto normalmente. Cada Enter cria um novo parágrafo."></textarea>
+            <textarea id="news-content" rows="16" placeholder="Digite o texto normalmente. Cada Enter cria um novo parágrafo."></textarea>
             <small>Não precisa mais usar [P]. Selecione um texto e aperte “Título de tópico” para gerar [H: TEXTO]. Os marcadores antigos continuam funcionando</small>
           </div>
           <div class="admin-field"><label for="news-author">Autor</label><input id="news-author" value="Central Free Fire" maxlength="100"></div>
@@ -128,9 +128,16 @@
         </form>
       </section>
 
-      <section class="admin-panel">
-        <div class="admin-panel-head"><div><p class="admin-eyebrow">Gerenciamento</p><h2>Notícias cadastradas no painel</h2></div><input id="admin-news-search" class="admin-search" type="search" placeholder="Buscar notícia"></div>
-        <div id="admin-news-list" class="admin-news-list"><div class="admin-empty">Nenhuma notícia cadastrada pelo painel</div></div>
+      <section class="admin-panel admin-management-panel">
+        <div class="admin-panel-head admin-panel-head-wrap">
+          <div><p class="admin-eyebrow">Gerenciamento</p><h2>Todas as notícias</h2><p id="admin-news-list-summary" class="admin-muted">Carregando notícias...</p></div>
+          <div class="admin-management-tools">
+            <select id="admin-news-filter" aria-label="Filtrar notícias"><option value="all">Todas</option><option value="published">Publicadas</option><option value="draft">Rascunhos</option><option value="featured">Em destaque</option></select>
+            <input id="admin-news-search" class="admin-search" type="search" placeholder="Buscar por título, slug ou autor">
+          </div>
+        </div>
+        <div class="admin-management-help">Use os controles da própria linha para publicar, salvar como rascunho ou colocar em destaque. O botão <strong>Editar</strong> abre todos os campos no editor acima.</div>
+        <div id="admin-news-list" class="admin-news-list"><div class="admin-empty">Carregando todas as notícias...</div></div>
       </section>
     </section>
   </main>

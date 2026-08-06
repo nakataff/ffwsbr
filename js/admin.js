@@ -24,11 +24,12 @@ let allNews = [];
 let newsMetrics = {};
 let pageAnalytics = [];
 let slugTouched = false;
+let currentNewsFilter = 'all';
 let gaAccessToken = '';
 let gaTokenClient = null;
 let gaTokenExpiresAt = 0;
 const GA_SETTINGS_KEY = 'cff-ga4-admin-settings-v1';
-const LOCAL_NEWS_URL = 'noticias-painel.json?v=20260806-admin-v2';
+const LOCAL_NEWS_URL = 'noticias-painel.json?v=20260806-admin-v3';
 
 function escapeHTML(value) {
   return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
@@ -88,7 +89,7 @@ function prepareContentAndImage(content, currentImage) {
   return { content: src, image };
 }
 
-function normalizeNews(raw, id = '') {
+function normalizeNews(raw, id = '', source = 'admin') {
   const prepared = prepareContentAndImage(raw && raw.conteudo || '', raw && raw.imagem || '');
   return {
     id: String(raw && (raw.id || id) || '').trim(),
@@ -102,24 +103,59 @@ function normalizeNews(raw, id = '') {
     destaque: Boolean(raw && raw.destaque),
     status: String(raw && raw.status || 'published'),
     createdAt: Number(raw && raw.createdAt || 0),
-    updatedAt: Number(raw && raw.updatedAt || 0)
+    updatedAt: Number(raw && raw.updatedAt || 0),
+    source,
+    origin: String(raw && (raw.origin || raw.source) || source)
   };
+}
+
+function sourceLabel(item) {
+  if (item.source === 'draft') return 'Painel';
+  if (item.source === 'admin') return 'Painel';
+  if (item.source === 'sheet') return 'Planilha';
+  return 'Arquivo do site';
+}
+
+function mergeDashboardNews(localNews, sheetNews, adminNews, drafts, hiddenNews) {
+  const merged = new Map();
+  localNews.forEach((item) => merged.set(item.id, item));
+  sheetNews.forEach((item) => merged.set(item.id, item));
+  adminNews.forEach((item) => merged.set(item.id, item));
+  Object.keys(hiddenNews || {}).forEach((id) => { if (hiddenNews[id]) merged.delete(id); });
+  drafts.forEach((item) => merged.set(item.id, item));
+  return Array.from(merged.values()).sort((a, b) => {
+    const aTime = a.updatedAt || a.createdAt || Date.parse(a.data) || 0;
+    const bTime = b.updatedAt || b.createdAt || Date.parse(b.data) || 0;
+    return bTime - aTime || a.titulo.localeCompare(b.titulo, 'pt-BR');
+  });
+}
+
+async function loadSheetNewsFile() {
+  const sheetUrl = window.CFF_CONFIG && window.CFF_CONFIG.sheets && window.CFF_CONFIG.sheets.noticias;
+  if (!sheetUrl) return [];
+  const bucket = Math.floor(Date.now() / 300000);
+  const response = await fetch(sheetUrl + (sheetUrl.includes('?') ? '&' : '?') + 'v=' + bucket, { cache: 'default' });
+  if (!response.ok) throw new Error('Planilha indisponível');
+  return sheetNews(await response.text()).map((item) => normalizeNews(item, item.id, 'sheet'));
 }
 
 async function loadDashboard() {
   $('#admin-refresh').disabled = true;
   try {
-    const [newsSnap, draftsSnap, metricsSnap, analyticsSnap] = await Promise.all([
+    const [newsSnap, draftsSnap, metricsSnap, analyticsSnap, hiddenSnap, localNews, sheetNewsItems] = await Promise.all([
       get(ref(database, 'adminNews')),
       get(ref(database, 'adminDrafts')),
       get(ref(database, 'newsMetrics')),
-      get(ref(database, 'siteAnalytics/pages'))
+      get(ref(database, 'siteAnalytics/pages')),
+      get(ref(database, 'adminHiddenNews')),
+      loadLocalNewsFile().catch((error) => { console.warn('Arquivo local de notícias indisponível', error); return []; }),
+      loadSheetNewsFile().catch((error) => { console.warn('Planilha de notícias indisponível', error); return []; })
     ]);
     const newsData = newsSnap.val() || {};
     const draftsData = draftsSnap.val() || {};
-    const published = Object.keys(newsData).map((id) => normalizeNews({ ...newsData[id], status: 'published' }, id));
-    const drafts = Object.keys(draftsData).map((id) => normalizeNews({ ...draftsData[id], status: 'draft' }, id));
-    allNews = published.concat(drafts).sort((a, b) => (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt));
+    const published = Object.keys(newsData).map((id) => normalizeNews({ ...newsData[id], status: 'published' }, id, 'admin'));
+    const drafts = Object.keys(draftsData).map((id) => normalizeNews({ ...draftsData[id], status: 'draft' }, id, 'draft'));
+    allNews = mergeDashboardNews(localNews, sheetNewsItems, published, drafts, hiddenSnap.val() || {});
     newsMetrics = metricsSnap.val() || {};
     const analyticsData = analyticsSnap.val() || {};
     pageAnalytics = Object.values(analyticsData).filter(Boolean).sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
@@ -153,27 +189,49 @@ function renderDashboard() {
     <div class="admin-update-row">
       <div class="admin-update-copy"><strong>${escapeHTML(item.titulo)}</strong><small>${item.status === 'draft' ? 'Rascunho' : 'Publicada'} • ${formatDate(item.updatedAt || item.createdAt)}</small></div>
       <button class="admin-btn admin-btn-ghost" type="button" data-edit-news="${escapeHTML(item.id)}">Editar</button>
-    </div>`).join('') : '<div class="admin-empty">Nenhuma atualização pelo painel</div>';
+    </div>`).join('') : '<div class="admin-empty">Nenhuma notícia encontrada</div>';
 
   renderNewsList();
 }
 
 function renderNewsList() {
   const query = String(searchInput.value || '').trim().toLowerCase();
-  const filtered = allNews.filter((item) => !query || item.titulo.toLowerCase().includes(query) || item.id.toLowerCase().includes(query));
+  const filtered = allNews.filter((item) => {
+    const matchesSearch = !query || item.titulo.toLowerCase().includes(query) || item.id.toLowerCase().includes(query) || item.autor.toLowerCase().includes(query);
+    const matchesFilter = currentNewsFilter === 'all' ||
+      (currentNewsFilter === 'published' && item.status !== 'draft') ||
+      (currentNewsFilter === 'draft' && item.status === 'draft') ||
+      (currentNewsFilter === 'featured' && item.destaque);
+    return matchesSearch && matchesFilter;
+  });
+  const summary = $('#admin-news-list-summary');
+  if (summary) summary.textContent = `${filtered.length} de ${allNews.length} notícia(s)`;
   newsList.innerHTML = filtered.length ? filtered.map((item) => {
     const metric = newsMetrics[item.id] || {};
-    return `<article class="admin-news-row">
-      <img class="admin-news-thumb" src="${escapeHTML(item.imagem || 'central free fire.webp')}" alt="" onerror="this.src='central free fire.webp'">
-      <div class="admin-news-copy"><strong>${escapeHTML(item.titulo)}</strong><small>${escapeHTML(item.id)} • ${formatNumber(metric.views)} views • ${formatNumber(metric.likes)} curtidas</small><div class="admin-news-meta"><span class="admin-chip ${item.status === 'draft' ? 'is-draft' : ''}">${item.status === 'draft' ? 'Rascunho' : 'Publicada'}</span>${item.destaque ? '<span class="admin-chip is-featured">Destaque</span>' : ''}</div></div>
-      <div class="admin-news-actions"><a class="admin-btn admin-btn-ghost" href="noticia.html?id=${encodeURIComponent(item.id)}" target="_blank" rel="noopener">Abrir</a><button class="admin-btn admin-btn-ghost" type="button" data-edit-news="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-news="${escapeHTML(item.id)}">Excluir</button></div>
+    const isDraft = item.status === 'draft';
+    return `<article class="admin-news-row" data-news-id="${escapeHTML(item.id)}">
+      <img class="admin-news-thumb" src="${escapeHTML(item.imagem || 'central free fire.webp')}" alt="" loading="lazy" onerror="this.src='central free fire.webp'">
+      <div class="admin-news-copy">
+        <strong title="${escapeHTML(item.titulo)}">${escapeHTML(item.titulo)}</strong>
+        <small>${escapeHTML(item.id)} • ${formatNumber(metric.views)} views • ${formatNumber(metric.likes)} curtidas</small>
+        <div class="admin-news-meta"><span class="admin-chip ${isDraft ? 'is-draft' : ''}">${isDraft ? 'Rascunho' : 'Publicada'}</span>${item.destaque ? '<span class="admin-chip is-featured">Destaque</span>' : ''}<span class="admin-chip is-source">${sourceLabel(item)}</span></div>
+      </div>
+      <div class="admin-news-quick">
+        <label class="admin-quick-check" title="Alterar destaque"><input type="checkbox" data-toggle-featured="${escapeHTML(item.id)}" ${item.destaque ? 'checked' : ''}><span>Destaque</span></label>
+        <select class="admin-quick-status" data-change-status="${escapeHTML(item.id)}" aria-label="Status da notícia">
+          <option value="published" ${isDraft ? '' : 'selected'}>Publicada</option>
+          <option value="draft" ${isDraft ? 'selected' : ''}>Rascunho</option>
+        </select>
+      </div>
+      <div class="admin-news-actions">${isDraft ? `<button class="admin-btn admin-btn-ghost" type="button" data-preview-news="${escapeHTML(item.id)}">Prévia</button>` : `<a class="admin-btn admin-btn-ghost" href="noticia.html?id=${encodeURIComponent(item.id)}" target="_blank" rel="noopener">Abrir</a>`}<button class="admin-btn admin-btn-primary" type="button" data-edit-news="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-news="${escapeHTML(item.id)}">Excluir</button></div>
     </article>`;
-  }).join('') : '<div class="admin-empty">Nenhuma notícia encontrada</div>';
+  }).join('') : '<div class="admin-empty">Nenhuma notícia encontrada com esse filtro</div>';
 }
 
 function clearForm() {
   newsForm.reset();
   $('#news-original-id').value = '';
+  $('#news-origin').value = 'admin';
   $('#news-author').value = 'Central Free Fire';
   $('#news-status').value = 'published';
   $('#news-date').value = todayInputValue();
@@ -184,6 +242,7 @@ function clearForm() {
 
 function fillForm(item) {
   $('#news-original-id').value = item.id;
+  $('#news-origin').value = item.origin || item.source || 'admin';
   $('#news-title').value = item.titulo;
   $('#news-slug').value = item.id;
   $('#news-date').value = dateInputValue(item.data);
@@ -215,8 +274,32 @@ function readForm() {
     autor: $('#news-author').value.trim() || 'Central Free Fire',
     link_original: $('#news-original-link').value.trim(),
     destaque: $('#news-featured').checked,
-    status: $('#news-status').value === 'draft' ? 'draft' : 'published'
+    status: $('#news-status').value === 'draft' ? 'draft' : 'published',
+    origin: $('#news-origin').value || 'admin'
   };
+}
+
+async function writeManagedNews(item, previous = null) {
+  const nowPayload = {
+    ...item,
+    source: 'admin',
+    origin: item.origin || previous && (previous.origin || previous.source) || 'admin',
+    createdAt: previous && previous.createdAt ? previous.createdAt : serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+  if (item.status === 'draft') {
+    await Promise.all([
+      set(ref(database, 'adminDrafts/' + item.id), nowPayload),
+      remove(ref(database, 'adminNews/' + item.id)),
+      set(ref(database, 'adminHiddenNews/' + item.id), true)
+    ]);
+  } else {
+    await Promise.all([
+      set(ref(database, 'adminNews/' + item.id), nowPayload),
+      remove(ref(database, 'adminDrafts/' + item.id)),
+      remove(ref(database, 'adminHiddenNews/' + item.id))
+    ]);
+  }
 }
 
 async function saveNews(event) {
@@ -224,30 +307,20 @@ async function saveNews(event) {
   const submit = newsForm.querySelector('[type="submit"]');
   const originalId = $('#news-original-id').value.trim();
   const item = readForm();
-  if (!item.id || !item.titulo || !item.conteudo) {
+  const previous = allNews.find((news) => news.id === originalId) || null;
+  if (!item.id || !item.titulo || (!item.conteudo && !previous)) {
     setMessage(formMessage, 'Preencha título, slug e conteúdo.', 'error');
     return;
   }
   submit.disabled = true;
   setMessage(formMessage, 'Salvando...');
   try {
-    const previous = allNews.find((news) => news.id === originalId);
-    const payload = {
-      ...item,
-      createdAt: previous && previous.createdAt ? previous.createdAt : serverTimestamp(),
-      updatedAt: serverTimestamp()
-    };
-    const destination = item.status === 'draft' ? 'adminDrafts' : 'adminNews';
-    const opposite = item.status === 'draft' ? 'adminNews' : 'adminDrafts';
-    await set(ref(database, destination + '/' + item.id), payload);
-    await Promise.all([
-      remove(ref(database, opposite + '/' + item.id)),
-      remove(ref(database, 'adminHiddenNews/' + item.id))
-    ]);
+    await writeManagedNews(item, previous);
     if (originalId && originalId !== item.id) {
       await Promise.all([
         remove(ref(database, 'adminNews/' + originalId)),
-        remove(ref(database, 'adminDrafts/' + originalId))
+        remove(ref(database, 'adminDrafts/' + originalId)),
+        previous && ['local', 'sheet'].includes(previous.source) ? set(ref(database, 'adminHiddenNews/' + originalId), true) : remove(ref(database, 'adminHiddenNews/' + originalId))
       ]);
     }
     setMessage(formMessage, item.status === 'draft' ? 'Rascunho salvo.' : 'Notícia publicada no site.', 'success');
@@ -258,6 +331,38 @@ async function saveNews(event) {
     console.error(error);
   } finally {
     submit.disabled = false;
+  }
+}
+
+async function updateNewsFeatured(id, featured, control) {
+  const item = allNews.find((news) => news.id === id);
+  if (!item) return;
+  control.disabled = true;
+  try {
+    await writeManagedNews({ ...item, destaque: featured }, item);
+    await loadDashboard();
+  } catch (error) {
+    control.checked = !featured;
+    alert('Não foi possível alterar o destaque.');
+    console.error(error);
+  } finally {
+    control.disabled = false;
+  }
+}
+
+async function updateNewsStatus(id, status, control) {
+  const item = allNews.find((news) => news.id === id);
+  if (!item) return;
+  control.disabled = true;
+  try {
+    await writeManagedNews({ ...item, status: status === 'draft' ? 'draft' : 'published' }, item);
+    await loadDashboard();
+  } catch (error) {
+    control.value = item.status === 'draft' ? 'draft' : 'published';
+    alert('Não foi possível alterar o status.');
+    console.error(error);
+  } finally {
+    control.disabled = false;
   }
 }
 
@@ -324,7 +429,7 @@ async function loadLocalNewsFile() {
   if (!response.ok) throw new Error('Arquivo local de notícias indisponível');
   const data = await response.json();
   const list = Array.isArray(data) ? data : Object.values(data || {});
-  return list.map((item) => normalizeNews(item, item && item.id)).filter((item) => item.id && item.titulo);
+  return list.map((item) => normalizeNews(item, item && item.id, 'local')).filter((item) => item.id && item.titulo);
 }
 
 async function importLocalNews() {
@@ -334,7 +439,7 @@ async function importLocalNews() {
   button.textContent = 'Importando...';
   try {
     const imported = await loadLocalNewsFile();
-    const existing = new Set(allNews.map((item) => item.id));
+    const existing = new Set(allNews.filter((item) => item.source === 'admin' || item.source === 'draft').map((item) => item.id));
     const updates = {};
     imported.forEach((item) => {
       if (existing.has(item.id)) return;
@@ -367,7 +472,7 @@ async function importSheet() {
     const response = await fetch(sheetUrl + (sheetUrl.includes('?') ? '&' : '?') + 'v=' + Date.now(), { cache: 'no-store' });
     if (!response.ok) throw new Error('Planilha indisponível');
     const imported = sheetNews(await response.text());
-    const existing = new Set(allNews.map((item) => item.id));
+    const existing = new Set(allNews.filter((item) => item.source === 'admin' || item.source === 'draft').map((item) => item.id));
     const updates = {};
     imported.forEach((item) => {
       if (existing.has(item.id)) return;
@@ -455,6 +560,13 @@ function extractLeadHeading(content) {
 
 function previewNews() {
   const item = readForm();
+  const lead = extractLeadHeading(item.conteudo);
+  const displayTitle = lead.headline || item.titulo || 'Título da notícia';
+  $('#admin-preview-content').innerHTML = `${item.imagem ? `<img class="admin-preview-cover" src="${escapeHTML(item.imagem)}" alt="">` : ''}<p class="admin-eyebrow">Prévia da notícia</p><h1>${escapeHTML(displayTitle)}</h1>${item.resumo ? `<p class="admin-preview-summary">${escapeHTML(item.resumo)}</p>` : ''}<div class="admin-preview-meta">${escapeHTML(item.data)} • ${escapeHTML(item.autor)}</div><div>${renderBody(lead.content)}</div>`;
+  $('#admin-preview-dialog').showModal();
+}
+
+function previewStoredNews(item) {
   const lead = extractLeadHeading(item.conteudo);
   const displayTitle = lead.headline || item.titulo || 'Título da notícia';
   $('#admin-preview-content').innerHTML = `${item.imagem ? `<img class="admin-preview-cover" src="${escapeHTML(item.imagem)}" alt="">` : ''}<p class="admin-eyebrow">Prévia da notícia</p><h1>${escapeHTML(displayTitle)}</h1>${item.resumo ? `<p class="admin-preview-summary">${escapeHTML(item.resumo)}</p>` : ''}<div class="admin-preview-meta">${escapeHTML(item.data)} • ${escapeHTML(item.autor)}</div><div>${renderBody(lead.content)}</div>`;
@@ -668,11 +780,21 @@ fillGaSettings();
 $('#admin-close-preview').addEventListener('click', () => $('#admin-preview-dialog').close());
 newsForm.addEventListener('submit', saveNews);
 searchInput.addEventListener('input', renderNewsList);
+$('#admin-news-filter').addEventListener('change', (event) => { currentNewsFilter = event.target.value; renderNewsList(); });
 $('#news-title').addEventListener('input', (event) => { if (!slugTouched) $('#news-slug').value = slugify(event.target.value); });
 $('#news-slug').addEventListener('input', () => { slugTouched = true; });
 document.addEventListener('click', (event) => {
   const edit = event.target.closest('[data-edit-news]');
   if (edit) { const item = allNews.find((news) => news.id === edit.dataset.editNews); if (item) fillForm(item); }
+  const preview = event.target.closest('[data-preview-news]');
+  if (preview) { const item = allNews.find((news) => news.id === preview.dataset.previewNews); if (item) previewStoredNews(item); }
   const del = event.target.closest('[data-delete-news]');
   if (del) deleteNews(del.dataset.deleteNews);
+});
+
+document.addEventListener('change', (event) => {
+  const featured = event.target.closest('[data-toggle-featured]');
+  if (featured) updateNewsFeatured(featured.dataset.toggleFeatured, featured.checked, featured);
+  const status = event.target.closest('[data-change-status]');
+  if (status) updateNewsStatus(status.dataset.changeStatus, status.value, status);
 });

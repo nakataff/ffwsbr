@@ -1,0 +1,20 @@
+PAINEL ADMINISTRATIVO V3 — GERENCIAMENTO DE NOTÍCIAS
+
+Arquivos alterados:
+- admin.html
+- css/admin.css
+- js/admin.js
+
+Mudanças:
+- O gerenciamento carrega automaticamente todas as notícias do arquivo local, da planilha, do Firebase e os rascunhos.
+- Busca por título, slug ou autor.
+- Filtros: Todas, Publicadas, Rascunhos e Em destaque.
+- Controles rápidos em cada notícia para alterar destaque e status.
+- Botões Abrir/Prévia, Editar e Excluir.
+- Ao editar uma notícia da planilha ou do arquivo, o painel salva uma versão administrável no Firebase, sem precisar editar a planilha.
+- Ao transformar uma notícia antiga em rascunho, a versão pública é ocultada automaticamente.
+- Layout adaptado para desktop e mobile.
+
+Cache atualizado:
+- css/admin.css?v=20260806-admin-v3
+- js/admin.js?v=20260806-admin-v3
