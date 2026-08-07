@@ -330,7 +330,7 @@
 
 
   function renderClassificatoria(rootId) {
-    const layoutApi = window.FFWSBRSeasonLayout;
+    const layoutApi = window.FFWSBRSeasonEngine || window.FFWSBRSeasonLayout;
     const root = document.getElementById(rootId);
     if (!root) return;
     if (!layoutApi || typeof layoutApi.renderClassification !== 'function') {
