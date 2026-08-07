@@ -4,6 +4,8 @@
   const CONFIG = window.FFWS_BR_2026_S1_CONFIG || {};
   const ROOT_ID = 'ffws-br-s1-classificatoria-root';
   let lastRows = [];
+  const mvpFilters = { stage: ['classificatoria'], team: [], role: [], rookie: [], day: [] };
+  let mvpOpenFilter = null;
 
   const number = value => Number(value) || 0;
   const escapeHtml = value => String(value ?? '')
@@ -212,6 +214,163 @@
     return true;
   }
 
+
+
+  function normalizeRole(value) {
+    try { if (typeof normalizePlayerRole === 'function') return String(normalizePlayerRole(value) || '').toUpperCase(); } catch (_) {}
+    const role = String(value || '').trim().toUpperCase();
+    if (role.includes('GRAN')) return 'GRAN';
+    if (role.includes('SUP')) return 'SUP';
+    if (role.includes('RUSH')) return 'RUSH';
+    return role || 'RUSH';
+  }
+
+  function roleForPlayer(name) {
+    try { if (typeof cffGetPlayerRoleForMvpFilter === 'function') return normalizeRole(cffGetPlayerRoleForMvpFilter(name)); } catch (_) {}
+    return 'RUSH';
+  }
+
+  function rookieForPlayer(name) {
+    try { return typeof isRookiePlayer === 'function' ? Boolean(isRookiePlayer(name)) : false; }
+    catch (_) { return false; }
+  }
+
+  function mvpEntries() {
+    const stages = ['classificatoria', 'final'];
+    const out = [];
+    stages.forEach(stage => {
+      let rows = [];
+      try {
+        if (typeof cffGetPlayerDailyByStage === 'function') rows = cffGetPlayerDailyByStage(stage) || [];
+        else if (stage === 'classificatoria' && typeof db !== 'undefined') rows = db.playerDaily || [];
+      } catch (_) {}
+      (rows || []).forEach(row => {
+        const sourceName = row.jogador || row.nome || row.player || '';
+        if (!sourceName) return;
+        let official = null;
+        try { if (typeof cffFindOfficialPlayerForMvp === 'function') official = cffFindOfficialPlayerForMvp(sourceName); } catch (_) {}
+        const name = official?.jogador || sourceName;
+        const team = String(row.equipe || row.team || '').trim() || official?.equipe || '';
+        out.push({
+          name,
+          team,
+          stage,
+          day: String(row.dia || row.day || ''),
+          kills: number(row.abates ?? row.kills),
+          damage: number(row.dano ?? row.damage),
+          assists: number(row.assists ?? row.assistencias),
+          matches: number(row.quedas ?? row.matches),
+          mvps: number(row.mvp ?? row.mvps),
+          role: roleForPlayer(name),
+          rookie: rookieForPlayer(name)
+        });
+      });
+    });
+    return out;
+  }
+
+  function mvpFilterOptions(entries) {
+    const layout = CONFIG.layout?.mvp || {};
+    const teams = [...new Set(entries.map(entry => entry.team).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    const days = [...new Set(entries.map(entry => number(entry.day)).filter(Boolean))].sort((a, b) => a - b);
+    return {
+      stage: layout.stages || [{ value: 'classificatoria', label: 'Classificatória' }, { value: 'final', label: 'Final' }],
+      team: teams.map(team => ({ value: team, label: team })),
+      role: layout.roles || [{ value: 'RUSH', label: 'Rush' }, { value: 'SUP', label: 'Suporte' }, { value: 'GRAN', label: 'Granadeiro' }],
+      rookie: layout.rookies || [{ value: 'rookie', label: 'Apenas novatos' }, { value: 'veteran', label: 'Sem novatos' }],
+      day: days.map(day => ({ value: String(day), label: `Dia ${day}` }))
+    };
+  }
+
+  function filteredMvpRows(entries) {
+    const filtered = entries.filter(entry => {
+      const rookieMatch = !mvpFilters.rookie.length
+        || (mvpFilters.rookie.includes('rookie') && entry.rookie)
+        || (mvpFilters.rookie.includes('veteran') && !entry.rookie);
+      return (!mvpFilters.stage.length || mvpFilters.stage.includes(String(entry.stage)))
+        && (!mvpFilters.team.length || mvpFilters.team.some(team => String(team).toUpperCase() === String(entry.team).toUpperCase()))
+        && (!mvpFilters.role.length || mvpFilters.role.includes(normalizeRole(entry.role)))
+        && rookieMatch
+        && (!mvpFilters.day.length || mvpFilters.day.includes(String(entry.day)));
+    });
+    const aggregate = new Map();
+    filtered.forEach(entry => {
+      const key = `${String(entry.name).toUpperCase()}__${String(entry.team).toUpperCase()}`;
+      if (!aggregate.has(key)) aggregate.set(key, { name: entry.name, team: entry.team, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
+      const row = aggregate.get(key);
+      row.kills += number(entry.kills);
+      row.damage += number(entry.damage);
+      row.assists += number(entry.assists);
+      row.matches += number(entry.matches);
+      row.mvps += number(entry.mvps);
+    });
+    return [...aggregate.values()].filter(row => row.matches > 0).sort((a, b) => b.kills - a.kills || b.damage - a.damage || b.assists - a.assists || a.name.localeCompare(b.name, 'pt-BR'));
+  }
+
+  function reopenMvpMenu() {
+    if (!mvpOpenFilter) return;
+    const menu = document.getElementById(`ffws-s1-mvp-multi-${mvpOpenFilter}`);
+    if (menu) menu.hidden = false;
+  }
+
+  function renderMvp() {
+    const root = document.getElementById('ffws-br-s1-mvp-root');
+    if (!root) return false;
+    const engine = window.FFWSBRSeasonEngine || window.FFWSBRSeasonLayout;
+    if (!engine?.renderMvp) return false;
+    const entries = mvpEntries();
+    const options = mvpFilterOptions(entries);
+    const rows = filteredMvpRows(entries);
+    const layout = CONFIG.layout?.mvp || {};
+    engine.renderMvp({
+      rootId: 'ffws-br-s1-mvp-root',
+      pageClass: 'ffws-s1-mvp-page',
+      hero: { kicker: layout.heroKicker || 'FFWS BRASIL 2026 SPLIT 1', title: layout.heroTitle || 'Ranking MVP', subtitle: layout.heroSubtitle || 'Classificação individual da WB 2026 S1' },
+      section: { title: layout.title || 'Classificação Geral de Jogadores', description: layout.description || 'Filtre o ranking pelos dados disponíveis.' },
+      playerCountLabel: `${rows.length} jogadores`,
+      filters: [
+        { key: 'stage', title: 'Etapa', options: options.stage, selected: mvpFilters.stage, menuId: 'ffws-s1-mvp-multi-stage' },
+        { key: 'team', title: 'Equipe', options: options.team, selected: mvpFilters.team, menuId: 'ffws-s1-mvp-multi-team' },
+        { key: 'role', title: 'Posição', options: options.role, selected: mvpFilters.role, menuId: 'ffws-s1-mvp-multi-role' },
+        { key: 'rookie', title: 'Novatos', options: options.rookie, selected: mvpFilters.rookie, menuId: 'ffws-s1-mvp-multi-rookie' },
+        { key: 'day', title: 'Dias', options: options.day, selected: mvpFilters.day, menuId: 'ffws-s1-mvp-multi-day' }
+      ],
+      handlers: { toggle: 'toggleFFWSBRS1MvpMulti', clear: 'clearFFWSBRS1MvpMulti', set: 'setFFWSBRS1MvpMulti' },
+      resolveTeamName: name => name,
+      resolveShortName: name => shortFor(name),
+      resolveLogo: name => logoFor(name),
+      openPlayerHandler: 'openPlayerProfile',
+      openTeamHandler: 'openTeamProfile',
+      rows
+    });
+    reopenMvpMenu();
+    return true;
+  }
+
+  function toggleMvpMulti(key) {
+    const menu = document.getElementById(`ffws-s1-mvp-multi-${key}`);
+    const willOpen = !!menu && menu.hidden;
+    mvpOpenFilter = willOpen ? key : null;
+    document.querySelectorAll('[id^="ffws-s1-mvp-multi-"]').forEach(item => { if (item.id !== `ffws-s1-mvp-multi-${key}`) item.hidden = true; });
+    if (menu) menu.hidden = !willOpen;
+  }
+
+  function clearMvpMulti(key) {
+    if (!Array.isArray(mvpFilters[key])) return;
+    mvpFilters[key] = [];
+    mvpOpenFilter = key;
+    renderMvp();
+  }
+
+  function setMvpMulti(key, value, checked) {
+    if (!Array.isArray(mvpFilters[key])) return;
+    const selected = new Set(mvpFilters[key]);
+    checked ? selected.add(String(value)) : selected.delete(String(value));
+    mvpFilters[key] = [...selected];
+    mvpOpenFilter = key;
+    renderMvp();
+  }
+
   function installLegacyCompatibility() {
     window.renderFullTeams = renderClassificatoria;
     window.renderGroupsTables = () => renderGroupTables(lastRows.length ? lastRows : standardizedRows());
@@ -229,10 +388,15 @@
     }, 100);
   }
 
+  window.toggleFFWSBRS1MvpMulti = toggleMvpMulti;
+  window.clearFFWSBRS1MvpMulti = clearMvpMulti;
+  window.setFFWSBRS1MvpMulti = setMvpMulti;
+
   window.FFWSBRS1 = Object.freeze({
     activate,
     renderClassificatoria,
-    renderGroupTables
+    renderGroupTables,
+    renderMvp
   });
 
   installLegacyCompatibility();

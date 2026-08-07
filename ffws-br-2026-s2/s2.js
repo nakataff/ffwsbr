@@ -31,6 +31,7 @@
     selectionTab: 'semanal',
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
     statsFilters: { stage: 'classificatoria', days: [], confrontations: [], maps: [] },
+    statsOpenMulti: null,
     notesFilters: { stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all' },
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
@@ -415,17 +416,6 @@
     return Array.isArray(state.players?.entries) ? state.players.entries : [];
   }
 
-  function multiFilter(key, title, options) {
-    const selected = state.playerFilters[key] || [];
-    const label = selected.length ? `${selected.length} selecionado${selected.length > 1 ? 's' : ''}` : `Todos`;
-    return `<div class="ffws-s2-filter"><span>${escapeHtml(title)}:</span><div class="ffws-s2-multi" data-s2-multi="${escapeHtml(key)}">
-      <button type="button" onclick="toggleFFWSS2Multi('${key}')"><b>${escapeHtml(label)}</b><span>⌄</span></button>
-      <div class="ffws-s2-multi-menu" id="ffws-s2-multi-${escapeHtml(key)}" hidden>
-        <label><input type="checkbox" ${selected.length === 0 ? 'checked' : ''} onchange="clearFFWSS2Multi('${key}')"> Todos</label>
-        ${options.map(option => `<label><input type="checkbox" value="${escapeHtml(option.value)}" ${selected.includes(String(option.value)) ? 'checked' : ''} onchange="setFFWSS2Multi('${key}',this.value,this.checked)"> ${option.flag ? `<span>${escapeHtml(option.flag)}</span>` : ''}${escapeHtml(option.label)}</label>`).join('')}
-      </div>
-    </div></div>`;
-  }
 
   function playerFilterOptions() {
     const entries = allPlayerEntries();
@@ -477,18 +467,32 @@
   }
 
   function renderMvp() {
-    const root = document.getElementById('ffws-br-s2-mvp-content');
-    if (!root) return;
+    const engine = window.FFWSBRSeasonEngine || window.FFWSBRSeasonLayout;
+    if (!engine?.renderMvp) return;
     const options = playerFilterOptions();
     const rows = filteredPlayers();
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Ranking MVP', 'Classificação individual da WB 2026 S2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner">
-        <div class="ffws-s2-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking por etapa, equipe, posição, país e dia.</p></div><span class="ffws-s2-badge">${rows.length} jogadores</span></div>
-        <div class="ffws-s2-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('country', 'País', options.country)}${multiFilter('rookie', 'Novatos', options.rookie)}${multiFilter('day', 'Dias', options.day)}</div>
-        <div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th class="team-col"><span class="ffws-s2-desktop">Jogador</span><span class="ffws-s2-mobile">J</span></th><th>Eqp</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile">K/Q</th></tr></thead><tbody>
-        ${rows.length ? rows.map((row, index) => `<tr><td class="ffws-s2-rank">${index + 1}º</td><td class="team-col"><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>`).join('') : '<tr><td colspan="9"><div class="ffws-s2-empty"><div><strong>Nenhum resultado neste recorte</strong>Altere os filtros para consultar os dados disponíveis.</div></div></td></tr>'}
-        </tbody></table></div>
-      </div></section></div>`;
+    engine.renderMvp({
+      rootId: 'ffws-br-s2-mvp-content',
+      pageClass: 'ffws-s2-mvp-page',
+      hero: { kicker: 'FFWS BRASIL 2026 SPLIT 2', title: 'Ranking MVP', subtitle: 'Classificação individual da WB 2026 S2' },
+      section: { title: 'Classificação Geral de Jogadores', description: 'Filtre o ranking por etapa, equipe, posição, país, novatos e dia.' },
+      playerCountLabel: `${rows.length} jogadores`,
+      filters: [
+        { key: 'stage', title: 'Etapa', options: options.stage, selected: state.playerFilters.stage, menuId: 'ffws-s2-multi-stage' },
+        { key: 'team', title: 'Equipe', options: options.team, selected: state.playerFilters.team, menuId: 'ffws-s2-multi-team' },
+        { key: 'role', title: 'Posição', options: options.role, selected: state.playerFilters.role, menuId: 'ffws-s2-multi-role' },
+        { key: 'country', title: 'País', options: options.country, selected: state.playerFilters.country, menuId: 'ffws-s2-multi-country' },
+        { key: 'rookie', title: 'Novatos', options: options.rookie, selected: state.playerFilters.rookie, menuId: 'ffws-s2-multi-rookie' },
+        { key: 'day', title: 'Dias', options: options.day, selected: state.playerFilters.day, menuId: 'ffws-s2-multi-day' }
+      ],
+      handlers: { toggle: 'toggleFFWSS2Multi', clear: 'clearFFWSS2Multi', set: 'setFFWSS2Multi' },
+      resolveTeamName: teamName => teamByName(teamName)?.name || teamName,
+      resolveShortName: teamName => abbreviation(teamName),
+      resolveLogo: teamName => logo(teamName),
+      openPlayerHandler: 'openCurrentSeasonPlayer',
+      openTeamHandler: 'openCurrentSeasonTeam',
+      rows
+    });
   }
 
   function renderTeams() {
@@ -1038,10 +1042,14 @@
     ` : `<section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-empty"><div><strong>Etapa ainda sem resultados</strong>Escolha a Classificatória para consultar as quedas já disputadas.</div></div></div></section>`;
 
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da WB 2026 S2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Todos os blocos abaixo usam exatamente o mesmo recorte.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
+      <section class="ffws-s2-panel ffws-s2-filter-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Todos os blocos abaixo usam exatamente o mesmo recorte.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
       <div class="ffws-s2-filters"><label class="ffws-s2-filter"><span>Etapa:</span><select onchange="setFFWSS2StatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('confrontations','Confrontos',options.confrontations)}${statsMultiFilter('maps','Mapa',options.maps)}</div></div></section>
       ${statsBlocks}
     </div>`;
+    if (state.statsOpenMulti) {
+      const openMenu = document.getElementById(`ffws-s2-stats-multi-${state.statsOpenMulti}`);
+      if (openMenu) openMenu.hidden = false;
+    }
   }
   function calculateS2CffNote(kills, damage, assists, mvp, position) {
     kills = number(kills); damage = number(damage); assists = number(assists); position = number(position);
@@ -1263,10 +1271,10 @@
   };
   window.setFFWSS2SelectionWeek = week => { state.selectionTab = 'semanal'; state.selectionWeek = String(week || '1'); renderSelections(); };
   window.setFFWSS2SelectionTab = tab => { state.selectionTab = S2_SELECTION_PHASES[tab] ? tab : 'semanal'; renderSelections(); };
-  window.setFFWSS2StatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.confrontations = []; state.statsFilters.maps = []; renderStats(); };
-  window.toggleFFWSS2StatsMulti = key => { document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-stats-multi-${key}`) menu.hidden = true; }); const menu = document.getElementById(`ffws-s2-stats-multi-${key}`); if (menu) menu.hidden = !menu.hidden; };
-  window.clearFFWSS2StatsMulti = key => { state.statsFilters[key] = []; renderStats(); };
-  window.setFFWSS2StatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; renderStats(); };
+  window.setFFWSS2StatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.confrontations = []; state.statsFilters.maps = []; state.statsOpenMulti = null; renderStats(); };
+  window.toggleFFWSS2StatsMulti = key => { const menu = document.getElementById(`ffws-s2-stats-multi-${key}`); const willOpen = !!menu && menu.hidden; state.statsOpenMulti = willOpen ? key : null; document.querySelectorAll('.ffws-s2-multi-menu').forEach(item => { if (item.id !== `ffws-s2-stats-multi-${key}`) item.hidden = true; }); if (menu) menu.hidden = !willOpen ? true : false; };
+  window.clearFFWSS2StatsMulti = key => { state.statsFilters[key] = []; state.statsOpenMulti = key; renderStats(); };
+  window.setFFWSS2StatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; state.statsOpenMulti = key; renderStats(); };
   window.ffwsS2StatsPageNav = (key, delta) => { const pages = s2StatsPageState(); pages[key] = delta === 'reset' ? 0 : number(pages[key]) + number(delta); renderStats(); };
   window.setFFWSS2NotesFilter = (key, value) => { state.notesFilters[key] = String(value); if (key === 'stage') { state.notesFilters.day = 'all'; state.notesFilters.map = 'all'; state.notesFilters.drop = 'all'; } if (key === 'day') state.notesFilters.drop = 'all'; renderNotes(); };
   window.setFFWSS2CompareFilter = (key, value) => { state.compareFilters[key] = String(value); if (key === 'stage') { state.compareFilters.day = 'all'; state.compareFilters.map = 'all'; } renderCompare(); };

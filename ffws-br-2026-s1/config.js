@@ -41,6 +41,26 @@ window.FFWS_BR_2026_S1_CONFIG = Object.freeze({
         { from: 13, to: 14, rowClass: 'br-row-eliminated', cellClass: 'br-status-eliminated', title: 'Eliminado' },
         { from: 15, to: 16, rowClass: 'br-row-relegated', cellClass: 'br-status-relegated', title: 'Rebaixado para LAFF' }
       ]
+    },
+    mvp: {
+      heroKicker: 'FFWS BRASIL 2026 SPLIT 1',
+      heroTitle: 'Ranking MVP',
+      heroSubtitle: 'Classificação individual da WB 2026 S1',
+      title: 'Classificação Geral de Jogadores',
+      description: 'Filtre o ranking por etapa, equipe, posição, novatos e dia.',
+      stages: [
+        { value: 'classificatoria', label: 'Classificatória' },
+        { value: 'final', label: 'Final' }
+      ],
+      roles: [
+        { value: 'RUSH', label: 'Rush' },
+        { value: 'SUP', label: 'Suporte' },
+        { value: 'GRAN', label: 'Granadeiro' }
+      ],
+      rookies: [
+        { value: 'rookie', label: 'Apenas novatos' },
+        { value: 'veteran', label: 'Sem novatos' }
+      ]
     }
   }
 });
