@@ -32,7 +32,7 @@
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
     statsFilters: { stage: 'classificatoria', days: [], confrontations: [], maps: [] },
     notesFilters: { stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all' },
-    compareFilters: { stage: 'classificatoria', day: 'all', map: 'all' },
+    compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
     statsStage: 'classificatoria'
   };
@@ -1147,9 +1147,14 @@
 
   function compareFilteredEntries() {
     const f = state.compareFilters;
-    return allPlayerEntries().filter(entry => (f.stage === 'geral' || entry.stage === f.stage)
-      && (f.day === 'all' || String(entry.day) === String(f.day))
-      && (f.map === 'all' || normalize(entry.map) === normalize(f.map)));
+    return allPlayerEntries().filter(entry => {
+      const meta = rosterPlayerByName(entry.name || entry.player, entry.team);
+      const role = String(entry.roleShort || entry.role || meta?.roleShort || meta?.role || '').toUpperCase();
+      return (f.stage === 'geral' || entry.stage === f.stage)
+        && (!f.roles.length || f.roles.includes(role))
+        && (f.day === 'all' || String(entry.day) === String(f.day))
+        && (f.map === 'all' || normalize(entry.map) === normalize(f.map));
+    });
   }
 
   function compareAggregate(entries) {
@@ -1195,13 +1200,26 @@
     const p2=rows.find(row=>row.key===state.comparePlayers.p2)||null;
     const days=[...new Set(allPlayerEntries().filter(e=>state.compareFilters.stage==='geral'||e.stage===state.compareFilters.stage).map(e=>number(e.day)).filter(Boolean))].sort((a,b)=>a-b);
     const maps=[...new Set(allPlayerEntries().filter(e=>state.compareFilters.stage==='geral'||e.stage===state.compareFilters.stage).map(e=>e.map).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const roleOptions=playerFilterOptions().role;
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Comparar 1V1', 'Compare dois jogadores da WB 2026 S2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Escolha o confronto</h2><p>Pesquise pelo nome e compare o desempenho por etapa, dia ou mapa.</p></div><span class="ffws-s2-badge">${rows.length} jogadores ativos</span></div>
-      <div class="ffws-s2-filters">${compareSelect('stage','Etapa',[['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']])}${compareSelect('day','Dia',[['all','Todos'],...days.map(v=>[String(v),`Dia ${v}`])])}${compareSelect('map','Mapa',[['all','Todos'],...maps.map(v=>[v,v])])}</div>
-      ${p1&&p2?`<div class="ffws-s2-compare-selectors">${comparePlayerPicker('p1',rows,p1,'Jogador 1')}<b>VS</b>${comparePlayerPicker('p2',rows,p2,'Jogador 2')}</div><div class="ffws-s2-player-compare-grid">${compareHero(p1,'left')}<div class="ffws-s2-compare-metrics">${compareMetric('Abates',p1.kills,p2.kills)}${compareMetric('Dano',p1.damage,p2.damage,false,v=>number(v).toLocaleString('pt-BR'))}${compareMetric('Assistências',p1.assists,p2.assists)}${compareMetric('Quedas',p1.matches,p2.matches)}${compareMetric('MVPs',p1.mvps,p2.mvps)}${compareMetric('K / queda',p1.avgKills,p2.avgKills,false,v=>number(v).toFixed(2))}${compareMetric('Dano / queda',p1.avgDamage,p2.avgDamage,false,v=>Math.round(number(v)).toLocaleString('pt-BR'))}${compareMetric('Assist. / queda',p1.avgAssists,p2.avgAssists,false,v=>number(v).toFixed(2))}${compareMetric('Recorde em queda',p1.bestDrop,p2.bestDrop)}</div>${compareHero(p2,'right')}</div>`:'<div class="ffws-s2-empty"><div><strong>Etapa ainda sem estatísticas</strong>Escolha a Classificatória para comparar os jogadores que já atuaram.</div></div>'}</div></section></div>`;
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Escolha o confronto</h2><p>Pesquise pelo nome e filtre os jogadores por posição, etapa, dia ou mapa.</p></div><span class="ffws-s2-badge">${rows.length} jogadores ativos</span></div>
+      <div class="ffws-s2-filters">${compareSelect('stage','Etapa',[['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']])}${compareMultiFilter('roles','Posição',roleOptions)}${compareSelect('day','Dia',[['all','Todos'],...days.map(v=>[String(v),`Dia ${v}`])])}${compareSelect('map','Mapa',[['all','Todos'],...maps.map(v=>[v,v])])}</div>
+      ${p1&&p2?`<div class="ffws-s2-compare-selectors">${comparePlayerPicker('p1',rows,p1,'Jogador 1')}<b>VS</b>${comparePlayerPicker('p2',rows,p2,'Jogador 2')}</div><div class="ffws-s2-player-compare-grid">${compareHero(p1,'left')}<div class="ffws-s2-compare-metrics">${compareMetric('Abates',p1.kills,p2.kills)}${compareMetric('Dano',p1.damage,p2.damage,false,v=>number(v).toLocaleString('pt-BR'))}${compareMetric('Assistências',p1.assists,p2.assists)}${compareMetric('Quedas',p1.matches,p2.matches)}${compareMetric('MVPs',p1.mvps,p2.mvps)}${compareMetric('K / queda',p1.avgKills,p2.avgKills,false,v=>number(v).toFixed(2))}${compareMetric('Dano / queda',p1.avgDamage,p2.avgDamage,false,v=>Math.round(number(v)).toLocaleString('pt-BR'))}${compareMetric('Assist. / queda',p1.avgAssists,p2.avgAssists,false,v=>number(v).toFixed(2))}${compareMetric('Recorde em queda',p1.bestDrop,p2.bestDrop)}</div>${compareHero(p2,'right')}</div>`:'<div class="ffws-s2-empty"><div><strong>Nenhum jogador neste recorte</strong>Altere a posição, etapa, dia ou mapa para comparar os jogadores disponíveis.</div></div>'}</div></section></div>`;
   }
 
   function compareSelect(key,label,options){const selected=String(state.compareFilters[key]);return `<label class="ffws-s2-filter"><span>${escapeHtml(label)}:</span><select onchange="setFFWSS2CompareFilter('${key}',this.value)">${options.map(([value,text])=>`<option value="${escapeHtml(value)}"${selected===String(value)?' selected':''}>${escapeHtml(text)}</option>`).join('')}</select></label>`;}
+
+  function compareMultiFilter(key, title, options) {
+    const selected = state.compareFilters[key] || [];
+    const label = selected.length ? `${selected.length} selecionado${selected.length > 1 ? 's' : ''}` : 'Todos';
+    return `<div class="ffws-s2-filter"><span>${escapeHtml(title)}:</span><div class="ffws-s2-multi" data-s2-compare-multi="${escapeHtml(key)}">
+      <button type="button" onclick="toggleFFWSS2CompareMulti('${key}')"><b>${escapeHtml(label)}</b><span>⌄</span></button>
+      <div class="ffws-s2-multi-menu" id="ffws-s2-compare-multi-${escapeHtml(key)}" hidden>
+        <label><input type="checkbox" ${selected.length === 0 ? 'checked' : ''} onchange="clearFFWSS2CompareMulti('${key}')"> Todos</label>
+        ${options.map(option => `<label><input type="checkbox" value="${escapeHtml(option.value)}" ${selected.includes(String(option.value)) ? 'checked' : ''} onchange="setFFWSS2CompareMulti('${key}',this.value,this.checked)"> ${escapeHtml(option.label)}</label>`).join('')}
+      </div>
+    </div></div>`;
+  }
 
   function renderPage(pageId) {
     if (!state.loaded) return;
@@ -1252,6 +1270,19 @@
   window.ffwsS2StatsPageNav = (key, delta) => { const pages = s2StatsPageState(); pages[key] = delta === 'reset' ? 0 : number(pages[key]) + number(delta); renderStats(); };
   window.setFFWSS2NotesFilter = (key, value) => { state.notesFilters[key] = String(value); if (key === 'stage') { state.notesFilters.day = 'all'; state.notesFilters.map = 'all'; state.notesFilters.drop = 'all'; } if (key === 'day') state.notesFilters.drop = 'all'; renderNotes(); };
   window.setFFWSS2CompareFilter = (key, value) => { state.compareFilters[key] = String(value); if (key === 'stage') { state.compareFilters.day = 'all'; state.compareFilters.map = 'all'; } renderCompare(); };
+  window.toggleFFWSS2CompareMulti = key => {
+    document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-compare-multi-${key}`) menu.hidden = true; });
+    const menu = document.getElementById(`ffws-s2-compare-multi-${key}`);
+    if (menu) menu.hidden = !menu.hidden;
+  };
+  window.clearFFWSS2CompareMulti = key => { if (Array.isArray(state.compareFilters[key])) state.compareFilters[key] = []; renderCompare(); };
+  window.setFFWSS2CompareMulti = (key, value, checked) => {
+    if (!Array.isArray(state.compareFilters[key])) return;
+    const selected = new Set(state.compareFilters[key]);
+    checked ? selected.add(String(value)) : selected.delete(String(value));
+    state.compareFilters[key] = [...selected];
+    renderCompare();
+  };
   window.setFFWSS2ComparePlayer = (side, value) => { state.comparePlayers[side] = String(value); renderCompare(); };
   window.openFFWSS2ComparePicker = side => {
     document.querySelectorAll('.ffws-s2-compare-picker-menu').forEach(menu => { menu.hidden = menu.id !== `ffws-s2-compare-picker-${side}`; });

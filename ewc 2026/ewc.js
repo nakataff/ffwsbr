@@ -1434,20 +1434,54 @@
   window.setEWCPlayerSort = setPlayerRankingSort;
   window.toggleEWCPlayerDetails = togglePlayerDetails;
 
-  document.addEventListener('DOMContentLoaded', () => {
+  function initEWCModule() {
+    if (window.__cffEWCModuleInitialized) {
+      const activeId = document.querySelector('.page.active')?.id || '';
+      if (PAGE_IDS.has(activeId)) loadData().then(renderActivePage).catch(() => renderLoadError(activeId));
+      return;
+    }
+    window.__cffEWCModuleInitialized = true;
+
     document.addEventListener('click', event => {
       if (event.target.closest('.ewc-multi-filter')) return;
       activePlayerFilterMenu = '';
       document.querySelectorAll('.ewc-multi-filter[open]').forEach(filter => filter.removeAttribute('open'));
     });
+
     patchNavigation();
+
+    // O módulo da EWC é carregado sob demanda depois do DOMContentLoaded.
+    // Observe a troca da página ativa para renderizar cada aba mesmo quando
+    // o shell principal restaura a função global navigate após o lazy-load.
+    const observer = new MutationObserver(() => {
+      const activeId = document.querySelector('.page.active')?.id || '';
+      if (!PAGE_IDS.has(activeId)) return;
+      const targetId = PAGE_ALIASES[activeId] || activeId;
+      if (targetId !== activeId && typeof window.navigate === 'function') {
+        window.navigate(targetId);
+        return;
+      }
+      loadData().then(renderActivePage).catch(() => renderLoadError(activeId));
+    });
+    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+
     const hash = String(location.hash || '').replace(/^#/, '');
     const activeId = document.querySelector('.page.active')?.id || '';
+    const aliasTarget = PAGE_ALIASES[activeId] || '';
     const shouldLoadNow = hash.startsWith('ewc') || PAGE_IDS.has(activeId);
-    const init = () => loadData().then(() => {
-      if (!resolveHash(hash)) renderActivePage();
-    }).catch(() => renderLoadError(activeId));
+    const init = () => {
+      if (aliasTarget && aliasTarget !== activeId && typeof window.navigate === 'function') {
+        window.navigate(aliasTarget);
+        return;
+      }
+      loadData().then(() => {
+        if (!resolveHash(hash)) renderActivePage();
+      }).catch(() => renderLoadError(activeId));
+    };
     if (shouldLoadNow) init();
     else (window.cffRunWhenIdle || function (callback) { return setTimeout(callback, 1200); })(() => loadTeamsData().catch(() => {}), 1200);
-  });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initEWCModule, { once: true });
+  else initEWCModule();
 })();
