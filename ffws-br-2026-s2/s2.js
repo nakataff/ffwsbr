@@ -1392,6 +1392,13 @@
     return `<div class="ffws-s2-player-team-filters"><div class="ffws-s2-player-team-filter-head"><span>Filtrar por equipe</span><button type="button" onclick="clearFFWSS2DropReportPlayerTeams()" ${selected.size ? '' : 'disabled'}>LIMPAR TUDO</button></div><div class="ffws-s2-player-team-filter-logos">${teams.map(team => `<button type="button" class="${selected.has(normalize(team)) ? 'active' : ''}" title="${escapeHtml(team)}" aria-pressed="${selected.has(normalize(team)) ? 'true' : 'false'}" onclick="toggleFFWSS2DropReportPlayerTeam('${jsAttr(team)}')"><img src="${escapeHtml(logo(team))}" alt="${escapeHtml(abbreviation(team))}" onerror="this.onerror=null;this.src='escudo.webp'"></button>`).join('')}</div></div>`;
   }
 
+  function s2DropReportCompactMetric(value) {
+    const n = Math.max(0, number(value));
+    if (n < 1000) return String(Math.round(n));
+    const compact = Math.floor(n / 100) / 10;
+    return `${compact.toFixed(1).replace('.', ',')}k`;
+  }
+
   function s2DropReportPlayersHtml(report) {
     const sortKey = String(state.dropReport?.playerSort || 'kills');
     const selectedTeams = new Set(state.dropReport.playerTeams || []);
@@ -1400,12 +1407,11 @@
     const options = [['kills','Abates'],['damage','Dano'],['assists','Assistências'],['note','Nota CFF']];
     return `<div class="ffws-s2-drop-report-list-page"><div class="ffws-s2-drop-report-toolbar"><div><strong>Relatório dos jogadores</strong><span>${rows.length}${selectedTeams.size ? ` de ${allRows.length}` : ''} jogadores neste ${report.mode === 'day' ? 'dia' : 'recorte'}.</span></div><label>Ordenar por <select onchange="setFFWSS2DropReportPlayerSort(this.value)">${options.map(([value,label]) => `<option value="${value}"${sortKey===value?' selected':''}>${label}</option>`).join('')}</select></label></div>
       ${s2DropReportPlayerTeamFiltersHtml(report)}
-      <div class="ffws-s2-drop-player-head"><span>#</span><span>JOGADOR</span><span>E</span><span>K</span><span>DANO</span><span>AST</span><span>CFF</span></div>
+      <div class="ffws-s2-drop-player-head"><span class="ffws-s2-drop-rank-head">#</span><span class="ffws-s2-drop-player-label"><span class="ffws-s2-desktop">JOGADOR</span><span class="ffws-s2-mobile">J</span></span><span><span class="ffws-s2-desktop">EQP</span><span class="ffws-s2-mobile">E</span></span><span><span class="ffws-s2-desktop">KILLS</span><span class="ffws-s2-mobile">K</span></span><span><span class="ffws-s2-desktop">ASSIT.</span><span class="ffws-s2-mobile">AST.</span></span><span><span class="ffws-s2-desktop">DANO</span><span class="ffws-s2-mobile">DMG</span></span><span>CFF</span></div>
       <div class="ffws-s2-drop-player-list">${rows.length ? rows.map((row,index) => `<div class="ffws-s2-drop-player-row">
         <span class="ffws-s2-drop-player-rank">${index + 1}º</span><button type="button" class="ffws-s2-drop-player-name" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.team)}</small></button>
-        <button type="button" class="ffws-s2-drop-player-team" title="${escapeHtml(row.team)}" onclick="toggleFFWSS2DropReportPlayerTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"></button>
-        <strong class="ffws-s2-drop-primary">${row.kills}</strong><span class="ffws-s2-drop-desktop-stat">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-s2-drop-desktop-stat">${row.assists}</span><span class="ffws-s2-drop-desktop-stat"><em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${number(row.note).toFixed(1)}</em></span>
-        <div class="ffws-s2-drop-mobile-extra"><span>Dano <b>${row.damage.toLocaleString('pt-BR')}</b></span><span>Ast <b>${row.assists}</b></span>${row.mvp ? `<span>MVP <b>${row.mvp}</b></span>` : ''}<span>CFF <em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${number(row.note).toFixed(1)}</em></span></div>
+        <button type="button" class="ffws-s2-drop-player-team" title="${escapeHtml(row.team)}" onclick="toggleFFWSS2DropReportPlayerTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" alt="${escapeHtml(abbreviation(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"></button>
+        <strong class="ffws-s2-drop-primary ffws-s2-drop-player-kills">${row.kills}</strong><span class="ffws-s2-drop-player-assists">${row.assists}</span><span class="ffws-s2-drop-player-damage"><span class="ffws-s2-desktop">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-s2-mobile">${s2DropReportCompactMetric(row.damage)}</span></span><span class="ffws-s2-drop-player-cff"><em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${number(row.note).toFixed(1)}</em></span>
       </div>`).join('') : '<div class="ffws-s2-drop-filter-empty">Nenhum jogador das equipes selecionadas.</div>'}</div></div>`;
   }
 

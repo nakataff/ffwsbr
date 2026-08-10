@@ -188,3 +188,38 @@ body.ffws-s2-drop-modal-open{overflow:hidden}
   .ffws-s2-drop-report-tabs{padding:7px 44px 7px 0}
   .ffws-s2-team-detail-metrics .ffws-s2-drop-summary-card:last-child:nth-child(odd){grid-column:1/-1}
 }
+
+
+/* ===== WB 2026 S2 • Relatório de jogadores v9 ===== */
+.ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:44px minmax(170px,1fr) 60px 70px 70px 110px 68px;column-gap:8px}
+.ffws-s2-drop-player-head>span{min-width:0;text-align:center}
+.ffws-s2-drop-player-head .ffws-s2-drop-player-label{text-align:left}
+.ffws-s2-drop-player-row>.ffws-s2-drop-player-rank,.ffws-s2-drop-player-row>.ffws-s2-drop-primary,.ffws-s2-drop-player-row>.ffws-s2-drop-player-assists,.ffws-s2-drop-player-row>.ffws-s2-drop-player-damage,.ffws-s2-drop-player-row>.ffws-s2-drop-player-cff{justify-self:center;text-align:center}
+.ffws-s2-drop-player-team{width:100%;height:100%;display:grid;place-items:center;padding:0}
+.ffws-s2-drop-player-team img{display:block;width:25px;height:25px;margin:0 auto;object-fit:contain}
+.ffws-s2-drop-player-damage{font-weight:850;color:#eef5ff}
+.ffws-s2-drop-player-assists{color:#dfe9f7;font-weight:800}
+.ffws-s2-drop-player-cff{display:flex;justify-content:center}
+@media(max-width:680px){
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:minmax(72px,1fr) 30px 28px 34px 48px 46px;column-gap:4px}
+  .ffws-s2-drop-player-head .ffws-s2-drop-rank-head,.ffws-s2-drop-player-row>.ffws-s2-drop-player-rank{display:none}
+  .ffws-s2-drop-player-head span:nth-child(n+5){display:block}
+  .ffws-s2-drop-player-row>.ffws-s2-drop-desktop-stat{display:initial}
+  .ffws-s2-drop-player-name{padding-left:2px}
+  .ffws-s2-drop-player-name strong{font-size:.74rem}
+  .ffws-s2-drop-player-team img{width:21px;height:21px}
+  .ffws-s2-drop-player-kills,.ffws-s2-drop-player-assists,.ffws-s2-drop-player-damage{font-size:.72rem}
+  .ffws-s2-drop-player-cff .ffws-s2-note-badge{min-width:40px;padding:5px 6px;font-size:.68rem}
+}
+@media(max-width:390px){
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:minmax(66px,1fr) 28px 26px 31px 44px 42px;column-gap:3px}
+  .ffws-s2-drop-player-row{padding:8px 5px}
+  .ffws-s2-drop-player-name strong{font-size:.7rem}
+  .ffws-s2-drop-player-kills,.ffws-s2-drop-player-assists,.ffws-s2-drop-player-damage{font-size:.68rem}
+  .ffws-s2-drop-player-cff .ffws-s2-note-badge{min-width:37px;padding:5px 4px;font-size:.64rem}
+}
+@media(max-width:340px){
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:minmax(60px,1fr) 26px 24px 29px 41px 39px;column-gap:2px}
+  .ffws-s2-drop-player-head{font-size:.5rem}
+  .ffws-s2-drop-player-row{padding-left:4px;padding-right:4px}
+}
