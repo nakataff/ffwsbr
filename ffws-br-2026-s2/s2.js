@@ -948,6 +948,87 @@
             </div>`, header, 4);
   }
 
+  function s2StatsStageLabel(stage) {
+    return stage === 'classificatoria' ? 'Classificatória' : stage === 'segundaFase' ? 'Segunda Fase' : stage === 'final' ? 'Final' : String(stage || '');
+  }
+
+  function s2StatsRecordContext(row, daily = false) {
+    const parts = [s2StatsStageLabel(row.stage)];
+    if (row.day) parts.push(`Dia ${row.day}`);
+    if (!daily && row.drop) parts.push(`Q${row.drop}`);
+    if (!daily && row.map) parts.push(row.map);
+    if (daily && row.matches) parts.push(`${row.matches} queda${row.matches === 1 ? '' : 's'}`);
+    return parts.filter(Boolean).join(' • ');
+  }
+
+  function s2StatsRecordPlayerCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
+    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
+    const header = `<div style="display:grid;grid-template-columns:1.35fr .9fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Jogador</div><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
+    return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.35fr .9fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
+      <div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><span class="clickable" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div><small style="display:block;color:#56606d;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
+      <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display:flex;align-items:center;gap:6px;color:#9aa0a6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><img src="${escapeHtml(logo(row.team))}" style="width:14px;height:14px;object-fit:contain" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size:.9em">${escapeHtml(abbreviation(row.team))}</span></div>
+      <div style="font-weight:bold;color:var(--accent);text-align:right">${escapeHtml(formatter(valueGetter(row)))}</div>
+    </div>`, header, 4);
+  }
+
+  function s2StatsRecordTeamCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
+    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.points) - number(a.points));
+    const header = `<div style="display:grid;grid-template-columns:1.35fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
+    return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.35fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
+      <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="min-width:0"><div style="display:flex;align-items:center;gap:6px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px;height:16px;object-fit:contain" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size:.95em;font-weight:bold">${escapeHtml(abbreviation(row.team))}</span></div><small style="display:block;color:#56606d;margin-top:3px;margin-left:26px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
+      <div style="font-weight:bold;color:var(--accent);text-align:right">${escapeHtml(formatter(valueGetter(row)))}</div>
+    </div>`, header, 4);
+  }
+
+  function statsRecordRows(events, playerEntries) {
+    const playerDrop = playerEntries.map(entry => ({
+      name: entry.name, team: entry.team, stage: entry.stage || 'classificatoria', day: number(entry.day), drop: number(entry.drop), map: entry.map || '',
+      kills: number(entry.kills), damage: number(entry.damage), assists: number(entry.assists), matches: 1
+    }));
+
+    const playerDayMap = new Map();
+    playerDrop.forEach(row => {
+      const key = `${row.stage}:${row.day}:${normalize(row.name)}:${normalize(row.team)}`;
+      if (!playerDayMap.has(key)) playerDayMap.set(key, { name: row.name, team: row.team, stage: row.stage, day: row.day, kills: 0, damage: 0, assists: 0, matches: 0 });
+      const out = playerDayMap.get(key);
+      out.kills += row.kills; out.damage += row.damage; out.assists += row.assists; out.matches += 1;
+    });
+
+    const damageByTeamDrop = new Map();
+    playerDrop.forEach(row => {
+      const key = `${row.stage}:${row.day}:${row.drop}:${normalize(row.team)}`;
+      damageByTeamDrop.set(key, number(damageByTeamDrop.get(key)) + row.damage);
+    });
+
+    const teamDrop = [];
+    events.forEach(event => {
+      const stage = event._stage || 'classificatoria';
+      const day = number(event._day);
+      const drop = number(event.drop || event.queda || event.number);
+      const map = String(event.map || event.mapa || '');
+      eventResults(event).forEach(result => {
+        const team = result.team || result.equipe;
+        if (!team) return;
+        teamDrop.push({
+          team, stage, day, drop, map, matches: 1,
+          points: number(result.points ?? result.pontos ?? (number(result.placementPoints) + number(result.kills))),
+          kills: number(result.kills ?? result.abates),
+          damage: number(damageByTeamDrop.get(`${stage}:${day}:${drop}:${normalize(team)}`))
+        });
+      });
+    });
+
+    const teamDayMap = new Map();
+    teamDrop.forEach(row => {
+      const key = `${row.stage}:${row.day}:${normalize(row.team)}`;
+      if (!teamDayMap.has(key)) teamDayMap.set(key, { team: row.team, stage: row.stage, day: row.day, points: 0, kills: 0, damage: 0, matches: 0 });
+      const out = teamDayMap.get(key);
+      out.points += row.points; out.kills += row.kills; out.damage += row.damage; out.matches += 1;
+    });
+
+    return { playerDrop, playerDay: [...playerDayMap.values()], teamDrop, teamDay: [...teamDayMap.values()] };
+  }
+
   function statsRankingTable(rows, averages) {
     return `<div class="ffws-s2-table-wrap"><table class="ffws-s2-table ffws-s2-compact-table"><thead><tr><th>#</th><th>Eqp</th><th>PTS</th><th>K</th><th>${averages ? 'POS' : 'B!'}</th><th class="hide-mobile">Q</th></tr></thead><tbody>${rows.map((row,index)=>`<tr><td class="ffws-s2-rank">${index+1}º</td>${teamCell(row.team)}<td>${averages ? row.avgPoints.toFixed(2) : row.points}</td><td>${averages ? row.avgKills.toFixed(2) : row.kills}</td><td>${averages ? `${row.avgPosition.toFixed(2)}º` : row.booyahs}</td><td class="hide-mobile">${row.matches}</td></tr>`).join('')}</tbody></table></div>`;
   }
@@ -987,6 +1068,7 @@
         avgPartAssists: total.assists ? (row.assists / total.assists) * 100 : 0
       };
     });
+    const records = statsRecordRows(events, playerEntries);
 
     const statsBlocks = events.length ? `
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Resumo do recorte</h2><p>Todos os cards abaixo seguem o mesmo padrão visual da WB 2026 S1.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
@@ -1032,6 +1114,34 @@
             <div class="card"><div class="card-top-border"></div><h3>Part. Kills</h3>${s2StatsPlayerCard('pl-partkills', playerShareRows, row => row.avgPartKills, value => `${number(value).toFixed(1)}%`, '%')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Part. Dano</h3>${s2StatsPlayerCard('pl-partdano', playerShareRows, row => row.avgPartDamage, value => `${number(value).toFixed(1)}%`, '%')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Part. Assists</h3>${s2StatsPlayerCard('pl-partast', playerShareRows, row => row.avgPartAssists, value => `${number(value).toFixed(1)}%`, '%')}</div>
+        </div>
+
+        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Jogadores</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Mais Abates em uma Queda</h3>${s2StatsRecordPlayerCard('rec-pl-drop-kills', records.playerDrop, row => row.kills, value => String(value), 'Kills')}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Assist. em uma Queda</h3>${s2StatsRecordPlayerCard('rec-pl-drop-assists', records.playerDrop, row => row.assists, value => String(value), 'Ast')}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordPlayerCard('rec-pl-drop-damage', records.playerDrop, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
+        </div>
+
+        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Jogadores</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Mais Abates em um Dia</h3>${s2StatsRecordPlayerCard('rec-pl-day-kills', records.playerDay, row => row.kills, value => String(value), 'Kills', true)}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Assist. em um Dia</h3>${s2StatsRecordPlayerCard('rec-pl-day-assists', records.playerDay, row => row.assists, value => String(value), 'Ast', true)}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordPlayerCard('rec-pl-day-damage', records.playerDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>
+        </div>
+
+        <h4 style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Times</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-points', records.teamDrop, row => row.points, value => String(value), 'Pts')}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Abates em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-kills', records.teamDrop, row => row.kills, value => String(value), 'Kills')}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-damage', records.teamDrop, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
+        </div>
+
+        <h4 style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Times</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-points', records.teamDay, row => row.points, value => String(value), 'Pts', true)}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Abates em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-kills', records.teamDay, row => row.kills, value => String(value), 'Kills', true)}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-damage', records.teamDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>
         </div>
       </div>
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-ranking-columns"><div><div class="ffws-s2-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div><div class="ffws-s2-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
