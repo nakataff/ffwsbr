@@ -66,3 +66,40 @@
   .ffws-s2-mvp-table th:nth-child(4),.ffws-s2-mvp-table td:nth-child(4),.ffws-s2-mvp-table th:nth-child(7),.ffws-s2-mvp-table td:nth-child(7){width:17%}
   .ffws-s2-mvp-mobile-tools>span{display:none}
 }
+
+/* ===== 2026-08-10: MVP paginado + seleções em andamento ===== */
+.ffws-s2-mvp-pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 0;color:#7893b5;font-size:.76rem;font-weight:900}
+.ffws-s2-mvp-pager button{width:32px;height:32px;border-radius:50%;border:1px solid #2b496f;background:#0b1426;color:var(--accent);font-size:1rem;font-weight:900;cursor:pointer}
+.ffws-s2-mvp-pager button:hover:not(:disabled){border-color:var(--accent);background:rgba(0,200,255,.1)}
+.ffws-s2-mvp-pager button:disabled{opacity:.28;cursor:default}
+
+.ffws-s2-selection-page .season-selection-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.ffws-s2-selection-page .season-selection-tab:disabled{cursor:not-allowed;opacity:.42;filter:grayscale(.35)}
+.ffws-s2-selection-page .season-selection-tab:disabled:hover{transform:none;background:rgba(255,255,255,.035);border-color:color-mix(in srgb,var(--selection-color) 35%,transparent)}
+.ffws-s2-selection-page .season-selection-panel-segunda-fase .season-selection-tag{background:#21c778;color:#03150d}
+.season-selection-week-stage-filter{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.season-selection-week-stage-filter>span{color:#7994b6;font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-right:2px}
+.season-selection-week-stage-filter button{border:1px solid rgba(255,255,255,.12);background:#0b1322;color:#fff;border-radius:999px;padding:8px 12px;font-size:.72rem;font-weight:900;text-transform:uppercase;cursor:pointer}
+.season-selection-week-stage-filter button.active{border-color:#ff0000;background:rgba(255,0,0,.16);color:#fff}
+.season-selection-week-stage-filter button:disabled{opacity:.42;cursor:not-allowed;color:#8090a8}
+.season-selection-week-stage-filter button small{margin-left:5px;font-size:.58rem;color:#8b98aa}
+.season-selection-week-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.season-selection-week-btn.is-locked{background:#111723!important;border-color:#273044!important;color:#69778b!important;box-shadow:none!important;opacity:.58;cursor:not-allowed!important}
+.season-selection-week-btn.is-locked small{font-size:.52rem;font-weight:900;color:#657287}
+.season-selection-disclaimer{display:flex;align-items:flex-start;gap:11px;margin:0 0 18px;padding:12px 14px;border:1px solid rgba(0,200,255,.28);border-radius:12px;background:rgba(0,200,255,.065)}
+.season-selection-disclaimer strong{flex:0 0 auto;color:var(--accent);font-size:.72rem;font-weight:1000;letter-spacing:.05em}
+.season-selection-disclaimer span{color:#9bb5d3;font-size:.8rem;line-height:1.45}
+
+@media(max-width:760px){
+  .ffws-s2-mvp-table th:nth-child(2),.ffws-s2-mvp-table td:nth-child(2){padding-left:18px}
+  .ffws-s2-selection-page .season-selection-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .season-selection-disclaimer{display:block;text-align:left}
+  .season-selection-disclaimer strong,.season-selection-disclaimer span{display:block}
+  .season-selection-disclaimer span{margin-top:5px}
+  .season-selection-week-stage-filter{justify-content:stretch}
+  .season-selection-week-stage-filter>span{width:100%}
+  .season-selection-week-stage-filter button{flex:1 1 0;min-width:0}
+}
+@media(max-width:390px){
+  .ffws-s2-mvp-table th:nth-child(2),.ffws-s2-mvp-table td:nth-child(2){padding-left:14px}
+}

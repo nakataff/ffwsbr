@@ -27,8 +27,9 @@
       segundaFase: { period: 'all', map: 'all', drop: 'all' },
       final: { period: 'all', map: 'all', drop: 'all' }
     },
-    selectionWeek: '1',
+    selectionWeek: '',
     selectionTab: 'semanal',
+    mvpPage: 0,
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
     statsFilters: { stage: 'classificatoria', days: [], confrontations: [], maps: [] },
     notesFilters: { stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all' },
@@ -481,23 +482,47 @@
     if (!root) return;
     const options = playerFilterOptions();
     const rows = filteredPlayers();
+    const pageSize = 10;
+    const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+    state.mvpPage = Math.max(0, Math.min(number(state.mvpPage), pageCount - 1));
+    const pageStart = state.mvpPage * pageSize;
+    const pageRows = rows.slice(pageStart, pageStart + pageSize);
+    const pageEnd = Math.min(pageStart + pageRows.length, rows.length);
+    const pager = rows.length > pageSize ? `<div class="ffws-s2-mvp-pager">
+      <button type="button" aria-label="Top 10 anterior" ${state.mvpPage <= 0 ? 'disabled' : ''} onclick="setFFWSS2MvpPage(${state.mvpPage - 1})">‹</button>
+      <span>Top ${pageStart + 1}–${pageEnd} de ${rows.length}</span>
+      <button type="button" aria-label="Próximo Top 10" ${state.mvpPage >= pageCount - 1 ? 'disabled' : ''} onclick="setFFWSS2MvpPage(${state.mvpPage + 1})">›</button>
+    </div>` : '';
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Ranking MVP', 'Classificação individual da WB 2026 S2')}
       <section class="ffws-s2-panel ffws-s2-mvp-panel"><div class="ffws-s2-panel-inner">
         <div class="ffws-s2-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking por etapa, equipe, posição, país e dia.</p></div><span class="ffws-s2-badge">${rows.length} jogadores</span></div>
         <div class="ffws-s2-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('country', 'País', options.country)}${multiFilter('rookie', 'Novatos', options.rookie)}${multiFilter('day', 'Dias', options.day)}</div>
-        <div class="ffws-s2-mvp-mobile-tools"><span>Visual compacto: J · E · K · Q</span><button type="button" class="ffws-s2-mvp-details-toggle" aria-expanded="false" onclick="toggleFFWSS2MvpDetails(this)">Dados completos</button></div>
+        <div class="ffws-s2-mvp-mobile-tools"><span>Visual compacto: J · E · K · Q</span><button type="button" class="ffws-s2-mvp-details-toggle" aria-expanded="false">Dados completos</button></div>
         <div class="ffws-s2-table-wrap"><table class="ffws-s2-table ffws-s2-mvp-table"><thead><tr><th class="ffws-s2-mvp-rank-col">#</th><th class="team-col ffws-s2-mvp-player-col"><span class="ffws-s2-desktop">Jogador</span><span class="ffws-s2-mobile">J</span></th><th><span class="ffws-s2-desktop">Eqp</span><span class="ffws-s2-mobile">E</span></th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile">K/Q</th></tr></thead><tbody>
-        ${rows.length ? rows.map((row, index) => `<tr class="ffws-s2-mvp-main-row"><td class="ffws-s2-rank ffws-s2-mvp-rank-col">${index + 1}º</td><td class="team-col ffws-s2-mvp-player-col"><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>
+        ${pageRows.length ? pageRows.map((row, index) => {
+          const rank = pageStart + index + 1;
+          return `<tr class="ffws-s2-mvp-main-row"><td class="ffws-s2-rank ffws-s2-mvp-rank-col">${rank}º</td><td class="team-col ffws-s2-mvp-player-col"><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>
           <tr class="ffws-s2-mvp-details-row"><td colspan="9"><div class="ffws-s2-mvp-details-grid">
-            <div><span>Posição</span><strong>${index + 1}º</strong></div>
+            <div><span>Posição</span><strong>${rank}º</strong></div>
             <div><span>Dano</span><strong>${row.damage.toLocaleString('pt-BR')}</strong></div>
             <div><span>Assistências</span><strong>${row.assists}</strong></div>
             <div><span>MVP da queda</span><strong>${row.mvps}</strong></div>
             <div><span>K / queda</span><strong>${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</strong></div>
             <div><span>Recorde em queda</span><strong>${row.bestDrop}</strong></div>
-          </div></td></tr>`).join('') : '<tr><td colspan="9"><div class="ffws-s2-empty"><div><strong>Nenhum resultado neste recorte</strong>Altere os filtros para consultar os dados disponíveis.</div></div></td></tr>'}
+          </div></td></tr>`;
+        }).join('') : '<tr><td colspan="9"><div class="ffws-s2-empty"><div><strong>Nenhum resultado neste recorte</strong>Altere os filtros para consultar os dados disponíveis.</div></div></td></tr>'}
         </tbody></table></div>
+        ${pager}
       </div></section></div>`;
+
+    const detailsButton = root.querySelector('.ffws-s2-mvp-details-toggle');
+    if (detailsButton) detailsButton.addEventListener('click', () => {
+      const panel = root.querySelector('.ffws-s2-mvp-panel');
+      if (!panel) return;
+      const expanded = panel.classList.toggle('show-details');
+      detailsButton.setAttribute('aria-expanded', String(expanded));
+      detailsButton.textContent = expanded ? 'Ocultar detalhes' : 'Dados completos';
+    });
   }
 
   function renderTeams() {
@@ -656,8 +681,9 @@
   }
 
   const S2_SELECTION_PHASES = {
-    semanal: { label: 'TIMES DA SEMANA', short: 'SEMANA', color: '#ff0000', panelClass: 'week', title: 'Seleções semanais' },
+    semanal: { label: 'TIMES DA SEMANA', short: 'SEMANA', color: '#ff0000', panelClass: 'week', title: 'Times da semana' },
     classificatoria: { label: 'CLASSIFICATÓRIA', short: 'CLASSIF.', color: '#00c8ff', panelClass: 'classificatoria', title: 'Seleção da classificatória' },
+    segundaFase: { label: 'SEGUNDA FASE', short: '2ª FASE', color: '#21c778', panelClass: 'segunda-fase', title: 'Seleção da segunda fase' },
     final: { label: 'FINAL', short: 'FINAL', color: '#ffd166', panelClass: 'final', title: 'Seleção da final' },
     torneio: { label: 'TORNEIO', short: 'TORNEIO', color: '#a855f7', panelClass: 'torneio', title: 'Seleção do torneio' }
   };
@@ -673,19 +699,18 @@
 
   function availableSelectionWeeks() {
     const entries = allPlayerEntries().filter(selectionEntryIsClassificatoria);
-    const available = Object.keys(S2_WEEKS).filter(key => {
+    return Object.keys(S2_WEEKS).filter(key => {
       const days = S2_WEEKS[key] || [];
       return entries.some(entry => days.includes(selectionEntryDay(entry)));
     });
-    return available.length ? available : ['1'];
   }
 
   function selectionTabsHtml() {
     const finalUnlocked = selectionFinalComplete();
     return Object.entries(S2_SELECTION_PHASES).map(([key, config]) => {
-      const unlocked = key === 'semanal' || key === 'classificatoria' || finalUnlocked;
+      const unlocked = key === 'semanal' || key === 'classificatoria' || ((key === 'final' || key === 'torneio') && finalUnlocked);
       const active = state.selectionTab === key;
-      return `<button type="button" class="season-selection-tab ${active ? 'active' : ''} ${unlocked ? '' : 'locked'}" style="--selection-color:${config.color}" onclick="setFFWSS2SelectionTab('${key}')">
+      return `<button type="button" class="season-selection-tab ${active ? 'active' : ''} ${unlocked ? '' : 'locked'}" style="--selection-color:${config.color}" ${unlocked ? `onclick="setFFWSS2SelectionTab('${key}')"` : 'disabled aria-disabled="true"'}>
         <span>${config.label}</span>${unlocked ? '' : '<small>EM BREVE</small>'}
       </button>`;
     }).join('');
@@ -693,6 +718,7 @@
 
   function selectionGlow(color) {
     if (color === '#00c8ff') return 'rgba(0,200,255,.48)';
+    if (color === '#21c778') return 'rgba(33,199,120,.44)';
     if (color === '#ffd166') return 'rgba(255,209,102,.45)';
     if (color === '#a855f7') return 'rgba(168,85,247,.45)';
     return 'rgba(255,0,0,.50)';
@@ -700,6 +726,7 @@
 
   function selectionBackdrop(color) {
     if (color === '#00c8ff') return '#06283a';
+    if (color === '#21c778') return '#063524';
     if (color === '#ffd166') return '#3b2d05';
     if (color === '#a855f7') return '#2b123e';
     return '#400';
@@ -754,28 +781,42 @@
     const phaseKey = state.selectionTab || 'semanal';
     const config = selectionPhaseConfig(phaseKey);
     const availableWeeks = availableSelectionWeeks();
-    if (!availableWeeks.includes(String(state.selectionWeek))) state.selectionWeek = availableWeeks[0];
-    const week = String(state.selectionWeek || availableWeeks[0] || '1');
+    const allWeeks = Object.keys(S2_WEEKS);
+    const latestAvailableWeek = availableWeeks[availableWeeks.length - 1] || allWeeks[0] || '1';
+    if (!availableWeeks.includes(String(state.selectionWeek))) state.selectionWeek = latestAvailableWeek;
+    const week = String(state.selectionWeek || latestAvailableWeek);
     const finalUnlocked = selectionFinalComplete();
 
     let rows = [];
     let title = config.title;
     let description = '';
     let filters = '';
+    let notice = '';
     let content = '';
 
     if (phaseKey === 'semanal') {
-      rows = selectionRowsForWeek(week);
+      const weekUnlocked = availableWeeks.includes(week);
+      rows = weekUnlocked ? selectionRowsForWeek(week) : [];
       const lineup = buildWeeklySelection(rows);
-      title = 'Seleções semanais';
-      description = 'Escolha a semana para ver os destaques por posição.';
-      filters = `<div class="season-selection-filters">${availableWeeks.map(key => `<button type="button" class="btn-day ${week === key ? 'active' : ''}" onclick="setFFWSS2SelectionWeek('${key}')" style="${week === key ? 'background:#ff0000;border-color:#ff0000;color:#fff;' : ''}">SEMANA ${key}</button>`).join('')}</div>`;
+      title = 'Times da Semana';
+      description = 'O resultado mais recente disponível aparece primeiro. Semanas futuras são liberadas quando recebem os primeiros dados.';
+      const phaseFilter = `<div class="season-selection-week-stage-filter"><span>Fase:</span><button type="button" class="active">Classificatória</button><button type="button" disabled aria-disabled="true">Segunda Fase <small>EM BREVE</small></button></div>`;
+      const weekButtons = allWeeks.map(key => {
+        const unlocked = availableWeeks.includes(key);
+        const active = unlocked && week === key;
+        return `<button type="button" class="btn-day season-selection-week-btn ${active ? 'active' : ''} ${unlocked ? '' : 'is-locked'}" ${unlocked ? `onclick="setFFWSS2SelectionWeek('${key}')"` : 'disabled aria-disabled="true"'} style="${active ? 'background:#ff0000;border-color:#ff0000;color:#fff;' : ''}">SEMANA ${key}${unlocked ? '' : '<small>EM BREVE</small>'}</button>`;
+      }).join('');
+      filters = `${phaseFilter}<div class="season-selection-filters">${weekButtons}</div>`;
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey, week);
     } else if (phaseKey === 'classificatoria') {
       rows = selectionRowsForDays([]);
       const lineup = buildWeeklySelection(rows);
-      description = 'Melhores de cada posição levando em conta todos os dados da classificatória.';
+      description = 'Melhores de cada posição levando em conta os dados já disputados na classificatória.';
+      notice = `<div class="season-selection-disclaimer"><strong>CLASSIFICATÓRIA EM ANDAMENTO</strong><span>Esta seleção é parcial e pode mudar a cada nova rodada conforme os números da competição são atualizados.</span></div>`;
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey);
+    } else if (phaseKey === 'segundaFase') {
+      description = 'A seleção da Segunda Fase será liberada quando essa etapa começar.';
+      content = selectionLockedHtml(phaseKey);
     } else if (!finalUnlocked) {
       description = phaseKey === 'final' ? 'A seleção será liberada quando a Final tiver dados suficientes.' : 'A seleção será definida depois do encerramento da temporada.';
       content = selectionLockedHtml(phaseKey);
@@ -805,11 +846,12 @@
       <div class="season-selection-hero">
         <div class="season-selection-kicker">WB 2026 S2</div>
         <h1>SELEÇÕES DA SEASON</h1>
-        <p>Os melhores jogadores por função: seleções semanais, classificatória, final e torneio.</p>
+        <p>Os melhores jogadores por função: times da semana, classificatória, segunda fase, final e torneio.</p>
       </div>
       <div class="season-selection-tabs">${selectionTabsHtml()}</div>
       <section class="season-selection-panel season-selection-panel-${config.panelClass}">
         <div class="season-selection-section-head"><div><span class="season-selection-tag">${escapeHtml(config.label)}</span><h2>${escapeHtml(title)}</h2></div><p>${escapeHtml(description)}</p></div>
+        ${notice}
         ${filters}
         <div class="selection-grid season-selection-grid">${content}</div>
       </section>
@@ -1448,11 +1490,13 @@
     const menu = document.getElementById(`ffws-s2-multi-${key}`);
     if (menu) menu.hidden = !menu.hidden;
   };
-  window.clearFFWSS2Multi = key => { state.playerFilters[key] = []; renderMvp(); };
+  window.setFFWSS2MvpPage = page => { state.mvpPage = Math.max(0, number(page)); renderMvp(); };
+  window.clearFFWSS2Multi = key => { state.playerFilters[key] = []; state.mvpPage = 0; renderMvp(); };
   window.setFFWSS2Multi = (key, value, checked) => {
     const list = new Set(state.playerFilters[key] || []);
     checked ? list.add(String(value)) : list.delete(String(value));
     state.playerFilters[key] = [...list];
+    state.mvpPage = 0;
     renderMvp();
   };
 
