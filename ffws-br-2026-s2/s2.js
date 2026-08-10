@@ -1784,11 +1784,27 @@
     wrapNavigate();
     const hash = String(location.hash || '').replace(/^#/, '');
     if (PAGE_IDS.has(hash)) activate(hash);
-    const observer = new MutationObserver(() => {
-      const active = document.querySelector(`.page.active[id^="${PAGE_PREFIX}"]`);
-      if (active) activate(active.id);
+    // Observe somente a troca de página da própria S2.
+    // Antes o observer ficava no body inteiro e qualquer mudança de classe
+    // (menu, busca, widgets etc.) podia reativar/renderizar a Stats e destruir
+    // um Relatório de Quedas que estivesse aberto.
+    let observedActivePage = document.querySelector(`.page.active[id^="${PAGE_PREFIX}"]`)?.id || '';
+    const observer = new MutationObserver(mutations => {
+      let nextActivePage = '';
+      for (const mutation of mutations) {
+        const target = mutation.target;
+        if (!(target instanceof Element)) continue;
+        if (!PAGE_IDS.has(target.id) || !target.classList.contains('active')) continue;
+        nextActivePage = target.id;
+        break;
+      }
+      if (!nextActivePage || nextActivePage === observedActivePage) return;
+      observedActivePage = nextActivePage;
+      activate(nextActivePage);
     });
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    document.querySelectorAll(`.page[id^="${PAGE_PREFIX}"]`).forEach(page => {
+      observer.observe(page, { attributes: true, attributeFilter: ['class'] });
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
