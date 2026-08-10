@@ -223,3 +223,57 @@ body.ffws-s2-drop-modal-open{overflow:hidden}
   .ffws-s2-drop-player-head{font-size:.5rem}
   .ffws-s2-drop-player-row{padding-left:4px;padding-right:4px}
 }
+
+
+/* ===== WB 2026 S2 • Relatório v10: header/nav + logos + alinhamento mobile ===== */
+.ffws-s2-drop-report-top{padding:0 0 12px;align-items:flex-start}
+.ffws-s2-drop-report-title{min-width:0;flex:1}
+.ffws-s2-drop-report-close{position:static;flex:0 0 38px;width:38px;height:38px;margin:0;border:1px solid #31496a;border-radius:50%;background:#101a2c;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;display:grid;place-items:center}
+.ffws-s2-drop-report-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 13px}
+.ffws-s2-drop-report-nav button{width:auto;height:auto;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"label arrow" "target arrow";align-items:center;column-gap:8px;padding:8px 10px;border:1px solid #2c4668;border-radius:10px;background:#0e192b;color:#fff;text-align:left;cursor:pointer}
+.ffws-s2-drop-report-nav button span{grid-area:label;color:#6f89a9;font-size:.53rem;font-weight:1000;letter-spacing:.035em}
+.ffws-s2-drop-report-nav button strong{grid-area:target;margin-top:1px;color:var(--accent);font-size:.72rem;font-weight:1000}
+.ffws-s2-drop-report-nav button b{grid-area:arrow;color:var(--accent);font-size:1.05rem}
+.ffws-s2-drop-report-nav button:disabled{opacity:.32;cursor:default}
+
+/* Filtro por logos: maior e legível no desktop, contido no mobile. */
+.ffws-s2-player-team-filter-logos{gap:8px}
+.ffws-s2-player-team-filter-logos button{width:46px;height:46px;padding:6px;border-radius:10px}
+.ffws-s2-player-team-filter-logos img{width:32px;height:32px;max-width:32px;max-height:32px;object-fit:contain}
+
+/* Linha de jogadores: mesma grade no header e nas linhas. */
+.ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:44px minmax(170px,1fr) 62px 66px 62px 112px 70px;column-gap:8px}
+.ffws-s2-drop-player-head>span,.ffws-s2-drop-player-row>.ffws-s2-drop-primary,.ffws-s2-drop-player-row>.ffws-s2-drop-player-assists,.ffws-s2-drop-player-row>.ffws-s2-drop-player-damage,.ffws-s2-drop-player-row>.ffws-s2-drop-player-cff{width:100%;justify-self:stretch;text-align:center}
+.ffws-s2-drop-player-team{width:100%;display:grid;place-items:center}
+.ffws-s2-drop-player-team img{width:28px;height:28px;max-width:28px;max-height:28px;margin:0;object-fit:contain}
+
+@media(max-width:680px){
+  .ffws-s2-drop-report-top{padding:0 0 10px;gap:10px}
+  .ffws-s2-drop-report-close{flex-basis:36px;width:36px;height:36px;font-size:1.35rem}
+  .ffws-s2-drop-report-nav{gap:6px;margin:8px 0 10px}
+  .ffws-s2-drop-report-nav button{padding:7px 8px;border-radius:9px}
+  .ffws-s2-drop-report-nav button span{font-size:.47rem}
+  .ffws-s2-drop-report-nav button strong{font-size:.65rem}
+  .ffws-s2-drop-report-tabs{padding:7px 0}
+  .ffws-s2-player-team-filter-logos{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+  .ffws-s2-player-team-filter-logos button{width:100%;height:40px;padding:4px}
+  .ffws-s2-player-team-filter-logos img{width:23px;height:23px;max-width:23px;max-height:23px}
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:minmax(72px,1fr) 28px 25px 31px 48px 44px;column-gap:4px}
+  .ffws-s2-drop-player-team img{width:18px;height:18px;max-width:18px;max-height:18px}
+  .ffws-s2-drop-player-kills,.ffws-s2-drop-player-assists,.ffws-s2-drop-player-damage{display:flex;align-items:center;justify-content:center;font-size:.7rem;line-height:1}
+  .ffws-s2-drop-player-cff{display:flex;align-items:center;justify-content:center}
+  .ffws-s2-drop-player-cff .ffws-s2-note-badge{width:40px;min-width:40px;box-sizing:border-box;padding:5px 3px;text-align:center;font-size:.65rem;line-height:1}
+}
+@media(max-width:390px){
+  .ffws-s2-player-team-filter-logos{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .ffws-s2-player-team-filter-logos button{height:37px}
+  .ffws-s2-player-team-filter-logos img{width:21px;height:21px;max-width:21px;max-height:21px}
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:minmax(66px,1fr) 26px 23px 29px 45px 41px;column-gap:3px}
+  .ffws-s2-drop-player-cff .ffws-s2-note-badge{width:37px;min-width:37px;font-size:.61rem}
+}
+@media(max-width:350px){
+  .ffws-s2-player-team-filter-logos{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .ffws-s2-drop-report-nav button span{font-size:.44rem}
+  .ffws-s2-drop-report-nav button strong{font-size:.6rem}
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:minmax(62px,1fr) 24px 22px 27px 42px 39px;column-gap:2px}
+}

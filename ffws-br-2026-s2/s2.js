@@ -1420,19 +1420,24 @@
   }
 
   function s2DropReportNavigation(report) {
+    const events = [...filteredStatsEvents()].sort((a, b) => String(a._stage || '').localeCompare(String(b._stage || '')) || number(a._day) - number(b._day) || number(a.drop || a.number) - number(b.drop || b.number));
+    const days = [];
+    const seenDays = new Set();
+    events.forEach(event => {
+      const key = s2DropReportDayKey(event._stage, event._day);
+      if (!seenDays.has(key)) { seenDays.add(key); days.push({ key, stage: event._stage, day: number(event._day) }); }
+    });
+    const currentDayKey = s2DropReportDayKey(report.stage, report.day);
+    const dayIndex = days.findIndex(item => item.key === currentDayKey);
+    const nextDay = dayIndex >= 0 && dayIndex < days.length - 1 ? days[dayIndex + 1] : null;
+    let nextDrop = null;
     if (report.mode === 'day') {
-      const groups = [];
-      const seen = new Set();
-      filteredStatsEvents().forEach(event => {
-        const key = s2DropReportDayKey(event._stage, event._day);
-        if (!seen.has(key)) { seen.add(key); groups.push({ key, stage: event._stage, day: event._day }); }
-      });
-      const index = groups.findIndex(item => item.key === report.key);
-      return { prev: index > 0 ? groups[index - 1] : null, next: index >= 0 && index < groups.length - 1 ? groups[index + 1] : null, dayMode: true };
+      nextDrop = events.find(event => s2DropReportDayKey(event._stage, event._day) === currentDayKey) || null;
+    } else {
+      const dropIndex = events.findIndex(event => s2DropReportEventKey(event) === report.key);
+      nextDrop = dropIndex >= 0 && dropIndex < events.length - 1 ? events[dropIndex + 1] : null;
     }
-    const events = filteredStatsEvents();
-    const index = events.findIndex(event => s2DropReportEventKey(event) === report.key);
-    return { prev: index > 0 ? events[index - 1] : null, next: index >= 0 && index < events.length - 1 ? events[index + 1] : null, dayMode: false };
+    return { nextDrop, nextDay };
   }
 
   function renderFFWSS2DropReportModal() {
@@ -1443,13 +1448,13 @@
     if (!report) return;
     const tab = state.dropReport.tab || 'summary';
     const nav = s2DropReportNavigation(report);
-    const navAction = item => {
-      if (!item) return '';
-      return nav.dayMode ? `openFFWSS2DayReport('${jsAttr(item.stage)}',${number(item.day)})` : `openFFWSS2DropReport('${s2DropReportEventKey(item)}')`;
-    };
+    const nextDropLabel = nav.nextDrop ? `D${number(nav.nextDrop._day)} • Q${number(nav.nextDrop.drop || nav.nextDrop.number)}` : 'Última queda';
+    const nextDayLabel = nav.nextDay ? `D${number(nav.nextDay.day)}` : 'Último dia';
+    const nextDropAction = nav.nextDrop ? `openFFWSS2DropReport('${s2DropReportEventKey(nav.nextDrop)}')` : '';
+    const nextDayAction = nav.nextDay ? `openFFWSS2DayReport('${jsAttr(nav.nextDay.stage)}',${number(nav.nextDay.day)})` : '';
     const topTitle = report.mode === 'day' ? `DIA ${report.day} • ${report.dropsCount} QUEDAS` : `DIA ${report.day} • QUEDA ${report.drop}`;
     const topSub = report.mode === 'day' ? `${report.maps.length} mapa${report.maps.length === 1 ? '' : 's'} no recorte` : (report.map || '');
-    body.innerHTML = `<div class="ffws-s2-drop-report-top"><div><small>${escapeHtml(s2StatsStageLabel(report.stage))}</small><strong>${escapeHtml(topTitle)}</strong><span>${escapeHtml(topSub)}</span></div><div class="ffws-s2-drop-report-nav"><button type="button" ${nav.prev?'':'disabled'} onclick="${navAction(nav.prev)}" aria-label="${report.mode === 'day' ? 'Dia anterior' : 'Queda anterior'}">‹</button><button type="button" ${nav.next?'':'disabled'} onclick="${navAction(nav.next)}" aria-label="${report.mode === 'day' ? 'Próximo dia' : 'Próxima queda'}">›</button></div></div>${s2DropReportTabsHtml(tab)}<div class="ffws-s2-drop-report-tabbody">${tab === 'teams' ? s2DropReportTeamsHtml(report) : tab === 'players' ? s2DropReportPlayersHtml(report) : s2DropReportSummaryHtml(report)}</div>`;
+    body.innerHTML = `<div class="ffws-s2-drop-report-top"><div class="ffws-s2-drop-report-title"><small>${escapeHtml(s2StatsStageLabel(report.stage))}</small><strong>${escapeHtml(topTitle)}</strong><span>${escapeHtml(topSub)}</span></div><button type="button" class="ffws-s2-drop-report-close" onclick="closeFFWSS2DropReport()" aria-label="Fechar relatório">×</button></div><div class="ffws-s2-drop-report-nav"><button type="button" ${nav.nextDrop?'':'disabled'} onclick="${nextDropAction}" aria-label="Ir para ${escapeHtml(nextDropLabel)}"><span>PRÓXIMA QUEDA</span><strong>${escapeHtml(nextDropLabel)}</strong><b>→</b></button><button type="button" ${nav.nextDay?'':'disabled'} onclick="${nextDayAction}" aria-label="Ir para ${escapeHtml(nextDayLabel)}"><span>PRÓXIMO DIA</span><strong>${escapeHtml(nextDayLabel)}</strong><b>→</b></button></div>${s2DropReportTabsHtml(tab)}<div class="ffws-s2-drop-report-tabbody">${tab === 'teams' ? s2DropReportTeamsHtml(report) : tab === 'players' ? s2DropReportPlayersHtml(report) : s2DropReportSummaryHtml(report)}</div>`;
   }
 
   function s2DropReportSelectorHtml(events) {
@@ -1461,7 +1466,7 @@
     });
     return `<section class="ffws-s2-panel ffws-s2-drop-report-section"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Relatório de Quedas</h2><p>Clique no dia para ver o relatório agregado ou abra uma queda individual.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
       <div class="ffws-s2-drop-day-list">${[...groups.values()].map(group => `<div class="ffws-s2-drop-day-row"><button type="button" class="ffws-s2-drop-day-label" onclick="openFFWSS2DayReport('${jsAttr(group.stage)}',${number(group.day)})"><span><small>${escapeHtml(s2StatsStageShortLabel(group.stage))}</small><strong>DIA ${group.day}</strong></span><em>VER DIA ›</em></button><div class="ffws-s2-drop-buttons">${group.events.sort((a,b)=>number(a.drop||a.number)-number(b.drop||b.number)).map(event => { const report=s2DropReportBuild(event); const recordContext=s2DropReportSplitContext(); const bestPlayer=report?.leaders?.playerKills; const fire=bestPlayer && s2DropReportRank(bestPlayer.kills, recordContext.playerKills) <= 3; return `<button type="button" onclick="openFFWSS2DropReport('${s2DropReportEventKey(event)}')"><span>Q${number(event.drop || event.number)}</span>${fire?'<i aria-label="Top 3 do split">🔥</i>':''}<small>${escapeHtml(s2StatsMapShortLabel(event.map || event.mapa))}</small></button>`; }).join('')}</div></div>`).join('')}</div>
-      <div id="ffws-s2-drop-report-modal" class="ffws-s2-drop-report-modal" hidden onclick="if(event.target===this)closeFFWSS2DropReport()"><div class="ffws-s2-drop-report-dialog" role="dialog" aria-modal="true" aria-label="Relatório do dia ou da queda"><button type="button" class="ffws-s2-drop-report-close" onclick="closeFFWSS2DropReport()" aria-label="Fechar relatório">×</button><div id="ffws-s2-drop-report-body"></div></div></div>
+      <div id="ffws-s2-drop-report-modal" class="ffws-s2-drop-report-modal" hidden onclick="if(event.target===this)closeFFWSS2DropReport()"><div class="ffws-s2-drop-report-dialog" role="dialog" aria-modal="true" aria-label="Relatório do dia ou da queda"><div id="ffws-s2-drop-report-body"></div></div></div>
     </div></section>`;
   }
 
