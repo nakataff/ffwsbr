@@ -482,11 +482,20 @@
     const options = playerFilterOptions();
     const rows = filteredPlayers();
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Ranking MVP', 'Classificação individual da WB 2026 S2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner">
+      <section class="ffws-s2-panel ffws-s2-mvp-panel"><div class="ffws-s2-panel-inner">
         <div class="ffws-s2-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking por etapa, equipe, posição, país e dia.</p></div><span class="ffws-s2-badge">${rows.length} jogadores</span></div>
         <div class="ffws-s2-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('country', 'País', options.country)}${multiFilter('rookie', 'Novatos', options.rookie)}${multiFilter('day', 'Dias', options.day)}</div>
-        <div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th class="team-col"><span class="ffws-s2-desktop">Jogador</span><span class="ffws-s2-mobile">J</span></th><th>Eqp</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile">K/Q</th></tr></thead><tbody>
-        ${rows.length ? rows.map((row, index) => `<tr><td class="ffws-s2-rank">${index + 1}º</td><td class="team-col"><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>`).join('') : '<tr><td colspan="9"><div class="ffws-s2-empty"><div><strong>Nenhum resultado neste recorte</strong>Altere os filtros para consultar os dados disponíveis.</div></div></td></tr>'}
+        <div class="ffws-s2-mvp-mobile-tools"><span>Visual compacto: J · E · K · Q</span><button type="button" class="ffws-s2-mvp-details-toggle" aria-expanded="false" onclick="toggleFFWSS2MvpDetails(this)">Dados completos</button></div>
+        <div class="ffws-s2-table-wrap"><table class="ffws-s2-table ffws-s2-mvp-table"><thead><tr><th class="ffws-s2-mvp-rank-col">#</th><th class="team-col ffws-s2-mvp-player-col"><span class="ffws-s2-desktop">Jogador</span><span class="ffws-s2-mobile">J</span></th><th><span class="ffws-s2-desktop">Eqp</span><span class="ffws-s2-mobile">E</span></th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile">K/Q</th></tr></thead><tbody>
+        ${rows.length ? rows.map((row, index) => `<tr class="ffws-s2-mvp-main-row"><td class="ffws-s2-rank ffws-s2-mvp-rank-col">${index + 1}º</td><td class="team-col ffws-s2-mvp-player-col"><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>
+          <tr class="ffws-s2-mvp-details-row"><td colspan="9"><div class="ffws-s2-mvp-details-grid">
+            <div><span>Posição</span><strong>${index + 1}º</strong></div>
+            <div><span>Dano</span><strong>${row.damage.toLocaleString('pt-BR')}</strong></div>
+            <div><span>Assistências</span><strong>${row.assists}</strong></div>
+            <div><span>MVP da queda</span><strong>${row.mvps}</strong></div>
+            <div><span>K / queda</span><strong>${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</strong></div>
+            <div><span>Recorde em queda</span><strong>${row.bestDrop}</strong></div>
+          </div></td></tr>`).join('') : '<tr><td colspan="9"><div class="ffws-s2-empty"><div><strong>Nenhum resultado neste recorte</strong>Altere os filtros para consultar os dados disponíveis.</div></div></td></tr>'}
         </tbody></table></div>
       </div></section></div>`;
   }
@@ -1426,6 +1435,13 @@
       const first = [...menu.querySelectorAll('.ffws-s2-compare-picker-option')].find(option => !option.hidden);
       if (first) { event.preventDefault(); first.click(); }
     }
+  };
+  window.toggleFFWSS2MvpDetails = button => {
+    const panel = button?.closest('.ffws-s2-mvp-panel');
+    if (!panel) return;
+    const expanded = panel.classList.toggle('show-details');
+    button.setAttribute('aria-expanded', String(expanded));
+    button.textContent = expanded ? 'Ocultar detalhes' : 'Dados completos';
   };
   window.toggleFFWSS2Multi = key => {
     document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-multi-${key}`) menu.hidden = true; });
