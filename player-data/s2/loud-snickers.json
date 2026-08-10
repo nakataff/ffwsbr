@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-10",
   "team": "LOUD SNICKERS",
   "profileType": "full",
   "players": {
@@ -33,11 +33,24 @@
       },
       "s2": {
         "edition": "WB 2026 S2",
-        "kills": 0,
-        "damage": 0,
-        "assists": 0,
-        "matches": 0,
-        "mvp": 0
+        "kills": 42,
+        "damage": 25065,
+        "assists": 28,
+        "matches": 18,
+        "mvp": 1,
+        "record": 17,
+        "rankKills": 11,
+        "rankDamage": 18,
+        "rankAssists": 39,
+        "stages": {
+          "classificatoria": {
+            "kills": 42,
+            "damage": 25065,
+            "assists": 28,
+            "matches": 18,
+            "mvp": 1
+          }
+        }
       },
       "historical": {
         "LBFF 7": {
@@ -223,11 +236,24 @@
       },
       "s2": {
         "edition": "WB 2026 S2",
-        "kills": 0,
-        "damage": 0,
-        "assists": 0,
-        "matches": 0,
-        "mvp": 0
+        "kills": 19,
+        "damage": 20303,
+        "assists": 51,
+        "matches": 18,
+        "mvp": 0,
+        "record": 10,
+        "rankKills": 50,
+        "rankDamage": 33,
+        "rankAssists": 8,
+        "stages": {
+          "classificatoria": {
+            "kills": 19,
+            "damage": 20303,
+            "assists": 51,
+            "matches": 18,
+            "mvp": 0
+          }
+        }
       },
       "historical": {
         "LBFF 9": {
@@ -386,11 +412,24 @@
       },
       "s2": {
         "edition": "WB 2026 S2",
-        "kills": 0,
-        "damage": 0,
-        "assists": 0,
-        "matches": 0,
-        "mvp": 0
+        "kills": 33,
+        "damage": 21095,
+        "assists": 57,
+        "matches": 16,
+        "mvp": 0,
+        "record": 17,
+        "rankKills": 31,
+        "rankDamage": 31,
+        "rankAssists": 3,
+        "stages": {
+          "classificatoria": {
+            "kills": 33,
+            "damage": 21095,
+            "assists": 57,
+            "matches": 16,
+            "mvp": 0
+          }
+        }
       },
       "historical": {
         "WB 2025 S1": {
@@ -510,11 +549,24 @@
       },
       "s2": {
         "edition": "WB 2026 S2",
-        "kills": 0,
-        "damage": 0,
-        "assists": 0,
-        "matches": 0,
-        "mvp": 0
+        "kills": 34,
+        "damage": 28101,
+        "assists": 23,
+        "matches": 18,
+        "mvp": 0,
+        "record": 17,
+        "rankKills": 30,
+        "rankDamage": 15,
+        "rankAssists": 47,
+        "stages": {
+          "classificatoria": {
+            "kills": 34,
+            "damage": 28101,
+            "assists": 23,
+            "matches": 18,
+            "mvp": 0
+          }
+        }
       },
       "historical": {
         "LBFF 7": {
@@ -701,10 +753,23 @@
       "s2": {
         "edition": "WB 2026 S2",
         "kills": 0,
-        "damage": 0,
+        "damage": 1174,
         "assists": 0,
-        "matches": 0,
-        "mvp": 0
+        "matches": 2,
+        "mvp": 0,
+        "record": 0,
+        "rankKills": 62,
+        "rankDamage": 61,
+        "rankAssists": 61,
+        "stages": {
+          "classificatoria": {
+            "kills": 0,
+            "damage": 1174,
+            "assists": 0,
+            "matches": 2,
+            "mvp": 0
+          }
+        }
       },
       "historical": {
         "WB 2024 F1": {
