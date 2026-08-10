@@ -35,7 +35,8 @@
     notesFilters: { stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all' },
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
-    statsStage: 'classificatoria'
+    statsStage: 'classificatoria',
+    dropReport: { key: '', tab: 'summary', teamSort: 'points', playerSort: 'kills' }
   };
 
   const S2_WEEKS = { '1': [1, 2], '2': [3, 4], '3': [5, 6], '4': [7, 8], '5': [9, 10], '6': [11, 12], '7': [13, 14] };
@@ -1003,19 +1004,32 @@
     return stage === 'classificatoria' ? 'Classificatória' : stage === 'segundaFase' ? 'Segunda Fase' : stage === 'final' ? 'Final' : String(stage || '');
   }
 
+  function s2StatsStageShortLabel(stage) {
+    return stage === 'classificatoria' ? 'Class.' : stage === 'segundaFase' ? '2ª Fase' : stage === 'final' ? 'Final' : String(stage || '');
+  }
+
+  function s2StatsMapShortLabel(map) {
+    const raw = String(map || '').trim();
+    const key = normalize(raw);
+    if (key === 'NOVATERRA') return 'Nova T.';
+    if (key === 'PURGATORIO') return 'Purg.';
+    if (key === 'KALAHARI') return 'Kalah.';
+    return raw;
+  }
+
   function s2StatsRecordContext(row, daily = false) {
-    const parts = [s2StatsStageLabel(row.stage)];
-    if (row.day) parts.push(`Dia ${row.day}`);
+    const parts = [s2StatsStageShortLabel(row.stage)];
+    if (row.day) parts.push(`D${row.day}`);
     if (!daily && row.drop) parts.push(`Q${row.drop}`);
-    if (!daily && row.map) parts.push(row.map);
-    if (daily && row.matches) parts.push(`${row.matches} queda${row.matches === 1 ? '' : 's'}`);
+    if (!daily && row.map) parts.push(s2StatsMapShortLabel(row.map));
+    if (daily && row.matches) parts.push(`${row.matches}Q`);
     return parts.filter(Boolean).join(' • ');
   }
 
   function s2StatsRecordPlayerCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
     const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
-    const header = `<div style="display:grid;grid-template-columns:1.35fr .9fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Jogador</div><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
-    return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.35fr .9fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
+    const header = `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Jogador</div><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
+    return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
       <div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><span class="clickable" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div><small style="display:block;color:#56606d;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
       <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display:flex;align-items:center;gap:6px;color:#9aa0a6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><img src="${escapeHtml(logo(row.team))}" style="width:14px;height:14px;object-fit:contain" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size:.9em">${escapeHtml(abbreviation(row.team))}</span></div>
       <div style="font-weight:bold;color:var(--accent);text-align:right">${escapeHtml(formatter(valueGetter(row)))}</div>
@@ -1078,6 +1092,218 @@
     });
 
     return { playerDrop, playerDay: [...playerDayMap.values()], teamDrop, teamDay: [...teamDayMap.values()] };
+  }
+
+  function s2DropReportCache() {
+    if (!window.__ffwsS2DropReportCache) window.__ffwsS2DropReportCache = { drops: new Map(), context: null };
+    return window.__ffwsS2DropReportCache;
+  }
+
+  function s2DropReportEventKey(event) {
+    return `${event?._stage || 'classificatoria'}:${number(event?._day || event?.day || event?.round)}:${number(event?.drop || event?.queda || event?.number)}`;
+  }
+
+  function s2DropReportAllEvents() {
+    return ['classificatoria', 'segundaFase', 'final'].flatMap(stage => stageEvents(stage).map((event, index) => ({
+      ...event,
+      _stage: stage,
+      _day: stage === 'final' ? (number(event.day) || index + 1) : (number(event.round) || number(event.day) || index + 1)
+    })));
+  }
+
+  function s2DropReportFindEvent(key) {
+    return s2DropReportAllEvents().find(event => s2DropReportEventKey(event) === String(key || '')) || null;
+  }
+
+  function s2DropReportBuild(event) {
+    if (!event) return null;
+    const cache = s2DropReportCache();
+    const key = s2DropReportEventKey(event);
+    if (cache.drops.has(key)) return cache.drops.get(key);
+    const stage = event._stage || 'classificatoria';
+    const day = number(event._day || event.day || event.round);
+    const drop = number(event.drop || event.queda || event.number);
+    const map = String(event.map || event.mapa || '');
+    const players = allPlayerEntries().filter(entry => String(entry.stage || 'classificatoria') === stage
+      && number(entry.day) === day
+      && number(entry.drop) === drop)
+      .map(entry => ({
+        name: entry.name || entry.player || '—', team: entry.team || entry.equipe || '',
+        kills: number(entry.kills ?? entry.abates), damage: number(entry.damage ?? entry.dano),
+        assists: number(entry.assists ?? entry.assistencias), mvp: number(entry.mvp ?? entry.mvps)
+      }));
+    const playerTeamTotals = new Map();
+    players.forEach(player => {
+      const teamKey = normalize(player.team);
+      if (!playerTeamTotals.has(teamKey)) playerTeamTotals.set(teamKey, { damage: 0, assists: 0, playerKills: 0 });
+      const out = playerTeamTotals.get(teamKey);
+      out.damage += player.damage; out.assists += player.assists; out.playerKills += player.kills;
+    });
+    const teams = eventResults(event).map(result => {
+      const team = result.team || result.equipe || '';
+      const extras = playerTeamTotals.get(normalize(team)) || { damage: 0, assists: 0, playerKills: 0 };
+      const position = number(result.position || result.posicao);
+      const placementPoints = number(result.placementPoints ?? result.pontosColocacao ?? result.pp);
+      const kills = number(result.kills ?? result.abates);
+      const points = number(result.points ?? result.pontos ?? (placementPoints + kills));
+      return { team, position, placementPoints, kills, points, booyah: number(result.booyah ?? result.booyahs) || (position === 1 ? 1 : 0), damage: extras.damage, assists: extras.assists };
+    });
+    const booyah = teams.find(row => row.booyah || row.position === 1) || null;
+    const topBy = (rows, getter, asc = false) => [...rows].sort((a, b) => asc ? number(getter(a)) - number(getter(b)) : number(getter(b)) - number(getter(a)))[0] || null;
+    const report = {
+      key, event, stage, day, drop, map, teams, players, booyah,
+      totals: {
+        kills: teams.reduce((sum, row) => sum + row.kills, 0),
+        points: teams.reduce((sum, row) => sum + row.points, 0),
+        placementPoints: teams.reduce((sum, row) => sum + row.placementPoints, 0),
+        damage: players.reduce((sum, row) => sum + row.damage, 0),
+        assists: players.reduce((sum, row) => sum + row.assists, 0)
+      },
+      leaders: {
+        playerKills: topBy(players, row => row.kills), playerDamage: topBy(players, row => row.damage), playerAssists: topBy(players, row => row.assists),
+        teamPoints: topBy(teams, row => row.points), teamKills: topBy(teams, row => row.kills), teamDamage: topBy(teams, row => row.damage)
+      }
+    };
+    cache.drops.set(key, report);
+    return report;
+  }
+
+  function s2DropReportSplitContext() {
+    const cache = s2DropReportCache();
+    if (cache.context) return cache.context;
+    const reports = s2DropReportAllEvents().map(s2DropReportBuild).filter(Boolean);
+    const values = key => reports.map(report => number(key(report))).filter(value => Number.isFinite(value));
+    const playerValues = metric => reports.flatMap(report => report.players.map(row => number(row[metric])));
+    const teamValues = metric => reports.flatMap(report => report.teams.map(row => number(row[metric])));
+    cache.context = {
+      totalKills: values(report => report.totals.kills), totalPoints: values(report => report.totals.points), totalDamage: values(report => report.totals.damage),
+      playerKills: playerValues('kills'), playerDamage: playerValues('damage'), playerAssists: playerValues('assists'),
+      teamPoints: teamValues('points'), teamKills: teamValues('kills'), teamDamage: teamValues('damage')
+    };
+    return cache.context;
+  }
+
+  function s2DropReportRank(value, values) {
+    const unique = [...new Set((values || []).map(number))].sort((a, b) => b - a);
+    const index = unique.indexOf(number(value));
+    return index < 0 ? 0 : index + 1;
+  }
+
+  function s2DropReportBadge(rank) {
+    if (rank === 1) return '<span class="ffws-s2-drop-record-badge is-record">🔥 RECORDE DO SPLIT</span>';
+    if (rank === 2) return '<span class="ffws-s2-drop-record-badge">🥈 TOP 2 DO SPLIT</span>';
+    if (rank === 3) return '<span class="ffws-s2-drop-record-badge">🥉 TOP 3 DO SPLIT</span>';
+    return '';
+  }
+
+  function s2DropReportMetricCard(label, value, sub = '', rank = 0) {
+    return `<article class="ffws-s2-drop-summary-card"><small>${escapeHtml(label)}</small><strong>${escapeHtml(String(value))}</strong>${sub ? `<span>${escapeHtml(sub)}</span>` : ''}${s2DropReportBadge(rank)}</article>`;
+  }
+
+  function s2DropReportHighlightCard(label, row, metric, formatter, rank = 0, isTeam = false) {
+    if (!row) return '';
+    const name = isTeam ? row.team : row.name;
+    const team = row.team || '';
+    return `<article class="ffws-s2-drop-highlight-card"><small>${escapeHtml(label)}</small><button type="button" onclick="${isTeam ? `openCurrentSeasonTeam('${jsAttr(team)}')` : `openCurrentSeasonPlayer('${jsAttr(name)}','${jsAttr(team)}')`}"><span>${isTeam ? `<img src="${escapeHtml(logo(team))}" onerror="this.onerror=null;this.src='escudo.webp'">` : ''}<strong>${escapeHtml(name)}</strong>${!isTeam && team ? `<em>${escapeHtml(abbreviation(team))}</em>` : ''}</span><b>${escapeHtml(formatter(row[metric]))}</b></button>${s2DropReportBadge(rank)}</article>`;
+  }
+
+  function s2DropReportSummaryHtml(report) {
+    const context = s2DropReportSplitContext();
+    const leaders = report.leaders;
+    const booyah = report.booyah;
+    return `<div class="ffws-s2-drop-report-overview">
+      <div class="ffws-s2-drop-report-hero"><div><span>${escapeHtml(s2StatsStageLabel(report.stage))} • Dia ${report.day} • Queda ${report.drop}</span><h3>${escapeHtml(report.map || 'Mapa não informado')}</h3></div>${booyah ? `<button type="button" class="ffws-s2-drop-booyah" onclick="openCurrentSeasonTeam('${jsAttr(booyah.team)}')"><small>BOOYAH</small><span><img src="${escapeHtml(logo(booyah.team))}" onerror="this.onerror=null;this.src='escudo.webp'"><strong>${escapeHtml(booyah.team)}</strong></span></button>` : ''}</div>
+      <div class="ffws-s2-drop-summary-grid">
+        ${s2DropReportMetricCard('Total de abates', report.totals.kills, 'na queda', s2DropReportRank(report.totals.kills, context.totalKills))}
+        ${s2DropReportMetricCard('Total de pontos', report.totals.points, 'somando as equipes', s2DropReportRank(report.totals.points, context.totalPoints))}
+        ${s2DropReportMetricCard('Dano total', report.totals.damage.toLocaleString('pt-BR'), 'dos jogadores', s2DropReportRank(report.totals.damage, context.totalDamage))}
+        ${s2DropReportMetricCard('Assistências', report.totals.assists, 'na queda')}
+        ${s2DropReportMetricCard('Equipes', report.teams.length, 'participantes')}
+        ${s2DropReportMetricCard('Pontos de colocação', report.totals.placementPoints, 'distribuídos')}
+      </div>
+      <div class="ffws-s2-drop-report-subhead"><h4>Destaques da queda</h4><p>Comparação automática com todas as quedas já cadastradas no split.</p></div>
+      <div class="ffws-s2-drop-highlight-grid">
+        ${s2DropReportHighlightCard('Mais abates', leaders.playerKills, 'kills', value => `${value} K`, s2DropReportRank(leaders.playerKills?.kills, context.playerKills))}
+        ${s2DropReportHighlightCard('Mais dano', leaders.playerDamage, 'damage', value => number(value).toLocaleString('pt-BR'), s2DropReportRank(leaders.playerDamage?.damage, context.playerDamage))}
+        ${s2DropReportHighlightCard('Mais assistências', leaders.playerAssists, 'assists', value => `${value} AST`, s2DropReportRank(leaders.playerAssists?.assists, context.playerAssists))}
+        ${s2DropReportHighlightCard('Time com mais pontos', leaders.teamPoints, 'points', value => `${value} PTS`, s2DropReportRank(leaders.teamPoints?.points, context.teamPoints), true)}
+        ${s2DropReportHighlightCard('Time com mais abates', leaders.teamKills, 'kills', value => `${value} K`, s2DropReportRank(leaders.teamKills?.kills, context.teamKills), true)}
+        ${s2DropReportHighlightCard('Time com mais dano', leaders.teamDamage, 'damage', value => number(value).toLocaleString('pt-BR'), s2DropReportRank(leaders.teamDamage?.damage, context.teamDamage), true)}
+      </div>
+    </div>`;
+  }
+
+  function s2DropReportTeamSort(rows, sortKey) {
+    const getters = { points: row => row.points, kills: row => row.kills, placementPoints: row => row.placementPoints, damage: row => row.damage, assists: row => row.assists, position: row => row.position };
+    const getter = getters[sortKey] || getters.points;
+    return [...rows].sort((a, b) => sortKey === 'position'
+      ? getter(a) - getter(b)
+      : getter(b) - getter(a) || a.position - b.position || b.kills - a.kills);
+  }
+
+  function s2DropReportTeamsHtml(report) {
+    const sortKey = String(state.dropReport?.teamSort || 'points');
+    const rows = s2DropReportTeamSort(report.teams, sortKey);
+    const options = [['points','Pontos'],['kills','Abates'],['placementPoints','Pontos por colocação'],['damage','Dano'],['assists','Assistências'],['position','Posição na queda']];
+    return `<div class="ffws-s2-drop-report-list-page"><div class="ffws-s2-drop-report-toolbar"><div><strong>Relatório das equipes</strong><span>O número à esquerda é a posição real da equipe na queda.</span></div><label>Ordenar por <select onchange="setFFWSS2DropReportTeamSort(this.value)">${options.map(([value,label]) => `<option value="${value}"${sortKey===value?' selected':''}>${label}</option>`).join('')}</select></label></div>
+      <div class="ffws-s2-drop-place-legend"><span class="p1">1º Booyah</span><span class="p2">2º</span><span class="p3">3º</span><span>4º–12º colocação na queda</span></div>
+      <div class="ffws-s2-drop-team-head"><span>POS</span><span>EQUIPE</span><span>PTS</span><span>PC</span><span>K</span><span>DANO</span><span>AST</span></div>
+      <div class="ffws-s2-drop-team-list">${rows.map(row => `<div class="ffws-s2-drop-team-row place-${Math.min(row.position || 12,12)}">
+        <span class="ffws-s2-drop-place">${row.position || '—'}º</span>
+        <button type="button" class="ffws-s2-drop-team-name" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"><span><strong>${escapeHtml(abbreviation(row.team))}</strong><small>${escapeHtml(row.team)}</small></span></button>
+        <strong class="ffws-s2-drop-primary">${row.points}</strong><span class="ffws-s2-drop-desktop-stat">${row.placementPoints}</span><strong>${row.kills}</strong><span class="ffws-s2-drop-desktop-stat">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-s2-drop-desktop-stat">${row.assists}</span>
+        <div class="ffws-s2-drop-mobile-extra"><span>PC <b>${row.placementPoints}</b></span><span>Dano <b>${row.damage.toLocaleString('pt-BR')}</b></span><span>Ast <b>${row.assists}</b></span></div>
+      </div>`).join('')}</div></div>`;
+  }
+
+  function s2DropReportPlayerSort(rows, sortKey) {
+    const getter = sortKey === 'damage' ? row => row.damage : sortKey === 'assists' ? row => row.assists : row => row.kills;
+    return [...rows].sort((a, b) => getter(b) - getter(a) || b.kills - a.kills || b.damage - a.damage || a.name.localeCompare(b.name, 'pt-BR'));
+  }
+
+  function s2DropReportPlayersHtml(report) {
+    const sortKey = String(state.dropReport?.playerSort || 'kills');
+    const rows = s2DropReportPlayerSort(report.players, sortKey);
+    const options = [['kills','Abates'],['damage','Dano'],['assists','Assistências']];
+    return `<div class="ffws-s2-drop-report-list-page"><div class="ffws-s2-drop-report-toolbar"><div><strong>Relatório dos jogadores</strong><span>${rows.length} jogadores com dados registrados nesta queda.</span></div><label>Ordenar por <select onchange="setFFWSS2DropReportPlayerSort(this.value)">${options.map(([value,label]) => `<option value="${value}"${sortKey===value?' selected':''}>${label}</option>`).join('')}</select></label></div>
+      <div class="ffws-s2-drop-player-head"><span>#</span><span>JOGADOR</span><span>E</span><span>K</span><span>DANO</span><span>AST</span></div>
+      <div class="ffws-s2-drop-player-list">${rows.map((row,index) => `<div class="ffws-s2-drop-player-row">
+        <span class="ffws-s2-drop-player-rank">${index + 1}º</span><button type="button" class="ffws-s2-drop-player-name" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.team)}</small></button>
+        <button type="button" class="ffws-s2-drop-player-team" title="${escapeHtml(row.team)}" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"></button>
+        <strong class="ffws-s2-drop-primary">${row.kills}</strong><span class="ffws-s2-drop-desktop-stat">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-s2-drop-desktop-stat">${row.assists}</span>
+        <div class="ffws-s2-drop-mobile-extra"><span>Dano <b>${row.damage.toLocaleString('pt-BR')}</b></span><span>Ast <b>${row.assists}</b></span>${row.mvp ? `<span>MVP <b>${row.mvp}</b></span>` : ''}</div>
+      </div>`).join('')}</div></div>`;
+  }
+
+  function s2DropReportTabsHtml(tab) {
+    return `<div class="ffws-s2-drop-report-tabs" role="tablist"><button type="button" class="${tab==='summary'?'active':''}" onclick="setFFWSS2DropReportTab('summary')">Resumo</button><button type="button" class="${tab==='teams'?'active':''}" onclick="setFFWSS2DropReportTab('teams')">Equipes</button><button type="button" class="${tab==='players'?'active':''}" onclick="setFFWSS2DropReportTab('players')">Jogadores</button></div>`;
+  }
+
+  function renderFFWSS2DropReportModal() {
+    const modal = document.getElementById('ffws-s2-drop-report-modal');
+    const body = document.getElementById('ffws-s2-drop-report-body');
+    if (!modal || !body || !state.dropReport?.key) return;
+    const report = s2DropReportBuild(s2DropReportFindEvent(state.dropReport.key));
+    if (!report) return;
+    const tab = state.dropReport.tab || 'summary';
+    const navEvents = filteredStatsEvents();
+    const index = navEvents.findIndex(event => s2DropReportEventKey(event) === report.key);
+    const prev = index > 0 ? navEvents[index - 1] : null;
+    const next = index >= 0 && index < navEvents.length - 1 ? navEvents[index + 1] : null;
+    body.innerHTML = `<div class="ffws-s2-drop-report-top"><div><small>${escapeHtml(s2StatsStageLabel(report.stage))}</small><strong>DIA ${report.day} • QUEDA ${report.drop}</strong><span>${escapeHtml(report.map || '')}</span></div><div class="ffws-s2-drop-report-nav"><button type="button" ${prev?'':'disabled'} onclick="${prev ? `openFFWSS2DropReport('${s2DropReportEventKey(prev)}')` : ''}" aria-label="Queda anterior">‹</button><button type="button" ${next?'':'disabled'} onclick="${next ? `openFFWSS2DropReport('${s2DropReportEventKey(next)}')` : ''}" aria-label="Próxima queda">›</button></div></div>${s2DropReportTabsHtml(tab)}<div class="ffws-s2-drop-report-tabbody">${tab === 'teams' ? s2DropReportTeamsHtml(report) : tab === 'players' ? s2DropReportPlayersHtml(report) : s2DropReportSummaryHtml(report)}</div>`;
+  }
+
+  function s2DropReportSelectorHtml(events) {
+    const groups = new Map();
+    events.forEach(event => {
+      const key = `${event._stage}:${event._day}`;
+      if (!groups.has(key)) groups.set(key, { stage: event._stage, day: event._day, events: [] });
+      groups.get(key).events.push(event);
+    });
+    return `<section class="ffws-s2-panel ffws-s2-drop-report-section"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Relatório de Quedas</h2><p>Abra uma queda para ver resumo, equipes e jogadores sem sair das Estatísticas Gerais.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
+      <div class="ffws-s2-drop-day-list">${[...groups.values()].map(group => `<div class="ffws-s2-drop-day-row"><div class="ffws-s2-drop-day-label"><small>${escapeHtml(s2StatsStageShortLabel(group.stage))}</small><strong>DIA ${group.day}</strong></div><div class="ffws-s2-drop-buttons">${group.events.sort((a,b)=>number(a.drop||a.number)-number(b.drop||b.number)).map(event => { const report=s2DropReportBuild(event); const recordContext=s2DropReportSplitContext(); const bestPlayer=report?.leaders?.playerKills; const fire=bestPlayer && s2DropReportRank(bestPlayer.kills, recordContext.playerKills) <= 3; return `<button type="button" onclick="openFFWSS2DropReport('${s2DropReportEventKey(event)}')"><span>Q${number(event.drop || event.number)}</span>${fire?'<i aria-label="Top 3 do split">🔥</i>':''}<small>${escapeHtml(s2StatsMapShortLabel(event.map || event.mapa))}</small></button>`; }).join('')}</div></div>`).join('')}</div>
+      <div id="ffws-s2-drop-report-modal" class="ffws-s2-drop-report-modal" hidden onclick="if(event.target===this)closeFFWSS2DropReport()"><div class="ffws-s2-drop-report-dialog" role="dialog" aria-modal="true" aria-label="Relatório da queda"><button type="button" class="ffws-s2-drop-report-close" onclick="closeFFWSS2DropReport()" aria-label="Fechar relatório">×</button><div id="ffws-s2-drop-report-body"></div></div></div>
+    </div></section>`;
   }
 
   function statsRankingTable(rows, averages) {
@@ -1195,6 +1421,7 @@
             <div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-damage', records.teamDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>
         </div>
       </div>
+      ${s2DropReportSelectorHtml(events)}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-ranking-columns"><div><div class="ffws-s2-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div><div class="ffws-s2-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
     ` : `<section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-empty"><div><strong>Etapa ainda sem resultados</strong>Escolha a Classificatória para consultar as quedas já disputadas.</div></div></div></section>`;
 
@@ -1400,6 +1627,12 @@
 
   function activate(pageId) {
     if (!PAGE_IDS.has(pageId)) return;
+    if (pageId !== 'ffws-br-s2-stats' && state.dropReport?.bodyOverflow !== undefined) {
+      const modal = document.getElementById('ffws-s2-drop-report-modal');
+      if (modal) modal.hidden = true;
+      document.body.style.overflow = state.dropReport.bodyOverflow ?? '';
+      delete state.dropReport.bodyOverflow;
+    }
     const root = document.getElementById(`${pageId}-content`);
     if (root && !root.dataset.s2Loading) {
       root.dataset.s2Loading = '1';
@@ -1429,6 +1662,31 @@
   window.clearFFWSS2StatsMulti = key => { state.statsFilters[key] = []; renderStats(); };
   window.setFFWSS2StatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; renderStats(); };
   window.ffwsS2StatsPageNav = (key, delta) => { const pages = s2StatsPageState(); pages[key] = delta === 'reset' ? 0 : number(pages[key]) + number(delta); renderStats(); };
+  window.openFFWSS2DropReport = key => {
+    const event = s2DropReportFindEvent(key);
+    if (!event) return;
+    state.dropReport.key = String(key);
+    if (!state.dropReport.tab) state.dropReport.tab = 'summary';
+    const modal = document.getElementById('ffws-s2-drop-report-modal');
+    if (!modal) return;
+    renderFFWSS2DropReportModal();
+    modal.hidden = false;
+    if (state.dropReport.bodyOverflow === undefined) state.dropReport.bodyOverflow = document.body.style.overflow || '';
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => modal.querySelector('.ffws-s2-drop-report-close')?.focus({ preventScroll: true }));
+  };
+  window.closeFFWSS2DropReport = () => {
+    const modal = document.getElementById('ffws-s2-drop-report-modal');
+    if (modal) modal.hidden = true;
+    document.body.style.overflow = state.dropReport.bodyOverflow ?? '';
+    delete state.dropReport.bodyOverflow;
+  };
+  window.setFFWSS2DropReportTab = tab => {
+    state.dropReport.tab = ['summary','teams','players'].includes(String(tab)) ? String(tab) : 'summary';
+    renderFFWSS2DropReportModal();
+  };
+  window.setFFWSS2DropReportTeamSort = value => { state.dropReport.teamSort = String(value || 'points'); renderFFWSS2DropReportModal(); };
+  window.setFFWSS2DropReportPlayerSort = value => { state.dropReport.playerSort = String(value || 'kills'); renderFFWSS2DropReportModal(); };
   window.setFFWSS2NotesFilter = (key, value) => { state.notesFilters[key] = String(value); if (key === 'stage') { state.notesFilters.day = 'all'; state.notesFilters.map = 'all'; state.notesFilters.drop = 'all'; } if (key === 'day') state.notesFilters.drop = 'all'; renderNotes(); };
   window.setFFWSS2CompareFilter = (key, value) => { state.compareFilters[key] = String(value); if (key === 'stage') { state.compareFilters.day = 'all'; state.compareFilters.map = 'all'; } renderCompare(); };
   window.toggleFFWSS2CompareMulti = key => {
@@ -1503,6 +1761,10 @@
   document.addEventListener('click', event => {
     if (!event.target.closest('.ffws-s2-multi')) document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { menu.hidden = true; });
     if (!event.target.closest('.ffws-s2-compare-picker')) document.querySelectorAll('.ffws-s2-compare-picker-menu').forEach(menu => { menu.hidden = true; });
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !document.getElementById('ffws-s2-drop-report-modal')?.hidden) closeFFWSS2DropReport();
   });
 
   function wrapNavigate() {
