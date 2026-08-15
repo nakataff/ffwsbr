@@ -1423,20 +1423,31 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             </div>
         </div>
 
-        <div class="filters ot-filters-new">
-            <input type="text" id="ot-search" placeholder="Pesquisar por torneio, ano, equipe, campeão ou região..." oninput="renderOutrosTorneiosList()" autocomplete="off">
-            <select id="ot-filter-year" onchange="renderOutrosTorneiosList()">
-                <option value="all">Todos os anos</option>
-            </select>
-            <select id="ot-filter-tier" onchange="renderOutrosTorneiosList()">
-                <option value="all">Todos os tiers</option>
-            </select>
-            <select id="ot-filter-region" onchange="renderOutrosTorneiosList()">
-                <option value="all">Todas as regiões</option>
-            </select>
+        <div class="ot-global-view-tabs" role="tablist" aria-label="Visualização de Outros Torneios">
+            <button type="button" class="ot-global-view-tab active" data-ot-main-view="tournaments" onclick="setOtMainView('tournaments')">TORNEIOS</button>
+            <button type="button" class="ot-global-view-tab" data-ot-main-view="radar" onclick="setOtMainView('radar')">RADAR ESTATÍSTICO</button>
         </div>
 
-        <div class="ot-cards-grid" id="ot-grid-torneios"></div>
+        <div id="ot-tournaments-panel">
+            <div class="filters ot-filters-new">
+                <input type="text" id="ot-search" placeholder="Pesquisar por torneio, ano, equipe, campeão ou região..." oninput="renderOutrosTorneiosList()" autocomplete="off">
+                <select id="ot-filter-year" onchange="renderOutrosTorneiosList()">
+                    <option value="all">Todos os anos</option>
+                </select>
+                <select id="ot-filter-tier" onchange="renderOutrosTorneiosList()">
+                    <option value="all">Todos os tiers</option>
+                </select>
+                <select id="ot-filter-region" onchange="renderOutrosTorneiosList()">
+                    <option value="all">Todas as regiões</option>
+                </select>
+            </div>
+
+            <div class="ot-cards-grid" id="ot-grid-torneios"></div>
+        </div>
+
+        <div id="ot-radar-panel" hidden>
+            <div id="ot-radar-content"><p class="ot-empty">Carregando Radar Estatístico...</p></div>
+        </div>
     </div>
 
     <div id="ot-details-view" style="display: none;">
@@ -2136,7 +2147,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260728-photo-map-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260815-wb2025-s2-clash-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260815-hall-radar-v1"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
