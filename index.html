@@ -212,6 +212,66 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 #stats .filters { overflow: visible !important; }
 #stats .multi-check-menu { z-index: 12000 !important; }
 </style>
+
+<style id="ot-clash-squad-styles">
+.ot-clash-rule{margin:14px 0 12px;padding:14px 16px;border:1px solid rgba(0,200,255,.22);background:rgba(0,200,255,.055);border-radius:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ot-clash-rule>strong{color:#fff;font-size:.82rem;letter-spacing:.04em}
+.ot-clash-rule>span{color:var(--text-muted);font-size:.88rem}
+.ot-clash-rule>div{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.ot-clash-rule>div b{padding:6px 9px;border-radius:8px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);font-size:.76rem;color:#dfefff;white-space:nowrap}
+.ot-clash-switch{margin:0 0 14px;display:flex;gap:8px;flex-wrap:wrap}
+.ot-clash-overall{display:grid;grid-template-columns:minmax(220px,.52fr) minmax(360px,1fr);gap:16px;align-items:start}
+.ot-clash-callout{min-height:110px;border:1px solid var(--border-color);border-radius:12px;background:rgba(255,255,255,.025);padding:18px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+.ot-clash-callout strong{font-size:1rem;color:#fff}
+.ot-clash-callout span{font-size:.85rem;color:var(--text-muted);line-height:1.45}
+.ot-clash-week-head{margin:2px 0 12px;display:flex;align-items:center;justify-content:space-between}
+.ot-clash-week-head>div{display:flex;flex-direction:column;gap:3px}
+.ot-clash-week-head strong{font-size:1.02rem;color:#fff}
+.ot-clash-week-head span{font-size:.78rem;color:var(--text-muted)}
+.ot-clash-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,330px);gap:18px;align-items:start}
+.ot-clash-bracket{display:grid;grid-template-columns:1.25fr 1fr .9fr;gap:14px;min-width:0}
+.ot-clash-round{min-width:0}
+.ot-clash-round h4,.ot-clash-week-points h4{margin:0 0 8px;color:#7e9dcc;font-size:.72rem;letter-spacing:.045em}
+.ot-clash-round-matches{display:flex;flex-direction:column;gap:10px}
+.ot-clash-round:nth-child(2) .ot-clash-round-matches{padding-top:38px;gap:58px}
+.ot-clash-round:nth-child(3) .ot-clash-round-matches{padding-top:112px}
+.ot-clash-match{border:1px solid var(--border-color);border-radius:10px;overflow:hidden;background:rgba(255,255,255,.02)}
+.ot-clash-team{appearance:none;width:100%;border:0;border-bottom:1px solid rgba(255,255,255,.06);background:transparent;color:#dbe8ff;display:grid;grid-template-columns:28px minmax(0,1fr) 28px;align-items:center;gap:8px;padding:7px 9px;text-align:left;cursor:pointer;font:inherit}
+.ot-clash-team:last-child{border-bottom:0}
+.ot-clash-team:hover{background:rgba(0,200,255,.05)}
+.ot-clash-team.winner{background:rgba(0,200,255,.075);color:#fff}
+.ot-clash-team img{width:24px;height:24px;object-fit:contain}
+.ot-clash-team span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ot-clash-team b{text-align:center;font-size:.92rem;color:#fff}
+.ot-clash-points-table table{min-width:0!important}
+.ot-clash-points-table .ot-team-click img{width:26px;height:26px}
+.ot-clash-bonus-col{color:#00d5ff!important;font-weight:800;white-space:nowrap}
+@media (max-width:900px){
+  .ot-clash-overall,.ot-clash-layout{grid-template-columns:1fr}
+  .ot-clash-week-points{max-width:none}
+}
+@media (max-width:700px){
+  .ot-clash-rule{align-items:flex-start;padding:12px}
+  .ot-clash-rule>div{margin-left:0;width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .ot-clash-rule>div b{text-align:center}
+  .ot-clash-switch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .ot-clash-switch .ot-final-filter-btn{min-width:0;padding:9px 5px;font-size:.68rem}
+  .ot-clash-switch .ot-final-filter-btn:first-child{grid-column:1/-1}
+  .ot-clash-bracket{grid-template-columns:1fr;gap:14px}
+  .ot-clash-round:nth-child(2) .ot-clash-round-matches,.ot-clash-round:nth-child(3) .ot-clash-round-matches{padding-top:0;gap:10px}
+  .ot-clash-team{grid-template-columns:25px minmax(0,1fr) 28px;padding:7px 8px}
+  .ot-clash-team img{width:22px;height:22px}
+  .ot-clash-overall{gap:12px}
+  .ot-clash-callout{min-height:0}
+  .ot-clash-points-table .ot-team-click img{width:23px;height:23px}
+  .ot-clash-bonus-col{font-size:.82rem}
+}
+@media (max-width:360px){
+  .ot-clash-switch{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ot-clash-switch .ot-final-filter-btn:first-child{grid-column:1/-1}
+}
+</style>
+
 </head>
 <body>
 
@@ -2076,7 +2136,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260728-photo-map-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260815-wb2025-s1-opt-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260815-wb2025-s2-clash-v1"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260728-calendar-v1"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
