@@ -1,120 +1,120 @@
 {
   "tournament": "WB 2026 S2",
-  "updatedAt": "2026-08-03",
+  "updatedAt": "2026-08-09",
   "status": "live",
   "stage": "classificatoria",
-  "daysCompleted": 2,
-  "matchesCompleted": 12,
+  "daysCompleted": 4,
+  "matchesCompleted": 24,
   "teams": [
     {
-      "team": "LOS",
-      "position": 1,
-      "points": 189,
-      "booyahs": 0,
-      "kills": 112,
-      "matches": 12
-    },
-    {
       "team": "FLUXO W7M",
-      "position": 2,
-      "points": 164,
-      "booyahs": 4,
-      "kills": 91,
-      "matches": 12
-    },
-    {
-      "team": "LOUD SNICKERS",
-      "position": 3,
-      "points": 152,
-      "booyahs": 2,
-      "kills": 72,
-      "matches": 12
-    },
-    {
-      "team": "TEAM SOLID",
-      "position": 4,
-      "points": 150,
-      "booyahs": 3,
-      "kills": 81,
-      "matches": 12
-    },
-    {
-      "team": "INFLUENCE RAGE",
-      "position": 5,
-      "points": 131,
-      "booyahs": 1,
-      "kills": 75,
-      "matches": 12
+      "position": 1,
+      "points": 335,
+      "booyahs": 5,
+      "kills": 194,
+      "matches": 24
     },
     {
       "team": "ALPHA7",
-      "position": 6,
-      "points": 130,
+      "position": 2,
+      "points": 318,
+      "booyahs": 3,
+      "kills": 195,
+      "matches": 24
+    },
+    {
+      "team": "TEAM SOLID",
+      "position": 3,
+      "points": 296,
+      "booyahs": 4,
+      "kills": 173,
+      "matches": 24
+    },
+    {
+      "team": "RISE GAMING",
+      "position": 4,
+      "points": 282,
+      "booyahs": 1,
+      "kills": 170,
+      "matches": 24
+    },
+    {
+      "team": "LOS",
+      "position": 5,
+      "points": 270,
       "booyahs": 0,
-      "kills": 74,
-      "matches": 12
+      "kills": 159,
+      "matches": 18
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "position": 6,
+      "points": 256,
+      "booyahs": 4,
+      "kills": 128,
+      "matches": 18
     }
   ],
   "players": [
     {
-      "name": "Yago",
-      "team": "LOS",
-      "kills": 37,
-      "damage": 26775,
-      "assists": 18,
-      "matches": 12,
+      "name": "MT7",
+      "team": "FLUXO W7M",
+      "kills": 64,
+      "damage": 43717,
+      "assists": 32,
+      "matches": 24,
       "mvp": 2,
-      "player": "Yago"
-    },
-    {
-      "name": "Rigby245",
-      "team": "LOS",
-      "kills": 36,
-      "damage": 18456,
-      "assists": 39,
-      "matches": 12,
-      "mvp": 3,
-      "player": "Rigby245"
-    },
-    {
-      "name": "Pitbull",
-      "team": "TEAM SOLID",
-      "kills": 30,
-      "damage": 15628,
-      "assists": 25,
-      "matches": 12,
-      "mvp": 1,
-      "player": "Pitbull"
+      "player": "MT7"
     },
     {
       "name": "KaKaZk",
       "team": "RISE GAMING",
-      "kills": 27,
-      "damage": 18776,
-      "assists": 16,
-      "matches": 12,
+      "kills": 63,
+      "damage": 38979,
+      "assists": 32,
+      "matches": 24,
       "mvp": 0,
       "player": "KaKaZk"
     },
     {
-      "name": "TRAP",
-      "team": "LOUD SNICKERS",
-      "kills": 25,
-      "damage": 15644,
-      "assists": 15,
-      "matches": 12,
-      "mvp": 0,
-      "player": "TRAP"
+      "name": "Yago",
+      "team": "LOS",
+      "kills": 62,
+      "damage": 48155,
+      "assists": 23,
+      "matches": 18,
+      "mvp": 4,
+      "player": "Yago"
     },
     {
-      "name": "Bops",
-      "team": "FLUXO W7M",
-      "kills": 25,
-      "damage": 14648,
-      "assists": 26,
-      "matches": 12,
+      "name": "JNmvp7",
+      "team": "ALPHA7",
+      "kills": 60,
+      "damage": 30199,
+      "assists": 50,
+      "matches": 24,
+      "mvp": 1,
+      "player": "JNmvp7"
+    },
+    {
+      "name": "Pitbull",
+      "team": "TEAM SOLID",
+      "kills": 54,
+      "damage": 33121,
+      "assists": 50,
+      "matches": 24,
+      "mvp": 1,
+      "player": "Pitbull"
+    },
+    {
+      "name": "Sam7",
+      "team": "ALPHA7",
+      "kills": 52,
+      "damage": 32026,
+      "assists": 41,
+      "matches": 24,
       "mvp": 0,
-      "player": "Bops"
+      "player": "Sam7"
     }
   ]
 }
