@@ -6,7 +6,7 @@
   <title>Codiguinhos | Painel Administrativo - Central Free Fire</title>
   <meta name="robots" content="noindex,nofollow,noarchive">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin-codiguinhos-sync.js?v=20260815-secure-cloud-v1"></script>
+  <script type="module" src="js/admin-codiguinhos-sync.js?v=20260815-recovery-v2"></script>
   <style>
     :root{
       --bg:#070914;
@@ -896,6 +896,17 @@
     .cloud-status.error::before{background:var(--red)}
     .admin-back-link{background:#1d2744;box-shadow:none;text-decoration:none}
     .private-warning{margin:0 0 16px;padding:10px 12px;border:1px solid rgba(255,209,102,.24);border-radius:13px;background:rgba(255,209,102,.06);color:#ffe39b;font-size:12px;font-weight:850;line-height:1.45}
+    .secure-help-btn{background:#1d2744;box-shadow:none}
+    .recovery-overlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,5,14,.86);backdrop-filter:blur(10px)}
+    .recovery-overlay[hidden]{display:none}
+    .recovery-card{width:min(620px,100%);border:1px solid rgba(90,167,255,.35);border-radius:24px;padding:24px;background:#0d1426;box-shadow:0 28px 90px rgba(0,0,0,.62)}
+    .recovery-card h2{margin:0 0 8px;font-size:clamp(24px,5vw,34px)}
+    .recovery-card p{margin:0;color:var(--muted);line-height:1.55}
+    .recovery-code{margin:18px 0;padding:17px;border:1px dashed rgba(55,214,122,.48);border-radius:16px;background:rgba(55,214,122,.08);color:#dffff0;font-family:"JetBrains Mono",Consolas,monospace;font-size:clamp(16px,4vw,22px);font-weight:1000;letter-spacing:.8px;text-align:center;word-break:break-word;user-select:all}
+    .recovery-actions{display:flex;gap:9px;flex-wrap:wrap}
+    .recovery-actions button{flex:1;min-width:150px}
+    .recovery-warning{margin-top:14px;color:#ffe39b;font-size:12px;font-weight:850;line-height:1.45}
+    @media(max-width:520px){.recovery-card{padding:18px}.recovery-actions{display:grid}.recovery-actions button{width:100%;min-width:0}}
     @media(max-width:520px){.secure-gate{padding:8px}.secure-card{padding:18px}.secure-actions{display:grid}.secure-actions button,.secure-actions a{width:100%;min-width:0}.cloud-status{width:100%;justify-content:center}}
 
   </style>
@@ -920,9 +931,10 @@
         <input id="codiguinhosKey" type="password" autocomplete="off" placeholder="Digite a chave dos codiguinhos">
         <div class="secure-actions">
           <button type="button" onclick="desbloquearCodiguinhos()">Desbloquear</button>
+          <button class="secure-help-btn" type="button" onclick="abrirRecuperacaoCodiguinhos()">Esqueci a chave</button>
           <a class="file-label admin-back-link" href="admin.html">← Painel</a>
         </div>
-        <div class="secure-note">A chave <strong>não fica salva no HTML nem no Firebase</strong>. Ela fica apenas na memória desta aba enquanto a página estiver aberta.</div>
+        <div class="secure-note">A chave <strong>não fica salva no HTML nem no Firebase</strong>. Ela fica apenas na memória desta aba enquanto a página estiver aberta. Se esquecer, use o <strong>código de recuperação</strong> gerado pelo painel.</div>
       </div>
 
       <div id="secureGateSetup" class="secure-form" hidden>
@@ -944,11 +956,39 @@
           <button type="button" onclick="migrarBackupInicial()">Criptografar e enviar backup</button>
           <button class="secondary" type="button" onclick="criarBaseCodiguinhosVazia()">Criar base vazia</button>
         </div>
-        <div class="secure-note">Depois da migração você não precisa mais importar/exportar JSON para manter os dados sincronizados. <strong>Não esqueça a chave:</strong> sem ela, o conteúdo criptografado não pode ser recuperado.</div>
+        <div class="secure-note">Depois da migração você não precisa mais importar/exportar JSON para manter os dados sincronizados. Ao criar a base, o painel vai gerar um <strong>código de recuperação</strong>. Guarde esse código fora do site: ele permite trocar a chave caso você esqueça.</div>
+      </div>
+
+      <div id="secureGateRecover" class="secure-form" hidden>
+        <div class="secure-note"><strong>Recuperar acesso.</strong> Use o código de recuperação que o painel gerou quando a proteção foi ativada. Você continuará precisando estar logado na conta administrativa.</div>
+        <label for="codiguinhosRecoveryCode">Código de recuperação</label>
+        <input id="codiguinhosRecoveryCode" type="text" autocomplete="off" spellcheck="false" placeholder="CFFR-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX">
+        <label for="codiguinhosRecoveryNewKey">Nova chave</label>
+        <input id="codiguinhosRecoveryNewKey" type="password" autocomplete="new-password" minlength="8" placeholder="Crie uma nova chave">
+        <label for="codiguinhosRecoveryNewKeyConfirm">Confirmar nova chave</label>
+        <input id="codiguinhosRecoveryNewKeyConfirm" type="password" autocomplete="new-password" minlength="8" placeholder="Repita a nova chave">
+        <div class="secure-actions">
+          <button type="button" onclick="recuperarChaveCodiguinhos()">Recuperar e trocar chave</button>
+          <button class="secondary" type="button" onclick="voltarDoRecoveryCodiguinhos()">Voltar</button>
+        </div>
       </div>
       <p id="secureGateMessage" class="secure-message"></p>
     </div>
   </section>
+
+  <div id="recoveryCodeOverlay" class="recovery-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="recoveryCodeTitle">
+    <div class="recovery-card">
+      <h2 id="recoveryCodeTitle">Guarde seu código de recuperação</h2>
+      <p>Ele serve para redefinir a chave dos codiguinhos se você esquecer. O código <strong>não fica salvo em texto aberto no Firebase</strong> e esta é a hora de guardar uma cópia.</p>
+      <div id="recoveryCodeValue" class="recovery-code"></div>
+      <div class="recovery-actions">
+        <button type="button" onclick="copiarCodigoRecuperacao()">Copiar código</button>
+        <button class="secondary" type="button" onclick="baixarCodigoRecuperacao()">Baixar .txt</button>
+        <button class="ok" type="button" onclick="fecharCodigoRecuperacao()">Já guardei</button>
+      </div>
+      <div class="recovery-warning">Guarde em um gerenciador de senhas, arquivo offline ou outro lugar privado. Se você perder ao mesmo tempo a chave normal e este código, a criptografia não poderá ser recuperada.</div>
+    </div>
+  </div>
 
   <main class="app" id="codiguinhosApp" hidden>
     <header>
@@ -964,6 +1004,7 @@
         <button class="ok" onclick="exportarRelatorioCSV()">Exportar relatório CSV</button>
         <button class="secondary" onclick="exportarJSON()">Backup de emergência</button>
         <button class="secondary" onclick="trocarChaveCodiguinhos()">Trocar chave</button>
+        <button class="secondary" onclick="gerarNovoCodigoRecuperacao()">Código de recuperação</button>
         <button class="secondary" onclick="bloquearCodiguinhos()">🔒 Bloquear</button>
         <button class="danger" onclick="limparTudo()">Limpar preenchimentos</button>
       </div>
@@ -2444,6 +2485,99 @@
       salvarMemoria();
     }
 
+    let ultimoCodigoRecuperacao = "";
+
+    function mostrarCodigoRecuperacao(codigo){
+      ultimoCodigoRecuperacao = String(codigo || "");
+      if(!ultimoCodigoRecuperacao) return;
+      const overlay = document.getElementById("recoveryCodeOverlay");
+      const value = document.getElementById("recoveryCodeValue");
+      if(value) value.textContent = ultimoCodigoRecuperacao;
+      if(overlay) overlay.hidden = false;
+    }
+
+    async function copiarCodigoRecuperacao(){
+      if(!ultimoCodigoRecuperacao) return;
+      try{
+        await navigator.clipboard.writeText(ultimoCodigoRecuperacao);
+        alert("Código de recuperação copiado.");
+      }catch(e){
+        prompt("Copie seu código de recuperação:", ultimoCodigoRecuperacao);
+      }
+    }
+
+    function baixarCodigoRecuperacao(){
+      if(!ultimoCodigoRecuperacao) return;
+      const texto = [
+        "CENTRAL FREE FIRE - RECUPERAÇÃO DOS CODIGUINHOS",
+        "",
+        `Código: ${ultimoCodigoRecuperacao}`,
+        "",
+        "Use este código somente se esquecer a chave de criptografia dos codiguinhos.",
+        "Mantenha este arquivo privado."
+      ].join("\n");
+      baixarArquivo(texto, "recuperacao-codiguinhos.txt", "text/plain;charset=utf-8");
+    }
+
+    function fecharCodigoRecuperacao(){
+      const overlay = document.getElementById("recoveryCodeOverlay");
+      if(overlay) overlay.hidden = true;
+      ultimoCodigoRecuperacao = "";
+    }
+
+    function abrirRecuperacaoCodiguinhos(){
+      setSecureMessage("");
+      mostrarGateSecao("secureGateRecover");
+      document.getElementById("secureGateDescription").textContent = "Recupere a base e defina uma nova chave.";
+      setTimeout(() => document.getElementById("codiguinhosRecoveryCode")?.focus(), 40);
+    }
+
+    function voltarDoRecoveryCodiguinhos(){
+      setSecureMessage("");
+      mostrarGateSecao("secureGateUnlock");
+      document.getElementById("secureGateDescription").textContent = "Sessão confirmada. Desbloqueie a base criptografada.";
+    }
+
+    async function recuperarChaveCodiguinhos(){
+      const codigo = document.getElementById("codiguinhosRecoveryCode")?.value || "";
+      const nova = document.getElementById("codiguinhosRecoveryNewKey")?.value || "";
+      const confirma = document.getElementById("codiguinhosRecoveryNewKeyConfirm")?.value || "";
+      if(!codigo.trim()){ setSecureMessage("Digite o código de recuperação.", "error"); return; }
+      if(nova.length < 8){ setSecureMessage("A nova chave precisa ter pelo menos 8 caracteres.", "error"); return; }
+      if(nova !== confirma){ setSecureMessage("As duas novas chaves não conferem.", "error"); return; }
+      setSecureMessage("Validando recuperação e trocando a chave...");
+      try{
+        const estado = await window.CodiguinhosCloud.recoverAndChangePassphrase(codigo, nova);
+        document.getElementById("codiguinhosRecoveryCode").value = "";
+        document.getElementById("codiguinhosRecoveryNewKey").value = "";
+        document.getElementById("codiguinhosRecoveryNewKeyConfirm").value = "";
+        aplicarEstadoCodiguinhos(estado);
+        alert("Acesso recuperado. Sua nova chave já está ativa.");
+      }catch(erro){
+        setSecureMessage(erro?.message || "Não foi possível recuperar a base.", "error");
+      }
+    }
+
+    async function gerarNovoCodigoRecuperacao(){
+      if(!controleDesbloqueado || !window.CodiguinhosCloud) return;
+      if(!confirm("Gerar um NOVO código de recuperação? O código anterior deixará de funcionar.")) return;
+      try{
+        sincronizarGruposNaMemoria();
+        const codigo = await window.CodiguinhosCloud.rotateRecoveryCode(memoria);
+        mostrarCodigoRecuperacao(codigo);
+      }catch(erro){
+        alert("Não consegui gerar um novo código. " + (erro?.message || "Tente novamente."));
+      }
+    }
+
+    window.abrirRecuperacaoCodiguinhos = abrirRecuperacaoCodiguinhos;
+    window.voltarDoRecoveryCodiguinhos = voltarDoRecoveryCodiguinhos;
+    window.recuperarChaveCodiguinhos = recuperarChaveCodiguinhos;
+    window.gerarNovoCodigoRecuperacao = gerarNovoCodigoRecuperacao;
+    window.copiarCodigoRecuperacao = copiarCodigoRecuperacao;
+    window.baixarCodigoRecuperacao = baixarCodigoRecuperacao;
+    window.fecharCodigoRecuperacao = fecharCodigoRecuperacao;
+
     async function trocarChaveCodiguinhos(){
       if(!controleDesbloqueado || !window.CodiguinhosCloud) return;
       const nova = prompt("Digite a NOVA chave de criptografia. Use pelo menos 8 caracteres:");
@@ -2500,7 +2634,7 @@
     }
 
     function mostrarGateSecao(id){
-      ["secureGateLoading","secureGateLogin","secureGateUnlock","secureGateSetup"].forEach(chave => {
+      ["secureGateLoading","secureGateLogin","secureGateUnlock","secureGateSetup","secureGateRecover"].forEach(chave => {
         const el = document.getElementById(chave);
         if(el) el.hidden = chave !== id;
       });
@@ -2578,9 +2712,11 @@
       if(!chave){ setSecureMessage("Digite a chave de criptografia.", "error"); return; }
       setSecureMessage("Descriptografando...");
       try{
-        const estado = await window.CodiguinhosCloud.unlock(chave);
+        const resultado = await window.CodiguinhosCloud.unlock(chave);
+        const estado = resultado?.state || resultado;
         document.getElementById("codiguinhosKey").value = "";
         aplicarEstadoCodiguinhos(estado);
+        if(resultado?.recoveryCode) mostrarCodigoRecuperacao(resultado.recoveryCode);
       }catch(erro){
         setSecureMessage("Chave incorreta ou base inválida. " + (erro?.message || ""), "error");
       }
@@ -2594,9 +2730,10 @@
       setSecureMessage("Criptografando e enviando a base antiga...");
       try{
         const estado = normalizarMemoria(local.dados || local);
-        await window.CodiguinhosCloud.create(chave, estado);
+        const resultado = await window.CodiguinhosCloud.create(chave, estado);
         limparMemoriaAntigaLocal();
-        aplicarEstadoCodiguinhos(estado);
+        aplicarEstadoCodiguinhos(resultado?.state || estado);
+        if(resultado?.recoveryCode) mostrarCodigoRecuperacao(resultado.recoveryCode);
       }catch(erro){ setSecureMessage(erro?.message || "Falha na migração.", "error"); }
     }
 
@@ -2613,9 +2750,10 @@
         if(!Object.keys(estado.codigos || {}).length && !estado.__gruposAtivos.length && !estado.__gruposArquivados.length){
           throw new Error("O arquivo não parece conter os dados dos codiguinhos.");
         }
-        await window.CodiguinhosCloud.create(chave, estado);
+        const resultado = await window.CodiguinhosCloud.create(chave, estado);
         limparMemoriaAntigaLocal();
-        aplicarEstadoCodiguinhos(estado);
+        aplicarEstadoCodiguinhos(resultado?.state || estado);
+        if(resultado?.recoveryCode) mostrarCodigoRecuperacao(resultado.recoveryCode);
       }catch(erro){ setSecureMessage(erro?.message || "Não consegui migrar o backup.", "error"); }
     }
 
@@ -2626,9 +2764,10 @@
       const estado = memoriaVazia();
       setSecureMessage("Criando base criptografada...");
       try{
-        await window.CodiguinhosCloud.create(chave, estado);
+        const resultado = await window.CodiguinhosCloud.create(chave, estado);
         limparMemoriaAntigaLocal();
-        aplicarEstadoCodiguinhos(estado);
+        aplicarEstadoCodiguinhos(resultado?.state || estado);
+        if(resultado?.recoveryCode) mostrarCodigoRecuperacao(resultado.recoveryCode);
       }catch(erro){ setSecureMessage(erro?.message || "Não consegui criar a base.", "error"); }
     }
 
