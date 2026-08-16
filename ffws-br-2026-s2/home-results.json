@@ -4,77 +4,87 @@
   "status": "live",
   "stage": "classificatoria",
   "daysCompleted": 6,
-  "matchesCompleted": 33,
+  "matchesCompleted": 36,
   "teams": [
     {
       "team": "LOS",
       "position": 1,
-      "points": 424,
-      "booyahs": 2,
-      "kills": 241,
-      "matches": 27
+      "points": 476,
+      "booyahs": 3,
+      "kills": 277,
+      "matches": 30
+    },
+    {
+      "team": "RISE GAMING",
+      "position": 2,
+      "points": 459,
+      "booyahs": 3,
+      "kills": 272,
+      "matches": 36
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "position": 3,
+      "points": 438,
+      "booyahs": 7,
+      "kills": 232,
+      "matches": 30
     },
     {
       "team": "FLUXO W7M",
-      "position": 2,
+      "position": 4,
       "points": 415,
       "booyahs": 6,
       "kills": 233,
       "matches": 30
     },
     {
-      "team": "RISE GAMING",
-      "position": 3,
-      "points": 394,
-      "booyahs": 2,
-      "kills": 236,
-      "matches": 33
-    },
-    {
-      "team": "LOUD SNICKERS",
-      "position": 4,
-      "points": 393,
-      "booyahs": 6,
-      "kills": 209,
-      "matches": 27
-    },
-    {
       "team": "ALPHA7",
       "position": 5,
-      "points": 383,
+      "points": 391,
       "booyahs": 4,
-      "kills": 237,
-      "matches": 27
+      "kills": 245,
+      "matches": 30
     },
     {
       "team": "INFLUENCE RAGE",
       "position": 6,
-      "points": 364,
+      "points": 372,
       "booyahs": 1,
-      "kills": 215,
-      "matches": 33
+      "kills": 221,
+      "matches": 36
     }
   ],
   "players": [
     {
+      "name": "Yago",
+      "team": "LOS",
+      "kills": 103,
+      "damage": 80717,
+      "assists": 49,
+      "matches": 30,
+      "mvp": 6,
+      "player": "Yago"
+    },
+    {
       "name": "KaKaZk",
       "team": "RISE GAMING",
-      "kills": 91,
-      "damage": 58718,
-      "assists": 52,
-      "matches": 33,
+      "kills": 99,
+      "damage": 66440,
+      "assists": 61,
+      "matches": 36,
       "mvp": 1,
       "player": "KaKaZk"
     },
     {
-      "name": "Yago",
-      "team": "LOS",
-      "kills": 90,
-      "damage": 71293,
-      "assists": 40,
-      "matches": 27,
-      "mvp": 5,
-      "player": "Yago"
+      "name": "TRAP",
+      "team": "LOUD SNICKERS",
+      "kills": 81,
+      "damage": 46015,
+      "assists": 60,
+      "matches": 30,
+      "mvp": 1,
+      "player": "TRAP"
     },
     {
       "name": "MT7",
@@ -87,32 +97,22 @@
       "player": "MT7"
     },
     {
-      "name": "TRAP",
-      "team": "LOUD SNICKERS",
-      "kills": 72,
-      "damage": 41273,
-      "assists": 52,
-      "matches": 27,
-      "mvp": 1,
-      "player": "TRAP"
-    },
-    {
       "name": "honeyzL",
       "team": "INTZ",
-      "kills": 67,
-      "damage": 45654,
-      "assists": 34,
-      "matches": 27,
+      "kills": 69,
+      "damage": 49023,
+      "assists": 42,
+      "matches": 30,
       "mvp": 2,
       "player": "honeyzL"
     },
     {
       "name": "Lyon",
       "team": "INFLUENCE RAGE",
-      "kills": 67,
-      "damage": 40058,
-      "assists": 71,
-      "matches": 33,
+      "kills": 69,
+      "damage": 42483,
+      "assists": 73,
+      "matches": 36,
       "mvp": 1,
       "player": "Lyon"
     }
