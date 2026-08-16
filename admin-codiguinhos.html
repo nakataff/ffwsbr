@@ -877,7 +877,11 @@
     .secure-card>p{color:var(--muted);line-height:1.55}
     .secure-form{display:grid;gap:11px;margin-top:18px}
     .secure-form label{font-size:11px;color:var(--muted);font-weight:1000;text-transform:uppercase;letter-spacing:.55px}
-    .secure-form input[type="password"],.secure-form input[type="file"]{width:100%;border:1px solid var(--line);background:#0e1426;color:#fff;border-radius:13px;padding:13px;outline:none}
+    .secure-form input[type="password"]{width:100%;border:1px solid var(--line);background:#0e1426;color:#fff;border-radius:13px;padding:13px;outline:none}
+    .secure-backup-picker{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}
+    .secure-backup-picker .file-label{width:auto;min-width:190px;margin:0}
+    .secure-backup-file-name{min-width:0;color:var(--muted);font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    @media (max-width:520px){.secure-backup-picker{grid-template-columns:1fr}.secure-backup-picker .file-label{width:100%}.secure-backup-file-name{text-align:center}}
     .secure-form input[type="password"]:focus{border-color:rgba(90,167,255,.7);box-shadow:0 0 0 4px rgba(90,167,255,.11)}
     .secure-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
     .secure-actions button,.secure-actions a{flex:1;min-width:150px;text-decoration:none}
@@ -930,8 +934,12 @@
         <div id="secureLocalMigration" hidden>
           <button class="ok" type="button" onclick="migrarDadosLocaisAntigos()">Migrar dados já salvos neste navegador</button>
         </div>
-        <label for="secureBackupFile">Ou selecione seu backup-codiguinhos.json</label>
-        <input id="secureBackupFile" type="file" accept="application/json,.json">
+        <label>Ou selecione seu backup-codiguinhos.json</label>
+        <div class="secure-backup-picker">
+          <label class="file-label" for="secureBackupFile">📂 Selecionar backup JSON</label>
+          <span class="secure-backup-file-name" id="secureBackupFileName">Nenhum arquivo selecionado</span>
+          <input id="secureBackupFile" type="file" accept="application/json,.json" onchange="atualizarNomeBackupSeguro(this)">
+        </div>
         <div class="secure-actions">
           <button type="button" onclick="migrarBackupInicial()">Criptografar e enviar backup</button>
           <button class="secondary" type="button" onclick="criarBaseCodiguinhosVazia()">Criar base vazia</button>
@@ -2385,6 +2393,12 @@
     }
 
 
+    function atualizarNomeBackupSeguro(input){
+      const nome = input && input.files && input.files[0] ? input.files[0].name : "Nenhum arquivo selecionado";
+      const alvo = document.getElementById("secureBackupFileName");
+      if(alvo) alvo.textContent = nome;
+    }
+
     function exportarJSON(){
       if(!controleDesbloqueado) return;
       if(!confirm("Este backup será baixado em JSON legível e contém os codiguinhos. Baixar mesmo assim?")) return;
@@ -2418,9 +2432,7 @@
       const extras = (memoria.__gruposExtras || []).map(g => ({...g, codigos:[...(g.codigos || [])]}));
       const arquivados = (memoria.__gruposArquivados || []).map(g => ({...g, codigos:[...(g.codigos || [])]}));
       const preferencias = {...(memoria.__preferencias || {})};
-      const imagens = Object.fromEntries(Object.entries(memoria.grupos || {}).filter(([,cfg]) => cfg && cfg.imagem).map(([id,cfg]) => [id, {imagem:cfg.imagem}]));
       memoria = memoriaVazia();
-      memoria.grupos = imagens;
       memoria.__gruposAtivos = ativos;
       memoria.__gruposExtras = extras;
       memoria.__gruposArquivados = arquivados;
@@ -2630,16 +2642,6 @@
     window.addEventListener("codiguinhos-remote-state", event => {
       if(!controleDesbloqueado || !event.detail?.state) return;
       aplicarEstadoCodiguinhos(event.detail.state);
-    });
-    window.addEventListener("codiguinhos-auth-lost", () => {
-      controleDesbloqueado = false;
-      memoria = memoriaVazia();
-      grupos = [];
-      document.getElementById("codiguinhosApp").hidden = true;
-      document.getElementById("secureGate").hidden = false;
-      mostrarGateSecao("secureGateLogin");
-      document.getElementById("secureGateDescription").textContent = "Sua sessão administrativa terminou. Entre novamente pelo painel.";
-      setSecureMessage("");
     });
     window.addEventListener("pageshow", event => { if(event.persisted) location.reload(); });
     window.addEventListener("codiguinhos-sync-status", event => {
