@@ -1,0 +1,2655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Codiguinhos | Painel Administrativo - Central Free Fire</title>
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
+  <script type="module" src="js/admin-codiguinhos-sync.js?v=20260815-secure-cloud-v1"></script>
+  <style>
+    :root{
+      --bg:#070914;
+      --panel:#11172a;
+      --panel-2:#161e35;
+      --text:#f7f8ff;
+      --muted:#9fa8c7;
+      --line:rgba(255,255,255,.11);
+      --green:#37d67a;
+      --yellow:#ffd166;
+      --red:#ff304f;
+      --red-2:#8f0018;
+      --blue:#5aa7ff;
+      --purple:#9b5cff;
+      --orange:#ff9f43;
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(155,92,255,.23), transparent 28%),
+        radial-gradient(circle at 90% 0%, rgba(90,167,255,.20), transparent 24%),
+        linear-gradient(180deg, #070914 0%, #0b1020 100%);
+      padding:26px;
+    }
+
+    .app{max-width:1240px; margin:0 auto;}
+
+    header{
+      display:flex;
+      gap:18px;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+
+    .title h1{
+      margin:0 0 8px;
+      font-size:clamp(28px, 4vw, 48px);
+      letter-spacing:-1.5px;
+      line-height:1;
+    }
+
+    .title p{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+      max-width:760px;
+    }
+
+    .top-actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+
+    button, .file-label{
+      border:0;
+      color:#fff;
+      background:linear-gradient(135deg, var(--purple), var(--blue));
+      padding:11px 14px;
+      border-radius:12px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 8px 22px rgba(90,167,255,.18);
+      transition:.18s ease;
+      font-size:14px;
+      white-space:nowrap;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+    }
+
+    button:hover, .file-label:hover{transform:translateY(-1px); filter:brightness(1.08)}
+    button.secondary{background:#1d2744; box-shadow:none}
+    button.danger{background:linear-gradient(135deg, #ff4d6d, #c9184a)}
+    button.ok{background:linear-gradient(135deg, #20c76b, #0f8f53)}
+    button.small{padding:8px 10px; font-size:12px; border-radius:10px}
+    input[type="file"]{display:none}
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(140px, 1fr));
+      gap:12px;
+      margin:18px 0 18px;
+    }
+
+    .stat{
+      background:rgba(17,23,42,.82);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+      font-weight:800;
+    }
+
+    .stat strong{display:block; margin-top:5px; font-size:32px; line-height:1;}
+
+    .codiguin-nav{
+      position:relative;
+      margin:0 0 18px;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:16px;
+      background:rgba(17,23,42,.78);
+      box-shadow:var(--shadow);
+    }
+
+    .codiguin-nav-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+
+    .codiguin-nav-title h2{margin:0; font-size:20px; letter-spacing:-.4px;}
+    .codiguin-nav-title p{margin:5px 0 0; color:var(--muted); font-size:13px;}
+
+    .codiguin-nav-tools{display:flex; align-items:center; gap:8px; flex-wrap:wrap; position:relative;}
+    .codiguin-legend{display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:var(--muted); font-size:12px; font-weight:900;}
+    .legend-item{display:inline-flex; align-items:center; gap:6px;}
+    .legend-dot{width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 12px rgba(55,214,122,.6);}
+    .legend-dot.off{background:#767d91; box-shadow:none;}
+
+    .selector-settings-wrap{position:relative;}
+    .selector-gear{
+      width:34px;
+      height:34px;
+      padding:0;
+      border-radius:10px;
+      background:#1d2744;
+      box-shadow:none;
+      font-size:16px;
+    }
+    .selector-settings{
+      position:absolute;
+      top:42px;
+      right:0;
+      z-index:30;
+      display:none;
+      width:245px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#11172a;
+      box-shadow:0 18px 45px rgba(0,0,0,.5);
+    }
+    .selector-settings.open{display:block;}
+    .selector-settings label{display:flex; gap:9px; align-items:center; color:#fff; font-size:13px; font-weight:900; cursor:pointer;}
+    .selector-settings input{width:18px; height:18px; accent-color:var(--blue);}
+    .selector-settings small{display:block; color:var(--muted); margin-top:7px; line-height:1.35;}
+    .selector-settings .setting-separator{height:1px; background:var(--line); margin:11px 0;}
+    .selector-settings .organize-toggle{width:100%; margin-top:10px;}
+
+    .selector-manage-bar{
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:0 0 14px;
+      padding:11px 12px;
+      border:1px solid rgba(90,167,255,.32);
+      border-radius:14px;
+      background:rgba(90,167,255,.08);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+    .selector-manage-bar.open{display:flex;}
+    .selector-manage-bar strong{color:#fff;}
+
+    .codiguin-list{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
+      gap:12px;
+    }
+
+    .codiguin-tile{
+      position:relative;
+      min-width:0;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+      background:rgba(10,15,30,.82);
+      cursor:pointer;
+      transition:.18s ease;
+      text-align:center;
+      overflow:hidden;
+    }
+    .codiguin-tile:hover{transform:translateY(-2px); border-color:rgba(90,167,255,.5);}
+    .codiguin-tile.active{border-color:var(--blue); box-shadow:0 0 0 3px rgba(90,167,255,.14);}
+    .codiguin-tile.unavailable{background:rgba(22,25,34,.8);}
+    .codiguin-tile.unavailable .codiguin-photo,
+    .codiguin-tile.unavailable .codiguin-name{filter:grayscale(1); opacity:.56;}
+
+    .codiguin-photo-wrap{position:relative; width:112px; height:112px; margin:0 auto 10px;}
+    .codiguin-photo{
+      width:112px;
+      height:112px;
+      object-fit:cover;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:linear-gradient(135deg, rgba(155,92,255,.20), rgba(90,167,255,.16));
+      display:block;
+    }
+    .codiguin-photo-placeholder{
+      width:112px;
+      height:112px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.22);
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      background:rgba(255,255,255,.035);
+      color:var(--muted);
+      font-size:11px;
+      font-weight:900;
+    }
+    .codiguin-photo-placeholder b{font-size:27px; line-height:1; color:#fff;}
+
+    .photo-action{
+      position:absolute;
+      z-index:5;
+      bottom:-4px;
+      width:30px;
+      height:30px;
+      padding:0;
+      border-radius:50%;
+      box-shadow:0 6px 16px rgba(0,0,0,.42);
+      font-size:13px;
+    }
+    .photo-action.edit{right:-5px; background:linear-gradient(135deg, var(--purple), var(--blue));}
+    .photo-action.remove{left:-5px; background:#2b3144; color:#ff9aad;}
+
+    .codiguin-tile.selector-hidden{
+      opacity:.56;
+      border-style:dashed;
+    }
+    .codiguin-tile.selector-hidden::after{
+      content:"OCULTO";
+      position:absolute;
+      inset:8px auto auto 8px;
+      z-index:9;
+      padding:5px 7px;
+      border-radius:999px;
+      background:#2b3144;
+      color:#c8cee0;
+      font-size:8px;
+      font-weight:1000;
+      letter-spacing:.7px;
+    }
+    .tile-organize-tools{
+      display:grid;
+      grid-template-columns:38px 1fr;
+      gap:7px;
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid var(--line);
+      position:relative;
+      z-index:10;
+    }
+    .tile-organize-tools button{
+      width:38px;
+      min-width:38px;
+      height:38px;
+      padding:0;
+      border-radius:10px;
+      background:#1d2744;
+      box-shadow:none;
+    }
+    .tile-position-control{display:grid; grid-template-columns:auto 1fr; gap:6px; align-items:center;}
+    .tile-position-control span{color:var(--muted); font-size:10px; font-weight:1000; text-transform:uppercase;}
+    .tile-position-control select{min-width:0; width:100%; padding:8px; border-radius:10px; font-size:12px;}
+
+    .remaining-bubble{
+      position:absolute;
+      top:7px;
+      right:7px;
+      z-index:7;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      border:3px solid #0d1323;
+      background:var(--green);
+      color:#06150c;
+      font-weight:1000;
+      line-height:.85;
+      box-shadow:0 8px 20px rgba(0,0,0,.34);
+    }
+    .remaining-bubble strong{font-size:19px;}
+    .remaining-bubble span{font-size:7px; text-transform:uppercase; letter-spacing:.4px; margin-top:3px;}
+    .codiguin-tile.unavailable .remaining-bubble{background:#707789; color:#fff;}
+
+    .codiguin-name{
+      min-height:38px;
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:2;
+      overflow:hidden;
+      font-size:13px;
+      line-height:1.25;
+      font-weight:1000;
+    }
+    .codiguin-state{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-top:8px;
+      padding:5px 8px;
+      border:1px solid rgba(55,214,122,.30);
+      border-radius:999px;
+      background:rgba(55,214,122,.09);
+      color:var(--green);
+      font-size:10px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.45px;
+    }
+    .codiguin-state::before{content:""; width:7px; height:7px; border-radius:50%; background:currentColor;}
+    .codiguin-tile.unavailable .codiguin-state{color:#a2a8b8; border-color:rgba(162,168,184,.25); background:rgba(162,168,184,.08);}
+
+    .toolbar{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:10px;
+      align-items:center;
+      margin-bottom:18px;
+    }
+
+    .search, select, .date-input{
+      background:#0e1426;
+      color:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:13px 14px;
+      outline:none;
+      font-weight:700;
+    }
+
+    .search{width:100%; font-size:15px; font-weight:500;}
+    .search:focus, select:focus, .date-input:focus{
+      border-color:rgba(90,167,255,.65);
+      box-shadow:0 0 0 4px rgba(90,167,255,.12);
+    }
+
+    .report-box{
+      margin:0 0 18px;
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      background:rgba(17,23,42,.78);
+      box-shadow:var(--shadow);
+    }
+
+    .report-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:16px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+      flex-wrap:wrap;
+    }
+
+    .report-head h2{margin:0; font-size:20px; letter-spacing:-.4px;}
+    .report-head p{margin:4px 0 0; color:var(--muted); font-size:13px;}
+    .report-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+    .report-content{padding:16px; display:none;}
+    .report-box.open .report-content{display:block;}
+
+    .report-table-wrap{overflow:auto; border:1px solid var(--line); border-radius:16px;}
+    table{width:100%; border-collapse:collapse; min-width:820px;}
+    th, td{padding:12px; border-bottom:1px solid var(--line); text-align:left; font-size:13px;}
+    th{color:var(--muted); text-transform:uppercase; letter-spacing:.6px; font-size:11px; background:rgba(0,0,0,.18);}
+    td.code-cell{font-family:"JetBrains Mono", Consolas, monospace; font-weight:900; color:#fff;}
+    tbody tr:hover{background:rgba(255,255,255,.04)}
+
+    .groups{display:grid; gap:18px;}
+
+    .group{
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background:rgba(17,23,42,.78);
+    }
+
+    .group-head{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      padding:18px;
+      background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+      border-bottom:1px solid var(--line);
+    }
+
+    .group-name{display:flex; align-items:flex-start; gap:12px; min-width:0;}
+    .dot{width:14px; height:14px; border-radius:50%; box-shadow:0 0 24px currentColor; flex:0 0 auto; margin-top:5px;}
+    .group h2{margin:0; font-size:20px; letter-spacing:-.4px;}
+    .group-meta{color:var(--muted); margin-top:3px; font-size:13px;}
+
+    .validity-editor{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+      align-items:end;
+    }
+
+    .mini-field{display:grid; gap:5px;}
+    .mini-field label{font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; font-weight:900;}
+    .mini-field input{padding:9px 10px; border-radius:10px; font-size:12px;}
+
+    .pill-row{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{border:1px solid var(--line); border-radius:999px; padding:8px 10px; font-size:12px; font-weight:900; background:rgba(0,0,0,.18); white-space:nowrap;}
+    .pill.ok{color:var(--green)} .pill.wait{color:var(--yellow)} .pill.end{color:var(--red)} .pill.info{color:var(--blue)}
+
+    .cards{display:grid; grid-template-columns:repeat(2, minmax(260px, 1fr)); gap:12px; padding:16px;}
+
+    .card{
+      background:rgba(10,15,30,.85);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      display:grid;
+      gap:10px;
+      position:relative;
+      overflow:hidden;
+      min-height:238px;
+    }
+
+    .card.used{
+      opacity:.9;
+      border-color:rgba(255,48,79,.55);
+      background:rgba(35,5,13,.82);
+    }
+
+    .card.used::before{
+      content:"🔒 CÓDIGO RESGATADO";
+      position:absolute;
+      inset:0;
+      z-index:7;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:22px;
+      background:linear-gradient(135deg, rgba(255,0,38,.24), rgba(95,0,18,.18));
+      color:rgba(255,255,255,.78);
+      font-weight:1000;
+      font-size:clamp(30px, 5vw, 58px);
+      letter-spacing:1.5px;
+      line-height:.95;
+      text-shadow:0 5px 18px rgba(0,0,0,.38);
+      pointer-events:none;
+      transform:rotate(-8deg) scale(1.05);
+      border:6px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(1.2px);
+    }
+
+    .card.used::after{
+      content:"USADO";
+      position:absolute;
+      top:13px;
+      right:-45px;
+      z-index:8;
+      transform:rotate(35deg);
+      background:#fff;
+      color:var(--red-2);
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing:1.6px;
+      padding:6px 54px;
+      box-shadow:0 8px 22px rgba(0,0,0,.35);
+      pointer-events:none;
+    }
+
+    .card.used > *{position:relative; z-index:5;}
+    .card.used .receiver, .card.used .redeem-date{opacity:.96;}
+    .card.used .code{filter:drop-shadow(0 2px 8px rgba(0,0,0,.6));}
+
+    .code-row{display:flex; justify-content:space-between; gap:8px; align-items:center;}
+    .code{font-family:"JetBrains Mono", Consolas, monospace; font-size:18px; font-weight:1000; letter-spacing:.8px; word-break:break-all;}
+    .number{color:var(--muted); font-size:12px; font-weight:900; border:1px solid var(--line); padding:5px 8px; border-radius:999px; flex:0 0 auto;}
+
+    .status-line{display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:12px; font-weight:800;}
+    .status{border-radius:999px; padding:6px 9px; border:1px solid var(--line); color:#fff;}
+    .status.available{background:rgba(55,214,122,.12); color:var(--green); border-color:rgba(55,214,122,.35)}
+    .status.waiting{background:rgba(255,209,102,.12); color:var(--yellow); border-color:rgba(255,209,102,.35)}
+    .status.expired{background:rgba(255,92,122,.12); color:var(--red); border-color:rgba(255,92,122,.35)}
+
+    .status.invalid{background:rgba(255,48,79,.16); color:#ffb3c1; border-color:rgba(255,48,79,.55)}
+    .card.invalid{
+      border-color:rgba(255,193,7,.65);
+      background:rgba(42,25,5,.82);
+    }
+    .card.invalid::before{
+      content:"⚠ CÓDIGO INVÁLIDO";
+      position:absolute;
+      inset:0;
+      z-index:7;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:22px;
+      background:linear-gradient(135deg, rgba(255,159,67,.22), rgba(255,48,79,.20));
+      color:rgba(255,255,255,.82);
+      font-weight:1000;
+      font-size:clamp(28px, 4.7vw, 54px);
+      letter-spacing:1.2px;
+      line-height:.95;
+      text-shadow:0 5px 18px rgba(0,0,0,.42);
+      pointer-events:none;
+      transform:rotate(-8deg) scale(1.04);
+      border:6px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(1.2px);
+    }
+    .card.invalid > *{position:relative; z-index:5;}
+    .result-select{
+      background:#0e1426;
+      color:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 11px;
+      outline:none;
+      font-weight:900;
+      width:100%;
+    }
+    .result-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      align-items:end;
+    }
+    .manager{
+      margin:18px 0;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:16px;
+      background:rgba(17,23,42,.78);
+      box-shadow:var(--shadow);
+    }
+    .manager summary{
+      cursor:pointer;
+      font-weight:1000;
+      font-size:18px;
+      list-style:none;
+    }
+    .manager summary::-webkit-details-marker{display:none}
+    .manager p{
+      color:var(--muted);
+      margin:8px 0 14px;
+      font-size:13px;
+    }
+
+    .parser-box{
+      margin-top:14px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(0,0,0,.16);
+    }
+    .parser-box h3{
+      margin:0 0 6px;
+      font-size:16px;
+      letter-spacing:-.2px;
+    }
+    .parser-box textarea{
+      width:100%;
+      min-height:190px;
+      resize:vertical;
+      border:1px solid var(--line);
+      background:#0e1426;
+      color:#fff;
+      border-radius:14px;
+      padding:12px 13px;
+      outline:none;
+      font-weight:700;
+      font-family:"JetBrains Mono", Consolas, monospace;
+      line-height:1.45;
+    }
+    .parse-preview{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+    .parse-card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px;
+      display:grid;
+      gap:6px;
+    }
+    .parse-card strong{font-size:15px}
+    .parse-card span{color:var(--muted); font-size:12px; font-weight:800}
+    .parse-card code{color:#fff; font-weight:1000}
+
+    .add-grid{
+      display:grid;
+      grid-template-columns:1.2fr 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .add-grid textarea,
+    .add-grid input{
+      width:100%;
+      border:1px solid var(--line);
+      background:#0e1426;
+      color:#fff;
+      border-radius:14px;
+      padding:12px 13px;
+      outline:none;
+      font-weight:800;
+    }
+    .add-grid textarea{
+      grid-column:1 / -1;
+      min-height:110px;
+      resize:vertical;
+      font-family:"JetBrains Mono", Consolas, monospace;
+    }
+    .report-toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    .report-toolbar .left-tools,
+    .report-toolbar .right-tools{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .report-toolbar label{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+    @media (max-width: 760px){
+      .add-grid{grid-template-columns:1fr}
+      .result-grid{grid-template-columns:1fr}
+      .report-toolbar{display:grid}
+    }
+
+
+
+
+    .remove-list{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .remove-tools-note{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .remove-row{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      border-radius:16px;
+      padding:12px;
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:12px;
+      align-items:center;
+    }
+
+    .remove-row.expired-candidate{
+      border-color:rgba(255,92,122,.45);
+      background:rgba(255,48,79,.08);
+    }
+
+    .remove-row.selected{
+      border-color:rgba(90,167,255,.72);
+      box-shadow:0 0 0 3px rgba(90,167,255,.10);
+    }
+
+    .remove-check{
+      width:22px;
+      height:22px;
+      accent-color:#ff304f;
+      cursor:pointer;
+    }
+
+    .remove-info strong{
+      display:block;
+      font-size:15px;
+      margin-bottom:4px;
+    }
+
+    .remove-info span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      margin-top:2px;
+    }
+
+    .remove-badges{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    @media (max-width: 760px){
+      .remove-row{grid-template-columns:auto 1fr; align-items:flex-start}
+      .remove-badges{grid-column:1 / -1; justify-content:flex-start}
+    }
+
+
+    .auto-archive-overlay{
+      position:fixed;
+      inset:0;
+      z-index:999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:rgba(0,0,0,.72);
+      backdrop-filter:blur(6px);
+    }
+
+    .auto-archive-overlay.open{display:flex;}
+    body.auto-archive-open{overflow:hidden;}
+
+    .auto-archive-modal{
+      width:min(560px, 100%);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(55,214,122,.18), transparent 26%),
+        linear-gradient(180deg, rgba(22,30,53,.98), rgba(10,15,30,.98));
+      box-shadow:0 28px 90px rgba(0,0,0,.62);
+      padding:26px;
+      text-align:center;
+      animation:autoArchivePop .18s ease-out;
+    }
+
+    @keyframes autoArchivePop{
+      from{transform:translateY(10px) scale(.98); opacity:.65;}
+      to{transform:translateY(0) scale(1); opacity:1;}
+    }
+
+    .auto-archive-tag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:12px;
+      border:1px solid rgba(55,214,122,.38);
+      border-radius:999px;
+      padding:7px 11px;
+      color:var(--green);
+      background:rgba(55,214,122,.10);
+      font-size:12px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .auto-archive-modal h2{
+      margin:0;
+      font-size:clamp(28px, 5vw, 46px);
+      line-height:.95;
+      letter-spacing:-1.4px;
+    }
+
+    .auto-archive-modal p{
+      margin:14px auto 0;
+      color:var(--muted);
+      max-width:460px;
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .auto-archive-name{
+      margin-top:14px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,255,255,.05);
+      font-weight:1000;
+    }
+
+    .auto-archive-actions{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .auto-archive-actions button{min-width:170px;}
+
+    .receiver-wrap label, .redeem-wrap label{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:6px;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    .receiver, .redeem-date{
+      width:100%;
+      border:0;
+      outline:none;
+      background:#fff;
+      color:#071020;
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:15px;
+      font-weight:700;
+    }
+
+    .card-actions{display:flex; gap:8px; justify-content:space-between; align-items:center; flex-wrap:wrap;}
+    .check{display:flex; gap:8px; align-items:center; color:#fff; font-size:13px; font-weight:900; cursor:pointer; background:rgba(255,255,255,.07); padding:8px 10px; border-radius:12px; border:1px solid var(--line);}
+    .check input{width:18px; height:18px; accent-color:#ff304f;}
+
+    .empty{padding:30px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:18px; margin:16px;}
+    .footer-note{margin-top:18px; color:var(--muted); font-size:13px; text-align:center;}
+
+    @media (max-width: 980px){.stats{grid-template-columns:repeat(2, 1fr)} .codiguin-list{grid-template-columns:repeat(auto-fill, minmax(145px, 1fr))} .toolbar{grid-template-columns:1fr} .cards{grid-template-columns:1fr} .group-head{align-items:flex-start; flex-direction:column} .pill-row{justify-content:flex-start}}
+    @media (max-width: 520px){body{padding:16px} .stats{grid-template-columns:1fr} .top-actions{width:100%} button, .file-label{width:100%; text-align:center} .code{font-size:16px} .validity-editor{display:grid; grid-template-columns:1fr} .mini-field input{width:100%} .card.used::before{font-size:34px}}
+
+
+    /* Integração segura com o painel administrativo */
+    [hidden]{display:none !important}
+    .secure-gate{min-height:calc(100vh - 52px);display:grid;place-items:center;padding:24px}
+    .secure-card{width:min(620px,100%);padding:24px;border:1px solid var(--line);border-radius:24px;background:rgba(17,23,42,.94);box-shadow:var(--shadow)}
+    .secure-brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;color:#fff;text-decoration:none;font-weight:1000}
+    .secure-brand img{width:38px;height:38px;object-fit:contain}
+    .secure-kicker{margin:0 0 7px;color:var(--blue);font-size:11px;font-weight:1000;letter-spacing:1.2px;text-transform:uppercase}
+    .secure-card h1{margin:0 0 8px;font-size:clamp(25px,5vw,38px)}
+    .secure-card>p{color:var(--muted);line-height:1.55}
+    .secure-form{display:grid;gap:11px;margin-top:18px}
+    .secure-form label{font-size:11px;color:var(--muted);font-weight:1000;text-transform:uppercase;letter-spacing:.55px}
+    .secure-form input[type="password"],.secure-form input[type="file"]{width:100%;border:1px solid var(--line);background:#0e1426;color:#fff;border-radius:13px;padding:13px;outline:none}
+    .secure-form input[type="password"]:focus{border-color:rgba(90,167,255,.7);box-shadow:0 0 0 4px rgba(90,167,255,.11)}
+    .secure-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
+    .secure-actions button,.secure-actions a{flex:1;min-width:150px;text-decoration:none}
+    .secure-note{margin-top:15px;padding:12px;border:1px solid rgba(90,167,255,.22);border-radius:13px;background:rgba(90,167,255,.06);color:#c9d8ee;font-size:12px;line-height:1.5}
+    .secure-note strong{color:#fff}
+    .secure-message{min-height:20px;margin:12px 0 0;color:var(--muted);font-size:13px;font-weight:850}
+    .secure-message.error{color:#ff9aad}.secure-message.ok{color:var(--green)}
+    .cloud-status{display:inline-flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(0,0,0,.18);color:var(--muted);font-size:11px;font-weight:1000;white-space:nowrap}
+    .cloud-status::before{content:"";width:8px;height:8px;border-radius:50%;background:#8a91a8}
+    .cloud-status.saving::before{background:var(--yellow);box-shadow:0 0 10px rgba(255,209,102,.45)}
+    .cloud-status.saved::before{background:var(--green);box-shadow:0 0 10px rgba(55,214,122,.45)}
+    .cloud-status.error::before{background:var(--red)}
+    .admin-back-link{background:#1d2744;box-shadow:none;text-decoration:none}
+    .private-warning{margin:0 0 16px;padding:10px 12px;border:1px solid rgba(255,209,102,.24);border-radius:13px;background:rgba(255,209,102,.06);color:#ffe39b;font-size:12px;font-weight:850;line-height:1.45}
+    @media(max-width:520px){.secure-gate{padding:8px}.secure-card{padding:18px}.secure-actions{display:grid}.secure-actions button,.secure-actions a{width:100%;min-width:0}.cloud-status{width:100%;justify-content:center}}
+
+  </style>
+</head>
+<body>
+  <section id="secureGate" class="secure-gate" aria-live="polite">
+    <div class="secure-card">
+      <a class="secure-brand" href="admin.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire • Admin</span></a>
+      <p class="secure-kicker">Área privada</p>
+      <h1>Controle de Codiguinhos</h1>
+      <p id="secureGateDescription">Verificando sua sessão administrativa...</p>
+
+      <div id="secureGateLoading" class="secure-message">Conectando ao Firebase...</div>
+
+      <div id="secureGateLogin" hidden>
+        <div class="secure-note"><strong>Acesso bloqueado.</strong> Entre primeiro no painel administrativo. Esta página não consegue ler os codiguinhos sem a conta administradora autenticada.</div>
+        <div class="secure-actions"><a class="file-label admin-back-link" href="admin.html">← Ir para o painel</a></div>
+      </div>
+
+      <div id="secureGateUnlock" class="secure-form" hidden>
+        <label for="codiguinhosKey">Chave de criptografia</label>
+        <input id="codiguinhosKey" type="password" autocomplete="off" placeholder="Digite a chave dos codiguinhos">
+        <div class="secure-actions">
+          <button type="button" onclick="desbloquearCodiguinhos()">Desbloquear</button>
+          <a class="file-label admin-back-link" href="admin.html">← Painel</a>
+        </div>
+        <div class="secure-note">A chave <strong>não fica salva no HTML nem no Firebase</strong>. Ela fica apenas na memória desta aba enquanto a página estiver aberta.</div>
+      </div>
+
+      <div id="secureGateSetup" class="secure-form" hidden>
+        <div class="secure-note"><strong>Primeiro acesso.</strong> Escolha uma chave e migre seu backup atual uma única vez. Depois disso, todas as alterações passam a ser salvas automaticamente no Firebase.</div>
+        <label for="codiguinhosNewKey">Nova chave de criptografia</label>
+        <input id="codiguinhosNewKey" type="password" autocomplete="new-password" minlength="8" placeholder="Crie uma chave forte e memorável">
+        <label for="codiguinhosNewKeyConfirm">Confirmar chave</label>
+        <input id="codiguinhosNewKeyConfirm" type="password" autocomplete="new-password" minlength="8" placeholder="Repita a chave">
+        <div id="secureLocalMigration" hidden>
+          <button class="ok" type="button" onclick="migrarDadosLocaisAntigos()">Migrar dados já salvos neste navegador</button>
+        </div>
+        <label for="secureBackupFile">Ou selecione seu backup-codiguinhos.json</label>
+        <input id="secureBackupFile" type="file" accept="application/json,.json">
+        <div class="secure-actions">
+          <button type="button" onclick="migrarBackupInicial()">Criptografar e enviar backup</button>
+          <button class="secondary" type="button" onclick="criarBaseCodiguinhosVazia()">Criar base vazia</button>
+        </div>
+        <div class="secure-note">Depois da migração você não precisa mais importar/exportar JSON para manter os dados sincronizados. <strong>Não esqueça a chave:</strong> sem ela, o conteúdo criptografado não pode ser recuperado.</div>
+      </div>
+      <p id="secureGateMessage" class="secure-message"></p>
+    </div>
+  </section>
+
+  <main class="app" id="codiguinhosApp" hidden>
+    <header>
+      <div class="title">
+        <h1>Controle de Codiguinhos</h1>
+        <p>Área privada sincronizada com o Firebase. Alterações são criptografadas antes de sair do navegador.</p>
+      </div>
+
+      <div class="top-actions">
+        <span id="cloudSaveStatus" class="cloud-status">Bloqueado</span>
+        <a class="file-label admin-back-link" href="admin.html">← Painel</a>
+        <button class="secondary" onclick="arquivarExpirados()">Remover expirados</button>
+        <button class="ok" onclick="exportarRelatorioCSV()">Exportar relatório CSV</button>
+        <button class="secondary" onclick="exportarJSON()">Backup de emergência</button>
+        <button class="secondary" onclick="trocarChaveCodiguinhos()">Trocar chave</button>
+        <button class="secondary" onclick="bloquearCodiguinhos()">🔒 Bloquear</button>
+        <button class="danger" onclick="limparTudo()">Limpar preenchimentos</button>
+      </div>
+    </header>
+
+    <section class="stats">
+      <div class="stat"><span>Total de códigos</span><strong id="statTotal">0</strong></div>
+      <div class="stat"><span>Restantes</span><strong id="statRestantes">0</strong></div>
+      <div class="stat"><span>Resgatados</span><strong id="statEntregues">0</strong></div>
+      <div class="stat"><span>Disponíveis hoje</span><strong id="statDisponiveis">0</strong></div>
+      <div class="stat"><span>Expirados</span><strong id="statExpirados">0</strong></div>
+      <div class="stat"><span>Com ganhador</span><strong id="statGanhadores">0</strong></div>
+    </section>
+
+    <section class="codiguin-nav" aria-label="Filtro visual de codiguinhos">
+      <div class="codiguin-nav-head">
+        <div class="codiguin-nav-title">
+          <h2>Codiguinhos</h2>
+          <p>Clique em uma foto para mostrar somente os códigos daquele codiguin.</p>
+        </div>
+        <div class="codiguin-nav-tools">
+          <div class="codiguin-legend" aria-label="Legenda de disponibilidade">
+            <span class="legend-item"><span class="legend-dot"></span>Disponível</span>
+            <span class="legend-item"><span class="legend-dot off"></span>Indisponível</span>
+          </div>
+          <button class="secondary small" type="button" onclick="filtrarPorCodiguin('todos')">Ver todos</button>
+          <div class="selector-settings-wrap">
+            <button class="selector-gear" type="button" title="Configurações dos codiguinhos" aria-label="Configurações dos codiguinhos" onclick="toggleConfiguracoesCodiguins(event)">⚙</button>
+            <div id="selectorSettings" class="selector-settings">
+              <label><input id="mostrarRestantesSelector" type="checkbox" onchange="alternarMostrarRestantesSelector(this.checked)"> Mostrar quantidade restante</label>
+              <small>Oculta ou exibe o círculo com o número de códigos restantes em cada foto.</small>
+              <div class="setting-separator"></div>
+              <label><input id="mostrarBotoesFotoSelector" type="checkbox" onchange="alternarMostrarBotoesFotoSelector(this.checked)"> Mostrar botões de foto</label>
+              <small>Oculta ou mostra os botões de adicionar, trocar e remover foto.</small>
+              <button id="organizarCodiguinsBtn" class="secondary small organize-toggle" type="button" onclick="toggleModoOrganizarCodiguins(event)">Organizar e ocultar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="selectorManageBar" class="selector-manage-bar">
+        <span><strong>Modo de organização ativo.</strong> Use o olho para ocultar/mostrar e escolha a posição de cada codiguin.</span>
+        <button class="secondary small" type="button" onclick="toggleModoOrganizarCodiguins(event)">Concluir</button>
+      </div>
+      <div id="codiguinList" class="codiguin-list"></div>
+      <input id="fotoCodiguinInput" type="file" accept="image/*" onchange="salvarFotoCodiguin(event)">
+    </section>
+
+
+    <details class="manager">
+      <summary>➕ Adicionar novos codiguinhos / pacote do mês</summary>
+      <p>Use isso quando chegarem codiguinhos novos. Cole um código por linha. O sistema salva automaticamente no Firebase, já criptografado.</p>
+
+
+      <div class="parser-box">
+        <h3>📥 Colar comunicado completo e preparar pacotes automaticamente</h3>
+        <p>Cole o texto inteiro do jeito que você recebe, com a lista numerada, validade e blocos “CÓDIGOS...”. Depois clique em preparar.</p>
+        <textarea id="textoPacoteCompleto" placeholder="Cole aqui o comunicado completo dos codiguinhos..."></textarea>
+        <div class="top-actions" style="margin-top:10px">
+          <button onclick="prepararPacotesDoTexto()">Preparar pacotes pelo texto</button>
+          <button class="secondary" onclick="limparTextoPacoteCompleto()">Limpar texto</button>
+        </div>
+        <div id="previewPacotes" class="parse-preview"></div>
+      </div>
+
+      <p style="margin-top:16px">Ou adicione um pacote manualmente preenchendo os campos abaixo.</p>
+
+      <div class="add-grid">
+        <input id="novoNome" type="text" placeholder="Nome do pacote. Ex: Codiguins Junho" />
+        <input id="novoItem" type="text" placeholder="Item/recompensa. Ex: Skin, emote, pacote..." />
+        <input id="novoCor" type="color" value="#9b5cff" title="Cor do pacote" />
+        <input id="novoInicio" type="date" />
+        <input id="novoFim" type="date" />
+        <input id="novoId" type="text" placeholder="ID opcional. Ex: codiguins-junho" />
+        <textarea id="novosCodigos" placeholder="Cole os códigos aqui, um por linha..."></textarea>
+      </div>
+
+      <div class="top-actions" style="margin-top:12px">
+        <button onclick="adicionarGrupoManual()">Adicionar pacote</button>
+        <button class="secondary" onclick="limparCamposNovoGrupo()">Limpar campos</button>
+      </div>
+    </details>
+
+
+
+    <details class="manager" id="removeManager">
+      <summary>🧹 Remover codiguinhos da tela principal</summary>
+      <p>Marque manualmente quais pacotes quer remover. Os que o sistema entende como expirados ficam destacados, mas nada sai da tela até você selecionar e confirmar.</p>
+      <div class="top-actions" style="margin-top:12px">
+        <button onclick="selecionarExpiradosRemocao()">Marcar os que aparecem expirados</button>
+        <button class="secondary" onclick="selecionarTodosRemocao()">Marcar todos</button>
+        <button class="secondary" onclick="limparSelecaoRemocao()">Desmarcar todos</button>
+        <button class="danger" onclick="confirmarRemocaoSelecionados()">Remover selecionados</button>
+      </div>
+      <div id="removeResumo" class="remove-tools-note">Nenhum pacote selecionado.</div>
+      <div id="removeList" class="remove-list"></div>
+    </details>
+
+    <details class="manager" id="archiveManager">
+      <summary>🗄️ Codiguinhos removidos / expirados</summary>
+      <p>Os pacotes removidos saem da tela principal, mas continuam guardados no backup e podem ser restaurados quando precisar.</p>
+      <div id="archiveList" class="parse-preview"></div>
+    </details>
+
+
+    <section class="toolbar">
+      <input id="busca" class="search" type="search" placeholder="Buscar por código, item, nome de quem recebeu ou data..." oninput="render()" />
+      <select id="filtroStatus" onchange="render()">
+        <option value="todos">Todos os status</option>
+        <option value="restantes">Só restantes</option>
+        <option value="entregues">Só resgatados</option>
+        <option value="com_ganhador">Só com ganhador</option>
+        <option value="sem_ganhador">Só sem ganhador</option>
+        <option value="disponiveis">Só disponíveis</option>
+        <option value="aguardando">Só aguardando data</option>
+        <option value="expirados">Só expirados</option>
+      </select>
+      <select id="filtroGrupo" onchange="render()"><option value="todos">Todos os codiguins</option></select>
+    </section>
+
+    <section id="reportBox" class="report-box">
+      <div class="report-head">
+        <div>
+          <h2>Relatório de ganhadores</h2>
+          <p>Lista automática de quem ganhou, qual código ganhou e em qual dia foi marcado como resgatado.</p>
+        </div>
+        <div class="report-actions">
+          <button class="secondary" onclick="toggleRelatorio()">Mostrar/ocultar relatório</button>
+          <button class="secondary" onclick="copiarRelatorio()">Copiar relatório</button>
+          <button class="ok" onclick="exportarRelatorioCSV()">Exportar CSV</button>
+        </div>
+      </div>
+      <div class="report-toolbar">
+        <div class="left-tools">
+          <label for="ordenarRelatorio">Ordenar por</label>
+          <select id="ordenarRelatorio" onchange="atualizarRelatorio()">
+            <option value="nome">Nome A-Z</option>
+            <option value="data">Data do resgate</option>
+            <option value="item">Item</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+      </div>
+      <div class="report-content" id="reportContent"></div>
+    </section>
+
+    <section id="groups" class="groups"></section>
+
+    <p class="footer-note">Salvamento automático: cada alteração é criptografada no navegador e sincronizada com o Firebase. O backup manual é apenas uma opção de emergência.</p>
+  </main>
+
+
+  <div id="autoArchiveOverlay" class="auto-archive-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="auto-archive-modal">
+      <div class="auto-archive-tag" id="autoArchiveTag">10 resgatados</div>
+      <h2>VOCÊ QUER ARQUIVAR ESTE CODIGUINHO?</h2>
+      <p>Esse pacote chegou ao limite de códigos resgatados. Arquivando, ele sai da tela principal, mas continua salvo no histórico criptografado e nos removidos.</p>
+      <div class="auto-archive-name" id="autoArchiveName">Pacote de codiguinhos</div>
+      <div class="auto-archive-actions">
+        <button class="ok" onclick="confirmarAutoArquivar()">SIM, ARQUIVAR</button>
+        <button class="secondary" onclick="deixarAutoArquivarDepois()">DEIXAR PARA DEPOIS</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "controle_codiguinhos_naka_v2"; // usado apenas para detectar/migrar o formato antigo
+    const STORAGE_KEY_ANTIGO = "controle_codiguinhos_naka_v1";
+
+    let grupos = [];
+    let memoria = memoriaVazia();
+    let controleDesbloqueado = false;
+    let remocaoSelecionados = new Set();
+    const AUTO_ARQUIVAR_QTD_RESGATADOS = 10;
+    let autoArquivoModalGrupoId = null;
+    let fotoCodiguinGrupoId = null;
+    let modoOrganizarCodiguins = false;
+
+    function memoriaVazia(){
+      return {
+        codigos:{}, grupos:{}, __gruposAtivos:[], __gruposExtras:[], __gruposArquivados:[],
+        __autoArquivarPostergados:{},
+        __preferencias:{mostrarRestantesSelector:true, mostrarBotoesFotoSelector:true, ordemCodiguinsSelector:[], codiguinsOcultosSelector:[]}
+      };
+    }
+
+    function normalizarGrupoPersistido(g, manualPadrao=true){
+      if(!g || !g.id || !Array.isArray(g.codigos)) return null;
+      return {
+        id:String(g.id),
+        nome:g.nome || String(g.id),
+        item:g.item || g.nome || String(g.id),
+        inicio:g.inicio || hojeISO(),
+        fim:g.fim || hojeISO(),
+        cor:g.cor || "#9b5cff",
+        manual:g.manual === undefined ? Boolean(manualPadrao) : Boolean(g.manual),
+        ...(g.arquivadoEm ? {arquivadoEm:g.arquivadoEm} : {}),
+        codigos:[...new Set(g.codigos.map(c => String(c).trim()).filter(Boolean))]
+      };
+    }
+
+    function carregarGruposExtras(){
+      const ativosFonte = Array.isArray(memoria.__gruposAtivos) && memoria.__gruposAtivos.length
+        ? memoria.__gruposAtivos
+        : (Array.isArray(memoria.__gruposExtras) ? memoria.__gruposExtras : []);
+      grupos = ativosFonte.map(g => normalizarGrupoPersistido(g, true)).filter(Boolean);
+    }
+
+    function removerArquivadosDaTelaPrincipal(){
+      const idsArquivados = new Set((memoria.__gruposArquivados || []).map(g => String(g.id)));
+      if(idsArquivados.size) grupos = grupos.filter(g => !idsArquivados.has(String(g.id)));
+    }
+
+    function sincronizarGruposNaMemoria(){
+      memoria.__gruposAtivos = grupos.map(g => normalizarGrupoPersistido(g, Boolean(g.manual))).filter(Boolean);
+      memoria.__gruposExtras = memoria.__gruposAtivos.filter(g => g.manual === true);
+    }
+
+    function salvarGruposExtras(){
+      sincronizarGruposNaMemoria();
+      salvarMemoria();
+    }
+
+    function idsArquivados(){
+      return new Set((memoria.__gruposArquivados || []).map(g => g.id));
+    }
+
+    function aplicarArquivados(){
+      const ids = idsArquivados();
+      grupos = grupos.filter(g => !ids.has(g.id));
+    }
+
+    function normalizarMemoria(raw){
+      const base = memoriaVazia();
+      raw = raw && typeof raw === "object" ? raw : {};
+      if(raw.codigos || raw.grupos || raw.__gruposAtivos || raw.__gruposExtras || raw.__gruposArquivados || raw.__autoArquivarPostergados || raw.__preferencias){
+        base.codigos = raw.codigos || {};
+        base.grupos = raw.grupos || {};
+        base.__gruposAtivos = Array.isArray(raw.__gruposAtivos) ? raw.__gruposAtivos : [];
+        base.__gruposExtras = Array.isArray(raw.__gruposExtras) ? raw.__gruposExtras : [];
+        base.__gruposArquivados = Array.isArray(raw.__gruposArquivados) ? raw.__gruposArquivados : [];
+        base.__autoArquivarPostergados = raw.__autoArquivarPostergados && typeof raw.__autoArquivarPostergados === "object" && !Array.isArray(raw.__autoArquivarPostergados) ? raw.__autoArquivarPostergados : {};
+        base.__preferencias = raw.__preferencias && typeof raw.__preferencias === "object" && !Array.isArray(raw.__preferencias) ? {...base.__preferencias, ...raw.__preferencias} : base.__preferencias;
+      }else{
+        base.codigos = raw || {};
+      }
+
+      Object.keys(base.codigos).forEach(codigo => {
+        const d = base.codigos[codigo] || {};
+        base.codigos[codigo] = {
+          recebeu:d.recebeu || "",
+          entregue:Boolean(d.entregue),
+          resultado:d.resultado || "sucesso",
+          dataResgate:d.dataResgate || somenteData(d.atualizadoEm) || "",
+          atualizadoEm:d.atualizadoEm || null
+        };
+      });
+
+      base.__gruposAtivos = base.__gruposAtivos.map(g => normalizarGrupoPersistido(g, true)).filter(Boolean);
+      base.__gruposExtras = base.__gruposExtras.map(g => normalizarGrupoPersistido(g, true)).filter(Boolean);
+      // Backup v2: os pacotes ativos ficavam em __gruposExtras.
+      if(!base.__gruposAtivos.length && base.__gruposExtras.length) base.__gruposAtivos = base.__gruposExtras.map(g => ({...g}));
+      base.__gruposArquivados = base.__gruposArquivados.map(g => {
+        const norm = normalizarGrupoPersistido(g, Boolean(g.manual));
+        if(norm) norm.arquivadoEm = g.arquivadoEm || new Date().toISOString();
+        return norm;
+      }).filter(Boolean);
+      return base;
+    }
+
+    function salvarMemoria(){
+      if(!controleDesbloqueado || !window.CodiguinhosCloud) return;
+      sincronizarGruposNaMemoria();
+      window.CodiguinhosCloud.scheduleSave(memoria);
+    }
+
+    function hojeISO(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function hojeLocal(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
+    function dataLocal(yyyyMmDd){ const [y,m,d] = String(yyyyMmDd || hojeISO()).split("-").map(Number); return new Date(y, m - 1, d); }
+    function somenteData(valor){ return valor ? String(valor).slice(0,10) : ""; }
+
+    function formatarData(yyyyMmDd){
+      if(!yyyyMmDd) return "Sem data";
+      const [y,m,d] = String(yyyyMmDd).split("-");
+      if(!y || !m || !d) return yyyyMmDd;
+      return `${d}/${m}/${y}`;
+    }
+
+    function configGrupo(grupo){
+      if(!memoria.grupos[grupo.id]) memoria.grupos[grupo.id] = {};
+      return memoria.grupos[grupo.id];
+    }
+
+    function inicioGrupo(grupo){ return configGrupo(grupo).inicio || grupo.inicio; }
+    function fimGrupo(grupo){ return configGrupo(grupo).fim || grupo.fim; }
+
+    function alterarValidadeGrupo(id, campo, valor){
+      const grupo = grupos.find(g => g.id === id);
+      if(!grupo) return;
+      const cfg = configGrupo(grupo);
+      cfg[campo] = valor;
+
+      const inicio = cfg.inicio || grupo.inicio;
+      const fim = cfg.fim || grupo.fim;
+      if(inicio && fim && dataLocal(inicio) > dataLocal(fim)){
+        alert("A data inicial não pode ficar depois da data final.");
+        cfg[campo] = campo === "inicio" ? grupo.inicio : grupo.fim;
+      }
+
+      salvarMemoria();
+      render();
+    }
+
+    function restaurarValidadeGrupo(id){
+      const grupo = grupos.find(g => g.id === id);
+      if(!grupo) return;
+      memoria.grupos[grupo.id] = {};
+      salvarMemoria();
+      render();
+    }
+
+    function statusGrupo(grupo){
+      const inicio = inicioGrupo(grupo);
+      const fimData = fimGrupo(grupo);
+      const hoje = hojeLocal();
+      const inicioDate = dataLocal(inicio);
+      const fimDate = dataLocal(fimData);
+      fimDate.setHours(23,59,59,999);
+
+      if(hoje < inicioDate) return { tipo:"waiting", texto:`Disponível em ${formatarData(inicio)}` };
+      if(hoje > fimDate) return { tipo:"expired", texto:`Expirado em ${formatarData(fimData)}` };
+      return { tipo:"available", texto:"Disponível agora" };
+    }
+
+
+
+    function garantirAutoArquivarMemoria(){
+      if(!memoria.__autoArquivarPostergados || typeof memoria.__autoArquivarPostergados !== "object" || Array.isArray(memoria.__autoArquivarPostergados)){
+        memoria.__autoArquivarPostergados = {};
+      }
+      return memoria.__autoArquivarPostergados;
+    }
+
+    function totalResgatadosGrupo(grupo){
+      return (grupo.codigos || []).filter(codigo => dadosCodigo(codigo).entregue).length;
+    }
+
+    function grupoPorCodigo(codigo){
+      return grupos.find(g => (g.codigos || []).includes(codigo));
+    }
+
+    function limparAutoArquivarSeAbaixoLimite(grupo){
+      if(!grupo) return;
+      if(totalResgatadosGrupo(grupo) >= AUTO_ARQUIVAR_QTD_RESGATADOS) return;
+      const postergados = garantirAutoArquivarMemoria();
+      if(postergados[grupo.id]){
+        delete postergados[grupo.id];
+        salvarMemoria();
+      }
+    }
+
+    function verificarAutoArquivarPorCodigo(codigo){
+      verificarAutoArquivarGrupo(grupoPorCodigo(codigo));
+    }
+
+    function verificarAutoArquivarGrupo(grupo){
+      if(!grupo) return;
+      const totalResgatados = totalResgatadosGrupo(grupo);
+      limparAutoArquivarSeAbaixoLimite(grupo);
+      if(totalResgatados < AUTO_ARQUIVAR_QTD_RESGATADOS) return;
+
+      const postergados = garantirAutoArquivarMemoria();
+      if(postergados[grupo.id]) return;
+      abrirModalAutoArquivar(grupo, totalResgatados);
+    }
+
+    function abrirModalAutoArquivar(grupo, totalResgatados){
+      const overlay = document.getElementById("autoArchiveOverlay");
+      const nome = document.getElementById("autoArchiveName");
+      const tag = document.getElementById("autoArchiveTag");
+      if(!overlay) return;
+
+      autoArquivoModalGrupoId = grupo.id;
+      if(nome) nome.textContent = grupo.nome;
+      if(tag) tag.textContent = `${totalResgatados} resgatados`;
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("auto-archive-open");
+    }
+
+    function fecharModalAutoArquivar(){
+      const overlay = document.getElementById("autoArchiveOverlay");
+      if(overlay){
+        overlay.classList.remove("open");
+        overlay.setAttribute("aria-hidden", "true");
+      }
+      document.body.classList.remove("auto-archive-open");
+      autoArquivoModalGrupoId = null;
+    }
+
+    function confirmarAutoArquivar(){
+      const id = autoArquivoModalGrupoId;
+      fecharModalAutoArquivar();
+      if(!id) return;
+      arquivarGrupo(id, true);
+    }
+
+    function deixarAutoArquivarDepois(){
+      const id = autoArquivoModalGrupoId;
+      const grupo = grupos.find(g => g.id === id);
+      if(id && grupo){
+        const postergados = garantirAutoArquivarMemoria();
+        postergados[id] = {
+          postergadoEm: new Date().toISOString(),
+          resgatados: totalResgatadosGrupo(grupo)
+        };
+        salvarMemoria();
+      }
+      fecharModalAutoArquivar();
+    }
+
+    function grupoParaArquivo(grupo){
+      return {
+        id: grupo.id,
+        nome: grupo.nome,
+        item: grupo.item,
+        inicio: inicioGrupo(grupo),
+        fim: fimGrupo(grupo),
+        cor: grupo.cor || "#9b5cff",
+        manual: Boolean(grupo.manual),
+        arquivadoEm: new Date().toISOString(),
+        codigos: [...new Set((grupo.codigos || []).map(c => String(c).trim()).filter(Boolean))]
+      };
+    }
+
+    function arquivarGrupo(id, silencioso = false){
+      const grupo = grupos.find(g => g.id === id);
+      if(!grupo) return false;
+      const st = statusGrupo(grupo);
+
+      if(!silencioso){
+        const avisoAtivo = st.tipo !== "expired" ? "\n\nAtenção: esse pacote ainda não está expirado." : "";
+        if(!confirm(`Remover o pacote "${grupo.nome}" da tela principal?${avisoAtivo}\n\nEle ficará guardado em "Codiguinhos removidos / expirados" e também no histórico criptografado.`)) return false;
+      }
+
+      const postergados = garantirAutoArquivarMemoria();
+      delete postergados[grupo.id];
+
+      if(!Array.isArray(memoria.__gruposArquivados)) memoria.__gruposArquivados = [];
+      if(!memoria.__gruposArquivados.some(g => g.id === grupo.id)){
+        memoria.__gruposArquivados.push(grupoParaArquivo(grupo));
+      }
+
+      grupos = grupos.filter(g => g.id !== id);
+      salvarGruposExtras();
+      salvarMemoria();
+      popularFiltroGrupo();
+      render();
+      return true;
+    }
+
+    function arquivarExpirados(){
+      abrirSeletorRemocao();
+    }
+
+    function abrirSeletorRemocao(){
+      const manager = document.getElementById("removeManager");
+      if(manager){
+        manager.open = true;
+        renderSeletorRemocao();
+        manager.scrollIntoView({ behavior:"smooth", block:"start" });
+      }
+    }
+
+    function resumoGrupoRemocao(grupo){
+      const st = statusGrupo(grupo);
+      const total = (grupo.codigos || []).length;
+      const resgatados = (grupo.codigos || []).filter(c => dadosCodigo(c).entregue).length;
+      const comGanhador = (grupo.codigos || []).filter(c => String(dadosCodigo(c).recebeu || "").trim()).length;
+      return { st, total, resgatados, comGanhador };
+    }
+
+    function renderSeletorRemocao(){
+      const root = document.getElementById("removeList");
+      const resumo = document.getElementById("removeResumo");
+      if(!root) return;
+
+      const idsAtivos = new Set(grupos.map(g => g.id));
+      remocaoSelecionados = new Set([...remocaoSelecionados].filter(id => idsAtivos.has(id)));
+
+      if(grupos.length === 0){
+        root.innerHTML = `<div class="empty" style="margin:0">Não há pacotes ativos para remover.</div>`;
+        if(resumo) resumo.textContent = "Nenhum pacote ativo.";
+        return;
+      }
+
+      const ordenados = [...grupos].sort((a,b) => {
+        const sa = statusGrupo(a).tipo === "expired" ? 0 : 1;
+        const sb = statusGrupo(b).tipo === "expired" ? 0 : 1;
+        return sa - sb || String(fimGrupo(a)).localeCompare(String(fimGrupo(b))) || a.nome.localeCompare(b.nome, "pt-BR", {sensitivity:"base"});
+      });
+
+      root.innerHTML = ordenados.map(g => {
+        const {st, total, resgatados, comGanhador} = resumoGrupoRemocao(g);
+        const selecionado = remocaoSelecionados.has(g.id);
+        const fimAtual = fimGrupo(g);
+        const inicioAtual = inicioGrupo(g);
+        const classeStatus = st.tipo === "available" ? "ok" : st.tipo === "waiting" ? "wait" : "end";
+        return `
+          <label class="remove-row ${st.tipo === "expired" ? "expired-candidate" : ""} ${selecionado ? "selected" : ""}">
+            <input class="remove-check" type="checkbox" value="${escapeAttr(g.id)}" ${selecionado ? "checked" : ""} onchange="toggleGrupoRemocao(this.value, this.checked)">
+            <div class="remove-info">
+              <strong>${escapeHTML(g.nome)}</strong>
+              <span>Item: ${escapeHTML(g.item)}</span>
+              <span>Validade atual: ${formatarData(inicioAtual)} a ${formatarData(fimAtual)}</span>
+            </div>
+            <div class="remove-badges">
+              <span class="pill ${classeStatus}">${st.texto}</span>
+              <span class="pill info">${total} códigos</span>
+              <span class="pill">${resgatados} resgatados</span>
+              <span class="pill">${comGanhador} ganhadores</span>
+            </div>
+          </label>`;
+      }).join("");
+
+      atualizarResumoRemocao();
+    }
+
+    function atualizarResumoRemocao(){
+      const resumo = document.getElementById("removeResumo");
+      if(!resumo) return;
+      const selecionados = grupos.filter(g => remocaoSelecionados.has(g.id));
+      const totalPacotes = selecionados.length;
+      const totalCodigos = selecionados.reduce((soma, g) => soma + (g.codigos || []).length, 0);
+      const totalComHistorico = selecionados.reduce((soma, g) => soma + (g.codigos || []).filter(c => {
+        const d = dadosCodigo(c);
+        return d.entregue || String(d.recebeu || "").trim();
+      }).length, 0);
+
+      if(totalPacotes === 0){
+        resumo.textContent = "Nenhum pacote selecionado.";
+        return;
+      }
+
+      resumo.textContent = `${totalPacotes} pacote(s) selecionado(s), ${totalCodigos} código(s) no total. ${totalComHistorico} código(s) têm ganhador/resgate salvo e serão mantidos no arquivo/backup.`;
+    }
+
+    function toggleGrupoRemocao(id, marcado){
+      if(marcado) remocaoSelecionados.add(id);
+      else remocaoSelecionados.delete(id);
+      renderSeletorRemocao();
+    }
+
+    function selecionarExpiradosRemocao(){
+      remocaoSelecionados = new Set(grupos.filter(g => statusGrupo(g).tipo === "expired").map(g => g.id));
+      const manager = document.getElementById("removeManager");
+      if(manager) manager.open = true;
+      renderSeletorRemocao();
+    }
+
+    function selecionarTodosRemocao(){
+      remocaoSelecionados = new Set(grupos.map(g => g.id));
+      const manager = document.getElementById("removeManager");
+      if(manager) manager.open = true;
+      renderSeletorRemocao();
+    }
+
+    function limparSelecaoRemocao(){
+      remocaoSelecionados.clear();
+      renderSeletorRemocao();
+    }
+
+    function confirmarRemocaoSelecionados(){
+      const selecionados = grupos.filter(g => remocaoSelecionados.has(g.id));
+      if(selecionados.length === 0){
+        alert("Selecione pelo menos um pacote para remover.");
+        return;
+      }
+
+      const naoExpirados = selecionados.filter(g => statusGrupo(g).tipo !== "expired").length;
+      const totalCodigos = selecionados.reduce((soma, g) => soma + (g.codigos || []).length, 0);
+      const comHistorico = selecionados.reduce((soma, g) => soma + (g.codigos || []).filter(c => {
+        const d = dadosCodigo(c);
+        return d.entregue || String(d.recebeu || "").trim();
+      }).length, 0);
+
+      const avisoNaoExpirados = naoExpirados ? `\n\nAtenção: ${naoExpirados} pacote(s) selecionado(s) não aparecem como expirados. Isso é permitido, mas confira antes de confirmar.` : "";
+      if(!confirm(`Remover ${selecionados.length} pacote(s) selecionado(s) da tela principal?\n\nTotal: ${totalCodigos} código(s).\n${comHistorico} código(s) têm ganhador/resgate salvo e continuarão no arquivo/backup.${avisoNaoExpirados}`)) return;
+
+      const ids = [...remocaoSelecionados];
+      ids.forEach(id => arquivarGrupo(id, true));
+      remocaoSelecionados.clear();
+      renderSeletorRemocao();
+      alert("Pacote(s) selecionado(s) removido(s) da tela principal.");
+    }
+
+    function restaurarGrupoArquivado(id){
+      if(!Array.isArray(memoria.__gruposArquivados)) memoria.__gruposArquivados = [];
+      const idx = memoria.__gruposArquivados.findIndex(g => g.id === id);
+      if(idx === -1) return;
+
+      const grupo = memoria.__gruposArquivados.splice(idx, 1)[0];
+      delete grupo.arquivadoEm;
+      if(!grupos.some(g => g.id === grupo.id)){
+        grupos.push(grupo);
+      }
+
+      salvarGruposExtras();
+      salvarMemoria();
+      popularFiltroGrupo();
+      render();
+    }
+
+    function renderArquivados(){
+      const root = document.getElementById("archiveList");
+      if(!root) return;
+      const arquivados = memoria.__gruposArquivados || [];
+
+      if(arquivados.length === 0){
+        root.innerHTML = `<div class="empty" style="margin:0">Nenhum pacote removido ainda.</div>`;
+        return;
+      }
+
+      root.innerHTML = arquivados.map(g => {
+        const usados = (g.codigos || []).filter(c => dadosCodigo(c).entregue).length;
+        return `
+          <div class="parse-card">
+            <strong>${escapeHTML(g.nome)}</strong>
+            <span>Item: ${escapeHTML(g.item)}</span>
+            <span>Validade: ${formatarData(g.inicio)} a ${formatarData(g.fim)}</span>
+            <span>Removido em: ${g.arquivadoEm ? formatarData(somenteData(g.arquivadoEm)) : "Sem data"}</span>
+            <span><code>${(g.codigos || []).length}</code> códigos • <code>${usados}</code> resgatados</span>
+            <div class="top-actions">
+              <button class="secondary small" onclick="restaurarGrupoArquivado('${escapeAttr(g.id)}')">Restaurar pacote</button>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function dadosCodigo(codigo){
+      if(!memoria.codigos[codigo]) memoria.codigos[codigo] = { recebeu:"", entregue:false, dataResgate:"", atualizadoEm:null };
+      return memoria.codigos[codigo];
+    }
+
+    function setRecebeu(codigo, valor){
+      const d = dadosCodigo(codigo);
+      d.recebeu = valor;
+      d.atualizadoEm = new Date().toISOString();
+      salvarMemoria();
+      atualizarStats();
+      atualizarRelatorio();
+      renderArquivados();
+      const removeManager = document.getElementById("removeManager");
+      if(removeManager && removeManager.open) renderSeletorRemocao();
+    }
+
+    function setEntregue(codigo, valor){
+      const d = dadosCodigo(codigo);
+      d.entregue = valor;
+      d.atualizadoEm = new Date().toISOString();
+      if(valor && !d.dataResgate) d.dataResgate = hojeISO();
+      if(!valor) d.dataResgate = "";
+      salvarMemoria();
+      render();
+      if(valor) verificarAutoArquivarPorCodigo(codigo);
+      else limparAutoArquivarSeAbaixoLimite(grupoPorCodigo(codigo));
+    }
+
+    function setResultadoCodigo(codigo, valor){
+      const d = dadosCodigo(codigo);
+      d.resultado = valor;
+      d.entregue = true;
+      if(!d.dataResgate) d.dataResgate = hojeISO();
+      d.atualizadoEm = new Date().toISOString();
+      salvarMemoria();
+      render();
+      verificarAutoArquivarPorCodigo(codigo);
+    }
+
+    function setDataResgate(codigo, valor){
+      const d = dadosCodigo(codigo);
+      d.dataResgate = valor;
+      d.atualizadoEm = new Date().toISOString();
+      if(valor) d.entregue = true;
+      salvarMemoria();
+      render();
+      if(valor) verificarAutoArquivarPorCodigo(codigo);
+      else limparAutoArquivarSeAbaixoLimite(grupoPorCodigo(codigo));
+    }
+
+    function copiarCodigo(codigo){
+      navigator.clipboard.writeText(codigo).then(() => {
+        const btn = document.querySelector(`[data-copy="${codigo}"]`);
+        if(btn){ const txt = btn.textContent; btn.textContent = "Copiado!"; setTimeout(() => btn.textContent = txt, 900); }
+      });
+    }
+
+    function preferenciasUI(){
+      if(!memoria.__preferencias || typeof memoria.__preferencias !== "object" || Array.isArray(memoria.__preferencias)){
+        memoria.__preferencias = {
+          mostrarRestantesSelector:true,
+          mostrarBotoesFotoSelector:true,
+          ordemCodiguinsSelector:[],
+          codiguinsOcultosSelector:[]
+        };
+      }
+      const pref = memoria.__preferencias;
+      if(typeof pref.mostrarRestantesSelector !== "boolean") pref.mostrarRestantesSelector = true;
+      if(typeof pref.mostrarBotoesFotoSelector !== "boolean") pref.mostrarBotoesFotoSelector = true;
+      if(!Array.isArray(pref.ordemCodiguinsSelector)) pref.ordemCodiguinsSelector = [];
+      if(!Array.isArray(pref.codiguinsOcultosSelector)) pref.codiguinsOcultosSelector = [];
+      pref.ordemCodiguinsSelector = [...new Set(pref.ordemCodiguinsSelector.map(String))];
+      pref.codiguinsOcultosSelector = [...new Set(pref.codiguinsOcultosSelector.map(String))];
+      return pref;
+    }
+
+    function imagemGrupo(grupo){
+      return configGrupo(grupo).imagem || "";
+    }
+
+    function filtrarPorCodiguin(id){
+      const select = document.getElementById("filtroGrupo");
+      if(!select) return;
+      select.value = [...select.options].some(o => o.value === id) ? id : "todos";
+      render();
+      const toolbar = document.querySelector(".toolbar");
+      if(id !== "todos" && toolbar) toolbar.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+
+    function toggleConfiguracoesCodiguins(event){
+      if(event) event.stopPropagation();
+      const menu = document.getElementById("selectorSettings");
+      if(menu) menu.classList.toggle("open");
+    }
+
+    function alternarMostrarRestantesSelector(mostrar){
+      preferenciasUI().mostrarRestantesSelector = Boolean(mostrar);
+      salvarMemoria();
+      renderCodiguinSelector();
+    }
+
+    function alternarMostrarBotoesFotoSelector(mostrar){
+      preferenciasUI().mostrarBotoesFotoSelector = Boolean(mostrar);
+      salvarMemoria();
+      renderCodiguinSelector();
+    }
+
+    function idsCodiguinsOrdenados(){
+      const pref = preferenciasUI();
+      const idsAtivos = grupos.map(g => String(g.id));
+      const ativosSet = new Set(idsAtivos);
+      const ordemValida = pref.ordemCodiguinsSelector.filter(id => ativosSet.has(String(id)));
+      idsAtivos.forEach(id => {
+        if(!ordemValida.includes(id)) ordemValida.push(id);
+      });
+      pref.ordemCodiguinsSelector = ordemValida;
+      return ordemValida;
+    }
+
+    function gruposOrdenadosSelector(){
+      const porId = new Map(grupos.map(g => [String(g.id), g]));
+      return idsCodiguinsOrdenados().map(id => porId.get(String(id))).filter(Boolean);
+    }
+
+    function codiguinOcultoSelector(id){
+      return preferenciasUI().codiguinsOcultosSelector.includes(String(id));
+    }
+
+    function toggleModoOrganizarCodiguins(event){
+      if(event) event.stopPropagation();
+      modoOrganizarCodiguins = !modoOrganizarCodiguins;
+      const menu = document.getElementById("selectorSettings");
+      if(menu) menu.classList.remove("open");
+      renderCodiguinSelector();
+    }
+
+    function clicarCodiguinTile(id){
+      if(modoOrganizarCodiguins) return;
+      filtrarPorCodiguin(id);
+    }
+
+    function alternarVisibilidadeCodiguinSelector(id, event){
+      if(event) event.stopPropagation();
+      const pref = preferenciasUI();
+      const chave = String(id);
+      const ocultos = new Set(pref.codiguinsOcultosSelector.map(String));
+      if(ocultos.has(chave)) ocultos.delete(chave);
+      else ocultos.add(chave);
+      pref.codiguinsOcultosSelector = [...ocultos];
+
+      const filtro = document.getElementById("filtroGrupo");
+      if(ocultos.has(chave) && filtro && filtro.value === chave){
+        filtro.value = "todos";
+      }
+      salvarMemoria();
+      popularFiltroGrupo();
+      render();
+    }
+
+    function moverCodiguinParaPosicao(id, novaPosicao, event){
+      if(event) event.stopPropagation();
+      const ordem = idsCodiguinsOrdenados();
+      const chave = String(id);
+      const atual = ordem.indexOf(chave);
+      if(atual === -1) return;
+      const destino = Math.max(0, Math.min(ordem.length - 1, Number(novaPosicao) - 1));
+      ordem.splice(atual, 1);
+      ordem.splice(destino, 0, chave);
+      preferenciasUI().ordemCodiguinsSelector = ordem;
+      salvarMemoria();
+      popularFiltroGrupo();
+      render();
+    }
+
+    function escolherFotoCodiguin(id, event){
+      if(event) event.stopPropagation();
+      fotoCodiguinGrupoId = id;
+      const input = document.getElementById("fotoCodiguinInput");
+      if(input){
+        input.value = "";
+        input.click();
+      }
+    }
+
+    function removerFotoCodiguin(id, event){
+      if(event) event.stopPropagation();
+      const grupo = grupos.find(g => g.id === id);
+      if(!grupo) return;
+      if(!confirm(`Remover a foto de "${grupo.nome}"?`)) return;
+      delete configGrupo(grupo).imagem;
+      salvarMemoria();
+      renderCodiguinSelector();
+    }
+
+    function redimensionarFotoCodiguin(file){
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          try{
+            const max = 420;
+            const escala = Math.min(1, max / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round((img.naturalWidth || img.width) * escala));
+            canvas.height = Math.max(1, Math.round((img.naturalHeight || img.height) * escala));
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL("image/webp", .80));
+          }catch(erro){
+            URL.revokeObjectURL(url);
+            reject(erro);
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("Imagem inválida"));
+        };
+        img.src = url;
+      });
+    }
+
+    async function salvarFotoCodiguin(event){
+      const file = event.target.files && event.target.files[0];
+      const id = fotoCodiguinGrupoId;
+      fotoCodiguinGrupoId = null;
+      if(!file || !id) return;
+      if(!file.type.startsWith("image/")){
+        alert("Escolha um arquivo de imagem.");
+        return;
+      }
+      const grupo = grupos.find(g => g.id === id);
+      if(!grupo) return;
+      try{
+        const dataUrl = await redimensionarFotoCodiguin(file);
+        configGrupo(grupo).imagem = dataUrl;
+        salvarMemoria();
+        renderCodiguinSelector();
+      }catch(erro){
+        alert("Não consegui salvar essa foto. Tente uma imagem menor ou em PNG/JPG/WebP.");
+      }
+    }
+
+    function renderCodiguinSelector(){
+      const root = document.getElementById("codiguinList");
+      if(!root) return;
+      const selecionado = document.getElementById("filtroGrupo")?.value || "todos";
+      const pref = preferenciasUI();
+      const mostrarRestantes = pref.mostrarRestantesSelector;
+      const mostrarBotoesFoto = pref.mostrarBotoesFotoSelector;
+      const checkRestantes = document.getElementById("mostrarRestantesSelector");
+      const checkFotos = document.getElementById("mostrarBotoesFotoSelector");
+      const manageBar = document.getElementById("selectorManageBar");
+      const organizeBtn = document.getElementById("organizarCodiguinsBtn");
+      if(checkRestantes) checkRestantes.checked = mostrarRestantes;
+      if(checkFotos) checkFotos.checked = mostrarBotoesFoto;
+      if(manageBar) manageBar.classList.toggle("open", modoOrganizarCodiguins);
+      if(organizeBtn) organizeBtn.textContent = modoOrganizarCodiguins ? "Concluir organização" : "Organizar e ocultar";
+
+      const todosOrdenados = gruposOrdenadosSelector();
+      const visiveis = modoOrganizarCodiguins
+        ? todosOrdenados
+        : todosOrdenados.filter(grupo => !codiguinOcultoSelector(grupo.id));
+
+      if(todosOrdenados.length === 0){
+        root.innerHTML = `<div class="empty" style="grid-column:1/-1;margin:0">Nenhum codiguin ativo para mostrar.</div>`;
+        return;
+      }
+
+      if(visiveis.length === 0){
+        root.innerHTML = `<div class="empty" style="grid-column:1/-1;margin:0">Todos os codiguinhos estão ocultos. Abra a engrenagem e clique em “Organizar e ocultar” para mostrar algum novamente.</div>`;
+        return;
+      }
+
+      root.innerHTML = visiveis.map(grupo => {
+        const st = statusGrupo(grupo);
+        const restantes = (grupo.codigos || []).filter(c => !dadosCodigo(c).entregue).length;
+        const disponivel = st.tipo === "available" && restantes > 0;
+        const imagem = imagemGrupo(grupo);
+        const oculto = codiguinOcultoSelector(grupo.id);
+        const posicaoAtual = todosOrdenados.findIndex(g => String(g.id) === String(grupo.id)) + 1;
+        const opcoesPosicao = todosOrdenados.map((_, index) =>
+          `<option value="${index + 1}" ${index + 1 === posicaoAtual ? "selected" : ""}>${index + 1}º</option>`
+        ).join("");
+        const botoesFoto = mostrarBotoesFoto ? `
+              ${imagem ? `<button class="photo-action remove" type="button" title="Remover foto" aria-label="Remover foto" onclick="removerFotoCodiguin('${escapeAttr(grupo.id)}', event)">×</button>` : ""}
+              <button class="photo-action edit" type="button" title="${imagem ? "Trocar foto" : "Adicionar foto"}" aria-label="${imagem ? "Trocar foto" : "Adicionar foto"}" onclick="escolherFotoCodiguin('${escapeAttr(grupo.id)}', event)">📷</button>` : "";
+
+        return `
+          <article class="codiguin-tile ${disponivel ? "" : "unavailable"} ${selecionado === grupo.id ? "active" : ""} ${oculto ? "selector-hidden" : ""}"
+            onclick="clicarCodiguinTile('${escapeAttr(grupo.id)}')" title="${modoOrganizarCodiguins ? "Organize este codiguin" : `Filtrar por ${escapeAttr(grupo.nome)}`}">
+            ${mostrarRestantes ? `<div class="remaining-bubble"><strong>${restantes}</strong><span>restam</span></div>` : ""}
+            <div class="codiguin-photo-wrap">
+              ${imagem
+                ? `<img class="codiguin-photo" src="${escapeAttr(imagem)}" alt="${escapeAttr(grupo.nome)}">`
+                : `<div class="codiguin-photo-placeholder"><b>🎁</b><span>${mostrarBotoesFoto ? "Adicionar foto" : "Sem foto"}</span></div>`}
+              ${botoesFoto}
+            </div>
+            <div class="codiguin-name">${escapeHTML(grupo.nome)}</div>
+            <div class="codiguin-state">${disponivel ? "Disponível" : "Indisponível"}</div>
+            ${modoOrganizarCodiguins ? `
+              <div class="tile-organize-tools" onclick="event.stopPropagation()">
+                <button type="button" title="${oculto ? "Mostrar codiguin" : "Ocultar codiguin"}" aria-label="${oculto ? "Mostrar codiguin" : "Ocultar codiguin"}" onclick="alternarVisibilidadeCodiguinSelector('${escapeAttr(grupo.id)}', event)">${oculto ? "👁" : "🙈"}</button>
+                <label class="tile-position-control">
+                  <span>Posição</span>
+                  <select onchange="moverCodiguinParaPosicao('${escapeAttr(grupo.id)}', this.value, event)">${opcoesPosicao}</select>
+                </label>
+              </div>` : ""}
+          </article>`;
+      }).join("");
+    }
+
+    function popularFiltroGrupo(){
+      const select = document.getElementById("filtroGrupo");
+      const valorAtual = select.value || "todos";
+      select.innerHTML = '<option value="todos">Todos os codiguins</option>';
+      gruposOrdenadosSelector().forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g.id;
+        opt.textContent = codiguinOcultoSelector(g.id) ? `${g.nome} (oculto na faixa)` : g.nome;
+        select.appendChild(opt);
+      });
+      select.value = [...select.options].some(o => o.value === valorAtual) ? valorAtual : "todos";
+    }
+
+    function passaFiltro({grupo, codigo, dados, status}){
+      const busca = document.getElementById("busca").value.trim().toLowerCase();
+      const filtroStatus = document.getElementById("filtroStatus").value;
+      const filtroGrupo = document.getElementById("filtroGrupo").value;
+
+      if(filtroGrupo !== "todos" && grupo.id !== filtroGrupo) return false;
+      if(busca){
+        const texto = `${codigo} ${grupo.nome} ${grupo.item} ${dados.recebeu} ${dados.dataResgate} ${formatarData(dados.dataResgate)}`.toLowerCase();
+        if(!texto.includes(busca)) return false;
+      }
+
+      if(filtroStatus === "restantes" && dados.entregue) return false;
+      if(filtroStatus === "entregues" && !dados.entregue) return false;
+      if(filtroStatus === "com_ganhador" && !String(dados.recebeu || "").trim()) return false;
+      if(filtroStatus === "sem_ganhador" && String(dados.recebeu || "").trim()) return false;
+      if(filtroStatus === "disponiveis" && status.tipo !== "available") return false;
+      if(filtroStatus === "aguardando" && status.tipo !== "waiting") return false;
+      if(filtroStatus === "expirados" && status.tipo !== "expired") return false;
+      return true;
+    }
+
+    function listarCodigos(incluirArquivados = false){
+      const lista = [];
+      const fonte = incluirArquivados
+        ? [...grupos, ...(memoria.__gruposArquivados || []).map(g => ({...g, arquivado:true}))]
+        : grupos;
+
+      fonte.forEach(grupo => {
+        const st = statusGrupo(grupo);
+        grupo.codigos.forEach((codigo, index) => lista.push({ grupo, codigo, index, dados:dadosCodigo(codigo), status:st }));
+      });
+      return lista;
+    }
+
+    function atualizarStats(){
+      let total = 0, entregues = 0, disponiveis = 0, expirados = 0, ganhadores = 0;
+      grupos.forEach(g => {
+        const st = statusGrupo(g);
+        g.codigos.forEach(codigo => {
+          const dados = dadosCodigo(codigo);
+          total++;
+          if(dados.entregue) entregues++;
+          if(st.tipo === "available" && !dados.entregue) disponiveis++;
+          if(st.tipo === "expired" && !dados.entregue) expirados++;
+          if(String(dados.recebeu || "").trim()) ganhadores++;
+        });
+      });
+      document.getElementById("statTotal").textContent = total;
+      document.getElementById("statRestantes").textContent = total - entregues;
+      document.getElementById("statEntregues").textContent = entregues;
+      document.getElementById("statDisponiveis").textContent = disponiveis;
+      document.getElementById("statExpirados").textContent = expirados;
+      document.getElementById("statGanhadores").textContent = ganhadores;
+    }
+
+    function render(){
+      renderCodiguinSelector();
+      const root = document.getElementById("groups");
+      root.innerHTML = "";
+      let algumResultado = false;
+
+      gruposOrdenadosSelector().forEach(grupo => {
+        const st = statusGrupo(grupo);
+        const cardsFiltrados = grupo.codigos
+          .map((codigo, index) => ({ codigo, index, dados:dadosCodigo(codigo), status:st }))
+          .filter(item => passaFiltro({ grupo, ...item }));
+
+        const entreguesGrupo = grupo.codigos.filter(c => dadosCodigo(c).entregue).length;
+        const restantesGrupo = grupo.codigos.length - entreguesGrupo;
+        const inicioAtual = inicioGrupo(grupo);
+        const fimAtual = fimGrupo(grupo);
+
+        if(cardsFiltrados.length === 0) return;
+        algumResultado = true;
+
+        const section = document.createElement("article");
+        section.className = "group";
+        section.style.borderColor = hexToRgba(grupo.cor, .28);
+
+        section.innerHTML = `
+          <div class="group-head">
+            <div class="group-name">
+              <span class="dot" style="background:${grupo.cor}; color:${grupo.cor}"></span>
+              <div>
+                <h2>${escapeHTML(grupo.nome)}</h2>
+                <div class="group-meta">Item: ${escapeHTML(grupo.item)} • Validade atual: ${formatarData(inicioAtual)} a ${formatarData(fimAtual)}</div>
+                <div class="validity-editor">
+                  <div class="mini-field"><label>Disponível a partir de</label><input class="date-input" type="date" value="${inicioAtual}" onchange="alterarValidadeGrupo('${grupo.id}', 'inicio', this.value)"></div>
+                  <div class="mini-field"><label>Expira em</label><input class="date-input" type="date" value="${fimAtual}" onchange="alterarValidadeGrupo('${grupo.id}', 'fim', this.value)"></div>
+                  <button class="secondary small" onclick="restaurarValidadeGrupo('${grupo.id}')">Restaurar datas</button>
+                </div>
+              </div>
+            </div>
+            <div class="pill-row">
+              <span class="pill ${st.tipo === "available" ? "ok" : st.tipo === "waiting" ? "wait" : "end"}">${st.texto}</span>
+              ${totalResgatadosGrupo(grupo) >= AUTO_ARQUIVAR_QTD_RESGATADOS ? `<span class="pill ok">Pronto para arquivar</span>` : ""}
+              <span class="pill info">${restantesGrupo} restantes</span>
+              <span class="pill">${entreguesGrupo} resgatados</span>
+              ${st.tipo === "expired" ? `<button class="danger small" onclick="arquivarGrupo('${grupo.id}')">Remover pacote</button>` : ""}
+            </div>
+          </div>
+          <div class="cards"></div>`;
+
+        const cards = section.querySelector(".cards");
+        cardsFiltrados.forEach(({codigo, index, dados}) => {
+          const card = document.createElement("div");
+          card.className = `card ${dados.entregue ? (dados.resultado === "invalido" ? "invalid" : "used") : ""}`;
+          card.innerHTML = `
+            <div class="code-row">
+              <div class="code">${escapeHTML(codigo)}</div>
+              <div class="number">#${String(index + 1).padStart(2, "0")}</div>
+            </div>
+            <div class="status-line">
+              <span class="status ${st.tipo}">${st.texto}</span>
+              <span>Expira: ${formatarData(fimAtual)}</span>
+              ${dados.entregue && dados.dataResgate ? `<span>Resgatado em: ${formatarData(dados.dataResgate)}</span>` : ""}
+              ${dados.entregue ? `<span class="status ${dados.resultado === "invalido" ? "invalid" : "available"}">${dados.resultado === "invalido" ? "Inválido" : "Resgatado com sucesso"}</span>` : ""}
+            </div>
+            <div class="receiver-wrap">
+              <label>Quem ganhou / recebeu</label>
+              <input class="receiver" value="${escapeAttr(dados.recebeu)}" placeholder="Escreva o nome aqui..." oninput="setRecebeu('${codigo}', this.value)" />
+            </div>
+            <div class="result-grid">
+              <div class="redeem-wrap">
+                <label>Dia que foi resgatado</label>
+                <input class="redeem-date" type="date" value="${escapeAttr(dados.dataResgate)}" onchange="setDataResgate('${codigo}', this.value)" />
+              </div>
+              <div class="redeem-wrap">
+                <label>Resultado do código</label>
+                <select class="result-select" onchange="setResultadoCodigo('${codigo}', this.value)">
+                  <option value="sucesso" ${dados.resultado !== "invalido" ? "selected" : ""}>Resgatado com sucesso</option>
+                  <option value="invalido" ${dados.resultado === "invalido" ? "selected" : ""}>Inválido</option>
+                </select>
+              </div>
+            </div>
+            <div class="card-actions">
+              <label class="check"><input type="checkbox" ${dados.entregue ? "checked" : ""} onchange="setEntregue('${codigo}', this.checked)" /> 🔒 Código resgatado</label>
+              <button class="secondary small" data-copy="${codigo}" onclick="copiarCodigo('${codigo}')">Copiar código</button>
+            </div>`;
+          cards.appendChild(card);
+        });
+
+        root.appendChild(section);
+      });
+
+      if(!algumResultado) root.innerHTML = `<div class="empty">Nenhum codiguin encontrado com esse filtro.</div>`;
+      atualizarStats();
+      atualizarRelatorio();
+      renderArquivados();
+    }
+
+    function statusTexto(dados){
+      if(!dados.entregue) return "Aguardando resgate";
+      return dados.resultado === "invalido" ? "Inválido" : "Resgatado com sucesso";
+    }
+
+    function relatorioLinhas(){
+      const ordenar = document.getElementById("ordenarRelatorio")?.value || "nome";
+      const linhas = listarCodigos(true)
+        .filter(item => item.dados.entregue || String(item.dados.recebeu || "").trim());
+
+      const porNome = (a,b) => String(a.dados.recebeu || "zzzz").localeCompare(String(b.dados.recebeu || "zzzz"), "pt-BR", {sensitivity:"base"});
+      const porData = (a,b) => String(b.dados.dataResgate || "").localeCompare(String(a.dados.dataResgate || ""));
+      const porItem = (a,b) => a.grupo.item.localeCompare(b.grupo.item, "pt-BR", {sensitivity:"base"}) || porNome(a,b);
+      const porStatus = (a,b) => statusTexto(a.dados).localeCompare(statusTexto(b.dados), "pt-BR", {sensitivity:"base"}) || porNome(a,b);
+
+      if(ordenar === "data") return linhas.sort((a,b) => porData(a,b) || porNome(a,b));
+      if(ordenar === "item") return linhas.sort(porItem);
+      if(ordenar === "status") return linhas.sort(porStatus);
+      return linhas.sort(porNome);
+    }
+
+    function atualizarRelatorio(){
+      const root = document.getElementById("reportContent");
+      const linhas = relatorioLinhas();
+      if(linhas.length === 0){
+        root.innerHTML = `<div class="empty" style="margin:0">Ainda não tem nenhum código com ganhador ou marcado como resgatado.</div>`;
+        return;
+      }
+      root.innerHTML = `
+        <div class="report-table-wrap">
+          <table>
+            <thead><tr><th>Data</th><th>Quem ganhou</th><th>Código</th><th>Codiguin</th><th>Item</th><th>Status</th></tr></thead>
+            <tbody>
+              ${linhas.map(({grupo, codigo, dados}) => `
+                <tr>
+                  <td>${dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"}</td>
+                  <td>${escapeHTML(dados.recebeu || "Sem nome")}</td>
+                  <td class="code-cell">${escapeHTML(codigo)}</td>
+                  <td>${escapeHTML(grupo.nome)}${grupo.arquivado ? " <span style=\"color:var(--muted);font-weight:900\">(arquivado)</span>" : ""}</td>
+                  <td>${escapeHTML(grupo.item)}</td>
+                  <td>${statusTexto(dados)}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function toggleRelatorio(){ document.getElementById("reportBox").classList.toggle("open"); }
+
+    function textoRelatorio(){
+      const linhas = relatorioLinhas();
+      if(linhas.length === 0) return "Nenhum código registrado no relatório.";
+      return linhas.map(({grupo, codigo, dados}) => `${dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"} | ${dados.recebeu || "Sem nome"} | ${codigo} | ${grupo.nome} | ${statusTexto(dados)}`).join("\n");
+    }
+
+    function copiarRelatorio(){
+      navigator.clipboard.writeText(textoRelatorio()).then(() => alert("Relatório copiado!"));
+    }
+
+    function exportarRelatorioCSV(){
+      const linhas = relatorioLinhas();
+      const header = ["data_resgate","ganhador","codigo","codiguin","item","status"];
+      const csv = [header, ...linhas.map(({grupo, codigo, dados}) => [dados.dataResgate || "", dados.recebeu || "", codigo, grupo.arquivado ? `${grupo.nome} (arquivado)` : grupo.nome, grupo.item, statusTexto(dados)])]
+        .map(row => row.map(campoCSV).join(","))
+        .join("\n");
+      baixarArquivo(csv, "relatorio-codiguinhos.csv", "text/csv;charset=utf-8");
+    }
+
+
+    function slugify(texto){
+      return String(texto || "")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 42);
+    }
+
+
+    function normalizarTitulo(txt){
+      return String(txt || "")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .replace(/CODIGUIN|CODIGUINS|CODIGOS|CODIGO|CÓDIGOS|CÓDIGO/g, "")
+        .replace(/CONJUNTO/g, "")
+        .replace(/[^\w\s+-]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function normalizarDataBR(data){
+      const m = String(data || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if(!m) return "";
+      return `${m[3]}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`;
+    }
+
+    function formatarDataEntrada(dataIso){
+      if(!dataIso) return "";
+      return formatarData(dataIso);
+    }
+
+    function extrairPacotesDoTexto(texto){
+      const linhas = String(texto || "").replace(/\u200a|\u200b|\u00a0/g, " ").split(/\r?\n/);
+      const metas = [];
+      let metaAtual = null;
+
+      linhas.forEach(linhaOriginal => {
+        const linha = linhaOriginal.trim();
+        if(!linha) return;
+
+        const cab = linha.match(/^(\d+)\s*[-–]\s*(.+)$/);
+        if(cab){
+          metaAtual = {
+            ordem:Number(cab[1]),
+            nome:cab[2].trim(),
+            item:cab[2].trim(),
+            inicio:"",
+            fim:""
+          };
+          metas.push(metaAtual);
+          return;
+        }
+
+        if(metaAtual){
+          const item = linha.match(/item\s*:\s*(.+)$/i);
+          if(item) metaAtual.item = item[1].trim();
+
+          const validade = linha.match(/validade\s*:\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*a\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
+          if(validade){
+            metaAtual.inicio = normalizarDataBR(validade[1]);
+            metaAtual.fim = normalizarDataBR(validade[2]);
+          }
+        }
+      });
+
+      const blocos = [];
+      const regex = /C[ÓO]DIGOS?\s+([^:\n]+):\s*([\s\S]*?)(?=\n\s*C[ÓO]DIGOS?\s+[^:\n]+:|$)/gi;
+      let match;
+      while((match = regex.exec(texto)) !== null){
+        const titulo = match[1].trim();
+        const corpo = match[2] || "";
+        const codigos = corpo
+          .replace(/[^\w\s-]/g, " ")
+          .split(/\s+/)
+          .map(c => c.trim().toUpperCase())
+          .filter(c => /^[A-Z0-9]{8,20}$/.test(c));
+
+        if(codigos.length){
+          blocos.push({
+            titulo,
+            codigos:[...new Set(codigos)]
+          });
+        }
+      }
+
+      return blocos.map((bloco, idx) => {
+        const tituloNorm = normalizarTitulo(bloco.titulo);
+        let meta = metas.find(m => normalizarTitulo(m.nome).includes(tituloNorm) || tituloNorm.includes(normalizarTitulo(m.nome)));
+        if(!meta){
+          meta = metas.find(m => normalizarTitulo(m.item).includes(tituloNorm) || tituloNorm.includes(normalizarTitulo(m.item)));
+        }
+        if(!meta){
+          meta = metas[idx] || {};
+        }
+
+        return {
+          nome: meta.nome || bloco.titulo,
+          item: meta.item || bloco.titulo,
+          inicio: meta.inicio || "",
+          fim: meta.fim || "",
+          cor: ["#9b5cff", "#5aa7ff", "#ffd166", "#ff9f43", "#37d67a", "#ff5c7a"][idx % 6],
+          codigos: bloco.codigos
+        };
+      });
+    }
+
+    function prepararPacotesDoTexto(){
+      const texto = document.getElementById("textoPacoteCompleto").value;
+      const pacotes = extrairPacotesDoTexto(texto);
+      const preview = document.getElementById("previewPacotes");
+
+      if(!pacotes.length){
+        preview.innerHTML = `<div class="empty" style="margin:0">Não consegui encontrar blocos de códigos nesse texto. Confere se existe algo como “CÓDIGOS NOME DO ITEM:” seguido dos códigos.</div>`;
+        return;
+      }
+
+      preview.innerHTML = pacotes.map((p, i) => `
+        <div class="parse-card">
+          <strong>${escapeHTML(p.nome)}</strong>
+          <span>Item: ${escapeHTML(p.item)}</span>
+          <span>Validade: ${p.inicio ? formatarDataEntrada(p.inicio) : "sem início"} a ${p.fim ? formatarDataEntrada(p.fim) : "sem fim"}</span>
+          <span><code>${p.codigos.length}</code> códigos encontrados</span>
+        </div>
+      `).join("") + `
+        <div class="top-actions">
+          <button onclick="confirmarPacotesPreparados()">Adicionar ${pacotes.length} pacote(s) preparado(s)</button>
+        </div>
+      `;
+
+      window.__pacotesPreparados = pacotes;
+    }
+
+    function confirmarPacotesPreparados(){
+      const pacotes = window.__pacotesPreparados || [];
+      if(!pacotes.length){
+        alert("Prepare os pacotes primeiro.");
+        return;
+      }
+
+      let adicionados = 0;
+      pacotes.forEach((p, idx) => {
+        if(!p.nome || !p.codigos.length) return;
+
+        const idBase = slugify(p.nome);
+        let id = idBase || `codiguins-${Date.now()}-${idx}`;
+        let n = 2;
+        while(grupos.some(g => g.id === id)){
+          id = `${idBase}-${n++}`;
+        }
+
+        grupos.push({
+          id,
+          nome:p.nome,
+          item:p.item || p.nome,
+          inicio:p.inicio || hojeISO(),
+          fim:p.fim || hojeISO(),
+          cor:p.cor || "#9b5cff",
+          manual:true,
+          codigos:p.codigos
+        });
+        adicionados++;
+      });
+
+      if(!adicionados){
+        alert("Nenhum pacote válido para adicionar.");
+        return;
+      }
+
+      salvarGruposExtras();
+      popularFiltroGrupo();
+      render();
+      document.getElementById("previewPacotes").innerHTML = "";
+      document.getElementById("textoPacoteCompleto").value = "";
+      window.__pacotesPreparados = [];
+      alert(`${adicionados} pacote(s) adicionado(s) com sucesso!`);
+    }
+
+    function limparTextoPacoteCompleto(){
+      document.getElementById("textoPacoteCompleto").value = "";
+      document.getElementById("previewPacotes").innerHTML = "";
+      window.__pacotesPreparados = [];
+    }
+
+
+    function adicionarGrupoManual(){
+      const nome = document.getElementById("novoNome").value.trim();
+      const item = document.getElementById("novoItem").value.trim();
+      const inicio = document.getElementById("novoInicio").value;
+      const fim = document.getElementById("novoFim").value;
+      const cor = document.getElementById("novoCor").value || "#9b5cff";
+      const idDigitado = document.getElementById("novoId").value.trim();
+      const codigos = document.getElementById("novosCodigos").value
+        .split(/\r?\n/)
+        .map(c => c.trim())
+        .filter(Boolean);
+
+      if(!nome || !item || !inicio || !fim || codigos.length === 0){
+        alert("Preencha nome, item, início, validade e pelo menos 1 código.");
+        return;
+      }
+
+      const idBase = slugify(idDigitado || nome);
+      let id = idBase || `codiguins-${Date.now()}`;
+      let n = 2;
+      while(grupos.some(g => g.id === id)){
+        id = `${idBase}-${n++}`;
+      }
+
+      const grupo = {
+        id,
+        nome,
+        item,
+        inicio,
+        fim,
+        cor,
+        manual:true,
+        codigos:[...new Set(codigos)]
+      };
+
+      grupos.push(grupo);
+      salvarGruposExtras();
+      popularFiltroGrupo();
+      limparCamposNovoGrupo();
+      render();
+      alert("Novo pacote de codiguinhos adicionado!");
+    }
+
+    function limparCamposNovoGrupo(){
+      ["novoNome","novoItem","novoInicio","novoFim","novoId","novosCodigos"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+      });
+      const cor = document.getElementById("novoCor");
+      if(cor) cor.value = "#9b5cff";
+    }
+
+
+    function exportarJSON(){
+      if(!controleDesbloqueado) return;
+      if(!confirm("Este backup será baixado em JSON legível e contém os codiguinhos. Baixar mesmo assim?")) return;
+      sincronizarGruposNaMemoria();
+      const backup = { criadoEm:new Date().toISOString(), versao:3, dados:memoria };
+      baixarArquivo(JSON.stringify(backup, null, 2), "backup-codiguinhos-emergencia.json", "application/json");
+    }
+
+    function importarJSON(event){
+      const file = event.target.files && event.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const backup = JSON.parse(reader.result);
+          aplicarEstadoCodiguinhos(backup.dados || backup || {});
+          salvarMemoria();
+          alert("Backup restaurado e sincronizado com o Firebase.");
+        }catch(e){
+          alert("Não consegui importar. Confira se o arquivo é um backup JSON válido.");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    function limparTudo(){
+      if(!confirm("Limpar nomes, datas de resgate, status e alterações de validade? Os pacotes e os códigos serão mantidos.")) return;
+      sincronizarGruposNaMemoria();
+      const ativos = (memoria.__gruposAtivos || []).map(g => ({...g, codigos:[...(g.codigos || [])]}));
+      const extras = (memoria.__gruposExtras || []).map(g => ({...g, codigos:[...(g.codigos || [])]}));
+      const arquivados = (memoria.__gruposArquivados || []).map(g => ({...g, codigos:[...(g.codigos || [])]}));
+      const preferencias = {...(memoria.__preferencias || {})};
+      const imagens = Object.fromEntries(Object.entries(memoria.grupos || {}).filter(([,cfg]) => cfg && cfg.imagem).map(([id,cfg]) => [id, {imagem:cfg.imagem}]));
+      memoria = memoriaVazia();
+      memoria.grupos = imagens;
+      memoria.__gruposAtivos = ativos;
+      memoria.__gruposExtras = extras;
+      memoria.__gruposArquivados = arquivados;
+      memoria.__preferencias = {...memoria.__preferencias, ...preferencias};
+      carregarGruposExtras();
+      aplicarArquivados();
+      popularFiltroGrupo();
+      render();
+      salvarMemoria();
+    }
+
+    async function trocarChaveCodiguinhos(){
+      if(!controleDesbloqueado || !window.CodiguinhosCloud) return;
+      const nova = prompt("Digite a NOVA chave de criptografia. Use pelo menos 8 caracteres:");
+      if(!nova) return;
+      if(nova.length < 8){ alert("Use pelo menos 8 caracteres."); return; }
+      const confirma = prompt("Repita a nova chave:");
+      if(nova !== confirma){ alert("As chaves não conferem."); return; }
+      try{
+        sincronizarGruposNaMemoria();
+        await window.CodiguinhosCloud.changePassphrase(nova, memoria);
+        alert("Chave trocada. Os dados foram recriptografados.");
+      }catch(erro){
+        alert("Não consegui trocar a chave. " + (erro?.message || "Tente novamente."));
+      }
+    }
+
+    async function bloquearCodiguinhos(){
+      if(!controleDesbloqueado || !window.CodiguinhosCloud) return;
+      try{ await window.CodiguinhosCloud.flush(); }catch(e){}
+      window.CodiguinhosCloud.lock();
+      controleDesbloqueado = false;
+      memoria = memoriaVazia();
+      grupos = [];
+      document.getElementById("codiguinhosApp").hidden = true;
+      document.getElementById("secureGate").hidden = false;
+      mostrarGateSecao("secureGateUnlock");
+      document.getElementById("secureGateDescription").textContent = "Base bloqueada. Digite a chave para abrir novamente.";
+      setSecureMessage("");
+      setTimeout(() => document.getElementById("codiguinhosKey")?.focus(), 40);
+    }
+    window.bloquearCodiguinhos = bloquearCodiguinhos;
+
+    function baixarArquivo(conteudo, nome, tipo){
+      const blob = new Blob([conteudo], { type: tipo });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nome;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function campoCSV(valor){ return `"${String(valor ?? "").replaceAll('"', '""')}"`; }
+
+    function escapeAttr(str){ return String(str || "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"); }
+    function escapeHTML(str){ return String(str || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
+    function hexToRgba(hex, alpha){ const clean = hex.replace("#", ""); const bigint = parseInt(clean, 16); const r = (bigint >> 16) & 255; const g = (bigint >> 8) & 255; const b = bigint & 255; return `rgba(${r}, ${g}, ${b}, ${alpha})`; }
+
+    function setSecureMessage(texto, tipo=""){
+      const el = document.getElementById("secureGateMessage");
+      if(!el) return;
+      el.textContent = texto || "";
+      el.className = `secure-message ${tipo}`.trim();
+    }
+
+    function mostrarGateSecao(id){
+      ["secureGateLoading","secureGateLogin","secureGateUnlock","secureGateSetup"].forEach(chave => {
+        const el = document.getElementById(chave);
+        if(el) el.hidden = chave !== id;
+      });
+    }
+
+    function detectarMemoriaAntigaLocal(){
+      try{
+        for(const key of [STORAGE_KEY, STORAGE_KEY_ANTIGO]){
+          const raw = localStorage.getItem(key);
+          if(raw){
+            const parsed = JSON.parse(raw);
+            if(parsed && typeof parsed === "object") return parsed;
+          }
+        }
+      }catch(e){}
+      return null;
+    }
+
+    function limparMemoriaAntigaLocal(){
+      try{ localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY_ANTIGO); }catch(e){}
+    }
+
+    function aplicarEstadoCodiguinhos(raw){
+      memoria = normalizarMemoria(raw);
+      carregarGruposExtras();
+      aplicarArquivados();
+      popularFiltroGrupo();
+      render();
+      controleDesbloqueado = true;
+      const gate = document.getElementById("secureGate");
+      const app = document.getElementById("codiguinhosApp");
+      if(gate) gate.hidden = true;
+      if(app) app.hidden = false;
+      window.scrollTo(0, 0);
+    }
+    window.aplicarEstadoCodiguinhos = aplicarEstadoCodiguinhos;
+
+    async function iniciarPortaoSeguro(){
+      if(!window.CodiguinhosCloud) return;
+      setSecureMessage("");
+      try{
+        const info = await window.CodiguinhosCloud.inspect();
+        if(!info.authenticated){
+          mostrarGateSecao("secureGateLogin");
+          document.getElementById("secureGateDescription").textContent = "Sua sessão administrativa não está autenticada.";
+          return;
+        }
+        if(info.hasData){
+          mostrarGateSecao("secureGateUnlock");
+          document.getElementById("secureGateDescription").textContent = "Sessão confirmada. Desbloqueie a base criptografada.";
+          setTimeout(() => document.getElementById("codiguinhosKey")?.focus(), 40);
+        }else{
+          mostrarGateSecao("secureGateSetup");
+          document.getElementById("secureGateDescription").textContent = "Não há uma base criptografada no Firebase ainda.";
+          const local = detectarMemoriaAntigaLocal();
+          const box = document.getElementById("secureLocalMigration");
+          if(box) box.hidden = !local;
+        }
+      }catch(erro){
+        mostrarGateSecao("secureGateLogin");
+        setSecureMessage("Não consegui acessar a área privada. Confira as regras do Firebase. " + (erro?.message || ""), "error");
+      }
+    }
+
+    function obterNovaChave(){
+      const a = document.getElementById("codiguinhosNewKey")?.value || "";
+      const b = document.getElementById("codiguinhosNewKeyConfirm")?.value || "";
+      if(a.length < 8) throw new Error("A chave precisa ter pelo menos 8 caracteres.");
+      if(a !== b) throw new Error("As duas chaves não conferem.");
+      return a;
+    }
+
+    async function desbloquearCodiguinhos(){
+      const chave = document.getElementById("codiguinhosKey")?.value || "";
+      if(!chave){ setSecureMessage("Digite a chave de criptografia.", "error"); return; }
+      setSecureMessage("Descriptografando...");
+      try{
+        const estado = await window.CodiguinhosCloud.unlock(chave);
+        document.getElementById("codiguinhosKey").value = "";
+        aplicarEstadoCodiguinhos(estado);
+      }catch(erro){
+        setSecureMessage("Chave incorreta ou base inválida. " + (erro?.message || ""), "error");
+      }
+    }
+
+    async function migrarDadosLocaisAntigos(){
+      let chave;
+      try{ chave = obterNovaChave(); }catch(erro){ setSecureMessage(erro.message, "error"); return; }
+      const local = detectarMemoriaAntigaLocal();
+      if(!local){ setSecureMessage("Não encontrei dados antigos neste navegador.", "error"); return; }
+      setSecureMessage("Criptografando e enviando a base antiga...");
+      try{
+        const estado = normalizarMemoria(local.dados || local);
+        await window.CodiguinhosCloud.create(chave, estado);
+        limparMemoriaAntigaLocal();
+        aplicarEstadoCodiguinhos(estado);
+      }catch(erro){ setSecureMessage(erro?.message || "Falha na migração.", "error"); }
+    }
+
+    async function migrarBackupInicial(){
+      let chave;
+      try{ chave = obterNovaChave(); }catch(erro){ setSecureMessage(erro.message, "error"); return; }
+      const file = document.getElementById("secureBackupFile")?.files?.[0];
+      if(!file){ setSecureMessage("Selecione o backup-codiguinhos.json.", "error"); return; }
+      setSecureMessage("Lendo, criptografando e enviando o backup...");
+      try{
+        const texto = await file.text();
+        const backup = JSON.parse(texto);
+        const estado = normalizarMemoria(backup.dados || backup || {});
+        if(!Object.keys(estado.codigos || {}).length && !estado.__gruposAtivos.length && !estado.__gruposArquivados.length){
+          throw new Error("O arquivo não parece conter os dados dos codiguinhos.");
+        }
+        await window.CodiguinhosCloud.create(chave, estado);
+        limparMemoriaAntigaLocal();
+        aplicarEstadoCodiguinhos(estado);
+      }catch(erro){ setSecureMessage(erro?.message || "Não consegui migrar o backup.", "error"); }
+    }
+
+    async function criarBaseCodiguinhosVazia(){
+      let chave;
+      try{ chave = obterNovaChave(); }catch(erro){ setSecureMessage(erro.message, "error"); return; }
+      if(!confirm("Criar uma base vazia? Use esta opção apenas se não precisar do backup atual.")) return;
+      const estado = memoriaVazia();
+      setSecureMessage("Criando base criptografada...");
+      try{
+        await window.CodiguinhosCloud.create(chave, estado);
+        limparMemoriaAntigaLocal();
+        aplicarEstadoCodiguinhos(estado);
+      }catch(erro){ setSecureMessage(erro?.message || "Não consegui criar a base.", "error"); }
+    }
+
+    window.desbloquearCodiguinhos = desbloquearCodiguinhos;
+    window.migrarDadosLocaisAntigos = migrarDadosLocaisAntigos;
+    window.migrarBackupInicial = migrarBackupInicial;
+    window.criarBaseCodiguinhosVazia = criarBaseCodiguinhosVazia;
+
+    window.addEventListener("codiguinhos-cloud-ready", iniciarPortaoSeguro, {once:true});
+    if(window.CodiguinhosCloud) iniciarPortaoSeguro();
+    window.addEventListener("codiguinhos-remote-state", event => {
+      if(!controleDesbloqueado || !event.detail?.state) return;
+      aplicarEstadoCodiguinhos(event.detail.state);
+    });
+    window.addEventListener("codiguinhos-auth-lost", () => {
+      controleDesbloqueado = false;
+      memoria = memoriaVazia();
+      grupos = [];
+      document.getElementById("codiguinhosApp").hidden = true;
+      document.getElementById("secureGate").hidden = false;
+      mostrarGateSecao("secureGateLogin");
+      document.getElementById("secureGateDescription").textContent = "Sua sessão administrativa terminou. Entre novamente pelo painel.";
+      setSecureMessage("");
+    });
+    window.addEventListener("pageshow", event => { if(event.persisted) location.reload(); });
+    window.addEventListener("codiguinhos-sync-status", event => {
+      const el = document.getElementById("cloudSaveStatus");
+      if(!el) return;
+      const estado = event.detail?.status || "";
+      const textos = {saving:"Salvando...", saved:"Firebase • salvo", error:"Falha ao salvar", unlocked:"Firebase • criptografado"};
+      el.textContent = textos[estado] || "Firebase • criptografado";
+      el.className = `cloud-status ${estado === "unlocked" ? "saved" : estado}`;
+    });
+  </script>
+</body>
+</html>
