@@ -277,3 +277,102 @@ body.ffws-s2-drop-modal-open{overflow:hidden}
   .ffws-s2-drop-report-nav button strong{font-size:.6rem}
   .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{grid-template-columns:minmax(62px,1fr) 24px 22px 27px 42px 39px;column-gap:2px}
 }
+
+
+/* ===== WB 2026 S2 • Relatório v11: navegação robusta sem sobreposição ===== */
+.ffws-s2-drop-report-nav-v11{
+  position:relative!important;
+  z-index:1;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+  width:100%!important;
+  min-height:52px;
+  margin:10px 0 12px!important;
+  padding:0!important;
+}
+.ffws-s2-drop-report-nav-v11 .ffws-s2-drop-report-navbtn{
+  all:unset;
+  box-sizing:border-box;
+  min-width:0!important;
+  min-height:52px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  padding:8px 11px!important;
+  border:1px solid #2c4668!important;
+  border-radius:10px!important;
+  background:#0e192b!important;
+  color:#fff!important;
+  cursor:pointer!important;
+  font:inherit!important;
+}
+.ffws-s2-drop-report-nav-v11 .ffws-s2-drop-report-navbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ffws-s2-drop-report-nav-v11 .ffws-s2-drop-report-navbtn:disabled{opacity:.34!important;cursor:default!important}
+.ffws-s2-drop-report-navcopy{display:block!important;min-width:0!important;line-height:1.08!important}
+.ffws-s2-drop-report-navcopy small{display:block!important;margin:0!important;color:#7d94b3!important;font-size:.52rem!important;font-weight:1000!important;letter-spacing:.04em!important;white-space:nowrap!important;line-height:1.1!important}
+.ffws-s2-drop-report-navcopy strong{display:block!important;margin:4px 0 0!important;color:var(--accent)!important;font-size:.76rem!important;font-weight:1000!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;line-height:1.05!important}
+.ffws-s2-drop-report-navarrow{display:block!important;flex:0 0 auto!important;color:var(--accent)!important;font-size:1.05rem!important;font-weight:1000!important;line-height:1!important}
+.ffws-s2-drop-report-nav-v11 + .ffws-s2-drop-report-tabs{position:relative!important;top:auto!important;z-index:1!important;margin:0 0 14px!important;padding:0!important}
+@media(max-width:680px){
+  .ffws-s2-drop-report-nav-v11{gap:6px!important;min-height:48px;margin:8px 0 10px!important}
+  .ffws-s2-drop-report-nav-v11 .ffws-s2-drop-report-navbtn{min-height:48px!important;padding:7px 8px!important;border-radius:9px!important}
+  .ffws-s2-drop-report-navcopy small{font-size:.46rem!important}
+  .ffws-s2-drop-report-navcopy strong{font-size:.67rem!important}
+  .ffws-s2-drop-report-navarrow{font-size:.95rem!important}
+  .ffws-s2-drop-report-nav-v11 + .ffws-s2-drop-report-tabs{margin-bottom:12px!important}
+}
+@media(max-width:340px){
+  .ffws-s2-drop-report-navcopy small{font-size:.43rem!important}
+  .ffws-s2-drop-report-navcopy strong{font-size:.61rem!important}
+  .ffws-s2-drop-report-nav-v11 .ffws-s2-drop-report-navbtn{padding-left:7px!important;padding-right:7px!important}
+}
+
+
+/* ===== 2026-08-16: Ajuste de respiro no ranking MVP S2 ===== */
+@media(max-width:760px){
+  .ffws-s2-mvp-mobile-tools{padding:0 10px 0 12px}
+  .ffws-s2-mvp-details-toggle{margin-right:2px}
+  .ffws-s2-mvp-table th:nth-child(2),.ffws-s2-mvp-table td:nth-child(2){padding-left:24px}
+  .ffws-s2-mvp-details-row td{padding:0 14px 12px!important}
+}
+@media(max-width:390px){
+  .ffws-s2-mvp-mobile-tools{padding:0 8px 0 10px}
+  .ffws-s2-mvp-table th:nth-child(2),.ffws-s2-mvp-table td:nth-child(2){padding-left:18px}
+  .ffws-s2-mvp-details-row td{padding:0 12px 12px!important}
+}
+
+/* ===== 2026-08-16: posição (#) visível no relatório de jogadores mobile ===== */
+@media(max-width:680px){
+  .ffws-s2-drop-player-head .ffws-s2-drop-rank-head,
+  .ffws-s2-drop-player-row>.ffws-s2-drop-player-rank{
+    display:block;
+    width:100%;
+    justify-self:stretch;
+    text-align:center;
+  }
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{
+    grid-template-columns:26px minmax(72px,1fr) 28px 25px 31px 48px 44px;
+    column-gap:4px;
+  }
+  .ffws-s2-drop-player-rank{
+    font-size:.62rem;
+    line-height:1;
+    white-space:nowrap;
+  }
+}
+@media(max-width:390px){
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{
+    grid-template-columns:24px minmax(64px,1fr) 26px 23px 29px 44px 41px;
+    column-gap:3px;
+  }
+  .ffws-s2-drop-player-rank{font-size:.59rem}
+}
+@media(max-width:350px){
+  .ffws-s2-drop-player-head,.ffws-s2-drop-player-row{
+    grid-template-columns:22px minmax(58px,1fr) 24px 22px 27px 41px 39px;
+    column-gap:2px;
+  }
+  .ffws-s2-drop-player-rank{font-size:.56rem}
+}
