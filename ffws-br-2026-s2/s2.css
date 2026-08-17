@@ -536,3 +536,47 @@ body.ffws-s2-drop-modal-open{overflow:hidden}
   .cff-s1-record-row{padding:7px}
   .cff-s1-drop-section .ffws-s2-drop-table td{font-size:.6rem}
 }
+
+
+/* ===== 2026-08-16: Navegação fixa em 2 linhas - Stats S1/S2 v17 ===== */
+/* .page tinha overflow-x:hidden global, que impedia position:sticky de acompanhar a página. */
+#stats.page,#ffws-br-s2-stats.page{overflow-x:clip!important;overflow-y:visible!important}
+
+.cff-stats-sticky-nav{
+  position:-webkit-sticky!important;position:sticky!important;top:64px!important;z-index:120!important;
+  display:flex!important;align-items:center!important;gap:10px!important;width:100%;min-width:0;
+  min-height:64px!important;margin:0 0 16px!important;padding:7px 10px 7px 12px!important;
+  border:1px solid #213a5a!important;border-radius:11px!important;
+  background:rgba(7,15,28,.985)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 10px 26px rgba(0,0,0,.34)!important
+}
+.cff-stats-sticky-nav>span{flex:0 0 auto!important;color:#84a9d5!important;font-size:.61rem!important;font-weight:1000!important;letter-spacing:.055em!important;text-transform:uppercase!important;white-space:nowrap!important}
+.cff-stats-sticky-rows{display:grid!important;grid-template-rows:auto auto!important;gap:5px!important;flex:1 1 auto!important;min-width:0!important;overflow:hidden!important}
+.cff-stats-sticky-row{display:flex!important;align-items:center!important;gap:5px!important;min-width:0!important;overflow-x:auto!important;overflow-y:hidden!important;padding:0 1px!important;scrollbar-width:none;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+.cff-stats-sticky-row::-webkit-scrollbar{display:none}
+#stats .cff-stats-sticky-row button,#ffws-br-s2-stats .cff-stats-sticky-row button{
+  appearance:none!important;-webkit-appearance:none!important;flex:0 0 auto!important;
+  min-height:23px!important;margin:0!important;padding:5px 9px!important;
+  border:1px solid rgba(76,133,190,.32)!important;border-radius:999px!important;
+  background:#0c192b!important;color:#bcd8f1!important;box-shadow:none!important;
+  font:inherit!important;font-size:.59rem!important;font-weight:900!important;line-height:1!important;
+  text-transform:none!important;white-space:nowrap!important;cursor:pointer!important;transition:.15s!important
+}
+#stats .cff-stats-sticky-row button:hover,#stats .cff-stats-sticky-row button:focus-visible,
+#ffws-br-s2-stats .cff-stats-sticky-row button:hover,#ffws-br-s2-stats .cff-stats-sticky-row button:focus-visible{
+  border-color:#00c8ff!important;background:#10263c!important;color:#fff!important;outline:0!important
+}
+#stats [id^="anchor-"],#ffws-br-s2-stats [id^="anchor-"]{scroll-margin-top:146px!important}
+
+@media(max-width:760px){
+  .cff-stats-sticky-nav{top:103px!important;min-height:58px!important;margin-bottom:12px!important;padding:6px 7px!important;border-radius:9px!important;gap:6px!important}
+  .cff-stats-sticky-nav>span{font-size:.53rem!important}
+  .cff-stats-sticky-rows{gap:4px!important}
+  .cff-stats-sticky-row{gap:4px!important}
+  #stats .cff-stats-sticky-row button,#ffws-br-s2-stats .cff-stats-sticky-row button{min-height:22px!important;padding:5px 8px!important;font-size:.55rem!important}
+  #stats [id^="anchor-"],#ffws-br-s2-stats [id^="anchor-"]{scroll-margin-top:177px!important}
+}
+@media(max-width:390px){
+  .cff-stats-sticky-nav>span{display:none!important}
+  .cff-stats-sticky-nav{padding-left:6px!important;padding-right:6px!important}
+}

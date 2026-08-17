@@ -1503,7 +1503,9 @@
       ['anchor-s2-rec-day-team','Rec. Dia Times'], ['anchor-s2-relatorio','Relatório'], ['anchor-s2-evolucao','Evolução'],
       ['anchor-s2-ranking-medias','Médias'], ['anchor-s2-ranking-totais','Totais']
     ];
-    return `<div class="cff-stats-sticky-nav" data-stats-sticky-nav="s2"><span>Ir para:</span><div class="cff-stats-sticky-scroll">${items.map(([id,label]) => `<button type="button" onclick="scrollFFWSS2StatsSection('${id}')">${escapeHtml(label)}</button>`).join('')}</div></div>`;
+    const cut = Math.ceil(items.length / 2);
+    const rows = [items.slice(0, cut), items.slice(cut)];
+    return `<div class="cff-stats-sticky-nav" data-stats-sticky-nav="s2"><span>Ir para:</span><div class="cff-stats-sticky-rows">${rows.map(row => `<div class="cff-stats-sticky-row">${row.map(([id,label]) => `<button type="button" onclick="scrollFFWSS2StatsSection('${id}')">${escapeHtml(label)}</button>`).join('')}</div>`).join('')}</div></div>`;
   }
 
   function s2StatsEvolutionPeriods(events) {
