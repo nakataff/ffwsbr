@@ -31,7 +31,8 @@
     selectionTab: 'semanal',
     mvpPage: 0,
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
-    statsFilters: { stage: 'classificatoria', days: [], confrontations: [], maps: [] },
+    statsFilters: { stage: 'classificatoria', days: [], maps: [] },
+    statsEvolution: { metric: 'position', teams: [] },
     notesFilters: { stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all', halfMatches: true },
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
@@ -891,8 +892,7 @@
     const events = statsStageEvents();
     const days = [...new Set(events.map(event => event._day).filter(Boolean))].sort((a, b) => a - b);
     const maps = [...new Set(events.map(event => String(event.map || event.mapa || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const confrontations = [...new Map(events.map(event => [`${event._stage}:${event._day}`, { value: `${event._stage}:${event._day}`, label: `${event._stage === 'classificatoria' ? 'Rodada' : 'Dia'} ${event._day}` }])).values()];
-    return { days: days.map(day => ({ value: String(day), label: `Dia ${day}` })), maps: maps.map(map => ({ value: map, label: map })), confrontations };
+    return { days: days.map(day => ({ value: String(day), label: `Dia ${day}` })), maps: maps.map(map => ({ value: map, label: map })) };
   }
 
   function statsMultiFilter(key, title, options) {
@@ -905,10 +905,8 @@
     const filters = state.statsFilters;
     return statsStageEvents().filter(event => {
       const map = String(event.map || event.mapa || '');
-      const confrontation = `${event._stage}:${event._day}`;
       return (!filters.days.length || filters.days.includes(String(event._day)))
-        && (!filters.maps.length || filters.maps.some(value => normalize(value) === normalize(map)))
-        && (!filters.confrontations.length || filters.confrontations.includes(confrontation));
+        && (!filters.maps.length || filters.maps.some(value => normalize(value) === normalize(map)));
     });
   }
 
@@ -1487,10 +1485,122 @@
       if (!groups.has(key)) groups.set(key, { stage: event._stage, day: event._day, events: [] });
       groups.get(key).events.push(event);
     });
-    return `<section class="ffws-s2-panel ffws-s2-drop-report-section"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Relatório de Quedas</h2><p>Clique no dia para ver o relatório agregado ou abra uma queda individual.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
+    return `<section id="anchor-s2-relatorio" class="ffws-s2-panel ffws-s2-drop-report-section"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Relatório de Quedas</h2><p>Clique no dia para ver o relatório agregado ou abra uma queda individual.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
       <div class="ffws-s2-drop-day-list">${[...groups.values()].map(group => `<div class="ffws-s2-drop-day-row"><button type="button" class="ffws-s2-drop-day-label" onclick="openFFWSS2DayReport('${jsAttr(group.stage)}',${number(group.day)})"><span><small>${escapeHtml(s2StatsStageShortLabel(group.stage))}</small><strong>DIA ${group.day}</strong></span><em>VER DIA ›</em></button><div class="ffws-s2-drop-buttons">${group.events.sort((a,b)=>number(a.drop||a.number)-number(b.drop||b.number)).map(event => { const report=s2DropReportBuild(event); const recordContext=s2DropReportSplitContext(); const bestPlayer=report?.leaders?.playerKills; const fire=bestPlayer && s2DropReportRank(bestPlayer.kills, recordContext.playerKills) <= 3; return `<button type="button" onclick="openFFWSS2DropReport('${s2DropReportEventKey(event)}')"><span>Q${number(event.drop || event.number)}</span>${fire?'<i aria-label="Top 3 do split">🔥</i>':''}<small>${escapeHtml(s2StatsMapShortLabel(event.map || event.mapa))}</small></button>`; }).join('')}</div></div>`).join('')}</div>
       <div id="ffws-s2-drop-report-modal" class="ffws-s2-drop-report-modal" hidden onclick="if(event.target===this)closeFFWSS2DropReport()"><div class="ffws-s2-drop-report-dialog" role="dialog" aria-modal="true" aria-label="Relatório do dia ou da queda"><div id="ffws-s2-drop-report-body"></div></div></div>
     </div></section>`;
+  }
+
+  let s2StatsEvolutionChart = null;
+  let s2StatsEvolutionObserver = null;
+
+  function s2StatsStickyNavHtml() {
+    const items = [
+      ['anchor-s2-resumo','Resumo'], ['anchor-s2-filtros','Filtros'], ['anchor-s2-totais-equipe','Totais Equipe'],
+      ['anchor-s2-medias-equipe','Médias Equipe'], ['anchor-s2-top3-equipe','Equipes/Queda'], ['anchor-s2-totais-jogador','Totais Jog.'],
+      ['anchor-s2-medias-jogador','Médias Jog.'], ['anchor-s2-participacao','Participação'], ['anchor-s2-novatos','Novatos'],
+      ['anchor-s2-rec-drop-player','Rec. Q Jog.'], ['anchor-s2-rec-day-player','Rec. Dia Jog.'], ['anchor-s2-rec-drop-team','Rec. Q Times'],
+      ['anchor-s2-rec-day-team','Rec. Dia Times'], ['anchor-s2-relatorio','Relatório'], ['anchor-s2-evolucao','Evolução'],
+      ['anchor-s2-ranking-medias','Médias'], ['anchor-s2-ranking-totais','Totais']
+    ];
+    return `<div class="cff-stats-sticky-nav" data-stats-sticky-nav="s2"><span>Ir para:</span><div class="cff-stats-sticky-scroll">${items.map(([id,label]) => `<button type="button" onclick="scrollFFWSS2StatsSection('${id}')">${escapeHtml(label)}</button>`).join('')}</div></div>`;
+  }
+
+  function s2StatsEvolutionPeriods(events) {
+    const order = { classificatoria: 0, segundaFase: 1, final: 2 };
+    const map = new Map();
+    events.forEach(event => {
+      const key = `${event._stage}:${event._day}`;
+      if (!map.has(key)) map.set(key, { stage: event._stage, day: event._day, events: [] });
+      map.get(key).events.push(event);
+    });
+    return [...map.values()].sort((a,b) => (order[a.stage] ?? 9) - (order[b.stage] ?? 9) || number(a.day) - number(b.day));
+  }
+
+  function s2StatsEvolutionTeamList(events) {
+    const ranking = aggregateStatsTeams(events).sort((a,b) => b.points - a.points || b.kills - a.kills);
+    const available = ranking.map(row => row.team);
+    const allowed = new Set(available.map(normalize));
+    state.statsEvolution.teams = (state.statsEvolution.teams || []).filter(team => allowed.has(normalize(team)));
+    if (!state.statsEvolution.teams.length) state.statsEvolution.teams = available.slice(0, Math.min(5, available.length));
+    return available;
+  }
+
+  function s2StatsEvolutionHtml(events) {
+    const teams = s2StatsEvolutionTeamList(events);
+    const selected = new Set((state.statsEvolution.teams || []).map(normalize));
+    return `<section id="anchor-s2-evolucao" class="ffws-s2-panel ffws-s2-stats-evolution"><div class="ffws-s2-panel-inner">
+      <div class="ffws-s2-panel-head"><div><h2>Comparação de Evolução das Equipes</h2><p>Gráfico no mesmo estilo da S1, usando o recorte definido nos filtros acima.</p></div><span class="ffws-s2-badge">até 5 equipes</span></div>
+      <div class="ffws-s2-evolution-controls"><label class="ffws-s2-filter"><span>Métrica do gráfico:</span><select onchange="setFFWSS2StatsEvolutionMetric(this.value)"><option value="position"${state.statsEvolution.metric==='position'?' selected':''}>Posição geral (acumulada)</option><option value="points"${state.statsEvolution.metric==='points'?' selected':''}>Pontos por dia</option><option value="kills"${state.statsEvolution.metric==='kills'?' selected':''}>Abates por dia</option></select></label><div class="ffws-s2-evolution-team-wrap"><span>Equipes (máx. 5):</span><div class="ffws-s2-evolution-team-buttons">${teams.map(team => `<button type="button" class="${selected.has(normalize(team)) ? 'active' : ''}" onclick="toggleFFWSS2StatsEvolutionTeam('${jsAttr(team)}')" title="${escapeHtml(team)}"><img src="${escapeHtml(logo(team))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><b>${escapeHtml(abbreviation(team))}</b></button>`).join('')}</div></div></div>
+      <div class="ffws-s2-evolution-canvas-wrap"><canvas id="ffws-s2-stats-evolution-chart"></canvas><div id="ffws-s2-stats-evolution-empty" class="ffws-s2-empty" hidden><div><strong>Sem dados suficientes</strong>Selecione ao menos uma equipe com resultados no recorte.</div></div></div>
+    </div></section>`;
+  }
+
+  function s2StatsEvolutionSeries(events, teamName, metric) {
+    const periods = s2StatsEvolutionPeriods(events);
+    const target = normalize(teamName);
+    const values = [];
+    const cumulative = new Map();
+    periods.forEach(period => {
+      const daily = new Map();
+      period.events.forEach(event => eventResults(event).forEach(result => {
+        const team = result.team || result.equipe;
+        if (!team) return;
+        const key = normalize(team);
+        if (!daily.has(key)) daily.set(key, { team, points:0, kills:0, booyahs:0 });
+        const row = daily.get(key);
+        const pos = number(result.position || result.posicao);
+        row.points += number(result.points ?? result.pontos ?? (number(result.placementPoints) + number(result.kills)));
+        row.kills += number(result.kills ?? result.abates);
+        row.booyahs += number(result.booyahs ?? result.booyah ?? (pos === 1 ? 1 : 0));
+      }));
+      daily.forEach((row,key) => {
+        if (!cumulative.has(key)) cumulative.set(key,{ team:row.team, points:0, kills:0, booyahs:0 });
+        const total = cumulative.get(key); total.points += row.points; total.kills += row.kills; total.booyahs += row.booyahs;
+      });
+      if (metric === 'position') {
+        const ordered = [...cumulative.values()].sort((a,b)=>b.points-a.points || b.booyahs-a.booyahs || b.kills-a.kills || a.team.localeCompare(b.team,'pt-BR'));
+        const pos = ordered.findIndex(row => normalize(row.team) === target);
+        values.push(pos >= 0 ? pos + 1 : null);
+      } else {
+        const row = daily.get(target);
+        values.push(row ? (metric === 'kills' ? row.kills : row.points) : 0);
+      }
+    });
+    return values;
+  }
+
+  function renderS2StatsEvolutionChart() {
+    const canvas = document.getElementById('ffws-s2-stats-evolution-chart');
+    if (!canvas) return;
+    const events = filteredStatsEvents();
+    const periods = s2StatsEvolutionPeriods(events);
+    const selected = (state.statsEvolution.teams || []).slice(0,5);
+    const empty = document.getElementById('ffws-s2-stats-evolution-empty');
+    if (!periods.length || !selected.length) { canvas.hidden = true; if (empty) empty.hidden = false; return; }
+    canvas.hidden = false; if (empty) empty.hidden = true;
+    const draw = () => {
+      if (!window.Chart || !document.getElementById('ffws-s2-stats-evolution-chart')) return;
+      if (s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart = null; }
+      const labels = periods.map(period => `${s2StatsStageShortLabel(period.stage)} D${period.day}`);
+      const palette = ['#00c8ff','#ffd34d','#7fe29a','#ff7a90','#b68cff'];
+      const metric = state.statsEvolution.metric || 'position';
+      s2StatsEvolutionChart = new window.Chart(canvas.getContext('2d'), {
+        type:'line',
+        data:{ labels, datasets:selected.map((team,index)=>({ label:abbreviation(team), data:s2StatsEvolutionSeries(events,team,metric), borderColor:palette[index%palette.length], backgroundColor:palette[index%palette.length], tension:.2, borderWidth:2.25, pointRadius:3, pointHoverRadius:5, spanGaps:true })) },
+        options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'nearest',intersect:false}, plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}}}, scales:{x:{ticks:{color:'#7893b5',maxRotation:0,autoSkip:true},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
+      });
+    };
+    const loadAndDraw = () => (typeof window.cffLoadChartJS === 'function' ? window.cffLoadChartJS() : Promise.resolve(window.Chart)).then(draw).catch(()=>{});
+    if ('IntersectionObserver' in window) {
+      if (s2StatsEvolutionObserver) s2StatsEvolutionObserver.disconnect();
+      s2StatsEvolutionObserver = new IntersectionObserver(entries => { if (entries.some(entry=>entry.isIntersecting)) { s2StatsEvolutionObserver.disconnect(); s2StatsEvolutionObserver=null; loadAndDraw(); } }, { rootMargin:'180px' });
+      s2StatsEvolutionObserver.observe(canvas);
+    } else loadAndDraw();
+  }
+
+  function s2StatsBackTopButtonHtml() {
+    return '<button type="button" class="cff-stats-back-top" data-stats-back-top="s2" onclick="window.scrollTo({top:0,behavior:\'smooth\'})" aria-label="Voltar ao topo" title="Voltar ao topo">↑</button>';
   }
 
   function statsRankingTable(rows, averages) {
@@ -1500,6 +1610,8 @@
   function renderStats() {
     const root = document.getElementById('ffws-br-s2-stats-content');
     if (!root) return;
+    if (s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart = null; }
+    if (s2StatsEvolutionObserver) { try { s2StatsEvolutionObserver.disconnect(); } catch (_) {} s2StatsEvolutionObserver = null; }
     const options = statsFilterOptions();
     const events = filteredStatsEvents();
     const teams = aggregateStatsTeams(events);
@@ -1525,83 +1637,93 @@
     });
     const playerShareRows = players.filter(row => row.matches >= 3).map(row => {
       const total = teamTotals.get(normalize(row.team)) || { kills: 0, damage: 0, assists: 0 };
-      return {
-        ...row,
+      return { ...row,
         avgPartKills: total.kills ? (row.kills / total.kills) * 100 : 0,
         avgPartDamage: total.damage ? (row.damage / total.damage) * 100 : 0,
         avgPartAssists: total.assists ? (row.assists / total.assists) * 100 : 0
       };
     });
+    const rookieRows = players.filter(row => Boolean(rosterPlayerByName(row.name, row.team)?.rookie));
     const records = statsRecordRows(events, playerEntries);
 
-    const statsBlocks = events.length ? `
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Resumo do recorte</h2><p>Todos os cards abaixo seguem o mesmo padrão visual da WB 2026 S1.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
-      <div class="ffws-s2-stats-grid">${[['Quedas disputadas',events.length],['Total de pontos',totalPoints],['Total de abates',totalKills],['Total de booyahs',totalBooyahs],['Média de pontos',totalResults ? (totalPoints / totalResults).toFixed(2) : '0.00'],['Colocação média',avgPosition ? `${avgPosition.toFixed(2)}º` : '—']].map(([label, value]) => `<div class="ffws-s2-stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div></div></section>
-      <div style="margin-top: 26px;">
-        <h4 id="anchor-totais-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Equipe</h4>
+    const summaryBlock = events.length ? `<section id="anchor-s2-resumo" class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Resumo do recorte</h2><p>Visão rápida do recorte atualmente selecionado.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
+      <div class="ffws-s2-stats-grid">${[['Quedas disputadas',events.length],['Total de pontos',totalPoints],['Total de abates',totalKills],['Total de booyahs',totalBooyahs],['Média de pontos',totalResults ? (totalPoints / totalResults).toFixed(2) : '0.00'],['Colocação média',avgPosition ? `${avgPosition.toFixed(2)}º` : '—']].map(([label, value]) => `<div class="ffws-s2-stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div></div></section>` : '';
+
+    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-s2-panel ffws-s2-stats-filter-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Todos os blocos abaixo usam exatamente o mesmo recorte.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
+      <div class="ffws-s2-filters"><label class="ffws-s2-filter"><span>Etapa:</span><select onchange="setFFWSS2StatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('maps','Mapa',options.maps)}</div></div></section>`;
+
+    const statsBlocks = events.length ? `<div class="ffws-s2-stats-body" style="margin-top: 4px;">
+        <h4 id="anchor-s2-totais-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Equipe</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Top Pontos</h3>${s2StatsTeamValueCard('eq-pts', teams, row => row.points, value => String(value), 'Pts')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Top Abates</h3>${s2StatsTeamValueCard('eq-kills', teams, row => row.kills, value => String(value), 'Kills')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Top Booyahs</h3>${s2StatsTeamValueCard('eq-booyah', teams, row => row.booyahs, value => String(value), 'B!')}</div>
         </div>
 
-        <h4 id="anchor-medias-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Equipe</h4>
+        <h4 id="anchor-s2-medias-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Equipe</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Média Pontos</h3>${s2StatsTeamValueCard('eq-avgpts', teams, row => row.avgPoints, value => number(value).toFixed(2), 'Média')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3>${s2StatsTeamValueCard('eq-avgkills', teams, row => row.avgKills, value => number(value).toFixed(2), 'Média')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Colocação Média</h3>${s2StatsTeamPositionCard('eq-avgpos', teams)}</div>
         </div>
 
-        <h4 id="anchor-top3-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Top 3 &amp; Último Lugar por Equipe <span style="font-size:0.55em; color:#888; text-transform:none; font-weight:normal;">(número de quedas ao lado)</span></h4>
+        <h4 id="anchor-s2-top3-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Top 3 &amp; Último Lugar por Equipe <span style="font-size:0.55em; color:#888; text-transform:none; font-weight:normal;">(número de quedas ao lado)</span></h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>+ Vezes no Top 3</h3>${s2StatsTeamDualValueCard('eq-top3-count', teams, row => row.top3, value => String(value), row => row.matches, 'Top3', 'Q')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Maior Média Top 3</h3>${s2StatsTeamDualValueCard('eq-top3-avg', teams, row => row.top3Rate, value => `${(number(value) * 100).toFixed(1)}%`, row => `${row.top3} x`, '% Top3', 'N')}</div>
             <div class="card"><div class="card-top-border"></div><h3>+ Vezes em Último (12º)</h3>${s2StatsTeamDualValueCard('eq-top12-count', teams, row => row.top12, value => String(value), row => row.matches, '12º', 'Q')}</div>
         </div>
 
-        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Jogador</h4>
+        <h4 id="anchor-s2-totais-jogador" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Jogador</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Top Abates</h3>${s2StatsPlayerCard('pl-totkills', players, row => row.kills, value => String(value), 'Kills')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Top Dano</h3>${s2StatsPlayerCard('pl-totdano', players, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Top Assistências</h3>${s2StatsPlayerCard('pl-totast', players, row => row.assists, value => String(value), 'Ast')}</div>
         </div>
 
-        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Jogador</h4>
+        <h4 id="anchor-s2-medias-jogador" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Médias por Jogador</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Média Abates</h3>${s2StatsPlayerCard('pl-avgkills', players, row => row.avgKills, value => number(value).toFixed(2), 'Média')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Média Dano</h3>${s2StatsPlayerCard('pl-avgdano', players, row => row.avgDamage, value => number(value).toFixed(0), 'Média')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Média Assistências</h3>${s2StatsPlayerCard('pl-avgast', players, row => row.avgAssists, value => number(value).toFixed(2), 'Média')}</div>
         </div>
 
-        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Participação Relativa à Equipe <span style="font-size:0.6em; color:#666; text-transform: none; font-weight: normal;">(média % de contribuição por queda — min. 3 quedas)</span></h4>
+        <h4 id="anchor-s2-participacao" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Participação Relativa à Equipe <span style="font-size:0.6em; color:#666; text-transform: none; font-weight: normal;">(média % de contribuição por queda — min. 3 quedas)</span></h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Part. Kills</h3>${s2StatsPlayerCard('pl-partkills', playerShareRows, row => row.avgPartKills, value => `${number(value).toFixed(1)}%`, '%')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Part. Dano</h3>${s2StatsPlayerCard('pl-partdano', playerShareRows, row => row.avgPartDamage, value => `${number(value).toFixed(1)}%`, '%')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Part. Assists</h3>${s2StatsPlayerCard('pl-partast', playerShareRows, row => row.avgPartAssists, value => `${number(value).toFixed(1)}%`, '%')}</div>
         </div>
 
-        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Jogadores</h4>
+        <h4 id="anchor-s2-novatos" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Jogadores Novatos</h4>
+        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="card"><div class="card-top-border"></div><h3>Abates</h3>${s2StatsPlayerCard('rookie-kills', rookieRows, row => row.kills, value => String(value), 'Kills')}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Dano</h3>${s2StatsPlayerCard('rookie-damage', rookieRows, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
+            <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${s2StatsPlayerCard('rookie-assists', rookieRows, row => row.assists, value => String(value), 'Ast')}</div>
+        </div>
+
+        <h4 id="anchor-s2-rec-drop-player" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Jogadores</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em uma Queda</h3>${s2StatsRecordPlayerCard('rec-pl-drop-kills', records.playerDrop, row => row.kills, value => String(value), 'Kills')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Assist. em uma Queda</h3>${s2StatsRecordPlayerCard('rec-pl-drop-assists', records.playerDrop, row => row.assists, value => String(value), 'Ast')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordPlayerCard('rec-pl-drop-damage', records.playerDrop, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
         </div>
 
-        <h4 style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Jogadores</h4>
+        <h4 id="anchor-s2-rec-day-player" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Jogadores</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em um Dia</h3>${s2StatsRecordPlayerCard('rec-pl-day-kills', records.playerDay, row => row.kills, value => String(value), 'Kills', true)}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Assist. em um Dia</h3>${s2StatsRecordPlayerCard('rec-pl-day-assists', records.playerDay, row => row.assists, value => String(value), 'Ast', true)}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordPlayerCard('rec-pl-day-damage', records.playerDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>
         </div>
 
-        <h4 style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Times</h4>
+        <h4 id="anchor-s2-rec-drop-team" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Times</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-points', records.teamDrop, row => row.points, value => String(value), 'Pts')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-kills', records.teamDrop, row => row.kills, value => String(value), 'Kills')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-damage', records.teamDrop, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
         </div>
 
-        <h4 style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Times</h4>
+        <h4 id="anchor-s2-rec-day-team" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Times</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-points', records.teamDay, row => row.points, value => String(value), 'Pts', true)}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-kills', records.teamDay, row => row.kills, value => String(value), 'Kills', true)}</div>
@@ -1609,14 +1731,18 @@
         </div>
       </div>
       ${s2DropReportSelectorHtml(events)}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-ranking-columns"><div><div class="ffws-s2-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div><div class="ffws-s2-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
+      ${s2StatsEvolutionHtml(events)}
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-ranking-columns"><div id="anchor-s2-ranking-medias"><div class="ffws-s2-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div id="anchor-s2-ranking-totais"><div class="ffws-s2-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
     ` : `<section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-empty"><div><strong>Etapa ainda sem resultados</strong>Escolha a Classificatória para consultar as quedas já disputadas.</div></div></div></section>`;
 
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da WB 2026 S2')}
-      <section class="ffws-s2-panel ffws-s2-stats-filter-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Todos os blocos abaixo usam exatamente o mesmo recorte.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
-      <div class="ffws-s2-filters"><label class="ffws-s2-filter"><span>Etapa:</span><select onchange="setFFWSS2StatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('confrontations','Confrontos',options.confrontations)}${statsMultiFilter('maps','Mapa',options.maps)}</div></div></section>
+      ${s2StatsStickyNavHtml()}
+      ${summaryBlock}
+      ${filterBlock}
       ${statsBlocks}
+      ${s2StatsBackTopButtonHtml()}
     </div>`;
+    requestAnimationFrame(() => { renderS2StatsEvolutionChart(); updateCffStatsBackTopVisibility(); });
   }
   function calculateS2CffNote(kills, damage, assists, mvp, position) {
     kills = number(kills); damage = number(damage); assists = number(assists); position = number(position);
@@ -1881,11 +2007,30 @@
   };
   window.setFFWSS2SelectionWeek = week => { state.selectionTab = 'semanal'; state.selectionWeek = String(week || '1'); renderSelections(); };
   window.setFFWSS2SelectionTab = tab => { state.selectionTab = S2_SELECTION_PHASES[tab] ? tab : 'semanal'; renderSelections(); };
-  window.setFFWSS2StatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.confrontations = []; state.statsFilters.maps = []; renderStats(); };
+  window.setFFWSS2StatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.maps = []; renderStats(); };
   window.toggleFFWSS2StatsMulti = key => { document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-stats-multi-${key}`) menu.hidden = true; }); const menu = document.getElementById(`ffws-s2-stats-multi-${key}`); if (menu) menu.hidden = !menu.hidden; };
   window.clearFFWSS2StatsMulti = key => { state.statsFilters[key] = []; renderStats(); };
   window.setFFWSS2StatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; renderStats(); };
   window.ffwsS2StatsPageNav = (key, delta) => { const pages = s2StatsPageState(); pages[key] = delta === 'reset' ? 0 : number(pages[key]) + number(delta); renderStats(); };
+  window.scrollFFWSS2StatsSection = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.setFFWSS2StatsEvolutionMetric = value => { state.statsEvolution.metric = ['position','points','kills'].includes(String(value)) ? String(value) : 'position'; renderS2StatsEvolutionChart(); };
+  window.toggleFFWSS2StatsEvolutionTeam = team => {
+    const selected = new Set(state.statsEvolution.teams || []);
+    const current = [...selected].find(item => normalize(item) === normalize(team));
+    if (current) selected.delete(current); else if (selected.size < 5) selected.add(String(team));
+    state.statsEvolution.teams = [...selected];
+    document.querySelectorAll('.ffws-s2-evolution-team-buttons button').forEach(button => {
+      const text = button.getAttribute('title') || ''; button.classList.toggle('active', state.statsEvolution.teams.some(item => normalize(item) === normalize(text)));
+    });
+    renderS2StatsEvolutionChart();
+  };
+  window.updateCffStatsBackTopVisibility = () => {
+    document.querySelectorAll('.cff-stats-back-top').forEach(button => {
+      const owner = button.dataset.statsBackTop;
+      const active = owner === 's2' ? document.getElementById('ffws-br-s2-stats')?.classList.contains('active') : document.getElementById('stats')?.classList.contains('active');
+      button.classList.toggle('is-visible', Boolean(active && window.scrollY > 520));
+    });
+  };
   window.openFFWSS2DropReport = key => {
     const event = s2DropReportFindEvent(key);
     if (!event) return;
@@ -2031,6 +2176,7 @@
     if (!event.target.closest('.ffws-s2-compare-picker')) document.querySelectorAll('.ffws-s2-compare-picker-menu').forEach(menu => { menu.hidden = true; });
   });
 
+  window.addEventListener('scroll', () => window.updateCffStatsBackTopVisibility?.(), { passive: true });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && !document.getElementById('ffws-s2-drop-report-modal')?.hidden) closeFFWSS2DropReport();
   });
