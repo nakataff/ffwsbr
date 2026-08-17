@@ -36,6 +36,7 @@
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
     notesOpenMulti: '',
     notesPage: 0,
+    notesRecordPages: { drops: 0, days: 0, averages: 0 },
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
     statsStage: 'classificatoria',
@@ -1891,23 +1892,58 @@
     });
   }
 
-  function notesTeamMatchCounts() {
+  function notesParticipationEvents() {
     const f = state.notesFilters;
+    return s2DropReportAllEvents().filter(event => {
+      const stage = String(event._stage || 'classificatoria');
+      const day = String(number(event._day));
+      const drop = String(number(event.drop || event.queda || event.number));
+      const map = String(event.map || event.mapa || '');
+      return notesFilterMatch(f.stage, stage)
+        && notesFilterMatch(f.day, day)
+        && notesFilterMatch(f.map, map, normalize)
+        && notesFilterMatch(f.drop, drop);
+    });
+  }
+
+  function notesTeamMatchCounts() {
     const counts = new Map();
     const seen = new Set();
-    allPlayerEntries().forEach(entry => {
-      if (!notesFilterMatch(f.stage, entry.stage)) return;
-      if (!notesFilterMatch(f.day, String(entry.day))) return;
-      if (!notesFilterMatch(f.map, entry.map, normalize)) return;
-      if (!notesFilterMatch(f.drop, String(entry.drop))) return;
-      const teamKey = normalize(entry.team);
-      if (!teamKey) return;
-      const matchKey = `${teamKey}__${entry.stage}__${number(entry.day)}__${number(entry.drop)}`;
-      if (seen.has(matchKey)) return;
-      seen.add(matchKey);
-      counts.set(teamKey, (counts.get(teamKey) || 0) + 1);
+    notesParticipationEvents().forEach(event => {
+      eventResults(event).forEach(result => {
+        const team = result.team || result.equipe;
+        const teamKey = normalize(team);
+        if (!teamKey) return;
+        const matchKey = `${teamKey}__${s2DropReportEventKey(event)}`;
+        if (seen.has(matchKey)) return;
+        seen.add(matchKey);
+        counts.set(teamKey, (counts.get(teamKey) || 0) + 1);
+      });
     });
     return counts;
+  }
+
+  function notesDailyTeamMatchCounts() {
+    const counts = new Map();
+    const seen = new Set();
+    notesParticipationEvents().forEach(event => {
+      eventResults(event).forEach(result => {
+        const team = result.team || result.equipe;
+        const teamKey = normalize(team);
+        if (!teamKey) return;
+        const dayKey = `${event._stage}__${number(event._day)}__${teamKey}`;
+        const matchKey = `${dayKey}__${number(event.drop || event.queda || event.number)}`;
+        if (seen.has(matchKey)) return;
+        seen.add(matchKey);
+        counts.set(dayKey, (counts.get(dayKey) || 0) + 1);
+      });
+    });
+    return counts;
+  }
+
+  function resetNotesPagination() {
+    state.notesPage = 0;
+    state.notesRecordPages = { drops: 0, days: 0, averages: 0 };
   }
 
   function noteBadgeClass(note) {
@@ -1961,19 +1997,7 @@
       row.matches+=1;
     });
 
-    const dailyTeamMatchCounts = new Map();
-    const dailySeenMatches = new Set();
-    allPlayerEntries().forEach(entry => {
-      if (!notesFilterMatch(f.stage, entry.stage)) return;
-      if (!notesFilterMatch(f.day, String(entry.day))) return;
-      if (!notesFilterMatch(f.map, entry.map, normalize)) return;
-      if (!notesFilterMatch(f.drop, String(entry.drop))) return;
-      const teamKey = `${entry.stage}__${number(entry.day)}__${normalize(entry.team)}`;
-      const matchKey = `${teamKey}__${number(entry.drop)}`;
-      if (dailySeenMatches.has(matchKey)) return;
-      dailySeenMatches.add(matchKey);
-      dailyTeamMatchCounts.set(teamKey, (dailyTeamMatchCounts.get(teamKey) || 0) + 1);
-    });
+    const dailyTeamMatchCounts = notesDailyTeamMatchCounts();
 
     let dailyRows = [...dailyMap.values()].map(row => ({
       ...row,
@@ -2011,13 +2035,11 @@
       };
     });
     if (f.halfMatches !== false) {
-      if (mode === 'day') rows = rows.filter(row => row.dayCount > 0);
-      else {
-        rows = rows.filter(row => {
-          const teamMatches = teamMatchCounts.get(normalize(row.team)) || row.matches;
-          return row.matches >= Math.ceil(teamMatches / 2);
-        });
-      }
+      rows = rows.filter(row => {
+        const teamMatches = teamMatchCounts.get(normalize(row.team)) || row.matches;
+        const hasOverallParticipation = row.matches >= Math.ceil(teamMatches / 2);
+        return hasOverallParticipation && (mode !== 'day' || row.dayCount > 0);
+      });
     }
     rows.sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage);
 
@@ -2030,10 +2052,21 @@
     const maps=[...new Set(stageScopedEntries.map(entry=>entry.map).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
     const drops=!f.day.length?[]:[...new Set(stageScopedEntries.filter(entry=>notesFilterMatch(f.day,String(entry.day))).map(entry=>number(entry.drop)).filter(Boolean))].sort((a,b)=>a-b);
 
-    const topDrops=[...visibleDetailed].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
-    const topDays=[...dailyRows].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
-    const generalAverageRows=[...rows].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
-    const noteRecord=(title,list,subtitle)=>`<article class="ffws-s2-top-card"><h3>${title}</h3>${list.length?list.map((row,index)=>`<button type="button" class="ffws-s2-note-record" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><b>${index+1}º</b><span><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(subtitle(row))}</small></span><em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</em></button>`).join(''):'<div class="ffws-s2-empty-mini">Nenhum resultado neste recorte.</div>'}</article>`;
+    const eligibleDailyRows = f.halfMatches === false ? dailyRows : dailyRows.filter(row => eligibleKeys.has(row.playerKey));
+    const topDrops=[...visibleDetailed].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage);
+    const topDays=[...eligibleDailyRows].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage);
+    const generalAverageRows=[...rows].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage);
+    const noteRecord=(key,title,list,subtitle,action)=>{
+      const pageSize=4;
+      const pageCount=Math.max(1,Math.ceil(list.length/pageSize));
+      const current=Math.max(0,Math.min(number(state.notesRecordPages?.[key]),pageCount-1));
+      state.notesRecordPages[key]=current;
+      const start=current*pageSize;
+      const pageRows=list.slice(start,start+pageSize);
+      const end=Math.min(start+pageRows.length,list.length);
+      const pager=list.length>pageSize?`<div class="ffws-s2-mvp-pager ffws-s2-note-record-pager"><button type="button" aria-label="Página anterior" ${current<=0?'disabled':''} onclick="setFFWSS2NotesRecordPage('${key}',${current-1})">‹</button><span>${start+1}–${end} de ${list.length}</span><button type="button" aria-label="Próxima página" ${current>=pageCount-1?'disabled':''} onclick="setFFWSS2NotesRecordPage('${key}',${current+1})">›</button></div>`:'';
+      return `<article class="ffws-s2-top-card"><h3>${title}</h3>${pageRows.length?pageRows.map((row,index)=>`<button type="button" class="ffws-s2-note-record" onclick="${action(row)}"><b>${start+index+1}º</b><span><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(subtitle(row))}</small></span><em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</em></button>`).join(''):'<div class="ffws-s2-empty-mini">Nenhum resultado neste recorte.</div>'}${pager}</article>`;
+    };
 
     const pageSize=10;
     const pageCount=Math.max(1,Math.ceil(rows.length/pageSize));
@@ -2052,7 +2085,7 @@
       ${notesModeControl()}
       <div class="ffws-s2-filters ffws-s2-notes-filters">${notesMultiFilter('stage','Etapa',[{value:'classificatoria',label:'Classificatória'},{value:'segundaFase',label:'Segunda Fase'},{value:'final',label:'Final'}])}${notesMultiFilter('team','Equipe',teams.map(v=>({value:v,label:v})))}${notesMultiFilter('role','Posição',[{value:'RUSH',label:'Rush'},{value:'GRAN',label:'Granadeiro'},{value:'SUP',label:'Suporte'},{value:'3',label:'3º homem'}])}${notesMultiFilter('day','Dia',days.map(v=>({value:String(v),label:`Dia ${v}`})))}${notesMultiFilter('drop','Queda',drops.map(v=>({value:String(v),label:`Queda ${v}`})),{disabled:!f.day.length,title:'Escolha ao menos um dia para liberar o filtro de queda',disabledLabel:'Selecione um dia'})}${notesMultiFilter('map','Mapa',maps.map(v=>({value:v,label:v})))}${notesHalfMatchesControl()}</div>
       ${rows.length?`<div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th>Jogador</th><th>Eqp</th><th>Nota</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Ast.</th><th>Q</th><th class="hide-mobile" title="${bestLabel}">${bestLabel}</th></tr></thead><tbody>${pageRows.map((row,index)=>`<tr><td class="ffws-s2-rank">${pageStart+index+1}º</td><td><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</span></td><td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.best.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>${pager}`:'<div class="ffws-s2-empty"><div><strong>Nenhuma nota neste recorte</strong>Altere os filtros para consultar as atuações disponíveis.</div></div>'}</div></section>
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte.</p></div></div><div class="ffws-s2-top-grid">${noteRecord('Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`)}${noteRecord('Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${row.damage.toLocaleString('pt-BR')} dano`)}${noteRecord('Médias Gerais',generalAverageRows,row=>mode==='day'?`${row.dayCount} dia${row.dayCount===1?'':'s'} • ${row.matches} quedas`:`${row.matches} quedas • ${row.kills} K`)}</div></div></section>
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte. Use as setas para ver as próximas posições.</p></div></div><div class="ffws-s2-top-grid">${noteRecord('drops','Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`,row=>`openFFWSS2NoteDropReport('${jsAttr(row.stage)}',${number(row.day)},${number(row.drop)})`)}${noteRecord('days','Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${row.damage.toLocaleString('pt-BR')} dano`,row=>`openFFWSS2NoteDayReport('${jsAttr(row.stage)}',${number(row.day)})`)}${noteRecord('averages','Médias Gerais',generalAverageRows,row=>mode==='day'?`${row.dayCount} dia${row.dayCount===1?'':'s'} • ${row.matches} quedas`:`${row.matches} quedas • ${row.kills} K`,row=>`openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')`)}</div></div></section>
       ${s2NotesBackTopButtonHtml()}
     </div>`;
     requestAnimationFrame(() => window.updateCffStatsBackTopVisibility?.());
@@ -2085,7 +2118,7 @@
 
   function notesHalfMatchesControl() {
     const checked = state.notesFilters.halfMatches !== false;
-    return `<div class="ffws-s2-filter ffws-s2-notes-half-filter"><span>Participação:</span><label class="ffws-s2-notes-half-check" title="Exibe somente jogadores que disputaram pelo menos metade das quedas realizadas pela própria equipe no recorte atual"><input type="checkbox" ${checked?'checked ':''}onchange="setFFWSS2NotesHalfMatches(this.checked)"><b>50% das quedas</b></label></div>`;
+    return `<div class="ffws-s2-filter ffws-s2-notes-half-filter"><span>Participação:</span><label class="ffws-s2-notes-half-check" title="Exibe somente jogadores que disputaram pelo menos 50% das quedas realizadas pela própria equipe em todo o recorte atual"><input type="checkbox" ${checked?'checked ':''}onchange="setFFWSS2NotesHalfMatches(this.checked)"><b>50% das quedas</b></label></div>`;
   }
 
   function compareFilteredEntries() {
@@ -2307,7 +2340,7 @@
   window.setFFWSS2NotesFilter = (key, value) => {
     if (key !== 'mode') return;
     state.notesFilters.mode = String(value) === 'drop' ? 'drop' : 'day';
-    state.notesPage = 0;
+    resetNotesPagination();
     renderNotes();
   };
   window.toggleFFWSS2NotesMulti = key => {
@@ -2324,7 +2357,7 @@
     if (key === 'stage') { state.notesFilters.day = []; state.notesFilters.map = []; state.notesFilters.drop = []; }
     if (key === 'day') state.notesFilters.drop = [];
     state.notesOpenMulti = key;
-    state.notesPage = 0;
+    resetNotesPagination();
     renderNotes();
   };
   window.setFFWSS2NotesMulti = (key, value, checked) => {
@@ -2336,11 +2369,42 @@
     if (key === 'stage') { state.notesFilters.day = []; state.notesFilters.map = []; state.notesFilters.drop = []; }
     if (key === 'day') state.notesFilters.drop = [];
     state.notesOpenMulti = key;
-    state.notesPage = 0;
+    resetNotesPagination();
     renderNotes();
   };
-  window.setFFWSS2NotesHalfMatches = checked => { state.notesFilters.halfMatches = Boolean(checked); state.notesPage = 0; renderNotes(); };
+  window.setFFWSS2NotesHalfMatches = checked => { state.notesFilters.halfMatches = Boolean(checked); resetNotesPagination(); renderNotes(); };
   window.setFFWSS2NotesPage = page => { state.notesPage = Math.max(0, number(page)); renderNotes(); };
+  window.setFFWSS2NotesRecordPage = (key, page) => {
+    if (!['drops','days','averages'].includes(String(key))) return;
+    state.notesRecordPages[key] = Math.max(0, number(page));
+    renderNotes();
+  };
+  function openS2StatsReportFromNotes(mode, stage, day, drop = 0) {
+    const targetStage = ['classificatoria','segundaFase','final'].includes(String(stage)) ? String(stage) : 'classificatoria';
+    state.statsStage = targetStage;
+    state.statsFilters.stage = targetStage;
+    state.statsFilters.days = [];
+    state.statsFilters.maps = [];
+    const openWhenReady = (attempt = 0) => {
+      const anchor = document.getElementById('anchor-s2-relatorio');
+      const modal = document.getElementById('ffws-s2-drop-report-modal');
+      if (anchor && modal) {
+        anchor.scrollIntoView({ block: 'start' });
+        if (mode === 'day') window.openFFWSS2DayReport(targetStage, number(day));
+        else {
+          const event = s2DropReportAllEvents().find(item => String(item._stage) === targetStage && number(item._day) === number(day) && number(item.drop || item.queda || item.number) === number(drop));
+          if (event) window.openFFWSS2DropReport(s2DropReportEventKey(event));
+        }
+        return;
+      }
+      if (attempt < 90) requestAnimationFrame(() => openWhenReady(attempt + 1));
+    };
+    if (typeof window.navigate === 'function') window.navigate('ffws-br-s2-stats');
+    else location.hash = '#ffws-br-s2-stats';
+    requestAnimationFrame(() => openWhenReady());
+  }
+  window.openFFWSS2NoteDropReport = (stage, day, drop) => openS2StatsReportFromNotes('drop', stage, day, drop);
+  window.openFFWSS2NoteDayReport = (stage, day) => openS2StatsReportFromNotes('day', stage, day, 0);
   window.setFFWSS2CompareFilter = (key, value) => { state.compareFilters[key] = String(value); if (key === 'stage') { state.compareFilters.day = 'all'; state.compareFilters.map = 'all'; } renderCompare(); };
   window.toggleFFWSS2CompareMulti = key => {
     document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-compare-multi-${key}`) menu.hidden = true; });
