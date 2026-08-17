@@ -376,3 +376,29 @@ body.ffws-s2-drop-modal-open{overflow:hidden}
   }
   .ffws-s2-drop-player-rank{font-size:.56rem}
 }
+
+/* ===== 2026-08-16: filtros Classificatória + participação mínima Notas CFF ===== */
+.ffws-s2-classificatoria-page .ffws-s2-classification-inline-filters{
+  display:grid;
+  grid-template-columns:auto minmax(170px,1fr) auto minmax(170px,1fr) auto minmax(170px,1fr);
+  align-items:center;
+  gap:10px 12px;
+}
+.ffws-s2-classificatoria-page .ffws-s2-classification-inline-filters .ffws-season-map-label{margin-left:0!important}
+.ffws-s2-classificatoria-page .ffws-s2-classification-inline-filters select{width:100%;min-width:0}
+.ffws-s2-classificatoria-page .ffws-s2-classification-inline-filters select:disabled,
+.ffws-s2-notes-filters select:disabled{opacity:.46;cursor:not-allowed;color:#71829b}
+.ffws-s2-notes-filters .ffws-s2-filter{min-width:140px;flex:1 1 140px}
+.ffws-s2-notes-half-filter{min-width:175px!important}
+.ffws-s2-notes-half-check{min-height:38px;display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid #243b5e;border-radius:8px;background:#0b1426;color:#dcecff;cursor:pointer;user-select:none}
+.ffws-s2-notes-half-check input{width:16px;height:16px;margin:0;accent-color:#00c8ff;flex:0 0 auto}
+.ffws-s2-notes-half-check b{font-size:.78rem;white-space:nowrap}
+@media(max-width:760px){
+  .ffws-s2-classificatoria-page .ffws-s2-classification-inline-filters{grid-template-columns:1fr;gap:6px}
+  .ffws-s2-classificatoria-page .ffws-s2-classification-inline-filters label{margin-top:5px!important}
+  .ffws-s2-notes-filters{grid-template-columns:1fr 1fr}
+  .ffws-s2-notes-filters .ffws-s2-filter,.ffws-s2-notes-half-filter{min-width:0!important}
+}
+@media(max-width:420px){
+  .ffws-s2-notes-filters{grid-template-columns:1fr}
+}
