@@ -592,3 +592,27 @@ body.cff-stats-route #main-content,
 body.cff-stats-route #main-content>.container,
 body.cff-stats-route #stats.page,
 body.cff-stats-route #ffws-br-s2-stats.page{overflow-x:clip!important;overflow-y:visible!important}
+
+/* ===== 2026-08-17: Notas CFF S2 — modo por dia/queda + paginação v20 ===== */
+.ffws-s2-notes-mode-row{
+  display:flex;align-items:flex-end;gap:12px;margin:0 0 8px;padding:10px 13px;
+  border:1px solid #20304d;border-radius:14px;background:#0c1427
+}
+.ffws-s2-notes-mode-filter{width:220px;min-width:220px;flex:0 0 220px}
+.ffws-s2-notes-mode-filter select{width:100%;min-height:38px}
+
+/* Participação segue exatamente a caixa dos selects da mesma fileira. */
+.ffws-s2-notes-filters .ffws-s2-notes-half-filter{min-width:140px!important;flex:1 1 140px!important}
+.ffws-s2-notes-half-check{
+  box-sizing:border-box!important;width:100%;height:38px!important;min-height:38px!important;
+  padding:0 11px!important
+}
+.ffws-s2-notes-pager{margin-top:13px}
+
+@media(max-width:760px){
+  .ffws-s2-notes-mode-row{padding:10px}
+  .ffws-s2-notes-mode-filter{width:100%;min-width:0;flex:1 1 auto}
+}
+@media(max-width:760px){
+  .ffws-s2-notes-filters .ffws-s2-notes-half-filter{min-width:0!important}
+}

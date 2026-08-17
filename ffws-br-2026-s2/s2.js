@@ -33,7 +33,8 @@
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
     statsEvolution: { metric: 'position', teams: [] },
-    notesFilters: { stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all', halfMatches: true },
+    notesFilters: { mode: 'day', stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all', halfMatches: true },
+    notesPage: 0,
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
     statsStage: 'classificatoria',
@@ -1913,6 +1914,7 @@
     const root = document.getElementById('ffws-br-s2-notas-content');
     if (!root) return;
     const f = state.notesFilters;
+    const mode = f.mode === 'drop' ? 'drop' : 'day';
     const entries = notesFilteredEntries();
     const events = s2EventLookup();
     const detailed = entries.map(entry => {
@@ -1922,68 +1924,137 @@
       const note = calculateS2CffNote(entry.kills, entry.damage, entry.assists, entry.mvp, position);
       return { ...entry, position, note };
     });
+
     const aggregate = new Map();
     detailed.forEach(entry => {
       const key = `${normalize(entry.name)}__${normalize(entry.team)}`;
-      if (!aggregate.has(key)) aggregate.set(key,{key,name:entry.name,team:entry.team,sum:0,best:0,kills:0,damage:0,assists:0,mvps:0,matches:0});
-      const row=aggregate.get(key); row.sum+=entry.note; row.best=Math.max(row.best,entry.note); row.kills+=number(entry.kills); row.damage+=number(entry.damage); row.assists+=number(entry.assists); row.mvps+=number(entry.mvp); row.matches+=1;
+      if (!aggregate.has(key)) aggregate.set(key,{key,name:entry.name,team:entry.team,sum:0,bestDropNote:0,kills:0,damage:0,assists:0,mvps:0,matches:0});
+      const row=aggregate.get(key);
+      row.sum+=entry.note;
+      row.bestDropNote=Math.max(row.bestDropNote,entry.note);
+      row.kills+=number(entry.kills);
+      row.damage+=number(entry.damage);
+      row.assists+=number(entry.assists);
+      row.mvps+=number(entry.mvp);
+      row.matches+=1;
     });
-    const teamMatchCounts = notesTeamMatchCounts();
-    const fullDaySelection = f.day !== 'all' && f.drop === 'all' && f.map === 'all';
-    let rows=[...aggregate.values()].map(row=>{
-      const dropAverageNote = row.matches ? row.sum / row.matches : 0;
-      return {
-        ...row,
-        dropAverageNote,
-        note: fullDaySelection ? calculateS2DailyCffNote(row.kills, row.damage, row.mvps, row.matches, f.stage) : dropAverageNote
-      };
+
+    const dailyMap = new Map();
+    detailed.forEach(entry => {
+      const playerKey = `${normalize(entry.name)}__${normalize(entry.team)}`;
+      const key = `${playerKey}__${entry.stage}__${number(entry.day)}`;
+      if (!dailyMap.has(key)) dailyMap.set(key,{key,playerKey,name:entry.name,team:entry.team,stage:entry.stage,day:number(entry.day),kills:0,damage:0,assists:0,mvp:0,notes:0,matches:0});
+      const row=dailyMap.get(key);
+      row.kills+=number(entry.kills);
+      row.damage+=number(entry.damage);
+      row.assists+=number(entry.assists);
+      row.mvp+=number(entry.mvp);
+      row.notes+=entry.note;
+      row.matches+=1;
     });
-    if (f.halfMatches !== false) {
-      rows = rows.filter(row => {
-        const teamMatches = teamMatchCounts.get(normalize(row.team)) || row.matches;
-        return row.matches >= Math.ceil(teamMatches / 2);
-      });
-    }
-    rows.sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage);
-    const eligibleKeys = new Set(rows.map(row => row.key));
-    const visibleDetailed = f.halfMatches === false ? detailed : detailed.filter(entry => eligibleKeys.has(`${normalize(entry.name)}__${normalize(entry.team)}`));
-    const teams=[...new Set(allPlayerEntries().map(entry=>entry.team).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    const days=[...new Set(allPlayerEntries().filter(entry=>f.stage==='geral'||entry.stage===f.stage).map(entry=>number(entry.day)).filter(Boolean))].sort((a,b)=>a-b);
-    const maps=[...new Set(allPlayerEntries().filter(entry=>f.stage==='geral'||entry.stage===f.stage).map(entry=>entry.map).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    const drops=f.day==='all'?[]:[...new Set(allPlayerEntries().filter(entry=>(f.stage==='geral'||entry.stage===f.stage)&&String(entry.day)===String(f.day)).map(entry=>number(entry.drop)).filter(Boolean))].sort((a,b)=>a-b);
-    const topDrops=[...visibleDetailed].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
-    const dayMap=new Map();
-    visibleDetailed.forEach(entry=>{
-      const key=`${normalize(entry.name)}__${normalize(entry.team)}__${entry.stage}__${entry.day}`;
-      if(!dayMap.has(key))dayMap.set(key,{name:entry.name,team:entry.team,stage:entry.stage,day:entry.day,kills:0,damage:0,mvp:0,notes:0,matches:0});
-      const row=dayMap.get(key);row.kills+=number(entry.kills);row.damage+=number(entry.damage);row.mvp+=number(entry.mvp);row.notes+=entry.note;row.matches+=1;
-    });
+
     const dailyTeamMatchCounts = new Map();
     const dailySeenMatches = new Set();
     allPlayerEntries().forEach(entry => {
       if (f.stage !== 'geral' && String(entry.stage) !== f.stage) return;
+      if (f.day !== 'all' && String(entry.day) !== String(f.day)) return;
+      if (f.map !== 'all' && normalize(entry.map) !== normalize(f.map)) return;
+      if (f.drop !== 'all' && String(entry.drop) !== String(f.drop)) return;
       const teamKey = `${entry.stage}__${number(entry.day)}__${normalize(entry.team)}`;
       const matchKey = `${teamKey}__${number(entry.drop)}`;
       if (dailySeenMatches.has(matchKey)) return;
       dailySeenMatches.add(matchKey);
       dailyTeamMatchCounts.set(teamKey, (dailyTeamMatchCounts.get(teamKey) || 0) + 1);
     });
-    const topDays=[...dayMap.values()].filter(row => {
-      const teamMatches = dailyTeamMatchCounts.get(`${row.stage}__${number(row.day)}__${normalize(row.team)}`) || row.matches;
-      return f.halfMatches === false || row.matches >= Math.ceil(teamMatches / 2);
-    }).map(row=>({
+
+    let dailyRows = [...dailyMap.values()].map(row => ({
       ...row,
-      dropAverageNote: row.matches?row.notes/row.matches:0,
+      dropAverageNote: row.matches ? row.notes / row.matches : 0,
       note: calculateS2DailyCffNote(row.kills,row.damage,row.mvp,row.matches,row.stage)
-    })).sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
-    const generalAverageRows=[...rows].map(row=>({...row,note:row.dropAverageNote})).sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
+    }));
+    if (f.halfMatches !== false) {
+      dailyRows = dailyRows.filter(row => {
+        const teamMatches = dailyTeamMatchCounts.get(`${row.stage}__${number(row.day)}__${normalize(row.team)}`) || row.matches;
+        return row.matches >= Math.ceil(teamMatches / 2);
+      });
+    }
+
+    const dailyByPlayer = new Map();
+    dailyRows.forEach(day => {
+      if (!dailyByPlayer.has(day.playerKey)) dailyByPlayer.set(day.playerKey,{sum:0,best:0,days:0});
+      const row=dailyByPlayer.get(day.playerKey);
+      row.sum+=day.note;
+      row.best=Math.max(row.best,day.note);
+      row.days+=1;
+    });
+
+    const teamMatchCounts = notesTeamMatchCounts();
+    let rows=[...aggregate.values()].map(row=>{
+      const dropAverageNote = row.matches ? row.sum / row.matches : 0;
+      const dayStats = dailyByPlayer.get(row.key) || {sum:0,best:0,days:0};
+      const dailyAverageNote = dayStats.days ? dayStats.sum / dayStats.days : 0;
+      return {
+        ...row,
+        dropAverageNote,
+        dailyAverageNote,
+        dayCount:dayStats.days,
+        note:mode==='day'?dailyAverageNote:dropAverageNote,
+        best:mode==='day'?dayStats.best:row.bestDropNote
+      };
+    });
+    if (f.halfMatches !== false) {
+      if (mode === 'day') rows = rows.filter(row => row.dayCount > 0);
+      else {
+        rows = rows.filter(row => {
+          const teamMatches = teamMatchCounts.get(normalize(row.team)) || row.matches;
+          return row.matches >= Math.ceil(teamMatches / 2);
+        });
+      }
+    }
+    rows.sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage);
+
+    const eligibleKeys = new Set(rows.map(row => row.key));
+    const visibleDetailed = f.halfMatches === false ? detailed : detailed.filter(entry => eligibleKeys.has(`${normalize(entry.name)}__${normalize(entry.team)}`));
+    const teams=[...new Set(allPlayerEntries().map(entry=>entry.team).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const days=[...new Set(allPlayerEntries().filter(entry=>f.stage==='geral'||entry.stage===f.stage).map(entry=>number(entry.day)).filter(Boolean))].sort((a,b)=>a-b);
+    const maps=[...new Set(allPlayerEntries().filter(entry=>f.stage==='geral'||entry.stage===f.stage).map(entry=>entry.map).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const drops=f.day==='all'?[]:[...new Set(allPlayerEntries().filter(entry=>(f.stage==='geral'||entry.stage===f.stage)&&String(entry.day)===String(f.day)).map(entry=>number(entry.drop)).filter(Boolean))].sort((a,b)=>a-b);
+
+    const topDrops=[...visibleDetailed].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
+    const topDays=[...dailyRows].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
+    const generalAverageRows=[...rows].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
     const noteRecord=(title,list,subtitle)=>`<article class="ffws-s2-top-card"><h3>${title}</h3>${list.length?list.map((row,index)=>`<button type="button" class="ffws-s2-note-record" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><b>${index+1}º</b><span><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(subtitle(row))}</small></span><em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</em></button>`).join(''):'<div class="ffws-s2-empty-mini">Nenhum resultado neste recorte.</div>'}</article>`;
+
+    const pageSize=10;
+    const pageCount=Math.max(1,Math.ceil(rows.length/pageSize));
+    state.notesPage=Math.max(0,Math.min(number(state.notesPage),pageCount-1));
+    const pageStart=state.notesPage*pageSize;
+    const pageRows=rows.slice(pageStart,pageStart+pageSize);
+    const pageEnd=Math.min(pageStart+pageRows.length,rows.length);
+    const pager=rows.length>pageSize?`<div class="ffws-s2-mvp-pager ffws-s2-notes-pager"><button type="button" aria-label="Ranking anterior" ${state.notesPage<=0?'disabled':''} onclick="setFFWSS2NotesPage(${state.notesPage-1})">‹</button><span>${pageStart+1}–${pageEnd} de ${rows.length}</span><button type="button" aria-label="Próximo ranking" ${state.notesPage>=pageCount-1?'disabled':''} onclick="setFFWSS2NotesPage(${state.notesPage+1})">›</button></div>`:'';
+    const rankingDescription=mode==='day'
+      ? 'Por dia, a nota geral é a média das Notas do Dia, calculadas pelo desempenho acumulado de cada dia. Esse é o modo padrão.'
+      : 'Por queda, a nota geral é a média direta das avaliações de cada queda.';
+    const bestLabel=mode==='day'?'Melhor dia':'Melhor queda';
+
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Notas CFF', 'Avaliações por queda e por dia da Central Free Fire')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Ranking de Notas</h2><p>A nota por queda combina abates, dano, assistências, MVP e posição final da equipe. Ao selecionar um dia inteiro, a Nota do Dia é recalculada pelo desempenho acumulado, no mesmo sistema da S1.</p></div><span class="ffws-s2-badge">${visibleDetailed.length} atuações</span></div>
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Ranking de Notas</h2><p>${rankingDescription}</p></div><span class="ffws-s2-badge">${visibleDetailed.length} atuações</span></div>
+      ${notesModeControl()}
       <div class="ffws-s2-filters ffws-s2-notes-filters">${notesSelect('stage','Etapa',[['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']])}${notesSelect('team','Equipe',[['all','Todas'],...teams.map(v=>[v,v])])}${notesSelect('role','Posição',[['all','Todas'],['RUSH','Rush'],['GRAN','Granadeiro'],['SUP','Suporte'],['3','3º homem']])}${notesSelect('day','Dia',[['all','Todos'],...days.map(v=>[String(v),`Dia ${v}`])])}${notesSelect('drop','Queda',f.day==='all'?[['all','Selecione um dia']]:[['all','Todas'],...drops.map(v=>[String(v),`Queda ${v}`])],{disabled:f.day==='all',title:'Escolha um dia para liberar o filtro de queda'})}${notesSelect('map','Mapa',[['all','Todos'],...maps.map(v=>[v,v])])}${notesHalfMatchesControl()}</div>
-      ${rows.length?`<div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th>Jogador</th><th>Eqp</th><th>Nota</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Ast.</th><th>Q</th><th class="hide-mobile">Melhor</th></tr></thead><tbody>${rows.map((row,index)=>`<tr><td class="ffws-s2-rank">${index+1}º</td><td><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</span></td><td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.best.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="ffws-s2-empty"><div><strong>Nenhuma nota neste recorte</strong>Altere os filtros para consultar as atuações disponíveis.</div></div>'}</div></section>
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte.</p></div></div><div class="ffws-s2-top-grid">${noteRecord('Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`)}${noteRecord('Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${row.damage.toLocaleString('pt-BR')} dano`)}${noteRecord('Médias Gerais',generalAverageRows,row=>`${row.matches} quedas • ${row.kills} K`)}</div></div></section>
+      ${rows.length?`<div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th>Jogador</th><th>Eqp</th><th>Nota</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Ast.</th><th>Q</th><th class="hide-mobile" title="${bestLabel}">${bestLabel}</th></tr></thead><tbody>${pageRows.map((row,index)=>`<tr><td class="ffws-s2-rank">${pageStart+index+1}º</td><td><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</span></td><td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.best.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>${pager}`:'<div class="ffws-s2-empty"><div><strong>Nenhuma nota neste recorte</strong>Altere os filtros para consultar as atuações disponíveis.</div></div>'}</div></section>
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte.</p></div></div><div class="ffws-s2-top-grid">${noteRecord('Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`)}${noteRecord('Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${row.damage.toLocaleString('pt-BR')} dano`)}${noteRecord('Médias Gerais',generalAverageRows,row=>mode==='day'?`${row.dayCount} dia${row.dayCount===1?'':'s'} • ${row.matches} quedas`:`${row.matches} quedas • ${row.kills} K`)}</div></div></section>
+      ${s2NotesBackTopButtonHtml()}
     </div>`;
+    requestAnimationFrame(() => window.updateCffStatsBackTopVisibility?.());
+  }
+
+  function notesModeControl() {
+    const selected = state.notesFilters.mode === 'drop' ? 'drop' : 'day';
+    return `<div class="ffws-s2-notes-mode-row"><label class="ffws-s2-filter ffws-s2-notes-mode-filter"><span>Cálculo do ranking:</span><select onchange="setFFWSS2NotesFilter('mode',this.value)"><option value="day"${selected==='day'?' selected':''}>Por dia</option><option value="drop"${selected==='drop'?' selected':''}>Por queda</option></select></label></div>`;
+  }
+
+  function s2NotesBackTopButtonHtml() {
+    return '<button type="button" class="cff-stats-back-top" data-stats-back-top="notes" onclick="window.scrollTo({top:0,behavior:\'smooth\'})" aria-label="Voltar ao topo" title="Voltar ao topo">↑</button>';
   }
 
   function notesSelect(key, label, options, config = {}) {
@@ -2143,7 +2214,11 @@
   window.updateCffStatsBackTopVisibility = () => {
     document.querySelectorAll('.cff-stats-back-top').forEach(button => {
       const owner = button.dataset.statsBackTop;
-      const active = owner === 's2' ? document.getElementById('ffws-br-s2-stats')?.classList.contains('active') : document.getElementById('stats')?.classList.contains('active');
+      const active = owner === 's2'
+        ? document.getElementById('ffws-br-s2-stats')?.classList.contains('active')
+        : owner === 'notes'
+          ? document.getElementById('ffws-br-s2-notas')?.classList.contains('active')
+          : document.getElementById('stats')?.classList.contains('active');
       button.classList.toggle('is-visible', Boolean(active && window.scrollY > 520));
     });
   };
@@ -2211,12 +2286,15 @@
   window.clearFFWSS2DropReportPlayerTeams = () => { state.dropReport.playerTeams = []; renderFFWSS2DropReportModal(); };
   window.setFFWSS2NotesFilter = (key, value) => {
     if (key === 'drop' && state.notesFilters.day === 'all') return;
-    state.notesFilters[key] = String(value);
+    if (key === 'mode') state.notesFilters.mode = String(value) === 'drop' ? 'drop' : 'day';
+    else state.notesFilters[key] = String(value);
     if (key === 'stage') { state.notesFilters.day = 'all'; state.notesFilters.map = 'all'; state.notesFilters.drop = 'all'; }
     if (key === 'day') state.notesFilters.drop = 'all';
+    state.notesPage = 0;
     renderNotes();
   };
-  window.setFFWSS2NotesHalfMatches = checked => { state.notesFilters.halfMatches = Boolean(checked); renderNotes(); };
+  window.setFFWSS2NotesHalfMatches = checked => { state.notesFilters.halfMatches = Boolean(checked); state.notesPage = 0; renderNotes(); };
+  window.setFFWSS2NotesPage = page => { state.notesPage = Math.max(0, number(page)); renderNotes(); };
   window.setFFWSS2CompareFilter = (key, value) => { state.compareFilters[key] = String(value); if (key === 'stage') { state.compareFilters.day = 'all'; state.compareFilters.map = 'all'; } renderCompare(); };
   window.toggleFFWSS2CompareMulti = key => {
     document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-compare-multi-${key}`) menu.hidden = true; });
