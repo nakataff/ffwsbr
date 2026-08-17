@@ -33,7 +33,8 @@
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
     statsEvolution: { metric: 'position', teams: [] },
-    notesFilters: { mode: 'day', stage: 'classificatoria', team: 'all', role: 'all', day: 'all', map: 'all', drop: 'all', halfMatches: true },
+    notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
+    notesOpenMulti: '',
     notesPage: 0,
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
@@ -1869,17 +1870,24 @@
     return lookup;
   }
 
+  function notesFilterMatch(list, value, normalizer = String) {
+    const selected = Array.isArray(list) ? list : [];
+    if (!selected.length) return true;
+    const target = normalizer(value);
+    return selected.some(item => normalizer(item) === target);
+  }
+
   function notesFilteredEntries() {
     const f = state.notesFilters;
     return allPlayerEntries().filter(entry => {
       const meta = rosterPlayerByName(entry.name, entry.team);
       const role = String(entry.roleShort || meta?.roleShort || '').toUpperCase();
-      return (f.stage === 'geral' || String(entry.stage) === f.stage)
-        && (f.team === 'all' || normalize(entry.team) === normalize(f.team))
-        && (f.role === 'all' || role === f.role)
-        && (f.day === 'all' || String(entry.day) === String(f.day))
-        && (f.map === 'all' || normalize(entry.map) === normalize(f.map))
-        && (f.drop === 'all' || String(entry.drop) === String(f.drop));
+      return notesFilterMatch(f.stage, entry.stage)
+        && notesFilterMatch(f.team, entry.team, normalize)
+        && notesFilterMatch(f.role, role, value => String(value || '').toUpperCase())
+        && notesFilterMatch(f.day, String(entry.day))
+        && notesFilterMatch(f.map, entry.map, normalize)
+        && notesFilterMatch(f.drop, String(entry.drop));
     });
   }
 
@@ -1888,10 +1896,10 @@
     const counts = new Map();
     const seen = new Set();
     allPlayerEntries().forEach(entry => {
-      if (f.stage !== 'geral' && String(entry.stage) !== f.stage) return;
-      if (f.day !== 'all' && String(entry.day) !== String(f.day)) return;
-      if (f.map !== 'all' && normalize(entry.map) !== normalize(f.map)) return;
-      if (f.drop !== 'all' && String(entry.drop) !== String(f.drop)) return;
+      if (!notesFilterMatch(f.stage, entry.stage)) return;
+      if (!notesFilterMatch(f.day, String(entry.day))) return;
+      if (!notesFilterMatch(f.map, entry.map, normalize)) return;
+      if (!notesFilterMatch(f.drop, String(entry.drop))) return;
       const teamKey = normalize(entry.team);
       if (!teamKey) return;
       const matchKey = `${teamKey}__${entry.stage}__${number(entry.day)}__${number(entry.drop)}`;
@@ -1956,10 +1964,10 @@
     const dailyTeamMatchCounts = new Map();
     const dailySeenMatches = new Set();
     allPlayerEntries().forEach(entry => {
-      if (f.stage !== 'geral' && String(entry.stage) !== f.stage) return;
-      if (f.day !== 'all' && String(entry.day) !== String(f.day)) return;
-      if (f.map !== 'all' && normalize(entry.map) !== normalize(f.map)) return;
-      if (f.drop !== 'all' && String(entry.drop) !== String(f.drop)) return;
+      if (!notesFilterMatch(f.stage, entry.stage)) return;
+      if (!notesFilterMatch(f.day, String(entry.day))) return;
+      if (!notesFilterMatch(f.map, entry.map, normalize)) return;
+      if (!notesFilterMatch(f.drop, String(entry.drop))) return;
       const teamKey = `${entry.stage}__${number(entry.day)}__${normalize(entry.team)}`;
       const matchKey = `${teamKey}__${number(entry.drop)}`;
       if (dailySeenMatches.has(matchKey)) return;
@@ -2015,10 +2023,12 @@
 
     const eligibleKeys = new Set(rows.map(row => row.key));
     const visibleDetailed = f.halfMatches === false ? detailed : detailed.filter(entry => eligibleKeys.has(`${normalize(entry.name)}__${normalize(entry.team)}`));
-    const teams=[...new Set(allPlayerEntries().map(entry=>entry.team).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    const days=[...new Set(allPlayerEntries().filter(entry=>f.stage==='geral'||entry.stage===f.stage).map(entry=>number(entry.day)).filter(Boolean))].sort((a,b)=>a-b);
-    const maps=[...new Set(allPlayerEntries().filter(entry=>f.stage==='geral'||entry.stage===f.stage).map(entry=>entry.map).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    const drops=f.day==='all'?[]:[...new Set(allPlayerEntries().filter(entry=>(f.stage==='geral'||entry.stage===f.stage)&&String(entry.day)===String(f.day)).map(entry=>number(entry.drop)).filter(Boolean))].sort((a,b)=>a-b);
+    const allEntries = allPlayerEntries();
+    const stageScopedEntries = allEntries.filter(entry => notesFilterMatch(f.stage, entry.stage));
+    const teams=[...new Set(allEntries.map(entry=>entry.team).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const days=[...new Set(stageScopedEntries.map(entry=>number(entry.day)).filter(Boolean))].sort((a,b)=>a-b);
+    const maps=[...new Set(stageScopedEntries.map(entry=>entry.map).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const drops=!f.day.length?[]:[...new Set(stageScopedEntries.filter(entry=>notesFilterMatch(f.day,String(entry.day))).map(entry=>number(entry.drop)).filter(Boolean))].sort((a,b)=>a-b);
 
     const topDrops=[...visibleDetailed].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
     const topDays=[...dailyRows].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
@@ -2040,7 +2050,7 @@
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Notas CFF', 'Avaliações por queda e por dia da Central Free Fire')}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Ranking de Notas</h2><p>${rankingDescription}</p></div><span class="ffws-s2-badge">${visibleDetailed.length} atuações</span></div>
       ${notesModeControl()}
-      <div class="ffws-s2-filters ffws-s2-notes-filters">${notesSelect('stage','Etapa',[['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']])}${notesSelect('team','Equipe',[['all','Todas'],...teams.map(v=>[v,v])])}${notesSelect('role','Posição',[['all','Todas'],['RUSH','Rush'],['GRAN','Granadeiro'],['SUP','Suporte'],['3','3º homem']])}${notesSelect('day','Dia',[['all','Todos'],...days.map(v=>[String(v),`Dia ${v}`])])}${notesSelect('drop','Queda',f.day==='all'?[['all','Selecione um dia']]:[['all','Todas'],...drops.map(v=>[String(v),`Queda ${v}`])],{disabled:f.day==='all',title:'Escolha um dia para liberar o filtro de queda'})}${notesSelect('map','Mapa',[['all','Todos'],...maps.map(v=>[v,v])])}${notesHalfMatchesControl()}</div>
+      <div class="ffws-s2-filters ffws-s2-notes-filters">${notesMultiFilter('stage','Etapa',[{value:'classificatoria',label:'Classificatória'},{value:'segundaFase',label:'Segunda Fase'},{value:'final',label:'Final'}])}${notesMultiFilter('team','Equipe',teams.map(v=>({value:v,label:v})))}${notesMultiFilter('role','Posição',[{value:'RUSH',label:'Rush'},{value:'GRAN',label:'Granadeiro'},{value:'SUP',label:'Suporte'},{value:'3',label:'3º homem'}])}${notesMultiFilter('day','Dia',days.map(v=>({value:String(v),label:`Dia ${v}`})))}${notesMultiFilter('drop','Queda',drops.map(v=>({value:String(v),label:`Queda ${v}`})),{disabled:!f.day.length,title:'Escolha ao menos um dia para liberar o filtro de queda',disabledLabel:'Selecione um dia'})}${notesMultiFilter('map','Mapa',maps.map(v=>({value:v,label:v})))}${notesHalfMatchesControl()}</div>
       ${rows.length?`<div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th>Jogador</th><th>Eqp</th><th>Nota</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Ast.</th><th>Q</th><th class="hide-mobile" title="${bestLabel}">${bestLabel}</th></tr></thead><tbody>${pageRows.map((row,index)=>`<tr><td class="ffws-s2-rank">${pageStart+index+1}º</td><td><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</span></td><td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.best.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>${pager}`:'<div class="ffws-s2-empty"><div><strong>Nenhuma nota neste recorte</strong>Altere os filtros para consultar as atuações disponíveis.</div></div>'}</div></section>
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte.</p></div></div><div class="ffws-s2-top-grid">${noteRecord('Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`)}${noteRecord('Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${row.damage.toLocaleString('pt-BR')} dano`)}${noteRecord('Médias Gerais',generalAverageRows,row=>mode==='day'?`${row.dayCount} dia${row.dayCount===1?'':'s'} • ${row.matches} quedas`:`${row.matches} quedas • ${row.kills} K`)}</div></div></section>
       ${s2NotesBackTopButtonHtml()}
@@ -2057,10 +2067,20 @@
     return '<button type="button" class="cff-stats-back-top" data-stats-back-top="notes" onclick="window.scrollTo({top:0,behavior:\'smooth\'})" aria-label="Voltar ao topo" title="Voltar ao topo">↑</button>';
   }
 
-  function notesSelect(key, label, options, config = {}) {
-    const selected = String(state.notesFilters[key]);
+  function notesMultiFilter(key, label, options, config = {}) {
+    const selected = Array.isArray(state.notesFilters[key]) ? state.notesFilters[key] : [];
     const disabled = Boolean(config.disabled);
-    return `<label class="ffws-s2-filter"><span>${escapeHtml(label)}:</span><select onchange="setFFWSS2NotesFilter('${key}',this.value)"${disabled?' disabled':''}${config.title?` title="${escapeHtml(config.title)}"`:''}>${options.map(([value,text])=>`<option value="${escapeHtml(value)}"${selected===String(value)?' selected':''}>${escapeHtml(text)}</option>`).join('')}</select></label>`;
+    const buttonLabel = disabled && config.disabledLabel
+      ? config.disabledLabel
+      : selected.length ? `${selected.length} selecionado${selected.length > 1 ? 's' : ''}` : 'Todos';
+    const open = !disabled && state.notesOpenMulti === key;
+    return `<div class="ffws-s2-filter"><span>${escapeHtml(label)}:</span><div class="ffws-s2-multi ffws-s2-notes-multi" data-s2-notes-multi="${escapeHtml(key)}">
+      <button type="button" onclick="toggleFFWSS2NotesMulti('${key}')"${disabled?' disabled':''}${config.title?` title="${escapeHtml(config.title)}"`:''}><b>${escapeHtml(buttonLabel)}</b><span>⌄</span></button>
+      <div class="ffws-s2-multi-menu" id="ffws-s2-notes-multi-${escapeHtml(key)}"${open?'':' hidden'}>
+        <label><input type="checkbox" ${selected.length===0?'checked ':''}onchange="clearFFWSS2NotesMulti('${key}')"> Todos</label>
+        ${options.map(option=>`<label><input type="checkbox" value="${escapeHtml(option.value)}" ${selected.includes(String(option.value))?'checked ':''}onchange="setFFWSS2NotesMulti('${key}',this.value,this.checked)"> ${escapeHtml(option.label)}</label>`).join('')}
+      </div>
+    </div></div>`;
   }
 
   function notesHalfMatchesControl() {
@@ -2285,11 +2305,37 @@
   };
   window.clearFFWSS2DropReportPlayerTeams = () => { state.dropReport.playerTeams = []; renderFFWSS2DropReportModal(); };
   window.setFFWSS2NotesFilter = (key, value) => {
-    if (key === 'drop' && state.notesFilters.day === 'all') return;
-    if (key === 'mode') state.notesFilters.mode = String(value) === 'drop' ? 'drop' : 'day';
-    else state.notesFilters[key] = String(value);
-    if (key === 'stage') { state.notesFilters.day = 'all'; state.notesFilters.map = 'all'; state.notesFilters.drop = 'all'; }
-    if (key === 'day') state.notesFilters.drop = 'all';
+    if (key !== 'mode') return;
+    state.notesFilters.mode = String(value) === 'drop' ? 'drop' : 'day';
+    state.notesPage = 0;
+    renderNotes();
+  };
+  window.toggleFFWSS2NotesMulti = key => {
+    if (key === 'drop' && !state.notesFilters.day.length) return;
+    const nextOpen = state.notesOpenMulti === key ? '' : key;
+    state.notesOpenMulti = nextOpen;
+    document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => {
+      menu.hidden = menu.id !== `ffws-s2-notes-multi-${key}` || !nextOpen;
+    });
+  };
+  window.clearFFWSS2NotesMulti = key => {
+    if (!Array.isArray(state.notesFilters[key])) return;
+    state.notesFilters[key] = [];
+    if (key === 'stage') { state.notesFilters.day = []; state.notesFilters.map = []; state.notesFilters.drop = []; }
+    if (key === 'day') state.notesFilters.drop = [];
+    state.notesOpenMulti = key;
+    state.notesPage = 0;
+    renderNotes();
+  };
+  window.setFFWSS2NotesMulti = (key, value, checked) => {
+    if (!Array.isArray(state.notesFilters[key])) return;
+    if (key === 'drop' && !state.notesFilters.day.length) return;
+    const selected = new Set(state.notesFilters[key]);
+    checked ? selected.add(String(value)) : selected.delete(String(value));
+    state.notesFilters[key] = [...selected];
+    if (key === 'stage') { state.notesFilters.day = []; state.notesFilters.map = []; state.notesFilters.drop = []; }
+    if (key === 'day') state.notesFilters.drop = [];
+    state.notesOpenMulti = key;
     state.notesPage = 0;
     renderNotes();
   };
@@ -2366,7 +2412,10 @@
   };
 
   document.addEventListener('click', event => {
-    if (!event.target.closest('.ffws-s2-multi')) document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { menu.hidden = true; });
+    if (!event.target.closest('.ffws-s2-multi')) {
+      document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { menu.hidden = true; });
+      state.notesOpenMulti = '';
+    }
     if (!event.target.closest('.ffws-s2-compare-picker')) document.querySelectorAll('.ffws-s2-compare-picker-menu').forEach(menu => { menu.hidden = true; });
   });
 

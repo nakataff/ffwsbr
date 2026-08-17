@@ -616,3 +616,14 @@ body.cff-stats-route #ffws-br-s2-stats.page{overflow-x:clip!important;overflow-y
 @media(max-width:760px){
   .ffws-s2-notes-filters .ffws-s2-notes-half-filter{min-width:0!important}
 }
+
+/* ===== 2026-08-17: Notas CFF S2 — filtros múltiplos v21 ===== */
+.ffws-s2-notes-filters{overflow:visible}
+.ffws-s2-notes-filters .ffws-s2-multi{width:100%;min-width:0}
+.ffws-s2-notes-filters .ffws-s2-multi>button{box-sizing:border-box;height:38px;min-height:38px}
+.ffws-s2-notes-filters .ffws-s2-multi>button:disabled{opacity:.46;cursor:not-allowed;color:#71829b}
+.ffws-s2-notes-filters .ffws-s2-multi-menu{z-index:220;min-width:max(100%,260px)}
+.ffws-s2-notes-filters .ffws-s2-filter:nth-last-child(2) .ffws-s2-multi-menu{left:auto;right:0}
+@media(max-width:760px){
+  .ffws-s2-notes-filters .ffws-s2-multi-menu{left:12px!important;right:12px!important;min-width:0}
+}
