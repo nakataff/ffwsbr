@@ -1232,7 +1232,15 @@
     });
     const rankedTeams = [...teamMap.values()].sort((a, b) => b.points - a.points || b.booyah - a.booyah || b.kills - a.kills || b.damage - a.damage || a.team.localeCompare(b.team, 'pt-BR'));
     rankedTeams.forEach((row, index) => { row.position = index + 1; });
-    const players = [...playerMap.values()].map(row => ({ ...row, note: row.matches ? row.noteSum / row.matches : 0 }));
+    const minDailyMatches = Math.max(1, Math.ceil(reports.length / 2));
+    const players = [...playerMap.values()].map(row => {
+      const dropAverageNote = row.matches ? row.noteSum / row.matches : 0;
+      return {
+        ...row,
+        dropAverageNote,
+        note: row.matches >= minDailyMatches ? calculateS2DailyCffNote(row.kills, row.damage, row.mvp, row.matches, stage) : dropAverageNote
+      };
+    });
     const topBy = (rows, getter) => [...rows].sort((a, b) => number(getter(b)) - number(getter(a)))[0] || null;
     const maps = [];
     reports.forEach(report => { if (report.map && !maps.some(map => normalize(map) === normalize(report.map))) maps.push(report.map); });
@@ -1774,6 +1782,82 @@
     return Number(Math.min(note, 10).toFixed(1));
   }
 
+
+  const s2DailyNoteContextCache = new Map();
+
+  function s2Percentile(values, percentile) {
+    const sorted = (values || []).map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+    if (!sorted.length) return 0;
+    const position = (sorted.length - 1) * percentile;
+    const lower = Math.floor(position);
+    const upper = Math.ceil(position);
+    if (lower === upper) return sorted[lower];
+    return sorted[lower] + (sorted[upper] - sorted[lower]) * (position - lower);
+  }
+
+  function s2DailyNoteContext(stage = 'classificatoria') {
+    const stageKey = String(stage || 'classificatoria');
+    if (s2DailyNoteContextCache.has(stageKey)) return s2DailyNoteContextCache.get(stageKey);
+    const daily = new Map();
+    allPlayerEntries().forEach(entry => {
+      if (stageKey !== 'geral' && String(entry.stage) !== stageKey) return;
+      const key = `${normalize(entry.name || entry.player)}__${normalize(entry.team)}__${entry.stage}__${number(entry.day)}`;
+      if (!daily.has(key)) daily.set(key, { kills: 0, damage: 0, mvp: 0, matches: 0 });
+      const row = daily.get(key);
+      row.kills += number(entry.kills);
+      row.damage += number(entry.damage);
+      row.mvp += number(entry.mvp || entry.mvps);
+      row.matches += number(entry.matches || 1);
+    });
+    const rows = [...daily.values()].filter(row => row.matches > 0);
+    const kills = rows.map(row => row.kills);
+    const damage = rows.map(row => row.damage);
+    const mean = values => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+    const context = {
+      avgKills: Math.max(mean(kills), 5),
+      avgDamage: Math.max(mean(damage), 6500),
+      p20Kills: s2Percentile(kills, 0.2) || 2,
+      p20Damage: s2Percentile(damage, 0.2) || 3500,
+      p80Kills: s2Percentile(kills, 0.8) || 12,
+      p80Damage: s2Percentile(damage, 0.8) || 14000,
+      maxKills: Math.max(30, ...kills),
+      maxDamage: Math.max(24000, ...damage)
+    };
+    s2DailyNoteContextCache.set(stageKey, context);
+    return context;
+  }
+
+  function calculateS2DailyCffNote(kills, damage, mvps, matches = 6, stage = 'classificatoria') {
+    kills = number(kills); damage = number(damage); mvps = number(mvps); matches = Math.max(1, number(matches) || 6);
+    const context = s2DailyNoteContext(stage);
+    const paceFactor = 6 / matches;
+    const normalizedKills = kills * paceFactor;
+    const normalizedDamage = damage * paceFactor;
+
+    if (kills <= 1 && damage < 3500 && mvps === 0) {
+      const lowNote = 3.6 + 0.25 * kills + 0.25 * Math.min(damage / 3500, 1);
+      return Number(Math.max(3.5, Math.min(lowNote, 4.2)).toFixed(1));
+    }
+
+    let impact = (normalizedKills / Math.max(context.avgKills, 1)) * 0.7
+      + (normalizedDamage / Math.max(context.avgDamage, 1)) * 0.25
+      + 0.2 * (context.maxKills ? normalizedKills / context.maxKills : 0);
+    impact += Math.min(0.05 * mvps, 0.2);
+    impact = Math.max(impact, 0.2);
+
+    let note = 6.35 + 1.75 * Math.log2(impact);
+    if (normalizedKills <= context.p20Kills && normalizedDamage <= context.p20Damage) note -= 0.35;
+    if (normalizedKills >= context.p80Kills || normalizedDamage >= context.p80Damage) note += 0.25;
+    if (kills >= 3 && damage >= 5000) note = Math.max(note, 4.9);
+    if (kills >= 5 || damage >= 7500) note = Math.max(note, 5.8);
+    if (kills >= Math.max(8, Math.round(context.avgKills)) || damage >= Math.max(10000, 1.25 * context.avgDamage)) note = Math.max(note, 6.3);
+    if (kills >= 18 || damage >= 18000) note = Math.max(note, 8);
+    if (kills >= 24 || damage >= 23000) note = Math.max(note, 9);
+    if (kills >= 30) note = 10;
+    note += Math.min(0.1 * mvps, 0.3);
+    return Number(Math.max(3.5, Math.min(note, 10)).toFixed(1));
+  }
+
   function s2EventLookup() {
     const lookup = new Map();
     ['classificatoria','segundaFase','final'].forEach(stage => stageEvents(stage).forEach((event,index) => {
@@ -1845,7 +1929,15 @@
       const row=aggregate.get(key); row.sum+=entry.note; row.best=Math.max(row.best,entry.note); row.kills+=number(entry.kills); row.damage+=number(entry.damage); row.assists+=number(entry.assists); row.mvps+=number(entry.mvp); row.matches+=1;
     });
     const teamMatchCounts = notesTeamMatchCounts();
-    let rows=[...aggregate.values()].map(row=>({...row,note:row.matches?row.sum/row.matches:0}));
+    const fullDaySelection = f.day !== 'all' && f.drop === 'all' && f.map === 'all';
+    let rows=[...aggregate.values()].map(row=>{
+      const dropAverageNote = row.matches ? row.sum / row.matches : 0;
+      return {
+        ...row,
+        dropAverageNote,
+        note: fullDaySelection ? calculateS2DailyCffNote(row.kills, row.damage, row.mvps, row.matches, f.stage) : dropAverageNote
+      };
+    });
     if (f.halfMatches !== false) {
       rows = rows.filter(row => {
         const teamMatches = teamMatchCounts.get(normalize(row.team)) || row.matches;
@@ -1861,14 +1953,36 @@
     const drops=f.day==='all'?[]:[...new Set(allPlayerEntries().filter(entry=>(f.stage==='geral'||entry.stage===f.stage)&&String(entry.day)===String(f.day)).map(entry=>number(entry.drop)).filter(Boolean))].sort((a,b)=>a-b);
     const topDrops=[...visibleDetailed].sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
     const dayMap=new Map();
-    visibleDetailed.forEach(entry=>{const key=`${normalize(entry.name)}__${entry.day}`;if(!dayMap.has(key))dayMap.set(key,{name:entry.name,team:entry.team,day:entry.day,kills:0,damage:0,mvp:0,notes:0,matches:0});const row=dayMap.get(key);row.kills+=number(entry.kills);row.damage+=number(entry.damage);row.mvp+=number(entry.mvp);row.notes+=entry.note;row.matches+=1});
-    const topDays=[...dayMap.values()].map(row=>({...row,note:row.matches?row.notes/row.matches:0})).sort((a,b)=>b.note-a.note||b.kills-a.kills).slice(0,4);
+    visibleDetailed.forEach(entry=>{
+      const key=`${normalize(entry.name)}__${normalize(entry.team)}__${entry.stage}__${entry.day}`;
+      if(!dayMap.has(key))dayMap.set(key,{name:entry.name,team:entry.team,stage:entry.stage,day:entry.day,kills:0,damage:0,mvp:0,notes:0,matches:0});
+      const row=dayMap.get(key);row.kills+=number(entry.kills);row.damage+=number(entry.damage);row.mvp+=number(entry.mvp);row.notes+=entry.note;row.matches+=1;
+    });
+    const dailyTeamMatchCounts = new Map();
+    const dailySeenMatches = new Set();
+    allPlayerEntries().forEach(entry => {
+      if (f.stage !== 'geral' && String(entry.stage) !== f.stage) return;
+      const teamKey = `${entry.stage}__${number(entry.day)}__${normalize(entry.team)}`;
+      const matchKey = `${teamKey}__${number(entry.drop)}`;
+      if (dailySeenMatches.has(matchKey)) return;
+      dailySeenMatches.add(matchKey);
+      dailyTeamMatchCounts.set(teamKey, (dailyTeamMatchCounts.get(teamKey) || 0) + 1);
+    });
+    const topDays=[...dayMap.values()].filter(row => {
+      const teamMatches = dailyTeamMatchCounts.get(`${row.stage}__${number(row.day)}__${normalize(row.team)}`) || row.matches;
+      return f.halfMatches === false || row.matches >= Math.ceil(teamMatches / 2);
+    }).map(row=>({
+      ...row,
+      dropAverageNote: row.matches?row.notes/row.matches:0,
+      note: calculateS2DailyCffNote(row.kills,row.damage,row.mvp,row.matches,row.stage)
+    })).sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
+    const generalAverageRows=[...rows].map(row=>({...row,note:row.dropAverageNote})).sort((a,b)=>b.note-a.note||b.kills-a.kills||b.damage-a.damage).slice(0,4);
     const noteRecord=(title,list,subtitle)=>`<article class="ffws-s2-top-card"><h3>${title}</h3>${list.length?list.map((row,index)=>`<button type="button" class="ffws-s2-note-record" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><b>${index+1}º</b><span><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(subtitle(row))}</small></span><em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</em></button>`).join(''):'<div class="ffws-s2-empty-mini">Nenhum resultado neste recorte.</div>'}</article>`;
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Notas CFF', 'Avaliações por queda no padrão SofaScore da Central Free Fire')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Ranking de Notas</h2><p>A nota combina abates, dano, assistências, MVP e posição final da equipe.</p></div><span class="ffws-s2-badge">${visibleDetailed.length} atuações</span></div>
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Notas CFF', 'Avaliações por queda e por dia da Central Free Fire')}
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Ranking de Notas</h2><p>A nota por queda combina abates, dano, assistências, MVP e posição final da equipe. Ao selecionar um dia inteiro, a Nota do Dia é recalculada pelo desempenho acumulado, no mesmo sistema da S1.</p></div><span class="ffws-s2-badge">${visibleDetailed.length} atuações</span></div>
       <div class="ffws-s2-filters ffws-s2-notes-filters">${notesSelect('stage','Etapa',[['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']])}${notesSelect('team','Equipe',[['all','Todas'],...teams.map(v=>[v,v])])}${notesSelect('role','Posição',[['all','Todas'],['RUSH','Rush'],['GRAN','Granadeiro'],['SUP','Suporte'],['3','3º homem']])}${notesSelect('day','Dia',[['all','Todos'],...days.map(v=>[String(v),`Dia ${v}`])])}${notesSelect('drop','Queda',f.day==='all'?[['all','Selecione um dia']]:[['all','Todas'],...drops.map(v=>[String(v),`Queda ${v}`])],{disabled:f.day==='all',title:'Escolha um dia para liberar o filtro de queda'})}${notesSelect('map','Mapa',[['all','Todos'],...maps.map(v=>[v,v])])}${notesHalfMatchesControl()}</div>
       ${rows.length?`<div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr><th>#</th><th>Jogador</th><th>Eqp</th><th>Nota</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Ast.</th><th>Q</th><th class="hide-mobile">Melhor</th></tr></thead><tbody>${rows.map((row,index)=>`<tr><td class="ffws-s2-rank">${index+1}º</td><td><button type="button" class="ffws-s2-inline-link" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</span></td><td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.best.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="ffws-s2-empty"><div><strong>Nenhuma nota neste recorte</strong>Altere os filtros para consultar as atuações disponíveis.</div></div>'}</div></section>
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte.</p></div></div><div class="ffws-s2-top-grid">${noteRecord('Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`)}${noteRecord('Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K`)}${noteRecord('Médias Gerais',rows.slice(0,4),row=>`${row.matches} quedas • ${row.kills} K`)}</div></div></section>
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte.</p></div></div><div class="ffws-s2-top-grid">${noteRecord('Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`)}${noteRecord('Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${row.damage.toLocaleString('pt-BR')} dano`)}${noteRecord('Médias Gerais',generalAverageRows,row=>`${row.matches} quedas • ${row.kills} K`)}</div></div></section>
     </div>`;
   }
 
