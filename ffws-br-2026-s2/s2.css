@@ -580,3 +580,15 @@ body.ffws-s2-drop-modal-open{overflow:hidden}
   .cff-stats-sticky-nav>span{display:none!important}
   .cff-stats-sticky-nav{padding-left:6px!important;padding-right:6px!important}
 }
+
+
+/* ===== 2026-08-16: correções Stats S1/S2 v18 ===== */
+/* O atributo hidden precisa vencer o display:grid base do estado vazio. */
+.ffws-s2-empty[hidden]{display:none!important}
+
+/* Sticky só funciona se nenhum ancestral virar scroll container por overflow-x:hidden. */
+html.cff-stats-route,body.cff-stats-route{overflow-x:clip!important}
+body.cff-stats-route #main-content,
+body.cff-stats-route #main-content>.container,
+body.cff-stats-route #stats.page,
+body.cff-stats-route #ffws-br-s2-stats.page{overflow-x:clip!important;overflow-y:visible!important}
