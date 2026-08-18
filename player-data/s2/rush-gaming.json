@@ -9,7 +9,7 @@
       "aliases": [
         "BLACK02"
       ],
-      "photo": "black02.webp",
+      "photo": "player-photos/s2/black02.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "RUSH GAMING",
@@ -152,7 +152,7 @@
         "GUIMERLQ",
         "Guimerlq"
       ],
-      "photo": "guime.webp",
+      "photo": "player-photos/s2/guimerlq.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "RUSH GAMING",
@@ -278,7 +278,7 @@
         "Ericking",
         "ERICKING"
       ],
-      "photo": "eric.webp",
+      "photo": "player-photos/s2/ericking.webp",
       "country": "br",
       "role": "SUPORTE",
       "currentTeam": "RUSH GAMING",
@@ -383,7 +383,7 @@
         "Prozin",
         "Prozin10"
       ],
-      "photo": "prozin.webp",
+      "photo": "player-photos/s2/prozin.webp",
       "country": "br",
       "role": "GRANADEIRO",
       "currentTeam": "RUSH GAMING",
@@ -542,7 +542,7 @@
       "aliases": [
         "MitinX"
       ],
-      "photo": "mitin.webp",
+      "photo": "player-photos/s2/mitinx.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "RUSH GAMING",

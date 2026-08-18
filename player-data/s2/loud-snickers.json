@@ -12,7 +12,7 @@
         "XTRAP7",
         "Trap"
       ],
-      "photo": "trap.webp",
+      "photo": "player-photos/s2/trap.webp",
       "country": "br",
       "role": "GRANADEIRO",
       "currentTeam": "LOUD SNICKERS",
@@ -215,7 +215,7 @@
         "NICKZ",
         "Nickz7"
       ],
-      "photo": "nickz7.webp",
+      "photo": "player-photos/s2/nickz.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "LOUD SNICKERS",
@@ -391,7 +391,7 @@
         "bzp",
         "bzp10"
       ],
-      "photo": "bzp.webp",
+      "photo": "player-photos/s2/bzp.webp",
       "country": "br",
       "role": "SUPORTE",
       "currentTeam": "LOUD SNICKERS",
@@ -528,7 +528,7 @@
         "GUAXA7",
         "Guaxa"
       ],
-      "photo": "guaxa.webp",
+      "photo": "player-photos/s2/guaxa.webp",
       "country": "br",
       "role": "SUPORTE",
       "currentTeam": "LOUD SNICKERS",
@@ -731,7 +731,7 @@
         "HAK",
         "Hak"
       ],
-      "photo": "hak.webp",
+      "photo": "player-photos/s2/hak.webp",
       "country": "br",
       "role": "SUPORTE",
       "currentTeam": "LOUD SNICKERS",

@@ -13,7 +13,7 @@
         "Stark7",
         "Stark10"
       ],
-      "photo": "stark.webp",
+      "photo": "player-photos/s2/stark.webp",
       "country": "br",
       "role": "GRANADEIRO",
       "currentTeam": "LOOPS",
@@ -202,7 +202,7 @@
         "LPS Draxx7",
         "DRAXX7"
       ],
-      "photo": "drax.webp",
+      "photo": "player-photos/s2/draxx7.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "LOOPS",
@@ -417,7 +417,7 @@
         "Vitin9",
         "LPS  Vitin9"
       ],
-      "photo": "silhueta.webp",
+      "photo": "player-photos/s2/vitin9.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "LOOPS",
@@ -601,7 +601,7 @@
         "LPS Pão7",
         "PÃO7"
       ],
-      "photo": "pao.webp",
+      "photo": "player-photos/s2/pao7.webp",
       "country": "br",
       "role": "SUPORTE",
       "currentTeam": "LOOPS",
@@ -856,7 +856,7 @@
         "Luan7",
         "LPS  Luan7"
       ],
-      "photo": "luan.webp",
+      "photo": "player-photos/s2/luan7.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "LOOPS",

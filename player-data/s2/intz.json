@@ -12,7 +12,7 @@
         "INTZ Gus",
         "Gus"
       ],
-      "photo": "gus.webp",
+      "photo": "player-photos/s2/gus.webp",
       "country": "br",
       "role": "GRANADEIRO",
       "currentTeam": "INTZ",
@@ -239,7 +239,7 @@
         "INTZ joão7",
         "joão7"
       ],
-      "photo": "joao.webp",
+      "photo": "player-photos/s2/joao7.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "INTZ",
@@ -439,7 +439,7 @@
         "INTZ honeyzL",
         "HONEY"
       ],
-      "photo": "honey.webp",
+      "photo": "player-photos/s2/honeyzl.webp",
       "country": "br",
       "role": "SUPORTE",
       "currentTeam": "INTZ",
@@ -629,7 +629,7 @@
         "Kaua7xp",
         "Kauã7xp"
       ],
-      "photo": "xp.webp",
+      "photo": "player-photos/s2/kauaxp.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "INTZ",
@@ -772,7 +772,7 @@
         "PEREIRA",
         "INTZ PEREIRA"
       ],
-      "photo": "silhueta.webp",
+      "photo": "player-photos/s2/pereira.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "INTZ",

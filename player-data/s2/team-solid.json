@@ -10,7 +10,7 @@
         "Motovea",
         "Motovea7"
       ],
-      "photo": "motovea7.webp",
+      "photo": "player-photos/s2/motovea.webp",
       "country": "br",
       "role": "SUPORTE",
       "currentTeam": "TEAM SOLID",
@@ -175,7 +175,7 @@
         "vitinxp",
         "VITINxp"
       ],
-      "photo": "vitinxp.webp",
+      "photo": "player-photos/s2/vitinxp.webp",
       "country": "br",
       "role": "GRANADEIRO",
       "currentTeam": "TEAM SOLID",
@@ -385,7 +385,7 @@
         "ErickPitbull",
         "Erickmvp"
       ],
-      "photo": "pitbull.webp",
+      "photo": "player-photos/s2/pitbull.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "TEAM SOLID",
@@ -583,7 +583,7 @@
       "aliases": [
         "BYTE333"
       ],
-      "photo": "byte.webp",
+      "photo": "player-photos/s2/byte333.webp",
       "country": "br",
       "role": "RUSH",
       "currentTeam": "TEAM SOLID",
