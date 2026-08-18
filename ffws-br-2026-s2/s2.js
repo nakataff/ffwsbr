@@ -1472,6 +1472,22 @@
     return { nextDrop, nextDay };
   }
 
+  function ensureFFWSS2DropReportModal() {
+    let modal = document.getElementById('ffws-s2-drop-report-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'ffws-s2-drop-report-modal';
+      modal.className = 'ffws-s2-drop-report-modal';
+      modal.hidden = true;
+      modal.setAttribute('onclick', 'if(event.target===this)closeFFWSS2DropReport()');
+      modal.innerHTML = '<div class="ffws-s2-drop-report-dialog" role="dialog" aria-modal="true" aria-label="Relatório do dia ou da queda"><div id="ffws-s2-drop-report-body"></div></div>';
+      document.body.appendChild(modal);
+    } else if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+    return modal;
+  }
+
   function renderFFWSS2DropReportModal() {
     const modal = document.getElementById('ffws-s2-drop-report-modal');
     const body = document.getElementById('ffws-s2-drop-report-body');
@@ -1498,7 +1514,6 @@
     });
     return `<section id="anchor-s2-relatorio" class="ffws-s2-panel ffws-s2-drop-report-section"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Relatório de Quedas</h2><p>Clique no dia para ver o relatório agregado ou abra uma queda individual.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
       <div class="ffws-s2-drop-day-list">${[...groups.values()].map(group => `<div class="ffws-s2-drop-day-row"><button type="button" class="ffws-s2-drop-day-label" onclick="openFFWSS2DayReport('${jsAttr(group.stage)}',${number(group.day)})"><span><small>${escapeHtml(s2StatsStageShortLabel(group.stage))}</small><strong>DIA ${group.day}</strong></span><em>VER DIA ›</em></button><div class="ffws-s2-drop-buttons">${group.events.sort((a,b)=>number(a.drop||a.number)-number(b.drop||b.number)).map(event => { const report=s2DropReportBuild(event); const recordContext=s2DropReportSplitContext(); const bestPlayer=report?.leaders?.playerKills; const fire=bestPlayer && s2DropReportRank(bestPlayer.kills, recordContext.playerKills) <= 3; return `<button type="button" onclick="openFFWSS2DropReport('${s2DropReportEventKey(event)}')"><span>Q${number(event.drop || event.number)}</span>${fire?'<i aria-label="Top 3 do split">🔥</i>':''}<small>${escapeHtml(s2StatsMapShortLabel(event.map || event.mapa))}</small></button>`; }).join('')}</div></div>`).join('')}</div>
-      <div id="ffws-s2-drop-report-modal" class="ffws-s2-drop-report-modal" hidden onclick="if(event.target===this)closeFFWSS2DropReport()"><div class="ffws-s2-drop-report-dialog" role="dialog" aria-modal="true" aria-label="Relatório do dia ou da queda"><div id="ffws-s2-drop-report-body"></div></div></div>
     </div></section>`;
   }
 
@@ -2283,8 +2298,7 @@
     state.dropReport.teamDetail = '';
     state.dropReport.playerTeams = [];
     if (!state.dropReport.tab) state.dropReport.tab = 'summary';
-    const modal = document.getElementById('ffws-s2-drop-report-modal');
-    if (!modal) return;
+    const modal = ensureFFWSS2DropReportModal();
     renderFFWSS2DropReportModal();
     const reportBody = document.getElementById('ffws-s2-drop-report-body');
     if (reportBody) reportBody.scrollTop = 0;
@@ -2301,8 +2315,7 @@
     state.dropReport.teamDetail = '';
     state.dropReport.playerTeams = [];
     if (!state.dropReport.tab) state.dropReport.tab = 'summary';
-    const modal = document.getElementById('ffws-s2-drop-report-modal');
-    if (!modal) return;
+    const modal = ensureFFWSS2DropReportModal();
     renderFFWSS2DropReportModal();
     const reportBody = document.getElementById('ffws-s2-drop-report-body');
     if (reportBody) reportBody.scrollTop = 0;
@@ -2385,23 +2398,13 @@
     state.statsFilters.stage = targetStage;
     state.statsFilters.days = [];
     state.statsFilters.maps = [];
-    const openWhenReady = (attempt = 0) => {
-      const anchor = document.getElementById('anchor-s2-relatorio');
-      const modal = document.getElementById('ffws-s2-drop-report-modal');
-      if (anchor && modal) {
-        anchor.scrollIntoView({ block: 'start' });
-        if (mode === 'day') window.openFFWSS2DayReport(targetStage, number(day));
-        else {
-          const event = s2DropReportAllEvents().find(item => String(item._stage) === targetStage && number(item._day) === number(day) && number(item.drop || item.queda || item.number) === number(drop));
-          if (event) window.openFFWSS2DropReport(s2DropReportEventKey(event));
-        }
-        return;
-      }
-      if (attempt < 90) requestAnimationFrame(() => openWhenReady(attempt + 1));
-    };
-    if (typeof window.navigate === 'function') window.navigate('ffws-br-s2-stats');
-    else location.hash = '#ffws-br-s2-stats';
-    requestAnimationFrame(() => openWhenReady());
+    ensureFFWSS2DropReportModal();
+    if (mode === 'day') {
+      window.openFFWSS2DayReport(targetStage, number(day));
+      return;
+    }
+    const event = s2DropReportAllEvents().find(item => String(item._stage) === targetStage && number(item._day) === number(day) && number(item.drop || item.queda || item.number) === number(drop));
+    if (event) window.openFFWSS2DropReport(s2DropReportEventKey(event));
   }
   window.openFFWSS2NoteDropReport = (stage, day, drop) => openS2StatsReportFromNotes('drop', stage, day, drop);
   window.openFFWSS2NoteDayReport = (stage, day) => openS2StatsReportFromNotes('day', stage, day, 0);
