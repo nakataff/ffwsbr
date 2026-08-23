@@ -1,57 +1,57 @@
 {
   "tournament": "WB 2026 S2",
-  "updatedAt": "2026-08-16",
+  "updatedAt": "2026-08-23",
   "status": "live",
   "stage": "classificatoria",
-  "daysCompleted": 6,
-  "matchesCompleted": 36,
+  "daysCompleted": 7,
+  "matchesCompleted": 42,
   "teams": [
     {
       "team": "LOS",
       "position": 1,
-      "points": 476,
+      "points": 573,
+      "booyahs": 4,
+      "kills": 331,
+      "matches": 36
+    },
+    {
+      "team": "FLUXO W7M",
+      "position": 2,
+      "points": 514,
+      "booyahs": 6,
+      "kills": 298,
+      "matches": 36
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "position": 3,
+      "points": 505,
+      "booyahs": 8,
+      "kills": 272,
+      "matches": 36
+    },
+    {
+      "team": "INTZ",
+      "position": 4,
+      "points": 486,
       "booyahs": 3,
-      "kills": 277,
-      "matches": 30
+      "kills": 304,
+      "matches": 36
     },
     {
       "team": "RISE GAMING",
-      "position": 2,
+      "position": 5,
       "points": 459,
       "booyahs": 3,
       "kills": 272,
       "matches": 36
     },
     {
-      "team": "LOUD SNICKERS",
-      "position": 3,
-      "points": 438,
-      "booyahs": 7,
-      "kills": 232,
-      "matches": 30
-    },
-    {
-      "team": "FLUXO W7M",
-      "position": 4,
-      "points": 415,
-      "booyahs": 6,
-      "kills": 233,
-      "matches": 30
-    },
-    {
       "team": "ALPHA7",
-      "position": 5,
-      "points": 391,
-      "booyahs": 4,
-      "kills": 245,
-      "matches": 30
-    },
-    {
-      "team": "INFLUENCE RAGE",
       "position": 6,
-      "points": 372,
-      "booyahs": 1,
-      "kills": 221,
+      "points": 457,
+      "booyahs": 4,
+      "kills": 286,
       "matches": 36
     }
   ],
@@ -59,10 +59,10 @@
     {
       "name": "Yago",
       "team": "LOS",
-      "kills": 103,
-      "damage": 80717,
-      "assists": 49,
-      "matches": 30,
+      "kills": 124,
+      "damage": 94760,
+      "assists": 63,
+      "matches": 36,
       "mvp": 6,
       "player": "Yago"
     },
@@ -77,44 +77,44 @@
       "player": "KaKaZk"
     },
     {
-      "name": "TRAP",
-      "team": "LOUD SNICKERS",
-      "kills": 81,
-      "damage": 46015,
-      "assists": 60,
-      "matches": 30,
-      "mvp": 1,
-      "player": "TRAP"
-    },
-    {
       "name": "MT7",
       "team": "FLUXO W7M",
-      "kills": 73,
-      "damage": 51612,
-      "assists": 39,
-      "matches": 30,
-      "mvp": 2,
+      "kills": 96,
+      "damage": 67191,
+      "assists": 47,
+      "matches": 36,
+      "mvp": 4,
       "player": "MT7"
     },
     {
       "name": "honeyzL",
       "team": "INTZ",
-      "kills": 69,
-      "damage": 49023,
-      "assists": 42,
-      "matches": 30,
-      "mvp": 2,
+      "kills": 92,
+      "damage": 64280,
+      "assists": 53,
+      "matches": 36,
+      "mvp": 3,
       "player": "honeyzL"
     },
     {
-      "name": "Lyon",
-      "team": "INFLUENCE RAGE",
-      "kills": 69,
-      "damage": 42483,
-      "assists": 73,
+      "name": "TRAP",
+      "team": "LOUD SNICKERS",
+      "kills": 87,
+      "damage": 53044,
+      "assists": 77,
       "matches": 36,
       "mvp": 1,
-      "player": "Lyon"
+      "player": "TRAP"
+    },
+    {
+      "name": "JNmvp7",
+      "team": "ALPHA7",
+      "kills": 81,
+      "damage": 45675,
+      "assists": 81,
+      "matches": 36,
+      "mvp": 1,
+      "player": "JNmvp7"
     }
   ]
 }
