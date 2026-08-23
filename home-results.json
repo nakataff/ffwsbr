@@ -1,0 +1,120 @@
+{
+  "tournament": "WB 2026 S2",
+  "updatedAt": "2026-08-23",
+  "status": "live",
+  "stage": "classificatoria",
+  "daysCompleted": 8,
+  "matchesCompleted": 48,
+  "teams": [
+    {
+      "team": "LOS",
+      "position": 1,
+      "points": 667,
+      "booyahs": 6,
+      "kills": 387,
+      "matches": 42
+    },
+    {
+      "team": "LOUD SNICKERS",
+      "position": 2,
+      "points": 615,
+      "booyahs": 9,
+      "kills": 336,
+      "matches": 42
+    },
+    {
+      "team": "INTZ",
+      "position": 3,
+      "points": 580,
+      "booyahs": 4,
+      "kills": 363,
+      "matches": 42
+    },
+    {
+      "team": "ALPHA7",
+      "position": 4,
+      "points": 540,
+      "booyahs": 4,
+      "kills": 340,
+      "matches": 42
+    },
+    {
+      "team": "RISE GAMING",
+      "position": 5,
+      "points": 522,
+      "booyahs": 3,
+      "kills": 315,
+      "matches": 42
+    },
+    {
+      "team": "FLUXO W7M",
+      "position": 6,
+      "points": 514,
+      "booyahs": 6,
+      "kills": 298,
+      "matches": 36
+    }
+  ],
+  "players": [
+    {
+      "name": "Yago",
+      "team": "LOS",
+      "kills": 150,
+      "damage": 110093,
+      "assists": 75,
+      "matches": 42,
+      "mvp": 8,
+      "player": "Yago"
+    },
+    {
+      "name": "KaKaZk",
+      "team": "RISE GAMING",
+      "kills": 116,
+      "damage": 80064,
+      "assists": 71,
+      "matches": 42,
+      "mvp": 1,
+      "player": "KaKaZk"
+    },
+    {
+      "name": "honeyzL",
+      "team": "INTZ",
+      "kills": 109,
+      "damage": 79114,
+      "assists": 69,
+      "matches": 42,
+      "mvp": 3,
+      "player": "honeyzL"
+    },
+    {
+      "name": "TRAP",
+      "team": "LOUD SNICKERS",
+      "kills": 104,
+      "damage": 66296,
+      "assists": 101,
+      "matches": 42,
+      "mvp": 1,
+      "player": "TRAP"
+    },
+    {
+      "name": "MT7",
+      "team": "FLUXO W7M",
+      "kills": 96,
+      "damage": 67191,
+      "assists": 47,
+      "matches": 36,
+      "mvp": 4,
+      "player": "MT7"
+    },
+    {
+      "name": "Rigby245",
+      "team": "LOS",
+      "kills": 95,
+      "damage": 49823,
+      "assists": 117,
+      "matches": 40,
+      "mvp": 3,
+      "player": "Rigby245"
+    }
+  ]
+}
