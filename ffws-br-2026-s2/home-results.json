@@ -3,55 +3,55 @@
   "updatedAt": "2026-08-23",
   "status": "live",
   "stage": "classificatoria",
-  "daysCompleted": 7,
-  "matchesCompleted": 42,
+  "daysCompleted": 8,
+  "matchesCompleted": 48,
   "teams": [
     {
       "team": "LOS",
       "position": 1,
-      "points": 573,
-      "booyahs": 4,
-      "kills": 331,
-      "matches": 36
-    },
-    {
-      "team": "FLUXO W7M",
-      "position": 2,
-      "points": 514,
+      "points": 667,
       "booyahs": 6,
-      "kills": 298,
-      "matches": 36
+      "kills": 387,
+      "matches": 42
     },
     {
       "team": "LOUD SNICKERS",
-      "position": 3,
-      "points": 505,
-      "booyahs": 8,
-      "kills": 272,
-      "matches": 36
+      "position": 2,
+      "points": 615,
+      "booyahs": 9,
+      "kills": 336,
+      "matches": 42
     },
     {
       "team": "INTZ",
+      "position": 3,
+      "points": 580,
+      "booyahs": 4,
+      "kills": 363,
+      "matches": 42
+    },
+    {
+      "team": "ALPHA7",
       "position": 4,
-      "points": 486,
-      "booyahs": 3,
-      "kills": 304,
-      "matches": 36
+      "points": 540,
+      "booyahs": 4,
+      "kills": 340,
+      "matches": 42
     },
     {
       "team": "RISE GAMING",
       "position": 5,
-      "points": 459,
+      "points": 522,
       "booyahs": 3,
-      "kills": 272,
-      "matches": 36
+      "kills": 315,
+      "matches": 42
     },
     {
-      "team": "ALPHA7",
+      "team": "FLUXO W7M",
       "position": 6,
-      "points": 457,
-      "booyahs": 4,
-      "kills": 286,
+      "points": 514,
+      "booyahs": 6,
+      "kills": 298,
       "matches": 36
     }
   ],
@@ -59,22 +59,42 @@
     {
       "name": "Yago",
       "team": "LOS",
-      "kills": 124,
-      "damage": 94760,
-      "assists": 63,
-      "matches": 36,
-      "mvp": 6,
+      "kills": 150,
+      "damage": 110093,
+      "assists": 75,
+      "matches": 42,
+      "mvp": 8,
       "player": "Yago"
     },
     {
       "name": "KaKaZk",
       "team": "RISE GAMING",
-      "kills": 99,
-      "damage": 66440,
-      "assists": 61,
-      "matches": 36,
+      "kills": 116,
+      "damage": 80064,
+      "assists": 71,
+      "matches": 42,
       "mvp": 1,
       "player": "KaKaZk"
+    },
+    {
+      "name": "honeyzL",
+      "team": "INTZ",
+      "kills": 109,
+      "damage": 79114,
+      "assists": 69,
+      "matches": 42,
+      "mvp": 3,
+      "player": "honeyzL"
+    },
+    {
+      "name": "TRAP",
+      "team": "LOUD SNICKERS",
+      "kills": 104,
+      "damage": 66296,
+      "assists": 101,
+      "matches": 42,
+      "mvp": 1,
+      "player": "TRAP"
     },
     {
       "name": "MT7",
@@ -87,34 +107,14 @@
       "player": "MT7"
     },
     {
-      "name": "honeyzL",
-      "team": "INTZ",
-      "kills": 92,
-      "damage": 64280,
-      "assists": 53,
-      "matches": 36,
+      "name": "Rigby245",
+      "team": "LOS",
+      "kills": 95,
+      "damage": 49823,
+      "assists": 117,
+      "matches": 40,
       "mvp": 3,
-      "player": "honeyzL"
-    },
-    {
-      "name": "TRAP",
-      "team": "LOUD SNICKERS",
-      "kills": 87,
-      "damage": 53044,
-      "assists": 77,
-      "matches": 36,
-      "mvp": 1,
-      "player": "TRAP"
-    },
-    {
-      "name": "JNmvp7",
-      "team": "ALPHA7",
-      "kills": 81,
-      "damage": 45675,
-      "assists": 81,
-      "matches": 36,
-      "mvp": 1,
-      "player": "JNmvp7"
+      "player": "Rigby245"
     }
   ]
 }
