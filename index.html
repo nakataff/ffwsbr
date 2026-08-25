@@ -1762,7 +1762,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
         <div class="filters hall-filters">
             <label style="color: var(--text-muted); font-weight: bold;">Ordenar por:</label>
-            <select onchange="setHallAllTimeSort(this.value)">
+            <select id="hist-all-sort-select" onchange="setHallAllTimeSort(this.value)">
                 <option value="kills">Abates</option>
                 <option value="team">Equipe</option>
                 <option value="quedas">Quedas</option>
@@ -1784,9 +1784,9 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         <th>
             <span class="full-name-desktop">Equipe Atual</span><span class="short-name-mobile">E</span>
         </th>
-        <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></th>
-        <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
-        <th>Média</th>
+        <th aria-sort="descending"><button type="button" class="hall-sort-btn is-active" data-sort="kills" data-dir="desc" onclick="sortHallAllTimeColumn('kills')" aria-label="Ordenar por abates"><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></button></th>
+        <th aria-sort="none"><button type="button" class="hall-sort-btn" data-sort="quedas" data-dir="" onclick="sortHallAllTimeColumn('quedas')" aria-label="Ordenar por quedas"><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></button></th>
+        <th aria-sort="none"><button type="button" class="hall-sort-btn" data-sort="media" data-dir="" onclick="sortHallAllTimeColumn('media')" aria-label="Ordenar por média">Média</button></th>
     </tr>
 </thead>
                 <tbody></tbody>
@@ -2152,7 +2152,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260825-naandox-alias-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260825-hall-sort-v1"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
