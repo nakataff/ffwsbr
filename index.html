@@ -184,6 +184,30 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 @media(max-width:760px){.home-year-ranking-list{padding:4px 8px 7px}.home-year-mini-table th:nth-child(1){width:38px}.home-year-mini-table th:nth-child(n+3){width:42px}.home-year-mini-table th,.home-year-mini-table td{padding-left:4px;padding-right:4px}.ot-year-title-detail-row{grid-template-columns:minmax(0,1fr) 82px;gap:8px;padding:8px 0}.ot-year-title-detail-row span{grid-column:1/-1;text-align:left;margin-top:-4px}}
 </style>
 
+<style id="ot-year-podium-v2-css">
+.ot-year-titles-table .ot-year-title-main-row{cursor:pointer}.ot-year-titles-table .ot-year-title-main-row td{height:62px}.ot-year-titles-table .ot-year-title-main-row:hover td{background:rgba(13,20,30,.98)}
+.ot-year-title-team-btn{font-size:1rem!important;gap:11px!important;width:100%;min-width:0}
+.ot-year-title-team-btn img{width:34px!important;height:34px!important}
+.ot-year-title-team-btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ot-year-title-team-btn[aria-expanded="true"]{color:var(--accent)}
+.ot-year-titles-table .ot-year-medal-cell strong{font-size:1.28rem;line-height:1;font-weight:1000}
+.ot-year-titles-table .ot-year-total-cell strong{font-size:1.35rem;line-height:1;font-weight:1000;color:#fff}
+.ot-year-titles-table .ot-year-medal-head{font-size:.74rem}
+.ot-year-podium-detail-row[hidden]{display:none!important}
+.ot-year-podium-detail-row>td{padding:0!important;background:#080d14!important;border-bottom:1px solid rgba(255,255,255,.09)!important}
+.ot-year-podium-detail-inner{padding:13px 14px 15px;border-left:4px solid rgba(0,200,255,.42);background:linear-gradient(90deg,rgba(0,200,255,.045),rgba(4,9,15,.82) 25%)}
+.ot-year-podium-detail-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.ot-year-podium-detail-title strong{color:#fff;font-size:.88rem;text-transform:uppercase}.ot-year-podium-detail-title span{color:#7890aa;font-size:.68rem;font-weight:900;text-transform:uppercase}
+.ot-year-podium-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.ot-year-podium-group{min-width:0;border:1px solid rgba(255,255,255,.075);border-radius:9px;overflow:hidden;background:rgba(3,8,14,.54)}
+.ot-year-podium-group-head{height:36px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ot-year-podium-group-head strong{font-size:.72rem;letter-spacing:.5px}.ot-year-podium-group-head span{min-width:25px;height:22px;padding:0 7px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:1000;background:rgba(255,255,255,.08);color:#fff}
+.ot-year-podium-group.gold .ot-year-podium-group-head{background:rgba(199,158,16,.14);color:#ffdb64}.ot-year-podium-group.silver .ot-year-podium-group-head{background:rgba(175,190,211,.12);color:#dde8f6}.ot-year-podium-group.bronze .ot-year-podium-group-head{background:rgba(178,110,47,.12);color:#efb481}
+.ot-year-podium-events{padding:4px 9px 7px}.ot-year-podium-event{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:9px;min-height:42px;padding:5px 1px;border-bottom:1px solid rgba(255,255,255,.05)}.ot-year-podium-event:last-child{border-bottom:0}.ot-year-podium-event div{min-width:0}.ot-year-podium-event strong{display:block;color:#eef6ff;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ot-year-podium-event small{display:block;color:#7090ae;font-size:.62rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ot-year-podium-event time{color:#90a8c0;font-size:.65rem;font-weight:850;white-space:nowrap}.ot-year-podium-empty{padding:12px 2px;color:#687b92;font-size:.68rem;text-align:center}
+.ot-year-premium-table .ot-year-medal-cell,.ot-year-premium-table .ot-year-total-cell{font-variant-numeric:tabular-nums;font-size:1.14rem;font-weight:1000}.ot-year-premium-table .ot-year-total-cell{font-size:1.22rem}.home-year-mini-table td.home-medal-gold,.home-year-mini-table td.home-medal-silver,.home-year-mini-table td.home-medal-bronze{font-size:.94rem!important}.home-year-mini-table td.home-total-cell{font-size:1rem!important}
+@media(max-width:760px){.ot-year-titles-table{min-width:620px}.ot-year-titles-table .ot-year-title-main-row td{height:56px}.ot-year-title-team-btn{font-size:.9rem!important}.ot-year-title-team-btn img{width:30px!important;height:30px!important}.ot-year-titles-table .ot-year-medal-cell strong{font-size:1.16rem}.ot-year-titles-table .ot-year-total-cell strong{font-size:1.22rem}.ot-year-podium-grid{grid-template-columns:1fr}.ot-year-podium-detail-inner{padding:10px 10px 12px}.ot-year-podium-detail-title{align-items:flex-start;flex-direction:column;gap:2px}}
+</style>
+
 <style id="hall-fame-extra-css">
 .hall-extra-section{margin:34px 0;padding:22px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(135deg,rgba(0,200,255,.055),rgba(255,255,255,.025));}
 .hall-extra-title{margin:0 0 8px;color:var(--accent);font-size:1.45rem;font-weight:1000;text-transform:uppercase;letter-spacing:.04em;}
@@ -2254,7 +2278,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260828-ot-fast-v3"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260828-ot-podium-v4"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
