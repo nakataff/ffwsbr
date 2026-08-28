@@ -405,6 +405,18 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 @media(max-width:760px){.home-year-section-head{align-items:flex-start;flex-direction:column;padding:15px}.home-year-link{width:100%;box-sizing:border-box}.home-year-rankings-grid{grid-template-columns:1fr;gap:16px}.home-latest-champions-grid{grid-template-columns:1fr;padding:12px}.home-latest-champion{padding:12px}.home-year-ranking-list{padding:4px 12px 7px}.home-year-link-bottom{margin:0 12px 12px;width:calc(100% - 24px)}.ot-global-view-tabs{display:grid;grid-template-columns:1fr;width:100%}.ot-year-subtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.ot-year-subtab{padding:9px 5px;font-size:.72rem}.ot-year-summary{grid-template-columns:1fr}.ot-year-table{min-width:680px}.ot-year-mvp-events-grid{grid-template-columns:1fr}.ot-year-ranking-head{flex-direction:column}}
 </style>
 
+
+<style id="ot-year-events-align-v1-css">
+.ot-year-events-table th.ot-year-event-team-head{text-align:left!important;padding-left:14px}
+.ot-year-events-table td.ot-year-event-team-cell{text-align:left!important;padding-left:14px!important;padding-right:12px!important}
+.ot-year-events-table .ot-year-event-team-cell .ot-year-team-link{width:100%;justify-content:flex-start;text-align:left}
+.ot-year-events-table .ot-year-event-team-cell .ot-year-team-link span{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ot-year-podium-detail-btn{display:block;width:100%;max-width:100%;border:0;background:transparent;color:#eef6ff;padding:0;font:inherit;font-size:.72rem;font-weight:950;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.ot-year-podium-detail-btn:hover{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+#ot-details-view>.btn-back{margin-bottom:14px}
+@media(max-width:760px){.ot-year-events-table th.ot-year-event-team-head,.ot-year-events-table td.ot-year-event-team-cell{padding-left:9px!important}}
+</style>
+
 </head>
 <body>
 
@@ -1582,7 +1594,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     </div>
 
     <div id="ot-details-view" style="display: none;">
-        <button class="btn-back" onclick="closeOtherTournament()">← Voltar para Torneios</button>
+        <button class="btn-back" onclick="closeOtherTournament()">← Voltar para Torneios 2026</button>
 
         <div class="ot-details-header ot-details-header-new" id="ot-details-header">
             <div class="ot-details-main">
@@ -2278,7 +2290,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260828-ot-podium-v4"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260828-ot-events-links-v5"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
