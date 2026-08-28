@@ -1,0 +1,923 @@
+{
+  "schema": 1,
+  "id": "showmatch-klaus-2026",
+  "name": "Showmatch Klaus 2026",
+  "shortName": "2026 Klaus",
+  "year": "2026",
+  "startDate": "2026-01-08",
+  "endDate": "2026-01-08",
+  "tier": "Showmatch",
+  "region": "BRASIL",
+  "status": "AMADOR",
+  "eventType": "Online",
+  "organizer": "Klauszn",
+  "instagram": "klauszn.ff",
+  "source": "Código fornecido pelo usuário (Liquipedia)",
+  "final": {
+    "type": "final",
+    "source": "liquipedia-code-user",
+    "format": "matchlistPoints",
+    "scoreMode": "pointsOnly",
+    "title": "Grande Final",
+    "maps": [
+      [
+        1,
+        ""
+      ],
+      [
+        2,
+        ""
+      ],
+      [
+        3,
+        ""
+      ],
+      [
+        4,
+        ""
+      ],
+      [
+        5,
+        ""
+      ],
+      [
+        6,
+        ""
+      ]
+    ],
+    "cols": [
+      "pos",
+      "teamOriginal",
+      "team",
+      "total",
+      "matches"
+    ],
+    "matchCols": [
+      "match",
+      "total"
+    ],
+    "rows": [
+      [
+        1,
+        "loud",
+        "LOUD",
+        125,
+        [
+          [
+            1,
+            14
+          ],
+          [
+            2,
+            16
+          ],
+          [
+            3,
+            28
+          ],
+          [
+            4,
+            26
+          ],
+          [
+            5,
+            16
+          ],
+          [
+            6,
+            25
+          ]
+        ]
+      ],
+      [
+        2,
+        "fx w7m",
+        "FLUXO W7M",
+        83,
+        [
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            16
+          ],
+          [
+            3,
+            14
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            15
+          ],
+          [
+            6,
+            16
+          ]
+        ]
+      ],
+      [
+        3,
+        "sekwy m",
+        "SEKWY M",
+        77,
+        [
+          [
+            1,
+            21
+          ],
+          [
+            2,
+            25
+          ],
+          [
+            3,
+            8
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            6,
+            7
+          ]
+        ]
+      ],
+      [
+        4,
+        "a34",
+        "ALFA 34",
+        76,
+        [
+          [
+            1,
+            28
+          ],
+          [
+            2,
+            13
+          ],
+          [
+            3,
+            16
+          ],
+          [
+            4,
+            15
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            6,
+            4
+          ]
+        ]
+      ],
+      [
+        5,
+        "e1",
+        "E1 SPORTS",
+        76,
+        [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            16
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            16
+          ],
+          [
+            5,
+            16
+          ],
+          [
+            6,
+            26
+          ]
+        ]
+      ],
+      [
+        6,
+        "vp",
+        "VIRTUS PRO",
+        63,
+        [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            4,
+            18
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            16
+          ]
+        ]
+      ],
+      [
+        7,
+        "faze",
+        "FAZE CLAN",
+        61,
+        [
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            5,
+            26
+          ],
+          [
+            6,
+            5
+          ]
+        ]
+      ],
+      [
+        8,
+        "ts",
+        "TEAM SOLID",
+        54,
+        [
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            12
+          ],
+          [
+            3,
+            18
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            12
+          ],
+          [
+            6,
+            4
+          ]
+        ]
+      ],
+      [
+        9,
+        "wick e",
+        "WICK E",
+        54,
+        [
+          [
+            1,
+            12
+          ],
+          [
+            2,
+            9
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            6,
+            18
+          ]
+        ]
+      ],
+      [
+        10,
+        "inf",
+        "INFLUENCE RAGE",
+        49,
+        [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            19
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            6,
+            9
+          ]
+        ]
+      ],
+      [
+        11,
+        "nhaw",
+        "NIGHT HAWKS",
+        28,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            5,
+            12
+          ],
+          [
+            6,
+            6
+          ]
+        ]
+      ],
+      [
+        12,
+        "rostro",
+        "ROSTRO",
+        15,
+        [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            0
+          ]
+        ]
+      ]
+    ]
+  },
+  "teams": {
+    "type": "teams",
+    "source": "liquipedia-code-user",
+    "format": "teamCardParticipants",
+    "items": [
+      {
+        "id": "fluxo-w7m",
+        "o": "fx w7m",
+        "n": "FLUXO W7M",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "But",
+            "f": "br"
+          },
+          {
+            "n": "Proxx7",
+            "f": "br"
+          },
+          {
+            "n": "Bops",
+            "f": "br"
+          },
+          {
+            "n": "MT7",
+            "f": "br"
+          },
+          {
+            "n": "Giuh",
+            "f": "br",
+            "dnp": true
+          }
+        ],
+        "s": [
+          {
+            "n": "LUUUKING",
+            "f": "br",
+            "r": "head coach",
+            "t": "staff"
+          },
+          {
+            "n": "Renan",
+            "f": "br",
+            "r": "analyst",
+            "t": "staff"
+          }
+        ]
+      },
+      {
+        "id": "team-solid",
+        "o": "ts",
+        "n": "TEAM SOLID",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "Vettel5",
+            "f": "br"
+          },
+          {
+            "n": "Lewis44",
+            "f": "br"
+          },
+          {
+            "n": "Putsgrilo10",
+            "f": "br"
+          },
+          {
+            "n": "Sbriça",
+            "f": "br"
+          }
+        ],
+        "s": []
+      },
+      {
+        "id": "loud",
+        "o": "loud",
+        "n": "LOUD",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "GYOMEI",
+            "f": "br",
+            "l": "Trap"
+          },
+          {
+            "n": "AKAZA",
+            "f": "br",
+            "l": "Nickz7"
+          },
+          {
+            "n": "PAETHI",
+            "f": "br",
+            "l": "HAK"
+          },
+          {
+            "n": "ZENITSU",
+            "f": "br",
+            "l": "Guaxa7"
+          },
+          {
+            "n": "ZZZ",
+            "f": "br",
+            "l": "bzp10"
+          }
+        ],
+        "s": [
+          {
+            "n": "JOKER",
+            "f": "br",
+            "r": "head coach",
+            "t": "staff"
+          },
+          {
+            "n": "VIANA",
+            "f": "br",
+            "r": "analyst",
+            "t": "staff"
+          }
+        ]
+      },
+      {
+        "id": "virtus-pro",
+        "o": "vp",
+        "n": "VIRTUS PRO",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "S.I.N",
+            "f": "br"
+          },
+          {
+            "n": "FROIS2X",
+            "f": "br"
+          },
+          {
+            "n": "LUKE",
+            "f": "br"
+          },
+          {
+            "n": "MAFRA.rj",
+            "f": "br"
+          }
+        ],
+        "s": []
+      },
+      {
+        "id": "sekwy-m",
+        "o": "sekwy m",
+        "n": "SEKWY M",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "NODA",
+            "f": "br"
+          },
+          {
+            "n": "LucasAWP",
+            "f": "br"
+          },
+          {
+            "n": "mtsexy",
+            "f": "br"
+          },
+          {
+            "n": "brota10",
+            "f": "br"
+          }
+        ],
+        "s": []
+      },
+      {
+        "id": "e1-sports",
+        "o": "e1",
+        "n": "E1 SPORTS",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "Pão7",
+            "f": "br"
+          },
+          {
+            "n": "LYON",
+            "f": "br"
+          },
+          {
+            "n": "Vitin9",
+            "f": "br"
+          },
+          {
+            "n": "VITINxp",
+            "f": "br"
+          },
+          {
+            "n": "Bombom",
+            "f": "br"
+          }
+        ],
+        "s": [
+          {
+            "n": "Ninja",
+            "f": "br",
+            "r": "head coach",
+            "t": "staff",
+            "l": "Ninja (Brazilian Coach)"
+          }
+        ]
+      },
+      {
+        "id": "night-hawks",
+        "o": "night hawks",
+        "n": "NIGHT HAWKS",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "kwk1ng7",
+            "f": "br"
+          },
+          {
+            "n": "Jerem10",
+            "f": "br"
+          },
+          {
+            "n": "kwk!ng7",
+            "f": "br"
+          },
+          {
+            "n": "FIXXA",
+            "f": "br"
+          }
+        ],
+        "s": []
+      },
+      {
+        "id": "alfa-34",
+        "o": "a34",
+        "n": "ALFA 34",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "Gus",
+            "f": "br"
+          },
+          {
+            "n": "FLASH",
+            "f": "br",
+            "l": "Mlk1ing7"
+          },
+          {
+            "n": "xPain",
+            "f": "br"
+          },
+          {
+            "n": "HONEY",
+            "f": "br"
+          }
+        ],
+        "s": []
+      },
+      {
+        "id": "faze-clan",
+        "o": "faze clan",
+        "n": "FAZE CLAN",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "João7",
+            "f": "br"
+          },
+          {
+            "n": "Draxx7",
+            "f": "br"
+          },
+          {
+            "n": "Stark7",
+            "f": "br"
+          },
+          {
+            "n": "KakaZk",
+            "f": "br"
+          }
+        ],
+        "s": [
+          {
+            "n": "VT",
+            "f": "br",
+            "r": "head coach",
+            "t": "staff"
+          }
+        ]
+      },
+      {
+        "id": "influence-rage",
+        "o": "inf",
+        "n": "INFLUENCE RAGE",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "Lippe!",
+            "f": "br"
+          },
+          {
+            "n": "R7xy",
+            "f": "br"
+          },
+          {
+            "n": "Razure",
+            "f": "br"
+          },
+          {
+            "n": "Igor7",
+            "f": "br"
+          }
+        ],
+        "s": []
+      },
+      {
+        "id": "rostro",
+        "o": "Rostro",
+        "n": "ROSTRO",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "!saGoat",
+            "f": ""
+          },
+          {
+            "n": "Nejoto9",
+            "f": ""
+          },
+          {
+            "n": "Muñoz7",
+            "f": ""
+          },
+          {
+            "n": "deelkn7",
+            "f": ""
+          }
+        ],
+        "s": []
+      },
+      {
+        "id": "wick-e",
+        "o": "wick e",
+        "n": "WICK E",
+        "q": "Convidado",
+        "p": [
+          {
+            "n": "E.Agus!BR",
+            "f": ""
+          },
+          {
+            "n": "zZz",
+            "f": ""
+          },
+          {
+            "n": "franzn10",
+            "f": ""
+          },
+          {
+            "n": "Fakk8",
+            "f": ""
+          }
+        ],
+        "s": []
+      }
+    ]
+  },
+  "prizePool": {
+    "type": "teamPrizePool",
+    "source": "liquipedia-code-user",
+    "format": "teamPrizePool",
+    "currency": "USD",
+    "cols": [
+      "pos",
+      "teamOriginal",
+      "team",
+      "prize"
+    ],
+    "rows": [
+      [
+        1,
+        "loud",
+        "LOUD",
+        300
+      ]
+    ]
+  },
+  "playerRanking": {
+    "type": "playerRanking",
+    "source": "liquipedia-code-user",
+    "title": "Ranking MVP — Mais abates",
+    "tabLabel": "Ranking MVP",
+    "cols": [
+      "pos",
+      "player",
+      "team",
+      "kills"
+    ],
+    "available": {
+      "kills": true,
+      "matches": false,
+      "avgKills": false,
+      "damage": false,
+      "assists": false,
+      "mvps": false
+    },
+    "rows": [
+      [
+        1,
+        "Trap",
+        "LOUD",
+        27
+      ],
+      [
+        2,
+        "MT7",
+        "FLUXO W7M",
+        17
+      ],
+      [
+        3,
+        "PÃO7",
+        "E1 SPORTS",
+        17
+      ],
+      [
+        4,
+        "AKAZA",
+        "LOUD",
+        16
+      ],
+      [
+        5,
+        "Bops",
+        "FLUXO W7M",
+        14
+      ]
+    ]
+  },
+  "playerLinks": {
+    "AKAZA": "Nickz7",
+    "PÃO7": "Pão7"
+  },
+  "aliases": {
+    "loud": "LOUD",
+    "fx": "FLUXO W7M",
+    "fx w7m": "FLUXO W7M",
+    "fluxo w7m": "FLUXO W7M",
+    "ts": "TEAM SOLID",
+    "team solid": "TEAM SOLID",
+    "vp": "VIRTUS PRO",
+    "virtus pro": "VIRTUS PRO",
+    "sekwy m": "SEKWY M",
+    "e1": "E1 SPORTS",
+    "e1 sports": "E1 SPORTS",
+    "nhaw": "NIGHT HAWKS",
+    "night hawks": "NIGHT HAWKS",
+    "a34": "ALFA 34",
+    "alfa 34": "ALFA 34",
+    "faze": "FAZE CLAN",
+    "faze clan": "FAZE CLAN",
+    "inf": "INFLUENCE RAGE",
+    "influence rage": "INFLUENCE RAGE",
+    "rostro": "ROSTRO",
+    "wick e": "WICK E"
+  },
+  "awards": [
+    {
+      "award": "MVP",
+      "player": "Trap",
+      "team": "LOUD",
+      "note": ""
+    }
+  ],
+  "hideAwardsTab": true,
+  "prizeTabLabel": "Premiação",
+  "logo": "trofeu.webp"
+}
