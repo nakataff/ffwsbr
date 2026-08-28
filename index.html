@@ -274,7 +274,74 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <style id="ot-radar-css">
-.ot-global-view-tabs{display:flex;gap:8px;margin:18px 0 16px;padding:5px;background:rgba(6,17,33,.72);border:1px solid var(--border);border-radius:12px;width:max-content;max-width:100%}.ot-global-view-tab{border:0;background:transparent;color:var(--text-muted);font-weight:950;letter-spacing:.4px;padding:10px 16px;border-radius:8px;cursor:pointer}.ot-global-view-tab.active{background:rgba(0,200,255,.13);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(0,200,255,.28)}#ot-radar-panel[hidden],#ot-tournaments-panel[hidden]{display:none!important}.ot-radar-intro{border:1px solid rgba(0,200,255,.22);background:linear-gradient(135deg,rgba(0,200,255,.07),rgba(255,255,255,.015));border-radius:14px;padding:18px;margin-bottom:18px}.ot-radar-intro h3{margin:0 0 6px;color:#fff;font-size:1.25rem}.ot-radar-intro p{margin:0;color:var(--text-muted);line-height:1.5;font-size:.86rem}.ot-radar-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.ot-radar-summary div{padding:12px;border:1px solid var(--border);border-radius:10px;background:rgba(0,0,0,.16)}.ot-radar-summary strong{display:block;color:#fff;font-size:1.22rem}.ot-radar-summary span{display:block;color:#7fb7ea;font-size:.68rem;font-weight:900;text-transform:uppercase;margin-top:3px}.ot-radar-group{margin:22px 0}.ot-radar-group-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:10px}.ot-radar-group-head h3{margin:0;color:#fff;font-size:1.02rem;text-transform:uppercase;letter-spacing:.5px}.ot-radar-group-head span{color:var(--text-muted);font-size:.72rem}.ot-radar-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.ot-radar-card{border:1px solid var(--border);border-radius:12px;background:var(--panel-bg);overflow:hidden}.ot-radar-card-head{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px 13px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.018)}.ot-radar-card-head strong{font-size:.82rem;color:#89bdff;text-transform:uppercase}.ot-radar-card-head small{color:var(--text-muted);font-size:.66rem;font-weight:800}.ot-radar-list{padding:5px 8px 8px}.ot-radar-row{display:grid;grid-template-columns:28px 28px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:48px;padding:6px;border-bottom:1px solid rgba(255,255,255,.045)}.ot-radar-row:last-child{border-bottom:0}.ot-radar-rank{font-size:.74rem;color:#7f8ea5;font-weight:950}.ot-radar-logo{width:25px;height:25px;object-fit:contain}.ot-radar-team{min-width:0}.ot-radar-team strong{display:block;color:#fff;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ot-radar-team small{display:block;color:#71849e;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.ot-radar-team .ot-radar-disclaimer{color:#8aa0ba;font-size:.59rem;font-weight:850;letter-spacing:.02em;text-transform:none}.ot-radar-value{text-align:right}.ot-radar-value strong{display:block;color:var(--accent);font-size:.84rem}.ot-radar-value small{display:block;color:#8a9bb2;font-size:.62rem;margin-top:2px}.ot-radar-value.negative strong{color:#ff6b72}.ot-radar-value.positive strong{color:#55dda0}.ot-radar-empty{padding:18px;color:var(--text-muted);font-size:.8rem}.ot-radar-footnote{font-size:.72rem;color:#71849e;line-height:1.5;margin-top:14px;padding:10px 12px;border-left:2px solid rgba(0,200,255,.35);background:rgba(0,200,255,.035)}.ot-radar-live-note{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,193,7,.28);background:rgba(255,193,7,.06)}.ot-radar-live-note strong{color:#ffd166;font-size:.72rem;white-space:nowrap}.ot-radar-live-note span{color:#9fb0c8;font-size:.7rem;line-height:1.45}@media(max-width:800px){.ot-global-view-tabs{width:100%}.ot-global-view-tab{flex:1;padding:10px 8px;font-size:.78rem}.ot-radar-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.ot-radar-grid{grid-template-columns:1fr}.ot-radar-group-head{align-items:flex-start;flex-direction:column}.ot-radar-row{grid-template-columns:24px 26px minmax(0,1fr) auto;gap:7px}.ot-radar-logo{width:23px;height:23px}.ot-radar-team strong{font-size:.76rem}.ot-radar-value strong{font-size:.8rem}}
+.ot-global-view-tabs{display:flex;gap:8px;margin:18px 0 16px;padding:5px;background:rgba(6,17,33,.72);border:1px solid var(--border);border-radius:12px;width:max-content;max-width:100%}.ot-global-view-tab{border:0;background:transparent;color:var(--text-muted);font-weight:950;letter-spacing:.4px;padding:10px 16px;border-radius:8px;cursor:pointer}.ot-global-view-tab.active{background:rgba(0,200,255,.13);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(0,200,255,.28)}#ot-radar-panel[hidden],#ot-tournaments-panel[hidden],#ot-year2026-panel[hidden]{display:none!important}.ot-radar-intro{border:1px solid rgba(0,200,255,.22);background:linear-gradient(135deg,rgba(0,200,255,.07),rgba(255,255,255,.015));border-radius:14px;padding:18px;margin-bottom:18px}.ot-radar-intro h3{margin:0 0 6px;color:#fff;font-size:1.25rem}.ot-radar-intro p{margin:0;color:var(--text-muted);line-height:1.5;font-size:.86rem}.ot-radar-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.ot-radar-summary div{padding:12px;border:1px solid var(--border);border-radius:10px;background:rgba(0,0,0,.16)}.ot-radar-summary strong{display:block;color:#fff;font-size:1.22rem}.ot-radar-summary span{display:block;color:#7fb7ea;font-size:.68rem;font-weight:900;text-transform:uppercase;margin-top:3px}.ot-radar-group{margin:22px 0}.ot-radar-group-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:10px}.ot-radar-group-head h3{margin:0;color:#fff;font-size:1.02rem;text-transform:uppercase;letter-spacing:.5px}.ot-radar-group-head span{color:var(--text-muted);font-size:.72rem}.ot-radar-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.ot-radar-card{border:1px solid var(--border);border-radius:12px;background:var(--panel-bg);overflow:hidden}.ot-radar-card-head{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px 13px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.018)}.ot-radar-card-head strong{font-size:.82rem;color:#89bdff;text-transform:uppercase}.ot-radar-card-head small{color:var(--text-muted);font-size:.66rem;font-weight:800}.ot-radar-list{padding:5px 8px 8px}.ot-radar-row{display:grid;grid-template-columns:28px 28px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:48px;padding:6px;border-bottom:1px solid rgba(255,255,255,.045)}.ot-radar-row:last-child{border-bottom:0}.ot-radar-rank{font-size:.74rem;color:#7f8ea5;font-weight:950}.ot-radar-logo{width:25px;height:25px;object-fit:contain}.ot-radar-team{min-width:0}.ot-radar-team strong{display:block;color:#fff;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ot-radar-team small{display:block;color:#71849e;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.ot-radar-team .ot-radar-disclaimer{color:#8aa0ba;font-size:.59rem;font-weight:850;letter-spacing:.02em;text-transform:none}.ot-radar-value{text-align:right}.ot-radar-value strong{display:block;color:var(--accent);font-size:.84rem}.ot-radar-value small{display:block;color:#8a9bb2;font-size:.62rem;margin-top:2px}.ot-radar-value.negative strong{color:#ff6b72}.ot-radar-value.positive strong{color:#55dda0}.ot-radar-empty{padding:18px;color:var(--text-muted);font-size:.8rem}.ot-radar-footnote{font-size:.72rem;color:#71849e;line-height:1.5;margin-top:14px;padding:10px 12px;border-left:2px solid rgba(0,200,255,.35);background:rgba(0,200,255,.035)}.ot-radar-live-note{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,193,7,.28);background:rgba(255,193,7,.06)}.ot-radar-live-note strong{color:#ffd166;font-size:.72rem;white-space:nowrap}.ot-radar-live-note span{color:#9fb0c8;font-size:.7rem;line-height:1.45}@media(max-width:800px){.ot-global-view-tabs{width:100%}.ot-global-view-tab{flex:1;padding:10px 8px;font-size:.78rem}.ot-radar-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.ot-radar-grid{grid-template-columns:1fr}.ot-radar-group-head{align-items:flex-start;flex-direction:column}.ot-radar-row{grid-template-columns:24px 26px minmax(0,1fr) auto;gap:7px}.ot-radar-logo{width:23px;height:23px}.ot-radar-team strong{font-size:.76rem}.ot-radar-value strong{font-size:.8rem}}
+</style>
+
+
+<style id="home-year-hub-css">
+.home-year-section{margin:0 0 25px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,rgba(0,200,255,.045),rgba(255,255,255,.018));overflow:hidden}
+.home-year-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid var(--border)}
+.home-year-section-head h2{margin:4px 0 0;color:#fff;font-size:clamp(1.18rem,2vw,1.55rem);text-transform:uppercase;letter-spacing:.04em}
+.home-year-kicker{color:#79b6e8;font-size:.7rem;font-weight:950;letter-spacing:1.4px;text-transform:uppercase}
+.home-year-link{border:1px solid rgba(0,200,255,.32);background:rgba(0,200,255,.075);color:var(--accent);border-radius:999px;padding:9px 13px;font-size:.72rem;font-weight:950;letter-spacing:.6px;cursor:pointer;white-space:nowrap}
+.home-year-link:hover{background:rgba(0,200,255,.15)}
+.home-year-link-bottom{margin:0 16px 16px;width:calc(100% - 32px);border-radius:10px}
+.home-latest-champions-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:16px}
+.home-latest-champion{min-width:0;border:1px solid rgba(255,255,255,.08);background:rgba(5,10,19,.54);border-radius:13px;padding:14px;display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;align-items:center}
+.home-latest-champion img{width:42px;height:42px;object-fit:contain}
+.home-latest-champion-copy{min-width:0}
+.home-latest-champion-event{display:block;color:#7f9ab7;font-size:.68rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-latest-champion strong{display:block;color:#fff;font-size:.98rem;font-weight:1000;margin:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-latest-champion small{display:block;color:#72cdf5;font-size:.68rem;font-weight:850}
+.home-year-rankings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:25px;margin-bottom:25px}
+.home-year-ranking-card{margin:0}
+.home-year-ranking-list{padding:5px 16px 8px}
+.home-year-ranking-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:51px;border-bottom:1px solid rgba(255,255,255,.055)}
+.home-year-ranking-row:last-child{border-bottom:0}
+.home-year-ranking-pos{color:#6e819a;font-size:.8rem;font-weight:1000;text-align:center}
+.home-year-ranking-name{min-width:0;color:#fff;font-size:.87rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-year-ranking-name small{display:block;margin-top:2px;color:#7187a3;font-size:.66rem;font-weight:800}
+.home-year-ranking-value{text-align:right;color:var(--accent);font-size:1.05rem;font-weight:1000}
+.home-year-ranking-value small{display:block;color:#7187a3;font-size:.58rem;font-weight:850;text-transform:uppercase}
+.home-year-loading{grid-column:1/-1;padding:22px;color:var(--text-muted);text-align:center;font-weight:800}
+#home .home-live-market-grid,#home .home-year-section,#home .home-year-rankings-grid,#home .home-grid-2{content-visibility:auto;contain-intrinsic-size:520px}
+
+#ot-year2026-panel[hidden],#ot-year-events-panel[hidden],#ot-year-titles-panel[hidden],#ot-year-mvp-panel[hidden]{display:none!important}
+.ot-year-subtabs{display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap}
+.ot-year-subtab{border:1px solid var(--border);background:rgba(255,255,255,.025);color:var(--text-muted);border-radius:10px;padding:10px 16px;font-weight:950;letter-spacing:.5px;cursor:pointer}
+.ot-year-subtab.active{border-color:rgba(0,200,255,.42);background:rgba(0,200,255,.1);color:var(--accent)}
+.ot-year-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.ot-year-summary div{border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025);padding:13px}
+.ot-year-summary strong{display:block;color:#fff;font-size:1.3rem}
+.ot-year-summary span{display:block;color:#7894b1;font-size:.68rem;font-weight:900;text-transform:uppercase;margin-top:3px}
+.ot-year-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:13px;background:var(--panel-bg)}
+.ot-year-table{width:100%;min-width:820px;border-collapse:collapse}
+.ot-year-table th{padding:11px 10px;background:rgba(0,200,255,.055);color:#8bc8ef;font-size:.68rem;text-transform:uppercase;letter-spacing:.55px;border-bottom:1px solid var(--border);white-space:nowrap}
+.ot-year-table td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.055);font-size:.82rem;color:#dfeeff;text-align:center}
+.ot-year-table tbody tr:last-child td{border-bottom:0}
+.ot-year-table td:first-child,.ot-year-table th:first-child{text-align:left}
+.ot-year-event-name{font-weight:950;color:#fff}
+.ot-year-detail-btn{border:1px solid rgba(0,200,255,.32);background:rgba(0,200,255,.07);color:var(--accent);padding:6px 9px;border-radius:8px;font-size:.66rem;font-weight:950;cursor:pointer}
+.ot-year-muted{color:#6f8198}
+.ot-year-medal{font-weight:1000}
+.ot-year-medal.gold{color:#ffd166}.ot-year-medal.silver{color:#c9d4df}.ot-year-medal.bronze{color:#d7975e}
+.ot-year-ranking-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:0 0 14px;padding:16px;border:1px solid var(--border);border-radius:13px;background:linear-gradient(135deg,rgba(0,200,255,.065),rgba(255,255,255,.018))}
+.ot-year-ranking-head h3{margin:0;color:#fff;font-size:1.15rem;text-transform:uppercase}
+.ot-year-ranking-head p{margin:5px 0 0;color:var(--text-muted);font-size:.8rem}
+.ot-year-mvp-events{margin-top:20px}
+.ot-year-mvp-events-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ot-year-mvp-event{border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025);padding:12px;min-width:0}
+.ot-year-mvp-event strong{display:block;color:#fff;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ot-year-mvp-event span{display:block;color:var(--accent);font-size:.76rem;font-weight:950;margin-top:5px}
+.ot-year-mvp-event small{display:block;color:#7088a4;font-size:.66rem;margin-top:3px}
+
+.ot-year-team-link,.ot-year-player-link{border:0;background:transparent;color:#fff;padding:0;display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:900;cursor:pointer;text-align:left}
+.ot-year-team-link:hover,.ot-year-player-link:hover{color:var(--accent)}
+.ot-year-team-link img{width:26px;height:26px;object-fit:contain;flex:0 0 auto}
+.ot-year-rank-number{display:inline-block;min-width:30px;color:#6f839c;font-weight:1000;margin-right:8px}
+.ot-year-rank-table td:first-child,.ot-year-mvp-table td:first-child{text-align:left}
+@media(max-width:900px){.home-latest-champions-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ot-year-mvp-events-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.home-year-section-head{align-items:flex-start;flex-direction:column;padding:15px}.home-year-link{width:100%;box-sizing:border-box}.home-year-rankings-grid{grid-template-columns:1fr;gap:16px}.home-latest-champions-grid{grid-template-columns:1fr;padding:12px}.home-latest-champion{padding:12px}.home-year-ranking-list{padding:4px 12px 7px}.home-year-link-bottom{margin:0 12px 12px;width:calc(100% - 24px)}.ot-global-view-tabs{display:grid;grid-template-columns:1fr;width:100%}.ot-year-subtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.ot-year-subtab{padding:9px 5px;font-size:.72rem}.ot-year-summary{grid-template-columns:1fr}.ot-year-table{min-width:680px}.ot-year-mvp-events-grid{grid-template-columns:1fr}.ot-year-ranking-head{flex-direction:column}}
 </style>
 
 </head>
@@ -512,61 +579,6 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             <div class="home-s2-team-loading">Carregando equipes...</div>
         </div>
     </section>
-    <div class="home-champions-grid">
-        <div class="home-widget home-ffws-champion-widget">
-            <h3>🏆 FFWS BRASIL 2026 S1</h3>
-            <div class="home-widget-body home-ffws-champion-body">
-                <div class="home-ffws-champion-kicker">GRANDE FINAL ENCERRADA</div>
-                <div class="home-ffws-champion-title">CAMPEÃO DEFINIDO</div>
-                <div class="home-ffws-section-label">🏆 CAMPEÃO DA FINAL</div>
-                <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openTeamProfile('LOUD SNICKERS')">
-                    <img decoding="async" loading="lazy" src="loud 2.webp" alt="LOUD SNICKERS" onerror="this.src='escudo.webp'">
-                    <span class="home-ffws-team-info"><strong>LOUD</strong><small>193 pts • 2 B! • 100 K</small></span>
-                    <span class="home-ffws-badge champion">CAMPEÃO</span>
-                </button>
-                <div class="home-ffws-section-label">✈️ CLASSIFICADOS PARA A EWC 2026</div>
-                <div class="home-ffws-ewc-grid">
-                    <button type="button" class="home-ffws-team-card" onclick="openTeamProfile('LOS')"><img decoding="async" loading="lazy" src="Los.webp" alt="LOS" onerror="this.src='escudo.webp'"><span class="home-ffws-team-info"><strong>LOS</strong><small>208 pts • 4 B! • 104 K</small></span><span class="home-ffws-badge ewc">✈️ EWC</span></button>
-                    <button type="button" class="home-ffws-team-card" onclick="openTeamProfile('FLUXO W7M')"><img decoding="async" loading="lazy" src="Fluxo 2.webp" alt="FLUXO W7M" onerror="this.src='escudo.webp'"><span class="home-ffws-team-info"><strong>FX</strong><small>170 pts • 2 B! • 84 K</small></span><span class="home-ffws-badge ewc">✈️ EWC</span></button>
-                </div>
-                <button type="button" onclick="navigate('final')" class="home-widget-link-btn home-ffws-final-link">VER TABELA DA FINAL →</button>
-            </div>
-        </div>
-        <div class="home-widget home-ffws-champion-widget home-laff-champion-widget">
-            <h3>🏆 LAFF 2026 S1</h3>
-            <div class="home-widget-body home-ffws-champion-body">
-                <div class="home-ffws-champion-kicker">GRANDE FINAL ENCERRADA</div>
-                <div class="home-ffws-champion-title">CAMPEÃO DEFINIDO</div>
-                <div class="home-ffws-section-label">🏆 CAMPEÃO DA LAFF</div>
-                <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openLAFFTeamProfile('CPT VOX')">
-                    <img class="home-laff-team-logo" data-cff-team-logo="CPT VOX" decoding="async" loading="lazy" src="cpt vox.webp" alt="CPT VOX" onerror="this.src='escudo.webp'">
-                    <span class="home-ffws-team-info"><strong>CPT VOX</strong><small>200 pts • 3 B! • 112 K</small></span><span class="home-ffws-badge champion">CAMPEÃO</span>
-                </button>
-                <div class="home-ffws-section-label">⬆️ CLASSIFICADOS PARA WB 2026 S2</div>
-                <button type="button" class="home-ffws-team-card" onclick="openLAFFTeamProfile('SX GG')">
-                    <img class="home-laff-team-logo" data-cff-team-logo="SX GG" decoding="async" loading="lazy" src="sx tet.webp" alt="SX GG" onerror="this.src='escudo.webp'">
-                    <span class="home-ffws-team-info"><strong>SX GG</strong><small>192 pts • 2 B! • 121 K</small></span><span class="home-ffws-badge ewc">FFWS BR S2</span>
-                </button>
-                <button type="button" onclick="navigate('laff-classificatoria')" class="home-widget-link-btn home-ffws-final-link">VER RESULTADOS DA LAFF →</button>
-            </div>
-        </div>
-        <div class="home-widget home-ffws-champion-widget home-lyon-champion-widget">
-            <h3>🏆 EWC 2026</h3>
-            <div class="home-widget-body home-ffws-champion-body">
-                <div class="home-ffws-champion-kicker">GRANDE FINAL ENCERRADA</div>
-                <div class="home-ffws-champion-title">CAMPEÃO DEFINIDO</div>
-                <div class="home-ffws-section-label">🏆 CAMPEÃ DA EWC</div>
-                <button type="button" class="home-ffws-team-card home-ffws-team-card-champion" onclick="openEWCTeamProfile('LYON')">
-                    <img decoding="async" loading="lazy" src="https://i.postimg.cc/XYGTQnxR/inco.webp" alt="LYON" onerror="this.src='escudo.webp'">
-                    <span class="home-ffws-team-info"><strong>LYON</strong><small>155 pts • 2 B! • 101 K</small></span>
-                    <span class="home-ffws-badge champion">CAMPEÃ</span>
-                </button>
-                <div class="home-ffws-section-label">🌍 LYON CLASSIFICADA PARA A FFWS GLOBAL SERIES 2026</div>
-                <button type="button" onclick="navigate('ewc-final')" class="home-widget-link-btn home-ffws-final-link">VER FINAL DA EWC →</button>
-            </div>
-        </div>
-    </div>
-
     <div class="home-live-market-grid" style="margin-bottom: 25px;">
         <div class="home-widget">
             <h3>🔴 Ao Vivo Agora</h3>
@@ -593,6 +605,47 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             </div>
             <button onclick="navigate('mercado')" class="home-widget-link-btn">Ver Mercado Completo →</button>
         </div>
+    </div>
+
+    <section class="home-year-section" aria-labelledby="home-year-latest-title">
+        <div class="home-year-section-head">
+            <div>
+                <span class="home-year-kicker">CENÁRIO BRASILEIRO • 2026</span>
+                <h2 id="home-year-latest-title">Últimos Campeões</h2>
+            </div>
+            <button type="button" class="home-year-link" onclick="openCff2026View('events')">VER TORNEIOS →</button>
+        </div>
+        <div class="home-latest-champions-grid" id="home-year-latest-champions">
+            <div class="home-year-loading">Carregando campeões...</div>
+        </div>
+    </section>
+
+    <div class="home-year-rankings-grid">
+        <section class="home-year-section home-year-ranking-card" aria-labelledby="home-year-titles-title">
+            <div class="home-year-section-head">
+                <div>
+                    <span class="home-year-kicker">22 TORNEIOS REGISTRADOS</span>
+                    <h2 id="home-year-titles-title">Ranking de Títulos no Ano</h2>
+                </div>
+            </div>
+            <div class="home-year-ranking-list" id="home-year-titles-ranking">
+                <div class="home-year-loading">Carregando ranking...</div>
+            </div>
+            <button type="button" class="home-year-link home-year-link-bottom" onclick="openCff2026View('titles')">VER RANKING COMPLETO →</button>
+        </section>
+
+        <section class="home-year-section home-year-ranking-card" aria-labelledby="home-year-mvps-title">
+            <div class="home-year-section-head">
+                <div>
+                    <span class="home-year-kicker">DESTAQUES INDIVIDUAIS • 2026</span>
+                    <h2 id="home-year-mvps-title">Ranking de MVPs no Ano</h2>
+                </div>
+            </div>
+            <div class="home-year-ranking-list" id="home-year-mvps-ranking">
+                <div class="home-year-loading">Carregando ranking...</div>
+            </div>
+            <button type="button" class="home-year-link home-year-link-bottom" onclick="openCff2026View('mvp')">VER RANKING COMPLETO →</button>
+        </section>
     </div>
 
     <div class="home-grid-2" style="margin-bottom: 25px;">
@@ -1420,20 +1473,32 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <div id="outros-torneios" class="page">
     <div id="ot-list-view">
         <div class="ot-hero-new">
-            <div class="ot-hero-kicker">Arquivo histórico</div>
+            <div class="ot-hero-kicker">Torneios registrados</div>
             <h2>Outros Torneios</h2>
-            <p>Veja informações sobre os principais torneios do cenário de Free Fire.</p>
+            <p>Eventos de 2026, campeões, ranking de títulos, MVPs e arquivo histórico do competitivo.</p>
             <div class="ot-hero-warning">
-                <strong>Aviso:</strong> arquivo histórico é alimentado periodicamente e pode conter pequenos erros.
+                <strong>2026:</strong> 22 torneios mobile registrados até 27/08/2026.
             </div>
         </div>
 
         <div class="ot-global-view-tabs" role="tablist" aria-label="Visualização de Outros Torneios">
-            <button type="button" class="ot-global-view-tab active" data-ot-main-view="tournaments" onclick="setOtMainView('tournaments')">TORNEIOS</button>
+            <button type="button" class="ot-global-view-tab active" data-ot-main-view="year2026" onclick="setOtMainView('year2026')">TORNEIOS 2026</button>
+            <button type="button" class="ot-global-view-tab" data-ot-main-view="tournaments" onclick="setOtMainView('tournaments')">ARQUIVO DETALHADO</button>
             <button type="button" class="ot-global-view-tab" data-ot-main-view="radar" onclick="setOtMainView('radar')">RADAR ESTATÍSTICO</button>
         </div>
 
-        <div id="ot-tournaments-panel">
+        <div id="ot-year2026-panel">
+            <div class="ot-year-subtabs" role="tablist" aria-label="Torneios 2026">
+                <button type="button" class="ot-year-subtab active" data-ot-year-view="events" onclick="setOtYearView('events')">EVENTOS</button>
+                <button type="button" class="ot-year-subtab" data-ot-year-view="titles" onclick="setOtYearView('titles')">TÍTULOS</button>
+                <button type="button" class="ot-year-subtab" data-ot-year-view="mvp" onclick="setOtYearView('mvp')">MVP</button>
+            </div>
+            <div id="ot-year-events-panel" class="ot-year-panel"><div id="ot-year-events-content"><p class="ot-empty">Carregando torneios de 2026...</p></div></div>
+            <div id="ot-year-titles-panel" class="ot-year-panel" hidden><div id="ot-year-titles-content"></div></div>
+            <div id="ot-year-mvp-panel" class="ot-year-panel" hidden><div id="ot-year-mvp-content"></div></div>
+        </div>
+
+        <div id="ot-tournaments-panel" hidden>
             <div class="filters ot-filters-new">
                 <input type="text" id="ot-search" placeholder="Pesquisar por torneio, ano, equipe, campeão ou região..." oninput="renderOutrosTorneiosList()" autocomplete="off">
                 <select id="ot-filter-year" onchange="renderOutrosTorneiosList()">
@@ -2152,13 +2217,13 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260828-amateur-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260828-yearhub-v1"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
 <script defer src="js/news-admin-provider.js?v=20260806-admin-v2"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
-<script defer src="js/home-current-results.min.js?v=20260815-home-sync-v3"></script>
+<script defer src="js/home-current-results.min.js?v=20260828-yearhub-v1"></script>
 </main>
 
 </body>
