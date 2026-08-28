@@ -178,6 +178,10 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
   .home-ffws-team-card-champion { grid-template-columns: auto minmax(0, 1fr) auto; }
 }
 
+
+.ot-year-title-details{margin:14px 0 0;border:1px solid rgba(0,200,255,.22);border-radius:13px;background:rgba(4,10,17,.72);overflow:hidden}
+.ot-year-title-details[hidden]{display:none!important}.ot-year-title-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-bottom:1px solid var(--border);background:rgba(0,200,255,.055)}.ot-year-title-details-head h4{margin:0;color:#fff;font-size:.93rem;text-transform:uppercase}.ot-year-title-details-head button{border:0;background:transparent;color:#7f9ab7;font-size:1.1rem;cursor:pointer;padding:5px 8px}.ot-year-title-details-list{padding:5px 12px 10px}.ot-year-title-detail-row{display:grid;grid-template-columns:minmax(0,1fr) 105px minmax(100px,.7fr);gap:12px;align-items:center;min-height:48px;border-bottom:1px solid rgba(255,255,255,.055)}.ot-year-title-detail-row:last-child{border-bottom:0}.ot-year-title-detail-row strong{color:#fff;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ot-year-title-detail-row time{color:#8ba0b9;font-size:.72rem;text-align:center}.ot-year-title-detail-row span{color:var(--accent);font-size:.75rem;font-weight:900;text-align:right}.ot-year-title-team-btn{border:0;background:transparent;color:#fff;padding:0;display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:900;cursor:pointer;text-align:left}.ot-year-title-team-btn:hover{color:var(--accent)}.ot-year-title-team-btn img{width:26px;height:26px;object-fit:contain;flex:0 0 auto}
+@media(max-width:760px){.home-year-ranking-list{padding:4px 8px 7px}.home-year-mini-table th:nth-child(1){width:38px}.home-year-mini-table th:nth-child(n+3){width:42px}.home-year-mini-table th,.home-year-mini-table td{padding-left:4px;padding-right:4px}.ot-year-title-detail-row{grid-template-columns:minmax(0,1fr) 82px;gap:8px;padding:8px 0}.ot-year-title-detail-row span{grid-column:1/-1;text-align:left;margin-top:-4px}}
 </style>
 
 <style id="hall-fame-extra-css">
@@ -305,6 +309,17 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .home-year-ranking-value small{display:block;color:#7187a3;font-size:.58rem;font-weight:850;text-transform:uppercase}
 .home-year-loading{grid-column:1/-1;padding:22px;color:var(--text-muted);text-align:center;font-weight:800}
 #home .home-live-market-grid,#home .home-year-section,#home .home-year-rankings-grid,#home .home-grid-2{content-visibility:auto;contain-intrinsic-size:520px}
+
+.home-year-ranking-list{overflow:hidden}
+.home-year-mini-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.home-year-mini-table th{height:36px;padding:0 7px;background:#1a1f29;color:#f3f7fc;font-size:.66rem;font-weight:1000;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);text-align:center}
+.home-year-mini-table th:nth-child(1){width:42px}.home-year-mini-table th:nth-child(2){text-align:left;width:auto}.home-year-mini-table th:nth-child(n+3){width:48px}
+.home-year-mini-table th.home-medal-gold{background:rgba(199,158,16,.2);color:#ffdb64}.home-year-mini-table th.home-medal-silver{background:rgba(175,190,211,.18);color:#dde8f6}.home-year-mini-table th.home-medal-bronze{background:rgba(178,110,47,.18);color:#efb481}
+.home-year-mini-table td{height:43px;padding:0 7px;background:rgba(8,12,18,.92);border-bottom:1px solid rgba(255,255,255,.055);font-size:.78rem;text-align:center;color:#f5f8fc}
+.home-year-mini-table tbody tr:last-child td{border-bottom:0}.home-year-mini-table tbody tr:hover td{background:rgba(14,20,29,.96)}
+.home-year-mini-table td.home-rank-cell{padding:0}.home-year-rank-badge-mini{height:43px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;font-weight:1000}
+.home-year-rank-badge-mini.pos-1{background:linear-gradient(180deg,#cda21d,#a57f0a)}.home-year-rank-badge-mini.pos-2{background:linear-gradient(180deg,#8a97aa,#697487)}.home-year-rank-badge-mini.pos-3{background:linear-gradient(180deg,#b87433,#8d5524)}.home-year-rank-badge-mini.pos-4{background:linear-gradient(180deg,#b06a1a,#8c4f0e)}.home-year-rank-badge-mini.pos-5{background:linear-gradient(180deg,#14879c,#0f6777)}
+.home-year-mini-table td.home-name-cell{text-align:left;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.home-year-name-inline{display:flex;align-items:center;gap:7px;min-width:0}.home-year-name-inline img{width:20px;height:20px;object-fit:contain;flex:0 0 auto}.home-year-name-inline span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.home-year-mini-table td.home-medal-gold{background:rgba(199,158,16,.1);color:#ffdb64;font-weight:1000}.home-year-mini-table td.home-medal-silver{background:rgba(175,190,211,.08);color:#dde8f6;font-weight:950}.home-year-mini-table td.home-medal-bronze{background:rgba(178,110,47,.08);color:#efb481;font-weight:950}.home-year-mini-table td.home-total-cell{font-weight:1000;font-size:.84rem}
 
 #ot-year2026-panel[hidden],#ot-year-events-panel[hidden],#ot-year-titles-panel[hidden],#ot-year-mvp-panel[hidden]{display:none!important}
 .ot-year-subtabs{display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap}
@@ -2239,13 +2254,13 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260828-yearhub-style-v2"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260828-ot-fast-v3"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
 <script defer src="js/news-admin-provider.js?v=20260806-admin-v2"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
-<script defer src="js/home-current-results.min.js?v=20260828-yearhub-style-v2"></script>
+<script defer src="js/home-current-results.min.js?v=20260828-home-ranktable-v3"></script>
 </main>
 
 </body>
