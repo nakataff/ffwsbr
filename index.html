@@ -338,8 +338,30 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .ot-year-team-link,.ot-year-player-link{border:0;background:transparent;color:#fff;padding:0;display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:900;cursor:pointer;text-align:left}
 .ot-year-team-link:hover,.ot-year-player-link:hover{color:var(--accent)}
 .ot-year-team-link img{width:26px;height:26px;object-fit:contain;flex:0 0 auto}
-.ot-year-rank-number{display:inline-block;min-width:30px;color:#6f839c;font-weight:1000;margin-right:8px}
-.ot-year-rank-table td:first-child,.ot-year-mvp-table td:first-child{text-align:left}
+.ot-year-premium-table{min-width:760px}
+.ot-year-premium-table thead th{padding:12px 10px;background:#1a1f29;color:#eef5ff;font-size:.78rem;font-weight:1000;border-bottom:1px solid rgba(255,255,255,.08)}
+.ot-year-premium-table thead th.ot-year-rank-head{width:84px;text-align:center}
+.ot-year-premium-table thead th.ot-year-medal-head.gold{background:rgba(199,158,16,.18);color:#ffdb64}
+.ot-year-premium-table thead th.ot-year-medal-head.silver{background:rgba(175,190,211,.18);color:#dde8f6}
+.ot-year-premium-table thead th.ot-year-medal-head.bronze{background:rgba(178,110,47,.18);color:#efb481}
+.ot-year-premium-table tbody td{padding:0 10px;height:54px;background:rgba(8,12,18,.96);border-bottom:1px solid rgba(255,255,255,.06);font-size:.92rem}
+.ot-year-premium-table tbody tr:hover td{background:rgba(12,17,26,.98)}
+.ot-year-rank-cell{padding:0!important;width:84px;text-align:center}
+.ot-year-rank-badge{display:flex;align-items:center;justify-content:center;height:54px;font-size:1.02rem;font-weight:1000;color:#fff;letter-spacing:.02em}
+.ot-year-rank-badge.pos-1{background:linear-gradient(180deg,#cda21d,#a57f0a)}
+.ot-year-rank-badge.pos-2{background:linear-gradient(180deg,#8a97aa,#697487)}
+.ot-year-rank-badge.pos-3{background:linear-gradient(180deg,#b87433,#8d5524)}
+.ot-year-rank-badge.pos-4{background:linear-gradient(180deg,#b06a1a,#8c4f0e)}
+.ot-year-rank-badge.pos-5{background:linear-gradient(180deg,#14879c,#0f6777)}
+.ot-year-team-cell,.ot-year-player-cell{text-align:left!important;padding:0 14px!important;min-width:220px}
+.ot-year-team-cell .ot-year-team-link,.ot-year-player-cell .ot-year-player-link{width:100%;justify-content:flex-start}
+.ot-year-team-cell .ot-year-team-link span,.ot-year-player-cell .ot-year-player-link{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ot-year-medal-cell,.ot-year-total-cell{text-align:center!important;font-size:1.02rem;font-weight:1000}
+.ot-year-medal-cell.gold{background:rgba(199,158,16,.12)!important;color:#ffdb64}
+.ot-year-medal-cell.silver{background:rgba(175,190,211,.11)!important;color:#dde8f6}
+.ot-year-medal-cell.bronze{background:rgba(178,110,47,.11)!important;color:#efb481}
+.ot-year-total-cell strong{font-size:1.06rem;color:#fff}
+.ot-year-rank-table td:first-child,.ot-year-mvp-table td:first-child{text-align:center}
 @media(max-width:900px){.home-latest-champions-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ot-year-mvp-events-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.home-year-section-head{align-items:flex-start;flex-direction:column;padding:15px}.home-year-link{width:100%;box-sizing:border-box}.home-year-rankings-grid{grid-template-columns:1fr;gap:16px}.home-latest-champions-grid{grid-template-columns:1fr;padding:12px}.home-latest-champion{padding:12px}.home-year-ranking-list{padding:4px 12px 7px}.home-year-link-bottom{margin:0 12px 12px;width:calc(100% - 24px)}.ot-global-view-tabs{display:grid;grid-template-columns:1fr;width:100%}.ot-year-subtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.ot-year-subtab{padding:9px 5px;font-size:.72rem}.ot-year-summary{grid-template-columns:1fr}.ot-year-table{min-width:680px}.ot-year-mvp-events-grid{grid-template-columns:1fr}.ot-year-ranking-head{flex-direction:column}}
 </style>
@@ -2217,13 +2239,13 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260828-yearhub-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260828-yearhub-style-v2"></script>
 <script defer src="js/search-fast.min.js?v=20260801-tier-constructor-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260729-fast-home-v1"></script>
 <script defer src="js/news-admin-provider.js?v=20260806-admin-v2"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
-<script defer src="js/home-current-results.min.js?v=20260828-yearhub-v1"></script>
+<script defer src="js/home-current-results.min.js?v=20260828-yearhub-style-v2"></script>
 </main>
 
 </body>
