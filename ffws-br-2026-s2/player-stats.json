@@ -5,111 +5,111 @@
     "angelo7": {
       "name": "Ângelo7",
       "team": "CPT VOX",
-      "kills": 57,
-      "damage": 54058,
-      "assists": 90,
-      "matches": 53,
+      "kills": 54,
+      "damage": 50541,
+      "assists": 80,
+      "matches": 48,
       "mvp": 0,
       "record": 12,
       "stages": {
         "classificatoria": {
-          "kills": 57,
-          "damage": 54058,
-          "assists": 90,
-          "matches": 53,
+          "kills": 54,
+          "damage": 50541,
+          "assists": 80,
+          "matches": 48,
           "mvp": 0
         }
       },
-      "rankKills": 46,
-      "rankDamage": 28,
-      "rankAssists": 23
+      "rankKills": 47,
+      "rankDamage": 25,
+      "rankAssists": 25
     },
     "bad9": {
       "name": "bad9",
       "team": "CPT VOX",
-      "kills": 65,
-      "damage": 36181,
-      "assists": 99,
-      "matches": 53,
+      "kills": 59,
+      "damage": 32205,
+      "assists": 91,
+      "matches": 48,
       "mvp": 0,
       "record": 11,
       "stages": {
         "classificatoria": {
-          "kills": 65,
-          "damage": 36181,
-          "assists": 99,
-          "matches": 53,
+          "kills": 59,
+          "damage": 32205,
+          "assists": 91,
+          "matches": 48,
           "mvp": 0
         }
       },
-      "rankKills": 40,
-      "rankDamage": 48,
-      "rankAssists": 18
+      "rankKills": 44,
+      "rankDamage": 49,
+      "rankAssists": 16
     },
     "black02": {
       "name": "BLACK02",
       "team": "RUSH GAMING",
-      "kills": 65,
-      "damage": 49015,
-      "assists": 77,
-      "matches": 48,
+      "kills": 61,
+      "damage": 45221,
+      "assists": 73,
+      "matches": 44,
       "mvp": 1,
       "record": 18,
       "stages": {
         "classificatoria": {
-          "kills": 65,
-          "damage": 49015,
-          "assists": 77,
-          "matches": 48,
+          "kills": 61,
+          "damage": 45221,
+          "assists": 73,
+          "matches": 44,
           "mvp": 1
         }
       },
-      "rankKills": 40,
-      "rankDamage": 32,
+      "rankKills": 41,
+      "rankDamage": 33,
       "rankAssists": 31
     },
     "bops": {
       "name": "Bops",
       "team": "FLUXO W7M",
-      "kills": 84,
-      "damage": 64635,
-      "assists": 115,
-      "matches": 47,
+      "kills": 76,
+      "damage": 56997,
+      "assists": 102,
+      "matches": 42,
       "mvp": 0,
       "record": 16,
       "stages": {
         "classificatoria": {
-          "kills": 84,
-          "damage": 64635,
-          "assists": 115,
-          "matches": 47,
+          "kills": 76,
+          "damage": 56997,
+          "assists": 102,
+          "matches": 42,
           "mvp": 0
         }
       },
-      "rankKills": 22,
-      "rankDamage": 17,
+      "rankKills": 24,
+      "rankDamage": 19,
       "rankAssists": 12
     },
     "braboxx7": {
       "name": "BRABOXX7",
       "team": "AFROGAMES",
-      "kills": 65,
-      "damage": 42650,
-      "assists": 71,
-      "matches": 53,
+      "kills": 62,
+      "damage": 38983,
+      "assists": 66,
+      "matches": 48,
       "mvp": 0,
       "record": 12,
       "stages": {
         "classificatoria": {
-          "kills": 65,
-          "damage": 42650,
-          "assists": 71,
-          "matches": 53,
+          "kills": 62,
+          "damage": 38983,
+          "assists": 66,
+          "matches": 48,
           "mvp": 0
         }
       },
       "rankKills": 40,
-      "rankDamage": 41,
+      "rankDamage": 42,
       "rankAssists": 38
     },
     "brisa7": {
@@ -129,24 +129,24 @@
     "butzin": {
       "name": "BuTziN",
       "team": "FLUXO W7M",
-      "kills": 92,
-      "damage": 55019,
-      "assists": 89,
-      "matches": 47,
-      "mvp": 2,
+      "kills": 81,
+      "damage": 47504,
+      "assists": 79,
+      "matches": 42,
+      "mvp": 1,
       "record": 17,
       "stages": {
         "classificatoria": {
-          "kills": 92,
-          "damage": 55019,
-          "assists": 89,
-          "matches": 47,
-          "mvp": 2
+          "kills": 81,
+          "damage": 47504,
+          "assists": 79,
+          "matches": 42,
+          "mvp": 1
         }
       },
-      "rankKills": 19,
-      "rankDamage": 25,
-      "rankAssists": 25
+      "rankKills": 20,
+      "rankDamage": 30,
+      "rankAssists": 27
     },
     "byte333": {
       "name": "BYTE333",
@@ -166,30 +166,30 @@
           "mvp": 0
         }
       },
-      "rankKills": 40,
-      "rankDamage": 46,
-      "rankAssists": 19
+      "rankKills": 37,
+      "rankDamage": 44,
+      "rankAssists": 14
     },
     "bzp": {
       "name": "BZP",
       "team": "LOUD SNICKERS",
-      "kills": 95,
-      "damage": 58803,
-      "assists": 141,
-      "matches": 45,
+      "kills": 84,
+      "damage": 52412,
+      "assists": 125,
+      "matches": 40,
       "mvp": 1,
       "record": 17,
       "stages": {
         "classificatoria": {
-          "kills": 95,
-          "damage": 58803,
-          "assists": 141,
-          "matches": 45,
+          "kills": 84,
+          "damage": 52412,
+          "assists": 125,
+          "matches": 40,
           "mvp": 1
         }
       },
       "rankKills": 17,
-      "rankDamage": 21,
+      "rankDamage": 22,
       "rankAssists": 4
     },
     "carioca": {
@@ -209,68 +209,68 @@
     "destroi7": {
       "name": "Destroi7",
       "team": "CIVIS",
-      "kills": 23,
-      "damage": 28339,
-      "assists": 67,
-      "matches": 49,
+      "kills": 20,
+      "damage": 23675,
+      "assists": 53,
+      "matches": 44,
       "mvp": 0,
       "record": 5,
       "stages": {
         "classificatoria": {
-          "kills": 23,
-          "damage": 28339,
-          "assists": 67,
-          "matches": 49,
+          "kills": 20,
+          "damage": 23675,
+          "assists": 53,
+          "matches": 44,
           "mvp": 0
         }
       },
-      "rankKills": 57,
-      "rankDamage": 54,
-      "rankAssists": 43
+      "rankKills": 59,
+      "rankDamage": 55,
+      "rankAssists": 49
     },
     "dnsetzz": {
       "name": "dnsetzz",
       "team": "AFROGAMES",
-      "kills": 4,
-      "damage": 972,
+      "kills": 2,
+      "damage": 486,
       "assists": 0,
-      "matches": 4,
+      "matches": 2,
       "mvp": 0,
       "record": 2,
       "stages": {
         "classificatoria": {
-          "kills": 4,
-          "damage": 972,
+          "kills": 2,
+          "damage": 486,
           "assists": 0,
-          "matches": 4,
+          "matches": 2,
           "mvp": 0
         }
       },
       "rankKills": 65,
-      "rankDamage": 65,
+      "rankDamage": 66,
       "rankAssists": null
     },
     "draxx7": {
       "name": "Draxx7",
       "team": "LOOPS",
-      "kills": 80,
-      "damage": 47337,
-      "assists": 72,
-      "matches": 53,
+      "kills": 76,
+      "damage": 43980,
+      "assists": 61,
+      "matches": 48,
       "mvp": 1,
       "record": 18,
       "stages": {
         "classificatoria": {
-          "kills": 80,
-          "damage": 47337,
-          "assists": 72,
-          "matches": 53,
+          "kills": 76,
+          "damage": 43980,
+          "assists": 61,
+          "matches": 48,
           "mvp": 1
         }
       },
-      "rankKills": 26,
+      "rankKills": 24,
       "rankDamage": 37,
-      "rankAssists": 36
+      "rankAssists": 40
     },
     "erick11": {
       "name": "Erick11",
@@ -290,91 +290,91 @@
           "mvp": 1
         }
       },
-      "rankKills": 38,
-      "rankDamage": 40,
-      "rankAssists": 29
+      "rankKills": 34,
+      "rankDamage": 34,
+      "rankAssists": 24
     },
     "ericking": {
       "name": "Ericking",
       "team": "RUSH GAMING",
-      "kills": 63,
-      "damage": 64105,
-      "assists": 65,
-      "matches": 43,
+      "kills": 61,
+      "damage": 61053,
+      "assists": 61,
+      "matches": 40,
       "mvp": 0,
       "record": 11,
       "stages": {
         "classificatoria": {
-          "kills": 63,
-          "damage": 64105,
-          "assists": 65,
-          "matches": 43,
+          "kills": 61,
+          "damage": 61053,
+          "assists": 61,
+          "matches": 40,
           "mvp": 0
         }
       },
-      "rankKills": 44,
-      "rankDamage": 18,
-      "rankAssists": 45
+      "rankKills": 41,
+      "rankDamage": 14,
+      "rankAssists": 40
     },
     "furiazz7": {
       "name": "Furiazz7",
       "team": "SX TET",
-      "kills": 77,
-      "damage": 52969,
-      "assists": 75,
-      "matches": 50,
+      "kills": 71,
+      "damage": 48105,
+      "assists": 69,
+      "matches": 45,
       "mvp": 0,
       "record": 17,
       "stages": {
         "classificatoria": {
-          "kills": 77,
-          "damage": 52969,
-          "assists": 75,
-          "matches": 50,
+          "kills": 71,
+          "damage": 48105,
+          "assists": 69,
+          "matches": 45,
           "mvp": 0
         }
       },
       "rankKills": 30,
       "rankDamage": 29,
-      "rankAssists": 33
+      "rankAssists": 35
     },
     "gbtrem22": {
       "name": "Gbtrem22",
       "team": "CPT VOX",
-      "kills": 62,
-      "damage": 47757,
-      "assists": 61,
-      "matches": 53,
+      "kills": 56,
+      "damage": 43964,
+      "assists": 53,
+      "matches": 48,
       "mvp": 0,
       "record": 13,
       "stages": {
         "classificatoria": {
-          "kills": 62,
-          "damage": 47757,
-          "assists": 61,
-          "matches": 53,
+          "kills": 56,
+          "damage": 43964,
+          "assists": 53,
+          "matches": 48,
           "mvp": 0
         }
       },
       "rankKills": 45,
-      "rankDamage": 35,
-      "rankAssists": 47
+      "rankDamage": 38,
+      "rankAssists": 49
     },
     "gbzinn7": {
       "name": "gbzinn7",
       "team": "AFROGAMES",
-      "kills": 28,
-      "damage": 21000,
+      "kills": 27,
+      "damage": 19673,
       "assists": 24,
-      "matches": 24,
+      "matches": 21,
       "mvp": 0,
       "record": 10,
       "stages": {
         "classificatoria": {
-          "kills": 28,
-          "damage": 21000,
+          "kills": 27,
+          "damage": 19673,
           "assists": 24,
-          "matches": 24,
+          "matches": 21,
           "mvp": 0
         }
       },
@@ -385,111 +385,111 @@
     "general": {
       "name": "General!",
       "team": "LOS",
-      "kills": 71,
-      "damage": 45744,
-      "assists": 137,
-      "matches": 53,
+      "kills": 67,
+      "damage": 41739,
+      "assists": 125,
+      "matches": 48,
       "mvp": 1,
       "record": 20,
       "stages": {
         "classificatoria": {
-          "kills": 71,
-          "damage": 45744,
-          "assists": 137,
-          "matches": 53,
+          "kills": 67,
+          "damage": 41739,
+          "assists": 125,
+          "matches": 48,
           "mvp": 1
         }
       },
-      "rankKills": 35,
-      "rankDamage": 39,
-      "rankAssists": 6
+      "rankKills": 34,
+      "rankDamage": 40,
+      "rankAssists": 4
     },
     "giuh": {
       "name": "Giuh",
       "team": "FLUXO W7M",
-      "kills": 81,
-      "damage": 47173,
-      "assists": 108,
-      "matches": 41,
+      "kills": 73,
+      "damage": 40034,
+      "assists": 96,
+      "matches": 36,
       "mvp": 3,
       "record": 17,
       "stages": {
         "classificatoria": {
-          "kills": 81,
-          "damage": 47173,
-          "assists": 108,
-          "matches": 41,
+          "kills": 73,
+          "damage": 40034,
+          "assists": 96,
+          "matches": 36,
           "mvp": 3
         }
       },
-      "rankKills": 25,
-      "rankDamage": 38,
+      "rankKills": 27,
+      "rankDamage": 41,
       "rankAssists": 14
     },
     "guaxa": {
       "name": "GUAXA",
       "team": "LOUD SNICKERS",
-      "kills": 110,
-      "damage": 81607,
-      "assists": 95,
-      "matches": 53,
+      "kills": 96,
+      "damage": 71275,
+      "assists": 80,
+      "matches": 48,
       "mvp": 0,
       "record": 17,
       "stages": {
         "classificatoria": {
-          "kills": 110,
-          "damage": 81607,
-          "assists": 95,
-          "matches": 53,
+          "kills": 96,
+          "damage": 71275,
+          "assists": 80,
+          "matches": 48,
           "mvp": 0
         }
       },
-      "rankKills": 10,
+      "rankKills": 11,
       "rankDamage": 8,
-      "rankAssists": 21
+      "rankAssists": 25
     },
     "guimerlq": {
       "name": "GUIMERLQ",
       "team": "RUSH GAMING",
-      "kills": 82,
-      "damage": 41103,
-      "assists": 72,
-      "matches": 46,
+      "kills": 72,
+      "damage": 36837,
+      "assists": 68,
+      "matches": 41,
       "mvp": 0,
       "record": 15,
       "stages": {
         "classificatoria": {
-          "kills": 82,
-          "damage": 41103,
-          "assists": 72,
-          "matches": 46,
+          "kills": 72,
+          "damage": 36837,
+          "assists": 68,
+          "matches": 41,
           "mvp": 0
         }
       },
-      "rankKills": 24,
-      "rankDamage": 43,
-      "rankAssists": 36
+      "rankKills": 29,
+      "rankDamage": 45,
+      "rankAssists": 37
     },
     "gus": {
       "name": "GUS",
       "team": "INTZ",
-      "kills": 104,
-      "damage": 78122,
-      "assists": 158,
-      "matches": 53,
+      "kills": 96,
+      "damage": 70597,
+      "assists": 137,
+      "matches": 48,
       "mvp": 1,
       "record": 16,
       "stages": {
         "classificatoria": {
-          "kills": 104,
-          "damage": 78122,
-          "assists": 158,
-          "matches": 53,
+          "kills": 96,
+          "damage": 70597,
+          "assists": 137,
+          "matches": 48,
           "mvp": 1
         }
       },
-      "rankKills": 12,
-      "rankDamage": 10,
+      "rankKills": 11,
+      "rankDamage": 9,
       "rankAssists": 1
     },
     "hak": {
@@ -510,9 +510,9 @@
           "mvp": 0
         }
       },
-      "rankKills": 60,
+      "rankKills": 59,
       "rankDamage": 60,
-      "rankAssists": 60
+      "rankAssists": 58
     },
     "henry10": {
       "name": "Henry10",
@@ -533,162 +533,162 @@
         }
       },
       "rankKills": 66,
-      "rankDamage": 66,
+      "rankDamage": 65,
       "rankAssists": 65
     },
     "honeyzl": {
       "name": "honeyzL",
       "team": "INTZ",
-      "kills": 124,
-      "damage": 95918,
-      "assists": 103,
-      "matches": 53,
+      "kills": 117,
+      "damage": 88118,
+      "assists": 88,
+      "matches": 48,
       "mvp": 3,
       "record": 23,
       "stages": {
         "classificatoria": {
-          "kills": 124,
-          "damage": 95918,
-          "assists": 103,
-          "matches": 53,
+          "kills": 117,
+          "damage": 88118,
+          "assists": 88,
+          "matches": 48,
           "mvp": 3
         }
       },
-      "rankKills": 4,
+      "rankKills": 3,
       "rankDamage": 2,
-      "rankAssists": 16
+      "rankAssists": 20
     },
     "hugo7": {
       "name": "Hugo7",
       "team": "CIVIS",
-      "kills": 42,
-      "damage": 35729,
-      "assists": 55,
-      "matches": 52,
+      "kills": 34,
+      "damage": 29739,
+      "assists": 44,
+      "matches": 47,
       "mvp": 0,
       "record": 10,
       "stages": {
         "classificatoria": {
-          "kills": 42,
-          "damage": 35729,
-          "assists": 55,
-          "matches": 52,
+          "kills": 34,
+          "damage": 29739,
+          "assists": 44,
+          "matches": 47,
           "mvp": 0
         }
       },
-      "rankKills": 52,
-      "rankDamage": 50,
+      "rankKills": 54,
+      "rankDamage": 51,
       "rankAssists": 53
     },
     "igor7": {
       "name": "IGOR7",
       "team": "INFLUENCE RAGE",
-      "kills": 87,
-      "damage": 82279,
-      "assists": 58,
-      "matches": 47,
+      "kills": 70,
+      "damage": 68151,
+      "assists": 50,
+      "matches": 42,
       "mvp": 1,
       "record": 21,
       "stages": {
         "classificatoria": {
-          "kills": 87,
-          "damage": 82279,
-          "assists": 58,
-          "matches": 47,
+          "kills": 70,
+          "damage": 68151,
+          "assists": 50,
+          "matches": 42,
           "mvp": 1
         }
       },
-      "rankKills": 21,
-      "rankDamage": 7,
-      "rankAssists": 50
+      "rankKills": 31,
+      "rankDamage": 10,
+      "rankAssists": 52
     },
     "iguinmvp": {
       "name": "IguiNmvp",
       "team": "LOOPS",
-      "kills": 18,
-      "damage": 8756,
-      "assists": 22,
-      "matches": 11,
+      "kills": 9,
+      "damage": 4532,
+      "assists": 11,
+      "matches": 6,
       "mvp": 0,
       "record": 9,
       "stages": {
         "classificatoria": {
-          "kills": 18,
-          "damage": 8756,
-          "assists": 22,
-          "matches": 11,
+          "kills": 9,
+          "damage": 4532,
+          "assists": 11,
+          "matches": 6,
           "mvp": 0
         }
       },
       "rankKills": 62,
-      "rankDamage": 62,
+      "rankDamage": 63,
       "rankAssists": 62
     },
     "isacksr": {
       "name": "IsackSR",
       "team": "SX TET",
-      "kills": 38,
-      "damage": 29744,
-      "assists": 73,
-      "matches": 44,
+      "kills": 36,
+      "damage": 27337,
+      "assists": 69,
+      "matches": 41,
       "mvp": 0,
       "record": 8,
       "stages": {
         "classificatoria": {
-          "kills": 38,
-          "damage": 29744,
-          "assists": 73,
-          "matches": 44,
+          "kills": 36,
+          "damage": 27337,
+          "assists": 69,
+          "matches": 41,
           "mvp": 0
         }
       },
-      "rankKills": 54,
-      "rankDamage": 53,
-      "rankAssists": 34
+      "rankKills": 52,
+      "rankDamage": 52,
+      "rankAssists": 35
     },
     "jnmvp7": {
       "name": "JNmvp7",
       "team": "ALPHA7",
-      "kills": 122,
-      "damage": 68366,
-      "assists": 132,
-      "matches": 53,
+      "kills": 106,
+      "damage": 60509,
+      "assists": 116,
+      "matches": 48,
       "mvp": 1,
       "record": 22,
       "stages": {
         "classificatoria": {
-          "kills": 122,
-          "damage": 68366,
-          "assists": 132,
-          "matches": 53,
+          "kills": 106,
+          "damage": 60509,
+          "assists": 116,
+          "matches": 48,
           "mvp": 1
         }
       },
-      "rankKills": 5,
-      "rankDamage": 13,
-      "rankAssists": 7
+      "rankKills": 7,
+      "rankDamage": 15,
+      "rankAssists": 8
     },
     "joao7": {
       "name": "João7",
       "team": "INTZ",
-      "kills": 98,
-      "damage": 56462,
-      "assists": 124,
-      "matches": 53,
+      "kills": 94,
+      "damage": 51317,
+      "assists": 107,
+      "matches": 48,
       "mvp": 1,
       "record": 17,
       "stages": {
         "classificatoria": {
-          "kills": 98,
-          "damage": 56462,
-          "assists": 124,
-          "matches": 53,
+          "kills": 94,
+          "damage": 51317,
+          "assists": 107,
+          "matches": 48,
           "mvp": 1
         }
       },
-      "rankKills": 15,
-      "rankDamage": 22,
-      "rankAssists": 10
+      "rankKills": 13,
+      "rankDamage": 23,
+      "rankAssists": 11
     },
     "kakazk": {
       "name": "KaKaZk",
@@ -708,97 +708,97 @@
           "mvp": 1
         }
       },
-      "rankKills": 9,
-      "rankDamage": 9,
-      "rankAssists": 38
+      "rankKills": 4,
+      "rankDamage": 6,
+      "rankAssists": 33
     },
     "kauaxp": {
       "name": "kauãxp",
       "team": "INTZ",
-      "kills": 120,
-      "damage": 61654,
-      "assists": 143,
-      "matches": 53,
-      "mvp": 4,
+      "kills": 101,
+      "damage": 54875,
+      "assists": 133,
+      "matches": 48,
+      "mvp": 3,
       "record": 19,
       "stages": {
         "classificatoria": {
-          "kills": 120,
-          "damage": 61654,
-          "assists": 143,
-          "matches": 53,
-          "mvp": 4
+          "kills": 101,
+          "damage": 54875,
+          "assists": 133,
+          "matches": 48,
+          "mvp": 3
         }
       },
-      "rankKills": 7,
+      "rankKills": 9,
       "rankDamage": 20,
       "rankAssists": 3
     },
     "lc777": {
       "name": "LC777",
       "team": "ALPHA7",
-      "kills": 93,
-      "damage": 92402,
-      "assists": 109,
-      "matches": 53,
+      "kills": 83,
+      "damage": 82880,
+      "assists": 98,
+      "matches": 48,
       "mvp": 0,
       "record": 19,
       "stages": {
         "classificatoria": {
-          "kills": 93,
-          "damage": 92402,
-          "assists": 109,
-          "matches": 53,
+          "kills": 83,
+          "damage": 82880,
+          "assists": 98,
+          "matches": 48,
           "mvp": 0
         }
       },
       "rankKills": 18,
-      "rankDamage": 3,
+      "rankDamage": 4,
       "rankAssists": 13
     },
     "lippe": {
       "name": "lippe!",
       "team": "INFLUENCE RAGE",
-      "kills": 57,
-      "damage": 48891,
-      "assists": 93,
-      "matches": 47,
+      "kills": 54,
+      "damage": 44178,
+      "assists": 77,
+      "matches": 42,
       "mvp": 0,
       "record": 12,
       "stages": {
         "classificatoria": {
-          "kills": 57,
-          "damage": 48891,
-          "assists": 93,
-          "matches": 47,
+          "kills": 54,
+          "damage": 44178,
+          "assists": 77,
+          "matches": 42,
           "mvp": 0
         }
       },
-      "rankKills": 46,
-      "rankDamage": 33,
-      "rankAssists": 22
+      "rankKills": 47,
+      "rankDamage": 36,
+      "rankAssists": 29
     },
     "luan7": {
       "name": "Luan7",
       "team": "LOOPS",
-      "kills": 20,
-      "damage": 11933,
-      "assists": 30,
-      "matches": 16,
+      "kills": 17,
+      "damage": 10241,
+      "assists": 25,
+      "matches": 14,
       "mvp": 0,
       "record": 7,
       "stages": {
         "classificatoria": {
-          "kills": 20,
-          "damage": 11933,
-          "assists": 30,
-          "matches": 16,
+          "kills": 17,
+          "damage": 10241,
+          "assists": 25,
+          "matches": 14,
           "mvp": 0
         }
       },
-      "rankKills": 60,
+      "rankKills": 61,
       "rankDamage": 61,
-      "rankAssists": 59
+      "rankAssists": 60
     },
     "lukasz": {
       "name": "LukaSZ",
@@ -817,24 +817,24 @@
     "lyon": {
       "name": "Lyon",
       "team": "INFLUENCE RAGE",
-      "kills": 92,
-      "damage": 56017,
-      "assists": 106,
-      "matches": 47,
+      "kills": 82,
+      "damage": 49958,
+      "assists": 91,
+      "matches": 42,
       "mvp": 1,
       "record": 15,
       "stages": {
         "classificatoria": {
-          "kills": 92,
-          "damage": 56017,
-          "assists": 106,
-          "matches": 47,
+          "kills": 82,
+          "damage": 49958,
+          "assists": 91,
+          "matches": 42,
           "mvp": 1
         }
       },
       "rankKills": 19,
-      "rankDamage": 23,
-      "rankAssists": 15
+      "rankDamage": 26,
+      "rankAssists": 16
     },
     "mala": {
       "name": "Mala",
@@ -854,53 +854,53 @@
           "mvp": 0
         }
       },
-      "rankKills": 30,
-      "rankDamage": 36,
-      "rankAssists": 23
+      "rankKills": 23,
+      "rankDamage": 31,
+      "rankAssists": 18
     },
     "mitinx": {
       "name": "MitinX",
       "team": "RUSH GAMING",
-      "kills": 40,
-      "damage": 29875,
-      "assists": 34,
-      "matches": 26,
+      "kills": 36,
+      "damage": 26396,
+      "assists": 31,
+      "matches": 23,
       "mvp": 0,
       "record": 18,
       "stages": {
         "classificatoria": {
-          "kills": 40,
-          "damage": 29875,
-          "assists": 34,
-          "matches": 26,
+          "kills": 36,
+          "damage": 26396,
+          "assists": 31,
+          "matches": 23,
           "mvp": 0
         }
       },
-      "rankKills": 53,
-      "rankDamage": 52,
-      "rankAssists": 58
+      "rankKills": 52,
+      "rankDamage": 53,
+      "rankAssists": 57
     },
     "mitomvp": {
       "name": "MitoMvp",
       "team": "ALPHA7",
-      "kills": 108,
-      "damage": 65797,
-      "assists": 103,
-      "matches": 53,
+      "kills": 98,
+      "damage": 58859,
+      "assists": 89,
+      "matches": 48,
       "mvp": 2,
       "record": 22,
       "stages": {
         "classificatoria": {
-          "kills": 108,
-          "damage": 65797,
-          "assists": 103,
-          "matches": 53,
+          "kills": 98,
+          "damage": 58859,
+          "assists": 89,
+          "matches": 48,
           "mvp": 2
         }
       },
-      "rankKills": 11,
-      "rankDamage": 14,
-      "rankAssists": 16
+      "rankKills": 10,
+      "rankDamage": 17,
+      "rankAssists": 19
     },
     "motovea": {
       "name": "Motovea",
@@ -920,31 +920,31 @@
           "mvp": 2
         }
       },
-      "rankKills": 38,
-      "rankDamage": 19,
-      "rankAssists": 47
+      "rankKills": 34,
+      "rankDamage": 13,
+      "rankAssists": 40
     },
     "mt7": {
       "name": "MT7",
       "team": "FLUXO W7M",
-      "kills": 119,
-      "damage": 90737,
-      "assists": 67,
-      "matches": 47,
+      "kills": 109,
+      "damage": 80262,
+      "assists": 58,
+      "matches": 42,
       "mvp": 4,
       "record": 23,
       "stages": {
         "classificatoria": {
-          "kills": 119,
-          "damage": 90737,
-          "assists": 67,
-          "matches": 47,
+          "kills": 109,
+          "damage": 80262,
+          "assists": 58,
+          "matches": 42,
           "mvp": 4
         }
       },
-      "rankKills": 8,
+      "rankKills": 6,
       "rankDamage": 5,
-      "rankAssists": 43
+      "rankAssists": 46
     },
     "mtsexy": {
       "name": "mtsexy.",
@@ -986,74 +986,74 @@
           "mvp": 0
         }
       },
-      "rankKills": 50,
-      "rankDamage": 45,
-      "rankAssists": 26
+      "rankKills": 46,
+      "rankDamage": 43,
+      "rankAssists": 20
     },
     "nepoign": {
       "name": "nepoIGN",
       "team": "INFLUENCE RAGE",
-      "kills": 68,
-      "damage": 40434,
-      "assists": 69,
-      "matches": 47,
+      "kills": 60,
+      "damage": 35849,
+      "assists": 59,
+      "matches": 42,
       "mvp": 0,
       "record": 13,
       "stages": {
         "classificatoria": {
-          "kills": 68,
-          "damage": 40434,
-          "assists": 69,
-          "matches": 47,
+          "kills": 60,
+          "damage": 35849,
+          "assists": 59,
+          "matches": 42,
           "mvp": 0
         }
       },
-      "rankKills": 36,
-      "rankDamage": 44,
-      "rankAssists": 40
+      "rankKills": 43,
+      "rankDamage": 46,
+      "rankAssists": 45
     },
     "neyawp": {
       "name": "NEYawp",
       "team": "CIVIS",
-      "kills": 75,
-      "damage": 55149,
-      "assists": 35,
-      "matches": 53,
-      "mvp": 2,
+      "kills": 63,
+      "damage": 50630,
+      "assists": 28,
+      "matches": 48,
+      "mvp": 1,
       "record": 15,
       "stages": {
         "classificatoria": {
-          "kills": 75,
-          "damage": 55149,
-          "assists": 35,
-          "matches": 53,
-          "mvp": 2
+          "kills": 63,
+          "damage": 50630,
+          "assists": 28,
+          "matches": 48,
+          "mvp": 1
         }
       },
-      "rankKills": 32,
+      "rankKills": 39,
       "rankDamage": 24,
-      "rankAssists": 57
+      "rankAssists": 59
     },
     "nickz": {
       "name": "NICKZ",
       "team": "LOUD SNICKERS",
-      "kills": 79,
-      "damage": 54912,
-      "assists": 127,
-      "matches": 47,
+      "kills": 68,
+      "damage": 48906,
+      "assists": 113,
+      "matches": 42,
       "mvp": 0,
       "record": 16,
       "stages": {
         "classificatoria": {
-          "kills": 79,
-          "damage": 54912,
-          "assists": 127,
-          "matches": 47,
+          "kills": 68,
+          "damage": 48906,
+          "assists": 113,
+          "matches": 42,
           "mvp": 0
         }
       },
-      "rankKills": 28,
-      "rankDamage": 26,
+      "rankKills": 33,
+      "rankDamage": 27,
       "rankAssists": 9
     },
     "nielffx": {
@@ -1074,53 +1074,53 @@
           "mvp": 0
         }
       },
-      "rankKills": 59,
+      "rankKills": 58,
       "rankDamage": 59,
-      "rankAssists": 55
+      "rankAssists": 54
     },
     "nikeboy": {
       "name": "Nikeboy",
       "team": "SX TET",
-      "kills": 97,
-      "damage": 91462,
-      "assists": 57,
-      "matches": 53,
+      "kills": 91,
+      "damage": 85585,
+      "assists": 56,
+      "matches": 48,
       "mvp": 3,
       "record": 21,
       "stages": {
         "classificatoria": {
-          "kills": 97,
-          "damage": 91462,
-          "assists": 57,
-          "matches": 53,
+          "kills": 91,
+          "damage": 85585,
+          "assists": 56,
+          "matches": 48,
           "mvp": 3
         }
       },
-      "rankKills": 16,
-      "rankDamage": 4,
-      "rankAssists": 52
+      "rankKills": 14,
+      "rankDamage": 3,
+      "rankAssists": 47
     },
     "pao7": {
       "name": "Pão7",
       "team": "LOOPS",
-      "kills": 80,
-      "damage": 69289,
-      "assists": 59,
-      "matches": 51,
+      "kills": 75,
+      "damage": 65220,
+      "assists": 54,
+      "matches": 47,
       "mvp": 2,
       "record": 13,
       "stages": {
         "classificatoria": {
-          "kills": 80,
-          "damage": 69289,
-          "assists": 59,
-          "matches": 51,
+          "kills": 75,
+          "damage": 65220,
+          "assists": 54,
+          "matches": 47,
           "mvp": 2
         }
       },
       "rankKills": 26,
       "rankDamage": 12,
-      "rankAssists": 49
+      "rankAssists": 48
     },
     "pereira": {
       "name": "PEREIRA",
@@ -1139,24 +1139,24 @@
     "peter": {
       "name": "PETER",
       "team": "AFROGAMES",
-      "kills": 84,
-      "damage": 49640,
-      "assists": 69,
-      "matches": 53,
+      "kills": 81,
+      "damage": 45919,
+      "assists": 64,
+      "matches": 48,
       "mvp": 0,
       "record": 13,
       "stages": {
         "classificatoria": {
-          "kills": 84,
-          "damage": 49640,
-          "assists": 69,
-          "matches": 53,
+          "kills": 81,
+          "damage": 45919,
+          "assists": 64,
+          "matches": 48,
           "mvp": 0
         }
       },
-      "rankKills": 22,
-      "rankDamage": 31,
-      "rankAssists": 40
+      "rankKills": 20,
+      "rankDamage": 32,
+      "rankAssists": 39
     },
     "pitbull": {
       "name": "Pitbull",
@@ -1176,9 +1176,9 @@
           "mvp": 1
         }
       },
-      "rankKills": 28,
-      "rankDamage": 30,
-      "rankAssists": 28
+      "rankKills": 22,
+      "rankDamage": 21,
+      "rankAssists": 23
     },
     "proxx7": {
       "name": "Proxx7",
@@ -1199,68 +1199,68 @@
         }
       },
       "rankKills": 63,
-      "rankDamage": 63,
+      "rankDamage": 62,
       "rankAssists": 63
     },
     "prozin": {
       "name": "PROZIN",
       "team": "RUSH GAMING",
-      "kills": 73,
-      "damage": 48018,
-      "assists": 81,
-      "matches": 49,
+      "kills": 69,
+      "damage": 44890,
+      "assists": 71,
+      "matches": 44,
       "mvp": 1,
       "record": 18,
       "stages": {
         "classificatoria": {
-          "kills": 73,
-          "damage": 48018,
-          "assists": 81,
-          "matches": 49,
+          "kills": 69,
+          "damage": 44890,
+          "assists": 71,
+          "matches": 44,
           "mvp": 1
         }
       },
-      "rankKills": 33,
-      "rankDamage": 34,
-      "rankAssists": 30
+      "rankKills": 32,
+      "rankDamage": 35,
+      "rankAssists": 33
     },
     "raone7": {
       "name": "Raone7",
       "team": "LOS",
-      "kills": 99,
-      "damage": 72990,
-      "assists": 128,
-      "matches": 53,
+      "kills": 90,
+      "damage": 67059,
+      "assists": 118,
+      "matches": 48,
       "mvp": 1,
       "record": 14,
       "stages": {
         "classificatoria": {
-          "kills": 99,
-          "damage": 72990,
-          "assists": 128,
-          "matches": 53,
+          "kills": 90,
+          "damage": 67059,
+          "assists": 118,
+          "matches": 48,
           "mvp": 1
         }
       },
-      "rankKills": 14,
+      "rankKills": 15,
       "rankDamage": 11,
-      "rankAssists": 8
+      "rankAssists": 7
     },
     "redxzzz": {
       "name": "Redxzzz",
       "team": "SX TET",
-      "kills": 23,
-      "damage": 16447,
-      "assists": 36,
-      "matches": 22,
+      "kills": 22,
+      "damage": 15571,
+      "assists": 33,
+      "matches": 20,
       "mvp": 0,
       "record": 6,
       "stages": {
         "classificatoria": {
-          "kills": 23,
-          "damage": 16447,
-          "assists": 36,
-          "matches": 22,
+          "kills": 22,
+          "damage": 15571,
+          "assists": 33,
+          "matches": 20,
           "mvp": 0
         }
       },
@@ -1271,68 +1271,68 @@
     "rigby245": {
       "name": "Rigby245",
       "team": "LOS",
-      "kills": 129,
-      "damage": 64681,
-      "assists": 149,
-      "matches": 51,
-      "mvp": 5,
+      "kills": 113,
+      "damage": 57787,
+      "assists": 135,
+      "matches": 46,
+      "mvp": 4,
       "record": 23,
       "stages": {
         "classificatoria": {
-          "kills": 129,
-          "damage": 64681,
-          "assists": 149,
-          "matches": 51,
-          "mvp": 5
+          "kills": 113,
+          "damage": 57787,
+          "assists": 135,
+          "matches": 46,
+          "mvp": 4
         }
       },
-      "rankKills": 3,
-      "rankDamage": 16,
+      "rankKills": 5,
+      "rankDamage": 18,
       "rankAssists": 2
     },
     "sam7": {
       "name": "Sam7",
       "team": "ALPHA7",
-      "kills": 122,
-      "damage": 65654,
-      "assists": 87,
-      "matches": 53,
+      "kills": 106,
+      "damage": 59182,
+      "assists": 79,
+      "matches": 48,
       "mvp": 0,
       "record": 19,
       "stages": {
         "classificatoria": {
-          "kills": 122,
-          "damage": 65654,
-          "assists": 87,
-          "matches": 53,
+          "kills": 106,
+          "damage": 59182,
+          "assists": 79,
+          "matches": 48,
           "mvp": 0
         }
       },
-      "rankKills": 5,
-      "rankDamage": 15,
+      "rankKills": 7,
+      "rankDamage": 16,
       "rankAssists": 27
     },
     "sant10s": {
       "name": "Sant10s",
       "team": "AFROGAMES",
-      "kills": 57,
-      "damage": 31968,
-      "assists": 118,
-      "matches": 50,
+      "kills": 54,
+      "damage": 30108,
+      "assists": 113,
+      "matches": 45,
       "mvp": 1,
       "record": 11,
       "stages": {
         "classificatoria": {
-          "kills": 57,
-          "damage": 31968,
-          "assists": 118,
-          "matches": 50,
+          "kills": 54,
+          "damage": 30108,
+          "assists": 113,
+          "matches": 45,
           "mvp": 1
         }
       },
-      "rankKills": 46,
-      "rankDamage": 51,
-      "rankAssists": 11
+      "rankKills": 47,
+      "rankDamage": 50,
+      "rankAssists": 9
     },
     "saskito": {
       "name": "saskito!",
@@ -1379,24 +1379,24 @@
     "soares": {
       "name": "SOARES",
       "team": "CIVIS",
-      "kills": 56,
-      "damage": 27935,
-      "assists": 52,
-      "matches": 53,
+      "kills": 46,
+      "damage": 24512,
+      "assists": 41,
+      "matches": 48,
       "mvp": 0,
       "record": 12,
       "stages": {
         "classificatoria": {
-          "kills": 56,
-          "damage": 27935,
-          "assists": 52,
-          "matches": 53,
+          "kills": 46,
+          "damage": 24512,
+          "assists": 41,
+          "matches": 48,
           "mvp": 0
         }
       },
-      "rankKills": 49,
-      "rankDamage": 55,
-      "rankAssists": 54
+      "rankKills": 51,
+      "rankDamage": 54,
+      "rankAssists": 55
     },
     "stark": {
       "name": "Stark",
@@ -1416,75 +1416,75 @@
           "mvp": 0
         }
       },
-      "rankKills": 55,
+      "rankKills": 54,
       "rankDamage": 56,
-      "rankAssists": 31
+      "rankAssists": 29
     },
     "trap": {
       "name": "TRAP",
       "team": "LOUD SNICKERS",
-      "kills": 134,
-      "damage": 90348,
-      "assists": 141,
-      "matches": 53,
+      "kills": 119,
+      "damage": 78322,
+      "assists": 121,
+      "matches": 48,
       "mvp": 1,
       "record": 22,
       "stages": {
         "classificatoria": {
-          "kills": 134,
-          "damage": 90348,
-          "assists": 141,
-          "matches": 53,
+          "kills": 119,
+          "damage": 78322,
+          "assists": 121,
+          "matches": 48,
           "mvp": 1
         }
       },
       "rankKills": 2,
-      "rankDamage": 6,
-      "rankAssists": 4
+      "rankDamage": 7,
+      "rankAssists": 6
     },
     "trevor9": {
       "name": "TREVOR9",
       "team": "CPT VOX",
-      "kills": 101,
-      "damage": 54457,
-      "assists": 69,
-      "matches": 53,
+      "kills": 90,
+      "damage": 48818,
+      "assists": 60,
+      "matches": 48,
       "mvp": 0,
       "record": 17,
       "stages": {
         "classificatoria": {
-          "kills": 101,
-          "damage": 54457,
-          "assists": 69,
-          "matches": 53,
-          "mvp": 0
-        }
-      },
-      "rankKills": 13,
-      "rankDamage": 27,
-      "rankAssists": 40
-    },
-    "vitin9": {
-      "name": "Vitin9",
-      "team": "LOOPS",
-      "kills": 54,
-      "damage": 36061,
-      "assists": 63,
-      "matches": 48,
-      "mvp": 0,
-      "record": 10,
-      "stages": {
-        "classificatoria": {
-          "kills": 54,
-          "damage": 36061,
-          "assists": 63,
+          "kills": 90,
+          "damage": 48818,
+          "assists": 60,
           "matches": 48,
           "mvp": 0
         }
       },
-      "rankKills": 51,
-      "rankDamage": 49,
-      "rankAssists": 46
+      "rankKills": 15,
+      "rankDamage": 28,
+      "rankAssists": 44
+    },
+    "vitin9": {
+      "name": "Vitin9",
+      "team": "LOOPS",
+      "kills": 47,
+      "damage": 33298,
+      "assists": 61,
+      "matches": 44,
+      "mvp": 0,
+      "record": 10,
+      "stages": {
+        "classificatoria": {
+          "kills": 47,
+          "damage": 33298,
+          "assists": 61,
+          "matches": 44,
+          "mvp": 0
+        }
+      },
+      "rankKills": 50,
+      "rankDamage": 48,
+      "rankAssists": 40
     },
     "vitinxp": {
       "name": "vitinxp",
@@ -1504,53 +1504,53 @@
           "mvp": 0
         }
       },
-      "rankKills": 33,
-      "rankDamage": 42,
-      "rankAssists": 34
+      "rankKills": 27,
+      "rankDamage": 39,
+      "rankAssists": 31
     },
     "yago": {
       "name": "Yago",
       "team": "LOS",
-      "kills": 191,
-      "damage": 140766,
-      "assists": 96,
-      "matches": 53,
-      "mvp": 11,
+      "kills": 174,
+      "damage": 126979,
+      "assists": 88,
+      "matches": 48,
+      "mvp": 10,
       "record": 26,
       "stages": {
         "classificatoria": {
-          "kills": 191,
-          "damage": 140766,
-          "assists": 96,
-          "matches": 53,
-          "mvp": 11
+          "kills": 174,
+          "damage": 126979,
+          "assists": 88,
+          "matches": 48,
+          "mvp": 10
         }
       },
       "rankKills": 1,
       "rankDamage": 1,
-      "rankAssists": 19
+      "rankAssists": 20
     },
     "yato7": {
       "name": "Yato7",
       "team": "SX TET",
-      "kills": 68,
-      "damage": 37497,
-      "assists": 58,
-      "matches": 43,
+      "kills": 64,
+      "damage": 35163,
+      "assists": 51,
+      "matches": 38,
       "mvp": 0,
       "record": 19,
       "stages": {
         "classificatoria": {
-          "kills": 68,
-          "damage": 37497,
-          "assists": 58,
-          "matches": 43,
+          "kills": 64,
+          "damage": 35163,
+          "assists": 51,
+          "matches": 38,
           "mvp": 0
         }
       },
-      "rankKills": 36,
+      "rankKills": 38,
       "rankDamage": 47,
-      "rankAssists": 50
+      "rankAssists": 51
     }
   }
 }
