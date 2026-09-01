@@ -247,3 +247,130 @@
   .home-s2-team img { width: 36px; height: 36px; }
   .home-s2-team strong { font-size: .55rem; }
 }
+
+/* Home 2026-09-01: lateral esquerda para Ao Vivo + WB 2026 S2 Top 6 */
+.home-main-layout {
+  display: grid;
+  grid-template-columns: minmax(245px, 285px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.home-left-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.home-left-rail .home-widget {
+  height: auto;
+  min-width: 0;
+}
+.home-left-rail .home-widget h3 {
+  padding: 12px 13px;
+  font-size: .78rem;
+  letter-spacing: .045em;
+}
+.home-left-rail .home-widget-link-btn {
+  width: 100%;
+  border-radius: 0;
+  font-size: .68rem;
+  letter-spacing: .08em;
+}
+.home-rail-table-body {
+  display: block;
+  padding: 0 !important;
+}
+.home-rail-table-body table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.home-left-rail .home-widget table tr {
+  height: 48px;
+}
+.home-left-rail .home-widget table td {
+  min-width: 0;
+  padding: 7px 7px;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+  font-size: .77rem;
+}
+.home-left-rail .home-widget table tr:last-child td {
+  border-bottom: 0;
+}
+.home-left-rail .home-rank-pos {
+  width: 27px;
+  color: var(--accent);
+  font-weight: 950;
+  text-align: center;
+}
+.home-left-rail .home-rank-main {
+  min-width: 0;
+  text-align: left;
+}
+.home-left-rail .home-rank-main a {
+  display: block;
+  overflow: hidden;
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-left-rail .home-rank-main small {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: #7089a7;
+  font-size: .62rem;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-left-rail .home-rank-value {
+  width: 58px;
+  color: var(--accent);
+  font-size: .77rem;
+  font-weight: 950;
+  text-align: right;
+  white-space: nowrap;
+}
+.home-left-rail .home-rail-live .home-widget-body {
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.home-left-rail .live-card {
+  padding: 9px 10px;
+}
+.home-center-column {
+  min-width: 0;
+}
+.home-center-column .home-live-market-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.home-center-column .home-s2-broadcast {
+  padding: clamp(16px, 2.25vw, 25px);
+}
+.home-center-column .home-s2-team-grid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+@media (max-width: 1180px) {
+  .home-main-layout { grid-template-columns: minmax(225px, 255px) minmax(0, 1fr); gap: 16px; }
+  .home-center-column .home-live-market-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .home-main-layout { grid-template-columns: 1fr; }
+  .home-left-rail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .home-left-rail .home-rail-live { grid-column: 1 / -1; }
+  .home-center-column .home-live-market-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .home-left-rail { grid-template-columns: 1fr; }
+  .home-left-rail .home-rail-live { grid-column: auto; }
+  .home-center-column .home-live-market-grid { grid-template-columns: 1fr; }
+  .home-left-rail .home-widget table tr { height: 44px; }
+  .home-left-rail .home-widget table td { padding: 6px 8px; }
+}
