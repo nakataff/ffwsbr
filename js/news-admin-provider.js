@@ -4,7 +4,7 @@
   const FALLBACK_IMAGE = 'central free fire.webp';
   const LOCAL_NEWS_URL = 'noticias-painel.json?v=20260806-admin-v2';
   const CACHE_KEY = 'cff_news_cache_admin_v1';
-  const CACHE_MAX_AGE = 30 * 60 * 1000;
+  const CACHE_MAX_AGE = 6 * 60 * 60 * 1000;
 
   function config() {
     return window.CFF_CONFIG || {};
@@ -265,25 +265,58 @@
     return { views: Number(item.views || 0), likes: Number(item.likes || 0) };
   }
 
+  function warmHeroImages(items) {
+    const count = window.matchMedia && window.matchMedia('(min-width: 901px)').matches ? 3 : 1;
+    items.slice(0, count).forEach(function (item) {
+      const url = String(item && item.imagem || FALLBACK_IMAGE).trim();
+      if (!url || url === FALLBACK_IMAGE) return;
+      try {
+        const parsed = new URL(url, location.href);
+        if (parsed.origin !== location.origin && !document.querySelector('link[data-cff-news-origin="' + parsed.origin.replace(/"/g, '') + '"]')) {
+          const preconnect = document.createElement('link');
+          preconnect.rel = 'preconnect';
+          preconnect.href = parsed.origin;
+          preconnect.dataset.cffNewsOrigin = parsed.origin;
+          document.head.appendChild(preconnect);
+        }
+      } catch (_) {}
+      if (!Array.from(document.querySelectorAll('link[rel="preload"][as="image"]')).some(function (link) { return link.href === url; })) {
+        const preload = document.createElement('link');
+        preload.rel = 'preload';
+        preload.as = 'image';
+        preload.href = url;
+        preload.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(preload);
+      }
+    });
+  }
+
   function render(items, metrics) {
     const hero = document.getElementById('news-hero-container');
     const grid = document.getElementById('ultimas-noticias-grid');
     const title = document.getElementById('ultimas-noticias-titulo');
     if (!hero || !items.length) return false;
 
-    const featured = items.filter(function (item) { return item.destaque; });
+    /* A notícia mais recente sempre lidera. As duas seguintes priorizam
+       o que estiver marcado como destaque; se faltar alguma, completa com
+       as notícias mais recentes restantes. */
     const slides = [];
     const seen = new Set();
-    featured.concat(items).forEach(function (item) {
+    if (items[0]) {
+      slides.push(items[0]);
+      seen.add(items[0].id);
+    }
+    items.filter(function (item) { return item.destaque && !seen.has(item.id); }).concat(items).forEach(function (item) {
       if (slides.length >= 3 || seen.has(item.id)) return;
       slides.push(item); seen.add(item.id);
     });
+    warmHeroImages(slides);
 
     function heroCard(item, variant, index) {
       const metric = metricsFor(metrics, item.id);
       const isMain = variant === 'main';
-      return '<a class="news-feature-card news-feature-' + variant + '" href="' + escapeHTML(item.urlInterna) + '">' +
-        '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" decoding="async" ' + (index === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
+      return '<a class="news-feature-card news-feature-' + variant + '" href="' + escapeHTML(item.urlInterna) + '" title="' + escapeHTML(item.titulo) + '">' +
+        '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" loading="eager" decoding="async" fetchpriority="high" onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
         '<div class="news-feature-overlay"><h2 class="news-feature-title">' + escapeHTML(item.titulo) + '</h2>' +
         (isMain && item.resumo ? '<p>' + escapeHTML(item.resumo) + '</p>' : '') +
         '<div class="news-feature-metrics"><span>👁 ' + formatCount(metric.views) + '</span><span>❤ ' + formatCount(metric.likes) + '</span></div></div></a>';
@@ -291,6 +324,16 @@
 
     const desktopMain = slides[0] ? heroCard(slides[0], 'main', 0) : '';
     const desktopSide = slides.slice(1, 3).map(function (item, index) { return heroCard(item, 'side', index + 1); }).join('');
+    const recentTextItems = items.filter(function (item) { return !seen.has(item.id); }).slice(0, 5);
+    const desktopRecent = recentTextItems.length ? '<aside class="news-recent-text-panel" aria-label="Notícias recentes">' +
+      '<div class="news-recent-text-head"><span>ÚLTIMAS</span><strong>Notícias recentes</strong></div>' +
+      '<div class="news-recent-text-list">' + recentTextItems.map(function (item, index) {
+        const metric = metricsFor(metrics, item.id);
+        return '<a class="news-recent-text-item" href="' + escapeHTML(item.urlInterna) + '" title="' + escapeHTML(item.titulo) + '">' +
+          '<span class="news-recent-text-index">' + String(index + 1).padStart(2, '0') + '</span>' +
+          '<span class="news-recent-text-copy"><strong>' + escapeHTML(item.titulo) + '</strong>' +
+          '<small>👁 ' + formatCount(metric.views) + ' &nbsp; ❤ ' + formatCount(metric.likes) + '</small></span></a>';
+      }).join('') + '</div></aside>' : '';
     const mobileSlides = slides.map(function (item, index) {
       const metric = metricsFor(metrics, item.id);
       return '<a class="news-hero-slide ' + (index === 0 ? 'active' : '') + '" href="' + escapeHTML(item.urlInterna) + '">' +
@@ -300,9 +343,10 @@
         '<div style="display:flex;gap:12px;margin-top:12px;color:#cfe9ff;font-size:.82rem;font-weight:900"><span>👁 ' + formatCount(metric.views) + '</span><span>❤ ' + formatCount(metric.likes) + '</span></div></div></a>';
     }).join('');
 
-    hero.innerHTML = '<section class="news-feature-desktop news-feature-count-' + slides.length + '" aria-label="Notícias principais">' +
+    hero.innerHTML = '<section class="news-feature-desktop news-feature-count-' + slides.length + (desktopRecent ? ' news-feature-with-recent' : ' news-feature-no-recent') + '" aria-label="Notícias principais">' +
       '<div class="news-feature-main-wrap">' + desktopMain + '</div>' +
       (desktopSide ? '<div class="news-feature-side-stack">' + desktopSide + '</div>' : '') +
+      desktopRecent +
       '</section>' +
       '<section class="news-hero-carousel news-feature-mobile" id="news-hero-carousel" aria-label="Notícias principais">' +
       '<div class="news-hero-track">' + mobileSlides + '</div>' +
@@ -316,8 +360,8 @@
       let visibleCount = 3;
 
       grid.style.display = 'grid';
-      grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
-      grid.style.gap = '20px';
+      grid.style.removeProperty('grid-template-columns');
+      grid.style.removeProperty('gap');
 
       function renderLatestNews() {
         const visibleItems = latestItems.slice(0, visibleCount);
