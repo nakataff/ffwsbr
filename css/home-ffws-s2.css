@@ -752,12 +752,15 @@
     width: 100%;
     box-sizing: border-box;
     margin-top: 3px;
-    overflow: hidden;
-    font-size: .37rem;
-    line-height: 1.05;
-    letter-spacing: .01em;
+    padding: 0 2px;
+    overflow: visible;
+    font-size: .35rem;
+    line-height: 1.1;
+    letter-spacing: 0;
     text-overflow: clip;
     white-space: nowrap;
+    transform: scaleX(.94);
+    transform-origin: center;
   }
   .home-left-rail .home-rail-rank-table thead th { height: 30px; font-size: .6rem; }
   .home-left-rail .home-widget table tr { height: 47px; }
