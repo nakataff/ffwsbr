@@ -102,6 +102,7 @@ function normalizeNews(raw, id = '', source = 'admin') {
     link_original: String(raw && (raw.link_original || raw.link) || '').trim(),
     destaque: Boolean(raw && raw.destaque),
     status: String(raw && raw.status || 'published'),
+    ordem: raw && raw.ordem != null && Number.isFinite(Number(raw.ordem)) ? Number(raw.ordem) : null,
     createdAt: Number(raw && raw.createdAt || 0),
     updatedAt: Number(raw && raw.updatedAt || 0),
     source,
@@ -116,6 +117,29 @@ function sourceLabel(item) {
   return 'Arquivo do site';
 }
 
+function parseNewsTimestamp(value) {
+  const text = String(value || '').trim();
+  if (!text) return 0;
+  let match = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (match) return Date.UTC(Number(match[3]), Number(match[2]) - 1, Number(match[1]), Number(match[4] || 0), Number(match[5] || 0), Number(match[6] || 0));
+  match = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (match) return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4] || 0), Number(match[5] || 0), Number(match[6] || 0));
+  const parsed = Date.parse(text);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function newsDateKey(item) {
+  return Math.max(Number(item && item.updatedAt || 0), Number(item && item.createdAt || 0), parseNewsTimestamp(item && item.data));
+}
+
+function newsOrderKey(item) {
+  return item && item.ordem != null && Number.isFinite(Number(item.ordem)) ? Number(item.ordem) : newsDateKey(item);
+}
+
+function compareNewsOrder(a, b) {
+  return newsOrderKey(b) - newsOrderKey(a) || String(a.titulo || '').localeCompare(String(b.titulo || ''), 'pt-BR');
+}
+
 function mergeDashboardNews(localNews, sheetNews, adminNews, drafts, hiddenNews) {
   const merged = new Map();
   localNews.forEach((item) => merged.set(item.id, item));
@@ -123,11 +147,7 @@ function mergeDashboardNews(localNews, sheetNews, adminNews, drafts, hiddenNews)
   adminNews.forEach((item) => merged.set(item.id, item));
   Object.keys(hiddenNews || {}).forEach((id) => { if (hiddenNews[id]) merged.delete(id); });
   drafts.forEach((item) => merged.set(item.id, item));
-  return Array.from(merged.values()).sort((a, b) => {
-    const aTime = a.updatedAt || a.createdAt || Date.parse(a.data) || 0;
-    const bTime = b.updatedAt || b.createdAt || Date.parse(b.data) || 0;
-    return bTime - aTime || a.titulo.localeCompare(b.titulo, 'pt-BR');
-  });
+  return Array.from(merged.values()).sort(compareNewsOrder);
 }
 
 async function loadSheetNewsFile() {
@@ -185,7 +205,8 @@ function renderDashboard() {
       <span class="admin-ranking-value">${formatNumber(item.views)} views</span>
     </div>`).join('') : '<div class="admin-empty">Ainda não há visualizações registradas</div>';
 
-  $('#admin-latest-updates').innerHTML = allNews.length ? allNews.slice(0, 8).map((item) => `
+  const latestUpdates = [...allNews].sort((a, b) => newsDateKey(b) - newsDateKey(a));
+  $('#admin-latest-updates').innerHTML = latestUpdates.length ? latestUpdates.slice(0, 8).map((item) => `
     <div class="admin-update-row">
       <div class="admin-update-copy"><strong>${escapeHTML(item.titulo)}</strong><small>${item.status === 'draft' ? 'Rascunho' : 'Publicada'} • ${formatDate(item.updatedAt || item.createdAt)}</small></div>
       <button class="admin-btn admin-btn-ghost" type="button" data-edit-news="${escapeHTML(item.id)}">Editar</button>
@@ -196,6 +217,8 @@ function renderDashboard() {
 
 function renderNewsList() {
   const query = String(searchInput.value || '').trim().toLowerCase();
+  const publishedOrder = allNews.filter((item) => item.status !== 'draft').sort(compareNewsOrder);
+  const publishedIndex = new Map(publishedOrder.map((item, index) => [item.id, index]));
   const filtered = allNews.filter((item) => {
     const matchesSearch = !query || item.titulo.toLowerCase().includes(query) || item.id.toLowerCase().includes(query) || item.autor.toLowerCase().includes(query);
     const matchesFilter = currentNewsFilter === 'all' ||
@@ -217,6 +240,7 @@ function renderNewsList() {
         <div class="admin-news-meta"><span class="admin-chip ${isDraft ? 'is-draft' : ''}">${isDraft ? 'Rascunho' : 'Publicada'}</span>${item.destaque ? '<span class="admin-chip is-featured">Destaque</span>' : ''}<span class="admin-chip is-source">${sourceLabel(item)}</span></div>
       </div>
       <div class="admin-news-quick">
+        ${!isDraft ? `<div class="admin-news-order" aria-label="Ordenar notícia"><button class="admin-order-btn" type="button" data-move-news="up" data-news-id="${escapeHTML(item.id)}" ${publishedIndex.get(item.id) === 0 ? 'disabled' : ''}>↑ Subir</button><button class="admin-order-btn" type="button" data-move-news="down" data-news-id="${escapeHTML(item.id)}" ${publishedIndex.get(item.id) === publishedOrder.length - 1 ? 'disabled' : ''}>↓ Descer</button></div>` : ''}
         <label class="admin-quick-check" title="Alterar destaque"><input type="checkbox" data-toggle-featured="${escapeHTML(item.id)}" ${item.destaque ? 'checked' : ''}><span>Destaque</span></label>
         <select class="admin-quick-status" data-change-status="${escapeHTML(item.id)}" aria-label="Status da notícia">
           <option value="published" ${isDraft ? '' : 'selected'}>Publicada</option>
@@ -280,8 +304,12 @@ function readForm() {
 }
 
 async function writeManagedNews(item, previous = null) {
+  const preservedOrder = item && item.ordem != null && Number.isFinite(Number(item.ordem))
+    ? Number(item.ordem)
+    : previous && previous.ordem != null && Number.isFinite(Number(previous.ordem)) ? Number(previous.ordem) : null;
   const nowPayload = {
     ...item,
+    ...(preservedOrder == null ? {} : { ordem: preservedOrder }),
     source: 'admin',
     origin: item.origin || previous && (previous.origin || previous.source) || 'admin',
     createdAt: previous && previous.createdAt ? previous.createdAt : serverTimestamp(),
@@ -331,6 +359,42 @@ async function saveNews(event) {
     console.error(error);
   } finally {
     submit.disabled = false;
+  }
+}
+
+async function moveNews(id, direction, control) {
+  const published = allNews.filter((item) => item.status !== 'draft').sort(compareNewsOrder);
+  const index = published.findIndex((item) => item.id === id);
+  const delta = direction === 'up' ? -1 : 1;
+  const targetIndex = index + delta;
+  if (index < 0 || targetIndex < 0 || targetIndex >= published.length) return;
+
+  const item = published[index];
+  const crossed = published[targetIndex];
+  let nextOrder;
+  if (delta < 0) {
+    const higher = published[targetIndex - 1];
+    const crossedKey = newsOrderKey(crossed);
+    nextOrder = higher ? (newsOrderKey(higher) + crossedKey) / 2 : crossedKey + 1;
+  } else {
+    const lower = published[targetIndex + 1];
+    const crossedKey = newsOrderKey(crossed);
+    nextOrder = lower ? (crossedKey + newsOrderKey(lower)) / 2 : crossedKey - 1;
+  }
+
+  if (!Number.isFinite(nextOrder)) return;
+  if (control) control.disabled = true;
+  const row = newsList.querySelector(`[data-news-id="${CSS.escape(id)}"]`);
+  if (row) row.classList.add('is-saving');
+  try {
+    await writeManagedNews({ ...item, ordem: nextOrder }, item);
+    await loadDashboard();
+  } catch (error) {
+    alert('Não foi possível alterar a ordem da notícia.');
+    console.error(error);
+  } finally {
+    if (control) control.disabled = false;
+    if (row) row.classList.remove('is-saving');
   }
 }
 
@@ -784,6 +848,8 @@ $('#admin-news-filter').addEventListener('change', (event) => { currentNewsFilte
 $('#news-title').addEventListener('input', (event) => { if (!slugTouched) $('#news-slug').value = slugify(event.target.value); });
 $('#news-slug').addEventListener('input', () => { slugTouched = true; });
 document.addEventListener('click', (event) => {
+  const move = event.target.closest('[data-move-news]');
+  if (move) { moveNews(move.dataset.newsId, move.dataset.moveNews, move); return; }
   const edit = event.target.closest('[data-edit-news]');
   if (edit) { const item = allNews.find((news) => news.id === edit.dataset.editNews); if (item) fillForm(item); }
   const preview = event.target.closest('[data-preview-news]');

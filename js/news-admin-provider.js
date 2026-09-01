@@ -149,6 +149,7 @@
       linkOriginal: String(raw && (raw.link_original || raw.linkOriginal || raw.link) || '').trim(),
       destaque: booleanValue(raw && raw.destaque),
       status: String(raw && raw.status || 'published'),
+      ordem: raw && raw.ordem != null && Number.isFinite(Number(raw.ordem)) ? Number(raw.ordem) : null,
       createdAt: Number(raw && raw.createdAt || 0),
       updatedAt: Number(raw && raw.updatedAt || 0),
       source: String(raw && raw.source || 'admin'),
@@ -204,6 +205,10 @@
     );
   }
 
+  function newsOrderKey(item) {
+    return item && item.ordem != null && Number.isFinite(Number(item.ordem)) ? Number(item.ordem) : newsSortTime(item);
+  }
+
   function mergeNews(localNews, sheetNews, adminNews, hiddenNews) {
     const map = new Map();
     const sheetById = new Map();
@@ -222,7 +227,7 @@
     });
     Object.keys(hiddenNews || {}).forEach(function (id) { if (hiddenNews[id]) map.delete(id); });
     return Array.from(map.values()).sort(function (a, b) {
-      return newsSortTime(b) - newsSortTime(a);
+      return newsOrderKey(b) - newsOrderKey(a) || String(a.titulo || '').localeCompare(String(b.titulo || ''), 'pt-BR');
     });
   }
 
@@ -254,17 +259,6 @@
     } catch (_) {}
   }
 
-  function formatCount(value) {
-    const number = Math.max(0, Number(value || 0));
-    return number >= 1000000 ? (number / 1000000).toFixed(number >= 10000000 ? 0 : 1).replace('.0', '') + ' mi' :
-      number >= 1000 ? (number / 1000).toFixed(number >= 10000 ? 0 : 1).replace('.0', '') + ' mil' : String(number);
-  }
-
-  function metricsFor(metrics, id) {
-    const item = metrics && metrics[id] || {};
-    return { views: Number(item.views || 0), likes: Number(item.likes || 0) };
-  }
-
   function warmHeroImages(items) {
     const count = window.matchMedia && window.matchMedia('(min-width: 901px)').matches ? 3 : 1;
     items.slice(0, count).forEach(function (item) {
@@ -291,7 +285,7 @@
     });
   }
 
-  function render(items, metrics) {
+  function render(items) {
     const hero = document.getElementById('news-hero-container');
     const grid = document.getElementById('ultimas-noticias-grid');
     const title = document.getElementById('ultimas-noticias-titulo');
@@ -313,34 +307,29 @@
     warmHeroImages(slides);
 
     function heroCard(item, variant, index) {
-      const metric = metricsFor(metrics, item.id);
       const isMain = variant === 'main';
       return '<a class="news-feature-card news-feature-' + variant + '" href="' + escapeHTML(item.urlInterna) + '" title="' + escapeHTML(item.titulo) + '">' +
         '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" loading="eager" decoding="async" fetchpriority="high" onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
         '<div class="news-feature-overlay"><h2 class="news-feature-title">' + escapeHTML(item.titulo) + '</h2>' +
         (isMain && item.resumo ? '<p>' + escapeHTML(item.resumo) + '</p>' : '') +
-        '<div class="news-feature-metrics"><span>👁 ' + formatCount(metric.views) + '</span><span>❤ ' + formatCount(metric.likes) + '</span></div></div></a>';
+        '</div></a>';
     }
 
     const desktopMain = slides[0] ? heroCard(slides[0], 'main', 0) : '';
     const desktopSide = slides.slice(1, 3).map(function (item, index) { return heroCard(item, 'side', index + 1); }).join('');
     const recentTextItems = items.filter(function (item) { return !seen.has(item.id); }).slice(0, 5);
-    const desktopRecent = recentTextItems.length ? '<aside class="news-recent-text-panel" aria-label="Notícias recentes">' +
-      '<div class="news-recent-text-head"><span>ÚLTIMAS</span><strong>Notícias recentes</strong></div>' +
-      '<div class="news-recent-text-list">' + recentTextItems.map(function (item, index) {
-        const metric = metricsFor(metrics, item.id);
+    const desktopRecent = recentTextItems.length ? '<aside class="news-recent-text-panel" aria-label="Mais notícias">' +
+      '<div class="news-recent-text-head"><strong>MAIS NOTÍCIAS</strong></div>' +
+      '<div class="news-recent-text-list">' + recentTextItems.map(function (item) {
         return '<a class="news-recent-text-item" href="' + escapeHTML(item.urlInterna) + '" title="' + escapeHTML(item.titulo) + '">' +
-          '<span class="news-recent-text-index">' + String(index + 1).padStart(2, '0') + '</span>' +
-          '<span class="news-recent-text-copy"><strong>' + escapeHTML(item.titulo) + '</strong>' +
-          '<small>👁 ' + formatCount(metric.views) + ' &nbsp; ❤ ' + formatCount(metric.likes) + '</small></span></a>';
+          '<span class="news-recent-text-copy"><strong>' + escapeHTML(item.titulo) + '</strong></span></a>';
       }).join('') + '</div></aside>' : '';
     const mobileSlides = slides.map(function (item, index) {
-      const metric = metricsFor(metrics, item.id);
       return '<a class="news-hero-slide ' + (index === 0 ? 'active' : '') + '" href="' + escapeHTML(item.urlInterna) + '">' +
         '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" decoding="async" ' + (index === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
         '<div class="news-hero-overlay"><h2 class="news-hero-title">' + escapeHTML(item.titulo) + '</h2>' +
         (item.resumo ? '<p style="margin:8px 0 0;color:#d7ecff;font-weight:600;max-width:760px">' + escapeHTML(item.resumo) + '</p>' : '') +
-        '<div style="display:flex;gap:12px;margin-top:12px;color:#cfe9ff;font-size:.82rem;font-weight:900"><span>👁 ' + formatCount(metric.views) + '</span><span>❤ ' + formatCount(metric.likes) + '</span></div></div></a>';
+        '</div></a>';
     }).join('');
 
     hero.innerHTML = '<section class="news-feature-desktop news-feature-count-' + slides.length + (desktopRecent ? ' news-feature-with-recent' : ' news-feature-no-recent') + '" aria-label="Notícias principais">' +
@@ -368,11 +357,9 @@
         if (title) title.style.display = latestItems.length ? 'block' : 'none';
         grid.style.display = latestItems.length ? 'grid' : 'none';
         grid.innerHTML = visibleItems.map(function (item) {
-          const metric = metricsFor(metrics, item.id);
           return '<a class="old-news-card" href="' + escapeHTML(item.urlInterna) + '" style="display:flex;flex-direction:column;height:100%;text-decoration:none;color:inherit">' +
             '<div style="width:100%;height:160px;overflow:hidden;border-bottom:1px solid var(--border)"><img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" loading="lazy" decoding="async" onerror="this.src=\'' + FALLBACK_IMAGE + '\'" style="width:100%;height:100%;object-fit:cover"></div>' +
-            '<div class="old-news-title" style="padding:12px 12px 8px;font-size:.95em;flex-grow:1">' + escapeHTML(item.titulo) + '</div>' +
-            '<div style="display:flex;gap:12px;padding:0 12px 12px;color:var(--text-muted);font-size:.78rem;font-weight:900"><span>👁 ' + formatCount(metric.views) + '</span><span>❤ ' + formatCount(metric.likes) + '</span></div></a>';
+            '<div class="old-news-title" style="padding:12px;font-size:.95em;flex-grow:1">' + escapeHTML(item.titulo) + '</div></a>';
         }).join('');
 
         const hasMore = visibleCount < latestItems.length;
@@ -424,10 +411,9 @@
     tasks.push(getJSON(LOCAL_NEWS_URL).then(parseLocalNews).catch(function () { return []; }));
     tasks.push(base ? getJSON(base + '/adminNews.json').then(objectValues).catch(function () { return []; }) : Promise.resolve([]));
     tasks.push(sheetUrl ? getText(sheetUrl + (sheetUrl.includes('?') ? '&' : '?') + 'v=' + Math.floor(Date.now() / 60000)).then(parseSheetNews).catch(function () { return []; }) : Promise.resolve([]));
-    tasks.push(base ? getJSON(base + '/newsMetrics.json').catch(function () { return {}; }) : Promise.resolve({}));
     tasks.push(base ? getJSON(base + '/adminHiddenNews.json').catch(function () { return {}; }) : Promise.resolve({}));
     const result = await Promise.all(tasks);
-    return { items: mergeNews(result[0], result[2], result[1], result[4]), metrics: result[3] || {} };
+    return { items: mergeNews(result[0], result[2], result[1], result[3]) };
   }
 
   window.CFF_NEWS_PROVIDER = {
@@ -453,7 +439,7 @@
     if (!hero) return;
 
     const cached = loadCache();
-    if (cached.length) render(cached, {});
+    if (cached.length) render(cached);
     else hero.innerHTML = '<section class="news-hero-carousel" aria-label="Carregando notícias"><div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:1px">Carregando notícias...</div></section>';
 
     try {
@@ -462,7 +448,7 @@
       saveCache(result.items);
       window.CFF_NOTICIAS_CACHE = result.items;
       window.cffNoticias = result.items;
-      render(result.items, result.metrics);
+      render(result.items);
     } catch (error) {
       if (!cached.length) {
         hero.innerHTML = '<section class="news-hero-carousel" aria-label="Erro ao carregar notícias"><div style="min-height:220px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--text-muted)"><strong style="color:#fff;text-transform:uppercase">Notícias indisponíveis no momento</strong><span style="font-size:.9em">Tente novamente em instantes.</span></div></section>';

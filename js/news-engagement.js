@@ -9,12 +9,6 @@
     return String(value || '').trim().replace(/[.#$/\[\]]/g, '_').slice(0, 180);
   }
 
-  function formatCount(value) {
-    const number = Math.max(0, Number(value || 0));
-    return number >= 1000000 ? (number / 1000000).toFixed(number >= 10000000 ? 0 : 1).replace('.0', '') + ' mi' :
-      number >= 1000 ? (number / 1000).toFixed(number >= 10000 ? 0 : 1).replace('.0', '') + ' mil' : String(number);
-  }
-
   async function request(path, options) {
     const response = await fetch(databaseURL + '/' + path + '.json', Object.assign({ cache: 'no-store' }, options || {}));
     if (!response.ok) throw new Error('Firebase HTTP ' + response.status);
@@ -33,7 +27,7 @@
     if (document.getElementById('cff-news-engagement-style')) return;
     const style = document.createElement('style');
     style.id = 'cff-news-engagement-style';
-    style.textContent = '.cff-news-engagement{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:20px 0 4px;padding:14px 0;border-top:1px solid rgba(143,179,220,.18);border-bottom:1px solid rgba(143,179,220,.18)}.cff-news-engagement-stat,.cff-news-like-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(0,200,255,.2);border-radius:999px;padding:9px 13px;background:rgba(0,200,255,.055);color:#dff5ff;font:900 .85rem/1 system-ui,sans-serif}.cff-news-like-btn{cursor:pointer}.cff-news-like-btn.is-liked{background:rgba(255,72,107,.14);border-color:rgba(255,72,107,.35);color:#ff9bb0}.cff-news-like-btn:disabled{opacity:.6;cursor:wait}';
+    style.textContent = '.cff-news-engagement{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:20px 0 4px;padding:14px 0;border-top:1px solid rgba(143,179,220,.18);border-bottom:1px solid rgba(143,179,220,.18)}.cff-news-like-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(0,200,255,.2);border-radius:999px;padding:9px 13px;background:rgba(0,200,255,.055);color:#dff5ff;font:900 .85rem/1 system-ui,sans-serif;cursor:pointer}.cff-news-like-btn.is-liked{background:rgba(255,72,107,.14);border-color:rgba(255,72,107,.35);color:#ff9bb0}.cff-news-like-btn:disabled{opacity:.6;cursor:wait}';
     document.head.appendChild(style);
   }
 
@@ -50,30 +44,24 @@
     const wrapper = document.createElement('div');
     wrapper.className = 'cff-news-engagement';
     wrapper.dataset.cffNewsEngagement = id;
-    wrapper.innerHTML = '<span class="cff-news-engagement-stat" title="Visualizações desta notícia">👁 <strong data-cff-views>0</strong> visualizações</span><button type="button" class="cff-news-like-btn" data-cff-like>❤ <strong data-cff-likes>0</strong> curtidas</button>';
+    wrapper.innerHTML = '<button type="button" class="cff-news-like-btn" data-cff-like>❤ <span data-cff-like-label>Curtir</span></button>';
     host.insertAdjacentElement('afterend', wrapper);
 
-    const viewsEl = wrapper.querySelector('[data-cff-views]');
-    const likesEl = wrapper.querySelector('[data-cff-likes]');
     const likeButton = wrapper.querySelector('[data-cff-like]');
+    const likeLabel = wrapper.querySelector('[data-cff-like-label]');
     const likedKey = 'cff_news_liked_' + id;
     let liked = localStorage.getItem(likedKey) === '1';
-    likeButton.classList.toggle('is-liked', liked);
-
-    async function refresh() {
-      try {
-        const metrics = await request('newsMetrics/' + encodeURIComponent(id));
-        viewsEl.textContent = formatCount(metrics && metrics.views);
-        likesEl.textContent = formatCount(metrics && metrics.likes);
-      } catch (_) {}
+    function renderLikeState() {
+      likeButton.classList.toggle('is-liked', liked);
+      if (likeLabel) likeLabel.textContent = liked ? 'Curtido' : 'Curtir';
     }
+    renderLikeState();
 
     const sessionKey = 'cff_news_viewed_' + id;
     if (sessionStorage.getItem(sessionKey) !== '1') {
       sessionStorage.setItem(sessionKey, '1');
       try { await increment('newsMetrics/' + encodeURIComponent(id) + '/views', 1); } catch (_) {}
     }
-    await refresh();
 
     likeButton.addEventListener('click', async function () {
       if (likeButton.disabled) return;
@@ -83,8 +71,7 @@
         await increment('newsMetrics/' + encodeURIComponent(id) + '/likes', delta);
         liked = !liked;
         localStorage.setItem(likedKey, liked ? '1' : '0');
-        likeButton.classList.toggle('is-liked', liked);
-        await refresh();
+        renderLikeState();
       } catch (_) {
         likeButton.title = 'Não foi possível registrar agora';
       } finally {
