@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-10",
+  "updatedAt": "2026-09-01",
   "team": "SX TET",
   "profileType": "full",
   "players": {
@@ -13,54 +13,56 @@
       "photo": "player-photos/s2/isacksr.webp",
       "country": "br",
       "role": "GRANADEIRO",
-      "currentTeam": "SX TET",
-      "currentTeamLogo": "sx tet.webp",
+      "currentTeam": "",
+      "currentTeamLogo": "",
       "currentRoster": {
         "team": "SX TET",
         "role": "GRANADEIRO",
         "roleShort": "GRAN",
-        "starter": true,
-        "rosterStatus": "Titular",
-        "captain": true,
+        "starter": false,
+        "rosterStatus": "Saiu",
+        "captain": false,
         "rookie": true,
         "highlight": false,
         "fullName": "Isack de Paula Batista",
         "age": 26,
         "birthDate": "2000-05-10",
-        "state": "Minas gerais"
+        "state": "Minas gerais",
+        "left": true
       },
       "s2": {
         "edition": "WB 2026 S2",
-        "kills": 13,
-        "damage": 10339,
-        "assists": 21,
-        "matches": 13,
+        "kills": 39,
+        "damage": 28289,
+        "assists": 73,
+        "matches": 45,
         "mvp": 0,
-        "record": 7,
-        "rankKills": 53,
-        "rankDamage": 53,
-        "rankAssists": 50,
+        "record": 8,
         "stages": {
           "classificatoria": {
-            "kills": 13,
-            "damage": 10339,
-            "assists": 21,
-            "matches": 13,
+            "kills": 39,
+            "damage": 28289,
+            "assists": 73,
+            "matches": 45,
             "mvp": 0
           }
-        }
+        },
+        "rankKills": 53,
+        "rankDamage": 53,
+        "rankAssists": 38
       },
       "historical": {},
       "editions": [
         {
           "edition": "WB 2026 S2",
-          "kills": 0,
-          "matches": 0,
-          "avg": 0,
+          "kills": 39,
+          "matches": 45,
+          "avg": 0.87,
           "team": "SX TET",
-          "damage": 0,
-          "assists": 0,
-          "status": "Ainda não iniciada"
+          "damage": 28289,
+          "assists": 73,
+          "status": "",
+          "mvp": 0
         }
       ],
       "teamHistory": [
@@ -84,7 +86,9 @@
       "availableSeasons": [
         "s2",
         "laff"
-      ]
+      ],
+      "lastTeam": "SX TET",
+      "lastTeamLogo": "sx tet.webp"
     },
     "furiazz7": {
       "id": "furiazz7",

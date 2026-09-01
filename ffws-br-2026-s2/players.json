@@ -1,6 +1,6 @@
 {
   "tournament": "WB 2026 S2",
-  "updatedAt": "2026-08-30",
+  "updatedAt": "2026-09-01",
   "source": "Dados oficiais importados por queda — WB 2026 S2 (Dias 1–4 completos)",
   "rookieRule": "Estreante somente quando marcado na planilha e sem participação anterior registrada na LBFF/WB/FFWS Brasil.",
   "rookies": [
@@ -901,12 +901,23 @@
     {
       "name": "IguiNmvp",
       "sourceName": "IguiNmvp",
-      "aliases": [],
+      "aliases": [
+        "iguiNmvp"
+      ],
       "team": "LOOPS",
       "roleShort": "RUSH",
       "country": "br",
       "rookie": false,
-      "teamAbbreviation": "LOOPS"
+      "teamAbbreviation": "LOOPS",
+      "id": "iguinmvp__loops",
+      "role": "RUSH",
+      "starter": true,
+      "rosterStatus": "Titular",
+      "captain": true,
+      "highlight": false,
+      "sourceRookieFlag": false,
+      "order": 38,
+      "left": false
     },
     {
       "id": "luan7__loops",
@@ -969,9 +980,9 @@
       "country": "br",
       "role": "GRANADEIRO",
       "roleShort": "GRAN",
-      "starter": true,
-      "rosterStatus": "Titular",
-      "captain": true,
+      "starter": false,
+      "rosterStatus": "Saiu",
+      "captain": false,
       "highlight": false,
       "rookie": false,
       "sourceRookieFlag": false,
@@ -979,7 +990,8 @@
       "age": 22,
       "birthDate": "2004-03-27",
       "state": "Rio de Janeiro",
-      "order": 38
+      "order": 999,
+      "left": true
     },
     {
       "id": "vitin9__loops",
@@ -1489,9 +1501,9 @@
       "country": "br",
       "role": "GRANADEIRO",
       "roleShort": "GRAN",
-      "starter": true,
-      "rosterStatus": "Titular",
-      "captain": true,
+      "starter": false,
+      "rosterStatus": "Saiu",
+      "captain": false,
       "highlight": false,
       "rookie": true,
       "sourceRookieFlag": true,
@@ -1499,7 +1511,8 @@
       "age": 26,
       "birthDate": "2000-05-10",
       "state": "Minas gerais",
-      "order": 63
+      "order": 999,
+      "left": true
     },
     {
       "id": "nikeboy__sx-tet",

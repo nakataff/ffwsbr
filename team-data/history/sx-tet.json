@@ -1,24 +1,8 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-09-01",
   "team": "SX TET",
   "history": {
     "players": [
-      {
-        "id": "isacksr",
-        "name": "IsackSR",
-        "photo": "silhueta.webp",
-        "currentTeam": "SX TET",
-        "isCurrent": true,
-        "hasProfile": true,
-        "cargo": "Jogador",
-        "kills": 0,
-        "matches": 0,
-        "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
-        "passageOrder": 1
-      },
       {
         "id": "furiazz7",
         "name": "Furiazz7",
@@ -36,6 +20,24 @@
           "WB 2026 S2"
         ],
         "passageOrder": 2
+      },
+      {
+        "id": "nikeboy",
+        "name": "Nikeboy",
+        "photo": "nikeboy.webp",
+        "currentTeam": "SX TET",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 765,
+        "matches": 507,
+        "avg": 1.51,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 6
       },
       {
         "id": "redxzzz",
@@ -74,26 +76,24 @@
         "passageOrder": 4
       },
       {
-        "id": "nikeboy",
-        "name": "Nikeboy",
-        "photo": "nikeboy.webp",
-        "currentTeam": "SX TET",
-        "isCurrent": true,
+        "id": "isacksr",
+        "name": "IsackSR",
+        "photo": "silhueta.webp",
+        "currentTeam": "",
+        "isCurrent": false,
         "hasProfile": true,
         "cargo": "Jogador",
-        "kills": 765,
-        "matches": 507,
-        "avg": 1.51,
+        "kills": 0,
+        "matches": 0,
+        "avg": 0.0,
         "editions": [
-          "WB 2025 S2",
-          "WB 2026 S1",
           "WB 2026 S2"
         ],
-        "passageOrder": 6
+        "passageOrder": 1
       }
     ],
-    "currentCount": 5,
-    "formerCount": 0
+    "currentCount": 4,
+    "formerCount": 1
   },
   "titles": [],
   "results": []

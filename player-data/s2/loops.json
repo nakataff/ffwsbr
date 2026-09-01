@@ -1,199 +1,8 @@
 {
-  "updatedAt": "2026-08-10",
+  "updatedAt": "2026-09-01",
   "team": "LOOPS",
   "profileType": "full",
   "players": {
-    "stark": {
-      "id": "stark",
-      "name": "Stark",
-      "aliases": [
-        "Stark",
-        "LPS Stark10",
-        "STARK7",
-        "Stark7",
-        "Stark10"
-      ],
-      "photo": "player-photos/s2/stark.webp",
-      "country": "br",
-      "role": "GRANADEIRO",
-      "currentTeam": "LOOPS",
-      "currentTeamLogo": "Loops 1.webp",
-      "currentRoster": {
-        "team": "LOOPS",
-        "role": "GRANADEIRO",
-        "roleShort": "GRAN",
-        "starter": true,
-        "rosterStatus": "Titular",
-        "captain": true,
-        "rookie": false,
-        "highlight": false,
-        "fullName": "Richard Ribeiro de Brito",
-        "age": 22,
-        "birthDate": "2004-03-27",
-        "state": "Rio de Janeiro"
-      },
-      "s2": {
-        "edition": "WB 2026 S2",
-        "kills": 24,
-        "damage": 16909,
-        "assists": 57,
-        "matches": 24,
-        "mvp": 0,
-        "record": 11,
-        "rankKills": 42,
-        "rankDamage": 42,
-        "rankAssists": 3,
-        "stages": {
-          "classificatoria": {
-            "kills": 24,
-            "damage": 16909,
-            "assists": 57,
-            "matches": 24,
-            "mvp": 0
-          }
-        }
-      },
-      "historical": {
-        "LBFF 8": {
-          "kills": 99,
-          "matches": 80
-        },
-        "LBFF 9": {
-          "kills": 240,
-          "matches": 200
-        },
-        "WB 2024 F1": {
-          "kills": 151,
-          "matches": 96
-        },
-        "WB 2024 F2": {
-          "kills": 163,
-          "matches": 104
-        },
-        "WB 2025 S1": {
-          "kills": 147,
-          "matches": 104
-        },
-        "WB 2025 S2": {
-          "kills": 101,
-          "matches": 68
-        },
-        "WB 2026 S1": {
-          "kills": 116,
-          "matches": 90
-        }
-      },
-      "editions": [
-        {
-          "edition": "LBFF 8",
-          "kills": 99,
-          "matches": 80,
-          "avg": 1.24,
-          "team": ""
-        },
-        {
-          "edition": "LBFF 9",
-          "kills": 240,
-          "matches": 200,
-          "avg": 1.2,
-          "team": ""
-        },
-        {
-          "edition": "WB 2024 F1",
-          "kills": 151,
-          "matches": 96,
-          "avg": 1.57,
-          "team": ""
-        },
-        {
-          "edition": "WB 2024 F2",
-          "kills": 163,
-          "matches": 104,
-          "avg": 1.57,
-          "team": ""
-        },
-        {
-          "edition": "WB 2025 S1",
-          "kills": 147,
-          "matches": 104,
-          "avg": 1.41,
-          "team": ""
-        },
-        {
-          "edition": "WB 2025 S2",
-          "kills": 101,
-          "matches": 68,
-          "avg": 1.49,
-          "team": ""
-        },
-        {
-          "edition": "WB 2026 S1",
-          "kills": 116,
-          "matches": 90,
-          "avg": 1.29,
-          "team": "LOOPS",
-          "damage": 77680,
-          "assists": 139,
-          "mvp": 0
-        },
-        {
-          "edition": "WB 2026 S2",
-          "kills": 0,
-          "matches": 0,
-          "avg": 0,
-          "team": "LOOPS",
-          "damage": 0,
-          "assists": 0,
-          "status": "Ainda não iniciada"
-        }
-      ],
-      "teamHistory": [
-        {
-          "team": "GOD ESPORTS",
-          "cargo": "Jogador",
-          "logo": "escudo.webp",
-          "edition": ""
-        },
-        {
-          "team": "MIBR",
-          "cargo": "Jogador",
-          "logo": "escudo.webp",
-          "edition": ""
-        },
-        {
-          "team": "W7M ESPORTS",
-          "cargo": "Jogador",
-          "logo": "escudo.webp",
-          "edition": ""
-        },
-        {
-          "team": "ALPHA7",
-          "cargo": "Jogador",
-          "logo": "A7 2.webp",
-          "edition": ""
-        },
-        {
-          "team": "LOOPS",
-          "cargo": "Jogador",
-          "logo": "escudo.webp",
-          "edition": "WB 2026 S1"
-        }
-      ],
-      "allTime": {
-        "kills": 1133,
-        "matches": 832,
-        "damage": 77680,
-        "assists": 139,
-        "mvp": 0,
-        "avg": 1.36
-      },
-      "profileType": "full",
-      "dataSource": "WB 2026 S2",
-      "availableSeasons": [
-        "s2",
-        "s1"
-      ]
-    },
     "draxx7": {
       "id": "draxx7",
       "name": "Draxx7",
@@ -1000,6 +809,336 @@
         "s2",
         "s1"
       ]
+    },
+    "iguinmvp": {
+      "id": "iguinmvp",
+      "profileType": "full",
+      "name": "IguiNmvp",
+      "aliases": [
+        "IguiNmvp",
+        "iguiNmvp"
+      ],
+      "photo": "iguin.webp",
+      "country": "br",
+      "role": "RUSH",
+      "allTime": {
+        "kills": 476,
+        "matches": 386,
+        "damage": 34452,
+        "assists": 64,
+        "mvp": 2,
+        "avg": 1.23
+      },
+      "editions": [
+        {
+          "edition": "WB 2024 F1",
+          "kills": 61,
+          "matches": 36,
+          "avg": 1.69,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 136,
+          "matches": 104,
+          "avg": 1.31,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S1",
+          "kills": 100,
+          "matches": 102,
+          "avg": 0.98,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 57,
+          "matches": 54,
+          "avg": 1.06,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 61,
+          "matches": 45,
+          "avg": 1.36,
+          "team": "RISE GAMING",
+          "damage": 34452,
+          "assists": 64,
+          "mvp": 2
+        },
+        {
+          "edition": "WB 2026 S2",
+          "team": "LOOPS",
+          "kills": 12,
+          "matches": 12,
+          "avg": 1.0,
+          "damage": 6416,
+          "assists": 15,
+          "mvp": 0,
+          "status": ""
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "E1 SPORTS",
+          "cargo": "Jogador",
+          "logo": "E1.webp",
+          "edition": ""
+        },
+        {
+          "team": "RED CANIDS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "RISE GAMING",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        },
+        {
+          "team": "LOOPS",
+          "cargo": "Jogador",
+          "logo": "Loops 1.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "currentTeam": "LOOPS",
+      "currentTeamLogo": "Loops 1.webp",
+      "currentRoster": {
+        "team": "LOOPS",
+        "role": "RUSH",
+        "roleShort": "RUSH",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": true,
+        "rookie": false,
+        "highlight": false,
+        "left": false
+      },
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 12,
+        "damage": 6416,
+        "assists": 15,
+        "matches": 12,
+        "mvp": 0,
+        "record": 9,
+        "stages": {
+          "classificatoria": {
+            "kills": 12,
+            "damage": 6416,
+            "assists": 15,
+            "matches": 12,
+            "mvp": 0
+          }
+        },
+        "rankKills": 62,
+        "rankDamage": 62,
+        "rankAssists": 62
+      },
+      "availableSeasons": [
+        "s2"
+      ],
+      "dataSource": "WB 2026 S2"
+    },
+    "stark": {
+      "id": "stark",
+      "name": "Stark",
+      "aliases": [
+        "Stark",
+        "LPS Stark10",
+        "STARK7",
+        "Stark7",
+        "Stark10"
+      ],
+      "photo": "player-photos/s2/stark.webp",
+      "country": "br",
+      "role": "GRANADEIRO",
+      "currentTeam": "",
+      "currentTeamLogo": "",
+      "currentRoster": {
+        "team": "LOOPS",
+        "role": "GRANADEIRO",
+        "roleShort": "GRAN",
+        "starter": false,
+        "rosterStatus": "Saiu",
+        "captain": false,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Richard Ribeiro de Brito",
+        "age": 22,
+        "birthDate": "2004-03-27",
+        "state": "Rio de Janeiro",
+        "left": true
+      },
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 34,
+        "damage": 23673,
+        "assists": 77,
+        "matches": 33,
+        "mvp": 0,
+        "record": 11,
+        "stages": {
+          "classificatoria": {
+            "kills": 34,
+            "damage": 23673,
+            "assists": 77,
+            "matches": 33,
+            "mvp": 0
+          }
+        },
+        "rankKills": 54,
+        "rankDamage": 57,
+        "rankAssists": 35
+      },
+      "historical": {
+        "LBFF 8": {
+          "kills": 99,
+          "matches": 80
+        },
+        "LBFF 9": {
+          "kills": 240,
+          "matches": 200
+        },
+        "WB 2024 F1": {
+          "kills": 151,
+          "matches": 96
+        },
+        "WB 2024 F2": {
+          "kills": 163,
+          "matches": 104
+        },
+        "WB 2025 S1": {
+          "kills": 147,
+          "matches": 104
+        },
+        "WB 2025 S2": {
+          "kills": 101,
+          "matches": 68
+        },
+        "WB 2026 S1": {
+          "kills": 116,
+          "matches": 90
+        }
+      },
+      "editions": [
+        {
+          "edition": "LBFF 8",
+          "kills": 99,
+          "matches": 80,
+          "avg": 1.24,
+          "team": ""
+        },
+        {
+          "edition": "LBFF 9",
+          "kills": 240,
+          "matches": 200,
+          "avg": 1.2,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F1",
+          "kills": 151,
+          "matches": 96,
+          "avg": 1.57,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 163,
+          "matches": 104,
+          "avg": 1.57,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S1",
+          "kills": 147,
+          "matches": 104,
+          "avg": 1.41,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 101,
+          "matches": 68,
+          "avg": 1.49,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 116,
+          "matches": 90,
+          "avg": 1.29,
+          "team": "LOOPS",
+          "damage": 77680,
+          "assists": 139,
+          "mvp": 0
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 34,
+          "matches": 33,
+          "avg": 1.03,
+          "team": "LOOPS",
+          "damage": 23673,
+          "assists": 77,
+          "status": "",
+          "mvp": 0
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "GOD ESPORTS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "MIBR",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "W7M ESPORTS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "ALPHA7",
+          "cargo": "Jogador",
+          "logo": "A7 2.webp",
+          "edition": ""
+        },
+        {
+          "team": "LOOPS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        }
+      ],
+      "allTime": {
+        "kills": 1133,
+        "matches": 832,
+        "damage": 77680,
+        "assists": 139,
+        "mvp": 0,
+        "avg": 1.36
+      },
+      "profileType": "full",
+      "dataSource": "WB 2026 S2",
+      "availableSeasons": [
+        "s2",
+        "s1"
+      ],
+      "lastTeam": "LOOPS",
+      "lastTeamLogo": "Loops 1.webp"
     }
   }
 }

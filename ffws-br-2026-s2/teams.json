@@ -1,6 +1,6 @@
 {
   "tournament": "WB 2026 S2",
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-09-01",
   "teams": [
     {
       "name": "AFROGAMES",
@@ -103,11 +103,12 @@
       "country": "br",
       "logo": "Loops 1.webp",
       "players": [
-        "Stark",
         "Draxx7",
         "Vitin9",
         "Pão7",
-        "Luan7"
+        "Luan7",
+        "IguiNmvp",
+        "Stark"
       ]
     },
     {
@@ -169,11 +170,11 @@
       "logo": "sx tet.webp",
       "logoPending": false,
       "players": [
-        "IsackSR",
         "Furiazz7",
         "Redxzzz",
         "Yato7",
-        "Nikeboy"
+        "Nikeboy",
+        "IsackSR"
       ]
     },
     {

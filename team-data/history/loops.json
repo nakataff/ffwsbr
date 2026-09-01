@@ -1,26 +1,8 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-09-01",
   "team": "LOOPS",
   "history": {
     "players": [
-      {
-        "id": "stark",
-        "name": "Stark",
-        "photo": "stark.webp",
-        "currentTeam": "LOOPS",
-        "isCurrent": true,
-        "hasProfile": true,
-        "cargo": "Jogador",
-        "kills": 1133,
-        "matches": 832,
-        "avg": 1.36,
-        "editions": [
-          "WB 2025 S2",
-          "WB 2026 S1",
-          "WB 2026 S2"
-        ],
-        "passageOrder": 5
-      },
       {
         "id": "draxx7",
         "name": "Draxx7",
@@ -40,16 +22,32 @@
         "passageOrder": 4
       },
       {
-        "id": "vitin9",
-        "name": "Vitin9",
-        "photo": "silhueta.webp",
+        "id": "iguinmvp",
+        "name": "IguiNmvp",
+        "photo": "iguin.webp",
         "currentTeam": "LOOPS",
         "isCurrent": true,
         "hasProfile": true,
         "cargo": "Jogador",
-        "kills": 874,
-        "matches": 664,
-        "avg": 1.32,
+        "kills": 488,
+        "matches": 398,
+        "avg": 1.23,
+        "editions": [
+          "WB 2026 S2"
+        ],
+        "passageOrder": 1
+      },
+      {
+        "id": "luan7",
+        "name": "Luan7",
+        "photo": "luan.webp",
+        "currentTeam": "LOOPS",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 482,
+        "matches": 407,
+        "avg": 1.18,
         "editions": [
           "WB 2025 S2",
           "WB 2026 S1",
@@ -76,40 +74,22 @@
         "passageOrder": 7
       },
       {
-        "id": "luan7",
-        "name": "Luan7",
-        "photo": "luan.webp",
+        "id": "vitin9",
+        "name": "Vitin9",
+        "photo": "silhueta.webp",
         "currentTeam": "LOOPS",
         "isCurrent": true,
         "hasProfile": true,
         "cargo": "Jogador",
-        "kills": 482,
-        "matches": 407,
-        "avg": 1.18,
+        "kills": 874,
+        "matches": 664,
+        "avg": 1.32,
         "editions": [
           "WB 2025 S2",
           "WB 2026 S1",
           "WB 2026 S2"
         ],
         "passageOrder": 4
-      },
-      {
-        "id": "naandox",
-        "name": "Naandox",
-        "photo": "nandox.webp",
-        "currentTeam": "RISE GAMING",
-        "isCurrent": false,
-        "hasProfile": true,
-        "cargo": "Jogador",
-        "kills": 1048,
-        "matches": 784,
-        "avg": 1.34,
-        "editions": [
-          "WB 2025 S2",
-          "WB 2026 S1",
-          "WB 2026 S2"
-        ],
-        "passageOrder": 5
       },
       {
         "id": "band",
@@ -130,24 +110,6 @@
         "passageOrder": 4
       },
       {
-        "id": "nikeboy",
-        "name": "Nikeboy",
-        "photo": "nikeboy.webp",
-        "currentTeam": "SX TET",
-        "isCurrent": false,
-        "hasProfile": true,
-        "cargo": "Jogador",
-        "kills": 765,
-        "matches": 507,
-        "avg": 1.51,
-        "editions": [
-          "WB 2025 S2",
-          "WB 2026 S1",
-          "WB 2026 S2"
-        ],
-        "passageOrder": 4
-      },
-      {
         "id": "bahiaz7",
         "name": "Bahiaz7",
         "photo": "bahia.webp",
@@ -158,24 +120,6 @@
         "kills": 401,
         "matches": 387,
         "avg": 1.04,
-        "editions": [
-          "WB 2025 S1",
-          "WB 2025 S2",
-          "WB 2026 S1"
-        ],
-        "passageOrder": 3
-      },
-      {
-        "id": "juca10xl",
-        "name": "Juca10xl",
-        "photo": "juca.webp",
-        "currentTeam": "E1 SPORTS",
-        "isCurrent": false,
-        "hasProfile": true,
-        "cargo": "Jogador",
-        "kills": 535,
-        "matches": 449,
-        "avg": 1.19,
         "editions": [
           "WB 2025 S1",
           "WB 2025 S2",
@@ -199,10 +143,82 @@
           "WB 2026 S2"
         ],
         "passageOrder": 1
+      },
+      {
+        "id": "juca10xl",
+        "name": "Juca10xl",
+        "photo": "juca.webp",
+        "currentTeam": "E1 SPORTS",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 535,
+        "matches": 449,
+        "avg": 1.19,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1"
+        ],
+        "passageOrder": 3
+      },
+      {
+        "id": "naandox",
+        "name": "Naandox",
+        "photo": "nandox.webp",
+        "currentTeam": "RISE GAMING",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1048,
+        "matches": 784,
+        "avg": 1.34,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 5
+      },
+      {
+        "id": "nikeboy",
+        "name": "Nikeboy",
+        "photo": "nikeboy.webp",
+        "currentTeam": "SX TET",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 765,
+        "matches": 507,
+        "avg": 1.51,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
+        "id": "stark",
+        "name": "Stark",
+        "photo": "stark.webp",
+        "currentTeam": "",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 1133,
+        "matches": 832,
+        "avg": 1.36,
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 5
       }
     ],
     "currentCount": 5,
-    "formerCount": 6
+    "formerCount": 7
   },
   "titles": [],
   "results": []

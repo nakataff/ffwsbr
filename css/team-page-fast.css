@@ -5,3 +5,9 @@
 @media(max-width:720px){.cff-season-tabs{margin-top:12px}.cff-season-tabs button{min-width:82px;padding:10px 13px}.cff-season-stage-grid{grid-template-columns:1fr}.cff-season-stage-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.cff-history-grid,.cff-title-grid{grid-template-columns:1fr}.cff-history-player{grid-template-columns:52px minmax(0,1fr) auto}.cff-history-player>img{width:52px;height:58px}.cff-result-row{grid-template-columns:minmax(0,1fr) 44px}.cff-result-row span,.cff-result-row small{display:none}.cff-result-row b{text-align:right}.cff-history-counts{width:100%}.cff-team-section-head.cff-season-head{margin-bottom:4px}}
 
 .cff-history-player.is-static{cursor:default}.cff-history-player.is-static:hover{transform:none;border-color:var(--cff-border)}
+
+/* Movimentações de elenco — 01/09/2026 */
+.cff-player-card.is-departed{order:99;opacity:.46;filter:grayscale(1);border-color:rgba(150,160,175,.18);background:linear-gradient(145deg,#11141a,#0b0d12)}
+.cff-player-card.is-departed:hover{opacity:.68;filter:grayscale(.78);border-color:rgba(170,180,195,.35)}
+.cff-player-card.is-departed .cff-player-role,.cff-player-card.is-departed .cff-player-realname{color:#7f8998}
+.cff-player-tag.departed{color:#c5cad1;border-color:rgba(160,168,180,.35);background:rgba(160,168,180,.08)}

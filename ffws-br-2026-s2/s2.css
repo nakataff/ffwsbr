@@ -627,3 +627,9 @@ body.cff-stats-route #ffws-br-s2-stats.page{overflow-x:clip!important;overflow-y
 @media(max-width:760px){
   .ffws-s2-notes-filters .ffws-s2-multi-menu{left:12px!important;right:12px!important;min-width:0}
 }
+
+/* WB 2026 S2 — movimentações de elenco 01/09/2026 */
+.ffws-s2-roster-player.departed{order:99;opacity:.48;filter:grayscale(1);background:rgba(255,255,255,.018)}
+.ffws-s2-roster-player.departed:hover{opacity:.7;filter:grayscale(.8);background:rgba(255,255,255,.035)}
+.ffws-s2-roster-player.departed .ffws-s2-roster-player-main strong,.ffws-s2-roster-player.departed .ffws-s2-roster-player-main small{color:#7f8998}
+.ffws-s2-roster-badge.departed{color:#c5cad1;background:rgba(160,168,180,.08);border-color:rgba(160,168,180,.3)}

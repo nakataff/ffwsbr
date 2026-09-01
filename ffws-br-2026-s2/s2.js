@@ -128,7 +128,8 @@
   function playersForTeam(teamName) {
     return rosterPlayers()
       .filter(player => normalize(player.team) === normalize(teamName))
-      .sort((a, b) => Number(b.starter) - Number(a.starter)
+      .sort((a, b) => Number(Boolean(a.left)) - Number(Boolean(b.left))
+        || Number(b.starter) - Number(a.starter)
         || Number(b.captain) - Number(a.captain)
         || number(a.order) - number(b.order)
         || String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR'));
@@ -154,9 +155,13 @@
 
   function playerBadges(player) {
     const badges = [];
-    if (player?.captain) badges.push('<span class="ffws-s2-roster-badge captain">Capitão</span>');
-    if (player?.rookie) badges.push('<span class="ffws-s2-roster-badge rookie">Estreante</span>');
-    if (player?.highlight) badges.push('<span class="ffws-s2-roster-badge highlight">Destaque</span>');
+    const departed = Boolean(player?.left) || normalize(player?.rosterStatus) === 'saiu';
+    if (departed) badges.push('<span class="ffws-s2-roster-badge departed">Saiu</span>');
+    else {
+      if (player?.captain) badges.push('<span class="ffws-s2-roster-badge captain">Capitão</span>');
+      if (player?.rookie) badges.push('<span class="ffws-s2-roster-badge rookie">Estreante</span>');
+      if (player?.highlight) badges.push('<span class="ffws-s2-roster-badge highlight">Destaque</span>');
+    }
     return badges.join('');
   }
 
@@ -562,10 +567,12 @@
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Diretório de Equipes</h2><p>Confira os elencos, funções e estreantes da temporada.</p></div><span class="ffws-s2-badge">${totalPlayers} jogadores • ${totalRookies} estreantes</span></div>
       <div class="ffws-s2-teams-grid ffws-s2-rosters-grid">${state.teams.map(team => {
         const roster = playersForTeam(team.name);
-        const starters = roster.filter(player => player.starter).length;
+        const departed = roster.filter(player => Boolean(player.left) || normalize(player.rosterStatus) === 'saiu').length;
+        const starters = roster.filter(player => player.starter && !player.left).length;
+        const reserves = roster.filter(player => !player.starter && !player.left).length;
         return `<article class="ffws-s2-team-card ffws-s2-team-roster-card" role="button" tabindex="0" onclick="openCurrentSeasonTeam('${jsAttr(team.name)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCurrentSeasonTeam('${jsAttr(team.name)}')}">
-          <header class="ffws-s2-team-roster-head"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.abbreviation)} • Brasil</small><small class="${team.logoPending ? 'ffws-s2-logo-pending' : ''}">${starters} titulares • ${Math.max(0, roster.length - starters)} reservas</small></div></header>
-          <div class="ffws-s2-roster-list">${roster.length ? roster.map(player => `<button type="button" class="ffws-s2-roster-player${player.starter ? '' : ' reserve'}" onclick="event.stopPropagation();openCurrentSeasonPlayer('${jsAttr(player.name)}', '${jsAttr(player.team)}')">
+          <header class="ffws-s2-team-roster-head"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.abbreviation)} • Brasil</small><small class="${team.logoPending ? 'ffws-s2-logo-pending' : ''}">${starters} titulares • ${reserves} reservas${departed ? ` • ${departed} saiu` : ''}</small></div></header>
+          <div class="ffws-s2-roster-list">${roster.length ? roster.map(player => `<button type="button" class="ffws-s2-roster-player${player.left ? ' departed' : (player.starter ? '' : ' reserve')}" onclick="event.stopPropagation();openCurrentSeasonPlayer('${jsAttr(player.name)}', '${jsAttr(player.team)}')">
             <img class="ffws-s2-roster-player-avatar" loading="lazy" decoding="async" src="${escapeHtml(playerPhoto(player))}" alt="${escapeHtml(player.name)}" onerror="this.onerror=null;this.src='silhueta.webp'">
             <span class="ffws-s2-roster-player-main"><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(playerRoleLabel(player))} • ${escapeHtml(player.rosterStatus)}</small></span>
             <span class="ffws-s2-roster-badges">${playerBadges(player)}</span>
