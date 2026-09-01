@@ -587,3 +587,43 @@
   #news-hero-container .news-feature-desktop { display: none; }
   #news-hero-container .news-feature-mobile { display: block; }
 }
+
+/* Home 2026-09-01: ajuste fino de escala do destaque desktop */
+@media (min-width: 901px) {
+  /* Aproxima o destaque da largura útil da home, mantendo respiro lateral. */
+  #news-hero-container .news-feature-desktop {
+    width: min(96%, 1280px);
+    height: clamp(360px, 34vw, 465px);
+    aspect-ratio: auto;
+    gap: 16px;
+  }
+  #news-hero-container .news-feature-side-stack {
+    gap: 16px;
+  }
+
+  /* O restante da home fica só um pouco mais compacto para alinhar melhor
+     visualmente com o destaque, sem alterar a estrutura dos componentes. */
+  #home .home-main-layout {
+    width: min(98%, 1320px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Mais área útil de texto nas duas notícias menores. Não corta títulos. */
+  #news-hero-container .news-feature-side .news-feature-overlay {
+    padding: 42px 15px 14px;
+  }
+  #news-hero-container .news-feature-side .news-feature-title {
+    display: block;
+    overflow: visible;
+    font-size: clamp(.84rem, 1vw, 1.06rem);
+    line-height: 1.1;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: initial;
+    overflow-wrap: anywhere;
+  }
+  #news-hero-container .news-feature-side .news-feature-metrics {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+}
