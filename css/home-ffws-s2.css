@@ -374,3 +374,47 @@
   .home-left-rail .home-widget table tr { height: 44px; }
   .home-left-rail .home-widget table td { padding: 6px 8px; }
 }
+
+/* Home 2026-09-01: prioridade da transmissão no mobile + notícias compactas */
+.home-news-more-wrap {
+  justify-content: center;
+  margin: -22px 0 40px;
+}
+.home-news-more-btn {
+  min-width: min(100%, 320px);
+  padding: 11px 18px;
+  border: 1px solid rgba(0, 200, 255, .38);
+  border-radius: 999px;
+  background: rgba(0, 200, 255, .075);
+  color: var(--accent);
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 950;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.home-news-more-btn:hover {
+  background: rgba(0, 200, 255, .14);
+  border-color: rgba(0, 200, 255, .7);
+  transform: translateY(-1px);
+}
+@media (max-width: 900px) {
+  /* A caixa .home-center-column deixa de gerar uma camada visual. Assim,
+     a transmissão pode vir antes da lateral no mobile sem duplicar conteúdo. */
+  .home-main-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .home-center-column {
+    display: contents;
+  }
+  .home-s2-broadcast { order: 1; }
+  .home-left-rail { order: 2; width: 100%; box-sizing: border-box; }
+  .home-center-column > *:not(.home-s2-broadcast) { order: 3; width: 100%; box-sizing: border-box; }
+}
+@media (max-width: 620px) {
+  .home-news-more-wrap { margin-top: -24px; }
+  .home-news-more-btn { width: 100%; }
+}

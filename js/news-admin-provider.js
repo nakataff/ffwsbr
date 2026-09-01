@@ -241,17 +241,42 @@
       '</section>';
 
     if (grid) {
-      if (title) title.style.display = 'block';
+      const latestItems = items.filter(function (item) { return !seen.has(item.id); });
+      const actions = document.getElementById('ultimas-noticias-actions');
+      const moreButton = document.getElementById('ultimas-noticias-carregar-mais');
+      let visibleCount = 3;
+
       grid.style.display = 'grid';
       grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
       grid.style.gap = '20px';
-      grid.innerHTML = items.map(function (item) {
-        const metric = metricsFor(metrics, item.id);
-        return '<a class="old-news-card" href="' + escapeHTML(item.urlInterna) + '" style="display:flex;flex-direction:column;height:100%;text-decoration:none;color:inherit">' +
-          '<div style="width:100%;height:160px;overflow:hidden;border-bottom:1px solid var(--border)"><img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" loading="lazy" decoding="async" onerror="this.src=\'' + FALLBACK_IMAGE + '\'" style="width:100%;height:100%;object-fit:cover"></div>' +
-          '<div class="old-news-title" style="padding:12px 12px 8px;font-size:.95em;flex-grow:1">' + escapeHTML(item.titulo) + '</div>' +
-          '<div style="display:flex;gap:12px;padding:0 12px 12px;color:var(--text-muted);font-size:.78rem;font-weight:900"><span>👁 ' + formatCount(metric.views) + '</span><span>❤ ' + formatCount(metric.likes) + '</span></div></a>';
-      }).join('');
+
+      function renderLatestNews() {
+        const visibleItems = latestItems.slice(0, visibleCount);
+        if (title) title.style.display = latestItems.length ? 'block' : 'none';
+        grid.style.display = latestItems.length ? 'grid' : 'none';
+        grid.innerHTML = visibleItems.map(function (item) {
+          const metric = metricsFor(metrics, item.id);
+          return '<a class="old-news-card" href="' + escapeHTML(item.urlInterna) + '" style="display:flex;flex-direction:column;height:100%;text-decoration:none;color:inherit">' +
+            '<div style="width:100%;height:160px;overflow:hidden;border-bottom:1px solid var(--border)"><img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" loading="lazy" decoding="async" onerror="this.src=\'' + FALLBACK_IMAGE + '\'" style="width:100%;height:100%;object-fit:cover"></div>' +
+            '<div class="old-news-title" style="padding:12px 12px 8px;font-size:.95em;flex-grow:1">' + escapeHTML(item.titulo) + '</div>' +
+            '<div style="display:flex;gap:12px;padding:0 12px 12px;color:var(--text-muted);font-size:.78rem;font-weight:900"><span>👁 ' + formatCount(metric.views) + '</span><span>❤ ' + formatCount(metric.likes) + '</span></div></a>';
+        }).join('');
+
+        const hasMore = visibleCount < latestItems.length;
+        if (actions) actions.style.display = hasMore ? 'flex' : 'none';
+        if (moreButton) {
+          moreButton.hidden = !hasMore;
+          moreButton.textContent = hasMore ? 'Carregar mais notícias ↓' : '';
+        }
+      }
+
+      if (moreButton) {
+        moreButton.onclick = function () {
+          visibleCount = Math.min(visibleCount + 3, latestItems.length);
+          renderLatestNews();
+        };
+      }
+      renderLatestNews();
     }
 
     bindCarousel();
@@ -338,6 +363,8 @@
         hero.innerHTML = '<section class="news-hero-carousel" aria-label="Erro ao carregar notícias"><div style="min-height:220px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--text-muted)"><strong style="color:#fff;text-transform:uppercase">Notícias indisponíveis no momento</strong><span style="font-size:.9em">Tente novamente em instantes.</span></div></section>';
         if (grid) grid.innerHTML = '';
         if (title) title.style.display = 'none';
+        const actions = document.getElementById('ultimas-noticias-actions');
+        if (actions) actions.style.display = 'none';
       }
       console.error(error);
     }
