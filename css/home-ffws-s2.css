@@ -691,3 +691,80 @@
   }
   #ultimas-noticias-grid { grid-template-columns: 1fr; gap: 14px; }
 }
+
+/* Home 2026-09-01 v12: rankings compactos + ajustes mobile */
+.home-left-rail .home-rail-rank-table thead th {
+  height: 28px;
+  padding: 0 5px;
+  border-bottom: 1px solid rgba(0,200,255,.18);
+  background: rgba(0,200,255,.035);
+  color: #7897b8;
+  font-size: .58rem;
+  font-weight: 1000;
+  letter-spacing: .055em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.home-left-rail .home-rail-rank-table thead th:nth-child(2) { text-align: left; }
+.home-left-rail .home-rail-team-table th:nth-child(1),
+.home-left-rail .home-rail-team-table td:nth-child(1),
+.home-left-rail .home-rail-player-table th:nth-child(1),
+.home-left-rail .home-rail-player-table td:nth-child(1) { width: 27px; }
+.home-left-rail .home-rail-team-table th:nth-child(3),
+.home-left-rail .home-rail-team-table td:nth-child(3) { width: 46px; }
+.home-left-rail .home-rail-team-table th:nth-child(4),
+.home-left-rail .home-rail-team-table td:nth-child(4) { width: 41px; }
+.home-left-rail .home-rail-player-table th:nth-child(3),
+.home-left-rail .home-rail-player-table td:nth-child(3) { width: 56px; }
+.home-left-rail .home-rail-player-table th:nth-child(4),
+.home-left-rail .home-rail-player-table td:nth-child(4) { width: 31px; }
+.home-left-rail .home-rank-number {
+  color: #f4f8ff;
+  font-size: .72rem;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+.home-left-rail .home-rank-points { color: var(--accent); }
+.home-left-rail .home-rank-matches { color: #7f9ab7; font-size: .67rem; }
+.home-left-rail .home-rank-placeholder {
+  height: 66px;
+  padding: 14px 10px !important;
+  color: var(--text-muted);
+  font-size: .68rem !important;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+}
+.home-year-team-short { display: none; }
+
+@media (max-width: 760px) {
+  .home-year-team-full { display: none; }
+  .home-year-team-short { display: inline; }
+  .home-year-name-inline { gap: 5px; }
+  .home-year-name-inline img { width: 18px; height: 18px; }
+}
+
+@media (max-width: 620px) {
+  .home-s2-team { position: relative; overflow: hidden; }
+  .home-s2-team.is-resting::after {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 3px;
+    overflow: hidden;
+    font-size: .37rem;
+    line-height: 1.05;
+    letter-spacing: .01em;
+    text-overflow: clip;
+    white-space: nowrap;
+  }
+  .home-left-rail .home-rail-rank-table thead th { height: 30px; font-size: .6rem; }
+  .home-left-rail .home-widget table tr { height: 47px; }
+  .home-left-rail .home-widget table td { padding: 6px 5px; }
+  .home-left-rail .home-rank-main a { font-size: .8rem; }
+  .home-left-rail .home-rank-main small { font-size: .61rem; }
+  .home-left-rail .home-rank-number { font-size: .75rem; }
+  .home-left-rail .home-rail-player-table th:nth-child(3),
+  .home-left-rail .home-rail-player-table td:nth-child(3) { width: 62px; }
+}
