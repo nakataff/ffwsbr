@@ -162,16 +162,67 @@
     }).filter(function (item) { return item.status === 'published' && item.titulo && item.id; });
   }
 
+  function parseNewsTimestamp(value) {
+    const text = String(value || '').trim();
+    if (!text) return 0;
+
+    let match = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (match) {
+      const day = Number(match[1]);
+      const month = Number(match[2]);
+      const year = Number(match[3]);
+      const hour = Number(match[4] || 0);
+      const minute = Number(match[5] || 0);
+      const second = Number(match[6] || 0);
+      if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+        return Date.UTC(year, month - 1, day, hour, minute, second);
+      }
+    }
+
+    match = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (match) {
+      const year = Number(match[1]);
+      const month = Number(match[2]);
+      const day = Number(match[3]);
+      const hour = Number(match[4] || 0);
+      const minute = Number(match[5] || 0);
+      const second = Number(match[6] || 0);
+      if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+        return Date.UTC(year, month - 1, day, hour, minute, second);
+      }
+    }
+
+    const parsed = Date.parse(text);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function newsSortTime(item) {
+    return Math.max(
+      Number(item && item.updatedAt || 0),
+      Number(item && item.createdAt || 0),
+      parseNewsTimestamp(item && item.data)
+    );
+  }
+
   function mergeNews(localNews, sheetNews, adminNews, hiddenNews) {
     const map = new Map();
+    const sheetById = new Map();
     localNews.forEach(function (item) { map.set(item.id, item); });
-    sheetNews.forEach(function (item) { map.set(item.id, item); });
-    adminNews.forEach(function (item) { map.set(item.id, item); });
+    sheetNews.forEach(function (item) { map.set(item.id, item); sheetById.set(item.id, item); });
+    adminNews.forEach(function (item) {
+      const sheetItem = sheetById.get(item.id);
+      if (sheetItem) {
+        map.set(item.id, Object.assign({}, sheetItem, item, {
+          destaque: sheetItem.destaque,
+          data: sheetItem.data || item.data
+        }));
+      } else {
+        map.set(item.id, item);
+      }
+    });
     Object.keys(hiddenNews || {}).forEach(function (id) { if (hiddenNews[id]) map.delete(id); });
     return Array.from(map.values()).sort(function (a, b) {
-      const aTime = a.updatedAt || a.createdAt || Date.parse(a.data) || 0;
-      const bTime = b.updatedAt || b.createdAt || Date.parse(b.data) || 0;
-      return bTime - aTime;
+      return newsSortTime(b) - newsSortTime(a);
     });
   }
 
@@ -318,7 +369,7 @@
     const tasks = [];
     tasks.push(getJSON(LOCAL_NEWS_URL).then(parseLocalNews).catch(function () { return []; }));
     tasks.push(base ? getJSON(base + '/adminNews.json').then(objectValues).catch(function () { return []; }) : Promise.resolve([]));
-    tasks.push(sheetUrl ? getText(sheetUrl + (sheetUrl.includes('?') ? '&' : '?') + 'v=' + Math.floor(Date.now() / 300000)).then(parseSheetNews).catch(function () { return []; }) : Promise.resolve([]));
+    tasks.push(sheetUrl ? getText(sheetUrl + (sheetUrl.includes('?') ? '&' : '?') + 'v=' + Math.floor(Date.now() / 60000)).then(parseSheetNews).catch(function () { return []; }) : Promise.resolve([]));
     tasks.push(base ? getJSON(base + '/newsMetrics.json').catch(function () { return {}; }) : Promise.resolve({}));
     tasks.push(base ? getJSON(base + '/adminHiddenNews.json').catch(function () { return {}; }) : Promise.resolve({}));
     const result = await Promise.all(tasks);
