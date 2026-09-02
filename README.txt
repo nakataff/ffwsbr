@@ -1,18 +1,29 @@
-NOTÍCIAS ESTÁTICAS - CENTRAL FREE FIRE
+MatheusSmartStorage v0.1.1
 
-Copie estes itens para a raiz do repositório:
-- pasta noticias/
-- sitemap.xml
-- news-sitemap.xml
-- robots.txt
+INSTALAÇÃO PARA O SETUP DO MATHEUS
 
-Depois teste uma URL assim no Rich Results Test:
-https://centralfreefire.com.br/noticias/garena-anuncia-data-de-retorno-da-laff/
+Extraia a pasta MatheusSmartStorage diretamente em:
+D:\SteamLibrary\steamapps\common\Palworld\Pal\Binaries\Win64\Mods\
 
-No Search Console, envie:
-- sitemap.xml
-- news-sitemap.xml
+O resultado deve ficar:
+D:\SteamLibrary\steamapps\common\Palworld\Pal\Binaries\Win64\Mods\MatheusSmartStorage\enabled.txt
+D:\SteamLibrary\steamapps\common\Palworld\Pal\Binaries\Win64\Mods\MatheusSmartStorage\Scripts\main.lua
+D:\SteamLibrary\steamapps\common\Palworld\Pal\Binaries\Win64\Mods\MatheusSmartStorage\Scripts\MatheusSmartStorageConfig.lua
 
-As páginas foram geradas a partir do TSV enviado e já têm NewsArticle no HTML inicial.
-Link TSV da planilha:
-https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv
+Esta versão já inclui enabled.txt, então NÃO é necessário editar mods.txt.
+Se preferir habilitar por mods.txt, a linha equivalente é:
+MatheusSmartStorage : 1
+
+IMPORTANTE:
+- Feche o Palworld antes de instalar/substituir.
+- Remova/desative o ChestOrganizer antigo durante os testes.
+- Abra o jogo novamente após instalar.
+
+LOG ESPERADO:
+[MatheusSmartStorage] SELFTEST OK
+[MatheusSmartStorage] v0.1.1 carregado
+
+ATALHO:
+Ctrl + Shift + J = juntar itens iguais no baú que já possui a maior quantidade.
+
+O modo automático verifica periodicamente quando um item aparece em um baú diferente e tenta devolver apenas a nova quantidade ao baú principal daquele item.
