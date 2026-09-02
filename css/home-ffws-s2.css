@@ -771,3 +771,60 @@
   .home-left-rail .home-rail-player-table th:nth-child(3),
   .home-left-rail .home-rail-player-table td:nth-child(3) { width: 62px; }
 }
+
+
+/* Home 2026-09-02: Próximas Lives no topo + paginação de 5 itens */
+.home-center-column .home-live-market-grid > .home-widget:first-child .home-widget-body {
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.home-center-column #lives-upcoming-container {
+  flex: 0 0 auto;
+}
+.home-center-column #lives-up-empty {
+  margin-top: 0;
+}
+.home-lives-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 10px;
+}
+.home-lives-pagination[hidden] { display: none !important; }
+.home-lives-page-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 200, 255, .28);
+  border-radius: 8px;
+  background: rgba(0, 200, 255, .06);
+  color: var(--accent);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 950;
+  line-height: 1;
+  cursor: pointer;
+}
+.home-lives-page-btn:hover:not(:disabled) {
+  background: rgba(0, 200, 255, .14);
+  border-color: rgba(0, 200, 255, .52);
+}
+.home-lives-page-btn:disabled {
+  opacity: .28;
+  cursor: default;
+}
+.home-lives-page-label {
+  min-width: 44px;
+  color: #8da8c7;
+  font-size: .72rem;
+  font-weight: 850;
+  text-align: center;
+}
+@media (max-width: 620px) {
+  .home-lives-pagination { margin-top: 2px; padding-top: 8px; }
+}

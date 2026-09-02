@@ -67,7 +67,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <!-- Dados históricos são carregados sob demanda para não bloquear a home. -->
 <link rel="stylesheet" href="css/bundle.min.css?v=20260721-layout-performance-v1">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260901-descansa-fix-v13">
+<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260902-lives-pagination-v20">
 <link rel="stylesheet" href="css/site-nav-freeze.css?v=20260901-nav-unified-v11">
 <link rel="stylesheet" href="css/search-fast.css?v=20260728-search-layout-v1">
 <link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1" media="print" onload="this.media='all'">
@@ -720,6 +720,11 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             <div class="home-widget-body" style="padding: 12px;">
                 <div id="lives-upcoming-container" class="lives-container"></div>
                 <div id="lives-up-empty" class="lives-empty">Nenhuma próxima live agendada.</div>
+                <div id="lives-up-pagination" class="home-lives-pagination" hidden aria-label="Paginação das próximas lives">
+                    <button type="button" id="lives-up-prev" class="home-lives-page-btn" aria-label="Página anterior">‹</button>
+                    <span id="lives-up-page-label" class="home-lives-page-label">1 / 1</span>
+                    <button type="button" id="lives-up-next" class="home-lives-page-btn" aria-label="Próxima página">›</button>
+                </div>
             </div>
         </div>
 
@@ -2332,7 +2337,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/search-fast.min.js?v=20260901-roster-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260901-news-restore-v1"></script>
-<script defer src="js/home-live-widget.min.js?v=20260902-live-admin-v17"></script>
+<script defer src="js/home-live-widget.min.js?v=20260902-lives-pagination-v20"></script>
 <script defer src="js/news-admin-provider.js?v=20260901-lcp-safe-v16"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
 <script defer src="js/home-current-results.min.js?v=20260901-team-shorts-v14"></script>
