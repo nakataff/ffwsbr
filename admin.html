@@ -19,9 +19,9 @@
   </script>
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260902-live-panel-v17">
+  <link rel="stylesheet" href="css/admin.css?v=20260902-news-schedule-v27">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin.js?v=20260902-live-duplicate-v19"></script>
+  <script type="module" src="js/admin.js?v=20260902-news-schedule-v27"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -165,7 +165,8 @@
           </div>
           <div class="admin-field"><label for="news-author">Autor</label><input id="news-author" value="Central Free Fire" maxlength="100"></div>
           <div class="admin-field"><label for="news-original-link">Link original</label><input id="news-original-link" type="url" placeholder="https://instagram.com/..."></div>
-          <div class="admin-field"><label for="news-status">Status</label><select id="news-status"><option value="published">Publicada</option><option value="draft">Rascunho</option></select></div>
+          <div class="admin-field"><label for="news-status">Status</label><select id="news-status"><option value="published">Publicada</option><option value="scheduled">Agendada</option><option value="draft">Rascunho</option></select></div>
+          <div id="news-schedule-field" class="admin-field" hidden><label for="news-publish-at">Publicar em</label><input id="news-publish-at" type="datetime-local"><small>Horário de Brasília (BRT). A notícia entra no site automaticamente.</small></div>
           <div class="admin-field admin-check-field"><label><input id="news-featured" type="checkbox"> Colocar em destaque</label></div>
           <div class="admin-form-actions admin-field-wide">
             <button id="admin-preview-news" class="admin-btn admin-btn-ghost" type="button">Visualizar</button>
@@ -179,11 +180,11 @@
         <div class="admin-panel-head admin-panel-head-wrap">
           <div><p class="admin-eyebrow">Gerenciamento</p><h2>Todas as notícias</h2><p id="admin-news-list-summary" class="admin-muted">Carregando notícias...</p></div>
           <div class="admin-management-tools">
-            <select id="admin-news-filter" aria-label="Filtrar notícias"><option value="all">Todas</option><option value="published">Publicadas</option><option value="draft">Rascunhos</option><option value="featured">Em destaque</option></select>
+            <select id="admin-news-filter" aria-label="Filtrar notícias"><option value="all">Todas</option><option value="published">Publicadas</option><option value="scheduled">Agendadas</option><option value="draft">Rascunhos</option><option value="featured">Em destaque</option></select>
             <input id="admin-news-search" class="admin-search" type="search" placeholder="Buscar por título, slug ou autor">
           </div>
         </div>
-        <div class="admin-management-help">Use <strong>↑ Subir</strong> e <strong>↓ Descer</strong> para definir a ordem em que as notícias aparecem no site. Os outros controles publicam, salvam como rascunho ou colocam em destaque. O botão <strong>Editar</strong> abre todos os campos no editor acima.</div>
+        <div class="admin-management-help">Use <strong>↑ Subir</strong> e <strong>↓ Descer</strong> para definir a ordem em que as notícias aparecem no site. Notícias agendadas só ficam públicas no horário definido (BRT). Os outros controles publicam, salvam como rascunho ou colocam em destaque. O botão <strong>Editar</strong> abre todos os campos no editor acima.</div>
         <div id="admin-news-list" class="admin-news-list"><div class="admin-empty">Carregando todas as notícias...</div></div>
       </section>
     </section>

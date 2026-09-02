@@ -7,36 +7,7 @@
 /* Admin v3: gerenciamento completo de todas as notícias */
 .admin-management-tools{display:flex;align-items:center;gap:10px;min-width:min(100%,520px)}.admin-management-tools select{width:165px;flex:0 0 auto}.admin-management-tools .admin-search{flex:1;min-width:180px}.admin-management-help{margin:-4px 0 14px;padding:10px 12px;border:1px solid rgba(0,200,255,.14);border-radius:11px;background:rgba(0,200,255,.045);color:#bcd2e8;font-size:.82rem;line-height:1.5}.admin-news-row{grid-template-columns:72px minmax(220px,1fr) minmax(185px,.45fr) auto}.admin-news-thumb{width:72px;height:62px}.admin-news-quick{display:flex;align-items:center;justify-content:flex-end;gap:8px}.admin-quick-check{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#07101d;color:#d7e9fb;font-size:.74rem;font-weight:900;cursor:pointer;white-space:nowrap}.admin-quick-check input{width:auto;accent-color:var(--accent)}.admin-quick-status{width:118px;padding:8px 9px;border-radius:10px;font-size:.76rem;font-weight:900}.admin-chip.is-source{background:rgba(141,168,199,.09);color:#bcd2e8}.admin-news-actions{justify-content:flex-end;flex-wrap:wrap}.admin-news-actions .admin-btn-primary{color:#00131b}.admin-news-row.is-saving{opacity:.65;pointer-events:none}@media(max-width:1100px){.admin-news-row{grid-template-columns:64px minmax(0,1fr) auto}.admin-news-thumb{width:64px;height:56px}.admin-news-quick{grid-column:2;justify-content:flex-start}.admin-news-actions{grid-column:3;grid-row:1/3;max-width:170px}}@media(max-width:760px){.admin-management-tools{width:100%;min-width:0;flex-direction:column;align-items:stretch}.admin-management-tools select,.admin-management-tools .admin-search{width:100%;min-width:0}.admin-news-row{grid-template-columns:54px minmax(0,1fr)}.admin-news-thumb{width:54px;height:50px}.admin-news-quick{grid-column:1/-1;justify-content:stretch;flex-wrap:wrap}.admin-quick-check{flex:1;justify-content:center}.admin-quick-status{flex:1;width:auto}.admin-news-actions{grid-column:1/-1;grid-row:auto;max-width:none;justify-content:stretch}.admin-news-actions .admin-btn{flex:1;text-align:center}.admin-management-help{font-size:.78rem}}
 
-/* 2026-09-01: ordenação manual das notícias */
-.admin-news-order{display:flex;align-items:center;gap:5px}
-.admin-order-btn{appearance:none;border:1px solid rgba(0,200,255,.2);border-radius:9px;background:rgba(0,200,255,.055);color:#cdefff;padding:8px 9px;font-size:.72rem;font-weight:950;white-space:nowrap;cursor:pointer;transition:.16s ease}
-.admin-order-btn:hover:not(:disabled){border-color:rgba(0,200,255,.55);background:rgba(0,200,255,.1);transform:translateY(-1px)}
-.admin-order-btn:disabled{opacity:.28;cursor:not-allowed;transform:none}
-@media(min-width:1101px){.admin-news-row{grid-template-columns:72px minmax(220px,1fr) minmax(320px,.72fr) auto}.admin-news-quick{flex-wrap:wrap}}
-@media(max-width:760px){.admin-news-order{width:100%}.admin-order-btn{flex:1}}
-
-/* 2026-09-02: painel administrativo de lives */
-.admin-live-panel{overflow:hidden}
-.admin-live-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;padding-bottom:20px;border-bottom:1px solid rgba(141,168,199,.14)}
-.admin-optional{color:var(--muted);font-size:.78rem;font-weight:700;text-transform:none}
-.admin-duration-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.admin-mini-field{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:7px;margin:0}
-.admin-mini-field input{min-width:0}
-.admin-mini-field span{color:var(--muted);font-size:.78rem;font-weight:900;text-transform:uppercase}
-.admin-live-list-head{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin:20px 0 12px}
-.admin-live-list-head h3{margin:3px 0 0;font-size:1.08rem}
-.admin-live-list{display:grid;gap:9px}
-.admin-live-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px;border:1px solid rgba(141,168,199,.15);border-radius:13px;background:rgba(255,255,255,.025)}
-.admin-live-status{display:inline-flex;align-items:center;justify-content:center;min-width:82px;padding:6px 9px;border-radius:999px;font-size:.68rem;font-weight:1000;letter-spacing:.5px;border:1px solid rgba(141,168,199,.2);color:#bcd2e8;background:rgba(141,168,199,.08)}
-.admin-live-status.is-live{color:#ff8799;border-color:rgba(255,93,118,.4);background:rgba(255,93,118,.1)}
-.admin-live-status.is-upcoming{color:#7fe7ff;border-color:rgba(0,200,255,.35);background:rgba(0,200,255,.08)}
-.admin-live-status.is-ended{color:#9bacbf;background:rgba(141,168,199,.055)}
-.admin-live-status.is-invalid{color:#ffd180;border-color:rgba(255,188,67,.32);background:rgba(255,188,67,.08)}
-.admin-live-copy{min-width:0}
-.admin-live-copy strong{display:block;color:#fff;font-size:.94rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.admin-live-copy small,.admin-live-copy span{display:block;margin-top:4px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.admin-live-copy span{font-size:.74rem;color:#9db8d2}
-.admin-live-actions{display:flex;gap:7px;justify-content:flex-end}
-.admin-live-actions .admin-btn{padding:8px 10px;font-size:.76rem}
-@media(max-width:900px){.admin-live-form{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-live-row{grid-template-columns:auto minmax(0,1fr)}.admin-live-actions{grid-column:1/-1;justify-content:flex-end}}
-@media(max-width:640px){.admin-live-form{grid-template-columns:1fr}.admin-live-form .admin-field-wide{grid-column:auto}.admin-live-list-head{align-items:flex-start;flex-direction:column}.admin-live-row{grid-template-columns:1fr}.admin-live-status{justify-self:start}.admin-live-copy strong,.admin-live-copy small,.admin-live-copy span{white-space:normal}.admin-live-actions{grid-column:auto;width:100%}.admin-live-actions .admin-btn{flex:1}}
+/* V27 — notícias agendadas */
+.admin-chip.is-scheduled{color:#ffd36a;border-color:rgba(255,211,106,.34);background:rgba(255,193,7,.10)}
+.admin-chip.is-scheduled-time{color:#d7e8ff;border-color:rgba(120,180,255,.26);background:rgba(70,130,210,.08);text-transform:none;letter-spacing:0}
+#news-schedule-field[hidden]{display:none!important}

@@ -6,6 +6,7 @@
   const CACHE_KEY = 'cff_news_cache_admin_v1';
   const CACHE_MAX_AGE = 6 * 60 * 60 * 1000;
   let localNewsPromise = null;
+  let scheduledRefreshTimer = null;
 
   function config() {
     return window.CFF_CONFIG || {};
@@ -150,6 +151,7 @@
       linkOriginal: String(raw && (raw.link_original || raw.linkOriginal || raw.link) || '').trim(),
       destaque: booleanValue(raw && raw.destaque),
       status: String(raw && raw.status || 'published'),
+      publishAt: Number(raw && (raw.publishAt || raw.scheduledAt) || 0),
       ordem: raw && raw.ordem != null && Number.isFinite(Number(raw.ordem)) ? Number(raw.ordem) : null,
       createdAt: Number(raw && raw.createdAt || 0),
       updatedAt: Number(raw && raw.updatedAt || 0),
@@ -161,7 +163,13 @@
   function objectValues(data) {
     return Object.keys(data || {}).map(function (key) {
       return normalizeNews(Object.assign({ id: key, source: 'admin' }, data[key] || {}));
-    }).filter(function (item) { return item.status === 'published' && item.titulo && item.id; });
+    }).filter(function (item) { return item.titulo && item.id; });
+  }
+
+  function isPublicNow(item, now) {
+    if (!item || item.status === 'draft') return false;
+    if (Number(item.publishAt || 0) > now) return false;
+    return item.status === 'published' || item.status === 'scheduled';
   }
 
   function parseNewsTimestamp(value) {
@@ -200,6 +208,7 @@
 
   function newsSortTime(item) {
     return Math.max(
+      Number(item && item.publishAt || 0),
       Number(item && item.updatedAt || 0),
       Number(item && item.createdAt || 0),
       parseNewsTimestamp(item && item.data)
@@ -210,11 +219,12 @@
     return item && item.ordem != null && Number.isFinite(Number(item.ordem)) ? Number(item.ordem) : newsSortTime(item);
   }
 
-  function mergeNews(localNews, sheetNews, adminNews, hiddenNews) {
+  function mergeNews(localNews, sheetNews, adminNews, hiddenNews, suppressedIds) {
     const map = new Map();
     const sheetById = new Map();
     localNews.forEach(function (item) { map.set(item.id, item); });
     sheetNews.forEach(function (item) { map.set(item.id, item); sheetById.set(item.id, item); });
+    (suppressedIds || []).forEach(function (id) { map.delete(id); sheetById.delete(id); });
     adminNews.forEach(function (item) {
       const sheetItem = sheetById.get(item.id);
       if (sheetItem) {
@@ -417,7 +427,39 @@
     tasks.push(sheetUrl ? getText(sheetUrl, 'no-cache').then(parseSheetNews).catch(function () { return []; }) : Promise.resolve([]));
     tasks.push(base ? getJSON(base + '/adminHiddenNews.json').catch(function () { return {}; }) : Promise.resolve({}));
     const result = await Promise.all(tasks);
-    return { items: mergeNews(result[0], result[2], result[1], result[3]) };
+    const now = Date.now();
+    const adminAll = result[1] || [];
+    const futureScheduled = adminAll.filter(function (item) {
+      return item.status !== 'draft' && Number(item.publishAt || 0) > now;
+    });
+    const publicAdmin = adminAll.filter(function (item) { return isPublicNow(item, now); });
+    const nextPublishAt = futureScheduled.reduce(function (min, item) {
+      const time = Number(item.publishAt || 0);
+      return !min || time < min ? time : min;
+    }, 0);
+    return {
+      items: mergeNews(result[0], result[2], publicAdmin, result[3], futureScheduled.map(function (item) { return item.id; })),
+      nextPublishAt: nextPublishAt
+    };
+  }
+
+  function scheduleScheduledRefresh(timestamp) {
+    if (scheduledRefreshTimer) {
+      clearTimeout(scheduledRefreshTimer);
+      scheduledRefreshTimer = null;
+    }
+    const target = Number(timestamp || 0);
+    if (!target || target <= Date.now()) return;
+    const MAX_DELAY = 6 * 60 * 60 * 1000;
+    const delay = Math.max(1000, Math.min(MAX_DELAY, target - Date.now() + 1200));
+    scheduledRefreshTimer = setTimeout(function () {
+      scheduledRefreshTimer = null;
+      if (Date.now() + 1500 >= target) {
+        if (typeof window.loadNoticias === 'function') window.loadNoticias();
+      } else {
+        scheduleScheduledRefresh(target);
+      }
+    }, delay);
   }
 
   window.CFF_NEWS_PROVIDER = {
@@ -470,6 +512,7 @@
         render(result.items);
         renderedItems = result.items;
       }
+      scheduleScheduledRefresh(result.nextPublishAt);
     } catch (error) {
       if (!renderedItems.length) {
         hero.innerHTML = '<section class="news-hero-carousel" aria-label="Erro ao carregar notícias"><div style="min-height:220px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--text-muted)"><strong style="color:#fff;text-transform:uppercase">Notícias indisponíveis no momento</strong><span style="font-size:.9em">Tente novamente em instantes.</span></div></section>';

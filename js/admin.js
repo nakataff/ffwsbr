@@ -69,6 +69,56 @@ function todayInputValue() {
   return local.toISOString().slice(0, 10);
 }
 
+function parseBRTDateTime(value) {
+  const text = String(value || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(text)) return 0;
+  const date = new Date(text + ':00-03:00');
+  const time = date.getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
+function brtDateTimeInputValue(timestamp) {
+  const value = Number(timestamp || 0);
+  if (!Number.isFinite(value) || value <= 0) return '';
+  return new Date(value - 3 * 60 * 60 * 1000).toISOString().slice(0, 16);
+}
+
+function defaultScheduleInputValue() {
+  const step = 5 * 60 * 1000;
+  const future = Date.now() + 30 * 60 * 1000;
+  return brtDateTimeInputValue(Math.ceil(future / step) * step);
+}
+
+function formatScheduleBRT(timestamp) {
+  const value = Number(timestamp || 0);
+  if (!Number.isFinite(value) || value <= 0) return 'Horário não definido';
+  return new Date(value).toLocaleString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).replace(',', ' •');
+}
+
+function effectiveNewsStatus(item, now = Date.now()) {
+  if (!item || item.status === 'draft') return 'draft';
+  if (Number(item.publishAt || 0) > now) return 'scheduled';
+  return 'published';
+}
+
+function syncNewsScheduleField() {
+  const field = $('#news-schedule-field');
+  const input = $('#news-publish-at');
+  const status = $('#news-status');
+  if (!field || !input || !status) return;
+  const scheduled = status.value === 'scheduled';
+  field.hidden = !scheduled;
+  input.required = scheduled;
+  if (scheduled && !input.value) input.value = defaultScheduleInputValue();
+}
+
 function setMessage(element, text, type = '') {
   element.textContent = text || '';
   element.classList.toggle('is-error', type === 'error');
@@ -105,6 +155,7 @@ function normalizeNews(raw, id = '', source = 'admin') {
     link_original: String(raw && (raw.link_original || raw.link) || '').trim(),
     destaque: Boolean(raw && raw.destaque),
     status: String(raw && raw.status || 'published'),
+    publishAt: Number(raw && (raw.publishAt || raw.scheduledAt) || 0),
     ordem: raw && raw.ordem != null && Number.isFinite(Number(raw.ordem)) ? Number(raw.ordem) : null,
     createdAt: Number(raw && raw.createdAt || 0),
     updatedAt: Number(raw && raw.updatedAt || 0),
@@ -132,7 +183,7 @@ function parseNewsTimestamp(value) {
 }
 
 function newsDateKey(item) {
-  return Math.max(Number(item && item.updatedAt || 0), Number(item && item.createdAt || 0), parseNewsTimestamp(item && item.data));
+  return Math.max(Number(item && item.publishAt || 0), Number(item && item.updatedAt || 0), Number(item && item.createdAt || 0), parseNewsTimestamp(item && item.data));
 }
 
 function newsOrderKey(item) {
@@ -176,7 +227,7 @@ async function loadDashboard() {
     ]);
     const newsData = newsSnap.val() || {};
     const draftsData = draftsSnap.val() || {};
-    const published = Object.keys(newsData).map((id) => normalizeNews({ ...newsData[id], status: 'published' }, id, 'admin'));
+    const published = Object.keys(newsData).map((id) => normalizeNews({ ...newsData[id], status: newsData[id] && newsData[id].status || 'published' }, id, 'admin'));
     const drafts = Object.keys(draftsData).map((id) => normalizeNews({ ...draftsData[id], status: 'draft' }, id, 'draft'));
     allNews = mergeDashboardNews(localNews, sheetNewsItems, published, drafts, hiddenSnap.val() || {});
     newsMetrics = metricsSnap.val() || {};
@@ -211,7 +262,7 @@ function renderDashboard() {
   const latestUpdates = [...allNews].sort((a, b) => newsDateKey(b) - newsDateKey(a));
   $('#admin-latest-updates').innerHTML = latestUpdates.length ? latestUpdates.slice(0, 8).map((item) => `
     <div class="admin-update-row">
-      <div class="admin-update-copy"><strong>${escapeHTML(item.titulo)}</strong><small>${item.status === 'draft' ? 'Rascunho' : 'Publicada'} • ${formatDate(item.updatedAt || item.createdAt)}</small></div>
+      <div class="admin-update-copy"><strong>${escapeHTML(item.titulo)}</strong><small>${effectiveNewsStatus(item) === 'draft' ? 'Rascunho' : effectiveNewsStatus(item) === 'scheduled' ? 'Agendada para ' + formatScheduleBRT(item.publishAt) : 'Publicada'} • ${formatDate(item.updatedAt || item.createdAt)}</small></div>
       <button class="admin-btn admin-btn-ghost" type="button" data-edit-news="${escapeHTML(item.id)}">Editar</button>
     </div>`).join('') : '<div class="admin-empty">Nenhuma notícia encontrada</div>';
 
@@ -220,13 +271,15 @@ function renderDashboard() {
 
 function renderNewsList() {
   const query = String(searchInput.value || '').trim().toLowerCase();
-  const publishedOrder = allNews.filter((item) => item.status !== 'draft').sort(compareNewsOrder);
+  const publishedOrder = allNews.filter((item) => effectiveNewsStatus(item) === 'published').sort(compareNewsOrder);
   const publishedIndex = new Map(publishedOrder.map((item, index) => [item.id, index]));
   const filtered = allNews.filter((item) => {
+    const state = effectiveNewsStatus(item);
     const matchesSearch = !query || item.titulo.toLowerCase().includes(query) || item.id.toLowerCase().includes(query) || item.autor.toLowerCase().includes(query);
     const matchesFilter = currentNewsFilter === 'all' ||
-      (currentNewsFilter === 'published' && item.status !== 'draft') ||
-      (currentNewsFilter === 'draft' && item.status === 'draft') ||
+      (currentNewsFilter === 'published' && state === 'published') ||
+      (currentNewsFilter === 'scheduled' && state === 'scheduled') ||
+      (currentNewsFilter === 'draft' && state === 'draft') ||
       (currentNewsFilter === 'featured' && item.destaque);
     return matchesSearch && matchesFilter;
   });
@@ -234,23 +287,29 @@ function renderNewsList() {
   if (summary) summary.textContent = `${filtered.length} de ${allNews.length} notícia(s)`;
   newsList.innerHTML = filtered.length ? filtered.map((item) => {
     const metric = newsMetrics[item.id] || {};
-    const isDraft = item.status === 'draft';
+    const state = effectiveNewsStatus(item);
+    const isDraft = state === 'draft';
+    const isScheduled = state === 'scheduled';
+    const isPublic = state === 'published';
+    const chipLabel = isDraft ? 'Rascunho' : isScheduled ? 'Agendada' : 'Publicada';
+    const chipClass = isDraft ? 'is-draft' : isScheduled ? 'is-scheduled' : '';
+    const scheduleMeta = isScheduled ? `<span class="admin-chip is-scheduled-time">${escapeHTML(formatScheduleBRT(item.publishAt))}</span>` : '';
+    const statusOptions = isScheduled
+      ? `<option value="scheduled" selected disabled>Agendada</option><option value="published">Publicar agora</option><option value="draft">Rascunho</option>`
+      : `<option value="published" ${isPublic ? 'selected' : ''}>Publicada</option><option value="draft" ${isDraft ? 'selected' : ''}>Rascunho</option>`;
     return `<article class="admin-news-row" data-news-id="${escapeHTML(item.id)}">
       <img class="admin-news-thumb" src="${escapeHTML(item.imagem || 'central free fire.webp')}" alt="" loading="lazy" onerror="this.src='central free fire.webp'">
       <div class="admin-news-copy">
         <strong title="${escapeHTML(item.titulo)}">${escapeHTML(item.titulo)}</strong>
         <small>${escapeHTML(item.id)} • ${formatNumber(metric.views)} views • ${formatNumber(metric.likes)} curtidas</small>
-        <div class="admin-news-meta"><span class="admin-chip ${isDraft ? 'is-draft' : ''}">${isDraft ? 'Rascunho' : 'Publicada'}</span>${item.destaque ? '<span class="admin-chip is-featured">Destaque</span>' : ''}<span class="admin-chip is-source">${sourceLabel(item)}</span></div>
+        <div class="admin-news-meta"><span class="admin-chip ${chipClass}">${chipLabel}</span>${scheduleMeta}${item.destaque ? '<span class="admin-chip is-featured">Destaque</span>' : ''}<span class="admin-chip is-source">${sourceLabel(item)}</span></div>
       </div>
       <div class="admin-news-quick">
-        ${!isDraft ? `<div class="admin-news-order" aria-label="Ordenar notícia"><button class="admin-order-btn" type="button" data-move-news="up" data-news-id="${escapeHTML(item.id)}" ${publishedIndex.get(item.id) === 0 ? 'disabled' : ''}>↑ Subir</button><button class="admin-order-btn" type="button" data-move-news="down" data-news-id="${escapeHTML(item.id)}" ${publishedIndex.get(item.id) === publishedOrder.length - 1 ? 'disabled' : ''}>↓ Descer</button></div>` : ''}
+        ${isPublic ? `<div class="admin-news-order" aria-label="Ordenar notícia"><button class="admin-order-btn" type="button" data-move-news="up" data-news-id="${escapeHTML(item.id)}" ${publishedIndex.get(item.id) === 0 ? 'disabled' : ''}>↑ Subir</button><button class="admin-order-btn" type="button" data-move-news="down" data-news-id="${escapeHTML(item.id)}" ${publishedIndex.get(item.id) === publishedOrder.length - 1 ? 'disabled' : ''}>↓ Descer</button></div>` : ''}
         <label class="admin-quick-check" title="Alterar destaque"><input type="checkbox" data-toggle-featured="${escapeHTML(item.id)}" ${item.destaque ? 'checked' : ''}><span>Destaque</span></label>
-        <select class="admin-quick-status" data-change-status="${escapeHTML(item.id)}" aria-label="Status da notícia">
-          <option value="published" ${isDraft ? '' : 'selected'}>Publicada</option>
-          <option value="draft" ${isDraft ? 'selected' : ''}>Rascunho</option>
-        </select>
+        <select class="admin-quick-status" data-change-status="${escapeHTML(item.id)}" aria-label="Status da notícia">${statusOptions}</select>
       </div>
-      <div class="admin-news-actions">${isDraft ? `<button class="admin-btn admin-btn-ghost" type="button" data-preview-news="${escapeHTML(item.id)}">Prévia</button>` : `<a class="admin-btn admin-btn-ghost" href="noticia.html?id=${encodeURIComponent(item.id)}" target="_blank" rel="noopener">Abrir</a>`}<button class="admin-btn admin-btn-primary" type="button" data-edit-news="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-news="${escapeHTML(item.id)}">Excluir</button></div>
+      <div class="admin-news-actions">${isPublic ? `<a class="admin-btn admin-btn-ghost" href="noticia.html?id=${encodeURIComponent(item.id)}" target="_blank" rel="noopener">Abrir</a>` : `<button class="admin-btn admin-btn-ghost" type="button" data-preview-news="${escapeHTML(item.id)}">Prévia</button>`}<button class="admin-btn admin-btn-primary" type="button" data-edit-news="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-news="${escapeHTML(item.id)}">Excluir</button></div>
     </article>`;
   }).join('') : '<div class="admin-empty">Nenhuma notícia encontrada com esse filtro</div>';
 }
@@ -261,7 +320,9 @@ function clearForm() {
   $('#news-origin').value = 'admin';
   $('#news-author').value = 'Central Free Fire';
   $('#news-status').value = 'published';
+  $('#news-publish-at').value = '';
   $('#news-date').value = todayInputValue();
+  syncNewsScheduleField();
   $('#editor-title').textContent = 'Nova notícia';
   slugTouched = false;
   setMessage(formMessage, '');
@@ -278,7 +339,10 @@ function fillForm(item) {
   $('#news-content').value = item.conteudo;
   $('#news-author').value = item.autor || 'Central Free Fire';
   $('#news-original-link').value = item.link_original;
-  $('#news-status').value = item.status === 'draft' ? 'draft' : 'published';
+  const state = effectiveNewsStatus(item);
+  $('#news-status').value = state === 'scheduled' ? 'scheduled' : state === 'draft' ? 'draft' : 'published';
+  $('#news-publish-at').value = state === 'scheduled' ? brtDateTimeInputValue(item.publishAt) : '';
+  syncNewsScheduleField();
   $('#news-featured').checked = item.destaque;
   $('#editor-title').textContent = 'Editar notícia';
   slugTouched = true;
@@ -291,17 +355,21 @@ function readForm() {
   const id = safeFirebaseKey(slugify($('#news-slug').value || titulo));
   const prepared = prepareContentAndImage($('#news-content').value, $('#news-image').value);
   if (!$('#news-image').value.trim() && prepared.image) $('#news-image').value = prepared.image;
+  const status = ['published', 'scheduled', 'draft'].includes($('#news-status').value) ? $('#news-status').value : 'published';
+  const publishAt = status === 'scheduled' ? parseBRTDateTime($('#news-publish-at').value) : 0;
+  const scheduledDate = status === 'scheduled' && $('#news-publish-at').value ? $('#news-publish-at').value.slice(0, 10) : '';
   return {
     id,
     titulo,
     imagem: prepared.image,
     resumo: $('#news-summary').value.trim(),
     conteudo: prepared.content,
-    data: $('#news-date').value || todayInputValue(),
+    data: scheduledDate || $('#news-date').value || todayInputValue(),
     autor: $('#news-author').value.trim() || 'Central Free Fire',
     link_original: $('#news-original-link').value.trim(),
     destaque: $('#news-featured').checked,
-    status: $('#news-status').value === 'draft' ? 'draft' : 'published',
+    status,
+    publishAt,
     origin: $('#news-origin').value || 'admin'
   };
 }
@@ -312,6 +380,7 @@ async function writeManagedNews(item, previous = null) {
     : previous && previous.ordem != null && Number.isFinite(Number(previous.ordem)) ? Number(previous.ordem) : null;
   const nowPayload = {
     ...item,
+    status: item.status === 'scheduled' ? 'published' : item.status,
     ...(preservedOrder == null ? {} : { ordem: preservedOrder }),
     source: 'admin',
     origin: item.origin || previous && (previous.origin || previous.source) || 'admin',
@@ -343,6 +412,10 @@ async function saveNews(event) {
     setMessage(formMessage, 'Preencha título, slug e conteúdo.', 'error');
     return;
   }
+  if (item.status === 'scheduled' && (!item.publishAt || item.publishAt <= Date.now())) {
+    setMessage(formMessage, 'Escolha uma data e hora futuras para o agendamento.', 'error');
+    return;
+  }
   submit.disabled = true;
   setMessage(formMessage, 'Salvando...');
   try {
@@ -354,7 +427,7 @@ async function saveNews(event) {
         previous && ['local', 'sheet'].includes(previous.source) ? set(ref(database, 'adminHiddenNews/' + originalId), true) : remove(ref(database, 'adminHiddenNews/' + originalId))
       ]);
     }
-    setMessage(formMessage, item.status === 'draft' ? 'Rascunho salvo.' : 'Notícia publicada no site.', 'success');
+    setMessage(formMessage, item.status === 'draft' ? 'Rascunho salvo.' : item.status === 'scheduled' ? `Notícia agendada para ${formatScheduleBRT(item.publishAt)}.` : 'Notícia publicada no site.', 'success');
     $('#news-original-id').value = item.id;
     await loadDashboard();
   } catch (error) {
@@ -366,7 +439,7 @@ async function saveNews(event) {
 }
 
 async function moveNews(id, direction, control) {
-  const published = allNews.filter((item) => item.status !== 'draft').sort(compareNewsOrder);
+  const published = allNews.filter((item) => effectiveNewsStatus(item) === 'published').sort(compareNewsOrder);
   const index = published.findIndex((item) => item.id === id);
   const delta = direction === 'up' ? -1 : 1;
   const targetIndex = index + delta;
@@ -422,10 +495,10 @@ async function updateNewsStatus(id, status, control) {
   if (!item) return;
   control.disabled = true;
   try {
-    await writeManagedNews({ ...item, status: status === 'draft' ? 'draft' : 'published' }, item);
+    await writeManagedNews({ ...item, status: status === 'draft' ? 'draft' : 'published', publishAt: 0 }, item);
     await loadDashboard();
   } catch (error) {
-    control.value = item.status === 'draft' ? 'draft' : 'published';
+    control.value = effectiveNewsStatus(item) === 'draft' ? 'draft' : effectiveNewsStatus(item) === 'scheduled' ? 'scheduled' : 'published';
     alert('Não foi possível alterar o status.');
     console.error(error);
   } finally {
@@ -1050,6 +1123,19 @@ $('#admin-close-preview').addEventListener('click', () => $('#admin-preview-dial
 if (liveForm) liveForm.addEventListener('submit', saveLive);
 $('#admin-new-live')?.addEventListener('click', clearLiveForm);
 $('#admin-clear-live')?.addEventListener('click', clearLiveForm);
+$('#news-status').addEventListener('change', () => {
+  syncNewsScheduleField();
+  if ($('#news-status').value === 'scheduled' && $('#news-publish-at').value) {
+    $('#news-date').value = $('#news-publish-at').value.slice(0, 10);
+  }
+});
+$('#news-publish-at').addEventListener('change', () => {
+  if ($('#news-status').value === 'scheduled' && $('#news-publish-at').value) {
+    $('#news-date').value = $('#news-publish-at').value.slice(0, 10);
+  }
+});
+syncNewsScheduleField();
+
 newsForm.addEventListener('submit', saveNews);
 searchInput.addEventListener('input', renderNewsList);
 $('#admin-news-filter').addEventListener('change', (event) => { currentNewsFilter = event.target.value; renderNewsList(); });
