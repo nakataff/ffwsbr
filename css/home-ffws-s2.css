@@ -828,3 +828,33 @@
 @media (max-width: 620px) {
   .home-lives-pagination { margin-top: 2px; padding-top: 8px; }
 }
+
+/* Home 2026-09-02: contagem explícita e alerta de live prestes a começar */
+.live-card.is-starting-soon {
+  border-color: rgba(255, 67, 67, .78) !important;
+  background: rgba(255, 45, 45, .075) !important;
+}
+.live-card.is-starting-soon .live-dot {
+  background: #ff3b3b !important;
+  box-shadow: 0 0 10px rgba(255, 59, 59, .9) !important;
+  animation: cff-live-soon-pulse 1s ease-in-out infinite;
+}
+.live-card.is-starting-soon .live-card-badge {
+  background: rgba(255, 45, 45, .16) !important;
+  color: #ff5757 !important;
+  border-color: rgba(255, 87, 87, .35) !important;
+  font-weight: 950;
+  animation: cff-live-soon-blink 1s steps(2,end) infinite;
+}
+@keyframes cff-live-soon-pulse {
+  0%,100% { transform: scale(.88); opacity: .55; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+@keyframes cff-live-soon-blink {
+  0%,45% { opacity: 1; }
+  46%,100% { opacity: .4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-card.is-starting-soon .live-dot,
+  .live-card.is-starting-soon .live-card-badge { animation: none; }
+}
