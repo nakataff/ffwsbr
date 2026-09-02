@@ -978,3 +978,39 @@
   .home-left-rail .home-rank-identity b { font-size: .72rem; }
   .home-weekly-player { grid-template-columns: 34px minmax(0,1fr) 38px 62px; }
 }
+
+
+/* Home 2026-09-02 v25: mídia em coluna própria nos Top 6 */
+.home-left-rail .home-rail-rank-table thead th:nth-child(2) { text-align: center; }
+.home-left-rail .home-rail-rank-table thead th:nth-child(3) { text-align: left; }
+.home-left-rail .home-rail-team-table th:nth-child(1),
+.home-left-rail .home-rail-team-table td:nth-child(1),
+.home-left-rail .home-rail-player-table th:nth-child(1),
+.home-left-rail .home-rail-player-table td:nth-child(1) { width: 25px; }
+.home-left-rail .home-rail-team-table th:nth-child(2),
+.home-left-rail .home-rail-team-table td:nth-child(2),
+.home-left-rail .home-rail-player-table th:nth-child(2),
+.home-left-rail .home-rail-player-table td:nth-child(2) { width: 36px; padding-left: 2px; padding-right: 2px; }
+.home-left-rail .home-rail-team-table th:nth-child(4),
+.home-left-rail .home-rail-team-table td:nth-child(4) { width: 43px; }
+.home-left-rail .home-rail-team-table th:nth-child(5),
+.home-left-rail .home-rail-team-table td:nth-child(5) { width: 39px; }
+.home-left-rail .home-rail-player-table th:nth-child(4),
+.home-left-rail .home-rail-player-table td:nth-child(4) { width: 55px; }
+.home-left-rail .home-rail-player-table th:nth-child(5),
+.home-left-rail .home-rail-player-table td:nth-child(5) { width: 31px; }
+.home-left-rail .home-rank-media { text-align: center; vertical-align: middle; }
+.home-left-rail .home-rank-media > a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.home-left-rail .home-rank-media .home-rank-avatar,
+.home-left-rail .home-rank-media .home-rank-team-logo { display: block; margin: 0 auto; }
+.home-left-rail .home-rank-identity { gap: 0; }
+.home-left-rail .home-rank-main { min-width: 0; }
+.home-left-rail .home-rank-main .home-rank-identity > span { width: 100%; }
+@media (max-width: 620px) {
+  .home-left-rail .home-rail-team-table th:nth-child(2),
+  .home-left-rail .home-rail-team-table td:nth-child(2),
+  .home-left-rail .home-rail-player-table th:nth-child(2),
+  .home-left-rail .home-rail-player-table td:nth-child(2) { width: 38px; }
+  .home-left-rail .home-rank-media .home-rank-avatar,
+  .home-left-rail .home-rank-media .home-rank-team-logo { width: 30px; height: 30px; }
+}
