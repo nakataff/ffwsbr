@@ -1,6 +1,6 @@
 {
   "tournament": "WB 2026 S2",
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-02",
   "source": "Dados oficiais importados por queda — WB 2026 S2 (Dias 1–4 completos)",
   "rookieRule": "Estreante somente quando marcado na planilha e sem participação anterior registrada na LBFF/WB/FFWS Brasil.",
   "rookies": [
@@ -917,7 +917,8 @@
       "highlight": false,
       "sourceRookieFlag": false,
       "order": 38,
-      "left": false
+      "left": false,
+      "fullName": "Igor Passos"
     },
     {
       "id": "luan7__loops",
@@ -1695,6 +1696,28 @@
       "birthDate": "2004-01-16",
       "state": "Rio Grande do Norte",
       "order": 69
+    },
+    {
+      "id": "wliu__sx-tet",
+      "name": "wLiu",
+      "sourceName": "wLiu",
+      "aliases": [
+        "wLiu"
+      ],
+      "team": "SX TET",
+      "teamAbbreviation": "SXT",
+      "country": "br",
+      "role": "JOGADOR",
+      "roleShort": "",
+      "starter": true,
+      "rosterStatus": "Titular",
+      "captain": true,
+      "highlight": false,
+      "rookie": false,
+      "sourceRookieFlag": false,
+      "fullName": "Diego Carvalho",
+      "order": 68,
+      "left": false
     }
   ],
   "entries": [

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-02",
   "team": "SX TET",
   "profileType": "full",
   "players": {
@@ -669,6 +669,160 @@
       "availableSeasons": [
         "s2",
         "s1"
+      ]
+    },
+    "wliu": {
+      "id": "wliu",
+      "profileType": "full",
+      "name": "wLiu",
+      "aliases": [
+        "wLiu"
+      ],
+      "photo": "wliu.webp",
+      "country": "br",
+      "role": "JOGADOR",
+      "currentTeam": "SX TET",
+      "currentTeamLogo": "sx tet.webp",
+      "currentRoster": {
+        "team": "SX TET",
+        "role": "JOGADOR",
+        "roleShort": "",
+        "starter": true,
+        "rosterStatus": "Titular",
+        "captain": true,
+        "rookie": false,
+        "highlight": false,
+        "fullName": "Diego Carvalho",
+        "left": false
+      },
+      "s2": {
+        "edition": "WB 2026 S2",
+        "kills": 0,
+        "damage": 0,
+        "assists": 0,
+        "matches": 0,
+        "mvp": 0,
+        "record": 0,
+        "stages": {
+          "classificatoria": {
+            "kills": 0,
+            "damage": 0,
+            "assists": 0,
+            "matches": 0,
+            "mvp": 0
+          }
+        }
+      },
+      "historical": {
+        "WB 2024 F1": {
+          "kills": 99,
+          "matches": 96
+        },
+        "WB 2024 F2": {
+          "kills": 123,
+          "matches": 96
+        },
+        "WB 2025 S1": {
+          "kills": 117,
+          "matches": 104
+        },
+        "WB 2025 S2": {
+          "kills": 61,
+          "matches": 68
+        },
+        "WB 2026 S1": {
+          "kills": 96,
+          "matches": 104
+        }
+      },
+      "editions": [
+        {
+          "edition": "WB 2024 F1",
+          "kills": 99,
+          "matches": 96,
+          "avg": 1.03,
+          "team": ""
+        },
+        {
+          "edition": "WB 2024 F2",
+          "kills": 123,
+          "matches": 96,
+          "avg": 1.28,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S1",
+          "kills": 117,
+          "matches": 104,
+          "avg": 1.12,
+          "team": ""
+        },
+        {
+          "edition": "WB 2025 S2",
+          "kills": 61,
+          "matches": 68,
+          "avg": 0.9,
+          "team": ""
+        },
+        {
+          "edition": "WB 2026 S1",
+          "kills": 96,
+          "matches": 104,
+          "avg": 0.92,
+          "team": "AXS FUSION",
+          "damage": 86568,
+          "assists": 189,
+          "mvp": 0
+        },
+        {
+          "edition": "WB 2026 S2",
+          "kills": 0,
+          "matches": 0,
+          "avg": 0,
+          "team": "SX TET",
+          "damage": 0,
+          "assists": 0,
+          "status": "Ainda não iniciada",
+          "mvp": 0
+        }
+      ],
+      "teamHistory": [
+        {
+          "team": "MGS",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "ALFA 34",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": ""
+        },
+        {
+          "team": "AXS FUSION",
+          "cargo": "Jogador",
+          "logo": "escudo.webp",
+          "edition": "WB 2026 S1"
+        },
+        {
+          "team": "SX TET",
+          "cargo": "Jogador",
+          "logo": "sx tet.webp",
+          "edition": "WB 2026 S2"
+        }
+      ],
+      "allTime": {
+        "kills": 592,
+        "matches": 572,
+        "damage": 86568,
+        "assists": 189,
+        "mvp": 0,
+        "avg": 1.03
+      },
+      "dataSource": "WB 2026 S2",
+      "availableSeasons": [
+        "s2"
       ]
     }
   }

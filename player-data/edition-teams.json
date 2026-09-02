@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-02",
   "source": "passagens.zip — elencos LBFF/WB enviados pelo usuário",
   "players": {
     "01pires": {
@@ -1576,7 +1576,8 @@
       "WB 2024 F1": "Magic Squad",
       "WB 2024 F2": "Magic Squad",
       "WB 2025 S1": "Alfa 34",
-      "WB 2025 S2": "Alfa 34"
+      "WB 2025 S2": "Alfa 34",
+      "WB 2026 S2": "SX TET"
     },
     "wm": {
       "WB 2024 F2": "Juve"

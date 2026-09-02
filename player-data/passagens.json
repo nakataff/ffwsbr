@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-09-02",
   "source": "DADOS DO SITE - Passagens.csv + elencos da WB 2026 S1 e WB 2026 S2",
   "stats": {
     "players": 378,
@@ -6740,7 +6740,7 @@
       ],
       "photo": "stark.webp",
       "hasProfile": true,
-      "currentTeam": "LOOPS",
+      "currentTeam": "",
       "history": [
         {
           "team": "GOD ESPORTS",
@@ -6773,7 +6773,7 @@
         {
           "team": "LOOPS",
           "cargo": "Jogador",
-          "source": "WB 2026 S1",
+          "source": "WB 2026 S2",
           "order": 5,
           "logo": "Loops 1.webp"
         }
@@ -8550,7 +8550,7 @@
       ],
       "photo": "iguin.webp",
       "hasProfile": true,
-      "currentTeam": "RISE GAMING",
+      "currentTeam": "LOOPS",
       "history": [
         {
           "team": "E1 SPORTS",
@@ -8572,6 +8572,13 @@
           "source": "WB 2026 S1",
           "order": 3,
           "logo": "Rise 1.webp"
+        },
+        {
+          "team": "LOOPS",
+          "cargo": "Jogador",
+          "source": "WB 2026 S2",
+          "order": 4,
+          "logo": "Loops 1.webp"
         }
       ]
     },
@@ -8737,7 +8744,7 @@
       ],
       "photo": "wliu.webp",
       "hasProfile": true,
-      "currentTeam": "AXS FUSION",
+      "currentTeam": "SX TET",
       "history": [
         {
           "team": "MGS",
@@ -8759,6 +8766,13 @@
           "source": "WB 2026 S1",
           "order": 3,
           "logo": "AXS BRANCA.webp"
+        },
+        {
+          "team": "SX TET",
+          "cargo": "Jogador",
+          "source": "WB 2026 S2",
+          "order": 4,
+          "logo": "sx tet.webp"
         }
       ]
     },
@@ -10282,7 +10296,7 @@
       ],
       "photo": "silhueta.webp",
       "hasProfile": true,
-      "currentTeam": "SX TET",
+      "currentTeam": "",
       "history": [
         {
           "team": "SX TET",

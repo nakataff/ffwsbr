@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-02",
   "team": "LOOPS",
   "profileType": "full",
   "players": {
@@ -917,7 +917,8 @@
         "captain": true,
         "rookie": false,
         "highlight": false,
-        "left": false
+        "left": false,
+        "fullName": "Igor Passos"
       },
       "s2": {
         "edition": "WB 2026 S2",
@@ -1120,7 +1121,7 @@
           "team": "LOOPS",
           "cargo": "Jogador",
           "logo": "escudo.webp",
-          "edition": "WB 2026 S1"
+          "edition": "WB 2026 S2"
         }
       ],
       "allTime": {

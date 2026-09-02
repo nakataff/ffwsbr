@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-02",
   "team": "SX TET",
   "history": {
     "players": [
@@ -58,6 +58,27 @@
         "passageOrder": 4
       },
       {
+        "id": "wliu",
+        "name": "wLiu",
+        "photo": "wliu.webp",
+        "currentTeam": "SX TET",
+        "isCurrent": true,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 592,
+        "matches": 572,
+        "avg": 1.03,
+        "editions": [
+          "WB 2024 F1",
+          "WB 2024 F2",
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
+        "passageOrder": 4
+      },
+      {
         "id": "yato7",
         "name": "Yato7",
         "photo": "silhueta.webp",
@@ -92,7 +113,7 @@
         "passageOrder": 1
       }
     ],
-    "currentCount": 4,
+    "currentCount": 5,
     "formerCount": 1
   },
   "titles": [],

@@ -125,8 +125,12 @@
     return Array.isArray(state.players?.players) ? state.players.players : [];
   }
 
+  function currentRosterPlayers() {
+    return rosterPlayers().filter(player => !player?.left && normalize(player?.rosterStatus) !== 'SAIU');
+  }
+
   function playersForTeam(teamName) {
-    return rosterPlayers()
+    return currentRosterPlayers()
       .filter(player => normalize(player.team) === normalize(teamName))
       .sort((a, b) => Number(b.starter) - Number(a.starter)
         || Number(b.captain) - Number(a.captain)
@@ -556,8 +560,8 @@
   function renderTeams() {
     const root = document.getElementById('ffws-br-s2-equipes-content');
     if (!root) return;
-    const totalPlayers = rosterPlayers().length;
-    const totalRookies = rosterPlayers().filter(player => player.rookie).length;
+    const totalPlayers = currentRosterPlayers().length;
+    const totalRookies = currentRosterPlayers().filter(player => player.rookie).length;
     root.innerHTML = `<div class="ffws-s2-shell">${hero('Equipes', 'As 14 organizações e os elencos da WB 2026 S2')}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Diretório de Equipes</h2><p>Confira os elencos, funções e estreantes da temporada.</p></div><span class="ffws-s2-badge">${totalPlayers} jogadores • ${totalRookies} estreantes</span></div>
       <div class="ffws-s2-teams-grid ffws-s2-rosters-grid">${state.teams.map(team => {
