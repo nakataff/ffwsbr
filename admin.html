@@ -4,11 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <script>
+    (() => {
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('password')) {
+          url.searchParams.delete('password');
+          const query = url.searchParams.toString();
+          history.replaceState(null, '', url.pathname + (query ? '?' + query : '') + url.hash);
+        }
+      } catch (_) {}
+    })();
+  </script>
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-panel-v17">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin.js?v=20260902-live-panel-v17"></script>
+  <script type="module" src="js/admin.js?v=20260902-live-duplicate-v19"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -25,10 +38,10 @@
       <p class="admin-eyebrow">Acesso restrito</p>
       <h1>Painel administrativo</h1>
       <p class="admin-muted">Digite a senha cadastrada no Firebase Authentication</p>
-      <form id="admin-login-form" class="admin-login-form">
+      <form id="admin-login-form" class="admin-login-form" onsubmit="return false;">
         <label for="admin-password">Senha</label>
         <div class="admin-password-row">
-          <input id="admin-password" name="password" type="password" autocomplete="current-password" minlength="6" required autofocus>
+          <input id="admin-password" type="password" autocomplete="current-password" minlength="6" required autofocus>
           <button id="admin-toggle-password" class="admin-btn admin-btn-ghost" type="button">Mostrar</button>
         </div>
         <button class="admin-btn admin-btn-primary admin-btn-block" type="submit">Entrar</button>

@@ -536,6 +536,23 @@ function fillLiveForm(item) {
   liveForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function duplicateLiveForm(item) {
+  if (!item || !liveForm) return;
+  $('#live-original-id').value = '';
+  $('#live-tournament').value = item.torneio;
+  $('#live-phase-day').value = item.faseDia;
+  $('#live-channel').value = item.canal;
+  $('#live-url').value = item.url;
+  $('#live-start').value = item.inicio.slice(0, 16);
+  $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
+  $('#live-duration-minutes').value = String(item.duracaoMinutos % 60);
+  $('#live-type').value = item.tipo;
+  $('#live-editor-title').textContent = 'Duplicar live';
+  setMessage($('#admin-live-message'), 'Cópia carregada. Ajuste fase/dia e data/hora antes de salvar.', 'success');
+  liveForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.setTimeout(() => $('#live-phase-day')?.focus(), 250);
+}
+
 function readLiveForm() {
   const hours = Math.max(0, Number($('#live-duration-hours').value || 0));
   const minutes = Math.max(0, Math.min(59, Number($('#live-duration-minutes').value || 0)));
@@ -566,7 +583,7 @@ function renderLiveList() {
     return `<div class="admin-live-row">
       <span class="admin-live-status is-${status.key}">${status.label}</span>
       <div class="admin-live-copy"><strong>${escapeHTML(item.torneio)}</strong><small>${escapeHTML([item.faseDia, item.canal].filter(Boolean).join(' • '))}</small><span>${escapeHTML(formatLiveDate(item.inicio))} • ${escapeHTML(formatLiveDuration(item.duracaoMinutos))} • ${typeLabel}</span></div>
-      <div class="admin-live-actions"><button class="admin-btn admin-btn-ghost" type="button" data-edit-live="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-live="${escapeHTML(item.id)}">Excluir</button></div>
+      <div class="admin-live-actions"><button class="admin-btn admin-btn-ghost" type="button" data-edit-live="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-ghost" type="button" data-duplicate-live="${escapeHTML(item.id)}">Duplicar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-live="${escapeHTML(item.id)}">Excluir</button></div>
     </div>`;
   }).join('') : '<div class="admin-empty">Nenhuma live cadastrada no painel</div>';
 }
@@ -1041,6 +1058,8 @@ $('#news-slug').addEventListener('input', () => { slugTouched = true; });
 document.addEventListener('click', (event) => {
   const editLive = event.target.closest('[data-edit-live]');
   if (editLive) { const item = allLives.find((live) => live.id === editLive.dataset.editLive); if (item) fillLiveForm(item); return; }
+  const duplicateLive = event.target.closest('[data-duplicate-live]');
+  if (duplicateLive) { const item = allLives.find((live) => live.id === duplicateLive.dataset.duplicateLive); if (item) duplicateLiveForm(item); return; }
   const deleteLiveButton = event.target.closest('[data-delete-live]');
   if (deleteLiveButton) { deleteLive(deleteLiveButton.dataset.deleteLive); return; }
   const move = event.target.closest('[data-move-news]');
