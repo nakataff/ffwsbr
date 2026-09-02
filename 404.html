@@ -2,33 +2,71 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="robots" content="noindex">
   <title>Redirecionando...</title>
-
   <script>
     (function () {
-      const path = window.location.pathname;
+      'use strict';
+      var path = window.location.pathname || '/';
 
-      // Fallback para notícias estáticas:
-      // /noticias/slug-da-noticia/
-      // vira:
-      // /noticia.html?id=slug-da-noticia
-      const noticiaMatch = path.match(/^\/noticias\/([^\/]+)\/?$/);
-
-      if (noticiaMatch && noticiaMatch[1]) {
-        const slug = decodeURIComponent(noticiaMatch[1]);
-        window.location.replace('/noticia.html?id=' + encodeURIComponent(slug));
-        return;
+      function safePart(value) {
+        try { return decodeURIComponent(value || '').trim(); }
+        catch (_) { return String(value || '').trim(); }
       }
 
-      // Mantém seu comportamento antigo para outras páginas
-      sessionStorage.setItem('redirect', path);
+      // URLs amigáveis de equipes:
+      // /equipe/loud-snickers -> /equipe.html?time=loud-snickers
+      var teamMatch = path.match(/^\/equipe\/([^\/]+)\/?$/i);
+      if (teamMatch && teamMatch[1]) {
+        var team = safePart(teamMatch[1]);
+        if (team) {
+          window.location.replace('/equipe.html?time=' + encodeURIComponent(team));
+          return;
+        }
+      }
+
+      // URLs amigáveis de jogadores:
+      // /jogador/cauan7 -> /jogador.html?id=cauan7
+      var playerMatch = path.match(/^\/jogador\/([^\/]+)\/?$/i);
+      if (playerMatch && playerMatch[1]) {
+        var player = safePart(playerMatch[1]);
+        if (player) {
+          window.location.replace('/jogador.html?id=' + encodeURIComponent(player));
+          return;
+        }
+      }
+
+      // Mantém compatibilidade com as URLs de notícias já usadas pelo site.
+      // /noticias/slug-da-noticia/ -> /noticia.html?id=slug-da-noticia
+      var newsMatch = path.match(/^\/noticias\/([^\/]+)\/?$/i);
+      if (newsMatch && newsMatch[1]) {
+        var news = safePart(newsMatch[1]);
+        if (news) {
+          window.location.replace('/noticia.html?id=' + encodeURIComponent(news));
+          return;
+        }
+      }
+
+      // Compatibilidade adicional caso um link singular seja compartilhado no futuro.
+      var newsSingleMatch = path.match(/^\/noticia\/([^\/]+)\/?$/i);
+      if (newsSingleMatch && newsSingleMatch[1]) {
+        var singleNews = safePart(newsSingleMatch[1]);
+        if (singleNews) {
+          window.location.replace('/noticia.html?id=' + encodeURIComponent(singleNews));
+          return;
+        }
+      }
+
+      // Comportamento antigo para qualquer outra rota desconhecida.
+      try {
+        sessionStorage.setItem('redirect', path + window.location.search + window.location.hash);
+      } catch (_) {}
       window.location.replace('/');
     })();
   </script>
 </head>
 <body>
   <p>Redirecionando...</p>
-
-<script src="js/site-analytics.js?v=20260806-admin-v1"></script>
+  <script src="/js/site-analytics.js?v=20260806-admin-v1"></script>
 </body>
 </html>
