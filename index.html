@@ -67,9 +67,9 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <!-- Dados históricos são carregados sob demanda para não bloquear a home. -->
 <link rel="stylesheet" href="css/bundle.min.css?v=20260902-tournament-link-v21">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260902-home-rank-cols-v25">
+<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260902-home-polish-v30">
 <link rel="stylesheet" href="css/site-nav-freeze.css?v=20260901-nav-unified-v11">
-<link rel="stylesheet" href="css/site-back-navigation.css?v=20260902-site-back-v26">
+<link rel="stylesheet" href="css/site-back-navigation.css?v=20260902-back-accent-v30">
 <link rel="stylesheet" href="css/search-fast.css?v=20260728-search-layout-v1">
 <link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1" media="print" onload="this.media='all'">
   <style id="home-ffws-champion-fixed-css">
@@ -432,7 +432,15 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .ot-year-podium-detail-btn{display:block;width:100%;max-width:100%;border:0;background:transparent;color:#eef6ff;padding:0;font:inherit;font-size:.72rem;font-weight:950;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .ot-year-podium-detail-btn:hover{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 #ot-details-view>.btn-back{margin-bottom:14px}
-@media(max-width:760px){.ot-year-events-table th.ot-year-event-team-head,.ot-year-events-table td.ot-year-event-team-cell{padding-left:9px!important}}
+@media(max-width:760px){
+.ot-year-events-table{min-width:820px;table-layout:fixed}
+.ot-year-events-table th,.ot-year-events-table td{vertical-align:top}
+.ot-year-events-table th:nth-child(1),.ot-year-events-table td:nth-child(1){width:190px;min-width:190px;box-sizing:border-box}
+.ot-year-events-table th:nth-child(2),.ot-year-events-table td:nth-child(2){width:86px;min-width:86px;white-space:nowrap}
+.ot-year-events-table .ot-year-detail-btn,.ot-year-events-table .ot-year-event-name{display:block;width:100%;max-width:100%;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.25;text-align:left}
+.ot-year-events-table .ot-year-detail-btn{padding:7px 8px}
+.ot-year-events-table th.ot-year-event-team-head,.ot-year-events-table td.ot-year-event-team-cell{padding-left:9px!important}
+}
 </style>
 
 </head>
@@ -2381,10 +2389,10 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260902-s2-rest-gap-v28"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260902-home-polish-v30"></script>
 <script defer src="js/site-back-navigation.min.js?v=20260902-pretty-routes-v29"></script>
 <script defer src="js/search-fast.min.js?v=20260901-roster-v1"></script>
-<script defer src="js/home-ffws-s2.min.js?v=20260902-home-assets-v24"></script>
+<script defer src="js/home-ffws-s2.min.js?v=20260902-team-shorts-v30"></script>
 <script defer src="js/home-news-lives.min.js?v=20260902-tournament-link-v21"></script>
 <script defer src="js/home-live-widget.min.js?v=20260902-home-lives-v24"></script>
 <script defer src="js/news-admin-provider.js?v=20260902-news-schedule-v27"></script>
