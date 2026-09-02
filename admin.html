@@ -6,9 +6,9 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260901-news-order-v10">
+  <link rel="stylesheet" href="css/admin.css?v=20260902-live-panel-v17">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin.js?v=20260901-news-order-v10"></script>
+  <script type="module" src="js/admin.js?v=20260902-live-panel-v17"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -38,7 +38,7 @@
 
     <section id="admin-dashboard" hidden>
       <div class="admin-welcome">
-        <div><p class="admin-eyebrow">Visão geral</p><h1>Painel da Central Free Fire</h1><p class="admin-muted">Dados de acesso, engajamento e publicação das notícias</p></div>
+        <div><p class="admin-eyebrow">Visão geral</p><h1>Painel da Central Free Fire</h1><p class="admin-muted">Dados de acesso, engajamento, notícias e transmissões</p></div>
         <button id="admin-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button>
       </div>
 
@@ -94,6 +94,33 @@
             <div id="ga-top-pages" class="admin-ranking"><div class="admin-empty">Conecte o Analytics para carregar os dados</div></div>
           </div>
         </div>
+      </section>
+
+
+      <section class="admin-panel admin-live-panel">
+        <div class="admin-panel-head admin-panel-head-wrap">
+          <div><p class="admin-eyebrow">Transmissões</p><h2 id="live-editor-title">Nova live</h2><p class="admin-muted">Cadastre a programação no horário de Brasília. A home troca automaticamente entre agendada, ao vivo e encerrada.</p></div>
+          <button id="admin-new-live" class="admin-btn admin-btn-ghost" type="button">+ Nova live</button>
+        </div>
+
+        <form id="admin-live-form" class="admin-live-form">
+          <input id="live-original-id" type="hidden">
+          <div class="admin-field"><label for="live-tournament">Nome do torneio</label><input id="live-tournament" maxlength="120" required placeholder="Ex.: FFWS LATAM"></div>
+          <div class="admin-field"><label for="live-phase-day">Fase e dia</label><input id="live-phase-day" maxlength="100" placeholder="Ex.: CLASS. / DIA 10"></div>
+          <div class="admin-field"><label for="live-channel">Canal do torneio</label><input id="live-channel" maxlength="120" required placeholder="Ex.: FF LATAM"></div>
+          <div class="admin-field admin-field-wide"><label for="live-url">Link da transmissão <span class="admin-optional">(opcional)</span></label><input id="live-url" type="url" placeholder="https://www.youtube.com/watch?v=..."><small>Se preencher, o card da live na home fica clicável.</small></div>
+          <div class="admin-field"><label for="live-start">Dia e hora que começa</label><input id="live-start" type="datetime-local" required><small>Horário de Brasília (BRT)</small></div>
+          <div class="admin-field"><label>Duração</label><div class="admin-duration-row"><label class="admin-mini-field"><input id="live-duration-hours" type="number" min="0" max="72" step="1" value="3" required><span>horas</span></label><label class="admin-mini-field"><input id="live-duration-minutes" type="number" min="0" max="59" step="1" value="0" required><span>minutos</span></label></div></div>
+          <div class="admin-field"><label for="live-type">Tipo de live</label><select id="live-type"><option value="mobile">Mobile</option><option value="emulador">Emulador</option><option value="misto">Misto</option></select></div>
+          <div class="admin-form-actions admin-field-wide">
+            <button id="admin-clear-live" class="admin-btn admin-btn-ghost" type="button">Limpar</button>
+            <button class="admin-btn admin-btn-primary" type="submit">Salvar live</button>
+          </div>
+          <p id="admin-live-message" class="admin-message admin-field-wide" aria-live="polite"></p>
+        </form>
+
+        <div class="admin-live-list-head"><div><p class="admin-eyebrow">Agenda</p><h3>Lives cadastradas</h3></div><span id="admin-live-summary" class="admin-muted">Carregando...</span></div>
+        <div id="admin-live-list" class="admin-live-list"><div class="admin-empty">Carregando lives...</div></div>
       </section>
 
       <section class="admin-panel admin-editor-panel">

@@ -20,6 +20,9 @@ const formMessage = $('#admin-form-message');
 const newsForm = $('#admin-news-form');
 const newsList = $('#admin-news-list');
 const searchInput = $('#admin-news-search');
+const liveForm = $('#admin-live-form');
+const liveList = $('#admin-live-list');
+let allLives = [];
 let allNews = [];
 let newsMetrics = {};
 let pageAnalytics = [];
@@ -447,6 +450,191 @@ async function deleteNews(id) {
   }
 }
 
+
+function normalizeLive(raw, id = '') {
+  const durationMinutes = raw && raw.duracaoMinutos != null
+    ? Number(raw.duracaoMinutos)
+    : Math.round(Number(raw && raw.duracao || 0) * 60);
+  return {
+    id: String(raw && (raw.id || id) || '').trim(),
+    torneio: String(raw && (raw.torneio || raw.titulo || '') || '').trim(),
+    faseDia: String(raw && (raw.faseDia || raw.fase_dia || '') || '').trim(),
+    canal: String(raw && raw.canal || '').trim(),
+    url: String(raw && raw.url || '').trim(),
+    inicio: String(raw && (raw.inicio || raw.data_hora || '') || '').trim(),
+    duracaoMinutos: Number.isFinite(durationMinutes) ? Math.max(0, Math.round(durationMinutes)) : 0,
+    tipo: ['mobile', 'emulador', 'misto'].includes(String(raw && (raw.tipo || raw.categoria) || '').toLowerCase()) ? String(raw.tipo || raw.categoria).toLowerCase() : 'mobile',
+    createdAt: Number(raw && raw.createdAt || 0),
+    updatedAt: Number(raw && raw.updatedAt || 0)
+  };
+}
+
+function parseLiveBRT(value) {
+  const text = String(value || '').trim();
+  const match = text.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/);
+  if (match) {
+    const date = new Date(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6] || '00'}-03:00`);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+  const parsed = new Date(text);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function liveStatus(item) {
+  const start = parseLiveBRT(item.inicio);
+  if (!start) return { key: 'invalid', label: 'SEM HORÁRIO', order: 3 };
+  const end = new Date(start.getTime() + Math.max(1, item.duracaoMinutos) * 60000);
+  const now = new Date();
+  if (now >= start && now <= end) return { key: 'live', label: 'AO VIVO', order: 0 };
+  if (now < start) return { key: 'upcoming', label: 'AGENDADA', order: 1 };
+  return { key: 'ended', label: 'ENCERRADA', order: 2 };
+}
+
+function formatLiveDate(value) {
+  const date = parseLiveBRT(value);
+  if (!date) return 'Horário inválido';
+  return date.toLocaleString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function formatLiveDuration(minutes) {
+  const total = Math.max(0, Number(minutes || 0));
+  const hours = Math.floor(total / 60);
+  const mins = total % 60;
+  if (hours && mins) return `${hours}h ${mins}min`;
+  if (hours) return `${hours}h`;
+  return `${mins}min`;
+}
+
+function clearLiveForm() {
+  if (!liveForm) return;
+  liveForm.reset();
+  $('#live-original-id').value = '';
+  $('#live-duration-hours').value = '3';
+  $('#live-duration-minutes').value = '0';
+  $('#live-type').value = 'mobile';
+  $('#live-editor-title').textContent = 'Nova live';
+  setMessage($('#admin-live-message'), '');
+}
+
+function fillLiveForm(item) {
+  if (!item || !liveForm) return;
+  $('#live-original-id').value = item.id;
+  $('#live-tournament').value = item.torneio;
+  $('#live-phase-day').value = item.faseDia;
+  $('#live-channel').value = item.canal;
+  $('#live-url').value = item.url;
+  $('#live-start').value = item.inicio.slice(0, 16);
+  $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
+  $('#live-duration-minutes').value = String(item.duracaoMinutos % 60);
+  $('#live-type').value = item.tipo;
+  $('#live-editor-title').textContent = 'Editar live';
+  setMessage($('#admin-live-message'), '');
+  liveForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function readLiveForm() {
+  const hours = Math.max(0, Number($('#live-duration-hours').value || 0));
+  const minutes = Math.max(0, Math.min(59, Number($('#live-duration-minutes').value || 0)));
+  return {
+    torneio: $('#live-tournament').value.trim(),
+    faseDia: $('#live-phase-day').value.trim(),
+    canal: $('#live-channel').value.trim(),
+    url: $('#live-url').value.trim(),
+    inicio: $('#live-start').value.trim(),
+    duracaoMinutos: Math.round(hours * 60 + minutes),
+    tipo: $('#live-type').value
+  };
+}
+
+function renderLiveList() {
+  if (!liveList) return;
+  const sorted = [...allLives].sort((a, b) => {
+    const sa = liveStatus(a), sb = liveStatus(b);
+    if (sa.order !== sb.order) return sa.order - sb.order;
+    const ta = parseLiveBRT(a.inicio)?.getTime() || 0;
+    const tb = parseLiveBRT(b.inicio)?.getTime() || 0;
+    return sa.key === 'ended' ? tb - ta : ta - tb;
+  });
+  $('#admin-live-summary').textContent = `${sorted.length} live${sorted.length === 1 ? '' : 's'} cadastrada${sorted.length === 1 ? '' : 's'}`;
+  liveList.innerHTML = sorted.length ? sorted.map((item) => {
+    const status = liveStatus(item);
+    const typeLabel = item.tipo === 'emulador' ? 'EMULADOR' : item.tipo === 'misto' ? 'MISTO' : 'MOBILE';
+    return `<div class="admin-live-row">
+      <span class="admin-live-status is-${status.key}">${status.label}</span>
+      <div class="admin-live-copy"><strong>${escapeHTML(item.torneio)}</strong><small>${escapeHTML([item.faseDia, item.canal].filter(Boolean).join(' • '))}</small><span>${escapeHTML(formatLiveDate(item.inicio))} • ${escapeHTML(formatLiveDuration(item.duracaoMinutos))} • ${typeLabel}</span></div>
+      <div class="admin-live-actions"><button class="admin-btn admin-btn-ghost" type="button" data-edit-live="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-live="${escapeHTML(item.id)}">Excluir</button></div>
+    </div>`;
+  }).join('') : '<div class="admin-empty">Nenhuma live cadastrada no painel</div>';
+}
+
+async function loadAdminLives() {
+  if (!liveList) return;
+  try {
+    const snap = await get(ref(database, 'adminLives'));
+    const data = snap.val() || {};
+    allLives = Object.keys(data).map((id) => normalizeLive(data[id], id)).filter((item) => item.id && item.torneio);
+    renderLiveList();
+  } catch (error) {
+    liveList.innerHTML = '<div class="admin-empty">Não foi possível carregar as lives do painel</div>';
+    setMessage($('#admin-live-message'), 'O Firebase recusou a leitura de adminLives. Confira as regras desse caminho.', 'error');
+    console.error(error);
+  }
+}
+
+async function saveLive(event) {
+  event.preventDefault();
+  const item = readLiveForm();
+  if (!item.torneio || !item.canal || !item.inicio) return setMessage($('#admin-live-message'), 'Preencha torneio, canal e dia/hora.', 'error');
+  if (item.duracaoMinutos <= 0) return setMessage($('#admin-live-message'), 'A duração precisa ser maior que zero.', 'error');
+  const originalId = $('#live-original-id').value.trim();
+  const id = originalId || safeFirebaseKey(`live-${Date.now()}-${slugify(item.torneio).slice(0, 55)}`);
+  const previous = allLives.find((live) => live.id === originalId);
+  const payload = {
+    id,
+    torneio: item.torneio,
+    faseDia: item.faseDia,
+    canal: item.canal,
+    url: item.url,
+    inicio: item.inicio,
+    duracaoMinutos: item.duracaoMinutos,
+    tipo: item.tipo,
+    createdAt: previous && previous.createdAt ? previous.createdAt : serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+  const submit = liveForm.querySelector('[type="submit"]');
+  submit.disabled = true;
+  setMessage($('#admin-live-message'), 'Salvando live...');
+  try {
+    await set(ref(database, 'adminLives/' + id), payload);
+    if (originalId && originalId !== id) await remove(ref(database, 'adminLives/' + originalId));
+    setMessage($('#admin-live-message'), 'Live salva. A home atualiza automaticamente em até 1 minuto.', 'success');
+    clearLiveForm();
+    await loadAdminLives();
+  } catch (error) {
+    setMessage($('#admin-live-message'), 'Não foi possível salvar. Confira a permissão adminLives nas regras do Firebase.', 'error');
+    console.error(error);
+  } finally {
+    submit.disabled = false;
+  }
+}
+
+async function deleteLive(id) {
+  const item = allLives.find((live) => live.id === id);
+  if (!item || !confirm(`Excluir a live "${item.torneio}"?`)) return;
+  try {
+    await remove(ref(database, 'adminLives/' + id));
+    if ($('#live-original-id').value === id) clearLiveForm();
+    await loadAdminLives();
+  } catch (error) {
+    alert('Não foi possível excluir a live.');
+    console.error(error);
+  }
+}
+
 function parseTSV(text) {
   const rows = [];
   let row = [], cell = '', quoted = false;
@@ -820,7 +1008,7 @@ onAuthStateChanged(auth, async (user) => {
   dashboard.hidden = !allowed;
   logoutButton.hidden = !allowed;
   if (user && !allowed) await signOut(auth);
-  if (allowed) { clearForm(); await loadDashboard(); }
+  if (allowed) { clearForm(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives()]); }
 });
 
 logoutButton.addEventListener('click', () => signOut(auth));
@@ -829,7 +1017,7 @@ $('#admin-toggle-password').addEventListener('click', () => {
   input.type = input.type === 'password' ? 'text' : 'password';
   $('#admin-toggle-password').textContent = input.type === 'password' ? 'Mostrar' : 'Ocultar';
 });
-$('#admin-refresh').addEventListener('click', loadDashboard);
+$('#admin-refresh').addEventListener('click', () => Promise.all([loadDashboard(), loadAdminLives()]));
 $('#admin-new-news').addEventListener('click', clearForm);
 $('#admin-import-local').addEventListener('click', importLocalNews);
 $('#admin-import-sheet').addEventListener('click', importSheet);
@@ -842,12 +1030,19 @@ $('#ga-refresh').addEventListener('click', loadGoogleAnalyticsData);
 $('#ga-period').addEventListener('change', () => { saveGaSettings(false); if (gaAccessToken) loadGoogleAnalyticsData(); });
 fillGaSettings();
 $('#admin-close-preview').addEventListener('click', () => $('#admin-preview-dialog').close());
+if (liveForm) liveForm.addEventListener('submit', saveLive);
+$('#admin-new-live')?.addEventListener('click', clearLiveForm);
+$('#admin-clear-live')?.addEventListener('click', clearLiveForm);
 newsForm.addEventListener('submit', saveNews);
 searchInput.addEventListener('input', renderNewsList);
 $('#admin-news-filter').addEventListener('change', (event) => { currentNewsFilter = event.target.value; renderNewsList(); });
 $('#news-title').addEventListener('input', (event) => { if (!slugTouched) $('#news-slug').value = slugify(event.target.value); });
 $('#news-slug').addEventListener('input', () => { slugTouched = true; });
 document.addEventListener('click', (event) => {
+  const editLive = event.target.closest('[data-edit-live]');
+  if (editLive) { const item = allLives.find((live) => live.id === editLive.dataset.editLive); if (item) fillLiveForm(item); return; }
+  const deleteLiveButton = event.target.closest('[data-delete-live]');
+  if (deleteLiveButton) { deleteLive(deleteLiveButton.dataset.deleteLive); return; }
   const move = event.target.closest('[data-move-news]');
   if (move) { moveNews(move.dataset.newsId, move.dataset.moveNews, move); return; }
   const edit = event.target.closest('[data-edit-news]');
