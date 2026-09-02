@@ -280,5 +280,50 @@
         "mvp": 1
       }
     ]
+  },
+  "weeklySelection": {
+    "week": 5,
+    "days": [
+      9,
+      10
+    ],
+    "players": [
+      {
+        "player": "Giuh",
+        "team": "FLUXO W7M",
+        "kills": 34,
+        "damage": 16838,
+        "assists": 40,
+        "matches": 12,
+        "roleShort": "RUSH"
+      },
+      {
+        "player": "kauãxp",
+        "team": "INTZ",
+        "kills": 34,
+        "damage": 13542,
+        "assists": 26,
+        "matches": 12,
+        "roleShort": "RUSH"
+      },
+      {
+        "player": "Bops",
+        "team": "FLUXO W7M",
+        "kills": 25,
+        "damage": 18711,
+        "assists": 43,
+        "matches": 12,
+        "roleShort": "GRAN"
+      },
+      {
+        "player": "Yago",
+        "team": "LOS",
+        "kills": 53,
+        "damage": 36079,
+        "assists": 25,
+        "matches": 12,
+        "roleShort": "SUP"
+      }
+    ]
   }
 }
