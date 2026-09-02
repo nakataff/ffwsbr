@@ -2056,7 +2056,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
         <section class="hall-extra-section" id="hall-team-leaders-section">
             <h2 class="hall-extra-title">Líderes por Equipe</h2>
-            <p class="hall-extra-subtitle">Maior destaque histórico de cada equipe cadastrada, com os números da WB 2026 S2 atualizados automaticamente.</p>
+            <p class="hall-extra-subtitle">Ranking histórico por jogador + organização: soma apenas os abates e quedas feitos enquanto o jogador defendia aquela equipe. A WB 2026 S2 entra automaticamente.</p>
             <div class="hall-team-leader-tools">
                 <label for="hall-team-leaders-metric">Mostrar líder por:</label>
                 <select id="hall-team-leaders-metric" onchange="setHallTeamLeaderMetric(this.value)">
@@ -2064,22 +2064,32 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                     <option value="matches">Quedas</option>
                     <option value="avg">Média</option>
                 </select>
+                <label class="hall-team-min-drops" for="hall-team-min-drops" title="Só considera jogadores que fizeram pelo menos 50% das quedas disponíveis nas edições em que defenderam a equipe.">
+                    <input id="hall-team-min-drops" type="checkbox" checked onchange="setHallTeamLeaderMinDrops(this.checked)">
+                    Quedas mínimas
+                </label>
             </div>
             <div class="table-container">
                 <table id="table-hall-team-leaders">
                     <thead>
                         <tr>
-                            <th style="text-align:left;">Equipe</th>
+                            <th style="width:50px;">#</th>
                             <th style="text-align:left;"><span class="full-name-desktop">Jogador</span><span class="short-name-mobile">J</span></th>
+                            <th style="text-align:left;"><span class="full-name-desktop">Equipe</span><span class="short-name-mobile">E</span></th>
                             <th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></th>
                             <th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th>
                             <th>Média</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="5" style="color:#aaa; padding:20px;">Carregando líderes por equipe...</td></tr>
+                        <tr><td colspan="6" style="color:#aaa; padding:20px;">Carregando ranking por equipe...</td></tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="hall-team-pagination" aria-label="Paginação do ranking por equipe">
+                <button id="hall-team-page-prev" class="btn-action" type="button" onclick="changeHallTeamLeaderPage(-1)" aria-label="Página anterior">‹</button>
+                <span id="hall-team-page-info" class="hall-team-page-info">Top 1–10</span>
+                <button id="hall-team-page-next" class="btn-action" type="button" onclick="changeHallTeamLeaderPage(1)" aria-label="Próxima página">›</button>
             </div>
         </section>
 
@@ -2362,7 +2372,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260902-hall-team-leaders-v22"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260902-team-career-v23"></script>
 <script defer src="js/search-fast.min.js?v=20260901-roster-v1"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260815-live-window-v2"></script>
 <script defer src="js/home-news-lives.min.js?v=20260902-tournament-link-v21"></script>
