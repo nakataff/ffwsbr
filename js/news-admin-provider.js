@@ -3,24 +3,16 @@
 
   const FALLBACK_IMAGE = 'central free fire.webp';
   const LOCAL_NEWS_URL = 'noticias-painel.json?v=20260806-admin-v2';
-  const NEWS_SHEET_FALLBACK = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=0&single=true&output=tsv';
-  const FIREBASE_DB_FALLBACK = 'https://central-free-fire-default-rtdb.firebaseio.com';
   const CACHE_KEY = 'cff_news_cache_admin_v1';
-  const CACHE_MAX_AGE = 30 * 60 * 1000;
+  const CACHE_MAX_AGE = 6 * 60 * 60 * 1000;
   let localNewsPromise = null;
-  let earlyNewsPromise = null;
-  let loadNoticiasPromise = null;
 
   function config() {
     return window.CFF_CONFIG || {};
   }
 
   function databaseBase() {
-    return String(config().firebase && config().firebase.databaseURL || FIREBASE_DB_FALLBACK).replace(/\/$/, '');
-  }
-
-  function newsSheetUrl() {
-    return String(config().sheets && config().sheets.noticias || NEWS_SHEET_FALLBACK).trim();
+    return String(config().firebase && config().firebase.databaseURL || '').replace(/\/$/, '');
   }
 
   function escapeHTML(value) {
@@ -281,42 +273,10 @@
     } catch (_) {}
   }
 
-  function selectHeroItems(items) {
-    const slides = [];
-    const seen = new Set();
-    if (items && items[0]) {
-      slides.push(items[0]);
-      seen.add(items[0].id);
-    }
-    (items || []).filter(function (item) { return item.destaque && !seen.has(item.id); }).concat(items || []).forEach(function (item) {
-      if (slides.length >= 3 || !item || seen.has(item.id)) return;
-      slides.push(item);
-      seen.add(item.id);
-    });
-    return { slides: slides, seen: seen };
-  }
-
   function warmHeroImages(items) {
-    const visible = (items || []).slice(0, 3);
-    visible.forEach(function (item) {
-      const url = String(item && item.imagem || FALLBACK_IMAGE).trim();
-      if (!url || url === FALLBACK_IMAGE) return;
-      try {
-        const parsed = new URL(url, location.href);
-        const selectorOrigin = parsed.origin.replace(/"/g, '');
-        if (parsed.origin !== location.origin && !document.querySelector('link[data-cff-news-origin="' + selectorOrigin + '"]')) {
-          const preconnect = document.createElement('link');
-          preconnect.rel = 'preconnect';
-          preconnect.href = parsed.origin;
-          preconnect.dataset.cffNewsOrigin = parsed.origin;
-          document.head.appendChild(preconnect);
-        }
-      } catch (_) {}
-    });
-
-    /* Só a manchete principal recebe preload. Priorizar três imagens grandes
-       ao mesmo tempo estava disputando banda com o restante da primeira tela. */
-    const main = visible[0];
+    /* Só a manchete principal recebe preload. O host principal das capas já
+       tem preconnect no HTML; não criamos conexões extras para cada origem. */
+    const main = (items || [])[0];
     const url = String(main && main.imagem || FALLBACK_IMAGE).trim();
     if (!url || url === FALLBACK_IMAGE) return;
     if (!Array.from(document.querySelectorAll('link[rel="preload"][as="image"]')).some(function (link) { return link.href === url; })) {
@@ -338,15 +298,22 @@
     /* A notícia mais recente sempre lidera. As duas seguintes priorizam
        o que estiver marcado como destaque; se faltar alguma, completa com
        as notícias mais recentes restantes. */
-    const selection = selectHeroItems(items);
-    const slides = selection.slides;
-    const seen = selection.seen;
+    const slides = [];
+    const seen = new Set();
+    if (items[0]) {
+      slides.push(items[0]);
+      seen.add(items[0].id);
+    }
+    items.filter(function (item) { return item.destaque && !seen.has(item.id); }).concat(items).forEach(function (item) {
+      if (slides.length >= 3 || seen.has(item.id)) return;
+      slides.push(item); seen.add(item.id);
+    });
     warmHeroImages(slides);
 
     function heroCard(item, variant, index) {
       const isMain = variant === 'main';
       return '<a class="news-feature-card news-feature-' + variant + '" href="' + escapeHTML(item.urlInterna) + '" title="' + escapeHTML(item.titulo) + '">' +
-        '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" width="1200" height="628" loading="eager" decoding="' + (isMain ? 'sync' : 'async') + '" fetchpriority="' + (isMain ? 'high' : 'low') + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
+        '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" width="1200" height="628" loading="eager" decoding="' + (isMain ? 'sync' : 'async') + '" fetchpriority="' + (isMain ? 'high' : 'auto') + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
         '<div class="news-feature-overlay"><h2 class="news-feature-title">' + escapeHTML(item.titulo) + '</h2>' +
         (isMain && item.resumo ? '<p>' + escapeHTML(item.resumo) + '</p>' : '') +
         '</div></a>';
@@ -443,32 +410,14 @@
 
   async function loadAllNews() {
     const base = databaseBase();
-    const sheetUrl = newsSheetUrl();
+    const sheetUrl = config().sheets && config().sheets.noticias;
     const tasks = [];
     tasks.push(loadLocalNews());
     tasks.push(base ? getJSON(base + '/adminNews.json').then(objectValues).catch(function () { return []; }) : Promise.resolve([]));
-    tasks.push(sheetUrl ? getText(sheetUrl, 'default').then(parseSheetNews).catch(function () { return []; }) : Promise.resolve([]));
+    tasks.push(sheetUrl ? getText(sheetUrl, 'no-cache').then(parseSheetNews).catch(function () { return []; }) : Promise.resolve([]));
     tasks.push(base ? getJSON(base + '/adminHiddenNews.json').catch(function () { return {}; }) : Promise.resolve({}));
     const result = await Promise.all(tasks);
     return { items: mergeNews(result[0], result[2], result[1], result[3]) };
-  }
-
-  function startEarlyNewsLoad() {
-    if (earlyNewsPromise) return earlyNewsPromise;
-    /* Em visitas recorrentes, a URL da manchete pode ser descoberta ainda no <head>,
-       antes de qualquer consulta externa. O cache é curto para não segurar notícia antiga. */
-    const cached = loadCache();
-    if (cached.length) warmHeroImages(selectHeroItems(cached).slides);
-    earlyNewsPromise = loadAllNews().then(function (result) {
-      if (result && result.items && result.items.length) {
-        warmHeroImages(selectHeroItems(result.items).slides);
-      }
-      return result;
-    }).catch(function (error) {
-      earlyNewsPromise = null;
-      throw error;
-    });
-    return earlyNewsPromise;
   }
 
   window.CFF_NEWS_PROVIDER = {
@@ -487,63 +436,49 @@
     }
   };
 
-  window.loadNoticias = function () {
-    if (loadNoticiasPromise) return loadNoticiasPromise;
-    loadNoticiasPromise = (async function () {
-      const hero = document.getElementById('news-hero-container');
-      const grid = document.getElementById('ultimas-noticias-grid');
-      const title = document.getElementById('ultimas-noticias-titulo');
-      if (!hero) return;
+  window.loadNoticias = async function () {
+    const hero = document.getElementById('news-hero-container');
+    const grid = document.getElementById('ultimas-noticias-grid');
+    const title = document.getElementById('ultimas-noticias-titulo');
+    if (!hero) return;
 
-      const cached = loadCache();
-      let renderedItems = [];
-      if (cached.length) {
-        render(cached);
-        renderedItems = cached;
-      } else {
-        hero.innerHTML = '<section class="news-hero-carousel" aria-label="Carregando notícias"><div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:1px">Carregando notícias...</div></section>';
-      }
+    const cached = loadCache();
+    let renderedItems = [];
+    if (cached.length) {
+      render(cached);
+      renderedItems = cached;
+    } else {
+      hero.innerHTML = '<section class="news-hero-carousel" aria-label="Carregando notícias"><div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:1px">Carregando notícias...</div></section>';
+      /* Conteúdo local entra antes da planilha/Firebase para a home nunca ficar
+         esperando fontes externas antes de descobrir as imagens. */
+      loadLocalNews().then(function (localItems) {
+        if (!localItems.length || renderedItems.length) return;
+        render(localItems);
+        renderedItems = localItems;
+      });
+    }
 
-      try {
-        /* O carregamento começa no <head>. Quando o DOM fica pronto, a planilha/Firebase
-           já estão em andamento (ou resolvidos) e a imagem principal já pode estar em preload. */
-        const result = await startEarlyNewsLoad();
-        if (!result.items.length) throw new Error('Nenhuma notícia encontrada.');
-        saveCache(result.items);
-        window.CFF_NOTICIAS_CACHE = result.items;
-        window.cffNoticias = result.items;
-        if (newsFingerprint(renderedItems) !== newsFingerprint(result.items)) {
-          render(result.items);
-          renderedItems = result.items;
-        }
-      } catch (error) {
-        /* Se as fontes externas falharem, usa o JSON local sem segurar a primeira tela. */
-        if (!renderedItems.length) {
-          const localItems = await loadLocalNews().catch(function () { return []; });
-          if (localItems.length) {
-            render(localItems);
-            renderedItems = localItems;
-          }
-        }
-        if (!renderedItems.length) {
-          hero.innerHTML = '<section class="news-hero-carousel" aria-label="Erro ao carregar notícias"><div style="min-height:220px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--text-muted)"><strong style="color:#fff;text-transform:uppercase">Notícias indisponíveis no momento</strong><span style="font-size:.9em">Tente novamente em instantes.</span></div></section>';
-          if (grid) grid.innerHTML = '';
-          if (title) title.style.display = 'none';
-          const actions = document.getElementById('ultimas-noticias-actions');
-          if (actions) actions.style.display = 'none';
-        }
-        console.error(error);
+    try {
+      const result = await loadAllNews();
+      if (!result.items.length) throw new Error('Nenhuma notícia encontrada.');
+      saveCache(result.items);
+      window.CFF_NOTICIAS_CACHE = result.items;
+      window.cffNoticias = result.items;
+      /* Não recria o DOM se nada visível mudou. Isso evita cancelar/reiniciar
+         downloads de imagens quando o cache já tinha exatamente o mesmo conteúdo. */
+      if (newsFingerprint(renderedItems) !== newsFingerprint(result.items)) {
+        render(result.items);
+        renderedItems = result.items;
       }
-    })();
-    return loadNoticiasPromise;
+    } catch (error) {
+      if (!renderedItems.length) {
+        hero.innerHTML = '<section class="news-hero-carousel" aria-label="Erro ao carregar notícias"><div style="min-height:220px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--text-muted)"><strong style="color:#fff;text-transform:uppercase">Notícias indisponíveis no momento</strong><span style="font-size:.9em">Tente novamente em instantes.</span></div></section>';
+        if (grid) grid.innerHTML = '';
+        if (title) title.style.display = 'none';
+        const actions = document.getElementById('ultimas-noticias-actions');
+        if (actions) actions.style.display = 'none';
+      }
+      console.error(error);
+    }
   };
-
-  /* O script é carregado no <head> com async. Começa a buscar os dados antes de
-     o navegador terminar de analisar o HTML, encurtando o caminho até o LCP. */
-  startEarlyNewsLoad().catch(function () {});
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { window.loadNoticias(); }, { once: true });
-  } else {
-    window.loadNoticias();
-  }
 })();
