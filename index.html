@@ -378,7 +378,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .ot-year-table tbody tr:last-child td{border-bottom:0}
 .ot-year-table td:first-child,.ot-year-table th:first-child{text-align:left}
 .ot-year-event-name{font-weight:950;color:#fff}
-.ot-year-detail-btn{border:1px solid rgba(0,200,255,.32);background:rgba(0,200,255,.07);color:var(--accent);padding:6px 9px;border-radius:8px;font-size:.66rem;font-weight:950;cursor:pointer}
+.ot-year-detail-btn{border:0;background:transparent;color:#fff;padding:0;font:inherit;font-weight:950;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:rgba(255,255,255,.38);text-underline-offset:3px}.ot-year-detail-btn:hover{color:var(--accent);text-decoration-color:currentColor}
 .ot-year-muted{color:#6f8198}
 .ot-year-medal{font-weight:1000}
 .ot-year-medal.gold{color:#ffd166}.ot-year-medal.silver{color:#c9d4df}.ot-year-medal.bronze{color:#d7975e}
@@ -438,7 +438,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .ot-year-events-table th:nth-child(1),.ot-year-events-table td:nth-child(1){width:190px;min-width:190px;box-sizing:border-box}
 .ot-year-events-table th:nth-child(2),.ot-year-events-table td:nth-child(2){width:86px;min-width:86px;white-space:nowrap}
 .ot-year-events-table .ot-year-detail-btn,.ot-year-events-table .ot-year-event-name{display:block;width:100%;max-width:100%;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.25;text-align:left}
-.ot-year-events-table .ot-year-detail-btn{padding:7px 8px}
+.ot-year-events-table .ot-year-detail-btn{padding:0}
 .ot-year-events-table th.ot-year-event-team-head,.ot-year-events-table td.ot-year-event-team-cell{padding-left:9px!important}
 }
 </style>
@@ -1616,9 +1616,9 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         </div>
 
         <div class="ot-global-view-tabs" role="tablist" aria-label="Visualização de Outros Torneios">
-            <button type="button" class="ot-global-view-tab active" data-ot-main-view="year2026" onclick="setOtMainView('year2026')">TORNEIOS 2026</button>
-            <button type="button" class="ot-global-view-tab" data-ot-main-view="tournaments" onclick="setOtMainView('tournaments')">ARQUIVO DETALHADO</button>
+            <button type="button" class="ot-global-view-tab" data-ot-main-view="tournaments" onclick="setOtMainView('tournaments')">ARQUIVO DETALHES</button>
             <button type="button" class="ot-global-view-tab" data-ot-main-view="radar" onclick="setOtMainView('radar')">RADAR ESTATÍSTICO</button>
+            <button type="button" class="ot-global-view-tab active" data-ot-main-view="year2026" onclick="setOtMainView('year2026')">TORNEIOS 2026</button>
         </div>
 
         <div id="ot-year2026-panel">
