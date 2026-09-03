@@ -284,19 +284,42 @@
   }
 
   function warmHeroImages(items) {
-    /* Só a manchete principal recebe preload. O host principal das capas já
-       tem preconnect no HTML; não criamos conexões extras para cada origem. */
-    const main = (items || [])[0];
-    const url = String(main && main.imagem || FALLBACK_IMAGE).trim();
-    if (!url || url === FALLBACK_IMAGE) return;
-    if (!Array.from(document.querySelectorAll('link[rel="preload"][as="image"]')).some(function (link) { return link.href === url; })) {
+    /* Na primeira tela do desktop existem 3 capas realmente visíveis.
+       Aquecemos apenas essas 3; no mobile, somente a principal. Isso evita
+       competir com imagens que não aparecem acima da dobra. */
+    const desktop = !window.matchMedia || window.matchMedia('(min-width: 761px)').matches;
+    const urls = (items || []).slice(0, desktop ? 3 : 1).map(function (item) {
+      return String(item && item.imagem || FALLBACK_IMAGE).trim();
+    }).filter(function (url, index, list) {
+      return url && url !== FALLBACK_IMAGE && list.indexOf(url) === index;
+    });
+
+    /* Se alguma capa vier de outro host, abre no máximo duas conexões extras.
+       i.postimg.cc já possui preconnect fixo no HTML. */
+    const origins = [];
+    urls.forEach(function (url) {
+      try {
+        const origin = new URL(url, location.href).origin;
+        if (origin !== location.origin && origins.indexOf(origin) === -1) origins.push(origin);
+      } catch (_) {}
+    });
+    origins.slice(0, 2).forEach(function (origin) {
+      if (Array.from(document.querySelectorAll('link[rel="preconnect"]')).some(function (link) { return link.href.replace(/\/$/, '') === origin; })) return;
+      const preconnect = document.createElement('link');
+      preconnect.rel = 'preconnect';
+      preconnect.href = origin;
+      document.head.appendChild(preconnect);
+    });
+
+    urls.forEach(function (url) {
+      if (Array.from(document.querySelectorAll('link[rel="preload"][as="image"]')).some(function (link) { return link.href === url; })) return;
       const preload = document.createElement('link');
       preload.rel = 'preload';
       preload.as = 'image';
       preload.href = url;
       preload.setAttribute('fetchpriority', 'high');
       document.head.appendChild(preload);
-    }
+    });
   }
 
   function render(items) {
@@ -322,8 +345,9 @@
 
     function heroCard(item, variant, index) {
       const isMain = variant === 'main';
+      const desktopViewport = !window.matchMedia || window.matchMedia('(min-width: 761px)').matches;
       return '<a class="news-feature-card news-feature-' + variant + '" href="' + escapeHTML(item.urlInterna) + '" title="' + escapeHTML(item.titulo) + '">' +
-        '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" width="1200" height="628" loading="eager" decoding="' + (isMain ? 'sync' : 'async') + '" fetchpriority="' + (isMain ? 'high' : 'auto') + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
+        '<img src="' + escapeHTML(item.imagem || FALLBACK_IMAGE) + '" alt="' + escapeHTML(item.titulo) + '" width="1200" height="628" loading="' + (desktopViewport ? 'eager' : 'lazy') + '" decoding="async" fetchpriority="' + (desktopViewport ? 'high' : 'low') + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'">' +
         '<div class="news-feature-overlay"><h2 class="news-feature-title">' + escapeHTML(item.titulo) + '</h2>' +
         (isMain && item.resumo ? '<p>' + escapeHTML(item.resumo) + '</p>' : '') +
         '</div></a>';
@@ -491,13 +515,12 @@
       renderedItems = cached;
     } else {
       hero.innerHTML = '<section class="news-hero-carousel" aria-label="Carregando notícias"><div style="min-height:220px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:1px">Carregando notícias...</div></section>';
-      /* Conteúdo local entra antes da planilha/Firebase para a home nunca ficar
-         esperando fontes externas antes de descobrir as imagens. */
-      loadLocalNews().then(function (localItems) {
-        if (!localItems.length || renderedItems.length) return;
-        render(localItems);
-        renderedItems = localItems;
-      });
+      /* Cold start: NÃO renderiza as capas do fallback local enquanto Firebase
+         e planilha estão chegando. A versão anterior iniciava até 3 downloads
+         antigos e logo depois trocava o DOM para outras 3 capas, fazendo as
+         imagens corretas disputar banda justamente na primeira visita.
+         O fallback local continua fazendo parte de loadAllNews() e será usado
+         normalmente se as fontes externas falharem. */
     }
 
     try {

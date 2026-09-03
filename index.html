@@ -20,6 +20,7 @@
   try {
     var cached = JSON.parse(localStorage.getItem('cff_news_cache_admin_v1') || 'null');
     if (!cached || !Array.isArray(cached.items) || !cached.items.length) return;
+    if (Date.now() - Number(cached.savedAt || 0) > 6 * 60 * 60 * 1000) return;
     var url = String((cached.items[0] && cached.items[0].imagem) || '').trim();
     if (!url || url === 'central free fire.webp') return;
     var link = document.createElement('link');
@@ -2397,7 +2398,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/home-ffws-s2.min.js?v=20260902-team-shorts-v30"></script>
 <script defer src="js/home-news-lives.min.js?v=20260902-tournament-link-v21"></script>
 <script defer src="js/home-live-widget.min.js?v=20260902-home-lives-v24"></script>
-<script defer src="js/news-admin-provider.js?v=20260902-news-schedule-v27"></script>
+<script defer src="js/news-admin-provider.js?v=20260903-home-images-v36"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
 <script defer src="js/home-current-results.min.js?v=20260902-home-rank-cols-v25"></script>
 <script defer src="js/home-year-2026.min.js?v=20260901-team-shorts-v14"></script>
