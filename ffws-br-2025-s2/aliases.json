@@ -1,6 +1,6 @@
 {
   "updatedAt": "2026-09-04",
-  "source": "Dia 1 WB 2025 S2 + aliases confirmados pelo usuário e nomes canônicos já existentes no site",
+  "source": "Dias 1 a 4 WB 2025 S2 + aliases confirmados pelo usuário e nomes canônicos já existentes no site",
   "players": {
     "Guime$": "GUIMERLQ",
     "Dorito99": "DORITO",
@@ -21,10 +21,16 @@
     "iguiNmvp": "IguiNmvp",
     "Nando9": "NANDO9",
     "Nickz7": "NICKZ",
-    "Erick1ng": "Ericking"
+    "Erick1ng": "Ericking",
+    "Lins": "Lins7",
+    "bzp10": "BZP",
+    "NandoX": "Naandox"
   },
   "teams": {
     "RUSH": "RUSH GAMING",
-    "VASCO E-SPORTS": "VASCO ESPORTS"
+    "VASCO E-SPORTS": "VASCO ESPORTS",
+    "ALFA34": "ALFA 34",
+    "AXS FUSION": "AXS",
+    "LOOPS": "LOOPS ESPORTS"
   }
 }
