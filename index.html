@@ -246,12 +246,12 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </style>
 
     <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260903-registro-detalhado-v1" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260904-wb2025s2-dia1-v1" media="print" onload="this.media='all'">
 <noscript id="cff-page-css-noscript">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
 <link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1">
 <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1">
-<link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260903-registro-detalhado-v1">
+<link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20260904-wb2025s2-dia1-v1">
 </noscript>
 
 <style id="cff-s1-stats-filter-hotfix">
@@ -494,55 +494,36 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         </section>
 
         <div class="sidebar-divider"></div>
-        <section class="sidebar-section" id="sidebar-section-ewc" data-section-key="ewc">
-            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ewc')" aria-expanded="false" aria-controls="sidebar-content-ewc">
-                <span>EWC 2026</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
+        <section class="sidebar-section" id="sidebar-section-oficiais" data-section-key="oficiais">
+            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('oficiais')" aria-expanded="false" aria-controls="sidebar-content-oficiais">
+                <span>TORNEIOS OFICIAIS</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
             </button>
-            <div class="sidebar-section-content" id="sidebar-content-ewc">
+            <div class="sidebar-section-content" id="sidebar-content-oficiais">
                 <div>
-                    <button onclick="navigateAndClose('ewc-grupos')" id="sb-ewc-grupos">FASE DE GRUPOS</button>
-                    <button onclick="navigateAndClose('ewc-repescagem')" id="sb-ewc-repescagem">REPESCAGEM</button>
-                    <button onclick="navigateAndClose('ewc-final')" id="sb-ewc-final">FINAL</button>
-                    <button onclick="navigateAndClose('ewc-mvp')" id="sb-ewc-mvp">RANKING MVP</button>
-                    <button onclick="navigateAndClose('ewc-equipes')" id="sb-ewc-equipes">EQUIPES</button>
-                    <button onclick="navigateAndClose('ewc-stats')" id="sb-ewc-stats">ESTATÍSTICAS GERAIS</button>
-                </div>
-            </div>
-        </section>
-
-        <div class="sidebar-divider"></div>
-        <section class="sidebar-section" id="sidebar-section-ffws-br" data-section-key="ffws-br">
-            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ffws-br')" aria-expanded="true" aria-controls="sidebar-content-ffws-br">
-                <span>WB 2026 S1</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
-            </button>
-            <div class="sidebar-section-content" id="sidebar-content-ffws-br">
-                <div>
-                    <button onclick="navigateAndClose('tabela')" id="sb-tabela">CLASSIFICATÓRIA</button>
-                    <button onclick="navigateAndClose('final')" id="sb-final">FINAL</button>
-                    <button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button>
-                    <button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button>
-                    <button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button>
-                    <button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÕES DA SEASON</button>
-                    <button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button>
-                    <button onclick="navigateAndClose('notas-cff')" id="sb-notas-cff">NOTAS CFF</button>
-                    <button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
-                </div>
-            </div>
-        </section>
-
-        <div class="sidebar-divider"></div>
-        <section class="sidebar-section" id="sidebar-section-laff" data-section-key="laff">
-            <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('laff')" aria-expanded="false" aria-controls="sidebar-content-laff">
-                <span>LAFF 2026 S1</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span>
-            </button>
-            <div class="sidebar-section-content" id="sidebar-content-laff">
-                <div>
-                    <button onclick="navigateAndClose('laff-classificatoria')" id="sb-laff-classificatoria">CLASSIFICATÓRIA</button>
-                    <button onclick="navigateAndClose('laff-mvp')" id="sb-laff-mvp">RANKING MVP</button>
-                    <button onclick="navigateAndClose('laff-equipes')" id="sb-laff-equipes">EQUIPES</button>
-                    <button onclick="navigateAndClose('laff-datas')" id="sb-laff-datas">DATAS</button>
-                    <button onclick="navigateAndClose('laff-selecoes')" id="sb-laff-selecoes">SELEÇÕES DA SEASON</button>
-                    <button onclick="navigateAndClose('laff-stats')" id="sb-laff-stats">ESTATÍSTICAS GERAIS</button>
+                    <section class="sidebar-section" id="sidebar-section-ewc" data-section-key="ewc">
+                        <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ewc')" aria-expanded="false" aria-controls="sidebar-content-ewc"><span>EWC 2026</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span></button>
+                        <div class="sidebar-section-content" id="sidebar-content-ewc"><div>
+                            <button onclick="navigateAndClose('ewc-grupos')" id="sb-ewc-grupos">FASE DE GRUPOS</button><button onclick="navigateAndClose('ewc-repescagem')" id="sb-ewc-repescagem">REPESCAGEM</button><button onclick="navigateAndClose('ewc-final')" id="sb-ewc-final">FINAL</button><button onclick="navigateAndClose('ewc-mvp')" id="sb-ewc-mvp">RANKING MVP</button><button onclick="navigateAndClose('ewc-equipes')" id="sb-ewc-equipes">EQUIPES</button><button onclick="navigateAndClose('ewc-stats')" id="sb-ewc-stats">ESTATÍSTICAS GERAIS</button>
+                        </div></div>
+                    </section>
+                    <section class="sidebar-section" id="sidebar-section-ffws-br" data-section-key="ffws-br">
+                        <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('ffws-br')" aria-expanded="false" aria-controls="sidebar-content-ffws-br"><span>WB 2026 S1</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span></button>
+                        <div class="sidebar-section-content" id="sidebar-content-ffws-br"><div>
+                            <button onclick="navigateAndClose('tabela')" id="sb-tabela">CLASSIFICATÓRIA</button><button onclick="navigateAndClose('final')" id="sb-final">FINAL</button><button onclick="navigateAndClose('mvp')" id="sb-mvp">RANKING MVP</button><button onclick="navigateAndClose('equipes')" id="sb-equipes">EQUIPES</button><button onclick="navigateAndClose('datas')" id="sb-datas">DATAS</button><button onclick="navigateAndClose('selecao-da-semana')" id="sb-selecao-da-semana">SELEÇÕES DA SEASON</button><button onclick="navigateAndClose('stats')" id="sb-stats">ESTATÍSTICAS GERAIS</button><button onclick="navigateAndClose('notas-cff')" id="sb-notas-cff">NOTAS CFF</button><button onclick="navigateAndClose('comparar-1v1')" id="sb-comparar-1v1">COMPARAR 1V1</button>
+                        </div></div>
+                    </section>
+                    <section class="sidebar-section" id="sidebar-section-laff" data-section-key="laff">
+                        <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('laff')" aria-expanded="false" aria-controls="sidebar-content-laff"><span>LAFF 2026 S1</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span></button>
+                        <div class="sidebar-section-content" id="sidebar-content-laff"><div>
+                            <button onclick="navigateAndClose('laff-classificatoria')" id="sb-laff-classificatoria">CLASSIFICATÓRIA</button><button onclick="navigateAndClose('laff-mvp')" id="sb-laff-mvp">RANKING MVP</button><button onclick="navigateAndClose('laff-equipes')" id="sb-laff-equipes">EQUIPES</button><button onclick="navigateAndClose('laff-datas')" id="sb-laff-datas">DATAS</button><button onclick="navigateAndClose('laff-selecoes')" id="sb-laff-selecoes">SELEÇÕES DA SEASON</button><button onclick="navigateAndClose('laff-stats')" id="sb-laff-stats">ESTATÍSTICAS GERAIS</button>
+                        </div></div>
+                    </section>
+                    <section class="sidebar-section" id="sidebar-section-wb-2025-s2" data-section-key="wb-2025-s2">
+                        <button class="sidebar-category sidebar-section-toggle" type="button" onclick="toggleSidebarSection('wb-2025-s2')" aria-expanded="false" aria-controls="sidebar-content-wb-2025-s2"><span>WB 2025 S2</span><span class="sidebar-section-chevron" aria-hidden="true">⌄</span></button>
+                        <div class="sidebar-section-content" id="sidebar-content-wb-2025-s2"><div>
+                            <button onclick="navigateAndClose('ffws-br-2025-s2-classificatoria')" id="sb-ffws-br-2025-s2-classificatoria">CLASSIFICATÓRIA</button><button onclick="navigateAndClose('ffws-br-2025-s2-contra-squad')" id="sb-ffws-br-2025-s2-contra-squad">CONTRA SQUAD</button><button onclick="navigateAndClose('ffws-br-2025-s2-final')" id="sb-ffws-br-2025-s2-final">FINAL</button><button onclick="navigateAndClose('ffws-br-2025-s2-mvp')" id="sb-ffws-br-2025-s2-mvp">RANKING MVP</button><button onclick="navigateAndClose('ffws-br-2025-s2-equipes')" id="sb-ffws-br-2025-s2-equipes">EQUIPES</button><button onclick="navigateAndClose('ffws-br-2025-s2-datas')" id="sb-ffws-br-2025-s2-datas">DATAS</button><button onclick="navigateAndClose('ffws-br-2025-s2-selecoes')" id="sb-ffws-br-2025-s2-selecoes">SELEÇÕES DA SEASON</button><button onclick="navigateAndClose('ffws-br-2025-s2-stats')" id="sb-ffws-br-2025-s2-stats">ESTATÍSTICAS GERAIS</button><button onclick="navigateAndClose('ffws-br-2025-s2-notas')" id="sb-ffws-br-2025-s2-notas">NOTAS CFF</button><button onclick="navigateAndClose('ffws-br-2025-s2-comparar')" id="sb-ffws-br-2025-s2-comparar">COMPARAR 1V1</button>
+                        </div></div>
+                    </section>
                 </div>
             </div>
         </section>
@@ -1730,6 +1711,18 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <div id="ffws-br-s2-notas" class="page"><div id="ffws-br-s2-notas-content"></div></div>
 <div id="ffws-br-s2-comparar" class="page"><div id="ffws-br-s2-comparar-content"></div></div>
 
+<!-- PAGES: FFWS BRASIL 2025 SPLIT 2 -->
+<div id="ffws-br-2025-s2-classificatoria" class="page"><div id="ffws-br-2025-s2-classificatoria-content"></div></div>
+<div id="ffws-br-2025-s2-contra-squad" class="page"><div id="ffws-br-2025-s2-contra-squad-content"></div></div>
+<div id="ffws-br-2025-s2-final" class="page"><div id="ffws-br-2025-s2-final-content"></div></div>
+<div id="ffws-br-2025-s2-mvp" class="page"><div id="ffws-br-2025-s2-mvp-content"></div></div>
+<div id="ffws-br-2025-s2-equipes" class="page"><div id="ffws-br-2025-s2-equipes-content"></div></div>
+<div id="ffws-br-2025-s2-datas" class="page"><div id="ffws-br-2025-s2-datas-content"></div></div>
+<div id="ffws-br-2025-s2-selecoes" class="page"><div id="ffws-br-2025-s2-selecoes-content"></div></div>
+<div id="ffws-br-2025-s2-stats" class="page"><div id="ffws-br-2025-s2-stats-content"></div></div>
+<div id="ffws-br-2025-s2-notas" class="page"><div id="ffws-br-2025-s2-notas-content"></div></div>
+<div id="ffws-br-2025-s2-comparar" class="page"><div id="ffws-br-2025-s2-comparar-content"></div></div>
+
 <!-- PAGE: EWC 2026 -->
 <div id="ewc-2026" class="page">
     <div class="ewc-empty">Abrindo EWC 2026...</div>
@@ -2392,7 +2385,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260818-s2-mvp-photos-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20260903-registro-detalhado-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20260904-wb2025s2-dia1-v1"></script>
 <script defer src="js/site-back-navigation.min.js?v=20260902-pretty-routes-v29"></script>
 <script defer src="js/search-fast.min.js?v=20260902-wliu-sx-v31"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260902-team-shorts-v30"></script>
