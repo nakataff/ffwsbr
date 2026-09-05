@@ -1,0 +1,523 @@
+{
+  "tournament": "WB 2026 S2",
+  "updatedAt": "2026-09-05",
+  "teams": [
+    {
+      "name": "AFROGAMES",
+      "abbreviation": "AFRO",
+      "country": "br",
+      "logo": "afg.webp",
+      "logoPending": false,
+      "players": [
+        "Nielffx",
+        "BRABOXX7",
+        "gbzinn7",
+        "Sant10s",
+        "dnsetzz",
+        "PETER"
+      ]
+    },
+    {
+      "name": "ALPHA7",
+      "abbreviation": "A7",
+      "country": "br",
+      "logo": "A7 2.webp",
+      "players": [
+        "Sam7",
+        "Brisa7",
+        "MitoMvp",
+        "LC777",
+        "JNmvp7"
+      ]
+    },
+    {
+      "name": "CIVIS",
+      "abbreviation": "CIV",
+      "country": "br",
+      "logo": "Civis.webp",
+      "players": [
+        "Hugo7",
+        "SOARES",
+        "Destroi7",
+        "NEYawp",
+        "Henry10",
+        "LukaSZ"
+      ]
+    },
+    {
+      "name": "CPT VOX",
+      "abbreviation": "CPT",
+      "country": "br",
+      "logo": "cpt vox.webp",
+      "logoPending": false,
+      "players": [
+        "Gbtrem22",
+        "bad9",
+        "TREVOR9",
+        "Ângelo7",
+        "Seven7zk"
+      ]
+    },
+    {
+      "name": "FLUXO W7M",
+      "abbreviation": "FX",
+      "country": "br",
+      "logo": "Fluxo 2.webp",
+      "players": [
+        "Bops",
+        "BuTziN",
+        "Giuh",
+        "MT7",
+        "Proxx7"
+      ]
+    },
+    {
+      "name": "INFLUENCE RAGE",
+      "abbreviation": "IR",
+      "country": "br",
+      "logo": "Influence Rage.webp",
+      "players": [
+        "lippe!",
+        "IGOR7",
+        "nepoIGN",
+        "Lyon",
+        "saskito!"
+      ]
+    },
+    {
+      "name": "INTZ",
+      "abbreviation": "INTZ",
+      "country": "br",
+      "logo": "Intz 1.webp",
+      "players": [
+        "GUS",
+        "João7",
+        "honeyzL",
+        "kauãxp",
+        "PEREIRA"
+      ]
+    },
+    {
+      "name": "LOOPS",
+      "abbreviation": "LOOPS",
+      "country": "br",
+      "logo": "Loops 1.webp",
+      "players": [
+        "Draxx7",
+        "Vitin9",
+        "Pão7",
+        "Luan7",
+        "IguiNmvp"
+      ]
+    },
+    {
+      "name": "LOS",
+      "abbreviation": "LOS",
+      "country": "br",
+      "logo": "Los.webp",
+      "players": [
+        "Raone7",
+        "General!",
+        "Rigby245",
+        "Yago",
+        "mtsexy."
+      ]
+    },
+    {
+      "name": "LOUD SNICKERS",
+      "abbreviation": "LOUD",
+      "country": "br",
+      "logo": "loud 2.webp",
+      "players": [
+        "TRAP",
+        "NICKZ",
+        "BZP",
+        "GUAXA",
+        "HAK"
+      ]
+    },
+    {
+      "name": "RISE GAMING",
+      "abbreviation": "RISE",
+      "country": "br",
+      "logo": "Rise 1.webp",
+      "players": [
+        "Mala",
+        "Erick11",
+        "Carioca",
+        "Naandox",
+        "KaKaZk"
+      ]
+    },
+    {
+      "name": "RUSH GAMING",
+      "abbreviation": "RUSH",
+      "country": "br",
+      "logo": "Rush.webp",
+      "players": [
+        "BLACK02",
+        "GUIMERLQ",
+        "Ericking",
+        "PROZIN",
+        "MitinX"
+      ]
+    },
+    {
+      "name": "SX TET",
+      "abbreviation": "SXT",
+      "country": "br",
+      "logo": "sx tet.webp",
+      "logoPending": false,
+      "players": [
+        "Furiazz7",
+        "Redxzzz",
+        "Yato7",
+        "Nikeboy",
+        "wLiu"
+      ]
+    },
+    {
+      "name": "TEAM SOLID",
+      "abbreviation": "TS",
+      "country": "br",
+      "logo": "Team Solid 2.webp",
+      "players": [
+        "Motovea",
+        "vitinxp",
+        "Pitbull",
+        "BYTE333",
+        "Sbriça"
+      ]
+    }
+  ],
+  "schedule": [
+    {
+      "key": "classificatoria-r1",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 1",
+      "round": 1,
+      "date": "2026-08-01",
+      "dateLabel": "01/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "SX TET",
+        "INTZ"
+      ]
+    },
+    {
+      "key": "classificatoria-r2",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 2",
+      "round": 2,
+      "date": "2026-08-02",
+      "dateLabel": "02/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "CIVIS",
+        "CPT VOX"
+      ]
+    },
+    {
+      "key": "classificatoria-r3",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 3",
+      "round": 3,
+      "date": "2026-08-08",
+      "dateLabel": "08/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "RUSH GAMING",
+        "LOUD SNICKERS"
+      ]
+    },
+    {
+      "key": "classificatoria-r4",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 4",
+      "round": 4,
+      "date": "2026-08-09",
+      "dateLabel": "09/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "AFROGAMES",
+        "LOS"
+      ]
+    },
+    {
+      "key": "classificatoria-r5",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 5",
+      "round": 5,
+      "date": "2026-08-15",
+      "dateLabel": "15/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "ALPHA7",
+        "TEAM SOLID"
+      ]
+    },
+    {
+      "key": "classificatoria-r6",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 6",
+      "round": 6,
+      "date": "2026-08-16",
+      "dateLabel": "16/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "LOOPS",
+        "FLUXO W7M"
+      ]
+    },
+    {
+      "key": "classificatoria-r7",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 7",
+      "round": 7,
+      "date": "2026-08-22",
+      "dateLabel": "22/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "INFLUENCE RAGE",
+        "RISE GAMING"
+      ]
+    },
+    {
+      "key": "classificatoria-r8",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 8",
+      "round": 8,
+      "date": "2026-08-23",
+      "dateLabel": "23/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "FLUXO W7M",
+        "INFLUENCE RAGE"
+      ]
+    },
+    {
+      "key": "classificatoria-r9",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 9",
+      "round": 9,
+      "date": "2026-08-29",
+      "dateLabel": "29/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "RISE GAMING",
+        "TEAM SOLID"
+      ]
+    },
+    {
+      "key": "classificatoria-r10",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 10",
+      "round": 10,
+      "date": "2026-08-30",
+      "dateLabel": "30/08",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "CIVIS",
+        "LOUD SNICKERS"
+      ]
+    },
+    {
+      "key": "classificatoria-r11",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 11",
+      "round": 11,
+      "date": "2026-09-05",
+      "dateLabel": "05/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "AFROGAMES",
+        "CPT VOX"
+      ]
+    },
+    {
+      "key": "classificatoria-r12",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 12",
+      "round": 12,
+      "date": "2026-09-06",
+      "dateLabel": "06/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "LOOPS",
+        "ALPHA7"
+      ]
+    },
+    {
+      "key": "classificatoria-r13",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 13",
+      "round": 13,
+      "date": "2026-09-12",
+      "dateLabel": "12/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "INTZ",
+        "RUSH GAMING"
+      ]
+    },
+    {
+      "key": "classificatoria-r14",
+      "stage": "classificatoria",
+      "stageName": "Classificatória",
+      "label": "Rodada 14",
+      "round": 14,
+      "date": "2026-09-13",
+      "dateLabel": "13/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": [
+        "SX TET",
+        "LOS"
+      ]
+    },
+    {
+      "key": "segunda-fase-r1",
+      "stage": "segundaFase",
+      "stageName": "Segunda Fase",
+      "label": "Rodada 1",
+      "round": 1,
+      "date": "2026-09-19",
+      "dateLabel": "19/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    },
+    {
+      "key": "segunda-fase-r2",
+      "stage": "segundaFase",
+      "stageName": "Segunda Fase",
+      "label": "Rodada 2",
+      "round": 2,
+      "date": "2026-09-20",
+      "dateLabel": "20/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    },
+    {
+      "key": "segunda-fase-r3",
+      "stage": "segundaFase",
+      "stageName": "Segunda Fase",
+      "label": "Rodada 3",
+      "round": 3,
+      "date": "2026-09-26",
+      "dateLabel": "26/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    },
+    {
+      "key": "segunda-fase-r4",
+      "stage": "segundaFase",
+      "stageName": "Segunda Fase",
+      "label": "Rodada 4",
+      "round": 4,
+      "date": "2026-09-27",
+      "dateLabel": "27/09",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    },
+    {
+      "key": "segunda-fase-r5",
+      "stage": "segundaFase",
+      "stageName": "Segunda Fase",
+      "label": "Rodada 5",
+      "round": 5,
+      "date": "2026-10-03",
+      "dateLabel": "03/10",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    },
+    {
+      "key": "segunda-fase-r6",
+      "stage": "segundaFase",
+      "stageName": "Segunda Fase",
+      "label": "Rodada 6",
+      "round": 6,
+      "date": "2026-10-04",
+      "dateLabel": "04/10",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    },
+    {
+      "key": "final-d1",
+      "stage": "final",
+      "stageName": "Grande Final",
+      "label": "Dia 1",
+      "day": 1,
+      "date": "2026-10-10",
+      "dateLabel": "10/10",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    },
+    {
+      "key": "final-d2",
+      "stage": "final",
+      "stageName": "Grande Final",
+      "label": "Dia 2",
+      "day": 2,
+      "date": "2026-10-11",
+      "dateLabel": "11/10",
+      "time": "13h",
+      "time24": "13:00",
+      "timezone": "America/Sao_Paulo",
+      "restingTeams": []
+    }
+  ]
+}
