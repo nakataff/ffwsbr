@@ -1,0 +1,282 @@
+name: Atualiza WB 2026 S2 R11 Q1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/cff-r11-q1.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Atualizar JSONs da queda
+        shell: bash
+        run: |
+          python <<'PY'
+          import json, pathlib, re, unicodedata, collections
+
+          base = pathlib.Path('ffws-br-2026-s2')
+          DATE = '2026-09-05'
+          ROUND = 11
+          DROP = 1
+          MAP = 'Bermuda'
+
+          team_source = [
+              ('TEAM SOLID',27,0,18,2),
+              ('FLUXO W7M',24,1,12,1),
+              ('RISE GAMING',14,0,10,7),
+              ('LOUD SNICKERS',14,0,6,3),
+              ('LOS',11,0,9,9),
+              ('RUSH GAMING',10,0,3,4),
+              ('SX TET',9,0,4,6),
+              ('CIVIS SPORTS',8,0,8,11),
+              ('ALPHA7',8,0,7,10),
+              ('INFLUENCE RAGE',8,0,2,5),
+              ('LOOPS',3,0,0,8),
+              ('INTZ ESPORTS',0,0,0,12),
+          ]
+
+          player_source = [
+              ('Pitbull','TEAM SOLID',7,4284,8,1),
+              ('Giuh','FLUXO W7M',5,1685,5,0),
+              ('MT7','FLUXO W7M',4,2821,2,0),
+              ('vitinxp','TEAM SOLID',4,2454,8,0),
+              ('Erick11','RISE GAMING',4,1810,3,0),
+              ('BYTE333','TEAM SOLID',4,1554,7,0),
+              ('Mala','RISE GAMING',4,1094,2,0),
+              ('Motovea','TEAM SOLID',3,3052,4,0),
+              ('Yago','LOS',3,2771,1,0),
+              ('BuTziN','FLUXO W7M',3,1518,4,0),
+              ('Raone7','LOS',3,1489,1,0),
+              ('SoaresXL','CIVIS SPORTS',3,1299,1,0),
+              ('Destroi7','CIVIS SPORTS',3,1200,2,0),
+              ('Lc777','ALPHA7',2,1782,1,0),
+              ('Prozin','RUSH GAMING',2,1253,1,0),
+              ('Sam7','ALPHA7',2,1237,1,0),
+              ('LYON','INFLUENCE RAGE',2,965,0,0),
+              ('General!','LOS',2,942,3,0),
+              ('TRAP','LOUD SNICKERS',2,930,2,0),
+              ('Yato7','SX TET',2,928,1,0),
+              ('HAK','LOUD SNICKERS',2,927,0,0),
+              ('MitoMvp','ALPHA7',2,790,1,0),
+              ('Furiazz7','SX TET',2,462,0,0),
+              ('KaKaZk','RISE GAMING',1,2616,5,0),
+              ('GUAXA','LOUD SNICKERS',1,1680,1,0),
+              ('Nandox','RISE GAMING',1,1561,6,0),
+              ('ERICKING','RUSH GAMING',1,1229,0,0),
+              ('JNmvp7','ALPHA7',1,879,3,0),
+              ('Rigby245','LOS',1,826,3,0),
+              ('BZP','LOUD SNICKERS',1,810,3,0),
+              ('Hugo7','CIVIS SPORTS',1,805,3,0),
+              ('Neywp','CIVIS SPORTS',1,339,0,0),
+              ('Bops','FLUXO W7M',0,789,6,0),
+              ('Pão7','LOOPS',0,510,0,0),
+              ('wLiu','SX TET',0,489,3,0),
+              ('Nikeboy','SX TET',0,450,2,0),
+              ('Vitin9','LOOPS',0,349,0,0),
+              ('Gus','INTZ ESPORTS',0,322,0,0),
+              ('nepoIGN','INFLUENCE RAGE',0,290,0,0),
+              ('Draxx7','LOOPS',0,246,0,0),
+              ('honeyzL','INTZ ESPORTS',0,226,0,0),
+              ('IguiNmvp','LOOPS',0,200,0,0),
+              ('kauãxp','INTZ ESPORTS',0,173,0,0),
+              ('IGOR7','INFLUENCE RAGE',0,157,0,0),
+              ('lippe!','INFLUENCE RAGE',0,80,0,0),
+              ('BLACK02','RUSH GAMING',0,0,2,0),
+              ('Guimerlq','RUSH GAMING',0,0,1,0),
+              ('joão7','INTZ ESPORTS',0,0,0,0),
+          ]
+
+          def load(name):
+              with open(base / name, encoding='utf-8') as f:
+                  return json.load(f)
+
+          def save(name, data):
+              with open(base / name, 'w', encoding='utf-8', newline='\n') as f:
+                  json.dump(data, f, ensure_ascii=False, indent=2)
+                  f.write('\n')
+
+          def norm(value):
+              value = unicodedata.normalize('NFD', str(value or ''))
+              value = ''.join(ch for ch in value if unicodedata.category(ch) != 'Mn')
+              return re.sub(r'[^a-z0-9]', '', value.lower())
+
+          def teamcanon(name):
+              return {'civissports':'CIVIS', 'intzesports':'INTZ'}.get(norm(name), str(name).strip())
+
+          stages = load('stages.json')
+          players = load('players.json')
+          old_stats = load('player-stats.json')
+          home = load('home-results.json')
+          radar = load('radar-summary.json')
+
+          if any(int(x.get('round',0)) == ROUND and int(x.get('drop',x.get('number',0))) == DROP for x in stages['classificatoria']['rounds']):
+              raise SystemExit('R11 Q1 já existe; abortando para evitar duplicação.')
+
+          alias_index = {}
+          meta_by_name = {}
+          for meta in players['players']:
+              meta_by_name[meta['name']] = meta
+              for alias in [meta['name'], *(meta.get('aliases') or [])]:
+                  alias_index.setdefault(norm(alias), meta['name'])
+
+          canonical_players = []
+          for raw, team, kills, damage, assists, mvp in player_source:
+              name = alias_index.get(norm(raw))
+              if not name:
+                  raise SystemExit(f'Jogador sem correspondência: {raw}')
+              canonical_players.append((name, teamcanon(team), kills, damage, assists, mvp))
+
+          if len(canonical_players) != 48:
+              raise SystemExit('Quantidade de jogadores inválida')
+          if sum(x[2] for x in canonical_players) != 79 or sum(x[3] for x in team_source) != 79:
+              raise SystemExit('Total de abates não confere')
+
+          by_team_players = collections.Counter()
+          for name, team, kills, damage, assists, mvp in canonical_players:
+              by_team_players[team] += kills
+          by_team_source = {teamcanon(team): kills for team, points, booyah, kills, pos in team_source}
+          if dict(by_team_players) != by_team_source:
+              raise SystemExit(f'Abates por equipe divergentes: {by_team_players} != {by_team_source}')
+
+          placement = {1:12,2:9,3:8,4:7,5:6,6:5,7:4,8:3,9:2,10:1,11:0,12:0}
+          results = []
+          for team, points, booyah, kills, pos in team_source:
+              pp = placement[pos]
+              if pp + kills != points:
+                  raise SystemExit(f'Pontuação divergente para {team}')
+              results.append({'team':teamcanon(team),'position':pos,'placementPoints':pp,'kills':kills,'points':points,'booyah':booyah})
+
+          stages['classificatoria']['rounds'].append({'round':ROUND,'number':DROP,'drop':DROP,'map':MAP,'results':results})
+          stages['updatedAt'] = DATE
+
+          standings = collections.defaultdict(lambda: {'points':0,'booyahs':0,'kills':0,'placementPoints':0,'matches':0})
+          for event in stages['classificatoria']['rounds']:
+              for row in event.get('results', []):
+                  acc = standings[row['team']]
+                  acc['points'] += int(row.get('points',0))
+                  acc['booyahs'] += int(row.get('booyah',0))
+                  acc['kills'] += int(row.get('kills',0))
+                  acc['placementPoints'] += int(row.get('placementPoints',0))
+                  acc['matches'] += 1
+          stage_rows = [{'team':team, **acc} for team, acc in standings.items()]
+          stage_rows.sort(key=lambda x: (-x['points'], -x['booyahs'], -x['kills'], x['team']))
+          for i, row in enumerate(stage_rows, 1):
+              row['position'] = i
+          stages['classificatoria']['rows'] = stage_rows
+
+          if any(int(e.get('day',0)) == ROUND and int(e.get('drop',0)) == DROP and e.get('stage') == 'classificatoria' for e in players['entries']):
+              raise SystemExit('Entradas de jogador da R11 Q1 já existem')
+
+          new_entries = []
+          for name, team, kills, damage, assists, mvp in canonical_players:
+              meta = meta_by_name[name]
+              new_entries.append({
+                  'stage':'classificatoria','day':ROUND,'round':ROUND,'drop':DROP,'map':MAP,
+                  'name':name,'team':team,'kills':kills,'damage':damage,'assists':assists,'matches':1,'mvp':mvp,
+                  'roleShort':meta.get('roleShort',''),'country':meta.get('country','br'),'rookie':bool(meta.get('rookie',False))
+              })
+          new_entries.sort(key=lambda e: (e['team'], e['name'].casefold()))
+          players['entries'].extend(new_entries)
+          players['updatedAt'] = DATE
+
+          aggregate = collections.defaultdict(lambda: collections.Counter())
+          daily_kills = collections.defaultdict(lambda: collections.Counter())
+          for entry in players['entries']:
+              name = entry['name']
+              for field in ('kills','damage','assists','matches','mvp'):
+                  aggregate[name][field] += int(entry.get(field,0) or 0)
+              daily_kills[name][int(entry.get('day',0) or 0)] += int(entry.get('kills',0) or 0)
+
+          old_key_by_name = {value['name']: key for key, value in old_stats['players'].items()}
+          ordered_names = [value['name'] for value in old_stats['players'].values()]
+          for meta in players['players']:
+              if meta['name'] not in old_key_by_name and meta['name'] in aggregate:
+                  ordered_names.append(meta['name'])
+
+          stats = {'tournament': old_stats.get('tournament','WB 2026 S2'), 'updatedAt': DATE, 'players': {}}
+          for name in ordered_names:
+              key = old_key_by_name.get(name, norm(name))
+              old = old_stats['players'].get(key, {})
+              meta = meta_by_name.get(name, {})
+              acc = aggregate[name]
+              team = next((e['team'] for e in reversed(players['entries']) if e['name'] == name), None) or old.get('team') or meta.get('team') or ''
+              stage = {f: acc[f] for f in ('kills','damage','assists','matches','mvp')}
+              stats['players'][key] = {
+                  'name':name,'team':team,'kills':acc['kills'],'damage':acc['damage'],'assists':acc['assists'],'matches':acc['matches'],'mvp':acc['mvp'],
+                  'record':max(daily_kills[name].values(), default=0),
+                  'stages':({'classificatoria':stage} if acc['matches'] else {}),
+                  'rankKills':None,'rankDamage':None,'rankAssists':None
+              }
+
+          for metric, rank_field in [('kills','rankKills'),('damage','rankDamage'),('assists','rankAssists')]:
+              values = [v[metric] for v in stats['players'].values()]
+              for value in stats['players'].values():
+                  value[rank_field] = 1 + sum(x > value[metric] for x in values) if value[metric] > 0 else None
+
+          home['updatedAt'] = DATE
+          home['status'] = 'live'
+          home['stage'] = 'classificatoria'
+          home['daysCompleted'] = 10
+          home['matchesCompleted'] = len(stages['classificatoria']['rounds'])
+          home['teams'] = [{k:row[k] for k in ('team','position','points','booyahs','kills','matches')} for row in stage_rows[:6]]
+
+          player_rows = [
+              {'player':v['name'],'team':v['team'],'kills':v['kills'],'damage':v['damage'],'assists':v['assists'],'matches':v['matches'],'mvp':v['mvp']}
+              for v in stats['players'].values()
+          ]
+          def top6(metric):
+              return sorted(player_rows, key=lambda x: (-x[metric], -x['kills'], x['player'].casefold()))[:6]
+          home['rankings'] = {'kills':top6('kills'),'damage':top6('damage'),'assists':top6('assists')}
+          home['players'] = list(home['rankings']['kills'])
+
+          radar['updatedAt'] = DATE
+          radar['status'] = 'live'
+          radar.setdefault('classificatoria', {})['finished'] = False
+          radar['classificatoria']['rows'] = [dict(row) for row in stage_rows]
+
+          target_entries = [e for e in players['entries'] if int(e.get('day',0)) == ROUND and int(e.get('drop',0)) == DROP and e.get('stage') == 'classificatoria']
+          if len(target_entries) != 48 or sum(e['kills'] for e in target_entries) != 79:
+              raise SystemExit('Validação final de jogadores falhou')
+          if sum(r['kills'] for r in results) != 79:
+              raise SystemExit('Validação final de equipes falhou')
+          expected = {'LOS':(861,515,55),'INTZ':(729,466,55),'LOUD SNICKERS':(728,393,49),'FLUXO W7M':(728,427,49),'TEAM SOLID':(581,327,49),'CIVIS':(305,172,49)}
+          for team, triplet in expected.items():
+              row = next(x for x in stage_rows if x['team'] == team)
+              if (row['points'],row['kills'],row['matches']) != triplet:
+                  raise SystemExit(f'Classificação inesperada para {team}: {row}')
+
+          save('stages.json', stages)
+          save('players.json', players)
+          save('player-stats.json', stats)
+          save('home-results.json', home)
+          save('radar-summary.json', radar)
+          print('R11 Q1 Bermuda validada: 12 times, 48 jogadores, 79 abates.')
+          PY
+
+      - name: Validar JSONs
+        shell: bash
+        run: |
+          python -m json.tool ffws-br-2026-s2/stages.json >/dev/null
+          python -m json.tool ffws-br-2026-s2/players.json >/dev/null
+          python -m json.tool ffws-br-2026-s2/player-stats.json >/dev/null
+          python -m json.tool ffws-br-2026-s2/home-results.json >/dev/null
+          python -m json.tool ffws-br-2026-s2/radar-summary.json >/dev/null
+          git diff --check
+
+      - name: Commitar atualização e remover workflow temporário
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ffws-br-2026-s2/stages.json ffws-br-2026-s2/players.json ffws-br-2026-s2/player-stats.json ffws-br-2026-s2/home-results.json ffws-br-2026-s2/radar-summary.json
+          git rm .github/workflows/cff-r11-q1.yml
+          git commit -m "Atualiza R11 Q1 da WB 2026 S2"
+          git push origin HEAD:main
