@@ -40,3 +40,12 @@ window.FFWS_BR_2026_S2_CONFIG = Object.freeze({
     }
   }
 });
+
+(() => {
+  if (document.querySelector('script[data-cff-s2-player-evolution]')) return;
+  const script = document.createElement('script');
+  script.src = 'js/s2-player-evolution.min.js?v=20260905-s2-player-evolution-v1';
+  script.async = true;
+  script.dataset.cffS2PlayerEvolution = '1';
+  document.head.appendChild(script);
+})();
