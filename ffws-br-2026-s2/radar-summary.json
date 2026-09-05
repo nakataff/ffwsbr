@@ -8,129 +8,129 @@
     "rows": [
       {
         "team": "LOS",
-        "points": 861,
-        "booyahs": 8,
-        "kills": 515,
-        "placementPoints": 346,
-        "matches": 55,
-        "position": 1
-      },
-      {
-        "team": "INTZ",
-        "points": 729,
-        "booyahs": 5,
-        "kills": 466,
-        "placementPoints": 263,
-        "matches": 55,
-        "position": 2
-      },
-      {
-        "team": "LOUD SNICKERS",
-        "points": 728,
-        "booyahs": 11,
-        "kills": 393,
-        "placementPoints": 335,
-        "matches": 49,
-        "position": 3
+        "position": 1,
+        "points": 962,
+        "matches": 60,
+        "booyahs": 9,
+        "kills": 575,
+        "placementPoints": 387
       },
       {
         "team": "FLUXO W7M",
-        "points": 728,
-        "booyahs": 9,
-        "kills": 427,
-        "placementPoints": 301,
-        "matches": 49,
-        "position": 4
+        "position": 2,
+        "points": 838,
+        "matches": 54,
+        "booyahs": 13,
+        "kills": 486,
+        "placementPoints": 352
+      },
+      {
+        "team": "LOUD SNICKERS",
+        "position": 3,
+        "points": 805,
+        "matches": 54,
+        "booyahs": 11,
+        "kills": 441,
+        "placementPoints": 364
+      },
+      {
+        "team": "INTZ",
+        "position": 4,
+        "points": 786,
+        "matches": 60,
+        "booyahs": 5,
+        "kills": 502,
+        "placementPoints": 284
       },
       {
         "team": "ALPHA7",
-        "points": 652,
+        "position": 5,
+        "points": 690,
+        "matches": 60,
         "booyahs": 4,
-        "kills": 416,
-        "placementPoints": 236,
-        "matches": 55,
-        "position": 5
+        "kills": 435,
+        "placementPoints": 255
       },
       {
         "team": "RISE GAMING",
-        "points": 636,
-        "booyahs": 5,
-        "kills": 384,
-        "placementPoints": 252,
-        "matches": 49,
-        "position": 6
-      },
-      {
-        "team": "RUSH GAMING",
-        "points": 612,
-        "booyahs": 3,
-        "kills": 360,
-        "placementPoints": 252,
-        "matches": 55,
-        "position": 7
-      },
-      {
-        "team": "CPT VOX",
-        "points": 585,
-        "booyahs": 3,
-        "kills": 309,
-        "placementPoints": 276,
+        "position": 6,
+        "points": 660,
         "matches": 54,
-        "position": 8
+        "booyahs": 5,
+        "kills": 402,
+        "placementPoints": 258
       },
       {
         "team": "TEAM SOLID",
-        "points": 581,
+        "position": 7,
+        "points": 650,
+        "matches": 54,
         "booyahs": 5,
-        "kills": 327,
-        "placementPoints": 254,
-        "matches": 49,
-        "position": 9
+        "kills": 364,
+        "placementPoints": 286
       },
       {
-        "team": "INFLUENCE RAGE",
-        "points": 524,
-        "booyahs": 2,
-        "kills": 305,
-        "placementPoints": 219,
-        "matches": 49,
-        "position": 10
+        "team": "RUSH GAMING",
+        "position": 8,
+        "points": 648,
+        "matches": 60,
+        "booyahs": 3,
+        "kills": 378,
+        "placementPoints": 270
+      },
+      {
+        "team": "CPT VOX",
+        "position": 9,
+        "points": 585,
+        "matches": 54,
+        "booyahs": 3,
+        "kills": 309,
+        "placementPoints": 276
       },
       {
         "team": "SX TET",
-        "points": 512,
+        "position": 10,
+        "points": 569,
+        "matches": 60,
         "booyahs": 3,
-        "kills": 309,
-        "placementPoints": 203,
-        "matches": 55,
-        "position": 11
+        "kills": 339,
+        "placementPoints": 230
       },
       {
-        "team": "AFROGAMES",
-        "points": 494,
-        "booyahs": 1,
-        "kills": 268,
-        "placementPoints": 226,
+        "team": "INFLUENCE RAGE",
+        "position": 11,
+        "points": 556,
         "matches": 54,
-        "position": 12
+        "booyahs": 2,
+        "kills": 322,
+        "placementPoints": 234
       },
       {
         "team": "LOOPS",
-        "points": 463,
+        "position": 12,
+        "points": 508,
+        "matches": 60,
         "booyahs": 2,
-        "kills": 282,
-        "placementPoints": 181,
-        "matches": 55,
-        "position": 13
+        "kills": 308,
+        "placementPoints": 200
+      },
+      {
+        "team": "AFROGAMES",
+        "position": 13,
+        "points": 494,
+        "matches": 54,
+        "booyahs": 1,
+        "kills": 268,
+        "placementPoints": 226
       },
       {
         "team": "CIVIS",
-        "points": 305,
+        "position": 14,
+        "points": 321,
+        "matches": 54,
         "booyahs": 0,
-        "kills": 172,
-        "placementPoints": 133,
-        "matches": 49,
-        "position": 14
+        "kills": 181,
+        "placementPoints": 140
       }
     ]
   },
