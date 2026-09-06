@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <base href="/">
   <script>
   (function () {
     if (location.protocol === 'http:' && !/^(localhost|127\.0\.0\.1)$/i.test(location.hostname)) {
@@ -13,10 +14,11 @@
   <title>Notícia | Central Free Fire</title>
   <meta name="description" content="Notícia da Central Free Fire.">
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/bundle.min.css">
+  <link rel="stylesheet" href="css/bundle.min.css?v=20260904-sidebar-nested-v22">
   <link rel="stylesheet" href="css/site-back-navigation.css?v=20260902-back-accent-v30">
   <script defer src="js/config.min.js?v=20260607-noticia-dinamica-v3"></script>
-  <script defer src="js/news-admin-provider.js?v=20260902-news-schedule-v27"></script>
+  <script defer src="js/news-admin-provider.js?v=20260905-pretty-news-v38"></script>
+  <script defer src="js/news-index-sidebar.js?v=20260905-index-sidebar-v1"></script>
   <script defer src="js/news-engagement.js?v=20260901-private-metrics-v10"></script>
   <script defer src="js/site-analytics.js?v=20260806-admin-v2"></script>
   <script defer src="js/site-back-navigation.min.js?v=20260902-pretty-routes-v29"></script>
@@ -24,6 +26,10 @@
     body { background: var(--bg, #07101f); color: var(--text, #f5f8ff); }
     .news-page-shell { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
     .news-topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; }
+    .news-topbar-left { display:flex; align-items:center; gap:10px; min-width:0; }
+    .news-sidebar-trigger { display:inline-flex; align-items:center; gap:8px; min-height:40px; border:1px solid rgba(0,200,255,.28); background:rgba(0,200,255,.08); color:#fff; border-radius:12px; padding:9px 12px; font-weight:950; cursor:pointer; }
+    .news-sidebar-trigger span { color:var(--accent,#00c8ff); font-size:1.15rem; line-height:1; }
+    .news-sidebar-trigger b { font-size:.78rem; letter-spacing:.8px; }
     .news-back { border:1px solid rgba(0,200,255,.25); background:rgba(0,200,255,.07); color:#fff; border-radius:999px; padding:10px 14px; font-weight:900; text-decoration:none; }
     .news-brand { display:flex; align-items:center; gap:10px; color:#8fb3dc; font-size:.82rem; font-weight:950; letter-spacing:1.2px; text-transform:uppercase; }
     .news-brand img { width:32px; height:32px; object-fit:contain; border-radius:8px; }
@@ -47,7 +53,9 @@
     .news-state { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; color:#8fb3dc; font-weight:900; padding:20px; }
     @media (max-width: 680px) {
       .news-page-shell { width: min(100% - 18px, 980px); padding-top:14px; }
-      .news-topbar { align-items:flex-start; flex-direction:column-reverse; }
+      .news-topbar { align-items:flex-start; }
+      .news-topbar-left { flex-wrap:wrap; }
+      .news-sidebar-trigger b { display:none; }
       .news-cover { max-height:300px; }
       .news-content { padding:18px; }
       .news-title { font-size:2rem; }
@@ -249,6 +257,10 @@
       ensure('property', 'og:description', description || title);
       ensure('property', 'og:image', image || fallbackImage);
       ensure('property', 'og:type', 'article');
+      ensure('property', 'og:url', location.href);
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+      canonical.href = location.origin + location.pathname;
     }
 
     function renderNotFound() {
@@ -281,8 +293,12 @@
     async function init() {
       try {
         const params = new URLSearchParams(location.search);
-        const wanted = decodeURIComponent(params.get('id') || params.get('slug') || '').trim();
+        const pathMatch = location.pathname.match(/^\/noticia\/([^\/]+)\/?$/i);
+        const rawWanted = params.get('id') || params.get('slug') || (pathMatch && pathMatch[1]) || '';
+        const wanted = decodeURIComponent(rawWanted).trim();
         if (!wanted) return renderNotFound();
+        const prettyPath = '/noticia/' + encodeURIComponent(wanted);
+        if (location.pathname !== prettyPath || location.search) history.replaceState(null, '', prettyPath);
 
         let wait = 0;
         while ((!window.CFF_CONFIG || !window.CFF_CONFIG.sheets || !window.CFF_NEWS_PROVIDER) && wait < 100) {

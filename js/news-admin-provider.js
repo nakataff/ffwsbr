@@ -156,7 +156,7 @@
       createdAt: Number(raw && raw.createdAt || 0),
       updatedAt: Number(raw && raw.updatedAt || 0),
       source: String(raw && raw.source || 'admin'),
-      urlInterna: 'noticia.html?id=' + encodeURIComponent(id)
+      urlInterna: '/noticia/' + encodeURIComponent(id)
     };
   }
 
