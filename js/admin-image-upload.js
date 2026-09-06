@@ -4,6 +4,7 @@
   const SETTINGS_KEY = 'cff-cloudinary-admin-settings-v1';
   const MAX_FILE_SIZE = 8 * 1024 * 1024;
   const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
+  const PHOTO_CREDIT_TOKEN = 'FONTEFOTO';
 
   const $ = (selector, root = document) => root.querySelector(selector);
 
@@ -28,6 +29,7 @@
       .cff-image-upload-status{margin:8px 0 0;font-size:.76rem;color:#9ba4b3;line-height:1.35}.cff-image-upload-status.is-error{color:#ff7777}.cff-image-upload-status.is-success{color:#72d889}
       .cff-image-preview{display:none;margin-top:10px;border:1px solid #2d333c;border-radius:9px;overflow:hidden;background:#0c0e12}.cff-image-preview.is-visible{display:grid;grid-template-columns:120px minmax(0,1fr)}
       .cff-image-preview img{width:120px;height:82px;object-fit:cover;display:block}.cff-image-preview-copy{padding:9px 10px;min-width:0}.cff-image-preview-copy b{display:block;font-size:.76rem;color:#fff;margin-bottom:4px}.cff-image-preview-copy a{display:block;color:#73ccff;font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
+      .cff-photo-credit{margin-top:12px;padding-top:11px;border-top:1px solid #2b3139}.cff-photo-credit label{display:block;color:#dce7f4;font-size:.76rem;font-weight:900;margin-bottom:6px}.cff-photo-credit input{width:100%;box-sizing:border-box}.cff-photo-credit small{display:block;color:#7f8998;font-size:.68rem;line-height:1.4;margin-top:6px}
       .cff-cloudinary-settings{margin-top:10px;border-top:1px solid #2b3139;padding-top:9px}.cff-cloudinary-settings summary{cursor:pointer;color:#8ecfff;font-size:.76rem;font-weight:800;user-select:none}.cff-cloudinary-settings-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-top:9px}.cff-cloudinary-settings-grid label{display:block;color:#9ca6b5;font-size:.7rem;font-weight:800}.cff-cloudinary-settings-grid input{margin-top:5px}.cff-cloudinary-note{display:block;color:#777f8d;font-size:.68rem;line-height:1.35;margin-top:7px}
       .cff-cloudinary-settings .admin-btn{white-space:nowrap}
       @media(max-width:700px){.cff-cloudinary-settings-grid{grid-template-columns:1fr}.cff-cloudinary-settings-grid .admin-btn{width:100%}.cff-image-preview.is-visible{grid-template-columns:94px minmax(0,1fr)}.cff-image-preview img{width:94px;height:72px}}
@@ -121,6 +123,15 @@
     textarea.focus();
   }
 
+  function stripPhotoCreditToken(text) {
+    let credit = '';
+    const clean = String(text || '').replace(/^\s*\[FONTEFOTO\s*:\s*([^\]]*)\]\s*\n?/im, (full, value) => {
+      credit = String(value || '').trim();
+      return '';
+    });
+    return { text: clean.replace(/^\n+/, ''), credit };
+  }
+
   function init() {
     const urlInput = $('#news-image');
     const field = urlInput?.closest('.admin-field');
@@ -145,6 +156,11 @@
       </div>
       <p id="cff-image-upload-status" class="cff-image-upload-status">${isConfigured() ? 'Cloudinary configurado. Você já pode enviar imagens.' : 'Configure o Cloudinary abaixo uma única vez neste navegador.'}</p>
       <div id="cff-image-preview" class="cff-image-preview"><img id="cff-image-preview-img" alt="Prévia"><div class="cff-image-preview-copy"><b>Imagem atual</b><a id="cff-image-preview-link" href="#" target="_blank" rel="noopener"></a></div></div>
+      <div class="cff-photo-credit">
+        <label for="cff-photo-credit-input">Legenda / fonte da foto <span style="font-weight:650;color:#7f8998">(opcional)</span></label>
+        <input id="cff-photo-credit-input" maxlength="300" placeholder="Ex.: Hakim Ziyech em França x Marrocos pela Copa de 2022 — Foto: REUTERS/Carl Recine">
+        <small>O texto aparece logo abaixo da imagem principal da matéria.</small>
+      </div>
       <details class="cff-cloudinary-settings" ${isConfigured() ? '' : 'open'}>
         <summary>⚙ Configurar Cloudinary</summary>
         <div class="cff-cloudinary-settings-grid">
@@ -169,6 +185,9 @@
     const previewLink = $('#cff-image-preview-link');
     const cloudName = $('#cff-cloudinary-name');
     const preset = $('#cff-cloudinary-preset');
+    const creditInput = $('#cff-photo-credit-input');
+    const newsForm = $('#admin-news-form');
+    const contentInput = $('#news-content');
     const settings = getSettings();
     cloudName.value = settings.cloudName;
     preset.value = settings.uploadPreset;
@@ -185,6 +204,20 @@
       previewImg.src = url;
       previewLink.textContent = url;
       previewLink.href = url;
+    }
+
+    function restorePhotoCreditFromContent() {
+      if (!contentInput || !creditInput) return;
+      const parsed = stripPhotoCreditToken(contentInput.value);
+      if (parsed.credit) creditInput.value = parsed.credit;
+      contentInput.value = parsed.text;
+    }
+
+    function encodePhotoCreditIntoContent() {
+      if (!contentInput || !creditInput) return;
+      const parsed = stripPhotoCreditToken(contentInput.value);
+      const credit = String(creditInput.value || '').trim().replace(/\]/g, ')');
+      contentInput.value = credit ? `[${PHOTO_CREDIT_TOKEN}: ${credit}]\n${parsed.text}` : parsed.text;
     }
 
     async function handleCoverFile(file) {
@@ -266,6 +299,13 @@
     urlInput.addEventListener('change', refreshPreview);
     previewImg.addEventListener('error', () => preview.classList.remove('is-visible'));
 
+    if (newsForm) {
+      newsForm.addEventListener('submit', () => {
+        encodePhotoCreditIntoContent();
+        setTimeout(restorePhotoCreditFromContent, 0);
+      }, true);
+    }
+
     document.addEventListener('click', (event) => {
       const inlineButton = event.target.closest?.('#admin-insert-image');
       if (!inlineButton || !isConfigured()) return;
@@ -276,10 +316,22 @@
     }, true);
 
     document.addEventListener('click', (event) => {
-      if (event.target.closest?.('[data-edit-news]')) setTimeout(refreshPreview, 80);
-      if (event.target.closest?.('#admin-new-news')) setTimeout(refreshPreview, 80);
+      if (event.target.closest?.('[data-edit-news]')) {
+        setTimeout(() => {
+          refreshPreview();
+          restorePhotoCreditFromContent();
+        }, 100);
+      }
+      if (event.target.closest?.('#admin-new-news')) {
+        setTimeout(() => {
+          refreshPreview();
+          creditInput.value = '';
+          restorePhotoCreditFromContent();
+        }, 100);
+      }
     }, true);
 
+    restorePhotoCreditFromContent();
     refreshPreview();
 
     window.CFF_ADMIN_IMAGE_UPLOAD = {
