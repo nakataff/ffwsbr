@@ -59,13 +59,20 @@ function json(data, status = 200, request = null, extraHeaders = {}) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
+function normalizeTimestamp(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return Date.now();
+  return n < 1_000_000_000_000 ? n * 1000 : n;
+}
+
 function dateKeys(timestamp = Date.now()) {
+  const normalized = normalizeTimestamp(timestamp);
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: TIME_ZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).formatToParts(new Date(Number(timestamp) || Date.now()));
+  }).formatToParts(new Date(normalized));
   const map = Object.fromEntries(parts.map((part) => [part.type, part.value]));
   return {
     monthKey: `${map.year}-${map.month}`,
@@ -158,8 +165,6 @@ async function receiveWebhook(request, env) {
 
   for (const entry of body.entry) {
     try {
-      // Instagram comment webhooks are normally wrapped in entry.changes[].
-      // Keep support for the direct field/value shape as a fallback.
       const changes = Array.isArray(entry?.changes) ? entry.changes : [];
       for (const change of changes) {
         if (change?.field === 'comments' && change.value) {
@@ -216,7 +221,7 @@ async function processComment(env, entry) {
     type: 'comment',
     sourceId: mediaId || commentId,
     points: RULES.commentPoints,
-    timestamp: Number(entry.time) || Date.now(),
+    timestamp: normalizeTimestamp(entry.time),
   });
 }
 
@@ -257,7 +262,7 @@ async function processStoryMention(env, event, story) {
     username = await fetchMessageUsername(story.messageId, env.INSTAGRAM_ACCESS_TOKEN);
   }
 
-  const timestamp = Number(event.timestamp) || Date.now();
+  const timestamp = normalizeTimestamp(event.timestamp);
   const key = await userKey(identity, username);
   const { dayKey } = dateKeys(timestamp);
 
