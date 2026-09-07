@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260907-s1-selection-s2-match-v1';
+  const BUILD = '20260907-s1-selection-s2-match-v2';
   const WEEKS = Object.freeze({
     '1':[1,2],'2':[3,4],'3':[5,6],'4':[7,8],'5':[9,10],
     '6':[11,12],'7':[13,14],'8':[15,16],'9':[17,18],'10':[19,20]
@@ -27,7 +27,6 @@
   const norm = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
   const num = value => Number(value) || 0;
   const esc = value => String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-  const jsq = value => String(value ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');
 
   async function getJson(path) {
     const response = await fetch(`${path}?v=${BUILD}`, { cache:'force-cache' });
@@ -142,7 +141,7 @@
       if (found) return found;
     } catch (_) {}
     const known = {
-      BIELGOD:'bielgod.webp',Cauan7:'cauan7.webp',WHISKYx:'whisky.webp',Rojão:'silhueta.webp',Mts007:'mts007.webp',Yann7awp:'yan7.webp',Theus:'theus.webp',wLiu:'wliu.webp',ITAL0$$:'italo.webp',IguiNmvp:'iguin.webp',Lost21:'lost21.webp',Keven7!:'keven.webp','DRADE.11':'drade.webp','SEU PAI':'seu pai.webp',YOKO7:'yoko.webp'
+      BIELGOD:'bielgod.webp',Cauan7:'cauan7.webp',WHISKYx:'whisky.webp',Rojão:'silhueta.webp',Mts007:'mts007.webp',Yann7awp:'yan7.webp',Theus:'theus.webp',wLiu:'wliu.webp',ITAL0$$:'italo.webp',IguiNmvp:'iguin.webp',Lost21:'lost21.webp','Keven7!':'keven.webp','DRADE.11':'drade.webp','SEU PAI':'seu pai.webp',YOKO7:'yoko.webp'
     };
     if (known[player?.name]) return known[player.name];
     const id = String(player?.id || '').toLowerCase().replace(/[^a-z0-9]/g,'');
