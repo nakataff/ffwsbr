@@ -80,6 +80,30 @@ function dateKeys(timestamp = Date.now()) {
   };
 }
 
+function shiftDayKey(dayKey, days) {
+  const [year, month, day] = String(dayKey || '').split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + Number(days || 0), 12));
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, '0'),
+    String(date.getUTCDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+function weekKeys(timestamp = Date.now()) {
+  const { dayKey } = dateKeys(timestamp);
+  const [year, month, day] = dayKey.split('-').map(Number);
+  const calendar = new Date(Date.UTC(year, month - 1, day, 12));
+  const mondayOffset = (calendar.getUTCDay() + 6) % 7;
+  const weekStartKey = shiftDayKey(dayKey, -mondayOffset);
+  const weekEndKey = shiftDayKey(weekStartKey, 6);
+  return {
+    weekKey: weekStartKey,
+    weekStartKey,
+    weekEndKey,
+  };
+}
+
 function cleanUsername(value) {
   return String(value || '')
     .trim()
@@ -368,8 +392,11 @@ async function awardInteraction(env, event) {
 }
 
 async function getRanking(request, env, url) {
-  const period = url.searchParams.get('period') === 'all' ? 'all' : 'month';
-  const { monthKey } = dateKeys(Date.now());
+  const requested = String(url.searchParams.get('period') || 'week').toLowerCase();
+  const period = ['week', 'month', 'all'].includes(requested) ? requested : 'week';
+  const now = Date.now();
+  const { monthKey } = dateKeys(now);
+  const { weekKey, weekStartKey, weekEndKey } = weekKeys(now);
 
   let result;
   if (period === 'all') {
@@ -383,7 +410,7 @@ async function getRanking(request, env, url) {
       ORDER BY points_all DESC, story_mentions_all DESC, comments_all DESC
       LIMIT 500
     `).all();
-  } else {
+  } else if (period === 'month') {
     result = await env.DB.prepare(`
       SELECT user_key, username, points,
              story_mentions AS storyMentions,
@@ -395,6 +422,21 @@ async function getRanking(request, env, url) {
       ORDER BY points DESC, story_mentions DESC, comments DESC
       LIMIT 500
     `).bind(monthKey).all();
+  } else {
+    result = await env.DB.prepare(`
+      SELECT user_key,
+             MAX(username) AS username,
+             SUM(points) AS points,
+             SUM(CASE WHEN type = 'story' THEN 1 ELSE 0 END) AS storyMentions,
+             SUM(CASE WHEN type = 'comment' THEN 1 ELSE 0 END) AS comments,
+             COUNT(DISTINCT day_key) AS activeDays,
+             MAX(created_at) AS lastInteractionAt
+      FROM awards
+      WHERE day_key BETWEEN ?1 AND ?2
+      GROUP BY user_key
+      ORDER BY points DESC, storyMentions DESC, comments DESC
+      LIMIT 500
+    `).bind(weekStartKey, weekEndKey).all();
   }
 
   const users = {};
@@ -412,7 +454,18 @@ async function getRanking(request, env, url) {
   }
 
   return json(
-    { updatedAt, rules: RULES, users },
+    {
+      updatedAt,
+      rules: RULES,
+      period: {
+        type: period,
+        weekKey,
+        weekStart: weekStartKey,
+        weekEnd: weekEndKey,
+        monthKey,
+      },
+      users,
+    },
     200,
     request,
     { 'Cache-Control': 'public, max-age=60' }
