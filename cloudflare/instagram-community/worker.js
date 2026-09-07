@@ -5,7 +5,7 @@ const RULES = Object.freeze({
   commentLimitPerMedia: 1,
 });
 
-const GRAPH_VERSION = 'v24.0';
+const GRAPH_VERSION = 'v26.0';
 const TIME_ZONE = 'America/Sao_Paulo';
 const ALLOWED_ORIGINS = new Set([
   'https://centralfreefire.com.br',
@@ -158,6 +158,21 @@ async function receiveWebhook(request, env) {
 
   for (const entry of body.entry) {
     try {
+      // Instagram comment webhooks are normally wrapped in entry.changes[].
+      // Keep support for the direct field/value shape as a fallback.
+      const changes = Array.isArray(entry?.changes) ? entry.changes : [];
+      for (const change of changes) {
+        if (change?.field === 'comments' && change.value) {
+          await processComment(env, {
+            field: change.field,
+            value: change.value,
+            time: entry.time,
+          });
+        } else {
+          await logChangeShape(env, entry, change);
+        }
+      }
+
       if (entry?.field === 'comments' && entry.value) {
         await processComment(env, entry);
       }
@@ -167,6 +182,10 @@ async function receiveWebhook(request, env) {
         const story = findStoryMention(event);
         if (story) await processStoryMention(env, event, story);
         else await logMessagingShape(env, event);
+      }
+
+      if (!changes.length && !messaging.length && entry?.field !== 'comments') {
+        await logEntryShape(env, entry);
       }
     } catch (error) {
       console.error('Instagram event processing error', error);
@@ -393,6 +412,37 @@ async function getRanking(request, env, url) {
     request,
     { 'Cache-Control': 'public, max-age=60' }
   );
+}
+
+async function logEntryShape(env, entry) {
+  const summary = {
+    entryKeys: Object.keys(entry || {}),
+    hasChanges: Array.isArray(entry?.changes),
+    changeFields: Array.isArray(entry?.changes)
+      ? entry.changes.map((change) => String(change?.field || '')).filter(Boolean)
+      : [],
+    hasMessaging: Array.isArray(entry?.messaging),
+    time: Number(entry?.time || 0),
+  };
+
+  await env.DB.prepare(
+    'INSERT INTO raw_events (kind, payload, received_at) VALUES (?1, ?2, ?3)'
+  ).bind('unrecognized_entry', JSON.stringify(summary), Date.now()).run();
+}
+
+async function logChangeShape(env, entry, change) {
+  const value = change?.value || {};
+  const summary = {
+    field: String(change?.field || ''),
+    valueKeys: Object.keys(value),
+    fromKeys: Object.keys(value?.from || {}),
+    mediaKeys: Object.keys(value?.media || {}),
+    entryTime: Number(entry?.time || 0),
+  };
+
+  await env.DB.prepare(
+    'INSERT INTO raw_events (kind, payload, received_at) VALUES (?1, ?2, ?3)'
+  ).bind('unrecognized_change', JSON.stringify(summary), Date.now()).run();
 }
 
 async function logMessagingShape(env, event) {
