@@ -12,6 +12,7 @@
     'notas-cff',
     'comparar-1v1'
   ]);
+  const S1_MOBILE_PAGES = new Set(['tabela', 'mvp', 'stats', 'equipes', 'datas', 'final']);
 
   const repairState = new Map();
   let legacyPromise = null;
@@ -129,7 +130,7 @@
     return task;
   }
 
-  function wrapFunction(name) {
+  function wrapNavigateFunction(name) {
     const base = window[name];
     if (typeof base !== 'function' || base.__cffS1RepairWrapped) return;
 
@@ -146,10 +147,36 @@
     window[name] = wrapped;
   }
 
+  function wrapMobileTab() {
+    const base = window.mobileTabClick;
+    if (typeof base !== 'function' || base.__cffS1RepairWrapped) return;
+
+    const wrapped = function(key, button, ...args) {
+      const target = String(key || '').trim();
+      const activeS1 = getActiveS1Page();
+
+      if (activeS1 && S1_MOBILE_PAGES.has(target)) {
+        const result = typeof window.navigate === 'function'
+          ? window.navigate(target)
+          : base.call(this, key, button, ...args);
+        document.querySelectorAll('.nav-mobile-tab').forEach(el => el.classList.remove('active'));
+        button?.classList?.add('active');
+        repairPage(target);
+        return result;
+      }
+
+      return base.call(this, key, button, ...args);
+    };
+
+    wrapped.__cffS1RepairWrapped = true;
+    wrapped.__cffS1RepairBase = base;
+    window.mobileTabClick = wrapped;
+  }
+
   function installWrappers() {
-    wrapFunction('navigate');
-    wrapFunction('navigateAndClose');
-    wrapFunction('mobileTabClick');
+    wrapNavigateFunction('navigate');
+    wrapNavigateFunction('navigateAndClose');
+    wrapMobileTab();
   }
 
   function bootRepair() {
