@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050810">
+  <title>Ranking da Comunidade | Central Free Fire</title>
+  <meta name="description" content="Ranking de interação da comunidade da Central Free Fire no Instagram.">
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
+  <script defer src="js/public-shell.min.js?v=20260904-wb2025s2-dia1-v1"></script>
+  <script defer src="js/config.min.js?v=20260629-laff-json-v1"></script>
+  <style>
+    :root{
+      --ig-bg:#050810;--ig-card:#0b111d;--ig-card2:#0f1726;--ig-border:#1d2a42;
+      --ig-accent:#00c8ff;--ig-text:#f7fbff;--ig-muted:#86a0be;--ig-gold:#ffc83d;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at 50% -10%,rgba(0,200,255,.10),transparent 34%),var(--ig-bg);color:var(--ig-text);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+    button,input{font:inherit}
+    .ig-page{width:min(1180px,calc(100% - 30px));margin:0 auto;padding:36px 0 70px}
+    .ig-hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:22px;align-items:stretch;margin-bottom:22px}
+    .ig-hero-main,.ig-side-card,.ig-card{border:1px solid var(--ig-border);background:linear-gradient(145deg,rgba(15,23,38,.96),rgba(7,12,22,.97));border-radius:20px;box-shadow:0 18px 55px rgba(0,0,0,.24)}
+    .ig-hero-main{position:relative;overflow:hidden;padding:34px}
+    .ig-hero-main::after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;right:-160px;top:-190px;background:rgba(0,200,255,.12);filter:blur(4px);pointer-events:none}
+    .ig-kicker{display:flex;align-items:center;gap:9px;color:var(--ig-accent);font-size:.78rem;font-weight:950;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:12px}
+    .ig-kicker::before{content:"";width:28px;height:3px;border-radius:99px;background:var(--ig-accent)}
+    .ig-title{position:relative;z-index:1;margin:0;font-size:clamp(2rem,5vw,4.35rem);line-height:.94;font-weight:1000;letter-spacing:-.045em;text-transform:uppercase}
+    .ig-title span{display:block;color:var(--ig-accent)}
+    .ig-subtitle{position:relative;z-index:1;max-width:650px;margin:18px 0 0;color:#9cb2cb;font-size:.98rem;line-height:1.65;font-weight:650}
+    .ig-side-card{padding:24px;display:flex;flex-direction:column;justify-content:center}
+    .ig-side-card small{color:var(--ig-muted);font-weight:850;letter-spacing:1px;text-transform:uppercase}
+    .ig-side-card strong{font-size:2.2rem;margin:6px 0 2px;font-weight:1000}
+    .ig-side-card p{margin:0;color:#8fa8c5;line-height:1.45;font-size:.88rem}
+    .ig-status{display:inline-flex;align-items:center;gap:7px;margin-top:18px;width:max-content;padding:7px 10px;border:1px solid rgba(0,200,255,.22);border-radius:999px;background:rgba(0,200,255,.07);color:#bcefff;font-size:.72rem;font-weight:900;letter-spacing:.7px;text-transform:uppercase}
+    .ig-status-dot{width:7px;height:7px;border-radius:50%;background:var(--ig-accent);box-shadow:0 0 12px rgba(0,200,255,.8)}
+    .ig-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:22px 0 16px}
+    .ig-tabs{display:flex;gap:7px;padding:5px;border:1px solid var(--ig-border);border-radius:12px;background:#080e18}
+    .ig-tab{border:0;border-radius:8px;padding:9px 15px;background:transparent;color:#7792b1;font-weight:950;font-size:.77rem;letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
+    .ig-tab.is-active{background:rgba(0,200,255,.13);color:#dff8ff;box-shadow:inset 0 0 0 1px rgba(0,200,255,.28)}
+    .ig-search{position:relative;width:min(350px,100%)}
+    .ig-search input{width:100%;height:43px;border:1px solid var(--ig-border);border-radius:11px;background:#080e18;color:#fff;outline:none;padding:0 14px 0 40px;font-weight:750}
+    .ig-search input:focus{border-color:rgba(0,200,255,.55);box-shadow:0 0 0 3px rgba(0,200,255,.07)}
+    .ig-search::before{content:"⌕";position:absolute;left:14px;top:7px;color:var(--ig-accent);font-size:1.25rem}
+    .ig-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+    .ig-stat{border:1px solid var(--ig-border);border-radius:14px;background:var(--ig-card);padding:18px;min-width:0}
+    .ig-stat span{display:block;color:var(--ig-muted);font-size:.72rem;font-weight:950;letter-spacing:1px;text-transform:uppercase}
+    .ig-stat strong{display:block;margin-top:6px;font-size:1.75rem;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ig-stat small{display:block;margin-top:3px;color:#607a9a;font-weight:700;font-size:.72rem}
+    .ig-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(285px,.65fr);gap:16px;align-items:start}
+    .ig-card{overflow:hidden}
+    .ig-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid var(--ig-border)}
+    .ig-card-head h2{margin:0;font-size:.9rem;font-weight:1000;letter-spacing:1.25px;text-transform:uppercase}
+    .ig-updated{color:#627b99;font-size:.7rem;font-weight:750;text-align:right}
+    .ig-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:18px 18px 10px}
+    .ig-podium-item{min-width:0;border:1px solid #1d2a42;border-radius:13px;background:rgba(255,255,255,.025);padding:14px;text-align:center}
+    .ig-podium-item:first-child{border-color:rgba(255,200,61,.35);background:linear-gradient(180deg,rgba(255,200,61,.08),rgba(255,255,255,.02))}
+    .ig-rank-medal{display:flex;width:32px;height:32px;margin:0 auto 9px;align-items:center;justify-content:center;border-radius:50%;background:#131d2d;color:#b8c8dc;font-size:.8rem;font-weight:1000}
+    .ig-podium-item:first-child .ig-rank-medal{background:rgba(255,200,61,.14);color:var(--ig-gold)}
+    .ig-user-icon{width:46px;height:46px;margin:0 auto 9px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#16243a,#0a101b);border:1px solid #263852;color:var(--ig-accent);font-size:1rem;font-weight:1000;text-transform:uppercase}
+    .ig-podium-user{display:block;color:#fff;font-size:.82rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ig-podium-points{display:block;margin-top:4px;color:var(--ig-accent);font-size:.78rem;font-weight:1000}
+    .ig-table-wrap{overflow-x:auto}
+    .ig-table{width:100%;border-collapse:collapse;min-width:650px}
+    .ig-table th{padding:11px 14px;border-bottom:1px solid var(--ig-border);color:#617d9e;background:#080d16;text-align:left;font-size:.66rem;font-weight:1000;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+    .ig-table td{padding:13px 14px;border-bottom:1px solid rgba(29,42,66,.7);font-size:.83rem;font-weight:780;color:#dce8f5;vertical-align:middle}
+    .ig-table tbody tr:hover{background:rgba(0,200,255,.035)}
+    .ig-table tbody tr:last-child td{border-bottom:0}
+    .ig-pos{width:50px;color:#7692b2!important;font-weight:1000!important}
+    .ig-user-cell{display:flex;align-items:center;gap:10px;min-width:0}
+    .ig-mini-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#121d2d;border:1px solid #22344d;color:var(--ig-accent);font-size:.73rem;font-weight:1000;flex:none;text-transform:uppercase}
+    .ig-user-cell strong{display:block;max-width:235px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.83rem}
+    .ig-points{color:var(--ig-accent)!important;font-weight:1000!important}
+    .ig-muted-cell{color:#89a2bf!important}
+    .ig-empty{padding:52px 24px;text-align:center;color:#7892b0}
+    .ig-empty strong{display:block;color:#cddcec;margin-bottom:7px;font-size:1rem}
+    .ig-empty p{max-width:470px;margin:0 auto;line-height:1.5;font-size:.82rem}
+    .ig-rules{padding:8px 18px 18px}
+    .ig-rule{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(29,42,66,.72)}
+    .ig-rule:last-child{border-bottom:0}
+    .ig-rule-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(0,200,255,.07);border:1px solid rgba(0,200,255,.14);font-size:1rem}
+    .ig-rule strong{display:block;font-size:.8rem}.ig-rule small{display:block;margin-top:3px;color:#758eac;font-size:.7rem;line-height:1.35}
+    .ig-rule-points{color:var(--ig-accent);font-size:.82rem;font-weight:1000;white-space:nowrap}
+    .ig-note{margin-top:16px;padding:14px;border:1px solid rgba(0,200,255,.15);border-radius:12px;background:rgba(0,200,255,.045);color:#7f9dbd;font-size:.74rem;line-height:1.5}
+    .ig-error{display:none;margin:0 0 16px;padding:12px 14px;border:1px solid rgba(255,96,96,.25);border-radius:10px;background:rgba(255,96,96,.07);color:#ffb4b4;font-size:.8rem;font-weight:750}
+    .ig-error.is-visible{display:block}
+    @media(max-width:900px){.ig-hero{grid-template-columns:1fr}.ig-grid{grid-template-columns:1fr}.ig-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:650px){
+      .ig-page{width:min(100% - 20px,1180px);padding-top:20px}.ig-hero-main{padding:24px 20px}.ig-side-card{padding:18px 20px}.ig-title{font-size:clamp(2.05rem,13vw,3.6rem)}
+      .ig-toolbar{align-items:stretch;flex-direction:column}.ig-tabs{width:100%}.ig-tab{flex:1;padding-left:8px;padding-right:8px}.ig-search{width:100%}
+      .ig-stats{gap:8px}.ig-stat{padding:14px}.ig-stat strong{font-size:1.35rem}.ig-card-head{padding:15px}.ig-podium{padding:14px 10px 8px;gap:6px}.ig-podium-item{padding:11px 6px}.ig-user-icon{width:40px;height:40px}.ig-podium-user{font-size:.72rem}.ig-podium-points{font-size:.7rem}
+      .ig-table{min-width:0}.ig-table th:nth-child(4),.ig-table td:nth-child(4),.ig-table th:nth-child(5),.ig-table td:nth-child(5){display:none}.ig-table th,.ig-table td{padding:11px 10px}.ig-user-cell strong{max-width:150px}.ig-pos{width:34px}.ig-card-head{align-items:flex-start;flex-direction:column}.ig-updated{text-align:left}
+    }
+  </style>
+</head>
+<body>
+<header class="cff-public-topbar">
+  <div class="cff-public-left">
+    <button class="cff-public-menu-button" id="cff-public-menu-open" type="button" aria-label="Abrir menu">☰</button>
+    <div class="cff-public-teams">
+      <button class="cff-public-teams-button" id="cff-public-teams-toggle" type="button" aria-expanded="false">EQUIPES ▼</button>
+      <div class="cff-public-teams-dropdown" id="cff-public-teams-dropdown"><div class="cff-public-teams-grid" id="cff-public-teams-grid"></div></div>
+    </div>
+  </div>
+  <a class="cff-public-brand" href="index.html" aria-label="Ir para o início"><img src="central free fire.webp" alt="Central Free Fire"><span>CENTRAL FREE FIRE</span></a>
+  <div class="cff-public-search"><div class="cff-public-search-row"><input id="cff-public-search-input" type="search" placeholder="BUSCAR JOGADOR, EQUIPE OU PÁGINA..." autocomplete="off" aria-label="Buscar no site"><button id="cff-public-search-submit" type="button" aria-label="Buscar">⌕</button></div><div id="cff-public-search-results" class="cff-public-search-results"></div></div>
+</header>
+<div class="cff-public-overlay" id="cff-public-overlay"></div>
+<aside class="cff-public-sidebar" id="cff-public-sidebar" aria-label="Menu lateral"><div class="cff-public-sidebar-head"><span>MENU</span><button class="cff-public-sidebar-close" id="cff-public-menu-close" type="button" aria-label="Fechar menu">✕</button></div><nav class="cff-public-sidebar-nav" id="cff-public-sidebar-nav"></nav></aside>
+
+<main class="ig-page">
+  <section class="ig-hero">
+    <div class="ig-hero-main">
+      <div class="ig-kicker">Comunidade Central Free Fire</div>
+      <h1 class="ig-title">Ranking de <span>Interações</span></h1>
+      <p class="ig-subtitle">Acompanhe quem mais participa e divulga a página no Instagram. Comentários e menções em Stories entram no ranking automaticamente quando a integração está ativa.</p>
+    </div>
+    <div class="ig-side-card">
+      <small>Temporada atual</small>
+      <strong id="ig-period-label">SETEMBRO 2026</strong>
+      <p>O ranking mensal reinicia a cada mês para todo mundo ter chance de disputar as premiações.</p>
+      <div class="ig-status"><span class="ig-status-dot"></span><span id="ig-status-text">Aguardando dados</span></div>
+    </div>
+  </section>
+
+  <div class="ig-toolbar">
+    <div class="ig-tabs" role="tablist" aria-label="Período do ranking">
+      <button class="ig-tab is-active" type="button" data-period="month">Mês atual</button>
+      <button class="ig-tab" type="button" data-period="all">Geral</button>
+    </div>
+    <label class="ig-search"><input id="ig-search" type="search" placeholder="Buscar @usuário" autocomplete="off" aria-label="Buscar usuário no ranking"></label>
+  </div>
+
+  <div id="ig-error" class="ig-error"></div>
+
+  <section class="ig-stats" aria-label="Resumo do ranking">
+    <article class="ig-stat"><span>Participantes</span><strong id="ig-stat-users">0</strong><small>perfis no ranking</small></article>
+    <article class="ig-stat"><span>Interações</span><strong id="ig-stat-actions">0</strong><small>ações contabilizadas</small></article>
+    <article class="ig-stat"><span>Stories</span><strong id="ig-stat-stories">0</strong><small>menções registradas</small></article>
+    <article class="ig-stat"><span>Comentários</span><strong id="ig-stat-comments">0</strong><small>posts/reels interagidos</small></article>
+  </section>
+
+  <section class="ig-grid">
+    <article class="ig-card">
+      <div class="ig-card-head"><h2>Classificação</h2><div class="ig-updated" id="ig-updated">Ainda sem atualização</div></div>
+      <div class="ig-podium" id="ig-podium" hidden></div>
+      <div class="ig-table-wrap">
+        <table class="ig-table" id="ig-table" hidden>
+          <thead><tr><th>#</th><th>Usuário</th><th>Pontos</th><th>Stories</th><th>Comentários</th><th>Dias ativos</th></tr></thead>
+          <tbody id="ig-tbody"></tbody>
+        </table>
+        <div class="ig-empty" id="ig-empty"><strong>Ranking ainda não iniciado</strong><p>Assim que o webhook do Instagram começar a registrar interações, a classificação aparecerá aqui automaticamente.</p></div>
+      </div>
+    </article>
+
+    <aside class="ig-card">
+      <div class="ig-card-head"><h2>Como pontua</h2></div>
+      <div class="ig-rules">
+        <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Publicou/republicou um Story e marcou a página.</small></div><div class="ig-rule-points" id="ig-rule-story">+10 pts</div></div>
+        <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small>Interagiu em uma publicação ou Reel. Conta uma vez por conteúdo.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div>
+        <div class="ig-note">Para evitar spam, o mesmo comentário não deve pontuar várias vezes no mesmo conteúdo e menções em Story podem ter limite diário. O backend será responsável por validar essas regras.</div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  const DEFAULT_RULES={storyMentionPoints:10,commentPoints:2};
+  const state={period:'month',query:'',users:[],updatedAt:null,rules:{...DEFAULT_RULES}};
+  const monthKey=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit'}).format(new Date()).slice(0,7);
+
+  const els={
+    tabs:[...document.querySelectorAll('.ig-tab')],search:document.getElementById('ig-search'),tbody:document.getElementById('ig-tbody'),table:document.getElementById('ig-table'),empty:document.getElementById('ig-empty'),podium:document.getElementById('ig-podium'),updated:document.getElementById('ig-updated'),error:document.getElementById('ig-error'),status:document.getElementById('ig-status-text'),periodLabel:document.getElementById('ig-period-label'),
+    users:document.getElementById('ig-stat-users'),actions:document.getElementById('ig-stat-actions'),stories:document.getElementById('ig-stat-stories'),comments:document.getElementById('ig-stat-comments'),ruleStory:document.getElementById('ig-rule-story'),ruleComment:document.getElementById('ig-rule-comment')
+  };
+
+  function escapeHTML(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function num(value){const n=Number(value);return Number.isFinite(n)?n:0;}
+  function username(value){const clean=String(value||'').trim().replace(/^@+/,'');return clean||'usuario';}
+  function initials(value){const clean=username(value).replace(/[^a-z0-9]/gi,'');return (clean.slice(0,2)||'IG').toUpperCase();}
+  function formatNumber(value){return new Intl.NumberFormat('pt-BR').format(num(value));}
+  function monthLabel(){return new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',month:'long',year:'numeric'}).format(new Date()).toUpperCase();}
+  function timestampLabel(value){const n=num(value);if(!n)return 'Ainda sem atualização';try{return 'Atualizado em '+new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(n));}catch(_){return 'Atualização recente';}}
+
+  function normalizeUsers(raw){
+    const source=raw&&raw.users&&typeof raw.users==='object'?raw.users:{};
+    return Object.entries(source).map(([id,item])=>{
+      const x=item||{};
+      return {id,username:username(x.username||x.userName||x.handle),points:num(x.points||x.pontos),storyMentions:num(x.storyMentions||x.stories),comments:num(x.comments||x.comentarios),activeDays:num(x.activeDays||x.diasAtivos),lastInteractionAt:num(x.lastInteractionAt)};
+    }).sort((a,b)=>b.points-a.points||b.storyMentions-a.storyMentions||b.comments-a.comments||a.username.localeCompare(b.username,'pt-BR'));
+  }
+
+  function renderPodium(users){
+    const top=users.slice(0,3);
+    if(!top.length){els.podium.hidden=true;els.podium.innerHTML='';return;}
+    els.podium.hidden=false;
+    els.podium.innerHTML=top.map((u,i)=>`<div class="ig-podium-item"><div class="ig-rank-medal">${i+1}º</div><div class="ig-user-icon">${escapeHTML(initials(u.username))}</div><strong class="ig-podium-user">@${escapeHTML(u.username)}</strong><span class="ig-podium-points">${formatNumber(u.points)} pts</span></div>`).join('');
+  }
+
+  function filteredUsers(){
+    const q=state.query.trim().toLowerCase().replace(/^@/,'');
+    if(!q)return state.users;
+    return state.users.filter(u=>u.username.toLowerCase().includes(q));
+  }
+
+  function render(){
+    const all=state.users;
+    const visible=filteredUsers();
+    const stories=all.reduce((s,u)=>s+u.storyMentions,0);
+    const comments=all.reduce((s,u)=>s+u.comments,0);
+    els.users.textContent=formatNumber(all.length);els.stories.textContent=formatNumber(stories);els.comments.textContent=formatNumber(comments);els.actions.textContent=formatNumber(stories+comments);
+    els.ruleStory.textContent='+'+formatNumber(state.rules.storyMentionPoints)+' pts';els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' pts';
+    els.updated.textContent=timestampLabel(state.updatedAt);
+    els.periodLabel.textContent=state.period==='month'?monthLabel():'HISTÓRICO GERAL';
+    renderPodium(state.query?[]:all);
+
+    if(!visible.length){
+      els.table.hidden=true;els.empty.hidden=false;
+      els.empty.innerHTML=state.query?'<strong>Nenhum usuário encontrado</strong><p>Tente buscar por outro @ do Instagram.</p>':'<strong>Ranking ainda não iniciado</strong><p>Assim que o webhook do Instagram começar a registrar interações, a classificação aparecerá aqui automaticamente.</p>';
+      return;
+    }
+    els.empty.hidden=true;els.table.hidden=false;
+    els.tbody.innerHTML=visible.map(u=>{
+      const pos=all.findIndex(item=>item.id===u.id)+1;
+      return `<tr><td class="ig-pos">${pos}º</td><td><div class="ig-user-cell"><span class="ig-mini-icon">${escapeHTML(initials(u.username))}</span><strong>@${escapeHTML(u.username)}</strong></div></td><td class="ig-points">${formatNumber(u.points)}</td><td class="ig-muted-cell">${formatNumber(u.storyMentions)}</td><td class="ig-muted-cell">${formatNumber(u.comments)}</td><td class="ig-muted-cell">${formatNumber(u.activeDays)}</td></tr>`;
+    }).join('');
+  }
+
+  async function load(){
+    els.error.classList.remove('is-visible');els.status.textContent='Atualizando...';
+    const cfg=window.CFF_CONFIG||{};
+    const base=String(cfg.firebase&&cfg.firebase.databaseURL||'').replace(/\/$/,'');
+    if(!base){els.status.textContent='Sem conexão';els.error.textContent='Configuração do banco de dados não encontrada.';els.error.classList.add('is-visible');return;}
+    const path=state.period==='month'?`instagramCommunity/public/months/${monthKey}`:'instagramCommunity/public/allTime';
+    try{
+      const response=await fetch(`${base}/${path}.json`,{cache:'no-store'});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      const raw=await response.json()||{};
+      state.users=normalizeUsers(raw);state.updatedAt=num(raw.updatedAt);
+      if(raw.rules&&typeof raw.rules==='object')state.rules={...DEFAULT_RULES,...raw.rules};else state.rules={...DEFAULT_RULES};
+      els.status.textContent=state.users.length?'Dados sincronizados':'Aguardando dados';
+      render();
+    }catch(err){
+      state.users=[];state.updatedAt=null;render();els.status.textContent='Integração pendente';
+      els.error.textContent='O ranking já está pronto, mas a leitura do banco ainda precisa ser liberada para a integração do Instagram.';els.error.classList.add('is-visible');
+    }
+  }
+
+  els.tabs.forEach(btn=>btn.addEventListener('click',()=>{state.period=btn.dataset.period;els.tabs.forEach(x=>x.classList.toggle('is-active',x===btn));load();}));
+  els.search.addEventListener('input',()=>{state.query=els.search.value;render();});
+
+  function boot(){if(window.CFF_CONFIG)load();else setTimeout(boot,80);}
+  boot();
+  setInterval(()=>{if(!document.hidden)load();},60000);
+})();
+</script>
+<script src="js/site-analytics.js?v=20260806-admin-v1"></script>
+</body>
+</html>
