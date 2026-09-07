@@ -10,7 +10,6 @@
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="js/public-shell.min.js?v=20260904-wb2025s2-dia1-v1"></script>
-  <script defer src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <style>
     :root{
       --ig-bg:#050810;--ig-card:#0b111d;--ig-card2:#0f1726;--ig-border:#1d2a42;
@@ -114,13 +113,13 @@
     <div class="ig-hero-main">
       <div class="ig-kicker">Comunidade Central Free Fire</div>
       <h1 class="ig-title">Ranking de <span>Interações</span></h1>
-      <p class="ig-subtitle">Acompanhe quem mais participa e divulga a página no Instagram. Comentários e menções em Stories entram no ranking automaticamente quando a integração está ativa.</p>
+      <p class="ig-subtitle">Acompanhe quem mais participa e divulga a página no Instagram. Comentários e menções em Stories entram no ranking automaticamente.</p>
     </div>
     <div class="ig-side-card">
       <small>Temporada atual</small>
       <strong id="ig-period-label">SETEMBRO 2026</strong>
       <p>O ranking mensal reinicia a cada mês para todo mundo ter chance de disputar as premiações.</p>
-      <div class="ig-status"><span class="ig-status-dot"></span><span id="ig-status-text">Aguardando dados</span></div>
+      <div class="ig-status"><span class="ig-status-dot"></span><span id="ig-status-text">Carregando...</span></div>
     </div>
   </section>
 
@@ -132,7 +131,7 @@
     <label class="ig-search"><input id="ig-search" type="search" placeholder="Buscar @usuário" autocomplete="off" aria-label="Buscar usuário no ranking"></label>
   </div>
 
-  <div id="ig-error" class="ig-error"></div>
+  <div id="ig-error" class="ig-error" role="alert"></div>
 
   <section class="ig-stats" aria-label="Resumo do ranking">
     <article class="ig-stat"><span>Participantes</span><strong id="ig-stat-users">0</strong><small>perfis no ranking</small></article>
@@ -143,14 +142,14 @@
 
   <section class="ig-grid">
     <article class="ig-card">
-      <div class="ig-card-head"><h2>Classificação</h2><div class="ig-updated" id="ig-updated">Ainda sem atualização</div></div>
+      <div class="ig-card-head"><h2>Classificação</h2><div class="ig-updated" id="ig-updated">Carregando dados...</div></div>
       <div class="ig-podium" id="ig-podium" hidden></div>
       <div class="ig-table-wrap">
         <table class="ig-table" id="ig-table" hidden>
           <thead><tr><th>#</th><th>Usuário</th><th>Pontos</th><th>Stories</th><th>Comentários</th><th>Dias ativos</th></tr></thead>
           <tbody id="ig-tbody"></tbody>
         </table>
-        <div class="ig-empty" id="ig-empty"><strong>Ranking ainda não iniciado</strong><p>Assim que o webhook do Instagram começar a registrar interações, a classificação aparecerá aqui automaticamente.</p></div>
+        <div class="ig-empty" id="ig-empty"><strong>Carregando ranking...</strong><p>Buscando as interações mais recentes do Instagram.</p></div>
       </div>
     </article>
 
@@ -159,7 +158,7 @@
       <div class="ig-rules">
         <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Publicou/republicou um Story e marcou a página.</small></div><div class="ig-rule-points" id="ig-rule-story">+10 pts</div></div>
         <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small>Interagiu em uma publicação ou Reel. Conta uma vez por conteúdo.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div>
-        <div class="ig-note">Para evitar spam, o mesmo comentário não deve pontuar várias vezes no mesmo conteúdo e menções em Story podem ter limite diário. O backend será responsável por validar essas regras.</div>
+        <div class="ig-note" id="ig-rule-note">Para evitar spam, cada pessoa pontua uma vez por publicação e há limite diário para menções em Story.</div>
       </div>
     </aside>
   </section>
@@ -169,13 +168,14 @@
 (function(){
   'use strict';
 
-  const DEFAULT_RULES={storyMentionPoints:10,commentPoints:2};
-  const state={period:'month',query:'',users:[],updatedAt:null,rules:{...DEFAULT_RULES}};
-  const monthKey=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit'}).format(new Date()).slice(0,7);
+  const API='https://cff-instagram-community.nakataffb4.workers.dev/api/ranking';
+  const REFRESH_MS=5*60*1000;
+  const DEFAULT_RULES={storyMentionPoints:10,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1};
+  const state={period:'month',query:'',users:[],updatedAt:null,rules:{...DEFAULT_RULES},loading:false};
 
   const els={
     tabs:[...document.querySelectorAll('.ig-tab')],search:document.getElementById('ig-search'),tbody:document.getElementById('ig-tbody'),table:document.getElementById('ig-table'),empty:document.getElementById('ig-empty'),podium:document.getElementById('ig-podium'),updated:document.getElementById('ig-updated'),error:document.getElementById('ig-error'),status:document.getElementById('ig-status-text'),periodLabel:document.getElementById('ig-period-label'),
-    users:document.getElementById('ig-stat-users'),actions:document.getElementById('ig-stat-actions'),stories:document.getElementById('ig-stat-stories'),comments:document.getElementById('ig-stat-comments'),ruleStory:document.getElementById('ig-rule-story'),ruleComment:document.getElementById('ig-rule-comment')
+    users:document.getElementById('ig-stat-users'),actions:document.getElementById('ig-stat-actions'),stories:document.getElementById('ig-stat-stories'),comments:document.getElementById('ig-stat-comments'),ruleStory:document.getElementById('ig-rule-story'),ruleComment:document.getElementById('ig-rule-comment'),ruleNote:document.getElementById('ig-rule-note')
   };
 
   function escapeHTML(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
@@ -190,7 +190,7 @@
     const source=raw&&raw.users&&typeof raw.users==='object'?raw.users:{};
     return Object.entries(source).map(([id,item])=>{
       const x=item||{};
-      return {id,username:username(x.username||x.userName||x.handle),points:num(x.points||x.pontos),storyMentions:num(x.storyMentions||x.stories),comments:num(x.comments||x.comentarios),activeDays:num(x.activeDays||x.diasAtivos),lastInteractionAt:num(x.lastInteractionAt)};
+      return {id,username:username(x.username),points:num(x.points),storyMentions:num(x.storyMentions),comments:num(x.comments),activeDays:num(x.activeDays),lastInteractionAt:num(x.lastInteractionAt)};
     }).sort((a,b)=>b.points-a.points||b.storyMentions-a.storyMentions||b.comments-a.comments||a.username.localeCompare(b.username,'pt-BR'));
   }
 
@@ -212,17 +212,23 @@
     const visible=filteredUsers();
     const stories=all.reduce((s,u)=>s+u.storyMentions,0);
     const comments=all.reduce((s,u)=>s+u.comments,0);
-    els.users.textContent=formatNumber(all.length);els.stories.textContent=formatNumber(stories);els.comments.textContent=formatNumber(comments);els.actions.textContent=formatNumber(stories+comments);
-    els.ruleStory.textContent='+'+formatNumber(state.rules.storyMentionPoints)+' pts';els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' pts';
+    els.users.textContent=formatNumber(all.length);
+    els.stories.textContent=formatNumber(stories);
+    els.comments.textContent=formatNumber(comments);
+    els.actions.textContent=formatNumber(stories+comments);
+    els.ruleStory.textContent='+'+formatNumber(state.rules.storyMentionPoints)+' pts';
+    els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' pts';
+    els.ruleNote.textContent=`Para evitar spam, cada pessoa pontua uma vez por publicação. Menções em Story têm limite de ${formatNumber(state.rules.storyMentionDailyLimit)} por dia.`;
     els.updated.textContent=timestampLabel(state.updatedAt);
     els.periodLabel.textContent=state.period==='month'?monthLabel():'HISTÓRICO GERAL';
     renderPodium(state.query?[]:all);
 
     if(!visible.length){
       els.table.hidden=true;els.empty.hidden=false;
-      els.empty.innerHTML=state.query?'<strong>Nenhum usuário encontrado</strong><p>Tente buscar por outro @ do Instagram.</p>':'<strong>Ranking ainda não iniciado</strong><p>Assim que o webhook do Instagram começar a registrar interações, a classificação aparecerá aqui automaticamente.</p>';
+      els.empty.innerHTML=state.query?'<strong>Nenhum usuário encontrado</strong><p>Tente buscar por outro @ do Instagram.</p>':'<strong>Ranking ainda não iniciado</strong><p>Assim que novas interações forem registradas, a classificação aparecerá aqui automaticamente.</p>';
       return;
     }
+
     els.empty.hidden=true;els.table.hidden=false;
     els.tbody.innerHTML=visible.map(u=>{
       const pos=all.findIndex(item=>item.id===u.id)+1;
@@ -231,31 +237,42 @@
   }
 
   async function load(){
-    els.error.classList.remove('is-visible');els.status.textContent='Atualizando...';
-    const cfg=window.CFF_CONFIG||{};
-    const base=String(cfg.firebase&&cfg.firebase.databaseURL||'').replace(/\/$/,'');
-    if(!base){els.status.textContent='Sem conexão';els.error.textContent='Configuração do banco de dados não encontrada.';els.error.classList.add('is-visible');return;}
-    const path=state.period==='month'?`instagramCommunity/public/months/${monthKey}`:'instagramCommunity/public/allTime';
+    if(state.loading)return;
+    state.loading=true;
+    els.error.classList.remove('is-visible');
+    els.status.textContent='Atualizando...';
     try{
-      const response=await fetch(`${base}/${path}.json`,{cache:'no-store'});
+      const period=state.period==='all'?'all':'month';
+      const response=await fetch(`${API}?period=${period}&_=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});
       if(!response.ok)throw new Error('HTTP '+response.status);
-      const raw=await response.json()||{};
-      state.users=normalizeUsers(raw);state.updatedAt=num(raw.updatedAt);
-      if(raw.rules&&typeof raw.rules==='object')state.rules={...DEFAULT_RULES,...raw.rules};else state.rules={...DEFAULT_RULES};
+      const raw=await response.json();
+      state.users=normalizeUsers(raw);
+      state.updatedAt=num(raw&&raw.updatedAt);
+      state.rules=raw&&raw.rules&&typeof raw.rules==='object'?{...DEFAULT_RULES,...raw.rules}:{...DEFAULT_RULES};
       els.status.textContent=state.users.length?'Dados sincronizados':'Aguardando dados';
       render();
     }catch(err){
-      state.users=[];state.updatedAt=null;render();els.status.textContent='Integração pendente';
-      els.error.textContent='O ranking já está pronto, mas a leitura do banco ainda precisa ser liberada para a integração do Instagram.';els.error.classList.add('is-visible');
+      console.error('Falha ao carregar ranking da comunidade:',err);
+      els.status.textContent='Erro de conexão';
+      els.error.textContent='Não foi possível atualizar o ranking agora. Tente novamente em alguns instantes.';
+      els.error.classList.add('is-visible');
+      if(!state.users.length){state.updatedAt=null;render();}
+    }finally{
+      state.loading=false;
     }
   }
 
-  els.tabs.forEach(btn=>btn.addEventListener('click',()=>{state.period=btn.dataset.period;els.tabs.forEach(x=>x.classList.toggle('is-active',x===btn));load();}));
+  els.tabs.forEach(btn=>btn.addEventListener('click',()=>{
+    if(state.period===btn.dataset.period)return;
+    state.period=btn.dataset.period;
+    els.tabs.forEach(x=>x.classList.toggle('is-active',x===btn));
+    load();
+  }));
   els.search.addEventListener('input',()=>{state.query=els.search.value;render();});
 
-  function boot(){if(window.CFF_CONFIG)load();else setTimeout(boot,80);}
-  boot();
-  setInterval(()=>{if(!document.hidden)load();},60000);
+  load();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
+  setInterval(()=>{if(!document.hidden)load();},REFRESH_MS);
 })();
 </script>
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
