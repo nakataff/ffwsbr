@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260907-s1-static-pages-v1';
-  const STATIC_PAGES = new Set(['equipes', 'selecao-da-semana', 'comparar-1v1']);
+  const BUILD = '20260907-s1-static-pages-v2';
+  const STATIC_PAGES = new Set(['equipes', 'comparar-1v1']);
   const state = {
     loading: null,
     ready: false,
@@ -295,37 +295,7 @@
   }
 
   function renderSelections() {
-    const root = document.getElementById('selecao-da-semana');
-    if (!root) return false;
-    const tabs = [
-      ['classificatoria', 'Classificatória', '#ff9f43'],
-      ['final', 'Final', '#ff5f71'],
-      ['torneio', 'Torneio', '#00c8ff']
-    ];
-    const stage = state.selectionTab === 'torneio' ? 'geral' : state.selectionTab;
-    const lineup = buildSelection(stage);
-    const selected = tabs.find(([key]) => key === state.selectionTab) || tabs[2];
-    const title = state.selectionTab === 'torneio' ? 'Seleção da Season' : `Seleção da ${selected[1]}`;
-    const description = state.selectionTab === 'torneio'
-      ? 'Os quatro destaques da edição, respeitando a composição de 2 Rush, 1 Granadeiro e 1 Suporte.'
-      : `Os quatro destaques da ${selected[1].toLowerCase()} com a mesma composição por função.`;
-
-    root.innerHTML = `<div class="ffws-s2-selection-page" data-s1-static="selecao-da-semana">
-      <div class="season-selection-hero"><div class="season-selection-kicker">WB 2026 S1 • ARQUIVO</div><h1>SELEÇÕES DA SEASON</h1><p>Seleções finais da edição congeladas em arquivos leves, sem depender das planilhas antigas.</p></div>
-      <div class="season-selection-tabs">${tabs.map(([key, label, color]) => `<button type="button" class="season-selection-tab ${state.selectionTab === key ? 'active' : ''}" style="--selection-color:${color}" data-s1-selection-tab="${key}">${label}</button>`).join('')}</div>
-      <section class="season-selection-panel season-selection-panel-tournament">
-        <div class="season-selection-section-head"><div><span class="season-selection-tag">${esc(selected[1])}</span><h2>${esc(title)}</h2></div><p>${esc(description)}</p></div>
-        <div class="selection-grid season-selection-grid">${lineup.map(player => selectionCard(player, stage)).join('')}</div>
-        <div class="s1-static-archive-note">Seleção calculada sobre os dados finais congelados da edição, ponderando abates, dano, assistências e MVPs de acordo com a função.</div>
-      </section>
-    </div>`;
-
-    root.querySelectorAll('[data-s1-selection-tab]').forEach(button => button.addEventListener('click', () => {
-      state.selectionTab = button.getAttribute('data-s1-selection-tab') || 'torneio';
-      renderSelections();
-    }));
-    root.querySelectorAll('[data-s1-open-player]').forEach(button => button.addEventListener('click', () => openPlayer(state.byName.get(norm(button.getAttribute('data-s1-open-player'))))));
-    return true;
+    return false;
   }
 
   function compareRows() {
@@ -403,7 +373,6 @@
     try {
       await loadData();
       if (page === 'equipes') return renderTeams();
-      if (page === 'selecao-da-semana') return renderSelections();
       if (page === 'comparar-1v1') return renderCompare();
     } catch (error) {
       console.error('[S1 static pages]', page, error);
