@@ -1,0 +1,46 @@
+name: Deploy Instagram Webhook
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Install Functions dependencies
+        working-directory: functions
+        run: npm install
+
+      - name: Sync Firebase secrets
+        shell: bash
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
+          META_WEBHOOK_VERIFY_TOKEN: ${{ secrets.META_WEBHOOK_VERIFY_TOKEN }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$INSTAGRAM_ACCESS_TOKEN" | firebase functions:secrets:set INSTAGRAM_ACCESS_TOKEN --project central-free-fire --force
+          printf '%s' "$META_APP_SECRET" | firebase functions:secrets:set META_APP_SECRET --project central-free-fire --force
+          printf '%s' "$META_WEBHOOK_VERIFY_TOKEN" | firebase functions:secrets:set META_WEBHOOK_VERIFY_TOKEN --project central-free-fire --force
+
+      - name: Deploy database rules and webhook
+        run: firebase deploy --only database,functions --project central-free-fire --non-interactive
