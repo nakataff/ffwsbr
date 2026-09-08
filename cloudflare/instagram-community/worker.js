@@ -1,12 +1,14 @@
 const RULES = Object.freeze({
   storyMentionPoints: 10,
   commentPoints: 2,
+  checkinPoints: 1,
   storyMentionDailyLimit: 3,
   commentLimitPerMedia: 1,
 });
 
 const GRAPH_VERSION = 'v26.0';
 const TIME_ZONE = 'America/Sao_Paulo';
+const CHECKIN_CODE_TTL_MS = 15 * 60 * 1000;
 const ALLOWED_ORIGINS = new Set([
   'https://centralfreefire.com.br',
   'https://www.centralfreefire.com.br',
@@ -15,6 +17,10 @@ const ALLOWED_ORIGINS = new Set([
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: corsHeaders(request) });
+    }
 
     if (url.pathname === '/health') {
       return json({ ok: true, service: 'Central Free Fire Instagram Community' }, 200, request);
@@ -30,8 +36,16 @@ export default {
       return getRanking(request, env, url);
     }
 
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: corsHeaders(request) });
+    if (url.pathname === '/api/checkin/start' && request.method === 'POST') {
+      return startCheckin(request, env);
+    }
+
+    if (url.pathname === '/api/checkin/status' && request.method === 'GET') {
+      return checkinStatus(request, env, url);
+    }
+
+    if (url.pathname === '/api/checkin' && request.method === 'POST') {
+      return doCheckin(request, env);
     }
 
     return json({ ok: false, error: 'Not found' }, 404, request);
@@ -43,7 +57,7 @@ function corsHeaders(request) {
   const allowed = ALLOWED_ORIGINS.has(origin) || origin.startsWith('http://localhost:');
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://centralfreefire.com.br',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Vary': 'Origin',
   };
@@ -57,6 +71,14 @@ function json(data, status = 200, request = null, extraHeaders = {}) {
   };
   if (request) Object.assign(headers, corsHeaders(request));
   return new Response(JSON.stringify(data), { status, headers });
+}
+
+async function readJson(request) {
+  try {
+    return await request.json();
+  } catch (_) {
+    return {};
+  }
 }
 
 function normalizeTimestamp(value) {
@@ -96,11 +118,10 @@ function weekKeys(timestamp = Date.now()) {
   const calendar = new Date(Date.UTC(year, month - 1, day, 12));
   const mondayOffset = (calendar.getUTCDay() + 6) % 7;
   const weekStartKey = shiftDayKey(dayKey, -mondayOffset);
-  const weekEndKey = shiftDayKey(weekStartKey, 6);
   return {
     weekKey: weekStartKey,
     weekStartKey,
-    weekEndKey,
+    weekEndKey: shiftDayKey(weekStartKey, 6),
   };
 }
 
@@ -129,14 +150,25 @@ function fallbackUsername(identity) {
   return `usuario_${value.slice(-7) || 'ig'}`;
 }
 
+function randomToken(bytes = 24) {
+  const data = new Uint8Array(bytes);
+  crypto.getRandomValues(data);
+  return [...data].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function randomCheckinCode() {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const data = new Uint8Array(6);
+  crypto.getRandomValues(data);
+  return `NKT-${[...data].map((b) => chars[b % chars.length]).join('')}`;
+}
+
 function verifyWebhook(url, env) {
   const mode = url.searchParams.get('hub.mode') || '';
   const token = url.searchParams.get('hub.verify_token') || '';
   const challenge = url.searchParams.get('hub.challenge') || '';
 
-  if (!mode) {
-    return json({ ok: true, service: 'Central Free Fire Instagram Webhook' });
-  }
+  if (!mode) return json({ ok: true, service: 'Central Free Fire Instagram Webhook' });
 
   if (mode === 'subscribe' && token && token === env.META_WEBHOOK_VERIFY_TOKEN) {
     return new Response(challenge, { status: 200 });
@@ -208,6 +240,7 @@ async function receiveWebhook(request, env) {
 
       const messaging = Array.isArray(entry?.messaging) ? entry.messaging : [];
       for (const event of messaging) {
+        if (await processCheckinVerification(env, event)) continue;
         const story = findStoryMention(event);
         if (story) await processStoryMention(env, event, story);
         else await logMessagingShape(env, event);
@@ -236,9 +269,8 @@ async function processComment(env, entry) {
   if (!identity || (!mediaId && !commentId)) return;
 
   const key = await userKey(identity, username);
-  const awardKey = `comment:${key}:${mediaId || commentId}`;
   await awardInteraction(env, {
-    awardKey,
+    awardKey: `comment:${key}:${mediaId || commentId}`,
     userKey: key,
     identity,
     username: username || fallbackUsername(identity),
@@ -331,6 +363,167 @@ async function fetchMessageUsername(messageId, accessToken) {
   }
 }
 
+async function processCheckinVerification(env, event) {
+  const message = event?.message || {};
+  if (message?.is_echo) return false;
+
+  const text = String(message?.text || '').trim().toUpperCase();
+  const match = text.match(/\bNKT-[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}\b/);
+  if (!match) return false;
+
+  const now = Date.now();
+  const pending = await env.DB.prepare(`
+    SELECT session_id
+    FROM checkin_sessions
+    WHERE code = ?1 AND verified_at IS NULL AND expires_at >= ?2
+    LIMIT 1
+  `).bind(match[0], now).first();
+
+  if (!pending?.session_id) return false;
+
+  const identity = String(event?.sender?.id || '').trim();
+  if (!identity) return false;
+
+  let username = cleanUsername(event?.sender?.username);
+  const messageId = String(message?.mid || '');
+  if (!username && messageId) {
+    username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);
+  }
+
+  const key = await userKey(identity, username);
+  const result = await env.DB.prepare(`
+    UPDATE checkin_sessions
+    SET user_key = ?1,
+        instagram_id = ?2,
+        username = ?3,
+        verified_at = ?4,
+        expires_at = 0
+    WHERE session_id = ?5 AND verified_at IS NULL
+  `).bind(
+    key,
+    identity,
+    username || fallbackUsername(identity),
+    now,
+    pending.session_id
+  ).run();
+
+  return Boolean(result.meta?.changes);
+}
+
+async function startCheckin(request, env) {
+  const now = Date.now();
+  await env.DB.prepare(
+    'DELETE FROM checkin_sessions WHERE verified_at IS NULL AND expires_at < ?1'
+  ).bind(now - 60_000).run();
+
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const sessionId = randomToken(24);
+    const code = randomCheckinCode();
+    const expiresAt = now + CHECKIN_CODE_TTL_MS;
+    const inserted = await env.DB.prepare(`
+      INSERT OR IGNORE INTO checkin_sessions
+        (session_id, code, expires_at, created_at, last_used_at)
+      VALUES (?1, ?2, ?3, ?4, 0)
+    `).bind(sessionId, code, expiresAt, now).run();
+
+    if (inserted.meta?.changes) {
+      return json({
+        ok: true,
+        status: 'pending',
+        session: sessionId,
+        code,
+        expiresAt,
+        instagram: '@nakataff',
+        checkinPoints: RULES.checkinPoints,
+      }, 200, request);
+    }
+  }
+
+  return json({ ok: false, error: 'Não foi possível gerar o código agora.' }, 503, request);
+}
+
+async function getCheckinSession(env, sessionId) {
+  if (!sessionId || !/^[a-f0-9]{48}$/i.test(sessionId)) return null;
+  return env.DB.prepare(`
+    SELECT session_id, code, user_key, instagram_id, username, verified_at, expires_at, created_at, last_used_at
+    FROM checkin_sessions
+    WHERE session_id = ?1
+  `).bind(sessionId).first();
+}
+
+async function checkinStatus(request, env, url) {
+  const sessionId = String(url.searchParams.get('session') || '').trim();
+  const row = await getCheckinSession(env, sessionId);
+  if (!row) return json({ ok: false, status: 'missing' }, 404, request);
+
+  const now = Date.now();
+  if (!row.verified_at && Number(row.expires_at || 0) < now) {
+    return json({ ok: true, status: 'expired' }, 200, request);
+  }
+
+  if (!row.verified_at || !row.user_key) {
+    return json({
+      ok: true,
+      status: 'pending',
+      code: row.code,
+      expiresAt: Number(row.expires_at || 0),
+      checkinPoints: RULES.checkinPoints,
+    }, 200, request);
+  }
+
+  const { dayKey } = dateKeys(now);
+  const awardKey = `checkin:${row.user_key}:${dayKey}`;
+  const award = await env.DB.prepare(
+    'SELECT 1 AS found FROM awards WHERE award_key = ?1 LIMIT 1'
+  ).bind(awardKey).first();
+
+  return json({
+    ok: true,
+    status: 'verified',
+    username: row.username,
+    checkedInToday: Boolean(award?.found),
+    dayKey,
+    checkinPoints: RULES.checkinPoints,
+  }, 200, request);
+}
+
+async function doCheckin(request, env) {
+  const body = await readJson(request);
+  const sessionId = String(body?.session || '').trim();
+  const row = await getCheckinSession(env, sessionId);
+
+  if (!row) return json({ ok: false, error: 'Sessão não encontrada.' }, 404, request);
+  if (!row.verified_at || !row.user_key) {
+    return json({ ok: false, error: 'Vincule seu Instagram antes do check-in.' }, 403, request);
+  }
+
+  const timestamp = Date.now();
+  const { dayKey } = dateKeys(timestamp);
+  const awarded = await awardInteraction(env, {
+    awardKey: `checkin:${row.user_key}:${dayKey}`,
+    userKey: row.user_key,
+    identity: row.instagram_id || '',
+    username: row.username || fallbackUsername(row.instagram_id),
+    type: 'checkin',
+    sourceId: dayKey,
+    points: RULES.checkinPoints,
+    timestamp,
+  });
+
+  await env.DB.prepare(
+    'UPDATE checkin_sessions SET last_used_at = ?1 WHERE session_id = ?2'
+  ).bind(timestamp, sessionId).run();
+
+  return json({
+    ok: true,
+    awarded,
+    alreadyCheckedIn: !awarded,
+    points: awarded ? RULES.checkinPoints : 0,
+    username: row.username,
+    dayKey,
+  }, 200, request);
+}
+
 async function awardInteraction(env, event) {
   const { monthKey, dayKey } = dateKeys(event.timestamp);
   const now = Date.now();
@@ -356,6 +549,7 @@ async function awardInteraction(env, event) {
   const activeInsert = await env.DB.prepare(`
     INSERT OR IGNORE INTO active_days (user_key, day_key) VALUES (?1, ?2)
   `).bind(event.userKey, dayKey).run();
+
   const newDay = activeInsert.meta?.changes ? 1 : 0;
   const storyInc = event.type === 'story' ? 1 : 0;
   const commentInc = event.type === 'comment' ? 1 : 0;
@@ -373,7 +567,16 @@ async function awardInteraction(env, event) {
         comments_all = users.comments_all + excluded.comments_all,
         active_days_all = users.active_days_all + excluded.active_days_all,
         last_interaction_at = MAX(users.last_interaction_at, excluded.last_interaction_at)
-    `).bind(event.userKey, event.identity || null, event.username, event.points, storyInc, commentInc, newDay, event.timestamp),
+    `).bind(
+      event.userKey,
+      event.identity || null,
+      event.username,
+      event.points,
+      storyInc,
+      commentInc,
+      newDay,
+      event.timestamp
+    ),
     env.DB.prepare(`
       INSERT INTO monthly_users
         (month_key, user_key, username, points, story_mentions, comments, active_days, last_interaction_at)
@@ -385,7 +588,16 @@ async function awardInteraction(env, event) {
         comments = monthly_users.comments + excluded.comments,
         active_days = monthly_users.active_days + excluded.active_days,
         last_interaction_at = MAX(monthly_users.last_interaction_at, excluded.last_interaction_at)
-    `).bind(monthKey, event.userKey, event.username, event.points, storyInc, commentInc, newDay, event.timestamp),
+    `).bind(
+      monthKey,
+      event.userKey,
+      event.username,
+      event.points,
+      storyInc,
+      commentInc,
+      newDay,
+      event.timestamp
+    ),
   ]);
 
   return true;
@@ -453,23 +665,18 @@ async function getRanking(request, env, url) {
     updatedAt = Math.max(updatedAt, Number(row.lastInteractionAt || 0));
   }
 
-  return json(
-    {
-      updatedAt,
-      rules: RULES,
-      period: {
-        type: period,
-        weekKey,
-        weekStart: weekStartKey,
-        weekEnd: weekEndKey,
-        monthKey,
-      },
-      users,
+  return json({
+    updatedAt,
+    rules: RULES,
+    period: {
+      type: period,
+      weekKey,
+      weekStart: weekStartKey,
+      weekEnd: weekEndKey,
+      monthKey,
     },
-    200,
-    request,
-    { 'Cache-Control': 'public, max-age=60' }
-  );
+    users,
+  }, 200, request, { 'Cache-Control': 'public, max-age=60' });
 }
 
 async function logEntryShape(env, entry) {
@@ -519,6 +726,7 @@ async function logMessagingShape(env, event) {
     referralSource: String(event?.referral?.source || ''),
     referralType: String(event?.referral?.type || ''),
     messageId: String(message?.mid || ''),
+    hasText: Boolean(message?.text),
     timestamp: Number(event?.timestamp || 0),
   };
 
