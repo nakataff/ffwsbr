@@ -1,6 +1,18 @@
 (function () {
   'use strict';
 
+  if (/\/interacoes\.html$/i.test(location.pathname) && !document.querySelector('script[data-cff-community-checkin]')) {
+    const script = document.createElement('script');
+    script.src = 'js/community-checkin.js?v=20260908-daily-checkin-v1';
+    script.async = false;
+    script.dataset.cffCommunityCheckin = '1';
+    document.head.appendChild(script);
+  }
+})();
+
+(function () {
+  'use strict';
+
   function start() {
     const config = window.CFF_CONFIG || {};
     const databaseURL = String(config.firebase && config.firebase.databaseURL || '').replace(/\/$/, '');
