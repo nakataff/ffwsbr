@@ -36,22 +36,27 @@
       const key = safeKey(path);
       const seenKey = 'cff_page_seen_' + key;
       if (sessionStorage.getItem(seenKey) === '1') return;
-      sessionStorage.setItem(seenKey, '1');
+
       const payload = {
         path: path,
         title: String(document.title || 'Central Free Fire').slice(0, 160),
         views: { '.sv': { increment: 1 } },
         lastViewedAt: { '.sv': 'timestamp' }
       };
+
       try {
-        await fetch(databaseURL + '/siteAnalytics/pages/' + key + '.json', {
+        const response = await fetch(databaseURL + '/siteAnalytics/pages/' + key + '.json', {
           method: 'PATCH',
           cache: 'no-store',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
           keepalive: true
         });
-      } catch (_) {}
+        if (!response.ok) throw new Error('Analytics write failed: HTTP ' + response.status);
+        sessionStorage.setItem(seenKey, '1');
+      } catch (error) {
+        console.warn('[CFF analytics] não foi possível registrar a visualização', error);
+      }
     }
 
     let queued = null;
