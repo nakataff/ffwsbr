@@ -16,7 +16,7 @@
   const isNews = /\/noticia\.html$/i.test(location.pathname) || /^\/noticias\/[^/]+\/?$/i.test(location.pathname);
   if (isNews && !document.querySelector('script[data-cff-news-comments]')) {
     const script = document.createElement('script');
-    script.src = '/js/news-comments.js?v=20260909-news-comments-v1';
+    script.src = '/js/news-comments.js?v=20260909-news-comments-v2';
     script.async = false;
     script.dataset.cffNewsComments = '1';
     document.head.appendChild(script);
