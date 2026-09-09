@@ -13,6 +13,19 @@
 (function () {
   'use strict';
 
+  const isNews = /\/noticia\.html$/i.test(location.pathname) || /^\/noticias\/[^/]+\/?$/i.test(location.pathname);
+  if (isNews && !document.querySelector('script[data-cff-news-comments]')) {
+    const script = document.createElement('script');
+    script.src = '/js/news-comments.js?v=20260909-news-comments-v1';
+    script.async = false;
+    script.dataset.cffNewsComments = '1';
+    document.head.appendChild(script);
+  }
+})();
+
+(function () {
+  'use strict';
+
   function start() {
     const config = window.CFF_CONFIG || {};
     const databaseURL = String(config.firebase && config.firebase.databaseURL || '').replace(/\/$/, '');
