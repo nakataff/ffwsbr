@@ -16,6 +16,20 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['id','titulo','conteudo','status']) && newData.child('id').isString() && newData.child('id').val() == $slug && newData.child('titulo').isString() && newData.child('titulo').val().length > 2 && newData.child('titulo').val().length <= 180 && newData.child('conteudo').isString() && newData.child('status').val() == 'draft')"
       }
     },
+    "adminLives": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "!newData.exists() || (newData.hasChildren(['id','torneio','canal','inicio','duracaoMinutos','tipo']) && newData.child('id').isString() && newData.child('id').val() == $id && newData.child('torneio').isString() && newData.child('torneio').val().length >= 2 && newData.child('torneio').val().length <= 120 && newData.child('canal').isString() && newData.child('canal').val().length >= 1 && newData.child('canal').val().length <= 120 && newData.child('inicio').isString() && newData.child('inicio').val().length >= 10 && newData.child('inicio').val().length <= 32 && newData.child('duracaoMinutos').isNumber() && newData.child('duracaoMinutos').val() > 0 && newData.child('duracaoMinutos').val() <= 4320 && newData.child('tipo').isString() && (newData.child('tipo').val() == 'mobile' || newData.child('tipo').val() == 'emulador' || newData.child('tipo').val() == 'misto'))"
+      }
+    },
+    "adminTitles": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "!newData.exists() || (newData.hasChildren(['id','name','date','winner','runnerUp','third','mvpRanking']) && newData.child('id').isString() && newData.child('id').val() == $id && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 160 && newData.child('date').isString() && newData.child('date').val().length == 10 && newData.child('winner').isString() && newData.child('winner').val().length >= 1 && newData.child('winner').val().length <= 100 && newData.child('runnerUp').isString() && newData.child('runnerUp').val().length >= 1 && newData.child('runnerUp').val().length <= 100 && newData.child('third').isString() && newData.child('third').val().length >= 1 && newData.child('third').val().length <= 100 && newData.child('mvpRanking').exists())"
+      }
+    },
     "newsMetrics": {
       ".read": true,
       "$slug": {
@@ -27,6 +41,30 @@
         },
         "$other": {
           ".validate": false
+        }
+      }
+    },
+    "newsComments": {
+      ".read": true,
+      "$slug": {
+        ".indexOn": ["createdAt"],
+        "$comment": {
+          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (!data.exists() && newData.exists() && newData.hasChildren(['name','text','createdAt','clientId']) && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 36 && newData.child('text').isString() && newData.child('text').val().length >= 2 && newData.child('text').val().length <= 600 && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now + 10000 && newData.child('createdAt').val() >= now - 120000 && newData.child('clientId').isString() && newData.child('clientId').val().length >= 3 && newData.child('clientId').val().length <= 80)",
+          "name": {
+            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 36"
+          },
+          "text": {
+            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 600"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber() && newData.val() <= now + 10000 && newData.val() >= now - 120000"
+          },
+          "clientId": {
+            ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 80"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       }
     },
@@ -76,6 +114,16 @@
       "$slug": {
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
         ".validate": "!newData.exists() || newData.val() == true"
+      }
+    },
+    "instagramCommunity": {
+      "public": {
+        ".read": true,
+        ".write": false
+      },
+      "private": {
+        ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".write": false
       }
     }
   }

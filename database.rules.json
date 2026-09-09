@@ -16,6 +16,20 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['id','titulo','conteudo','status']) && newData.child('id').isString() && newData.child('id').val() == $slug && newData.child('titulo').isString() && newData.child('titulo').val().length > 2 && newData.child('titulo').val().length <= 180 && newData.child('conteudo').isString() && newData.child('status').val() == 'draft')"
       }
     },
+    "adminLives": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "!newData.exists() || (newData.hasChildren(['id','torneio','canal','inicio','duracaoMinutos','tipo']) && newData.child('id').isString() && newData.child('id').val() == $id && newData.child('torneio').isString() && newData.child('torneio').val().length >= 2 && newData.child('torneio').val().length <= 120 && newData.child('canal').isString() && newData.child('canal').val().length >= 1 && newData.child('canal').val().length <= 120 && newData.child('inicio').isString() && newData.child('inicio').val().length >= 10 && newData.child('inicio').val().length <= 32 && newData.child('duracaoMinutos').isNumber() && newData.child('duracaoMinutos').val() > 0 && newData.child('duracaoMinutos').val() <= 4320 && newData.child('tipo').isString() && (newData.child('tipo').val() == 'mobile' || newData.child('tipo').val() == 'emulador' || newData.child('tipo').val() == 'misto'))"
+      }
+    },
+    "adminTitles": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "!newData.exists() || (newData.hasChildren(['id','name','date','winner','runnerUp','third','mvpRanking']) && newData.child('id').isString() && newData.child('id').val() == $id && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 160 && newData.child('date').isString() && newData.child('date').val().length == 10 && newData.child('winner').isString() && newData.child('winner').val().length >= 1 && newData.child('winner').val().length <= 100 && newData.child('runnerUp').isString() && newData.child('runnerUp').val().length >= 1 && newData.child('runnerUp').val().length <= 100 && newData.child('third').isString() && newData.child('third').val().length >= 1 && newData.child('third').val().length <= 100 && newData.child('mvpRanking').exists())"
+      }
+    },
     "newsMetrics": {
       ".read": true,
       "$slug": {
