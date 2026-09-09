@@ -30,6 +30,30 @@
         }
       }
     },
+    "newsComments": {
+      ".read": true,
+      "$slug": {
+        ".indexOn": ["createdAt"],
+        "$comment": {
+          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (!data.exists() && newData.exists() && newData.hasChildren(['name','text','createdAt','clientId']) && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 36 && newData.child('text').isString() && newData.child('text').val().length >= 2 && newData.child('text').val().length <= 600 && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now + 10000 && newData.child('createdAt').val() >= now - 120000 && newData.child('clientId').isString() && newData.child('clientId').val().length >= 3 && newData.child('clientId').val().length <= 80)",
+          "name": {
+            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 36"
+          },
+          "text": {
+            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 600"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber() && newData.val() <= now + 10000 && newData.val() >= now - 120000"
+          },
+          "clientId": {
+            ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 80"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
     "siteAnalytics": {
       ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
       "pages": {
