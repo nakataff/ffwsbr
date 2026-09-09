@@ -35,6 +35,18 @@
       "pages": {
         "$page": {
           ".write": "newData.hasChildren(['path','title','views','lastViewedAt']) && newData.child('path').isString() && newData.child('path').val().length <= 300 && newData.child('title').isString() && newData.child('title').val().length <= 160 && newData.child('views').isNumber() && ((!data.exists() && newData.child('views').val() == 1) || (data.child('views').isNumber() && newData.child('views').val() == data.child('views').val() + 1)) && (!data.exists() || newData.child('path').val() == data.child('path').val()) && newData.child('lastViewedAt').isNumber() && newData.child('lastViewedAt').val() <= now && newData.child('lastViewedAt').val() >= now - 60000",
+          "path": {
+            ".validate": "newData.isString() && newData.val().length <= 300"
+          },
+          "title": {
+            ".validate": "newData.isString() && newData.val().length <= 160"
+          },
+          "views": {
+            ".validate": "newData.isNumber() && newData.val() >= 1"
+          },
+          "lastViewedAt": {
+            ".validate": "newData.isNumber() && newData.val() <= now && newData.val() >= now - 60000"
+          },
           "$other": {
             ".validate": false
           }
