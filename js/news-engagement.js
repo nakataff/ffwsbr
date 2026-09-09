@@ -2,10 +2,10 @@
   'use strict';
 
   function loadCommentsModule() {
-    const isNews = /\/noticia\.html$/i.test(location.pathname) || /^\/noticias\/[^/]+\/?$/i.test(location.pathname);
+    const isNews = /\/noticia\.html$/i.test(location.pathname) || /^\/noticias\/[^/]+\/?$/i.test(location.pathname) || /^\/noticia\/[^/]+\/?$/i.test(location.pathname);
     if (!isNews || document.querySelector('script[data-cff-news-comments]')) return;
     const script = document.createElement('script');
-    script.src = '/js/news-comments.js?v=20260909-news-comments-v2';
+    script.src = '/js/news-comments.js?v=20260909-news-comments-v3';
     script.async = false;
     script.dataset.cffNewsComments = '1';
     document.head.appendChild(script);
@@ -129,8 +129,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     loadCommentsModule();
     const dynamicId = new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('slug');
-    const staticMatch = location.pathname.match(/\/noticias\/([^/]+)\/?$/i);
-    const slug = dynamicId || (staticMatch && staticMatch[1]);
+    const routeMatch = location.pathname.match(/^\/noticias?\/([^/]+)\/?$/i);
+    const slug = dynamicId || (routeMatch && routeMatch[1]);
     if (slug && !document.getElementById('noticia-dinamica')) mount(slug);
   }, { once: true });
 })();
