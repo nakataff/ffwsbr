@@ -1,6 +1,30 @@
 (function () {
   'use strict';
 
+  if (/(^|\/)admin\.html$/i.test(location.pathname)) return;
+
+  const publisherId = 'ca-pub-3351547915606735';
+
+  if (!document.querySelector('meta[name="google-adsense-account"]')) {
+    const meta = document.createElement('meta');
+    meta.name = 'google-adsense-account';
+    meta.content = publisherId;
+    document.head.appendChild(meta);
+  }
+
+  if (!document.querySelector('script[data-cff-adsense]') && !document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle"]')) {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(publisherId);
+    script.crossOrigin = 'anonymous';
+    script.dataset.cffAdsense = '1';
+    document.head.appendChild(script);
+  }
+})();
+
+(function () {
+  'use strict';
+
   if (/\/interacoes\.html$/i.test(location.pathname) && !document.querySelector('script[data-cff-community-checkin]')) {
     const script = document.createElement('script');
     script.src = 'js/community-checkin.js?v=20260908-daily-checkin-v1';
