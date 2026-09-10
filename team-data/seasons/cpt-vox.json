@@ -1,1 +1,26 @@
-{"updatedAt":"2026-07-28","team":"CPT VOX","seasons":{"s1":null,"ewc":null}}
+{
+  "updatedAt": "2026-09-10",
+  "team": "CPT VOX",
+  "seasons": {
+    "s1": null,
+    "ewc": null,
+    "laff": {
+      "id": "laff-2026-s1",
+      "name": "LAFF 2026 S1",
+      "teamAtEvent": "CPT VOX",
+      "finalPosition": 1,
+      "status": "Campeã",
+      "stages": [
+        {"id":"classificatoria","label":"Classificatória","position":4,"points":253,"kills":157,"booyahs":1,"matches":18,"status":"Finalista"},
+        {"id":"final","label":"Final","position":1,"points":200,"kills":112,"booyahs":3,"matches":13,"status":"Campeã","champion":true}
+      ],
+      "players": [
+        {"id":"trevor9","name":"TREVOR9","photo":"player-photos/s2/trevor9.webp","role":"RUSH","team":"CPT VOX","kills":95,"damage":0,"assists":0,"matches":31,"mvp":0,"avg":3.06},
+        {"id":"angelo7","name":"Ângelo7","photo":"player-photos/s2/angelo7.webp","role":"GRANADEIRO","team":"CPT VOX","kills":68,"damage":0,"assists":0,"matches":31,"mvp":0,"avg":2.19},
+        {"id":"bad9","name":"bad9","photo":"player-photos/s2/bad9.webp","role":"RUSH","team":"CPT VOX","kills":48,"damage":0,"assists":0,"matches":31,"mvp":0,"avg":1.55},
+        {"id":"gbtrem22","name":"Gbtrem22","photo":"player-photos/s2/gbtrem22.webp","role":"SUPORTE","team":"CPT VOX","kills":47,"damage":0,"assists":0,"matches":27,"mvp":0,"avg":1.74},
+        {"id":"seven7zk","name":"Seven7zk","photo":"silhueta.webp","role":"RUSH","team":"CPT VOX","kills":11,"damage":0,"assists":0,"matches":4,"mvp":0,"avg":2.75}
+      ]
+    }
+  }
+}
