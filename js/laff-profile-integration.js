@@ -1,11 +1,16 @@
 (()=>{'use strict';
 if(window.__cffLaffProfileIntegration)return;
 window.__cffLaffProfileIntegration=true;
-const V='20260910-laff-profile-v1';
+const V='20260910-laff-profile-v2';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const fmt=v=>(Number(v)||0).toLocaleString('pt-BR');
 const TEAM_SLUGS={cptvox:'cpt-vox',afrogames:'afrogames',sxtet:'sx-tet'};
+const TEAM_RESULTS={
+ cptvox:{event:'LAFF 2026 S1',place:'1º',tier:'Campeã',champion:true},
+ sxtet:{event:'LAFF 2026 S1 (como SX GG)',place:'2º',tier:'Vice-campeã'},
+ afrogames:{event:'LAFF 2026 S1',place:'5º',tier:'Final'}
+};
 const PLAYER_RESULTS={
  gbtrem22:{team:'CPT VOX',place:'1º lugar',label:'CAMPEÃ',champion:true},
  bad9:{team:'CPT VOX',place:'1º lugar',label:'CAMPEÃ',champion:true},
@@ -53,13 +58,31 @@ async function renderTeamLaff(slug,teamName,button){
   panel.innerHTML=`<div class="cff-team-section-head cff-season-head"><div><h2>LAFF 2026 S1</h2><p>${esc(c.status||final.status||'Desempenho da equipe')}</p><span class="cff-laff-season-note${isChampion?' is-champion':''}">${isChampion?'🏆 ':''}${esc(note)}</span></div></div><section class="cff-team-stats"><div class="cff-team-stat"><small>Final</small><strong>${c.finalPosition?fmt(c.finalPosition)+'º':'—'}</strong></div><div class="cff-team-stat"><small>Abates</small><strong>${fmt(totals.kills)}</strong></div><div class="cff-team-stat"><small>Booyahs</small><strong>${fmt(totals.booyahs)}</strong></div><div class="cff-team-stat"><small>Quedas</small><strong>${fmt(totals.matches)}</strong></div></section>${stageCards(stages)}<section class="cff-team-section cff-season-roster-section"><div class="cff-team-section-head"><div><h2>Jogadores na LAFF</h2><p>${c.teamAtEvent&&norm(c.teamAtEvent)!==norm(teamName)?`Line registrada como ${esc(c.teamAtEvent)}`:'Elenco utilizado na competição'}</p></div><span class="cff-team-badge">${(c.players||[]).length} jogadores</span></div><div class="cff-team-roster">${(c.players||[]).map(p=>laffPlayerCard(p,teamName)).join('')}</div></section>`;
  }catch(e){panel.innerHTML='<div class="cff-public-empty">Não foi possível carregar os dados da LAFF desta equipe.</div>'}finally{button.disabled=false}
 }
+function currentTeamName(){return document.querySelector('#team-page-root .cff-team-hero h1')?.textContent?.trim()||''}
 function patchTeamPage(){
- const nav=document.querySelector('#team-page-root .cff-season-tabs'),name=document.querySelector('#team-page-root .cff-team-hero h1')?.textContent?.trim();if(!nav||!name)return false;
+ const nav=document.querySelector('#team-page-root .cff-season-tabs'),name=currentTeamName();if(!nav||!name)return false;
  const slug=TEAM_SLUGS[norm(name)];if(!slug||nav.querySelector('[data-cff-team-laff]'))return true;
  const b=document.createElement('button');b.type='button';b.className='cff-laff-team-tab';b.dataset.cffTeamLaff='1';b.textContent='LAFF 2026 S1';b.setAttribute('aria-selected','false');nav.appendChild(b);
  b.addEventListener('click',()=>{nav.querySelectorAll('button').forEach(x=>{x.classList.toggle('is-active',x===b);x.setAttribute('aria-selected',x===b?'true':'false')});renderTeamLaff(slug,name,b)});
  nav.querySelectorAll('[data-team-season]').forEach(x=>x.addEventListener('click',()=>{b.classList.remove('is-active');b.setAttribute('aria-selected','false')}));
  return true;
+}
+function patchTeamHistoryLaff(){
+ const name=currentTeamName(),key=norm(name),info=TEAM_RESULTS[key];if(!info)return;
+ const titlesMount=document.getElementById('cff-team-titles-mount');
+ if(info.champion&&titlesMount){
+  const grid=titlesMount.querySelector('.cff-title-grid');
+  if(grid&&!norm(grid.textContent).includes('laff2026s1')){
+   grid.querySelector('.cff-public-empty')?.remove();
+   grid.insertAdjacentHTML('afterbegin','<article class="cff-title-card" data-cff-laff-team-title="1"><img src="laff.webp" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'trofeu.webp\'"><div><strong>Campeã</strong><span>LAFF 2026 S1</span><small>2026 • LAFF</small></div></article>');
+   const badge=titlesMount.querySelector('.cff-team-badge'),n=Number((badge?.textContent||'').match(/\d+/)?.[0]);if(badge)badge.textContent=`${(Number.isFinite(n)?n:0)+1} conquistas`;
+  }
+ }
+ const resultsMount=document.getElementById('cff-team-results-mount'),list=resultsMount?.querySelector('.cff-results-list');
+ if(list&&!norm(list.textContent).includes('laff2026s1')){
+  list.querySelector('.cff-public-empty')?.remove();
+  list.insertAdjacentHTML('afterbegin',`<article class="cff-result-row" data-cff-laff-team-result="1"><strong>${esc(info.event)}</strong><span>2026</span><b>${esc(info.place)}</b><small>${esc(info.tier)}</small></article>`);
+ }
 }
 function playerKey(){return norm(document.querySelector('#player-root .profile-name')?.textContent||'')}
 function patchPlayerResult(){
@@ -78,10 +101,10 @@ function patchCptPlayerTitle(){
  const sub=document.querySelector('[data-title-collective] span');if(sub)sub.textContent='Conquistas registradas';
 }
 let timer=0,tries=0;
-function patch(){css();patchTeamPage();patchPlayerResult();patchCptPlayerTitle()}
+function patch(){css();patchTeamPage();patchTeamHistoryLaff();patchPlayerResult();patchCptPlayerTitle()}
 function schedule(){clearTimeout(timer);timer=setTimeout(patch,50)}
 const observer=new MutationObserver(schedule);observer.observe(document.documentElement,{childList:true,subtree:true});
-function boot(){patch();const t=setInterval(()=>{tries++;patch();if((document.querySelector('.cff-team-hero')||document.querySelector('.profile-name'))&&tries>10||tries>80)clearInterval(t)},150)}
+function boot(){patch();const t=setInterval(()=>{tries++;patch();if(((document.querySelector('.cff-team-hero')||document.querySelector('.profile-name'))&&tries>10)||tries>80)clearInterval(t)},150)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 document.addEventListener('click',e=>{if(e.target.closest?.('[data-player-season="laff"]'))setTimeout(patchPlayerResult,40)});
 window.CFF_LAFF_PROFILE_INTEGRATION_VERSION=V;
