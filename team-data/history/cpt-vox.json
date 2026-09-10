@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-09-10",
   "team": "CPT VOX",
   "history": {
     "players": [
@@ -14,9 +14,7 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 1
       },
       {
@@ -30,9 +28,7 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 1
       },
       {
@@ -46,11 +42,7 @@
         "kills": 77,
         "matches": 94,
         "avg": 0.82,
-        "editions": [
-          "WB 2024 F2",
-          "WB 2025 S1",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2024 F2", "WB 2025 S1", "LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 2
       },
       {
@@ -64,11 +56,7 @@
         "kills": 194,
         "matches": 205,
         "avg": 0.95,
-        "editions": [
-          "WB 2024 F1",
-          "WB 2024 F2",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2024 F1", "WB 2024 F2", "LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 3
       },
       {
@@ -82,15 +70,28 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 1
       }
     ],
     "currentCount": 5,
     "formerCount": 0
   },
-  "titles": [],
-  "results": []
+  "titles": [
+    {
+      "type": "Campeã",
+      "event": "LAFF 2026 S1",
+      "date": "2026",
+      "tier": "LAFF",
+      "logo": "laff.webp"
+    }
+  ],
+  "results": [
+    {
+      "torneio": "LAFF 2026 S1",
+      "data": "2026",
+      "place": "1st",
+      "tier": "Campeã"
+    }
+  ]
 }
