@@ -1,1 +1,25 @@
-{"updatedAt":"2026-07-28","team":"SX TET","seasons":{"s1":null,"ewc":null}}
+{
+  "updatedAt": "2026-09-10",
+  "team": "SX TET",
+  "seasons": {
+    "s1": null,
+    "ewc": null,
+    "laff": {
+      "id": "laff-2026-s1",
+      "name": "LAFF 2026 S1",
+      "teamAtEvent": "SX GG",
+      "finalPosition": 2,
+      "status": "Vice-campeã",
+      "stages": [
+        {"id":"classificatoria","label":"Classificatória","position":3,"points":286,"kills":185,"booyahs":3,"matches":18,"status":"Finalista"},
+        {"id":"final","label":"Final","position":2,"points":192,"kills":121,"booyahs":2,"matches":13,"status":"Vice-campeã","champion":false}
+      ],
+      "players": [
+        {"id":"mexico","name":"Mexico","photo":"silhueta.webp","role":"SNIPER","team":"SX GG","kills":86,"damage":0,"assists":0,"matches":31,"mvp":0,"avg":2.77},
+        {"id":"furiazz7","name":"Furiazz7","photo":"player-photos/s2/furiazz7.webp","role":"RUSH","team":"SX GG","kills":82,"damage":0,"assists":0,"matches":31,"mvp":0,"avg":2.65},
+        {"id":"redxzzz","name":"Redxzzz","photo":"player-photos/s2/redxzzz.webp","role":"GRANADEIRO","team":"SX GG","kills":78,"damage":0,"assists":0,"matches":31,"mvp":0,"avg":2.52},
+        {"id":"isacksr","name":"IsackSR","photo":"player-photos/s2/isacksr.webp","role":"SUPORTE","team":"SX GG","kills":60,"damage":0,"assists":0,"matches":31,"mvp":0,"avg":1.94}
+      ]
+    }
+  }
+}
