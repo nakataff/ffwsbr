@@ -1,1 +1,26 @@
-{"updatedAt":"2026-07-28","team":"AFROGAMES","seasons":{"s1":null,"ewc":null}}
+{
+  "updatedAt": "2026-09-10",
+  "team": "AFROGAMES",
+  "seasons": {
+    "s1": null,
+    "ewc": null,
+    "laff": {
+      "id": "laff-2026-s1",
+      "name": "LAFF 2026 S1",
+      "teamAtEvent": "AFROGAMES",
+      "finalPosition": 5,
+      "status": "5º lugar",
+      "stages": [
+        {"id":"classificatoria","label":"Classificatória","position":12,"points":199,"kills":124,"booyahs":2,"matches":18,"status":"Repescagem"},
+        {"id":"repescagem","label":"Repescagem","position":4,"points":76,"kills":50,"booyahs":0,"matches":6,"status":"Classificada para a Final"},
+        {"id":"final","label":"Final","position":5,"points":165,"kills":98,"booyahs":2,"matches":13,"status":"5º lugar","champion":false}
+      ],
+      "players": [
+        {"id":"braboxx7","name":"BRABOXX7","photo":"player-photos/s2/braboxx7.webp","role":"RUSH","team":"AFROGAMES","kills":90,"damage":0,"assists":0,"matches":37,"mvp":0,"avg":2.43},
+        {"id":"gbzinn7","name":"gbzinn7","photo":"player-photos/s2/gbzinn7.webp","role":"SUPORTE","team":"AFROGAMES","kills":89,"damage":0,"assists":0,"matches":37,"mvp":0,"avg":2.41},
+        {"id":"sant10s","name":"Sant10s","photo":"player-photos/s2/sant10s.webp","role":"RUSH","team":"AFROGAMES","kills":48,"damage":0,"assists":0,"matches":33,"mvp":0,"avg":1.45},
+        {"id":"nielffx","name":"Nielffx","photo":"player-photos/s2/nielffx.webp","role":"GRANADEIRO","team":"AFROGAMES","kills":43,"damage":0,"assists":0,"matches":37,"mvp":0,"avg":1.16}
+      ]
+    }
+  }
+}
