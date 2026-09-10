@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-09-10",
   "team": "AFROGAMES",
   "history": {
     "players": [
@@ -14,9 +14,7 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 1
       },
       {
@@ -30,9 +28,7 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 1
       },
       {
@@ -46,9 +42,7 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 1
       },
       {
@@ -62,9 +56,7 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 1
       },
       {
@@ -78,9 +70,7 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2026 S2"],
         "passageOrder": 1
       },
       {
@@ -94,11 +84,7 @@
         "kills": 710,
         "matches": 430,
         "avg": 1.65,
-        "editions": [
-          "WB 2025 S2",
-          "WB 2026 S1",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2025 S2", "WB 2026 S1", "WB 2026 S2"],
         "passageOrder": 3
       }
     ],
@@ -106,5 +92,12 @@
     "formerCount": 0
   },
   "titles": [],
-  "results": []
+  "results": [
+    {
+      "torneio": "LAFF 2026 S1",
+      "data": "2026",
+      "place": "5th",
+      "tier": "Final"
+    }
+  ]
 }
