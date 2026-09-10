@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-02",
+  "updatedAt": "2026-09-10",
   "team": "SX TET",
   "history": {
     "players": [
@@ -14,11 +14,7 @@
         "kills": 60,
         "matches": 86,
         "avg": 0.7,
-        "editions": [
-          "WB 2025 S1",
-          "WB 2025 S2",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2025 S1", "WB 2025 S2", "LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 2
       },
       {
@@ -32,11 +28,7 @@
         "kills": 765,
         "matches": 507,
         "avg": 1.51,
-        "editions": [
-          "WB 2025 S2",
-          "WB 2026 S1",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2025 S2", "WB 2026 S1", "WB 2026 S2"],
         "passageOrder": 6
       },
       {
@@ -50,11 +42,7 @@
         "kills": 235,
         "matches": 270,
         "avg": 0.87,
-        "editions": [
-          "WB 2025 S2",
-          "WB 2026 S1",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2025 S2", "WB 2026 S1", "LAFF 2026 S1", "WB 2026 S2"],
         "passageOrder": 4
       },
       {
@@ -68,14 +56,7 @@
         "kills": 592,
         "matches": 572,
         "avg": 1.03,
-        "editions": [
-          "WB 2024 F1",
-          "WB 2024 F2",
-          "WB 2025 S1",
-          "WB 2025 S2",
-          "WB 2026 S1",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2024 F1", "WB 2024 F2", "WB 2025 S1", "WB 2025 S2", "WB 2026 S1", "WB 2026 S2"],
         "passageOrder": 4
       },
       {
@@ -89,11 +70,7 @@
         "kills": 525,
         "matches": 456,
         "avg": 1.15,
-        "editions": [
-          "WB 2024 F2",
-          "WB 2025 S1",
-          "WB 2026 S2"
-        ],
+        "editions": ["WB 2024 F2", "WB 2025 S1", "WB 2026 S2"],
         "passageOrder": 4
       },
       {
@@ -107,15 +84,34 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": [
-          "WB 2026 S2"
-        ],
+        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "passageOrder": 1
+      },
+      {
+        "id": "mexico",
+        "name": "Mexico",
+        "photo": "silhueta.webp",
+        "currentTeam": "",
+        "isCurrent": false,
+        "hasProfile": true,
+        "cargo": "Jogador",
+        "kills": 86,
+        "matches": 31,
+        "avg": 2.77,
+        "editions": ["LAFF 2026 S1"],
         "passageOrder": 1
       }
     ],
     "currentCount": 5,
-    "formerCount": 1
+    "formerCount": 2
   },
   "titles": [],
-  "results": []
+  "results": [
+    {
+      "torneio": "LAFF 2026 S1 (como SX GG)",
+      "data": "2026",
+      "place": "2nd",
+      "tier": "Vice-campeã"
+    }
+  ]
 }
