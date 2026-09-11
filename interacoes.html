@@ -179,7 +179,7 @@
     users:document.getElementById('ig-stat-users'),actions:document.getElementById('ig-stat-actions'),stories:document.getElementById('ig-stat-stories'),comments:document.getElementById('ig-stat-comments'),ruleStory:document.getElementById('ig-rule-story'),ruleComment:document.getElementById('ig-rule-comment'),ruleNote:document.getElementById('ig-rule-note')
   };
 
-  function escapeHTML(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function escapeHTML(value){return String(value??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));}
   function num(value){const n=Number(value);return Number.isFinite(n)?n:0;}
   function username(value){const clean=String(value||'').trim().replace(/^@+/,'');return clean||'usuario';}
   function initials(value){const clean=username(value).replace(/[^a-z0-9]/gi,'');return (clean.slice(0,2)||'IG').toUpperCase();}
@@ -296,6 +296,7 @@
   setInterval(()=>{if(!document.hidden)load();},REFRESH_MS);
 })();
 </script>
+<script src="js/community-checkin.js?v=20260911-checkin-v1"></script>
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
 </body>
 </html>
