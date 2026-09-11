@@ -64,3 +64,13 @@ window.FFWS_BR_2026_S1_CONFIG = Object.freeze({
     }
   }
 });
+
+(() => {
+  const id = 'cff-s1-classificatoria-multifilters';
+  if (document.getElementById(id)) return;
+  const script = document.createElement('script');
+  script.id = id;
+  script.src = 'js/s1-classificatoria-multifilters.js?v=20260911-s1-multifilters-v1';
+  script.async = false;
+  document.head.appendChild(script);
+})();
