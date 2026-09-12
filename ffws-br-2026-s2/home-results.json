@@ -3,32 +3,32 @@
   "updatedAt": "2026-09-12",
   "status": "live",
   "stage": "classificatoria",
-  "daysCompleted": 12,
-  "matchesCompleted": 75,
+  "daysCompleted": 13,
+  "matchesCompleted": 78,
   "teams": [
     {
       "team": "LOS",
       "position": 1,
-      "points": 1122,
-      "booyahs": 13,
-      "kills": 666,
-      "matches": 69
+      "points": 1174,
+      "booyahs": 14,
+      "kills": 699,
+      "matches": 72
     },
     {
       "team": "FLUXO W7M",
       "position": 2,
-      "points": 950,
-      "booyahs": 14,
-      "kills": 554,
-      "matches": 63
+      "points": 998,
+      "booyahs": 15,
+      "kills": 587,
+      "matches": 66
     },
     {
       "team": "LOUD SNICKERS",
       "position": 3,
-      "points": 939,
+      "points": 981,
       "booyahs": 12,
-      "kills": 518,
-      "matches": 63
+      "kills": 539,
+      "matches": 66
     },
     {
       "team": "INTZ",
@@ -41,55 +41,55 @@
     {
       "team": "TEAM SOLID",
       "position": 5,
-      "points": 803,
-      "booyahs": 7,
-      "kills": 454,
-      "matches": 63
+      "points": 862,
+      "booyahs": 8,
+      "kills": 492,
+      "matches": 66
     },
     {
       "team": "RISE GAMING",
       "position": 6,
-      "points": 747,
+      "points": 789,
       "booyahs": 5,
-      "kills": 459,
-      "matches": 63
+      "kills": 484,
+      "matches": 66
     }
   ],
   "players": [
     {
       "player": "Yago",
       "team": "LOS",
-      "kills": 255,
-      "damage": 183452,
-      "assists": 136,
-      "matches": 69,
+      "kills": 264,
+      "damage": 191036,
+      "assists": 143,
+      "matches": 72,
       "mvp": 14
     },
     {
       "player": "MT7",
       "team": "FLUXO W7M",
-      "kills": 184,
-      "damage": 133171,
-      "assists": 98,
-      "matches": 63,
-      "mvp": 7
+      "kills": 199,
+      "damage": 141671,
+      "assists": 102,
+      "matches": 66,
+      "mvp": 8
     },
     {
       "player": "Rigby245",
       "team": "LOS",
-      "kills": 171,
-      "damage": 91006,
-      "assists": 214,
-      "matches": 67,
-      "mvp": 5
+      "kills": 186,
+      "damage": 97061,
+      "assists": 221,
+      "matches": 70,
+      "mvp": 6
     },
     {
       "player": "KaKaZk",
       "team": "RISE GAMING",
-      "kills": 168,
-      "damage": 112455,
-      "assists": 99,
-      "matches": 63,
+      "kills": 170,
+      "damage": 114439,
+      "assists": 105,
+      "matches": 66,
       "mvp": 3
     },
     {
@@ -104,10 +104,10 @@
     {
       "player": "TRAP",
       "team": "LOUD SNICKERS",
-      "kills": 153,
-      "damage": 102875,
-      "assists": 155,
-      "matches": 63,
+      "kills": 159,
+      "damage": 106917,
+      "assists": 159,
+      "matches": 66,
       "mvp": 2
     }
   ],
@@ -116,37 +116,37 @@
       {
         "player": "Yago",
         "team": "LOS",
-        "kills": 255,
-        "damage": 183452,
-        "assists": 136,
-        "matches": 69,
+        "kills": 264,
+        "damage": 191036,
+        "assists": 143,
+        "matches": 72,
         "mvp": 14
       },
       {
         "player": "MT7",
         "team": "FLUXO W7M",
-        "kills": 184,
-        "damage": 133171,
-        "assists": 98,
-        "matches": 63,
-        "mvp": 7
+        "kills": 199,
+        "damage": 141671,
+        "assists": 102,
+        "matches": 66,
+        "mvp": 8
       },
       {
         "player": "Rigby245",
         "team": "LOS",
-        "kills": 171,
-        "damage": 91006,
-        "assists": 214,
-        "matches": 67,
-        "mvp": 5
+        "kills": 186,
+        "damage": 97061,
+        "assists": 221,
+        "matches": 70,
+        "mvp": 6
       },
       {
         "player": "KaKaZk",
         "team": "RISE GAMING",
-        "kills": 168,
-        "damage": 112455,
-        "assists": 99,
-        "matches": 63,
+        "kills": 170,
+        "damage": 114439,
+        "assists": 105,
+        "matches": 66,
         "mvp": 3
       },
       {
@@ -161,10 +161,10 @@
       {
         "player": "TRAP",
         "team": "LOUD SNICKERS",
-        "kills": 153,
-        "damage": 102875,
-        "assists": 155,
-        "matches": 63,
+        "kills": 159,
+        "damage": 106917,
+        "assists": 159,
+        "matches": 66,
         "mvp": 2
       }
     ],
@@ -172,20 +172,20 @@
       {
         "player": "Yago",
         "team": "LOS",
-        "kills": 255,
-        "damage": 183452,
-        "assists": 136,
-        "matches": 69,
+        "kills": 264,
+        "damage": 191036,
+        "assists": 143,
+        "matches": 72,
         "mvp": 14
       },
       {
         "player": "MT7",
         "team": "FLUXO W7M",
-        "kills": 184,
-        "damage": 133171,
-        "assists": 98,
-        "matches": 63,
-        "mvp": 7
+        "kills": 199,
+        "damage": 141671,
+        "assists": 102,
+        "matches": 66,
+        "mvp": 8
       },
       {
         "player": "honeyzL",
@@ -199,40 +199,40 @@
       {
         "player": "Nikeboy",
         "team": "SX TET",
-        "kills": 120,
-        "damage": 114216,
-        "assists": 70,
-        "matches": 69,
+        "kills": 127,
+        "damage": 121378,
+        "assists": 71,
+        "matches": 72,
         "mvp": 3
       },
       {
         "player": "KaKaZk",
         "team": "RISE GAMING",
-        "kills": 168,
-        "damage": 112455,
-        "assists": 99,
-        "matches": 63,
+        "kills": 170,
+        "damage": 114439,
+        "assists": 105,
+        "matches": 66,
         "mvp": 3
       },
       {
-        "player": "TRAP",
-        "team": "LOUD SNICKERS",
-        "kills": 153,
-        "damage": 102875,
-        "assists": 155,
-        "matches": 63,
-        "mvp": 2
+        "player": "Motovea",
+        "team": "TEAM SOLID",
+        "kills": 122,
+        "damage": 107142,
+        "assists": 93,
+        "matches": 66,
+        "mvp": 3
       }
     ],
     "assists": [
       {
         "player": "Rigby245",
         "team": "LOS",
-        "kills": 171,
-        "damage": 91006,
-        "assists": 214,
-        "matches": 67,
-        "mvp": 5
+        "kills": 186,
+        "damage": 97061,
+        "assists": 221,
+        "matches": 70,
+        "mvp": 6
       },
       {
         "player": "GUS",
@@ -244,6 +244,33 @@
         "mvp": 1
       },
       {
+        "player": "BZP",
+        "team": "LOUD SNICKERS",
+        "kills": 122,
+        "damage": 74291,
+        "assists": 187,
+        "matches": 58,
+        "mvp": 1
+      },
+      {
+        "player": "Bops",
+        "team": "FLUXO W7M",
+        "kills": 118,
+        "damage": 88909,
+        "assists": 187,
+        "matches": 66,
+        "mvp": 0
+      },
+      {
+        "player": "Raone7",
+        "team": "LOS",
+        "kills": 149,
+        "damage": 103631,
+        "assists": 184,
+        "matches": 70,
+        "mvp": 1
+      },
+      {
         "player": "kauãxp",
         "team": "INTZ",
         "kills": 138,
@@ -251,33 +278,6 @@
         "assists": 181,
         "matches": 66,
         "mvp": 3
-      },
-      {
-        "player": "Bops",
-        "team": "FLUXO W7M",
-        "kills": 113,
-        "damage": 85108,
-        "assists": 176,
-        "matches": 63,
-        "mvp": 0
-      },
-      {
-        "player": "BZP",
-        "team": "LOUD SNICKERS",
-        "kills": 118,
-        "damage": 71558,
-        "assists": 175,
-        "matches": 55,
-        "mvp": 1
-      },
-      {
-        "player": "Raone7",
-        "team": "LOS",
-        "kills": 144,
-        "damage": 99156,
-        "assists": 171,
-        "matches": 67,
-        "mvp": 1
       }
     ]
   },
