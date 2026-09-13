@@ -2,13 +2,6 @@ name: Deploy Instagram Webhook
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'database.rules.json'
-      - 'firebase.json'
-      - 'functions/**'
-      - '.github/workflows/deploy-instagram-webhook.yml'
 
 permissions:
   contents: read
