@@ -1,5 +1,6 @@
 (()=>{
   const liveVersion=Date.now();
+  const LIVE_ROOT='ffwsLive/2026-s2';
 
   const SECOND_PHASE_SEED = Object.freeze([
     Object.freeze({ team: 'LOS', sourcePosition: 1, bonus: 50 }),
@@ -15,6 +16,12 @@
     Object.freeze({ team: 'AFROGAMES', sourcePosition: 11, bonus: 2 }),
     Object.freeze({ team: 'SX TET', sourcePosition: 12, bonus: 0 })
   ]);
+
+  const num=v=>Number(v)||0;
+  const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
+  const playerKey=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const values=v=>Array.isArray(v)?v.filter(Boolean):Object.values(v||{}).filter(Boolean);
+  const jsonResponse=(response,payload)=>{const headers=new Headers(response.headers);headers.set('content-type','application/json; charset=utf-8');return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers})};
 
   function injectSecondPhasePolish() {
     if (document.getElementById('cff-s2-second-phase-polish')) return;
@@ -40,10 +47,7 @@
         #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name strong{display:block;max-width:none!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap;font-size:.75rem}
         #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name .ffws-s2-mobile{display:inline!important;white-space:nowrap}
       }
-
-      @media(max-width:470px){
-        #ffws-br-s2-segunda-fase .ffws-s2-table th,#ffws-br-s2-segunda-fase .ffws-s2-table td{font-size:.78rem}
-      }
+      @media(max-width:470px){#ffws-br-s2-segunda-fase .ffws-s2-table th,#ffws-br-s2-segunda-fase .ffws-s2-table td{font-size:.78rem}}
     `;
     document.head.appendChild(style);
   }
@@ -94,38 +98,162 @@
     }
   });
 
-  if (!window.__CFF_2026_S2_SECOND_PHASE_SEED_PATCH__) {
-    window.__CFF_2026_S2_SECOND_PHASE_SEED_PATCH__ = true;
-    const nativeFetch = window.fetch.bind(window);
-    window.fetch = async (...args) => {
-      const response = await nativeFetch(...args);
-      const input = args[0];
-      const requestUrl = typeof input === 'string' ? input : (input && input.url) || '';
-      if (!requestUrl.includes('ffws-br-2026-s2/stages.json') || !response.ok) return response;
+  function liveDbBase(){return String(window.CFF_CONFIG?.firebase?.databaseURL||'').replace(/\/$/,'')}
+  let liveCache=null,liveCacheAt=0,livePromise=null;
+  async function loadLive(nativeFetch){
+    const now=Date.now();
+    if(liveCache&&now-liveCacheAt<2500)return liveCache;
+    if(livePromise)return livePromise;
+    const base=liveDbBase();
+    if(!base)return null;
+    livePromise=nativeFetch(`${base}/${LIVE_ROOT}.json?v=${now}`,{cache:'no-store'}).then(async r=>{
+      if(!r.ok)return null;
+      const data=await r.json();liveCache=data||null;liveCacheAt=Date.now();return liveCache;
+    }).catch(()=>null).finally(()=>{livePromise=null});
+    return livePromise;
+  }
+  function flattenDrops(stage){
+    const out=[];
+    const days=stage?.drops||{};
+    Object.keys(days).sort((a,b)=>num(a)-num(b)).forEach(day=>{
+      const drops=days[day]||{};
+      Object.keys(drops).sort((a,b)=>num(a)-num(b)).forEach(drop=>{
+        const item=drops[drop];if(item)out.push({...item,day:num(item.day||day),drop:num(item.drop||drop)});
+      });
+    });
+    return out;
+  }
+  function toEvent(item){
+    return {round:num(item.day),day:num(item.day),number:num(item.drop),drop:num(item.drop),map:item.map||'',results:values(item.teams).map(r=>({team:r.team||'',position:num(r.position),placementPoints:num(r.placementPoints),kills:num(r.kills),points:num(r.points),booyah:num(r.booyah)}))};
+  }
+  function baseRows(stageKey,currentRows){
+    const old=new Map((currentRows||[]).map(r=>[normalize(r.team),r]));
+    return SECOND_PHASE_SEED.map(seed=>{
+      const prev=old.get(normalize(seed.team))||{};
+      return {team:seed.team,position:seed.sourcePosition,points:stageKey==='segundaFase'?seed.bonus:0,booyahs:0,kills:0,placementPoints:0,matches:0,...(stageKey==='segundaFase'?{sourcePosition:seed.sourcePosition,bonus:seed.bonus}:{}),worldQualified:Boolean(prev.worldQualified)};
+    });
+  }
+  function computeRows(stageKey,events,currentRows){
+    const rows=baseRows(stageKey,currentRows),map=new Map(rows.map(r=>[normalize(r.team),r]));
+    events.forEach(event=>values(event.results).forEach(result=>{
+      let row=map.get(normalize(result.team));
+      if(!row){row={team:result.team,position:null,points:0,booyahs:0,kills:0,placementPoints:0,matches:0};map.set(normalize(result.team),row);rows.push(row)}
+      row.points+=num(result.points);row.booyahs+=num(result.booyah)||(num(result.position)===1?1:0);row.kills+=num(result.kills);row.placementPoints+=num(result.placementPoints);row.matches+=1;
+    }));
+    rows.sort((a,b)=>b.points-a.points||b.booyahs-a.booyahs||b.kills-a.kills||String(a.team).localeCompare(String(b.team),'pt-BR'));
+    rows.forEach((r,i)=>r.position=i+1);
+    return rows;
+  }
+  function detectChampion(events){
+    const totals=new Map(SECOND_PHASE_SEED.map(x=>[normalize(x.team),0]));
+    for(const event of events){
+      const eligible=new Set([...totals].filter(([,pts])=>pts>=160).map(([key])=>key));
+      const winner=values(event.results).find(r=>num(r.position)===1&&eligible.has(normalize(r.team)));
+      if(winner)return winner.team;
+      values(event.results).forEach(r=>totals.set(normalize(r.team),(totals.get(normalize(r.team))||0)+num(r.points)));
+    }
+    return '';
+  }
+  function mergeStages(payload,live){
+    if(!payload||typeof payload!=='object')return payload;
+    if(payload.classificatoria&&typeof payload.classificatoria==='object')payload.classificatoria.finished=true;
+    if(!payload.segundaFase||typeof payload.segundaFase!=='object')payload.segundaFase={finished:false,bonus:[],rounds:[],rows:[]};
+    payload.segundaFase.bonus=SECOND_PHASE_SEED.map(item=>({team:item.team,sourcePosition:item.sourcePosition,bonus:item.bonus}));
 
-      try {
-        const payload = await response.clone().json();
-        if (!payload || typeof payload !== 'object') return response;
+    const secondEvents=flattenDrops(live?.segundaFase).map(toEvent);
+    if(secondEvents.length){
+      payload.segundaFase.rounds=secondEvents.map(({day,...event})=>event);
+      payload.segundaFase.rows=computeRows('segundaFase',secondEvents,payload.segundaFase.rows);
+      payload.segundaFase.finished=secondEvents.length>=36;
+    }else{
+      const existingRows=Array.isArray(payload.segundaFase.rows)?payload.segundaFase.rows:[];
+      const existingByTeam=new Map(existingRows.map(row=>[normalize(row?.team),row]));
+      payload.segundaFase.rows=SECOND_PHASE_SEED.map(item=>{const current=existingByTeam.get(normalize(item.team))||{};const hasMatches=num(current.matches)>0;return {...current,team:item.team,sourcePosition:item.sourcePosition,bonus:item.bonus,position:hasMatches?current.position:item.sourcePosition,points:hasMatches?num(current.points):item.bonus,booyahs:num(current.booyahs),kills:num(current.kills),placementPoints:num(current.placementPoints),matches:num(current.matches)}});
+    }
 
-        if (payload.classificatoria && typeof payload.classificatoria === 'object') payload.classificatoria.finished = true;
-        if (!payload.segundaFase || typeof payload.segundaFase !== 'object') payload.segundaFase = { finished: false, bonus: [], rounds: [], rows: [] };
+    const finalEvents=flattenDrops(live?.final).map(toEvent);
+    if(finalEvents.length){
+      if(!payload.final||typeof payload.final!=='object')payload.final={finished:false,days:[],rows:[]};
+      const byDay=new Map();
+      finalEvents.forEach(event=>{if(!byDay.has(event.day))byDay.set(event.day,[]);byDay.get(event.day).push(({round,...rest})=>rest)});
+      payload.final.days=[...byDay].sort((a,b)=>a[0]-b[0]).map(([day,matches])=>({day,matches:matches.sort((a,b)=>num(a.drop)-num(b.drop))}));
+      let rows=computeRows('final',finalEvents,payload.final.rows);
+      const champion=detectChampion(finalEvents);
+      if(champion){const winner=rows.find(r=>normalize(r.team)===normalize(champion));rows=rows.filter(r=>r!==winner);if(winner)rows.unshift(winner);rows.forEach((r,i)=>r.position=i+1);payload.final.champion=champion;payload.final.finished=true}
+      else payload.final.finished=finalEvents.length>=16;
+      payload.final.rows=rows;payload.final.championRushPoint=160;payload.final.matchesPlayed=finalEvents.length;payload.final.scheduledMaxMatches=16;
+    }
+    if(live?.segundaFase?.updatedAt||live?.final?.updatedAt)payload.updatedAt=new Date(Math.max(num(live?.segundaFase?.updatedAt),num(live?.final?.updatedAt))).toISOString().slice(0,10);
+    return payload;
+  }
+  function livePlayerAggregates(live){
+    const out=new Map();
+    ['segundaFase','final'].forEach(stageKey=>{
+      flattenDrops(live?.[stageKey]).forEach(drop=>values(drop.players).forEach(p=>{
+        const key=playerKey(p.name);if(!key)return;
+        if(!out.has(key))out.set(key,{name:p.name,team:p.team,stages:{},days:new Map()});
+        const row=out.get(key);row.name=p.name||row.name;row.team=p.team||row.team;
+        if(!row.stages[stageKey])row.stages[stageKey]={kills:0,damage:0,assists:0,matches:0,mvp:0};
+        const s=row.stages[stageKey];s.kills+=num(p.kills);s.damage+=num(p.damage);s.assists+=num(p.assists);s.matches+=1;s.mvp+=num(p.mvp);
+        const dk=`${stageKey}:${drop.day}`;row.days.set(dk,(row.days.get(dk)||0)+num(p.kills));
+      }));
+    });
+    return out;
+  }
+  function mergePlayerStats(payload,live){
+    if(!payload||typeof payload!=='object')payload={tournament:'WB 2026 S2',players:{}};
+    if(!payload.players||typeof payload.players!=='object')payload.players={};
+    const liveAgg=livePlayerAggregates(live);
+    const keyByNorm=new Map(Object.entries(payload.players).map(([key,p])=>[playerKey(p?.name||key),key]));
+    liveAgg.forEach((agg,normKey)=>{
+      const key=keyByNorm.get(normKey)||normKey;
+      const current=payload.players[key]||{name:agg.name,team:agg.team,kills:0,damage:0,assists:0,matches:0,mvp:0,record:0,stages:{}};
+      if(!current.stages||typeof current.stages!=='object')current.stages={};
+      ['segundaFase','final'].forEach(stageKey=>{
+        const next=agg.stages[stageKey];if(!next)return;
+        const old=current.stages[stageKey]||{};
+        current.kills=num(current.kills)-num(old.kills)+num(next.kills);
+        current.damage=num(current.damage)-num(old.damage)+num(next.damage);
+        current.assists=num(current.assists)-num(old.assists)+num(next.assists);
+        current.matches=num(current.matches)-num(old.matches)+num(next.matches);
+        current.mvp=num(current.mvp)-num(old.mvp)+num(next.mvp);
+        current.stages[stageKey]={...next};
+      });
+      current.name=agg.name||current.name;current.team=agg.team||current.team;current.record=Math.max(num(current.record),0,...agg.days.values());
+      payload.players[key]=current;
+    });
+    const records=Object.values(payload.players);
+    const rankField=(field,rankName)=>{const sorted=records.filter(r=>num(r[field])>0).sort((a,b)=>num(b[field])-num(a[field])||String(a.name).localeCompare(String(b.name),'pt-BR'));let last=null,rank=0;sorted.forEach((r,i)=>{const v=num(r[field]);if(v!==last){rank=i+1;last=v}r[rankName]=rank});records.filter(r=>num(r[field])<=0).forEach(r=>r[rankName]=null)};
+    rankField('kills','rankKills');rankField('damage','rankDamage');rankField('assists','rankAssists');
+    return payload;
+  }
+  function mergeHome(payload,live,stats){
+    if(!payload||typeof payload!=='object')payload={};
+    const records=Object.values(stats?.players||{});
+    const sorted=(field)=>records.filter(r=>num(r[field])>0).sort((a,b)=>num(b[field])-num(a[field])||String(a.name).localeCompare(String(b.name),'pt-BR')).slice(0,6).map(r=>({player:r.name,name:r.name,team:r.team,kills:num(r.kills),damage:num(r.damage),assists:num(r.assists),matches:num(r.matches),mvp:num(r.mvp)}));
+    payload.rankings={...(payload.rankings||{}),kills:sorted('kills'),damage:sorted('damage'),assists:sorted('assists')};payload.players=payload.rankings.kills;
+    const stageHolder={segundaFase:{rows:[]},classificatoria:{},final:{}};mergeStages(stageHolder,live);payload.teams=(stageHolder.segundaFase.rows||[]).slice(0,6).map(r=>({...r}));payload.stage='segundaFase';payload.status=stageHolder.segundaFase.finished?'finished':'live';payload.matchesCompleted=flattenDrops(live?.segundaFase).length;payload.daysCompleted=new Set(flattenDrops(live?.segundaFase).map(d=>d.day)).size;
+    return payload;
+  }
 
-        const existingRows = Array.isArray(payload.segundaFase.rows) ? payload.segundaFase.rows : [];
-        const existingByTeam = new Map(existingRows.map(row => [String(row?.team || '').trim().toUpperCase(), row]));
-        payload.segundaFase.bonus = SECOND_PHASE_SEED.map(item => ({ team: item.team, sourcePosition: item.sourcePosition, bonus: item.bonus }));
-        payload.segundaFase.rows = SECOND_PHASE_SEED.map(item => {
-          const current = existingByTeam.get(item.team.toUpperCase()) || {};
-          const hasSecondPhaseMatches = Number(current.matches || 0) > 0;
-          return { ...current, team: item.team, sourcePosition: item.sourcePosition, bonus: item.bonus, position: hasSecondPhaseMatches ? current.position : item.sourcePosition, points: hasSecondPhaseMatches ? Number(current.points || 0) : item.bonus, booyahs: Number(current.booyahs || 0), kills: Number(current.kills || 0), placementPoints: Number(current.placementPoints || 0), matches: Number(current.matches || 0) };
-        });
-
-        const headers = new Headers(response.headers);
-        headers.set('content-type', 'application/json; charset=utf-8');
-        return new Response(JSON.stringify(payload), { status: response.status, statusText: response.statusText, headers });
-      } catch (error) {
-        console.warn('[CFF] Não foi possível aplicar o fechamento da Classificatória/Segunda Fase:', error);
+  if(!window.__CFF_2026_S2_LIVE_PATCH__){
+    window.__CFF_2026_S2_LIVE_PATCH__=true;
+    const nativeFetch=window.fetch.bind(window);
+    window.fetch=async(...args)=>{
+      const response=await nativeFetch(...args);const input=args[0];const requestUrl=typeof input==='string'?input:(input&&input.url)||'';
+      const relevant=/ffws-br-2026-s2\/(?:stages|player-stats|home-results)\.json/i.test(requestUrl);
+      if(!relevant||!response.ok)return response;
+      try{
+        const payload=await response.clone().json();const live=await loadLive(nativeFetch);if(!live)return response;
+        if(requestUrl.includes('stages.json'))return jsonResponse(response,mergeStages(payload,live));
+        if(requestUrl.includes('player-stats.json'))return jsonResponse(response,mergePlayerStats(payload,live));
+        if(requestUrl.includes('home-results.json')){
+          let stats={players:{}};
+          try{const r=await nativeFetch(`ffws-br-2026-s2/player-stats.json?v=${Date.now()}`,{cache:'no-store'});if(r.ok)stats=mergePlayerStats(await r.json(),live)}catch(_){}
+          return jsonResponse(response,mergeHome(payload,live,stats));
+        }
         return response;
-      }
+      }catch(error){console.warn('[CFF] Falha ao aplicar dados ao vivo da WB 2026 S2:',error);return response}
     };
   }
 
