@@ -16,26 +16,6 @@
     Object.freeze({ team: 'SX TET', sourcePosition: 12, bonus: 0 })
   ]);
 
-  const normalizeTeam = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
-  let worldTeamKeys = SECOND_PHASE_SEED.slice(0, 2).map(item => normalizeTeam(item.team));
-  let paintScheduled = false;
-
-  function paintWorldPlayers() {
-    paintScheduled = false;
-    const world = new Set(worldTeamKeys);
-    document.querySelectorAll('#ffws-br-s2-mvp-content .ffws-s2-mvp-main-row').forEach(row => {
-      const teamImage = row.querySelector('td:nth-child(3) .ffws-s2-team-cell img');
-      const teamName = teamImage?.getAttribute('alt') || '';
-      row.classList.toggle('cff-s2-world-player-row', world.has(normalizeTeam(teamName)));
-    });
-  }
-
-  function scheduleWorldPlayerPaint() {
-    if (paintScheduled) return;
-    paintScheduled = true;
-    requestAnimationFrame(paintWorldPlayers);
-  }
-
   function injectSecondPhasePolish() {
     if (document.getElementById('cff-s2-second-phase-polish')) return;
     const style = document.createElement('style');
@@ -44,22 +24,24 @@
       #ffws-br-s2-segunda-fase .ffws-s2-row-world{box-shadow:inset 4px 0 #ffc226!important;background:linear-gradient(90deg,rgba(255,194,38,.13),rgba(255,194,38,.035))!important}
       #ffws-br-s2-segunda-fase .ffws-s2-row-world td:first-child{color:#ffd45a!important}
       #ffws-br-s2-segunda-fase .ffws-s2-row-final{box-shadow:none!important;background:rgba(255,255,255,.012)!important}
-      #ffws-br-s2-mvp-content .cff-s2-world-player-row>td:nth-child(3){background:linear-gradient(90deg,rgba(255,194,38,.15),rgba(255,194,38,.045))!important;box-shadow:inset 3px 0 #ffc226}
-      #ffws-br-s2-mvp-content .cff-s2-world-player-row>td:nth-child(3) .ffws-s2-team-name strong{color:#ffd45a!important}
+      #ffws-br-s2-segunda-fase .ffws-s2-legend .world i{background:#ffc226!important}
+      #ffws-br-s2-segunda-fase .ffws-s2-legend .final i{background:#465469!important}
+
       @media(max-width:760px){
-        #ffws-br-s2-mvp-content .ffws-s2-mvp-table th:nth-child(2),#ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(2){width:44%;padding-left:4px!important;padding-right:4px!important}
-        #ffws-br-s2-mvp-content .ffws-s2-mvp-table th:nth-child(3),#ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(3){width:24%;padding-left:10px!important;padding-right:10px!important}
-        #ffws-br-s2-mvp-content .ffws-s2-mvp-table th:nth-child(4),#ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(4),#ffws-br-s2-mvp-content .ffws-s2-mvp-table th:nth-child(7),#ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(7){width:16%;padding-left:4px!important;padding-right:4px!important}
-        #ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(3) .ffws-s2-team-cell{justify-content:flex-start!important;gap:4px!important;min-width:0}
-        #ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(3) .ffws-s2-team-name{display:flex!important;min-width:0;overflow:hidden}
-        #ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(3) .ffws-s2-team-name strong{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.69rem}
-        #ffws-br-s2-mvp-content .ffws-s2-mvp-table td:nth-child(3) .ffws-s2-team-cell img{width:20px!important;height:20px!important;flex:0 0 20px}
+        #ffws-br-s2-segunda-fase .ffws-s2-table .team-col{min-width:222px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name{flex:1 1 auto;min-width:0}
+        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name strong{max-width:none}
+      }
+
+      @media(max-width:470px){
+        #ffws-br-s2-segunda-fase .ffws-s2-table{min-width:455px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th,#ffws-br-s2-segunda-fase .ffws-s2-table td{font-size:.78rem}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(1),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(1){padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(2),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(2){padding-left:10px!important;padding-right:10px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(3),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(3),#ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(4),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(4){padding-left:4px!important;padding-right:4px!important}
       }
     `;
     document.head.appendChild(style);
-    const observer = new MutationObserver(scheduleWorldPlayerPaint);
-    observer.observe(document.body, { childList: true, subtree: true });
-    scheduleWorldPlayerPaint();
   }
 
   injectSecondPhasePolish();
@@ -132,10 +114,6 @@
           const hasSecondPhaseMatches = Number(current.matches || 0) > 0;
           return { ...current, team: item.team, sourcePosition: item.sourcePosition, bonus: item.bonus, position: hasSecondPhaseMatches ? current.position : item.sourcePosition, points: hasSecondPhaseMatches ? Number(current.points || 0) : item.bonus, booyahs: Number(current.booyahs || 0), kills: Number(current.kills || 0), placementPoints: Number(current.placementPoints || 0), matches: Number(current.matches || 0) };
         });
-
-        const worldRows = [...payload.segundaFase.rows].sort((a, b) => Number(a.position || 999) - Number(b.position || 999) || Number(b.points || 0) - Number(a.points || 0));
-        worldTeamKeys = worldRows.slice(0, 2).map(row => normalizeTeam(row.team));
-        scheduleWorldPlayerPaint();
 
         const headers = new Headers(response.headers);
         headers.set('content-type', 'application/json; charset=utf-8');
