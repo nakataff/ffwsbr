@@ -20,19 +20,19 @@
     teamsUrl: 'ffws-br-2026-s2/teams.json?v=20260902-wliu-sx-v31',
     stagesUrl: `ffws-br-2026-s2/stages.json?v=${liveVersion}`,
     playersUrl: `ffws-br-2026-s2/players.json?v=${liveVersion}`,
-    datesUrl: 'ffws-br-2026-s2/dates.json?v=20260728-calendar-v1',
+    datesUrl: 'ffws-br-2026-s2/dates.json?v=20260913-classificatoria-final-v2',
     secondPhaseSeed: SECOND_PHASE_SEED,
     layout: {
       classificatoria: {
         participantsTitle: 'Times Participantes',
-        classificationTitle: 'Classificação Geral',
+        classificationTitle: 'Classificação Final',
         format: {
           kicker: 'WB 2026 S2',
           title: 'Formato da Classificatória',
-          description: '14 equipes • 14 rodadas • duas equipes ficam de folga por rodada • os 12 melhores avançam para a Segunda Fase • os dois últimos são rebaixados.',
+          description: '14 equipes • 14 rodadas • duas equipes ficaram de folga por rodada • os 12 melhores avançaram para a Segunda Fase • os dois últimos foram rebaixados.',
           legends: [
-            { className: 'br-legend-final', range: '1º ao 12º', label: 'avançam para a Segunda Fase' },
-            { className: 'br-legend-relegated', range: '13º ao 14º', label: 'são rebaixados diretamente' }
+            { className: 'br-legend-final', range: '1º ao 12º', label: 'classificados para a Segunda Fase' },
+            { className: 'br-legend-relegated', range: '13º ao 14º', label: 'rebaixados diretamente' }
           ],
           details: {
             summary: 'Ver detalhes do novo formato',
@@ -53,16 +53,16 @@
           { value: 'Solara', label: 'Solara' }
         ],
         zones: [
-          { from: 1, to: 12, rowClass: 'br-row-final', cellClass: 'br-status-final', title: 'Segunda Fase' },
+          { from: 1, to: 12, rowClass: 'br-row-final', cellClass: 'br-status-final', title: 'Classificado' },
           { from: 13, to: 14, rowClass: 'br-row-relegated', cellClass: 'br-status-relegated', title: 'Rebaixado' }
         ]
       }
     }
   });
 
-  // Enquanto a Classificatória ainda recebe o arquivo final, injeta no payload da temporada
-  // a composição e os bônus confirmados da Segunda Fase. O s2.js continua usando o mesmo
-  // stages.json e, quando houver quedas, soma o bônus aos pontos conquistados normalmente.
+  // A Classificatória foi encerrada em 13/09. Enquanto o gerador ainda mantém
+  // "finished: false" no JSON bruto, normaliza o payload para o estado oficial
+  // e injeta os 12 classificados com os bônus iniciais da Segunda Fase.
   if (!window.__CFF_2026_S2_SECOND_PHASE_SEED_PATCH__) {
     window.__CFF_2026_S2_SECOND_PHASE_SEED_PATCH__ = true;
     const nativeFetch = window.fetch.bind(window);
@@ -75,6 +75,10 @@
       try {
         const payload = await response.clone().json();
         if (!payload || typeof payload !== 'object') return response;
+
+        if (payload.classificatoria && typeof payload.classificatoria === 'object') {
+          payload.classificatoria.finished = true;
+        }
 
         if (!payload.segundaFase || typeof payload.segundaFase !== 'object') {
           payload.segundaFase = { finished: false, bonus: [], rounds: [], rows: [] };
@@ -91,11 +95,18 @@
 
         payload.segundaFase.rows = SECOND_PHASE_SEED.map(item => {
           const current = existingByTeam.get(item.team.toUpperCase()) || {};
+          const hasSecondPhaseMatches = Number(current.matches || 0) > 0;
           return {
             ...current,
             team: item.team,
             sourcePosition: item.sourcePosition,
-            bonus: item.bonus
+            bonus: item.bonus,
+            position: hasSecondPhaseMatches ? current.position : item.sourcePosition,
+            points: hasSecondPhaseMatches ? Number(current.points || 0) : item.bonus,
+            booyahs: Number(current.booyahs || 0),
+            kills: Number(current.kills || 0),
+            placementPoints: Number(current.placementPoints || 0),
+            matches: Number(current.matches || 0)
           };
         });
 
@@ -107,7 +118,7 @@
           headers
         });
       } catch (error) {
-        console.warn('[CFF] Não foi possível aplicar os bônus da Segunda Fase:', error);
+        console.warn('[CFF] Não foi possível aplicar o fechamento da Classificatória/Segunda Fase:', error);
         return response;
       }
     };
