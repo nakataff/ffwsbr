@@ -7,14 +7,13 @@
   <meta name="referrer" content="no-referrer">
   <title>Edição | Painel Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="preload" href="assets/fonts/avilock-bold.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
-  <link rel="stylesheet" href="css/admin-edicao.css?v=20260913-photo-editor-v5">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20260913-photo-editor-v6">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20260913-photo-editor-v5"></script>
+  <script type="module" src="js/admin-edicao.js?v=20260913-photo-editor-v6"></script>
 </head>
 <body>
   <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
@@ -117,7 +116,7 @@
           </div>
           <div class="admin-field">
             <label for="photo-editor-text">Texto da arte</label>
-            <textarea id="photo-editor-text" rows="3" maxlength="220" placeholder="Digite o título ou chamada"></textarea>
+            <textarea id="photo-editor-text" rows="3" maxlength="220" wrap="off" placeholder="Digite o título ou chamada"></textarea>
           </div>
           <div class="admin-field">
             <label for="photo-editor-font-family">Fonte</label>
@@ -153,7 +152,18 @@
             <input id="photo-editor-text-spacing" type="range" min="70" max="180" value="106" step="2">
           </label>
           <label class="photo-editor-check"><input id="photo-editor-text-shadow" type="checkbox" checked> Sombra leve</label>
-          <p class="photo-editor-hint">A Avilock agora vem carregada automaticamente pelo próprio site. Cada texto pode usar uma fonte e configuração diferente.</p>
+
+          <div class="photo-editor-button-grid photo-editor-text-default-actions">
+            <button id="photo-editor-save-text-defaults" class="admin-btn admin-btn-ghost" type="button">Salvar como padrão</button>
+            <button id="photo-editor-apply-text-defaults" class="admin-btn admin-btn-ghost" type="button">Aplicar padrão</button>
+          </div>
+
+          <label class="photo-editor-frame-loader photo-editor-font-loader">
+            <span>Avilock</span>
+            <input id="photo-editor-font-file" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2">
+            <small>Carregue a Avilock uma vez. Ela fica salva neste navegador e será aplicada automaticamente nas próximas vezes.</small>
+          </label>
+          <p class="photo-editor-hint">O editor só quebra uma linha quando você apertar Enter. Não há mais quebra automática no texto da arte.</p>
         </div>
 
         <div class="photo-editor-control-section">
