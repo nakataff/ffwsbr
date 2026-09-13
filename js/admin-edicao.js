@@ -17,8 +17,8 @@ if (!config) {
 
 const app = getApps().length ? getApp() : initializeApp(config);
 const auth = getAuth(app);
-
 const $ = (selector) => document.querySelector(selector);
+
 const ui = {
   app: $('#photo-editor-app'),
   authMessage: $('#photo-editor-auth-message'),
@@ -47,6 +47,8 @@ const ui = {
   text: $('#photo-editor-text'),
   fontSize: $('#photo-editor-font-size'),
   textColor: $('#photo-editor-text-color'),
+  textX: $('#photo-editor-text-x'),
+  textXValue: $('#photo-editor-text-x-value'),
   textY: $('#photo-editor-text-y'),
   textYValue: $('#photo-editor-text-y-value'),
   textShadow: $('#photo-editor-text-shadow'),
@@ -67,6 +69,8 @@ const ui = {
 };
 
 const ctx = ui.canvas.getContext('2d', { alpha: false, desynchronized: true });
+let initialized = false;
+
 const state = {
   image: null,
   imageUrl: '',
@@ -84,18 +88,26 @@ const state = {
   text: '',
   textSize: 160,
   textColor: '#ffffff',
+  textX: 50,
   textY: 42,
   textShadow: true,
   frameEnabled: true,
   customFrame: null,
   customFrameUrl: '',
-  dragging: false,
+  renderQueued: false,
+  avilockReady: false,
+  logo: null,
+  activePointers: new Map(),
   dragPointerId: null,
   dragLastX: 0,
   dragLastY: 0,
-  renderQueued: false,
-  avilockReady: false,
-  logo: null
+  pinching: false,
+  pinchStartDistance: 0,
+  pinchStartZoom: 1,
+  pinchStartCenterX: 0,
+  pinchStartCenterY: 0,
+  pinchStartImageX: BASE_W / 2,
+  pinchStartImageY: BASE_H / 2
 };
 
 function setMessage(text, type = '') {
@@ -130,29 +142,21 @@ function drawRoundedRect(context, x, y, width, height, radius) {
 
 function drawFallbackBackground(context) {
   const gradient = context.createLinearGradient(0, 0, BASE_W, BASE_H);
-  gradient.addColorStop(0, '#a870ff');
-  gradient.addColorStop(0.55, '#965eea');
-  gradient.addColorStop(1, '#6d35bf');
+  gradient.addColorStop(0, '#0b0d14');
+  gradient.addColorStop(0.56, '#12161d');
+  gradient.addColorStop(1, '#020304');
   context.fillStyle = gradient;
   context.fillRect(0, 0, BASE_W, BASE_H);
 
   context.save();
-  context.globalAlpha = 0.13;
-  context.fillStyle = '#ffffff';
-  const originX = BASE_W * 0.55;
-  const originY = BASE_H * 0.42;
-  const rayCount = 26;
-  for (let i = 0; i < rayCount; i += 2) {
-    const a1 = (Math.PI * 2 * i) / rayCount;
-    const a2 = (Math.PI * 2 * (i + 1)) / rayCount;
-    const radius = BASE_H * 1.15;
-    context.beginPath();
-    context.moveTo(originX, originY);
-    context.lineTo(originX + Math.cos(a1) * radius, originY + Math.sin(a1) * radius);
-    context.lineTo(originX + Math.cos(a2) * radius, originY + Math.sin(a2) * radius);
-    context.closePath();
-    context.fill();
-  }
+  context.globalAlpha = 0.16;
+  const gold = context.createRadialGradient(BASE_W * 0.5, BASE_H * 0.34, 40, BASE_W * 0.5, BASE_H * 0.34, BASE_W * 0.48);
+  gold.addColorStop(0, '#f3c66a');
+  gold.addColorStop(0.18, 'rgba(243,198,106,.65)');
+  gold.addColorStop(0.45, 'rgba(243,198,106,.12)');
+  gold.addColorStop(1, 'rgba(243,198,106,0)');
+  context.fillStyle = gold;
+  context.fillRect(0, 0, BASE_W, BASE_H);
   context.restore();
 }
 
@@ -185,23 +189,26 @@ function wrapText(context, text, maxWidth) {
     let line = words.shift();
     words.forEach((word) => {
       const test = `${line} ${word}`;
-      if (context.measureText(test).width <= maxWidth) line = test;
-      else {
+      if (context.measureText(test).width <= maxWidth) {
+        line = test;
+      } else {
         lines.push(line);
         line = word;
       }
     });
     lines.push(line);
   });
-  return lines.slice(0, 4);
+  return lines.slice(0, 5);
 }
 
 function drawTextLayer(context) {
   const text = String(state.text || '').trim();
   if (!text) return;
+
   const fontFamily = state.avilockReady ? '"Avilock"' : 'Impact, "Arial Black", sans-serif';
   const fontSize = clamp(Number(state.textSize) || 160, 40, 500);
-  const y = BASE_H * (clamp(Number(state.textY) || 42, 8, 72) / 100);
+  const x = BASE_W * (clamp(Number(state.textX) || 50, 5, 95) / 100);
+  const y = BASE_H * (clamp(Number(state.textY) || 42, 8, 90) / 100);
 
   context.save();
   context.textAlign = 'center';
@@ -213,11 +220,36 @@ function drawTextLayer(context) {
     context.shadowBlur = Math.max(10, fontSize * 0.08);
     context.shadowOffsetY = Math.max(4, fontSize * 0.035);
   }
-  const lines = wrapText(context, text.toUpperCase(), BASE_W * 0.82);
+  const lines = wrapText(context, text.toUpperCase(), BASE_W * 0.84);
   const lineHeight = fontSize * 0.92;
   const startY = y - ((lines.length - 1) * lineHeight) / 2;
-  lines.forEach((line, index) => context.fillText(line, BASE_W / 2, startY + index * lineHeight));
+  lines.forEach((line, index) => context.fillText(line, x, startY + index * lineHeight));
   context.restore();
+}
+
+function drawBrand(context) {
+  const logoSize = 230;
+  const x = BASE_W * 0.73;
+  const y = BASE_H * 0.89;
+  if (state.logo && state.logo.complete && state.logo.naturalWidth) {
+    const ratio = state.logo.naturalWidth / state.logo.naturalHeight;
+    const logoW = ratio >= 1 ? logoSize : logoSize * ratio;
+    const logoH = ratio >= 1 ? logoSize / ratio : logoSize;
+    context.drawImage(state.logo, x - logoW - 40, y - logoH / 2, logoW, logoH);
+  }
+
+  context.textAlign = 'left';
+  context.textBaseline = 'alphabetic';
+  context.fillStyle = '#ffffff';
+  context.shadowColor = 'rgba(0,0,0,.45)';
+  context.shadowBlur = 8;
+  context.shadowOffsetY = 3;
+  const family = state.avilockReady ? '"Avilock"' : 'Impact, "Arial Black", sans-serif';
+  context.font = `150px ${family}`;
+  context.fillText('CENTRAL', x, y - 18);
+  context.font = `92px ${family}`;
+  context.fillText('FREE FIRE', x, y + 88);
+  context.shadowColor = 'transparent';
 }
 
 function drawDefaultFrame(context) {
@@ -262,31 +294,6 @@ function drawDefaultFrame(context) {
   context.restore();
 }
 
-function drawBrand(context) {
-  const logoSize = 230;
-  const x = BASE_W * 0.73;
-  const y = BASE_H * 0.89;
-  if (state.logo && state.logo.complete && state.logo.naturalWidth) {
-    const ratio = state.logo.naturalWidth / state.logo.naturalHeight;
-    const logoW = ratio >= 1 ? logoSize : logoSize * ratio;
-    const logoH = ratio >= 1 ? logoSize / ratio : logoSize;
-    context.drawImage(state.logo, x - logoW - 40, y - logoH / 2, logoW, logoH);
-  }
-
-  context.textAlign = 'left';
-  context.textBaseline = 'alphabetic';
-  context.fillStyle = '#ffffff';
-  context.shadowColor = 'rgba(0,0,0,.45)';
-  context.shadowBlur = 8;
-  context.shadowOffsetY = 3;
-  const family = state.avilockReady ? '"Avilock"' : 'Impact, "Arial Black", sans-serif';
-  context.font = `150px ${family}`;
-  context.fillText('CENTRAL', x, y - 18);
-  context.font = `92px ${family}`;
-  context.fillText('FREE FIRE', x, y + 88);
-  context.shadowColor = 'transparent';
-}
-
 function drawCustomFrame(context) {
   if (!state.customFrame) return false;
   context.drawImage(state.customFrame, 0, 0, BASE_W, BASE_H);
@@ -294,7 +301,6 @@ function drawCustomFrame(context) {
 }
 
 function render() {
-  ctx.save();
   ctx.clearRect(0, 0, BASE_W, BASE_H);
   drawFallbackBackground(ctx);
   drawPhoto(ctx);
@@ -303,11 +309,12 @@ function render() {
     const customDrawn = drawCustomFrame(ctx);
     if (!customDrawn) drawDefaultFrame(ctx);
   }
-  ctx.restore();
 
   ui.empty.hidden = Boolean(state.image);
   ui.download.disabled = !state.image;
-  ui.status.textContent = state.image ? `${state.image.naturalWidth} × ${state.image.naturalHeight} • arraste para reposicionar` : 'Adicione uma foto para começar';
+  ui.status.textContent = state.image
+    ? `${state.image.naturalWidth} × ${state.image.naturalHeight} • arraste para mover • pinça para zoom`
+    : 'Adicione uma foto para começar';
 }
 
 function fitImage(mode = 'cover', preserveZoom = false) {
@@ -373,6 +380,7 @@ function resetAll() {
   state.text = '';
   state.textSize = 160;
   state.textColor = '#ffffff';
+  state.textX = 50;
   state.textY = 42;
   state.textShadow = true;
   ui.rotation.value = '0';
@@ -380,6 +388,8 @@ function resetAll() {
   ui.text.value = '';
   ui.fontSize.value = '160';
   ui.textColor.value = '#ffffff';
+  ui.textX.value = '50';
+  ui.textXValue.textContent = '50%';
   ui.textY.value = '42';
   ui.textYValue.textContent = '42%';
   ui.textShadow.checked = true;
@@ -397,38 +407,109 @@ function stagePoint(event) {
   };
 }
 
+function getPointerList() {
+  return Array.from(state.activePointers.values());
+}
+
+function getDistance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function getMidpoint(a, b) {
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+}
+
+function syncZoomUi() {
+  const zoomPercent = Math.round(state.zoom * 100);
+  ui.zoom.value = String(zoomPercent);
+  ui.zoomValue.textContent = `${zoomPercent}%`;
+}
+
+function startPinch() {
+  const points = getPointerList();
+  if (points.length < 2) return;
+  const [a, b] = points;
+  const midpoint = getMidpoint(a, b);
+  state.pinching = true;
+  state.dragPointerId = null;
+  state.pinchStartDistance = Math.max(getDistance(a, b), 1);
+  state.pinchStartZoom = state.zoom;
+  state.pinchStartCenterX = midpoint.x;
+  state.pinchStartCenterY = midpoint.y;
+  state.pinchStartImageX = state.x;
+  state.pinchStartImageY = state.y;
+}
+
 function onPointerDown(event) {
   if (!state.image) return;
   event.preventDefault();
   const point = stagePoint(event);
-  state.dragging = true;
-  state.dragPointerId = event.pointerId;
-  state.dragLastX = point.x;
-  state.dragLastY = point.y;
+  state.activePointers.set(event.pointerId, point);
   ui.stage.setPointerCapture?.(event.pointerId);
+
+  if (state.activePointers.size === 1) {
+    state.dragPointerId = event.pointerId;
+    state.dragLastX = point.x;
+    state.dragLastY = point.y;
+    state.pinching = false;
+  } else if (state.activePointers.size >= 2) {
+    startPinch();
+  }
 }
 
 function onPointerMove(event) {
-  if (!state.dragging || state.dragPointerId !== event.pointerId) return;
+  if (!state.activePointers.has(event.pointerId)) return;
   event.preventDefault();
   const point = stagePoint(event);
-  state.x += point.x - state.dragLastX;
-  state.y += point.y - state.dragLastY;
-  state.dragLastX = point.x;
-  state.dragLastY = point.y;
-  queueRender();
+  state.activePointers.set(event.pointerId, point);
+
+  if (state.activePointers.size >= 2) {
+    if (!state.pinching) startPinch();
+    const [a, b] = getPointerList();
+    const distance = Math.max(getDistance(a, b), 1);
+    const midpoint = getMidpoint(a, b);
+    state.zoom = clamp(state.pinchStartZoom * (distance / state.pinchStartDistance), 0.25, 3);
+    state.x = state.pinchStartImageX + (midpoint.x - state.pinchStartCenterX);
+    state.y = state.pinchStartImageY + (midpoint.y - state.pinchStartCenterY);
+    syncZoomUi();
+    queueRender();
+    return;
+  }
+
+  if (state.dragPointerId === event.pointerId) {
+    state.x += point.x - state.dragLastX;
+    state.y += point.y - state.dragLastY;
+    state.dragLastX = point.x;
+    state.dragLastY = point.y;
+    queueRender();
+  }
 }
 
 function onPointerUp(event) {
-  if (state.dragPointerId !== event.pointerId) return;
-  state.dragging = false;
-  state.dragPointerId = null;
+  if (state.activePointers.has(event.pointerId)) {
+    state.activePointers.delete(event.pointerId);
+  }
   ui.stage.releasePointerCapture?.(event.pointerId);
+
+  if (state.activePointers.size >= 2) {
+    startPinch();
+    return;
+  }
+
+  state.pinching = false;
+  if (state.activePointers.size === 1) {
+    const [id, point] = Array.from(state.activePointers.entries())[0];
+    state.dragPointerId = id;
+    state.dragLastX = point.x;
+    state.dragLastY = point.y;
+  } else {
+    state.dragPointerId = null;
+  }
 }
 
 function updateZoom(value) {
   state.zoom = clamp(Number(value) / 100, 0.25, 3);
-  ui.zoomValue.textContent = `${Math.round(state.zoom * 100)}%`;
+  syncZoomUi();
   queueRender();
 }
 
@@ -482,26 +563,6 @@ function exportImage() {
   }, mime, quality);
 }
 
-async function tryLoadAvilockFromSite() {
-  const candidates = ['fonts/Avilock.ttf', 'fonts/avilock.ttf', 'fonts/Avilock.otf', 'fonts/avilock.otf'];
-  for (const source of candidates) {
-    try {
-      const response = await fetch(source, { cache: 'force-cache' });
-      if (!response.ok) continue;
-      const buffer = await response.arrayBuffer();
-      const font = new FontFace(FONT_NAME, buffer);
-      await font.load();
-      document.fonts.add(font);
-      state.avilockReady = true;
-      updateFontStatus();
-      queueRender();
-      return true;
-    } catch (_) {}
-  }
-  updateFontStatus();
-  return false;
-}
-
 async function loadAvilockFile(file) {
   if (!file) return;
   const name = String(file.name || '').toLowerCase();
@@ -525,7 +586,7 @@ async function loadAvilockFile(file) {
 }
 
 function updateFontStatus() {
-  const ready = state.avilockReady || document.fonts.check('32px Avilock');
+  const ready = document.fonts.check('24px "Avilock"') || state.avilockReady;
   state.avilockReady = ready;
   ui.fontStatus.textContent = ready ? 'Avilock ativa' : 'Fallback ativo';
   ui.fontStatus.classList.toggle('is-ready', ready);
@@ -588,6 +649,12 @@ async function clearSavedFrame() {
   } catch (_) {}
 }
 
+function updateFrameStatus(text, ready = true) {
+  ui.frameStatus.textContent = text;
+  ui.frameStatus.classList.toggle('is-ready', ready);
+  ui.frameStatus.classList.toggle('is-warning', !ready);
+}
+
 function setCustomFrameFromBlob(blob, persist = true) {
   if (!blob) return;
   if (state.customFrameUrl) URL.revokeObjectURL(state.customFrameUrl);
@@ -596,11 +663,10 @@ function setCustomFrameFromBlob(blob, persist = true) {
   image.onload = async () => {
     state.customFrame = image;
     state.customFrameUrl = url;
-    ui.frameStatus.textContent = 'PNG personalizado';
-    ui.frameStatus.classList.add('is-ready');
+    updateFrameStatus('Frente personalizada', true);
     if (persist) await saveFrameBlob(blob);
     queueRender();
-    setMessage('Moldura personalizada aplicada por cima da foto.', 'success');
+    setMessage('Imagem da frente aplicada por cima da foto.', 'success');
   };
   image.onerror = () => {
     URL.revokeObjectURL(url);
@@ -612,6 +678,7 @@ function setCustomFrameFromBlob(blob, persist = true) {
 async function restoreSavedFrame() {
   const blob = await getSavedFrameBlob();
   if (blob) setCustomFrameFromBlob(blob, false);
+  else updateFrameStatus('Padrão', true);
 }
 
 async function useDefaultFrame() {
@@ -620,8 +687,7 @@ async function useDefaultFrame() {
   state.customFrameUrl = '';
   await clearSavedFrame();
   ui.frameFile.value = '';
-  ui.frameStatus.textContent = 'Padrão';
-  ui.frameStatus.classList.add('is-ready');
+  updateFrameStatus('Padrão', true);
   queueRender();
   setMessage('Moldura padrão restaurada.', 'success');
 }
@@ -634,6 +700,14 @@ function loadLogo() {
   };
   logo.onerror = () => {};
   logo.src = 'central free fire.webp';
+}
+
+function bindPercent(input, output, key) {
+  input.addEventListener('input', () => {
+    state[key] = Number(input.value);
+    output.textContent = `${state[key]}%`;
+    queueRender();
+  });
 }
 
 function bindEvents() {
@@ -657,13 +731,6 @@ function bindEvents() {
     queueRender();
   });
 
-  const bindPercent = (input, output, key) => {
-    input.addEventListener('input', () => {
-      state[key] = Number(input.value);
-      output.textContent = `${state[key]}%`;
-      queueRender();
-    });
-  };
   bindPercent(ui.brightness, ui.brightnessValue, 'brightness');
   bindPercent(ui.contrast, ui.contrastValue, 'contrast');
   bindPercent(ui.saturation, ui.saturationValue, 'saturation');
@@ -679,6 +746,11 @@ function bindEvents() {
   });
   ui.textColor.addEventListener('input', () => {
     state.textColor = ui.textColor.value;
+    queueRender();
+  });
+  ui.textX.addEventListener('input', () => {
+    state.textX = Number(ui.textX.value);
+    ui.textXValue.textContent = `${state.textX}%`;
     queueRender();
   });
   ui.textY.addEventListener('input', () => {
@@ -710,11 +782,11 @@ function bindEvents() {
   ui.stage.addEventListener('pointermove', onPointerMove);
   ui.stage.addEventListener('pointerup', onPointerUp);
   ui.stage.addEventListener('pointercancel', onPointerUp);
+  ui.stage.addEventListener('pointerleave', onPointerUp);
   ui.stage.addEventListener('wheel', (event) => {
     if (!state.image) return;
     event.preventDefault();
     const next = clamp(Number(ui.zoom.value) + (event.deltaY < 0 ? 5 : -5), 25, 300);
-    ui.zoom.value = String(next);
     updateZoom(next);
   }, { passive: false });
 
@@ -728,13 +800,16 @@ function bindEvents() {
 }
 
 async function initEditor() {
+  if (initialized) return;
+  initialized = true;
   bindEvents();
   loadLogo();
-  drawFallbackBackground(ctx);
-  drawDefaultFrame(ctx);
   updateFontStatus();
-  tryLoadAvilockFromSite();
-  restoreSavedFrame();
+  document.fonts.ready.then(() => {
+    updateFontStatus();
+    queueRender();
+  });
+  await restoreSavedFrame();
   render();
 }
 
