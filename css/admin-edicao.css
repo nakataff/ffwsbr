@@ -2,3 +2,27 @@
 @media(max-width:1180px){.photo-editor-layout{grid-template-columns:340px minmax(0,1fr)}.photo-editor-export{position:static;grid-column:1/-1}.photo-editor-export{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}.photo-editor-export>.photo-editor-section-title,.photo-editor-export>.photo-editor-export-info,.photo-editor-export>#photo-editor-message{grid-column:1/-1}.photo-editor-export>.photo-editor-download{margin:0}.photo-editor-export .admin-field{margin:0}}
 @media(max-width:820px){.photo-editor-heading{align-items:flex-start;flex-direction:column}.photo-editor-layout{grid-template-columns:1fr}.photo-editor-controls,.photo-editor-export{position:static}.photo-editor-workspace{grid-row:1}.photo-editor-controls{grid-row:2}.photo-editor-export{grid-row:3;display:block}.photo-editor-export .admin-field{margin-bottom:15px}.photo-editor-stage{width:min(100%,620px)}.photo-editor-heading-actions{width:100%}.photo-editor-heading-actions .admin-btn,.photo-editor-heading-actions label{flex:1;justify-content:center}}
 @media(max-width:560px){.photo-editor-button-grid{grid-template-columns:1fr 1fr}.photo-editor-two-cols{grid-template-columns:1fr 90px}.photo-editor-current-tab{display:none}.photo-editor-stage{border-radius:12px}.photo-editor-heading{margin-top:12px}.photo-editor-range-head{align-items:flex-start}.photo-editor-layout{gap:12px}}
+
+/* v7 — preview sempre visível e painel de ferramentas independente */
+@media(min-width:821px){
+  .photo-editor-controls{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:7px}
+  .photo-editor-workspace{position:sticky;top:16px;align-self:start}
+  .photo-editor-stage{width:min(100%,68vh)}
+  .photo-editor-controls::-webkit-scrollbar{width:7px}.photo-editor-controls::-webkit-scrollbar-thumb{background:rgba(111,223,255,.22);border-radius:999px}.photo-editor-controls::-webkit-scrollbar-track{background:transparent}
+}
+@media(max-width:820px){
+  .photo-editor-heading{margin-bottom:10px}
+  .photo-editor-layout{display:flex;flex-direction:column;gap:10px}
+  .photo-editor-workspace{order:1;position:sticky;top:0;z-index:30;width:100%;box-sizing:border-box;padding:10px 12px 12px;background:rgba(7,12,20,.98);border-color:rgba(0,200,255,.2);box-shadow:0 16px 34px rgba(0,0,0,.42);backdrop-filter:blur(12px)}
+  .photo-editor-preview-head{margin-bottom:8px}.photo-editor-preview-head .admin-eyebrow{display:none}.photo-editor-preview-head h2{font-size:14px}.photo-editor-preview-head .admin-muted{font-size:11px;max-width:58%;text-align:right;line-height:1.25}
+  .photo-editor-stage{width:min(100%,35vh);max-width:none;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.28)}
+  .photo-editor-stage-help{display:none}
+  .photo-editor-controls{order:2;position:relative!important;top:auto!important;max-height:none;overflow:visible;padding-right:0}
+  .photo-editor-export{order:3}
+  .photo-editor-control-section{padding-bottom:16px;margin-bottom:16px}
+}
+@media(max-width:560px){
+  .photo-editor-stage{width:min(100%,32vh)}
+  .photo-editor-workspace{padding:8px 9px 10px}
+  .photo-editor-preview-head{margin-bottom:6px}
+}
