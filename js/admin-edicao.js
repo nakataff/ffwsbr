@@ -89,7 +89,7 @@ const state = {
   textSize: 160,
   textColor: '#ffffff',
   textX: 50,
-  textY: 42,
+  textY: 82,
   textShadow: true,
   frameEnabled: true,
   customFrame: null,
@@ -208,7 +208,7 @@ function drawTextLayer(context) {
   const fontFamily = state.avilockReady ? '"Avilock"' : 'Impact, "Arial Black", sans-serif';
   const fontSize = clamp(Number(state.textSize) || 160, 40, 500);
   const x = BASE_W * (clamp(Number(state.textX) || 50, 5, 95) / 100);
-  const y = BASE_H * (clamp(Number(state.textY) || 42, 8, 90) / 100);
+  const y = BASE_H * (clamp(Number(state.textY) || 82, 8, 92) / 100);
 
   context.save();
   context.textAlign = 'center';
@@ -304,11 +304,11 @@ function render() {
   ctx.clearRect(0, 0, BASE_W, BASE_H);
   drawFallbackBackground(ctx);
   drawPhoto(ctx);
-  drawTextLayer(ctx);
   if (state.frameEnabled) {
     const customDrawn = drawCustomFrame(ctx);
     if (!customDrawn) drawDefaultFrame(ctx);
   }
+  drawTextLayer(ctx);
 
   ui.empty.hidden = Boolean(state.image);
   ui.download.disabled = !state.image;
@@ -381,7 +381,7 @@ function resetAll() {
   state.textSize = 160;
   state.textColor = '#ffffff';
   state.textX = 50;
-  state.textY = 42;
+  state.textY = 82;
   state.textShadow = true;
   ui.rotation.value = '0';
   ui.rotationValue.textContent = '0°';
@@ -390,8 +390,8 @@ function resetAll() {
   ui.textColor.value = '#ffffff';
   ui.textX.value = '50';
   ui.textXValue.textContent = '50%';
-  ui.textY.value = '42';
-  ui.textYValue.textContent = '42%';
+  ui.textY.value = '82';
+  ui.textYValue.textContent = '82%';
   ui.textShadow.checked = true;
   resetAdjustments();
   if (state.image) fitImage('cover');
