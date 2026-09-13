@@ -7,10 +7,14 @@
   <meta name="referrer" content="no-referrer">
   <title>Edição | Painel Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="preload" href="assets/fonts/avilock-bold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
-  <link rel="stylesheet" href="css/admin-edicao.css?v=20260913-photo-editor-v4">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20260913-photo-editor-v5">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20260913-photo-editor-v4"></script>
+  <script type="module" src="js/admin-edicao.js?v=20260913-photo-editor-v5"></script>
 </head>
 <body>
   <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
@@ -27,7 +31,7 @@
       <div>
         <p class="admin-eyebrow">Ferramenta privada</p>
         <h1>Edição de arte</h1>
-        <p class="admin-muted">Encaixe uma foto no layout, ajuste no preview e exporte pronta para publicação. No celular e iPad você pode usar pinça com dois dedos para dar zoom.</p>
+        <p class="admin-muted">Encaixe a foto no layout, adicione PIP e textos e exporte pronta para publicação. No celular/iPad, a pinça pode ser travada pelo cadeado do Zoom.</p>
       </div>
       <div class="photo-editor-heading-actions">
         <label class="admin-btn admin-btn-primary photo-editor-file-button">
@@ -53,17 +57,20 @@
             <button id="photo-editor-flip" class="admin-btn admin-btn-ghost" type="button">↔ Espelhar</button>
           </div>
 
-          <label class="photo-editor-slider-row" for="photo-editor-zoom">
-            <span>Zoom <output id="photo-editor-zoom-value">100%</output></span>
+          <div class="photo-editor-slider-row">
+            <div class="photo-editor-range-head">
+              <span>Zoom <output id="photo-editor-zoom-value">100%</output></span>
+              <button id="photo-editor-pinch-lock" class="photo-editor-lock-button" type="button" aria-pressed="false" title="Travar pinça">🔓 Pinça</button>
+            </div>
             <input id="photo-editor-zoom" type="range" min="25" max="300" value="100" step="1">
-          </label>
+          </div>
 
           <label class="photo-editor-slider-row" for="photo-editor-rotation">
             <span>Rotação <output id="photo-editor-rotation-value">0°</output></span>
             <input id="photo-editor-rotation" type="range" min="-180" max="180" value="0" step="1">
           </label>
 
-          <p class="photo-editor-hint">No preview, arraste a foto com o mouse ou dedo para posicionar. Em touch, a pinça com dois dedos aumenta ou diminui a imagem.</p>
+          <p class="photo-editor-hint">No preview, arraste a foto com o mouse ou dedo. A pinça com dois dedos controla o zoom enquanto o cadeado estiver aberto.</p>
         </div>
 
         <div class="photo-editor-control-section">
@@ -84,15 +91,49 @@
         </div>
 
         <div class="photo-editor-control-section">
-          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Texto</p><h2>Avilock</h2></div><span id="photo-editor-font-status" class="photo-editor-status-pill">Verificando</span></div>
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">P.I.P.</p><h2>Imagem sobreposta</h2></div><span id="photo-editor-pip-status" class="photo-editor-status-pill">Sem imagem</span></div>
+          <label class="photo-editor-frame-loader">
+            <span>Enviar imagem para P.I.P.</span>
+            <input id="photo-editor-pip-file" type="file" accept="image/png,image/jpeg,image/webp">
+            <small>A imagem fica por cima da moldura e pode ser posicionada livremente.</small>
+          </label>
+          <label class="photo-editor-check"><input id="photo-editor-pip-enabled" type="checkbox" checked> Mostrar P.I.P.</label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-size"><span>Tamanho <output id="photo-editor-pip-size-value">28%</output></span><input id="photo-editor-pip-size" type="range" min="5" max="100" value="28" step="1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-x"><span>Posição horizontal <output id="photo-editor-pip-x-value">75%</output></span><input id="photo-editor-pip-x" type="range" min="0" max="100" value="75" step="1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-y"><span>Posição vertical <output id="photo-editor-pip-y-value">25%</output></span><input id="photo-editor-pip-y" type="range" min="0" max="100" value="25" step="1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-opacity"><span>Opacidade <output id="photo-editor-pip-opacity-value">100%</output></span><input id="photo-editor-pip-opacity" type="range" min="10" max="100" value="100" step="1"></label>
+          <button id="photo-editor-clear-pip" class="admin-btn admin-btn-ghost admin-btn-block" type="button">Remover P.I.P.</button>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title">
+            <div><p class="admin-eyebrow">Texto</p><h2>Camadas de texto</h2></div>
+            <span id="photo-editor-font-status" class="photo-editor-status-pill">Verificando Avilock</span>
+          </div>
+          <div class="photo-editor-text-toolbar">
+            <div id="photo-editor-text-layers" class="photo-editor-text-layers" aria-label="Camadas de texto"></div>
+            <button id="photo-editor-add-text" class="admin-btn admin-btn-ghost" type="button">+ Adicionar texto</button>
+            <button id="photo-editor-remove-text" class="photo-editor-mini-button photo-editor-remove-text" type="button">Remover atual</button>
+          </div>
           <div class="admin-field">
             <label for="photo-editor-text">Texto da arte</label>
-            <textarea id="photo-editor-text" rows="3" maxlength="160" placeholder="Digite o título ou chamada"></textarea>
+            <textarea id="photo-editor-text" rows="3" maxlength="220" placeholder="Digite o título ou chamada"></textarea>
+          </div>
+          <div class="admin-field">
+            <label for="photo-editor-font-family">Fonte</label>
+            <select id="photo-editor-font-family">
+              <option value="Avilock" selected>Avilock</option>
+              <option value="Anton">Anton</option>
+              <option value="Bebas Neue">Bebas Neue</option>
+              <option value="Oswald">Oswald</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Impact">Impact</option>
+            </select>
           </div>
           <div class="photo-editor-two-cols">
             <div class="admin-field">
               <label for="photo-editor-font-size">Tamanho</label>
-              <input id="photo-editor-font-size" type="number" min="40" max="500" step="5" value="160">
+              <input id="photo-editor-font-size" type="number" min="40" max="500" step="5" value="190">
             </div>
             <div class="admin-field">
               <label for="photo-editor-text-color">Cor</label>
@@ -104,19 +145,15 @@
             <input id="photo-editor-text-x" type="range" min="5" max="95" value="50" step="1">
           </label>
           <label class="photo-editor-slider-row" for="photo-editor-text-y">
-            <span>Posição vertical <output id="photo-editor-text-y-value">82%</output></span>
-            <input id="photo-editor-text-y" type="range" min="8" max="92" value="82" step="1">
+            <span>Posição vertical <output id="photo-editor-text-y-value">86%</output></span>
+            <input id="photo-editor-text-y" type="range" min="8" max="94" value="86" step="1">
           </label>
           <label class="photo-editor-slider-row" for="photo-editor-text-spacing">
-            <span>Espaçamento dos parágrafos <output id="photo-editor-text-spacing-value">92%</output></span>
-            <input id="photo-editor-text-spacing" type="range" min="70" max="180" value="92" step="2">
+            <span>Espaçamento dos parágrafos <output id="photo-editor-text-spacing-value">106%</output></span>
+            <input id="photo-editor-text-spacing" type="range" min="70" max="180" value="106" step="2">
           </label>
           <label class="photo-editor-check"><input id="photo-editor-text-shadow" type="checkbox" checked> Sombra leve</label>
-          <label class="photo-editor-font-loader">
-            <span>Carregar Avilock do computador</span>
-            <input id="photo-editor-font-file" type="file" accept=".ttf,.otf,font/ttf,font/otf">
-            <small>Se a fonte não estiver embutida no site, selecione aqui o arquivo da Avilock.</small>
-          </label>
+          <p class="photo-editor-hint">A Avilock agora vem carregada automaticamente pelo próprio site. Cada texto pode usar uma fonte e configuração diferente.</p>
         </div>
 
         <div class="photo-editor-control-section">
@@ -143,7 +180,7 @@
             <span>PNG, JPG ou WEBP</span>
           </div>
         </div>
-        <div class="photo-editor-stage-help">Dica: no computador, use a roda do mouse para zoom. No celular/iPad, use pinça com dois dedos.</div>
+        <div class="photo-editor-stage-help">Dica: no computador, use a roda do mouse para zoom. No celular/iPad, use pinça com dois dedos ou trave a pinça pelo cadeado.</div>
       </section>
 
       <aside class="admin-panel photo-editor-export">
@@ -158,38 +195,25 @@
         </div>
         <div class="admin-field">
           <label for="photo-editor-format">Formato</label>
-          <select id="photo-editor-format">
-            <option value="png" selected>PNG</option>
-            <option value="jpg">JPG</option>
-          </select>
+          <select id="photo-editor-format"><option value="png" selected>PNG</option><option value="jpg">JPG</option></select>
         </div>
         <label id="photo-editor-quality-wrap" class="photo-editor-slider-row" for="photo-editor-quality" hidden>
           <span>Qualidade JPG <output id="photo-editor-quality-value">92%</output></span>
           <input id="photo-editor-quality" type="range" min="60" max="100" value="92" step="1">
         </label>
-        <div class="admin-field">
-          <label for="photo-editor-file-name">Nome do arquivo</label>
-          <input id="photo-editor-file-name" value="central-free-fire-edit" maxlength="80">
-        </div>
+        <div class="admin-field"><label for="photo-editor-file-name">Nome do arquivo</label><input id="photo-editor-file-name" value="central-free-fire-edit" maxlength="80"></div>
         <button id="photo-editor-download" class="admin-btn admin-btn-primary admin-btn-block photo-editor-download" type="button" disabled>Baixar arte</button>
         <p id="photo-editor-message" class="admin-message" aria-live="polite"></p>
         <div class="photo-editor-export-info">
           <strong>Camadas</strong>
-          <span>1. Foto</span>
-          <span>2. Moldura da frente</span>
-          <span>3. Texto em Avilock</span>
+          <span>1. Foto</span><span>2. Moldura da frente</span><span>3. P.I.P.</span><span>4. Textos</span>
         </div>
       </aside>
     </section>
   </main>
 
   <section id="photo-editor-auth-message" class="photo-editor-auth-message">
-    <div class="admin-login-card">
-      <div class="admin-login-icon">🔒</div>
-      <p class="admin-eyebrow">Acesso restrito</p>
-      <h1>Validando sessão</h1>
-      <p class="admin-muted">Esta ferramenta usa o mesmo login do painel administrativo.</p>
-    </div>
+    <div class="admin-login-card"><div class="admin-login-icon">🔒</div><p class="admin-eyebrow">Acesso restrito</p><h1>Validando sessão</h1><p class="admin-muted">Esta ferramenta usa o mesmo login do painel administrativo.</p></div>
   </section>
 </body>
 </html>
