@@ -1,10 +1,27 @@
 (()=>{
   const liveVersion=Date.now();
+
+  const SECOND_PHASE_SEED = Object.freeze([
+    Object.freeze({ team: 'LOS', sourcePosition: 1, bonus: 50 }),
+    Object.freeze({ team: 'LOUD SNICKERS', sourcePosition: 2, bonus: 42 }),
+    Object.freeze({ team: 'FLUXO W7M', sourcePosition: 3, bonus: 35 }),
+    Object.freeze({ team: 'INTZ', sourcePosition: 4, bonus: 29 }),
+    Object.freeze({ team: 'TEAM SOLID', sourcePosition: 5, bonus: 24 }),
+    Object.freeze({ team: 'RISE GAMING', sourcePosition: 6, bonus: 19 }),
+    Object.freeze({ team: 'ALPHA7', sourcePosition: 7, bonus: 15 }),
+    Object.freeze({ team: 'RUSH GAMING', sourcePosition: 8, bonus: 11 }),
+    Object.freeze({ team: 'INFLUENCE RAGE', sourcePosition: 9, bonus: 8 }),
+    Object.freeze({ team: 'CPT VOX', sourcePosition: 10, bonus: 5 }),
+    Object.freeze({ team: 'AFROGAMES', sourcePosition: 11, bonus: 2 }),
+    Object.freeze({ team: 'SX TET', sourcePosition: 12, bonus: 0 })
+  ]);
+
   window.FFWS_BR_2026_S2_CONFIG = Object.freeze({
     teamsUrl: 'ffws-br-2026-s2/teams.json?v=20260902-wliu-sx-v31',
     stagesUrl: `ffws-br-2026-s2/stages.json?v=${liveVersion}`,
     playersUrl: `ffws-br-2026-s2/players.json?v=${liveVersion}`,
     datesUrl: 'ffws-br-2026-s2/dates.json?v=20260728-calendar-v1',
+    secondPhaseSeed: SECOND_PHASE_SEED,
     layout: {
       classificatoria: {
         participantsTitle: 'Times Participantes',
@@ -42,6 +59,59 @@
       }
     }
   });
+
+  // Enquanto a Classificatória ainda recebe o arquivo final, injeta no payload da temporada
+  // a composição e os bônus confirmados da Segunda Fase. O s2.js continua usando o mesmo
+  // stages.json e, quando houver quedas, soma o bônus aos pontos conquistados normalmente.
+  if (!window.__CFF_2026_S2_SECOND_PHASE_SEED_PATCH__) {
+    window.__CFF_2026_S2_SECOND_PHASE_SEED_PATCH__ = true;
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = async (...args) => {
+      const response = await nativeFetch(...args);
+      const input = args[0];
+      const requestUrl = typeof input === 'string' ? input : (input && input.url) || '';
+      if (!requestUrl.includes('ffws-br-2026-s2/stages.json') || !response.ok) return response;
+
+      try {
+        const payload = await response.clone().json();
+        if (!payload || typeof payload !== 'object') return response;
+
+        if (!payload.segundaFase || typeof payload.segundaFase !== 'object') {
+          payload.segundaFase = { finished: false, bonus: [], rounds: [], rows: [] };
+        }
+
+        const existingRows = Array.isArray(payload.segundaFase.rows) ? payload.segundaFase.rows : [];
+        const existingByTeam = new Map(existingRows.map(row => [String(row?.team || '').trim().toUpperCase(), row]));
+
+        payload.segundaFase.bonus = SECOND_PHASE_SEED.map(item => ({
+          team: item.team,
+          sourcePosition: item.sourcePosition,
+          bonus: item.bonus
+        }));
+
+        payload.segundaFase.rows = SECOND_PHASE_SEED.map(item => {
+          const current = existingByTeam.get(item.team.toUpperCase()) || {};
+          return {
+            ...current,
+            team: item.team,
+            sourcePosition: item.sourcePosition,
+            bonus: item.bonus
+          };
+        });
+
+        const headers = new Headers(response.headers);
+        headers.set('content-type', 'application/json; charset=utf-8');
+        return new Response(JSON.stringify(payload), {
+          status: response.status,
+          statusText: response.statusText,
+          headers
+        });
+      } catch (error) {
+        console.warn('[CFF] Não foi possível aplicar os bônus da Segunda Fase:', error);
+        return response;
+      }
+    };
+  }
 
   if (document.querySelector('script[data-cff-s2-player-evolution]')) return;
   const script = document.createElement('script');
