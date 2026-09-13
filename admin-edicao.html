@@ -8,9 +8,9 @@
   <title>Edição | Painel Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
-  <link rel="stylesheet" href="css/admin-edicao.css?v=20260913-photo-editor-v1">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20260913-photo-editor-v2">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20260913-photo-editor-v1"></script>
+  <script type="module" src="js/admin-edicao.js?v=20260913-photo-editor-v2"></script>
 </head>
 <body>
   <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
@@ -27,7 +27,7 @@
       <div>
         <p class="admin-eyebrow">Ferramenta privada</p>
         <h1>Edição de arte</h1>
-        <p class="admin-muted">Encaixe uma foto no layout da Central Free Fire, faça os ajustes e exporte pronta para publicação.</p>
+        <p class="admin-muted">Encaixe uma foto no layout, ajuste no preview e exporte pronta para publicação. No celular e iPad você pode usar pinça com dois dedos para dar zoom.</p>
       </div>
       <div class="photo-editor-heading-actions">
         <label class="admin-btn admin-btn-primary photo-editor-file-button">
@@ -63,7 +63,7 @@
             <input id="photo-editor-rotation" type="range" min="-180" max="180" value="0" step="1">
           </label>
 
-          <p class="photo-editor-hint">No preview, arraste a foto com o mouse ou dedo para posicionar.</p>
+          <p class="photo-editor-hint">No preview, arraste a foto com o mouse ou dedo para posicionar. Em touch, a pinça com dois dedos aumenta ou diminui a imagem.</p>
         </div>
 
         <div class="photo-editor-control-section">
@@ -87,7 +87,7 @@
           <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Texto</p><h2>Avilock</h2></div><span id="photo-editor-font-status" class="photo-editor-status-pill">Verificando</span></div>
           <div class="admin-field">
             <label for="photo-editor-text">Texto da arte</label>
-            <textarea id="photo-editor-text" rows="3" maxlength="120" placeholder="Digite um título ou chamada"></textarea>
+            <textarea id="photo-editor-text" rows="3" maxlength="160" placeholder="Digite o título ou chamada"></textarea>
           </div>
           <div class="photo-editor-two-cols">
             <div class="admin-field">
@@ -99,25 +99,29 @@
               <input id="photo-editor-text-color" class="photo-editor-color" type="color" value="#ffffff">
             </div>
           </div>
+          <label class="photo-editor-slider-row" for="photo-editor-text-x">
+            <span>Posição horizontal <output id="photo-editor-text-x-value">50%</output></span>
+            <input id="photo-editor-text-x" type="range" min="5" max="95" value="50" step="1">
+          </label>
           <label class="photo-editor-slider-row" for="photo-editor-text-y">
-            <span>Altura do texto <output id="photo-editor-text-y-value">42%</output></span>
-            <input id="photo-editor-text-y" type="range" min="8" max="72" value="42" step="1">
+            <span>Posição vertical <output id="photo-editor-text-y-value">42%</output></span>
+            <input id="photo-editor-text-y" type="range" min="8" max="90" value="42" step="1">
           </label>
           <label class="photo-editor-check"><input id="photo-editor-text-shadow" type="checkbox" checked> Sombra leve</label>
           <label class="photo-editor-font-loader">
             <span>Carregar Avilock do computador</span>
             <input id="photo-editor-font-file" type="file" accept=".ttf,.otf,font/ttf,font/otf">
-            <small>O editor também tenta usar automaticamente <strong>fonts/Avilock.ttf</strong> quando existir no site.</small>
+            <small>Se a fonte não estiver embutida no site, selecione aqui o arquivo da Avilock.</small>
           </label>
         </div>
 
         <div class="photo-editor-control-section">
-          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Moldura</p><h2>Layout da Central</h2></div><span id="photo-editor-frame-status" class="photo-editor-status-pill is-ready">Ativa</span></div>
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Moldura</p><h2>Imagem da frente</h2></div><span id="photo-editor-frame-status" class="photo-editor-status-pill is-ready">Ativa</span></div>
           <label class="photo-editor-check"><input id="photo-editor-frame-enabled" type="checkbox" checked> Mostrar moldura</label>
           <label class="photo-editor-frame-loader">
-            <span>Usar um PNG de moldura personalizado</span>
+            <span>Usar um PNG/WEBP da frente</span>
             <input id="photo-editor-frame-file" type="file" accept="image/png,image/webp">
-            <small>Se você escolher um PNG com transparência, ele fica por cima da foto. A escolha fica salva neste navegador.</small>
+            <small>Carregue a arte da frente aqui. Ela ficará por cima da foto e a escolha fica salva neste navegador.</small>
           </label>
           <button id="photo-editor-clear-frame" class="admin-btn admin-btn-ghost admin-btn-block" type="button">Voltar para a moldura padrão</button>
         </div>
@@ -135,7 +139,7 @@
             <span>PNG, JPG ou WEBP</span>
           </div>
         </div>
-        <div class="photo-editor-stage-help">Dica: use a roda do mouse sobre o preview para dar zoom. Segure e arraste para reposicionar.</div>
+        <div class="photo-editor-stage-help">Dica: no computador, use a roda do mouse para zoom. No celular/iPad, use pinça com dois dedos.</div>
       </section>
 
       <aside class="admin-panel photo-editor-export">
@@ -169,7 +173,7 @@
           <strong>Camadas</strong>
           <span>1. Foto</span>
           <span>2. Texto em Avilock</span>
-          <span>3. Moldura da Central Free Fire</span>
+          <span>3. Moldura da frente</span>
         </div>
       </aside>
     </section>
