@@ -74,7 +74,7 @@
         "$page": {
           ".write": "newData.hasChildren(['path','title','views','lastViewedAt']) && newData.child('path').isString() && newData.child('path').val().length <= 300 && newData.child('title').isString() && newData.child('title').val().length <= 160 && newData.child('views').isNumber() && ((!data.exists() && newData.child('views').val() == 1) || (data.child('views').isNumber() && newData.child('views').val() == data.child('views').val() + 1)) && (!data.exists() || newData.child('path').val() == data.child('path').val()) && newData.child('lastViewedAt').isNumber() && newData.child('lastViewedAt').val() <= now && newData.child('lastViewedAt').val() >= now - 60000",
           "path": {
-            ".validate": "newData.isString() && newData.val().length <= 300"
+            ".validate": "newData.isString() && newData.child('path').val().length <= 300"
           },
           "title": {
             ".validate": "newData.isString() && newData.val().length <= 160"
@@ -115,6 +115,10 @@
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
         ".validate": "!newData.exists() || newData.val() == true"
       }
+    },
+    "ffwsLive": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
     },
     "instagramCommunity": {
       "public": {
