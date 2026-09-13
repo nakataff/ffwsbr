@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Edição | Painel Central Free Fire</title>
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20260913-photo-editor-v1">
+  <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
+  <script type="module" src="js/admin-edicao.js?v=20260913-photo-editor-v1"></script>
+</head>
+<body>
+  <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
+    <header class="admin-header">
+      <a class="admin-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
+      <div class="admin-header-actions">
+        <a class="admin-btn admin-btn-ghost" href="admin.html">← Painel</a>
+        <span class="admin-btn admin-btn-primary photo-editor-current-tab" aria-current="page">🎨 Edição</span>
+        <a class="admin-btn admin-btn-ghost" href="index.html">Ver site</a>
+      </div>
+    </header>
+
+    <section class="photo-editor-heading">
+      <div>
+        <p class="admin-eyebrow">Ferramenta privada</p>
+        <h1>Edição de arte</h1>
+        <p class="admin-muted">Encaixe uma foto no layout da Central Free Fire, faça os ajustes e exporte pronta para publicação.</p>
+      </div>
+      <div class="photo-editor-heading-actions">
+        <label class="admin-btn admin-btn-primary photo-editor-file-button">
+          + Adicionar foto
+          <input id="photo-editor-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        </label>
+        <button id="photo-editor-reset-all" class="admin-btn admin-btn-ghost" type="button">Resetar arte</button>
+      </div>
+    </section>
+
+    <section class="photo-editor-layout">
+      <aside class="admin-panel photo-editor-controls" aria-label="Controles de edição">
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title">
+            <div><p class="admin-eyebrow">Imagem</p><h2>Enquadramento</h2></div>
+            <span id="photo-editor-image-name" class="photo-editor-file-name">Nenhuma foto</span>
+          </div>
+
+          <div class="photo-editor-button-grid">
+            <button id="photo-editor-fit-cover" class="admin-btn admin-btn-ghost" type="button">Preencher</button>
+            <button id="photo-editor-fit-contain" class="admin-btn admin-btn-ghost" type="button">Encaixar inteira</button>
+            <button id="photo-editor-center" class="admin-btn admin-btn-ghost" type="button">Centralizar</button>
+            <button id="photo-editor-flip" class="admin-btn admin-btn-ghost" type="button">↔ Espelhar</button>
+          </div>
+
+          <label class="photo-editor-slider-row" for="photo-editor-zoom">
+            <span>Zoom <output id="photo-editor-zoom-value">100%</output></span>
+            <input id="photo-editor-zoom" type="range" min="25" max="300" value="100" step="1">
+          </label>
+
+          <label class="photo-editor-slider-row" for="photo-editor-rotation">
+            <span>Rotação <output id="photo-editor-rotation-value">0°</output></span>
+            <input id="photo-editor-rotation" type="range" min="-180" max="180" value="0" step="1">
+          </label>
+
+          <p class="photo-editor-hint">No preview, arraste a foto com o mouse ou dedo para posicionar.</p>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Ajustes</p><h2>Foto</h2></div><button id="photo-editor-reset-adjustments" class="photo-editor-mini-button" type="button">Padrão</button></div>
+
+          <label class="photo-editor-slider-row" for="photo-editor-brightness">
+            <span>Brilho <output id="photo-editor-brightness-value">100%</output></span>
+            <input id="photo-editor-brightness" type="range" min="50" max="150" value="100" step="1">
+          </label>
+          <label class="photo-editor-slider-row" for="photo-editor-contrast">
+            <span>Contraste <output id="photo-editor-contrast-value">100%</output></span>
+            <input id="photo-editor-contrast" type="range" min="50" max="160" value="100" step="1">
+          </label>
+          <label class="photo-editor-slider-row" for="photo-editor-saturation">
+            <span>Saturação <output id="photo-editor-saturation-value">100%</output></span>
+            <input id="photo-editor-saturation" type="range" min="0" max="200" value="100" step="1">
+          </label>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Texto</p><h2>Avilock</h2></div><span id="photo-editor-font-status" class="photo-editor-status-pill">Verificando</span></div>
+          <div class="admin-field">
+            <label for="photo-editor-text">Texto da arte</label>
+            <textarea id="photo-editor-text" rows="3" maxlength="120" placeholder="Digite um título ou chamada"></textarea>
+          </div>
+          <div class="photo-editor-two-cols">
+            <div class="admin-field">
+              <label for="photo-editor-font-size">Tamanho</label>
+              <input id="photo-editor-font-size" type="number" min="40" max="500" step="5" value="160">
+            </div>
+            <div class="admin-field">
+              <label for="photo-editor-text-color">Cor</label>
+              <input id="photo-editor-text-color" class="photo-editor-color" type="color" value="#ffffff">
+            </div>
+          </div>
+          <label class="photo-editor-slider-row" for="photo-editor-text-y">
+            <span>Altura do texto <output id="photo-editor-text-y-value">42%</output></span>
+            <input id="photo-editor-text-y" type="range" min="8" max="72" value="42" step="1">
+          </label>
+          <label class="photo-editor-check"><input id="photo-editor-text-shadow" type="checkbox" checked> Sombra leve</label>
+          <label class="photo-editor-font-loader">
+            <span>Carregar Avilock do computador</span>
+            <input id="photo-editor-font-file" type="file" accept=".ttf,.otf,font/ttf,font/otf">
+            <small>O editor também tenta usar automaticamente <strong>fonts/Avilock.ttf</strong> quando existir no site.</small>
+          </label>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Moldura</p><h2>Layout da Central</h2></div><span id="photo-editor-frame-status" class="photo-editor-status-pill is-ready">Ativa</span></div>
+          <label class="photo-editor-check"><input id="photo-editor-frame-enabled" type="checkbox" checked> Mostrar moldura</label>
+          <label class="photo-editor-frame-loader">
+            <span>Usar um PNG de moldura personalizado</span>
+            <input id="photo-editor-frame-file" type="file" accept="image/png,image/webp">
+            <small>Se você escolher um PNG com transparência, ele fica por cima da foto. A escolha fica salva neste navegador.</small>
+          </label>
+          <button id="photo-editor-clear-frame" class="admin-btn admin-btn-ghost admin-btn-block" type="button">Voltar para a moldura padrão</button>
+        </div>
+      </aside>
+
+      <section class="admin-panel photo-editor-workspace">
+        <div class="photo-editor-preview-head">
+          <div><p class="admin-eyebrow">Preview</p><h2>3000 × 3749</h2></div>
+          <span id="photo-editor-canvas-status" class="admin-muted">Adicione uma foto para começar</span>
+        </div>
+        <div id="photo-editor-stage" class="photo-editor-stage" tabindex="0" aria-label="Área de edição. Arraste a foto para reposicionar.">
+          <canvas id="photo-editor-canvas" width="3000" height="3749"></canvas>
+          <div id="photo-editor-empty" class="photo-editor-empty">
+            <strong>Adicione a foto que vai entrar na arte</strong>
+            <span>PNG, JPG ou WEBP</span>
+          </div>
+        </div>
+        <div class="photo-editor-stage-help">Dica: use a roda do mouse sobre o preview para dar zoom. Segure e arraste para reposicionar.</div>
+      </section>
+
+      <aside class="admin-panel photo-editor-export">
+        <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Saída</p><h2>Exportar</h2></div></div>
+        <div class="admin-field">
+          <label for="photo-editor-size">Tamanho</label>
+          <select id="photo-editor-size">
+            <option value="3000x3749" selected>Original — 3000 × 3749</option>
+            <option value="1200x1500">Feed 4:5 — 1200 × 1500</option>
+            <option value="1080x1350">Instagram 4:5 — 1080 × 1350</option>
+          </select>
+        </div>
+        <div class="admin-field">
+          <label for="photo-editor-format">Formato</label>
+          <select id="photo-editor-format">
+            <option value="png" selected>PNG</option>
+            <option value="jpg">JPG</option>
+          </select>
+        </div>
+        <label id="photo-editor-quality-wrap" class="photo-editor-slider-row" for="photo-editor-quality" hidden>
+          <span>Qualidade JPG <output id="photo-editor-quality-value">92%</output></span>
+          <input id="photo-editor-quality" type="range" min="60" max="100" value="92" step="1">
+        </label>
+        <div class="admin-field">
+          <label for="photo-editor-file-name">Nome do arquivo</label>
+          <input id="photo-editor-file-name" value="central-free-fire-edit" maxlength="80">
+        </div>
+        <button id="photo-editor-download" class="admin-btn admin-btn-primary admin-btn-block photo-editor-download" type="button" disabled>Baixar arte</button>
+        <p id="photo-editor-message" class="admin-message" aria-live="polite"></p>
+        <div class="photo-editor-export-info">
+          <strong>Camadas</strong>
+          <span>1. Foto</span>
+          <span>2. Texto em Avilock</span>
+          <span>3. Moldura da Central Free Fire</span>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <section id="photo-editor-auth-message" class="photo-editor-auth-message">
+    <div class="admin-login-card">
+      <div class="admin-login-icon">🔒</div>
+      <p class="admin-eyebrow">Acesso restrito</p>
+      <h1>Validando sessão</h1>
+      <p class="admin-muted">Esta ferramenta usa o mesmo login do painel administrativo.</p>
+    </div>
+  </section>
+</body>
+</html>
