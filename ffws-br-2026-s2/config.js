@@ -28,17 +28,21 @@
       #ffws-br-s2-segunda-fase .ffws-s2-legend .final i{background:#465469!important}
 
       @media(max-width:760px){
-        #ffws-br-s2-segunda-fase .ffws-s2-table .team-col{min-width:222px!important}
-        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name{flex:1 1 auto;min-width:0}
-        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name strong{max-width:none}
+        #ffws-br-s2-segunda-fase .ffws-s2-table{min-width:455px!important;table-layout:fixed}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(1),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(1){width:38px;padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(2),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(2){width:118px;min-width:118px!important;padding-left:5px!important;padding-right:5px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(3),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(3){width:68px;padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(4),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(4){width:58px;padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(5),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(5),#ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(6),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(6),#ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(8),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(8){width:50px;padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-cell{gap:5px;min-width:0}
+        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-cell img{width:20px!important;height:20px!important;flex:0 0 20px}
+        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name{display:block!important;flex:1 1 auto;min-width:0;overflow:visible}
+        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name strong{display:block;max-width:none!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap;font-size:.75rem}
+        #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name .ffws-s2-mobile{display:inline!important;white-space:nowrap}
       }
 
       @media(max-width:470px){
-        #ffws-br-s2-segunda-fase .ffws-s2-table{min-width:455px!important}
         #ffws-br-s2-segunda-fase .ffws-s2-table th,#ffws-br-s2-segunda-fase .ffws-s2-table td{font-size:.78rem}
-        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(1),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(1){padding-left:4px!important;padding-right:4px!important}
-        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(2),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(2){padding-left:10px!important;padding-right:10px!important}
-        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(3),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(3),#ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(4),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(4){padding-left:4px!important;padding-right:4px!important}
       }
     `;
     document.head.appendChild(style);
