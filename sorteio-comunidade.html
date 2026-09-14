@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="index,follow">
+  <title>Sorteio da Comunidade | Central Free Fire</title>
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <script src="js/config.min.js?v=20260915-community-giveaway-v1"></script>
+  <style>
+    :root{color-scheme:dark;--bg:#07101b;--panel:#0c1726;--line:#20334b;--text:#f3f8ff;--muted:#7f99b8;--cyan:#00c8ff;--ok:#68e0a5;--danger:#ff8997}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 0,rgba(0,200,255,.14),transparent 32%),linear-gradient(180deg,#07101b,#040911);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.shell{width:min(720px,calc(100% - 28px));margin:auto;padding:28px 0 48px}.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:1000}.brand img{width:42px;height:42px;border-radius:12px;object-fit:cover}.card{margin-top:24px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,rgba(13,26,43,.98),rgba(6,13,23,.98));box-shadow:0 24px 70px rgba(0,0,0,.3);overflow:hidden}.hero{padding:28px}.kicker{color:var(--cyan);font-size:.72rem;font-weight:1000;letter-spacing:1.5px;text-transform:uppercase}.hero h1{margin:7px 0 10px;font-size:clamp(1.8rem,7vw,3.2rem);line-height:.98;text-transform:uppercase}.hero p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.55;font-weight:700}.countdown{display:inline-flex;margin-top:16px;padding:7px 10px;border:1px solid rgba(0,200,255,.24);border-radius:999px;background:rgba(0,200,255,.07);color:#b9efff;font-size:.72rem;font-weight:950}.form-wrap{padding:20px 28px 28px;border-top:1px solid var(--line);background:rgba(0,0,0,.12)}label{display:block;margin-bottom:7px;color:#cfe3f7;font-size:.77rem;font-weight:950}input{width:100%;height:52px;border:1px solid #29405b;border-radius:13px;background:#050b13;color:#fff;padding:0 14px;font-size:1rem;font-weight:850;outline:none}input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,200,255,.1)}button{width:100%;margin-top:10px;height:50px;border:0;border-radius:13px;background:var(--cyan);color:#03131b;font-weight:1000;text-transform:uppercase;cursor:pointer}button:disabled{opacity:.55;cursor:default}.help{margin:10px 0 0;color:#637f9f;font-size:.7rem;line-height:1.45;font-weight:750}.message{min-height:22px;margin:11px 0 0;font-size:.78rem;font-weight:900}.message.ok{color:var(--ok)}.message.err{color:var(--danger)}.closed{padding:28px;text-align:center}.closed strong{display:block;font-size:1.1rem}.closed span{display:block;margin-top:7px;color:var(--muted);font-size:.8rem;line-height:1.45}.footer{margin-top:15px;color:#506b89;font-size:.66rem;text-align:center}@media(max-width:520px){.shell{width:min(100% - 18px,720px);padding-top:17px}.hero{padding:22px 18px}.form-wrap{padding:18px}.card{border-radius:17px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <a class="brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
+    <section class="card" id="giveaway-card"><div class="closed"><strong>Carregando sorteio...</strong></div></section>
+    <div class="footer">Uma inscrição por @ do Instagram</div>
+  </main>
+
+  <script type="module">
+    import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+    import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+
+    const config=window.CFF_CONFIG?.firebase;
+    const card=document.getElementById('giveaway-card');
+    if(!config){card.innerHTML='<div class="closed"><strong>Sorteio indisponível</strong><span>Tente novamente mais tarde.</span></div>';throw new Error('Firebase config ausente');}
+    const app=getApps().length?getApp():initializeApp(config),db=getDatabase(app);
+    const currentRef=ref(db,'communityGiveaways/current');
+    let current=null,timer=null,busy=false;
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    const cleanUser=v=>String(v||'').trim().replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g,'').slice(0,30);
+    const fmt=ms=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ms));
+    async function hash(value){const data=new TextEncoder().encode(value),digest=await crypto.subtle.digest('SHA-256',data);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+    function countdown(ms){const left=Math.max(0,Number(ms||0)-Date.now());if(!left)return'Encerrado';const s=Math.floor(left/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),sec=s%60;return d?`${d}d ${h}h ${m}min`:`${h}h ${m}min ${sec}s`;}
+    function closed(){return !current?.active||!current?.id||!current?.endsAt||Date.now()>=Number(current.endsAt);}
+    function render(){
+      clearInterval(timer);
+      if(!current?.id){card.innerHTML='<div class="closed"><strong>Nenhum sorteio aberto agora</strong><span>Quando houver um novo sorteio da comunidade, ele vai aparecer aqui.</span></div>';return;}
+      if(closed()) {card.innerHTML=`<div class="hero"><div class="kicker">🎁 Sorteio da comunidade</div><h1>${esc(current.title||'Sorteio encerrado')}</h1>${current.description?`<p>${esc(current.description)}</p>`:''}</div><div class="closed"><strong>Inscrições encerradas</strong><span>O prazo terminou em ${esc(fmt(current.endsAt))}. Boa sorte para quem participou!</span></div>`;return;}
+      card.innerHTML=`<div class="hero"><div class="kicker">🎁 Sorteio da comunidade</div><h1>${esc(current.title||'Participe do sorteio')}</h1><p>${esc(current.description||'Deixe seu @ do Instagram para participar.')}</p><span class="countdown" id="giveaway-countdown">Fecha em ${esc(countdown(current.endsAt))}</span></div><div class="form-wrap"><form id="giveaway-form"><label for="giveaway-user">Seu @ do Instagram</label><input id="giveaway-user" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="31" placeholder="@seuusuario" required><button id="giveaway-submit" type="submit">Participar do sorteio</button><p class="help">Você só precisa informar seu @. Inscrições duplicadas do mesmo perfil não entram duas vezes.</p><p class="message" id="giveaway-message" aria-live="polite"></p></form></div>`;
+      document.getElementById('giveaway-form')?.addEventListener('submit',submit);
+      timer=setInterval(()=>{const el=document.getElementById('giveaway-countdown');if(!el)return clearInterval(timer);if(closed())return render();el.textContent=`Fecha em ${countdown(current.endsAt)}`;},1000);
+    }
+    async function submit(e){
+      e.preventDefault();if(busy||closed())return render();
+      const input=document.getElementById('giveaway-user'),button=document.getElementById('giveaway-submit'),message=document.getElementById('giveaway-message');
+      const username=cleanUser(input?.value);if(!username||username.length<2){message.textContent='Digite um @ válido.';message.className='message err';return;}
+      busy=true;button.disabled=true;button.textContent='Confirmando...';message.textContent='';
+      try{const key=await hash(username);await set(ref(db,`communityGiveaways/entries/${current.id}/${key}`),{username,createdAt:Date.now()});message.textContent=`@${username} está participando! Boa sorte 🔥`;message.className='message ok';input.value='';button.textContent='Inscrição confirmada ✓';}
+      catch(err){console.error(err);message.textContent='Esse @ já está inscrito ou o sorteio foi encerrado.';message.className='message err';button.disabled=false;button.textContent='Participar do sorteio';}
+      finally{busy=false;}
+    }
+    onValue(currentRef,snap=>{current=snap.val()||null;render();},()=>{card.innerHTML='<div class="closed"><strong>Sorteio indisponível</strong><span>Tente novamente mais tarde.</span></div>';});
+  </script>
+</body>
+</html>
