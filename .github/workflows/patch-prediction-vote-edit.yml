@@ -20,27 +20,18 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('cloudflare/instagram-community/worker.js')
           text = path.read_text(encoding='utf-8')
-          old = """  const existingVote = await predictionVoteFor(env, prediction.id, row.user_key);
-          if (!existingVote) {
-            await awardInteraction(env, {
-              awardKey: `prediction-vote:${prediction.id}:${row.user_key}`,
-              userKey: row.user_key,
-              identity: row.instagram_id || '',
-              username: row.username || fallbackUsername(row.instagram_id),
-              type: 'prediction_vote',
-              sourceId: encodeVoteSource(prediction.id, option, guessedPoints),
-              points: prediction.participationPoints,
-              timestamp: Date.now(),
-            });
-          }
-
-          const all = await buildPredictionsPayload(env, sessionId, ctx);
-          return json({ ok: true, alreadyVoted: Boolean(existingVote), participationAwarded: existingVote ? 0 : prediction.participationPoints, all }, 200, request);
-          """
-          new = """  const existingVote = await predictionVoteFor(env, prediction.id, row.user_key);
+          pattern = re.compile(
+              r"  const existingVote = await predictionVoteFor\(env, prediction\.id, row\.user_key\);\n"
+              r"  if \(!existingVote\) \{.*?\n"
+              r"  const all = await buildPredictionsPayload\(env, sessionId, ctx\);\n"
+              r"  return json\(\{ ok: true, alreadyVoted: Boolean\(existingVote\), participationAwarded: existingVote \? 0 : prediction\.participationPoints, all \}, 200, request\);",
+              re.S,
+          )
+          replacement = """  const existingVote = await predictionVoteFor(env, prediction.id, row.user_key);
           let voteUpdated = false;
           if (!existingVote) {
             await awardInteraction(env, {
@@ -79,11 +70,11 @@ jobs:
             voteUpdated,
             participationAwarded: existingVote ? 0 : prediction.participationPoints,
             all,
-          }, 200, request);
-          """
-          if old not in text:
-              raise SystemExit('Expected vote block was not found; worker left unchanged.')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          }, 200, request);"""
+          updated, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one vote block, found {count}; worker left unchanged.')
+          path.write_text(updated, encoding='utf-8')
           PY
 
       - name: Commit worker patch
