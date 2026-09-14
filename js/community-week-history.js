@@ -187,3 +187,12 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load, { once: true });
   else load();
 })();
+
+(() => {
+  if (!/interacoes\.html$/i.test(location.pathname)) return;
+  if (document.querySelector('script[data-cff-community-prediction]')) return;
+  const script = document.createElement('script');
+  script.src = 'js/community-prediction.js?v=20260914-prediction-v1';
+  script.dataset.cffCommunityPrediction = '1';
+  document.head.appendChild(script);
+})();
