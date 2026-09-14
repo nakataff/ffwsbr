@@ -36,6 +36,10 @@ export default {
       return getRanking(request, env, url);
     }
 
+    if (url.pathname === '/api/ranking/history' && request.method === 'GET') {
+      return getWeeklyHistory(request, env, url);
+    }
+
     if (url.pathname === '/api/checkin/start' && request.method === 'POST') {
       return startCheckin(request, env);
     }
@@ -123,6 +127,13 @@ function weekKeys(timestamp = Date.now()) {
     weekStartKey,
     weekEndKey: shiftDayKey(weekStartKey, 6),
   };
+}
+
+function dayKeyTimestamp(dayKey) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dayKey || ''))) return null;
+  const [year, month, day] = String(dayKey).split('-').map(Number);
+  const value = Date.UTC(year, month - 1, day, 15, 0, 0);
+  return Number.isFinite(value) ? value : null;
 }
 
 function cleanUsername(value) {
@@ -608,7 +619,10 @@ async function getRanking(request, env, url) {
   const period = ['week', 'month', 'all'].includes(requested) ? requested : 'week';
   const now = Date.now();
   const { monthKey } = dateKeys(now);
-  const { weekKey, weekStartKey, weekEndKey } = weekKeys(now);
+  const requestedWeek = String(url.searchParams.get('week') || '').trim();
+  const requestedWeekTimestamp = period === 'week' ? dayKeyTimestamp(requestedWeek) : null;
+  const weekInfo = weekKeys(requestedWeekTimestamp || now);
+  const { weekKey, weekStartKey, weekEndKey } = weekInfo;
 
   let result;
   if (period === 'all') {
@@ -636,17 +650,18 @@ async function getRanking(request, env, url) {
     `).bind(monthKey).all();
   } else {
     result = await env.DB.prepare(`
-      SELECT user_key,
-             MAX(username) AS username,
-             SUM(points) AS points,
-             SUM(CASE WHEN type = 'story' THEN 1 ELSE 0 END) AS storyMentions,
-             SUM(CASE WHEN type = 'comment' THEN 1 ELSE 0 END) AS comments,
-             COUNT(DISTINCT day_key) AS activeDays,
-             MAX(created_at) AS lastInteractionAt
-      FROM awards
-      WHERE day_key BETWEEN ?1 AND ?2
-      GROUP BY user_key
-      ORDER BY points DESC, storyMentions DESC, comments DESC
+      SELECT a.user_key,
+             COALESCE(MAX(u.username), MAX(a.username)) AS username,
+             SUM(a.points) AS points,
+             SUM(CASE WHEN a.type = 'story' THEN 1 ELSE 0 END) AS storyMentions,
+             SUM(CASE WHEN a.type = 'comment' THEN 1 ELSE 0 END) AS comments,
+             COUNT(DISTINCT a.day_key) AS activeDays,
+             MAX(a.created_at) AS lastInteractionAt
+      FROM awards a
+      LEFT JOIN users u ON u.user_key = a.user_key
+      WHERE a.day_key BETWEEN ?1 AND ?2
+      GROUP BY a.user_key
+      ORDER BY points DESC, storyMentions DESC, comments DESC, username ASC
       LIMIT 500
     `).bind(weekStartKey, weekEndKey).all();
   }
@@ -674,9 +689,108 @@ async function getRanking(request, env, url) {
       weekStart: weekStartKey,
       weekEnd: weekEndKey,
       monthKey,
+      historical: period === 'week' && Boolean(requestedWeekTimestamp),
     },
     users,
   }, 200, request, { 'Cache-Control': 'public, max-age=60' });
+}
+
+async function getWeeklyHistory(request, env, url) {
+  const rawLimit = Number(url.searchParams.get('limit'));
+  const limit = Math.max(1, Math.min(Number.isFinite(rawLimit) ? Math.floor(rawLimit) : 24, 104));
+  const now = Date.now();
+  const currentWeek = weekKeys(now);
+  const cutoff = shiftDayKey(currentWeek.weekStartKey, -(limit + 2) * 7);
+
+  const result = await env.DB.prepare(`
+    SELECT a.day_key,
+           a.user_key,
+           COALESCE(MAX(u.username), MAX(a.username)) AS username,
+           SUM(a.points) AS points,
+           SUM(CASE WHEN a.type = 'story' THEN 1 ELSE 0 END) AS storyMentions,
+           SUM(CASE WHEN a.type = 'comment' THEN 1 ELSE 0 END) AS comments,
+           COUNT(DISTINCT a.day_key) AS activeDays,
+           MAX(a.created_at) AS lastInteractionAt
+    FROM awards a
+    LEFT JOIN users u ON u.user_key = a.user_key
+    WHERE a.day_key >= ?1
+    GROUP BY a.day_key, a.user_key
+    ORDER BY a.day_key DESC
+  `).bind(cutoff).all();
+
+  const weeks = new Map();
+  for (const row of result.results || []) {
+    const stamp = dayKeyTimestamp(row.day_key);
+    if (!stamp) continue;
+    const wk = weekKeys(stamp);
+    if (wk.weekStartKey === currentWeek.weekStartKey) continue;
+
+    if (!weeks.has(wk.weekStartKey)) {
+      weeks.set(wk.weekStartKey, {
+        weekKey: wk.weekKey,
+        weekStart: wk.weekStartKey,
+        weekEnd: wk.weekEndKey,
+        users: new Map(),
+      });
+    }
+
+    const week = weeks.get(wk.weekStartKey);
+    const existing = week.users.get(row.user_key) || {
+      userKey: row.user_key,
+      username: row.username || 'usuario',
+      points: 0,
+      storyMentions: 0,
+      comments: 0,
+      activeDays: new Set(),
+      lastInteractionAt: 0,
+    };
+
+    existing.username = row.username || existing.username;
+    existing.points += Number(row.points || 0);
+    existing.storyMentions += Number(row.storyMentions || 0);
+    existing.comments += Number(row.comments || 0);
+    existing.activeDays.add(row.day_key);
+    existing.lastInteractionAt = Math.max(existing.lastInteractionAt, Number(row.lastInteractionAt || 0));
+    week.users.set(row.user_key, existing);
+  }
+
+  const history = [...weeks.values()]
+    .sort((a, b) => b.weekStart.localeCompare(a.weekStart))
+    .slice(0, limit)
+    .map((week) => {
+      const ranked = [...week.users.values()].sort((a, b) =>
+        b.points - a.points ||
+        b.storyMentions - a.storyMentions ||
+        b.comments - a.comments ||
+        a.username.localeCompare(b.username, 'pt-BR')
+      );
+      const top = ranked[0] || null;
+      return {
+        weekKey: week.weekKey,
+        weekStart: week.weekStart,
+        weekEnd: week.weekEnd,
+        participants: ranked.length,
+        winner: top ? {
+          userKey: top.userKey,
+          username: top.username,
+          points: top.points,
+          storyMentions: top.storyMentions,
+          comments: top.comments,
+          activeDays: top.activeDays.size,
+          lastInteractionAt: top.lastInteractionAt,
+        } : null,
+      };
+    })
+    .filter((item) => item.winner);
+
+  return json({
+    currentWeek: {
+      weekKey: currentWeek.weekKey,
+      weekStart: currentWeek.weekStartKey,
+      weekEnd: currentWeek.weekEndKey,
+    },
+    history,
+  }, 200, request, { 'Cache-Control': 'public, max-age=300' });
 }
 
 async function logEntryShape(env, entry) {
