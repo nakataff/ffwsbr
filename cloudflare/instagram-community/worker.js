@@ -822,21 +822,45 @@ async function votePrediction(request, env, ctx) {
   if (!row?.verified_at || !row?.user_key) return json({ ok: false, error: 'Vincule seu Instagram antes de palpitar.' }, 403, request);
 
   const existingVote = await predictionVoteFor(env, prediction.id, row.user_key);
-  if (!existingVote) {
-    await awardInteraction(env, {
-      awardKey: `prediction-vote:${prediction.id}:${row.user_key}`,
-      userKey: row.user_key,
-      identity: row.instagram_id || '',
-      username: row.username || fallbackUsername(row.instagram_id),
-      type: 'prediction_vote',
-      sourceId: encodeVoteSource(prediction.id, option, guessedPoints),
-      points: prediction.participationPoints,
-      timestamp: Date.now(),
-    });
+let voteUpdated = false;
+if (!existingVote) {
+  await awardInteraction(env, {
+    awardKey: `prediction-vote:${prediction.id}:${row.user_key}`,
+    userKey: row.user_key,
+    identity: row.instagram_id || '',
+    username: row.username || fallbackUsername(row.instagram_id),
+    type: 'prediction_vote',
+    sourceId: encodeVoteSource(prediction.id, option, guessedPoints),
+    points: prediction.participationPoints,
+    timestamp: Date.now(),
+  });
+} else {
+  const sameOption = existingVote.option === option;
+  const samePoints = prediction.kind !== 'team_points' || Number(existingVote.points) === Number(guessedPoints);
+  if (!sameOption || !samePoints) {
+    const updated = await env.DB.prepare(`
+      UPDATE awards
+      SET source_id = ?1, username = ?2, created_at = ?3
+      WHERE award_key = ?4 AND user_key = ?5 AND type = 'prediction_vote'
+    `).bind(
+      encodeVoteSource(prediction.id, option, guessedPoints),
+      row.username || fallbackUsername(row.instagram_id),
+      Date.now(),
+      `prediction-vote:${prediction.id}:${row.user_key}`,
+      row.user_key,
+    ).run();
+    voteUpdated = Boolean(updated.meta?.changes);
   }
+}
 
-  const all = await buildPredictionsPayload(env, sessionId, ctx);
-  return json({ ok: true, alreadyVoted: Boolean(existingVote), participationAwarded: existingVote ? 0 : prediction.participationPoints, all }, 200, request);
+const all = await buildPredictionsPayload(env, sessionId, ctx);
+return json({
+  ok: true,
+  alreadyVoted: Boolean(existingVote),
+  voteUpdated,
+  participationAwarded: existingVote ? 0 : prediction.participationPoints,
+  all,
+}, 200, request);
 }
 
 async function getPredictionRanking(request, env, url) {
