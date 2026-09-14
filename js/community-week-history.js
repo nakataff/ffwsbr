@@ -50,7 +50,7 @@
   if (!/interacoes\.html$/i.test(location.pathname)) return;
   if (!document.querySelector('script[data-cff-community-prediction]')) {
     const script=document.createElement('script');
-    script.src='js/community-prediction.js?v=20260914-prediction-v2';
+    script.src='js/community-prediction.js?v=20260915-prediction-v3';
     script.dataset.cffCommunityPrediction='1';
     document.head.appendChild(script);
   }
