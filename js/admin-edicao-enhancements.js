@@ -213,6 +213,14 @@
     const reset=$('#photo-editor-reset-all');if(reset)reset.textContent='↺ Resetar';
   }
 
+  function loadAutosave(){
+    if(document.querySelector('script[data-cff-edicao-autosave]'))return;
+    const script=document.createElement('script');
+    script.src='js/admin-edicao-autosave.js?v=20260914-autosave-v1';
+    script.dataset.cffEdicaoAutosave='1';
+    document.head.appendChild(script);
+  }
+
   function enhance(){
     addStyles();
     hideLegacyFrameControls();
@@ -223,6 +231,7 @@
     setupEmptyClick();
     setupTemplatePicker();
     setupVisualGrids();
+    loadAutosave();
     setTimeout(()=>applyOverlay(storedOverlay()),220);
   }
 
