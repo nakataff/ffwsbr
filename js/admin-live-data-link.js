@@ -16,6 +16,7 @@
           <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html">🎁 Abrir Codiguinhos</a>
           <a class="admin-btn admin-btn-primary" href="admin-dados.html" data-admin-live-data-link>📊 Dados ao vivo</a>
           <a class="admin-btn admin-btn-primary" href="admin-palpite.html">🎯 Palpites</a>
+          <a class="admin-btn admin-btn-primary" href="admin-recompensas.html">🔥 Bônus</a>
           <a class="admin-btn admin-btn-primary" href="admin-sorteio-comunidade.html">🎁 Sorteio</a>
         </div>
       </div>`;
