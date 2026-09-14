@@ -116,6 +116,10 @@
         ".validate": "!newData.exists() || newData.val() == true"
       }
     },
+    "adminCodiguinhos": {
+      ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+      ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
+    },
     "ffwsLive": {
       ".read": true,
       ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
