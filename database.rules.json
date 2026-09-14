@@ -83,7 +83,7 @@
             ".validate": "newData.isNumber() && newData.val() >= 1"
           },
           "lastViewedAt": {
-            ".validate": "newData.isNumber() && newData.val() <= now && newData.val() >= now - 60000"
+            ".validate": "newData.isNumber() && newData.val() <= now && newData.child('lastViewedAt').val() >= now - 60000"
           },
           "$other": {
             ".validate": false
@@ -123,6 +123,29 @@
     "ffwsLive": {
       ".read": true,
       ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
+    },
+    "communityGiveaways": {
+      "current": {
+        ".read": true,
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
+      },
+      "entries": {
+        "$giveawayId": {
+          ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          "$entry": {
+            ".write": "!data.exists() && newData.exists() && root.child('communityGiveaways').child('current').child('active').val() == true && root.child('communityGiveaways').child('current').child('id').val() == $giveawayId && root.child('communityGiveaways').child('current').child('endsAt').isNumber() && now <= root.child('communityGiveaways').child('current').child('endsAt').val() && newData.hasChildren(['username','createdAt'])",
+            "username": {
+              ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 30"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber() && newData.val() <= now + 10000 && newData.val() >= now - 60000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
     },
     "instagramCommunity": {
       "public": {
