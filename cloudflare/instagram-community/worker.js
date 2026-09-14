@@ -9,13 +9,14 @@ const RULES = Object.freeze({
 const GRAPH_VERSION = 'v26.0';
 const TIME_ZONE = 'America/Sao_Paulo';
 const CHECKIN_CODE_TTL_MS = 15 * 60 * 1000;
+const PREDICTION_URL = 'https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/communityPrediction.json';
 const ALLOWED_ORIGINS = new Set([
   'https://centralfreefire.com.br',
   'https://www.centralfreefire.com.br',
 ]);
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') {
@@ -38,6 +39,14 @@ export default {
 
     if (url.pathname === '/api/ranking/history' && request.method === 'GET') {
       return getWeeklyHistory(request, env, url);
+    }
+
+    if (url.pathname === '/api/prediction' && request.method === 'GET') {
+      return getPrediction(request, env, url, ctx);
+    }
+
+    if (url.pathname === '/api/prediction/vote' && request.method === 'POST') {
+      return votePrediction(request, env);
     }
 
     if (url.pathname === '/api/checkin/start' && request.method === 'POST') {
@@ -460,6 +469,191 @@ async function getCheckinSession(env, sessionId) {
     FROM checkin_sessions
     WHERE session_id = ?1
   `).bind(sessionId).first();
+}
+
+function normalizePrediction(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const id = String(raw.id || '').trim().slice(0, 100);
+  const question = String(raw.question || '').trim().slice(0, 180);
+  const source = Array.isArray(raw.options) ? raw.options : Object.values(raw.options || {});
+  const options = source
+    .map((item, index) => ({
+      id: String(item?.id || String.fromCharCode(97 + index)).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24),
+      label: String(item?.label || '').trim().slice(0, 100),
+    }))
+    .filter((item) => item.id && item.label)
+    .slice(0, 8);
+  if (!id || question.length < 4 || options.length < 2) return null;
+  const closesAt = Number(raw.closesAt || 0);
+  const participationPoints = Math.max(0, Math.min(20, Number(raw.participationPoints ?? 1) || 0));
+  const correctPoints = Math.max(0, Math.min(50, Number(raw.correctPoints ?? 3) || 0));
+  const correctOption = String(raw.correctOption || '').trim();
+  const rawStatus = String(raw.status || 'open').toLowerCase();
+  let status = rawStatus === 'settled' ? 'settled' : rawStatus === 'closed' ? 'closed' : 'open';
+  if (status === 'open' && closesAt && Date.now() >= closesAt) status = 'closed';
+  if (status === 'settled' && !options.some((item) => item.id === correctOption)) status = 'closed';
+  return {
+    id,
+    question,
+    options,
+    closesAt,
+    status,
+    correctOption: status === 'settled' ? correctOption : '',
+    participationPoints,
+    correctPoints,
+    createdAt: Number(raw.createdAt || 0),
+    updatedAt: Number(raw.updatedAt || 0),
+    settledAt: Number(raw.settledAt || 0),
+  };
+}
+
+async function fetchPrediction() {
+  try {
+    const response = await fetch(`${PREDICTION_URL}?_=${Date.now()}`, {
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) return null;
+    return normalizePrediction(await response.json());
+  } catch (error) {
+    console.error('Prediction config fetch failed', error);
+    return null;
+  }
+}
+
+async function predictionVoteFor(env, predictionId, key) {
+  if (!predictionId || !key) return '';
+  const row = await env.DB.prepare(`
+    SELECT source_id
+    FROM awards
+    WHERE award_key = ?1
+    LIMIT 1
+  `).bind(`prediction-vote:${predictionId}:${key}`).first();
+  const prefix = `${predictionId}:`;
+  const source = String(row?.source_id || '');
+  return source.startsWith(prefix) ? source.slice(prefix.length) : '';
+}
+
+async function predictionCorrectAwarded(env, predictionId, key) {
+  if (!predictionId || !key) return false;
+  const row = await env.DB.prepare(`
+    SELECT 1 AS found
+    FROM awards
+    WHERE award_key = ?1
+    LIMIT 1
+  `).bind(`prediction-correct:${predictionId}:${key}`).first();
+  return Boolean(row?.found);
+}
+
+async function settlePrediction(env, prediction) {
+  if (!prediction || prediction.status !== 'settled' || !prediction.correctOption || prediction.correctPoints <= 0) return;
+  const sourceId = `${prediction.id}:${prediction.correctOption}`;
+  const result = await env.DB.prepare(`
+    SELECT user_key, username
+    FROM awards
+    WHERE type = 'prediction_vote' AND source_id = ?1
+    LIMIT 1000
+  `).bind(sourceId).all();
+  const rows = result.results || [];
+  const timestamp = prediction.closesAt || prediction.settledAt || Date.now();
+  for (let i = 0; i < rows.length; i += 20) {
+    const chunk = rows.slice(i, i + 20);
+    await Promise.all(chunk.map((row) => awardInteraction(env, {
+      awardKey: `prediction-correct:${prediction.id}:${row.user_key}`,
+      userKey: row.user_key,
+      identity: '',
+      username: row.username || 'usuario',
+      type: 'prediction_correct',
+      sourceId: prediction.id,
+      points: prediction.correctPoints,
+      timestamp,
+    })));
+  }
+}
+
+async function predictionResponse(request, env, prediction, sessionId = '', ctx = null) {
+  if (!prediction) return json({ ok: true, prediction: null, linked: false, vote: '' }, 200, request);
+  if (prediction.status === 'settled' && ctx?.waitUntil) ctx.waitUntil(settlePrediction(env, prediction));
+
+  const row = sessionId ? await getCheckinSession(env, sessionId) : null;
+  const linked = Boolean(row?.verified_at && row?.user_key);
+  const vote = linked ? await predictionVoteFor(env, prediction.id, row.user_key) : '';
+  const correctAwarded = linked && prediction.status === 'settled'
+    ? await predictionCorrectAwarded(env, prediction.id, row.user_key)
+    : false;
+
+  return json({
+    ok: true,
+    prediction,
+    linked,
+    username: linked ? row.username : '',
+    vote,
+    correctAwarded,
+  }, 200, request);
+}
+
+async function getPrediction(request, env, url, ctx) {
+  const prediction = await fetchPrediction();
+  const sessionId = String(url.searchParams.get('session') || '').trim();
+  return predictionResponse(request, env, prediction, sessionId, ctx);
+}
+
+async function votePrediction(request, env) {
+  const body = await readJson(request);
+  const sessionId = String(body?.session || '').trim();
+  const predictionId = String(body?.predictionId || '').trim();
+  const option = String(body?.option || '').trim();
+  const prediction = await fetchPrediction();
+
+  if (!prediction || prediction.id !== predictionId) {
+    return json({ ok: false, error: 'Esse palpite não está mais disponível.' }, 404, request);
+  }
+  if (prediction.status !== 'open' || (prediction.closesAt && Date.now() >= prediction.closesAt)) {
+    return json({ ok: false, error: 'O prazo para esse palpite já terminou.' }, 409, request);
+  }
+  if (!prediction.options.some((item) => item.id === option)) {
+    return json({ ok: false, error: 'Opção de palpite inválida.' }, 400, request);
+  }
+
+  const row = await getCheckinSession(env, sessionId);
+  if (!row?.verified_at || !row?.user_key) {
+    return json({ ok: false, error: 'Vincule seu Instagram antes de palpitar.' }, 403, request);
+  }
+
+  const existingVote = await predictionVoteFor(env, prediction.id, row.user_key);
+  if (existingVote) {
+    return json({
+      ok: true,
+      prediction,
+      linked: true,
+      username: row.username,
+      vote: existingVote,
+      alreadyVoted: true,
+      correctAwarded: false,
+    }, 200, request);
+  }
+
+  await awardInteraction(env, {
+    awardKey: `prediction-vote:${prediction.id}:${row.user_key}`,
+    userKey: row.user_key,
+    identity: row.instagram_id || '',
+    username: row.username || fallbackUsername(row.instagram_id),
+    type: 'prediction_vote',
+    sourceId: `${prediction.id}:${option}`,
+    points: prediction.participationPoints,
+    timestamp: Date.now(),
+  });
+
+  return json({
+    ok: true,
+    prediction,
+    linked: true,
+    username: row.username,
+    vote: option,
+    alreadyVoted: false,
+    participationAwarded: prediction.participationPoints,
+    correctAwarded: false,
+  }, 200, request);
 }
 
 async function checkinStatus(request, env, url) {
