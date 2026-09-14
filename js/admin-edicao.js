@@ -27,6 +27,8 @@ let textSeq=0;
 const newText=()=>({id:`text-${++textSeq}`,text:'',...textDefaults});
 const firstText=newText();
 const s={image:null,imageUrl:'',baseScale:1,zoom:1,x:W/2,y:H/2,rotation:0,flipX:1,brightness:100,contrast:100,saturation:100,pinchLocked:false,pip:null,pipUrl:'',pipEnabled:true,pipSize:28,pipX:75,pipY:25,pipOpacity:100,texts:[firstText],activeTextId:firstText.id,frameEnabled:true,frame:null,frameUrl:'',logo:null,fontReady:false,pointers:new Map(),dragId:null,pinch:null,renderQueued:false};
+window.__CFF_ADMIN_EDICAO_STATE__=s;
+window.__CFF_ADMIN_EDICAO_QUEUE__=queue;
 let initialized=false,officialFontFace=null;
 
 function msg(t,type=''){ui.message.textContent=t||'';ui.message.classList.toggle('is-error',type==='error');ui.message.classList.toggle('is-success',type==='success');}
