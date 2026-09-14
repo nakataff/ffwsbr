@@ -1,0 +1,98 @@
+name: Patch prediction vote editing
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-prediction-vote-edit.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Allow changing an existing prediction
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('cloudflare/instagram-community/worker.js')
+          text = path.read_text(encoding='utf-8')
+          old = """  const existingVote = await predictionVoteFor(env, prediction.id, row.user_key);
+  if (!existingVote) {
+    await awardInteraction(env, {
+      awardKey: `prediction-vote:${prediction.id}:${row.user_key}`,
+      userKey: row.user_key,
+      identity: row.instagram_id || '',
+      username: row.username || fallbackUsername(row.instagram_id),
+      type: 'prediction_vote',
+      sourceId: encodeVoteSource(prediction.id, option, guessedPoints),
+      points: prediction.participationPoints,
+      timestamp: Date.now(),
+    });
+  }
+
+  const all = await buildPredictionsPayload(env, sessionId, ctx);
+  return json({ ok: true, alreadyVoted: Boolean(existingVote), participationAwarded: existingVote ? 0 : prediction.participationPoints, all }, 200, request);
+"""
+          new = """  const existingVote = await predictionVoteFor(env, prediction.id, row.user_key);
+  let voteUpdated = false;
+  if (!existingVote) {
+    await awardInteraction(env, {
+      awardKey: `prediction-vote:${prediction.id}:${row.user_key}`,
+      userKey: row.user_key,
+      identity: row.instagram_id || '',
+      username: row.username || fallbackUsername(row.instagram_id),
+      type: 'prediction_vote',
+      sourceId: encodeVoteSource(prediction.id, option, guessedPoints),
+      points: prediction.participationPoints,
+      timestamp: Date.now(),
+    });
+  } else {
+    const sameOption = existingVote.option === option;
+    const samePoints = prediction.kind !== 'team_points' || Number(existingVote.points) === Number(guessedPoints);
+    if (!sameOption || !samePoints) {
+      const updated = await env.DB.prepare(`
+        UPDATE awards
+        SET source_id = ?1, username = ?2, created_at = ?3
+        WHERE award_key = ?4 AND user_key = ?5 AND type = 'prediction_vote'
+      `).bind(
+        encodeVoteSource(prediction.id, option, guessedPoints),
+        row.username || fallbackUsername(row.instagram_id),
+        Date.now(),
+        `prediction-vote:${prediction.id}:${row.user_key}`,
+        row.user_key,
+      ).run();
+      voteUpdated = Boolean(updated.meta?.changes);
+    }
+  }
+
+  const all = await buildPredictionsPayload(env, sessionId, ctx);
+  return json({
+    ok: true,
+    alreadyVoted: Boolean(existingVote),
+    voteUpdated,
+    participationAwarded: existingVote ? 0 : prediction.participationPoints,
+    all,
+  }, 200, request);
+"""
+          if old not in text:
+              raise SystemExit('Expected vote block was not found; worker left unchanged.')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+      - name: Commit worker patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloudflare/instagram-community/worker.js
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Permite trocar palpite antes do encerramento"
+          git push
