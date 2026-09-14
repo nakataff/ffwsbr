@@ -127,7 +127,7 @@
       status = 'Palpite encerrado. Aguardando o resultado oficial.';
       statusClass = 'warn';
     } else {
-      status = `Escolha uma opção. Depois de confirmar, não dá para trocar o palpite.`;
+      status = 'Escolha uma opção. Depois de confirmar, não dá para trocar o palpite.';
     }
 
     root.innerHTML = `
@@ -203,5 +203,6 @@
 
   window.addEventListener('storage', e => { if (e.key === SESSION_KEY) load(); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+  setInterval(() => { if (!document.hidden && !busy) load(); }, 15000);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
 })();
