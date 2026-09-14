@@ -910,11 +910,32 @@ async function verifyAdminFirebaseToken(request) {
   const header = String(request.headers.get('Authorization') || '');
   const match = header.match(/^Bearer\s+(.+)$/i);
   if (!match) return null;
+  const idToken = match[1];
+
+  // Prefer Firebase Realtime Database itself as the verifier. The
+  // adminDrafts node is readable only by the configured admin email,
+  // so a 200 response proves both that the ID token is valid and that
+  // its email claim has administrative access. This also avoids
+  // failures caused by browser/referrer restrictions on the Firebase
+  // Web API key when Identity Toolkit is called server-side.
+  try {
+    const verifyUrl = `${FIREBASE_BASE}/adminDrafts.json?shallow=true&auth=${encodeURIComponent(idToken)}`;
+    const response = await fetch(verifyUrl, {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    if (response.ok) return { email: ADMIN_EMAIL, verifiedBy: 'rtdb' };
+  } catch (error) {
+    console.error('Firebase RTDB admin verification failed', error);
+  }
+
+  // Compatibility fallback for projects where the Web API key also
+  // accepts server-side Identity Toolkit requests.
   try {
     const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(FIREBASE_WEB_API_KEY)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken: match[1] }),
+      body: JSON.stringify({ idToken }),
     });
     if (!response.ok) return null;
     const data = await response.json();
