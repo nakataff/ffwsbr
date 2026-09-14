@@ -48,9 +48,16 @@
 
 (() => {
   if (!/interacoes\.html$/i.test(location.pathname)) return;
-  if (document.querySelector('script[data-cff-community-prediction]')) return;
-  const script=document.createElement('script');
-  script.src='js/community-prediction.js?v=20260914-prediction-v2';
-  script.dataset.cffCommunityPrediction='1';
-  document.head.appendChild(script);
+  if (!document.querySelector('script[data-cff-community-prediction]')) {
+    const script=document.createElement('script');
+    script.src='js/community-prediction.js?v=20260914-prediction-v2';
+    script.dataset.cffCommunityPrediction='1';
+    document.head.appendChild(script);
+  }
+  if (!document.querySelector('script[data-cff-community-rewards]')) {
+    const script=document.createElement('script');
+    script.src='js/community-rewards.js?v=20260915-weekly-rewards-v1';
+    script.dataset.cffCommunityRewards='1';
+    document.head.appendChild(script);
+  }
 })();
