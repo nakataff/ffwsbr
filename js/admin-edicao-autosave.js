@@ -66,6 +66,7 @@
     document.head.appendChild(style);
     $('#cff-edicao-autosave-clear')?.addEventListener('click',async()=>{
       if(!confirm('Apagar o rascunho automático deste navegador? A arte aberta continua na tela até você sair ou recarregar.'))return;
+      clearTimeout(timer);
       try{localStorage.removeItem(META_KEY);}catch{}
       await Promise.allSettled([dbDelete(PHOTO_KEY),dbDelete(PIP_KEY)]);
       setStatus('Rascunho apagado','');
@@ -224,7 +225,7 @@
     const app=$('#photo-editor-app');if(!app||app.dataset.autosaveBound==='1')return;app.dataset.autosaveBound='1';
     app.addEventListener('input',scheduleSave,true);
     app.addEventListener('change',scheduleSave,true);
-    app.addEventListener('click',e=>{if(e.target.closest('#photo-editor-download,#photo-editor-save-top,#photo-editor-save-preview,[data-grid]'))return;setTimeout(scheduleSave,60);},true);
+    app.addEventListener('click',e=>{if(e.target.closest('#photo-editor-download,#photo-editor-save-top,#photo-editor-save-preview,#cff-edicao-autosave-clear,[data-grid]'))return;setTimeout(scheduleSave,60);},true);
     const stage=$('#photo-editor-stage');
     ['pointerup','pointercancel','wheel'].forEach(ev=>stage?.addEventListener(ev,scheduleSave,{passive:true}));
     const photo=$('#photo-editor-file');
