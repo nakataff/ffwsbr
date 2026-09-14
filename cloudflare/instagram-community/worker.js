@@ -1082,6 +1082,15 @@ async function claimRewardCode(request, env) {
     timestamp: Date.now(),
   });
 
+  if (awarded) {
+    await evaluateWeeklyBonuses(env, {
+      userKey: row.user_key,
+      identity: row.instagram_id || '',
+      username: row.username || fallbackUsername(row.instagram_id),
+      timestamp: Date.now(),
+    });
+  }
+
   return json({ ok: true, awarded, alreadyClaimed: !awarded, points: awarded ? item.points : 0, username: row.username }, 200, request);
 }
 
@@ -1180,7 +1189,7 @@ async function getRanking(request, env, url) {
              active_days_all AS activeDays,
              last_interaction_at AS lastInteractionAt
       FROM users
-      ORDER BY points_all DESC, story_mentions_all DESC, comments_all DESC
+      ORDER BY points_all DESC, active_days_all DESC, story_mentions_all DESC, comments_all DESC
       LIMIT 500
     `).all();
   } else if (period === 'month') {
@@ -1192,7 +1201,7 @@ async function getRanking(request, env, url) {
              last_interaction_at AS lastInteractionAt
       FROM monthly_users
       WHERE month_key = ?1
-      ORDER BY points DESC, story_mentions DESC, comments DESC
+      ORDER BY points DESC, active_days DESC, story_mentions DESC, comments DESC
       LIMIT 500
     `).bind(monthKey).all();
   } else {
@@ -1202,14 +1211,13 @@ async function getRanking(request, env, url) {
              SUM(a.points) AS points,
              SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END) AS storyMentions,
              SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END) AS comments,
-             COUNT(DISTINCT ad.day_key) AS activeDays,
+             (SELECT COUNT(*) FROM active_days ad WHERE ad.user_key=a.user_key AND ad.day_key BETWEEN ?1 AND ?2) AS activeDays,
              MAX(a.created_at) AS lastInteractionAt
       FROM awards a
       LEFT JOIN users u ON u.user_key = a.user_key
-      LEFT JOIN active_days ad ON ad.user_key = a.user_key AND ad.day_key BETWEEN ?1 AND ?2
       WHERE a.day_key BETWEEN ?1 AND ?2
       GROUP BY a.user_key
-      ORDER BY points DESC, storyMentions DESC, comments DESC, username ASC
+      ORDER BY points DESC, activeDays DESC, storyMentions DESC, comments DESC, username ASC
       LIMIT 500
     `).bind(weekStartKey, weekEndKey).all();
   }
@@ -1312,9 +1320,11 @@ async function getWeeklyHistory(request, env, url) {
     .sort((a,b) => b.weekStart.localeCompare(a.weekStart))
     .slice(0, limit)
     .map(week => {
-      const ranked = [...week.users.values()].sort((a,b) =>
-        b.points - a.points || b.storyMentions - a.storyMentions || b.comments - a.comments || a.username.localeCompare(b.username, 'pt-BR')
-      );
+      const ranked = [...week.users.values()].sort((a,b) => {
+        const aDays = activeByWeekUser.get(`${week.weekStart}:${a.userKey}`)?.size || 0;
+        const bDays = activeByWeekUser.get(`${week.weekStart}:${b.userKey}`)?.size || 0;
+        return b.points - a.points || bDays - aDays || b.storyMentions - a.storyMentions || b.comments - a.comments || a.username.localeCompare(b.username, 'pt-BR');
+      });
       const top = ranked[0] || null;
       return {
         weekKey: week.weekKey,
