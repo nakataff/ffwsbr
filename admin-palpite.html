@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Palpites | Painel Central Free Fire</title>
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+  <script src="js/config.min.js?v=20260914-prediction-v1"></script>
+  <style>
+    .pred-shell{max-width:1050px}.pred-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,.75fr);gap:16px;align-items:start}.pred-form{display:grid;gap:14px}.pred-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pred-actions{display:flex;gap:8px;flex-wrap:wrap}.pred-preview{display:grid;gap:11px}.pred-card{border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);padding:14px}.pred-card strong{display:block;color:#fff;font-size:1.05rem;line-height:1.35}.pred-options{display:grid;gap:7px;margin-top:12px}.pred-option{padding:10px;border:1px solid rgba(0,200,255,.16);border-radius:9px;background:rgba(0,200,255,.04);color:#cdefff;font-weight:800}.pred-meta{display:grid;gap:5px;margin-top:12px;color:#8498b3;font-size:12px}.pred-meta b{color:#dce8f5}.pred-status{display:inline-flex;width:max-content;padding:5px 8px;border-radius:999px;border:1px solid rgba(0,200,255,.28);background:rgba(0,200,255,.07);color:#aeefff;font-size:11px;font-weight:900;text-transform:uppercase}.pred-status.settled{border-color:rgba(83,217,157,.35);background:rgba(83,217,157,.08);color:#8bf0bd}.pred-status.closed{border-color:rgba(255,208,95,.35);background:rgba(255,208,95,.08);color:#ffd875}.pred-help{font-size:12px;line-height:1.5;color:#8292aa}.pred-result{display:grid;gap:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}@media(max-width:760px){.pred-grid{grid-template-columns:1fr}.pred-row{grid-template-columns:1fr}.pred-actions .admin-btn{flex:1;justify-content:center}}
+  </style>
+</head>
+<body>
+  <main id="pred-app" class="admin-shell pred-shell" hidden>
+    <header class="admin-header">
+      <a class="admin-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
+      <div class="admin-header-actions"><a class="admin-btn admin-btn-ghost" href="admin.html">← Painel</a><a class="admin-btn admin-btn-ghost" href="interacoes.html">Ver ranking</a></div>
+    </header>
+
+    <section class="admin-welcome">
+      <div><p class="admin-eyebrow">Ranking da comunidade</p><h1>Palpite da rodada</h1><p class="admin-muted">Crie uma pergunta simples, defina o horário limite e depois marque a resposta correta. Participar dá ponto e acertar dá bônus.</p></div>
+    </section>
+
+    <div class="pred-grid">
+      <section class="admin-panel">
+        <div class="admin-panel-head"><div><p class="admin-eyebrow">Novo palpite</p><h2>Criar pergunta</h2></div></div>
+        <form id="pred-form" class="pred-form">
+          <div class="admin-field"><label for="pred-question">Pergunta</label><input id="pred-question" maxlength="180" required placeholder="Ex.: Quem vai terminar o dia em 1º lugar?"></div>
+          <div class="admin-field"><label for="pred-options">Opções</label><textarea id="pred-options" rows="6" required placeholder="LOUD&#10;LOS&#10;FLUXO&#10;INTZ"></textarea><small>Uma opção por linha. Mínimo 2, máximo 8.</small></div>
+          <div class="pred-row">
+            <div class="admin-field"><label for="pred-closes">Fecha em</label><input id="pred-closes" type="datetime-local" required><small>Horário de Brasília</small></div>
+            <div class="admin-field"><label for="pred-participation">Pontos por participar</label><input id="pred-participation" type="number" min="0" max="20" value="1"></div>
+          </div>
+          <div class="pred-row">
+            <div class="admin-field"><label for="pred-correct-points">Bônus por acertar</label><input id="pred-correct-points" type="number" min="0" max="50" value="3"></div>
+            <div class="admin-field"><label>&nbsp;</label><button class="admin-btn admin-btn-primary admin-btn-block" type="submit">🎯 Publicar novo palpite</button></div>
+          </div>
+          <p id="pred-message" class="admin-message" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <aside class="admin-panel pred-preview">
+        <div class="admin-panel-head"><div><p class="admin-eyebrow">No ar agora</p><h2>Palpite atual</h2></div></div>
+        <div id="pred-current" class="pred-card"><div class="admin-empty">Carregando...</div></div>
+      </aside>
+    </div>
+  </main>
+
+  <section id="pred-auth" class="photo-editor-auth-message" style="min-height:100vh;display:grid;place-items:center;padding:24px"><div class="admin-login-card"><div class="admin-login-icon">🔒</div><p class="admin-eyebrow">Acesso restrito</p><h1>Validando sessão</h1><p class="admin-muted">Use o mesmo login do painel administrativo.</p></div></section>
+
+  <script type="module">
+    import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+    import { getDatabase, ref, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+
+    const ADMIN='admin@centralfreefire.com.br';
+    const config=window.CFF_CONFIG?.firebase;
+    if(!config){location.replace('admin.html');throw new Error('Firebase config ausente');}
+    const app=getApps().length?getApp():initializeApp(config),auth=getAuth(app),db=getDatabase(app);
+    const $=s=>document.querySelector(s);let current=null;
+    const root=ref(db,'communityPrediction');
+    const msg=(text,type='')=>{const el=$('#pred-message');el.textContent=text||'';el.classList.toggle('is-error',type==='error');el.classList.toggle('is-success',type==='success');};
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    function localStamp(ms){if(!ms)return '—';return new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ms));}
+    function parseLocal(value){if(!value)return 0;const d=new Date(value);return Number.isFinite(d.getTime())?d.getTime():0;}
+    function statusOf(p){if(!p)return 'none';if(p.status==='settled')return 'settled';if(p.status==='closed'||Date.now()>=Number(p.closesAt||0))return 'closed';return 'open';}
+    function renderCurrent(){const box=$('#pred-current');if(!current){box.innerHTML='<div class="admin-empty">Nenhum palpite publicado ainda.</div>';return;}const status=statusOf(current);const options=Array.isArray(current.options)?current.options:[];const correct=options.find(o=>o.id===current.correctOption);box.innerHTML=`<span class="pred-status ${status}">${status==='open'?'ABERTO':status==='settled'?'FINALIZADO':'ENCERRADO'}</span><strong style="margin-top:10px">${esc(current.question)}</strong><div class="pred-options">${options.map(o=>`<div class="pred-option">${esc(o.label)}${current.correctOption===o.id?' ✓':''}</div>`).join('')}</div><div class="pred-meta"><span>Fecha: <b>${esc(localStamp(current.closesAt))}</b></span><span>Participar: <b>+${Number(current.participationPoints||1)} pt</b></span><span>Acertar: <b>+${Number(current.correctPoints||3)} pts</b></span></div><div class="pred-result"><label class="admin-field"><span>Resposta correta</span><select id="pred-correct-select"><option value="">Selecione...</option>${options.map(o=>`<option value="${esc(o.id)}" ${current.correctOption===o.id?'selected':''}>${esc(o.label)}</option>`).join('')}</select></label><div class="pred-actions"><button id="pred-close" type="button" class="admin-btn admin-btn-ghost">Encerrar palpites</button><button id="pred-settle" type="button" class="admin-btn admin-btn-primary">✓ Finalizar resultado</button></div><p class="pred-help">Ao finalizar, o Worker identifica automaticamente quem acertou e adiciona o bônus no ranking.</p></div>`;
+      $('#pred-close')?.addEventListener('click',closePrediction);$('#pred-settle')?.addEventListener('click',settlePrediction);
+    }
+    async function closePrediction(){if(!current)return;await update(root,{status:'closed',updatedAt:Date.now()});msg('Palpite encerrado. Agora ninguém consegue votar.','success');}
+    async function settlePrediction(){if(!current)return;const answer=$('#pred-correct-select')?.value||'';if(!answer){msg('Escolha a resposta correta primeiro.','error');return;}await update(root,{status:'settled',correctOption:answer,settledAt:Date.now(),updatedAt:Date.now()});msg('Resultado finalizado. O bônus será distribuído automaticamente pelo Worker.','success');}
+    $('#pred-form').addEventListener('submit',async e=>{e.preventDefault();const question=$('#pred-question').value.trim();const labels=$('#pred-options').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,8);const closesAt=parseLocal($('#pred-closes').value);if(question.length<4){msg('Digite uma pergunta válida.','error');return;}if(labels.length<2){msg('Coloque pelo menos duas opções.','error');return;}if(!closesAt||closesAt<=Date.now()){msg('O horário de encerramento precisa estar no futuro.','error');return;}const id=`palpite-${Date.now()}`;const data={id,question,options:labels.map((label,i)=>({id:String.fromCharCode(97+i),label})),closesAt,status:'open',correctOption:'',participationPoints:Math.max(0,Math.min(20,Number($('#pred-participation').value)||1)),correctPoints:Math.max(0,Math.min(50,Number($('#pred-correct-points').value)||3)),createdAt:Date.now(),updatedAt:Date.now()};try{await set(root,data);msg('Novo palpite publicado!','success');$('#pred-question').value='';$('#pred-options').value='';}catch(err){console.error(err);msg('Não foi possível publicar o palpite.','error');}});
+    onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){location.replace('admin.html');return;}$('#pred-auth').hidden=true;$('#pred-app').hidden=false;onValue(root,snap=>{current=snap.val()||null;renderCurrent();},err=>{console.error(err);msg('Erro ao carregar o palpite atual.','error');});});
+  </script>
+</body>
+</html>
