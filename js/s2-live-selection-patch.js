@@ -1,16 +1,22 @@
 (()=>{
   'use strict';
-  if(window.__CFF_S2_LIVE_SELECTION_PATCH_V2__)return;
-  window.__CFF_S2_LIVE_SELECTION_PATCH_V2__=true;
+  if(window.__CFF_S2_LIVE_SELECTION_PATCH_V3__)return;
+  window.__CFF_S2_LIVE_SELECTION_PATCH_V3__=true;
+
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
   const num=v=>Number(v)||0;
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  let cache=null,cacheAt=0,wrapping=false;
+  let cache=null,cacheAt=0,wrapping=false,syncing=false,scheduled=false;
 
   async function data(){
     if(cache&&Date.now()-cacheAt<3000)return cache;
-    try{const r=await fetch(`ffws-br-2026-s2/players.json?v=${Date.now()}`,{cache:'no-store'});if(!r.ok)return null;cache=await r.json();cacheAt=Date.now();return cache}catch(_){return null}
+    try{
+      const r=await fetch(`ffws-br-2026-s2/players.json?v=${Date.now()}`,{cache:'no-store'});
+      if(!r.ok)return null;
+      cache=await r.json();cacheAt=Date.now();return cache;
+    }catch(_){return null}
   }
+
   function metaFor(payload,name,team){
     const list=Array.isArray(payload?.players)?payload.players:[],n=norm(name),t=norm(team);
     return list.find(p=>norm(p?.team)===t&&[p?.name,p?.sourceName,...(p?.aliases||[])].some(a=>norm(a)===n))||list.find(p=>[p?.name,p?.sourceName,...(p?.aliases||[])].some(a=>norm(a)===n))||null;
@@ -28,46 +34,81 @@
     return[...agg.values()].sort((a,b)=>b.kills-a.kills||b.damage-a.damage||b.assists-a.assists);
   }
 
+  function setText(el,text){if(el&&el.textContent!==text)el.textContent=text}
+
   function patchClassificatoria(){
     const root=document.getElementById('ffws-br-s2-selecoes-content');if(!root)return;
     const panel=root.querySelector('.season-selection-panel-classificatoria');if(!panel)return;
-    const head=panel.querySelector('.season-selection-section-head p');
-    if(head)head.textContent='Seleção final dos melhores jogadores por função na Classificatória.';
+    setText(panel.querySelector('.season-selection-section-head p'),'Seleção final dos melhores jogadores por função na Classificatória.');
     const notice=panel.querySelector('.season-selection-disclaimer');
     if(notice){
-      const strong=notice.querySelector('strong'),span=notice.querySelector('span');
-      if(strong)strong.textContent='CLASSIFICATÓRIA ENCERRADA';
-      if(span)span.textContent='Seleção definitiva da primeira fase após o encerramento das 14 rodadas.';
+      setText(notice.querySelector('strong'),'CLASSIFICATÓRIA ENCERRADA');
+      setText(notice.querySelector('span'),'Seleção definitiva da primeira fase após o encerramento das 14 rodadas.');
     }
   }
 
-  async function patchSecondPanel(){
-    const root=document.getElementById('ffws-br-s2-selecoes-content');if(!root)return;
-    const rs=await rows();if(!rs.length)return;
-    const grid=root.querySelector('.season-selection-grid'),head=root.querySelector('.season-selection-section-head p');if(!grid)return;
-    if(head)head.textContent='Melhores de cada posição considerando os dados já disputados na Segunda Fase.';
-    grid.innerHTML=lineup(rs).map(card).join('');
+  async function patchSecondPanel(rs){
+    const root=document.getElementById('ffws-br-s2-selecoes-content');if(!root||!rs.length)return;
+    const panel=root.querySelector('.season-selection-panel-segunda-fase');if(!panel)return;
+    const grid=panel.querySelector('.season-selection-grid'),head=panel.querySelector('.season-selection-section-head p');if(!grid)return;
+    setText(head,'Melhores de cada posição considerando os dados já disputados na Segunda Fase.');
+    const selected=lineup(rs);
+    const signature=selected.map(r=>`${norm(r.name)}:${norm(r.team)}:${r.kills}:${r.damage}:${r.matches}`).join('|');
+    if(grid.dataset.cffLiveSelectionSignature===signature)return;
+    grid.dataset.cffLiveSelectionSignature=signature;
+    grid.innerHTML=selected.map(card).join('');
   }
 
   async function sync(){
-    patchClassificatoria();
-    const root=document.getElementById('ffws-br-s2-selecoes-content');if(!root)return;
-    const rs=await rows();if(!rs.length)return;
-    [...root.querySelectorAll('.season-selection-tab')].forEach(btn=>{
-      if(!/SEGUNDA FASE/i.test(btn.textContent||''))return;
-      btn.disabled=false;btn.removeAttribute('aria-disabled');btn.classList.remove('locked');
-      const small=btn.querySelector('small');if(small)small.remove();
-      btn.onclick=()=>{window.setFFWSS2SelectionTab?.('segundaFase');setTimeout(patchSecondPanel,20)};
-    });
-    if(root.querySelector('.season-selection-panel-segunda-fase'))patchSecondPanel();
+    if(syncing)return;
+    syncing=true;
+    try{
+      patchClassificatoria();
+      const root=document.getElementById('ffws-br-s2-selecoes-content');if(!root)return;
+      const rs=await rows();if(!rs.length)return;
+      [...root.querySelectorAll('.season-selection-tab')].forEach(btn=>{
+        if(!/SEGUNDA FASE/i.test(btn.textContent||''))return;
+        if(btn.disabled)btn.disabled=false;
+        if(btn.hasAttribute('aria-disabled'))btn.removeAttribute('aria-disabled');
+        if(btn.classList.contains('locked'))btn.classList.remove('locked');
+        const small=btn.querySelector('small');if(small)small.remove();
+        if(btn.dataset.cffSecondPhaseLive!=='1'){
+          btn.dataset.cffSecondPhaseLive='1';
+          btn.onclick=()=>{window.setFFWSS2SelectionTab?.('segundaFase');setTimeout(scheduleSync,30)};
+        }
+      });
+      await patchSecondPanel(rs);
+    }finally{syncing=false}
+  }
+
+  function scheduleSync(){
+    if(scheduled)return;
+    scheduled=true;
+    requestAnimationFrame(()=>{scheduled=false;sync()});
   }
 
   function wrapSetter(){
     if(wrapping||typeof window.setFFWSS2SelectionTab!=='function')return;
-    wrapping=true;const orig=window.setFFWSS2SelectionTab;
-    window.setFFWSS2SelectionTab=tab=>{orig(tab);setTimeout(()=>{patchClassificatoria();sync();if(tab==='segundaFase')patchSecondPanel()},20)};
+    wrapping=true;
+    const orig=window.setFFWSS2SelectionTab;
+    window.setFFWSS2SelectionTab=tab=>{orig(tab);setTimeout(scheduleSync,20)};
   }
-  const observer=new MutationObserver(()=>{wrapSetter();sync()});
-  const boot=()=>{wrapSetter();observer.observe(document.body,{childList:true,subtree:true});sync()};
+
+  const observer=new MutationObserver(mutations=>{
+    const relevant=mutations.some(m=>{
+      const target=m.target?.nodeType===1?m.target:m.target?.parentElement;
+      return target?.closest?.('#ffws-br-s2-selecoes-content')||[...m.addedNodes].some(n=>n.nodeType===1&&(n.id==='ffws-br-s2-selecoes-content'||n.querySelector?.('#ffws-br-s2-selecoes-content')));
+    });
+    if(relevant)scheduleSync();
+  });
+
+  const boot=()=>{
+    const tryWrap=()=>{wrapSetter();if(wrapping)clearInterval(timer)};
+    const timer=setInterval(tryWrap,250);
+    setTimeout(()=>clearInterval(timer),10000);
+    tryWrap();
+    observer.observe(document.body,{childList:true,subtree:true});
+    scheduleSync();
+  };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
