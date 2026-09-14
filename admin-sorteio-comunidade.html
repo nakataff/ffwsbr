@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Sorteio da Comunidade | Painel Central Free Fire</title>
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+  <script src="js/config.min.js?v=20260915-community-giveaway-v1"></script>
+  <style>
+    .give-shell{max-width:1180px}.give-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;align-items:start}.give-form{display:grid;gap:13px}.give-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.give-actions{display:flex;gap:8px;flex-wrap:wrap}.give-status{display:inline-flex;width:max-content;padding:5px 8px;border-radius:999px;border:1px solid rgba(0,200,255,.25);background:rgba(0,200,255,.06);color:#b9efff;font-size:11px;font-weight:950;text-transform:uppercase}.give-status.closed{border-color:rgba(255,174,74,.3);background:rgba(255,174,74,.07);color:#ffd292}.give-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.give-stat{padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025)}.give-stat span{display:block;color:#748eaa;font-size:10px;font-weight:900;text-transform:uppercase}.give-stat strong{display:block;margin-top:5px;color:#fff;font-size:20px}.give-tools{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.give-tools select{min-width:170px}.give-table-wrap{overflow:auto;border:1px solid rgba(255,255,255,.07);border-radius:12px}.give-table{width:100%;border-collapse:collapse;min-width:760px}.give-table th,.give-table td{padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:12px}.give-table th{color:#7893b0;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.give-user{color:#fff;font-weight:1000}.badge{display:inline-flex;padding:4px 6px;border-radius:999px;font-size:10px;font-weight:950}.badge.yes{background:rgba(89,220,158,.1);color:#83eabb}.badge.unknown{background:rgba(255,255,255,.05);color:#8095ad}.give-note{margin-top:10px;color:#7389a4;font-size:11px;line-height:1.5}.give-empty{padding:22px;text-align:center;color:#758da8;font-size:12px}.give-link{word-break:break-all}.admin-message.is-success{color:#73e0aa}.admin-message.is-error{color:#ff94a1}@media(max-width:850px){.give-grid{grid-template-columns:1fr}.give-summary{grid-template-columns:1fr 1fr 1fr}}@media(max-width:540px){.give-row{grid-template-columns:1fr}.give-summary{grid-template-columns:1fr}.give-actions .admin-btn,.give-tools .admin-btn,.give-tools select{width:100%}}
+  </style>
+</head>
+<body>
+  <main id="give-app" class="admin-shell give-shell" hidden>
+    <header class="admin-header">
+      <a class="admin-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
+      <div class="admin-header-actions"><a class="admin-btn admin-btn-ghost" href="admin.html">← Painel</a><a class="admin-btn admin-btn-ghost" href="sorteio-comunidade.html" target="_blank">Abrir página pública</a></div>
+    </header>
+
+    <section class="admin-welcome">
+      <div><p class="admin-eyebrow">Comunidade</p><h1>Sorteio esporádico</h1><p class="admin-muted">Abra um sorteio por tempo limitado, receba os @ e copie tudo direto para o seu sorteador.</p></div>
+    </section>
+
+    <div class="give-grid">
+      <section class="admin-panel">
+        <div class="admin-panel-head admin-panel-head-wrap"><div><p class="admin-eyebrow">Configuração</p><h2>Sorteio atual</h2></div><span id="give-status" class="give-status closed">SEM SORTEIO</span></div>
+        <form id="give-form" class="give-form">
+          <div class="admin-field"><label for="give-title">Título</label><input id="give-title" maxlength="100" required placeholder="Ex.: SORTEIO DE CODIGUINHO"></div>
+          <div class="admin-field"><label for="give-description">Descrição</label><textarea id="give-description" rows="4" maxlength="400" placeholder="Ex.: Deixe seu @ e concorra a um codiguinho hoje."></textarea></div>
+          <div class="give-row"><div class="admin-field"><label for="give-end">Encerra em</label><input id="give-end" type="datetime-local" required><small>Horário de Brasília</small></div><div class="admin-field"><label>ID do sorteio</label><input id="give-id" readonly placeholder="Será criado automaticamente"></div></div>
+          <div class="give-actions"><button class="admin-btn admin-btn-primary" type="submit">🎁 Salvar e abrir sorteio</button><button id="give-close" class="admin-btn admin-btn-danger" type="button">Encerrar agora</button><button id="give-new" class="admin-btn admin-btn-ghost" type="button">+ Novo sorteio</button></div>
+          <p id="give-message" class="admin-message" aria-live="polite"></p>
+        </form>
+        <div class="give-note"><strong>Sobre seguidores:</strong> o Instagram não permite confirmar com segurança se um @ digitado no site segue o perfil. Já o histórico de comentários dá para cruzar com os dados que a Central FF já registra.</div>
+      </section>
+
+      <section class="admin-panel">
+        <div class="admin-panel-head admin-panel-head-wrap"><div><p class="admin-eyebrow">Inscritos</p><h2>Participantes</h2></div><button id="give-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar histórico</button></div>
+        <div class="give-summary"><div class="give-stat"><span>Total</span><strong id="give-total">0</strong></div><div class="give-stat"><span>Já comentou</span><strong id="give-commented">0</strong></div><div class="give-stat"><span>Exibidos</span><strong id="give-visible">0</strong></div></div>
+        <div class="give-tools"><select id="give-filter"><option value="all">Todos os inscritos</option><option value="commented">Só quem já comentou</option><option value="unknown">Sem histórico identificado</option></select><button id="give-copy-names" class="admin-btn admin-btn-primary" type="button">Copiar @ para sorteador</button><button id="give-copy-sheet" class="admin-btn admin-btn-ghost" type="button">Copiar como planilha</button><button id="give-csv" class="admin-btn admin-btn-ghost" type="button">Baixar CSV</button></div>
+        <div class="give-table-wrap"><table class="give-table"><thead><tr><th>#</th><th>Instagram</th><th>Já comentou?</th><th>Comentários</th><th>Pontos ranking</th><th>Inscrição</th></tr></thead><tbody id="give-tbody"><tr><td colspan="6"><div class="give-empty">Nenhum participante ainda.</div></td></tr></tbody></table></div>
+        <div class="give-note">“Já comentou” usa o histórico disponível no ranking geral da comunidade. Se aparecer “não identificado”, não significa necessariamente que a pessoa nunca comentou — apenas que ela não apareceu na consulta disponível.</div>
+      </section>
+    </div>
+  </main>
+
+  <section id="give-auth" style="min-height:100vh;display:grid;place-items:center;padding:24px"><div class="admin-login-card"><div class="admin-login-icon">🔒</div><p class="admin-eyebrow">Acesso restrito</p><h1>Validando sessão</h1><p class="admin-muted">Use o mesmo login do painel administrativo.</p></div></section>
+
+  <script type="module">
+    import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+    import { getDatabase, ref, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+
+    const ADMIN='admin@centralfreefire.com.br';
+    const API='https://cff-instagram-community.nakataffb4.workers.dev';
+    const PUBLIC_URL='https://centralfreefire.com.br/sorteio-comunidade.html';
+    const config=window.CFF_CONFIG?.firebase;
+    if(!config){location.replace('admin.html');throw new Error('Firebase config ausente');}
+    const app=getApps().length?getApp():initializeApp(config),auth=getAuth(app),db=getDatabase(app);
+    const $=s=>document.querySelector(s);const currentRef=ref(db,'communityGiveaways/current');
+    let current=null,entries=[],history=new Map(),unsubscribeEntries=null;
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    const msg=(text,type='')=>{const el=$('#give-message');el.textContent=text||'';el.className=`admin-message${type?` is-${type}`:''}`};
+    const fmt=ms=>ms?new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ms)):'—';
+    function toLocal(ms){if(!ms)return'';const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms));const o=Object.fromEntries(parts.map(p=>[p.type,p.value]));return`${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`;}
+    function parseBrt(value){return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(String(value||''))?Date.parse(`${value}:00-03:00`):0;}
+    function newId(){const d=new Date(),p=n=>String(n).padStart(2,'0');return`giveaway-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${Date.now().toString(36)}`;}
+    function isOpen(){return Boolean(current?.active&&current?.id&&Number(current.endsAt)>Date.now());}
+    function fill(){
+      $('#give-title').value=current?.title||'';$('#give-description').value=current?.description||'';$('#give-end').value=toLocal(current?.endsAt);$('#give-id').value=current?.id||'';
+      const status=$('#give-status');status.textContent=current?.id?(isOpen()?'ABERTO':'ENCERRADO'):'SEM SORTEIO';status.classList.toggle('closed',!isOpen());
+    }
+    async function saveGiveaway(e){e.preventDefault();const title=$('#give-title').value.trim(),description=$('#give-description').value.trim(),endsAt=parseBrt($('#give-end').value);if(title.length<3)return msg('Digite um título válido.','error');if(!endsAt||endsAt<=Date.now())return msg('O horário de encerramento precisa estar no futuro.','error');const id=$('#give-id').value.trim()||newId();const data={id,title,description,endsAt,active:true,createdAt:current?.id===id?Number(current.createdAt||Date.now()):Date.now(),updatedAt:Date.now()};try{await set(currentRef,data);msg(`Sorteio aberto. Link público: ${PUBLIC_URL}`,'success');}catch(err){console.error(err);msg('Não foi possível salvar o sorteio.','error');}}
+    async function closeNow(){if(!current?.id)return;try{await update(currentRef,{active:false,endsAt:Math.min(Number(current.endsAt||Date.now()),Date.now()),updatedAt:Date.now()});msg('Sorteio encerrado. A lista ficou salva para exportação.','success');}catch(err){console.error(err);msg('Não foi possível encerrar.','error');}}
+    function freshForm(){current=null;fill();$('#give-id').value='';const end=new Date(Date.now()+3*60*60*1000);$('#give-end').value=toLocal(end);msg('Preencha os dados e salve para abrir um novo sorteio.');}
+    function attachEntries(id){if(unsubscribeEntries){unsubscribeEntries();unsubscribeEntries=null;}entries=[];renderEntries();if(!id)return;unsubscribeEntries=onValue(ref(db,`communityGiveaways/entries/${id}`),snap=>{const raw=snap.val()||{};entries=Object.values(raw).map(x=>({username:String(x?.username||'').replace(/^@+/,''),createdAt:Number(x?.createdAt||0)})).filter(x=>x.username).sort((a,b)=>a.createdAt-b.createdAt);renderEntries();});}
+    async function loadHistory(){try{const r=await fetch(`${API}/api/ranking?period=all&_=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const raw=await r.json();history=new Map(Object.values(raw?.users||{}).map(x=>[String(x?.username||'').replace(/^@+/,'').toLowerCase(),x]));renderEntries();msg('Histórico de interação atualizado.','success');}catch(err){console.error(err);msg('Não consegui atualizar o histórico de interação agora. A lista de inscritos continua disponível.','error');}}
+    function enriched(){const seen=new Set();return entries.filter(x=>{const k=x.username.toLowerCase();if(seen.has(k))return false;seen.add(k);return true;}).map(x=>{const h=history.get(x.username.toLowerCase())||null;return{...x,known:Boolean(h),comments:Number(h?.comments||0),points:Number(h?.points||0),stories:Number(h?.storyMentions||0)}});}
+    function filtered(){const mode=$('#give-filter')?.value||'all';return enriched().filter(x=>mode==='commented'?x.comments>0:mode==='unknown'?!x.known:true);}
+    function renderEntries(){const all=enriched(),rows=filtered();$('#give-total').textContent=String(all.length);$('#give-commented').textContent=String(all.filter(x=>x.comments>0).length);$('#give-visible').textContent=String(rows.length);const body=$('#give-tbody');if(!rows.length){body.innerHTML='<tr><td colspan="6"><div class="give-empty">Nenhum participante neste filtro.</div></td></tr>';return;}body.innerHTML=rows.map((x,i)=>`<tr><td>${i+1}</td><td class="give-user">@${esc(x.username)}</td><td>${x.comments>0?'<span class="badge yes">SIM</span>':x.known?'<span class="badge unknown">NÃO REGISTRADO</span>':'<span class="badge unknown">NÃO IDENTIFICADO</span>'}</td><td>${x.comments}</td><td>${x.points}</td><td>${esc(fmt(x.createdAt))}</td></tr>`).join('');}
+    async function copyText(text,success){try{await navigator.clipboard.writeText(text);}catch{const a=document.createElement('textarea');a.value=text;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();}msg(success,'success');}
+    function copyNames(){const rows=filtered();if(!rows.length)return msg('Não há participantes neste filtro.','error');copyText(rows.map(x=>`@${x.username}`).join('\n'),`${rows.length} @ copiados para colar no sorteador.`);}
+    function copySheet(){const rows=filtered();if(!rows.length)return msg('Não há participantes neste filtro.','error');const tsv=['Instagram\tJá comentou\tComentários\tStories\tPontos no ranking\tInscrição',...rows.map(x=>`@${x.username}\t${x.comments>0?'SIM':x.known?'NÃO REGISTRADO':'NÃO IDENTIFICADO'}\t${x.comments}\t${x.stories}\t${x.points}\t${fmt(x.createdAt)}`)].join('\n');copyText(tsv,`${rows.length} linhas copiadas como planilha.`);}
+    function csv(){const rows=filtered();if(!rows.length)return msg('Não há participantes neste filtro.','error');const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;const text=['Instagram,Ja comentou,Comentarios,Stories,Pontos ranking,Inscricao',...rows.map(x=>[q(`@${x.username}`),q(x.comments>0?'SIM':x.known?'NAO REGISTRADO':'NAO IDENTIFICADO'),x.comments,x.stories,x.points,q(fmt(x.createdAt))].join(','))].join('\r\n');const blob=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`sorteio-${current?.id||'comunidade'}.csv`;a.click();URL.revokeObjectURL(url);}
+
+    $('#give-form').addEventListener('submit',saveGiveaway);$('#give-close').addEventListener('click',closeNow);$('#give-new').addEventListener('click',freshForm);$('#give-refresh').addEventListener('click',loadHistory);$('#give-filter').addEventListener('change',renderEntries);$('#give-copy-names').addEventListener('click',copyNames);$('#give-copy-sheet').addEventListener('click',copySheet);$('#give-csv').addEventListener('click',csv);
+    onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){location.replace('admin.html');return;}$('#give-auth').hidden=true;$('#give-app').hidden=false;onValue(currentRef,snap=>{current=snap.val()||null;fill();attachEntries(current?.id||'');});loadHistory();});
+  </script>
+</body>
+</html>
