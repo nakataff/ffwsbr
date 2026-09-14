@@ -157,7 +157,7 @@
     <aside class="ig-card">
       <div class="ig-card-head"><h2>Como pontua</h2></div>
       <div class="ig-rules">
-        <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Publicou/republicou um Story e marcou a página.</small></div><div class="ig-rule-points" id="ig-rule-story">+10 pts</div></div>
+        <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Publicou/republicou um Story e marcou a página.</small></div><div class="ig-rule-points" id="ig-rule-story">+5 pts</div></div>
         <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small>Interagiu em uma publicação ou Reel. Conta uma vez por conteúdo.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div>
         <div class="ig-note" id="ig-rule-note">Para evitar spam, cada pessoa pontua uma vez por publicação e há limite diário para menções em Story.</div>
       </div>
@@ -171,7 +171,7 @@
 
   const API='https://cff-instagram-community.nakataffb4.workers.dev/api/ranking';
   const REFRESH_MS=5*60*1000;
-  const DEFAULT_RULES={storyMentionPoints:10,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1};
+  const DEFAULT_RULES={storyMentionPoints:5,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1};
   const state={period:'week',query:'',users:[],updatedAt:null,periodInfo:null,rules:{...DEFAULT_RULES},loading:false};
 
   const els={
@@ -195,7 +195,7 @@
     return Object.entries(source).map(([id,item])=>{
       const x=item||{};
       return {id,username:username(x.username),points:num(x.points),storyMentions:num(x.storyMentions),comments:num(x.comments),activeDays:num(x.activeDays),lastInteractionAt:num(x.lastInteractionAt)};
-    }).sort((a,b)=>b.points-a.points||b.storyMentions-a.storyMentions||b.comments-a.comments||a.username.localeCompare(b.username,'pt-BR'));
+    }).sort((a,b)=>b.points-a.points||b.activeDays-a.activeDays||b.storyMentions-a.storyMentions||b.comments-a.comments||a.username.localeCompare(b.username,'pt-BR'));
   }
 
   function renderPodium(users){
