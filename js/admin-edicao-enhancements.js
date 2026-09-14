@@ -18,7 +18,7 @@
       .photo-editor-stage.is-empty-clickable:hover .photo-editor-empty{border-color:rgba(0,200,255,.62);background:rgba(0,200,255,.065)}
       .photo-editor-empty{transition:border-color .16s ease,background .16s ease,transform .16s ease}
       .photo-editor-stage.is-empty-clickable:hover .photo-editor-empty{transform:scale(.995)}
-      .cff-edicao-grid-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+      .cff-edicao-grid-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;flex-basis:100%;width:100%;margin-top:8px}
       .cff-edicao-grid-label{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted,#8fa0bd);margin-right:2px}
       .cff-edicao-grid-btn{border:1px solid rgba(145,165,205,.24);background:rgba(255,255,255,.035);color:#c8d3e8;border-radius:8px;padding:7px 9px;font:800 11px/1 inherit;cursor:pointer;transition:.15s ease}
       .cff-edicao-grid-btn:hover{border-color:rgba(0,200,255,.5);color:#fff}
@@ -37,6 +37,12 @@
       @media(max-width:760px){.cff-edicao-grid-controls{gap:5px}.cff-edicao-grid-btn{padding:7px 8px;font-size:10px}}
     `;
     document.head.appendChild(style);
+  }
+
+  function hideLegacyFrameControls(){
+    const input=$('#photo-editor-frame-enabled');
+    const section=input?.closest('.photo-editor-control-section');
+    if(section) section.hidden=true;
   }
 
   async function forceOfficialOverlay(){
@@ -60,12 +66,6 @@
     }catch(error){
       console.error('Não foi possível carregar edition/degrade.png no editor.',error);
     }
-  }
-
-  function removeLegacyFrameControls(){
-    const input=$('#photo-editor-frame-enabled');
-    const section=input?.closest('.photo-editor-control-section');
-    if(section) section.remove();
   }
 
   function setupEmptyClick(){
@@ -127,7 +127,7 @@
       ['center','Centro'],
       ['square','1:1']
     ];
-    controls.innerHTML=`<span class="cff-edicao-grid-label">Visualização</span>${modes.map(([key,label])=>`<button type="button" class="cff-edicao-grid-btn${key==='none'?' is-active':''}" data-grid="${key}">${label}</button>`).join('')}<div class="cff-edicao-grid-note">As grades são só de preview e nunca entram na arte exportada. “Perfil 3:4” mostra exatamente o corte lateral aproximado da grade do perfil sobre uma arte 4:5.</div>`;
+    controls.innerHTML=`<span class="cff-edicao-grid-label">Visualização</span>${modes.map(([key,label])=>`<button type="button" class="cff-edicao-grid-btn${key==='none'?' is-active':''}" data-grid="${key}">${label}</button>`).join('')}<div class="cff-edicao-grid-note">As grades servem apenas para visualização e nunca entram na arte exportada. “Perfil 3:4” sombreia o corte lateral da grade do perfil sobre a arte 4:5.</div>`;
     head.appendChild(controls);
     controls.addEventListener('click',e=>{
       const btn=e.target.closest('[data-grid]');if(!btn)return;
@@ -140,9 +140,10 @@
 
   function enhance(){
     addStyles();
+    hideLegacyFrameControls();
     setupEmptyClick();
     setupVisualGrids();
-    forceOfficialOverlay().then(()=>removeLegacyFrameControls());
+    forceOfficialOverlay();
   }
 
   function boot(){
