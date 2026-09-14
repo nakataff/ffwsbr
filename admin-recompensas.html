@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Bônus da Comunidade | Painel Central Free Fire</title>
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+  <script src="js/config.min.js?v=20260915-community-rewards-v1"></script>
+  <style>
+    .rw-shell{max-width:1080px}.rw-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.rw-form{display:grid;gap:13px}.rw-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.rw-actions{display:flex;gap:8px;flex-wrap:wrap}.rw-current{padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}.rw-current strong{display:block;color:#fff}.rw-current span{display:block;margin-top:5px;color:#7f95af;font-size:12px;line-height:1.45}.rw-rules{display:grid;gap:8px}.rw-rule{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;padding:11px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.02)}.rw-rule b{color:#fff;font-size:12px}.rw-rule small{display:block;margin-top:3px;color:#768da8}.rw-rule span{color:#00c8ff;font-weight:1000}.admin-message.is-success{color:#74e2ac}.admin-message.is-error{color:#ff95a2}@media(max-width:760px){.rw-grid,.rw-row{grid-template-columns:1fr}.rw-actions .admin-btn{width:100%;justify-content:center}}
+  </style>
+</head>
+<body>
+<main id="rw-app" class="admin-shell rw-shell" hidden>
+  <header class="admin-header">
+    <a class="admin-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
+    <div class="admin-header-actions"><a class="admin-btn admin-btn-ghost" href="admin.html">← Painel</a><a class="admin-btn admin-btn-ghost" href="interacoes.html">Ver ranking</a></div>
+  </header>
+  <section class="admin-welcome"><div><p class="admin-eyebrow">Ranking da comunidade</p><h1>Bônus e missões</h1><p class="admin-muted">Controle a missão semanal e crie códigos surpresa sem precisar alterar o Worker.</p></div></section>
+
+  <div class="rw-grid">
+    <section class="admin-panel">
+      <div class="admin-panel-head"><div><p class="admin-eyebrow">Missão semanal</p><h2>Objetivos automáticos</h2></div></div>
+      <form id="mission-form" class="rw-form">
+        <div class="admin-field"><label for="mission-label">Nome da missão</label><input id="mission-label" maxlength="80" value="Missão semanal"></div>
+        <div class="rw-row"><div class="admin-field"><label for="mission-comments">Posts diferentes</label><input id="mission-comments" type="number" min="1" max="30" value="3"></div><div class="admin-field"><label for="mission-checkins">Check-ins</label><input id="mission-checkins" type="number" min="1" max="7" value="2"></div></div>
+        <div class="rw-row"><div class="admin-field"><label for="mission-stories">Stories</label><input id="mission-stories" type="number" min="1" max="21" value="1"></div><div class="admin-field"><label for="mission-points">Pontos ao concluir</label><input id="mission-points" type="number" min="1" max="50" value="10"></div></div>
+        <label class="admin-check"><input id="mission-active" type="checkbox" checked> Missão ativa</label>
+        <button class="admin-btn admin-btn-primary" type="submit">Salvar missão</button>
+        <p id="mission-message" class="admin-message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="admin-panel">
+      <div class="admin-panel-head"><div><p class="admin-eyebrow">Código surpresa</p><h2>Soltar código valendo pontos</h2></div></div>
+      <form id="code-form" class="rw-form">
+        <div class="admin-field"><label for="code-value">Código</label><input id="code-value" maxlength="40" autocomplete="off" placeholder="Ex.: NAKA20"></div>
+        <div class="admin-field"><label for="code-label">Dica/descrição</label><input id="code-label" maxlength="100" placeholder="Ex.: Código escondido no Story de hoje 👀"></div>
+        <div class="rw-row"><div class="admin-field"><label for="code-points">Pontos</label><input id="code-points" type="number" min="1" max="50" value="3"></div><div class="admin-field"><label for="code-end">Expira em</label><input id="code-end" type="datetime-local" required></div></div>
+        <div class="rw-actions"><button class="admin-btn admin-btn-primary" type="submit">🔥 Ativar código</button><button id="code-disable" class="admin-btn admin-btn-danger" type="button">Desativar</button></div>
+        <p id="code-message" class="admin-message" aria-live="polite"></p>
+      </form>
+      <div id="code-current" class="rw-current"><strong>Nenhum código ativo</strong><span>Crie um código acima para aparecer na página de interações.</span></div>
+    </section>
+  </div>
+
+  <section class="admin-panel" style="margin-top:16px">
+    <div class="admin-panel-head"><div><p class="admin-eyebrow">Automático</p><h2>Outros bônus já ativos</h2></div></div>
+    <div class="rw-rules" style="padding:0 16px 16px">
+      <div class="rw-rule"><div><b>📅 Frequência semanal</b><small>3, 5 e 7 dias ativos na mesma semana.</small></div><span>+3 / +5 / +10</span></div>
+      <div class="rw-rule"><div><b>💬 Posts diferentes</b><small>Comentar em 5 e 10 publicações diferentes.</small></div><span>+5 / +5</span></div>
+      <div class="rw-rule"><div><b>🧩 Participação completa</b><small>Comentário + Story + check-in na mesma semana.</small></div><span>+5</span></div>
+      <div class="rw-rule"><div><b>⚡ Comentário relâmpago</b><small>Primeiro comentário do dia feito até 20 minutos após a publicação.</small></div><span>+1</span></div>
+    </div>
+  </section>
+</main>
+<section id="rw-auth" style="min-height:100vh;display:grid;place-items:center;padding:24px"><div class="admin-login-card"><div class="admin-login-icon">🔒</div><p class="admin-eyebrow">Acesso restrito</p><h1>Validando sessão</h1><p class="admin-muted">Use o mesmo login do painel administrativo.</p></div></section>
+
+<script type="module">
+  import { initializeApp,getApps,getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+  import { getAuth,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+  import { getDatabase,ref,onValue,set,update } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+  const ADMIN='admin@centralfreefire.com.br',config=window.CFF_CONFIG?.firebase;
+  if(!config){location.replace('admin.html');throw new Error('Firebase config ausente')}
+  const app=getApps().length?getApp():initializeApp(config),auth=getAuth(app),db=getDatabase(app),root=ref(db,'ffwsLive/communityRewards');
+  const $=s=>document.querySelector(s);let data={};
+  const msg=(id,text,type='')=>{const el=$(id);el.textContent=text||'';el.className=`admin-message${type?` is-${type}`:''}`};
+  const toLocal=ms=>{if(!ms)return'';const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms)),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return`${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`};
+  const parseBrt=v=>/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(String(v||''))?Date.parse(`${v}:00-03:00`):0;
+  const fmt=ms=>ms?new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ms)):'—';
+  async function sha256(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(v||'').trim().toUpperCase()));return[...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+  function fill(){const m=data?.mission||{},c=data?.surpriseCode||{};$('#mission-label').value=m.label||'Missão semanal';$('#mission-comments').value=Number(m.commentsTarget||3);$('#mission-checkins').value=Number(m.checkinsTarget||2);$('#mission-stories').value=Number(m.storiesTarget||1);$('#mission-points').value=Number(m.points||10);$('#mission-active').checked=m.active!==false;const cur=$('#code-current');if(c.id&&c.active&&Number(c.endsAt)>Date.now())cur.innerHTML=`<strong>${c.label||'Código surpresa ativo'}</strong><span>+${Number(c.points||3)} pts • expira em ${fmt(c.endsAt)} • ID ${c.id}</span>`;else cur.innerHTML='<strong>Nenhum código ativo</strong><span>Crie um código acima para aparecer na página de interações.</span>';}
+  $('#mission-form').addEventListener('submit',async e=>{e.preventDefault();const mission={label:$('#mission-label').value.trim()||'Missão semanal',commentsTarget:Math.max(1,Math.min(30,Number($('#mission-comments').value)||3)),checkinsTarget:Math.max(1,Math.min(7,Number($('#mission-checkins').value)||2)),storiesTarget:Math.max(1,Math.min(21,Number($('#mission-stories').value)||1)),points:Math.max(1,Math.min(50,Number($('#mission-points').value)||10)),active:$('#mission-active').checked,updatedAt:Date.now()};try{await set(ref(db,'ffwsLive/communityRewards/mission'),mission);msg('#mission-message','Missão semanal salva.','success')}catch(err){console.error(err);msg('#mission-message','Não foi possível salvar.','error')}});
+  $('#code-form').addEventListener('submit',async e=>{e.preventDefault();const code=$('#code-value').value.trim().toUpperCase(),endsAt=parseBrt($('#code-end').value),points=Math.max(1,Math.min(50,Number($('#code-points').value)||3)),label=$('#code-label').value.trim()||'Código surpresa da Central FF';if(code.length<3)return msg('#code-message','Digite um código com pelo menos 3 caracteres.','error');if(!endsAt||endsAt<=Date.now())return msg('#code-message','Escolha um horário futuro.','error');const item={id:`code-${Date.now()}`,label,codeHash:await sha256(code),points,endsAt,active:true,createdAt:Date.now(),updatedAt:Date.now()};try{await set(ref(db,'ffwsLive/communityRewards/surpriseCode'),item);$('#code-value').value='';msg('#code-message','Código ativado. O valor digitado não fica salvo, apenas o hash.','success')}catch(err){console.error(err);msg('#code-message','Não foi possível ativar.','error')}});
+  $('#code-disable').addEventListener('click',async()=>{try{await update(ref(db,'ffwsLive/communityRewards/surpriseCode'),{active:false,updatedAt:Date.now()});msg('#code-message','Código desativado.','success')}catch(err){console.error(err);msg('#code-message','Não foi possível desativar.','error')}});
+  onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){location.replace('admin.html');return}$('#rw-auth').hidden=true;$('#rw-app').hidden=false;onValue(root,s=>{data=s.val()||{};fill()})});
+</script>
+</body>
+</html>
