@@ -15,6 +15,7 @@
           <a class="admin-btn admin-btn-ghost" href="admin-edicao.html" data-admin-edicao-link>🎨 Edição</a>
           <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html">🎁 Abrir Codiguinhos</a>
           <a class="admin-btn admin-btn-primary" href="admin-dados.html" data-admin-live-data-link>📊 Dados ao vivo</a>
+          <a class="admin-btn admin-btn-primary" href="admin-palpite.html">🎯 Palpites</a>
         </div>
       </div>`;
   }
