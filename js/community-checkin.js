@@ -240,8 +240,17 @@
     }
   }
 
+  function loadWeeklyHistory() {
+    if (document.querySelector('script[data-cff-week-history]')) return;
+    const script = document.createElement('script');
+    script.src = 'js/community-week-history.js?v=20260914-week-history-v1';
+    script.dataset.cffWeekHistory = '1';
+    document.head.appendChild(script);
+  }
+
   function boot() {
     if (!mount()) return;
+    loadWeeklyHistory();
     bootSession();
   }
 
