@@ -46,13 +46,14 @@
   function render(data){
     state=data;const root=mount();if(!root)return;
     if(!data?.linked){root.innerHTML='<div class="cff-rewards-head"><h2>🔥 Bônus da semana</h2><span>Constância vale ponto</span></div><div class="cff-rewards-locked"><strong>Vincule seu Instagram no check-in acima</strong><br>Depois disso você acompanha aqui sua frequência, missão semanal e códigos surpresa.</div>';return;}
-    const p=data.progress||{},b=data.bonuses||{},mission=data.mission||{};
+    const p=data.progress||{},b=data.bonuses||{},mission=data.mission||{},rules=data.rules||{};
+    const s3=num(rules.streak3Points||3),s5=num(rules.streak5Points||7),s7=num(rules.streak7Points||15),streakMax=s3+s5+s7;
     const streakDone=Boolean(b.streak7),postDone=Boolean(b.posts10),mixDone=Boolean(b.mix),missionDone=Boolean(b.mission);
     const mixChips=[['Comentário',p.comments>0],['Story',p.stories>0],['Check-in',p.checkins>0]].map(([t,ok])=>`<span class="cff-reward-chip ${ok?'ok':''}">${ok?'✓ ':''}${esc(t)}</span>`).join('');
     const missionChips=[[`Posts ${p.distinctPosts}/${mission.commentsTarget||3}`,p.distinctPosts>=(mission.commentsTarget||3)],[`Check-ins ${p.checkins}/${mission.checkinsTarget||2}`,p.checkins>=(mission.checkinsTarget||2)],[`Stories ${p.stories}/${mission.storiesTarget||1}`,p.stories>=(mission.storiesTarget||1)]].map(([t,ok])=>`<span class="cff-reward-chip ${ok?'ok':''}">${ok?'✓ ':''}${esc(t)}</span>`).join('');
-    const streakPts=(b.streak3?3:0)+(b.streak5?5:0)+(b.streak7?10:0);
+    const streakPts=(b.streak3?s3:0)+(b.streak5?s5:0)+(b.streak7?s7:0);
     root.innerHTML=`<div class="cff-rewards-head"><h2>🔥 Bônus da semana</h2><span>@${esc(data.username)} • ${esc(data.weekStart||'')} a ${esc(data.weekEnd||'')}</span></div><div class="cff-rewards-grid">
-      ${card('📅','Frequência',`${p.activeDays}/7 dias ativos • bônus já ganhos: ${streakPts} pts`,18,p.activeDays,7,streakDone,`<span class="cff-reward-chip ${b.streak3?'ok':''}">3d +3</span><span class="cff-reward-chip ${b.streak5?'ok':''}">5d +5</span><span class="cff-reward-chip ${b.streak7?'ok':''}">7d +10</span>`)}
+      ${card('📅','Frequência',`${p.activeDays}/7 dias ativos • bônus já ganhos: ${streakPts} pts`,streakMax,p.activeDays,7,streakDone,`<span class="cff-reward-chip ${b.streak3?'ok':''}">3d +${s3}</span><span class="cff-reward-chip ${b.streak5?'ok':''}">5d +${s5}</span><span class="cff-reward-chip ${b.streak7?'ok':''}">7d +${s7}</span>`)}
       ${card('💬','Posts diferentes',`${p.distinctPosts} publicações comentadas`,10,p.distinctPosts,10,postDone,`<span class="cff-reward-chip ${b.posts5?'ok':''}">5 posts +5</span><span class="cff-reward-chip ${b.posts10?'ok':''}">10 posts +5</span>`)}
       ${card('🧩','Participação completa','Comente, mencione nos Stories e faça check-in na mesma semana',5,(p.comments>0?1:0)+(p.stories>0?1:0)+(p.checkins>0?1:0),3,mixDone,mixChips)}
       ${card('🎯',mission.label||'Missão semanal',mission.active===false?'Missão pausada':`Complete os 3 objetivos da semana`,mission.points||10,(p.distinctPosts>=(mission.commentsTarget||3)?1:0)+(p.checkins>=(mission.checkinsTarget||2)?1:0)+(p.stories>=(mission.storiesTarget||1)?1:0),3,missionDone,missionChips)}
