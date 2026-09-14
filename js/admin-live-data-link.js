@@ -1,19 +1,23 @@
 (()=>{
-  function addLink(){
-    if(document.querySelector('[data-admin-live-data-link]')) return;
+  function mountTools(){
     const panels=[...document.querySelectorAll('.admin-panel')];
-    const tools=panels.find(panel=>/Ferramentas privadas/i.test(panel.textContent||'')) || panels[0];
-    if(!tools) return;
-    const head=tools.querySelector('.admin-panel-head') || tools;
-    const actions=head.querySelector('.admin-inline-actions') || head;
-    const link=document.createElement('a');
-    link.href='admin-dados.html';
-    link.className='admin-btn admin-btn-primary';
-    link.dataset.adminLiveDataLink='1';
-    link.textContent='📊 Dados ao vivo';
-    link.style.marginLeft='8px';
-    actions.appendChild(link);
+    const tools=panels.find(panel=>/Ferramentas privadas|Controle de premiações|Ferramentas Central FF/i.test(panel.textContent||''));
+    if(!tools)return;
+
+    document.querySelectorAll('.admin-header-actions [data-admin-edicao-link]').forEach(el=>el.remove());
+
+    tools.dataset.centralTools='1';
+    tools.style.marginBottom='16px';
+    tools.innerHTML=`
+      <div class="admin-panel-head admin-panel-head-wrap" style="align-items:center;gap:14px">
+        <div><h2 style="margin:0">Ferramentas Central FF</h2></div>
+        <div class="admin-inline-actions" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <a class="admin-btn admin-btn-ghost" href="admin-edicao.html" data-admin-edicao-link>🎨 Edição</a>
+          <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html">🎁 Abrir Codiguinhos</a>
+          <a class="admin-btn admin-btn-primary" href="admin-dados.html" data-admin-live-data-link>📊 Dados ao vivo</a>
+        </div>
+      </div>`;
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addLink,{once:true});
-  else addLink();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountTools,{once:true});
+  else mountTools();
 })();
