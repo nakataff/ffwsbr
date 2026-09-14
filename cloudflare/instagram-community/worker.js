@@ -1,5 +1,5 @@
 const RULES = Object.freeze({
-  storyMentionPoints: 10,
+  storyMentionPoints: 5,
   commentPoints: 2,
   checkinPoints: 1,
   storyMentionDailyLimit: 3,
@@ -7,8 +7,8 @@ const RULES = Object.freeze({
   ffwsPredictionParticipationPoints: 1,
   ffwsPredictionNearestPoints: 5,
   streak3Points: 3,
-  streak5Points: 5,
-  streak7Points: 10,
+  streak5Points: 7,
+  streak7Points: 15,
   posts5Points: 5,
   posts10Points: 5,
   completeMixPoints: 5,
@@ -21,6 +21,8 @@ const TIME_ZONE = 'America/Sao_Paulo';
 const CHECKIN_CODE_TTL_MS = 15 * 60 * 1000;
 const SITE_BASE = 'https://centralfreefire.com.br/';
 const FIREBASE_BASE = 'https://central-free-fire-default-rtdb.firebaseio.com';
+const FIREBASE_WEB_API_KEY = 'AIzaSyAePlDtXqjyyyJRCxnveoh1B6ZzqnyRknE';
+const ADMIN_EMAIL = 'admin@centralfreefire.com.br';
 const PREDICTION_URL = `${FIREBASE_BASE}/ffwsLive/communityPrediction.json`;
 const REWARDS_URL = `${FIREBASE_BASE}/ffwsLive/communityRewards.json`;
 const LIVE_SECOND_URL = `${FIREBASE_BASE}/ffwsLive/2026-s2/segundaFase.json`;
@@ -70,6 +72,7 @@ export default {
     if (url.pathname === '/api/prediction' && request.method === 'GET') return getPredictionLegacy(request, env, url, ctx);
     if (url.pathname === '/api/prediction/vote' && request.method === 'POST') return votePrediction(request, env, ctx);
     if (url.pathname === '/api/prediction/ranking' && request.method === 'GET') return getPredictionRanking(request, env, url);
+    if (url.pathname === '/api/admin/prediction-votes' && request.method === 'GET') return getAdminPredictionVotes(request, env);
     if (url.pathname === '/api/rewards/status' && request.method === 'GET') return getRewardStatus(request, env, url);
     if (url.pathname === '/api/rewards/code' && request.method === 'POST') return claimRewardCode(request, env);
     if (url.pathname === '/api/checkin/start' && request.method === 'POST') return startCheckin(request, env);
@@ -86,7 +89,7 @@ function corsHeaders(request) {
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://centralfreefire.com.br',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Vary': 'Origin',
   };
 }
@@ -877,6 +880,114 @@ async function getPredictionRanking(request, env, url) {
     lastInteractionAt: Number(row.lastInteractionAt || 0),
   }));
   return json({ ok: true, period, ranking }, 200, request, { 'Cache-Control': 'public, max-age=60' });
+}
+
+async function verifyAdminFirebaseToken(request) {
+  const header = String(request.headers.get('Authorization') || '');
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  if (!match) return null;
+  try {
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(FIREBASE_WEB_API_KEY)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: match[1] }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const user = Array.isArray(data?.users) ? data.users[0] : null;
+    const email = String(user?.email || '').toLowerCase();
+    return email === ADMIN_EMAIL ? user : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function predictionIdFromSource(sourceId, knownIds = []) {
+  const source = String(sourceId || '');
+  const pipe = source.indexOf('|');
+  if (pipe > 0) return source.slice(0, pipe);
+  for (const id of knownIds) if (source.startsWith(`${id}:`)) return id;
+  const colon = source.indexOf(':');
+  return colon > 0 ? source.slice(0, colon) : source;
+}
+
+async function getAdminPredictionVotes(request, env) {
+  const admin = await verifyAdminFirebaseToken(request);
+  if (!admin) return json({ ok: false, error: 'Acesso administrativo inválido.' }, 401, request);
+
+  const [manual, auto, voteRows, bonusRows] = await Promise.all([
+    fetchManualPrediction(),
+    automaticPredictionData(),
+    env.DB.prepare(`
+      SELECT a.user_key, COALESCE(u.username,a.username) AS username, a.source_id, a.points, a.created_at
+      FROM awards a
+      LEFT JOIN users u ON u.user_key=a.user_key
+      WHERE a.type='prediction_vote'
+      ORDER BY a.created_at DESC
+      LIMIT 2500
+    `).all(),
+    env.DB.prepare(`
+      SELECT user_key, source_id, points, type
+      FROM awards
+      WHERE type IN ('prediction_correct','prediction_nearest')
+      ORDER BY created_at DESC
+      LIMIT 2500
+    `).all(),
+  ]);
+
+  const allPredictions = [];
+  for (const item of auto.pairs || []) for (const prediction of item.predictions || []) allPredictions.push(prediction);
+  if (manual) allPredictions.push(manual);
+  const meta = new Map(allPredictions.map(p => [p.id, p]));
+  const knownIds = [...meta.keys()].sort((a,b) => b.length - a.length);
+  const bonusMap = new Map();
+  for (const row of bonusRows.results || []) bonusMap.set(`${row.source_id}:${row.user_key}`, { points: Number(row.points || 0), type: row.type || '' });
+
+  const groups = new Map();
+  for (const row of voteRows.results || []) {
+    const predictionId = predictionIdFromSource(row.source_id, knownIds);
+    const prediction = meta.get(predictionId) || null;
+    const parsed = prediction ? parseVoteSource(predictionId, row.source_id) : (() => {
+      const parts = String(row.source_id || '').split('|');
+      return { option: parts[1] || '', points: parts[2] === '' || parts[2] == null ? null : Number(parts[2]) };
+    })();
+    if (!groups.has(predictionId)) {
+      groups.set(predictionId, {
+        id: predictionId,
+        label: prediction?.label || 'Palpite anterior',
+        question: prediction?.question || predictionId,
+        kind: prediction?.kind || 'choice',
+        status: prediction?.status || 'historical',
+        closesAt: Number(prediction?.closesAt || 0),
+        result: prediction?.result || null,
+        options: Array.isArray(prediction?.options) ? prediction.options : [],
+        votes: [],
+      });
+    }
+    const group = groups.get(predictionId);
+    const optionLabel = prediction?.options?.find(o => o.id === parsed?.option)?.label || parsed?.option || '—';
+    const bonus = bonusMap.get(`${predictionId}:${row.user_key}`) || null;
+    const resultPoints = Number(prediction?.result?.points);
+    const error = Number.isFinite(Number(parsed?.points)) && Number.isFinite(resultPoints) ? Math.abs(Number(parsed.points) - resultPoints) : null;
+    group.votes.push({
+      userKey: row.user_key,
+      username: row.username || 'usuario',
+      option: parsed?.option || '',
+      optionLabel,
+      guessedPoints: parsed?.points == null ? null : Number(parsed.points),
+      participationPoints: Number(row.points || 0),
+      votedAt: Number(row.created_at || 0),
+      won: Boolean(bonus),
+      bonusPoints: Number(bonus?.points || 0),
+      error,
+    });
+  }
+
+  const predictions = [...groups.values()]
+    .map(group => ({ ...group, voteCount: group.votes.length }))
+    .sort((a,b) => Math.max(...b.votes.map(v => v.votedAt),0) - Math.max(...a.votes.map(v => v.votedAt),0));
+
+  return json({ ok: true, admin: String(admin.email || ADMIN_EMAIL), totalVotes: predictions.reduce((sum,p) => sum + p.voteCount, 0), predictions }, 200, request);
 }
 
 function normalizeRewardConfig(raw) {
