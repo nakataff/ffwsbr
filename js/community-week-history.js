@@ -5,6 +5,7 @@
 
   const API = 'https://cff-instagram-community.nakataffb4.workers.dev';
   const HISTORY_LIMIT = 24;
+  const CURRENT_RANKING_LIMIT = 20;
 
   const esc = (value) => String(value ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -61,10 +62,47 @@
       .cff-week-history-rank{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.028);font-size:.75rem}
       .cff-week-history-rank b{color:#7895b4}.cff-week-history-rank strong{color:#eaf4ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cff-week-history-rank span{color:#00c8ff;font-weight:1000}
       .cff-week-history-rank:first-child{background:rgba(255,200,61,.07)}.cff-week-history-rank:first-child b{color:#ffc83d}
+      .cff-ranking-scope-note{padding:10px 14px;border-top:1px solid rgba(29,42,66,.55);background:rgba(0,200,255,.025);color:#7895b5;font-size:.7rem;font-weight:750;line-height:1.4}
+      .cff-ranking-scope-note strong{color:#bdefff}
       @media(max-width:900px){.cff-week-history-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
-      @media(max-width:620px){.cff-week-history-list{grid-template-columns:1fr;padding:10px}.cff-week-history-head{padding:15px}.cff-week-history-item{padding:10px}.cff-week-history-detail{padding:13px}}
+      @media(max-width:620px){.cff-week-history-list{grid-template-columns:1fr;padding:10px}.cff-week-history-head{padding:15px}.cff-week-history-item{padding:10px}.cff-week-history-detail{padding:13px}.cff-ranking-scope-note{font-size:.67rem}}
     `;
     document.head.appendChild(style);
+  }
+
+  function setupCurrentRankingView() {
+    const table = document.getElementById('ig-table');
+    const tbody = document.getElementById('ig-tbody');
+    const search = document.getElementById('ig-search');
+    const card = table?.closest('.ig-card');
+    const title = card?.querySelector('.ig-card-head h2');
+    const wrap = table?.closest('.ig-table-wrap');
+    if (!table || !tbody || !search || !card || !wrap || card.dataset.top20Ready === '1') return;
+
+    card.dataset.top20Ready = '1';
+    search.placeholder = 'Digite @ para consultar qualquer participante';
+
+    const note = document.createElement('div');
+    note.className = 'cff-ranking-scope-note';
+    note.id = 'cff-ranking-scope-note';
+    wrap.appendChild(note);
+
+    const apply = () => {
+      const query = String(search.value || '').trim().replace(/^@+/, '');
+      const rows = [...tbody.querySelectorAll('tr')];
+      rows.forEach((row, index) => {
+        row.hidden = !query && index >= CURRENT_RANKING_LIMIT;
+      });
+
+      if (title) title.textContent = query ? 'Resultado da busca' : `Classificação • Top ${CURRENT_RANKING_LIMIT}`;
+      note.innerHTML = query
+        ? '<strong>Consulta individual:</strong> a busca verifica os participantes registrados neste período e mantém a posição real no ranking.'
+        : `<strong>Top ${CURRENT_RANKING_LIMIT} em destaque.</strong> Para não poluir a lista com interações esporádicas, os demais participantes ficam ocultos. Digite um @ na busca para consultar a pontuação de qualquer perfil.`;
+    };
+
+    new MutationObserver(apply).observe(tbody, { childList: true, subtree: true });
+    search.addEventListener('input', () => requestAnimationFrame(apply));
+    apply();
   }
 
   function mount() {
@@ -72,6 +110,7 @@
     const grid = document.querySelector('.ig-grid');
     if (!grid) return null;
     injectCss();
+    setupCurrentRankingView();
     const section = document.createElement('section');
     section.className = 'cff-week-history';
     section.id = 'cff-week-history';
