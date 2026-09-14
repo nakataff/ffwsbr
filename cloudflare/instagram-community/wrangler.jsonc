@@ -1,0 +1,12 @@
+{
+  "name": "cff-instagram-community",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-14",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cff-instagram-community",
+      "database_id": "48e14987-34f9-4591-874f-c45c513dcb39"
+    }
+  ]
+}
