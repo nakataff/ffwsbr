@@ -24,105 +24,94 @@ jobs:
           p = Path('cloudflare/instagram-community/worker.js')
           s = p.read_text(encoding='utf-8')
 
-          old_helper = """async function fetchMessageUsername(messageId, accessToken) {
-  if (!messageId || !accessToken) return '';
-  try {
-    const url = new URL(`https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(messageId)}`);
-    url.searchParams.set('fields', 'id,from');
-    url.searchParams.set('access_token', accessToken);
-    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-    if (!response.ok) return '';
-    const data = await response.json();
-    return cleanUsername(data?.from?.username);
-  } catch (_) {
-    return '';
-  }
-}
-"""
-
-          new_helper = old_helper + """
-async function fetchInstagramUsername(identity, accessToken) {
-  if (!identity || !accessToken) return '';
-  try {
-    const url = new URL(`https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(identity)}`);
-    url.searchParams.set('fields', 'id,username');
-    url.searchParams.set('access_token', accessToken);
-    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-    if (!response.ok) return '';
-    const data = await response.json();
-    return cleanUsername(data?.username);
-  } catch (_) {
-    return '';
-  }
-}
-"""
-
+          helper_marker = "async function fetchMediaTimestamp(mediaId, accessToken) {"
+          helper_lines = [
+              "async function fetchInstagramUsername(identity, accessToken) {",
+              "  if (!identity || !accessToken) return '';",
+              "  try {",
+              "    const url = new URL(`https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(identity)}`);",
+              "    url.searchParams.set('fields', 'id,username');",
+              "    url.searchParams.set('access_token', accessToken);",
+              "    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });",
+              "    if (!response.ok) return '';",
+              "    const data = await response.json();",
+              "    return cleanUsername(data?.username);",
+              "  } catch (_) {",
+              "    return '';",
+              "  }",
+              "}",
+              "",
+          ]
           if 'async function fetchInstagramUsername(' not in s:
-              if old_helper not in s:
-                  raise SystemExit('fetchMessageUsername marker not found')
-              s = s.replace(old_helper, new_helper, 1)
+              if helper_marker not in s:
+                  raise SystemExit('fetchMediaTimestamp marker not found')
+              s = s.replace(helper_marker, '\n'.join(helper_lines) + helper_marker, 1)
 
-          old_checkin = """  let username = cleanUsername(event?.sender?.username);
-  const messageId = String(message?.mid || '');
-  if (!username && messageId) username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);
-  const key = await userKey(identity, username);
-  const result = await env.DB.prepare(`
-    UPDATE checkin_sessions
-    SET user_key = ?1, instagram_id = ?2, username = ?3, verified_at = ?4, expires_at = 0
-    WHERE session_id = ?5 AND verified_at IS NULL
-  `).bind(key, identity, username || fallbackUsername(identity), now, pending.session_id).run();
-"""
+          old_lines = [
+              "  let username = cleanUsername(event?.sender?.username);",
+              "  const messageId = String(message?.mid || '');",
+              "  if (!username && messageId) username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);",
+              "  const key = await userKey(identity, username);",
+              "  const result = await env.DB.prepare(`",
+              "    UPDATE checkin_sessions",
+              "    SET user_key = ?1, instagram_id = ?2, username = ?3, verified_at = ?4, expires_at = 0",
+              "    WHERE session_id = ?5 AND verified_at IS NULL",
+              "  `).bind(key, identity, username || fallbackUsername(identity), now, pending.session_id).run();",
+          ]
+          old = '\n'.join(old_lines)
 
-          new_checkin = """  let username = cleanUsername(event?.sender?.username);
-  const messageId = String(message?.mid || '');
+          new_lines = [
+              "  let username = cleanUsername(event?.sender?.username);",
+              "  const messageId = String(message?.mid || '');",
+              "",
+              "  // 1) Alguns webhooks não trazem sender.username. Tenta recuperar pelo ID da mensagem.",
+              "  if (!username && messageId) username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);",
+              "",
+              "  // 2) Se a mensagem também não devolver o @, consulta diretamente o Instagram-scoped ID do remetente.",
+              "  if (!username) username = await fetchInstagramUsername(identity, env.INSTAGRAM_ACCESS_TOKEN);",
+              "",
+              "  const key = await userKey(identity, username);",
+              "",
+              "  // 3) Último fallback: reaproveita um @ real já conhecido para este mesmo Instagram ID.",
+              "  if (!username) {",
+              "    const knownAward = await env.DB.prepare(`",
+              "      SELECT username",
+              "      FROM awards",
+              "      WHERE user_key = ?1",
+              "        AND username IS NOT NULL",
+              "        AND username != ''",
+              "        AND username NOT LIKE 'usuario_%'",
+              "      ORDER BY created_at DESC",
+              "      LIMIT 1",
+              "    `).bind(key).first();",
+              "    username = cleanUsername(knownAward?.username);",
+              "  }",
+              "",
+              "  if (!username) {",
+              "    const knownSession = await env.DB.prepare(`",
+              "      SELECT username",
+              "      FROM checkin_sessions",
+              "      WHERE instagram_id = ?1",
+              "        AND username IS NOT NULL",
+              "        AND username != ''",
+              "        AND username NOT LIKE 'usuario_%'",
+              "      ORDER BY verified_at DESC",
+              "      LIMIT 1",
+              "    `).bind(identity).first();",
+              "    username = cleanUsername(knownSession?.username);",
+              "  }",
+              "",
+              "  const result = await env.DB.prepare(`",
+              "    UPDATE checkin_sessions",
+              "    SET user_key = ?1, instagram_id = ?2, username = ?3, verified_at = ?4, expires_at = 0",
+              "    WHERE session_id = ?5 AND verified_at IS NULL",
+              "  `).bind(key, identity, username || fallbackUsername(identity), now, pending.session_id).run();",
+          ]
+          new = '\n'.join(new_lines)
 
-  // 1) Alguns webhooks não trazem sender.username. Tenta recuperar pelo ID da mensagem.
-  if (!username && messageId) username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);
-
-  // 2) Se a mensagem também não devolver o @, consulta diretamente o Instagram-scoped ID do remetente.
-  if (!username) username = await fetchInstagramUsername(identity, env.INSTAGRAM_ACCESS_TOKEN);
-
-  const key = await userKey(identity, username);
-
-  // 3) Último fallback: reaproveita um @ real já conhecido para este mesmo Instagram ID.
-  if (!username) {
-    const knownAward = await env.DB.prepare(`
-      SELECT username
-      FROM awards
-      WHERE user_key = ?1
-        AND username IS NOT NULL
-        AND username != ''
-        AND username NOT LIKE 'usuario_%'
-      ORDER BY created_at DESC
-      LIMIT 1
-    `).bind(key).first();
-    username = cleanUsername(knownAward?.username);
-  }
-
-  if (!username) {
-    const knownSession = await env.DB.prepare(`
-      SELECT username
-      FROM checkin_sessions
-      WHERE instagram_id = ?1
-        AND username IS NOT NULL
-        AND username != ''
-        AND username NOT LIKE 'usuario_%'
-      ORDER BY verified_at DESC
-      LIMIT 1
-    `).bind(identity).first();
-    username = cleanUsername(knownSession?.username);
-  }
-
-  const result = await env.DB.prepare(`
-    UPDATE checkin_sessions
-    SET user_key = ?1, instagram_id = ?2, username = ?3, verified_at = ?4, expires_at = 0
-    WHERE session_id = ?5 AND verified_at IS NULL
-  `).bind(key, identity, username || fallbackUsername(identity), now, pending.session_id).run();
-"""
-
-          if old_checkin not in s:
+          if old not in s:
               raise SystemExit('processCheckinVerification marker not found')
-          s = s.replace(old_checkin, new_checkin, 1)
+          s = s.replace(old, new, 1)
           p.write_text(s, encoding='utf-8')
           PY
 
