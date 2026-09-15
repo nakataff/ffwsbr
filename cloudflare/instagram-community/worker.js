@@ -353,6 +353,72 @@ async function fetchInstagramGraphJson(objectId, fields, accessToken) {
   return null;
 }
 
+async function diagnoseMetaRequest(base, objectId, fields, accessToken) {
+  const result = {
+    base: base.includes('facebook.com') ? 'facebook' : 'instagram',
+    status: 0,
+    ok: false,
+    username: '',
+    error: null,
+  };
+  if (!objectId || !accessToken) {
+    result.error = { message: !objectId ? 'missing_object_id' : 'missing_access_token' };
+    return result;
+  }
+  try {
+    const url = new URL(`${base}/${GRAPH_VERSION}/${encodeURIComponent(objectId)}`);
+    url.searchParams.set('fields', fields);
+    url.searchParams.set('access_token', accessToken);
+    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
+    result.status = response.status;
+    let data = null;
+    try { data = await response.json(); } catch (_) {}
+    result.ok = Boolean(response.ok && data && !data.error);
+    result.username = cleanUsername(data?.username || data?.from?.username);
+    if (data?.error) {
+      result.error = {
+        message: String(data.error.message || '').slice(0, 220),
+        type: String(data.error.type || '').slice(0, 80),
+        code: Number(data.error.code || 0) || 0,
+        subcode: Number(data.error.error_subcode || 0) || 0,
+      };
+    } else if (!response.ok) {
+      result.error = { message: `HTTP ${response.status}` };
+    }
+  } catch (error) {
+    result.error = { message: String(error?.message || error || 'fetch_failed').slice(0, 220) };
+  }
+  return result;
+}
+
+async function buildCheckinDiagnostic(identity, messageId, accessToken) {
+  const identityAttempts = [];
+  for (const base of ['https://graph.instagram.com', 'https://graph.facebook.com']) {
+    identityAttempts.push(await diagnoseMetaRequest(base, identity, 'id,name,username', accessToken));
+  }
+  const messageAttempts = [];
+  if (messageId) {
+    for (const base of ['https://graph.instagram.com', 'https://graph.facebook.com']) {
+      messageAttempts.push(await diagnoseMetaRequest(base, messageId, 'id,from', accessToken));
+    }
+  }
+  return {
+    senderIdSuffix: String(identity || '').slice(-8),
+    senderIdLength: String(identity || '').length,
+    identity: identityAttempts,
+    message: messageAttempts,
+    at: Date.now(),
+  };
+}
+
+async function saveCheckinDiagnostic(env, diagnostic, sessionId = '') {
+  try {
+    const payload = JSON.stringify({ sessionId: String(sessionId || '').slice(0, 64), ...diagnostic });
+    await env.DB.prepare('INSERT INTO raw_events (kind, payload, received_at) VALUES (?1, ?2, ?3)')
+      .bind('checkin_debug', payload, Date.now()).run();
+  } catch (_) {}
+}
+
 async function fetchMessageUsername(messageId, accessToken) {
   const data = await fetchInstagramGraphJson(messageId, 'id,from', accessToken);
   return cleanUsername(data?.from?.username);
@@ -460,6 +526,12 @@ async function processCheckinVerification(env, event) {
     username = cleanUsername(knownSession?.username);
   }
 
+  if (!username) {
+    const diagnostic = await buildCheckinDiagnostic(identity, messageId, env.INSTAGRAM_ACCESS_TOKEN);
+    await saveCheckinDiagnostic(env, diagnostic, pending.session_id);
+    console.log('[checkin-debug]', JSON.stringify(diagnostic));
+  }
+
   const result = await env.DB.prepare(`
     UPDATE checkin_sessions
     SET user_key = ?1, instagram_id = ?2, username = ?3, verified_at = ?4, expires_at = 0
@@ -551,10 +623,16 @@ async function checkinStatus(request, env, url) {
     }
   }
 
+  let debug = null;
+  if (!resolvedUsername || /^usuario_/i.test(resolvedUsername)) {
+    debug = await buildCheckinDiagnostic(row.instagram_id, '', env.INSTAGRAM_ACCESS_TOKEN);
+    await saveCheckinDiagnostic(env, debug, sessionId);
+  }
+
   const { dayKey } = dateKeys(now);
   const awardKey = `checkin:${row.user_key}:${dayKey}`;
   const award = await env.DB.prepare('SELECT 1 AS found FROM awards WHERE award_key = ?1 LIMIT 1').bind(awardKey).first();
-  return json({ ok: true, status: 'verified', username: resolvedUsername || row.username, checkedInToday: Boolean(award?.found), dayKey, checkinPoints: RULES.checkinPoints }, 200, request);
+  return json({ ok: true, status: 'verified', username: resolvedUsername || row.username, checkedInToday: Boolean(award?.found), dayKey, checkinPoints: RULES.checkinPoints, debug }, 200, request);
 }
 
 async function doCheckin(request, env) {

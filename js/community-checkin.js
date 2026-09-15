@@ -171,10 +171,19 @@
     const checked = Boolean(data?.checkedInToday);
     const username = String(data?.username || '').trim();
     const unresolved = !username || /^usuario_/i.test(username);
+    const attempts = Array.isArray(data?.debug?.identity) ? data.debug.identity : [];
+    const debugText = unresolved && attempts.length
+      ? attempts.map((item) => {
+          const code = item?.error?.code ? ` #${item.error.code}${item?.error?.subcode ? '/' + item.error.subcode : ''}` : '';
+          const msg = item?.error?.message ? `: ${item.error.message}` : (item?.username ? `: @${item.username}` : '');
+          return `${item.base || 'graph'} ${item.status || 0}${code}${msg}`;
+        }).join(' | ')
+      : '';
     root.innerHTML = `
       <span class="cff-checkin-status ${checked ? 'cff-checkin-success' : ''}">${checked ? 'Check-in concluído hoje' : 'Instagram vinculado'}</span>
       <strong class="cff-checkin-user">${unresolved ? 'Instagram não identificado' : '@' + esc(username)}</strong>
       <p class="cff-checkin-help ${unresolved ? 'cff-checkin-error' : ''}">${unresolved ? 'A Meta confirmou a conta, mas não devolveu o @ corretamente. Gere um novo código e envie novamente pela conta certa.' : (checked ? 'Você já garantiu o ponto de hoje. Volte amanhã para pontuar de novo.' : 'Tudo certo. Seu Instagram já está confirmado neste navegador.')}</p>
+      ${debugText ? `<p class="cff-checkin-help" style="margin-top:-4px;word-break:break-word;opacity:.85"><strong>Diagnóstico Meta:</strong> ${esc(debugText)}</p>` : ''}
       <div class="cff-checkin-actions">
         <button class="cff-checkin-btn primary" id="cff-checkin-do" type="button" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in +1'}</button>
         <button class="cff-checkin-btn" id="cff-checkin-relink" type="button">Vincular novamente por código</button>
