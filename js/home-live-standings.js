@@ -28,6 +28,19 @@
     return now >= start && now <= end;
   }
 
+  function isTournamentFinished(live) {
+    const completed = Math.max(0, Number(live?.standings?.completedMaps || 0));
+    const total = Math.max(0, Number(live?.standings?.totalMaps || 0));
+    return total > 0 && completed >= total;
+  }
+
+  function shouldShow(live, now) {
+    if (!live?.standings?.enabled) return false;
+    if (isLiveNow(live, now)) return true;
+    if (!live?.standingsKeepVisible) return false;
+    return !isTournamentFinished(live);
+  }
+
   function injectStyles() {
     if (document.getElementById('cff-live-standings-css')) return;
     const style = document.createElement('style');
@@ -96,8 +109,13 @@
     if (!body) return;
     const now = new Date();
     const eligible = lives
-      .filter((live) => live?.standings?.enabled && isLiveNow(live, now))
-      .sort((a, b) => (parseBRT(a.inicio)?.getTime() || 0) - (parseBRT(b.inicio)?.getTime() || 0));
+      .filter((live) => shouldShow(live, now))
+      .sort((a, b) => {
+        const aLive = isLiveNow(a, now) ? 1 : 0;
+        const bLive = isLiveNow(b, now) ? 1 : 0;
+        if (aLive !== bLive) return bLive - aLive;
+        return Number(b?.standings?.updatedAt || 0) - Number(a?.standings?.updatedAt || 0);
+      });
     const live = eligible[0];
     let host = document.getElementById('cff-live-standings');
     if (!live) {
@@ -117,13 +135,14 @@
     }
     host.replaceChildren();
 
+    const currentlyLive = isLiveNow(live, now);
     const head = document.createElement('div');
     head.className = 'cff-live-standings-head';
     const title = document.createElement('div');
     title.className = 'cff-live-standings-title';
     const kicker = document.createElement('span');
     kicker.className = 'cff-live-standings-kicker';
-    kicker.textContent = 'TABELA AO VIVO';
+    kicker.textContent = currentlyLive ? 'TABELA AO VIVO' : 'CLASSIFICAÇÃO DA FINAL';
     const strong = document.createElement('strong');
     strong.textContent = String(live.standings?.title || live.torneio || 'Classificação');
     strong.title = strong.textContent;
@@ -132,7 +151,7 @@
     progress.className = 'cff-live-standings-progress';
     const completed = Math.max(0, Number(live.standings?.completedMaps || 0));
     const total = Math.max(0, Number(live.standings?.totalMaps || 0));
-    progress.textContent = total ? `${completed}/${total} QUEDAS` : (completed ? `${completed} QUEDAS` : 'AO VIVO');
+    progress.textContent = total ? `${completed}/${total} QUEDAS` : (completed ? `${completed} QUEDAS` : (currentlyLive ? 'AO VIVO' : 'EM ANDAMENTO'));
     head.append(title, progress);
 
     const grid = document.createElement('div');
