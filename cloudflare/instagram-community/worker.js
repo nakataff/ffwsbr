@@ -773,7 +773,7 @@ async function settleAutoCombo(env, predictions) {
     winners.push({ userKey: row.user_key, username: row.username || other.username || 'usuario' });
   }
 
-  const timestamp = Math.max(Number(best.closesAt || 0), Number(worst.closesAt || 0), Date.now());
+  const timestamp = Math.max(Number(best.closesAt || 0), Number(worst.closesAt || 0)) || Date.now();
   for (let i = 0; i < winners.length; i += 25) {
     await Promise.all(winners.slice(i, i + 25).map(row => awardInteraction(env, {
       awardKey: `prediction-combo:${best.day || 'day'}:${row.userKey}`,
