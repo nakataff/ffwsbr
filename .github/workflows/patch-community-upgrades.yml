@@ -28,5 +28,5 @@ jobs:
             echo "No changes"
             exit 0
           fi
-          git commit -m "Integra palpites duplos, promoções e prioridades no sorteio"
+          git commit -m "Ajusta data do bônus combo dos palpites"
           git push
