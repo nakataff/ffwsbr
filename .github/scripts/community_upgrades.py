@@ -47,7 +47,7 @@ if 'async function settleAutoCombo' not in text:
     winners.push({ userKey: row.user_key, username: row.username || other.username || 'usuario' });
   }
 
-  const timestamp = Math.max(Number(best.closesAt || 0), Number(worst.closesAt || 0), Date.now());
+  const timestamp = Math.max(Number(best.closesAt || 0), Number(worst.closesAt || 0)) || Date.now();
   for (let i = 0; i < winners.length; i += 25) {
     await Promise.all(winners.slice(i, i + 25).map(row => awardInteraction(env, {
       awardKey: `prediction-combo:${best.day || 'day'}:${row.userKey}`,
@@ -66,6 +66,13 @@ if 'async function settleAutoCombo' not in text:
     if marker not in text:
         raise SystemExit('settleAllAvailable marker not found')
     text = text.replace(marker, combo + marker, 1)
+
+# Correct already-patched workers too: combo points belong to the prediction day,
+# not the day the result happens to be processed.
+text = text.replace(
+    'const timestamp = Math.max(Number(best.closesAt || 0), Number(worst.closesAt || 0), Date.now());',
+    'const timestamp = Math.max(Number(best.closesAt || 0), Number(worst.closesAt || 0)) || Date.now();',
+)
 
 pattern = re.compile(
     r'async function settleAllAvailable\(env, manual, auto\) \{.*?\n\}\n\nasync function resolvePrediction',
