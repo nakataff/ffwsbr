@@ -2,6 +2,8 @@
   'use strict';
 
   if (!/\/(?:interacoes\.html)?$/i.test(location.pathname) && !/interacoes\.html$/i.test(location.pathname)) return;
+  if (window.__CFF_COMMUNITY_CHECKIN_V2__) return;
+  window.__CFF_COMMUNITY_CHECKIN_V2__ = true;
 
   const API = 'https://cff-instagram-community.nakataffb4.workers.dev';
   const STORAGE_KEY = 'cff_daily_checkin_session_v1';
@@ -72,7 +74,7 @@
       .cff-checkin-swap{margin-top:10px;border:0;background:none;color:#627d9a;font-size:.63rem;font-weight:900;text-transform:uppercase;cursor:pointer}
       .cff-checkin-success{color:#7ee2a8!important}
       .cff-checkin-error{color:#ff9ca8!important}
-      @media(max-width:800px){.cff-checkin{grid-template-columns:1fr}.cff-checkin-box{border-left:0;border-top:1px solid rgba(0,200,255,.12)}.cff-checkin-copy{padding:18px}.cff-checkin-box{padding:12px}}
+      @media(max-width:800px){.cff-checkin{grid-template-columns:1fr}.cff-checkin-box{border-left:0;border-top:1px solid rgba(0,200,255,.12)}.cff-checkin-copy{padding:18px}.cff-checkin-box{padding:12px}.cff-checkin-actions .cff-checkin-btn{width:100%}}
     `;
     document.head.appendChild(style);
   }
@@ -101,7 +103,7 @@
       <div class="cff-checkin-copy">
         <div class="cff-checkin-kicker">Pontos extras • 1 vez por dia</div>
         <h2>Check-in diário <span>+1 ponto</span></h2>
-        <p>Vincule seu Instagram uma única vez por DM. Depois, basta voltar ao Central Free Fire todos os dias e tocar em fazer check-in. O ponto entra no ranking semanal, mensal e geral.</p>
+        <p>Vincule seu Instagram por DM. Em outro navegador ou dispositivo, você pode gerar um novo código e confirmar a mesma conta novamente. Depois, basta fazer o check-in diário.</p>
       </div>
       <div class="cff-checkin-box"><div class="cff-checkin-panel" id="cff-checkin-panel"><span class="cff-checkin-status">Carregando</span></div></div>`;
     toolbar.parentNode.insertBefore(section, toolbar);
@@ -148,23 +150,39 @@
     startPolling();
   }
 
+  async function restartLink(message = 'Gerar um novo código de vínculo para este navegador?') {
+    if (busy) return;
+    if (!confirm(message)) return;
+    stopPolling();
+    saveSession('');
+    renderLoading('Gerando novo código');
+    try {
+      await startSession();
+    } catch (error) {
+      console.error('[CFF Check-in relink]', error);
+      renderUnavailable();
+    }
+  }
+
   function renderVerified(data) {
     stopPolling();
     const root = panel();
     if (!root) return;
     const checked = Boolean(data?.checkedInToday);
+    const username = String(data?.username || '').trim();
+    const unresolved = !username || /^usuario_/i.test(username);
     root.innerHTML = `
       <span class="cff-checkin-status ${checked ? 'cff-checkin-success' : ''}">${checked ? 'Check-in concluído hoje' : 'Instagram vinculado'}</span>
-      <strong class="cff-checkin-user">@${esc(data?.username || 'usuario')}</strong>
-      <p class="cff-checkin-help">${checked ? 'Você já garantiu o ponto de hoje. Volte amanhã para pontuar de novo.' : 'Tudo certo. Seu Instagram já está confirmado neste navegador.'}</p>
-      <div class="cff-checkin-actions"><button class="cff-checkin-btn primary" id="cff-checkin-do" type="button" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in +1'}</button></div>
+      <strong class="cff-checkin-user">${unresolved ? 'Instagram não identificado' : '@' + esc(username)}</strong>
+      <p class="cff-checkin-help ${unresolved ? 'cff-checkin-error' : ''}">${unresolved ? 'A Meta confirmou a conta, mas não devolveu o @ corretamente. Gere um novo código e envie novamente pela conta certa.' : (checked ? 'Você já garantiu o ponto de hoje. Volte amanhã para pontuar de novo.' : 'Tudo certo. Seu Instagram já está confirmado neste navegador.')}</p>
+      <div class="cff-checkin-actions">
+        <button class="cff-checkin-btn primary" id="cff-checkin-do" type="button" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in +1'}</button>
+        <button class="cff-checkin-btn" id="cff-checkin-relink" type="button">Vincular novamente por código</button>
+      </div>
       <button class="cff-checkin-swap" id="cff-checkin-swap" type="button">Trocar conta neste navegador</button>`;
     document.getElementById('cff-checkin-do')?.addEventListener('click', doCheckin);
-    document.getElementById('cff-checkin-swap')?.addEventListener('click', () => {
-      if (!confirm('Desvincular este navegador e conectar outro Instagram?')) return;
-      saveSession('');
-      bootSession();
-    });
+    document.getElementById('cff-checkin-relink')?.addEventListener('click', () => restartLink('Gerar um novo código para confirmar novamente seu Instagram neste navegador?'));
+    document.getElementById('cff-checkin-swap')?.addEventListener('click', () => restartLink('Desvincular este navegador e conectar outro Instagram?'));
   }
 
   function renderExpired() {
