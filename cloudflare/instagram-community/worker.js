@@ -336,34 +336,31 @@ async function processStoryMention(env, event, story) {
   }
 }
 
-async function fetchMessageUsername(messageId, accessToken) {
-  if (!messageId || !accessToken) return '';
-  try {
-    const url = new URL(`https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(messageId)}`);
-    url.searchParams.set('fields', 'id,from');
-    url.searchParams.set('access_token', accessToken);
-    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-    if (!response.ok) return '';
-    const data = await response.json();
-    return cleanUsername(data?.from?.username);
-  } catch (_) {
-    return '';
+async function fetchInstagramGraphJson(objectId, fields, accessToken) {
+  if (!objectId || !accessToken) return null;
+  const bases = ['https://graph.instagram.com', 'https://graph.facebook.com'];
+  for (const base of bases) {
+    try {
+      const url = new URL(`${base}/${GRAPH_VERSION}/${encodeURIComponent(objectId)}`);
+      url.searchParams.set('fields', fields);
+      url.searchParams.set('access_token', accessToken);
+      const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
+      if (!response.ok) continue;
+      const data = await response.json();
+      if (data && !data.error) return data;
+    } catch (_) {}
   }
+  return null;
+}
+
+async function fetchMessageUsername(messageId, accessToken) {
+  const data = await fetchInstagramGraphJson(messageId, 'id,from', accessToken);
+  return cleanUsername(data?.from?.username);
 }
 
 async function fetchInstagramUsername(identity, accessToken) {
-  if (!identity || !accessToken) return '';
-  try {
-    const url = new URL(`https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(identity)}`);
-    url.searchParams.set('fields', 'id,username');
-    url.searchParams.set('access_token', accessToken);
-    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-    if (!response.ok) return '';
-    const data = await response.json();
-    return cleanUsername(data?.username);
-  } catch (_) {
-    return '';
-  }
+  const data = await fetchInstagramGraphJson(identity, 'id,name,username', accessToken);
+  return cleanUsername(data?.username);
 }
 async function fetchMediaTimestamp(mediaId, accessToken) {
   if (!mediaId || !accessToken) return 0;
@@ -512,10 +509,52 @@ async function checkinStatus(request, env, url) {
     return json({ ok: true, status: 'pending', code: row.code, expiresAt: Number(row.expires_at || 0), checkinPoints: RULES.checkinPoints }, 200, request);
   }
 
+  let resolvedUsername = cleanUsername(row.username);
+  if ((!resolvedUsername || /^usuario_/i.test(resolvedUsername)) && row.instagram_id) {
+    resolvedUsername = await fetchInstagramUsername(row.instagram_id, env.INSTAGRAM_ACCESS_TOKEN);
+
+    if (!resolvedUsername && row.user_key) {
+      const knownAward = await env.DB.prepare(`
+        SELECT username
+        FROM awards
+        WHERE user_key = ?1
+          AND username IS NOT NULL
+          AND username != ''
+          AND username NOT LIKE 'usuario_%'
+        ORDER BY created_at DESC
+        LIMIT 1
+      `).bind(row.user_key).first();
+      resolvedUsername = cleanUsername(knownAward?.username);
+    }
+
+    if (!resolvedUsername && row.instagram_id) {
+      const knownSession = await env.DB.prepare(`
+        SELECT username
+        FROM checkin_sessions
+        WHERE instagram_id = ?1
+          AND username IS NOT NULL
+          AND username != ''
+          AND username NOT LIKE 'usuario_%'
+        ORDER BY verified_at DESC
+        LIMIT 1
+      `).bind(row.instagram_id).first();
+      resolvedUsername = cleanUsername(knownSession?.username);
+    }
+
+    if (resolvedUsername) {
+      await env.DB.prepare('UPDATE checkin_sessions SET username = ?1 WHERE session_id = ?2').bind(resolvedUsername, sessionId).run();
+      if (row.user_key) {
+        await env.DB.prepare("UPDATE users SET username = ?1 WHERE user_key = ?2 AND (username = '' OR username LIKE 'usuario_%')").bind(resolvedUsername, row.user_key).run();
+        await env.DB.prepare("UPDATE monthly_users SET username = ?1 WHERE user_key = ?2 AND (username = '' OR username LIKE 'usuario_%')").bind(resolvedUsername, row.user_key).run();
+        await env.DB.prepare("UPDATE awards SET username = ?1 WHERE user_key = ?2 AND (username = '' OR username LIKE 'usuario_%')").bind(resolvedUsername, row.user_key).run();
+      }
+    }
+  }
+
   const { dayKey } = dateKeys(now);
   const awardKey = `checkin:${row.user_key}:${dayKey}`;
   const award = await env.DB.prepare('SELECT 1 AS found FROM awards WHERE award_key = ?1 LIMIT 1').bind(awardKey).first();
-  return json({ ok: true, status: 'verified', username: row.username, checkedInToday: Boolean(award?.found), dayKey, checkinPoints: RULES.checkinPoints }, 200, request);
+  return json({ ok: true, status: 'verified', username: resolvedUsername || row.username, checkedInToday: Boolean(award?.found), dayKey, checkinPoints: RULES.checkinPoints }, 200, request);
 }
 
 async function doCheckin(request, env) {
