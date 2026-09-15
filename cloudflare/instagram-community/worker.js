@@ -351,6 +351,20 @@ async function fetchMessageUsername(messageId, accessToken) {
   }
 }
 
+async function fetchInstagramUsername(identity, accessToken) {
+  if (!identity || !accessToken) return '';
+  try {
+    const url = new URL(`https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(identity)}`);
+    url.searchParams.set('fields', 'id,username');
+    url.searchParams.set('access_token', accessToken);
+    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
+    if (!response.ok) return '';
+    const data = await response.json();
+    return cleanUsername(data?.username);
+  } catch (_) {
+    return '';
+  }
+}
 async function fetchMediaTimestamp(mediaId, accessToken) {
   if (!mediaId || !accessToken) return 0;
   try {
@@ -411,8 +425,44 @@ async function processCheckinVerification(env, event) {
 
   let username = cleanUsername(event?.sender?.username);
   const messageId = String(message?.mid || '');
+
+  // 1) Alguns webhooks não trazem sender.username. Tenta recuperar pelo ID da mensagem.
   if (!username && messageId) username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);
+
+  // 2) Se a mensagem também não devolver o @, consulta diretamente o Instagram-scoped ID do remetente.
+  if (!username) username = await fetchInstagramUsername(identity, env.INSTAGRAM_ACCESS_TOKEN);
+
   const key = await userKey(identity, username);
+
+  // 3) Último fallback: reaproveita um @ real já conhecido para este mesmo Instagram ID.
+  if (!username) {
+    const knownAward = await env.DB.prepare(`
+      SELECT username
+      FROM awards
+      WHERE user_key = ?1
+        AND username IS NOT NULL
+        AND username != ''
+        AND username NOT LIKE 'usuario_%'
+      ORDER BY created_at DESC
+      LIMIT 1
+    `).bind(key).first();
+    username = cleanUsername(knownAward?.username);
+  }
+
+  if (!username) {
+    const knownSession = await env.DB.prepare(`
+      SELECT username
+      FROM checkin_sessions
+      WHERE instagram_id = ?1
+        AND username IS NOT NULL
+        AND username != ''
+        AND username NOT LIKE 'usuario_%'
+      ORDER BY verified_at DESC
+      LIMIT 1
+    `).bind(identity).first();
+    username = cleanUsername(knownSession?.username);
+  }
+
   const result = await env.DB.prepare(`
     UPDATE checkin_sessions
     SET user_key = ?1, instagram_id = ?2, username = ?3, verified_at = ?4, expires_at = 0
