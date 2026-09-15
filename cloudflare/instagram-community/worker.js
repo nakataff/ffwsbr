@@ -6,6 +6,7 @@ const RULES = Object.freeze({
   commentLimitPerMedia: 1,
   ffwsPredictionParticipationPoints: 1,
   ffwsPredictionNearestPoints: 5,
+  ffwsPredictionComboPoints: 3,
   streak3Points: 3,
   streak5Points: 7,
   streak7Points: 15,
@@ -625,6 +626,7 @@ function autoPredictionPair(round, options, live) {
     closesAt: round.closesAt,
     participationPoints: RULES.ffwsPredictionParticipationPoints,
     correctPoints: RULES.ffwsPredictionNearestPoints,
+    comboPoints: RULES.ffwsPredictionComboPoints,
     day: round.round,
     date: round.date,
     pointsPrompt: 'Quantos pontos esse time vai fazer?',
@@ -745,13 +747,56 @@ async function settleAutoPrediction(env, prediction) {
   }
 }
 
+async function settleAutoCombo(env, predictions) {
+  const list = Array.isArray(predictions) ? predictions : [];
+  const best = list.find(p => p?.metric === 'best');
+  const worst = list.find(p => p?.metric === 'worst');
+  if (!best || !worst || best.status !== 'settled' || worst.status !== 'settled' || !best.result || !worst.result) return;
+
+  const [bestRows, worstRows] = await Promise.all([
+    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key LIKE ?1 LIMIT 2500`).bind(`prediction-vote:${best.id}:%`).all(),
+    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key LIKE ?1 LIMIT 2500`).bind(`prediction-vote:${worst.id}:%`).all(),
+  ]);
+
+  const bestAccepted = new Set(best.result.teams || (best.result.option ? [best.result.option] : []));
+  const worstAccepted = new Set(worst.result.teams || (worst.result.option ? [worst.result.option] : []));
+  const worstByUser = new Map((worstRows.results || []).map(row => [row.user_key, row]));
+  const winners = [];
+
+  for (const row of bestRows.results || []) {
+    const bestVote = parseVoteSource(best.id, row.source_id);
+    if (!bestVote || !bestAccepted.has(bestVote.option)) continue;
+    const other = worstByUser.get(row.user_key);
+    if (!other) continue;
+    const worstVote = parseVoteSource(worst.id, other.source_id);
+    if (!worstVote || !worstAccepted.has(worstVote.option)) continue;
+    winners.push({ userKey: row.user_key, username: row.username || other.username || 'usuario' });
+  }
+
+  const timestamp = Math.max(Number(best.closesAt || 0), Number(worst.closesAt || 0), Date.now());
+  for (let i = 0; i < winners.length; i += 25) {
+    await Promise.all(winners.slice(i, i + 25).map(row => awardInteraction(env, {
+      awardKey: `prediction-combo:${best.day || 'day'}:${row.userKey}`,
+      userKey: row.userKey,
+      identity: '',
+      username: row.username,
+      type: 'prediction_combo',
+      sourceId: `${best.id}|${worst.id}`,
+      points: RULES.ffwsPredictionComboPoints,
+      timestamp,
+    })));
+  }
+}
+
 async function settleAllAvailable(env, manual, auto) {
   const jobs = [];
   if (manual?.status === 'settled') jobs.push(settleManualPrediction(env, manual));
   for (const item of auto.pairs || []) {
-    for (const prediction of item.predictions || []) {
+    const predictions = item.predictions || [];
+    for (const prediction of predictions) {
       if (prediction.status === 'settled') jobs.push(settleAutoPrediction(env, prediction));
     }
+    if (predictions.length >= 2 && predictions.every(p => p.status === 'settled')) jobs.push(settleAutoCombo(env, predictions));
   }
   await Promise.allSettled(jobs);
 }
@@ -869,7 +914,7 @@ async function getPredictionRanking(request, env, url) {
   const now = Date.now();
   const { monthKey } = dateKeys(now);
   const week = weekKeys(now);
-  let where = `a.type IN ('prediction_vote','prediction_correct','prediction_nearest')`;
+  let where = `a.type IN ('prediction_vote','prediction_correct','prediction_nearest','prediction_combo')`;
   let binds = [];
 
   if (period === 'week') {

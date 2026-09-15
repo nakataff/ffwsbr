@@ -88,5 +88,7 @@
     $('#give-form').addEventListener('submit',saveGiveaway);$('#give-close').addEventListener('click',closeNow);$('#give-new').addEventListener('click',freshForm);$('#give-refresh').addEventListener('click',loadHistory);$('#give-filter').addEventListener('change',renderEntries);$('#give-copy-names').addEventListener('click',copyNames);$('#give-copy-sheet').addEventListener('click',copySheet);$('#give-csv').addEventListener('click',csv);
     onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){location.replace('admin.html');return;}$('#give-auth').hidden=true;$('#give-app').hidden=false;onValue(currentRef,snap=>{current=snap.val()||null;fill();attachEntries(current?.id||'');});loadHistory();});
   </script>
+
+<script data-cff-giveaway-priority src="js/admin-giveaway-priority.js?v=20260915-giveaway-priority-v1"></script>
 </body>
 </html>
