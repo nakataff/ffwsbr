@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/patch-instagram-checkin-debug.yml'
       - '.github/scripts/patch_instagram_debug.py'
+      - '.github/scripts/trigger_instagram_debug.txt'
 
 permissions:
   contents: write
