@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   if (!/\/sorteador(?:\/index\.html)?\/?$/i.test(location.pathname)) return;
-  if (window.__CFF_SORTER_CHANCE_HIGHLIGHT_V2__) return;
-  window.__CFF_SORTER_CHANCE_HIGHLIGHT_V2__ = true;
+  if (window.__CFF_SORTER_CHANCE_HIGHLIGHT_V3__) return;
+  window.__CFF_SORTER_CHANCE_HIGHLIGHT_V3__ = true;
 
   const $ = (s) => document.querySelector(s);
   const STORAGE_KEY = 'cff_sorter_show_chance_percent_v1';
@@ -150,6 +150,12 @@
     }
   }
 
+  function wheelDisplayChips() {
+    const chips = [...document.querySelectorAll('#chips .chip')];
+    const held = String(document.body.dataset.cffHeldWinner || '').trim();
+    return chips.filter((chip) => !chip.classList.contains('used') || (held && parseChip(chip).label === held));
+  }
+
   function highlightChip(chip) {
     if (!chip || chip.classList.contains('used')) return;
     if (highlightedChip === chip && highlightTimer) {
@@ -158,7 +164,7 @@
     }
 
     clearHighlight();
-    const active = [...document.querySelectorAll('#chips .chip:not(.used)')];
+    const active = wheelDisplayChips();
     const index = active.indexOf(chip);
     if (index < 0 || !active.length) return;
 
