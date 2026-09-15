@@ -1,0 +1,124 @@
+name: Patch checkin relink
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-checkin-relink.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply checkin relink improvements
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('js/community-checkin.js')
+          s = p.read_text(encoding='utf-8')
+          if '__CFF_COMMUNITY_CHECKIN_V2__' not in s:
+              marker = "  if (!/\\/(?:interacoes\\.html)?$/i.test(location.pathname) && !/interacoes\\.html$/i.test(location.pathname)) return;\n"
+              s = s.replace(marker, marker + "  if (window.__CFF_COMMUNITY_CHECKIN_V2__) return;\n  window.__CFF_COMMUNITY_CHECKIN_V2__ = true;\n", 1)
+
+          old = """  function renderVerified(data) {
+    stopPolling();
+    const root = panel();
+    if (!root) return;
+    const checked = Boolean(data?.checkedInToday);
+    root.innerHTML = `
+      <span class=\"cff-checkin-status ${checked ? 'cff-checkin-success' : ''}\">${checked ? 'Check-in concluído hoje' : 'Instagram vinculado'}</span>
+      <strong class=\"cff-checkin-user\">@${esc(data?.username || 'usuario')}</strong>
+      <p class=\"cff-checkin-help\">${checked ? 'Você já garantiu o ponto de hoje. Volte amanhã para pontuar de novo.' : 'Tudo certo. Seu Instagram já está confirmado neste navegador.'}</p>
+      <div class=\"cff-checkin-actions\"><button class=\"cff-checkin-btn primary\" id=\"cff-checkin-do\" type=\"button\" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in +1'}</button></div>
+      <button class=\"cff-checkin-swap\" id=\"cff-checkin-swap\" type=\"button\">Trocar conta neste navegador</button>`;
+    document.getElementById('cff-checkin-do')?.addEventListener('click', doCheckin);
+    document.getElementById('cff-checkin-swap')?.addEventListener('click', () => {
+      if (!confirm('Desvincular este navegador e conectar outro Instagram?')) return;
+      saveSession('');
+      bootSession();
+    });
+  }
+"""
+          new = """  async function restartLink(message = 'Gerar um novo código de vínculo para este navegador?') {
+    if (busy) return;
+    if (!confirm(message)) return;
+    stopPolling();
+    saveSession('');
+    renderLoading('Gerando novo código');
+    try { await startSession(); }
+    catch (error) { console.error('[CFF Check-in relink]', error); renderUnavailable(); }
+  }
+
+  function renderVerified(data) {
+    stopPolling();
+    const root = panel();
+    if (!root) return;
+    const checked = Boolean(data?.checkedInToday);
+    const username = String(data?.username || '').trim();
+    const unresolved = !username || /^usuario_/i.test(username);
+    root.innerHTML = `
+      <span class=\"cff-checkin-status ${checked ? 'cff-checkin-success' : ''}\">${checked ? 'Check-in concluído hoje' : 'Instagram vinculado'}</span>
+      <strong class=\"cff-checkin-user\">${unresolved ? 'Instagram não identificado' : '@' + esc(username)}</strong>
+      <p class=\"cff-checkin-help ${unresolved ? 'cff-checkin-error' : ''}\">${unresolved ? 'A Meta confirmou a conta, mas não devolveu o @ corretamente. Gere um novo código e envie novamente pela conta certa.' : (checked ? 'Você já garantiu o ponto de hoje. Volte amanhã para pontuar de novo.' : 'Tudo certo. Seu Instagram já está confirmado neste navegador.')}</p>
+      <div class=\"cff-checkin-actions\">
+        <button class=\"cff-checkin-btn primary\" id=\"cff-checkin-do\" type=\"button\" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in +1'}</button>
+        <button class=\"cff-checkin-btn\" id=\"cff-checkin-relink\" type=\"button\">Vincular novamente por código</button>
+      </div>
+      <button class=\"cff-checkin-swap\" id=\"cff-checkin-swap\" type=\"button\">Trocar conta neste navegador</button>`;
+    document.getElementById('cff-checkin-do')?.addEventListener('click', doCheckin);
+    document.getElementById('cff-checkin-relink')?.addEventListener('click', () => restartLink('Gerar um novo código para confirmar novamente seu Instagram neste navegador?'));
+    document.getElementById('cff-checkin-swap')?.addEventListener('click', () => restartLink('Desvincular este navegador e conectar outro Instagram?'));
+  }
+"""
+          if old not in s:
+              raise SystemExit('renderVerified marker not found')
+          s = s.replace(old, new, 1)
+          s = s.replace('Vincule seu Instagram uma única vez por DM. Depois, basta voltar ao Central Free Fire todos os dias e tocar em fazer check-in. O ponto entra no ranking semanal, mensal e geral.', 'Vincule seu Instagram por DM. Em outro navegador ou dispositivo, você pode gerar um novo código e confirmar a mesma conta novamente. Depois, basta fazer o check-in diário.', 1)
+          p.write_text(s, encoding='utf-8')
+
+          w = Path('cloudflare/instagram-community/worker.js')
+          t = w.read_text(encoding='utf-8')
+          old = """  let username = cleanUsername(event?.sender?.username);
+  const messageId = String(message?.mid || '');
+  if (!username && messageId) username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);
+  const key = await userKey(identity, username);
+"""
+          new = """  let username = cleanUsername(event?.sender?.username);
+  const messageId = String(message?.mid || '');
+  if (!username && messageId) username = await fetchMessageUsername(messageId, env.INSTAGRAM_ACCESS_TOKEN);
+  const key = await userKey(identity, username);
+  if (!username) {
+    const known = await env.DB.prepare(`
+      SELECT username FROM awards
+      WHERE user_key = ?1 AND username NOT LIKE 'usuario_%'
+      ORDER BY created_at DESC LIMIT 1
+    `).bind(key).first();
+    username = cleanUsername(known?.username);
+  }
+"""
+          if old not in t:
+              raise SystemExit('worker checkin marker not found')
+          t = t.replace(old, new, 1)
+          w.write_text(t, encoding='utf-8')
+
+          h = Path('interacoes.html')
+          x = h.read_text(encoding='utf-8')
+          import re
+          x = re.sub(r'community-checkin\.js\?v=[^\"\']+', 'community-checkin.js?v=20260915-checkin-relink-v2', x, count=1)
+          h.write_text(x, encoding='utf-8')
+          PY
+          node --check js/community-checkin.js
+          node --check cloudflare/instagram-community/worker.js
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/community-checkin.js cloudflare/instagram-community/worker.js interacoes.html
+          git commit -m "Permite revincular check-in e recupera arroba conhecido"
+          git push
