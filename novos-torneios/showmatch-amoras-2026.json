@@ -27,25 +27,9 @@
     "format": "matchlistPoints",
     "scoreMode": "pointsOnly",
     "title": "Grande Final",
-    "maps": [
-      [1, ""],
-      [2, ""],
-      [3, ""],
-      [4, ""],
-      [5, ""],
-      [6, ""]
-    ],
-    "cols": [
-      "pos",
-      "teamOriginal",
-      "team",
-      "total",
-      "matches"
-    ],
-    "matchCols": [
-      "match",
-      "total"
-    ],
+    "maps": [[1, ""], [2, ""], [3, ""], [4, ""], [5, ""], [6, ""]],
+    "cols": ["pos", "teamOriginal", "team", "total", "matches"],
+    "matchCols": ["match", "total"],
     "rows": [
       [1, "los", "LOS", 125, [[1, 28], [2, 26], [3, 9], [4, 17], [5, 17], [6, 28]]],
       [2, "loud", "LOUD", 84, [[1, 12], [2, 13], [3, 3], [4, 17], [5, 32], [6, 7]]],
@@ -66,186 +50,18 @@
     "source": "liquipedia-code-user",
     "format": "teamCardParticipants",
     "items": [
-      {
-        "id": "los",
-        "o": "los",
-        "n": "LOS",
-        "q": "Convidado",
-        "p": [
-          {"n": "Raone7", "f": "br"},
-          {"n": "General", "f": "br"},
-          {"n": "Rigby245", "f": "br"},
-          {"n": "Yago", "f": "br"},
-          {"n": "mtsexy", "f": "br"}
-        ],
-        "s": [
-          {"n": "LIPÃO", "f": "br", "r": "head coach", "t": "staff"},
-          {"n": "Jaya", "f": "br", "r": "analyst", "t": "staff", "l": "Jaya (Analyst)"}
-        ]
-      },
-      {
-        "id": "loud",
-        "o": "loud",
-        "n": "LOUD",
-        "q": "Convidado",
-        "p": [
-          {"n": "GYOMEI", "f": "br", "l": "Trap"},
-          {"n": "AKAZA", "f": "br", "l": "Nickz7"},
-          {"n": "PAETHI", "f": "br", "l": "HAK"},
-          {"n": "ZENITSU", "f": "br", "l": "Guaxa7"},
-          {"n": "ZZZ", "f": "br", "l": "bzp10"}
-        ],
-        "s": [
-          {"n": "JOKER", "f": "br", "r": "head coach", "t": "staff"},
-          {"n": "VIANA", "f": "br", "r": "analyst", "t": "staff"}
-        ]
-      },
-      {
-        "id": "faze-clan",
-        "o": "faze",
-        "n": "FAZE CLAN",
-        "q": "Convidado",
-        "p": [
-          {"n": "João7", "f": "br"},
-          {"n": "KakaZk", "f": "br"},
-          {"n": "Draxx7", "f": "br"},
-          {"n": "STARK7", "f": "br"}
-        ],
-        "s": [
-          {"n": "VT", "f": "br", "r": "head coach", "t": "staff"},
-          {"n": "Bryan", "f": "br", "r": "analyst", "t": "staff"}
-        ]
-      },
-      {
-        "id": "virtus-pro",
-        "o": "vp",
-        "n": "VIRTUS PRO",
-        "q": "Convidado",
-        "p": [
-          {"n": "PHINEAS", "f": "br"},
-          {"n": "OLIVER", "f": "br"},
-          {"n": "PASHA", "f": "br"},
-          {"n": "FERB", "f": "br"}
-        ],
-        "s": [
-          {"n": "Frois", "f": "br", "r": "head coach", "t": "staff"},
-          {"n": "Jotape", "f": "br", "r": "analyst", "t": "staff"}
-        ]
-      },
-      {
-        "id": "e1-sports",
-        "o": "e1",
-        "n": "E1 SPORTS",
-        "q": "Convidado",
-        "p": [
-          {"n": "LYON", "f": "br", "l": "lyon br"},
-          {"n": "PÃO7", "f": "br"},
-          {"n": "VITINxp", "f": "br"},
-          {"n": "Vitin9", "f": "br"},
-          {"n": "Bombom", "f": "br"}
-        ],
-        "s": [
-          {"n": "Ninja", "f": "br", "r": "head coach", "t": "staff", "l": "Ninja (Brazilian Coach)"}
-        ]
-      },
-      {
-        "id": "axs-fusion",
-        "o": "axs",
-        "n": "AXS FUSION",
-        "q": "Convidado",
-        "p": [
-          {"n": "Yann7awp", "f": "br"},
-          {"n": "SOARES", "f": "br"},
-          {"n": "Theus", "f": "br"},
-          {"n": "Redxz7", "f": "br"}
-        ],
-        "s": [
-          {"n": "CORREIA", "f": "br", "r": "head coach", "t": "staff"},
-          {"n": "Yunna", "f": "br", "r": "manager", "t": "staff"}
-        ]
-      },
-      {
-        "id": "dr3-pit",
-        "o": "dr3 pit",
-        "n": "DR3 PIT",
-        "q": "Convidado",
-        "p": [
-          {"n": "igz", "f": "br"},
-          {"n": "GHOST7", "f": "br"},
-          {"n": "EASY", "f": "br"},
-          {"n": "KingzJ", "f": "br"}
-        ],
-        "s": []
-      },
-      {
-        "id": "team-solid",
-        "o": "ts",
-        "n": "TEAM SOLID",
-        "q": "Convidado",
-        "p": [
-          {"n": "PIASTRI81", "f": "br"},
-          {"n": "NEYMARJR", "f": "br"},
-          {"n": "VETTEL", "f": "br"},
-          {"n": "LEWIS44", "f": "br"}
-        ],
-        "s": [
-          {"n": "PUTSGRILO", "f": "br", "r": "head coach", "t": "staff"}
-        ]
-      },
-      {
-        "id": "influence-rage",
-        "o": "inf",
-        "n": "INFLUENCE RAGE",
-        "q": "Convidado",
-        "p": [
-          {"n": "Lippe!", "f": "br"},
-          {"n": "Razure", "f": "br"},
-          {"n": "Igor7", "f": "br"},
-          {"n": "RUSH", "f": "br"}
-        ],
-        "s": [
-          {"n": "WF9", "f": "br", "r": "head coach", "t": "staff"}
-        ]
-      },
-      {
-        "id": "rush-gaming",
-        "o": "rsh m",
-        "n": "RUSH GAMING",
-        "q": "Convidado",
-        "p": [
-          {"n": "BLACK02", "f": "br"},
-          {"n": "GUIMERLQ", "f": "br"},
-          {"n": "Ericking", "f": "br"},
-          {"n": "PROZIN", "f": "br"},
-          {"n": "MitinX", "f": "br"}
-        ],
-        "s": []
-      },
-      {
-        "id": "vasco-esports",
-        "o": "crvg",
-        "n": "VASCO ESPORTS",
-        "q": "Convidado",
-        "p": [],
-        "s": []
-      },
-      {
-        "id": "fluxo-w7m",
-        "o": "fx",
-        "n": "FLUXO W7M",
-        "q": "Convidado",
-        "p": [
-          {"n": "Bops", "f": "br"},
-          {"n": "Giuh", "f": "br"},
-          {"n": "But", "f": "br"},
-          {"n": "MT7", "f": "br"},
-          {"n": "Proxx7", "f": "br"}
-        ],
-        "s": [
-          {"n": "LUUUKING", "f": "br", "r": "head coach", "t": "staff"},
-          {"n": "Renan", "f": "br", "r": "analyst", "t": "staff"}
-        ]
-      }
+      {"id":"los","o":"los","n":"LOS","q":"Convidado","p":[{"n":"Raone7","f":"br"},{"n":"General","f":"br"},{"n":"Rigby245","f":"br"},{"n":"Yago","f":"br"},{"n":"mtsexy","f":"br"}],"s":[{"n":"LIPÃO","f":"br","r":"head coach","t":"staff"},{"n":"Jaya","f":"br","r":"analyst","t":"staff","l":"Jaya (Analyst)"}]},
+      {"id":"loud","o":"loud","n":"LOUD","q":"Convidado","p":[{"n":"GYOMEI","f":"br","l":"Trap"},{"n":"AKAZA","f":"br","l":"Nickz7"},{"n":"PAETHI","f":"br","l":"HAK"},{"n":"ZENITSU","f":"br","l":"Guaxa7"},{"n":"ZZZ","f":"br","l":"bzp10"}],"s":[{"n":"JOKER","f":"br","r":"head coach","t":"staff"},{"n":"VIANA","f":"br","r":"analyst","t":"staff"}]},
+      {"id":"faze-clan","o":"faze","n":"FAZE CLAN","q":"Convidado","p":[{"n":"João7","f":"br"},{"n":"KakaZk","f":"br"},{"n":"Draxx7","f":"br"},{"n":"STARK7","f":"br"}],"s":[{"n":"VT","f":"br","r":"head coach","t":"staff"},{"n":"Bryan","f":"br","r":"analyst","t":"staff"}]},
+      {"id":"virtus-pro","o":"vp","n":"VIRTUS PRO","q":"Convidado","p":[{"n":"PHINEAS","f":"br"},{"n":"OLIVER","f":"br"},{"n":"PASHA","f":"br"},{"n":"FERB","f":"br"}],"s":[{"n":"Frois","f":"br","r":"head coach","t":"staff"},{"n":"Jotape","f":"br","r":"analyst","t":"staff"}]},
+      {"id":"e1-sports","o":"e1","n":"E1 SPORTS","q":"Convidado","p":[{"n":"LYON","f":"br","l":"lyon br"},{"n":"PÃO7","f":"br"},{"n":"VITINxp","f":"br"},{"n":"Vitin9","f":"br"},{"n":"Bombom","f":"br"}],"s":[{"n":"Ninja","f":"br","r":"head coach","t":"staff","l":"Ninja (Brazilian Coach)"}]},
+      {"id":"axs-fusion","o":"axs","n":"AXS FUSION","q":"Convidado","p":[{"n":"Yann7awp","f":"br"},{"n":"SOARES","f":"br"},{"n":"Theus","f":"br"},{"n":"Redxz7","f":"br"}],"s":[{"n":"CORREIA","f":"br","r":"head coach","t":"staff"},{"n":"Yunna","f":"br","r":"manager","t":"staff"}]},
+      {"id":"dr3-pit","o":"dr3 pit","n":"DR3 PIT","q":"Convidado","p":[{"n":"igz","f":"br"},{"n":"GHOST7","f":"br"},{"n":"EASY","f":"br"},{"n":"KingzJ","f":"br"}],"s":[]},
+      {"id":"team-solid","o":"ts","n":"TEAM SOLID","q":"Convidado","p":[{"n":"PIASTRI81","f":"br"},{"n":"NEYMARJR","f":"br"},{"n":"VETTEL","f":"br"},{"n":"LEWIS44","f":"br"}],"s":[{"n":"PUTSGRILO","f":"br","r":"head coach","t":"staff"}]},
+      {"id":"influence-rage","o":"inf","n":"INFLUENCE RAGE","q":"Convidado","p":[{"n":"Lippe!","f":"br"},{"n":"Razure","f":"br"},{"n":"Igor7","f":"br"},{"n":"RUSH","f":"br"}],"s":[{"n":"WF9","f":"br","r":"head coach","t":"staff"}]},
+      {"id":"rush-gaming","o":"rsh m","n":"RUSH GAMING","q":"Convidado","p":[],"s":[]},
+      {"id":"vasco-esports","o":"crvg","n":"VASCO ESPORTS","q":"Convidado","p":[],"s":[]},
+      {"id":"fluxo-w7m","o":"fx","n":"FLUXO W7M","q":"Convidado","p":[{"n":"Bops","f":"br"},{"n":"Giuh","f":"br"},{"n":"But","f":"br"},{"n":"MT7","f":"br"},{"n":"Proxx7","f":"br"}],"s":[{"n":"LUUUKING","f":"br","r":"head coach","t":"staff"},{"n":"Renan","f":"br","r":"analyst","t":"staff"}]}
     ]
   },
   "prizePool": {
@@ -253,57 +69,11 @@
     "source": "liquipedia-code-user",
     "format": "teamPrizePool",
     "currency": "BRL",
-    "cols": [
-      "pos",
-      "teamOriginal",
-      "team",
-      "prize"
-    ],
-    "rows": [
-      [1, "los", "LOS", 1000],
-      [2, "loud", "LOUD", 0],
-      [3, "faze", "FAZE CLAN", 0],
-      [4, "rsh m", "RUSH GAMING", 0],
-      [5, "inf", "INFLUENCE RAGE", 0],
-      [6, "ts", "TEAM SOLID", 0],
-      [7, "e1", "E1 SPORTS", 0],
-      [8, "fx", "FLUXO W7M", 0],
-      [9, "vp", "VIRTUS PRO", 0],
-      [10, "crvg", "VASCO ESPORTS", 0],
-      [11, "axs", "AXS FUSION", 0],
-      [12, "dr3 pit", "DR3 PIT", 0]
-    ]
+    "cols": ["pos", "teamOriginal", "team", "prize"],
+    "rows": [[1,"los","LOS",1000],[2,"loud","LOUD",0],[3,"faze","FAZE CLAN",0],[4,"rsh m","RUSH GAMING",0],[5,"inf","INFLUENCE RAGE",0],[6,"ts","TEAM SOLID",0],[7,"e1","E1 SPORTS",0],[8,"fx","FLUXO W7M",0],[9,"vp","VIRTUS PRO",0],[10,"crvg","VASCO ESPORTS",0],[11,"axs","AXS FUSION",0],[12,"dr3 pit","DR3 PIT",0]]
   },
   "aliases": {
-    "los": "LOS",
-    "loud": "LOUD",
-    "faze": "FAZE CLAN",
-    "rsh m": "RUSH GAMING",
-    "rush": "RUSH GAMING",
-    "rush gaming": "RUSH GAMING",
-    "inf": "INFLUENCE RAGE",
-    "influence rage": "INFLUENCE RAGE",
-    "ts": "TEAM SOLID",
-    "team solid": "TEAM SOLID",
-    "e1": "E1 SPORTS",
-    "e1 sports": "E1 SPORTS",
-    "fx": "FLUXO W7M",
-    "fluxo w7m": "FLUXO W7M",
-    "vp": "VIRTUS PRO",
-    "virtus pro": "VIRTUS PRO",
-    "crvg": "VASCO ESPORTS",
-    "vasco esports": "VASCO ESPORTS",
-    "axs": "AXS FUSION",
-    "axs fusion": "AXS FUSION",
-    "dr3 p": "DR3 PIT",
-    "dr3 pit": "DR3 PIT"
+    "los":"LOS","loud":"LOUD","faze":"FAZE CLAN","rsh m":"RUSH GAMING","rush":"RUSH GAMING","rush gaming":"RUSH GAMING","inf":"INFLUENCE RAGE","influence rage":"INFLUENCE RAGE","ts":"TEAM SOLID","team solid":"TEAM SOLID","e1":"E1 SPORTS","e1 sports":"E1 SPORTS","fx":"FLUXO W7M","fluxo w7m":"FLUXO W7M","vp":"VIRTUS PRO","virtus pro":"VIRTUS PRO","crvg":"VASCO ESPORTS","vasco esports":"VASCO ESPORTS","axs":"AXS FUSION","axs fusion":"AXS FUSION","dr3 p":"DR3 PIT","dr3 pit":"DR3 PIT"
   },
-  "awards": [
-    {
-      "award": "MVP",
-      "player": "Raone7",
-      "team": "LOS",
-      "note": ""
-    }
-  ]
+  "awards": [{"award":"MVP","player":"Raone7","team":"LOS","note":""}]
 }
