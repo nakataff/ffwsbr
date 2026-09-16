@@ -4,11 +4,12 @@
   window.__CFF_ADMIN_EDICAO_TRANSFORM_BOX__=true;
 
   const W=3000,H=3749;
+  const SNAP_PX=12,RELEASE_PX=28;
   const $=(s,r=document)=>r.querySelector(s);
   const state=()=>window.__CFF_ADMIN_EDICAO_STATE__||null;
   const rerender=()=>{try{window.__CFF_ADMIN_EDICAO_QUEUE__?.();}catch{}};
   const clamp=(v,a,b)=>Math.min(b,Math.max(a,Number(v)||0));
-  let box=null,gesture=null,lastKey='';
+  let box=null,guides=null,guideX=null,guideY=null,gesture=null,lastKey='';
 
   function addStyles(){
     if($('#cff-transform-box-styles')) return;
@@ -29,11 +30,27 @@
       .cff-transform-close{position:absolute;right:-28px;top:-13px;width:22px;height:22px;border:0;border-radius:7px;background:rgba(5,10,16,.9);color:#fff;font:900 17px/1 Arial,sans-serif;display:grid;place-items:center;cursor:pointer;padding:0;box-shadow:0 2px 8px rgba(0,0,0,.45);touch-action:none}
       .cff-transform-close:hover{background:#d7364e}
       .cff-transform-tip{position:absolute;left:50%;bottom:-31px;transform:translateX(-50%);padding:4px 7px;border-radius:6px;background:rgba(3,8,14,.82);border:1px solid rgba(255,255,255,.13);color:#d8e6f5;font:800 8px/1 Arial,sans-serif;white-space:nowrap;pointer-events:none;opacity:.76}
+      #cff-transform-guides{position:absolute;inset:0;z-index:29;pointer-events:none;overflow:hidden}
+      .cff-snap-guide{position:absolute;display:none;background:#16d7ff;box-shadow:0 0 0 1px rgba(0,0,0,.28),0 0 8px rgba(0,211,255,.5)}
+      .cff-snap-guide.is-on{display:block}
+      .cff-snap-guide.is-v{width:1.5px}
+      .cff-snap-guide.is-h{height:1.5px}
+      .cff-snap-guide::after{content:attr(data-label);position:absolute;padding:3px 5px;border-radius:5px;background:rgba(3,12,20,.88);border:1px solid rgba(22,215,255,.4);color:#b9f5ff;font:900 8px/1 Arial,sans-serif;letter-spacing:.04em;white-space:nowrap}
+      .cff-snap-guide.is-v::after{top:7px;left:6px}
+      .cff-snap-guide.is-h::after{left:7px;top:6px}
       @media(max-width:820px){
-        .cff-transform-handle{width:16px;height:16px}.cff-transform-rotate{width:20px;height:20px;top:-35px}.cff-transform-rotate-line{top:-33px;height:33px}.cff-transform-close{width:25px;height:25px;right:-31px;top:-15px}.cff-transform-tip{display:none}
+        .cff-transform-handle{width:16px;height:16px}.cff-transform-rotate{width:20px;height:20px;top:-35px}.cff-transform-rotate-line{top:-33px;height:33px}.cff-transform-close{width:25px;height:25px;right:-31px;top:-15px}.cff-transform-tip{display:none}.cff-snap-guide::after{display:none}
       }
     `;
     document.head.appendChild(style);
+  }
+
+  function setupGuides(stage){
+    if(guides)return;
+    guides=document.createElement('div');guides.id='cff-transform-guides';guides.setAttribute('aria-hidden','true');
+    guideX=document.createElement('div');guideX.className='cff-snap-guide is-v';
+    guideY=document.createElement('div');guideY.className='cff-snap-guide is-h';
+    guides.append(guideX,guideY);stage.appendChild(guides);
   }
 
   function setup(){
@@ -41,6 +58,7 @@
     if(!stage) return false;
     if(box) return true;
     if(getComputedStyle(stage).position==='static') stage.style.position='relative';
+    setupGuides(stage);
     box=document.createElement('div');
     box.id='cff-photo-transform';
     box.hidden=true;
@@ -53,12 +71,24 @@
       <span class="cff-transform-rotate-line"></span>
       <button class="cff-transform-rotate" type="button" aria-label="Rotacionar foto" title="Rotacionar">↻</button>
       <button class="cff-transform-close" type="button" aria-label="Remover foto" title="Remover foto">×</button>
-      <span class="cff-transform-tip">arraste para mover · cantos para redimensionar</span>`;
+      <span class="cff-transform-tip">arraste para mover · cantos para redimensionar · Alt ignora o ímã</span>`;
     stage.appendChild(box);
 
     box.addEventListener('pointerdown',onPointerDown,true);
     $('.cff-transform-close',box)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();removePhoto();});
+    disableWheelZoom(stage);
+    const help=$('.photo-editor-stage-help');
+    if(help)help.textContent='No computador, arraste a foto e use os pontos do quadro para redimensionar. As guias magnéticas ajudam no centro e nas bordas. O scroll do mouse rola a página e não altera mais o zoom.';
     return true;
+  }
+
+  function disableWheelZoom(stage){
+    if(!stage||stage.dataset.cffWheelZoomDisabled==='1')return;
+    stage.dataset.cffWheelZoomDisabled='1';
+    stage.addEventListener('wheel',e=>{
+      if(!state()?.image)return;
+      e.stopImmediatePropagation();
+    },{capture:true,passive:true});
   }
 
   function geometry(){
@@ -81,7 +111,7 @@
   function syncBox(force=false){
     if(!box&&!setup())return;
     const s=state(),g=geometry();
-    if(!s?.image||!g){box.hidden=true;return;}
+    if(!s?.image||!g){box.hidden=true;clearGuides();return;}
     box.hidden=false;
     const key=[g.left,g.top,g.width,g.height,g.rotation,s.flipX].map(v=>Math.round(Number(v)*100)/100).join('|');
     if(!force&&key===lastKey)return;
@@ -99,6 +129,59 @@
     return {x:g.stageRect.left+g.left,y:g.stageRect.top+g.top};
   }
 
+  function halfExtents(s){
+    if(!s?.image)return {x:0,y:0};
+    const iw=Number(s.image.naturalWidth||s.image.width||0),ih=Number(s.image.naturalHeight||s.image.height||0);
+    const sc=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=iw*sc,h=ih*sc,rad=(Number(s.rotation)||0)*Math.PI/180;
+    return {x:(Math.abs(w*Math.cos(rad))+Math.abs(h*Math.sin(rad)))/2,y:(Math.abs(w*Math.sin(rad))+Math.abs(h*Math.cos(rad)))/2};
+  }
+
+  function candidates(axis,s){
+    const half=halfExtents(s);
+    if(axis==='x')return [
+      {id:'center-x',value:W/2,guide:W/2,label:'CENTRO'},
+      {id:'left',value:half.x,guide:0,label:'BORDA ESQ.'},
+      {id:'right',value:W-half.x,guide:W,label:'BORDA DIR.'}
+    ];
+    return [
+      {id:'center-y',value:H/2,guide:H/2,label:'CENTRO'},
+      {id:'top',value:half.y,guide:0,label:'TOPO'},
+      {id:'bottom',value:H-half.y,guide:H,label:'BASE'}
+    ];
+  }
+
+  function clearGuide(axis){
+    const el=axis==='x'?guideX:guideY;if(!el)return;el.classList.remove('is-on');el.dataset.label='';
+  }
+  function clearGuides(){clearGuide('x');clearGuide('y');}
+
+  function showGuide(axis,pos,label){
+    const g=geometry(),el=axis==='x'?guideX:guideY;if(!g||!el)return;
+    const x0=g.canvasRect.left-g.stageRect.left,y0=g.canvasRect.top-g.stageRect.top;
+    el.dataset.label=label||'';
+    if(axis==='x'){
+      el.style.left=`${x0+(pos/W)*g.canvasRect.width}px`;el.style.top=`${y0}px`;el.style.height=`${g.canvasRect.height}px`;el.style.width='1.5px';
+    }else{
+      el.style.left=`${x0}px`;el.style.top=`${y0+(pos/H)*g.canvasRect.height}px`;el.style.width=`${g.canvasRect.width}px`;el.style.height='1.5px';
+    }
+    el.classList.add('is-on');
+  }
+
+  function resolveSnap(axis,raw,e,s){
+    const scale=axis==='x'?(W/gesture.canvasW):(H/gesture.canvasH),threshold=SNAP_PX*scale,release=RELEASE_PX*scale;
+    const list=candidates(axis,s),key=axis==='x'?'snapX':'snapY';
+    if(e.altKey){gesture[key]=null;clearGuide(axis);return raw;}
+    if(gesture[key]){
+      const current=list.find(c=>c.id===gesture[key]);
+      if(current&&Math.abs(raw-current.value)<=release){showGuide(axis,current.guide,current.label);return current.value;}
+      gesture[key]=null;clearGuide(axis);
+    }
+    let best=null,bestDist=Infinity;
+    for(const c of list){const d=Math.abs(raw-c.value);if(d<bestDist){best=c;bestDist=d;}}
+    if(best&&bestDist<=threshold){gesture[key]=best.id;showGuide(axis,best.guide,best.label);return best.value;}
+    clearGuide(axis);return raw;
+  }
+
   function onPointerDown(e){
     const s=state();if(!s?.image)return;
     const target=e.target;
@@ -106,11 +189,12 @@
     e.preventDefault();e.stopPropagation();
     const center=pointerCenter(),g=geometry();if(!center||!g)return;
     const mode=target.closest('.cff-transform-rotate')?'rotate':target.closest('.cff-transform-handle')?'resize':'move';
+    clearGuides();
     gesture={
       id:e.pointerId,mode,startX:e.clientX,startY:e.clientY,startStateX:Number(s.x)||W/2,startStateY:Number(s.y)||H/2,
       startZoom:Number(s.zoom)||1,startRotation:Number(s.rotation)||0,centerX:center.x,centerY:center.y,
       startAngle:Math.atan2(e.clientY-center.y,e.clientX-center.x),startDistance:Math.max(12,Math.hypot(e.clientX-center.x,e.clientY-center.y)),
-      canvasW:g.canvasRect.width,canvasH:g.canvasRect.height
+      canvasW:g.canvasRect.width,canvasH:g.canvasRect.height,snapX:null,snapY:null
     };
     target.setPointerCapture?.(e.pointerId);
     window.addEventListener('pointermove',onPointerMove,{capture:true});
@@ -134,13 +218,17 @@
     const s=state();if(!s?.image)return;
     e.preventDefault();e.stopPropagation();
     if(gesture.mode==='move'){
-      s.x=gesture.startStateX+(e.clientX-gesture.startX)*(W/gesture.canvasW);
-      s.y=gesture.startStateY+(e.clientY-gesture.startY)*(H/gesture.canvasH);
+      const rawX=gesture.startStateX+(e.clientX-gesture.startX)*(W/gesture.canvasW);
+      const rawY=gesture.startStateY+(e.clientY-gesture.startY)*(H/gesture.canvasH);
+      s.x=resolveSnap('x',rawX,e,s);
+      s.y=resolveSnap('y',rawY,e,s);
     }else if(gesture.mode==='resize'){
+      clearGuides();
       const d=Math.max(8,Math.hypot(e.clientX-gesture.centerX,e.clientY-gesture.centerY));
       s.zoom=clamp(gesture.startZoom*(d/gesture.startDistance),.25,3);
       syncZoomUi(s);
     }else if(gesture.mode==='rotate'){
+      clearGuides();
       const angle=Math.atan2(e.clientY-gesture.centerY,e.clientX-gesture.centerX);
       let deg=gesture.startRotation+(angle-gesture.startAngle)*180/Math.PI;
       while(deg>180)deg-=360;while(deg<-180)deg+=360;
@@ -151,7 +239,7 @@
 
   function onPointerUp(e){
     if(!gesture||e.pointerId!==gesture.id)return;
-    e.preventDefault();e.stopPropagation();gesture=null;
+    e.preventDefault();e.stopPropagation();gesture=null;clearGuides();
     window.removeEventListener('pointermove',onPointerMove,true);
     lastKey='';syncBox(true);
   }
@@ -163,13 +251,13 @@
     const file=$('#photo-editor-file'),name=$('#photo-editor-image-name'),empty=$('#photo-editor-empty'),download=$('#photo-editor-download'),rot=$('#photo-editor-rotation'),rotOut=$('#photo-editor-rotation-value'),zoom=$('#photo-editor-zoom'),zoomOut=$('#photo-editor-zoom-value');
     if(file)file.value='';if(name)name.textContent='Nenhuma foto';if(empty){empty.hidden=false;empty.classList.remove('is-hidden');}if(download)download.disabled=true;
     if(rot)rot.value='0';if(rotOut)rotOut.textContent='0°';if(zoom)zoom.value='100';if(zoomOut)zoomOut.textContent='100%';
-    lastKey='';if(box)box.hidden=true;rerender();
+    clearGuides();lastKey='';if(box)box.hidden=true;rerender();
   }
 
   function bind(){
     const app=$('#photo-editor-app');if(!app||app.dataset.transformBoxBound==='1')return;app.dataset.transformBoxBound='1';
-    ['input','change','click','pointerup','wheel'].forEach(ev=>app.addEventListener(ev,()=>requestAnimationFrame(()=>syncBox(true)),true));
-    window.addEventListener('resize',()=>{lastKey='';syncBox(true)});
+    ['input','change','click','pointerup'].forEach(ev=>app.addEventListener(ev,()=>requestAnimationFrame(()=>syncBox(true)),true));
+    window.addEventListener('resize',()=>{lastKey='';clearGuides();syncBox(true)});
   }
 
   function tick(){syncBox();requestAnimationFrame(tick);}
