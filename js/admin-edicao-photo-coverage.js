@@ -16,6 +16,7 @@
     style.textContent=`
       .cff-studio-canvas-shell{background:#08101a!important;background-image:none!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.045)!important}
       #cff-photo-coverage{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;image-rendering:auto}
+      .photo-editor-empty{z-index:9}
       .cff-photo-coverage-note{position:absolute;right:7px;bottom:7px;z-index:11;padding:4px 6px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:rgba(3,8,14,.82);color:#c5d2e2;font:800 8px/1.15 Arial,sans-serif;letter-spacing:.03em;pointer-events:none;backdrop-filter:blur(5px)}
       .cff-photo-coverage-note strong{color:#fff}.cff-photo-coverage-note.is-hidden{display:none}
       .cff-photo-coverage-tool.is-active{border-color:#00c8ff!important;background:rgba(0,200,255,.12)!important;color:#e7fbff!important}
