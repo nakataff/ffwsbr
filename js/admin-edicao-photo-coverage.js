@@ -15,6 +15,11 @@
     const script=document.createElement('script');script.src='js/admin-edicao-transform-box.js?v=20260916-transform-v3';script.defer=true;script.dataset.cffTransformBox='1';document.head.appendChild(script);
   }
 
+  function loadPerformance(){
+    if(window.__CFF_ADMIN_EDICAO_PERFORMANCE__||document.querySelector('script[data-cff-performance]'))return;
+    const script=document.createElement('script');script.src='js/admin-edicao-performance.js?v=20260916-perf-v1';script.defer=true;script.dataset.cffPerformance='1';document.head.appendChild(script);
+  }
+
   function addStyles(){
     if($('#cff-photo-coverage-styles'))return;
     const style=document.createElement('style');style.id='cff-photo-coverage-styles';
@@ -105,7 +110,7 @@
   }
 
   function boot(){
-    loadTransformBox();addStyles();let tries=0;
+    loadTransformBox();loadPerformance();addStyles();let tries=0;
     const timer=setInterval(()=>{tries++;if(state()&&!$('#photo-editor-app')?.hidden&&setup()){clearInterval(timer);bind();scheduleDraw(0,true);}else if(tries>180)clearInterval(timer);},100);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
