@@ -15,7 +15,7 @@
     style.id='cff-photo-coverage-styles';
     style.textContent=`
       .cff-studio-canvas-shell{background:#08101a!important;background-image:none!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.045)!important}
-      #cff-photo-coverage{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;image-rendering:auto}
+      #cff-photo-coverage{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;image-rendering:auto;background:transparent!important}
       .photo-editor-empty{z-index:9}
       .cff-photo-coverage-note{position:absolute;right:7px;bottom:7px;z-index:11;padding:4px 6px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:rgba(3,8,14,.82);color:#c5d2e2;font:800 8px/1.15 Arial,sans-serif;letter-spacing:.03em;pointer-events:none;backdrop-filter:blur(5px)}
       .cff-photo-coverage-note strong{color:#fff}.cff-photo-coverage-note.is-hidden{display:none}
@@ -44,8 +44,9 @@
   }
 
   function syncButton(){
+    const s=state();
     const button=$('.cff-photo-coverage-tool');if(button)button.classList.toggle('is-active',enabled);
-    const note=$('.cff-photo-coverage-note');if(note)note.classList.toggle('is-hidden',!enabled);
+    const note=$('.cff-photo-coverage-note');if(note)note.classList.toggle('is-hidden',!enabled||!!(s?.cffBlurFill&&s?.image));
   }
 
   function checker(ctx){
@@ -64,6 +65,7 @@
     const canvas=$('#cff-photo-coverage');if(!canvas)return;
     const ctx=canvas.getContext('2d');const s=state();
     ctx.clearRect(0,0,W,H);
+    syncButton();
     if(!enabled||!s) return;
     if(s.cffBlurFill&&s.image) return;
     checker(ctx);
