@@ -534,6 +534,7 @@ function normalizeLive(raw, id = '') {
     faseDia: String(raw && (raw.faseDia || raw.fase_dia || '') || '').trim(),
     canal: String(raw && raw.canal || '').trim(),
     url: String(raw && raw.url || '').trim(),
+    linkMode: String(raw && raw.linkMode || '').trim().toLowerCase() === 'schedule' ? 'schedule' : 'always',
     inicio: String(raw && (raw.inicio || raw.data_hora || '') || '').trim(),
     duracaoMinutos: Number.isFinite(durationMinutes) ? Math.max(0, Math.round(durationMinutes)) : 0,
     tipo: ['mobile', 'emulador', 'misto'].includes(String(raw && (raw.tipo || raw.categoria) || '').toLowerCase()) ? String(raw.tipo || raw.categoria).toLowerCase() : 'mobile',
@@ -588,6 +589,7 @@ function clearLiveForm() {
   $('#live-original-id').value = '';
   $('#live-duration-hours').value = '3';
   $('#live-duration-minutes').value = '0';
+  $('#live-link-mode').value = 'schedule';
   $('#live-type').value = 'mobile';
   $('#live-editor-title').textContent = 'Nova live';
   setMessage($('#admin-live-message'), '');
@@ -600,6 +602,7 @@ function fillLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
   $('#live-start').value = item.inicio.slice(0, 16);
   $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
   $('#live-duration-minutes').value = String(item.duracaoMinutos % 60);
@@ -616,6 +619,7 @@ function duplicateLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
   $('#live-start').value = item.inicio.slice(0, 16);
   $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
   $('#live-duration-minutes').value = String(item.duracaoMinutos % 60);
@@ -634,6 +638,7 @@ function readLiveForm() {
     faseDia: $('#live-phase-day').value.trim(),
     canal: $('#live-channel').value.trim(),
     url: $('#live-url').value.trim(),
+    linkMode: $('#live-link-mode').value === 'schedule' ? 'schedule' : 'always',
     inicio: $('#live-start').value.trim(),
     duracaoMinutos: Math.round(hours * 60 + minutes),
     tipo: $('#live-type').value
