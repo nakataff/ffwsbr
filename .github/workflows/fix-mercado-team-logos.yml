@@ -1,0 +1,46 @@
+name: Fix Mercado team logos
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-mercado-team-logos.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fix Mercado logo resolver
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('js/charts-market.min.js')
+          text = p.read_text(encoding='utf-8')
+          old = 'function resolveEscudo(e,a){if(e&&e.trim())return e.trim();if(a&&"undefined"!=typeof logos){const e=a.trim().toUpperCase();if(logos[e])return logos[e];const t=Object.keys(logos).find(a=>a.toUpperCase()===e);if(t)return logos[t]}return"escudo.webp"}'
+          new = 'function resolveEscudo(e,a){if(e&&e.trim())return e.trim();if(a){try{if("function"==typeof window.getTeamLogoSafe){const e=window.getTeamLogoSafe(a);if(e&&"escudo.webp"!==e)return e}}catch(e){}try{if("function"==typeof window.cffFindLiveTeamLogo){const e=window.cffFindLiveTeamLogo(a);if(e)return e}}catch(e){}if("undefined"!=typeof logos){const e=a.trim().toUpperCase();if(logos[e])return logos[e];const t=Object.keys(logos).find(a=>a.toUpperCase()===e);if(t)return logos[t]}}return"escudo.webp"}'
+          if old not in text:
+              raise SystemExit('resolveEscudo original não encontrado')
+          p.write_text(text.replace(old,new,1),encoding='utf-8')
+
+          i = Path('index.html')
+          html = i.read_text(encoding='utf-8')
+          charts_old = '<script defer src="js/charts-market.min.js?v=20260917-restore-mercado-v1"></script>'
+          charts_new = '<script defer src="js/year-ranking-logo-sheet.js?v=20260917-mercado-logos-v1"></script>\n<script defer src="js/charts-market.min.js?v=20260917-mercado-logos-v2"></script>'
+          if charts_old not in html:
+              raise SystemExit('loader atual do Mercado não encontrado')
+          i.write_text(html.replace(charts_old,charts_new,1),encoding='utf-8')
+          PY
+      - name: Commit fix and remove temporary workflow
+        run: |
+          rm -f .github/workflows/fix-mercado-team-logos.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html js/charts-market.min.js .github/workflows/fix-mercado-team-logos.yml
+          git commit -m "Faz Mercado da Bala resolver logos reais das equipes"
+          git push
