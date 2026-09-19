@@ -460,12 +460,21 @@
     </div></div>`;
   }
 
+  function mvpOverallDay(entry) {
+    const day = number(entry?.day);
+    if (!day) return 0;
+    const stage = String(entry?.stage || '');
+    if (stage === 'segundaFase') return day + 14;
+    if (stage === 'final') return day + 20;
+    return day;
+  }
+
   function playerFilterOptions() {
     const entries = allPlayerEntries();
     const roster = rosterPlayers();
     const playerSource = entries.length ? entries : roster;
     const teams = [...new Set((playerSource.length ? playerSource.map(entry => entry.team) : state.teams.map(team => team.name)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const days = [...new Set(entries.map(entry => number(entry.day)).filter(Boolean))].sort((a, b) => a - b);
+    const days = [...new Set(entries.map(entry => mvpOverallDay(entry)).filter(Boolean))].sort((a, b) => a - b);
     const countries = [...new Set(playerSource.map(entry => String(entry.country || rosterPlayerByName(entry.name || entry.player, entry.team)?.country || 'br').toLowerCase()).filter(Boolean))];
     const countryNames = { br: 'Brasil' };
     return {
@@ -492,7 +501,7 @@
         && (!f.role.length || f.role.includes(String(entry.roleShort || entry.role || meta?.roleShort || '').toUpperCase()))
         && (!f.country.length || f.country.includes(country))
         && rookieMatch
-        && (!f.day.length || f.day.includes(String(entry.day)));
+        && (!f.day.length || f.day.includes(String(mvpOverallDay(entry))));
     });
     const aggregate = new Map();
     entries.forEach(entry => {
