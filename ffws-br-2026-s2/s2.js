@@ -28,10 +28,10 @@
       final: { period: 'all', map: 'all', drop: 'all' }
     },
     selectionWeek: '',
-    selectionTab: 'semanal',
+    selectionTab: 'segundaFase',
     mvpPage: 0,
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
-    statsFilters: { stage: 'classificatoria', days: [], maps: [] },
+    statsFilters: { stage: 'segundaFase', days: [], maps: [] },
     statsEvolution: { metric: 'position', teams: [] },
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
     notesOpenMulti: '',
@@ -39,7 +39,7 @@
     notesRecordPages: { drops: 0, days: 0, averages: 0 },
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
-    statsStage: 'classificatoria',
+    statsStage: 'segundaFase',
     dropReport: { mode: 'drop', key: '', tab: 'summary', teamSort: 'points', playerSort: 'kills', playerTeams: [], teamDetail: '' }
   };
 
@@ -746,10 +746,49 @@
     });
   }
 
+  function secondPhaseSelectionEntries() {
+    return allPlayerEntries().filter(entry => normalize(entry?.stage || entry?.etapa) === 'SEGUNDAFASE');
+  }
+
+  function secondPhaseSelectionRows() {
+    const aggregate = new Map();
+    secondPhaseSelectionEntries().forEach(entry => {
+      const name = entry.name || entry.player || entry.jogador;
+      const team = entry.team || entry.equipe || '';
+      if (!name) return;
+      const key = `${normalize(name)}__${normalize(team)}`;
+      if (!aggregate.has(key)) aggregate.set(key, { name, team, meta: rosterPlayerByName(name, team), kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
+      const row = aggregate.get(key);
+      row.kills += number(entry.kills ?? entry.abates);
+      row.damage += number(entry.damage ?? entry.dano);
+      row.assists += number(entry.assists ?? entry.assistencias);
+      row.matches += number(entry.matches ?? entry.quedas) || 1;
+      row.mvps += number(entry.mvp ?? entry.mvps);
+    });
+    return [...aggregate.values()].sort((a, b) => b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
+  }
+
+  function secondPhaseCompletedDays() {
+    const days = new Map();
+    stageEvents('segundaFase').forEach((event, index) => {
+      if (!eventResults(event).length) return;
+      const day = number(event.day || event.round);
+      if (!day) return;
+      const drop = number(event.drop || event.queda || event.number) || index + 1;
+      if (!days.has(day)) days.set(day, new Set());
+      days.get(day).add(drop);
+    });
+    return [...days.entries()]
+      .filter(([, drops]) => drops.size >= 6)
+      .map(([day]) => day)
+      .sort((a, b) => a - b);
+  }
+
   function selectionTabsHtml() {
     const finalUnlocked = selectionFinalComplete();
+    const secondPhaseStarted = secondPhaseSelectionEntries().length > 0;
     return Object.entries(S2_SELECTION_PHASES).map(([key, config]) => {
-      const unlocked = key === 'semanal' || key === 'classificatoria' || ((key === 'final' || key === 'torneio') && finalUnlocked);
+      const unlocked = key === 'semanal' || key === 'classificatoria' || (key === 'segundaFase' && secondPhaseStarted) || ((key === 'final' || key === 'torneio') && finalUnlocked);
       const active = state.selectionTab === key;
       return `<button type="button" class="season-selection-tab ${active ? 'active' : ''} ${unlocked ? '' : 'locked'}" style="--selection-color:${config.color}" ${unlocked ? `onclick="setFFWSS2SelectionTab('${key}')"` : 'disabled aria-disabled="true"'}>
         <span>${config.label}</span>${unlocked ? '' : '<small>EM BREVE</small>'}
@@ -856,8 +895,16 @@
       notice = `<div class="season-selection-disclaimer"><strong>CLASSIFICATÓRIA EM ANDAMENTO</strong><span>Esta seleção é parcial e pode mudar a cada nova rodada conforme os números da competição são atualizados.</span></div>`;
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey);
     } else if (phaseKey === 'segundaFase') {
-      description = 'A seleção da Segunda Fase será liberada quando essa etapa começar.';
-      content = selectionLockedHtml(phaseKey);
+      rows = secondPhaseSelectionRows();
+      const lineup = buildWeeklySelection(rows);
+      const completedDays = secondPhaseCompletedDays();
+      const hasData = rows.length > 0;
+      const partial = hasData && (completedDays.length === 0 || completedDays.length % 2 === 1);
+      description = 'Melhores de cada posição considerando os dados já disputados na Segunda Fase.';
+      if (partial) {
+        notice = `<div class="season-selection-disclaimer"><strong>SELEÇÃO PARCIAL</strong><span>A seleção fica parcial enquanto apenas o primeiro dia do bloco tem dados e fecha quando o segundo dia é concluído.</span></div>`;
+      }
+      content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionLockedHtml(phaseKey);
     } else if (!finalUnlocked) {
       description = phaseKey === 'final' ? 'A seleção será liberada quando a Final tiver dados suficientes.' : 'A seleção será definida depois do encerramento da temporada.';
       content = selectionLockedHtml(phaseKey);
