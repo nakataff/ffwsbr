@@ -934,7 +934,7 @@
       if (weeklyStage === 'segundaFase' && rows.length) {
         const completed = secondPhaseCompletedDays().filter(day => selectedDays.includes(day));
         if (completed.length < selectedDays.length) {
-          notice = partialSelectionNotice('O primeiro dia deste bloco já foi concluído. A seleção fecha quando o segundo dia terminar.');
+          notice = partialSelectionNotice('Este bloco ainda não teve os dois dias concluídos. A seleção fecha quando o segundo dia terminar.');
         }
       }
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey, selectedWeek);
@@ -947,12 +947,16 @@
     } else if (phaseKey === 'segundaFase') {
       rows = secondPhaseSelectionRows();
       const lineup = buildWeeklySelection(rows);
-      const completedDays = secondPhaseCompletedDays();
+      const completedDays = new Set(secondPhaseCompletedDays());
+      const playedDays = [...new Set(secondPhaseSelectionEntries().map(selectionEntryDay).filter(Boolean))].sort((a, b) => a - b);
+      const latestPlayedDay = playedDays[playedDays.length - 1] || 0;
+      const pairStart = latestPlayedDay ? (latestPlayedDay % 2 === 0 ? latestPlayedDay - 1 : latestPlayedDay) : 0;
+      const currentPair = pairStart ? [pairStart, pairStart + 1] : [];
       const hasData = rows.length > 0;
-      const partial = hasData && (completedDays.length === 0 || completedDays.length % 2 === 1);
+      const partial = hasData && currentPair.length === 2 && !currentPair.every(day => completedDays.has(day));
       description = 'Melhores de cada posição considerando os dados já disputados na Segunda Fase.';
       if (partial) {
-        notice = partialSelectionNotice('A seleção fica parcial enquanto apenas o primeiro dia do bloco tem dados e fecha quando o segundo dia é concluído.');
+        notice = partialSelectionNotice('O bloco atual ainda não teve os dois dias concluídos. A seleção fecha quando o segundo dia terminar.');
       }
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionLockedHtml(phaseKey);
     } else if (!finalUnlocked) {
