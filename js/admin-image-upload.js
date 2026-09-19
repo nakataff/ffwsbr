@@ -2,7 +2,10 @@
   'use strict';
 
   const SETTINGS_KEY = 'cff-cloudinary-admin-settings-v1';
-  const MAX_FILE_SIZE = 8 * 1024 * 1024;
+  const MAX_SOURCE_FILE_SIZE = 20 * 1024 * 1024;
+  const MAX_OUTPUT_DIMENSION = 1600;
+  const TARGET_OUTPUT_BYTES = 800 * 1024;
+  const WEBP_QUALITY_STEPS = [0.86, 0.80, 0.74, 0.68, 0.62];
   const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
   const PHOTO_CREDIT_TOKEN = 'FONTEFOTO';
 
@@ -73,18 +76,133 @@
   function validateFile(file) {
     if (!file) throw new Error('Nenhuma imagem selecionada.');
     if (!ACCEPTED_TYPES.has(file.type)) throw new Error('Use JPG, PNG, WEBP, GIF ou AVIF.');
-    if (file.size > MAX_FILE_SIZE) throw new Error('A imagem precisa ter no máximo 8 MB.');
+    if (file.size > MAX_SOURCE_FILE_SIZE) throw new Error('A imagem original precisa ter no máximo 20 MB.');
+  }
+
+  function prettyBytes(bytes) {
+    const value = Number(bytes || 0);
+    if (value >= 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(value >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
+    return `${Math.max(1, Math.round(value / 1024))} KB`;
+  }
+
+  function canvasToBlob(canvas, type, quality) {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Não foi possível converter a imagem.')), type, quality);
+    });
+  }
+
+  async function decodeImage(file) {
+    if ('createImageBitmap' in window) {
+      try {
+        const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+        return {
+          width: bitmap.width,
+          height: bitmap.height,
+          draw(ctx, width, height) { ctx.drawImage(bitmap, 0, 0, width, height); },
+          close() { try { bitmap.close(); } catch (_) {} }
+        };
+      } catch (_) {}
+    }
+
+    return new Promise((resolve, reject) => {
+      const objectUrl = URL.createObjectURL(file);
+      const image = new Image();
+      image.onload = () => resolve({
+        width: image.naturalWidth || image.width,
+        height: image.naturalHeight || image.height,
+        draw(ctx, width, height) { ctx.drawImage(image, 0, 0, width, height); },
+        close() { URL.revokeObjectURL(objectUrl); }
+      });
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('Não foi possível abrir essa imagem.'));
+      };
+      image.src = objectUrl;
+    });
+  }
+
+  function webpFilename(name) {
+    const base = String(name || 'imagem').replace(/\.[^.]+$/, '').replace(/[^a-z0-9._-]+/gi, '-').replace(/^-+|-+$/g, '') || 'imagem';
+    return `${base}.webp`;
+  }
+
+  async function optimizeImage(file, onStatus) {
+    validateFile(file);
+
+    // Mantém GIF para não destruir animações. Imagens estáticas são sempre convertidas para WEBP.
+    if (file.type === 'image/gif') {
+      return {
+        file,
+        converted: false,
+        originalBytes: file.size,
+        processedBytes: file.size,
+        originalWidth: 0,
+        originalHeight: 0,
+        width: 0,
+        height: 0,
+        note: 'GIF mantido para preservar animação'
+      };
+    }
+
+    onStatus?.(`Otimizando ${file.type === 'image/png' ? 'PNG' : 'imagem'} → WEBP...`);
+    const decoded = await decodeImage(file);
+    try {
+      const sourceWidth = Math.max(1, Number(decoded.width || 0));
+      const sourceHeight = Math.max(1, Number(decoded.height || 0));
+      const scale = Math.min(1, MAX_OUTPUT_DIMENSION / sourceWidth, MAX_OUTPUT_DIMENSION / sourceHeight);
+      const width = Math.max(1, Math.round(sourceWidth * scale));
+      const height = Math.max(1, Math.round(sourceHeight * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d', { alpha: true });
+      if (!ctx) throw new Error('Seu navegador não conseguiu preparar a conversão da imagem.');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      decoded.draw(ctx, width, height);
+
+      let blob = null;
+      let usedQuality = WEBP_QUALITY_STEPS[WEBP_QUALITY_STEPS.length - 1];
+      for (const quality of WEBP_QUALITY_STEPS) {
+        blob = await canvasToBlob(canvas, 'image/webp', quality);
+        usedQuality = quality;
+        if (blob.size <= TARGET_OUTPUT_BYTES) break;
+      }
+
+      const processed = new File([blob], webpFilename(file.name), {
+        type: 'image/webp',
+        lastModified: Date.now()
+      });
+
+      return {
+        file: processed,
+        converted: true,
+        originalBytes: file.size,
+        processedBytes: processed.size,
+        originalWidth: sourceWidth,
+        originalHeight: sourceHeight,
+        width,
+        height,
+        quality: usedQuality
+      };
+    } finally {
+      decoded.close?.();
+    }
   }
 
   async function uploadFile(file, onStatus) {
-    validateFile(file);
+    const optimized = await optimizeImage(file, onStatus);
+    const upload = optimized.file;
     const settings = getSettings();
     if (!settings.cloudName || !settings.uploadPreset) {
       throw new Error('Configure o Cloud Name e o Upload Preset antes de enviar.');
     }
-    onStatus?.('Enviando imagem para o Cloudinary...');
+    onStatus?.(optimized.converted
+      ? `WEBP pronto (${prettyBytes(optimized.processedBytes)}). Enviando para o Cloudinary...`
+      : 'Enviando imagem para o Cloudinary...');
     const form = new FormData();
-    form.append('file', file);
+    form.append('file', upload, upload.name);
     form.append('upload_preset', settings.uploadPreset);
     form.append('tags', 'centralfreefire,noticias');
     const response = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(settings.cloudName)}/image/upload`, {
@@ -102,7 +220,16 @@
       publicId: data.public_id || '',
       width: Number(data.width || 0),
       height: Number(data.height || 0),
-      bytes: Number(data.bytes || file.size || 0)
+      bytes: Number(data.bytes || upload.size || 0),
+      originalBytes: optimized.originalBytes,
+      processedBytes: optimized.processedBytes,
+      converted: optimized.converted,
+      quality: optimized.quality || 0,
+      originalWidth: optimized.originalWidth || 0,
+      originalHeight: optimized.originalHeight || 0,
+      processedWidth: optimized.width || Number(data.width || 0),
+      processedHeight: optimized.height || Number(data.height || 0),
+      note: optimized.note || ''
     };
   }
 
@@ -146,7 +273,7 @@
       <div class="cff-image-upload-head"><strong>Upload direto da imagem</strong><span>Cloudinary • sem GitHub</span></div>
       <div id="cff-image-drop" class="cff-image-drop" tabindex="0" role="button" aria-label="Selecionar imagem para a notícia">
         <span class="cff-image-drop-icon">🖼️</span>
-        <span class="cff-image-drop-copy"><b>Arraste a imagem aqui ou clique para selecionar</b><small>JPG, PNG, WEBP, GIF ou AVIF. O link da imagem é preenchido automaticamente.</small></span>
+        <span class="cff-image-drop-copy"><b>Arraste a imagem aqui ou clique para selecionar</b><small>PNG, JPG, AVIF e WEBP são convertidos automaticamente para WEBP, limitados a 1600 px e comprimidos antes do upload. GIF é preservado.</small></span>
       </div>
       <input id="cff-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden>
       <input id="cff-inline-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden>
@@ -227,9 +354,11 @@
         urlInput.dispatchEvent(new Event('input', { bubbles: true }));
         urlInput.dispatchEvent(new Event('change', { bubbles: true }));
         refreshPreview();
-        const kb = Math.max(1, Math.round(result.bytes / 1024));
         const dimensions = result.width && result.height ? ` • ${result.width}×${result.height}` : '';
-        setStatus(status, `✅ Upload concluído • ${kb} KB${dimensions}. A URL da capa já foi preenchida.`, 'success');
+        const compression = result.converted
+          ? ` • WEBP automático: ${prettyBytes(result.originalBytes)} → ${prettyBytes(result.bytes)}`
+          : ` • ${prettyBytes(result.bytes)}`;
+        setStatus(status, `✅ Upload concluído${compression}${dimensions}. A URL da capa já foi preenchida.`, 'success');
       } catch (error) {
         setStatus(status, `❌ ${error.message}`, 'error');
       } finally {
@@ -241,7 +370,8 @@
       try {
         const result = await uploadFile(file, (text) => setStatus(status, text));
         insertInlineToken(result.url);
-        setStatus(status, '✅ Imagem enviada e inserida dentro do texto.', 'success');
+        const compression = result.converted ? ` • ${prettyBytes(result.originalBytes)} → ${prettyBytes(result.bytes)} em WEBP` : '';
+        setStatus(status, `✅ Imagem enviada e inserida dentro do texto${compression}.`, 'success');
       } catch (error) {
         setStatus(status, `❌ ${error.message}`, 'error');
       } finally {
@@ -336,6 +466,7 @@
 
     window.CFF_ADMIN_IMAGE_UPLOAD = {
       uploadFile,
+      optimizeImage,
       getSettings,
       optimizedCloudinaryUrl
     };
