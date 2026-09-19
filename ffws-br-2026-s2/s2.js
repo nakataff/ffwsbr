@@ -28,6 +28,7 @@
       final: { period: 'all', map: 'all', drop: 'all' }
     },
     selectionWeek: '',
+    selectionWeekStage: 'segundaFase',
     selectionTab: 'segundaFase',
     mvpPage: 0,
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
@@ -44,6 +45,7 @@
   };
 
   const S2_WEEKS = { '1': [1, 2], '2': [3, 4], '3': [5, 6], '4': [7, 8], '5': [9, 10], '6': [11, 12], '7': [13, 14] };
+  const S2_SECOND_PHASE_WEEKS = { '1': [1, 2], '2': [3, 4], '3': [5, 6] };
 
   const escapeHtml = value => String(value ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -104,6 +106,8 @@
   }
 
   function logo(teamName) {
+    const localTeam = teamByName(teamName);
+    if (localTeam?.logo && localTeam.logo !== 'escudo.webp') return localTeam.logo;
     try {
       if (typeof window.getTeamLogoByAliases === 'function') {
         const resolved = window.getTeamLogoByAliases(teamName);
@@ -114,7 +118,7 @@
         if (direct) return direct;
       }
     } catch (_) {}
-    return teamByName(teamName)?.logo || 'escudo.webp';
+    return 'escudo.webp';
   }
 
   function abbreviation(teamName) {
@@ -768,6 +772,38 @@
     return [...aggregate.values()].sort((a, b) => b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
   }
 
+  function secondPhaseSelectionRowsForDays(days = []) {
+    const aggregate = new Map();
+    secondPhaseSelectionEntries()
+      .filter(entry => !days.length || days.includes(selectionEntryDay(entry)))
+      .forEach(entry => {
+        const name = entry.name || entry.player || entry.jogador;
+        const team = entry.team || entry.equipe || '';
+        if (!name) return;
+        const key = `${normalize(name)}__${normalize(team)}`;
+        if (!aggregate.has(key)) aggregate.set(key, { name, team, meta: rosterPlayerByName(name, team), kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
+        const row = aggregate.get(key);
+        row.kills += number(entry.kills ?? entry.abates);
+        row.damage += number(entry.damage ?? entry.dano);
+        row.assists += number(entry.assists ?? entry.assistencias);
+        row.matches += number(entry.matches ?? entry.quedas) || 1;
+        row.mvps += number(entry.mvp ?? entry.mvps);
+      });
+    return [...aggregate.values()].sort((a, b) => b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
+  }
+
+  function availableSecondPhaseSelectionWeeks() {
+    const entries = secondPhaseSelectionEntries();
+    return Object.keys(S2_SECOND_PHASE_WEEKS).filter(key => {
+      const days = S2_SECOND_PHASE_WEEKS[key] || [];
+      return entries.some(entry => days.includes(selectionEntryDay(entry)));
+    });
+  }
+
+  function partialSelectionNotice(text = 'Seleção parcial: o segundo dia deste bloco ainda não foi concluído.') {
+    return `<div class="season-selection-disclaimer"><strong style="display:flex;align-items:center;gap:8px;"><span aria-hidden="true" style="width:11px;height:11px;border-radius:50%;background:#ff2b2b;box-shadow:0 0 0 4px rgba(255,43,43,.14);display:inline-block;flex:0 0 11px;"></span>SELEÇÃO PARCIAL</strong><span>${escapeHtml(text)}</span></div>`;
+  }
+
   function secondPhaseCompletedDays() {
     const days = new Map();
     stageEvents('segundaFase').forEach((event, index) => {
@@ -860,11 +896,6 @@
     if (!root) return;
     const phaseKey = state.selectionTab || 'semanal';
     const config = selectionPhaseConfig(phaseKey);
-    const availableWeeks = availableSelectionWeeks();
-    const allWeeks = Object.keys(S2_WEEKS);
-    const latestAvailableWeek = availableWeeks[availableWeeks.length - 1] || allWeeks[0] || '1';
-    if (!availableWeeks.includes(String(state.selectionWeek))) state.selectionWeek = latestAvailableWeek;
-    const week = String(state.selectionWeek || latestAvailableWeek);
     const finalUnlocked = selectionFinalComplete();
 
     let rows = [];
@@ -875,19 +906,38 @@
     let content = '';
 
     if (phaseKey === 'semanal') {
-      const weekUnlocked = availableWeeks.includes(week);
-      rows = weekUnlocked ? selectionRowsForWeek(week) : [];
+      const secondPhaseStarted = secondPhaseSelectionEntries().length > 0;
+      const weeklyStage = state.selectionWeekStage === 'segundaFase' && secondPhaseStarted ? 'segundaFase' : 'classificatoria';
+      const weekMap = weeklyStage === 'segundaFase' ? S2_SECOND_PHASE_WEEKS : S2_WEEKS;
+      const stageWeeks = weeklyStage === 'segundaFase' ? availableSecondPhaseSelectionWeeks() : availableSelectionWeeks();
+      const weekKeys = Object.keys(weekMap);
+      const latestWeek = stageWeeks[stageWeeks.length - 1] || weekKeys[0] || '1';
+      if (!stageWeeks.includes(String(state.selectionWeek))) state.selectionWeek = latestWeek;
+      const selectedWeek = String(state.selectionWeek || latestWeek);
+      const selectedDays = weekMap[selectedWeek] || [];
+      const weekUnlocked = stageWeeks.includes(selectedWeek);
+      rows = weekUnlocked
+        ? (weeklyStage === 'segundaFase' ? secondPhaseSelectionRowsForDays(selectedDays) : selectionRowsForWeek(selectedWeek))
+        : [];
       const lineup = buildWeeklySelection(rows);
-      title = 'Times da Semana';
-      description = 'O resultado mais recente disponível aparece primeiro. Semanas futuras são liberadas quando recebem os primeiros dados.';
-      const phaseFilter = `<div class="season-selection-week-stage-filter"><span>Fase:</span><button type="button" class="active">Classificatória</button><button type="button" disabled aria-disabled="true">Segunda Fase <small>EM BREVE</small></button></div>`;
-      const weekButtons = allWeeks.map(key => {
-        const unlocked = availableWeeks.includes(key);
-        const active = unlocked && week === key;
+      title = weeklyStage === 'segundaFase' ? 'Times da Semana — Segunda Fase' : 'Times da Semana';
+      description = weeklyStage === 'segundaFase'
+        ? 'Cada bloco reúne dois dias da Segunda Fase. Após o primeiro dia, a seleção aparece como parcial e fecha quando o segundo dia termina.'
+        : 'O resultado mais recente disponível aparece primeiro. Semanas futuras são liberadas quando recebem os primeiros dados.';
+      const phaseFilter = `<div class="season-selection-week-stage-filter"><span>Fase:</span><button type="button" class="${weeklyStage === 'classificatoria' ? 'active' : ''}" onclick="setFFWSS2SelectionWeekStage('classificatoria')">Classificatória</button><button type="button" class="${weeklyStage === 'segundaFase' ? 'active' : ''} ${secondPhaseStarted ? '' : 'is-locked'}" ${secondPhaseStarted ? `onclick="setFFWSS2SelectionWeekStage('segundaFase')"` : 'disabled aria-disabled="true"'}>Segunda Fase${secondPhaseStarted ? '' : ' <small>EM BREVE</small>'}</button></div>`;
+      const weekButtons = weekKeys.map(key => {
+        const unlocked = stageWeeks.includes(key);
+        const active = unlocked && selectedWeek === key;
         return `<button type="button" class="btn-day season-selection-week-btn ${active ? 'active' : ''} ${unlocked ? '' : 'is-locked'}" ${unlocked ? `onclick="setFFWSS2SelectionWeek('${key}')"` : 'disabled aria-disabled="true"'} style="${active ? 'background:#ff0000;border-color:#ff0000;color:#fff;' : ''}">SEMANA ${key}${unlocked ? '' : '<small>EM BREVE</small>'}</button>`;
       }).join('');
       filters = `${phaseFilter}<div class="season-selection-filters">${weekButtons}</div>`;
-      content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey, week);
+      if (weeklyStage === 'segundaFase' && rows.length) {
+        const completed = secondPhaseCompletedDays().filter(day => selectedDays.includes(day));
+        if (completed.length < selectedDays.length) {
+          notice = partialSelectionNotice('O primeiro dia deste bloco já foi concluído. A seleção fecha quando o segundo dia terminar.');
+        }
+      }
+      content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey, selectedWeek);
     } else if (phaseKey === 'classificatoria') {
       rows = selectionRowsForDays([]);
       const lineup = buildWeeklySelection(rows);
@@ -902,7 +952,7 @@
       const partial = hasData && (completedDays.length === 0 || completedDays.length % 2 === 1);
       description = 'Melhores de cada posição considerando os dados já disputados na Segunda Fase.';
       if (partial) {
-        notice = `<div class="season-selection-disclaimer"><strong>SELEÇÃO PARCIAL</strong><span>A seleção fica parcial enquanto apenas o primeiro dia do bloco tem dados e fecha quando o segundo dia é concluído.</span></div>`;
+        notice = partialSelectionNotice('A seleção fica parcial enquanto apenas o primeiro dia do bloco tem dados e fecha quando o segundo dia é concluído.');
       }
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionLockedHtml(phaseKey);
     } else if (!finalUnlocked) {
@@ -2321,6 +2371,12 @@
     renderPage(map[stageKey]);
   };
   window.setFFWSS2SelectionWeek = week => { state.selectionTab = 'semanal'; state.selectionWeek = String(week || '1'); renderSelections(); };
+  window.setFFWSS2SelectionWeekStage = stage => {
+    state.selectionTab = 'semanal';
+    state.selectionWeekStage = stage === 'segundaFase' ? 'segundaFase' : 'classificatoria';
+    state.selectionWeek = '';
+    renderSelections();
+  };
   window.setFFWSS2SelectionTab = tab => { state.selectionTab = S2_SELECTION_PHASES[tab] ? tab : 'semanal'; renderSelections(); };
   window.setFFWSS2StatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.maps = []; renderStats(); };
   window.toggleFFWSS2StatsMulti = key => { document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-stats-multi-${key}`) menu.hidden = true; }); const menu = document.getElementById(`ffws-s2-stats-multi-${key}`); if (menu) menu.hidden = !menu.hidden; };
