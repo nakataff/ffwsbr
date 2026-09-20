@@ -2,6 +2,7 @@
   'use strict';
   if(window.__CFF_2026_S2_LIVE_PATCH_V3__)return;
   window.__CFF_2026_S2_LIVE_PATCH_V3__=true;
+  window.__CFF_2026_S2_LIVE_PATCH__=true;
 
   const PROD_ROOT='ffwsLive/2026-s2';
   const TEST_ROOT='ffwsLive/2026-s2/teste';
@@ -187,18 +188,13 @@
 
   window.fetch=async(...args)=>{
     const response=await nativeFetch(...args),input=args[0],url=typeof input==='string'?input:(input&&input.url)||'';
-    if(!response.ok||!/ffws-br-2026-s2\/(?:stages|player-stats|players|radar-summary|home-results)\.json/i.test(url))return response;
+    if(!response.ok||!/ffws-br-2026-s2\/(?:stages|player-stats|players|radar-summary)\.json/i.test(url))return response;
     try{
       const data=await live();if(!data)return response;const payload=await response.clone().json();
       if(url.includes('stages.json'))return responseWith(response,mergeStages(payload,data));
       if(url.includes('player-stats.json'))return responseWith(response,mergeStats(payload,data));
       if(url.includes('players.json'))return responseWith(response,mergePlayers(payload,data));
       if(url.includes('radar-summary.json'))return responseWith(response,mergeRadar(payload,data));
-      if(url.includes('home-results.json')){
-        let stats={players:{}};
-        try{const r=await nativeFetch(`ffws-br-2026-s2/player-stats.json?v=20260920-player-stats-base-v1`,{cache:'default'});if(r.ok)stats=mergeStats(await r.json(),data)}catch(_){}
-        return responseWith(response,mergeHome(payload,data,stats));
-      }
       return response;
     }catch(error){console.warn('[CFF] Dados ao vivo indisponíveis:',error);return response}
   };
