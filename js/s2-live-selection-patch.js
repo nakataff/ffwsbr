@@ -23,9 +23,9 @@
   let cache=null,cacheAt=0,wrapping=false,syncing=false,scheduled=false;
 
   async function data(){
-    if(cache&&Date.now()-cacheAt<3000)return cache;
+    if(cache&&Date.now()-cacheAt<30000)return cache;
     try{
-      const r=await fetch(`ffws-br-2026-s2/players.json?v=${Date.now()}`,{cache:'no-store'});
+      const r=await fetch('ffws-br-2026-s2/players.json?v=20260920-s2-live-players-v1',{cache:'default'});
       if(!r.ok)return null;
       cache=await r.json();cacheAt=Date.now();return cache;
     }catch(_){return null}
