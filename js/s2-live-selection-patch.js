@@ -23,7 +23,19 @@
   }
   function role(row){const raw=String(row?.meta?.roleShort||row?.meta?.role||row?.roleShort||row?.role||'RUSH').toUpperCase();if(raw.includes('GRAN'))return'GRAN';if(raw.includes('SUP'))return'SUP';if(raw==='3'||raw.includes('3º'))return'3';return'RUSH'}
   function lineup(rows){const used=new Set(),take=(roles,n)=>rows.filter(r=>!used.has(r)&&roles.includes(role(r))).slice(0,n).map(r=>(used.add(r),r));let out=[...take(['RUSH','3'],2),...take(['GRAN'],1),...take(['SUP'],1)];if(out.length<4)out=out.concat(rows.filter(r=>!used.has(r)).slice(0,4-out.length));return out}
-  function logo(team){try{return window.getTeamLogoByAliases?.(team)||window.logos?.[team]||'escudo.webp'}catch(_){return'escudo.webp'}}
+  function logo(team){
+    try{
+      const candidates=[
+        typeof window.cffFindLiveTeamLogo==='function'?window.cffFindLiveTeamLogo(team):'',
+        typeof window.getTeamLogoSafe==='function'?window.getTeamLogoSafe(team):'',
+        typeof window.getTeamLogoByAliases==='function'?window.getTeamLogoByAliases(team):'',
+        window.logos?.[team],
+        window.logos?.[String(team||'').toUpperCase()]
+      ];
+      const resolved=candidates.find(value=>value&&value!=='escudo.webp');
+      return resolved||'escudo.webp';
+    }catch(_){return'escudo.webp'}
+  }
   function photo(meta){try{return window.cffResolvePlayerPhoto?.(meta?.name,meta?.photo||meta?.image||'')||meta?.photo||meta?.image||'silhueta.webp'}catch(_){return meta?.photo||meta?.image||'silhueta.webp'}}
   function card(row){const color='#21c778',r=role(row),m=row.meta||{name:row.name},dmg=`${(row.damage/1000).toFixed(1)}K`;return `<div class="ffws-s2-s1-selection-card" role="button" tabindex="0" onclick="window.openCurrentSeasonPlayer?.('${String(row.name).replace(/'/g,"\\'")}','${String(row.team).replace(/'/g,"\\'")}')"><div style="cursor:pointer;width:280px;height:420px;background:#000;border:4px solid ${color};border-radius:15px;position:relative;overflow:hidden;box-shadow:0 0 25px rgba(33,199,120,.44);margin:0 auto;box-sizing:border-box"><div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#063524,#000);opacity:.95"></div><div style="position:absolute;top:15px;left:15px;z-index:10;background:${color};color:#fff;padding:4px 12px;border-radius:4px;font-size:.75em;font-weight:900;letter-spacing:1px">2ª FASE</div><div style="position:absolute;top:50px;left:25px;z-index:4;text-align:center;color:${color}"><div style="font-size:22px;font-weight:900">${esc(r)}</div><div style="margin:8px auto;width:35px;height:3px;background:${color}"></div><img src="${esc(logo(row.team))}" alt="${esc(row.team)}" style="width:50px;height:50px;object-fit:contain;margin-top:5px"></div><img src="${esc(photo(m))}" alt="${esc(row.name)}" onerror="this.onerror=null;this.src='silhueta.webp'" style="position:absolute;top:20px;right:-35px;height:270px;max-width:245px;object-fit:contain;object-position:right bottom;z-index:2;filter:drop-shadow(5px 5px 15px #000);-webkit-mask-image:linear-gradient(to bottom,#000 75%,transparent 100%)"><div style="position:absolute;bottom:0;width:100%;height:170px;background:linear-gradient(transparent,#000 45%);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:20px;box-sizing:border-box"><div style="color:#fff;font-size:24px;font-weight:900;text-transform:uppercase;padding:6px 10px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box">${esc(row.name)}</div><div style="display:flex;justify-content:space-around;width:90%;color:#fff;border-top:1px solid rgba(33,199,120,.38);padding-top:10px"><div style="text-align:center"><div style="font-size:.65em;color:#888">KILLS</div><div style="font-size:1.1em;font-weight:900;color:${color}">${row.kills}</div></div><div style="text-align:center"><div style="font-size:.65em;color:#888">DANO</div><div style="font-size:1.1em;font-weight:900">${dmg}</div></div><div style="text-align:center"><div style="font-size:.65em;color:#888">QUEDAS</div><div style="font-size:1.1em;font-weight:900">${row.matches}</div></div></div></div></div></div>`}
 
@@ -53,7 +65,7 @@
     const grid=panel.querySelector('.season-selection-grid'),head=panel.querySelector('.season-selection-section-head p');if(!grid)return;
     setText(head,'Melhores de cada posição considerando os dados já disputados na Segunda Fase.');
     const selected=lineup(rs);
-    const signature=selected.map(r=>`${norm(r.name)}:${norm(r.team)}:${r.kills}:${r.damage}:${r.matches}`).join('|');
+    const signature=selected.map(r=>`${norm(r.name)}:${norm(r.team)}:${r.kills}:${r.damage}:${r.matches}:${logo(r.team)}`).join('|');
     if(grid.dataset.cffLiveSelectionSignature===signature)return;
     grid.dataset.cffLiveSelectionSignature=signature;
     grid.innerHTML=selected.map(card).join('');
@@ -108,6 +120,8 @@
     setTimeout(()=>clearInterval(timer),10000);
     tryWrap();
     observer.observe(document.body,{childList:true,subtree:true});
+    window.addEventListener('cff:year-logos-ready',scheduleSync);
+    document.addEventListener('cff:modules-loaded',scheduleSync);
     scheduleSync();
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
