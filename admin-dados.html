@@ -70,14 +70,20 @@
           <div id="live-preview" class="live-preview live-hidden"></div>
 
           <section class="live-card" style="margin-top:18px;background:#0a111d;border-color:#2b4568">
-            <span class="live-stage-pill">TESTE LOOKER</span>
-            <h3 style="margin-top:10px">Buscar dados direto da Garena</h3>
-            <p class="live-note">Teste técnico usando a T1 da Rodada 16 • Queda 4. Ele não publica nada no Firebase; serve apenas para verificar se o navegador permite acessar o Looker diretamente.</p>
-            <div class="live-actions">
-              <button id="live-garena-test" class="live-btn primary" type="button">TESTAR GARENA • R16 Q4</button>
+            <span class="live-stage-pill">GARENA LOOKER</span>
+            <h3 style="margin-top:10px">Importar T1 + P1 automaticamente</h3>
+            <p class="live-note">Requer a extensão CFF Looker Bridge instalada e uma aba do relatório da Garena aberta e logada no Chrome.</p>
+            <div class="live-row">
+              <div class="live-field"><label for="live-garena-round">Rodada no Looker</label><input id="live-garena-round" type="text" value="R16" inputmode="text"></div>
+              <div class="live-field"><label for="live-garena-drop">Queda</label><select id="live-garena-drop"><option>Q1</option><option>Q2</option><option>Q3</option><option selected>Q4</option><option>Q5</option><option>Q6</option></select></div>
             </div>
-            <p id="live-garena-test-message" class="live-message"></p>
-            <div id="live-garena-test-preview" class="live-preview live-hidden"></div>
+            <div class="live-field"><label for="live-garena-map">Mapa</label><select id="live-garena-map"><option value="">Selecione o mapa</option><option>Bermuda</option><option>Kalahari</option><option value="Purgatório">Purgatório</option><option value="Nova Terra">Nova Terra</option><option>Solara</option></select></div>
+            <div class="live-actions">
+              <button id="live-garena-fetch" class="live-btn primary" type="button">BUSCAR T1 + P1 DA GARENA</button>
+              <a class="live-btn ghost" href="https://github.com/nakataff/ffwsbr/tree/main/cff-looker-bridge" target="_blank" rel="noopener" style="text-decoration:none">Como instalar a extensão</a>
+            </div>
+            <p id="live-garena-status" class="live-message">Extensão: verificando…</p>
+            <div id="live-garena-preview" class="live-preview live-hidden"></div>
           </section>
 
           <section class="live-batch">
@@ -127,6 +133,6 @@
       </div>
     </section>
   </main>
-  <script type="module" src="js/admin-live-data.js?v=20260920-garena-test-v4"></script>
+  <script type="module" src="js/admin-live-data.js?v=20260920-garena-bridge-v7"></script>
 </body>
 </html>
