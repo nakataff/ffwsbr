@@ -19,7 +19,8 @@ const E={
   teamsFile:$('#live-teams-file'),playersFile:$('#live-players-file'),teamsStatus:$('#live-teams-status'),playersStatus:$('#live-players-status'),validate:$('#live-validate'),publish:$('#live-publish'),
   message:$('#live-message'),preview:$('#live-preview'),refresh:$('#live-refresh'),count:$('#live-count'),updated:$('#live-updated'),list:$('#live-drop-list'),stageHelp:$('#live-stage-help'),testMode:$('#live-test-mode'),
   shareBody:$('#live-share-body'),shareTitle:$('#live-share-title'),shareSubtitle:$('#live-share-subtitle'),shareWorld:$('#live-share-world'),shareDrop:$('#live-share-drop'),shareDownload:$('#live-share-download'),shareStatus:$('#live-share-status'),
-  batchList:$('#live-batch-list'),batchAdd:$('#live-batch-add'),batchValidate:$('#live-batch-validate'),batchPublish:$('#live-batch-publish'),batchClear:$('#live-batch-clear'),batchMessage:$('#live-batch-message')
+  batchList:$('#live-batch-list'),batchAdd:$('#live-batch-add'),batchValidate:$('#live-batch-validate'),batchPublish:$('#live-batch-publish'),batchClear:$('#live-batch-clear'),batchMessage:$('#live-batch-message'),
+  garenaTest:$('#live-garena-test'),garenaTestMessage:$('#live-garena-test-message'),garenaTestPreview:$('#live-garena-test-preview')
 };
 
 const BONUS=Object.freeze({'LOS':50,'LOUD SNICKERS':42,'FLUXO W7M':35,'INTZ':29,'TEAM SOLID':24,'RISE GAMING':19,'ALPHA7':15,'RUSH GAMING':11,'INFLUENCE RAGE':8,'CPT VOX':5,'AFROGAMES':2,'SX TET':0});
@@ -223,6 +224,124 @@ async function loadStage(){
 async function loadRoster(){try{const r=await fetch(`ffws-br-2026-s2/teams.json?v=${Date.now()}`,{cache:'no-store'}),j=await r.json(),teams=Array.isArray(j.teams)?j.teams:[];rosterNames=new Set(teams.flatMap(t=>t.players||[]).map(norm));teamMeta=new Map(teams.map(t=>[norm(t.name),t]));renderShareTable()}catch{rosterNames=new Set();teamMeta=new Map();renderShareTable()}}
 async function fileRead(input,type){const f=input.files?.[0];if(!f)return;const text=await f.text();if(type==='teams'){teamText=text;teamFileName=f.name;E.teamsStatus.textContent=`${f.name} carregado`;E.teamsStatus.className='live-file-ok'}else{playerText=text;playerFileName=f.name;E.playersStatus.textContent=`${f.name} carregado`;E.playersStatus.className='live-file-ok'}}
 
+const LOOKER_ENDPOINT='https://datastudio.google.com/u/0/batchedDataV2?appVersion=20260914_0100';
+function garenaTestMsg(text,type=''){if(!E.garenaTestMessage)return;E.garenaTestMessage.textContent=text||'';E.garenaTestMessage.className=`live-message${type?' '+type:''}`}
+function lookerT1Payload(round='R16',drop='Q4'){
+  return {
+    dataRequest:[{
+      requestContext:{
+        reportContext:{
+          reportId:'2a4cb120-b9f6-4721-b0cc-2620c018e3c7',
+          pageId:'p_puv4sxyk7d',
+          mode:1,
+          componentId:'cd-k2u4sxyk7d',
+          displayType:'simple-table',
+          actionId:'crossFilters|reportDefault'
+        },
+        requestMode:0
+      },
+      datasetSpec:{
+        dataset:[{datasourceId:'e3095371-ed3a-4866-8d84-606219ed299d',revisionNumber:0,parameterOverrides:[]}],
+        queryFields:[
+          {name:'qt_jdlcq8b91d',datasetNs:'d0',tableNs:'t0',resultTransformation:{analyticalFunction:0,isRelativeToBase:false,bypassCanvasFilters:false},dataTransformation:{sourceFieldName:'_n1604116824_'}},
+          {name:'qt_s72dcpdhrd',datasetNs:'d0',tableNs:'t0',resultTransformation:{analyticalFunction:0,isRelativeToBase:false,bypassCanvasFilters:false},dataTransformation:{sourceFieldName:'_649865485_',aggregation:6}},
+          {name:'qt_wtjcq8b91d',datasetNs:'d0',tableNs:'t0',resultTransformation:{analyticalFunction:0,isRelativeToBase:false,bypassCanvasFilters:false},dataTransformation:{sourceFieldName:'_1887436980_',aggregation:6}},
+          {name:'qt_plkcq8b91d',datasetNs:'d0',tableNs:'t0',resultTransformation:{analyticalFunction:0,isRelativeToBase:false,bypassCanvasFilters:false},dataTransformation:{sourceFieldName:'_1272811272_',aggregation:6}},
+          {name:'qt_qlkcq8b91d',datasetNs:'d0',tableNs:'t0',resultTransformation:{analyticalFunction:0,isRelativeToBase:false,bypassCanvasFilters:false},dataTransformation:{sourceFieldName:'_78391006_',aggregation:2}},
+          {name:'qt_p2epidfh6d',datasetNs:'d0',tableNs:'t0',resultTransformation:{analyticalFunction:0,isRelativeToBase:false,bypassCanvasFilters:false},dataTransformation:{sourceFieldName:'_1273248318_',aggregation:1}}
+        ],
+        sortData:[
+          {sortColumn:{name:'qt_s72dcpdhrd',datasetNs:'d0',tableNs:'t0',dataTransformation:{sourceFieldName:'_649865485_',aggregation:6}},sortDir:1},
+          {sortColumn:{name:'qt_wtjcq8b91d',datasetNs:'d0',tableNs:'t0',dataTransformation:{sourceFieldName:'_1887436980_',aggregation:6}},sortDir:1},
+          {sortColumn:{name:'qt_plkcq8b91d',datasetNs:'d0',tableNs:'t0',dataTransformation:{sourceFieldName:'_1272811272_',aggregation:6}},sortDir:1}
+        ],
+        includeRowsCount:true,
+        relatedDimensionMask:{addDisplay:false,addUniqueId:false,addLatLong:false},
+        paginateInfo:{startRow:1,rowsCount:100},
+        dsFilterOverrides:[],
+        filters:[
+          {filterDefinition:{filterExpression:{include:false,conceptType:0,concept:{ns:'t0',name:'qt_58vni89xgd'},filterConditionType:'NU',stringValues:[''],numberValues:[],queryTimeTransformation:{dataTransformation:{sourceFieldName:'_n1604116824_'}}}},dataSubsetNs:{datasetNs:'d0',tableNs:'t0',contextNs:'c0'},version:3},
+          {filterDefinition:{filterExpression:{include:true,conceptType:0,concept:{ns:'t0',name:'qt_dh9njshotd'},filterConditionType:'EQ',stringValues:['Fase 2'],numberValues:[],queryTimeTransformation:{dataTransformation:{sourceFieldName:'_2182253_'}}}},dataSubsetNs:{datasetNs:'d0',tableNs:'t0',contextNs:'c0'},version:3},
+          {filterDefinition:{filterExpression:{include:true,conceptType:0,concept:{name:'qt_sf9j14z11d',ns:'t0'},queryTimeTransformation:{dataTransformation:{sourceFieldName:'calc_6mzkkba45d'}},filterConditionType:'IN',stringValues:[round]}},dataSubsetNs:{datasetNs:'d0',tableNs:'t0',contextNs:'c0'},version:3,isCanvasFilter:true},
+          {filterDefinition:{filterExpression:{include:true,conceptType:0,concept:{name:'qt_clqd54z11d',ns:'t0'},queryTimeTransformation:{dataTransformation:{sourceFieldName:'_78391006_'}},filterConditionType:'IN',stringValues:[drop]}},dataSubsetNs:{datasetNs:'d0',tableNs:'t0',contextNs:'c0'},version:3,isCanvasFilter:true}
+        ],
+        features:[],
+        dateRanges:[],
+        contextNsCount:1,
+        dateRangeDimensions:[{name:'qt_mbscq8b91d',datasetNs:'d0',tableNs:'t0',dataTransformation:{sourceFieldName:'_2122698_'}}],
+        calculatedField:[],
+        needGeocoding:false,
+        geoFieldMask:[],
+        multipleGeocodeFields:[],
+        timezone:'America/Sao_Paulo'
+      },
+      role:'main',
+      retryHints:{useClientControlledRetry:true,isLastRetry:false,retryCount:0,originalRequestId:'cd-k2u4sxyk7d_0_0'}
+    }]
+  };
+}
+function parseLookerJson(text){
+  const cleanText=String(text||'').replace(/^\s*\)\]\}'\s*/,'').trim();
+  if(!cleanText)throw new Error('O Looker respondeu sem conteúdo.');
+  return JSON.parse(cleanText);
+}
+function tableColumnValues(column){
+  if(!column)return[];
+  const bucket=column.stringColumn||column.doubleColumn||column.longColumn||column.dateColumn||{};
+  return Array.isArray(bucket.values)?bucket.values:[];
+}
+function parseLookerT1(json){
+  const table=json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset;
+  if(!table||!Array.isArray(table.column)||table.column.length<6)throw new Error('Resposta recebida, mas a tabela T1 não foi encontrada.');
+  const cols=table.column.map(tableColumnValues),size=Number(table.size||cols[0]?.length||0),rows=[];
+  for(let i=0;i<size;i++)rows.push({
+    team:canonicalTeam(cols[0]?.[i]||''),
+    points:num(cols[1]?.[i]),
+    booyah:num(cols[2]?.[i]),
+    kills:num(cols[3]?.[i]),
+    matches:num(cols[4]?.[i]),
+    position:num(cols[5]?.[i])
+  });
+  return rows.filter(row=>row.team);
+}
+async function testGarenaLooker(){
+  if(!E.garenaTest)return;
+  E.garenaTest.disabled=true;garenaTestMsg('Tentando acessar o Looker da Garena…');
+  if(E.garenaTestPreview)E.garenaTestPreview.classList.add('live-hidden');
+  try{
+    const response=await fetch(LOOKER_ENDPOINT,{
+      method:'POST',
+      credentials:'include',
+      mode:'cors',
+      headers:{'Content-Type':'application/json;charset=UTF-8'},
+      body:JSON.stringify(lookerT1Payload('R16','Q4'))
+    });
+    const raw=await response.text();
+    if(!response.ok)throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    const json=parseLookerJson(raw),rows=parseLookerT1(json);
+    if(rows.length!==12)throw new Error(`Recebi ${rows.length} equipes em vez de 12.`);
+    if(E.garenaTestPreview){
+      E.garenaTestPreview.textContent=[
+        'CONEXÃO OK • Garena Looker • R16 • Q4',
+        '',
+        ...rows.sort((a,b)=>a.position-b.position).map(row=>`${String(row.position).padStart(2,'0')}º ${row.team.padEnd(17)} ${String(row.points).padStart(3)} pts • ${String(row.booyah)} B • ${String(row.kills).padStart(2)} K • ${row.matches} Q`)
+      ].join('\n');
+      E.garenaTestPreview.classList.remove('live-hidden');
+    }
+    garenaTestMsg('✓ Funcionou direto do admin. Recebi as 12 equipes da T1 da R16 Q4.','ok');
+  }catch(error){
+    console.error('Teste Looker/Garena:',error);
+    const detail=String(error?.message||error);
+    const likelyCors=/failed to fetch|networkerror|cors/i.test(detail);
+    garenaTestMsg(likelyCors
+      ? 'Bloqueado pelo navegador (CORS/sessão). O endpoint existe, mas o Central Free Fire não pode lê-lo diretamente. Isso confirma que vamos precisar de uma ponte/automação usando a sessão do Looker.'
+      : `Falhou: ${detail}`,'error');
+    if(E.garenaTestPreview){
+      E.garenaTestPreview.textContent=`ERRO NO TESTE\n\n${detail}\n\nSe o Console mostrar bloqueio por CORS, a consulta está correta e o impedimento é apenas o navegador.`;
+      E.garenaTestPreview.classList.remove('live-hidden');
+    }
+  }finally{E.garenaTest.disabled=false}
+}
 function batchMsg(text,type=''){if(!E.batchMessage)return;E.batchMessage.textContent=text||'';E.batchMessage.className=`live-message${type?' '+type:''}`}
 function batchUsedSlots(){
   const used=new Set(drops().map(x=>`${x.day}:${x.drop}`));
@@ -367,6 +486,7 @@ E.stage?.addEventListener('change',()=>{clearBatch();loadStage()});
 E.testMode?.addEventListener('change',()=>{stageData={};E.preview.classList.add('live-hidden');loadStage()});
 E.refresh?.addEventListener('click',()=>loadStage());
 E.shareDownload?.addEventListener('click',exportSharePng);
+E.garenaTest?.addEventListener('click',testGarenaLooker);
 E.batchAdd?.addEventListener('click',addBatchRow);
 E.batchValidate?.addEventListener('click',validateBatch);
 E.batchPublish?.addEventListener('click',publishBatch);
