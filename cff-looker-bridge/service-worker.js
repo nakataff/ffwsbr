@@ -1,4 +1,5 @@
 const REPORT_ID = '2a4cb120-b9f6-4721-b0cc-2620c018e3c7';
+const REPORT_URL_ID = '4bbd7490-84fe-4be2-b753-666f944c16ed';
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || message.type !== 'CFF_LOOKER_FETCH') return;
@@ -11,7 +12,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!/^Q\d+$/.test(drop)) throw new Error('Queda inválida. Use algo como Q4.');
 
     const tabs = await chrome.tabs.query({ url: 'https://datastudio.google.com/*' });
-    const tab = tabs.find(item => String(item.url || '').includes(REPORT_ID)) || tabs[0];
+    const tab = tabs.find(item => String(item.url || '').includes(REPORT_URL_ID)) || tabs.find(item => String(item.url || '').includes(REPORT_ID)) || tabs[0];
 
     if (!tab?.id) {
       throw new Error('Abra o relatório da Garena no Looker Studio em outra aba e tente novamente.');
