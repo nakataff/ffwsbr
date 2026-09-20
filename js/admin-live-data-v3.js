@@ -363,7 +363,7 @@ function requestGarenaBridge(round,drop){
       const data=event.data||{};
       if(data.source!=='cff-looker-bridge'||data.type!=='FETCH_RESULT'||data.requestId!==requestId)return;
       clearTimeout(timer);window.removeEventListener('message',handler);
-      if(data.ok)resolve(data.data);else reject(new Error(data.error||'Falha ao consultar o Looker.'));
+      if(data.ok)resolve(data.data);else{const err=new Error(data.error||'Falha ao consultar o Looker.');err.diagnostics=data.diagnostics||null;reject(err)}
     };
     window.addEventListener('message',handler);
     window.postMessage({source:'cff-admin-looker',type:'FETCH',requestId,round,drop},location.origin);
@@ -374,7 +374,7 @@ function installGarenaBridgeListener(){
     if(event.source!==window||event.origin!==location.origin)return;
     const data=event.data||{};
     if(data.source==='cff-looker-bridge'&&data.type==='READY'){
-      garenaBridgeReady=true;garenaStatus('Extensão conectada. Abra o relatório da Garena em outra aba e escolha rodada, queda e mapa.','ok');
+      garenaBridgeReady=true;garenaStatus(`Extensão conectada • v${data.version||'?'} • abra o relatório da Garena em outra aba.`,'ok');
     }
   });
   window.postMessage({source:'cff-admin-looker',type:'PING'},location.origin);
@@ -408,7 +408,15 @@ async function fetchGarenaData(){
       E.garenaPreview.classList.remove('live-hidden');
     }
     garenaStatus('✓ T1 + P1 importados. Confira a validação acima e clique em PROCESSAR E PUBLICAR.','ok');
-  }catch(error){console.error(error);garenaStatus(error.message||String(error),'error')}
+  }catch(error){
+    console.error('Garena Looker Bridge:',error,error?.diagnostics||'');
+    garenaStatus(error.message||String(error),'error');
+    if(E.garenaPreview){
+      const log=error?.diagnostics?JSON.stringify(error.diagnostics,null,2):'Sem diagnóstico adicional.';
+      E.garenaPreview.textContent='LOG DA BRIDGE\n\n'+log;
+      E.garenaPreview.classList.remove('live-hidden');
+    }
+  }
   finally{E.garenaFetch.disabled=false}
 }
 function batchMsg(text,type=''){if(!E.batchMessage)return;E.batchMessage.textContent=text||'';E.batchMessage.className=`live-message${type?' '+type:''}`}
