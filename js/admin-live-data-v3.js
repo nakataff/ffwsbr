@@ -17,7 +17,8 @@ const E={
   login:$('#live-login'),dashboard:$('#live-dashboard'),password:$('#live-password'),loginBtn:$('#live-login-btn'),loginMsg:$('#live-login-message'),logout:$('#live-logout'),
   stage:$('#live-stage'),day:$('#live-day'),drop:$('#live-drop'),next:$('#live-next'),map:$('#live-map'),customMapWrap:$('#live-custom-map-wrap'),customMap:$('#live-custom-map'),
   teamsFile:$('#live-teams-file'),playersFile:$('#live-players-file'),teamsStatus:$('#live-teams-status'),playersStatus:$('#live-players-status'),validate:$('#live-validate'),publish:$('#live-publish'),
-  message:$('#live-message'),preview:$('#live-preview'),refresh:$('#live-refresh'),count:$('#live-count'),updated:$('#live-updated'),list:$('#live-drop-list'),stageHelp:$('#live-stage-help'),testMode:$('#live-test-mode')
+  message:$('#live-message'),preview:$('#live-preview'),refresh:$('#live-refresh'),count:$('#live-count'),updated:$('#live-updated'),list:$('#live-drop-list'),stageHelp:$('#live-stage-help'),testMode:$('#live-test-mode'),
+  shareBody:$('#live-share-body'),shareTitle:$('#live-share-title'),shareSubtitle:$('#live-share-subtitle'),shareWorld:$('#live-share-world'),shareDrop:$('#live-share-drop'),shareDownload:$('#live-share-download'),shareStatus:$('#live-share-status')
 };
 
 const BONUS=Object.freeze({'LOS':50,'LOUD SNICKERS':42,'FLUXO W7M':35,'INTZ':29,'TEAM SOLID':24,'RISE GAMING':19,'ALPHA7':15,'RUSH GAMING':11,'INFLUENCE RAGE':8,'CPT VOX':5,'AFROGAMES':2,'SX TET':0});
@@ -27,7 +28,7 @@ const STAGES=Object.freeze({
 });
 const POINTS_TO_PLACEMENT={12:1,9:2,8:3,7:4,6:5,5:6,4:7,3:8,2:9,1:10};
 
-let stageData={},teamText='',playerText='',teamFileName='',playerFileName='',rosterNames=new Set();
+let stageData={},teamText='',playerText='',teamFileName='',playerFileName='',rosterNames=new Set(),teamMeta=new Map();
 
 const clean=v=>String(v??'').replace(/^\uFEFF/,'').trim();
 const norm=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
@@ -85,8 +86,127 @@ function fmtTime(v){const n=Number(v||0);if(!n)return'—';try{return new Date(n
 function drops(data=stageData){const out=[],days=data?.drops||{};Object.keys(days).sort((a,b)=>Number(a)-Number(b)).forEach(day=>{const ds=days[day]||{};Object.keys(ds).sort((a,b)=>Number(a)-Number(b)).forEach(drop=>{const item=ds[drop];if(item)out.push({...item,day:Number(item.day||day),drop:Number(item.drop||drop)})})});return out}
 function nextDrop(){const c=cfg(),used=new Set(drops().map(x=>`${x.day}:${x.drop}`));for(let day=1;day<=c.days;day++)for(let drop=1;drop<=Number(c.dropsByDay[day]||0);drop++)if(!used.has(`${day}:${drop}`))return{day,drop};return null}
 function applyNext(){const n=nextDrop();if(n){E.next.value=`Dia ${n.day} • Queda ${n.drop}`;E.day.value=n.day;E.drop.value=n.drop}else E.next.value='Etapa completa'}
+
+const SHARE_SHORT=Object.freeze({
+  'AFROGAMES':'AFG','ALPHA7':'A7','CPT VOX':'CPX','FLUXO W7M':'FX','INFLUENCE RAGE':'INF','INTZ':'INTZ','LOS':'LOS',
+  'LOUD SNICKERS':'LOUD','RISE GAMING':'RISE','RUSH GAMING':'RUSH','SX TET':'SXT','TEAM SOLID':'TS'
+});
+function shareTeamMeta(team){
+  const canonical=canonicalTeam(team),meta=teamMeta.get(norm(canonical))||{};
+  return{name:canonical,short:SHARE_SHORT[canonical]||meta.abbreviation||canonical,logo:meta.logo||'escudo.webp'};
+}
+function standingRows(dropList=drops()){
+  const score=new Map(),bonus=(E.stage.value==='segundaFase'&&!isTest())?(stageData?.bonus||BONUS):{};
+  const ensure=team=>{
+    const name=canonicalTeam(team),key=norm(name);
+    if(!score.has(key))score.set(key,{team:name,points:Number(bonus?.[name]||0),booyah:0,kills:0,matches:0});
+    return score.get(key);
+  };
+  if(E.stage.value==='segundaFase'&&!isTest())Object.keys(BONUS).forEach(ensure);
+  dropList.forEach(dropItem=>{
+    (dropItem?.teams||[]).forEach(teamRow=>{
+      const row=ensure(teamRow.team);
+      row.points+=num(teamRow.points);
+      row.booyah+=num(teamRow.booyah);
+      row.kills+=num(teamRow.kills);
+      row.matches+=1;
+    });
+  });
+  return [...score.values()]
+    .sort((a,b)=>b.points-a.points||b.booyah-a.booyah||b.kills-a.kills||a.team.localeCompare(b.team,'pt-BR'))
+    .map((row,index)=>({...row,rank:index+1,...shareTeamMeta(row.team)}));
+}
+function currentShareRows(){
+  const all=drops(),current=standingRows(all),previous=standingRows(all.slice(0,-1)),previousRank=new Map(previous.map(row=>[norm(row.team),row.rank]));
+  return current.map(row=>({...row,move:(previousRank.get(norm(row.team))||row.rank)-row.rank}));
+}
+function renderShareTable(){
+  if(!E.shareBody)return;
+  const list=drops(),rows=currentShareRows(),last=list[list.length-1],stage=cfg(),maxDrop=last?Number(stage.dropsByDay[last.day]||last.drop||0):Number(stage.dropsByDay[1]||0);
+  E.shareTitle.textContent=`FFWS BR 2026 S2 - ${String(stage.label||'').toUpperCase()}`;
+  E.shareSubtitle.textContent=last?`DIA ${last.day} • CLASSIFICAÇÃO AO VIVO`:'CLASSIFICAÇÃO AO VIVO';
+  E.shareDrop.textContent=`QUEDA ${last?.drop||0}/${maxDrop||0}`;
+  if(E.shareWorld){
+    E.shareWorld.style.display=E.stage.value==='segundaFase'?'inline-flex':'none';
+    E.shareWorld.textContent='Global Series 1-2';
+  }
+  if(!rows.length){
+    E.shareBody.innerHTML='<tr><td colspan="6"><div class="live-share-empty">Nenhuma queda publicada nesta etapa.</div></td></tr>';
+    return;
+  }
+  E.shareBody.innerHTML=rows.map(row=>{
+    const move=row.move>0?`<span class="live-share-move up">▲${row.move}</span>`:row.move<0?`<span class="live-share-move down">▼${Math.abs(row.move)}</span>`:'';
+    return `<tr>
+      <td class="live-share-rank">${row.rank}º ${move}</td>
+      <td class="team"><span class="live-share-team"><img src="${esc(row.logo)}" onerror="this.src='escudo.webp'" alt=""><b>${esc(row.short)}</b></span></td>
+      <td>${Math.round(row.points)}</td><td class="live-share-booyah">${Math.round(row.booyah)}</td><td>${Math.round(row.kills)}</td><td>${Math.round(row.matches)}</td>
+    </tr>`;
+  }).join('');
+}
+function rr(ctx,x,y,w,h,r,fill,stroke=''){
+  const radius=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+radius,y);ctx.arcTo(x+w,y,x+w,y+h,radius);ctx.arcTo(x+w,y+h,x,y+h,radius);ctx.arcTo(x,y+h,x,y,radius);ctx.arcTo(x,y,x+w,y,radius);ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}
+}
+function loadShareImage(src){
+  return new Promise(resolve=>{
+    const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src||'escudo.webp';
+  });
+}
+async function exportSharePng(){
+  if(!E.shareDownload)return;
+  const rows=currentShareRows(),list=drops(),last=list[list.length-1],stage=cfg();
+  if(!rows.length){E.shareStatus.textContent='Publique pelo menos uma queda antes de salvar a imagem.';return}
+  E.shareDownload.disabled=true;E.shareStatus.textContent='Gerando PNG 1080×1350…';
+  try{
+    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#121419';ctx.fillRect(0,0,1080,1350);
+    rr(ctx,28,28,1024,1294,26,'#181a20','#2a2d35');
+    ctx.save();ctx.beginPath();ctx.rect(28,28,1024,205);ctx.clip();ctx.fillStyle='#1c1e24';ctx.fillRect(28,28,1024,205);ctx.restore();
+
+    ctx.fillStyle='#fff';ctx.font='900 38px Arial, sans-serif';ctx.textBaseline='top';
+    ctx.fillText('FFWS BR 2026 S2 -',58,62);
+    ctx.fillText(String(stage.label||'').toUpperCase(),58,108);
+    ctx.fillStyle='#aeb5c1';ctx.font='800 20px Arial, sans-serif';
+    ctx.fillText(last?`DIA ${last.day} • CLASSIFICAÇÃO AO VIVO`:'CLASSIFICAÇÃO AO VIVO',58,163);
+
+    if(E.stage.value==='segundaFase'){
+      rr(ctx,748,58,258,42,21,'#203324','#367846');ctx.fillStyle='#49c665';ctx.beginPath();ctx.arc(770,79,7,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='900 17px Arial, sans-serif';ctx.fillText('Global Series 1-2',790,69);
+    }
+    const maxDrop=last?Number(stage.dropsByDay[last.day]||last.drop||0):Number(stage.dropsByDay[1]||0);
+    rr(ctx,820,123,186,52,26,'#33250b','#9d7000');ctx.fillStyle='#ffc400';ctx.font='900 20px Arial, sans-serif';ctx.fillText(`QUEDA ${last?.drop||0}/${maxDrop||0}`,848,139);
+
+    const headerY=233,rowStart=299,rowH=80;
+    ctx.fillStyle='#22242a';ctx.fillRect(28,headerY,1024,66);
+    ctx.fillStyle='#9ba3af';ctx.font='800 18px Arial, sans-serif';ctx.textBaseline='middle';
+    ctx.fillText('#',62,headerY+33);ctx.fillText('Equipe',190,headerY+33);
+    ctx.textAlign='center';ctx.fillText('Pontos',650,headerY+33);ctx.fillStyle='#35df58';ctx.fillText('Booyah!',790,headerY+33);ctx.fillStyle='#9ba3af';ctx.fillText('Abates',920,headerY+33);ctx.fillText('Quedas',1010,headerY+33);ctx.textAlign='left';
+
+    const images=await Promise.all(rows.map(row=>loadShareImage(row.logo)));
+    rows.forEach((row,index)=>{
+      const y=rowStart+index*rowH;
+      ctx.fillStyle=index<2?'#1b2d21':(index%2?'#181a20':'#16181d');ctx.fillRect(28,y,1024,rowH);
+      if(index<2){ctx.fillStyle='#4ed56c';ctx.fillRect(28,y,5,rowH)}
+      ctx.strokeStyle='#292c33';ctx.beginPath();ctx.moveTo(28,y);ctx.lineTo(1052,y);ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font='900 22px Arial, sans-serif';ctx.textBaseline='middle';ctx.fillText(`${row.rank}º`,62,y+40);
+      if(row.move){
+        ctx.fillStyle=row.move>0?'#40df72':'#ff5f6d';ctx.font='900 16px Arial, sans-serif';ctx.fillText(row.move>0?`▲${row.move}`:`▼${Math.abs(row.move)}`,105,y+40);
+      }
+      const img=images[index];if(img)ctx.drawImage(img,150,y+18,44,44);
+      ctx.fillStyle='#fff';ctx.font='900 24px Arial, sans-serif';ctx.fillText(row.short,210,y+40);
+      ctx.textAlign='center';ctx.font='900 23px Arial, sans-serif';ctx.fillText(String(Math.round(row.points)),650,y+40);ctx.fillStyle='#35df58';ctx.fillText(String(Math.round(row.booyah)),790,y+40);ctx.fillStyle='#fff';ctx.fillText(String(Math.round(row.kills)),920,y+40);ctx.fillStyle='#b5bbc5';ctx.fillText(String(Math.round(row.matches)),1010,y+40);ctx.textAlign='left';
+    });
+    ctx.fillStyle='#777f8b';ctx.font='700 16px Arial, sans-serif';ctx.textAlign='right';ctx.textBaseline='alphabetic';ctx.fillText('Central Free Fire',1018,1290);ctx.textAlign='left';
+
+    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Falha ao gerar PNG.')),'image/png',1));
+    const url=URL.createObjectURL(blob),a=document.createElement('a'),stageSlug=E.stage.value==='segundaFase'?'segunda-fase':'final';
+    a.href=url;a.download=`ffws-br-2026-s2-${stageSlug}-classificacao.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    E.shareStatus.textContent=`PNG salvo em 1080×1350 • ${Math.max(1,Math.round(blob.size/1024))} KB`;
+  }catch(error){console.error(error);E.shareStatus.textContent=`Não foi possível gerar a imagem: ${error.message||error}`}
+  finally{E.shareDownload.disabled=false}
+}
 function render(){
-  const list=drops();E.count.textContent=String(list.length);E.updated.textContent=fmtTime(stageData.updatedAt);
+  const list=drops();E.count.textContent=String(list.length);E.updated.textContent=fmtTime(stageData.updatedAt);renderShareTable();
   E.stageHelp.textContent=isTest()
     ? 'MODO TESTE: aceita equipes antigas e salva tudo em uma área isolada. Esses dados NÃO entram no site público.'
     : (E.stage.value==='final'?'Final: Dia 1 com 6 quedas; Dia 2 com até 10; Champion Rush em 160 pontos.':'Segunda Fase: 6 dias × 6 quedas; os bônus da Classificatória são somados automaticamente.');
@@ -99,7 +219,7 @@ async function loadStage(){
   try{const snap=await get(ref(db,stagePath()));stageData=snap.val()||{};render();msg(isTest()?'Área de teste carregada. Nada daqui altera o site público.':'Dados carregados.','ok')}
   catch(error){console.error(error);stageData={};render();msg('Não foi possível ler a base.','error')}
 }
-async function loadRoster(){try{const r=await fetch(`ffws-br-2026-s2/teams.json?v=${Date.now()}`,{cache:'no-store'}),j=await r.json();rosterNames=new Set((j.teams||[]).flatMap(t=>t.players||[]).map(norm))}catch{rosterNames=new Set()}}
+async function loadRoster(){try{const r=await fetch(`ffws-br-2026-s2/teams.json?v=${Date.now()}`,{cache:'no-store'}),j=await r.json(),teams=Array.isArray(j.teams)?j.teams:[];rosterNames=new Set(teams.flatMap(t=>t.players||[]).map(norm));teamMeta=new Map(teams.map(t=>[norm(t.name),t]));renderShareTable()}catch{rosterNames=new Set();teamMeta=new Map();renderShareTable()}}
 async function fileRead(input,type){const f=input.files?.[0];if(!f)return;const text=await f.text();if(type==='teams'){teamText=text;teamFileName=f.name;E.teamsStatus.textContent=`${f.name} carregado`;E.teamsStatus.className='live-file-ok'}else{playerText=text;playerFileName=f.name;E.playersStatus.textContent=`${f.name} carregado`;E.playersStatus.className='live-file-ok'}}
 
 function validatePayload(){
@@ -164,6 +284,7 @@ E.map?.addEventListener('change',()=>E.customMapWrap.classList.toggle('live-hidd
 E.stage?.addEventListener('change',()=>loadStage());
 E.testMode?.addEventListener('change',()=>{stageData={};E.preview.classList.add('live-hidden');loadStage()});
 E.refresh?.addEventListener('click',()=>loadStage());
+E.shareDownload?.addEventListener('click',exportSharePng);
 E.validate?.addEventListener('click',()=>{try{preview(validatePayload())}catch(error){msg(error.message||String(error),'error')}});
 E.publish?.addEventListener('click',publish);
 E.list?.addEventListener('click',event=>{const edit=event.target.closest('[data-edit-drop]'),del=event.target.closest('[data-delete-drop]');if(edit){const[d,q]=edit.dataset.editDrop.split(':').map(Number);editDrop(d,q)}if(del){const[d,q]=del.dataset.deleteDrop.split(':').map(Number);deleteDrop(d,q)}});
