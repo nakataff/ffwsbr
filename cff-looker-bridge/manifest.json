@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Central Free Fire - Garena Looker Bridge",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Conecta o admin-dados do Central Free Fire ao Looker Studio da Garena usando a sessão já aberta no Chrome.",
   "permissions": ["tabs", "scripting"],
   "host_permissions": ["https://datastudio.google.com/*"],
