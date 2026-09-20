@@ -20,7 +20,8 @@ const E={
   message:$('#live-message'),preview:$('#live-preview'),refresh:$('#live-refresh'),count:$('#live-count'),updated:$('#live-updated'),list:$('#live-drop-list'),stageHelp:$('#live-stage-help'),testMode:$('#live-test-mode'),
   shareBody:$('#live-share-body'),shareTitle:$('#live-share-title'),shareSubtitle:$('#live-share-subtitle'),shareWorld:$('#live-share-world'),shareDrop:$('#live-share-drop'),shareDownload:$('#live-share-download'),shareStatus:$('#live-share-status'),
   batchList:$('#live-batch-list'),batchAdd:$('#live-batch-add'),batchValidate:$('#live-batch-validate'),batchPublish:$('#live-batch-publish'),batchClear:$('#live-batch-clear'),batchMessage:$('#live-batch-message'),
-  garenaTest:$('#live-garena-test'),garenaTestMessage:$('#live-garena-test-message'),garenaTestPreview:$('#live-garena-test-preview')
+  garenaTest:$('#live-garena-test'),garenaTestMessage:$('#live-garena-test-message'),garenaTestPreview:$('#live-garena-test-preview'),
+  garenaFetch:$('#live-garena-fetch'),garenaRound:$('#live-garena-round'),garenaDrop:$('#live-garena-drop'),garenaMap:$('#live-garena-map'),garenaStatus:$('#live-garena-status'),garenaPreview:$('#live-garena-preview')
 };
 
 const BONUS=Object.freeze({'LOS':50,'LOUD SNICKERS':42,'FLUXO W7M':35,'INTZ':29,'TEAM SOLID':24,'RISE GAMING':19,'ALPHA7':15,'RUSH GAMING':11,'INFLUENCE RAGE':8,'CPT VOX':5,'AFROGAMES':2,'SX TET':0});
@@ -342,6 +343,73 @@ async function testGarenaLooker(){
     }
   }finally{E.garenaTest.disabled=false}
 }
+let garenaBridgeReady=false,garenaBridgeSeq=0;
+function garenaStatus(text,type=''){if(!E.garenaStatus)return;E.garenaStatus.textContent=text||'';E.garenaStatus.className=`live-message${type?' '+type:''}`}
+function parseLookerP1(json){
+  const table=json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset;
+  if(!table||!Array.isArray(table.column)||table.column.length<7)throw new Error('Tabela P1 não encontrada na resposta do Looker.');
+  const cols=table.column.map(tableColumnValues),size=Number(table.size||cols[0]?.length||0),rows=[];
+  for(let i=0;i<size;i++)rows.push({
+    name:clean(cols[0]?.[i]||''),team:canonicalTeam(cols[1]?.[i]||''),kills:num(cols[2]?.[i]),damage:num(cols[3]?.[i]),assists:num(cols[4]?.[i]),matches:num(cols[5]?.[i]),mvp:num(cols[6]?.[i])
+  });
+  return rows.filter(row=>row.name&&row.team);
+}
+function requestGarenaBridge(round,drop){
+  return new Promise((resolve,reject)=>{
+    const requestId=`cff-${Date.now()}-${++garenaBridgeSeq}`;
+    const timer=setTimeout(()=>{window.removeEventListener('message',handler);reject(new Error('Extensão CFF Looker Bridge não respondeu. Instale/ative a extensão e recarregue esta página.'))},12000);
+    const handler=event=>{
+      if(event.source!==window||event.origin!==location.origin)return;
+      const data=event.data||{};
+      if(data.source!=='cff-looker-bridge'||data.type!=='FETCH_RESULT'||data.requestId!==requestId)return;
+      clearTimeout(timer);window.removeEventListener('message',handler);
+      if(data.ok)resolve(data.data);else reject(new Error(data.error||'Falha ao consultar o Looker.'));
+    };
+    window.addEventListener('message',handler);
+    window.postMessage({source:'cff-admin-looker',type:'FETCH',requestId,round,drop},location.origin);
+  });
+}
+function installGarenaBridgeListener(){
+  window.addEventListener('message',event=>{
+    if(event.source!==window||event.origin!==location.origin)return;
+    const data=event.data||{};
+    if(data.source==='cff-looker-bridge'&&data.type==='READY'){
+      garenaBridgeReady=true;garenaStatus('Extensão conectada. Abra o relatório da Garena em outra aba e escolha rodada, queda e mapa.','ok');
+    }
+  });
+  window.postMessage({source:'cff-admin-looker',type:'PING'},location.origin);
+  setTimeout(()=>{if(!garenaBridgeReady)garenaStatus('Extensão não detectada. Instale a CFF Looker Bridge e recarregue a página.','error')},1200);
+}
+async function fetchGarenaData(){
+  if(!E.garenaFetch)return;
+  if(E.stage.value!=='segundaFase'){garenaStatus('A importação automática está configurada apenas para a Segunda Fase no momento.','error');return}
+  const round=clean(E.garenaRound?.value).toUpperCase(),drop=clean(E.garenaDrop?.value).toUpperCase(),map=clean(E.garenaMap?.value);
+  if(!/^R\d+$/.test(round)){garenaStatus('Informe uma rodada como R16.','error');return}
+  if(!/^Q\d+$/.test(drop)){garenaStatus('Escolha a queda.','error');return}
+  if(!map){garenaStatus('Escolha o mapa antes de buscar.','error');return}
+  E.garenaFetch.disabled=true;garenaStatus(`Buscando ${round} • ${drop} no Looker da Garena…`);
+  try{
+    const data=await requestGarenaBridge(round,drop);
+    const teams=parseLookerT1(data.t1),players=parseLookerP1(data.p1);
+    if(teams.length!==12)throw new Error(`T1 retornou ${teams.length} equipes; esperado: 12.`);
+    if(players.length<40)throw new Error(`P1 retornou apenas ${players.length} jogadores.`);
+    teamText=['Equipe\tPosição\tPontos\tBooyah\tAbates',...teams.map(r=>[.team,r.position,r.points,r.booyah,r.kills].join('\t'))].join('\n');
+    playerText=['Jogador\tEquipe\tAbates\tDano\tAssistências\tMVP',...players.map(r=>[.name,r.team,r.kills,r.damage,r.assists,r.mvp].join('\t'))].join('\n');
+    teamFileName=`Garena-${round}-${drop}-T1`;playerFileName=`Garena-${round}-${drop}-P1`;
+    E.teamsStatus.textContent=`${teamFileName} • automático`;E.teamsStatus.className='live-file-ok';
+    E.playersStatus.textContent=`${playerFileName} • ${players.length} jogadores`;E.playersStatus.className='live-file-ok';
+    const roundNumber=Number(round.replace(/\D/g,'')),dropNumber=Number(drop.replace(/\D/g,''));
+    if(roundNumber>=15&&roundNumber<=20)E.day.value=roundNumber-14;
+    E.drop.value=dropNumber;E.map.value=map;E.customMapWrap.classList.add('live-hidden');
+    const checked=validatePayload();preview(checked);
+    if(E.garenaPreview){
+      E.garenaPreview.textContent=[`IMPORTAÇÃO OK • ${round} • ${drop} • ${map}`,`${teams.length} equipes • ${players.length} jogadores`,'',...teams.sort((a,b)=>a.position-b.position).map(r=>`${String(r.position).padStart(2,'0')}º ${r.team.padEnd(17)} ${String(r.points).padStart(2)} pts • ${r.kills} K`)].join('\n');
+      E.garenaPreview.classList.remove('live-hidden');
+    }
+    garenaStatus('✓ T1 + P1 importados. Confira a validação acima e clique em PROCESSAR E PUBLICAR.','ok');
+  }catch(error){console.error(error);garenaStatus(error.message||String(error),'error')}
+  finally{E.garenaFetch.disabled=false}
+}
 function batchMsg(text,type=''){if(!E.batchMessage)return;E.batchMessage.textContent=text||'';E.batchMessage.className=`live-message${type?' '+type:''}`}
 function batchUsedSlots(){
   const used=new Set(drops().map(x=>`${x.day}:${x.drop}`));
@@ -487,6 +555,7 @@ E.testMode?.addEventListener('change',()=>{stageData={};E.preview.classList.add(
 E.refresh?.addEventListener('click',()=>loadStage());
 E.shareDownload?.addEventListener('click',exportSharePng);
 E.garenaTest?.addEventListener('click',testGarenaLooker);
+E.garenaFetch?.addEventListener('click',fetchGarenaData);
 E.batchAdd?.addEventListener('click',addBatchRow);
 E.batchValidate?.addEventListener('click',validateBatch);
 E.batchPublish?.addEventListener('click',publishBatch);
@@ -498,6 +567,8 @@ E.list?.addEventListener('click',event=>{const edit=event.target.closest('[data-
 E.loginBtn?.addEventListener('click',async()=>{const password=E.password.value;E.loginBtn.disabled=true;loginMsg('Entrando…');try{await signInWithEmailAndPassword(auth,ADMIN_EMAIL,password);E.password.value=''}catch(error){loginMsg('Senha inválida ou acesso não autorizado.','error')}finally{E.loginBtn.disabled=false}});
 E.password?.addEventListener('keydown',event=>{if(event.key==='Enter')E.loginBtn.click()});
 E.logout?.addEventListener('click',()=>signOut(auth));
+
+installGarenaBridgeListener();
 
 onAuthStateChanged(auth,user=>{
   const allowed=user&&String(user.email||'').toLowerCase()===ADMIN_EMAIL;
