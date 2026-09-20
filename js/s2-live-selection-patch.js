@@ -1,7 +1,7 @@
 (()=>{
   'use strict';
-  if(window.__CFF_S2_LIVE_SELECTION_PATCH_V3__)return;
-  window.__CFF_S2_LIVE_SELECTION_PATCH_V3__=true;
+  if(window.__CFF_S2_LIVE_SELECTION_PATCH_V4__)return;
+  window.__CFF_S2_LIVE_SELECTION_PATCH_V4__=true;
 
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
   const num=v=>Number(v)||0;
