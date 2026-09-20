@@ -341,8 +341,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         const post = async (payload, label) => {
           const attempts = [];
+          let last = null;
           for (const endpointUrl of endpoints) {
             const result = await postOnce(endpointUrl, payload, label);
+            last = result;
             attempts.push({
               endpoint: result.endpoint,
               ok: result.ok,
@@ -358,8 +360,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               return result;
             }
           }
-          const last = await postOnce(endpoints[endpoints.length - 1], payload, label);
-          last.attempts = attempts;
+          if (last) last.attempts = attempts;
           return last;
         };
 
