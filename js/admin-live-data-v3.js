@@ -18,7 +18,8 @@ const E={
   stage:$('#live-stage'),day:$('#live-day'),drop:$('#live-drop'),next:$('#live-next'),map:$('#live-map'),customMapWrap:$('#live-custom-map-wrap'),customMap:$('#live-custom-map'),
   teamsFile:$('#live-teams-file'),playersFile:$('#live-players-file'),teamsStatus:$('#live-teams-status'),playersStatus:$('#live-players-status'),validate:$('#live-validate'),publish:$('#live-publish'),
   message:$('#live-message'),preview:$('#live-preview'),refresh:$('#live-refresh'),count:$('#live-count'),updated:$('#live-updated'),list:$('#live-drop-list'),stageHelp:$('#live-stage-help'),testMode:$('#live-test-mode'),
-  shareBody:$('#live-share-body'),shareTitle:$('#live-share-title'),shareSubtitle:$('#live-share-subtitle'),shareWorld:$('#live-share-world'),shareDrop:$('#live-share-drop'),shareDownload:$('#live-share-download'),shareStatus:$('#live-share-status')
+  shareBody:$('#live-share-body'),shareTitle:$('#live-share-title'),shareSubtitle:$('#live-share-subtitle'),shareWorld:$('#live-share-world'),shareDrop:$('#live-share-drop'),shareDownload:$('#live-share-download'),shareStatus:$('#live-share-status'),
+  batchList:$('#live-batch-list'),batchAdd:$('#live-batch-add'),batchValidate:$('#live-batch-validate'),batchPublish:$('#live-batch-publish'),batchClear:$('#live-batch-clear'),batchMessage:$('#live-batch-message')
 };
 
 const BONUS=Object.freeze({'LOS':50,'LOUD SNICKERS':42,'FLUXO W7M':35,'INTZ':29,'TEAM SOLID':24,'RISE GAMING':19,'ALPHA7':15,'RUSH GAMING':11,'INFLUENCE RAGE':8,'CPT VOX':5,'AFROGAMES':2,'SX TET':0});
@@ -222,28 +223,109 @@ async function loadStage(){
 async function loadRoster(){try{const r=await fetch(`ffws-br-2026-s2/teams.json?v=${Date.now()}`,{cache:'no-store'}),j=await r.json(),teams=Array.isArray(j.teams)?j.teams:[];rosterNames=new Set(teams.flatMap(t=>t.players||[]).map(norm));teamMeta=new Map(teams.map(t=>[norm(t.name),t]));renderShareTable()}catch{rosterNames=new Set();teamMeta=new Map();renderShareTable()}}
 async function fileRead(input,type){const f=input.files?.[0];if(!f)return;const text=await f.text();if(type==='teams'){teamText=text;teamFileName=f.name;E.teamsStatus.textContent=`${f.name} carregado`;E.teamsStatus.className='live-file-ok'}else{playerText=text;playerFileName=f.name;E.playersStatus.textContent=`${f.name} carregado`;E.playersStatus.className='live-file-ok'}}
 
-function validatePayload(){
-  const c=cfg(),day=Math.trunc(Number(E.day.value||0)),drop=Math.trunc(Number(E.drop.value||0)),max=Number(c.dropsByDay[day]||0),map=mapName();
-  if(day<1||day>c.days)throw new Error(`Dia inválido para ${c.label}.`);
-  if(drop<1||drop>max)throw new Error(`Queda inválida. Dia ${day} aceita até ${max}.`);
-  if(!map)throw new Error('Escolha o mapa desta queda.');
-  if(!teamText||!playerText)throw new Error('Envie T1 e P1.');
-  const teams=parseTeams(teamText),players=parsePlayers(playerText);
+function batchMsg(text,type=''){if(!E.batchMessage)return;E.batchMessage.textContent=text||'';E.batchMessage.className=`live-message${type?' '+type:''}`}
+function batchUsedSlots(){
+  const used=new Set(drops().map(x=>`${x.day}:${x.drop}`));
+  E.batchList?.querySelectorAll('.live-batch-row').forEach(row=>used.add(`${row.dataset.day}:${row.dataset.drop}`));
+  return used;
+}
+function nextBatchSlot(){
+  const used=batchUsedSlots(),c=cfg();
+  for(let day=1;day<=c.days;day++)for(let drop=1;drop<=Number(c.dropsByDay[day]||0);drop++)if(!used.has(`${day}:${drop}`))return{day,drop};
+  return null;
+}
+function batchMapOptions(){
+  return '<option value="">Selecione</option><option>Bermuda</option><option>Kalahari</option><option value="Purgatório">Purgatório</option><option value="Nova Terra">Nova Terra</option><option>Solara</option>';
+}
+function addBatchRow(){
+  if(!E.batchList)return;
+  const slot=nextBatchSlot();
+  if(!slot){batchMsg('Não há mais quedas livres nesta etapa.','error');return}
+  const row=document.createElement('div');row.className='live-batch-row';row.dataset.day=String(slot.day);row.dataset.drop=String(slot.drop);
+  row.innerHTML=`
+    <div class="live-batch-slot"><small>Próxima</small><strong>Dia ${slot.day} • Q${slot.drop}</strong></div>
+    <div class="live-field"><label>Mapa</label><select data-batch-map>${batchMapOptions()}</select></div>
+    <label class="live-batch-file"><span>Equipes • T1</span><input data-batch-teams type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv"></label>
+    <label class="live-batch-file"><span>Jogadores • P1</span><input data-batch-players type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv"></label>
+    <button class="live-btn danger live-batch-remove" data-batch-remove type="button" title="Remover queda">×</button>
+    <div class="live-batch-status">Aguardando T1, P1 e mapa.</div>`;
+  E.batchList.appendChild(row);batchMsg('');
+}
+function clearBatch(){
+  if(E.batchList)E.batchList.innerHTML='';
+  batchMsg('');
+}
+function validateParsedDrop({day,drop,map,teamsText,playersText,teamsName='T1',playersName='P1'}){
+  const c=cfg(),max=Number(c.dropsByDay[day]||0);
+  if(day<1||day>c.days)throw new Error(`Dia ${day} inválido para ${c.label}.`);
+  if(drop<1||drop>max)throw new Error(`Q${drop} inválida para o Dia ${day}.`);
+  if(!clean(map))throw new Error('Escolha o mapa.');
+  if(!teamsText||!playersText)throw new Error('Selecione T1 e P1.');
+  const teams=parseTeams(teamsText),players=parsePlayers(playersText);
   if(teams.length!==12)throw new Error(`T1: encontrei ${teams.length} equipes; deveriam ser 12.`);
-  if(!players.length)throw new Error('P1: nenhum jogador reconhecido. Confira os cabeçalhos.');
+  if(!players.length)throw new Error('P1: nenhum jogador reconhecido.');
   const positions=teams.map(x=>x.position).filter(x=>x>=1&&x<=12);
-  if(new Set(positions).size!==12)throw new Error('T1: não consegui identificar posições 1º–12º. A coluna pode ser “Média Posição” ou “Posição”.');
-
+  if(new Set(positions).size!==12)throw new Error('T1: não consegui identificar as posições 1º–12º.');
   const allowed=new Set(Object.keys(BONUS).map(norm)),badTeams=teams.filter(x=>!allowed.has(norm(x.team))).map(x=>x.team);
-  if(badTeams.length&&!isTest())throw new Error(`Equipe fora da Segunda Fase/Final: ${badTeams.join(', ')}. Para testar arquivos antigos, ative “Modo teste”.`);
-
+  if(badTeams.length&&!isTest())throw new Error(`Equipe fora da etapa: ${badTeams.join(', ')}.`);
   const tk=new Map(teams.map(x=>[norm(x.team),Number(x.kills||0)])),pk=new Map();
   players.forEach(x=>pk.set(norm(x.team),(pk.get(norm(x.team))||0)+Number(x.kills||0)));
   const mismatch=teams.filter(x=>(tk.get(norm(x.team))||0)!==(pk.get(norm(x.team))||0)).map(x=>`${x.team}: T=${tk.get(norm(x.team))||0} / P=${pk.get(norm(x.team))||0}`);
   if(mismatch.length)throw new Error(`Abates T1 × P1 não batem: ${mismatch.join(' • ')}`);
-
   const unknown=rosterNames.size?players.filter(x=>!rosterNames.has(norm(x.name))).map(x=>x.name):[];
-  return{payload:{stage:E.stage.value,day,drop,map,teams:teams.sort((a,b)=>a.position-b.position),players,source:{teams:teamFileName||'T1',players:playerFileName||'P1'},testMode:isTest(),updatedAt:Date.now()},unknown,badTeams};
+  return{payload:{stage:E.stage.value,day,drop,map:clean(map),teams:teams.sort((a,b)=>a.position-b.position),players,source:{teams:teamsName,players:playersName},testMode:isTest(),updatedAt:Date.now()},unknown,badTeams};
+}
+async function collectBatch(){
+  const rows=[...(E.batchList?.querySelectorAll('.live-batch-row')||[])];
+  if(!rows.length)throw new Error('Adicione pelo menos uma queda ao lote.');
+  const out=[];
+  for(const row of rows){
+    const status=row.querySelector('.live-batch-status'),teamsFile=row.querySelector('[data-batch-teams]')?.files?.[0],playersFile=row.querySelector('[data-batch-players]')?.files?.[0],map=row.querySelector('[data-batch-map]')?.value||'';
+    status.className='live-batch-status';status.textContent='Validando…';
+    try{
+      if(!teamsFile||!playersFile)throw new Error('Selecione T1 e P1.');
+      const [teamsTextValue,playersTextValue]=await Promise.all([teamsFile.text(),playersFile.text()]);
+      const result=validateParsedDrop({day:Number(row.dataset.day),drop:Number(row.dataset.drop),map,teamsText:teamsTextValue,playersText:playersTextValue,teamsName:teamsFile.name,playersName:playersFile.name});
+      status.className='live-batch-status ok';status.textContent=`✓ Dia ${result.payload.day} • Q${result.payload.drop} • ${result.payload.map} • ${result.payload.teams.reduce((s,x)=>s+num(x.kills),0)} abates${result.unknown.length?` • ${result.unknown.length} fora do roster`:''}`;
+      out.push(result);
+    }catch(error){
+      status.className='live-batch-status error';status.textContent=`✕ ${error.message||error}`;
+      throw new Error(`Dia ${row.dataset.day} • Q${row.dataset.drop}: ${error.message||error}`);
+    }
+  }
+  return out;
+}
+async function validateBatch(){
+  try{const rows=await collectBatch();batchMsg(`✓ ${rows.length} queda${rows.length===1?'':'s'} validada${rows.length===1?'':'s'}. Pode processar o lote.`,'ok')}
+  catch(error){batchMsg(error.message||String(error),'error')}
+}
+async function publishBatch(){
+  let results;
+  try{results=await collectBatch()}catch(error){batchMsg(error.message||String(error),'error');return}
+  const conflicts=[];
+  for(const {payload:p} of results){
+    const snap=await get(ref(db,`${stagePath()}/drops/${p.day}/${p.drop}`));
+    if(snap.exists())conflicts.push(`Dia ${p.day} • Q${p.drop}`);
+  }
+  if(conflicts.length&&!confirm(`${conflicts.join(', ')} já existe${conflicts.length===1?'':'m'}. Substituir ao processar o lote?`))return;
+  try{
+    E.batchPublish.disabled=true;E.batchValidate.disabled=true;batchMsg(`Publicando ${results.length} quedas…`);
+    const updates={};
+    results.forEach(({payload:p})=>{updates[`${stagePath()}/drops/${p.day}/${p.drop}`]=p});
+    updates[`${stagePath()}/updatedAt`]=serverTimestamp();
+    updates[`${stagePath()}/formatVersion`]=3;
+    updates[`${stagePath()}/label`]=`${cfg().label}${isTest()?' • TESTE':''}`;
+    if(!isTest()&&E.stage.value==='segundaFase')updates[`${stagePath()}/bonus`]=BONUS;
+    if(!isTest()&&E.stage.value==='final')updates[`${stagePath()}/championPoint`]=160;
+    await update(ref(db),updates);
+    const count=results.length;clearBatch();await loadStage();batchMsg(`✓ ${count} queda${count===1?'':'s'} publicada${count===1?'':'s'} de uma vez.`,'ok');
+  }catch(error){console.error(error);batchMsg(`Falha ao publicar lote: ${error.message||error}`,'error')}
+  finally{E.batchPublish.disabled=false;E.batchValidate.disabled=false}
+}
+
+function validatePayload(){
+  const day=Math.trunc(Number(E.day.value||0)),drop=Math.trunc(Number(E.drop.value||0)),map=mapName();
+  return validateParsedDrop({day,drop,map,teamsText:teamText,playersText:playerText,teamsName:teamFileName||'T1',playersName:playerFileName||'P1'});
 }
 function preview(result){
   const p=result.payload,totalK=p.teams.reduce((s,x)=>s+num(x.kills),0),totalD=p.players.reduce((s,x)=>s+num(x.damage),0),lines=[];
@@ -281,10 +363,15 @@ async function deleteDrop(day,drop){
 E.teamsFile?.addEventListener('change',()=>fileRead(E.teamsFile,'teams'));
 E.playersFile?.addEventListener('change',()=>fileRead(E.playersFile,'players'));
 E.map?.addEventListener('change',()=>E.customMapWrap.classList.toggle('live-hidden',E.map.value!=='Outro'));
-E.stage?.addEventListener('change',()=>loadStage());
+E.stage?.addEventListener('change',()=>{clearBatch();loadStage()});
 E.testMode?.addEventListener('change',()=>{stageData={};E.preview.classList.add('live-hidden');loadStage()});
 E.refresh?.addEventListener('click',()=>loadStage());
 E.shareDownload?.addEventListener('click',exportSharePng);
+E.batchAdd?.addEventListener('click',addBatchRow);
+E.batchValidate?.addEventListener('click',validateBatch);
+E.batchPublish?.addEventListener('click',publishBatch);
+E.batchClear?.addEventListener('click',clearBatch);
+E.batchList?.addEventListener('click',event=>{if(event.target.closest('[data-batch-remove]'))event.target.closest('.live-batch-row')?.remove()});
 E.validate?.addEventListener('click',()=>{try{preview(validatePayload())}catch(error){msg(error.message||String(error),'error')}});
 E.publish?.addEventListener('click',publish);
 E.list?.addEventListener('click',event=>{const edit=event.target.closest('[data-edit-drop]'),del=event.target.closest('[data-delete-drop]');if(edit){const[d,q]=edit.dataset.editDrop.split(':').map(Number);editDrop(d,q)}if(del){const[d,q]=del.dataset.deleteDrop.split(':').map(Number);deleteDrop(d,q)}});
@@ -295,5 +382,5 @@ E.logout?.addEventListener('click',()=>signOut(auth));
 onAuthStateChanged(auth,user=>{
   const allowed=user&&String(user.email||'').toLowerCase()===ADMIN_EMAIL;
   E.login?.classList.toggle('live-hidden',Boolean(allowed));E.dashboard?.classList.toggle('live-hidden',!allowed);E.logout?.classList.toggle('live-hidden',!allowed);
-  if(allowed){loadRoster();loadStage()}else{stageData={};render();if(user)loginMsg('Este usuário não tem acesso ao painel.','error')}
+  if(allowed){loadRoster();loadStage().then(()=>{if(E.batchList&&!E.batchList.children.length)addBatchRow()})}else{stageData={};clearBatch();render();if(user)loginMsg('Este usuário não tem acesso ao painel.','error')}
 });
