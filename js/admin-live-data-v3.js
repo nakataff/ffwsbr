@@ -439,11 +439,11 @@ function addBatchRow(){
   if(!slot){batchMsg('Não há mais quedas livres nesta etapa.','error');return}
   const row=document.createElement('div');row.className='live-batch-row';row.dataset.day=String(slot.day);row.dataset.drop=String(slot.drop);
   row.innerHTML=`
-    <div class="live-batch-slot"><small>Próxima</small><strong>Dia ${slot.day} • Q${slot.drop}</strong></div>
+    <div class="live-batch-slot"><div><small>Queda detectada</small><strong>Dia ${slot.day} • Q${slot.drop}</strong></div></div>
+    <button class="live-btn danger live-batch-remove" data-batch-remove type="button" title="Remover queda">×</button>
     <div class="live-field"><label>Mapa</label><select data-batch-map>${batchMapOptions()}</select></div>
     <label class="live-batch-file"><span>Equipes • T1</span><input data-batch-teams type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv"></label>
     <label class="live-batch-file"><span>Jogadores • P1</span><input data-batch-players type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv"></label>
-    <button class="live-btn danger live-batch-remove" data-batch-remove type="button" title="Remover queda">×</button>
     <div class="live-batch-status">Aguardando T1, P1 e mapa.</div>`;
   E.batchList.appendChild(row);batchMsg('');
 }
