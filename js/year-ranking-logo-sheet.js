@@ -42,7 +42,7 @@ function parseTsv(text){
 async function loadSheet(url){
  if(!url)return;
  const join=url.includes('?')?'&':'?';
- const r=await fetch(url+join+'cffv='+Date.now(),{cache:'no-store'});
+ const r=await fetch(url+join+'cffv='+Math.floor(Date.now()/300000),{cache:'default'});
  if(!r.ok)throw new Error('HTTP '+r.status);
  parseTsv(await r.text());
 }
@@ -51,7 +51,7 @@ async function load(){
  loadPromise=(async()=>{
    Object.entries(fallbackLogos).forEach(([n,u])=>add(n,u));
    try{
-     const r=await fetch('team-data/logo-map.json?v='+V,{cache:'no-store'});
+     const r=await fetch('team-data/logo-map.json?v='+V,{cache:'default'});
      if(r.ok){
        const d=await r.json();
        Object.entries(d?.logos||{}).forEach(([n,u])=>add(n,u));
