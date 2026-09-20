@@ -3,7 +3,9 @@
 
   const API = 'https://cff-instagram-community.nakataffb4.workers.dev/api/ranking?period=week';
   const FULL_RANKING_URL = 'interacoes.html';
-  const REFRESH_MS = 5 * 60 * 1000;
+  const REFRESH_MS = 10 * 60 * 1000;
+  let lastLoadAt = 0;
+  let loading = false;
 
   const esc = (value) => String(value ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -118,10 +120,12 @@
       </div>`).join('');
   }
 
-  async function load() {
-    if (!mount()) return;
+  async function load(force = false) {
+    if (!mount() || loading) return;
+    if (!force && lastLoadAt && Date.now() - lastLoadAt < REFRESH_MS) return;
+    loading = true;
     try {
-      const response = await fetch(`${API}&_=${Date.now()}`, { cache: 'no-store', headers: { Accept: 'application/json' } });
+      const response = await fetch(`${API}&_=${Math.floor(Date.now() / REFRESH_MS)}`, { cache: 'default', headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const raw = await response.json();
       renderRows(normalize(raw));
@@ -131,11 +135,14 @@
       console.error('[Home community ranking]', error);
       const body = document.getElementById('home-community-body');
       if (body) body.innerHTML = '<div class="home-community-empty">Não foi possível atualizar o ranking agora.</div>';
+    } finally {
+      lastLoadAt = Date.now();
+      loading = false;
     }
   }
 
   function boot() {
-    load();
+    load(true);
     setInterval(() => { if (!document.hidden) load(); }, REFRESH_MS);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
   }
