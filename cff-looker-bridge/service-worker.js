@@ -16,13 +16,49 @@ function columnValues(column) {
   return Array.isArray(bucket.values) ? bucket.values : [];
 }
 
-function compactT1(json) {
-  const table = json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset;
-  if (!table || !Array.isArray(table.column) || table.column.length < 6) {
-    throw new Error('T1 capturada, mas a tabela esperada de 6 colunas não foi encontrada.');
+function tableCandidates(json) {
+  const out = [];
+  const responses = Array.isArray(json?.dataResponse) ? json.dataResponse : [];
+  responses.forEach((response, responseIndex) => {
+    const subsets = Array.isArray(response?.dataSubset) ? response.dataSubset : [];
+    subsets.forEach((subset, subsetIndex) => {
+      const table = subset?.dataset?.tableDataset;
+      if (table && Array.isArray(table.column)) {
+        out.push({ responseIndex, subsetIndex, table });
+      }
+    });
+  });
+  return out;
+}
+
+function compactT1(json, diagnostics) {
+  const candidates = tableCandidates(json);
+  let picked = null;
+
+  for (const candidate of candidates) {
+    const table = candidate.table;
+    if (table.column.length < 6) continue;
+    const cols = table.column.map(columnValues);
+    const size = Number(table.size || cols[0]?.length || 0);
+    if (size !== 12) continue;
+
+    const positions = cols[5]?.map(value => Number(value)) || [];
+    const validPositions = positions.length === 12 &&
+      new Set(positions.filter(value => value >= 1 && value <= 12)).size === 12;
+
+    if (validPositions) {
+      picked = { ...candidate, cols, size };
+      break;
+    }
+
+    if (!picked && table.column.length === 6) picked = { ...candidate, cols, size };
   }
-  const cols = table.column.map(columnValues);
-  const size = Number(table.size || cols[0]?.length || 0);
+
+  if (!picked) {
+    throw new Error('T1 capturada, mas nenhuma tabela compatível com 12 equipes foi encontrada no batch.');
+  }
+
+  const { cols, size } = picked;
   const rows = [];
   for (let i = 0; i < size; i++) {
     rows.push({
@@ -34,16 +70,41 @@ function compactT1(json) {
       position: Number(cols[5]?.[i] ?? 0)
     });
   }
+
+  if (diagnostics) {
+    diagnostics.t1ResponseIndex = picked.responseIndex;
+    diagnostics.t1SubsetIndex = picked.subsetIndex;
+    diagnostics.t1Columns = picked.table.column.length;
+    diagnostics.t1Size = size;
+    diagnostics.t1Positions = rows.map(row => row.position);
+    diagnostics.t1Teams = rows.map(row => row.team);
+  }
   return rows;
 }
 
-function compactP1(json) {
-  const table = json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset;
-  if (!table || !Array.isArray(table.column) || table.column.length < 7) {
-    throw new Error('P1 capturada, mas a tabela esperada de 7 colunas não foi encontrada.');
+function compactP1(json, diagnostics) {
+  const candidates = tableCandidates(json);
+  let picked = null;
+
+  for (const candidate of candidates) {
+    const table = candidate.table;
+    if (table.column.length < 7) continue;
+    const cols = table.column.map(columnValues);
+    const size = Number(table.size || cols[0]?.length || 0);
+    if (size < 40) continue;
+
+    if (table.column.length === 7) {
+      picked = { ...candidate, cols, size };
+      break;
+    }
+    if (!picked) picked = { ...candidate, cols, size };
   }
-  const cols = table.column.map(columnValues);
-  const size = Number(table.size || cols[0]?.length || 0);
+
+  if (!picked) {
+    throw new Error('P1 capturada, mas nenhuma tabela compatível com jogadores foi encontrada no batch.');
+  }
+
+  const { cols, size } = picked;
   const rows = [];
   for (let i = 0; i < size; i++) {
     rows.push({
@@ -55,6 +116,13 @@ function compactP1(json) {
       matches: Number(cols[5]?.[i] ?? 0),
       mvp: Number(cols[6]?.[i] ?? 0)
     });
+  }
+
+  if (diagnostics) {
+    diagnostics.p1ResponseIndex = picked.responseIndex;
+    diagnostics.p1SubsetIndex = picked.subsetIndex;
+    diagnostics.p1Columns = picked.table.column.length;
+    diagnostics.p1Size = size;
   }
   return rows;
 }
@@ -161,8 +229,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       capturePage('P1', PAGE_P1, round, drop, diagnostics)
     ]);
 
-    const teams = compactT1(t1Json);
-    const players = compactP1(p1Json);
+    const teams = compactT1(t1Json, diagnostics);
+    const players = compactP1(p1Json, diagnostics);
 
     diagnostics.t1Rows = teams.length;
     diagnostics.p1Rows = players.length;
