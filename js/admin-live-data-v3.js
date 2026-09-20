@@ -390,7 +390,8 @@ async function fetchGarenaData(){
   E.garenaFetch.disabled=true;garenaStatus(`Buscando ${round} • ${drop} no Looker da Garena…`);
   try{
     const data=await requestGarenaBridge(round,drop);
-    const teams=parseLookerT1(data.t1),players=parseLookerP1(data.p1);
+    const teams=Array.isArray(data.teams)?data.teams.map(row=>({team:canonicalTeam(row.team),points:num(row.points),booyah:num(row.booyah),kills:num(row.kills),matches:num(row.matches),position:num(row.position),placementPoints:Math.max(0,num(row.points)-num(row.kills))})):parseLookerT1(data.t1);
+    const players=Array.isArray(data.players)?data.players.map(row=>({name:clean(row.name),team:canonicalTeam(row.team),kills:num(row.kills),damage:num(row.damage),assists:num(row.assists),matches:num(row.matches),mvp:num(row.mvp),survival:0,revives:0})).filter(row=>row.name&&row.team):parseLookerP1(data.p1);
     if(teams.length!==12)throw new Error(`T1 retornou ${teams.length} equipes; esperado: 12.`);
     if(players.length<40)throw new Error(`P1 retornou apenas ${players.length} jogadores.`);
     teamText=['Equipe\tPosição\tPontos\tBooyah\tAbates',...teams.map(r=>[r.team,r.position,r.points,r.booyah,r.kills].join('\t'))].join('\n');
