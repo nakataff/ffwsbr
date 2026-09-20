@@ -289,13 +289,79 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return parseBody(body);
         };
 
-        const [t1, p1] = await Promise.all([post(t1Payload), post(p1Payload)]);
-        return { t1, p1, appVersion, reportUrl: location.href };
+        const columnValues = column => {
+          if (!column) return [];
+          const bucket = column.stringColumn || column.doubleColumn || column.longColumn || column.dateColumn || {};
+          return Array.isArray(bucket.values) ? bucket.values : [];
+        };
+
+        const compactT1 = json => {
+          const table = json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset;
+          if (!table || !Array.isArray(table.column) || table.column.length < 6) {
+            throw new Error('T1: resposta recebida, mas a tabela de 6 colunas não foi encontrada.');
+          }
+          const cols = table.column.map(columnValues);
+          const size = Number(table.size || cols[0]?.length || 0);
+          const rows = [];
+          for (let i = 0; i < size; i++) {
+            rows.push({
+              team: String(cols[0]?.[i] ?? ''),
+              points: Number(cols[1]?.[i] ?? 0),
+              booyah: Number(cols[2]?.[i] ?? 0),
+              kills: Number(cols[3]?.[i] ?? 0),
+              matches: Number(cols[4]?.[i] ?? 0),
+              position: Number(cols[5]?.[i] ?? 0)
+            });
+          }
+          return rows;
+        };
+
+        const compactP1 = json => {
+          const table = json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset;
+          if (!table || !Array.isArray(table.column) || table.column.length < 7) {
+            throw new Error('P1: resposta recebida, mas a tabela de 7 colunas não foi encontrada.');
+          }
+          const cols = table.column.map(columnValues);
+          const size = Number(table.size || cols[0]?.length || 0);
+          const rows = [];
+          for (let i = 0; i < size; i++) {
+            rows.push({
+              name: String(cols[0]?.[i] ?? ''),
+              team: String(cols[1]?.[i] ?? ''),
+              kills: Number(cols[2]?.[i] ?? 0),
+              damage: Number(cols[3]?.[i] ?? 0),
+              assists: Number(cols[4]?.[i] ?? 0),
+              matches: Number(cols[5]?.[i] ?? 0),
+              mvp: Number(cols[6]?.[i] ?? 0)
+            });
+          }
+          return rows;
+        };
+
+        const [t1Json, p1Json] = await Promise.all([post(t1Payload), post(p1Payload)]);
+        const teams = compactT1(t1Json);
+        const players = compactP1(p1Json);
+
+        return {
+          teams,
+          players,
+          appVersion,
+          reportUrl: location.href,
+          diagnostics: {
+            t1Rows: teams.length,
+            p1Rows: players.length,
+            t1Columns: t1Json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset?.column?.length || 0,
+            p1Columns: p1Json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset?.column?.length || 0
+          }
+        };
       }
     });
 
     const data = results?.[0]?.result;
-    if (!data?.t1 || !data?.p1) throw new Error('A aba do Looker não devolveu T1/P1.');
+    if (!data) throw new Error('A aba do Looker executou a consulta, mas não devolveu resultado.');
+    if (!Array.isArray(data.teams) || !Array.isArray(data.players)) {
+      throw new Error('A aba do Looker não devolveu as listas T1/P1. Resultado: ' + JSON.stringify(data).slice(0, 300));
+    }
 
     return { ok: true, data };
   })()
