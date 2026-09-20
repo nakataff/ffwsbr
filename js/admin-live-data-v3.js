@@ -393,8 +393,8 @@ async function fetchGarenaData(){
     const teams=parseLookerT1(data.t1),players=parseLookerP1(data.p1);
     if(teams.length!==12)throw new Error(`T1 retornou ${teams.length} equipes; esperado: 12.`);
     if(players.length<40)throw new Error(`P1 retornou apenas ${players.length} jogadores.`);
-    teamText=['Equipe\tPosição\tPontos\tBooyah\tAbates',...teams.map(r=>[.team,r.position,r.points,r.booyah,r.kills].join('\t'))].join('\n');
-    playerText=['Jogador\tEquipe\tAbates\tDano\tAssistências\tMVP',...players.map(r=>[.name,r.team,r.kills,r.damage,r.assists,r.mvp].join('\t'))].join('\n');
+    teamText=['Equipe\tPosição\tPontos\tBooyah\tAbates',...teams.map(r=>[r.team,r.position,r.points,r.booyah,r.kills].join('\t'))].join('\n');
+    playerText=['Jogador\tEquipe\tAbates\tDano\tAssistências\tMVP',...players.map(r=>[r.name,r.team,r.kills,r.damage,r.assists,r.mvp].join('\t'))].join('\n');
     teamFileName=`Garena-${round}-${drop}-T1`;playerFileName=`Garena-${round}-${drop}-P1`;
     E.teamsStatus.textContent=`${teamFileName} • automático`;E.teamsStatus.className='live-file-ok';
     E.playersStatus.textContent=`${playerFileName} • ${players.length} jogadores`;E.playersStatus.className='live-file-ok';
