@@ -780,10 +780,12 @@
       .filter(entry => !days.length || days.includes(selectionEntryDay(entry)))
       .forEach(entry => {
         const name = entry.name || entry.player || entry.jogador;
-        const team = entry.team || entry.equipe || '';
+        const sourceTeam = entry.team || entry.equipe || '';
         if (!name) return;
+        const meta = rosterPlayerByName(name, sourceTeam) || rosterPlayerByName(name);
+        const team = sourceTeam || meta?.team || meta?.equipe || '';
         const key = `${normalize(name)}__${normalize(team)}`;
-        if (!aggregate.has(key)) aggregate.set(key, { name, team, meta: rosterPlayerByName(name, team), kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
+        if (!aggregate.has(key)) aggregate.set(key, { name, team, meta, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
         const row = aggregate.get(key);
         row.kills += number(entry.kills ?? entry.abates);
         row.damage += number(entry.damage ?? entry.dano);
@@ -853,8 +855,10 @@
   function selectionCard(row, phaseKey = 'semanal') {
     if (!row) return '';
     const config = selectionPhaseConfig(phaseKey);
-    const meta = row.meta || rosterPlayerByName(row.name, row.team) || { name: row.name };
-    const resolvedTeam = row.team || meta?.team || meta?.equipe || '';
+    const meta = row.meta || rosterPlayerByName(row.name, row.team) || rosterPlayerByName(row.name) || { name: row.name };
+    const rowTeam = String(row.team || '').trim();
+    const metaTeam = String(meta?.team || meta?.equipe || '').trim();
+    const resolvedTeam = teamByName(rowTeam)?.name || teamByName(metaTeam)?.name || metaTeam || rowTeam;
     const role = selectionRole(row);
     const photo = playerPhoto(meta);
     const teamLogo = logo(resolvedTeam);
