@@ -29,6 +29,7 @@ window.addEventListener('message', event => {
       requestId: data.requestId,
       ok: Boolean(response?.ok) && !error,
       data: response?.data || null,
+      diagnostics: response?.diagnostics || null,
       error: error || response?.error || ''
     });
   });
