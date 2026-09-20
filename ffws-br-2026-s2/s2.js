@@ -758,10 +758,12 @@
     const aggregate = new Map();
     secondPhaseSelectionEntries().forEach(entry => {
       const name = entry.name || entry.player || entry.jogador;
-      const team = entry.team || entry.equipe || '';
+      const sourceTeam = entry.team || entry.equipe || '';
       if (!name) return;
+      const meta = rosterPlayerByName(name, sourceTeam) || rosterPlayerByName(name);
+      const team = sourceTeam || meta?.team || meta?.equipe || '';
       const key = `${normalize(name)}__${normalize(team)}`;
-      if (!aggregate.has(key)) aggregate.set(key, { name, team, meta: rosterPlayerByName(name, team), kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
+      if (!aggregate.has(key)) aggregate.set(key, { name, team, meta, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
       const row = aggregate.get(key);
       row.kills += number(entry.kills ?? entry.abates);
       row.damage += number(entry.damage ?? entry.dano);
@@ -852,20 +854,21 @@
     if (!row) return '';
     const config = selectionPhaseConfig(phaseKey);
     const meta = row.meta || rosterPlayerByName(row.name, row.team) || { name: row.name };
+    const resolvedTeam = row.team || meta?.team || meta?.equipe || '';
     const role = selectionRole(row);
     const photo = playerPhoto(meta);
-    const teamLogo = logo(row.team);
+    const teamLogo = logo(resolvedTeam);
     const damage = `${(row.damage / 1000).toFixed(1)}K`;
     const glow = selectionGlow(config.color);
     const backdrop = selectionBackdrop(config.color);
-    return `<div class="ffws-s2-s1-selection-card" role="button" tabindex="0" aria-label="Abrir perfil de ${escapeHtml(row.name)}" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')}">
+    return `<div class="ffws-s2-s1-selection-card" role="button" tabindex="0" aria-label="Abrir perfil de ${escapeHtml(row.name)}" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(resolvedTeam)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(resolvedTeam)}')}">
       <div style="cursor:pointer;width:280px;height:420px;background:#000;border:4px solid ${config.color};border-radius:15px;position:relative;overflow:hidden;box-shadow:0 0 25px ${glow};margin:0 auto;box-sizing:border-box;">
         <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,${backdrop},#000);opacity:.95;"></div>
         <div style="position:absolute;top:15px;left:15px;z-index:10;background:${config.color};color:#fff;padding:4px 12px;border-radius:4px;font-size:.75em;font-weight:900;text-transform:uppercase;letter-spacing:1px;">${config.short}</div>
         <div style="position:absolute;top:50px;left:25px;z-index:4;text-align:center;color:${config.color};">
           <div style="font-size:22px;font-weight:900;">${escapeHtml(role)}</div>
           <div style="margin:8px auto;width:35px;height:3px;background:${config.color};"></div>
-          <img src="${escapeHtml(teamLogo)}" alt="${escapeHtml(row.team)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='escudo.webp'" style="width:50px;height:50px;object-fit:contain;margin-top:5px;filter:drop-shadow(0 0 5px ${glow});">
+          <img src="${escapeHtml(teamLogo)}" alt="${escapeHtml(resolvedTeam)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='escudo.webp'" style="width:50px;height:50px;object-fit:contain;margin-top:5px;filter:drop-shadow(0 0 5px ${glow});">
         </div>
         <img src="${escapeHtml(photo)}" alt="${escapeHtml(row.name)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'" style="position:absolute;top:20px;right:-35px;height:270px;max-width:245px;object-fit:contain;object-position:right bottom;z-index:2;filter:drop-shadow(5px 5px 15px #000);-webkit-mask-image:linear-gradient(to bottom,#000 75%,transparent 100%);">
         <div style="position:absolute;bottom:0;width:100%;height:170px;background:linear-gradient(transparent,#000 45%);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:20px;box-sizing:border-box;">
