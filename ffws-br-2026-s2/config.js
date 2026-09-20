@@ -1,5 +1,5 @@
 (()=>{
-  const liveVersion=Date.now();
+  const liveVersion='20260920-s2-static-v1';
   const LIVE_ROOT='ffwsLive/2026-s2';
 
   const SECOND_PHASE_SEED = Object.freeze([
@@ -249,7 +249,7 @@
         if(requestUrl.includes('player-stats.json'))return jsonResponse(response,mergePlayerStats(payload,live));
         if(requestUrl.includes('home-results.json')){
           let stats={players:{}};
-          try{const r=await nativeFetch(`ffws-br-2026-s2/player-stats.json?v=${Date.now()}`,{cache:'no-store'});if(r.ok)stats=mergePlayerStats(await r.json(),live)}catch(_){}
+          try{const r=await nativeFetch(`ffws-br-2026-s2/player-stats.json?v=20260920-player-stats-base-v1`,{cache:'default'});if(r.ok)stats=mergePlayerStats(await r.json(),live)}catch(_){}
           return jsonResponse(response,mergeHome(payload,live,stats));
         }
         return response;
