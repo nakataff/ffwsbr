@@ -50,7 +50,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (resource) appVersion = new URL(resource).searchParams.get('appVersion') || appVersion;
         } catch (_) {}
 
-        const endpoint = location.origin + '/u/0/batchedDataV2?appVersion=' + encodeURIComponent(appVersion);
+        const endpoints = [
+          location.origin + '/batchedDataV2?appVersion=' + encodeURIComponent(appVersion),
+          location.origin + '/u/0/batchedDataV2?appVersion=' + encodeURIComponent(appVersion)
+        ];
 
         const t1Payload = {
           dataRequest: [{
@@ -289,12 +292,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return JSON.parse(clean);
         };
 
-        const post = async (payload, label) => {
+        const postOnce = async (endpointUrl, payload, label) => {
           try {
-            const response = await fetch(endpoint, {
+            const response = await fetch(endpointUrl, {
               method: 'POST',
               credentials: 'include',
               headers: {
+                'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json;charset=UTF-8',
                 'X-Same-Domain': '1'
               },
@@ -311,6 +315,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return {
               ok: response.ok && Boolean(json),
               label,
+              endpoint: endpointUrl,
               status: response.status,
               statusText: response.statusText,
               bodyLength: body.length,
@@ -322,6 +327,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return {
               ok: false,
               label,
+              endpoint: endpointUrl,
               status: 0,
               statusText: '',
               bodyLength: 0,
@@ -331,6 +337,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               json: null
             };
           }
+        };
+
+        const post = async (payload, label) => {
+          const attempts = [];
+          for (const endpointUrl of endpoints) {
+            const result = await postOnce(endpointUrl, payload, label);
+            attempts.push({
+              endpoint: result.endpoint,
+              ok: result.ok,
+              status: result.status,
+              statusText: result.statusText,
+              bodyLength: result.bodyLength,
+              parseError: result.parseError || '',
+              fetchError: result.fetchError || '',
+              bodyStart: result.bodyStart || ''
+            });
+            if (result.ok) {
+              result.attempts = attempts;
+              return result;
+            }
+          }
+          const last = await postOnce(endpoints[endpoints.length - 1], payload, label);
+          last.attempts = attempts;
+          return last;
         };
 
         const columnValues = column => {
@@ -389,16 +419,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           readyState: document.readyState,
           appVersion,
           resourceDetected: Boolean(resource),
-          endpoint,
+          endpoints,
           requests: [t1Req, p1Req].map(item => ({
             label: item.label,
             ok: item.ok,
+            endpoint: item.endpoint || '',
             status: item.status,
             statusText: item.statusText,
             bodyLength: item.bodyLength,
             parseError: item.parseError || '',
             fetchError: item.fetchError || '',
-            bodyStart: item.bodyStart || ''
+            bodyStart: item.bodyStart || '',
+            attempts: item.attempts || []
           }))
         };
 
