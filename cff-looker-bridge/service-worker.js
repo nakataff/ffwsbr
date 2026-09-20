@@ -4,15 +4,30 @@ const REPORT_URL_ID = '4bbd7490-84fe-4be2-b753-666f944c16ed';
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || message.type !== 'CFF_LOOKER_FETCH') return;
 
+  const diagnostics = {
+    bridgeVersion: chrome.runtime.getManifest().version,
+    round: String(message.round || '').toUpperCase().trim(),
+    drop: String(message.drop || '').toUpperCase().trim(),
+    tabsFound: 0,
+    selectedTabId: null,
+    selectedTabUrl: '',
+    selectedTabTitle: '',
+    executeWorld: 'MAIN'
+  };
+
   (async () => {
-    const round = String(message.round || '').toUpperCase().trim();
-    const drop = String(message.drop || '').toUpperCase().trim();
+    const round = diagnostics.round;
+    const drop = diagnostics.drop;
 
     if (!/^R\d+$/.test(round)) throw new Error('Rodada inválida. Use algo como R16.');
     if (!/^Q\d+$/.test(drop)) throw new Error('Queda inválida. Use algo como Q4.');
 
     const tabs = await chrome.tabs.query({ url: 'https://datastudio.google.com/*' });
+    diagnostics.tabsFound = tabs.length;
     const tab = tabs.find(item => String(item.url || '').includes(REPORT_URL_ID)) || tabs.find(item => String(item.url || '').includes(REPORT_ID)) || tabs[0];
+    diagnostics.selectedTabId = tab?.id || null;
+    diagnostics.selectedTabUrl = String(tab?.url || '');
+    diagnostics.selectedTabTitle = String(tab?.title || '');
 
     if (!tab?.id) {
       throw new Error('Abra o relatório da Garena no Looker Studio em outra aba e tente novamente.');
@@ -274,20 +289,48 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return JSON.parse(clean);
         };
 
-        const post = async payload => {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json;charset=UTF-8',
-              'X-Same-Domain': '1'
-            },
-            body: JSON.stringify(payload)
-          });
+        const post = async (payload, label) => {
+          try {
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'X-Same-Domain': '1'
+              },
+              body: JSON.stringify(payload)
+            });
 
-          const body = await response.text();
-          if (!response.ok) throw new Error('Looker HTTP ' + response.status + ': ' + body.slice(0, 180));
-          return parseBody(body);
+            const body = await response.text();
+            let json = null;
+            let parseError = '';
+            if (response.ok) {
+              try { json = parseBody(body); }
+              catch (error) { parseError = String(error?.message || error); }
+            }
+            return {
+              ok: response.ok && Boolean(json),
+              label,
+              status: response.status,
+              statusText: response.statusText,
+              bodyLength: body.length,
+              parseError,
+              bodyStart: response.ok ? '' : body.slice(0, 180),
+              json
+            };
+          } catch (error) {
+            return {
+              ok: false,
+              label,
+              status: 0,
+              statusText: '',
+              bodyLength: 0,
+              parseError: '',
+              bodyStart: '',
+              fetchError: String(error?.message || error),
+              json: null
+            };
+          }
         };
 
         const columnValues = column => {
@@ -339,35 +382,83 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return rows;
         };
 
-        const [t1Json, p1Json] = await Promise.all([post(t1Payload), post(p1Payload)]);
-        const teams = compactT1(t1Json);
-        const players = compactP1(p1Json);
-
-        return {
-          teams,
-          players,
+        const [t1Req, p1Req] = await Promise.all([post(t1Payload, 'T1'), post(p1Payload, 'P1')]);
+        const pageDiagnostics = {
+          href: location.href,
+          origin: location.origin,
+          readyState: document.readyState,
           appVersion,
-          reportUrl: location.href,
-          diagnostics: {
-            t1Rows: teams.length,
-            p1Rows: players.length,
-            t1Columns: t1Json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset?.column?.length || 0,
-            p1Columns: p1Json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset?.column?.length || 0
-          }
+          resourceDetected: Boolean(resource),
+          endpoint,
+          requests: [t1Req, p1Req].map(item => ({
+            label: item.label,
+            ok: item.ok,
+            status: item.status,
+            statusText: item.statusText,
+            bodyLength: item.bodyLength,
+            parseError: item.parseError || '',
+            fetchError: item.fetchError || '',
+            bodyStart: item.bodyStart || ''
+          }))
         };
+
+        if (!t1Req.ok || !p1Req.ok) {
+          return {
+            __cffError: 'A consulta chegou ao Looker, mas T1 ou P1 falhou.',
+            __cffDiagnostics: pageDiagnostics
+          };
+        }
+
+        try {
+          const teams = compactT1(t1Req.json);
+          const players = compactP1(p1Req.json);
+          pageDiagnostics.t1Rows = teams.length;
+          pageDiagnostics.p1Rows = players.length;
+          pageDiagnostics.t1Columns = t1Req.json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset?.column?.length || 0;
+          pageDiagnostics.p1Columns = p1Req.json?.dataResponse?.[0]?.dataSubset?.[0]?.dataset?.tableDataset?.column?.length || 0;
+          return {
+            teams,
+            players,
+            appVersion,
+            reportUrl: location.href,
+            diagnostics: pageDiagnostics
+          };
+        } catch (error) {
+          return {
+            __cffError: String(error?.message || error),
+            __cffDiagnostics: pageDiagnostics
+          };
+        }
       }
     });
 
+    diagnostics.executeResultCount = Array.isArray(results) ? results.length : 0;
+    diagnostics.executeResults = Array.isArray(results) ? results.map(item => ({
+      frameId: item?.frameId ?? null,
+      documentId: item?.documentId || '',
+      hasResult: Object.prototype.hasOwnProperty.call(item || {}, 'result'),
+      resultType: typeof item?.result
+    })) : [];
+
     const data = results?.[0]?.result;
-    if (!data) throw new Error('A aba do Looker executou a consulta, mas não devolveu resultado.');
+    if (!data) {
+      throw Object.assign(new Error('A aba do Looker executou o script, mas o Chrome devolveu result=undefined.'), { diagnostics });
+    }
+    if (data.__cffError) {
+      throw Object.assign(new Error(data.__cffError), { diagnostics: { ...diagnostics, page: data.__cffDiagnostics || null } });
+    }
     if (!Array.isArray(data.teams) || !Array.isArray(data.players)) {
-      throw new Error('A aba do Looker não devolveu as listas T1/P1. Resultado: ' + JSON.stringify(data).slice(0, 300));
+      throw Object.assign(new Error('A aba do Looker não devolveu as listas T1/P1.'), { diagnostics: { ...diagnostics, returnedKeys: Object.keys(data || {}) } });
     }
 
-    return { ok: true, data };
+    return { ok: true, data, diagnostics: { ...diagnostics, page: data.diagnostics || null } };
   })()
     .then(sendResponse)
-    .catch(error => sendResponse({ ok: false, error: String(error?.message || error) }));
+    .catch(error => sendResponse({
+      ok: false,
+      error: String(error?.message || error),
+      diagnostics: error?.diagnostics || diagnostics
+    }));
 
   return true;
 });
