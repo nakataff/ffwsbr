@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Central Free Fire - Garena Looker Bridge",
+  "version": "1.0.0",
+  "description": "Conecta o admin-dados do Central Free Fire ao Looker Studio da Garena usando a sessão já aberta no Chrome.",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": ["https://datastudio.google.com/*"],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://centralfreefire.com.br/*",
+        "https://www.centralfreefire.com.br/*",
+        "https://nakataff.github.io/ffwsbr/*"
+      ],
+      "js": ["admin-bridge.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
