@@ -1,7 +1,9 @@
 const SOURCE = 'cff-looker-bridge';
 
+const BRIDGE_VERSION = chrome.runtime.getManifest().version;
+
 function post(message) {
-  window.postMessage({ source: SOURCE, ...message }, location.origin);
+  window.postMessage({ source: SOURCE, version: BRIDGE_VERSION, ...message }, location.origin);
 }
 
 window.addEventListener('message', event => {
