@@ -402,7 +402,9 @@ async function fetchGarenaData(){
     const roundNumber=Number(round.replace(/\D/g,'')),dropNumber=Number(drop.replace(/\D/g,''));
     if(roundNumber>=15&&roundNumber<=20)E.day.value=roundNumber-14;
     E.drop.value=dropNumber;E.map.value=map;E.customMapWrap.classList.add('live-hidden');
-    const checked=validatePayload();preview(checked);
+    let checked;
+    try{checked=validatePayload()}catch(error){error.diagnostics=data?.diagnostics||null;throw error}
+    preview(checked);
     if(E.garenaPreview){
       E.garenaPreview.textContent=[`IMPORTAÇÃO OK • ${round} • ${drop} • ${map}`,`${teams.length} equipes • ${players.length} jogadores`,'',...teams.sort((a,b)=>a.position-b.position).map(r=>`${String(r.position).padStart(2,'0')}º ${r.team.padEnd(17)} ${String(r.points).padStart(2)} pts • ${r.kills} K`)].join('\n');
       E.garenaPreview.classList.remove('live-hidden');
