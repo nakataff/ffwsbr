@@ -900,17 +900,47 @@ function autoPredictionPair(round, teamOpts, playerOpts, live) {
   ];
 }
 
-async function automaticPredictionData() {
-  const [rounds, logos, live, roster] = await Promise.all([
+let predictionMetaCache = { at: 0, rounds: null, logos: null, roster: null, pending: null };
+let predictionLiveCache = { at: 0, data: null, pending: null };
+
+async function predictionMeta() {
+  const now = Date.now();
+  if (predictionMetaCache.rounds && now - predictionMetaCache.at < 5 * 60 * 1000) return predictionMetaCache;
+  if (predictionMetaCache.pending) return predictionMetaCache.pending;
+  predictionMetaCache.pending = Promise.all([
     fetchSecondPhaseRounds(),
     fetchLogoMap(),
-    fetchJson(LIVE_SECOND_URL),
     fetchJson(PLAYERS_URL),
-  ]);
-  const teams = teamOptions(logos);
-  const players = playerOptions(roster || {});
-  const pairs = rounds.map(round => ({ round, predictions: autoPredictionPair(round, teams, players, live || {}) }));
-  return { rounds, pairs, options: teams, playerOptions: players, live: live || {} };
+  ]).then(([rounds, logos, roster]) => {
+    predictionMetaCache = { at: Date.now(), rounds, logos, roster: roster || {}, pending: null };
+    return predictionMetaCache;
+  }).catch(error => {
+    predictionMetaCache.pending = null;
+    throw error;
+  });
+  return predictionMetaCache.pending;
+}
+
+async function predictionLive() {
+  const now = Date.now();
+  if (predictionLiveCache.data && now - predictionLiveCache.at < 8 * 1000) return predictionLiveCache.data;
+  if (predictionLiveCache.pending) return predictionLiveCache.pending;
+  predictionLiveCache.pending = fetchJson(LIVE_SECOND_URL).then(data => {
+    predictionLiveCache = { at: Date.now(), data: data || {}, pending: null };
+    return predictionLiveCache.data;
+  }).catch(error => {
+    predictionLiveCache.pending = null;
+    throw error;
+  });
+  return predictionLiveCache.pending;
+}
+
+async function automaticPredictionData() {
+  const [meta, live] = await Promise.all([predictionMeta(), predictionLive()]);
+  const teams = teamOptions(meta.logos || {});
+  const players = playerOptions(meta.roster || {});
+  const pairs = (meta.rounds || []).map(round => ({ round, predictions: autoPredictionPair(round, teams, players, live || {}) }));
+  return { rounds: meta.rounds || [], pairs, options: teams, playerOptions: players, live: live || {} };
 }
 
 function selectAutoWeekend(auto) {
