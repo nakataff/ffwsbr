@@ -53,12 +53,15 @@
     const style = document.createElement('style');
     style.id = 'cff-community-checkin-css';
     style.textContent = `
-      .cff-checkin{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,.72fr);gap:14px;margin:0 0 18px;border:1px solid rgba(0,200,255,.20);border-radius:18px;background:linear-gradient(135deg,rgba(0,200,255,.075),rgba(11,17,29,.96) 48%,rgba(8,14,24,.98));overflow:hidden;box-shadow:0 16px 42px rgba(0,0,0,.18)}
+      .cff-checkin{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr);gap:0;margin:0 0 18px;border:1px solid rgba(0,200,255,.28);border-radius:18px;background:linear-gradient(135deg,rgba(0,200,255,.09),rgba(11,17,29,.98) 50%,rgba(8,14,24,.99));overflow:hidden;box-shadow:0 16px 42px rgba(0,0,0,.18)}
       .cff-checkin-copy{padding:22px 24px;min-width:0}
       .cff-checkin-kicker{color:#00c8ff;font-size:.68rem;font-weight:1000;letter-spacing:1.5px;text-transform:uppercase}
       .cff-checkin h2{margin:6px 0 8px;color:#fff;font-size:clamp(1.35rem,3vw,2rem);font-weight:1000;line-height:1;text-transform:uppercase}
       .cff-checkin h2 span{color:#00c8ff}
       .cff-checkin-copy p{margin:0;max-width:680px;color:#88a4c3;font-size:.82rem;line-height:1.55;font-weight:700}
+      .cff-checkin-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:15px}
+      .cff-checkin-step{display:flex;align-items:center;gap:8px;min-width:0;padding:8px 9px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(255,255,255,.025);color:#8aa5c3;font-size:.64rem;font-weight:850}
+      .cff-checkin-step b{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:rgba(0,200,255,.12);color:#00c8ff;font-size:.64rem}
       .cff-checkin-box{display:flex;align-items:center;justify-content:center;padding:16px;border-left:1px solid rgba(0,200,255,.12);background:rgba(0,0,0,.12)}
       .cff-checkin-panel{width:100%;padding:15px;border:1px solid rgba(255,255,255,.08);border-radius:13px;background:#080e18;text-align:center}
       .cff-checkin-status{display:inline-flex;align-items:center;gap:7px;color:#90aac6;font-size:.66rem;font-weight:950;letter-spacing:.7px;text-transform:uppercase}
@@ -69,12 +72,12 @@
       .cff-checkin-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:7px}
       .cff-checkin-btn{border:1px solid rgba(0,200,255,.28);border-radius:9px;padding:9px 12px;background:rgba(0,200,255,.10);color:#dff8ff;font-size:.7rem;font-weight:1000;text-transform:uppercase;cursor:pointer;text-decoration:none}
       .cff-checkin-btn:hover{border-color:#00c8ff;background:rgba(0,200,255,.16)}
-      .cff-checkin-btn.primary{border-color:#00c8ff;background:#00c8ff;color:#03111a}
+      .cff-checkin-btn.primary{min-height:43px;border-color:#00c8ff;background:#00c8ff;color:#03111a;box-shadow:0 8px 22px rgba(0,200,255,.22);font-size:.73rem}
       .cff-checkin-btn[disabled]{opacity:.55;cursor:default}
       .cff-checkin-swap{margin-top:10px;border:0;background:none;color:#627d9a;font-size:.63rem;font-weight:900;text-transform:uppercase;cursor:pointer}
       .cff-checkin-success{color:#7ee2a8!important}
       .cff-checkin-error{color:#ff9ca8!important}
-      @media(max-width:800px){.cff-checkin{grid-template-columns:1fr}.cff-checkin-box{border-left:0;border-top:1px solid rgba(0,200,255,.12)}.cff-checkin-copy{padding:18px}.cff-checkin-box{padding:12px}.cff-checkin-actions .cff-checkin-btn{width:100%}}
+      @media(max-width:800px){.cff-checkin{grid-template-columns:1fr}.cff-checkin-box{border-left:0;border-top:1px solid rgba(0,200,255,.12)}.cff-checkin-copy{padding:18px}.cff-checkin-box{padding:12px}.cff-checkin-steps{grid-template-columns:1fr}.cff-checkin-actions .cff-checkin-btn{width:100%}}
     `;
     document.head.appendChild(style);
   }
@@ -92,8 +95,10 @@
   }
 
   function mount() {
+    if (document.getElementById('cff-community-checkin')) return document.getElementById('cff-community-checkin');
+    const target = document.getElementById('cff-checkin-mount');
     const toolbar = document.querySelector('.ig-toolbar');
-    if (!toolbar || document.getElementById('cff-community-checkin')) return null;
+    if (!target && !toolbar) return null;
     injectCss();
     injectRule();
     const section = document.createElement('section');
@@ -101,12 +106,17 @@
     section.id = 'cff-community-checkin';
     section.innerHTML = `
       <div class="cff-checkin-copy">
-        <div class="cff-checkin-kicker">Pontos extras • 1 vez por dia</div>
+        <div class="cff-checkin-kicker">✅ Não esqueça seu ponto diário</div>
         <h2>Check-in diário <span>+1 ponto</span></h2>
-        <p>Vincule seu Instagram por DM. Em outro navegador ou dispositivo, você pode gerar um novo código e confirmar a mesma conta novamente. Depois, basta fazer o check-in diário.</p>
+        <p>Depois de vincular seu Instagram uma vez, é só voltar aqui todos os dias e tocar no botão de check-in. Leva poucos segundos e conta no Ranking da Comunidade.</p>
+        <div class="cff-checkin-steps">
+          <span class="cff-checkin-step"><b>1</b> Vincule seu Instagram</span>
+          <span class="cff-checkin-step"><b>2</b> Volte uma vez por dia</span>
+          <span class="cff-checkin-step"><b>3</b> Clique e ganhe +1 ponto</span>
+        </div>
       </div>
-      <div class="cff-checkin-box"><div class="cff-checkin-panel" id="cff-checkin-panel"><span class="cff-checkin-status">Carregando</span></div></div>`;
-    toolbar.parentNode.insertBefore(section, toolbar);
+      <div class="cff-checkin-box"><div class="cff-checkin-panel" id="cff-checkin-panel"><span class="cff-checkin-status">Carregando seu check-in</span></div></div>`;
+    if (target) target.appendChild(section); else toolbar.parentNode.insertBefore(section, toolbar);
     return section;
   }
 
@@ -185,7 +195,7 @@
       <p class="cff-checkin-help ${unresolved ? 'cff-checkin-error' : ''}">${unresolved ? 'A Meta confirmou a conta, mas não devolveu o @ corretamente. Gere um novo código e envie novamente pela conta certa.' : (checked ? 'Você já garantiu o ponto de hoje. Volte amanhã para pontuar de novo.' : 'Tudo certo. Seu Instagram já está confirmado neste navegador.')}</p>
       ${debugText ? `<p class="cff-checkin-help" style="margin-top:-4px;word-break:break-word;opacity:.85"><strong>Diagnóstico Meta:</strong> ${esc(debugText)}</p>` : ''}
       <div class="cff-checkin-actions">
-        <button class="cff-checkin-btn primary" id="cff-checkin-do" type="button" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in +1'}</button>
+        <button class="cff-checkin-btn primary" id="cff-checkin-do" type="button" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in de hoje • +1'}</button>
         <button class="cff-checkin-btn" id="cff-checkin-relink" type="button">Vincular novamente por código</button>
       </div>
       <button class="cff-checkin-swap" id="cff-checkin-swap" type="button">Trocar conta neste navegador</button>`;
@@ -237,7 +247,7 @@
       const help = root?.querySelector('.cff-checkin-help');
       if (help && data?.awarded) help.textContent = '+1 ponto! Seu check-in de hoje foi contabilizado no ranking.';
     } catch (_) {
-      if (button) { button.disabled = false; button.textContent = 'Fazer check-in +1'; }
+      if (button) { button.disabled = false; button.textContent = 'Fazer check-in de hoje • +1'; }
       const root = panel();
       const help = root?.querySelector('.cff-checkin-help');
       if (help) { help.textContent = 'Não foi possível confirmar agora. Tente novamente.'; help.classList.add('cff-checkin-error'); }
