@@ -21,6 +21,20 @@
   const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
   const playerKey=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
   const values=v=>Array.isArray(v)?v.filter(Boolean):Object.values(v||{}).filter(Boolean);
+  let playerNameMapPromise=null;
+  function loadPlayerNameRows(nativeFetch){
+    if(playerNameMapPromise)return playerNameMapPromise;
+    playerNameMapPromise=nativeFetch('ffws-br-2026-s2/player-name-map.json?v=20260921-player-aliases-v1',{cache:'default'})
+      .then(r=>r.ok?r.json():null)
+      .then(data=>Array.isArray(data?.rows)?data.rows:[])
+      .catch(()=>[]);
+    return playerNameMapPromise;
+  }
+  function canonicalLivePlayer(rows,name,team){
+    const n=playerKey(name),t=normalize(team),list=Array.isArray(rows)?rows:[];
+    const matches=row=>[row?.canonicalName,row?.sourceName,...(Array.isArray(row?.aliases)?row.aliases:[])].some(value=>playerKey(value)===n);
+    return list.find(row=>normalize(row?.team)===t&&matches(row))||list.find(matches)||null;
+  }
   const jsonResponse=(response,payload)=>{const headers=new Headers(response.headers);headers.set('content-type','application/json; charset=utf-8');return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers})};
 
   function injectSecondPhasePolish() {
@@ -186,13 +200,14 @@
     if(live?.segundaFase?.updatedAt||live?.final?.updatedAt)payload.updatedAt=new Date(Math.max(num(live?.segundaFase?.updatedAt),num(live?.final?.updatedAt))).toISOString().slice(0,10);
     return payload;
   }
-  function livePlayerAggregates(live){
+  function livePlayerAggregates(live,nameRows=[]){
     const out=new Map();
     ['segundaFase','final'].forEach(stageKey=>{
       flattenDrops(live?.[stageKey]).forEach(drop=>values(drop.players).forEach(p=>{
-        const key=playerKey(p.name);if(!key)return;
-        if(!out.has(key))out.set(key,{name:p.name,team:p.team,stages:{},days:new Map()});
-        const row=out.get(key);row.name=p.name||row.name;row.team=p.team||row.team;
+        const meta=canonicalLivePlayer(nameRows,p.name,p.team),canonicalName=meta?.canonicalName||p.name,canonicalTeam=meta?.team||p.team;
+        const key=playerKey(canonicalName);if(!key)return;
+        if(!out.has(key))out.set(key,{name:canonicalName,team:canonicalTeam,stages:{},days:new Map()});
+        const row=out.get(key);row.name=canonicalName||row.name;row.team=canonicalTeam||row.team;
         if(!row.stages[stageKey])row.stages[stageKey]={kills:0,damage:0,assists:0,matches:0,mvp:0};
         const s=row.stages[stageKey];s.kills+=num(p.kills);s.damage+=num(p.damage);s.assists+=num(p.assists);s.matches+=1;s.mvp+=num(p.mvp);
         const dk=`${stageKey}:${drop.day}`;row.days.set(dk,(row.days.get(dk)||0)+num(p.kills));
@@ -200,10 +215,11 @@
     });
     return out;
   }
-  function mergePlayerStats(payload,live){
+  async function mergePlayerStats(payload,live,nativeFetch){
     if(!payload||typeof payload!=='object')payload={tournament:'WB 2026 S2',players:{}};
     if(!payload.players||typeof payload.players!=='object')payload.players={};
-    const liveAgg=livePlayerAggregates(live);
+    const nameRows=await loadPlayerNameRows(nativeFetch);
+    const liveAgg=livePlayerAggregates(live,nameRows);
     const keyByNorm=new Map(Object.entries(payload.players).map(([key,p])=>[playerKey(p?.name||key),key]));
     liveAgg.forEach((agg,normKey)=>{
       const key=keyByNorm.get(normKey)||normKey;
@@ -246,10 +262,10 @@
       try{
         const payload=await response.clone().json();const live=await loadLive(nativeFetch);if(!live)return response;
         if(requestUrl.includes('stages.json'))return jsonResponse(response,mergeStages(payload,live));
-        if(requestUrl.includes('player-stats.json'))return jsonResponse(response,mergePlayerStats(payload,live));
+        if(requestUrl.includes('player-stats.json'))return jsonResponse(response,await mergePlayerStats(payload,live,nativeFetch));
         if(requestUrl.includes('home-results.json')){
           let stats={players:{}};
-          try{const r=await nativeFetch(`ffws-br-2026-s2/player-stats.json?v=20260920-player-stats-base-v1`,{cache:'default'});if(r.ok)stats=mergePlayerStats(await r.json(),live)}catch(_){}
+          try{const r=await nativeFetch(`ffws-br-2026-s2/player-stats.json?v=20260920-player-stats-base-v1`,{cache:'default'});if(r.ok)stats=await mergePlayerStats(await r.json(),live,nativeFetch)}catch(_){}
           return jsonResponse(response,mergeHome(payload,live,stats));
         }
         return response;
