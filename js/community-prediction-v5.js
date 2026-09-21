@@ -83,8 +83,20 @@
     document.head.appendChild(s);
   }
 
+  function injectRankingRule(){
+    const rules=document.querySelector('.ig-rules');
+    if(!rules||document.getElementById('ig-rule-prediction'))return;
+    const row=document.createElement('div');
+    row.className='ig-rule';
+    row.id='ig-rule-prediction';
+    row.innerHTML='<div class="ig-rule-icon">🎯</div><div><strong>Palpites da WB</strong><small>Participe nos dois dias: melhor, pior e MVP. Participação soma pontos e os acertos rendem bônus.</small></div><div class="ig-rule-points">BÔNUS</div>';
+    const note=rules.querySelector('.ig-note');
+    if(note)rules.insertBefore(row,note);else rules.appendChild(row);
+  }
+
   function mount(){
     injectCss();
+    injectRankingRule();
     const root=$('#cff-predictions-mount');
     if(root)return root;
     return null;
