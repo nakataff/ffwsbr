@@ -7,8 +7,6 @@
 
   const API = 'https://cff-instagram-community.nakataffb4.workers.dev';
   const STORAGE_KEY = 'cff_daily_checkin_session_v1';
-  const POLL_MS = 4000;
-  let pollTimer = null;
   let busy = false;
 
   function esc(value) {
@@ -141,7 +139,7 @@
     root.innerHTML = `
       <span class="cff-checkin-status">Aguardando vínculo</span>
       <strong class="cff-checkin-code">${esc(code)}</strong>
-      <p class="cff-checkin-help">Mande exatamente este código por DM para <strong>@nakataff</strong>. A confirmação é automática e este navegador ficará vinculado à sua conta.</p>
+      <p class="cff-checkin-help">Mande exatamente este código por DM para <strong>@nakataff</strong>. Depois de enviar, clique em <strong>Já enviei</strong> para confirmar. A página não fica consultando o servidor sozinha.</p>
       <div class="cff-checkin-actions">
         <button class="cff-checkin-btn" id="cff-checkin-copy" type="button">Copiar código</button>
         <a class="cff-checkin-btn" href="https://www.instagram.com/nakataff/" target="_blank" rel="noopener">Abrir @nakataff</a>
@@ -157,13 +155,11 @@
       if (button) { button.textContent = 'Copiado!'; setTimeout(() => { button.textContent = 'Copiar código'; }, 1200); }
     });
     document.getElementById('cff-checkin-sent')?.addEventListener('click', checkStatus);
-    startPolling();
   }
 
   async function restartLink(message = 'Gerar um novo código de vínculo para este navegador?') {
     if (busy) return;
     if (!confirm(message)) return;
-    stopPolling();
     saveSession('');
     renderLoading('Gerando novo código');
     try {
@@ -175,7 +171,6 @@
   }
 
   function renderVerified(data) {
-    stopPolling();
     const root = panel();
     if (!root) return;
     const checked = Boolean(data?.checkedInToday);
@@ -205,7 +200,6 @@
   }
 
   function renderExpired() {
-    stopPolling();
     const root = panel();
     if (!root) return;
     root.innerHTML = '<span class="cff-checkin-status">Código expirado</span><p class="cff-checkin-help" style="margin-top:9px">Por segurança, o código de vínculo vale por 15 minutos.</p><div class="cff-checkin-actions"><button class="cff-checkin-btn primary" id="cff-checkin-new" type="button">Gerar novo código</button></div>';
@@ -257,7 +251,6 @@
   }
 
   function startPolling() {
-    stopPolling();
     pollTimer = setInterval(() => { if (!document.hidden) checkStatus().catch(() => {}); }, POLL_MS);
   }
 
@@ -266,11 +259,30 @@
     pollTimer = null;
   }
 
+  function renderIdle() {
+    const root = panel();
+    if (!root) return;
+    root.innerHTML = `
+      <span class="cff-checkin-status">Check-in disponível</span>
+      <strong class="cff-checkin-user">+1 ponto por dia</strong>
+      <p class="cff-checkin-help">O servidor só será consultado quando você realmente iniciar ou confirmar o check-in.</p>
+      <div class="cff-checkin-actions">
+        <button class="cff-checkin-btn primary" id="cff-checkin-start" type="button">Vincular Instagram / começar</button>
+      </div>`;
+    document.getElementById('cff-checkin-start')?.addEventListener('click', async () => {
+      renderLoading('Gerando código');
+      try { await startSession(); } catch (error) { console.error('[CFF Check-in start]', error); renderUnavailable(); }
+    });
+  }
+
   async function bootSession() {
-    renderLoading();
     try {
-      if (session()) await checkStatus();
-      else await startSession();
+      if (session()) {
+        renderLoading();
+        await checkStatus();
+      } else {
+        renderIdle();
+      }
     } catch (error) {
       console.error('[CFF Check-in]', error);
       renderUnavailable();
