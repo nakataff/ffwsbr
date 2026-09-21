@@ -76,9 +76,27 @@
       .cff-pred-rank-tabs{display:flex;gap:5px}.cff-pred-rank-tab{border:1px solid #263853;border-radius:8px;background:transparent;color:#718dab;padding:6px 9px;font-size:.59rem;font-weight:950;text-transform:uppercase;cursor:pointer}
       .cff-pred-rank-tab.is-active{border-color:#00c8ff;background:rgba(0,200,255,.08);color:#dff9ff}
       .cff-pred-rank-list{display:grid}.cff-pred-rank-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:11px 15px;border-bottom:1px solid rgba(255,255,255,.055)}
-      .cff-pred-rank-row:last-child{border-bottom:0}.cff-pred-rank-pos{color:#6b88a8;font-weight:1000}.cff-pred-rank-user{overflow:hidden;color:#eef7ff;font-size:.72rem;font-weight:950;text-overflow:ellipsis;white-space:nowrap}.cff-pred-rank-stat{color:#6f8baa;font-size:.61rem}.cff-pred-rank-points{color:#00c8ff;font-size:.73rem;font-weight:1000}
+      .cff-pred-rank-row:last-child{border-bottom:0}.cff-pred-rank-pos{color:#6b88a8;font-weight:1000}.cff-pred-rank-user{min-width:0;border:0;background:none;padding:0;overflow:hidden;color:#eef7ff;font:950 .72rem/1.2 inherit;text-align:left;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.cff-pred-rank-user:hover{color:#00c8ff;text-decoration:underline}.cff-pred-rank-stat{color:#6f8baa;font-size:.61rem}.cff-pred-rank-points{color:#00c8ff;font-size:.73rem;font-weight:1000}
+      .cff-pred-profile-overlay{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:16px;background:rgba(2,6,12,.78);backdrop-filter:blur(6px)}
+      .cff-pred-profile{width:min(780px,100%);max-height:min(88vh,820px);overflow:auto;border:1px solid rgba(0,200,255,.25);border-radius:18px;background:#09111d;box-shadow:0 26px 80px rgba(0,0,0,.48)}
+      .cff-pred-profile-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #1d2a42;background:rgba(9,17,29,.97);backdrop-filter:blur(8px)}
+      .cff-pred-profile-head small{display:block;color:#00c8ff;font-size:.58rem;font-weight:1000;letter-spacing:.9px;text-transform:uppercase}.cff-pred-profile-head h3{margin:3px 0 0;color:#fff;font-size:1rem}
+      .cff-pred-profile-close{display:grid;place-items:center;width:36px;height:36px;border:1px solid #273a54;border-radius:9px;background:#101a29;color:#9bb2ca;font-size:1rem;cursor:pointer}.cff-pred-profile-close:hover{border-color:#00c8ff;color:#fff}
+      .cff-pred-profile-body{display:grid;gap:10px;padding:12px}
+      .cff-pred-profile-day{border:1px solid #1d2a42;border-radius:13px;background:#070d17;overflow:hidden}
+      .cff-pred-profile-day-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.06)}
+      .cff-pred-profile-day-head strong{color:#fff;font-size:.72rem;text-transform:uppercase}.cff-pred-profile-day-head span{color:#6e89a7;font-size:.6rem;font-weight:850}
+      .cff-pred-profile-day.is-future{opacity:.72}
+      .cff-pred-profile-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.055)}
+      .cff-pred-profile-pick{min-width:0;padding:12px;background:#08101b}
+      .cff-pred-profile-pick>span{display:block;color:#6885a4;font-size:.56rem;font-weight:1000;letter-spacing:.7px;text-transform:uppercase}
+      .cff-pred-profile-pick strong{display:block;margin-top:5px;color:#eef7ff;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .cff-pred-profile-pick b{display:block;margin-top:4px;color:#00c8ff;font-size:.65rem}
+      .cff-pred-profile-pick small{display:block;margin-top:5px;color:#617e9d;font-size:.58rem;line-height:1.35}
+      .cff-pred-profile-pick .is-hit{color:#75dfa8}.cff-pred-profile-pick .is-miss{color:#ff9ca8}.cff-pred-profile-lock{padding:19px 14px;color:#687f99;font-size:.67rem;font-weight:850;text-align:center}
+      .cff-pred-profile-loading{padding:36px 20px;color:#7994b2;text-align:center;font-size:.73rem;font-weight:850}
       .cff-pred-empty{padding:24px;color:#748fab;text-align:center;font-size:.72rem;font-weight:800}
-      @media(max-width:700px){.cff-pred-v5-hero{align-items:flex-start;flex-direction:column}.cff-pred-v5-badge{width:100%;text-align:center}.cff-pred-form-grid{grid-template-columns:1fr}.cff-pred-field.mvp{grid-column:auto}.cff-pred-input-row{grid-template-columns:1fr}.cff-pred-day-foot{align-items:stretch;flex-direction:column}.cff-pred-save{width:100%}.cff-pred-rank-row{grid-template-columns:30px minmax(0,1fr) auto}.cff-pred-rank-stat{display:none}}
+      @media(max-width:700px){.cff-pred-v5-hero{align-items:flex-start;flex-direction:column}.cff-pred-v5-badge{width:100%;text-align:center}.cff-pred-form-grid{grid-template-columns:1fr}.cff-pred-field.mvp{grid-column:auto}.cff-pred-input-row{grid-template-columns:1fr}.cff-pred-day-foot{align-items:stretch;flex-direction:column}.cff-pred-save{width:100%}.cff-pred-rank-row{grid-template-columns:30px minmax(0,1fr) auto}.cff-pred-rank-stat{display:none}.cff-pred-profile-overlay{padding:8px}.cff-pred-profile{max-height:94vh}.cff-pred-profile-grid{grid-template-columns:1fr}.cff-pred-profile-head{padding:13px 14px}}
     `;
     document.head.appendChild(s);
   }
@@ -313,14 +331,80 @@
     }
   }
 
+  function profileMetricLabel(metric){
+    if(metric==='best')return'🔥 Melhor equipe';
+    if(metric==='worst')return'📉 Pior equipe';
+    if(metric==='mvp')return'⭐ MVP';
+    return'Palpite';
+  }
+
+  function profilePickMarkup(p){
+    if(!p?.revealed)return`<div class="cff-pred-profile-pick"><span>${esc(profileMetricLabel(p?.metric))}</span><strong>—</strong><small>Palpite ainda não revelado</small></div>`;
+    if(!p.vote)return`<div class="cff-pred-profile-pick"><span>${esc(profileMetricLabel(p.metric))}</span><strong>Não participou</strong><small>Nenhum palpite registrado</small></div>`;
+    const value=p.vote.points==null?'':p.metric==='mvp'?`${num(p.vote.points)} K`:`${num(p.vote.points)} pts`;
+    const result=p.result?(p.result.points==null?p.result.optionLabel:`${p.result.optionLabel} • ${num(p.result.points)} ${p.metric==='mvp'?'K':'pts'}`):'Resultado ainda pendente';
+    const resultClass=p.result?(p.vote.correctSelection?'is-hit':'is-miss'):'';
+    const verdict=p.result?(p.vote.correctSelection?'✓ Acertou a escolha':'✕ Escolha diferente'):'';
+    return`<div class="cff-pred-profile-pick">
+      <span>${esc(profileMetricLabel(p.metric))}</span>
+      <strong>${esc(p.vote.optionLabel||'—')}</strong>
+      ${value?`<b>${esc(value)}</b>`:''}
+      <small>Resultado: ${esc(result)}</small>
+      ${verdict?`<small class="${resultClass}">${esc(verdict)}</small>`:''}
+    </div>`;
+  }
+
+  function closePredictionProfile(){
+    document.getElementById('cff-pred-profile-overlay')?.remove();
+    document.removeEventListener('keydown',profileEscape);
+  }
+
+  function profileEscape(e){if(e.key==='Escape')closePredictionProfile()}
+
+  async function openPredictionProfile(userKey,username){
+    closePredictionProfile();
+    const overlay=document.createElement('div');
+    overlay.id='cff-pred-profile-overlay';
+    overlay.className='cff-pred-profile-overlay';
+    overlay.innerHTML=`<section class="cff-pred-profile" role="dialog" aria-modal="true" aria-label="Perfil de palpites">
+      <div class="cff-pred-profile-head"><div><small>Histórico público de palpites</small><h3>@${esc(username||'usuario')}</h3></div><button class="cff-pred-profile-close" type="button" aria-label="Fechar">✕</button></div>
+      <div class="cff-pred-profile-loading">Carregando rodadas...</div>
+    </section>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('.cff-pred-profile-close')?.addEventListener('click',closePredictionProfile);
+    overlay.addEventListener('click',e=>{if(e.target===overlay)closePredictionProfile()});
+    document.addEventListener('keydown',profileEscape);
+    try{
+      const data=await request('/api/prediction/profile?userKey='+encodeURIComponent(userKey)+'&_='+Date.now());
+      const days=Array.isArray(data?.days)?data.days:[];
+      const body=overlay.querySelector('.cff-pred-profile-loading');
+      const title=overlay.querySelector('.cff-pred-profile-head h3');
+      if(title)title.textContent='@'+String(data?.username||username||'usuario').replace(/^@+/,'');
+      if(!body)return;
+      body.className='cff-pred-profile-body';
+      body.innerHTML=days.length?days.map(day=>{
+        const date=day.date?day.date.split('-').reverse().slice(0,2).join('/'):'';
+        return`<article class="cff-pred-profile-day ${day.revealed?'':'is-future'}">
+          <div class="cff-pred-profile-day-head"><strong>Dia ${num(day.day)}${date?' • '+esc(date):''}</strong><span>${day.revealed?'PALPITES LIBERADOS':'AINDA NÃO REVELADO'}</span></div>
+          ${day.revealed?`<div class="cff-pred-profile-grid">${(day.predictions||[]).map(profilePickMarkup).join('')}</div>`:`<div class="cff-pred-profile-lock">Os palpites deste dia ficam ocultos até o fechamento das 13h</div>`}
+        </article>`;
+      }).join(''):'<div class="cff-pred-profile-loading">Nenhuma rodada encontrada.</div>';
+    }catch(e){
+      const body=overlay.querySelector('.cff-pred-profile-loading');
+      if(body)body.textContent='Não foi possível carregar este perfil agora.';
+      console.error('[CFF prediction profile]',e);
+    }
+  }
+
   async function loadRanking(){
     const root=rankingMount();if(!root)return;
     root.innerHTML='<div class="cff-pred-empty">Carregando ranking de palpites...</div>';
     try{
       const data=await request('/api/prediction/ranking?period='+encodeURIComponent(state.rankingPeriod)+'&_='+Date.now());
       const rows=Array.isArray(data?.ranking)?data.ranking:[];
-      root.innerHTML=`<section class="cff-pred-rank-v5"><div class="cff-pred-rank-v5-head"><h3>🏆 Ranking de palpites</h3><div class="cff-pred-rank-tabs">${[['week','Semana'],['month','Mês'],['all','Geral']].map(([id,label])=>`<button class="cff-pred-rank-tab ${state.rankingPeriod===id?'is-active':''}" data-rank-period="${id}" type="button">${label}</button>`).join('')}</div></div><div class="cff-pred-rank-list">${rows.length?rows.slice(0,30).map((row,i)=>`<div class="cff-pred-rank-row"><span class="cff-pred-rank-pos">${i+1}º</span><span class="cff-pred-rank-user">@${esc(row.username||'usuario')}</span><span class="cff-pred-rank-stat">${num(row.wins)} acertos • ${num(row.participations)} palpites</span><strong class="cff-pred-rank-points">${num(row.points)} pts</strong></div>`).join(''):'<div class="cff-pred-empty">O ranking de palpites ainda não começou.</div>'}</div></section>`;
+      root.innerHTML=`<section class="cff-pred-rank-v5"><div class="cff-pred-rank-v5-head"><h3>🏆 Ranking de palpites</h3><div class="cff-pred-rank-tabs">${[['week','Semana'],['month','Mês'],['all','Geral']].map(([id,label])=>`<button class="cff-pred-rank-tab ${state.rankingPeriod===id?'is-active':''}" data-rank-period="${id}" type="button">${label}</button>`).join('')}</div></div><div class="cff-pred-rank-list">${rows.length?rows.slice(0,30).map((row,i)=>`<div class="cff-pred-rank-row"><span class="cff-pred-rank-pos">${i+1}º</span><button class="cff-pred-rank-user" type="button" data-pred-profile="${esc(row.userKey||'')}" data-pred-username="${esc(row.username||'usuario')}" title="Ver palpites de @${esc(row.username||'usuario')}">@${esc(row.username||'usuario')}</button><span class="cff-pred-rank-stat">${num(row.wins)} acertos • ${num(row.participations)} palpites</span><strong class="cff-pred-rank-points">${num(row.points)} pts</strong></div>`).join(''):'<div class="cff-pred-empty">O ranking de palpites ainda não começou.</div>'}</div></section>`;
       root.querySelectorAll('[data-rank-period]').forEach(btn=>btn.addEventListener('click',()=>{state.rankingPeriod=btn.dataset.rankPeriod||'week';loadRanking()}));
+      root.querySelectorAll('[data-pred-profile]').forEach(btn=>btn.addEventListener('click',()=>openPredictionProfile(btn.dataset.predProfile||'',btn.dataset.predUsername||'usuario')));
     }catch(e){root.innerHTML='<div class="cff-pred-empty">Não foi possível carregar o ranking de palpites.</div>'}
   }
 
