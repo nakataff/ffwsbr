@@ -3,7 +3,7 @@
 
   const API = 'https://cff-instagram-community.nakataffb4.workers.dev/api/ranking?period=week';
   const FULL_RANKING_URL = 'interacoes.html';
-  const REFRESH_MS = 10 * 60 * 1000;
+  const REFRESH_MS = 30 * 60 * 1000;
   let lastLoadAt = 0;
   let loading = false;
 
