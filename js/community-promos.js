@@ -79,6 +79,7 @@
   function predictionTitle(p) {
     if (p.metric === 'best') return '🔥 Melhor equipe do dia';
     if (p.metric === 'worst') return '📉 Pior equipe do dia';
+    if (p.metric === 'mvp') return '⭐ MVP do dia';
     return '🎯 Palpite';
   }
 
@@ -96,7 +97,7 @@
       if (broadcast) broadcast.insertAdjacentElement('afterend', root);
       else document.querySelector('#home .home-center-column')?.prepend(root);
     }
-    root.innerHTML = `<div class="cff-home-predictions-head"><strong>🎯 Palpites da WB / FFWS BR</strong><span>${open ? `abertos até ${esc(fmt(closesAt))}` : 'palpites do dia encerrados'}</span></div><div class="cff-home-predictions-body">${predictions.map(p => `<div class="cff-home-prediction-item"><small>${esc(predictionTitle(p))}</small><b>${esc(p.question || '')}</b></div>`).join('')}</div><div class="cff-home-predictions-foot"><span>Escolha melhor + pior equipe e estime os pontos. Acertar os dois rende bônus extra.</span><a href="interacoes.html#palpites">${open ? 'Dar palpite' : 'Ver palpites'}</a></div>`;
+    root.innerHTML = `<div class="cff-home-predictions-head"><strong>🎯 Palpites da WB / FFWS BR</strong><span>${open ? `abertos até ${esc(fmt(closesAt))}` : 'palpites do dia encerrados'}</span></div><div class="cff-home-predictions-body">${predictions.map(p => `<div class="cff-home-prediction-item"><small>${esc(predictionTitle(p))}</small><b>${esc(p.question || '')}</b></div>`).join('')}</div><div class="cff-home-predictions-foot"><span>Palpite na melhor equipe, pior equipe e MVP do dia. Você pode editar até 13h.</span><a href="interacoes.html#palpites">${open ? 'Dar palpite' : 'Ver palpites'}</a></div>`;
 
     const watch = document.getElementById('home-s2-watch');
     if (watch?.parentNode && !document.getElementById('cff-home-broadcast-predict')) {
@@ -111,13 +112,7 @@
 
   function scrollHash() {
     if (!isInteractions || location.hash !== '#palpites') return;
-    let tries = 0;
-    const t = setInterval(() => {
-      tries += 1;
-      const el = document.getElementById('cff-community-prediction');
-      if (el) { clearInterval(t); el.scrollIntoView({ behavior:'smooth', block:'start' }); }
-      else if (tries > 50) clearInterval(t);
-    }, 120);
+    window.cffOpenCommunityTab?.('predictions',{updateHash:false});
   }
 
   async function boot() {
