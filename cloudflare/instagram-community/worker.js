@@ -55,6 +55,7 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 let rewardsCache = { at: 0, data: null };
+let predictionSettlementSweep = { at: 0, signature: '', pending: null };
 
 export default {
   async fetch(request, env, ctx) {
@@ -972,6 +973,11 @@ function encodeVoteSource(predictionId, option, points) {
   return `${predictionId}|${option}|${points == null ? '' : Math.round(Number(points) || 0)}`;
 }
 
+function awardKeyPrefixBounds(prefix) {
+  const start = String(prefix || '');
+  return [start, start + '\uffff'];
+}
+
 function parseVoteSource(predictionId, sourceId) {
   const source = String(sourceId || '');
   if (source.startsWith(`${predictionId}|`)) {
@@ -1004,14 +1010,15 @@ async function publicPredictionVotes(env, predictions) {
   const now = Date.now();
   for (const prediction of predictions || []) {
     if (!prediction?.id || !prediction?.closesAt || now < Number(prediction.closesAt)) continue;
+    const [startKey,endKey] = awardKeyPrefixBounds(`prediction-vote:${prediction.id}:`);
     const result = await env.DB.prepare(`
       SELECT a.user_key, COALESCE(u.username,a.username) AS username, a.source_id, a.created_at
       FROM awards a
       LEFT JOIN users u ON u.user_key=a.user_key
-      WHERE a.type='prediction_vote' AND a.award_key LIKE ?1
+      WHERE a.type='prediction_vote' AND a.award_key >= ?1 AND a.award_key < ?2
       ORDER BY a.created_at ASC
       LIMIT 1000
-    `).bind(`prediction-vote:${prediction.id}:%`).all();
+    `).bind(startKey,endKey).all();
 
     out[prediction.id] = (result.results || []).map(row => {
       const vote = parseVoteSource(prediction.id, row.source_id) || {};
@@ -1031,12 +1038,13 @@ async function publicPredictionVotes(env, predictions) {
 
 async function settleManualPrediction(env, prediction) {
   if (!prediction || prediction.category !== 'custom' || prediction.status !== 'settled' || !prediction.correctOption || prediction.correctPoints <= 0) return;
+  const [startKey,endKey] = awardKeyPrefixBounds(`prediction-vote:${prediction.id}:`);
   const result = await env.DB.prepare(`
     SELECT user_key, username, source_id
     FROM awards
-    WHERE type = 'prediction_vote' AND award_key LIKE ?1
+    WHERE type = 'prediction_vote' AND award_key >= ?1 AND award_key < ?2
     LIMIT 1500
-  `).bind(`prediction-vote:${prediction.id}:%`).all();
+  `).bind(startKey,endKey).all();
   const timestamp = prediction.closesAt || prediction.settledAt || Date.now();
 
   for (let i = 0; i < (result.results || []).length; i += 25) {
@@ -1056,12 +1064,13 @@ async function settleManualPrediction(env, prediction) {
 
 async function settleAutoPrediction(env, prediction) {
   if (!prediction || prediction.category !== 'ffws' || prediction.status !== 'settled' || !prediction.result || prediction.correctPoints <= 0) return;
+  const [startKey,endKey] = awardKeyPrefixBounds(`prediction-vote:${prediction.id}:`);
   const result = await env.DB.prepare(`
     SELECT user_key, username, source_id
     FROM awards
-    WHERE type = 'prediction_vote' AND award_key LIKE ?1
+    WHERE type = 'prediction_vote' AND award_key >= ?1 AND award_key < ?2
     LIMIT 2000
-  `).bind(`prediction-vote:${prediction.id}:%`).all();
+  `).bind(startKey,endKey).all();
 
   const accepted = new Set(prediction.result.teams || prediction.result.options || (prediction.result.option ? [prediction.result.option] : []));
   const candidates = [];
@@ -1097,9 +1106,11 @@ async function settleAutoCombo(env, predictions) {
   const worst = list.find(p => p?.metric === 'worst');
   if (!best || !worst || best.status !== 'settled' || worst.status !== 'settled' || !best.result || !worst.result) return;
 
+  const [bestStart,bestEnd] = awardKeyPrefixBounds(`prediction-vote:${best.id}:`);
+  const [worstStart,worstEnd] = awardKeyPrefixBounds(`prediction-vote:${worst.id}:`);
   const [bestRows, worstRows] = await Promise.all([
-    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key LIKE ?1 LIMIT 2500`).bind(`prediction-vote:${best.id}:%`).all(),
-    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key LIKE ?1 LIMIT 2500`).bind(`prediction-vote:${worst.id}:%`).all(),
+    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key >= ?1 AND award_key < ?2 LIMIT 2500`).bind(bestStart,bestEnd).all(),
+    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key >= ?1 AND award_key < ?2 LIMIT 2500`).bind(worstStart,worstEnd).all(),
   ]);
 
   const bestAccepted = new Set(best.result.teams || (best.result.option ? [best.result.option] : []));
@@ -1145,6 +1156,35 @@ async function settleAllAvailable(env, manual, auto) {
   await Promise.allSettled(jobs);
 }
 
+function settlementSignature(manual, auto) {
+  const parts = [];
+  if (manual?.status === 'settled') parts.push(`m:${manual.id}:${manual.correctOption || ''}`);
+  for (const item of auto?.pairs || []) {
+    const settled = (item.predictions || []).filter(p => p?.status === 'settled');
+    for (const p of settled) parts.push(`p:${p.id}:${p?.result?.option || ''}:${p?.result?.points ?? ''}`);
+    if (settled.length && settled.length === (item.predictions || []).length) parts.push(`c:${item?.round?.round || ''}`);
+  }
+  return parts.sort().join('|');
+}
+
+function maybeSettleAllAvailable(env, manual, auto) {
+  const signature = settlementSignature(manual, auto);
+  if (!signature) return Promise.resolve();
+  const now = Date.now();
+  if (predictionSettlementSweep.signature === signature && now - predictionSettlementSweep.at < 15 * 60 * 1000) {
+    return predictionSettlementSweep.pending || Promise.resolve();
+  }
+  if (predictionSettlementSweep.pending && predictionSettlementSweep.signature === signature) {
+    return predictionSettlementSweep.pending;
+  }
+  predictionSettlementSweep.signature = signature;
+  predictionSettlementSweep.at = now;
+  predictionSettlementSweep.pending = settleAllAvailable(env, manual, auto).finally(() => {
+    predictionSettlementSweep.pending = null;
+  });
+  return predictionSettlementSweep.pending;
+}
+
 async function resolvePrediction(predictionId, manual, auto) {
   if (manual?.id === predictionId) return manual;
   for (const item of auto.pairs || []) {
@@ -1157,7 +1197,7 @@ async function resolvePrediction(predictionId, manual, auto) {
 
 async function buildPredictionsPayload(env, sessionId, ctx) {
   const [manual, auto] = await Promise.all([fetchManualPrediction(), automaticPredictionData()]);
-  if (ctx?.waitUntil) ctx.waitUntil(settleAllAvailable(env, manual, auto));
+  if (ctx?.waitUntil) ctx.waitUntil(maybeSettleAllAvailable(env, manual, auto));
 
   const weekend = selectAutoWeekend(auto);
   const activePredictions = [...selectAutoPair(auto)];
