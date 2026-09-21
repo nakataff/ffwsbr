@@ -221,7 +221,7 @@
   'use strict';
 
   const API='https://cff-instagram-community.nakataffb4.workers.dev/api/ranking';
-  const REFRESH_MS=5*60*1000;
+  const REFRESH_MS=30*60*1000;
   const DEFAULT_RULES={storyMentionPoints:5,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1};
   const state={period:'week',query:'',users:[],updatedAt:null,periodInfo:null,rules:{...DEFAULT_RULES},loading:false};
 
