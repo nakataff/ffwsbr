@@ -27,7 +27,7 @@
 
   if (/\/interacoes\.html$/i.test(location.pathname) && !document.querySelector('script[data-cff-community-checkin]')) {
     const script = document.createElement('script');
-    script.src = 'js/community-checkin.js?v=20260917-relink-v3';
+    script.src = 'js/community-checkin.js?v=20260921-community-checkin-v4';
     script.async = false;
     script.dataset.cffCommunityCheckin = '1';
     document.head.appendChild(script);
