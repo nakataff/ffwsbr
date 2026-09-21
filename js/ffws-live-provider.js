@@ -18,6 +18,26 @@
   const vals=v=>Array.isArray(v)?v.filter(Boolean):Object.values(v||{}).filter(Boolean);
   const nativeFetch=window.fetch.bind(window);
   let cache=null,cacheAt=0,cacheRoot='',pending=null;
+  let playerNameMapPromise=null;
+
+  async function playerNameRows(){
+    if(playerNameMapPromise)return playerNameMapPromise;
+    playerNameMapPromise=nativeFetch('ffws-br-2026-s2/player-name-map.json?v=20260921-player-aliases-v1',{cache:'default'})
+      .then(r=>r.ok?r.json():null)
+      .then(data=>Array.isArray(data?.rows)?data.rows:[])
+      .catch(()=>[]);
+    return playerNameMapPromise;
+  }
+
+  function canonicalLivePlayer(rows,name,team){
+    const n=pkey(name),t=norm(team);
+    const list=Array.isArray(rows)?rows:[];
+    const matches=row=>{
+      const names=[row?.canonicalName,row?.sourceName,...(Array.isArray(row?.aliases)?row.aliases:[])];
+      return names.some(value=>pkey(value)===n);
+    };
+    return list.find(row=>norm(row?.team)===t&&matches(row))||list.find(matches)||null;
+  }
 
   function previewMode(){
     try{
@@ -117,20 +137,25 @@
     const stamps=[num(data?.segundaFase?.updatedAt),num(data?.final?.updatedAt)].filter(Boolean);if(stamps.length)payload.updatedAt=new Date(Math.max(...stamps)).toISOString().slice(0,10);
     return payload;
   }
-  function livePlayerAgg(data){
+  function livePlayerAgg(data,nameRows=[]){
     const agg=new Map();
     ['segundaFase','final'].forEach(stageKey=>flatten(data?.[stageKey]).forEach(drop=>vals(drop.players).forEach(p=>{
-      const k=pkey(p.name);if(!k)return;
-      if(!agg.has(k))agg.set(k,{name:p.name,team:p.team,stages:{},days:new Map()});
-      const a=agg.get(k);a.name=p.name||a.name;a.team=p.team||a.team;
+      const meta=canonicalLivePlayer(nameRows,p.name,p.team);
+      const canonicalName=meta?.canonicalName||p.name;
+      const canonicalTeam=meta?.team||p.team;
+      const k=pkey(canonicalName);if(!k)return;
+      if(!agg.has(k))agg.set(k,{name:canonicalName,team:canonicalTeam,stages:{},days:new Map()});
+      const a=agg.get(k);a.name=canonicalName||a.name;a.team=canonicalTeam||a.team;
       if(!a.stages[stageKey])a.stages[stageKey]={kills:0,damage:0,assists:0,matches:0,mvp:0};
       const s=a.stages[stageKey];s.kills+=num(p.kills);s.damage+=num(p.damage);s.assists+=num(p.assists);s.matches++;s.mvp+=num(p.mvp);
       const dk=`${stageKey}:${drop.day}`;a.days.set(dk,(a.days.get(dk)||0)+num(p.kills));
     })));
     return agg;
   }
-  function mergeStats(payload,data){
-    payload=payload&&typeof payload==='object'?payload:{players:{}};payload.players=payload.players||{};const agg=livePlayerAgg(data);
+  async function mergeStats(payload,data){
+    payload=payload&&typeof payload==='object'?payload:{players:{}};payload.players=payload.players||{};
+    const nameRows=await playerNameRows();
+    const agg=livePlayerAgg(data,nameRows);
     const byName=new Map(Object.entries(payload.players).map(([k,p])=>[pkey(p?.name||k),k]));
     agg.forEach((a,n)=>{
       const key=byName.get(n)||n,r=payload.players[key]||{name:a.name,team:a.team,kills:0,damage:0,assists:0,matches:0,mvp:0,record:0,stages:{}};r.stages=r.stages||{};
@@ -192,7 +217,7 @@
     try{
       const data=await live();if(!data)return response;const payload=await response.clone().json();
       if(url.includes('stages.json'))return responseWith(response,mergeStages(payload,data));
-      if(url.includes('player-stats.json'))return responseWith(response,mergeStats(payload,data));
+      if(url.includes('player-stats.json'))return responseWith(response,await mergeStats(payload,data));
       if(url.includes('players.json'))return responseWith(response,mergePlayers(payload,data));
       if(url.includes('radar-summary.json'))return responseWith(response,mergeRadar(payload,data));
       return response;
