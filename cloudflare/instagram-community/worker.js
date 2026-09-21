@@ -922,10 +922,10 @@ function selectAutoWeekend(auto) {
   }
   const ordered = [...groups.values()].map(items => items.sort((a,b) => Number(a.round.round) - Number(b.round.round)));
   const now = Date.now();
-  return ordered.find(items => items.some(item =>
-    Number(item?.round?.closesAt || 0) > now ||
-    (item.predictions || []).some(prediction => prediction.status !== 'settled')
-  )) || ordered[ordered.length - 1] || [];
+  const upcoming = ordered.find(items => items.some(item => Number(item?.round?.closesAt || 0) > now));
+  if (upcoming) return upcoming;
+  const unresolved = ordered.slice().reverse().find(items => items.some(item => (item.predictions || []).some(prediction => prediction.status !== 'settled')));
+  return unresolved || ordered[ordered.length - 1] || [];
 }
 
 function selectAutoPair(auto) {
