@@ -91,6 +91,25 @@
       .ig-stats{gap:8px}.ig-stat{padding:14px}.ig-stat strong{font-size:1.35rem}.ig-card-head{padding:15px}.ig-podium{padding:14px 10px 8px;gap:6px}.ig-podium-item{padding:11px 6px}.ig-user-icon{width:40px;height:40px}.ig-podium-user{font-size:.72rem}.ig-podium-points{font-size:.7rem}
       .ig-table{min-width:0}.ig-table th:nth-child(4),.ig-table td:nth-child(4),.ig-table th:nth-child(5),.ig-table td:nth-child(5){display:none}.ig-table th,.ig-table td{padding:11px 10px}.ig-user-cell strong{max-width:150px}.ig-pos{width:34px}.ig-card-head{align-items:flex-start;flex-direction:column}.ig-updated{text-align:left}
     }
+  
+    .community-main-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0 0 18px;padding:6px;border:1px solid var(--ig-border);border-radius:14px;background:#070d17}
+    .community-main-tab{min-height:48px;border:0;border-radius:9px;background:transparent;color:#7893b2;font-size:.78rem;font-weight:1000;letter-spacing:.7px;text-transform:uppercase;cursor:pointer}
+    .community-main-tab span{display:block;margin-top:2px;color:#536f8e;font-size:.57rem;font-weight:800;letter-spacing:0;text-transform:none}
+    .community-main-tab.is-active{background:linear-gradient(135deg,rgba(0,200,255,.16),rgba(0,200,255,.07));color:#ecfbff;box-shadow:inset 0 0 0 1px rgba(0,200,255,.3)}
+    .community-main-tab.is-active span{color:#8dbdd1}
+    .community-view[hidden]{display:none!important}
+    #community-ranking-view .ig-grid{grid-template-columns:1fr}
+    #community-ranking-view .ig-grid>article{border-color:rgba(0,200,255,.18)}
+    #community-ranking-view .ig-grid>aside .ig-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 18px;padding-top:4px}
+    #community-ranking-view .ig-grid>aside .ig-rule{min-height:70px}
+    #community-ranking-view .ig-grid>aside .ig-note{grid-column:1/-1}
+    #community-ranking-view .ig-toolbar{margin-top:14px}
+    #community-ranking-view .ig-podium{padding-top:20px}
+    #community-ranking-view .ig-podium-item{padding:17px 12px}
+    #community-ranking-view .ig-table td{padding-top:15px;padding-bottom:15px}
+    #community-predictions-view{display:grid;gap:16px}
+    @media(max-width:650px){.community-main-tabs{grid-template-columns:1fr}.community-main-tab{text-align:left;padding:0 14px}}
+
   </style>
 </head>
 <body>
@@ -112,8 +131,8 @@
   <section class="ig-hero">
     <div class="ig-hero-main">
       <div class="ig-kicker">Comunidade Central Free Fire</div>
-      <h1 class="ig-title">Ranking de <span>Interações</span></h1>
-      <p class="ig-subtitle">Acompanhe quem mais participa e divulga a página no Instagram. Comentários e menções em Stories entram no ranking automaticamente.</p>
+      <h1 class="ig-title">Ranking da <span>Comunidade</span></h1>
+      <p class="ig-subtitle">Acompanhe quem mais participa da Central Free Fire. Stories, comentários e check-ins somam pontos automaticamente durante a semana.</p>
     </div>
     <div class="ig-side-card">
       <small>Período atual</small>
@@ -123,6 +142,13 @@
     </div>
   </section>
 
+  <nav class="community-main-tabs" aria-label="Comunidade">
+    <button class="community-main-tab is-active" type="button" data-community-tab="ranking">🏆 Ranking<span>Classificação, pontos e check-in diário</span></button>
+    <button class="community-main-tab" type="button" data-community-tab="predictions">🎯 Palpites<span>Dois dias, MVP e palpites da comunidade</span></button>
+  </nav>
+
+  <section class="community-view" id="community-ranking-view" data-community-view="ranking">
+    <div id="cff-checkin-mount"></div>
   <div class="ig-toolbar">
     <div class="ig-tabs" role="tablist" aria-label="Período do ranking">
       <button class="ig-tab is-active" type="button" data-period="week">Semana</button>
@@ -163,8 +189,33 @@
       </div>
     </aside>
   </section>
+  </section>
+
+  <section class="community-view" id="community-predictions-view" data-community-view="predictions" hidden>
+    <div id="cff-predictions-mount"></div>
+    <div id="cff-prediction-ranking-mount"></div>
+  </section>
 </main>
 
+<script>
+(() => {
+  const buttons=[...document.querySelectorAll('[data-community-tab]')];
+  const views=[...document.querySelectorAll('[data-community-view]')];
+  function openTab(name,{updateHash=true}={}){
+    const target=name==='predictions'?'predictions':'ranking';
+    buttons.forEach(btn=>btn.classList.toggle('is-active',btn.dataset.communityTab===target));
+    views.forEach(view=>{view.hidden=view.dataset.communityView!==target});
+    if(updateHash){
+      const hash=target==='predictions'?'#palpites':'';
+      history.replaceState(null,'',location.pathname+location.search+hash);
+    }
+  }
+  window.cffOpenCommunityTab=openTab;
+  buttons.forEach(btn=>btn.addEventListener('click',()=>openTab(btn.dataset.communityTab)));
+  openTab(location.hash==='#palpites'?'predictions':'ranking',{updateHash:false});
+  window.addEventListener('hashchange',()=>openTab(location.hash==='#palpites'?'predictions':'ranking',{updateHash:false}));
+})();
+</script>
 <script>
 (function(){
   'use strict';
@@ -296,10 +347,10 @@
   setInterval(()=>{if(!document.hidden)load();},REFRESH_MS);
 })();
 </script>
-<script src="js/community-checkin.js?v=20260917-relink-v3"></script>
+<script data-cff-community-checkin src="js/community-checkin.js?v=20260921-community-checkin-v4"></script>
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
 
-<script data-cff-community-prediction src="js/community-prediction.js?v=20260915-prediction-pair-v4"></script>
+<script data-cff-community-prediction src="js/community-prediction-v5.js?v=20260921-prediction-weekend-v5"></script>
 <script data-cff-community-promos src="js/community-promos.js?v=20260915-community-promos-v1"></script>
 </body>
 </html>
