@@ -270,7 +270,7 @@
     try{
       let latest=null;
       for(const p of dayPredictions(day).filter(p=>['best','worst','mvp'].includes(p.metric)))latest=await submitOne(p,draftFor(p));
-      state.drafts.clear();state.playerSearch.clear();
+      dayPredictions(day).forEach(p=>{state.drafts.delete(p.id);state.playerSearch.delete(p.id)});
       if(latest?.all)state.payload=latest.all;else await load(false);
       render();
     }catch(e){console.error('[CFF Predictions day]',e);alert(e.message||'Não foi possível salvar os palpites.')}
