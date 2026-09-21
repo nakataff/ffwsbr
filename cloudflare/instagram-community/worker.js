@@ -1225,7 +1225,11 @@ async function votePrediction(request, env, ctx) {
   let guessedPoints = null;
   if (prediction.kind === 'team_points' || prediction.kind === 'player_kills') {
     guessedPoints = Math.round(Number(body?.points));
-    if (!Number.isFinite(guessedPoints) || guessedPoints < 0 || guessedPoints > 300) return json({ ok: false, error: 'Digite uma previsão de pontos entre 0 e 300.' }, 400, request);
+    const maxGuess = prediction.kind === 'player_kills' ? 60 : 300;
+    if (!Number.isFinite(guessedPoints) || guessedPoints < 0 || guessedPoints > maxGuess) {
+      const label = prediction.kind === 'player_kills' ? 'abates' : 'pontos';
+      return json({ ok: false, error: `Digite uma previsão de ${label} entre 0 e ${maxGuess}.` }, 400, request);
+    }
   }
 
   const row = await getCheckinSession(env, sessionId);
