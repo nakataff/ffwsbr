@@ -75,6 +75,7 @@ export default {
     if (url.pathname === '/api/prediction' && request.method === 'GET') return getPredictionLegacy(request, env, url, ctx);
     if (url.pathname === '/api/prediction/vote' && request.method === 'POST') return votePrediction(request, env, ctx);
     if (url.pathname === '/api/prediction/ranking' && request.method === 'GET') return getPredictionRanking(request, env, url);
+    if (url.pathname === '/api/prediction/profile' && request.method === 'GET') return getPredictionProfile(request, env, url);
     if (url.pathname === '/api/admin/prediction-votes' && request.method === 'GET') return getAdminPredictionVotes(request, env);
     if (url.pathname === '/api/rewards/status' && request.method === 'GET') return getRewardStatus(request, env, url);
     if (url.pathname === '/api/rewards/code' && request.method === 'POST') return claimRewardCode(request, env);
@@ -1318,6 +1319,123 @@ async function getPredictionRanking(request, env, url) {
     lastInteractionAt: Number(row.lastInteractionAt || 0),
   }));
   return json({ ok: true, period, ranking }, 200, request, { 'Cache-Control': 'public, max-age=60' });
+}
+
+async function getPredictionProfile(request, env, url) {
+  const key = String(url.searchParams.get('userKey') || '').trim().slice(0, 120);
+  if (!key || !/^[a-zA-Z0-9_-]+$/.test(key)) return json({ ok: false, error: 'Perfil inválido.' }, 400, request);
+
+  const [auto, user, voteRows] = await Promise.all([
+    automaticPredictionData(),
+    env.DB.prepare('SELECT username FROM users WHERE user_key = ?1 LIMIT 1').bind(key).first(),
+    env.DB.prepare(`
+      SELECT source_id, created_at
+      FROM awards
+      WHERE user_key = ?1 AND type = 'prediction_vote'
+      ORDER BY created_at ASC
+      LIMIT 500
+    `).bind(key).all(),
+  ]);
+
+  const allPredictions = [];
+  for (const item of auto.pairs || []) {
+    for (const prediction of item.predictions || []) allPredictions.push(prediction);
+  }
+  const predictionById = new Map(allPredictions.map(p => [p.id, p]));
+  const knownIds = [...predictionById.keys()].sort((a,b) => b.length - a.length);
+  const votes = new Map();
+
+  for (const row of voteRows.results || []) {
+    const predictionId = predictionIdFromSource(row.source_id, knownIds);
+    const prediction = predictionById.get(predictionId);
+    if (!prediction) continue;
+    const parsed = parseVoteSource(predictionId, row.source_id);
+    if (!parsed) continue;
+    votes.set(predictionId, { ...parsed, votedAt: Number(row.created_at || 0) });
+  }
+
+  const now = Date.now();
+  const days = (auto.pairs || []).map(item => {
+    const day = Number(item?.round?.round || 0);
+    const closesAt = Number(item?.round?.closesAt || 0);
+    const revealed = Boolean(closesAt && now >= closesAt);
+    const predictions = (item.predictions || [])
+      .filter(p => ['best','worst','mvp'].includes(p.metric))
+      .map(prediction => {
+        if (!revealed) {
+          return {
+            id: prediction.id,
+            metric: prediction.metric,
+            kind: prediction.kind,
+            revealed: false,
+            vote: null,
+            result: null,
+          };
+        }
+
+        const stored = votes.get(prediction.id) || null;
+        const option = stored ? (prediction.options || []).find(o => o.id === stored.option) : null;
+        const accepted = new Set(
+          prediction?.result?.teams ||
+          prediction?.result?.options ||
+          (prediction?.result?.option ? [prediction.result.option] : [])
+        );
+        const resultOption = prediction?.result?.option
+          ? (prediction.options || []).find(o => o.id === prediction.result.option)
+          : null;
+
+        return {
+          id: prediction.id,
+          metric: prediction.metric,
+          kind: prediction.kind,
+          revealed: true,
+          vote: stored ? {
+            option: stored.option,
+            optionLabel: String(option?.label || stored.option || '—'),
+            team: String(option?.team || ''),
+            points: stored.points == null ? null : Number(stored.points),
+            votedAt: Number(stored.votedAt || 0),
+            correctSelection: Boolean(prediction.result && accepted.has(stored.option)),
+            exactValue: Boolean(
+              prediction.result &&
+              Number.isFinite(Number(stored.points)) &&
+              Number(stored.points) === Number(prediction.result.points)
+            ),
+          } : null,
+          result: prediction.result ? {
+            option: String(prediction.result.option || ''),
+            optionLabel: String(
+              prediction.result.teamLabel ||
+              prediction.result.playerLabel ||
+              resultOption?.label ||
+              prediction.result.option ||
+              '—'
+            ),
+            points: Number.isFinite(Number(prediction.result.points)) ? Number(prediction.result.points) : null,
+          } : null,
+        };
+      });
+
+    return {
+      day,
+      date: String(item?.round?.date || ''),
+      closesAt,
+      revealed,
+      predictions,
+    };
+  });
+
+  let username = String(user?.username || '').trim();
+  if (!username) {
+    const row = await env.DB.prepare(`
+      SELECT username FROM awards
+      WHERE user_key = ?1 AND username IS NOT NULL AND username != ''
+      ORDER BY created_at DESC LIMIT 1
+    `).bind(key).first();
+    username = String(row?.username || 'usuario');
+  }
+
+  return json({ ok: true, userKey: key, username, days }, 200, request, { 'Cache-Control': 'public, max-age=20' });
 }
 
 async function verifyAdminFirebaseToken(request) {
