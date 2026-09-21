@@ -428,7 +428,6 @@
     if(!mount())return;
     if(location.hash==='#palpites')window.cffOpenCommunityTab?.('predictions',{updateHash:false});
     load();
-    setInterval(()=>{if(!document.hidden)load(false)},5*60*1000);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
