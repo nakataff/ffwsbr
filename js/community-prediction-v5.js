@@ -127,8 +127,24 @@
 
   function fmtDeadline(ms){
     if(!ms)return'';
-    try{return new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(Number(ms)))}
+    try{return new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',weekday:'long',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(Number(ms))).replace(/^./,m=>m.toUpperCase())}
     catch{return''}
+  }
+
+  function fmtDayDate(day){
+    const ms=Number(day?.closesAt||0);
+    if(!ms)return`Dia ${num(day?.day)}`;
+    try{
+      const date=new Date(ms);
+      const weekday=new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',weekday:'long'}).format(date).replace(/^./,m=>m.toUpperCase());
+      const dm=new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit'}).format(date);
+      return `${weekday} ${dm}`;
+    }catch{return`Dia ${num(day?.day)}`}
+  }
+
+  function weekendSummary(days){
+    const list=(days||[]).map(day=>fmtDayDate(day)).filter(Boolean);
+    return list.join(' e ');
   }
 
   function optionDisplay(o){
@@ -198,7 +214,7 @@
     }
     const rows=[...byUser.values()];
     return `<div class="cff-public-votes">
-      <div class="cff-public-votes-head"><strong>Palpites da comunidade • Dia ${num(day.day)}</strong><span>Visíveis após o fechamento das 13h</span></div>
+      <div class="cff-public-votes-head"><strong>Palpites da comunidade • Dia ${num(day.day)} • ${esc(fmtDayDate(day))}</strong><span>Visíveis após 13h de ${esc(fmtDayDate(day))}</span></div>
       ${rows.length?`<div class="cff-public-votes-wrap"><table><thead><tr><th>Usuário</th><th>Melhor</th><th>Pior</th><th>MVP</th></tr></thead><tbody>${rows.map(row=>`<tr><td>@${esc(row.username)}</td><td>${row.best?`${esc(row.best.optionLabel)}${row.best.points==null?'':` • ${num(row.best.points)} pts`}`:'—'}</td><td>${row.worst?`${esc(row.worst.optionLabel)}${row.worst.points==null?'':` • ${num(row.worst.points)} pts`}`:'—'}</td><td>${row.mvp?`${esc(row.mvp.optionLabel)}${row.mvp.points==null?'':` • ${num(row.mvp.points)} K`}`:'—'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="cff-public-votes-empty">Ainda não há palpites registrados para mostrar.</div>'}
     </div>`;
   }
@@ -223,11 +239,11 @@
     let status='';
     if(!linked)status='<span class="cff-pred-day-status warn">Vincule seu Instagram no check-in para liberar os palpites.</span>';
     else if(!isOpen)status='<span class="cff-pred-day-status warn">Palpites encerrados. Agora os palpites da comunidade estão públicos abaixo.</span>';
-    else if(hasVotes)status='<span class="cff-pred-day-status ok">Seu palpite já foi salvo. Você pode alterar até 13h.</span>';
-    else status='<span class="cff-pred-day-status">Preencha os 3 campos e salve o Dia inteiro de uma vez.</span>';
+    else if(hasVotes)status=`<span class="cff-pred-day-status ok">Seu palpite já foi salvo. Você pode alterar até <b>13h de ${esc(fmtDayDate(day))}</b>.</span>`;
+    else status=`<span class="cff-pred-day-status">Preencha os 3 campos e salve o dia inteiro. O prazo termina às <b>13h de ${esc(fmtDayDate(day))}</b>.</span>`;
     const can=linked&&isOpen&&dayComplete(day)&&dayChanged(day)&&!state.busy;
     return `<article class="cff-pred-day-card">
-      <div class="cff-pred-day-head"><strong>FFWS BR 2026 S2 • Dia ${num(day.day)}</strong><span>Fecha ${esc(fmtDeadline(day.closesAt))}</span></div>
+      <div class="cff-pred-day-head"><strong>FFWS BR 2026 S2 • Dia ${num(day.day)} • ${esc(fmtDayDate(day))}</strong><span>PALPITES ATÉ ${esc(fmtDeadline(day.closesAt))}</span></div>
       <div class="cff-pred-form-grid">${teamField(best,'best')}${teamField(worst,'worst')}${mvpField(mvp)}</div>
       <div class="cff-pred-day-foot">${status}${!linked?'<button class="cff-pred-save" type="button" data-open-checkin>Ir para o check-in</button>':linked&&isOpen?`<button class="cff-pred-save" type="button" data-save-day="${num(day.day)}" ${can?'':'disabled'}>${hasVotes?'Salvar alterações':'Salvar palpites do dia'}</button>`:''}</div>
       ${publicVotes(day)}
@@ -250,8 +266,8 @@
     const active=days.find(d=>num(d.day)===num(state.activeDay))||days[0];
     const custom=(Array.isArray(data.predictions)?data.predictions:[]).filter(p=>p.category==='custom');
     root.innerHTML=`<div class="cff-pred-v5">
-      <div class="cff-pred-v5-hero"><div><div class="cff-pred-v5-kicker">🎯 Palpites da comunidade</div><h2>Palpite nos dois dias do fim de semana</h2><p>Melhor equipe, pior equipe e MVP com previsão de abates. Você pode editar até 13h de cada dia.</p></div><div class="cff-pred-v5-badge">${data.linked?`@${esc(data.username||'vinculado')}`:'Instagram não vinculado'}</div></div>
-      <div class="cff-pred-day-tabs">${days.map(day=>`<button class="cff-pred-day-tab ${num(day.day)===num(state.activeDay)?'is-active':''}" type="button" data-day="${num(day.day)}">Dia ${num(day.day)}<small>${Number(day.closesAt)>Date.now()?'ABERTO ATÉ 13H':'ENCERRADO'}</small></button>`).join('')}</div>
+      <div class="cff-pred-v5-hero"><div><div class="cff-pred-v5-kicker">🎯 Palpites da comunidade</div><h2>Palpites do fim de semana</h2><p><b>${esc(weekendSummary(days))}</b>. Cada dia fecha separadamente às 13h da própria data — o palpite de sábado não fica aberto até domingo.</p></div><div class="cff-pred-v5-badge">${data.linked?`@${esc(data.username||'vinculado')}`:'Instagram não vinculado'}</div></div>
+      <div class="cff-pred-day-tabs">${days.map(day=>`<button class="cff-pred-day-tab ${num(day.day)===num(state.activeDay)?'is-active':''}" type="button" data-day="${num(day.day)}">Dia ${num(day.day)} • ${esc(fmtDayDate(day))}<small>${Number(day.closesAt)>Date.now()?`ABERTO ATÉ 13H DE ${esc(fmtDayDate(day))}`:'ENCERRADO'}</small></button>`).join('')}</div>
       ${dayCard(active)}
       ${custom.length?`<div>${custom.map(customMarkup).join('')}</div>`:''}
     </div>`;
