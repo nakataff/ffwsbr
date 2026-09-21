@@ -250,15 +250,6 @@
     }
   }
 
-  function startPolling() {
-    pollTimer = setInterval(() => { if (!document.hidden) checkStatus().catch(() => {}); }, POLL_MS);
-  }
-
-  function stopPolling() {
-    if (pollTimer) clearInterval(pollTimer);
-    pollTimer = null;
-  }
-
   function renderIdle() {
     const root = panel();
     if (!root) return;
