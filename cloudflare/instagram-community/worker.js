@@ -7,6 +7,7 @@ const RULES = Object.freeze({
   ffwsPredictionParticipationPoints: 1,
   ffwsPredictionNearestPoints: 5,
   ffwsPredictionComboPoints: 3,
+  ffwsPredictionMvpNearestPoints: 5,
   streak3Points: 3,
   streak5Points: 7,
   streak7Points: 15,
@@ -29,6 +30,7 @@ const REWARDS_URL = `${FIREBASE_BASE}/ffwsLive/communityRewards.json`;
 const LIVE_SECOND_URL = `${FIREBASE_BASE}/ffwsLive/2026-s2/segundaFase.json`;
 const DATES_URL = `${SITE_BASE}ffws-br-2026-s2/dates.json`;
 const LOGOS_URL = `${SITE_BASE}team-data/logo-map.json`;
+const PLAYERS_URL = `${SITE_BASE}ffws-br-2026-s2/players.json`;
 const ACTIVE_TYPES = new Set(['comment', 'story', 'checkin', 'prediction_vote', 'bonus_code']);
 const SECOND_PHASE_TEAMS = Object.freeze([
   'LOS','LOUD SNICKERS','FLUXO W7M','INTZ','TEAM SOLID','RISE GAMING',
@@ -746,6 +748,25 @@ function teamOptions(logos) {
   return SECOND_PHASE_TEAMS.map((team, index) => ({ id: cleanOptionId(team, `t${index + 1}`), label: team, logo: absoluteLogo(logos?.[team] || '') }));
 }
 
+function predictionNorm(value) {
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
+}
+
+function playerOptions(payload) {
+  const players = Array.isArray(payload?.players) ? payload.players : [];
+  const allowed = new Set(SECOND_PHASE_TEAMS.map(predictionNorm));
+  return players
+    .filter(player => allowed.has(predictionNorm(player?.team)))
+    .map((player, index) => ({
+      id: String(player?.id || cleanOptionId(`${player?.name || 'player'}-${player?.team || index + 1}`, `p${index + 1}`)).slice(0, 80),
+      label: String(player?.name || '').trim(),
+      team: String(player?.team || '').trim(),
+      aliases: [player?.sourceName, ...(Array.isArray(player?.aliases) ? player.aliases : [])].filter(Boolean).map(String),
+    }))
+    .filter(player => player.id && player.label)
+    .slice(0, 100);
+}
+
 function dailyTotals(live, day) {
   const drops = live?.drops?.[day] || live?.drops?.[String(day)] || {};
   const entries = Object.values(drops).filter(Boolean);
@@ -781,44 +802,139 @@ function extremeResult(options, totals, mode) {
   };
 }
 
-function autoPredictionPair(round, options, live) {
+function dailyPlayerResult(live, day, options) {
+  const drops = live?.drops?.[day] || live?.drops?.[String(day)] || {};
+  const entries = Object.values(drops).filter(Boolean);
+  if (entries.length < 6) return null;
+
+  const optionByAlias = new Map();
+  for (const option of options) {
+    const aliases = [option.label, ...option.aliases].map(predictionNorm).filter(Boolean);
+    for (const alias of aliases) {
+      optionByAlias.set(`${alias}__${predictionNorm(option.team)}`, option);
+      if (!optionByAlias.has(alias)) optionByAlias.set(alias, option);
+    }
+  }
+
+  const totals = new Map();
+  for (const drop of entries.slice(0, 6)) {
+    const rows = Array.isArray(drop?.players) ? drop.players : [];
+    if (!rows.length) return null;
+    for (const row of rows) {
+      const nameKey = predictionNorm(row?.name || row?.player || row?.jogador);
+      const teamKey = predictionNorm(row?.team || row?.equipe);
+      const option = optionByAlias.get(`${nameKey}__${teamKey}`) || optionByAlias.get(nameKey);
+      if (!option) continue;
+      totals.set(option.id, (totals.get(option.id) || 0) + Number(row?.kills || row?.abates || 0));
+    }
+  }
+
+  if (!totals.size) return null;
+  const maxKills = Math.max(...totals.values());
+  const winners = options.filter(option => Number(totals.get(option.id) || 0) === maxKills);
+  if (!winners.length) return null;
+  return {
+    option: winners[0].id,
+    options: winners.map(player => player.id),
+    player: winners[0].label,
+    playerLabel: winners.map(player => player.label).join(' / '),
+    points: maxKills,
+    closestError: null,
+  };
+}
+
+function autoPredictionPair(round, teamOpts, playerOpts, live) {
   const totals = dailyTotals(live, round.round);
-  const bestResult = extremeResult(options, totals, 'best');
-  const worstResult = extremeResult(options, totals, 'worst');
-  const base = {
+  const bestResult = extremeResult(teamOpts, totals, 'best');
+  const worstResult = extremeResult(teamOpts, totals, 'worst');
+  const mvpResult = dailyPlayerResult(live, round.round, playerOpts);
+  const now = Date.now();
+  const common = {
     category: 'ffws',
-    kind: 'team_points',
     label: `FFWS BR • Segunda Fase • Dia ${round.round}`,
-    options,
     closesAt: round.closesAt,
     participationPoints: RULES.ffwsPredictionParticipationPoints,
-    correctPoints: RULES.ffwsPredictionNearestPoints,
-    comboPoints: RULES.ffwsPredictionComboPoints,
     day: round.round,
     date: round.date,
-    pointsPrompt: 'Quantos pontos esse time vai fazer?',
   };
-  const now = Date.now();
   return [
-    { ...base, id: `ffws-2026-s2-d${round.round}-best`, question: `Qual equipe vai pontuar mais no Dia ${round.round}?`, metric: 'best', status: bestResult ? 'settled' : now >= round.closesAt ? 'closed' : 'open', result: bestResult },
-    { ...base, id: `ffws-2026-s2-d${round.round}-worst`, question: `Qual vai ser a pior equipe do Dia ${round.round}?`, metric: 'worst', status: worstResult ? 'settled' : now >= round.closesAt ? 'closed' : 'open', result: worstResult },
+    {
+      ...common,
+      id: `ffws-2026-s2-d${round.round}-best`,
+      kind: 'team_points',
+      metric: 'best',
+      question: `Qual equipe vai pontuar mais no Dia ${round.round}?`,
+      options: teamOpts,
+      correctPoints: RULES.ffwsPredictionNearestPoints,
+      comboPoints: RULES.ffwsPredictionComboPoints,
+      pointsPrompt: 'Quantos pontos esse time vai fazer?',
+      status: bestResult ? 'settled' : now >= round.closesAt ? 'closed' : 'open',
+      result: bestResult,
+    },
+    {
+      ...common,
+      id: `ffws-2026-s2-d${round.round}-worst`,
+      kind: 'team_points',
+      metric: 'worst',
+      question: `Qual vai ser a pior equipe do Dia ${round.round}?`,
+      options: teamOpts,
+      correctPoints: RULES.ffwsPredictionNearestPoints,
+      comboPoints: RULES.ffwsPredictionComboPoints,
+      pointsPrompt: 'Quantos pontos esse time vai fazer?',
+      status: worstResult ? 'settled' : now >= round.closesAt ? 'closed' : 'open',
+      result: worstResult,
+    },
+    {
+      ...common,
+      id: `ffws-2026-s2-d${round.round}-mvp`,
+      kind: 'player_kills',
+      metric: 'mvp',
+      question: `Quem será o MVP do Dia ${round.round}?`,
+      options: playerOpts,
+      correctPoints: RULES.ffwsPredictionMvpNearestPoints,
+      comboPoints: 0,
+      pointsPrompt: 'Quantos abates ele fará?',
+      status: mvpResult ? 'settled' : now >= round.closesAt ? 'closed' : 'open',
+      result: mvpResult,
+    },
   ];
 }
 
 async function automaticPredictionData() {
-  const [rounds, logos, live] = await Promise.all([fetchSecondPhaseRounds(), fetchLogoMap(), fetchJson(LIVE_SECOND_URL)]);
-  const options = teamOptions(logos);
-  const pairs = rounds.map(round => ({ round, predictions: autoPredictionPair(round, options, live || {}) }));
-  return { rounds, pairs, options, live: live || {} };
+  const [rounds, logos, live, roster] = await Promise.all([
+    fetchSecondPhaseRounds(),
+    fetchLogoMap(),
+    fetchJson(LIVE_SECOND_URL),
+    fetchJson(PLAYERS_URL),
+  ]);
+  const teams = teamOptions(logos);
+  const players = playerOptions(roster || {});
+  const pairs = rounds.map(round => ({ round, predictions: autoPredictionPair(round, teams, players, live || {}) }));
+  return { rounds, pairs, options: teams, playerOptions: players, live: live || {} };
+}
+
+function selectAutoWeekend(auto) {
+  const groups = new Map();
+  for (const item of auto.pairs || []) {
+    const block = Math.ceil(Number(item?.round?.round || 0) / 2);
+    if (!groups.has(block)) groups.set(block, []);
+    groups.get(block).push(item);
+  }
+  const ordered = [...groups.values()].map(items => items.sort((a,b) => Number(a.round.round) - Number(b.round.round)));
+  const now = Date.now();
+  return ordered.find(items => items.some(item =>
+    Number(item?.round?.closesAt || 0) > now ||
+    (item.predictions || []).some(prediction => prediction.status !== 'settled')
+  )) || ordered[ordered.length - 1] || [];
 }
 
 function selectAutoPair(auto) {
+  const weekend = selectAutoWeekend(auto);
   const now = Date.now();
-  for (const item of auto.pairs) {
-    if (item.round.closesAt > now) return item.predictions;
-    if (item.round.closesAt <= now && item.predictions.some(p => p.status !== 'settled')) return item.predictions;
-  }
-  return auto.pairs.length ? auto.pairs[auto.pairs.length - 1].predictions : [];
+  const active = weekend.find(item => Number(item?.round?.closesAt || 0) > now)
+    || weekend.find(item => (item.predictions || []).some(prediction => prediction.status !== 'settled'))
+    || weekend[weekend.length - 1];
+  return active?.predictions || [];
 }
 
 function encodeVoteSource(predictionId, option, points) {
@@ -850,6 +966,36 @@ async function predictionBonus(env, predictionId, key) {
     LIMIT 1
   `).bind(`prediction-correct:${predictionId}:${key}`, `prediction-nearest:${predictionId}:${key}`).first();
   return { won: Boolean(row), points: Number(row?.points || 0), type: row?.type || '' };
+}
+
+async function publicPredictionVotes(env, predictions) {
+  const out = {};
+  const now = Date.now();
+  for (const prediction of predictions || []) {
+    if (!prediction?.id || !prediction?.closesAt || now < Number(prediction.closesAt)) continue;
+    const result = await env.DB.prepare(`
+      SELECT a.user_key, COALESCE(u.username,a.username) AS username, a.source_id, a.created_at
+      FROM awards a
+      LEFT JOIN users u ON u.user_key=a.user_key
+      WHERE a.type='prediction_vote' AND a.award_key LIKE ?1
+      ORDER BY a.created_at ASC
+      LIMIT 1000
+    `).bind(`prediction-vote:${prediction.id}:%`).all();
+
+    out[prediction.id] = (result.results || []).map(row => {
+      const vote = parseVoteSource(prediction.id, row.source_id) || {};
+      const option = (prediction.options || []).find(item => item.id === vote.option);
+      return {
+        username: String(row.username || 'usuario'),
+        option: String(vote.option || ''),
+        optionLabel: String(option?.label || vote.option || '—'),
+        team: String(option?.team || ''),
+        points: vote.points == null ? null : Number(vote.points),
+        createdAt: Number(row.created_at || 0),
+      };
+    });
+  }
+  return out;
 }
 
 async function settleManualPrediction(env, prediction) {
@@ -886,7 +1032,7 @@ async function settleAutoPrediction(env, prediction) {
     LIMIT 2000
   `).bind(`prediction-vote:${prediction.id}:%`).all();
 
-  const accepted = new Set(prediction.result.teams || []);
+  const accepted = new Set(prediction.result.teams || prediction.result.options || (prediction.result.option ? [prediction.result.option] : []));
   const candidates = [];
   for (const row of result.results || []) {
     const vote = parseVoteSource(prediction.id, row.source_id);
@@ -982,14 +1128,18 @@ async function buildPredictionsPayload(env, sessionId, ctx) {
   const [manual, auto] = await Promise.all([fetchManualPrediction(), automaticPredictionData()]);
   if (ctx?.waitUntil) ctx.waitUntil(settleAllAvailable(env, manual, auto));
 
-  const predictions = [...selectAutoPair(auto)];
-  if (manual) predictions.push(manual);
+  const weekend = selectAutoWeekend(auto);
+  const activePredictions = [...selectAutoPair(auto)];
+  if (manual) activePredictions.push(manual);
+  const weekendPredictions = weekend.flatMap(item => item.predictions || []);
+  const allVisible = [...weekendPredictions, ...(manual ? [manual] : [])];
+
   const row = sessionId ? await getCheckinSession(env, sessionId) : null;
   const linked = Boolean(row?.verified_at && row?.user_key);
   const votes = {};
 
   if (linked) {
-    for (const prediction of predictions) {
+    for (const prediction of allVisible) {
       const vote = await predictionVoteFor(env, prediction.id, row.user_key);
       if (!vote) continue;
       const bonus = await predictionBonus(env, prediction.id, row.user_key);
@@ -997,7 +1147,25 @@ async function buildPredictionsPayload(env, sessionId, ctx) {
     }
   }
 
-  return { ok: true, linked, username: linked ? row.username : '', predictions, votes };
+  const publicVotes = await publicPredictionVotes(env, weekendPredictions);
+  const days = weekend.map(item => ({
+    day: Number(item?.round?.round || 0),
+    date: String(item?.round?.date || ''),
+    closesAt: Number(item?.round?.closesAt || 0),
+    status: (item.predictions || []).every(p => p.status === 'settled') ? 'settled'
+      : Date.now() >= Number(item?.round?.closesAt || 0) ? 'closed' : 'open',
+    predictions: item.predictions || [],
+  }));
+
+  return {
+    ok: true,
+    linked,
+    username: linked ? row.username : '',
+    predictions: activePredictions,
+    days,
+    votes,
+    publicVotes,
+  };
 }
 
 async function getPredictions(request, env, url, ctx) {
@@ -1025,7 +1193,7 @@ async function votePrediction(request, env, ctx) {
   if (!prediction.options.some(item => item.id === option)) return json({ ok: false, error: 'Opção de palpite inválida.' }, 400, request);
 
   let guessedPoints = null;
-  if (prediction.kind === 'team_points') {
+  if (prediction.kind === 'team_points' || prediction.kind === 'player_kills') {
     guessedPoints = Math.round(Number(body?.points));
     if (!Number.isFinite(guessedPoints) || guessedPoints < 0 || guessedPoints > 300) return json({ ok: false, error: 'Digite uma previsão de pontos entre 0 e 300.' }, 400, request);
   }
