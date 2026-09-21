@@ -73,7 +73,7 @@
     const pair=predictions.filter(p=>p.category==='ffws').sort((a,b)=>String(a.metric).localeCompare(String(b.metric)));const custom=predictions.filter(p=>p.category==='custom');
     root.innerHTML=`<div class="cff-prediction-head"><div><div class="cff-prediction-kicker">🎯 Palpites da comunidade</div><h2>Prove que entende do jogo</h2></div><div class="cff-prediction-head-note">Na FFWS, melhor e pior equipe são obrigatórios. Os dois podem ser alterados até o horário de encerramento.</div></div><div class="cff-prediction-list">${pair.length?pairMarkup(pair):''}${custom.map(customMarkup).join('')}</div>`;
     bind(pair,custom);
-    if(location.hash==='#palpites')setTimeout(()=>root.scrollIntoView({behavior:'smooth',block:'start'}),80);
+    if(location.hash==='#palpites')window.cffOpenCommunityTab?.('predictions',{updateHash:false});
   }
 
   function bind(pair,custom){
