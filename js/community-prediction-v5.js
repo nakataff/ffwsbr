@@ -211,7 +211,7 @@
     return `<article class="cff-pred-day-card">
       <div class="cff-pred-day-head"><strong>FFWS BR 2026 S2 • Dia ${num(day.day)}</strong><span>Fecha ${esc(fmtDeadline(day.closesAt))}</span></div>
       <div class="cff-pred-form-grid">${teamField(best,'best')}${teamField(worst,'worst')}${mvpField(mvp)}</div>
-      <div class="cff-pred-day-foot">${status}${linked&&isOpen?`<button class="cff-pred-save" type="button" data-save-day="${num(day.day)}" ${can?'':'disabled'}>${hasVotes?'Salvar alterações':'Salvar palpites do dia'}</button>`:''}</div>
+      <div class="cff-pred-day-foot">${status}${!linked?'<button class="cff-pred-save" type="button" data-open-checkin>Ir para o check-in</button>':linked&&isOpen?`<button class="cff-pred-save" type="button" data-save-day="${num(day.day)}" ${can?'':'disabled'}>${hasVotes?'Salvar alterações':'Salvar palpites do dia'}</button>`:''}</div>
       ${publicVotes(day)}
     </article>`;
   }
@@ -261,6 +261,7 @@
       input.addEventListener('change',apply);
     });
     root.querySelectorAll('[data-save-day]').forEach(btn=>btn.addEventListener('click',()=>submitDay(num(btn.dataset.saveDay))));
+    root.querySelectorAll('[data-open-checkin]').forEach(btn=>btn.addEventListener('click',()=>{window.cffOpenCommunityTab?.('ranking');setTimeout(()=>document.getElementById('cff-community-checkin')?.focus?.({preventScroll:true}),0)}));
     root.querySelectorAll('[data-custom-option]').forEach(input=>input.addEventListener('change',()=>{const p=findPrediction(input.dataset.customOption),d=draftFor(p);d.option=input.value||'';state.drafts.set(p.id,d);render()}));
     root.querySelectorAll('[data-save-custom]').forEach(btn=>btn.addEventListener('click',()=>submitCustom(btn.dataset.saveCustom)));
   }
