@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
   <link rel="stylesheet" href="css/admin-edicao.css?v=20260915-studio-v2">
   <script src="js/config.min.js?v=20260914-editor-autosave-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20260914-editor-autosave-v1"></script>
+  <script type="module" src="js/admin-edicao.js?v=20260922-default-contain-top-v2"></script>
   <script defer src="js/admin-edicao-autosave.js?v=20260914-autosave-v2"></script>
   <script defer src="js/admin-edicao-enhancements.js?v=20260915-studio-v2"></script>
   <script defer src="js/admin-edicao-studio-v2.js?v=20260915-studio-v2"></script>
@@ -57,7 +57,7 @@
 
           <div class="photo-editor-button-grid">
             <button id="photo-editor-fit-cover" class="admin-btn admin-btn-ghost" type="button">Preencher</button>
-            <button id="photo-editor-fit-contain" class="admin-btn admin-btn-ghost" type="button">Encaixar inteira</button>
+            <button id="photo-editor-fit-contain" class="admin-btn admin-btn-ghost" type="button">Encaixar inteira • topo</button>
             <button id="photo-editor-center" class="admin-btn admin-btn-ghost" type="button">Centralizar</button>
             <button id="photo-editor-flip" class="admin-btn admin-btn-ghost" type="button">↔ Espelhar</button>
           </div>
@@ -75,7 +75,7 @@
             <input id="photo-editor-rotation" type="range" min="-180" max="180" value="0" step="1">
           </label>
 
-          <p class="photo-editor-hint">No preview, arraste a foto com o mouse ou dedo. A pinça com dois dedos controla o zoom enquanto o cadeado estiver aberto.</p>
+          <p class="photo-editor-hint">Fotos novas entram por padrão em <strong>Encaixar inteira</strong>, alinhadas no topo. No preview, arraste a foto com o mouse ou dedo. A pinça com dois dedos controla o zoom enquanto o cadeado estiver aberto.</p>
         </div>
 
         <div class="photo-editor-control-section">
