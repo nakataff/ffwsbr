@@ -31,6 +31,9 @@
     rerender();
   }
 
+  window.__CFF_ADMIN_EDICAO_STUDIO_STATE__=()=>({...settings});
+  window.__CFF_ADMIN_EDICAO_STUDIO_APPLY__=next=>{if(!next||typeof next!=='object')return;Object.assign(settings,next);saveSettings();};
+
   function hexRgb(hex){
     const v=String(hex||'#05070b').replace('#','').trim();
     const n=parseInt(v.length===3?v.split('').map(x=>x+x).join(''):v,16);
@@ -38,59 +41,36 @@
     return [(n>>16)&255,(n>>8)&255,n&255];
   }
 
+  const photoFadeCache=new WeakMap();
+  function fadedPhotoSource(image,s){
+    if(!s?.cffGradientEnabled)return image;
+    const iw=Number(image.naturalWidth||image.width||1),ih=Number(image.naturalHeight||image.height||1),height=clamp(s.cffGradientHeight,10,80),opacity=clamp(s.cffGradientOpacity,0,100),key=`${iw}x${ih}|${height}|${opacity}`;
+    const cached=photoFadeCache.get(image);if(cached?.key===key)return cached.canvas;
+    const canvas=document.createElement('canvas');canvas.width=iw;canvas.height=ih;const cx=canvas.getContext('2d');
+    cx.drawImage(image,0,0,iw,ih);cx.globalCompositeOperation='destination-in';
+    const start=ih*(1-height/100),grad=cx.createLinearGradient(0,start,0,ih),bottomAlpha=1-opacity/100;
+    grad.addColorStop(0,'rgba(0,0,0,1)');grad.addColorStop(.34,'rgba(0,0,0,.98)');grad.addColorStop(1,`rgba(0,0,0,${bottomAlpha})`);
+    cx.fillStyle=grad;cx.fillRect(0,start,iw,ih-start);cx.globalCompositeOperation='source-over';
+    photoFadeCache.set(image,{key,canvas});return canvas;
+  }
+
   function installCanvasEffects(){
     if(window.__CFF_ADMIN_EDICAO_CANVAS_PATCH__) return;
     window.__CFF_ADMIN_EDICAO_CANVAS_PATCH__=true;
-    const proto=CanvasRenderingContext2D.prototype;
-    const nativeDraw=proto.drawImage;
+    const proto=CanvasRenderingContext2D.prototype,nativeDraw=proto.drawImage;
     proto.drawImage=function(image,...args){
-      const s=state();
-      const isEditor=this?.canvas?.id==='photo-editor-canvas'||this?.__cffEditorScene===true;
-      const isMain=isEditor&&s?.image&&image===s.image;
-      if(!isMain||s.__cffEffectPass) return nativeDraw.call(this,image,...args);
-
+      const s=state(),isEditor=this?.canvas?.id==='photo-editor-canvas'||this?.__cffEditorScene===true,isMain=isEditor&&s?.image&&image===s.image;
+      if(!isMain||s.__cffEffectPass)return nativeDraw.call(this,image,...args);
       if(s.cffBlurFill){
         s.__cffEffectPass=true;
         try{
-          const iw=Number(image.naturalWidth||image.width||1),ih=Number(image.naturalHeight||image.height||1);
-          const scale=Math.max(W/iw,H/ih)*1.075;
-          const dw=iw*scale,dh=ih*scale,dx=(W-dw)/2,dy=(H-dh)/2;
-          this.save();
-          const sceneScaleX=Number(this.__cffScaleX)||1,sceneScaleY=Number(this.__cffScaleY)||1;
-          this.setTransform(sceneScaleX,0,0,sceneScaleY,0,0);
-          this.globalCompositeOperation='source-over';
-          this.globalAlpha=1;
-          this.shadowColor='transparent';this.shadowBlur=0;this.shadowOffsetX=0;this.shadowOffsetY=0;
-          this.filter=`brightness(${s.brightness||100}%) contrast(${s.contrast||100}%) saturate(${s.saturation||100}%) blur(${clamp(s.cffBlurAmount,20,220)}px)`;
-          nativeDraw.call(this,image,dx,dy,dw,dh);
-          this.filter='none';
-          const dim=clamp(s.cffBlurDim,0,70)/100;
-          if(dim>0){this.fillStyle=`rgba(0,0,0,${dim})`;this.fillRect(0,0,W,H);}
-          this.restore();
+          const iw=Number(image.naturalWidth||image.width||1),ih=Number(image.naturalHeight||image.height||1),scale=Math.max(W/iw,H/ih)*1.075,dw=iw*scale,dh=ih*scale,dx=(W-dw)/2,dy=(H-dh)/2;
+          this.save();const sceneScaleX=Number(this.__cffScaleX)||1,sceneScaleY=Number(this.__cffScaleY)||1;this.setTransform(sceneScaleX,0,0,sceneScaleY,0,0);this.globalCompositeOperation='source-over';this.globalAlpha=1;this.shadowColor='transparent';this.shadowBlur=0;this.shadowOffsetX=0;this.shadowOffsetY=0;
+          this.filter=`brightness(${s.brightness||100}%) contrast(${s.contrast||100}%) saturate(${s.saturation||100}%) blur(${clamp(s.cffBlurAmount,20,220)}px)`;nativeDraw.call(this,image,dx,dy,dw,dh);this.filter='none';
+          const dim=clamp(s.cffBlurDim,0,70)/100;if(dim>0){this.fillStyle=`rgba(0,0,0,${dim})`;this.fillRect(0,0,W,H);}this.restore();
         }finally{s.__cffEffectPass=false;}
       }
-
-      const result=nativeDraw.call(this,image,...args);
-
-      if(s.cffGradientEnabled){
-        const height=H*(clamp(s.cffGradientHeight,10,80)/100);
-        const y=H-height;
-        const [r,g,b]=hexRgb(s.cffGradientColor);
-        const opacity=clamp(s.cffGradientOpacity,0,100)/100;
-        this.save();
-        const sceneScaleX=Number(this.__cffScaleX)||1,sceneScaleY=Number(this.__cffScaleY)||1;
-        this.setTransform(sceneScaleX,0,0,sceneScaleY,0,0);
-        this.globalCompositeOperation='source-over';
-        this.filter='none';
-        this.shadowColor='transparent';this.shadowBlur=0;this.shadowOffsetX=0;this.shadowOffsetY=0;
-        const grad=this.createLinearGradient(0,y,0,H);
-        grad.addColorStop(0,`rgba(${r},${g},${b},0)`);
-        grad.addColorStop(.35,`rgba(${r},${g},${b},${opacity*.22})`);
-        grad.addColorStop(1,`rgba(${r},${g},${b},${opacity})`);
-        this.fillStyle=grad;this.fillRect(0,y,W,height);
-        this.restore();
-      }
-      return result;
+      return nativeDraw.call(this,fadedPhotoSource(image,s),...args);
     };
   }
 
@@ -128,9 +108,20 @@
     const stage=$('#photo-editor-stage');
     if(!stage||stage.closest('.cff-studio-canvas-shell')) return;
     const shell=document.createElement('div');shell.className='cff-studio-canvas-shell';
-    stage.parentNode.insertBefore(shell,stage);shell.appendChild(stage);
+    stage.parentNode.insertBefore(shell,stage);
+    const ghost=document.createElement('img');ghost.id='cff-main-photo-ghost';ghost.className='cff-main-photo-ghost';ghost.alt='';ghost.draggable=false;ghost.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();window.__CFF_ADMIN_EDICAO_SELECT__?.('photo');});
+    shell.appendChild(ghost);shell.appendChild(stage);
     const badge=document.createElement('div');badge.className='cff-studio-artboard-badge';badge.textContent='ARTE · 3000 × 3749';shell.appendChild(badge);
     const safe=document.createElement('div');safe.id='cff-studio-safe';safe.className='cff-studio-safe';safe.hidden=!settings.safe;stage.appendChild(safe);
+  }
+
+  function syncMainGhost(){
+    const s=state(),stage=$('#photo-editor-stage'),shell=stage?.closest('.cff-studio-canvas-shell'),ghost=$('#cff-main-photo-ghost');if(!stage||!shell||!ghost)return;
+    if(!s?.image){ghost.hidden=true;return;}ghost.hidden=false;
+    const sr=stage.getBoundingClientRect(),rr=shell.getBoundingClientRect(),scale=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=(Number(s.image.naturalWidth||s.image.width||1)*scale/W)*sr.width,h=(Number(s.image.naturalHeight||s.image.height||1)*scale/H)*sr.height,left=(sr.left-rr.left)+(Number(s.x)||W/2)/W*sr.width,top=(sr.top-rr.top)+(Number(s.y)||H/2)/H*sr.height;
+    const src=s.imageUrl||s.image.src||'';if(src&&ghost.src!==src)ghost.src=src;
+    ghost.style.left=`${left}px`;ghost.style.top=`${top}px`;ghost.style.width=`${w}px`;ghost.style.height=`${h}px`;ghost.style.transform=`translate(-50%,-50%) rotate(${Number(s.rotation)||0}deg) scaleX(${s.flipX===-1?-1:1})`;ghost.style.filter=`brightness(${s.brightness||100}%) contrast(${s.contrast||100}%) saturate(${s.saturation||100}%)`;
+    if(s.cffGradientEnabled){const start=100-clamp(s.cffGradientHeight,10,80),endAlpha=1-clamp(s.cffGradientOpacity,0,100)/100;ghost.style.webkitMaskImage=ghost.style.maskImage=`linear-gradient(to bottom,#000 0%,#000 ${start}%,rgba(0,0,0,${endAlpha}) 100%)`;}else{ghost.style.webkitMaskImage='none';ghost.style.maskImage='none';}
   }
 
   function jump(selector){
@@ -139,31 +130,24 @@
   }
 
   function setupToolbar(){
-    const workspace=$('.photo-editor-workspace'),head=$('.photo-editor-preview-head');
-    if(!workspace||!head||$('.cff-studio-toolbar')) return;
+    const workspace=$('.photo-editor-workspace'),head=$('.photo-editor-preview-head');if(!workspace||!head||$('.cff-studio-toolbar')) return;
+    let root=$('#cff-preview-control-groups');if(!root){root=document.createElement('div');root.id='cff-preview-control-groups';root.className='cff-preview-control-groups';head.insertAdjacentElement('afterend',root);}
+    let details=root.querySelector('[data-preview-group="shortcuts"]');if(!details){details=document.createElement('details');details.className='cff-preview-group';details.dataset.previewGroup='shortcuts';details.innerHTML='<summary>ATALHOS<span aria-hidden="true">⌄</span></summary><div class="cff-preview-group-body"></div>';details.open=localStorage.getItem('cff-preview-group-shortcuts')==='1';details.addEventListener('toggle',()=>localStorage.setItem('cff-preview-group-shortcuts',details.open?'1':'0'));root.appendChild(details);}
     const bar=document.createElement('div');bar.className='cff-studio-toolbar';
     bar.innerHTML=`
       <button class="cff-studio-tool is-accent" data-act="photo" type="button">🖼️ Foto</button>
       <button class="cff-studio-tool" data-act="cover" type="button">▣ Preencher</button>
       <button class="cff-studio-tool" data-act="containblur" type="button">🌫️ Encaixar + blur</button>
       <button class="cff-studio-tool" data-act="blur" type="button">✨ Fundo blur</button>
-      <button class="cff-studio-tool" data-act="gradient" type="button">◒ Degradê</button>
-      <button class="cff-studio-tool" data-act="readable" type="button">Aa Texto legível</button>
+      <button class="cff-studio-tool" data-act="gradient" type="button">◒ Suavizar foto</button>
       <button class="cff-studio-tool" data-act="safe" type="button">▦ Margens</button>`;
-    head.insertAdjacentElement('afterend',bar);
-    bar.addEventListener('click',e=>{
-      const btn=e.target.closest('[data-act]');if(!btn)return;
-      const act=btn.dataset.act;
-      if(act==='photo') $('#photo-editor-file')?.click();
-      if(act==='cover') $('#photo-editor-fit-cover')?.click();
+    details.querySelector('.cff-preview-group-body').appendChild(bar);
+    bar.addEventListener('click',e=>{const btn=e.target.closest('[data-act]');if(!btn)return;const act=btn.dataset.act;
+      if(act==='photo')$('#photo-editor-file')?.click();
+      if(act==='cover')$('#photo-editor-fit-cover')?.click();
       if(act==='containblur'){settings.blur=true;saveSettings();$('#photo-editor-fit-contain')?.click();}
       if(act==='blur'){settings.blur=!settings.blur;saveSettings();}
       if(act==='gradient'){settings.gradient=!settings.gradient;saveSettings();}
-      if(act==='readable'){
-        settings.gradient=true;settings.gradientHeight=40;settings.gradientOpacity=76;settings.gradientColor='#05070b';
-        const shadow=$('#photo-editor-text-shadow');if(shadow&&!shadow.checked){shadow.checked=true;shadow.dispatchEvent(new Event('change',{bubbles:true}));}
-        saveSettings();jump('#photo-editor-text');
-      }
       if(act==='safe'){settings.safe=!settings.safe;saveSettings();}
     });
   }
@@ -175,15 +159,14 @@
     if(!imageSection||!controls) return;
     const panel=document.createElement('div');panel.id='cff-studio-effects';panel.className='photo-editor-control-section cff-studio-effects';
     panel.innerHTML=`
-      <div class="cff-studio-effects-title"><div><p class="admin-eyebrow">Efeitos</p><h2>Fundo & legibilidade</h2></div><small>não destrutivo</small></div>
+      <div class="cff-studio-effects-title"><div><p class="admin-eyebrow">Efeitos</p><h2>Fundo & foto</h2></div><small>não destrutivo</small></div>
       <label class="cff-studio-switch"><span>🌫️ Duplicar foto com blur atrás</span><input id="cff-studio-blur" type="checkbox"></label>
       <div class="cff-studio-mini-grid"><button id="cff-studio-fit-blur" class="admin-btn admin-btn-ghost" type="button">Encaixar + preencher blur</button><button id="cff-studio-blur-off" class="admin-btn admin-btn-ghost" type="button">Limpar efeito</button></div>
       <label class="cff-studio-effect-control"><span>Intensidade do blur <output id="cff-studio-blur-value"></output></span><input id="cff-studio-blur-range" type="range" min="20" max="220" step="5"></label>
       <label class="cff-studio-effect-control"><span>Escurecer fundo <output id="cff-studio-dim-value"></output></span><input id="cff-studio-dim-range" type="range" min="0" max="70" step="1"></label>
-      <label class="cff-studio-switch"><span>◒ Degradê inferior para texto</span><input id="cff-studio-gradient" type="checkbox"></label>
-      <label class="cff-studio-effect-control"><span>Altura do degradê <output id="cff-studio-gradient-height-value"></output></span><input id="cff-studio-gradient-height" type="range" min="10" max="80" step="1"></label>
-      <label class="cff-studio-effect-control"><span>Força do degradê <output id="cff-studio-gradient-opacity-value"></output></span><input id="cff-studio-gradient-opacity" type="range" min="0" max="100" step="1"></label>
-      <label class="cff-studio-effect-control"><span>Cor do degradê</span><input id="cff-studio-gradient-color" type="color"></label>
+      <label class="cff-studio-switch"><span>◒ Suavizar base da foto</span><input id="cff-studio-gradient" type="checkbox"></label>
+      <label class="cff-studio-effect-control"><span>Altura da suavização <output id="cff-studio-gradient-height-value"></output></span><input id="cff-studio-gradient-height" type="range" min="10" max="80" step="1"></label>
+      <label class="cff-studio-effect-control"><span>Força do fade <output id="cff-studio-gradient-opacity-value"></output></span><input id="cff-studio-gradient-opacity" type="range" min="0" max="100" step="1"></label>
       <label class="cff-studio-switch"><span>▦ Mostrar margem segura 5% / 15%</span><input id="cff-studio-safe-toggle" type="checkbox"></label>`;
     imageSection.insertAdjacentElement('afterend',panel);
 
@@ -193,7 +176,7 @@
     $('#cff-studio-gradient',panel).onchange=e=>{settings.gradient=e.target.checked;saveSettings();};
     $('#cff-studio-gradient-height',panel).oninput=e=>{settings.gradientHeight=+e.target.value;saveSettings();};
     $('#cff-studio-gradient-opacity',panel).oninput=e=>{settings.gradientOpacity=+e.target.value;saveSettings();};
-    $('#cff-studio-gradient-color',panel).oninput=e=>{settings.gradientColor=e.target.value;saveSettings();};
+    $('#cff-studio-gradient-color',panel)?.addEventListener('input',e=>{settings.gradientColor=e.target.value;saveSettings();});
     $('#cff-studio-safe-toggle',panel).onchange=e=>{settings.safe=e.target.checked;saveSettings();};
     $('#cff-studio-fit-blur',panel).onclick=()=>{settings.blur=true;saveSettings();$('#photo-editor-fit-contain')?.click();};
     $('#cff-studio-blur-off',panel).onclick=()=>{settings.blur=false;settings.gradient=false;saveSettings();};
@@ -230,13 +213,14 @@
     setChecked('#cff-studio-blur',settings.blur);setValue('#cff-studio-blur-range',settings.blurAmount);setText('#cff-studio-blur-value',`${settings.blurAmount}px`);
     setValue('#cff-studio-dim-range',settings.blurDim);setText('#cff-studio-dim-value',`${settings.blurDim}%`);
     setChecked('#cff-studio-gradient',settings.gradient);setValue('#cff-studio-gradient-height',settings.gradientHeight);setText('#cff-studio-gradient-height-value',`${settings.gradientHeight}%`);
-    setValue('#cff-studio-gradient-opacity',settings.gradientOpacity);setText('#cff-studio-gradient-opacity-value',`${settings.gradientOpacity}%`);setValue('#cff-studio-gradient-color',settings.gradientColor);
+    setValue('#cff-studio-gradient-opacity',settings.gradientOpacity);setText('#cff-studio-gradient-opacity-value',`${settings.gradientOpacity}%`);
     setChecked('#cff-studio-safe-toggle',settings.safe);const safe=$('#cff-studio-safe');if(safe)safe.hidden=!settings.safe;
     $$('[data-act="blur"]').forEach(el=>el.classList.toggle('is-active',!!settings.blur));$$('[data-act="gradient"]').forEach(el=>el.classList.toggle('is-active',!!settings.gradient));$$('[data-act="safe"]').forEach(el=>el.classList.toggle('is-active',!!settings.safe));
     const photo=!!s?.image,pipCount=Array.isArray(s?.pips)?s.pips.length:(s?.pip?1:0),pip=pipCount>0,frame=s?.frameEnabled!==false,textCount=Array.isArray(s?.texts)?s.texts.length:1;
     setText('#cff-layer-photo',photo?'on':'vazia');setText('#cff-layer-blur',settings.blur?'on':'off');setText('#cff-layer-text',textCount);setText('#cff-layer-pip',pip?String(pipCount):'off');setText('#cff-layer-frame',frame?'on':'off');
     const layerMap=[['#cff-layer-photo',photo],['#cff-layer-blur',settings.blur],['#cff-layer-pip',pip],['#cff-layer-frame',frame]];
     layerMap.forEach(([id,on])=>$(id)?.closest('.cff-studio-layer')?.classList.toggle('is-on',!!on));
+    syncMainGhost();
   }
 
   function bindSync(){
