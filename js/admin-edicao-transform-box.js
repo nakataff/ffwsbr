@@ -145,11 +145,17 @@
   }
 
   function beginInteraction(){
+    const s=state();if(s)s.cffLivePhotoActive=true;
     window.__CFF_ADMIN_EDICAO_INTERACTING__=true;
+    window.__CFF_ADMIN_EDICAO_SYNC_MAIN_LIVE__?.();
+    rerender();
     window.dispatchEvent(new CustomEvent('cff-editor-interaction-start'));
   }
   function endInteraction(){
+    const s=state();if(s)s.cffLivePhotoActive=false;
     window.__CFF_ADMIN_EDICAO_INTERACTING__=false;
+    rerender();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>window.__CFF_ADMIN_EDICAO_SYNC_MAIN_LIVE__?.()));
     window.dispatchEvent(new CustomEvent('cff-editor-interaction-end'));
   }
 
@@ -183,7 +189,7 @@
     }else if(gesture.mode==='rotate'){
       clearGuides();const angle=Math.atan2(e.clientY-gesture.centerY,e.clientX-gesture.centerX);let deg=gesture.startRotation+(angle-gesture.startAngle)*180/Math.PI;while(deg>180)deg-=360;while(deg<-180)deg+=360;s.rotation=deg;syncRotationUi(s);
     }
-    rerender();scheduleBoxSync(true);
+    window.__CFF_ADMIN_EDICAO_SYNC_MAIN_LIVE__?.();scheduleBoxSync(true);
   }
 
   function onPointerUp(e){
