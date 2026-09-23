@@ -55,8 +55,8 @@
     const start=Math.max(0,Math.min(1,1-length/100)),span=Math.max(.001,1-start),bottomAlpha=1-strength/100,grad=cx.createLinearGradient(0,0,0,ih);
     grad.addColorStop(0,'rgba(0,0,0,1)');
     grad.addColorStop(start,'rgba(0,0,0,1)');
-    grad.addColorStop(Math.min(1,start+span*.32),'rgba(0,0,0,.78)');
-    grad.addColorStop(Math.min(1,start+span*.62),'rgba(0,0,0,.24)');
+    grad.addColorStop(Math.min(1,start+span*.28),'rgba(0,0,0,.64)');
+    grad.addColorStop(Math.min(1,start+span*.58),'rgba(0,0,0,.10)');
     grad.addColorStop(1,`rgba(0,0,0,${bottomAlpha})`);
     cx.fillStyle=grad;
     cx.fillRect(0,0,iw,ih);
@@ -133,7 +133,7 @@
     const sr=stage.getBoundingClientRect(),rr=shell.getBoundingClientRect(),scale=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=(Number(s.image.naturalWidth||s.image.width||1)*scale/W)*sr.width,h=(Number(s.image.naturalHeight||s.image.height||1)*scale/H)*sr.height,left=(sr.left-rr.left)+(Number(s.x)||W/2)/W*sr.width,top=(sr.top-rr.top)+(Number(s.y)||H/2)/H*sr.height;
     const src=s.imageUrl||s.image.src||'';if(src&&ghost.src!==src)ghost.src=src;
     ghost.style.left=`${left}px`;ghost.style.top=`${top}px`;ghost.style.width=`${w}px`;ghost.style.height=`${h}px`;ghost.style.transform=`translate3d(-50%,-50%,0) rotate(${Number(s.rotation)||0}deg) scaleX(${s.flipX===-1?-1:1})`;ghost.style.filter=`brightness(${s.brightness||100}%) contrast(${s.contrast||100}%) saturate(${s.saturation||100}%)`;
-    if(s.cffGradientEnabled){const length=clamp(s.cffGradientHeight,2,25),strength=clamp(s.cffGradientStrength??100,0,100),start=100-length,mid1=start+length*.32,mid2=start+length*.62,bottom=Math.max(0,1-strength/100);ghost.style.webkitMaskImage=ghost.style.maskImage=`linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,1) ${start}%,rgba(0,0,0,.78) ${mid1}%,rgba(0,0,0,.24) ${mid2}%,rgba(0,0,0,${bottom}) 100%)`;}else{ghost.style.webkitMaskImage='none';ghost.style.maskImage='none';}
+    if(s.cffGradientEnabled){const length=clamp(s.cffGradientHeight,2,25),strength=clamp(s.cffGradientStrength??100,0,100),start=100-length,mid1=start+length*.32,mid2=start+length*.62,bottom=Math.max(0,1-strength/100);ghost.style.webkitMaskImage=ghost.style.maskImage=`linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,1) ${start}%,rgba(0,0,0,.64) ${mid1}%,rgba(0,0,0,.10) ${mid2}%,rgba(0,0,0,${bottom}) 100%)`;}else{ghost.style.webkitMaskImage='none';ghost.style.maskImage='none';}
   }
   window.__CFF_ADMIN_EDICAO_SYNC_MAIN_LIVE__=syncMainGhost;
 
