@@ -13,13 +13,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
-  <link rel="stylesheet" href="css/admin-edicao.css?v=20260915-studio-v2">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20260923-pip-fluid-v3">
   <script src="js/config.min.js?v=20260914-editor-autosave-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20260922-default-contain-top-v2"></script>
-  <script defer src="js/admin-edicao-autosave.js?v=20260914-autosave-v2"></script>
+  <script type="module" src="js/admin-edicao.js?v=20260923-pip-fluid-v3"></script>
+  <script defer src="js/admin-edicao-autosave.js?v=20260923-pip-fluid-v3"></script>
   <script defer src="js/admin-edicao-enhancements.js?v=20260915-studio-v2"></script>
-  <script defer src="js/admin-edicao-studio-v2.js?v=20260915-studio-v2"></script>
-  <script defer src="js/admin-edicao-photo-coverage.js?v=20260915-coverage-v1"></script>
+  <script defer src="js/admin-edicao-studio-v2.js?v=20260923-pip-fluid-v3"></script>
+  <script defer src="js/admin-edicao-photo-coverage.js?v=20260923-pip-fluid-v3"></script>
 </head>
 <body>
   <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
@@ -96,18 +96,29 @@
         </div>
 
         <div class="photo-editor-control-section">
-          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">P.I.P.</p><h2>Imagem sobreposta</h2></div><span id="photo-editor-pip-status" class="photo-editor-status-pill">Sem imagem</span></div>
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">P.I.P.</p><h2>Imagens sobrepostas</h2></div><span id="photo-editor-pip-status" class="photo-editor-status-pill">Sem imagem</span></div>
           <label class="photo-editor-frame-loader">
-            <span>Enviar imagem para P.I.P.</span>
+            <span>+ Adicionar P.I.P.</span>
             <input id="photo-editor-pip-file" type="file" accept="image/png,image/jpeg,image/webp">
-            <small>A imagem fica por cima da moldura e pode ser posicionada livremente.</small>
+            <small>Sem limite artificial. Cada imagem vira uma camada independente.</small>
           </label>
-          <label class="photo-editor-check"><input id="photo-editor-pip-enabled" type="checkbox" checked> Mostrar P.I.P.</label>
-          <label class="photo-editor-slider-row" for="photo-editor-pip-size"><span>Tamanho <output id="photo-editor-pip-size-value">28%</output></span><input id="photo-editor-pip-size" type="range" min="5" max="100" value="28" step="1"></label>
-          <label class="photo-editor-slider-row" for="photo-editor-pip-x"><span>Posição horizontal <output id="photo-editor-pip-x-value">75%</output></span><input id="photo-editor-pip-x" type="range" min="0" max="100" value="75" step="1"></label>
-          <label class="photo-editor-slider-row" for="photo-editor-pip-y"><span>Posição vertical <output id="photo-editor-pip-y-value">25%</output></span><input id="photo-editor-pip-y" type="range" min="0" max="100" value="25" step="1"></label>
-          <label class="photo-editor-slider-row" for="photo-editor-pip-opacity"><span>Opacidade <output id="photo-editor-pip-opacity-value">100%</output></span><input id="photo-editor-pip-opacity" type="range" min="10" max="100" value="100" step="1"></label>
-          <button id="photo-editor-clear-pip" class="admin-btn admin-btn-ghost admin-btn-block" type="button">Remover P.I.P.</button>
+          <div class="photo-editor-pip-actions">
+            <button id="photo-editor-paste-image" class="admin-btn admin-btn-ghost" type="button">Colar imagem</button>
+            <button id="photo-editor-duplicate-pip" class="admin-btn admin-btn-ghost" type="button">Duplicar</button>
+          </div>
+          <div id="photo-editor-pip-layers" class="photo-editor-pip-layers" aria-label="Camadas P.I.P."></div>
+          <label class="photo-editor-check"><input id="photo-editor-pip-enabled" type="checkbox" checked> Mostrar P.I.P. selecionado</label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-size"><span>Tamanho <output id="photo-editor-pip-size-value">28%</output></span><input id="photo-editor-pip-size" type="range" min="3" max="120" value="28" step="0.5"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-rotation"><span>Rotação <output id="photo-editor-pip-rotation-value">0°</output></span><input id="photo-editor-pip-rotation" type="range" min="-180" max="180" value="0" step="1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-x"><span>Posição horizontal <output id="photo-editor-pip-x-value">75%</output></span><input id="photo-editor-pip-x" type="range" min="-20" max="120" value="75" step="0.1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-y"><span>Posição vertical <output id="photo-editor-pip-y-value">25%</output></span><input id="photo-editor-pip-y" type="range" min="-20" max="120" value="25" step="0.1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-opacity"><span>Opacidade <output id="photo-editor-pip-opacity-value">100%</output></span><input id="photo-editor-pip-opacity" type="range" min="0" max="100" value="100" step="1"></label>
+          <div class="photo-editor-pip-order-actions">
+            <button id="photo-editor-pip-back" class="photo-editor-mini-button" type="button">← Descer camada</button>
+            <button id="photo-editor-pip-front" class="photo-editor-mini-button" type="button">Subir camada →</button>
+          </div>
+          <button id="photo-editor-clear-pip" class="admin-btn admin-btn-ghost admin-btn-block" type="button">Remover selecionado</button>
+          <p class="photo-editor-hint">Clique/toque no P.I.P. na arte para selecionar. Arraste para mover e use os cantos para redimensionar. Ctrl+V / Cmd+V cola uma imagem direto.</p>
         </div>
 
         <div class="photo-editor-control-section">
