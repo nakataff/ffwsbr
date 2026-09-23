@@ -209,7 +209,7 @@
   }
 
   function improveLabels(){
-    const add=$('.photo-editor-file-button');if(add&&add.firstChild)add.firstChild.textContent='+ Foto ';
+    const add=$('.photo-editor-file-button');if(add&&add.firstChild)add.firstChild.textContent='Foto principal ';
     const reset=$('#photo-editor-reset-all');if(reset)reset.textContent='↺ Resetar';
   }
 
