@@ -1773,7 +1773,14 @@
     const avgPosition = totalResults ? teams.reduce((sum, row) => sum + row.positionSum, 0) / totalResults : 0;
     const totalRanking = [...teams].sort((a, b) => b.points - a.points || b.booyahs - a.booyahs || b.kills - a.kills);
     const avgRanking = [...teams].sort((a, b) => b.avgPoints - a.avgPoints || b.avgKills - a.avgKills || a.avgPosition - b.avgPosition);
-    const stageOptions = [['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']];
+    const stageOptions = [['classificatoria','Fase 1 • Classificatória'],['segundaFase','Fase 2 • Segunda Fase'],['final','Final'],['geral','Geral']];
+    const stageQuickOptions = [
+      ['classificatoria','FASE 1','Classificatória'],
+      ['segundaFase','FASE 2','Segunda Fase'],
+      ['geral','GERAL','Fases somadas'],
+      ['final','FINAL','Decisão']
+    ];
+    const activeStageMeta = stageQuickOptions.find(row => row[0] === state.statsFilters.stage) || stageQuickOptions[0];
 
     const teamTotals = new Map();
     playerEntries.forEach(entry => {
@@ -1798,7 +1805,8 @@
     const summaryBlock = events.length ? `<section id="anchor-s2-resumo" class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Resumo do recorte</h2><p>Visão rápida do recorte atualmente selecionado.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
       <div class="ffws-s2-stats-grid">${[['Quedas disputadas',events.length],['Total de pontos',totalPoints],['Total de abates',totalKills],['Total de booyahs',totalBooyahs],['Média de pontos',totalResults ? (totalPoints / totalResults).toFixed(2) : '0.00'],['Colocação média',avgPosition ? `${avgPosition.toFixed(2)}º` : '—']].map(([label, value]) => `<div class="ffws-s2-stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div></div></section>` : '';
 
-    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-s2-panel ffws-s2-stats-filter-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Todos os blocos abaixo usam exatamente o mesmo recorte.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
+    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-s2-panel ffws-s2-stats-filter-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Escolha claramente entre Fase 1 e Fase 2 antes de comparar os números.</p></div><span class="ffws-s2-badge">${activeStageMeta[1]} • ${events.length} quedas</span></div>
+      <nav class="ffws-s2-stats-stage-switch" aria-label="Fase das estatísticas">${stageQuickOptions.map(([value,title,sub]) => `<button type="button" class="ffws-s2-stats-stage-btn ${state.statsFilters.stage === value ? 'is-active' : ''} is-${value}" onclick="setFFWSS2StatsStage('${value}')"><strong>${title}</strong><small>${sub}</small></button>`).join('')}</nav>
       <div class="ffws-s2-filters"><label class="ffws-s2-filter"><span>Etapa:</span><select onchange="setFFWSS2StatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('maps','Mapa',options.maps)}</div></div></section>`;
 
     const statsBlocks = events.length ? `<div class="ffws-s2-stats-body" style="margin-top: 4px;">
