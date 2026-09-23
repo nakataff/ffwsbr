@@ -12,12 +12,12 @@
 
   function loadTransformBox(){
     if(window.__CFF_ADMIN_EDICAO_TRANSFORM_BOX__||document.querySelector('script[data-cff-transform-box]'))return;
-    const script=document.createElement('script');script.src='js/admin-edicao-transform-box.js?v=20260923-pip-effects-v5';script.defer=true;script.dataset.cffTransformBox='1';document.head.appendChild(script);
+    const script=document.createElement('script');script.src='js/admin-edicao-transform-box.js?v=20260923-pip-effects-v6';script.defer=true;script.dataset.cffTransformBox='1';document.head.appendChild(script);
   }
 
   function loadPerformance(){
     if(window.__CFF_ADMIN_EDICAO_PERFORMANCE__||document.querySelector('script[data-cff-performance]'))return;
-    const script=document.createElement('script');script.src='js/admin-edicao-performance.js?v=20260923-pip-effects-v3';script.defer=true;script.dataset.cffPerformance='1';document.head.appendChild(script);
+    const script=document.createElement('script');script.src='js/admin-edicao-performance.js?v=20260923-pip-effects-v6';script.defer=true;script.dataset.cffPerformance='1';document.head.appendChild(script);
   }
 
   function addStyles(){
