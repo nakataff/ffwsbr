@@ -196,7 +196,7 @@
     s.image=null;s.imageUrl='';s.zoom=1;s.baseScale=1;s.x=W/2;s.y=H/2;s.rotation=0;s.flipX=1;
     const file=$('#photo-editor-file'),name=$('#photo-editor-image-name'),empty=$('#photo-editor-empty'),download=$('#photo-editor-download'),rot=$('#photo-editor-rotation'),rotOut=$('#photo-editor-rotation-value'),zoom=$('#photo-editor-zoom'),zoomOut=$('#photo-editor-zoom-value');
     if(file)file.value='';if(name)name.textContent='Nenhuma foto';if(empty){empty.hidden=false;empty.classList.remove('is-hidden');}if(download)download.disabled=true;if(rot)rot.value='0';if(rotOut)rotOut.textContent='0°';if(zoom)zoom.value='100';if(zoomOut)zoomOut.textContent='100%';
-    clearGuides();lastKey='';if(box)box.hidden=true;rerender();
+    clearGuides();lastKey='';if(box)box.hidden=true;window.__CFF_ADMIN_EDICAO_CLEAR_SELECTION__?.();rerender();
   }
 
   function bind(){
