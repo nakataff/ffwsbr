@@ -67,7 +67,7 @@
       <span class="cff-transform-tip">arraste para mover · cantos para redimensionar · Alt ignora o ímã</span>`;
     stage.appendChild(box);
     box.addEventListener('pointerdown',onPointerDown,true);
-    $('.cff-transform-close',box)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();removePhoto();});
+    $('.cff-transform-close',box)?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(typeof window.__CFF_ADMIN_EDICAO_CONFIRM_DELETE_MAIN__==='function')window.__CFF_ADMIN_EDICAO_CONFIRM_DELETE_MAIN__();else removePhoto();});
     disableWheelZoom(stage);
     const help=$('.photo-editor-stage-help');
     if(help)help.textContent='No computador, arraste a foto e use os pontos do quadro para redimensionar. As guias magnéticas ajudam no centro e nas bordas. O scroll do mouse rola a página e não altera mais o zoom.';
