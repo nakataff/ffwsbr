@@ -256,15 +256,15 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .hall-summary-chip.is-active{border-color:rgba(0,200,255,.4);background:rgba(0,200,255,.12);color:#dff8ff}
 .hall-summary-chip-all{color:#a8c5df}
 .hall-player-summary-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}
-.hall-player-summary-mini span{min-width:0;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-height:66px;padding:7px 5px;border:1px solid rgba(255,255,255,.075);border-radius:9px;background:rgba(255,255,255,.03);text-align:center}
-.hall-player-summary-mini span.is-leading{border-color:rgba(0,200,255,.42);background:rgba(0,200,255,.08)}
+.hall-player-summary-mini>span{min-width:0;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-height:66px;padding:7px 5px;border:1px solid rgba(255,255,255,.075);border-radius:9px;background:rgba(255,255,255,.03);text-align:center}
+.hall-player-summary-mini>span.is-leading{border-color:rgba(0,200,255,.42);background:rgba(0,200,255,.08)}
 .hall-player-summary-mini strong{max-width:100%;color:#fff;font-size:1.12rem;font-weight:1000;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hall-player-summary-mini small{color:var(--text-muted);font-size:.59rem;font-weight:900;text-transform:uppercase;letter-spacing:.055em}
 .hall-player-summary-mini em{display:-webkit-box;max-width:100%;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:#7694af;font-size:.55rem;font-style:normal;font-weight:800;line-height:1.2}
-.hall-player-summary-mini span.is-teams{justify-content:flex-start;padding-top:9px}
-.hall-player-summary-mini span.is-teams strong{margin-top:0}
-.hall-player-summary-mini span.is-teams em{display:block;overflow:visible;white-space:normal;-webkit-line-clamp:unset;-webkit-box-orient:initial;font-size:.50rem;line-height:1.18;word-break:normal;overflow-wrap:anywhere}
-.hall-team-short{display:none}
+.hall-player-summary-mini>span.is-teams{justify-content:flex-start;padding-top:9px}
+.hall-player-summary-mini>span.is-teams strong{margin-top:0}
+.hall-player-summary-mini>span.is-teams em{display:block;overflow:visible;white-space:normal;-webkit-line-clamp:unset;-webkit-box-orient:initial;font-size:.50rem;line-height:1.18;word-break:normal;overflow-wrap:anywhere}
+.hall-team-short{display:none!important}
 .hall-summary-row-hint{padding:7px 12px;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.012);color:#66829e;font-size:.59rem;font-weight:800}
 .hall-summary-table-wrap{border:0!important;border-radius:0!important;margin:0!important;overflow:hidden!important}
 .table-hall-player-summary{width:100%!important;min-width:0!important;table-layout:fixed!important}
@@ -291,8 +291,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .hall-extra-section{padding:13px;margin:24px 0}.hall-extra-title{font-size:1.08rem}.hall-extra-subtitle{font-size:.8rem;margin-bottom:14px}
 .hall-summary-search-row{grid-template-columns:1fr;gap:8px}.hall-summary-search-row .btn-action{width:100%;min-height:42px}
 .hall-summary-grid.is-compare{grid-template-columns:1fr}.hall-player-summary-head{padding:12px}.hall-summary-head-actions{gap:7px}.hall-summary-clear{padding:5px 7px;font-size:.54rem}.hall-summary-row-hint{padding:6px 9px;font-size:.54rem}
-.hall-player-summary-mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:9px}.hall-player-summary-mini span{min-height:58px;padding:6px 3px}
-.hall-player-summary-mini strong{font-size:.98rem}.hall-player-summary-mini small{font-size:.52rem;letter-spacing:.025em}.hall-player-summary-mini em{font-size:.5rem}.hall-player-summary-mini span.is-teams{padding-top:7px}.hall-player-summary-mini span.is-teams em{font-size:.45rem;line-height:1.15}.hall-team-full{display:none!important}.hall-team-short{display:inline!important}
+.hall-player-summary-mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:9px}.hall-player-summary-mini>span{min-height:58px;padding:6px 3px}
+.hall-player-summary-mini strong{font-size:.98rem}.hall-player-summary-mini small{font-size:.52rem;letter-spacing:.025em}.hall-player-summary-mini em{font-size:.5rem}.hall-player-summary-mini>span.is-teams{padding-top:7px}.hall-player-summary-mini>span.is-teams em{font-size:.45rem;line-height:1.15}.hall-team-full{display:none!important}.hall-team-short{display:inline!important}
 .table-hall-player-summary th,.table-hall-player-summary td{padding:7px 2px!important;font-size:.65rem!important}.table-hall-player-summary .hall-sort-btn{font-size:.6rem!important;letter-spacing:-.02em}
 .hall-summary-compare-note{justify-content:flex-start;gap:6px;font-size:.66rem}
 .hall-extra-section .table-container{overflow-x:auto}#table-hall-edition-leaders th,#table-hall-edition-leaders td{padding:9px 8px;font-size:.82rem}#table-hall-edition-leaders th:first-child,#table-hall-edition-leaders td:first-child{min-width:92px;text-align:left}
