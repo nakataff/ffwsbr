@@ -99,7 +99,7 @@
     const style=document.createElement('style');
     style.id='cff-studio-v2-styles';
     style.textContent=`
-      .photo-editor-app{max-width:1980px!important}
+      .photo-editor-app{max-width:1980px!important;width:min(1980px,calc(100% - 24px))!important}
       .photo-editor-layout{grid-template-columns:minmax(300px,360px) minmax(0,1fr) minmax(250px,300px)!important;gap:14px!important}
       .photo-editor-controls,.photo-editor-export,.photo-editor-workspace{border-color:rgba(125,151,183,.12)!important}
       .photo-editor-control-section{border:1px solid rgba(255,255,255,.065)!important;border-radius:14px;padding:14px!important;margin:0 0 10px!important;background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.009))}
