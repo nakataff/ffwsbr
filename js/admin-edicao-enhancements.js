@@ -446,7 +446,7 @@
     redo.id='cff-editor-redo';redo.type='button';redo.className='admin-btn admin-btn-ghost cff-editor-history-btn';redo.textContent='↷ Refazer';redo.title='Refazer (Ctrl+Shift+Z / Ctrl+Y)';
     const reset=$('#photo-editor-reset-all');actions.insertBefore(undo,reset||null);actions.insertBefore(redo,reset||null);
     undo.addEventListener('click',undoEditor);redo.addEventListener('click',redoEditor);
-    app.addEventListener('input',()=>scheduleHistory(360),true);app.addEventListener('change',()=>scheduleHistory(90),true);app.addEventListener('click',e=>{if(e.target.closest('#cff-editor-undo,#cff-editor-redo'))return;setTimeout(()=>scheduleHistory(40),0);},true);
+    app.addEventListener('input',()=>scheduleHistory(360),true);app.addEventListener('change',()=>scheduleHistory(90),true);app.addEventListener('click',e=>{if(e.target.closest('#cff-editor-undo,#cff-editor-redo'))return;setTimeout(()=>scheduleHistory(40),0);},true);app.addEventListener('pointerup',()=>scheduleHistory(45),true);$('#photo-editor-stage')?.addEventListener('wheel',()=>scheduleHistory(180),{passive:true});
     window.addEventListener('cff-editor-interaction-end',()=>scheduleHistory(20));window.addEventListener('cff-pips-changed',()=>scheduleHistory(30));window.addEventListener('cff-photo-changed',()=>scheduleHistory(40));window.addEventListener('cff-photo-removed',()=>scheduleHistory(40));
     document.addEventListener('keydown',e=>{
       const tag=document.activeElement?.tagName||'',editing=/INPUT|TEXTAREA|SELECT/.test(tag)||document.activeElement?.isContentEditable;
@@ -454,7 +454,7 @@
       if((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='y'){e.preventDefault();redoEditor();return;}
       if(e.key==='Delete'&&!editing&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();deleteSelected();}
     },true);
-    setTimeout(recordHistory,180);updateHistoryButtons();
+    setTimeout(recordHistory,800);updateHistoryButtons();
     window.__CFF_ADMIN_EDICAO_HISTORY__={undo:undoEditor,redo:redoEditor,record:recordHistory};
   }
 
