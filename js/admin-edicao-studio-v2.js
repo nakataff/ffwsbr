@@ -45,7 +45,7 @@
     const nativeDraw=proto.drawImage;
     proto.drawImage=function(image,...args){
       const s=state();
-      const isEditor=this?.canvas?.id==='photo-editor-canvas';
+      const isEditor=this?.canvas?.id==='photo-editor-canvas'||this?.__cffEditorScene===true;
       const isMain=isEditor&&s?.image&&image===s.image;
       if(!isMain||s.__cffEffectPass) return nativeDraw.call(this,image,...args);
 
@@ -56,7 +56,8 @@
           const scale=Math.max(W/iw,H/ih)*1.075;
           const dw=iw*scale,dh=ih*scale,dx=(W-dw)/2,dy=(H-dh)/2;
           this.save();
-          this.setTransform(1,0,0,1,0,0);
+          const sceneScaleX=Number(this.__cffScaleX)||1,sceneScaleY=Number(this.__cffScaleY)||1;
+          this.setTransform(sceneScaleX,0,0,sceneScaleY,0,0);
           this.globalCompositeOperation='source-over';
           this.globalAlpha=1;
           this.shadowColor='transparent';this.shadowBlur=0;this.shadowOffsetX=0;this.shadowOffsetY=0;
@@ -77,7 +78,8 @@
         const [r,g,b]=hexRgb(s.cffGradientColor);
         const opacity=clamp(s.cffGradientOpacity,0,100)/100;
         this.save();
-        this.setTransform(1,0,0,1,0,0);
+        const sceneScaleX=Number(this.__cffScaleX)||1,sceneScaleY=Number(this.__cffScaleY)||1;
+        this.setTransform(sceneScaleX,0,0,sceneScaleY,0,0);
         this.globalCompositeOperation='source-over';
         this.filter='none';
         this.shadowColor='transparent';this.shadowBlur=0;this.shadowOffsetX=0;this.shadowOffsetY=0;
@@ -97,8 +99,8 @@
     const style=document.createElement('style');
     style.id='cff-studio-v2-styles';
     style.textContent=`
-      .photo-editor-app{max-width:1760px!important}
-      .photo-editor-layout{grid-template-columns:minmax(320px,390px) minmax(0,1fr) minmax(270px,315px)!important;gap:14px!important}
+      .photo-editor-app{max-width:1980px!important}
+      .photo-editor-layout{grid-template-columns:minmax(300px,360px) minmax(0,1fr) minmax(250px,300px)!important;gap:14px!important}
       .photo-editor-controls,.photo-editor-export,.photo-editor-workspace{border-color:rgba(125,151,183,.12)!important}
       .photo-editor-control-section{border:1px solid rgba(255,255,255,.065)!important;border-radius:14px;padding:14px!important;margin:0 0 10px!important;background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.009))}
       .photo-editor-control-section:last-child{margin-bottom:0!important}.photo-editor-section-title{margin-bottom:11px!important}.photo-editor-section-title h2{font-size:16px!important}
@@ -226,8 +228,8 @@
     setValue('#cff-studio-gradient-opacity',settings.gradientOpacity);setText('#cff-studio-gradient-opacity-value',`${settings.gradientOpacity}%`);setValue('#cff-studio-gradient-color',settings.gradientColor);
     setChecked('#cff-studio-safe-toggle',settings.safe);const safe=$('#cff-studio-safe');if(safe)safe.hidden=!settings.safe;
     $$('[data-act="blur"]').forEach(el=>el.classList.toggle('is-active',!!settings.blur));$$('[data-act="gradient"]').forEach(el=>el.classList.toggle('is-active',!!settings.gradient));$$('[data-act="safe"]').forEach(el=>el.classList.toggle('is-active',!!settings.safe));
-    const photo=!!s?.image,pip=!!s?.pip,frame=s?.frameEnabled!==false,textCount=Array.isArray(s?.texts)?s.texts.length:1;
-    setText('#cff-layer-photo',photo?'on':'vazia');setText('#cff-layer-blur',settings.blur?'on':'off');setText('#cff-layer-text',textCount);setText('#cff-layer-pip',pip?'on':'off');setText('#cff-layer-frame',frame?'on':'off');
+    const photo=!!s?.image,pipCount=Array.isArray(s?.pips)?s.pips.length:(s?.pip?1:0),pip=pipCount>0,frame=s?.frameEnabled!==false,textCount=Array.isArray(s?.texts)?s.texts.length:1;
+    setText('#cff-layer-photo',photo?'on':'vazia');setText('#cff-layer-blur',settings.blur?'on':'off');setText('#cff-layer-text',textCount);setText('#cff-layer-pip',pip?String(pipCount):'off');setText('#cff-layer-frame',frame?'on':'off');
     const layerMap=[['#cff-layer-photo',photo],['#cff-layer-blur',settings.blur],['#cff-layer-pip',pip],['#cff-layer-frame',frame]];
     layerMap.forEach(([id,on])=>$(id)?.closest('.cff-studio-layer')?.classList.toggle('is-on',!!on));
   }
