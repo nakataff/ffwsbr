@@ -285,6 +285,11 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .hall-summary-compare-note strong{color:#fff}
 .hall-summary-compare-note span{color:#41617e}
 .hall-player-summary-empty{color:var(--text-muted);padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:10px;background:rgba(0,0,0,.12)}
+.hall-year-tools{display:grid;grid-template-columns:120px 150px minmax(180px,1fr) minmax(180px,1fr) auto;gap:10px;align-items:end;margin:0 0 12px}
+.hall-year-field{display:grid;gap:5px;min-width:0}.hall-year-field label{color:var(--text-muted);font-size:.7rem;font-weight:900}.hall-year-field select,.hall-year-field input{width:100%;min-width:0}
+.hall-year-min-drops{display:flex;align-items:center;gap:7px;min-height:42px;color:#fff;font-size:.72rem;font-weight:900;white-space:nowrap}.hall-year-min-drops input{width:16px;height:16px;accent-color:var(--accent)}
+.hall-year-meta{margin:2px 0 10px;color:#7292af;font-size:.7rem;font-weight:850}.hall-year-team-cell{text-align:left!important}.hall-year-team-cell .hall-team-full,.hall-year-team-cell .hall-team-short{font-weight:850}
+#table-hall-year-ranking{width:100%}#table-hall-year-ranking th{white-space:nowrap}
 #table-hall-edition-leaders th{white-space:nowrap}
 @media(max-width:980px){.hall-player-summary-head{align-items:flex-start;flex-direction:column}.hall-summary-head-actions{width:100%;justify-content:space-between}.hall-summary-status{text-align:left}.hall-player-summary-name{font-size:1.02rem}}
 @media(max-width:700px){
@@ -295,6 +300,12 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .hall-player-summary-mini strong{font-size:.98rem}.hall-player-summary-mini small{font-size:.52rem;letter-spacing:.025em}.hall-player-summary-mini em{font-size:.5rem}.hall-player-summary-mini>span.is-teams{padding-top:7px}.hall-player-summary-mini>span.is-teams em{font-size:.45rem;line-height:1.15}.hall-team-full{display:none!important}.hall-team-short{display:inline!important}
 .table-hall-player-summary th,.table-hall-player-summary td{padding:7px 2px!important;font-size:.65rem!important}.table-hall-player-summary .hall-sort-btn{font-size:.6rem!important;letter-spacing:-.02em}
 .hall-summary-compare-note{justify-content:flex-start;gap:6px;font-size:.66rem}
+.hall-year-tools{grid-template-columns:1fr 1fr;gap:8px}.hall-year-field:nth-child(3),.hall-year-field:nth-child(4){grid-column:1/-1}.hall-year-min-drops{grid-column:1/-1;min-height:34px}.hall-year-meta{font-size:.64rem}
+#table-hall-year-ranking{table-layout:fixed!important;width:100%!important;min-width:0!important}#table-hall-year-ranking th,#table-hall-year-ranking td{padding-left:3px!important;padding-right:3px!important;overflow:hidden}
+#table-hall-year-ranking th:nth-child(1),#table-hall-year-ranking td:nth-child(1){width:30px!important}#table-hall-year-ranking th:nth-child(2),#table-hall-year-ranking td:nth-child(2){width:auto!important;text-align:left!important}
+#table-hall-year-ranking th:nth-child(3),#table-hall-year-ranking td:nth-child(3){width:66px!important}#table-hall-year-ranking th:nth-child(4),#table-hall-year-ranking td:nth-child(4),#table-hall-year-ranking th:nth-child(5),#table-hall-year-ranking td:nth-child(5){width:40px!important}
+#table-hall-year-ranking th:nth-child(6),#table-hall-year-ranking td:nth-child(6){width:48px!important}#table-hall-year-ranking .hall-player-link{display:block!important;width:100%;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem!important}
+#table-hall-year-ranking .hall-year-team-cell .hall-team-short{display:block!important;white-space:normal!important;line-height:1.12;font-size:.62rem;text-align:center}
 .hall-extra-section .table-container{overflow-x:auto}#table-hall-edition-leaders th,#table-hall-edition-leaders td{padding:9px 8px;font-size:.82rem}#table-hall-edition-leaders th:first-child,#table-hall-edition-leaders td:first-child{min-width:92px;text-align:left}
 }
 @media(max-width:390px){.hall-player-summary-mini{grid-template-columns:repeat(2,minmax(0,1fr))}.table-hall-player-summary th:nth-child(1),.table-hall-player-summary td:nth-child(1){width:25%}.table-hall-player-summary th:nth-child(2),.table-hall-player-summary td:nth-child(2){width:24%}.table-hall-player-summary th:nth-child(3),.table-hall-player-summary td:nth-child(3){width:15%}.table-hall-player-summary th:nth-child(4),.table-hall-player-summary td:nth-child(4){width:14%}.table-hall-player-summary th:nth-child(5),.table-hall-player-summary td:nth-child(5){width:22%}}
@@ -2107,6 +2118,66 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
             <button id="btn-hist-edition-less" class="btn-action" onclick="changeHallEditionLimit('less')" style="display:none;">Ver menos</button>
             <button id="btn-hist-edition-more" class="btn-action" onclick="changeHallEditionLimit('more')">Ver do Top 10 ao 50</button>
         </div>
+
+        <section class="hall-extra-section" id="hall-year-ranking-section">
+            <h2 class="hall-extra-title">Ranking por Ano</h2>
+            <p class="hall-extra-subtitle">Soma todas as edições disputadas no mesmo ano. Pesquise por jogador ou equipe e ordene por abates, quedas ou média.</p>
+
+            <div class="hall-year-tools">
+                <div class="hall-year-field">
+                    <label for="hall-year-select">Ano</label>
+                    <select id="hall-year-select" onchange="setHallYear(this.value)">
+                        <option>Carregando...</option>
+                    </select>
+                </div>
+                <div class="hall-year-field">
+                    <label for="hall-year-metric">Ordenar por</label>
+                    <select id="hall-year-metric" onchange="setHallYearMetric(this.value)">
+                        <option value="kills">Abates</option>
+                        <option value="matches">Quedas</option>
+                        <option value="avg">Média</option>
+                    </select>
+                </div>
+                <div class="hall-year-field">
+                    <label for="hall-year-player-search">Jogador</label>
+                    <input id="hall-year-player-search" class="hall-search-input" type="search" placeholder="Pesquisar jogador..." autocomplete="off" oninput="setHallYearPlayerSearch(this.value)">
+                </div>
+                <div class="hall-year-field">
+                    <label for="hall-year-team-search">Equipe</label>
+                    <input id="hall-year-team-search" class="hall-search-input" type="search" placeholder="Pesquisar equipe ou sigla..." autocomplete="off" oninput="setHallYearTeamSearch(this.value)">
+                </div>
+                <label class="hall-year-min-drops" for="hall-year-min-drops" title="Exige pelo menos 50% do maior número de quedas disputado por um jogador no ano selecionado.">
+                    <input id="hall-year-min-drops" type="checkbox" onchange="setHallYearMinDrops(this.checked)">
+                    Quedas mínimas
+                </label>
+            </div>
+
+            <div id="hall-year-meta" class="hall-year-meta"></div>
+
+            <div class="table-container">
+                <table id="table-hall-year-ranking">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;">#</th>
+                            <th style="text-align:left;"><span class="full-name-desktop">Jogador</span><span class="short-name-mobile">J</span></th>
+                            <th style="text-align:left;"><span class="full-name-desktop">Times no ano</span><span class="short-name-mobile">E</span></th>
+                            <th aria-sort="descending"><button type="button" class="hall-sort-btn is-active" data-sort="kills" data-dir="desc" onclick="sortHallYearColumn('kills')"><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></button></th>
+                            <th aria-sort="none"><button type="button" class="hall-sort-btn" data-sort="matches" data-dir="" onclick="sortHallYearColumn('matches')"><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></button></th>
+                            <th aria-sort="none"><button type="button" class="hall-sort-btn" data-sort="avg" data-dir="" onclick="sortHallYearColumn('avg')">Média</button></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hall-lite-loading"><td colspan="6">Carregando ranking anual...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="hall-team-pagination" aria-label="Paginação do ranking por ano">
+                <button id="hall-year-page-prev" class="btn-action" type="button" onclick="changeHallYearPage(-1)" aria-label="Página anterior">‹</button>
+                <span id="hall-year-page-info" class="hall-team-page-info">Top 1–10</span>
+                <button id="hall-year-page-next" class="btn-action" type="button" onclick="changeHallYearPage(1)" aria-label="Próxima página">›</button>
+            </div>
+        </section>
 
         <section class="hall-extra-section" id="hall-edition-leaders-section">
             <h2 class="hall-extra-title">Líderes por Edição</h2>
