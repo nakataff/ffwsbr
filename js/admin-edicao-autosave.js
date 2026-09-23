@@ -213,7 +213,7 @@
       if(photoBlob){await restoreFile($('#photo-editor-file'),photoBlob,meta.imageName);await waitFor(()=>!!state()?.image,7000);}
       if(Array.isArray(meta.pips)&&meta.pips.length&&window.__CFF_ADMIN_EDICAO_ADD_PIP_BLOB__){
         for(const p of meta.pips){const blob=await dbGet(`pip:${p.id}`);if(blob)await window.__CFF_ADMIN_EDICAO_ADD_PIP_BLOB__(blob,p);}
-        const s=state();if(s&&meta.activePipId&&s.pips?.some(p=>p.id===meta.activePipId)){s.activePipId=meta.activePipId;window.__CFF_ADMIN_EDICAO_QUEUE__?.();}
+        const s=state();if(s&&meta.activePipId&&s.pips?.some(p=>p.id===meta.activePipId)){s.activePipId=meta.activePipId;window.__CFF_ADMIN_EDICAO_SYNC_PIPS__?.();}
       }else if(pipBlob){await restoreFile($('#photo-editor-pip-file'),pipBlob,meta.pipName);await waitFor(()=>!!state()?.pip,5000);}
       restoreTexts(meta);
       syncDirectState(meta);
