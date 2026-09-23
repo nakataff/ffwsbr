@@ -12,6 +12,10 @@
   let activeOverlay='';
 
   const $=s=>document.querySelector(s);
+  const EDITOR_TAB_KEY='cff-admin-edicao-active-tab-v1';
+  const EDITOR_TAB_MAGNET_KEY='cff-admin-edicao-tab-magnet-v1';
+  const editorState=()=>window.__CFF_ADMIN_EDICAO_STATE__||null;
+  let activeEditorTab=localStorage.getItem(EDITOR_TAB_KEY)||'image',textDrag=null,textOverlayRaf=0,textMeasureCtx=null;
 
   function addStyles(){
     if($('#cff-edicao-enhancement-styles')) return;
@@ -43,7 +47,12 @@
       .cff-edicao-quick-nav{display:flex;gap:7px;overflow-x:auto;padding:0 0 13px;margin:0 0 18px;border-bottom:1px solid rgba(255,255,255,.09);scrollbar-width:none}
       .cff-edicao-quick-nav::-webkit-scrollbar{display:none}
       .cff-edicao-quick-btn{flex:0 0 auto;border:1px solid rgba(145,165,205,.2);background:rgba(255,255,255,.035);color:#aebbd0;border-radius:999px;padding:8px 11px;font:850 11px/1 inherit;cursor:pointer;white-space:nowrap}
-      .cff-edicao-quick-btn:first-child{border-color:rgba(0,200,255,.4);background:rgba(0,200,255,.08);color:#dff9ff}
+      .cff-edicao-quick-btn.is-active{border-color:#00c8ff;background:rgba(0,200,255,.12);color:#effcff;box-shadow:inset 0 0 0 1px rgba(0,200,255,.08)}
+      .cff-edicao-tab-magnet{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-10px 0 15px;padding:8px 2px 11px;border-bottom:1px solid rgba(255,255,255,.07);color:#8194ad;font-size:10px;font-weight:850}.cff-edicao-tab-magnet label{display:flex;align-items:center;gap:7px;cursor:pointer}.cff-edicao-tab-magnet input{width:16px;height:16px;accent-color:#00c8ff}.cff-edicao-tab-magnet small{color:#60758f;font-size:9px}
+      .photo-editor-control-section.cff-tab-hidden{display:none!important}
+      .cff-text-hit{position:absolute;z-index:92;box-sizing:border-box;transform:translate(-50%,-50%);border:1.5px solid transparent;cursor:move;touch-action:none;pointer-events:auto}
+      .cff-text-hit:hover{border-color:rgba(0,200,255,.34)}.cff-text-hit.is-selected{border-color:#16d7ff;box-shadow:0 0 0 1px rgba(255,255,255,.42),0 0 0 3px rgba(0,200,255,.08)}
+      .cff-text-hit-label{position:absolute;left:0;top:-20px;display:none;padding:3px 5px;border-radius:5px;background:rgba(3,9,15,.88);border:1px solid rgba(22,215,255,.35);color:#c9f8ff;font:900 8px/1 Arial,sans-serif;white-space:nowrap;pointer-events:none}.cff-text-hit.is-selected .cff-text-hit-label{display:block}
       .photo-editor-control-section.cff-primary-text{padding:16px;border:1px solid rgba(0,200,255,.16);border-radius:14px;background:linear-gradient(180deg,rgba(0,200,255,.035),rgba(255,255,255,.012));margin-bottom:18px}
       .photo-editor-control-section.cff-primary-text .photo-editor-section-title{margin-bottom:12px}
       @media(max-width:1180px) and (min-width:821px){
@@ -189,14 +198,134 @@
     controls.insertBefore(textSection,controls.firstElementChild);
   }
 
+  function classifyControlSections(){
+    const controls=$('.photo-editor-controls');if(!controls)return;
+    const map=[
+      ['#photo-editor-zoom','image'],['#photo-editor-frame-enabled','image'],
+      ['#photo-editor-brightness','adjust'],['#cff-studio-effects','adjust'],
+      ['#photo-editor-pip-file','pip'],['#photo-editor-text','text']
+    ];
+    map.forEach(([selector,tab])=>{const target=$(selector),section=target?.closest('.photo-editor-control-section')||(target?.classList?.contains('photo-editor-control-section')?target:null);if(section)section.dataset.editorTab=tab;});
+  }
+
+  function tabMagnetEnabled(){
+    const raw=localStorage.getItem(EDITOR_TAB_MAGNET_KEY);
+    return raw===null?true:raw!=='0';
+  }
+
+  function applyEditorTab(tab,{store=true}={}){
+    const allowed=['text','image','adjust','pip'];activeEditorTab=allowed.includes(tab)?tab:'image';
+    classifyControlSections();
+    document.querySelectorAll('.photo-editor-controls .photo-editor-control-section[data-editor-tab]').forEach(section=>section.classList.toggle('cff-tab-hidden',section.dataset.editorTab!==activeEditorTab));
+    document.querySelectorAll('.cff-edicao-quick-btn[data-editor-tab]').forEach(btn=>{const on=btn.dataset.editorTab===activeEditorTab;btn.classList.toggle('is-active',on);btn.setAttribute('aria-selected',String(on));});
+    if(store)localStorage.setItem(EDITOR_TAB_KEY,activeEditorTab);
+  }
+
   function setupQuickNav(){
     const controls=$('.photo-editor-controls');
     if(!controls||$('.cff-edicao-quick-nav')) return;
-    const items=[['Texto','#photo-editor-text'],['Imagem','#photo-editor-zoom'],['Ajustes','#photo-editor-brightness'],['P.I.P.','#photo-editor-pip-file'],['Exportar','.photo-editor-export']];
-    const nav=document.createElement('nav');nav.className='cff-edicao-quick-nav';nav.setAttribute('aria-label','Atalhos do editor');
-    nav.innerHTML=items.map(([label,target])=>`<button type="button" class="cff-edicao-quick-btn" data-target="${target}">${label}</button>`).join('');
-    controls.insertBefore(nav,controls.firstElementChild);
-    nav.addEventListener('click',e=>{const btn=e.target.closest('[data-target]');if(!btn)return;const target=$(btn.dataset.target);const section=target?.closest('.photo-editor-control-section')||target;section?.scrollIntoView({behavior:'smooth',block:'start'});if(target&&['TEXTAREA','INPUT','SELECT'].includes(target.tagName))setTimeout(()=>target.focus({preventScroll:true}),350);});
+    const items=[['Texto','text'],['Imagem','image'],['Ajustes','adjust'],['P.I.P.','pip']];
+    const nav=document.createElement('nav');nav.className='cff-edicao-quick-nav';nav.setAttribute('aria-label','Abas do editor');nav.setAttribute('role','tablist');
+    nav.innerHTML=items.map(([label,tab])=>`<button type="button" role="tab" class="cff-edicao-quick-btn" data-editor-tab="${tab}">${label}</button>`).join('');
+    const magnet=document.createElement('div');magnet.className='cff-edicao-tab-magnet';magnet.innerHTML=`<label><input id="cff-edicao-tab-magnet" type="checkbox"> Ímã de aba</label><small>seleção no preview abre a aba certa</small>`;
+    controls.insertBefore(magnet,controls.firstElementChild);controls.insertBefore(nav,magnet);
+    nav.addEventListener('click',e=>{const btn=e.target.closest('[data-editor-tab]');if(btn)applyEditorTab(btn.dataset.editorTab);});
+    const toggle=$('#cff-edicao-tab-magnet');if(toggle){toggle.checked=tabMagnetEnabled();toggle.addEventListener('change',()=>localStorage.setItem(EDITOR_TAB_MAGNET_KEY,toggle.checked?'1':'0'));}
+    const observer=new MutationObserver(()=>{classifyControlSections();applyEditorTab(activeEditorTab,{store:false});});observer.observe(controls,{childList:true,subtree:true});
+    window.__CFF_ADMIN_EDICAO_OPEN_TAB__=tab=>applyEditorTab(tab);
+    classifyControlSections();applyEditorTab(activeEditorTab,{store:false});
+  }
+
+  function textMeasure(){
+    if(textMeasureCtx)return textMeasureCtx;
+    const canvas=document.createElement('canvas');textMeasureCtx=canvas.getContext('2d');return textMeasureCtx;
+  }
+
+  function textGeometry(layer){
+    const text=String(layer?.text||'');if(!text.trim())return null;
+    const size=Math.min(500,Math.max(40,Number(layer.size)||190)),spacing=Math.min(180,Math.max(70,Number(layer.spacing)||106))/100,lineH=size*spacing,lines=text.toUpperCase().split(/\r?\n/),m=textMeasure();
+    m.font=`700 ${size}px "${String(layer.font||'Avilock').replace(/"/g,'')}", sans-serif`;
+    const width=Math.max(size*.8,...lines.map(line=>m.measureText(line||' ').width))+size*.18,height=Math.max(size,((lines.length-1)*lineH)+size*1.08);
+    return{x:Math.min(95,Math.max(5,Number(layer.x)||50)),y:Math.min(94,Math.max(8,Number(layer.y)||86)),widthPct:Math.min(98,Math.max(3,(width/3000)*100)),heightPct:Math.min(98,Math.max(2,(height/3749)*100))};
+  }
+
+  function scheduleTextOverlaySync(){
+    if(textOverlayRaf)return;textOverlayRaf=requestAnimationFrame(()=>{textOverlayRaf=0;syncTextOverlays();});
+  }
+
+  function syncTextOverlays(){
+    const s=editorState(),stage=$('#photo-editor-stage');if(!s||!stage)return;
+    const valid=new Set((s.texts||[]).map(t=>t.id));
+    stage.querySelectorAll('.cff-text-hit').forEach(el=>{if(!valid.has(el.dataset.textId))el.remove();});
+    (s.texts||[]).forEach((layer,index)=>{
+      const g=textGeometry(layer);let el=stage.querySelector(`.cff-text-hit[data-text-id="${CSS.escape(layer.id)}"]`);
+      if(!g){el?.remove();return;}
+      if(!el){el=document.createElement('div');el.className='cff-text-hit';el.dataset.textId=layer.id;el.innerHTML='<span class="cff-text-hit-label"></span>';stage.appendChild(el);}
+      el.style.left=`${g.x}%`;el.style.top=`${g.y}%`;el.style.width=`${g.widthPct}%`;el.style.height=`${g.heightPct}%`;el.querySelector('.cff-text-hit-label').textContent=`Texto ${index+1}`;
+      el.classList.toggle('is-selected',s.cffSelection?.type==='text'&&s.cffSelection?.id===layer.id);
+    });
+  }
+
+  function syncTextPositionUi(layer){
+    if(!layer)return;const x=$('#photo-editor-text-x'),xo=$('#photo-editor-text-x-value'),y=$('#photo-editor-text-y'),yo=$('#photo-editor-text-y-value');
+    if(x)x.value=String(layer.x);if(xo)xo.textContent=`${Number(layer.x).toFixed(1)}%`;if(y)y.value=String(layer.y);if(yo)yo.textContent=`${Number(layer.y).toFixed(1)}%`;
+  }
+
+  function setEditorSelection(type='none',id=null){
+    const s=editorState();if(!s)return;
+    const nextType=['photo','pip','text'].includes(type)?type:'none',nextId=nextType==='photo'||nextType==='none'?null:String(id||'');
+    if(nextType==='pip'){const p=(s.pips||[]).find(x=>x.id===nextId);if(!p)return;s.activePipId=nextId;}
+    if(nextType==='text'){const t=(s.texts||[]).find(x=>x.id===nextId);if(!t)return;s.activeTextId=nextId;window.__CFF_ADMIN_EDICAO_ACTIVATE_TEXT__?.(nextId);}
+    s.cffSelection={type:nextType,id:nextId};
+    window.__CFF_ADMIN_EDICAO_SYNC_PIPS__?.();scheduleTextOverlaySync();
+    if(tabMagnetEnabled()){const tab={photo:'image',pip:'pip',text:'text'}[nextType];if(tab)applyEditorTab(tab);}
+    window.dispatchEvent(new CustomEvent('cff-editor-selection-change',{detail:{type:nextType,id:nextId}}));
+  }
+
+  function clearEditorSelection(){setEditorSelection('none');}
+  window.__CFF_ADMIN_EDICAO_SELECT__=setEditorSelection;
+  window.__CFF_ADMIN_EDICAO_CLEAR_SELECTION__=clearEditorSelection;
+
+  function pointHitsMainPhoto(e){
+    const s=editorState(),stage=$('#photo-editor-stage');if(!s?.image||!stage)return false;
+    const r=stage.getBoundingClientRect();if(!r.width||!r.height)return false;
+    const px=(e.clientX-r.left)/r.width*3000,py=(e.clientY-r.top)/r.height*3749,dx=px-(Number(s.x)||1500),dy=py-(Number(s.y)||1874.5),rad=-(Number(s.rotation)||0)*Math.PI/180,rx=dx*Math.cos(rad)-dy*Math.sin(rad),ry=dx*Math.sin(rad)+dy*Math.cos(rad),scale=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=(s.image.naturalWidth||s.image.width||0)*scale,h=(s.image.naturalHeight||s.image.height||0)*scale;
+    return Math.abs(rx)<=w/2&&Math.abs(ry)<=h/2;
+  }
+
+  function beginTextDrag(e,el){
+    const s=editorState(),id=el.dataset.textId,layer=(s?.texts||[]).find(t=>t.id===id);if(!layer)return;
+    e.preventDefault();e.stopPropagation();setEditorSelection('text',id);
+    const r=$('#photo-editor-stage').getBoundingClientRect();textDrag={id,pointerId:e.pointerId,startClientX:e.clientX,startClientY:e.clientY,startX:Number(layer.x)||50,startY:Number(layer.y)||86,stageW:r.width,stageH:r.height};
+    el.setPointerCapture?.(e.pointerId);window.__CFF_ADMIN_EDICAO_INTERACTING__=true;window.dispatchEvent(new CustomEvent('cff-editor-interaction-start'));
+    window.addEventListener('pointermove',moveTextDrag,{capture:true});window.addEventListener('pointerup',endTextDrag,{capture:true,once:true});window.addEventListener('pointercancel',endTextDrag,{capture:true,once:true});
+  }
+
+  function moveTextDrag(e){
+    const g=textDrag,s=editorState();if(!g||e.pointerId!==g.pointerId||!s)return;const layer=(s.texts||[]).find(t=>t.id===g.id);if(!layer)return;
+    e.preventDefault();e.stopPropagation();layer.x=Math.min(95,Math.max(5,g.startX+((e.clientX-g.startClientX)/g.stageW)*100));layer.y=Math.min(94,Math.max(8,g.startY+((e.clientY-g.startClientY)/g.stageH)*100));syncTextPositionUi(layer);window.__CFF_ADMIN_EDICAO_QUEUE__?.();scheduleTextOverlaySync();
+  }
+
+  function endTextDrag(e){
+    const g=textDrag;if(!g||e.pointerId!==g.pointerId)return;e.preventDefault();e.stopPropagation();textDrag=null;window.removeEventListener('pointermove',moveTextDrag,true);window.__CFF_ADMIN_EDICAO_INTERACTING__=false;window.dispatchEvent(new CustomEvent('cff-editor-interaction-end'));
+    const input=$('#photo-editor-text-x');input?.dispatchEvent(new Event('input',{bubbles:true}));scheduleTextOverlaySync();
+  }
+
+  function setupPreviewSelection(){
+    const stage=$('#photo-editor-stage'),workspace=$('.photo-editor-workspace');if(!stage||stage.dataset.cffSelectionBound==='1')return;stage.dataset.cffSelectionBound='1';
+    stage.addEventListener('pointerdown',e=>{
+      const textHit=e.target.closest('.cff-text-hit');if(textHit){beginTextDrag(e,textHit);return;}
+      if(e.target.closest('.photo-editor-pip-hit'))return;
+      if(e.target.closest('#cff-photo-transform')){setEditorSelection('photo');return;}
+      if(pointHitsMainPhoto(e)){setEditorSelection('photo');return;}
+      clearEditorSelection();e.preventDefault();e.stopImmediatePropagation();
+    },true);
+    workspace?.addEventListener('pointerdown',e=>{if(e.target.closest('#photo-editor-stage'))return;if(e.target.closest('button,input,select,textarea,label'))return;if(e.target.closest('.cff-studio-canvas-shell')||e.target===workspace)clearEditorSelection();},true);
+    const app=$('#photo-editor-app');app?.addEventListener('input',scheduleTextOverlaySync,true);app?.addEventListener('change',scheduleTextOverlaySync,true);
+    window.addEventListener('resize',scheduleTextOverlaySync);window.addEventListener('cff-editor-selection-change',scheduleTextOverlaySync);
+    if('ResizeObserver'in window)new ResizeObserver(scheduleTextOverlaySync).observe(stage);
+    setInterval(()=>{if(!window.__CFF_ADMIN_EDICAO_INTERACTING__)scheduleTextOverlaySync();},500);
+    scheduleTextOverlaySync();
   }
 
   function setupTopSave(){
@@ -226,6 +355,7 @@
     hideLegacyFrameControls();
     reorderControls();
     setupQuickNav();
+    setupPreviewSelection();
     setupTopSave();
     improveLabels();
     setupEmptyClick();
