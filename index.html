@@ -297,10 +297,13 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 #table-hall-year-ranking .hall-year-main-row:hover{background:rgba(0,200,255,.04)}
 #table-hall-year-ranking .hall-year-main-row:focus{outline:none;box-shadow:inset 3px 0 0 rgba(0,200,255,.45)}
 #table-hall-year-ranking .hall-year-main-row.is-expanded{background:rgba(0,200,255,.065);box-shadow:inset 3px 0 0 rgba(0,200,255,.7)}
-.hall-year-player-cell{display:flex;align-items:center;gap:7px;min-width:0}
-.hall-year-expand-mark{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid rgba(255,255,255,.12);border-radius:5px;color:#7fa6c6;font-size:.76rem;font-weight:1000;line-height:1}
+.hall-year-player-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e7eef7;font-weight:850}
 .hall-year-detail-tr>td{padding:0!important;background:rgba(0,0,0,.16)}
 .hall-year-detail{padding:8px 10px 10px}
+.hall-year-detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 6px 8px}
+.hall-year-detail-top>strong{color:#8aa8c3;font-size:.62rem;font-weight:950;text-transform:uppercase;letter-spacing:.05em}
+.hall-year-collapse{appearance:none;border:0;background:transparent;color:#79dff5;padding:4px 2px;font:900 .62rem/1 inherit;cursor:pointer}
+.hall-year-collapse:hover,.hall-year-collapse:focus-visible{color:#fff;outline:none}
 .hall-year-detail-head,.hall-year-detail-row{display:grid;grid-template-columns:minmax(70px,1.05fr) minmax(90px,1.3fr) 48px 48px 58px;gap:8px;align-items:center}
 .hall-year-detail-head{padding:0 6px 5px;color:#6384a3;font-size:.58rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}
 .hall-year-detail-row{padding:7px 6px;border-top:1px solid rgba(255,255,255,.055);color:#dbe9f6;font-size:.7rem}
@@ -322,8 +325,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 #table-hall-year-ranking th:nth-child(1),#table-hall-year-ranking td:nth-child(1){width:30px!important}#table-hall-year-ranking th:nth-child(2),#table-hall-year-ranking td:nth-child(2){width:auto!important;text-align:left!important}
 #table-hall-year-ranking th:nth-child(3),#table-hall-year-ranking td:nth-child(3),#table-hall-year-ranking th:nth-child(4),#table-hall-year-ranking td:nth-child(4){width:44px!important}
 #table-hall-year-ranking th:nth-child(5),#table-hall-year-ranking td:nth-child(5){width:52px!important}#table-hall-year-ranking .hall-player-link{display:block!important;width:100%;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem!important}
-.hall-year-player-cell{gap:4px}.hall-year-expand-mark{width:16px;height:16px;font-size:.68rem}
-.hall-year-detail{padding:6px 5px 8px}.hall-year-detail-head,.hall-year-detail-row{grid-template-columns:58px minmax(56px,1fr) 34px 34px 42px;gap:3px}.hall-year-detail-head{padding:0 3px 4px;font-size:.5rem}.hall-year-detail-row{padding:6px 3px;font-size:.6rem}.hall-year-detail-row .hall-team-full{display:none!important}.hall-year-detail-row .hall-team-short{display:inline!important}
+.hall-year-player-name{font-size:.8rem}
+.hall-year-detail{padding:6px 5px 8px}.hall-year-detail-top{padding:1px 3px 6px}.hall-year-detail-top>strong,.hall-year-collapse{font-size:.54rem}.hall-year-detail-head,.hall-year-detail-row{grid-template-columns:58px minmax(56px,1fr) 34px 34px 42px;gap:3px}.hall-year-detail-head{padding:0 3px 4px;font-size:.5rem}.hall-year-detail-row{padding:6px 3px;font-size:.6rem}.hall-year-detail-row .hall-team-full{display:none!important}.hall-year-detail-row .hall-team-short{display:inline!important}
 .hall-extra-section .table-container{overflow-x:auto}#table-hall-edition-leaders th,#table-hall-edition-leaders td{padding:9px 8px;font-size:.82rem}#table-hall-edition-leaders th:first-child,#table-hall-edition-leaders td:first-child{min-width:92px;text-align:left}
 }
 @media(max-width:390px){.hall-player-summary-mini{grid-template-columns:repeat(2,minmax(0,1fr))}.table-hall-player-summary th:nth-child(1),.table-hall-player-summary td:nth-child(1){width:25%}.table-hall-player-summary th:nth-child(2),.table-hall-player-summary td:nth-child(2){width:24%}.table-hall-player-summary th:nth-child(3),.table-hall-player-summary td:nth-child(3){width:15%}.table-hall-player-summary th:nth-child(4),.table-hall-player-summary td:nth-child(4){width:14%}.table-hall-player-summary th:nth-child(5),.table-hall-player-summary td:nth-child(5){width:22%}}
