@@ -31,7 +31,7 @@
   function isContinuousControl(target){
     if(!target)return false;
     if(target.closest?.('#cff-studio-effects'))return false;
-    return !!target.closest?.('#photo-editor-text,#photo-editor-font-size,#photo-editor-text-x,#photo-editor-text-y,#photo-editor-text-spacing,#photo-editor-zoom,#photo-editor-rotation,#photo-editor-brightness,#photo-editor-contrast,#photo-editor-saturation,#photo-editor-pip-size,#photo-editor-pip-rotation,#photo-editor-pip-x,#photo-editor-pip-y,#photo-editor-pip-opacity');
+    return !!target.closest?.('#photo-editor-text,#photo-editor-font-size,#photo-editor-text-x,#photo-editor-text-y,#photo-editor-text-spacing,#photo-editor-zoom,#photo-editor-rotation,#photo-editor-brightness,#photo-editor-contrast,#photo-editor-saturation,#photo-editor-pip-size,#photo-editor-pip-rotation,#photo-editor-pip-x,#photo-editor-pip-y,#photo-editor-pip-opacity,#photo-editor-pip-stroke-width,#photo-editor-pip-shadow-size,#photo-editor-pip-shadow-blur,#photo-editor-pip-shadow-opacity,#photo-editor-pip-shadow-x,#photo-editor-pip-shadow-y');
   }
 
   function bind(){
