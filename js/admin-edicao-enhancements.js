@@ -214,9 +214,9 @@
   }
 
   function loadAutosave(){
-    if(document.querySelector('script[data-cff-edicao-autosave]'))return;
+    if(window.__CFF_ADMIN_EDICAO_AUTOSAVE__||document.querySelector('script[data-cff-edicao-autosave]'))return;
     const script=document.createElement('script');
-    script.src='js/admin-edicao-autosave.js?v=20260914-autosave-v1';
+    script.src='js/admin-edicao-autosave.js?v=20260923-pip-effects-v6';
     script.dataset.cffEdicaoAutosave='1';
     document.head.appendChild(script);
   }
