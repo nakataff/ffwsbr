@@ -285,11 +285,19 @@
     return rows;
   }
 
+  function isOverallStageFilter(stageKey) {
+    const selected = state.stageFilter[stageKey] || { period: 'all', map: 'all', drop: 'all' };
+    return selected.period === 'all' && selected.map === 'all' && selected.drop === 'all';
+  }
+
   function filterStageRows(stageKey) {
     const payload = state.stages?.[stageKey] || {};
     const events = filteredStageEvents(stageKey);
-    if (stageEvents(stageKey).length) return aggregateStageRows(stageKey, events);
     const rawRows = Array.isArray(payload.rows) ? payload.rows : [];
+    // Na Final, a classificação geral precisa respeitar o Champion Rush.
+    // O provider já coloca o campeão oficial em 1º mesmo quando outra equipe somou mais pontos.
+    if (stageKey === 'final' && isOverallStageFilter(stageKey) && rawRows.length) return rawRows.map(row => ({ ...row }));
+    if (stageEvents(stageKey).length) return aggregateStageRows(stageKey, events);
     if (rawRows.length) return rawRows.map(row => ({ ...row }));
     if (stageKey === 'classificatoria') {
       return state.teams.map(team => ({ team: team.name, position: null, points: 0, booyahs: 0, kills: 0, placementPoints: 0, matches: 0 }));
@@ -304,7 +312,12 @@
     if (!pos) return '';
     if (stageKey === 'classificatoria') return pos <= 12 ? 'ffws-s2-row-advance' : 'ffws-s2-row-relegated';
     if (stageKey === 'segundaFase') return pos <= 2 ? 'ffws-s2-row-world' : 'ffws-s2-row-final';
-    if (pos === 1) return 'ffws-s2-row-champion';
+    if (stageKey === 'final') {
+      const champion = normalize(state.stages?.final?.champion || '');
+      if (isOverallStageFilter('final') && champion && normalize(row.team) === champion) return 'ffws-s2-row-champion';
+      if (row.worldQualified) return 'ffws-s2-row-world';
+      return '';
+    }
     if (row.worldQualified) return 'ffws-s2-row-world';
     return '';
   }
