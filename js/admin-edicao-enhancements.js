@@ -328,6 +328,94 @@
     scheduleTextOverlaySync();
   }
 
+  const editorHistory={entries:[],index:-1,applying:false,timer:0,max:60};
+
+  function snapshotEditor(){
+    const s=editorState();if(!s)return null;
+    return{
+      image:s.image||null,imageBlob:s.imageBlob||null,imageName:s.imageName||'',baseScale:Number(s.baseScale)||1,zoom:Number(s.zoom)||1,x:Number(s.x)||1500,y:Number(s.y)||1874.5,rotation:Number(s.rotation)||0,flipX:s.flipX===-1?-1:1,brightness:Number(s.brightness)||100,contrast:Number(s.contrast)||100,saturation:Number(s.saturation)||100,pinchLocked:!!s.pinchLocked,
+      pips:(s.pips||[]).map(p=>({...p})),activePipId:s.activePipId||null,pipSeq:Number(s.pipSeq)||0,
+      texts:(s.texts||[]).map(t=>({...t})),activeTextId:s.activeTextId||null,
+      frameEnabled:s.frameEnabled!==false,frame:s.frame||null,frameUrl:s.frameUrl||'',
+      selection:{type:s.cffSelection?.type||'none',id:s.cffSelection?.id||null},
+      studio:window.__CFF_ADMIN_EDICAO_STUDIO_STATE__?.()||null
+    };
+  }
+
+  function snapshotKey(v){
+    if(!v)return'';
+    return JSON.stringify({
+      image:v.imageName||'',hasImage:!!v.image,baseScale:v.baseScale,zoom:v.zoom,x:v.x,y:v.y,rotation:v.rotation,flipX:v.flipX,brightness:v.brightness,contrast:v.contrast,saturation:v.saturation,pinchLocked:v.pinchLocked,
+      pips:v.pips.map(p=>[p.id,p.name,p.enabled,p.size,p.x,p.y,p.opacity,p.rotation,p.flipX,p.strokeEnabled,p.strokeWidth,p.strokeColor,p.shadowEnabled,p.shadowSize,p.shadowBlur,p.shadowColor,p.shadowOpacity,p.shadowX,p.shadowY]),
+      texts:v.texts.map(t=>[t.id,t.text,t.font,t.size,t.color,t.x,t.y,t.spacing,t.shadow]),frameEnabled:v.frameEnabled,frameUrl:v.frameUrl||'',studio:v.studio
+    });
+  }
+
+  function updateHistoryButtons(){
+    const undo=$('#cff-editor-undo'),redo=$('#cff-editor-redo');
+    if(undo)undo.disabled=editorHistory.index<=0;
+    if(redo)redo.disabled=editorHistory.index<0||editorHistory.index>=editorHistory.entries.length-1;
+  }
+
+  function recordHistory(){
+    if(editorHistory.applying)return;
+    const snap=snapshotEditor();if(!snap)return;const key=snapshotKey(snap),current=editorHistory.entries[editorHistory.index];
+    if(current&&current.key===key){updateHistoryButtons();return;}
+    if(editorHistory.index<editorHistory.entries.length-1)editorHistory.entries.splice(editorHistory.index+1);
+    editorHistory.entries.push({key,snap});if(editorHistory.entries.length>editorHistory.max)editorHistory.entries.shift();
+    editorHistory.index=editorHistory.entries.length-1;updateHistoryButtons();
+  }
+
+  function scheduleHistory(ms=280){clearTimeout(editorHistory.timer);editorHistory.timer=setTimeout(recordHistory,ms);}
+
+  function freshObjectUrl(blob,fallback=''){try{return blob?URL.createObjectURL(blob):fallback||'';}catch{return fallback||'';}}
+
+  function applyHistorySnapshot(snap){
+    const s=editorState();if(!s||!snap)return;editorHistory.applying=true;
+    try{
+      s.image=snap.image||null;s.imageBlob=snap.imageBlob||null;s.imageName=snap.imageName||'';s.imageUrl=s.image?freshObjectUrl(s.imageBlob,''):'';s.baseScale=snap.baseScale;s.zoom=snap.zoom;s.x=snap.x;s.y=snap.y;s.rotation=snap.rotation;s.flipX=snap.flipX;s.brightness=snap.brightness;s.contrast=snap.contrast;s.saturation=snap.saturation;s.pinchLocked=snap.pinchLocked;
+      s.pips=snap.pips.map(p=>({...p,url:freshObjectUrl(p.sourceBlob,p.url)}));s.activePipId=snap.activePipId;s.pipSeq=snap.pipSeq;
+      s.texts=snap.texts.map(t=>({...t}));s.activeTextId=snap.activeTextId;
+      s.frameEnabled=snap.frameEnabled;s.frame=snap.frame;s.frameUrl=snap.frameUrl||'';
+      s.cffSelection={...(snap.selection||{type:'none',id:null})};
+      if(snap.studio)window.__CFF_ADMIN_EDICAO_STUDIO_APPLY__?.(snap.studio);
+      window.__CFF_ADMIN_EDICAO_SYNC_ALL__?.();
+      if(s.cffSelection?.type==='photo'&&!s.image)s.cffSelection={type:'none',id:null};
+      if(s.cffSelection?.type==='pip'&&!s.pips.some(p=>p.id===s.cffSelection.id))s.cffSelection={type:'none',id:null};
+      if(s.cffSelection?.type==='text'&&!s.texts.some(t=>t.id===s.cffSelection.id))s.cffSelection={type:'none',id:null};
+      window.dispatchEvent(new CustomEvent('cff-editor-selection-change',{detail:{...s.cffSelection}}));
+    }finally{editorHistory.applying=false;updateHistoryButtons();}
+  }
+
+  function undoEditor(){if(editorHistory.index<=0)return;editorHistory.index--;applyHistorySnapshot(editorHistory.entries[editorHistory.index].snap);}
+  function redoEditor(){if(editorHistory.index<0||editorHistory.index>=editorHistory.entries.length-1)return;editorHistory.index++;applyHistorySnapshot(editorHistory.entries[editorHistory.index].snap);}
+
+  function deleteSelected(){
+    const s=editorState(),sel=s?.cffSelection;if(!s||!sel||sel.type==='none')return;
+    if(sel.type==='photo'&&s.image){window.__CFF_ADMIN_EDICAO_CONFIRM_DELETE_MAIN__?.();return;}
+    if(sel.type==='pip'){s.activePipId=sel.id;window.__CFF_ADMIN_EDICAO_REMOVE_PIP__?.();scheduleHistory(40);return;}
+    if(sel.type==='text'){s.activeTextId=sel.id;window.__CFF_ADMIN_EDICAO_REMOVE_TEXT__?.();scheduleHistory(40);}
+  }
+
+  function setupHistory(){
+    const actions=$('.photo-editor-heading-actions'),app=$('#photo-editor-app');if(!actions||!app||$('#cff-editor-undo'))return;
+    const undo=document.createElement('button'),redo=document.createElement('button');
+    undo.id='cff-editor-undo';undo.type='button';undo.className='admin-btn admin-btn-ghost cff-editor-history-btn';undo.textContent='↶ Desfazer';undo.title='Desfazer (Ctrl+Z)';
+    redo.id='cff-editor-redo';redo.type='button';redo.className='admin-btn admin-btn-ghost cff-editor-history-btn';redo.textContent='↷ Refazer';redo.title='Refazer (Ctrl+Shift+Z / Ctrl+Y)';
+    const reset=$('#photo-editor-reset-all');actions.insertBefore(undo,reset||null);actions.insertBefore(redo,reset||null);
+    undo.addEventListener('click',undoEditor);redo.addEventListener('click',redoEditor);
+    app.addEventListener('input',()=>scheduleHistory(360),true);app.addEventListener('change',()=>scheduleHistory(90),true);app.addEventListener('click',e=>{if(e.target.closest('#cff-editor-undo,#cff-editor-redo'))return;setTimeout(()=>scheduleHistory(40),0);},true);
+    window.addEventListener('cff-editor-interaction-end',()=>scheduleHistory(20));window.addEventListener('cff-pips-changed',()=>scheduleHistory(30));window.addEventListener('cff-photo-changed',()=>scheduleHistory(40));window.addEventListener('cff-photo-removed',()=>scheduleHistory(40));
+    document.addEventListener('keydown',e=>{
+      const tag=document.activeElement?.tagName||'',editing=/INPUT|TEXTAREA|SELECT/.test(tag)||document.activeElement?.isContentEditable;
+      if((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='z'){e.preventDefault();if(e.shiftKey)redoEditor();else undoEditor();return;}
+      if((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='y'){e.preventDefault();redoEditor();return;}
+      if(e.key==='Delete'&&!editing&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();deleteSelected();}
+    },true);
+    setTimeout(recordHistory,180);updateHistoryButtons();
+    window.__CFF_ADMIN_EDICAO_HISTORY__={undo:undoEditor,redo:redoEditor,record:recordHistory};
+  }
+
   function setupTopSave(){
     const actions=$('.photo-editor-heading-actions'),download=$('#photo-editor-download'),head=$('.photo-editor-preview-head');
     if(!actions||!download||!head||$('#photo-editor-save-top')) return;
@@ -356,6 +444,7 @@
     reorderControls();
     setupQuickNav();
     setupPreviewSelection();
+    setupHistory();
     setupTopSave();
     improveLabels();
     setupEmptyClick();
