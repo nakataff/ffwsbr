@@ -11,7 +11,7 @@
   const rerender=()=>{try{window.__CFF_ADMIN_EDICAO_QUEUE__?.();}catch{}};
   const clamp=(v,a,b)=>Math.min(b,Math.max(a,Number(v)||0));
 
-  const defaults={blur:false,blurAmount:100,blurDim:18,gradient:false,gradientHeight:10,gradientOpacity:100,gradientColor:'#05070b',safe:false};
+  const defaults={blur:false,blurAmount:100,blurDim:18,gradient:false,gradientHeight:10,gradientStrength:100,gradientOpacity:100,gradientColor:'#05070b',safe:false};
   let settings={...defaults};
   try{settings={...defaults,...JSON.parse(localStorage.getItem(STORAGE)||'{}')};}catch{}
   // Migra o slider antigo (5–80) para o novo fade curto (2–25).
@@ -26,6 +26,7 @@
       s.cffBlurDim=clamp(settings.blurDim,0,70);
       s.cffGradientEnabled=!!settings.gradient;
       s.cffGradientHeight=clamp(settings.gradientHeight,2,25);
+      s.cffGradientStrength=clamp(settings.gradientStrength,0,100);
       s.cffGradientOpacity=100;
       s.cffGradientColor=settings.gradientColor||'#05070b';
     }
@@ -46,15 +47,17 @@
   const photoFadeCache=new WeakMap();
   function fadedPhotoSource(image,s){
     if(!s?.cffGradientEnabled)return image;
-    const iw=Number(image.naturalWidth||image.width||1),ih=Number(image.naturalHeight||image.height||1),length=clamp(s.cffGradientHeight,2,25),key=`${iw}x${ih}|${length}`;
+    const iw=Number(image.naturalWidth||image.width||1),ih=Number(image.naturalHeight||image.height||1),length=clamp(s.cffGradientHeight,2,25),strength=clamp(s.cffGradientStrength??100,0,100),key=`${iw}x${ih}|${length}|${strength}`;
     const cached=photoFadeCache.get(image);if(cached?.key===key)return cached.canvas;
     const canvas=document.createElement('canvas');canvas.width=iw;canvas.height=ih;const cx=canvas.getContext('2d');
     cx.drawImage(image,0,0,iw,ih);
     cx.globalCompositeOperation='destination-in';
-    const start=Math.max(0,Math.min(1,1-length/100)),grad=cx.createLinearGradient(0,0,0,ih);
+    const start=Math.max(0,Math.min(1,1-length/100)),span=Math.max(.001,1-start),bottomAlpha=1-strength/100,grad=cx.createLinearGradient(0,0,0,ih);
     grad.addColorStop(0,'rgba(0,0,0,1)');
     grad.addColorStop(start,'rgba(0,0,0,1)');
-    grad.addColorStop(1,'rgba(0,0,0,0)');
+    grad.addColorStop(Math.min(1,start+span*.32),'rgba(0,0,0,.78)');
+    grad.addColorStop(Math.min(1,start+span*.62),'rgba(0,0,0,.24)');
+    grad.addColorStop(1,`rgba(0,0,0,${bottomAlpha})`);
     cx.fillStyle=grad;
     cx.fillRect(0,0,iw,ih);
     cx.globalCompositeOperation='source-over';
@@ -130,7 +133,7 @@
     const sr=stage.getBoundingClientRect(),rr=shell.getBoundingClientRect(),scale=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=(Number(s.image.naturalWidth||s.image.width||1)*scale/W)*sr.width,h=(Number(s.image.naturalHeight||s.image.height||1)*scale/H)*sr.height,left=(sr.left-rr.left)+(Number(s.x)||W/2)/W*sr.width,top=(sr.top-rr.top)+(Number(s.y)||H/2)/H*sr.height;
     const src=s.imageUrl||s.image.src||'';if(src&&ghost.src!==src)ghost.src=src;
     ghost.style.left=`${left}px`;ghost.style.top=`${top}px`;ghost.style.width=`${w}px`;ghost.style.height=`${h}px`;ghost.style.transform=`translate3d(-50%,-50%,0) rotate(${Number(s.rotation)||0}deg) scaleX(${s.flipX===-1?-1:1})`;ghost.style.filter=`brightness(${s.brightness||100}%) contrast(${s.contrast||100}%) saturate(${s.saturation||100}%)`;
-    if(s.cffGradientEnabled){const start=100-clamp(s.cffGradientHeight,2,25);ghost.style.webkitMaskImage=ghost.style.maskImage=`linear-gradient(to bottom,#000 0%,#000 ${start}%,transparent 100%)`;}else{ghost.style.webkitMaskImage='none';ghost.style.maskImage='none';}
+    if(s.cffGradientEnabled){const length=clamp(s.cffGradientHeight,2,25),strength=clamp(s.cffGradientStrength??100,0,100),start=100-length,mid1=start+length*.32,mid2=start+length*.62,bottom=Math.max(0,1-strength/100);ghost.style.webkitMaskImage=ghost.style.maskImage=`linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,1) ${start}%,rgba(0,0,0,.78) ${mid1}%,rgba(0,0,0,.24) ${mid2}%,rgba(0,0,0,${bottom}) 100%)`;}else{ghost.style.webkitMaskImage='none';ghost.style.maskImage='none';}
   }
   window.__CFF_ADMIN_EDICAO_SYNC_MAIN_LIVE__=syncMainGhost;
 
@@ -177,7 +180,8 @@
       <label class="cff-studio-effect-control"><span>Escurecer fundo <output id="cff-studio-dim-value"></output></span><input id="cff-studio-dim-range" type="range" min="0" max="70" step="1"></label>
       <label class="cff-studio-switch"><span>◒ Degradê da foto para transparente</span><input id="cff-studio-gradient" type="checkbox"></label>
       <label class="cff-studio-effect-control"><span>Comprimento do degradê <output id="cff-studio-gradient-height-value"></output></span><input id="cff-studio-gradient-height" type="range" min="2" max="25" step="1"></label>
-      <small class="cff-studio-fade-help">Aplica apenas na base da foto: curto = fade discreto · longo = transição mais extensa.</small>
+      <label class="cff-studio-effect-control"><span>Força da transparência <output id="cff-studio-gradient-strength-value"></output></span><input id="cff-studio-gradient-strength" type="range" min="0" max="100" step="1"></label>
+      <small class="cff-studio-fade-help">Comprimento define onde começa. Força define o quanto a base desaparece — 100% chega em transparência total.</small>
       <label class="cff-studio-switch"><span>▦ Mostrar margem segura 5% / 15%</span><input id="cff-studio-safe-toggle" type="checkbox"></label>`;
     imageSection.insertAdjacentElement('afterend',panel);
 
@@ -186,6 +190,7 @@
     $('#cff-studio-dim-range',panel).oninput=e=>{settings.blurDim=+e.target.value;saveSettings();};
     $('#cff-studio-gradient',panel).onchange=e=>{settings.gradient=e.target.checked;saveSettings();};
     $('#cff-studio-gradient-height',panel).oninput=e=>{settings.gradientHeight=+e.target.value;saveSettings();};
+    $('#cff-studio-gradient-strength',panel).oninput=e=>{settings.gradientStrength=+e.target.value;saveSettings();};
     $('#cff-studio-gradient-color',panel)?.addEventListener('input',e=>{settings.gradientColor=e.target.value;saveSettings();});
     $('#cff-studio-safe-toggle',panel).onchange=e=>{settings.safe=e.target.checked;saveSettings();};
     $('#cff-studio-fit-blur',panel).onclick=()=>{settings.blur=true;saveSettings();$('#photo-editor-fit-contain')?.click();};
@@ -222,7 +227,7 @@
     const setText=(id,v)=>{const el=$(id);if(el&&el.textContent!==String(v))el.textContent=String(v);};
     setChecked('#cff-studio-blur',settings.blur);setValue('#cff-studio-blur-range',settings.blurAmount);setText('#cff-studio-blur-value',`${settings.blurAmount}px`);
     setValue('#cff-studio-dim-range',settings.blurDim);setText('#cff-studio-dim-value',`${settings.blurDim}%`);
-    setChecked('#cff-studio-gradient',settings.gradient);setValue('#cff-studio-gradient-height',settings.gradientHeight);setText('#cff-studio-gradient-height-value',`${settings.gradientHeight}%`);
+    setChecked('#cff-studio-gradient',settings.gradient);setValue('#cff-studio-gradient-height',settings.gradientHeight);setText('#cff-studio-gradient-height-value',`${settings.gradientHeight}%`);setValue('#cff-studio-gradient-strength',settings.gradientStrength);setText('#cff-studio-gradient-strength-value',`${settings.gradientStrength}%`);
     setChecked('#cff-studio-safe-toggle',settings.safe);const safe=$('#cff-studio-safe');if(safe)safe.hidden=!settings.safe;
     $$('[data-act="blur"]').forEach(el=>el.classList.toggle('is-active',!!settings.blur));$$('[data-act="gradient"]').forEach(el=>el.classList.toggle('is-active',!!settings.gradient));$$('[data-act="safe"]').forEach(el=>el.classList.toggle('is-active',!!settings.safe));
     const photo=!!s?.image,pipCount=Array.isArray(s?.pips)?s.pips.length:(s?.pip?1:0),pip=pipCount>0,frame=s?.frameEnabled!==false,textCount=Array.isArray(s?.texts)?s.texts.length:1;
@@ -240,7 +245,7 @@
 
   function enhance(){
     const s=state();if(!s)return;
-    s.cffBlurFill=!!settings.blur;s.cffBlurAmount=settings.blurAmount;s.cffBlurDim=settings.blurDim;s.cffGradientEnabled=!!settings.gradient;s.cffGradientHeight=clamp(settings.gradientHeight,2,25);s.cffGradientOpacity=100;s.cffGradientColor=settings.gradientColor;
+    s.cffBlurFill=!!settings.blur;s.cffBlurAmount=settings.blurAmount;s.cffBlurDim=settings.blurDim;s.cffGradientEnabled=!!settings.gradient;s.cffGradientHeight=clamp(settings.gradientHeight,2,25);s.cffGradientStrength=clamp(settings.gradientStrength,0,100);s.cffGradientOpacity=100;s.cffGradientColor=settings.gradientColor;
     addStyles();installCanvasEffects();setupArtboard();setupToolbar();setupEffects();setupLayers();bindSync();syncUi();rerender();
   }
 
