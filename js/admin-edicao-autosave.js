@@ -98,7 +98,7 @@
       imageName:imageFile?.name||$('#photo-editor-image-name')?.textContent||'foto.png',
       hasPip:!!s.pip,
       pipName:pipFile?.name||'pip.png',
-      pips:(Array.isArray(s.pips)?s.pips:[]).map(p=>({id:String(p.id||''),name:String(p.name||'pip.png'),enabled:p.enabled!==false,size:safeNum(p.size,28),x:safeNum(p.x,75),y:safeNum(p.y,25),opacity:safeNum(p.opacity,100),rotation:safeNum(p.rotation,0),flipX:p.flipX===-1?-1:1})),
+      pips:(Array.isArray(s.pips)?s.pips:[]).map(p=>({id:String(p.id||''),name:String(p.name||'pip.png'),enabled:p.enabled!==false,size:safeNum(p.size,28),x:safeNum(p.x,75),y:safeNum(p.y,25),opacity:safeNum(p.opacity,100),rotation:safeNum(p.rotation,0),flipX:p.flipX===-1?-1:1,strokeEnabled:!!p.strokeEnabled,strokeWidth:safeNum(p.strokeWidth,6),strokeColor:String(p.strokeColor||'#ffffff'),shadowEnabled:p.shadowEnabled!==false,shadowSize:safeNum(p.shadowSize,10),shadowBlur:safeNum(p.shadowBlur,24),shadowColor:String(p.shadowColor||'#000000'),shadowOpacity:safeNum(p.shadowOpacity,45),shadowX:safeNum(p.shadowX,0),shadowY:safeNum(p.shadowY,18)})),
       activePipId:String(s.activePipId||''),
       baseScale:safeNum(s.baseScale,1),zoom:safeNum(s.zoom,1),x:safeNum(s.x,1500),y:safeNum(s.y,1874.5),rotation:safeNum(s.rotation,0),flipX:s.flipX===-1?-1:1,
       brightness:safeNum(s.brightness,100),contrast:safeNum(s.contrast,100),saturation:safeNum(s.saturation,100),pinchLocked:!!s.pinchLocked,
@@ -242,6 +242,7 @@
     $('#photo-editor-clear-pip')?.addEventListener('click',()=>setTimeout(async()=>{if(!state()?.pip){await dbDelete(PIP_KEY);scheduleSave();}},100),true);
     window.addEventListener('cff-pips-changed',async e=>{const d=e.detail||{};try{if(d.type==='add'&&d.pip?.id&&d.blob)await dbPut(d.blob,`pip:${d.pip.id}`);if(d.type==='remove'&&d.id)await dbDelete(`pip:${d.id}`);}catch(error){console.warn('[Editor autosave] pip',error);}scheduleSave();});
     window.addEventListener('cff-photo-changed',async e=>{const blob=e.detail?.blob;if(!blob||restoring)return;try{await dbPut(blob,PHOTO_KEY);scheduleSave();}catch(error){console.warn('[Editor autosave] foto',error);}});
+    window.addEventListener('cff-photo-removed',async()=>{if(restoring)return;try{await dbDelete(PHOTO_KEY);}catch{}scheduleSave();});
     window.addEventListener('pagehide',()=>saveMeta(false));
     document.addEventListener('visibilitychange',()=>{if(document.hidden)saveMeta(false);});
   }
