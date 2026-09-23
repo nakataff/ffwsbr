@@ -204,15 +204,20 @@
     if(!exportPanel||$('.cff-studio-layers')) return;
     const box=document.createElement('div');box.className='cff-studio-layers';
     box.innerHTML=`<div class="cff-studio-layers-head"><strong>Camadas</strong><small>toque para editar</small></div>
-      <button class="cff-studio-layer" data-jump="#photo-editor-zoom"><span>🖼️ Foto principal</span><span id="cff-layer-photo">vazia</span></button>
-      <button class="cff-studio-layer" data-effect="blur"><span>🌫️ Fundo blur</span><span id="cff-layer-blur">off</span></button>
-      <button class="cff-studio-layer" data-jump="#photo-editor-text"><span>🔤 Textos</span><span id="cff-layer-text">1</span></button>
-      <button class="cff-studio-layer" data-jump="#photo-editor-pip-file"><span>▣ P.I.P.</span><span id="cff-layer-pip">off</span></button>
-      <button class="cff-studio-layer" data-jump="#photo-editor-frame-enabled"><span>▱ Moldura</span><span id="cff-layer-frame">on</span></button>`;
+      <button class="cff-studio-layer" data-tab="image" data-select="photo"><span>🖼️ Foto principal</span><span id="cff-layer-photo">vazia</span></button>
+      <button class="cff-studio-layer" data-tab="adjust" data-effect="blur"><span>🌫️ Fundo blur</span><span id="cff-layer-blur">off</span></button>
+      <button class="cff-studio-layer" data-tab="text" data-select="text"><span>🔤 Textos</span><span id="cff-layer-text">1</span></button>
+      <button class="cff-studio-layer" data-tab="pip" data-select="pip"><span>▣ P.I.P.</span><span id="cff-layer-pip">off</span></button>
+      <button class="cff-studio-layer" data-tab="image" data-jump="#photo-editor-frame-enabled"><span>▱ Moldura</span><span id="cff-layer-frame">on</span></button>`;
     exportPanel.insertBefore(box,exportPanel.firstElementChild?.nextSibling||exportPanel.firstElementChild);
     box.addEventListener('click',e=>{
       const btn=e.target.closest('.cff-studio-layer');if(!btn)return;
-      if(btn.dataset.jump) jump(btn.dataset.jump);
+      if(btn.dataset.tab)window.__CFF_ADMIN_EDICAO_OPEN_TAB__?.(btn.dataset.tab);
+      const s=state();
+      if(btn.dataset.select==='photo'&&s?.image)window.__CFF_ADMIN_EDICAO_SELECT__?.('photo');
+      if(btn.dataset.select==='text'&&s?.activeTextId)window.__CFF_ADMIN_EDICAO_SELECT__?.('text',s.activeTextId);
+      if(btn.dataset.select==='pip'&&s?.activePipId)window.__CFF_ADMIN_EDICAO_SELECT__?.('pip',s.activePipId);
+      if(btn.dataset.jump)jump(btn.dataset.jump);
       if(btn.dataset.effect==='blur'){settings.blur=!settings.blur;saveSettings();}
     });
   }
