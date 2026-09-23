@@ -44,3 +44,28 @@
 .profile-history-details .edition-list{margin:0;padding:14px}
 @media(max-width:640px){.profile-teammates{margin-top:13px}.profile-teammates-grid{grid-template-columns:1fr}.profile-history-summary{padding:13px}.profile-history-action{font-size:.64rem}.profile-history-details .edition-list{padding:11px}.profile-teammate-card{padding:8px 9px}}
 .team-history-card{position:relative;color:var(--white);text-decoration:none;transition:border-color .16s,background .16s,transform .16s;padding-right:88px}.team-history-card:hover{border-color:rgba(0,200,255,.55);background:rgba(0,200,255,.07);transform:translateY(-1px)}.team-history-open{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:.68rem;font-weight:950;text-transform:uppercase;white-space:nowrap}.team-history-card:not(:last-child):after{right:-9px}@media(max-width:640px){.team-history-card{padding-right:80px}.team-history-open{right:11px;font-size:.63rem}}
+
+
+/* Histórico resumido + totais por equipe */
+.team-kill-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:9px;margin-top:15px}
+.team-kill-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:11px;padding:12px 13px;border:1px solid var(--border);border-radius:11px;background:rgba(17,24,39,.72);color:var(--white);text-decoration:none;transition:border-color .16s,background .16s,transform .16s}
+.team-kill-row:hover{border-color:rgba(0,200,255,.52);background:rgba(0,200,255,.06);transform:translateY(-1px)}
+.team-kill-logo{width:38px;height:38px;object-fit:contain}
+.team-kill-name{min-width:0}.team-kill-name strong,.team-kill-name small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team-kill-name strong{font-size:.8rem}.team-kill-name small{margin-top:3px;color:var(--muted);font-size:.62rem}
+.team-kill-total{text-align:right}.team-kill-total b{display:block;color:var(--accent);font-size:1.03rem}.team-kill-total small{display:block;margin-top:3px;color:#7f96b4;font-size:.56rem;font-weight:900;text-transform:uppercase}
+.edition-scroll-hint{color:#6fa9d7;font-weight:850}
+@media(max-width:640px){
+  .team-kill-list{grid-template-columns:1fr}
+  .profile-history-details .edition-list{display:block;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:11px 11px 13px;scrollbar-width:thin}
+  .profile-history-details .edition-row{width:calc(100% + 88px);min-width:0;grid-template-columns:minmax(118px,1fr) 52px 52px 52px 82px;gap:7px;padding:11px 10px;margin-bottom:8px;scroll-snap-align:start}
+  .profile-history-details .edition-row:last-child{margin-bottom:0}
+  .profile-history-details .edition-main{min-width:0}
+  .profile-history-details .edition-main strong,.profile-history-details .edition-main small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .profile-history-details .edition-main strong{font-size:.78rem}
+  .profile-history-details .edition-main small{font-size:.66rem}
+  .profile-history-details .edition-stat b{font-size:.78rem}
+  .profile-history-details .edition-stat span{font-size:.54rem}
+  .profile-history-details .edition-damage{border-left:1px solid rgba(0,200,255,.16);padding-left:8px}
+  .edition-scroll-hint{white-space:nowrap}
+}
