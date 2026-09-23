@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-23",
   "team": "LOOPS",
   "history": {
     "players": [
@@ -63,9 +63,9 @@
         "isCurrent": true,
         "hasProfile": true,
         "cargo": "Jogador",
-        "kills": 1518,
-        "matches": 1242,
-        "avg": 1.22,
+        "kills": 1625,
+        "matches": 1309,
+        "avg": 1.24,
         "editions": [
           "WB 2025 S2",
           "WB 2026 S1",
