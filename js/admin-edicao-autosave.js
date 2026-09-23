@@ -241,6 +241,7 @@
     pip?.addEventListener('change',async()=>{if(restoring)return;const file=pip.files?.[0];if(!file)return;try{await dbPut(file,PIP_KEY);scheduleSave();}catch(error){console.warn(error);setStatus('P.I.P. não pôde ser salvo no rascunho','error');}},true);
     $('#photo-editor-clear-pip')?.addEventListener('click',()=>setTimeout(async()=>{if(!state()?.pip){await dbDelete(PIP_KEY);scheduleSave();}},100),true);
     window.addEventListener('cff-pips-changed',async e=>{const d=e.detail||{};try{if(d.type==='add'&&d.pip?.id&&d.blob)await dbPut(d.blob,`pip:${d.pip.id}`);if(d.type==='remove'&&d.id)await dbDelete(`pip:${d.id}`);}catch(error){console.warn('[Editor autosave] pip',error);}scheduleSave();});
+    window.addEventListener('cff-photo-changed',async e=>{const blob=e.detail?.blob;if(!blob||restoring)return;try{await dbPut(blob,PHOTO_KEY);scheduleSave();}catch(error){console.warn('[Editor autosave] foto',error);}});
     window.addEventListener('pagehide',()=>saveMeta(false));
     document.addEventListener('visibilitychange',()=>{if(document.hidden)saveMeta(false);});
   }
