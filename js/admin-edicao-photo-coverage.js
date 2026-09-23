@@ -12,7 +12,7 @@
 
   function loadTransformBox(){
     if(window.__CFF_ADMIN_EDICAO_TRANSFORM_BOX__||document.querySelector('script[data-cff-transform-box]'))return;
-    const script=document.createElement('script');script.src='js/admin-edicao-transform-box.js?v=20260923-selection-tabs-v7';script.defer=true;script.dataset.cffTransformBox='1';document.head.appendChild(script);
+    const script=document.createElement('script');script.src='js/admin-edicao-transform-box.js?v=20260923-history-pasteboard-v8';script.defer=true;script.dataset.cffTransformBox='1';document.head.appendChild(script);
   }
 
   function loadPerformance(){
