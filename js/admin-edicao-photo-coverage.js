@@ -73,7 +73,7 @@
 
   function erasePip(ctx,s){
     const pips=Array.isArray(s?.pips)&&s.pips.length?s.pips:(s?.pip?[{image:s.pip,enabled:s.pipEnabled,size:s.pipSize,x:s.pipX,y:s.pipY,opacity:s.pipOpacity,rotation:0,flipX:1}]:[]);
-    pips.forEach(p=>{if(!p?.image||p.enabled===false)return;const ratio=(p.image.naturalWidth||p.image.width)/(p.image.naturalHeight||p.image.height||1),w=W*(clamp(p.size,3,120)/100),h=w/ratio,x=W*(Number(p.x)||0)/100,y=H*(Number(p.y)||0)/100;ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=clamp(p.opacity,0,100)/100;ctx.translate(x,y);ctx.rotate((Number(p.rotation)||0)*Math.PI/180);ctx.scale(p.flipX===-1?-1:1,1);ctx.drawImage(p.image,-w/2,-h/2,w,h);ctx.restore();});
+    pips.forEach(p=>{if(!p?.image||p.enabled===false)return;const ratio=(p.image.naturalWidth||p.image.width)/(p.image.naturalHeight||p.image.height||1),w=W*(clamp(p.size,3,180)/100),h=w/ratio,x=W*(Number(p.x)||0)/100,y=H*(Number(p.y)||0)/100;ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=clamp(p.opacity,0,100)/100;ctx.translate(x,y);ctx.rotate((Number(p.rotation)||0)*Math.PI/180);ctx.scale(p.flipX===-1?-1:1,1);ctx.drawImage(p.image,-w/2,-h/2,w,h);ctx.restore();});
   }
 
   function fontCss(name,size){const weight=name==='Montserrat'?'900':'700';if(name==='Impact')return `${size}px Impact, "Arial Black", sans-serif`;return `${weight} ${size}px "${name||'Avilock'}", Impact, "Arial Black", sans-serif`;}
@@ -92,7 +92,7 @@
   function syncNote(show){const note=$('.cff-photo-coverage-note');if(note)note.classList.toggle('is-hidden',!enabled||!show);}
 
   function keyFor(){
-    const s=state();if(!s)return'nostate';const img=s.image,frame=s.frame,pipSig=(Array.isArray(s.pips)?s.pips:[]).map(p=>[p.id,p.enabled,p.size,p.x,p.y,p.opacity,p.rotation,p.flipX].join('~')).join('||'),textSig=(Array.isArray(s.texts)?s.texts:[]).map(t=>[t.text,t.font,t.size,t.x,t.y,t.spacing].join('~')).join('||');
+    const s=state();if(!s)return'nostate';const img=s.image,frame=s.frame,pipSig=(Array.isArray(s.pips)?s.pips:[]).map(p=>[p.id,p.enabled,p.size,p.x,p.y,p.opacity,p.rotation,p.flipX,p.strokeEnabled,p.strokeWidth,p.strokeColor,p.shadowEnabled,p.shadowSize,p.shadowBlur,p.shadowColor,p.shadowOpacity,p.shadowX,p.shadowY].join('~')).join('||'),textSig=(Array.isArray(s.texts)?s.texts:[]).map(t=>[t.text,t.font,t.size,t.x,t.y,t.spacing].join('~')).join('||');
     return[enabled?1:0,!!img,img?.naturalWidth||0,img?.naturalHeight||0,s.baseScale,s.zoom,s.x,s.y,s.rotation,s.cffBlurFill,!!s.frameEnabled,frame?.src||'',pipSig,textSig].join('|');
   }
 
