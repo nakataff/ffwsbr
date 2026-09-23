@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-09-23",
   "team": "LOUD SNICKERS",
   "history": {
     "players": [
@@ -211,7 +211,7 @@
         "cargo": "Coach",
         "kills": 0,
         "matches": 0,
-        "avg": 0.0,
+        "avg": 0,
         "editions": [],
         "passageOrder": 2
       },
@@ -353,6 +353,13 @@
     "formerCount": 15
   },
   "titles": [
+    {
+      "event": "WB 2026 S1 - Final",
+      "type": "Campeão",
+      "date": "2026-05-31",
+      "tier": "S-Tier",
+      "logo": "trofeu.webp"
+    },
     {
       "event": "Liga do Rei Elite Mobile 2026",
       "type": "Campeão",
@@ -504,7 +511,7 @@
     {
       "data": "2026-05-31",
       "tier": "S-Tier",
-      "place": "2º",
+      "place": "1º",
       "torneio": "WB 2026 S1 - Final"
     },
     {
