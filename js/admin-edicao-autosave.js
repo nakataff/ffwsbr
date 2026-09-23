@@ -67,8 +67,10 @@
     $('#cff-edicao-autosave-clear')?.addEventListener('click',async()=>{
       if(!confirm('Apagar o rascunho automático deste navegador? A arte aberta continua na tela até você sair ou recarregar.'))return;
       clearTimeout(timer);
+      const meta=readMeta();
       try{localStorage.removeItem(META_KEY);}catch{}
-      await Promise.allSettled([dbDelete(PHOTO_KEY),dbDelete(PIP_KEY)]);
+      const pipDeletes=(Array.isArray(meta?.pips)?meta.pips:[]).map(p=>dbDelete(`pip:${p.id}`));
+      await Promise.allSettled([dbDelete(PHOTO_KEY),dbDelete(PIP_KEY),...pipDeletes]);
       setStatus('Rascunho apagado','');
     });
   }
@@ -96,6 +98,8 @@
       imageName:imageFile?.name||$('#photo-editor-image-name')?.textContent||'foto.png',
       hasPip:!!s.pip,
       pipName:pipFile?.name||'pip.png',
+      pips:(Array.isArray(s.pips)?s.pips:[]).map(p=>({id:String(p.id||''),name:String(p.name||'pip.png'),enabled:p.enabled!==false,size:safeNum(p.size,28),x:safeNum(p.x,75),y:safeNum(p.y,25),opacity:safeNum(p.opacity,100),rotation:safeNum(p.rotation,0),flipX:p.flipX===-1?-1:1})),
+      activePipId:String(s.activePipId||''),
       baseScale:safeNum(s.baseScale,1),zoom:safeNum(s.zoom,1),x:safeNum(s.x,1500),y:safeNum(s.y,1874.5),rotation:safeNum(s.rotation,0),flipX:s.flipX===-1?-1:1,
       brightness:safeNum(s.brightness,100),contrast:safeNum(s.contrast,100),saturation:safeNum(s.saturation,100),pinchLocked:!!s.pinchLocked,
       pipEnabled:s.pipEnabled!==false,pipSize:safeNum(s.pipSize,28),pipX:safeNum(s.pipX,75),pipY:safeNum(s.pipY,25),pipOpacity:safeNum(s.pipOpacity,100),
@@ -205,9 +209,12 @@
     if(!meta){restoring=false;setStatus('Salvamento automático ativo','');bind();return;}
     setStatus('Restaurando último rascunho…','saving');
     try{
-      const [photoBlob,pipBlob]=await Promise.all([meta.hasImage?dbGet(PHOTO_KEY):null,meta.hasPip?dbGet(PIP_KEY):null]);
+      const [photoBlob,pipBlob]=await Promise.all([meta.hasImage?dbGet(PHOTO_KEY):null,meta.hasPip&&!Array.isArray(meta.pips)?dbGet(PIP_KEY):null]);
       if(photoBlob){await restoreFile($('#photo-editor-file'),photoBlob,meta.imageName);await waitFor(()=>!!state()?.image,7000);}
-      if(pipBlob){await restoreFile($('#photo-editor-pip-file'),pipBlob,meta.pipName);await waitFor(()=>!!state()?.pip,5000);}
+      if(Array.isArray(meta.pips)&&meta.pips.length&&window.__CFF_ADMIN_EDICAO_ADD_PIP_BLOB__){
+        for(const p of meta.pips){const blob=await dbGet(`pip:${p.id}`);if(blob)await window.__CFF_ADMIN_EDICAO_ADD_PIP_BLOB__(blob,p);}
+        const s=state();if(s&&meta.activePipId&&s.pips?.some(p=>p.id===meta.activePipId)){s.activePipId=meta.activePipId;window.__CFF_ADMIN_EDICAO_QUEUE__?.();}
+      }else if(pipBlob){await restoreFile($('#photo-editor-pip-file'),pipBlob,meta.pipName);await waitFor(()=>!!state()?.pip,5000);}
       restoreTexts(meta);
       syncDirectState(meta);
       restoreOutput(meta);
@@ -233,6 +240,7 @@
     const pip=$('#photo-editor-pip-file');
     pip?.addEventListener('change',async()=>{if(restoring)return;const file=pip.files?.[0];if(!file)return;try{await dbPut(file,PIP_KEY);scheduleSave();}catch(error){console.warn(error);setStatus('P.I.P. não pôde ser salvo no rascunho','error');}},true);
     $('#photo-editor-clear-pip')?.addEventListener('click',()=>setTimeout(async()=>{if(!state()?.pip){await dbDelete(PIP_KEY);scheduleSave();}},100),true);
+    window.addEventListener('cff-pips-changed',async e=>{const d=e.detail||{};try{if(d.type==='add'&&d.pip?.id&&d.blob)await dbPut(d.blob,`pip:${d.pip.id}`);if(d.type==='remove'&&d.id)await dbDelete(`pip:${d.id}`);}catch(error){console.warn('[Editor autosave] pip',error);}scheduleSave();});
     window.addEventListener('pagehide',()=>saveMeta(false));
     document.addEventListener('visibilitychange',()=>{if(document.hidden)saveMeta(false);});
   }
