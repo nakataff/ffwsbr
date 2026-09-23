@@ -136,13 +136,28 @@
     }
   }
 
+  function ensurePreviewGroups(){
+    const workspace=$('.photo-editor-workspace'),head=$('.photo-editor-preview-head');if(!workspace||!head)return null;
+    let root=$('#cff-preview-control-groups');if(root)return root;
+    root=document.createElement('div');root.id='cff-preview-control-groups';root.className='cff-preview-control-groups';head.insertAdjacentElement('afterend',root);return root;
+  }
+
+  function previewGroup(key,label){
+    const root=ensurePreviewGroups();if(!root)return null;
+    let details=root.querySelector(`[data-preview-group="${key}"]`);if(details)return details.querySelector('.cff-preview-group-body');
+    details=document.createElement('details');details.className='cff-preview-group';details.dataset.previewGroup=key;
+    details.innerHTML=`<summary>${label}<span aria-hidden="true">⌄</span></summary><div class="cff-preview-group-body"></div>`;
+    const saved=localStorage.getItem(`cff-preview-group-${key}`);details.open=saved==='1';
+    details.addEventListener('toggle',()=>localStorage.setItem(`cff-preview-group-${key}`,details.open?'1':'0'));
+    root.appendChild(details);return details.querySelector('.cff-preview-group-body');
+  }
+
   function setupTemplatePicker(){
-    const head=$('.photo-editor-preview-head');
-    if(!head||$('.cff-edicao-template-controls')) return;
-    const controls=document.createElement('div');
-    controls.className='cff-edicao-template-controls';
-    controls.innerHTML=`<span class="cff-edicao-template-label">Moldura</span>${Object.entries(OVERLAYS).map(([key,item])=>`<button type="button" class="cff-edicao-template-btn" data-cff-overlay="${key}">${item.label}</button>`).join('')}`;
-    head.appendChild(controls);
+    const body=previewGroup('frame','MOLDURA');
+    if(!body||body.querySelector('.cff-edicao-template-controls')) return;
+    const controls=document.createElement('div');controls.className='cff-edicao-template-controls';
+    controls.innerHTML=Object.entries(OVERLAYS).map(([key,item])=>`<button type="button" class="cff-edicao-template-btn" data-cff-overlay="${key}">${item.label}</button>`).join('');
+    body.appendChild(controls);
     controls.addEventListener('click',e=>{const btn=e.target.closest('[data-cff-overlay]');if(btn)applyOverlay(btn.dataset.cffOverlay);});
     syncTemplateButtons(storedOverlay());
   }
@@ -179,15 +194,27 @@
   }
 
   function setupVisualGrids(){
-    const stage=$('#photo-editor-stage'),head=$('.photo-editor-preview-head');
-    if(!stage||!head||$('#photo-editor-visual-grid')) return;
+    const stage=$('#photo-editor-stage'),body=previewGroup('grid','GRADES');
+    if(!stage||!body||$('#photo-editor-visual-grid')) return;
     if(getComputedStyle(stage).position==='static') stage.style.position='relative';
     const overlay=document.createElement('div');overlay.id='photo-editor-visual-grid';overlay.className='cff-edicao-visual-grid';overlay.setAttribute('aria-hidden','true');stage.appendChild(overlay);
     const controls=document.createElement('div');controls.className='cff-edicao-grid-controls';
     const modes=[['none','Sem grade'],['profile','Perfil 3:4'],['safe','Área segura'],['thirds','Terços'],['center','Centro'],['square','1:1']];
-    controls.innerHTML=`<span class="cff-edicao-grid-label">Visualização</span>${modes.map(([key,label])=>`<button type="button" class="cff-edicao-grid-btn${key==='none'?' is-active':''}" data-grid="${key}">${label}</button>`).join('')}<div class="cff-edicao-grid-note">As grades servem apenas para visualização e nunca entram na arte exportada. “Perfil 3:4” sombreia o corte lateral da grade do perfil sobre a arte 4:5.</div>`;
-    head.appendChild(controls);
+    controls.innerHTML=`${modes.map(([key,label])=>`<button type="button" class="cff-edicao-grid-btn${key==='none'?' is-active':''}" data-grid="${key}">${label}</button>`).join('')}<div class="cff-edicao-grid-note">Só visualização; nunca entra na arte exportada.</div>`;
+    body.appendChild(controls);
     controls.addEventListener('click',e=>{const btn=e.target.closest('[data-grid]');if(!btn)return;controls.querySelectorAll('[data-grid]').forEach(el=>el.classList.toggle('is-active',el===btn));const mode=btn.dataset.grid||'none';overlay.innerHTML=gridMarkup(mode);overlay.dataset.mode=mode;});
+  }
+
+  function setupPreviewZoom(){
+    const head=$('.photo-editor-preview-head'),stage=$('#photo-editor-stage');if(!head||!stage||$('#cff-preview-zoom'))return;
+    const box=document.createElement('div');box.id='cff-preview-zoom';box.className='cff-preview-zoom';
+    box.innerHTML='<button type="button" data-z="-10" title="Diminuir preview">−</button><output>100%</output><button type="button" data-z="10" title="Aumentar preview">+</button><button type="button" data-fit="1" class="cff-preview-fit">Ajustar</button>';
+    head.appendChild(box);
+    let value=Math.min(120,Math.max(45,Number(localStorage.getItem('cff-preview-zoom-v1'))||100));
+    const apply=v=>{value=Math.min(120,Math.max(45,v));stage.style.zoom=String(value/100);box.querySelector('output').textContent=`${value}%`;localStorage.setItem('cff-preview-zoom-v1',String(value));window.dispatchEvent(new Event('resize'));};
+    box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.z)apply(value+Number(b.dataset.z));else if(b.dataset.fit){const workspace=$('.photo-editor-workspace'),available=Math.max(360,(workspace?.clientHeight||window.innerHeight)-220),base=stage.offsetHeight||1;apply(Math.min(100,Math.max(45,Math.floor((available/base)*100/5)*5)));}});
+    apply(value);
+    window.__CFF_ADMIN_EDICAO_SET_PREVIEW_ZOOM__=apply;
   }
 
   function reorderControls(){
@@ -450,6 +477,7 @@
     setupEmptyClick();
     setupTemplatePicker();
     setupVisualGrids();
+    setupPreviewZoom();
     loadAutosave();
     setTimeout(()=>applyOverlay(storedOverlay()),220);
   }
