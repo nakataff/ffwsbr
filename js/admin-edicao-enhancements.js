@@ -146,10 +146,13 @@
     }
   }
 
+  function sortPreviewGroups(root){
+    if(!root)return;const order=['frame','grid','shortcuts'];order.forEach(key=>{const el=root.querySelector(`[data-preview-group="${key}"]`);if(el)root.appendChild(el);});
+  }
+
   function ensurePreviewGroups(){
     const workspace=$('.photo-editor-workspace'),head=$('.photo-editor-preview-head');if(!workspace||!head)return null;
-    let root=$('#cff-preview-control-groups');if(root)return root;
-    root=document.createElement('div');root.id='cff-preview-control-groups';root.className='cff-preview-control-groups';head.insertAdjacentElement('afterend',root);return root;
+    let root=$('#cff-preview-control-groups');if(!root){root=document.createElement('div');root.id='cff-preview-control-groups';root.className='cff-preview-control-groups';head.insertAdjacentElement('afterend',root);}sortPreviewGroups(root);return root;
   }
 
   function previewGroup(key,label){
@@ -159,7 +162,7 @@
     details.innerHTML=`<summary>${label}<span aria-hidden="true">⌄</span></summary><div class="cff-preview-group-body"></div>`;
     const saved=localStorage.getItem(`cff-preview-group-${key}`);details.open=saved==='1';
     details.addEventListener('toggle',()=>localStorage.setItem(`cff-preview-group-${key}`,details.open?'1':'0'));
-    root.appendChild(details);return details.querySelector('.cff-preview-group-body');
+    root.appendChild(details);sortPreviewGroups(root);return details.querySelector('.cff-preview-group-body');
   }
 
   function setupTemplatePicker(){
