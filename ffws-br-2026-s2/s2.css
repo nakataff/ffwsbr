@@ -633,3 +633,19 @@ body.cff-stats-route #ffws-br-s2-stats.page,body.cff-stats-route #registro-detal
 .ffws-s2-roster-player.departed:hover{opacity:.7;filter:grayscale(.8);background:rgba(255,255,255,.035)}
 .ffws-s2-roster-player.departed .ffws-s2-roster-player-main strong,.ffws-s2-roster-player.departed .ffws-s2-roster-player-main small{color:#7f8998}
 .ffws-s2-roster-badge.departed{color:#c5cad1;background:rgba(160,168,180,.08);border-color:rgba(160,168,180,.3)}
+
+
+/* Stats: separação visual entre Fase 1 e Fase 2 */
+.ffws-s2-stats-stage-switch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 13px}
+.ffws-s2-stats-stage-btn{display:grid;gap:3px;min-height:58px;padding:10px 12px;border:1px solid #223857;border-radius:11px;background:#0a1322;color:#8fa8c9;text-align:left;cursor:pointer;transition:border-color .16s,background .16s,color .16s,transform .16s}
+.ffws-s2-stats-stage-btn:hover{transform:translateY(-1px);border-color:#3b608f;color:#e7f5ff}
+.ffws-s2-stats-stage-btn strong{font-size:.72rem;font-weight:1000;letter-spacing:.05em}
+.ffws-s2-stats-stage-btn small{font-size:.58rem;font-weight:800;color:#667f9d}
+.ffws-s2-stats-stage-btn.is-active{color:#fff;background:rgba(0,200,255,.08);border-color:rgba(0,200,255,.48);box-shadow:inset 0 0 0 1px rgba(0,200,255,.10)}
+.ffws-s2-stats-stage-btn.is-active small{color:#9fc9df}
+.ffws-s2-stats-stage-btn.is-segundaFase.is-active{background:rgba(46,220,148,.09);border-color:rgba(46,220,148,.5)}
+.ffws-s2-stats-stage-btn.is-segundaFase.is-active strong{color:#7bf0b8}
+.ffws-s2-stats-stage-btn.is-classificatoria.is-active strong{color:#66cfff}
+.ffws-s2-stats-stage-btn.is-final.is-active{background:rgba(255,194,38,.08);border-color:rgba(255,194,38,.42)}
+.ffws-s2-stats-stage-btn.is-final.is-active strong{color:#ffd76f}
+@media(max-width:700px){.ffws-s2-stats-stage-switch{grid-template-columns:repeat(2,minmax(0,1fr))}.ffws-s2-stats-stage-btn{min-height:54px}}
