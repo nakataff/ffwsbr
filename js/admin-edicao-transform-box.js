@@ -92,7 +92,7 @@
   function syncBox(force=false){
     if(!box&&!setup())return;
     const s=state(),g=geometry();
-    if(!s?.image||!g){box.hidden=true;clearGuides();return;}
+    if(!s?.image||!g||s.cffSelection?.type!=='photo'){box.hidden=true;clearGuides();return;}
     box.hidden=false;
     const key=[g.left,g.top,g.width,g.height,g.rotation,s.flipX].map(v=>Math.round(Number(v)*100)/100).join('|');
     if(!force&&key===lastKey)return;
@@ -152,6 +152,7 @@
 
   function onPointerDown(e){
     const s=state();if(!s?.image)return;
+    window.__CFF_ADMIN_EDICAO_SELECT__?.('photo');
     const target=e.target;if(target.closest('.cff-transform-close'))return;
     e.preventDefault();e.stopPropagation();
     const g=geometry();if(!g)return;
@@ -202,6 +203,7 @@
     const app=$('#photo-editor-app'),stage=$('#photo-editor-stage'),canvas=$('#photo-editor-canvas');if(!app||app.dataset.transformBoxBound==='1')return;app.dataset.transformBoxBound='1';
     ['input','change','click','pointerup'].forEach(ev=>app.addEventListener(ev,()=>scheduleBoxSync(true),true));
     window.addEventListener('resize',()=>{lastKey='';clearGuides();scheduleBoxSync(true)});
+    window.addEventListener('cff-editor-selection-change',()=>{lastKey='';clearGuides();scheduleBoxSync(true)});
     if('ResizeObserver'in window){resizeObserver=new ResizeObserver(()=>{lastKey='';scheduleBoxSync(true)});if(stage)resizeObserver.observe(stage);if(canvas)resizeObserver.observe(canvas);}
     idleTimer=setInterval(()=>{if(!window.__CFF_ADMIN_EDICAO_INTERACTING__)syncBox();},600);
   }
