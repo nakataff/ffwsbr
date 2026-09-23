@@ -431,24 +431,25 @@
       },
       "s2": {
         "edition": "WB 2026 S2",
-        "kills": 38,
-        "damage": 35956,
-        "assists": 25,
-        "matches": 24,
-        "mvp": 0,
+        "kills": 107,
+        "damage": 91110,
+        "assists": 73,
+        "matches": 67,
+        "mvp": 2,
         "record": 13,
-        "rankKills": 20,
-        "rankDamage": 5,
-        "rankAssists": 42,
+        "rankKills": 35,
+        "rankDamage": 17,
+        "rankAssists": 50,
         "stages": {
           "classificatoria": {
-            "kills": 38,
-            "damage": 35956,
-            "assists": 25,
-            "matches": 24,
-            "mvp": 0
+            "kills": 107,
+            "damage": 91110,
+            "assists": 73,
+            "matches": 67,
+            "mvp": 2
           }
-        }
+        },
+        "status": "Campanha encerrada — eliminado na Classificatória"
       },
       "historical": {
         "LBFF 3": {
@@ -590,13 +591,14 @@
         },
         {
           "edition": "WB 2026 S2",
-          "kills": 0,
-          "matches": 0,
-          "avg": 0,
+          "kills": 107,
+          "matches": 67,
+          "avg": 1.6,
           "team": "LOOPS",
-          "damage": 0,
-          "assists": 0,
-          "status": "Ainda não iniciada"
+          "damage": 91110,
+          "assists": 73,
+          "status": "Encerrada",
+          "mvp": 2
         }
       ],
       "teamHistory": [
@@ -644,12 +646,12 @@
         }
       ],
       "allTime": {
-        "kills": 1518,
-        "matches": 1242,
-        "damage": 159604,
-        "assists": 106,
-        "mvp": 5,
-        "avg": 1.22
+        "kills": 1625,
+        "matches": 1309,
+        "damage": 250714,
+        "assists": 179,
+        "mvp": 7,
+        "avg": 1.24
       },
       "profileType": "full",
       "dataSource": "WB 2026 S2",
@@ -873,7 +875,7 @@
           "team": "LOOPS",
           "kills": 12,
           "matches": 12,
-          "avg": 1.0,
+          "avg": 1,
           "damage": 6416,
           "assists": 15,
           "mvp": 0,
