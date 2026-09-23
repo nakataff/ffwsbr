@@ -13,13 +13,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
-  <link rel="stylesheet" href="css/admin-edicao.css?v=20260923-pip-fluid-v4">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20260923-pip-effects-v5">
   <script src="js/config.min.js?v=20260914-editor-autosave-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20260923-pip-fluid-v4"></script>
-  <script defer src="js/admin-edicao-autosave.js?v=20260923-pip-fluid-v4"></script>
+  <script type="module" src="js/admin-edicao.js?v=20260923-pip-effects-v5"></script>
+  <script defer src="js/admin-edicao-autosave.js?v=20260923-pip-effects-v5"></script>
   <script defer src="js/admin-edicao-enhancements.js?v=20260915-studio-v2"></script>
-  <script defer src="js/admin-edicao-studio-v2.js?v=20260923-pip-fluid-v4"></script>
-  <script defer src="js/admin-edicao-photo-coverage.js?v=20260923-pip-fluid-v4"></script>
+  <script defer src="js/admin-edicao-studio-v2.js?v=20260923-pip-effects-v5"></script>
+  <script defer src="js/admin-edicao-photo-coverage.js?v=20260923-pip-effects-v5"></script>
 </head>
 <body>
   <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
@@ -40,9 +40,11 @@
       </div>
       <div class="photo-editor-heading-actions">
         <label class="admin-btn admin-btn-primary photo-editor-file-button">
-          + Adicionar foto
+          Foto principal
           <input id="photo-editor-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
         </label>
+        <button id="photo-editor-add-pip-top" class="admin-btn admin-btn-primary" type="button">+ P.I.P.</button>
+        <button id="photo-editor-delete-main" class="admin-btn admin-btn-ghost photo-editor-delete-main" type="button" title="Apagar foto principal" aria-label="Apagar foto principal" disabled>🗑</button>
         <button id="photo-editor-reset-all" class="admin-btn admin-btn-ghost" type="button">Resetar arte</button>
       </div>
     </section>
@@ -108,11 +110,29 @@
           </div>
           <div id="photo-editor-pip-layers" class="photo-editor-pip-layers" aria-label="Camadas P.I.P."></div>
           <label class="photo-editor-check"><input id="photo-editor-pip-enabled" type="checkbox" checked> Mostrar P.I.P. selecionado</label>
-          <label class="photo-editor-slider-row" for="photo-editor-pip-size"><span>Tamanho <output id="photo-editor-pip-size-value">28%</output></span><input id="photo-editor-pip-size" type="range" min="3" max="120" value="28" step="0.5"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-size"><span>Tamanho <output id="photo-editor-pip-size-value">28%</output></span><input id="photo-editor-pip-size" type="range" min="3" max="180" value="28" step="0.5"></label>
           <label class="photo-editor-slider-row" for="photo-editor-pip-rotation"><span>Rotação <output id="photo-editor-pip-rotation-value">0°</output></span><input id="photo-editor-pip-rotation" type="range" min="-180" max="180" value="0" step="1"></label>
           <label class="photo-editor-slider-row" for="photo-editor-pip-x"><span>Posição horizontal <output id="photo-editor-pip-x-value">75%</output></span><input id="photo-editor-pip-x" type="range" min="-20" max="120" value="75" step="0.1"></label>
           <label class="photo-editor-slider-row" for="photo-editor-pip-y"><span>Posição vertical <output id="photo-editor-pip-y-value">25%</output></span><input id="photo-editor-pip-y" type="range" min="-20" max="120" value="25" step="0.1"></label>
           <label class="photo-editor-slider-row" for="photo-editor-pip-opacity"><span>Opacidade <output id="photo-editor-pip-opacity-value">100%</output></span><input id="photo-editor-pip-opacity" type="range" min="0" max="100" value="100" step="1"></label>
+
+          <details class="photo-editor-pip-effect-group" open>
+            <summary>Contorno</summary>
+            <label class="photo-editor-check"><input id="photo-editor-pip-stroke-enabled" type="checkbox"> Mostrar contorno</label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-stroke-width"><span>Espessura <output id="photo-editor-pip-stroke-width-value">6 px</output></span><input id="photo-editor-pip-stroke-width" type="range" min="0" max="40" value="6" step="1"></label>
+            <div class="photo-editor-pip-color-row"><label for="photo-editor-pip-stroke-color">Cor</label><input id="photo-editor-pip-stroke-color" class="photo-editor-color" type="color" value="#ffffff"></div>
+          </details>
+
+          <details class="photo-editor-pip-effect-group" open>
+            <summary>Sombra</summary>
+            <label class="photo-editor-check"><input id="photo-editor-pip-shadow-enabled" type="checkbox" checked> Mostrar sombra</label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-size"><span>Tamanho <output id="photo-editor-pip-shadow-size-value">10 px</output></span><input id="photo-editor-pip-shadow-size" type="range" min="0" max="80" value="10" step="1"></label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-blur"><span>Desfoque <output id="photo-editor-pip-shadow-blur-value">24 px</output></span><input id="photo-editor-pip-shadow-blur" type="range" min="0" max="140" value="24" step="1"></label>
+            <div class="photo-editor-pip-color-row"><label for="photo-editor-pip-shadow-color">Cor</label><input id="photo-editor-pip-shadow-color" class="photo-editor-color" type="color" value="#000000"></div>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-opacity"><span>Opacidade <output id="photo-editor-pip-shadow-opacity-value">45%</output></span><input id="photo-editor-pip-shadow-opacity" type="range" min="0" max="100" value="45" step="1"></label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-x"><span>Distância horizontal <output id="photo-editor-pip-shadow-x-value">0 px</output></span><input id="photo-editor-pip-shadow-x" type="range" min="-120" max="120" value="0" step="1"></label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-y"><span>Distância vertical <output id="photo-editor-pip-shadow-y-value">18 px</output></span><input id="photo-editor-pip-shadow-y" type="range" min="-120" max="120" value="18" step="1"></label>
+          </details>
           <div class="photo-editor-pip-order-actions">
             <button id="photo-editor-pip-back" class="photo-editor-mini-button" type="button">← Descer camada</button>
             <button id="photo-editor-pip-front" class="photo-editor-mini-button" type="button">Subir camada →</button>
@@ -238,6 +258,18 @@
       </aside>
     </section>
   </main>
+
+  <dialog id="photo-editor-delete-main-dialog" class="photo-editor-confirm-dialog">
+    <form method="dialog" class="photo-editor-confirm-card">
+      <div class="photo-editor-confirm-icon">🗑</div>
+      <h2>Remover foto principal?</h2>
+      <p>A foto principal será removida da arte. P.I.P.s, textos e moldura continuam no projeto.</p>
+      <div class="photo-editor-confirm-actions">
+        <button value="cancel" class="admin-btn admin-btn-ghost" type="submit">Cancelar</button>
+        <button id="photo-editor-confirm-delete-main" value="remove" class="admin-btn admin-btn-danger" type="submit">Remover foto</button>
+      </div>
+    </form>
+  </dialog>
 
   <section id="photo-editor-auth-message" class="photo-editor-auth-message">
     <div class="admin-login-card"><div class="admin-login-icon">🔒</div><p class="admin-eyebrow">Acesso restrito</p><h1>Validando sessão</h1><p class="admin-muted">Esta ferramenta usa o mesmo login do painel administrativo.</p></div>
