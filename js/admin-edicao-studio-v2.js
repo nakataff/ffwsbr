@@ -144,6 +144,7 @@
       <button class="cff-studio-tool" data-act="gradient" type="button">◒ Suavizar foto</button>
       <button class="cff-studio-tool" data-act="safe" type="button">▦ Margens</button>`;
     details.querySelector('.cff-preview-group-body').appendChild(bar);
+    ['frame','grid','shortcuts'].forEach(key=>{const el=root.querySelector(`[data-preview-group="${key}"]`);if(el)root.appendChild(el);});
     bar.addEventListener('click',e=>{const btn=e.target.closest('[data-act]');if(!btn)return;const act=btn.dataset.act;
       if(act==='photo')$('#photo-editor-file')?.click();
       if(act==='cover')$('#photo-editor-fit-cover')?.click();
