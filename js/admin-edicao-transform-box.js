@@ -83,10 +83,13 @@
   function geometry(){
     const s=state(),stage=$('#photo-editor-stage'),canvas=$('#photo-editor-canvas');
     if(!s?.image||!stage||!canvas)return null;
-    const sr=stage.getBoundingClientRect(),cr=canvas.getBoundingClientRect();
-    if(!cr.width||!cr.height)return null;
-    const sx=cr.width/W,sy=cr.height/H,iw=Number(s.image.naturalWidth||s.image.width||0),ih=Number(s.image.naturalHeight||s.image.height||0),sc=(Number(s.baseScale)||1)*(Number(s.zoom)||1);
-    return {left:(cr.left-sr.left)+(Number(s.x)||W/2)*sx,top:(cr.top-sr.top)+(Number(s.y)||H/2)*sy,width:Math.max(2,iw*sc*sx),height:Math.max(2,ih*sc*sy),rotation:Number(s.rotation)||0,canvasRect:cr,stageRect:sr};
+    const sr=stage.getBoundingClientRect(),cr=canvas.getBoundingClientRect(),localW=canvas.clientWidth||stage.clientWidth,localH=canvas.clientHeight||stage.clientHeight;
+    if(!cr.width||!cr.height||!localW||!localH)return null;
+    const iw=Number(s.image.naturalWidth||s.image.width||0),ih=Number(s.image.naturalHeight||s.image.height||0),sc=(Number(s.baseScale)||1)*(Number(s.zoom)||1);
+    const localLeft=(canvas.offsetLeft||0)+(Number(s.x)||W/2)/W*localW,localTop=(canvas.offsetTop||0)+(Number(s.y)||H/2)/H*localH;
+    const width=Math.max(2,(iw*sc/W)*localW),height=Math.max(2,(ih*sc/H)*localH);
+    const centerClientX=cr.left+(Number(s.x)||W/2)/W*cr.width,centerClientY=cr.top+(Number(s.y)||H/2)/H*cr.height;
+    return {left:localLeft,top:localTop,width,height,rotation:Number(s.rotation)||0,canvasRect:cr,stageRect:sr,localW,localH,canvasOffsetX:canvas.offsetLeft||0,canvasOffsetY:canvas.offsetTop||0,centerClientX,centerClientY};
   }
 
   function syncBox(force=false){
@@ -122,13 +125,13 @@
   function showGuide(axis,pos,label){
     const el=axis==='x'?guideX:guideY,g=gesture;if(!el||!g)return;
     el.dataset.label=label||'';
-    if(axis==='x'){el.style.left=`${g.canvasOffsetX+(pos/W)*g.canvasW}px`;el.style.top=`${g.canvasOffsetY}px`;el.style.height=`${g.canvasH}px`;el.style.width='1.5px';}
-    else{el.style.left=`${g.canvasOffsetX}px`;el.style.top=`${g.canvasOffsetY+(pos/H)*g.canvasH}px`;el.style.width=`${g.canvasW}px`;el.style.height='1.5px';}
+    if(axis==='x'){el.style.left=`${g.canvasOffsetLocalX+(pos/W)*g.localW}px`;el.style.top=`${g.canvasOffsetLocalY}px`;el.style.height=`${g.localH}px`;el.style.width='1.5px';}
+    else{el.style.left=`${g.canvasOffsetLocalX}px`;el.style.top=`${g.canvasOffsetLocalY+(pos/H)*g.localH}px`;el.style.width=`${g.localW}px`;el.style.height='1.5px';}
     el.classList.add('is-on');
   }
 
   function resolveSnap(axis,raw,e,s){
-    const scale=axis==='x'?(W/gesture.canvasW):(H/gesture.canvasH),threshold=SNAP_PX*scale,release=RELEASE_PX*scale,list=candidates(axis,s),key=axis==='x'?'snapX':'snapY';
+    const scale=axis==='x'?(W/gesture.renderW):(H/gesture.renderH),threshold=SNAP_PX*scale,release=RELEASE_PX*scale,list=candidates(axis,s),key=axis==='x'?'snapX':'snapY';
     if(e.altKey){gesture[key]=null;clearGuide(axis);return raw;}
     if(gesture[key]){
       const current=list.find(c=>c.id===gesture[key]);
@@ -156,9 +159,9 @@
     const target=e.target;if(target.closest('.cff-transform-close'))return;
     e.preventDefault();e.stopPropagation();
     const g=geometry();if(!g)return;
-    const centerX=g.stageRect.left+g.left,centerY=g.stageRect.top+g.top,mode=target.closest('.cff-transform-rotate')?'rotate':target.closest('.cff-transform-handle')?'resize':'move';
+    const centerX=g.centerClientX,centerY=g.centerClientY,mode=target.closest('.cff-transform-rotate')?'rotate':target.closest('.cff-transform-handle')?'resize':'move';
     clearGuides();beginInteraction();
-    gesture={id:e.pointerId,mode,startX:e.clientX,startY:e.clientY,startStateX:Number(s.x)||W/2,startStateY:Number(s.y)||H/2,startZoom:Number(s.zoom)||1,startRotation:Number(s.rotation)||0,centerX,centerY,startAngle:Math.atan2(e.clientY-centerY,e.clientX-centerX),startDistance:Math.max(12,Math.hypot(e.clientX-centerX,e.clientY-centerY)),canvasW:g.canvasRect.width,canvasH:g.canvasRect.height,canvasOffsetX:g.canvasRect.left-g.stageRect.left,canvasOffsetY:g.canvasRect.top-g.stageRect.top,snapX:null,snapY:null};
+    gesture={id:e.pointerId,mode,startX:e.clientX,startY:e.clientY,startStateX:Number(s.x)||W/2,startStateY:Number(s.y)||H/2,startZoom:Number(s.zoom)||1,startRotation:Number(s.rotation)||0,centerX,centerY,startAngle:Math.atan2(e.clientY-centerY,e.clientX-centerX),startDistance:Math.max(12,Math.hypot(e.clientX-centerX,e.clientY-centerY)),renderW:g.canvasRect.width,renderH:g.canvasRect.height,localW:g.localW,localH:g.localH,canvasOffsetLocalX:g.canvasOffsetX,canvasOffsetLocalY:g.canvasOffsetY,snapX:null,snapY:null};
     target.setPointerCapture?.(e.pointerId);
     window.addEventListener('pointermove',onPointerMove,{capture:true});
     window.addEventListener('pointerup',onPointerUp,{capture:true,once:true});
@@ -173,7 +176,7 @@
     const s=state();if(!s?.image)return;
     e.preventDefault();e.stopPropagation();
     if(gesture.mode==='move'){
-      const rawX=gesture.startStateX+(e.clientX-gesture.startX)*(W/gesture.canvasW),rawY=gesture.startStateY+(e.clientY-gesture.startY)*(H/gesture.canvasH);
+      const rawX=gesture.startStateX+(e.clientX-gesture.startX)*(W/gesture.renderW),rawY=gesture.startStateY+(e.clientY-gesture.startY)*(H/gesture.renderH);
       s.x=resolveSnap('x',rawX,e,s);s.y=resolveSnap('y',rawY,e,s);
     }else if(gesture.mode==='resize'){
       clearGuides();const d=Math.max(8,Math.hypot(e.clientX-gesture.centerX,e.clientY-gesture.centerY));s.zoom=clamp(gesture.startZoom*(d/gesture.startDistance),.25,3);syncZoomUi(s);
