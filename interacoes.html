@@ -188,12 +188,12 @@
       <div class="ig-card-head"><h2>Como pontua</h2></div>
       <div class="ig-rules">
         <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Publicou/republicou um Story e marcou a página.</small></div><div class="ig-rule-points" id="ig-rule-story">+5 pts</div></div>
-        <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small>Interagiu de forma natural em uma publicação ou Reel. Conta uma vez por conteúdo.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div>
+        <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small id="ig-rule-comment-copy">Interagiu de forma natural em publicação ou Reel recente. Conta uma vez por conteúdo e apenas em posts publicados nos últimos 7 dias.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div>
         <div class="ig-note" id="ig-rule-note">Para evitar spam, cada pessoa pontua uma vez por publicação e há limite diário para menções em Story.</div>
       </div>
       <div class="ig-integrity">
         <strong>⚠️ Integridade do ranking</strong>
-        Comentar em massa publicações antigas, fazer spam ou repetir ações com o objetivo de aumentar artificialmente a pontuação é considerado manipulação do ranking. Interações desse tipo podem ser desconsideradas, ter os pontos removidos e resultar em exclusão de premiações ou do ranking.
+        Comentários só geram pontos em publicações e Reels publicados nos últimos 7 dias. Comentar em massa conteúdos antigos, fazer spam ou repetir ações com o objetivo de aumentar artificialmente a pontuação é considerado manipulação do ranking. Interações desse tipo podem ser desconsideradas, ter os pontos removidos e resultar em exclusão de premiações ou do ranking.
         <a href="diretrizes-comunidade.html">Ver diretrizes completas →</a>
       </div>
     </aside>
@@ -231,12 +231,12 @@
 
   const API='https://cff-instagram-community.nakataffb4.workers.dev/api/ranking';
   const REFRESH_MS=30*60*1000;
-  const DEFAULT_RULES={storyMentionPoints:5,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1};
+  const DEFAULT_RULES={storyMentionPoints:5,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1,commentMediaMaxAgeDays:7};
   const state={period:'week',query:'',users:[],updatedAt:null,periodInfo:null,rules:{...DEFAULT_RULES},loading:false};
 
   const els={
     tabs:[...document.querySelectorAll('.ig-tab')],search:document.getElementById('ig-search'),tbody:document.getElementById('ig-tbody'),table:document.getElementById('ig-table'),empty:document.getElementById('ig-empty'),podium:document.getElementById('ig-podium'),updated:document.getElementById('ig-updated'),error:document.getElementById('ig-error'),status:document.getElementById('ig-status-text'),periodLabel:document.getElementById('ig-period-label'),periodCopy:document.getElementById('ig-period-copy'),
-    users:document.getElementById('ig-stat-users'),actions:document.getElementById('ig-stat-actions'),stories:document.getElementById('ig-stat-stories'),comments:document.getElementById('ig-stat-comments'),ruleStory:document.getElementById('ig-rule-story'),ruleComment:document.getElementById('ig-rule-comment'),ruleNote:document.getElementById('ig-rule-note')
+    users:document.getElementById('ig-stat-users'),actions:document.getElementById('ig-stat-actions'),stories:document.getElementById('ig-stat-stories'),comments:document.getElementById('ig-stat-comments'),ruleStory:document.getElementById('ig-rule-story'),ruleComment:document.getElementById('ig-rule-comment'),ruleCommentCopy:document.getElementById('ig-rule-comment-copy'),ruleNote:document.getElementById('ig-rule-note')
   };
 
   function escapeHTML(value){return String(value??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));}
@@ -297,7 +297,9 @@
     els.actions.textContent=formatNumber(stories+comments);
     els.ruleStory.textContent='+'+formatNumber(state.rules.storyMentionPoints)+' pts';
     els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' pts';
-    els.ruleNote.textContent=`Para evitar spam, cada pessoa pontua uma vez por publicação. Menções em Story têm limite de ${formatNumber(state.rules.storyMentionDailyLimit)} por dia. Comentários em massa feitos apenas para inflar o ranking podem ser desconsiderados.`;
+    const maxCommentAge=Math.max(1,num(state.rules.commentMediaMaxAgeDays)||7);
+    if(els.ruleCommentCopy)els.ruleCommentCopy.textContent=`Interagiu de forma natural em publicação ou Reel recente. Conta uma vez por conteúdo e apenas em posts publicados nos últimos ${formatNumber(maxCommentAge)} dias.`;
+    els.ruleNote.textContent=`Para evitar spam, cada pessoa pontua uma vez por publicação. Menções em Story têm limite de ${formatNumber(state.rules.storyMentionDailyLimit)} por dia. Comentários em conteúdos com mais de ${formatNumber(maxCommentAge)} dias não geram pontos.`;
     els.updated.textContent=timestampLabel(state.updatedAt);
     updatePeriodText();
     renderPodium(state.query?[]:all);
