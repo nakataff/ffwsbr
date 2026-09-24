@@ -33,6 +33,7 @@ let gaTokenClient = null;
 let gaTokenExpiresAt = 0;
 const GA_SETTINGS_KEY = 'cff-ga4-admin-settings-v1';
 const LOCAL_NEWS_URL = 'noticias-painel.json?v=20260806-admin-v3';
+const COMMUNITY_API_BASE = 'https://cff-instagram-community.nakataffb4.workers.dev';
 
 function escapeHTML(value) {
   return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
@@ -1164,6 +1165,85 @@ onAuthStateChanged(auth, async (user) => {
   if (allowed) { clearForm(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives()]); }
 });
 
+async function recalculateCommunityRanking() {
+  const button = $('#admin-ranking-recalc');
+  const input = $('#admin-ranking-recalc-users');
+  const message = $('#admin-ranking-recalc-message');
+  const user = auth.currentUser;
+  if (!button || !input || !message || !user) return;
+
+  const usernames = [...new Set(input.value.split(/[\s,;]+/).map((value) => value.trim().replace(/^@+/, '')).filter(Boolean))].slice(0, 5);
+  if (!usernames.length) return setMessage(message, 'Informe pelo menos um @ para recalcular.', 'error');
+
+  button.disabled = true;
+  const accumulated = new Map();
+  let lastUnknown = Infinity;
+  let stalled = 0;
+
+  try {
+    const token = await user.getIdToken(true);
+    for (let pass = 1; pass <= 10; pass++) {
+      setMessage(message, `Recalculando pela regra de 7 dias… etapa ${pass}`);
+      const response = await fetch(COMMUNITY_API_BASE + '/api/admin/recalculate-comment-age', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ usernames })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data?.ok) throw new Error(data?.error || `HTTP ${response.status}`);
+
+      for (const row of data.results || []) {
+        const key = String(row.username || row.requested || '').toLowerCase();
+        const prev = accumulated.get(key) || {
+          username: row.username || row.requested || key,
+          before: row.before || null,
+          after: row.after || null,
+          removedComments: 0,
+          removedCommentPoints: 0,
+          unresolvedMedia: 0,
+          error: row.error || ''
+        };
+        if (!prev.before && row.before) prev.before = row.before;
+        if (row.after) prev.after = row.after;
+        prev.removedComments += Number(row.removedComments || 0);
+        prev.removedCommentPoints += Number(row.removedCommentPoints || 0);
+        prev.unresolvedMedia = Number(row.unresolvedMedia || 0);
+        if (row.error) prev.error = row.error;
+        accumulated.set(key, prev);
+      }
+
+      const unknown = Number(data.unresolvedMedia || 0);
+      if (!data.incomplete || unknown <= 0) break;
+      if (unknown >= lastUnknown) stalled++; else stalled = 0;
+      lastUnknown = unknown;
+      if (stalled >= 2) break;
+      await new Promise((resolve) => setTimeout(resolve, 350));
+    }
+
+    const rows = [...accumulated.values()];
+    const summary = rows.map((row) => {
+      if (row.error) return `@${row.username}: ${row.error}`;
+      const before = row.before || {};
+      const after = row.after || {};
+      const main = `@${row.username}: ${formatNumber(before.points)} → ${formatNumber(after.points)} pts; comentários ${formatNumber(before.comments)} → ${formatNumber(after.comments)}`;
+      const removed = row.removedComments ? ` (${formatNumber(row.removedComments)} comentários antigos removidos)` : '';
+      const pending = row.unresolvedMedia ? ` · ${formatNumber(row.unresolvedMedia)} mídia(s) não puderam ser verificadas` : '';
+      return main + removed + pending;
+    }).join(' | ');
+
+    setMessage(message, summary || 'Recálculo concluído.', rows.some((row) => row.unresolvedMedia) ? '' : 'success');
+  } catch (error) {
+    const detail = String(error?.message || error || 'erro');
+    setMessage(message, `Não foi possível recalcular agora: ${detail}. Se o endpoint acabou de ser publicado, aguarde o deploy do Worker e tente novamente.`, 'error');
+    console.error(error);
+  } finally {
+    button.disabled = false;
+  }
+}
+
 logoutButton.addEventListener('click', () => signOut(auth));
 $('#admin-toggle-password').addEventListener('click', () => {
   const input = $('#admin-password');
@@ -1188,6 +1268,7 @@ $('#admin-new-live')?.addEventListener('click', clearLiveForm);
 $('#admin-clear-live')?.addEventListener('click', clearLiveForm);
 $('#live-add-alt-link')?.addEventListener('click', () => $('#live-alt-links')?.appendChild(liveAltRow()));
 $('#admin-clear-ended-lives')?.addEventListener('click', clearEndedLives);
+$('#admin-ranking-recalc')?.addEventListener('click', recalculateCommunityRanking);
 $('#news-status').addEventListener('change', () => {
   syncNewsScheduleField();
   if ($('#news-status').value === 'scheduled' && $('#news-publish-at').value) {
