@@ -231,8 +231,9 @@
 
   const API='https://cff-instagram-community.nakataffb4.workers.dev/api/ranking';
   const REFRESH_MS=30*60*1000;
+  const CACHE_PREFIX='cff-community-ranking-cache-v2:';
   const DEFAULT_RULES={storyMentionPoints:5,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1,commentMediaMaxAgeDays:7};
-  const state={period:'week',query:'',users:[],updatedAt:null,periodInfo:null,rules:{...DEFAULT_RULES},loading:false};
+  const state={period:'week',query:'',users:[],updatedAt:null,periodInfo:null,rules:{...DEFAULT_RULES},loading:false,usingCache:false};
 
   const els={
     tabs:[...document.querySelectorAll('.ig-tab')],search:document.getElementById('ig-search'),tbody:document.getElementById('ig-tbody'),table:document.getElementById('ig-table'),empty:document.getElementById('ig-empty'),podium:document.getElementById('ig-podium'),updated:document.getElementById('ig-updated'),error:document.getElementById('ig-error'),status:document.getElementById('ig-status-text'),periodLabel:document.getElementById('ig-period-label'),periodCopy:document.getElementById('ig-period-copy'),
@@ -317,28 +318,77 @@
     }).join('');
   }
 
+  function applyRankingRaw(raw,{cached=false}={}){
+    state.users=normalizeUsers(raw);
+    state.updatedAt=num(raw&&raw.updatedAt);
+    state.periodInfo=raw&&raw.period&&typeof raw.period==='object'?raw.period:null;
+    state.rules=raw&&raw.rules&&typeof raw.rules==='object'?{...DEFAULT_RULES,...raw.rules}:{...DEFAULT_RULES};
+    state.usingCache=!!cached;
+  }
+
+  function readRankingCache(period){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(CACHE_PREFIX+period)||'null');
+      if(!parsed||!parsed.raw||!Number(parsed.savedAt))return null;
+      const maxAge=period==='week'?6*60*60*1000:24*60*60*1000;
+      if(Date.now()-Number(parsed.savedAt)>maxAge)return null;
+      return parsed.raw;
+    }catch(_){return null}
+  }
+
+  function writeRankingCache(period,raw){
+    try{localStorage.setItem(CACHE_PREFIX+period,JSON.stringify({savedAt:Date.now(),raw}))}catch(_){}
+  }
+
+  async function fetchRanking(period){
+    let lastError=null;
+    for(let attempt=0;attempt<3;attempt++){
+      try{
+        const controller=new AbortController();
+        const timeout=setTimeout(()=>controller.abort(),7000);
+        const response=await fetch(`${API}?period=${period}&_=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'},signal:controller.signal});
+        clearTimeout(timeout);
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        const raw=await response.json();
+        if(!raw||typeof raw!=='object')throw new Error('Resposta inválida');
+        return raw;
+      }catch(error){
+        lastError=error;
+        if(attempt<2)await new Promise(resolve=>setTimeout(resolve,600*(attempt+1)));
+      }
+    }
+    throw lastError||new Error('Falha de conexão');
+  }
+
   async function load(){
     if(state.loading)return;
     state.loading=true;
+    state.usingCache=false;
     els.error.classList.remove('is-visible');
     els.status.textContent='Atualizando...';
     try{
       const period=['week','month','all'].includes(state.period)?state.period:'week';
-      const response=await fetch(`${API}?period=${period}&_=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});
-      if(!response.ok)throw new Error('HTTP '+response.status);
-      const raw=await response.json();
-      state.users=normalizeUsers(raw);
-      state.updatedAt=num(raw&&raw.updatedAt);
-      state.periodInfo=raw&&raw.period&&typeof raw.period==='object'?raw.period:null;
-      state.rules=raw&&raw.rules&&typeof raw.rules==='object'?{...DEFAULT_RULES,...raw.rules}:{...DEFAULT_RULES};
+      const raw=await fetchRanking(period);
+      applyRankingRaw(raw);
+      writeRankingCache(period,raw);
       els.status.textContent=state.users.length?'Dados sincronizados':'Aguardando dados';
       render();
     }catch(err){
       console.error('Falha ao carregar ranking da comunidade:',err);
-      els.status.textContent='Erro de conexão';
-      els.error.textContent='Não foi possível atualizar o ranking agora. Tente novamente em alguns instantes.';
-      els.error.classList.add('is-visible');
-      if(!state.users.length){state.updatedAt=null;state.periodInfo=null;render();}
+      const period=['week','month','all'].includes(state.period)?state.period:'week';
+      const cached=readRankingCache(period);
+      if(cached){
+        applyRankingRaw(cached,{cached:true});
+        els.status.textContent='Última atualização salva';
+        els.error.textContent='O serviço do ranking está oscilando. Exibindo a última classificação salva enquanto a conexão é restabelecida.';
+        els.error.classList.add('is-visible');
+        render();
+      }else{
+        els.status.textContent='Erro de conexão';
+        els.error.textContent='Não foi possível atualizar o ranking agora. O sistema está tentando se recuperar.';
+        els.error.classList.add('is-visible');
+        if(!state.users.length){state.updatedAt=null;state.periodInfo=null;render();}
+      }
     }finally{
       state.loading=false;
     }
@@ -358,10 +408,10 @@
   setInterval(()=>{if(!document.hidden)load();},REFRESH_MS);
 })();
 </script>
-<script data-cff-community-checkin src="js/community-checkin.js?v=20260921-no-poll-v5"></script>
+<script data-cff-community-checkin src="js/community-checkin.js?v=20260924-ranking-recovery-v6"></script>
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
 
 <script data-cff-community-prediction src="js/community-prediction-v5.js?v=20260921-no-poll-v10"></script>
-<script data-cff-community-promos src="js/community-promos.js?v=20260921-community-tabs-v3"></script>
+<script data-cff-community-promos src="js/community-promos.js?v=20260924-ranking-recovery-v4"></script>
 </body>
 </html>
