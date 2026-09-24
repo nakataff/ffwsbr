@@ -21,7 +21,8 @@ const RULES = Object.freeze({
   storyMentionPoints: 10,
   commentPoints: 2,
   storyMentionDailyLimit: 3,
-  commentLimitPerMedia: 1
+  commentLimitPerMedia: 1,
+  commentMediaMaxAgeDays: 7
 });
 
 function hash(value) {
@@ -42,8 +43,40 @@ function fallbackUsername(identity) {
   return `usuario_${suffix}`;
 }
 
+function normalizeTimestamp(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return Date.now();
+  return n < 1_000_000_000_000 ? n * 1000 : n;
+}
+
+async function fetchMediaTimestamp(mediaId, accessToken) {
+  if (!mediaId || !accessToken) return 0;
+  try {
+    const url = new URL(
+      `https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(mediaId)}`
+    );
+    url.searchParams.set('fields', 'timestamp');
+    url.searchParams.set('access_token', accessToken);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(7000)
+    });
+    if (!response.ok) return 0;
+    const payload = await response.json();
+    const parsed = Date.parse(String(payload && payload.timestamp || ''));
+    return Number.isFinite(parsed) ? parsed : 0;
+  } catch (error) {
+    logger.warn('Falha ao consultar data da mídia do Instagram', {
+      mediaId: String(mediaId || '').slice(0, 40),
+      error: error && error.message ? error.message : String(error)
+    });
+    return 0;
+  }
+}
+
 function dateKeys(timestamp) {
-  const date = new Date(Number(timestamp) || Date.now());
+  const date = new Date(normalizeTimestamp(timestamp));
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: TIME_ZONE,
     year: 'numeric',
@@ -276,7 +309,7 @@ async function recordAcceptedInteraction(db, event) {
   await db.ref().update(publicUpdates);
 }
 
-async function processComment(db, entry) {
+async function processComment(db, entry, accessToken) {
   const value = entry && entry.value ? entry.value : {};
   const from = value && value.from ? value.from : {};
   const media = value && value.media ? value.media : {};
@@ -286,12 +319,48 @@ async function processComment(db, entry) {
   const commentId = String(value.id || '').trim();
   const mediaId = String(media.id || '').trim();
 
-  if (!identity || (!commentId && !mediaId)) return;
+  if (!identity || !mediaId) return;
+
+  const timestamp = normalizeTimestamp(entry.time);
+  const inlinePublishedAt = Date.parse(String(media.timestamp || media.created_time || ''));
+  const publishedAt = Number.isFinite(inlinePublishedAt)
+    ? inlinePublishedAt
+    : await fetchMediaTimestamp(mediaId, accessToken);
+
+  const maxAgeMs = RULES.commentMediaMaxAgeDays * 24 * 60 * 60 * 1000;
+  const ageMs = publishedAt ? timestamp - publishedAt : Number.POSITIVE_INFINITY;
+
+  // Sem data confirmada ou em conteúdo com mais de 7 dias, o comentário
+  // não entra no ranking. Assim uma falha de consulta não vira brecha de farm.
+  if (!publishedAt || ageMs < -5 * 60 * 1000 || ageMs > maxAgeMs) {
+    try {
+      const rejectKey = hash(
+        `comment-age:${identity}:${mediaId}:${commentId || timestamp}`
+      );
+      await db.ref(
+        `instagramCommunity/private/rejectedComments/${rejectKey}`
+      ).set({
+        username: username || fallbackUsername(identity),
+        mediaId,
+        commentId,
+        eventAt: timestamp,
+        mediaPublishedAt: publishedAt || 0,
+        maxAgeDays: RULES.commentMediaMaxAgeDays,
+        reason: publishedAt ? 'media_too_old' : 'media_timestamp_unavailable',
+        receivedAt: Date.now()
+      });
+    } catch (error) {
+      logger.warn('Falha ao registrar comentário rejeitado', {
+        error: error && error.message ? error.message : String(error)
+      });
+    }
+    return;
+  }
 
   const eventKey = `comment:${identity}:${mediaId || commentId}`;
   const accepted = await claimOnce(db, eventKey, {
     type: 'comment',
-    sourceId: mediaId || commentId
+    sourceId: mediaId
   });
 
   if (!accepted) return;
@@ -301,9 +370,9 @@ async function processComment(db, entry) {
     eventKey,
     identity,
     username,
-    sourceId: mediaId || commentId,
+    sourceId: mediaId,
     points: RULES.commentPoints,
-    timestamp: Number(entry.time) || Date.now()
+    timestamp
   });
 }
 
@@ -411,7 +480,7 @@ async function processWebhookBody(body, accessToken) {
 
   for (const entry of body.entry) {
     if (entry && entry.field === 'comments' && entry.value) {
-      jobs.push(processComment(db, entry));
+      jobs.push(processComment(db, entry, accessToken));
     }
 
     const messages = Array.isArray(entry && entry.messaging)
