@@ -525,6 +525,16 @@ async function deleteNews(id) {
 }
 
 
+function inferLiveRegion(title) {
+  const value = String(title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  return /\b(LATAM|SEA|USA|MEA|INDIA|BANGLADESH|PAKISTAN|NEPAL|GLOBAL|WORLD|EWC|MUNDIAL)\b/.test(value) ? 'internacional' : 'brasil';
+}
+
+function normalizeLiveLevel(value) {
+  const level = String(value || '').trim().toLowerCase();
+  return level === 'amador' ? 'amador' : 'oficial';
+}
+
 function normalizeLive(raw, id = '') {
   const durationMinutes = raw && raw.duracaoMinutos != null
     ? Number(raw.duracaoMinutos)
@@ -542,7 +552,10 @@ function normalizeLive(raw, id = '') {
     linkMode: String(raw && raw.linkMode || '').trim().toLowerCase() === 'schedule' ? 'schedule' : 'always',
     inicio: String(raw && (raw.inicio || raw.data_hora || '') || '').trim(),
     duracaoMinutos: Number.isFinite(durationMinutes) ? Math.max(0, Math.round(durationMinutes)) : 0,
-    tipo: ['mobile', 'emulador', 'misto'].includes(String(raw && (raw.tipo || raw.categoria) || '').toLowerCase()) ? String(raw.tipo || raw.categoria).toLowerCase() : 'mobile',
+    regiao: ['brasil', 'internacional'].includes(String(raw && raw.regiao || '').toLowerCase())
+      ? String(raw.regiao).toLowerCase()
+      : inferLiveRegion(raw && (raw.torneio || raw.titulo || '')),
+    nivel: normalizeLiveLevel(raw && (raw.nivel || raw.escopo || (['amador','oficial'].includes(String(raw.categoria || '').toLowerCase()) ? raw.categoria : 'oficial'))),
     createdAt: Number(raw && raw.createdAt || 0),
     updatedAt: Number(raw && raw.updatedAt || 0)
   };
@@ -619,7 +632,8 @@ function clearLiveForm() {
   $('#live-duration-hours').value = '3';
   $('#live-duration-minutes').value = '0';
   $('#live-link-mode').value = 'schedule';
-  $('#live-type').value = 'mobile';
+  $('#live-region').value = 'brasil';
+  $('#live-level').value = 'oficial';
   renderLiveAltLinks([]);
   $('#live-editor-title').textContent = 'Nova live';
   setMessage($('#admin-live-message'), '');
@@ -637,7 +651,8 @@ function fillLiveForm(item) {
   $('#live-start').value = item.inicio.slice(0, 16);
   $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
   $('#live-duration-minutes').value = String(item.duracaoMinutos % 60);
-  $('#live-type').value = item.tipo;
+  $('#live-region').value = item.regiao;
+  $('#live-level').value = item.nivel;
   $('#live-editor-title').textContent = 'Editar live';
   setMessage($('#admin-live-message'), '');
   liveForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -655,7 +670,8 @@ function duplicateLiveForm(item) {
   $('#live-start').value = item.inicio.slice(0, 16);
   $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
   $('#live-duration-minutes').value = String(item.duracaoMinutos % 60);
-  $('#live-type').value = item.tipo;
+  $('#live-region').value = item.regiao;
+  $('#live-level').value = item.nivel;
   $('#live-editor-title').textContent = 'Duplicar live';
   setMessage($('#admin-live-message'), 'Cópia carregada. Ajuste fase/dia e data/hora antes de salvar.', 'success');
   liveForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -674,7 +690,8 @@ function readLiveForm() {
     linkMode: $('#live-link-mode').value === 'schedule' ? 'schedule' : 'always',
     inicio: $('#live-start').value.trim(),
     duracaoMinutos: Math.round(hours * 60 + minutes),
-    tipo: $('#live-type').value
+    regiao: $('#live-region').value === 'internacional' ? 'internacional' : 'brasil',
+    nivel: $('#live-level').value === 'amador' ? 'amador' : 'oficial'
   };
 }
 
@@ -690,10 +707,11 @@ function renderLiveList() {
   $('#admin-live-summary').textContent = `${sorted.length} live${sorted.length === 1 ? '' : 's'} cadastrada${sorted.length === 1 ? '' : 's'}`;
   liveList.innerHTML = sorted.length ? sorted.map((item) => {
     const status = liveStatus(item);
-    const typeLabel = item.tipo === 'emulador' ? 'EMULADOR' : item.tipo === 'misto' ? 'MISTO' : 'MOBILE';
+    const regionLabel = item.regiao === 'internacional' ? '🌎 INTERNACIONAL' : '🇧🇷 BRASIL';
+    const levelLabel = item.nivel === 'amador' ? '🎮 AMADOR' : '✅ OFICIAL';
     return `<div class="admin-live-row">
       <span class="admin-live-status is-${status.key}">${status.label}</span>
-      <div class="admin-live-copy"><strong>${escapeHTML(item.torneio)}</strong><small>${escapeHTML([item.faseDia, item.canal].filter(Boolean).join(' • '))}</small><span>${escapeHTML(formatLiveDate(item.inicio))} • ${escapeHTML(formatLiveDuration(item.duracaoMinutos))} • ${typeLabel}</span>${(item.url ? 1 : 0) + (item.links?.length || 0) > 1 ? `<span class="admin-live-link-count">▶ ${(item.url ? 1 : 0) + (item.links?.length || 0)} transmissões</span>` : ''}</div>
+      <div class="admin-live-copy"><strong>${escapeHTML(item.torneio)}</strong><small>${escapeHTML([item.faseDia, item.canal].filter(Boolean).join(' • '))}</small><span>${escapeHTML(formatLiveDate(item.inicio))} • ${escapeHTML(formatLiveDuration(item.duracaoMinutos))}</span><span class="admin-live-taxonomy">${regionLabel} · ${levelLabel}</span>${(item.url ? 1 : 0) + (item.links?.length || 0) > 1 ? `<span class="admin-live-link-count">▶ ${(item.url ? 1 : 0) + (item.links?.length || 0)} transmissões</span>` : ''}</div>
       <div class="admin-live-actions"><button class="admin-btn admin-btn-ghost" type="button" data-edit-live="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-ghost" type="button" data-duplicate-live="${escapeHTML(item.id)}">Duplicar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-live="${escapeHTML(item.id)}">Excluir</button></div>
     </div>`;
   }).join('') : '<div class="admin-empty">Nenhuma live cadastrada no painel</div>';
@@ -731,7 +749,8 @@ async function saveLive(event) {
     linkMode: item.linkMode,
     inicio: item.inicio,
     duracaoMinutos: item.duracaoMinutos,
-    tipo: item.tipo,
+    regiao: item.regiao,
+    nivel: item.nivel,
     createdAt: previous && previous.createdAt ? previous.createdAt : serverTimestamp(),
     updatedAt: serverTimestamp()
   };
