@@ -68,7 +68,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <!-- Dados históricos são carregados sob demanda para não bloquear a home. -->
 <link rel="stylesheet" href="css/bundle.min.css?v=20260904-sidebar-nested-v22">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260924-live-filters-v4">
+<link rel="stylesheet" href="css/home-ffws-s2.css?v=20260924-transmission-hub-v5">
 <link rel="stylesheet" href="css/site-nav-freeze.css?v=20260901-nav-unified-v11">
 <link rel="stylesheet" href="css/site-back-navigation.css?v=20260902-back-accent-v30">
 <link rel="stylesheet" href="css/search-fast.css?v=20260728-search-layout-v1">
@@ -722,12 +722,48 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
 
     <div class="home-main-layout">
-        <aside class="home-left-rail" aria-label="WB 2026 S2 ao vivo e rankings">
-            <div class="home-widget home-rail-live">
-                <h3>🔴 Ao Vivo Agora</h3>
-                <div class="home-widget-body" style="padding: 12px;">
-                    <div id="lives-on-container" class="lives-container"></div>
-                    <div id="lives-on-empty" class="lives-empty">Nenhuma live no ar agora.</div>
+        <aside class="home-left-rail" aria-label="Transmissões e rankings da WB 2026 S2">
+            <div class="home-widget home-rail-live home-transmission-widget">
+                <h3 class="home-transmission-title">
+                    <svg class="home-transmission-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="2.2"></circle>
+                        <path d="M8.6 8.6a4.8 4.8 0 0 0 0 6.8M15.4 8.6a4.8 4.8 0 0 1 0 6.8"></path>
+                        <path d="M5.5 5.5a9.2 9.2 0 0 0 0 13M18.5 5.5a9.2 9.2 0 0 1 0 13"></path>
+                    </svg>
+                    <span>Transmissão</span>
+                </h3>
+                <div class="home-widget-body home-transmission-body">
+                    <div class="home-live-filters" aria-label="Filtros de transmissões">
+                        <div class="home-live-filter-buttons">
+                            <button type="button" class="home-live-filter" data-live-filter="todos" aria-pressed="false"><small>TODOS</small></button>
+                            <button type="button" class="home-live-filter is-active" data-live-filter="brasil" aria-pressed="true"><small>BR</small></button>
+                            <button type="button" class="home-live-filter" data-live-filter="internacional" aria-pressed="false"><small>INTERNACIONAL</small></button>
+                            <button type="button" class="home-live-filter" data-live-filter="oficial" aria-pressed="false"><small>OFICIAL</small></button>
+                            <button type="button" class="home-live-filter" data-live-filter="amador" aria-pressed="false"><small>AMADOR</small></button>
+                        </div>
+                    </div>
+
+                    <section class="home-transmission-section home-transmission-now" aria-labelledby="home-transmission-now-title">
+                        <div class="home-transmission-subhead" id="home-transmission-now-title">
+                            <span class="home-transmission-live-dot" aria-hidden="true"></span>
+                            <strong>AO VIVO AGORA</strong>
+                        </div>
+                        <div id="lives-on-container" class="lives-container"></div>
+                        <div id="lives-on-empty" class="lives-empty">Nenhuma live no ar agora.</div>
+                    </section>
+
+                    <section class="home-transmission-section home-transmission-upcoming" aria-labelledby="home-transmission-upcoming-title">
+                        <div class="home-transmission-subhead" id="home-transmission-upcoming-title">
+                            <svg class="home-transmission-clock" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <circle cx="12" cy="12" r="8.5"></circle>
+                                <path d="M12 7.5v5l3.5 2"></path>
+                            </svg>
+                            <strong>PRÓXIMAS LIVES</strong>
+                        </div>
+                        <div id="lives-upcoming-container" class="lives-container"></div>
+                        <div id="lives-up-empty" class="lives-empty">Nenhuma próxima live com esses filtros.</div>
+                        <button id="lives-upcoming-more" class="home-upcoming-more" type="button" hidden>Ver próximas →</button>
+                    </section>
                 </div>
             </div>
 
@@ -795,24 +831,6 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     </section>
     <div class="home-live-market-grid" style="margin-bottom: 25px;">
         <div class="home-live-selection-stack">
-            <details class="home-upcoming-section" open>
-                <summary><span>📅 Próximas Lives</span><small>expandir / recolher</small></summary>
-                <div class="home-upcoming-body">
-                    <div class="home-live-filters" aria-label="Filtros de transmissões">
-                        <div class="home-live-filter-buttons">
-                            <button type="button" class="home-live-filter is-active" data-live-filter="brasil" aria-pressed="true"><span aria-hidden="true">🇧🇷</span><small>Brasil</small></button>
-                            <button type="button" class="home-live-filter" data-live-filter="internacional" aria-pressed="false"><span aria-hidden="true">🌎</span><small>Internacional</small></button>
-                            <button type="button" class="home-live-filter" data-live-filter="amador" aria-pressed="false"><span aria-hidden="true">🎮</span><small>Amador</small></button>
-                            <button type="button" class="home-live-filter" data-live-filter="oficial" aria-pressed="false"><span aria-hidden="true">✅</span><small>Oficial</small></button>
-                        </div>
-                        <span class="home-live-filter-legend">Pode combinar filtros · padrão: Brasil · vale para ao vivo e próximas</span>
-                    </div>
-                    <div id="lives-upcoming-container" class="lives-container"></div>
-                    <div id="lives-up-empty" class="lives-empty">Nenhuma próxima live com esses filtros.</div>
-                    <button id="lives-upcoming-more" class="home-upcoming-more" type="button" hidden>Ver próximas →</button>
-                </div>
-            </details>
-
             <div class="home-widget home-weekly-selection-widget">
                 <div class="home-weekly-selection-head">
                     <h3>⭐ Seleção da Semana</h3>
@@ -2554,7 +2572,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/search-fast.min.js?v=20260922-canonical-search-v32"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20260920-static-cache-v31"></script>
 <script defer src="js/home-news-lives.min.js?v=20260920-alias-cache-v22"></script>
-<script defer src="js/home-live-widget.min.js?v=20260924-live-filters-v4"></script>
+<script defer src="js/home-live-widget.min.js?v=20260924-transmission-hub-v5"></script>
 <script defer src="js/news-admin-provider.js?v=20260903-home-images-v36"></script>
 <script defer src="js/year-ranking-logo-sheet.js?v=20260920-logo-cache-v3"></script>
 <script defer src="js/charts-market.min.js?v=20260919-mercado-photos-v3"></script>
