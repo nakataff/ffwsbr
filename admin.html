@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="css/admin.css?v=20260924-detective-tools-v6">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
-  <script type="module" src="js/admin.js?v=20260924-detective-tools-v37"></script>
+  <script type="module" src="js/admin.js?v=20260924-transmission-admin-v38"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -158,8 +158,9 @@
           <div class="admin-field"><label for="live-link-mode">Quando liberar o link?</label><select id="live-link-mode"><option value="schedule" selected>Somente no horário de início</option><option value="always">Sempre disponível</option></select><small>Use “Somente no horário” quando o canal transmite torneios diferentes.</small></div>
           <div class="admin-field"><label for="live-start">Dia e hora que começa</label><input id="live-start" type="datetime-local" required><small>Horário de Brasília (BRT)</small></div>
           <div class="admin-field"><label>Duração</label><div class="admin-duration-row"><label class="admin-mini-field"><input id="live-duration-hours" type="number" min="0" max="72" step="1" value="3" required><span>horas</span></label><label class="admin-mini-field"><input id="live-duration-minutes" type="number" min="0" max="59" step="1" value="0" required><span>minutos</span></label></div></div>
-          <div class="admin-field"><label for="live-region">Região</label><select id="live-region"><option value="brasil" selected>🇧🇷 Brasil</option><option value="internacional">🌎 Internacional</option></select></div>
-          <div class="admin-field"><label for="live-level">Categoria</label><select id="live-level"><option value="oficial" selected>✅ Oficial</option><option value="amador">🎮 Amador</option></select></div>
+          <div class="admin-field"><label for="live-region">Região / filtro da home</label><select id="live-region"><option value="brasil" selected>BR</option><option value="internacional">Internacional</option></select></div>
+          <div class="admin-field"><label for="live-level">Categoria / filtro da home</label><select id="live-level"><option value="oficial" selected>Oficial</option><option value="amador">Amador</option></select></div>
+          <p class="admin-muted admin-field-wide" style="margin:0;">Região e categoria definem em quais filtros da seção Transmissão essa live aparece na home.</p>
           <div class="admin-form-actions admin-field-wide">
             <button id="admin-clear-live" class="admin-btn admin-btn-ghost" type="button">Limpar</button>
             <button class="admin-btn admin-btn-primary" type="submit">Salvar live</button>
