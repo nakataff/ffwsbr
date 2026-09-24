@@ -79,6 +79,7 @@ export default {
     if (url.pathname === '/api/prediction/ranking' && request.method === 'GET') return getPredictionRanking(request, env, url);
     if (url.pathname === '/api/prediction/profile' && request.method === 'GET') return getPredictionProfile(request, env, url);
     if (url.pathname === '/api/admin/prediction-votes' && request.method === 'GET') return getAdminPredictionVotes(request, env);
+    if (url.pathname === '/api/admin/recalculate-comment-age' && request.method === 'POST') return recalculateCommentAgeAdmin(request, env);
     if (url.pathname === '/api/rewards/status' && request.method === 'GET') return getRewardStatus(request, env, url);
     if (url.pathname === '/api/rewards/code' && request.method === 'POST') return claimRewardCode(request, env);
     if (url.pathname === '/api/checkin/start' && request.method === 'POST') return startCheckin(request, env);
@@ -1628,6 +1629,279 @@ async function getAdminPredictionVotes(request, env) {
     .sort((a,b) => Math.max(...b.votes.map(v => v.votedAt),0) - Math.max(...a.votes.map(v => v.votedAt),0));
 
   return json({ ok: true, admin: String(admin.email || ADMIN_EMAIL), totalVotes: predictions.reduce((sum,p) => sum + p.voteCount, 0), predictions }, 200, request);
+}
+
+
+function commentDayEndTimestamp(dayKey) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dayKey || ''))) return 0;
+  const n = Date.parse(`${dayKey}T23:59:59-03:00`);
+  return Number.isFinite(n) ? n : 0;
+}
+
+async function ensureMediaAgeCache(env) {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS media_age_cache (
+      media_id TEXT PRIMARY KEY,
+      published_at INTEGER NOT NULL,
+      checked_at INTEGER NOT NULL
+    )
+  `).run();
+}
+
+async function fetchMediaTimestampBatch(mediaIds, accessToken) {
+  const ids = [...new Set((mediaIds || []).map(String).filter(Boolean))];
+  const found = new Map();
+  if (!ids.length || !accessToken) return found;
+
+  for (let i = 0; i < ids.length; i += 25) {
+    const chunk = ids.slice(i, i + 25);
+    for (const base of ['https://graph.facebook.com', 'https://graph.instagram.com']) {
+      try {
+        const url = new URL(`${base}/${GRAPH_VERSION}/`);
+        url.searchParams.set('ids', chunk.join(','));
+        url.searchParams.set('fields', 'timestamp');
+        url.searchParams.set('access_token', accessToken);
+        const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
+        if (!response.ok) continue;
+        const data = await response.json();
+        for (const id of chunk) {
+          const parsed = Date.parse(String(data?.[id]?.timestamp || ''));
+          if (Number.isFinite(parsed) && parsed > 0) found.set(id, parsed);
+        }
+        if (chunk.every(id => found.has(id))) break;
+      } catch (_) {}
+    }
+  }
+  return found;
+}
+
+async function getWeekStatsForUser(env, userKeyValue, weekStart, weekEnd) {
+  const row = await env.DB.prepare(`
+    SELECT COALESCE(SUM(points),0) AS points,
+           SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
+           SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments
+    FROM awards
+    WHERE user_key=?1 AND day_key BETWEEN ?2 AND ?3
+  `).bind(userKeyValue, weekStart, weekEnd).first();
+  const active = await env.DB.prepare(`
+    SELECT COUNT(*) AS count FROM active_days
+    WHERE user_key=?1 AND day_key BETWEEN ?2 AND ?3
+  `).bind(userKeyValue, weekStart, weekEnd).first();
+  return {
+    points: Number(row?.points || 0),
+    stories: Number(row?.stories || 0),
+    comments: Number(row?.comments || 0),
+    activeDays: Number(active?.count || 0),
+  };
+}
+
+async function rebuildCommunityUserAggregates(env, userKeyValue, fallbackUsernameValue = 'usuario') {
+  const current = await env.DB.prepare('SELECT instagram_id, username FROM users WHERE user_key=?1 LIMIT 1').bind(userKeyValue).first();
+  const username = cleanUsername(current?.username || fallbackUsernameValue) || fallbackUsernameValue;
+
+  await env.DB.prepare('DELETE FROM active_days WHERE user_key=?1').bind(userKeyValue).run();
+  await env.DB.prepare(`
+    INSERT OR IGNORE INTO active_days (user_key, day_key)
+    SELECT user_key, day_key
+    FROM awards
+    WHERE user_key=?1
+      AND type IN ('comment','story','checkin','prediction_vote','bonus_code')
+    GROUP BY user_key, day_key
+  `).bind(userKeyValue).run();
+
+  await env.DB.prepare('DELETE FROM monthly_users WHERE user_key=?1').bind(userKeyValue).run();
+  await env.DB.prepare(`
+    INSERT INTO monthly_users
+      (month_key,user_key,username,points,story_mentions,comments,active_days,last_interaction_at)
+    SELECT a.month_key,
+           a.user_key,
+           COALESCE(MAX(NULLIF(a.username,'')),?2),
+           COALESCE(SUM(a.points),0),
+           SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END),
+           SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END),
+           (SELECT COUNT(*) FROM active_days ad
+             WHERE ad.user_key=a.user_key AND substr(ad.day_key,1,7)=a.month_key),
+           COALESCE(MAX(a.created_at),0)
+    FROM awards a
+    WHERE a.user_key=?1
+    GROUP BY a.month_key,a.user_key
+  `).bind(userKeyValue, username).run();
+
+  const totals = await env.DB.prepare(`
+    SELECT COALESCE(SUM(points),0) AS points,
+           SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
+           SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments,
+           COALESCE(MAX(created_at),0) AS lastAt
+    FROM awards WHERE user_key=?1
+  `).bind(userKeyValue).first();
+  const active = await env.DB.prepare('SELECT COUNT(*) AS count FROM active_days WHERE user_key=?1').bind(userKeyValue).first();
+
+  await env.DB.prepare(`
+    INSERT INTO users
+      (user_key,instagram_id,username,points_all,story_mentions_all,comments_all,active_days_all,last_interaction_at)
+    VALUES (?1,?2,?3,?4,?5,?6,?7,?8)
+    ON CONFLICT(user_key) DO UPDATE SET
+      instagram_id=COALESCE(users.instagram_id,excluded.instagram_id),
+      username=excluded.username,
+      points_all=excluded.points_all,
+      story_mentions_all=excluded.story_mentions_all,
+      comments_all=excluded.comments_all,
+      active_days_all=excluded.active_days_all,
+      last_interaction_at=excluded.last_interaction_at
+  `).bind(
+    userKeyValue,
+    current?.instagram_id || null,
+    username,
+    Number(totals?.points || 0),
+    Number(totals?.stories || 0),
+    Number(totals?.comments || 0),
+    Number(active?.count || 0),
+    Number(totals?.lastAt || 0)
+  ).run();
+}
+
+async function recalculateCommentAgeAdmin(request, env) {
+  const admin = await verifyAdminFirebaseToken(request);
+  if (!admin) return json({ ok: false, error: 'Acesso administrativo inválido.' }, 401, request);
+
+  const body = await readJson(request);
+  const usernames = [...new Set((Array.isArray(body?.usernames) ? body.usernames : [])
+    .map(cleanUsername).filter(Boolean))].slice(0, 5);
+  if (!usernames.length) return json({ ok: false, error: 'Informe pelo menos um usuário.' }, 400, request);
+
+  await ensureMediaAgeCache(env);
+  const week = weekKeys(Date.now());
+  const cacheRows = await env.DB.prepare('SELECT media_id,published_at FROM media_age_cache').all();
+  const mediaCache = new Map((cacheRows.results || []).map(row => [String(row.media_id), Number(row.published_at || 0)]));
+
+  const targets = [];
+  const unresolved = new Set();
+  for (const username of usernames) {
+    const user = await env.DB.prepare(`
+      SELECT user_key, username FROM users
+      WHERE lower(username)=lower(?1)
+      LIMIT 1
+    `).bind(username).first();
+    if (!user?.user_key) {
+      targets.push({ requested: username, error: 'Usuário não encontrado no ranking.' });
+      continue;
+    }
+    const comments = await env.DB.prepare(`
+      SELECT award_key,source_id,day_key,points
+      FROM awards
+      WHERE user_key=?1 AND type='comment' AND day_key BETWEEN ?2 AND ?3
+      ORDER BY day_key ASC,created_at ASC
+    `).bind(user.user_key, week.weekStartKey, week.weekEndKey).all();
+    const rows = comments.results || [];
+    rows.forEach(row => {
+      const id = String(row.source_id || '');
+      if (id && !mediaCache.has(id)) unresolved.add(id);
+    });
+    targets.push({ requested: username, userKey: user.user_key, username: user.username || username, comments: rows });
+  }
+
+  const token = env.INSTAGRAM_ACCESS_TOKEN;
+  const batchFound = await fetchMediaTimestampBatch([...unresolved], token);
+  for (const [mediaId, publishedAt] of batchFound) {
+    mediaCache.set(mediaId, publishedAt);
+    await env.DB.prepare(`
+      INSERT INTO media_age_cache(media_id,published_at,checked_at)
+      VALUES(?1,?2,?3)
+      ON CONFLICT(media_id) DO UPDATE SET published_at=excluded.published_at,checked_at=excluded.checked_at
+    `).bind(mediaId, publishedAt, Date.now()).run();
+    unresolved.delete(mediaId);
+  }
+
+  // Fallback controlado para não estourar limite de subrequests do Worker.
+  const fallbackIds = [...unresolved].slice(0, 30);
+  for (let i = 0; i < fallbackIds.length; i += 6) {
+    const chunk = fallbackIds.slice(i, i + 6);
+    const values = await Promise.all(chunk.map(async mediaId => [mediaId, await fetchMediaTimestamp(mediaId, token)]));
+    for (const [mediaId, publishedAt] of values) {
+      if (!publishedAt) continue;
+      mediaCache.set(mediaId, publishedAt);
+      unresolved.delete(mediaId);
+      await env.DB.prepare(`
+        INSERT INTO media_age_cache(media_id,published_at,checked_at)
+        VALUES(?1,?2,?3)
+        ON CONFLICT(media_id) DO UPDATE SET published_at=excluded.published_at,checked_at=excluded.checked_at
+      `).bind(mediaId, publishedAt, Date.now()).run();
+    }
+  }
+
+  const weeklyBonusTypes = [
+    'bonus_streak_3','bonus_streak_5','bonus_streak_7',
+    'bonus_posts_5','bonus_posts_10','bonus_mix','bonus_mission'
+  ];
+  const results = [];
+
+  for (const target of targets) {
+    if (!target.userKey) { results.push(target); continue; }
+    const before = await getWeekStatsForUser(env, target.userKey, week.weekStartKey, week.weekEndKey);
+    const invalid = [];
+    const stillUnknown = [];
+
+    for (const row of target.comments) {
+      const mediaId = String(row.source_id || '');
+      const publishedAt = mediaCache.get(mediaId) || 0;
+      if (!publishedAt) { stillUnknown.push(mediaId); continue; }
+      const commentAt = commentDayEndTimestamp(row.day_key);
+      if (!commentAt) continue;
+      const ageMs = commentAt - publishedAt;
+      if (ageMs > RULES.commentMediaMaxAgeDays * 24 * 60 * 60 * 1000) invalid.push(row);
+    }
+
+    if (invalid.length) {
+      for (let i = 0; i < invalid.length; i += 50) {
+        const chunk = invalid.slice(i, i + 50);
+        await env.DB.batch(chunk.map(row => env.DB.prepare('DELETE FROM awards WHERE award_key=?1').bind(row.award_key)));
+      }
+
+      const invalidMedia = [...new Set(invalid.map(row => String(row.source_id || '')).filter(Boolean))];
+      for (let i = 0; i < invalidMedia.length; i += 50) {
+        const chunk = invalidMedia.slice(i, i + 50);
+        await env.DB.batch(chunk.map(mediaId => env.DB.prepare(
+          "DELETE FROM awards WHERE user_key=?1 AND type='bonus_flash' AND source_id=?2"
+        ).bind(target.userKey, mediaId)));
+      }
+
+      const placeholders = weeklyBonusTypes.map((_, i) => `?${i + 4}`).join(',');
+      await env.DB.prepare(`
+        DELETE FROM awards
+        WHERE user_key=?1 AND day_key BETWEEN ?2 AND ?3
+          AND type IN (${placeholders})
+      `).bind(target.userKey, week.weekStartKey, week.weekEndKey, ...weeklyBonusTypes).run();
+
+      await rebuildCommunityUserAggregates(env, target.userKey, target.username);
+      await evaluateWeeklyBonuses(env, {
+        userKey: target.userKey,
+        identity: '',
+        username: target.username,
+        timestamp: Date.now(),
+      });
+    }
+
+    const after = await getWeekStatsForUser(env, target.userKey, week.weekStartKey, week.weekEndKey);
+    results.push({
+      username: target.username,
+      removedComments: invalid.length,
+      removedCommentPoints: invalid.reduce((sum,row) => sum + Number(row.points || 0), 0),
+      unresolvedMedia: [...new Set(stillUnknown)].length,
+      before,
+      after,
+    });
+  }
+
+  return json({
+    ok: true,
+    admin: String(admin.email || ADMIN_EMAIL),
+    weekStart: week.weekStartKey,
+    weekEnd: week.weekEndKey,
+    maxAgeDays: RULES.commentMediaMaxAgeDays,
+    incomplete: unresolved.size > 0 || results.some(item => Number(item.unresolvedMedia || 0) > 0),
+    unresolvedMedia: unresolved.size,
+    results,
+  }, 200, request);
 }
 
 function normalizeRewardConfig(raw) {
