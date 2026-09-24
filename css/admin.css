@@ -61,3 +61,11 @@
 .admin-community-recalc-controls input{min-width:0}
 .admin-community-recalc .admin-message{grid-column:1/-1;margin:0}
 @media(max-width:760px){.admin-community-recalc{grid-template-columns:1fr}.admin-community-recalc-controls{grid-template-columns:1fr}.admin-community-recalc-controls .admin-btn{width:100%}}
+
+/* 2026-09-24: transmissões por região/categoria + aba ferramentas */
+.admin-live-taxonomy{color:#6f94b8!important;font-size:.66rem!important;font-weight:900!important;letter-spacing:.025em}
+.cff-admin-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.cff-admin-tabs .cff-admin-tab{flex:0 0 auto}
+@media(max-width:680px){
+  .cff-admin-tabs{justify-content:flex-start!important}
+}
