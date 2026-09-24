@@ -38,8 +38,15 @@
 .admin-live-copy span{font-size:.74rem;color:#9db8d2}
 .admin-live-actions{display:flex;gap:7px;justify-content:flex-end}
 .admin-live-actions .admin-btn{padding:8px 10px;font-size:.76rem}
+.admin-live-alt-links{display:grid;gap:8px;margin:2px 0 9px}
+.admin-live-alt-row{display:grid;grid-template-columns:minmax(120px,.42fr) minmax(0,1fr) auto;gap:8px;align-items:center}
+.admin-live-alt-row input{min-width:0}
+.admin-live-alt-remove{min-width:38px;padding-inline:10px!important}
+.admin-live-add-alt{justify-self:start}
+.admin-live-list-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.admin-live-link-count{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:#74dfff!important;font-size:.7rem!important;font-weight:900}
 @media(max-width:900px){.admin-live-form{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-live-row{grid-template-columns:auto minmax(0,1fr)}.admin-live-actions{grid-column:1/-1;justify-content:flex-end}}
-@media(max-width:640px){.admin-live-form{grid-template-columns:1fr}.admin-live-form .admin-field-wide{grid-column:auto}.admin-live-list-head{align-items:flex-start;flex-direction:column}.admin-live-row{grid-template-columns:1fr}.admin-live-status{justify-self:start}.admin-live-copy strong,.admin-live-copy small,.admin-live-copy span{white-space:normal}.admin-live-actions{grid-column:auto;width:100%}.admin-live-actions .admin-btn{flex:1}}
+@media(max-width:640px){.admin-live-form{grid-template-columns:1fr}.admin-live-form .admin-field-wide{grid-column:auto}.admin-live-list-head{align-items:flex-start;flex-direction:column}.admin-live-list-tools{width:100%;justify-content:space-between}.admin-live-row{grid-template-columns:1fr}.admin-live-status{justify-self:start}.admin-live-copy strong,.admin-live-copy small,.admin-live-copy span{white-space:normal}.admin-live-actions{grid-column:auto;width:100%}.admin-live-actions .admin-btn{flex:1}.admin-live-alt-row{grid-template-columns:1fr auto}.admin-live-alt-row input[type="url"]{grid-column:1/-1}.admin-live-alt-remove{grid-column:2;grid-row:1}}
 
 /* V27 — notícias agendadas (preservado no V28) */
 .admin-chip.is-scheduled{color:#ffd36a;border-color:rgba(255,211,106,.34);background:rgba(255,193,7,.10)}
