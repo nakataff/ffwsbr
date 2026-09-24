@@ -174,7 +174,7 @@
     window.addEventListener('pointercancel',onPointerUp,{capture:true,once:true});
   }
 
-  function syncZoomUi(s){const z=$('#photo-editor-zoom'),out=$('#photo-editor-zoom-value'),pct=Math.round((Number(s.zoom)||1)*100);if(z)z.value=String(clamp(pct,25,300));if(out)out.textContent=`${pct}%`;}
+  function syncZoomUi(s){const z=$('#photo-editor-zoom'),out=$('#photo-editor-zoom-value'),pct=Math.round((Number(s.zoom)||1)*100);if(z)z.value=String(clamp(pct,5,800));if(out)out.textContent=`${pct}%`;}
   function syncRotationUi(s){const input=$('#photo-editor-rotation'),out=$('#photo-editor-rotation-value'),rounded=Math.round(Number(s.rotation)||0);if(input)input.value=String(clamp(rounded,-180,180));if(out)out.textContent=`${rounded}°`;}
 
   function onPointerMove(e){
@@ -185,7 +185,7 @@
       const rawX=gesture.startStateX+(e.clientX-gesture.startX)*(W/gesture.renderW),rawY=gesture.startStateY+(e.clientY-gesture.startY)*(H/gesture.renderH);
       s.x=resolveSnap('x',rawX,e,s);s.y=resolveSnap('y',rawY,e,s);
     }else if(gesture.mode==='resize'){
-      clearGuides();const d=Math.max(8,Math.hypot(e.clientX-gesture.centerX,e.clientY-gesture.centerY));s.zoom=clamp(gesture.startZoom*(d/gesture.startDistance),.25,3);syncZoomUi(s);
+      clearGuides();const d=Math.max(8,Math.hypot(e.clientX-gesture.centerX,e.clientY-gesture.centerY));s.zoom=clamp(gesture.startZoom*(d/gesture.startDistance),.05,8);syncZoomUi(s);
     }else if(gesture.mode==='rotate'){
       clearGuides();const angle=Math.atan2(e.clientY-gesture.centerY,e.clientX-gesture.centerX);let deg=gesture.startRotation+(angle-gesture.startAngle)*180/Math.PI;while(deg>180)deg-=360;while(deg<-180)deg+=360;s.rotation=deg;syncRotationUi(s);
     }
