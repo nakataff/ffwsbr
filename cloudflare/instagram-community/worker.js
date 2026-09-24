@@ -57,6 +57,23 @@ const ALLOWED_ORIGINS = new Set([
 
 let rewardsCache = { at: 0, data: null };
 let predictionSettlementSweep = { at: 0, signature: '', pending: null };
+const RANKING_CACHE_TTL_MS = 60_000;
+const rankingCache = new Map();
+let performanceIndexesReady = false;
+let performanceIndexesPromise = null;
+
+const PERFORMANCE_INDEXES = Object.freeze([
+  'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
+  'CREATE INDEX IF NOT EXISTS idx_awards_type_award_key ON awards (type, award_key)',
+  'CREATE INDEX IF NOT EXISTS idx_awards_user_day_type ON awards (user_key, day_key, type)',
+  'CREATE INDEX IF NOT EXISTS idx_awards_type_day_user ON awards (type, day_key, user_key)',
+  'CREATE INDEX IF NOT EXISTS idx_awards_type_month_user ON awards (type, month_key, user_key)',
+  'CREATE INDEX IF NOT EXISTS idx_awards_user_type_created ON awards (user_key, type, created_at)',
+  'CREATE INDEX IF NOT EXISTS idx_awards_day_user_type ON awards (day_key, user_key, type)',
+  'CREATE INDEX IF NOT EXISTS idx_active_days_day_user ON active_days (day_key, user_key)',
+  'CREATE INDEX IF NOT EXISTS idx_monthly_points ON monthly_users (month_key, points DESC)',
+  'CREATE INDEX IF NOT EXISTS idx_users_points ON users (points_all DESC)',
+]);
 
 export default {
   async fetch(request, env, ctx) {
@@ -64,6 +81,10 @@ export default {
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
     if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community' }, 200, request);
+
+    if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
+      await ensurePerformanceIndexes(env);
+    }
 
     if (url.pathname === '/webhook') {
       if (request.method === 'GET') return verifyWebhook(url, env);
@@ -104,6 +125,23 @@ function json(data, status = 200, request = null, extraHeaders = {}) {
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...extraHeaders };
   if (request) Object.assign(headers, corsHeaders(request));
   return new Response(JSON.stringify(data), { status, headers });
+}
+
+async function ensurePerformanceIndexes(env) {
+  if (performanceIndexesReady) return true;
+  if (!performanceIndexesPromise) {
+    performanceIndexesPromise = env.DB.batch(
+      PERFORMANCE_INDEXES.map((sql) => env.DB.prepare(sql))
+    ).then(() => {
+      performanceIndexesReady = true;
+      return true;
+    }).catch((error) => {
+      performanceIndexesPromise = null;
+      console.error('D1 performance indexes could not be ensured', error);
+      return false;
+    });
+  }
+  return performanceIndexesPromise;
 }
 
 async function readJson(request) {
@@ -1664,53 +1702,52 @@ async function getRewardConfig(force = false) {
 
 async function weeklySnapshot(env, userKeyValue, timestamp = Date.now()) {
   const week = weekKeys(timestamp);
-  const [stats, active, bonusRows] = await Promise.all([
-    env.DB.prepare(`
-      SELECT
-        SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments,
-        COUNT(DISTINCT CASE WHEN type='comment' THEN source_id END) AS distinctPosts,
-        SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
-        SUM(CASE WHEN type='checkin' THEN 1 ELSE 0 END) AS checkins,
-        SUM(CASE WHEN type='prediction_vote' THEN 1 ELSE 0 END) AS predictions
-      FROM awards
-      WHERE user_key=?1 AND day_key BETWEEN ?2 AND ?3
-    `).bind(userKeyValue, week.weekStartKey, week.weekEndKey).first(),
-    env.DB.prepare(`
-      SELECT COUNT(*) AS count
-      FROM active_days
-      WHERE user_key=?1 AND day_key BETWEEN ?2 AND ?3
-    `).bind(userKeyValue, week.weekStartKey, week.weekEndKey).first(),
-    env.DB.prepare(`
-      SELECT type, award_key, points
-      FROM awards
-      WHERE user_key=?1 AND day_key BETWEEN ?2 AND ?3 AND type LIKE 'bonus_%'
-    `).bind(userKeyValue, week.weekStartKey, week.weekEndKey).all(),
-  ]);
-
-  const bonuses = {};
-  for (const row of bonusRows.results || []) {
-    if (row.type === 'bonus_streak_3') bonuses.streak3 = true;
-    if (row.type === 'bonus_streak_5') bonuses.streak5 = true;
-    if (row.type === 'bonus_streak_7') bonuses.streak7 = true;
-    if (row.type === 'bonus_posts_5') bonuses.posts5 = true;
-    if (row.type === 'bonus_posts_10') bonuses.posts10 = true;
-    if (row.type === 'bonus_mix') bonuses.mix = true;
-    if (row.type === 'bonus_mission') bonuses.mission = true;
-    if (row.type === 'bonus_flash') bonuses.flash = true;
-    if (row.type === 'bonus_code') bonuses.code = true;
-  }
+  const stats = await env.DB.prepare(`
+    SELECT
+      SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments,
+      COUNT(DISTINCT CASE WHEN type='comment' THEN source_id END) AS distinctPosts,
+      SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
+      SUM(CASE WHEN type='checkin' THEN 1 ELSE 0 END) AS checkins,
+      SUM(CASE WHEN type='prediction_vote' THEN 1 ELSE 0 END) AS predictions,
+      MAX(CASE WHEN type='bonus_streak_3' THEN 1 ELSE 0 END) AS bonusStreak3,
+      MAX(CASE WHEN type='bonus_streak_5' THEN 1 ELSE 0 END) AS bonusStreak5,
+      MAX(CASE WHEN type='bonus_streak_7' THEN 1 ELSE 0 END) AS bonusStreak7,
+      MAX(CASE WHEN type='bonus_posts_5' THEN 1 ELSE 0 END) AS bonusPosts5,
+      MAX(CASE WHEN type='bonus_posts_10' THEN 1 ELSE 0 END) AS bonusPosts10,
+      MAX(CASE WHEN type='bonus_mix' THEN 1 ELSE 0 END) AS bonusMix,
+      MAX(CASE WHEN type='bonus_mission' THEN 1 ELSE 0 END) AS bonusMission,
+      MAX(CASE WHEN type='bonus_flash' THEN 1 ELSE 0 END) AS bonusFlash,
+      MAX(CASE WHEN type='bonus_code' THEN 1 ELSE 0 END) AS bonusCode,
+      (
+        SELECT COUNT(*)
+        FROM active_days ad
+        WHERE ad.user_key=?1 AND ad.day_key BETWEEN ?2 AND ?3
+      ) AS activeDays
+    FROM awards
+    WHERE user_key=?1 AND day_key BETWEEN ?2 AND ?3
+  `).bind(userKeyValue, week.weekStartKey, week.weekEndKey).first();
 
   return {
     week,
     progress: {
-      activeDays: Number(active?.count || 0),
+      activeDays: Number(stats?.activeDays || 0),
       comments: Number(stats?.comments || 0),
       distinctPosts: Number(stats?.distinctPosts || 0),
       stories: Number(stats?.stories || 0),
       checkins: Number(stats?.checkins || 0),
       predictions: Number(stats?.predictions || 0),
     },
-    bonuses,
+    bonuses: {
+      streak3: Boolean(stats?.bonusStreak3),
+      streak5: Boolean(stats?.bonusStreak5),
+      streak7: Boolean(stats?.bonusStreak7),
+      posts5: Boolean(stats?.bonusPosts5),
+      posts10: Boolean(stats?.bonusPosts10),
+      mix: Boolean(stats?.bonusMix),
+      mission: Boolean(stats?.bonusMission),
+      flash: Boolean(stats?.bonusFlash),
+      code: Boolean(stats?.bonusCode),
+    },
   };
 }
 
@@ -1904,6 +1941,7 @@ async function awardInteraction(env, event) {
         last_interaction_at = MAX(monthly_users.last_interaction_at, excluded.last_interaction_at)
     `).bind(monthKey, event.userKey, event.username, Number(event.points || 0), storyInc, commentInc, newDay, timestamp),
   ]);
+  rankingCache.clear();
 
   if (!String(event.type || '').startsWith('bonus_')) {
     try {
@@ -1930,6 +1968,12 @@ async function getRanking(request, env, url) {
   const requestedWeekTimestamp = period === 'week' ? dayKeyTimestamp(requestedWeek) : null;
   const weekInfo = weekKeys(requestedWeekTimestamp || now);
   const { weekKey, weekStartKey, weekEndKey } = weekInfo;
+  const cacheKey = `${period}:${period === 'week' ? weekStartKey : period === 'month' ? monthKey : 'all'}`;
+  const cached = rankingCache.get(cacheKey);
+
+  if (cached && now - cached.at < RANKING_CACHE_TTL_MS) {
+    return json(cached.payload, 200, request, { 'Cache-Control': 'public, max-age=60' });
+  }
 
   let result;
   if (period === 'all') {
@@ -1957,18 +2001,34 @@ async function getRanking(request, env, url) {
     `).bind(monthKey).all();
   } else {
     result = await env.DB.prepare(`
-      SELECT a.user_key,
-             COALESCE(MAX(u.username), MAX(a.username)) AS username,
-             SUM(a.points) AS points,
-             SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END) AS storyMentions,
-             SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END) AS comments,
-             (SELECT COUNT(*) FROM active_days ad WHERE ad.user_key=a.user_key AND ad.day_key BETWEEN ?1 AND ?2) AS activeDays,
-             MAX(a.created_at) AS lastInteractionAt
-      FROM awards a
-      LEFT JOIN users u ON u.user_key = a.user_key
-      WHERE a.day_key BETWEEN ?1 AND ?2
-      GROUP BY a.user_key
-      ORDER BY points DESC, activeDays DESC, storyMentions DESC, comments DESC, username ASC
+      WITH week_awards AS (
+        SELECT user_key,
+               MAX(username) AS username,
+               SUM(points) AS points,
+               SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS storyMentions,
+               SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments,
+               MAX(created_at) AS lastInteractionAt
+        FROM awards
+        WHERE day_key BETWEEN ?1 AND ?2
+        GROUP BY user_key
+      ),
+      week_active AS (
+        SELECT user_key, COUNT(*) AS activeDays
+        FROM active_days
+        WHERE day_key BETWEEN ?1 AND ?2
+        GROUP BY user_key
+      )
+      SELECT w.user_key,
+             COALESCE(u.username, w.username) AS username,
+             w.points,
+             w.storyMentions,
+             w.comments,
+             COALESCE(a.activeDays, 0) AS activeDays,
+             w.lastInteractionAt
+      FROM week_awards w
+      LEFT JOIN users u ON u.user_key = w.user_key
+      LEFT JOIN week_active a ON a.user_key = w.user_key
+      ORDER BY w.points DESC, activeDays DESC, w.storyMentions DESC, w.comments DESC, username ASC
       LIMIT 500
     `).bind(weekStartKey, weekEndKey).all();
   }
@@ -1987,7 +2047,7 @@ async function getRanking(request, env, url) {
     updatedAt = Math.max(updatedAt, Number(row.lastInteractionAt || 0));
   }
 
-  return json({
+  const payload = {
     updatedAt,
     rules: RULES,
     period: {
@@ -1999,7 +2059,10 @@ async function getRanking(request, env, url) {
       historical: period === 'week' && Boolean(requestedWeekTimestamp),
     },
     users,
-  }, 200, request, { 'Cache-Control': 'public, max-age=60' });
+  };
+  rankingCache.set(cacheKey, { at: now, payload });
+
+  return json(payload, 200, request, { 'Cache-Control': 'public, max-age=60' });
 }
 
 async function getWeeklyHistory(request, env, url) {
@@ -2010,90 +2073,93 @@ async function getWeeklyHistory(request, env, url) {
   const cutoff = shiftDayKey(currentWeek.weekStartKey, -(limit + 2) * 7);
 
   const result = await env.DB.prepare(`
-    SELECT a.day_key,
-           a.user_key,
-           COALESCE(MAX(u.username), MAX(a.username)) AS username,
-           SUM(a.points) AS points,
-           SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END) AS storyMentions,
-           SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END) AS comments,
-           MAX(a.created_at) AS lastInteractionAt
-    FROM awards a
-    LEFT JOIN users u ON u.user_key = a.user_key
-    WHERE a.day_key >= ?1
-    GROUP BY a.day_key, a.user_key
-    ORDER BY a.day_key DESC
-  `).bind(cutoff).all();
-
-  const activeResult = await env.DB.prepare(`
-    SELECT user_key, day_key
-    FROM active_days
-    WHERE day_key >= ?1
-  `).bind(cutoff).all();
-  const activeByWeekUser = new Map();
-  for (const row of activeResult.results || []) {
-    const stamp = dayKeyTimestamp(row.day_key);
-    if (!stamp) continue;
-    const wk = weekKeys(stamp);
-    const key = `${wk.weekStartKey}:${row.user_key}`;
-    if (!activeByWeekUser.has(key)) activeByWeekUser.set(key, new Set());
-    activeByWeekUser.get(key).add(row.day_key);
-  }
+    WITH award_rows AS (
+      SELECT
+        date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
+        user_key,
+        username,
+        points,
+        type,
+        created_at
+      FROM awards
+      WHERE day_key >= ?1
+    ),
+    award_weeks AS (
+      SELECT
+        weekStart,
+        user_key,
+        MAX(username) AS username,
+        SUM(points) AS points,
+        SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS storyMentions,
+        SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments,
+        MAX(created_at) AS lastInteractionAt
+      FROM award_rows
+      GROUP BY weekStart, user_key
+    ),
+    active_rows AS (
+      SELECT
+        date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
+        user_key
+      FROM active_days
+      WHERE day_key >= ?1
+    ),
+    active_weeks AS (
+      SELECT weekStart, user_key, COUNT(*) AS activeDays
+      FROM active_rows
+      GROUP BY weekStart, user_key
+    )
+    SELECT
+      w.weekStart,
+      w.user_key,
+      COALESCE(u.username, w.username) AS username,
+      w.points,
+      w.storyMentions,
+      w.comments,
+      COALESCE(a.activeDays, 0) AS activeDays,
+      w.lastInteractionAt
+    FROM award_weeks w
+    LEFT JOIN users u ON u.user_key = w.user_key
+    LEFT JOIN active_weeks a ON a.weekStart = w.weekStart AND a.user_key = w.user_key
+    WHERE w.weekStart < ?2
+    ORDER BY w.weekStart DESC, w.points DESC, activeDays DESC, w.storyMentions DESC, w.comments DESC, username ASC
+  `).bind(cutoff, currentWeek.weekStartKey).all();
 
   const weeks = new Map();
   for (const row of result.results || []) {
-    const stamp = dayKeyTimestamp(row.day_key);
-    if (!stamp) continue;
-    const wk = weekKeys(stamp);
-    if (wk.weekStartKey === currentWeek.weekStartKey) continue;
-
-    if (!weeks.has(wk.weekStartKey)) {
-      weeks.set(wk.weekStartKey, { weekKey: wk.weekKey, weekStart: wk.weekStartKey, weekEnd: wk.weekEndKey, users: new Map() });
+    const weekStart = String(row.weekStart || '');
+    if (!weekStart) continue;
+    if (!weeks.has(weekStart)) {
+      const stamp = dayKeyTimestamp(weekStart);
+      if (!stamp) continue;
+      const wk = weekKeys(stamp);
+      weeks.set(weekStart, {
+        weekKey: wk.weekKey,
+        weekStart: wk.weekStartKey,
+        weekEnd: wk.weekEndKey,
+        participants: 0,
+        winner: null,
+      });
     }
 
-    const week = weeks.get(wk.weekStartKey);
-    const existing = week.users.get(row.user_key) || {
-      userKey: row.user_key,
-      username: row.username || 'usuario',
-      points: 0,
-      storyMentions: 0,
-      comments: 0,
-      lastInteractionAt: 0,
-    };
-    existing.username = row.username || existing.username;
-    existing.points += Number(row.points || 0);
-    existing.storyMentions += Number(row.storyMentions || 0);
-    existing.comments += Number(row.comments || 0);
-    existing.lastInteractionAt = Math.max(existing.lastInteractionAt, Number(row.lastInteractionAt || 0));
-    week.users.set(row.user_key, existing);
+    const week = weeks.get(weekStart);
+    week.participants += 1;
+    if (!week.winner) {
+      week.winner = {
+        userKey: row.user_key,
+        username: row.username || 'usuario',
+        points: Number(row.points || 0),
+        storyMentions: Number(row.storyMentions || 0),
+        comments: Number(row.comments || 0),
+        activeDays: Number(row.activeDays || 0),
+        lastInteractionAt: Number(row.lastInteractionAt || 0),
+      };
+    }
   }
 
   const history = [...weeks.values()]
-    .sort((a,b) => b.weekStart.localeCompare(a.weekStart))
+    .sort((a, b) => b.weekStart.localeCompare(a.weekStart))
     .slice(0, limit)
-    .map(week => {
-      const ranked = [...week.users.values()].sort((a,b) => {
-        const aDays = activeByWeekUser.get(`${week.weekStart}:${a.userKey}`)?.size || 0;
-        const bDays = activeByWeekUser.get(`${week.weekStart}:${b.userKey}`)?.size || 0;
-        return b.points - a.points || bDays - aDays || b.storyMentions - a.storyMentions || b.comments - a.comments || a.username.localeCompare(b.username, 'pt-BR');
-      });
-      const top = ranked[0] || null;
-      return {
-        weekKey: week.weekKey,
-        weekStart: week.weekStart,
-        weekEnd: week.weekEnd,
-        participants: ranked.length,
-        winner: top ? {
-          userKey: top.userKey,
-          username: top.username,
-          points: top.points,
-          storyMentions: top.storyMentions,
-          comments: top.comments,
-          activeDays: activeByWeekUser.get(`${week.weekStart}:${top.userKey}`)?.size || 0,
-          lastInteractionAt: top.lastInteractionAt,
-        } : null,
-      };
-    })
-    .filter(item => item.winner);
+    .filter((item) => item.winner);
 
   return json({
     currentWeek: { weekKey: currentWeek.weekKey, weekStart: currentWeek.weekStartKey, weekEnd: currentWeek.weekEndKey },
