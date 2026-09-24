@@ -69,3 +69,19 @@
 @media(max-width:680px){
   .cff-admin-tabs{justify-content:flex-start!important}
 }
+
+/* 2026-09-24: ferramentas acima das abas + atalho detetive */
+.admin-detective-btn{width:42px;min-width:42px;padding-inline:0;font-size:1.05rem;display:inline-grid;place-items:center}
+.admin-abuse-dialog{width:min(760px,calc(100vw - 28px));border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(15,27,45,.985),rgba(7,13,23,.99));color:var(--text);padding:18px;box-shadow:0 34px 100px rgba(0,0,0,.58)}
+.admin-abuse-dialog::backdrop{background:rgba(1,5,10,.72);backdrop-filter:blur(5px)}
+.admin-abuse-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:0 0 14px;padding:0;background:none;border:0}
+.admin-abuse-dialog-head h2{margin:4px 0 0;font-size:1.25rem}
+.admin-abuse-close{width:38px;height:38px;padding:0;display:grid;place-items:center;font-size:1.2rem}
+.admin-abuse-dialog .admin-community-recalc{margin-top:0;grid-template-columns:1fr}
+.admin-abuse-dialog .admin-community-recalc-controls{grid-template-columns:minmax(0,1fr) auto}
+@media(max-width:620px){
+  .admin-header-actions{gap:7px}
+  .admin-abuse-dialog{padding:14px}
+  .admin-abuse-dialog .admin-community-recalc-controls{grid-template-columns:1fr}
+  .admin-abuse-dialog .admin-community-recalc-controls .admin-btn{width:100%}
+}
