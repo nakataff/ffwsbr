@@ -52,3 +52,12 @@
 .admin-chip.is-scheduled{color:#ffd36a;border-color:rgba(255,211,106,.34);background:rgba(255,193,7,.10)}
 .admin-chip.is-scheduled-time{color:#d7e8ff;border-color:rgba(120,180,255,.26);background:rgba(70,130,210,.08);text-transform:none;letter-spacing:0}
 #news-schedule-field[hidden]{display:none!important}
+
+/* 2026-09-24: correção administrativa do ranking da comunidade */
+.admin-community-recalc{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,.8fr);gap:14px;align-items:center;margin-top:16px;padding:14px;border:1px solid rgba(255,190,70,.18);border-radius:13px;background:rgba(255,190,70,.035)}
+.admin-community-recalc strong{display:block;color:#fff;font-size:.9rem}
+.admin-community-recalc small{display:block;margin-top:5px;color:var(--muted);font-size:.74rem;line-height:1.45}
+.admin-community-recalc-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.admin-community-recalc-controls input{min-width:0}
+.admin-community-recalc .admin-message{grid-column:1/-1;margin:0}
+@media(max-width:760px){.admin-community-recalc{grid-template-columns:1fr}.admin-community-recalc-controls{grid-template-columns:1fr}.admin-community-recalc-controls .admin-btn{width:100%}}
