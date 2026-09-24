@@ -709,8 +709,8 @@ function renderLiveList() {
   $('#admin-live-summary').textContent = `${sorted.length} live${sorted.length === 1 ? '' : 's'} cadastrada${sorted.length === 1 ? '' : 's'}`;
   liveList.innerHTML = sorted.length ? sorted.map((item) => {
     const status = liveStatus(item);
-    const regionLabel = item.regiao === 'internacional' ? '🌎 INTERNACIONAL' : '🇧🇷 BRASIL';
-    const levelLabel = item.nivel === 'amador' ? '🎮 AMADOR' : '✅ OFICIAL';
+    const regionLabel = item.regiao === 'internacional' ? 'INTERNACIONAL' : 'BR';
+    const levelLabel = item.nivel === 'amador' ? 'AMADOR' : 'OFICIAL';
     return `<div class="admin-live-row">
       <span class="admin-live-status is-${status.key}">${status.label}</span>
       <div class="admin-live-copy"><strong>${escapeHTML(item.torneio)}</strong><small>${escapeHTML([item.faseDia, item.canal].filter(Boolean).join(' • '))}</small><span>${escapeHTML(formatLiveDate(item.inicio))} • ${escapeHTML(formatLiveDuration(item.duracaoMinutos))}</span><span class="admin-live-taxonomy">${regionLabel} · ${levelLabel}</span>${(item.url ? 1 : 0) + (item.links?.length || 0) > 1 ? `<span class="admin-live-link-count">▶ ${(item.url ? 1 : 0) + (item.links?.length || 0)} transmissões</span>` : ''}</div>
