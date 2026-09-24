@@ -98,7 +98,8 @@ function organizeDashboard() {
     ['analytics', 'ANALYTICS'],
     ['lives', 'TRANSMISSÕES'],
     ['news', 'NOTÍCIAS'],
-    ['titles', 'TÍTULOS']
+    ['titles', 'TÍTULOS'],
+    ['tools', 'FERRAMENTAS']
   ];
   tabs.innerHTML = sections.map(([key, label]) => `<button class="cff-admin-tab" type="button" data-admin-tab="${key}">${label}</button>`).join('');
 
@@ -106,6 +107,7 @@ function organizeDashboard() {
   (privatePanel || welcome).insertAdjacentElement('afterend', tabs);
 
   const views = Object.fromEntries(sections.map(([key]) => [key, createView(key)]));
+  tabs.insertAdjacentElement('afterend', views.tools);
   tabs.insertAdjacentElement('afterend', views.titles);
   tabs.insertAdjacentElement('afterend', views.news);
   tabs.insertAdjacentElement('afterend', views.lives);
@@ -120,6 +122,7 @@ function organizeDashboard() {
   [statGrid, dashGrid, gaPanel].filter(Boolean).forEach((node) => views.analytics.appendChild(node));
   [livePanel].filter(Boolean).forEach((node) => views.lives.appendChild(node));
   [editorPanel, managementPanel].filter(Boolean).forEach((node) => views.news.appendChild(node));
+  if (privatePanel) views.tools.appendChild(privatePanel);
   views.titles.appendChild(buildTitlesPanel());
 
   tabs.addEventListener('click', (event) => {
@@ -134,7 +137,7 @@ function organizeDashboard() {
 
   bindTitleEvents();
   const saved = localStorage.getItem('cff_admin_section_v1');
-  selectSection(['analytics','lives','news','titles'].includes(saved) ? saved : 'analytics');
+  selectSection(['analytics','lives','news','titles','tools'].includes(saved) ? saved : 'analytics');
 }
 
 function selectSection(key) {
