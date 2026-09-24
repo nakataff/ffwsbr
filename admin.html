@@ -19,7 +19,7 @@
   </script>
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+  <link rel="stylesheet" href="css/admin.css?v=20260924-live-links-v1">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
   <script type="module" src="js/admin.js?v=20260917-standings-import-v29"></script>
@@ -122,7 +122,13 @@
           <div class="admin-field"><label for="live-tournament">Nome do torneio</label><input id="live-tournament" maxlength="120" required placeholder="Ex.: FFWS LATAM"></div>
           <div class="admin-field"><label for="live-phase-day">Fase e dia</label><input id="live-phase-day" maxlength="100" placeholder="Ex.: CLASS. / DIA 10"></div>
           <div class="admin-field"><label for="live-channel">Canal do torneio</label><input id="live-channel" maxlength="120" required placeholder="Ex.: FF LATAM"></div>
-          <div class="admin-field admin-field-wide"><label for="live-url">Link da transmissão ou do canal <span class="admin-optional">(opcional)</span></label><input id="live-url" type="url" placeholder="https://www.youtube.com/@canal ou https://www.youtube.com/watch?v=..."><small>Se for um canal do YouTube, a home abre automaticamente o endereço /live para cair na transmissão atual.</small></div>
+          <div class="admin-field admin-field-wide"><label for="live-url">Transmissão principal <span class="admin-optional">(opcional)</span></label><input id="live-url" type="url" placeholder="https://www.youtube.com/@canal ou https://www.youtube.com/watch?v=..."><small>Se for um canal do YouTube, a home abre automaticamente o endereço /live para cair na transmissão atual.</small></div>
+          <div class="admin-field admin-field-wide">
+            <label>Transmissões alternativas <span class="admin-optional">(opcional)</span></label>
+            <div id="live-alt-links" class="admin-live-alt-links"></div>
+            <button id="live-add-alt-link" class="admin-btn admin-btn-ghost admin-live-add-alt" type="button">+ Adicionar transmissão alternativa</button>
+            <small>Você pode cadastrar co-streams ou canais alternativos. Na home eles aparecem como ícones clicáveis separados.</small>
+          </div>
           <div class="admin-field"><label for="live-link-mode">Quando liberar o link?</label><select id="live-link-mode"><option value="schedule" selected>Somente no horário de início</option><option value="always">Sempre disponível</option></select><small>Use “Somente no horário” quando o canal transmite torneios diferentes.</small></div>
           <div class="admin-field"><label for="live-start">Dia e hora que começa</label><input id="live-start" type="datetime-local" required><small>Horário de Brasília (BRT)</small></div>
           <div class="admin-field"><label>Duração</label><div class="admin-duration-row"><label class="admin-mini-field"><input id="live-duration-hours" type="number" min="0" max="72" step="1" value="3" required><span>horas</span></label><label class="admin-mini-field"><input id="live-duration-minutes" type="number" min="0" max="59" step="1" value="0" required><span>minutos</span></label></div></div>
@@ -134,7 +140,13 @@
           <p id="admin-live-message" class="admin-message admin-field-wide" aria-live="polite"></p>
         </form>
 
-        <div class="admin-live-list-head"><div><p class="admin-eyebrow">Agenda</p><h3>Lives cadastradas</h3></div><span id="admin-live-summary" class="admin-muted">Carregando...</span></div>
+        <div class="admin-live-list-head">
+          <div><p class="admin-eyebrow">Agenda</p><h3>Lives cadastradas</h3></div>
+          <div class="admin-live-list-tools">
+            <span id="admin-live-summary" class="admin-muted">Carregando...</span>
+            <button id="admin-clear-ended-lives" class="admin-btn admin-btn-ghost" type="button">Limpar encerradas</button>
+          </div>
+        </div>
         <div id="admin-live-list" class="admin-live-list"><div class="admin-empty">Carregando lives...</div></div>
       </section>
 
