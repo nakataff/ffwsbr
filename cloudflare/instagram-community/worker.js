@@ -4,6 +4,7 @@ const RULES = Object.freeze({
   checkinPoints: 1,
   storyMentionDailyLimit: 3,
   commentLimitPerMedia: 1,
+  commentMediaMaxAgeDays: 7,
   ffwsPredictionParticipationPoints: 1,
   ffwsPredictionNearestPoints: 5,
   ffwsPredictionComboPoints: 3,
@@ -266,6 +267,37 @@ async function processComment(env, entry) {
   if (!identity || (!mediaId && !commentId)) return;
 
   const timestamp = normalizeTimestamp(entry.time);
+
+  // O ranking premia interação recorrente com conteúdo recente.
+  // Comentários em posts/Reels com mais de 7 dias não geram pontos.
+  // Se não for possível confirmar a data da mídia, não pontua (fail closed)
+  // para evitar que uma falha de consulta vire brecha de farm.
+  if (mediaId) {
+    const inlinePublishedAt = Date.parse(String(media.timestamp || media.created_time || ''));
+    const publishedAt = Number.isFinite(inlinePublishedAt)
+      ? inlinePublishedAt
+      : await fetchMediaTimestamp(mediaId, env.INSTAGRAM_ACCESS_TOKEN);
+    const maxAgeMs = RULES.commentMediaMaxAgeDays * 24 * 60 * 60 * 1000;
+    const ageMs = publishedAt ? timestamp - publishedAt : Number.POSITIVE_INFINITY;
+    if (!publishedAt || ageMs < -5 * 60 * 1000 || ageMs > maxAgeMs) {
+      try {
+        await env.DB.prepare('INSERT INTO raw_events (kind, payload, received_at) VALUES (?1, ?2, ?3)')
+          .bind('comment_rejected_media_age', JSON.stringify({
+            mediaId,
+            commentId,
+            username: username || fallbackUsername(identity),
+            eventAt: timestamp,
+            mediaPublishedAt: publishedAt || 0,
+            maxAgeDays: RULES.commentMediaMaxAgeDays,
+          }), Date.now()).run();
+      } catch (_) {}
+      return;
+    }
+  } else {
+    // Sem mediaId não é possível validar a idade da publicação.
+    return;
+  }
+
   const key = await userKey(identity, username);
   const awarded = await awardInteraction(env, {
     awardKey: `comment:${key}:${mediaId || commentId}`,
@@ -434,18 +466,9 @@ async function fetchInstagramUsername(identity, accessToken) {
 }
 async function fetchMediaTimestamp(mediaId, accessToken) {
   if (!mediaId || !accessToken) return 0;
-  try {
-    const url = new URL(`https://graph.instagram.com/${GRAPH_VERSION}/${encodeURIComponent(mediaId)}`);
-    url.searchParams.set('fields', 'timestamp');
-    url.searchParams.set('access_token', accessToken);
-    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-    if (!response.ok) return 0;
-    const data = await response.json();
-    const value = Date.parse(String(data?.timestamp || ''));
-    return Number.isFinite(value) ? value : 0;
-  } catch (_) {
-    return 0;
-  }
+  const data = await fetchInstagramGraphJson(mediaId, 'timestamp', accessToken);
+  const value = Date.parse(String(data?.timestamp || ''));
+  return Number.isFinite(value) ? value : 0;
 }
 
 async function maybeAwardFastComment(env, event) {
