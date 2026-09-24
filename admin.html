@@ -19,10 +19,10 @@
   </script>
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260924-live-filters-v4">
+  <link rel="stylesheet" href="css/admin.css?v=20260924-detective-tools-v5">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
-  <script type="module" src="js/admin.js?v=20260924-private-tools-v34"></script>
+  <script type="module" src="js/admin.js?v=20260924-detective-tools-v35"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -30,6 +30,7 @@
       <a class="admin-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
       <div class="admin-header-actions">
         <a class="admin-btn admin-btn-ghost" href="index.html">Ver site</a>
+        <button id="admin-abuse-tools" class="admin-btn admin-btn-ghost admin-detective-btn" type="button" title="Corrigir abuso no ranking" aria-label="Corrigir abuso no ranking" hidden>🕵️</button>
         <button id="admin-logout" class="admin-btn admin-btn-danger" type="button" hidden>Sair</button>
       </div>
     </header>
@@ -56,14 +57,24 @@
         <button id="admin-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button>
       </div>
 
-      <section class="admin-panel" style="margin-bottom:16px">
+      <section class="admin-panel admin-central-tools-panel" style="margin-bottom:16px">
         <div class="admin-panel-head admin-panel-head-wrap">
-          <div><p class="admin-eyebrow">Ferramentas privadas</p><h2>Controle de premiações</h2><p class="admin-muted">Os codiguinhos ficam fora do HTML público e são lidos apenas com sua sessão administrativa + chave de criptografia.</p></div>
+          <div><p class="admin-eyebrow">Ferramentas privadas</p><h2>Ferramentas Central FF</h2><p class="admin-muted">Atalhos administrativos para edição, dados, premiações e comunidade.</p></div>
           <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html">🎁 Abrir Codiguinhos</a>
         </div>
+      </section>
+
+      <dialog id="admin-abuse-dialog" class="admin-abuse-dialog">
+        <form method="dialog" class="admin-abuse-dialog-head">
+          <div>
+            <p class="admin-eyebrow">🕵️ Ferramenta privada</p>
+            <h2>Corrigir abuso no ranking</h2>
+          </div>
+          <button class="admin-btn admin-btn-ghost admin-abuse-close" type="submit" value="close" aria-label="Fechar">×</button>
+        </form>
         <div class="admin-community-recalc">
           <div>
-            <strong>Corrigir abuso no ranking de interações</strong>
+            <strong>Recalcular interações suspeitas</strong>
             <small>Recalcula a semana atual pela regra de 7 dias e remove comentários comprovadamente feitos em posts antigos. A operação usa sua sessão admin.</small>
           </div>
           <div class="admin-community-recalc-controls">
@@ -72,7 +83,7 @@
           </div>
           <p id="admin-ranking-recalc-message" class="admin-message" aria-live="polite"></p>
         </div>
-      </section>
+      </dialog>
 
       <div class="admin-stat-grid">
         <article class="admin-stat-card"><span>Visualizações do site</span><strong id="stat-page-views">0</strong><small>Somadas por página e seção</small></article>
