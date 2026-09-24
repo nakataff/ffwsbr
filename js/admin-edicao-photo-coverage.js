@@ -12,7 +12,7 @@
 
   function loadTransformBox(){
     if(window.__CFF_ADMIN_EDICAO_TRANSFORM_BOX__||document.querySelector('script[data-cff-transform-box]'))return;
-    const script=document.createElement('script');script.src='js/admin-edicao-transform-box.js?v=20260923-live-move-v11';script.defer=true;script.dataset.cffTransformBox='1';document.head.appendChild(script);
+    const script=document.createElement('script');script.src='js/admin-edicao-transform-box.js?v=20260924-art-clip-zoom-v12';script.defer=true;script.dataset.cffTransformBox='1';document.head.appendChild(script);
   }
 
   function loadPerformance(){
