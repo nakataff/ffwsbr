@@ -14,6 +14,8 @@ const $ = (selector) => document.querySelector(selector);
 const loginSection = $('#admin-login');
 const dashboard = $('#admin-dashboard');
 const logoutButton = $('#admin-logout');
+const abuseToolsButton = $('#admin-abuse-tools');
+const abuseDialog = $('#admin-abuse-dialog');
 const loginForm = $('#admin-login-form');
 const loginMessage = $('#admin-login-message');
 const formMessage = $('#admin-form-message');
@@ -1180,6 +1182,8 @@ onAuthStateChanged(auth, async (user) => {
   loginSection.hidden = allowed;
   dashboard.hidden = !allowed;
   logoutButton.hidden = !allowed;
+  if (abuseToolsButton) abuseToolsButton.hidden = !allowed;
+  if (!allowed && abuseDialog?.open) abuseDialog.close();
   if (user && !allowed) await signOut(auth);
   if (allowed) { clearForm(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives()]); }
 });
@@ -1264,6 +1268,14 @@ async function recalculateCommunityRanking() {
 }
 
 logoutButton.addEventListener('click', () => signOut(auth));
+abuseToolsButton?.addEventListener('click', () => {
+  if (!auth.currentUser || !isAdmin(auth.currentUser) || !abuseDialog) return;
+  if (typeof abuseDialog.showModal === 'function') abuseDialog.showModal();
+  else abuseDialog.setAttribute('open', '');
+});
+abuseDialog?.addEventListener('click', (event) => {
+  if (event.target === abuseDialog) abuseDialog.close?.();
+});
 $('#admin-toggle-password').addEventListener('click', () => {
   const input = $('#admin-password');
   input.type = input.type === 'password' ? 'text' : 'password';
