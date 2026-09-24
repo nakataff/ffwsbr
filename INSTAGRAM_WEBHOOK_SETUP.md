@@ -4,7 +4,7 @@ O backend está em `functions/index.js` e grava automaticamente no Realtime Data
 
 ## O que ele contabiliza
 
-- Comentário: **+2 pontos**, no máximo uma vez por usuário em cada publicação/Reel.
+- Comentário: **+2 pontos**, no máximo uma vez por usuário em cada publicação/Reel e somente quando o conteúdo foi publicado há no máximo **7 dias**.
 - Menção da Central em Story: **+10 pontos**, uma vez por Story, com limite padrão de **3 Stories por dia por usuário**.
 - Reenvios do mesmo webhook pela Meta são deduplicados e não pontuam novamente.
 - O ranking mensal e o ranking geral são atualizados automaticamente.
