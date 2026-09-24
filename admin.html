@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="css/admin.css?v=20260924-live-links-v1">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
-  <script type="module" src="js/admin.js?v=20260917-standings-import-v29"></script>
+  <script type="module" src="js/admin.js?v=20260924-live-ranking-tools-v30"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -60,6 +60,17 @@
         <div class="admin-panel-head admin-panel-head-wrap">
           <div><p class="admin-eyebrow">Ferramentas privadas</p><h2>Controle de premiações</h2><p class="admin-muted">Os codiguinhos ficam fora do HTML público e são lidos apenas com sua sessão administrativa + chave de criptografia.</p></div>
           <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html">🎁 Abrir Codiguinhos</a>
+        </div>
+        <div class="admin-community-recalc">
+          <div>
+            <strong>Corrigir abuso no ranking de interações</strong>
+            <small>Recalcula a semana atual pela regra de 7 dias e remove comentários comprovadamente feitos em posts antigos. A operação usa sua sessão admin.</small>
+          </div>
+          <div class="admin-community-recalc-controls">
+            <input id="admin-ranking-recalc-users" value="@ghost819281, @apela_009" aria-label="Usuários para recalcular">
+            <button id="admin-ranking-recalc" class="admin-btn admin-btn-ghost" type="button">Recalcular ranking</button>
+          </div>
+          <p id="admin-ranking-recalc-message" class="admin-message" aria-live="polite"></p>
         </div>
       </section>
 
