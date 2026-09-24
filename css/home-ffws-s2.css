@@ -913,12 +913,74 @@
   gap: 14px;
   min-width: 0;
 }
-.home-upcoming-widget .home-widget-body {
-  align-items: stretch;
-  justify-content: flex-start;
-  min-height: 0;
+.home-upcoming-section {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(10,16,27,.94), rgba(7,12,21,.97));
+  overflow: hidden;
 }
-.home-upcoming-widget #lives-upcoming-container { flex: 0 0 auto; }
+.home-upcoming-section > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 14px;
+  list-style: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 950;
+}
+.home-upcoming-section > summary::-webkit-details-marker { display: none; }
+.home-upcoming-section > summary small {
+  color: #6f88a3;
+  font-size: .56rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.home-upcoming-section[open] > summary {
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.home-upcoming-body { padding: 10px; }
+.home-upcoming-section #lives-upcoming-container { display: grid; gap: 8px; }
+.home-upcoming-more {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 9px;
+  border: 1px solid rgba(0,200,255,.28);
+  border-radius: 9px;
+  background: rgba(0,200,255,.055);
+  color: var(--accent);
+  font: inherit;
+  font-size: .68rem;
+  font-weight: 950;
+  cursor: pointer;
+}
+.home-upcoming-more:hover { background: rgba(0,200,255,.10); }
+.cff-live-alt-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding-left: 7px;
+}
+.cff-live-alt-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 7px;
+  background: #ff1738;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 1000;
+  box-shadow: 0 4px 10px rgba(255,23,56,.18);
+  cursor: pointer;
+}
+.cff-live-alt-link:hover { filter: brightness(1.1); transform: translateY(-1px); }
 .home-weekly-selection-widget {
   display: flex;
   flex-direction: column;
