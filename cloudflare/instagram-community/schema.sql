@@ -86,6 +86,12 @@ CREATE INDEX IF NOT EXISTS idx_awards_type_award_key
 CREATE INDEX IF NOT EXISTS idx_awards_user_day_type
   ON awards (user_key, day_key, type);
 
+CREATE INDEX IF NOT EXISTS idx_awards_day_user_type
+  ON awards (day_key, user_key, type);
+
+CREATE INDEX IF NOT EXISTS idx_active_days_day_user
+  ON active_days (day_key, user_key);
+
 CREATE INDEX IF NOT EXISTS idx_awards_type_day_user
   ON awards (type, day_key, user_key);
 
