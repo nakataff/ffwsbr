@@ -534,6 +534,10 @@ function normalizeLive(raw, id = '') {
     faseDia: String(raw && (raw.faseDia || raw.fase_dia || '') || '').trim(),
     canal: String(raw && raw.canal || '').trim(),
     url: String(raw && raw.url || '').trim(),
+    links: (Array.isArray(raw && raw.links) ? raw.links : Object.values(raw && raw.links || {})).map((link, index) => ({
+      label: String(link && (link.label || link.nome || link.canal) || `Alternativa ${index + 1}`).trim().slice(0, 80),
+      url: String(link && (link.url || link.link) || '').trim()
+    })).filter((link) => link.url),
     linkMode: String(raw && raw.linkMode || '').trim().toLowerCase() === 'schedule' ? 'schedule' : 'always',
     inicio: String(raw && (raw.inicio || raw.data_hora || '') || '').trim(),
     duracaoMinutos: Number.isFinite(durationMinutes) ? Math.max(0, Math.round(durationMinutes)) : 0,
@@ -583,6 +587,30 @@ function formatLiveDuration(minutes) {
   return `${mins}min`;
 }
 
+function liveAltRow(link = {}) {
+  const row = document.createElement('div');
+  row.className = 'admin-live-alt-row';
+  row.innerHTML = '<input class="live-alt-label" maxlength="80" placeholder="Nome (ex.: CazéTV)"><input class="live-alt-url" type="url" placeholder="https://youtube.com/..."><button class="admin-btn admin-btn-ghost admin-live-alt-remove" type="button" title="Remover alternativa">×</button>';
+  row.querySelector('.live-alt-label').value = String(link.label || '');
+  row.querySelector('.live-alt-url').value = String(link.url || '');
+  row.querySelector('.admin-live-alt-remove').addEventListener('click', () => row.remove());
+  return row;
+}
+
+function renderLiveAltLinks(links = []) {
+  const host = $('#live-alt-links');
+  if (!host) return;
+  host.replaceChildren();
+  (Array.isArray(links) ? links : []).forEach((link) => host.appendChild(liveAltRow(link)));
+}
+
+function readLiveAltLinks() {
+  return [...document.querySelectorAll('#live-alt-links .admin-live-alt-row')].map((row, index) => ({
+    label: row.querySelector('.live-alt-label')?.value.trim() || `Alternativa ${index + 1}`,
+    url: row.querySelector('.live-alt-url')?.value.trim() || ''
+  })).filter((link) => link.url);
+}
+
 function clearLiveForm() {
   if (!liveForm) return;
   liveForm.reset();
@@ -591,6 +619,7 @@ function clearLiveForm() {
   $('#live-duration-minutes').value = '0';
   $('#live-link-mode').value = 'schedule';
   $('#live-type').value = 'mobile';
+  renderLiveAltLinks([]);
   $('#live-editor-title').textContent = 'Nova live';
   setMessage($('#admin-live-message'), '');
 }
@@ -602,6 +631,7 @@ function fillLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  renderLiveAltLinks(item.links || []);
   $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
   $('#live-start').value = item.inicio.slice(0, 16);
   $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
@@ -619,6 +649,7 @@ function duplicateLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  renderLiveAltLinks(item.links || []);
   $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
   $('#live-start').value = item.inicio.slice(0, 16);
   $('#live-duration-hours').value = String(Math.floor(item.duracaoMinutos / 60));
@@ -638,6 +669,7 @@ function readLiveForm() {
     faseDia: $('#live-phase-day').value.trim(),
     canal: $('#live-channel').value.trim(),
     url: $('#live-url').value.trim(),
+    links: readLiveAltLinks(),
     linkMode: $('#live-link-mode').value === 'schedule' ? 'schedule' : 'always',
     inicio: $('#live-start').value.trim(),
     duracaoMinutos: Math.round(hours * 60 + minutes),
@@ -660,7 +692,7 @@ function renderLiveList() {
     const typeLabel = item.tipo === 'emulador' ? 'EMULADOR' : item.tipo === 'misto' ? 'MISTO' : 'MOBILE';
     return `<div class="admin-live-row">
       <span class="admin-live-status is-${status.key}">${status.label}</span>
-      <div class="admin-live-copy"><strong>${escapeHTML(item.torneio)}</strong><small>${escapeHTML([item.faseDia, item.canal].filter(Boolean).join(' • '))}</small><span>${escapeHTML(formatLiveDate(item.inicio))} • ${escapeHTML(formatLiveDuration(item.duracaoMinutos))} • ${typeLabel}</span></div>
+      <div class="admin-live-copy"><strong>${escapeHTML(item.torneio)}</strong><small>${escapeHTML([item.faseDia, item.canal].filter(Boolean).join(' • '))}</small><span>${escapeHTML(formatLiveDate(item.inicio))} • ${escapeHTML(formatLiveDuration(item.duracaoMinutos))} • ${typeLabel}</span>${(item.url ? 1 : 0) + (item.links?.length || 0) > 1 ? `<span class="admin-live-link-count">▶ ${(item.url ? 1 : 0) + (item.links?.length || 0)} transmissões</span>` : ''}</div>
       <div class="admin-live-actions"><button class="admin-btn admin-btn-ghost" type="button" data-edit-live="${escapeHTML(item.id)}">Editar</button><button class="admin-btn admin-btn-ghost" type="button" data-duplicate-live="${escapeHTML(item.id)}">Duplicar</button><button class="admin-btn admin-btn-danger" type="button" data-delete-live="${escapeHTML(item.id)}">Excluir</button></div>
     </div>`;
   }).join('') : '<div class="admin-empty">Nenhuma live cadastrada no painel</div>';
@@ -694,6 +726,8 @@ async function saveLive(event) {
     faseDia: item.faseDia,
     canal: item.canal,
     url: item.url,
+    links: item.links,
+    linkMode: item.linkMode,
     inicio: item.inicio,
     duracaoMinutos: item.duracaoMinutos,
     tipo: item.tipo,
@@ -727,6 +761,30 @@ async function deleteLive(id) {
   } catch (error) {
     alert('Não foi possível excluir a live.');
     console.error(error);
+  }
+}
+
+async function clearEndedLives() {
+  const ended = allLives.filter((item) => liveStatus(item).key === 'ended');
+  if (!ended.length) {
+    setMessage($('#admin-live-message'), 'Não há transmissões encerradas para limpar.');
+    return;
+  }
+  if (!confirm(`Remover ${ended.length} transmissão${ended.length === 1 ? '' : 'ões'} já encerrada${ended.length === 1 ? '' : 's'}?`)) return;
+  const button = $('#admin-clear-ended-lives');
+  if (button) button.disabled = true;
+  try {
+    const updates = {};
+    ended.forEach((item) => { updates['adminLives/' + item.id] = null; });
+    await update(ref(database), updates);
+    if (ended.some((item) => item.id === $('#live-original-id').value)) clearLiveForm();
+    setMessage($('#admin-live-message'), `${ended.length} transmissão${ended.length === 1 ? '' : 'ões'} encerrada${ended.length === 1 ? '' : 's'} removida${ended.length === 1 ? '' : 's'}.`, 'success');
+    await loadAdminLives();
+  } catch (error) {
+    setMessage($('#admin-live-message'), 'Não foi possível limpar as transmissões encerradas.', 'error');
+    console.error(error);
+  } finally {
+    if (button) button.disabled = false;
   }
 }
 
@@ -1128,6 +1186,8 @@ $('#admin-close-preview').addEventListener('click', () => $('#admin-preview-dial
 if (liveForm) liveForm.addEventListener('submit', saveLive);
 $('#admin-new-live')?.addEventListener('click', clearLiveForm);
 $('#admin-clear-live')?.addEventListener('click', clearLiveForm);
+$('#live-add-alt-link')?.addEventListener('click', () => $('#live-alt-links')?.appendChild(liveAltRow()));
+$('#admin-clear-ended-lives')?.addEventListener('click', clearEndedLives);
 $('#news-status').addEventListener('change', () => {
   syncNewsScheduleField();
   if ($('#news-status').value === 'scheduled' && $('#news-publish-at').value) {
