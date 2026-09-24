@@ -82,6 +82,10 @@
     .ig-rule strong{display:block;font-size:.8rem}.ig-rule small{display:block;margin-top:3px;color:#758eac;font-size:.7rem;line-height:1.35}
     .ig-rule-points{color:var(--ig-accent);font-size:.82rem;font-weight:1000;white-space:nowrap}
     .ig-note{margin-top:16px;padding:14px;border:1px solid rgba(0,200,255,.15);border-radius:12px;background:rgba(0,200,255,.045);color:#7f9dbd;font-size:.74rem;line-height:1.5}
+    .ig-integrity{margin:14px 18px 18px;padding:15px 16px;border:1px solid rgba(255,190,70,.26);border-radius:13px;background:linear-gradient(135deg,rgba(255,190,70,.08),rgba(255,120,70,.035));color:#aebed0;font-size:.74rem;line-height:1.55}
+    .ig-integrity strong{display:block;margin-bottom:5px;color:#ffd27a;font-size:.78rem}
+    .ig-integrity a{display:inline-flex;margin-top:9px;color:#7ee6ff;font-weight:950;text-decoration:none}
+    .ig-integrity a:hover{text-decoration:underline}
     .ig-error{display:none;margin:0 0 16px;padding:12px 14px;border:1px solid rgba(255,96,96,.25);border-radius:10px;background:rgba(255,96,96,.07);color:#ffb4b4;font-size:.8rem;font-weight:750}
     .ig-error.is-visible{display:block}
     @media(max-width:900px){.ig-hero{grid-template-columns:1fr}.ig-grid{grid-template-columns:1fr}.ig-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -184,8 +188,13 @@
       <div class="ig-card-head"><h2>Como pontua</h2></div>
       <div class="ig-rules">
         <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Publicou/republicou um Story e marcou a página.</small></div><div class="ig-rule-points" id="ig-rule-story">+5 pts</div></div>
-        <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small>Interagiu em uma publicação ou Reel. Conta uma vez por conteúdo.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div>
+        <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small>Interagiu de forma natural em uma publicação ou Reel. Conta uma vez por conteúdo.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div>
         <div class="ig-note" id="ig-rule-note">Para evitar spam, cada pessoa pontua uma vez por publicação e há limite diário para menções em Story.</div>
+      </div>
+      <div class="ig-integrity">
+        <strong>⚠️ Integridade do ranking</strong>
+        Comentar em massa publicações antigas, fazer spam ou repetir ações com o objetivo de aumentar artificialmente a pontuação é considerado manipulação do ranking. Interações desse tipo podem ser desconsideradas, ter os pontos removidos e resultar em exclusão de premiações ou do ranking.
+        <a href="diretrizes-comunidade.html">Ver diretrizes completas →</a>
       </div>
     </aside>
   </section>
@@ -288,7 +297,7 @@
     els.actions.textContent=formatNumber(stories+comments);
     els.ruleStory.textContent='+'+formatNumber(state.rules.storyMentionPoints)+' pts';
     els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' pts';
-    els.ruleNote.textContent=`Para evitar spam, cada pessoa pontua uma vez por publicação. Menções em Story têm limite de ${formatNumber(state.rules.storyMentionDailyLimit)} por dia.`;
+    els.ruleNote.textContent=`Para evitar spam, cada pessoa pontua uma vez por publicação. Menções em Story têm limite de ${formatNumber(state.rules.storyMentionDailyLimit)} por dia. Comentários em massa feitos apenas para inflar o ranking podem ser desconsiderados.`;
     els.updated.textContent=timestampLabel(state.updatedAt);
     updatePeriodText();
     renderPodium(state.query?[]:all);
