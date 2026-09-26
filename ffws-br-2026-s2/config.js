@@ -48,13 +48,17 @@
       #ffws-br-s2-segunda-fase .ffws-s2-legend .world i{background:#ffc226!important}
       #ffws-br-s2-segunda-fase .ffws-s2-legend .final i{background:#465469!important}
 
+      #ffws-br-s2-segunda-fase .ffws-s2-table .ffws-s2-bonus-col{width:52px;min-width:52px;max-width:52px;padding-left:4px!important;padding-right:4px!important;font-size:.78rem;white-space:nowrap}
       @media(max-width:760px){
         #ffws-br-s2-segunda-fase .ffws-s2-table{min-width:455px!important;table-layout:fixed}
         #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(1),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(1){width:38px;padding-left:4px!important;padding-right:4px!important}
         #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(2),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(2){width:118px;min-width:118px!important;padding-left:5px!important;padding-right:5px!important}
-        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(3),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(3){width:68px;padding-left:4px!important;padding-right:4px!important}
-        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(4),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(4){width:58px;padding-left:4px!important;padding-right:4px!important}
-        #ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(5),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(5),#ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(6),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(6),#ffws-br-s2-segunda-fase .ffws-s2-table th:nth-child(8),#ffws-br-s2-segunda-fase .ffws-s2-table td:nth-child(8){width:50px;padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table .ffws-s2-points-col{width:58px;padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table .ffws-s2-booyah-col,
+        #ffws-br-s2-segunda-fase .ffws-s2-table .ffws-s2-kills-col,
+        #ffws-br-s2-segunda-fase .ffws-s2-table .ffws-s2-placement-col,
+        #ffws-br-s2-segunda-fase .ffws-s2-table .ffws-s2-matches-col{width:50px;padding-left:4px!important;padding-right:4px!important}
+        #ffws-br-s2-segunda-fase .ffws-s2-table .ffws-s2-bonus-col{width:46px;min-width:46px;max-width:46px;padding-left:2px!important;padding-right:2px!important;font-size:.68rem}
         #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-cell{gap:5px;min-width:0}
         #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-cell img{width:20px!important;height:20px!important;flex:0 0 20px}
         #ffws-br-s2-segunda-fase .ffws-s2-table td.team-col .ffws-s2-team-name{display:block!important;flex:1 1 auto;min-width:0;overflow:visible}
