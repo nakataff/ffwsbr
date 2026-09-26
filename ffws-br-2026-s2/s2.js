@@ -277,7 +277,7 @@
     }));
     const rows = [...map.values()];
     const hasEvents = events.some(event => eventResults(event).length);
-    if (stageKey === 'segundaFase' && hasEvents) rows.forEach(row => { row.points += number(row.bonus); });
+    if (stageKey === 'segundaFase' && hasEvents && isOverallStageFilter(stageKey)) rows.forEach(row => { row.points += number(row.bonus); });
     if (hasEvents) {
       rows.sort((a, b) => b.points - a.points || b.booyahs - a.booyahs || b.kills - a.kills || a.team.localeCompare(b.team, 'pt-BR'));
       rows.forEach((row, index) => { row.position = index + 1; });
@@ -324,19 +324,19 @@
 
   function stageTable(stageKey) {
     const rows = filterStageRows(stageKey);
-    const showBonus = stageKey === 'segundaFase';
+    const showBonus = stageKey === 'segundaFase' && isOverallStageFilter(stageKey);
     return `<div class="ffws-s2-table-wrap"><table class="ffws-s2-table"><thead><tr>
       <th>#</th><th class="team-col"><span class="ffws-s2-desktop">Equipe</span><span class="ffws-s2-mobile">Eqp</span></th>
-      ${showBonus ? '<th>BÔNUS</th>' : ''}<th>PTS</th><th>B!</th><th>K</th><th class="hide-mobile">PP</th><th>Q</th>
+      <th class="ffws-s2-points-col">PTS</th><th class="ffws-s2-booyah-col">B!</th><th class="ffws-s2-kills-col">K</th><th class="hide-mobile ffws-s2-placement-col">PP</th><th class="ffws-s2-matches-col">Q</th>${showBonus ? '<th class="ffws-s2-bonus-col">BÔNUS</th>' : ''}
     </tr></thead><tbody>${rows.map((row, index) => {
       const hasData = number(row.matches) > 0 || number(row.points) > 0 || number(row.position) > 0;
       const rank = number(row.position) || '—';
       const subtitle = row.placeholder ? 'Vaga a definir' : (hasData ? '' : 'Aguardando resultados');
       return `<tr class="${rowClass(stageKey, row)}">
         <td class="ffws-s2-rank">${rank}</td>${teamCell(row.team, subtitle)}
-        ${showBonus ? `<td>${hasData ? number(row.bonus) : '—'}</td>` : ''}
-        <td>${hasData ? number(row.points) : '—'}</td><td>${hasData ? number(row.booyahs) : '—'}</td><td>${hasData ? number(row.kills) : '—'}</td>
-        <td class="hide-mobile">${hasData ? number(row.placementPoints) : '—'}</td><td>${hasData ? number(row.matches) : '—'}</td>
+        <td class="ffws-s2-points-col">${hasData ? number(row.points) : '—'}</td><td class="ffws-s2-booyah-col">${hasData ? number(row.booyahs) : '—'}</td><td class="ffws-s2-kills-col">${hasData ? number(row.kills) : '—'}</td>
+        <td class="hide-mobile ffws-s2-placement-col">${hasData ? number(row.placementPoints) : '—'}</td><td class="ffws-s2-matches-col">${hasData ? number(row.matches) : '—'}</td>
+        ${showBonus ? `<td class="ffws-s2-bonus-col">${hasData ? number(row.bonus) : '—'}</td>` : ''}
       </tr>`;
     }).join('')}</tbody></table></div>`;
   }
