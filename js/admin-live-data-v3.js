@@ -216,13 +216,15 @@ function render(){
   E.list.innerHTML=list.length?list.slice().reverse().map(x=>`<div class="live-drop"><div><strong>Dia ${x.day} • Q${x.drop}</strong><small> • ${esc(x.map||'Sem mapa')}</small></div><div class="live-actions" style="margin:0"><button class="live-btn ghost" style="padding:6px 8px" data-edit-drop="${x.day}:${x.drop}" type="button">Editar</button><button class="live-btn danger" style="padding:6px 8px" data-delete-drop="${x.day}:${x.drop}" type="button">Excluir</button></div></div>`).join(''):'<div class="live-note">Nenhuma queda salva ainda.</div>';
   if(E.publish)E.publish.textContent=isTest()?'PROCESSAR TESTE':'PROCESSAR E PUBLICAR';
   applyNext();
+  manualPruneConfirmed();
+  manualRenderAll();
 }
 async function loadStage(){
   msg(isTest()?'Carregando área de teste…':'Carregando dados da etapa…');
   try{const snap=await get(ref(db,stagePath()));stageData=snap.val()||{};render();msg(isTest()?'Área de teste carregada. Nada daqui altera o site público.':'Dados carregados.','ok')}
   catch(error){console.error(error);stageData={};render();msg('Não foi possível ler a base.','error')}
 }
-async function loadRoster(){try{const r=await fetch(`ffws-br-2026-s2/teams.json?v=${Date.now()}`,{cache:'no-store'}),j=await r.json(),teams=Array.isArray(j.teams)?j.teams:[];rosterNames=new Set(teams.flatMap(t=>t.players||[]).map(norm));teamMeta=new Map(teams.map(t=>[norm(t.name),t]));renderShareTable()}catch{rosterNames=new Set();teamMeta=new Map();renderShareTable()}}
+async function loadRoster(){try{const r=await fetch(`ffws-br-2026-s2/teams.json?v=${Date.now()}`,{cache:'no-store'}),j=await r.json(),teams=Array.isArray(j.teams)?j.teams:[];rosterNames=new Set(teams.flatMap(t=>t.players||[]).map(norm));teamMeta=new Map(teams.map(t=>[norm(t.name),t]));renderShareTable();manualRenderAll()}catch{rosterNames=new Set();teamMeta=new Map();renderShareTable();manualRenderAll()}}
 async function fileRead(input,type){const f=input.files?.[0];if(!f)return;const text=await f.text();if(type==='teams'){teamText=text;teamFileName=f.name;E.teamsStatus.textContent=`${f.name} carregado`;E.teamsStatus.className='live-file-ok'}else{playerText=text;playerFileName=f.name;E.playersStatus.textContent=`${f.name} carregado`;E.playersStatus.className='live-file-ok'}}
 
 const LOOKER_ENDPOINT='https://datastudio.google.com/u/0/batchedDataV2?appVersion=20260914_0100';
@@ -557,6 +559,156 @@ async function deleteDrop(day,drop){
   if(!confirm(`Excluir Dia ${day} • Q${drop}${isTest()?' da área de teste':''}?`))return;
   try{await remove(ref(db,`${stagePath()}/drops/${day}/${drop}`));await update(ref(db),{[`${stagePath()}/updatedAt`]:serverTimestamp()});await loadStage();msg('Queda excluída.','ok')}catch(error){msg(`Falha ao excluir: ${error.message||error}`,'error')}
 }
+
+
+/* ===== QUEDAS MANUAIS • PRÉVIA LOCAL =====
+ * Rascunho exclusivo deste navegador. Não faz nenhum write no Firebase.
+ * A tabela combina quedas confirmadas + rascunhos locais e o site público
+ * só muda quando T1 + P1 são processados pelo fluxo normal acima.
+ */
+const MANUAL_STORAGE_KEY='cff-admin-dados-manual-v1';
+const MANUAL_TEAMS=Object.keys(BONUS);
+const MANUAL_SHORT=Object.freeze({'AFROGAMES':'AFG','ALPHA7':'A7','CPT VOX':'CPX','FLUXO W7M':'FX','INFLUENCE RAGE':'INF','INTZ':'INTZ','LOS':'LOS','LOUD SNICKERS':'LOUD','RISE GAMING':'RISE','RUSH GAMING':'RUSH','SX TET':'SXT','TEAM SOLID':'TS'});
+const MANUAL_PP=Object.freeze({1:12,2:9,3:8,4:7,5:6,6:5,7:4,8:3,9:2,10:1,11:0,12:0});
+const M={
+  panel:document.querySelector('[data-live-panel="manual"]'),
+  day:$('#manual-live-day'),drop:$('#manual-live-drop'),mode:$('#manual-live-mode'),map:$('#manual-live-map'),teams:$('#manual-live-teams'),
+  counter:$('#manual-live-counter'),saveState:$('#manual-live-save-state'),message:$('#manual-live-message'),clear:$('#manual-live-clear'),confirm:$('#manual-live-confirm'),
+  file:$('#manual-live-t1'),fileStatus:$('#manual-live-t1-status'),dayView:$('#manual-live-view-day'),overallView:$('#manual-live-view-overall'),
+  title:$('#manual-live-table-title'),subtitle:$('#manual-live-table-subtitle'),badge:$('#manual-live-table-badge'),tbody:$('#manual-live-table-body')
+};
+let manualState=manualLoadState(),manualView='day',manualSaveTimer=0;
+
+function manualLoadState(){try{const data=JSON.parse(localStorage.getItem(MANUAL_STORAGE_KEY)||'{}');return data&&typeof data==='object'?data:{}}catch{return{}}}
+function manualPersist(){
+  try{localStorage.setItem(MANUAL_STORAGE_KEY,JSON.stringify(manualState))}catch{}
+  if(M.saveState){M.saveState.textContent='Salvo neste navegador';M.saveState.classList.add('ok');clearTimeout(manualSaveTimer);manualSaveTimer=setTimeout(()=>M.saveState?.classList.remove('ok'),900)}
+}
+function manualStageKey(){return E.stage?.value==='final'?'final':'segundaFase'}
+function manualStageDrafts(){const key=manualStageKey();if(!manualState[key]||typeof manualState[key]!=='object')manualState[key]={};return manualState[key]}
+function manualSlot(day=M.day?.value,drop=M.drop?.value){return `${Number(day)||1}:${Number(drop)||1}`}
+function manualDraft(day=M.day?.value,drop=M.drop?.value,create=false){
+  const drafts=manualStageDrafts(),key=manualSlot(day,drop);
+  if(!drafts[key]&&create){
+    drafts[key]={day:Number(day)||1,drop:Number(drop)||1,map:'',mode:M.mode?.value||'position-kills',teams:{},updatedAt:Date.now(),hasData:false};
+    MANUAL_TEAMS.forEach(team=>drafts[key].teams[team]={position:null,kills:null,points:null});
+  }
+  return drafts[key]||null;
+}
+function manualInt(value){if(value===null||value===undefined||String(value).trim()==='')return null;const n=Number(String(value).replace(',','.'));return Number.isInteger(n)?n:null}
+function manualPP(position){return MANUAL_PP[Number(position)]||0}
+function manualMeta(team){const meta=teamMeta.get(norm(team))||{};return{short:MANUAL_SHORT[team]||meta.abbreviation||team,logo:meta.logo||'escudo.webp'}}
+function manualRowCalc(row,mode){
+  const position=manualInt(row?.position),rawKills=manualInt(row?.kills),rawPoints=manualInt(row?.points);
+  if(mode==='position-points'){
+    const points=rawPoints===null?0:Math.max(0,rawPoints),kills=rawPoints===null?0:(position===null?0:rawPoints-manualPP(position));
+    return{position,points,kills:Math.max(0,kills),booyah:position===1?1:0,invalid:rawPoints!==null&&position!==null&&rawPoints<manualPP(position)};
+  }
+  const kills=rawKills===null?0:Math.max(0,rawKills);
+  return{position,kills,points:kills+(position===null?0:manualPP(position)),booyah:position===1?1:0,invalid:false};
+}
+function manualConfirmedDrops(){return drops(stageData)}
+function manualDraftDrop(draft){
+  const mode=draft?.mode||'position-kills';
+  return{day:Number(draft.day)||1,drop:Number(draft.drop)||1,map:draft.map||'',manual:true,updatedAt:Number(draft.updatedAt)||0,teams:MANUAL_TEAMS.map(team=>{const calc=manualRowCalc(draft?.teams?.[team]||{},mode);return{team,position:calc.position,placementPoints:calc.position===null?0:manualPP(calc.position),kills:calc.kills,points:calc.points,booyah:calc.booyah}})};
+}
+function manualEffectiveDrops(){
+  const bySlot=new Map(manualConfirmedDrops().map(item=>[manualSlot(item.day,item.drop),{...item,manual:false}]));
+  Object.values(manualStageDrafts()).forEach(draft=>{if(draft?.hasData)bySlot.set(manualSlot(draft.day,draft.drop),manualDraftDrop(draft))});
+  return [...bySlot.values()].sort((a,b)=>Number(a.day)-Number(b.day)||Number(a.drop)-Number(b.drop));
+}
+function manualRows(dropList,{bonus=false}={}){
+  const score=new Map();
+  const ensure=team=>{const name=canonicalTeam(team);if(!score.has(name))score.set(name,{team:name,points:bonus&&manualStageKey()==='segundaFase'?Number(BONUS[name]||0):0,booyah:0,kills:0,matches:0});return score.get(name)};
+  MANUAL_TEAMS.forEach(ensure);
+  dropList.forEach(drop=>{
+    const byTeam=new Map((drop?.teams||[]).map(row=>[canonicalTeam(row.team),row]));
+    MANUAL_TEAMS.forEach(team=>{const src=byTeam.get(team);if(!src)return;const row=ensure(team);row.points+=num(src.points);row.booyah+=num(src.booyah);row.kills+=num(src.kills);row.matches+=1});
+  });
+  return [...score.values()].sort((a,b)=>b.points-a.points||b.booyah-a.booyah||b.kills-a.kills||a.team.localeCompare(b.team,'pt-BR')).map((row,index)=>({...row,rank:index+1,...manualMeta(row.team)}));
+}
+function manualCut(){return{day:Number(M.day?.value)||1,drop:Number(M.drop?.value)||1}}
+function manualRowsForView(previous=false){
+  const cut=manualCut(),all=manualEffectiveDrops(),within=drop=>{
+    if(manualView==='day')return Number(drop.day)===cut.day&&Number(drop.drop)<=(previous?cut.drop-1:cut.drop);
+    return Number(drop.day)<cut.day||(Number(drop.day)===cut.day&&Number(drop.drop)<=(previous?cut.drop-1:cut.drop));
+  };
+  return manualRows(all.filter(within),{bonus:manualView==='overall'});
+}
+function manualPruneConfirmed(){
+  if(isTest())return;
+  const confirmed=new Map(manualConfirmedDrops().map(item=>[manualSlot(item.day,item.drop),item])),drafts=manualStageDrafts();let changed=false;
+  Object.entries(drafts).forEach(([key,draft])=>{const official=confirmed.get(key);if(official&&Number(official.updatedAt||0)>=Number(draft.updatedAt||0)){delete drafts[key];changed=true}});
+  if(changed)manualPersist();
+}
+function manualFillSelectors(){
+  if(!M.panel)return;const c=cfg(),day=Math.min(c.days,Math.max(1,Number(M.day?.value)||1));
+  M.day.innerHTML=Array.from({length:c.days},(_,index)=>`<option value="${index+1}">Dia ${index+1}</option>`).join('');M.day.value=String(day);manualFillDrops();
+}
+function manualFillDrops(){
+  if(!M.drop)return;const c=cfg(),day=Number(M.day?.value)||1,max=Number(c.dropsByDay[day]||6),drop=Math.min(max,Math.max(1,Number(M.drop.value)||1));
+  M.drop.innerHTML=Array.from({length:max},(_,index)=>`<option value="${index+1}">Queda ${index+1}</option>`).join('');M.drop.value=String(drop);
+}
+function manualRenderInputs(){
+  if(!M.teams)return;const draft=manualDraft(),mode=M.mode?.value||draft?.mode||'position-kills';
+  M.teams.innerHTML=MANUAL_TEAMS.map(team=>{
+    const meta=manualMeta(team),row=draft?.teams?.[team]||{},position=row.position??'',value=mode==='position-points'?(row.points??''):(row.kills??''),calc=manualRowCalc(row,mode);
+    const detail=mode==='position-points'?(calc.invalid?'Pontuação menor que a colocação':`Abates calculados: ${position===''?'—':calc.kills}`):`Pontos da queda: ${calc.points}`;
+    return `<article class="manual-live-team${calc.invalid?' invalid':''}" data-manual-team="${esc(team)}"><div class="manual-live-team-id"><img src="${esc(meta.logo)}" alt="" onerror="this.src='escudo.webp'"><span><strong>${esc(meta.short)}</strong><small>${esc(team)}</small></span></div><label><span>Pos.</span><input data-manual-position type="number" inputmode="numeric" min="1" max="12" value="${esc(position)}" placeholder="—"></label><label><span>${mode==='position-points'?'Pts queda':'Abates'}</span><input data-manual-value type="number" inputmode="numeric" min="0" value="${esc(value)}" placeholder="0"></label><div class="manual-live-calc"><small>${esc(detail)}</small><b>${position===''?'VIVO':`${position}º`}</b></div></article>`;
+  }).join('');
+}
+function manualUpdateCard(card){
+  if(!card)return;const mode=M.mode?.value||'position-kills',position=manualInt(card.querySelector('[data-manual-position]')?.value),value=manualInt(card.querySelector('[data-manual-value]')?.value),row={position,kills:mode==='position-kills'?value:null,points:mode==='position-points'?value:null},calc=manualRowCalc(row,mode),small=card.querySelector('.manual-live-calc small'),badge=card.querySelector('.manual-live-calc b');
+  card.classList.toggle('invalid',calc.invalid);if(small)small.textContent=mode==='position-points'?(calc.invalid?'Pontuação menor que a colocação':`Abates calculados: ${position===null?'—':calc.kills}`):`Pontos da queda: ${calc.points}`;if(badge)badge.textContent=position===null?'VIVO':`${position}º`;
+}
+function manualCapture(){
+  const draft=manualDraft(undefined,undefined,true),mode=M.mode?.value||'position-kills';draft.mode=mode;draft.map=M.map?.value||'';draft.updatedAt=Date.now();let any=false,invalid=false;
+  M.teams?.querySelectorAll('[data-manual-team]').forEach(card=>{
+    const team=card.dataset.manualTeam,row=draft.teams[team]||(draft.teams[team]={position:null,kills:null,points:null}),position=manualInt(card.querySelector('[data-manual-position]')?.value),value=manualInt(card.querySelector('[data-manual-value]')?.value);
+    row.position=position;if(mode==='position-points'){row.points=value;row.kills=value===null||position===null?null:value-manualPP(position);if(value!==null&&position!==null&&value<manualPP(position))invalid=true}else{row.kills=value;row.points=value===null?null:value+(position===null?0:manualPP(position))}if(position!==null||value!==null)any=true;manualUpdateCard(card);
+  });
+  draft.hasData=any;manualPersist();manualRenderCounter();manualRenderTable();manualMsg(invalid?'Há pontuação menor que o mínimo da colocação. Revise esse time.':'Prévia local atualizada. Nada foi enviado ao site.',invalid?'error':'ok');
+}
+function manualRenderCounter(){
+  if(!M.counter)return;const draft=manualDraft(),mode=M.mode?.value||draft?.mode||'position-kills';let filled=0;
+  MANUAL_TEAMS.forEach(team=>{const row=draft?.teams?.[team]||{};if(manualInt(row.position)!==null||manualInt(mode==='position-points'?row.points:row.kills)!==null)filled++});
+  M.counter.textContent=`${filled}/12 preenchidos`;M.counter.classList.toggle('complete',filled===12);
+}
+function manualRenderTable(){
+  if(!M.tbody)return;const cut=manualCut(),rowsNow=manualRowsForView(false),rowsPrev=manualRowsForView(true),prevRank=new Map(rowsPrev.map(row=>[row.team,row.rank])),draft=manualDraft(cut.day,cut.drop),confirmed=manualConfirmedDrops().some(item=>Number(item.day)===cut.day&&Number(item.drop)===cut.drop),local=Boolean(draft?.hasData);
+  M.dayView?.classList.toggle('active',manualView==='day');M.overallView?.classList.toggle('active',manualView==='overall');
+  if(M.title)M.title.textContent=manualView==='day'?`FFWS BR 2026 S2 — ${String(cfg().label).toUpperCase()} — DIA ${cut.day}`:`FFWS BR 2026 S2 — ${String(cfg().label).toUpperCase()} — GERAL`;
+  if(M.subtitle)M.subtitle.textContent=manualView==='day'?`Tabela do dia até a Queda ${cut.drop}`:`Tabela geral até Dia ${cut.day} • Queda ${cut.drop}`;
+  if(M.badge){M.badge.textContent=local?`Q${cut.drop} • PRÉVIA LOCAL`:(confirmed?`Q${cut.drop} • CONFIRMADO`:`Q${cut.drop} • AGUARDANDO`);M.badge.classList.toggle('manual',local)}
+  M.tbody.innerHTML=rowsNow.map(row=>{const move=(prevRank.get(row.team)||row.rank)-row.rank,moveHtml=move>0?`<span class="manual-live-move up">▲${move}</span>`:move<0?`<span class="manual-live-move down">▼${Math.abs(move)}</span>`:'<span class="manual-live-move">—</span>';return `<tr><td><b>${row.rank}º</b></td><td class="team"><span class="manual-live-table-team"><img src="${esc(row.logo)}" alt="" onerror="this.src='escudo.webp'"><b>${esc(row.short)}</b></span></td><td class="move">${moveHtml}</td><td>${Math.round(row.points)}</td><td class="booyah">${Math.round(row.booyah)}</td><td>${Math.round(row.kills)}</td><td>${Math.round(row.matches)}</td></tr>`}).join('');
+}
+function manualMsg(text,type=''){if(!M.message)return;M.message.textContent=text||'';M.message.className=`live-message${type?' '+type:''}`}
+function manualLoadCurrent(){
+  if(!M.panel)return;const draft=manualDraft();if(M.mode)M.mode.value=draft?.mode||'position-kills';if(M.map)M.map.value=draft?.map||'';if(M.file){M.file.value=''}if(M.fileStatus)M.fileStatus.textContent=draft?.sourceFile?`Última correção: ${draft.sourceFile}`:'Nenhum arquivo importado';manualRenderInputs();manualRenderCounter();manualRenderTable();
+}
+function manualRenderAll(){if(!M.panel)return;manualRenderInputs();manualRenderCounter();manualRenderTable()}
+function manualClear(){
+  const cut=manualCut(),drafts=manualStageDrafts(),key=manualSlot(cut.day,cut.drop);if(!drafts[key])return manualMsg('Não há rascunho manual nesta queda.');
+  if(!confirm(`Limpar a prévia manual do Dia ${cut.day} • Q${cut.drop}? Os dados confirmados do site não serão alterados.`))return;delete drafts[key];manualPersist();manualLoadCurrent();manualMsg('Rascunho manual removido. O site não foi alterado.','ok');
+}
+function manualGoConfirm(){
+  const cut=manualCut(),targetDay=$('#live-day'),targetDrop=$('#live-drop'),targetMap=$('#live-map'),map=M.map?.value||'';if(targetDay)targetDay.value=String(cut.day);if(targetDrop)targetDrop.value=String(cut.drop);if(targetMap&&map&&[...targetMap.options].some(option=>option.value===map||option.textContent===map))targetMap.value=map;document.querySelector('[data-live-tab="single"]')?.click();$('#live-teams-file')?.focus();
+}
+async function manualImportT1(file){
+  if(!file)return;try{const rows=parseTeams(await file.text());if(rows.length!==12)throw new Error(`Encontrei ${rows.length} equipes; o T1 precisa ter as 12.`);const draft=manualDraft(undefined,undefined,true);draft.mode='position-points';draft.sourceFile=file.name;draft.updatedAt=Date.now();draft.hasData=true;rows.forEach(src=>{const team=canonicalTeam(src.team);if(!MANUAL_TEAMS.includes(team))return;draft.teams[team]={position:manualInt(src.position),kills:manualInt(src.kills),points:manualInt(src.points)}});manualPersist();manualLoadCurrent();manualMsg('T1 aplicado somente à prévia local. Para confirmar no site, envie T1 + P1 na aba UMA QUEDA.','ok')}catch(error){if(M.fileStatus)M.fileStatus.textContent='Falha ao importar T1';manualMsg(error.message||String(error),'error')}
+}
+function initManualDrops(){
+  if(!M.panel)return;manualFillSelectors();manualLoadCurrent();
+  M.day?.addEventListener('change',()=>{manualFillDrops();manualLoadCurrent()});M.drop?.addEventListener('change',manualLoadCurrent);
+  M.mode?.addEventListener('change',()=>{const draft=manualDraft(undefined,undefined,true);draft.mode=M.mode.value;draft.updatedAt=Date.now();manualPersist();manualRenderInputs();manualRenderCounter();manualRenderTable()});
+  M.map?.addEventListener('change',()=>{const draft=manualDraft(undefined,undefined,true);draft.map=M.map.value;draft.updatedAt=Date.now();manualPersist();manualRenderTable()});
+  M.teams?.addEventListener('input',event=>{if(event.target.matches('[data-manual-position],[data-manual-value]'))manualCapture()});
+  M.clear?.addEventListener('click',manualClear);M.confirm?.addEventListener('click',manualGoConfirm);M.file?.addEventListener('change',()=>manualImportT1(M.file.files?.[0]));
+  M.dayView?.addEventListener('click',()=>{manualView='day';manualRenderTable()});M.overallView?.addEventListener('click',()=>{manualView='overall';manualRenderTable()});
+  E.stage?.addEventListener('change',()=>{manualFillSelectors();manualLoadCurrent()});
+  window.addEventListener('storage',event=>{if(event.key===MANUAL_STORAGE_KEY){manualState=manualLoadState();manualLoadCurrent()}});
+}
+initManualDrops();
 
 E.teamsFile?.addEventListener('change',()=>fileRead(E.teamsFile,'teams'));
 E.playersFile?.addEventListener('change',()=>fileRead(E.playersFile,'players'));
