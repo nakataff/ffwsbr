@@ -24,9 +24,10 @@
     dates: { stages: [] },
     stageFilter: {
       classificatoria: { period: 'all', map: 'all', drop: 'all' },
-      segundaFase: { period: 'all', map: 'all', drop: 'all' },
+      segundaFase: { period: [], map: [], drop: [] },
       final: { period: 'all', map: 'all', drop: 'all' }
     },
+    stageOpenMulti: '',
     selectionWeek: '',
     selectionWeekStage: 'segundaFase',
     selectionTab: 'segundaFase',
@@ -240,15 +241,24 @@
     return Array.isArray(event?.results) ? event.results : (Array.isArray(event?.rows) ? event.rows : []);
   }
 
+  function stageFilterValues(stageKey, type) {
+    const raw = state.stageFilter?.[stageKey]?.[type];
+    if (Array.isArray(raw)) return raw.map(value => String(value)).filter(value => value && value !== 'all');
+    if (raw === undefined || raw === null || raw === '' || raw === 'all') return [];
+    return [String(raw)];
+  }
+
   function filteredStageEvents(stageKey) {
-    const filter = state.stageFilter[stageKey] || { period: 'all', map: 'all', drop: 'all' };
+    const periods = stageFilterValues(stageKey, 'period');
+    const maps = stageFilterValues(stageKey, 'map');
+    const drops = stageFilterValues(stageKey, 'drop');
     return stageEvents(stageKey).filter((event, index) => {
       const periodValue = stageKey === 'final' ? (number(event.day) || 1) : (number(event.round) || number(event.number) || index + 1);
       const eventMap = String(event.map || event.mapa || '').trim();
       const eventDrop = number(event.drop) || number(event.queda) || number(event.number) || index + 1;
-      return (filter.period === 'all' || String(periodValue) === String(filter.period))
-        && (filter.map === 'all' || normalize(eventMap) === normalize(filter.map))
-        && (filter.drop === 'all' || String(eventDrop) === String(filter.drop));
+      return (!periods.length || periods.includes(String(periodValue)))
+        && (!maps.length || maps.some(map => normalize(map) === normalize(eventMap)))
+        && (!drops.length || drops.includes(String(eventDrop)));
     });
   }
 
@@ -286,8 +296,9 @@
   }
 
   function isOverallStageFilter(stageKey) {
-    const selected = state.stageFilter[stageKey] || { period: 'all', map: 'all', drop: 'all' };
-    return selected.period === 'all' && selected.map === 'all' && selected.drop === 'all';
+    return !stageFilterValues(stageKey, 'period').length
+      && !stageFilterValues(stageKey, 'map').length
+      && !stageFilterValues(stageKey, 'drop').length;
   }
 
   function filterStageRows(stageKey) {
@@ -348,6 +359,36 @@
     const events = stageEvents(stageKey);
     const maps = [...new Set(events.map(event => String(event.map || event.mapa || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
     const drops = [...new Set(events.map((event, index) => number(event.drop) || number(event.queda) || number(event.number) || index + 1).filter(Boolean))].sort((a, b) => a - b);
+
+    if (stageKey === 'segundaFase') {
+      const periodsSelected = stageFilterValues(stageKey, 'period');
+      const mapsSelected = stageFilterValues(stageKey, 'map');
+      const dropsSelected = stageFilterValues(stageKey, 'drop');
+      const periodOptions = Array.from({ length: total }, (_, index) => ({ value: String(index + 1), label: `Dia ${index + 1}` }));
+      const mapOptions = maps.map(map => ({ value: map, label: map }));
+      const dropOptions = drops.map(drop => ({ value: String(drop), label: `Queda ${drop}` }));
+      const multi = (type, title, values, options) => {
+        const key = `${stageKey}:${type}`;
+        const buttonLabel = values.length ? (values.length === 1 ? (options.find(option => String(option.value) === String(values[0]))?.label || values[0]) : `${values.length} selecionados`) : 'Todos';
+        return `<div class="ffws-s2-filter"><span>${escapeHtml(title)}:</span><div class="ffws-s2-multi ffws-s2-stage-multi" data-s2-stage-multi="${escapeHtml(type)}">
+          <button type="button" onclick="toggleFFWSS2StageMulti('${stageKey}','${type}')" aria-expanded="${state.stageOpenMulti === key ? 'true' : 'false'}"><b>${escapeHtml(buttonLabel)}</b><span>⌄</span></button>
+          <div class="ffws-s2-multi-menu" id="ffws-s2-stage-multi-${type}"${state.stageOpenMulti === key ? '' : ' hidden'}>
+            <label><input type="checkbox" ${values.length === 0 ? 'checked' : ''} onchange="clearFFWSS2StageMulti('${stageKey}','${type}')"> Todos</label>
+            ${options.map(option => `<label><input type="checkbox" value="${escapeHtml(option.value)}" ${values.includes(String(option.value)) ? 'checked' : ''} onchange="setFFWSS2StageMulti('${stageKey}','${type}',this.value,this.checked)"> ${escapeHtml(option.label)}</label>`).join('')}
+          </div>
+        </div></div>`;
+      };
+      const summaryParts = [];
+      if (periodsSelected.length) summaryParts.push(periodsSelected.length === 1 ? `Dia ${periodsSelected[0]}` : `${periodsSelected.length} dias`);
+      if (mapsSelected.length) summaryParts.push(mapsSelected.length === 1 ? mapsSelected[0] : `${mapsSelected.length} mapas`);
+      if (dropsSelected.length) summaryParts.push(dropsSelected.length === 1 ? `Queda ${dropsSelected[0]}` : `${dropsSelected.length} quedas`);
+      return `<div class="ffws-s2-filters ffws-s2-stage-multi-filters">
+        ${multi('period', 'Dia', periodsSelected, periodOptions)}
+        ${multi('map', 'Mapa', mapsSelected, mapOptions)}
+        ${multi('drop', 'Queda', dropsSelected, dropOptions)}
+      </div><div class="ffws-s2-filter-summary">${summaryParts.length ? escapeHtml(summaryParts.join(' • ')) : 'Classificação geral'}.</div>`;
+    }
+
     return `<div class="ffws-s2-filters">
       <label class="ffws-s2-filter"><span>${label}:</span><select onchange="setFFWSS2StageFilter('${stageKey}','period',this.value)"><option value="all">Geral</option>${Array.from({ length: total }, (_, index) => `<option value="${index + 1}"${String(selected.period) === String(index + 1) ? ' selected' : ''}>${label} ${index + 1}</option>`).join('')}</select></label>
       <label class="ffws-s2-filter"><span>Mapa:</span><select onchange="setFFWSS2StageFilter('${stageKey}','map',this.value)"${maps.length ? '' : ' disabled title="Disponível após o início da etapa"'}><option value="all">Todos os mapas</option>${maps.map(map => `<option value="${escapeHtml(map)}"${normalize(selected.map) === normalize(map) ? ' selected' : ''}>${escapeHtml(map)}</option>`).join('')}</select></label>
@@ -2395,12 +2436,44 @@
   }
 
   window.setFFWSS2StageFilter = (stageKey, type, value) => {
+    const pageMap = { classificatoria: 'ffws-br-s2-classificatoria', segundaFase: 'ffws-br-s2-segunda-fase', final: 'ffws-br-s2-final' };
+    if (stageKey === 'segundaFase') {
+      state.stageFilter.segundaFase = state.stageFilter.segundaFase || { period: [], map: [], drop: [] };
+      state.stageFilter.segundaFase[type] = value === 'all' ? [] : [String(value)];
+      state.stageOpenMulti = '';
+      renderPage(pageMap[stageKey]);
+      return;
+    }
     state.stageFilter[stageKey] = state.stageFilter[stageKey] || { period: 'all', map: 'all', drop: 'all' };
     if (type === 'drop' && state.stageFilter[stageKey].period === 'all') return;
     state.stageFilter[stageKey][type] = value;
     if (type === 'period') state.stageFilter[stageKey].drop = 'all';
-    const map = { classificatoria: 'ffws-br-s2-classificatoria', segundaFase: 'ffws-br-s2-segunda-fase', final: 'ffws-br-s2-final' };
-    renderPage(map[stageKey]);
+    renderPage(pageMap[stageKey]);
+  };
+  window.toggleFFWSS2StageMulti = (stageKey, type) => {
+    const key = `${stageKey}:${type}`;
+    state.stageOpenMulti = state.stageOpenMulti === key ? '' : key;
+    document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => {
+      menu.hidden = menu.id !== `ffws-s2-stage-multi-${type}` || !state.stageOpenMulti;
+    });
+    const button = document.querySelector(`[data-s2-stage-multi="${type}"] > button`);
+    if (button) button.setAttribute('aria-expanded', String(Boolean(state.stageOpenMulti)));
+  };
+  window.clearFFWSS2StageMulti = (stageKey, type) => {
+    if (stageKey !== 'segundaFase') return;
+    state.stageFilter.segundaFase = state.stageFilter.segundaFase || { period: [], map: [], drop: [] };
+    state.stageFilter.segundaFase[type] = [];
+    state.stageOpenMulti = `${stageKey}:${type}`;
+    renderPage('ffws-br-s2-segunda-fase');
+  };
+  window.setFFWSS2StageMulti = (stageKey, type, value, checked) => {
+    if (stageKey !== 'segundaFase') return;
+    state.stageFilter.segundaFase = state.stageFilter.segundaFase || { period: [], map: [], drop: [] };
+    const selected = new Set(stageFilterValues(stageKey, type));
+    checked ? selected.add(String(value)) : selected.delete(String(value));
+    state.stageFilter.segundaFase[type] = [...selected];
+    state.stageOpenMulti = `${stageKey}:${type}`;
+    renderPage('ffws-br-s2-segunda-fase');
   };
   window.setFFWSS2SelectionWeek = week => { state.selectionTab = 'semanal'; state.selectionWeek = String(week || '1'); renderSelections(); };
   window.setFFWSS2SelectionWeekStage = stage => {
@@ -2630,6 +2703,7 @@
     if (!event.target.closest('.ffws-s2-multi')) {
       document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { menu.hidden = true; });
       state.notesOpenMulti = '';
+      state.stageOpenMulti = '';
     }
     if (!event.target.closest('.ffws-s2-compare-picker')) document.querySelectorAll('.ffws-s2-compare-picker-menu').forEach(menu => { menu.hidden = true; });
   });
