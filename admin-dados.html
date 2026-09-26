@@ -7,6 +7,7 @@
   <title>Dados ao vivo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+  <link rel="stylesheet" href="css/admin-live-manual.css?v=20260926-manual-drops-v1">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <style>
     body{background:#070b14;color:#eef5ff}.live-shell{max-width:1180px;margin:0 auto;padding:20px}.live-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}.live-brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:900}.live-brand img{width:42px;height:42px;object-fit:contain}.live-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:16px}.live-card{background:#0d1422;border:1px solid #24314a;border-radius:16px;padding:18px}.live-card h2,.live-card h3{margin:0 0 12px}.live-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.live-field{display:grid;gap:6px;margin-bottom:12px}.live-field label{font-size:.78rem;font-weight:900;color:#8dbfff;text-transform:uppercase;letter-spacing:.5px}.live-field input,.live-field select{width:100%;box-sizing:border-box;background:#080d17;border:1px solid #2a3b58;color:#fff;border-radius:10px;padding:11px 12px}.live-upload{border:1px dashed #365173;border-radius:13px;padding:14px;background:#09101c}.live-upload strong{display:block;margin-bottom:8px}.live-upload small{display:block;color:#8094b3;margin-top:6px}
@@ -87,6 +88,7 @@
 
           <nav class="live-tabs" aria-label="Formas de envio">
             <button class="live-tab active" type="button" data-live-tab="single" aria-selected="true">UMA QUEDA</button>
+            <button class="live-tab" type="button" data-live-tab="manual" aria-selected="false">QUEDAS MANUAIS</button>
             <button class="live-tab" type="button" data-live-tab="batch" aria-selected="false">VÁRIAS QUEDAS</button>
             <button class="live-tab" type="button" data-live-tab="garena" aria-selected="false">GARENA LOOKER</button>
           </nav>
@@ -111,6 +113,69 @@
             <div class="live-actions"><button id="live-validate" class="live-btn ghost" type="button">Validar T1 + P1</button><button id="live-publish" class="live-btn primary" type="button">PROCESSAR E PUBLICAR</button></div>
             <p id="live-message" class="live-message"></p>
             <div id="live-preview" class="live-preview live-hidden"></div>
+          </section>
+
+          <section class="live-tab-panel" data-live-panel="manual">
+            <div class="manual-live-shell">
+              <div class="live-panel-head">
+                <div>
+                  <h3>Quedas manuais</h3>
+                  <p class="live-note">Atualize a classificação ao vivo sem esperar T1 + P1. Esta área é uma prévia local e nunca publica dados no site.</p>
+                </div>
+              </div>
+
+              <div class="manual-live-local-note">
+                <div>
+                  <strong>Prévia local</strong>
+                  Tudo digitado aqui fica somente neste navegador. O site público só muda quando a queda for confirmada pela aba <b>UMA QUEDA</b> com T1 + P1.
+                </div>
+              </div>
+
+              <div class="manual-live-controls">
+                <div class="live-field"><label for="manual-live-day">Dia</label><select id="manual-live-day"></select></div>
+                <div class="live-field"><label for="manual-live-drop">Queda</label><select id="manual-live-drop"></select></div>
+                <div class="live-field"><label for="manual-live-mode">Modo de entrada</label><select id="manual-live-mode"><option value="position-kills">Posição + abates</option><option value="position-points">Posição + pontuação final da queda</option></select></div>
+                <div class="live-field"><label for="manual-live-map">Mapa</label><select id="manual-live-map"><option value="">Sem informação</option><option>Bermuda</option><option>Kalahari</option><option value="Purgatório">Purgatório</option><option value="Nova Terra">Nova Terra</option><option>Solara</option></select></div>
+              </div>
+
+              <div class="manual-live-tools">
+                <div class="manual-live-file">
+                  <label for="manual-live-t1">Corrigir com T1</label>
+                  <input id="manual-live-t1" type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv">
+                  <small id="manual-live-t1-status">Nenhum arquivo importado</small>
+                </div>
+                <button id="manual-live-clear" class="live-btn ghost" type="button">Limpar esta queda</button>
+                <button id="manual-live-confirm" class="live-btn primary" type="button">Ir para T1 + P1</button>
+              </div>
+
+              <div class="manual-live-progress">
+                <span id="manual-live-counter">0/12 preenchidos</span>
+                <span id="manual-live-save-state">Rascunho salvo automaticamente</span>
+              </div>
+
+              <div id="manual-live-teams" class="manual-live-teams"></div>
+              <p id="manual-live-message" class="live-message">Digite os dados da queda para atualizar a prévia abaixo.</p>
+
+              <section class="manual-live-preview">
+                <div class="manual-live-preview-toolbar" role="group" aria-label="Tabela manual exibida">
+                  <button id="manual-live-view-day" class="manual-live-view active" type="button">Tabela do dia</button>
+                  <button id="manual-live-view-overall" class="manual-live-view" type="button">Tabela geral</button>
+                </div>
+                <div class="manual-live-table-head">
+                  <div>
+                    <h4 id="manual-live-table-title">FFWS BR 2026 S2 — SEGUNDA FASE</h4>
+                    <p id="manual-live-table-subtitle">Tabela do dia</p>
+                  </div>
+                  <span id="manual-live-table-badge" class="manual-live-table-badge">AGUARDANDO</span>
+                </div>
+                <div class="manual-live-table-wrap">
+                  <table class="manual-live-table">
+                    <thead><tr><th>#</th><th>Equipe</th><th>Mov.</th><th>Pontos</th><th>Booyah!</th><th>Abates</th><th>Quedas</th></tr></thead>
+                    <tbody id="manual-live-table-body"><tr><td colspan="7">Carregando prévia...</td></tr></tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
           </section>
 
           <section class="live-tab-panel" data-live-panel="batch">
@@ -196,6 +261,6 @@
       activate(saved);
     })();
   </script>
-  <script type="module" src="js/admin-live-data.js?v=20260920-admin-tabs-v11"></script>
+  <script type="module" src="js/admin-live-data.js?v=20260926-manual-drops-v12"></script>
 </body>
 </html>
