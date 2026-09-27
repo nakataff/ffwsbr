@@ -649,3 +649,14 @@ body.cff-stats-route #ffws-br-s2-stats.page,body.cff-stats-route #registro-detal
 .ffws-s2-stats-stage-btn.is-final.is-active{background:rgba(255,194,38,.08);border-color:rgba(255,194,38,.42)}
 .ffws-s2-stats-stage-btn.is-final.is-active strong{color:#ffd76f}
 @media(max-width:700px){.ffws-s2-stats-stage-switch{grid-template-columns:repeat(2,minmax(0,1fr))}.ffws-s2-stats-stage-btn{min-height:54px}}
+
+
+/* ===== 2026-09-27: Ranking MVP mobile — jogador um pouco mais à direita ===== */
+@media(max-width:760px){
+  .ffws-s2-mvp-table th:nth-child(2),
+  .ffws-s2-mvp-table td:nth-child(2){padding-left:24px!important}
+}
+@media(max-width:390px){
+  .ffws-s2-mvp-table th:nth-child(2),
+  .ffws-s2-mvp-table td:nth-child(2){padding-left:20px!important}
+}
