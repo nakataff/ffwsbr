@@ -753,6 +753,7 @@ async function saveLive(event) {
     duracaoMinutos: item.duracaoMinutos,
     regiao: item.regiao,
     nivel: item.nivel,
+    tipo: 'misto',
     createdAt: previous && previous.createdAt ? previous.createdAt : serverTimestamp(),
     updatedAt: serverTimestamp()
   };
@@ -766,8 +767,11 @@ async function saveLive(event) {
     clearLiveForm();
     await loadAdminLives();
   } catch (error) {
-    setMessage($('#admin-live-message'), 'Não foi possível salvar. Confira a permissão adminLives nas regras do Firebase.', 'error');
-    console.error(error);
+    const code = String(error && error.code || '').trim();
+    setMessage($('#admin-live-message'), code
+      ? `Não foi possível salvar (${code}). Atualize a página e tente novamente.`
+      : 'Não foi possível salvar a transmissão. Atualize a página e tente novamente.', 'error');
+    console.error('Falha ao salvar adminLives:', error);
   } finally {
     submit.disabled = false;
   }
