@@ -15,21 +15,23 @@
       head.className='admin-panel-head admin-panel-head-wrap';
       tools.prepend(head);
     }
-    head.style.alignItems='center';
-    head.style.gap='14px';
+    head.style.alignItems='stretch';
+    head.style.gap='12px';
+    head.style.flexDirection='column';
     head.innerHTML=`
       <div>
         <p class="admin-eyebrow">Ferramentas privadas</p>
         <h2 style="margin:0">Ferramentas Central FF</h2>
         <p class="admin-muted" style="margin-top:5px">Acesso administrativo e correções internas do site</p>
       </div>
-      <div class="admin-inline-actions" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <a class="admin-btn admin-btn-ghost" href="admin-edicao.html" data-admin-edicao-link>🎨 Edição</a>
-        <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html">🎁 Abrir Codiguinhos</a>
-        <a class="admin-btn admin-btn-primary" href="admin-dados.html" data-admin-live-data-link>📊 Dados ao vivo</a>
-        <a class="admin-btn admin-btn-primary" href="admin-palpite.html">🎯 Palpites</a>
-        <a class="admin-btn admin-btn-primary" href="admin-recompensas.html">🔥 Bônus</a>
-        <a class="admin-btn admin-btn-primary" href="admin-sorteio-comunidade.html">🎁 Sorteio</a>
+      <div class="admin-inline-actions" style="display:flex;gap:8px;flex-wrap:nowrap;align-items:center;width:100%;overflow-x:auto;padding-bottom:4px">
+        <a class="admin-btn admin-btn-ghost" href="admin-edicao.html" data-admin-edicao-link style="flex:0 0 auto">🎨 Edição</a>
+        <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html" style="flex:0 0 auto">🎁 Abrir Codiguinhos</a>
+        <a class="admin-btn admin-btn-primary" href="admin-dados.html" data-admin-live-data-link style="flex:0 0 auto">📊 Dados ao vivo</a>
+        <a class="admin-btn admin-btn-primary" href="admin-palpite.html" style="flex:0 0 auto">🎯 Palpites</a>
+        <a class="admin-btn admin-btn-primary" href="admin-recompensas.html" style="flex:0 0 auto">🔥 Bônus</a>
+        <a class="admin-btn admin-btn-primary" href="admin-sorteio-comunidade.html" style="flex:0 0 auto">🎁 Sorteio</a>
+        <a class="admin-btn admin-btn-primary" href="admin-sorteador.html" style="flex:0 0 auto">🎡 Sorteador</a>
       </div>`;
 
     const recalc=tools.querySelector('.admin-community-recalc');
