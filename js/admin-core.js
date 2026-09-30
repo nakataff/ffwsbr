@@ -25,6 +25,9 @@ const searchInput = $('#admin-news-search');
 const liveForm = $('#admin-live-form');
 const liveList = $('#admin-live-list');
 let allLives = [];
+let savedLiveChannels = [];
+const LIVE_SAVED_CHANNEL_KEY = 'cff-admin-live-saved-channel-v1';
+let selectedSavedLiveChannelId = (() => { try { return localStorage.getItem(LIVE_SAVED_CHANNEL_KEY) || ''; } catch (_) { return ''; } })();
 let allNews = [];
 let newsMetrics = {};
 let pageAnalytics = [];
@@ -603,12 +606,173 @@ function formatLiveDuration(minutes) {
   return `${mins}min`;
 }
 
+function normalizeSavedLiveChannel(raw, id = '') {
+  return {
+    id: String(raw && (raw.id || id) || '').trim(),
+    name: String(raw && (raw.name || raw.nome || raw.canal) || '').trim().slice(0, 120),
+    url: String(raw && (raw.url || raw.link) || '').trim().slice(0, 500),
+    createdAt: Number(raw && raw.createdAt || 0),
+    updatedAt: Number(raw && raw.updatedAt || 0)
+  };
+}
+
+function savedLiveChannelOptions(selectedId = '') {
+  const selected = String(selectedId || '');
+  return '<option value="">Canal salvo...</option>' + savedLiveChannels
+    .map((item) => `<option value="${escapeHTML(item.id)}"${item.id === selected ? ' selected' : ''}>${escapeHTML(item.name)}</option>`)
+    .join('');
+}
+
+function syncMainSavedLiveChannelSelect(selectedId = '') {
+  const select = $('#live-saved-channel');
+  if (!select) return;
+  select.innerHTML = '<option value="">Selecionar canal salvo...</option>' + savedLiveChannels
+    .map((item) => `<option value="${escapeHTML(item.id)}">${escapeHTML(item.name)}</option>`)
+    .join('');
+  if (selectedId && savedLiveChannels.some((item) => item.id === selectedId)) select.value = selectedId;
+  else select.value = '';
+  const del = $('#live-delete-channel');
+  if (del) del.disabled = !select.value;
+}
+
+function refreshAltSavedChannelSelects() {
+  document.querySelectorAll('#live-alt-links .live-alt-saved-channel').forEach((select) => {
+    const previous = select.value;
+    select.innerHTML = savedLiveChannelOptions(previous);
+    if (previous && savedLiveChannels.some((item) => item.id === previous)) select.value = previous;
+  });
+}
+
+function rememberSavedLiveChannel(id) {
+  selectedSavedLiveChannelId = String(id || '');
+  try {
+    if (selectedSavedLiveChannelId) localStorage.setItem(LIVE_SAVED_CHANNEL_KEY, selectedSavedLiveChannelId);
+    else localStorage.removeItem(LIVE_SAVED_CHANNEL_KEY);
+  } catch (_) {}
+}
+
+function applySavedLiveChannelToMain(id, remember = true) {
+  const item = savedLiveChannels.find((channel) => channel.id === id);
+  if (!item) return false;
+  $('#live-channel').value = item.name;
+  $('#live-url').value = item.url;
+  if (remember) rememberSavedLiveChannel(item.id);
+  syncMainSavedLiveChannelSelect(item.id);
+  return true;
+}
+
+function applyRememberedSavedLiveChannel() {
+  if (!selectedSavedLiveChannelId) {
+    syncMainSavedLiveChannelSelect('');
+    return;
+  }
+  if (!applySavedLiveChannelToMain(selectedSavedLiveChannelId, false)) {
+    rememberSavedLiveChannel('');
+    syncMainSavedLiveChannelSelect('');
+  }
+}
+
+async function loadSavedLiveChannels() {
+  try {
+    const snap = await get(ref(database, 'adminLiveChannels'));
+    const raw = snap.val() || {};
+    savedLiveChannels = Object.keys(raw)
+      .map((id) => normalizeSavedLiveChannel(raw[id], id))
+      .filter((item) => item.id && item.name && item.url)
+      .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }));
+    syncMainSavedLiveChannelSelect($('#live-original-id')?.value ? '' : selectedSavedLiveChannelId);
+    refreshAltSavedChannelSelects();
+    if (!$('#live-original-id')?.value && !$('#live-channel')?.value && !$('#live-url')?.value) applyRememberedSavedLiveChannel();
+  } catch (error) {
+    console.error('Falha ao carregar canais salvos:', error);
+  }
+}
+
+async function saveSavedLiveChannel(name, url) {
+  const channelName = String(name || '').trim();
+  const channelUrl = String(url || '').trim();
+  if (!channelName || !channelUrl) throw new Error('Preencha o nome e o link do canal antes de salvar.');
+  let parsed;
+  try { parsed = new URL(channelUrl); } catch (_) { throw new Error('O link do canal é inválido.'); }
+  if (!/^https?:$/.test(parsed.protocol)) throw new Error('O link do canal precisa começar com http:// ou https://.');
+  const existing = savedLiveChannels.find((item) => item.name.toLowerCase() === channelName.toLowerCase());
+  const id = existing?.id || safeFirebaseKey('channel-' + (slugify(channelName) || Date.now()));
+  const payload = {
+    id,
+    name: channelName.slice(0, 120),
+    url: parsed.toString().slice(0, 500),
+    createdAt: existing?.createdAt || serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+  await set(ref(database, 'adminLiveChannels/' + id), payload);
+  await loadSavedLiveChannels();
+  return id;
+}
+
+async function saveMainLiveChannel() {
+  const button = $('#live-save-channel');
+  if (button) button.disabled = true;
+  try {
+    const id = await saveSavedLiveChannel($('#live-channel').value, $('#live-url').value);
+    rememberSavedLiveChannel(id);
+    applySavedLiveChannelToMain(id, false);
+    setMessage($('#admin-live-message'), 'Canal salvo. Ele poderá ser reutilizado nas próximas transmissões e nas alternativas.', 'success');
+  } catch (error) {
+    setMessage($('#admin-live-message'), error.message || 'Não foi possível salvar o canal.', 'error');
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+async function deleteSelectedLiveChannel() {
+  const select = $('#live-saved-channel');
+  const id = String(select?.value || '');
+  const item = savedLiveChannels.find((channel) => channel.id === id);
+  if (!item) return;
+  if (!confirm(`Excluir o canal salvo "${item.name}"?`)) return;
+  try {
+    await remove(ref(database, 'adminLiveChannels/' + id));
+    if (selectedSavedLiveChannelId === id) rememberSavedLiveChannel('');
+    await loadSavedLiveChannels();
+    syncMainSavedLiveChannelSelect('');
+    setMessage($('#admin-live-message'), 'Canal salvo removido.', 'success');
+  } catch (error) {
+    setMessage($('#admin-live-message'), 'Não foi possível excluir o canal salvo.', 'error');
+    console.error(error);
+  }
+}
+
 function liveAltRow(link = {}) {
   const row = document.createElement('div');
   row.className = 'admin-live-alt-row';
-  row.innerHTML = '<input class="live-alt-label" maxlength="80" placeholder="Nome (ex.: CazéTV)"><input class="live-alt-url" type="url" placeholder="https://youtube.com/..."><button class="admin-btn admin-btn-ghost admin-live-alt-remove" type="button" title="Remover alternativa">×</button>';
+  row.innerHTML = '<select class="live-alt-saved-channel" aria-label="Canal salvo para transmissão alternativa"></select><input class="live-alt-label" maxlength="80" placeholder="Nome (ex.: CazéTV)"><input class="live-alt-url" type="url" placeholder="https://youtube.com/..."><button class="admin-btn admin-btn-ghost admin-live-alt-save" type="button" title="Salvar este canal para reutilizar">💾</button><button class="admin-btn admin-btn-ghost admin-live-alt-remove" type="button" title="Remover alternativa">×</button>';
+  const savedSelect = row.querySelector('.live-alt-saved-channel');
+  savedSelect.innerHTML = savedLiveChannelOptions('');
   row.querySelector('.live-alt-label').value = String(link.label || '');
   row.querySelector('.live-alt-url').value = String(link.url || '');
+  savedSelect.addEventListener('change', () => {
+    const item = savedLiveChannels.find((channel) => channel.id === savedSelect.value);
+    if (!item) return;
+    row.querySelector('.live-alt-label').value = item.name;
+    row.querySelector('.live-alt-url').value = item.url;
+  });
+  row.querySelector('.admin-live-alt-save').addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    try {
+      const id = await saveSavedLiveChannel(
+        row.querySelector('.live-alt-label').value,
+        row.querySelector('.live-alt-url').value
+      );
+      savedSelect.innerHTML = savedLiveChannelOptions(id);
+      savedSelect.value = id;
+      setMessage($('#admin-live-message'), 'Canal alternativo salvo para reutilizar.', 'success');
+    } catch (error) {
+      setMessage($('#admin-live-message'), error.message || 'Não foi possível salvar o canal alternativo.', 'error');
+    } finally {
+      button.disabled = false;
+    }
+  });
   row.querySelector('.admin-live-alt-remove').addEventListener('click', () => row.remove());
   return row;
 }
@@ -637,6 +801,7 @@ function clearLiveForm() {
   $('#live-region').value = 'brasil';
   $('#live-level').value = 'oficial';
   renderLiveAltLinks([]);
+  applyRememberedSavedLiveChannel();
   $('#live-editor-title').textContent = 'Nova live';
   setMessage($('#admin-live-message'), '');
 }
@@ -648,6 +813,7 @@ function fillLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  syncMainSavedLiveChannelSelect('');
   renderLiveAltLinks(item.links || []);
   $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
   $('#live-start').value = item.inicio.slice(0, 16);
@@ -667,6 +833,7 @@ function duplicateLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  syncMainSavedLiveChannelSelect('');
   renderLiveAltLinks(item.links || []);
   $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
   $('#live-start').value = item.inicio.slice(0, 16);
@@ -1189,7 +1356,7 @@ onAuthStateChanged(auth, async (user) => {
   if (abuseToolsButton) abuseToolsButton.hidden = !allowed;
   if (!allowed && abuseDialog?.open) abuseDialog.close();
   if (user && !allowed) await signOut(auth);
-  if (allowed) { clearForm(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives()]); }
+  if (allowed) { clearForm(); await loadSavedLiveChannels(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives()]); }
 });
 
 async function recalculateCommunityRanking() {
@@ -1285,7 +1452,7 @@ $('#admin-toggle-password').addEventListener('click', () => {
   input.type = input.type === 'password' ? 'text' : 'password';
   $('#admin-toggle-password').textContent = input.type === 'password' ? 'Mostrar' : 'Ocultar';
 });
-$('#admin-refresh').addEventListener('click', () => Promise.all([loadDashboard(), loadAdminLives()]));
+$('#admin-refresh').addEventListener('click', () => Promise.all([loadDashboard(), loadAdminLives(), loadSavedLiveChannels()]));
 $('#admin-new-news').addEventListener('click', clearForm);
 $('#admin-import-local').addEventListener('click', importLocalNews);
 $('#admin-import-sheet').addEventListener('click', importSheet);
@@ -1302,6 +1469,14 @@ if (liveForm) liveForm.addEventListener('submit', saveLive);
 $('#admin-new-live')?.addEventListener('click', clearLiveForm);
 $('#admin-clear-live')?.addEventListener('click', clearLiveForm);
 $('#live-add-alt-link')?.addEventListener('click', () => $('#live-alt-links')?.appendChild(liveAltRow()));
+$('#live-saved-channel')?.addEventListener('change', (event) => {
+  const id = String(event.target.value || '');
+  const del = $('#live-delete-channel');
+  if (del) del.disabled = !id;
+  if (id) applySavedLiveChannelToMain(id, true);
+});
+$('#live-save-channel')?.addEventListener('click', saveMainLiveChannel);
+$('#live-delete-channel')?.addEventListener('click', deleteSelectedLiveChannel);
 $('#admin-clear-ended-lives')?.addEventListener('click', clearEndedLives);
 $('#admin-ranking-recalc')?.addEventListener('click', recalculateCommunityRanking);
 $('#news-status').addEventListener('change', () => {
