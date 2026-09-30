@@ -18,6 +18,7 @@
 
   let db=null,refFn=null,onValueFn=null,setFn=null;
   let items=new Map(),currentId='',entries=[],stopEntries=null,stopPrivate=null;
+  const knownPasswords=new Map();
 
   function message(text,type=''){
     const el=$('#private-message');if(!el)return;
@@ -133,7 +134,7 @@
     $('#private-title').value=item.title||'';
     $('#private-description').value=item.description||'';
     $('#private-end').value=toLocal(item.endsAt);
-    $('#private-password').value='';
+    $('#private-password').value=knownPasswords.get(currentId)||'';
     const fields=item.fields||{};
     $('#private-field-name').checked=Boolean(fields.name);
     $('#private-field-id').checked=Boolean(fields.id);
@@ -204,6 +205,7 @@
       if(password.length<3)return message('A senha precisa ter pelo menos 3 caracteres.','error');
       passwordSalt=randomHex(16);
       keyHex=await deriveKeyHex(passwordSalt,password);
+      knownPasswords.set(id,password);
     }
     if(!passwordSalt||!keyHex)return message('Digite uma nova senha para este sorteio.','error');
     if(!entryToken)entryToken=randomHex(24);
@@ -219,7 +221,6 @@
         setFn(refFn(db,`communityGiveaways/privatePublic/${id}`),envelope)
       ]);
       currentId=id;items.set(id,data);renderSelect();fillForm(data);
-      if($('#private-password'))$('#private-password').value='';
       message(`Sorteio privado salvo. Link: ${privateLink(id)}`,'success');
     }catch(err){console.error(err);message('Não foi possível salvar o sorteio privado.','error');}
   }
@@ -259,6 +260,26 @@
     message(`${entries.length} participantes copiados.`,'success');
   }
 
+  function togglePassword(){
+    const input=$('#private-password'),button=$('#private-password-toggle');if(!input||!button)return;
+    const showing=input.type==='text';
+    input.type=showing?'password':'text';
+    button.textContent=showing?'◉':'◎';
+    button.setAttribute('aria-label',showing?'Mostrar senha':'Ocultar senha');
+    button.title=showing?'Mostrar senha':'Ocultar senha';
+  }
+
+  async function copyPassword(){
+    const input=$('#private-password');
+    const password=String(input?.value||'');
+    if(!password){
+      return message('Essa senha antiga não fica salva em texto. Digite uma nova senha se quiser copiá-la.','error');
+    }
+    try{await navigator.clipboard.writeText(password);}
+    catch(_){const a=document.createElement('textarea');a.value=password;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();}
+    message('Senha copiada.','success');
+  }
+
   function bind(){
     wireTabs();
     $('#private-form')?.addEventListener('submit',savePrivate);
@@ -266,6 +287,8 @@
     $('#private-close')?.addEventListener('click',closePrivate);
     $('#private-copy-link')?.addEventListener('click',copyLink);
     $('#private-copy-entries')?.addEventListener('click',copyEntries);
+    $('#private-password-toggle')?.addEventListener('click',togglePassword);
+    $('#private-password-copy')?.addEventListener('click',copyPassword);
     $('#private-select')?.addEventListener('change',e=>{
       const id=String(e.target.value||'');currentId=id;
       if(id&&items.has(id))fillForm(items.get(id));else resetForm();
