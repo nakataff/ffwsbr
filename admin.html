@@ -23,10 +23,10 @@
   </script>
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260930-live-embed-v8">
+  <link rel="stylesheet" href="css/admin.css?v=20260930-official-videos-v9">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
-  <script type="module" src="js/admin.js?v=20260930-live-embed-v42"></script>
+  <script type="module" src="js/admin.js?v=20260930-official-videos-v43"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -151,6 +151,12 @@
           <button id="admin-new-live" class="admin-btn admin-btn-ghost" type="button">+ Nova live</button>
         </div>
 
+        <div class="admin-live-tabs" role="tablist" aria-label="Ferramentas de transmissão">
+          <button class="admin-live-tab is-active" type="button" data-admin-live-tab="agenda" aria-selected="true">📡 Agenda e lives</button>
+          <button class="admin-live-tab" type="button" data-admin-live-tab="official-videos" aria-selected="false">▶ Vídeos oficiais</button>
+        </div>
+
+        <div id="admin-live-tab-agenda" class="admin-live-tab-panel">
         <form id="admin-live-form" class="admin-live-form">
           <input id="live-original-id" type="hidden">
           <div class="admin-field"><label for="live-tournament">Nome do torneio</label><input id="live-tournament" maxlength="120" required placeholder="Ex.: FFWS LATAM"></div>
@@ -201,6 +207,44 @@
           </div>
         </div>
         <div id="admin-live-list" class="admin-live-list"><div class="admin-empty">Carregando lives...</div></div>
+        </div>
+
+        <div id="admin-live-tab-official-videos" class="admin-live-tab-panel" hidden>
+          <div class="admin-official-video-intro">
+            <div>
+              <p class="admin-eyebrow">Player principal da home</p>
+              <h3>Vídeos das transmissões oficiais</h3>
+              <p class="admin-muted">Associe um vídeo do YouTube a uma rodada/dia da FFWS BR 2026 S2. Quando ativado, o embed aparece dentro do bloco grande de Próxima Transmissão. É totalmente opcional.</p>
+            </div>
+          </div>
+
+          <form id="admin-official-video-form" class="admin-official-video-form">
+            <div class="admin-field admin-field-wide">
+              <label for="official-video-round">Rodada / dia</label>
+              <select id="official-video-round"><option value="">Carregando calendário...</option></select>
+            </div>
+            <div class="admin-field admin-field-wide">
+              <label for="official-video-url">Link direto do vídeo/live no YouTube</label>
+              <input id="official-video-url" type="url" placeholder="https://www.youtube.com/watch?v=... ou https://youtu.be/...">
+              <small>Use o link direto da transmissão. Links de canal como @ffesportsbr/live não servem para identificar o vídeo do embed.</small>
+            </div>
+            <label class="admin-official-video-toggle admin-field-wide">
+              <input id="official-video-enabled" type="checkbox" checked>
+              <span>Mostrar o player no bloco principal da home</span>
+            </label>
+            <div class="admin-form-actions admin-field-wide">
+              <button id="official-video-remove" class="admin-btn admin-btn-ghost" type="button" disabled>Remover vídeo</button>
+              <button class="admin-btn admin-btn-primary" type="submit">Salvar vídeo oficial</button>
+            </div>
+            <p id="official-video-message" class="admin-message admin-field-wide" aria-live="polite"></p>
+          </form>
+
+          <div class="admin-live-list-head admin-official-video-list-head">
+            <div><p class="admin-eyebrow">Configurados</p><h3>Vídeos oficiais salvos</h3></div>
+            <span id="official-video-summary" class="admin-muted">Carregando...</span>
+          </div>
+          <div id="official-video-list" class="admin-official-video-list"><div class="admin-empty">Nenhum vídeo configurado.</div></div>
+        </div>
       </section>
 
       <section class="admin-panel admin-editor-panel">
