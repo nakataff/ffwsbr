@@ -1257,7 +1257,7 @@
 .home-transmission-widget .live-card{
   display:grid!important;
   grid-template-columns:auto minmax(0,1fr) auto;
-  grid-template-areas:"dot info badge" "links links links";
+  grid-template-areas:"dot info badge" "links links links" "embed embed embed";
   align-items:center;
   column-gap:8px;
   row-gap:0;
@@ -1313,6 +1313,36 @@
   box-shadow:0 5px 14px rgba(255,23,56,.18);
 }
 .cff-live-action:hover{filter:brightness(1.08)}
+.cff-live-embed-toggle{
+  border:1px solid rgba(0,200,255,.32);
+  background:#0a2230;
+  color:#8eeaff;
+  box-shadow:none;
+  cursor:pointer;
+}
+.cff-live-embed-toggle[aria-expanded="true"]{
+  border-color:rgba(255,255,255,.16);
+  background:#151b26;
+  color:#dbe8f6;
+}
+.cff-live-embed-wrap{
+  grid-area:embed;
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  margin-top:8px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:9px;
+  background:#05070a;
+}
+.cff-live-embed-wrap iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+}
 .cff-live-action-title{display:block}
 .cff-live-action-alt{
   flex-direction:column;
