@@ -171,6 +171,9 @@
     try{
       await setFn(refFn(db,`communityGiveaways/private/${id}`),data);
       currentId=id;
+      items.set(id,data);
+      renderSelect();
+      fillForm(data);
       if($('#private-password'))$('#private-password').value='';
       message(`Sorteio privado salvo. Link: ${privateLink(id)}`,'success');
     }catch(err){console.error(err);message('Não foi possível salvar o sorteio privado.','error');}
