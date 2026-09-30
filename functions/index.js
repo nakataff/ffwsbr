@@ -545,6 +545,7 @@ exports.privateGiveaway = onRequest(
     cors: true
   },
   async (req, res) => {
+    res.set('Cache-Control', 'no-store');
     if (req.method === 'OPTIONS') {
       res.status(204).send('');
       return;
