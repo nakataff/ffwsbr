@@ -26,6 +26,9 @@ const liveForm = $('#admin-live-form');
 const liveList = $('#admin-live-list');
 let allLives = [];
 let savedLiveChannels = [];
+let officialVideoSchedule = [];
+let officialBroadcastVideos = {};
+let activeAdminLiveTab = 'agenda';
 const LIVE_SAVED_CHANNEL_KEY = 'cff-admin-live-saved-channel-v1';
 let selectedSavedLiveChannelId = (() => { try { return localStorage.getItem(LIVE_SAVED_CHANNEL_KEY) || ''; } catch (_) { return ''; } })();
 let allNews = [];
@@ -634,6 +637,149 @@ function syncLiveEmbedField() {
   const enabled = Boolean($('#live-embed-enabled')?.checked);
   const settings = $('#live-embed-settings');
   if (settings) settings.hidden = !enabled;
+}
+
+function setAdminLiveTab(name) {
+  activeAdminLiveTab = name === 'official-videos' ? 'official-videos' : 'agenda';
+  document.querySelectorAll('[data-admin-live-tab]').forEach((button) => {
+    const active = button.dataset.adminLiveTab === activeAdminLiveTab;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  const agenda = $('#admin-live-tab-agenda');
+  const official = $('#admin-live-tab-official-videos');
+  if (agenda) agenda.hidden = activeAdminLiveTab !== 'agenda';
+  if (official) official.hidden = activeAdminLiveTab !== 'official-videos';
+  const newLive = $('#admin-new-live');
+  if (newLive) newLive.hidden = activeAdminLiveTab !== 'agenda';
+  const title = $('#live-editor-title');
+  if (title) title.textContent = activeAdminLiveTab === 'official-videos'
+    ? 'Vídeos oficiais'
+    : ($('#live-original-id')?.value ? 'Editar live' : 'Nova live');
+}
+
+function officialVideoRoundLabel(item) {
+  if (!item) return 'Rodada';
+  return [item.stageName || item.stage, item.label, item.dateLabel || item.date, item.time].filter(Boolean).join(' • ');
+}
+
+function renderOfficialVideoList() {
+  const root = $('#official-video-list');
+  const summary = $('#official-video-summary');
+  if (!root || !summary) return;
+  const rows = officialVideoSchedule
+    .map((item) => ({ item, video: officialBroadcastVideos[item.key] }))
+    .filter((row) => row.video && row.video.url);
+  summary.textContent = rows.length ? `${rows.length} vídeo(s) configurado(s)` : 'Nenhum vídeo configurado';
+  root.innerHTML = rows.length ? rows.map(({ item, video }) => `
+    <button class="admin-official-video-row" type="button" data-official-video-edit="${escapeHTML(item.key)}">
+      <span><strong>${escapeHTML(officialVideoRoundLabel(item))}</strong><small>${escapeHTML(video.url || '')}</small></span>
+      <span class="admin-chip ${video.enabled ? '' : 'is-draft'}">${video.enabled ? 'ATIVO' : 'DESATIVADO'}</span>
+    </button>
+  `).join('') : '<div class="admin-empty">Nenhum vídeo oficial configurado. A home continua funcionando normalmente sem eles.</div>';
+  root.querySelectorAll('[data-official-video-edit]').forEach((button) => button.addEventListener('click', () => {
+    const key = button.dataset.officialVideoEdit || '';
+    const select = $('#official-video-round');
+    if (select) select.value = key;
+    fillOfficialVideoForm(key);
+    setAdminLiveTab('official-videos');
+    $('#official-video-url')?.focus();
+  }));
+}
+
+function fillOfficialVideoForm(key) {
+  const video = officialBroadcastVideos[String(key || '')] || null;
+  const url = $('#official-video-url');
+  const enabled = $('#official-video-enabled');
+  const removeButton = $('#official-video-remove');
+  if (url) url.value = video?.url || '';
+  if (enabled) enabled.checked = video ? Boolean(video.enabled) : true;
+  if (removeButton) removeButton.disabled = !video;
+  setMessage($('#official-video-message'), video
+    ? (video.enabled ? 'Vídeo salvo e ativo no bloco principal.' : 'Vídeo salvo, mas o player está desativado.')
+    : 'Nenhum vídeo configurado para esta rodada.');
+}
+
+async function loadOfficialBroadcastVideos() {
+  const [scheduleResponse, videosSnap] = await Promise.all([
+    fetch('ffws-br-2026-s2/dates.json?v=20260930-official-videos-v1', { cache: 'no-store' }),
+    get(ref(database, 'homeBroadcastVideos'))
+  ]);
+  if (!scheduleResponse.ok) throw new Error('Não foi possível carregar o calendário da FFWS BR.');
+  const payload = await scheduleResponse.json();
+  officialVideoSchedule = Array.isArray(payload?.rounds) ? payload.rounds : [];
+  officialBroadcastVideos = videosSnap.val() || {};
+  const select = $('#official-video-round');
+  if (select) {
+    const previous = select.value;
+    select.innerHTML = '<option value="">Selecione a rodada/dia...</option>' + officialVideoSchedule.map((item) =>
+      `<option value="${escapeHTML(item.key)}">${escapeHTML(officialVideoRoundLabel(item))}</option>`
+    ).join('');
+    if (previous && officialVideoSchedule.some((item) => item.key === previous)) select.value = previous;
+    else {
+      const now = Date.now();
+      const next = officialVideoSchedule.find((item) => {
+        const stamp = Date.parse(String(item.date || '') + 'T' + String(item.time24 || '13:00') + ':00-03:00');
+        return Number.isFinite(stamp) && stamp >= now - 6 * 60 * 60 * 1000;
+      });
+      if (next) select.value = next.key;
+    }
+    fillOfficialVideoForm(select.value);
+  }
+  renderOfficialVideoList();
+}
+
+async function saveOfficialBroadcastVideo(event) {
+  event.preventDefault();
+  const key = String($('#official-video-round')?.value || '');
+  const url = String($('#official-video-url')?.value || '').trim();
+  const enabled = Boolean($('#official-video-enabled')?.checked);
+  const item = officialVideoSchedule.find((row) => row.key === key);
+  if (!item) return setMessage($('#official-video-message'), 'Selecione uma rodada ou dia.', 'error');
+  const videoId = youtubeVideoId(url);
+  if (!videoId) return setMessage($('#official-video-message'), 'Cole um link direto do vídeo/live no YouTube.', 'error');
+  const submit = $('#admin-official-video-form')?.querySelector('[type="submit"]');
+  if (submit) submit.disabled = true;
+  try {
+    const data = {
+      key,
+      url,
+      videoId,
+      enabled,
+      stage: String(item.stage || ''),
+      stageName: String(item.stageName || ''),
+      label: String(item.label || ''),
+      date: String(item.date || ''),
+      updatedAt: Date.now()
+    };
+    await set(ref(database, 'homeBroadcastVideos/' + key), data);
+    officialBroadcastVideos[key] = data;
+    fillOfficialVideoForm(key);
+    renderOfficialVideoList();
+    setMessage($('#official-video-message'), enabled
+      ? 'Vídeo salvo. O embed aparecerá no bloco principal quando esta for a transmissão atual/próxima.'
+      : 'Vídeo salvo, mas deixado desativado.', 'success');
+  } catch (error) {
+    console.error(error);
+    setMessage($('#official-video-message'), 'Não foi possível salvar o vídeo oficial.', 'error');
+  } finally {
+    if (submit) submit.disabled = false;
+  }
+}
+
+async function removeOfficialBroadcastVideo() {
+  const key = String($('#official-video-round')?.value || '');
+  if (!key || !officialBroadcastVideos[key]) return;
+  try {
+    await remove(ref(database, 'homeBroadcastVideos/' + key));
+    delete officialBroadcastVideos[key];
+    fillOfficialVideoForm(key);
+    renderOfficialVideoList();
+    setMessage($('#official-video-message'), 'Vídeo removido. O bloco principal volta ao layout normal.', 'success');
+  } catch (error) {
+    console.error(error);
+    setMessage($('#official-video-message'), 'Não foi possível remover o vídeo oficial.', 'error');
+  }
 }
 
 function normalizeSavedLiveChannel(raw, id = '') {
@@ -1402,7 +1548,7 @@ onAuthStateChanged(auth, async (user) => {
   if (abuseToolsButton) abuseToolsButton.hidden = !allowed;
   if (!allowed && abuseDialog?.open) abuseDialog.close();
   if (user && !allowed) await signOut(auth);
-  if (allowed) { clearForm(); await loadSavedLiveChannels(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives()]); }
+  if (allowed) { clearForm(); await loadSavedLiveChannels(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives(), loadOfficialBroadcastVideos()]); }
 });
 
 async function recalculateCommunityRanking() {
@@ -1498,7 +1644,7 @@ $('#admin-toggle-password').addEventListener('click', () => {
   input.type = input.type === 'password' ? 'text' : 'password';
   $('#admin-toggle-password').textContent = input.type === 'password' ? 'Mostrar' : 'Ocultar';
 });
-$('#admin-refresh').addEventListener('click', () => Promise.all([loadDashboard(), loadAdminLives(), loadSavedLiveChannels()]));
+$('#admin-refresh').addEventListener('click', () => Promise.all([loadDashboard(), loadAdminLives(), loadSavedLiveChannels(), loadOfficialBroadcastVideos()]));
 $('#admin-new-news').addEventListener('click', clearForm);
 $('#admin-import-local').addEventListener('click', importLocalNews);
 $('#admin-import-sheet').addEventListener('click', importSheet);
@@ -1512,7 +1658,11 @@ $('#ga-period').addEventListener('change', () => { saveGaSettings(false); if (ga
 fillGaSettings();
 $('#admin-close-preview').addEventListener('click', () => $('#admin-preview-dialog').close());
 if (liveForm) liveForm.addEventListener('submit', saveLive);
-$('#admin-new-live')?.addEventListener('click', clearLiveForm);
+document.querySelectorAll('[data-admin-live-tab]').forEach((button) => button.addEventListener('click', () => setAdminLiveTab(button.dataset.adminLiveTab)));
+$('#admin-official-video-form')?.addEventListener('submit', saveOfficialBroadcastVideo);
+$('#official-video-round')?.addEventListener('change', (event) => fillOfficialVideoForm(event.target.value));
+$('#official-video-remove')?.addEventListener('click', removeOfficialBroadcastVideo);
+$('#admin-new-live')?.addEventListener('click', () => { setAdminLiveTab('agenda'); clearLiveForm(); });
 $('#admin-clear-live')?.addEventListener('click', clearLiveForm);
 $('#live-add-alt-link')?.addEventListener('click', () => $('#live-alt-links')?.appendChild(liveAltRow()));
 $('#live-embed-enabled')?.addEventListener('change', syncLiveEmbedField);
