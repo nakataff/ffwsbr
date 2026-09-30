@@ -129,6 +129,10 @@
         ".read": true,
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
       },
+      "history": {
+        ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
+      },
       "private": {
         ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
