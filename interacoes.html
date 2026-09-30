@@ -88,7 +88,16 @@
     .ig-integrity a:hover{text-decoration:underline}
     .ig-error{display:none;margin:0 0 16px;padding:12px 14px;border:1px solid rgba(255,96,96,.25);border-radius:10px;background:rgba(255,96,96,.07);color:#ffb4b4;font-size:.8rem;font-weight:750}
     .ig-error.is-visible{display:block}
-    @media(max-width:900px){.ig-hero{grid-template-columns:1fr}.ig-grid{grid-template-columns:1fr}.ig-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .ig-community-links{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:12px;margin:0 0 18px}
+    .ig-community-links-card{border:1px solid var(--ig-border);border-radius:14px;background:var(--ig-card);padding:16px 18px}
+    .ig-community-links-card h2{margin:0 0 7px;font-size:.82rem;font-weight:1000;text-transform:uppercase;letter-spacing:.7px}
+    .ig-community-links-card p,.ig-community-links-card li{color:#8099b7;font-size:.72rem;line-height:1.5}
+    .ig-community-links-card ul{margin:8px 0 0;padding-left:18px}
+    .ig-whatsapp-actions{display:grid;gap:8px;margin-top:10px}
+    .ig-whatsapp-link{display:flex;align-items:center;justify-content:center;min-height:40px;border:1px solid rgba(104,224,165,.25);border-radius:10px;background:rgba(104,224,165,.07);color:#a9f0cc;text-decoration:none;font-size:.68rem;font-weight:1000;text-transform:uppercase}
+    .ig-whatsapp-link:hover{background:rgba(104,224,165,.12)}
+
+    @media(max-width:900px){.ig-hero{grid-template-columns:1fr}.ig-grid{grid-template-columns:1fr}.ig-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ig-community-links{grid-template-columns:1fr}}
     @media(max-width:650px){
       .ig-page{width:min(100% - 20px,1180px);padding-top:20px}.ig-hero-main{padding:24px 20px}.ig-side-card{padding:18px 20px}.ig-title{font-size:clamp(2.05rem,13vw,3.6rem)}
       .ig-toolbar{align-items:stretch;flex-direction:column}.ig-tabs{width:100%}.ig-tab{flex:1;padding-left:8px;padding-right:8px}.ig-search{width:100%}
@@ -144,6 +153,26 @@
       <p id="ig-period-copy">De segunda a domingo. O ranking fecha no domingo às 23h59 e uma nova disputa começa na segunda.</p>
       <div class="ig-status"><span class="ig-status-dot"></span><span id="ig-status-text">Carregando...</span></div>
     </div>
+  </section>
+
+  <section class="ig-community-links" aria-label="Comunidade e diretrizes do sorteio">
+    <article class="ig-community-links-card">
+      <h2>Diretrizes dos sorteios</h2>
+      <ul>
+        <li>Perfis com mais interações e melhor posição no ranking podem receber chance extra quando o sorteio estiver com prioridade ativada.</li>
+        <li>Conta fake, conta duplicada, múltiplas contas da mesma pessoa, spam ou manipulação artificial de interações podem causar desclassificação.</li>
+        <li>O @ informado no sorteio deve ser válido e pertencer ao participante.</li>
+      </ul>
+      <p><a href="sorteio-comunidade.html" style="color:#7ee6ff;font-weight:950;text-decoration:none">Abrir página do sorteio →</a></p>
+    </article>
+    <aside class="ig-community-links-card">
+      <h2>Comunidade no WhatsApp</h2>
+      <p>Entre para acompanhar avisos, sorteios e novidades da Central Free Fire.</p>
+      <div class="ig-whatsapp-actions">
+        <a class="ig-whatsapp-link" href="https://chat.whatsapp.com/CfCyUPedGS7BkrtgsXTMlZ" target="_blank" rel="noopener noreferrer">Entrar no grupo</a>
+        <a class="ig-whatsapp-link" href="https://chat.whatsapp.com/CfCyUPedGS7BkrtgsXTMlZ" target="_blank" rel="noopener noreferrer">Entrar no canal</a>
+      </div>
+    </aside>
   </section>
 
   <nav class="community-main-tabs" aria-label="Comunidade">
@@ -412,6 +441,6 @@
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
 
 <script data-cff-community-prediction src="js/community-prediction-v5.js?v=20260921-no-poll-v10"></script>
-<script data-cff-community-promos src="js/community-promos.js?v=20260924-ranking-recovery-v4"></script>
+<script data-cff-community-promos src="js/community-promos.js?v=20260929-giveaway-winner-v5"></script>
 </body>
 </html>
