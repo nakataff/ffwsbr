@@ -1316,20 +1316,25 @@
 .cff-live-action-title{display:block}
 .cff-live-action-alt{
   flex-direction:column;
-  min-height:38px;
-  gap:3px;
-  background:#171f2d;
-  border:1px solid rgba(255,255,255,.10);
+  min-height:34px;
+  gap:2px;
+  background:#fff;
+  border:1px solid rgba(255,23,56,.22);
+  color:#ff1738;
   box-shadow:none;
+}
+.cff-live-action-alt .cff-live-action-title{
+  font-size:.50rem;
+  letter-spacing:.035em;
 }
 .cff-live-action-alt small{
   display:block;
   max-width:100%;
   overflow:hidden;
-  color:#9eb3cb;
-  font-size:.52rem;
+  color:#d31331;
+  font-size:.45rem;
   font-weight:850;
-  letter-spacing:.01em;
+  letter-spacing:.005em;
   text-overflow:ellipsis;
   text-transform:none;
   white-space:nowrap;
@@ -1370,5 +1375,6 @@
     font-size:.44rem!important;
   }
   .cff-live-action{font-size:.56rem}
-  .cff-live-action-alt small{font-size:.49rem}
+  .cff-live-action-alt .cff-live-action-title{font-size:.47rem}
+  .cff-live-action-alt small{font-size:.42rem}
 }
