@@ -23,10 +23,10 @@
   </script>
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20260930-saved-live-channels-v7">
+  <link rel="stylesheet" href="css/admin.css?v=20260930-live-embed-v8">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
-  <script type="module" src="js/admin.js?v=20260930-saved-live-channels-v41"></script>
+  <script type="module" src="js/admin.js?v=20260930-live-embed-v42"></script>
 </head>
 <body>
   <main class="admin-shell">
@@ -166,6 +166,14 @@
           </div>
           <div class="admin-field"><label for="live-channel">Canal do torneio</label><input id="live-channel" maxlength="120" required placeholder="Ex.: FF LATAM"></div>
           <div class="admin-field admin-field-wide"><label for="live-url">Transmissão principal <span class="admin-optional">(opcional)</span></label><input id="live-url" type="url" placeholder="https://www.youtube.com/@canal ou https://www.youtube.com/watch?v=..."><small>Se for um canal do YouTube, a home abre automaticamente o endereço /live para cair na transmissão atual.</small></div>
+          <div class="admin-field admin-field-wide admin-live-embed-field">
+            <label class="admin-live-embed-toggle"><input id="live-embed-enabled" type="checkbox"> <span>Permitir assistir pelo site</span></label>
+            <div id="live-embed-settings" class="admin-live-embed-settings" hidden>
+              <label for="live-embed-url">Link direto da live no YouTube <span class="admin-optional">(opcional se a transmissão principal já for um vídeo)</span></label>
+              <input id="live-embed-url" type="url" placeholder="https://www.youtube.com/watch?v=... ou https://youtu.be/...">
+              <small>O player só aparece quando esta opção estiver ativada. Use um link direto do vídeo/live; link de canal como @canal/live não identifica o vídeo para o embed.</small>
+            </div>
+          </div>
           <div class="admin-field admin-field-wide">
             <label>Transmissões alternativas <span class="admin-optional">(opcional)</span></label>
             <div id="live-alt-links" class="admin-live-alt-links"></div>
