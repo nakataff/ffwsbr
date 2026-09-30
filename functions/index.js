@@ -509,7 +509,8 @@ function privateGiveawayFields(raw) {
     name: Boolean(source.name),
     id: Boolean(source.id),
     instagram: Boolean(source.instagram),
-    nickname: Boolean(source.nickname)
+    nickname: Boolean(source.nickname),
+    whatsapp: Boolean(source.whatsapp)
   };
 }
 
@@ -608,10 +609,11 @@ exports.privateGiveaway = onRequest(
         instagram: allowed.instagram
           ? cleanUsername(privateGiveawayValue(incoming.instagram, 64))
           : '',
-        nickname: allowed.nickname ? privateGiveawayValue(incoming.nickname, 80) : ''
+        nickname: allowed.nickname ? privateGiveawayValue(incoming.nickname, 80) : '',
+        whatsapp: allowed.whatsapp ? privateGiveawayValue(incoming.whatsapp, 40) : ''
       };
 
-      if (!values.name && !values.id && !values.instagram && !values.nickname) {
+      if (!values.name && !values.id && !values.instagram && !values.nickname && !values.whatsapp) {
         res.status(400).json({ ok: false, error: 'Preencha pelo menos um dos campos do sorteio.' });
         return;
       }
@@ -620,7 +622,8 @@ exports.privateGiveaway = onRequest(
         values.name.toLowerCase(),
         values.id.toLowerCase(),
         values.instagram.toLowerCase(),
-        values.nickname.toLowerCase()
+        values.nickname.toLowerCase(),
+        values.whatsapp.toLowerCase()
       ].join('|');
       const dedupeKey = hash(identity);
       const dedupeRef = db.ref(`communityGiveaways/privateDedupe/${giveawayId}/${dedupeKey}`);
