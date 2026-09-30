@@ -1324,17 +1324,19 @@
   box-shadow:none;
 }
 .cff-live-action-alt .cff-live-action-title{
-  font-size:.50rem;
-  letter-spacing:.035em;
+  font-size:.43rem;
+  letter-spacing:.03em;
+  opacity:.88;
 }
 .cff-live-action-alt small{
   display:block;
   max-width:100%;
   overflow:hidden;
-  color:#d31331;
-  font-size:.45rem;
-  font-weight:850;
+  color:#c80f2b;
+  font-size:.66rem;
+  font-weight:1000;
   letter-spacing:.005em;
+  line-height:1.05;
   text-overflow:ellipsis;
   text-transform:none;
   white-space:nowrap;
@@ -1375,6 +1377,6 @@
     font-size:.44rem!important;
   }
   .cff-live-action{font-size:.56rem}
-  .cff-live-action-alt .cff-live-action-title{font-size:.47rem}
-  .cff-live-action-alt small{font-size:.42rem}
+  .cff-live-action-alt .cff-live-action-title{font-size:.40rem}
+  .cff-live-action-alt small{font-size:.62rem}
 }
