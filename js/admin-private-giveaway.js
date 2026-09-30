@@ -48,7 +48,8 @@
       name:Boolean($('#private-field-name')?.checked),
       id:Boolean($('#private-field-id')?.checked),
       instagram:Boolean($('#private-field-instagram')?.checked),
-      nickname:Boolean($('#private-field-nickname')?.checked)
+      nickname:Boolean($('#private-field-nickname')?.checked),
+      whatsapp:Boolean($('#private-field-whatsapp')?.checked)
     };
   }
 
@@ -95,6 +96,7 @@
     $('#private-field-id').checked=Boolean(fields.id);
     $('#private-field-instagram').checked=Boolean(fields.instagram);
     $('#private-field-nickname').checked=Boolean(fields.nickname);
+    $('#private-field-whatsapp').checked=Boolean(fields.whatsapp);
     const open=Boolean(item.active&&Number(item.endsAt)>Date.now());
     const status=$('#private-status');if(status){status.textContent=open?'ABERTO':'ENCERRADO';status.classList.toggle('closed',!open);}
     const link=privateLink(currentId),box=$('#private-link-box');
@@ -128,6 +130,7 @@
         id:String(x?.id||''),
         instagram:String(x?.instagram||'').replace(/^@+/,''),
         nickname:String(x?.nickname||''),
+        whatsapp:String(x?.whatsapp||''),
         createdAt:Number(x?.createdAt||0)
       })).sort((a,b)=>a.createdAt-b.createdAt);
       renderEntries();
@@ -137,9 +140,9 @@
   function renderEntries(){
     const body=$('#private-tbody');if(!body)return;
     if($('#private-total'))$('#private-total').textContent=String(entries.length);
-    if(!currentId){body.innerHTML='<tr><td colspan="6"><div class="give-empty">Nenhum sorteio privado selecionado.</div></td></tr>';return;}
-    if(!entries.length){body.innerHTML='<tr><td colspan="6"><div class="give-empty">Ainda não há participantes neste sorteio.</div></td></tr>';return;}
-    body.innerHTML=entries.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name||'—')}</td><td>${esc(x.id||'—')}</td><td>${x.instagram?'@'+esc(x.instagram):'—'}</td><td>${esc(x.nickname||'—')}</td><td><span class="private-muted">${esc(fmt(x.createdAt))}</span></td></tr>`).join('');
+    if(!currentId){body.innerHTML='<tr><td colspan="7"><div class="give-empty">Nenhum sorteio privado selecionado.</div></td></tr>';return;}
+    if(!entries.length){body.innerHTML='<tr><td colspan="7"><div class="give-empty">Ainda não há participantes neste sorteio.</div></td></tr>';return;}
+    body.innerHTML=entries.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name||'—')}</td><td>${esc(x.id||'—')}</td><td>${x.instagram?'@'+esc(x.instagram):'—'}</td><td>${esc(x.nickname||'—')}</td><td>${esc(x.whatsapp||'—')}</td><td><span class="private-muted">${esc(fmt(x.createdAt))}</span></td></tr>`).join('');
   }
 
   async function savePrivate(event){
@@ -201,6 +204,7 @@
       if(x.id)parts.push(`ID: ${x.id}`);
       if(x.instagram)parts.push(`@${x.instagram}`);
       if(x.nickname)parts.push(x.nickname);
+      if(x.whatsapp)parts.push(`WhatsApp: ${x.whatsapp}`);
       return parts.join(' | ');
     }).join('\n');
     try{await navigator.clipboard.writeText(lines);}catch(_){const a=document.createElement('textarea');a.value=lines;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();}
