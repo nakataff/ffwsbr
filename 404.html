@@ -14,6 +14,14 @@
         catch (_) { return String(value || '').trim(); }
       }
 
+      // Sorteios privados:
+      // /sorteio-comunidade/2912391 -> /sorteio-comunidade.html?private=2912391
+      var privateGiveawayMatch = path.match(/^\/sorteio-comunidade\/(\d{7})\/?$/i);
+      if (privateGiveawayMatch && privateGiveawayMatch[1]) {
+        window.location.replace('/sorteio-comunidade.html?private=' + encodeURIComponent(privateGiveawayMatch[1]));
+        return;
+      }
+
       // URLs amigáveis de equipes:
       // /equipe/loud-snickers -> /equipe.html?time=loud-snickers
       var teamMatch = path.match(/^\/equipe\/([^\/]+)\/?$/i);
