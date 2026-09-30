@@ -129,6 +129,18 @@
         ".read": true,
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
       },
+      "private": {
+        ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
+      },
+      "privateEntries": {
+        ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".write": false
+      },
+      "privateDedupe": {
+        ".read": false,
+        ".write": false
+      },
       "entries": {
         "$giveawayId": {
           ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
