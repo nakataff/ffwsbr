@@ -537,6 +537,7 @@ function validPrivateGiveawayPassword(row, password) {
   return safeTimingEqual(hash(`${salt}:${supplied}`), stored);
 }
 
+// Endpoint público com validação de senha para os sorteios privados.
 exports.privateGiveaway = onRequest(
   {
     region: REGION,
