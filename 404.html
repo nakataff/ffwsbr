@@ -18,7 +18,7 @@
       // /sorteio-comunidade/2912391 -> /sorteio-comunidade.html?private=2912391
       var privateGiveawayMatch = path.match(/^\/sorteio-comunidade\/(\d{7})\/?$/i);
       if (privateGiveawayMatch && privateGiveawayMatch[1]) {
-        window.location.replace('/sorteio-comunidade.html?private=' + encodeURIComponent(privateGiveawayMatch[1]));
+        window.location.replace('/sorteio-comunidade.html?private=' + encodeURIComponent(privateGiveawayMatch[1]) + '&v=20260930-private-eye-v2');
         return;
       }
 
