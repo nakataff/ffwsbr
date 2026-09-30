@@ -133,13 +133,41 @@
         ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
       },
-      "privateEntries": {
-        ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
-        ".write": false
+      "privatePublic": {
+        ".read": true,
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
       },
-      "privateDedupe": {
-        ".read": false,
-        ".write": false
+      "privateEntries": {
+        "$giveawayId": {
+          ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          "$entry": {
+            ".write": "!data.exists() && newData.exists() && root.child('communityGiveaways').child('private').child($giveawayId).child('active').val() == true && root.child('communityGiveaways').child('private').child($giveawayId).child('id').val() == $giveawayId && root.child('communityGiveaways').child('private').child($giveawayId).child('endsAt').isNumber() && now <= root.child('communityGiveaways').child('private').child($giveawayId).child('endsAt').val() && newData.hasChildren(['accessToken','createdAt']) && newData.child('accessToken').isString() && newData.child('accessToken').val() == root.child('communityGiveaways').child('private').child($giveawayId).child('entryToken').val() && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now + 10000 && newData.child('createdAt').val() >= now - 60000 && ((newData.child('name').isString() && newData.child('name').val().length >= 1) || (newData.child('id').isString() && newData.child('id').val().length >= 1) || (newData.child('instagram').isString() && newData.child('instagram').val().length >= 1) || (newData.child('nickname').isString() && newData.child('nickname').val().length >= 1) || (newData.child('whatsapp').isString() && newData.child('whatsapp').val().length >= 1))",
+            "accessToken": {
+              ".validate": "newData.isString() && newData.val().length >= 20 && newData.val().length <= 128"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber() && newData.val() <= now + 10000 && newData.val() >= now - 60000"
+            },
+            "name": {
+              ".validate": "!newData.exists() || (root.child('communityGiveaways').child('private').child($giveawayId).child('fields').child('name').val() == true && newData.isString() && newData.val().length >= 1 && newData.val().length <= 80)"
+            },
+            "id": {
+              ".validate": "!newData.exists() || (root.child('communityGiveaways').child('private').child($giveawayId).child('fields').child('id').val() == true && newData.isString() && newData.val().length >= 1 && newData.val().length <= 80)"
+            },
+            "instagram": {
+              ".validate": "!newData.exists() || (root.child('communityGiveaways').child('private').child($giveawayId).child('fields').child('instagram').val() == true && newData.isString() && newData.val().length >= 1 && newData.val().length <= 64)"
+            },
+            "nickname": {
+              ".validate": "!newData.exists() || (root.child('communityGiveaways').child('private').child($giveawayId).child('fields').child('nickname').val() == true && newData.isString() && newData.val().length >= 1 && newData.val().length <= 80)"
+            },
+            "whatsapp": {
+              ".validate": "!newData.exists() || (root.child('communityGiveaways').child('private').child($giveawayId).child('fields').child('whatsapp').val() == true && newData.isString() && newData.val().length >= 1 && newData.val().length <= 40)"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
       },
       "entries": {
         "$giveawayId": {
