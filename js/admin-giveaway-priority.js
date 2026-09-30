@@ -8,7 +8,8 @@
   const STORAGE = 'cff_giveaway_priority_rules_v1';
   const DEFAULTS = {
     cap: 3,
-    commented: { enabled:false, pct:10 },
+    commented: { enabled:false, pct:20 },
+    topRank: { enabled:false, pct:30, top:1 },
     story: { enabled:false, pct:10 },
     top20: { enabled:false, pct:15 },
     active3: { enabled:false, pct:15 },
@@ -16,7 +17,7 @@
     active7: { enabled:false, pct:40 },
   };
 
-  let db = null, current = null, entries = [], allMap = new Map(), weekMap = new Map(), weekOrder = [];
+  let db = null, current = null, entries = [], allMap = new Map(), allOrder = [], weekMap = new Map(), weekOrder = [];
   let stopEntries = null, stopCurrent = null;
   const $ = (s) => document.querySelector(s);
   const esc = (v) => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -33,6 +34,9 @@
         out[id].enabled = Boolean(raw?.[id]?.enabled);
         out[id].pct = Math.max(0, Math.min(500, num(raw?.[id]?.pct ?? DEFAULTS[id].pct)));
       }
+      out.topRank.enabled = Boolean(raw?.topRank?.enabled);
+      out.topRank.pct = Math.max(0, Math.min(500, num(raw?.topRank?.pct ?? DEFAULTS.topRank.pct)));
+      out.topRank.top = Math.max(1, Math.min(1000, Math.round(num(raw?.topRank?.top) || DEFAULTS.topRank.top)));
       return out;
     } catch (_) { return structuredClone(DEFAULTS); }
   }
@@ -42,6 +46,11 @@
     for (const id of ['commented','story','top20','active3','active5','active7']) {
       next[id] = { enabled: Boolean($(`#gp-${id}-on`)?.checked), pct: Math.max(0, num($(`#gp-${id}-pct`)?.value)) };
     }
+    next.topRank = {
+      enabled: Boolean($('#gp-topRank-on')?.checked),
+      pct: Math.max(0, num($('#gp-topRank-pct')?.value)),
+      top: Math.max(1, Math.min(1000, Math.round(num($('#gp-topRank-top')?.value) || 1)))
+    };
     try { localStorage.setItem(STORAGE, JSON.stringify(next)); } catch (_) {}
     render();
   }
@@ -49,7 +58,7 @@
   function css() {
     if ($('#cff-give-priority-css')) return;
     const s = document.createElement('style'); s.id = 'cff-give-priority-css'; s.textContent = `
-      .gp{margin-top:16px}.gp-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;align-items:start}.gp-rules{display:grid;gap:8px;padding:0 16px 16px}.gp-rule{display:grid;grid-template-columns:auto minmax(0,1fr) 100px;gap:10px;align-items:center;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025)}.gp-rule input[type=checkbox]{width:18px;height:18px;accent-color:#00c8ff}.gp-rule strong{display:block;color:#fff;font-size:12px}.gp-rule small{display:block;margin-top:3px;color:#7089a5;font-size:10px;line-height:1.35}.gp-pct{display:flex;align-items:center;gap:5px}.gp-pct input{width:70px;height:36px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px;text-align:right}.gp-pct span{color:#7c94af;font-size:11px;font-weight:900}.gp-cap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px 14px;color:#8ea5bf;font-size:11px}.gp-cap input{width:86px;height:38px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px}.gp-tools{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 12px}.gp-table-wrap{overflow:auto;border-top:1px solid rgba(255,255,255,.07)}.gp-table{width:100%;border-collapse:collapse;min-width:760px}.gp-table th,.gp-table td{padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.055);text-align:left;font-size:11px}.gp-table th{color:#7893b0;font-size:9px;text-transform:uppercase;letter-spacing:.05em}.gp-user{color:#fff;font-weight:1000}.gp-weight{color:#00c8ff;font-size:13px;font-weight:1000}.gp-reasons{color:#7892ad;line-height:1.45}.gp-empty{padding:24px;text-align:center;color:#758da8;font-size:11px}.gp-note{padding:0 16px 14px;color:#6e86a1;font-size:10px;line-height:1.5}.gp-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 16px 12px}.gp-stat{padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.025)}.gp-stat span{display:block;color:#718aa6;font-size:9px;font-weight:900;text-transform:uppercase}.gp-stat strong{display:block;margin-top:4px;color:#fff;font-size:18px}@media(max-width:850px){.gp-grid{grid-template-columns:1fr}}@media(max-width:560px){.gp-rule{grid-template-columns:auto minmax(0,1fr);}.gp-pct{grid-column:2}.gp-tools .admin-btn{width:100%}.gp-summary{grid-template-columns:1fr}}
+      .gp{margin-top:16px}.gp-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;align-items:start}.gp-rules{display:grid;gap:8px;padding:0 16px 16px}.gp-rule{display:grid;grid-template-columns:auto minmax(0,1fr) 100px;gap:10px;align-items:center;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025)}.gp-rule input[type=checkbox]{width:18px;height:18px;accent-color:#00c8ff}.gp-rule strong{display:block;color:#fff;font-size:12px}.gp-rule small{display:block;margin-top:3px;color:#7089a5;font-size:10px;line-height:1.35}.gp-pct{display:flex;align-items:center;gap:5px}.gp-pct input{width:70px;height:36px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px;text-align:right}.gp-pct span{color:#7c94af;font-size:11px;font-weight:900}.gp-rank-config{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}.gp-rank-config input{width:58px!important}.gp-rank-config em{font-style:normal;color:#718aa6;font-size:10px;font-weight:900}.gp-cap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px 14px;color:#8ea5bf;font-size:11px}.gp-cap input{width:86px;height:38px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px}.gp-tools{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 12px}.gp-table-wrap{overflow:auto;border-top:1px solid rgba(255,255,255,.07)}.gp-table{width:100%;border-collapse:collapse;min-width:760px}.gp-table th,.gp-table td{padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.055);text-align:left;font-size:11px}.gp-table th{color:#7893b0;font-size:9px;text-transform:uppercase;letter-spacing:.05em}.gp-user{color:#fff;font-weight:1000}.gp-weight{color:#00c8ff;font-size:13px;font-weight:1000}.gp-reasons{color:#7892ad;line-height:1.45}.gp-empty{padding:24px;text-align:center;color:#758da8;font-size:11px}.gp-note{padding:0 16px 14px;color:#6e86a1;font-size:10px;line-height:1.5}.gp-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 16px 12px}.gp-stat{padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.025)}.gp-stat span{display:block;color:#718aa6;font-size:9px;font-weight:900;text-transform:uppercase}.gp-stat strong{display:block;margin-top:4px;color:#fff;font-size:18px}@media(max-width:850px){.gp-grid{grid-template-columns:1fr}}@media(max-width:560px){.gp-rule{grid-template-columns:auto minmax(0,1fr);}.gp-pct{grid-column:2}.gp-tools .admin-btn{width:100%}.gp-summary{grid-template-columns:1fr}}
     `; document.head.appendChild(s);
   }
 
@@ -58,7 +67,7 @@
     const app = $('#give-app'); if (!app || app.hidden) return null; css();
     const r = rules();
     const section = document.createElement('section'); section.id='cff-give-priority'; section.className='admin-panel gp';
-    section.innerHTML = `<div class="admin-panel-head admin-panel-head-wrap"><div><p class="admin-eyebrow">Prioridade opcional</p><h2>Chance extra por interação</h2><p class="admin-muted">1,5× significa 50% mais chance que um participante normal. Critérios desligados não alteram a chance.</p></div><button id="gp-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button></div><div class="gp-grid"><div><div class="gp-rules">${ruleRow('commented','Já comentou no perfil','Histórico geral de comentários',r.commented)}${ruleRow('story','Já marcou em Story','Histórico geral de menções em Stories',r.story)}${ruleRow('top20','Top 20 da semana','Está entre os 20 primeiros do ranking semanal',r.top20)}${ruleRow('active3','3+ dias ativos','Constância nesta semana',r.active3)}${ruleRow('active5','5+ dias ativos','Bônus maior de longevidade',r.active5)}${ruleRow('active7','7 dias ativos','Maior bônus de constância',r.active7)}</div><div class="gp-cap"><span>Limite máximo de prioridade por pessoa</span><label><input id="gp-cap" type="number" min="1" max="10" step="0.1" value="${esc(r.cap)}"> ×</label></div><div class="gp-note">Os bônus são somados. Ex.: +15% por 3 dias e +25% por 5 dias = 1,40×. A regra de 7 dias pode somar com as anteriores para valorizar ainda mais quem acompanha a página a semana inteira.</div></div><div><div class="gp-summary"><div class="gp-stat"><span>Participantes</span><strong id="gp-total">0</strong></div><div class="gp-stat"><span>Com prioridade</span><strong id="gp-prioritized">0</strong></div><div class="gp-stat"><span>Maior peso</span><strong id="gp-max">1×</strong></div></div><div class="gp-tools"><button id="gp-copy" class="admin-btn admin-btn-primary" type="button">Copiar para sorteador com prioridade</button><button id="gp-sheet" class="admin-btn admin-btn-ghost" type="button">Copiar planilha</button><button id="gp-csv" class="admin-btn admin-btn-ghost" type="button">Baixar CSV</button></div><div class="gp-table-wrap"><table class="gp-table"><thead><tr><th>#</th><th>Instagram</th><th>Critérios</th><th>Prioridade</th><th>Chance extra</th></tr></thead><tbody id="gp-body"><tr><td colspan="5"><div class="gp-empty">Carregando participantes...</div></td></tr></tbody></table></div></div></div>`;
+    section.innerHTML = `<div class="admin-panel-head admin-panel-head-wrap"><div><p class="admin-eyebrow">Prioridade opcional</p><h2>Chance extra por interação</h2><p class="admin-muted">1,5× significa 50% mais chance que um participante normal. Critérios desligados não alteram a chance.</p></div><button id="gp-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button></div><div class="gp-grid"><div><div class="gp-rules">${ruleRow('commented','Já comentou no perfil','Histórico geral de comentários',r.commented)}${rankRuleRow(r.topRank)}${ruleRow('story','Já marcou em Story','Histórico geral de menções em Stories',r.story)}${ruleRow('top20','Top 20 da semana','Está entre os 20 primeiros do ranking semanal',r.top20)}${ruleRow('active3','3+ dias ativos','Constância nesta semana',r.active3)}${ruleRow('active5','5+ dias ativos','Bônus maior de longevidade',r.active5)}${ruleRow('active7','7 dias ativos','Maior bônus de constância',r.active7)}</div><div class="gp-cap"><span>Limite máximo de prioridade por pessoa</span><label><input id="gp-cap" type="number" min="1" max="10" step="0.1" value="${esc(r.cap)}"> ×</label></div><div class="gp-note">Os bônus são somados. Ex.: +15% por 3 dias e +25% por 5 dias = 1,40×. A regra de 7 dias pode somar com as anteriores para valorizar ainda mais quem acompanha a página a semana inteira.</div></div><div><div class="gp-summary"><div class="gp-stat"><span>Participantes</span><strong id="gp-total">0</strong></div><div class="gp-stat"><span>Com prioridade</span><strong id="gp-prioritized">0</strong></div><div class="gp-stat"><span>Maior peso</span><strong id="gp-max">1×</strong></div></div><div class="gp-tools"><button id="gp-copy" class="admin-btn admin-btn-primary" type="button">Copiar para sorteador com prioridade</button><button id="gp-sheet" class="admin-btn admin-btn-ghost" type="button">Copiar planilha</button><button id="gp-csv" class="admin-btn admin-btn-ghost" type="button">Baixar CSV</button></div><div class="gp-table-wrap"><table class="gp-table"><thead><tr><th>#</th><th>Instagram</th><th>Critérios</th><th>Prioridade</th><th>Chance extra</th></tr></thead><tbody id="gp-body"><tr><td colspan="5"><div class="gp-empty">Carregando participantes...</div></td></tr></tbody></table></div></div></div>`;
     app.appendChild(section);
     section.querySelectorAll('input').forEach(el => el.addEventListener('change', saveRules));
     $('#gp-refresh')?.addEventListener('click', loadRankings);
@@ -72,6 +81,10 @@
     return `<label class="gp-rule"><input id="gp-${id}-on" type="checkbox" ${rule.enabled?'checked':''}><span><strong>${esc(title)}</strong><small>${esc(copy)}</small></span><span class="gp-pct"><input id="gp-${id}-pct" type="number" min="0" max="500" step="5" value="${esc(rule.pct)}"><span>%</span></span></label>`;
   }
 
+  function rankRuleRow(rule) {
+    return `<label class="gp-rule"><input id="gp-topRank-on" type="checkbox" ${rule.enabled?'checked':''}><span><strong>Mais pontos no ranking</strong><small>Bônus para quem estiver no Top N do ranking geral da comunidade.</small></span><span class="gp-pct gp-rank-config"><em>Top</em><input id="gp-topRank-top" type="number" min="1" max="1000" step="1" value="${esc(rule.top)}"><em>+</em><input id="gp-topRank-pct" type="number" min="0" max="500" step="5" value="${esc(rule.pct)}"><span>%</span></span></label>`;
+  }
+
   function normalizeRanking(raw) {
     const source = raw?.users && typeof raw.users === 'object' ? raw.users : {};
     return Object.values(source).map(x => ({ username:clean(x?.username), points:num(x?.points), comments:num(x?.comments), stories:num(x?.storyMentions), activeDays:num(x?.activeDays) })).filter(x=>x.username).sort((a,b)=>b.points-a.points||b.activeDays-a.activeDays||b.stories-a.stories||b.comments-a.comments);
@@ -82,24 +95,25 @@
     try {
       const [a,w] = await Promise.all(['all','week'].map(async period => { const r=await fetch(`${API}/api/ranking?period=${period}&_=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}}); if(!r.ok)throw new Error(`HTTP ${r.status}`); return r.json(); }));
       const all = normalizeRanking(a), week = normalizeRanking(w);
-      allMap = new Map(all.map(x=>[key(x.username),x])); weekMap = new Map(week.map(x=>[key(x.username),x])); weekOrder = week.map(x=>key(x.username));
+      allMap = new Map(all.map(x=>[key(x.username),x])); allOrder = all.map(x=>key(x.username)); weekMap = new Map(week.map(x=>[key(x.username),x])); weekOrder = week.map(x=>key(x.username));
       render();
     } catch (e) { console.error('[Giveaway priority ranking]',e); }
     finally { if(btn){btn.disabled=false;btn.textContent='↻ Atualizar dados';} }
   }
 
   function matched(x, r) {
-    const a=allMap.get(key(x.username))||{}; const w=weekMap.get(key(x.username))||{}; const pos=weekOrder.indexOf(key(x.username))+1;
+    const a=allMap.get(key(x.username))||{}; const w=weekMap.get(key(x.username))||{}; const pos=weekOrder.indexOf(key(x.username))+1; const allPos=allOrder.indexOf(key(x.username))+1;
     const reasons=[]; let pct=0;
     const add=(id,label,ok)=>{if(r[id].enabled&&ok){pct+=num(r[id].pct);reasons.push(`${label} +${num(r[id].pct)}%`);}};
-    add('commented','Comentou',num(a.comments)>0);
+    add('commented','Já comentou',num(a.comments)>0);
+    add('topRank',`Top ${r.topRank.top} do ranking`,allPos>0&&allPos<=r.topRank.top);
     add('story','Story',num(a.stories)>0);
     add('top20','Top 20',pos>0&&pos<=20);
     add('active3','3 dias',num(w.activeDays)>=3);
     add('active5','5 dias',num(w.activeDays)>=5);
     add('active7','7 dias',num(w.activeDays)>=7);
     const weight=Math.min(Math.max(1,num(r.cap)||3),1+pct/100);
-    return {...x,weight:Math.round(weight*100)/100,pct:Math.round((weight-1)*100),reasons,pos,all:a,week:w};
+    return {...x,weight:Math.round(weight*100)/100,pct:Math.round((weight-1)*100),reasons,pos,allPos,all:a,week:w};
   }
 
   function rows() {
@@ -107,7 +121,8 @@
     return entries.filter(x=>{const k=key(x.username);if(!k||seen.has(k))return false;seen.add(k);return true;}).map(x=>matched(x,r));
   }
 
-  function weightLabel(v) { return String(Math.round(num(v)*100)/100).replace('.',',')+'×'; }
+  function sorterWeight(v) { let out=(Math.round(Math.max(1,num(v))*100)/100).toFixed(2).replace('.',','); return out.replace(/,00$/,',0').replace(/(,\d)0$/,'$1'); }
+  function weightLabel(v) { return sorterWeight(v)+'×'; }
 
   function render() {
     const body=$('#gp-body'); if(!body)return; const list=rows(); const prioritized=list.filter(x=>x.weight>1); const max=Math.max(1,...list.map(x=>x.weight));
@@ -127,9 +142,14 @@
     copyText(list.map(x=>`@${x.username} ${weightLabel(x.weight)}`).join('\n'),'Lista com prioridades copiada. Cole direto no Sorteador Nakateam.');
   }
 
-  function copySheet() {
-    const list=rows(); if(!list.length)return;
-    copyText(['instagram\tprioridade\tchance_extra\tcriterios',...list.map(x=>`@${x.username}\t${String(x.weight).replace('.',',')}\t${x.pct}%\t${x.reasons.join(' | ')}`)].join('\n'),'Planilha com prioridades copiada.');
+  function simpleLinesFor(input) {
+    const r=rules();
+    return (input||[]).map(item=>{ const username=clean(item?.username); const weighted=matched({username},r); return `${username} ${sorterWeight(weighted.weight)}`; }).join('\n');
+  }
+
+  function copySheet(input=rows()) {
+    const list=input||[]; if(!list.length)return;
+    copyText(simpleLinesFor(list),`${list.length} participantes copiados no formato Nome 1,0.`);
   }
 
   function downloadCsv() {
@@ -138,6 +158,8 @@
     const csv='\ufeff'+[['instagram','prioridade','chance_extra','criterios'],...list.map(x=>[`@${x.username}`,String(x.weight).replace('.',','),`${x.pct}%`,x.reasons.join(' | ')])].map(r=>r.map(q).join(';')).join('\r\n');
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`sorteio-prioridades-${current?.id||'comunidade'}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
   }
+
+  window.CFFGiveawayPriority = { copySimple: copySheet, simpleLinesFor, weightForUsername(username){ return matched({username:clean(username)},rules()); }, getRules: rules };
 
   async function connectFirebase() {
     const [{getApps,getApp},{getDatabase,ref,onValue},{getAuth,onAuthStateChanged}] = await Promise.all([
