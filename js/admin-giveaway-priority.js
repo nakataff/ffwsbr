@@ -9,7 +9,7 @@
   const DEFAULTS = {
     cap: 3,
     commented: { enabled:false, pct:20 },
-    topRank: { enabled:false, pct:30, top:1 },
+    topRank: { enabled:false, pct:30, top:1, mode:'fixed', step:1 },
     story: { enabled:false, pct:10 },
     top20: { enabled:false, pct:15 },
     active3: { enabled:false, pct:15 },
@@ -18,6 +18,7 @@
   };
 
   let db = null, current = null, entries = [], allMap = new Map(), allOrder = [], weekMap = new Map(), weekOrder = [];
+  let sortState = { key:'weight', dir:'desc' };
   let stopEntries = null, stopCurrent = null;
   const $ = (s) => document.querySelector(s);
   const esc = (v) => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -37,6 +38,8 @@
       out.topRank.enabled = Boolean(raw?.topRank?.enabled);
       out.topRank.pct = Math.max(0, Math.min(500, num(raw?.topRank?.pct ?? DEFAULTS.topRank.pct)));
       out.topRank.top = Math.max(1, Math.min(1000, Math.round(num(raw?.topRank?.top) || DEFAULTS.topRank.top)));
+      out.topRank.mode = raw?.topRank?.mode === 'gradual' ? 'gradual' : 'fixed';
+      out.topRank.step = Math.max(0, Math.min(500, num(raw?.topRank?.step ?? DEFAULTS.topRank.step)));
       return out;
     } catch (_) { return structuredClone(DEFAULTS); }
   }
@@ -49,7 +52,9 @@
     next.topRank = {
       enabled: Boolean($('#gp-topRank-on')?.checked),
       pct: Math.max(0, num($('#gp-topRank-pct')?.value)),
-      top: Math.max(1, Math.min(1000, Math.round(num($('#gp-topRank-top')?.value) || 1)))
+      top: Math.max(1, Math.min(1000, Math.round(num($('#gp-topRank-top')?.value) || 1))),
+      mode: $('#gp-topRank-mode')?.value === 'gradual' ? 'gradual' : 'fixed',
+      step: Math.max(0, num($('#gp-topRank-step')?.value))
     };
     try { localStorage.setItem(STORAGE, JSON.stringify(next)); } catch (_) {}
     render();
@@ -58,7 +63,7 @@
   function css() {
     if ($('#cff-give-priority-css')) return;
     const s = document.createElement('style'); s.id = 'cff-give-priority-css'; s.textContent = `
-      .gp{margin-top:16px}.gp-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;align-items:start}.gp-rules{display:grid;gap:8px;padding:0 16px 16px}.gp-rule{display:grid;grid-template-columns:auto minmax(0,1fr) 100px;gap:10px;align-items:center;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025)}.gp-rule input[type=checkbox]{width:18px;height:18px;accent-color:#00c8ff}.gp-rule strong{display:block;color:#fff;font-size:12px}.gp-rule small{display:block;margin-top:3px;color:#7089a5;font-size:10px;line-height:1.35}.gp-pct{display:flex;align-items:center;gap:5px}.gp-pct input{width:70px;height:36px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px;text-align:right}.gp-pct span{color:#7c94af;font-size:11px;font-weight:900}.gp-rank-config{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}.gp-rank-config input{width:58px!important}.gp-rank-config em{font-style:normal;color:#718aa6;font-size:10px;font-weight:900}.gp-cap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px 14px;color:#8ea5bf;font-size:11px}.gp-cap input{width:86px;height:38px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px}.gp-tools{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 12px}.gp-table-wrap{overflow:auto;border-top:1px solid rgba(255,255,255,.07)}.gp-table{width:100%;border-collapse:collapse;min-width:760px}.gp-table th,.gp-table td{padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.055);text-align:left;font-size:11px}.gp-table th{color:#7893b0;font-size:9px;text-transform:uppercase;letter-spacing:.05em}.gp-user{color:#fff;font-weight:1000}.gp-weight{color:#00c8ff;font-size:13px;font-weight:1000}.gp-reasons{color:#7892ad;line-height:1.45}.gp-empty{padding:24px;text-align:center;color:#758da8;font-size:11px}.gp-note{padding:0 16px 14px;color:#6e86a1;font-size:10px;line-height:1.5}.gp-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 16px 12px}.gp-stat{padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.025)}.gp-stat span{display:block;color:#718aa6;font-size:9px;font-weight:900;text-transform:uppercase}.gp-stat strong{display:block;margin-top:4px;color:#fff;font-size:18px}@media(max-width:850px){.gp-grid{grid-template-columns:1fr}}@media(max-width:560px){.gp-rule{grid-template-columns:auto minmax(0,1fr);}.gp-pct{grid-column:2}.gp-tools .admin-btn{width:100%}.gp-summary{grid-template-columns:1fr}}
+      .gp{margin-top:16px}.gp-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;align-items:start}.gp-rules{display:grid;gap:8px;padding:0 16px 16px}.gp-rule{display:grid;grid-template-columns:auto minmax(0,1fr) 100px;gap:10px;align-items:center;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025)}.gp-rule input[type=checkbox]{width:18px;height:18px;accent-color:#00c8ff}.gp-rule strong{display:block;color:#fff;font-size:12px}.gp-rule small{display:block;margin-top:3px;color:#7089a5;font-size:10px;line-height:1.35}.gp-pct{display:flex;align-items:center;gap:5px}.gp-pct input{width:70px;height:36px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px;text-align:right}.gp-pct span{color:#7c94af;font-size:11px;font-weight:900}.gp-rank-config{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}.gp-rank-config input{width:58px!important}.gp-rank-config select{height:36px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 7px;font-size:10px;font-weight:900}.gp-rank-config em{font-style:normal;color:#718aa6;font-size:10px;font-weight:900}.gp-rank-step{display:none}.gp-rank-step.is-visible{display:inline-flex;align-items:center;gap:5px}.gp-cap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px 14px;color:#8ea5bf;font-size:11px}.gp-cap input{width:86px;height:38px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 8px}.gp-tools{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 12px}.gp-mobile-sort{display:none;padding:0 16px 10px}.gp-mobile-sort label{display:grid;gap:5px;color:#7893b0;font-size:9px;font-weight:950;text-transform:uppercase}.gp-mobile-sort select{height:38px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#080e18;color:#fff;padding:0 9px;font-weight:900}.gp-table-wrap{overflow:auto;border-top:1px solid rgba(255,255,255,.07)}.gp-table{width:100%;border-collapse:collapse;min-width:820px}.gp-table th,.gp-table td{padding:10px 13px;border-bottom:1px solid rgba(255,255,255,.055);text-align:left;font-size:12px}.gp-table th{color:#7893b0;font-size:9px;text-transform:uppercase;letter-spacing:.05em}.gp-sort-btn{display:inline-flex;align-items:center;gap:5px;border:0;background:transparent;color:inherit;padding:0;font:inherit;text-transform:inherit;letter-spacing:inherit;cursor:pointer;font-weight:950}.gp-sort-btn:hover{color:#d7efff}.gp-sort-btn .arrow{color:#00c8ff;font-size:10px}.gp-user{color:#fff;font-weight:1000}.gp-weight{color:#00c8ff;font-size:16px;font-weight:1000;white-space:nowrap}.gp-reasons{color:#7892ad;line-height:1.45}.gp-empty{padding:24px;text-align:center;color:#758da8;font-size:11px}.gp-note{padding:0 16px 14px;color:#6e86a1;font-size:10px;line-height:1.5}.gp-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 16px 12px}.gp-stat{padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.025)}.gp-stat span{display:block;color:#718aa6;font-size:9px;font-weight:900;text-transform:uppercase}.gp-stat strong{display:block;margin-top:4px;color:#fff;font-size:18px}@media(max-width:850px){.gp-grid{grid-template-columns:1fr}.gp-table{min-width:760px}}@media(max-width:560px){.gp-rule{grid-template-columns:auto minmax(0,1fr);}.gp-pct{grid-column:2}.gp-rank-config{grid-column:2;justify-content:flex-start}.gp-rank-config select{width:100%}.gp-rank-step.is-visible{width:100%;justify-content:flex-start}.gp-tools .admin-btn{width:100%}.gp-summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.gp-stat{padding:8px}.gp-stat strong{font-size:16px}.gp-mobile-sort{display:block}.gp-table{min-width:660px}.gp-table th,.gp-table td{padding:9px 8px;font-size:11px}.gp-weight{font-size:14px}}@media(max-width:390px){.gp-summary{grid-template-columns:1fr}.gp-table{min-width:620px}}
     `; document.head.appendChild(s);
   }
 
@@ -67,13 +72,17 @@
     const app = $('#give-app'); if (!app || app.hidden) return null; css();
     const r = rules();
     const section = document.createElement('section'); section.id='cff-give-priority'; section.className='admin-panel gp';
-    section.innerHTML = `<div class="admin-panel-head admin-panel-head-wrap"><div><p class="admin-eyebrow">Prioridade opcional</p><h2>Chance extra por interação</h2><p class="admin-muted">1,5× significa 50% mais chance que um participante normal. Critérios desligados não alteram a chance.</p></div><button id="gp-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button></div><div class="gp-grid"><div><div class="gp-rules">${ruleRow('commented','Já comentou no perfil','Histórico geral de comentários',r.commented)}${rankRuleRow(r.topRank)}${ruleRow('story','Já marcou em Story','Histórico geral de menções em Stories',r.story)}${ruleRow('top20','Top 20 da semana','Está entre os 20 primeiros do ranking semanal',r.top20)}${ruleRow('active3','3+ dias ativos','Constância nesta semana',r.active3)}${ruleRow('active5','5+ dias ativos','Bônus maior de longevidade',r.active5)}${ruleRow('active7','7 dias ativos','Maior bônus de constância',r.active7)}</div><div class="gp-cap"><span>Limite máximo de prioridade por pessoa</span><label><input id="gp-cap" type="number" min="1" max="10" step="0.1" value="${esc(r.cap)}"> ×</label></div><div class="gp-note">Os bônus são somados. Ex.: 20% equivale a +0,2 e 30% equivale a +0,3. Então 1,0 + 0,2 + 0,3 = 1,5 no sorteador.</div></div><div><div class="gp-summary"><div class="gp-stat"><span>Participantes</span><strong id="gp-total">0</strong></div><div class="gp-stat"><span>Com prioridade</span><strong id="gp-prioritized">0</strong></div><div class="gp-stat"><span>Maior peso</span><strong id="gp-max">1×</strong></div></div><div class="gp-tools"><button id="gp-copy" class="admin-btn admin-btn-primary" type="button">Copiar para sorteador com prioridade</button><button id="gp-sheet" class="admin-btn admin-btn-ghost" type="button">Copiar planilha</button><button id="gp-csv" class="admin-btn admin-btn-ghost" type="button">Baixar CSV</button></div><div class="gp-table-wrap"><table class="gp-table"><thead><tr><th>#</th><th>Instagram</th><th>Critérios</th><th>Prioridade</th><th>Chance extra</th></tr></thead><tbody id="gp-body"><tr><td colspan="5"><div class="gp-empty">Carregando participantes...</div></td></tr></tbody></table></div></div></div>`;
+    section.innerHTML = `<div class="admin-panel-head admin-panel-head-wrap"><div><p class="admin-eyebrow">Prioridade opcional</p><h2>Chance extra por interação</h2><p class="admin-muted">1,5× significa 50% mais chance que um participante normal. Critérios desligados não alteram a chance.</p></div><button id="gp-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button></div><div class="gp-grid"><div><div class="gp-rules">${ruleRow('commented','Já comentou no perfil','Histórico geral de comentários',r.commented)}${rankRuleRow(r.topRank)}${ruleRow('story','Já marcou em Story','Histórico geral de menções em Stories',r.story)}${ruleRow('top20','Top 20 da semana','Está entre os 20 primeiros do ranking semanal',r.top20)}${ruleRow('active3','3+ dias ativos','Constância nesta semana',r.active3)}${ruleRow('active5','5+ dias ativos','Bônus maior de longevidade',r.active5)}${ruleRow('active7','7 dias ativos','Maior bônus de constância',r.active7)}</div><div class="gp-cap"><span>Limite máximo de prioridade por pessoa</span><label><input id="gp-cap" type="number" min="1" max="10" step="0.1" value="${esc(r.cap)}"> ×</label></div><div class="gp-note">Os bônus são somados. Ex.: 20% equivale a +0,2 e 30% equivale a +0,3. Então 1,0 + 0,2 + 0,3 = 1,5 no sorteador.</div></div><div><div class="gp-summary"><div class="gp-stat"><span>Participantes</span><strong id="gp-total">0</strong></div><div class="gp-stat"><span>Com prioridade</span><strong id="gp-prioritized">0</strong></div><div class="gp-stat"><span>Maior peso</span><strong id="gp-max">1×</strong></div></div><div class="gp-tools"><button id="gp-copy" class="admin-btn admin-btn-primary" type="button">Copiar para sorteador com prioridade</button><button id="gp-sheet" class="admin-btn admin-btn-ghost" type="button">Copiar planilha</button><button id="gp-csv" class="admin-btn admin-btn-ghost" type="button">Baixar CSV</button></div><div class="gp-mobile-sort"><label>Ordenar por<select id="gp-mobile-sort"><option value="weight:desc">Maior chance</option><option value="weight:asc">Menor chance</option><option value="username:asc">Instagram A–Z</option><option value="username:desc">Instagram Z–A</option><option value="rank:asc">Melhor ranking</option><option value="rank:desc">Pior ranking</option><option value="index:asc">Ordem de inscrição</option></select></label></div><div class="gp-table-wrap"><table class="gp-table"><thead><tr><th><button class="gp-sort-btn" type="button" data-gp-sort="index"># <span class="arrow"></span></button></th><th><button class="gp-sort-btn" type="button" data-gp-sort="username">Instagram <span class="arrow"></span></button></th><th><button class="gp-sort-btn" type="button" data-gp-sort="reasons">Bônus aplicados <span class="arrow"></span></button></th><th><button class="gp-sort-btn" type="button" data-gp-sort="weight">Chance <span class="arrow"></span></button></th><th><button class="gp-sort-btn" type="button" data-gp-sort="rank">Ranking <span class="arrow"></span></button></th></tr></thead><tbody id="gp-body"><tr><td colspan="5"><div class="gp-empty">Carregando participantes...</div></td></tr></tbody></table></div></div></div>`;
     app.appendChild(section);
     section.querySelectorAll('input').forEach(el => el.addEventListener('change', saveRules));
     $('#gp-refresh')?.addEventListener('click', loadRankings);
     $('#gp-copy')?.addEventListener('click', copyForSorter);
     $('#gp-sheet')?.addEventListener('click', copySheet);
     $('#gp-csv')?.addEventListener('click', downloadCsv);
+    $('#gp-topRank-mode')?.addEventListener('change', ()=>{ syncRankModeUi(); saveRules(); });
+    section.querySelectorAll('[data-gp-sort]').forEach(btn=>btn.addEventListener('click',()=>setSort(btn.dataset.gpSort)));
+    $('#gp-mobile-sort')?.addEventListener('change',e=>{const [key,dir]=String(e.target.value||'weight:desc').split(':');sortState={key,dir};render();});
+    syncRankModeUi();
     return section;
   }
 
@@ -82,7 +91,12 @@
   }
 
   function rankRuleRow(rule) {
-    return `<label class="gp-rule"><input id="gp-topRank-on" type="checkbox" ${rule.enabled?'checked':''}><span><strong>Mais pontos no ranking</strong><small>Bônus para quem estiver no Top N do ranking geral da comunidade.</small></span><span class="gp-pct gp-rank-config"><em>Top</em><input id="gp-topRank-top" type="number" min="1" max="1000" step="1" value="${esc(rule.top)}"><em>+</em><input id="gp-topRank-pct" type="number" min="0" max="500" step="5" value="${esc(rule.pct)}"><span>%</span></span></label>`;
+    return `<label class="gp-rule"><input id="gp-topRank-on" type="checkbox" ${rule.enabled?'checked':''}><span><strong>Mais pontos no ranking</strong><small>Escolha bônus igual para todo o Top N ou gradual, diminuindo a cada posição.</small></span><span class="gp-pct gp-rank-config"><em>Top</em><input id="gp-topRank-top" type="number" min="1" max="1000" step="1" value="${esc(rule.top)}"><select id="gp-topRank-mode"><option value="fixed" ${rule.mode!=='gradual'?'selected':''}>Bônus igual</option><option value="gradual" ${rule.mode==='gradual'?'selected':''}>Gradual</option></select><em>Top 1 +</em><input id="gp-topRank-pct" type="number" min="0" max="500" step="1" value="${esc(rule.pct)}"><span>%</span><span id="gp-rank-step-wrap" class="gp-rank-step ${rule.mode==='gradual'?'is-visible':''}"><em>Cai</em><input id="gp-topRank-step" type="number" min="0" max="500" step="1" value="${esc(rule.step)}"><span>%/posição</span></span></span></label>`;
+  }
+
+  function syncRankModeUi(){
+    const gradual=$('#gp-topRank-mode')?.value==='gradual';
+    $('#gp-rank-step-wrap')?.classList.toggle('is-visible',gradual);
   }
 
   function normalizeRanking(raw) {
@@ -106,7 +120,10 @@
     const reasons=[]; let pct=0;
     const add=(id,label,ok)=>{if(r[id].enabled&&ok){pct+=num(r[id].pct);reasons.push(`${label} ${bonusLabel(r[id].pct)}`);}};
     add('commented','Já comentou',num(a.comments)>0);
-    add('topRank',`Top ${r.topRank.top} do ranking`,allPos>0&&allPos<=r.topRank.top);
+    if(r.topRank.enabled&&allPos>0&&allPos<=r.topRank.top){
+      const rankPct=r.topRank.mode==='gradual'?Math.max(0,num(r.topRank.pct)-(allPos-1)*num(r.topRank.step)):num(r.topRank.pct);
+      if(rankPct>0){pct+=rankPct;reasons.push(`#${allPos} no ranking ${bonusLabel(rankPct)}`);}
+    }
     add('story','Story',num(a.stories)>0);
     add('top20','Top 20',pos>0&&pos<=20);
     add('active3','3 dias',num(w.activeDays)>=3);
@@ -118,7 +135,20 @@
 
   function rows() {
     const seen=new Set(); const r=rules();
-    return entries.filter(x=>{const k=key(x.username);if(!k||seen.has(k))return false;seen.add(k);return true;}).map(x=>matched(x,r));
+    return entries.filter(x=>{const k=key(x.username);if(!k||seen.has(k))return false;seen.add(k);return true;}).map((x,index)=>({...matched(x,r),entryIndex:index+1}));
+  }
+
+  function sortedRows(){
+    const list=[...rows()],{key:sortKey,dir}=sortState,mul=dir==='asc'?1:-1;
+    const val=x=>sortKey==='index'?num(x.entryIndex):sortKey==='username'?String(x.username||'').toLowerCase():sortKey==='reasons'?x.reasons.length:sortKey==='rank'?(x.allPos||999999):num(x.weight);
+    list.sort((a,b)=>{const av=val(a),bv=val(b);if(typeof av==='string')return av.localeCompare(bv,'pt-BR')*mul;return (av-bv)*mul||a.entryIndex-b.entryIndex;});
+    return list;
+  }
+
+  function setSort(key){
+    if(sortState.key===key) sortState.dir=sortState.dir==='asc'?'desc':'asc';
+    else sortState={key,dir:key==='username'||key==='index'||key==='rank'?'asc':'desc'};
+    render();
   }
 
   function sorterWeight(v) { let out=(Math.round(Math.max(1,num(v))*100)/100).toFixed(2).replace('.',','); return out.replace(/,00$/,',0').replace(/(,\d)0$/,'$1'); }
@@ -126,10 +156,12 @@
   function weightLabel(v) { return sorterWeight(v)+'×'; }
 
   function render() {
-    const body=$('#gp-body'); if(!body)return; const list=rows(); const prioritized=list.filter(x=>x.weight>1); const max=Math.max(1,...list.map(x=>x.weight));
-    $('#gp-total').textContent=String(list.length); $('#gp-prioritized').textContent=String(prioritized.length); $('#gp-max').textContent=weightLabel(max);
+    const body=$('#gp-body'); if(!body)return; const base=rows(),list=sortedRows(),prioritized=base.filter(x=>x.weight>1),max=Math.max(1,...base.map(x=>x.weight));
+    $('#gp-total').textContent=String(base.length); $('#gp-prioritized').textContent=String(prioritized.length); $('#gp-max').textContent=weightLabel(max);
+    document.querySelectorAll('[data-gp-sort]').forEach(btn=>{const arrow=btn.querySelector('.arrow');if(arrow)arrow.textContent=sortState.key===btn.dataset.gpSort?(sortState.dir==='asc'?'▲':'▼'):'';});
+    const mobile=$('#gp-mobile-sort');if(mobile){const wanted=`${sortState.key}:${sortState.dir}`;if([...mobile.options].some(o=>o.value===wanted))mobile.value=wanted;}
     if(!list.length){body.innerHTML='<tr><td colspan="5"><div class="gp-empty">Nenhum participante neste sorteio.</div></td></tr>';return;}
-    body.innerHTML=list.map((x,i)=>`<tr><td>${i+1}</td><td class="gp-user">@${esc(x.username)}</td><td class="gp-reasons">${x.reasons.length?esc(x.reasons.join(' • ')):'Sem bônus'}</td><td class="gp-weight">${esc(weightLabel(x.weight))}</td><td>${x.pct?`+${x.pct}%`:'Normal'}</td></tr>`).join('');
+    body.innerHTML=list.map(x=>`<tr><td>${x.entryIndex}</td><td class="gp-user">@${esc(x.username)}</td><td class="gp-reasons">${x.reasons.length?esc(x.reasons.join(' • ')):'Sem bônus'}</td><td class="gp-weight">${esc(weightLabel(x.weight))}</td><td>${x.allPos?`#${x.allPos}`:'—'}</td></tr>`).join('');
   }
 
   async function copyText(text,msg) {
@@ -140,7 +172,7 @@
 
   function copyForSorter() {
     const list=rows(); if(!list.length)return;
-    copyText(list.map(x=>`@${x.username} ${weightLabel(x.weight)}`).join('\n'),'Lista com prioridades copiada. Cole direto no Sorteador Nakateam.');
+    copyText(list.map(x=>`${x.username} ${sorterWeight(x.weight)}`).join('\n'),'Lista com prioridades copiada. Cole direto no Sorteador Nakateam.');
   }
 
   function simpleLinesFor(input) {
