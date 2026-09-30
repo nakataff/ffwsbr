@@ -41,6 +41,12 @@
 .admin-live-alt-links{display:grid;gap:8px;margin:2px 0 9px}
 .admin-live-saved-channel-tools{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:8px;align-items:center}
 .admin-live-saved-channel-tools select{min-width:0}
+.admin-live-embed-field{padding:12px;border:1px solid rgba(0,200,255,.13);border-radius:12px;background:rgba(0,200,255,.025)}
+.admin-live-embed-toggle{display:flex!important;align-items:center;gap:9px;margin:0!important;color:#e7f7ff!important;cursor:pointer}
+.admin-live-embed-toggle input{width:18px;height:18px;accent-color:#00c8ff}
+.admin-live-embed-settings{display:grid;gap:6px;margin-top:11px}
+.admin-live-embed-settings[hidden]{display:none!important}
+
 .admin-live-alt-row{display:grid;grid-template-columns:minmax(150px,.55fr) minmax(120px,.42fr) minmax(0,1fr) auto auto;gap:8px;align-items:center}
 .admin-live-alt-row select,.admin-live-alt-row input{min-width:0}
 .admin-live-alt-save,.admin-live-alt-remove{min-width:38px;padding-inline:10px!important}
