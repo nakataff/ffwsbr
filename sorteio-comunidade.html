@@ -50,6 +50,10 @@
     const privateId=String(privatePathMatch?.[1]||privateQuery||'').trim();
     let current=null,timer=null,busy=false,privateConfig=null,privateEnvelope=null;
     if(privateId&&privateQuery&&!privatePathMatch){try{history.replaceState(null,'',`/sorteio-comunidade/${privateId}`);}catch(_){}}
+    if(privateId){
+      const robots=document.querySelector('meta[name="robots"]');if(robots)robots.content='noindex,nofollow';
+      document.title='Sorteio privado | Central Free Fire';
+    }
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
     const cleanUser=v=>String(v||'').trim().replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g,'').slice(0,30);
     const fmt=ms=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ms));
