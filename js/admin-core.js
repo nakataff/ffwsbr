@@ -550,6 +550,9 @@ function normalizeLive(raw, id = '') {
     faseDia: String(raw && (raw.faseDia || raw.fase_dia || '') || '').trim(),
     canal: String(raw && raw.canal || '').trim(),
     url: String(raw && raw.url || '').trim(),
+    embedEnabled: Boolean(raw && raw.embedEnabled),
+    embedUrl: String(raw && raw.embedUrl || '').trim(),
+    embedVideoId: String(raw && raw.embedVideoId || '').trim(),
     links: (Array.isArray(raw && raw.links) ? raw.links : Object.values(raw && raw.links || {})).map((link, index) => ({
       label: String(link && (link.label || link.nome || link.canal) || `Alternativa ${index + 1}`).trim().slice(0, 80),
       url: String(link && (link.url || link.link) || '').trim()
@@ -604,6 +607,33 @@ function formatLiveDuration(minutes) {
   if (hours && mins) return `${hours}h ${mins}min`;
   if (hours) return `${hours}h`;
   return `${mins}min`;
+}
+
+function youtubeVideoId(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    let id = '';
+    if (host === 'youtu.be') id = url.pathname.split('/').filter(Boolean)[0] || '';
+    else if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com' || host === 'youtube-nocookie.com') {
+      id = url.searchParams.get('v') || '';
+      if (!id) {
+        const match = url.pathname.match(/^\/(?:live|embed|shorts)\/([^/?#]+)/i);
+        if (match) id = match[1];
+      }
+    }
+    return /^[A-Za-z0-9_-]{6,20}$/.test(id) ? id : '';
+  } catch (_) {
+    return '';
+  }
+}
+
+function syncLiveEmbedField() {
+  const enabled = Boolean($('#live-embed-enabled')?.checked);
+  const settings = $('#live-embed-settings');
+  if (settings) settings.hidden = !enabled;
 }
 
 function normalizeSavedLiveChannel(raw, id = '') {
@@ -800,6 +830,9 @@ function clearLiveForm() {
   $('#live-link-mode').value = 'schedule';
   $('#live-region').value = 'brasil';
   $('#live-level').value = 'oficial';
+  $('#live-embed-enabled').checked = false;
+  $('#live-embed-url').value = '';
+  syncLiveEmbedField();
   renderLiveAltLinks([]);
   applyRememberedSavedLiveChannel();
   $('#live-editor-title').textContent = 'Nova live';
@@ -813,6 +846,9 @@ function fillLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  $('#live-embed-enabled').checked = Boolean(item.embedEnabled);
+  $('#live-embed-url').value = item.embedUrl || '';
+  syncLiveEmbedField();
   syncMainSavedLiveChannelSelect('');
   renderLiveAltLinks(item.links || []);
   $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
@@ -833,6 +869,9 @@ function duplicateLiveForm(item) {
   $('#live-phase-day').value = item.faseDia;
   $('#live-channel').value = item.canal;
   $('#live-url').value = item.url;
+  $('#live-embed-enabled').checked = Boolean(item.embedEnabled);
+  $('#live-embed-url').value = item.embedUrl || '';
+  syncLiveEmbedField();
   syncMainSavedLiveChannelSelect('');
   renderLiveAltLinks(item.links || []);
   $('#live-link-mode').value = item.linkMode === 'schedule' ? 'schedule' : 'always';
@@ -855,6 +894,8 @@ function readLiveForm() {
     faseDia: $('#live-phase-day').value.trim(),
     canal: $('#live-channel').value.trim(),
     url: $('#live-url').value.trim(),
+    embedEnabled: Boolean($('#live-embed-enabled')?.checked),
+    embedUrl: $('#live-embed-url')?.value.trim() || '',
     links: readLiveAltLinks(),
     linkMode: $('#live-link-mode').value === 'schedule' ? 'schedule' : 'always',
     inicio: $('#live-start').value.trim(),
@@ -905,6 +946,8 @@ async function saveLive(event) {
   const item = readLiveForm();
   if (!item.torneio || !item.canal || !item.inicio) return setMessage($('#admin-live-message'), 'Preencha torneio, canal e dia/hora.', 'error');
   if (item.duracaoMinutos <= 0) return setMessage($('#admin-live-message'), 'A duração precisa ser maior que zero.', 'error');
+  const embedVideoId = item.embedEnabled ? youtubeVideoId(item.embedUrl || item.url) : '';
+  if (item.embedEnabled && !embedVideoId) return setMessage($('#admin-live-message'), 'Para assistir pelo site, informe um link direto do vídeo/live do YouTube (watch?v=, youtu.be ou youtube.com/live/...).', 'error');
   const originalId = $('#live-original-id').value.trim();
   const id = originalId || safeFirebaseKey(`live-${Date.now()}-${slugify(item.torneio).slice(0, 55)}`);
   const previous = allLives.find((live) => live.id === originalId);
@@ -914,6 +957,9 @@ async function saveLive(event) {
     faseDia: item.faseDia,
     canal: item.canal,
     url: item.url,
+    embedEnabled: item.embedEnabled,
+    embedUrl: item.embedEnabled ? (item.embedUrl || item.url) : '',
+    embedVideoId,
     links: item.links,
     linkMode: item.linkMode,
     inicio: item.inicio,
@@ -1469,6 +1515,7 @@ if (liveForm) liveForm.addEventListener('submit', saveLive);
 $('#admin-new-live')?.addEventListener('click', clearLiveForm);
 $('#admin-clear-live')?.addEventListener('click', clearLiveForm);
 $('#live-add-alt-link')?.addEventListener('click', () => $('#live-alt-links')?.appendChild(liveAltRow()));
+$('#live-embed-enabled')?.addEventListener('change', syncLiveEmbedField);
 $('#live-saved-channel')?.addEventListener('change', (event) => {
   const id = String(event.target.value || '');
   const del = $('#live-delete-channel');
