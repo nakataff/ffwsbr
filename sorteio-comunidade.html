@@ -38,28 +38,38 @@
 
   <script type="module">
     import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-    import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+    import { getDatabase, ref, onValue, set, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
     const config=window.CFF_CONFIG?.firebase;
     const card=document.getElementById('giveaway-card');
     if(!config){card.innerHTML='<div class="closed"><strong>Sorteio indisponível</strong><span>Tente novamente mais tarde.</span></div>';throw new Error('Firebase config ausente');}
     const app=getApps().length?getApp():initializeApp(config),db=getDatabase(app);
     const currentRef=ref(db,'communityGiveaways/current');
-    const PRIVATE_API='https://southamerica-east1-central-free-fire.cloudfunctions.net/privateGiveaway';
     const privatePathMatch=location.pathname.match(/^\/sorteio-comunidade\/(\d{7})\/?$/i);
     const privateQuery=new URLSearchParams(location.search).get('private');
     const privateId=String(privatePathMatch?.[1]||privateQuery||'').trim();
-    let current=null,timer=null,busy=false,privatePassword='',privateConfig=null;
+    let current=null,timer=null,busy=false,privateConfig=null,privateEnvelope=null;
     if(privateId&&privateQuery&&!privatePathMatch){try{history.replaceState(null,'',`/sorteio-comunidade/${privateId}`);}catch(_){}}
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
     const cleanUser=v=>String(v||'').trim().replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g,'').slice(0,30);
     const fmt=ms=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ms));
     async function hash(value){const data=new TextEncoder().encode(value),digest=await crypto.subtle.digest('SHA-256',data);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
     function countdown(ms){const left=Math.max(0,Number(ms||0)-Date.now());if(!left)return'Encerrado';const s=Math.floor(left/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),sec=s%60;return d?`${d}d ${h}h ${m}min`:`${h}h ${m}min ${sec}s`;}
-    async function privateRequest(payload){
-      const response=await fetch(PRIVATE_API,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});
-      let data={};try{data=await response.json();}catch(_){}
-      if(!response.ok)throw new Error(data?.error||'Não foi possível acessar este sorteio.');
+    function b64ToBytes(value){
+      const binary=atob(String(value||'')),out=new Uint8Array(binary.length);
+      for(let i=0;i<binary.length;i++)out[i]=binary.charCodeAt(i);
+      return out;
+    }
+    async function derivePrivateKey(salt,password){
+      const raw=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`${salt}:${password}`)));
+      return crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['decrypt']);
+    }
+    async function decryptPrivateConfig(password){
+      if(!privateEnvelope?.salt||!privateEnvelope?.iv||!privateEnvelope?.ciphertext)throw new Error('Sorteio privado indisponível.');
+      const key=await derivePrivateKey(privateEnvelope.salt,password);
+      const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64ToBytes(privateEnvelope.iv)},key,b64ToBytes(privateEnvelope.ciphertext));
+      const data=JSON.parse(new TextDecoder().decode(plain));
+      if(String(data?.id||'')!==privateId||!data?.entryToken)throw new Error('Senha incorreta.');
       return data;
     }
     function renderPrivateGate(error=''){
@@ -72,13 +82,14 @@
       const input=document.getElementById('private-password-public'),button=document.getElementById('private-unlock-btn'),message=document.getElementById('private-unlock-message');
       const password=String(input?.value||'');if(password.length<3){message.textContent='Digite a senha do sorteio.';message.className='message err';return;}
       busy=true;button.disabled=true;button.textContent='Verificando...';
-      try{const data=await privateRequest({action:'unlock',id:privateId,password});privatePassword=password;privateConfig=data.giveaway||null;renderPrivate();}
-      catch(err){message.textContent=err.message||'Senha incorreta.';message.className='message err';button.disabled=false;button.textContent='Entrar no sorteio';}
+      try{privateConfig=await decryptPrivateConfig(password);renderPrivate();}
+      catch(err){message.textContent='Senha incorreta.';message.className='message err';button.disabled=false;button.textContent='Entrar no sorteio';}
       finally{busy=false;}
     }
     function privateFieldMarkup(key,label,placeholder){
       if(!privateConfig?.fields?.[key])return'';
-      return `<div class="field"><label for="private-entry-${key}">${esc(label)} <span style="color:#607d9c;font-weight:700">(opcional)</span></label><input id="private-entry-${key}" data-private-field="${key}" type="text" maxlength="80" autocomplete="off" placeholder="${esc(placeholder)}"></div>`;
+      const max=key==='whatsapp'?40:key==='instagram'?64:80;
+      return `<div class="field"><label for="private-entry-${key}">${esc(label)} <span style="color:#607d9c;font-weight:700">(opcional)</span></label><input id="private-entry-${key}" data-private-field="${key}" type="text" maxlength="${max}" autocomplete="off" placeholder="${esc(placeholder)}"></div>`;
     }
     function renderPrivate(){
       clearInterval(timer);
@@ -94,12 +105,22 @@
     async function submitPrivate(event){
       event.preventDefault();if(busy||!privateConfig?.active)return;
       const button=document.getElementById('private-entry-submit'),message=document.getElementById('private-entry-message');
-      const fields={};document.querySelectorAll('[data-private-field]').forEach(input=>{fields[input.dataset.privateField]=String(input.value||'').trim();});
+      const fields={};
+      document.querySelectorAll('[data-private-field]').forEach(input=>{
+        let value=String(input.value||'').trim();
+        if(input.dataset.privateField==='instagram')value=value.replace(/^@+/,'').toLowerCase().replace(/[^a-z0-9._]/g,'').slice(0,64);
+        if(value)fields[input.dataset.privateField]=value;
+      });
       if(!Object.values(fields).some(Boolean)){message.textContent='Preencha pelo menos um campo.';message.className='message err';return;}
       busy=true;button.disabled=true;button.textContent='Confirmando...';message.textContent='';
-      try{await privateRequest({action:'enter',id:privateId,password:privatePassword,fields});card.innerHTML=`<div class="hero"><div class="kicker">🔒 Sorteio privado</div><h1>${esc(privateConfig.title||'Sorteio privado')}</h1></div><div class="private-success">Inscrição confirmada ✓<br><span style="color:#7f99b8;font-weight:700">Você já está participando deste sorteio.</span></div>`;}
-      catch(err){message.textContent=err.message||'Não foi possível confirmar.';message.className='message err';button.disabled=false;button.textContent='Participar do sorteio';}
-      finally{busy=false;}
+      try{
+        const identity=['name','id','instagram','nickname','whatsapp'].map(k=>String(fields[k]||'').toLowerCase()).join('|');
+        const entryKey=await hash(`${privateId}|${identity}`);
+        await set(ref(db,`communityGiveaways/privateEntries/${privateId}/${entryKey}`),{...fields,accessToken:String(privateConfig.entryToken),createdAt:Date.now()});
+        card.innerHTML=`<div class="hero"><div class="kicker">🔒 Sorteio privado</div><h1>${esc(privateConfig.title||'Sorteio privado')}</h1></div><div class="private-success">Inscrição confirmada ✓<br><span style="color:#7f99b8;font-weight:700">Você já está participando deste sorteio.</span></div>`;
+      }catch(err){
+        console.error(err);message.textContent=String(err?.code||'').includes('PERMISSION_DENIED')?'Esse cadastro já foi enviado ou o sorteio encerrou.':'Não foi possível confirmar agora.';message.className='message err';button.disabled=false;button.textContent='Participar do sorteio';
+      }finally{busy=false;}
     }
 
     function closed(){return !current?.active||!current?.id||!current?.endsAt||Date.now()>=Number(current.endsAt);}
@@ -127,7 +148,10 @@
     }
     if(privateId){
       if(!/^\d{7}$/.test(privateId))card.innerHTML='<div class="closed"><strong>Link privado inválido</strong><span>Confira o endereço recebido.</span></div>';
-      else renderPrivateGate();
+      else get(ref(db,`communityGiveaways/privatePublic/${privateId}`)).then(snap=>{
+        if(!snap.exists())throw new Error('missing');
+        privateEnvelope=snap.val()||null;renderPrivateGate();
+      }).catch(()=>{card.innerHTML='<div class="closed"><strong>Sorteio privado não encontrado</strong><span>Confira o link recebido com o organizador.</span></div>';});
     }else{
       onValue(currentRef,snap=>{current=snap.val()||null;render();},()=>{card.innerHTML='<div class="closed"><strong>Sorteio indisponível</strong><span>Tente novamente mais tarde.</span></div>';});
     }
