@@ -264,7 +264,7 @@
     const input=$('#private-password'),button=$('#private-password-toggle');if(!input||!button)return;
     const showing=input.type==='text';
     input.type=showing?'password':'text';
-    button.textContent=showing?'◉':'◎';
+    button.textContent='👁';
     button.setAttribute('aria-label',showing?'Mostrar senha':'Ocultar senha');
     button.title=showing?'Mostrar senha':'Ocultar senha';
   }
