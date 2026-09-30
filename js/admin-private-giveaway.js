@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   if (!/admin-sorteio-comunidade\.html$/i.test(location.pathname)) return;
-  if (window.__CFF_ADMIN_PRIVATE_GIVEAWAY_V1__) return;
-  window.__CFF_ADMIN_PRIVATE_GIVEAWAY_V1__ = true;
+  if (window.__CFF_ADMIN_PRIVATE_GIVEAWAY_V2__) return;
+  window.__CFF_ADMIN_PRIVATE_GIVEAWAY_V2__ = true;
 
   const PUBLIC_BASE='https://centralfreefire.com.br/sorteio-comunidade/';
   const $=s=>document.querySelector(s);
@@ -16,7 +16,7 @@
   };
   const parseBrt=value=>/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(String(value||''))?Date.parse(`${value}:00-03:00`):0;
 
-  let db=null,refFn=null,onValueFn=null,setFn=null,updateFn=null;
+  let db=null,refFn=null,onValueFn=null,setFn=null;
   let items=new Map(),currentId='',entries=[],stopEntries=null,stopPrivate=null;
 
   function message(text,type=''){
@@ -24,11 +24,22 @@
     el.textContent=text||'';el.className=`admin-message${type?` is-${type}`:''}`;
   }
 
-  function randomHex(bytes=16){
-    const arr=new Uint8Array(bytes);crypto.getRandomValues(arr);
-    return [...arr].map(v=>v.toString(16).padStart(2,'0')).join('');
+  function randomBytes(size){
+    const arr=new Uint8Array(size);crypto.getRandomValues(arr);return arr;
+  }
+  function bytesToHex(bytes){return [...bytes].map(v=>v.toString(16).padStart(2,'0')).join('');}
+  function hexToBytes(hex){
+    const clean=String(hex||'');const out=new Uint8Array(clean.length/2);
+    for(let i=0;i<out.length;i++)out[i]=parseInt(clean.slice(i*2,i*2+2),16);
+    return out;
+  }
+  function bytesToB64(bytes){
+    let binary='';const chunk=0x8000;
+    for(let i=0;i<bytes.length;i+=chunk)binary+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+    return btoa(binary);
   }
 
+  function randomHex(bytes=16){return bytesToHex(randomBytes(bytes));}
   function randomId(){
     for(let i=0;i<100;i++){
       const arr=new Uint32Array(1);crypto.getRandomValues(arr);
@@ -38,9 +49,20 @@
     return String(Date.now()).slice(-7).padStart(7,'1');
   }
 
-  async function sha256(value){
-    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(value||'')));
-    return [...new Uint8Array(digest)].map(v=>v.toString(16).padStart(2,'0')).join('');
+  async function sha256Bytes(value){
+    return new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(value||''))));
+  }
+  async function deriveKeyHex(salt,password){
+    return bytesToHex(await sha256Bytes(`${salt}:${password}`));
+  }
+  async function importAesKey(keyHex,usage){
+    return crypto.subtle.importKey('raw',hexToBytes(keyHex),{name:'AES-GCM'},false,[usage]);
+  }
+  async function encryptPayload(payload,keyHex){
+    const iv=randomBytes(12),key=await importAesKey(keyHex,'encrypt');
+    const plain=new TextEncoder().encode(JSON.stringify(payload));
+    const encrypted=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,plain));
+    return {iv:bytesToB64(iv),ciphertext:bytesToB64(encrypted)};
   }
 
   function fieldsFromForm(){
@@ -55,6 +77,27 @@
 
   function selectedItem(){return currentId?items.get(currentId)||null:null}
   function privateLink(id=currentId){return id?PUBLIC_BASE+id:''}
+  function publicPayload(data){
+    return {
+      id:String(data.id||''),
+      title:String(data.title||'Sorteio privado'),
+      description:String(data.description||''),
+      endsAt:Number(data.endsAt||0),
+      active:Boolean(data.active),
+      fields:data.fields||{},
+      entryToken:String(data.entryToken||'')
+    };
+  }
+
+  async function publicEnvelope(data){
+    const encrypted=await encryptPayload(publicPayload(data),data.keyHex);
+    return {
+      salt:String(data.passwordSalt||''),
+      iv:encrypted.iv,
+      ciphertext:encrypted.ciphertext,
+      updatedAt:Number(data.updatedAt||Date.now())
+    };
+  }
 
   function setTab(name){
     const target=name==='private'?'private':'public';
@@ -117,10 +160,7 @@
     if(currentId&&items.has(currentId))select.value=currentId;
   }
 
-  function stopEntriesWatch(){
-    if(stopEntries){stopEntries();stopEntries=null;}
-  }
-
+  function stopEntriesWatch(){if(stopEntries){stopEntries();stopEntries=null;}}
   function watchEntries(id){
     stopEntriesWatch();entries=[];renderEntries();if(!id||!db)return;
     stopEntries=onValueFn(refFn(db,`communityGiveaways/privateEntries/${id}`),snap=>{
@@ -158,25 +198,27 @@
 
     const existing=selectedItem();
     const id=currentId||randomId();
-    let passwordSalt=String(existing?.passwordSalt||''),passwordHash=String(existing?.passwordHash||'');
+    let passwordSalt=String(existing?.passwordSalt||''),keyHex=String(existing?.keyHex||''),entryToken=String(existing?.entryToken||'');
     if(!existing&&password.length<3)return message('Escolha uma senha com pelo menos 3 caracteres.','error');
     if(password){
       if(password.length<3)return message('A senha precisa ter pelo menos 3 caracteres.','error');
       passwordSalt=randomHex(16);
-      passwordHash=await sha256(`${passwordSalt}:${password}`);
+      keyHex=await deriveKeyHex(passwordSalt,password);
     }
-    if(!passwordSalt||!passwordHash)return message('Defina uma senha para o sorteio privado.','error');
+    if(!passwordSalt||!keyHex)return message('Digite uma nova senha para este sorteio.','error');
+    if(!entryToken)entryToken=randomHex(24);
 
     const data={
-      id,title,description,endsAt,active:true,fields,passwordSalt,passwordHash,
+      id,title,description,endsAt,active:true,fields,passwordSalt,keyHex,entryToken,
       createdAt:Number(existing?.createdAt||Date.now()),updatedAt:Date.now()
     };
     try{
-      await setFn(refFn(db,`communityGiveaways/private/${id}`),data);
-      currentId=id;
-      items.set(id,data);
-      renderSelect();
-      fillForm(data);
+      const envelope=await publicEnvelope(data);
+      await Promise.all([
+        setFn(refFn(db,`communityGiveaways/private/${id}`),data),
+        setFn(refFn(db,`communityGiveaways/privatePublic/${id}`),envelope)
+      ]);
+      currentId=id;items.set(id,data);renderSelect();fillForm(data);
       if($('#private-password'))$('#private-password').value='';
       message(`Sorteio privado salvo. Link: ${privateLink(id)}`,'success');
     }catch(err){console.error(err);message('Não foi possível salvar o sorteio privado.','error');}
@@ -184,9 +226,15 @@
 
   async function closePrivate(){
     if(!db||!currentId)return message('Selecione um sorteio privado.','error');
+    const existing=selectedItem();if(!existing)return message('Sorteio privado não encontrado.','error');
+    const data={...existing,active:false,endsAt:Math.min(Number(existing.endsAt||Date.now()),Date.now()),updatedAt:Date.now()};
     try{
-      await updateFn(refFn(db,`communityGiveaways/private/${currentId}`),{active:false,endsAt:Math.min(Number(selectedItem()?.endsAt||Date.now()),Date.now()),updatedAt:Date.now()});
-      message('Sorteio privado encerrado.','success');
+      const envelope=await publicEnvelope(data);
+      await Promise.all([
+        setFn(refFn(db,`communityGiveaways/private/${currentId}`),data),
+        setFn(refFn(db,`communityGiveaways/privatePublic/${currentId}`),envelope)
+      ]);
+      items.set(currentId,data);renderSelect();fillForm(data);message('Sorteio privado encerrado.','success');
     }catch(err){console.error(err);message('Não foi possível encerrar.','error');}
   }
 
@@ -226,12 +274,12 @@
   }
 
   async function connect(){
-    const [{getApps,getApp},{getDatabase,ref,onValue,set,update}]=await Promise.all([
+    const [{getApps,getApp},{getDatabase,ref,onValue,set}]=await Promise.all([
       import('https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js'),
       import('https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js')
     ]);
     if(!getApps().length)return;
-    db=getDatabase(getApp());refFn=ref;onValueFn=onValue;setFn=set;updateFn=update;
+    db=getDatabase(getApp());refFn=ref;onValueFn=onValue;setFn=set;
     stopPrivate=onValue(ref(db,'communityGiveaways/private'),snap=>{
       const raw=snap.val()||{};
       items=new Map(Object.values(raw).filter(x=>x?.id).map(x=>[String(x.id),x]));
@@ -246,8 +294,7 @@
       tries++;
       const app=$('#give-app');
       if(app&&!app.hidden){
-        clearInterval(timer);
-        bind();
+        clearInterval(timer);bind();
         connect().catch(err=>{console.error('[Private giveaway admin]',err);message('Falha ao conectar os sorteios privados.','error');});
       }else if(tries>120)clearInterval(timer);
     },100);
