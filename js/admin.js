@@ -1,4 +1,4 @@
-import './admin-core.js?v=20260929-adminlives-fix-v7';
+import './admin-core.js?v=20260930-saved-live-channels-v8';
 import './admin-sections-titles.js?v=20260924-tools-above-tabs-v4';
 import './admin-titles-extras.js?v=20260909-admin-title-extras-v1';
 import './admin-editor-link.js?v=20260913-central-tools-v2';
