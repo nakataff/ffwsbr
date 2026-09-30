@@ -16,6 +16,13 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['id','titulo','conteudo','status']) && newData.child('id').isString() && newData.child('id').val() == $slug && newData.child('titulo').isString() && newData.child('titulo').val().length > 2 && newData.child('titulo').val().length <= 180 && newData.child('conteudo').isString() && newData.child('status').val() == 'draft')"
       }
     },
+    "adminLiveChannels": {
+      ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+      "$id": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "!newData.exists() || (newData.hasChildren(['id','name','url']) && newData.child('id').isString() && newData.child('id').val() == $id && newData.child('name').isString() && newData.child('name').val().length >= 1 && newData.child('name').val().length <= 120 && newData.child('url').isString() && newData.child('url').val().length >= 8 && newData.child('url').val().length <= 500)"
+      }
+    },
     "adminLives": {
       ".read": true,
       "$id": {
