@@ -2,11 +2,6 @@ name: Deploy Instagram Webhook
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'functions/**'
-      - 'firebase.json'
 
 permissions:
   contents: read
@@ -36,7 +31,6 @@ jobs:
         run: npm install
 
       - name: Sync Firebase secrets
-        if: github.event_name == 'workflow_dispatch'
         shell: bash
         env:
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
