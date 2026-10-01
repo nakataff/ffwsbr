@@ -770,18 +770,43 @@
 
   function layoutPlacementRows(){
     const count=Number(launchDesign.simpleRows)||2;
-    document.querySelectorAll('#teams-inputs-container .v46-placement-grid').forEach(grid=>{
-      if(grid.dataset.cffPlacementRows===String(count))return;
+    const set=(element,name,value)=>{if(element.style.getPropertyValue(name)!==String(value))element.style.setProperty(name,value)};
+    document.querySelectorAll('#teams-inputs-container .team-row').forEach(row=>{
+      const grid=row.querySelector(':scope>.v46-placement-grid');
+      row.classList.toggle('cff-placement-paired',!!grid);if(!grid)return;
       const choices=Array.from(grid.querySelectorAll('.v46-placement-choice'));
       if(!choices.length)return;
-      grid.querySelectorAll(':scope>.cff-placement-line').forEach(line=>line.remove());
-      const rows=Math.min(count,choices.length),base=Math.floor(choices.length/rows),extra=choices.length%rows;
-      let offset=0;
-      for(let row=0;row<rows;row++){
-        const length=base+(row<extra?1:0),line=document.createElement('div');line.className='cff-placement-line';line.style.setProperty('--cff-placement-count',length);
-        choices.slice(offset,offset+length).forEach(choice=>line.appendChild(choice));offset+=length;grid.appendChild(line);
+      if(grid.dataset.cffPlacementRows!==String(count)){
+        grid.querySelectorAll(':scope>.cff-placement-line').forEach(line=>line.remove());
+        const rows=Math.min(count,choices.length),base=Math.floor(choices.length/rows),extra=choices.length%rows;
+        let offset=0;
+        for(let index=0;index<rows;index++){
+          const length=base+(index<extra?1:0),line=document.createElement('div');line.className='cff-placement-line';
+          line.style.setProperty('--cff-placement-count',length);line.style.setProperty('--cff-placement-row',index+1);
+          choices.slice(offset,offset+length).forEach(choice=>line.appendChild(choice));offset+=length;grid.appendChild(line);
+        }
+        grid.dataset.cffPlacementRows=String(count);
       }
-      grid.dataset.cffPlacementRows=String(count);
+      // Share the card's rows so each pair of extra fields stays beside its placement row.
+      const extras=row.querySelector(':scope>.cff-extra-grid'),fields=Array.from(extras?.querySelectorAll('.cff-extra-field')||[]);
+      const warning=extras?.querySelector('.cff-extra-warning'),extraRows=Math.ceil(fields.length/2),extraSpan=extraRows+(warning&&!warning.hidden?1:0),rows=Math.max(count,extraSpan+1);
+      set(row,'--cff-paired-rows',rows);if(extras)set(extras,'--cff-extra-rows',Math.max(1,extraSpan));
+      const widths=[Math.max(launchDesign.fieldWidth,Math.ceil(launchDesign.labelSize*6.5)),Math.max(launchDesign.fieldWidth,Math.ceil(launchDesign.labelSize*6.5))];
+      const labels=[Math.max(22,Math.ceil(launchDesign.labelSize*1.5))],heights=[launchDesign.fieldHeight];
+      fields.forEach((field,index)=>{
+        const input=field.querySelector('input'),label=field.querySelector('.micro-label'),font=parseFloat(getComputedStyle(label).fontSize)||launchDesign.labelSize;
+        const width=parseFloat(field.style.getPropertyValue('--cff-extra-width'))||launchDesign.fieldWidth,height=parseFloat(getComputedStyle(input).height)||launchDesign.fieldHeight;
+        const fieldRow=Math.floor(index/2)+1,column=index%2;
+        widths[column]=Math.max(widths[column],width,Math.ceil(font*6.5));
+        labels[fieldRow]=Math.max(labels[fieldRow]||22,Math.ceil(font*1.5));heights[fieldRow]=Math.max(heights[fieldRow]||0,height);
+        set(field,'grid-column',column+1);set(field,'grid-row',fieldRow);
+      });
+      widths.forEach((width,index)=>set(row,'--cff-paired-column-'+(index+1),width+'px'));
+      grid.querySelectorAll(':scope>.cff-placement-line').forEach((line,index)=>{
+        set(line,'--cff-placement-label-height',(labels[index]||labels[0])+'px');
+        set(line,'--cff-placement-choice-height',Math.max(launchDesign.simpleHeight,heights[index]||launchDesign.fieldHeight)+'px');
+      });
+      if(warning)set(warning,'grid-row',extraRows+1);
     });
   }
   const LAUNCH_DESIGN_KEY='cff_camp_launch_design_v1';
@@ -954,6 +979,24 @@
       @container cff-launch-card (max-width:500px){
         #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row>.v46-placement-grid{grid-column:1/-1!important;grid-row:3!important}
         #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row>.slot-actions{grid-column:-2!important;grid-row:2!important}
+      }
+      #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired{grid-template-columns:var(--cff-paired-column-1) var(--cff-paired-column-2) minmax(0,1fr) 30px!important;align-items:start}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.team-flex{grid-row:1!important}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.small-cell{grid-row:2}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.v46-placement-grid{position:relative;grid-column:3!important;grid-row:2 / span var(--cff-paired-rows)!important;display:grid;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:subgrid!important;padding:0!important;gap:inherit!important;border:0;background:transparent;align-items:stretch}
+      #teams-inputs-container#teams-inputs-container .cff-placement-paired .v46-placement-title{position:absolute;top:0;left:0;right:0;height:22px;margin:0;line-height:22px;font-size:var(--cff-launch-labelSize,9.5px)!important}
+      #teams-inputs-container#teams-inputs-container .cff-placement-paired .cff-placement-line{grid-row:var(--cff-placement-row);padding-top:var(--cff-placement-label-height);align-items:start;align-self:stretch;box-sizing:border-box;overflow-x:auto;grid-template-columns:repeat(var(--cff-placement-count),minmax(max-content,1fr));gap:1px}
+      #teams-inputs-container#teams-inputs-container .cff-placement-paired .cff-placement-line>.v46-placement-choice{min-height:var(--cff-placement-choice-height)!important}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.slot-actions{grid-column:4!important;grid-row:2!important}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.cff-extra-grid{grid-column:1/3!important;grid-row:3 / span var(--cff-extra-rows);display:grid!important;grid-template-columns:subgrid;grid-template-rows:subgrid;gap:inherit;padding:0;border:0;align-items:start}
+      #teams-inputs-container#teams-inputs-container .cff-placement-paired .cff-extra-field{align-self:start}
+      #teams-inputs-container#teams-inputs-container .cff-placement-paired .cff-extra-warning{grid-column:1/-1}
+      @media(max-width:760px){
+        #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired{grid-template-columns:var(--cff-paired-column-1) var(--cff-paired-column-2) minmax(0,1fr)!important}
+        #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.slot-actions{grid-column:3!important;grid-row:1!important;justify-self:end;z-index:1}
+        #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.team-flex{padding-right:38px!important}
+        #teams-inputs-container#teams-inputs-container:not(.cff-launch-design) .cff-placement-paired .v46-placement-choice{font-size:8px!important;gap:1px!important}
+        #teams-inputs-container#teams-inputs-container:not(.cff-launch-design) .cff-placement-paired .v46-placement-choice input{width:10px!important;min-width:10px!important;max-width:10px!important;height:10px!important;min-height:10px!important;flex-basis:10px!important}
       }
       @media(max-width:1250px){body.cff-launch-editing #teams-inputs-container.v81-launch-grid{grid-template-columns:minmax(0,1fr)!important}}
       @media(max-width:980px){
