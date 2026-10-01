@@ -364,7 +364,7 @@
       body.v81-launch-grid-mode .main-layout,
       body.v41-tournament-mode.v81-launch-grid-mode .main-layout,
       body.v81-launch-grid-mode.v81-launch-grid-wide .main-layout,
-      body.v41-tournament-mode.v81-launch-grid-mode.v81-launch-grid-wide .main-layout{grid-template-columns:minmax(0,1fr) minmax(460px,.64fr)!important}
+      body.v41-tournament-mode.v81-launch-grid-mode.v81-launch-grid-wide .main-layout{grid-template-columns:minmax(0,1fr) minmax(0,min(48vw,var(--cff-grid-table-slot-width,520px)))!important}
       body.v81-launch-grid-mode #summary-section{position:sticky;top:76px;max-height:calc(100vh - 90px);overflow:auto}
       body.v81-launch-grid-mode #teams-inputs-container.v81-launch-grid{grid-template-columns:repeat(var(--v81-grid-columns),minmax(max(350px,calc(var(--v81-grid-card-min) * .66)),1fr))!important}
       body.v81-launch-grid-mode #teams-inputs-container.v81-launch-grid>.team-row{min-width:max(350px,calc(var(--v81-grid-card-min) * .66))!important}
@@ -503,6 +503,24 @@
     document.querySelectorAll('#teams-inputs-container>*').forEach(card=>card.classList.add('cff-team-entry'));
     organizeLaunchOptions();
     refreshLaunchColors();
+    fitGridTableSlot();
+  }
+
+  function fitGridTableSlot(){
+    const layout=$('.main-layout'),table=$('#summary-section #table-print-area table');
+    if(!layout||!table)return;
+    // The print-width control writes a fixed width inline. Fit that table's slot,
+    // rather than stretching its black canvas across a fraction of the workspace.
+    const fixedWidth=/^\d+(?:\.\d+)?px$/.test(table.style.width);
+    const width=fixedWidth?Math.ceil(table.getBoundingClientRect().width):500;
+    if(!width)return;
+    const value=(width+20)+'px';
+    if(layout.style.getPropertyValue('--cff-grid-table-slot-width')!==value){
+      layout.style.setProperty('--cff-grid-table-slot-width',value);
+    }
+    const title=$('#summary-section #table-print-area .table-title-box');
+    // Recompute a title left over from the wider canvas, so its drop badge fits too.
+    if(document.body.classList.contains('v81-launch-grid-mode')&&title&&Math.abs(title.getBoundingClientRect().width-table.getBoundingClientRect().width)>1)window.syncTableHeaderWidth?.({updateUi:false});
   }
 
   const LAUNCH_COLORS_KEY='cff_camp_launch_colors_v1';
@@ -673,6 +691,7 @@
     };
     new MutationObserver(refresh).observe(document.body,{childList:true,subtree:true});
     document.addEventListener('change',refresh,{passive:true});
+    document.addEventListener('click',event=>{if(event.target.closest?.('[data-v81-view]'))refresh()},{passive:true});
     refresh();
   }
 
