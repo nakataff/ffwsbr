@@ -375,6 +375,7 @@
       #teams-inputs-container .v46-placement-choice{padding:3px 0!important;gap:2px!important;font-size:.6rem!important}
       #teams-inputs-container .v46-placement-choice input{width:12px!important;min-width:12px!important;max-width:12px!important;height:12px!important;min-height:12px!important;flex-basis:12px!important}
       #teams-inputs-container .slot-actions .btn-slot{width:30px!important;min-width:30px!important;max-width:30px!important;height:32px;padding:0!important}
+      #teams-inputs-container .v82-calculated-kills.pending{display:none!important}
       #teams-inputs-container .team-row>.team-flex{grid-column:1/-1;min-height:34px;padding:5px 7px;box-sizing:border-box;border-radius:6px;background:var(--cff-team-color);color:var(--cff-team-ink,#fff)}
       #teams-inputs-container .team-row>.team-flex>span:not(.team-quick-actions-v28){color:inherit!important;min-width:0;overflow:hidden;text-overflow:ellipsis}
       #teams-inputs-container .cff-color-picker{position:relative;display:none;flex:0 0 26px;width:26px!important;height:26px;margin:0!important;padding:0!important;align-items:center;justify-content:center;border:1px solid currentColor;border-radius:5px;cursor:pointer;color:inherit;font-size:16px}
@@ -397,7 +398,7 @@
       body.cff-camp-focus>.container>:not(.main-layout){display:none!important}
       body.cff-camp-focus .main-layout{display:block!important}
       body.cff-camp-focus .drop-section{display:none!important}
-      body.cff-camp-focus #summary-section{position:static!important;max-height:none!important;width:100%;border:0;background:transparent!important}
+      body.cff-camp-focus #summary-section{position:static!important;max-height:none!important;width:min(100%,var(--cff-focus-table-width,500px))!important;margin:0 auto!important;padding:0!important;border:0;background:transparent!important}
       body.cff-camp-focus #summary-section>summary,
       body.cff-camp-focus #summary-section .sub-summary-section:not(:has(#table-print-area)),
       body.cff-camp-focus #summary-section .sub-summary-section:has(#table-print-area)>summary,
@@ -408,9 +409,13 @@
       body.cff-camp-focus #v93-table-controls-gear-row{display:none!important}
       body.cff-camp-focus #summary-section>.collapsible-content,
       body.cff-camp-focus #summary-section .sub-summary-content{padding:0!important}
-      body.cff-camp-focus #v92-table-view-switch{display:flex!important;gap:8px;margin:0 0 12px}
-      body.cff-camp-focus #v92-table-view-switch .v76-view-button{flex:1 1 0;min-height:36px}
+      body.cff-camp-focus #summary-section .sub-summary-section:has(#table-print-area){border:0!important;margin:0!important;padding:0!important;background:transparent!important}
+      body.cff-camp-focus #v92-table-view-switch{display:flex!important;width:100%!important;box-sizing:border-box;flex-wrap:nowrap!important;gap:8px;margin:0 0 12px!important;position:static!important}
+      body.cff-camp-focus #v92-table-view-switch .v76-view-button{flex:1 1 0!important;min-width:0;min-height:36px}
       body.cff-camp-focus .cff-camp-topbar{position:sticky;top:0}
+      body.cff-camp-launch-focus>.container>:not(.main-layout){display:none!important}
+      body.cff-camp-launch-focus:not(.v81-launch-grid-mode) .main-layout{grid-template-columns:minmax(0,1fr)!important}
+      body.cff-camp-launch-focus:not(.v81-launch-grid-mode) #summary-section{display:none!important}
       @container(max-width:720px){
         .summary-section .summary-main-controls>label.switch{grid-column:span 6}
         .summary-section .summary-main-controls>div.cff-visual-field{grid-column:span 6}
@@ -518,9 +523,19 @@
     if(layout.style.getPropertyValue('--cff-grid-table-slot-width')!==value){
       layout.style.setProperty('--cff-grid-table-slot-width',value);
     }
+    if(document.body.classList.contains('cff-camp-focus'))fitFocusedTable();
     const title=$('#summary-section #table-print-area .table-title-box');
     // Recompute a title left over from the wider canvas, so its drop badge fits too.
     if(document.body.classList.contains('v81-launch-grid-mode')&&title&&Math.abs(title.getBoundingClientRect().width-table.getBoundingClientRect().width)>1)window.syncTableHeaderWidth?.({updateUi:false});
+  }
+
+  function fitFocusedTable(){
+    const section=$('#summary-section'),table=$('#summary-section #table-print-area table');
+    const width=table?.getBoundingClientRect().width;
+    if(section&&width){
+      const value=Math.ceil(width)+'px';
+      if(section.style.getPropertyValue('--cff-focus-table-width')!==value)section.style.setProperty('--cff-focus-table-width',value);
+    }
   }
 
   const LAUNCH_COLORS_KEY='cff_camp_launch_colors_v1';
@@ -735,21 +750,27 @@
       el.title='O estado do camp é salvo localmente neste navegador.';
     }catch(_){el.textContent='● Auto-save local'}
   }
-  function setFocus(active){
-    if(active){
+  function setWorkspaceFocus(mode){
+    if(mode==='tables'){
       $('#summary-section')?.setAttribute('open','');
       $('#table-print-area')?.closest('details')?.setAttribute('open','');
+      fitFocusedTable();
     }
-    document.body.classList.toggle('cff-camp-focus',active);
-    try{localStorage.setItem(FOCUS_KEY,active?'1':'0')}catch(_){}
-    const btn=$('#cff-camp-focus');if(btn){btn.classList.toggle('is-active',active);btn.textContent=active?'← Sair do foco':'▦ Foco nas tabelas';btn.title=active?'Voltar ao painel completo':'Mostrar apenas Tabela do dia e Tabela geral quando disponível'}
+    if(mode==='launch')$('.drop-section')?.setAttribute('open','');
+    document.body.classList.toggle('cff-camp-focus',mode==='tables');
+    document.body.classList.toggle('cff-camp-launch-focus',mode==='launch');
+    try{localStorage.setItem(FOCUS_KEY,mode==='tables'?'1':mode==='launch'?'launch':'0')}catch(_){}
+    const btn=$('#cff-camp-focus');if(btn){const active=mode==='tables';btn.classList.toggle('is-active',active);btn.textContent=active?'← Sair do foco':'▦ Foco nas tabelas';btn.title=active?'Voltar ao painel completo':'Mostrar apenas Tabela do dia e Tabela geral quando disponível';btn.setAttribute('aria-pressed',String(active))}
+    const launch=$('#cff-camp-launch-focus');if(launch){const active=mode==='launch';launch.classList.toggle('is-active',active);launch.textContent=active?'← Sair do foco de quedas':'Foco no lançar quedas';launch.setAttribute('aria-pressed',String(active))}
+    requestAnimationFrame(()=>{markWorkspaceElements();window.syncTableHeaderWidth?.({updateUi:false})});
   }
   function wireToolbar(){
     document.querySelectorAll('[data-cff-preset]').forEach(btn=>btn.addEventListener('click',()=>loadPreset(btn.dataset.cffPreset,true)));
     $('#cff-camp-import')?.addEventListener('click',()=>$('#cff-camp-file')?.click());
     $('#cff-camp-file')?.addEventListener('change',e=>{const file=e.target.files?.[0];if(file)importFile(file);e.target.value=''});
     $('#cff-camp-download')?.addEventListener('click',()=>window.downloadBackupJson?.());
-    $('#cff-camp-focus')?.addEventListener('click',()=>setFocus(!document.body.classList.contains('cff-camp-focus')));
+    $('#cff-camp-focus')?.addEventListener('click',()=>setWorkspaceFocus(document.body.classList.contains('cff-camp-focus')?'none':'tables'));
+    $('#cff-camp-launch-focus')?.addEventListener('click',()=>setWorkspaceFocus(document.body.classList.contains('cff-camp-launch-focus')?'none':'launch'));
     $('#cff-camp-logos')?.addEventListener('click',()=>{
       document.querySelector('.teams-setup')?.setAttribute('open','');
       setTimeout(()=>$('#cff-logo-bank')?.scrollIntoView({behavior:'smooth',block:'center'}),40);
@@ -791,7 +812,8 @@
     loadLogoCatalog();
     wireToolbar();
     updateSaveState();
-    setFocus(localStorage.getItem(FOCUS_KEY)==='1');
+    const focus=localStorage.getItem(FOCUS_KEY);
+    setWorkspaceFocus(focus==='1'?'tables':focus==='launch'?'launch':'none');
     [250,700,1500].forEach(delay=>setTimeout(()=>{patchLogoResolver();buildLogoBank();applyRepoLogosToRows();renderLogoBank();},delay));
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
