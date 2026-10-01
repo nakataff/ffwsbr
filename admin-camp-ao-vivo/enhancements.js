@@ -352,21 +352,46 @@
       #teams-inputs-container .micro-label{display:block;min-height:22px;font-size:.64rem;line-height:1.3}
       #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row,
       body.v41-simple-mode #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row{
-        grid-template-columns:minmax(66px,.7fr) minmax(78px,.9fr) minmax(200px,2fr) 36px!important;
-        padding:10px!important;row-gap:7px;
+        grid-template-columns:50px 50px minmax(174px,1fr) 30px!important;
+        padding:8px!important;gap:6px!important;row-gap:7px;
       }
       #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.team-flex{grid-column:1/-1;overflow:visible!important;min-height:28px}
       #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.team-flex>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       #teams-inputs-container .v46-placement-grid{align-self:stretch}
       #teams-inputs-container .v46-placement-choice input{width:14px!important;min-width:14px!important;max-width:14px!important;height:14px!important;min-height:14px!important;flex-basis:14px!important}
       #teams-inputs-container .v46-placement-choice{gap:3px;line-height:1.3}
-      /* A grid needs the full workspace width for readable team slots. */
+      /* Keep scores beside the editor, including on smaller desktop screens. */
       body.v81-launch-grid-mode .main-layout,
       body.v41-tournament-mode.v81-launch-grid-mode .main-layout,
       body.v81-launch-grid-mode.v81-launch-grid-wide .main-layout,
-      body.v41-tournament-mode.v81-launch-grid-mode.v81-launch-grid-wide .main-layout{grid-template-columns:minmax(0,1fr)!important}
-      body.v81-launch-grid-mode #summary-section{position:static;max-height:none;overflow:visible}
-      body.v81-launch-grid-mode #teams-inputs-container.v81-launch-grid{grid-template-columns:repeat(var(--v81-grid-columns),minmax(var(--v81-grid-card-min),1fr))!important}
+      body.v41-tournament-mode.v81-launch-grid-mode.v81-launch-grid-wide .main-layout{grid-template-columns:minmax(0,1fr) minmax(460px,.64fr)!important}
+      body.v81-launch-grid-mode #summary-section{position:sticky;top:76px;max-height:calc(100vh - 90px);overflow:auto}
+      body.v81-launch-grid-mode #teams-inputs-container.v81-launch-grid{grid-template-columns:repeat(var(--v81-grid-columns),minmax(max(350px,calc(var(--v81-grid-card-min) * .66)),1fr))!important}
+      body.v81-launch-grid-mode #teams-inputs-container.v81-launch-grid>.team-row{min-width:max(350px,calc(var(--v81-grid-card-min) * .66))!important}
+      #teams-inputs-container input:is([id^="kills-"],[id^="place-"]){width:50px!important;min-width:50px!important;max-width:50px!important;height:32px;padding:5px 3px!important;text-align:center;box-sizing:border-box;font-size:.85rem;-moz-appearance:textfield}
+      #teams-inputs-container input:is([id^="kills-"],[id^="place-"])::-webkit-inner-spin-button,
+      #teams-inputs-container input:is([id^="kills-"],[id^="place-"])::-webkit-outer-spin-button{-webkit-appearance:none!important;appearance:none!important;margin:0}
+      #teams-inputs-container .v46-placement-grid{gap:2px!important;padding:5px!important}
+      #teams-inputs-container .v46-placement-choice{padding:3px 0!important;gap:2px!important;font-size:.6rem!important}
+      #teams-inputs-container .v46-placement-choice input{width:12px!important;min-width:12px!important;max-width:12px!important;height:12px!important;min-height:12px!important;flex-basis:12px!important}
+      #teams-inputs-container .slot-actions .btn-slot{width:30px!important;min-width:30px!important;max-width:30px!important;height:32px;padding:0!important}
+      #teams-inputs-container .team-row>.team-flex{grid-column:1/-1;min-height:34px;padding:5px 7px;box-sizing:border-box;border-radius:6px;background:var(--cff-team-color);color:var(--cff-team-ink,#fff)}
+      #teams-inputs-container .team-row>.team-flex>span:not(.team-quick-actions-v28){color:inherit!important;min-width:0;overflow:hidden;text-overflow:ellipsis}
+      #teams-inputs-container .cff-color-picker{position:relative;display:none;flex:0 0 26px;width:26px!important;height:26px;margin:0!important;padding:0!important;align-items:center;justify-content:center;border:1px solid currentColor;border-radius:5px;cursor:pointer;color:inherit;font-size:16px}
+      #teams-inputs-container.cff-custom-colors .cff-color-picker{display:inline-flex}
+      #teams-inputs-container .cff-color-picker input[type="color"]{position:absolute;inset:0;opacity:0;width:100%!important;min-width:0!important;height:100%;margin:0;padding:0;border:0;cursor:pointer}
+      #teams-inputs-container .cff-color-picker:focus-within{outline:2px solid #fff;outline-offset:2px}
+      #teams-inputs-container .cff-color-picker svg{width:16px;height:16px;fill:currentColor;pointer-events:none}
+      #drop-settings-panel{width:min(420px,calc(100vw - 44px))!important;max-height:min(720px,calc(100dvh - 115px));overflow:auto;box-sizing:border-box;padding:12px!important;background:#101924!important;border-color:#31485d!important}
+      #drop-settings-panel>.cff-launch-group{margin:8px 0 0;border:1px solid #293e51;border-radius:8px;background:#131f2c}
+      #drop-settings-panel>.cff-launch-group>summary{padding:9px 10px!important;color:#aacce9;font-size:.76rem;text-transform:none;cursor:pointer}
+      #drop-settings-panel .cff-launch-options{padding:0 8px 8px;display:grid;gap:6px}
+      #drop-settings-panel .cff-launch-options .switch:not([style*="display: none"]){display:flex!important;flex-direction:row-reverse!important;justify-content:flex-end!important;gap:8px!important;width:100%!important;box-sizing:border-box;padding:8px!important;margin:0!important;min-height:34px;font-size:.74rem!important;text-align:left;white-space:normal;text-transform:none;background:#1b2938!important}
+      #drop-settings-panel .v81-option-note::after{display:none!important}
+      #drop-settings-panel .cff-launch-options>div{margin:0!important}
+      #drop-settings-panel .cff-launch-options button{white-space:normal;min-height:32px}
+      #drop-settings-panel #cff-auto-colors{width:100%;text-align:left;padding:8px 10px;border-color:#486583;color:#cbe6ff}
+      #drop-settings-panel .cff-launch-help{font-size:.68rem;line-height:1.45;color:#a1b6cb;margin:0 2px 2px}
       #v92-table-view-switch[hidden],#v76-table-view-toolbar[hidden],#v92-table-view-switch button[hidden]{display:none!important}
       /* Focus keeps the existing day/general view switch and hides editing tools. */
       body.cff-camp-focus>.container>:not(.main-layout){display:none!important}
@@ -392,11 +417,18 @@
         .summary-section .summary-main-controls>#v90-champion-activated-logos-row{grid-column:1/-1;min-height:40px}
       }
       @media(max-width:1250px){body .main-layout{grid-template-columns:minmax(0,1fr)!important}}
+      @media(max-width:980px){
+        body.v81-launch-grid-mode .main-layout,
+        body.v41-tournament-mode.v81-launch-grid-mode .main-layout,
+        body.v81-launch-grid-mode.v81-launch-grid-wide .main-layout,
+        body.v41-tournament-mode.v81-launch-grid-mode.v81-launch-grid-wide .main-layout{grid-template-columns:minmax(0,1fr)!important}
+        body.v81-launch-grid-mode #summary-section{position:static;max-height:none}
+      }
       @media(max-width:760px){
         .summary-section .summary-main-controls>label.switch{white-space:normal}
         .summary-section .summary-main-controls>div.cff-visual-field{grid-column:1/-1}
         #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row,
-        body.v41-simple-mode #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row{grid-template-columns:1fr 1fr 36px!important}
+        body.v41-simple-mode #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row{grid-template-columns:50px minmax(50px,1fr) 30px!important}
         #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.v46-placement-grid{grid-column:1/-1;grid-row:3}
         #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.slot-actions{grid-column:3;grid-row:2}
         .container{width:calc(100% - 12px)!important;padding:12px!important}
@@ -469,6 +501,161 @@
       }
     }
     document.querySelectorAll('#teams-inputs-container>*').forEach(card=>card.classList.add('cff-team-entry'));
+    organizeLaunchOptions();
+    refreshLaunchColors();
+  }
+
+  const LAUNCH_COLORS_KEY='cff_camp_launch_colors_v1';
+  const LAUNCH_PALETTE=['#275ba3','#7948a7','#a83b58','#a56325','#27815b','#277d91','#684db5','#986024','#397444','#9d417f','#386d91','#86722a','#4b548c','#875b46','#347b76','#863e48'];
+  function normalizeLaunchColors(value){
+    const colors=Object.create(null);
+    Object.entries(value?.colors||{}).forEach(([code,color])=>{
+      if(code&&/^#[0-9a-f]{6}$/i.test(String(color)))colors[code]=color;
+    });
+    return {customize:value?.customize===true,colors};
+  }
+  let launchColors=(()=>{
+    try{
+      const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');
+      return normalizeLaunchColors(backup?.config?.cffLaunchColorsV1||JSON.parse(localStorage.getItem(LAUNCH_COLORS_KEY)||'null'));
+    }catch(_){return normalizeLaunchColors(null)}
+  })();
+  function saveLaunchColors(saveCamp=false){
+    try{localStorage.setItem(LAUNCH_COLORS_KEY,JSON.stringify(launchColors))}catch(_){toast('Não foi possível salvar as cores neste navegador.','err')}
+    if(saveCamp&&window.__CFF_CAMP_READY__===true)window.autoSave?.(true);
+  }
+  function launchTeamCode(row){
+    // Historical sort patches may leave a stale row dataset. Scoring inputs own the team identity.
+    return row.querySelector('input[id^="kills-"],input[id^="pts-"],input[id^="place-"],input[id^="start-"]')?.id.replace(/^(kills|pts|place|start)-/,'')||row.querySelector('input[name="booyah"]')?.value||row.dataset.teamCode||'';
+  }
+  function extraLaunchColor(index){
+    return '#'+[0,120,240].map(offset=>Math.round(90+45*Math.sin((index*137.5+offset)*Math.PI/180)).toString(16).padStart(2,'0')).join('');
+  }
+  function colorInk(color){
+    const rgb=[1,3,5].map(i=>parseInt(color.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+    const luminance=rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+    return luminance>.179?'#0b1320':'#ffffff';
+  }
+  function refreshLaunchColors(){
+    const container=$('#teams-inputs-container');
+    if(!container)return;
+    container.classList.toggle('cff-custom-colors',launchColors.customize);
+    let added=false;
+    container.querySelectorAll('.team-row').forEach(row=>{
+      const code=launchTeamCode(row),header=row.querySelector(':scope>.team-flex');
+      if(!code||!header)return;
+      if(!launchColors.colors[code]){
+        // The saved team code, rather than its position in a sorted list, owns the color.
+        const used=new Set(Object.values(launchColors.colors));
+        let color=LAUNCH_PALETTE.find(value=>!used.has(value)),index=used.size;
+        while(!color||used.has(color))color=extraLaunchColor(index++);
+        launchColors.colors[code]=color;
+        added=true;
+      }
+      const color=launchColors.colors[code];
+      if(row.style.getPropertyValue('--cff-team-color')!==color){
+        row.style.setProperty('--cff-team-color',color);
+        row.style.setProperty('--cff-team-ink',colorInk(color));
+      }
+      let picker=header.querySelector('.cff-color-picker');
+      if(picker&&picker.dataset.cffColorTeam!==code){picker.remove();picker=null}
+      if(!picker){
+        picker=document.createElement('label');picker.className='cff-color-picker';
+        picker.dataset.cffColorTeam=code;
+        const name=teamRows().find(t=>t.code===code)?.name||code;
+        picker.title='Personalizar cor de '+name;
+        picker.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.7 2.3a1 1 0 0 0-1.4 0L9 12.6l2.4 2.4L21.7 4.7a1 1 0 0 0 0-1.4l-1-1zM7.5 14C4 14 6 19 2 20c5 2 9-1 9-3.5A3.5 3.5 0 0 0 7.5 14z"/></svg><input type="color">';
+        const input=picker.querySelector('input');
+        input.setAttribute('aria-label',picker.title);
+        input.addEventListener('input',event=>{
+          event.stopPropagation();
+          launchColors.colors[code]=input.value;refreshLaunchColors();saveLaunchColors();
+        });
+        input.addEventListener('change',event=>{event.stopPropagation();saveLaunchColors(true)});
+        picker.addEventListener('click',event=>event.stopPropagation());
+        const nameNode=Array.from(header.children).find(el=>el.tagName==='SPAN'&&!el.classList.contains('team-quick-actions-v28'));
+        if(nameNode)nameNode.insertAdjacentElement('afterend',picker);else header.appendChild(picker);
+      }
+      const input=picker.querySelector('input');
+      if(input.value!==color)input.value=color;
+    });
+    if(added)saveLaunchColors();
+    const toggle=$('#cff-customize-colors');if(toggle)toggle.checked=launchColors.customize;
+  }
+  function organizeLaunchOptions(){
+    const panel=$('#drop-settings-panel');if(!panel)return;
+    if(!$('#cff-customize-colors')){
+      const row=document.createElement('label');row.id='cff-customize-colors-row';row.className='switch';
+      row.innerHTML='Personalizar cor <input type="checkbox" id="cff-customize-colors">';
+      row.title='Mostra o pincel ao lado do nome de cada time. As cores continuam aplicadas ao desativar.';
+      row.querySelector('input').addEventListener('change',event=>{
+        launchColors.customize=event.target.checked;refreshLaunchColors();saveLaunchColors(true);
+      });
+      panel.appendChild(row);
+      const auto=document.createElement('button');auto.id='cff-auto-colors';auto.type='button';auto.className='btn-mini';auto.textContent='🎲 Cores auto';
+      auto.title='Sortear novas cores para os cabeçalhos de todos os times desta lista.';
+      auto.addEventListener('click',()=>{
+        const cards=Array.from(document.querySelectorAll('#teams-inputs-container .team-row'));
+        const codes=[...new Set(cards.map(launchTeamCode).filter(Boolean))];
+        const palette=Array.from({length:Math.max(codes.length,LAUNCH_PALETTE.length)},(_,i)=>LAUNCH_PALETTE[i]||extraLaunchColor(i));
+        // Shuffle once per click; scrolling, sorting and reloads never reroll colors.
+        for(let i=palette.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[palette[i],palette[j]]=[palette[j],palette[i]];}
+        codes.forEach((code,i)=>launchColors.colors[code]=palette[i]);
+        refreshLaunchColors();saveLaunchColors(true);
+      });
+      panel.appendChild(auto);
+    }
+    const groups=[
+      ['entry','Preenchimento',true,['.v32-drop-order-box','#drop-opt-auto-update-row','#drop-opt-simple-placement-row','#drop-opt-simple-kills-row','#drop-opt-count-kills-without-placement-row','#drop-opt-v57-team-score-row','#drop-opt-v81-top12-last-row']],
+      ['visual','Cores e visual',true,['#cff-customize-colors-row','#cff-auto-colors','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
+      ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
+      ['clear','Limpar dados',false,['#v33-remove-team-panel','#v38-clear-drops-box']]
+    ];
+    groups.forEach(([id,title,open,selectors])=>{
+      let group=$('#cff-launch-group-'+id);
+      if(!group){
+        group=document.createElement('details');group.id='cff-launch-group-'+id;group.className='cff-launch-group';group.open=open;
+        const heading=document.createElement('summary');heading.textContent=title;
+        group.appendChild(heading);const content=document.createElement('div');content.className='cff-launch-options';group.appendChild(content);panel.appendChild(group);
+      }
+      const content=group.querySelector('.cff-launch-options');
+      selectors.forEach(selector=>{
+        const option=panel.querySelector(selector);if(option&&option.parentElement!==content)content.appendChild(option);
+      });
+    });
+    const names={
+      'drop-opt-auto-update':'Atualizar tabelas ao vivo','drop-opt-simple-placement':'Colocação simples',
+      'drop-opt-count-kills-without-placement':'Contar abates sem colocação','drop-opt-v57-team-score':'Ajuste manual de abates',
+      'drop-opt-v81-top12-last':'Posições definidas no fim da lista','drop-opt-v59-short-names':'Nome curto dos times',
+      'drop-opt-v59-show-logos':'Exibir logos','drop-opt-legends':'Exibir legendas','drop-opt-random':'Mostrar botão de teste',
+      'drop-opt-clear-maps':'Mostrar botão de limpar mapas','drop-opt-clear-placements':'Mostrar botão de limpar posições'
+    };
+    Object.entries(names).forEach(([id,text])=>{
+      const label=document.getElementById(id)?.closest('label');
+      const node=Array.from(label?.childNodes||[]).find(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim());
+      if(node&&node.textContent.trim()!==text)node.textContent=text+' ';
+    });
+  }
+  function installLaunchColorBackup(){
+    const collect=window.collectBackupData;
+    if(typeof collect==='function'){
+      window.collectBackupData=function(){
+        const data=collect.apply(this,arguments);data.config=data.config||{};
+        data.config.cffLaunchColorsV1=JSON.parse(JSON.stringify(launchColors));return data;
+      };
+    }
+    const importer=window.importBackup;
+    if(typeof importer==='function'){
+      window.importBackup=function(){
+        let data;try{data=JSON.parse($('#backup-input')?.value||'')}catch(_){}
+        const result=importer.apply(this,arguments);
+        if(data?.config?.cffLaunchColorsV1){
+          launchColors=normalizeLaunchColors(data.config.cffLaunchColorsV1);
+          refreshLaunchColors();saveLaunchColors(true);
+        }
+        return result;
+      };
+    }
   }
 
   function installWorkspacePolishObserver(){
@@ -572,6 +759,7 @@
   };
 
   function boot(){
+    installLaunchColorBackup();
     injectCampFixStyles();
     injectWorkspacePolishStyles();
     compactWorkspaceLabels();
@@ -589,4 +777,3 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
-
