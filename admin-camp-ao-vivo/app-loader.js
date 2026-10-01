@@ -48,15 +48,29 @@
       script.onload=()=>{
         URL.revokeObjectURL(url);
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v5';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v6';
         extra.async=false;
         extra.onload=()=>{
-          const integrations=document.createElement('script');
-          integrations.src='admin-camp-ao-vivo/integrations.js?v=20261001-camp-v4';
-          integrations.async=false;
-          integrations.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • integrações ativas')};
-          integrations.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • integração externa indisponível')};
-          document.body.appendChild(integrations);
+          const persistence=document.createElement('script');
+          persistence.src='admin-camp-ao-vivo/persistence.js?v=20261001-camp-persist-v1';
+          persistence.async=false;
+          persistence.onload=()=>{
+            const integrations=document.createElement('script');
+            integrations.src='admin-camp-ao-vivo/integrations.js?v=20261001-camp-v4';
+            integrations.async=false;
+            integrations.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • auto-save + integrações ativas')};
+            integrations.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • auto-save ativo • integração externa indisponível')};
+            document.body.appendChild(integrations);
+          };
+          persistence.onerror=()=>{
+            const integrations=document.createElement('script');
+            integrations.src='admin-camp-ao-vivo/integrations.js?v=20261001-camp-v4';
+            integrations.async=false;
+            integrations.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • integração ativa • auto-save extra indisponível')};
+            integrations.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • ferramentas extras parciais')};
+            document.body.appendChild(integrations);
+          };
+          document.body.appendChild(persistence);
         };
         extra.onerror=()=>{
           document.body.classList.remove('cff-assets-pending');
