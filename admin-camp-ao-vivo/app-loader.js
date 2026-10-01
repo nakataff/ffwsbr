@@ -61,7 +61,7 @@
         extra.async=false;
         extra.onload=()=>{
           const persistence=document.createElement('script');
-          persistence.src='admin-camp-ao-vivo/persistence.js?v=20261001-camp-persist-v1';
+          persistence.src='admin-camp-ao-vivo/persistence.js?v=20261001-camp-persist-v2';
           persistence.async=false;
           persistence.onload=()=>{
             const integrations=document.createElement('script');
