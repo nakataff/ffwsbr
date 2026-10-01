@@ -359,7 +359,12 @@
       }
       #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.team-flex{grid-column:1/-1;overflow:visible!important;min-height:28px}
       #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.team-flex>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-      #teams-inputs-container .v46-placement-grid{align-self:stretch}
+      #teams-inputs-container .v46-placement-grid{align-self:stretch;grid-template-columns:minmax(0,1fr)!important}
+      #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.v46-placement-grid{grid-column:1/-1!important;grid-row:3!important}
+      #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.slot-actions{grid-column:4;grid-row:2}
+      #teams-inputs-container .cff-placement-line{display:grid;grid-column:1/-1;grid-template-columns:repeat(var(--cff-placement-count),minmax(0,1fr));gap:4px;min-width:0}
+      #teams-inputs-container .cff-placement-line>.v46-placement-choice{min-height:22px;box-sizing:border-box}
+      #teams-inputs-container.cff-hide-clear-slot .slot-actions button[onclick*="clearTeamSlot"]{display:none!important}
       #teams-inputs-container .v46-placement-choice input{width:14px!important;min-width:14px!important;max-width:14px!important;height:14px!important;min-height:14px!important;flex-basis:14px!important}
       #teams-inputs-container .v46-placement-choice{gap:3px;line-height:1.3}
       /* Keep scores beside the editor, including on smaller desktop screens. */
@@ -394,6 +399,14 @@
       #drop-settings-panel .cff-launch-options>div{margin:0!important}
       #drop-settings-panel .cff-launch-options button{white-space:normal;min-height:32px}
       #drop-settings-panel #cff-auto-colors{width:100%;text-align:left;padding:8px 10px;border-color:#486583;color:#cbe6ff}
+      #drop-settings-panel #v34-hide-toggle,#drop-settings-panel .v34-hide-title,#drop-settings-panel #v34-hide-body>.hint{display:none!important}
+      #drop-settings-panel #v34-hide-buttons-panel{margin:0!important}
+      #drop-settings-panel #v34-hide-body{display:grid!important;gap:6px;padding:0!important;margin:0!important;border:0!important;background:transparent!important}
+      #drop-settings-panel .cff-launch-options .switch.cff-eye-control{flex-direction:row!important;justify-content:space-between!important;margin:0!important;gap:10px!important}
+      #drop-settings-panel .cff-eye-control>input{display:none!important}
+      #drop-settings-panel .cff-eye-control>.cff-visibility-eye{display:inline-flex;align-items:center;justify-content:center;width:32px!important;min-width:32px;height:30px!important;min-height:30px!important;flex:0 0 32px;padding:4px!important;background:#203c54;color:#95d4ff;border:1px solid #496b8a;border-radius:6px;cursor:pointer}
+      #drop-settings-panel .cff-visibility-eye[aria-pressed="true"]{background:#17212e;color:#8597ac;border-color:#35485b}
+      #drop-settings-panel .cff-visibility-eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
       #drop-settings-panel .cff-launch-help{font-size:.68rem;line-height:1.45;color:#a1b6cb;margin:0 2px 2px}
       #v92-table-view-switch[hidden],#v76-table-view-toolbar[hidden],#v92-table-view-switch button[hidden]{display:none!important}
       /* Focus keeps the existing day/general view switch and hides editing tools. */
@@ -516,6 +529,7 @@
     refreshLaunchColors();
     compactInputLabels();
     applyLaunchDesign();
+    layoutPlacementRows();
     syncLaunchEditorPreview();
     fitGridTableSlot();
   }
@@ -660,6 +674,13 @@
   }
   function organizeLaunchOptions(){
     const panel=$('#drop-settings-panel');if(!panel)return;
+    if(!$('#cff-hide-clear-slot')){
+      const row=document.createElement('label');row.id='cff-clear-slot-row';row.className='switch';
+      row.innerHTML='LIMPAR SLOT <input type="checkbox" id="cff-hide-clear-slot">';
+      row.querySelector('input').checked=launchDesign.hideClearSlot;
+      row.querySelector('input').addEventListener('change',event=>{launchDesign.hideClearSlot=event.target.checked;applyLaunchDesign();saveLaunchDesign(true)});
+      panel.appendChild(row);
+    }
     if(!$('#cff-launch-edit-mode')){
       const edit=document.createElement('button');edit.id='cff-launch-edit-mode';edit.type='button';edit.className='btn-mini';edit.textContent='MODO EDIÇÃO';
       edit.setAttribute('aria-controls','cff-launch-editor');edit.setAttribute('aria-expanded','false');
@@ -690,7 +711,7 @@
     const groups=[
       ['entry','Preenchimento',true,['.v32-drop-order-box','#drop-opt-auto-update-row','#drop-opt-simple-placement-row','#drop-opt-simple-kills-row','#drop-opt-count-kills-without-placement-row','#drop-opt-v57-team-score-row','#drop-opt-v81-top12-last-row']],
       ['visual','Cores e visual',true,['#cff-launch-edit-mode','#cff-customize-colors-row','#cff-auto-colors','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
-      ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
+      ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#cff-clear-slot-row','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
       ['clear','Limpar dados',false,['#v33-remove-team-panel','#v38-clear-drops-box']]
     ];
     groups.forEach(([id,title,open,selectors])=>{
@@ -715,7 +736,52 @@
     Object.entries(names).forEach(([id,text])=>{
       const label=document.getElementById(id)?.closest('label');
       const node=Array.from(label?.childNodes||[]).find(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim());
-      if(node&&node.textContent.trim()!==text)node.textContent=text+' ';
+      if(node&&!label.classList.contains('cff-eye-control')&&node.textContent.trim()!==text)node.textContent=text+' ';
+    });
+    syncVisibilityEyes();
+  }
+
+  function syncVisibilityEyes(){
+    const controls=[
+      ['drop-opt-random','Botão de teste',false],['drop-opt-clear-maps','Limpar mapas',false],['drop-opt-clear-placements','Limpar posições',false],
+      ['v34-hide-tiebreak','Desempate',true],['v34-hide-options','Opções do time',true],['v34-hide-delete','Apagar time',true],['v34-hide-pause','Pausa',true],
+      ['cff-hide-clear-slot','LIMPAR SLOT',true]
+    ];
+    controls.forEach(([id,name,inverted])=>{
+      const input=document.getElementById(id),row=input?.closest('label');if(!row)return;
+      row.classList.add('cff-eye-control');input.hidden=true;
+      const text=Array.from(row.childNodes).find(node=>node.nodeType===Node.TEXT_NODE&&node.textContent.trim());
+      if(text&&text.textContent.trim()!==name)text.textContent=name+' ';
+      let button=row.querySelector('.cff-visibility-eye');
+      if(!button){
+        button=document.createElement('button');button.type='button';button.className='cff-visibility-eye';button.dataset.cffVisibilityTarget=id;
+        button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();input.checked=!input.checked;input.dispatchEvent(new Event('change',{bubbles:true}));syncVisibilityEyes()});
+        row.appendChild(button);
+      }
+      const visible=inverted?!input.checked:input.checked;
+      const action=(visible?'Ocultar ':'Mostrar ')+name;
+      button.title=action;button.setAttribute('aria-label',action);button.setAttribute('aria-pressed',String(!visible));
+      if(button.dataset.visible!==String(visible)){
+        button.dataset.visible=String(visible);
+        button.innerHTML=visible?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 5.1 12 5c6.5 0 10 7 10 7a20 20 0 0 1-3.2 4.1M6.1 6.2A20 20 0 0 0 2 12s3.5 7 10 7a12 12 0 0 0 5.1-1.1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+      }
+    });
+  }
+
+  function layoutPlacementRows(){
+    const count=Number(launchDesign.simpleRows)||2;
+    document.querySelectorAll('#teams-inputs-container .v46-placement-grid').forEach(grid=>{
+      if(grid.dataset.cffPlacementRows===String(count))return;
+      const choices=Array.from(grid.querySelectorAll('.v46-placement-choice'));
+      if(!choices.length)return;
+      grid.querySelectorAll(':scope>.cff-placement-line').forEach(line=>line.remove());
+      const rows=Math.min(count,choices.length),base=Math.floor(choices.length/rows),extra=choices.length%rows;
+      let offset=0;
+      for(let row=0;row<rows;row++){
+        const length=base+(row<extra?1:0),line=document.createElement('div');line.className='cff-placement-line';line.style.setProperty('--cff-placement-count',length);
+        choices.slice(offset,offset+length).forEach(choice=>line.appendChild(choice));offset+=length;grid.appendChild(line);
+      }
+      grid.dataset.cffPlacementRows=String(count);
     });
   }
   const LAUNCH_DESIGN_KEY='cff_camp_launch_design_v1';
@@ -739,7 +805,7 @@
       {key:'simpleSize',label:'Tamanho das posições',min:9,max:20,value:10},
       {key:'simpleHeight',label:'Altura das opções',min:18,max:40,value:22},
       {key:'radioSize',label:'Tamanho das bolinhas',min:10,max:22,value:12},
-      {key:'simpleColumns',label:'Posições por linha',value:'6',options:[['6','6 posições'],['4','4 posições'],['3','3 posições']]}
+      {key:'simpleRows',label:'Total de linhas',value:'2',options:Array.from({length:12},(_,i)=>[String(i+1),(i+1)+(i===0?' linha':' linhas')])}
     ]},
     {title:'Colocação normal',fields:[
       {key:'normalSize',label:'Texto do seletor',min:10,max:22,value:12},
@@ -750,11 +816,13 @@
       {key:'cardPadding',label:'Espaço dentro do card',min:4,max:20,value:8},
       {key:'cardGap',label:'Espaço entre os cards',min:4,max:24,value:8},
       {key:'cardRadius',label:'Arredondamento',min:0,max:24,value:9},
-      {key:'logoSize',label:'Tamanho das logos',min:16,max:44,value:22}
+      {key:'logoSize',label:'Tamanho das logos',min:16,max:44,value:22},
+      {key:'hideClearSlot',label:'LIMPAR SLOT',value:false,type:'checkbox',optionsOnly:true}
     ]}
   ];
   const launchDesignFields=LAUNCH_DESIGN_FIELDS.flatMap(group=>group.fields);
   function normalizeLaunchDesign(value){
+    if(value?.simpleRows===undefined&&['3','4','6'].includes(value?.simpleColumns))value={...value,simpleRows:String(12/Number(value.simpleColumns))};
     const design={};
     launchDesignFields.forEach(field=>{
       const candidate=value?.[field.key];
@@ -783,7 +851,10 @@
   function applyLaunchDesign(){
     const container=$('#teams-inputs-container');if(!container)return;
     // Leave the original rendering intact until a visual setting is changed.
-    container.classList.toggle('cff-launch-design',launchDesignFields.some(field=>launchDesign[field.key]!==field.value));
+    container.classList.toggle('cff-launch-design',launchDesignFields.some(field=>!field.optionsOnly&&launchDesign[field.key]!==field.value));
+    container.classList.toggle('cff-hide-clear-slot',launchDesign.hideClearSlot);
+    const clear=$('#cff-hide-clear-slot');if(clear)clear.checked=launchDesign.hideClearSlot;
+    syncVisibilityEyes();
     launchDesignFields.forEach(field=>{
       if(field.type==='checkbox'||field.key==='nameColor')return;
       const value=launchDesign[field.key]+(typeof field.value==='number'?'px':'');
@@ -874,7 +945,7 @@
       #teams-inputs-container.cff-launch-design .team-row.detailed-row{grid-template-columns:var(--cff-launch-field-track) var(--cff-launch-field-track) minmax(36px,1fr) 32px 30px!important}
       #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row,
       body.v41-simple-mode #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row{grid-template-columns:var(--cff-launch-field-track) var(--cff-launch-field-track) minmax(0,1fr) 30px!important}
-      #teams-inputs-container.cff-launch-design .v46-placement-grid{grid-template-columns:repeat(var(--cff-launch-simpleColumns),minmax(0,1fr))!important}
+      #teams-inputs-container.cff-launch-design .v46-placement-grid{grid-template-columns:minmax(0,1fr)!important}
       #teams-inputs-container.cff-launch-design .v46-placement-title{font-size:var(--cff-launch-labelSize)!important;color:var(--cff-launch-labelColor)!important}
       #teams-inputs-container.cff-launch-design .v46-placement-choice{font-size:var(--cff-launch-simpleSize)!important;min-height:var(--cff-launch-simpleHeight)!important;box-sizing:border-box}
       #teams-inputs-container.cff-launch-design .v46-placement-choice input{width:var(--cff-launch-radioSize)!important;height:var(--cff-launch-radioSize)!important;min-width:var(--cff-launch-radioSize)!important;max-width:var(--cff-launch-radioSize)!important;min-height:var(--cff-launch-radioSize)!important;flex-basis:var(--cff-launch-radioSize)!important}
@@ -904,6 +975,7 @@
       const summary=document.createElement('summary');summary.textContent=group.title;section.appendChild(summary);
       const fields=document.createElement('div');fields.className='cff-editor-fields';section.appendChild(fields);
       group.fields.forEach(field=>{
+        if(field.optionsOnly)return;
         const label=document.createElement('label');label.className='cff-editor-control';label.htmlFor='cff-launch-design-'+field.key;
         const title=document.createElement('span');title.textContent=field.label;label.appendChild(title);
         const input=document.createElement(field.options?'select':'input');input.id=label.htmlFor;input.dataset.cffLaunchField=field.key;
@@ -928,11 +1000,11 @@
       const key=event.target.dataset.cffLaunchField;if(!key)return;
       const field=launchDesignFields.find(field=>field.key===key);if(!field)return;
       launchDesign=normalizeLaunchDesign({...launchDesign,[key]:field.type==='checkbox'?event.target.checked:typeof field.value==='number'?Number(event.target.value):event.target.value});
-      applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign();
+      applyLaunchDesign();layoutPlacementRows();syncLaunchEditorControls();saveLaunchDesign();
       clearTimeout(saveLaunchDesign._timer);saveLaunchDesign._timer=setTimeout(()=>saveLaunchDesign(true),180);
     });
     panel.addEventListener('change',event=>{if(event.target.dataset.cffLaunchField){clearTimeout(saveLaunchDesign._timer);saveLaunchDesign(true)}});
-    reset.addEventListener('click',()=>{launchDesign=normalizeLaunchDesign(null);applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign(true);toast('Visual padrão restaurado.')});
+    reset.addEventListener('click',()=>{launchDesign=normalizeLaunchDesign(null);applyLaunchDesign();layoutPlacementRows();syncLaunchEditorControls();saveLaunchDesign(true);toast('Visual padrão restaurado.')});
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&launchEditorOpen){setLaunchEditorOpen(false);event.preventDefault()}});
     syncLaunchEditorControls();
   }
