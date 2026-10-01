@@ -34,405 +34,6 @@
       .cff-camp-load-error{margin:20px;padding:14px;border:1px solid #a3384b;border-radius:10px;background:#2b1016;color:#ffd7dd;font-weight:800}
     </style>
     <script src="js/config.min.js?v=20260915-community-giveaway-v1"></script>
-
-    <style id="cff-camp-workspace-redesign-v1">
-      /* Redesign visual do workspace principal: lançar quedas + resumo/códigos */
-      .main-layout{
-        display:grid!important;
-        grid-template-columns:minmax(560px,.86fr) minmax(700px,1.14fr)!important;
-        gap:18px!important;
-        align-items:start!important;
-        margin-top:18px!important;
-      }
-      .main-layout>details{
-        min-width:0!important;
-        margin:0!important;
-      }
-      .main-layout .drop-section,
-      .main-layout .summary-section{
-        border:1px solid #213348!important;
-        border-radius:14px!important;
-        background:#0a111a!important;
-        box-shadow:0 12px 32px rgba(0,0,0,.16)!important;
-        overflow:clip!important;
-      }
-      .main-layout .drop-section>summary,
-      .main-layout .summary-section>summary{
-        min-height:48px!important;
-        box-sizing:border-box!important;
-        display:flex!important;
-        align-items:center!important;
-        padding:0 16px!important;
-        border:0!important;
-        border-bottom:1px solid #1e3042!important;
-        background:#111a25!important;
-        color:#f3f8ff!important;
-        font-size:.88rem!important;
-        font-weight:900!important;
-        letter-spacing:.02em!important;
-        text-transform:uppercase!important;
-      }
-      .main-layout .drop-section>.collapsible-content,
-      .main-layout .summary-section>.collapsible-content{
-        padding:14px!important;
-        background:#09111a!important;
-      }
-
-      /* Cabeçalho do lançamento */
-      .drop-top-tools{
-        display:flex!important;
-        flex-wrap:wrap!important;
-        align-items:center!important;
-        gap:8px!important;
-        margin:0 0 12px!important;
-        padding:0 0 12px!important;
-        border-bottom:1px solid #1b2b3b!important;
-      }
-      .drop-top-tools .drop-settings-wrap{margin-right:auto!important}
-      .drop-top-tools .btn-mini{
-        min-height:34px!important;
-        border-radius:8px!important;
-      }
-      .drop-fill-counter{
-        min-height:32px!important;
-        display:flex!important;
-        align-items:center!important;
-        padding:0 12px!important;
-        border-radius:999px!important;
-        font-size:.72rem!important;
-        letter-spacing:.03em!important;
-      }
-
-      /* Queda / modo / mapa agora viram um bloco único e previsível */
-      .drop-context-grid{
-        display:grid!important;
-        grid-template-columns:minmax(110px,.8fr) minmax(190px,1.35fr) minmax(190px,1.6fr)!important;
-        gap:10px!important;
-        margin:0 0 12px!important;
-        padding:12px!important;
-        border:1px solid #1d3042!important;
-        border-radius:11px!important;
-        background:#0d1621!important;
-      }
-      .drop-context-field{min-width:0!important}
-      .drop-context-field label{
-        margin:0 0 6px!important;
-        color:#86a7c3!important;
-        font-size:.67rem!important;
-        font-weight:900!important;
-        letter-spacing:.045em!important;
-        text-transform:uppercase!important;
-      }
-      .drop-context-field select,
-      .drop-section input,
-      .drop-section select{
-        border-radius:8px!important;
-      }
-      .drop-context-field select{
-        min-height:38px!important;
-        width:100%!important;
-      }
-      .drop-context-field .map-warning{
-        margin-top:8px!important;
-        border-radius:8px!important;
-      }
-
-      /* Ações secundárias sem competir visualmente com os campos */
-      .drop-section .drop-utility-actions,
-      .drop-section .mvp-inline-box{
-        margin:0 0 10px!important;
-        padding:10px!important;
-        border:1px solid #192b3d!important;
-        border-radius:10px!important;
-        background:#0c151f!important;
-      }
-      .drop-section .drop-utility-actions{
-        display:flex!important;
-        flex-wrap:wrap!important;
-        align-items:center!important;
-        gap:8px!important;
-      }
-      .drop-section .drop-utility-actions .hint{
-        flex:1 1 260px!important;
-        margin:0!important;
-        color:#7790a8!important;
-      }
-      .drop-section .mvp-inline-box{
-        gap:10px!important;
-        align-items:end!important;
-      }
-
-      /* Cards dos times: menos sensação de "caixas espremidas" */
-      #teams-inputs-container{
-        margin-top:10px!important;
-      }
-      #teams-inputs-container>*{
-        border-radius:10px!important;
-        box-shadow:none!important;
-      }
-      #teams-inputs-container>*:focus-within{
-        box-shadow:0 0 0 1px rgba(29,174,255,.20)!important;
-      }
-      #teams-inputs-container input,
-      #teams-inputs-container select,
-      #teams-inputs-container button{
-        border-radius:7px!important;
-      }
-      .drop-section .btn-save{
-        position:sticky!important;
-        bottom:10px!important;
-        z-index:12!important;
-        min-height:44px!important;
-        margin-top:14px!important;
-        border-radius:10px!important;
-        box-shadow:0 8px 24px rgba(0,0,0,.28)!important;
-        font-weight:900!important;
-      }
-
-      /* Sub-blocos do resumo */
-      .summary-section .sub-summary-section{
-        margin:0 0 10px!important;
-        border:1px solid #1c2e40!important;
-        border-radius:10px!important;
-        background:#0b131d!important;
-        overflow:clip!important;
-      }
-      .summary-section .sub-summary-section:last-child{margin-bottom:0!important}
-      .summary-section .sub-summary-section>summary{
-        min-height:40px!important;
-        box-sizing:border-box!important;
-        display:flex!important;
-        align-items:center!important;
-        padding:0 12px!important;
-        border:0!important;
-        border-bottom:1px solid transparent!important;
-        background:#0f1924!important;
-        color:#dceaff!important;
-        font-size:.76rem!important;
-        font-weight:900!important;
-        letter-spacing:.025em!important;
-        text-transform:uppercase!important;
-      }
-      .summary-section .sub-summary-section[open]>summary{
-        border-bottom-color:#1c2e40!important;
-      }
-      .summary-section .sub-summary-content{
-        padding:11px!important;
-      }
-
-      /* Opções estéticas em cartões/pílulas alinhados */
-      .summary-section .summary-toolbar{
-        display:grid!important;
-        grid-template-columns:minmax(0,1fr) auto!important;
-        gap:10px!important;
-        align-items:start!important;
-        padding:0!important;
-        border:0!important;
-        background:transparent!important;
-      }
-      .summary-section .summary-main-controls{
-        display:grid!important;
-        grid-template-columns:repeat(4,minmax(120px,1fr))!important;
-        gap:8px!important;
-        min-width:0!important;
-      }
-      .summary-section label.switch{
-        box-sizing:border-box!important;
-        min-height:38px!important;
-        display:flex!important;
-        align-items:center!important;
-        justify-content:flex-start!important;
-        gap:7px!important;
-        margin:0!important;
-        padding:7px 9px!important;
-        border:1px solid #1d3042!important;
-        border-radius:8px!important;
-        background:#0c1620!important;
-        color:#bcd0e3!important;
-        font-size:.72rem!important;
-        font-weight:800!important;
-        line-height:1.15!important;
-        text-transform:none!important;
-      }
-      .summary-section label.switch:has(input:checked){
-        border-color:rgba(32,174,255,.55)!important;
-        background:rgba(18,91,132,.16)!important;
-        color:#e9f7ff!important;
-      }
-      .summary-section label.switch input{
-        flex:0 0 auto!important;
-        margin:0!important;
-      }
-      .summary-section .summary-style-control,
-      .summary-section .summary-main-controls>div:not(.summary-style-control){
-        min-width:0!important;
-        padding:7px 9px!important;
-        border:1px solid #1d3042!important;
-        border-radius:8px!important;
-        background:#0c1620!important;
-      }
-      .summary-section .summary-style-control label,
-      .summary-section .summary-main-controls>div>label{
-        margin:0 0 5px!important;
-        color:#829bb3!important;
-        font-size:.64rem!important;
-        font-weight:900!important;
-        text-transform:uppercase!important;
-      }
-      .summary-section .summary-main-controls select{
-        min-height:30px!important;
-        border-radius:7px!important;
-      }
-      .summary-actions-compact{
-        display:grid!important;
-        grid-template-columns:repeat(2,36px)!important;
-        gap:7px!important;
-      }
-      .summary-actions-compact .btn-mini{
-        width:36px!important;
-        min-width:36px!important;
-        height:36px!important;
-        padding:0!important;
-        border-radius:8px!important;
-      }
-
-      /* Colunas: grade compacta, ordem ocupa uma linha própria */
-      .summary-columns-box{
-        display:grid!important;
-        grid-template-columns:repeat(5,minmax(105px,1fr))!important;
-        gap:8px!important;
-        align-items:stretch!important;
-        padding:0!important;
-        border:0!important;
-        background:transparent!important;
-      }
-      .summary-columns-box .detail-mode-pill{
-        min-height:38px!important;
-        display:flex!important;
-        align-items:center!important;
-        justify-content:center!important;
-        box-sizing:border-box!important;
-        margin:0!important;
-        border-radius:8px!important;
-      }
-      .summary-columns-box .column-order-control{
-        grid-column:1/-1!important;
-        display:grid!important;
-        grid-template-columns:auto minmax(180px,1fr) auto!important;
-        align-items:center!important;
-        gap:8px!important;
-        margin-top:2px!important;
-        padding:9px!important;
-        border:1px solid #1d3042!important;
-        border-radius:8px!important;
-        background:#0c1620!important;
-      }
-      .summary-columns-box .column-order-control label{
-        color:#819ab2!important;
-        font-weight:900!important;
-        text-transform:uppercase!important;
-      }
-      .summary-columns-box .column-order-control input{
-        min-width:0!important;
-        min-height:34px!important;
-        border-radius:7px!important;
-      }
-
-      /* Ferramentas da tabela e blocos de código */
-      .summary-section .table-edit-toolbar{
-        display:flex!important;
-        flex-wrap:wrap!important;
-        align-items:center!important;
-        gap:7px!important;
-        margin:0 0 10px!important;
-        padding:8px!important;
-        border:1px solid #1c2e40!important;
-        border-radius:9px!important;
-        background:#0c1620!important;
-      }
-      .summary-section .table-edit-status{
-        margin-left:2px!important;
-        color:#849bb2!important;
-        font-size:.72rem!important;
-      }
-      .summary-section .column-edit-panel{
-        border-radius:9px!important;
-      }
-      .summary-section .code-actions-grid{
-        gap:10px!important;
-        margin-top:12px!important;
-      }
-      .summary-section .code-actions-grid>div{
-        min-width:0!important;
-        padding:10px!important;
-        border:1px solid #1c2e40!important;
-        border-radius:10px!important;
-        background:#0b141e!important;
-      }
-      .summary-section .code-actions-grid textarea{
-        box-sizing:border-box!important;
-        width:100%!important;
-        border-radius:8px!important;
-      }
-      .summary-section .btn-gen{
-        min-height:40px!important;
-        border-radius:8px!important;
-        font-weight:900!important;
-      }
-
-      /* Desktop médio: ainda lado a lado, mas sem esmagar o lançamento */
-      @media (max-width:1450px){
-        .main-layout{
-          grid-template-columns:minmax(520px,.92fr) minmax(640px,1.08fr)!important;
-        }
-        .summary-section .summary-main-controls{
-          grid-template-columns:repeat(3,minmax(120px,1fr))!important;
-        }
-        .summary-columns-box{
-          grid-template-columns:repeat(4,minmax(105px,1fr))!important;
-        }
-      }
-
-      /* Em telas menores, empilha as duas áreas em vez de comprimir tudo */
-      @media (max-width:1180px){
-        .main-layout{
-          grid-template-columns:minmax(0,1fr)!important;
-        }
-        .drop-section .btn-save{position:static!important}
-        .summary-section .summary-main-controls{
-          grid-template-columns:repeat(4,minmax(120px,1fr))!important;
-        }
-        .summary-columns-box{
-          grid-template-columns:repeat(5,minmax(105px,1fr))!important;
-        }
-      }
-
-      @media (max-width:780px){
-        .main-layout{gap:12px!important}
-        .main-layout .drop-section>.collapsible-content,
-        .main-layout .summary-section>.collapsible-content{padding:10px!important}
-        .drop-context-grid{
-          grid-template-columns:1fr!important;
-          padding:10px!important;
-        }
-        .summary-section .summary-toolbar{
-          grid-template-columns:1fr!important;
-        }
-        .summary-section .summary-main-controls{
-          grid-template-columns:repeat(2,minmax(0,1fr))!important;
-        }
-        .summary-actions-compact{
-          grid-template-columns:repeat(2,40px)!important;
-        }
-        .summary-columns-box{
-          grid-template-columns:repeat(2,minmax(0,1fr))!important;
-        }
-        .summary-columns-box .column-order-control{
-          grid-template-columns:1fr!important;
-        }
-      }
-    </style>
-
 </head>
 <body class="cff-auth-pending cff-assets-pending">
     <div class="cff-camp-auth" id="cff-camp-auth">
@@ -706,19 +307,19 @@ G7X, g7x, G7X</textarea>
                     </div>
                     <div id="drop-fill-counter" class="drop-fill-counter empty">0/0 preenchidos</div>
                 </div>
-                <div class="drop-context-grid">
-                    <div class="drop-context-field drop-context-field--drop">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="flex:1">
                         <label>Queda Atual</label>
                         <select id="drop-num" onchange="loadDropData()"></select>
                     </div>
-                    <div class="drop-context-field drop-context-field--mode" id="input-mode-box">
+                    <div style="flex:1.4" id="input-mode-box">
                         <label>Modo de Entrada</label>
                         <select id="input-mode" onchange="handleInputModeChange()">
                             <option value="per-drop">Pontos da Queda</option>
                             <option value="cumulative">Total Acumulado</option>
                         </select>
                     </div>
-                    <div class="drop-context-field drop-context-field--map" id="map-box">
+                    <div style="flex:2" id="map-box">
                         <label>Mapa</label>
                         <select id="drop-map" onchange="updateMapWarning(); updatePostPreview(); autoSave();">
                             <option value="" selected>Sem informação</option>
@@ -768,7 +369,7 @@ G7X, g7x, G7X</textarea>
                 <summary>Resumo e gerar código</summary>
                 <div class="collapsible-content">
                 <details class="sub-summary-section" open>
-                    <summary>Visual da tabela</summary>
+                    <summary>Opções estéticas</summary>
                     <div class="sub-summary-content">
                         <div class="summary-toolbar">
                             <div class="summary-main-controls">
@@ -787,7 +388,7 @@ G7X, g7x, G7X</textarea>
                 </details>
 
                 <details class="sub-summary-section">
-                    <summary>Colunas da tabela</summary>
+                    <summary>Opção da coluna</summary>
                     <div class="sub-summary-content">
                         <div class="summary-columns-box" id="summary-columns-box">
                             <span class="detail-mode-pill" id="summary-mode-pill">Sem detalhes</span>
@@ -810,7 +411,7 @@ G7X, g7x, G7X</textarea>
                 </details>
 
                 <details class="sub-summary-section" open>
-                    <summary>Prévia da tabela</summary>
+                    <summary>Tabela</summary>
                     <div class="sub-summary-content">
                         <div class="table-edit-toolbar">
                             <button class="btn-mini" type="button" id="column-edit-toggle" onclick="toggleColumnEditMode()" title="Entrar/sair do modo edição de colunas">🎬</button>
