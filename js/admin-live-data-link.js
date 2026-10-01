@@ -28,6 +28,7 @@
         <a class="admin-btn admin-btn-ghost" href="admin-edicao.html" data-admin-edicao-link style="flex:0 0 auto">🎨 Edição</a>
         <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html" style="flex:0 0 auto">🎁 Abrir Codiguinhos</a>
         <a class="admin-btn admin-btn-primary" href="admin-dados.html" data-admin-live-data-link style="flex:0 0 auto">📊 Dados ao vivo</a>
+        <a class="admin-btn admin-btn-primary" href="admin-camp-ao-vivo.html" style="flex:0 0 auto">🏆 Camp ao vivo</a>
         <a class="admin-btn admin-btn-primary" href="admin-palpite.html" style="flex:0 0 auto">🎯 Palpites</a>
         <a class="admin-btn admin-btn-primary" href="admin-recompensas.html" style="flex:0 0 auto">🔥 Bônus</a>
         <a class="admin-btn admin-btn-primary" href="admin-sorteio-comunidade.html" style="flex:0 0 auto">🎁 Sorteio</a>
