@@ -48,7 +48,7 @@
       script.onload=()=>{
         URL.revokeObjectURL(url);
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-v4';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v5';
         extra.async=false;
         extra.onload=()=>{
           const integrations=document.createElement('script');
