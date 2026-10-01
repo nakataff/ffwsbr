@@ -349,7 +349,9 @@
       .summary-section .code-actions-grid textarea{width:100%;box-sizing:border-box}
       #teams-inputs-container .team-row{min-width:0;border-radius:9px!important;gap:8px;align-items:center}
       #teams-inputs-container .team-flex{min-width:0}
-      #teams-inputs-container .micro-label{display:block;min-height:22px;font-size:.64rem;line-height:1.3}
+      #teams-inputs-container .micro-label{display:block;height:22px;min-height:22px;margin:0!important;font-size:.58rem!important;line-height:22px;white-space:nowrap}
+      #teams-inputs-container .team-row>.small-cell{align-self:start;min-width:0}
+      #teams-inputs-container .small-cell>input[type="number"]{height:32px!important;box-sizing:border-box;padding:5px 3px!important;font-size:.85rem}
       #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row,
       body.v41-simple-mode #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row{
         grid-template-columns:50px 50px minmax(174px,1fr) 30px!important;
@@ -416,6 +418,10 @@
       body.cff-camp-launch-focus>.container>:not(.main-layout){display:none!important}
       body.cff-camp-launch-focus:not(.v81-launch-grid-mode) .main-layout{grid-template-columns:minmax(0,1fr)!important}
       body.cff-camp-launch-focus:not(.v81-launch-grid-mode) #summary-section{display:none!important}
+      body.cff-camp-launch-focus.cff-camp-launch-hide-table .main-layout{display:block!important}
+      body.cff-camp-launch-focus.cff-camp-launch-hide-table #summary-section{display:none!important}
+      #cff-launch-hide-table-wrap[hidden]{display:none!important}
+      #cff-launch-hide-table-wrap{padding:6px 8px;border:1px solid #31485d;border-radius:6px;background:#142130;white-space:nowrap}
       @container(max-width:720px){
         .summary-section .summary-main-controls>label.switch{grid-column:span 6}
         .summary-section .summary-main-controls>div.cff-visual-field{grid-column:span 6}
@@ -508,7 +514,44 @@
     document.querySelectorAll('#teams-inputs-container>*').forEach(card=>card.classList.add('cff-team-entry'));
     organizeLaunchOptions();
     refreshLaunchColors();
+    compactInputLabels();
+    applyLaunchDesign();
+    syncLaunchEditorPreview();
     fitGridTableSlot();
+  }
+
+  function compactInputLabels(){
+    const mode=$('#input-mode')?.value||'per-drop';
+    const simpleKills=$('#drop-opt-simple-kills')?.checked===true;
+    const modes={
+      'per-drop':simpleKills?'Pts + abates da queda':'Pts da queda','per-drop-cumulative-kills':'Pts + abates acum.',
+      'cumulative':simpleKills?'Pts acum. + abates acum.':'Pts acumulados','detail-pos-kills':'Abates + posição',
+      'detail-points-kills':'Abates + pts colocação','detail-cumulative-kills':'Abates acum. + pts acum.',
+      'detail-pos-total':'Posição + pts acum.','detail-pos-drop-points':'Posição + pts da queda'
+    };
+    document.querySelectorAll('#input-mode option').forEach(option=>{
+      const text=modes[option.value];
+      if(text&&option.textContent!==text){if(!option.title)option.title=option.textContent;option.textContent=text}
+    });
+    document.querySelectorAll('#teams-inputs-container .small-cell').forEach(cell=>{
+      const label=cell.querySelector('.micro-label'),input=cell.querySelector('input[id]');
+      if(!label||!input)return;
+      let text;
+      if(input.id.startsWith('place-'))text='POSIÇÃO';
+      else if(input.id.startsWith('kills-'))text=mode.includes('cumulative')?'ABAT. AC.':'ABATES';
+      else if(input.id.startsWith('start-'))text='PTS INIC.';
+      else if(input.id.startsWith('pts-'))text=mode==='detail-points-kills'?'PTS COL.':mode==='cumulative'||mode==='detail-cumulative-kills'||mode==='detail-pos-total'?'PTS ACUM.':'PTS';
+      if(text&&label.textContent!==text){if(!label.title)label.title=label.textContent;label.textContent=text}
+    });
+  }
+
+  const LAUNCH_HIDE_TABLE_KEY='cff_camp_launch_hide_table_v1';
+  let launchTableHidden=(()=>{try{return localStorage.getItem(LAUNCH_HIDE_TABLE_KEY)==='1'}catch(_){return false}})();
+  function syncLaunchTableVisibility(){
+    const active=document.body.classList.contains('cff-camp-launch-focus');
+    document.body.classList.toggle('cff-camp-launch-hide-table',launchTableHidden);
+    const wrap=$('#cff-launch-hide-table-wrap');if(wrap)wrap.hidden=!active;
+    const input=$('#cff-launch-hide-table');if(input){input.checked=launchTableHidden;input.disabled=launchEditorOpen}
   }
 
   function fitGridTableSlot(){
@@ -617,6 +660,12 @@
   }
   function organizeLaunchOptions(){
     const panel=$('#drop-settings-panel');if(!panel)return;
+    if(!$('#cff-launch-edit-mode')){
+      const edit=document.createElement('button');edit.id='cff-launch-edit-mode';edit.type='button';edit.className='btn-mini';edit.textContent='MODO EDIÇÃO';
+      edit.setAttribute('aria-controls','cff-launch-editor');edit.setAttribute('aria-expanded','false');
+      edit.addEventListener('click',()=>{window.toggleDropSettingsPanel?.(false);setLaunchEditorOpen(!launchEditorOpen)});
+      panel.appendChild(edit);
+    }
     if(!$('#cff-customize-colors')){
       const row=document.createElement('label');row.id='cff-customize-colors-row';row.className='switch';
       row.innerHTML='Personalizar cor <input type="checkbox" id="cff-customize-colors">';
@@ -640,7 +689,7 @@
     }
     const groups=[
       ['entry','Preenchimento',true,['.v32-drop-order-box','#drop-opt-auto-update-row','#drop-opt-simple-placement-row','#drop-opt-simple-kills-row','#drop-opt-count-kills-without-placement-row','#drop-opt-v57-team-score-row','#drop-opt-v81-top12-last-row']],
-      ['visual','Cores e visual',true,['#cff-customize-colors-row','#cff-auto-colors','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
+      ['visual','Cores e visual',true,['#cff-launch-edit-mode','#cff-customize-colors-row','#cff-auto-colors','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
       ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
       ['clear','Limpar dados',false,['#v33-remove-team-panel','#v38-clear-drops-box']]
     ];
@@ -669,12 +718,232 @@
       if(node&&node.textContent.trim()!==text)node.textContent=text+' ';
     });
   }
+  const LAUNCH_DESIGN_KEY='cff_camp_launch_design_v1';
+  const LAUNCH_DESIGN_FIELDS=[
+    {title:'Nome dos times',fields:[
+      {key:'nameSize',label:'Tamanho do nome',min:10,max:26,value:13},
+      {key:'nameFont',label:'Fonte do nome',value:'inherit',options:[['inherit','Padrão'],['Arial, sans-serif','Arial'],['"Segoe UI", sans-serif','Segoe UI'],['Verdana, sans-serif','Verdana'],['Georgia, serif','Georgia'],['monospace','Monoespaçada']]},
+      {key:'nameWeight',label:'Peso da fonte',value:'inherit',options:[['inherit','Padrão'],['400','Normal'],['600','Seminegrito'],['800','Negrito']]},
+      {key:'customNameColor',label:'Personalizar cor da letra',value:false,type:'checkbox'},
+      {key:'nameColor',label:'Cor do nome',value:'#ffffff',type:'color'}
+    ]},
+    {title:'Textos e caixas',fields:[
+      {key:'labelSize',label:'Tamanho dos rótulos',min:8,max:16,step:.5,value:9.5},
+      {key:'labelColor',label:'Cor dos rótulos',value:'#888888',type:'color'},
+      {key:'valueSize',label:'Tamanho dos números',min:12,max:24,value:14},
+      {key:'fieldWidth',label:'Largura das caixas',min:45,max:90,value:50},
+      {key:'fieldHeight',label:'Altura das caixas',min:28,max:52,value:32},
+      {key:'killsSize',label:'Texto dos abates calculados',min:9,max:20,value:11}
+    ]},
+    {title:'Colocação simples',fields:[
+      {key:'simpleSize',label:'Tamanho das posições',min:9,max:20,value:10},
+      {key:'simpleHeight',label:'Altura das opções',min:18,max:40,value:22},
+      {key:'radioSize',label:'Tamanho das bolinhas',min:10,max:22,value:12},
+      {key:'simpleColumns',label:'Posições por linha',value:'6',options:[['6','6 posições'],['4','4 posições'],['3','3 posições']]}
+    ]},
+    {title:'Colocação normal',fields:[
+      {key:'normalSize',label:'Texto do seletor',min:10,max:22,value:12},
+      {key:'normalHeight',label:'Altura do seletor',min:26,max:52,value:30},
+      {key:'specialSize',label:'Texto Top 12 / Booyah',min:9,max:18,value:11}
+    ]},
+    {title:'Cards e logos',fields:[
+      {key:'cardPadding',label:'Espaço dentro do card',min:4,max:20,value:8},
+      {key:'cardGap',label:'Espaço entre os cards',min:4,max:24,value:8},
+      {key:'cardRadius',label:'Arredondamento',min:0,max:24,value:9},
+      {key:'logoSize',label:'Tamanho das logos',min:16,max:44,value:22}
+    ]}
+  ];
+  const launchDesignFields=LAUNCH_DESIGN_FIELDS.flatMap(group=>group.fields);
+  function normalizeLaunchDesign(value){
+    const design={};
+    launchDesignFields.forEach(field=>{
+      const candidate=value?.[field.key];
+      if(field.options)design[field.key]=field.options.some(([option])=>option===candidate)?candidate:field.value;
+      else if(field.type==='color')design[field.key]=/^#[0-9a-f]{6}$/i.test(String(candidate))?candidate:field.value;
+      else if(field.type==='checkbox')design[field.key]=candidate===true;
+      else{
+        const numeric=typeof candidate==='number'&&Number.isFinite(candidate)?candidate:field.value;
+        design[field.key]=Math.min(field.max,Math.max(field.min,numeric));
+      }
+    });
+    return design;
+  }
+  let launchDesign=(()=>{
+    try{
+      const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');
+      return normalizeLaunchDesign(backup?.config?.cffLaunchDesignV1||JSON.parse(localStorage.getItem(LAUNCH_DESIGN_KEY)||'null'));
+    }catch(_){return normalizeLaunchDesign(null)}
+  })();
+  let launchEditorOpen=false;
+  function saveLaunchDesign(saveCamp=false){
+    try{localStorage.setItem(LAUNCH_DESIGN_KEY,JSON.stringify(launchDesign))}
+    catch(_){toast('Não foi possível salvar o visual neste navegador.','err')}
+    if(saveCamp&&window.__CFF_CAMP_READY__===true)window.autoSave?.(true);
+  }
+  function applyLaunchDesign(){
+    const container=$('#teams-inputs-container');if(!container)return;
+    // Leave the original rendering intact until a visual setting is changed.
+    container.classList.toggle('cff-launch-design',launchDesignFields.some(field=>launchDesign[field.key]!==field.value));
+    launchDesignFields.forEach(field=>{
+      if(field.type==='checkbox'||field.key==='nameColor')return;
+      const value=launchDesign[field.key]+(typeof field.value==='number'?'px':'');
+      const property='--cff-launch-'+field.key;
+      if(container.style.getPropertyValue(property)!==value)container.style.setProperty(property,value);
+    });
+    const height=Math.max(22,Math.ceil(launchDesign.labelSize*1.5));
+    if(container.style.getPropertyValue('--cff-launch-label-height')!==height+'px')container.style.setProperty('--cff-launch-label-height',height+'px');
+    const track=Math.max(launchDesign.fieldWidth,Math.ceil(launchDesign.labelSize*6.5))+'px';
+    if(container.style.getPropertyValue('--cff-launch-field-track')!==track)container.style.setProperty('--cff-launch-field-track',track);
+    if(launchDesign.customNameColor)container.style.setProperty('--cff-launch-name-ink',launchDesign.nameColor);
+    else container.style.removeProperty('--cff-launch-name-ink');
+  }
+  function syncLaunchEditorControls(){
+    launchDesignFields.forEach(field=>{
+      const input=$('#cff-launch-design-'+field.key);if(!input)return;
+      if(field.type==='checkbox')input.checked=launchDesign[field.key];
+      else if(input.value!==String(launchDesign[field.key]))input.value=launchDesign[field.key];
+      const output=$('#cff-launch-value-'+field.key);
+      if(output)output.textContent=launchDesign[field.key]+' px';
+    });
+    const color=$('#cff-launch-design-nameColor');if(color)color.disabled=!launchDesign.customNameColor;
+  }
+  function syncLaunchEditorPreview(){
+    const control=$('#cff-launch-preview-placement'),original=$('#drop-opt-simple-placement');
+    if(!control)return;
+    const mode=$('#input-mode')?.value;
+    const supported=$('#game-detail-mode')?.value==='detailed'&&['detail-pos-kills','detail-points-kills','detail-pos-total','detail-pos-drop-points'].includes(mode)&&$('#drop-num')?.value!=='starting';
+    control.disabled=!supported||!original;
+    control.value=original?.checked?'simple':'normal';
+    const hint=$('#cff-launch-preview-note');
+    const text=supported?'A prévia usa a colocação selecionada.':'Os ajustes de colocação aparecem nos modos com posição.';
+    if(hint&&hint.textContent!==text)hint.textContent=text;
+  }
+  function setLaunchEditorOpen(open){
+    const panel=$('#cff-launch-editor');if(!panel)return;
+    if(open&&document.body.classList.contains('cff-camp-focus'))setWorkspaceFocus('launch');
+    launchEditorOpen=!!open;
+    document.body.classList.toggle('cff-launch-editing',launchEditorOpen);
+    panel.hidden=!launchEditorOpen;
+    window.toggleDropSettingsPanel?.(false);
+    const options=$('.drop-settings-wrap>button');if(options)options.disabled=launchEditorOpen;
+    const button=$('#cff-launch-edit-mode');
+    button?.setAttribute('aria-expanded',String(launchEditorOpen));
+    button?.classList.toggle('is-active',launchEditorOpen);
+    if(launchEditorOpen){$('.drop-section')?.setAttribute('open','');syncLaunchEditorControls();syncLaunchEditorPreview();$('#cff-launch-editor-close')?.focus({preventScroll:true})}
+    syncLaunchTableVisibility();
+    requestAnimationFrame(()=>{markWorkspaceElements();window.syncTableHeaderWidth?.({updateUi:false})});
+  }
+  function buildLaunchEditor(){
+    const layout=$('.main-layout');if(!layout||$('#cff-launch-editor'))return;
+    const style=document.createElement('style');style.id='cff-launch-editor-style';
+    style.textContent=`
+      #cff-launch-editor[hidden]{display:none!important}
+      body.cff-launch-editing .main-layout:has(>#cff-launch-editor){display:grid!important;grid-template-columns:minmax(0,1fr) 340px!important;align-items:start}
+      body.cff-launch-editing #summary-section{display:none!important}
+      body.cff-launch-editing #drop-settings-panel{display:none!important}
+      body.cff-launch-editing .drop-settings-wrap>button{opacity:.5;cursor:default}
+      body.cff-launch-editing .drop-section{grid-column:1;grid-row:1;min-width:0}
+      #cff-launch-editor{grid-column:2;grid-row:1;position:sticky;top:76px;max-height:calc(100dvh - 92px);overflow:auto;box-sizing:border-box;min-width:0;padding:14px;border:1px solid #3b526d;border-radius:10px;background:#101a27;color:#d8e5f5;scrollbar-width:thin}
+      #cff-launch-editor .cff-editor-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;position:sticky;top:-14px;padding:8px 0;background:#101a27;z-index:1}
+      #cff-launch-editor h3{font-size:.86rem;margin:0;color:#b7dcff}
+      #cff-launch-editor p{font-size:.72rem;line-height:1.4;color:#94a9bf;margin:7px 0 12px}
+      #cff-launch-editor button{min-height:32px;font-size:.7rem}
+      #cff-launch-editor>details{margin-top:10px;border:1px solid #2b4057;border-radius:7px;background:#142131}
+      #cff-launch-editor>details>summary{padding:10px;font-size:.76rem;cursor:pointer;color:#bdd9f4}
+      #cff-launch-editor .cff-editor-fields{display:grid;gap:13px;padding:5px 10px 12px}
+      #cff-launch-editor .cff-editor-control{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:7px;margin:0;min-width:0;font-size:.73rem;line-height:1.3;color:#b9cbe0;text-transform:none;font-weight:400}
+      #cff-launch-editor .cff-editor-control output{color:#71caff;font-size:.7rem;min-width:32px;text-align:right}
+      #cff-launch-editor .cff-editor-control>input[type="range"],#cff-launch-editor .cff-editor-control>select{grid-column:1/-1;width:100%;min-width:0;box-sizing:border-box;margin:0;height:30px;padding:3px 6px;font-size:.76rem;accent-color:#67b9ff}
+      #cff-launch-editor input[type="range"]{cursor:pointer;border:0;background:transparent}
+      #cff-launch-editor input[type="color"]{width:42px!important;min-width:42px;height:28px;padding:2px;border:1px solid #47637c;border-radius:5px;cursor:pointer}
+      #cff-launch-editor input[type="checkbox"]{width:16px;min-width:16px;height:16px;margin:0;accent-color:#67b9ff}
+      #cff-launch-editor input:disabled{opacity:.4;cursor:default}
+      #cff-launch-editor .cff-editor-preview{padding:10px;border:1px solid #34506b;border-radius:7px;background:#18283b}
+      #cff-launch-editor .cff-editor-preview p{margin-bottom:0}
+      #cff-launch-editor-reset{width:100%;margin-top:12px}
+      #drop-settings-panel #cff-launch-edit-mode{width:100%;padding:10px;text-align:left;border-color:#5380a8;color:#b6dcff;background:#213950}
+      #drop-settings-panel #cff-launch-edit-mode.is-active{border-color:#71caff}
+      body #teams-inputs-container.cff-launch-design .team-row.cff-team-entry:has(>.team-flex){padding:var(--cff-launch-cardPadding)!important;border-radius:var(--cff-launch-cardRadius)!important;margin-bottom:var(--cff-launch-cardGap)!important;container-name:cff-launch-card;container-type:inline-size}
+      body #teams-inputs-container.cff-launch-design.v81-launch-grid{gap:var(--cff-launch-cardGap)!important}
+      body #teams-inputs-container.cff-launch-design.v81-launch-grid>.team-row.cff-team-entry{margin-bottom:0!important}
+      #teams-inputs-container.cff-launch-design .team-row>.team-flex>span:not(.team-quick-actions-v28){font-size:var(--cff-launch-nameSize)!important;font-family:var(--cff-launch-nameFont)!important;font-weight:var(--cff-launch-nameWeight)!important;color:var(--cff-launch-name-ink,var(--cff-team-ink,#fff))!important;white-space:nowrap}
+      #teams-inputs-container.cff-launch-design .mini-logo{width:var(--cff-launch-logoSize)!important;height:var(--cff-launch-logoSize)!important}
+      #teams-inputs-container.cff-launch-design .micro-label{font-size:var(--cff-launch-labelSize)!important;color:var(--cff-launch-labelColor)!important;height:var(--cff-launch-label-height)!important;line-height:var(--cff-launch-label-height)!important}
+      #teams-inputs-container.cff-launch-design .small-cell>input[type="number"]{font-size:var(--cff-launch-valueSize)!important;height:var(--cff-launch-fieldHeight)!important;width:var(--cff-launch-fieldWidth)!important;min-width:var(--cff-launch-fieldWidth)!important;max-width:var(--cff-launch-fieldWidth)!important;text-align:center}
+      #teams-inputs-container.cff-launch-design .v82-calculated-kills{font-size:var(--cff-launch-killsSize)!important}
+      #teams-inputs-container.cff-launch-design .team-row.detailed-row{grid-template-columns:var(--cff-launch-field-track) var(--cff-launch-field-track) minmax(36px,1fr) 32px 30px!important}
+      #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row,
+      body.v41-simple-mode #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row{grid-template-columns:var(--cff-launch-field-track) var(--cff-launch-field-track) minmax(0,1fr) 30px!important}
+      #teams-inputs-container.cff-launch-design .v46-placement-grid{grid-template-columns:repeat(var(--cff-launch-simpleColumns),minmax(0,1fr))!important}
+      #teams-inputs-container.cff-launch-design .v46-placement-title{font-size:var(--cff-launch-labelSize)!important;color:var(--cff-launch-labelColor)!important}
+      #teams-inputs-container.cff-launch-design .v46-placement-choice{font-size:var(--cff-launch-simpleSize)!important;min-height:var(--cff-launch-simpleHeight)!important;box-sizing:border-box}
+      #teams-inputs-container.cff-launch-design .v46-placement-choice input{width:var(--cff-launch-radioSize)!important;height:var(--cff-launch-radioSize)!important;min-width:var(--cff-launch-radioSize)!important;max-width:var(--cff-launch-radioSize)!important;min-height:var(--cff-launch-radioSize)!important;flex-basis:var(--cff-launch-radioSize)!important}
+      #teams-inputs-container.cff-launch-design .position-helper select{font-size:var(--cff-launch-normalSize)!important;height:var(--cff-launch-normalHeight)!important;box-sizing:border-box}
+      #teams-inputs-container.cff-launch-design .top12-cell{font-size:var(--cff-launch-specialSize)!important}
+      @container cff-launch-card (max-width:500px){
+        #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row>.v46-placement-grid{grid-column:1/-1!important;grid-row:3!important}
+        #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row>.slot-actions{grid-column:-2!important;grid-row:2!important}
+      }
+      @media(max-width:1250px){body.cff-launch-editing #teams-inputs-container.v81-launch-grid{grid-template-columns:minmax(0,1fr)!important}}
+      @media(max-width:980px){
+        body.cff-launch-editing .main-layout:has(>#cff-launch-editor){grid-template-columns:minmax(0,1fr)!important}
+        body.cff-launch-editing .drop-section{grid-column:1;grid-row:2}
+        #cff-launch-editor{grid-column:1;grid-row:1;top:65px;max-height:40dvh;z-index:10}
+      }
+      @media(max-width:760px){
+        #teams-inputs-container.cff-launch-design .team-row.detailed-row{grid-template-columns:var(--cff-launch-field-track) minmax(var(--cff-launch-field-track),1fr) 30px!important}
+        #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row,
+        body.v41-simple-mode #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row{grid-template-columns:var(--cff-launch-field-track) minmax(var(--cff-launch-field-track),1fr) 30px!important}
+      }
+    `;
+    document.head.appendChild(style);
+    const panel=document.createElement('aside');panel.id='cff-launch-editor';panel.hidden=true;panel.setAttribute('aria-label','Modo edição do lançar quedas');
+    panel.innerHTML='<div class="cff-editor-heading"><h3>MODO EDIÇÃO</h3><button type="button" class="btn-mini" id="cff-launch-editor-close">Concluir</button></div><p>Prévia ao vivo · ajustes salvos automaticamente</p><div class="cff-editor-preview"><label class="cff-editor-control" for="cff-launch-preview-placement"><span>Colocação na prévia</span><select id="cff-launch-preview-placement"><option value="simple">Simples · bolinhas</option><option value="normal">Normal · seletor</option></select></label><p id="cff-launch-preview-note"></p></div>';
+    LAUNCH_DESIGN_FIELDS.forEach((group,index)=>{
+      const section=document.createElement('details');section.open=index<2;
+      const summary=document.createElement('summary');summary.textContent=group.title;section.appendChild(summary);
+      const fields=document.createElement('div');fields.className='cff-editor-fields';section.appendChild(fields);
+      group.fields.forEach(field=>{
+        const label=document.createElement('label');label.className='cff-editor-control';label.htmlFor='cff-launch-design-'+field.key;
+        const title=document.createElement('span');title.textContent=field.label;label.appendChild(title);
+        const input=document.createElement(field.options?'select':'input');input.id=label.htmlFor;input.dataset.cffLaunchField=field.key;
+        if(field.options)field.options.forEach(([value,text])=>{const option=document.createElement('option');option.value=value;option.textContent=text;input.appendChild(option)});
+        else{
+          input.type=field.type||'range';
+          if(!field.type){input.min=field.min;input.max=field.max;input.step=field.step||1;const output=document.createElement('output');output.id='cff-launch-value-'+field.key;output.htmlFor=input.id;label.appendChild(output)}
+        }
+        label.appendChild(input);fields.appendChild(label);
+      });
+      panel.appendChild(section);
+    });
+    const reset=document.createElement('button');reset.id='cff-launch-editor-reset';reset.type='button';reset.className='btn-mini';reset.textContent='Restaurar visual padrão';panel.appendChild(reset);
+    layout.appendChild(panel);
+    panel.querySelector('#cff-launch-editor-close').addEventListener('click',()=>{setLaunchEditorOpen(false);$('#cff-launch-edit-mode')?.focus({preventScroll:true})});
+    panel.querySelector('#cff-launch-preview-placement').addEventListener('change',event=>{
+      const target=$('#drop-opt-simple-placement');if(!target)return;
+      target.checked=event.target.value==='simple';target.dispatchEvent(new Event('change',{bubbles:true}));
+      requestAnimationFrame(markWorkspaceElements);
+    });
+    panel.addEventListener('input',event=>{
+      const key=event.target.dataset.cffLaunchField;if(!key)return;
+      const field=launchDesignFields.find(field=>field.key===key);if(!field)return;
+      launchDesign=normalizeLaunchDesign({...launchDesign,[key]:field.type==='checkbox'?event.target.checked:typeof field.value==='number'?Number(event.target.value):event.target.value});
+      applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign();
+      clearTimeout(saveLaunchDesign._timer);saveLaunchDesign._timer=setTimeout(()=>saveLaunchDesign(true),180);
+    });
+    panel.addEventListener('change',event=>{if(event.target.dataset.cffLaunchField){clearTimeout(saveLaunchDesign._timer);saveLaunchDesign(true)}});
+    reset.addEventListener('click',()=>{launchDesign=normalizeLaunchDesign(null);applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign(true);toast('Visual padrão restaurado.')});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&launchEditorOpen){setLaunchEditorOpen(false);event.preventDefault()}});
+    syncLaunchEditorControls();
+  }
+
   function installLaunchColorBackup(){
     const collect=window.collectBackupData;
     if(typeof collect==='function'){
       window.collectBackupData=function(){
         const data=collect.apply(this,arguments);data.config=data.config||{};
-        data.config.cffLaunchColorsV1=JSON.parse(JSON.stringify(launchColors));return data;
+        data.config.cffLaunchColorsV1=JSON.parse(JSON.stringify(launchColors));
+        data.config.cffLaunchDesignV1={...launchDesign};return data;
       };
     }
     const importer=window.importBackup;
@@ -685,6 +954,10 @@
         if(data?.config?.cffLaunchColorsV1){
           launchColors=normalizeLaunchColors(data.config.cffLaunchColorsV1);
           refreshLaunchColors();saveLaunchColors(true);
+        }
+        if(data?.config){
+          launchDesign=normalizeLaunchDesign(data.config.cffLaunchDesignV1);
+          applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign(true);
         }
         return result;
       };
@@ -751,6 +1024,7 @@
     }catch(_){el.textContent='● Auto-save local'}
   }
   function setWorkspaceFocus(mode){
+    if(mode==='tables')setLaunchEditorOpen(false);
     if(mode==='tables'){
       $('#summary-section')?.setAttribute('open','');
       $('#table-print-area')?.closest('details')?.setAttribute('open','');
@@ -759,6 +1033,7 @@
     if(mode==='launch')$('.drop-section')?.setAttribute('open','');
     document.body.classList.toggle('cff-camp-focus',mode==='tables');
     document.body.classList.toggle('cff-camp-launch-focus',mode==='launch');
+    syncLaunchTableVisibility();
     try{localStorage.setItem(FOCUS_KEY,mode==='tables'?'1':mode==='launch'?'launch':'0')}catch(_){}
     const btn=$('#cff-camp-focus');if(btn){const active=mode==='tables';btn.classList.toggle('is-active',active);btn.textContent=active?'← Sair do foco':'▦ Foco nas tabelas';btn.title=active?'Voltar ao painel completo':'Mostrar apenas Tabela do dia e Tabela geral quando disponível';btn.setAttribute('aria-pressed',String(active))}
     const launch=$('#cff-camp-launch-focus');if(launch){const active=mode==='launch';launch.classList.toggle('is-active',active);launch.textContent=active?'← Sair do foco de quedas':'Foco no lançar quedas';launch.setAttribute('aria-pressed',String(active))}
@@ -771,6 +1046,12 @@
     $('#cff-camp-download')?.addEventListener('click',()=>window.downloadBackupJson?.());
     $('#cff-camp-focus')?.addEventListener('click',()=>setWorkspaceFocus(document.body.classList.contains('cff-camp-focus')?'none':'tables'));
     $('#cff-camp-launch-focus')?.addEventListener('click',()=>setWorkspaceFocus(document.body.classList.contains('cff-camp-launch-focus')?'none':'launch'));
+    $('#cff-launch-hide-table')?.addEventListener('change',event=>{
+      launchTableHidden=event.target.checked;
+      try{localStorage.setItem(LAUNCH_HIDE_TABLE_KEY,launchTableHidden?'1':'0')}catch(_){}
+      syncLaunchTableVisibility();
+      requestAnimationFrame(markWorkspaceElements);
+    });
     $('#cff-camp-logos')?.addEventListener('click',()=>{
       document.querySelector('.teams-setup')?.setAttribute('open','');
       setTimeout(()=>$('#cff-logo-bank')?.scrollIntoView({behavior:'smooth',block:'center'}),40);
@@ -794,6 +1075,7 @@
     norm,
     teamRows,
     refreshViews,
+    openLaunchEditor(){setLaunchEditorOpen(true)},
     meaningfulAutosave,
     updateSaveState
   };
@@ -802,6 +1084,7 @@
     installLaunchColorBackup();
     injectCampFixStyles();
     injectWorkspacePolishStyles();
+    buildLaunchEditor();
     compactWorkspaceLabels();
     markWorkspaceElements();
     installWorkspacePolishObserver();

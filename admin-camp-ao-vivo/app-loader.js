@@ -120,9 +120,10 @@
           return;
         }
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v15';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v16';
         extra.async=false;
         extra.onload=()=>{
+          const startPersistence=()=>{
           const persistence=document.createElement('script');
           persistence.src='admin-camp-ao-vivo/persistence.js?v=20261001-camp-persist-v3';
           persistence.async=false;
@@ -143,6 +144,13 @@
             document.body.appendChild(integrations);
           };
           document.body.appendChild(persistence);
+          };
+          const entries=document.createElement('script');
+          entries.src='admin-camp-ao-vivo/launch-extras.js?v=20261001-camp-fixes-v16';
+          entries.async=false;
+          entries.onload=startPersistence;
+          entries.onerror=()=>{console.warn('[Camp ao vivo] entradas extras indisponíveis');startPersistence()};
+          document.body.appendChild(entries);
         };
         extra.onerror=()=>{
           document.body.classList.remove('cff-assets-pending');
@@ -164,5 +172,4 @@
   }
   load();
 })();
-
 
