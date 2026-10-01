@@ -21,6 +21,15 @@
     try{
       setStatus('Carregando ferramentas…');
       if(typeof DecompressionStream!=='function')throw new Error('Seu navegador precisa ser atualizado para abrir o Camp ao Vivo.');
+      if(!localStorage.getItem('ffws_autosave')){
+        try{
+          const safe=JSON.parse(localStorage.getItem('cff_camp_safe_autosave_v1')||'null');
+          if(safe&&safe.backup&&typeof safe.backup==='object'){
+            localStorage.setItem('ffws_autosave',JSON.stringify(safe.backup));
+            setStatus('Recuperando auto-save seguro…');
+          }
+        }catch(error){console.warn('[Camp ao vivo] auto-save seguro inválido',error)}
+      }
       const shouldSeed=!localStorage.getItem('ffws_autosave');
       const presetPromise=shouldSeed
         ?fetch('admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-segunda-fase.json?v=20261001',{cache:'no-store'})
