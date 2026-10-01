@@ -267,8 +267,11 @@
   }
 
   function patchSaveDrop(){
-    if(saveDropPatched||typeof window.saveDrop!=='function')return false;
-    const original=window.saveDrop;
+    if(saveDropPatched)return true;
+    let original=null;
+    try{if(typeof saveDrop==='function')original=saveDrop}catch(_){}
+    if(!original&&typeof window.saveDrop==='function')original=window.saveDrop;
+    if(typeof original!=='function')return false;
     if(original.__cffPersistencePatched){saveDropPatched=true;return true}
 
     const wrapped=function(...args){
