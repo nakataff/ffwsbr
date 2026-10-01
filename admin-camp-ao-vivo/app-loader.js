@@ -17,19 +17,43 @@
   }
   async function gunzipUrl(url){return gunzipBytes([url])}
 
+  function hasTournament(data){
+    return !!(data && typeof data === 'object' && (
+      data.selectedTeams?.length || data.tournamentModeV1?.days?.length ||
+      data.drops?.some(drop=>['points','kills','placements'].some(key=>
+        Object.values(drop?.[key]||{}).some(value=>value!==null&&value!==undefined&&value!=='')))
+    ));
+  }
+  function read(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(_){return null}}
+  function prepareAutosave(){
+    const core=read('ffws_autosave');
+    if(hasTournament(core))return core;
+    const safe=read('cff_camp_safe_autosave_v1');
+    const history=read('cff_camp_safe_history_v1');
+    const startup=read('cff_camp_startup_backup_v1');
+    const candidates=[safe,...(Array.isArray(history)?history:[]),startup];
+    const found=candidates.find(item=>hasTournament(item?.backup));
+    if(found){
+      localStorage.setItem('ffws_autosave',JSON.stringify(found.backup));
+      setStatus('Recuperando campeonato salvo…');
+      return found.backup;
+    }
+    return core;
+  }
+  // The legacy bundle was written for static scripts and initializes on window.load.
+  // This loader fetches it asynchronously, so use a dedicated lifecycle event instead.
+  function prepareCoreSource(source){
+    if(!source.includes('window.onload = () => {'))throw new Error('Inicializador do camp não encontrado.');
+    return source.replace('window.onload = () => {','window.__CFF_CAMP_INITIALIZE__ = () => {')
+      .replace(/window\.addEventListener\(\s*(['"])load\1\s*,/g,
+        'window.addEventListener("cff:camp-core-ready",');
+  }
+
   async function load(){
     try{
       setStatus('Carregando ferramentas…');
       if(typeof DecompressionStream!=='function')throw new Error('Seu navegador precisa ser atualizado para abrir o Camp ao Vivo.');
-      if(!localStorage.getItem('ffws_autosave')){
-        try{
-          const safe=JSON.parse(localStorage.getItem('cff_camp_safe_autosave_v1')||'null');
-          if(safe&&safe.backup&&typeof safe.backup==='object'){
-            localStorage.setItem('ffws_autosave',JSON.stringify(safe.backup));
-            setStatus('Recuperando auto-save seguro…');
-          }
-        }catch(error){console.warn('[Camp ao vivo] auto-save seguro inválido',error)}
-      }
+      prepareAutosave();
       const shouldSeed=!localStorage.getItem('ffws_autosave');
       const presetPromise=shouldSeed
         ?fetch('admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-segunda-fase.json?v=20261001',{cache:'no-store'})
@@ -51,17 +75,56 @@
         catch(error){console.warn('[Camp ao vivo] preset inicial ignorado',error)}
       }
 
-      const url=URL.createObjectURL(new Blob([appSource],{type:'text/javascript'}));
+      const protectedAutosave=localStorage.getItem('ffws_autosave');
+      const protectedData=read('ffws_autosave');
+      if(hasTournament(protectedData)){
+        // Preserve the state present before any bundle or enhancement can write.
+        try{localStorage.setItem('cff_camp_startup_backup_v1',JSON.stringify({
+          savedAt:Date.now(),backup:protectedData
+        }))}catch(error){console.warn('[Camp ao vivo] cópia inicial indisponível',error)}
+      }
+      window.__CFF_CAMP_READY__=false;
+      const preparedSource=prepareCoreSource(appSource);
+      const originalSetItem=Storage.prototype.setItem;
+      const guardedSetItem=function(key,value){
+        if(this===localStorage&&key==='ffws_autosave'&&!window.__CFF_CAMP_READY__)return;
+        return originalSetItem.call(this,key,value);
+      };
+      Storage.prototype.setItem=guardedSetItem;
+      const releaseGuard=()=>{
+        if(Storage.prototype.setItem===guardedSetItem)Storage.prototype.setItem=originalSetItem;
+      };
+      const url=URL.createObjectURL(new Blob([preparedSource],{type:'text/javascript'}));
       const script=document.createElement('script');
       script.src=url;script.async=false;
       script.onload=()=>{
         URL.revokeObjectURL(url);
+        try{
+          window.__CFF_CAMP_INITIALIZE__();
+          window.dispatchEvent(new Event('cff:camp-core-ready'));
+          if(!document.getElementById('drop-num')?.options.length ||
+            (protectedData?.selectedTeams?.length &&
+             !document.querySelector('#teams-inputs-container .team-row'))){
+            throw new Error('O estado salvo não foi carregado. Seu backup anterior foi preservado.');
+          }
+          window.__CFF_CAMP_READY__=true;
+          releaseGuard();
+        }catch(error){
+          // Keep blocking legacy autosaves from delayed timers after a failed restore.
+          if(protectedAutosave)originalSetItem.call(localStorage,'ffws_autosave',protectedAutosave);
+          console.error('[Camp ao vivo] inicialização bloqueada',error);
+          setStatus('Falha ao restaurar • backup preservado');
+          document.body.classList.remove('cff-assets-pending');
+          const box=document.createElement('div');box.className='cff-camp-load-error';
+          box.textContent=String(error?.message||error);document.body.prepend(box);
+          return;
+        }
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v8';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v11';
         extra.async=false;
         extra.onload=()=>{
           const persistence=document.createElement('script');
-          persistence.src='admin-camp-ao-vivo/persistence.js?v=20261001-camp-persist-v2';
+          persistence.src='admin-camp-ao-vivo/persistence.js?v=20261001-camp-persist-v3';
           persistence.async=false;
           persistence.onload=()=>{
             const integrations=document.createElement('script');
@@ -87,7 +150,7 @@
         };
         document.body.appendChild(extra);
       };
-      script.onerror=()=>{URL.revokeObjectURL(url);throw new Error('Falha ao iniciar o núcleo do camp.')};
+      script.onerror=()=>{releaseGuard();URL.revokeObjectURL(url);setStatus('Falha ao iniciar • backup preservado');document.body.classList.remove('cff-assets-pending')};
       document.body.appendChild(script);
     }catch(error){
       console.error('[Camp ao vivo]',error);
@@ -101,3 +164,4 @@
   }
   load();
 })();
+

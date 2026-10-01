@@ -57,7 +57,8 @@
 
   function fingerprint(data){
     try{
-      const text=JSON.stringify(data);
+      const {generatedAt,...stable}=data;
+      const text=JSON.stringify(stable);
       let hash=2166136261;
       for(let i=0;i<text.length;i++){
         hash^=text.charCodeAt(i);
@@ -82,12 +83,13 @@
     try{
       const raw=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
       const list=Array.isArray(raw)?raw:[];
-      if(list[0]?.fingerprint===snapshot.fingerprint)return;
+      const fp=snapshot.fingerprint||fingerprint(snapshot.backup);
+      if(list[0]?.fingerprint===fp)return;
       list.unshift({
-        savedAt:snapshot.savedAt,
-        fingerprint:snapshot.fingerprint,
-        tournamentName:snapshot.tournamentName,
-        drop:snapshot.drop,
+        savedAt:snapshot.savedAt||Date.now(),
+        fingerprint:fp,
+        tournamentName:snapshot.tournamentName||backupName(snapshot.backup),
+        drop:snapshot.drop||0,
         backup:snapshot.backup
       });
       localStorage.setItem(HISTORY_KEY,JSON.stringify(list.slice(0,HISTORY_LIMIT)));
@@ -97,12 +99,15 @@
   }
 
   function saveLocalNow(reason='change',forceHistory=false){
-    try{window.autoSave?.(true)}catch(_){}
+    if(window.__CFF_CAMP_READY__!==true)return false;
     const data=currentBackup();
     if(!data)return false;
 
     const previous=readSafe();
-    if(!meaningful(data)&&previous?.backup&&meaningful(previous.backup)){
+    const core=(()=>{try{return JSON.parse(localStorage.getItem(CORE_KEY)||'null')}catch(_){return null}})();
+    const hasTeams=value=>!!(value?.selectedTeams?.length||value?.tournamentModeV1?.days?.length);
+    if((!meaningful(data)||!hasTeams(data))&&(hasTeams(previous?.backup)||hasTeams(core))){
+      setIndicator('Salvamento bloqueado: painel vazio','O campeonato anterior foi preservado. Restaure um backup antes de continuar.');
       return false;
     }
 
@@ -117,6 +122,7 @@
       backup:data
     };
 
+    if(previous?.backup&&previous.fingerprint!==fp){writeHistory(previous)}
     try{
       localStorage.setItem(CORE_KEY,JSON.stringify(data));
       localStorage.setItem(SAFE_KEY,JSON.stringify(snapshot));
@@ -275,8 +281,8 @@
     if(original.__cffPersistencePatched){saveDropPatched=true;return true}
 
     const wrapped=function(...args){
-      const before=currentBackup();
-      const beforeFp=before?fingerprint(before):'';
+      const savedDrop=Number($('#drop-num')?.value||0);
+      const validDrop=Number.isInteger(savedDrop)&&savedDrop>0&&savedDrop<=Number($('#num-quedas')?.value||0);
       let result;
       try{result=original.apply(this,args)}
       catch(error){throw error}
@@ -287,9 +293,9 @@
         }
         setTimeout(()=>{
           const snapshot=saveLocalNow('save-drop',true);
-          if(!snapshot)return;
-          const afterFp=snapshot.fingerprint;
-          if(afterFp===beforeFp)return;
+          if(!snapshot||!validDrop)return;
+          // saveDrop advances the selector. The remote record belongs to the drop just saved.
+          snapshot.drop=savedDrop;
           saveRemoteAfterDrop(snapshot);
         },120);
       };
@@ -310,16 +316,20 @@
     document.addEventListener('click',event=>{
       const target=event.target.closest?.('button,[role="button"],input[type="radio"],input[type="checkbox"]');
       if(!target)return;
-      if(target.matches('[data-cff-preset],#cff-camp-import'))saveLocalNow('before-destructive-action',true);
+      if(target.matches('[data-cff-preset],#cff-camp-import')){
+        const snapshot=saveLocalNow('before-destructive-action',true);
+        if(snapshot){clearTimeout(historyTimer);writeHistory(snapshot)}
+      }
       setTimeout(()=>scheduleLocalSave('click'),0);
     },{passive:true,capture:true});
-    window.addEventListener('beforeunload',()=>saveLocalNow('beforeunload',true));
+    window.addEventListener('beforeunload',()=>{const snapshot=saveLocalNow('beforeunload',true);if(snapshot){clearTimeout(historyTimer);writeHistory(snapshot)}});
     document.addEventListener('visibilitychange',()=>{
-      if(document.visibilityState==='hidden')saveLocalNow('hidden',true);
+      if(document.visibilityState==='hidden'){const snapshot=saveLocalNow('hidden',true);if(snapshot){clearTimeout(historyTimer);writeHistory(snapshot)}}
     });
   }
 
   function boot(){
+    if(window.__CFF_CAMP_READY__!==true)return;
     if(restoreSafeIfCoreWasLost())return;
     wire();
     saveLocalNow('boot',false);
@@ -353,3 +363,4 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
 })();
+
