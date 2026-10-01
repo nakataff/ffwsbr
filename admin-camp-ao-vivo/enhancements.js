@@ -292,7 +292,7 @@
     if($('#cff-camp-workspace-polish-v2'))return;
     const style=document.createElement('style');
     style.id='cff-camp-workspace-polish-v2';
-    style.textContent=\`
+    style.textContent=`
       /* ===== Workspace: Lançar quedas + Resumo ===== */
       .main-layout{
         display:grid!important;
@@ -723,7 +723,7 @@
           grid-template-columns:1fr!important;
         }
       }
-    \`;
+    `;
     document.head.appendChild(style);
   }
 
