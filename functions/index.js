@@ -6,12 +6,14 @@ const { defineSecret } = require('firebase-functions/params');
 const { logger } = require('firebase-functions');
 const { initializeApp, getApps } = require('firebase-admin/app');
 const { getDatabase } = require('firebase-admin/database');
+const { getAuth } = require('firebase-admin/auth');
 
 if (!getApps().length) initializeApp();
 
 const VERIFY_TOKEN = defineSecret('META_WEBHOOK_VERIFY_TOKEN');
 const APP_SECRET = defineSecret('META_APP_SECRET');
 const INSTAGRAM_ACCESS_TOKEN = defineSecret('INSTAGRAM_ACCESS_TOKEN');
+const GITHUB_CAMP_TOKEN = defineSecret('GITHUB_CAMP_TOKEN');
 
 const REGION = 'southamerica-east1';
 const TIME_ZONE = 'America/Sao_Paulo';
@@ -556,6 +558,154 @@ exports.instagramWebhook = onRequest(
     } catch (error) {
       logger.error('Erro geral no webhook do Instagram', error);
       res.status(500).send('Internal Server Error');
+    }
+  }
+);
+
+
+const CAMP_GITHUB_REPO = 'nakataff/ffwsbr';
+const CAMP_GITHUB_BRANCH = 'main';
+const CAMP_GITHUB_PATH = 'admin-camp-ao-vivo/data/autosave-live.json';
+const CAMP_ADMIN_EMAIL = 'admin@centralfreefire.com.br';
+
+async function verifyCampAdmin(req) {
+  const header = String(req.get('authorization') || '');
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  if (!match) throw Object.assign(new Error('Token ausente.'), { statusCode: 401 });
+  const decoded = await getAuth().verifyIdToken(match[1]);
+  if (String(decoded.email || '').toLowerCase() !== CAMP_ADMIN_EMAIL) {
+    throw Object.assign(new Error('Usuário não autorizado.'), { statusCode: 403 });
+  }
+  return decoded;
+}
+
+function githubHeaders(token) {
+  return {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${token}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'central-free-fire-camp-backup'
+  };
+}
+
+function githubContentsUrl() {
+  const encodedPath = CAMP_GITHUB_PATH.split('/').map(encodeURIComponent).join('/');
+  return `https://api.github.com/repos/${CAMP_GITHUB_REPO}/contents/${encodedPath}`;
+}
+
+async function getGithubFileSha(token) {
+  const response = await fetch(`${githubContentsUrl()}?ref=${encodeURIComponent(CAMP_GITHUB_BRANCH)}`, {
+    headers: githubHeaders(token),
+    signal: AbortSignal.timeout(10000)
+  });
+  if (response.status === 404) return '';
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    throw new Error(`GitHub GET ${response.status}: ${text.slice(0, 240)}`);
+  }
+  const data = await response.json();
+  return String(data && data.sha || '');
+}
+
+async function putGithubBackup(token, payload, previousSha) {
+  const body = {
+    message: `Camp ao vivo: backup após Queda ${payload.drop || '?'} - ${payload.tournamentName || 'torneio'}`,
+    content: Buffer.from(JSON.stringify(payload, null, 2), 'utf8').toString('base64'),
+    branch: CAMP_GITHUB_BRANCH
+  };
+  if (previousSha) body.sha = previousSha;
+
+  const response = await fetch(githubContentsUrl(), {
+    method: 'PUT',
+    headers: {
+      ...githubHeaders(token),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(15000)
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    const error = new Error(`GitHub PUT ${response.status}: ${text.slice(0, 300)}`);
+    error.statusCode = response.status;
+    throw error;
+  }
+
+  return response.json();
+}
+
+exports.campGithubBackup = onRequest(
+  {
+    region: REGION,
+    timeoutSeconds: 30,
+    memory: '256MiB',
+    cors: true,
+    secrets: [GITHUB_CAMP_TOKEN]
+  },
+  async (req, res) => {
+    if (req.method === 'OPTIONS') {
+      res.status(204).send('');
+      return;
+    }
+
+    if (req.method !== 'POST') {
+      res.set('Allow', 'POST');
+      res.status(405).json({ ok: false, error: 'Method Not Allowed' });
+      return;
+    }
+
+    try {
+      await verifyCampAdmin(req);
+
+      const body = req.body && typeof req.body === 'object' ? req.body : {};
+      const backup = body.backup;
+      if (!backup || typeof backup !== 'object') {
+        res.status(400).json({ ok: false, error: 'Backup inválido.' });
+        return;
+      }
+
+      const serializedSize = Buffer.byteLength(JSON.stringify(backup), 'utf8');
+      if (serializedSize > 4 * 1024 * 1024) {
+        res.status(413).json({ ok: false, error: 'Backup acima de 4 MB.' });
+        return;
+      }
+
+      const payload = {
+        generatedAt: new Date().toISOString(),
+        tournamentName: String(body.tournamentName || 'Camp ao vivo').slice(0, 180),
+        drop: Math.max(0, Number(body.drop) || 0),
+        source: 'admin-camp-ao-vivo',
+        backup
+      };
+
+      const token = GITHUB_CAMP_TOKEN.value();
+      let sha = await getGithubFileSha(token);
+      let result;
+
+      try {
+        result = await putGithubBackup(token, payload, sha);
+      } catch (error) {
+        if (Number(error.statusCode) !== 409) throw error;
+        sha = await getGithubFileSha(token);
+        result = await putGithubBackup(token, payload, sha);
+      }
+
+      res.status(200).json({
+        ok: true,
+        path: CAMP_GITHUB_PATH,
+        commitSha: String(result && result.commit && result.commit.sha || '')
+      });
+    } catch (error) {
+      const status = Number(error && error.statusCode) || 500;
+      logger.error('Falha no backup GitHub do Camp ao Vivo', {
+        status,
+        error: error && error.message ? error.message : String(error)
+      });
+      res.status(status).json({
+        ok: false,
+        error: status >= 500 ? 'Falha ao salvar backup no GitHub.' : String(error.message || 'Erro')
+      });
     }
   }
 );
