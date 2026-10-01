@@ -59,6 +59,98 @@
     config=normalizeConfig(backup?.config?.cffLaunchExtraFieldsV1||fallback?.config);
     drafts=normalizeDrafts(backup?.cffExtraEntriesV1?.drafts||fallback?.drafts);
   }catch(_){config=normalizeConfig(null);drafts=normalizeDrafts(null)}
+  const SLOT_FOCUS_KEY='cff_camp_slot_focus_v1';
+  const normalizeSlotFocus=value=>({enabled:value?.enabled===true,target:/^(auto|main:(kills|pts|place|pospick|start)|extra:[\w-]+)$/.test(value?.target||'')?value.target:'auto'});
+  let slotFocus,focusedSlotKey=null,slotFocusAnchor=null;
+  try{const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');slotFocus=normalizeSlotFocus(backup?.config?.cffLaunchSlotFocusV1||JSON.parse(localStorage.getItem(SLOT_FOCUS_KEY)||'null'))}
+  catch(_){slotFocus=normalizeSlotFocus(null)}
+  function saveSlotFocus(){
+    try{localStorage.setItem(SLOT_FOCUS_KEY,JSON.stringify(slotFocus))}catch(_){}
+    if(window.__CFF_CAMP_READY__)window.autoSave?.(true);
+  }
+  function slotKey(input){
+    if(input?.matches?.('.cff-extra-input'))return 'extra:'+input.closest('.cff-extra-field')?.dataset.cffExtraId;
+    const prefix=input?.id?.match(/^(kills|pts|place|pospick|start)-/)?.[1];
+    return prefix&&input.matches('input[type="number"],input[type="text"],select')?'main:'+prefix:null;
+  }
+  function availableSlot(input){return !!slotKey(input)&&!input.disabled&&!input.readOnly&&input.getClientRects().length>0&&getComputedStyle(input).visibility!=='hidden'}
+  function slotInputs(){return [...document.querySelectorAll('#teams-inputs-container .team-row input,#teams-inputs-container .team-row select')].filter(availableSlot)}
+  function focusSlots(key){return slotInputs().filter(input=>slotKey(input)===key)}
+  function focusSlot(input){
+    if(!input)return;
+    input.focus();try{input.select?.()}catch(_){}
+    input.scrollIntoView({block:'nearest',inline:'nearest'});
+  }
+  function rememberSlotFocus(input){
+    slotFocusAnchor={input,key:slotKey(input),code:codeFor(input.closest('.team-row')),start:input.selectionStart,end:input.selectionEnd};
+  }
+  function anchoredSlot(){
+    if(!slotFocusAnchor)return null;
+    if(slotFocusAnchor.input.isConnected&&availableSlot(slotFocusAnchor.input))return slotFocusAnchor.input;
+    return focusSlots(slotFocusAnchor.key).find(input=>codeFor(input.closest('.team-row'))===slotFocusAnchor.code)||null;
+  }
+  function restoreSlotFocus(){
+    if(!slotFocus.enabled||![document.body,document.documentElement].includes(document.activeElement))return;
+    const input=anchoredSlot();if(!input)return;
+    const {start,end}=slotFocusAnchor;input.focus();
+    if(start!==null&&end!==null)try{input.setSelectionRange(start,end)}catch(_){}
+  }
+  document.addEventListener('pointerdown',event=>{if(!event.target.closest?.('#teams-inputs-container')||!availableSlot(event.target))slotFocusAnchor=null},true);
+  function syncSlotFocusUi(){
+    const wrap=$('#cff-slot-focus-tools');if(!wrap)return;
+    const toggle=$('#cff-slot-focus-enabled'),select=$('#cff-slot-focus-field'),start=$('#cff-slot-focus-start');
+    const eligible=slotInputs(),availableKeys=new Set(eligible.map(slotKey));
+    const options=new Map([['auto','Campo em que eu clicar']]);
+    [...document.querySelectorAll('#teams-inputs-container .team-row input,#teams-inputs-container .team-row select')].filter(input=>slotKey(input)&&input.getClientRects().length>0&&getComputedStyle(input).visibility!=='hidden').forEach(input=>{
+      const key=slotKey(input);if(options.has(key))return;
+      if(key.startsWith('extra:')){
+        const index=config.fields.findIndex(field=>key==='extra:'+field.id),field=config.fields[index];
+        if(field)options.set(key,'Extra '+(index+1)+' · '+TYPES[field.kind].name);
+      }else{
+        const kind=primaryKind(input)||(input.id.startsWith('pospick-')?'position':null);
+        options.set(key,(TYPES[kind]?.name||input.closest('.small-cell')?.querySelector('.micro-label')?.textContent||'Campo')+' · principal');
+      }
+    });
+    if(!options.has(slotFocus.target))options.set(slotFocus.target,'Campo indisponível neste modo');
+    const signature=JSON.stringify([...options].map(([key,name])=>[key,name,key==='auto'||availableKeys.has(key)]));
+    if(select.dataset.signature!==signature){
+      select.replaceChildren();options.forEach((name,key)=>{const option=document.createElement('option');option.value=key;option.textContent=name;option.disabled=key!=='auto'&&!availableKeys.has(key);select.appendChild(option)});select.dataset.signature=signature;
+    }
+    toggle.checked=slotFocus.enabled;select.value=slotFocus.target;select.hidden=start.hidden=!slotFocus.enabled;
+    const activeKey=slotFocus.target==='auto'?focusedSlotKey:slotFocus.target;
+    start.disabled=!(slotFocus.target==='auto'?eligible.length:availableKeys.has(slotFocus.target));
+    wrap.title='Tab: próximo time · Shift+Tab: time anterior · Esc: sair do foco';
+    document.querySelectorAll('#teams-inputs-container .cff-slot-focus-target').forEach(input=>{if(!slotFocus.enabled||!availableSlot(input)||slotKey(input)!==activeKey)input.classList.remove('cff-slot-focus-target')});
+    if(slotFocus.enabled&&activeKey)focusSlots(activeKey).forEach(input=>input.classList.add('cff-slot-focus-target'));
+  }
+  function buildSlotFocusUi(){
+    const toolbar=$('#v81-launch-view-tools');if(!toolbar||$('#cff-slot-focus-tools'))return;
+    const wrap=document.createElement('div');wrap.id='cff-slot-focus-tools';
+    wrap.innerHTML='<label class="switch" for="cff-slot-focus-enabled"><input id="cff-slot-focus-enabled" type="checkbox"> Foco nos slots</label><select id="cff-slot-focus-field" aria-label="Campo para focar nos slots"></select><button id="cff-slot-focus-start" type="button" class="btn-mini">Iniciar</button>';
+    $('#v81-grid-config-button')?.insertAdjacentElement('afterend',wrap);
+    $('#cff-slot-focus-enabled').addEventListener('change',event=>{slotFocus.enabled=event.target.checked;slotFocusAnchor=null;syncSlotFocusUi();saveSlotFocus()});
+    $('#cff-slot-focus-field').addEventListener('change',event=>{slotFocus.target=event.target.value;syncSlotFocusUi();saveSlotFocus()});
+    $('#cff-slot-focus-start').addEventListener('click',()=>{
+      const current=focusedSlotKey?focusSlots(focusedSlotKey):[];
+      const inputs=slotFocus.target==='auto'?(current.length?current:slotInputs()):focusSlots(slotFocus.target);
+      focusSlot(inputs[0]);
+    });
+    syncSlotFocusUi();
+  }
+  document.addEventListener('focusin',event=>{
+    if(slotFocus.enabled&&event.target.closest?.('#teams-inputs-container')&&availableSlot(event.target)){rememberSlotFocus(event.target);focusedSlotKey=slotKey(event.target);syncSlotFocusUi()}
+    else if(event.target!==document.body)slotFocusAnchor=null;
+  });
+  document.addEventListener('keydown',event=>{
+    if(!slotFocus.enabled||event.isComposing||event.ctrlKey||event.metaKey||event.altKey)return;
+    const input=event.target===document.body?anchoredSlot():event.target;if(!input?.closest?.('#teams-inputs-container')||!availableSlot(input))return;
+    if(event.key==='Escape'){slotFocus.enabled=false;slotFocusAnchor=null;syncSlotFocusUi();saveSlotFocus();return}
+    if(event.key!=='Tab')return;
+    const key=slotFocus.target==='auto'?slotKey(input):slotFocus.target;
+    if(slotKey(input)!==key)return;
+    const inputs=focusSlots(key),current=inputs.indexOf(input);if(current<0)return;
+    event.preventDefault();focusSlot(inputs[(current+(event.shiftKey?-1:1)+inputs.length)%inputs.length]);
+  },true);
   let applying=false,queued=false,handledInput=null;
   function persist(saveCamp=true){
     try{localStorage.setItem(KEY,JSON.stringify({owner:owner(),config,drafts}))}
@@ -217,6 +309,7 @@
       if(warning.textContent!==text)warning.textContent=text;
       warning.hidden=!text;
     });
+    buildSlotFocusUi();syncSlotFocusUi();restoreSlotFocus();
   }
   function queueRender(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;renderRows()})}
   function installDataHooks(){
@@ -249,15 +342,15 @@
     };
     const collect=window.collectBackupData;
     window.collectBackupData=function(){
-      const data=collect.apply(this,arguments);data.config=data.config||{};data.config.cffLaunchExtraFieldsV1=JSON.parse(JSON.stringify(config));data.cffExtraEntriesV1={drafts:JSON.parse(JSON.stringify(drafts))};return data;
+      const data=collect.apply(this,arguments);data.config=data.config||{};data.config.cffLaunchExtraFieldsV1=JSON.parse(JSON.stringify(config));data.config.cffLaunchSlotFocusV1={...slotFocus};data.cffExtraEntriesV1={drafts:JSON.parse(JSON.stringify(drafts))};return data;
     };
     const importer=window.importBackup;
     window.importBackup=function(){
       let data;try{data=JSON.parse($('#backup-input')?.value||'')}catch(_){}
-      const previous={config,drafts};
-      if(data?.config){config=normalizeConfig(data.config.cffLaunchExtraFieldsV1);drafts=normalizeDrafts(data.cffExtraEntriesV1?.drafts)}
-      try{const result=importer.apply(this,arguments);renderConfiguration();renderRows();persist();return result}
-      catch(error){config=previous.config;drafts=previous.drafts;throw error}
+      const previous={config,drafts,slotFocus};
+      if(data?.config){config=normalizeConfig(data.config.cffLaunchExtraFieldsV1);drafts=normalizeDrafts(data.cffExtraEntriesV1?.drafts);slotFocus=normalizeSlotFocus(data.config.cffLaunchSlotFocusV1);focusedSlotKey=null;slotFocusAnchor=null}
+      try{const result=importer.apply(this,arguments);renderConfiguration();renderRows();persist();saveSlotFocus();return result}
+      catch(error){config=previous.config;drafts=previous.drafts;slotFocus=previous.slotFocus;throw error}
     };
     const clearSlot=window.clearTeamSlot;
     window.clearTeamSlot=function(code){if(drafts[scope()])delete drafts[scope()][code];const result=clearSlot.apply(this,arguments);commitCurrent();renderRows();persist();return result};
@@ -315,6 +408,15 @@
   }
   function buildUi(){
     const style=document.createElement('style');style.textContent=`
+      #v81-launch-view-tools{flex-wrap:wrap;max-width:100%}
+      #cff-slot-focus-tools{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-left:5px;max-width:100%}
+      #cff-slot-focus-tools>.switch{display:flex;flex-direction:row;align-items:center;gap:5px;margin:0;white-space:nowrap;font-size:.74rem;text-transform:none}
+      #cff-slot-focus-tools input{width:14px;height:14px;margin:0;accent-color:#ffaa00}
+      #cff-slot-focus-tools>select{width:clamp(150px,17vw,235px);max-width:100%;min-width:0;height:34px;margin:0;padding:5px;font-size:.72rem}
+      #cff-slot-focus-tools>.btn-mini{height:34px;margin:0}
+      #cff-slot-focus-tools>[hidden]{display:none!important}
+      #teams-inputs-container .cff-slot-focus-target{outline:1px solid #ffaa0060;outline-offset:2px}
+      #teams-inputs-container .cff-slot-focus-target:focus{outline:2px solid #ffaa00;outline-offset:2px}
       #teams-inputs-container .cff-extra-grid{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;min-width:0;padding-top:4px;border-top:1px solid #ffffff14}
       #teams-inputs-container .cff-extra-grid .cff-extra-field{display:flex;flex-direction:column;gap:0;flex:0 0 auto;min-width:0;width:max(var(--cff-extra-width),calc(var(--cff-extra-label) * 6.5));max-width:100%;margin:0;color:#9cb2cd;text-transform:none}
       #teams-inputs-container .cff-extra-grid .cff-extra-field>.micro-label{font-size:var(--cff-extra-label)!important;line-height:1.4!important;height:auto!important;min-height:max(22px,calc(var(--cff-extra-label) * 1.5))!important;color:var(--cff-launch-labelColor,#888)!important;white-space:nowrap;margin:0!important}
@@ -354,6 +456,7 @@
   }
   installDataHooks();buildUi();
   document.addEventListener('input',event=>{
+    if(slotFocus.enabled&&event.target.closest?.('#teams-inputs-container')&&availableSlot(event.target)){rememberSlotFocus(event.target);queueMicrotask(restoreSlotFocus)}
     if(applying)return;
     const input=event.target;
     if(input.dataset.cffExtraKind){edit(input.dataset.cffExtraTeam,input.dataset.cffExtraKind,input.value);return}
