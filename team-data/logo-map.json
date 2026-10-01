@@ -100,7 +100,9 @@
     "PAIN GAMING": "pain.webp",
     "PAIN": "pain.webp",
     "ALFA 34": "a34.webp",
-    "VIRTUS PRO": "Virtus Pro.webp"
+    "VIRTUS PRO": "Virtus Pro.webp",
+    "ANTISOCIAL TEAM": "ast.webp",
+    "LYON": "lyon.webp"
   },
   "aliases": {
     "CRUZEIRO": "CRUZEIRO ESPORTS",
@@ -138,6 +140,9 @@
     "ARGON": "ARG",
     "AVIDA": "AVD",
     "SHADOW ESPORTS": "SE",
-    "HAWK": "HAWK GAMING"
+    "HAWK": "HAWK GAMING",
+    "ANTISOCIAL": "ANTISOCIAL TEAM",
+    "AST": "ANTISOCIAL TEAM",
+    "ATS": "ANTISOCIAL TEAM"
   }
 }

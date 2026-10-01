@@ -120,7 +120,7 @@
           return;
         }
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v11';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v12';
         extra.async=false;
         extra.onload=()=>{
           const persistence=document.createElement('script');

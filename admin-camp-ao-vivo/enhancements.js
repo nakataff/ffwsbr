@@ -7,8 +7,13 @@
   };
   const LOGO_KEY='cff_camp_logo_bank_v1';
   const FOCUS_KEY='cff_camp_focus_v1';
-  const LOGO_CATALOG_URL='team-data/logo-map.json?v=20261001-camp-logos-v2';
+  const LOGO_CATALOG_URL='team-data/logo-map.json?v=20261001-camp-logos-v3';
   const BUILTIN_LOGOS={
+    ANTISOCIALTEAM:'ast.webp',
+    ANTISOCIAL:'ast.webp',
+    AST:'ast.webp',
+    ATS:'ast.webp',
+    LYON:'lyon.webp',
     LOS:'home-assets/teams/los.webp',
     LOUDSNICKERS:'home-assets/teams/loud-snickers.webp',
     FLUXOW7M:'home-assets/teams/fluxo-w7m.webp',
@@ -295,6 +300,7 @@
       /* Only workspace controls; tables and scoring fields keep their own rules. */
       body .main-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)!important;gap:16px!important;align-items:start}
       .main-layout>.collapsible-section{min-width:0;box-sizing:border-box;border-radius:12px!important}
+      .main-layout>.summary-section{container-type:inline-size}
       .main-layout>.collapsible-section>summary{font-size:.85rem;line-height:1.4;padding:10px 12px!important}
       .main-layout>.collapsible-section>.collapsible-content{padding:12px!important}
       .drop-section button,.summary-section button{white-space:nowrap}
@@ -314,14 +320,22 @@
         height:16px!important;min-height:16px!important;padding:0!important;margin:0!important;flex:0 0 16px!important;
       }
       .main-layout label.switch{display:inline-flex;align-items:center;gap:7px;width:auto!important;min-width:0;text-transform:none;font-size:.76rem;line-height:1.4}
-      .summary-section .summary-toolbar{display:flex!important;flex-wrap:wrap;gap:10px;align-items:start}
-      .summary-section .summary-main-controls{display:flex!important;flex:1 1 100%;flex-wrap:wrap;gap:8px;align-items:center}
-      .summary-section .summary-main-controls>label.switch{box-sizing:border-box;padding:7px 9px;border:1px solid #293c50;border-radius:7px;white-space:nowrap}
-      .summary-section .summary-main-controls>div{min-width:0}
-      .summary-section .summary-style-control{display:flex;gap:7px;align-items:center}
+      .summary-section .summary-toolbar{display:grid!important;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}
+      .summary-section .summary-main-controls{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;align-items:stretch}
+      .summary-section .summary-main-controls>label.switch{grid-column:span 3;box-sizing:border-box;min-height:40px;margin:0;padding:8px 9px;border:1px solid #293c50;border-radius:7px;white-space:nowrap}
+      .summary-section .summary-main-controls>div.cff-visual-field{grid-column:span 4;min-width:0!important;display:flex!important;flex-direction:column;align-items:stretch;justify-content:center;gap:6px;box-sizing:border-box;min-height:76px;padding:8px 10px;background:#0c1420;border:1px solid #293c50;border-radius:7px}
+      .summary-section .summary-main-controls>div.cff-visual-field>label{display:block;font-size:.68rem!important;line-height:16px;margin:0!important;color:#8eb0cf;text-transform:uppercase}
+      .summary-section .summary-main-controls>#v90-champion-activated-logos-row{grid-column:span 4;min-height:76px;white-space:normal;line-height:1.4;background:#0c1420}
+      .summary-section .summary-style-control{gap:6px}
       .summary-section .summary-style-control label{margin:0;white-space:nowrap}
-      .summary-section .summary-main-controls select{width:auto;max-width:100%;min-width:125px}
-      .summary-section .summary-actions-compact{margin-left:auto;gap:7px}
+      .summary-section .summary-main-controls select{width:100%;max-width:100%;min-width:0;min-height:36px;padding:7px 9px;margin:0}
+      .summary-section .summary-actions-compact{display:flex;align-items:center;justify-content:flex-start;width:100%;margin:0;padding-top:2px;gap:7px}
+      .summary-section .summary-actions-compact::before{content:'Ferramentas';font-size:.7rem;color:#8eb0cf;margin-right:5px}
+      .summary-section .summary-actions-compact .btn-mini{display:inline-flex;align-items:center;justify-content:center;width:36px;min-width:36px;height:36px;padding:0;border-radius:7px;line-height:1}
+      .summary-section #v57-day-split-ui{margin-top:10px}
+      .summary-section .v57-day-main{display:flex;flex-wrap:wrap;align-items:center;gap:10px;min-height:40px}
+      .summary-section .v57-day-main>.switch{margin:0;min-height:36px}
+      .summary-section .v57-day-main>.btn-mini{min-height:36px}
       .summary-section .sub-summary-section{border-radius:9px;margin-bottom:10px}
       .summary-section .sub-summary-section>summary{padding:9px 11px;font-size:.78rem;line-height:1.4}
       .summary-section .sub-summary-content{padding:10px}
@@ -372,8 +386,15 @@
       body.cff-camp-focus #v92-table-view-switch{display:flex!important;gap:8px;margin:0 0 12px}
       body.cff-camp-focus #v92-table-view-switch .v76-view-button{flex:1 1 0;min-height:36px}
       body.cff-camp-focus .cff-camp-topbar{position:sticky;top:0}
+      @container(max-width:720px){
+        .summary-section .summary-main-controls>label.switch{grid-column:span 6}
+        .summary-section .summary-main-controls>div.cff-visual-field{grid-column:span 6}
+        .summary-section .summary-main-controls>#v90-champion-activated-logos-row{grid-column:1/-1;min-height:40px}
+      }
       @media(max-width:1250px){body .main-layout{grid-template-columns:minmax(0,1fr)!important}}
       @media(max-width:760px){
+        .summary-section .summary-main-controls>label.switch{white-space:normal}
+        .summary-section .summary-main-controls>div.cff-visual-field{grid-column:1/-1}
         #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row,
         body.v41-simple-mode #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row{grid-template-columns:1fr 1fr 36px!important}
         #teams-inputs-container.v46-simple-placement-enabled .team-row.detailed-row>.v46-placement-grid{grid-column:1/-1;grid-row:3}
@@ -420,6 +441,10 @@
       ['Gerar Código Wiki','📄 Gerar Wiki'],
       ['Gerar Prizepool','💰 Prizepool']
     ];
+    const cpLabel=$('#v90-champion-activated-logos-row');
+    cpLabel?.childNodes.forEach(node=>{
+      if(node.nodeType===Node.TEXT_NODE&&node.textContent.includes('Mostrar logos do Champion Point'))node.textContent=' Logos do Champion Point';
+    });
     document.querySelectorAll('button').forEach(el=>{
       const current=el.textContent.replace(/\s+/g,' ').trim();
       const found=buttons.find(([from])=>current===from);
@@ -431,6 +456,10 @@
   }
 
   function markWorkspaceElements(){
+    const styleField=$('#summary-table-style')?.closest('.summary-style-control');
+    const spacingField=$('#table-spacing')?.parentElement;
+    styleField?.classList.add('cff-visual-field');
+    spacingField?.classList.add('cff-visual-field');
     const dropNum=$('#drop-num');
     if(dropNum){
       const row=dropNum.parentElement?.parentElement;
