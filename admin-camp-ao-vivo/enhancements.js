@@ -7,6 +7,7 @@
   };
   const LOGO_KEY='cff_camp_logo_bank_v1';
   const FOCUS_KEY='cff_camp_focus_v1';
+  const LOGO_CATALOG_URL='team-data/logo-map.json?v=20261001-camp-logos-v2';
   const BUILTIN_LOGOS={
     LOS:'home-assets/teams/los.webp',
     LOUDSNICKERS:'home-assets/teams/loud-snickers.webp',
@@ -48,6 +49,33 @@
     catch(error){console.error(error);toast('O navegador ficou sem espaço para salvar mais logos.','err');return false}
   }
   let logoBank=readBank();
+  let catalogLogos=new Map();
+  let catalogAliases=new Map();
+  let logoCatalogLoaded=false;
+
+  function catalogLogo(name){
+    const key=norm(name);
+    if(!key)return '';
+    const canonical=catalogAliases.get(key)||key;
+    return catalogLogos.get(canonical)||catalogLogos.get(key)||'';
+  }
+  async function loadLogoCatalog(){
+    try{
+      const response=await fetch(LOGO_CATALOG_URL,{cache:'default'});
+      if(!response.ok)throw new Error(`HTTP ${response.status}`);
+      const data=await response.json();
+      catalogLogos=new Map(Object.entries(data?.logos||{}).map(([name,url])=>[norm(name),String(url||'').trim()]).filter(([,url])=>url));
+      catalogAliases=new Map(Object.entries(data?.aliases||{}).map(([alias,target])=>[norm(alias),norm(target)]).filter(([alias,target])=>alias&&target));
+      logoCatalogLoaded=true;
+      applyRepoLogosToRows();
+      refreshViews();
+      renderLogoBank();
+      return true;
+    }catch(error){
+      console.warn('[Camp ao vivo] catálogo de logos indisponível',error);
+      return false;
+    }
+  }
 
   function teamRows(){
     const rows=[...document.querySelectorAll('#teams-config-rows .sheet-row')].map(row=>({
@@ -69,7 +97,7 @@
   }
   function resolveBankLogo(name){
     const key=norm(name),canonical=aliasIndex().get(key)||key;
-    return logoBank[canonical]?.src||logoBank[key]?.src||BUILTIN_LOGOS[canonical]||BUILTIN_LOGOS[key]||'';
+    return logoBank[canonical]?.src||logoBank[key]?.src||BUILTIN_LOGOS[canonical]||BUILTIN_LOGOS[key]||catalogLogo(canonical)||catalogLogo(key)||'';
   }
 
   function patchLogoResolver(){
@@ -95,7 +123,14 @@
   }
 
   function repoLogoForTeam(team){
-    return BUILTIN_LOGOS[norm(team?.name)]||BUILTIN_LOGOS[norm(team?.code)]||BUILTIN_LOGOS[norm(team?.abbr)]||'';
+    return BUILTIN_LOGOS[norm(team?.name)]||BUILTIN_LOGOS[norm(team?.code)]||BUILTIN_LOGOS[norm(team?.abbr)]||catalogLogo(team?.name)||catalogLogo(team?.code)||catalogLogo(team?.abbr)||'';
+  }
+  function shouldReplaceLogoValue(value){
+    const raw=String(value||'').trim();
+    if(!raw)return true;
+    if(/^[a-z]:[\\/]/i.test(raw)||raw.startsWith('file:'))return true;
+    if(!/^(?:https?:|data:|blob:)/i.test(raw)&&!/[\\/]/.test(raw))return true;
+    return false;
   }
   function applyRepoLogosToRows(){
     const rows=[...document.querySelectorAll('#logos-config-rows .sheet-row')];
@@ -109,7 +144,7 @@
         row=[...document.querySelectorAll('#logos-config-rows .sheet-row')].find(x=>norm(x.querySelector('.logo-sheet-name')?.value)===norm(team.name));
       }
       const input=row?.querySelector('.logo-sheet-file');
-      if(input&&input.value!==path){input.value=path;changed++}
+      if(input&&input.value!==path&&shouldReplaceLogoValue(input.value)){input.value=path;changed++}
     });
     if(changed){
       try{window.syncLogosTextareaFromGrid?.();window.parseLogoOverrides?.();window.autoSave?.()}catch(_){}
@@ -214,6 +249,44 @@
     return true;
   }
 
+  function injectCampFixStyles(){
+    if($('#cff-camp-fixes-style'))return;
+    const style=document.createElement('style');
+    style.id='cff-camp-fixes-style';
+    style.textContent=`
+      .v46-placement-choice input:checked{
+        border-color:var(--accent)!important;
+        background:radial-gradient(circle at center,#fff 0 3px,transparent 3.5px),var(--accent)!important;
+        box-shadow:0 0 0 1px rgba(255,170,0,.30),0 0 7px rgba(255,170,0,.22)!important;
+      }
+      .v46-placement-choice:has(input:checked){font-weight:1000!important}
+      .v76-day-actions [data-v76-edit-day]{border-color:rgba(0,200,255,.38)!important;color:#a9eeff!important}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function patchImportedDayEditing(){
+    if(window.__CFF_CAMP_IMPORTED_DAY_EDIT_V2__)return;
+    window.__CFF_CAMP_IMPORTED_DAY_EDIT_V2__=true;
+    document.addEventListener('click',event=>{
+      const edit=event.target.closest?.('[data-v76-edit-day]');
+      if(!edit)return;
+      const id=String(edit.dataset.v76EditDay||'');
+      const open=[...document.querySelectorAll('[data-v76-open-day]')].find(button=>String(button.dataset.v76OpenDay||'')===id);
+      if(!open)return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      open.click();
+    },true);
+    const relabel=()=>document.querySelectorAll('[data-v76-edit-day]').forEach(button=>{
+      if(button.textContent.trim()==='Editar registro')button.textContent='Editar quedas';
+      button.title='Carrega este dia antigo no editor para alterar qualquer queda';
+    });
+    relabel();
+    new MutationObserver(relabel).observe(document.body,{childList:true,subtree:true});
+  }
+
   function meaningfulAutosave(){
     try{
       const data=JSON.parse(localStorage.getItem('ffws_autosave')||'null');
@@ -293,9 +366,12 @@
   };
 
   function boot(){
+    injectCampFixStyles();
+    patchImportedDayEditing();
     patchLogoResolver();
     buildLogoBank();
     applyRepoLogosToRows();
+    loadLogoCatalog();
     wireToolbar();
     updateSaveState();
     setFocus(localStorage.getItem(FOCUS_KEY)==='1');
