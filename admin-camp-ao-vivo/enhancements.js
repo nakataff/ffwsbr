@@ -121,10 +121,11 @@
     try{window.parseLogoOverrides?.()}catch(_){}
     try{window.renderSummary?.()}catch(_){}
     try{window.v76TournamentMode?.render?.()}catch(_){}
-    document.querySelectorAll('img.mini-logo').forEach(img=>{
+    document.querySelectorAll('img.mini-logo:not(.cff-launch-logo)').forEach(img=>{
       const team=img.alt||img.closest('[data-team]')?.dataset?.team||'';
       const src=resolveBankLogo(team);if(src)img.src=src;
     });
+    refreshLaunchLogos();
   }
 
   function repoLogoForTeam(team){
@@ -602,7 +603,7 @@
     Object.entries(value?.colors||{}).forEach(([code,color])=>{
       if(code&&/^#[0-9a-f]{6}$/i.test(String(color)))colors[code]=color;
     });
-    return {customize:value?.customize===true,colors};
+    return {customize:value?.customize===true,black:value?.black===true,colors};
   }
   let launchColors=(()=>{
     try{
@@ -642,7 +643,7 @@
         launchColors.colors[code]=color;
         added=true;
       }
-      const color=launchColors.colors[code];
+      const color=launchColors.black?'#000000':launchColors.colors[code];
       if(row.style.getPropertyValue('--cff-team-color')!==color){
         row.style.setProperty('--cff-team-color',color);
         row.style.setProperty('--cff-team-ink',colorInk(color));
@@ -667,11 +668,119 @@
         if(nameNode)nameNode.insertAdjacentElement('afterend',picker);else header.appendChild(picker);
       }
       const input=picker.querySelector('input');
-      if(input.value!==color)input.value=color;
+      if(input.value!==launchColors.colors[code])input.value=launchColors.colors[code];
     });
     if(added)saveLaunchColors();
     const toggle=$('#cff-customize-colors');if(toggle)toggle.checked=launchColors.customize;
+    const black=$('#cff-black-headers');if(black)black.checked=launchColors.black;
   }
+  const LAUNCH_DRAWINGS_KEY='cff_camp_launch_drawings_v1';
+  const DRAWING_COLORS=['#ffbc42','#49dcb1','#68b7ff','#ff729c','#c09bff','#ff8d50','#a8df65','#66d5e8'];
+  const DRAWING_SHAPES={
+    bull:'<path fill="@A" d="M12 17 24 28 29 14 50 21 71 14 76 28 88 17 84 43 70 49 67 73 50 87 33 73 30 49 16 43Z"/><path fill="@B" d="m34 49 12 6-11 4Zm32 0-12 6 11 4ZM37 69h26l-5 10H42Z"/>',
+    bull2:'<path fill="@A" d="m8 21 16 10 8-12 18 6 18-6 8 12 16-10-8 28-13 2-5 22-16 16-16-16-5-22-13-2Z"/><path fill="@B" d="m32 43 15 10-12 2Zm36 0-15 10 12 2ZM39 70q11-12 22 0v8H39Z"/>',
+    star:'<path fill="@A" d="m50 7 12 28 31 3-23 21 7 31-27-16-27 16 7-31L7 38l31-3Z"/><path fill="@B" d="m50 27 7 19 20 1-16 13 5 20-16-13-16 13 5-20-16-13 20-1Z"/>',
+    star2:'<path fill="@A" d="m50 4 14 24 28-2-8 27 10 25-29 1-15 22-15-22-29-1 10-25-8-27 28 2Z"/><path fill="@B" d="m50 22 9 19 21 3-15 14 4 21-19-10-19 10 4-21-15-14 21-3Z"/>',
+    shield:'<path fill="@A" d="m50 6 36 14-5 40Q76 81 50 96 24 81 19 60l-5-40Z"/><path fill="@B" d="m50 20 22 8-4 30q-3 15-18 27V20Z"/>',
+    shield2:'<path fill="@A" d="M17 12h66v45Q77 80 50 95 23 80 17 57Z"/><path fill="@B" d="m50 22 8 18 21 2-16 14 5 20-18-11-18 11 5-20-16-14 21-2Z"/>',
+    bolt:'<path fill="@A" d="M50 4 17 56h29L35 96l48-61H54L67 4Z"/><path fill="@B" d="M55 18 31 48h28L49 76l20-32H47Z"/>',
+    bolt2:'<path fill="@A" d="m50 3 43 47-43 47L7 50Z"/><path fill="@B" d="M57 17 31 56h19L43 84l29-43H53Z"/>',
+    wolf:'<path fill="@A" d="m19 9 24 18h14L81 9l-5 40 9 13-19 10-16 23-16-23-19-10 9-13Z"/><path fill="@B" d="m28 47 17 10-13 2Zm44 0L55 57l13 2ZM41 70h18l-9 12Z"/>',
+    eagle:'<path fill="@A" d="m5 19 36 20 9-20 9 20 36-20-15 34-21 7-9 35-9-35-21-7Z"/><path fill="@B" d="m50 33 11 15-11 8-11-8ZM19 39l20 11-6 5Zm62 0L61 50l6 5Z"/>',
+    flame:'<path fill="@A" d="M52 4Q69 29 59 39q22-9 27-22 19 40-3 64Q50 109 21 80-3 53 24 22q-3 28 13 28Q55 43 52 4Z"/><path fill="@B" d="M48 44Q43 64 58 66q9-5 11-15 13 24-7 34Q33 98 28 73q-1-13 9-20 0 12 8 14Z"/>',
+    diamond:'<path fill="@A" d="m25 11 50 0 22 30-47 56L3 41Z"/><path fill="@B" d="M28 21h44l12 16H16Zm7 25h30L50 80Z"/>'
+  };
+  function normalizeLaunchDrawings(value){
+    const drawings=Object.create(null);
+    Object.entries(value||{}).forEach(([code,item])=>{if(code&&Object.hasOwn(DRAWING_SHAPES,item?.shape)&&/^#[0-9a-f]{6}$/i.test(item.color||'')&&/^#[0-9a-f]{6}$/i.test(item.accent||''))drawings[code]={shape:item.shape,color:item.color,accent:item.accent}});
+    return drawings;
+  }
+  let launchDrawings=(()=>{try{const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');return normalizeLaunchDrawings(backup?.config?.cffLaunchDrawingsV1||JSON.parse(localStorage.getItem(LAUNCH_DRAWINGS_KEY)||'null'))}catch(_){return normalizeLaunchDrawings(null)}})();
+  const failedLaunchLogos=new Set();
+  function saveLaunchDrawings(saveCamp=false){
+    try{localStorage.setItem(LAUNCH_DRAWINGS_KEY,JSON.stringify(launchDrawings))}catch(_){}
+    if(saveCamp&&window.__CFF_CAMP_READY__)window.autoSave?.(true);
+  }
+  function chooseLaunchDrawing(code,reroll=false){
+    if(launchDrawings[code]&&!reroll)return launchDrawings[code];
+    const keys=Object.keys(DRAWING_SHAPES),used=new Set(Object.entries(launchDrawings).filter(([other])=>other!==code).map(([,item])=>item.shape));
+    const available=keys.filter(key=>!used.has(key)&&key!==launchDrawings[code]?.shape),pool=available.length?available:keys.filter(key=>key!==launchDrawings[code]?.shape);
+    launchDrawings[code]={shape:pool[Math.floor(Math.random()*pool.length)],color:DRAWING_COLORS[Math.floor(Math.random()*DRAWING_COLORS.length)],accent:Math.random()<.5?'#ffffff':'#101115'};
+    saveLaunchDrawings();return launchDrawings[code];
+  }
+  function drawingSource(item){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'+DRAWING_SHAPES[item.shape].replaceAll('@A',item.color).replaceAll('@B',item.accent)+'</svg>')}
+  function initialLogoSource(team){
+    const initials=(team.abbr?String(team.abbr).slice(0,3):String(team.name||team.code||'?').split(/\s+/).map(word=>word[0]||'').join('').slice(0,3)).replace(/[&<>"']/g,'');
+    return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="18" fill="#25354b"/><text x="50" y="62" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="700" fill="#ffffff">'+initials+'</text></svg>');
+  }
+  function launchLogoSources(team){
+    const configured=[...document.querySelectorAll('#logos-config-rows .sheet-row')].find(row=>[team.name,team.code,team.abbr].some(name=>norm(row.querySelector('.logo-sheet-name')?.value)===norm(name)));
+    const custom=configured?.querySelector('.logo-sheet-file')?.value.trim()||'';
+    const bank=resolveBankLogo(team.name)||resolveBankLogo(team.code);
+    const known=repoLogoForTeam(team);
+    let original='';try{original=window.getLogo?.(team.name)||''}catch(_){}
+    const generic=value=>!value||/(?:^|\/)escudo\.webp(?:\?|$)/i.test(value);
+    return [...new Set([logoBank[norm(team.name)]?.src,logoBank[norm(team.code)]?.src,!shouldReplaceLogoValue(custom)?custom:'',known,bank,original].filter(value=>typeof value==='string'&&!generic(value)))];
+  }
+  function fallbackLaunchLogo(img,team,code){
+    const kind=launchDesign.randomDrawings?'drawing':'initials',src=kind==='drawing'?drawingSource(chooseLaunchDrawing(code)):initialLogoSource(team);
+    img.dataset.cffLogoKind=kind;img.dataset.cffLogoState='fallback';
+    if(img.getAttribute('src')!==src)img.src=src;
+    syncLaunchDrawingButton(img.closest('.team-row'),img);
+  }
+  function syncLaunchDrawingButton(row,img){
+    if(!row)return;
+    const header=row.querySelector(':scope>.team-flex');if(!header)return;
+    let button=header.querySelector('.cff-reroll-drawing');
+    if(launchDesign.randomDrawings&&img?.dataset.cffLogoKind==='drawing'){
+      if(!button){button=document.createElement('button');button.type='button';button.className='cff-reroll-drawing';button.textContent='🎲';button.title='Trocar desenho deste time';button.setAttribute('aria-label',button.title);button.addEventListener('click',()=>{const code=launchTeamCode(row);chooseLaunchDrawing(code,true);refreshLaunchLogos();saveLaunchDrawings(true)});header.appendChild(button)}
+      button.hidden=$('#drop-opt-v59-show-logos')?.checked===false;
+    }else button?.remove();
+  }
+  function refreshLaunchLogos(){
+    const container=$('#teams-inputs-container');if(!container)return;
+    const show=$('#drop-opt-v59-show-logos')?.checked!==false;
+    container.classList.toggle('cff-logo-side-mode',show&&launchDesign.logoMode==='side');
+    const teams=teamRows();
+    container.querySelectorAll('.team-row').forEach(row=>{
+      const code=launchTeamCode(row),header=row.querySelector(':scope>.team-flex');if(!code||!header)return;
+      const team=teams.find(team=>team.code===code)||{code,name:code,abbr:code};
+      let wrap=row.querySelector('.cff-launch-logo-wrap'),img=wrap?.querySelector('img');
+      if(!wrap){
+        wrap=document.createElement('div');wrap.className='cff-launch-logo-wrap';
+        img=header.querySelector('img.mini-logo')||document.createElement('img');img.classList.add('mini-logo','cff-launch-logo');img.removeAttribute('onerror');img.onerror=null;
+        wrap.appendChild(img);
+      }
+      const side=show&&launchDesign.logoMode==='side',parent=side?row:header;
+      if(wrap.parentElement!==parent){
+        if(side)row.appendChild(wrap);
+        else{const name=[...header.children].find(node=>node.tagName==='SPAN'&&!node.classList.contains('team-quick-actions-v28'));header.insertBefore(wrap,name||header.firstChild)}
+      }
+      wrap.hidden=!show;row.classList.toggle('cff-logo-side',side);row.classList.toggle('cff-logo-large',show&&launchDesign.logoMode==='large');
+      img.alt=team.name;img.title=team.name;
+      const sources=launchLogoSources(team),signature=JSON.stringify([code,sources,launchDesign.randomDrawings,launchDrawings[code]]);
+      if(img.dataset.cffLogoSignature!==signature){
+        img.dataset.cffLogoSignature=signature;let attempt=0;
+        const next=()=>{
+          while(attempt<sources.length&&failedLaunchLogos.has(sources[attempt]))attempt++;
+          if(attempt>=sources.length){fallbackLaunchLogo(img,team,code);return}
+          const src=sources[attempt++];img.dataset.cffLogoKind='real';img.dataset.cffLogoState='loading';
+          img.onerror=()=>{failedLaunchLogos.add(src);next()};
+          img.onload=()=>{img.dataset.cffLogoState='loaded';syncLaunchDrawingButton(row,img)};
+          if(img.getAttribute('src')!==src)img.src=src;
+          else if(img.complete&&img.naturalWidth>0)img.onload();
+          else if(img.complete&&img.naturalWidth===0)img.onerror();
+        };
+        img.onerror=null;next();
+      }
+      syncLaunchDrawingButton(row,img);
+      if(side){
+        const top=Math.ceil(header.getBoundingClientRect().bottom-row.getBoundingClientRect().top+(parseFloat(getComputedStyle(row).rowGap)||7))+'px';
+        if(row.style.getPropertyValue('--cff-logo-body-top')!==top)row.style.setProperty('--cff-logo-body-top',top);
+      }
+    });
+  }
+
   function organizeLaunchOptions(){
     const panel=$('#drop-settings-panel');if(!panel)return;
     if(!$('#cff-hide-clear-slot')){
@@ -708,9 +817,19 @@
       });
       panel.appendChild(auto);
     }
+    if(!$('#cff-black-headers')){
+      const row=document.createElement('label');row.id='cff-black-headers-row';row.className='switch';row.innerHTML='COR PRETA <input id="cff-black-headers" type="checkbox">';
+      row.querySelector('input').addEventListener('change',event=>{launchColors.black=event.target.checked;refreshLaunchColors();saveLaunchColors(true)});panel.appendChild(row);
+      const designs=document.createElement('label');designs.id='cff-random-drawings-row';designs.className='switch';designs.innerHTML='DESENHOS RANDÔMICOS <input id="cff-random-drawings" type="checkbox">';
+      designs.title='Identificar times sem logo com desenhos de até duas cores. As logos disponíveis continuam sendo usadas.';
+      designs.querySelector('input').addEventListener('change',event=>{launchDesign.randomDrawings=event.target.checked;applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign(true)});panel.appendChild(designs);
+      const logos=document.createElement('button');logos.id='cff-launch-logo-config';logos.type='button';logos.className='btn-mini';logos.textContent='Configurar logos e desenhos';
+      logos.addEventListener('click',()=>{window.toggleDropSettingsPanel?.(false);setLaunchEditorOpen(true);const section=$('#cff-launch-design-logoMode')?.closest('details');if(section){section.open=true;section.scrollIntoView({block:'nearest'})}});panel.appendChild(logos);
+    }
+    const random=$('#cff-random-drawings');if(random)random.checked=launchDesign.randomDrawings;
     const groups=[
       ['entry','Preenchimento',true,['.v32-drop-order-box','#drop-opt-auto-update-row','#drop-opt-simple-placement-row','#drop-opt-simple-kills-row','#drop-opt-count-kills-without-placement-row','#drop-opt-v57-team-score-row','#drop-opt-v81-top12-last-row']],
-      ['visual','Cores e visual',true,['#cff-launch-edit-mode','#cff-customize-colors-row','#cff-auto-colors','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
+      ['visual','Cores e visual',true,['#cff-launch-edit-mode','#cff-customize-colors-row','#cff-auto-colors','#cff-black-headers-row','#cff-random-drawings-row','#cff-launch-logo-config','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
       ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#cff-clear-slot-row','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
       ['clear','Limpar dados',false,['#v33-remove-team-panel','#v38-clear-drops-box']]
     ];
@@ -837,11 +956,23 @@
       {key:'normalHeight',label:'Altura do seletor',min:26,max:52,value:30},
       {key:'specialSize',label:'Texto Top 12 / Booyah',min:9,max:18,value:11}
     ]},
+    {title:'Logos e desenhos',fields:[
+      {key:'logoMode',label:'Posição da logo',value:'small',options:[['small','Logo no topo pequena do lado do nome'],['large','Logo grande do lado do nome'],['side','Logo grande à esquerda dos campos']]},
+      {key:'logoSize',label:'Tamanho da logo pequena',min:16,max:64,value:22},
+      {key:'logoLargeSize',label:'Tamanho da logo grande no nome',min:32,max:120,value:56},
+      {key:'logoSideWidth',label:'Largura da logo ao lado do slot',min:48,max:160,value:96},
+      {key:'logoGap',label:'Espaço entre logo e nome',min:0,max:20,value:7},
+      {key:'logoOutline',label:'Contorno da logo',min:0,max:3,step:.5,value:0},
+      {key:'logoOutlineColor',label:'Cor do contorno',value:'#ffffff',type:'color'},
+      {key:'logoRadius',label:'Arredondamento da logo',min:0,max:24,value:0},
+      {key:'logoShadow',label:'Sombra da logo',value:false,type:'checkbox'},
+      {key:'randomDrawings',label:'DESENHOS RANDÔMICOS',value:false,type:'checkbox'}
+    ]},
     {title:'Cards e logos',fields:[
       {key:'cardPadding',label:'Espaço dentro do card',min:4,max:20,value:8},
       {key:'cardGap',label:'Espaço entre os cards',min:4,max:24,value:8},
       {key:'cardRadius',label:'Arredondamento',min:0,max:24,value:9},
-      {key:'logoSize',label:'Tamanho das logos',min:16,max:44,value:22},
+
       {key:'hideClearSlot',label:'LIMPAR SLOT',value:false,type:'checkbox',optionsOnly:true}
     ]}
   ];
@@ -876,10 +1007,11 @@
   function applyLaunchDesign(){
     const container=$('#teams-inputs-container');if(!container)return;
     // Leave the original rendering intact until a visual setting is changed.
-    container.classList.toggle('cff-launch-design',launchDesignFields.some(field=>!field.optionsOnly&&launchDesign[field.key]!==field.value));
+    container.classList.toggle('cff-launch-design',launchDesignFields.some(field=>!field.optionsOnly&&!['logoMode','logoLargeSize','logoSideWidth','logoGap','logoOutline','logoOutlineColor','logoRadius','logoShadow','randomDrawings'].includes(field.key)&&launchDesign[field.key]!==field.value));
     container.classList.toggle('cff-hide-clear-slot',launchDesign.hideClearSlot);
     const clear=$('#cff-hide-clear-slot');if(clear)clear.checked=launchDesign.hideClearSlot;
     syncVisibilityEyes();
+    const random=$('#cff-random-drawings');if(random)random.checked=launchDesign.randomDrawings;
     launchDesignFields.forEach(field=>{
       if(field.type==='checkbox'||field.key==='nameColor')return;
       const value=launchDesign[field.key]+(typeof field.value==='number'?'px':'');
@@ -890,8 +1022,14 @@
     if(container.style.getPropertyValue('--cff-launch-label-height')!==height+'px')container.style.setProperty('--cff-launch-label-height',height+'px');
     const track=Math.max(launchDesign.fieldWidth,Math.ceil(launchDesign.labelSize*6.5))+'px';
     if(container.style.getPropertyValue('--cff-launch-field-track')!==track)container.style.setProperty('--cff-launch-field-track',track);
+    const outline=launchDesign.logoOutline,color=launchDesign.logoOutlineColor;
+    const effects=outline?[`drop-shadow(${outline}px 0 0 ${color})`,`drop-shadow(-${outline}px 0 0 ${color})`,`drop-shadow(0 ${outline}px 0 ${color})`,`drop-shadow(0 -${outline}px 0 ${color})`]:[];
+    if(launchDesign.logoShadow)effects.push('drop-shadow(0 3px 4px #00000099)');
+    const filter=effects.join(' ')||'none';if(container.style.getPropertyValue('--cff-launch-logo-filter')!==filter)container.style.setProperty('--cff-launch-logo-filter',filter);
+    container.style.setProperty('--cff-launch-large-name-size',Math.max(launchDesign.nameSize,Math.min(32,Math.ceil(launchDesign.logoLargeSize*.35)))+'px');
     if(launchDesign.customNameColor)container.style.setProperty('--cff-launch-name-ink',launchDesign.nameColor);
     else container.style.removeProperty('--cff-launch-name-ink');
+    refreshLaunchLogos();
   }
   function syncLaunchEditorControls(){
     launchDesignFields.forEach(field=>{
@@ -998,6 +1136,27 @@
         #teams-inputs-container#teams-inputs-container:not(.cff-launch-design) .cff-placement-paired .v46-placement-choice{font-size:8px!important;gap:1px!important}
         #teams-inputs-container#teams-inputs-container:not(.cff-launch-design) .cff-placement-paired .v46-placement-choice input{width:10px!important;min-width:10px!important;max-width:10px!important;height:10px!important;min-height:10px!important;flex-basis:10px!important}
       }
+      #teams-inputs-container#teams-inputs-container .cff-launch-logo-wrap{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:0;margin:0 var(--cff-launch-logoGap,7px) 0 0;position:relative}
+      #teams-inputs-container#teams-inputs-container:not(.v59-hide-launch-logos) .cff-launch-logo{display:block!important;object-fit:contain!important;width:var(--cff-launch-logoSize,22px)!important;height:var(--cff-launch-logoSize,22px)!important;min-width:0!important;max-width:none!important;flex-shrink:0;border-radius:var(--cff-launch-logoRadius,0px)!important;filter:var(--cff-launch-logo-filter,none)!important}
+      #teams-inputs-container#teams-inputs-container .cff-launch-logo-wrap[hidden],#teams-inputs-container#teams-inputs-container.v59-hide-launch-logos .cff-launch-logo-wrap{display:none!important}
+      #teams-inputs-container#teams-inputs-container .cff-logo-large .cff-launch-logo{width:var(--cff-launch-logoLargeSize,56px)!important;height:var(--cff-launch-logoLargeSize,56px)!important}
+      #teams-inputs-container#teams-inputs-container .cff-logo-large>.team-flex>span:not(.team-quick-actions-v28):not(.v41-simple-team-abbr){font-size:var(--cff-launch-large-name-size,20px)!important;line-height:1.2!important}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-logo-side{position:relative;padding-left:calc(var(--cff-launch-cardPadding,8px) + var(--cff-effective-side-width,var(--cff-launch-logoSideWidth,96px)) + var(--cff-launch-logoGap,7px))!important}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-logo-side>.team-flex{margin-left:calc(-1 * (var(--cff-effective-side-width,var(--cff-launch-logoSideWidth,96px)) + var(--cff-launch-logoGap,7px)));width:calc(100% + var(--cff-effective-side-width,var(--cff-launch-logoSideWidth,96px)) + var(--cff-launch-logoGap,7px))!important;max-width:none!important}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-logo-side>.cff-launch-logo-wrap{position:absolute;left:var(--cff-launch-cardPadding,8px);top:var(--cff-logo-body-top,45px);bottom:var(--cff-launch-cardPadding,8px);width:var(--cff-effective-side-width,var(--cff-launch-logoSideWidth,96px));margin:0;padding:3px;box-sizing:border-box}
+      #teams-inputs-container#teams-inputs-container .team-row.cff-logo-side>.cff-launch-logo-wrap>.cff-launch-logo{width:100%!important;height:100%!important;max-height:100%!important;min-height:0!important}
+      #teams-inputs-container#teams-inputs-container.v81-launch-grid.cff-logo-side-mode{grid-template-columns:repeat(var(--v81-grid-columns),minmax(calc(max(350px,calc(var(--v81-grid-card-min) * .66)) + var(--cff-effective-side-width,var(--cff-launch-logoSideWidth,96px)) + var(--cff-launch-logoGap,7px)),1fr))!important}
+      #teams-inputs-container#teams-inputs-container.v81-launch-grid>.team-row.cff-logo-side{min-width:calc(350px + var(--cff-effective-side-width,var(--cff-launch-logoSideWidth,96px)) + var(--cff-launch-logoGap,7px))!important}
+      #teams-inputs-container .cff-reroll-drawing{flex:0 0 24px;min-width:24px;width:24px;height:24px;padding:0;border:1px solid #ffffff55;border-radius:5px;background:#00000033;color:inherit;font-size:12px;cursor:pointer;margin:0 0 0 3px}
+      #teams-inputs-container .cff-reroll-drawing[hidden]{display:none!important}
+      #cff-reroll-drawings{width:100%;text-align:left}
+      #drop-settings-panel #cff-launch-logo-config{width:100%;padding:9px;text-align:left}
+      @media(max-width:760px){
+        #teams-inputs-container#teams-inputs-container .team-row.cff-logo-side{--cff-effective-side-width:min(var(--cff-launch-logoSideWidth,96px),20vw)}
+        #teams-inputs-container#teams-inputs-container .cff-logo-side .v46-placement-title{font-size:8px!important;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        #teams-inputs-container#teams-inputs-container.v81-launch-grid.cff-logo-side-mode{grid-template-columns:minmax(0,1fr)!important}
+        #teams-inputs-container#teams-inputs-container.v81-launch-grid>.team-row.cff-logo-side{min-width:0!important}
+      }
       @media(max-width:1250px){body.cff-launch-editing #teams-inputs-container.v81-launch-grid{grid-template-columns:minmax(0,1fr)!important}}
       @media(max-width:980px){
         body.cff-launch-editing .main-layout:has(>#cff-launch-editor){grid-template-columns:minmax(0,1fr)!important}
@@ -1031,6 +1190,10 @@
       });
       panel.appendChild(section);
     });
+    const logoSection=panel.querySelector('#cff-launch-design-logoMode')?.closest('details');
+    const reroll=document.createElement('button');reroll.type='button';reroll.id='cff-reroll-drawings';reroll.className='btn-mini';reroll.textContent='🎲 Sortear novos desenhos';
+    reroll.addEventListener('click',()=>{document.querySelectorAll('#teams-inputs-container .cff-launch-logo[data-cff-logo-kind="drawing"]').forEach(img=>chooseLaunchDrawing(launchTeamCode(img.closest('.team-row')),true));refreshLaunchLogos();saveLaunchDrawings(true)});
+    logoSection?.querySelector('.cff-editor-fields')?.appendChild(reroll);
     const reset=document.createElement('button');reset.id='cff-launch-editor-reset';reset.type='button';reset.className='btn-mini';reset.textContent='Restaurar visual padrão';panel.appendChild(reset);
     layout.appendChild(panel);
     panel.querySelector('#cff-launch-editor-close').addEventListener('click',()=>{setLaunchEditorOpen(false);$('#cff-launch-edit-mode')?.focus({preventScroll:true})});
@@ -1058,7 +1221,7 @@
       window.collectBackupData=function(){
         const data=collect.apply(this,arguments);data.config=data.config||{};
         data.config.cffLaunchColorsV1=JSON.parse(JSON.stringify(launchColors));
-        data.config.cffLaunchDesignV1={...launchDesign};return data;
+        data.config.cffLaunchDesignV1={...launchDesign};data.config.cffLaunchDrawingsV1=JSON.parse(JSON.stringify(launchDrawings));return data;
       };
     }
     const importer=window.importBackup;
@@ -1071,7 +1234,7 @@
           refreshLaunchColors();saveLaunchColors(true);
         }
         if(data?.config){
-          launchDesign=normalizeLaunchDesign(data.config.cffLaunchDesignV1);
+          launchDesign=normalizeLaunchDesign(data.config.cffLaunchDesignV1);launchDrawings=normalizeLaunchDrawings(data.config.cffLaunchDrawingsV1);saveLaunchDrawings();
           applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign(true);
         }
         return result;
