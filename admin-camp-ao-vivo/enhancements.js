@@ -1385,8 +1385,94 @@
     updateSaveState
   };
 
+  function buildMultiDayWikiOverview(count,championEnabled){
+    const detailed=typeof isDetailedMode==='function'&&isDetailedMode();
+    const starting=typeof isStartingEnabled==='function'&&isStartingEnabled();
+    const stats=summaryData.map(team=>{
+      const bonus=starting?(Number(startingPoints[team.code])||0):0;
+      const row={code:team.code,total:bonus,starting:bonus,matches:0,booyahs:0,placement:0,kills:0,unknownPlacement:false,unknownKills:false};
+      for(let index=0;index<count;index++){
+        const drop=normalizeDropRecord(dropsData[index]),points=getStoredDropPoints(drop,team.code);
+        if(points===null||!Number.isFinite(points))continue;
+        row.total+=points;row.matches++;
+        const place=drop.booyah===team.code?1:getStoredPlacement(drop,team.code);
+        if(place===1)row.booyahs++;
+        if(!detailed)continue;
+        let kills=getStoredKills(drop,team.code);
+        const knownPlace=Number.isInteger(place)&&place>=1&&place<=12;
+        if((kills===null||!Number.isFinite(kills))&&knownPlace){
+          const inferred=points-getPlacementPoints(place);if(inferred>=0)kills=inferred;
+        }
+        if(kills!==null&&Number.isFinite(kills)){
+          row.kills+=kills;row.placement+=points-kills;
+        }else{
+          row.unknownKills=true;
+          if(knownPlace)row.placement+=getPlacementPoints(place);else row.unknownPlacement=true;
+        }
+      }
+      return row;
+    });
+    const bg=$('#bg-enabled')?.checked&&typeof getBgStringFromGrid==='function'?getBgStringFromGrid():'';
+    const title=championEnabled?'Champion Rush Standings Overview':'Final Standings Overview';
+    const winner=championEnabled&&typeof tournamentWinner!=='undefined'?tournamentWinner:null;
+    const rounds=[['Match Played',row=>row.matches],['[[File:Free Fire Booyah! allmode.png|55px]]',row=>row.booyahs]];
+    if(detailed)rounds.push(['Place Points',row=>row.unknownPlacement?null:row.placement],['Kill Points',row=>row.unknownKills?null:row.kills]);
+    else rounds.push(['Points',row=>row.total-row.starting]);
+    if(starting)rounds.push(['Headstart Points',row=>row.starting]);
+    const cp=Number($('#champion-point')?.value)||0;
+    const match=window.__buildMatchBlockV28({key:'R1M1',start:0,count,detailed,dateFallback:$('#match-date')?.value||'',championEnabled,cp,singleChampion:true,includeStartingPoints:true,includePlacementOverrides:true});
+    const finished=/^\|R1M1=\{\{Match\|finished=true(?:\||\})/.test(match);
+    // Manual input prevents imported match data from replacing the statistic columns.
+    let overview=`{{FfaStandings|title=${title}|import=false${bg?'|bg='+bg:''}`;
+    // Champion Rush can finish with a champion below the leader in total points.
+    if(winner)overview+='|tiebreakers=["manual","points"]';
+    overview+='\n';
+    rounds.forEach(([label],index)=>{overview+=`|round${index+1}={{Round|title=${label}|started=true|finished=${finished?'true':''}}}\n`});
+    stats.forEach((row,index)=>{
+      const values=rounds.map(([,value])=>value(row));
+      // Games and Booyahs are display statistics, not extra competition points.
+      const correction=row.total-values.reduce((sum,value)=>sum+(value===null?0:value),0);
+      overview+=`|{{TeamOpponent|${row.code}|${values.map((value,i)=>'r'+(i+1)+'='+(value===null?'':value)).join('|')}|startingpoints=${correction}|tiebreaker=${stats.length-index}}}\n`;
+    });
+    overview+='}}';
+    const id=typeof getOrCreateMatchlistId==='function'?getOrCreateMatchlistId():$('#matchlist-id')?.value||'finals';
+    const header=championEnabled?'Champion Rush':'Final';
+    return `===Finals===\n{{Tabs dynamic|name1=Overview|name2=Detailed|This=2}}\n{{Tabs dynamic/tab|1}}\n${overview}\n<!--\nDetailed\n-->{{Tabs dynamic/tab|2}}\n{{Bracket|Bracket/2|id=${id}\n|R1M1header=${header}\n${match}}}\n{{Tabs dynamic/end}}`;
+  }
+  function installMultiDayWikiOverview(){
+    const original=window.generateLiquipedia;
+    if(typeof original!=='function'||original.__cffMultiDayOverview)return;
+    const wrapped=function(){
+      const classic=$('#final-mode')?.value==='classic';
+      const detailed=typeof isDetailedMode==='function'&&isDetailedMode();
+      const outputMode=typeof window.getChampionOutputModeV90==='function'?window.getChampionOutputModeV90():$('#champion-output-mode')?.value||'overview';
+      // A registered tournament day or an imported match fragment is a one-day export.
+      const tournament=window.v76TournamentMode?.getState?.();
+      let scope;try{scope=window.collectBackupData?.(false)?.config?.v43WikiScope}catch(_){}
+      if(Number($('#tournament-days')?.value)<=1||tournament?.enabled||(classic&&!detailed)||(!classic&&outputMode!=='overview')||(classic&&['full','fragment'].includes(scope?.mode)))return original.apply(this,arguments);
+      window.renderSummary?.();
+      const championEnabled=typeof window.isChampionPointLogicEnabled==='function'&&window.isChampionPointLogicEnabled();
+      const done=dropsData.filter(drop=>getDropHasScore(normalizeDropRecord(drop))).length>=totalQuedas;
+      const count=Math.max(0,getWikiDropCount((championEnabled&&tournamentWinner)||done));
+      let cursor=0,days=0;
+      for(let day=1;day<=Number($('#tournament-days')?.value);day++){
+        const length=Math.max(0,Number($('#day-'+day+'-count')?.value)||0);
+        if(length&&cursor<count)days++;
+        cursor+=length;
+      }
+      if(days<=1)return original.apply(this,arguments);
+      const out=buildMultiDayWikiOverview(count,championEnabled);
+      const area=$('#output-code');if(area){area.value=out;area.focus();area.select();try{document.execCommand('copy')}catch(_){}}
+      const simple=$('#v41-simple-output');if(simple)simple.value=out;
+      alert('Código completo gerado e copiado!');return out;
+    };
+    wrapped.__cffMultiDayOverview=true;window.generateLiquipedia=wrapped;
+    try{generateLiquipedia=wrapped}catch(_){}
+  }
+
   function boot(){
     installLaunchColorBackup();
+    installMultiDayWikiOverview();
     injectCampFixStyles();
     injectWorkspacePolishStyles();
     buildLaunchEditor();

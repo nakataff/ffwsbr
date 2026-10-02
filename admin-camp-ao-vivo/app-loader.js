@@ -120,7 +120,7 @@
           return;
         }
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v22';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v23';
         extra.async=false;
         extra.onload=()=>{
           const startPersistence=()=>{
@@ -146,7 +146,7 @@
           document.body.appendChild(persistence);
           };
           const entries=document.createElement('script');
-          entries.src='admin-camp-ao-vivo/launch-extras.js?v=20261001-camp-fixes-v22';
+          entries.src='admin-camp-ao-vivo/launch-extras.js?v=20261001-camp-fixes-v23';
           entries.async=false;
           entries.onload=startPersistence;
           entries.onerror=()=>{console.warn('[Camp ao vivo] entradas extras indisponíveis');startPersistence()};
