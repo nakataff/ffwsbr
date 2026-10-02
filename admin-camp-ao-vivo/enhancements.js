@@ -734,7 +734,7 @@
     let button=header.querySelector('.cff-reroll-drawing');
     if(launchDesign.randomDrawings&&img?.dataset.cffLogoKind==='drawing'){
       if(!button){button=document.createElement('button');button.type='button';button.className='cff-reroll-drawing';button.textContent='🎲';button.title='Trocar desenho deste time';button.setAttribute('aria-label',button.title);button.addEventListener('click',()=>{const code=launchTeamCode(row);chooseLaunchDrawing(code,true);refreshLaunchLogos();saveLaunchDrawings(true)});header.appendChild(button)}
-      button.hidden=$('#drop-opt-v59-show-logos')?.checked===false;
+      button.hidden=launchDesign.hideDrawingDice||$('#drop-opt-v59-show-logos')?.checked===false;
     }else button?.remove();
   }
   function refreshLaunchLogos(){
@@ -790,6 +790,11 @@
       row.querySelector('input').addEventListener('change',event=>{launchDesign.hideClearSlot=event.target.checked;applyLaunchDesign();saveLaunchDesign(true)});
       panel.appendChild(row);
     }
+    if(!$('#cff-hide-drawing-dice')){
+      const row=document.createElement('label');row.id='cff-hide-drawing-dice-row';row.className='switch';row.innerHTML='DADO DO DESENHO <input id="cff-hide-drawing-dice" type="checkbox">';
+      row.querySelector('input').checked=launchDesign.hideDrawingDice;
+      row.querySelector('input').addEventListener('change',event=>{launchDesign.hideDrawingDice=event.target.checked;applyLaunchDesign();saveLaunchDesign(true)});panel.appendChild(row);
+    }
     if(!$('#cff-launch-edit-mode')){
       const edit=document.createElement('button');edit.id='cff-launch-edit-mode';edit.type='button';edit.className='btn-mini';edit.textContent='MODO EDIÇÃO';
       edit.setAttribute('aria-controls','cff-launch-editor');edit.setAttribute('aria-expanded','false');
@@ -830,7 +835,7 @@
     const groups=[
       ['entry','Preenchimento',true,['.v32-drop-order-box','#drop-opt-auto-update-row','#drop-opt-simple-placement-row','#drop-opt-simple-kills-row','#drop-opt-count-kills-without-placement-row','#drop-opt-v57-team-score-row','#drop-opt-v81-top12-last-row']],
       ['visual','Cores e visual',true,['#cff-launch-edit-mode','#cff-customize-colors-row','#cff-auto-colors','#cff-black-headers-row','#cff-random-drawings-row','#cff-launch-logo-config','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
-      ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#cff-clear-slot-row','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
+      ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#cff-clear-slot-row','#cff-hide-drawing-dice-row','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
       ['clear','Limpar dados',false,['#v33-remove-team-panel','#v38-clear-drops-box']]
     ];
     groups.forEach(([id,title,open,selectors])=>{
@@ -864,7 +869,7 @@
     const controls=[
       ['drop-opt-random','Botão de teste',false],['drop-opt-clear-maps','Limpar mapas',false],['drop-opt-clear-placements','Limpar posições',false],
       ['v34-hide-tiebreak','Desempate',true],['v34-hide-options','Opções do time',true],['v34-hide-delete','Apagar time',true],['v34-hide-pause','Pausa',true],
-      ['cff-hide-clear-slot','LIMPAR SLOT',true]
+      ['cff-hide-clear-slot','LIMPAR SLOT',true],['cff-hide-drawing-dice','DADO DO DESENHO',true]
     ];
     controls.forEach(([id,name,inverted])=>{
       const input=document.getElementById(id),row=input?.closest('label');if(!row)return;
@@ -927,7 +932,23 @@
       });
       if(warning)set(warning,'grid-row',extraRows+1);
     });
+    centerLaunchEntryFields();
   }
+  function centerLaunchEntryFields(){
+    document.querySelectorAll('#teams-inputs-container .team-row').forEach(row=>{
+      const header=row.querySelector(':scope>.team-flex');if(!header)return;
+      const previous=parseFloat(row.style.getPropertyValue('--cff-input-y-offset'))||0;
+      const cells=Array.from(row.querySelectorAll(':scope>.small-cell,:scope>.cff-extra-grid>.cff-extra-field,:scope>.cff-extra-grid>.cff-extra-warning')).filter(cell=>cell.getClientRects().length&&getComputedStyle(cell).display!=='none');
+      if(!cells.length)return;
+      const bounds=cells.map(cell=>cell.getBoundingClientRect()),style=getComputedStyle(row);
+      const bodyTop=header.getBoundingClientRect().bottom+(parseFloat(style.rowGap)||0);
+      const bodyBottom=row.getBoundingClientRect().bottom-(parseFloat(style.paddingBottom)||0)-(parseFloat(style.borderBottomWidth)||0);
+      const first=Math.min(...bounds.map(rect=>rect.top))-previous,last=Math.max(...bounds.map(rect=>rect.bottom))-previous;
+      const offset=Math.round(Math.max(0,bodyTop+(bodyBottom-bodyTop-(last-first))/2-first)*100)/100;
+      if(Math.abs(offset-previous)>.05)row.style.setProperty('--cff-input-y-offset',offset+'px');
+    });
+  }
+  window.addEventListener('resize',()=>requestAnimationFrame(centerLaunchEntryFields),{passive:true});
   const LAUNCH_DESIGN_KEY='cff_camp_launch_design_v1';
   const LAUNCH_DESIGN_FIELDS=[
     {title:'Nome dos times',fields:[
@@ -973,7 +994,8 @@
       {key:'cardGap',label:'Espaço entre os cards',min:4,max:24,value:8},
       {key:'cardRadius',label:'Arredondamento',min:0,max:24,value:9},
 
-      {key:'hideClearSlot',label:'LIMPAR SLOT',value:false,type:'checkbox',optionsOnly:true}
+      {key:'hideClearSlot',label:'LIMPAR SLOT',value:false,type:'checkbox',optionsOnly:true},
+      {key:'hideDrawingDice',label:'DADO DO DESENHO',value:false,type:'checkbox',optionsOnly:true}
     ]}
   ];
   const launchDesignFields=LAUNCH_DESIGN_FIELDS.flatMap(group=>group.fields);
@@ -1010,6 +1032,7 @@
     container.classList.toggle('cff-launch-design',launchDesignFields.some(field=>!field.optionsOnly&&!['logoMode','logoLargeSize','logoSideWidth','logoGap','logoOutline','logoOutlineColor','logoRadius','logoShadow','randomDrawings'].includes(field.key)&&launchDesign[field.key]!==field.value));
     container.classList.toggle('cff-hide-clear-slot',launchDesign.hideClearSlot);
     const clear=$('#cff-hide-clear-slot');if(clear)clear.checked=launchDesign.hideClearSlot;
+    const dice=$('#cff-hide-drawing-dice');if(dice)dice.checked=launchDesign.hideDrawingDice;
     syncVisibilityEyes();
     const random=$('#cff-random-drawings');if(random)random.checked=launchDesign.randomDrawings;
     launchDesignFields.forEach(field=>{
@@ -1118,6 +1141,7 @@
         #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row>.v46-placement-grid{grid-column:1/-1!important;grid-row:3!important}
         #teams-inputs-container.cff-launch-design.v46-simple-placement-enabled .team-row.detailed-row>.slot-actions{grid-column:-2!important;grid-row:2!important}
       }
+      #teams-inputs-container .team-row>.small-cell,#teams-inputs-container .team-row>.cff-extra-grid{transform:translateY(var(--cff-input-y-offset,0px))}
       #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired{grid-template-columns:var(--cff-paired-column-1) var(--cff-paired-column-2) minmax(0,1fr) 30px!important;align-items:start}
       #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.team-flex{grid-row:1!important}
       #teams-inputs-container#teams-inputs-container .team-row.cff-placement-paired>.small-cell{grid-row:2}
