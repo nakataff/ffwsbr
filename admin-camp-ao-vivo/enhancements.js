@@ -748,9 +748,12 @@
       let wrap=row.querySelector('.cff-launch-logo-wrap'),img=wrap?.querySelector('img');
       if(!wrap){
         wrap=document.createElement('div');wrap.className='cff-launch-logo-wrap';
-        img=header.querySelector('img.mini-logo')||document.createElement('img');img.classList.add('mini-logo','cff-launch-logo');img.removeAttribute('onerror');img.onerror=null;
+        img=header.querySelector('img.mini-logo')||document.createElement('img');img.classList.add('cff-launch-logo');img.removeAttribute('onerror');img.onerror=null;
         wrap.appendChild(img);
       }
+      // Legacy placement sorting rewrites img.mini-logo with getLogo(), losing drawings.
+      // This image has its own resolver and sizing rules, so keep it outside that selector.
+      img.classList.remove('mini-logo');
       const side=show&&launchDesign.logoMode==='side',parent=side?row:header;
       if(wrap.parentElement!==parent){
         if(side)row.appendChild(wrap);
