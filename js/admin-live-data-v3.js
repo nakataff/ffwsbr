@@ -10,7 +10,8 @@ if(!firebaseConfig) throw new Error('Configuração Firebase não encontrada.');
 
 const app=getApps().length?getApp():initializeApp(firebaseConfig);
 const auth=getAuth(app),db=getDatabase(app);
-setPersistence(auth,browserLocalPersistence).catch(()=>{});
+// Let Firebase restore the existing session before making any persistence changes.
+// Switching its storage on every page load can interrupt other open admin tabs.
 
 const $=s=>document.querySelector(s);
 const E={
@@ -727,14 +728,44 @@ E.batchList?.addEventListener('click',event=>{if(event.target.closest('[data-bat
 E.validate?.addEventListener('click',()=>{try{preview(validatePayload())}catch(error){msg(error.message||String(error),'error')}});
 E.publish?.addEventListener('click',publish);
 E.list?.addEventListener('click',event=>{const edit=event.target.closest('[data-edit-drop]'),del=event.target.closest('[data-delete-drop]');if(edit){const[d,q]=edit.dataset.editDrop.split(':').map(Number);editDrop(d,q)}if(del){const[d,q]=del.dataset.deleteDrop.split(':').map(Number);deleteDrop(d,q)}});
-E.loginBtn?.addEventListener('click',async()=>{const password=E.password.value;E.loginBtn.disabled=true;loginMsg('Entrando…');try{await signInWithEmailAndPassword(auth,ADMIN_EMAIL,password);E.password.value=''}catch(error){loginMsg('Senha inválida ou acesso não autorizado.','error')}finally{E.loginBtn.disabled=false}});
+E.loginBtn?.addEventListener('click',async()=>{
+  if(E.loginBtn.disabled)return;
+  const password=E.password.value;E.loginBtn.disabled=true;loginMsg('Entrando…');
+  try{
+    await setPersistence(auth,browserLocalPersistence);
+    const credential=await signInWithEmailAndPassword(auth,ADMIN_EMAIL,password);
+    if(String(credential.user?.email||'').toLowerCase()!==ADMIN_EMAIL)throw new Error('Conta não autorizada');
+    E.password.value='';loginMsg('');
+  }catch(error){
+    const network=error?.code==='auth/network-request-failed';
+    loginMsg(network?'Não foi possível conectar. Confira sua conexão e tente novamente.':'Senha inválida ou acesso não autorizado.','error');
+  }finally{E.loginBtn.disabled=false}
+});
 E.password?.addEventListener('keydown',event=>{if(event.key==='Enter')E.loginBtn.click()});
-E.logout?.addEventListener('click',()=>signOut(auth));
+E.logout?.addEventListener('click',async()=>{
+  E.logout.disabled=true;
+  try{await signOut(auth);stageData={};clearBatch();render();loginMsg('Você saiu do painel.')}
+  catch(error){msg('Não foi possível sair. Tente novamente.','error')}
+  finally{E.logout.disabled=false}
+});
 
 installGarenaBridgeListener();
 
+let loadedAdminUid=null;
 onAuthStateChanged(auth,user=>{
   const allowed=user&&String(user.email||'').toLowerCase()===ADMIN_EMAIL;
   E.login?.classList.toggle('live-hidden',Boolean(allowed));E.dashboard?.classList.toggle('live-hidden',!allowed);E.logout?.classList.toggle('live-hidden',!allowed);
-  if(allowed){loadRoster();loadStage().then(()=>{if(E.batchList&&!E.batchList.children.length)addBatchRow()})}else{stageData={};clearBatch();render();if(user)loginMsg('Este usuário não tem acesso ao painel.','error')}
+  if(allowed){
+    loginMsg('');
+    if(loadedAdminUid!==user.uid){loadedAdminUid=user.uid;loadRoster();loadStage().then(()=>{if(E.batchList&&!E.batchList.children.length)addBatchRow()})}
+  }else{
+    const hadSession=loadedAdminUid!==null;loadedAdminUid=null;
+    // Keep selected files and manual drafts while access is locked; only explicit logout clears the batch.
+    if(user)loginMsg('Este usuário não tem acesso ao painel.','error');
+    else if(hadSession)loginMsg('Sua sessão foi encerrada. Entre novamente para continuar; os arquivos selecionados foram preservados.');
+    else if(E.loginMsg?.textContent==='Entrando…')loginMsg('');
+  }
+},()=>{
+  E.dashboard?.classList.add('live-hidden');E.login?.classList.remove('live-hidden');E.logout?.classList.add('live-hidden');
+  loginMsg('Não foi possível verificar sua sessão. Atualize a página ou tente entrar novamente.','error');
 });
