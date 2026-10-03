@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const PREFIX='cff_public_camp_v1:';
-  const VERSION='20261003-public-v2';
+  const VERSION='20261003-public-v3';
   const status=document.getElementById('cff-camp-load-status');
   const setStatus=text=>{if(status)status.textContent=text;};
   window.__CFF_CAMP_READY__=false;
@@ -84,7 +84,7 @@
         throw new Error('Não foi possível restaurar o campeonato. Seu backup foi preservado.');
       }
       window.__CFF_CAMP_READY__=true;
-      let enhancements=await fetchText('admin-camp-ao-vivo/enhancements.js?v=20261001-camp-fixes-v24');
+      let enhancements=await fetchText('admin-camp-ao-vivo/enhancements.js?v=20261003-camp-fixes-v25');
       enhancements=enhancements.replace("base:{url:'admin-camp-ao-vivo/data/backup-torneio.json',label:'Base do torneio'}","base:{url:'camp-ao-vivo/base.json',label:'Novo campeonato'}");
       await runScript(enhancements,'camp-ao-vivo/enhancements.js');
       await addon('admin-camp-ao-vivo/launch-extras.js');

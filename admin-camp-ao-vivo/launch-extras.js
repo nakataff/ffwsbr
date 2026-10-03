@@ -56,13 +56,13 @@
   try{
     const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null'),cache=JSON.parse(localStorage.getItem(KEY)||'null');
     const fallback=cache?.owner===owner()?cache:null;
-    config=normalizeConfig(backup?.config?.cffLaunchExtraFieldsV1||fallback?.config);
+    config=normalizeConfig(cache?.config||backup?.config?.cffLaunchExtraFieldsV1);
     drafts=normalizeDrafts(backup?.cffExtraEntriesV1?.drafts||fallback?.drafts);
   }catch(_){config=normalizeConfig(null);drafts=normalizeDrafts(null)}
   const SLOT_FOCUS_KEY='cff_camp_slot_focus_v1';
   const normalizeSlotFocus=value=>({enabled:value?.enabled===true,target:/^(auto|main:(kills|pts|place|pospick|start)|extra:[\w-]+)$/.test(value?.target||'')?value.target:'auto'});
   let slotFocus,focusedSlotKey=null,slotFocusAnchor=null;
-  try{const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');slotFocus=normalizeSlotFocus(backup?.config?.cffLaunchSlotFocusV1||JSON.parse(localStorage.getItem(SLOT_FOCUS_KEY)||'null'))}
+  try{const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');slotFocus=normalizeSlotFocus(JSON.parse(localStorage.getItem(SLOT_FOCUS_KEY)||'null')||backup?.config?.cffLaunchSlotFocusV1)}
   catch(_){slotFocus=normalizeSlotFocus(null)}
   function saveSlotFocus(){
     try{localStorage.setItem(SLOT_FOCUS_KEY,JSON.stringify(slotFocus))}catch(_){}
@@ -348,7 +348,7 @@
     window.importBackup=function(){
       let data;try{data=JSON.parse($('#backup-input')?.value||'')}catch(_){}
       const previous={config,drafts,slotFocus};
-      if(data?.config){config=normalizeConfig(data.config.cffLaunchExtraFieldsV1);drafts=normalizeDrafts(data.cffExtraEntriesV1?.drafts);slotFocus=normalizeSlotFocus(data.config.cffLaunchSlotFocusV1);focusedSlotKey=null;slotFocusAnchor=null}
+      if(data?.config){drafts=normalizeDrafts(data.cffExtraEntriesV1?.drafts);focusedSlotKey=null;slotFocusAnchor=null}
       try{const result=importer.apply(this,arguments);renderConfiguration();renderRows();persist();saveSlotFocus();return result}
       catch(error){config=previous.config;drafts=previous.drafts;slotFocus=previous.slotFocus;throw error}
     };
@@ -477,6 +477,7 @@
   new MutationObserver(queueRender).observe($('#teams-inputs-container'),{childList:true,subtree:true});
   applying=true;
   try{Object.entries(drafts[scope()]||{}).forEach(([code,state])=>{syncMain(code,state);refreshCore(code)});commitCurrent();renderRows()}finally{applying=false}
-  if(config.enabled||Object.keys(drafts).length)persist();
+  persist(false);saveSlotFocus();
   window.CFF_CAMP={...(window.CFF_CAMP||{}),extraEntries:{open:openConfiguration,refresh:queueRender}};
 })();
+

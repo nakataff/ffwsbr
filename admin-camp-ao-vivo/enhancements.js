@@ -608,7 +608,7 @@
   let launchColors=(()=>{
     try{
       const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');
-      return normalizeLaunchColors(backup?.config?.cffLaunchColorsV1||JSON.parse(localStorage.getItem(LAUNCH_COLORS_KEY)||'null'));
+      return normalizeLaunchColors(JSON.parse(localStorage.getItem(LAUNCH_COLORS_KEY)||'null')||backup?.config?.cffLaunchColorsV1);
     }catch(_){return normalizeLaunchColors(null)}
   })();
   function saveLaunchColors(saveCamp=false){
@@ -695,7 +695,7 @@
     Object.entries(value||{}).forEach(([code,item])=>{if(code&&Object.hasOwn(DRAWING_SHAPES,item?.shape)&&/^#[0-9a-f]{6}$/i.test(item.color||'')&&/^#[0-9a-f]{6}$/i.test(item.accent||''))drawings[code]={shape:item.shape,color:item.color,accent:item.accent}});
     return drawings;
   }
-  let launchDrawings=(()=>{try{const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');return normalizeLaunchDrawings(backup?.config?.cffLaunchDrawingsV1||JSON.parse(localStorage.getItem(LAUNCH_DRAWINGS_KEY)||'null'))}catch(_){return normalizeLaunchDrawings(null)}})();
+  let launchDrawings=(()=>{try{const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');return normalizeLaunchDrawings(JSON.parse(localStorage.getItem(LAUNCH_DRAWINGS_KEY)||'null')||backup?.config?.cffLaunchDrawingsV1)}catch(_){return normalizeLaunchDrawings(null)}})();
   const failedLaunchLogos=new Set();
   function saveLaunchDrawings(saveCamp=false){
     try{localStorage.setItem(LAUNCH_DRAWINGS_KEY,JSON.stringify(launchDrawings))}catch(_){}
@@ -1020,7 +1020,7 @@
   let launchDesign=(()=>{
     try{
       const backup=JSON.parse(localStorage.getItem('ffws_autosave')||'null');
-      return normalizeLaunchDesign(backup?.config?.cffLaunchDesignV1||JSON.parse(localStorage.getItem(LAUNCH_DESIGN_KEY)||'null'));
+      return normalizeLaunchDesign(JSON.parse(localStorage.getItem(LAUNCH_DESIGN_KEY)||'null')||backup?.config?.cffLaunchDesignV1);
     }catch(_){return normalizeLaunchDesign(null)}
   })();
   let launchEditorOpen=false;
@@ -1243,6 +1243,7 @@
   }
 
   function installLaunchColorBackup(){
+    saveLaunchColors();saveLaunchDrawings();saveLaunchDesign();
     const collect=window.collectBackupData;
     if(typeof collect==='function'){
       window.collectBackupData=function(){
@@ -1256,14 +1257,9 @@
       window.importBackup=function(){
         let data;try{data=JSON.parse($('#backup-input')?.value||'')}catch(_){}
         const result=importer.apply(this,arguments);
-        if(data?.config?.cffLaunchColorsV1){
-          launchColors=normalizeLaunchColors(data.config.cffLaunchColorsV1);
-          refreshLaunchColors();saveLaunchColors(true);
-        }
-        if(data?.config){
-          launchDesign=normalizeLaunchDesign(data.config.cffLaunchDesignV1);launchDrawings=normalizeLaunchDrawings(data.config.cffLaunchDrawingsV1);saveLaunchDrawings();
-          applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign(true);
-        }
+        // Appearance belongs to this browser, not to the imported tournament.
+        refreshLaunchColors();saveLaunchColors();saveLaunchDrawings();
+        applyLaunchDesign();syncLaunchEditorControls();saveLaunchDesign();
         return result;
       };
     }
@@ -1497,3 +1493,4 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
