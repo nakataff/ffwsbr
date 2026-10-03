@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editor de Torneios - Liquipedia</title>
+  <meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="stylesheet" href="admin-liquipedia/app.css?v=20261003-v1">
+<script src="js/config.min.js?v=20260629-laff-json-v1"></script>
+</head>
+<body class="cff-auth-pending">
+<div id="cff-camp-auth" class="editor-auth"><div><strong>Editor de Torneios</strong><p data-cff-auth-status>Validando sua sessão do painel…</p><a href="admin.html">Voltar ao painel</a></div></div>
+<header id="appHeader">
+  <div class="wrap app-header-main">
+    <div class="header-brand-row">
+      <button id="sidebarToggleBtn" class="tiny sidebar-toggle" onclick="toggleSidebar()" aria-expanded="false" title="Abrir ou esconder o menu lateral">☰ Menu</button>
+      <div>
+        <h1>Editor de Torneios para Liquipedia</h1>
+        <div class="sub">Preencha os dados, importe um texto wiki antigo ou gere o código pronto para colar.</div>
+      </div>
+    </div>
+    <div class="actions">
+      <span class="pill"><span id="teamCountBadge">12</span> times</span>
+      <button class="tiny ghost" onclick="jumpToSection('sec-teamdb')">Banco de times</button><button id="teamRegistryToggleBtn" class="tiny ghost registry-open-button" onclick="toggleTeamRegistry()">Times registrados</button>
+      <button id="undoBtn" class="tiny ghost history-btn" onclick="undoChange()" disabled>↶ Desfazer</button>
+      <button id="redoBtn" class="tiny ghost history-btn" onclick="redoChange()" disabled>↷ Refazer</button>
+      <a class="tiny editor-back" href="admin.html">← Painel</a><button class="tiny ghost" onclick="saveNow()">Salvar navegador</button><button class="tiny primary" onclick="editorCloud.save('manual')">☁ Salvar nuvem</button>
+      <button class="tiny ghost" onclick="jumpToSection('sec-backup',true);editorCloud.list()">Backups</button><button class="tiny ghost" onclick="clearAll()">Zerar</button>
+    </div>
+  </div>
+  <div class="wrap editor-statusbar" aria-live="polite"><span id="editorSaveBadge">Navegador: salvamento automático</span><span id="editorCloudBadge">Nuvem: aguardando sessão</span></div>
+  <nav class="wrap header-section-nav" aria-label="Atalhos das seções">
+    <button class="jump-btn top-jump" onclick="jumpToTop()" title="Ir para o topo" aria-label="Ir para o topo">↑</button>
+    <button class="jump-btn" data-jump-target="sec-config" onclick="jumpToSection('sec-config',true)" title="Configuração rápida" aria-label="Ir para Configuração rápida">⚙</button>
+    <button class="jump-btn" data-jump-target="sec-output" onclick="jumpToSection('sec-output',true)" title="Texto gerado" aria-label="Ir para Texto gerado">C</button>
+    <button class="jump-btn" data-jump-target="sec-infobox" onclick="jumpToSection('sec-infobox')" title="Infobox" aria-label="Ir para Infobox">I</button>
+    <button class="jump-btn" data-jump-target="sec-about" onclick="jumpToSection('sec-about')" title="About e formato" aria-label="Ir para About e formato">F</button>
+    <button class="jump-btn" data-jump-target="sec-prize" onclick="jumpToSection('sec-prize')" title="Prize Pool" aria-label="Ir para Prize Pool">$</button>
+    <button class="jump-btn" data-jump-target="sec-teamdb" onclick="jumpToSection('sec-teamdb')" title="Banco de Times" aria-label="Ir para Banco de Times">DB</button>
+    <button class="jump-btn" data-jump-target="sec-participants" onclick="jumpToSection('sec-participants')" title="Participantes" aria-label="Ir para Participantes">P</button>
+    <button class="jump-btn" data-jump-target="sec-group-standings" onclick="jumpToSection('sec-group-standings')" title="Group Stage" aria-label="Ir para Group Stage">G</button>
+    <button class="jump-btn" data-jump-target="sec-overall" onclick="jumpToSection('sec-overall')" title="Final" aria-label="Ir para Final">F</button>
+    <button class="jump-btn" data-jump-target="sec-broadcast" onclick="jumpToSection('sec-broadcast')" title="Broadcast" aria-label="Ir para Broadcast">B</button>
+  </nav>
+</header>
+
+<section id="teamRegistryPanel" class="wrap global-team-manager hidden">
+  <div class="card">
+    <h2>
+      Times registrados em cada seção
+      <span class="section-tools"><button class="tiny" onclick="syncAllRegisteredTeamsFromParticipants()">Usar Participantes em todos</button><button class="tiny collapse-btn" onclick="toggleTeamRegistry()">✕</button></span>
+    </h2>
+    <div class="card-body stack">
+      <div class="registry-toolbar">
+        <div><label>Time que saiu / nome antigo</label><select id="registryOldTeam"></select></div>
+        <div><label>Novo time / novo nome</label><input id="registryNewTeam" placeholder="Ex.: nvo mob"></div>
+        <div>
+          <label>Trocar nestes lugares</label>
+          <div class="registry-locations">
+            <label><input id="registryLocParticipants" type="checkbox" checked> Participantes</label>
+            <label><input id="registryLocPrize" type="checkbox" checked> Prize Pool</label>
+            <label><input id="registryLocGroup" type="checkbox" checked> Group Stage</label>
+            <label><input id="registryLocOverall" type="checkbox" checked> Final</label>
+          </div>
+        </div>
+        <button class="green" onclick="replaceRegisteredTeamEverywhere()">Substituir selecionado</button>
+      </div>
+      <div class="hint">A tabela mostra o nome bruto salvo em cada seção e a posição daquele mesmo slot em Participantes, Prize Pool, Group Stage e Final. Campos vazios continuam herdando o nome de Participantes na geração.</div>
+      <div id="registeredTeamRows" class="registry-table"></div>
+    </div>
+  </div>
+</section>
+
+<main id="appLayout" class="wrap grid sidebar-hidden">
+  <aside id="appSidebar" class="stack app-sidebar">
+    <section class="card" id="sec-config">
+      <h2>Configuração rápida <span class="section-tools"><button class="tiny collapse-btn" onclick="toggleSection('sec-config')">▲</button></span></h2>
+      <div class="card-body stack">
+        <div class="row3">
+          <div>
+            <label>Número de times</label>
+            <select id="teamCount" onchange="setTeamCount(+this.value)">
+              <option value="12">12 times</option>
+              <option value="18">18 times</option>
+              <option value="24">24 times</option>
+            </select>
+          </div>
+          <div>
+            <label>Formato da Final</label>
+            <select id="standingFormat" onchange="setStandingFormat(this.value)">
+              <option value="traditional">Tradicional</option>
+              <option value="champion">Champion Rush</option>
+            </select>
+          </div>
+          <div>
+            <label>Modo de pontuação</label>
+            <select id="standingMode" onchange="state.settings.standingMode=this.value; renderStandings(); autoSave(false);">
+              <option value="complete">PP + KP</option>
+              <option value="total">Somente total</option>
+            </select>
+          </div>
+        </div>
+        <div class="wide-actions">
+          <button class="green" onclick="generateWiki(true)">Gerar texto wiki</button>
+          <button class="primary" onclick="copyOutput()">Copiar resultado</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="sec-output">
+      <h2>Texto gerado / copiado <span class="section-tools"><button class="tiny collapse-btn" onclick="toggleSection('sec-output')">▲</button></span></h2>
+      <div class="card-body">
+        <textarea id="output" class="output" placeholder="Aqui aparece o código wiki completo gerado ou a seção que você acabou de copiar..."></textarea>
+        <div class="copybar">
+          <button class="primary" onclick="copyOutput()">Copiar completo</button>
+          <button onclick="copySection('infobox')">Copiar Infobox</button>
+          <button onclick="copySection('about')">Copiar About/Formato</button>
+          <button onclick="copySection('prize')">Copiar Prize Pool</button>
+          <button onclick="copySection('participants')">Copiar Participantes</button>
+          <button onclick="copySection('results')">Copiar Results</button>
+          <button onclick="copySection('groupStage')">Copiar Group Stage</button>
+          <button onclick="copySection('grandFinals')">Copiar Grand Finals</button>
+          <button onclick="copySection('broadcast')">Copiar Broadcast</button>
+          <button onclick="downloadWiki()">Baixar .txt</button>
+          <button onclick="generateWiki(true)">Atualizar geração</button>
+        </div>
+        <div class="status" id="copyStatus"></div>
+      </div>
+    </section>
+
+    <section class="card" id="sec-import">
+      <h2>Importar wiki <span class="section-tools"><button class="tiny collapse-btn" onclick="toggleSection('sec-import')">▲</button></span></h2>
+      <div class="card-body">
+        <label>Cole aqui um texto wiki já existente</label>
+        <textarea id="importText" placeholder="Cole aqui o código da Liquipedia..."></textarea>
+        <div class="copybar">
+          <button class="primary" onclick="importWiki()">Preencher com esse texto</button>
+          <button onclick="document.getElementById('importText').value=''">Limpar caixa</button>
+        </div>
+        <div class="status" id="importStatus"></div>
+      </div>
+    </section>
+
+    <section class="card" id="sec-backup">
+      <h2>Salvar e restaurar <span class="section-tools"><button class="tiny collapse-btn" onclick="toggleSection('sec-backup')">▲</button></span></h2>
+      <div class="card-body">
+        <div class="actions">
+          <button onclick="exportJSON()">Exportar JSON</button>
+          <label class="tiny" style="border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#1e293b;color:white;cursor:pointer;margin:0">Importar JSON<input type="file" accept=".json,application/json" onchange="importJSON(event)" style="display:none"></label>
+        </div>
+        <div class="save-summary" aria-live="polite"><span id="editorLocalStatus">Salvamento automático no navegador</span><span id="editorCloudStatus">Nuvem: aguardando sessão</span></div>
+        <label class="compact-check"><input id="editorCloudAuto" type="checkbox" checked onchange="editorCloud.setAuto(this.checked)"> Salvar na nuvem em momentos importantes</label>
+        <div class="actions"><button onclick="saveNow()">Salvar tudo agora no navegador</button><button class="primary" onclick="editorCloud.save('manual')">Salvar nuvem</button><button onclick="editorCloud.list()">Ver backups na nuvem</button></div>
+        <div id="editorCloudBackups" class="cloud-backups"></div><div class="hint">Geração, importação, modelos e alterações no banco criam checkpoints. O navegador também salva durante a edição.</div>
+      </div>
+    </section>
+
+    <section class="card" id="sec-aliases">
+      <h2>Aliases e memória <span class="section-tools"><button class="tiny red" onclick="clearSection('aliases')">Zerar seção</button><button class="tiny collapse-btn" onclick="toggleSection('sec-aliases')">▲</button></span></h2>
+      <div class="card-body stack">
+        <div class="compact-check">
+          <input id="aliasesEnabled" type="checkbox" onchange="toggleAliases(this.checked)">
+          <span>Ativar sugestões de nomes já registrados</span>
+        </div>
+        <div class="alias-stats">
+          <div class="alias-stat"><strong id="playerAliasCount">0</strong><span class="hint">jogadores/staff</span></div>
+          <div class="alias-stat"><strong id="teamAliasCount">0</strong><span class="hint">times</span></div>
+        </div>
+        <button class="green" onclick="saveCurrentInformation()">Salvar informações atuais</button>
+        <div class="hint">Registra nomes dos participantes, staff, times e banco de dados. As sugestões ficam salvas no navegador e entram no backup JSON.</div>
+        <div class="status" id="aliasStatus"></div>
+      </div>
+    </section>
+  </aside>
+
+  <section class="stack main-sections">
+    <section class="card" id="sec-infobox">
+      <h2>Infobox da liga <span class="section-tools"><button class="tiny primary section-primary-action" onclick="copySection('infobox')">Copiar</button><details class="section-menu"><summary title="Mais opções">⚙</summary><div class="section-menu-popover"><button class="tiny green" onclick="smartInfobox(true);closeSectionMenus()">Reconhecer campeonato</button><button class="tiny red" onclick="clearSection('infobox');closeSectionMenus()">Zerar Infobox</button></div></details><button class="tiny collapse-btn" onclick="toggleSection('sec-infobox')">▲</button></span></h2>
+      <div class="card-body stack">
+        <div class="infobox-grid">
+          <div class="span4 preset-box"><strong>Campeonatos predefinidos</strong><div class="preset-controls"><div><label>Modelo salvo</label><select id="editorPresetSelect"></select></div><button class="primary" onclick="applyTournamentPreset()">Preencher com modelo</button><div><label>Nome do modelo</label><input id="editorPresetName" placeholder="Ex.: Liga Marinho"></div><button class="green" onclick="saveTournamentPreset()">Salvar modelo atual</button><button onclick="deleteTournamentPreset()">Excluir modelo</button></div><div class="hint">Guarda Infobox, formato e configurações da liga. Os times e resultados continuam no projeto.</div><div id="editorPresetStatus" class="status"></div></div>
+          <div class="span2"><label>DISPLAYTITLE</label><input id="ibox_displayTitle" data-path="infobox.displayTitle" oninput="bindInput(this)" placeholder="Nome do campeonato"></div>
+          <div class="span2"><label>Nome</label><input id="ibox_name" data-path="infobox.name" oninput="bindInput(this)" onchange="smartInfobox(false)" placeholder="Nome do campeonato"></div>
+          <div><label>Shortname</label><input id="ibox_shortname" data-path="infobox.shortname" oninput="bindInput(this)" placeholder="Season 3"></div>
+          <div><label>Liquipedia tier</label><input id="ibox_liquipediatier" data-path="infobox.liquipediatier" oninput="bindInput(this)" placeholder="5"></div>
+          <div><label>Organizador</label><input id="ibox_organizer" data-path="infobox.organizer" oninput="bindInput(this)" placeholder="Organizador"></div>
+          <div><label>Tipo</label><input id="ibox_type" data-path="infobox.type" oninput="bindInput(this)" placeholder="Online"></div>
+          <div><label>País</label><input id="ibox_country" data-path="infobox.country" oninput="bindInput(this)" placeholder="Brazil"></div>
+          <div><label>Formato da data</label><label class="compact-check"><input id="ibox_singleDate" type="checkbox" onchange="setInfoboxSingleDate(this.checked)"><span>Data única (<span class="kbd">|date=</span>)</span></label></div>
+          <div id="ibox_singleDateField" class="hidden"><label>Data única</label><input id="ibox_date" data-path="infobox.date" oninput="bindInput(this)" type="date"></div>
+          <div id="ibox_startDateField"><label>Início</label><input id="ibox_sdate" data-path="infobox.sdate" oninput="bindInput(this)" type="date"></div>
+          <div id="ibox_endDateField"><label>Término</label><input id="ibox_edate" data-path="infobox.edate" oninput="bindInput(this)" type="date"></div>
+          <div><label>Prize pool</label><input id="ibox_prizepool" data-path="infobox.prizepool" oninput="bindInput(this)" placeholder="3,000"></div>
+          <div><label>Moeda local</label><input id="ibox_localcurrency" data-path="infobox.localcurrency" oninput="bindInput(this)" placeholder="brl"></div>
+          <div><label>Número de times</label><input id="ibox_team_number" data-path="infobox.team_number" oninput="bindInput(this)" type="number"></div>
+        </div>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Identificação avançada<small>tickername, series e sponsor</small></span></summary>
+          <div class="settings-disclosure-body"><div class="row3">
+            <div><label>Tickername</label><input id="ibox_tickername" data-path="infobox.tickername" oninput="bindInput(this)"></div>
+            <div><label>Series</label><input id="ibox_series" data-path="infobox.series" oninput="bindInput(this)"></div>
+            <div><label>Sponsor</label><input id="ibox_sponsor" data-path="infobox.sponsor" oninput="bindInput(this)"></div>
+          </div></div>
+        </details>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Imagens e ícones<small>versões light e dark mode</small></span></summary>
+          <div class="settings-disclosure-body"><div class="row4">
+            <div><label>Imagem light</label><input id="ibox_image" data-path="infobox.image" oninput="bindInput(this)"></div>
+            <div><label>Imagem dark</label><input id="ibox_imagedarkmode" data-path="infobox.imagedarkmode" oninput="bindInput(this)"></div>
+            <div><label>Ícone light</label><input id="ibox_icon" data-path="infobox.icon" oninput="bindInput(this)"></div>
+            <div><label>Ícone dark</label><input id="ibox_icondarkmode" data-path="infobox.icondarkmode" oninput="bindInput(this)"></div>
+          </div></div>
+        </details>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Redes sociais<small>YouTube, Instagram, Facebook, Kick e Twitter/X</small></span></summary>
+          <div class="settings-disclosure-body"><div class="infobox-grid">
+            <div><label>YouTube</label><input id="ibox_youtube" data-path="infobox.youtube" oninput="bindInput(this)"></div>
+            <div><label>Instagram</label><input id="ibox_instagram" data-path="infobox.instagram" oninput="bindInput(this)"></div>
+            <div><label>Facebook</label><input id="ibox_facebook" data-path="infobox.facebook" oninput="bindInput(this)"></div>
+            <div><label>Kick</label><input id="ibox_kick" data-path="infobox.kick" oninput="bindInput(this)"></div>
+            <div><label>Twitter/X</label><input id="ibox_twitter" data-path="infobox.twitter" oninput="bindInput(this)"></div>
+          </div></div>
+        </details>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Navegação e introdução<small>previous, next e texto inicial</small></span></summary>
+          <div class="settings-disclosure-body"><div class="row">
+            <div><label>Previous</label><input id="ibox_previous" data-path="infobox.previous" oninput="bindInput(this)"></div>
+            <div><label>Next</label><input id="ibox_next" data-path="infobox.next" oninput="bindInput(this)"></div>
+          </div><div><label>Texto de introdução</label><input id="ibox_intro" data-path="infobox.intro" oninput="bindInput(this)" placeholder="Deixe vazio para gerar automaticamente"></div></div>
+        </details>
+        <details class="section-import">
+          <summary>📥 Colar código wiki desta seção</summary>
+          <div class="section-import-body"><textarea id="sectionImportInfobox" placeholder="Cole {{DISPLAYTITLE:...}} e {{Infobox league...}}"></textarea><div class="copybar"><button class="primary" onclick="importWikiSection('infobox')">Ler e preencher Infobox</button><button onclick="clearSectionImport('infobox')">Limpar caixa</button></div></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="card" id="sec-about">
+      <h2>About e formato <span class="section-tools"><button class="tiny primary section-primary-action" onclick="copySection('about')">Copiar</button><details class="section-menu"><summary title="Mais opções">⚙</summary><div class="section-menu-popover"><button class="tiny red" onclick="clearSection('about');closeSectionMenus()">Zerar About/Formato</button></div></details><button class="tiny collapse-btn" onclick="toggleSection('sec-about')">▲</button></span></h2>
+      <div class="card-body stack">
+        <div class="format-toolbar">
+          <div>
+            <label>Estrutura do campeonato</label>
+            <select id="formatPreset" onchange="applyFormatPreset(this.value)">
+              <option value="qualifier_final">Qualifier + Final</option>
+              <option value="group_final">Fase de grupos + Final</option>
+              <option value="group_point_final">Fase de grupos + Point Rush + Final</option>
+              <option value="point_final">Point Rush + Final</option>
+              <option value="final_only">Somente Final</option>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+          <div><label>Template de pontos</label><input id="pointsTemplate" data-path="settings.pointsTemplate" oninput="bindInput(this); updateFormatPreview()" placeholder="Points12"></div>
+          <div>
+            <label>Desempate no template</label>
+            <div class="compact-check"><input id="pointsShowTb" type="checkbox" onchange="state.settings.pointsShowTb=this.checked?'true':'false'; updateFormatPreview(); autoSave(false)"><span>Adicionar <span class="kbd">showtb=true</span></span></div>
+          </div>
+        </div>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Resumo de participantes<small>total, convidados e classificados do Qualifier</small></span></summary>
+          <div class="settings-disclosure-body">
+          <div class="small-title" style="margin:0">Resumo de participantes antes das fases</div>
+          <div class="hint" style="margin-top:3px">Cada linha é opcional e pode ser ativada separadamente.</div>
+          <div id="formatSourceGrid" class="format-source-grid">
+            <div class="format-source-item">
+              <label class="compact-check"><input id="formatIncludeTotal" type="checkbox" onchange="toggleFormatSourceItem('formatIncludeTotal',this.checked)"><span>Incluir total de times</span></label>
+              <input id="formatTotalTeams" type="number" oninput="state.settings.formatTotalTeams=this.value; updateFormatPreview(); autoSave(false)" placeholder="24">
+            </div>
+            <div class="format-source-item">
+              <label class="compact-check"><input id="formatIncludeInvited" type="checkbox" onchange="toggleFormatSourceItem('formatIncludeInvited',this.checked)"><span>Incluir convidados</span></label>
+              <input id="formatInvitedTeams" type="number" oninput="state.settings.formatInvitedTeams=this.value; updateFormatPreview(); autoSave(false)" placeholder="12">
+            </div>
+            <div class="format-source-item">
+              <label class="compact-check"><input id="formatIncludeQualifier" type="checkbox" onchange="toggleFormatSourceItem('formatIncludeQualifier',this.checked)"><span>Incluir times do Qualifier</span></label>
+              <input id="formatQualifierTeams" type="number" oninput="state.settings.formatQualifierTeams=this.value; updateFormatPreview(); autoSave(false)" placeholder="6">
+            </div>
+          </div>
+        </div>
+        </details>
+
+        <div class="format-preview-tools">
+          <div>
+            <div class="small-title" style="margin:0">Fases do campeonato</div>
+            <div class="hint" style="margin-top:3px">As datas usam calendário e são convertidas automaticamente para o padrão em inglês da Liquipedia.</div>
+          </div>
+          <div class="actions"><select id="newFormatStageType" style="width:auto;min-width:165px"><option value="qualifier">Qualifier</option><option value="group">Group Stage</option><option value="point">Point Rush</option><option value="final">Final</option><option value="custom">Personalizada</option></select><button class="green" onclick="addFormatStage($('newFormatStageType').value,$('newFormatStageType').value==='custom')">+ Adicionar fase</button></div>
+        </div>
+        <div id="formatStages" class="format-stage-list"></div>
+
+        <details open class="section-import">
+          <summary>👁 Preview do formato</summary>
+          <div class="section-import-body"><textarea id="formatPreview" class="format-preview" readonly></textarea><div class="copybar"><button onclick="copyFormatPreview()">Copiar preview</button><button onclick="updateFormatPreview()">Atualizar preview</button></div></div>
+        </details>
+
+        <div class="row">
+          <div><label>Título da Final</label><input id="standingsTitle" data-path="settings.standingsTitle" oninput="bindInput(this)" placeholder="Finals Standings"></div>
+          <div><label>Texto do Group Stage em Results</label><input id="groupStageText" data-path="settings.groupStageText" oninput="bindInput(this)" placeholder="To be Determined"></div>
+        </div>
+        <details class="section-import">
+          <summary>📥 Colar código wiki desta seção</summary>
+          <div class="section-import-body"><textarea id="sectionImportAbout" placeholder="Cole a seção ==About== / ===Format==="></textarea><div class="copybar"><button class="primary" onclick="importWikiSection('about')">Ler e preencher About</button><button onclick="clearSectionImport('about')">Limpar caixa</button></div></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="card" id="sec-prize">
+      <h2>
+        Prize Pool
+        <span class="section-tools"><button class="tiny green section-primary-action" onclick="syncPrizeFromStandings()">Puxar da Final</button><details class="section-menu"><summary title="Mais opções">⚙</summary><div class="section-menu-popover"><button class="tiny" onclick="syncPrizeFromTeams();closeSectionMenus()">Puxar Participantes</button><button class="tiny primary" onclick="copySection('prize');closeSectionMenus()">Copiar Prize Pool</button><div class="menu-separator"></div><button class="tiny red" onclick="clearSection('prize');closeSectionMenus()">Zerar Prize Pool</button></div></details><button class="tiny collapse-btn" onclick="toggleSection('sec-prize')">▲</button></span>
+      </h2>
+      <div class="card-body stack">
+        <div class="essential-settings-grid">
+          <div><label>Modo do Prize Pool</label><select id="prizePoolMode" onchange="state.settings.prizePoolMode=this.value; autoSave(false); generateWiki(false);"><option value="complete">Completo: times + valores</option><option value="values_only">Provisório: somente valores</option></select></div>
+          <div><label>Moeda local</label><input id="localCurrency" data-path="settings.localCurrency" oninput="bindInput(this)" placeholder="brl"></div>
+          <div><label>Valores rápidos, separados por vírgula</label><input id="prizePresets" data-path="settings.prizePresetsText" oninput="bindInput(this); renderPrize();" placeholder="0, 500, 1000"></div>
+        </div>
+        <div class="compact-help">No modo provisório, o código mantém somente os valores por colocação. Os dados de times, MVP e qualificação continuam salvos e podem ser reativados depois.</div>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Configurações do código<small>import, cutafter, prizesummary e data dos eliminados</small></span></summary>
+          <div class="settings-disclosure-body">
+            <div class="row3">
+              <div><label>import</label><select id="prizeImport" onchange="state.settings.prizeImport=this.value; autoSave();"><option value="false">false</option><option value="true">true</option></select></div>
+              <div><label>cutafter</label><input id="prizeCutAfter" data-path="settings.prizeCutAfter" oninput="bindInput(this)" type="number" min="0" placeholder="2"></div>
+              <div><label>prizesummary</label><select id="prizeSummary" onchange="state.settings.prizeSummary=this.value; autoSave(false)"><option value="false">false</option><option value="true">true</option><option value="">Não incluir</option></select></div>
+            </div>
+            <div class="row">
+              <div><label>Data padrão dos eliminados</label><input id="prizeEliminatedDate" data-path="settings.prizeEliminatedDate" oninput="bindInput(this)" type="date"></div>
+              <div><label>Aplicar após o corte da Final</label><button class="green" style="width:100%" onclick="applyEliminatedDate()">Aplicar data</button></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">MVP<small>jogador, flag e time</small></span></summary>
+          <div class="settings-disclosure-body">
+            <div class="row4">
+              <div><label>Incluir MVP?</label><select id="includeMvp" onchange="state.settings.includeMvp=this.value; autoSave();"><option value="true">Sim</option><option value="false">Não</option></select></div>
+              <div><label>Prêmio em dinheiro do MVP (opcional)</label><input id="mvpPrize" type="number" min="0" step="0.01" data-path="settings.mvpPrize" oninput="bindInput(this)" placeholder="Ex.: 2000"></div>
+              <div><label>MVP - jogador</label><input id="mvpPlayer" data-path="settings.mvpPlayer" oninput="bindInput(this)" placeholder="tbd"></div>
+              <div><label>MVP - flag</label><input id="mvpFlag" data-path="settings.mvpFlag" oninput="bindInput(this)" placeholder="br"></div>
+              <div><label>MVP - time</label><input id="mvpTeam" list="editorSavedTeamNames" data-path="settings.mvpTeam" oninput="bindInput(this)" placeholder="código do time"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Qualificação<small>qualified1, página e nome do destino</small></span></summary>
+          <div class="settings-disclosure-body">
+            <div class="row4">
+              <div><label>Marcar qualificação?</label><select id="prizeQualEnabled" onchange="state.settings.prizeQualEnabled=this.value; renderPrize(); autoSave(false)"><option value="false">Não</option><option value="true">Sim</option></select></div>
+              <div><label>Quantos recebem qualified1=y</label><input id="prizeQualCount" type="number" min="0" oninput="setPrizeQualificationCount(this.value)" placeholder="2"></div>
+              <div><label>Página em qualifies1</label><input id="prizeQualPage" data-path="settings.prizeQualPage" oninput="bindInput(this)" placeholder="Free_Fire_World_Series/Brazil/2026/Split_2"></div>
+              <div><label>Nome em qualifies1name</label><input id="prizeQualName" data-path="settings.prizeQualName" oninput="bindInput(this)" placeholder="FFWS BR 2026 S2"></div>
+            </div>
+          </div>
+        </details>
+
+        <div class="hint">Use <span class="kbd">Puxar da Final</span> para preencher o Prize Pool na mesma ordem da classificação da Final. Arraste o botão <span class="kbd">☰</span> para mudar a posição sem apagar os dados.</div>
+        <div id="prizeFocusBar" class="focus-bar"></div>
+        <div id="prizeRows"></div>
+        <details class="section-import">
+          <summary>📥 Colar código wiki desta seção</summary>
+          <div class="section-import-body"><textarea id="sectionImportPrize" placeholder="Cole {{TeamPrizePool...}} ou a seção ==Prize Pool=="></textarea><div class="copybar"><button class="primary" onclick="importWikiSection('prize')">Ler e preencher Prize Pool</button><button onclick="clearSectionImport('prize')">Limpar caixa</button></div></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="card" id="sec-teamdb">
+      <h2>
+        Banco de Dados de Times
+        <span class="section-tools"><span class="pill"><span id="teamDbCount">0</span> salvos</span><button class="tiny collapse-btn" onclick="toggleSection('sec-teamdb')">▲</button></span>
+      </h2>
+      <div class="card-body stack">
+        <div class="row"><div><label>Buscar time salvo</label><input id="editorDbSearch" type="search" oninput="renderSavedTeams()" placeholder="Digite Flu, LOUD, um código ou alias…"></div><div class="hint">Selecione um time abaixo para ver a ficha e editar. Isso não altera os participantes atuais.</div></div><div id="editorSavedTeams" class="saved-teams-list"></div><div id="editorRosterEditor" class="roster-editor hidden"></div>
+        <details class="wiki-editor"><summary>Editar pelo código wiki / importar time</summary><div class="db-editor-line">
+          <div>
+            <label>Times salvos</label>
+            <select id="teamDbSelect" onchange="loadTeamDbToEditor(this.value)"></select>
+          </div>
+          <button class="tiny" onclick="loadSelectedTeamDbToEditor()">Editar selecionado</button>
+          <button class="tiny red" onclick="deleteSelectedTeamDb()">Excluir selecionado</button>
+          <button class="tiny" onclick="clearTeamDbEditor()">Limpar editor</button>
+        </div>
+        <div class="row">
+          <div><label>Código / abreviação do time</label><input id="teamDbCode" placeholder="Ex.: TS, FX W7M"></div>
+          <div><label>Aliases adicionais</label><input id="teamDbAliases" placeholder="Ex.: TeamSolid, Fluxo, FX; separados por vírgula"></div>
+        </div>
+        <div>
+          <label>Colar/salvar time em formato wiki</label>
+          <textarea id="teamDbText" placeholder="Cole um bloco tipo |{{Opponent|Fluxo W7M ... }} ou edite um time salvo aqui..."></textarea>
+        </div>
+        <div class="copybar">
+          <button class="green" onclick="saveTeamDbFromText()">Salvar texto no banco</button>
+          <button class="primary" onclick="updateSelectedTeamDbFromText()">Atualizar selecionado</button>
+          <button onclick="copySelectedTeamDbWiki()">Copiar wiki do selecionado</button>
+          <button class="red" onclick="clearTeamDatabase()">Excluir banco inteiro</button>
+        </div>
+        <div class="hint">O nome do wiki continua sendo o nome canônico. Código e aliases servem só para localizar o time no banco (sem diferenciar maiúsculas/minúsculas). Em Participantes, o gerador reconhece automaticamente nome, código ou alias e oferece o botão para puxar o elenco.</div>
+        <div class="status" id="teamDbStatus"></div></details>
+      </div>
+    </section>
+
+    <section class="card" id="sec-participants">
+      <h2>
+        Participantes
+        <span class="section-tools"><button class="tiny green" onclick="pullMatchingDbTeams()" title="Compara os nomes/códigos dos participantes com o banco e puxa os elencos encontrados">Puxar times do banco</button><button class="tiny gear-btn" title="Opções gerais dos participantes" onclick="toggleParticipantsTools()">⚙</button><button class="tiny primary" onclick="copySection('participants')">Copiar seção</button><button class="tiny collapse-btn" onclick="toggleSection('sec-participants')">▲</button></span>
+      </h2>
+      <div class="card-body">
+        <div id="participantsTools" class="clean-tool-panel">
+          <div class="options-grid">
+            <div class="option-card">
+              <div class="option-card-title">Ordenar participantes</div>
+              <div class="participant-sort-actions">
+                <button class="tiny" onclick="sortParticipants('qualification')">Invited → Qualifier</button>
+                <button class="tiny" onclick="sortParticipants('alphabetical')">Ordem alfabética</button>
+                <button class="tiny" onclick="sortParticipants('groups')">Ordem de grupos</button>
+              </div>
+              <div class="hint">A ordenação altera somente a sequência da seção Participantes. As ordens próprias do Prize Pool, Group Stage e Final são preservadas pelos IDs dos times.</div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Ações da seção</div>
+              <div class="actions">
+                <button class="tiny green" onclick="syncTeamsFromPrize()">Puxar do Prize Pool</button>
+                <button class="tiny" onclick="toggleTeamRegistry(true)">Ver/trocar times registrados</button>
+                <button class="tiny red" onclick="clearSection('participants')">Zerar Participantes</button>
+              </div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Trocar qualificação geral</div>
+              <div class="actions">
+                <button class="tiny" onclick="setAllQual('invite')">Tudo Invited</button>
+                <button class="tiny" onclick="setAllQual('qualifier')">Tudo Qualifier</button>
+              </div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Trocar flags gerais</div>
+              <div class="inline-field-actions">
+                <input id="allParticipantFlagInput" placeholder="Ex.: pt">
+                <button class="tiny green" onclick="applyAllParticipantFlags()">Aplicar</button>
+                <button class="tiny red" onclick="clearAllParticipantFlags()">Apagar</button>
+              </div>
+              <div class="hint">Apagar mantém a tag como <span class="kbd">|flag=</span>.</div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Roles dos jogadores</div>
+              <label class="compact-check">
+                <input id="includePlayerRolesCheck" type="checkbox" onchange="setIncludePlayerRoles(this.checked)">
+                <span>Incluir <span class="kbd">|role=</span> nos jogadores</span>
+              </label>
+              <div class="hint">Desativado por padrão. As roles ficam salvas no formulário, mas não aparecem no código wiki. Staff incluído continua com role e <span class="kbd">type=staff</span>.</div>
+            </div>
+          </div>
+        </div>
+        <div id="participantsFocusBar" class="focus-bar"></div>
+        <label class="compact-check analyst-option"><input id="includeAnalystCheck" type="checkbox" checked onchange="setAnalystIncluded(this.checked)"> Incluir analista em Participants</label><div class="hint">Desmarcar omite o analista do código e do formulário, preservando os dados salvos.</div>
+        <div id="teamsContainer"></div>
+        <details class="section-import">
+          <summary>📥 Colar código wiki desta seção</summary>
+          <div class="section-import-body"><textarea id="sectionImportParticipants" placeholder="Cole {{TeamParticipants...}} ou os blocos de Opponent/Persons"></textarea><div class="copybar"><button class="primary" onclick="importWikiSection('participants')">Ler e preencher Participantes</button><button onclick="clearSectionImport('participants')">Limpar caixa</button></div></div>
+        </details>
+        <div class="section-bottom-actions"><button class="tiny collapse-btn-bottom" onclick="toggleSection('sec-participants')">▲ Recolher Participantes</button></div>
+      </div>
+    </section>
+
+    <section class="card" id="sec-group-standings">
+      <h2>
+        Classificação do Group Stage
+        <span class="section-tools"><button class="tiny primary section-primary-action" onclick="copySection('groupStage')">Copiar</button><details class="section-menu"><summary title="Mais opções">⚙</summary><div class="section-menu-popover"><button class="tiny" onclick="toggleGroupStandingsTools();closeSectionMenus()">Ferramentas de pontuação</button><div class="menu-separator"></div><button class="tiny" onclick="syncGroupFromTeams();closeSectionMenus()">Puxar Participantes</button><button class="tiny green" onclick="syncGroupFromPrize();closeSectionMenus()">Puxar do Prize Pool</button><button class="tiny" onclick="syncPrizeFromGroup();closeSectionMenus()">Enviar ao Prize Pool</button><div class="menu-separator"></div><button class="tiny red" onclick="clearSection('groupStage');closeSectionMenus()">Zerar Group Stage</button></div></details><button class="tiny collapse-btn" onclick="toggleSection('sec-group-standings')">▲</button></span>
+      </h2>
+      <div class="card-body stack">
+        <div id="groupOverallTools" class="clean-tool-panel">
+          <div class="options-grid">
+            <div class="option-card">
+              <div class="option-card-title">Calcular PP automaticamente</div>
+              <div class="compact-check">
+                <input id="groupAutoPlacementCheck" type="checkbox" onchange="setGroupAutoPlacementFromTools(this.checked)">
+                <span class="hint" style="margin:0">PP = Total - KP. Usado somente no modo PP + KP do Overall Standings.</span>
+              </div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Preencher todas as quedas (MP)</div>
+              <div class="actions">
+                <input id="fillAllGroupMpValue" type="number" min="0" placeholder="Ex.: 18" style="max-width:150px">
+                <button class="tiny green" onclick="fillAllGroupMP()">Aplicar em todos</button>
+              </div>
+              <div class="hint">Disponível quando a Fase de Grupos usa Overall Standings. Preenche o campo <span class="kbd">mp</span> de todos os times sem alterar pontuação ou ordem.</div>
+            </div>
+          </div>
+        </div>
+        <div class="group-config-grid">
+          <div><label>Incluir Group Stage no Results?</label><select id="groupStageIncluded" onchange="setGroupStageIncluded(this.value)"><option value="true">Sim</option><option value="false">Não, pular a seção</option></select></div>
+          <div><label>Gerar classificação?</label><select id="groupStandingsEnabled" onchange="setGroupStandingsEnabled(this.value)"><option value="false">Não</option><option value="true">Sim</option></select></div>
+          <div><label>Nome da fase</label><input id="groupStageHeading" data-path="settings.groupStageHeading" oninput="bindInput(this)" placeholder="Group Stage"></div>
+          <div><label>Formato da tabela</label><select id="groupStandingsType" onchange="setGroupStandingsType(this.value)"><option value="overall">Overall Standings</option><option value="ffa">FFA Standings</option></select></div>
+          <div><label>Título da tabela</label><input id="groupStandingsTitle" data-path="settings.groupStandingsTitle" oninput="bindInput(this)" placeholder="Group Stage Standings"></div>
+        </div>
+
+        <details class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Classificação e destino<small>quantidade de classificados, eliminados e fase seguinte</small></span></summary>
+          <div class="settings-disclosure-body">
+            <div class="row3">
+              <div><label>Classificados para a Final</label><input id="groupQualifyCount" type="number" min="0" oninput="setGroupCounts('qualified',this.value)"></div>
+              <div><label>Não classificados</label><input id="groupEliminatedCount" type="number" min="0" oninput="setGroupCounts('eliminated',this.value)"></div>
+              <div><label>Destino dos classificados</label><input id="groupAdvanceTo" data-path="settings.groupAdvanceTo" oninput="bindInput(this)" placeholder="Finals"></div>
+            </div>
+          </div>
+        </details>
+
+        <details id="groupOverallSettingsDisclosure" class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Configurações do Overall<small>modo de pontuação da tabela de grupos</small></span></summary>
+          <div class="settings-disclosure-body">
+            <div id="groupOverallModeBox"><label>Modo do Overall</label><select id="groupOverallMode" onchange="state.settings.groupOverallMode=this.value; renderGroupStandings(); autoSave(false)"><option value="complete">PP + KP</option><option value="total">Somente total</option></select></div>
+          </div>
+        </details>
+
+        <details id="groupFfaSettingsDisclosure" class="settings-disclosure hidden">
+          <summary><span class="settings-disclosure-title">Configurações do FFA e grupos<small>rounds, pontuação acumulada e divisão A/B/C/D</small></span></summary>
+          <div class="settings-disclosure-body">
+            <div class="group-config-grid">
+              <div id="groupFfaRoundsBox"><label>Quantidade de rounds no FFA</label><input id="groupFfaRounds" type="number" min="1" max="24" oninput="setGroupRoundCount(this.value)"></div>
+              <div id="groupFfaImportBox"><label>import no FFA</label><select id="groupFfaImport" onchange="state.settings.groupFfaImport=this.value; autoSave(false)"><option value="false">false</option><option value="true">true</option></select></div>
+              <div id="groupFfaCumulativeBox"><label>Modo de pontuação dos dias</label><div class="compact-check"><input id="groupFfaCumulativeCheck" type="checkbox" onchange="setGroupFfaCumulative(this.checked)"><span><strong>SOMAR PONTUAÇÃO DO DIA</strong></span></div></div>
+              <div id="groupFfaGroupsEnabledBox"><label>Divisão por grupos</label><div class="compact-check"><input id="groupFfaGroupsEnabledCheck" type="checkbox" onchange="setGroupFfaGroupsEnabled(this.checked)"><span>Ativar grupos no FFA</span></div></div>
+              <div id="groupFfaGroupNamesBox"><label>Nomes dos grupos</label><input id="groupFfaGroupNames" oninput="setGroupFfaGroupNames(this.value)" placeholder="A, B, C, D"></div>
+              <div id="groupFfaTeamsPerGroupBox"><label>Times por grupo</label><input id="groupFfaTeamsPerGroup" type="number" min="1" max="24" oninput="setGroupFfaTeamsPerGroup(this.value)" placeholder="6"></div>
+            </div>
+          </div>
+        </details>
+
+        <details id="groupRoundConfigsWrap" class="settings-disclosure hidden">
+          <summary><span class="settings-disclosure-title">Configuração dos rounds<small>títulos, started e finished de cada dia</small></span></summary>
+          <div class="settings-disclosure-body"><div id="groupRoundConfigs" class="group-rounds-config"></div></div>
+        </details>
+        <details id="groupOrganizerDisclosure" class="settings-disclosure hidden">
+          <summary><span class="settings-disclosure-title">Organização dos grupos<small>mova os times nas colunas; a ordem das linhas será atualizada junto</small></span></summary>
+          <div class="settings-disclosure-body"><div id="groupOrganizerWrap" class="group-organizer"></div></div>
+        </details>
+        <div class="hint">A organização em colunas e a ordem das linhas estão vinculadas. Ao mover uma equipe para outro grupo, as linhas são reorganizadas na sequência Group A, Group B, Group C e Group D. Ao arrastar uma linha para dentro do bloco de outro grupo, a equipe também muda de grupo. No formato FFA, preencha <span class="kbd">r1</span>, <span class="kbd">r2</span> e os demais rounds com a pontuação usada pela tabela. Com <strong>SOMAR PONTUAÇÃO DO DIA</strong> ativado, informe o total acumulado após cada dia; o código wiki receberá somente os pontos conquistados naquele dia.</div>
+        <div id="groupGroupFocusBar" class="focus-bar hidden"></div>
+        <div id="groupFocusBar" class="focus-bar"></div>
+        <details id="groupLiveStandingsDisclosure" class="settings-disclosure" open>
+          <summary><span class="settings-disclosure-title">Tabela geral no momento<small>soma automática dos pontos e classificação provisória</small></span></summary>
+          <div class="settings-disclosure-body"><div id="groupLiveStandings"></div></div>
+        </details>
+        <div id="groupStandingsRows" class="group-table-wrap"></div>
+        <details class="section-import">
+          <summary>📥 Colar código wiki desta classificação</summary>
+          <div class="section-import-body"><textarea id="sectionImportGroupStage" placeholder="Cole {{OverallStandingsTable...}} ou {{FfaStandings...}} da fase"></textarea><div class="copybar"><button class="primary" onclick="importWikiSection('groupStage')">Ler e preencher Group Stage</button><button onclick="clearSectionImport('groupStage')">Limpar caixa</button></div></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="card" id="sec-overall">
+      <h2>
+        Final
+        <span class="section-tools"><button class="tiny primary section-primary-action" onclick="copySection('grandFinals')">Copiar Final</button><details class="section-menu"><summary title="Mais opções">⚙</summary><div class="section-menu-popover"><button class="tiny" onclick="toggleOverallTools();closeSectionMenus()">Ferramentas de pontuação</button><div class="menu-separator"></div><button class="tiny" onclick="syncStandingsFromTeams();closeSectionMenus()">Atualizar times</button><button class="tiny green" onclick="syncFinalistsFromGroup();closeSectionMenus()">Puxar classificados do Group Stage</button><button class="tiny" onclick="syncFinalistsFromPrize();closeSectionMenus()">Puxar do Prize Pool</button><button class="tiny" onclick="copySection('results');closeSectionMenus()">Copiar Results</button><div class="menu-separator"></div><button class="tiny red" onclick="clearSection('overall');closeSectionMenus()">Zerar Final</button></div></details><button class="tiny collapse-btn" onclick="toggleSection('sec-overall')">▲</button></span>
+      </h2>
+      <div class="card-body">
+        <div class="row3" style="margin-bottom:12px">
+          <div><label>Gerar classificação da Final?</label><select id="finalStandingsEnabled" onchange="state.settings.finalStandingsEnabled=this.value; autoSave(false); generateWiki(false);"><option value="true">Sim, gerar tabela</option><option value="false">Não, usar To be Determined</option></select></div>
+          <div><label>Formato do código da Final</label><select id="finalCodeMode" onchange="setFinalCodeMode(this.value)"><option value="simple">Tabela única</option><option value="dual">Overview + Detailed (2 abas)</option></select></div>
+          <div><label>Texto enquanto a Final não aconteceu</label><input id="finalStageText" data-path="settings.finalStageText" oninput="bindInput(this)" placeholder="To be Determined"></div>
+        </div>
+        <details id="finalDetailedSettingsDisclosure" class="settings-disclosure">
+          <summary><span class="settings-disclosure-title">Configuração da Final detalhada<small>usada no modo Overview + Detailed</small></span></summary>
+          <div class="settings-disclosure-body">
+            <div class="row4">
+              <div><label>Champion Point / matchpoint</label><input id="finalMatchpoint" data-path="settings.finalMatchpoint" oninput="bindInput(this)" placeholder="160"></div>
+              <div><label>ID do Bracket</label><input id="finalBracketId" data-path="settings.finalBracketId" oninput="bindInput(this)" placeholder="VQvMOQy9YK"></div>
+              <div><label>YouTube</label><input id="finalYoutube" data-path="settings.finalYoutube" oninput="bindInput(this)"></div>
+              <div><label>Twitch</label><input id="finalTwitch" data-path="settings.finalTwitch" oninput="bindInput(this)"></div>
+            </div>
+            <div class="hint">Ao importar uma Final de duas abas, mapas, quedas, placements, tiebreakers e o matchpoint ficam preservados para gerar novamente no mesmo modelo.</div>
+          </div>
+        </details>
+        <div id="overallTools" class="clean-tool-panel">
+          <div class="options-grid">
+            <div class="option-card">
+              <div class="option-card-title">Calcular PP automaticamente</div>
+              <div class="compact-check">
+                <input id="autoPlacementCheck" type="checkbox" onchange="setAutoPlacementFromTools(this.checked)">
+                <span class="hint" style="margin:0">PP = Total - KP. Usado somente no modo PP + KP.</span>
+              </div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Preencher todos os MP</div>
+              <div class="actions">
+                <input id="fillAllMpValue" placeholder="Ex.: 8" style="max-width:150px">
+                <button class="tiny green" onclick="fillAllMP()">Aplicar em todos</button>
+              </div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Headstart points</div>
+              <div class="compact-check">
+                <input id="headstartCheck" type="checkbox" onchange="setHeadstartEnabled(this.checked)">
+                <span class="hint" style="margin:0">Ativa a coluna e a variável <span class="kbd">|bp=</span>.</span>
+              </div>
+            </div>
+            <div class="option-card">
+              <div class="option-card-title">Times na Final</div>
+              <div class="actions">
+                <input id="finalTeamCount" type="number" min="1" max="24" placeholder="Ex.: 12 ou 15" oninput="setFinalTeamCount(this.value)" style="max-width:170px">
+                <button class="tiny green" onclick="syncFinalistsFromGroup()">Puxar do Group Stage</button>
+                <button class="tiny" onclick="syncFinalistsFromPrize()">Puxar do Prize Pool</button>
+              </div>
+              <div class="hint">Define quantos times entram na Final. Ao puxar do Group Stage, o sistema soma os pontos, ordena a tabela geral e seleciona automaticamente os melhores.</div>
+            </div>
+          </div>
+        </div>
+        <div class="focus-note">Selecione uma ou mais colunas para deixá-las editáveis ao mesmo tempo. Ao limpar os focos, o formulário inteiro da Final e a reordenação são liberados novamente. No Champion Point, o campeão permanece na posição definida pela ordem da tabela; o <span class="kbd">up</span> é aplicado exatamente naquela linha.</div>
+        <div id="overallFocusBar" class="focus-bar"></div>
+        <div id="standingsRows"></div>
+        <details class="section-import">
+          <summary>📥 Colar código wiki desta seção</summary>
+          <div class="section-import-body"><textarea id="sectionImportOverall" placeholder="Cole {{FfaStandings...}}, {{OverallStandingsTable...}}, {{Bracket...|{{Match...}}}} ou a seção ===Grand Finals==="></textarea><div class="copybar"><button class="primary" onclick="importWikiSection('overall')">Ler e preencher Final</button><button onclick="clearSectionImport('overall')">Limpar caixa</button></div></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="card" id="sec-broadcast">
+      <h2>
+        Broadcast e Talents
+        <span class="section-tools"><button class="tiny primary section-primary-action" onclick="copySection('broadcast')">Copiar</button><details class="section-menu"><summary title="Mais opções">⚙</summary><div class="section-menu-popover"><button class="tiny red" onclick="clearSection('broadcast');closeSectionMenus()">Zerar talentos</button></div></details><button class="tiny collapse-btn" onclick="toggleSection('sec-broadcast')">▲</button></span>
+      </h2>
+      <div class="card-body stack">
+        <div class="format-preview-tools">
+          <div>
+            <div class="small-title" style="margin:0">Talents personalizáveis</div>
+            <div class="hint" style="margin-top:3px">Os blocos Additional Content, Streams, Statistics e References são adicionados automaticamente e não precisam ser preenchidos.</div>
+          </div>
+          <button class="green" onclick="addBroadcastTalent()">+ Adicionar cargo</button>
+        </div>
+        <div id="broadcastTalents" class="broadcast-list"></div>
+        <details open class="section-import">
+          <summary>👁 Preview do final do código</summary>
+          <div class="section-import-body"><textarea id="broadcastPreview" class="broadcast-preview" readonly></textarea><div class="copybar"><button onclick="copyBroadcastPreview()">Copiar preview</button><button onclick="updateBroadcastPreview()">Atualizar preview</button></div></div>
+        </details>
+        <details class="section-import">
+          <summary>📥 Colar código wiki dos Talents</summary>
+          <div class="section-import-body"><textarea id="sectionImportBroadcast" placeholder="Cole a seção ==Broadcast== com os BroadcasterCard"></textarea><div class="copybar"><button class="primary" onclick="importWikiSection('broadcast')">Ler e preencher Talents</button><button onclick="clearSectionImport('broadcast')">Limpar caixa</button></div></div>
+        </details>
+      </div>
+    </section>
+
+  </section>
+</main>
+<datalist id="editorSavedTeamNames"></datalist>
+
+<script defer src="admin-liquipedia/seed.js?v=20261003-v1"></script>
+<script defer src="admin-liquipedia/app.js?v=20261003-v1"></script>
+<script defer src="admin-liquipedia/enhancements.js?v=20261003-v1"></script>
+<script type="module" src="admin-liquipedia/cloud.js?v=20261003-v1"></script>
+</body>
+</html>
