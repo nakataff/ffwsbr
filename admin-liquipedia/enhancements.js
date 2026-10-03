@@ -24,13 +24,29 @@ function editorImportant(reason){flushEditorLocal();window.editorCloud?.checkpoi
 const originalNormalizeState=normalizeState;
 normalizeState=function(obj){
   const next=originalNormalizeState(obj);
-  next.settings.includeAnalyst=next.settings.includeAnalyst==='false'?'false':'true';
+  const legacyAnalyst=obj?.settings?.includeAnalyst!=='false';
+  next.teams.forEach((team,index)=>{const saved=obj?.teams?.[index];team.includeCoach=staffIncluded(saved,'coach');team.includeAnalyst=hasOwn(saved,'includeAnalyst')?staffIncluded(saved,'analyst'):legacyAnalyst;});
+  delete next.settings.includeAnalyst;
   const prize=clean(next.settings.mvpPrize);next.settings.mvpPrize=prize!==''&&Number.isFinite(Number(prize))&&Number(prize)>=0?String(Number(prize)):'';
   next.tournamentPresets=Array.isArray(obj?.tournamentPresets)?obj.tournamentPresets.filter(p=>p&&clean(p.name)&&p.infobox).map(p=>({...p,name:clean(p.name)})):[];
   next.projectId=clean(obj?.projectId)||newTeamUid();
   return next;
 };
-function setAnalystIncluded(checked){state.settings.includeAnalyst=checked?'true':'false';renderTeams();autoSave(false);}
+function applyParticipantStaffState(){
+  const focus=focusState.participants;
+  document.querySelectorAll('input[data-staff-team][data-staff-role]').forEach(input=>{
+    const included=staffIncluded(state.teams[Number(input.dataset.staffTeam)],input.dataset.staffRole);
+    input.disabled=!included||(focus.size>0&&!focus.has(input.dataset.focusKey));
+    input.classList.toggle('staff-excluded',!included);
+  });
+}
+function setTeamStaffIncluded(index,role,checked){
+  const team=state.teams[index];if(!team||!['coach','analyst'].includes(role))return;
+  team[role==='coach'?'includeCoach':'includeAnalyst']=!!checked;
+  applyParticipantStaffState();refreshTeamCompletion(index);autoSave(false);
+}
+const originalStaffFocusMode=applyFocusMode;
+applyFocusMode=function(section){originalStaffFocusMode(section);if(section==='participants')applyParticipantStaffState();};
 const MARINHO_PRESET={id:'liga-marinho-s4',name:'Liga Marinho',infobox:{...defaultInfobox(),displayTitle:'Liga Marinho Season 4',liquipediatier:'5',name:'Liga Marinho Season 4',shortname:'Liga Marinho S4',tickername:'Liga Marinho S4',series:'Liga Marinho',seriesCommented:true,image:'liga marinho_lightmode.png',imagedarkmode:'Liga_marinho_darkmode.png',icon:'Liga_marinho_icon_lightmode.png',icondarkmode:'Liga_marinho_icon_darkmode.png',organizer:'Lidoma',type:'Online',country:'Brazil',sdate:'2026-04-14',edate:'2026-04-24',prizepool:'4000',localcurrency:'brl',youtube:'@OLUANMARINHO',instagram:'oluanmarinho',team_number:'24',previous:'Liga Marinho/Season_3 {{!}} Season 3',next:'Liga Marinho/Season_5 {{!}} Season 5',intro:"<p style=\"max-width:990px; padding-top:15px\">'''Liga Marinho Season 4''' it's an event organized by [[Luan Marinho]]. </p>"},formatStages:[],settings:{localCurrency:'brl'}};
 const presetSettingKeys=['localCurrency','qualifierDates','qualifierTeams','qualifyTop','finalDate','finalMatches','formatPreset','formatShowSources','formatIncludeTotal','formatIncludeInvited','formatIncludeQualifier','formatTotalTeams','formatInvitedTeams','formatQualifierTeams','pointsTemplate','pointsShowTb','groupStageIncluded','groupStageText','groupStageHeading','standingFormat','standingMode'];
 function renderTournamentPresets(){
@@ -94,6 +110,10 @@ function openSavedTeam(index,syncWiki=true){
   $('teamDbSelect').value=String(index);renderSavedTeams();renderRosterEditor();
 }
 function rosterField(label,key,value){return `<div><label>${esc(label)}</label><input value="${esc(value)}" oninput="updateRosterDraft('${key}',this.value)"></div>`;}
+function rosterStaffField(role,team){
+  const key=role==='coach'?'includeCoach':'includeAnalyst',title=role==='coach'?'Head Coach':'Analista';
+  return `<div><label class="staff-include-label" for="editorRoster${key}">${title} <input id="editorRoster${key}" type="checkbox" ${staffIncluded(team,role)?'checked':''} onchange="updateRosterDraft('${key}',this.checked)"></label><input id="editorRoster${role}Name" value="${esc(team[role].name)}" oninput="updateRosterDraft('${role}.name',this.value)"></div>`;
+}
 function renderRosterEditor(){
   const root=$('editorRosterEditor');if(!root)return;root.classList.toggle('hidden',!editorDraft);if(!editorDraft){root.innerHTML='';return;}
   const t=editorDraft;
@@ -101,7 +121,7 @@ function renderRosterEditor(){
   <div class="roster-player-head">Jogadores <button class="tiny" onclick="addRosterDraftPlayer()">+ Jogador</button></div>
   <div class="roster-scroll"><div class="roster-columns"><span>Nome</span><span>Flag</span><span>Link do perfil</span><span>Time opcional</span><span>Role</span><span></span></div>
   ${t.players.map((p,i)=>`<div class="roster-player-row">${['name','flag','link','team','role'].map(key=>`<input aria-label="${key} do jogador ${i+1}" value="${esc(p[key])}" oninput="updateRosterDraft('players.${i}.${key}',this.value)">`).join('')}<button class="tiny red" aria-label="Remover jogador ${i+1}" onclick="removeRosterDraftPlayer(${i})">×</button></div>`).join('')}</div>
-  <div class="row">${['coach','analyst'].map(role=>`<div class="row">${rosterField(role==='coach'?'Coach':'Analista',role+'.name',t[role].name)}${rosterField('Flag',role+'.flag',t[role].flag)}</div>`).join('')}</div>
+  <div class="row">${['coach','analyst'].map(role=>`<div class="row">${rosterStaffField(role,t)}${rosterField('Flag',role+'.flag',t[role].flag)}</div>`).join('')}</div>
   <details><summary>Qualificação e cargos</summary><div class="row3">${rosterField('Qualificação (invite / qualifier)','qual',t.qual)}${rosterField('Method','qualMethod',t.qualMethod)}${rosterField('Page','qualPage',t.qualPage)}${rosterField('Text','qualText',t.qualText)}${rosterField('Placement','qualPlacement',t.qualPlacement)}${rosterField('Role do coach','coach.role',t.coach.role)}${rosterField('Role do analista','analyst.role',t.analyst.role)}</div></details>
   <div class="actions"><button class="green" onclick="saveRosterDraft()">Salvar ficha</button><button onclick="discardRosterDraft()">Descartar edição</button></div><details><summary>Ver código registrado</summary><textarea id="editorRosterWiki" readonly></textarea></details><div class="status" id="editorRosterStatus"></div>`;
   updateRosterPreview();
@@ -165,7 +185,7 @@ importJSON=function(ev){
   const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result);if(!parsed||typeof parsed!=='object'||!parsed.settings||!Array.isArray(parsed.teams))throw Error('schema');saveEditorRecovery('Antes de importar JSON');state=normalizeState(parsed);state.cffSeedImportedV1=true;discardRosterDraft();resetParticipantTransientState();renderAll();renderTournamentPresets();editorImportant('backup-importado');flash('copyStatus','Backup importado com times, modelos e configurações.');}catch(error){alert('JSON inválido ou incompatível. O projeto atual foi preservado.');}ev.target.value='';};reader.readAsText(file);
 };
 const originalRenderAll=renderAll;
-renderAll=function(){originalRenderAll();renderTournamentPresets();document.body.classList.toggle('editor-no-analyst',state.settings.includeAnalyst==='false');};
+renderAll=function(){originalRenderAll();renderTournamentPresets();};
 window.EditorLiquipedia={snapshot:()=>safeClone(state),flush:flushEditorLocal,restore(data){if(!data?.settings||!Array.isArray(data.teams))throw Error('Backup incompatível');saveEditorRecovery('Antes de restaurar');state=normalizeState(data);state.cffSeedImportedV1=true;discardRosterDraft();resetParticipantTransientState();renderAll();initializeHistory();flushEditorLocal();},history(){try{return JSON.parse(localStorage.getItem('cff-liquipedia-recovery-v1')||'[]');}catch(error){return [];}}};
 window.addEventListener('pagehide',flushEditorLocal);document.addEventListener('visibilitychange',()=>{if(document.hidden)flushEditorLocal();});window.addEventListener('blur',flushEditorLocal);
 // Initialization is local and never overwrites a remote checkpoint.

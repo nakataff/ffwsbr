@@ -1,10 +1,12 @@
 
 let teamUidSequence = 0;
 function newTeamUid(){ teamUidSequence += 1; return `team-${Date.now().toString(36)}-${teamUidSequence.toString(36)}-${Math.random().toString(36).slice(2,7)}`; }
+function staffIncluded(team,role){const value=team?.[role==='coach'?'includeCoach':'includeAnalyst'];return value!==false&&value!=='false';}
 const blankPlayer = () => ({name:'',flag:'br',link:'',team:'',role:''});
 const blankTeam = () => ({
   uid:newTeamUid(), name:'', standingTeam:'', prizeTeam:'', groupTeam:'', qual:'invite', qualMethod:'', qualPage:'', qualText:'', qualPlacement:'', prize:'', prizeDate:'', allowIncomplete:false,
   players:[blankPlayer(),blankPlayer(),blankPlayer(),blankPlayer()],
+  includeCoach:true, includeAnalyst:true,
   coach:{name:'',flag:'br',role:'head coach'}, analyst:{name:'',flag:'br',role:'analyst'},
   booyah:'', mp:'', kp:'', pp:'', total:'', bp:'', championActivated:false, finalPlacement:'', finalTiebreaker:'', finalMatches:[],
   groupBooyah:'', groupMp:'', groupKp:'', groupPp:'', groupTotal:'', groupRounds:['','',''], groupFfaGroup:''
@@ -17,7 +19,7 @@ const defaultSettings = () => ({
   prizePresetsText:'0, 500, 1000, 1500, 2000, 3000, 5000', includeMvp:'false', mvpPrize:'', mvpPlayer:'', mvpFlag:'br', mvpTeam:'',
   prizeQualEnabled:'false', prizeQualCount:'0', prizeQualPage:'', prizeQualName:'', prizeCutAfter:'', prizeSummary:'false', prizeEliminatedDate:'',
   groupStageIncluded:'true', groupStandingsEnabled:'false', groupStageHeading:'Group Stage', groupStandingsType:'overall', groupStandingsTitle:'Group Stage Standings', groupQualifyCount:'12', groupEliminatedCount:'0', groupAdvanceTo:'Finals', groupOverallMode:'complete', groupAutoPlacement:'false', groupFfaRounds:'3', groupFfaImport:'false', groupFfaCumulative:'false', groupFfaGroupsEnabled:'false', groupFfaGroupMode:'manual', groupFfaGroupNames:'A, B, C, D', groupFfaTeamsPerGroup:'6',
-  finalTeamCount:'', finalCodeMode:'simple', finalBracketId:'', finalMatchpoint:'', finalKillPoint:'1', finalPlacementPoints:'12,9,8,7,6,5,4,3,2,1,0,0', finalWinnerMatch:'', finalTwitch:'', finalYoutube:'', finalDetailedHeader:'Champion Rush', finalOverviewTitle:'Champion Rush Standings Overview', includePlayerRoles:'false', includeAnalyst:'true'
+  finalTeamCount:'', finalCodeMode:'simple', finalBracketId:'', finalMatchpoint:'', finalKillPoint:'1', finalPlacementPoints:'12,9,8,7,6,5,4,3,2,1,0,0', finalWinnerMatch:'', finalTwitch:'', finalYoutube:'', finalDetailedHeader:'Champion Rush', finalOverviewTitle:'Champion Rush Standings Overview', includePlayerRoles:'false'
 });
 const defaultFormatStages = () => ([]);
 const defaultGroupRoundConfigs = () => ([
@@ -424,6 +426,7 @@ function normalizeRosterTeam(t){
   const base = blankTeam();
   const out = {
     name: clean(t?.name),
+    includeCoach:staffIncluded(t,'coach'), includeAnalyst:staffIncluded(t,'analyst'),
     code: clean(t?.code),
     aliases: Array.isArray(t?.aliases) ? t.aliases.map(clean).filter(Boolean).join(', ') : clean(t?.aliases),
     qual: t?.qual === 'qualifier' ? 'qualifier' : 'invite',
@@ -440,6 +443,7 @@ function rosterToTeam(roster, oldTeam){
   return {
     ...(oldTeam || blankTeam()),
     name: clean(roster.name),
+    includeCoach:staffIncluded(roster,'coach'), includeAnalyst:staffIncluded(roster,'analyst'),
     qual: roster.qual === 'qualifier' ? 'qualifier' : 'invite',
     qualMethod:clean(roster.qualMethod), qualPage:clean(roster.qualPage), qualText:clean(roster.qualText), qualPlacement:clean(roster.qualPlacement),
     players: Array.isArray(roster.players) ? roster.players.map(p=>({name:clean(p.name), flag:normalizedFlag(p), link:clean(p.link), team:clean(p.team), role:clean(p.role)})) : [],
@@ -451,7 +455,7 @@ function rosterToTeam(roster, oldTeam){
 function parseTeamWikiBlock(block){
   block = String(block || '').trim();
   if(!block) return null;
-  const t = normalizeRosterTeam({players:[]});
+  const t = normalizeRosterTeam({players:[],includeCoach:false,includeAnalyst:false});
   const nameMatch = block.match(/\{\{Opponent\|([^|}\n]*)/i);
   if(nameMatch) t.name = clean(nameMatch[1]);
   const qBlock = (block.match(/\{\{Qualification\|([\s\S]*?)\}\}/i) || [,''])[1];
@@ -480,15 +484,15 @@ function parseTeamWikiBlock(block){
     const team = teamMatch ? clean(teamMatch[1]) : '';
     const person = {name, flag, link, team, role:roleRaw};
     if(isStaff){
-      if(role.includes('analyst') || role.includes('analista')) t.analyst = person;
-      else if(role.includes('coach')) t.coach = person;
+      if(role.includes('analyst') || role.includes('analista')){t.analyst = person;t.includeAnalyst=true;}
+      else if(role.includes('coach')){t.coach = person;t.includeCoach=true;}
       else unknownStaff.push(person);
     } else {
       t.players.push(person);
     }
   }
-  if(!clean(t.coach.name) && unknownStaff[0]) t.coach = unknownStaff[0];
-  if(!clean(t.analyst.name) && unknownStaff[1]) t.analyst = unknownStaff[1];
+  if(!clean(t.coach.name) && unknownStaff[0]){t.coach = unknownStaff[0];t.includeCoach=true;}
+  if(!clean(t.analyst.name) && unknownStaff[1]){t.analyst = unknownStaff[1];t.includeAnalyst=true;}
   if(!t.players.length) t.players = blankTeam().players;
   return clean(t.name) ? t : null;
 }
@@ -502,8 +506,8 @@ function teamToDbWiki(t){
     if(clean(p.name)) lines.push(`    |{{Person|${clean(p.name)}${flagAttr(p.flag)}${clean(p.link) ? `|link=${clean(p.link)}` : ''}${playerTeamAttr(p.team)}${playerRoleAttr(p.role)}}}`);
   });
   if(clean(r.coach.name) || clean(r.analyst.name)) lines.push('    ');
-  if(clean(r.coach.name)) lines.push(`    |{{Person|${clean(r.coach.name)}${flagAttr(r.coach.flag)}|role=${clean(r.coach.role)||'head coach'}|type=staff}}`);
-  if(clean(r.analyst.name)) lines.push(`    |{{Person|${clean(r.analyst.name)}${flagAttr(r.analyst.flag)}|role=${clean(r.analyst.role)||'analyst'}|type=staff}}`);
+  if(staffIncluded(r,'coach')&&clean(r.coach.name)) lines.push(`    |{{Person|${clean(r.coach.name)}${flagAttr(r.coach.flag)}|role=${clean(r.coach.role)||'head coach'}|type=staff}}`);
+  if(staffIncluded(r,'analyst')&&clean(r.analyst.name)) lines.push(`    |{{Person|${clean(r.analyst.name)}${flagAttr(r.analyst.flag)}|role=${clean(r.analyst.role)||'analyst'}|type=staff}}`);
   lines.push('  }}');
   lines.push('}}');
   return lines.join('\n');
@@ -761,7 +765,6 @@ function fillSettingsInputs(){
   const headstartCheck = $('headstartCheck'); if(headstartCheck) headstartCheck.checked = s.headstartEnabled === 'true';
   const aliasesEnabled=$('aliasesEnabled'); if(aliasesEnabled) aliasesEnabled.checked=state.aliases?.enabled !== false;
   const includePlayerRolesCheck=$('includePlayerRolesCheck'); if(includePlayerRolesCheck) includePlayerRolesCheck.checked=s.includePlayerRoles === 'true';
-  const analyst=$('includeAnalystCheck');if(analyst)analyst.checked=s.includeAnalyst!=='false';
   updateInfoboxDateMode();
   $('teamCountBadge').textContent = s.teamCount;
 }
@@ -790,8 +793,8 @@ function teamCompletion(t){
   const missing=[];
   if(!clean(t?.name)) missing.push('time');
   if(!players.length || players.some(p=>!clean(p?.name))) missing.push('jogadores');
-  if(!clean(t?.coach?.name)) missing.push('coach');
-  if(state.settings.includeAnalyst!=='false' && !clean(t?.analyst?.name)) missing.push('analyst');
+  if(staffIncluded(t,'coach')&&!clean(t?.coach?.name)) missing.push('coach');
+  if(staffIncluded(t,'analyst')&&!clean(t?.analyst?.name)) missing.push('analyst');
   const empty=!clean(t?.name) && !players.some(p=>clean(p?.name)) && !clean(t?.coach?.name) && !clean(t?.analyst?.name);
   if(!missing.length) return {className:'team-complete',label:'COMPLETO',statusClass:'complete',missing:[]};
   if(t?.allowIncomplete) return {className:'team-accepted',label:'OK INCOMPLETO',statusClass:'accepted',missing};
@@ -804,7 +807,7 @@ function refreshTeamCompletion(i){
   badge.className='team-status '+status.statusClass; badge.textContent=status.label;
 }
 function renderTeams(){
-  const bar = $('participantsFocusBar'); if(bar) bar.innerHTML = focusBarHtml('participants', [['teamName','Time'],['playerName','Jogadores'],['playerLink','Links'],['playerTeam','Team opcional'],['playerRole','Roles'],['playerFlag','Flags dos jogadores'],['coachName','Coach'],['coachFlag','Flag coach'],...(state.settings.includeAnalyst!=='false'?[['analystName','Analyst'],['analystFlag','Flag analyst']]:[])]);
+  const bar = $('participantsFocusBar'); if(bar) bar.innerHTML = focusBarHtml('participants', [['teamName','Time'],['playerName','Jogadores'],['playerLink','Links'],['playerTeam','Team opcional'],['playerRole','Roles'],['playerFlag','Flags dos jogadores'],['coachName','Coach'],['coachFlag','Flag coach'],['analystName','Analista'],['analystFlag','Flag analista']]);
   const root = $('teamsContainer');
   root.innerHTML = state.teams.map((t,i)=>{
     const players = Array.isArray(t.players) ? t.players : [];
@@ -870,11 +873,11 @@ function renderTeams(){
           <button tabindex="-1" class="tiny red player-actions-button" title="Remover jogador" onclick="removePlayer(${i},${j})">−</button>
         </div>`;
         }).join('') : `<div class="hint">Nenhum jogador neste time. Clique em adicionar jogador para criar uma linha.</div>`}
-        <details class="staff-details"><summary tabindex="-1">Staff — head coach${state.settings.includeAnalyst!=='false'?' e analista':''}</summary><div class="staff-content"><div class="staff-line">
-          <div class="focus-cell">${focusLabel('Head coach','participants','coachName')}<input id="coachName${i}" ${focusAttrs('participants','coachName')} value="${esc(t.coach?.name)}" oninput="updateStaffAliasInput(${i},'coach',this.value)"><div id="aliasCoach${i}" class="alias-suggestion hidden"></div></div>
-          <div class="focus-cell">${focusLabel('Flag','participants','coachFlag')}<input ${focusAttrs('participants','coachFlag')} value="${esc(hasOwn(t.coach,'flag')?t.coach.flag:'br')}" oninput="updateStaff(${i},'coach','flag',this.value)"></div>
-${state.settings.includeAnalyst!=='false'?`          <div class="focus-cell">${focusLabel('Analyst','participants','analystName')}<input id="analystName${i}" ${focusAttrs('participants','analystName')} value="${esc(t.analyst?.name)}" oninput="updateStaffAliasInput(${i},'analyst',this.value)"><div id="aliasAnalyst${i}" class="alias-suggestion hidden"></div></div>
-          <div class="focus-cell">${focusLabel('Flag','participants','analystFlag')}<input ${focusAttrs('participants','analystFlag')} value="${esc(hasOwn(t.analyst,'flag')?t.analyst.flag:'br')}" oninput="updateStaff(${i},'analyst','flag',this.value)"></div>`:''}
+        <details class="staff-details" data-participant-staff="${i}"><summary>Staff — Head Coach e Analista</summary><div class="staff-content"><div class="staff-line">
+          <div class="focus-cell"><label class="staff-include-label" for="includeCoach${i}">Head Coach <input id="includeCoach${i}" type="checkbox" ${staffIncluded(t,'coach')?'checked':''} onchange="setTeamStaffIncluded(${i},'coach',this.checked)" aria-label="Incluir Head Coach do time ${esc(t.name)||i+1}"></label><input id="coachName${i}" data-staff-team="${i}" data-staff-role="coach" ${focusAttrs('participants','coachName')} value="${esc(t.coach?.name)}" oninput="updateStaffAliasInput(${i},'coach',this.value)"><div id="aliasCoach${i}" class="alias-suggestion hidden"></div></div>
+          <div class="focus-cell">${focusLabel('Flag','participants','coachFlag')}<input data-staff-team="${i}" data-staff-role="coach" ${focusAttrs('participants','coachFlag')} value="${esc(hasOwn(t.coach,'flag')?t.coach.flag:'br')}" oninput="updateStaff(${i},'coach','flag',this.value)"></div>
+          <div class="focus-cell"><label class="staff-include-label" for="includeAnalyst${i}">Analista <input id="includeAnalyst${i}" type="checkbox" ${staffIncluded(t,'analyst')?'checked':''} onchange="setTeamStaffIncluded(${i},'analyst',this.checked)" aria-label="Incluir Analista do time ${esc(t.name)||i+1}"></label><input id="analystName${i}" data-staff-team="${i}" data-staff-role="analyst" ${focusAttrs('participants','analystName')} value="${esc(t.analyst?.name)}" oninput="updateStaffAliasInput(${i},'analyst',this.value)"><div id="aliasAnalyst${i}" class="alias-suggestion hidden"></div></div>
+          <div class="focus-cell">${focusLabel('Flag','participants','analystFlag')}<input data-staff-team="${i}" data-staff-role="analyst" ${focusAttrs('participants','analystFlag')} value="${esc(hasOwn(t.analyst,'flag')?t.analyst.flag:'br')}" oninput="updateStaff(${i},'analyst','flag',this.value)"></div>
         </div></div></details>
       </div>
     </div>`;
@@ -1831,8 +1834,8 @@ function participantTeamWiki(t){
   const players = Array.isArray(t?.players) ? t.players : [];
   players.forEach(p => lines.push(`    |{{Person|${val(p?.name,'')}${flagAttr(hasOwn(p,'flag') ? p.flag : 'br')}${clean(p?.link) ? `|link=${clean(p.link)}` : ''}${playerTeamAttr(p?.team)}${playerRoleAttr(p?.role)}}}`));
   lines.push('    ');
-  lines.push(`    |{{Person|${val(t?.coach?.name,'')}${flagAttr(hasOwn(t?.coach,'flag') ? t.coach.flag : 'br')}|role=${clean(t?.coach?.role)||'head coach'}|type=staff}}`);
-  if(state.settings.includeAnalyst!=='false') lines.push(`    |{{Person|${val(t?.analyst?.name,'')}${flagAttr(hasOwn(t?.analyst,'flag') ? t.analyst.flag : 'br')}|role=${clean(t?.analyst?.role)||'analyst'}|type=staff}}`);
+  if(staffIncluded(t,'coach')) lines.push(`    |{{Person|${val(t?.coach?.name,'')}${flagAttr(hasOwn(t?.coach,'flag') ? t.coach.flag : 'br')}|role=${clean(t?.coach?.role)||'head coach'}|type=staff}}`);
+  if(staffIncluded(t,'analyst')) lines.push(`    |{{Person|${val(t?.analyst?.name,'')}${flagAttr(hasOwn(t?.analyst,'flag') ? t.analyst.flag : 'br')}|role=${clean(t?.analyst?.role)||'analyst'}|type=staff}}`);
   lines.push('  }}');
   lines.push('}}');
   return lines.join('\n');
