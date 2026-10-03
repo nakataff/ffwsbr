@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const PREFIX='cff_public_camp_v1:';
-  const VERSION='20261003-public-v1';
+  const VERSION='20261003-public-v2';
   const status=document.getElementById('cff-camp-load-status');
   const setStatus=text=>{if(status)status.textContent=text;};
   window.__CFF_CAMP_READY__=false;
@@ -74,7 +74,7 @@
         compressedText('admin-camp-ao-vivo/app.css.gz?v=20261001-camp-v4'),
         compressedText('admin-camp-ao-vivo/app.js.gz?v=20261001-camp-v4')
       ]);
-      const style=document.createElement('style');style.id='cff-camp-full-style';style.textContent=css.replace('tabela, quedas, wiki e publicação','tabelas, quedas e código wiki');document.head.appendChild(style);
+      const style=document.createElement('style');style.id='cff-camp-full-style';style.textContent=css.replace('tabela, quedas, wiki e publicação','tabelas e lançamento de quedas');document.head.appendChild(style);
       if(!source.includes('window.onload = () => {'))throw new Error('Inicializador do editor não encontrado.');
       const core=source.replace('window.onload = () => {','window.__CFF_CAMP_INITIALIZE__ = () => {')
         .replace(/window\.addEventListener\(\s*(['"])load\1\s*,/g,'window.addEventListener("cff:camp-core-ready",');
@@ -90,6 +90,7 @@
       await addon('admin-camp-ao-vivo/launch-extras.js');
       await addon('camp-ao-vivo/persistence.js');
       await addon('camp-ao-vivo/live.js');
+      await addon('camp-ao-vivo/public-ui.js');
       document.body.classList.remove('cff-assets-pending');setStatus('Pronto • seu campeonato salvo neste navegador');
     }catch(error){
       if(protectedRaw&&!window.__CFF_CAMP_READY__)native.setItem(PREFIX+'ffws_autosave',protectedRaw);
