@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editor de Torneios - Liquipedia</title>
   <meta name="robots" content="noindex,nofollow,noarchive">
-<link rel="stylesheet" href="admin-liquipedia/app.css?v=20261003-v3">
+<link rel="stylesheet" href="admin-liquipedia/app.css?v=20261003-v4">
 <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
 </head>
 <body class="cff-auth-pending">
@@ -333,6 +333,13 @@
               <div><label>Data padrão dos eliminados</label><input id="prizeEliminatedDate" data-path="settings.prizeEliminatedDate" oninput="bindInput(this)" type="date"></div>
               <div><label>Aplicar após o corte da Final</label><button class="green" style="width:100%" onclick="applyEliminatedDate()">Aplicar data</button></div>
             </div>
+            <div class="prize-date-ranges-panel">
+              <div class="small-title">Datas por faixa de colocação</div>
+              <div class="compact-help">Ex.: 13º–18º em 10/09 e 19º–24º em 08/09. As faixas usam a ordem atual do Prize Pool. Reaplique as datas se reordenar os times.</div>
+              <div id="prizeEliminationRanges" class="stack"></div>
+              <div class="actions"><button onclick="addEliminatedDateRange()">+ Adicionar faixa</button><button class="green" onclick="applyEliminatedDateRanges()">Aplicar datas das faixas</button></div>
+              <div id="prizeDateRangesStatus" class="hint" role="status" aria-live="polite"></div>
+            </div>
           </div>
         </details>
 
@@ -631,11 +638,12 @@
         <div class="format-preview-tools">
           <div>
             <div class="small-title" style="margin:0">Talents personalizáveis</div>
-            <div class="hint" style="margin-top:3px">Os blocos Additional Content, Streams, Statistics e References são adicionados automaticamente e não precisam ser preenchidos.</div>
+            <div class="hint" style="margin-top:3px">Cargos padrão: Host, Caster e Commentator. Você pode editar os cargos ou adicionar mais pessoas. Cargos sem talento preenchido ficam fora do código.</div>
           </div>
           <button class="green" onclick="addBroadcastTalent()">+ Adicionar cargo</button>
         </div>
         <div id="broadcastTalents" class="broadcast-list"></div>
+        <datalist id="broadcastRoles"><option value="Host"></option><option value="Caster"></option><option value="Commentator"></option></datalist>
         <details open class="section-import">
           <summary>👁 Preview do final do código</summary>
           <div class="section-import-body"><textarea id="broadcastPreview" class="broadcast-preview" readonly></textarea><div class="copybar"><button onclick="copyBroadcastPreview()">Copiar preview</button><button onclick="updateBroadcastPreview()">Atualizar preview</button></div></div>
@@ -651,9 +659,9 @@
 </main>
 <datalist id="editorSavedTeamNames"></datalist>
 
-<script defer src="admin-liquipedia/seed.js?v=20261003-v3"></script>
-<script defer src="admin-liquipedia/app.js?v=20261003-v3"></script>
-<script defer src="admin-liquipedia/enhancements.js?v=20261003-v3"></script>
-<script type="module" src="admin-liquipedia/cloud.js?v=20261003-v3"></script>
+<script defer src="admin-liquipedia/seed.js?v=20261003-v4"></script>
+<script defer src="admin-liquipedia/app.js?v=20261003-v4"></script>
+<script defer src="admin-liquipedia/enhancements.js?v=20261003-v4"></script>
+<script type="module" src="admin-liquipedia/cloud.js?v=20261003-v4"></script>
 </body>
 </html>

@@ -17,7 +17,7 @@ const defaultSettings = () => ({
   formatPreset:'custom', formatShowSources:'false', formatIncludeTotal:'false', formatIncludeInvited:'false', formatIncludeQualifier:'false', formatTotalTeams:'24', formatInvitedTeams:'12', formatQualifierTeams:'6', pointsShowTb:'false',
   pointsTemplate:'Points12', groupStageText:'To be Determined', finalStandingsEnabled:'true', finalStageText:'To be Determined', standingsTitle:'Finals Standings', standingFormat:'traditional', standingMode:'complete', autoPlacement:'false', headstartEnabled:'false', winnerIndex:'', winnerUid:'', localCurrency:'brl', prizeImport:'false', prizePoolMode:'complete',
   prizePresetsText:'0, 500, 1000, 1500, 2000, 3000, 5000', includeMvp:'false', mvpPrize:'', mvpPlayer:'', mvpFlag:'br', mvpTeam:'',
-  prizeQualEnabled:'false', prizeQualCount:'0', prizeQualPage:'', prizeQualName:'', prizeCutAfter:'', prizeSummary:'false', prizeEliminatedDate:'',
+  prizeQualEnabled:'false', prizeQualCount:'0', prizeQualPage:'', prizeQualName:'', prizeCutAfter:'', prizeSummary:'false', prizeEliminatedDate:'', prizeEliminationRanges:[],
   groupStageIncluded:'true', groupStandingsEnabled:'false', groupStageHeading:'Group Stage', groupStandingsType:'overall', groupStandingsTitle:'Group Stage Standings', groupQualifyCount:'12', groupEliminatedCount:'0', groupAdvanceTo:'Finals', groupOverallMode:'complete', groupAutoPlacement:'false', groupFfaRounds:'3', groupFfaImport:'false', groupFfaCumulative:'false', groupFfaGroupsEnabled:'false', groupFfaGroupMode:'manual', groupFfaGroupNames:'A, B, C, D', groupFfaTeamsPerGroup:'6',
   finalTeamCount:'', finalCodeMode:'simple', finalBracketId:'', finalMatchpoint:'', finalKillPoint:'1', finalPlacementPoints:'12,9,8,7,6,5,4,3,2,1,0,0', finalWinnerMatch:'', finalTwitch:'', finalYoutube:'', finalDetailedHeader:'Champion Rush', finalOverviewTitle:'Champion Rush Standings Overview', includePlayerRoles:'false'
 });
@@ -32,7 +32,7 @@ const createDefaultState = () => {
   return {
     settings:defaultSettings(), infobox:defaultInfobox(), formatStages:defaultFormatStages(), groupRoundConfigs:defaultGroupRoundConfigs(), teams, finalDetailedMaps:[],
     prizeOrder:teams.map(t=>t.uid), groupOrder:teams.map(t=>t.uid), finalOrder:teams.map(t=>t.uid), groupFocusedGroups:[], teamDB:[],
-    broadcastTalents:[], tournamentPresets:[], projectId:newTeamUid(),
+    broadcastTalents:defaultBroadcastTalents(), broadcastDefaultsInitialized:true, tournamentPresets:[], projectId:newTeamUid(),
     aliases:{enabled:true, players:{}, teams:{}}
   };
 };
@@ -208,11 +208,13 @@ function parseWikiDateText(text){
 }
 
 function blankBroadcastTalent(position=''){ return {position,b1:'',flag:'br',name:''}; }
+function defaultBroadcastTalents(){ return ['Host','Caster','Commentator'].map(blankBroadcastTalent); }
 function normalizeBroadcastTalent(item,index=0){ const defaults=['Host','Caster','Commentator']; return {...blankBroadcastTalent(defaults[index]||''),...(item||{}),position:clean(item?.position)||defaults[index]||'',b1:clean(item?.b1),flag:hasOwn(item||{},'flag')?clean(item.flag):'br',name:clean(item?.name)}; }
 function broadcastWikiLines(){
   const lines=['==Broadcast==','===Talents===',''];
   (state.broadcastTalents||[]).forEach((talent,index)=>{
     const t=normalizeBroadcastTalent(talent,index);
+    if(!t.b1&&!t.name)return;
     lines.push('{{BroadcasterCard');
     lines.push(`|position=${t.position}`);
     lines.push(`|b1=${t.b1}      |b1flag=${t.flag}|b1name=${t.name}`);
@@ -238,11 +240,11 @@ function broadcastWikiLines(){
 function renderBroadcast(){
   if(!Array.isArray(state.broadcastTalents)) state.broadcastTalents=[];
   const root=$('broadcastTalents'); if(!root)return;
-  root.innerHTML=state.broadcastTalents.length?state.broadcastTalents.map((talent,i)=>`<div class="broadcast-row"><div><label>Nome do cargo</label><input value="${esc(talent.position)}" oninput="updateBroadcastTalent(${i},'position',this.value)" placeholder="Ex.: Host & Caster"></div><div><label>Página/ID do talento (b1)</label><input value="${esc(talent.b1)}" oninput="updateBroadcastTalent(${i},'b1',this.value)" placeholder="Nome na Liquipedia"></div><div><label>Flag</label><input value="${esc(hasOwn(talent,'flag')?talent.flag:'br')}" oninput="updateBroadcastTalent(${i},'flag',this.value)" placeholder="br"></div><div><label>Nome exibido (b1name)</label><input value="${esc(talent.name)}" oninput="updateBroadcastTalent(${i},'name',this.value)" placeholder="Opcional"></div><button class="tiny red" onclick="removeBroadcastTalent(${i})">Remover</button></div>`).join(''):'<div class="format-empty">Nenhum cargo adicionado. Clique em “Adicionar cargo”.</div>';
+  root.innerHTML=state.broadcastTalents.length?state.broadcastTalents.map((talent,i)=>`<div class="broadcast-row"><div><label>Nome do cargo</label><input list="broadcastRoles" value="${esc(talent.position)}" oninput="updateBroadcastTalent(${i},'position',this.value)" placeholder="Ex.: Host & Caster"></div><div><label>Página/ID do talento (b1)</label><input value="${esc(talent.b1)}" oninput="updateBroadcastTalent(${i},'b1',this.value)" placeholder="Nome na Liquipedia"></div><div><label>Flag</label><input value="${esc(hasOwn(talent,'flag')?talent.flag:'br')}" oninput="updateBroadcastTalent(${i},'flag',this.value)" placeholder="br"></div><div><label>Nome exibido (b1name)</label><input value="${esc(talent.name)}" oninput="updateBroadcastTalent(${i},'name',this.value)" placeholder="Opcional"></div><button class="tiny red" onclick="removeBroadcastTalent(${i})">Remover</button></div>`).join(''):'<div class="format-empty">Nenhum cargo adicionado. Clique em “Adicionar cargo”.</div>';
   updateBroadcastPreview();
 }
 function updateBroadcastTalent(i,key,value){ if(!state.broadcastTalents?.[i])return; state.broadcastTalents[i][key]=value; updateBroadcastPreview(); autoSave(false); }
-function addBroadcastTalent(){ state.broadcastTalents=Array.isArray(state.broadcastTalents)?state.broadcastTalents:[]; state.broadcastTalents.push(blankBroadcastTalent('New Position')); renderBroadcast(); autoSave(false); }
+function addBroadcastTalent(position=''){ state.broadcastTalents=Array.isArray(state.broadcastTalents)?state.broadcastTalents:[]; const next=position||['Host','Caster','Commentator'].find(role=>!state.broadcastTalents.some(t=>clean(t.position)===role))||''; state.broadcastTalents.push(blankBroadcastTalent(next)); renderBroadcast(); autoSave(false); }
 function removeBroadcastTalent(i){ state.broadcastTalents.splice(i,1); renderBroadcast(); autoSave(false); }
 function updateBroadcastPreview(){ const el=$('broadcastPreview');if(el)el.value=broadcastWikiLines().join('\n'); }
 async function copyBroadcastPreview(){ const value=broadcastWikiLines().join('\n');if($('broadcastPreview'))$('broadcastPreview').value=value;await copyText(value,'Broadcast e conteúdo final copiados.'); }
@@ -1173,6 +1175,32 @@ function applyEliminatedDate(){
   orderedPrizeTeams().forEach((t,i)=>{ if(i>=qualified)t.prizeDate=date; });
   renderPrize(); autoSave(false); flash('copyStatus',date?'Data aplicada aos times eliminados.':'Datas dos eliminados foram limpas.');
 }
+function renderEliminatedDateRanges(){
+  const root=$('prizeEliminationRanges');if(!root)return;
+  const ranges=state.settings.prizeEliminationRanges;
+  root.innerHTML=ranges.length?ranges.map((range,i)=>`<div class="prize-date-range" data-prize-date-range="${i}"><div><label for="prizeRangeFrom${i}">Da colocação</label><input id="prizeRangeFrom${i}" type="number" min="1" max="${state.teams.length}" step="1" value="${esc(range.from)}" placeholder="13" oninput="updateEliminatedDateRange(${i},'from',this.value)"></div><div><label for="prizeRangeTo${i}">Até a colocação</label><input id="prizeRangeTo${i}" type="number" min="1" max="${state.teams.length}" step="1" value="${esc(range.to)}" placeholder="18" oninput="updateEliminatedDateRange(${i},'to',this.value)"></div><div class="prize-date-range-date"><label for="prizeRangeDate${i}">Data de eliminação</label><input id="prizeRangeDate${i}" type="date" value="${esc(range.date)}" oninput="updateEliminatedDateRange(${i},'date',this.value)"></div><button class="tiny red" onclick="removeEliminatedDateRange(${i})" aria-label="Remover faixa ${i+1}">Remover</button></div>`).join(''):'<div class="compact-help">Nenhuma faixa cadastrada.</div>';
+}
+function addEliminatedDateRange(){state.settings.prizeEliminationRanges.push({from:'',to:'',date:''});renderEliminatedDateRanges();autoSave(false);}
+function updateEliminatedDateRange(i,key,value){
+  const range=state.settings.prizeEliminationRanges[i];if(!range||!['from','to','date'].includes(key))return;
+  range[key]=value;$('prizeDateRangesStatus').textContent='';autoSave(false);
+}
+function removeEliminatedDateRange(i){state.settings.prizeEliminationRanges.splice(i,1);renderEliminatedDateRanges();$('prizeDateRangesStatus').textContent='';autoSave(false);}
+function applyEliminatedDateRanges(){
+  const ranges=state.settings.prizeEliminationRanges, status=$('prizeDateRangesStatus');
+  if(!ranges.length){status.textContent='Adicione uma faixa antes de aplicar.';return;}
+  const checked=[];
+  for(let i=0;i<ranges.length;i++){
+    const {from,to,date}=ranges[i],start=Number(from),end=Number(to),parsed=new Date(`${date}T00:00:00Z`);
+    if(!Number.isInteger(start)||!Number.isInteger(end)||start<1||end<start||end>state.teams.length){status.textContent=`Faixa ${i+1}: informe colocações de 1 a ${state.teams.length}, com início menor ou igual ao fim.`;return;}
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date){status.textContent=`Faixa ${i+1}: escolha uma data válida.`;return;}
+    if(checked.some(range=>start<=range.end&&end>=range.start)){status.textContent=`Faixa ${i+1}: uma colocação já está em outra faixa. Ajuste os intervalos.`;return;}
+    checked.push({start,end,date});
+  }
+  const teams=orderedPrizeTeams();let count=0;
+  checked.forEach(({start,end,date})=>{for(let position=start;position<=end;position++){teams[position-1].prizeDate=date;count++;}});
+  renderPrize();autoSave(false);status.textContent=`Datas aplicadas a ${count} times. As demais colocações foram preservadas.`;
+}
 function setFinalTeamCount(value){
   const raw=clean(value); state.settings.finalTeamCount=raw?String(Math.max(1,Math.min(state.teams.length,Number(raw)||1))):'';
   const winnerUid=championWinnerUid();
@@ -1536,6 +1564,7 @@ function renderAll(){
   fillSettingsInputs();
   renderFormatBuilder();
   renderPrize();
+  renderEliminatedDateRanges();
   renderTeamDB();
   renderTeams();
   renderGroupStandings();
@@ -2258,6 +2287,9 @@ function normalizeState(obj){
   out.finalDetailedMaps=Array.isArray(obj?.finalDetailedMaps)?obj.finalDetailedMaps.map((m,i)=>({match:Number(m?.match)||i+1,date:clean(m?.date),map:clean(m?.map),mvp:clean(m?.mvp),vod:clean(m?.vod)})).filter(m=>m.match>0):[];
   out.teamDB=Array.isArray(obj?.teamDB)?obj.teamDB.map(normalizeRosterTeam).filter(t=>clean(t.name)):[];
   out.broadcastTalents=Array.isArray(obj?.broadcastTalents)?obj.broadcastTalents.map(normalizeBroadcastTalent):base.broadcastTalents.map(normalizeBroadcastTalent);
+  if(!out.broadcastTalents.length&&!obj?.broadcastDefaultsInitialized)out.broadcastTalents=defaultBroadcastTalents();
+  out.broadcastDefaultsInitialized=true;
+  out.settings.prizeEliminationRanges=Array.isArray(obj?.settings?.prizeEliminationRanges)?obj.settings.prizeEliminationRanges.filter(range=>range&&typeof range==='object').map(range=>({from:clean(range.from),to:clean(range.to),date:clean(range.date)})):[];
   out.aliases={enabled:obj?.aliases?.enabled!==false,players:{...(obj?.aliases?.players||{})},teams:{...(obj?.aliases?.teams||{})}};
   while(out.teams.length<out.settings.teamCount) out.teams.push(blankTeam());
   out.teams=out.teams.slice(0,out.settings.teamCount);
@@ -2647,8 +2679,8 @@ function ensureImportCapacity(target, amount){ const wanted=countWanted(Math.max
 function resetImportedSection(target,section){
   if(section==='infobox') target.infobox=Object.fromEntries(Object.keys(defaultInfobox()).map(k=>[k,'']));
   if(section==='about'){ Object.assign(target.settings,{qualifierDates:'',qualifierTeams:'',qualifyTop:'',finalDate:'',finalMatches:'',formatPreset:'custom',formatShowSources:'false',formatIncludeTotal:'false',formatIncludeInvited:'false',formatIncludeQualifier:'false',formatTotalTeams:'',formatInvitedTeams:'',formatQualifierTeams:'',pointsTemplate:'',pointsShowTb:'false',groupStageText:'',standingsTitle:'Finals Standings'}); target.formatStages=[]; }
-  if(section==='broadcast') target.broadcastTalents=[];
-  if(section==='prize'){ Object.assign(target.settings,{localCurrency:'brl',prizeImport:'false',prizePoolMode:'complete',includeMvp:'false',mvpPrize:'',mvpPlayer:'',mvpFlag:'br',mvpTeam:'',prizeQualEnabled:'false',prizeQualCount:'0',prizeQualPage:'',prizeQualName:'',prizeCutAfter:'',prizeSummary:'false',prizeEliminatedDate:''}); target.teams.forEach(t=>{t.prize='0';t.prizeTeam='';t.prizeDate='';}); target.prizeOrder=target.teams.map(t=>t.uid); }
+  if(section==='broadcast'){target.broadcastTalents=defaultBroadcastTalents();target.broadcastDefaultsInitialized=true;}
+  if(section==='prize'){ Object.assign(target.settings,{localCurrency:'brl',prizeImport:'false',prizePoolMode:'complete',includeMvp:'false',mvpPrize:'',mvpPlayer:'',mvpFlag:'br',mvpTeam:'',prizeQualEnabled:'false',prizeQualCount:'0',prizeQualPage:'',prizeQualName:'',prizeCutAfter:'',prizeSummary:'false',prizeEliminatedDate:'',prizeEliminationRanges:[]}); target.teams.forEach(t=>{t.prize='0';t.prizeTeam='';t.prizeDate='';}); target.prizeOrder=target.teams.map(t=>t.uid); }
   if(section==='participants') target.teams=target.teams.map(t=>({...t,name:'',qual:'invite',qualMethod:'',qualPage:'',qualText:'',qualPlacement:'',players:[blankPlayer(),blankPlayer(),blankPlayer(),blankPlayer()],coach:{name:'',flag:'br',role:'head coach'},analyst:{name:'',flag:'br',role:'analyst'},allowIncomplete:false}));
   if(section==='groupStage'){ Object.assign(target.settings,{groupStageIncluded:'true',groupStandingsEnabled:'false',groupStageHeading:'Group Stage',groupStandingsType:'overall',groupStandingsTitle:'Group Stage Standings',groupQualifyCount:String(Math.min(12,target.settings.teamCount)),groupEliminatedCount:String(Math.max(0,target.settings.teamCount-12)),groupAdvanceTo:'Finals',groupOverallMode:'complete',groupAutoPlacement:'false',groupFfaRounds:'3',groupFfaImport:'false',groupFfaCumulative:'false',groupFfaGroupsEnabled:'false',groupFfaGroupMode:'manual',groupFfaGroupNames:'A, B, C, D',groupFfaTeamsPerGroup:'6'}); target.groupRoundConfigs=defaultGroupRoundConfigs(); target.groupFocusedGroups=[]; target.teams.forEach(t=>Object.assign(t,{groupTeam:'',groupBooyah:'0',groupMp:'',groupKp:'',groupPp:'',groupTotal:'',groupRounds:['','',''],groupFfaGroup:''})); target.groupOrder=target.teams.map(t=>t.uid); }
   if(section==='overall'){ Object.assign(target.settings,{finalStandingsEnabled:'true',finalStageText:'To be Determined',winnerIndex:'',winnerUid:'',autoPlacement:'false',headstartEnabled:'false',finalTeamCount:'',finalCodeMode:'simple',finalBracketId:'',finalMatchpoint:'',finalKillPoint:'1',finalPlacementPoints:'12,9,8,7,6,5,4,3,2,1,0,0',finalWinnerMatch:'',finalTwitch:'',finalYoutube:'',finalDetailedHeader:'Champion Rush',finalOverviewTitle:'Champion Rush Standings Overview'}); target.finalDetailedMaps=[]; target.teams.forEach(t=>Object.assign(t,{standingTeam:'',booyah:'0',mp:'',kp:'',pp:'',total:'',bp:'',championActivated:false,finalPlacement:'',finalTiebreaker:'',finalMatches:[]})); target.finalOrder=target.teams.map(t=>t.uid); }
@@ -2844,4 +2876,3 @@ function loadCollapsedSections(){
   }catch(e){}
   updateCollapseButtons();
 }
-
