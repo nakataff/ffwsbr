@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp ao vivo | Central Free Fire</title>
+    <meta name="description" content="Monte tabelas de Free Fire ao vivo, lance posições e abates, personalize o campeonato e salve seus backups no navegador.">
+    <link rel="canonical" href="https://centralfreefire.com.br/camp-ao-vivo.html">
+    <link rel="icon" type="image/webp" href="central free fire.webp">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <style id="cff-camp-critical">
+      html,body{margin:0;min-height:100%;background:#070c13;color:#edf6ff;font-family:'Segoe UI',Tahoma,sans-serif}
+      body.cff-assets-pending{overflow:hidden}
+      body.cff-assets-pending>.container,body.cff-assets-pending>.cff-camp-topbar{visibility:hidden}
+      .cff-camp-load-error{margin:20px;padding:14px;border:1px solid #a3384b;border-radius:10px;background:#2b1016;color:#ffd7dd;font-weight:800}
+    </style>
+    <script src="js/config.min.js?v=20260915-community-giveaway-v1"></script>
+</head>
+<body class="cff-assets-pending">
+
+    <header class="cff-camp-topbar">
+      <div class="cff-camp-brand">
+        <div class="cff-camp-brand-mark">C</div>
+        <div class="cff-camp-brand-copy">
+          <strong>Camp ao vivo</strong>
+          <small id="cff-camp-load-status">Iniciando ferramentas…</small>
+        </div>
+      </div>
+      <nav class="cff-camp-nav" aria-label="Atalhos do camp">
+        <span class="cff-camp-save-state" id="cff-camp-save-state">● Auto-save local</span>
+        <a class="cff-camp-btn" href="index.html">← Início</a>
+        <button class="cff-camp-btn" id="cff-camp-logos" type="button">Logos</button>
+        <button class="cff-camp-btn" id="cff-camp-focus" type="button">Modo foco</button>
+        <button class="cff-camp-btn" id="cff-camp-launch-focus" type="button" title="Focar no lançamento; a tabela continua ao lado no modo grade">Foco no lançar quedas</button>
+        <button class="cff-camp-btn" id="cff-camp-download" type="button">Baixar backup</button>
+      </nav>
+    </header>
+
+    <div class="container">
+        <h1>Camp ao vivo</h1>
+        <section class="cff-camp-command" aria-label="Ações rápidas do camp">
+          <div class="cff-camp-command-copy">
+            <strong>Atalhos do torneio</strong>
+            <small>Monte seu campeonato, importe um backup ou puxe a tabela confirmada da FFWS. Seu progresso é salvo neste navegador. Baixe um backup para usar em outro dispositivo.</small>
+          </div>
+          <button class="cff-camp-btn is-primary" type="button" data-cff-preset="ffws">Base FFWS BR S2</button>
+          <button class="cff-camp-btn" type="button" data-cff-preset="base">Novo campeonato</button>
+          <button class="cff-camp-btn" id="cff-camp-import" type="button">Importar JSON</button>
+          <button class="cff-camp-btn is-warn" id="cff-camp-download-command" type="button" onclick="window.downloadBackupJson?.()">Backup agora</button>
+          <input class="cff-camp-file-input" id="cff-camp-file" type="file" accept=".json,application/json">
+        </section>
+        
+        <div class="setup-grid">
+            <div class="form-group">
+                <label>Nome do Torneio</label>
+                <input type="text" id="tournament-name" value="Meu campeonato" oninput="renderSummary(); autoSave();">
+            </div>
+            <div class="form-group">
+                <label>Data 1º dia</label>
+                <input type="date" id="match-date" value="" onchange="handleV22MainDateChange(); autoSave();">
+            </div>
+            <div class="form-group">
+                <label>Quedas</label>
+                <input type="number" id="num-quedas" value="6" min="1">
+            </div>
+            <div class="form-group">
+                <label>Dias do torneio</label>
+                <input type="number" id="tournament-days" min="1" max="8" value="1" onchange="renderV19DayRows(false); autoSave(); renderSummary();">
+                <div class="hint">Padrão: 1 dia. Use 2+ para gerar M1, M2, Day 1, Day 2...</div>
+            </div>
+            <div class="form-group">
+                <label style="color: var(--cp-color);">Champion Point</label>
+                <input type="number" id="champion-point" value="50" oninput="renderSummary(); autoSave();">
+                <label class="switch" style="margin-top:8px; text-transform:none; color:#aaa; font-size:0.82em;">
+                    <input type="checkbox" id="champion-enabled" checked onchange="renderSummary(); autoSave();"> Ativar indicação
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Detalhes</label>
+                <select id="game-detail-mode" onchange="handleDetailModeChange(); autoSave();">
+                    <option value="simple">Não</option>
+                    <option value="detailed">Sim</option>
+                </select>
+                <div class="hint">Sim = gera {{MS|posição|abates}}. Não = gera {{MS|p=}} com showgamedetails=false.</div>
+            </div>
+            <div class="form-group">
+                <label>Starting Points</label>
+                <select id="starting-enabled" onchange="handleStartingEnabledChange(); autoSave();">
+                    <option value="no" selected>Não</option>
+                    <option value="yes">Sim</option>
+                </select>
+                <div class="hint">Pontuação extra fixa antes da Queda 1. Não conta como mapa, kill ou ponto de colocação.</div>
+            </div>
+            <div class="form-group">
+                <label>Chave do Match</label>
+                <input type="text" id="match-key" value="M1" oninput="autoSave();" placeholder="M1 ou R1M1">
+            </div>
+            <div class="form-group">
+                <label>ID do Matchlist</label>
+                <input type="text" id="matchlist-id" value="" maxlength="10" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,'').slice(0,10); autoSave();" placeholder="10 caracteres">
+                <div class="match-id-help">Se ficar vazio, o sistema gera um ID aleatório e mantém o mesmo nas próximas gerações.</div>
+            </div>
+            <div class="form-group">
+                <label>Fuso padrão</label>
+                <input type="text" id="default-abbr" value="BRT" oninput="autoSave();" placeholder="BRT, ICT...">
+                <label class="switch" style="margin-top:8px; text-transform:none; color:#aaa; font-size:0.82em;">
+                    <input type="checkbox" id="append-default-abbr" checked onchange="autoSave();"> Usar {{Abbr/...}} quando a data não tiver fuso
+                </label>
+            </div>
+            <div class="form-group match-bg-config">
+                <label>Extra do Match</label>
+                <label class="switch" style="text-transform:none; color:#aaa; font-size:.86em;">
+                    <input type="checkbox" id="bg-enabled" onchange="toggleBgConfigEnabled(); autoSave();"> ATIVAR BG
+                </label>
+                <button class="btn-mini" type="button" onclick="toggleBgConfigPanel()" title="Configurar BG">⚙️ BG</button>
+                <div id="match-bg-panel" class="match-bg-panel">
+                    <div class="match-bg-head"><span>BG</span><span>POS.</span><span></span></div>
+                    <div id="bg-config-rows"></div>
+                    <button class="btn-mini" type="button" onclick="addBgConfigRow('', ''); syncBgRulesFromGrid();">+ Adicionar BG</button>
+                    <div class="match-bg-preview" id="bg-config-preview">bg desativado</div>
+                    <label style="margin-top:10px; font-size:.74em;">Outros extras manuais</label>
+                    <input type="text" id="match-extra" value="" oninput="autoSave();" placeholder="ex: someparam=value">
+                </div>
+            </div>
+        </div>
+        <div class="setup-actions-bar">
+            <button class="btn-mini danger-mini" type="button" onclick="clearTournamentSetupFields()" title="Limpar nome do torneio, data, quedas, dias e Champion Point">🧹 Limpar campos</button>
+            <button class="btn-mini" type="button" onclick="quickSaveTopFields()" title="Salvar configurações do topo">💾 Salvar</button>
+        </div>
+
+        <details class="emoji-setup collapsible-section" open>
+            <summary>Emojis e visual da pontuação</summary>
+            <div class="collapsible-content">
+                <div class="emoji-grid">
+                    <div>
+                        <label>Regras de emoji por posição</label>
+                        <textarea id="emoji-rules-input" oninput="renderSummary(); updateEmojiPreview(); autoSave();" placeholder="⬆️: 1-2&#10;🏆: 1">⬆️: 1-2</textarea>
+                        <div class="hint">Formato: <b>emoji: posições</b>. Exemplos: <b>⬆️: 1-2</b> para campeão + melhor fora dele, ou <b>🏆: 1</b> para só o campeão. Pode usar várias linhas.</div>
+                    </div>
+                    <div>
+                        <label>Prévia dos emojis</label>
+                        <div class="emoji-preview" id="emoji-preview"></div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="teams-setup collapsible-section" open>
+            <summary>Configurar Times</summary>
+            <div class="collapsible-content">
+            <div class="teams-config-grid">
+                <div>
+                    <label>Configurar Times</label>
+                    <div class="sheet-box teams-sheet">
+                        <div class="sheet-head"><span>Nome do Time</span><span>Código</span><span>Abreviação</span><span></span></div>
+                        <div id="teams-config-rows" class="sheet-rows"></div>
+                        <div class="sheet-actions">
+                            <button class="btn-mini" type="button" onclick="addTeamConfigRow('', '', ''); syncTeamsTextareaFromGrid(true); refreshTeamSelector(true); autoSave();">+ Adicionar time</button>
+                            <button class="btn-mini" type="button" onclick="renderTeamConfigGridFromTextarea(); refreshTeamSelector(true);">Recarregar da lista</button>
+                        </div>
+                    </div>
+                    <textarea id="teams-input" class="sheet-hidden-textarea" rows="10">TIME 1, team1, T1
+TIME 2, team2, T2
+TIME 3, team3, T3
+TIME 4, team4, T4
+TIME 5, team5, T5
+TIME 6, team6, T6
+TIME 7, team7, T7
+TIME 8, team8, T8
+TIME 9, team9, T9
+TIME 10, team10, T10
+TIME 11, team11, T11
+TIME 12, team12, T12</textarea>
+                    <div class="hint">Agora funciona como uma mini planilha: <b>Nome do Time</b>, <b>Código</b> e <b>Abreviação</b> em colunas separadas. A abreviação aparece no modo resumo quando as logos estiverem ocultas.</div>
+                </div>
+                <div>
+                    <label>Logos Extras</label>
+                    <div class="sheet-box logos-sheet">
+                        <div class="sheet-head"><span>Nome do Time</span><span>Arquivo da Imagem</span><span></span></div>
+                        <div id="logos-config-rows" class="sheet-rows"></div>
+                        <div class="sheet-actions">
+                            <button class="btn-mini" type="button" onclick="addLogoConfigRow('', ''); syncLogosTextareaFromGrid(); parseLogoOverrides(); renderSummary(); autoSave();">+ Adicionar logo</button>
+                            <button class="btn-mini" type="button" onclick="renderLogoConfigGridFromTextarea(); parseLogoOverrides(); renderSummary();">Recarregar da lista</button>
+                        </div>
+                    </div>
+                    <textarea id="logos-input" class="sheet-hidden-textarea" rows="10" placeholder="CPT VOX, cptvox.png"></textarea>
+                    <div class="hint">Formato em colunas: <b>Nome do Time</b> e <b>Arquivo da Imagem</b>. Deixe vazio quando não precisar.</div>
+                </div>
+            </div>
+
+            <div class="team-selector-box">
+                <div class="team-selector-header">
+                    <label style="margin:0">Times que entram na tabela</label>
+                    <div class="team-selector-actions">
+                        <button class="btn-mini" type="button" title="Pesquisar time" onclick="toggleTeamSelectorSearch()">🔎</button>
+                        <button class="btn-mini" type="button" onclick="setAllTeamsChecked(true)">Marcar todos</button>
+                        <button class="btn-mini" type="button" onclick="setAllTeamsChecked(false)">Desmarcar todos</button>
+                    </div>
+                </div>
+                <div id="team-selector-search" class="team-selector-search">
+                    <input type="text" id="team-selector-query" placeholder="Pesquisar por nome, código ou abreviação..." oninput="filterTeamSelector()">
+                    <button class="btn-mini" type="button" onclick="clearTeamSelectorSearch()">Limpar</button>
+                    <div id="team-selector-search-status" class="selector-search-status"></div>
+                </div>
+                <div id="team-selector" class="team-checkboxes"></div>
+                <div class="hint">Marque só os times deste campeonato. Assim você não precisa apagar e refazer a lista toda vez.</div>
+            </div>
+
+            <button class="btn-apply" onclick="applySetupWithDataChoice()">Aplicar Configuração</button>
+            </div>
+        </details>
+
+
+        <details class="wiki-import-section collapsible-section" open>
+            <summary>Colar / ler código wiki</summary>
+            <div class="collapsible-content">
+            <div class="wiki-import-header">
+                <div>
+                    <label style="margin-bottom:6px;">Colar Código Wiki</label>
+                    <div class="hint" style="margin-top:0;">Cole um código <b>Matchlist</b>, <b>GroupTableLeague</b> ou <b>Prizepool</b>. O gerador detecta o tipo, puxa times/códigos e, quando for Matchlist, carrega quedas, mapas, data, Champion Point e pontos.</div>
+                </div>
+                <div class="wiki-type-badge" id="wiki-type-badge">AUTO</div>
+            </div>
+            <div class="wiki-read-options">
+                <label class="switch"><input type="checkbox" id="wiki-read-all" checked onchange="toggleWikiReadAll(this.checked)"> Tudo</label>
+                <label class="switch"><input type="checkbox" id="wiki-read-teams" checked onchange="syncWikiReadAll()"> Times / opponent / pontos</label>
+                <label class="switch"><input type="checkbox" id="wiki-read-maps" checked onchange="syncWikiReadAll()"> Maps</label>
+                <label class="switch"><input type="checkbox" id="wiki-read-date" checked onchange="syncWikiReadAll()"> Data / date</label>
+            </div>
+            <textarea id="wiki-paste-input" oninput="scheduleWikiAutoImport()" placeholder="Cole aqui o código wiki que você já tem..."></textarea>
+            <div class="wiki-import-actions">
+                <button class="btn-apply" type="button" onclick="importWikiCode(false)">Ler Código Wiki</button>
+                <button class="btn-mini" type="button" onclick="clearWikiImport()">Limpar</button>
+                <div id="wiki-detect-result" class="wiki-import-result">Aguardando código wiki...</div>
+            </div>
+            </div>
+        </details>
+
+        <div class="main-layout">
+            <details class="drop-section collapsible-section" open>
+                <summary>Lançar quedas</summary>
+                <div class="collapsible-content">
+                <div class="drop-top-tools">
+                    <div class="drop-settings-wrap">
+                        <button class="btn-mini" type="button" onclick="toggleDropSettingsPanel()">⚙️ Opções</button>
+                        <div id="drop-settings-panel" class="drop-settings-panel">
+                            <h4>Opções de lançar queda</h4>
+                            <label class="switch">BOTÃO RANDOM <input type="checkbox" id="drop-opt-random" checked onchange="syncDropLaunchOptionsFromUi()"></label>
+                            <label class="switch">LIMPAR MAPAS <input type="checkbox" id="drop-opt-clear-maps" checked onchange="syncDropLaunchOptionsFromUi()"></label>
+                            <label class="switch">LIMPAR TODAS COLOCAÇÕES <input type="checkbox" id="drop-opt-clear-placements" checked onchange="syncDropLaunchOptionsFromUi()"></label>
+                            <label class="switch">LEGENDAS <input type="checkbox" id="drop-opt-legends" checked onchange="syncDropLaunchOptionsFromUi()"></label>
+                            <label class="switch" id="drop-opt-simple-kills-row" title="Exibe e soma abates somente na tabela. O código wiki continua usando apenas pontos.">ABATES DA QUEDA (TABELA) <input type="checkbox" id="drop-opt-simple-kills" onchange="handleSimpleKillsOptionChange(this)"></label>
+                        </div>
+                    </div>
+                    <label class="switch" id="cff-launch-hide-table-wrap" hidden><input type="checkbox" id="cff-launch-hide-table"> Ocultar tabela</label>
+                    <div id="drop-fill-counter" class="drop-fill-counter empty">0/0 preenchidos</div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="flex:1">
+                        <label>Queda Atual</label>
+                        <select id="drop-num" onchange="loadDropData()"></select>
+                    </div>
+                    <div style="flex:1.4" id="input-mode-box">
+                        <label>Modo de Entrada</label>
+                        <select id="input-mode" onchange="handleInputModeChange()">
+                            <option value="per-drop">Pontos da Queda</option>
+                            <option value="cumulative">Total Acumulado</option>
+                        </select>
+                    </div>
+                    <div style="flex:2" id="map-box">
+                        <label>Mapa</label>
+                        <select id="drop-map" onchange="updateMapWarning(); updatePostPreview(); autoSave();">
+                            <option value="" selected>Sem informação</option>
+                            <option value="Bermuda">Bermuda</option>
+                            <option value="Kalahari">Kalahari</option>
+                            <option value="Purgatório">Purgatório</option>
+                            <option value="Nova Terra">Nova Terra</option>
+                            <option value="Alpine">Alpine</option>
+                            <option value="Solara">Solara</option>
+                        </select>
+                        <div id="map-warning" class="map-warning">
+                            <span>⚠️ Mapa sem informação. O código wiki vai sair com <b>mapa vazio</b> nesta queda.</span>
+                            <button class="btn-mini" type="button" onclick="hideMapWarning()">Ocultar aviso</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="drop-utility-actions">
+                    <button class="btn-mini launch-clear-maps-action" type="button" onclick="clearUnfinishedDropMaps()">Limpar mapas das quedas não terminadas</button>
+                    <button class="btn-mini launch-random-action" type="button" onclick="fillRandomCurrentDropForTest()">🎲 Random para teste</button>
+                    <div class="hint launch-legend">Remove o mapa apenas das quedas sem pontuação preenchida. O random preenche mapa, booyah, posições, abates, pontos e MVP para testar rápido.</div>
+                </div>
+
+                <div id="mvp-drop-box" class="mvp-inline-box">
+                    <label class="switch"><input type="checkbox" id="drop-mvp-enabled" onchange="toggleDropMvpFields(); updatePostPreview(); autoSave();"> Preencher MVP da queda</label>
+                    <div>
+                        <label style="font-size:0.74em; margin-bottom:5px;">MVP</label>
+                        <input type="text" id="drop-mvp" placeholder="Nome do MVP" oninput="updatePostPreview(); autoSave();">
+                    </div>
+                    <div>
+                        <label style="font-size:0.74em; margin-bottom:5px;">Abates do MVP</label>
+                        <input type="number" id="drop-mvppoint" placeholder="Kills" oninput="updatePostPreview(); autoSave();">
+                    </div>
+                </div>
+
+                <div id="detail-mode-note" class="mode-note" style="display:none"></div>
+                <div id="placement-actions" class="drop-utility-actions" style="display:none; margin-bottom:10px;">
+                    <button class="btn-mini launch-clear-placements-action" type="button" onclick="clearAllPlacements()">Limpar todas as colocações</button>
+                    <div class="hint launch-legend">As posições já usadas ficam bloqueadas nas setinhas para evitar repetir colocação na mesma queda.</div>
+                </div>
+                <div id="teams-inputs-container"></div>
+                <button class="btn-save" onclick="saveDrop()">Salvar Queda</button>
+                </div>
+            </details>
+
+            <details class="summary-section spacing-normal collapsible-section" id="summary-section" open>
+                <summary>Resumo e gerar código</summary>
+                <div class="collapsible-content">
+                <details class="sub-summary-section" open>
+                    <summary>Opções estéticas</summary>
+                    <div class="sub-summary-content">
+                        <div class="summary-toolbar">
+                            <div class="summary-main-controls">
+                                <label class="switch"><input type="checkbox" id="toggle-details" onchange="handleSummaryDropsToggle()" checked> Mostrar Quedas</label>
+                                <label class="switch"><input type="checkbox" id="toggle-game-details" onchange="handleSummaryDropsToggle()"> Mostrar Detalhes</label>
+                                <label class="switch"><input type="checkbox" id="hide-logos-summary" onchange="applyLogoVisibility(); renderSummary(); autoSave();"> Ocultar Logos</label>
+                                <div class="summary-style-control"><label>Modelo</label><select id="summary-table-style" onchange="renderSummary(); autoSave();"><option value="normal" selected>Normal</option><option value="compact">Resumo</option><option value="compact-logo">Resumo + logo</option></select></div>
+                                <div style="min-width:170px;"><label style="margin-bottom:5px; font-size:0.74em;">Espaçamento</label><select id="table-spacing" onchange="applyTableSpacing(); autoSave();"><option value="normal">Normal</option><option value="compact">Compacto</option><option value="tight">Bem compacto</option><option value="print" selected>Print/X - colunas próximas</option></select></div>
+                            </div>
+                            <div class="summary-actions-compact" title="Screenshot da tabela">
+                                <button class="btn-mini" type="button" onclick="downloadTableScreenshot()" title="Baixar screenshot">📸</button>
+                                <button class="btn-mini" type="button" onclick="copyTableScreenshotToClipboard()" title="Copiar screenshot para clipboard">📋</button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="sub-summary-section">
+                    <summary>Opção da coluna</summary>
+                    <div class="sub-summary-content">
+                        <div class="summary-columns-box" id="summary-columns-box">
+                            <span class="detail-mode-pill" id="summary-mode-pill">Sem detalhes</span>
+                            <label class="switch"><input type="checkbox" id="summary-full-table" checked onchange="renderSummary(); autoSave();"> Tabela completa</label>
+                            <label class="switch"><input type="checkbox" id="show-col-total" checked onchange="renderSummary(); autoSave();"> Total</label>
+                            <label class="switch"><input type="checkbox" id="show-col-booyah" checked onchange="renderSummary(); autoSave();"> Booyah</label>
+                            <label class="switch"><input type="checkbox" id="show-col-kills" checked onchange="renderSummary(); autoSave();"> Abates</label>
+                            <label class="switch"><input type="checkbox" id="show-col-placement" checked onchange="renderSummary(); autoSave();"> Pts. Col</label>
+                            <label class="switch"><input type="checkbox" id="show-col-starting" onchange="renderSummary(); autoSave();"> Pts. Iniciais</label>
+                            <label class="switch"><input type="checkbox" id="show-col-matches" checked onchange="renderSummary(); autoSave();"> Quedas</label>
+                            <label class="switch"><input type="checkbox" id="show-col-last-drop" checked onchange="renderSummary(); autoSave();"> Pts da última queda</label>
+                            <label class="switch"><input type="checkbox" id="show-last-drop-details" onchange="renderSummary(); autoSave();"> Detalhar Pts Queda X</label>
+                            <div class="column-order-control">
+                                <label style="margin:0; font-size:.74em;">Ordem das colunas</label>
+                                <input type="text" id="summary-column-order" value="lastDrop,total,booyah,kills,placement,starting,matches" oninput="renderSummary(); autoSave();" title="Use: lastDrop, total, booyah, kills, placement, starting, matches">
+                                <button class="btn-mini" type="button" onclick="resetColumnOrder()">Resetar ordem</button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="sub-summary-section" open>
+                    <summary>Tabela</summary>
+                    <div class="sub-summary-content">
+                        <div class="table-edit-toolbar">
+                            <button class="btn-mini" type="button" id="column-edit-toggle" onclick="toggleColumnEditMode()" title="Entrar/sair do modo edição de colunas">🎬</button>
+                            <button class="btn-mini" type="button" onclick="downloadTableSettingsJson()" title="Salvar configurações da tabela em JSON">💾</button>
+                            <button class="btn-mini" type="button" onclick="resetColumnWidths()" title="Resetar largura das colunas">↔️</button>
+                            <span class="table-edit-status" id="column-edit-status">Modo edição desligado</span>
+                        </div>
+                        <div class="column-edit-panel" id="column-edit-panel">
+                            <div class="column-edit-panel-title">
+                                <strong>🎬 Modo edição da tabela</strong>
+                                <span class="table-dimension-badge" id="table-dimensions-badge">Tabela: -- px × -- px</span>
+                            </div>
+                            <div class="table-size-controls">
+                                <label>
+                                    Largura da tabela (px)
+                                    <input type="number" id="summary-table-width-input" min="320" max="5000" step="10" placeholder="Auto" onchange="setSummaryTableWidthFromInput(this.value)">
+                                </label>
+                                <input type="range" id="summary-table-width-range" min="320" max="3000" step="10" value="0" oninput="setSummaryTableWidthFromInput(this.value, true)" onchange="setSummaryTableWidthFromInput(this.value)">
+                                <button class="btn-mini" type="button" onclick="bumpSummaryTableWidth(-80)">-80px</button>
+                                <button class="btn-mini" type="button" onclick="bumpSummaryTableWidth(80)">+80px</button>
+                                <button class="btn-mini" type="button" onclick="resetSummaryTableWidth()">Auto</button>
+                            </div>
+                            <div class="hint" style="margin:0 0 10px;">Você pode arrastar as laterais do cabeçalho ou editar os pixels abaixo. A largura geral muda a tabela inteira; os campos de coluna ajustam cada coluna individualmente.</div>
+                            <div class="column-size-list" id="column-size-list"></div>
+                        </div>
+                        <div class="table-print-area" id="table-print-area">
+                            <div class="table-title-box">
+                                <div class="table-title-main">
+                                    <h2 id="table-tournament-title">Resumo do Torneio</h2>
+                                    <div id="table-cp-info" class="cp-info"></div>
+                                </div>
+                                <div id="drop-progress-badge" class="drop-badge">QUEDA 0/0</div>
+                            </div>
+                            <div id="champion-banner">🏆 <span id="champion-name">TIME</span> É O CAMPEÃO (MATCH POINT)! 🏆</div>
+                            <div class="table-container">
+                                <table>
+                                    <thead id="summary-thead"></thead>
+                                    <tbody id="summary-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="code-actions-grid">
+                            <div><button class="btn-gen" onclick="generateLiquipedia()">Gerar Código Wiki</button><textarea id="output-code" style="height:250px; margin-top:10px; font-family:monospace; font-size:12px; white-space:pre" readonly></textarea></div>
+                            <div><button class="btn-gen" style="background:#66b3ff;" onclick="generatePrizepool()">Gerar Prizepool</button><textarea id="prizepool-code" style="height:250px; margin-top:10px; font-family:monospace; font-size:12px; white-space:pre" readonly></textarea></div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="sub-summary-section">
+                    <summary>Texto automático</summary>
+                    <div class="sub-summary-content">
+                        <div class="post-generator-box">
+                            <label>Texto automático para tweet/post</label>
+                            <div class="post-grid">
+                                <div>
+                                    <label style="font-size:0.74em; margin-bottom:5px;">Título do post</label>
+                                    <input type="text" id="post-title" value="FFWS BR - GRANDE FINAL 🏆 Dia 2/2" oninput="updatePostPreview(); autoSave();">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.74em; margin-bottom:5px;">Fonte da queda</label>
+                                    <select id="post-drop-source" onchange="updatePostPreview(); autoSave();">
+                                        <option value="last">Última queda preenchida</option>
+                                        <option value="current" selected>Queda selecionada</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.74em; margin-bottom:5px;">MVP da queda (texto)</label>
+                                    <div class="post-mvp-fields"><input type="text" id="post-mvp" placeholder="Nome do MVP" oninput="updatePostPreview(); autoSave();"><input type="number" id="post-mvppoint" placeholder="Kills" oninput="updatePostPreview(); autoSave();"></div>
+                                </div>
+                            </div>
+                            <div class="post-options">
+                                <label class="switch"><input type="checkbox" id="post-show-drop" checked onchange="updatePostPreview(); autoSave();"> Queda</label>
+                                <label class="switch"><input type="checkbox" id="post-show-map" checked onchange="updatePostPreview(); autoSave();"> Mapa</label>
+                                <label class="switch"><input type="checkbox" id="post-show-booyah" checked onchange="updatePostPreview(); autoSave();"> Booyah</label>
+                                <label class="switch"><input type="checkbox" id="post-show-booyah-count" checked onchange="updatePostPreview(); autoSave();"> Booyah com contagem</label>
+                                <label class="switch"><input type="checkbox" id="post-show-kills" checked onchange="updatePostPreview(); autoSave();"> Kills</label>
+                                <label class="switch"><input type="checkbox" id="post-show-points" checked onchange="updatePostPreview(); autoSave();"> Pontos</label>
+                                <label class="switch"><input type="checkbox" id="post-show-mvp" checked onchange="updatePostPreview(); autoSave();"> MVP</label>
+                                <label class="switch"><input type="checkbox" id="post-show-mvp-kills" checked onchange="updatePostPreview(); autoSave();"> Abates do MVP</label>
+                                <label class="switch"><input type="checkbox" id="post-show-table-line" checked onchange="updatePostPreview(); autoSave();"> “Tabela no momento”</label>
+                            </div>
+                            <textarea id="post-output" readonly></textarea>
+                            <button class="btn-gen" style="margin-top:10px; background:#4caf50; color:#fff;" onclick="copyPostText()">Copiar texto do post</button>
+                        </div>
+                    </div>
+                </details>
+                </div>
+            </details>
+        </div>
+
+<details class="backup-section collapsible-section">
+            <summary>Backup</summary>
+            <div class="collapsible-content">
+            <label>Backup JSON para usar em outro navegador</label>
+            <div class="backup-actions">
+                <button class="btn-apply" type="button" onclick="exportBackup()">Gerar Backup JSON</button>
+                <button class="btn-apply" type="button" onclick="downloadBackupJson()">Baixar .json</button>
+            </div>
+            <textarea id="backup-output" placeholder="Clique em Gerar Backup JSON para copiar/salvar o backup completo..."></textarea>
+
+            <label style="margin-top:16px;">Restaurar Backup JSON</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="backup-input" placeholder="Cole o JSON do backup aqui...">
+                <button class="btn-apply" style="margin-top:0; width: 150px;" onclick="importBackup()">Restaurar</button>
+            </div>
+            </div>
+        </details>
+    </div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="camp-ao-vivo/loader.js?v=20261003-public-v1"></script>
+</body>
+</html>
+
