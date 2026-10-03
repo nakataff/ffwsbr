@@ -14,8 +14,24 @@ autoSave=function(render=true){
   if(teamRegistryOpen){clearTimeout(editorRegistryTimer);editorRegistryTimer=setTimeout(renderTeamRegistryManager,220);}
 };
 let editorRegistryTimer=0;
-function scheduleDependentTeamRender(){clearTimeout(editorDependentTimer);editorDependentTimer=setTimeout(()=>{renderPrize();renderGroupStandings();renderStandings();},220);}
-function flushDependentTeamRender(){if(editorDependentTimer){clearTimeout(editorDependentTimer);editorDependentTimer=0;renderPrize();renderGroupStandings();renderStandings();}}
+const editorPendingTeamSections=new Set();
+const editorDependentSections={prize:{root:'sec-prize',render:()=>renderPrize()},group:{root:'sec-group-standings',render:()=>renderGroupStandings()},overall:{root:'sec-overall',render:()=>renderStandings()}};
+function scheduleDependentTeamRender(sections=Object.keys(editorDependentSections)){
+  sections.forEach(section=>editorPendingTeamSections.add(section));
+  clearTimeout(editorDependentTimer);editorDependentTimer=setTimeout(flushDependentTeamRender,220);
+}
+function flushDependentTeamRender(){
+  clearTimeout(editorDependentTimer);editorDependentTimer=0;
+  for(const section of editorPendingTeamSections){
+    const target=editorDependentSections[section];
+    // A delayed participant edit must not replace inputs in the table now being edited.
+    if($(target.root)?.contains(document.activeElement))continue;
+    editorPendingTeamSections.delete(section);target.render();
+  }
+}
+document.addEventListener('focusout',()=>{
+  if(editorPendingTeamSections.size){clearTimeout(editorDependentTimer);editorDependentTimer=setTimeout(flushDependentTeamRender,220);}
+});
 saveNow=function(){saveCurrentInformation(true);flushEditorLocal();flash('copyStatus','Projeto, times, modelos e aliases salvos no navegador.');};
 function saveEditorRecovery(label){
   try{const history=JSON.parse(localStorage.getItem('cff-liquipedia-recovery-v1')||'[]');history.unshift({label,updatedAt:Date.now(),data:safeClone(state)});localStorage.setItem('cff-liquipedia-recovery-v1',JSON.stringify(history.slice(0,5)));}catch(error){localStatus('Não foi possível guardar a cópia de recuperação. Exporte o JSON antes de substituir.');}

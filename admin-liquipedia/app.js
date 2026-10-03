@@ -1553,7 +1553,7 @@ function updateTeam(i, key, value){
   refreshTeamCompletion(i); autoSave(false);
 }
 function updatePrizeTeam(i, value){ state.teams[i].prizeTeam = value; autoSave(false); }
-function updateStandingTeam(i, value){ state.teams[i].standingTeam = value; scheduleDependentTeamRender(); autoSave(false); }
+function updateStandingTeam(i, value){ state.teams[i].standingTeam = value; scheduleDependentTeamRender(['prize']); autoSave(false); }
 function updatePlayer(i,j,key,value){ if(!Array.isArray(state.teams[i].players)) state.teams[i].players=[]; if(!state.teams[i].players[j]) state.teams[i].players[j]=blankPlayer(); state.teams[i].players[j][key]=value; refreshTeamCompletion(i); autoSave(false); }
 function updateTeamAliasInput(i,field,value){ updateTeam(i,field,value); setAliasHint('aliasTeamName'+i,'teams',value,`applyTeamAlias(${i},'${field}',decodeURIComponent(arguments[0]))`); if(field==='name')updateParticipantDbMatchHint(i,value); }
 function updatePrizeTeamAliasInput(i,value){ updatePrizeTeam(i,value); setAliasHint('aliasPrizeTeam'+i,'teams',value,`applyPrizeTeamAlias(${i},decodeURIComponent(arguments[0]))`); }
@@ -2844,5 +2844,4 @@ function loadCollapsedSections(){
   }catch(e){}
   updateCollapseButtons();
 }
-
 
