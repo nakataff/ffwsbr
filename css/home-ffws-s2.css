@@ -67,6 +67,10 @@
   gap: 8px;
   min-width: 260px;
 }
+.home-s2-broadcast-clock[hidden],
+.home-s2-live-pill[hidden] {
+  display: none !important;
+}
 .home-s2-broadcast-clock > span {
   display: flex;
   min-height: 78px;
