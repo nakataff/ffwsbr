@@ -1427,17 +1427,22 @@
     // Champion Rush can finish with a champion below the leader in total points.
     if(winner)overview+='|tiebreakers=["manual","points"]';
     overview+='\n';
-    rounds.forEach(([label],index)=>{overview+=`|round${index+1}={{Round|title=${label}|started=true|finished=${finished?'true':''}}}\n`});
+    const tabPad=(value,width)=>String(value)+'\t'.repeat(Math.max(1,Math.ceil((width-String(value).length)/4)));
+    rounds.forEach(([label],index)=>{overview+=`|round${index+1}={{Round|title=${tabPad(label,64)}|started=true|finished=${finished?'true':''}}}\n`});
     stats.forEach((row,index)=>{
       const values=rounds.map(([,value])=>value(row));
       // Games and Booyahs are display statistics, not extra competition points.
       const correction=row.total-values.reduce((sum,value)=>sum+(value===null?0:value),0);
-      overview+=`|{{TeamOpponent|${row.code}|${values.map((value,i)=>'r'+(i+1)+'='+(value===null?'':value)).join('|')}|startingpoints=${correction}|tiebreaker=${stats.length-index}}}\n`;
+      overview+=`|{{TeamOpponent|${tabPad(row.code,36)}|${values.map((value,i)=>'r'+(i+1)+'='+(value===null?'':value)).join('\t|')}\t|startingpoints=${correction}\t|tiebreaker=${stats.length-index}}}\n`;
     });
     overview+='}}';
     const id=typeof getOrCreateMatchlistId==='function'?getOrCreateMatchlistId():$('#matchlist-id')?.value||'finals';
     const header=championEnabled?'Champion Rush':'Final';
-    return `===Finals===\n{{Tabs dynamic|name1=Overview|name2=Detailed|This=2}}\n{{Tabs dynamic/tab|1}}\n${overview}\n<!--\nDetailed\n-->{{Tabs dynamic/tab|2}}\n{{Bracket|Bracket/2|id=${id}\n|R1M1header=${header}\n${match}}}\n{{Tabs dynamic/end}}`;
+    const formattedMatch=match
+      .replace(/(\|map=)([^|\r\n]*)(?=\|(?:mvp|mvppoint|vod)=)/g,(_,prefix,name)=>prefix+tabPad(name.trimEnd(),16))
+      .replace(/^(\s*\|opponent\d+=\{\{TeamOpponent\|)([^|\r\n]*)/gm,(_,prefix,code)=>prefix+code.trimEnd())
+      .replace(/^([ \t]*\|opponent\d+=)/gm,'\n$1');
+    return `{{box|start}}{{Tabs dynamic|name1=Overview Standings|icon1=matchpagelink|name2=Detailed Standings|icon2=standings|hide-showall=true|This=2}}<!--\nOverview\n-->{{Tabs dynamic/tab|1}}\n${overview}\n<!--\nDetailed\n-->{{Tabs dynamic/tab|2}}\n{{Bracket|Bracket/2|id=${id}\n|R1M1header=${header}\n${formattedMatch}}}\n{{Tabs dynamic/end}}\n{{box|end}}`;
   }
   function installMultiDayWikiOverview(){
     const original=window.generateLiquipedia;
