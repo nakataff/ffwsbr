@@ -225,6 +225,33 @@
   border-color: rgba(0, 200, 255, .42);
   background: rgba(0, 200, 255, .055);
 }
+.home-s2-team.is-world-qualified {
+  position: relative;
+  border: 2px solid #e6b843;
+  background: rgba(230, 184, 67, .08);
+}
+.home-s2-team.is-world-qualified:hover {
+  border-color: #ffdc78;
+  background: rgba(230, 184, 67, .14);
+}
+.home-s2-qualified-plane {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e6b843;
+  color: #171208;
+}
+.home-s2-qualified-plane svg { width: 15px; height: 15px; fill: currentColor; }
+.home-s2-participants-head #home-s2-resting-note { max-width: 65%; line-height: 1.5; text-align: right; }
+@media (max-width: 620px) {
+  .home-s2-participants-head #home-s2-resting-note { max-width: 100%; text-align: left; }
+}
 .home-s2-team.is-resting {
   opacity: .24;
   filter: grayscale(1);
