@@ -858,26 +858,6 @@
     });
   }
 
-  function partialSelectionNotice(text = 'Seleção parcial: o segundo dia deste bloco ainda não foi concluído.') {
-    return `<div class="season-selection-disclaimer"><strong style="display:flex;align-items:center;gap:8px;"><span aria-hidden="true" style="width:11px;height:11px;border-radius:50%;background:#ff2b2b;box-shadow:0 0 0 4px rgba(255,43,43,.14);display:inline-block;flex:0 0 11px;"></span>SELEÇÃO PARCIAL</strong><span>${escapeHtml(text)}</span></div>`;
-  }
-
-  function secondPhaseCompletedDays() {
-    const days = new Map();
-    stageEvents('segundaFase').forEach((event, index) => {
-      if (!eventResults(event).length) return;
-      const day = number(event.day || event.round);
-      if (!day) return;
-      const drop = number(event.drop || event.queda || event.number) || index + 1;
-      if (!days.has(day)) days.set(day, new Set());
-      days.get(day).add(drop);
-    });
-    return [...days.entries()]
-      .filter(([, drops]) => drops.size >= 6)
-      .map(([day]) => day)
-      .sort((a, b) => a - b);
-  }
-
   function selectionTabsHtml() {
     const finalUnlocked = selectionFinalComplete();
     const secondPhaseStarted = secondPhaseSelectionEntries().length > 0;
@@ -961,7 +941,6 @@
 
     let rows = [];
     let title = config.title;
-    let description = '';
     let filters = '';
     let notice = '';
     let content = '';
@@ -982,9 +961,6 @@
         : [];
       const lineup = buildWeeklySelection(rows);
       title = weeklyStage === 'segundaFase' ? 'Times da Semana — Segunda Fase' : 'Times da Semana';
-      description = weeklyStage === 'segundaFase'
-        ? 'Cada bloco reúne dois dias da Segunda Fase. Após o primeiro dia, a seleção aparece como parcial e fecha quando o segundo dia termina.'
-        : 'O resultado mais recente disponível aparece primeiro. Semanas futuras são liberadas quando recebem os primeiros dados.';
       const phaseFilter = `<div class="season-selection-week-stage-filter"><span>Fase:</span><button type="button" class="${weeklyStage === 'classificatoria' ? 'active' : ''}" onclick="setFFWSS2SelectionWeekStage('classificatoria')">Classificatória</button><button type="button" class="${weeklyStage === 'segundaFase' ? 'active' : ''} ${secondPhaseStarted ? '' : 'is-locked'}" ${secondPhaseStarted ? `onclick="setFFWSS2SelectionWeekStage('segundaFase')"` : 'disabled aria-disabled="true"'}>Segunda Fase${secondPhaseStarted ? '' : ' <small>EM BREVE</small>'}</button></div>`;
       const weekButtons = weekKeys.map(key => {
         const unlocked = stageWeeks.includes(key);
@@ -992,36 +968,18 @@
         return `<button type="button" class="btn-day season-selection-week-btn ${active ? 'active' : ''} ${unlocked ? '' : 'is-locked'}" ${unlocked ? `onclick="setFFWSS2SelectionWeek('${key}')"` : 'disabled aria-disabled="true"'} style="${active ? 'background:#ff0000;border-color:#ff0000;color:#fff;' : ''}">SEMANA ${key}${unlocked ? '' : '<small>EM BREVE</small>'}</button>`;
       }).join('');
       filters = `${phaseFilter}<div class="season-selection-filters">${weekButtons}</div>`;
-      if (weeklyStage === 'segundaFase' && rows.length) {
-        const completed = secondPhaseCompletedDays().filter(day => selectedDays.includes(day));
-        if (completed.length < selectedDays.length) {
-          notice = partialSelectionNotice('Este bloco ainda não teve os dois dias concluídos. A seleção fecha quando o segundo dia terminar.');
-        }
-      }
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey, selectedWeek);
     } else if (phaseKey === 'classificatoria') {
       rows = selectionRowsForDays([]);
       const lineup = buildWeeklySelection(rows);
-      description = 'Melhores de cada posição levando em conta os dados já disputados na classificatória.';
-      notice = `<div class="season-selection-disclaimer"><strong>CLASSIFICATÓRIA EM ANDAMENTO</strong><span>Esta seleção é parcial e pode mudar a cada nova rodada conforme os números da competição são atualizados.</span></div>`;
+      notice = `<div class="season-selection-disclaimer"><strong>CLASSIFICATÓRIA ENCERRADA</strong></div>`;
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey);
     } else if (phaseKey === 'segundaFase') {
       rows = secondPhaseSelectionRows();
       const lineup = buildWeeklySelection(rows);
-      const completedDays = new Set(secondPhaseCompletedDays());
-      const playedDays = [...new Set(secondPhaseSelectionEntries().map(selectionEntryDay).filter(Boolean))].sort((a, b) => a - b);
-      const latestPlayedDay = playedDays[playedDays.length - 1] || 0;
-      const pairStart = latestPlayedDay ? (latestPlayedDay % 2 === 0 ? latestPlayedDay - 1 : latestPlayedDay) : 0;
-      const currentPair = pairStart ? [pairStart, pairStart + 1] : [];
-      const hasData = rows.length > 0;
-      const partial = hasData && currentPair.length === 2 && !currentPair.every(day => completedDays.has(day));
-      description = 'Melhores de cada posição considerando os dados já disputados na Segunda Fase.';
-      if (partial) {
-        notice = partialSelectionNotice('O bloco atual ainda não teve os dois dias concluídos. A seleção fecha quando o segundo dia terminar.');
-      }
+      notice = '<div class="season-selection-disclaimer"><strong>SEGUNDA FASE ENCERRADA</strong></div>';
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionLockedHtml(phaseKey);
     } else if (!finalUnlocked) {
-      description = phaseKey === 'final' ? 'A seleção será liberada quando a Final tiver dados suficientes.' : 'A seleção será definida depois do encerramento da temporada.';
       content = selectionLockedHtml(phaseKey);
     } else {
       const targetStage = phaseKey === 'final' ? 'FINAL' : '';
@@ -1041,7 +999,6 @@
         row.mvps += number(entry.mvp ?? entry.mvps);
       });
       const lineup = buildWeeklySelection([...aggregate.values()].sort((a, b) => b.kills - a.kills || b.damage - a.damage));
-      description = phaseKey === 'final' ? 'Melhores de cada posição considerando somente a Final.' : 'Melhores de cada posição considerando toda a temporada.';
       content = lineup.length ? lineup.map(row => selectionCard(row, phaseKey)).join('') : selectionEmptyHtml(phaseKey);
     }
 
@@ -1049,11 +1006,10 @@
       <div class="season-selection-hero">
         <div class="season-selection-kicker">WB 2026 S2</div>
         <h1>SELEÇÕES DA SEASON</h1>
-        <p>Os melhores jogadores por função: times da semana, classificatória, segunda fase, final e torneio.</p>
       </div>
       <div class="season-selection-tabs">${selectionTabsHtml()}</div>
       <section class="season-selection-panel season-selection-panel-${config.panelClass}">
-        <div class="season-selection-section-head"><div><span class="season-selection-tag">${escapeHtml(config.label)}</span><h2>${escapeHtml(title)}</h2></div><p>${escapeHtml(description)}</p></div>
+        <div class="season-selection-section-head"><div><span class="season-selection-tag">${escapeHtml(config.label)}</span><h2>${escapeHtml(title)}</h2></div></div>
         ${notice}
         ${filters}
         <div class="selection-grid season-selection-grid">${content}</div>
