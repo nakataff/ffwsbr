@@ -5,6 +5,7 @@ const $=id=>document.getElementById(id),el=(tag,cls,text)=>{const e=document.cre
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 function fresh(){return {version:2,tasks:[],notes:[],theme:'dark',columns:copy(BASE_COLUMNS),platforms:[{id:'instagram',name:'Instagram'},{id:'x',name:'X'},{id:'facebook',name:'Facebook'},{id:'tiktok',name:'TikTok'},{id:'youtube',name:'YouTube'},{id:'site',name:'Site'}],tags:[],settings:{warningMinutes:60,view:'board',sort:'deadline'}};}
 let state=fresh(),files=new Map(),db=null,storageBlocked=false,saveQueue=Promise.resolve(),dragId=null,draft=null,draftFiles=new Map(),previewUrls=[],toastTimer,booted=false,openNoteId=null,editNoteId=null,failedFileChanges=new Map();
+let cloudUnsubscribe=null,cloudTimer=null,cloudPendingState=null,cloudSaveChain=Promise.resolve(),cloudReady=false,applyingRemote=false;
 const filters={text:'',deadline:'all',platform:'',tag:'',status:'',important:false};
 function validDate(s){if(s==='')return true;if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(s+'T12:00:00');return !Number.isNaN(+d)&&d.getFullYear()===Number(s.slice(0,4))&&d.getMonth()+1===Number(s.slice(5,7))&&d.getDate()===Number(s.slice(8,10));}
 function text(v,max,empty=true){if(typeof v!=='string'||v.length>max||(!empty&&!v.trim()))throw Error('Texto inválido');return v;}
@@ -33,7 +34,54 @@ function transact(next,fileChanges=[],replaceFiles=false){
  if(!db){if(fileChanges.some(x=>x.blob)||next.tasks.some(t=>t.attachments.length))return Promise.reject(Error('Este navegador não permite salvar anexos.'));try{localStorage.setItem(KEY,JSON.stringify(next));return Promise.resolve();}catch(e){return Promise.reject(e);}}
  return new Promise((resolve,reject)=>{const tx=db.transaction(['state','files'],'readwrite');tx.objectStore('state').put(next,'board');const store=tx.objectStore('files');if(replaceFiles)store.clear();fileChanges.forEach(f=>f.blob?store.put({id:f.id,blob:f.blob}):store.delete(f.id));tx.oncomplete=()=>{try{localStorage.setItem(KEY,JSON.stringify(next));}catch{}resolve();};tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Salvamento interrompido'));});
 }
-function save(changes=[]){const next=copy(state);$('save-status').textContent='Salvando…';const operation=saveQueue.then(()=>{const pending=new Map(failedFileChanges);changes.forEach(change=>pending.set(change.id,change));return transact(next,[...pending.values()]).then(()=>{failedFileChanges.clear();},error=>{failedFileChanges=pending;throw error;});});saveQueue=operation.catch(e=>{notice(storageBlocked?'Os dados anteriores estão protegidos. Importe um backup para substituir ou exporte o quadro atual.':'Não foi possível salvar suas alterações. Exporte um backup antes de fechar a página.');});operation.then(()=>{if(!$('storage-notice').classList.contains('visible'))$('save-status').textContent='Salvo neste navegador · Backup completo inclui os anexos.';},()=>{});return operation;}
+function hasMeaningfulState(value){
+ return Boolean(value?.tasks?.length||value?.notes?.length||value?.tags?.length||value?.columns?.some(c=>!BASE_COLUMNS.some(b=>b.id===c.id&&b.name===c.name&&!c.hidden))||value?.platforms?.some(p=>!fresh().platforms.some(b=>b.id===p.id&&b.name===p.name)));
+}
+function cloudStatus(message){if(!$('storage-notice').classList.contains('visible'))$('save-status').textContent=message;}
+function flushCloud(){
+ clearTimeout(cloudTimer);cloudTimer=null;
+ if(!cloudPendingState||!window.CFF_TASKS_CLOUD)return cloudSaveChain;
+ const snapshot=cloudPendingState;cloudPendingState=null;
+ cloudSaveChain=cloudSaveChain.catch(()=>{}).then(()=>window.CFF_TASKS_CLOUD.save(snapshot)).then(()=>{cloudReady=true;cloudStatus('Sincronizado na nuvem · cópia local ativa.');},error=>{console.error('[Tasks cloud save]',error);cloudStatus('Salvo neste aparelho · falha ao sincronizar com a nuvem.');throw error;});
+ return cloudSaveChain;
+}
+function scheduleCloud(next,delay=450){
+ if(applyingRemote||!window.CFF_TASKS_CLOUD)return;
+ cloudPendingState=copy(next);clearTimeout(cloudTimer);
+ cloudStatus('Salvo neste aparelho · sincronizando com a nuvem…');
+ cloudTimer=setTimeout(()=>{flushCloud().catch(()=>{});},delay);
+}
+async function persistCloudStateLocally(next){
+ if(db)await transact(next);else localStorage.setItem(KEY,JSON.stringify(next));
+}
+async function applyCloudPayload(payload,render=true){
+ if(!payload?.state)return false;
+ const next=normalise(payload.state);
+ applyingRemote=true;
+ try{state=next;await persistCloudStateLocally(next);}finally{applyingRemote=false;}
+ if(render){applyTheme();refreshFilters();renderNotes();renderBoard();}
+ cloudReady=true;cloudStatus('Sincronizado da nuvem · cópia local ativa.');
+ return true;
+}
+async function initCloudSync(renderRemote=false){
+ const cloud=window.CFF_TASKS_CLOUD;if(!cloud)return false;
+ try{
+  const payload=await cloud.load();
+  if(payload?.state)await applyCloudPayload(payload,renderRemote);
+  else if(hasMeaningfulState(state)){await cloud.save(state);cloudReady=true;cloudStatus('Quadro enviado para a nuvem · cópia local ativa.');}
+  else{cloudReady=true;cloudStatus('Nuvem conectada · aguardando seu primeiro conteúdo.');}
+  if(cloudUnsubscribe)cloudUnsubscribe();
+  cloudUnsubscribe=cloud.subscribe(p=>{applyCloudPayload(p,true).catch(error=>{console.error('[Tasks cloud receive]',error);cloudStatus('Nuvem conectada, mas uma atualização remota não pôde ser aplicada.');});},error=>{console.error('[Tasks cloud listen]',error);cloudStatus('Salvo neste aparelho · sincronização com a nuvem indisponível.');});
+  return true;
+ }catch(error){console.error('[Tasks cloud init]',error);cloudStatus('Salvo neste aparelho · sincronização com a nuvem indisponível.');return false;}
+}
+function save(changes=[]){
+ const next=copy(state);$('save-status').textContent='Salvando…';
+ const operation=saveQueue.then(()=>{const pending=new Map(failedFileChanges);changes.forEach(change=>pending.set(change.id,change));return transact(next,[...pending.values()]).then(()=>{failedFileChanges.clear();scheduleCloud(next);},error=>{failedFileChanges=pending;throw error;});});
+ saveQueue=operation.catch(e=>{notice(storageBlocked?'Os dados anteriores estão protegidos. Importe um backup para substituir ou exporte o quadro atual.':'Não foi possível salvar suas alterações. Exporte um backup antes de fechar a página.');});
+ operation.then(()=>{if(!window.CFF_TASKS_CLOUD&&!$('storage-notice').classList.contains('visible'))$('save-status').textContent='Salvo neste navegador · Backup completo inclui os anexos.';},()=>{});
+ return operation;
+}
 function history(t,action){t.updatedAt=now();t.history.push({id:uid(),at:t.updatedAt,action});}
 const columnName=id=>state.columns.find(c=>c.id===id)?.name||'Coluna';
 const isActive=t=>!['done','cancelled'].includes(t.status);
@@ -109,7 +157,7 @@ function resetFilters(){Object.assign(filters,{text:'',deadline:'all',platform:'
 function readAsDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});}
 async function exportBackup(){const button=$('export');button.disabled=true;button.textContent='Preparando backup…';try{const snapshot=copy(state),references=new Set(snapshot.tasks.flatMap(t=>t.attachments.map(a=>a.id))),stored=new Map(files),backupFiles=[];for(const id of references){const blob=stored.get(id);if(!blob)throw Error('Um anexo não está disponível.');backupFiles.push({id,data:await readAsDataURL(blob)});}const content={...snapshot,files:backupFiles},blob=new Blob([JSON.stringify(content,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='meu-quadro-backup-'+today()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Backup completo exportado');}catch(e){alert('Não foi possível exportar o backup: '+e.message);}finally{button.disabled=false;button.textContent='Exportar backup completo';}}
 function decodeBackupFile(file){const id=text(file.id,150,false),data=text(file.data,40*1024*1024,false),match=data.match(/^data:([^;,]*);base64,([A-Za-z0-9+/]*={0,2})$/);if(!match)throw Error('Anexo inválido');const binary=atob(match[2]),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return {id,blob:new Blob([bytes],{type:match[1]})};}
-async function importBackup(file){if(!file)return;const button=$('import');button.disabled=true;try{if(file.size>250*1024*1024)throw Error('O backup precisa ter até 250 MB.');const raw=JSON.parse(await file.text()),next=normalise(raw),nextFiles=new Map();if(raw.version===2){if(!Array.isArray(raw.files))throw Error('Lista de anexos ausente');for(const item of raw.files){const decoded=decodeBackupFile(item);if(nextFiles.has(decoded.id))throw Error('Anexo duplicado');nextFiles.set(decoded.id,decoded.blob);}}let totalBytes=0;for(const blob of nextFiles.values())totalBytes+=blob.size;if(totalBytes>150*1024*1024)throw Error('O total de anexos precisa ter até 150 MB.');next.tasks.forEach(t=>t.attachments.forEach(a=>{const blob=nextFiles.get(a.id);if(!blob||blob.size!==a.size||blob.type!==a.type)throw Error('Anexo ausente ou diferente do original');}));if(!confirm(`Importar ${next.tasks.length} tarefas, ${next.notes.length} lembretes e ${nextFiles.size} anexos? Isso substitui todo o quadro atual. Exporte um backup antes se quiser guardar o atual.`))return;await saveQueue;const blocked=storageBlocked;storageBlocked=false;try{await transact(next,[...nextFiles].map(([id,blob])=>({id,blob})),true);}catch(e){storageBlocked=blocked;throw e;}state=next;files=nextFiles;failedFileChanges.clear();$('storage-notice').classList.remove('visible');$('save-status').textContent='Salvo neste navegador · Backup completo inclui os anexos.';applyTheme();refreshFilters();resetFilters();renderNotes();toast('Backup importado');}catch(e){alert('Não foi possível importar: '+e.message+'. Selecione um backup exportado por este quadro.');}finally{button.disabled=false;$('backup-file').value='';}}
+async function importBackup(file){if(!file)return;const button=$('import');button.disabled=true;try{if(file.size>250*1024*1024)throw Error('O backup precisa ter até 250 MB.');const raw=JSON.parse(await file.text()),next=normalise(raw),nextFiles=new Map();if(raw.version===2){if(!Array.isArray(raw.files))throw Error('Lista de anexos ausente');for(const item of raw.files){const decoded=decodeBackupFile(item);if(nextFiles.has(decoded.id))throw Error('Anexo duplicado');nextFiles.set(decoded.id,decoded.blob);}}let totalBytes=0;for(const blob of nextFiles.values())totalBytes+=blob.size;if(totalBytes>150*1024*1024)throw Error('O total de anexos precisa ter até 150 MB.');next.tasks.forEach(t=>t.attachments.forEach(a=>{const blob=nextFiles.get(a.id);if(!blob||blob.size!==a.size||blob.type!==a.type)throw Error('Anexo ausente ou diferente do original');}));if(!confirm(`Importar ${next.tasks.length} tarefas, ${next.notes.length} lembretes e ${nextFiles.size} anexos? Isso substitui todo o quadro atual. Exporte um backup antes se quiser guardar o atual.`))return;await saveQueue;const blocked=storageBlocked;storageBlocked=false;try{await transact(next,[...nextFiles].map(([id,blob])=>({id,blob})),true);}catch(e){storageBlocked=blocked;throw e;}state=next;files=nextFiles;failedFileChanges.clear();$('storage-notice').classList.remove('visible');scheduleCloud(state,0);$('save-status').textContent=window.CFF_TASKS_CLOUD?'Backup importado · sincronizando com a nuvem…':'Salvo neste navegador · Backup completo inclui os anexos.';applyTheme();refreshFilters();resetFilters();renderNotes();toast('Backup importado');}catch(e){alert('Não foi possível importar: '+e.message+'. Selecione um backup exportado por este quadro.');}finally{button.disabled=false;$('backup-file').value='';}}
 function wire(){
  $('new-card').addEventListener('click',()=>openEditor());$('theme-toggle').addEventListener('click',()=>{state.theme=state.theme==='dark'?'light':'dark';applyTheme();save();});$('manage-columns').addEventListener('click',openColumns);$('close-columns').addEventListener('click',()=>$('columns-dialog').close());$('done-columns').addEventListener('click',()=>$('columns-dialog').close());$('warning-minutes').addEventListener('change',()=>{state.settings.warningMinutes=Number($('warning-minutes').value);save();renderBoard();});
  $('add-custom-column').addEventListener('click',()=>{const name=$('new-column-name').value.trim();if(!name){$('new-column-name').focus();return;}if(state.columns.some(c=>c.name.toLocaleLowerCase('pt-BR')===name.toLocaleLowerCase('pt-BR'))){toast('Já existe uma coluna com esse nome');return;}state.columns.push({id:'col-'+uid(),name,hidden:false});$('new-column-name').value='';save();renderColumns();refreshFilters();renderBoard();});$('new-column-name').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('add-custom-column').click();}});
@@ -123,12 +171,16 @@ function wire(){
  });
  $('search').addEventListener('input',()=>{filters.text=$('search').value.trim().toLocaleLowerCase('pt-BR');renderBoard();});document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>chooseFilter(b.dataset.filter)));document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{state.settings.view=b.dataset.view;save();renderBoard();}));['platform','tag','status'].forEach(key=>$('filter-'+key).addEventListener('change',()=>{filters[key]=$('filter-'+key).value;renderBoard();}));$('filter-important').addEventListener('click',()=>{filters.important=!filters.important;$('filter-important').setAttribute('aria-pressed',String(filters.important));$('filter-important').textContent=filters.important?'★ Só importantes':'☆ Só importantes';renderBoard();});$('sort').addEventListener('change',()=>{state.settings.sort=$('sort').value;save();renderBoard();});$('reset-filters').addEventListener('click',resetFilters);
  $('show-urgent').addEventListener('click',()=>{resetFilters();state.columns.forEach(c=>{if(state.tasks.some(t=>t.status===c.id&&['urgent','soon'].includes(remaining(t).level)))c.hidden=false;});save();chooseFilter('soon');});$('export').addEventListener('click',exportBackup);$('import').addEventListener('click',()=>$('backup-file').click());$('backup-file').addEventListener('change',e=>importBackup(e.target.files[0]));
- document.addEventListener('click',e=>{if(openNoteId&&!e.target.closest('.sticky-shell')&&!e.target.closest('#new-sticky')){openNoteId=null;editNoteId=null;renderNotes();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openNoteId&&!$('editor').open&&!$('columns-dialog').open){openNoteId=null;editNoteId=null;renderNotes();}});window.addEventListener('resize',()=>document.querySelectorAll('.sticky-body textarea').forEach(autoNoteHeight));setInterval(()=>{if(booted&&!dragId)tick();},15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&booted)tick();});
+ document.addEventListener('click',e=>{if(openNoteId&&!e.target.closest('.sticky-shell')&&!e.target.closest('#new-sticky')){openNoteId=null;editNoteId=null;renderNotes();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openNoteId&&!$('editor').open&&!$('columns-dialog').open){openNoteId=null;editNoteId=null;renderNotes();}});window.addEventListener('resize',()=>document.querySelectorAll('.sticky-body textarea').forEach(autoNoteHeight));setInterval(()=>{if(booted&&!dragId)tick();},15000);document.addEventListener('visibilitychange',()=>{if(document.hidden)flushCloud().catch(()=>{});else if(booted)tick();});window.addEventListener('pagehide',()=>{flushCloud().catch(()=>{});});
 }
 async function boot(){
  let raw=null,storedFiles=[];try{db=await openDatabase();const tx=db.transaction(['state','files'],'readonly');[raw,storedFiles]=await Promise.all([request(tx.objectStore('state').get('board')),request(tx.objectStore('files').getAll())]);}catch(e){db=null;}
- try{if(!raw){const local=localStorage.getItem(KEY);if(local)raw=JSON.parse(local);}if(raw)state=normalise(raw);storedFiles.forEach(f=>files.set(f.id,f.blob));if(state.tasks.some(t=>t.attachments.some(a=>!files.has(a.id))))notice('Alguns anexos não estão disponíveis neste navegador. Importe o backup completo para recuperá-los.');}catch(e){storageBlocked=true;notice('Não foi possível carregar os dados anteriores. Eles não serão sobrescritos. Você pode exportar este quadro ou importar um backup.');}
- wire();applyTheme();refreshFilters();renderNotes();renderBoard();booted=true;if(!storageBlocked&&db&&!$('storage-notice').classList.contains('visible'))save();else if(!db&&!storageBlocked)notice('Anexos indisponíveis neste navegador. Tarefas e lembretes podem ser salvos; exporte um backup para guardar suas alterações.');
+ try{if(!raw){const local=localStorage.getItem(KEY);if(local)raw=JSON.parse(local);}if(raw)state=normalise(raw);storedFiles.forEach(f=>files.set(f.id,f.blob));}catch(e){storageBlocked=true;notice('Não foi possível carregar os dados anteriores. Eles não serão sobrescritos. Você pode exportar este quadro ou importar um backup.');}
+ if(!storageBlocked)await initCloudSync(false);
+ if(state.tasks.some(t=>t.attachments.some(a=>!files.has(a.id))))notice('Alguns anexos não estão disponíveis neste dispositivo. As tarefas estão sincronizadas; importe um backup completo neste aparelho para recuperar os arquivos locais.');
+ wire();applyTheme();refreshFilters();renderNotes();renderBoard();booted=true;
+ if(!db&&!storageBlocked)notice('Anexos locais indisponíveis neste navegador. Tarefas e lembretes continuam sincronizados pela nuvem.');
+ if(window.CFF_TASKS_CLOUD&&cloudReady&&!$('storage-notice').classList.contains('visible'))cloudStatus('Sincronizado na nuvem · cópia local ativa.');
 }
 let cffTasksStarted=false;
 function startAuthenticatedBoard(){if(cffTasksStarted||!window.CFF_TASKS_AUTHORIZED)return;cffTasksStarted=true;boot().catch(e=>notice('Não foi possível abrir o quadro: '+e.message));}
