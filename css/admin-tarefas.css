@@ -242,3 +242,174 @@ select option:disabled{
   .card-service{margin-bottom:7px}
   .status-select{min-height:38px}
 }
+
+
+/* 2026-10-05: icone-imagem + select noturno + acoes editor v6 */
+/* O menu nativo do Windows/Chrome herda color-scheme:dark do documento.
+   Forçar apenas este select para esquema claro mantém as opções legíveis. */
+html[data-theme="dark"] .status-select{
+  color-scheme:light!important;
+  background:#211d31!important;
+  color:#f7f7fb!important;
+  border:1px solid #6655a6!important;
+}
+html[data-theme="dark"] .status-select option,
+html[data-theme="dark"] .status-select optgroup{
+  background:#ffffff!important;
+  color:#171922!important;
+}
+html[data-theme="dark"] .status-select option:checked{
+  background:#91bff2!important;
+  color:#11151b!important;
+}
+html[data-theme="dark"] .status-select option:disabled{
+  color:#858b98!important;
+}
+.status-select{
+  color-scheme:light;
+}
+
+/* Ações rápidas no topo do editor. */
+.editor-top-actions{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-left:auto;
+}
+.editor-icon-btn{
+  width:37px;
+  height:37px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:transparent;
+  transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+.editor-icon-btn svg{
+  width:19px;
+  height:19px;
+  fill:currentColor;
+}
+.editor-icon-btn:hover{
+  transform:translateY(-1px);
+}
+.editor-icon-btn.discard{
+  color:#e46f70;
+  border-color:rgba(216,83,86,.38);
+  background:rgba(190,55,58,.06);
+}
+.editor-icon-btn.discard:hover{
+  color:#ff9292;
+  border-color:rgba(232,92,95,.65);
+  background:rgba(190,55,58,.14);
+}
+.editor-icon-btn.save{
+  color:#a995ff;
+  border-color:rgba(137,111,239,.48);
+  background:rgba(118,97,219,.10);
+}
+.editor-icon-btn.save:hover{
+  color:#c1b3ff;
+  border-color:rgba(169,149,255,.72);
+  background:rgba(118,97,219,.20);
+}
+
+/* Serviço + imagem personalizada. */
+.task-service-block{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);
+  gap:12px;
+  align-items:end;
+  margin-top:10px;
+}
+.task-service-block .task-service-field{
+  max-width:none;
+  margin-top:0;
+}
+.service-icon-picker{
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--panel);
+}
+.service-icon-preview{
+  width:52px;
+  height:52px;
+  flex:0 0 52px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.10);
+  background:#111722;
+  color:#f4f6fa;
+  overflow:hidden;
+}
+.service-icon-preview span{
+  font-size:20px;
+  line-height:1;
+}
+.service-icon-preview img{
+  width:38px;
+  height:38px;
+  display:block;
+  object-fit:contain;
+}
+.service-icon-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+}
+.service-icon-copy strong{
+  font-size:12px;
+  line-height:1.2;
+}
+.service-icon-copy>span{
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.25;
+}
+.service-icon-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:5px;
+}
+.danger-small{
+  color:var(--danger);
+  border-color:rgba(205,86,86,.30);
+}
+.danger-small:hover{
+  background:var(--danger-bg)!important;
+  color:var(--danger)!important;
+}
+.card-service-image{
+  width:17px;
+  height:17px;
+  display:block;
+  object-fit:contain;
+}
+.card-service-icon:has(.card-service-image){
+  background:#0b1019;
+  border-color:rgba(255,255,255,.12);
+}
+
+@media(max-width:700px){
+  .editor-icon-btn{
+    width:40px;
+    height:40px;
+  }
+  .task-service-block{
+    grid-template-columns:1fr;
+  }
+  .service-icon-picker{
+    min-height:68px;
+  }
+}
