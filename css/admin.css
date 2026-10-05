@@ -108,3 +108,25 @@
   .admin-abuse-dialog .admin-community-recalc-controls{grid-template-columns:1fr}
   .admin-abuse-dialog .admin-community-recalc-controls .admin-btn{width:100%}
 }
+
+
+/* 2026-10-05: atalho de tarefas + mobile v40 */
+.admin-tasks-shortcut{white-space:nowrap}
+@media(max-width:640px){
+  .admin-header{align-items:center;flex-wrap:wrap;gap:8px}
+  .admin-header-actions{margin-left:auto;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .admin-header-actions .admin-btn{min-height:40px;padding:8px 10px;font-size:.78rem}
+  .admin-central-tools-panel .admin-inline-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .admin-central-tools-panel .admin-inline-actions .admin-btn{display:flex;align-items:center;justify-content:center;width:100%;min-width:0;min-height:44px;padding:9px 8px;text-align:center;line-height:1.15}
+  .admin-welcome>#admin-refresh{width:100%}
+  .admin-panel-head-wrap>.admin-inline-actions{width:100%}
+  .admin-panel-head-wrap>.admin-inline-actions .admin-btn{min-height:42px}
+  .admin-btn{touch-action:manipulation}
+}
+@media(max-width:390px){
+  .admin-shell{width:calc(100% - 12px)}
+  .admin-panel{padding:12px}
+  .admin-header-actions .admin-btn{padding-inline:8px}
+  .admin-central-tools-panel .admin-inline-actions{gap:6px}
+  .admin-central-tools-panel .admin-inline-actions .admin-btn{font-size:.76rem}
+}
