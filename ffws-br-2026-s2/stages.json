@@ -8904,8 +8904,132 @@
   },
   "final": {
     "finished": false,
-    "worldQualifiedFromStage2": [],
+    "worldQualifiedFromStage2": [
+      "LOUD SNICKERS",
+      "LOS"
+    ],
     "days": [],
-    "rows": []
+    "rows": [
+      {
+        "team": "LOS",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": true
+      },
+      {
+        "team": "LOUD SNICKERS",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": true
+      },
+      {
+        "team": "FLUXO W7M",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "INTZ",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "TEAM SOLID",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "RISE GAMING",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "ALPHA7",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "RUSH GAMING",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "INFLUENCE RAGE",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "CPT VOX",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "AFROGAMES",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      },
+      {
+        "team": "SX TET",
+        "position": null,
+        "points": 0,
+        "booyahs": 0,
+        "kills": 0,
+        "placementPoints": 0,
+        "matches": 0,
+        "worldQualified": false
+      }
+    ]
   }
 }

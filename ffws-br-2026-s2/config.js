@@ -1,5 +1,5 @@
 (()=>{
-  const liveVersion='20260920-s2-static-v1';
+  const liveVersion='20261005-final-ready-v2';
   const LIVE_ROOT='ffwsLive/2026-s2';
 
   const SECOND_PHASE_SEED = Object.freeze([
@@ -193,7 +193,7 @@
     if(finalEvents.length){
       if(!payload.final||typeof payload.final!=='object')payload.final={finished:false,days:[],rows:[]};
       const byDay=new Map();
-      finalEvents.forEach(event=>{if(!byDay.has(event.day))byDay.set(event.day,[]);byDay.get(event.day).push(({round,...rest})=>rest)});
+      finalEvents.forEach(event=>{if(!byDay.has(event.day))byDay.set(event.day,[]);const {round,...match}=event;byDay.get(event.day).push(match)});
       payload.final.days=[...byDay].sort((a,b)=>a[0]-b[0]).map(([day,matches])=>({day,matches:matches.sort((a,b)=>num(a.drop)-num(b.drop))}));
       let rows=computeRows('final',finalEvents,payload.final.rows);
       const champion=detectChampion(finalEvents);

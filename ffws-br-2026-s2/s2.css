@@ -660,3 +660,5 @@ body.cff-stats-route #ffws-br-s2-stats.page,body.cff-stats-route #registro-detal
   .ffws-s2-mvp-table th:nth-child(2),
   .ffws-s2-mvp-table td:nth-child(2){padding-left:20px!important}
 }
+
+#ffws-br-s2-final .ffws-s2-team-name small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
