@@ -1,6 +1,6 @@
 
 'use strict';
-const KEY='meu-quadro-v1',DB_NAME='meu-quadro-completo',COLORS={none:['Padrão','#8a8a96'],blue:['Azul','#73a5db'],lilac:['Lilás','#ab84cc'],mint:['Verde','#76b98c'],yellow:['Amarelo','#d8b44d'],coral:['Laranja','#d89570'],red:['Vermelho','#ce8585']},NOTE_COLORS={yellow:'Amarelo',mint:'Verde',lilac:'Lilás',coral:'Laranja',blue:'Azul',pink:'Rosa',red:'Vermelho',teal:'Turquesa',gray:'Cinza',sand:'Areia'},BASE_COLUMNS=[{id:'todo',name:'A fazer',hidden:false},{id:'doing',name:'Em andamento',hidden:false},{id:'done',name:'Concluído',hidden:false},{id:'cancelled',name:'Cancelada',hidden:false}];
+const KEY='meu-quadro-v1',CLOUD_MARKER='meu-quadro-cloud-v1',DB_NAME='meu-quadro-completo',COLORS={none:['Padrão','#8a8a96'],blue:['Azul','#73a5db'],lilac:['Lilás','#ab84cc'],mint:['Verde','#76b98c'],yellow:['Amarelo','#d8b44d'],coral:['Laranja','#d89570'],red:['Vermelho','#ce8585']},NOTE_COLORS={yellow:'Amarelo',mint:'Verde',lilac:'Lilás',coral:'Laranja',blue:'Azul',pink:'Rosa',red:'Vermelho',teal:'Turquesa',gray:'Cinza',sand:'Areia'},BASE_COLUMNS=[{id:'todo',name:'A fazer',hidden:false},{id:'doing',name:'Em andamento',hidden:false},{id:'done',name:'Concluído',hidden:false},{id:'cancelled',name:'Cancelada',hidden:false}];
 const $=id=>document.getElementById(id),el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;},uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),now=()=>new Date().toISOString(),copy=value=>structuredClone(value);
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 function fresh(){return {version:2,tasks:[],notes:[],theme:'dark',columns:copy(BASE_COLUMNS),platforms:[{id:'instagram',name:'Instagram'},{id:'x',name:'X'},{id:'facebook',name:'Facebook'},{id:'tiktok',name:'TikTok'},{id:'youtube',name:'YouTube'},{id:'site',name:'Site'}],tags:[],settings:{warningMinutes:60,view:'board',sort:'deadline'}};}
@@ -37,12 +37,36 @@ function transact(next,fileChanges=[],replaceFiles=false){
 function hasMeaningfulState(value){
  return Boolean(value?.tasks?.length||value?.notes?.length||value?.tags?.length||value?.columns?.some(c=>!BASE_COLUMNS.some(b=>b.id===c.id&&b.name===c.name&&!c.hidden))||value?.platforms?.some(p=>!fresh().platforms.some(b=>b.id===p.id&&b.name===p.name)));
 }
+function mergeById(remoteItems,localItems,preferLocal=false){
+ const map=new Map((remoteItems||[]).map(item=>[item.id,copy(item)]));
+ for(const item of localItems||[]){
+  const current=map.get(item.id);
+  if(!current){map.set(item.id,copy(item));continue;}
+  if(preferLocal){map.set(item.id,copy(item));continue;}
+  const localTime=Date.parse(item.updatedAt||item.createdAt||0)||0,currentTime=Date.parse(current.updatedAt||current.createdAt||0)||0;
+  if(localTime>currentTime)map.set(item.id,copy(item));
+ }
+ return [...map.values()];
+}
+function mergeInitialStates(localState,remoteState){
+ const merged={
+  ...copy(remoteState),
+  tasks:mergeById(remoteState.tasks,localState.tasks),
+  notes:mergeById(remoteState.notes,localState.notes,true),
+  columns:mergeById(remoteState.columns,localState.columns,true),
+  platforms:mergeById(remoteState.platforms,localState.platforms,true),
+  tags:mergeById(remoteState.tags,localState.tags,true),
+  theme:localState.theme||remoteState.theme,
+  settings:{...remoteState.settings,...localState.settings}
+ };
+ return normalise(merged);
+}
 function cloudStatus(message){if(!$('storage-notice').classList.contains('visible'))$('save-status').textContent=message;}
 function flushCloud(){
  clearTimeout(cloudTimer);cloudTimer=null;
  if(!cloudPendingState||!window.CFF_TASKS_CLOUD)return cloudSaveChain;
  const snapshot=cloudPendingState;cloudPendingState=null;
- cloudSaveChain=cloudSaveChain.catch(()=>{}).then(()=>window.CFF_TASKS_CLOUD.save(snapshot)).then(()=>{cloudReady=true;cloudStatus('Sincronizado na nuvem · cópia local ativa.');},error=>{console.error('[Tasks cloud save]',error);cloudStatus('Salvo neste aparelho · falha ao sincronizar com a nuvem.');throw error;});
+ cloudSaveChain=cloudSaveChain.catch(()=>{}).then(()=>window.CFF_TASKS_CLOUD.save(snapshot)).then(()=>{cloudReady=true;try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}cloudStatus('Sincronizado na nuvem · cópia local ativa.');},error=>{console.error('[Tasks cloud save]',error);cloudStatus('Salvo neste aparelho · falha ao sincronizar com a nuvem.');throw error;});
  return cloudSaveChain;
 }
 function scheduleCloud(next,delay=450){
@@ -60,16 +84,27 @@ async function applyCloudPayload(payload,render=true){
  applyingRemote=true;
  try{state=next;await persistCloudStateLocally(next);}finally{applyingRemote=false;}
  if(render){applyTheme();refreshFilters();renderNotes();renderBoard();}
- cloudReady=true;cloudStatus('Sincronizado da nuvem · cópia local ativa.');
+ cloudReady=true;try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}cloudStatus('Sincronizado da nuvem · cópia local ativa.');
  return true;
 }
 async function initCloudSync(renderRemote=false){
  const cloud=window.CFF_TASKS_CLOUD;if(!cloud)return false;
  try{
   const payload=await cloud.load();
-  if(payload?.state)await applyCloudPayload(payload,renderRemote);
-  else if(hasMeaningfulState(state)){await cloud.save(state);cloudReady=true;cloudStatus('Quadro enviado para a nuvem · cópia local ativa.');}
-  else{cloudReady=true;cloudStatus('Nuvem conectada · aguardando seu primeiro conteúdo.');}
+  const previouslySynced=localStorage.getItem(CLOUD_MARKER)==='1';
+  if(payload?.state){
+   const remoteState=normalise(payload.state);
+   if(!previouslySynced&&hasMeaningfulState(state)){
+    const merged=mergeInitialStates(state,remoteState),changed=JSON.stringify(merged)!==JSON.stringify(remoteState);
+    applyingRemote=true;try{state=merged;await persistCloudStateLocally(merged);}finally{applyingRemote=false;}
+    if(changed)await cloud.save(merged);
+    try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}
+    cloudReady=true;if(renderRemote){applyTheme();refreshFilters();renderNotes();renderBoard();}
+    cloudStatus(changed?'Quadros mesclados e salvos na nuvem.':'Sincronizado na nuvem · cópia local ativa.');
+   }else await applyCloudPayload(payload,renderRemote);
+  }else if(hasMeaningfulState(state)){
+   await cloud.save(state);try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}cloudReady=true;cloudStatus('Quadro enviado para a nuvem · cópia local ativa.');
+  }else{cloudReady=true;cloudStatus('Nuvem conectada · aguardando seu primeiro conteúdo.');}
   if(cloudUnsubscribe)cloudUnsubscribe();
   cloudUnsubscribe=cloud.subscribe(p=>{applyCloudPayload(p,true).catch(error=>{console.error('[Tasks cloud receive]',error);cloudStatus('Nuvem conectada, mas uma atualização remota não pôde ser aplicada.');});},error=>{console.error('[Tasks cloud listen]',error);cloudStatus('Salvo neste aparelho · sincronização com a nuvem indisponível.');});
   return true;
