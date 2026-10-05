@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quadro de tarefas | Central Free Fire</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/webp" href="central free fire.webp">
+<script src="js/config.min.js?v=20260629-laff-json-v1"></script>
+<script>try{const s=JSON.parse(localStorage.getItem('meu-quadro-v1')||'null');if(s?.theme==='light')document.documentElement.dataset.theme='light';}catch{}</script>
+<link rel="stylesheet" href="css/admin-tarefas.css?v=20261005-v1">
+</head>
+<body class="cff-auth-pending">
+<div id="cff-tasks-auth" class="cff-tasks-auth"><div class="cff-tasks-auth-card"><strong>Quadro de tarefas</strong><p data-cff-auth-status role="status">Validando sua sessão do painel…</p><a class="quiet" href="admin.html">Voltar ao painel</a></div></div>
+<main class="wrap">
+ <div class="top"><div class="brand"><div class="mark" aria-hidden="true">✓</div><div><h1>Meu quadro</h1><p class="subtitle">Tarefas, posts e ideias no mesmo lugar.</p></div></div><div class="top-actions"><a class="quiet" href="admin.html">Voltar ao painel</a><button class="quiet theme-toggle" id="theme-toggle">☀ Modo claro</button><button class="quiet" id="manage-columns">Colunas e ajustes</button><button class="primary" id="new-card">+ Nova tarefa</button></div></div>
+ <div class="notice" id="storage-notice" role="alert"></div>
+ <div class="toolbar"><div class="search"><input type="search" id="search" placeholder="Buscar tarefa, detalhe ou link…" aria-label="Buscar tarefas"></div><div class="segmented" aria-label="Filtrar prazo"><button data-filter="all" aria-pressed="true">Todas</button><button data-filter="today" aria-pressed="false">Hoje</button><button data-filter="soon" aria-pressed="false">Prazo próximo</button><button data-filter="late" aria-pressed="false">Atrasadas</button></div><div class="segmented" aria-label="Tipo de visualização"><button data-view="board" aria-pressed="true">Quadro</button><button data-view="agenda" aria-pressed="false">Agenda</button></div></div>
+ <div class="advanced-filters"><select id="filter-platform" aria-label="Filtrar por plataforma"><option value="">Todas as plataformas</option></select><select id="filter-tag" aria-label="Filtrar por etiqueta"><option value="">Todas as etiquetas</option></select><select id="filter-status" aria-label="Filtrar por coluna"><option value="">Todas as colunas</option></select><button class="quiet filter-important" id="filter-important" aria-pressed="false">☆ Só importantes</button><select id="sort" aria-label="Ordenar tarefas"><option value="deadline">Prazo mais próximo</option><option value="important">Importantes primeiro</option><option value="newest">Mais recentes</option><option value="title">Nome da tarefa</option></select><button class="small-btn" id="reset-filters">Limpar filtros</button></div>
+ <div class="summary"><span id="progress-text">Carregando seu quadro…</span><div class="track" aria-hidden="true"><span id="progress-bar"></span></div><span id="visible-count"></span><span class="hidden-info" id="hidden-info"></span></div>
+ <div class="alert-banner" id="deadline-alert"><span id="deadline-alert-text"></span><button class="small-btn" id="show-urgent">Ver tarefas</button></div>
+ <div class="workspace"><div class="board-area"><section class="board" id="board" aria-label="Quadro de tarefas"><p class="loading">Carregando…</p></section><section id="agenda" aria-label="Agenda de tarefas" hidden></section></div><aside class="reminders" aria-label="Notas adesivas"><div class="reminders-head"><h2>Lembretes</h2><button class="add-sticky" id="new-sticky" aria-label="Adicionar nota adesiva" title="Adicionar nota adesiva">+</button></div><p class="hint">Clique para abrir · ✎ edita título e cor.</p><div id="sticky-list"></div></aside></div>
+ <footer class="footer"><span id="save-status">Salvamento automático neste navegador.</span><div class="footer-buttons"><button class="quiet" id="export">Exportar backup completo</button><button class="quiet" id="import">Importar backup</button></div></footer>
+</main>
+<dialog id="editor">
+ <form id="task-form"><div class="dialog-top"><h2 id="editor-title">Nova tarefa</h2><button type="button" class="close" id="close-dialog" aria-label="Fechar">×</button></div>
+ <label class="field">O que você precisa fazer?<input id="task-title" maxlength="200" required placeholder="Ex.: Preparar post da final" autocomplete="off"></label>
+ <label class="field">Detalhes <span class="optional">(opcional)</span><textarea id="task-note" maxlength="4000" placeholder="Texto, instruções ou informações importantes…"></textarea></label>
+ <div class="row"><label class="field">Data <span class="optional">(opcional)</span><input type="date" id="task-date"></label><label class="field">Horário <span class="optional">(opcional)</span><input type="time" id="task-time"></label><label class="field">Coluna<select id="task-status"></select></label></div>
+ <label class="important-option"><input type="checkbox" id="task-important">★ Marcar como importante</label>
+ <div class="form-section"><div class="section-head"><h3>Cor do card</h3></div><div class="color-options" id="task-colors"></div></div>
+ <div class="form-section"><div class="section-head"><h3>Onde será o post?</h3><span class="hint">Pode marcar várias opções.</span></div><div class="check-options" id="task-platforms"></div><div class="inline-add"><input id="new-platform-name" maxlength="40" placeholder="Adicionar plataforma: TikTok…" aria-label="Nome da nova plataforma"><button type="button" class="small-btn" id="add-platform">+ Adicionar</button></div></div>
+ <div class="form-section"><div class="section-head"><h3>Etiquetas / cliente / projeto</h3></div><div class="check-options" id="task-tags"></div><div class="inline-add"><input id="new-tag-name" maxlength="40" placeholder="Ex.: Nakata, MMR, CentralFreeFire" aria-label="Nome da nova etiqueta"><button type="button" class="small-btn" id="add-tag">+ Adicionar</button></div></div>
+ <div class="form-section"><div class="section-head"><h3>Links</h3><button type="button" class="small-btn" id="add-link">+ Adicionar link</button></div><p class="hint" id="links-hint">Referência, briefing, site ou post publicado. Imagem de prévia opcional.</p><div id="task-links"></div></div>
+ <div class="form-section"><div class="section-head"><h3>Subtarefas</h3><button type="button" class="small-btn" id="add-subtask">+ Adicionar</button></div><div id="task-subtasks"></div><p class="hint" id="subtasks-hint">Divida a tarefa em etapas: fazer arte, revisar e publicar.</p></div>
+ <div class="form-section"><div class="section-head"><h3>Anexos</h3><button type="button" class="small-btn" id="add-attachment">+ Adicionar arquivo</button></div><div class="attachment-grid" id="task-attachments"></div><p class="hint" id="attachments-hint">Imagens, briefing ou outros arquivos. Os anexos vão no backup completo.</p><input type="file" id="attachment-files" multiple hidden></div>
+ <details class="form-section history-details" id="task-history"><summary>Histórico da tarefa</summary><ol class="history-list" id="history-list"></ol></details>
+ <div class="dialog-actions"><button type="button" class="quiet" id="cancel">Cancelar edição</button><button type="submit" class="primary" id="save-task">Salvar tarefa</button></div></form>
+</dialog>
+<dialog id="columns-dialog"><div class="dialog-top"><h2>Colunas e ajustes</h2><button class="close" id="close-columns" aria-label="Fechar">×</button></div><p class="hint">Oculte uma coluna sem apagar as tarefas. Use as setas para mudar a ordem.</p><div class="columns-list" id="columns-list"></div><div class="inline-add"><input id="new-column-name" maxlength="40" placeholder="Nova coluna: Aguardando aprovação…" aria-label="Nome da nova coluna"><button class="small-btn" id="add-custom-column">+ Criar coluna</button></div><div class="settings-block"><label class="field">Destacar quando faltar<select id="warning-minutes"><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">1 hora</option><option value="180">3 horas</option><option value="1440">1 dia</option></select></label><p class="hint">O prazo é atualizado enquanto o quadro está aberto. Sem horário definido, a tarefa vence no fim do dia.</p></div><div class="dialog-actions"><button class="primary" id="done-columns">Pronto</button></div></dialog>
+<input type="file" id="backup-file" accept=".json,application/json" hidden><div id="toast" role="status" aria-live="polite"></div>
+<script defer src="js/admin-tarefas.js?v=20261005-v1"></script>
+<script type="module" src="js/admin-tarefas-auth.js?v=20261005-v1"></script>
+</body>
+</html>
