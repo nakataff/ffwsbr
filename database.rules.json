@@ -136,6 +136,10 @@
       ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
       ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
     },
+    "adminTasks": {
+      ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+      ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
+    },
     "ffwsLive": {
       ".read": true,
       ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
