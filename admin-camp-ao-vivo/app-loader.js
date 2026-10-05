@@ -51,7 +51,12 @@
 
   function loadTournamentSetup(){
     const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261005-hours-panel-v2';
-    setup.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
+    setup.onload=()=>{
+      const wiki=document.createElement('script');wiki.src='admin-camp-ao-vivo/final-wiki.js?v=20261005-final-wiki-v1';
+      wiki.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
+      wiki.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • código da final indisponível')};
+      document.body.appendChild(wiki);
+    };
     setup.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • configuração simplificada indisponível')};
     document.body.appendChild(setup);
   }
@@ -179,4 +184,3 @@
   }
   load();
 })();
-
