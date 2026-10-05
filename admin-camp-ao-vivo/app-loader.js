@@ -49,6 +49,12 @@
         'window.addEventListener("cff:camp-core-ready",');
   }
 
+  function loadTournamentSetup(){
+    const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261005-final-phases-v1';
+    setup.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
+    setup.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • configuração simplificada indisponível')};
+    document.body.appendChild(setup);
+  }
   async function load(){
     try{
       setStatus('Carregando ferramentas…');
@@ -56,12 +62,12 @@
       prepareAutosave();
       const shouldSeed=!localStorage.getItem('ffws_autosave');
       const presetPromise=shouldSeed
-        ?fetch('admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-segunda-fase.json?v=20261001',{cache:'no-store'})
+        ?fetch('admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-final.json?v=20261005-final-v1',{cache:'no-store'})
         :Promise.resolve(null);
 
       const [cssSource,appSource,presetResponse]=await Promise.all([
         gunzipUrl('admin-camp-ao-vivo/app.css.gz?v=20261001-camp-v4'),
-        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261001-camp-v4'),
+        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261005-final-phases-v1'),
         presetPromise
       ]);
 
@@ -77,6 +83,7 @@
 
       const protectedAutosave=localStorage.getItem('ffws_autosave');
       const protectedData=read('ffws_autosave');
+      window.__CFF_CAMP_INITIAL_BACKUP__=protectedData;
       if(hasTournament(protectedData)){
         // Preserve the state present before any bundle or enhancement can write.
         try{localStorage.setItem('cff_camp_startup_backup_v1',JSON.stringify({
@@ -120,7 +127,7 @@
           return;
         }
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261003-camp-fixes-v25';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261005-final-phases-v1';
         extra.async=false;
         extra.onload=()=>{
           const startPersistence=()=>{
@@ -129,17 +136,17 @@
           persistence.async=false;
           persistence.onload=()=>{
             const integrations=document.createElement('script');
-            integrations.src='admin-camp-ao-vivo/integrations.js?v=20261001-camp-v4';
+            integrations.src='admin-camp-ao-vivo/integrations.js?v=20261005-final-phases-v1';
             integrations.async=false;
-            integrations.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • auto-save + integrações ativas')};
+            integrations.onload=loadTournamentSetup;
             integrations.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • auto-save ativo • integração externa indisponível')};
             document.body.appendChild(integrations);
           };
           persistence.onerror=()=>{
             const integrations=document.createElement('script');
-            integrations.src='admin-camp-ao-vivo/integrations.js?v=20261001-camp-v4';
+            integrations.src='admin-camp-ao-vivo/integrations.js?v=20261005-final-phases-v1';
             integrations.async=false;
-            integrations.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • integração ativa • auto-save extra indisponível')};
+            integrations.onload=loadTournamentSetup;
             integrations.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • ferramentas extras parciais')};
             document.body.appendChild(integrations);
           };

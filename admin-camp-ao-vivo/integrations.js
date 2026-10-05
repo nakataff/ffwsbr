@@ -21,7 +21,7 @@
   };
   const STAGE_META={
     segundaFase:{label:'Segunda Fase',days:6,dropsByDay:{1:6,2:6,3:6,4:6,5:6,6:6},starting:true},
-    final:{label:'Final',days:2,dropsByDay:{1:6,2:10},starting:false}
+    final:{label:'Final',days:2,dropsByDay:{1:6,2:null},starting:false}
   };
 
   let lastLiveImport=null;
@@ -43,7 +43,7 @@
     if($('#cff-camp-integrations-style'))return;
     const style=document.createElement('style');style.id='cff-camp-integrations-style';
     style.textContent=`
-      .cff-camp-integrations{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:9px;align-items:center;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid rgba(118,164,208,.14)}
+      .cff-camp-integrations{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:9px;align-items:center;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid rgba(118,164,208,.14)}
       .cff-camp-integration-copy{min-width:0}.cff-camp-integration-copy strong{display:block;color:#eaf7ff;font-size:.74rem;text-transform:uppercase;letter-spacing:.55px}.cff-camp-integration-copy small{display:block;margin-top:3px;color:#7895b1;font-size:.66rem;line-height:1.35}
       #cff-camp-integration-status[data-tone="ok"]{color:#7eeab4}#cff-camp-integration-status[data-tone="warn"]{color:#ffd06a}#cff-camp-integration-status[data-tone="err"]{color:#ff9ca9}
       .cff-camp-modal{position:fixed;inset:0;z-index:40000;display:grid;place-items:center;padding:18px;background:rgba(2,6,12,.78);backdrop-filter:blur(5px)}
@@ -66,6 +66,7 @@
     const row=document.createElement('div');row.id='cff-camp-integrations';row.className='cff-camp-integrations';
     row.innerHTML=`
       <div class="cff-camp-integration-copy"><strong>Integrações Central FF</strong><small id="cff-camp-integration-status">Puxe as quedas já confirmadas no site e continue a tabela ao vivo sem publicar o rascunho.</small></div>
+      <label>Etapa FFWS<select id="cff-camp-live-stage" class="cff-camp-btn"><option value="final">Final</option><option value="segundaFase">Segunda Fase</option></select></label>
       <button class="cff-camp-btn is-primary" id="cff-camp-live-sync" type="button">↻ FFWS ao vivo</button>
       <button class="cff-camp-btn" id="cff-camp-publish-title" type="button">🏁 Enviar resultado</button>`;
     command.appendChild(row);
@@ -150,7 +151,7 @@
     });
     const starting=dayStarting(stageKey,day,codes,catalog,bonus);
     const stageLabel=stageKey==='final'?'Final':'Segunda Fase';
-    const config={...(template.config||{}),quedas:String(expected),tournamentName:`FFWS BR 2026 S2 - ${stageLabel} — Dia ${day}`,startingEnabled:stageKey==='segundaFase'&&day===1,championEnabled:stageKey==='final',cp:stageKey==='final'?'160':String(template.config?.cp||160)};
+    const config={...(template.config||{}),tournamentDays:stageKey==='final'?2:6,v68ChampionRushUnlimited:stageKey==='final'&&day===2,cffFfwsStage:stageKey,quedas:String(expected),tournamentName:`FFWS BR 2026 S2 - ${stageLabel} — Dia ${day}`,startingEnabled:stageKey==='segundaFase'&&day===1,championEnabled:stageKey==='final',cp:stageKey==='final'?'160':String(template.config?.cp||160)};
     return{version:template.version||23,selectedTeams:[...codes],currentInputMode:'detail-pos-kills',drops,startingPoints:starting,placementOverrides:{},config};
   }
   function makeRegisteredDay(template,stageKey,day,records,codes,catalog,bonus,expected){
@@ -162,8 +163,9 @@
     return Object.values(drop.points||{}).some(v=>v!==null&&v!==undefined&&String(v)!=='')||Object.values(drop.kills||{}).some(v=>v!==null&&v!==undefined&&String(v)!=='')||Object.values(drop.placements||{}).some(v=>v!==null&&v!==undefined&&String(v)!=='');
   }
   function mergeLocalDraft(imported,current,confirmedCount,currentDay){
-    if(!current||num(current?.tournamentModeV1?.draftDayNumber)!==num(currentDay))return imported;
-    const old=Array.isArray(current.drops)?current.drops:[];for(let i=confirmedCount;i<imported.drops.length;i++)if(hasDraftData(old[i]))imported.drops[i]=old[i];
+    if(!current||current.config?.cffFfwsStage!==imported.config?.cffFfwsStage||num(current?.tournamentModeV1?.draftDayNumber)!==num(currentDay))return imported;
+    const old=Array.isArray(current.drops)?current.drops:[];for(let i=0;i<old.length;i++)if(hasDraftData(old[i])&&!hasDraftData(imported.drops[i]))imported.drops[i]=old[i];
+    imported.config.quedas=String(imported.drops.length);
     return imported;
   }
   function collectLivePlayers(records){
@@ -176,20 +178,20 @@
 
   async function buildLiveBackup(root,stageKey){
     const meta=STAGE_META[stageKey];if(!meta)throw new Error('Etapa não reconhecida.');
-    const records=flattenLiveStage(root?.[stageKey]);if(!records.length)throw new Error(`Ainda não há quedas confirmadas na ${meta.label}.`);
+    const records=flattenLiveStage(root?.[stageKey]);if(!records.length&&stageKey!=='final')throw new Error(`Ainda não há quedas confirmadas na ${meta.label}.`);
     const template=await fetchTemplate();const catalog=parseTeamCatalog(template.teams);const bonus=normalizeBonus(root?.[stageKey]);
     const liveNames=[...new Set(records.flatMap(x=>liveTeamRows(x).map(t=>String(t.team||'').trim())).filter(Boolean))];liveNames.forEach(name=>makeTeamCode(name,catalog));
     const codes=liveNames.map(name=>makeTeamCode(name,catalog));
-    if(stageKey==='segundaFase')Object.keys(bonus).forEach(name=>{const code=makeTeamCode(name,catalog);if(!codes.includes(code))codes.push(code)});
+    if(stageKey==='segundaFase'||!codes.length)Object.keys(bonus).forEach(name=>{const code=makeTeamCode(name,catalog);if(!codes.includes(code))codes.push(code)});
     const byDay=new Map();records.forEach(x=>{if(!byDay.has(num(x.day)))byDay.set(num(x.day),[]);byDay.get(num(x.day)).push(x)});byDay.forEach(arr=>arr.sort((a,b)=>num(a.drop)-num(b.drop)));
-    let latestDay=Math.max(...byDay.keys());let currentDay=latestDay;let currentRecords=byDay.get(currentDay)||[];const expectedCurrent=num(meta.dropsByDay[currentDay]||Math.max(6,...currentRecords.map(x=>num(x.drop))));
-    const stageComplete=stageKey==='segundaFase'?records.length>=36:(records.length>=16||Boolean(root?.final?.champion));
+    let latestDay=Math.max(1,...byDay.keys());let currentDay=latestDay;let currentRecords=byDay.get(currentDay)||[];const expectedCurrent=num(meta.dropsByDay[currentDay]||Math.max(6,...currentRecords.map(x=>num(x.drop))));
+    const stageComplete=stageKey==='segundaFase'?records.length>=36:Boolean(root?.final?.champion);
     if(!stageComplete&&currentRecords.length>=expectedCurrent&&currentDay<meta.days){currentDay++;currentRecords=[]}
     const registered=[];for(let day=1;day<currentDay;day++){const recs=byDay.get(day)||[];if(!recs.length)continue;const expected=num(meta.dropsByDay[day]||Math.max(6,...recs.map(x=>num(x.drop))));registered.push(makeRegisteredDay(template,stageKey,day,recs,codes,catalog,bonus,expected))}
-    const expected=num(meta.dropsByDay[currentDay]||Math.max(6,...currentRecords.map(x=>num(x.drop)),6));
+    const expected=num(meta.dropsByDay[currentDay]||Math.max(1,...currentRecords.map(x=>num(x.drop)))+(stageKey==='final'&&currentDay===2&&!stageComplete?1:0));
     const current=daySnapshot(template,stageKey,currentDay,currentRecords,codes,catalog,bonus,expected);
     current.teams=catalogText(catalog);current.logos=template.logos||'';current.generatedAt=new Date().toISOString();current.currentInputMode='detail-pos-kills';
-    current.config={...current.config,tournamentName:`FFWS BR 2026 S2 - ${meta.label} — Dia ${currentDay}`,emojiRules:stageKey==='segundaFase'?'🌏: 1-2':String(template.config?.emojiRules||''),startingEnabled:stageKey==='segundaFase'&&currentDay===1,championEnabled:stageKey==='final',finalMode:stageKey==='final'?'champion':'classic'};
+    current.config={...current.config,tournamentName:`FFWS BR 2026 S2 - ${meta.label} — Dia ${currentDay}`,emojiRules:stageKey==='segundaFase'?'🌏: 1-2':String(template.config?.emojiRules||''),startingEnabled:stageKey==='segundaFase'&&currentDay===1,championEnabled:stageKey==='final',finalMode:stageKey==='final'?'champion':'classic',cffTournamentPhasesV1:{version:1,activeId:stageKey,phases:[{id:stageKey,name:meta.label,teams:codes.length,advance:0,days:meta.days,firstDrops:6,laterDrops:6,unlimited:stageKey==='final',format:stageKey==='final'?'champion':'classic',cp:160,lastDate:'',completed:false}]} };
     current.tournamentModeV1={version:7,ownerStageId:'',enabled:true,view:'day',name:`FFWS BR 2026 S2 - ${meta.label}`,editingDayId:'',draftDayNumber:currentDay,rosterCodes:[...codes],draftActiveCodes:[...codes],days:registered,config:{unitLabel:'Dia',expectedTeams:codes.length,teamsPerRound:codes.length,advanceCount:stageKey==='segundaFase'?2:1,relegatedCount:0,tieBreakers:['booyahs','kills','placementPoints'],liveOverall:true,dimInactiveLogos:true,autoCloseDay:true,askBackupOnDayEnd:true,wikiMatchKey:'M1',wikiHeader:'',wikiYoutube:'',wikiAutoToggle:false,columns:{total:true,booyahs:true,kills:true,placementPoints:true,drops:true,daysPlayed:false,rests:false,average:false,lastDay:true,dayColumns:false,movement:true},bgRules:stageKey==='segundaFase'?[{key:'up',positions:'1-2',label:'Global Series',color:'#39b85a'}]:[]}};
     return{backup:current,records,currentDay,confirmedCurrent:currentRecords.length,expected,stageKey,stageLabel:meta.label,players:collectLivePlayers(records),updatedAt:num(root?.[stageKey]?.updatedAt)};
   }
@@ -198,7 +200,7 @@
     const base=dbBase();if(!base)throw new Error('Firebase não configurado.');
     const r=await fetch(`${base}/${FFWS_ROOT}.json?v=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`Falha ao ler a tabela pública (${r.status}).`);return r.json();
   }
-  function detectStage(root){const finalCount=flattenLiveStage(root?.final).length;return finalCount?'final':'segundaFase'}
+  function detectStage(){return $('#cff-camp-live-stage')?.value||'final'}
   async function syncFfwsLive(){
     const btn=$('#cff-camp-live-sync');if(btn)btn.disabled=true;setStatus('Buscando a tabela confirmada mais recente…','warn');
     try{
@@ -208,6 +210,9 @@
       const total=result.records.length,label=`FFWS BR 2026 S2 • ${result.stageLabel} • Dia ${result.currentDay}`;
       const preserve=result.confirmedCurrent<result.expected?' A próxima queda continua livre para você atualizar manualmente enquanto ela rola.':'';
       if(!confirm(`${label}\n\n${total} queda(s) confirmada(s) no site • ${result.confirmedCurrent}/${result.expected} no dia atual.\n\nPuxar esses dados para o Camp?${preserve}`))return setStatus('Atualização cancelada.');
+      try{localStorage.setItem('cff_camp_before_live_sync_v1',JSON.stringify(current))}catch(_){}
+      const oldStage=current?.config?.cffFfwsStage||(/Segunda Fase/i.test(current?.config?.tournamentName||'')?'segundaFase':/Final/i.test(current?.config?.tournamentName||'')?'final':'');
+      if(oldStage!==stageKey)window.v37DetachStage?.();
       await window.CFF_CAMP?.applyBackupText?.(JSON.stringify(result.backup),`${label} — dados ao vivo`,false);
       lastLiveImport=result;try{localStorage.setItem(LIVE_META_KEY,JSON.stringify({stageKey:result.stageKey,currentDay:result.currentDay,players:result.players.slice(0,20),updatedAt:Date.now()}))}catch(_){ }
       setStatus(`${label} • ${result.confirmedCurrent}/${result.expected} quedas do dia puxadas. O rascunho não foi publicado.`,'ok');
@@ -278,6 +283,7 @@
     finally{if(button)button.disabled=false}
   }
 
+  window.CFF_CAMP_LIVE={buildLiveBackup,mergeLocalDraft,fetchLiveRoot,sync:syncFfwsLive};
   function boot(){injectStyles();buildToolbar();ensureModal();document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#cff-camp-modal')?.hidden)closeModal()})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

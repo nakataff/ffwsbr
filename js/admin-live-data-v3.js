@@ -28,7 +28,7 @@ const E={
 const BONUS=Object.freeze({'LOS':50,'LOUD SNICKERS':42,'FLUXO W7M':35,'INTZ':29,'TEAM SOLID':24,'RISE GAMING':19,'ALPHA7':15,'RUSH GAMING':11,'INFLUENCE RAGE':8,'CPT VOX':5,'AFROGAMES':2,'SX TET':0});
 const STAGES=Object.freeze({
   segundaFase:{label:'Segunda Fase',days:6,dropsByDay:{1:6,2:6,3:6,4:6,5:6,6:6}},
-  final:{label:'Final',days:2,dropsByDay:{1:6,2:10},championPoint:160}
+  final:{label:'Final',days:2,dropsByDay:{1:6,2:null},championPoint:160}
 });
 const POINTS_TO_PLACEMENT={12:1,9:2,8:3,7:4,6:5,5:6,4:7,3:8,2:9,1:10};
 
@@ -88,7 +88,7 @@ function msg(text,type=''){E.message.textContent=text||'';E.message.className=`l
 function loginMsg(text,type=''){E.loginMsg.textContent=text||'';E.loginMsg.className=`live-message${type?' '+type:''}`}
 function fmtTime(v){const n=Number(v||0);if(!n)return'—';try{return new Date(n).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return'—'}}
 function drops(data=stageData){const out=[],days=data?.drops||{};Object.keys(days).sort((a,b)=>Number(a)-Number(b)).forEach(day=>{const ds=days[day]||{};Object.keys(ds).sort((a,b)=>Number(a)-Number(b)).forEach(drop=>{const item=ds[drop];if(item)out.push({...item,day:Number(item.day||day),drop:Number(item.drop||drop)})})});return out}
-function nextDrop(){const c=cfg(),used=new Set(drops().map(x=>`${x.day}:${x.drop}`));for(let day=1;day<=c.days;day++)for(let drop=1;drop<=Number(c.dropsByDay[day]||0);drop++)if(!used.has(`${day}:${drop}`))return{day,drop};return null}
+function nextDrop(){const c=cfg(),used=new Set(drops().map(x=>`${x.day}:${x.drop}`));for(let day=1;day<=c.days;day++)for(let drop=1;drop<=(c.dropsByDay[day]===null?used.size+1:Number(c.dropsByDay[day]||0));drop++)if(!used.has(`${day}:${drop}`))return{day,drop};return null}
 function applyNext(){const n=nextDrop();if(n){E.next.value=`Dia ${n.day} • Queda ${n.drop}`;E.day.value=n.day;E.drop.value=n.drop}else E.next.value='Etapa completa'}
 
 const SHARE_SHORT=Object.freeze({
@@ -213,7 +213,7 @@ function render(){
   const list=drops();E.count.textContent=String(list.length);E.updated.textContent=fmtTime(stageData.updatedAt);renderShareTable();
   E.stageHelp.textContent=isTest()
     ? 'MODO TESTE: aceita equipes antigas e salva tudo em uma área isolada. Esses dados NÃO entram no site público.'
-    : (E.stage.value==='final'?'Final: Dia 1 com 6 quedas; Dia 2 com até 10; Champion Rush em 160 pontos.':'Segunda Fase: 6 dias × 6 quedas; os bônus da Classificatória são somados automaticamente.');
+    : (E.stage.value==='final'?'Final: Dia 1 com 6 quedas; Dia 2 sem limite de quedas; Champion Rush em 160 pontos.':'Segunda Fase: 6 dias × 6 quedas; os bônus da Classificatória são somados automaticamente.');
   E.list.innerHTML=list.length?list.slice().reverse().map(x=>`<div class="live-drop"><div><strong>Dia ${x.day} • Q${x.drop}</strong><small> • ${esc(x.map||'Sem mapa')}</small></div><div class="live-actions" style="margin:0"><button class="live-btn ghost" style="padding:6px 8px" data-edit-drop="${x.day}:${x.drop}" type="button">Editar</button><button class="live-btn danger" style="padding:6px 8px" data-delete-drop="${x.day}:${x.drop}" type="button">Excluir</button></div></div>`).join(''):'<div class="live-note">Nenhuma queda salva ainda.</div>';
   if(E.publish)E.publish.textContent=isTest()?'PROCESSAR TESTE':'PROCESSAR E PUBLICAR';
   applyNext();
@@ -432,7 +432,7 @@ function batchUsedSlots(){
 }
 function nextBatchSlot(){
   const used=batchUsedSlots(),c=cfg();
-  for(let day=1;day<=c.days;day++)for(let drop=1;drop<=Number(c.dropsByDay[day]||0);drop++)if(!used.has(`${day}:${drop}`))return{day,drop};
+  for(let day=1;day<=c.days;day++)for(let drop=1;drop<=(c.dropsByDay[day]===null?used.size+1:Number(c.dropsByDay[day]||0));drop++)if(!used.has(`${day}:${drop}`))return{day,drop};
   return null;
 }
 function batchMapOptions(){
@@ -457,9 +457,9 @@ function clearBatch(){
   batchMsg('');
 }
 function validateParsedDrop({day,drop,map,teamsText,playersText,teamsName='T1',playersName='P1'}){
-  const c=cfg(),max=Number(c.dropsByDay[day]||0);
-  if(day<1||day>c.days)throw new Error(`Dia ${day} inválido para ${c.label}.`);
-  if(drop<1||drop>max)throw new Error(`Q${drop} inválida para o Dia ${day}.`);
+  const c=cfg(),max=c.dropsByDay[day]===null?Infinity:Number(c.dropsByDay[day]||0);
+  if(!Number.isSafeInteger(day)||day<1||day>c.days)throw new Error(`Dia ${day} inválido para ${c.label}.`);
+  if(!Number.isSafeInteger(drop)||drop<1||drop>max)throw new Error(`Q${drop} inválida para o Dia ${day}.`);
   if(!clean(map))throw new Error('Escolha o mapa.');
   if(!teamsText||!playersText)throw new Error('Selecione T1 e P1.');
   const teams=parseTeams(teamsText),players=parsePlayers(playersText);
@@ -647,7 +647,7 @@ function manualFillSelectors(){
   M.day.innerHTML=Array.from({length:c.days},(_,index)=>`<option value="${index+1}">Dia ${index+1}</option>`).join('');M.day.value=String(day);manualFillDrops();
 }
 function manualFillDrops(){
-  if(!M.drop)return;const c=cfg(),day=Number(M.day?.value)||1,max=Number(c.dropsByDay[day]||6),drop=Math.min(max,Math.max(1,Number(M.drop.value)||1));
+  if(!M.drop)return;const c=cfg(),day=Number(M.day?.value)||1,max=c.dropsByDay[day]===null?Math.max(6,Number(M.drop.value)||1,...manualConfirmedDrops().filter(x=>x.day===day).map(x=>x.drop+1),...Object.values(manualStageDrafts()).filter(x=>x.day===day).map(x=>x.drop+1)):Number(c.dropsByDay[day]||6),drop=Math.min(max,Math.max(1,Number(M.drop.value)||1));
   M.drop.innerHTML=Array.from({length:max},(_,index)=>`<option value="${index+1}">Queda ${index+1}</option>`).join('');M.drop.value=String(drop);
 }
 function manualRenderInputs(){

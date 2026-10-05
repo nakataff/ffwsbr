@@ -2,7 +2,7 @@
   'use strict';
 
   const PRESETS={
-    ffws:{url:'admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-segunda-fase.json',label:'FFWS BR 2026 S2'},
+    ffws:{url:'admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-final.json',label:'FFWS BR 2026 S2 — Final'},
     base:{url:'admin-camp-ao-vivo/data/backup-torneio.json',label:'Base do torneio'}
   };
   const LOGO_KEY='cff_camp_logo_bank_v1';

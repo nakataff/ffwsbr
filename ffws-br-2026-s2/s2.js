@@ -792,8 +792,7 @@
   }
 
   function selectionFinalComplete() {
-    const finalEntries = allPlayerEntries().filter(entry => normalize(entry?.stage || entry?.etapa) === 'FINAL');
-    return finalEntries.length >= 16 * 48;
+    return state.stages?.final?.finished === true;
   }
 
   function availableSelectionWeeks() {

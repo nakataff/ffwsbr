@@ -1,5 +1,5 @@
 (()=>{
-  const liveVersion='20261005-final-ready-v2';
+  const liveVersion='20261005-final-unlimited-v3';
   const LIVE_ROOT='ffwsLive/2026-s2';
 
   const SECOND_PHASE_SEED = Object.freeze([
@@ -198,8 +198,8 @@
       let rows=computeRows('final',finalEvents,payload.final.rows);
       const champion=detectChampion(finalEvents);
       if(champion){const winner=rows.find(r=>normalize(r.team)===normalize(champion));rows=rows.filter(r=>r!==winner);if(winner)rows.unshift(winner);rows.forEach((r,i)=>r.position=i+1);payload.final.champion=champion;payload.final.finished=true}
-      else payload.final.finished=finalEvents.length>=16;
-      payload.final.rows=rows;payload.final.championRushPoint=160;payload.final.matchesPlayed=finalEvents.length;payload.final.scheduledMaxMatches=16;
+      else payload.final.finished=false;
+      payload.final.rows=rows;payload.final.championRushPoint=160;payload.final.matchesPlayed=finalEvents.length;payload.final.scheduledMaxMatches=null;payload.final.unlimitedDay2=true;
     }
     if(live?.segundaFase?.updatedAt||live?.final?.updatedAt)payload.updatedAt=new Date(Math.max(num(live?.segundaFase?.updatedAt),num(live?.final?.updatedAt))).toISOString().slice(0,10);
     return payload;
