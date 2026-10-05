@@ -3,7 +3,8 @@ import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/
 import { getDatabase, ref, get, set, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 const ADMIN = 'admin@centralfreefire.com.br';
-const CLOUD_PATH = 'adminTasks/board';
+const CLOUD_PATH = 'adminLiquipediaEditor/tasksBoard';
+const LEGACY_CLOUD_PATH = 'adminTasks/board';
 const overlay = document.getElementById('cff-tasks-auth');
 const config = window.CFF_CONFIG?.firebase;
 const clientId = globalThis.crypto?.randomUUID?.() || ('tasks-' + Date.now() + '-' + Math.random().toString(36).slice(2));
@@ -21,12 +22,22 @@ if (!config) {
     const auth = getAuth(app);
     const database = getDatabase(app);
     const cloudRef = ref(database, CLOUD_PATH);
+    const legacyCloudRef = ref(database, LEGACY_CLOUD_PATH);
 
     window.CFF_TASKS_CLOUD = {
       clientId,
       async load() {
         const snap = await get(cloudRef);
-        return snap.exists() ? snap.val() : null;
+        if (snap.exists()) return snap.val();
+        try {
+          const legacy = await get(legacyCloudRef);
+          if (legacy.exists()) {
+            const payload = legacy.val();
+            await set(cloudRef, payload);
+            return payload;
+          }
+        } catch (_) {}
+        return null;
       },
       async save(state) {
         const cleanState = JSON.parse(JSON.stringify(state));
