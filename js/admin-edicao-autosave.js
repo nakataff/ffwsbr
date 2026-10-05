@@ -98,12 +98,12 @@
       imageName:imageFile?.name||$('#photo-editor-image-name')?.textContent||'foto.png',
       hasPip:!!s.pip,
       pipName:pipFile?.name||'pip.png',
-      pips:(Array.isArray(s.pips)?s.pips:[]).map(p=>({id:String(p.id||''),name:String(p.name||'pip.png'),enabled:p.enabled!==false,size:safeNum(p.size,28),x:safeNum(p.x,75),y:safeNum(p.y,25),opacity:safeNum(p.opacity,100),rotation:safeNum(p.rotation,0),flipX:p.flipX===-1?-1:1,strokeEnabled:!!p.strokeEnabled,strokeWidth:safeNum(p.strokeWidth,6),strokeColor:String(p.strokeColor||'#ffffff'),shadowEnabled:p.shadowEnabled!==false,shadowSize:safeNum(p.shadowSize,10),shadowBlur:safeNum(p.shadowBlur,24),shadowColor:String(p.shadowColor||'#000000'),shadowOpacity:safeNum(p.shadowOpacity,45),shadowX:safeNum(p.shadowX,0),shadowY:safeNum(p.shadowY,18)})),
+      pips:(Array.isArray(s.pips)?s.pips:[]).map(p=>({id:String(p.id||''),name:String(p.name||'pip.png'),enabled:p.enabled!==false,size:safeNum(p.size,28),x:safeNum(p.x,75),y:safeNum(p.y,25),opacity:safeNum(p.opacity,100),rotation:safeNum(p.rotation,0),flipX:p.flipX===-1?-1:1,strokeEnabled:!!p.strokeEnabled,strokeWidth:safeNum(p.strokeWidth,6),strokeColor:String(p.strokeColor||'#ffffff'),shadowEnabled:p.shadowEnabled!==false,shadowSize:safeNum(p.shadowSize,10),shadowBlur:safeNum(p.shadowBlur,24),shadowColor:String(p.shadowColor||'#000000'),shadowOpacity:safeNum(p.shadowOpacity,45),shadowX:safeNum(p.shadowX,0),shadowY:safeNum(p.shadowY,18),cffLockX:!!p.cffLockX,cffLockY:!!p.cffLockY})),
       activePipId:String(s.activePipId||''),
       baseScale:safeNum(s.baseScale,1),zoom:safeNum(s.zoom,1),x:safeNum(s.x,1500),y:safeNum(s.y,1874.5),rotation:safeNum(s.rotation,0),flipX:s.flipX===-1?-1:1,
-      brightness:safeNum(s.brightness,100),contrast:safeNum(s.contrast,100),saturation:safeNum(s.saturation,100),pinchLocked:!!s.pinchLocked,
+      brightness:safeNum(s.brightness,100),contrast:safeNum(s.contrast,100),saturation:safeNum(s.saturation,100),pinchLocked:!!s.pinchLocked,cffLockX:!!s.cffLockX,cffLockY:!!s.cffLockY,
       pipEnabled:s.pipEnabled!==false,pipSize:safeNum(s.pipSize,28),pipX:safeNum(s.pipX,75),pipY:safeNum(s.pipY,25),pipOpacity:safeNum(s.pipOpacity,100),
-      texts:(Array.isArray(s.texts)?s.texts:[]).slice(0,5).map(t=>({text:String(t?.text||''),font:String(t?.font||'Avilock'),size:safeNum(t?.size,190),color:String(t?.color||'#ffffff'),x:safeNum(t?.x,50),y:safeNum(t?.y,86),spacing:safeNum(t?.spacing,106),shadow:t?.shadow!==false})),
+      texts:(Array.isArray(s.texts)?s.texts:[]).slice(0,5).map(t=>({text:String(t?.text||''),font:String(t?.font||'Avilock'),size:safeNum(t?.size,190),color:String(t?.color||'#ffffff'),x:safeNum(t?.x,50),y:safeNum(t?.y,86),spacing:safeNum(t?.spacing,106),shadow:t?.shadow!==false,cffLockX:!!t.cffLockX,cffLockY:!!t.cffLockY})),
       activeTextIndex:Math.max(0,(Array.isArray(s.texts)?s.texts:[]).findIndex(t=>t.id===s.activeTextId)),
       output:{size:$('#photo-editor-size')?.value||'3000x3749',format:$('#photo-editor-format')?.value||'png',quality:$('#photo-editor-quality')?.value||'92',fileName:$('#photo-editor-file-name')?.value||'central-free-fire-edit'}
     };
@@ -166,6 +166,7 @@
       setInput('#photo-editor-text-y',t.y,'input');
       setInput('#photo-editor-text-spacing',t.spacing,'input');
       setInput('#photo-editor-text-shadow',t.shadow,'change');
+      const layer=state()?.texts?.[index];if(layer){layer.x=safeNum(t.x,50);layer.y=safeNum(t.y,86);layer.cffLockX=!!t.cffLockX;layer.cffLockY=!!t.cffLockY;}
     });
     const tabs=[...document.querySelectorAll('.photo-editor-text-layer')];
     tabs[Math.min(Math.max(0,meta.activeTextIndex||0),tabs.length-1)]?.click();
@@ -176,7 +177,8 @@
     const copy=['baseScale','zoom','x','y','rotation','brightness','contrast','saturation','pipSize','pipX','pipY','pipOpacity'];
     copy.forEach(k=>{if(Number.isFinite(Number(meta[k])))s[k]=Number(meta[k]);});
     s.flipX=meta.flipX===-1?-1:1;
-    s.pinchLocked=!!meta.pinchLocked;
+    s.pinchLocked=!!meta.pinchLocked;s.cffLockX=!!meta.cffLockX;s.cffLockY=!!meta.cffLockY;
+    (s.pips||[]).forEach(p=>{const saved=(meta.pips||[]).find(x=>x.id===p.id);if(saved){p.cffLockX=!!saved.cffLockX;p.cffLockY=!!saved.cffLockY}});
     s.pipEnabled=meta.pipEnabled!==false;
     const pairs=[
       ['#photo-editor-zoom',Math.round(s.zoom*100),'#photo-editor-zoom-value',`${Math.round(s.zoom*100)}%`],
@@ -230,6 +232,7 @@
 
   function bind(){
     const app=$('#photo-editor-app');if(!app||app.dataset.autosaveBound==='1')return;app.dataset.autosaveBound='1';
+    window.addEventListener('cff-editor-position-change',scheduleSave);
     app.addEventListener('input',scheduleSave,true);
     app.addEventListener('change',scheduleSave,true);
     app.addEventListener('click',e=>{if(e.target.closest('#photo-editor-download,#photo-editor-save-top,#photo-editor-save-preview,#cff-edicao-autosave-clear,[data-grid]'))return;setTimeout(scheduleSave,60);},true);
@@ -258,3 +261,4 @@
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+

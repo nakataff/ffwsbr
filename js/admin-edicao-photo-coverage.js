@@ -61,7 +61,7 @@
 
   function eraseMainPhoto(ctx,s){
     if(!s?.image)return;const iw=Number(s.image.naturalWidth||s.image.width||0),ih=Number(s.image.naturalHeight||s.image.height||0);if(!iw||!ih)return;
-    const scale=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=iw*scale,h=ih*scale;ctx.save();ctx.globalCompositeOperation='destination-out';ctx.translate(Number(s.x)||W/2,Number(s.y)||H/2);ctx.rotate((Number(s.rotation)||0)*Math.PI/180);ctx.fillStyle='#000';ctx.fillRect(-w/2,-h/2,w,h);ctx.restore();
+    const scale=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=iw*scale,h=ih*scale;ctx.save();ctx.globalCompositeOperation='destination-out';ctx.translate(Number(s.x),Number(s.y));ctx.rotate((Number(s.rotation)||0)*Math.PI/180);ctx.fillStyle='#000';ctx.fillRect(-w/2,-h/2,w,h);ctx.restore();
   }
 
   function eraseFrame(ctx,s){
@@ -80,7 +80,7 @@
 
   function eraseTexts(ctx,s){
     const texts=Array.isArray(s?.texts)?s.texts:[];
-    texts.forEach(layer=>{const text=String(layer?.text||'');if(!text.trim())return;const size=clamp(layer.size||190,40,500),x=W*(clamp(layer.x||50,5,95)/100),y=H*(clamp(layer.y||86,8,94)/100),lineH=size*(clamp(layer.spacing||106,70,180)/100),lines=text.replace(/\r/g,'').split('\n').slice(0,10).map(v=>v.toUpperCase()),start=y-((lines.length-1)*lineH)/2;ctx.save();ctx.globalCompositeOperation='destination-out';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=fontCss(layer.font,size);ctx.fillStyle='#000';ctx.strokeStyle='#000';ctx.lineWidth=Math.max(4,size*.045);lines.forEach((line,i)=>{ctx.strokeText(line,x,start+i*lineH);ctx.fillText(line,x,start+i*lineH);});ctx.restore();});
+    texts.forEach(layer=>{const text=String(layer?.text||'');if(!text.trim())return;const size=clamp(layer.size||190,40,500),x=W*((Number.isFinite(Number(layer.x))?Number(layer.x):50)/100),y=H*((Number.isFinite(Number(layer.y))?Number(layer.y):86)/100),lineH=size*(clamp(layer.spacing||106,70,180)/100),lines=text.replace(/\r/g,'').split('\n').slice(0,10).map(v=>v.toUpperCase()),start=y-((lines.length-1)*lineH)/2;ctx.save();ctx.globalCompositeOperation='destination-out';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=fontCss(layer.font,size);ctx.fillStyle='#000';ctx.strokeStyle='#000';ctx.lineWidth=Math.max(4,size*.045);lines.forEach((line,i)=>{ctx.strokeText(line,x,start+i*lineH);ctx.fillText(line,x,start+i*lineH);});ctx.restore();});
   }
 
   function draw(){
@@ -116,3 +116,4 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
