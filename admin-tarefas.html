@@ -11,7 +11,7 @@
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
 <script>try{const s=JSON.parse(localStorage.getItem('meu-quadro-v1')||'null');if(s?.theme==='light')document.documentElement.dataset.theme='light';}catch{}</script>
-<link rel="stylesheet" href="css/admin-tarefas.css?v=20261005-mobile-v4">
+<link rel="stylesheet" href="css/admin-tarefas.css?v=20261005-services-v5">
 </head>
 <body class="cff-auth-pending">
 <div id="cff-tasks-auth" class="cff-tasks-auth"><div class="cff-tasks-auth-card"><strong>Quadro de tarefas</strong><p data-cff-auth-status role="status">Validando sua sessão do painel…</p><a class="quiet" href="admin.html">Voltar ao painel</a></div></div>
@@ -30,6 +30,7 @@
  <label class="field">O que você precisa fazer?<input id="task-title" maxlength="200" required placeholder="Ex.: Preparar post da final" autocomplete="off"></label>
  <label class="field">Detalhes <span class="optional">(opcional)</span><textarea id="task-note" maxlength="4000" placeholder="Texto, instruções ou informações importantes…"></textarea></label>
  <div class="row"><label class="field">Data <span class="optional">(opcional)</span><input type="date" id="task-date"></label><label class="field">Horário <span class="optional">(opcional)</span><input type="time" id="task-time"></label><label class="field">Coluna<select id="task-status"></select></label></div>
+ <label class="field task-service-field">Serviço <span class="optional">(opcional)</span><select id="task-service" aria-label="Tipo de serviço"></select><span class="service-help">Mostra um ícone discreto no cabeçalho do card.</span></label>
  <label class="important-option"><input type="checkbox" id="task-important">★ Marcar como importante</label>
  <div class="form-section"><div class="section-head"><h3>Cor do card</h3></div><div class="color-options" id="task-colors"></div></div>
  <div class="form-section"><div class="section-head"><h3>Onde será o post?</h3><span class="hint">Pode marcar várias opções.</span></div><div class="check-options" id="task-platforms"></div><div class="inline-add"><input id="new-platform-name" maxlength="40" placeholder="Adicionar plataforma: TikTok…" aria-label="Nome da nova plataforma"><button type="button" class="small-btn" id="add-platform">+ Adicionar</button></div></div>
@@ -42,7 +43,7 @@
 </dialog>
 <dialog id="columns-dialog"><div class="dialog-top"><h2>Colunas e ajustes</h2><button class="close" id="close-columns" aria-label="Fechar">×</button></div><p class="hint">Oculte uma coluna sem apagar as tarefas. Use as setas para mudar a ordem.</p><div class="columns-list" id="columns-list"></div><div class="inline-add"><input id="new-column-name" maxlength="40" placeholder="Nova coluna: Aguardando aprovação…" aria-label="Nome da nova coluna"><button class="small-btn" id="add-custom-column">+ Criar coluna</button></div><div class="settings-block"><label class="field">Destacar quando faltar<select id="warning-minutes"><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">1 hora</option><option value="180">3 horas</option><option value="1440">1 dia</option></select></label><p class="hint">O prazo é atualizado enquanto o quadro está aberto. Sem horário definido, a tarefa vence no fim do dia.</p></div><div class="dialog-actions"><button class="primary" id="done-columns">Pronto</button></div></dialog>
 <input type="file" id="backup-file" accept=".json,application/json" hidden><div id="toast" role="status" aria-live="polite"></div>
-<script defer src="js/admin-tarefas.js?v=20261005-cloud-v6"></script>
+<script defer src="js/admin-tarefas.js?v=20261005-services-v7"></script>
 <script type="module" src="js/admin-tarefas-auth.js?v=20261005-cloud-v6"></script>
 </body>
 </html>
