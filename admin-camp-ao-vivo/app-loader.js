@@ -50,7 +50,7 @@
   }
 
   function loadTournamentSetup(){
-    const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261005-final-phases-v1';
+    const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261005-hours-panel-v2';
     setup.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
     setup.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • configuração simplificada indisponível')};
     document.body.appendChild(setup);
@@ -179,5 +179,4 @@
   }
   load();
 })();
-
 

@@ -114,7 +114,19 @@
     const grid=document.querySelector('.setup-grid');if(!grid)return;
     const card=document.createElement('section');card.id='cff-admin-tournament-setup';card.innerHTML='<header><div><h2>Campeonato e fases</h2><p id="cff-phase-current"></p></div><button class="btn-mini" type="button" id="cff-final-import">↻ Carregar Final FFWS</button></header><div id="cff-admin-basic"></div><div class="cff-phase-actions"><button type="button" class="btn-mini" data-admin-tab="roster">👥 Escolher times</button><button type="button" class="btn-mini" data-admin-tab="days">📅 Dias e descansos</button><button type="button" class="btn-mini" data-admin-tab="general">🏆 Tabela geral</button></div><details id="cff-phase-details" open><summary>Fases e classificados</summary><div id="cff-phase-list"></div><button class="btn-mini" type="button" id="cff-add-phase">+ Adicionar fase</button><p class="cff-phase-hint">Encerrar e avançar salva os resultados e leva os classificados para a próxima fase. A data do último dia entra no Prizepool dos eliminados.</p></details><button class="btn-mini" type="button" id="cff-phase-recover">Baixar backup anterior</button><details id="cff-admin-advanced"><summary>Horários, pontuação e código Wiki</summary><div class="cff-admin-rules" id="cff-admin-rule-settings"></div></details>';
     grid.before(card);$('cff-admin-basic').append(grid);for(const group of [...grid.children])if(!group.querySelector('#tournament-name,#match-date,#num-quedas,#tournament-days'))$('cff-admin-rule-settings').append(group);
-    const time=$('auto-time-panel');if(time)$('cff-admin-rule-settings').append(time);
+    const time=$('auto-time-panel');if(time){
+      $('cff-admin-rule-settings').append(time);
+      const triggers=[...card.querySelectorAll('[onclick="toggleV19TimePanel()"]')],toggle=window.toggleV19TimePanel;
+      const syncHours=()=>triggers.forEach(button=>{button.setAttribute('aria-controls','auto-time-panel');button.setAttribute('aria-expanded',String(time.classList.contains('open')))});
+      window.toggleV19TimePanel=function(){
+        toggle?.apply(this,arguments);syncHours();
+        if(time.classList.contains('open')){
+          $('cff-admin-advanced').open=true;
+          requestAnimationFrame(()=>time.scrollIntoView({block:'nearest',behavior:'smooth'}));
+        }else triggers.find(button=>!time.contains(button))?.focus();
+      };
+      syncHours();
+    }
     card.addEventListener('click',async e=>{
       const tab=e.target.closest('[data-admin-tab]');if(tab){api()?.open?.();document.querySelector(`[data-v76-tab="${tab.dataset.adminTab}"]`)?.click()}
       const open=e.target.closest('[data-phase-open]');if(open){if(confirm('Abrir esta fase? A fase atual ficará salva.'))try{await openPhase(open.dataset.phaseOpen)}catch(err){notify(err.message,'err')}}
@@ -154,3 +166,4 @@
     }catch(e){notify('Use Carregar Final FFWS para atualizar. Seu campeonato foi preservado.','warn')}})();
   }
 })();
+
