@@ -93,3 +93,152 @@ html[data-theme=dark]{color-scheme:dark;--bg:#13141a;--panel:#1b1c24;--card:#262
   body.show-mobile-filters .advanced-filters{grid-template-columns:1fr}
   body.show-mobile-filters #reset-filters{grid-column:auto}
 }
+
+
+/* 2026-10-05: serviços + cabeçalho escuro dos cards v5 */
+/* Dropdown nativo: evita opções brancas com texto branco em Windows/Chrome. */
+select option{
+  background:#f7f7fa!important;
+  color:#151823!important;
+}
+select option:disabled{
+  color:#7a7f8e!important;
+}
+.status-select{
+  min-height:34px;
+  padding:5px 8px;
+  background:var(--field);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:8px;
+}
+.status-select:focus{
+  border-color:var(--accent);
+}
+
+/* Serviço da tarefa. */
+.task-service-field{
+  max-width:360px;
+  margin-top:10px;
+}
+.task-service-field select{
+  width:100%;
+  margin-top:5px;
+}
+.service-help{
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:500;
+}
+
+/* O corpo continua usando a cor escolhida; o cabeçalho é sempre escuro
+   para os ícones claros manterem contraste em qualquer card. */
+.card{
+  padding:0;
+  overflow:hidden;
+  border-top-width:1px;
+}
+.card.important{
+  border-top:3px solid #d9ad42;
+}
+.card-head{
+  padding:10px 11px 11px;
+  background:#111722;
+  color:#f5f7fb;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.card-body{
+  padding:11px 12px 12px;
+  min-width:0;
+}
+.card-head .card-top{
+  align-items:center;
+}
+.card-head .card-title{
+  color:#f5f7fb;
+  font-weight:750;
+}
+.card-head .card-title:hover{
+  color:#cfc8ff;
+}
+.card.completed .card-head .card-title,
+.card.cancelled .card-head .card-title{
+  color:#9ba2b0;
+}
+.card-head .star{
+  color:#9ca6b8;
+}
+.card-head .star[aria-pressed=true]{
+  color:#f1c65b;
+}
+.card-head .complete-circle{
+  border-color:#8f99aa;
+  color:transparent;
+}
+.card-head .complete-input:checked+.complete-circle{
+  background:#71c99b;
+  border-color:#71c99b;
+  color:#0e1712;
+}
+.card-service{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  max-width:100%;
+  margin-bottom:8px;
+  color:#c9d0dc;
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.035em;
+}
+.card-service-icon{
+  display:grid;
+  place-items:center;
+  width:23px;
+  height:23px;
+  flex:0 0 23px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:7px;
+  background:rgba(255,255,255,.035);
+  color:#f4f6fa;
+  font-size:13px;
+  line-height:1;
+  font-weight:500;
+}
+.card-service-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  opacity:.9;
+}
+.card-body .card-text:first-child,
+.card-body .chips:first-child,
+.card-body .deadline:first-child{
+  margin-top:0;
+}
+.card-body .card-actions{
+  margin-left:-1px;
+  margin-right:-1px;
+}
+
+/* Variações mínimas apenas para reconhecer o tipo sem virar carnaval. */
+.card-service[data-service="design"] .card-service-icon{color:#e9d7ff}
+.card-service[data-service="social"] .card-service-icon{color:#d9e8ff}
+.card-service[data-service="carousel"] .card-service-icon{color:#dce2ff}
+.card-service[data-service="video"] .card-service-icon{color:#ffd9df}
+.card-service[data-service="site"] .card-service-icon{color:#d7f0ff}
+.card-service[data-service="copy"] .card-service-icon{color:#f3e4c8}
+.card-service[data-service="data"] .card-service-icon{color:#d9f1df}
+.card-service[data-service="live"] .card-service-icon{color:#ffdcca}
+.card-service[data-service="other"] .card-service-icon{color:#e0e2e8}
+
+@media(max-width:700px){
+  .task-service-field{max-width:none}
+  .card-head{padding:9px 10px 10px}
+  .card-body{padding:10px}
+  .card-service{margin-bottom:7px}
+  .status-select{min-height:38px}
+}
