@@ -1,12 +1,12 @@
 
 'use strict';
-const KEY='meu-quadro-v1',CLOUD_MARKER='meu-quadro-cloud-v1',DB_NAME='meu-quadro-completo',COLORS={none:['Padrão','#8a8a96'],blue:['Azul','#73a5db'],lilac:['Lilás','#ab84cc'],mint:['Verde','#76b98c'],yellow:['Amarelo','#d8b44d'],coral:['Laranja','#d89570'],red:['Vermelho','#ce8585']},NOTE_COLORS={yellow:'Amarelo',mint:'Verde',lilac:'Lilás',coral:'Laranja',blue:'Azul',pink:'Rosa',red:'Vermelho',teal:'Turquesa',gray:'Cinza',sand:'Areia'},BASE_COLUMNS=[{id:'todo',name:'A fazer',hidden:false},{id:'doing',name:'Em andamento',hidden:false},{id:'done',name:'Concluído',hidden:false},{id:'cancelled',name:'Cancelada',hidden:false}];
+const KEY='meu-quadro-v1',CLOUD_MARKER='meu-quadro-cloud-v1',SYNC_KEY='meu-quadro-sync-v2',DB_NAME='meu-quadro-completo',COLORS={none:['Padrão','#8a8a96'],blue:['Azul','#73a5db'],lilac:['Lilás','#ab84cc'],mint:['Verde','#76b98c'],yellow:['Amarelo','#d8b44d'],coral:['Laranja','#d89570'],red:['Vermelho','#ce8585']},NOTE_COLORS={yellow:'Amarelo',mint:'Verde',lilac:'Lilás',coral:'Laranja',blue:'Azul',pink:'Rosa',red:'Vermelho',teal:'Turquesa',gray:'Cinza',sand:'Areia'},BASE_COLUMNS=[{id:'todo',name:'A fazer',hidden:false},{id:'doing',name:'Em andamento',hidden:false},{id:'done',name:'Concluído',hidden:false},{id:'cancelled',name:'Cancelada',hidden:false}];
 const SERVICES={design:{name:'Arte / Design',icon:'✦'},social:{name:'Post / Social',icon:'▱'},carousel:{name:'Carrossel',icon:'▤'},video:{name:'Vídeo',icon:'▷'},site:{name:'Site',icon:'◎'},copy:{name:'Texto / Legenda',icon:'✎'},data:{name:'Dados / Estatísticas',icon:'▥'},live:{name:'Cobertura / Live',icon:'◉'},other:{name:'Outro',icon:'◇'}};
 const $=id=>document.getElementById(id),el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;},uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),now=()=>new Date().toISOString(),copy=value=>structuredClone(value);
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
-function fresh(){return {version:2,tasks:[],notes:[],theme:'dark',columns:copy(BASE_COLUMNS),platforms:[{id:'instagram',name:'Instagram'},{id:'x',name:'X'},{id:'facebook',name:'Facebook'},{id:'tiktok',name:'TikTok'},{id:'youtube',name:'YouTube'},{id:'site',name:'Site'}],tags:[],settings:{warningMinutes:60,view:'board',sort:'deadline'}};}
+function fresh(){return {version:2,tasks:[],notes:[],usefulLinks:[],theme:'dark',columns:copy(BASE_COLUMNS),platforms:[{id:'instagram',name:'Instagram'},{id:'x',name:'X'},{id:'facebook',name:'Facebook'},{id:'tiktok',name:'TikTok'},{id:'youtube',name:'YouTube'},{id:'site',name:'Site'}],tags:[],settings:{warningMinutes:60,view:'board',sort:'deadline'}};}
 let state=fresh(),files=new Map(),db=null,storageBlocked=false,saveQueue=Promise.resolve(),dragId=null,draft=null,draftFiles=new Map(),previewUrls=[],toastTimer,booted=false,openNoteId=null,editNoteId=null,failedFileChanges=new Map();
-let cloudUnsubscribe=null,cloudTimer=null,cloudPendingState=null,cloudSaveChain=Promise.resolve(),cloudReady=false,applyingRemote=false;
+let cloudUnsubscribe=null,cloudTimer=null,cloudPendingState=null,cloudSaveChain=Promise.resolve(),cloudReady=false,applyingRemote=false,syncBase=null,syncDirty=false,cloudBusy=false,cloudRetry=null;
 const filters={text:'',deadline:'all',platform:'',tag:'',status:'',important:false};
 function validDate(s){if(s==='')return true;if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(s+'T12:00:00');return !Number.isNaN(+d)&&d.getFullYear()===Number(s.slice(0,4))&&d.getMonth()+1===Number(s.slice(5,7))&&d.getDate()===Number(s.slice(8,10));}
 function text(v,max,empty=true){if(typeof v!=='string'||v.length>max||(!empty&&!v.trim()))throw Error('Texto inválido');return v;}
@@ -25,7 +25,8 @@ function normalise(data){
   return {id:t.id,title:text(t.title,200,false).trim(),note:text(t.note,4000),date,time,status,previousStatus:prev,important:legacy?false:!!t.important,color:legacy?'none':Object.hasOwn(COLORS,t.color)?t.color:'none',service:legacy?'':Object.hasOwn(SERVICES,String(t.service||''))?String(t.service):'',serviceIcon:legacy?'':cleanServiceIcon(t.serviceIcon||''),platforms:legacy?[]:references(t.platforms,platformIds),tags:legacy?[]:references(t.tags,tagIds),links:legacy?[]:uniqueList(t.links,l=>({id:l.id,url:cleanUrl(text(l.url,3000,false)),label:text(l.label,200),imageUrl:cleanUrl(text(l.imageUrl||'',3000))})),subtasks:legacy?[]:uniqueList(t.subtasks,s=>({id:s.id,text:text(s.text,300,false),done:!!s.done})),attachments:legacy?[]:uniqueList(t.attachments,a=>({id:a.id,name:text(a.name,255,false),type:text(a.type,200),size:Number.isFinite(a.size)&&a.size>=0?a.size:(()=>{throw Error('Anexo inválido')})()})),createdAt:legacy?now():iso(t.createdAt)||now(),updatedAt:legacy?now():iso(t.updatedAt)||now(),completedAt:legacy?null:iso(t.completedAt),cancelledAt:legacy?null:iso(t.cancelledAt),history:legacy?[]:uniqueList(t.history,h=>({id:h.id,at:iso(h.at)||now(),action:text(h.action,1000,false)}))};
  });
  const notes=uniqueList(data.notes===undefined?[]:data.notes,(n,index)=>{if(!Object.hasOwn(NOTE_COLORS,n.color))throw Error('Cor inválida');return {id:n.id,title:n.title===undefined?'Lembrete '+(index+1):text(n.title,60,false),text:text(n.text,5000),color:n.color};});if(data.theme!==undefined&&!['light','dark'].includes(data.theme))throw Error('Tema inválido');const settings=legacy?base.settings:data.settings||{};
- return {version:2,tasks,notes,theme:data.theme||'dark',columns,platforms,tags,settings:{warningMinutes:[15,30,60,180,1440].includes(Number(settings.warningMinutes))?Number(settings.warningMinutes):60,view:settings.view==='agenda'?'agenda':'board',sort:['deadline','important','newest','title'].includes(settings.sort)?settings.sort:'deadline'}};
+ const usefulLinks=uniqueList(data.usefulLinks||[],link=>({id:link.id,label:text(link.label,80,false).trim(),url:cleanUrl(text(link.url,3000,false))}));
+ return {version:2,tasks,notes,usefulLinks,theme:data.theme||'dark',columns,platforms,tags,settings:{warningMinutes:[15,30,60,180,1440].includes(Number(settings.warningMinutes))?Number(settings.warningMinutes):60,view:settings.view==='agenda'?'agenda':'board',sort:['deadline','important','newest','title'].includes(settings.sort)?settings.sort:'deadline'}};
 }
 function toast(message){clearTimeout(toastTimer);$('toast').textContent=message;$('toast').classList.add('show');toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3000);}
 function notice(message){$('storage-notice').textContent=message;$('storage-notice').classList.add('visible');$('save-status').textContent='Falha ao salvar · Exporte um backup antes de fechar.';}
@@ -37,7 +38,7 @@ function transact(next,fileChanges=[],replaceFiles=false){
  return new Promise((resolve,reject)=>{const tx=db.transaction(['state','files'],'readwrite');tx.objectStore('state').put(next,'board');const store=tx.objectStore('files');if(replaceFiles)store.clear();fileChanges.forEach(f=>f.blob?store.put({id:f.id,blob:f.blob}):store.delete(f.id));tx.oncomplete=()=>{try{localStorage.setItem(KEY,JSON.stringify(next));}catch{}resolve();};tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Salvamento interrompido'));});
 }
 function hasMeaningfulState(value){
- return Boolean(value?.tasks?.length||value?.notes?.length||value?.tags?.length||value?.columns?.some(c=>!BASE_COLUMNS.some(b=>b.id===c.id&&b.name===c.name&&!c.hidden))||value?.platforms?.some(p=>!fresh().platforms.some(b=>b.id===p.id&&b.name===p.name)));
+ return Boolean(value?.tasks?.length||value?.notes?.length||value?.usefulLinks?.length||value?.tags?.length||value?.columns?.some(c=>!BASE_COLUMNS.some(b=>b.id===c.id&&b.name===c.name&&!c.hidden))||value?.platforms?.some(p=>!fresh().platforms.some(b=>b.id===p.id&&b.name===p.name)));
 }
 function mergeById(remoteItems,localItems,preferLocal=false){
  const map=new Map((remoteItems||[]).map(item=>[item.id,copy(item)]));
@@ -55,6 +56,7 @@ function mergeInitialStates(localState,remoteState){
   ...copy(remoteState),
   tasks:mergeById(remoteState.tasks,localState.tasks),
   notes:mergeById(remoteState.notes,localState.notes,true),
+  usefulLinks:mergeById(remoteState.usefulLinks,localState.usefulLinks,true),
   columns:mergeById(remoteState.columns,localState.columns,true),
   platforms:mergeById(remoteState.platforms,localState.platforms,true),
   tags:mergeById(remoteState.tags,localState.tags,true),
@@ -64,56 +66,87 @@ function mergeInitialStates(localState,remoteState){
  return normalise(merged);
 }
 function cloudStatus(message){if(!$('storage-notice').classList.contains('visible'))$('save-status').textContent=message;}
-function flushCloud(){
+function checkpoint(){
+ try{localStorage.setItem(SYNC_KEY,JSON.stringify({base:syncBase,dirty:syncDirty,local:state}));}catch{cloudStatus('Cópia local limitada · mantenha a página aberta até sincronizar.');}
+}
+function repaintCloud(){
+ applyTheme();refreshFilters();renderBoard();
+ // Keep typing uninterrupted. The focused note is refreshed when editing finishes.
+ if(!document.activeElement?.closest('.sticky-body'))renderNotes();
+ if(!document.activeElement?.closest('#useful-link-form'))renderUsefulLinks();
+}
+function retryCloud(){
+ clearTimeout(cloudRetry);
+ cloudRetry=setTimeout(()=>{if(booted&&!storageBlocked){if(cloudReady)flushCloud().catch(()=>{});else initCloudSync(true);}},5000);
+}
+async function flushCloud(){
  clearTimeout(cloudTimer);cloudTimer=null;
- if(!cloudPendingState||!window.CFF_TASKS_CLOUD)return cloudSaveChain;
- const snapshot=cloudPendingState;cloudPendingState=null;
- cloudSaveChain=cloudSaveChain.catch(()=>{}).then(()=>window.CFF_TASKS_CLOUD.save(snapshot)).then(()=>{cloudReady=true;try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}cloudStatus('Sincronizado na nuvem · cópia local ativa.');},error=>{console.error('[Tasks cloud save]',error);cloudStatus('Salvo neste aparelho · falha ao sincronizar com a nuvem.');throw error;});
+ if(!syncDirty||!window.CFF_TASKS_CLOUD||cloudBusy||!cloudReady)return cloudSaveChain;
+ const snapshot=copy(state),base=syncBase&&copy(syncBase);cloudBusy=true;
+ cloudSaveChain=(async()=>{
+  try{
+   const payload=await window.CFF_TASKS_CLOUD.save(snapshot,base);
+   const confirmed=normalise(window.CFF_TASKS_SYNC.decode(payload));
+   const next=normalise(window.CFF_TASKS_SYNC.merge(snapshot,state,confirmed));
+   const changed=!window.CFF_TASKS_SYNC.same(next,state);
+   state=next;syncBase=confirmed;clearTimeout(cloudRetry);cloudRetry=null;syncDirty=!window.CFF_TASKS_SYNC.same(state,syncBase);checkpoint();
+   await persistCloudStateLocally(state);
+   try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}
+   if(changed)repaintCloud();
+   cloudStatus(syncDirty?'Salvo neste aparelho · sincronizando…':'Sincronizado na nuvem · cópia local ativa.');
+  }catch(error){
+   syncDirty=true;checkpoint();console.error('[Tasks cloud save]',error);
+   cloudStatus('Salvo neste aparelho · envio pendente. Tentando novamente…');retryCloud();
+   throw error;
+  }finally{cloudBusy=false;if(syncDirty&&!cloudRetry)scheduleCloud(state);}
+ })();
  return cloudSaveChain;
 }
 function scheduleCloud(next,delay=450){
  if(applyingRemote||!window.CFF_TASKS_CLOUD)return;
- cloudPendingState=copy(next);clearTimeout(cloudTimer);
- cloudStatus('Salvo neste aparelho · sincronizando com a nuvem…');
- cloudTimer=setTimeout(()=>{flushCloud().catch(()=>{});},delay);
+ clearTimeout(cloudTimer);cloudStatus('Salvo neste aparelho · sincronizando com a nuvem…');
+ cloudTimer=setTimeout(()=>{if(cloudReady)flushCloud().catch(()=>{});else initCloudSync(true);},delay);
 }
 async function persistCloudStateLocally(next){
- if(db)await transact(next);else localStorage.setItem(KEY,JSON.stringify(next));
+ const operation=saveQueue.then(()=>transact(next));saveQueue=operation.catch(()=>{});await operation;
 }
 async function applyCloudPayload(payload,render=true){
- if(!payload?.state)return false;
- const next=normalise(payload.state);
- applyingRemote=true;
- try{state=next;await persistCloudStateLocally(next);}finally{applyingRemote=false;}
- if(render){applyTheme();refreshFilters();renderNotes();renderBoard();}
- cloudReady=true;try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}cloudStatus('Sincronizado da nuvem · cópia local ativa.');
+ if(!payload)return false;
+ const remote=normalise(window.CFF_TASKS_SYNC.decode(payload));
+ const next=syncDirty?normalise(window.CFF_TASKS_SYNC.merge(syncBase,state,remote)):remote;
+ const changed=!window.CFF_TASKS_SYNC.same(state,next);
+ state=next;syncBase=copy(remote);syncDirty=!window.CFF_TASKS_SYNC.same(next,remote);checkpoint();
+ await persistCloudStateLocally(next);
+ if(render&&changed)repaintCloud();
+ cloudReady=true;try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}
+ cloudStatus(syncDirty?'Salvo neste aparelho · sincronizando…':'Sincronizado da nuvem · cópia local ativa.');
+ if(syncDirty&&!cloudBusy)scheduleCloud(state);
  return true;
 }
+let cloudInitializing=false;
 async function initCloudSync(renderRemote=false){
- const cloud=window.CFF_TASKS_CLOUD;if(!cloud)return false;
+ const cloud=window.CFF_TASKS_CLOUD;if(!cloud||cloudInitializing||storageBlocked)return false;
+ cloudInitializing=true;
  try{
   const payload=await cloud.load();
-  const previouslySynced=localStorage.getItem(CLOUD_MARKER)==='1';
-  if(payload?.state){
-   const remoteState=normalise(payload.state);
-   if(!previouslySynced&&hasMeaningfulState(state)){
-    const merged=mergeInitialStates(state,remoteState),changed=JSON.stringify(merged)!==JSON.stringify(remoteState);
-    applyingRemote=true;try{state=merged;await persistCloudStateLocally(merged);}finally{applyingRemote=false;}
-    if(changed)await cloud.save(merged);
-    try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}
-    cloudReady=true;if(renderRemote){applyTheme();refreshFilters();renderNotes();renderBoard();}
-    cloudStatus(changed?'Quadros mesclados e salvos na nuvem.':'Sincronizado na nuvem · cópia local ativa.');
+  if(payload){
+   const remote=normalise(window.CFF_TASKS_SYNC.decode(payload));
+   if(!syncBase&&hasMeaningfulState(state)){
+    // One-time recovery of boards saved before durable sync checkpoints existed.
+    state=mergeInitialStates(state,remote);syncBase=remote;syncDirty=!window.CFF_TASKS_SYNC.same(state,remote);checkpoint();
+    await persistCloudStateLocally(state);if(renderRemote)repaintCloud();
    }else await applyCloudPayload(payload,renderRemote);
-  }else if(hasMeaningfulState(state)){
-   await cloud.save(state);try{localStorage.setItem(CLOUD_MARKER,'1');}catch{}cloudReady=true;cloudStatus('Quadro enviado para a nuvem · cópia local ativa.');
-  }else{cloudReady=true;cloudStatus('Nuvem conectada · aguardando seu primeiro conteúdo.');}
+  }else{syncBase=syncBase||fresh();syncDirty=syncDirty||hasMeaningfulState(state);checkpoint();}
+  cloudReady=true;clearTimeout(cloudRetry);cloudRetry=null;
   if(cloudUnsubscribe)cloudUnsubscribe();
-  cloudUnsubscribe=cloud.subscribe(p=>{applyCloudPayload(p,true).catch(error=>{console.error('[Tasks cloud receive]',error);cloudStatus('Nuvem conectada, mas uma atualização remota não pôde ser aplicada.');});},error=>{console.error('[Tasks cloud listen]',error);cloudStatus('Salvo neste aparelho · sincronização com a nuvem indisponível.');});
+  cloudUnsubscribe=cloud.subscribe(p=>{applyCloudPayload(p,true).catch(error=>{console.error('[Tasks cloud receive]',error);cloudStatus('Atualização pendente · tentando reconectar…');retryCloud();});},error=>{console.error('[Tasks cloud listen]',error);cloudReady=false;cloudStatus('Salvo neste aparelho · tentando reconectar à nuvem…');retryCloud();});
+  if(syncDirty)await flushCloud();else cloudStatus('Sincronizado na nuvem · cópia local ativa.');
   return true;
- }catch(error){console.error('[Tasks cloud init]',error);cloudStatus('Salvo neste aparelho · sincronização com a nuvem indisponível.');return false;}
+ }catch(error){console.error('[Tasks cloud init]',error);cloudReady=false;cloudStatus('Salvo neste aparelho · nuvem indisponível. Tentando novamente…');retryCloud();return false;}
+ finally{cloudInitializing=false;}
 }
 function save(changes=[]){
- const next=copy(state);$('save-status').textContent='Salvando…';
+ syncDirty=true;checkpoint();const next=copy(state);$('save-status').textContent='Salvando…';
  const operation=saveQueue.then(()=>{const pending=new Map(failedFileChanges);changes.forEach(change=>pending.set(change.id,change));return transact(next,[...pending.values()]).then(()=>{failedFileChanges.clear();scheduleCloud(next);},error=>{failedFileChanges=pending;throw error;});});
  saveQueue=operation.catch(e=>{notice(storageBlocked?'Os dados anteriores estão protegidos. Importe um backup para substituir ou exporte o quadro atual.':'Não foi possível salvar suas alterações. Exporte um backup antes de fechar a página.');});
  operation.then(()=>{if(!window.CFF_TASKS_CLOUD&&!$('storage-notice').classList.contains('visible'))$('save-status').textContent='Salvo neste navegador · Backup completo inclui os anexos.';},()=>{});
@@ -182,11 +215,59 @@ function renderNotes(){
   const del=el('button','sticky-delete','×');del.title='Excluir lembrete';del.setAttribute('aria-label','Excluir '+(n.title||'lembrete'));del.addEventListener('click',()=>{if((n.text.trim()||n.title&&!/^Lembrete|^Novo lembrete/.test(n.title))&&!confirm('Excluir este lembrete?'))return;state.notes=state.notes.filter(x=>x.id!==n.id);if(openNoteId===n.id)openNoteId=null;if(editNoteId===n.id)editNoteId=null;save();renderNotes();});head.append(title,edit,del);card.append(head);
   if(openNoteId===n.id){
    const body=el('div','sticky-body');body.id='note-body-'+n.id;
-   if(editNoteId===n.id){const settings=el('div','sticky-settings'),label=el('label','sticky-setting-label','Título'),name=el('input');name.type='text';name.value=n.title||'Lembrete '+(index+1);name.maxLength=60;name.setAttribute('aria-label','Título do lembrete');name.addEventListener('input',()=>{n.title=name.value.trim()||'Lembrete';title.textContent='▾ '+n.title;save();});label.append(name);settings.append(label);const colors=el('div','sticky-colors');Object.entries(NOTE_COLORS).forEach(([color,colorName])=>{const b=el('button','swatch');b.dataset.color=color;b.title=colorName;b.setAttribute('aria-label','Cor '+colorName);b.setAttribute('aria-pressed',String(color===n.color));b.addEventListener('click',()=>{n.color=color;card.dataset.color=color;colors.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));save();});colors.append(b);});settings.append(colors);body.append(settings);}
-   const input=el('textarea');input.value=n.text;input.maxLength=5000;input.placeholder='Escreva seu lembrete…';input.setAttribute('aria-label','Texto de '+(n.title||'lembrete'));input.addEventListener('input',()=>{n.text=input.value;autoNoteHeight(input);save();});body.append(input);card.append(body);requestAnimationFrame(()=>autoNoteHeight(input));
+   if(editNoteId===n.id){const settings=el('div','sticky-settings'),label=el('label','sticky-setting-label','Título'),name=el('input');name.type='text';name.value=n.title||'Lembrete '+(index+1);name.maxLength=60;name.setAttribute('aria-label','Título do lembrete');name.addEventListener('input',()=>{n.title=name.value.trim()||'Lembrete';const current=state.notes.find(x=>x.id===n.id);if(current)current.title=n.title;title.textContent='▾ '+n.title;save();});label.append(name);settings.append(label);const colors=el('div','sticky-colors');Object.entries(NOTE_COLORS).forEach(([color,colorName])=>{const b=el('button','swatch');b.dataset.color=color;b.title=colorName;b.setAttribute('aria-label','Cor '+colorName);b.setAttribute('aria-pressed',String(color===n.color));b.addEventListener('click',()=>{n.color=color;const current=state.notes.find(x=>x.id===n.id);if(current)current.color=color;card.dataset.color=color;colors.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));save();});colors.append(b);});settings.append(colors);body.append(settings);}
+   const input=el('textarea');input.value=n.text;input.maxLength=5000;input.placeholder='Escreva seu lembrete…';input.setAttribute('aria-label','Texto de '+(n.title||'lembrete'));input.addEventListener('input',()=>{n.text=input.value;const current=state.notes.find(x=>x.id===n.id);if(current)current.text=n.text;autoNoteHeight(input);save();});body.append(input);card.append(body);requestAnimationFrame(()=>autoNoteHeight(input));
   }
   shell.append(card);list.append(shell);
  });
+}
+let editingUsefulId=null;
+function setToolPanel(name){
+ ['reminders','links'].forEach(kind=>{
+  const panel=$(kind==='reminders'?'reminder-drawer':'links-drawer');panel.hidden=kind!==name;
+  $('toggle-'+kind).setAttribute('aria-expanded',String(kind===name));
+ });
+}
+function usefulIcon(kind){
+ const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');
+ const path=document.createElementNS(icon.namespaceURI,'path');path.setAttribute('d',kind==='copy'?'M9 9h12v12H9V9ZM15 5V3H3v12h2':'M4 20h4L20 8l-4-4L4 16v4ZM14 6l4 4');icon.append(path);return icon;
+}
+async function copyUsefulLink(url){
+ try{
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(url);
+  else{const input=el('textarea');input.value=url;input.style.cssText='position:fixed;opacity:0';document.body.append(input);input.select();const ok=document.execCommand('copy');input.remove();if(!ok)throw Error('Cópia indisponível');}
+  toast('Link copiado');
+ }catch{toast('Não foi possível copiar. Abra o link para copiar o endereço.');}
+}
+function openUsefulEditor(link){
+ editingUsefulId=link?.id||null;$('useful-link-label').value=link?.label||'';$('useful-link-url').value=link?.url||'';
+ $('useful-link-url').setCustomValidity('');$('useful-link-form').hidden=false;setToolPanel('links');$('useful-link-label').focus();
+}
+function renderUsefulLinks(){
+ const list=$('useful-links-list');list.replaceChildren();
+ if(!state.usefulLinks.length)list.append(el('p','sticky-empty','Guarde seus links de uso diário no +.'));
+ state.usefulLinks.forEach(link=>{
+  const card=el('article','useful-link'),heading=el('div','useful-link-heading'),label=el('strong','',link.label),edit=el('button','useful-icon');
+  edit.title='Editar link';edit.setAttribute('aria-label','Editar '+link.label);edit.append(usefulIcon('edit'));edit.addEventListener('click',()=>openUsefulEditor(link));
+  const del=el('button','useful-icon delete','×');del.title='Excluir link';del.setAttribute('aria-label','Excluir '+link.label);del.addEventListener('click',()=>{if(!confirm('Excluir “'+link.label+'”?'))return;state.usefulLinks=state.usefulLinks.filter(x=>x.id!==link.id);if(editingUsefulId===link.id)$('useful-link-form').hidden=true;save();renderUsefulLinks();});
+  heading.append(label,edit,del);const row=el('div','useful-link-row'),a=el('a','',link.url);a.href=link.url;a.target='_blank';a.rel='noopener noreferrer';a.title=link.url;
+  const button=el('button','useful-icon copy');button.title='Copiar link';button.setAttribute('aria-label','Copiar link de '+link.label);button.append(usefulIcon('copy'));button.addEventListener('click',()=>copyUsefulLink(link.url));row.append(a,button);card.append(heading,row);list.append(card);
+ });
+}
+function wireDeskTools(){
+ ['reminders','links'].forEach(kind=>$('toggle-'+kind).addEventListener('click',()=>{setToolPanel($('toggle-'+kind).getAttribute('aria-expanded')==='true'?null:kind);}));
+ document.querySelectorAll('[data-close-tools]').forEach(button=>button.addEventListener('click',()=>setToolPanel(null)));
+ $('new-useful-link').addEventListener('click',()=>openUsefulEditor());$('cancel-useful-link').addEventListener('click',()=>$('useful-link-form').hidden=true);
+ $('useful-link-url').addEventListener('input',()=>$('useful-link-url').setCustomValidity(''));
+ $('useful-link-form').addEventListener('submit',e=>{
+  e.preventDefault();let url;try{url=cleanUrl($('useful-link-url').value);}catch(error){$('useful-link-url').setCustomValidity(error.message);$('useful-link-url').reportValidity();return;}
+  const label=$('useful-link-label').value.trim();if(!label)return;
+  const link={id:editingUsefulId||uid(),label,url},index=state.usefulLinks.findIndex(x=>x.id===link.id);if(index<0)state.usefulLinks.push(link);else state.usefulLinks[index]=link;
+  save();renderUsefulLinks();$('useful-link-form').hidden=true;editingUsefulId=null;toast('Link salvo');
+ });
+ document.addEventListener('click',e=>{if(!e.target.closest('.desk-tools')&&!e.target.closest('.sticky-shell'))setToolPanel(null);});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('editor').open&&!$('columns-dialog').open)setToolPanel(null);});
+ $('sticky-list').addEventListener('focusout',()=>{setTimeout(()=>{if(!document.activeElement?.closest('.sticky-body'))renderNotes();},0);});
 }
 function optionChecks(target,defs,selected){const container=$(target);container.replaceChildren();defs.forEach(d=>{const label=el('label','option-chip'),input=el('input');input.type='checkbox';input.value=d.id;input.checked=selected.includes(d.id);input.addEventListener('change',()=>{const key=target==='task-platforms'?'platforms':'tags';draft[key]=Array.from(container.querySelectorAll('input:checked'),x=>x.value);});label.append(input,el('span','',d.name));container.append(label);});}
 function renderColors(){const container=$('task-colors');container.replaceChildren();Object.entries(COLORS).forEach(([key,[name,value]])=>{const b=el('button','color-choice');b.type='button';b.style.setProperty('--swatch',value);b.title=name;b.dataset.color=key;b.setAttribute('aria-label','Cor '+name);b.setAttribute('aria-pressed',String(draft.color===key));b.addEventListener('click',()=>{draft.color=key;container.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});container.append(b);});}
@@ -208,8 +289,9 @@ function resetFilters(){Object.assign(filters,{text:'',deadline:'all',platform:'
 function readAsDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});}
 async function exportBackup(){const button=$('export');button.disabled=true;button.textContent='Preparando backup…';try{const snapshot=copy(state),references=new Set(snapshot.tasks.flatMap(t=>t.attachments.map(a=>a.id))),stored=new Map(files),backupFiles=[];for(const id of references){const blob=stored.get(id);if(!blob)throw Error('Um anexo não está disponível.');backupFiles.push({id,data:await readAsDataURL(blob)});}const content={...snapshot,files:backupFiles},blob=new Blob([JSON.stringify(content,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='meu-quadro-backup-'+today()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Backup completo exportado');}catch(e){alert('Não foi possível exportar o backup: '+e.message);}finally{button.disabled=false;button.textContent='Exportar backup completo';}}
 function decodeBackupFile(file){const id=text(file.id,150,false),data=text(file.data,40*1024*1024,false),match=data.match(/^data:([^;,]*);base64,([A-Za-z0-9+/]*={0,2})$/);if(!match)throw Error('Anexo inválido');const binary=atob(match[2]),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return {id,blob:new Blob([bytes],{type:match[1]})};}
-async function importBackup(file){if(!file)return;const button=$('import');button.disabled=true;try{if(file.size>250*1024*1024)throw Error('O backup precisa ter até 250 MB.');const raw=JSON.parse(await file.text()),next=normalise(raw),nextFiles=new Map();if(raw.version===2){if(!Array.isArray(raw.files))throw Error('Lista de anexos ausente');for(const item of raw.files){const decoded=decodeBackupFile(item);if(nextFiles.has(decoded.id))throw Error('Anexo duplicado');nextFiles.set(decoded.id,decoded.blob);}}let totalBytes=0;for(const blob of nextFiles.values())totalBytes+=blob.size;if(totalBytes>150*1024*1024)throw Error('O total de anexos precisa ter até 150 MB.');next.tasks.forEach(t=>t.attachments.forEach(a=>{const blob=nextFiles.get(a.id);if(!blob||blob.size!==a.size||blob.type!==a.type)throw Error('Anexo ausente ou diferente do original');}));if(!confirm(`Importar ${next.tasks.length} tarefas, ${next.notes.length} lembretes e ${nextFiles.size} anexos? Isso substitui todo o quadro atual. Exporte um backup antes se quiser guardar o atual.`))return;await saveQueue;const blocked=storageBlocked;storageBlocked=false;try{await transact(next,[...nextFiles].map(([id,blob])=>({id,blob})),true);}catch(e){storageBlocked=blocked;throw e;}state=next;files=nextFiles;failedFileChanges.clear();$('storage-notice').classList.remove('visible');scheduleCloud(state,0);$('save-status').textContent=window.CFF_TASKS_CLOUD?'Backup importado · sincronizando com a nuvem…':'Salvo neste navegador · Backup completo inclui os anexos.';applyTheme();refreshFilters();resetFilters();renderNotes();toast('Backup importado');}catch(e){alert('Não foi possível importar: '+e.message+'. Selecione um backup exportado por este quadro.');}finally{button.disabled=false;$('backup-file').value='';}}
+async function importBackup(file){if(!file)return;const button=$('import');button.disabled=true;try{if(file.size>250*1024*1024)throw Error('O backup precisa ter até 250 MB.');const raw=JSON.parse(await file.text()),next=normalise(raw),nextFiles=new Map();if(raw.version===2){if(!Array.isArray(raw.files))throw Error('Lista de anexos ausente');for(const item of raw.files){const decoded=decodeBackupFile(item);if(nextFiles.has(decoded.id))throw Error('Anexo duplicado');nextFiles.set(decoded.id,decoded.blob);}}let totalBytes=0;for(const blob of nextFiles.values())totalBytes+=blob.size;if(totalBytes>150*1024*1024)throw Error('O total de anexos precisa ter até 150 MB.');next.tasks.forEach(t=>t.attachments.forEach(a=>{const blob=nextFiles.get(a.id);if(!blob||blob.size!==a.size||blob.type!==a.type)throw Error('Anexo ausente ou diferente do original');}));if(!confirm(`Importar ${next.tasks.length} tarefas, ${next.notes.length} lembretes e ${nextFiles.size} anexos? Isso substitui todo o quadro atual. Exporte um backup antes se quiser guardar o atual.`))return;await saveQueue;const blocked=storageBlocked;storageBlocked=false;try{await transact(next,[...nextFiles].map(([id,blob])=>({id,blob})),true);}catch(e){storageBlocked=blocked;throw e;}state=next;syncDirty=true;checkpoint();files=nextFiles;failedFileChanges.clear();$('storage-notice').classList.remove('visible');scheduleCloud(state,0);$('save-status').textContent=window.CFF_TASKS_CLOUD?'Backup importado · sincronizando com a nuvem…':'Salvo neste navegador · Backup completo inclui os anexos.';applyTheme();refreshFilters();resetFilters();renderNotes();renderUsefulLinks();toast('Backup importado');}catch(e){alert('Não foi possível importar: '+e.message+'. Selecione um backup exportado por este quadro.');}finally{button.disabled=false;$('backup-file').value='';}}
 function wire(){
+ wireDeskTools();
  const filterToggle=$('toggle-filters');
  if(filterToggle)filterToggle.addEventListener('click',()=>{
   const open=!document.body.classList.contains('show-mobile-filters');
@@ -233,14 +315,15 @@ function wire(){
  });
  $('search').addEventListener('input',()=>{filters.text=$('search').value.trim().toLocaleLowerCase('pt-BR');renderBoard();});document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>chooseFilter(b.dataset.filter)));document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{state.settings.view=b.dataset.view;save();renderBoard();}));['platform','tag','status'].forEach(key=>$('filter-'+key).addEventListener('change',()=>{filters[key]=$('filter-'+key).value;renderBoard();}));$('filter-important').addEventListener('click',()=>{filters.important=!filters.important;$('filter-important').setAttribute('aria-pressed',String(filters.important));$('filter-important').textContent=filters.important?'★ Só importantes':'☆ Só importantes';renderBoard();});$('sort').addEventListener('change',()=>{state.settings.sort=$('sort').value;save();renderBoard();});$('reset-filters').addEventListener('click',resetFilters);
  $('show-urgent').addEventListener('click',()=>{resetFilters();state.columns.forEach(c=>{if(state.tasks.some(t=>t.status===c.id&&['urgent','soon'].includes(remaining(t).level)))c.hidden=false;});save();chooseFilter('soon');});$('export').addEventListener('click',exportBackup);$('import').addEventListener('click',()=>$('backup-file').click());$('backup-file').addEventListener('change',e=>importBackup(e.target.files[0]));
- document.addEventListener('click',e=>{if(openNoteId&&!e.target.closest('.sticky-shell')&&!e.target.closest('#new-sticky')){openNoteId=null;editNoteId=null;renderNotes();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openNoteId&&!$('editor').open&&!$('columns-dialog').open){openNoteId=null;editNoteId=null;renderNotes();}});window.addEventListener('resize',()=>document.querySelectorAll('.sticky-body textarea').forEach(autoNoteHeight));setInterval(()=>{if(booted&&!dragId)tick();},15000);document.addEventListener('visibilitychange',()=>{if(document.hidden)flushCloud().catch(()=>{});else if(booted)tick();});window.addEventListener('pagehide',()=>{flushCloud().catch(()=>{});});
+ document.addEventListener('click',e=>{if(openNoteId&&!e.target.closest('.reminders')&&!e.target.closest('.sticky-shell')){openNoteId=null;editNoteId=null;renderNotes();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openNoteId&&!$('editor').open&&!$('columns-dialog').open){openNoteId=null;editNoteId=null;renderNotes();}});window.addEventListener('resize',()=>document.querySelectorAll('.sticky-body textarea').forEach(autoNoteHeight));setInterval(()=>{if(booted&&!dragId)tick();},15000);document.addEventListener('visibilitychange',()=>{if(document.hidden)flushCloud().catch(()=>{});else if(booted){tick();initCloudSync(true);}});window.addEventListener('online',()=>{clearTimeout(cloudRetry);cloudRetry=null;initCloudSync(true);});$('sync-now').addEventListener('click',()=>{saveQueue.then(()=>initCloudSync(true));});window.addEventListener('pagehide',()=>{flushCloud().catch(()=>{});});
 }
 async function boot(){
  let raw=null,storedFiles=[];try{db=await openDatabase();const tx=db.transaction(['state','files'],'readonly');[raw,storedFiles]=await Promise.all([request(tx.objectStore('state').get('board')),request(tx.objectStore('files').getAll())]);}catch(e){db=null;}
  try{if(!raw){const local=localStorage.getItem(KEY);if(local)raw=JSON.parse(local);}if(raw)state=normalise(raw);storedFiles.forEach(f=>files.set(f.id,f.blob));}catch(e){storageBlocked=true;notice('Não foi possível carregar os dados anteriores. Eles não serão sobrescritos. Você pode exportar este quadro ou importar um backup.');}
+ try{const saved=JSON.parse(localStorage.getItem(SYNC_KEY)||'null');if(saved){syncBase=saved.base?normalise(saved.base):null;syncDirty=!!saved.dirty;if(syncDirty&&saved.local)state=normalise(saved.local);}}catch{}
  if(!storageBlocked)await initCloudSync(false);
  if(state.tasks.some(t=>t.attachments.some(a=>!files.has(a.id))))notice('Alguns anexos não estão disponíveis neste dispositivo. As tarefas estão sincronizadas; importe um backup completo neste aparelho para recuperar os arquivos locais.');
- wire();applyTheme();refreshFilters();renderNotes();renderBoard();booted=true;
+ wire();applyTheme();refreshFilters();renderNotes();renderUsefulLinks();renderBoard();booted=true;
  if(!db&&!storageBlocked)notice('Anexos locais indisponíveis neste navegador. Tarefas e lembretes continuam sincronizados pela nuvem.');
  if(window.CFF_TASKS_CLOUD&&cloudReady&&!$('storage-notice').classList.contains('visible'))cloudStatus('Sincronizado na nuvem · cópia local ativa.');
 }
@@ -248,4 +331,5 @@ let cffTasksStarted=false;
 function startAuthenticatedBoard(){if(cffTasksStarted||!window.CFF_TASKS_AUTHORIZED)return;cffTasksStarted=true;boot().catch(e=>notice('Não foi possível abrir o quadro: '+e.message));}
 window.addEventListener('cff-tasks-authenticated',startAuthenticatedBoard);
 startAuthenticatedBoard();
+
 

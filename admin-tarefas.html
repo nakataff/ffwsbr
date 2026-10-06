@@ -11,7 +11,7 @@
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
 <script>try{const s=JSON.parse(localStorage.getItem('meu-quadro-v1')||'null');if(s?.theme==='light')document.documentElement.dataset.theme='light';}catch{}</script>
-<link rel="stylesheet" href="css/admin-tarefas.css?v=20261005-service-images-v6">
+<link rel="stylesheet" href="css/admin-tarefas.css?v=20261006-sync-desk-v1">
 </head>
 <body class="cff-auth-pending">
 <div id="cff-tasks-auth" class="cff-tasks-auth"><div class="cff-tasks-auth-card"><strong>Quadro de tarefas</strong><p data-cff-auth-status role="status">Validando sua sessão do painel…</p><a class="quiet" href="admin.html">Voltar ao painel</a></div></div>
@@ -22,8 +22,16 @@
  <div class="advanced-filters" id="advanced-filter-area"><select id="filter-platform" aria-label="Filtrar por plataforma"><option value="">Todas as plataformas</option></select><select id="filter-tag" aria-label="Filtrar por etiqueta"><option value="">Todas as etiquetas</option></select><select id="filter-status" aria-label="Filtrar por coluna"><option value="">Todas as colunas</option></select><button class="quiet filter-important" id="filter-important" aria-pressed="false">☆ Só importantes</button><select id="sort" aria-label="Ordenar tarefas"><option value="deadline">Prazo mais próximo</option><option value="important">Importantes primeiro</option><option value="newest">Mais recentes</option><option value="title">Nome da tarefa</option></select><button class="small-btn" id="reset-filters">Limpar filtros</button></div>
  <div class="summary"><span id="progress-text">Carregando seu quadro…</span><div class="track" aria-hidden="true"><span id="progress-bar"></span></div><span id="visible-count"></span><span class="hidden-info" id="hidden-info"></span></div>
  <div class="alert-banner" id="deadline-alert"><span id="deadline-alert-text"></span><button class="small-btn" id="show-urgent">Ver tarefas</button></div>
- <div class="workspace"><div class="board-area"><section class="board" id="board" aria-label="Quadro de tarefas"><p class="loading">Carregando…</p></section><section id="agenda" aria-label="Agenda de tarefas" hidden></section></div><aside class="reminders" aria-label="Notas adesivas"><div class="reminders-head"><h2>Lembretes</h2><button class="add-sticky" id="new-sticky" aria-label="Adicionar nota adesiva" title="Adicionar nota adesiva">+</button></div><p class="hint">Clique para abrir · ✎ edita título e cor.</p><div id="sticky-list"></div></aside></div>
- <footer class="footer"><span id="save-status">Salvamento automático neste navegador.</span><div class="footer-buttons"><button class="quiet" id="export">Exportar backup completo</button><button class="quiet" id="import">Importar backup</button></div></footer>
+ <div class="workspace"><div class="board-area"><section class="board" id="board" aria-label="Quadro de tarefas"><p class="loading">Carregando…</p></section><section id="agenda" aria-label="Agenda de tarefas" hidden></section></div><aside class="desk-tools" aria-label="Lembretes e links úteis">
+ <div class="tool-tabs">
+  <button class="paper-tab" id="toggle-reminders" aria-label="Abrir lembretes" title="Lembretes" aria-expanded="false" aria-controls="reminder-drawer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5V3Zm10 0v5h4M8 12h8M8 16h6"/></svg></button>
+  <button class="pin-tab" id="toggle-links" aria-label="Abrir links úteis" title="Links úteis" aria-expanded="false" aria-controls="links-drawer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 3 7 7-3 1-4 4v3l-2 2-8-8 2-2h3l4-4 1-3ZM9 15l-6 6"/></svg></button>
+ </div>
+ <section class="tool-drawer" id="reminder-drawer" aria-label="Lembretes" hidden><div class="reminders"><div class="reminders-head"><h2>Lembretes</h2><div class="tool-heading-actions"><button class="add-sticky" id="new-sticky" aria-label="Adicionar lembrete" title="Adicionar lembrete">+</button><button class="drawer-close" data-close-tools aria-label="Fechar lembretes">×</button></div></div><div id="sticky-list"></div></div></section>
+ <section class="tool-drawer" id="links-drawer" aria-label="Links úteis" hidden><div class="reminders-head"><h2>Links úteis</h2><div class="tool-heading-actions"><button class="add-sticky" id="new-useful-link" aria-label="Adicionar link útil" title="Adicionar link útil">+</button><button class="drawer-close" data-close-tools aria-label="Fechar links úteis">×</button></div></div><div id="useful-links-list"></div>
+ <form id="useful-link-form" hidden><label class="field">Legenda<input id="useful-link-label" maxlength="80" placeholder="STORYS DIÁRIO" required></label><label class="field">Link<input id="useful-link-url" maxlength="3000" placeholder="https://…" required></label><div class="useful-form-actions"><button type="button" class="small-btn" id="cancel-useful-link">Cancelar</button><button class="small-btn primary" type="submit">Salvar</button></div></form></section>
+ </aside></div>
+ <footer class="footer"><span id="save-status">Salvamento automático neste navegador.</span><div class="footer-buttons"><button class="quiet" id="sync-now">Sincronizar agora</button><button class="quiet" id="export">Exportar backup completo</button><button class="quiet" id="import">Importar backup</button></div></footer>
 </main>
 <dialog id="editor">
  <form id="task-form"><div class="dialog-top"><h2 id="editor-title">Nova tarefa</h2><div class="editor-top-actions"><button type="button" class="editor-icon-btn discard" id="discard-dialog" aria-label="Descartar alterações" title="Descartar alterações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2h-1l-1 14H6L5 7H4V5h4l1-2Zm-1.9 4 .85 12h8.1l.85-12H7.1ZM10 9h2v8h-2V9Zm4 0h2v8h-2V9Z"/></svg></button><button type="submit" class="editor-icon-btn save" id="save-task-top" aria-label="Salvar tarefa" title="Salvar tarefa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v15H4V3Zm2 2v14h12V7.2L15.8 5H15v5H8V5H6Zm4 0v3h3V5h-3Zm-1 8h6v4H9v-4Z"/></svg></button></div></div>
@@ -43,7 +51,9 @@
 </dialog>
 <dialog id="columns-dialog"><div class="dialog-top"><h2>Colunas e ajustes</h2><button class="close" id="close-columns" aria-label="Fechar">×</button></div><p class="hint">Oculte uma coluna sem apagar as tarefas. Use as setas para mudar a ordem.</p><div class="columns-list" id="columns-list"></div><div class="inline-add"><input id="new-column-name" maxlength="40" placeholder="Nova coluna: Aguardando aprovação…" aria-label="Nome da nova coluna"><button class="small-btn" id="add-custom-column">+ Criar coluna</button></div><div class="settings-block"><label class="field">Destacar quando faltar<select id="warning-minutes"><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">1 hora</option><option value="180">3 horas</option><option value="1440">1 dia</option></select></label><p class="hint">O prazo é atualizado enquanto o quadro está aberto. Sem horário definido, a tarefa vence no fim do dia.</p></div><div class="dialog-actions"><button class="primary" id="done-columns">Pronto</button></div></dialog>
 <input type="file" id="backup-file" accept=".json,application/json" hidden><div id="toast" role="status" aria-live="polite"></div>
-<script defer src="js/admin-tarefas.js?v=20261005-service-images-v8"></script>
-<script type="module" src="js/admin-tarefas-auth.js?v=20261005-cloud-v6"></script>
+<script src="js/admin-tarefas-sync.js?v=20261006-sync-desk-v1"></script>
+<script defer src="js/admin-tarefas.js?v=20261006-sync-desk-v1"></script>
+<script type="module" src="js/admin-tarefas-auth.js?v=20261006-sync-desk-v1"></script>
 </body>
 </html>
+

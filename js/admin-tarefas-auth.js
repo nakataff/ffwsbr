@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
-import { getDatabase, ref, get, set, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+import { getDatabase, ref, get, onValue, serverTimestamp, runTransaction } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 const ADMIN = 'admin@centralfreefire.com.br';
 const CLOUD_PATH = 'adminLiquipediaEditor/tasksBoard';
@@ -33,21 +33,33 @@ if (!config) {
           const legacy = await get(legacyCloudRef);
           if (legacy.exists()) {
             const payload = legacy.val();
-            await set(cloudRef, payload);
-            return payload;
+            const migrated = await runTransaction(cloudRef, current => current || {
+              schemaVersion: 2,
+              stateJson: JSON.stringify(window.CFF_TASKS_SYNC.decode(payload)),
+              updatedAt: serverTimestamp(),
+              updatedBy: auth.currentUser.email,
+              clientId
+            }, { applyLocally: false });
+            if (migrated.committed) return migrated.snapshot.val();
           }
         } catch (_) {}
         return null;
       },
-      async save(state) {
-        const cleanState = JSON.parse(JSON.stringify(state));
-        await set(cloudRef, {
-          schemaVersion: 1,
-          state: cleanState,
-          updatedAt: serverTimestamp(),
-          updatedBy: auth.currentUser?.email || ADMIN,
-          clientId
-        });
+      async save(state, base) {
+        if (!auth.currentUser || auth.currentUser.email.toLowerCase() !== ADMIN) throw Error('Sessão do administrador necessária');
+        const result = await runTransaction(cloudRef, current => {
+          const remote = current ? window.CFF_TASKS_SYNC.decode(current) : (base || state);
+          const merged = window.CFF_TASKS_SYNC.merge(base, state, remote);
+          return {
+            schemaVersion: 2,
+            stateJson: JSON.stringify(merged),
+            updatedAt: serverTimestamp(),
+            updatedBy: auth.currentUser.email,
+            clientId
+          };
+        }, { applyLocally: false });
+        if (!result.committed) throw Error('Envio não confirmado pela nuvem');
+        return result.snapshot.val();
       },
       subscribe(handler, onError) {
         return onValue(
@@ -80,3 +92,4 @@ if (!config) {
     fail('Não foi possível validar a sessão. Volte ao painel para entrar novamente.');
   }
 }
+

@@ -413,3 +413,47 @@ html[data-theme="dark"] .status-select option:disabled{
     min-height:68px;
   }
 }
+/* Folded paper and pinned links: desktop drawers open to the left. */
+.workspace{grid-template-columns:minmax(0,1fr)}
+.wrap{padding-right:82px}
+.desk-tools{position:fixed;right:14px;top:36%;z-index:40}
+.tool-tabs{display:grid;gap:13px}
+.tool-tabs button{width:48px;height:54px;display:grid;place-items:center;border:0;filter:drop-shadow(0 4px 8px #0004);transition:transform .15s}
+.tool-tabs button:hover,.tool-tabs button[aria-expanded=true]{transform:translateX(-4px)}
+.paper-tab{position:relative;background:repeating-linear-gradient(to bottom,#fff3c4 0 11px,#dacb9655 12px 13px);color:#685633;border-radius:3px 3px 3px 10px;clip-path:polygon(0 0,73% 0,100% 24%,100% 100%,0 100%)}
+.paper-tab:after{content:'';position:absolute;right:0;top:0;width:14px;height:14px;background:#d1b569;clip-path:polygon(0 0,0 100%,100% 100%)}
+.pin-tab{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;border-radius:13px}
+.tool-tabs svg,.useful-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tool-drawer{position:absolute;right:64px;top:0;width:min(340px,calc(100vw - 94px));padding:16px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:13px;box-shadow:0 15px 50px #0006;max-height:60dvh;overflow:auto;animation:desk-unfold .16s ease-out;transform-origin:right top}
+.tool-drawer[hidden]{display:none}
+.tool-drawer h2{font-size:17px}
+.tool-heading-actions{display:flex;gap:8px;align-items:center}
+.drawer-close{border:0;background:transparent;font-size:22px;color:var(--muted);width:28px;height:28px}
+.tool-drawer .reminders{position:static;order:initial;margin:0;width:100%;padding:0}
+.tool-drawer .reminders-head{margin-bottom:13px}
+.tool-drawer .sticky-shell{height:auto;min-height:43px;margin-bottom:9px}
+.tool-drawer .sticky.expanded{position:relative;top:auto;left:auto;right:auto;box-shadow:0 4px 12px #0002}
+.tool-drawer .sticky-body textarea{max-height:32dvh}
+.useful-link{padding:10px 0;border-bottom:1px solid var(--line)}
+.useful-link:last-child{border-bottom:0}
+.useful-link-heading,.useful-link-row{display:flex;gap:6px;align-items:center;min-width:0}
+.useful-link-heading strong{font-size:12px;letter-spacing:.3px;flex:1;overflow-wrap:anywhere}
+.useful-icon{display:grid;place-items:center;flex:none;width:28px;height:28px;background:transparent;border:0;border-radius:5px;color:var(--muted);font-size:20px}
+.useful-icon svg{width:17px;height:17px}
+.useful-icon:hover{background:var(--soft);color:var(--accent)}
+.useful-icon.delete:hover{color:var(--danger)}
+.useful-link-row a{flex:1;min-width:0;font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-decoration:none}
+.useful-link-row .copy{color:var(--accent)}
+#useful-link-form{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+#useful-link-form[hidden]{display:none}
+.useful-form-actions{display:flex;gap:8px;justify-content:flex-end}
+@keyframes desk-unfold{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+@media(max-width:700px){
+ .wrap{padding-right:14px}.workspace{display:flex;flex-direction:column}.board-area{width:100%}
+ .desk-tools{position:static;width:100%;display:grid;gap:16px;z-index:auto;order:2}
+ .tool-tabs{display:none}.tool-drawer,.tool-drawer[hidden]{display:block!important;position:static;width:100%;max-height:none;overflow:visible;box-shadow:none;animation:none}
+ .drawer-close{display:none}.tool-drawer .reminders{order:initial}
+ .tool-drawer .sticky-body textarea{max-height:45dvh}
+ #useful-link-form input{width:100%;font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){.tool-drawer{animation:none}.tool-tabs button{transition:none}}
