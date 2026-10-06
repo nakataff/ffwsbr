@@ -42,6 +42,7 @@
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
     compareNextSlot: 3,
+    compareAccountPreferenceApplied: false,
     statsStage: 'segundaFase',
     dropReport: { mode: 'drop', key: '', tab: 'summary', teamSort: 'points', playerSort: 'kills', playerTeams: [], teamDetail: '' }
   };
@@ -2305,7 +2306,7 @@
 
   function compareHero(row, side) {
     const meta=rosterPlayerByName(row?.name,row?.team)||{};
-    return `<article class="ffws-s2-player-compare-hero ${side}"><img class="ffws-s2-compare-photo" src="${escapeHtml(playerPhoto(meta))}" alt="${escapeHtml(row?.name||'Jogador')}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'"><div><img class="ffws-s2-compare-team-logo" src="${escapeHtml(logo(row?.team))}" alt=""><strong>${escapeHtml(row?.name||'—')}</strong><span>${escapeHtml(row?.team?abbreviation(row.team):'Sem equipe')}</span></div></article>`;
+    return `<article class="ffws-s2-player-compare-hero ${side}"><img class="ffws-s2-compare-photo" src="${escapeHtml(playerPhoto(meta))}" alt="${escapeHtml(row?.name||'Jogador')}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'"><div><img class="ffws-s2-compare-team-logo" src="${escapeHtml(logo(row?.team))}" alt=""><strong>${escapeHtml(row?.name||'—')}</strong><span>${escapeHtml(row?.team?abbreviation(row.team):'Sem equipe')}</span></div>${row?`<div class="cff-compare-favorites"><button type="button" title="Favoritar jogador" aria-label="Favoritar ${escapeHtml(row.name)}" onclick="window.CFFS2Compare.favorite('${escapeHtml(jsAttr(row.key))}','player')">☆</button><button type="button" title="Favoritar equipe" aria-label="Favoritar ${escapeHtml(abbreviation(row.team))}" onclick="window.CFFS2Compare.favorite('${escapeHtml(jsAttr(row.key))}','team')">♧</button></div>`:''}</article>`;
   }
 
   function compareMetric(label, a, b, lowerBetter = false, formatter = value => String(value)) {
@@ -2365,7 +2366,7 @@
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Escolha os jogadores</h2><p>Pesquise pelo nome e filtre por posição, etapa, dia ou mapa.</p></div><span class="ffws-s2-badge">${rows.length} jogadores ativos</span></div>
       <div class="ffws-s2-filters">${compareSelect('stage','Etapa',[['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']])}${compareMultiFilter('roles','Posição',roleOptions)}${compareSelect('day','Dia',[['all','Todos'],...days.map(v=>[String(v),`Dia ${v}`])])}${compareSelect('map','Mapa',[['all','Todos'],...maps.map(v=>[v,v])])}</div>
       ${rows.length?`<div class="ffws-s2-compare-selectors${slots.length>2?' is-multiple':''}">${selectors}</div>
-      <div class="ffws-s2-compare-controls"><button type="button" class="ffws-s2-compare-add" onclick="addFFWSS2ComparePlayer()"${slots.length>=rows.length?' disabled':''}>+ Adicionar jogador</button>${slots.length>2?'<span>Deslize a tabela para ver todos os jogadores.</span>':''}</div>
+      <div class="ffws-s2-compare-controls"><button type="button" class="ffws-s2-compare-add" onclick="addFFWSS2ComparePlayer()"${slots.length>=rows.length?' disabled':''}>+ Adicionar jogador</button>${slots.length>2?'<span>Deslize a tabela para ver todos os jogadores.</span>':''}<button type="button" class="ffws-s2-compare-add cff-account-save-compare" onclick="window.CFFS2Compare.save()">Salvar comparação na minha conta</button></div>
       ${slots.length===2?`<div class="ffws-s2-player-compare-grid">${compareHero(p1,'left')}<div class="ffws-s2-compare-metrics">${compareMetrics().map(([label,key,format])=>p1&&p2?compareMetric(label,p1[key],p2[key],false,format):`<div class="ffws-s2-compare-metric"><strong>${p1?escapeHtml(format(p1[key])):'—'}</strong><span>${escapeHtml(label)}</span><strong>${p2?escapeHtml(format(p2[key])):'—'}</strong></div>`).join('')}</div>${compareHero(p2,'right')}</div>`:compareManyTable(players)}`:'<div class="ffws-s2-empty"><div><strong>Nenhum jogador neste recorte</strong>Altere a posição, etapa, dia ou mapa para comparar os jogadores disponíveis.</div></div>'}</div></section></div>`;
   }
 
@@ -2727,10 +2728,27 @@
     return true;
   }
 
+  window.CFFS2Compare={
+    snapshot(){const rows=compareAggregate(compareFilteredEntries());return {version:1,filters:{...state.compareFilters,roles:[...state.compareFilters.roles]},players:Object.values(state.comparePlayers).map(key=>rows.find(row=>row.key===key)).filter(Boolean).map(({key,name,team})=>({key,name,team}))};},
+    async save(){try{if(!window.CFF_ACCOUNT)return alert('A área pessoal está carregando. Tente novamente em instantes.');await window.CFF_ACCOUNT.saveComparison(this.snapshot());}catch(error){window.CFF_ACCOUNT?.toast('Não foi possível salvar a comparação. Tente novamente.');}},
+    async favorite(key,kind){const row=compareAggregate(compareFilteredEntries()).find(row=>row.key===key);if(!row)return;try{if(!window.CFF_ACCOUNT)return alert('A área pessoal está carregando.');await window.CFF_ACCOUNT.saveFavorite(kind,kind==='team'?row.team:row.name,kind==='team'?'':row.team);}catch(error){window.CFF_ACCOUNT?.toast('Não foi possível salvar o favorito.');}},
+    async restore(snapshot){
+      if(!snapshot||snapshot.version!==1||!Array.isArray(snapshot.players)||snapshot.players.length<2||snapshot.players.length>100)return;
+      await loadData();await loadPlayersData();const f=snapshot.filters||{};
+      state.compareFilters={stage:['classificatoria','segundaFase','final','geral'].includes(f.stage)?f.stage:'classificatoria',roles:Array.isArray(f.roles)?f.roles.filter(x=>['RUSH','SUP','GRAN','3'].includes(x)):[],day:String(f.day||'all').slice(0,10),map:String(f.map||'all').slice(0,40)};
+      state.comparePlayers=Object.fromEntries(snapshot.players.map((row,index)=>['p'+(index+1),String(row.key||'').slice(0,200)]));state.compareNextSlot=snapshot.players.length+1;renderCompare();
+    }
+  };
+  function restoreAccountCompare(){
+    if(!document.getElementById('ffws-br-s2-comparar')?.classList.contains('active'))return;
+    try{const raw=sessionStorage.getItem('cff_account_compare_restore');if(raw){sessionStorage.removeItem('cff_account_compare_restore');state.compareAccountPreferenceApplied=true;window.CFFS2Compare.restore(JSON.parse(raw)).catch(()=>window.CFF_ACCOUNT?.toast('Não foi possível abrir esta comparação. Tente novamente.'));}else if(!state.compareAccountPreferenceApplied&&window.CFF_ACCOUNT?.preferences.stage){state.compareAccountPreferenceApplied=true;state.compareFilters.stage=window.CFF_ACCOUNT.preferences.stage;renderCompare();}}catch(_){}
+  }
+  window.addEventListener('cff:account-preferences',restoreAccountCompare);
+
   function init() {
     wrapNavigate();
     const hash = String(location.hash || '').replace(/^#/, '');
-    if (PAGE_IDS.has(hash)) activate(hash);
+    if (PAGE_IDS.has(hash)) {activate(hash);if(hash==='ffws-br-s2-comparar')loadData().then(loadPlayersData).then(restoreAccountCompare).catch(()=>{});}
     // Observe somente a troca de página da própria S2.
     // Antes o observer ficava no body inteiro e qualquer mudança de classe
     // (menu, busca, widgets etc.) podia reativar/renderizar a Stats e destruir

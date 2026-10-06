@@ -229,6 +229,127 @@
           "updatedAt"
         ]
       }
+    },
+    "userAccounts": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        "profile": {
+          ".validate": "newData.hasChildren([\"name\", \"createdAt\"])",
+          "name": {
+            ".validate": "newData.isString() && newData.val().length <= 80 && newData.val().length > 0"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "preferences": {
+          ".validate": "newData.hasChildren([\"stage\"])",
+          "stage": {
+            ".validate": "newData.isString() && (newData.val() == 'classificatoria' || newData.val() == 'segundaFase' || newData.val() == 'final' || newData.val() == 'geral')"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "community": {
+          ".validate": "newData.hasChildren([\"session\"])",
+          "session": {
+            ".validate": "newData.isString() && newData.val().matches(/^[a-fA-F0-9]{48}$/)"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "favorites": {
+          "$id": {
+            ".validate": "$id.matches(/^f([0-9]|[1-9][0-9])$/) && newData.hasChildren([\"kind\", \"name\", \"team\", \"createdAt\"])",
+            "kind": {
+              ".validate": "newData.val() == 'team' || newData.val() == 'player'"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 100 && newData.val().length > 0"
+            },
+            "team": {
+              ".validate": "newData.isString() && newData.val().length <= 100"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "comparisons": {
+          "$id": {
+            ".validate": "$id.matches(/^c([0-9]|[12][0-9])$/) && newData.hasChildren([\"title\", \"snapshotJson\", \"createdAt\"])",
+            "title": {
+              ".validate": "newData.isString() && newData.val().length <= 120 && newData.val().length > 0"
+            },
+            "snapshotJson": {
+              ".validate": "newData.isString() && newData.val().length <= 50000 && newData.val().length > 0"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "tournaments": {
+          "$id": {
+            ".validate": "$id.matches(/^t[0-9]$/) && newData.hasChildren([\"name\", \"backupJson\", \"updatedAt\"])",
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 120 && newData.val().length > 0"
+            },
+            "backupJson": {
+              ".validate": "newData.isString() && newData.val().length <= 1500000 && newData.val().length > 0"
+            },
+            "updatedAt": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "tournamentIndex": {
+          "$id": {
+            ".validate": "$id.matches(/^t[0-9]$/) && newData.hasChildren([\"name\", \"updatedAt\"])",
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 120 && newData.val().length > 0"
+            },
+            "updatedAt": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "activity": {
+          "$id": {
+            ".validate": "$id.matches(/^a([0-9]|[1-3][0-9])$/) && newData.hasChildren([\"action\", \"at\"])",
+            "action": {
+              ".validate": "newData.isString() && newData.val().length <= 120 && newData.val().length > 0"
+            },
+            "at": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
     }
   }
 }

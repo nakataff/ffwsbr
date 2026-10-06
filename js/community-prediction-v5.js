@@ -337,8 +337,8 @@
     const root=mount();if(!root)return;
     if(showLoading)root.innerHTML='<div class="cff-pred-empty">Carregando palpites...</div>';
     try{
-      const qs=new URLSearchParams();if(session())qs.set('session',session());qs.set('_',String(Date.now()));
-      state.payload=await request('/api/predictions?'+qs.toString());
+      const current=session(),qs=new URLSearchParams();if(current)qs.set('session',current);qs.set('_',String(Date.now()));
+      const payload=await request('/api/predictions?'+qs.toString());if(current!==session())return;state.payload=payload;
       render();
       loadRanking();
     }catch(e){
@@ -430,5 +430,6 @@
     load();
   }
 
+  window.addEventListener('cff:community-session-changed',()=>{state.drafts.clear();state.playerSearch.clear();state.payload=null;if(window.CFF_ACCOUNT)window.CFF_ACCOUNT.ready.then(load);else load();});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

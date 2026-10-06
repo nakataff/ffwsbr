@@ -333,12 +333,12 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </style>
 
     <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20261006-compare-many-v1" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20261006-account-v1" media="print" onload="this.media='all'">
 <noscript id="cff-page-css-noscript">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5">
 <link rel="stylesheet" href="ewc%202026/ewc.css?v=20260720-multiselect-v1">
 <link rel="stylesheet" href="css/ffws-br-season-layout.css?v=20260728-shared-v1">
-<link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20261006-compare-many-v1">
+<link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20261006-account-v1">
 </noscript>
 
 <style id="cff-s1-stats-filter-hotfix">
@@ -556,6 +556,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     </div>
     <div class="sidebar-nav">
         <div class="sidebar-category sidebar-category-fixed">PRINCIPAL</div>
+        <button type="button" onclick="location.href='conta.html'" id="sb-conta" data-account-entry>MINHA CONTA / ENTRAR</button>
         <button onclick="navigateAndClose('home')" id="sb-home">INÍCIO</button>
         <button onclick="navigateAndClose('mercado')" id="sb-mercado">MERCADO DA BALA</button>
         <button onclick="window.location.href='tier-constructor.html'" id="sb-tier-constructor">TIER CONSTRUCTOR</button>
@@ -681,6 +682,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         </div>
 
         <div class="nav-desktop-right">
+            <a class="cff-account-nav-button" href="conta.html" data-account-entry>Entrar</a>
             <div class="nav-search-wrapper-desktop" id="nav-search-wrapper-desktop">
                 <input type="text" id="global-search-desktop" placeholder="BUSCAR..." autocomplete="off">
                 <button class="nav-search-toggle-btn" onclick="toggleDesktopSearch()" aria-label="Buscar">
@@ -2571,7 +2573,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260922-canonical-photos-v2"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261006-compare-many-v28"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261006-account-v29"></script>
 <script defer src="js/site-back-navigation.min.js?v=20260902-pretty-routes-v29"></script>
 <script defer src="js/search-fast.min.js?v=20260922-canonical-search-v32"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261004-world-qualified-v34"></script>
@@ -2588,5 +2590,6 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer data-cff-community-promos src="js/community-promos.js?v=20260921-community-tabs-v3"></script>
+<script type="module" src="js/public-account.js?v=20261006-account-v1"></script>
 </body>
 </html>

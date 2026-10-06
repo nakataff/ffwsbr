@@ -193,7 +193,9 @@
         <button class="cff-checkin-btn primary" id="cff-checkin-do" type="button" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in de hoje • +1'}</button>
         <button class="cff-checkin-btn" id="cff-checkin-relink" type="button">Vincular novamente por código</button>
       </div>
-      <button class="cff-checkin-swap" id="cff-checkin-swap" type="button">Trocar conta neste navegador</button>`;
+      <button class="cff-checkin-swap" id="cff-checkin-swap" type="button">Trocar conta neste navegador</button>
+      <div class="cff-checkin-actions">${window.CFF_ACCOUNT?.user?'<button class="cff-checkin-btn" id="cff-checkin-google-save" type="button">Salvar vínculo na conta Google</button>':'<a class="cff-checkin-btn" href="conta.html">Entrar com Google e guardar o vínculo</a>'}</div>`;
+    document.getElementById('cff-checkin-google-save')?.addEventListener('click',async()=>{try{await window.CFF_ACCOUNT.rememberInstagram(session());}catch(error){window.CFF_ACCOUNT.toast('Não foi possível salvar o vínculo. Tente novamente.');}});
     document.getElementById('cff-checkin-do')?.addEventListener('click', doCheckin);
     document.getElementById('cff-checkin-relink')?.addEventListener('click', () => restartLink('Gerar um novo código para confirmar novamente seu Instagram neste navegador?'));
     document.getElementById('cff-checkin-swap')?.addEventListener('click', () => restartLink('Desvincular este navegador e conectar outro Instagram?'));
@@ -218,6 +220,7 @@
     if (!current) return startSession();
     try {
       const data = await request('/api/checkin/status?session=' + encodeURIComponent(current));
+      if(current!==session())return bootSession();
       if (data?.status === 'verified') return renderVerified(data);
       if (data?.status === 'expired') return renderExpired();
       if (data?.status === 'pending') return renderPending(data);
@@ -291,8 +294,10 @@
   function boot() {
     if (!mount()) return;
     loadWeeklyHistory();
-    bootSession();
+    if(window.CFF_ACCOUNT)window.CFF_ACCOUNT.ready.then(bootSession);else bootSession();
   }
+  window.addEventListener('cff:community-session-changed',bootSession);
+  window.addEventListener('cff:account-changed',()=>{if(panel())bootSession();});
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();

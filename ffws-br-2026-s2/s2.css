@@ -691,3 +691,5 @@ body.cff-stats-route #ffws-br-s2-stats.page,body.cff-stats-route #registro-detal
 .ffws-s2-compare-table .ffws-s2-player-compare-hero strong{font-size:.87rem}
 .ffws-s2-compare-caption{padding:9px;text-align:left;font-size:.72rem;color:#88a6c9;background:#080e19}
 @media(max-width:620px){.ffws-s2-compare-table th,.ffws-s2-compare-table td{width:150px;min-width:150px;padding:10px 7px}.ffws-s2-compare-table th:first-child{width:105px;min-width:105px;font-size:.6rem}.ffws-s2-compare-table thead th{padding:5px}.ffws-s2-compare-table .ffws-s2-player-compare-hero{min-height:220px}.ffws-s2-compare-table .ffws-s2-compare-photo{height:145px}}
+
+.ffws-s2-player-compare-hero>.cff-compare-favorites{position:absolute;inset:9px 9px auto auto;display:flex;gap:5px;padding:0;background:none;grid-template-columns:none}.cff-compare-favorites button{width:28px;height:28px;padding:0;border:1px solid #39627c;border-radius:8px;background:#0b172ae8;color:#97dfff;font-size:18px;cursor:pointer}.cff-compare-favorites button:hover{color:#ffc226}.cff-account-save-compare{margin-left:auto}@media(max-width:620px){.cff-account-save-compare{margin-left:0}}
