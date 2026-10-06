@@ -249,18 +249,18 @@ select option:disabled{
    Forçar apenas este select para esquema claro mantém as opções legíveis. */
 html[data-theme="dark"] .status-select{
   color-scheme:light!important;
-  background:#211d31!important;
-  color:#f7f7fb!important;
-  border:1px solid #6655a6!important;
+  background:var(--status-bg,var(--field))!important;
+  color:var(--status-ink,var(--ink))!important;
+  border:1px solid var(--status-edge,var(--line))!important;
 }
 html[data-theme="dark"] .status-select option,
 html[data-theme="dark"] .status-select optgroup{
-  background:#ffffff!important;
-  color:#171922!important;
+  background:var(--status-bg,#ffffff)!important;
+  color:var(--status-ink,#171922)!important;
 }
 html[data-theme="dark"] .status-select option:checked{
-  background:#91bff2!important;
-  color:#11151b!important;
+  background:var(--status-bg,#91bff2)!important;
+  color:var(--status-ink,#11151b)!important;
 }
 html[data-theme="dark"] .status-select option:disabled{
   color:#858b98!important;
@@ -457,3 +457,81 @@ html[data-theme="dark"] .status-select option:disabled{
  #useful-link-form input{width:100%;font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){.tool-drawer{animation:none}.tool-tabs button{transition:none}}
+
+/* Weekly post routines and a completion circle for the current Brazilian date. */
+.clock-tab{position:relative;height:48px!important;border-radius:50%;background:var(--card);color:var(--accent);border:1px solid var(--line)!important}
+.daily-pending-count{position:absolute;top:-4px;right:-5px;display:grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:12px;background:#7661db;color:white;border:2px solid var(--bg);font-size:10px;font-weight:700}
+.daily-post{padding:12px 10px;margin-bottom:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.daily-post-heading,.daily-post-footer{display:flex;align-items:center;gap:7px;min-width:0}
+.daily-post-title{flex:1;min-width:0;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.daily-time{flex:none;padding:2px 5px;border-radius:5px;background:var(--soft);color:var(--accent);font-size:11px;font-variant-numeric:tabular-nums}
+.daily-complete{margin:0;width:26px;height:26px}
+.daily-complete .complete-input,.daily-complete .complete-circle{width:26px;height:26px}
+.daily-complete .complete-input:disabled+.complete-circle{opacity:.25;cursor:default}
+.daily-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:11px}
+.daily-day{display:grid;justify-items:center;gap:6px;cursor:pointer;color:var(--muted);font-size:10px;line-height:1.2}
+.daily-day input{width:17px;height:17px;margin:0;padding:0;accent-color:#8873e6;cursor:pointer}
+.daily-day:has(input:checked){color:var(--ink)}
+.daily-day.is-today span{color:var(--accent);font-weight:750;text-decoration:underline;text-underline-offset:3px}
+.daily-post-footer{margin-top:11px}
+.daily-status{flex:1;min-width:0;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.daily-post[data-level=done]{border-color:var(--green)}
+.daily-post[data-level=done] .daily-status{color:var(--green)}
+.daily-post[data-level=late] .daily-status{color:var(--danger)}
+.daily-post[data-level=soon] .daily-status{color:var(--amber)}
+#daily-post-form{margin-top:13px;padding-top:14px;border-top:1px solid var(--line)}
+#daily-post-form[hidden]{display:none}
+.daily-days-field{margin:0 0 15px;padding:0;border:0;min-width:0}
+.daily-days-field legend{font-size:12px;color:var(--muted)}
+.daily-days-field .daily-week{margin-top:8px}
+#daily-form-error:empty{display:none}
+#daily-form-error{color:var(--danger);margin-bottom:10px}
+@media(max-width:700px){#daily-post-form input:not([type=checkbox]){width:100%;font-size:16px}.daily-day{min-height:42px}.daily-post-title{font-size:13px}}
+
+/* The status uses the whole row; actions stay together below it. */
+.card-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.card-actions .status-select{grid-column:1/-1;width:100%;max-width:100%;min-height:38px;padding:8px 11px;font-size:12px;font-weight:650;border:1px solid var(--status-edge,var(--line));border-radius:7px;background:var(--status-bg,var(--field));color:var(--status-ink,var(--ink))}
+.card-actions .icon-btn{padding:5px 2px;font-size:12px;min-width:0;min-height:30px;text-align:center}
+.status-picker option{font-weight:500;background:var(--status-bg,var(--field));color:var(--status-ink,var(--ink))}
+.status-picker{background:var(--status-bg,var(--field));color:var(--status-ink,var(--ink));border-color:var(--status-edge,var(--line))}
+[data-status-tone=blue]{--status-bg:#e9f2ff;--status-ink:#265798;--status-edge:#94b8e8}
+[data-status-tone=amber]{--status-bg:#fff4d8;--status-ink:#855d0d;--status-edge:#d8bd77}
+[data-status-tone=green]{--status-bg:#e4f5eb;--status-ink:#246b47;--status-edge:#88bd9e}
+[data-status-tone=red]{--status-bg:#ffebed;--status-ink:#a63e4c;--status-edge:#dc939b}
+[data-status-tone=violet]{--status-bg:#f0eaff;--status-ink:#664298;--status-edge:#b498da}
+[data-status-tone=teal]{--status-bg:#dff5f3;--status-ink:#296d69;--status-edge:#84bfba}
+[data-status-tone=pink]{--status-bg:#ffe9f4;--status-ink:#954572;--status-edge:#d6a1bf}
+[data-status-tone=orange]{--status-bg:#fff0e2;--status-ink:#9b5725;--status-edge:#d5ab87}
+html[data-theme=dark] [data-status-tone=blue]{--status-bg:#263951;--status-ink:#bddaff;--status-edge:#5b7ba5}
+html[data-theme=dark] [data-status-tone=amber]{--status-bg:#453d28;--status-ink:#f5d899;--status-edge:#927d48}
+html[data-theme=dark] [data-status-tone=green]{--status-bg:#283f32;--status-ink:#b9e8cd;--status-edge:#527f65}
+html[data-theme=dark] [data-status-tone=red]{--status-bg:#472d33;--status-ink:#ffc1c7;--status-edge:#975c66}
+html[data-theme=dark] [data-status-tone=violet]{--status-bg:#3c2f50;--status-ink:#ddc7ff;--status-edge:#8163a5}
+html[data-theme=dark] [data-status-tone=teal]{--status-bg:#28403f;--status-ink:#b6e8e3;--status-edge:#568681}
+html[data-theme=dark] [data-status-tone=pink]{--status-bg:#472f3e;--status-ink:#f7c3df;--status-edge:#966880}
+html[data-theme=dark] [data-status-tone=orange]{--status-bg:#443528;--status-ink:#ffd2ad;--status-edge:#99734f}
+@media(max-width:700px){.card-actions .icon-btn{min-height:36px}}
+
+.status-picker option[data-status-tone]{background:var(--status-bg,var(--field))!important;color:var(--status-ink,var(--ink))!important}
+
+.settings-tabs{display:flex;gap:6px;margin:0 0 18px;padding:4px;background:var(--panel);border-radius:9px}
+.settings-tabs button{flex:1;padding:9px 12px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-weight:650}
+.settings-tabs button[aria-selected=true]{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
+#saved-services-list{display:grid;gap:8px;margin-top:12px}
+.saved-service-row{display:flex;gap:10px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.saved-service-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:8px;background:#101723;color:#f4f5f9;font-size:22px}
+.saved-service-icon img{width:28px;height:28px;object-fit:contain}
+.saved-service-row strong{flex:1;min-width:0;font-size:12px;overflow-wrap:anywhere}
+#saved-service-form{padding:16px 0 0;margin-top:17px;border-top:1px solid var(--line)}
+#saved-service-form h3{margin-bottom:12px}
+.saved-service-image-row{display:flex;align-items:center;gap:12px;margin:10px 0 18px}
+.saved-service-image-row .service-icon-preview{background:#101723;color:#f4f5f9;flex:none}
+.saved-service-image-row .hint{margin-top:7px}
+#saved-service-error:empty{display:none}#saved-service-error{color:var(--danger);margin-bottom:12px}
+@media(max-width:700px){.saved-service-row{gap:7px}.saved-service-row .small-btn{padding:7px 9px}#saved-service-form input{width:100%;font-size:16px}.settings-tabs button{min-height:42px}}
+
+.settings-dialog-head{position:sticky;top:-23px;z-index:4;background:var(--card);padding-bottom:4px}
+.settings-dialog-head .dialog-top{position:static;margin-bottom:10px}
+.settings-dialog-head .settings-tabs{margin-bottom:12px}
+@media(max-width:1000px){.settings-dialog-head{top:-18px}}
+@media(max-width:700px){.settings-dialog-head{top:-14px}}

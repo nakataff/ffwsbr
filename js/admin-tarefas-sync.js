@@ -2,13 +2,13 @@
   'use strict';
   const clone = value => JSON.parse(JSON.stringify(value));
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  const lists = ['tasks', 'notes', 'usefulLinks', 'columns', 'platforms', 'tags'];
+  const lists = ['tasks', 'notes', 'usefulLinks', 'dailyPosts', 'services', 'columns', 'platforms', 'tags'];
   // Realtime Database omits empty arrays. Repair older board payloads before validation.
   function decode(payload) {
     if (!payload) return null;
     const state = typeof payload.stateJson === 'string' ? JSON.parse(payload.stateJson) : clone(payload.state || payload);
     if (!state || ![1, 2].includes(state.version)) throw Error('Quadro da nuvem inválido');
-    lists.forEach(key => { if (state[key] == null) state[key] = []; });
+    lists.forEach(key => { if (state[key] == null) state[key] = key === 'services' ? clone(window.CFF_TASKS_DEFAULT_SERVICES || []) : []; });
     state.tasks.forEach(task => {
       ['platforms', 'tags', 'links', 'subtasks', 'attachments', 'history'].forEach(key => { if (task[key] == null) task[key] = []; });
     });
@@ -19,6 +19,7 @@
     for (const key of new Set([...Object.keys(base || {}), ...Object.keys(local || {})])) {
       if (same(base?.[key], local?.[key])) continue;
       if (local?.[key] === undefined) delete result[key];
+      else if (key === 'completedDates') result[key] = fields(base?.[key], local[key], remote?.[key]);
       else result[key] = clone(local[key]);
     }
     return result;
@@ -46,3 +47,4 @@
   }
   window.CFF_TASKS_SYNC = { decode, merge, same };
 })();
+
