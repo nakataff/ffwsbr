@@ -11,7 +11,7 @@
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
 <script>try{const s=JSON.parse(localStorage.getItem('meu-quadro-v1')||'null');if(s?.theme==='light')document.documentElement.dataset.theme='light';}catch{}</script>
-<link rel="stylesheet" href="css/admin-tarefas.css?v=20261006-daily-services-v1">
+<link rel="stylesheet" href="css/admin-tarefas.css?v=20261006-useful-links-v2">
 </head>
 <body class="cff-auth-pending">
 <div id="cff-tasks-auth" class="cff-tasks-auth"><div class="cff-tasks-auth-card"><strong>Quadro de tarefas</strong><p data-cff-auth-status role="status">Validando sua sessão do painel…</p><a class="quiet" href="admin.html">Voltar ao painel</a></div></div>
@@ -30,7 +30,7 @@
  </div>
  <section class="tool-drawer" id="reminder-drawer" aria-label="Lembretes" hidden><div class="reminders"><div class="reminders-head"><h2>Lembretes</h2><div class="tool-heading-actions"><button class="add-sticky" id="new-sticky" aria-label="Adicionar lembrete" title="Adicionar lembrete">+</button><button class="drawer-close" data-close-tools aria-label="Fechar lembretes">×</button></div></div><div id="sticky-list"></div></div></section>
  <section class="tool-drawer" id="links-drawer" aria-label="Links úteis" hidden><div class="reminders-head"><h2>Links úteis</h2><div class="tool-heading-actions"><button class="add-sticky" id="new-useful-link" aria-label="Adicionar link útil" title="Adicionar link útil">+</button><button class="drawer-close" data-close-tools aria-label="Fechar links úteis">×</button></div></div><div id="useful-links-list"></div>
- <form id="useful-link-form" hidden><label class="field">Legenda<input id="useful-link-label" maxlength="80" placeholder="STORYS DIÁRIO" required></label><label class="field">Link<input id="useful-link-url" maxlength="3000" placeholder="https://…" required></label><div class="useful-form-actions"><button type="button" class="small-btn" id="cancel-useful-link">Cancelar</button><button class="small-btn primary" type="submit">Salvar</button></div></form></section>
+ <form id="useful-link-form" hidden><label class="field">Legenda<input id="useful-link-label" maxlength="80" placeholder="STORYS DIÁRIO" required></label><div id="useful-link-fields"></div><button type="button" class="small-btn" id="add-useful-url">+ Adicionar outro link</button><div class="useful-form-actions"><button type="button" class="small-btn" id="cancel-useful-link">Cancelar</button><button class="small-btn primary" type="submit">Salvar</button></div></form></section>
  <section class="tool-drawer" id="daily-drawer" aria-label="Posts diários" hidden><div class="reminders-head"><h2>Posts diários</h2><div class="tool-heading-actions"><button class="add-sticky" id="new-daily-post" aria-label="Adicionar post diário" title="Adicionar post diário">+</button><button class="drawer-close" data-close-tools aria-label="Fechar posts diários">×</button></div></div><div id="daily-posts-list"></div>
  <form id="daily-post-form" hidden><label class="field">Nome do post<input id="daily-post-title" maxlength="140" placeholder="POSTAR STORIES" required></label><fieldset class="daily-days-field"><legend>Dias da semana</legend><div class="daily-week" id="daily-form-days"></div></fieldset><label class="field">Horário <span class="optional">(opcional · Brasília)</span><input type="time" id="daily-post-time"></label><p class="hint" id="daily-form-error" role="status"></p><div class="useful-form-actions"><button type="button" class="small-btn" id="cancel-daily-post">Cancelar</button><button class="small-btn primary" type="submit">Salvar</button></div></form></section>
  </aside></div>
@@ -59,10 +59,10 @@
  <form id="saved-service-form" hidden><h3 id="saved-service-form-title">Novo serviço</h3><label class="field">Nome<input id="saved-service-name" maxlength="40" placeholder="Ex.: Stories MMR" required></label><div class="saved-service-image-row"><div class="service-icon-preview"><span id="saved-service-glyph">◇</span><img id="saved-service-preview" alt="Prévia do ícone" hidden></div><div><button type="button" class="small-btn" id="choose-saved-service-image">Escolher ícone</button><button type="button" class="small-btn danger-small" id="remove-saved-service-image" hidden>Remover</button><p class="hint">PNG, JPG, WEBP ou AVIF · até 300 KB</p></div></div><input type="file" id="saved-service-file" accept="image/png,image/jpeg,image/webp,image/avif" hidden><p class="hint" id="saved-service-error" role="status"></p><div class="useful-form-actions"><button type="button" class="small-btn" id="cancel-saved-service">Cancelar</button><button type="submit" class="primary" id="save-saved-service">Salvar serviço</button></div></form></section>
  <div class="dialog-actions"><button class="primary" id="done-columns">Pronto</button></div></dialog>
 <input type="file" id="backup-file" accept=".json,application/json" hidden><div id="toast" role="status" aria-live="polite"></div>
-<script src="js/admin-tarefas-sync.js?v=20261006-daily-services-v1"></script>
-<script src="js/admin-tarefas-daily.js?v=20261006-daily-services-v1"></script>
-<script defer src="js/admin-tarefas.js?v=20261006-daily-services-v1"></script>
-<script type="module" src="js/admin-tarefas-auth.js?v=20261006-daily-services-v1"></script>
+<script src="js/admin-tarefas-sync.js?v=20261006-useful-links-v2"></script>
+<script src="js/admin-tarefas-daily.js?v=20261006-useful-links-v2"></script>
+<script defer src="js/admin-tarefas.js?v=20261006-useful-links-v2"></script>
+<script type="module" src="js/admin-tarefas-auth.js?v=20261006-useful-links-v2"></script>
 </body>
 </html>
 

@@ -535,3 +535,19 @@ html[data-theme=dark] [data-status-tone=orange]{--status-bg:#443528;--status-ink
 .settings-dialog-head .settings-tabs{margin-bottom:12px}
 @media(max-width:1000px){.settings-dialog-head{top:-18px}}
 @media(max-width:700px){.settings-dialog-head{top:-14px}}
+
+/* Constrain link min-content width in the mobile tools grid. */
+.desk-tools,.tool-drawer,#useful-links-list,.useful-link,#useful-link-form{min-width:0}
+#useful-links-list,.useful-link,#useful-link-form{max-width:100%}
+.useful-link-heading strong{min-width:0}
+.useful-link-row{width:100%;max-width:100%}
+.useful-link-row a{display:block;flex:1 1 0;width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.useful-link-row+.useful-link-row{margin-top:4px}
+.useful-url-field{min-width:0;margin:12px 0;padding:10px;border:1px solid var(--line);border-radius:8px}
+.useful-url-field input:not([type=checkbox]){width:100%;min-width:0;box-sizing:border-box}
+.useful-url-field .field[hidden]{display:none}
+.useful-hyperlink-toggle{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.4;margin:8px 0;cursor:pointer}
+.useful-hyperlink-toggle input{flex:none;width:16px!important;height:16px;margin:0;accent-color:var(--accent)}
+.useful-remove-url{margin-top:6px;color:var(--danger)}
+.useful-remove-url:disabled{opacity:.35;cursor:default}
+#useful-link-form>.useful-form-actions{margin-top:12px;flex-wrap:wrap}
