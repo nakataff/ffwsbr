@@ -290,7 +290,8 @@
           "$other": {
             ".validate": false
           },
-          ".read": "auth != null && auth.uid == $uid || (auth != null && auth.token.email == 'admin@centralfreefire.com.br')"
+          ".read": "auth != null && auth.uid == $uid || (auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
+          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') && !newData.exists()"
         },
         "favorites": {
           "$id": {
@@ -434,7 +435,8 @@
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 80"
         },
         "instagram": {
-          ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 80"
+          ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 80",
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
         },
         "joinedAt": {
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
@@ -521,6 +523,23 @@
           ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
           ".validate": "newData.isBoolean() && root.child('communityProfileCatalog').child($badge).child('kind').val() == 'badge'"
         }
+      }
+    },
+    "communityOwnerInstagram": {
+      ".read": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (auth != null && data.child('uid').val() == auth.uid)",
+      ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || ((auth != null && data.child('uid').val() == auth.uid) && !newData.exists())",
+      ".validate": "newData.hasChildren(['uid','username','linkedAt']) && root.child('communityMembers').child(newData.child('uid').val()).exists()",
+      "uid": {
+        ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{1,128}$/)"
+      },
+      "username": {
+        ".validate": "newData.val() == 'nakataff'"
+      },
+      "linkedAt": {
+        ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+      },
+      "$other": {
+        ".validate": false
       }
     }
   }

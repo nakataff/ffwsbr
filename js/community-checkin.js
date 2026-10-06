@@ -270,6 +270,7 @@
   }
 
   async function bootSession() {
+    const linked=window.CFF_ACCOUNT?.instagram;if(linked?.source==='admin'&&linked.username==='nakataff'){const root=panel();if(root)root.innerHTML='<span class="cff-checkin-status cff-checkin-success">Conta da página vinculada</span><strong class="cff-checkin-user">@nakataff</strong><p class="cff-checkin-help">Este perfil Google está vinculado a @nakataff pelo administrador.</p><a class="cff-checkin-btn" href="conta.html">Abrir meu perfil</a>';return;}
     try {
       if (session()) {
         renderLoading();
@@ -297,6 +298,7 @@
     if(window.CFF_ACCOUNT)window.CFF_ACCOUNT.ready.then(bootSession);else bootSession();
   }
   window.addEventListener('cff:community-session-changed',bootSession);
+  window.addEventListener('cff:account-instagram-changed',bootSession);
   window.addEventListener('cff:account-changed',()=>{if(panel())bootSession();});
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
