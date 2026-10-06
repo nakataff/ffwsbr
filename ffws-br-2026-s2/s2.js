@@ -41,6 +41,7 @@
     notesRecordPages: { drops: 0, days: 0, averages: 0 },
     compareFilters: { stage: 'classificatoria', roles: [], day: 'all', map: 'all' },
     comparePlayers: { p1: '', p2: '' },
+    compareNextSlot: 3,
     statsStage: 'segundaFase',
     dropReport: { mode: 'drop', key: '', tab: 'summary', teamSort: 'points', playerSort: 'kills', playerTeams: [], teamDetail: '' }
   };
@@ -1117,7 +1118,8 @@
   }
 
   function s2StatsTeamValueCard(key, rows, valueGetter, formatter, valueLabel) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.points - a.points);
+    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
+    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.points - a.points);
     const header = `<div style="display: grid; grid-template-columns: 1fr 0.5fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px; height:16px; object-fit: contain;" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size: 0.95em; font-weight:bold;">${escapeHtml(abbreviation(row.team))}</span></div>
@@ -1126,7 +1128,8 @@
   }
 
   function s2StatsTeamDualValueCard(key, rows, primaryGetter, primaryFormatter, secondaryGetter, primaryLabel, secondaryLabel) {
-    const ordered = [...rows].sort((a, b) => number(primaryGetter(b)) - number(primaryGetter(a)) || b.kills - a.kills || b.points - a.points);
+    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
+    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(primaryGetter(b)) - number(primaryGetter(a)) || b.kills - a.kills || b.points - a.points);
     const header = `<div style="display: grid; grid-template-columns: 1fr 0.5fr 0.4fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">${escapeHtml(primaryLabel)}</div><div style="text-align: right; color:#444;">${escapeHtml(secondaryLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr 0.4fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px; height:16px; object-fit: contain;" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size: 0.95em; font-weight:bold;">${escapeHtml(abbreviation(row.team))}</span></div>
@@ -1136,7 +1139,8 @@
   }
 
   function s2StatsTeamPositionCard(key, rows) {
-    const ordered = [...rows].sort((a, b) => a.avgPosition - b.avgPosition || b.kills - a.kills || b.points - a.points);
+    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
+    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => a.avgPosition - b.avgPosition || b.kills - a.kills || b.points - a.points);
     const header = '<div style="display: grid; grid-template-columns: 1fr 0.5fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">Pos</div></div>';
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px; height:16px; object-fit: contain;" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size: 0.95em; font-weight:bold;">${escapeHtml(abbreviation(row.team))}</span></div>
@@ -1145,7 +1149,8 @@
   }
 
   function s2StatsPlayerCard(key, rows, valueGetter, formatter, valueLabel) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.damage - a.damage);
+    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
+    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.damage - a.damage);
     const header = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><span class="clickable" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div>
@@ -1181,7 +1186,8 @@
   }
 
   function s2StatsRecordPlayerCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
+    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
+    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
     const header = `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Jogador</div><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
       <div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><span class="clickable" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div><small style="display:block;color:#56606d;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
@@ -1191,7 +1197,8 @@
   }
 
   function s2StatsRecordTeamCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.points) - number(a.points));
+    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
+    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.points) - number(a.points));
     const header = `<div style="display:grid;grid-template-columns:1.35fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.35fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
       <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="min-width:0"><div style="display:flex;align-items:center;gap:6px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px;height:16px;object-fit:contain" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size:.95em;font-weight:bold">${escapeHtml(abbreviation(row.team))}</span></div><small style="display:block;color:#56606d;margin-top:3px;margin-left:26px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
@@ -1537,7 +1544,7 @@
       <div class="ffws-s2-drop-team-head"><span>POS</span><span>EQUIPE</span><span>PTS</span><span>PC</span><span>K</span><span>DANO</span><span>AST</span></div>
       <div class="ffws-s2-drop-team-list">${rows.map(row => `<div class="ffws-s2-drop-team-row place-${Math.min(row.position || 12,12)}">
         <span class="ffws-s2-drop-place">${row.position || '—'}º</span>
-        <button type="button" class="ffws-s2-drop-team-name" onclick="showFFWSS2DropReportTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"><span><strong>${escapeHtml(abbreviation(row.team))}</strong><small>${escapeHtml(row.team)}</small></span></button>
+        <button type="button" class="ffws-s2-drop-team-name" onclick="showFFWSS2DropReportTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"><span><strong>${escapeHtml(abbreviation(row.team))}</strong><small>${escapeHtml(abbreviation(row.team))}</small></span></button>
         <strong class="ffws-s2-drop-primary">${row.points}</strong><span class="ffws-s2-drop-desktop-stat">${row.placementPoints}</span><strong>${row.kills}</strong><span class="ffws-s2-drop-desktop-stat">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-s2-drop-desktop-stat">${row.assists}</span>
         <div class="ffws-s2-drop-mobile-extra"><span>PC <b>${row.placementPoints}</b></span><span>Dano <b>${row.damage.toLocaleString('pt-BR')}</b></span><span>Ast <b>${row.assists}</b></span>${row.booyah ? `<span>B! <b>${row.booyah}</b></span>` : ''}</div>
       </div>`).join('')}</div></div>`;
@@ -1571,7 +1578,7 @@
       ${s2DropReportPlayerTeamFiltersHtml(report)}
       <div class="ffws-s2-drop-player-head"><span class="ffws-s2-drop-rank-head">#</span><span class="ffws-s2-drop-player-label"><span class="ffws-s2-desktop">JOGADOR</span><span class="ffws-s2-mobile">J</span></span><span><span class="ffws-s2-desktop">EQP</span><span class="ffws-s2-mobile">E</span></span><span><span class="ffws-s2-desktop">KILLS</span><span class="ffws-s2-mobile">K</span></span><span><span class="ffws-s2-desktop">ASSIT.</span><span class="ffws-s2-mobile">AST.</span></span><span><span class="ffws-s2-desktop">DANO</span><span class="ffws-s2-mobile">DMG</span></span><span>CFF</span></div>
       <div class="ffws-s2-drop-player-list">${rows.length ? rows.map((row,index) => `<div class="ffws-s2-drop-player-row">
-        <span class="ffws-s2-drop-player-rank">${index + 1}º</span><button type="button" class="ffws-s2-drop-player-name" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.team)}</small></button>
+        <span class="ffws-s2-drop-player-rank">${index + 1}º</span><button type="button" class="ffws-s2-drop-player-name" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(abbreviation(row.team))}</small></button>
         <button type="button" class="ffws-s2-drop-player-team" title="${escapeHtml(row.team)}" onclick="toggleFFWSS2DropReportPlayerTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" alt="${escapeHtml(abbreviation(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"></button>
         <strong class="ffws-s2-drop-primary ffws-s2-drop-player-kills">${row.kills}</strong><span class="ffws-s2-drop-player-assists">${row.assists}</span><span class="ffws-s2-drop-player-damage"><span class="ffws-s2-desktop">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-s2-mobile">${s2DropReportCompactMetric(row.damage)}</span></span><span class="ffws-s2-drop-player-cff"><em class="ffws-s2-note-badge ${noteBadgeClass(row.note)}">${number(row.note).toFixed(1)}</em></span>
       </div>`).join('') : '<div class="ffws-s2-drop-filter-empty">Nenhum jogador das equipes selecionadas.</div>'}</div></div>`;
@@ -2298,7 +2305,7 @@
 
   function compareHero(row, side) {
     const meta=rosterPlayerByName(row?.name,row?.team)||{};
-    return `<article class="ffws-s2-player-compare-hero ${side}"><img class="ffws-s2-compare-photo" src="${escapeHtml(playerPhoto(meta))}" alt="${escapeHtml(row?.name||'Jogador')}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'"><div><img class="ffws-s2-compare-team-logo" src="${escapeHtml(logo(row?.team))}" alt=""><strong>${escapeHtml(row?.name||'—')}</strong><span>${escapeHtml(row?.team||'Sem equipe')}</span></div></article>`;
+    return `<article class="ffws-s2-player-compare-hero ${side}"><img class="ffws-s2-compare-photo" src="${escapeHtml(playerPhoto(meta))}" alt="${escapeHtml(row?.name||'Jogador')}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'"><div><img class="ffws-s2-compare-team-logo" src="${escapeHtml(logo(row?.team))}" alt=""><strong>${escapeHtml(row?.name||'—')}</strong><span>${escapeHtml(row?.team?abbreviation(row.team):'Sem equipe')}</span></div></article>`;
   }
 
   function compareMetric(label, a, b, lowerBetter = false, formatter = value => String(value)) {
@@ -2307,33 +2314,59 @@
   }
 
   function comparePlayerPicker(side, rows, selectedRow, label) {
-    const ordered = [...rows].sort((a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR') || String(a.team).localeCompare(String(b.team), 'pt-BR'));
+    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
+    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR') || String(a.team).localeCompare(String(b.team), 'pt-BR'));
     const selectedText = selectedRow ? `${selectedRow.name} • ${abbreviation(selectedRow.team)}` : '';
     return `<label class="ffws-s2-compare-picker-label"><span>${escapeHtml(label)}</span><div class="ffws-s2-compare-picker" data-compare-picker="${side}">
       <div class="ffws-s2-compare-search-box"><span aria-hidden="true">⌕</span><input id="ffws-s2-compare-search-${side}" type="search" value="${escapeHtml(selectedText)}" placeholder="Pesquisar jogador..." autocomplete="off" spellcheck="false" onfocus="this.select();openFFWSS2ComparePicker('${side}')" oninput="filterFFWSS2ComparePicker('${side}',this.value)" onkeydown="handleFFWSS2ComparePickerKey(event,'${side}')"></div>
       <div class="ffws-s2-compare-picker-menu" id="ffws-s2-compare-picker-${side}" hidden>
         <div class="ffws-s2-compare-picker-hint">Digite o nome do jogador</div>
-        <div class="ffws-s2-compare-picker-options">${ordered.map(row => `<button type="button" class="ffws-s2-compare-picker-option${selectedRow?.key === row.key ? ' is-selected' : ''}" data-compare-search="${escapeHtml(`${row.name} ${row.team} ${abbreviation(row.team)}`)}" onclick="chooseFFWSS2ComparePlayer('${side}','${jsAttr(row.key)}')"><img src="${escapeHtml(logo(row.team))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='escudo.webp'"><span><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.team)}</small></span>${selectedRow?.key === row.key ? '<b>✓</b>' : ''}</button>`).join('')}</div>
+        <div class="ffws-s2-compare-picker-options">${ordered.map(row => `<button type="button" class="ffws-s2-compare-picker-option${selectedRow?.key === row.key ? ' is-selected' : ''}" data-compare-search="${escapeHtml(`${row.name} ${row.team} ${abbreviation(row.team)}`)}" onclick="chooseFFWSS2ComparePlayer('${side}','${jsAttr(row.key)}')"><img src="${escapeHtml(logo(row.team))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='escudo.webp'"><span><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(abbreviation(row.team))}</small></span>${selectedRow?.key === row.key ? '<b>✓</b>' : ''}</button>`).join('')}</div>
         <div class="ffws-s2-compare-picker-empty" hidden>Nenhum jogador encontrado.</div>
       </div>
     </div></label>`;
   }
 
+  function compareMetrics() {
+    return [
+      ['Abates','kills',v=>String(number(v))],['Dano','damage',v=>number(v).toLocaleString('pt-BR')],
+      ['Assistências','assists',v=>String(number(v))],['Quedas','matches',v=>String(number(v))],
+      ['MVPs','mvps',v=>String(number(v))],['K / queda','avgKills',v=>number(v).toFixed(2)],
+      ['Dano / queda','avgDamage',v=>Math.round(number(v)).toLocaleString('pt-BR')],
+      ['Assist. / queda','avgAssists',v=>number(v).toFixed(2)],['Recorde em queda','bestDrop',v=>String(number(v))]
+    ];
+  }
+
+  function compareManyTable(players) {
+    return `<div class="ffws-s2-compare-table-scroll" role="region" aria-label="Estatísticas dos jogadores comparados" tabindex="0"><table class="ffws-s2-compare-table">
+      <caption class="ffws-s2-compare-caption">Comparação de ${players.length} jogadores</caption>
+      <thead><tr><th scope="col">Estatística</th>${players.map((row,index)=>`<th scope="col">${compareHero(row,index%2?'right':'left')}</th>`).join('')}</tr></thead>
+      <tbody>${compareMetrics().map(([label,key,format])=>{
+        const values=players.filter(Boolean).map(row=>number(row[key])),best=Math.max(...values),distinct=Math.min(...values)<best;
+        return `<tr><th scope="row">${escapeHtml(label)}</th>${players.map(row=>`<td class="${row&&distinct&&number(row[key])===best?'winner':''}">${row?escapeHtml(format(row[key])):'—'}</td>`).join('')}</tr>`;
+      }).join('')}</tbody></table></div>`;
+  }
+
   function renderCompare() {
     const root = document.getElementById('ffws-br-s2-comparar-content');
     if (!root) return;
-    const rows=compareAggregate(compareFilteredEntries());
-    if (!state.comparePlayers.p1 || !rows.some(row=>row.key===state.comparePlayers.p1)) state.comparePlayers.p1=rows[0]?.key||'';
-    if (!state.comparePlayers.p2 || !rows.some(row=>row.key===state.comparePlayers.p2) || state.comparePlayers.p2===state.comparePlayers.p1) state.comparePlayers.p2=rows.find(row=>row.key!==state.comparePlayers.p1)?.key||state.comparePlayers.p1;
-    const p1=rows.find(row=>row.key===state.comparePlayers.p1)||null;
-    const p2=rows.find(row=>row.key===state.comparePlayers.p2)||null;
+    const rows=compareAggregate(compareFilteredEntries()),slots=Object.keys(state.comparePlayers),used=new Set();
+    slots.forEach(slot=>{
+      let key=state.comparePlayers[slot];
+      if(!key||used.has(key)||!rows.some(row=>row.key===key))key=rows.find(row=>!used.has(row.key))?.key||'';
+      state.comparePlayers[slot]=key;if(key)used.add(key);
+    });
+    const players=slots.map(slot=>rows.find(row=>row.key===state.comparePlayers[slot])||null),[p1,p2]=players;
     const days=[...new Set(allPlayerEntries().filter(e=>state.compareFilters.stage==='geral'||e.stage===state.compareFilters.stage).map(e=>number(e.day)).filter(Boolean))].sort((a,b)=>a-b);
     const maps=[...new Set(allPlayerEntries().filter(e=>state.compareFilters.stage==='geral'||e.stage===state.compareFilters.stage).map(e=>e.map).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
     const roleOptions=playerFilterOptions().role;
-    root.innerHTML = `<div class="ffws-s2-shell">${hero('Comparar 1V1', 'Compare dois jogadores da WB 2026 S2')}
-      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Escolha o confronto</h2><p>Pesquise pelo nome e filtre os jogadores por posição, etapa, dia ou mapa.</p></div><span class="ffws-s2-badge">${rows.length} jogadores ativos</span></div>
+    const selectors=slots.map((slot,index)=>`<div class="ffws-s2-compare-slot">${comparePlayerPicker(slot,rows,players[index],`Jogador ${index+1}`)}${slots.length>2?`<button type="button" class="ffws-s2-compare-remove" onclick="removeFFWSS2ComparePlayer('${slot}')" aria-label="Remover jogador ${index+1}" title="Remover jogador">×</button>`:''}</div>`).join(slots.length===2?'<b>VS</b>':'');
+    root.innerHTML = `<div class="ffws-s2-shell">${hero('Comparar jogadores', 'Compare os jogadores da WB 2026 S2')}
+      <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Escolha os jogadores</h2><p>Pesquise pelo nome e filtre por posição, etapa, dia ou mapa.</p></div><span class="ffws-s2-badge">${rows.length} jogadores ativos</span></div>
       <div class="ffws-s2-filters">${compareSelect('stage','Etapa',[['classificatoria','Classificatória'],['segundaFase','Segunda Fase'],['final','Final'],['geral','Geral']])}${compareMultiFilter('roles','Posição',roleOptions)}${compareSelect('day','Dia',[['all','Todos'],...days.map(v=>[String(v),`Dia ${v}`])])}${compareSelect('map','Mapa',[['all','Todos'],...maps.map(v=>[v,v])])}</div>
-      ${p1&&p2?`<div class="ffws-s2-compare-selectors">${comparePlayerPicker('p1',rows,p1,'Jogador 1')}<b>VS</b>${comparePlayerPicker('p2',rows,p2,'Jogador 2')}</div><div class="ffws-s2-player-compare-grid">${compareHero(p1,'left')}<div class="ffws-s2-compare-metrics">${compareMetric('Abates',p1.kills,p2.kills)}${compareMetric('Dano',p1.damage,p2.damage,false,v=>number(v).toLocaleString('pt-BR'))}${compareMetric('Assistências',p1.assists,p2.assists)}${compareMetric('Quedas',p1.matches,p2.matches)}${compareMetric('MVPs',p1.mvps,p2.mvps)}${compareMetric('K / queda',p1.avgKills,p2.avgKills,false,v=>number(v).toFixed(2))}${compareMetric('Dano / queda',p1.avgDamage,p2.avgDamage,false,v=>Math.round(number(v)).toLocaleString('pt-BR'))}${compareMetric('Assist. / queda',p1.avgAssists,p2.avgAssists,false,v=>number(v).toFixed(2))}${compareMetric('Recorde em queda',p1.bestDrop,p2.bestDrop)}</div>${compareHero(p2,'right')}</div>`:'<div class="ffws-s2-empty"><div><strong>Nenhum jogador neste recorte</strong>Altere a posição, etapa, dia ou mapa para comparar os jogadores disponíveis.</div></div>'}</div></section></div>`;
+      ${rows.length?`<div class="ffws-s2-compare-selectors${slots.length>2?' is-multiple':''}">${selectors}</div>
+      <div class="ffws-s2-compare-controls"><button type="button" class="ffws-s2-compare-add" onclick="addFFWSS2ComparePlayer()"${slots.length>=rows.length?' disabled':''}>+ Adicionar jogador</button>${slots.length>2?'<span>Deslize a tabela para ver todos os jogadores.</span>':''}</div>
+      ${slots.length===2?`<div class="ffws-s2-player-compare-grid">${compareHero(p1,'left')}<div class="ffws-s2-compare-metrics">${compareMetrics().map(([label,key,format])=>p1&&p2?compareMetric(label,p1[key],p2[key],false,format):`<div class="ffws-s2-compare-metric"><strong>${p1?escapeHtml(format(p1[key])):'—'}</strong><span>${escapeHtml(label)}</span><strong>${p2?escapeHtml(format(p2[key])):'—'}</strong></div>`).join('')}</div>${compareHero(p2,'right')}</div>`:compareManyTable(players)}`:'<div class="ffws-s2-empty"><div><strong>Nenhum jogador neste recorte</strong>Altere a posição, etapa, dia ou mapa para comparar os jogadores disponíveis.</div></div>'}</div></section></div>`;
   }
 
   function compareSelect(key,label,options){const selected=String(state.compareFilters[key]);return `<label class="ffws-s2-filter"><span>${escapeHtml(label)}:</span><select onchange="setFFWSS2CompareFilter('${key}',this.value)">${options.map(([value,text])=>`<option value="${escapeHtml(value)}"${selected===String(value)?' selected':''}>${escapeHtml(text)}</option>`).join('')}</select></label>`;}
@@ -2598,7 +2631,21 @@
     state.compareFilters[key] = [...selected];
     renderCompare();
   };
-  window.setFFWSS2ComparePlayer = (side, value) => { state.comparePlayers[side] = String(value); renderCompare(); };
+  window.addFFWSS2ComparePlayer = () => {
+    const rows=compareAggregate(compareFilteredEntries()),selected=new Set(Object.values(state.comparePlayers));
+    const next=rows.find(row=>!selected.has(row.key));if(!next)return;
+    const slot='p'+state.compareNextSlot++;state.comparePlayers[slot]=next.key;renderCompare();
+    document.getElementById('ffws-s2-compare-search-'+slot)?.focus();
+  };
+  window.removeFFWSS2ComparePlayer = side => {
+    if(Object.keys(state.comparePlayers).length<=2||!Object.hasOwn(state.comparePlayers,side))return;
+    delete state.comparePlayers[side];renderCompare();
+  };
+  window.setFFWSS2ComparePlayer = (side, value) => {
+    if(!Object.hasOwn(state.comparePlayers,side))return;
+    if(Object.entries(state.comparePlayers).some(([slot,key])=>slot!==side&&key===String(value)))return;
+    state.comparePlayers[side]=String(value);renderCompare();
+  };
   window.openFFWSS2ComparePicker = side => {
     document.querySelectorAll('.ffws-s2-compare-picker-menu').forEach(menu => { menu.hidden = menu.id !== `ffws-s2-compare-picker-${side}`; });
     const menu = document.getElementById(`ffws-s2-compare-picker-${side}`);
@@ -2620,8 +2667,7 @@
     if (empty) empty.hidden = visible > 0;
   };
   window.chooseFFWSS2ComparePlayer = (side, value) => {
-    state.comparePlayers[side] = String(value);
-    renderCompare();
+    window.setFFWSS2ComparePlayer(side,value);
   };
   window.handleFFWSS2ComparePickerKey = (event, side) => {
     const menu = document.getElementById(`ffws-s2-compare-picker-${side}`);

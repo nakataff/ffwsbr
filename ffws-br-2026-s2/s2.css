@@ -662,3 +662,32 @@ body.cff-stats-route #ffws-br-s2-stats.page,body.cff-stats-route #registro-detal
 }
 
 #ffws-br-s2-final .ffws-s2-team-name small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* More players keep a shared stats table, with scrolling limited to the table. */
+.ffws-s2-compare-slot{position:relative;min-width:0}
+.ffws-s2-compare-slot .ffws-s2-compare-picker-label{min-width:0}
+.ffws-s2-compare-selectors.is-multiple{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));align-items:end}
+.ffws-s2-compare-selectors.is-multiple .ffws-s2-compare-slot{padding-right:32px}
+.ffws-s2-compare-remove{position:absolute;right:0;bottom:10px;width:26px;height:28px;border:0;border-radius:6px;background:rgba(255,255,255,.06);color:#b6c5d8;font-size:21px;cursor:pointer}
+.ffws-s2-compare-remove:hover{color:#ff9191;background:rgba(255,90,90,.12)}
+.ffws-s2-compare-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 18px}
+.ffws-s2-compare-add{padding:10px 14px;border:1px solid rgba(0,200,255,.3);border-radius:9px;background:rgba(0,200,255,.09);color:#b8edff;font:inherit;font-size:.8rem;font-weight:800;cursor:pointer}
+.ffws-s2-compare-add:disabled{opacity:.4;cursor:default}
+.ffws-s2-compare-controls>span{font-size:.72rem;color:#88a6c9}
+.ffws-s2-player-compare-hero>div>.ffws-s2-compare-team-logo{grid-column:1;grid-row:1/span 2}
+.ffws-s2-player-compare-hero>div>strong,.ffws-s2-player-compare-hero>div>span{grid-column:2;min-width:0}
+.ffws-s2-player-compare-hero>div>span{overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}
+.ffws-s2-compare-table-scroll{width:100%;max-width:100%;min-width:0;overflow-x:auto;border:1px solid var(--border);border-radius:16px;overscroll-behavior-x:contain}
+.ffws-s2-compare-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+.ffws-s2-compare-table th,.ffws-s2-compare-table td{width:170px;min-width:170px;text-align:center;padding:12px;border-bottom:1px solid rgba(255,255,255,.07);background:#080e19}
+.ffws-s2-compare-table thead th{padding:6px}
+.ffws-s2-compare-table th:first-child{width:135px;min-width:135px;position:sticky;left:0;z-index:2;color:#88a6c9;font-size:.7rem;text-transform:uppercase;box-shadow:3px 0 9px #0003}
+.ffws-s2-compare-table td{color:#fff;font-weight:800;font-variant-numeric:tabular-nums}
+.ffws-s2-compare-table td.winner{color:#ffc226;background:rgba(255,194,38,.06)}
+.ffws-s2-compare-table .ffws-s2-player-compare-hero{min-height:240px;border-radius:11px}
+.ffws-s2-compare-table .ffws-s2-compare-photo{height:165px;top:8px}
+.ffws-s2-compare-table .ffws-s2-player-compare-hero>div{padding:50px 9px 13px;grid-template-columns:30px minmax(0,1fr);gap:4px 8px;text-align:left}
+.ffws-s2-compare-table .ffws-s2-compare-team-logo{width:30px;height:30px}
+.ffws-s2-compare-table .ffws-s2-player-compare-hero strong{font-size:.87rem}
+.ffws-s2-compare-caption{padding:9px;text-align:left;font-size:.72rem;color:#88a6c9;background:#080e19}
+@media(max-width:620px){.ffws-s2-compare-table th,.ffws-s2-compare-table td{width:150px;min-width:150px;padding:10px 7px}.ffws-s2-compare-table th:first-child{width:105px;min-width:105px;font-size:.6rem}.ffws-s2-compare-table thead th{padding:5px}.ffws-s2-compare-table .ffws-s2-player-compare-hero{min-height:220px}.ffws-s2-compare-table .ffws-s2-compare-photo{height:145px}}
