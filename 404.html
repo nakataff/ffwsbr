@@ -44,6 +44,22 @@
         }
       }
 
+      // URLs amigáveis de perfis:
+      // /perfil/@nakataff -> /conta.html?ig=nakataff
+      // /perfil/user128410 -> /conta.html?slug=user128410
+      var profileMatch = path.match(/^\/perfil\/([^\/]+)\/?$/i);
+      if (profileMatch && profileMatch[1]) {
+        var profile = safePart(profileMatch[1]);
+        if (/^@[a-z0-9_.]{1,64}$/i.test(profile)) {
+          window.location.replace('/conta.html?ig=' + encodeURIComponent(profile.slice(1)));
+          return;
+        }
+        if (/^user[0-9]{6,10}$/i.test(profile)) {
+          window.location.replace('/conta.html?slug=' + encodeURIComponent(profile.toLowerCase()));
+          return;
+        }
+      }
+
       // Mantém compatibilidade com as URLs de notícias já usadas pelo site.
       // /noticias/slug-da-noticia/ -> /noticia.html?id=slug-da-noticia
       var newsMatch = path.match(/^\/noticias\/([^\/]+)\/?$/i);
@@ -76,7 +92,7 @@
 <body>
   <p>Redirecionando...</p>
   <script src="/js/site-analytics.js?v=20260806-admin-v1"></script>
-<script type="module" src="/js/public-account.js?v=20261007-favorites-v1"></script>
+<script type="module" src="/js/public-account.js?v=20261007-profile-urls-v2"></script>
 </body>
 </html>
 
