@@ -1,6 +1,6 @@
 import {getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-import {request,stylesheet} from '/js/camp-notifications.js?v=20261007-events-v1';
-import {notificationContent,streamUrl} from '/js/camp-notification-content.js?v=20261007-events-v1';
+import {request,stylesheet} from '/js/camp-notifications.js?v=20261007-polish-v1';
+import {notificationContent,streamUrl,teamLogo} from '/js/camp-notification-content.js?v=20261007-polish-v1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,80);
 const app=()=>getApps().find(a=>a.name==='[DEFAULT]')||getApps()[0];
@@ -9,7 +9,7 @@ function snapshot(){const b=window.collectBackupData?.(true);if(!b?.selectedTeam
 function identity(b){const stage=b.config?.cffFfwsStage,name=String(b.tournamentModeV1?.name||b.config?.tournamentName||'').trim();if(!name)throw Error('Defina o nome do torneio.');return {name,stage:['final','segundaFase'].includes(stage)?stage:'',id:['final','segundaFase'].includes(stage)?'ffws-br-2026-s2-'+stage.toLowerCase():''};}
 function rowCode(row){return row.dataset.teamCode||row.dataset.v51TeamCode||row.querySelector('input[name="booyah"]')?.value||row.querySelector('[data-code]')?.dataset.code||Array.from(row.querySelectorAll('input[id]')).find(i=>/^(kills|pts|place|boo)-/.test(i.id))?.id.replace(/^(kills|pts|place|boo)-/,'')||'';}
 function launchRow(code){return Array.from(document.querySelectorAll('#teams-inputs-container .team-row')).find(r=>rowCode(r)===code);}
-function logo(code,name){const row=launchRow(code),team=window.getTeams?.().find(t=>t.code===code);const sources=[row?.querySelector('img.mini-logo,img')?.src,window.getLogo?.(name||team?.name||code)];for(const src of sources)try{if(!src)continue;const u=new URL(src,location.href);if(u.protocol==='https:'&&['centralfreefire.com.br','www.centralfreefire.com.br'].includes(u.hostname))return u.href;}catch{}return '';}
+function logo(code,name){const row=launchRow(code),team=window.getTeams?.().find(t=>t.code===code);const sources=[row?.querySelector('img.mini-logo,img')?.src,window.getLogo?.(name||team?.name||code)];for(const src of sources)try{if(!src)continue;const u=new URL(src,location.href);if(u.protocol==='https:'&&['centralfreefire.com.br','www.centralfreefire.com.br'].includes(u.hostname))return teamLogo(name,code,u.href);}catch{}return teamLogo(name,code);}
 function roster(b){const catalog=String(b.teams||'').split(/\r?\n/).map(line=>line.split(',').map(v=>v.trim()));return b.selectedTeams.map(code=>{const row=catalog.find(r=>r[1]===code)||[code,code,code];return{id:key(code),code,name:row[0]||code,aliases:[code,row[2]||code],logo:logo(code,row[0]||code)};});}
 async function catalog(){return (await request('settings',{},app())).catalog||{};}
 function dialog(title,html){document.getElementById('cff-notify-dialog')?.remove();const d=document.createElement('dialog');d.id='cff-notify-dialog';d.className='cff-notify-dialog';d.innerHTML='<div class="cff-notify-dialog-heading"><h2>'+esc(title)+'</h2><button type="button" class="cff-notify-close" data-close aria-label="Fechar">×</button></div>'+html+'<p role="status" data-status></p>';d.querySelector('[data-close]').onclick=()=>d.close();d.addEventListener('close',()=>d.remove());document.body.append(d);d.showModal();return d;}

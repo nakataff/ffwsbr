@@ -1,7 +1,7 @@
 import {DurableObject} from 'cloudflare:workers';
 import webpush from 'web-push';
 import C from '../../functions/camp-notifications-core.js';
-import {notificationContent,streamUrl} from '../../js/camp-notification-content.js';
+import {notificationContent,streamUrl,teamLogo} from '../../js/camp-notification-content.js';
 import {verifyToken} from './auth.js';
 const ORIGINS=new Set(['https://centralfreefire.com.br','https://www.centralfreefire.com.br']);
 const LIVE='https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2';
@@ -15,7 +15,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:2});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:3});
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -55,7 +55,7 @@ export class NotificationHub extends DurableObject {
  enqueue(id,t,day,drop,row,status){
   const kind=row.kind||'elimination',eventKey=kind==='start'?'__start':kind==='booyah'?'__booyah':row.teamId;
   const eventId=C.eventId(id,day,drop,eventKey,status),inboxId=C.eventId(id,day,drop,eventKey,'result'),existing=this.rows('SELECT data FROM events WHERE id=?',eventId)[0];
-  const event={...row,kind,streamUrl:streamUrl(t.streamUrl),logo:logoUrl(row.logo||t.teams[row.teamId]?.logo),tournamentId:id,tournamentName:t.name,day,drop,status,inboxId,at:Date.now()};
+  const event={...row,kind,streamUrl:streamUrl(t.streamUrl),logo:logoUrl(teamLogo(row.team,row.teamId,row.logo||t.teams[row.teamId]?.logo)),tournamentId:id,tournamentName:t.name,day,drop,status,inboxId,at:Date.now()};
   if(existing){const old=JSON.parse(existing.data);if(status==='official'&&['points','kills','position'].some(k=>old[k]!==event[k])){this.sql.exec('UPDATE events SET data=?,at=? WHERE id=?',JSON.stringify(event),event.at,eventId);const recipients=this.rows('SELECT uid FROM inbox WHERE id=?',inboxId);for(const {uid}of recipients)this.inbox(uid,event);}return false;}
   this.sql.exec('INSERT INTO events VALUES(?,?,?,?,?,?,?,?)',eventId,id,day,drop,row.teamId,status,JSON.stringify(event),event.at);
   for(const p of this.rows('SELECT uid,data FROM preferences WHERE tournament=?',id))if(C.interested(JSON.parse(p.data),event))this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?)',eventId,p.uid);
@@ -64,8 +64,8 @@ export class NotificationHub extends DurableObject {
  async schedule(){const jobs=this.rows('SELECT event FROM jobs LIMIT 1').length,pending=this.rows('SELECT check_at FROM pending ORDER BY check_at LIMIT 1')[0];if(jobs||pending)await this.ctx.storage.setAlarm(jobs?Date.now()+1000:Math.max(Date.now()+1000,pending.check_at));else await this.ctx.storage.deleteAlarm();}
  async push(uid,event){
   const devices=this.rows('SELECT id,data FROM devices WHERE uid=?',uid),vapid=this.vapid();
-  const {title,body}=notificationContent(event),prefix=event.status==='test'||event.kind==='start'?'':event.status==='official'?'Pontuação oficial · ':'Pontuação parcial · ';
-  const payload=JSON.stringify({title,body:prefix+body,icon:logoUrl(event.logo),tag:event.inboxId,url:streamUrl(event.streamUrl)||'/conta.html?tab=notifications'});
+  const {title,body}=notificationContent(event),prefix=event.status==='test'||event.kind==='start'?'':event.status==='official'?'Oficial · ':'Parcial · ';
+  const payload=JSON.stringify({title,body:prefix+body,icon:logoUrl(event.logo),image:logoUrl(event.logo),tag:event.inboxId,url:streamUrl(event.streamUrl)||'/conta.html?tab=notifications'});
   let accepted=0;
   for(const d of devices)try{const subscription=C.subscription(JSON.parse(d.data)),details=webpush.generateRequestDetails(subscription,payload,{vapidDetails:{subject:'https://centralfreefire.com.br',...vapid},TTL:300});const response=await fetch(details.endpoint,{method:'POST',headers:details.headers,body:details.body,redirect:'manual',signal:AbortSignal.timeout(8000)});await response.body?.cancel();if(response.ok)accepted++;else if([404,410].includes(response.status))this.sql.exec('DELETE FROM devices WHERE id=? AND uid=?',d.id,uid);}catch{}
   return {devices:devices.length,accepted};
@@ -87,7 +87,7 @@ export class NotificationHub extends DurableObject {
     const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Este torneio não está habilitado para avisos.');
     const teams={};for(const team of(Array.isArray(b.teams)?b.teams:[]).slice(0,100))if(Object.hasOwn(t.teams,team))teams[team]=true;
     const previous=this.rows('SELECT data FROM preferences WHERE uid=? AND tournament=?',uid,id)[0],prior=previous?JSON.parse(previous.data):{};
-    const types=b.types?{elimination:b.types.elimination===true,booyah:b.types.booyah===true,start:b.types.start===true}:prior.types||{elimination:true,booyah:false,start:false};
+    const types=b.types?{elimination:b.types.elimination===true,booyah:b.types.booyah===true,start:b.types.start===true}:prior.types||{elimination:true,booyah:true,start:true};
     const data={enabled:b.enabled===true,all:b.all===true,teams,types};this.sql.exec('INSERT OR REPLACE INTO preferences VALUES(?,?,?)',uid,id,JSON.stringify(data));return json({ok:true});
    }
    if(action==='device'){

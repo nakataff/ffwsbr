@@ -10,7 +10,7 @@ function interested(preference,event) {
  if(preference?.enabled!==true)return false;
  const kind=event.kind||'elimination';
  if(kind==='start')return preference.types?.start===true;
- if(kind==='booyah'&&preference.types?.booyah!==true)return false;
+ if(kind==='booyah')return preference.types?.booyah===true;
  if(kind==='elimination'&&preference.types?.elimination===false)return false;
  return preference.all===true || preference.teams?.[event.teamId]===true;
 }

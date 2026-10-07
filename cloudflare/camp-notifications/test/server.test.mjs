@@ -43,7 +43,7 @@ test('free notification API: authentication, isolation, device ownership, delive
  assert.equal((await api('publish',{...publish,result:{...publish.result,dayPoints:3}},admin)).status,400);
  unavailable=true;assert.equal((await api('publish',publish,admin)).status,400);unavailable=false;
  const results=await Promise.all([api('publish',publish,admin),api('publish',publish,admin)]);assert.equal(results.filter(r=>!r.duplicate).length,1);
- await hub.alarm();assert.equal(pushes.length,1);let inbox=await api('inbox');assert.equal(inbox.rows.length,1);assert.equal(inbox.rows[0].status,'partial');assert.equal(inbox.rows[0].team,'Fluxo');assert.equal(inbox.rows[0].dayPoints,40);assert.equal(inbox.rows[0].logo,'https://centralfreefire.com.br/logos/fluxo.webp');assert(payloads[0].title.endsWith('DIA 2 / QUEDA 17'));assert(payloads[0].body.includes('14 pontos nesta queda e 40 no dia'));assert.equal(payloads[0].icon,inbox.rows[0].logo);assert.equal((await api('inbox',{},other)).rows.length,0);
+ await hub.alarm();assert.equal(pushes.length,1);let inbox=await api('inbox');assert.equal(inbox.rows.length,1);assert.equal(inbox.rows[0].status,'partial');assert.equal(inbox.rows[0].team,'Fluxo');assert.equal(inbox.rows[0].dayPoints,40);assert.equal(inbox.rows[0].logo,'https://centralfreefire.com.br/logos/fluxo.webp');assert(payloads[0].title.endsWith('DIA 2 / QUEDA 17'));assert(payloads[0].body.includes('14 pts · 40 no dia'));assert.equal(payloads[0].icon,inbox.rows[0].logo);assert.equal((await api('inbox',{},other)).rows.length,0);
  await hub.alarm();assert.equal(pushes.length,1);
  official={manual:true,source:{teams:true,players:true},teams:{fx:{team:'FLUXO W7M',position:3,kills:8,points:16}},players:{p:{team:'FLUXO W7M',kills:8}}};
  hub.sql.exec('UPDATE pending SET check_at=0');await hub.alarm();assert.equal((await api('inbox')).rows[0].status,'partial');
@@ -65,8 +65,10 @@ test('start and Booyah: separate opt-in, deduplication, live link and official c
  assert.equal((await call('configure',{...cfg,streamUrl:'javascript:alert(1)'},admin)).status,400);
  assert.equal((await call('configure',cfg,admin)).status,200);
  await call('preferences',{tournamentId:camp,enabled:true,teams:['fx']});
+ assert.deepEqual((await call('settings')).preferences[camp].types,{elimination:true,booyah:true,start:true});
+ await call('preferences',{tournamentId:camp,enabled:true,teams:['fx'],types:{elimination:true,booyah:false,start:false}});
  await call('preferences',{tournamentId:camp,enabled:true,teams:[],types:{start:true}},other);
- await call('preferences',{tournamentId:camp,enabled:true,teams:['los'],types:{booyah:true}},fan);
+ await call('preferences',{tournamentId:camp,enabled:true,teams:['fx'],types:{booyah:true}},fan);
  assert.equal((await call('settings')).preferences[camp].types.booyah,false);
  for(const [jwt,name]of [[member,'member'],[other,'other'],[fan,'fan']])await call('device',{subscription:subscription(name)},jwt);
  const start={tournamentId:camp,day:1,drop:1,kind:'start',map:'Nexterra'};
@@ -77,14 +79,14 @@ test('start and Booyah: separate opt-in, deduplication, live link and official c
  await h.alarm();assert.equal(pushes.length,1);
  assert.equal((await call('inbox')).rows.length,0);assert.equal((await call('inbox',{},fan)).rows.length,0);
  let rows=(await call('inbox',{},other)).rows;assert.equal(rows[0].kind,'start');assert.equal(rows[0].map,'Nexterra');assert.equal(rows[0].streamUrl,cfg.streamUrl);
- assert.equal(payloads[0].url,cfg.streamUrl);assert.equal(payloads[0].body,'QUEDA 1 COMEÇOU! O mapa da vez é Nexterra!');
+ assert.equal(payloads[0].url,cfg.streamUrl);assert.equal(payloads[0].body,'Queda 1 começou! Mapa: Nexterra.');
  // A queued message must honor a later opt-out.
  await call('publish',{...start,drop:2},admin);await call('preferences',{tournamentId:camp,enabled:true,types:{start:false}},other);await h.alarm();assert.equal(pushes.length,1);
  const win={tournamentId:camp,day:1,drop:1,kind:'booyah',result:{teamId:'los',position:1,kills:12,points:24,dayPoints:24}};
  assert.equal((await call('publish',{...win,result:{...win.result,position:2}},admin)).status,400);
  assert.equal((await call('publish',win,admin)).duplicate,false);
  assert.equal((await call('publish',win,admin)).duplicate,true);
- await h.alarm();assert.equal(pushes.length,2);assert(payloads.at(-1).body.includes('BOOYAH PARA A EQUIPE LOS! 12 abates na queda 1!'));
+ await h.alarm();assert.equal(pushes.length,2);assert(payloads.at(-1).body.includes('BOOYAH: LOS! 12 abates ·'));
  rows=(await call('inbox',{},fan)).rows;assert.equal(rows.length,1);assert.equal(rows[0].kind,'booyah');assert.equal(rows[0].status,'partial');assert.equal((await call('inbox')).rows.length,0);
  official={source:{teams:true,players:true},teams:{los:{team:'LOS',position:1,kills:13,points:25}},players:{p:{team:'LOS',kills:13}}};
  h.sql.exec('UPDATE pending SET check_at=0');await h.alarm();rows=(await call('inbox',{},fan)).rows;assert.equal(rows.length,1);assert.equal(rows[0].status,'official');assert.equal(rows[0].kind,'booyah');assert.equal(rows[0].kills,13);assert.equal(pushes.length,3);
