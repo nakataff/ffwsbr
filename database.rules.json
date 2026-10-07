@@ -260,6 +260,9 @@
           "theme": {
             ".validate": "newData.val() == 'cyan' || newData.val() == 'gold' || newData.val() == 'pink' || newData.val() == 'green' || newData.val() == 'violet'"
           },
+          "avatarRingColor": {
+            ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
+          },
           "mainTeam": {
             ".validate": "newData.isString() && (newData.val() == '' || newData.val().matches(/^(team-afrogames|team-alpha7|team-civis|team-cpt-vox|team-fluxo-w7m|team-influence-rage|team-intz|team-loops|team-los|team-loud-snickers|team-rise-gaming|team-rush-gaming|team-sx-tet|team-team-solid)$/))"
           },
@@ -273,7 +276,7 @@
             ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 1800"
           },
           "coverId": {
-            ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
+            ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || newData.val() == 'none' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
           },
           "public": {
             ".validate": "newData.isBoolean()"
@@ -416,7 +419,7 @@
           ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 1800"
         },
         "coverId": {
-          ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
+          ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || newData.val() == 'none' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
         },
         "public": {
           ".validate": "newData.val() == true"
@@ -450,6 +453,23 @@
         "$other": {
           ".validate": false
         }
+      }
+    },
+    "communityProfileDefaults": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+      ".validate": "newData.hasChildren(['avatarId','coverId','updatedAt'])",
+      "avatarId": {
+        ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+      },
+      "coverId": {
+        ".validate": "newData.isString() && newData.val().length <= 100"
+      },
+      "updatedAt": {
+        ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+      },
+      "$other": {
+        ".validate": false
       }
     },
     "communityProfileCatalog": {
