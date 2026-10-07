@@ -406,6 +406,9 @@
         "theme": {
           ".validate": "newData.val() == 'cyan' || newData.val() == 'gold' || newData.val() == 'pink' || newData.val() == 'green' || newData.val() == 'violet'"
         },
+        "avatarRingColor": {
+          ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
+        },
         "mainTeam": {
           ".validate": "newData.isString() && (newData.val() == '' || newData.val().matches(/^(team-afrogames|team-alpha7|team-civis|team-cpt-vox|team-fluxo-w7m|team-influence-rage|team-intz|team-loops|team-los|team-loud-snickers|team-rise-gaming|team-rush-gaming|team-sx-tet|team-team-solid)$/))"
         },
