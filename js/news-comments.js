@@ -95,13 +95,15 @@
     /\b(porra|caralho|buceta|arrombado|arrombada)\b/i,
     /\b(retardado|retardada|mongoloide)\b/i,
     /\b(viado|viadinho|bicha)\b/i,
-    /\b(macaco|macaca)\b/i
+    /\b(macaco|macaca)\b/i,
+    /\b(nazi|nazista|nazismo|neonazi|neo\s*nazi|hitler|sieg\s*heil|heil\s*hitler|svastica|suastica|swastika)\b/i,
+    /\b(white\s*power|supremacia\s*branca|supremacista\s*branco|1488)\b/i
   ];
 
   function moderationReason(text){
     const value=String(text||'').trim();
     const normalized=normalize(value);
-    if(BLOCKED_PATTERNS.some(rx=>rx.test(normalized))) return 'Seu comentário contém um termo bloqueado pelo filtro.';
+    if(/[卐卍]/.test(value)||/\b1488\b/.test(normalized)||BLOCKED_PATTERNS.some(rx=>rx.test(normalized))) return 'Seu comentário contém um termo bloqueado pelo filtro.';
     const urls=value.match(/https?:\/\//gi)||[];
     if(urls.length>1) return 'Evite enviar vários links no mesmo comentário.';
     const mentions=value.match(/@[a-z0-9._]{2,}/gi)||[];
