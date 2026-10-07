@@ -26,8 +26,8 @@ function goalDefaultLabel(metric,target){const t=Number(target||1);const names={
 function toast(text){const el=$('profile-admin-toast');el.textContent=text;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.hidden=true,5000);}
 function admin(){if(auth.currentUser?.email!==ADMIN)throw Error('Acesso restrito.');}
 function updateCategoryField(preferred=''){const field=$('profile-category-field'),kind=form.elements.kind.value,options=categoryOptionsFor(kind);if(!field)return;field.hidden=!Object.keys(options).length;if(field.hidden)return;const current=preferred||form.elements.category.value,select=form.elements.category;select.innerHTML=Object.entries(options).map(([id,label])=>`<option value="${id}">${label}</option>`).join('');const fallback=kind==='badge'?'special':'special';select.value=Object.hasOwn(options,current)?current:fallback;}
-function defaultAvatarChoices(){return [{id:'default',name:'Central Free Fire'},...options.players.map(x=>({id:x.id,name:'Jogador · '+x.name})),...options.teams.map(x=>({id:x.id,name:'Logo · '+x.name})),...Object.entries(catalog).filter(([,x])=>x.enabled&&x.kind==='avatar').map(([id,x])=>({id,name:'Avatar · '+x.title}))];}
-function defaultCoverChoices(){return [{id:'',name:'Sem capa padrão'},...Object.entries(catalog).filter(([,x])=>x.enabled&&x.kind==='cover').map(([id,x])=>({id,name:x.title}))];}
+function defaultAvatarChoices(){return [{id:'default',name:'Central Free Fire'},...options.players.map(x=>({id:x.id,name:'Jogador · '+x.name})),...options.teams.map(x=>({id:x.id,name:'Logo · '+x.name})),...Object.entries(catalog).filter(([,x])=>x.enabled&&x.kind==='avatar'&&(!x.accessRule||x.accessRule==='all')).map(([id,x])=>({id,name:'Avatar · '+x.title}))];}
+function defaultCoverChoices(){return [{id:'',name:'Sem capa padrão'},...Object.entries(catalog).filter(([,x])=>x.enabled&&x.kind==='cover'&&(!x.accessRule||x.accessRule==='all')).map(([id,x])=>({id,name:x.title}))];}
 function renderDefaultPreview(){
  const form=$('profile-defaults-form');if(!form)return;
  const avatarId=String(form.elements.avatarId.value||'default'),coverId=String(form.elements.coverId.value||'');
