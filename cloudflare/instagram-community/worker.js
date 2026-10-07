@@ -64,6 +64,7 @@ let performanceIndexesReady = false;
 let performanceIndexesPromise = null;
 
 const PERFORMANCE_INDEXES = Object.freeze([
+  'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
   'CREATE INDEX IF NOT EXISTS idx_awards_type_award_key ON awards (type, award_key)',
   'CREATE INDEX IF NOT EXISTS idx_awards_user_day_type ON awards (user_key, day_key, type)',
@@ -96,6 +97,7 @@ export default {
     if (url.pathname === '/api/ranking' && request.method === 'GET') return getRanking(request, env, url);
     if (url.pathname === '/api/ranking/history' && request.method === 'GET') return getWeeklyHistory(request, env, url);
     if (url.pathname === '/api/ranking/months' && request.method === 'GET') return getMonthlyHistory(request, env, url);
+    if (url.pathname === '/api/achievements/profile' && request.method === 'GET') return getAchievementProfile(request, env, url);
     if (url.pathname === '/api/predictions' && request.method === 'GET') return getPredictions(request, env, url, ctx);
     if (url.pathname === '/api/prediction' && request.method === 'GET') return getPredictionLegacy(request, env, url, ctx);
     if (url.pathname === '/api/prediction/vote' && request.method === 'POST') return votePrediction(request, env, ctx);
@@ -2044,6 +2046,104 @@ async function awardInteraction(env, event) {
   return true;
 }
 
+async function computeMonthlySnapshot(env, monthKey) {
+  const bounds = monthKeyBounds(monthKey);
+  if (!bounds) return null;
+  const result = await env.DB.prepare(`
+    WITH month_awards AS (
+      SELECT a.user_key,
+             COALESCE(MAX(u.username), MAX(a.username)) AS username,
+             SUM(a.points) AS points,
+             SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END) AS storyMentions,
+             SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END) AS comments,
+             MAX(a.created_at) AS lastInteractionAt
+      FROM awards a
+      LEFT JOIN users u ON u.user_key = a.user_key
+      WHERE a.month_key = ?1
+      GROUP BY a.user_key
+    ),
+    month_active AS (
+      SELECT user_key, COUNT(*) AS activeDays
+      FROM active_days
+      WHERE day_key BETWEEN ?2 AND ?3
+      GROUP BY user_key
+    )
+    SELECT m.user_key,
+           m.username,
+           m.points,
+           m.storyMentions,
+           m.comments,
+           COALESCE(d.activeDays, 0) AS activeDays,
+           m.lastInteractionAt
+    FROM month_awards m
+    LEFT JOIN month_active d ON d.user_key = m.user_key
+    ORDER BY m.points DESC, activeDays DESC, m.storyMentions DESC, m.comments DESC, m.username ASC
+    LIMIT 500
+  `).bind(monthKey, bounds.firstDay, bounds.lastDay).all();
+
+  const coverage = await env.DB.prepare(`
+    SELECT MIN(day_key) AS firstDay, MAX(day_key) AS lastDay
+    FROM awards
+    WHERE month_key = ?1
+  `).bind(monthKey).first();
+
+  const users = {};
+  let updatedAt = 0;
+  for (const row of result.results || []) {
+    users[row.user_key] = {
+      username: row.username,
+      points: Number(row.points || 0),
+      storyMentions: Number(row.storyMentions || 0),
+      comments: Number(row.comments || 0),
+      activeDays: Number(row.activeDays || 0),
+      lastInteractionAt: Number(row.lastInteractionAt || 0),
+    };
+    updatedAt = Math.max(updatedAt, Number(row.lastInteractionAt || 0));
+  }
+  const ranked = Object.entries(users);
+  const winnerEntry = ranked[0] || null;
+  return {
+    month: monthKey,
+    participants: ranked.length,
+    firstDay: String(coverage?.firstDay || ''),
+    lastDay: String(coverage?.lastDay || ''),
+    updatedAt,
+    winner: winnerEntry ? { userKey: winnerEntry[0], ...winnerEntry[1] } : null,
+    users,
+  };
+}
+
+async function getOrCreateMonthlySnapshot(env, monthKey) {
+  if (!validMonthKey(monthKey)) return null;
+  const currentMonth = dateKeys(Date.now()).monthKey;
+  if (monthKey >= currentMonth) return null;
+  const existing = await env.DB.prepare('SELECT payload FROM monthly_ranking_snapshots WHERE month_key=?1 LIMIT 1').bind(monthKey).first();
+  if (existing?.payload) {
+    try { return JSON.parse(existing.payload); } catch (_) {}
+  }
+  const snapshot = await computeMonthlySnapshot(env, monthKey);
+  if (!snapshot) return null;
+  await env.DB.prepare('INSERT OR IGNORE INTO monthly_ranking_snapshots (month_key,payload,created_at) VALUES (?1,?2,?3)')
+    .bind(monthKey, JSON.stringify(snapshot), Date.now()).run();
+  const saved = await env.DB.prepare('SELECT payload FROM monthly_ranking_snapshots WHERE month_key=?1 LIMIT 1').bind(monthKey).first();
+  if (saved?.payload) {
+    try { return JSON.parse(saved.payload); } catch (_) {}
+  }
+  return snapshot;
+}
+
+async function closedMonthKeys(env, limit = 60) {
+  const currentMonth = dateKeys(Date.now()).monthKey;
+  const rows = await env.DB.prepare(`
+    SELECT DISTINCT month_key AS monthKey
+    FROM awards
+    WHERE month_key < ?1
+    ORDER BY month_key DESC
+    LIMIT ?2
+  `).bind(currentMonth, Math.max(1, Math.min(Number(limit) || 60, 60))).all();
+  return (rows.results || []).map(row => String(row.monthKey || '')).filter(validMonthKey);
+}
+
 async function getRanking(request, env, url) {
   const requested = String(url.searchParams.get('period') || 'week').toLowerCase();
   const period = ['week', 'month', 'all'].includes(requested) ? requested : 'week';
@@ -2064,6 +2164,30 @@ async function getRanking(request, env, url) {
 
   if (cached && now - cached.at < RANKING_CACHE_TTL_MS) {
     return json(cached.payload, 200, request, { 'Cache-Control': 'public, max-age=60' });
+  }
+
+  if (period === 'month' && monthKey < currentMonthKey) {
+    const snapshot = await getOrCreateMonthlySnapshot(env, monthKey);
+    if (snapshot) {
+      const payload = {
+        updatedAt: Number(snapshot.updatedAt || 0),
+        rules: RULES,
+        period: {
+          type: 'month',
+          weekKey,
+          weekStart: weekStartKey,
+          weekEnd: weekEndKey,
+          monthKey,
+          historical: true,
+          frozen: true,
+          firstRecordedDay: String(snapshot.firstDay || ''),
+          lastRecordedDay: String(snapshot.lastDay || ''),
+        },
+        users: snapshot.users || {},
+      };
+      rankingCache.set(cacheKey, { at: now, payload });
+      return json(payload, 200, request, { 'Cache-Control': 'public, max-age=86400' });
+    }
   }
 
   let result;
@@ -2194,83 +2318,116 @@ async function getRanking(request, env, url) {
 async function getMonthlyHistory(request, env, url) {
   const rawLimit = Number(url.searchParams.get('limit'));
   const limit = Math.max(1, Math.min(Number.isFinite(rawLimit) ? Math.floor(rawLimit) : 24, 60));
-  const currentMonthKey = dateKeys(Date.now()).monthKey;
+  const months = await closedMonthKeys(env, limit);
+  const snapshots = await Promise.all(months.map(month => getOrCreateMonthlySnapshot(env, month)));
+  const history = snapshots.filter(Boolean).map(snapshot => ({
+    month: snapshot.month,
+    participants: Number(snapshot.participants || 0),
+    firstDay: String(snapshot.firstDay || ''),
+    lastDay: String(snapshot.lastDay || ''),
+    winner: snapshot.winner || null,
+    frozen: true,
+  }));
+  return json({ ok: true, frozen: true, history }, 200, request, { 'Cache-Control': 'public, max-age=3600' });
+}
 
-  const result = await env.DB.prepare(`
-    WITH award_months AS (
-      SELECT a.month_key AS monthKey,
-             a.user_key,
-             COALESCE(MAX(u.username), MAX(a.username)) AS username,
-             SUM(a.points) AS points,
-             SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END) AS storyMentions,
-             SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END) AS comments,
-             MIN(a.day_key) AS userFirstDay,
-             MAX(a.day_key) AS userLastDay,
-             MAX(a.created_at) AS lastInteractionAt
-      FROM awards a
-      LEFT JOIN users u ON u.user_key = a.user_key
-      WHERE a.month_key < ?1
-      GROUP BY a.month_key, a.user_key
-    ),
-    active_months AS (
-      SELECT substr(day_key, 1, 7) AS monthKey,
-             user_key,
-             COUNT(*) AS activeDays
-      FROM active_days
-      WHERE substr(day_key, 1, 7) < ?1
-      GROUP BY substr(day_key, 1, 7), user_key
-    )
-    SELECT m.monthKey,
-           m.user_key,
-           m.username,
-           m.points,
-           m.storyMentions,
-           m.comments,
-           COALESCE(a.activeDays, 0) AS activeDays,
-           m.userFirstDay,
-           m.userLastDay,
-           m.lastInteractionAt
-    FROM award_months m
-    LEFT JOIN active_months a ON a.monthKey = m.monthKey AND a.user_key = m.user_key
-    ORDER BY m.monthKey DESC, m.points DESC, activeDays DESC, m.storyMentions DESC, m.comments DESC, m.username ASC
-  `).bind(currentMonthKey).all();
+async function getAchievementProfile(request, env, url) {
+  const username = cleanUsername(url.searchParams.get('username') || '').toLowerCase();
+  if (!username) return json({ ok: false, error: 'Perfil inválido.' }, 400, request);
 
-  const months = new Map();
-  for (const row of result.results || []) {
-    const month = String(row.monthKey || '');
-    if (!validMonthKey(month)) continue;
-    if (!months.has(month)) {
-      months.set(month, {
-        month,
-        participants: 0,
-        firstDay: String(row.userFirstDay || ''),
-        lastDay: String(row.userLastDay || ''),
-        winner: null,
-      });
-    }
-    const item = months.get(month);
-    item.participants += 1;
-    const first = String(row.userFirstDay || '');
-    const last = String(row.userLastDay || '');
-    if (first && (!item.firstDay || first < item.firstDay)) item.firstDay = first;
-    if (last && (!item.lastDay || last > item.lastDay)) item.lastDay = last;
-    if (!item.winner) {
-      item.winner = {
-        userKey: row.user_key,
-        username: row.username,
-        points: Number(row.points || 0),
-        storyMentions: Number(row.storyMentions || 0),
-        comments: Number(row.comments || 0),
-        activeDays: Number(row.activeDays || 0),
-      };
-    }
+  let user = await env.DB.prepare(`
+    SELECT user_key, username, points_all, story_mentions_all, comments_all, active_days_all
+    FROM users
+    WHERE lower(username)=?1
+    ORDER BY last_interaction_at DESC
+    LIMIT 1
+  `).bind(username).first();
+
+  if (!user?.user_key) {
+    const fallback = await env.DB.prepare(`
+      SELECT user_key, MAX(username) AS username
+      FROM awards
+      WHERE lower(username)=?1
+      GROUP BY user_key
+      ORDER BY MAX(created_at) DESC
+      LIMIT 1
+    `).bind(username).first();
+    if (!fallback?.user_key) return json({ ok: true, username, found: false, metrics: {} }, 200, request, { 'Cache-Control': 'public, max-age=120' });
+    user = { user_key: fallback.user_key, username: fallback.username, points_all: 0, story_mentions_all: 0, comments_all: 0, active_days_all: 0 };
   }
 
-  const history = [...months.values()]
-    .sort((a, b) => b.month.localeCompare(a.month))
-    .slice(0, limit);
+  const userKey = String(user.user_key);
+  const currentWeek = weekKeys(Date.now());
+  const [prediction, checkins, weeklyWinners, months] = await Promise.all([
+    env.DB.prepare(`
+      SELECT
+        SUM(CASE WHEN type='prediction_vote' THEN 1 ELSE 0 END) AS votes,
+        SUM(CASE WHEN type IN ('prediction_correct','prediction_nearest') THEN 1 ELSE 0 END) AS wins,
+        SUM(CASE WHEN type='prediction_combo' THEN 1 ELSE 0 END) AS combos
+      FROM awards
+      WHERE user_key=?1
+    `).bind(userKey).first(),
+    env.DB.prepare("SELECT COUNT(*) AS total FROM awards WHERE user_key=?1 AND type='checkin'").bind(userKey).first(),
+    env.DB.prepare(`
+      WITH award_rows AS (
+        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
+               user_key, username, points, type
+        FROM awards
+        WHERE day_key < ?1
+      ),
+      week_scores AS (
+        SELECT weekStart, user_key, MAX(username) AS username,
+               SUM(points) AS points,
+               SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
+               SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments
+        FROM award_rows
+        GROUP BY weekStart,user_key
+      ),
+      active_weeks AS (
+        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
+               user_key, COUNT(*) AS activeDays
+        FROM active_days
+        WHERE day_key < ?1
+        GROUP BY weekStart,user_key
+      ),
+      ranked AS (
+        SELECT s.weekStart,s.user_key,
+               ROW_NUMBER() OVER (
+                 PARTITION BY s.weekStart
+                 ORDER BY s.points DESC, COALESCE(a.activeDays,0) DESC, s.stories DESC, s.comments DESC, s.username ASC
+               ) AS place
+        FROM week_scores s
+        LEFT JOIN active_weeks a ON a.weekStart=s.weekStart AND a.user_key=s.user_key
+      )
+      SELECT COUNT(*) AS wins FROM ranked WHERE user_key=?2 AND place=1
+    `).bind(currentWeek.weekStartKey, userKey).first(),
+    closedMonthKeys(env, 60),
+  ]);
 
-  return json({ ok: true, history }, 200, request, { 'Cache-Control': 'public, max-age=60' });
+  const snapshots = await Promise.all(months.map(month => getOrCreateMonthlySnapshot(env, month)));
+  const monthWins = snapshots.filter(s => s?.winner?.userKey === userKey || String(s?.winner?.username||'').toLowerCase() === username).length;
+
+  const metrics = {
+    total_points: Number(user.points_all || 0),
+    week_wins: Number(weeklyWinners?.wins || 0),
+    month_wins: monthWins,
+    prediction_wins: Number(prediction?.wins || 0),
+    prediction_votes: Number(prediction?.votes || 0),
+    prediction_combo: Number(prediction?.combos || 0),
+    active_days: Number(user.active_days_all || 0),
+    comments: Number(user.comments_all || 0),
+    stories: Number(user.story_mentions_all || 0),
+    checkins: Number(checkins?.total || 0),
+  };
+
+  return json({
+    ok: true,
+    found: true,
+    userKey,
+    username: String(user.username || username),
+    metrics,
+    frozenMonths: months.length,
+  }, 200, request, { 'Cache-Control': 'public, max-age=120' });
 }
 
 async function getWeeklyHistory(request, env, url) {
