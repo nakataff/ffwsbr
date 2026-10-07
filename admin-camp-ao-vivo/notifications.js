@@ -34,6 +34,7 @@ function score(b,team,drop){
  return row;
 }
 async function publish(code){
+ await clearResetQueue;
  try{const b=snapshot(),info=identity(b),list=await catalog(),id=info.id||Object.keys(list).find(id=>list[id].name===info.name),t=list[id];if(!t?.enabled)throw Error('Abra Avisos do torneio e marque Permitir avisos primeiro.');
  const team=roster(b).find(r=>r.code===code&&t.teams?.[r.id]);if(!team)throw Error('Salve a configuração de avisos com este time primeiro.');
  const day=Number(b.tournamentModeV1?.draftDayNumber)||1,drop=Number(document.getElementById('drop-num')?.value)||1;
@@ -54,6 +55,7 @@ function attachBells(){
 }
 
 async function publishStart(){
+ await clearResetQueue;
  try{
   const b=snapshot(),info=identity(b),list=await catalog(),id=info.id||Object.keys(list).find(id=>list[id].name===info.name),t=list[id];if(!t?.enabled)throw Error('Abra Avisos do torneio e marque Permitir avisos primeiro.');
   const day=Number(b.tournamentModeV1?.draftDayNumber)||1,drop=Number(document.getElementById('drop-num')?.value)||1,map=String(document.getElementById('drop-map')?.value??b.drops?.[drop-1]?.map??'').trim();if(!map)throw Error('Selecione o mapa desta queda antes de enviar o aviso de início.');
@@ -68,9 +70,20 @@ function attachStartBell(){
  const button=document.createElement('button');button.id='cff-notify-start';button.type='button';button.className='btn-mini cff-notify-start';button.innerHTML=bell+'<span>Avisar início</span>';button.title='Avisar início da queda com o mapa selecionado';button.setAttribute('aria-label','Avisar início da queda');button.onclick=publishStart;anchor.insertAdjacentElement('afterend',button);
 }
 
+let clearResetQueue=Promise.resolve();
+window.addEventListener('cff:camp-drops-cleared',e=>{
+ let b,info,day;try{b=snapshot();info=identity(b);day=Number(b.tournamentModeV1?.draftDayNumber)||1;}catch{return;}
+ const all=e.detail?.all===true,drop=Number(e.detail?.drop);if(!all&&(!Number.isInteger(drop)||drop<1))return;
+ clearResetQueue=clearResetQueue.then(async()=>{
+  const list=await catalog(),id=info.id||Object.keys(list).find(id=>list[id].name===info.name);if(!id||!list[id])return;
+  const result=await request(all?'resetDay':'resetDrop',{tournamentId:id,day,...(all?{}:{drop})},app());
+  document.querySelectorAll('.cff-notify-bell.is-sent').forEach(b=>{b.classList.remove('is-sent');b.title='Enviar aviso de eliminação ou Booyah';});
+  window.CFF_CAMP?.toast?.(result.skipped?.length?'Dados limpos. Avisos oficiais preservados nas quedas: '+result.skipped.join(', '):'Dados e avisos de teste reiniciados.');
+ }).catch(error=>{window.CFF_CAMP?.toast?.('Os dados foram limpos, mas os avisos não foram reiniciados: '+error.message+' Use Reiniciar avisos em Avisos do torneio para tentar novamente.','err');});
+});
 function boot(){
  if(window.__CFF_CAMP_READY__!==true||!document.querySelector('.cff-camp-command'))return false;
- stylesheet();const tools=document.createElement('div');tools.className='cff-notify-admin';tools.innerHTML='<button type="button" class="cff-camp-btn" data-config>'+bell+' Avisos do torneio</button><a class="cff-camp-btn" href="/conta.html?tab=notifications" target="_blank" rel="noopener">Testar na minha conta ↗</a><span>Envie pelo sino ao lado do nome do time em Lançar quedas.</span>';tools.querySelector('[data-config]').onclick=configure;document.querySelector('.cff-camp-command').append(tools);
+ stylesheet();const clearBox=document.getElementById('v38-clear-drops-box');if(clearBox&&!clearBox.querySelector('[data-clear-notify-help]'))clearBox.insertAdjacentHTML('beforeend','<p class="cff-notify-help" data-clear-notify-help>Ao limpar, os avisos de teste dessas quedas também são reiniciados. Avisos oficiais são preservados.</p>');const tools=document.createElement('div');tools.className='cff-notify-admin';tools.innerHTML='<button type="button" class="cff-camp-btn" data-config>'+bell+' Avisos do torneio</button><a class="cff-camp-btn" href="/conta.html?tab=notifications" target="_blank" rel="noopener">Testar na minha conta ↗</a><span>Envie pelo sino ao lado do nome do time em Lançar quedas.</span>';tools.querySelector('[data-config]').onclick=configure;document.querySelector('.cff-camp-command').append(tools);
  attachBells();attachStartBell();const toolbar=document.getElementById('v81-launch-view-tools');if(toolbar)new MutationObserver(attachStartBell).observe(toolbar,{childList:true,subtree:true});const container=document.getElementById('teams-inputs-container');if(container){let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;attachBells();});}).observe(container,{childList:true,subtree:true});}
  return true;
 }

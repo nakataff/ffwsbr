@@ -61,6 +61,16 @@ export class NotificationHub extends DurableObject {
   for(const p of this.rows('SELECT uid,data FROM preferences WHERE tournament=?',id))if(C.interested(JSON.parse(p.data),event))this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?)',eventId,p.uid);
   return true;
  }
+ async clearTestDrop(id,t,day,drop){
+    if(t.officialStage&&C.officialRows(await this.official(t.officialStage,day,drop),t.teams).length)throw Error('Esta queda já tem T1 + P1 oficial e não pode ser reiniciada.');
+    const removed=this.ctx.storage.transactionSync(()=>{
+     if(this.rows("SELECT id FROM events WHERE tournament=? AND day=? AND dropno=? AND status='official' LIMIT 1",id,day,drop).length)throw Error('Esta queda já tem resultado oficial e não pode ser reiniciada.');
+     const events=this.rows('SELECT id,data FROM events WHERE tournament=? AND day=? AND dropno=?',id,day,drop);
+     for(const event of events){this.sql.exec('DELETE FROM jobs WHERE event=?',event.id);this.sql.exec('DELETE FROM inbox WHERE id=?',JSON.parse(event.data).inboxId);}
+     this.sql.exec('DELETE FROM events WHERE tournament=? AND day=? AND dropno=?',id,day,drop);
+     this.sql.exec('DELETE FROM pending WHERE tournament=? AND day=? AND dropno=?',id,day,drop);return events.length;
+    });return removed;
+ }
  async schedule(){const jobs=this.rows('SELECT event FROM jobs LIMIT 1').length,pending=this.rows('SELECT check_at FROM pending ORDER BY check_at LIMIT 1')[0];if(jobs||pending)await this.ctx.storage.setAlarm(jobs?Date.now()+1000:Math.max(Date.now()+1000,pending.check_at));else await this.ctx.storage.deleteAlarm();}
  async push(uid,event){
   const devices=this.rows('SELECT id,data FROM devices WHERE uid=?',uid),vapid=this.vapid();
@@ -107,16 +117,13 @@ export class NotificationHub extends DurableObject {
     const old=this.config(id),officialStage=['final','segundaFase'].includes(b.officialStage)?b.officialStage:'';if(old?.officialStage&&officialStage!==old.officialStage)throw Error('Crie outro torneio para trocar a etapa oficial.');
     if(!old&&this.rows('SELECT id FROM catalog').length>=100)throw Error('Limite de 100 torneios.');this.sql.exec('INSERT OR REPLACE INTO catalog VALUES(?,?)',id,JSON.stringify({name:C.text(b.name),enabled:b.enabled===true,teams,officialStage,streamUrl:b.streamUrl===undefined?streamUrl(old?.streamUrl):streamUrl(b.streamUrl),updatedAt:now}));return json({ok:true,tournamentId:id});
    }
-   if(action==='resetDrop'){
-    admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t)throw Error('Torneio não encontrado.');const day=C.integer(b.day,1,365),drop=C.integer(b.drop,1,999);
-    if(t.officialStage&&C.officialRows(await this.official(t.officialStage,day,drop),t.teams).length)throw Error('Esta queda já tem T1 + P1 oficial e não pode ser reiniciada.');
-    const removed=this.ctx.storage.transactionSync(()=>{
-     if(this.rows("SELECT id FROM events WHERE tournament=? AND day=? AND dropno=? AND status='official' LIMIT 1",id,day,drop).length)throw Error('Esta queda já tem resultado oficial e não pode ser reiniciada.');
-     const events=this.rows('SELECT id,data FROM events WHERE tournament=? AND day=? AND dropno=?',id,day,drop);
-     for(const event of events){this.sql.exec('DELETE FROM jobs WHERE event=?',event.id);this.sql.exec('DELETE FROM inbox WHERE id=?',JSON.parse(event.data).inboxId);}
-     this.sql.exec('DELETE FROM events WHERE tournament=? AND day=? AND dropno=?',id,day,drop);
-     this.sql.exec('DELETE FROM pending WHERE tournament=? AND day=? AND dropno=?',id,day,drop);return events.length;
-    });await this.schedule();return json({ok:true,removed});
+   if(action==='resetDrop'||action==='resetDay'){
+    admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t)throw Error('Torneio não encontrado.');const day=C.integer(b.day,1,365);
+    if(action==='resetDrop'){const removed=await this.clearTestDrop(id,t,day,C.integer(b.drop,1,999));await this.schedule();return json({ok:true,removed});}
+    let removed=0;const skipped=[];
+    for(const row of this.rows('SELECT DISTINCT dropno FROM events WHERE tournament=? AND day=?',id,day)){
+     try{removed+=await this.clearTestDrop(id,t,day,row.dropno);}catch(e){if(/oficial/.test(e.message))skipped.push(row.dropno);else throw e;}
+    }await this.schedule();return json({ok:true,removed,skipped});
    }
    if(action==='publish'){
     admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');const day=C.integer(b.day,1,365),drop=C.integer(b.drop,1,999),kind=b.kind||'elimination';

@@ -158,7 +158,7 @@
           document.body.appendChild(persistence);
           };
           const entries=document.createElement('script');
-          entries.src='admin-camp-ao-vivo/launch-extras.js?v=20261003-camp-fixes-v25';
+          entries.src='admin-camp-ao-vivo/launch-extras.js?v=20261007-clear-notify-v1';
           entries.async=false;
           entries.onload=startPersistence;
           entries.onerror=()=>{console.warn('[Camp ao vivo] entradas extras indisponíveis');startPersistence()};

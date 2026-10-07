@@ -357,11 +357,12 @@
     ['v38ClearCurrentDrop','v38ClearAllDrops'].forEach(name=>{
       const clear=window[name];if(typeof clear!=='function')return;
       window[name]=function(){
-        const key=scope(),previous=drafts,first=$('#teams-inputs-container .team-row input[type="number"]');
+        const key=scope(),previous=drafts,first=$('#teams-inputs-container .team-row input[type="number"]'),firstRow=$('#teams-inputs-container .team-row'),drop=Number($('#drop-num')?.value);
         drafts=name==='v38ClearAllDrops'?Object.fromEntries(Object.entries(drafts).filter(([entry])=>entry.slice(0,entry.lastIndexOf('|'))!==key.slice(0,key.lastIndexOf('|')))):{...drafts};
         if(name==='v38ClearCurrentDrop')delete drafts[key];
         const result=clear.apply(this,arguments);
         if(first===$('#teams-inputs-container .team-row input[type="number"]'))drafts=previous;
+        if(firstRow&&firstRow!==$('#teams-inputs-container .team-row'))window.dispatchEvent(new CustomEvent('cff:camp-drops-cleared',{detail:{all:name==='v38ClearAllDrops',drop}}));
         renderRows();persist();return result;
       };
     });

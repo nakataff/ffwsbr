@@ -112,4 +112,5 @@ test('admin can restart only the chosen non-official drop and preserve subscript
  official={source:{teams:true,players:true},teams:{fx:{team:'FLUXO W7M',position:1,kills:4,points:16}},players:{p:{team:'FLUXO W7M',kills:4}}};
  assert.equal((await call('resetDrop',a)).status,400);assert.equal(h.rows('SELECT id FROM events WHERE dropno=1').length,1);
  official=null;h.sql.exec("UPDATE events SET status='official' WHERE dropno=1");assert.equal((await call('resetDrop',a)).status,400);
+ await call('publish',{...start,day:2});assert.equal((await call('resetDay',a,member)).status,403);const batch=await call('resetDay',a);assert.equal(batch.removed,1);assert.deepEqual(batch.skipped,[1]);assert.equal(h.rows('SELECT id FROM events WHERE day=2').length,1);assert.equal(h.rows("SELECT id FROM events WHERE day=1 AND status='official'").length,1);assert.equal((await call('publish',{...start,drop:2})).duplicate,false);
 });
