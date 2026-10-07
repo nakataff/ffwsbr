@@ -2,3 +2,5 @@
 
 
 .cff-admin-gift-message{display:block;margin-top:5px;overflow-wrap:anywhere}
+
+.cff-admin-grant-row strong{display:flex;align-items:center;gap:8px}.cff-admin-grant-row strong img{width:30px;height:30px;object-fit:contain;flex:0 0 30px;border-radius:6px;background:#0a1320}.cff-admin-grant-row .cff-account-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
