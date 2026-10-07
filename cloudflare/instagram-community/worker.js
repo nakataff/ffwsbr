@@ -2391,7 +2391,7 @@ async function getAchievementProfile(request, env, url) {
         GROUP BY weekStart,user_key
       ),
       ranked AS (
-        SELECT s.weekStart,s.user_key,
+        SELECT s.weekStart,s.user_key,s.username,
                ROW_NUMBER() OVER (
                  PARTITION BY s.weekStart
                  ORDER BY s.points DESC, COALESCE(a.activeDays,0) DESC, s.stories DESC, s.comments DESC, s.username ASC
@@ -2399,8 +2399,8 @@ async function getAchievementProfile(request, env, url) {
         FROM week_scores s
         LEFT JOIN active_weeks a ON a.weekStart=s.weekStart AND a.user_key=s.user_key
       )
-      SELECT COUNT(*) AS wins FROM ranked WHERE user_key=?2 AND place=1
-    `).bind(currentWeek.weekStartKey, userKey).first(),
+      SELECT COUNT(*) AS wins FROM ranked WHERE place=1 AND (user_key=?2 OR lower(username)=?3)
+    `).bind(currentWeek.weekStartKey, userKey, username).first(),
     closedMonthKeys(env, 60),
   ]);
 
