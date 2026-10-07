@@ -125,7 +125,7 @@
 
   </style>
 <script defer src="js/config.min.js?v=20260629-laff-json-v1"></script>
-</head>
+<link rel="stylesheet" href="/css/community-profile.css?v=20261007-access-v1"></head>
 <body>
 <div class="cff-account-toolbar"><a href="conta.html" data-account-entry>Entrar com Google / Minha conta</a><span>Salve seu Instagram confirmado para usar nos outros aparelhos.</span></div>
 <header class="cff-public-topbar">
@@ -294,7 +294,7 @@
     const top=users.slice(0,3);
     if(!top.length){els.podium.hidden=true;els.podium.innerHTML='';return;}
     els.podium.hidden=false;
-    els.podium.innerHTML=top.map((u,i)=>`<div class="ig-podium-item"><div class="ig-rank-medal">${i+1}º</div><div class="ig-user-icon">${escapeHTML(initials(u.username))}</div><strong class="ig-podium-user">@${escapeHTML(u.username)}</strong><span class="ig-podium-points">${formatNumber(u.points)} pts</span></div>`).join('');
+    els.podium.innerHTML=top.map((u,i)=>`<div class="ig-podium-item"><div class="ig-rank-medal">${i+1}º</div><a class="ig-user-icon" href="/conta.html?ig=${encodeURIComponent(u.username)}" data-community-avatar="${escapeHTML(u.username)}" aria-label="Ver perfil de @${escapeHTML(u.username)}">${escapeHTML(initials(u.username))}</a><a class="ig-podium-user" href="/conta.html?ig=${encodeURIComponent(u.username)}">@${escapeHTML(u.username)}</a><span class="ig-podium-points">${formatNumber(u.points)} pts</span></div>`).join('');
   }
 
   function filteredUsers(){
@@ -345,7 +345,7 @@
     els.empty.hidden=true;els.table.hidden=false;
     els.tbody.innerHTML=visible.map(u=>{
       const pos=all.findIndex(item=>item.id===u.id)+1;
-      return `<tr><td class="ig-pos">${pos}º</td><td><div class="ig-user-cell"><span class="ig-mini-icon">${escapeHTML(initials(u.username))}</span><strong>@${escapeHTML(u.username)}</strong></div></td><td class="ig-points">${formatNumber(u.points)}</td><td class="ig-muted-cell">${formatNumber(u.storyMentions)}</td><td class="ig-muted-cell">${formatNumber(u.comments)}</td><td class="ig-muted-cell">${formatNumber(u.activeDays)}</td></tr>`;
+      return `<tr><td class="ig-pos">${pos}º</td><td><div class="ig-user-cell"><a class="ig-mini-icon" href="/conta.html?ig=${encodeURIComponent(u.username)}" data-community-avatar="${escapeHTML(u.username)}" aria-label="Ver perfil de @${escapeHTML(u.username)}">${escapeHTML(initials(u.username))}</a><a class="ig-ranking-name" href="/conta.html?ig=${encodeURIComponent(u.username)}">@${escapeHTML(u.username)}</a></div></td><td class="ig-points">${formatNumber(u.points)}</td><td class="ig-muted-cell">${formatNumber(u.storyMentions)}</td><td class="ig-muted-cell">${formatNumber(u.comments)}</td><td class="ig-muted-cell">${formatNumber(u.activeDays)}</td></tr>`;
     }).join('');
   }
 
@@ -445,6 +445,6 @@
 <script data-cff-community-prediction src="js/community-prediction-v5.js?v=20261006-account-v1"></script>
 <script data-cff-community-promos src="js/community-promos.js?v=20260929-giveaway-winner-v5"></script>
 
-<script type="module" src="/js/public-account.js?v=20261006-owner-v1"></script>
-</body>
+<script type="module" src="/js/public-account.js?v=20261007-access-v1"></script>
+<script type="module" src="/js/community-ranking-profiles.js?v=20261007-access-v1"></script></body>
 </html>

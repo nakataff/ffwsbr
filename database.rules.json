@@ -249,7 +249,7 @@
             ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 140"
           },
           "avatarId": {
-            ".validate": "newData.isString() && (newData.val() == data.val() || newData.val().matches(/^(default|team-afrogames|team-alpha7|team-civis|team-cpt-vox|team-fluxo-w7m|team-influence-rage|team-intz|team-loops|team-los|team-loud-snickers|team-rise-gaming|team-rush-gaming|team-sx-tet|team-team-solid|player-braboxx7-afrogames|player-dnsetzz-afrogames|player-gbzinn7-afrogames|player-nielffx-afrogames|player-peter-afrogames|player-sant10s-afrogames|player-brisa7-alpha7|player-jnmvp7-alpha7|player-lc777-alpha7|player-mitomvp-alpha7|player-sam7-alpha7|player-destroi7-civis|player-henry10-civis|player-hugo7-civis|player-lukasz-civis|player-neyawp-civis|player-soares-civis|player-angelo7-cpt-vox|player-bad9-cpt-vox|player-gbtrem22-cpt-vox|player-seven7zk-cpt-vox|player-trevor9-cpt-vox|player-bops-fluxo-w7m|player-butzin-fluxo-w7m|player-giuh-fluxo-w7m|player-mt7-fluxo-w7m|player-proxx7-fluxo-w7m|player-igor7-influence-rage|player-lippe-influence-rage|player-lyon-influence-rage|player-nepoign-influence-rage|player-saskito-influence-rage|player-gus-intz|player-honeyzl-intz|player-joao7-intz|player-kauaxp-intz|player-pereira-intz|player-draxx7-loops|player-iguinmvp-loops|player-luan7-loops|player-pao7-loops|player-vitin9-loops|player-general-los|player-mtsexy-los|player-raone7-los|player-rigby245-los|player-yago-los|player-bzp-loud-snickers|player-guaxa-loud-snickers|player-hak-loud-snickers|player-nickz-loud-snickers|player-trap-loud-snickers|player-carioca-rise-gaming|player-erick11-rise-gaming|player-kakazk-rise-gaming|player-mala-rise-gaming|player-naandox-rise-gaming|player-black02-rush-gaming|player-ericking-rush-gaming|player-guimerlq-rush-gaming|player-mitinx-rush-gaming|player-prozin-rush-gaming|player-furiazz7-sx-tet|player-nikeboy-sx-tet|player-redxzzz-sx-tet|player-yato7-sx-tet|player-byte333-team-solid|player-motovea-team-solid|player-pitbull-team-solid|player-sbrica-team-solid|player-vitinxp-team-solid|player-wliu-sx-tet)$/) || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'avatar' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true)))"
+            ".validate": "newData.isString() && (newData.val() == data.val() || newData.val().matches(/^(default|team-afrogames|team-alpha7|team-civis|team-cpt-vox|team-fluxo-w7m|team-influence-rage|team-intz|team-loops|team-los|team-loud-snickers|team-rise-gaming|team-rush-gaming|team-sx-tet|team-team-solid|player-braboxx7-afrogames|player-dnsetzz-afrogames|player-gbzinn7-afrogames|player-nielffx-afrogames|player-peter-afrogames|player-sant10s-afrogames|player-brisa7-alpha7|player-jnmvp7-alpha7|player-lc777-alpha7|player-mitomvp-alpha7|player-sam7-alpha7|player-destroi7-civis|player-henry10-civis|player-hugo7-civis|player-lukasz-civis|player-neyawp-civis|player-soares-civis|player-angelo7-cpt-vox|player-bad9-cpt-vox|player-gbtrem22-cpt-vox|player-seven7zk-cpt-vox|player-trevor9-cpt-vox|player-bops-fluxo-w7m|player-butzin-fluxo-w7m|player-giuh-fluxo-w7m|player-mt7-fluxo-w7m|player-proxx7-fluxo-w7m|player-igor7-influence-rage|player-lippe-influence-rage|player-lyon-influence-rage|player-nepoign-influence-rage|player-saskito-influence-rage|player-gus-intz|player-honeyzl-intz|player-joao7-intz|player-kauaxp-intz|player-pereira-intz|player-draxx7-loops|player-iguinmvp-loops|player-luan7-loops|player-pao7-loops|player-vitin9-loops|player-general-los|player-mtsexy-los|player-raone7-los|player-rigby245-los|player-yago-los|player-bzp-loud-snickers|player-guaxa-loud-snickers|player-hak-loud-snickers|player-nickz-loud-snickers|player-trap-loud-snickers|player-carioca-rise-gaming|player-erick11-rise-gaming|player-kakazk-rise-gaming|player-mala-rise-gaming|player-naandox-rise-gaming|player-black02-rush-gaming|player-ericking-rush-gaming|player-guimerlq-rush-gaming|player-mitinx-rush-gaming|player-prozin-rush-gaming|player-furiazz7-sx-tet|player-nikeboy-sx-tet|player-redxzzz-sx-tet|player-yato7-sx-tet|player-byte333-team-solid|player-motovea-team-solid|player-pitbull-team-solid|player-sbrica-team-solid|player-vitinxp-team-solid|player-wliu-sx-tet)$/) || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'avatar' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
           },
           "theme": {
             ".validate": "newData.val() == 'cyan' || newData.val() == 'gold' || newData.val() == 'pink' || newData.val() == 'green' || newData.val() == 'violet'"
@@ -267,7 +267,7 @@
             ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 1800"
           },
           "coverId": {
-            ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true)))"
+            ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
           },
           "public": {
             ".validate": "newData.isBoolean()"
@@ -392,7 +392,7 @@
           ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 140"
         },
         "avatarId": {
-          ".validate": "newData.isString() && (newData.val() == data.val() || newData.val().matches(/^(default|team-afrogames|team-alpha7|team-civis|team-cpt-vox|team-fluxo-w7m|team-influence-rage|team-intz|team-loops|team-los|team-loud-snickers|team-rise-gaming|team-rush-gaming|team-sx-tet|team-team-solid|player-braboxx7-afrogames|player-dnsetzz-afrogames|player-gbzinn7-afrogames|player-nielffx-afrogames|player-peter-afrogames|player-sant10s-afrogames|player-brisa7-alpha7|player-jnmvp7-alpha7|player-lc777-alpha7|player-mitomvp-alpha7|player-sam7-alpha7|player-destroi7-civis|player-henry10-civis|player-hugo7-civis|player-lukasz-civis|player-neyawp-civis|player-soares-civis|player-angelo7-cpt-vox|player-bad9-cpt-vox|player-gbtrem22-cpt-vox|player-seven7zk-cpt-vox|player-trevor9-cpt-vox|player-bops-fluxo-w7m|player-butzin-fluxo-w7m|player-giuh-fluxo-w7m|player-mt7-fluxo-w7m|player-proxx7-fluxo-w7m|player-igor7-influence-rage|player-lippe-influence-rage|player-lyon-influence-rage|player-nepoign-influence-rage|player-saskito-influence-rage|player-gus-intz|player-honeyzl-intz|player-joao7-intz|player-kauaxp-intz|player-pereira-intz|player-draxx7-loops|player-iguinmvp-loops|player-luan7-loops|player-pao7-loops|player-vitin9-loops|player-general-los|player-mtsexy-los|player-raone7-los|player-rigby245-los|player-yago-los|player-bzp-loud-snickers|player-guaxa-loud-snickers|player-hak-loud-snickers|player-nickz-loud-snickers|player-trap-loud-snickers|player-carioca-rise-gaming|player-erick11-rise-gaming|player-kakazk-rise-gaming|player-mala-rise-gaming|player-naandox-rise-gaming|player-black02-rush-gaming|player-ericking-rush-gaming|player-guimerlq-rush-gaming|player-mitinx-rush-gaming|player-prozin-rush-gaming|player-furiazz7-sx-tet|player-nikeboy-sx-tet|player-redxzzz-sx-tet|player-yato7-sx-tet|player-byte333-team-solid|player-motovea-team-solid|player-pitbull-team-solid|player-sbrica-team-solid|player-vitinxp-team-solid|player-wliu-sx-tet)$/) || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'avatar' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true)))"
+          ".validate": "newData.isString() && (newData.val() == data.val() || newData.val().matches(/^(default|team-afrogames|team-alpha7|team-civis|team-cpt-vox|team-fluxo-w7m|team-influence-rage|team-intz|team-loops|team-los|team-loud-snickers|team-rise-gaming|team-rush-gaming|team-sx-tet|team-team-solid|player-braboxx7-afrogames|player-dnsetzz-afrogames|player-gbzinn7-afrogames|player-nielffx-afrogames|player-peter-afrogames|player-sant10s-afrogames|player-brisa7-alpha7|player-jnmvp7-alpha7|player-lc777-alpha7|player-mitomvp-alpha7|player-sam7-alpha7|player-destroi7-civis|player-henry10-civis|player-hugo7-civis|player-lukasz-civis|player-neyawp-civis|player-soares-civis|player-angelo7-cpt-vox|player-bad9-cpt-vox|player-gbtrem22-cpt-vox|player-seven7zk-cpt-vox|player-trevor9-cpt-vox|player-bops-fluxo-w7m|player-butzin-fluxo-w7m|player-giuh-fluxo-w7m|player-mt7-fluxo-w7m|player-proxx7-fluxo-w7m|player-igor7-influence-rage|player-lippe-influence-rage|player-lyon-influence-rage|player-nepoign-influence-rage|player-saskito-influence-rage|player-gus-intz|player-honeyzl-intz|player-joao7-intz|player-kauaxp-intz|player-pereira-intz|player-draxx7-loops|player-iguinmvp-loops|player-luan7-loops|player-pao7-loops|player-vitin9-loops|player-general-los|player-mtsexy-los|player-raone7-los|player-rigby245-los|player-yago-los|player-bzp-loud-snickers|player-guaxa-loud-snickers|player-hak-loud-snickers|player-nickz-loud-snickers|player-trap-loud-snickers|player-carioca-rise-gaming|player-erick11-rise-gaming|player-kakazk-rise-gaming|player-mala-rise-gaming|player-naandox-rise-gaming|player-black02-rush-gaming|player-ericking-rush-gaming|player-guimerlq-rush-gaming|player-mitinx-rush-gaming|player-prozin-rush-gaming|player-furiazz7-sx-tet|player-nikeboy-sx-tet|player-redxzzz-sx-tet|player-yato7-sx-tet|player-byte333-team-solid|player-motovea-team-solid|player-pitbull-team-solid|player-sbrica-team-solid|player-vitinxp-team-solid|player-wliu-sx-tet)$/) || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'avatar' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
         },
         "theme": {
           ".validate": "newData.val() == 'cyan' || newData.val() == 'gold' || newData.val() == 'pink' || newData.val() == 'green' || newData.val() == 'violet'"
@@ -410,7 +410,7 @@
           ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 1800"
         },
         "coverId": {
-          ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true)))"
+          ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
         },
         "public": {
           ".validate": "newData.isBoolean()"
@@ -474,6 +474,9 @@
         },
         "$other": {
           ".validate": false
+        },
+        "accessRule": {
+          ".validate": "newData.isString() && newData.val().matches(/^(all|badge|weekly|monthly|top3|event|supporter|code|manual|admin)$/)"
         }
       }
     },
@@ -541,6 +544,75 @@
       "$other": {
         ".validate": false
       }
+    },
+    "communityImageOwnership": {
+      "$uid": {
+        ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br') || root.child('communityProfiles').child($uid).child('public').val() == true",
+        "$asset": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "newData.hasChildren(['source','grantedAt']) && root.child('communityProfileCatalog').child($asset).exists()",
+          "source": {
+            ".validate": "newData.val() == 'admin' || newData.val() == 'code'"
+          },
+          "codeHash": {
+            ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{64}$/)"
+          },
+          "grantedAt": {
+            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "communityAccountRoles": {
+      "$uid": {
+        ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br') || root.child('communityProfiles').child($uid).child('public').val() == true",
+        "administrator": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "newData.isBoolean()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "communityAvatarCodes": {
+      ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+      "$hash": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "$hash.matches(/^[a-f0-9]{64}$/) && newData.hasChildren(['assetId','enabled','expiresAt'])",
+        "assetId": {
+          ".validate": "newData.isString() && root.child('communityProfileCatalog').child(newData.val()).exists()"
+        },
+        "enabled": {
+          ".validate": "newData.isBoolean()"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "label": {
+          ".validate": "newData.isString() && newData.val().length <= 70"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "communityInstagramLinks": {
+      "$uid": {
+        ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br') || root.child('communityProfiles').child($uid).child('public').val() == true",
+        ".write": false
+      }
+    },
+    "communityRankingProfiles": {
+      ".read": true,
+      ".write": false
+    },
+    "communityProfileRate": {
+      ".read": false,
+      ".write": false
     }
   }
 }

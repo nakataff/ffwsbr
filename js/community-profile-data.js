@@ -1,5 +1,5 @@
 import { ref, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
-export const PROFILE_VERSION='20261006-profile-v2';
+export const PROFILE_VERSION='20261007-access-v1';
 export const escapeProfile=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const DEFAULT_AVATAR='/central%20free%20fire.webp';
 let optionsPromise;const imageCache=new Map();
@@ -17,4 +17,8 @@ export function hydrateProfileImages(root,db){
 }
 export function activeGrants(grants){return Object.entries(grants||{}).filter(([,g])=>g.status==='active').map(([id,g])=>({id,...g}));}
 export function hasBadge(grants,badgeId){return activeGrants(grants).some(g=>g.badgeId===badgeId);}
-export function catalogAvailable(item,grants){return item?.enabled&&(!item.unlockBadge||hasBadge(grants,item.unlockBadge));}
+export const ACCESS_LABELS={all:'Disponível para todos',weekly:'Campeão semanal',monthly:'Melhor do mês',top3:'Top 3 da comunidade',event:'Evento especial',supporter:'Apoiador da Central',code:'Via código',manual:'Liberação manual',admin:'Somente administradores',badge:'Por insígnia'};
+export function catalogAvailable(item,grants,ownership={},roles={},id=''){if(!item?.enabled)return false;const access=item.accessRule||(item.unlockBadge?'badge':'all');if(ownership[id])return true;if(access==='admin')return roles.administrator===true;return ['all','badge'].includes(access)&&(!item.unlockBadge||hasBadge(grants,item.unlockBadge));}
+export function automaticAvatar(name,options,catalog={}){let hash=2166136261;for(const c of String(name||'').toLowerCase()){hash^=c.charCodeAt(0);hash=Math.imul(hash,16777619);}const pool=[...(options?.players||[]),...Object.entries(catalog).filter(([,x])=>x.kind==='avatar'&&x.enabled&&(x.accessRule||'all')==='all'&&!x.unlockBadge).map(([id])=>({id}))];return pool.length?pool[(hash>>>0)%pool.length].id:'default';}
+export const instagramKey=name=>String(name||'').toLowerCase().replace(/\./g,',');
+
