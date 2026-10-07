@@ -1,13 +1,12 @@
 import {getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-import {getDatabase,ref,get} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
-import {request,stylesheet} from '/js/camp-notifications.js?v=20261007-v1';
+import {request,stylesheet} from '/js/camp-notifications.js?v=20261007-free-v2';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,80);
 const app=()=>getApps().find(a=>a.name==='[DEFAULT]')||getApps()[0];
 function snapshot(){const b=window.collectBackupData?.(true);if(!b?.selectedTeams?.length)throw Error('Adicione os times antes de configurar avisos.');return b;}
 function identity(b){const stage=b.config?.cffFfwsStage,name=String(b.tournamentModeV1?.name||b.config?.tournamentName||'').trim();if(!name)throw Error('Defina o nome do torneio.');return {name,stage:['final','segundaFase'].includes(stage)?stage:'',id:['final','segundaFase'].includes(stage)?'ffws-br-2026-s2-'+stage.toLowerCase():''};}
 function roster(b){const catalog=String(b.teams||'').split(/\r?\n/).map(line=>line.split(',').map(v=>v.trim()));return b.selectedTeams.map(code=>{const row=catalog.find(r=>r[1]===code)||[code,code,code];return{id:key(code),name:row[0]||code,aliases:[code,row[2]||code]};});}
-async function catalog(){return (await get(ref(getDatabase(app()),'campNotifications/catalog'))).val()||{};}
+async function catalog(){return (await request('settings',{},app())).catalog||{};}
 function dialog(title,html){document.getElementById('cff-notify-dialog')?.remove();const d=document.createElement('dialog');d.id='cff-notify-dialog';d.className='cff-notify-dialog';d.innerHTML=`<h2>${esc(title)}</h2>${html}<p role="status" data-status></p><button type="button" class="cff-camp-btn" data-close>Fechar</button>`;d.querySelector('[data-close]').onclick=()=>d.close();d.addEventListener('close',()=>d.remove());document.body.append(d);d.showModal();return d;}
 async function configure(){
  try{const b=snapshot(),info=identity(b),list=await catalog(),teams=roster(b);const prior=info.id?list[info.id]:Object.values(list).find(t=>t.name===info.name);
