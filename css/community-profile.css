@@ -48,9 +48,12 @@
 /* 2026-10-07: avatar/capa modal v1 */
 /* Quando há uma capa personalizada, o círculo decorativo padrão some. */
 .cff-profile-hero.has-cover:before{display:none}
-.cff-profile-avatar-wrap{position:relative;width:106px;height:106px;flex:0 0 106px;display:grid;place-items:center}
-.cff-profile-avatar-wrap>.cff-profile-avatar{width:100%;height:100%}
-.cff-profile-avatar.cff-profile-avatar-art{border:0!important;border-radius:0!important;padding:0!important;background:transparent!important;box-shadow:none!important;object-fit:contain!important;object-position:center!important}
+.cff-profile-avatar-wrap{position:relative;width:112px;height:112px;flex:0 0 112px;display:grid;place-items:center;isolation:isolate}
+.cff-profile-avatar-core{width:100%;height:100%;box-sizing:border-box;padding:4px;border-radius:50%;background:var(--cff-avatar-ring,#7C5CFF);box-shadow:0 7px 26px #0006}
+.cff-profile-avatar-core>.cff-profile-avatar{width:100%;height:100%;display:block;box-sizing:border-box;border:3px solid #07101d!important;border-radius:50%!important;padding:0!important;background:#07101d!important;box-shadow:none!important;object-fit:cover;object-position:50% 18%;overflow:hidden}
+.cff-profile-avatar.cff-profile-avatar-art{border-radius:50%!important;padding:0!important;background:#07101d!important;box-shadow:none!important;object-fit:cover!important;object-position:center!important}
+.cff-profile-avatar-frame-layer,.cff-profile-avatar-emblem-layer{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:50%}
+.cff-profile-avatar-frame-layer:empty,.cff-profile-avatar-emblem-layer:empty{display:none}
 .cff-profile-avatar-edit{position:absolute;right:-3px;bottom:-3px;width:34px;height:34px;display:grid;place-items:center;border:2px solid #0d1726;border-radius:50%;background:#7c5cff;color:white;box-shadow:0 5px 18px #0008;cursor:pointer;z-index:4}
 .cff-profile-avatar-edit svg,.cff-profile-cover-edit svg{width:17px;height:17px;fill:currentColor}
 .cff-profile-avatar-edit:hover,.cff-profile-cover-edit:hover{transform:translateY(-1px);filter:brightness(1.08)}
@@ -85,7 +88,7 @@
 .cff-avatar-gallery{display:none!important}
 
 @media(max-width:700px){
- .cff-profile-avatar-wrap{width:74px;height:74px;flex-basis:74px}
+ .cff-profile-avatar-wrap{width:80px;height:80px;flex-basis:80px}
  .cff-profile-avatar-edit{width:30px;height:30px;right:-5px;bottom:-5px}
  .cff-profile-avatar-edit svg{width:15px;height:15px}
  .cff-profile-cover-edit{top:10px;right:10px;width:34px;min-height:34px;padding:0;justify-content:center}
@@ -235,6 +238,7 @@
   object-position:center!important;
   padding:5%!important;
   box-sizing:border-box;
+  border-radius:50%!important;
 }
 .cff-badge-category{margin-top:22px}
 .cff-badge-category:first-of-type{margin-top:14px}
@@ -268,4 +272,20 @@
     padding:0;
   }
   .cff-badge-category{margin-top:18px}
+}
+
+
+/* 2026-10-07: aro de avatar + padroes globais v1 */
+.cff-ring-color-field{margin-top:14px}
+.cff-ring-color-control{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:7px}
+.cff-ring-color-control input[type=color]{width:52px;height:38px;padding:3px;border:1px solid #31465e;border-radius:9px;background:#08111e;cursor:pointer}
+.cff-ring-swatches{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.cff-ring-swatches button{width:26px;height:26px;padding:0;border:2px solid #0b1422;border-radius:50%;background:var(--ring-swatch);box-shadow:0 0 0 1px #34485e;cursor:pointer}
+.cff-ring-swatches button:hover{transform:scale(1.08);box-shadow:0 0 0 2px #7f6aff}
+.cff-ring-color-field>small{display:block;margin-top:7px;color:#718ca8;font-size:10px;line-height:1.4}
+.cff-default-cover img{width:100%;height:auto;aspect-ratio:4/1;object-fit:cover;border-radius:8px}
+.cff-default-cover .cff-no-cover-preview{width:100%}
+@media(max-width:700px){
+ .cff-profile-avatar-wrap{width:80px;height:80px;flex-basis:80px}
+ .cff-profile-avatar-core{padding:3px}
 }
