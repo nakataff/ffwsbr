@@ -103,3 +103,52 @@
  .cff-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .cff-visual-grid.is-cover{grid-template-columns:1fr}
 }
+
+
+/* 2026-10-07: fluxo de edicao visual v2 */
+.cff-profile-hero-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:38px}
+.cff-profile-hero.is-editing .cff-profile-cover-edit{
+  position:static;
+  top:auto;
+  right:auto;
+  z-index:auto;
+  min-height:36px;
+  margin:0;
+  transform:none;
+}
+.cff-profile-hero.is-editing .cff-profile-cover-edit:hover{transform:translateY(-1px)}
+.cff-profile-edit-changes{display:flex;align-items:center;gap:7px}
+.cff-profile-edit-changes[hidden]{display:none!important}
+.cff-profile-edit-icon{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border-radius:9px;
+  cursor:pointer;
+  transition:transform .15s ease,background .15s ease,border-color .15s ease;
+}
+.cff-profile-edit-icon:hover{transform:translateY(-1px)}
+.cff-profile-edit-icon svg{width:18px;height:18px;fill:currentColor}
+.cff-profile-edit-icon.save{
+  border:1px solid rgba(157,129,255,.62);
+  background:rgba(124,92,255,.18);
+  color:#bca8ff;
+}
+.cff-profile-edit-icon.save:hover{background:rgba(124,92,255,.30);border-color:#9e83ff;color:#d4c8ff}
+.cff-profile-edit-icon.discard{
+  border:1px solid rgba(226,91,91,.52);
+  background:rgba(194,60,60,.12);
+  color:#ef8585;
+}
+.cff-profile-edit-icon.discard:hover{background:rgba(194,60,60,.22);border-color:#e66d6d;color:#ffaaaa}
+.cff-profile-hero:not(.is-editing) .cff-profile-avatar-edit,
+.cff-profile-hero:not(.is-editing) .cff-profile-cover-edit{display:none!important}
+
+@media(max-width:700px){
+  .cff-profile-hero-tools{gap:6px}
+  .cff-profile-hero.is-editing .cff-profile-cover-edit{width:36px;min-height:36px;padding:0;justify-content:center}
+  .cff-profile-hero.is-editing .cff-profile-cover-edit span{display:none}
+  .cff-profile-edit-icon{width:36px;height:36px}
+}
