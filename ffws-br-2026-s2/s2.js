@@ -1119,8 +1119,7 @@
   }
 
   function s2StatsTeamValueCard(key, rows, valueGetter, formatter, valueLabel) {
-    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
-    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.points - a.points);
+    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.points - a.points);
     const header = `<div style="display: grid; grid-template-columns: 1fr 0.5fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px; height:16px; object-fit: contain;" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size: 0.95em; font-weight:bold;">${escapeHtml(abbreviation(row.team))}</span></div>
@@ -1129,8 +1128,7 @@
   }
 
   function s2StatsTeamDualValueCard(key, rows, primaryGetter, primaryFormatter, secondaryGetter, primaryLabel, secondaryLabel) {
-    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
-    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(primaryGetter(b)) - number(primaryGetter(a)) || b.kills - a.kills || b.points - a.points);
+    const ordered = [...rows].sort((a, b) => number(primaryGetter(b)) - number(primaryGetter(a)) || b.kills - a.kills || b.points - a.points);
     const header = `<div style="display: grid; grid-template-columns: 1fr 0.5fr 0.4fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">${escapeHtml(primaryLabel)}</div><div style="text-align: right; color:#444;">${escapeHtml(secondaryLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr 0.4fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px; height:16px; object-fit: contain;" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size: 0.95em; font-weight:bold;">${escapeHtml(abbreviation(row.team))}</span></div>
@@ -1140,8 +1138,7 @@
   }
 
   function s2StatsTeamPositionCard(key, rows) {
-    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
-    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => a.avgPosition - b.avgPosition || b.kills - a.kills || b.points - a.points);
+    const ordered = [...rows].sort((a, b) => a.avgPosition - b.avgPosition || b.kills - a.kills || b.points - a.points);
     const header = '<div style="display: grid; grid-template-columns: 1fr 0.5fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">Pos</div></div>';
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px; height:16px; object-fit: contain;" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size: 0.95em; font-weight:bold;">${escapeHtml(abbreviation(row.team))}</span></div>
@@ -1150,8 +1147,7 @@
   }
 
   function s2StatsPlayerCard(key, rows, valueGetter, formatter, valueLabel) {
-    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
-    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.damage - a.damage);
+    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.damage - a.damage);
     const header = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><span class="clickable" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div>
@@ -1187,8 +1183,7 @@
   }
 
   function s2StatsRecordPlayerCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
-    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
-    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
+    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
     const header = `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Jogador</div><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
       <div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><span class="clickable" onclick="openCurrentSeasonPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div><small style="display:block;color:#56606d;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
@@ -1198,8 +1193,7 @@
   }
 
   function s2StatsRecordTeamCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
-    const used = new Set(Object.entries(state.comparePlayers).filter(([slot])=>slot!==side).map(([,key])=>key));
-    const ordered = rows.filter(row=>!used.has(row.key)).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.points) - number(a.points));
+    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.points) - number(a.points));
     const header = `<div style="display:grid;grid-template-columns:1.35fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.35fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
       <div class="clickable" onclick="openCurrentSeasonTeam('${jsAttr(row.team)}')" style="min-width:0"><div style="display:flex;align-items:center;gap:6px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" style="width:16px;height:16px;object-fit:contain" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size:.95em;font-weight:bold">${escapeHtml(abbreviation(row.team))}</span></div><small style="display:block;color:#56606d;margin-top:3px;margin-left:26px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
