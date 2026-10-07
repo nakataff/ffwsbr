@@ -709,3 +709,5 @@ exports.campGithubBackup = onRequest(
     }
   }
 );
+
+Object.assign(exports, require('./camp-notifications'));

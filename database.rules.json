@@ -790,6 +790,19 @@
           }
         }
       }
+    },
+    "campNotifications": {
+      "catalog": {
+        ".read": true
+      },
+      "inboxes": {
+        "$uid": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".indexOn": [
+            "at"
+          ]
+        }
+      }
     }
   }
 }

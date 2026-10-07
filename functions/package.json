@@ -7,6 +7,10 @@
   },
   "dependencies": {
     "firebase-admin": "latest",
-    "firebase-functions": "latest"
+    "firebase-functions": "latest",
+    "web-push": "^3.6.7"
+  },
+  "scripts": {
+    "test:notifications": "node test/camp-notifications.test.cjs"
   }
 }
