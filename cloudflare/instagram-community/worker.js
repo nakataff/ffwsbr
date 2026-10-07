@@ -94,6 +94,7 @@ export default {
 
     if (url.pathname === '/api/ranking' && request.method === 'GET') return getRanking(request, env, url);
     if (url.pathname === '/api/ranking/history' && request.method === 'GET') return getWeeklyHistory(request, env, url);
+    if (url.pathname === '/api/ranking/months' && request.method === 'GET') return getMonthlyHistory(request, env, url);
     if (url.pathname === '/api/predictions' && request.method === 'GET') return getPredictions(request, env, url, ctx);
     if (url.pathname === '/api/prediction' && request.method === 'GET') return getPredictionLegacy(request, env, url, ctx);
     if (url.pathname === '/api/prediction/vote' && request.method === 'POST') return votePrediction(request, env, ctx);
@@ -186,6 +187,21 @@ function dayKeyTimestamp(dayKey) {
   const [year, month, day] = String(dayKey).split('-').map(Number);
   const value = Date.UTC(year, month - 1, day, 15, 0, 0);
   return Number.isFinite(value) ? value : null;
+}
+
+function validMonthKey(value) {
+  return /^20\d{2}-(0[1-9]|1[0-2])$/.test(String(value || ''));
+}
+
+function monthKeyBounds(monthKey) {
+  if (!validMonthKey(monthKey)) return null;
+  const [year, month] = monthKey.split('-').map(Number);
+  const last = new Date(Date.UTC(year, month, 0, 12));
+  return {
+    monthKey,
+    firstDay: `${monthKey}-01`,
+    lastDay: `${monthKey}-${String(last.getUTCDate()).padStart(2, '0')}`,
+  };
 }
 
 function saoPauloTimestamp(date, time = '13:00') {
@@ -1963,7 +1979,13 @@ async function getRanking(request, env, url) {
   const requested = String(url.searchParams.get('period') || 'week').toLowerCase();
   const period = ['week', 'month', 'all'].includes(requested) ? requested : 'week';
   const now = Date.now();
-  const { monthKey } = dateKeys(now);
+  const currentMonthKey = dateKeys(now).monthKey;
+  const requestedMonth = String(url.searchParams.get('month') || '').trim();
+  if (period === 'month' && requestedMonth && !validMonthKey(requestedMonth)) {
+    return json({ ok: false, error: 'Mês inválido. Use YYYY-MM.' }, 400, request);
+  }
+  const monthKey = period === 'month' && requestedMonth ? requestedMonth : currentMonthKey;
+  const monthBounds = monthKeyBounds(monthKey);
   const requestedWeek = String(url.searchParams.get('week') || '').trim();
   const requestedWeekTimestamp = period === 'week' ? dayKeyTimestamp(requestedWeek) : null;
   const weekInfo = weekKeys(requestedWeekTimestamp || now);
@@ -1989,16 +2011,36 @@ async function getRanking(request, env, url) {
     `).all();
   } else if (period === 'month') {
     result = await env.DB.prepare(`
-      SELECT user_key, username, points,
-             story_mentions AS storyMentions,
-             comments,
-             active_days AS activeDays,
-             last_interaction_at AS lastInteractionAt
-      FROM monthly_users
-      WHERE month_key = ?1
-      ORDER BY points DESC, active_days DESC, story_mentions DESC, comments DESC
+      WITH month_awards AS (
+        SELECT a.user_key,
+               COALESCE(MAX(u.username), MAX(a.username)) AS username,
+               SUM(a.points) AS points,
+               SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END) AS storyMentions,
+               SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END) AS comments,
+               MAX(a.created_at) AS lastInteractionAt
+        FROM awards a
+        LEFT JOIN users u ON u.user_key = a.user_key
+        WHERE a.month_key = ?1
+        GROUP BY a.user_key
+      ),
+      month_active AS (
+        SELECT user_key, COUNT(*) AS activeDays
+        FROM active_days
+        WHERE day_key BETWEEN ?2 AND ?3
+        GROUP BY user_key
+      )
+      SELECT m.user_key,
+             m.username,
+             m.points,
+             m.storyMentions,
+             m.comments,
+             COALESCE(d.activeDays, 0) AS activeDays,
+             m.lastInteractionAt
+      FROM month_awards m
+      LEFT JOIN month_active d ON d.user_key = m.user_key
+      ORDER BY m.points DESC, activeDays DESC, m.storyMentions DESC, m.comments DESC, m.username ASC
       LIMIT 500
-    `).bind(monthKey).all();
+    `).bind(monthKey, monthBounds.firstDay, monthBounds.lastDay).all();
   } else {
     result = await env.DB.prepare(`
       WITH week_awards AS (
@@ -2047,6 +2089,18 @@ async function getRanking(request, env, url) {
     updatedAt = Math.max(updatedAt, Number(row.lastInteractionAt || 0));
   }
 
+  let firstRecordedDay = '';
+  let lastRecordedDay = '';
+  if (period === 'month') {
+    const coverage = await env.DB.prepare(`
+      SELECT MIN(day_key) AS firstDay, MAX(day_key) AS lastDay
+      FROM awards
+      WHERE month_key = ?1
+    `).bind(monthKey).first();
+    firstRecordedDay = String(coverage?.firstDay || '');
+    lastRecordedDay = String(coverage?.lastDay || '');
+  }
+
   const payload = {
     updatedAt,
     rules: RULES,
@@ -2056,13 +2110,98 @@ async function getRanking(request, env, url) {
       weekStart: weekStartKey,
       weekEnd: weekEndKey,
       monthKey,
-      historical: period === 'week' && Boolean(requestedWeekTimestamp),
+      historical: (period === 'week' && Boolean(requestedWeekTimestamp)) || (period === 'month' && monthKey !== currentMonthKey),
+      firstRecordedDay,
+      lastRecordedDay,
     },
     users,
   };
   rankingCache.set(cacheKey, { at: now, payload });
 
   return json(payload, 200, request, { 'Cache-Control': 'public, max-age=60' });
+}
+
+
+async function getMonthlyHistory(request, env, url) {
+  const rawLimit = Number(url.searchParams.get('limit'));
+  const limit = Math.max(1, Math.min(Number.isFinite(rawLimit) ? Math.floor(rawLimit) : 24, 60));
+  const currentMonthKey = dateKeys(Date.now()).monthKey;
+
+  const result = await env.DB.prepare(`
+    WITH award_months AS (
+      SELECT a.month_key AS monthKey,
+             a.user_key,
+             COALESCE(MAX(u.username), MAX(a.username)) AS username,
+             SUM(a.points) AS points,
+             SUM(CASE WHEN a.type='story' THEN 1 ELSE 0 END) AS storyMentions,
+             SUM(CASE WHEN a.type='comment' THEN 1 ELSE 0 END) AS comments,
+             MIN(a.day_key) AS userFirstDay,
+             MAX(a.day_key) AS userLastDay,
+             MAX(a.created_at) AS lastInteractionAt
+      FROM awards a
+      LEFT JOIN users u ON u.user_key = a.user_key
+      WHERE a.month_key < ?1
+      GROUP BY a.month_key, a.user_key
+    ),
+    active_months AS (
+      SELECT substr(day_key, 1, 7) AS monthKey,
+             user_key,
+             COUNT(*) AS activeDays
+      FROM active_days
+      WHERE substr(day_key, 1, 7) < ?1
+      GROUP BY substr(day_key, 1, 7), user_key
+    )
+    SELECT m.monthKey,
+           m.user_key,
+           m.username,
+           m.points,
+           m.storyMentions,
+           m.comments,
+           COALESCE(a.activeDays, 0) AS activeDays,
+           m.userFirstDay,
+           m.userLastDay,
+           m.lastInteractionAt
+    FROM award_months m
+    LEFT JOIN active_months a ON a.monthKey = m.monthKey AND a.user_key = m.user_key
+    ORDER BY m.monthKey DESC, m.points DESC, activeDays DESC, m.storyMentions DESC, m.comments DESC, m.username ASC
+  `).bind(currentMonthKey).all();
+
+  const months = new Map();
+  for (const row of result.results || []) {
+    const month = String(row.monthKey || '');
+    if (!validMonthKey(month)) continue;
+    if (!months.has(month)) {
+      months.set(month, {
+        month,
+        participants: 0,
+        firstDay: String(row.userFirstDay || ''),
+        lastDay: String(row.userLastDay || ''),
+        winner: null,
+      });
+    }
+    const item = months.get(month);
+    item.participants += 1;
+    const first = String(row.userFirstDay || '');
+    const last = String(row.userLastDay || '');
+    if (first && (!item.firstDay || first < item.firstDay)) item.firstDay = first;
+    if (last && (!item.lastDay || last > item.lastDay)) item.lastDay = last;
+    if (!item.winner) {
+      item.winner = {
+        userKey: row.user_key,
+        username: row.username,
+        points: Number(row.points || 0),
+        storyMentions: Number(row.storyMentions || 0),
+        comments: Number(row.comments || 0),
+        activeDays: Number(row.activeDays || 0),
+      };
+    }
+  }
+
+  const history = [...months.values()]
+    .sort((a, b) => b.month.localeCompare(a.month))
+    .slice(0, limit);
+
+  return json({ ok: true, history }, 200, request, { 'Cache-Control': 'public, max-age=60' });
 }
 
 async function getWeeklyHistory(request, env, url) {
