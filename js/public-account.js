@@ -3,7 +3,7 @@ import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, G
 import { getDatabase, ref, get, set, update, onValue, runTransaction } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 import { profileOptions, findOption, approvedImage, hydrateProfileImages, DEFAULT_AVATAR, activeGrants, catalogAvailable,ACCESS_LABELS,automaticAvatar,instagramKey } from './community-profile-data.js?v=20261007-profile-v2';
-const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261007-edit-visuals-v1';
+const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261007-edit-visuals-v2';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const readLocal=k=>{try{return localStorage.getItem(k)||''}catch{return''}},writeLocal=(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch{}};
 let user=null,database,auth,unsub=[],generation=0,tab='overview',lists={favorites:{},comparisons:{},tournamentIndex:{},activity:{}},community=null,communityStatus=null,preferences={},profile={},busy=false,loaded=false;
