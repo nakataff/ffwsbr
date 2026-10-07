@@ -5,6 +5,7 @@ import {verifyToken} from './auth.js';
 const ORIGINS=new Set(['https://centralfreefire.com.br','https://www.centralfreefire.com.br']);
 const LIVE='https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2';
 const DAY=86400000;
+function logoUrl(value){try{const u=new URL(String(value||''));return u.protocol==='https:'&&['centralfreefire.com.br','www.centralfreefire.com.br'].includes(u.hostname)&&!u.port&&!u.username&&!u.password&&u.href.length<=2048?u.href:'';}catch{return '';}}
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 export default {
  async fetch(request,env) {
@@ -52,7 +53,7 @@ export class NotificationHub extends DurableObject {
  }
  enqueue(id,t,day,drop,row,status){
   const eventId=C.eventId(id,day,drop,row.teamId,status),inboxId=C.eventId(id,day,drop,row.teamId,'result'),existing=this.rows('SELECT data FROM events WHERE id=?',eventId)[0];
-  const event={...row,tournamentId:id,tournamentName:t.name,day,drop,status,inboxId,at:Date.now()};
+  const event={...row,logo:logoUrl(row.logo||t.teams[row.teamId]?.logo),tournamentId:id,tournamentName:t.name,day,drop,status,inboxId,at:Date.now()};
   if(existing){const old=JSON.parse(existing.data);if(status==='official'&&['points','kills','position'].some(k=>old[k]!==event[k])){this.sql.exec('UPDATE events SET data=?,at=? WHERE id=?',JSON.stringify(event),event.at,eventId);const recipients=this.rows('SELECT uid FROM inbox WHERE id=?',inboxId);for(const {uid}of recipients)this.inbox(uid,event);}return false;}
   this.sql.exec('INSERT INTO events VALUES(?,?,?,?,?,?,?,?)',eventId,id,day,drop,row.teamId,status,JSON.stringify(event),event.at);
   for(const p of this.rows('SELECT uid,data FROM preferences WHERE tournament=?',id))if(C.interested(JSON.parse(p.data),event))this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?)',eventId,p.uid);
@@ -61,7 +62,9 @@ export class NotificationHub extends DurableObject {
  async schedule(){const jobs=this.rows('SELECT event FROM jobs LIMIT 1').length,pending=this.rows('SELECT check_at FROM pending ORDER BY check_at LIMIT 1')[0];if(jobs||pending)await this.ctx.storage.setAlarm(jobs?Date.now()+1000:Math.max(Date.now()+1000,pending.check_at));else await this.ctx.storage.deleteAlarm();}
  async push(uid,event){
   const devices=this.rows('SELECT id,data FROM devices WHERE uid=?',uid),vapid=this.vapid();
-  const payload=JSON.stringify({title:event.status==='test'?'Teste Central FF':event.tournamentName,body:event.status==='test'?'Os avisos deste aparelho estão funcionando.':`${event.status==='official'?'Pontuação oficial':'Pontuação parcial'} · ${event.team} · ${event.position}º · ${event.kills} abates · ${event.points} pontos · D${event.day} Q${event.drop}`,tag:event.inboxId,url:'/conta.html?tab=notifications'});
+  const title=event.status==='test'?'Teste Central FF':event.tournamentName.replace(/\s*[—-]\s*Dia\s*\d+\s*$/i,'')+' / DIA '+event.day+' / QUEDA '+event.drop;
+  const body=event.status==='test'?'Os avisos deste aparelho estão funcionando.':(event.status==='official'?'Pontuação oficial · ':'Pontuação parcial · ')+(event.status==='official'?event.team+' terminou no top ':event.team+' acaba de cair no top ')+event.position+' com '+event.kills+' abates! '+event.points+' pontos nesta queda'+(Number.isInteger(event.dayPoints)?' e '+event.dayPoints+' no dia':'')+'.';
+  const payload=JSON.stringify({title,body,icon:logoUrl(event.logo),tag:event.inboxId,url:'/conta.html?tab=notifications'});
   let accepted=0;
   for(const d of devices)try{const subscription=C.subscription(JSON.parse(d.data)),details=webpush.generateRequestDetails(subscription,payload,{vapidDetails:{subject:'https://centralfreefire.com.br',...vapid},TTL:300});const response=await fetch(details.endpoint,{method:'POST',headers:details.headers,body:details.body,redirect:'manual',signal:AbortSignal.timeout(8000)});await response.body?.cancel();if(response.ok)accepted++;else if([404,410].includes(response.status))this.sql.exec('DELETE FROM devices WHERE id=? AND uid=?',d.id,uid);}catch{}
   return {devices:devices.length,accepted};
@@ -95,13 +98,13 @@ export class NotificationHub extends DurableObject {
    }
    if(action==='configure'){
     admin();const id=C.text(b.tournamentId,100);if(!/^[a-z0-9-]{5,100}$/.test(id))throw Error('Identificador inválido.');const teams={};
-    for(const r of(Array.isArray(b.teams)?b.teams:[]).slice(0,100)){const teamId=C.key(r.id);if(teamId&&r.name)teams[teamId]={name:C.text(r.name,100),aliases:[...new Set([r.name,r.id,...(Array.isArray(r.aliases)?r.aliases:[])].map(v=>C.text(v,100)))].slice(0,10)};}
+    for(const r of(Array.isArray(b.teams)?b.teams:[]).slice(0,100)){const teamId=C.key(r.id);if(teamId&&r.name)teams[teamId]={name:C.text(r.name,100),logo:logoUrl(r.logo),aliases:[...new Set([r.name,r.id,...(Array.isArray(r.aliases)?r.aliases:[])].map(v=>C.text(v,100)))].slice(0,10)};}
     if(!b.name||!Object.keys(teams).length)throw Error('Defina nome e times do torneio.');
     const old=this.config(id),officialStage=['final','segundaFase'].includes(b.officialStage)?b.officialStage:'';if(old?.officialStage&&officialStage!==old.officialStage)throw Error('Crie outro torneio para trocar a etapa oficial.');
     if(!old&&this.rows('SELECT id FROM catalog').length>=100)throw Error('Limite de 100 torneios.');this.sql.exec('INSERT OR REPLACE INTO catalog VALUES(?,?)',id,JSON.stringify({name:C.text(b.name),enabled:b.enabled===true,teams,officialStage,updatedAt:now}));return json({ok:true,tournamentId:id});
    }
    if(action==='publish'){
-    admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');const day=C.integer(b.day,1,365),drop=C.integer(b.drop,1,999),row=C.result(b.result);if(!Object.hasOwn(t.teams,row.teamId))throw Error('Time não cadastrado neste torneio.');row.team=t.teams[row.teamId].name;if(row.points<row.kills)throw Error('Os pontos não podem ser menores que os abates.');
+    admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');const day=C.integer(b.day,1,365),drop=C.integer(b.drop,1,999),row=C.result(b.result);if(!Object.hasOwn(t.teams,row.teamId))throw Error('Time não cadastrado neste torneio.');row.team=t.teams[row.teamId].name;row.logo=logoUrl(b.result?.logo||t.teams[row.teamId].logo);if(b.result?.dayPoints!==undefined){row.dayPoints=C.integer(b.result.dayPoints,0,1000000);if(row.dayPoints<row.points)throw Error('O total do dia não pode ser menor que os pontos da queda.');}if(row.points<row.kills)throw Error('Os pontos não podem ser menores que os abates.');
     if(t.officialStage){const official=await this.official(t.officialStage,day,drop);if(C.officialRows(official,t.teams).some(r=>r.teamId===row.teamId))throw Error('Esta queda já tem T1 + P1 oficial.');}
     let sent;this.ctx.storage.transactionSync(()=>{sent=this.enqueue(id,t,day,drop,row,'partial');if(t.officialStage)this.sql.exec('INSERT OR IGNORE INTO pending VALUES(?,?,?,?,?,?)',`${id}:${day}:${drop}`,id,day,drop,now+60000,now+7*DAY);});await this.schedule();return json({ok:true,duplicate:!sent});
    }

@@ -1,6 +1,12 @@
 name: Deploy Free Camp Notifications
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'cloudflare/camp-notifications/**'
+      - 'functions/camp-notifications-core.js'
+      - '.github/workflows/deploy-free-camp-notifications.yml'
 permissions:
   contents: read
 jobs:

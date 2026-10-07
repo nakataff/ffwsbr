@@ -1,4 +1,6 @@
 import test from 'node:test';
+import webpush from 'web-push';
+const payloads=[];const generate=webpush.generateRequestDetails;webpush.generateRequestDetails=(sub,payload,opts)=>{payloads.push(JSON.parse(payload));return generate(sub,payload,opts);};
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {readFileSync,writeFileSync,unlinkSync} from 'node:fs';
@@ -17,8 +19,8 @@ function context(){const db=new DatabaseSync(':memory:');let alarm=null;return {
 const subscription=id=>{const ecdh=createECDH('prime256v1');ecdh.generateKeys();return{endpoint:'https://fcm.googleapis.com/fcm/send/'+id,keys:{p256dh:ecdh.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,7).toString('base64url')}};};
 const ctx=context(),hub=new NotificationHub(ctx,{}),id='ffws-br-final';
 async function api(action,data={},jwt=member){const response=await hub.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return{status:response.status,...await response.json()};}
-const configure={tournamentId:id,name:'FFWS BR Final',enabled:true,teams:[{id:'fx',name:'Fluxo',aliases:['FLUXO W7M']},{id:'los',name:'LOS'}],officialStage:'final'};
-const publish={tournamentId:id,day:2,drop:17,result:{teamId:'fx',team:'spoof',position:4,kills:7,points:14}};
+const configure={tournamentId:id,name:'FFWS BR Final',enabled:true,teams:[{id:'fx',name:'Fluxo',logo:'https://centralfreefire.com.br/logos/fluxo.webp',aliases:['FLUXO W7M']},{id:'los',name:'LOS'}],officialStage:'final'};
+const publish={tournamentId:id,day:2,drop:17,result:{teamId:'fx',team:'spoof',position:4,kills:7,points:14,dayPoints:40,logo:'https://evil.test/logo.png'}};
 test('free notification API: authentication, isolation, device ownership, delivery and official transition',async()=>{
  assert.equal((await api('settings',{},'')).status,401);
  assert.equal((await api('settings',{},token('x',{aud:'another-project'}))).status,401);
@@ -38,14 +40,15 @@ test('free notification API: authentication, isolation, device ownership, delive
  assert.equal((await api('publish',publish)).status,403);
  assert.equal((await api('publish',{...publish,result:{...publish.result,teamId:'constructor'}},admin)).status,400);
  assert.equal((await api('publish',{...publish,result:{...publish.result,position:null}},admin)).status,400);
+ assert.equal((await api('publish',{...publish,result:{...publish.result,dayPoints:3}},admin)).status,400);
  unavailable=true;assert.equal((await api('publish',publish,admin)).status,400);unavailable=false;
  const results=await Promise.all([api('publish',publish,admin),api('publish',publish,admin)]);assert.equal(results.filter(r=>!r.duplicate).length,1);
- await hub.alarm();assert.equal(pushes.length,1);let inbox=await api('inbox');assert.equal(inbox.rows.length,1);assert.equal(inbox.rows[0].status,'partial');assert.equal(inbox.rows[0].team,'Fluxo');assert.equal((await api('inbox',{},other)).rows.length,0);
+ await hub.alarm();assert.equal(pushes.length,1);let inbox=await api('inbox');assert.equal(inbox.rows.length,1);assert.equal(inbox.rows[0].status,'partial');assert.equal(inbox.rows[0].team,'Fluxo');assert.equal(inbox.rows[0].dayPoints,40);assert.equal(inbox.rows[0].logo,'https://centralfreefire.com.br/logos/fluxo.webp');assert(payloads[0].title.endsWith('DIA 2 / QUEDA 17'));assert(payloads[0].body.includes('14 pontos nesta queda e 40 no dia'));assert.equal(payloads[0].icon,inbox.rows[0].logo);assert.equal((await api('inbox',{},other)).rows.length,0);
  await hub.alarm();assert.equal(pushes.length,1);
  official={manual:true,source:{teams:true,players:true},teams:{fx:{team:'FLUXO W7M',position:3,kills:8,points:16}},players:{p:{team:'FLUXO W7M',kills:8}}};
  hub.sql.exec('UPDATE pending SET check_at=0');await hub.alarm();assert.equal((await api('inbox')).rows[0].status,'partial');
  official.manual=false;official.players.p.kills=7;hub.sql.exec('UPDATE pending SET check_at=0');await hub.alarm();assert.equal((await api('inbox')).rows[0].status,'partial');
- official.players.p.kills=8;hub.sql.exec('UPDATE pending SET check_at=0');await hub.alarm();inbox=await api('inbox');assert.equal(inbox.rows.length,1);assert.equal(inbox.rows[0].status,'official');assert.equal(inbox.rows[0].points,16);assert.equal(pushes.length,2);
+ official.players.p.kills=8;hub.sql.exec('UPDATE pending SET check_at=0');await hub.alarm();inbox=await api('inbox');assert.equal(inbox.rows.length,1);assert.equal(inbox.rows[0].status,'official');assert.equal(inbox.rows[0].points,16);assert.equal(inbox.rows[0].dayPoints,undefined);assert(!payloads.at(-1).body.includes('no dia'));assert.equal(inbox.rows[0].logo,'https://centralfreefire.com.br/logos/fluxo.webp');assert.equal(pushes.length,2);
  official.teams.fx.points=17;hub.sql.exec('UPDATE pending SET check_at=0');await hub.alarm();assert.equal((await api('inbox')).rows[0].points,17);assert.equal(pushes.length,2);
  assert.equal((await api('publish',publish,admin)).status,400);
  assert.equal((await api('test')).accepted,1);assert.equal((await api('test')).status,400);assert.equal((await api('inbox',{},other)).rows.length,0);
