@@ -210,7 +210,7 @@ async function syncPublicIdentity(){if(!user)return;const uid=user.uid;let link=
  if(user?.uid!==uid)return;
  const sameInstagram=communityStatus?.username?.toLowerCase()===link.username;
  if(!visible||!sameInstagram){if(current?.uid===uid)await set(ref(database,'communityRankingProfiles/'+link.key),null);return;}
- const role=(await get(ref(database,'communityAccountRoles/'+uid))).val()||{},entry={uid,username:link.username,avatarId:findOption(options,visible.avatarId)||catalogAvailable(catalog[visible.avatarId],grants,ownership,role,visible.avatarId)?visible.avatarId:'default',administrator:role.administrator===true};
+ const role=(await get(ref(database,'communityAccountRoles/'+uid))).val()||{},rawAvatar=String(visible.avatarId||'default'),globalAvatar=String(profileDefaults.avatarId||'default'),effectiveAvatar=rawAvatar==='default'&&(findOption(options,globalAvatar)||(catalog[globalAvatar]?.kind==='avatar'&&catalog[globalAvatar]?.enabled))?globalAvatar:rawAvatar,entry={uid,username:link.username,avatarId:findOption(options,effectiveAvatar)||catalogAvailable(catalog[effectiveAvatar],grants,ownership,role,effectiveAvatar)||effectiveAvatar===globalAvatar?effectiveAvatar:'default',administrator:role.administrator===true};
  if(!current||Object.keys(entry).some(k=>entry[k]!==current[k]))await set(ref(database,'communityRankingProfiles/'+link.key),entry);
 }
 async function codeDigest(code){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(code)))].map(x=>x.toString(16).padStart(2,'0')).join('');}
