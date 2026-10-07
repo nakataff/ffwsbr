@@ -572,18 +572,18 @@
 }
 
 
-/* Compact profile topics below the avatar and name. */
+/* Profile details below the avatar and name. */
 .cff-profile-hero .cff-profile-identity{display:flex;align-items:center;justify-content:flex-start;width:100%;max-width:none;margin:18px 0 14px;gap:16px}
 .cff-profile-name{min-width:0;text-align:left;text-shadow:0 2px 5px #0009}
 .cff-profile-name h1{margin:0 0 7px;line-height:1.1}
 .cff-profile-name .cff-admin-seal{margin:0;max-width:100%;box-sizing:border-box}
 .cff-profile-details{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:flex-start;gap:8px;width:100%;max-width:640px;text-align:left}
-.cff-profile-details>.cff-profile-instagram,.cff-profile-details>.cff-profile-motto,.cff-profile-details>.cff-profile-player,.cff-profile-details>.cff-profile-topic,.cff-profile-details>.cff-profile-badge-icons{width:fit-content;max-width:100%;box-sizing:border-box;margin:0;padding:7px 10px;border:1px solid #adc5e329;border-radius:8px;background:#081321b8;color:#d9e6f5;min-height:0;max-height:none;line-height:1.45}
+.cff-profile-details>.cff-profile-instagram,.cff-profile-details>.cff-profile-motto,.cff-profile-details>.cff-profile-player,.cff-profile-details>.cff-profile-topic,.cff-profile-details>.cff-profile-badge-icons{width:fit-content;max-width:100%;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#d9e6f5;min-height:0;max-height:none;line-height:1.45}
 .cff-profile-details>.cff-profile-instagram{flex-basis:auto;color:#a9c6df}
 .cff-profile-details>.cff-profile-motto{flex-basis:100%;font-size:13px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
 .cff-profile-teams>small{display:block;color:#a9c6df;font-size:10px;margin-bottom:5px}
 .cff-profile-details .cff-team-chips{flex-wrap:wrap!important;min-height:0;max-height:none;overflow:visible}
-.cff-profile-details .cff-team-chip{background:#07101d55}
+.cff-profile-details .cff-team-chip{background:transparent;border:0;padding:0 8px 0 0}
 .cff-profile-details>.cff-profile-player{align-self:stretch;display:flex;align-items:center;font-size:12px}
 .cff-profile-details>.cff-profile-badge-icons:empty{display:none}
 @media(max-width:700px){
