@@ -40,6 +40,7 @@
  <form id="task-form"><div class="dialog-top"><h2 id="editor-title">Nova tarefa</h2><div class="editor-top-actions"><button type="button" class="editor-icon-btn discard" id="discard-dialog" aria-label="Descartar alterações" title="Descartar alterações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2h-1l-1 14H6L5 7H4V5h4l1-2Zm-1.9 4 .85 12h8.1l.85-12H7.1ZM10 9h2v8h-2V9Zm4 0h2v8h-2V9Z"/></svg></button><button type="submit" class="editor-icon-btn save" id="save-task-top" aria-label="Salvar tarefa" title="Salvar tarefa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v15H4V3Zm2 2v14h12V7.2L15.8 5H15v5H8V5H6Zm4 0v3h3V5h-3Zm-1 8h6v4H9v-4Z"/></svg></button></div></div>
  <label class="field">O que você precisa fazer?<input id="task-title" maxlength="200" required placeholder="Ex.: Preparar post da final" autocomplete="off"></label>
  <label class="field">Detalhes <span class="optional">(opcional)</span><textarea id="task-note" maxlength="4000" placeholder="Texto, instruções ou informações importantes…"></textarea></label>
+ <label class="important-option"><input type="checkbox" id="task-no-date"> Sem data definida</label>
  <div class="row"><label class="field">Data <span class="optional">(opcional)</span><input type="date" id="task-date"></label><label class="field">Horário <span class="optional">(opcional)</span><input type="time" id="task-time"></label><label class="field">Coluna<select id="task-status"></select></label></div>
  <div class="task-service-block"><label class="field task-service-field">Serviço <span class="optional">(opcional)</span><select id="task-service" aria-label="Tipo de serviço"></select><span class="service-help">Escolha um serviço salvo ou cadastre um serviço personalizado.</span></label><div class="service-icon-picker"><div class="service-icon-preview" id="service-icon-preview" aria-hidden="true"><span id="service-icon-fallback">◇</span><img id="service-icon-image" alt="" hidden></div><div class="service-icon-copy"><strong>Ícone de imagem</strong><span>PNG, JPG, WEBP ou AVIF · até 300 KB</span><div class="service-icon-actions"><button type="button" class="small-btn" id="choose-service-icon">Escolher imagem</button><button type="button" class="small-btn danger-small" id="remove-service-icon" hidden>Remover</button></div></div><input type="file" id="service-icon-file" accept="image/png,image/jpeg,image/webp,image/avif" hidden></div></div>
  <label class="important-option"><input type="checkbox" id="task-important">★ Marcar como importante</label>
@@ -61,7 +62,7 @@
 <input type="file" id="backup-file" accept=".json,application/json" hidden><div id="toast" role="status" aria-live="polite"></div>
 <script src="js/admin-tarefas-sync.js?v=20261006-useful-links-v2"></script>
 <script src="js/admin-tarefas-daily.js?v=20261006-useful-links-v2"></script>
-<script defer src="js/admin-tarefas.js?v=20261006-useful-links-v2"></script>
+<script defer src="js/admin-tarefas.js?v=20261007-no-date-v1"></script>
 <script type="module" src="js/admin-tarefas-auth.js?v=20261006-useful-links-v2"></script>
 </body>
 </html>
