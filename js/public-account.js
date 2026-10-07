@@ -25,7 +25,7 @@ const PROFILE_BLOCKED_PATTERNS=[
   /\b(white\s*power|supremacia\s*branca|supremacista\s*branco|1488)\b/i
 ];
 function normalizeProfileText(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[@4]/g,'a').replace(/[3]/g,'e').replace(/[1!]/g,'i').replace(/[0]/g,'o').replace(/[$5]/g,'s').replace(/[7]/g,'t').replace(/[_\-.]+/g,' ').replace(/\s+/g,' ').trim();}
-function profileModerationReason(value,label='texto'){const normalized=normalizeProfileText(value);if(!normalized)return '';if(PROFILE_BLOCKED_PATTERNS.some(rx=>rx.test(normalized)))return `O ${label} contém conteúdo que não é permitido no perfil.`;if(/(.)\1{10,}/i.test(normalized))return `O ${label} parece conter spam ou repetição excessiva.`;return '';}
+function profileModerationReason(value,label='texto'){const raw=String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),normalized=normalizeProfileText(value);if(!normalized)return '';if(/[卐卍]/.test(String(value||''))||/\b1488\b/.test(raw)||PROFILE_BLOCKED_PATTERNS.some(rx=>rx.test(normalized)))return `O ${label} contém conteúdo que não é permitido no perfil.`;if(/(.)\1{10,}/i.test(normalized))return `O ${label} parece conter spam ou repetição excessiva.`;return '';}
 
 async function api(path){const r=await fetch(API+path,{cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.error||'Falha ao consultar Instagram');return d;}
 function accountRef(path='',uid=user?.uid){if(!uid)throw Error('Entre com Google primeiro.');return ref(database,'userAccounts/'+uid+(path?'/'+path:''));}
