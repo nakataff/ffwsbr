@@ -152,3 +152,68 @@
   .cff-profile-hero.is-editing .cff-profile-cover-edit span{display:none}
   .cff-profile-edit-icon{width:36px;height:36px}
 }
+
+
+/* 2026-10-07: insignias automaticas + perfil v1 */
+.cff-profile-badge-icons{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  margin:2px 0 10px;
+}
+.cff-profile-badge-icon{
+  width:29px;
+  height:29px;
+  display:grid;
+  place-items:center;
+  flex:0 0 29px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:8px;
+  background:rgba(5,12,22,.72);
+  box-shadow:0 3px 10px rgba(0,0,0,.22);
+  overflow:hidden;
+}
+.cff-profile-badge-icon img{
+  width:23px;
+  height:23px;
+  display:block;
+  object-fit:contain;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.cff-profile-badge-icon.is-symbol{
+  color:#ffd56d;
+  font-size:16px;
+  font-weight:900;
+}
+.cff-profile-badge-more{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:29px;
+  height:29px;
+  padding:0 7px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  background:rgba(5,12,22,.58);
+  color:#a9bfd3;
+  font-size:10px;
+  font-weight:900;
+}
+.cff-badge-auto-note{
+  margin:16px 0 2px!important;
+  padding:10px 12px;
+  border:1px solid rgba(102,211,255,.12);
+  border-radius:9px;
+  background:rgba(38,114,151,.055);
+}
+.cff-profile-panel .cff-badge-grid:not(.full){
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));
+}
+@media(max-width:700px){
+  .cff-profile-badge-icons{gap:5px;margin-bottom:9px}
+  .cff-profile-badge-icon{width:26px;height:26px;flex-basis:26px;border-radius:7px}
+  .cff-profile-badge-icon img{width:20px;height:20px}
+  .cff-profile-badge-more{height:26px;min-width:26px}
+}
