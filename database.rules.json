@@ -635,6 +635,10 @@
         },
         "$other": {
           ".validate": false
+        },
+        "title": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 32"
         }
       }
     },
