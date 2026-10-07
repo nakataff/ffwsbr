@@ -453,3 +453,120 @@
     font-size:21px;
   }
 }
+
+
+/* 2026-10-07: capa alinhada + compartilhar v1 */
+.cff-profile-hero{
+  text-align:left;
+}
+.cff-profile-cover-art:after{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(5,10,18,.76) 0%,rgba(5,10,18,.56) 34%,rgba(5,10,18,.18) 66%,transparent 100%);
+}
+.cff-profile-identity{
+  justify-content:flex-start;
+  max-width:760px;
+}
+.cff-profile-info-card{
+  min-width:0;
+  max-width:620px;
+  text-align:left;
+}
+.cff-profile-hero.has-cover .cff-profile-info-card{
+  padding:10px 12px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:12px;
+  background:rgba(5,11,20,.54);
+  box-shadow:0 8px 22px rgba(0,0,0,.16);
+}
+.cff-profile-instagram,
+.cff-profile-motto,
+.cff-profile-player{
+  text-shadow:0 1px 3px rgba(0,0,0,.9);
+}
+.cff-profile-share{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  flex:none;
+  padding:0;
+  border:1px solid #37506a;
+  border-radius:9px;
+  background:#102137;
+  color:#d8efff;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.24);
+}
+.cff-profile-share:hover{
+  background:#17304d;
+  border-color:#4f7496;
+}
+.cff-profile-share svg{
+  width:18px;
+  height:18px;
+  fill:currentColor;
+}
+.cff-profile-badge-icons{
+  flex-wrap:nowrap!important;
+  min-height:29px;
+  max-height:29px;
+  overflow:hidden;
+}
+.cff-team-chips{
+  flex-wrap:nowrap!important;
+  min-height:32px;
+  max-height:32px;
+  overflow:hidden;
+}
+.cff-profile-player{
+  min-height:16px;
+}
+
+@media(max-width:700px){
+  .cff-profile-cover-art:after{
+    background:linear-gradient(90deg,rgba(4,9,17,.84) 0%,rgba(4,9,17,.62) 48%,rgba(4,9,17,.16) 82%,transparent 100%);
+  }
+  .cff-profile-hero-top{
+    justify-content:space-between;
+  }
+  .cff-profile-hero-tools{
+    margin-left:auto;
+    flex:none;
+  }
+  .cff-profile-share{
+    width:30px;
+    height:30px;
+    border-radius:8px;
+  }
+  .cff-profile-share svg{
+    width:15px;
+    height:15px;
+  }
+  .cff-profile-identity{
+    width:100%;
+    max-width:none;
+    justify-content:start;
+  }
+  .cff-profile-info-card{
+    width:100%;
+    max-width:none;
+    box-sizing:border-box;
+  }
+  .cff-profile-hero.has-cover .cff-profile-info-card{
+    padding:7px 8px;
+    border-radius:9px;
+    background:rgba(5,11,20,.60);
+  }
+  .cff-profile-badge-icons{
+    min-height:22px;
+    max-height:22px;
+  }
+  .cff-team-chips{
+    min-height:20px;
+    max-height:20px;
+  }
+}
