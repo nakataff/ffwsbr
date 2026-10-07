@@ -1923,6 +1923,7 @@ async function getRewardStatus(request, env, url) {
       completeMixPoints: RULES.completeMixPoints,
       fastCommentPoints: RULES.fastCommentPoints,
       fastCommentMinutes: RULES.fastCommentMinutes,
+      googleAccountPoints: RULES.googleAccountPoints,
     },
   }, 200, request);
 }
