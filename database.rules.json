@@ -388,7 +388,7 @@
     },
     "communityProfiles": {
       "$uid": {
-        ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br') || data.child('public').val() == true",
+        ".read": true,
         ".write": "auth != null && auth.uid == $uid",
         ".validate": "newData.hasChildren(['name','motto','avatarId','theme','mainTeam','favoritePlayer','teamIdsJson','featuredBadgesJson','coverId','public'])",
         "name": {
@@ -419,7 +419,7 @@
           ".validate": "newData.isString() && (newData.val() == data.val() || newData.val() == '' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))"
         },
         "public": {
-          ".validate": "newData.isBoolean()"
+          ".validate": "newData.val() == true"
         },
         "$other": {
           ".validate": false
@@ -494,6 +494,37 @@
         ".read": true,
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
         ".validate": "$id.matches(/^img-[a-z0-9-]{1,60}$/) && newData.isString() && newData.val().beginsWith('data:image/webp;base64,') && newData.val().length <= 140000"
+      }
+    },
+    "communityBadgeGoals": {
+      ".read": true,
+      "$goal": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "$goal.matches(/^goal-[a-z0-9-]{1,60}$/) && newData.hasChildren(['badgeId','metric','target','label','enabled','createdAt','updatedAt'])",
+        "badgeId": {
+          ".validate": "newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'badge'"
+        },
+        "metric": {
+          ".validate": "newData.isString() && newData.val().matches(/^(total_points|week_wins|month_wins|prediction_wins|prediction_votes|prediction_combo|active_days|comments|stories|checkins)$/)"
+        },
+        "target": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000000"
+        },
+        "label": {
+          ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 120"
+        },
+        "enabled": {
+          ".validate": "newData.isBoolean()"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "communityBadgeGrants": {
