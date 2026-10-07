@@ -1,7 +1,7 @@
 import { initializeApp,getApps } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getAuth,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import { getDatabase,ref,get,set,update,query,orderByChild,limitToLast,endBefore,onValue } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
-import { escapeProfile as esc,profileOptions,approvedImage,hydrateProfileImages,activeGrants,ACCESS_LABELS } from './community-profile-data.js?v=20261007-access-v1';
+import { escapeProfile as esc,profileOptions,approvedImage,hydrateProfileImages,activeGrants,ACCESS_LABELS } from './community-profile-data.js?v=20261007-profile-v2';
 const ADMIN='admin@centralfreefire.com.br',API='https://cff-instagram-community.nakataffb4.workers.dev',app=getApps().find(a=>a.name==='[DEFAULT]')||initializeApp(window.CFF_CONFIG.firebase),auth=getAuth(app),db=getDatabase(app),$=id=>document.getElementById(id),form=$('profile-catalog-form');
 let selectedGifts={},memberUnsub=null;
 let monthlyChampions={},codes={},selectedOwnership={},selectedRoles={},catalog={},members={},selected='',selectedGrants={},options={teams:[],players:[]},verifiedInstagram='',loadedImage='',imageRead=0,toastTimer,busy=false,memberSequence=0;
