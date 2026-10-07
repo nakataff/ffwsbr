@@ -1,5 +1,5 @@
 import {ref,onValue} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
-import {escapeProfile as esc,approvedImage,findOption} from './community-profile-data.js?v=20261007-access-v1';
+import {escapeProfile as esc,approvedImage,findOption} from './community-profile-data.js?v=20261007-profile-v2';
 const VERSION='20261007-favorites-v1',STAGES={geral:'Temporada',classificatoria:'Classificatória',segundaFase:'Segunda fase',final:'Grande Final'};
 const seed=['LOS','LOUD SNICKERS','FLUXO W7M','INTZ','TEAM SOLID','RISE GAMING','ALPHA7','RUSH GAMING','INFLUENCE RAGE','CPT VOX','AFROGAMES','SX TET'];
 const bonus=[50,42,35,29,24,19,15,11,8,5,2,0],fields=['kills','damage','assists','matches','mvp'];
