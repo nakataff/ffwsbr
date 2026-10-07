@@ -3,11 +3,11 @@ import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, G
 import { getDatabase, ref, get, set, update, onValue, runTransaction } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 import { profileOptions, findOption, approvedImage, hydrateProfileImages, DEFAULT_AVATAR, activeGrants, catalogAvailable,ACCESS_LABELS,automaticAvatar,instagramKey } from './community-profile-data.js?v=20261007-profile-v2';
-const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261007-cover-categories-v6';
+const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261007-profile-defaults-v7';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const readLocal=k=>{try{return localStorage.getItem(k)||''}catch{return''}},writeLocal=(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch{}};
 let user=null,database,auth,unsub=[],generation=0,tab='overview',lists={favorites:{},comparisons:{},tournamentIndex:{},activity:{}},community=null,communityStatus=null,preferences={},profile={},busy=false,loaded=false;
-let options={teams:[],players:[]},catalog={},badgeGoals={},achievementMetrics={},grants={},ownership={},roles={},stats=null,statsState='idle',historyRows=[],historyLoaded=false,historyState='idle',publicProfile=null,viewInstagram=String(new URLSearchParams(location.search).get('ig')||'').replace(/^@/,'').toLowerCase(),viewUid=new URLSearchParams(location.search).get('u')||'',viewSlug=String(new URLSearchParams(location.search).get('slug')||'').toLowerCase(),profileSlug='',profileLoading=null;
+let options={teams:[],players:[]},catalog={},profileDefaults={avatarId:'default',coverId:''},badgeGoals={},achievementMetrics={},grants={},ownership={},roles={},stats=null,statsState='idle',historyRows=[],historyLoaded=false,historyState='idle',publicProfile=null,viewInstagram=String(new URLSearchParams(location.search).get('ig')||'').replace(/^@/,'').toLowerCase(),viewUid=new URLSearchParams(location.search).get('u')||'',viewSlug=String(new URLSearchParams(location.search).get('slug')||'').toLowerCase(),profileSlug='',profileLoading=null;
 let favoriteFeed=null,favoriteJob=null,gifts={},commentBusy=false,editVisualDraft=null;
 let resolveReady;const ready=new Promise(r=>resolveReady=r);let loadGeneration=0,toastTimer;
 if(!document.querySelector('link[href*="public-account.css"]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/public-account.css?v='+VERSION;document.head.append(l);}
@@ -82,13 +82,16 @@ function instagramHtml(){return `<h2>Instagram e ranking</h2>${communityStatus?`
 const parsed=(value,fallback=[])=>{try{const d=JSON.parse(value||'null');return Array.isArray(d)?d:fallback;}catch{return fallback;}};
 const num=v=>Number.isFinite(Number(v))?Number(v):0,fmt=v=>new Intl.NumberFormat('pt-BR').format(num(v));
 function accessFor(p){return p===profile||p?.__editPreview?{ownership,roles}:publicProfile||{};}
-function avatarId(p=profile,g=grants){const id=p.avatarId||'default',a=accessFor(p);return findOption(options,id)||catalogAvailable(catalog[id],g,a.ownership,a.roles,id)?id:'default';}
+const DEFAULT_RING_COLOR='#7C5CFF';
+function avatarRingColor(p=profile){const value=String(p?.avatarRingColor||DEFAULT_RING_COLOR);return /^#[0-9A-Fa-f]{6}$/.test(value)?value:DEFAULT_RING_COLOR;}
+function avatarId(p=profile,g=grants){const raw=p.avatarId||'default',a=accessFor(p);if(raw==='default'){const global=String(profileDefaults.avatarId||'default');if(global!=='default'&&(findOption(options,global)||(catalog[global]?.kind==='avatar'&&catalog[global]?.enabled)))return global;return'default';}return findOption(options,raw)||catalogAvailable(catalog[raw],g,a.ownership,a.roles,raw)?raw:'default';}
 function avatar(p=profile,g=grants,cls='cff-profile-avatar'){const id=avatarId(p,g),custom=catalog[id]?.kind==='avatar',teamLogo=options.teams.some(t=>t.id===id);return approvedImage(options,catalog,id,cls+(custom?' cff-profile-avatar-art':'')+(teamLogo?' cff-profile-avatar-team-logo':''),'Avatar de '+(p.name||'torcedor'));}
 function teamIds(p=profile){return parsed(p.teamIdsJson).filter(id=>options.teams.some(t=>t.id===id)).slice(0,14);}
 function teamMarks(p=profile){return teamIds(p).sort((a,b)=>(b===p.mainTeam)-(a===p.mainTeam)).map(id=>{const t=findOption(options,id);return `<span class="cff-team-chip${id===p.mainTeam?' is-main':''}" title="${id===p.mainTeam?'Time principal':'Time favorito'}">${approvedImage(options,catalog,id,'',t.name)}${esc(t.short)}</span>`;}).join('');}
 function theme(p=profile){return ['cyan','gold','pink','green','violet'].includes(p.theme)?p.theme:'cyan';}
-function hasCover(p=profile,g=grants){const item=catalog[p.coverId],a=accessFor(p);return Boolean(item?.kind==='cover'&&catalogAvailable(item,g,a.ownership,a.roles,p.coverId));}
-function cover(p=profile,g=grants){return hasCover(p,g)?`<div class="cff-profile-cover-art">${approvedImage(options,catalog,p.coverId,'','Capa do perfil')}</div>`:'';}
+function coverId(p=profile,g=grants){const raw=String(p?.coverId||''),a=accessFor(p);if(raw==='none')return'';if(raw){const item=catalog[raw];return item?.kind==='cover'&&catalogAvailable(item,g,a.ownership,a.roles,raw)?raw:'';}const global=String(profileDefaults.coverId||'');return catalog[global]?.kind==='cover'&&catalog[global]?.enabled?global:'';}
+function hasCover(p=profile,g=grants){return Boolean(coverId(p,g));}
+function cover(p=profile,g=grants){const id=coverId(p,g);return id?`<div class="cff-profile-cover-art">${approvedImage(options,catalog,id,'','Capa do perfil')}</div>`:'';}
 const cameraSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.7 4 7.3 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.3L15.3 4H8.7ZM12 9a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>';
 const saveSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v15H4V3Zm2 2v14h12V7.2L15.8 5H15v5H8V5H6Zm4 0v3h3V5h-3Zm-1 8h6v4H9v-4Z"/></svg>';
 const trashSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2h-1l-1 14H6L5 7H4V5h4l1-2Zm-1.9 4 .85 12h8.1l.85-12H7.1ZM10 9h2v8h-2V9Zm4 0h2v8h-2V9Z"/></svg>';
