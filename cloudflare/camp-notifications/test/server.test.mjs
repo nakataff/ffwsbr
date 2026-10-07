@@ -93,3 +93,23 @@ test('start and Booyah: separate opt-in, deduplication, live link and official c
  assert.equal((await call('publish',{...start,drop:1},admin)).status,400);
  assert.equal((await call('publish',{...start,kind:'invalid'},admin)).status,400);
 });
+
+test('admin can restart only the chosen non-official drop and preserve subscriptions',async()=>{
+ const h=new NotificationHub(context(),{}),camp='test-restart';official=null;unavailable=false;
+ async function call(action,data={},jwt=admin){const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return {status:r.status,...await r.json()};}
+ await call('configure',{...configure,tournamentId:camp});await call('preferences',{tournamentId:camp,enabled:true,all:true},member);
+ const a={tournamentId:camp,day:1,drop:1},b={...a,drop:2},start={...a,kind:'start',map:'Bermuda'};
+ await call('publish',start);await call('publish',{...start,drop:2});await call('publish',{...a,kind:'booyah',result:{teamId:'fx',position:1,kills:4,points:16,dayPoints:16}});
+ assert.equal((await call('publish',start)).status,400);
+ assert.equal((await call('resetDrop',a,member)).status,403);
+ unavailable=true;assert.equal((await call('resetDrop',a)).status,400);unavailable=false;
+ assert.equal(h.rows('SELECT id FROM events WHERE dropno=1').length,2);
+ assert.equal((await call('resetDrop',a)).removed,2);
+ assert.equal(h.rows('SELECT id FROM events WHERE dropno=1').length,0);assert.equal(h.rows('SELECT id FROM events WHERE dropno=2').length,1);
+ assert.equal(h.rows('SELECT event FROM jobs').length,1);assert.equal(h.rows('SELECT id FROM pending WHERE dropno=1').length,0);
+ assert.equal((await call('settings',{},member)).preferences[camp].enabled,true);
+ assert.equal((await call('publish',start)).duplicate,false);assert.equal((await call('publish',start)).duplicate,true);
+ official={source:{teams:true,players:true},teams:{fx:{team:'FLUXO W7M',position:1,kills:4,points:16}},players:{p:{team:'FLUXO W7M',kills:4}}};
+ assert.equal((await call('resetDrop',a)).status,400);assert.equal(h.rows('SELECT id FROM events WHERE dropno=1').length,1);
+ official=null;h.sql.exec("UPDATE events SET status='official' WHERE dropno=1");assert.equal((await call('resetDrop',a)).status,400);
+});
