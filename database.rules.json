@@ -485,7 +485,7 @@
           ".validate": "newData.isString() && newData.val().matches(/^(all|badge|weekly|monthly|top3|event|supporter|code|manual|admin)$/)"
         },
         "category": {
-          ".validate": "newData.isString() && newData.val().matches(/^(character|logos|simple|stylized|special|interaction|prediction)$/)"
+          ".validate": "newData.isString() && newData.val().matches(/^(players|character|logos|simple|stylized|special|interaction|prediction)$/)"
         }
       }
     },
