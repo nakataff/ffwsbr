@@ -17,6 +17,7 @@ const RULES = Object.freeze({
   completeMixPoints: 5,
   fastCommentPoints: 1,
   fastCommentMinutes: 20,
+  googleAccountPoints: 20,
 });
 
 const GRAPH_VERSION = 'v26.0';
@@ -103,6 +104,7 @@ export default {
     if (url.pathname === '/api/admin/prediction-votes' && request.method === 'GET') return getAdminPredictionVotes(request, env);
     if (url.pathname === '/api/rewards/status' && request.method === 'GET') return getRewardStatus(request, env, url);
     if (url.pathname === '/api/rewards/code' && request.method === 'POST') return claimRewardCode(request, env);
+    if (url.pathname === '/api/account/google-bonus' && request.method === 'POST') return claimGoogleAccountBonus(request, env);
     if (url.pathname === '/api/checkin/start' && request.method === 'POST') return startCheckin(request, env);
     if (url.pathname === '/api/checkin/status' && request.method === 'GET') return checkinStatus(request, env, url);
     if (url.pathname === '/api/checkin' && request.method === 'POST') return doCheckin(request, env);
@@ -1555,6 +1557,29 @@ async function getPredictionProfile(request, env, url) {
   return json({ ok: true, userKey: key, username, days }, 200, request, { 'Cache-Control': 'public, max-age=20' });
 }
 
+async function verifyFirebaseUserToken(request) {
+  const header = String(request.headers.get('Authorization') || '');
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  if (!match) return null;
+  const idToken = match[1];
+  try {
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(FIREBASE_WEB_API_KEY)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const user = Array.isArray(data?.users) ? data.users[0] : null;
+    if (!user?.localId) return null;
+    const providers = Array.isArray(user.providerUserInfo) ? user.providerUserInfo.map(x => String(x?.providerId || '')) : [];
+    if (!providers.includes('google.com')) return null;
+    return { uid: String(user.localId), email: String(user.email || ''), idToken };
+  } catch (_) {
+    return null;
+  }
+}
+
 async function verifyAdminFirebaseToken(request) {
   const header = String(request.headers.get('Authorization') || '');
   const match = header.match(/^Bearer\s+(.+)$/i);
@@ -1801,6 +1826,49 @@ async function evaluateWeeklyBonuses(env, base) {
   }
 
   await Promise.allSettled(jobs);
+}
+
+async function claimGoogleAccountBonus(request, env) {
+  const firebaseUser = await verifyFirebaseUserToken(request);
+  if (!firebaseUser) return json({ ok: false, error: 'Entre com sua conta Google novamente.' }, 401, request);
+
+  let session = '';
+  try {
+    const response = await fetch(`${FIREBASE_BASE}/userAccounts/${encodeURIComponent(firebaseUser.uid)}/community/session.json?auth=${encodeURIComponent(firebaseUser.idToken)}`, {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    if (response.ok) session = String((await response.json()) || '').trim();
+  } catch (_) {}
+
+  if (!/^[a-f0-9]{48}$/i.test(session)) {
+    return json({ ok: true, awarded: false, alreadyClaimed: false, pendingInstagram: true, points: RULES.googleAccountPoints }, 200, request);
+  }
+
+  const row = await getCheckinSession(env, session);
+  if (!row?.verified_at || !row?.user_key) {
+    return json({ ok: true, awarded: false, alreadyClaimed: false, pendingInstagram: true, points: RULES.googleAccountPoints }, 200, request);
+  }
+
+  const awarded = await awardInteraction(env, {
+    awardKey: `bonus-google-account:${firebaseUser.uid}`,
+    userKey: row.user_key,
+    identity: row.instagram_id || '',
+    username: row.username || fallbackUsername(row.instagram_id),
+    type: 'bonus_google_account',
+    sourceId: firebaseUser.uid,
+    points: RULES.googleAccountPoints,
+    timestamp: Date.now(),
+  });
+
+  return json({
+    ok: true,
+    awarded,
+    alreadyClaimed: !awarded,
+    pendingInstagram: false,
+    points: RULES.googleAccountPoints,
+    username: row.username || '',
+  }, 200, request);
 }
 
 async function getRewardStatus(request, env, url) {
