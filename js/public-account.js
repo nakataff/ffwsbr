@@ -68,7 +68,7 @@ function rowsHtml(kind){const items=Object.entries(lists[kind]||{}).sort(([,a],[
 function instagramHtml(){return `<h2>Instagram e ranking</h2>${communityStatus?`<p><strong>@${esc(communityStatus.username||'Instagram confirmado')}</strong> · ${communityStatus.source==='admin'?'Conta da página vinculada pelo administrador':'Vínculo confirmado pelo sistema de interação'}.</p><p>Este vínculo acompanha sua conta Google nos outros aparelhos.</p><div class="cff-account-actions"><a class="cff-account-button primary" href="interacoes.html">${communityStatus.source==='admin'?'Ranking da comunidade':'Check-in, palpites e recompensas'}</a>${button('Desvincular','unlink')}</div>`:`<p>Confirme seu Instagram uma vez pelo código enviado no direct para @nakataff. Depois, salve o vínculo na conta Google e receba <strong>+20 pontos</strong> uma única vez.</p><div class="cff-account-actions"><a class="cff-account-button primary" href="interacoes.html">Vincular Instagram</a>${readLocal(SESSION)?button('Salvar vínculo já confirmado','link-instagram'):''}</div>`}`;}
 const parsed=(value,fallback=[])=>{try{const d=JSON.parse(value||'null');return Array.isArray(d)?d:fallback;}catch{return fallback;}};
 const num=v=>Number.isFinite(Number(v))?Number(v):0,fmt=v=>new Intl.NumberFormat('pt-BR').format(num(v));
-function accessFor(p){return p===profile?{ownership,roles}:publicProfile||{};}
+function accessFor(p){return p===profile||p?.__editPreview?{ownership,roles}:publicProfile||{};}
 function avatarId(p=profile,g=grants){const id=p.avatarId||'default',a=accessFor(p);return findOption(options,id)||catalogAvailable(catalog[id],g,a.ownership,a.roles,id)?id:'default';}
 function avatar(p=profile,g=grants,cls='cff-profile-avatar'){const id=avatarId(p,g),custom=catalog[id]?.kind==='avatar';return approvedImage(options,catalog,id,cls+(custom?' cff-profile-avatar-art':''),'Avatar de '+(p.name||'torcedor'));}
 function teamIds(p=profile){return parsed(p.teamIdsJson).filter(id=>options.teams.some(t=>t.id===id)).slice(0,14);}
@@ -81,7 +81,7 @@ const saveSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v
 const trashSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2h-1l-1 14H6L5 7H4V5h4l1-2Zm-1.9 4 .85 12h8.1l.85-12H7.1ZM10 9h2v8h-2V9Zm4 0h2v8h-2V9Z"/></svg>';
 function ensureEditVisualDraft(){if(!editVisualDraft)editVisualDraft={avatarId:avatarId(),coverId:String(profile.coverId||'')};return editVisualDraft;}
 function editVisualValue(kind){const d=ensureEditVisualDraft();return kind==='avatar'?String(d.avatarId||'default'):String(d.coverId||'');}
-function editPreviewProfile(){if(tab!=='edit'||!editVisualDraft)return profile;return Object.assign({},profile,{avatarId:editVisualValue('avatar'),coverId:editVisualValue('cover')});}
+function editPreviewProfile(){if(tab!=='edit'||!editVisualDraft)return profile;return Object.assign({},profile,{avatarId:editVisualValue('avatar'),coverId:editVisualValue('cover'),__editPreview:true});}
 function setEditDirty(form=$('cff-profile-editor')){if(!form)return;form.dataset.dirty='true';const tools=document.querySelector('.cff-profile-edit-changes');if(tools)tools.hidden=false;}
 function clearEditVisualDraft(){editVisualDraft=null;}
 
