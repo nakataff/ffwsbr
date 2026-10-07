@@ -3,7 +3,7 @@ import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, G
 import { getDatabase, ref, get, set, update, onValue, runTransaction } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 import { profileOptions, findOption, approvedImage, hydrateProfileImages, DEFAULT_AVATAR, activeGrants, catalogAvailable,ACCESS_LABELS,automaticAvatar,instagramKey } from './community-profile-data.js?v=20261007-profile-v2';
-const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261007-badge-goals-v3';
+const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261007-badge-goals-v4';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const readLocal=k=>{try{return localStorage.getItem(k)||''}catch{return''}},writeLocal=(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch{}};
 let user=null,database,auth,unsub=[],generation=0,tab='overview',lists={favorites:{},comparisons:{},tournamentIndex:{},activity:{}},community=null,communityStatus=null,preferences={},profile={},busy=false,loaded=false;
@@ -130,7 +130,38 @@ async function saveVisualSelection(kind,id){if(!user||tab!=='edit')return;const 
 function goalMetricLabel(metric,target){const t=Number(target||1),labels={total_points:`${t.toLocaleString('pt-BR')} pontos acumulados`,week_wins:`Melhor da semana ${t} vez${t===1?'':'es'}`,month_wins:`Melhor do mês ${t} vez${t===1?'':'es'}`,prediction_wins:`${t} acerto${t===1?'':'s'} em palpites`,prediction_votes:`${t} palpite${t===1?'':'s'} enviado${t===1?'':'s'}`,prediction_combo:`Acertou melhor + pior ${t} vez${t===1?'':'es'}`,active_days:`${t} dia${t===1?'':'s'} ativo${t===1?'':'s'}`,comments:`${t} comentário${t===1?'':'s'} válido${t===1?'':'s'}`,stories:`${t} marcação${t===1?'':'ões'} em Stories`,checkins:`${t} check-in${t===1?'':'s'}`};return labels[metric]||'Objetivo automático';}
 function goalMetricsFor(own=true){return own?achievementMetrics:(publicProfile?.achievementMetrics||{});}
 function achievedGoalBadges(own=true){const metrics=goalMetricsFor(own),out=[];for(const [goalId,g] of Object.entries(badgeGoals||{})){const item=catalog[g?.badgeId];if(!g?.enabled||!item?.enabled||item.kind!=='badge')continue;const value=Number(metrics[g.metric]||0),target=Number(g.target||0);if(target>0&&value>=target)out.push({...item,id:g.badgeId,reason:g.label||goalMetricLabel(g.metric,target),date:'Objetivo alcançado',automaticGoal:true,goalId,grantedAt:Number(g.updatedAt||0)});}return out;}
-async function loadAchievementMetrics(username){const clean=String(username||'').replace(/^@+/,'').toLowerCase();if(!/^[a-z0-9_.]{1,64}$/.test(clean))return {};try{const data=await api('/api/achievements/profile?username='+encodeURIComponent(clean));return data?.metrics&&typeof data.metrics==='object'?data.metrics:{};}catch{return {};}}
+async function loadAchievementMetrics(username){
+ const clean=String(username||'').replace(/^@+/,'').toLowerCase();if(!/^[a-z0-9_.]{1,64}$/.test(clean))return {};
+ try{
+  const data=await api('/api/achievements/profile?username='+encodeURIComponent(clean));
+  if(data?.metrics&&typeof data.metrics==='object'&&Object.keys(data.metrics).length)return data.metrics;
+ }catch{}
+ try{
+  const [all,weekly,monthly,predictions]=await Promise.all([
+   api('/api/ranking?period=all').catch(()=>null),
+   api('/api/ranking/history?limit=104').catch(()=>null),
+   api('/api/ranking/months?limit=60').catch(()=>null),
+   api('/api/prediction/ranking?period=all').catch(()=>null)
+  ]);
+  const sameName=value=>String(value||'').replace(/^@+/,'').toLowerCase()===clean;
+  const allRows=Object.values(all?.users||{}),rank=allRows.find(row=>sameName(row?.username))||{};
+  const weekWins=(weekly?.history||[]).filter(row=>sameName(row?.winner?.username)).length;
+  const monthWins=(monthly?.history||[]).filter(row=>sameName(row?.winner?.username)).length;
+  const predictionRow=(predictions?.ranking||[]).find(row=>sameName(row?.username))||{};
+  return {
+   total_points:num(rank.points),
+   week_wins:weekWins,
+   month_wins:monthWins,
+   prediction_wins:num(predictionRow.wins),
+   prediction_votes:num(predictionRow.participations),
+   prediction_combo:0,
+   active_days:num(rank.activeDays),
+   comments:num(rank.comments),
+   stories:num(rank.storyMentions),
+   checkins:0
+  };
+ }catch{return {};}
+}
 function medals(g=grants,own=true){const awards=activeGrants(g).filter(x=>catalog[x.badgeId]?.kind==='badge').sort((a,b)=>num(b.grantedAt)-num(a.grantedAt));const map=new Map(awards.map(x=>[x.badgeId,{...catalog[x.badgeId],id:x.badgeId,reason:x.reason,date:x.week||new Date(x.grantedAt).toLocaleDateString('pt-BR'),grantedAt:num(x.grantedAt)}]));for(const badge of achievedGoalBadges(own))if(!map.has(badge.id))map.set(badge.id,badge);const unique=[...map.values()];
  if(own&&stats?.rewards?.bonuses){const defs={streak3:['Presença marcada','3 dias ativos na semana','◷'],streak5:['Torcedor presente','5 dias ativos na semana','✦'],streak7:['Semana completa','7 dias ativos na semana','★'],posts5:['Na conversa','5 posts diferentes na semana','☏'],posts10:['Voz da comunidade','10 posts diferentes na semana','✧'],mix:['Participação completa','Comentário, Story e check-in','✣'],mission:['Missão cumprida','Missão semanal concluída','✓'],flash:['Na primeira fila','Bônus de comentário rápido','ϟ'],code:['Código resgatado','Código surpresa confirmado','⌘']};for(const[k,d]of Object.entries(defs))if(stats.rewards.bonuses[k])unique.push({id:'auto-'+k,title:d[0],description:d[1],symbol:d[2],date:'Semana atual',automatic:true,grantedAt:Date.now()});}
  return unique.sort((a,b)=>num(b.grantedAt)-num(a.grantedAt));}
