@@ -1,6 +1,6 @@
 import {getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-import {request,stylesheet} from '/js/camp-notifications.js?v=20261007-polish-v1';
-import {notificationContent,streamUrl,teamLogo} from '/js/camp-notification-content.js?v=20261007-polish-v1';
+import {request,stylesheet} from '/js/camp-notifications.js?v=20261007-clean-v1';
+import {notificationContent,streamUrl,teamLogo} from '/js/camp-notification-content.js?v=20261007-clean-v1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,80);
 const app=()=>getApps().find(a=>a.name==='[DEFAULT]')||getApps()[0];
