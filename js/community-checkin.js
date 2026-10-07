@@ -287,7 +287,7 @@
   function loadWeeklyHistory() {
     if (document.querySelector('script[data-cff-week-history]')) return;
     const script = document.createElement('script');
-    script.src = 'js/community-week-history.js?v=20261007-monthly-v1';
+    script.src = 'js/community-week-history.js?v=20261007-monthly-auto-v2';
     script.dataset.cffWeekHistory = '1';
     document.head.appendChild(script);
   }
