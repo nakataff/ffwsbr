@@ -217,3 +217,55 @@
   .cff-profile-badge-icon img{width:20px;height:20px}
   .cff-profile-badge-more{height:26px;min-width:26px}
 }
+
+
+/* 2026-10-07: categorias de insignias + logos v1 */
+.cff-visual-item.is-team-logo img{
+  width:70px;
+  height:70px;
+  object-fit:contain!important;
+  object-position:center!important;
+  border-radius:50%;
+  padding:4px;
+  box-sizing:border-box;
+  background:rgba(255,255,255,.035);
+}
+.cff-profile-avatar.cff-profile-avatar-team-logo{
+  object-fit:contain!important;
+  object-position:center!important;
+  padding:5%!important;
+  box-sizing:border-box;
+}
+.cff-badge-category{margin-top:22px}
+.cff-badge-category:first-of-type{margin-top:14px}
+.cff-badge-category>h3{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 10px;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.055em;
+  color:#c7d9ea;
+}
+.cff-badge-category>h3 span{
+  min-width:22px;
+  height:22px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 6px;
+  border:1px solid #31465e;
+  border-radius:999px;
+  background:#0d1827;
+  color:#839bb3;
+  font-size:9px;
+}
+@media(max-width:700px){
+  .cff-visual-item.is-team-logo img{
+    width:58px;
+    height:58px;
+    padding:3px;
+  }
+  .cff-badge-category{margin-top:18px}
+}
