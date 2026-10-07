@@ -483,6 +483,9 @@
         },
         "accessRule": {
           ".validate": "newData.isString() && newData.val().matches(/^(all|badge|weekly|monthly|top3|event|supporter|code|manual|admin)$/)"
+        },
+        "category": {
+          ".validate": "newData.isString() && newData.val().matches(/^(character|simple|stylized|special)$/)"
         }
       }
     },
