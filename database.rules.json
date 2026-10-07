@@ -65,9 +65,9 @@
           "createdAt"
         ],
         "$comment": {
-          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (!data.exists() && newData.exists() && newData.hasChildren(['name','text','createdAt','clientId']) && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 36 && newData.child('text').isString() && newData.child('text').val().length >= 2 && newData.child('text').val().length <= 600 && newData.child('createdAt').isNumber() && newData.child('createdAt').val() <= now + 10000 && newData.child('createdAt').val() >= now - 120000 && newData.child('clientId').isString() && newData.child('clientId').val().length >= 3 && newData.child('clientId').val().length <= 80)",
+          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (auth != null && auth.token.firebase.sign_in_provider == 'google.com' && !data.exists() && newData.exists() && newData.hasChildren(['name','text','createdAt','uid','avatarId']) && newData.child('uid').val() == auth.uid && newData.child('name').val() == root.child('userAccounts').child(auth.uid).child('profile').child('name').val() && (newData.child('avatarId').val() == 'default' || newData.child('avatarId').val() == root.child('userAccounts').child(auth.uid).child('profile').child('avatarId').val()) && root.child('newsCommentLimits').child(auth.uid).child('lastComment').val() == $comment && root.child('newsCommentLimits').child(auth.uid).child('slug').val() == $slug && newData.child('createdAt').val() == root.child('newsCommentLimits').child(auth.uid).child('lastAt').val())",
           "name": {
-            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 36"
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 80"
           },
           "text": {
             ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 600"
@@ -80,6 +80,12 @@
           },
           "$other": {
             ".validate": false
+          },
+          "uid": {
+            ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{1,128}$/)"
+          },
+          "avatarId": {
+            ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9-]{1,100}$/)"
           }
         }
       }
@@ -664,6 +670,49 @@
         },
         "$other": {
           ".validate": false
+        }
+      }
+    },
+    "newsCommentLimits": {
+      "$uid": {
+        ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
+        ".write": "auth != null && auth.token.firebase.sign_in_provider == 'google.com' && auth.uid == $uid && newData.exists() && (!data.exists() || data.child('lastAt').val() <= now - 30000)",
+        ".validate": "newData.hasChildren(['lastAt','lastComment','slug'])",
+        "lastAt": {
+          ".validate": "newData.isNumber() && newData.val() >= now - 10000 && newData.val() <= now + 10000"
+        },
+        "lastComment": {
+          ".validate": "newData.isString() && newData.val().matches(/^c_[a-f0-9]{32}$/)"
+        },
+        "slug": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_-]{1,160}$/)"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "communityGifts": {
+      "$uid": {
+        ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
+        "$gift": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "$gift.matches(/^gift-[a-z0-9-]{1,60}$/) && root.child('communityMembers').child($uid).exists() && newData.hasChildren(['assetId','kind','message','grantedAt'])",
+          "assetId": {
+            ".validate": "newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() != 'admin'"
+          },
+          "kind": {
+            ".validate": "newData.isString() && (newData.val() == 'avatar' || newData.val() == 'cover' || newData.val() == 'badge') && newData.val() == root.child('communityProfileCatalog').child(newData.parent().child('assetId').val()).child('kind').val()"
+          },
+          "message": {
+            ".validate": "newData.isString() && newData.val().length <= 160"
+          },
+          "grantedAt": {
+            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       }
     }

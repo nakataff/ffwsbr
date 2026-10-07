@@ -1,10 +1,9 @@
 (function(){
   'use strict';
 
-  const VERSION='20260909-news-comments-v4';
+  const VERSION='20261007-google-comments-v1';
   const MAX_COMMENTS=50;
   const COOLDOWN_MS=30000;
-  const NAME_KEY='cff_comment_name_v1';
   const LAST_SEND_KEY='cff_comment_last_send_v1';
   const LAST_TEXT_KEY='cff_comment_last_text_v1';
 
@@ -33,13 +32,6 @@
   }
   function normalize(value){
     return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  }
-  function randomId(){
-    const bytes=new Uint8Array(12);crypto.getRandomValues(bytes);return 'c_'+Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
-  }
-  function clientId(){
-    const key='cff_comment_client_v1';
-    try{let value=localStorage.getItem(key);if(!value){value=randomId().replace(/^c_/,'u_');localStorage.setItem(key,value)}return value}catch(_){return 'u_'+Math.random().toString(36).slice(2,14)}
   }
   function formatDate(value){
     const d=new Date(Number(value||0));
@@ -131,6 +123,7 @@
     const style=document.createElement('style');
     style.id='cff-news-comments-css';
     style.textContent=`
+      .cff-comments,.cff-comments *{box-sizing:border-box}
       .cff-comments{margin:28px 0 0;border:1px solid rgba(0,200,255,.18);border-radius:18px;background:rgba(9,17,31,.86);overflow:hidden;color:#f4f9ff}
       .cff-comments-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(0,200,255,.14);background:linear-gradient(135deg,rgba(0,200,255,.09),rgba(255,255,255,.018))}
       .cff-comments-kicker{color:#00c8ff;font-size:.72rem;font-weight:1000;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
@@ -145,7 +138,7 @@
       .cff-comment-actions{display:flex;align-items:center;justify-content:space-between;gap:14px}
       .cff-comment-submit{min-height:44px;border:0;border-radius:11px;padding:0 20px;background:#00c8ff;color:#00131b;font-weight:1000;white-space:nowrap;cursor:pointer}.cff-comment-submit:disabled{opacity:.48;cursor:not-allowed}
       .cff-comment-note{min-height:17px;color:#7897b8;font-size:.72rem;line-height:1.4}.cff-comment-note.is-error{color:#ff8f9b}.cff-comment-note.is-success{color:#72e6ad}
-      .cff-comments-list{display:grid;gap:10px;margin-top:15px}.cff-comment{padding:13px 14px;border:1px solid rgba(255,255,255,.075);border-radius:13px;background:#0b1422}
+      .cff-comment-identity{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.85rem;color:#b7d1eb}.cff-comment-login{border:1px solid #32647d;border-radius:10px;padding:10px 14px;background:#132b3b;color:#fff;cursor:pointer}.cff-comment-author-wrap{display:flex;align-items:center;gap:9px;min-width:0}.cff-comment-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none}.cff-comment-author{color:inherit;text-decoration:none}.cff-comments-list{display:grid;gap:10px;margin-top:15px}.cff-comment{padding:13px 14px;border:1px solid rgba(255,255,255,.075);border-radius:13px;background:#0b1422}
       .cff-comment-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.cff-comment-author{min-width:0;color:#fff;font-size:.9rem;font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cff-comment-time{flex:0 0 auto;color:#6f8dac;font-size:.66rem;font-weight:800}.cff-comment-text-body{color:#dcecff;font-size:.91rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.cff-comments-empty,.cff-comments-loading{padding:18px 8px 5px;color:#7897b8;text-align:center;font-size:.82rem;font-weight:800}
       @media(max-width:760px){.cff-comments{margin-top:20px;border-radius:15px}.cff-comments-head{padding:14px 15px}.cff-comments-body{padding:14px}.cff-comment-form{padding:12px}.cff-comment-actions{align-items:stretch;flex-direction:column}.cff-comment-submit{width:100%}.cff-comment-text{height:110px;min-height:110px}.cff-comment-top{align-items:flex-start;flex-direction:column;gap:2px}}
     `;
@@ -156,7 +149,7 @@
     if(document.getElementById('cff-news-comments')) return document.getElementById('cff-news-comments');
     const section=document.createElement('section');
     section.id='cff-news-comments';section.className='cff-comments';
-    section.innerHTML='<div class="cff-comments-head"><div><div class="cff-comments-kicker">Comunidade</div><h2 class="cff-comments-title">Comentários</h2></div><span class="cff-comments-count" id="cff-comments-count">0</span></div><div class="cff-comments-body"><form class="cff-comment-form" id="cff-comment-form"><div class="cff-comment-field"><label for="cff-comment-name">Nome ou @</label><input class="cff-comment-input" id="cff-comment-name" maxlength="36" autocomplete="nickname" placeholder="@seuinstagram" required></div><div class="cff-comment-field"><label for="cff-comment-text">Comentário</label><textarea class="cff-comment-text" id="cff-comment-text" maxlength="600" placeholder="Comente sobre a notícia..." required></textarea></div><div class="cff-comment-actions"><div class="cff-comment-note" id="cff-comment-note">Comentários públicos • filtro automático de spam e termos ofensivos</div><button class="cff-comment-submit" id="cff-comment-submit" type="submit">COMENTAR</button></div></form><div class="cff-comments-list" id="cff-comments-list"><div class="cff-comments-loading">Carregando comentários...</div></div></div>';
+    section.innerHTML='<div class="cff-comments-head"><div><div class="cff-comments-kicker">Comunidade</div><h2 class="cff-comments-title">Comentários</h2></div><span class="cff-comments-count" id="cff-comments-count">0</span></div><div class="cff-comments-body"><form class="cff-comment-form" id="cff-comment-form"><div class="cff-comment-identity" id="cff-comment-identity"><span>Carregando sua conta…</span></div><div class="cff-comment-field"><label for="cff-comment-text">Comentário</label><textarea class="cff-comment-text" id="cff-comment-text" maxlength="600" placeholder="Comente sobre a notícia..." required></textarea></div><div class="cff-comment-actions"><div class="cff-comment-note" id="cff-comment-note">Comentários públicos • filtro automático de spam e termos ofensivos</div><button class="cff-comment-submit" id="cff-comment-submit" type="submit">COMENTAR</button></div></form><div class="cff-comments-list" id="cff-comments-list"><div class="cff-comments-loading">Carregando comentários...</div></div></div>';
     return section;
   }
 
@@ -176,30 +169,36 @@
     let attempts=0;const timer=setInterval(()=>{if(mount(section)||++attempts>50) clearInterval(timer)},200);
   }
 
-  const els={form:section.querySelector('#cff-comment-form'),name:section.querySelector('#cff-comment-name'),text:section.querySelector('#cff-comment-text'),submit:section.querySelector('#cff-comment-submit'),note:section.querySelector('#cff-comment-note'),list:section.querySelector('#cff-comments-list'),count:section.querySelector('#cff-comments-count')};
-  try{els.name.value=String(localStorage.getItem(NAME_KEY)||'').slice(0,36)}catch(_){}
+  const els={form:section.querySelector('#cff-comment-form'),identity:section.querySelector('#cff-comment-identity'),text:section.querySelector('#cff-comment-text'),submit:section.querySelector('#cff-comment-submit'),note:section.querySelector('#cff-comment-note'),list:section.querySelector('#cff-comments-list'),count:section.querySelector('#cff-comments-count')};
+  let sending=false;
+  async function account(){if(!window.CFF_ACCOUNT)await import('/js/public-account.js?v=20261007-favorites-v1');await window.CFF_ACCOUNT.ready;return window.CFF_ACCOUNT;}
+  function identity(){const user=window.CFF_ACCOUNT?.user;els.identity.replaceChildren();const label=document.createElement('span');label.textContent=user?'Comentando como '+user.name:'Entre com Google para comentar com sua conta Central.';els.identity.append(label);if(!user){const button=document.createElement('button');button.type='button';button.className='cff-comment-login';button.textContent='Entrar com Google';button.onclick=async()=>{try{await(await account()).login();}catch{setNote('Não foi possível abrir o login. Tente novamente.','error');}};els.identity.append(button);}els.submit.disabled=sending||!user;els.text.disabled=!user;}
+  window.addEventListener('cff:account-changed',identity);window.addEventListener('cff:account-preferences',identity);
+  account().then(identity).catch(()=>setNote('Login indisponível no momento. Atualize a página.','error'));
   const endpoint=databaseURL+'/newsComments/'+encodeURIComponent(slug);
   function setNote(text,type){els.note.textContent=text;els.note.classList.toggle('is-error',type==='error');els.note.classList.toggle('is-success',type==='success')}
   function render(rows){
     els.count.textContent=String(rows.length);els.list.innerHTML='';
     if(!rows.length){els.list.innerHTML='<div class="cff-comments-empty">Seja o primeiro a comentar.</div>';return}
-    rows.forEach(item=>{const card=document.createElement('article');card.className='cff-comment';const top=document.createElement('div');top.className='cff-comment-top';const author=document.createElement('strong');author.className='cff-comment-author';author.textContent=item.name||'Visitante';const time=document.createElement('time');time.className='cff-comment-time';time.textContent=formatDate(item.createdAt);const text=document.createElement('div');text.className='cff-comment-text-body';text.textContent=item.text||'';top.append(author,time);card.append(top,text);els.list.appendChild(card)});
+    rows.forEach(item=>{const card=document.createElement('article');card.className='cff-comment';const top=document.createElement('div');top.className='cff-comment-top';const author=document.createElement(item.uid?'a':'strong');author.className='cff-comment-author';author.textContent=item.name||'Visitante';if(item.uid){author.href='/conta.html?u='+encodeURIComponent(item.uid);author.title='Ver perfil público';}const authorWrap=document.createElement('div');authorWrap.className='cff-comment-author-wrap';if(item.uid&&window.CFF_COMMENT_AVATAR){const image=document.createElement('span');image.dataset.commentAvatar=item.avatarId;image.innerHTML=window.CFF_COMMENT_AVATAR(item.avatarId);authorWrap.append(image); }authorWrap.append(author);const time=document.createElement('time');time.className='cff-comment-time';time.textContent=formatDate(item.createdAt);const text=document.createElement('div');text.className='cff-comment-text-body';text.textContent=item.text||'';top.append(authorWrap,time);card.append(top,text);els.list.appendChild(card)});window.CFF_ACCOUNT?.commentAvatars(els.list).catch(()=>{});
   }
   async function load(){
-    try{const response=await fetch(endpoint+'.json?orderBy=%22createdAt%22&limitToLast='+MAX_COMMENTS,{cache:'no-store'});if(!response.ok) throw new Error('HTTP '+response.status);const raw=await response.json();const rows=Object.values(raw||{}).map(item=>({name:clean(item&&item.name),text:String(item&&item.text||'').trim(),createdAt:Number(item&&item.createdAt||0)})).filter(item=>item.text).sort((a,b)=>b.createdAt-a.createdAt);render(rows)}catch(_){els.list.innerHTML='<div class="cff-comments-empty">Comentários indisponíveis no momento.</div>'}
+    try{const response=await fetch(endpoint+'.json?orderBy=%22createdAt%22&limitToLast='+MAX_COMMENTS,{cache:'no-store'});if(!response.ok) throw new Error('HTTP '+response.status);const raw=await response.json();const rows=Object.values(raw||{}).map(item=>({name:clean(item&&item.name),text:String(item&&item.text||'').trim(),createdAt:Number(item&&item.createdAt||0),uid:/^[A-Za-z0-9_-]{1,128}$/.test(item?.uid||'')?item.uid:'',avatarId:clean(item?.avatarId||'default')})).filter(item=>item.text).sort((a,b)=>b.createdAt-a.createdAt);render(rows)}catch(_){els.list.innerHTML='<div class="cff-comments-empty">Comentários indisponíveis no momento.</div>'}
   }
   els.form.addEventListener('submit',async event=>{
     event.preventDefault();
-    const name=clean(els.name.value).slice(0,36),text=String(els.text.value||'').replace(/\r/g,'').trim().slice(0,600);
-    if(name.length<2) return setNote('Digite um nome ou @ válido.','error');
+    const text=String(els.text.value||'').replace(/\r/g,'').trim().slice(0,600);
+    const current=await account().catch(()=>null);if(!current?.user)return setNote('Entre com Google para comentar.','error');
     if(text.length<2) return setNote('Escreva um comentário antes de enviar.','error');
     const blocked=moderationReason(text);
     if(blocked) return setNote(blocked,'error');
     try{const last=Number(localStorage.getItem(LAST_SEND_KEY)||0),wait=COOLDOWN_MS-(Date.now()-last);if(wait>0) return setNote('Aguarde '+Math.ceil(wait/1000)+'s para comentar novamente.','error')}catch(_){}
-    els.submit.disabled=true;setNote('Enviando comentário...');
-    try{const response=await fetch(endpoint+'/'+encodeURIComponent(randomId())+'.json',{method:'PUT',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,text,createdAt:Date.now(),clientId:clientId()})});if(!response.ok) throw new Error('HTTP '+response.status);try{localStorage.setItem(NAME_KEY,name);localStorage.setItem(LAST_SEND_KEY,String(Date.now()));localStorage.setItem(LAST_TEXT_KEY,text)}catch(_){}els.text.value='';setNote('Comentário publicado!','success');await load()}catch(_){setNote('Não foi possível publicar agora. Tente novamente em instantes.','error')}finally{els.submit.disabled=false}
+    sending=true;identity();setNote('Enviando comentário...');
+    try{await current.postNewsComment(slug,text);try{localStorage.setItem(LAST_SEND_KEY,String(Date.now()));localStorage.setItem(LAST_TEXT_KEY,text)}catch(_){}els.text.value='';setNote('Comentário publicado!','success');await load()}catch(error){setNote(error.message||'Não foi possível publicar agora. Tente novamente em instantes.','error')}finally{sending=false;identity()}
+
   });
   load();
   document.addEventListener('visibilitychange',()=>{if(!document.hidden) load()});
   window.CFF_NEWS_COMMENTS_VERSION=VERSION;
 })();
+
