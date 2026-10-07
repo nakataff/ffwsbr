@@ -709,5 +709,3 @@ exports.campGithubBackup = onRequest(
     }
   }
 );
-
-exports.communityProfileAccess = require('./community-profiles').communityProfileAccess;
