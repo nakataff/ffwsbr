@@ -57,3 +57,37 @@ test('free notification API: authentication, isolation, device ownership, delive
  const badOrigin=await worker.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Origin:'https://evil.test'},body:'{}'}),{});assert.equal(badOrigin.status,403);
  console.log('No paid backend, no real recipients, encrypted push accepted by mock endpoint.');
 });
+
+test('start and Booyah: separate opt-in, deduplication, live link and official confirmation',async()=>{
+ const c=context(),h=new NotificationHub(c,{}),camp='test-event-types',fan=token('fan');official=null;pushes=[];payloads.length=0;
+ async function call(action,data={},jwt=member){const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return {status:r.status,...await r.json()};}
+ const cfg={...configure,tournamentId:camp,streamUrl:'https://www.youtube.com/watch?v=live'};
+ assert.equal((await call('configure',{...cfg,streamUrl:'javascript:alert(1)'},admin)).status,400);
+ assert.equal((await call('configure',cfg,admin)).status,200);
+ await call('preferences',{tournamentId:camp,enabled:true,teams:['fx']});
+ await call('preferences',{tournamentId:camp,enabled:true,teams:[],types:{start:true}},other);
+ await call('preferences',{tournamentId:camp,enabled:true,teams:['los'],types:{booyah:true}},fan);
+ assert.equal((await call('settings')).preferences[camp].types.booyah,false);
+ for(const [jwt,name]of [[member,'member'],[other,'other'],[fan,'fan']])await call('device',{subscription:subscription(name)},jwt);
+ const start={tournamentId:camp,day:1,drop:1,kind:'start',map:'Nexterra'};
+ assert.equal((await call('publish',start)).status,403);
+ assert.equal((await call('publish',{...start,map:''},admin)).status,400);
+ assert.equal((await call('publish',start,admin)).duplicate,false);
+ assert.equal((await call('publish',start,admin)).duplicate,true);
+ await h.alarm();assert.equal(pushes.length,1);
+ assert.equal((await call('inbox')).rows.length,0);assert.equal((await call('inbox',{},fan)).rows.length,0);
+ let rows=(await call('inbox',{},other)).rows;assert.equal(rows[0].kind,'start');assert.equal(rows[0].map,'Nexterra');assert.equal(rows[0].streamUrl,cfg.streamUrl);
+ assert.equal(payloads[0].url,cfg.streamUrl);assert.equal(payloads[0].body,'QUEDA 1 COMEÇOU! O mapa da vez é Nexterra!');
+ // A queued message must honor a later opt-out.
+ await call('publish',{...start,drop:2},admin);await call('preferences',{tournamentId:camp,enabled:true,types:{start:false}},other);await h.alarm();assert.equal(pushes.length,1);
+ const win={tournamentId:camp,day:1,drop:1,kind:'booyah',result:{teamId:'los',position:1,kills:12,points:24,dayPoints:24}};
+ assert.equal((await call('publish',{...win,result:{...win.result,position:2}},admin)).status,400);
+ assert.equal((await call('publish',win,admin)).duplicate,false);
+ assert.equal((await call('publish',win,admin)).duplicate,true);
+ await h.alarm();assert.equal(pushes.length,2);assert(payloads.at(-1).body.includes('BOOYAH PARA A EQUIPE LOS! 12 abates na queda 1!'));
+ rows=(await call('inbox',{},fan)).rows;assert.equal(rows.length,1);assert.equal(rows[0].kind,'booyah');assert.equal(rows[0].status,'partial');assert.equal((await call('inbox')).rows.length,0);
+ official={source:{teams:true,players:true},teams:{los:{team:'LOS',position:1,kills:13,points:25}},players:{p:{team:'LOS',kills:13}}};
+ h.sql.exec('UPDATE pending SET check_at=0');await h.alarm();rows=(await call('inbox',{},fan)).rows;assert.equal(rows.length,1);assert.equal(rows[0].status,'official');assert.equal(rows[0].kind,'booyah');assert.equal(rows[0].kills,13);assert.equal(pushes.length,3);
+ assert.equal((await call('publish',{...start,drop:1},admin)).status,400);
+ assert.equal((await call('publish',{...start,kind:'invalid'},admin)).status,400);
+});

@@ -6,7 +6,14 @@ function text(value, max=120) { return String(value || '').trim().slice(0,max); 
 function integer(value, min, max) { if(value===null || value==='' || value===undefined || !Number.isInteger(Number(value)) || Number(value)<min || Number(value)>max) throw Error('Confira posição, abates e pontos.'); return Number(value); }
 function result(input) { return {teamId:text(input.teamId,80),team:text(input.team,100),position:integer(input.position,1,100),kills:integer(input.kills,0,999),points:integer(input.points,0,9999)}; }
 function eventId(tournament, day, drop, team, status) { return hash([tournament,day,drop,team,status].join(':')); }
-function interested(preference,event) { return preference?.enabled===true && (preference.all===true || preference.teams?.[event.teamId]===true); }
+function interested(preference,event) {
+ if(preference?.enabled!==true)return false;
+ const kind=event.kind||'elimination';
+ if(kind==='start')return preference.types?.start===true;
+ if(kind==='booyah'&&preference.types?.booyah!==true)return false;
+ if(kind==='elimination'&&preference.types?.elimination===false)return false;
+ return preference.all===true || preference.teams?.[event.teamId]===true;
+}
 function officialRows(value, roster) {
   if(!value || value.manual || value.testMode || !value.source?.teams || !value.source?.players || !Object.keys(value.players||{}).length) return [];
   const teams=Object.values(value.teams||{}), players=Object.values(value.players||{});

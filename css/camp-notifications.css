@@ -19,3 +19,5 @@
 .cff-notify-help{font-size:.76rem;color:#9eb3c8;line-height:1.5}.cff-notify-send{width:100%;min-height:42px}
 .cff-notify-message .cff-notify-result{display:flex;align-items:center;gap:12px}.cff-notify-message .cff-notify-team-logo{width:40px;height:40px}
 @media(max-width:480px){.cff-notify-admin .cff-camp-btn{flex:1 1 170px}.cff-notify-team-logo{width:44px;height:44px}.cff-notify-score-preview{padding:12px;gap:10px}}
+
+.cff-notify-start{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;color:#ffd56d!important;border-color:#ffd56d66!important;white-space:nowrap}.cff-notify-start svg{width:18px;height:18px;flex:none}.cff-notify-types{border-top:1px solid #29405a!important;margin-top:12px}.cff-notify-watch{display:inline-flex;align-items:center;gap:6px;margin:4px 12px 8px 0;color:#7ddfff;text-decoration:none;padding:7px 10px;border:1px solid #29405a;border-radius:8px;font-weight:700;font-size:.8rem}.cff-notify-message small{display:block}

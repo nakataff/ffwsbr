@@ -6,6 +6,7 @@ on:
     paths:
       - 'cloudflare/camp-notifications/**'
       - 'functions/camp-notifications-core.js'
+      - 'js/camp-notification-content.js'
       - '.github/workflows/deploy-free-camp-notifications.yml'
 permissions:
   contents: read
