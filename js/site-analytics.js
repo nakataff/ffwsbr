@@ -40,7 +40,7 @@
   const isNews = /\/noticia\.html$/i.test(location.pathname) || /^\/noticias\/[^/]+\/?$/i.test(location.pathname) || /^\/noticia\/[^/]+\/?$/i.test(location.pathname);
   if (isNews && !document.querySelector('script[data-cff-news-comments]')) {
     const script = document.createElement('script');
-    script.src = '/js/news-comments.js?v=20260909-news-comments-v3';
+    script.src = '/js/news-comments.js?v=20261007-moderation-v4';
     script.async = false;
     script.dataset.cffNewsComments = '1';
     document.head.appendChild(script);
