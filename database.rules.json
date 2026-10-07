@@ -644,6 +644,28 @@
           ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{64}$/) && root.child('communityAvatarCodes').child(newData.val()).child('enabled').val() == true && root.child('communityAvatarCodes').child(newData.val()).child('assetId').val() == $asset && (root.child('communityAvatarCodes').child(newData.val()).child('expiresAt').val() == 0 || root.child('communityAvatarCodes').child(newData.val()).child('expiresAt').val() >= now) && root.child('communityProfileCatalog').child($asset).child('enabled').val() == true && root.child('communityProfileCatalog').child($asset).child('accessRule').val() == 'code'"
         }
       }
+    },
+    "communityMonthlyChampions": {
+      ".read": true,
+      "$month": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "$month.matches(/^20[0-9]{2}-(0[1-9]|1[0-2])$/) && newData.hasChildren(['username','points','confirmedAt','monthEnd'])",
+        "username": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_.]{1,64}$/)"
+        },
+        "points": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000000 && newData.val() % 1 == 0"
+        },
+        "confirmedAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+        },
+        "monthEnd": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
     }
   }
 }
