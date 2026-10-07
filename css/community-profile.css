@@ -43,3 +43,63 @@
  .cff-code-gift-form{grid-template-columns:1fr}
  .cff-code-gift-form .cff-account-button{width:100%}
 }
+
+
+/* 2026-10-07: avatar/capa modal v1 */
+/* Quando há uma capa personalizada, o círculo decorativo padrão some. */
+.cff-profile-hero.has-cover:before{display:none}
+.cff-profile-avatar-wrap{position:relative;width:106px;height:106px;flex:0 0 106px;display:grid;place-items:center}
+.cff-profile-avatar-wrap>.cff-profile-avatar{width:100%;height:100%}
+.cff-profile-avatar.cff-profile-avatar-art{border:0!important;border-radius:0!important;padding:0!important;background:transparent!important;box-shadow:none!important;object-fit:contain!important;object-position:center!important}
+.cff-profile-avatar-edit{position:absolute;right:-3px;bottom:-3px;width:34px;height:34px;display:grid;place-items:center;border:2px solid #0d1726;border-radius:50%;background:#7c5cff;color:white;box-shadow:0 5px 18px #0008;cursor:pointer;z-index:4}
+.cff-profile-avatar-edit svg,.cff-profile-cover-edit svg{width:17px;height:17px;fill:currentColor}
+.cff-profile-avatar-edit:hover,.cff-profile-cover-edit:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.cff-profile-cover-edit{position:absolute;top:14px;right:14px;z-index:5;display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 11px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:rgba(5,10,18,.72);backdrop-filter:blur(8px);color:#f2f6ff;font:700 11px Arial,sans-serif;cursor:pointer;box-shadow:0 6px 18px #0005}
+.cff-profile-hero.has-owner-controls .cff-profile-hero-top{padding-right:116px}
+.cff-edit-preview small{display:block;margin-top:7px;color:#718ca8;font-size:10px;line-height:1.4}
+
+/* Seletor flutuante de foto/capa. */
+.cff-visual-picker{width:min(820px,calc(100vw - 28px));max-height:min(82vh,760px);box-sizing:border-box;padding:0;border:1px solid #354b66;border-radius:18px;background:#0b1422;color:#edf6ff;box-shadow:0 30px 90px #000c;overflow:hidden}
+.cff-visual-picker::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
+.cff-visual-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px 14px;border-bottom:1px solid #24364c}
+.cff-visual-head h2{margin:3px 0 0;font-size:20px}
+.cff-visual-close{width:34px;height:34px;display:grid;place-items:center;border:1px solid #344a64;border-radius:9px;background:#111d2d;color:#cfe3f4;font-size:22px;cursor:pointer}
+.cff-visual-tabs{display:flex;gap:7px;overflow:auto;padding:12px 16px;border-bottom:1px solid #203247;scrollbar-width:thin}
+.cff-visual-tabs button{flex:none;border:1px solid #2d4560;border-radius:999px;background:#0f1c2c;color:#9fb6cd;padding:8px 12px;font:800 10px Arial,sans-serif;cursor:pointer}
+.cff-visual-tabs button.is-active{border-color:#8d73ff;background:#2a214c;color:#eee9ff}
+.cff-visual-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;max-height:58vh;overflow:auto;padding:16px}
+.cff-visual-grid.is-cover{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.cff-visual-item{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;min-width:0;padding:10px;border:1px solid #263b55;border-radius:12px;background:#0f1b2b;color:#e7f1fb;cursor:pointer;text-align:center}
+.cff-visual-item:hover:not(:disabled){border-color:#5d78a0;background:#12243a}
+.cff-visual-item.is-selected{border-color:#9278ff;box-shadow:0 0 0 1px #9278ff inset;background:#1b1731}
+.cff-visual-item:disabled{opacity:.48;cursor:not-allowed}
+.cff-visual-item img{width:78px;height:78px;object-fit:cover;object-position:50% 18%;border-radius:50%;background:transparent}
+.cff-visual-item.is-custom img{object-fit:contain;object-position:center;border-radius:10px}
+.cff-visual-item span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:800}
+.cff-visual-item small{font-size:9px;color:#9ab0c6}
+.cff-visual-grid.is-cover .cff-visual-item img{width:100%;height:auto;aspect-ratio:4/1;object-fit:cover;border-radius:8px}
+.cff-no-cover-preview{display:block;width:100%;aspect-ratio:4/1;border-radius:8px;background:linear-gradient(120deg,#10253b,#10182a 58%,#101a2b)}
+.cff-visual-empty{grid-column:1/-1;margin:18px;color:#8ea6bd;text-align:center;font-size:12px}
+
+/* A galeria antiga não é mais a interface principal de foto/capa. */
+.cff-avatar-gallery{display:none!important}
+
+@media(max-width:700px){
+ .cff-profile-avatar-wrap{width:74px;height:74px;flex-basis:74px}
+ .cff-profile-avatar-edit{width:30px;height:30px;right:-5px;bottom:-5px}
+ .cff-profile-avatar-edit svg{width:15px;height:15px}
+ .cff-profile-cover-edit{top:10px;right:10px;width:34px;min-height:34px;padding:0;justify-content:center}
+ .cff-profile-cover-edit span{display:none}
+ .cff-profile-hero.has-owner-controls .cff-profile-hero-top{padding-right:38px}
+ .cff-visual-picker{width:calc(100vw - 16px);max-height:88vh;border-radius:15px}
+ .cff-visual-head{padding:14px 14px 11px}
+ .cff-visual-tabs{padding:10px 12px}
+ .cff-visual-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:11px}
+ .cff-visual-grid.is-cover{grid-template-columns:1fr 1fr}
+ .cff-visual-item{padding:8px 5px}
+ .cff-visual-item img{width:64px;height:64px}
+}
+@media(max-width:430px){
+ .cff-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .cff-visual-grid.is-cover{grid-template-columns:1fr}
+}
