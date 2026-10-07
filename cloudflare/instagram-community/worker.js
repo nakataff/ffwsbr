@@ -84,6 +84,10 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
     if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community' }, 200, request);
 
+    // These routes contain public standings only; never cache sessions or mutations.
+    const publicHandler = request.method === 'GET' ? PUBLIC_READ_ROUTES[url.pathname] : null;
+    if (publicHandler) return cachedPublicRead(request, env, ctx, url, publicHandler);
+
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
       await ensurePerformanceIndexes(env);
     }
@@ -2358,7 +2362,7 @@ async function getAchievementProfile(request, env, url) {
 
   const userKey = String(user.user_key);
   const currentWeek = weekKeys(Date.now());
-  const [prediction, checkins, weeklyWinners, months] = await Promise.all([
+  const [prediction, checkins, weeklyWinners, monthlyHistory] = await Promise.all([
     env.DB.prepare(`
       SELECT
         SUM(CASE WHEN type='prediction_vote' THEN 1 ELSE 0 END) AS votes,
@@ -2368,44 +2372,11 @@ async function getAchievementProfile(request, env, url) {
       WHERE user_key=?1
     `).bind(userKey).first(),
     env.DB.prepare("SELECT COUNT(*) AS total FROM awards WHERE user_key=?1 AND type='checkin'").bind(userKey).first(),
-    env.DB.prepare(`
-      WITH award_rows AS (
-        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
-               user_key, username, points, type
-        FROM awards
-        WHERE day_key < ?1
-      ),
-      week_scores AS (
-        SELECT weekStart, user_key, MAX(username) AS username,
-               SUM(points) AS points,
-               SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
-               SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments
-        FROM award_rows
-        GROUP BY weekStart,user_key
-      ),
-      active_weeks AS (
-        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
-               user_key, COUNT(*) AS activeDays
-        FROM active_days
-        WHERE day_key < ?1
-        GROUP BY weekStart,user_key
-      ),
-      ranked AS (
-        SELECT s.weekStart,s.user_key,s.username,
-               ROW_NUMBER() OVER (
-                 PARTITION BY s.weekStart
-                 ORDER BY s.points DESC, COALESCE(a.activeDays,0) DESC, s.stories DESC, s.comments DESC, s.username ASC
-               ) AS place
-        FROM week_scores s
-        LEFT JOIN active_weeks a ON a.weekStart=s.weekStart AND a.user_key=s.user_key
-      )
-      SELECT COUNT(*) AS wins FROM ranked WHERE place=1 AND (user_key=?2 OR lower(username)=?3)
-    `).bind(currentWeek.weekStartKey, userKey, username).first(),
-    closedMonthKeys(env, 60),
+    sharedWeeklyWinCount(request, env, currentWeek.weekStartKey, userKey, username),
+    sharedMonthlyHistory(request, env),
   ]);
 
-  const snapshots = await Promise.all(months.map(month => getOrCreateMonthlySnapshot(env, month)));
-  const monthWins = snapshots.filter(s => s?.winner?.userKey === userKey || String(s?.winner?.username||'').toLowerCase() === username).length;
+  const monthWins = monthlyHistory.filter(s => s?.winner?.userKey === userKey || String(s?.winner?.username||'').toLowerCase() === username).length;
 
   const metrics = {
     total_points: Number(user.points_all || 0),
@@ -2426,7 +2397,7 @@ async function getAchievementProfile(request, env, url) {
     userKey,
     username: String(user.username || username),
     metrics,
-    frozenMonths: months.length,
+    frozenMonths: monthlyHistory.length,
   }, 200, request, { 'Cache-Control': 'public, max-age=120' });
 }
 
@@ -2570,4 +2541,108 @@ async function logMessagingShape(env, event) {
     timestamp: Number(event?.timestamp || 0),
   };
   await env.DB.prepare('INSERT INTO raw_events (kind,payload,received_at) VALUES (?1,?2,?3)').bind('unrecognized_message', JSON.stringify(summary), Date.now()).run();
+}
+
+const PUBLIC_READ_ROUTES = Object.freeze({
+  '/api/ranking': getRanking,
+  '/api/ranking/history': getWeeklyHistory,
+  '/api/ranking/months': getMonthlyHistory,
+  '/api/achievements/profile': getAchievementProfile,
+});
+const PUBLIC_READ_TTL_SECONDS = 300;
+const publicReadPending = new Map();
+
+async function cachedPublicRead(request, env, ctx, url, handler) {
+  const canonical = new URL(url);
+  canonical.searchParams.delete('_'); // Older clients add a timestamp to bypass browser caches.
+  canonical.searchParams.sort();
+  canonical.searchParams.set('__cff_public_cache', '20261007-v1');
+  const key = new Request(canonical.toString(), { method: 'GET' });
+  const cache = globalThis.caches?.default;
+  const withCors = response => {
+    const headers = new Headers(response.headers);
+    for (const [name, value] of Object.entries(corsHeaders(request))) headers.set(name, value);
+    return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  };
+  if (cache) {
+    try {
+      const hit = await cache.match(key);
+      if (hit) return withCors(hit);
+    } catch { /* A cache failure must not block the public API. */ }
+  }
+  const pendingKey = canonical.toString();
+  let job = publicReadPending.get(pendingKey);
+  if (!job) {
+    job = (async () => {
+      await ensurePerformanceIndexes(env);
+      const response = await handler(request, env, url);
+      const headers = new Headers(response.headers);
+      if (response.ok) headers.set('Cache-Control', 'public, max-age=' + PUBLIC_READ_TTL_SECONDS);
+      const result = new Response(await response.arrayBuffer(), { status: response.status, statusText: response.statusText, headers });
+      if (cache && result.ok) {
+        // Store no caller's Origin in the shared cache. Reapply CORS on each response.
+        const storedHeaders = new Headers(result.headers);
+        storedHeaders.delete('Access-Control-Allow-Origin');
+        const stored = new Response(result.clone().body, { status: result.status, headers: storedHeaders });
+        try { await cache.put(key, stored); } catch { /* D1 remains the source of truth. */ }
+      }
+      return result;
+    })();
+    publicReadPending.set(pendingKey, job);
+    job.finally(() => { if (publicReadPending.get(pendingKey) === job) publicReadPending.delete(pendingKey); }).catch(() => {});
+  }
+  return withCors((await job).clone());
+}
+
+async function sharedWeeklyWinCount(request, env, weekStart, userKey, username) {
+  const cacheUrl = new URL('/__cff_weekly_winners?week=' + encodeURIComponent(weekStart), request.url);
+  const response = await cachedPublicRead(request, env, null, cacheUrl, async () => {
+    const result = await env.DB.prepare(`
+      WITH award_rows AS (
+        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
+               user_key, username, points, type
+        FROM awards
+        WHERE day_key < ?1
+      ),
+      week_scores AS (
+        SELECT weekStart, user_key, MAX(username) AS username,
+               SUM(points) AS points,
+               SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
+               SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments
+        FROM award_rows
+        GROUP BY weekStart,user_key
+      ),
+      active_weeks AS (
+        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
+               user_key, COUNT(*) AS activeDays
+        FROM active_days
+        WHERE day_key < ?1
+        GROUP BY weekStart,user_key
+      ),
+      ranked AS (
+        SELECT s.weekStart,s.user_key,s.username,
+               ROW_NUMBER() OVER (
+                 PARTITION BY s.weekStart
+                 ORDER BY s.points DESC, COALESCE(a.activeDays,0) DESC, s.stories DESC, s.comments DESC, s.username ASC
+               ) AS place
+        FROM week_scores s
+        LEFT JOIN active_weeks a ON a.weekStart=s.weekStart AND a.user_key=s.user_key
+      )
+      SELECT user_key, username, COUNT(*) AS wins FROM ranked WHERE place=1 GROUP BY user_key, username
+    `).bind(weekStart).all();
+    return json({ rows: result.results || [] }, 200);
+  });
+  if (!response.ok) throw Error('Não foi possível carregar os campeões semanais');
+  const payload = await response.json();
+  const wins = (payload.rows || []).filter(row => String(row.user_key) === userKey || String(row.username || '').toLowerCase() === username)
+    .reduce((total, row) => total + Number(row.wins || 0), 0);
+  return { wins };
+}
+
+async function sharedMonthlyHistory(request, env) {
+  const cacheUrl = new URL('/api/ranking/months?limit=60', request.url);
+  const response = await cachedPublicRead(request, env, null, cacheUrl, getMonthlyHistory);
+  if (!response.ok) throw Error('Não foi possível carregar os campeões mensais');
+  const payload = await response.json();
+  return payload.history || [];
 }
