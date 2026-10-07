@@ -2,19 +2,23 @@ import { ref, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-da
 export const PROFILE_VERSION='20261007-access-v1';
 export const escapeProfile=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const DEFAULT_AVATAR='/central%20free%20fire.webp';
-let optionsPromise;const imageCache=new Map();
+let optionsPromise;const imageCache=new Map(),imageValueCache=new Map();
 export function profileOptions(){return optionsPromise||=fetch('/profile-options.json?v='+PROFILE_VERSION).then(r=>{if(!r.ok)throw Error('Catálogo indisponível');return r.json()}).catch(e=>{optionsPromise=null;throw e});}
 export function findOption(options,id){return [...(options?.teams||[]),...(options?.players||[])].find(x=>x.id===id);}
 export function imageUrl(path){return new URL(path||DEFAULT_AVATAR,location.origin+'/').href;}
 export function approvedImage(options,catalog,id,cls='',alt=''){
- const opt=findOption(options,id),item=catalog?.[id],remote=(item?.enabled||item?.kind==='badge')&&item.assetId;
- const src=opt?imageUrl(opt.image):remote?'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=':DEFAULT_AVATAR;
- const pending=remote?' cff-profile-asset-pending':'';
- return `<img class="${escapeProfile(cls)}${pending}" src="${escapeProfile(src)}" alt="${escapeProfile(alt||opt?.name||item?.title||'Avatar Central')}" loading="lazy" decoding="async"${remote?` data-profile-asset="${escapeProfile(item.assetId)}"`:''}>`;
+ const opt=findOption(options,id),item=catalog?.[id],remote=(item?.enabled||item?.kind==='badge')&&item.assetId,cached=remote?imageValueCache.get(item.assetId):'';
+ const placeholder='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',src=opt?imageUrl(opt.image):(cached||remote?cached||placeholder:DEFAULT_AVATAR);
+ const pending=remote&&!cached?' cff-profile-asset-pending':'',critical=/cff-profile-avatar|cff-profile-cover-image/.test(String(cls||''));
+ return `<img class="${escapeProfile(cls)}${pending}" src="${escapeProfile(src)}" alt="${escapeProfile(alt||opt?.name||item?.title||'Avatar Central')}" loading="${critical?'eager':'lazy'}" decoding="async"${critical?' fetchpriority="high"':''}${remote&&!cached?` data-profile-asset="${escapeProfile(item.assetId)}"`:''}>`;
+}
+export async function warmProfileImages(ids,db){
+ const unique=[...new Set((ids||[]).filter(Boolean))];
+ await Promise.all(unique.map(async id=>{if(imageValueCache.has(id))return imageValueCache.get(id);let promise=imageCache.get(id);if(!promise){promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{const value=s.val();if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');imageValueCache.set(id,value);return value;}).catch(e=>{imageCache.delete(id);throw e;});imageCache.set(id,promise);}try{const value=await promise;imageValueCache.set(id,value);const preload=new Image();preload.src=value;try{await preload.decode();}catch{}return value;}catch{return'';}}));
 }
 export function hydrateProfileImages(root,db){
  const nodes=[...root.querySelectorAll('img[data-profile-asset]')];if(!nodes.length)return;
- const load=async node=>{const id=node.dataset.profileAsset;node.removeAttribute('data-profile-asset');try{let promise=imageCache.get(id);if(!promise){promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{const value=s.val();if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');return value;}).catch(e=>{imageCache.delete(id);throw e;});imageCache.set(id,promise);}const data=await promise;const preload=new Image();preload.src=data;try{await preload.decode();}catch{}if(node.isConnected){node.src=data;node.classList.remove('cff-profile-asset-pending');node.classList.add('cff-profile-asset-ready');}}catch{node.classList.remove('cff-profile-asset-pending');node.alt='Imagem indisponível';}};
+ const load=async node=>{const id=node.dataset.profileAsset;node.removeAttribute('data-profile-asset');try{let promise=imageCache.get(id);if(!promise){promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{const value=s.val();if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');return value;}).catch(e=>{imageCache.delete(id);throw e;});imageCache.set(id,promise);}const data=await promise;imageValueCache.set(id,data);const preload=new Image();preload.src=data;try{await preload.decode();}catch{}if(node.isConnected){node.src=data;node.classList.remove('cff-profile-asset-pending');node.classList.add('cff-profile-asset-ready');}}catch{node.classList.remove('cff-profile-asset-pending');node.alt='Imagem indisponível';}};
  if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){observer.unobserve(e.target);load(e.target);}}),{rootMargin:'180px'});nodes.forEach(n=>observer.observe(n));setTimeout(()=>observer.disconnect(),120000);}else nodes.forEach(load);
 }
 export function activeGrants(grants){return Object.entries(grants||{}).filter(([,g])=>g.status==='active').map(([id,g])=>({id,...g}));}
