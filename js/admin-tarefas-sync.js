@@ -2,7 +2,7 @@
   'use strict';
   const clone = value => JSON.parse(JSON.stringify(value));
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  const lists = ['tasks', 'notes', 'usefulLinks', 'dailyPosts', 'services', 'columns', 'platforms', 'tags'];
+  const lists = ['tasks', 'notes', 'usefulLinks', 'dailyPosts', 'services', 'columns', 'platforms', 'tags', 'projects', 'projectCompanies', 'projectNetworks', 'projectFields'];
   // Realtime Database omits empty arrays. Repair older board payloads before validation.
   function decode(payload) {
     if (!payload) return null;
@@ -34,7 +34,10 @@
       const current = new Map((remote[key] || []).map(item => [item.id, clone(item)]));
       before.forEach((_, id) => { if (!after.has(id)) current.delete(id); });
       after.forEach((item, id) => {
-        const previous = before.get(id);
+        // Two devices may initialise the same supplied project at once.
+        // Compare against its original defaults so untouched seed data cannot erase edits.
+        const previous = before.get(id) || (current.has(id) && window.CFF_TASKS_PROJECTS?.keys.includes(key)
+          ? window.CFF_TASKS_PROJECTS.seedBaseline(key, id) : undefined);
         if (!previous) current.set(id, clone(item));
         else if (!same(previous, item)) current.set(id, fields(previous, item, current.get(id) || previous));
       });
