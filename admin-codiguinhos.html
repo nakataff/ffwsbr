@@ -910,6 +910,7 @@
     @media(max-width:520px){.secure-gate{padding:8px}.secure-card{padding:18px}.secure-actions{display:grid}.secure-actions button,.secure-actions a{width:100%;min-width:0}.cloud-status{width:100%;justify-content:center}}
 
   </style>
+  <link rel="stylesheet" href="css/admin-codiguinhos-mostruario.css?v=20261008-v1">
 </head>
 <body>
   <section id="secureGate" class="secure-gate" aria-live="polite">
@@ -998,6 +999,7 @@
       </div>
 
       <div class="top-actions">
+        <button type="button" onclick="window.CFF_SHOWCASE.open()">▦ Mostruário para print</button>
         <span id="cloudSaveStatus" class="cloud-status">Bloqueado</span>
         <a class="file-label admin-back-link" href="admin.html">← Painel</a>
         <button class="secondary" onclick="arquivarExpirados()">Remover expirados</button>
@@ -1843,6 +1845,7 @@
       delete configGrupo(grupo).imagem;
       salvarMemoria();
       renderCodiguinSelector();
+      window.CFF_SHOWCASE?.refresh();
     }
 
     function redimensionarFotoCodiguin(file){
@@ -1889,6 +1892,7 @@
         configGrupo(grupo).imagem = dataUrl;
         salvarMemoria();
         renderCodiguinSelector();
+        window.CFF_SHOWCASE?.refresh();
       }catch(erro){
         alert("Não consegui salvar essa foto. Tente uma imagem menor ou em PNG/JPG/WebP.");
       }
@@ -2032,6 +2036,7 @@
     }
 
     function render(){
+      window.CFF_SHOWCASE?.refresh();
       renderCodiguinSelector();
       const root = document.getElementById("groups");
       root.innerHTML = "";
@@ -2599,6 +2604,7 @@
       try{ await window.CodiguinhosCloud.flush(); }catch(e){}
       window.CodiguinhosCloud.lock();
       controleDesbloqueado = false;
+      window.CFF_SHOWCASE?.close();
       memoria = memoriaVazia();
       grupos = [];
       document.getElementById("codiguinhosApp").hidden = true;
@@ -2776,6 +2782,22 @@
     window.migrarBackupInicial = migrarBackupInicial;
     window.criarBaseCodiguinhosVazia = criarBaseCodiguinhosVazia;
 
+    
+    window.CFF_SHOWCASE_DATA = {
+      read(){
+        if(!controleDesbloqueado) return null;
+        const pref = preferenciasUI();
+        return {settings:pref.mostruario || {},items:gruposOrdenadosSelector().map(g=>{
+          const cfg=configGrupo(g), remaining=g.codigos.filter(c=>!dadosCodigo(c).entregue).length;
+          return {id:g.id,name:g.nome,image:imagemGrupo(g),start:inicioGrupo(g),end:fimGrupo(g),status:remaining ? statusGrupo(g).tipo : "empty",remaining,meta:cfg.mostruario || {}};
+        })};
+      },
+      settings(value){if(!controleDesbloqueado)return;preferenciasUI().mostruario=value;salvarMemoria();},
+      item(id,value){if(!controleDesbloqueado)return;const g=grupos.find(g=>g.id===id);if(g){configGrupo(g).mostruario=value;salvarMemoria();}},
+      photo(id){escolherFotoCodiguin(id);},
+      order(id,pos){moverCodiguinParaPosicao(id,pos);}
+    };
+
     window.addEventListener("codiguinhos-cloud-ready", iniciarPortaoSeguro, {once:true});
     if(window.CodiguinhosCloud) iniciarPortaoSeguro();
     window.addEventListener("codiguinhos-remote-state", event => {
@@ -2792,5 +2814,6 @@
       el.className = `cloud-status ${estado === "unlocked" ? "saved" : estado}`;
     });
   </script>
+  <script src="js/admin-codiguinhos-mostruario.js?v=20261008-v1"></script>
 </body>
 </html>
