@@ -23,7 +23,7 @@
   </script>
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
-  <link rel="stylesheet" href="css/admin.css?v=20261005-mobile-tasks-v40">
+  <link rel="stylesheet" href="css/admin.css?v=20261008-tools-v1">
   <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
   <script type="module" src="js/admin.js?v=20261001-camp-tool-v44"></script>
@@ -62,23 +62,19 @@
         <button id="admin-refresh" class="admin-btn admin-btn-ghost" type="button">↻ Atualizar dados</button>
       </div>
 
-      <section class="admin-panel admin-central-tools-panel" style="margin-bottom:16px">
-        <div class="admin-panel-head admin-panel-head-wrap" style="align-items:stretch;gap:12px;flex-direction:column">
-          <div><p class="admin-eyebrow">Ferramentas privadas</p><h2>Ferramentas Central FF</h2><p class="admin-muted">Acesso administrativo e correções internas do site</p></div>
-          <div class="admin-inline-actions" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;width:100%;padding-bottom:4px">
-            <a class="admin-btn admin-btn-ghost" href="admin-edicao.html" data-admin-edicao-link style="flex:0 0 auto">🎨 Edição</a>
-            <a class="admin-btn admin-btn-primary" href="admin-codiguinhos.html" style="flex:0 0 auto">🎁 Abrir Codiguinhos</a>
-            <a class="admin-btn admin-btn-primary" href="admin-dados.html" data-admin-live-data-link style="flex:0 0 auto">📊 Dados ao vivo</a>
-            <a class="admin-btn admin-btn-primary" href="admin-camp-ao-vivo.html" style="flex:0 0 auto">🏆 Camp ao vivo</a>
-            <a class="admin-btn admin-btn-primary" href="admin-tarefas.html" style="flex:0 0 auto">✓ Quadro de tarefas</a>
-            <a class="admin-btn admin-btn-primary" href="admin-liquipedia.html" style="flex:0 0 auto">📝 Gerador Liquipedia</a>
-            <a class="admin-btn admin-btn-primary" href="admin-palpite.html" style="flex:0 0 auto">🎯 Palpites</a>
-            <a class="admin-btn admin-btn-primary" href="admin-perfis.html" style="flex:0 0 auto">✦ Perfis e insígnias</a>
-            <a class="admin-btn admin-btn-primary" href="admin-recompensas.html" style="flex:0 0 auto">🔥 Bônus</a>
-            <a class="admin-btn admin-btn-primary" href="admin-sorteio-comunidade.html" style="flex:0 0 auto">🎁 Sorteio</a>
-            <a class="admin-btn admin-btn-primary" href="admin-sorteador.html" style="flex:0 0 auto">🎡 Sorteador</a>
-          </div>
-        </div>
+      <section class="admin-panel admin-central-tools-panel">
+        <div class="admin-panel-head"><div><p class="admin-eyebrow">Atalhos do painel</p><h2>Ferramentas da Central</h2></div></div>
+        <nav class="admin-central-tools-grid" aria-label="Ferramentas da Central"><a class="admin-central-tool" href="admin-perfis.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M16 3a4 4 0 0 1 0 8 M22 21v-2a4 4 0 0 0-3-3.87 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/></svg></span><span><strong>Perfis e insígnias</strong><small>Editar contas, imagens e presentes</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-tarefas.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span><strong>Tarefas</strong><small>Planejar e acompanhar publicações</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-camp-ao-vivo.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0V3 M8 5H4v3a4 4 0 0 0 4 4 M16 5h4v3a4 4 0 0 1-4 4 M12 13v5 M8 21h8 M9 18h6"/></svg></span><span><strong>Camp ao vivo</strong><small>Quedas, pontuação e avisos</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-dados.html" data-admin-live-data-link><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18 M7 16V9 M12 16V5 M17 16v-4"/></svg></span><span><strong>Dados ao vivo</strong><small>Estatísticas e resultados</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-edicao.html" data-admin-edicao-link><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3-8-8 3-7 7-1 6 6-1 M14 7l5 5 M3 21l3-3"/></svg></span><span><strong>Edição</strong><small>Criar artes e ajustar imagens</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-liquipedia.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6 M14 2v6h6 M8 13h8 M8 17h6"/></svg></span><span><strong>Liquipedia</strong><small>Montar códigos de campeonatos</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-codiguinhos.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h18v4H3z M5 12v9h14v-9 M12 8v13 M12 8H8a3 3 0 1 1 3-3l1 3 M12 8h4a3 3 0 1 0-3-3l-1 3"/></svg></span><span><strong>Codiguinhos</strong><small>Organizar códigos da comunidade</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-palpite.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20 M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12 M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></svg></span><span><strong>Palpites</strong><small>Gerenciar rodadas e participações</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-recompensas.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 5 6 6 6 12a6 6 0 0 1-12 0c0-3 1-5 3-7 0 3 1 4 2 4 2-2 2-5 1-9"/></svg></span><span><strong>Bônus</strong><small>Missões e recompensas</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-sorteio-comunidade.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v4a3 3 0 0 0 0 6v4H3v-4a3 3 0 0 0 0-6V5 M15 5v3 M15 11v2 M15 16v3"/></svg></span><span><strong>Sorteio da comunidade</strong><small>Participantes e premiações</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a>
+<a class="admin-central-tool" href="admin-sorteador.html" ><span class="admin-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20 M12 2v20 M2 12h20 M5 5l14 14 M5 19L19 5"/></svg></span><span><strong>Sorteador</strong><small>Realizar sorteios personalizados</small></span><span class="admin-tool-arrow" aria-hidden="true">↗</span></a></nav>
       </section>
 
       <dialog id="admin-abuse-dialog" class="admin-abuse-dialog">

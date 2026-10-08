@@ -6,7 +6,7 @@ export function organizeMemberPanel(host,uid=''){
  if(!identity||!images||!rewards||!administration)return host;
  const rewardNodes=[];for(let node=owner.nextSibling;node&&node!==images;node=node.nextSibling)rewardNodes.push(node);
  rewardNodes.forEach(node=>rewards.append(node));
- administration.append(owner);identity.classList.add('cff-admin-member-header');
+ administration.append(owner);identity.classList.add('cff-admin-member-header');const identityRow=document.createElement('div');identityRow.className='cff-admin-header-identity';identityRow.innerHTML='<div data-member-header-avatar></div>';const heading=identity.querySelector('h3');if(heading)identityRow.append(heading);identity.prepend(identityRow);
  const code=identity.querySelector('code');if(code){const details=document.createElement('details');details.innerHTML='<summary>Identificador da conta</summary>';details.append(code);administration.append(details);}
  identity.insertAdjacentHTML('beforeend',button('Atualizar conta','data-refresh-member')+'<button type="button" class="cff-account-button cff-admin-mobile-back" data-member-back>← Voltar à lista</button>');
  const profile=document.createElement('section');profile.className='cff-profile-panel';profile.dataset.memberPane='profile';

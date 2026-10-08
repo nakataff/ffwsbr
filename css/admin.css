@@ -130,3 +130,7 @@
   .admin-central-tools-panel .admin-inline-actions{gap:6px}
   .admin-central-tools-panel .admin-inline-actions .admin-btn{font-size:.76rem}
 }
+
+
+.admin-central-tools-panel{margin-bottom:20px}.admin-central-tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}.admin-central-tool{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid #2c425a;border-radius:12px;background:#0e1b2b;color:#e6f3ff;text-decoration:none;min-width:0;transition:background .15s,border-color .15s}.admin-central-tool:hover{background:#142c42;border-color:#54b8da}.admin-central-tool:focus-visible{outline:2px solid #00c8ff;outline-offset:3px}.admin-tool-icon{display:grid;place-items:center;width:40px;height:40px;background:#193146;border-radius:10px;flex-shrink:0;font-size:21px}.admin-central-tool>span:nth-child(2){flex:1;min-width:0}.admin-central-tool strong{display:block;font-size:14px;line-height:1.4}.admin-central-tool small{display:block;color:#93a9c0;font-size:11px;margin-top:4px;line-height:1.5}.admin-tool-arrow{color:#70cde9}.admin-central-tool:first-child,.admin-central-tool:nth-child(2){border-color:#367f98;background:#112d3b}@media(max-width:1000px){.admin-central-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.admin-central-tools-grid{grid-template-columns:1fr}.admin-central-tool{padding:13px}}
+.admin-tool-icon svg{width:23px;height:23px}
