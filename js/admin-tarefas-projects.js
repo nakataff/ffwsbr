@@ -39,24 +39,38 @@
     const root=document.getElementById('projects-view');if(!root)return;
     const $=id=>document.getElementById(id);
     let projectId=api.getState().projects[0]?.id||'',companyId='',view='tasks',search='',status='',platform='',pending=false,timer=null;
-    const expanded=new Set();
+    const expanded=new Set(),visitedCompanies=new Set();
     const state=()=>api.getState();
     const fields=id=>state().projectFields.filter(f=>f.networkId===id);
     const networks=id=>state().projectNetworks.filter(n=>n.companyId===id);
     const companies=()=>state().projectCompanies.filter(c=>c.projectId===projectId);
     const related=()=>{const ids=new Set(companies().map(c=>c.id));return state().projectNetworks.filter(n=>ids.has(n.companyId));};
     const matches=n=>(!status||status==='pending'&&n.status!=='done'||n.status===status)&&(!platform||n.name===platform)&&(!search||[n.name,...fields(n.id).map(f=>f.text),state().projectCompanies.find(c=>c.id===n.companyId)?.name].join(' ').toLocaleLowerCase('pt-BR').includes(search));
-    function persist(immediate=false){clearTimeout(timer);if(immediate)api.save();else timer=setTimeout(()=>api.save(),300);}
+    let quickTimer=null;
+    const history=window.CFF_TASKS_PROJECT_HISTORY.create({getState:state,keys,validate:normalise,
+      onUpdate:info=>{$('project-undo').disabled=!info.undo;$('project-redo').disabled=!info.redo;$('project-undo').title=info.last?'Desfazer nesta sessão: '+info.last:'Nenhuma alteração para desfazer nesta sessão';$('project-action-notice').hidden=true;},
+      onApplied:result=>{if(result.applied){clearTimeout(timer);api.save();pickProject();render();api.toast(result.conflicts?'Algumas alterações já mudaram em outro dispositivo.':result.direction==='undo'?'Alteração desfeita':'Alteração refeita');}else if(result.conflicts)api.toast('Essa alteração já mudou em outro dispositivo.');}
+    });
+    function undo(){const result=history.undo();if(!result.applied&&result.conflicts)api.toast('Não foi possível desfazer: há alterações mais recentes relacionadas.');}
+    function persist(immediate=false,label='Alteração no projeto'){
+      const active=document.activeElement,group=active?.dataset.fieldText?'text:'+active.dataset.fieldText:active?.dataset.networkNote?'note:'+active.dataset.networkNote:'';
+      history.record(group.startsWith('text:')?'Editar texto':group.startsWith('note:')?'Editar observações':label,group);
+      clearTimeout(timer);if(immediate)api.save();else timer=setTimeout(()=>api.save(),300);
+    }
     function updateNetwork(id,patch){const n=state().projectNetworks.find(n=>n.id===id);if(!n)return;Object.assign(n,patch,{updatedAt:stamp()});persist();}
     function setStatus(id,value){const n=state().projectNetworks.find(n=>n.id===id);if(!n||!statuses[value])return;
       n.status=value;n.updatedAt=stamp();n.completedAt=value==='done'?n.updatedAt:'';
       if(value==='done')fields(id).forEach(f=>{f.done=true;f.completedAt=n.updatedAt;f.updatedAt=n.updatedAt;});
-      persist(true);render();
+      persist(true,'Alterar andamento');render();
     }
     function toggleField(id,done){const f=state().projectFields.find(f=>f.id===id);if(!f)return;f.done=done;f.updatedAt=stamp();f.completedAt=done?f.updatedAt:'';
       const n=state().projectNetworks.find(n=>n.id===f.networkId),fs=fields(f.networkId);
       if(n){n.status=fs.every(x=>x.done)?'done':fs.some(x=>x.done)?'doing':'todo';n.completedAt=n.status==='done'?f.updatedAt:'';n.updatedAt=f.updatedAt;}
-      persist(true);render();
+      persist(true,'Marcar campo');render();
+    }
+    function quickComplete(id){const n=state().projectNetworks.find(n=>n.id===id);if(!n)return;
+      if(n.status==='done'){fields(id).forEach(f=>{f.done=false;f.completedAt='';f.updatedAt=stamp();});setStatus(id,'todo');api.toast('Rede reaberta');return;}
+      const name=n.name;setStatus(id,'done');clearTimeout(quickTimer);$('project-action-notice-text').textContent=name+' concluído.';$('project-action-notice').hidden=false;quickTimer=setTimeout(()=>$('project-action-notice').hidden=true,8000);
     }
     async function copyText(text){
       try{await navigator.clipboard.writeText(text);api.toast('Texto copiado');}
@@ -65,22 +79,23 @@
     function progress(ns){return `${ns.filter(n=>n.status==='done').length}/${ns.length}`;}
     function renderSummary(){const ns=related(),done=ns.filter(n=>n.status==='done').length,ids=new Set(ns.map(n=>n.id)),fs=state().projectFields.filter(f=>ids.has(f.networkId));
       $('projects-summary').innerHTML=`<div><strong>${done}<span> / ${ns.length}</span></strong><small>redes concluídas</small></div><div><strong>${ns.filter(n=>n.status!=='done').length}</strong><small>redes pendentes</small></div><div><strong>${fs.filter(f=>f.done).length}<span> / ${fs.length}</span></strong><small>campos atualizados</small></div><div class="project-total-progress"><span>${ns.length?Math.round(done/ns.length*100):0}% concluído</span><progress value="${done}" max="${ns.length||1}"></progress></div>`;
+      $('project-pending-summary').innerHTML=['todo','doing','info','approval','rejected'].map(s=>`<button type="button" class="project-pending-chip status-${s}" data-pending-status="${s}" aria-pressed="${status===s}">${statuses[s]} <strong>${ns.filter(n=>n.status===s).length}</strong></button>`).join('');
     }
-    function renderNavigation(){const cs=companies().filter(c=>networks(c.id).some(matches)||!networks(c.id).length&&!search&&!status&&!platform);
+    function renderNavigation(){const cs=companies().filter(c=>c.id===companyId||networks(c.id).some(matches)||!networks(c.id).length&&!search&&!status&&!platform);
       if(!cs.some(c=>c.id===companyId))companyId=cs[0]?.id||'';
       $('project-company-select').innerHTML=cs.map(c=>`<option value="${escape(c.id)}">${escape(c.name)} · ${progress(networks(c.id))}</option>`).join('');$('project-company-select').value=companyId;
       $('project-company-list').innerHTML=cs.map(c=>{const ns=networks(c.id);return `<button class="project-company ${c.id===companyId?'selected':''}" data-company="${escape(c.id)}" aria-pressed="${c.id===companyId}"><span>${escape(c.name)}</span><small>${progress(ns)} redes concluídas</small><progress value="${ns.filter(n=>n.status==='done').length}" max="${ns.length||1}"></progress></button>`;}).join('')||'<p class="hint">Nenhuma empresa neste filtro.</p>';
     }
     function fieldHtml(f){return `<div class="project-field" data-field-id="${escape(f.id)}"><div class="project-field-head"><label class="project-field-check"><input type="checkbox" data-field-done="${escape(f.id)}" ${f.done?'checked':''}><span>${escape(f.label)}</span></label><button class="small-btn" data-copy-field="${escape(f.id)}">Copiar</button></div><label class="sr-only" for="project-text-${escape(f.id)}">${escape(f.label)} — texto editável</label><textarea id="project-text-${escape(f.id)}" data-field-text="${escape(f.id)}" maxlength="10000" rows="${Math.min(9,Math.max(2,f.text.split('\n').length+1))}">${escape(f.text)}</textarea><div class="project-field-meta"><span data-counter="${escape(f.id)}">${Array.from(f.text).length} caracteres</span><span data-field-edit="${escape(f.id)}">${f.text!==f.original?'Texto ajustado':'Texto recebido'}</span></div><details class="project-original"><summary>Ver texto original</summary><p>${escape(f.original)}</p></details></div>`;}
     function networkHtml(n,index){const fs=fields(n.id),open=expanded.has(n.id);const at=n.completedAt||n.updatedAt;
-      return `<article class="project-network" data-network="${escape(n.id)}"><div class="project-network-header"><button class="project-network-toggle" aria-expanded="${open}" aria-controls="project-network-${escape(n.id)}" data-expand="${escape(n.id)}"><span class="project-network-symbol">${escape(n.name.slice(0,2))}</span><span><strong>${escape(n.name)}</strong><small>${fs.filter(f=>f.done).length}/${fs.length} campos atualizados</small></span><span class="project-chevron">${open?'−':'+'}</span></button><label class="project-status-wrap"><span class="sr-only">Status de ${escape(n.name)}</span><select class="project-status status-${escape(n.status)}" data-project-status="${escape(n.id)}">${Object.entries(statuses).map(([k,v])=>`<option value="${k}" ${n.status===k?'selected':''}>${v}</option>`).join('')}</select></label></div><div class="project-network-body" id="project-network-${escape(n.id)}" ${open?'':'hidden'}><div class="project-network-tools"><label class="field">Link da rede social<input data-network-url="${escape(n.id)}" value="${escape(n.url)}" maxlength="2000" placeholder="https://…" type="text" inputmode="url"></label><div class="project-link-actions">${n.url?`<a class="small-btn" href="${escape(n.url)}" target="_blank" rel="noopener noreferrer">Abrir rede ↗</a><button class="small-btn" data-copy-url="${escape(n.id)}">Copiar link</button>`:''}<button class="small-btn" data-copy-network="${escape(n.id)}">Copiar textos da rede</button></div></div><div class="project-fields">${fs.map(fieldHtml).join('')}</div><button type="button" class="small-btn project-add-field" data-add-field="${escape(n.id)}">+ Campo</button><label class="field project-note">${n.status==='info'?'O que falta?':n.status==='rejected'?'Motivo da recusa':'Observações'}<textarea data-network-note="${escape(n.id)}" maxlength="4000" rows="2" placeholder="Pendência, aprovação ou orientação…">${escape(n.note)}</textarea></label><p class="project-last-update">${n.completedAt?'Concluído':'Última atualização'}: ${at?escape(new Date(at).toLocaleString('pt-BR')):'—'}</p></div></article>`;
+      return `<article class="project-network" data-network="${escape(n.id)}"><div class="project-network-header"><button type="button" class="project-quick-complete ${n.status==='done'?'is-done':''}" data-quick-complete="${escape(n.id)}" aria-pressed="${n.status==='done'}" aria-label="${n.status==='done'?'Reabrir':'Concluir'} ${escape(n.name)}" title="${n.status==='done'?'Reabrir pendência':'Concluir rede'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8"/></svg></button><button class="project-network-toggle" aria-expanded="${open}" aria-controls="project-network-${escape(n.id)}" data-expand="${escape(n.id)}"><span class="project-network-symbol">${escape(n.name.slice(0,2))}</span><span><strong>${escape(n.name)}</strong><small>${fs.filter(f=>f.done).length}/${fs.length} campos atualizados</small></span><span class="project-chevron">${open?'−':'+'}</span></button><label class="project-status-wrap"><span class="sr-only">Status de ${escape(n.name)}</span><select class="project-status status-${escape(n.status)}" data-project-status="${escape(n.id)}">${Object.entries(statuses).map(([k,v])=>`<option value="${k}" ${n.status===k?'selected':''}>${v}</option>`).join('')}</select></label></div><div class="project-network-body" id="project-network-${escape(n.id)}" ${open?'':'hidden'}><div class="project-network-tools"><label class="field">Link da rede social<input data-network-url="${escape(n.id)}" value="${escape(n.url)}" maxlength="2000" placeholder="https://…" type="text" inputmode="url"></label><div class="project-link-actions">${n.url?`<a class="small-btn" href="${escape(n.url)}" target="_blank" rel="noopener noreferrer">Abrir rede ↗</a><button class="small-btn" data-copy-url="${escape(n.id)}">Copiar link</button>`:''}<button class="small-btn" data-copy-network="${escape(n.id)}">Copiar textos da rede</button></div></div><div class="project-fields">${fs.map(fieldHtml).join('')}</div><button type="button" class="small-btn project-add-field" data-add-field="${escape(n.id)}">+ Campo</button><label class="field project-note">${n.status==='info'?'O que falta?':n.status==='rejected'?'Motivo da recusa':'Observações'}<textarea data-network-note="${escape(n.id)}" maxlength="4000" rows="2" placeholder="Pendência, aprovação ou orientação…">${escape(n.note)}</textarea></label><p class="project-last-update">${n.completedAt?'Concluído':'Última atualização'}: ${at?escape(new Date(at).toLocaleString('pt-BR')):'—'}</p></div></article>`;
     }
     function renderContent(){const c=companies().find(c=>c.id===companyId);if(!c){$('project-company-content').innerHTML='<div class="project-empty"><h3>Nenhum resultado</h3><p>Mude os filtros ou adicione uma empresa.</p></div>';return;}
       const ns=networks(c.id).filter(matches);
-      if(!ns.some(n=>expanded.has(n.id))&&ns.length)expanded.add(ns[0].id);
-      $('project-company-content').innerHTML=`<div class="project-company-heading"><div><p class="project-eyebrow">EMPRESA</p><h2>${escape(c.name)}</h2><p>${progress(networks(c.id))} redes concluídas</p></div><div><button class="small-btn" data-copy-company="${escape(c.id)}">Copiar empresa</button><button class="small-btn" id="project-add-network">+ Rede</button></div></div>${ns.map(networkHtml).join('')||'<p class="hint">Adicione uma rede social para começar.</p>'}`;
+      if(!visitedCompanies.has(c.id)){if(!ns.some(n=>expanded.has(n.id))&&ns.length)expanded.add(ns[0].id);visitedCompanies.add(c.id);}
+      $('project-company-content').innerHTML=`<div class="project-company-heading"><div><p class="project-eyebrow">EMPRESA</p><h2>${escape(c.name)}</h2><p>${progress(networks(c.id))} redes concluídas</p></div><div><button class="small-btn" data-copy-company="${escape(c.id)}">Copiar empresa</button><button class="small-btn" id="project-add-network">+ Rede</button></div></div>${ns.map(networkHtml).join('')||(networks(c.id).length?'<p class="hint">Nenhuma rede desta empresa corresponde aos filtros.</p>':'<p class="hint">Adicione uma rede social para começar.</p>')}`;
     }
-    function render(){renderSummary();renderNavigation();renderContent();pending=false;}
+    function render(){const y=window.scrollY,active=document.activeElement;const selector=active?.dataset.projectStatus?`[data-project-status="${CSS.escape(active.dataset.projectStatus)}"]`:active?.dataset.quickComplete?`[data-quick-complete="${CSS.escape(active.dataset.quickComplete)}"]`:active?.dataset.fieldDone?`[data-field-done="${CSS.escape(active.dataset.fieldDone)}"]`:null;renderSummary();renderNavigation();renderContent();pending=false;if(selector)root.querySelector(selector)?.focus({preventScroll:true});window.scrollTo({top:y,left:window.scrollX,behavior:'instant'});}
     function refresh(){if(!root.contains(document.activeElement)||!document.activeElement.matches('input,textarea'))render();else pending=true;}
     function pickProject(){const ps=state().projects;if(!ps.some(p=>p.id===projectId))projectId=ps[0]?.id||'';
       $('project-select').innerHTML=ps.map(p=>`<option value="${escape(p.id)}">${escape(p.name)}</option>`).join('');$('project-select').value=projectId;
@@ -95,7 +110,7 @@
       if(addKind==='company'&&projectId){state().projectCompanies.push({id,projectId,name,updatedAt:at,completedAt:''});companyId=id;}
       if(addKind==='network'&&companyId){state().projectNetworks.push({id,companyId,name,status:'todo',url:'',note:'',updatedAt:at,completedAt:''});state().projectFields.push({id:id+'-description',networkId:id,label:'Descrição',original:'',text:'',done:false,updatedAt:at,completedAt:''});expanded.add(id);}
       if(addKind==='field'&&addNetworkId){state().projectFields.push({id,networkId:addNetworkId,label:name,original:'',text:'',done:false,updatedAt:at,completedAt:''});const n=state().projectNetworks.find(n=>n.id===addNetworkId);if(n?.status==='done'){n.status='doing';n.completedAt='';n.updatedAt=at;}expanded.add(addNetworkId);}
-      search='';status='';platform='';$('project-search').value='';$('project-status-filter').value='';persist(true);dialog.close();pickProject();render();api.toast('Adicionado ao projeto');
+      search='';status='';platform='';$('project-search').value='';$('project-status-filter').value='';persist(true,'Adicionar '+{project:'projeto',company:'empresa',network:'rede',field:'campo'}[addKind]);dialog.close();pickProject();render();api.toast('Adicionado ao projeto');
     });
     $('project-add-close').addEventListener('click',()=>dialog.close());$('project-add-cancel').addEventListener('click',()=>dialog.close());
     document.querySelectorAll('[data-workspace-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.workspaceView)));
@@ -105,6 +120,8 @@
     $('project-status-filter').addEventListener('change',e=>{status=e.target.value;render();});$('project-platform-filter').addEventListener('change',e=>{platform=e.target.value;render();});
     $('project-company-select').addEventListener('change',e=>{companyId=e.target.value;renderContent();renderNavigation();});
     root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+      if(b.dataset.quickComplete)quickComplete(b.dataset.quickComplete);
+      if(b.dataset.pendingStatus){status=status===b.dataset.pendingStatus?'':b.dataset.pendingStatus;$('project-status-filter').value=status;render();}
       if(b.dataset.company){companyId=b.dataset.company;render();}
       if(b.dataset.expand){expanded.has(b.dataset.expand)?expanded.delete(b.dataset.expand):expanded.add(b.dataset.expand);const body=$('project-network-'+b.dataset.expand);body.hidden=!expanded.has(b.dataset.expand);b.setAttribute('aria-expanded',String(!body.hidden));b.querySelector('.project-chevron').textContent=body.hidden?'+':'−';}
       if(b.dataset.copyField)copyText(state().projectFields.find(f=>f.id===b.dataset.copyField)?.text||'');
@@ -132,9 +149,32 @@
       }catch(error){t.setCustomValidity(error.message);t.reportValidity();return;}}
       setTimeout(()=>{if(pending&&!root.contains(document.activeElement))refresh();},0);
     });
+    $('project-undo').addEventListener('click',undo);
+    $('project-redo').addEventListener('click',()=>{const result=history.redo();if(!result.applied&&result.conflicts)api.toast('Não foi possível refazer: há alterações mais recentes relacionadas.');});
+    $('project-quick-undo').addEventListener('click',undo);
+    document.addEventListener('keydown',e=>{
+      if(view!=='projects'||!(e.ctrlKey||e.metaKey)||e.altKey||e.target.closest('input,textarea,[contenteditable="true"]')||document.querySelector('dialog[open]'))return;
+      if(e.key.toLowerCase()==='z'){e.preventDefault();if(e.shiftKey)history.redo();else undo();}
+      else if(e.key.toLowerCase()==='y'){e.preventDefault();history.redo();}
+    });
+    const reportDialog=$('project-report-dialog');
+    function reportData(){return window.CFF_TASKS_PROJECT_REPORTS.report({state:state(),projectId,companyId,scope:$('project-report-scope').value,matches,filters:{search,status,platform}});}
+    function reportPreview(){const data=reportData(),includeTexts=$('project-report-texts').checked,format=$('project-report-format').value;
+      $('project-report-preview').value=format==='json'?JSON.stringify(data,null,2):window.CFF_TASKS_PROJECT_REPORTS.text(data,includeTexts);
+      $('project-report-count').textContent=`${data.summary.companies} empresas · ${data.summary.networks} redes · ${data.summary.fields} campos${format==='xlsx'?' · Abas: Resumo, Redes e Campos':''}`;
+    }
+    $('project-report-open').addEventListener('click',()=>{reportPreview();reportDialog.showModal();});
+    $('project-report-close').addEventListener('click',()=>reportDialog.close());
+    ['project-report-scope','project-report-format','project-report-texts'].forEach(id=>$(id).addEventListener('change',reportPreview));
+    $('project-report-copy').addEventListener('click',()=>copyText(window.CFF_TASKS_PROJECT_REPORTS.text(reportData(),$('project-report-texts').checked)));
+    $('project-report-download').addEventListener('click',()=>{
+      const data=reportData(),format=$('project-report-format').value,includeTexts=$('project-report-texts').checked;
+      const blob=format==='xlsx'?window.CFF_TASKS_PROJECT_REPORTS.workbook(data,includeTexts):new Blob([format==='json'?JSON.stringify(data,null,2):window.CFF_TASKS_PROJECT_REPORTS.text(data,includeTexts)],{type:format==='json'?'application/json;charset=utf-8':'text/plain;charset=utf-8'});
+      const href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download=`relatorio-${slug(data.project?.name||'projeto')}-${data.scope}-${data.generatedAt.slice(0,10)}.${{text:'txt',json:'json',xlsx:'xlsx'}[format]}`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1500);api.toast('Relatório gerado');
+    });
     window.addEventListener('pagehide',()=>{if(timer){clearTimeout(timer);api.save();}});
     pickProject();render();
-    return {refresh:()=>{pickProject();refresh();},switchView};
+    return {refresh:()=>{history.sync();pickProject();refresh();},switchView};
   }
   let baseline=null;
   function seedBaseline(key,id){if(!baseline){baseline={};seed(baseline);}return baseline[key]?.find(row=>row.id===id);}
