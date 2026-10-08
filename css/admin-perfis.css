@@ -3,17 +3,4 @@
 
 .cff-admin-gift-message{display:block;margin-top:5px;overflow-wrap:anywhere}
 
-.cff-admin-grant-row strong{display:flex;align-items:center;gap:8px}.cff-admin-grant-row strong img{width:30px;height:30px;object-fit:contain;flex:0 0 30px;border-radius:6px;background:#0a1320}.cff-admin-grant-row .cff-account-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-
-
-/* 2026-10-07: padroes globais de perfil v1 */
-.cff-admin-profile-defaults{margin-bottom:16px}
-.cff-admin-default-preview{display:grid;grid-template-columns:140px minmax(0,1fr);gap:14px;margin-top:12px}
-.cff-admin-default-preview>div{min-width:0}
-.cff-admin-default-preview small{display:block;margin-bottom:7px;color:#7792ad;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
-.cff-admin-default-avatar{width:88px;height:88px;display:block;object-fit:contain;border-radius:50%;background:#0b1422}
-.cff-admin-default-cover{width:100%;max-width:420px;aspect-ratio:4/1;display:flex;align-items:center;justify-content:center;object-fit:cover;border:1px solid #2c4158;border-radius:10px;background:#0b1422;color:#71879d;font-size:11px}
-@media(max-width:700px){
- .cff-admin-default-preview{grid-template-columns:1fr}
- .cff-admin-default-cover{max-width:none}
-}
+.cff-admin-profile-editor summary{cursor:pointer}.cff-admin-profile-editor input[type=color]{height:44px;padding:4px;width:100%;box-sizing:border-box}.cff-admin-edit-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border:1px solid #293e57;border-radius:10px;padding:12px;margin:12px 0}.cff-admin-edit-teams .cff-profile-switch{margin:0;min-width:0;align-items:flex-start;font-size:12px}.cff-admin-edit-teams span{overflow-wrap:anywhere}.cff-admin-edit-teams legend{padding:0 6px;font-size:13px}
