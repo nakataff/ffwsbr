@@ -69,9 +69,11 @@ function mergeById(remoteItems,localItems,preferLocal=false){
  return [...map.values()];
 }
 function mergeInitialStates(localState,remoteState){
+ const projectKeys=window.CFF_TASKS_PROJECTS.keys;
+ const recoveredProjects=window.CFF_TASKS_SYNC.merge(Object.fromEntries(projectKeys.map(key=>[key,[]])),localState,remoteState);
  const merged={
   ...copy(remoteState),
-  ...Object.fromEntries(window.CFF_TASKS_PROJECTS.keys.map(key=>[key,mergeById(remoteState[key],localState[key])])),
+  ...Object.fromEntries(projectKeys.map(key=>[key,recoveredProjects[key]])),
   tasks:mergeById(remoteState.tasks,localState.tasks),
   notes:mergeById(remoteState.notes,localState.notes,true),
   usefulLinks:mergeById(remoteState.usefulLinks,localState.usefulLinks,true),
