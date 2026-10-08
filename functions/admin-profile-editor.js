@@ -3,7 +3,7 @@ const options=require('./admin-profile-options.json');
 const fail=(status,message)=>Object.assign(new Error(message),{status});
 const fields=['name','motto','avatarId','coverId','avatarRingColor','theme','mainTeam','favoritePlayer','teamIdsJson'];
 function target(identity,uid){
- if(identity.email!=='admin@centralfreefire.com.br'||identity.email_verified!==true)throw fail(403,'Somente o administrador pode editar perfis.');
+ if(!identity.uid||identity.email!=='admin@centralfreefire.com.br')throw fail(403,'Somente o administrador pode editar perfis.');
  if(typeof uid!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(uid))throw fail(400,'Conta inválida.');return uid;
 }
 function visible(p){return Object.fromEntries([...fields,'featuredBadgesJson','public'].filter(k=>p[k]!==undefined).map(k=>[k,p[k]]));}

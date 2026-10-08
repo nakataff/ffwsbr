@@ -7,7 +7,7 @@ function database(){
  return {data,get,get writes(){return writes;},ref(path=''){return {async get(){const value=get(path);return {val:()=>value,exists:()=>value!==null};},async update(changes){writes++;for(const [path,value]of Object.entries(changes)){const keys=path.split('/');let target=data;for(const k of keys.slice(0,-1))target=target[k]||=( {} );target[keys.at(-1)]=value;}}};}};
 }
 test('admin authority is validated server-side; cosmetic seal and UID spoof cannot grant access',async()=>{
- const db=database();for(const identity of [{uid:'person',email:'fan@test',email_verified:true,administrator:true},{...admin,email_verified:false}]){
+ const db=database();for(const identity of [{uid:'person',email:'fan@test',email_verified:true,administrator:true},{uid:'person',email:'fan@test',admin:true}]){
   await assert.rejects(readProfile(db,identity,'person'),{status:403});await assert.rejects(editProfile(db,identity,'person',{name:'Changed'}),{status:403});
  }await assert.rejects(editProfile(db,admin,'../admin',{name:'Changed'}),{status:400});assert.equal(db.writes,0);
 });
@@ -20,3 +20,5 @@ test('rejects invalid fields, unknown assets, invalid favorites and oversized mo
  for(const profile of [{administrator:true},{createdAt:0},{name:''},{motto:'x'.repeat(81)},{avatarId:'https://evil.test/a'},{avatarId:'asset-99'},{avatarRingColor:'red'},{theme:'unknown'},{teamIdsJson:'null'},{teamIdsJson:'["team-fluxo-w7m","team-fluxo-w7m"]'},{teamIdsJson:'["evil"]'},{mainTeam:'team-fluxo-w7m'},{favoritePlayer:'evil'}]){const db=database();await assert.rejects(editProfile(db,admin,'person',profile),{status:400});assert.equal(db.writes,0);}
 });
 test('admin-only art stays restricted to administrator profiles',async()=>{const db=database();db.data.communityProfileCatalog['asset-2']={kind:'avatar',enabled:true,accessRule:'admin'};await assert.rejects(editProfile(db,admin,'person',{avatarId:'asset-2'}),{status:400});assert.equal(db.writes,0);});
+
+test('existing password administrator can edit without an email verification flag',async()=>{const db=database();await editProfile(db,{...admin,email_verified:false},'person',{name:'Administrador corrigiu'});assert.equal(db.get('communityProfiles/person/name'),'Administrador corrigiu');});
