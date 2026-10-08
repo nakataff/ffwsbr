@@ -30,8 +30,12 @@ async function editProfile(db,identity,uid,raw){
  next.teamIdsJson=JSON.stringify(teams);next.avatarRingColor=next.avatarRingColor.toUpperCase();
  for(const field of fields)changes['userAccounts/'+uid+'/profile/'+field]=next[field];
  changes['communityProfiles/'+uid]={...visible(next),featuredBadgesJson:next.featuredBadgesJson||'[]',public:next.public!==false};
- changes['communityMembers/'+uid+'/name']=next.name;
  const link=await db.ref('communityInstagramLinks/'+uid).get();
+ const member=(await db.ref('communityMembers/'+uid).get()).val();
+ if(member){changes['communityMembers/'+uid+'/name']=next.name;}else{
+  const createdAt=Number(p.createdAt),now=Date.now();
+  changes['communityMembers/'+uid]={name:next.name,instagram:typeof link.val()?.username==='string'?link.val().username:'',joinedAt:Number.isFinite(createdAt)&&createdAt>0&&createdAt<=now?createdAt:now};
+ }
  const username=link.val()?.username,handle=typeof username==='string'?username.toLowerCase().replace(/\./g,','):'';
  if(handle&&/^[a-z0-9_,]{1,64}$/.test(handle)){const directory=await db.ref('communityRankingProfiles/'+handle).get();if(directory.val()?.uid===uid)changes['communityRankingProfiles/'+handle]=next.public===false?null:{...directory.val(),avatarId:next.avatarId};}
  changes['communityProfileAdminEdits/'+uid]={at:Date.now(),by:identity.uid,fields:Object.keys(raw)};

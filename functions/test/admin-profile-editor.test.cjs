@@ -22,3 +22,16 @@ test('rejects invalid fields, unknown assets, invalid favorites and oversized mo
 test('admin-only art stays restricted to administrator profiles',async()=>{const db=database();db.data.communityProfileCatalog['asset-2']={kind:'avatar',enabled:true,accessRule:'admin'};await assert.rejects(editProfile(db,admin,'person',{avatarId:'asset-2'}),{status:400});assert.equal(db.writes,0);});
 
 test('existing password administrator can edit without an email verification flag',async()=>{const db=database();await editProfile(db,{...admin,email_verified:false},'person',{name:'Administrador corrigiu'});assert.equal(db.get('communityProfiles/person/name'),'Administrador corrigiu');});
+
+test('saving an unindexed minimal Google profile creates a complete member and public profile',async()=>{
+ const db=database();db.data.userAccounts.person.profile={name:'Inicial',createdAt:123};delete db.data.communityInstagramLinks;delete db.data.communityRankingProfiles;
+ await editProfile(db,admin,'person',{name:'Publicado'});
+ assert.deepEqual(db.get('communityMembers/person'),{name:'Publicado',instagram:'',joinedAt:123});
+ const publicProfile=db.get('communityProfiles/person');for(const field of ['name','motto','avatarId','theme','mainTeam','favoritePlayer','teamIdsJson','featuredBadgesJson','coverId','public'])assert(Object.hasOwn(publicProfile,field),field);
+ assert.equal(publicProfile.public,true);assert.equal(db.get('userAccounts/person/profile/createdAt'),123);assert.equal(db.get('userAccounts/person/community/session'),'private');assert.equal(db.writes,1);
+});
+test('existing member keeps original joined date and Instagram while name changes',async()=>{
+ const db=database();db.data.communityMembers={person:{name:'Antes',instagram:'already_verified',joinedAt:456}};
+ await editProfile(db,admin,'person',{name:'Depois'});
+ assert.deepEqual(db.get('communityMembers/person'),{name:'Depois',instagram:'already_verified',joinedAt:456});
+});

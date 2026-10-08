@@ -442,7 +442,7 @@
         "instagram"
       ],
       "$uid": {
-        ".write": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && (auth.uid == $uid || (auth.token.email == 'admin@centralfreefire.com.br' && !data.exists() && newData.exists() && root.child('userAccounts').child($uid).child('profile').exists()))",
         ".read": "auth != null && auth.uid == $uid",
         ".validate": "newData.hasChildren(['name','instagram','joinedAt'])",
         "name": {
