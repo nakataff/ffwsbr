@@ -12,7 +12,7 @@ export function memberReference(input){
 }
 export async function resolveMemberUid(input,read){
  const {kind,key}=memberReference(input);
- const uid=kind==='slug'?await read('communityProfileSlugs/'+key):kind==='instagram'?(await read('communityRankingProfiles/'+key))?.uid:key;
+ const uid=kind==='slug'?await read('communityProfileSlugs/'+key):kind==='instagram'?(await read('communityUsernames/'+key))||(await read('communityRankingProfiles/'+key))?.uid:key;
  if(typeof uid!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(uid))throw Error('Conta não encontrada para este perfil.');
  return uid;
 }

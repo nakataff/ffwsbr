@@ -173,7 +173,7 @@
 
   const els={form:section.querySelector('#cff-comment-form'),identity:section.querySelector('#cff-comment-identity'),text:section.querySelector('#cff-comment-text'),submit:section.querySelector('#cff-comment-submit'),note:section.querySelector('#cff-comment-note'),list:section.querySelector('#cff-comments-list'),count:section.querySelector('#cff-comments-count')};
   let sending=false;
-  async function account(){if(!window.CFF_ACCOUNT)await import('/js/public-account.js?v=20261007-badge-goals-v2');await window.CFF_ACCOUNT.ready;return window.CFF_ACCOUNT;}
+  async function account(){if(!window.CFF_ACCOUNT)await import('/js/public-account.js?v=20261008-registration-v1');await window.CFF_ACCOUNT.ready;return window.CFF_ACCOUNT;}
   function identity(){const user=window.CFF_ACCOUNT?.user;els.identity.replaceChildren();const label=document.createElement('span');label.textContent=user?'Comentando como '+user.name:'Entre com Google para comentar com sua conta Central.';els.identity.append(label);if(!user){const button=document.createElement('button');button.type='button';button.className='cff-comment-login';button.textContent='Entrar com Google';button.onclick=async()=>{try{await(await account()).login();}catch{setNote('Não foi possível abrir o login. Tente novamente.','error');}};els.identity.append(button);}els.submit.disabled=sending||!user;els.text.disabled=!user;}
   window.addEventListener('cff:account-changed',identity);window.addEventListener('cff:account-preferences',identity);
   account().then(identity).catch(()=>setNote('Login indisponível no momento. Atualize a página.','error'));

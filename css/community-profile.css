@@ -599,3 +599,5 @@
 .cff-profile-motto>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .cff-member-title{display:inline-flex;align-items:center;border:1px solid #7fabc452;background:#14263b;color:#b8dbf1;border-radius:20px;padding:4px 9px;font-size:11px;font-weight:700;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
 .cff-admin-seal+.cff-member-title{margin-left:6px}
+
+.cff-registration{max-width:620px;margin:24px auto}.cff-registration h1{margin:12px 0;font-size:30px}.cff-registration>p,.cff-registration form>small{color:#a8bbd2;line-height:1.5}.cff-registration fieldset{border:1px solid #304963;border-radius:12px;padding:16px;margin:20px 0;display:grid;gap:14px}.cff-registration fieldset label{display:flex;align-items:center;gap:10px}.cff-registration fieldset input{accent-color:#00c8ff;width:18px;height:18px}.cff-registration form>[role=status]{color:#9edffc;min-height:20px}.cff-profile-username{display:block;color:#9dd9ec;font-size:14px;margin:5px 0 9px}.cff-registration [data-registration-out]{margin-top:12px}

@@ -282,7 +282,13 @@
             ".validate": "newData.isBoolean()"
           },
           ".read": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
-          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br')"
+          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
+          "gender": {
+            ".validate": "newData.val() == 'masculino' || newData.val() == 'feminino'"
+          },
+          "username": {
+            ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_]{3,24}$/) && newData.parent().parent().parent().parent().child('communityUsernames').child(newData.val()).val() == $uid"
+          }
         },
         "preferences": {
           ".validate": "newData.hasChildren([\"stage\"])",
@@ -431,6 +437,9 @@
         },
         "$other": {
           ".validate": false
+        },
+        "username": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_]{3,24}$/) && newData.parent().parent().parent().child('communityUsernames').child(newData.val()).val() == $uid"
         }
       }
     },
@@ -458,6 +467,9 @@
         },
         "$other": {
           ".validate": false
+        },
+        "username": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_]{3,24}$/)"
         }
       }
     },
@@ -812,6 +824,13 @@
         ".read": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
         ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
         ".validate": "newData.hasChildren(['at','by','fields']) && newData.child('by').val() == auth.uid && newData.child('at').isNumber() && newData.child('at').val() <= now + 10000"
+      }
+    },
+    "communityUsernames": {
+      "$username": {
+        ".read": true,
+        ".write": "auth != null && ((!data.exists() && newData.val() == auth.uid) || (data.val() == auth.uid && (newData.exists() || newData.parent().parent().child('userAccounts').child(auth.uid).child('profile').child('username').val() != $username)))",
+        ".validate": "!newData.exists() || ($username.matches(/^[a-z0-9_]{3,24}$/) && newData.isString() && newData.val() == auth.uid && newData.parent().parent().child('userAccounts').child(auth.uid).child('profile').child('username').val() == $username)"
       }
     }
   }

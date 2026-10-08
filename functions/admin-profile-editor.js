@@ -6,7 +6,7 @@ function target(identity,uid){
  if(!identity.uid||identity.email!=='admin@centralfreefire.com.br')throw fail(403,'Somente o administrador pode editar perfis.');
  if(typeof uid!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(uid))throw fail(400,'Conta inválida.');return uid;
 }
-function visible(p){return Object.fromEntries([...fields,'featuredBadgesJson','public'].filter(k=>p[k]!==undefined).map(k=>[k,p[k]]));}
+function visible(p){return Object.fromEntries([...fields,'username','featuredBadgesJson','public'].filter(k=>p[k]!==undefined).map(k=>[k,p[k]]));}
 async function readProfile(db,identity,uid){target(identity,uid);const p=(await db.ref('userAccounts/'+uid+'/profile').get()).val();if(!p)throw fail(404,'Perfil não encontrado.');return {profile:visible(p)};}
 async function editProfile(db,identity,uid,raw){
  target(identity,uid);if(!raw||typeof raw!=='object'||Array.isArray(raw)||Object.keys(raw).some(k=>!fields.includes(k)))throw fail(400,'Campos de edição inválidos.');
@@ -34,7 +34,7 @@ async function editProfile(db,identity,uid,raw){
  const member=(await db.ref('communityMembers/'+uid).get()).val();
  if(member){changes['communityMembers/'+uid+'/name']=next.name;}else{
   const createdAt=Number(p.createdAt),now=Date.now();
-  changes['communityMembers/'+uid]={name:next.name,instagram:typeof link.val()?.username==='string'?link.val().username:'',joinedAt:Number.isFinite(createdAt)&&createdAt>0&&createdAt<=now?createdAt:now};
+  changes['communityMembers/'+uid]={name:next.name,instagram:typeof link.val()?.username==='string'?link.val().username:'',joinedAt:Number.isFinite(createdAt)&&createdAt>0&&createdAt<=now?createdAt:now,...(p.username?{username:p.username}:{})};
  }
  const username=link.val()?.username,handle=typeof username==='string'?username.toLowerCase().replace(/\./g,','):'';
  if(handle&&/^[a-z0-9_,]{1,64}$/.test(handle)){const directory=await db.ref('communityRankingProfiles/'+handle).get();if(directory.val()?.uid===uid)changes['communityRankingProfiles/'+handle]=next.public===false?null:{...directory.val(),avatarId:next.avatarId};}
