@@ -12,3 +12,39 @@
 .cff-admin-default-cover{display:block;width:100%;max-width:100%;height:auto;max-height:220px;object-fit:contain;object-position:left center;border-radius:12px}
 .cff-admin-default-cover.is-empty{box-sizing:border-box;min-height:96px;display:flex;align-items:center;justify-content:center;background:#122035;color:#9aabc2;border:1px dashed #32465d}
 @media(max-width:480px){.cff-admin-default-preview{grid-template-columns:1fr;gap:16px}}
+
+/* Scoped administration layout; public profiles keep their own sizing. */
+.cff-admin-profiles-page .cff-account-wrap{max-width:1540px;padding:28px 32px}
+.cff-admin-profiles-page [hidden]{display:none!important}
+.cff-admin-profiles-page .cff-account-tabs{flex-wrap:wrap;gap:8px;overflow:visible;padding:12px;background:#0d1725;border:1px solid #25384c;border-radius:14px}
+.cff-admin-profiles-page .cff-profile-panel{padding:22px}
+.cff-admin-profiles-page input,.cff-admin-profiles-page select{max-width:100%;box-sizing:border-box;min-width:0}
+.cff-admin-members-layout{grid-template-columns:minmax(270px,340px) minmax(0,1fr);gap:24px}
+.cff-admin-members-sidebar{background:#0b1523;border:1px solid #25384c;padding:16px;border-radius:14px;position:sticky;top:16px}
+.cff-admin-members-sidebar .cff-gallery-tools{display:block;margin:0}
+.cff-admin-members-sidebar input{width:100%;padding:11px 12px;border:1px solid #324b67;border-radius:9px;color:#edf3ff;background:#101e30}
+.cff-admin-direct-search{margin:12px 0;font-size:13px}.cff-admin-direct-search summary{color:#8fdbf5;cursor:pointer}.cff-admin-direct-search .cff-account-actions{margin-top:12px}
+#profile-member-list{max-height:66vh;overflow-y:auto;padding-right:4px}
+#profile-member-count{font-size:12px;color:#9aabc2;margin:14px 0}
+.cff-admin-member{padding:14px}.cff-admin-member strong{font-size:15px}.cff-admin-member small{display:block;font-size:11px;color:#8198b0;margin-top:8px}
+.cff-admin-member-header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:linear-gradient(125deg,#13283d,#111c2b);margin-bottom:14px}
+.cff-admin-member-header h3{font-size:24px;margin:0;width:100%}.cff-admin-member-header>span{margin-right:auto;font-size:13px}.cff-admin-member-header>a{font-size:13px}
+.cff-admin-member-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}.cff-admin-member-tabs .cff-account-button{font-size:12px;padding:10px 12px}
+[data-member-pane] h3{margin-top:0}[data-member-pane] form{max-width:100%}.cff-admin-profile-editor{border:0;margin:0;padding:0;background:transparent}.cff-admin-profile-editor summary{font-size:18px;margin-bottom:18px}
+.cff-admin-asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:16px 0}
+.cff-admin-asset-choice{position:relative;display:grid;gap:8px;padding:14px;border:1px solid #2c4561;border-radius:12px;background:#101e30;cursor:pointer;align-content:start;overflow-wrap:anywhere}
+.cff-admin-asset-choice:has(input:checked){border-color:#00c8ff;background:#12364a;box-shadow:0 0 0 1px #00c8ff}.cff-admin-asset-choice.is-owned{border-color:#367b65;background:#102a26;cursor:default}.cff-admin-asset-choice input{position:absolute;right:10px;top:10px;width:16px;height:16px;accent-color:#00c8ff}
+.cff-admin-asset-thumb{width:100%;height:100px;object-fit:contain;border-radius:8px}.cff-admin-asset-choice strong{font-size:13px}.cff-admin-asset-choice small{color:#9aabc2;font-size:11px;line-height:1.5}.cff-admin-asset-choice span{font-size:11px;color:#79d8f4}.cff-admin-asset-choice.is-owned span{color:#85e0b3}
+.cff-admin-mini-avatar{width:38px;height:38px;object-fit:contain;border-radius:8px;flex-shrink:0}
+[data-member-pane="rewards"]>.cff-profile-panel{border:0;padding:0;background:transparent}.cff-admin-profiles-page .cff-account-row{gap:12px;overflow-wrap:anywhere}.cff-admin-profiles-page .cff-account-row>span{flex:1;min-width:0}
+[data-member-pane="admin"]>section{margin-top:24px}.cff-admin-mobile-back{display:none}
+.cff-admin-catalog-layout{grid-template-columns:minmax(280px,370px) minmax(0,1fr)}
+.cff-admin-catalog-editor summary{padding:12px 0;color:#83def7;cursor:pointer;font-weight:700}.cff-admin-catalog-editor form{padding-top:10px}
+.cff-admin-catalog-filters{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;margin:16px 0}.cff-admin-catalog-filters input,.cff-admin-catalog-filters select{width:100%;padding:10px;border-radius:9px;border:1px solid #314761;background:#0e1b2b;color:#e1f3ff}
+.cff-admin-catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:14px}
+.cff-admin-catalog-grid .cff-admin-catalog-row{display:grid;gap:12px;padding:16px;border:1px solid #2a3e55;border-radius:12px;background:#101c2c;align-content:start}
+.cff-admin-catalog-grid .cff-admin-catalog-row>img{width:100%;height:115px;object-fit:contain;background:#0b1421}.cff-admin-catalog-grid .cff-admin-catalog-row strong{font-size:14px}.cff-admin-catalog-grid .cff-admin-catalog-row small{font-size:11px;line-height:1.5}.cff-admin-catalog-grid .cff-admin-catalog-row .cff-account-actions{width:auto}
+.cff-admin-settings-layout{display:grid;grid-template-columns:minmax(280px,400px) minmax(0,1fr);gap:24px;margin-top:22px}.cff-admin-settings-card{padding:20px;border:1px solid #293e57;border-radius:12px;background:#101b2b;min-width:0}.cff-admin-settings-card h3{margin-top:0}.cff-admin-grant-row img{width:44px;height:44px;object-fit:contain;vertical-align:middle;margin-right:8px}
+@media(max-width:1000px){.cff-admin-profiles-page .cff-account-wrap{padding:20px}.cff-admin-members-layout{grid-template-columns:260px minmax(0,1fr)}.cff-admin-catalog-layout{grid-template-columns:1fr}.cff-admin-catalog-filters{grid-template-columns:1fr 1fr}.cff-admin-catalog-filters input{grid-column:1/-1}}
+@media(max-width:760px){.cff-admin-profiles-page .cff-account-wrap{padding:14px}.cff-admin-profiles-page .cff-profile-panel{padding:16px}.cff-admin-members-layout,.cff-admin-settings-layout{grid-template-columns:1fr}.cff-admin-members-sidebar{position:static}.cff-admin-mobile-back{display:inline-flex}.cff-admin-members-view.is-member-open .cff-admin-members-sidebar{display:none}.cff-admin-members-view:not(.is-member-open) #profile-member-detail{display:none}.cff-admin-member-header h3{font-size:21px}.cff-admin-asset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cff-admin-asset-choice{padding:12px}.cff-admin-member-tabs{gap:6px}.cff-admin-member-tabs .cff-account-button{flex:1}.cff-admin-settings-card{padding:16px}}
+.cff-admin-member{display:flex;gap:12px;align-items:center}.cff-admin-member>div{min-width:0;flex:1}.cff-admin-member-avatar{width:44px;height:44px;flex-shrink:0;object-fit:cover;border-radius:50%;border:1px solid #36516a}.cff-admin-gift-preview{display:block;width:100%;max-width:200px;height:100px;object-fit:contain;border:1px solid #2a3e55;border-radius:10px;margin:10px 0 16px;background:#0b1421}
