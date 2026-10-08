@@ -22,6 +22,6 @@ export async function verifyToken(token, fetcher=fetch) {
   const key=await crypto.subtle.importKey('jwk',jwk,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);
   if(!await crypto.subtle.verify('RSASSA-PKCS1-v1_5',key,decode(parts[2]),new TextEncoder().encode(parts[0]+'.'+parts[1]))) throw Error();
   // Match the site's existing Firebase administrator account; Firebase ID tokens remain mandatory.
-  return {uid:claims.sub,admin:claims.email==='admin@centralfreefire.com.br'};
+  return {uid:claims.sub,email:claims.email,email_verified:claims.email_verified===true,admin:claims.email==='admin@centralfreefire.com.br'};
  } catch { throw Object.assign(Error('Sessão expirada. Entre novamente com Google.'),{status:401}); }
 }

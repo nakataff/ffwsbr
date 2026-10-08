@@ -3,7 +3,6 @@ const crypto = require('crypto');
 const { onRequest } = require('firebase-functions/v2/https');
 const { getAuth } = require('firebase-admin/auth');
 const { getDatabase } = require('firebase-admin/database');
-const adminEditor=require('./admin-profile-editor');
 const API = 'https://cff-instagram-community.nakataffb4.workers.dev';
 const key = name => name.toLowerCase().replace(/\./g, ',');
 const hash = text => crypto.createHash('sha256').update(text).digest('hex');
@@ -72,8 +71,6 @@ async function handle(req,res,deps={auth:getAuth(),db:getDatabase()}) {
     let identity;try{identity=await deps.auth.verifyIdToken(bearer[1],true);}catch{throw fail(401,'Entre novamente com Google.');}
     const uid=identity.uid;
     const action=req.body?.action;
-    if(action==='adminReadProfile')return res.json(await adminEditor.readProfile(deps.db,identity,req.body?.uid));
-    if(action==='adminEditProfile')return res.json(await adminEditor.editProfile(deps.db,identity,req.body?.uid,req.body?.profile));
     if(action!=='sync'&&action!=='redeem') throw fail(400,'Ação inválida.');
     const rate=deps.db.ref('communityProfileRate/'+uid+'/'+action), now=Date.now();
     const result=await rate.transaction(last=>last&&now-last<1500?undefined:now);

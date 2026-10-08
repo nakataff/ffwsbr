@@ -1,5 +1,5 @@
 export async function mountMemberEditor(host,{auth,uid,options,catalog,roles,esc,onSaved}){
- const api=async(action,profile)=>{const token=await auth.currentUser.getIdToken();const r=await fetch('https://southamerica-east1-central-free-fire.cloudfunctions.net/communityProfileAccess',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action,uid,profile})});const data=await r.json();if(!r.ok)throw Error(data.error||'Não foi possível editar o perfil.');return data;};
+ const api=async(action,profile)=>{const token=await auth.currentUser.getIdToken();const r=await fetch('https://cff-camp-notifications.nakataffb4.workers.dev/api',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action,uid,profile})});const data=await r.json();if(!r.ok)throw Error(data.error||'Não foi possível editar o perfil.');return data;};
  host.textContent='Carregando editor do perfil…';
  try{
   const {profile:p}=await api('adminReadProfile');if(!host.isConnected)return;

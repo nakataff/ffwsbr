@@ -2,6 +2,7 @@ import {DurableObject} from 'cloudflare:workers';
 import webpush from 'web-push';
 import C from '../../functions/camp-notifications-core.js';
 import {notificationContent,streamUrl,teamLogo} from '../../js/camp-notification-content.js';
+import adminEditor from '../../functions/admin-profile-editor.js';
 import {verifyToken} from './auth.js';
 const ORIGINS=new Set(['https://centralfreefire.com.br','https://www.centralfreefire.com.br']);
 const LIVE='https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2';
@@ -91,6 +92,10 @@ export class NotificationHub extends DurableObject {
    const rate=this.rows('SELECT * FROM limits WHERE uid=?',uid)[0],now=Date.now(),active=rate&&now-rate.request_at<60000;
    if(active&&rate.requests>=30)throw Object.assign(Error('Aguarde um minuto antes de tentar novamente.'),{status:429});
    this.sql.exec('INSERT OR REPLACE INTO limits VALUES(?,?,?,?)',uid,rate?.test_at||0,active?rate.request_at:now,active?rate.requests+1:1);
+   if(action==='adminReadProfile'||action==='adminEditProfile'){
+    admin();const database={ref:(path='')=>({get:async()=>{const r=await fetch('https://central-free-fire-default-rtdb.firebaseio.com/'+path.split('/').map(encodeURIComponent).join('/')+'.json?auth='+encodeURIComponent(token),{signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error('Não foi possível ler o perfil.');const value=await r.json();return {val:()=>value,exists:()=>value!==null};},update:async changes=>{const r=await fetch('https://central-free-fire-default-rtdb.firebaseio.com/.json?auth='+encodeURIComponent(token),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(changes),signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error('Não foi possível salvar o perfil.');}})};
+    return json(action==='adminReadProfile'?await adminEditor.readProfile(database,user,b.uid):await adminEditor.editProfile(database,user,b.uid,b.profile));
+   }
    if(action==='settings')return json({publicKey:this.vapid().publicKey,catalog:Object.fromEntries(Object.entries(this.catalog()).filter(([,t])=>t.enabled||user.admin)),preferences:Object.fromEntries(this.rows('SELECT tournament,data FROM preferences WHERE uid=?',uid).map(p=>[p.tournament,JSON.parse(p.data)]))});
    if(action==='inbox')return json({rows:this.rows('SELECT data FROM inbox WHERE uid=? ORDER BY at DESC LIMIT 50',uid).map(r=>JSON.parse(r.data))});
    if(action==='preferences'){

@@ -1,4 +1,4 @@
-import {mountMemberEditor} from './admin-profile-editor.js?v=20261008-v1';
+import {mountMemberEditor} from './admin-profile-editor.js?v=20261008-free-v2';
 import { initializeApp,getApps } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getAuth,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import { getDatabase,ref,get,set,update,query,orderByChild,limitToLast,endBefore,onValue } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';

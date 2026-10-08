@@ -1,9 +1,9 @@
-name: Deploy Community Profiles
+name: Deploy Profile Database Rules
 on:
   push:
     branches: [main]
     paths:
-      - 'functions/community-profiles.js'
+      - 'database.rules.json'
       - 'functions/admin-profile-editor.js'
       - 'functions/admin-profile-options.json'
       - '.github/workflows/deploy-community-profiles.yml'
@@ -25,4 +25,4 @@ jobs:
       - run: npm install
         working-directory: functions
       - run: node --test functions/test/admin-profile-editor.test.cjs
-      - run: firebase deploy --only functions:communityProfileAccess --project central-free-fire --non-interactive
+      - run: firebase deploy --only database --project central-free-fire --non-interactive
