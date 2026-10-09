@@ -6,9 +6,9 @@
   const safeImage=v=>/^data:image\/(webp|png|jpeg);base64,/i.test(v||'')||/^https?:\/\//i.test(v||'') ? v : '';
   const defaults={title:'Codiguinhos para resgatar',columns:3,names:true,dates:true,status:true,remaining:false,light:false};
   const dlg=document.createElement('dialog');dlg.className='showcase-dialog';dlg.setAttribute('aria-label','Mostruário de codiguinhos');
-  dlg.innerHTML=`<div class="showcase-bar"><h2>Mostruário para print</h2><button data-action="clean">Modo print</button><button class="secondary" data-action="close">Fechar</button></div>
+  dlg.innerHTML=`<div class="showcase-bar"><h2>Mostruário para print</h2><button data-action="clean">Modo print</button><button class="secondary" data-action="close">← Voltar ao controle</button></div>
     <div class="showcase-options"><label>Título <input type="text" data-setting="title" maxlength="100"></label><label>Colunas <select data-setting="columns"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>${[['names','Nomes'],['dates','Datas'],['status','Status'],['remaining','Quantidade restante'],['light','Fundo claro']].map(([key,label])=>`<label><input type="checkbox" data-setting="${key}">${label}</label>`).join('')}<span>O modo print esconde os itens ocultos e os controles. Esc volta à edição.</span></div>
-    <div class="showcase-board"><h2 class="showcase-heading"></h2><div class="showcase-grid"></div></div><button class="showcase-exit secondary" data-action="edit">Voltar à edição</button>`;
+    <div class="showcase-board"><h2 class="showcase-heading"></h2><div class="showcase-grid"></div></div><button class="showcase-exit secondary" data-action="edit">← Voltar à edição</button>`;
   document.body.append(dlg);let clean=false;
   function read(){const d=api()?.read();return d?{...d,settings:{...defaults,...d.settings}}:null;}
   function render(){
