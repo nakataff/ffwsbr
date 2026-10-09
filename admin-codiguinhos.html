@@ -2225,6 +2225,8 @@
     function normalizarDataBR(data){
       const m = String(data || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
       if(!m) return "";
+      const check = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+      if(check.getFullYear() !== Number(m[3]) || check.getMonth()+1 !== Number(m[2]) || check.getDate() !== Number(m[1])) return "";
       return `${m[3]}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`;
     }
 
@@ -2259,7 +2261,7 @@
           const item = linha.match(/item\s*:\s*(.+)$/i);
           if(item) metaAtual.item = item[1].trim();
 
-          const validade = linha.match(/validade\s*:\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*a\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
+          const validade = linha.match(/validade\s*:\s*(?:(?:from|de)\s+)?(\d{1,2}\/\d{1,2}\/\d{4})\s*(?:a|at[eé]|to|[-–])\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
           if(validade){
             metaAtual.inicio = normalizarDataBR(validade[1]);
             metaAtual.fim = normalizarDataBR(validade[2]);
@@ -2341,6 +2343,11 @@
         return;
       }
 
+      const semValidade = pacotes.filter(p => !p.inicio || !p.fim || p.inicio > p.fim);
+      if(semValidade.length){
+        alert("Confira a validade destes pacotes antes de adicionar: " + semValidade.map(p => p.nome).join(", ") + ". Use, por exemplo, Validade: From 24/10/2026 a 01/11/2026. As datas não serão substituídas pela data de hoje.");
+        return;
+      }
       let adicionados = 0;
       pacotes.forEach((p, idx) => {
         if(!p.nome || !p.codigos.length) return;
