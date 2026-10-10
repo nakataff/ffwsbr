@@ -2743,7 +2743,7 @@
 
   function init() {
     wrapNavigate();
-    const hash = String(location.hash || '').replace(/^#/, '');
+    const hash = window.CFF_SEASON_ROUTES?.pageFromLocation() || String(location.hash || '').replace(/^#/, '');
     if (PAGE_IDS.has(hash)) {activate(hash);if(hash==='ffws-br-s2-comparar')loadData().then(loadPlayersData).then(restoreAccountCompare).catch(()=>{});}
     // Observe somente a troca de página da própria S2.
     // Antes o observer ficava no body inteiro e qualquer mudança de classe
