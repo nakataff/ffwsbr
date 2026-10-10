@@ -1,12 +1,13 @@
 import {DurableObject} from 'cloudflare:workers';
 import webpush from 'web-push';
 import C from '../../functions/camp-notifications-core.js';
+import R from '../../functions/camp-results-core.js';
 import {notificationContent,streamUrl,teamLogo} from '../../js/camp-notification-content.js';
 import adminEditor from '../../functions/admin-profile-editor.js';
 import {verifyToken} from './auth.js';
 const ORIGINS=new Set(['https://centralfreefire.com.br','https://www.centralfreefire.com.br']);
 const LIVE='https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2';
-const DAY=86400000;
+const DAY=861800000;
 function logoUrl(value){try{const u=new URL(String(value||''));return u.protocol==='https:'&&['centralfreefire.com.br','www.centralfreefire.com.br'].includes(u.hostname)&&!u.port&&!u.username&&!u.password&&u.href.length<=2048?u.href:'';}catch{return '';}}
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 export default {
@@ -16,7 +17,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:4});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:5});
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -27,6 +28,7 @@ export class NotificationHub extends DurableObject {
  constructor(ctx,env) {
   super(ctx,env);this.ctx=ctx;this.sql=ctx.storage.sql;
   this.sql.exec(`CREATE TABLE IF NOT EXISTS catalog(id TEXT PRIMARY KEY,data TEXT NOT NULL);
+   CREATE TABLE IF NOT EXISTS snapshots(tournament TEXT,day INTEGER,dropno INTEGER,data TEXT,at INTEGER,PRIMARY KEY(tournament,day,dropno));
    CREATE TABLE IF NOT EXISTS preferences(uid TEXT,tournament TEXT,data TEXT,PRIMARY KEY(uid,tournament));
    CREATE INDEX IF NOT EXISTS pref_tournament ON preferences(tournament);
    CREATE TABLE IF NOT EXISTS devices(id TEXT PRIMARY KEY,uid TEXT,data TEXT);
@@ -54,8 +56,8 @@ export class NotificationHub extends DurableObject {
   this.sql.exec('DELETE FROM inbox WHERE uid=? AND id NOT IN (SELECT id FROM inbox WHERE uid=? ORDER BY at DESC LIMIT 50)',uid,uid);
  }
  enqueue(id,t,day,drop,row,status){
-  const kind=row.kind||'elimination',eventKey=kind==='start'?'__start':kind==='booyah'?'__booyah':row.teamId;
-  const eventId=C.eventId(id,day,drop,eventKey,status),inboxId=C.eventId(id,day,drop,eventKey,'result'),existing=this.rows('SELECT data FROM events WHERE id=?',eventId)[0];
+  const kind=row.kind||'elimination',eventKey=kind==='start'?'__start':kind==='booyah'?'__booyah':kind==='summary'?'__summary-'+row.revision:row.teamId;
+  const eventId=C.eventId(id,day,drop,eventKey,status),inboxId=C.eventId(id,day,drop,kind==='summary'?'__summary':eventKey,'result'),existing=this.rows('SELECT data FROM events WHERE id=?',eventId)[0];
   const event={...row,kind,streamUrl:streamUrl(t.streamUrl),logo:logoUrl(teamLogo(row.team,row.teamId,row.logo||t.teams[row.teamId]?.logo)),tournamentId:id,tournamentName:t.name,day,drop,status,inboxId,at:Date.now()};
   if(existing){const old=JSON.parse(existing.data);if(status==='official'&&['points','kills','position'].some(k=>old[k]!==event[k])){this.sql.exec('UPDATE events SET data=?,at=? WHERE id=?',JSON.stringify(event),event.at,eventId);const recipients=this.rows('SELECT uid FROM inbox WHERE id=?',inboxId);for(const {uid}of recipients)this.inbox(uid,event);}return false;}
   this.sql.exec('INSERT INTO events VALUES(?,?,?,?,?,?,?,?)',eventId,id,day,drop,row.teamId,status,JSON.stringify(event),event.at);
@@ -64,19 +66,20 @@ export class NotificationHub extends DurableObject {
  }
  async clearTestDrop(id,t,day,drop){
     if(t.officialStage&&C.officialRows(await this.official(t.officialStage,day,drop),t.teams).length)throw Error('Esta queda já tem T1 + P1 oficial e não pode ser reiniciada.');
+    if(this.rows("SELECT data FROM snapshots WHERE tournament=? AND day=? AND dropno=? AND json_extract(data,'$.status')='official'",id,day,drop).length)throw Error('Esta queda já tem resultado oficial e não pode ser reiniciada.');
     const removed=this.ctx.storage.transactionSync(()=>{
      if(this.rows("SELECT id FROM events WHERE tournament=? AND day=? AND dropno=? AND status='official' LIMIT 1",id,day,drop).length)throw Error('Esta queda já tem resultado oficial e não pode ser reiniciada.');
      const events=this.rows('SELECT id,data FROM events WHERE tournament=? AND day=? AND dropno=?',id,day,drop);
      for(const event of events){this.sql.exec('DELETE FROM jobs WHERE event=?',event.id);this.sql.exec('DELETE FROM inbox WHERE id=?',JSON.parse(event.data).inboxId);}
      this.sql.exec('DELETE FROM events WHERE tournament=? AND day=? AND dropno=?',id,day,drop);
-     this.sql.exec('DELETE FROM pending WHERE tournament=? AND day=? AND dropno=?',id,day,drop);return events.length;
+     this.sql.exec('DELETE FROM pending WHERE tournament=? AND day=? AND dropno=?',id,day,drop);this.sql.exec('DELETE FROM snapshots WHERE tournament=? AND day=? AND dropno=?',id,day,drop);return events.length;
     });return removed;
  }
  async schedule(){const jobs=this.rows('SELECT event FROM jobs LIMIT 1').length,pending=this.rows('SELECT check_at FROM pending ORDER BY check_at LIMIT 1')[0];if(jobs||pending)await this.ctx.storage.setAlarm(jobs?Date.now()+1000:Math.max(Date.now()+1000,pending.check_at));else await this.ctx.storage.deleteAlarm();}
  async push(uid,event){
   const devices=this.rows('SELECT id,data FROM devices WHERE uid=?',uid),vapid=this.vapid();
   const {title,body}=notificationContent(event),prefix=event.status==='test'||event.kind==='start'?'':event.status==='official'?'Oficial · ':'Parcial · ';
-  const payload=JSON.stringify({title,body:prefix+body,icon:logoUrl(event.logo),image:logoUrl(event.logo),tag:event.inboxId,url:streamUrl(event.streamUrl)||'/conta.html?tab=notifications'});
+  const payload=JSON.stringify({title,body:prefix+body,icon:logoUrl(event.logo),image:logoUrl(event.logo),tag:event.inboxId,url:event.day&&event.drop&&event.kind!=='start'?'/conta.html?tab=notifications&tournament='+encodeURIComponent(event.tournamentId)+'&day='+event.day+'&drop='+event.drop:streamUrl(event.streamUrl)||'/conta.html?tab=notifications',streamUrl:streamUrl(event.streamUrl)});
   let accepted=0;
   for(const d of devices)try{const subscription=C.subscription(JSON.parse(d.data)),details=webpush.generateRequestDetails(subscription,payload,{vapidDetails:{subject:'https://centralfreefire.com.br',...vapid},TTL:300});const response=await fetch(details.endpoint,{method:'POST',headers:details.headers,body:details.body,redirect:'manual',signal:AbortSignal.timeout(8000)});await response.body?.cancel();if(response.ok)accepted++;else if([404,410].includes(response.status))this.sql.exec('DELETE FROM devices WHERE id=? AND uid=?',d.id,uid);}catch{}
   return {devices:devices.length,accepted};
@@ -84,9 +87,9 @@ export class NotificationHub extends DurableObject {
  async fetch(request){
   try{
    const token=String(request.headers.get('Authorization')||'').match(/^Bearer (.+)$/)?.[1],user=await verifyToken(token),uid=user.uid;
-   if(Number(request.headers.get('Content-Length')||0)>40000)throw Error('Pedido muito grande.');
+   if(Number(request.headers.get('Content-Length')||0)>180000)throw Error('Pedido muito grande.');
    const reader=request.body?.getReader(),chunks=[];let length=0;
-   if(reader)for(;;){const {value,done}=await reader.read();if(done)break;length+=value.byteLength;if(length>40000){await reader.cancel();throw Error('Pedido muito grande.');}chunks.push(value);}
+   if(reader)for(;;){const {value,done}=await reader.read();if(done)break;length+=value.byteLength;if(length>180000){await reader.cancel();throw Error('Pedido muito grande.');}chunks.push(value);}
    const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}const b=JSON.parse(new TextDecoder().decode(bytes)),action=b.action;
    const admin=()=>{if(!user.admin)throw Object.assign(Error('Somente administrador.'),{status:403});};
    const rate=this.rows('SELECT * FROM limits WHERE uid=?',uid)[0],now=Date.now(),active=rate&&now-rate.request_at<60000;
@@ -126,9 +129,39 @@ export class NotificationHub extends DurableObject {
     admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t)throw Error('Torneio não encontrado.');const day=C.integer(b.day,1,365);
     if(action==='resetDrop'){const removed=await this.clearTestDrop(id,t,day,C.integer(b.drop,1,999));await this.schedule();return json({ok:true,removed});}
     let removed=0;const skipped=[];
-    for(const row of this.rows('SELECT DISTINCT dropno FROM events WHERE tournament=? AND day=?',id,day)){
+    for(const row of this.rows('SELECT dropno FROM events WHERE tournament=? AND day=? UNION SELECT dropno FROM snapshots WHERE tournament=? AND day=?',id,day,id,day)){
      try{removed+=await this.clearTestDrop(id,t,day,row.dropno);}catch(e){if(/oficial/.test(e.message))skipped.push(row.dropno);else throw e;}
     }await this.schedule();return json({ok:true,removed,skipped});
+   }
+   if(action==='results'){
+    const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Este torneio não está habilitado para avisos.');
+    const all=this.rows('SELECT data FROM snapshots WHERE tournament=? ORDER BY day,dropno LIMIT 2000',id).map(r=>JSON.parse(r.data));
+    const selected=b.day!==undefined||b.drop!==undefined?all.find(s=>s.day===C.integer(b.day,1,365)&&s.drop===C.integer(b.drop,1,999)):all.at(-1);
+    if(!selected)return json({selected:null,matches:all.slice(-100).map(s=>({day:s.day,drop:s.drop,map:s.map,status:s.status})),overall:null});
+    const until=all.filter(s=>s.day<selected.day||s.day===selected.day&&s.drop<=selected.drop);
+    return json({selected,matches:all.slice(-100).map(s=>({day:s.day,drop:s.drop,map:s.map,status:s.status})),overall:R.totals(until,t.teams),dayTotals:R.totals(until,t.teams,selected.day),teams:t.teams,streamUrl:streamUrl(t.streamUrl)});
+   }
+   if(action==='publishResults'){
+    admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');
+    const day=C.integer(b.day,1,365),drop=C.integer(b.drop,1,999);
+    if(!Array.isArray(b.matches)||!b.matches.length||b.matches.length>100)throw Error('Envie de 1 a 100 quedas por vez.');
+    let matches=b.matches.map(m=>R.normalize(m,t.teams));
+    if(new Set(matches.map(m=>m.day+':'+m.drop)).size!==matches.length||matches.some(m=>m.day>day||m.day===day&&m.drop>drop)||!matches.some(m=>m.day===day&&m.drop===drop))throw Error('Confira os dias e quedas enviados.');
+    if(t.officialStage){
+     const days=new Map();for(const d of [...new Set(matches.map(m=>m.day))]){const r=await fetch(`${LIVE}/${t.officialStage}/drops/${d}.json`,{signal:AbortSignal.timeout(5000)});if(!r.ok)throw Error('Não foi possível conferir T1 + P1. Tente novamente.');days.set(d,await r.json());}
+     matches=matches.map(m=>R.promote(m,C.officialRows(days.get(m.day)?.[m.drop],t.teams)));
+    }
+    let changed=0,current,notified=false;
+    this.ctx.storage.transactionSync(()=>{
+     for(let m of matches){const found=this.rows('SELECT data FROM snapshots WHERE tournament=? AND day=? AND dropno=?',id,m.day,m.drop)[0],prior=found&&JSON.parse(found.data);
+      if(prior?.status==='official'&&m.status!=='official')m=prior;
+      const comparable=v=>JSON.stringify([v.map,v.participants,v.rows,v.headstart,v.status,v.complete]);
+      if(!prior||comparable(prior)!==comparable(m)){m={...m,revision:(prior?.revision||0)+1,at:now};this.sql.exec('INSERT OR REPLACE INTO snapshots VALUES(?,?,?,?,?)',id,m.day,m.drop,JSON.stringify(m),now);changed++;}else m=prior;
+      if(m.day===day&&m.drop===drop)current=m;
+     }
+     if(t.officialStage&&current.status!=='official')this.sql.exec('INSERT OR IGNORE INTO pending VALUES(?,?,?,?,?,?)',`${id}:${day}:${drop}`,id,day,drop,now+60000,now+7*DAY);
+     if(b.notify===true)notified=this.enqueue(id,t,day,drop,{teamId:'__summary',kind:'summary',results:current.rows,revision:current.revision,map:current.map},current.status);
+    });await this.schedule();return json({ok:true,changed,revision:current.revision,status:current.status,notified,summaryAlreadySent:b.notify===true&&!notified,url:'/conta.html?tab=notifications&tournament='+encodeURIComponent(id)+'&day='+day+'&drop='+drop});
    }
    if(action==='publish'){
     admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');const day=C.integer(b.day,1,365),drop=C.integer(b.drop,1,999),kind=b.kind||'elimination';
@@ -153,6 +186,8 @@ export class NotificationHub extends DurableObject {
    for(const pending of this.rows('SELECT * FROM pending WHERE check_at<=? ORDER BY check_at LIMIT 3',now)){
     const t=this.config(pending.tournament);if(!t?.enabled||!t.officialStage){this.sql.exec('DELETE FROM pending WHERE id=?',pending.id);continue;}
     try{const rows=C.officialRows(await this.official(t.officialStage,pending.day,pending.dropno),t.teams),published=this.rows("SELECT team,data FROM events WHERE tournament=? AND day=? AND dropno=? AND status='partial'",pending.tournament,pending.day,pending.dropno);
+     const found=this.rows('SELECT data FROM snapshots WHERE tournament=? AND day=? AND dropno=?',pending.tournament,pending.day,pending.dropno)[0];
+     if(found){const prior=JSON.parse(found.data),next=R.promote(prior,rows);if(next.status==='official'&&JSON.stringify(next.rows)!==JSON.stringify(prior.rows)||next.status==='official'&&prior.status!=='official'){next.revision=(prior.revision||0)+1;next.at=now;this.sql.exec('UPDATE snapshots SET data=?,at=? WHERE tournament=? AND day=? AND dropno=?',JSON.stringify(next),now,pending.tournament,pending.day,pending.dropno);}}
      this.ctx.storage.transactionSync(()=>{for(const p of published){const prior=JSON.parse(p.data),row=rows.find(r=>r.teamId===p.team);if(!row)continue;
       if(prior.kind==='booyah'){const winner=rows.find(r=>r.position===1);if(winner)this.enqueue(pending.tournament,t,pending.day,pending.dropno,{...winner,kind:'booyah'},'official');}
       else this.enqueue(pending.tournament,t,pending.day,pending.dropno,row,'official');

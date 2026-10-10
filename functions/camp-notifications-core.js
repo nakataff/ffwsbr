@@ -9,6 +9,7 @@ function eventId(tournament, day, drop, team, status) { return hash([tournament,
 function interested(preference,event) {
  if(preference?.enabled!==true)return false;
  const kind=event.kind||'elimination';
+ if(kind==='summary')return preference.types?.elimination!==false&&(preference.all===true||(event.results||[]).some(r=>preference.teams?.[r.teamId]===true));
  if(kind==='start')return preference.types?.start===true;
  if(kind==='booyah')return preference.types?.booyah===true;
  if(kind==='elimination'&&preference.types?.elimination===false)return false;

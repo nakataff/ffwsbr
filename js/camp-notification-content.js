@@ -3,6 +3,7 @@ export function streamUrl(value){try{if(!value)return '';const u=new URL(String(
 export function notificationContent(e){
  if(e.status==='test')return {title:'Teste Central FF',body:'Este teste foi enviado apenas para sua conta.',badge:'TESTE'};
  const name=String(e.tournamentName||'Central Free Fire').replace(/\s*[—-]\s*Dia\s*\d+\s*$/i,'').slice(0,80),title=name+' / DIA '+e.day+' / QUEDA '+e.drop;
+ if(e.kind==='summary'){const rows=[...(e.results||[])].sort((a,b)=>b.points-a.points),parts=rows.slice(0,3).map(r=>shortTeamName(r.team,r.teamId)+': '+r.points+' pts');return {title,body:'Q'+e.drop+' • '+parts.join(' • ')+(rows.length>3?' • …':''),badge:e.status==='official'?'PONTUAÇÃO OFICIAL':'PONTUAÇÃO PARCIAL'};}
  if(e.kind==='start')return {title,body:'Queda '+e.drop+' começou! Mapa: '+e.map+'.',badge:'QUEDA AO VIVO'};
  const points=e.points+' pts'+(Number.isInteger(e.dayPoints)?' · '+e.dayPoints+' no dia':'')+'.';
  const body=e.kind==='booyah'?'BOOYAH: '+e.team+'! '+e.kills+' abates · '+points:e.team+' · Top '+e.position+' · '+e.kills+' abates · '+points;

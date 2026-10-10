@@ -13,8 +13,8 @@ const {NotificationHub,default:worker}=await import(runtime.href);unlinkSync(run
 const pair=generateKeyPairSync('rsa',{modulusLength:2048}),jwk={...pair.publicKey.export({format:'jwk'}),kid:'test-key',alg:'RS256',use:'sig'};
 const token=(uid,extra={})=>{const now=Math.floor(Date.now()/1000),h=Buffer.from(JSON.stringify({alg:'RS256',kid:'test-key'})).toString('base64url'),p=Buffer.from(JSON.stringify({aud:'central-free-fire',iss:'https://securetoken.google.com/central-free-fire',sub:uid,iat:now,exp:now+3600,auth_time:now,...extra})).toString('base64url');return h+'.'+p+'.'+sign('RSA-SHA256',Buffer.from(h+'.'+p),pair.privateKey).toString('base64url');};
 const admin=token('admin',{email:'admin@centralfreefire.com.br',email_verified:true}),member=token('member'),other=token('other');
-let official=null,pushes=[],unavailable=false;
-globalThis.fetch=async(url,options)=>{url=String(url);if(url.includes('googleapis.com/service_accounts'))return Response.json({keys:[jwk]},{headers:{'cache-control':'max-age=3600'}});if(url.includes('firebaseio.com')){if(unavailable)return new Response('',{status:503});return Response.json(official);}if(url.startsWith('https://fcm.googleapis.com/')){assert.equal(options.redirect,'manual');assert.equal(options.headers['Content-Encoding'],'aes128gcm');assert(options.body.length>20);pushes.push({url,headers:options.headers,body:options.body});return new Response(null,{status:201});}throw Error('Unexpected network '+url);};
+let official=null,officialDays={},pushes=[],unavailable=false;
+globalThis.fetch=async(url,options)=>{url=String(url);if(url.includes('googleapis.com/service_accounts'))return Response.json({keys:[jwk]},{headers:{'cache-control':'max-age=3600'}});if(url.includes('firebaseio.com')){if(unavailable)return new Response('',{status:503});return Response.json(/\/drops\/\d+\.json/.test(url)?officialDays:official);}if(url.startsWith('https://fcm.googleapis.com/')){assert.equal(options.redirect,'manual');assert.equal(options.headers['Content-Encoding'],'aes128gcm');assert(options.body.length>20);pushes.push({url,headers:options.headers,body:options.body});return new Response(null,{status:201});}throw Error('Unexpected network '+url);};
 function context(){const db=new DatabaseSync(':memory:');let alarm=null;return {storage:{sql:{exec(query,...args){if(!args.length&&query.includes(';')){db.exec(query);return{toArray:()=>[]};}const statement=db.prepare(query);if(/^\s*(SELECT|PRAGMA)/i.test(query))return{toArray:()=>statement.all(...args)};statement.run(...args);return{toArray:()=>[]};}},transactionSync(fn){db.exec('BEGIN');try{const r=fn();db.exec('COMMIT');return r;}catch(e){db.exec('ROLLBACK');throw e;}},async setAlarm(value){alarm=value},async deleteAlarm(){alarm=null},async getAlarm(){return alarm}}};}
 const subscription=id=>{const ecdh=createECDH('prime256v1');ecdh.generateKeys();return{endpoint:'https://fcm.googleapis.com/fcm/send/'+id,keys:{p256dh:ecdh.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,7).toString('base64url')}};};
 const ctx=context(),hub=new NotificationHub(ctx,{}),id='ffws-br-final';
@@ -115,3 +115,31 @@ test('admin can restart only the chosen non-official drop and preserve subscript
  await call('publish',{...start,day:2});assert.equal((await call('resetDay',a,member)).status,403);const batch=await call('resetDay',a);assert.equal(batch.removed,1);assert.deepEqual(batch.skipped,[1]);assert.equal(h.rows('SELECT id FROM events WHERE day=2').length,1);assert.equal(h.rows("SELECT id FROM events WHERE day=1 AND status='official'").length,1);assert.equal((await call('publish',{...start,drop:2})).duplicate,false);
 });
 test('profile editor gateway requires the real Firebase administrator identity',async()=>{const h=new NotificationHub(context(),{});async function call(jwt,uid){const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action:'adminReadProfile',uid})}));return r.status;}assert.equal(await call(member,'person'),403);assert.equal(await call(token('admin-password',{email:'admin@centralfreefire.com.br',email_verified:false}),'../person'),400);assert.equal(await call(admin,'../person'),400);});
+
+
+test('result tables: admin-only publication, corrections, totals, summary dedupe and T1/P1',async()=>{
+ const h=new NotificationHub(context(),{}),camp='result-tables-test';official=null;officialDays={};unavailable=false;payloads.length=0;
+ const call=async(action,data={},jwt=member)=>{const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return {status:r.status,...await r.json()};};
+ await call('configure',{...configure,tournamentId:camp},admin);
+ await call('preferences',{tournamentId:camp,enabled:true,all:true},member);
+ await call('device',{subscription:subscription('tables-fan')},member);
+ const first={day:1,drop:1,map:'Bermuda',participants:['fx','los'],headstart:{fx:10},rows:[{teamId:'fx',position:1,kills:8,points:20},{teamId:'los',position:2,kills:6,points:15}]};
+ const second={day:2,drop:1,map:'Kalahari',participants:['fx','los'],rows:[{teamId:'fx',position:2,kills:1,points:7},{teamId:'los',position:1,kills:10,points:22}]};
+ const packet={tournamentId:camp,day:2,drop:1,matches:[first,second]};
+ assert.equal((await call('publishResults',packet)).status,403);
+ assert.equal((await call('publishResults',{...packet,matches:[{...first,rows:[first.rows[0],first.rows[0]]},second]},admin)).status,400);
+ assert.equal((await call('publishResults',packet,admin)).changed,2);
+ assert.equal(h.rows('SELECT event FROM jobs').length,0);
+ let result=await call('results',{tournamentId:camp});assert.equal(result.selected.status,'partial');assert.equal(result.matches.length,2);assert.equal(result.overall.rows.find(r=>r.teamId==='fx').points,37);assert.equal(result.dayTotals.rows.find(r=>r.teamId==='fx').points,7);
+ assert.equal((await call('publishResults',packet,admin)).changed,0);
+ second.rows[0].points=8;
+ assert.equal((await call('publishResults',packet,admin)).changed,1);
+ result=await call('results',{tournamentId:camp});assert.equal(result.selected.revision,2);assert.equal(result.overall.rows.find(r=>r.teamId==='fx').points,38);assert.equal(result.overall.rows.find(r=>r.teamId==='fx').matches,2);
+ await call('publishResults',{...packet,notify:true},admin);await call('publishResults',{...packet,notify:true},admin);assert.equal(h.rows('SELECT event FROM jobs').length,1);await h.alarm();assert.equal(payloads.length,1);assert(payloads[0].body.includes('Parcial'));assert(payloads[0].url.includes('tournament='+camp));assert(payloads[0].url.includes('day=2&drop=1'));
+ officialDays={1:{source:{teams:true,players:true},teams:[{team:'FLUXO W7M',position:2,kills:5,points:14},{team:'LOS',position:1,kills:12,points:24}],players:[{team:'FLUXO W7M',kills:5},{team:'LOS',kills:12}]}};
+ official=officialDays[1];h.sql.exec('UPDATE pending SET check_at=0');await h.alarm();result=await call('results',{tournamentId:camp});assert.equal(result.selected.status,'official');assert.equal(result.selected.rows.find(r=>r.teamId==='fx').points,14);assert.equal(result.selected.revision,3);
+ await call('publishResults',packet,admin);result=await call('results',{tournamentId:camp});assert.equal(result.selected.status,'official');assert.equal(result.selected.rows.find(r=>r.teamId==='fx').points,14);
+ officialDays={};second.rows[0].points=90;await call('publishResults',packet,admin);result=await call('results',{tournamentId:camp});assert.equal(result.selected.status,'official');assert.equal(result.selected.rows.find(r=>r.teamId==='fx').points,14);assert.equal((await call('resetDrop',{tournamentId:camp,day:2,drop:1},admin)).status,400);
+ assert.equal((await call('results',{tournamentId:'disabled'})).status,400);
+ const older=await call('results',{tournamentId:camp,day:1,drop:1});assert.equal(older.overall.rows.find(r=>r.teamId==='fx').points,24);
+});

@@ -6,6 +6,7 @@ on:
     paths:
       - 'cloudflare/camp-notifications/**'
       - 'functions/camp-notifications-core.js'
+      - 'functions/camp-results-core.js'
       - 'functions/admin-profile-editor.js'
       - 'functions/admin-profile-options.json'
       - 'js/camp-notification-content.js'
