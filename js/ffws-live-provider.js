@@ -128,11 +128,11 @@
     const finalEvents=flatten(data?.final).map(event);
     if(finalEvents.length){
       const fin=payload.final||(payload.final={finished:false,days:[],rows:[]}),byDay=new Map();
-      finalEvents.forEach(e=>{if(!byDay.has(e.day))byDay.set(e.day,[]);byDay.get(e.day).push(({round,...rest})=>rest)});
+      finalEvents.forEach(e=>{if(!byDay.has(e.day))byDay.set(e.day,[]);const {round,...match}=e;byDay.get(e.day).push(match)});
       fin.days=[...byDay].sort((a,b)=>a[0]-b[0]).map(([day,matches])=>({day,matches:matches.sort((a,b)=>num(a.drop)-num(b.drop))}));
       let r=rows('final',finalEvents,fin.rows,preview);const champ=detectChampion(finalEvents);
-      if(champ){const w=r.find(x=>norm(x.team)===norm(champ));r=r.filter(x=>x!==w);if(w)r.unshift(w);r.forEach((x,i)=>x.position=i+1);fin.champion=champ;fin.finished=true}else fin.finished=finalEvents.length>=16;
-      fin.rows=r;fin.championRushPoint=160;fin.matchesPlayed=finalEvents.length;fin.scheduledMaxMatches=16;
+      if(champ){const w=r.find(x=>norm(x.team)===norm(champ));r=r.filter(x=>x!==w);if(w)r.unshift(w);r.forEach((x,i)=>x.position=i+1);fin.champion=champ;fin.finished=true}else fin.finished=false;
+      fin.rows=r;fin.championRushPoint=160;fin.matchesPlayed=finalEvents.length;fin.scheduledMaxMatches=null;fin.unlimitedDay2=true;
     }
     const stamps=[num(data?.segundaFase?.updatedAt),num(data?.final?.updatedAt)].filter(Boolean);if(stamps.length)payload.updatedAt=new Date(Math.max(...stamps)).toISOString().slice(0,10);
     return payload;
@@ -169,19 +169,24 @@
     const list=Array.isArray(payload?.players)?payload.players:[],n=pkey(name),t=norm(team);
     return list.find(p=>norm(p?.team)===t&&[p?.name,p?.sourceName,...(p?.aliases||[])].some(a=>pkey(a)===n))||list.find(p=>[p?.name,p?.sourceName,...(p?.aliases||[])].some(a=>pkey(a)===n))||null;
   }
-  function mergePlayers(payload,data){
-    if(!payload||typeof payload!=='object'||!Array.isArray(payload.entries))return payload;
-    ['segundaFase','final'].forEach(stageKey=>{
-      const ds=flatten(data?.[stageKey]);if(!ds.length)return;
-      payload.entries=payload.entries.filter(e=>String(e?.stage||'')!==stageKey);
-      ds.forEach(drop=>vals(drop.players).forEach(p=>{
-        const meta=rosterMeta(payload,p.name,p.team);
-        payload.entries.push({stage:stageKey,day:drop.day,round:drop.day,drop:drop.drop,map:drop.map||'',name:meta?.name||p.name,sourceName:p.name,team:meta?.team||p.team,kills:num(p.kills),damage:num(p.damage),assists:num(p.assists),matches:1,mvp:num(p.mvp),survival:num(p.survival),revives:num(p.revives),roleShort:meta?.roleShort||'',role:meta?.role||'',country:meta?.country||'',rookie:Boolean(meta?.rookie)});
-      }));
-    });
-    payload.entries.sort((a,b)=>String(a.stage||'').localeCompare(String(b.stage||''))||num(a.day)-num(b.day)||num(a.drop)-num(b.drop)||String(a.team||'').localeCompare(String(b.team||''),'pt-BR')||String(a.name||'').localeCompare(String(b.name||''),'pt-BR'));
+  async function mergePlayers(payload,data){
+    if(!payload||typeof payload!=='object')return payload;
+    const nameRows=await playerNameRows(),roster=Array.isArray(payload.players)?payload.players:[];
+    payload.entries=Array.isArray(payload.entries)?payload.entries:[];
+    for(const stage of ['segundaFase','final']){
+      const drops=flatten(data?.[stage]).filter(drop=>vals(drop.players).length);
+      const replaced=new Set(drops.map(drop=>`${num(drop.day)}:${num(drop.drop)}`));
+      payload.entries=payload.entries.filter(entry=>entry&&!(entry.stage===stage&&replaced.has(`${num(entry.day)}:${num(entry.drop)}`)));
+      for(const drop of drops)for(const player of vals(drop.players)){
+        if(!player.name||!player.team)continue;
+        const alias=canonicalLivePlayer(nameRows,player.name,player.team),team=alias?.team||player.team,name=alias?.canonicalName||player.name;
+        const meta=roster.find(row=>norm(row.team)===norm(team)&&[row.name,row.sourceName,...(Array.isArray(row.aliases)?row.aliases:[])].some(value=>pkey(value)===pkey(name)||pkey(value)===pkey(player.name)));
+        payload.entries.push({stage,day:num(drop.day),round:num(drop.day),drop:num(drop.drop),map:drop.map||'',name:meta?.name||name,sourceName:player.name,team:meta?.team||team,kills:num(player.kills),damage:num(player.damage),assists:num(player.assists),matches:1,mvp:num(player.mvp),survival:num(player.survival),revives:num(player.revives),roleShort:meta?.roleShort||'',role:meta?.role||'',country:meta?.country||'',rookie:Boolean(meta?.rookie)});
+      }
+    }
     return payload;
   }
+
   function cleanRadarStage(stageKey,data){
     const events=flatten(data?.[stageKey]).map(event);if(!events.length)return null;
     const r=rows(stageKey,events,[],Boolean(data?.__cffPreview));
@@ -218,9 +223,10 @@
       const data=await live();if(!data)return response;const payload=await response.clone().json();
       if(url.includes('stages.json'))return responseWith(response,mergeStages(payload,data));
       if(url.includes('player-stats.json'))return responseWith(response,await mergeStats(payload,data));
-      if(url.includes('players.json'))return responseWith(response,mergePlayers(payload,data));
+      if(url.includes('players.json'))return responseWith(response,await mergePlayers(payload,data));
       if(url.includes('radar-summary.json'))return responseWith(response,mergeRadar(payload,data));
       return response;
     }catch(error){console.warn('[CFF] Dados ao vivo indisponíveis:',error);return response}
   };
 })();
+
