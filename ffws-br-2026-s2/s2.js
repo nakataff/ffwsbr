@@ -231,16 +231,18 @@
     if (stageKey === 'final') {
       const direct = Array.isArray(payload.days) ? payload.days : [];
       return direct.flatMap((day, dayIndex) => {
+        if (!day || typeof day !== 'object') return [];
         const matches = Array.isArray(day?.matches) ? day.matches : (Array.isArray(day?.rounds) ? day.rounds : []);
-        if (matches.length) return matches.map((match, index) => ({ ...match, day: number(match.day) || number(day.day) || dayIndex + 1, number: number(match.number) || index + 1 }));
+        if (matches.length) return matches.flatMap((match, index) => match && typeof match === 'object' ? [{ ...match, day: number(match.day) || number(day.day) || dayIndex + 1, number: number(match.number) || number(match.drop) || index + 1 }] : []);
         return Array.isArray(day?.results) ? [{ ...day, day: number(day.day) || dayIndex + 1, number: number(day.number) || dayIndex + 1 }] : [];
       });
     }
-    return Array.isArray(payload.rounds) ? payload.rounds : [];
+    return Array.isArray(payload.rounds) ? payload.rounds.filter(event => event && typeof event === 'object') : [];
   }
 
   function eventResults(event) {
-    return Array.isArray(event?.results) ? event.results : (Array.isArray(event?.rows) ? event.rows : []);
+    const rows = Array.isArray(event?.results) ? event.results : (Array.isArray(event?.rows) ? event.rows : []);
+    return rows.filter(row => row && typeof row === 'object');
   }
 
   function stageFilterValues(stageKey, type) {
@@ -2769,3 +2771,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
+
