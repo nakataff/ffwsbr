@@ -256,16 +256,35 @@
     return payload;
   }
 
+  async function mergeLivePlayerEntries(payload,live,nativeFetch){
+    if(!payload||typeof payload!=='object')return payload;
+    const nameRows=await loadPlayerNameRows(nativeFetch),roster=Array.isArray(payload.players)?payload.players:[];
+    payload.entries=Array.isArray(payload.entries)?payload.entries:[];
+    for(const stage of ['segundaFase','final']){
+      const drops=flattenDrops(live?.[stage]).filter(drop=>values(drop.players).length);
+      const replaced=new Set(drops.map(drop=>`${num(drop.day)}:${num(drop.drop)}`));
+      payload.entries=payload.entries.filter(entry=>entry&&!(entry.stage===stage&&replaced.has(`${num(entry.day)}:${num(entry.drop)}`)));
+      for(const drop of drops)for(const player of values(drop.players)){
+        if(!player.name||!player.team)continue;
+        const alias=canonicalLivePlayer(nameRows,player.name,player.team),team=alias?.team||player.team,name=alias?.canonicalName||player.name;
+        const meta=roster.find(row=>normalize(row.team)===normalize(team)&&[row.name,row.sourceName,...(Array.isArray(row.aliases)?row.aliases:[])].some(value=>playerKey(value)===playerKey(name)||playerKey(value)===playerKey(player.name)));
+        payload.entries.push({stage,day:num(drop.day),round:num(drop.day),drop:num(drop.drop),map:drop.map||'',name:meta?.name||name,sourceName:player.name,team:meta?.team||team,kills:num(player.kills),damage:num(player.damage),assists:num(player.assists),matches:1,mvp:num(player.mvp),survival:num(player.survival),revives:num(player.revives),roleShort:meta?.roleShort||'',role:meta?.role||'',country:meta?.country||'',rookie:Boolean(meta?.rookie)});
+      }
+    }
+    return payload;
+  }
+
   if(!window.__CFF_2026_S2_LIVE_PATCH__){
     window.__CFF_2026_S2_LIVE_PATCH__=true;
     const nativeFetch=window.fetch.bind(window);
     window.fetch=async(...args)=>{
       const response=await nativeFetch(...args);const input=args[0];const requestUrl=typeof input==='string'?input:(input&&input.url)||'';
-      const relevant=/ffws-br-2026-s2\/(?:stages|player-stats|home-results)\.json/i.test(requestUrl);
+      const relevant=/ffws-br-2026-s2\/(?:stages|players|player-stats|home-results)\.json/i.test(requestUrl);
       if(!relevant||!response.ok)return response;
       try{
         const payload=await response.clone().json();const live=await loadLive(nativeFetch);if(!live)return response;
         if(requestUrl.includes('stages.json'))return jsonResponse(response,mergeStages(payload,live));
+        if(requestUrl.includes('players.json'))return jsonResponse(response,await mergeLivePlayerEntries(payload,live,nativeFetch));
         if(requestUrl.includes('player-stats.json'))return jsonResponse(response,await mergePlayerStats(payload,live,nativeFetch));
         if(requestUrl.includes('home-results.json')){
           let stats={players:{}};

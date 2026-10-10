@@ -16,6 +16,7 @@
   const state = {
     loading: null,
     loaded: false,
+    statsInitialStageSet: false,
     playersLoading: null,
     playersLoaded: false,
     teams: [],
@@ -73,6 +74,13 @@
     ]).then(([teams, stages, dates]) => {
       state.teams = Array.isArray(teams?.teams) ? teams.teams : [];
       state.stages = stages || {};
+      if (!state.statsInitialStageSet) {
+        if (stageEvents('final').some(event => eventResults(event).length)) {
+          state.statsFilters.stage = 'final';
+          state.statsStage = 'final';
+        }
+        state.statsInitialStageSet = true;
+      }
       state.dates = dates || { stages: [] };
       state.loaded = true;
       return state;
@@ -1818,7 +1826,7 @@
     const summaryBlock = events.length ? `<section id="anchor-s2-resumo" class="ffws-s2-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Resumo do recorte</h2><p>Visão rápida do recorte atualmente selecionado.</p></div><span class="ffws-s2-badge">${events.length} quedas</span></div>
       <div class="ffws-s2-stats-grid">${[['Quedas disputadas',events.length],['Total de pontos',totalPoints],['Total de abates',totalKills],['Total de booyahs',totalBooyahs],['Média de pontos',totalResults ? (totalPoints / totalResults).toFixed(2) : '0.00'],['Colocação média',avgPosition ? `${avgPosition.toFixed(2)}º` : '—']].map(([label, value]) => `<div class="ffws-s2-stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div></div></section>` : '';
 
-    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-s2-panel ffws-s2-stats-filter-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Escolha claramente entre Fase 1 e Fase 2 antes de comparar os números.</p></div><span class="ffws-s2-badge">${activeStageMeta[1]} • ${events.length} quedas</span></div>
+    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-s2-panel ffws-s2-stats-filter-panel"><div class="ffws-s2-panel-inner"><div class="ffws-s2-panel-head"><div><h2>Filtros do torneio</h2><p>Escolha a etapa, o dia e o mapa.</p></div><button type="button" class="ffws-s2-badge" onclick="refreshFFWSS2Stats()">↻ Atualizar</button><span class="ffws-s2-badge">${activeStageMeta[1]} • ${events.length} quedas</span></div>
       <nav class="ffws-s2-stats-stage-switch" aria-label="Fase das estatísticas">${stageQuickOptions.map(([value,title,sub]) => `<button type="button" class="ffws-s2-stats-stage-btn ${state.statsFilters.stage === value ? 'is-active' : ''} is-${value}" onclick="setFFWSS2StatsStage('${value}')"><strong>${title}</strong><small>${sub}</small></button>`).join('')}</nav>
       <div class="ffws-s2-filters"><label class="ffws-s2-filter"><span>Etapa:</span><select onchange="setFFWSS2StatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('maps','Mapa',options.maps)}</div></div></section>`;
 
@@ -2469,6 +2477,12 @@
   };
   window.setFFWSS2SelectionTab = tab => { state.selectionTab = S2_SELECTION_PHASES[tab] ? tab : 'semanal'; renderSelections(); };
   window.setFFWSS2StatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.maps = []; renderStats(); };
+  window.refreshFFWSS2Stats = () => {
+    if (state.loading || state.playersLoading) return;
+    state.loaded = false;
+    state.playersLoaded = false;
+    activate('ffws-br-s2-stats');
+  };
   window.toggleFFWSS2StatsMulti = key => { document.querySelectorAll('.ffws-s2-multi-menu').forEach(menu => { if (menu.id !== `ffws-s2-stats-multi-${key}`) menu.hidden = true; }); const menu = document.getElementById(`ffws-s2-stats-multi-${key}`); if (menu) menu.hidden = !menu.hidden; };
   window.clearFFWSS2StatsMulti = key => { state.statsFilters[key] = []; renderStats(); };
   window.setFFWSS2StatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; renderStats(); };
@@ -2771,4 +2785,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
+
 
