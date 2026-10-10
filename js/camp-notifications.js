@@ -1,7 +1,7 @@
 import {getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import {teamLogo,shortTeamName} from '/js/camp-notification-content.js?v=20261007-clean-v1';
-import {mountResults} from './camp-results.js?v=20261010-results-v1';
+import {mountResults} from './camp-results.js?v=20261010-match-select-v2';
 let configuration,installPrompt;
 window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;});
 const installed=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;

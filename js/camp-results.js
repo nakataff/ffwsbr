@@ -3,7 +3,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 export function mountResults(root,{catalog,request,app}){
  let stopped=false,seq=0,data,view='drop';const ids=Object.keys(catalog),query=new URLSearchParams(location.search);
  let tournament=ids.includes(query.get('tournament'))?query.get('tournament'):ids[0];
- root.innerHTML='<section class="cff-results"><div class="cff-results-heading"><div><h3>Quedas e classificação</h3><p>Resultados publicados pelo administrador.</p></div><button type="button" class="cff-account-button" data-refresh>Atualizar</button></div><div class="cff-results-selectors"><label>Torneio<select data-tournament>'+ids.map(id=>'<option value="'+esc(id)+'">'+esc(catalog[id].name)+'</option>').join('')+'</select></label><label>Queda<select data-match><option value="">Mais recente</option></select></label></div><div data-results-status role="status"></div><div data-results-body></div></section>';
+ root.innerHTML='<section class="cff-results"><div class="cff-results-heading"><div><h3>Quedas e classificação</h3><p>Escolha uma queda publicada para ver os resultados e o acumulado.</p></div><button type="button" class="cff-account-button" data-refresh>Atualizar</button></div><div class="cff-results-selectors"><label>Torneio<select data-tournament>'+ids.map(id=>'<option value="'+esc(id)+'">'+esc(catalog[id].name)+'</option>').join('')+'</select></label><label>Escolher queda disponível<select data-match aria-label="Escolher queda disponível"><option value="">Carregando quedas…</option></select></label></div><div data-results-status role="status"></div><div data-results-body></div></section>';
  const tournamentSelect=root.querySelector('[data-tournament]'),matchSelect=root.querySelector('[data-match]'),status=root.querySelector('[data-results-status]'),body=root.querySelector('[data-results-body]'),refresh=root.querySelector('[data-refresh]');
  if(tournament)tournamentSelect.value=tournament;
  function summary(s){return (s.status==='official'?'Oficial':'Parcial')+' - Q'+s.drop+' • '+[...s.rows].sort((a,b)=>b.points-a.points).map(r=>shortTeamName(r.team,r.teamId)+': '+r.points+' pts').join(' • ');}
@@ -22,7 +22,8 @@ export function mountResults(root,{catalog,request,app}){
   if(!tournament){status.textContent='Nenhum torneio foi habilitado ainda.';refresh.disabled=true;return;}
   const current=++seq;refresh.disabled=true;status.textContent='Carregando resultados…';
   try{const result=await request('results',{tournamentId:tournament,...(day?{day,drop}:{})},app);if(stopped||current!==seq||!root.isConnected)return;data=result;
-   matchSelect.innerHTML='<option value="">Mais recente</option>'+[...(data.matches||[])].reverse().map(s=>'<option value="'+s.day+':'+s.drop+'">Dia '+s.day+' · Queda '+s.drop+(s.map?' · '+esc(s.map):'')+'</option>').join('');
+   const available=[...(data.matches||[])].reverse(),latest=available[0];matchSelect.disabled=!latest;
+   matchSelect.innerHTML='<option value="">'+(latest?'Mais recente · Dia '+latest.day+' · Queda '+latest.drop:'Nenhuma queda publicada')+'</option>'+available.map(s=>'<option value="'+s.day+':'+s.drop+'">Dia '+s.day+' · Queda '+s.drop+(s.map?' · '+esc(s.map):'')+'</option>').join('');
    if(day&&Array.from(matchSelect.options).some(o=>o.value===day+':'+drop))matchSelect.value=day+':'+drop;
    status.textContent='';render();
   }catch(e){if(!stopped&&current===seq)status.textContent=e.message;}finally{if(!stopped&&current===seq)refresh.disabled=false;}
