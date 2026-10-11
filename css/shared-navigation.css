@@ -1,0 +1,49 @@
+/* Shared sidebar; independent of the older home/public shell rules. */
+#sidebar-panel,#cff-public-sidebar{width:min(320px,90vw);height:100dvh;max-height:100dvh;overflow:hidden}
+.sidebar-header,.cff-public-sidebar-head{min-height:60px;flex-shrink:0}
+.sidebar-close,.cff-public-sidebar-close{appearance:none;width:38px;height:38px;display:grid;place-items:center;border:1px solid #26334b!important;border-radius:9px!important;background:#0d1220!important;color:#fff!important;font-family:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer}
+.cff-unified-menu{padding:12px 12px max(24px,env(safe-area-inset-bottom))!important;overflow:auto!important;min-height:0;overscroll-behavior:contain;font-family:'Segoe UI',Tahoma,sans-serif}
+.cff-menu-label{padding:16px 12px 7px;color:#7f9bb6;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase}
+.cff-unified-menu .cff-menu-link,.cff-unified-menu .cff-menu-refresh{display:flex!important;align-items:center;min-height:44px;width:100%;box-sizing:border-box;padding:11px 12px!important;margin:0;border:0;background:transparent;color:#e5eef7;font-size:13px!important;line-height:1.4;font-weight:700!important;letter-spacing:.3px;text-transform:uppercase;text-decoration:none;border-radius:8px;cursor:pointer;white-space:normal}
+.cff-unified-menu .cff-menu-link::before{display:none!important}
+.cff-unified-menu .cff-menu-link:hover,.cff-unified-menu .cff-menu-link.active{background:rgba(0,200,255,.1);color:#00c8ff}
+.cff-unified-menu .cff-menu-link.active{box-shadow:inset 3px 0 #00c8ff}
+.cff-menu-group{margin:12px 0 0;border-top:1px solid #1c2b3d;padding-top:8px}
+.cff-menu-group summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;padding:8px 12px;box-sizing:border-box;border-radius:8px;color:#00c8ff;font-size:12px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;cursor:pointer}
+.cff-menu-group summary::-webkit-details-marker{display:none}
+.cff-menu-group summary span{font-size:20px;line-height:1;flex-shrink:0}
+.cff-menu-group[open]>summary>span{transform:rotate(180deg)}
+.cff-menu-group>summary:hover{background:rgba(0,200,255,.06)}
+.cff-menu-tournament{margin:5px 0;border:1px solid #1c2b3d;padding:0;border-radius:10px;background:#08121e}
+.cff-menu-tournament>summary{font-size:12px;letter-spacing:.4px;color:#c1d8ee;min-height:48px}
+.cff-menu-tournament[open]>summary{color:#00c8ff;border-bottom:1px solid #1c2b3d;border-radius:9px 9px 0 0}
+.cff-menu-tournament .cff-menu-items{padding:5px 7px 8px}
+.cff-menu-group:not([open])>.cff-menu-items{display:none!important}
+.cff-unified-menu a:focus-visible,.cff-menu-group summary:focus-visible,.cff-shortcuts-toggle:focus-visible,.cff-mobile-shortcuts :focus-visible{outline:2px solid #00c8ff;outline-offset:2px}
+.cff-mobile-brand{display:contents}
+.cff-shortcuts-toggle,.cff-mobile-shortcuts,.cff-mobile-return{display:none}
+@media(max-width:768px){
+  #main-content{padding-top:68px!important}
+  body:has(.cff-public-topbar){padding-top:68px!important}
+  .nav-mobile-bar.cff-mobile-header,.cff-public-topbar.cff-mobile-header{display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;grid-template-rows:1fr!important;align-items:center;height:68px!important;min-height:68px!important;padding:0 12px!important;gap:8px!important;box-sizing:border-box;background:#020509}
+  .cff-mobile-header>.nav-mob-menu-btn,.cff-mobile-header>.cff-public-left{justify-self:start;grid-column:1;grid-row:1}
+  .cff-mobile-header>.nav-mobile-right,.cff-mobile-header>.cff-public-account-host{justify-self:end;grid-column:3;grid-row:1;display:flex;align-items:center;min-width:0;gap:6px}
+  .cff-mobile-brand{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;grid-column:2;grid-row:1}
+  .cff-mobile-brand .nav-mobile-home-btn,.cff-mobile-brand .cff-public-brand{margin:0!important;padding:0!important;background:transparent!important;border:0!important;min-width:0!important;width:auto!important;height:38px!important;display:flex;align-items:center;justify-content:center}
+  .cff-mobile-brand img{height:36px!important;width:auto!important;max-width:75px;object-fit:contain}
+  .cff-shortcuts-toggle{display:grid;place-items:center;min-width:44px;height:24px;border:0;border-radius:5px;background:transparent;color:#00c8ff;font-size:23px;line-height:1;cursor:pointer}
+  .cff-shortcuts-toggle[aria-expanded="true"] span{transform:rotate(180deg)}
+  .cff-search-in-shortcuts,.cff-mobile-header .cff-public-teams,.cff-mobile-header .cff-site-back-btn{display:none!important}
+  .cff-mobile-shortcuts:not([hidden]){display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;position:absolute;top:100%;left:0;right:0;padding:10px 12px;background:#08121e;border-bottom:1px solid #00c8ff;box-shadow:0 12px 20px rgba(0,0,0,.35);box-sizing:border-box}
+  .cff-mobile-shortcuts a,.cff-mobile-shortcuts button{display:flex;align-items:center;justify-content:center;min-height:44px;padding:6px 2px;border:1px solid #25334a;border-radius:8px;background:transparent;color:#d5e5f4;text-decoration:none;font:800 12px/1.2 'Segoe UI',sans-serif;letter-spacing:.4px;text-transform:uppercase;cursor:pointer}
+  .cff-mobile-shortcuts .active{background:rgba(0,200,255,.12);border-color:#00c8ff;color:#00c8ff}
+  .cff-mobile-shortcuts button{grid-column:1/-1}
+  .cff-mobile-header .cff-public-search{display:none!important}
+  .cff-mobile-header.cff-mobile-search-open .cff-public-search{display:block!important;position:fixed;left:10px;right:10px;top:76px;width:auto!important;padding:8px;background:#08121e;border-radius:10px;box-shadow:0 10px 25px #0008;z-index:1100}
+  .nav-mobile-search-bar.active{padding:10px!important;background:#08121e}
+  .cff-mobile-header .cff-account-access{max-width:84px!important;min-width:36px!important;min-height:36px!important;padding:0 6px!important}
+  .cff-mobile-header .cff-account-access>span{max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cff-mobile-header .cff-account-access:has(img)>span{display:none!important}
+  .cff-mobile-return:not([hidden]){display:flex;align-items:center;padding:8px 16px 0;min-height:36px;box-sizing:border-box}
+  .cff-mobile-return button{border:0;background:transparent;color:#8fa9c4;min-height:36px;padding:0;font:700 12px 'Segoe UI',sans-serif;cursor:pointer}
+}
