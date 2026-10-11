@@ -693,3 +693,12 @@ body.cff-stats-route #ffws-br-s2-stats.page,body.cff-stats-route #registro-detal
 @media(max-width:620px){.ffws-s2-compare-table th,.ffws-s2-compare-table td{width:150px;min-width:150px;padding:10px 7px}.ffws-s2-compare-table th:first-child{width:105px;min-width:105px;font-size:.6rem}.ffws-s2-compare-table thead th{padding:5px}.ffws-s2-compare-table .ffws-s2-player-compare-hero{min-height:220px}.ffws-s2-compare-table .ffws-s2-compare-photo{height:145px}}
 
 .ffws-s2-player-compare-hero>.cff-compare-favorites{position:absolute;inset:9px 9px auto auto;display:flex;gap:5px;padding:0;background:none;grid-template-columns:none}.cff-compare-favorites button{width:28px;height:28px;padding:0;border:1px solid #39627c;border-radius:8px;background:#0b172ae8;color:#97dfff;font-size:18px;cursor:pointer}.cff-compare-favorites button:hover{color:#ffc226}.cff-account-save-compare{margin-left:auto}@media(max-width:620px){.cff-account-save-compare{margin-left:0}}
+
+
+/* Navegação entre as etapas da WB 2026 S2. */
+.ffws-s2-phase-navigation{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 16px}
+.ffws-s2-phase-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 15px;box-sizing:border-box;border:1px solid rgba(0,200,255,.3);border-radius:12px;background:rgba(0,200,255,.08);color:#dcecff;text-decoration:none;font-size:.88rem;font-weight:850;line-height:1.35}
+.ffws-s2-phase-link.is-next{margin-left:auto}
+.ffws-s2-phase-link:hover{background:rgba(0,200,255,.16);border-color:#00c8ff;color:#fff}
+.ffws-s2-phase-link:focus-visible{outline:2px solid #00c8ff;outline-offset:3px}
+@media(max-width:480px){.ffws-s2-phase-navigation{gap:8px}.ffws-s2-phase-link{padding:9px 11px;font-size:.8rem}}

@@ -107,6 +107,22 @@
     </section>`;
   }
 
+  function stageNavigation(stageKey) {
+    const stages = [
+      ['classificatoria', 'Classificatória', '/ffws-br-s2/classificatoria'],
+      ['segundaFase', 'Segunda Fase', '/ffws-br-s2/segunda-fase'],
+      ['final', 'Final', '/ffws-br-s2/final']
+    ];
+    const index = stages.findIndex(stage => stage[0] === stageKey);
+    if (index < 0) return '';
+    const link = (stage, direction) => {
+      const page = stage[0] === 'segundaFase' ? 'segunda-fase' : stage[0];
+      const text = direction === 'prev' ? `← ${stage[1]}` : `${stage[1]} →`;
+      return `<a class="ffws-s2-phase-link is-${direction}" href="${stage[2]}" aria-label="${direction === 'prev' ? 'Voltar para' : 'Ir para'} ${stage[1]}" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-br-s2-${page}');return false;}">${text}</a>`;
+    };
+    return `<nav class="ffws-s2-phase-navigation" aria-label="Navegar entre fases">${index > 0 ? link(stages[index - 1], 'prev') : ''}${index < stages.length - 1 ? link(stages[index + 1], 'next') : ''}</nav>`;
+  }
+
   function stageFormat(stageKey) {
     return state.stages?.format?.[stageKey] || {};
   }
@@ -484,6 +500,8 @@
       }
     });
 
+    root.insertAdjacentHTML('afterbegin', stageNavigation('classificatoria'));
+
     // No S2, os três filtros da classificatória ficam em uma única sequência:
     // Rodada > Queda > Mapa. A queda só é habilitada após escolher uma rodada.
     const filterRow = root.querySelector('.ffws-season-filters');
@@ -507,7 +525,7 @@
     const root = document.getElementById(rootId);
     if (!root) return;
     const rows = filterStageRows(stageKey);
-    root.innerHTML = `<div class="ffws-s2-shell">${hero(title, subtitle)}${formatPanel(stageKey)}
+    root.innerHTML = `<div class="ffws-s2-shell">${hero(title, subtitle)}${stageNavigation(stageKey)}${formatPanel(stageKey)}
       <section class="ffws-s2-panel"><div class="ffws-s2-panel-inner">
         <div class="ffws-s2-panel-head"><div><h2>Classificação</h2><p>Resultados atualizados por rodada, mapa e queda.</p></div><span class="ffws-s2-badge">${rows.length} equipes</span></div>
         ${stageFilters(stageKey)}${stageTable(stageKey)}
@@ -2785,5 +2803,6 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
+
 
 
