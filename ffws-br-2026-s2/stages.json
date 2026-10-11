@@ -1,6 +1,6 @@
 {
   "tournament": "WB 2026 S2",
-  "updatedAt": "2026-09-13",
+  "updatedAt": "2026-10-11",
   "format": {
     "classificatoria": {
       "label": "Classificatória",
@@ -28,7 +28,7 @@
     }
   },
   "classificatoria": {
-    "finished": false,
+    "finished": true,
     "rounds": [
       {
         "round": 1,
@@ -8897,13 +8897,13 @@
     ]
   },
   "segundaFase": {
-    "finished": false,
+    "finished": true,
     "bonus": [],
     "rounds": [],
     "rows": []
   },
   "final": {
-    "finished": false,
+    "finished": true,
     "worldQualifiedFromStage2": [
       "LOUD SNICKERS",
       "LOS"
@@ -9030,6 +9030,14 @@
         "matches": 0,
         "worldQualified": false
       }
+    ],
+    "champion": "FLUXO W7M",
+    "confirmedChampion": "FLUXO W7M",
+    "worldQualifiedTeams": [
+      "FLUXO W7M",
+      "LOUD SNICKERS",
+      "LOS"
     ]
-  }
+  },
+  "finished": true
 }

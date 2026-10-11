@@ -3,7 +3,7 @@
 
   const CONFIG = window.FFWS_BR_2026_S2_CONFIG || {
     teamsUrl: 'ffws-br-2026-s2/teams.json',
-    stagesUrl: 'ffws-br-2026-s2/stages.json',
+    stagesUrl: 'ffws-br-2026-s2/stages.json?v=20261011-season-closed-v1',
     playersUrl: 'ffws-br-2026-s2/players.json',
     datesUrl: 'ffws-br-2026-s2/dates.json'
   };
@@ -31,7 +31,7 @@
     stageOpenMulti: '',
     selectionWeek: '',
     selectionWeekStage: 'segundaFase',
-    selectionTab: 'segundaFase',
+    selectionTab: 'torneio',
     mvpPage: 0,
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
     statsFilters: { stage: 'segundaFase', days: [], maps: [] },
@@ -1011,6 +1011,7 @@
     } else if (!finalUnlocked) {
       content = selectionLockedHtml(phaseKey);
     } else {
+      notice = `<div class="season-selection-disclaimer"><strong>${phaseKey === 'final' ? 'FINAL ENCERRADA' : 'TORNEIO ENCERRADO'}</strong></div>`;
       const targetStage = phaseKey === 'final' ? 'FINAL' : '';
       const phaseEntries = allPlayerEntries().filter(entry => !targetStage || normalize(entry?.stage || entry?.etapa) === targetStage);
       const aggregate = new Map();
@@ -2803,6 +2804,7 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
+
 
 
 

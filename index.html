@@ -52,7 +52,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <!-- ADSENSE: carregado após a home ficar interativa -->
 <script defer src="js/config.min.js?v=20260629-laff-json-v1"></script>
 <!-- Limpa service workers/caches antigos para evitar site travado no mobile -->
-<script defer src="js/service-worker-register.min.js?v=20261010-final-stats-v8"></script>
+<script defer src="js/service-worker-register.min.js?v=20261011-season-closed-v9"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central Free Fire | Estatísticas Competitivas de Free Fire</title>
@@ -535,6 +535,20 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 }
 </style>
 
+<style>
+#home .home-s2-champion-banner{display:grid;grid-template-columns:112px minmax(0,1fr);gap:22px;align-items:center;padding:28px;margin-bottom:20px;border:1px solid rgba(255,196,0,.4);border-radius:16px;background:radial-gradient(ellipse at 100% 0,rgba(242,60,242,.12),transparent 60%),linear-gradient(135deg,#171820,#101115)}
+#home .home-s2-champion-logo{width:112px;height:112px;object-fit:contain}
+#home .home-s2-champion-copy h2{margin:8px 0;color:#ffc400;font-size:clamp(1.6rem,3vw,2.45rem);font-weight:950;line-height:1.12}
+#home .home-s2-champion-copy p{color:#f3f0ea;margin:12px 0;line-height:1.5;font-size:.95rem}
+#home .home-s2-champion-results{display:inline-flex;align-items:center;min-height:44px;color:#9bdcff;text-decoration:none;font-weight:800;font-size:.85rem}
+#home .home-s2-champion-results:hover,#home .home-s2-champion-results:focus-visible{text-decoration:underline}
+#home .home-s2-world-confirmed{grid-column:1/-1;padding-top:18px;border-top:1px solid rgba(255,196,0,.18)}
+#home .home-s2-world-confirmed>strong{font-size:.75rem;letter-spacing:.08em;color:#ffc400}
+#home .home-s2-world-confirmed>div{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+#home .home-s2-world-confirmed span{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(255,196,0,.28);border-radius:9px;padding:8px 12px;color:#f3f0ea;font-size:.8rem;font-weight:900}
+#home .home-s2-world-confirmed img{object-fit:contain}
+@media(max-width:600px){#home .home-s2-champion-banner{grid-template-columns:64px minmax(0,1fr);gap:14px;padding:18px}#home .home-s2-champion-logo{width:64px;height:64px}#home .home-s2-champion-copy .home-s2-broadcast-kicker{font-size:.64rem;line-height:1.5}#home .home-s2-champion-copy h2{font-size:1.45rem}#home .home-s2-champion-copy p{font-size:.82rem}#home .home-s2-world-confirmed span{gap:5px;padding:7px 8px;font-size:.7rem}#home .home-s2-world-confirmed>div{gap:7px}}
+</style>
 </head>
 <body>
 
@@ -808,24 +822,20 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         </aside>
 
         <div class="home-center-column">
-    <section class="home-s2-broadcast" id="home-s2-broadcast" aria-labelledby="home-s2-broadcast-title">
-        <div class="home-s2-broadcast-top">
-            <div class="home-s2-broadcast-copy">
-                <div class="home-s2-broadcast-kicker" id="home-s2-broadcast-kicker">FFWS BRASIL 2026 S2</div>
-                <h2 class="home-s2-broadcast-title" id="home-s2-broadcast-title">PRÓXIMA TRANSMISSÃO</h2>
-                <time class="home-s2-broadcast-date" id="home-s2-broadcast-date">Carregando próxima rodada...</time>
+    <section class="home-s2-broadcast" id="home-s2-broadcast" data-season-finished="true" aria-labelledby="home-s2-broadcast-title">
+        <div class="home-s2-champion-banner">
+            <img class="home-s2-champion-logo" src="home-assets/teams/fluxo-w7m.webp" width="112" height="112" alt="Fluxo W7M">
+            <div class="home-s2-champion-copy">
+                <div class="home-s2-broadcast-kicker">FFWS BRASIL 2026 • SPLIT 2 ENCERRADO</div>
+                <h2 id="home-s2-broadcast-title">FLUXO W7M CAMPEÃO</h2>
+                <p>O Fluxo conquista o título e se junta a LOUD e LOS no Mundial.</p>
+                <a class="home-s2-champion-results" href="/ffws-br-s2/final">Ver resultado da Grande Final →</a>
             </div>
-            <div class="home-s2-broadcast-side">
-                <div class="home-s2-broadcast-clock" id="home-s2-broadcast-clock" role="timer" aria-live="polite">
-                    <span><strong id="home-s2-days">00</strong><small>Dias</small></span>
-                    <span><strong id="home-s2-hours">00</strong><small>Horas</small></span>
-                    <span><strong id="home-s2-minutes">00</strong><small>Min</small></span>
-                </div>
-                <div class="home-s2-live-pill" id="home-s2-live-pill" hidden>AO VIVO</div>
-                <a class="home-s2-watch" id="home-s2-watch" href="https://www.youtube.com/@ffesportsbr" target="_blank" rel="noopener noreferrer">VER CANAL →</a>
+            <div class="home-s2-world-confirmed" aria-label="Classificados para o Mundial">
+                <strong>RUMO AO MUNDIAL</strong>
+                <div><span><img src="home-assets/teams/fluxo-w7m.webp" alt="" width="28" height="28">FLUXO</span><span><img src="home-assets/teams/loud-snickers.webp" alt="" width="28" height="28">LOUD</span><span><img src="home-assets/teams/los.webp" alt="" width="28" height="28">LOS</span></div>
             </div>
         </div>
-        <div class="home-s2-official-video" id="home-s2-official-video" hidden aria-label="Transmissão oficial"></div>
         <div class="home-s2-participants-head">
             <div>
                 <strong>14 TIMES PARTICIPANTES</strong>
@@ -2575,10 +2585,10 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20260922-canonical-photos-v2"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261011-phase-navigation-v35"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261011-season-closed-v36"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20260922-canonical-search-v32"></script>
-<script defer src="js/home-ffws-s2.min.js?v=20261010-final-world-v35"></script>
+<script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>
 <script defer src="js/home-news-lives.min.js?v=20260920-alias-cache-v22"></script>
 <script defer src="js/home-live-widget.min.js?v=20260930-live-modal-v8"></script>
 <script defer src="js/news-admin-provider.js?v=20260903-home-images-v36"></script>
@@ -2586,7 +2596,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/charts-market.min.js?v=20260919-mercado-photos-v3"></script>
 <script type="module" src="js/firebase-votes.min.js?v=20260917-restore-mercado-v1"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
-<script defer src="js/home-current-results.min.js?v=20261010-final-world-v30"></script>
+<script defer src="js/home-current-results.min.js?v=20261011-season-closed-v31"></script>
 <script defer src="js/home-year-2026.min.js?v=20261004-year-headings-v15"></script>
 </main>
 
@@ -2597,6 +2607,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/notas-cff-info.js?v=20261008-info-v1"></script>
 </body>
 </html>
+
 
 
 

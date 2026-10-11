@@ -130,7 +130,7 @@
       const fin=payload.final||(payload.final={finished:false,days:[],rows:[]}),byDay=new Map();
       finalEvents.forEach(e=>{if(!byDay.has(e.day))byDay.set(e.day,[]);const {round,...match}=e;byDay.get(e.day).push(match)});
       fin.days=[...byDay].sort((a,b)=>a[0]-b[0]).map(([day,matches])=>({day,matches:matches.sort((a,b)=>num(a.drop)-num(b.drop))}));
-      let r=rows('final',finalEvents,fin.rows,preview);const champ=detectChampion(finalEvents);
+      let r=rows('final',finalEvents,fin.rows,preview);const champ=fin.confirmedChampion||detectChampion(finalEvents);
       if(champ){const w=r.find(x=>norm(x.team)===norm(champ));r=r.filter(x=>x!==w);if(w)r.unshift(w);r.forEach((x,i)=>x.position=i+1);fin.champion=champ;fin.finished=true}else fin.finished=false;
       fin.rows=r;fin.championRushPoint=160;fin.matchesPlayed=finalEvents.length;fin.scheduledMaxMatches=null;fin.unlimitedDay2=true;
     }
@@ -229,4 +229,5 @@
     }catch(error){console.warn('[CFF] Dados ao vivo indisponíveis:',error);return response}
   };
 })();
+
 
