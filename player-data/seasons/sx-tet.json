@@ -61,7 +61,16 @@
         "team": "AXS FUSION",
         "rankKills": 75,
         "rankDamage": 76,
-        "rankAssists": 79
+        "rankAssists": 79,
+        "stages": {
+          "classificatoria": {
+            "kills": 20,
+            "damage": 13413,
+            "assists": 13,
+            "matches": 23,
+            "mvp": 0
+          }
+        }
       },
       "laff": {
         "key": "laff-2026-s1",
@@ -98,7 +107,23 @@
         "team": "VIRTUS PRO",
         "rankKills": 17,
         "rankDamage": 5,
-        "rankAssists": 34
+        "rankAssists": 34,
+        "stages": {
+          "classificatoria": {
+            "kills": 172,
+            "damage": 156468,
+            "assists": 152,
+            "matches": 88,
+            "mvp": 5
+          },
+          "final": {
+            "kills": 4,
+            "damage": 4807,
+            "assists": 5,
+            "matches": 6,
+            "mvp": 0
+          }
+        }
       }
     }
   }

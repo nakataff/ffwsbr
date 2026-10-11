@@ -15,7 +15,23 @@
         "team": "RUSH GAMING",
         "rankKills": 27,
         "rankDamage": 32,
-        "rankAssists": 24
+        "rankAssists": 24,
+        "stages": {
+          "classificatoria": {
+            "kills": 117,
+            "damage": 77024,
+            "assists": 151,
+            "matches": 83,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 23,
+            "damage": 17778,
+            "assists": 33,
+            "matches": 14,
+            "mvp": 1
+          }
+        }
       }
     },
     "guimerlq": {
@@ -31,7 +47,23 @@
         "team": "RUSH GAMING",
         "rankKills": 39,
         "rankDamage": 53,
-        "rankAssists": 46
+        "rankAssists": 46,
+        "stages": {
+          "classificatoria": {
+            "kills": 92,
+            "damage": 52360,
+            "assists": 105,
+            "matches": 67,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 32,
+            "damage": 13564,
+            "assists": 27,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "ericking": {
@@ -47,7 +79,16 @@
         "team": "LOOPS",
         "rankKills": 54,
         "rankDamage": 35,
-        "rankAssists": 56
+        "rankAssists": 56,
+        "stages": {
+          "classificatoria": {
+            "kills": 86,
+            "damage": 89276,
+            "assists": 104,
+            "matches": 80,
+            "mvp": 0
+          }
+        }
       }
     },
     "prozin": {
@@ -63,7 +104,23 @@
         "team": "RUSH GAMING",
         "rankKills": 42,
         "rankDamage": 41,
-        "rankAssists": 32
+        "rankAssists": 32,
+        "stages": {
+          "classificatoria": {
+            "kills": 106,
+            "damage": 69385,
+            "assists": 119,
+            "matches": 72,
+            "mvp": 2
+          },
+          "final": {
+            "kills": 11,
+            "damage": 13840,
+            "assists": 40,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "mitinx": {
@@ -79,7 +136,23 @@
         "team": "RUSH GAMING",
         "rankKills": 41,
         "rankDamage": 51,
-        "rankAssists": 58
+        "rankAssists": 58,
+        "stages": {
+          "classificatoria": {
+            "kills": 108,
+            "damage": 63428,
+            "assists": 82,
+            "matches": 61,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 9,
+            "damage": 4589,
+            "assists": 9,
+            "matches": 6,
+            "mvp": 0
+          }
+        }
       }
     }
   }

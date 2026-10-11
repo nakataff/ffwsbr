@@ -15,7 +15,23 @@
         "team": "AXS FUSION",
         "rankKills": 48,
         "rankDamage": 59,
-        "rankAssists": 37
+        "rankAssists": 37,
+        "stages": {
+          "classificatoria": {
+            "kills": 91,
+            "damage": 43182,
+            "assists": 139,
+            "matches": 80,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 7,
+            "damage": 6601,
+            "assists": 9,
+            "matches": 14,
+            "mvp": 1
+          }
+        }
       }
     },
     "destroi7": {
@@ -31,7 +47,16 @@
         "team": "CIVIS",
         "rankKills": 65,
         "rankDamage": 57,
-        "rankAssists": 51
+        "rankAssists": 51,
+        "stages": {
+          "classificatoria": {
+            "kills": 58,
+            "damage": 55233,
+            "assists": 110,
+            "matches": 86,
+            "mvp": 0
+          }
+        }
       }
     },
     "neyawp": {
@@ -47,7 +72,23 @@
         "team": "ALPHA7",
         "rankKills": 49,
         "rankDamage": 48,
-        "rankAssists": 60
+        "rankAssists": 60,
+        "stages": {
+          "classificatoria": {
+            "kills": 91,
+            "damage": 67192,
+            "assists": 77,
+            "matches": 69,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 6,
+            "damage": 7150,
+            "assists": 5,
+            "matches": 10,
+            "mvp": 0
+          }
+        }
       }
     }
   }

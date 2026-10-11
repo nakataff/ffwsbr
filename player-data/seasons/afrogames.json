@@ -123,7 +123,16 @@
         "team": "TEAM SOLID",
         "rankKills": 61,
         "rankDamage": 63,
-        "rankAssists": 41
+        "rankAssists": 41,
+        "stages": {
+          "classificatoria": {
+            "kills": 69,
+            "damage": 35290,
+            "assists": 141,
+            "matches": 45,
+            "mvp": 0
+          }
+        }
       }
     }
   }

@@ -15,7 +15,23 @@
         "team": "LOS",
         "rankKills": 4,
         "rankDamage": 12,
-        "rankAssists": 3
+        "rankAssists": 3,
+        "stages": {
+          "classificatoria": {
+            "kills": 205,
+            "damage": 125259,
+            "assists": 241,
+            "matches": 90,
+            "mvp": 7
+          },
+          "final": {
+            "kills": 25,
+            "damage": 14448,
+            "assists": 28,
+            "matches": 14,
+            "mvp": 1
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -54,7 +70,23 @@
         "team": "LOS",
         "rankKills": 55,
         "rankDamage": 54,
-        "rankAssists": 9
+        "rankAssists": 9,
+        "stages": {
+          "classificatoria": {
+            "kills": 74,
+            "damage": 52062,
+            "assists": 216,
+            "matches": 79,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 8,
+            "damage": 8775,
+            "assists": 33,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -93,7 +125,23 @@
         "team": "LOS",
         "rankKills": 5,
         "rankDamage": 15,
-        "rankAssists": 7
+        "rankAssists": 7,
+        "stages": {
+          "classificatoria": {
+            "kills": 191,
+            "damage": 111801,
+            "assists": 216,
+            "matches": 90,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 39,
+            "damage": 16733,
+            "assists": 37,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -132,7 +180,23 @@
         "team": "LOS",
         "rankKills": 2,
         "rankDamage": 2,
-        "rankAssists": 27
+        "rankAssists": 27,
+        "stages": {
+          "classificatoria": {
+            "kills": 251,
+            "damage": 176370,
+            "assists": 158,
+            "matches": 90,
+            "mvp": 11
+          },
+          "final": {
+            "kills": 32,
+            "damage": 23330,
+            "assists": 22,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -171,7 +235,16 @@
         "team": "LOS",
         "rankKills": 78,
         "rankDamage": 79,
-        "rankAssists": 78
+        "rankAssists": 78,
+        "stages": {
+          "classificatoria": {
+            "kills": 12,
+            "damage": 6166,
+            "assists": 15,
+            "matches": 11,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",

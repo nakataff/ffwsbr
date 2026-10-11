@@ -15,7 +15,23 @@
         "team": "TEAM SOLID",
         "rankKills": 18,
         "rankDamage": 8,
-        "rankAssists": 28
+        "rankAssists": 28,
+        "stages": {
+          "classificatoria": {
+            "kills": 149,
+            "damage": 133306,
+            "assists": 149,
+            "matches": 90,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 25,
+            "damage": 18430,
+            "assists": 23,
+            "matches": 14,
+            "mvp": 1
+          }
+        }
       }
     },
     "vitinxp": {
@@ -31,7 +47,23 @@
         "team": "TEAM SOLID",
         "rankKills": 21,
         "rankDamage": 22,
-        "rankAssists": 8
+        "rankAssists": 8,
+        "stages": {
+          "classificatoria": {
+            "kills": 136,
+            "damage": 96963,
+            "assists": 225,
+            "matches": 88,
+            "mvp": 3
+          },
+          "final": {
+            "kills": 19,
+            "damage": 13541,
+            "assists": 27,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "pitbull": {
@@ -47,7 +79,23 @@
         "team": "TEAM SOLID",
         "rankKills": 7,
         "rankDamage": 17,
-        "rankAssists": 17
+        "rankAssists": 17,
+        "stages": {
+          "classificatoria": {
+            "kills": 191,
+            "damage": 105579,
+            "assists": 159,
+            "matches": 90,
+            "mvp": 3
+          },
+          "final": {
+            "kills": 22,
+            "damage": 15616,
+            "assists": 31,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "byte333": {
@@ -63,7 +111,23 @@
         "team": "TEAM SOLID",
         "rankKills": 63,
         "rankDamage": 66,
-        "rankAssists": 48
+        "rankAssists": 48,
+        "stages": {
+          "classificatoria": {
+            "kills": 52,
+            "damage": 26887,
+            "assists": 103,
+            "matches": 47,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 12,
+            "damage": 7408,
+            "assists": 25,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     }
   }

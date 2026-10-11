@@ -15,7 +15,23 @@
         "team": "INFLUENCE RAGE",
         "rankKills": 36,
         "rankDamage": 27,
-        "rankAssists": 18
+        "rankAssists": 18,
+        "stages": {
+          "classificatoria": {
+            "kills": 121,
+            "damage": 93375,
+            "assists": 167,
+            "matches": 90,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 9,
+            "damage": 8957,
+            "assists": 22,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "igor7": {
@@ -31,7 +47,23 @@
         "team": "INFLUENCE RAGE",
         "rankKills": 20,
         "rankDamage": 13,
-        "rankAssists": 49
+        "rankAssists": 49,
+        "stages": {
+          "classificatoria": {
+            "kills": 143,
+            "damage": 123324,
+            "assists": 114,
+            "matches": 90,
+            "mvp": 3
+          },
+          "final": {
+            "kills": 18,
+            "damage": 15609,
+            "assists": 13,
+            "matches": 14,
+            "mvp": 1
+          }
+        }
       }
     },
     "nepoign": {
@@ -47,7 +79,16 @@
         "team": "ANGELS OUTPLAY",
         "rankKills": 45,
         "rankDamage": 49,
-        "rankAssists": 68
+        "rankAssists": 68,
+        "stages": {
+          "classificatoria": {
+            "kills": 111,
+            "damage": 74139,
+            "assists": 54,
+            "matches": 83,
+            "mvp": 0
+          }
+        }
       },
       "laff": {
         "key": "laff-2026-s1",
@@ -84,7 +125,23 @@
         "team": "E1 SPORTS",
         "rankKills": 33,
         "rankDamage": 28,
-        "rankAssists": 19
+        "rankAssists": 19,
+        "stages": {
+          "classificatoria": {
+            "kills": 120,
+            "damage": 87799,
+            "assists": 163,
+            "matches": 90,
+            "mvp": 2
+          },
+          "final": {
+            "kills": 14,
+            "damage": 13084,
+            "assists": 26,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "saskito": {
@@ -100,7 +157,16 @@
         "team": "INFLUENCE RAGE",
         "rankKills": 81,
         "rankDamage": 82,
-        "rankAssists": 81
+        "rankAssists": 81,
+        "stages": {
+          "classificatoria": {
+            "kills": 4,
+            "damage": 963,
+            "assists": 2,
+            "matches": 1,
+            "mvp": 0
+          }
+        }
       }
     }
   }

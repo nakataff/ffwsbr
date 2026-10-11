@@ -15,7 +15,23 @@
         "team": "FLUXO W7M",
         "rankKills": 22,
         "rankDamage": 16,
-        "rankAssists": 1
+        "rankAssists": 1,
+        "stages": {
+          "classificatoria": {
+            "kills": 141,
+            "damage": 108055,
+            "assists": 284,
+            "matches": 90,
+            "mvp": 2
+          },
+          "final": {
+            "kills": 13,
+            "damage": 13614,
+            "assists": 34,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -54,7 +70,23 @@
         "team": "FLUXO W7M",
         "rankKills": 12,
         "rankDamage": 19,
-        "rankAssists": 2
+        "rankAssists": 2,
+        "stages": {
+          "classificatoria": {
+            "kills": 166,
+            "damage": 105052,
+            "assists": 270,
+            "matches": 90,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 23,
+            "damage": 13397,
+            "assists": 32,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -93,7 +125,23 @@
         "team": "FLUXO W7M",
         "rankKills": 13,
         "rankDamage": 21,
-        "rankAssists": 5
+        "rankAssists": 5,
+        "stages": {
+          "classificatoria": {
+            "kills": 162,
+            "damage": 98692,
+            "assists": 241,
+            "matches": 90,
+            "mvp": 3
+          },
+          "final": {
+            "kills": 23,
+            "damage": 13197,
+            "assists": 21,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -132,7 +180,23 @@
         "team": "FLUXO W7M",
         "rankKills": 1,
         "rankDamage": 1,
-        "rankAssists": 36
+        "rankAssists": 36,
+        "stages": {
+          "classificatoria": {
+            "kills": 305,
+            "damage": 195537,
+            "assists": 133,
+            "matches": 87,
+            "mvp": 18
+          },
+          "final": {
+            "kills": 25,
+            "damage": 21873,
+            "assists": 21,
+            "matches": 14,
+            "mvp": 2
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -171,7 +235,16 @@
         "team": "FLUXO W7M",
         "rankKills": 82,
         "rankDamage": 83,
-        "rankAssists": 83
+        "rankAssists": 83,
+        "stages": {
+          "classificatoria": {
+            "kills": 1,
+            "damage": 618,
+            "assists": 0,
+            "matches": 3,
+            "mvp": 0
+          }
+        }
       }
     }
   }

@@ -15,7 +15,23 @@
         "team": "LOUD SNICKERS",
         "rankKills": 6,
         "rankDamage": 4,
-        "rankAssists": 4
+        "rankAssists": 4,
+        "stages": {
+          "classificatoria": {
+            "kills": 184,
+            "damage": 139142,
+            "assists": 231,
+            "matches": 90,
+            "mvp": 6
+          },
+          "final": {
+            "kills": 30,
+            "damage": 26563,
+            "assists": 34,
+            "matches": 14,
+            "mvp": 2
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -54,7 +70,23 @@
         "team": "LOUD SNICKERS",
         "rankKills": 11,
         "rankDamage": 20,
-        "rankAssists": 12
+        "rankAssists": 12,
+        "stages": {
+          "classificatoria": {
+            "kills": 162,
+            "damage": 100358,
+            "assists": 204,
+            "matches": 87,
+            "mvp": 3
+          },
+          "final": {
+            "kills": 29,
+            "damage": 15531,
+            "assists": 29,
+            "matches": 14,
+            "mvp": 2
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -93,7 +125,23 @@
         "team": "LOUD SNICKERS",
         "rankKills": 34,
         "rankDamage": 38,
-        "rankAssists": 21
+        "rankAssists": 21,
+        "stages": {
+          "classificatoria": {
+            "kills": 108,
+            "damage": 68806,
+            "assists": 148,
+            "matches": 59,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 23,
+            "damage": 17232,
+            "assists": 40,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -132,7 +180,23 @@
         "team": "LOUD SNICKERS",
         "rankKills": 24,
         "rankDamage": 7,
-        "rankAssists": 26
+        "rankAssists": 26,
+        "stages": {
+          "classificatoria": {
+            "kills": 135,
+            "damage": 134808,
+            "assists": 155,
+            "matches": 81,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 18,
+            "damage": 18854,
+            "assists": 25,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       },
       "ewc": {
         "name": "EWC 2026",
@@ -171,7 +235,16 @@
         "team": "LOUD SNICKERS",
         "rankKills": 66,
         "rankDamage": 64,
-        "rankAssists": 45
+        "rankAssists": 45,
+        "stages": {
+          "classificatoria": {
+            "kills": 57,
+            "damage": 35265,
+            "assists": 135,
+            "matches": 43,
+            "mvp": 0
+          }
+        }
       }
     }
   }

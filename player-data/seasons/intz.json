@@ -15,7 +15,23 @@
         "team": "INTZ",
         "rankKills": 9,
         "rankDamage": 18,
-        "rankAssists": 10
+        "rankAssists": 10,
+        "stages": {
+          "classificatoria": {
+            "kills": 178,
+            "damage": 109610,
+            "assists": 222,
+            "matches": 90,
+            "mvp": 5
+          },
+          "final": {
+            "kills": 16,
+            "damage": 10859,
+            "assists": 26,
+            "matches": 14,
+            "mvp": 1
+          }
+        }
       }
     },
     "joao7": {
@@ -31,7 +47,23 @@
         "team": "INTZ",
         "rankKills": 19,
         "rankDamage": 31,
-        "rankAssists": 11
+        "rankAssists": 11,
+        "stages": {
+          "classificatoria": {
+            "kills": 146,
+            "damage": 84579,
+            "assists": 208,
+            "matches": 90,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 22,
+            "damage": 12154,
+            "assists": 26,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "honeyzl": {
@@ -47,7 +79,23 @@
         "team": "INTZ",
         "rankKills": 14,
         "rankDamage": 10,
-        "rankAssists": 38
+        "rankAssists": 38,
+        "stages": {
+          "classificatoria": {
+            "kills": 162,
+            "damage": 127693,
+            "assists": 131,
+            "matches": 87,
+            "mvp": 3
+          },
+          "final": {
+            "kills": 21,
+            "damage": 13736,
+            "assists": 16,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     },
     "kauaxp": {
@@ -63,7 +111,23 @@
         "team": "INTZ",
         "rankKills": 32,
         "rankDamage": 40,
-        "rankAssists": 16
+        "rankAssists": 16,
+        "stages": {
+          "classificatoria": {
+            "kills": 123,
+            "damage": 76235,
+            "assists": 168,
+            "matches": 90,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 12,
+            "damage": 7806,
+            "assists": 22,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
       }
     }
   }
