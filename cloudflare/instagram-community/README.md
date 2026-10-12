@@ -47,14 +47,16 @@ publish races, monthly snapshots, persistent settlement locking, payouts and pag
 
 The `Deploy Instagram Community (Cloudflare)` GitHub Actions workflow runs on changes
 to this directory. It uses the existing repository secrets `CLOUDFLARE_API_TOKEN` and
-`CLOUDFLARE_ACCOUNT_ID`. The token needs access to this account's Workers scripts and D1.
+`CLOUDFLARE_ACCOUNT_ID`. The token needs access to this account's Workers scripts.
+The existing Worker DB binding initializes its own additive/idempotent schema on the
+first API request; a separate D1 administration permission is not required for deployment.
 
-The workflow tests first, applies the additive/idempotent
-`migrations/2026-10-12-shared-cache.sql` migration, publishes the existing Worker and
-checks `/health` for `20261012-d1-savings-v1`, then warms `/api/ranking?period=week`.
+The workflow tests first, publishes the existing Worker, checks `/health` for
+`20261012-d1-savings-v1`, then initializes the schema and warms `/api/ranking?period=week`.
+`migrations/2026-10-12-shared-cache.sql` contains the same schema for manual SQL deployments.
 
 No new paid service or database is created. Existing Instagram tokens and webhook
-configuration remain in Cloudflare. Failed migration/deployment steps stop the workflow.
+configuration remain in Cloudflare. Failed deployment/API checks stop the workflow.
 
 For a manual deployment from an authenticated environment:
 
