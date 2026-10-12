@@ -1,7 +1,7 @@
 (()=>{'use strict';
 if(window.__cffYearRankingSheetLogos)return;
 window.__cffYearRankingSheetLogos=true;
-const V='20260909-year-sheet-logos-v2';
+const V='20261012-global-sheet-logos-v5';
 const DEFAULT_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv';
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,'');
 const map={},aliases={};
@@ -44,7 +44,7 @@ async function loadSheet(url){
  const join=url.includes('?')?'&':'?';
  const r=await fetch(url+join+'cffv='+Math.floor(Date.now()/300000),{cache:'default'});
  if(!r.ok)throw new Error('HTTP '+r.status);
- parseTsv(await r.text());
+ return r.text();
 }
 async function load(){
  if(loadPromise)return loadPromise;
@@ -60,14 +60,15 @@ async function load(){
    }catch(_){}
    const primary=window.CFF_CONFIG?.sheets?.logosEquipes||DEFAULT_SHEET;
    const secondary=window.CFF_CONFIG?.sheets?.logosOutrasEquipes||'';
-   await Promise.allSettled([primary,secondary].filter(Boolean).map(loadSheet));
+   const sheets=await Promise.allSettled([secondary,primary].filter(Boolean).map(loadSheet));
+   sheets.forEach(result=>{if(result.status==='fulfilled')parseTsv(result.value)});
    ready=true;patch();
    document.dispatchEvent(new CustomEvent('cff:year-logos-ready'));
    return map;
  })().finally(()=>{loadPromise=null});
  return loadPromise;
 }
-function find(name){let k=norm(name);if(aliases[k])k=aliases[k];return map[k]||''}
+function find(name){const k=norm(name);return map[k]||map[aliases[k]]||''}
 function setImg(img,team){
  const src=find(team);if(!img||!src)return;
  if((img.getAttribute('src')||'')===src)return;
@@ -82,7 +83,25 @@ function patchDetailed(){
  document.querySelectorAll('#ot-year2026-panel .ot-year-team-link[data-team]').forEach(btn=>{const team=btn.dataset.team||btn.textContent?.trim();if(team)setImg(btn.querySelector('img'),team)});
  document.querySelectorAll('#ot-year-titles-content tbody tr').forEach(row=>{const cell=row.children?.[1];if(!cell)return;const team=cell.querySelector('[data-title-team]')?.dataset.titleTeam||cell.querySelector('[data-title-team]')?.textContent?.trim()||cell.textContent?.trim();if(team)cell.querySelectorAll('img').forEach(img=>setImg(img,team))});
 }
-function patch(){if(!ready)return;patchHomeChampions();patchHomeTitles();patchDetailed()}
+function patchWorldSeries(){
+ document.querySelectorAll('img[data-cff-global-team-logo]').forEach(img=>setImg(img,img.dataset.cffGlobalTeamLogo));
+ document.querySelectorAll('#home-global-classified .home-global-team').forEach(card=>{
+   const name=card.querySelector('strong')?.textContent?.trim();
+   const monogram=card.querySelector('.home-global-monogram');
+   const short=monogram?.textContent?.trim();
+   const team=find(name)?name:find(short)?short:'';
+   if(!team)return;
+   const box=card.querySelector('.home-global-team-image');if(!box)return;
+   let img=box.querySelector('img');
+   if(!img){img=document.createElement('img');img.loading='lazy';img.decoding='async';img.width=72;img.height=72;img.alt=name||short;box.prepend(img)}
+   img.dataset.cffGlobalTeamLogo=team;img.hidden=false;
+   if(monogram)monogram.hidden=true;
+   setImg(img,team);
+   const caption=card.querySelector('small');
+   if(caption?.textContent?.trim()==='Logo pendente')caption.textContent=short||name;
+ });
+}
+function patch(){if(!ready)return;patchHomeChampions();patchHomeTitles();patchDetailed();patchWorldSeries()}
 let timer;
 new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(patch,40)}).observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener('cff:year-rendered',patch);
