@@ -5,16 +5,29 @@
   "formatConfirmed": false,
   "format": {
     "classificatoria": {
-      "label": "Classificatória",
-      "description": "Formato e regras a confirmar."
+      "label": "Knockout • Fase 1",
+      "description": "Primeira fase do Knockout, que reúne 24 equipes e acontece de 6 a 22 de novembro em Bangkok. Datas específicas desta fase, regras, partidas e vagas para a Grande Final a confirmar.",
+      "dateLabel": "6 a 22 de novembro de 2026 • período conjunto do Knockout",
+      "rulesConfirmed": false
     },
     "segundaFase": {
-      "label": "Segunda Fase",
-      "description": "Formato e regras a confirmar."
+      "label": "Knockout • Fase 2",
+      "description": "Segunda fase do Knockout, realizado de 6 a 22 de novembro em Bangkok. Datas específicas desta fase e regras a confirmar. Equipes avançam à Grande Final ou à Last Chance; quantidades de vagas a confirmar.",
+      "dateLabel": "6 a 22 de novembro de 2026 • período conjunto do Knockout",
+      "rulesConfirmed": false
     },
     "final": {
-      "label": "Final",
-      "description": "Formato e regras a confirmar."
+      "label": "Grande Final",
+      "description": "12 equipes disputam o título no BITEC LIVE, em Bangkok, Tailândia. Número de partidas e regras da decisão a confirmar.",
+      "dateLabel": "28 de novembro de 2026",
+      "rulesConfirmed": false,
+      "teamCount": 12
+    },
+    "lastChance": {
+      "label": "Last Chance",
+      "description": "Última chance para avançar à Grande Final. Número de equipes, partidas e vagas a confirmar. As demais equipes serão eliminadas.",
+      "dateLabel": "27 de novembro de 2026",
+      "rulesConfirmed": false
     }
   },
   "classificatoria": {
@@ -30,6 +43,28 @@
   "final": {
     "finished": false,
     "days": [],
+    "rows": []
+  },
+  "event": {
+    "name": "FFWS Global Finals 2026",
+    "organizer": "Garena",
+    "slogan": "Reach Your Prime",
+    "teamCount": 24,
+    "type": "Presencial",
+    "city": "Bangkok",
+    "country": "Tailândia",
+    "startDate": "2026-11-06",
+    "endDate": "2026-11-28",
+    "dateLabel": "6 a 28 de novembro de 2026",
+    "finalVenue": "BITEC LIVE",
+    "finalTeamCount": 12,
+    "prizePool": null,
+    "matchCount": null,
+    "broadcastSchedule": null
+  },
+  "lastChance": {
+    "finished": false,
+    "rounds": [],
     "rows": []
   }
 }

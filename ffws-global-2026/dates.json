@@ -1,5 +1,48 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "stages": [],
+  "updatedAt": "2026-10-12",
+  "event": {
+    "name": "FFWS Global Finals 2026",
+    "organizer": "Garena",
+    "slogan": "Reach Your Prime",
+    "teamCount": 24,
+    "type": "Presencial",
+    "city": "Bangkok",
+    "country": "Tailândia",
+    "startDate": "2026-11-06",
+    "endDate": "2026-11-28",
+    "dateLabel": "6 a 28 de novembro de 2026",
+    "finalVenue": "BITEC LIVE",
+    "finalTeamCount": 12,
+    "prizePool": null,
+    "matchCount": null,
+    "broadcastSchedule": null
+  },
+  "stages": [
+    {
+      "id": "knockout",
+      "name": "Knockout • Fases 1 e 2",
+      "startDate": "2026-11-06",
+      "endDate": "2026-11-22",
+      "date": "6 a 22 de novembro de 2026",
+      "summary": "24 equipes em duas fases, em Bangkok. Datas individuais das fases, partidas e vagas para a final a confirmar."
+    },
+    {
+      "id": "lastChance",
+      "name": "Last Chance",
+      "startDate": "2026-11-27",
+      "endDate": "2026-11-27",
+      "date": "27 de novembro de 2026",
+      "summary": "Última chance de classificação para a Grande Final, em Bangkok. Quantidade de equipes, partidas e vagas a confirmar."
+    },
+    {
+      "id": "final",
+      "name": "Grande Final",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "date": "28 de novembro de 2026",
+      "summary": "12 equipes no BITEC LIVE, em Bangkok, Tailândia. Número de partidas e regras da decisão a confirmar."
+    }
+  ],
   "rounds": []
 }
