@@ -1,0 +1,52 @@
+{
+  "teams": {
+    "fluxo-w7m": {
+      "accent": "#be91ff",
+      "socials": [
+        {
+          "label": "Instagram oficial",
+          "url": "https://www.instagram.com/fluxogg/"
+        }
+      ]
+    },
+    "loud-snickers": {
+      "accent": "#88ef5b"
+    },
+    "los": {
+      "accent": "#ff994c"
+    },
+    "alpha7": {
+      "accent": "#e96b83"
+    },
+    "afrogames": {
+      "accent": "#ba93fb"
+    },
+    "civis": {
+      "accent": "#76d5e5"
+    },
+    "cpt-vox": {
+      "accent": "#ffb647"
+    },
+    "influence-rage": {
+      "accent": "#eb7098"
+    },
+    "intz": {
+      "accent": "#eeeeee"
+    },
+    "loops": {
+      "accent": "#ec777e"
+    },
+    "rise-gaming": {
+      "accent": "#85adff"
+    },
+    "rush-gaming": {
+      "accent": "#b999ff"
+    },
+    "sx-tet": {
+      "accent": "#83cfed"
+    },
+    "team-solid": {
+      "accent": "#e3bc75"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-10-12",
   "team": "FLUXO W7M",
   "history": {
     "players": [
@@ -309,6 +309,15 @@
   },
   "titles": [
     {
+      "event": "FFWS Brasil 2026 S2",
+      "type": "Campeão",
+      "date": "2026-10-11",
+      "tier": "A-Tier",
+      "logo": "wb.webp",
+      "url": "/ffws-br-s2/final",
+      "featured": true
+    },
+    {
       "event": "Yuta Invitational",
       "type": "Campeão",
       "date": "2026-03-26",
@@ -443,6 +452,13 @@
     }
   ],
   "results": [
+    {
+      "torneio": "FFWS Brasil 2026 S2",
+      "data": "2026-10-11",
+      "place": "1º",
+      "tier": "A-Tier",
+      "url": "/ffws-br-s2/final"
+    },
     {
       "data": "2026-07-18",
       "tier": "S-Tier",

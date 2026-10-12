@@ -51,7 +51,7 @@ async function renderTeamLaff(slug,teamName,button){
  const panel=document.getElementById('cff-season-panel');if(!panel)return;
  button.disabled=true;panel.innerHTML='<section class="cff-inline-loading"><span></span><strong>Carregando LAFF...</strong></section>';
  try{
-  const r=await fetch(`team-data/seasons/${slug}.json?v=${V}`,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const data=await r.json(),c=data?.seasons?.laff;if(!c)throw new Error('LAFF ausente');
+  const r=await fetch(`team-data/seasons/${slug}.json?v=${V}`,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const data=await r.json();if(button.getAttribute('aria-selected')!=='true')return;const c=data?.seasons?.laff;if(!c)throw new Error('LAFF ausente');
   const stages=c.stages||[],final=stages.find(x=>x.id==='final')||stages[stages.length-1]||{},totals=stages.reduce((a,x)=>(a.kills+=Number(x.kills)||0,a.matches+=Number(x.matches)||0,a.booyahs+=Number(x.booyahs)||0,a),{kills:0,matches:0,booyahs:0});
   const isChampion=Number(c.finalPosition)===1||final.champion;
   const note=c.teamAtEvent&&norm(c.teamAtEvent)!==norm(teamName)?`Disputou a competição como ${c.teamAtEvent}`:(isChampion?'Título da LAFF registrado no histórico da equipe':'Campanha registrada na LAFF');

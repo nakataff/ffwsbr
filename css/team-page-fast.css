@@ -16,3 +16,60 @@
 .cff-history-rank-btn{padding:7px 10px;border:1px solid rgba(0,200,255,.3);border-radius:999px;background:rgba(0,200,255,.075);color:var(--accent);font:inherit;font-size:.65rem;font-weight:950;text-transform:uppercase;letter-spacing:.03em;cursor:pointer;white-space:nowrap}.cff-history-rank-btn:hover{background:rgba(0,200,255,.15);border-color:rgba(0,200,255,.55)}
 body.cff-modal-open{overflow:hidden}.cff-team-ranking-modal[hidden]{display:none!important}.cff-team-ranking-modal{position:fixed;inset:0;z-index:3000;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.72);backdrop-filter:blur(5px)}.cff-team-ranking-dialog{width:min(620px,100%);max-height:min(78vh,720px);overflow:hidden;border:1px solid var(--border);border-radius:18px;background:#0b101d;box-shadow:0 24px 70px rgba(0,0,0,.55)}.cff-team-ranking-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 18px;border-bottom:1px solid var(--border)}.cff-team-ranking-head small{display:block;color:var(--accent);font-size:.64rem;font-weight:950;text-transform:uppercase;letter-spacing:.12em}.cff-team-ranking-head h2{margin:4px 0 0;font-size:1.05rem;text-transform:uppercase}.cff-team-ranking-head button{width:34px;height:34px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.035);color:#fff;font-size:1.35rem;line-height:1;cursor:pointer}.cff-team-ranking-table-wrap{max-height:calc(78vh - 76px);overflow:auto}.cff-team-ranking-table{width:100%;border-collapse:collapse}.cff-team-ranking-table th,.cff-team-ranking-table td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.065);text-align:center}.cff-team-ranking-table th{position:sticky;top:0;background:#0e1524;color:var(--muted);font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;z-index:1}.cff-team-ranking-table td{font-size:.82rem}.cff-team-ranking-table td:first-child{color:var(--accent);font-weight:950}.cff-team-ranking-table a{color:#fff;font-weight:900;text-decoration:none}.cff-team-ranking-table a:hover{color:var(--accent)}
 @media(max-width:720px){.cff-history-rank-btn{font-size:.59rem;padding:7px 8px}.cff-team-ranking-modal{padding:10px}.cff-team-ranking-dialog{max-height:86vh}.cff-team-ranking-table-wrap{max-height:calc(86vh - 74px)}.cff-team-ranking-table th,.cff-team-ranking-table td{padding:10px 9px}}
+
+/* Team profile navigation, identity and campaign context. */
+.cff-team-page{--team-accent-rgb:0,200,255}
+.cff-team-hero{background:linear-gradient(135deg,rgba(var(--team-accent-rgb),.15),rgba(255,255,255,.025))}
+.cff-team-hero:after{background:rgba(var(--team-accent-rgb),.12)}
+.cff-team-socials{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.cff-team-socials a{padding:7px 10px;border:1px solid rgba(var(--team-accent-rgb),.35);border-radius:9px;color:var(--accent);font-size:.72rem;font-weight:800;text-decoration:none}
+.cff-team-highlights{margin:18px 0;padding:17px;border:1px solid rgba(255,204,70,.25);border-radius:18px;background:rgba(255,204,70,.035)}
+.cff-highlights-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:.78rem}
+.cff-highlights-head strong{text-transform:uppercase;color:#ffd46b}
+.cff-highlights-head a{color:var(--muted);text-decoration:none}
+.cff-team-highlights .cff-title-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cff-profile-nav{position:sticky;top:var(--cff-profile-nav-top,64px);z-index:18;display:flex;gap:4px;padding:6px;margin:22px 0 16px;border:1px solid var(--border);border-radius:14px;background:rgba(9,14,25,.97);overflow-x:auto;scrollbar-width:none}
+.cff-profile-nav::-webkit-scrollbar{display:none}
+.cff-profile-nav a{flex:1 0 auto;text-align:center;padding:11px 14px;border-radius:9px;font-size:.76rem;font-weight:900;text-decoration:none;color:var(--muted)}
+.cff-profile-nav a[aria-current]{background:rgba(var(--team-accent-rgb),.13);color:var(--accent)}
+.cff-profile-section{scroll-margin-top:var(--cff-profile-scroll-offset,140px);min-width:0}
+.cff-profile-section:focus{outline:none}
+.cff-performance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 10px}
+.cff-performance-card{padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:14px;min-width:0}
+.cff-performance-card small{display:block;color:var(--muted);font-size:.72rem;font-weight:800}
+.cff-performance-card strong{display:block;margin:8px 0;font-size:1.7rem}
+.cff-performance-card span,.cff-performance-card em{display:block;font-size:.69rem;line-height:1.6}
+.cff-performance-card em{color:var(--muted);font-style:normal}
+.cff-performance-card .is-above{color:#78dfab}.cff-performance-card .is-below{color:#edb077}
+.cff-data-note{color:var(--muted);font-size:.74rem;line-height:1.65;margin:10px 0 18px}
+.cff-competition-roster{padding:14px;margin:16px 0;border:1px solid var(--border);border-radius:14px;background:var(--panel)}
+.cff-competition-roster summary{cursor:pointer;color:var(--accent);font-weight:850;font-size:.82rem}
+.cff-kill-share{grid-column:1/-1;font-size:.65rem;color:var(--muted);line-height:1.5}
+.cff-roster-changes{margin-top:15px;border-left:2px solid var(--accent);padding-left:15px;font-size:.8rem;color:var(--muted)}
+.cff-title-card{text-decoration:none;color:inherit;min-width:0}
+.cff-title-card.is-featured{border-color:rgba(255,204,70,.45);background:linear-gradient(145deg,rgba(255,204,70,.09),#0a0f1c)}
+.cff-title-card em{display:block;margin-top:7px;color:var(--accent);font-size:.65rem;font-style:normal}
+.cff-title-filter{display:flex;align-items:center;gap:10px;margin-bottom:15px;color:var(--muted);font-size:.78rem}
+.cff-title-filter select{padding:9px 12px;max-width:100%;border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--text);font:inherit}
+.cff-result-row{text-decoration:none;color:inherit}
+.cff-result-row[href]:hover,.cff-title-card[href]:hover{border-color:var(--accent)}
+.cff-season-tabs button.is-active{box-shadow:0 8px 22px rgba(var(--team-accent-rgb),.15)}
+.cff-profile-nav a:focus-visible,.cff-season-tabs button:focus-visible,.cff-title-filter select:focus-visible,.cff-team-socials a:focus-visible,.cff-competition-roster summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:720px){
+ .cff-team-highlights{padding:12px;margin:12px 0}
+ .cff-team-highlights .cff-title-grid{grid-template-columns:1fr}
+ .cff-team-highlights .cff-title-card:not(:first-child){display:none}
+ .cff-profile-nav{top:var(--cff-profile-nav-top,58px);margin:14px 0 12px;border-radius:11px;gap:2px;padding:4px}
+ .cff-profile-nav a{padding:10px 9px;font-size:.66rem}
+ .cff-performance-grid{grid-template-columns:1fr;gap:8px}
+ .cff-performance-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:12px}
+ .cff-performance-card strong{grid-column:2;grid-row:1/4;margin:0;align-self:center;font-size:1.55rem}
+ .cff-performance-card span,.cff-performance-card em{grid-column:1;font-size:.65rem}
+ .cff-profile-section{scroll-margin-top:var(--cff-profile-scroll-offset,174px)}
+ .cff-result-row{grid-template-columns:minmax(0,1fr) 44px;gap:5px 10px}
+ .cff-result-row strong{white-space:normal;line-height:1.4}
+ .cff-result-row span{display:block;grid-column:1;grid-row:2;font-size:.65rem}
+ .cff-result-row b{grid-column:2;grid-row:1/3}
+ .cff-title-card span{overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:reduce){.cff-team-page *{animation:none!important;transition:none!important}}
