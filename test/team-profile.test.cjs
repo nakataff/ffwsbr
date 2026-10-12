@@ -12,11 +12,11 @@ test('Fluxo championship is persisted once, dated, linked and featured ahead of 
 });
 function environment(query='fluxo-w7m',overrides={}){
  const nodes=new Map(),seasonButtons=new Map(),root={style:{setProperty(){}}};
- const element=id=>{if(nodes.has(id))return nodes.get(id);const e={id,dataset:{},hidden:false,events:{},style:{setProperty(){}},classList:{toggle(){},add(){},remove(){}},attributes:{},addEventListener(name,fn){this.events[name]=fn},setAttribute(k,v){this.attributes[k]=v},getAttribute(k){return this.attributes[k]},removeAttribute(k){delete this.attributes[k]},focus(){},getBoundingClientRect(){return {height:104}}};let html='';Object.defineProperty(e,'innerHTML',{get(){return html},set(value){html=value;for(const match of value.matchAll(/id="([^"]+)"/g))element(match[1]);for(const match of value.matchAll(/data-team-season="([^"]+)"[^>]*aria-selected="([^"]+)"/g)){const b=element('season-'+match[1]);b.dataset.teamSeason=match[1];b.attributes['aria-selected']=match[2];seasonButtons.set(match[1],b)}}});nodes.set(id,e);return e};
+ const element=id=>{if(nodes.has(id))return nodes.get(id);const e={id,dataset:{},hidden:false,events:{},style:{setProperty(){}},classList:{toggle(){},add(){},remove(){}},attributes:{},addEventListener(name,fn){this.events[name]=fn},setAttribute(k,v){this.attributes[k]=v},getAttribute(k){return this.attributes[k]},removeAttribute(k){delete this.attributes[k]},focus(){},getBoundingClientRect(){return {height:104}},scrollIntoView(options){this.scrollOptions=options}};let html='';Object.defineProperty(e,'innerHTML',{get(){return html},set(value){html=value;for(const match of value.matchAll(/id="([^"]+)"/g))element(match[1]);for(const match of value.matchAll(/data-team-season="([^"]+)"[^>]*aria-selected="([^"]+)"/g)){const b=element('season-'+match[1]);b.dataset.teamSeason=match[1];b.attributes['aria-selected']=match[2];seasonButtons.set(match[1],b)}}});nodes.set(id,e);return e};
  const page=element('team-page-root');page.style=root.style;
  const doc={readyState:'loading',documentElement:{},head:{appendChild(){}},body:{classList:{add(){},remove(){}}},addEventListener(){},getElementById:element,querySelector(sel){const hit=sel.match(/data-team-season="([^"\]]+)"/);return hit?seasonButtons.get(hit[1]):null},querySelectorAll(sel){return sel==='[data-team-season]'?[...seasonButtons.values()]:[]},createElement(){return element('canonical')}};
- const c={document:doc,window:{cffLoadPlayerPhotoMap:()=>new Promise(()=>{}),cffLoadTeamLogoMap:()=>new Promise(()=>{}),dispatchEvent(){},addEventListener(){}},location:{search:'?time='+query,pathname:'/equipe/'+query,origin:'https://centralfreefire.com.br'},history:{replaceState(){}},URLSearchParams,CustomEvent:class{},IntersectionObserver:class{observe(){}disconnect(){}},setTimeout,console,fetch:async url=>{const path=String(url).split('?')[0];if(overrides[path])return overrides[path]();return{ok:true,json:async()=>read(path)}}};
- vm.createContext(c);vm.runInContext(fs.readFileSync('js/team-profile-model.js','utf8'),c);
+ const c={document:doc,window:{cffLoadPlayerPhotoMap:()=>new Promise(()=>{}),cffLoadTeamLogoMap:()=>new Promise(()=>{}),dispatchEvent(){},addEventListener(){}},location:{search:'?time='+query,pathname:'/equipe/'+query,origin:'https://centralfreefire.com.br'},history:{calls:[],replaceState(...args){this.calls.push(args)}},URLSearchParams,CustomEvent:class{},IntersectionObserver:class{observe(){}disconnect(){}},setTimeout,console,fetch:async url=>{const path=String(url).split('?')[0];if(overrides[path])return overrides[path]();return{ok:true,json:async()=>read(path)}}};
+ vm.createContext(c);vm.runInContext(fs.readFileSync('js/tournament-logos.js','utf8'),c);vm.runInContext(fs.readFileSync('js/team-profile-model.js','utf8'),c);
  let src=fs.readFileSync('js/team-page-fast.min.js','utf8');src=src.replace("document.readyState==='loading'?",'window.qa={init,state,selectSeason,renderTitles,renderCurrentRoster,s2Outcome,titleCard};\ndocument.readyState===\'loading\'?');vm.runInContext(src,c);
  return {qa:c.window.qa,nodes,seasonButtons,page,c};
 }
@@ -36,4 +36,21 @@ test('late season responses do not replace a newly selected season',async()=>{
  let resolve;const e=environment('fluxo-w7m',{'team-data/seasons/fluxo-w7m.json':()=>new Promise(r=>resolve=()=>r({ok:true,json:async()=>read('team-data/seasons/fluxo-w7m.json')}))});await e.qa.init();const pending=e.qa.selectSeason('s1');await e.qa.selectSeason('s2');resolve();await pending;assert(e.nodes.get('cff-season-panel').innerHTML.includes('WB 2026 S2'));assert(!e.nodes.get('cff-season-panel').innerHTML.includes('<h2>WB 2026 S1</h2>'));
  // A manually selected LAFF tab also invalidates the pending main competition response.
  e.qa.state.seasonData=null;const second=e.qa.selectSeason('ewc');e.seasonButtons.get('ewc').setAttribute('aria-selected','false');e.nodes.get('cff-season-panel').innerHTML='LAFF selected';resolve();await second;assert.equal(e.nodes.get('cff-season-panel').innerHTML,'LAFF selected');
+});
+
+test('profile anchors and highlights remain on the team page even with base href pointing to the home',async()=>{
+ const e=environment();await e.qa.init();await tick();
+ const links=[...e.page.innerHTML.matchAll(/href="([^"]+)" data-profile-section="([^"]+)"/g)];assert.equal(links.length,5);
+ for(const [,href,section] of links){
+  const resolved=new URL(href,'https://centralfreefire.com.br/');assert.equal(resolved.pathname,'/equipe/fluxo-w7m');assert.equal(resolved.hash,'#cff-profile-'+section);
+  let prevented=false;const click={button:0,target:{closest(){return{dataset:{profileSection:section}}}},preventDefault(){prevented=true}};e.page.events.click(click);assert(prevented);assert.equal(e.c.history.calls.at(-1)[2],'/equipe/fluxo-w7m#cff-profile-'+section);assert.equal(e.nodes.get('cff-profile-'+section).scrollOptions.block,'start');
+ }
+ const highlight=e.nodes.get('cff-team-highlights').innerHTML;assert(highlight.includes('href="/equipe/fluxo-w7m#cff-profile-titles" data-profile-jump="titles"'));
+ let prevented=false;e.page.events.click({button:0,target:{closest(){return{dataset:{profileJump:'titles'}}}},preventDefault(){prevented=true}});assert(prevented);assert.equal(e.c.history.calls.at(-1)[2],'/equipe/fluxo-w7m#cff-profile-titles');
+ const count=e.c.history.calls.length;e.page.events.click({button:0,ctrlKey:true,target:{closest(){return{dataset:{profileSection:'roster'}}}},preventDefault(){assert.fail('Modified clicks must keep normal link behavior')}});assert.equal(e.c.history.calls.length,count);
+});
+test('team trophies use the shared global logo and preserve the Brazilian tournament logo',async()=>{
+ const e=environment();await e.qa.init();await tick();
+ assert(e.qa.titleCard({event:'Free Fire World Series - Global Finals 2024',logo:'trofeu.webp'}).includes('/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png'));
+ assert(e.qa.titleCard({event:'FFWS Brasil 2026 S2',logo:'wb.webp'}).includes('src="wb.webp"'));
 });

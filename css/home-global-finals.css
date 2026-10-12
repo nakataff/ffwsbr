@@ -6,3 +6,4 @@
 @media(max-width:360px){.home-global-region.region-sea .home-global-team-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-global-heading h2{font-size:23px}.home-global-region h3{font-size:9px}}
 
 @media(max-width:900px){.home-left-rail>.home-global-board{grid-column:1/-1;width:100%;margin-bottom:0}}
+.home-global-event-logo{display:block;width:86px;height:auto;max-width:100%;object-fit:contain;margin:0 auto 12px}.home-global-heading>span{display:block}
