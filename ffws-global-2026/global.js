@@ -34,7 +34,7 @@
     selectionTab: 'torneio',
     mvpPage: 0,
     playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
-    statsFilters: { stage: 'segundaFase', days: [], maps: [] },
+    statsFilters: { stage: 'classificatoria', days: [], maps: [] },
     statsEvolution: { metric: 'position', teams: [] },
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
     notesOpenMulti: '',
@@ -122,6 +122,8 @@
     };
     return `<nav class="ffws-global-phase-navigation" aria-label="Navegar entre fases">${index > 0 ? link(stages[index - 1], 'prev') : ''}${index < stages.length - 1 ? link(stages[index + 1], 'next') : ''}</nav>`;
   }
+
+  function stageLabel(key){return {classificatoria:'Classificatória',segundaFase:'Segunda Fase',final:'Final'}[key]||key;}
 
   function stageFormat(stageKey) {
     return state.stages?.format?.[stageKey] || {};
@@ -1750,7 +1752,7 @@
       ${s2DropReportSelectorHtml(events)}
       ${s2StatsEvolutionHtml(events)}
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-ranking-columns"><div id="anchor-s2-ranking-medias"><div class="ffws-global-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div id="anchor-s2-ranking-totais"><div class="ffws-global-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
-    ` : `<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-empty"><div><strong>Etapa ainda sem resultados</strong>Escolha a Classificatória para consultar as quedas já disputadas.</div></div></div></section>`;
+    ` : `<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-empty"><div><strong>Etapa ainda sem resultados</strong>As estatísticas aparecerão após o cadastro das quedas.</div></div></div></section>`;
 
     root.innerHTML = `<div class="ffws-global-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Global Finals 2026')}
       ${s2StatsStickyNavHtml()}
