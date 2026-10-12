@@ -67,7 +67,7 @@
   }
   if (!document.querySelector('script[data-cff-community-rewards]')) {
     const script=document.createElement('script');
-    script.src='js/community-rewards.js?v=20260915-weekly-rewards-v1';
+    script.src='js/community-rewards.js?v=20261012-story-review-v1';
     script.dataset.cffCommunityRewards='1';
     document.head.appendChild(script);
   }

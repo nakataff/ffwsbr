@@ -22,6 +22,7 @@ function fixture() {
 async function workerInternals() {
   let source=readFileSync(new URL('../worker.js',import.meta.url),'utf8');
   source=source.replace("from './optimizations.js'",`from '${new URL('../optimizations.js',import.meta.url).href}'`);
+  source=source.replace("from './story-reviews.js'",`from '${new URL('../story-reviews.js',import.meta.url).href}'`);
   // Rewards configuration is external; ledger/settlement tests isolate its unrelated bonus rules.
   source=source.replace('async function evaluateWeeklyBonuses(env, base) {','async function evaluateWeeklyBonuses(env, base) { return;');
   source+='\nexport {getRanking,publicRankingResponse,getWeeklyHistory,computeWeeklySnapshot,getOrCreateWeeklySnapshot,getOrCreateMonthlySnapshot,weekKeys,shiftDayKey,dayKeyTimestamp,allPredictionVotes,predictionResultSignature,invalidatePredictionSettlement,settleAllAvailable,maybeSettleAllAvailable};';
@@ -151,7 +152,7 @@ test('the actual settlement credits winners once, including across worker instan
 
 test('schema bootstrap is repeatable',()=>{
  const db=fixture();for(const sql of OPTIMIZATION_SCHEMA)db.sqlite.exec(sql);
- assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,6);
+ assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,8);
 });
 
 
@@ -166,5 +167,5 @@ test('production fetch bootstraps optimization schema before serving rankings',a
  const day=w.weekKeys().weekStartKey;seed(db,day,'a','alice',3);
  const response=await w.default.fetch(new Request('https://cff.test/api/ranking?period=week'),{DB:db},{});
  assert.equal(response.status,200);assert.equal((await response.json()).users.a.points,3);
- assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,6);
+ assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,8);
 });

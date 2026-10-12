@@ -116,3 +116,8 @@ export const OPTIMIZATION_SCHEMA = [
   "CREATE TABLE IF NOT EXISTS prediction_settlements (job_key TEXT PRIMARY KEY,signature TEXT NOT NULL,status TEXT NOT NULL,lease_token TEXT NOT NULL,lease_until INTEGER NOT NULL,completed_at INTEGER NOT NULL DEFAULT 0)",
   ...['awards','active_days'].flatMap(table => [trigger(table,'INSERT',['NEW']),trigger(table,'UPDATE',['OLD','NEW']),trigger(table,'DELETE',['OLD'])]),
 ];
+
+export async function invalidatePublicRankings(db){
+ state(db).cache.clear();
+ await db.prepare("DELETE FROM community_response_cache WHERE cache_key LIKE 'ranking:%' OR cache_key LIKE 'history:%' OR cache_key LIKE 'closed-weeks:%'").run();
+}

@@ -1,6 +1,10 @@
-import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
+import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, instagramPost } from './story-reviews.js';
+import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
+  storyApprovalRequired: true,
+  storyCurrentWeekOnly: true,
+  storyLimitPerPost: 1,
   commentPoints: 2,
   checkinPoints: 1,
   storyMentionDailyLimit: 3,
@@ -65,6 +69,7 @@ let performanceIndexesPromise = null;
 
 const PERFORMANCE_INDEXES = Object.freeze([
   ...OPTIMIZATION_SCHEMA,
+  ...STORY_REVIEW_SCHEMA,
   'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
   'CREATE INDEX IF NOT EXISTS idx_awards_type_award_key ON awards (type, award_key)',
@@ -83,10 +88,10 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION }, 200, request);
+    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION }, 200, request);
 
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
-      await ensurePerformanceIndexes(env);
+      if (!(await ensurePerformanceIndexes(env))) return json({ok:false,error:"Serviço temporariamente indisponível."},503,request);
     }
 
     if (url.pathname === '/webhook') {
@@ -104,6 +109,9 @@ export default {
     if (url.pathname === '/api/prediction/vote' && request.method === 'POST') return votePrediction(request, env, ctx);
     if (url.pathname === '/api/prediction/ranking' && request.method === 'GET') return getPredictionRanking(request, env, url);
     if (url.pathname === '/api/prediction/profile' && request.method === 'GET') return getPredictionProfile(request, env, url);
+    if (url.pathname === '/api/admin/stories' && request.method === 'GET') return getAdminStories(request,env,url);
+    if (url.pathname === '/api/admin/story-posts' && request.method === 'GET') return getAdminStoryPosts(request,env,url);
+    if (url.pathname === '/api/admin/stories/review' && request.method === 'POST') return reviewAdminStory(request,env);
     if (url.pathname === '/api/admin/prediction-votes' && request.method === 'GET') return getAdminPredictionVotes(request, env);
     if (url.pathname === '/api/rewards/status' && request.method === 'GET') return getRewardStatus(request, env, url);
     if (url.pathname === '/api/rewards/code' && request.method === 'POST') return claimRewardCode(request, env);
@@ -288,6 +296,7 @@ async function receiveWebhook(request, env) {
 
   if (!body || body.object !== 'instagram' || !Array.isArray(body.entry)) return new Response('EVENT_RECEIVED', { status: 200 });
 
+  let processingFailed=false;
   for (const entry of body.entry) {
     try {
       const changes = Array.isArray(entry?.changes) ? entry.changes : [];
@@ -302,17 +311,18 @@ async function receiveWebhook(request, env) {
       for (const event of messaging) {
         if (await processCheckinVerification(env, event)) continue;
         const story = findStoryMention(event);
-        if (story) await processStoryMention(env, event, story);
+        if (story) await processStoryMention(env, event, {...story,accountId:String(event?.recipient?.id||entry.id||'')});
         else await logMessagingShape(env, event);
       }
 
       if (!changes.length && !messaging.length && entry?.field !== 'comments') await logEntryShape(env, entry);
     } catch (error) {
+      processingFailed=true;
       console.error('Instagram event processing error', error);
     }
   }
 
-  return new Response('EVENT_RECEIVED', { status: 200 });
+  return new Response(processingFailed?'RETRY':'EVENT_RECEIVED', { status: processingFailed?503:200 });
 }
 
 async function processComment(env, entry) {
@@ -384,6 +394,7 @@ function findStoryMention(event) {
     return {
       storyId: String(referral?.story?.id || event?.message?.mid || event?.timestamp || ''),
       messageId: String(event?.message?.mid || ''),
+      mediaUrl: String(referral?.story?.url || ''),
     };
   }
 
@@ -395,40 +406,22 @@ function findStoryMention(event) {
   return {
     storyId: String(payload.id || payload.story_id || message.mid || event.timestamp || ''),
     messageId: String(message.mid || ''),
+    mediaUrl: String(payload.url || ''),
   };
 }
 
 async function processStoryMention(env, event, story) {
-  const identity = String(event?.sender?.id || '').trim();
-  if (!identity) return;
-
-  let username = cleanUsername(event?.sender?.username);
-  if (!username && story.messageId) username = await fetchMessageUsername(story.messageId, env.INSTAGRAM_ACCESS_TOKEN);
-
-  const timestamp = normalizeTimestamp(event.timestamp);
-  const key = await userKey(identity, username);
-  const { dayKey } = dateKeys(timestamp);
-  const daily = await env.DB.prepare('SELECT count FROM story_daily WHERE user_key = ?1 AND day_key = ?2').bind(key, dayKey).first();
-  if (Number(daily?.count || 0) >= RULES.storyMentionDailyLimit) return;
-
-  const awarded = await awardInteraction(env, {
-    awardKey: `story:${key}:${story.storyId || story.messageId || timestamp}`,
-    userKey: key,
-    identity,
-    username: username || fallbackUsername(identity),
-    type: 'story',
-    sourceId: story.storyId || story.messageId,
-    points: RULES.storyMentionPoints,
-    timestamp,
-  });
-
-  if (awarded) {
-    await env.DB.prepare(`
-      INSERT INTO story_daily (user_key, day_key, count)
-      VALUES (?1, ?2, 1)
-      ON CONFLICT(user_key, day_key) DO UPDATE SET count = count + 1
-    `).bind(key, dayKey).run();
-  }
+  const identity=String(event?.sender?.id||'').trim();if(!identity||!story.storyId)return;
+  const timestamp=Number(event.timestamp);if(!Number.isFinite(timestamp)||timestamp<=0)return;
+  const eventAt=normalizeTimestamp(timestamp);if(eventAt>Date.now()+300000)return;
+  let username=cleanUsername(event?.sender?.username);
+  const key=await userKey(identity,username),mentionKey=`story:${key}:${story.storyId}`;
+  const known=await env.DB.prepare('SELECT mention_key FROM story_reviews WHERE mention_key=?1').bind(mentionKey).first();if(known)return;
+  if(!username&&story.messageId)username=await fetchMessageUsername(story.messageId,env.INSTAGRAM_ACCESS_TOKEN);
+  if(!username){const user=await env.DB.prepare('SELECT username FROM users WHERE user_key=?1').bind(key).first();username=cleanUsername(user?.username)}
+  const {dayKey}=dateKeys(eventAt),{weekStartKey}=weekKeys(eventAt);
+  await queueStory(env.DB,{key:mentionKey,userKey:key,identity,username:username||fallbackUsername(identity),accountId:story.accountId,
+    storyId:story.storyId,messageId:story.messageId,mediaUrl:story.mediaUrl,timestamp:eventAt,dayKey,weekKey:weekStartKey});
 }
 
 async function fetchInstagramGraphJson(objectId, fields, accessToken) {
@@ -1629,6 +1622,51 @@ async function verifyAdminFirebaseToken(request) {
   }
 }
 
+
+function publicStoryReview(row){return {key:row.mention_key,username:row.username,storyId:row.story_id,messageId:row.message_id,mediaUrl:row.media_url,eventAt:row.event_at,weekStart:row.week_key,status:row.status,postUrl:row.post_url,publishedAt:row.published_at,verification:row.verification,note:row.note,reviewedAt:row.reviewed_at,reviewedBy:row.reviewed_by}}
+async function getAdminStories(request,env,url){
+ const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const status=['pending','approved','rejected'].includes(url.searchParams.get('status'))?url.searchParams.get('status'):'pending';
+ const cursor=String(url.searchParams.get('cursor')||'');const before=Number(cursor.split('|')[0])||Number.MAX_SAFE_INTEGER,after=cursor.slice(cursor.indexOf('|')+1);
+ const result=await env.DB.prepare(`SELECT * FROM story_reviews WHERE status=?1 AND (event_at<?2 OR (event_at=?2 AND mention_key>?3)) ORDER BY event_at DESC,mention_key ASC LIMIT 51`).bind(status,before,after).all();
+ const rows=(result.results||[]).slice(0,50),last=rows.at(-1),counts=await env.DB.prepare("SELECT status,COUNT(*) AS count FROM story_reviews GROUP BY status").all();
+ return json({ok:true,stories:rows.map(publicStoryReview),counts:Object.fromEntries((counts.results||[]).map(r=>[r.status,Number(r.count)])),cursor:result.results?.length>50?`${last.event_at}|${last.mention_key}`:'',rules:{points:5,dailyLimit:3,approvalRequired:true,currentWeekOnly:true}},200,request);
+}
+async function ownStoryPosts(env,row){
+ if(!row.account_id||!env.INSTAGRAM_ACCESS_TOKEN)return {available:false,posts:[]};
+ const data=await fetchInstagramGraphJson(row.account_id,'media.limit(100){id,permalink,timestamp,caption}',env.INSTAGRAM_ACCESS_TOKEN);
+ if(!Array.isArray(data?.media?.data))return {available:false,posts:[]};
+ const allPosts=data.media.data.map(p=>{const link=instagramPost(p.permalink),publishedAt=Date.parse(p.timestamp||'');return link&&Number.isFinite(publishedAt)?{id:String(p.id),...link,publishedAt,label:String(p.caption||'Publicação sem legenda').slice(0,140)}:null}).filter(Boolean);
+ const posts=allPosts.filter(p=>weekKeys(p.publishedAt).weekStartKey===row.week_key&&p.publishedAt<=row.event_at+300000);
+ return {available:true,posts,allPosts};
+}
+async function getAdminStoryPosts(request,env,url){
+ const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const row=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(String(url.searchParams.get('key')||'')).first();if(!row)return json({ok:false,error:'Story não encontrado.'},404,request);
+ const catalog=await ownStoryPosts(env,row);return json({ok:true,available:catalog.available,posts:catalog.posts},200,request);
+}
+async function reviewAdminStory(request,env){
+ const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const body=await readJson(request),key=String(body.key||''),decision=body.decision==='approve'?'approved':body.decision==='reject'?'rejected':'';
+ if(!decision)return json({ok:false,error:'Escolha aprovar ou rejeitar.'},400,request);
+ const row=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();if(!row)return json({ok:false,error:'Story não encontrado.'},404,request);
+ let post=null;
+ if(decision==='approved'&&row.status==='pending'){
+   if(body.confirmSamePost!==true)return json({ok:false,error:'Confira se o story mostra a publicação escolhida antes de aprovar.'},400,request);
+   const link=instagramPost(body.postUrl);if(!link)return json({ok:false,error:'Informe o link da publicação original no Instagram.'},400,request);
+   const catalog=await ownStoryPosts(env,row),found=(catalog.allPosts||catalog.posts).find(p=>p.key===link.key);
+   if(found)post={...found,verification:'meta'};
+   else{const publishedAt=Date.parse(String(body.publishedAt||''));if(body.confirmDate!==true||!/^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:00-03:00$/.test(String(body.publishedAt||''))||!Number.isFinite(publishedAt)||dateKeys(publishedAt).dayKey!==String(body.publishedAt).slice(0,10))return json({ok:false,error:'A data não foi encontrada automaticamente. Confira no Instagram e informe a data e hora de publicação.'},400,request);post={...link,publishedAt,verification:'manual'}}
+ }
+ const result=await reviewStory(env.DB,key,decision,post,String(admin.email||ADMIN_EMAIL),body.note);
+ if(result.error)return json({ok:false,error:result.error},result.status,request);
+ if(result.row.status==='approved'){
+  try{await evaluateWeeklyBonuses(env,{userKey:result.row.user_key,identity:result.row.instagram_id,username:result.row.username,timestamp:result.row.event_at})}catch(error){console.error('Story weekly bonus retry pending',error)}
+  await invalidatePublicRankings(env.DB);
+ }
+ return json({ok:true,alreadyReviewed:result.alreadyReviewed,points:result.row.status==='approved'?5:0,story:publicStoryReview(result.row)},200,request);
+}
+
 function predictionIdFromSource(sourceId, knownIds = []) {
   const source = String(sourceId || '');
   const pipe = source.indexOf('|');
@@ -1912,12 +1950,14 @@ async function getRewardStatus(request, env, url) {
   });
 
   const snapshot = await weeklySnapshot(env, row.user_key, Date.now());
+  const storyReview=await env.DB.prepare("SELECT COUNT(*) AS pending FROM story_reviews WHERE user_key=?1 AND week_key=?2 AND status='pending'").bind(row.user_key,snapshot.week.weekStartKey).first();
   return json({
     ok: true,
     linked: true,
     username: row.username,
     weekStart: snapshot.week.weekStartKey,
     weekEnd: snapshot.week.weekEndKey,
+    storyReview: {pending:Number(storyReview?.pending||0),approvalRequired:true},
     progress: snapshot.progress,
     bonuses: snapshot.bonuses,
     mission: config.mission,

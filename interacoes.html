@@ -148,7 +148,7 @@
     <div class="ig-hero-main">
       <div class="ig-kicker">Comunidade Central Free Fire</div>
       <h1 class="ig-title">Ranking da <span>Comunidade</span></h1>
-      <p class="ig-subtitle">Acompanhe quem mais participa da Central Free Fire. Stories, comentários e check-ins somam pontos automaticamente durante a semana.</p>
+      <p class="ig-subtitle">Acompanhe quem mais participa da Central Free Fire. Comentários e check-ins somam pontos automaticamente. Stories passam por aprovação antes de pontuar.</p>
     </div>
     <div class="ig-side-card">
       <small>Período atual</small>
@@ -199,7 +199,7 @@
   <section class="ig-stats" aria-label="Resumo do ranking">
     <article class="ig-stat"><span>Participantes</span><strong id="ig-stat-users">0</strong><small>perfis no ranking</small></article>
     <article class="ig-stat"><span>Interações</span><strong id="ig-stat-actions">0</strong><small>ações contabilizadas</small></article>
-    <article class="ig-stat"><span>Stories</span><strong id="ig-stat-stories">0</strong><small>menções registradas</small></article>
+    <article class="ig-stat"><span>Stories</span><strong id="ig-stat-stories">0</strong><small>menções pontuadas</small></article>
     <article class="ig-stat"><span>Comentários</span><strong id="ig-stat-comments">0</strong><small>posts/reels interagidos</small></article>
   </section>
 
@@ -219,9 +219,9 @@
     <aside class="ig-card">
       <div class="ig-card-head"><h2>Como pontua</h2></div>
       <div class="ig-rules">
-        <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Publicou/republicou um Story e marcou a página.</small></div><div class="ig-rule-points" id="ig-rule-story">+5 pts</div></div>
+        <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Compartilhou um post da Central da mesma semana e marcou a página. Pontos após aprovação.</small></div><div class="ig-rule-points" id="ig-rule-story">+5 pts</div></div>
         <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small id="ig-rule-comment-copy">Interagiu de forma natural em publicação ou Reel recente. Conta uma vez por conteúdo e apenas em posts publicados nos últimos 7 dias.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div><div class="ig-rule"><div class="ig-rule-icon">🔗</div><div><strong>Conta Google conectada</strong><small>Vincule sua conta Google a um Instagram confirmado. Bônus único por conta.</small></div><div class="ig-rule-points">+20 pts</div></div>
-        <div class="ig-note" id="ig-rule-note">Para evitar spam, cada pessoa pontua uma vez por publicação e há limite diário para menções em Story.</div>
+        <div class="ig-note" id="ig-rule-note">Stories precisam de aprovação. Só vale post da mesma semana, de segunda a domingo no horário de Brasília. Cada publicação pontua uma vez por pessoa, com até 3 aprovações por dia.</div>
       </div>
       <div class="ig-integrity">
         <strong>⚠️ Integridade do ranking</strong>
@@ -332,7 +332,7 @@
     els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' pts';
     const maxCommentAge=Math.max(1,num(state.rules.commentMediaMaxAgeDays)||7);
     if(els.ruleCommentCopy)els.ruleCommentCopy.textContent=`Interagiu de forma natural em publicação ou Reel recente. Conta uma vez por conteúdo e apenas em posts publicados nos últimos ${formatNumber(maxCommentAge)} dias.`;
-    els.ruleNote.textContent=`Para evitar spam, cada pessoa pontua uma vez por publicação. Menções em Story têm limite de ${formatNumber(state.rules.storyMentionDailyLimit)} por dia. Comentários em conteúdos com mais de ${formatNumber(maxCommentAge)} dias não geram pontos.`;
+    els.ruleNote.textContent=`Stories pontuam após aprovação: o post original precisa ser da mesma semana do story (segunda a domingo, horário de Brasília). Cada publicação vale uma vez por pessoa, com até ${formatNumber(state.rules.storyMentionDailyLimit)} aprovações por dia. Comentários em conteúdos com mais de ${formatNumber(maxCommentAge)} dias não geram pontos.`;
     els.updated.textContent=timestampLabel(state.updatedAt);
     updatePeriodText();
     renderPodium(state.query?[]:all);
@@ -441,7 +441,7 @@
   setInterval(()=>{if(!document.hidden)load();},REFRESH_MS);
 })();
 </script>
-<script data-cff-community-checkin src="js/community-checkin.js?v=20261007-monthly-auto-v3"></script>
+<script data-cff-community-checkin src="js/community-checkin.js?v=20261012-story-review-v1"></script>
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
 
 <script data-cff-community-prediction src="js/community-prediction-v5.js?v=20261006-account-v1"></script>
