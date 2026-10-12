@@ -1,6 +1,7 @@
 {
   "name": "cff-instagram-community",
   "main": "worker.js",
+  "keep_vars": true,
   "compatibility_date": "2026-09-14",
   "d1_databases": [
     {

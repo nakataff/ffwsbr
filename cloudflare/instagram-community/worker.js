@@ -1,3 +1,4 @@
+import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
   commentPoints: 2,
@@ -58,12 +59,12 @@ const ALLOWED_ORIGINS = new Set([
 
 let rewardsCache = { at: 0, data: null };
 let predictionSettlementSweep = { at: 0, signature: '', pending: null };
-const RANKING_CACHE_TTL_MS = 60_000;
-const rankingCache = new Map();
+const RANKING_CACHE_TTL_MS = 300_000;
 let performanceIndexesReady = false;
 let performanceIndexesPromise = null;
 
 const PERFORMANCE_INDEXES = Object.freeze([
+  ...OPTIMIZATION_SCHEMA,
   'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
   'CREATE INDEX IF NOT EXISTS idx_awards_type_award_key ON awards (type, award_key)',
@@ -82,7 +83,7 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community' }, 200, request);
+    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION }, 200, request);
 
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
       await ensurePerformanceIndexes(env);
@@ -94,7 +95,7 @@ export default {
       return new Response('Method Not Allowed', { status: 405 });
     }
 
-    if (url.pathname === '/api/ranking' && request.method === 'GET') return getRanking(request, env, url);
+    if (url.pathname === '/api/ranking' && request.method === 'GET') return publicRankingResponse(request, env, url);
     if (url.pathname === '/api/ranking/history' && request.method === 'GET') return getWeeklyHistory(request, env, url);
     if (url.pathname === '/api/ranking/months' && request.method === 'GET') return getMonthlyHistory(request, env, url);
     if (url.pathname === '/api/achievements/profile' && request.method === 'GET') return getAchievementProfile(request, env, url);
@@ -1092,14 +1093,14 @@ async function publicPredictionVotes(env, predictions) {
   for (const prediction of predictions || []) {
     if (!prediction?.id || !prediction?.closesAt || now < Number(prediction.closesAt)) continue;
     const [startKey,endKey] = awardKeyPrefixBounds(`prediction-vote:${prediction.id}:`);
-    const result = await env.DB.prepare(`
+    const result = await cachedPublic(env.DB, `public-votes:${prediction.id}`, 300_000, () => env.DB.prepare(`
       SELECT a.user_key, COALESCE(u.username,a.username) AS username, a.source_id, a.created_at
       FROM awards a
       LEFT JOIN users u ON u.user_key=a.user_key
       WHERE a.type='prediction_vote' AND a.award_key >= ?1 AND a.award_key < ?2
       ORDER BY a.created_at ASC
       LIMIT 1000
-    `).bind(startKey,endKey).all();
+    `).bind(startKey,endKey).all());
 
     out[prediction.id] = (result.results || []).map(row => {
       const vote = parseVoteSource(prediction.id, row.source_id) || {};
@@ -1119,13 +1120,7 @@ async function publicPredictionVotes(env, predictions) {
 
 async function settleManualPrediction(env, prediction) {
   if (!prediction || prediction.category !== 'custom' || prediction.status !== 'settled' || !prediction.correctOption || prediction.correctPoints <= 0) return;
-  const [startKey,endKey] = awardKeyPrefixBounds(`prediction-vote:${prediction.id}:`);
-  const result = await env.DB.prepare(`
-    SELECT user_key, username, source_id
-    FROM awards
-    WHERE type = 'prediction_vote' AND award_key >= ?1 AND award_key < ?2
-    LIMIT 1500
-  `).bind(startKey,endKey).all();
+  const result = { results: await allPredictionVotes(env, prediction.id) };
   const timestamp = prediction.closesAt || prediction.settledAt || Date.now();
 
   for (let i = 0; i < (result.results || []).length; i += 25) {
@@ -1145,13 +1140,7 @@ async function settleManualPrediction(env, prediction) {
 
 async function settleAutoPrediction(env, prediction) {
   if (!prediction || prediction.category !== 'ffws' || prediction.status !== 'settled' || !prediction.result || prediction.correctPoints <= 0) return;
-  const [startKey,endKey] = awardKeyPrefixBounds(`prediction-vote:${prediction.id}:`);
-  const result = await env.DB.prepare(`
-    SELECT user_key, username, source_id
-    FROM awards
-    WHERE type = 'prediction_vote' AND award_key >= ?1 AND award_key < ?2
-    LIMIT 2000
-  `).bind(startKey,endKey).all();
+  const result = { results: await allPredictionVotes(env, prediction.id) };
 
   const accepted = new Set(prediction.result.teams || prediction.result.options || (prediction.result.option ? [prediction.result.option] : []));
   const candidates = [];
@@ -1187,11 +1176,9 @@ async function settleAutoCombo(env, predictions) {
   const worst = list.find(p => p?.metric === 'worst');
   if (!best || !worst || best.status !== 'settled' || worst.status !== 'settled' || !best.result || !worst.result) return;
 
-  const [bestStart,bestEnd] = awardKeyPrefixBounds(`prediction-vote:${best.id}:`);
-  const [worstStart,worstEnd] = awardKeyPrefixBounds(`prediction-vote:${worst.id}:`);
   const [bestRows, worstRows] = await Promise.all([
-    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key >= ?1 AND award_key < ?2 LIMIT 2500`).bind(bestStart,bestEnd).all(),
-    env.DB.prepare(`SELECT user_key, username, source_id FROM awards WHERE type='prediction_vote' AND award_key >= ?1 AND award_key < ?2 LIMIT 2500`).bind(worstStart,worstEnd).all(),
+    allPredictionVotes(env,best.id).then(results=>({results})),
+    allPredictionVotes(env,worst.id).then(results=>({results})),
   ]);
 
   const bestAccepted = new Set(best.result.teams || (best.result.option ? [best.result.option] : []));
@@ -1224,46 +1211,64 @@ async function settleAutoCombo(env, predictions) {
   }
 }
 
+async function allPredictionVotes(env, id) {
+  const [start,end] = awardKeyPrefixBounds(`prediction-vote:${id}:`);
+  const rows=[];let cursor='';
+  while (true) {
+    const result=await env.DB.prepare(`SELECT award_key,user_key,username,source_id FROM awards
+      WHERE type='prediction_vote' AND award_key>=?1 AND award_key<?2 AND award_key>?3
+      ORDER BY award_key LIMIT 1000`).bind(start,end,cursor).all();
+    const page=result.results||[];rows.push(...page);
+    if(page.length<1000)return rows;
+    cursor=page[page.length-1].award_key;
+  }
+}
+
+function predictionResultSignature(p) {
+  return JSON.stringify({id:p.id,kind:p.kind,metric:p.metric,correctOption:p.correctOption,
+    correctPoints:p.correctPoints,closesAt:p.closesAt,settledAt:p.settledAt,
+    result:{option:p.result?.option,points:p.result?.points,
+      teams:[...(p.result?.teams||[])].sort(),options:[...(p.result?.options||[])].sort()}});
+}
+function settlementJobs(env, manual, auto) {
+  const jobs=[];
+  if(manual?.status==='settled')jobs.push({key:`manual:${manual.id}`,signature:predictionResultSignature(manual),work:()=>settleManualPrediction(env,manual)});
+  for(const item of auto?.pairs||[]) {
+    const list=item.predictions||[];
+    for(const p of list)if(p?.status==='settled')jobs.push({key:`auto:${p.id}`,signature:predictionResultSignature(p),work:()=>settleAutoPrediction(env,p)});
+    const best=list.find(p=>p.metric==='best'),worst=list.find(p=>p.metric==='worst');
+    if(best?.status==='settled'&&worst?.status==='settled')jobs.push({key:`combo:${best.id}|${worst.id}`,
+      signature:JSON.stringify([predictionResultSignature(best),predictionResultSignature(worst),RULES.ffwsPredictionComboPoints]),
+      work:()=>settleAutoCombo(env,list)});
+  }
+  return jobs;
+}
 async function settleAllAvailable(env, manual, auto) {
-  const jobs = [];
-  if (manual?.status === 'settled') jobs.push(settleManualPrediction(env, manual));
-  for (const item of auto.pairs || []) {
-    const predictions = item.predictions || [];
-    for (const prediction of predictions) {
-      if (prediction.status === 'settled') jobs.push(settleAutoPrediction(env, prediction));
-    }
-    if (predictions.length >= 2 && predictions.every(p => p.status === 'settled')) jobs.push(settleAutoCombo(env, predictions));
-  }
-  await Promise.allSettled(jobs);
+  const results=await Promise.allSettled(settlementJobs(env,manual,auto).map(job=>settleOnce(env.DB,job.key,job.signature,job.work)));
+  const failed=results.find(result=>result.status==='rejected');
+  if(failed)throw failed.reason;
 }
-
-function settlementSignature(manual, auto) {
-  const parts = [];
-  if (manual?.status === 'settled') parts.push(`m:${manual.id}:${manual.correctOption || ''}`);
-  for (const item of auto?.pairs || []) {
-    const settled = (item.predictions || []).filter(p => p?.status === 'settled');
-    for (const p of settled) parts.push(`p:${p.id}:${p?.result?.option || ''}:${p?.result?.points ?? ''}`);
-    if (settled.length && settled.length === (item.predictions || []).length) parts.push(`c:${item?.round?.round || ''}`);
-  }
-  return parts.sort().join('|');
-}
-
 function maybeSettleAllAvailable(env, manual, auto) {
-  const signature = settlementSignature(manual, auto);
-  if (!signature) return Promise.resolve();
-  const now = Date.now();
-  if (predictionSettlementSweep.signature === signature && now - predictionSettlementSweep.at < 15 * 60 * 1000) {
-    return predictionSettlementSweep.pending || Promise.resolve();
-  }
-  if (predictionSettlementSweep.pending && predictionSettlementSweep.signature === signature) {
-    return predictionSettlementSweep.pending;
-  }
-  predictionSettlementSweep.signature = signature;
-  predictionSettlementSweep.at = now;
-  predictionSettlementSweep.pending = settleAllAvailable(env, manual, auto).finally(() => {
-    predictionSettlementSweep.pending = null;
-  });
+  const signature=JSON.stringify(settlementJobs(env,manual,auto).map(({key,signature})=>[key,signature]).sort());
+  if(signature==='[]')return Promise.resolve();
+  const now=Date.now();
+  if(predictionSettlementSweep.signature===signature&&now-predictionSettlementSweep.at<15*60*1000)return predictionSettlementSweep.pending||Promise.resolve();
+  if(predictionSettlementSweep.pending)return predictionSettlementSweep.pending;
+  predictionSettlementSweep.signature=signature;
+  predictionSettlementSweep.pending=settleAllAvailable(env,manual,auto).then(()=>{
+    predictionSettlementSweep.at=Date.now();
+  }).catch(error=>{
+    predictionSettlementSweep.at=0;predictionSettlementSweep.signature='';
+    throw error;
+  }).finally(()=>{predictionSettlementSweep.pending=null});
   return predictionSettlementSweep.pending;
+}
+async function invalidatePredictionSettlement(env,id) {
+  const escaped=String(id).replace(/[\\%_]/g,'\\$&');
+  await env.DB.prepare(`DELETE FROM prediction_settlements WHERE job_key=?1 OR job_key=?2
+    OR job_key LIKE ?3 ESCAPE '\\' OR job_key LIKE ?4 ESCAPE '\\'`)
+    .bind(`manual:${id}`,`auto:${id}`,`combo:${escaped}|%`,`combo:%|${escaped}`).run();
+  predictionSettlementSweep.at=0;predictionSettlementSweep.signature='';
 }
 
 async function resolvePrediction(predictionId, manual, auto) {
@@ -1389,6 +1394,7 @@ if (!existingVote) {
   }
 }
 
+if (!existingVote || voteUpdated) await invalidatePredictionSettlement(env,prediction.id);
 const all = await buildPredictionsPayload(env, sessionId, ctx);
 return json({
   ok: true,
@@ -2028,7 +2034,7 @@ async function awardInteraction(env, event) {
         last_interaction_at = MAX(monthly_users.last_interaction_at, excluded.last_interaction_at)
     `).bind(monthKey, event.userKey, event.username, Number(event.points || 0), storyInc, commentInc, newDay, timestamp),
   ]);
-  rankingCache.clear();
+  // Current public rankings may lag by at most five minutes; new awards do not defeat the shared cache.
 
   if (!String(event.type || '').startsWith('bonus_')) {
     try {
@@ -2113,23 +2119,88 @@ async function computeMonthlySnapshot(env, monthKey) {
   };
 }
 
+async function computeWeeklySnapshot(env,weekStart) {
+  const week=weekKeys(dayKeyTimestamp(weekStart));
+  const result=await env.DB.prepare(`
+      WITH week_awards AS (
+        SELECT user_key,
+               MAX(username) AS username,
+               SUM(points) AS points,
+               SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS storyMentions,
+               SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments,
+               MAX(created_at) AS lastInteractionAt
+        FROM awards
+        WHERE day_key BETWEEN ?1 AND ?2
+        GROUP BY user_key
+      ),
+      week_active AS (
+        SELECT user_key, COUNT(*) AS activeDays
+        FROM active_days
+        WHERE day_key BETWEEN ?1 AND ?2
+        GROUP BY user_key
+      )
+      SELECT w.user_key,
+             COALESCE(u.username, w.username) AS username,
+             w.points,
+             w.storyMentions,
+             w.comments,
+             COALESCE(a.activeDays, 0) AS activeDays,
+             w.lastInteractionAt
+      FROM week_awards w
+      LEFT JOIN users u ON u.user_key = w.user_key
+      LEFT JOIN week_active a ON a.user_key = w.user_key
+      ORDER BY w.points DESC, activeDays DESC, w.storyMentions DESC, w.comments DESC, username ASC
+    `).bind(week.weekStartKey,week.weekEndKey).all();
+  const rows=result.results||[],users={};let updatedAt=0;
+  for(const row of rows.slice(0,500)) {
+    users[row.user_key]={username:row.username,points:Number(row.points||0),storyMentions:Number(row.storyMentions||0),
+      comments:Number(row.comments||0),activeDays:Number(row.activeDays||0),lastInteractionAt:Number(row.lastInteractionAt||0)};
+    updatedAt=Math.max(updatedAt,Number(row.lastInteractionAt||0));
+  }
+  const first=rows[0];
+  return {...week,participants:rows.length,updatedAt,users,winner:first?{userKey:first.user_key,...users[first.user_key]}:null};
+}
+async function getOrCreateWeeklySnapshot(env,weekStart) {
+  for(let attempt=0;attempt<2;attempt++) {
+    const row=await env.DB.prepare('SELECT payload FROM weekly_ranking_snapshots WHERE week_key=?1').bind(weekStart).first();
+    if(row?.payload){try{return JSON.parse(row.payload)}catch(_){}}
+    const version=await periodVersion(env.DB,'week:'+weekStart);
+    const snapshot=await computeWeeklySnapshot(env,weekStart);
+    if(await savePeriodSnapshot(env.DB,'weekly_ranking_snapshots','week_key',weekStart,'week:'+weekStart,version,snapshot))return snapshot;
+  }
+  return computeWeeklySnapshot(env,weekStart);
+}
+async function closedWeekKeys(env,limit) {
+  const current=weekKeys().weekStartKey;
+  return cachedPublic(env.DB,`closed-weeks:${current}:${limit||'all'}`,86_400_000,async()=>{
+    const cutoff=limit?shiftDayKey(current,-(limit+2)*7):'0000-01-01';
+    const result=await env.DB.prepare(`SELECT DISTINCT date(day_key,'-'||((CAST(strftime('%w',day_key) AS INTEGER)+6)%7)||' days') AS weekStart
+      FROM awards WHERE day_key>=?1 AND day_key<?2 ORDER BY weekStart DESC`).bind(cutoff,current).all();
+    const keys=(result.results||[]).map(row=>row.weekStart);
+    return limit?keys.slice(0,limit):keys;
+  });
+}
+async function weeklySummaries(env,limit) {
+  const keys=await closedWeekKeys(env,limit),rows=[];
+  for(let i=0;i<keys.length;i+=8)rows.push(...await Promise.all(keys.slice(i,i+8).map(key=>getOrCreateWeeklySnapshot(env,key))));
+  return rows.filter(row=>row.winner).map(row=>({weekKey:row.weekKey,weekStart:row.weekStartKey,weekEnd:row.weekEndKey,participants:row.participants,winner:row.winner}));
+}
+async function weeklyWinnerCount(env,userKey,username) {
+  const rows=await cachedPublic(env.DB,`history:${weekKeys().weekStartKey}:all`,900_000,()=>weeklySummaries(env,0));
+  return {wins:rows.filter(row=>row.winner.userKey===userKey||String(row.winner.username||'').toLowerCase()===username).length};
+}
+
 async function getOrCreateMonthlySnapshot(env, monthKey) {
-  if (!validMonthKey(monthKey)) return null;
-  const currentMonth = dateKeys(Date.now()).monthKey;
-  if (monthKey >= currentMonth) return null;
-  const existing = await env.DB.prepare('SELECT payload FROM monthly_ranking_snapshots WHERE month_key=?1 LIMIT 1').bind(monthKey).first();
-  if (existing?.payload) {
-    try { return JSON.parse(existing.payload); } catch (_) {}
+  if(!validMonthKey(monthKey)||monthKey>=dateKeys(Date.now()).monthKey)return null;
+  for(let attempt=0;attempt<2;attempt++) {
+    const existing=await env.DB.prepare('SELECT payload FROM monthly_ranking_snapshots WHERE month_key=?1').bind(monthKey).first();
+    if(existing?.payload){try{return JSON.parse(existing.payload)}catch(_){}}
+    const version=await periodVersion(env.DB,'month:'+monthKey);
+    const snapshot=await computeMonthlySnapshot(env,monthKey);
+    if(!snapshot)return null;
+    if(await savePeriodSnapshot(env.DB,'monthly_ranking_snapshots','month_key',monthKey,'month:'+monthKey,version,snapshot))return snapshot;
   }
-  const snapshot = await computeMonthlySnapshot(env, monthKey);
-  if (!snapshot) return null;
-  await env.DB.prepare('INSERT OR IGNORE INTO monthly_ranking_snapshots (month_key,payload,created_at) VALUES (?1,?2,?3)')
-    .bind(monthKey, JSON.stringify(snapshot), Date.now()).run();
-  const saved = await env.DB.prepare('SELECT payload FROM monthly_ranking_snapshots WHERE month_key=?1 LIMIT 1').bind(monthKey).first();
-  if (saved?.payload) {
-    try { return JSON.parse(saved.payload); } catch (_) {}
-  }
-  return snapshot;
+  return computeMonthlySnapshot(env,monthKey);
 }
 
 async function closedMonthKeys(env, limit = 60) {
@@ -2142,6 +2213,23 @@ async function closedMonthKeys(env, limit = 60) {
     LIMIT ?2
   `).bind(currentMonth, Math.max(1, Math.min(Number(limit) || 60, 60))).all();
   return (rows.results || []).map(row => String(row.monthKey || '')).filter(validMonthKey);
+}
+
+async function publicRankingResponse(request,env,url) {
+  const period=String(url.searchParams.get('period')||'week').toLowerCase();
+  const month=String(url.searchParams.get('month')||dateKeys().monthKey);
+  if(period==='month'&&!validMonthKey(month))return getRanking(request,env,url);
+  const week=weekKeys(dayKeyTimestamp(url.searchParams.get('week'))||Date.now()).weekStartKey;
+  const normalized=['week','month','all'].includes(period)?period:'week';
+  const key=`ranking:${normalized}:${normalized==='week'?week:normalized==='month'?month:'all'}`;
+  const payload=await cachedPublic(env.DB,key,RANKING_CACHE_TTL_MS,async()=>{
+    const response=await getRanking(request,env,url);
+    if(!response.ok)throw new Error('Ranking could not be cached');
+    return response.json();
+  });
+  // week= marks an historical request even if its actual week is the current week.
+  const historical=normalized==='week'?Boolean(dayKeyTimestamp(url.searchParams.get('week'))):normalized==='month'?month!==dateKeys().monthKey:false;
+  return json({...payload,period:{...payload.period,historical}},200,request,{'Cache-Control':'public, max-age=300'});
 }
 
 async function getRanking(request, env, url) {
@@ -2159,11 +2247,11 @@ async function getRanking(request, env, url) {
   const requestedWeekTimestamp = period === 'week' ? dayKeyTimestamp(requestedWeek) : null;
   const weekInfo = weekKeys(requestedWeekTimestamp || now);
   const { weekKey, weekStartKey, weekEndKey } = weekInfo;
-  const cacheKey = `${period}:${period === 'week' ? weekStartKey : period === 'month' ? monthKey : 'all'}`;
-  const cached = rankingCache.get(cacheKey);
 
-  if (cached && now - cached.at < RANKING_CACHE_TTL_MS) {
-    return json(cached.payload, 200, request, { 'Cache-Control': 'public, max-age=60' });
+  if(period==='week'&&weekStartKey<weekKeys(now).weekStartKey) {
+    const snapshot=await getOrCreateWeeklySnapshot(env,weekStartKey);
+    return json({updatedAt:snapshot.updatedAt,rules:RULES,period:{type:'week',weekKey,weekStart:weekStartKey,weekEnd:weekEndKey,
+      monthKey,historical:true,frozen:true,firstRecordedDay:'',lastRecordedDay:''},users:snapshot.users},200,request,{'Cache-Control':'public, max-age=300'});
   }
 
   if (period === 'month' && monthKey < currentMonthKey) {
@@ -2185,8 +2273,7 @@ async function getRanking(request, env, url) {
         },
         users: snapshot.users || {},
       };
-      rankingCache.set(cacheKey, { at: now, payload });
-      return json(payload, 200, request, { 'Cache-Control': 'public, max-age=86400' });
+      return json(payload, 200, request, { 'Cache-Control': 'public, max-age=300' });
     }
   }
 
@@ -2309,7 +2396,6 @@ async function getRanking(request, env, url) {
     },
     users,
   };
-  rankingCache.set(cacheKey, { at: now, payload });
 
   return json(payload, 200, request, { 'Cache-Control': 'public, max-age=60' });
 }
@@ -2368,39 +2454,7 @@ async function getAchievementProfile(request, env, url) {
       WHERE user_key=?1
     `).bind(userKey).first(),
     env.DB.prepare("SELECT COUNT(*) AS total FROM awards WHERE user_key=?1 AND type='checkin'").bind(userKey).first(),
-    env.DB.prepare(`
-      WITH award_rows AS (
-        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
-               user_key, username, points, type
-        FROM awards
-        WHERE day_key < ?1
-      ),
-      week_scores AS (
-        SELECT weekStart, user_key, MAX(username) AS username,
-               SUM(points) AS points,
-               SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS stories,
-               SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments
-        FROM award_rows
-        GROUP BY weekStart,user_key
-      ),
-      active_weeks AS (
-        SELECT date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
-               user_key, COUNT(*) AS activeDays
-        FROM active_days
-        WHERE day_key < ?1
-        GROUP BY weekStart,user_key
-      ),
-      ranked AS (
-        SELECT s.weekStart,s.user_key,s.username,
-               ROW_NUMBER() OVER (
-                 PARTITION BY s.weekStart
-                 ORDER BY s.points DESC, COALESCE(a.activeDays,0) DESC, s.stories DESC, s.comments DESC, s.username ASC
-               ) AS place
-        FROM week_scores s
-        LEFT JOIN active_weeks a ON a.weekStart=s.weekStart AND a.user_key=s.user_key
-      )
-      SELECT COUNT(*) AS wins FROM ranked WHERE place=1 AND (user_key=?2 OR lower(username)=?3)
-    `).bind(currentWeek.weekStartKey, userKey, username).first(),
+    weeklyWinnerCount(env,userKey,username),
     closedMonthKeys(env, 60),
   ]);
 
@@ -2430,106 +2484,12 @@ async function getAchievementProfile(request, env, url) {
   }, 200, request, { 'Cache-Control': 'public, max-age=120' });
 }
 
-async function getWeeklyHistory(request, env, url) {
-  const rawLimit = Number(url.searchParams.get('limit'));
-  const limit = Math.max(1, Math.min(Number.isFinite(rawLimit) ? Math.floor(rawLimit) : 24, 104));
-  const now = Date.now();
-  const currentWeek = weekKeys(now);
-  const cutoff = shiftDayKey(currentWeek.weekStartKey, -(limit + 2) * 7);
-
-  const result = await env.DB.prepare(`
-    WITH award_rows AS (
-      SELECT
-        date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
-        user_key,
-        username,
-        points,
-        type,
-        created_at
-      FROM awards
-      WHERE day_key >= ?1
-    ),
-    award_weeks AS (
-      SELECT
-        weekStart,
-        user_key,
-        MAX(username) AS username,
-        SUM(points) AS points,
-        SUM(CASE WHEN type='story' THEN 1 ELSE 0 END) AS storyMentions,
-        SUM(CASE WHEN type='comment' THEN 1 ELSE 0 END) AS comments,
-        MAX(created_at) AS lastInteractionAt
-      FROM award_rows
-      GROUP BY weekStart, user_key
-    ),
-    active_rows AS (
-      SELECT
-        date(day_key, '-' || ((CAST(strftime('%w', day_key) AS INTEGER) + 6) % 7) || ' days') AS weekStart,
-        user_key
-      FROM active_days
-      WHERE day_key >= ?1
-    ),
-    active_weeks AS (
-      SELECT weekStart, user_key, COUNT(*) AS activeDays
-      FROM active_rows
-      GROUP BY weekStart, user_key
-    )
-    SELECT
-      w.weekStart,
-      w.user_key,
-      COALESCE(u.username, w.username) AS username,
-      w.points,
-      w.storyMentions,
-      w.comments,
-      COALESCE(a.activeDays, 0) AS activeDays,
-      w.lastInteractionAt
-    FROM award_weeks w
-    LEFT JOIN users u ON u.user_key = w.user_key
-    LEFT JOIN active_weeks a ON a.weekStart = w.weekStart AND a.user_key = w.user_key
-    WHERE w.weekStart < ?2
-    ORDER BY w.weekStart DESC, w.points DESC, activeDays DESC, w.storyMentions DESC, w.comments DESC, username ASC
-  `).bind(cutoff, currentWeek.weekStartKey).all();
-
-  const weeks = new Map();
-  for (const row of result.results || []) {
-    const weekStart = String(row.weekStart || '');
-    if (!weekStart) continue;
-    if (!weeks.has(weekStart)) {
-      const stamp = dayKeyTimestamp(weekStart);
-      if (!stamp) continue;
-      const wk = weekKeys(stamp);
-      weeks.set(weekStart, {
-        weekKey: wk.weekKey,
-        weekStart: wk.weekStartKey,
-        weekEnd: wk.weekEndKey,
-        participants: 0,
-        winner: null,
-      });
-    }
-
-    const week = weeks.get(weekStart);
-    week.participants += 1;
-    if (!week.winner) {
-      week.winner = {
-        userKey: row.user_key,
-        username: row.username || 'usuario',
-        points: Number(row.points || 0),
-        storyMentions: Number(row.storyMentions || 0),
-        comments: Number(row.comments || 0),
-        activeDays: Number(row.activeDays || 0),
-        lastInteractionAt: Number(row.lastInteractionAt || 0),
-      };
-    }
-  }
-
-  const history = [...weeks.values()]
-    .sort((a, b) => b.weekStart.localeCompare(a.weekStart))
-    .slice(0, limit)
-    .filter((item) => item.winner);
-
-  return json({
-    currentWeek: { weekKey: currentWeek.weekKey, weekStart: currentWeek.weekStartKey, weekEnd: currentWeek.weekEndKey },
-    history,
-  }, 200, request, { 'Cache-Control': 'public, max-age=300' });
+async function getWeeklyHistory(request,env,url) {
+  const rawLimit=Number(url.searchParams.get('limit') || 24);
+  const limit=Math.max(1,Math.min(Number.isFinite(rawLimit)?Math.floor(rawLimit):24,104));
+  const current=weekKeys();
+  const history=await cachedPublic(env.DB,`history:${current.weekStartKey}:${limit}`,900_000,()=>weeklySummaries(env,limit));
+  return json({currentWeek:{weekKey:current.weekKey,weekStart:current.weekStartKey,weekEnd:current.weekEndKey},history},200,request,{'Cache-Control':'public, max-age=300'});
 }
 
 async function logEntryShape(env, entry) {
