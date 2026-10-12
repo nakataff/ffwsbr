@@ -655,8 +655,20 @@
         "title": {
           ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
           ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 32"
+        },
+        "roleId": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "newData.isString() && (root.child('communityRoleCatalog').child(newData.val()).exists() || newData.val().matches(/^(administrator|moderator|influencer|supporter|member)$/))"
+        },
+        "updatedAt": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
         }
-      }
+      },
+      ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+      ".indexOn": [
+        "roleId"
+      ]
     },
     "communityAvatarCodes": {
       ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
@@ -852,6 +864,29 @@
           ".validate": false
         }
       }
+    },
+    "communityRoleCatalog": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".validate": "$id.matches(/^[a-z][a-z0-9-]{0,31}$/) && newData.hasChildren(['label','color','order','updatedAt'])",
+        "label": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 32"
+        },
+        "color": {
+          ".validate": "newData.isString() && newData.val().matches(/^#[a-fA-F0-9]{6}$/)"
+        },
+        "order": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+        },
+        "$other": {
+          ".validate": false
+        }
+      },
+      ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
     }
   }
 }

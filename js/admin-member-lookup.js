@@ -12,7 +12,7 @@ export function memberReference(input){
 }
 export async function resolveMemberUid(input,read){
  const {kind,key}=memberReference(input);
- const uid=kind==='slug'?await read('communityProfileSlugs/'+key):kind==='instagram'?(await read('communityUsernames/'+key))||(await read('communityRankingProfiles/'+key))?.uid:key;
+ let uid=key;if(kind==='slug')uid=await read('communityProfileSlugs/'+key);else if(kind==='instagram'){const [central,instagram]=await Promise.all([read('communityUsernames/'+key),read('communityRankingProfiles/'+key)]);if(central&&instagram?.uid&&central!==instagram.uid)throw Error('Este @ corresponde a duas contas. Use o link com o código user... para escolher a pessoa correta.');uid=central||instagram?.uid;}
  if(typeof uid!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(uid))throw Error('Conta não encontrada para este perfil.');
  return uid;
 }
