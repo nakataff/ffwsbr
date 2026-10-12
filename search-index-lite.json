@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-02",
+  "updatedAt": "2026-10-12",
   "items": [
     {
       "type": "team",
@@ -7244,6 +7244,136 @@
         "Gerador de Tier List"
       ],
       "url": "tier-constructor.html"
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-classificatoria",
+      "title": "FFWS Global Finals 2026 · Classificatória",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/classificatoria",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Classificatória"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-segunda-fase",
+      "title": "FFWS Global Finals 2026 · Segunda Fase",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/segunda-fase",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Segunda Fase"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-final",
+      "title": "FFWS Global Finals 2026 · Final",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/final",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Final"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-mvp",
+      "title": "FFWS Global Finals 2026 · Ranking MVP",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/mvp",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Ranking MVP"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-equipes",
+      "title": "FFWS Global Finals 2026 · Equipes",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/equipes",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Equipes"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-datas",
+      "title": "FFWS Global Finals 2026 · Datas",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/datas",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Datas"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-selecoes",
+      "title": "FFWS Global Finals 2026 · Seleções da season",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/selecoes",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Seleções da season"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-stats",
+      "title": "FFWS Global Finals 2026 · Estatísticas",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/stats",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Estatísticas"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-notas",
+      "title": "FFWS Global Finals 2026 · Notas CFF",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/notas",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Notas CFF"
+      ]
+    },
+    {
+      "type": "page",
+      "id": "ffws-global-2026-comparar",
+      "title": "FFWS Global Finals 2026 · Comparar jogadores",
+      "sub": "Mundial de Free Fire",
+      "url": "/ffws-global-2026/comparar",
+      "image": "central free fire.webp",
+      "aliases": [
+        "FFWS Global 2026",
+        "Mundial 2026",
+        "Comparar jogadores"
+      ]
     }
   ]
 }

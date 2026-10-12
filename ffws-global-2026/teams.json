@@ -1,0 +1,342 @@
+{
+  "tournament": "FFWS Global Finals 2026",
+  "updatedAt": "2026-10-12",
+  "teams": [
+    {
+      "id": "lyon",
+      "name": "LYON",
+      "abbreviation": "LYON",
+      "wikiName": "LYON",
+      "logo": "lyon.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "EWC",
+      "qualification": {
+        "competition": "Esports World Cup",
+        "placement": 1
+      }
+    },
+    {
+      "id": "btr",
+      "name": "Bigetron by Vitality",
+      "abbreviation": "BTR",
+      "wikiName": "btr",
+      "logo": "https://i.postimg.cc/VsZ1y87q/bigetron.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 1
+      }
+    },
+    {
+      "id": "gow",
+      "name": "GOW",
+      "abbreviation": "GOW",
+      "wikiName": "gow",
+      "logo": "https://i.postimg.cc/DytTZc3h/gow.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 2
+      }
+    },
+    {
+      "id": "p-esports",
+      "name": "P Esports",
+      "abbreviation": "P",
+      "wikiName": "p esports",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 3
+      }
+    },
+    {
+      "id": "ag-al",
+      "name": "All Gamers Global",
+      "abbreviation": "AG",
+      "wikiName": "ag.al",
+      "logo": "https://i.postimg.cc/XJpvJ5XN/agg.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 4
+      }
+    },
+    {
+      "id": "team-flash",
+      "name": "Team Flash",
+      "abbreviation": "FL",
+      "wikiName": "team flash",
+      "logo": "https://i.postimg.cc/yxsDwznQ/team-flash.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 5
+      }
+    },
+    {
+      "id": "rrq",
+      "name": "RRQ",
+      "abbreviation": "RRQ",
+      "wikiName": "rrq",
+      "logo": "https://i.postimg.cc/vHpsBvFh/rrq.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 6
+      }
+    },
+    {
+      "id": "onic",
+      "name": "ONIC",
+      "abbreviation": "ONIC",
+      "wikiName": "onic",
+      "logo": "https://i.postimg.cc/vT2G3RKL/onic.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 7
+      }
+    },
+    {
+      "id": "bru",
+      "name": "Buriram United Esports",
+      "abbreviation": "BRU",
+      "wikiName": "bru",
+      "logo": "https://i.postimg.cc/RhXdSRq0/bru.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "SEA",
+      "qualification": {
+        "competition": "FFWS SEA",
+        "placement": 8
+      }
+    },
+    {
+      "id": "loud",
+      "name": "LOUD",
+      "abbreviation": "LOUD",
+      "wikiName": "loud",
+      "logo": "loud 2.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "BR - Segunda Fase",
+      "qualification": {
+        "competition": "FFWS BR - Segunda Fase",
+        "placement": 1
+      }
+    },
+    {
+      "id": "los",
+      "name": "LOS",
+      "abbreviation": "LOS",
+      "wikiName": "los",
+      "logo": "Los.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "BR - Segunda Fase",
+      "qualification": {
+        "competition": "FFWS BR - Segunda Fase",
+        "placement": 2
+      }
+    },
+    {
+      "id": "fx",
+      "name": "FLUXO W7M",
+      "abbreviation": "FX",
+      "wikiName": "fx",
+      "logo": "Fluxo 2.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "BR - Final",
+      "qualification": {
+        "competition": "FFWS BR - Final",
+        "placement": 1
+      }
+    },
+    {
+      "id": "blue-cheese",
+      "name": "Blue Cheese",
+      "abbreviation": "BC",
+      "wikiName": "Blue Cheese",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "LATAM",
+      "qualification": {
+        "competition": "FFWS LATAM",
+        "placement": 2
+      }
+    },
+    {
+      "id": "gundynasty",
+      "name": "GunDynasty",
+      "abbreviation": "GD",
+      "wikiName": "GunDynasty",
+      "logo": "https://i.postimg.cc/MHBK087H/gund.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "LATAM",
+      "qualification": {
+        "competition": "FFWS LATAM",
+        "placement": 3
+      }
+    },
+    {
+      "id": "stellar-esport",
+      "name": "Stellar Esport",
+      "abbreviation": "STL",
+      "wikiName": "Stellar Esport",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "USA",
+      "qualification": {
+        "competition": "FFWS USA",
+        "placement": 1
+      }
+    },
+    {
+      "id": "team-inf",
+      "name": "Team INF",
+      "abbreviation": "INF",
+      "wikiName": "team inf",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "Bangladesh",
+      "qualification": {
+        "competition": "FFWS Bangladesh",
+        "placement": 1
+      }
+    },
+    {
+      "id": "pe",
+      "name": "PE",
+      "abbreviation": "PE",
+      "wikiName": "Pe",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "Bangladesh",
+      "qualification": {
+        "competition": "FFWS Bangladesh",
+        "placement": 2
+      }
+    },
+    {
+      "id": "total-winner-esports",
+      "name": "Total Winner Esports",
+      "abbreviation": "TWE",
+      "wikiName": "Total Winner Esports",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "Paquistão",
+      "qualification": {
+        "competition": "FFWS Paquistão",
+        "placement": 1
+      }
+    },
+    {
+      "id": "horaa-esports",
+      "name": "Horaa Esports",
+      "abbreviation": "HORA",
+      "wikiName": "Horaa Esports",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "Nepal",
+      "qualification": {
+        "competition": "FFWS Nepal",
+        "placement": 1
+      }
+    },
+    {
+      "id": "xprojekt",
+      "name": "xProjekt",
+      "abbreviation": "XP",
+      "wikiName": "xProjekt",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "MENA",
+      "qualification": {
+        "competition": "FFWS MENA",
+        "placement": 1
+      }
+    },
+    {
+      "id": "paradox-gaming",
+      "name": "ParadoX Gaming",
+      "abbreviation": "PDX",
+      "wikiName": "ParadoX Gaming",
+      "logo": "https://i.postimg.cc/m2NTTjV5/paradox.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "África",
+      "qualification": {
+        "competition": "FFWS África",
+        "placement": 1
+      }
+    },
+    {
+      "id": "tag",
+      "name": "Team Apex Gaming",
+      "abbreviation": "TAG",
+      "wikiName": "tag",
+      "logo": "https://i.postimg.cc/Kct25f6q/apex.webp",
+      "logoPending": false,
+      "players": [],
+      "region": "Índia",
+      "qualification": {
+        "competition": "India Cup",
+        "placement": 1
+      }
+    },
+    {
+      "id": "resurrection-esports",
+      "name": "Resurrection Esports",
+      "abbreviation": "RES",
+      "wikiName": "Resurrection Esports",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "Índia",
+      "qualification": {
+        "competition": "India Cup",
+        "placement": 2
+      }
+    },
+    {
+      "id": "tsg-pros",
+      "name": "TSG Pros",
+      "abbreviation": "TSG",
+      "wikiName": "TSG Pros",
+      "logo": "escudo.webp",
+      "logoPending": true,
+      "players": [],
+      "region": "Índia",
+      "qualification": {
+        "competition": "India Cup",
+        "placement": 3
+      }
+    }
+  ]
+}

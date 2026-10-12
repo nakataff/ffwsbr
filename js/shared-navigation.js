@@ -11,6 +11,7 @@
       ['s25','WB 2025 S2',routes('ffws-br-2025-s2-',season.filter(([,key]) => key !== 'segunda-fase').concat([['Contra Squad','contra-squad']]))]
     ]],
     ['internacional','Torneios internacionais',[
+      ['global26','FFWS Global Finals 2026',routes('ffws-global-2026-',season)],
       ['ewc','EWC 2026',routes('ewc-',[['Fase de grupos','grupos'],['Repescagem','repescagem'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Estatísticas gerais','stats']])],
       ['sea','FFWS SEA 2026 S1',[['Visão geral','ffws-sea-2026-s1']]],
       ['latam','FFWS LATAM S1',[['Visão geral','ffws-latam-s1']]]
@@ -44,7 +45,7 @@
       });
     });
     const row=document.querySelector('.cff-mobile-return'); if(row)row.hidden=Boolean(document.getElementById('main-content') && page==='home');
-    const quick=document.getElementById('cff-mobile-shortcuts'); if(quick){const prefix=page.startsWith('ffws-br-2025-s2-')?'ffws-br-2025-s2-':'ffws-br-s2-';quick.querySelectorAll('[data-cff-shortcut]').forEach(a=>{const route=prefix+a.dataset.cffShortcut;a.dataset.cffRoute=route;a.href=href(route);a.classList.toggle('active',route===page);});}
+    const quick=document.getElementById('cff-mobile-shortcuts'); if(quick){const prefix=page.startsWith('ffws-global-2026-')?'ffws-global-2026-':page.startsWith('ffws-br-2025-s2-')?'ffws-br-2025-s2-':'ffws-br-s2-';quick.querySelectorAll('[data-cff-shortcut]').forEach(a=>{const route=prefix+a.dataset.cffShortcut;a.dataset.cffRoute=route;a.href=href(route);a.classList.toggle('active',route===page);});}
   }
   function setupMobile() {
     const homeBar=document.querySelector('.nav-mobile-bar'),publicBar=document.querySelector('.cff-public-topbar'),bar=homeBar||publicBar;
@@ -76,4 +77,5 @@
   window.addEventListener('hashchange',()=>setActive(current()));
   window.addEventListener('cff:pretty-route',()=>setActive(current()));
 })();
+
 

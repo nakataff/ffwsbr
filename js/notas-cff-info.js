@@ -2,7 +2,7 @@
   'use strict';
   if (window.__cffNotesInfo) return;
   window.__cffNotesInfo = true;
-  const pages = ['notas-cff', 'ffws-br-s2-notas', 'ffws-br-2025-s2-notas'];
+  const pages = ['notas-cff', 'ffws-br-s2-notas', 'ffws-br-2025-s2-notas', 'ffws-global-2026-notas'];
   const style = document.createElement('style');
   style.textContent = `
     .cff-note-info-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -69,7 +69,7 @@
     const root = document.getElementById(id);
     if (!root) continue;
     function attach() {
-      const heading = root.querySelector(id === 'notas-cff' ? '.cff-page-hero h2' : '.ffws-s2-hero h1');
+      const heading = root.querySelector(id === 'notas-cff' ? '.cff-page-hero h2' : '.ffws-s2-hero h1, .ffws-global-hero h1');
       if (!heading || heading.querySelector('.cff-note-info-button')) return;
       heading.classList.add('cff-note-info-heading');
       const button = document.createElement('button');

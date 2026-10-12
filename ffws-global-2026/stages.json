@@ -1,0 +1,35 @@
+{
+  "tournament": "FFWS Global Finals 2026",
+  "updatedAt": "2026-10-12",
+  "finished": false,
+  "formatConfirmed": false,
+  "format": {
+    "classificatoria": {
+      "label": "Classificatória",
+      "description": "Formato e regras a confirmar."
+    },
+    "segundaFase": {
+      "label": "Segunda Fase",
+      "description": "Formato e regras a confirmar."
+    },
+    "final": {
+      "label": "Final",
+      "description": "Formato e regras a confirmar."
+    }
+  },
+  "classificatoria": {
+    "finished": false,
+    "rounds": [],
+    "rows": []
+  },
+  "segundaFase": {
+    "finished": false,
+    "rounds": [],
+    "rows": []
+  },
+  "final": {
+    "finished": false,
+    "days": [],
+    "rows": []
+  }
+}
