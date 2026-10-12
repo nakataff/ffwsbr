@@ -1,3 +1,4 @@
+import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutcomes,profileInsights,peerScores} from './profile-insights.js';
 import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, instagramPost } from './story-reviews.js';
 import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
 const RULES = Object.freeze({
@@ -69,6 +70,7 @@ let performanceIndexesPromise = null;
 
 const PERFORMANCE_INDEXES = Object.freeze([
   ...OPTIMIZATION_SCHEMA,
+  ...PROFILE_INSIGHTS_SCHEMA,
   ...STORY_REVIEW_SCHEMA,
   'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
@@ -88,7 +90,7 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION }, 200, request);
+    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION }, 200, request);
 
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
       if (!(await ensurePerformanceIndexes(env))) return json({ok:false,error:"Serviço temporariamente indisponível."},503,request);
@@ -103,6 +105,8 @@ export default {
     if (url.pathname === '/api/ranking' && request.method === 'GET') return publicRankingResponse(request, env, url);
     if (url.pathname === '/api/ranking/history' && request.method === 'GET') return getWeeklyHistory(request, env, url);
     if (url.pathname === '/api/ranking/months' && request.method === 'GET') return getMonthlyHistory(request, env, url);
+    if (url.pathname === '/api/community/profile' && request.method === 'GET') return getCommunityProfile(request,env,url);
+    if (url.pathname === '/api/community/peers' && request.method === 'GET') return getCommunityPeers(request,env,url);
     if (url.pathname === '/api/achievements/profile' && request.method === 'GET') return getAchievementProfile(request, env, url);
     if (url.pathname === '/api/predictions' && request.method === 'GET') return getPredictions(request, env, url, ctx);
     if (url.pathname === '/api/prediction' && request.method === 'GET') return getPredictionLegacy(request, env, url, ctx);
@@ -1237,6 +1241,7 @@ function settlementJobs(env, manual, auto) {
   return jobs;
 }
 async function settleAllAvailable(env, manual, auto) {
+  await captureOutcomes(env.DB,[manual,...(auto?.pairs||[]).flatMap(item=>item.predictions||[])]);
   const results=await Promise.allSettled(settlementJobs(env,manual,auto).map(job=>settleOnce(env.DB,job.key,job.signature,job.work)));
   const failed=results.find(result=>result.status==='rejected');
   if(failed)throw failed.reason;
@@ -2570,4 +2575,18 @@ async function logMessagingShape(env, event) {
     timestamp: Number(event?.timestamp || 0),
   };
   await env.DB.prepare('INSERT INTO raw_events (kind,payload,received_at) VALUES (?1,?2,?3)').bind('unrecognized_message', JSON.stringify(summary), Date.now()).run();
+}
+
+async function getCommunityProfile(request,env,url){
+ const username=cleanHandle(url.searchParams.get('username'));if(!username)return json({ok:false,error:'Perfil inválido.'},400,request);
+ try{
+  // Bootstrap known closed rounds even when the scoring settlement was completed earlier.
+  await cachedPublic(env.DB,'profile-outcomes-bootstrap:v1',300000,async()=>{const [manual,auto]=await Promise.all([fetchManualPrediction(),automaticPredictionData()]);await captureOutcomes(env.DB,[manual,...(auto?.pairs||[]).flatMap(item=>item.predictions||[])]);return {ok:true};});
+  const payload=await profileInsights(env.DB,username,parseVoteSource);return json(payload,200,request,{'Cache-Control':'public, max-age=60'});
+ }catch(error){console.error('Community profile unavailable',error?.message);return json({ok:false,error:'Não foi possível carregar o perfil agora.'},503,request);}
+}
+async function getCommunityPeers(request,env,url){
+ const raw=String(url.searchParams.get('usernames')||'').split(',');const period=url.searchParams.get('period')||'week';
+ if(!raw.length||raw.length>100||raw.some(s=>!cleanHandle(s))||!['week','month','all'].includes(period))return json({ok:false,error:'Perfis ou período inválidos.'},400,request);
+ try{return json({ok:true,...await peerScores(env.DB,raw,period)},200,request,{'Cache-Control':'public, max-age=60'});}catch{return json({ok:false,error:'Não foi possível comparar agora.'},503,request);}
 }

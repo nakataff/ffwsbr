@@ -288,6 +288,9 @@
           },
           "username": {
             ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_]{3,24}$/) && newData.parent().parent().parent().parent().child('communityUsernames').child(newData.val()).val() == $uid"
+          },
+          "communityStyle": {
+            ".validate": "newData.isString() && newData.val().matches(/^(|level-novato|level-participante|level-veterano|level-elite|level-lenda)$/)"
           }
         },
         "preferences": {
@@ -394,6 +397,23 @@
         },
         "$other": {
           ".validate": false
+        },
+        "following": {
+          "$slot": {
+            ".validate": "$slot.matches(/^f([0-9]|[1-8][0-9]|9[0-8])$/) && newData.hasChildren(['kind','id','createdAt'])",
+            "kind": {
+              ".validate": "newData.val() == 'uid' || newData.val() == 'ig'"
+            },
+            "id": {
+              ".validate": "newData.isString() && ((newData.val() == data.val() && newData.parent().child('kind').val() == data.parent().child('kind').val()) || (newData.parent().child('kind').val() == 'uid' && newData.val() != auth.uid && newData.val().matches(/^[A-Za-z0-9_-]{1,128}$/) && root.child('communityProfiles').child(newData.val()).child('public').val() == true) || (newData.parent().child('kind').val() == 'ig' && newData.val().matches(/^[a-z0-9_.]{1,64}$/)))"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
         }
       }
     },
@@ -440,6 +460,9 @@
         },
         "username": {
           ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_]{3,24}$/) && newData.parent().parent().parent().child('communityUsernames').child(newData.val()).val() == $uid"
+        },
+        "communityStyle": {
+          ".validate": "newData.isString() && newData.val().matches(/^(|level-novato|level-participante|level-veterano|level-elite|level-lenda)$/)"
         }
       }
     },

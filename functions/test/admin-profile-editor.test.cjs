@@ -35,3 +35,5 @@ test('existing member keeps original joined date and Instagram while name change
  await editProfile(db,admin,'person',{name:'Depois'});
  assert.deepEqual(db.get('communityMembers/person'),{name:'Depois',instagram:'already_verified',joinedAt:456});
 });
+
+test('admin edits preserve the cosmetic level style while updating other public fields',async()=>{const db=database();db.data.userAccounts.person.profile.communityStyle='level-veterano';await editProfile(db,admin,'person',{name:'Novo nome'});assert.equal(db.get('communityProfiles/person/communityStyle'),'level-veterano');assert.equal(db.get('userAccounts/person/profile/communityStyle'),'level-veterano');});

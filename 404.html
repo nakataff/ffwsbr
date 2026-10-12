@@ -50,12 +50,13 @@
       var profileMatch = path.match(/^\/perfil\/([^\/]+)\/?$/i);
       if (profileMatch && profileMatch[1]) {
         var profile = safePart(profileMatch[1]);
+        var compareSuffix = new URLSearchParams(window.location.search).get('compare') === '1' ? '&compare=1' : '';
         if (/^@[a-z0-9_.]{1,64}$/i.test(profile)) {
-          window.location.replace('/conta.html?ig=' + encodeURIComponent(profile.slice(1)));
+          window.location.replace('/conta.html?ig=' + encodeURIComponent(profile.slice(1)) + compareSuffix);
           return;
         }
         if (/^user[0-9]{6,10}$/i.test(profile)) {
-          window.location.replace('/conta.html?slug=' + encodeURIComponent(profile.toLowerCase()));
+          window.location.replace('/conta.html?slug=' + encodeURIComponent(profile.toLowerCase()) + compareSuffix);
           return;
         }
       }
@@ -92,7 +93,7 @@
 <body>
   <p>Redirecionando...</p>
   <script src="/js/site-analytics.js?v=20260806-admin-v1"></script>
-<script type="module" src="/js/public-account.js?v=20261012-profile-roles-v1"></script>
+<script type="module" src="/js/public-account.js?v=20261012-community-profile-v1"></script>
 </body>
 </html>
 

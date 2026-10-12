@@ -261,3 +261,7 @@ CREATE TRIGGER IF NOT EXISTS cff_story_review_credit AFTER UPDATE ON story_revie
  INSERT INTO story_daily(user_key,day_key,count) VALUES(NEW.user_key,NEW.day_key,1)
  ON CONFLICT(user_key,day_key) DO UPDATE SET count=count+1;
  END;
+
+-- Community profile result archive (does not award points).
+CREATE TABLE IF NOT EXISTS community_prediction_outcomes (prediction_id TEXT PRIMARY KEY,payload TEXT NOT NULL,closes_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_users_username_profile ON users (lower(username),last_interaction_at DESC);

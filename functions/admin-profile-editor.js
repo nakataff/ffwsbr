@@ -6,7 +6,7 @@ function target(identity,uid){
  if(!identity.uid||identity.email!=='admin@centralfreefire.com.br')throw fail(403,'Somente o administrador pode editar perfis.');
  if(typeof uid!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(uid))throw fail(400,'Conta inválida.');return uid;
 }
-function visible(p){return Object.fromEntries([...fields,'username','featuredBadgesJson','public'].filter(k=>p[k]!==undefined).map(k=>[k,p[k]]));}
+function visible(p){return Object.fromEntries([...fields,'username','featuredBadgesJson','public','communityStyle'].filter(k=>p[k]!==undefined).map(k=>[k,p[k]]));}
 async function readProfile(db,identity,uid){target(identity,uid);const p=(await db.ref('userAccounts/'+uid+'/profile').get()).val();if(!p)throw fail(404,'Perfil não encontrado.');return {profile:visible(p)};}
 async function editProfile(db,identity,uid,raw){
  target(identity,uid);if(!raw||typeof raw!=='object'||Array.isArray(raw)||Object.keys(raw).some(k=>!fields.includes(k)))throw fail(400,'Campos de edição inválidos.');

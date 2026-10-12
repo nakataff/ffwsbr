@@ -40,8 +40,10 @@ jobs:
       - name: Confirm version, initialize D1 through the existing binding and warm the ranking
         run: |
           curl --fail --silent --show-error --retry 6 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 20 --output health.json https://cff-instagram-community.nakataffb4.workers.dev/health
-          node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));if(h.version!=="20261012-d1-savings-v1"||h.storyReviewVersion!=="20261012-story-review-v1")throw Error("Unexpected community version");'
+          node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));if(h.version!=="20261012-d1-savings-v1"||h.storyReviewVersion!=="20261012-story-review-v1"||h.profileInsightsVersion!=="20261012-community-profile-v1")throw Error("Unexpected community version");'
           curl --fail --silent --show-error --retry 3 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 30 --output ranking.json 'https://cff-instagram-community.nakataffb4.workers.dev/api/ranking?period=week'
           node -e 'const r=JSON.parse(require("node:fs").readFileSync("ranking.json","utf8"));if(!r.users||r.period?.type!=="week"||r.rules?.storyApprovalRequired!==true)throw Error("Public ranking check failed");console.log("Optimized community Worker is ready.");'
           curl --silent --show-error --output denied.json --write-out '%{http_code}' https://cff-instagram-community.nakataffb4.workers.dev/api/admin/stories > status.txt
           node -e 'if(require("node:fs").readFileSync("status.txt","utf8").trim()!=="401")throw Error("Story review endpoint must require admin authentication");'
+          curl --fail --silent --show-error --retry 3 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 30 --output peers.json 'https://cff-instagram-community.nakataffb4.workers.dev/api/community/peers?period=week&usernames=nakataff'
+          node -e 'const p=JSON.parse(require("node:fs").readFileSync("peers.json","utf8"));if(!p.ok||p.period!=="week"||!Array.isArray(p.users))throw Error("Community peers check failed");'

@@ -75,3 +75,27 @@ Approval requires the original Central post and reviewer confirmation that it ap
 The approval and all ledger/user/monthly/day counters commit in one SQLite statement using triggers. Failures roll back the decision and all credits. Approval retries are idempotent. Weekly bonuses are evaluated only after credit. Points go to the original story date, so later review can correctly update historical snapshots. Existing automatic points are preserved and are not retroactively reviewed without evidence.
 
 The runtime applies `STORY_REVIEW_SCHEMA` through the existing D1 binding. The SQL migration is also provided in `migrations/2026-10-12-story-reviews.sql`. No additional database secret or storage binding is required. A once-only policy marker invalidates cached ranking rule payloads on deployment. `/health` exposes `storyReviewVersion`; the deployment workflow checks this, the ranking's approval flag and unauthorized access to the admin endpoint.
+
+### Community profiles (2026-10-12)
+
+`GET /api/community/profile?username=...` supplies activity (365 calendar days,
+all-time streaks), lifetime points, prediction choice accuracy, and personal
+records in closed weeks from the last 104 weeks. Weekly records use the complete
+ledger, including positions beyond the public Top 500. Rankings of followed
+profiles use `GET /api/community/peers?period=week|month|all&usernames=...` (1–100
+names). Both are public, cached for five minutes and contain no account UID,
+Google e-mail, session, direct message or submitted open prediction choice.
+
+Closed prediction outcomes are archived in `community_prediction_outcomes` by
+the existing settlement flow and bootstrap for currently available rounds. This
+archive does not award points. Unknown historical outcomes and open predictions
+are excluded from accuracy; unknown outcomes interrupt a prediction streak.
+The existing score and proximity prizes remain unchanged.
+
+The browser stores up to 99 followed targets in private
+`userAccounts/{uid}/following/f0..f98`. Only the account owner can read/write this
+list. It is removed by the existing account deletion and included in its export.
+Level visuals are cosmetic (`communityStyle`) and rendered only when the
+server's lifetime score meets the threshold. Levels: Novato 0, Participante 100,
+Veterano 500, Elite 1500, Lenda 5000. The 1080×1920 story card is generated
+locally and downloaded/shared only at the user's request.

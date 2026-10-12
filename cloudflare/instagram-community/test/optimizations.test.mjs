@@ -22,7 +22,7 @@ function fixture() {
 async function workerInternals() {
   let source=readFileSync(new URL('../worker.js',import.meta.url),'utf8');
   source=source.replace("from './optimizations.js'",`from '${new URL('../optimizations.js',import.meta.url).href}'`);
-  source=source.replace("from './story-reviews.js'",`from '${new URL('../story-reviews.js',import.meta.url).href}'`);
+  source=source.replace("from './profile-insights.js'",`from '${new URL('../profile-insights.js',import.meta.url).href}'`).replace("from './story-reviews.js'",`from '${new URL('../story-reviews.js',import.meta.url).href}'`);
   // Rewards configuration is external; ledger/settlement tests isolate its unrelated bonus rules.
   source=source.replace('async function evaluateWeeklyBonuses(env, base) {','async function evaluateWeeklyBonuses(env, base) { return;');
   source+='\nexport {getRanking,publicRankingResponse,getWeeklyHistory,computeWeeklySnapshot,getOrCreateWeeklySnapshot,getOrCreateMonthlySnapshot,weekKeys,shiftDayKey,dayKeyTimestamp,allPredictionVotes,predictionResultSignature,invalidatePredictionSettlement,settleAllAvailable,maybeSettleAllAvailable};';
