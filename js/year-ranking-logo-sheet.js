@@ -1,10 +1,11 @@
 (()=>{'use strict';
 if(window.__cffYearRankingSheetLogos)return;
 window.__cffYearRankingSheetLogos=true;
-const V='20261012-global-sheet-logos-v5';
+const V='20261012-global-local-logos-v7';
 const DEFAULT_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv';
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,'');
-const map={},aliases={};
+const map={},aliases={},priorities={};
+const LYON_TEAM_LOGO='https://i.postimg.cc/XYGTQnxR/inco.webp';
 let ready=false,loadPromise=null;
 const fallbackLogos={'SIX EIGHT':'https://i.postimg.cc/QNSc7JY0/SIX8.webp'};
 function cleanUrl(value){
@@ -16,11 +17,12 @@ function cleanUrl(value){
  const direct=raw.match(/https?:\/\/[^\s"'<>]+/i);if(direct)return direct[0].replace(/[),.;]+$/,'');
  return /\.(?:png|webp|jpe?g|svg)(?:\?|$)/i.test(raw)?raw:'';
 }
-function add(name,url){
+function add(name,url,priority=0){
  name=String(name||'').trim();url=cleanUrl(url);
- if(name&&url)map[norm(name)]=url;
+ const key=norm(name);
+ if(name&&url&&priority>=(priorities[key]??-1)){map[key]=url;priorities[key]=priority}
 }
-function parseTsv(text){
+function parseTsv(text,priority=0){
  const lines=String(text||'').split(/\r?\n/).filter(x=>x.trim());
  if(!lines.length)return;
  const first=lines[0].split('\t').map(x=>norm(x));
@@ -36,7 +38,7 @@ function parseTsv(text){
      if(i>=0){u=c[i];if(!n)n=c.find((x,j)=>j!==i&&x&&!cleanUrl(x))||''}
    }
    if(!n&&c.length)n=c.find(x=>x&&!cleanUrl(x))||c[0];
-   add(n,u);
+   add(n,u,priority);
  }
 }
 async function loadSheet(url){
@@ -46,31 +48,43 @@ async function loadSheet(url){
  if(!r.ok)throw new Error('HTTP '+r.status);
  return r.text();
 }
+function notify(){patch();document.dispatchEvent(new CustomEvent('cff:year-logos-ready'))}
 async function load(){
  if(loadPromise)return loadPromise;
  loadPromise=(async()=>{
    Object.entries(fallbackLogos).forEach(([n,u])=>add(n,u));
-   try{
-     const r=await fetch('team-data/logo-map.json?v='+V,{cache:'default'});
-     if(r.ok){
-       const d=await r.json();
-       Object.entries(d?.logos||{}).forEach(([n,u])=>add(n,u));
-       Object.entries(d?.aliases||{}).forEach(([a,n])=>aliases[norm(a)]=norm(n));
-     }
-   }catch(_){}
+   // Paint available same-origin logos immediately; Google Sheets refreshes in the background.
+   ready=true;notify();
    const primary=window.CFF_CONFIG?.sheets?.logosEquipes||DEFAULT_SHEET;
    const secondary=window.CFF_CONFIG?.sheets?.logosOutrasEquipes||'';
-   const sheets=await Promise.allSettled([secondary,primary].filter(Boolean).map(loadSheet));
-   sheets.forEach(result=>{if(result.status==='fulfilled')parseTsv(result.value)});
-   ready=true;patch();
-   document.dispatchEvent(new CustomEvent('cff:year-logos-ready'));
-   return map;
+   const tasks=[fetch('team-data/logo-map.json?v='+V,{cache:'default'}).then(r=>r.ok?r.json():{}).then(d=>{
+     Object.entries(d?.logos||{}).forEach(([n,u])=>add(n,u));
+     Object.entries(d?.aliases||{}).forEach(([a,n])=>aliases[norm(a)]=norm(n));notify();
+   })];
+   if(secondary)tasks.push(loadSheet(secondary).then(text=>{parseTsv(text,1);notify()}));
+   tasks.push(loadSheet(primary).then(text=>{parseTsv(text,2);notify()}));
+   await Promise.allSettled(tasks);return map;
  })().finally(()=>{loadPromise=null});
  return loadPromise;
 }
-function find(name){const k=norm(name);return map[k]||map[aliases[k]]||''}
+function find(name){const k=norm(name);if(k==='LYON')return window.CFF_GLOBAL_TEAM_LOGOS?.logos?.LYON||LYON_TEAM_LOGO;return map[k]||map[aliases[k]]||''}
+function globalLogo(name){
+ const k=norm(name),assets=window.CFF_GLOBAL_TEAM_LOGOS;
+ const local=assets?.logos?.[k];
+ if(k==='LYON')return local||LYON_TEAM_LOGO;
+ const keys=assets?.keys?.[k]||[k];
+ // Only explicit team rows from the primary logo sheet can update an optimized asset.
+ const liveKey=keys.find(key=>(priorities[key]??0)>=2),live=liveKey?map[liveKey]:'';
+ const source=liveKey?assets?.sources?.[liveKey]:'';
+ if(local&&(!live||live===source||live===local))return local;
+ return live||local||find(name)||'';
+}
+
 function setImg(img,team){
- const src=find(team);if(!img||!src)return;
+ const isGlobal=Boolean(img?.dataset?.cffGlobalTeamLogo);
+ const src=isGlobal?globalLogo(team):find(team);if(!img||!src)return;
+ const warning=img.closest?.('.ffws-global-team-roster-head')?.querySelector('.ffws-global-logo-pending');
+ if(warning)warning.hidden=true;
  if((img.getAttribute('src')||'')===src)return;
  img.dataset.cffSheetLogo=String(team||'');
  img.src=src;
@@ -89,7 +103,7 @@ function patchWorldSeries(){
    const name=card.querySelector('strong')?.textContent?.trim();
    const monogram=card.querySelector('.home-global-monogram');
    const short=monogram?.textContent?.trim();
-   const team=find(name)?name:find(short)?short:'';
+   const team=globalLogo(name)?name:globalLogo(short)?short:'';
    if(!team)return;
    const box=card.querySelector('.home-global-team-image');if(!box)return;
    let img=box.querySelector('img');
@@ -107,6 +121,7 @@ new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(patch,40)}).obser
 window.addEventListener('cff:year-rendered',patch);
 document.addEventListener('cff:modules-loaded',patch);
 window.cffFindLiveTeamLogo=find;
+window.cffResolveGlobalTeamLogo=globalLogo;
 window.cffReloadYearSheetLogos=()=>{ready=false;return load()};
 window.cffPatchYearTeamLogos=patch;
 load();
