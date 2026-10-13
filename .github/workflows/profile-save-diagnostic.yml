@@ -2,7 +2,7 @@ name: Diagnose Profile Save (Read Only)
 on:
   push:
     branches: [main]
-    paths: ['functions/profile-save-diagnostic.cjs', '.github/workflows/profile-save-diagnostic.yml']
+    paths: ['functions/profile-save-diagnostic.cjs', 'functions/test/profile-save-emulator.cjs', '.github/workflows/profile-save-diagnostic.yml']
 permissions:
   contents: read
 jobs:
