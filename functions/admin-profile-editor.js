@@ -37,9 +37,16 @@ async function editProfile(db,identity,uid,raw){
   changes['communityMembers/'+uid]={name:next.name,instagram:typeof link.val()?.username==='string'?link.val().username:'',joinedAt:Number.isFinite(createdAt)&&createdAt>0&&createdAt<=now?createdAt:now,...(p.username?{username:p.username}:{})};
  }
  const username=link.val()?.username,handle=typeof username==='string'?username.toLowerCase().replace(/\./g,','):'';
- if(handle&&/^[a-z0-9_,]{1,64}$/.test(handle)){const directory=await db.ref('communityRankingProfiles/'+handle).get();if(directory.val()?.uid===uid)changes['communityRankingProfiles/'+handle]=next.public===false?null:{...directory.val(),avatarId:next.avatarId};}
+ if(handle&&/^[a-z0-9_,]{1,64}$/.test(handle)){
+  const directory=(await db.ref('communityRankingProfiles/'+handle).get()).val();
+  if(!directory?.uid||directory.uid===uid){
+   const administrator=(await db.ref('communityAccountRoles/'+uid+'/administrator').get()).val()===true;
+   changes['communityRankingProfiles/'+handle]=next.public===false?null:{uid,username:username.toLowerCase(),avatarId:next.avatarId,administrator};
+  }
+ }
  changes['communityProfileAdminEdits/'+uid]={at:Date.now(),by:identity.uid,fields:Object.keys(raw)};
  await db.ref().update(changes);return {ok:true,profile:visible(next)};
 }
 module.exports={readProfile,editProfile};
+
 

@@ -37,3 +37,7 @@ test('existing member keeps original joined date and Instagram while name change
 });
 
 test('admin edits preserve the cosmetic level style while updating other public fields',async()=>{const db=database();db.data.userAccounts.person.profile.communityStyle='level-veterano';await editProfile(db,admin,'person',{name:'Novo nome'});assert.equal(db.get('communityProfiles/person/communityStyle'),'level-veterano');assert.equal(db.get('userAccounts/person/profile/communityStyle'),'level-veterano');});
+
+test('saving repairs a missing ranking mapping for an already linked account',async()=>{const db=database();delete db.data.communityRankingProfiles.fan;await editProfile(db,admin,'person',{avatarId:'asset-1'});assert.deepEqual(db.get('communityRankingProfiles/fan'),{uid:'person',username:'fan',avatarId:'asset-1',administrator:false});});
+test('saving does not replace a ranking mapping belonging to another account',async()=>{const db=database();db.data.communityRankingProfiles.fan.uid='other';await editProfile(db,admin,'person',{name:'Depois'});assert.equal(db.get('communityRankingProfiles/fan/uid'),'other');assert.equal(db.get('communityProfiles/person/name'),'Depois');});
+test('private profiles stay out of the ranking directory after saving',async()=>{const db=database();db.data.userAccounts.person.profile.public=false;await editProfile(db,admin,'person',{name:'Depois'});assert.equal(db.get('communityRankingProfiles/fan'),null);assert.equal(db.get('communityProfiles/person/public'),false);});
