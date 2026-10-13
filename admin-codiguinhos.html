@@ -999,7 +999,7 @@
       </div>
 
       <div class="top-actions">
-        <button type="button" onclick="window.CFF_SHOWCASE.open()">▦ Mostruário para print</button>
+        <button type="button" onclick="window.CFF_SHOWCASE.open()">▦ Mostruário para print</button><a class="secondary" href="#cff-code-delivery">🎁 Enviar presente para perfil</a>
         <span id="cloudSaveStatus" class="cloud-status">Bloqueado</span>
         <a class="file-label admin-back-link" href="admin.html">← Painel</a>
         <button class="secondary" onclick="arquivarExpirados()">Remover expirados</button>
@@ -1152,6 +1152,7 @@
       <div class="report-content" id="reportContent"></div>
     </section>
 
+    <section id="cff-code-delivery" style="max-width:1100px;margin:24px auto;padding-left:14px;padding-right:14px"></section>
     <section id="groups" class="groups"></section>
 
     <p class="footer-note">Salvamento automático: cada alteração é criptografada no navegador e sincronizada com o Firebase. O backup manual é apenas uma opção de emergência.</p>
@@ -1260,7 +1261,8 @@
           entregue:Boolean(d.entregue),
           resultado:d.resultado || "sucesso",
           dataResgate:d.dataResgate || somenteData(d.atualizadoEm) || "",
-          atualizadoEm:d.atualizadoEm || null
+          atualizadoEm:d.atualizadoEm || null,
+          ...(d.presente && typeof d.presente === "object" ? {presente:d.presente} : {})
         };
       });
 
@@ -2036,6 +2038,7 @@
     }
 
     function render(){
+      window.dispatchEvent(new Event("cff:codiguinhos-changed"));
       window.CFF_SHOWCASE?.refresh();
       renderCodiguinSelector();
       const root = document.getElementById("groups");
@@ -2119,6 +2122,7 @@
             <div class="card-actions">
               <label class="check"><input type="checkbox" ${dados.entregue ? "checked" : ""} onchange="setEntregue('${codigo}', this.checked)" /> 🔒 Código resgatado</label>
               <button class="secondary small" data-copy="${codigo}" onclick="copiarCodigo('${codigo}')">Copiar código</button>
+              <button type="button" class="secondary small" data-code-gift-send="${escapeHTML(codigo)}"${dados.entregue||String(dados.recebeu||'').trim()||dados.presente||st.tipo!=='available'?' disabled':''}>🎁 Enviar ao perfil</button>
             </div>`;
           cards.appendChild(card);
         });
@@ -2790,6 +2794,10 @@
     window.criarBaseCodiguinhosVazia = criarBaseCodiguinhosVazia;
 
     
+    window.CFF_CODE_DELIVERY_SOURCE={
+      read(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>statusGrupo(g).tipo==='available'?g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!String(d.recebeu||'').trim()&&!d.presente;}).map(code=>({code:code.toUpperCase(),title:String(g.item||g.nome).slice(0,100),expires:fimGrupo(g)||''})):[]);},
+      async delivered({code,recipient,giftId,gift}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);d.recebeu='@'+recipient.username+' · presente no site';d.presente={uid:recipient.uid,giftId,sentAt:gift.sentAt,username:recipient.username};d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();}
+    };
     window.CFF_SHOWCASE_DATA = {
       read(){
         if(!controleDesbloqueado) return null;
@@ -2822,5 +2830,5 @@
     });
   </script>
   <script src="js/admin-codiguinhos-mostruario.js?v=20261008-v2"></script>
-</body>
+<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261013-code-gifts-v1";bootCodeGiftDelivery().catch(()=>{});</script></body>
 </html>

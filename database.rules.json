@@ -960,7 +960,22 @@
           ".read": "auth != null && auth.uid == $uid",
           ".write": false
         }
+      },
+      "latest": {
+        ".read": true,
+        ".write": false
       }
+    },
+    "communityCodeGifts": {
+      ".write": false,
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || auth.token.email == 'admin@centralfreefire.com.br')",
+        ".write": false
+      }
+    },
+    "communityCodeGiftAssignments": {
+      ".read": false,
+      ".write": false
     }
   }
 }

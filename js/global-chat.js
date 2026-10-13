@@ -1,4 +1,4 @@
-const VERSION='20261013-global-chat-v1';
+const VERSION='20261013-code-gifts-v1';
 const SERVICE='https://cff-camp-notifications.nakataffb4.workers.dev/api';
 const ADMIN='admin@centralfreefire.com.br';
 const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-4 3V11.5A7.5 7.5 0 0 1 9.5 4h3a7.5 7.5 0 0 1 7.5 7.5Z"/><path d="M7 10h8M7 14h5"/></svg>';
@@ -10,6 +10,14 @@ function mountChat(){
  document.body.append(host);
  const $=selector=>host.querySelector(selector),panel=$('#cff-chat-panel'),launch=$('.cff-chat-launch'),timeline=$('.cff-chat-timeline'),composer=$('.cff-chat-composer'),input=$('#cff-chat-text'),send=composer.querySelector('[type=submit]'),status=$('[data-chat-status]');
  let deps,dependencyPromise,app,auth,db,user=null,roles={},profile={},restriction=null,stops=[],modStop=null,catalog={},defaults={},roleCatalog={},options={},connected=false,sending=false,open=false,generation=0,firstSnapshot=true,selection=null,cooldownUntil=0,restrictionRows={};
+ let latestChat=null,lastSeen='';try{lastSeen=localStorage.getItem('cff_chat_last_seen_v1')||'';}catch{}
+ const updateUnread=()=>{const unread=!!latestChat?.id&&latestChat.id!==lastSeen;launch.classList.toggle('has-unread',unread);launch.setAttribute('aria-label',unread?'Abrir chat global · novas mensagens':'Abrir chat global');};
+ const markRead=()=>{if(!latestChat?.id||document.hidden)return;lastSeen=latestChat.id;try{localStorage.setItem('cff_chat_last_seen_v1',lastSeen);}catch{}updateUnread();};
+ let unreadStop=null,unreadStarting=false,unreadPageActive=true;
+ const startUnread=async()=>{if(unreadStop||unreadStarting)return;unreadStarting=true;try{const [a,d]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js')]);const config=window.CFF_CONFIG?.firebase;if(!config||!unreadPageActive)return;const existing=a.getApps().find(x=>x.name==='[DEFAULT]')||a.initializeApp(config);unreadStop=d.onValue(d.ref(d.getDatabase(existing),'globalChat/latest'),snapshot=>{latestChat=snapshot.val();if(open)markRead();else updateUnread();});}catch{}finally{unreadStarting=false;}};
+ startUnread();window.addEventListener('pagehide',()=>{unreadPageActive=false;unreadStop?.();unreadStop=null;});window.addEventListener('pageshow',event=>{unreadPageActive=true;if(event.persisted)startUnread();});
+ window.addEventListener('storage',event=>{if(event.key==='cff_chat_last_seen_v1'){lastSeen=event.newValue||'';updateUnread();}});
+ document.addEventListener('visibilitychange',()=>{if(open&&!document.hidden)markRead();});
  const nodes=new Map();
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const isModerator=()=>user?.email===ADMIN||roles.roleId==='moderator';
@@ -69,7 +77,7 @@ function mountChat(){
   if(!list.childElementCount)list.textContent='Nenhuma restrição ativa.';
  }
  async function show(){
-  if(open)return;open=true;const seq=++generation;firstSnapshot=true;panel.hidden=false;launch.setAttribute('aria-expanded','true');document.body.classList.toggle('cff-chat-mobile-open',matchMedia('(max-width:600px)').matches);panel.setAttribute('aria-modal',String(matchMedia('(max-width:600px)').matches));$('.cff-chat-close').focus();
+  if(open)return;open=true;markRead();const seq=++generation;firstSnapshot=true;panel.hidden=false;launch.setAttribute('aria-expanded','true');document.body.classList.toggle('cff-chat-mobile-open',matchMedia('(max-width:600px)').matches);panel.setAttribute('aria-modal',String(matchMedia('(max-width:600px)').matches));$('.cff-chat-close').focus();
   try{await dependencies();if(!open||seq!==generation)return;
    stops.push(listen('.info/connected',value=>{connected=value===true;$('[data-chat-connection]').textContent=connected?'● Ao vivo':'○ Reconectando…';availability();}));
    stops.push(listen('communityProfileCatalog',value=>{catalog=value||{};for(const [id,node]of nodes)renderMessage(id,node._chatMessage);deps.images.hydrateProfileImages(timeline,db);}));

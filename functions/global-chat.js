@@ -36,7 +36,7 @@ async function sendMessage(db,identity,raw,now=Date.now(),random=crypto.randomUU
  if(!/^[a-f0-9]{16}$/.test(random))throw fail(500,'Não foi possível preparar a mensagem.');
  const id=String(now)+'-'+random,avatarId=profile.avatarId==='default'?defaults?.avatarId||'default':profile.avatarId||'default';
  const entry={uid:actor.uid,name:String(profile.name||'Membro da Central').slice(0,80),avatarId,roleId:actor.roles.roleId||'member',text,at:now};
- const recent=await db.recentChat(),keys=Object.keys(recent||{}).sort(),changes={['globalChat/messages/'+id]:entry};
+ const recent=await db.recentChat(),keys=Object.keys(recent||{}).sort(),changes={['globalChat/messages/'+id]:entry,['globalChat/latest']:{id,at:now}};
  for(const old of keys.slice(0,Math.max(0,keys.length-99)))changes['globalChat/messages/'+old]=null;
  await db.update(changes);return {ok:true,id,at:now};
 }
