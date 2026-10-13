@@ -32,11 +32,16 @@ test('economy gateway verifies signed identities, private wallets, real account 
  assert.equal((await api(bob,{action:'economy',operation:'state',targetUid:'alice'})).wallet.balance,0);
  const code=(await api(alice,{action:'economy',operation:'state'})).inviteCode;
  assert.equal((await api(bob,{action:'economy',operation:'attachReferral',code})).attached,false);
- assert.equal((await api(admin,{action:'economyAdmin',operation:'addStock',code:'MOCKCODE1234',title:'Prêmio de teste',bucket:'roulette'})).status,200);
- assert.equal((await api(admin,{action:'economyAdmin',operation:'saveChances',chances:['p1','p3','p10','p50','code'].map(id=>({id,chance:id==='code'?100:0}))})).status,200);
+ const photo='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lZkAAAAASUVORK5CYII=';
+ assert.equal((await api(admin,{action:'economyAdmin',operation:'addStock',code:'MOCKCODE1234',title:'Prêmio de teste',bucket:'roulette',imageUrl:photo})).status,200);
+ assert.equal((await api(admin,{action:'economyAdmin',operation:'saveChances',chances:['p1','p3','p10','p25','p50','code'].map(id=>({id,chance:id==='code'?100:0}))})).status,200);
  const results=await Promise.all([api(alice,{action:'economy',operation:'spin'}),api(alice,{action:'economy',operation:'spin'})]);
  assert(results.every(r=>r.status===200&&r.result.id==='code'));
+ const mediaId=results[0].result.imageUrl.split('/').pop(),bindings={NOTIFICATIONS:{idFromName:()=> 'test',get:()=>({fetch:request=>hub.fetch(request)})}};
+ const media=await worker.fetch(new Request('https://notify.test/economy-media/'+mediaId),bindings);assert.equal(media.status,200);assert.equal(media.headers.get('Content-Type'),'image/png');assert(media.headers.get('Cache-Control').includes('immutable'));assert.deepEqual(new Uint8Array(await media.arrayBuffer()),Uint8Array.from(atob(photo.split(',')[1]),c=>c.charCodeAt(0)));
+ const missing=await worker.fetch(new Request('https://notify.test/economy-media/'+'b'.repeat(64)),bindings);assert.equal(missing.status,404);
  const giftPaths=Object.keys(data).filter(p=>p.startsWith('communityCodeGifts/alice/'));assert.equal(giftPaths.length,1);assert.equal(data[giftPaths[0]].code,'MOCKCODE1234');assert.equal(data[giftPaths[0]].openedAt,0);
  const bobState=await api(bob,{action:'economy',operation:'state'});assert(!JSON.stringify(bobState).includes('MOCKCODE1234'));assert(!JSON.stringify(bobState).includes('stockHash'));assert.equal(bobState.chances.find(p=>p.id==='code').chance,0);assert.deepEqual(data['ranking/alice'],{points:300});
  const health=await worker.fetch(new Request('https://notify.test/health'),{NOTIFICATIONS:{},CFF_GOAL_SERVICE_ACCOUNT:'configured'});assert.equal((await health.json()).economy,true);
 });
+

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Codiguinhos | Painel Administrativo - Central Free Fire</title>
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <script src="js/config.min.js?v=20261013-economy-v1"></script>
+  <script src="js/config.min.js?v=20261013-economy-v2"></script>
   <script type="module" src="js/admin-codiguinhos-sync.js?v=20260815-recovery-v2"></script>
   <style>
     :root{
@@ -2796,7 +2796,8 @@
 
     
     window.CFF_CODE_DELIVERY_SOURCE={
-      read(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>statusGrupo(g).tipo==='available'?g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!String(d.recebeu||'').trim()&&!d.presente;}).map(code=>({code:code.toUpperCase(),title:String(g.item||g.nome).slice(0,100),expires:fimGrupo(g)||''})):[]);},
+      stockPhotos(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().filter(g=>imagemGrupo(g)).map(g=>({imageUrl:imagemGrupo(g),codes:g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!d.presente&&String(d.recebeu||'').startsWith('Reservado para ');}).map(code=>code.toUpperCase())})).filter(g=>g.codes.length);},
+      read(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>statusGrupo(g).tipo==='available'?g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!String(d.recebeu||'').trim()&&!d.presente;}).map(code=>({code:code.toUpperCase(),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||''})):[]);},
       async reserved({code,bucket}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);d.recebeu='Reservado para '+(bucket==='roulette'?'roleta':bucket==='shop'?'loja':'roleta/loja');d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();},
       async delivered({code,recipient,giftId,gift}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);d.recebeu='@'+recipient.username+' · presente no site';d.presente={uid:recipient.uid,giftId,sentAt:gift.sentAt,username:recipient.username};d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();}
     };
@@ -2832,5 +2833,6 @@
     });
   </script>
   <script src="js/admin-codiguinhos-mostruario.js?v=20261008-v2"></script>
-<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261013-code-gifts-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261013-economy-v1"></script></body>
+<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261013-code-gifts-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261013-economy-v2"></script></body>
 </html>
+

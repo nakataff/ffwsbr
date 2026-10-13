@@ -1,3 +1,4 @@
+import economyMedia from '../../functions/economy-media.js';
 import economyCore from '../../functions/economy.js';
 import codeGifts from '../../functions/code-gifts.js';
 import globalChat from '../../functions/global-chat.js';
@@ -23,11 +24,12 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:11,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:12,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  else if(request.method==='GET'&&/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
-  return new Response(response.body,{status:response.status,headers:{...Object.fromEntries(response.headers),...headers}});
+  return new Response(response.body,{status:response.status,headers:{...Object.fromEntries(response.headers),...headers,'Cache-Control':response.headers.get('Cache-Control')||'no-store'}});
  }
 };
 export class NotificationHub extends DurableObject {
@@ -93,6 +95,7 @@ export class NotificationHub extends DurableObject {
  }
  async fetch(request){
   try{
+   const mediaId=request.method==='GET'&&new URL(request.url).pathname.match(/^\/economy-media\/([a-f0-9]{64})$/)?.[1];if(mediaId){const media=economyMedia.read(this.sql,mediaId);if(!media)return json({error:'Imagem não encontrada.'},404);return new Response(Uint8Array.from(atob(media.base64),c=>c.charCodeAt(0)),{headers:{'Content-Type':media.type,'Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'}});}
    const token=String(request.headers.get('Authorization')||'').match(/^Bearer (.+)$/)?.[1],user=await verifyToken(token),uid=user.uid;
    if(Number(request.headers.get('Content-Length')||0)>180000)throw Error('Pedido muito grande.');
    const reader=request.body?.getReader(),chunks=[];let length=0;
@@ -234,3 +237,4 @@ export class NotificationHub extends DurableObject {
   }finally{await this.schedule();}
  }
 }
+

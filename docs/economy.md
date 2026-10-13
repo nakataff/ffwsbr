@@ -8,10 +8,11 @@ Abra `conta.html?tab=points`, entre com Google e complete o cadastro. O check-in
 
 | Prêmio da roleta | Chance inicial |
 | --- | --- |
-| 1 ponto | 85% |
+| 1 ponto | 80% |
 | 3 pontos | 10% |
-| 10 pontos | 2% |
-| 50 pontos | 2% |
+| 10 pontos | 5% |
+| 25 pontos | 3% |
+| 50 pontos | 1% |
 | Um codiguinho | 1% |
 
 Sem um código válido no estoque da roleta, a chance de codiguinho fica em zero e os 1% passam para 1 ponto. A tela mostra as chances efetivas. Códigos com validade vencida não participam do sorteio nem da loja.
@@ -39,3 +40,16 @@ Os prêmios são entregues em **Presentes**: codiguinhos privados com imagem `ed
 Carteiras, estoque, convites e histórico ficam no SQLite privado. O Firebase recebe as entregas e fornece verificações pequenas do cadastro e Instagram. A carteira carrega por pedido do usuário, com no máximo 30 movimentações e 10 entregas pendentes por consulta. O custo incremental depende do uso real, sem garantia de consumo zero ou de permanência dentro de uma franquia gratuita.
 
 Testes: `node --test functions/test/economy.test.cjs`, `npm test` e `npm run check` em `cloudflare/camp-notifications`. O deploy mantém o Durable Object existente; não é necessária uma nova migração. A credencial `CFF_GOAL_SERVICE_ACCOUNT` já usada pelo Worker deve ter permissão `firebaseauth.users.get` para conferir a criação das contas convidadas.
+
+
+## Fotos e escolha do codiguinho
+
+Cada tipo de codiguinho aparece na loja com seu nome, foto, quantidade disponível, preço e o saldo da pessoa. O resgate fica vinculado ao tipo escolhido. Se esse tipo acabar antes da confirmação, o resgate falha sem cobrar pontos, mesmo que outro tipo ainda tenha estoque.
+
+As fotos do controle de codiguinhos acompanham as novas reservas. Ao desbloquear o controle, as fotos dos códigos já reservados são atualizadas automaticamente; há também o botão **Atualizar fotos dos códigos já reservados**. No painel de pontos, **Editar foto e detalhes** permite adicionar ou trocar a foto de um código que ainda não foi sorteado/resgatado. Códigos sem foto usam a imagem do presente como alternativa.
+
+Uploads são reduzidos a até 384 pixels no navegador. Imagens iguais são guardadas uma única vez no SQLite e servidas por uma URL de conteúdo imutável com cache. Somente as fotos de produtos ficam disponíveis nesse endpoint; códigos, saldos e destinatários continuam privados. O Firebase não recebe uma coleção extra de imagens.
+
+A roleta tem seis setores visuais, chances explícitas, giro contínuo durante o pedido, pelo menos seis voltas e desaceleração até o prêmio confirmado pelo servidor. Uma janela apresenta o prêmio e o saldo atualizado. A preferência de movimento reduzido é respeitada. Sem estoque, os avisos da roleta e da loja aparecem separadamente; os 1% do código passam para 1 ponto (81% com a configuração padrão).
+
+A atualização das chances é aplicada uma vez na implantação, preservando saldos, giros antigos, códigos e preços já cadastrados. Alterações posteriores feitas pelo administrador continuam valendo após reinícios.

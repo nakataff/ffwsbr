@@ -13,7 +13,12 @@ on:
       - 'functions/global-chat.js'
       - 'functions/code-gifts.js'
       - 'functions/economy.js'
+      - 'functions/economy-media.js'
       - 'functions/test/economy.test.cjs'
+      - 'js/economy-*.mjs'
+      - 'js/economy-ui.js'
+      - 'js/admin-economy*.js'
+      - 'test/economy-wheel.test.mjs'
       - 'functions/admin-profile-options.json'
       - 'js/camp-notification-content.js'
       - '.github/workflows/deploy-free-camp-notifications.yml'
@@ -39,11 +44,11 @@ jobs:
       - run: npm test
         working-directory: cloudflare/camp-notifications
       - name: Test profile results and account invitation
-        run: node --test test/account-welcome.test.mjs test/camp-results-view.test.mjs
+        run: node --test test/account-welcome.test.mjs test/camp-results-view.test.mjs test/economy-wheel.test.mjs
       - name: Test automatic profile rewards
         run: node --test functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs
       - name: Check points interfaces
-        run: node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js
+        run: node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js
       - name: Check referral account verification access
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -72,13 +77,18 @@ jobs:
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
           for attempt in 1 2 3 4 5 6 7 8; do
-            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==11||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==12||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
               echo 'Notification service is ready.'
               break
             fi
             test "$attempt" -lt 8 || exit 1
             sleep 5
           done
+      - name: Confirm roulette stock schema
+        run: |
+          media_status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output economy-media.json --write-out '%{http_code}' https://cff-camp-notifications.nakataffb4.workers.dev/economy-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+          test "$media_status" = 404
+          node -e 'const response=JSON.parse(require("node:fs").readFileSync("economy-media.json","utf8"));if(response.error!=="Imagem não encontrada.")process.exit(1);console.log("Roulette SQLite schema is ready.");'
       - name: Check official final Day 2 availability
         run: |
           curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output official-day-two.json https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2/final/drops/2.json
@@ -101,3 +111,4 @@ jobs:
           for(const day of Object.values(live.drops||{}))for(const match of Object.values(day||{}))for(const team of Object.values(match?.teams||{}))roster[C.key(team.team)]={name:team.team};
           console.log('Final tournament state: '+JSON.stringify(R.tournamentState(R.mergeOfficialMatches([],live,roster,'final'),roster,'final',live)));
           JS
+
