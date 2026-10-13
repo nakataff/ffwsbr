@@ -34,3 +34,13 @@ No iPhone, adicione o site à Tela de Início e abra pelo ícone. A permissão d
 ## Verificação
 
 `npm test` testa login assinado, permissões, isolamento por usuário, SSRF, troca de dono do aparelho, deduplicação, envio criptografado, transição T1 + P1 e correções. `npm run check` compila o bundle real para Workers sem publicar. Os testes não enviam notificações reais.
+
+## Quedas oficiais nas tabelas (2026-10-13)
+
+A consulta une os snapshots publicados no Camp ao vivo às quedas oficiais
+T1 + P1 do Admin Dados da etapa configurada, inclusive depois do dia 2, queda 1.
+As partidas são identificadas por dia + queda, sem duplicar o acumulado. Os
+dados oficiais têm cache compartilhado de 60 segundos por etapa. Em falhas
+de consulta, a tela preserva os dados disponíveis e informa a falha.
+Essa leitura não grava snapshots, não cria mensagens e não agenda pushes
+antigos. O envio de alertas continua dependendo dos comandos do administrador.

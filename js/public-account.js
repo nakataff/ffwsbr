@@ -1,4 +1,4 @@
-import {createCommunityProfile,communitySections,socialSection} from './profile-community.js?v=20261013-profile-layout-v2';
+import {createCommunityProfile,communitySections,socialSection} from './profile-community.js?v=20261013-official-results-v1';
 import {normalizeRoleCatalog,roleForAccount} from './profile-role-data.mjs?v=20261012-profile-admin-v1';
 import {registrationComplete,mountRegistration} from './profile-registration.js?v=20261008-registration-v1';
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
@@ -6,7 +6,7 @@ import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, G
 import { getDatabase, ref, get, set, update, onValue, runTransaction, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 import { profileOptions, findOption, approvedImage, hydrateProfileImages, warmProfileImages, DEFAULT_AVATAR, activeGrants, catalogAvailable,ACCESS_LABELS,automaticAvatar,instagramKey } from './community-profile-data.js?v=20261007-flicker-cache-v3';
-const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261013-profile-layout-v2';
+const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261013-official-results-v1';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const readLocal=k=>{try{return localStorage.getItem(k)||''}catch{return''}},writeLocal=(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch{}};
 let user=null,database,auth,unsub=[],generation=0,tab='overview',lists={favorites:{},comparisons:{},tournamentIndex:{},activity:{}},community=null,communityStatus=null,preferences={},profile={},busy=false,loaded=false;
@@ -265,7 +265,7 @@ let notificationStop=null,notificationGeneration=0;
 function mountAccountNotifications(){
  const seq=++notificationGeneration;notificationStop?.();notificationStop=null;
  const container=document.querySelector('[data-account-notifications]');if(!container||!user)return;
- import('./camp-notifications.js?v=20261010-match-select-v2').then(async module=>{if(seq!==notificationGeneration||!container.isConnected)return;const stop=await module.mountNotifications(container,getApps().find(a=>a.name==='cff-public-accounts'));if(seq!==notificationGeneration){stop();return;}notificationStop=stop;}).catch(()=>{if(container.isConnected)container.textContent='Não foi possível abrir seus avisos. Atualize a página.';});
+ import('./camp-notifications.js?v=20261013-official-results-v1').then(async module=>{if(seq!==notificationGeneration||!container.isConnected)return;const stop=await module.mountNotifications(container,getApps().find(a=>a.name==='cff-public-accounts'));if(seq!==notificationGeneration){stop();return;}notificationStop=stop;}).catch(()=>{if(container.isConnected)container.textContent='Não foi possível abrir seus avisos. Atualize a página.';});
 }
 function render(){const root=$('cff-account-root');if(!root)return;if(viewUid||viewInstagram||viewSlug){const signature=publicProfileSignature();if(root.dataset.publicProfileSignature===signature&&publicProfile&&!publicProfile.unavailable){updatePublicProfileDynamic();communityProfileUI.mount();return;}root.dataset.publicProfileSignature=signature;root.innerHTML=publicProfile?.unavailable?'<section class="cff-profile-panel"><h1>Perfil indisponível</h1><p>Este perfil ainda não está disponível.</p><a class="cff-account-button" href="/conta.html">Minha conta</a></section>':publicProfile?`${hero(publicProfile.profile,publicProfile.grants,false)}${publicStatsHtml()}${communitySections()}${publicProfile.automatic?'<p class="cff-profile-muted">Perfil automático da comunidade. Entre com Google e vincule este Instagram para personalizar.</p>':''}<section class="cff-profile-panel"><h2>Vitrine de insígnias</h2><div class="cff-badge-grid" data-public-showcase>${showcased(publicProfile.profile,publicProfile.grants,false)}</div></section><a class="cff-account-button" href="/conta.html">Minha conta</a>`:'<section class="cff-profile-loading" aria-busy="true"><span></span><strong>Carregando perfil…</strong></section>';hydrateProfileImages(root,database);if(publicProfile&&!publicProfile.unavailable)communityProfileUI.mount();return;}
  if(user&&profile.name&&!registrationComplete(profile)){

@@ -25,4 +25,24 @@ function totals(snapshots,roster,day){
  rows.sort((a,b)=>b.points-a.points||b.booyahs-a.booyahs||b.kills-a.kills||b.lastPoints-a.lastPoints||a.team.localeCompare(b.team));
  return {status:partial?'partial':'official',rows:rows.map((r,i)=>({...r,rank:i+1}))};
 }
-module.exports={normalize,promote,totals};
+// Read-only union: importing official tables never creates inbox messages or push jobs.
+function mergeOfficialMatches(saved,live,roster,stage){
+ const merged=new Map(saved.map(s=>[s.day+':'+s.drop,s]));
+ for(const [dayKey,drops] of Object.entries(live?.drops||{}))for(const [dropKey,value] of Object.entries(drops||{})){
+  if(!value)continue;
+  try{
+   const day=C.integer(dayKey,1,365),drop=C.integer(dropKey,1,999);
+   if(value.day!==undefined&&Number(value.day)!==day||value.drop!==undefined&&Number(value.drop)!==drop)continue;
+   const rows=C.officialRows(value,roster),rawTeams=Object.values(value.teams||{});
+   if(!rows.length||rows.length!==rawTeams.length)continue;
+   const prior=merged.get(day+':'+drop),headstart={...(prior?.headstart||{})};
+   const snapshot=normalize({day,drop,map:value.map||prior?.map||'',participants:rows.map(r=>r.teamId),rows,headstart},roster);
+   const next=promote(snapshot,rows),changed=!prior||JSON.stringify(prior.rows)!==JSON.stringify(next.rows)||prior.status!=='official'||prior.map!==next.map;
+   merged.set(day+':'+drop,{...next,source:'admin-dados',revision:changed?(prior?.revision||0)+1:prior.revision,at:Number(value.updatedAt)||prior?.at||0});
+  }catch{/* Incomplete/invalid T1 + P1 must not replace a published table. */}
+ }
+ // The official second-phase bonus is applied once, at the first available day.
+ if(stage==='segundaFase'&&merged.size){const firstDay=Math.min(...[...merged.values()].map(s=>s.day));const bonus={};for(const [name,value]of Object.entries(live?.bonus||{})){const id=Object.keys(roster).find(id=>[roster[id].name,...(roster[id].aliases||[])].some(alias=>C.key(alias)===C.key(name)));if(id&&Number.isInteger(Number(value)))bonus[id]=Number(value);}if(Object.keys(bonus).length)for(const [key,s]of merged)if(s.day===firstDay)merged.set(key,{...s,headstart:bonus});}
+ return [...merged.values()].sort((a,b)=>a.day-b.day||a.drop-b.drop);
+}
+module.exports={normalize,promote,totals,mergeOfficialMatches};

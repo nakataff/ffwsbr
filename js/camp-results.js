@@ -3,13 +3,13 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 export function mountResults(root,{catalog,request,app}){
  let stopped=false,seq=0,data,view='drop';const ids=Object.keys(catalog),query=new URLSearchParams(location.search);
  let tournament=ids.includes(query.get('tournament'))?query.get('tournament'):ids[0];
- root.innerHTML='<section class="cff-results"><div class="cff-results-heading"><div><h3>Quedas e classificação</h3><p>Escolha uma queda publicada para ver os resultados e o acumulado.</p></div><button type="button" class="cff-account-button" data-refresh>Atualizar</button></div><div class="cff-results-selectors"><label>Torneio<select data-tournament>'+ids.map(id=>'<option value="'+esc(id)+'">'+esc(catalog[id].name)+'</option>').join('')+'</select></label><label>Escolher queda disponível<select data-match aria-label="Escolher queda disponível"><option value="">Carregando quedas…</option></select></label></div><div data-results-status role="status"></div><div data-results-body></div></section>';
+ root.innerHTML='<section class="cff-results"><div class="cff-results-heading"><div><h3>Quedas e classificação</h3><p>Escolha uma queda oficial ou publicada para ver os resultados e o acumulado.</p></div><button type="button" class="cff-account-button" data-refresh>Atualizar</button></div><div class="cff-results-selectors"><label>Torneio<select data-tournament>'+ids.map(id=>'<option value="'+esc(id)+'">'+esc(catalog[id].name)+'</option>').join('')+'</select></label><label>Escolher queda disponível<select data-match aria-label="Escolher queda disponível"><option value="">Carregando quedas…</option></select></label></div><div data-results-status role="status"></div><div data-results-body></div></section>';
  const tournamentSelect=root.querySelector('[data-tournament]'),matchSelect=root.querySelector('[data-match]'),status=root.querySelector('[data-results-status]'),body=root.querySelector('[data-results-body]'),refresh=root.querySelector('[data-refresh]');
  if(tournament)tournamentSelect.value=tournament;
  function summary(s){return (s.status==='official'?'Oficial':'Parcial')+' - Q'+s.drop+' • '+[...s.rows].sort((a,b)=>b.points-a.points).map(r=>shortTeamName(r.team,r.teamId)+': '+r.points+' pts').join(' • ');}
  function rowName(r){const logo=teamLogo(r.team,r.teamId,data.teams?.[r.teamId]?.logo);return '<span class="cff-result-team">'+(logo?'<img loading="lazy" src="'+esc(logo)+'" alt="">':'')+'<span title="'+esc(r.team)+'">'+esc(shortTeamName(r.team,r.teamId))+'</span></span>';}
  function render(){
-  const s=data?.selected;if(!s){body.innerHTML='<p class="cff-profile-muted">Esta queda ainda não foi publicada. O administrador pode usar “Publicar tabela” após preencher os resultados.</p>';return;}
+  const s=data?.selected;if(!s){body.innerHTML='<p class="cff-profile-muted">Esta queda ainda não tem resultados disponíveis. Quedas oficiais do Admin Dados aparecem automaticamente; tabelas parciais podem ser publicadas pelo Camp ao vivo.</p>';return;}
   const isDrop=view==='drop',totals=view==='day'?data.dayTotals:data.overall;
   const rowMap=new Map(s.rows.map(r=>[r.teamId,r]));
   const rows=isDrop?s.participants.map(id=>rowMap.get(id)||{teamId:id,team:data.teams?.[id]?.name||id,position:null,kills:null,points:null}).sort((a,b)=>(a.position??999)-(b.position??999)):totals?.rows||[];
@@ -25,7 +25,7 @@ export function mountResults(root,{catalog,request,app}){
    const available=[...(data.matches||[])].reverse(),latest=available[0];matchSelect.disabled=!latest;
    matchSelect.innerHTML='<option value="">'+(latest?'Mais recente · Dia '+latest.day+' · Queda '+latest.drop:'Nenhuma queda publicada')+'</option>'+available.map(s=>'<option value="'+s.day+':'+s.drop+'">Dia '+s.day+' · Queda '+s.drop+(s.map?' · '+esc(s.map):'')+'</option>').join('');
    if(day&&Array.from(matchSelect.options).some(o=>o.value===day+':'+drop))matchSelect.value=day+':'+drop;
-   status.textContent='';render();
+   status.textContent=data.officialSyncUnavailable?'Não foi possível atualizar os dados oficiais agora. Exibindo os resultados já disponíveis.':'';render();
   }catch(e){if(!stopped&&current===seq)status.textContent=e.message;}finally{if(!stopped&&current===seq)refresh.disabled=false;}
  }
  const selection=()=>{const [d,q]=matchSelect.value.split(':').map(Number);load(d,q);};
