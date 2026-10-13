@@ -260,7 +260,9 @@
           "theme": {
             ".validate": "newData.val() == 'cyan' || newData.val() == 'gold' || newData.val() == 'pink' || newData.val() == 'green' || newData.val() == 'violet'"
           },
-          "frameId": {".validate": "(newData.isString() && (newData.val() == data.val() || newData.val() == '' || newData.val() == 'frame-bronze-1' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (!root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').exists() || root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))) || ((auth != null && auth.token.email == 'admin@centralfreefire.com.br') && newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame')"},
+          "frameId": {
+            ".validate": "(newData.isString() && (newData.val() == data.val() || newData.val() == '' || newData.val() == 'frame-bronze-1' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (!root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').exists() || root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))) || ((auth != null && auth.token.email == 'admin@centralfreefire.com.br') && newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame')"
+          },
           "avatarRingColor": {
             ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
           },
@@ -435,8 +437,10 @@
         "theme": {
           ".validate": "newData.val() == 'cyan' || newData.val() == 'gold' || newData.val() == 'pink' || newData.val() == 'green' || newData.val() == 'violet'"
         },
-        "frameId": {".validate": "(newData.isString() && (newData.val() == data.val() || newData.val() == '' || newData.val() == 'frame-bronze-1' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (!root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').exists() || root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))) || ((auth != null && auth.token.email == 'admin@centralfreefire.com.br') && newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame')"},
-          "avatarRingColor": {
+        "frameId": {
+          ".validate": "(newData.isString() && (newData.val() == data.val() || newData.val() == '' || newData.val() == 'frame-bronze-1' || (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame' && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && ((!root.child('communityProfileCatalog').child(newData.val()).child('accessRule').exists() || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'all' || root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'badge') && (!root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').exists() || root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val() == '' || root.child('communityBadgeOwnership').child($uid).child(root.child('communityProfileCatalog').child(newData.val()).child('unlockBadge').val()).val() == true) || root.child('communityImageOwnership').child($uid).child(newData.val()).exists() || (root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() == 'admin' && root.child('communityAccountRoles').child($uid).child('administrator').val() == true))))) || ((auth != null && auth.token.email == 'admin@centralfreefire.com.br') && newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('enabled').val() == true && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame')"
+        },
+        "avatarRingColor": {
           ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
         },
         "mainTeam": {
@@ -548,7 +552,9 @@
         "accessRule": {
           ".validate": "newData.isString() && newData.val().matches(/^(all|badge|weekly|monthly|top3|event|supporter|code|manual|admin|goal)$/)"
         },
-        "frameScale": {".validate": "newData.parent().child('kind').val() == 'frame' && newData.isNumber() && newData.val() >= 1 && newData.val() <= 1.8"},
+        "frameScale": {
+          ".validate": "newData.parent().child('kind').val() == 'frame' && newData.isNumber() && newData.val() >= 1 && newData.val() <= 1.8"
+        },
         "category": {
           ".validate": "newData.isString() && (newData.val().matches(/^(players|character|logos|simple|stylized|special|interaction|prediction)$/) || root.child('communityProfileCategories').child(newData.parent().child('kind').val()).child(newData.val()).exists())"
         }
@@ -562,31 +568,33 @@
       }
     },
     "communityProfileCategories": {
-    ".read": true,
-    "$kind": {
+      ".read": true,
+      "$kind": {
         ".validate": "$kind.matches(/^(avatar|cover|frame|badge)$/)",
         "$category": {
-            ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
-            ".validate": "$category.matches(/^[a-z][a-z0-9-]{0,31}$/) && newData.hasChildren(['label','order'])",
-            "label": {
-                ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
-            },
-            "order": {
-                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
-            },
-            "$other": {
-                ".validate": false
-            }
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "$category.matches(/^[a-z][a-z0-9-]{0,31}$/) && newData.hasChildren(['label','order'])",
+          "label": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+          },
+          "order": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
-    }
-},
+      }
+    },
     "communityBadgeGoals": {
       ".read": true,
       "$goal": {
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
         ".validate": "$goal.matches(/^goal-[a-z0-9-]{1,60}$/) && newData.hasChildren(['metric','target','label','enabled','createdAt','updatedAt']) && (newData.hasChildren(['assetId']) || newData.hasChildren(['badgeId']))",
-        "assetId": {".validate": "newData.isString() && (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'badge' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'avatar' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover') && root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() != 'admin'"},
-      "badgeId": {
+        "assetId": {
+          ".validate": "newData.isString() && (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'badge' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'avatar' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover') && root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() != 'admin'"
+        },
+        "badgeId": {
           ".validate": "newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'badge'"
         },
         "metric": {
@@ -934,9 +942,25 @@
         }
       },
       ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'"
+    },
+    "globalChat": {
+      ".write": false,
+      "messages": {
+        ".read": "query.limitToLast != null && query.limitToLast > 0 && query.limitToLast <= 100",
+        ".write": false
+      },
+      "limits": {
+        ".read": false,
+        ".write": false
+      },
+      "restrictions": {
+        ".read": "auth != null && (auth.token.email == 'admin@centralfreefire.com.br' || root.child('communityAccountRoles').child(auth.uid).child('roleId').val() == 'moderator')",
+        ".write": false,
+        "$uid": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": false
+        }
+      }
     }
   }
 }
-
-
-

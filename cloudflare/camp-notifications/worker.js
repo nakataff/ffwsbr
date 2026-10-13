@@ -1,3 +1,4 @@
+import globalChat from '../../functions/global-chat.js';
 import profileIdentity from '../../functions/profile-identity-sync.js';
 import profileGoals from '../../functions/profile-goals.js';
 import {goalDatabase} from './goal-database.js';
@@ -20,7 +21,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:8,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:9,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -98,6 +99,8 @@ export class NotificationHub extends DurableObject {
    const rate=this.rows('SELECT * FROM limits WHERE uid=?',uid)[0],now=Date.now(),active=rate&&now-rate.request_at<60000;
    if(active&&rate.requests>=30)throw Object.assign(Error('Aguarde um minuto antes de tentar novamente.'),{status:429});
    this.sql.exec('INSERT OR REPLACE INTO limits VALUES(?,?,?,?)',uid,rate?.test_at||0,active?rate.request_at:now,active?rate.requests+1:1);
+   if(action==='chatSend')return json(await globalChat.sendMessage(goalDatabase(this.goalSecret),user,b.text));
+   if(action==='chatModerate')return json(await globalChat.moderation(goalDatabase(this.goalSecret),user,b));
    if(action==='syncProfileIdentity')return json(await profileIdentity.syncVerifiedProfile(goalDatabase(this.goalSecret),user,async session=>{
     const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});
     if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();

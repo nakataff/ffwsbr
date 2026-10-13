@@ -18,8 +18,20 @@ async function accessToken(secret){
  })();try{return await tokenPending;}finally{tokenPending=null;}
 }
 export function goalDatabase(secret){
- const request=async(path,options={})=>{const token=await accessToken(secret);const response=await fetch(BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json',{...options,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)});if(!response.ok)throw Error('Não foi possível atualizar as recompensas agora.');return response.json();};
- return {get:path=>request(path),update:changes=>request('',{method:'PATCH',body:JSON.stringify(changes)}),async claimDirectory(path,uid,entry){
+ const request=async(path,options={},query='')=>{const token=await accessToken(secret);const response=await fetch(BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json'+query,{...options,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)});if(!response.ok)throw Error('Não foi possível atualizar as recompensas agora.');return response.json();};
+ return {get:path=>request(path),recentChat:()=>request('globalChat/messages',{},'?orderBy=%22%24key%22&limitToLast=110'),async transact(path,updater){
+  const token=await accessToken(secret),url=BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json';
+  for(let attempt=0;attempt<3;attempt++){
+   const current=await fetch(url,{headers:{Authorization:'Bearer '+token,'X-Firebase-ETag':'true'},signal:AbortSignal.timeout(8000)});
+   if(!current.ok)throw Error('Não foi possível conferir os dados do chat.');
+   const next=updater(await current.json()),etag=current.headers.get('ETag');
+   if(!etag)throw Error('Não foi possível atualizar o chat com segurança.');
+   const saved=await fetch(url,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json','If-Match':etag},body:JSON.stringify(next),signal:AbortSignal.timeout(8000)});
+   if(saved.status===412)continue;
+   if(!saved.ok)throw Error('Não foi possível atualizar o chat.');return next;
+  }
+  throw Error('O chat está sendo atualizado. Tente novamente.');
+ },update:changes=>request('',{method:'PATCH',body:JSON.stringify(changes)}),async claimDirectory(path,uid,entry){
   const token=await accessToken(secret),url=BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json';
   for(let attempt=0;attempt<3;attempt++){
    const current=await fetch(url,{headers:{Authorization:'Bearer '+token,'X-Firebase-ETag':'true'},signal:AbortSignal.timeout(8000)});
