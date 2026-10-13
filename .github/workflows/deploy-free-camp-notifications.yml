@@ -86,9 +86,15 @@ jobs:
           done
       - name: Confirm roulette stock schema
         run: |
-          media_status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output economy-media.json --write-out '%{http_code}' https://cff-camp-notifications.nakataffb4.workers.dev/economy-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
-          test "$media_status" = 404
-          node -e 'const response=JSON.parse(require("node:fs").readFileSync("economy-media.json","utf8"));if(response.error!=="Imagem não encontrada.")process.exit(1);console.log("Roulette SQLite schema is ready.");'
+          for attempt in 1 2 3 4 5 6 7 8; do
+            media_status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output economy-media.json --write-out '%{http_code}' https://cff-camp-notifications.nakataffb4.workers.dev/economy-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+            if test "$media_status" = 404 && node -e 'const response=JSON.parse(require("node:fs").readFileSync("economy-media.json","utf8"));if(response.error!=="Imagem não encontrada.")process.exit(1);console.log("Roulette SQLite schema is ready.");'; then
+              break
+            fi
+            echo "Waiting for the roulette image route (HTTP $media_status)."
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
       - name: Check official final Day 2 availability
         run: |
           curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output official-day-two.json https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2/final/drops/2.json

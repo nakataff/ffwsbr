@@ -21,7 +21,7 @@ export default {
  async fetch(request,env) {
   const origin=request.headers.get('Origin'),url=new URL(request.url);
   if(origin&&!ORIGINS.has(origin))return json({error:'Origem não permitida.'},403);
-  const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store'};
+  const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
   if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:12,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
@@ -29,7 +29,8 @@ export default {
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
-  return new Response(response.body,{status:response.status,headers:{...Object.fromEntries(response.headers),...headers,'Cache-Control':response.headers.get('Cache-Control')||'no-store'}});
+  const combined=new Headers(response.headers);for(const [key,value]of Object.entries(headers))combined.set(key,value);combined.set('Cache-Control',response.headers.get('Cache-Control')||'no-store');
+  return new Response(response.body,{status:response.status,headers:combined});
  }
 };
 export class NotificationHub extends DurableObject {
