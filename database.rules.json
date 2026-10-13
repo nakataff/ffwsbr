@@ -546,7 +546,7 @@
           ".validate": false
         },
         "accessRule": {
-          ".validate": "newData.isString() && newData.val().matches(/^(all|badge|weekly|monthly|top3|event|supporter|code|manual|admin)$/)"
+          ".validate": "newData.isString() && newData.val().matches(/^(all|badge|weekly|monthly|top3|event|supporter|code|manual|admin|goal)$/)"
         },
         "frameScale": {".validate": "newData.parent().child('kind').val() == 'frame' && newData.isNumber() && newData.val() >= 1 && newData.val() <= 1.8"},
         "category": {
@@ -565,8 +565,9 @@
       ".read": true,
       "$goal": {
         ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
-        ".validate": "$goal.matches(/^goal-[a-z0-9-]{1,60}$/) && newData.hasChildren(['badgeId','metric','target','label','enabled','createdAt','updatedAt'])",
-        "badgeId": {
+        ".validate": "$goal.matches(/^goal-[a-z0-9-]{1,60}$/) && newData.hasChildren(['metric','target','label','enabled','createdAt','updatedAt']) && (newData.hasChildren(['assetId']) || newData.hasChildren(['badgeId']))",
+        "assetId": {".validate": "newData.isString() && (root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'badge' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'frame' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'avatar' || root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'cover') && root.child('communityProfileCatalog').child(newData.val()).child('accessRule').val() != 'admin'"},
+      "badgeId": {
           ".validate": "newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'badge'"
         },
         "metric": {
@@ -657,7 +658,7 @@
           ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (auth != null && auth.uid == $uid && !data.exists() && newData.child('source').val() == 'code' && root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('enabled').val() == true && root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('assetId').val() == $asset && (root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('expiresAt').val() == 0 || root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('expiresAt').val() >= now) && root.child('communityProfileCatalog').child($asset).child('enabled').val() == true && root.child('communityProfileCatalog').child($asset).child('accessRule').val() == 'code')",
           ".validate": "newData.hasChildren(['source','grantedAt']) && root.child('communityProfileCatalog').child($asset).exists()",
           "source": {
-            ".validate": "newData.val() == 'admin' || newData.val() == 'code'"
+            ".validate": "newData.val() == 'admin' || newData.val() == 'code' || newData.val() == 'goal'"
           },
           "grantedAt": {
             ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 10000"
@@ -917,4 +918,5 @@
     }
   }
 }
+
 
