@@ -1,15 +1,16 @@
+import {BUILTIN_FRAMES} from './profile-frame-model.mjs?v=20261013-profile-frames-v1';
 import { ref, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
-export const PROFILE_VERSION='20261007-access-v1';
+export const PROFILE_VERSION='20261013-profile-frames-v1';
 export const escapeProfile=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const DEFAULT_AVATAR='/central%20free%20fire.webp';
 let optionsPromise;const imageCache=new Map(),imageValueCache=new Map();
-export function profileOptions(){return optionsPromise||=fetch('/profile-options.json?v='+PROFILE_VERSION).then(r=>{if(!r.ok)throw Error('Catálogo indisponível');return r.json()}).catch(e=>{optionsPromise=null;throw e});}
-export function findOption(options,id){return [...(options?.teams||[]),...(options?.players||[])].find(x=>x.id===id);}
+export function profileOptions(){return optionsPromise||=fetch('/profile-options.json?v='+PROFILE_VERSION).then(r=>{if(!r.ok)throw Error('Catálogo indisponível');return r.json().then(data=>({...data,frames:BUILTIN_FRAMES}))}).catch(e=>{optionsPromise=null;throw e});}
+export function findOption(options,id){return [...(options?.teams||[]),...(options?.players||[]),...(options?.frames||[])].find(x=>x.id===id);}
 export function imageUrl(path){return new URL(path||DEFAULT_AVATAR,location.origin+'/').href;}
 export function approvedImage(options,catalog,id,cls='',alt=''){
  const opt=findOption(options,id),item=catalog?.[id],remote=(item?.enabled||item?.kind==='badge')&&item.assetId,cached=remote?imageValueCache.get(item.assetId):'';
  const placeholder='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',src=opt?imageUrl(opt.image):(cached||remote?cached||placeholder:DEFAULT_AVATAR);
- const pending=remote&&!cached?' cff-profile-asset-pending':'',critical=/cff-profile-avatar|cff-profile-cover-image/.test(String(cls||''));
+ const pending=remote&&!cached?' cff-profile-asset-pending':'',critical=/cff-profile-avatar|cff-profile-cover-image|cff-profile-frame-image/.test(String(cls||''));
  return `<img class="${escapeProfile(cls)}${pending}" src="${escapeProfile(src)}" alt="${escapeProfile(alt||opt?.name||item?.title||'Avatar Central')}" loading="${critical?'eager':'lazy'}" decoding="async"${critical?' fetchpriority="high"':''}${remote&&!cached?` data-profile-asset="${escapeProfile(item.assetId)}"`:''}>`;
 }
 export async function warmProfileImages(ids,db){
@@ -27,4 +28,5 @@ export const ACCESS_LABELS={all:'Disponível para todos',weekly:'Campeão semana
 export function catalogAvailable(item,grants,ownership={},roles={},id=''){if(!item?.enabled)return false;const access=item.accessRule||(item.unlockBadge?'badge':'all');if(ownership[id])return true;if(access==='admin')return roles.administrator===true;return ['all','badge'].includes(access)&&(!item.unlockBadge||hasBadge(grants,item.unlockBadge));}
 export function automaticAvatar(name,options,catalog={}){let hash=2166136261;for(const c of String(name||'').toLowerCase()){hash^=c.charCodeAt(0);hash=Math.imul(hash,16777619);}const pool=[...(options?.players||[]),...Object.entries(catalog).filter(([,x])=>x.kind==='avatar'&&x.enabled&&(x.accessRule||'all')==='all'&&!x.unlockBadge).map(([id])=>({id}))];return pool.length?pool[(hash>>>0)%pool.length].id:'default';}
 export const instagramKey=name=>String(name||'').toLowerCase().replace(/\./g,',');
+
 

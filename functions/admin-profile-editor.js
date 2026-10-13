@@ -1,7 +1,7 @@
 'use strict';
 const options=require('./admin-profile-options.json');
 const fail=(status,message)=>Object.assign(new Error(message),{status});
-const fields=['name','motto','avatarId','coverId','avatarRingColor','theme','mainTeam','favoritePlayer','teamIdsJson'];
+const fields=['name','motto','avatarId','coverId','frameId','avatarRingColor','theme','mainTeam','favoritePlayer','teamIdsJson'];
 function target(identity,uid){
  if(!identity.uid||identity.email!=='admin@centralfreefire.com.br')throw fail(403,'Somente o administrador pode editar perfis.');
  if(typeof uid!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(uid))throw fail(400,'Conta inválida.');return uid;
@@ -19,9 +19,9 @@ async function editProfile(db,identity,uid,raw){
  if(!Array.isArray(teams)||teams.length>3||new Set(teams).size!==teams.length||teams.some(t=>!options.teams.includes(t)))throw fail(400,'Escolha até 3 times válidos.');
  if(next.mainTeam&&!teams.includes(next.mainTeam))throw fail(400,'O time principal deve estar nos favoritos.');
  if(next.favoritePlayer&&!options.players.includes(next.favoritePlayer))throw fail(400,'Jogador inválido.');
- const changes={};for(const [field,kind]of [['avatarId','avatar'],['coverId','cover']]){
+ const changes={};for(const [field,kind]of [['avatarId','avatar'],['coverId','cover'],['frameId','frame']]){
   const id=next[field];if(id===p[field])continue;if(field==='avatarId'&&(id==='default'||options.teams.includes(id)||options.players.includes(id)))continue;
-  if(field==='coverId'&&['','none'].includes(id))continue;
+  if(field==='coverId'&&['','none'].includes(id))continue;if(field==='frameId'&&(id===''||id==='frame-bronze-1'))continue;
   if(!/^asset-\d{1,3}$/.test(id))throw fail(400,'Imagem inválida.');
   const item=(await db.ref('communityProfileCatalog/'+id).get()).val();if(!item?.enabled||item.kind!==kind)throw fail(400,'Escolha uma imagem ativa do catálogo.');
   if(item.accessRule==='admin'&&(await db.ref('communityAccountRoles/'+uid+'/administrator').get()).val()!==true)throw fail(400,'Esta imagem é exclusiva de perfis administradores.');
@@ -42,3 +42,4 @@ async function editProfile(db,identity,uid,raw){
  await db.ref().update(changes);return {ok:true,profile:visible(next)};
 }
 module.exports={readProfile,editProfile};
+
