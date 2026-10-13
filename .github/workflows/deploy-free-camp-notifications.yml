@@ -44,6 +44,17 @@ jobs:
         run: node --test functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs
       - name: Check points interfaces
         run: node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js
+      - name: Check referral account verification access
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          node --input-type=module <<'JS'
+          import {goalDatabase} from './cloudflare/camp-notifications/goal-database.js';
+          // One deliberately absent UID verifies Auth read access without downloading users.
+          try { await goalDatabase(process.env.FIREBASE_SERVICE_ACCOUNT).accountCreatedAt('cff-economy-access-check'); }
+          catch(error) { if(error.message !== 'Conta indisponível.') throw error; }
+          console.log('Referral account verification access is ready.');
+          JS
       - name: Configure automatic reward service
         run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" | npx wrangler secret put CFF_GOAL_SERVICE_ACCOUNT
         working-directory: cloudflare/camp-notifications
