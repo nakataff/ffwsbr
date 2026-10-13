@@ -17,7 +17,12 @@ async function main(){
     await env.withSecurityRulesDisabled(ctx=>ctx.database().ref().set(root));
     try{await db.ref(key).set(value);console.log(key.endsWith('/stage')?'Preferences stage: PASS':key.startsWith('userAccounts')?'Private profile: PASS':'Public profile: PASS');}catch{console.log(key.endsWith('/stage')?'Preferences stage: DENIED':key.startsWith('userAccounts')?'Private profile: DENIED':'Public profile: DENIED');}
    }
-   process.exitCode=1;
+   
+   for(const [field,value] of Object.entries(visible)){
+    await env.withSecurityRulesDisabled(ctx=>ctx.database().ref().set(root));
+    try{await db.ref('communityProfiles/'+uid+'/'+field).set(value);console.log('Public field '+field+': PASS');}catch{console.log('Public field '+field+': DENIED');}
+   }
+process.exitCode=1;
   }
  }finally{await env.cleanup();}
 }
