@@ -1,0 +1,23 @@
+name: Diagnose Profile Save (Read Only)
+on:
+  push:
+    branches: [main]
+    paths: ['functions/profile-save-diagnostic.cjs', '.github/workflows/profile-save-diagnostic.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+      - run: npm install
+        working-directory: functions
+      - run: node functions/profile-save-diagnostic.cjs
+        env:
+          PROFILE_DIAGNOSTIC_USERNAME: lukinha_45
