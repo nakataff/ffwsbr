@@ -15,6 +15,7 @@ async function main(){
  const values=await Promise.all(paths.map(read)),root={};
  paths.forEach((path,i)=>{const keys=path.split('/');let node=root;for(const k of keys.slice(0,-1))node=node[k]??={};node[keys.at(-1)]=values[i];});
  const profile=values[0];if(profile?.username!==handle)throw Error('Account username does not match requested profile');
+ if(process.env.PROFILE_DIAGNOSTIC_FIXTURE)fs.writeFileSync(process.env.PROFILE_DIAGNOSTIC_FIXTURE,JSON.stringify({root,uid}),{mode:0o600});
  const oldRoot=structuredClone(root);
  const rules=JSON.parse(fs.readFileSync('database.rules.json','utf8')).rules;
  const failures=(node,path)=>{const fail=[];const check=(expr,p,label)=>{try{const ok=typeof expr==='boolean'?expr:Function('auth','$uid','newData','data','root','now','return Boolean('+expr.replaceAll('.matches(','.match(')+')')({uid,token:{email:'member@example.com'}},uid,snapshot(root,p),snapshot(oldRoot,p),snapshot(root),Date.now());if(!ok)fail.push(label);}catch{fail.push(label);}};check(node['.validate']??true,path,'required-fields');for(const key of Object.keys(snapshot(root,path).val()||{}))check((node[key]||node.$other)?.['.validate']??false,[...path,key],key);return fail;};

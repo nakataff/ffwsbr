@@ -21,3 +21,14 @@ jobs:
       - run: node functions/profile-save-diagnostic.cjs
         env:
           PROFILE_DIAGNOSTIC_USERNAME: lukinha_45
+          PROFILE_DIAGNOSTIC_FIXTURE: ${{ runner.temp }}/profile-save-fixture.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm install --no-save @firebase/rules-unit-testing firebase
+        working-directory: functions
+      - run: npm install -g firebase-tools
+      - run: firebase emulators:exec --config test/firebase-profile-emulator.json --project demo-profile-save --only database 'node functions/test/profile-save-emulator.cjs'
+        env:
+          PROFILE_DIAGNOSTIC_FIXTURE: ${{ runner.temp }}/profile-save-fixture.json
