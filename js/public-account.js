@@ -252,14 +252,23 @@ async function loadPublicProfile(){stopPublicRoles?.();stopPublicRoles=null;try{
 function publicStatsHtml(){const ranks=publicProfile?.rankings||{};return `<div class="cff-profile-stats" data-public-profile-stats>${[['week','Na semana'],['month','No mês'],['all','Geral']].map(([id,label])=>`<article><small>${label}</small><strong>${ranks[id]?.position?ranks[id].position+'º':'—'}</strong><span>${ranks[id]?fmt(ranks[id].points)+' pontos':'Sem registro no Top 500'}</span></article>`).join('')}</div>`;}
 function updatePublicProfileDynamic(){const root=$('cff-account-root');if(!root||!publicProfile||publicProfile.unavailable)return;const statsNode=root.querySelector('[data-public-profile-stats]');if(statsNode)statsNode.outerHTML=publicStatsHtml();const showcase=root.querySelector('[data-public-showcase]');if(showcase){showcase.innerHTML=showcased(publicProfile.profile,publicProfile.grants,false);hydrateProfileImages(showcase,database);}const icons=root.querySelector('[data-public-badge-icons]');if(icons){icons.outerHTML=profileBadgeIcons(publicProfile.grants,false,true);const next=root.querySelector('[data-public-badge-icons]');if(next)hydrateProfileImages(next,database);}}
 function publicProfileSignature(){if(!publicProfile)return'loading';if(publicProfile.unavailable)return'unavailable';const p=publicProfile.profile||{};return JSON.stringify([publicProfile.uid||'',publicProfile.username||'',p.name||'',p.motto||'',p.avatarId||'',p.coverId||'',p.frameId||'',p.avatarRingColor||'',p.theme||'',p.communityStyle||'',p.mainTeam||'',p.favoritePlayer||'',p.teamIdsJson||'',profileDefaults.updatedAt||0,profileCategories]);}
-async function syncPublicIdentity(){if(!user)return;const uid=user.uid;let link=(await get(ref(database,'communityInstagramLinks/'+uid))).val();if(communityStatus?.source==='admin'&&communityStatus.username==='nakataff'){link={username:'nakataff',key:'nakataff'};await set(ref(database,'communityInstagramLinks/'+uid),link);if(!(await get(ref(database,'communityAccountRoles/'+uid+'/administrator'))).exists())await set(ref(database,'communityAccountRoles/'+uid+'/administrator'),true);}
+const publicIdentitySyncs=new Map();
+async function syncPublicIdentity(){if(!user)return;const currentUser=user,uid=currentUser.uid;let link=(await get(ref(database,'communityInstagramLinks/'+uid))).val();
+ if(user?.uid!==uid)return;
+ if(communityStatus?.status==='verified'&&communityStatus.source!=='admin'&&link?.username!==String(communityStatus.username||'').toLowerCase()){
+  const key=uid+'|'+String(community?.session||'');let pending=publicIdentitySyncs.get(key);
+  if(!pending){pending=(async()=>{const token=await currentUser.getIdToken(),response=await fetch('https://cff-camp-notifications.nakataffb4.workers.dev/api',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action:'syncProfileIdentity'})});const result=await response.json();if(!response.ok)throw Error(result.error||'Não foi possível sincronizar o perfil.');return result;})();publicIdentitySyncs.set(key,pending);}
+  try{await pending;}finally{if(publicIdentitySyncs.get(key)===pending)publicIdentitySyncs.delete(key);}
+  if(user?.uid!==uid)return;link=(await get(ref(database,'communityInstagramLinks/'+uid))).val();
+ }
+if(communityStatus?.source==='admin'&&communityStatus.username==='nakataff'){link={username:'nakataff',key:'nakataff'};await set(ref(database,'communityInstagramLinks/'+uid),link);if(!(await get(ref(database,'communityAccountRoles/'+uid+'/administrator'))).exists())await set(ref(database,'communityAccountRoles/'+uid+'/administrator'),true);}
  if(user?.uid!==uid||!link?.key)return;
  const current=(await get(ref(database,'communityRankingProfiles/'+link.key))).val();
  if(current?.uid&&current.uid!==uid)return;
  const visible=(await get(ref(database,'communityProfiles/'+uid))).val();
  if(user?.uid!==uid)return;
  const sameInstagram=communityStatus?.username?.toLowerCase()===link.username;
- if(!visible||!sameInstagram){if(current?.uid===uid)await set(ref(database,'communityRankingProfiles/'+link.key),null);return;}
+ if(!visible||visible.public===false||!sameInstagram){if(current?.uid===uid)await set(ref(database,'communityRankingProfiles/'+link.key),null);return;}
  const role=(await get(ref(database,'communityAccountRoles/'+uid))).val()||{},rawAvatar=String(visible.avatarId||'default'),globalAvatar=String(profileDefaults.avatarId||'default'),effectiveAvatar=rawAvatar==='default'&&(findOption(options,globalAvatar)||(catalog[globalAvatar]?.kind==='avatar'&&catalog[globalAvatar]?.enabled))?globalAvatar:rawAvatar,entry={uid,username:link.username,avatarId:findOption(options,effectiveAvatar)||catalogAvailable(catalog[effectiveAvatar],grants,ownership,role,effectiveAvatar)||effectiveAvatar===globalAvatar?effectiveAvatar:'default',administrator:role.administrator===true};
  if(!current||Object.keys(entry).some(k=>entry[k]!==current[k]))await set(ref(database,'communityRankingProfiles/'+link.key),entry);
 }
@@ -362,6 +371,3 @@ async function boot(){
 }
 boot();
 window.addEventListener('pageshow',updateAccountAccess);
-
-
-

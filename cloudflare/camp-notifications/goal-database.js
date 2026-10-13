@@ -19,5 +19,18 @@ async function accessToken(secret){
 }
 export function goalDatabase(secret){
  const request=async(path,options={})=>{const token=await accessToken(secret);const response=await fetch(BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json',{...options,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)});if(!response.ok)throw Error('Não foi possível atualizar as recompensas agora.');return response.json();};
- return {get:path=>request(path),update:changes=>request('',{method:'PATCH',body:JSON.stringify(changes)})};
+ return {get:path=>request(path),update:changes=>request('',{method:'PATCH',body:JSON.stringify(changes)}),async claimDirectory(path,uid,entry){
+  const token=await accessToken(secret),url=BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json';
+  for(let attempt=0;attempt<3;attempt++){
+   const current=await fetch(url,{headers:{Authorization:'Bearer '+token,'X-Firebase-ETag':'true'},signal:AbortSignal.timeout(8000)});
+   if(!current.ok)throw Error('Não foi possível conferir o perfil no ranking.');
+   const value=await current.json();if(value?.uid&&value.uid!==uid)return false;
+   if(JSON.stringify(value)===JSON.stringify(entry))return true;
+   const etag=current.headers.get('ETag');if(!etag)throw Error('Não foi possível sincronizar o perfil com segurança.');
+   const saved=await fetch(url,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json','If-Match':etag},body:JSON.stringify(entry),signal:AbortSignal.timeout(8000)});
+   if(saved.status===412)continue;
+   if(!saved.ok)throw Error('Não foi possível sincronizar o perfil no ranking.');return true;
+  }
+  throw Error('O perfil está sendo atualizado. Tente novamente.');
+ }};
 }
