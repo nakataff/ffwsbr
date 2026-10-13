@@ -18,6 +18,10 @@ async function main(){
  if(process.env.PROFILE_DIAGNOSTIC_FIXTURE)fs.writeFileSync(process.env.PROFILE_DIAGNOSTIC_FIXTURE,JSON.stringify({root,uid}),{mode:0o600});
  const oldRoot=structuredClone(root);
  const rules=JSON.parse(fs.readFileSync('database.rules.json','utf8')).rules;
+ const token=await app.options.credential.getAccessToken();
+ const response=await fetch('https://central-free-fire-default-rtdb.firebaseio.com/.settings/rules.json',{headers:{Authorization:'Bearer '+token.access_token}});
+ if(response.ok){const live=(await response.json()).rules;const differences=[];const walk=(a,b,path=[])=>{if(typeof a!=='object'||a===null){if(a!==b)differences.push(path.join('/'));return;}for(const key of Object.keys(a))walk(a[key],b?.[key],[...path,key]);};walk(rules,live);console.log(JSON.stringify({liveRuleDifferences:differences}));}else console.log(JSON.stringify({liveRulesReadStatus:response.status}));
+
  const failures=(node,path)=>{const fail=[];const check=(expr,p,label)=>{try{const ok=typeof expr==='boolean'?expr:Function('auth','$uid','newData','data','root','now','return Boolean('+expr.replaceAll('.matches(','.match(')+')')({uid,token:{email:'member@example.com'}},uid,snapshot(root,p),snapshot(oldRoot,p),snapshot(root),Date.now());if(!ok)fail.push(label);}catch{fail.push(label);}};check(node['.validate']??true,path,'required-fields');for(const key of Object.keys(snapshot(root,path).val()||{}))check((node[key]||node.$other)?.['.validate']??false,[...path,key],key);return fail;};
  console.log(JSON.stringify({privateFailures:failures(rules.userAccounts.$uid.profile,['userAccounts',uid,'profile']),publicFailures:failures(rules.communityProfiles.$uid,['communityProfiles',uid]),preferenceFailures:failures(rules.userAccounts.$uid.preferences,['userAccounts',uid,'preferences']),usernameClaimMatches:values[8]===uid}));
  // Check every selectable custom image against both profile validators without changing saved data.
