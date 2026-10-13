@@ -1,8 +1,11 @@
 name: Diagnose Profile Save (Read Only)
 on:
-  push:
-    branches: [main]
-    paths: ['functions/profile-save-diagnostic.cjs', 'functions/test/profile-save-emulator.cjs', '.github/workflows/profile-save-diagnostic.yml']
+  workflow_dispatch:
+    inputs:
+      username:
+        description: Profile username to inspect without changing production data
+        required: true
+        type: string
 permissions:
   contents: read
 jobs:
@@ -20,7 +23,7 @@ jobs:
         working-directory: functions
       - run: node functions/profile-save-diagnostic.cjs
         env:
-          PROFILE_DIAGNOSTIC_USERNAME: lukinha_45
+          PROFILE_DIAGNOSTIC_USERNAME: ${{ inputs.username }}
           PROFILE_DIAGNOSTIC_FIXTURE: ${{ runner.temp }}/profile-save-fixture.json
       - uses: actions/setup-java@v4
         with:
