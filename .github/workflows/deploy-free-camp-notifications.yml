@@ -41,5 +41,24 @@ jobs:
       - name: Confirm the public service
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
-          curl --fail --silent --show-error --retry 8 --retry-all-errors --retry-delay 5 --retry-max-time 120 --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health
-          node -e 'const h = JSON.parse(require("node:fs").readFileSync("health.json", "utf8")); if (h.ok !== true || h.service !== "cff-camp-notifications" || h.version !== 6) throw new Error("Notification health check failed"); console.log("Notification service is ready.");'
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==6)process.exit(1);'; then
+              echo 'Notification service is ready.'
+              break
+            fi
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
+      - name: Check official final Day 2 availability
+        run: |
+          curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output official-day-two.json https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2/final/drops/2.json
+          node <<'JS'
+          const fs=require('node:fs'),C=require('./functions/camp-notifications-core.js');
+          const data=JSON.parse(fs.readFileSync('official-day-two.json','utf8'))||{};
+          const available=Object.entries(data).filter(([key,value])=>{
+            const teams=Object.values(value?.teams||{}),roster=Object.fromEntries(teams.map(t=>[C.key(t.team),{name:t.team}]));
+            const rows=C.officialRows(value,roster);
+            return rows.length===12&&rows.length===teams.length;
+          }).map(([key])=>Number(key)).sort((a,b)=>a-b);
+          console.log('Official final Day 2 drops: '+JSON.stringify(available));
+          JS
