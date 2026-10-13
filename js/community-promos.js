@@ -4,7 +4,6 @@
   if (window.__CFF_COMMUNITY_PROMOS_V1__) return;
   window.__CFF_COMMUNITY_PROMOS_V1__ = true;
 
-  const API = 'https://cff-instagram-community.nakataffb4.workers.dev';
   const GIVEAWAY_URL = 'https://central-free-fire-default-rtdb.firebaseio.com/communityGiveaways/current.json';
   const path = location.pathname.toLowerCase();
   const isHome = path === '/' || path.endsWith('/index.html');
@@ -84,40 +83,6 @@
     root.innerHTML = active ? promoMarkup(giveaway) : winnerMarkup(giveaway);
   }
 
-  function predictionTitle(p) {
-    if (p.metric === 'best') return '🔥 Melhor equipe do dia';
-    if (p.metric === 'worst') return '📉 Pior equipe do dia';
-    if (p.metric === 'mvp') return '⭐ MVP do dia';
-    return '🎯 Palpite';
-  }
-
-  function mountHomePredictions(payload) {
-    if (!isHome) return;
-    const predictions = (payload?.predictions || []).filter(p => p?.category === 'ffws');
-    if (!predictions.length) return;
-    css();
-    const open = predictions.some(p => p.status === 'open');
-    const closesAt = Math.max(...predictions.map(p => Number(p.closesAt || 0)));
-    let root = document.getElementById('cff-home-predictions');
-    if (!root) {
-      root = document.createElement('section'); root.id = 'cff-home-predictions'; root.className = 'cff-home-predictions';
-      const broadcast = document.getElementById('home-s2-broadcast');
-      if (broadcast) broadcast.insertAdjacentElement('afterend', root);
-      else document.querySelector('#home .home-center-column')?.prepend(root);
-    }
-    root.innerHTML = `<div class="cff-home-predictions-head"><strong>🎯 Palpites da WB / FFWS BR</strong><span>${open ? `abertos até ${esc(fmt(closesAt))}` : 'palpites do dia encerrados'}</span></div><div class="cff-home-predictions-body">${predictions.map(p => `<div class="cff-home-prediction-item"><small>${esc(predictionTitle(p))}</small><b>${esc(p.question || '')}</b></div>`).join('')}</div><div class="cff-home-predictions-foot"><span>Palpite na melhor equipe, pior equipe e MVP do dia. Você pode editar até 13h.</span><a href="interacoes.html#palpites">${open ? 'Dar palpite' : 'Ver palpites'}</a></div>`;
-
-    const watch = document.getElementById('home-s2-watch');
-    if (watch?.parentNode && !document.getElementById('cff-home-broadcast-predict')) {
-      const btn = document.createElement('a');
-      btn.id = 'cff-home-broadcast-predict';
-      btn.className = 'home-s2-watch cff-home-broadcast-predict';
-      btn.href = 'interacoes.html#palpites';
-      btn.textContent = open ? '🎯 DAR PALPITE →' : '🎯 VER PALPITES →';
-      watch.insertAdjacentElement('afterend', btn);
-    }
-  }
-
   function scrollHash() {
     if (!isInteractions || location.hash !== '#palpites') return;
     window.cffOpenCommunityTab?.('predictions',{updateHash:false});
@@ -126,7 +91,6 @@
   async function boot() {
     css();
     const jobs = [getJson(GIVEAWAY_URL).then(mountGiveaway).catch(() => {})];
-    if (isHome) jobs.push(getJson(`${API}/api/predictions`).then(mountHomePredictions).catch(() => {}));
     await Promise.allSettled(jobs);
     scrollHash();
     setInterval(() => {
