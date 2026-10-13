@@ -717,6 +717,7 @@
       }
     },
     "communityInstagramLinks": {
+      ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
       "$uid": {
         ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br') || root.child('communityProfiles').child($uid).exists()",
         ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (auth != null && auth.uid == $uid && root.child('communityOwnerInstagram').child('uid').val() == $uid && newData.child('username').val() == 'nakataff' && newData.child('key').val() == 'nakataff') || (auth != null && auth.uid == $uid && !newData.exists())",

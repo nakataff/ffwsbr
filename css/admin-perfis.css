@@ -74,3 +74,15 @@
 .cff-admin-profiles-page .cff-admin-member-group h3{font-size:.8rem;color:#8eaac3}
 @media(max-width:900px){.cff-role-list{grid-template-columns:1fr}.cff-admin-profiles-page .cff-admin-members-sidebar{position:static;max-height:none}.cff-admin-profiles-page .cff-account-tabs{top:0;border-radius:0}.cff-role-card{padding:14px}}
 .cff-admin-catalog-filters{grid-template-columns:minmax(180px,1fr) repeat(3,minmax(130px,.5fr))}@media(max-width:900px){.cff-admin-catalog-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.cff-admin-catalog-filters{grid-template-columns:1fr}}
+
+/* Full directory totals are independent of the paginated member list. */
+.cff-admin-member-summary{margin:0 0 20px}
+.cff-admin-member-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.cff-admin-member-summary-grid article{min-width:0;padding:18px 20px;background:#0d1725;border:1px solid #25384c;border-radius:13px}
+.cff-admin-member-summary-grid span{display:block;color:#96afc7;font-size:12px;line-height:1.5}
+.cff-admin-member-summary-grid strong{display:block;margin-top:8px;color:#edf6ff;font-size:30px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.cff-admin-member-summary-grid article:first-child{border-color:#37576e;background:#102234}
+.cff-admin-member-summary-grid article:first-child strong{color:#89d8ef}
+.cff-admin-member-summary>p{margin:9px 0 0;font-size:11px!important}
+@media(max-width:900px){.cff-admin-member-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.cff-admin-member-summary-grid{gap:8px}.cff-admin-member-summary-grid article{padding:13px}.cff-admin-member-summary-grid span{font-size:11px}.cff-admin-member-summary-grid strong{font-size:26px}}
