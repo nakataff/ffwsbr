@@ -7,7 +7,7 @@ async function accessToken(secret){
  tokenPending=(async()=>{
   let account;try{account=JSON.parse(secret||'');}catch{throw Error('Serviço de recompensas ainda em configuração.');}
   if(account.project_id!=='central-free-fire'||!account.client_email||!account.private_key)throw Error('Credencial do serviço de recompensas inválida.');
-  const encoder=new TextEncoder(),stamp=Math.floor(Date.now()/1000),header=b64(encoder.encode(JSON.stringify({alg:'RS256',typ:'JWT'}))),payload=b64(encoder.encode(JSON.stringify({iss:account.client_email,scope:'https://www.googleapis.com/auth/firebase.database https://www.googleapis.com/auth/userinfo.email',aud:'https://oauth2.googleapis.com/token',iat:stamp,exp:stamp+3600})));
+  const encoder=new TextEncoder(),stamp=Math.floor(Date.now()/1000),header=b64(encoder.encode(JSON.stringify({alg:'RS256',typ:'JWT'}))),payload=b64(encoder.encode(JSON.stringify({iss:account.client_email,scope:'https://www.googleapis.com/auth/firebase.database https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/identitytoolkit',aud:'https://oauth2.googleapis.com/token',iat:stamp,exp:stamp+3600})));
   const pem=account.private_key.replace(/-----[^-]+-----/g,'').replace(/\s/g,''),bytes=Uint8Array.from(atob(pem),c=>c.charCodeAt(0));
   const key=await crypto.subtle.importKey('pkcs8',bytes,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);
   const message=header+'.'+payload,signature=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,encoder.encode(message));
@@ -19,7 +19,10 @@ async function accessToken(secret){
 }
 export function goalDatabase(secret){
  const request=async(path,options={},query='')=>{const token=await accessToken(secret);const response=await fetch(BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json'+query,{...options,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)});if(!response.ok)throw Error('Não foi possível atualizar as recompensas agora.');return response.json();};
- return {get:path=>request(path),recentChat:()=>request('globalChat/messages',{},'?orderBy=%22%24key%22&limitToLast=110'),async transact(path,updater){
+ return {async accountCreatedAt(uid){
+  const token=await accessToken(secret),r=await fetch('https://identitytoolkit.googleapis.com/v1/projects/central-free-fire/accounts:lookup',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({localId:[uid]}),signal:AbortSignal.timeout(8000)});
+  if(!r.ok)throw Error('Não foi possível conferir a data de criação da conta.');const user=(await r.json()).users?.find(u=>u.localId===uid);if(!user||user.disabled)throw Error('Conta indisponível.');return Number(user.createdAt);
+ },get:path=>request(path),recentChat:()=>request('globalChat/messages',{},'?orderBy=%22%24key%22&limitToLast=110'),async transact(path,updater){
   const token=await accessToken(secret),url=BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json';
   for(let attempt=0;attempt<3;attempt++){
    const current=await fetch(url,{headers:{Authorization:'Bearer '+token,'X-Firebase-ETag':'true'},signal:AbortSignal.timeout(8000)});
@@ -46,3 +49,4 @@ export function goalDatabase(secret){
   throw Error('O perfil está sendo atualizado. Tente novamente.');
  }};
 }
+

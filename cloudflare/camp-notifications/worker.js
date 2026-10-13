@@ -1,3 +1,4 @@
+import economyCore from '../../functions/economy.js';
 import codeGifts from '../../functions/code-gifts.js';
 import globalChat from '../../functions/global-chat.js';
 import profileIdentity from '../../functions/profile-identity-sync.js';
@@ -22,7 +23,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:10,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:11,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -49,6 +50,7 @@ export class NotificationHub extends DurableObject {
    CREATE INDEX IF NOT EXISTS pending_check ON pending(check_at);
    CREATE TABLE IF NOT EXISTS limits(uid TEXT PRIMARY KEY,test_at INTEGER,request_at INTEGER,requests INTEGER);
    CREATE TABLE IF NOT EXISTS meta(id TEXT PRIMARY KEY,data TEXT);`);
+  economyCore.initEconomy(this.sql);
  }
  rows(query,...args){return this.sql.exec(query,...args).toArray();}
  config(id){const row=this.rows('SELECT data FROM catalog WHERE id=?',id)[0];return row?JSON.parse(row.data):null;}
@@ -100,6 +102,10 @@ export class NotificationHub extends DurableObject {
    const rate=this.rows('SELECT * FROM limits WHERE uid=?',uid)[0],now=Date.now(),active=rate&&now-rate.request_at<60000;
    if(active&&rate.requests>=30)throw Object.assign(Error('Aguarde um minuto antes de tentar novamente.'),{status:429});
    this.sql.exec('INSERT OR REPLACE INTO limits VALUES(?,?,?,?)',uid,rate?.test_at||0,active?rate.request_at:now,active?rate.requests+1:1);
+   if(action==='economy'||action==='economyAdmin'){
+    const economy=economyCore.createEconomy({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),db:goalDatabase(this.goalSecret),verifySession:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();}});
+    return json(await (action==='economyAdmin'?economy.adminHandle(user,b):economy.handle(user,b)));
+   }
    if(action==='findGiftRecipient')return json(await codeGifts.findRecipient(goalDatabase(this.goalSecret),user,b.query));
    if(action==='sendCodeGift')return json(await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b));
    if(action==='openCodeGift')return json(await codeGifts.openCodeGift(goalDatabase(this.goalSecret),user,b.giftId));
