@@ -290,7 +290,7 @@
             ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_]{3,24}$/) && newData.parent().parent().parent().parent().child('communityUsernames').child(newData.val()).val() == $uid"
           },
           "communityStyle": {
-            ".validate": "newData.isString() && newData.val().matches(/^(|level-novato|level-participante|level-veterano|level-elite|level-lenda)$/)"
+            ".validate": "newData.isString() && (newData.val() == '' || newData.val().matches(/^level-(novato|participante|veterano|elite|lenda)$/))"
           }
         },
         "preferences": {
@@ -462,7 +462,7 @@
           ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_]{3,24}$/) && newData.parent().parent().parent().child('communityUsernames').child(newData.val()).val() == $uid"
         },
         "communityStyle": {
-          ".validate": "newData.isString() && newData.val().matches(/^(|level-novato|level-participante|level-veterano|level-elite|level-lenda)$/)"
+          ".validate": "newData.isString() && (newData.val() == '' || newData.val().matches(/^level-(novato|participante|veterano|elite|lenda)$/))"
         }
       }
     },
