@@ -15,7 +15,7 @@ Abra `conta.html?tab=points`, entre com Google e complete o cadastro. O check-in
 | 50 pontos | 1% |
 | Um codiguinho | 1% |
 
-Sem um código válido no estoque da roleta, a chance de codiguinho fica em zero e os 1% passam para 1 ponto. A tela mostra as chances efetivas. Códigos com validade vencida não participam do sorteio nem da loja.
+Sem um código válido no estoque da roleta, a chance de codiguinho fica em zero e os 1% passam para 1 ponto. As chances efetivas são aplicadas no servidor. Códigos com validade vencida não participam do sorteio nem da loja.
 
 ## Convites
 
@@ -46,10 +46,18 @@ Testes: `node --test functions/test/economy.test.cjs`, `npm test` e `npm run che
 
 Cada tipo de codiguinho aparece na loja com seu nome, foto, quantidade disponível, preço e o saldo da pessoa. O resgate fica vinculado ao tipo escolhido. Se esse tipo acabar antes da confirmação, o resgate falha sem cobrar pontos, mesmo que outro tipo ainda tenha estoque.
 
-As fotos do controle de codiguinhos acompanham as novas reservas. Ao desbloquear o controle, as fotos dos códigos já reservados são atualizadas automaticamente; há também o botão **Atualizar fotos dos códigos já reservados**. No painel de pontos, **Editar foto e detalhes** permite adicionar ou trocar a foto de um código que ainda não foi sorteado/resgatado. Códigos sem foto usam a imagem do presente como alternativa.
+As fotos do controle de codiguinhos acompanham as novas reservas. Ao desbloquear o controle, as fotos que faltam nos códigos já reservados são atualizadas automaticamente; há também o botão **Atualizar fotos do estoque**. No painel de pontos, **Editar foto e detalhes** permite adicionar ou trocar a foto de um código que ainda não foi sorteado/resgatado. Códigos sem foto usam a imagem do presente como alternativa.
 
 Uploads são reduzidos a até 384 pixels no navegador. Imagens iguais são guardadas uma única vez no SQLite e servidas por uma URL de conteúdo imutável com cache. Somente as fotos de produtos ficam disponíveis nesse endpoint; códigos, saldos e destinatários continuam privados. O Firebase não recebe uma coleção extra de imagens.
 
 A roleta tem seis setores visuais, chances explícitas, giro contínuo durante o pedido, pelo menos seis voltas e desaceleração até o prêmio confirmado pelo servidor. Uma janela apresenta o prêmio e o saldo atualizado. A preferência de movimento reduzido é respeitada. Sem estoque, os avisos da roleta e da loja aparecem separadamente; os 1% do código passam para 1 ponto (81% com a configuração padrão).
 
 A atualização das chances é aplicada uma vez na implantação, preservando saldos, giros antigos, códigos e preços já cadastrados. Alterações posteriores feitas pelo administrador continuam valendo após reinícios.
+
+## Interface e destinos do estoque
+
+A área de pontos não exibe porcentagens; as chances continuam validadas no servidor. A roleta e a loja mostram avisos independentes quando não houver códigos válidos no respectivo estoque. Os prêmios disponíveis incluem foto, nome e quantidade.
+
+No controle de codiguinhos, o painel de pontos aparece depois do resumo de códigos, com formulários separados para reservar e editar. Etiquetas sobre a foto indicam Loja, Roleta ou Roleta e loja e a quantidade de cada destino. Cada código reservado também mostra uma etiqueta com acesso à edição. O destino pode ser alterado somente enquanto o código estiver válido e não reservado para um resgate; a troca preserva foto, título e validade.
+
+O admin consulta o estado de todos os códigos visíveis por hashes em lotes de até 500, sem expor códigos no retorno. As consultas são reaproveitadas por um minuto; alterações e o botão de disponibilidade atualizam imediatamente. Fotos que faltam no estoque são sincronizadas ao desbloquear o controle; o botão de fotos permite forçar a atualização das imagens já cadastradas. Códigos entregues ou com entrega pendente continuam bloqueados para envio manual.

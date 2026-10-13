@@ -1,8 +1,8 @@
-import {prepareEconomyPhoto} from './economy-photo.mjs?v=20261013-economy-v2';
+import {prepareEconomyPhoto} from './economy-photo.mjs?v=20261013-economy-v3';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import {getDatabase,ref,get} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
-import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261013-economy-v2';
+import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261013-economy-v3';
 const app=getApps().find(a=>a.name==='[DEFAULT]')||initializeApp(window.CFF_CONFIG.firebase),auth=getAuth(app),db=getDatabase(app),root=document.getElementById('eco-admin-root'),status=document.getElementById('eco-admin-status');
 const kinds={code:'Codiguinho',avatar:'Avatar',cover:'Capa',frame:'Moldura'},buckets={roulette:'Roleta',shop:'Loja',both:'Roleta e loja'};
 let catalog={},data=null,selected=null,working=false,adjustNonce=null;
