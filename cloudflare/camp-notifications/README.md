@@ -44,3 +44,13 @@ dados oficiais têm cache compartilhado de 60 segundos por etapa. Em falhas
 de consulta, a tela preserva os dados disponíveis e informa a falha.
 Essa leitura não grava snapshots, não cria mensagens e não agenda pushes
 antigos. O envio de alertas continua dependendo dos comandos do administrador.
+
+## Área de avisos e resultados (2026-10-13)
+
+A tela prioriza a classificação geral. Na final, resultados oficiais completos
+identificam o campeão pela regra Champion Rush (160 pontos antes da queda
+vencida), sem confundir campeão com líder em pontos. O usuário pode rever
+qualquer queda e acessar seu histórico privado. Preferências de alertas ficam
+recolhidas. Os resultados e o histórico mantêm a autenticação existente.
+O convite de conta é exclusivo para visitantes deslogados, tem fechamento
+por X, Agora não e Escape, e respeita uma hora de dispensa nesse navegador.

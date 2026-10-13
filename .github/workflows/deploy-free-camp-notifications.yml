@@ -32,6 +32,8 @@ jobs:
         working-directory: cloudflare/camp-notifications
       - run: npm test
         working-directory: cloudflare/camp-notifications
+      - name: Test profile results and account invitation
+        run: node --test test/account-welcome.test.mjs test/camp-results-view.test.mjs
       - name: Deploy the standalone free Worker
         run: npm run deploy
         working-directory: cloudflare/camp-notifications
@@ -42,7 +44,7 @@ jobs:
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
           for attempt in 1 2 3 4 5 6 7 8; do
-            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==6)process.exit(1);'; then
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==7)process.exit(1);'; then
               echo 'Notification service is ready.'
               break
             fi
@@ -61,4 +63,13 @@ jobs:
             return rows.length===12&&rows.length===teams.length;
           }).map(([key])=>Number(key)).sort((a,b)=>a-b);
           console.log('Official final Day 2 drops: '+JSON.stringify(available));
+          JS
+      - name: Confirm completed final state
+        run: |
+          curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output official-final.json https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2/final.json
+          node <<'JS'
+          const fs=require('node:fs'),C=require('./functions/camp-notifications-core.js'),R=require('./functions/camp-results-core.js');
+          const live=JSON.parse(fs.readFileSync('official-final.json','utf8'))||{},roster={};
+          for(const day of Object.values(live.drops||{}))for(const match of Object.values(day||{}))for(const team of Object.values(match?.teams||{}))roster[C.key(team.team)]={name:team.team};
+          console.log('Final tournament state: '+JSON.stringify(R.tournamentState(R.mergeOfficialMatches([],live,roster,'final'),roster,'final',live)));
           JS

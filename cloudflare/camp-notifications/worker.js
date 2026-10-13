@@ -17,7 +17,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:6});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:7});
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -138,10 +138,11 @@ export class NotificationHub extends DurableObject {
     const saved=this.rows('SELECT data FROM snapshots WHERE tournament=? ORDER BY day,dropno LIMIT 2000',id).map(r=>JSON.parse(r.data));
     const officialData=t.officialStage?await this.officialTables(t.officialStage):null;
     const all=R.mergeOfficialMatches(saved,officialData?.data,t.teams,t.officialStage);
+    const tournamentState=R.tournamentState(all,t.teams,t.officialStage,officialData?.data);
     const selected=b.day!==undefined||b.drop!==undefined?all.find(s=>s.day===C.integer(b.day,1,365)&&s.drop===C.integer(b.drop,1,999)):all.at(-1);
-    if(!selected)return json({selected:null,matches:all.slice(-100).map(s=>({day:s.day,drop:s.drop,map:s.map,status:s.status})),overall:null,officialSyncUnavailable:officialData?.unavailable===true});
+    if(!selected)return json({selected:null,matches:all.slice(-100).map(s=>({day:s.day,drop:s.drop,map:s.map,status:s.status})),overall:null,tournamentState,officialSyncUnavailable:officialData?.unavailable===true});
     const until=all.filter(s=>s.day<selected.day||s.day===selected.day&&s.drop<=selected.drop);
-    return json({selected,matches:all.slice(-100).map(s=>({day:s.day,drop:s.drop,map:s.map,status:s.status})),overall:R.totals(until,t.teams),dayTotals:R.totals(until,t.teams,selected.day),teams:t.teams,streamUrl:streamUrl(t.streamUrl),officialSyncUnavailable:officialData?.unavailable===true});
+    return json({selected,matches:all.slice(-100).map(s=>({day:s.day,drop:s.drop,map:s.map,status:s.status})),overall:R.totals(until,t.teams),dayTotals:R.totals(until,t.teams,selected.day),teams:t.teams,streamUrl:streamUrl(t.streamUrl),tournamentState,officialSyncUnavailable:officialData?.unavailable===true});
    }
    if(action==='publishResults'){
     admin();const id=C.text(b.tournamentId,100),t=this.config(id);if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');

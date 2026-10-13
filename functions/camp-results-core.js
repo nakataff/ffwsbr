@@ -45,4 +45,15 @@ function mergeOfficialMatches(saved,live,roster,stage){
  if(stage==='segundaFase'&&merged.size){const firstDay=Math.min(...[...merged.values()].map(s=>s.day));const bonus={};for(const [name,value]of Object.entries(live?.bonus||{})){const id=Object.keys(roster).find(id=>[roster[id].name,...(roster[id].aliases||[])].some(alias=>C.key(alias)===C.key(name)));if(id&&Number.isInteger(Number(value)))bonus[id]=Number(value);}if(Object.keys(bonus).length)for(const [key,s]of merged)if(s.day===firstDay)merged.set(key,{...s,headstart:bonus});}
  return [...merged.values()].sort((a,b)=>a.day-b.day||a.drop-b.drop);
 }
-module.exports={normalize,promote,totals,mergeOfficialMatches};
+function tournamentState(matches,roster,stage,live){
+ const active={finished:false,champion:null};if(stage!=='final')return active;
+ const threshold=Number(live?.championPoint)||160,total=new Map();let previous=null;
+ for(const s of matches){
+  if(s.status!=='official'||!s.complete||!previous&&(s.day!==1||s.drop!==1)||previous&&!(s.day===previous.day&&s.drop===previous.drop+1||previous.day===1&&previous.drop===6&&s.day===2&&s.drop===1))return active;
+  const win=s.rows.find(r=>r.position===1&&(total.get(r.teamId)||0)>=threshold);
+  if(win)return{finished:true,champion:{teamId:win.teamId,team:win.team},closingMatch:{day:s.day,drop:s.drop},matches:matches.indexOf(s)+1};
+  for(const r of s.rows)total.set(r.teamId,(total.get(r.teamId)||0)+r.points);previous=s;
+ }
+ return active;
+}
+module.exports={normalize,promote,totals,mergeOfficialMatches,tournamentState};
