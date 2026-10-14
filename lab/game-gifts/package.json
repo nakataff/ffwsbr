@@ -1,0 +1,1 @@
+{"name":"cff-game-gifts-lab","private":true,"scripts":{"start":"node server.cjs","test":"node --test ../../functions/test/economy-game-gifts.test.cjs ui.test.cjs http.test.cjs"},"devDependencies":{"jsdom":"30.1.2"}}

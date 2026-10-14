@@ -1,0 +1,31 @@
+name: Test Game Gifts Lab
+on:
+  pull_request:
+    paths:
+      - 'functions/economy*.js'
+      - 'functions/test/economy*.cjs'
+      - 'js/admin-economy.js'
+      - 'js/economy-ui.js'
+      - 'lab/game-gifts/**'
+      - 'cloudflare/camp-notifications/test/economy-api.test.mjs'
+      - '.github/workflows/test-game-gifts-lab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simulation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+      - run: npm install --no-audit --no-fund
+        working-directory: lab/game-gifts
+      - run: npm test
+        working-directory: lab/game-gifts
+      - run: node --test functions/test/economy.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs test/admin-economy-form.test.mjs test/economy-wheel.test.mjs test/profile-instagram-link.test.mjs
+      - run: npm install --omit=dev --no-audit --no-fund
+        working-directory: cloudflare/camp-notifications
+      - run: npm test
+        working-directory: cloudflare/camp-notifications

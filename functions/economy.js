@@ -3,6 +3,7 @@ const media=require('./economy-media');
 const interactionRewards=require('./economy-interactions');
 const coinRanking=require('./economy-ranking');
 const gameOrders=require('./economy-game-orders');
+const gameGifts=require('./economy-game-gifts');
 const ADMIN='admin@centralfreefire.com.br',DAY=86400000;
 const fail=(status,message)=>Object.assign(new Error(message),{status});
 const validUid=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(v);
@@ -15,6 +16,7 @@ function initEconomy(sql){
  interactionRewards.init(sql);
  coinRanking.init(sql);
  gameOrders.init(sql);
+ gameGifts.init(sql);
  sql.exec(`CREATE TABLE IF NOT EXISTS eco_wallet(uid TEXT PRIMARY KEY,balance INTEGER NOT NULL DEFAULT 0 CHECK(balance>=0),earned INTEGER NOT NULL DEFAULT 0,spent INTEGER NOT NULL DEFAULT 0);
  CREATE TABLE IF NOT EXISTS eco_ledger(id TEXT PRIMARY KEY,uid TEXT,delta INTEGER,kind TEXT,at INTEGER,label TEXT,byuid TEXT);
  CREATE INDEX IF NOT EXISTS eco_ledger_uid ON eco_ledger(uid,at DESC);
@@ -39,14 +41,15 @@ function initEconomy(sql){
  sql.exec('INSERT OR IGNORE INTO eco_settings VALUES(?,?)','chances',JSON.stringify(DEFAULT_CHANCES));
  sql.exec('INSERT OR IGNORE INTO eco_items VALUES(?,?)','code-default',JSON.stringify({id:'code-default',kind:'code',title:'Um codiguinho',price:1000,enabled:true,description:'Um código de item do Free Fire, conforme o estoque disponível.'}));
 }
-function createEconomy({sql,transaction,db,verifySession,ranking=null,now=()=>Date.now(),random=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}}){
+function createEconomy({sql,transaction,db,verifySession,ranking=null,giftProvider=null,environment='production',now=()=>Date.now(),random=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}}){
  const rows=(q,...args)=>{const result=sql.exec(q,...args);return typeof result.toArray==='function'?result.toArray():Array.from(result);};
  const actor=identity=>{if(!validUid(identity?.uid))throw fail(401,'Entre com Google para acessar suas CFF COINS.');if(identity.provider!=='google.com'&&identity.email!==ADMIN)throw fail(403,'Entre com Google para participar do sistema de CFF COINS.');return identity.uid;};
  const admin=identity=>{actor(identity);if(identity.email!==ADMIN)throw fail(403,'Somente o administrador pode gerenciar a carteira de CFF COINS e o estoque.');};
  const walletProfiles=coinRanking.create({sql,db,now});
  const wallet=uid=>{sql.exec('INSERT OR IGNORE INTO eco_wallet(uid) VALUES(?)',uid);return rows('SELECT balance,earned,spent FROM eco_wallet WHERE uid=?',uid)[0];};
  const credit=(uid,delta,kind,id,label,by='')=>{wallet(uid);const old=rows('SELECT uid,delta,kind,label FROM eco_ledger WHERE id=?',id)[0];if(old){if(old.uid!==uid||old.delta!==delta||old.kind!==kind||old.label!==label)throw fail(409,'Este pedido já foi registrado com outros dados. Confira o histórico antes de ajustar.');return false;}const w=wallet(uid);if(w.balance+delta<0)throw fail(400,'Saldo insuficiente.');sql.exec('UPDATE eco_wallet SET balance=balance+?,earned=earned+?,spent=spent+? WHERE uid=?',delta,kind==='game_refund'?0:Math.max(0,delta),kind==='game_refund'?-delta:Math.max(0,-delta),uid);sql.exec('INSERT INTO eco_ledger VALUES(?,?,?,?,?,?,?)',id,uid,delta,kind,now(),label,by);return true;};
- const orders=gameOrders.create({sql,transaction,credit,now});
+ const gifts=gameGifts.create({sql,transaction,now,provider:giftProvider,environment});
+ const orders=gameOrders.create({sql,transaction,credit,now,gifts});
  const interactions=interactionRewards.create({sql,transaction,db,ranking,credit,now});
  const syncInteractions=async(uid,force=false,p=null)=>{try{return await interactions.sync(uid,force,p);}catch{return {...interactions.summary(uid),status:'error',message:'Não foi possível atualizar os bônus de interações agora. Seu saldo continua disponível.'};}};
  const eligible=async uid=>{const p=await db.get('userAccounts/'+uid+'/profile');if(!p?.name||!/^[a-z0-9_]{3,24}$/.test(p.username||'')||!['masculino','feminino'].includes(p.gender))throw fail(403,'Complete seu cadastro em Minha conta para participar.');walletProfiles.remember(uid,p);return p;};
@@ -81,6 +84,11 @@ function createEconomy({sql,transaction,db,verifySession,ranking=null,now=()=>Da
  }
  async function adminHandle(identity,b){admin(identity);
   if(b.operation==='gameOrders')return orders.list(null,b);
+  if(b.operation==='gameGiftSender')return gifts.sender();
+  if(b.operation==='connectGameGiftTestSender')return gifts.connect();
+  if(b.operation==='prepareGameGift')return gifts.prepare(b.orderId,identity.uid);
+  if(b.operation==='sendGameGift')return gifts.send(b,identity.uid);
+  if(b.operation==='reconcileGameGift')return gifts.reconcile(b.orderId);
   if(b.operation==='finishGameOrder')return orders.transition('',b,identity.uid);
   if(b.operation==='syncCoinRanking'){
    const cursor=b.cursor||'';if(typeof cursor!=='string'||cursor&&!validUid(cursor))throw fail(400,'Página de sincronização inválida.');
