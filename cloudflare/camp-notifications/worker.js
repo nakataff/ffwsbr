@@ -114,6 +114,7 @@ export class NotificationHub extends DurableObject {
     return json(await (action==='economyAdmin'?economy.adminHandle(user,b):economy.handle(user,b)));
    }
    if(action==='findGiftRecipient')return json(await codeGifts.findRecipient(goalDatabase(this.goalSecret),user,b.query));
+   if(action==='codeGiftStatus')return json(await codeGifts.giftStatus(goalDatabase(this.goalSecret),user,b.hashes));
    if(action==='sendCodeGift')return json(await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b));
    if(action==='openCodeGift')return json(await codeGifts.openCodeGift(goalDatabase(this.goalSecret),user,b.giftId));
    if(action==='chatSend')return json(await globalChat.sendMessage(goalDatabase(this.goalSecret),user,b.text));

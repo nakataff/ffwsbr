@@ -33,6 +33,22 @@ async function sendCodeGift(db,identity,raw,now=Date.now()){
  const gift=await db.transact(path,old=>old||{kind:'code',title:assignment.title,code,message:assignment.message,expiresAt:assignment.expiresAt,sentAt:assignment.sentAt,senderUid:assignment.senderUid,recipientUsername:assignment.recipientUsername,recipientName:assignment.recipientName,openedAt:0});
  return {ok:true,giftId:assignment.giftId,recipient:target,gift};
 }
+// Admin-only reconciliation by hashes; neither codes nor the assignment index are exposed.
+async function giftStatus(db,identity,hashes){
+ requireAdmin(identity);
+ if(!Array.isArray(hashes)||hashes.length>20||hashes.some(hash=>typeof hash!=='string'||!/^[a-f0-9]{64}$/.test(hash)))throw fail(400,'Informe até 20 identificadores válidos.');
+ const unique=[...new Set(hashes)],gifts=[];
+ for(let i=0;i<unique.length;i+=12){
+  const entries=await Promise.all(unique.slice(i,i+12).map(async hash=>{
+   const assigned=await db.get('communityCodeGiftAssignments/'+hash);
+   if(!assigned||!validUid(assigned.uid)||!/^codegift-[a-f0-9-]{36}$/.test(assigned.giftId||''))return null;
+   const gift=await db.get('communityCodeGifts/'+assigned.uid+'/'+assigned.giftId);
+   return {hash,uid:assigned.uid,giftId:assigned.giftId,username:String(assigned.recipientUsername||''),name:String(assigned.recipientName||''),sentAt:Number(gift?.sentAt||assigned.sentAt||0),openedAt:Number(gift?.openedAt||0),pending:!gift};
+  }));
+  gifts.push(...entries.filter(Boolean));
+ }
+ return {ok:true,gifts};
+}
 async function openCodeGift(db,identity,giftId,now=Date.now()){
  if(!validUid(identity?.uid))throw fail(401,'Entre na sua conta para abrir o presente.');
  if(!/^codegift-[a-f0-9-]{36}$/.test(giftId||''))throw fail(400,'Presente inválido.');
@@ -40,4 +56,4 @@ async function openCodeGift(db,identity,giftId,now=Date.now()){
  const gift=await db.transact(path,old=>{if(!old)throw fail(404,'Presente não encontrado no seu inventário.');return old.openedAt?old:{...old,openedAt:now};});
  return {ok:true,gift};
 }
-module.exports={findRecipient,sendCodeGift,openCodeGift};
+module.exports={findRecipient,sendCodeGift,openCodeGift,giftStatus};
