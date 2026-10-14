@@ -9,3 +9,94 @@
 @media(max-width:760px){.eco-stock-panel{padding:18px}.eco-stock-panel-heading{flex-direction:column;gap:10px}.eco-stock-forms{grid-template-columns:1fr}.eco-stock-panel-footer button{flex:1 1 160px}.eco-stock-panel h2{font-size:20px}}
 
 .eco-coin-sort{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px;color:#bdcde3;margin:18px 0}.eco-coin-sort select{border:1px solid #3c5679;background:#101b2e;color:#edf5ff;border-radius:9px;padding:10px 13px;font:inherit}.eco-ranking-table-wrap{overflow-x:auto;margin-top:20px;border:1px solid #2d425f;border-radius:12px}.eco-ranking-table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}.eco-ranking-table th{padding:14px;text-align:left;background:#162741;color:#afc8e5;font-size:11px;white-space:nowrap}.eco-ranking-table td{padding:15px 14px;border-top:1px solid #2b405b;vertical-align:middle}.eco-ranking-table td:first-child{color:#f2d094;font-weight:800}.eco-ranking-table td small{display:block;font-size:11px;color:#a8bdd6;margin-top:5px}.eco-ranking-table td a{display:block;color:#9bcfff;font-size:12px;margin:4px 0;white-space:nowrap}.eco-ranking-table td:nth-child(3){color:#88dbbf}.eco-ranking-table tr:nth-child(even){background:#14203544}#eco-coin-ranking .eco-admin-links{align-items:center;font-size:13px}#eco-coin-ranking button:disabled{opacity:.4;cursor:default}
+
+/* Administração de moedas: largura e navegação próprias, sem alterar perfis. */
+.eco-admin-page .cff-account-wrap{width:min(1480px,100%);max-width:1480px;padding:28px 32px 48px;box-sizing:border-box;margin:0 auto}
+.eco-admin-page [hidden]{display:none!important}
+.eco-admin-page .eco-admin-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:24px 0 8px}
+.eco-admin-page .eco-admin-heading h1{margin:8px 0;font-size:clamp(26px,3vw,38px)}
+.eco-admin-page .eco-admin-heading p{margin:0;color:#b6c4d7}
+.eco-admin-page .eco-admin-heading .eco-admin-links{margin:0;justify-content:flex-end}
+.eco-admin-page .eco-admin-tabs{display:flex;gap:8px;padding:8px;border:1px solid #2b405c;background:#0c1728;border-radius:16px;margin:16px 0 20px;overflow-x:auto;scrollbar-width:thin}
+.eco-admin-tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border:1px solid transparent;background:transparent;color:#b8c9df;border-radius:10px;font:inherit;font-weight:600;white-space:nowrap;cursor:pointer}
+.eco-admin-tabs button:hover{background:#192d46;color:#fff}
+.eco-admin-tabs button[aria-selected=true]{background:#214c79;border-color:#4b87b5;color:#fff}
+.eco-admin-tabs button span{padding:2px 6px;background:#c23b49;color:white;border-radius:20px;font-size:11px}
+.eco-admin-page :is(button,a,input,select,summary):focus-visible{outline:3px solid #86ccff;outline-offset:3px}
+.eco-admin-page [data-admin-panel]{margin:0;padding:28px;border:1px solid #2c415e;background:#101b2d;border-radius:18px;min-width:0}
+.eco-admin-page [data-admin-panel]>h2{margin-top:0}
+.eco-admin-page [data-admin-panel] p{line-height:1.6}
+.eco-admin-page .eco-admin-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:24px;align-items:start}
+.eco-admin-page .eco-admin-split>*{min-width:0}
+.eco-admin-page .eco-admin-form{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.eco-admin-page .eco-admin-form :is(input,select){min-height:46px;min-width:0;font-size:16px}
+.eco-admin-page .eco-admin-form input[type=checkbox]{min-height:auto;width:20px;height:20px;flex-shrink:0}
+.eco-admin-page .eco-admin-form :is(.eco-form-full,.eco-odds){grid-column:1/-1}
+.eco-admin-page .eco-admin-form .eco-odds{margin:8px 0;gap:16px;grid-template-columns:repeat(6,minmax(0,1fr))}
+.eco-admin-page #eco-chances{margin-top:24px}
+.eco-admin-page .eco-admin-search{grid-template-columns:minmax(0,1fr) auto;align-items:end;max-width:850px;margin:24px 0}
+.eco-admin-page .eco-admin-search button{min-height:46px}
+.eco-admin-page #eco-adjust{max-width:850px;padding-top:24px}
+.eco-admin-page #eco-recipient .eco-admin-result{max-width:850px;box-sizing:border-box}
+.eco-admin-page .eco-stock-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:20px 0}
+.eco-admin-page .eco-stock-counts span{display:flex;flex-direction:column;gap:8px;color:#b7c8dd;border:1px solid #2c4766;padding:18px}
+.eco-admin-page .eco-stock-counts strong{font-size:22px;color:#e8f5ff;overflow-wrap:anywhere}
+.eco-admin-page .eco-admin-list{margin:12px 0;max-height:680px;overflow-y:auto;scrollbar-width:thin}
+.eco-admin-page .eco-admin-list article{background:#0c1728;overflow-wrap:anywhere}
+.eco-admin-page .eco-admin-list .cff-account-button{min-height:44px;margin-top:10px}
+.eco-admin-page details>summary{cursor:pointer;padding:12px 0;font-weight:600;min-height:44px;box-sizing:border-box}
+.eco-admin-page .eco-ranking-table{width:100%}
+.eco-admin-page .eco-ranking-table :is(th,td){padding:16px 14px;overflow-wrap:anywhere}
+.eco-admin-page .eco-ranking-table tbody tr:nth-child(even){background:#142136}
+.eco-admin-page .eco-ranking-table td:last-child a{min-height:36px;display:inline-flex;align-items:center;margin:2px 10px 2px 0}
+.eco-admin-page .eco-bonus-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:24px 0}
+.eco-bonus-cards article,.eco-bonus-help{padding:22px;background:#15263f;border:1px solid #345579;border-radius:14px}
+.eco-bonus-cards small{color:#8dcaff;letter-spacing:.8px;font-weight:700}
+.eco-bonus-cards h3{font-size:25px;margin:12px 0}
+.eco-bonus-cards p:last-child{font-size:14px;color:#b6c4d7}
+.eco-bonus-help h3{margin-top:0}
+.eco-admin-page .eco-admin-result{line-height:1.7;overflow-wrap:anywhere}
+.eco-admin-page .eco-admin-links{align-items:center}
+@media(max-width:1050px){
+ .eco-admin-page .cff-account-wrap{padding:22px}
+ .eco-admin-page .eco-admin-heading{align-items:flex-start;flex-direction:column;gap:16px}
+ .eco-admin-page .eco-admin-heading .eco-admin-links{justify-content:flex-start}
+ .eco-admin-tabs button{flex:0 0 auto}
+ .eco-admin-page .eco-admin-split{grid-template-columns:1fr}
+ .eco-admin-page .eco-admin-list{max-height:none;overflow:visible}
+ .eco-admin-page .eco-admin-form .eco-odds{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ .eco-admin-page .cff-account-wrap{padding:16px 12px 32px}
+ .eco-admin-page [data-admin-panel]{padding:18px 14px}
+ .eco-admin-page .eco-admin-tabs{margin:12px 0 16px;border-radius:12px}
+ .eco-admin-tabs button{padding:10px 14px}
+ .eco-admin-page .eco-admin-heading .eco-admin-links{width:100%;gap:8px}
+ .eco-admin-page .eco-admin-heading .cff-account-button{flex:1;justify-content:center;white-space:normal;text-align:center}
+ .eco-admin-page .eco-admin-form,.eco-admin-page .eco-admin-search,.eco-admin-page .eco-bonus-cards{grid-template-columns:1fr}
+ .eco-admin-page .eco-admin-form .eco-odds{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .eco-admin-page .eco-stock-counts{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .eco-admin-page .eco-stock-counts span{padding:12px;font-size:12px}
+ .eco-admin-page .eco-stock-counts strong{font-size:18px}
+ .eco-admin-page .cff-profile-panel-head{flex-wrap:wrap;gap:12px}
+ .eco-admin-page .eco-ranking-table-wrap{overflow:visible;border:0;background:transparent}
+ .eco-admin-page .eco-ranking-table{display:block;min-width:0}
+ .eco-admin-page .eco-ranking-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .eco-admin-page .eco-ranking-table tbody{display:grid;gap:12px}
+ .eco-admin-page .eco-ranking-table tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:14px;background:#0c1728;border:1px solid #2b405c;border-radius:12px}
+ .eco-admin-page .eco-ranking-table td{display:block;border:0;padding:8px;min-width:0;white-space:normal}
+ .eco-admin-page .eco-ranking-table td::before{content:attr(data-label);display:block;font-size:11px;color:#aabed7;margin-bottom:6px}
+ .eco-admin-page .eco-ranking-table td:is(:nth-child(2),:last-child){grid-column:1/-1}
+ .eco-admin-page .eco-ranking-table td:first-child{grid-column:1/-1;padding-bottom:0;color:#8dcaff;font-weight:700}
+ .eco-admin-page .eco-ranking-table td:first-child::before{display:none}
+ .eco-admin-page .eco-ranking-table td:nth-child(2)::before{display:none}
+ .eco-admin-page .eco-ranking-table td:last-child a{min-height:44px;padding:0 14px;border:1px solid #345579;border-radius:8px;justify-content:center}
+ .eco-admin-page .eco-bonus-cards article,.eco-admin-page .eco-bonus-help{padding:18px}
+ .eco-admin-page .eco-ledger{align-items:flex-start}
+ .eco-admin-page .eco-ledger b{white-space:nowrap}
+}
+.eco-admin-page .cff-profile-panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.eco-admin-page .cff-profile-panel-head h2{margin:8px 0 0}
+.eco-admin-page .cff-profile-eyebrow{font-size:11px;letter-spacing:1px;color:#8dcaff;font-weight:700}
+.eco-admin-page .eco-admin-list article{display:flow-root}
+.eco-admin-page .eco-admin-tabs button:disabled{opacity:.6;cursor:wait}
