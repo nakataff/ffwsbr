@@ -13,9 +13,13 @@
   const session=()=>{try{return localStorage.getItem(SESSION_KEY)||''}catch{return''}};
 
   async function request(path,options={}){
-    const r=await fetch(API+path,{cache:'no-store',headers:{'Content-Type':'application/json',Accept:'application/json',...(options.headers||{})},...options});
-    let data={};try{data=await r.json()}catch{}
-    if(!r.ok){const e=new Error(data?.error||`HTTP ${r.status}`);e.status=r.status;throw e}return data;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),12000);
+    try{
+      const r=await fetch(API+path,{...options,cache:'no-store',headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{}),...(options.headers||{})},signal:controller.signal});
+      let data={};try{data=await r.json()}catch(error){if(r.ok)throw error;}
+      if(!r.ok||data?.ok===false){const e=new Error(data?.error||`HTTP ${r.status}`);e.status=r.status;throw e;}return data;
+    }finally{clearTimeout(timeout);}
   }
 
   function css(){
@@ -72,7 +76,20 @@
   }
 
   async function load(){
-    if(!mount())return;injectRules();try{const qs=new URLSearchParams();if(session())qs.set('session',session());qs.set('_',Date.now());render(await request('/api/rewards/status?'+qs.toString()))}catch(err){console.error('[CFF Rewards]',err);const root=mount();if(root)root.innerHTML='<div class="cff-rewards-locked">Os bônus semanais estão temporariamente indisponíveis.</div>'}
+    if(!mount())return;
+    injectRules();
+    const current=session();
+    if(!current){render({linked:false});return;}
+    try{
+      const qs=new URLSearchParams({session:current});
+      const data=await request('/api/rewards/status?'+qs.toString());
+      if(current===session())render(data);
+    }catch(err){
+      console.error('[CFF Rewards]',err);
+      if(current!==session())return;
+      const root=mount();
+      if(root){root.innerHTML='<div class="cff-rewards-locked">Não foi possível atualizar os bônus agora. <button class="cff-checkin-btn" type="button" id="cff-rewards-retry">Tentar novamente</button></div>';$('#cff-rewards-retry')?.addEventListener('click',load);}
+    }
   }
 
   function boot(){let tries=0;const t=setInterval(()=>{tries++;if($('.ig-toolbar')){clearInterval(t);load()}else if(tries>100)clearInterval(t)},100)}

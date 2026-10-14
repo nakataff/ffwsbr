@@ -30,20 +30,27 @@
   }
 
   async function request(path, options = {}) {
-    const response = await fetch(API + path, {
-      cache: 'no-store',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(options.headers || {}) },
-      ...options,
-    });
-    let data = {};
-    try { data = await response.json(); } catch (_) {}
-    if (!response.ok) {
-      const error = new Error(data?.error || `HTTP ${response.status}`);
-      error.status = response.status;
-      error.data = data;
-      throw error;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch(API + path, {
+        ...options,
+        cache: 'no-store',
+        headers: { Accept: 'application/json', ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) },
+        signal: controller.signal,
+      });
+      let data = {};
+      try { data = await response.json(); } catch (error) { if (response.ok) throw error; }
+      if (!response.ok || data?.ok === false) {
+        const error = new Error(data?.error || `HTTP ${response.status}`);
+        error.status = response.status;
+        error.data = data;
+        throw error;
+      }
+      return data;
+    } finally {
+      clearTimeout(timeout);
     }
-    return data;
   }
 
   function injectCss() {
@@ -128,7 +135,7 @@
   function renderUnavailable() {
     const root = panel();
     if (!root) return;
-    root.innerHTML = '<span class="cff-checkin-status cff-checkin-error">Indisponível agora</span><p class="cff-checkin-help" style="margin-top:9px">O sistema de check-in ainda não está disponível. Tente novamente daqui a pouco.</p><div class="cff-checkin-actions"><button class="cff-checkin-btn" id="cff-checkin-retry" type="button">Tentar novamente</button></div>';
+    root.innerHTML = '<span class="cff-checkin-status cff-checkin-error">Indisponível agora</span><p class="cff-checkin-help" style="margin-top:9px">A conexão com o check-in demorou ou falhou. Tente novamente daqui a pouco.</p><div class="cff-checkin-actions"><button class="cff-checkin-btn" id="cff-checkin-retry" type="button">Tentar novamente</button></div>';
     document.getElementById('cff-checkin-retry')?.addEventListener('click', bootSession);
   }
 
@@ -287,7 +294,7 @@
   function loadWeeklyHistory() {
     if (document.querySelector('script[data-cff-week-history]')) return;
     const script = document.createElement('script');
-    script.src = 'js/community-week-history.js?v=20261012-story-review-v1';
+    script.src = 'js/community-week-history.js?v=20261014-loading-v1';
     script.dataset.cffWeekHistory = '1';
     document.head.appendChild(script);
   }
