@@ -1,7 +1,7 @@
 'use strict';
 const CUTOFF=Date.parse('2026-10-13T23:44:00Z'),RATE=20,RETRO_CAP=100,WEEK_CAP=10;
 const WEEK_BONUS=[5,3,2],MONTH_BONUS=[10,7,5];
-const day=at=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));
+const day=at=>{const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(at));return ['year','month','day'].map(key=>parts.find(part=>part.type===key).value).join('-');};
 const week=value=>{const d=new Date(value+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.toISOString().slice(0,10);};
 const safePoints=value=>Number.isSafeInteger(value)&&value>=0?value:0;
 function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS eco_interaction_identities(user_key TEXT PRIMARY KEY,uid TEXT UNIQUE,username TEXT,retro_source INTEGER,retro_credit INTEGER);
