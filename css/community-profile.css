@@ -649,3 +649,19 @@
 .cff-frame-editor-actions{margin:18px 0}
 .cff-edit-preview .cff-profile-avatar-wrap{width:68px;height:68px;flex-basis:68px}
 @media(max-width:700px){.cff-profile-avatar-wrap.has-frame{margin:10px 11px}.cff-visual-grid.is-frame{grid-template-columns:repeat(2,minmax(0,1fr))}.cff-frame-choice{padding:18px 7px}.cff-frame-editor-actions{align-items:flex-start}}
+
+/* Connection status in the public and private profile header. */
+.cff-profile-details>.cff-instagram-status{flex-basis:100%;width:100%;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:13px 15px;margin:2px 0 6px;border:1px solid #4c412c;border-radius:12px;background:#221e18ed;color:#f4d6a0;text-shadow:none}
+.cff-instagram-status.is-linked{border-color:#306650;background:#102b24ed;color:#a6efcb}
+.cff-instagram-status.is-checking,.cff-instagram-status.is-error{border-color:#40536b;background:#172334ed;color:#bdd4ee}
+.cff-instagram-status-icon{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border:1px solid currentColor;border-radius:50%;font-size:16px;font-weight:800}
+.cff-instagram-status>div{flex:1;min-width:0}
+.cff-instagram-status strong{font-size:14px;line-height:1.4;display:block}
+.cff-instagram-status p{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;font-size:12px;line-height:1.5;margin:4px 0 0;color:#cfbd9b}
+.cff-instagram-status.is-linked p{color:#b7dace}
+.cff-instagram-status.is-checking p,.cff-instagram-status.is-error p{color:#b1c3da}
+.cff-instagram-status p a{color:#b0f5d1;font-weight:700;text-decoration:none}
+.cff-instagram-status small{display:block;font-size:11px;color:#c5b8a0;margin-top:4px;overflow-wrap:anywhere}
+.cff-instagram-status .cff-account-button{flex-shrink:0;font-size:11px;padding:8px 10px;min-height:40px;background:#15273a;color:#dbeeff;border-color:#3b5879}
+@media(max-width:700px){.cff-profile-details>.cff-instagram-status{padding:11px 12px;gap:10px;flex-wrap:wrap}.cff-instagram-status strong{font-size:12px}.cff-instagram-status p{font-size:11px}.cff-instagram-status>.cff-account-button{width:100%;min-height:42px}.cff-instagram-status small{font-size:10px}}
+
