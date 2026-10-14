@@ -85,3 +85,15 @@ O admin de CFF COINS e loja (`admin-pontos.html`) começa com um ranking privado
 O endpoint `economyAdmin/coinRanking` aceita apenas a conta administrativa real. Nome e usuário do perfil são mantidos junto à carteira; carteiras anteriores são identificadas por leituras pequenas do perfil, em grupos de cinco, com reaproveitamento por 24 horas. O ranking usa os valores já lançados na carteira; bônus pendentes são conferidos quando a pessoa abre a Loja ou quando o admin consulta sua carteira.
 
 O admin de CFF COINS é organizado em abas: Ranking, Carteiras, Estoque, Loja, Roleta, Bônus e Entregas. O painel usa até 1.480 px de largura e apresenta o ranking em cartões no celular. A aba Bônus contém uma simulação informativa; ela não concede moedas nem aceita alterar a pontuação histórica. O servidor é a autoridade para os créditos.
+
+## Itens do Free Fire com entrega manual
+
+Na aba Loja do admin, o tipo `game` aceita imagem (upload otimizado ou URL aprovada do site), título, legenda até 500 caracteres, preço inteiro em CFF COINS e disponibilidade. Cada edição cria uma revisão do anúncio. A compra exige o preço e a revisão exibidos, nonce UUID e ID do jogo como string numérica de 6 a 20 dígitos. A interface pede digitação dupla e confirmação do ID. Não há cobrança em dinheiro.
+
+`buyGameItem` debita a carteira e grava `eco_game_orders` na mesma transação SQLite. O pedido mantém uma cópia da imagem, título, legenda, preço e destinatário, independente de edições do catálogo. A mesma nonce só pode representar o mesmo usuário, item e ID do jogo. São permitidos até dez pedidos pendentes por pessoa. Os pedidos não usam a entrega automática de codiguinhos ou imagens de perfil.
+
+O comprador vê seus pedidos na Loja e pode chamar `cancelGameOrder` somente enquanto `pending`; o cancelamento estorna o preço original uma vez. `finishGameOrder` é exclusivo do administrador real: `delivered` dá saída sem permitir cancelamento; `rejected` exige motivo e devolve as moedas. Cancelamento, baixa e recusa verificam novamente o estado dentro da transação. O estorno aparece no histórico, reduz as saídas e não infla o total de moedas ganhas. A entrega no jogo é feita pelo administrador antes de dar saída.
+
+A aba Pedidos do jogo tem filtros, contadores, paginação de vinte pedidos, ID copiável, perfil, confirmação e observação. A listagem do comprador é restrita à identidade do token; a listagem completa e a baixa exigem o e-mail administrativo verificado. Nenhum ID do jogo é exibido no ranking público. Os pedidos permanecem consultáveis mesmo se o perfil for removido.
+
+A aba Carteiras permite selecionar diretamente uma pessoa do ranking, enviar ou remover moedas por ações separadas, aplicar atalhos de Top 3 e conferir o saldo resultante. O servidor revalida o nome do perfil selecionado e retorna o saldo após o ajuste. Repetir a nonce não duplica o envio, e o histórico identifica a conta administrativa responsável.

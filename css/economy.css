@@ -100,3 +100,35 @@
 .eco-admin-page .cff-profile-eyebrow{font-size:11px;letter-spacing:1px;color:#8dcaff;font-weight:700}
 .eco-admin-page .eco-admin-list article{display:flow-root}
 .eco-admin-page .eco-admin-tabs button:disabled{opacity:.6;cursor:wait}
+
+.eco-game-orders{display:grid;gap:14px;margin:18px 0}
+.eco-game-order{display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:18px;align-items:start;padding:18px;border:1px solid #2b405c;border-radius:14px;background:#0c1728;min-width:0}
+.eco-game-order>img{width:90px;height:100px;object-fit:contain;border-radius:10px;background:#142540}
+.eco-game-order h3{margin:10px 0;font-size:19px;overflow-wrap:anywhere}
+.eco-game-order p{margin:8px 0;color:#c4d2e4;overflow-wrap:anywhere}
+.eco-game-order small{color:#adc1d9;line-height:1.6;display:block}
+.eco-game-order>button{align-self:center;white-space:normal;max-width:220px}
+.eco-order-status{display:inline-flex;padding:5px 9px;border-radius:6px;font-size:12px;font-weight:700;background:#3a2d17;color:#ffdc90}
+.eco-order-delivered{background:#123b31;color:#8ee3be}
+.eco-order-cancelled,.eco-order-rejected{background:#41212b;color:#ffb9c5}
+.eco-game-order .eco-refunded{color:#8ee3be;margin-top:10px}
+.eco-game-checkout{text-align:left;max-height:90vh;overflow-y:auto}
+.eco-game-checkout h2{font-size:24px}
+.eco-game-checkout>img{width:120px;height:120px;margin:10px auto}
+.eco-game-checkout .eco-admin-form{margin-top:20px}
+.eco-game-checkout .eco-admin-form input{font-size:16px}
+.eco-game-checkout button:disabled{opacity:.55}
+.eco-game-checkout .eco-status{margin:0;font-size:13px}
+.eco-admin-page .eco-game-order{grid-template-columns:100px minmax(0,1fr) minmax(230px,320px)}
+.eco-admin-page .eco-game-order .eco-admin-form{grid-template-columns:1fr;gap:12px}
+.eco-admin-page .eco-recipient-heading{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.eco-admin-page .eco-recipient-heading>div{flex:1;min-width:180px}
+.eco-admin-page .eco-recipient-heading strong{font-size:21px}
+.eco-admin-page .eco-recipient-heading p{margin:6px 0}
+.eco-recipient-icon{display:grid;place-items:center;width:52px;height:52px;border:1px solid #507ca8;border-radius:50%;background:#21456d;font-size:24px;font-weight:700}
+.eco-admin-page .eco-quick-members{max-width:850px;margin:12px 0}
+.eco-quick-members [data-quick-members],.eco-quick-bonuses{display:flex;gap:8px;flex-wrap:wrap;padding:10px 0}
+.eco-admin-page .eco-quick-bonuses button{font-size:12px;min-height:44px}
+.eco-admin-page #eco-adjust output{margin:0}
+@media(max-width:1050px){.eco-admin-page .eco-game-order{grid-template-columns:85px minmax(0,1fr)}.eco-admin-page .eco-game-order>form{grid-column:1/-1}}
+@media(max-width:650px){.eco-game-order,.eco-admin-page .eco-game-order{grid-template-columns:65px minmax(0,1fr);padding:14px;gap:12px}.eco-game-order>img{width:65px;height:80px}.eco-game-order>button,.eco-game-order>form{grid-column:1/-1;width:100%;max-width:none}.eco-game-checkout{padding:24px 18px}.eco-admin-page .eco-recipient-heading>div{min-width:0}.eco-admin-page .eco-recipient-heading>button{width:100%}}
