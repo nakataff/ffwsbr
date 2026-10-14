@@ -40,3 +40,14 @@ test('retroactive credits round down and never remove an existing higher credit'
  const s=setup();legacyWallet(s,'a',1000,250);const state=await s.core.state(actor('a'));assert.equal(state.wallet.balance,250);assert.equal(s.sql.exec("SELECT COUNT(*) AS n FROM eco_ledger WHERE kind='interaction_retro_upgrade'")[0].n,0);
  s.reports.user_b.retroPoints=9;assert.equal((await s.core.state(actor('b'))).wallet.balance,1);s.reports.user_c.retroPoints=4;assert.equal((await s.core.state(actor('c'))).wallet.balance,0);
 });
+test('ranking synchronization visits all existing wallets in bounded batches before ordering and credits only once',async()=>{
+ const s=setup();legacyWallet(s,'a',1000,50);
+ for(const uid of ['admin','b','c','d','e','f']){s.sql.exec('INSERT INTO eco_wallet(uid) VALUES(?)',uid);if(['e','f'].includes(uid)){s.data['userAccounts/'+uid+'/profile']={name:uid,username:'user_'+uid,gender:'masculino'};s.data['communityInstagramLinks/'+uid]={username:'user_'+uid};s.data['userAccounts/'+uid+'/community']={session:uid.repeat(48)};s.reports['user_'+uid]={userKey:'ig-'+uid,retroPoints:uid==='f'?3000:1000,weeks:[],months:[]};}}
+ await assert.rejects(s.core.adminHandle(actor('a'),{operation:'syncCoinRanking'}),{status:403});await assert.rejects(s.core.adminHandle(admin,{operation:'syncCoinRanking',cursor:'bad;'}),{status:400});
+ let cursor='',total=0,passes=0;do{const r=await s.core.adminHandle(admin,{operation:'syncCoinRanking',cursor,targetUid:'forged',points:999999});assert(r.checked<=5);total+=r.checked;passes++;cursor=r.nextCursor;if(r.complete)break;}while(cursor);
+ assert.equal(total,7);assert.equal(passes,2);const ranking=await s.core.adminHandle(admin,{operation:'coinRanking'});assert.equal(ranking.entries[0].uid,'f');assert.equal(ranking.entries[0].balance,500);assert.equal(ranking.total,7);assert.equal(ranking.totals.balance,1700);assert.equal(ranking.entries.find(r=>r.uid==='a').balance,200);
+ const calls=s.calls.profile,ledgers=s.sql.exec('SELECT COUNT(*) AS n FROM eco_ledger')[0].n;cursor='';do{const r=await s.core.adminHandle(admin,{operation:'syncCoinRanking',cursor});cursor=r.nextCursor;if(r.complete)break;}while(cursor);assert.equal(s.calls.profile,calls);assert.equal(s.sql.exec('SELECT COUNT(*) AS n FROM eco_ledger')[0].n,ledgers);
+});
+test('ranking batch reports source failures without blocking existing balances or other wallets',async()=>{
+ const s=setup();legacyWallet(s,'a',1000,50);s.sql.exec('INSERT INTO eco_wallet(uid,balance,earned) VALUES(?,?,?)','b',10,10);s.setError(true);s.setTime(I.CUTOFF+1000000);const r=await s.core.adminHandle(admin,{operation:'syncCoinRanking'});assert.equal(r.checked,2);assert.equal(r.failed,2);assert(r.complete);const balances=await s.core.adminHandle(admin,{operation:'coinRanking'});assert.equal(balances.entries.find(p=>p.uid==='a').balance,200);assert.equal(balances.entries.find(p=>p.uid==='b').balance,10);
+});

@@ -97,3 +97,11 @@ O comprador vê seus pedidos na Loja e pode chamar `cancelGameOrder` somente enq
 A aba Pedidos do jogo tem filtros, contadores, paginação de vinte pedidos, ID copiável, perfil, confirmação e observação. A listagem do comprador é restrita à identidade do token; a listagem completa e a baixa exigem o e-mail administrativo verificado. Nenhum ID do jogo é exibido no ranking público. Os pedidos permanecem consultáveis mesmo se o perfil for removido.
 
 A aba Carteiras permite selecionar diretamente uma pessoa do ranking, enviar ou remover moedas por ações separadas, aplicar atalhos de Top 3 e conferir o saldo resultante. O servidor revalida o nome do perfil selecionado e retorna o saldo após o ajuste. Repetir a nonce não duplica o envio, e o histórico identifica a conta administrativa responsável.
+
+### Correções de cadastro e atualização do ranking
+
+O campo identificador do formulário usa `itemId`, e o despacho de eventos consulta `getAttribute('id')`, evitando que propriedades nomeadas do HTMLFormElement bloqueiem o salvamento. O formulário mostra o andamento e as falhas ao lado do botão; os campos são preservados em caso de erro. Se o cadastro concluir e a atualização da lista falhar, a mensagem distingue esses dois resultados.
+
+Ao carregar/atualizar o ranking, o admin executa `syncCoinRanking` antes de ordenar os saldos. A operação percorre todas as carteiras SQLite existentes, inclusive as zeradas, em lotes de cinco, sem depender de abrir um perfil. A mesma conferência individual valida o Instagram, respeita o cache de um minuto e mantém as chaves de crédito idempotentes. Erros de origem são contabilizados e não bloqueiam o saldo já disponível. Cada interação do painel limita a doze lotes; populações maiores continuam a partir do cursor anterior na próxima atualização, evitando ciclos que ultrapassem o limite de requisições.
+
+O ranking visível atualiza os saldos locais a cada minuto; a conferência dos bônus se repete em cinco minutos, e o botão Atualizar ranking solicita nova conferência respeitando o cache. Abas fora do ranking e páginas ocultas não fazem essa atualização periódica. A interface mostra o horário da conferência, falhas temporárias ou lotes ainda pendentes. Esta atualização não importa em massa todos os cadastros do Firebase.

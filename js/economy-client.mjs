@@ -12,5 +12,5 @@ export async function attachPendingReferral(auth){
  attaching=economyRequest(auth,'attachReferral',{code:invite.code}).then(()=>{try{localStorage.removeItem(KEY);}catch{}}).finally(()=>{attaching=null;});return attaching;
 }
 export const escapeEconomy=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function loadEconomyStyle(){if(!document.querySelector('link[data-economy-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/economy.css?v=20261014-game-shop-v1';l.dataset.economyStyle='1';document.head.append(l);}}
+export function loadEconomyStyle(){if(!document.querySelector('link[data-economy-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/economy.css?v=20261014-shop-save-v2';l.dataset.economyStyle='1';document.head.append(l);}}
 

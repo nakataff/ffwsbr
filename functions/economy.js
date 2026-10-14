@@ -82,6 +82,13 @@ function createEconomy({sql,transaction,db,verifySession,ranking=null,now=()=>Da
  async function adminHandle(identity,b){admin(identity);
   if(b.operation==='gameOrders')return orders.list(null,b);
   if(b.operation==='finishGameOrder')return orders.transition('',b,identity.uid);
+  if(b.operation==='syncCoinRanking'){
+   const cursor=b.cursor||'';if(typeof cursor!=='string'||cursor&&!validUid(cursor))throw fail(400,'Página de sincronização inválida.');
+   const batch=rows('SELECT uid FROM eco_wallet WHERE uid>? ORDER BY uid LIMIT 6',cursor),selected=batch.slice(0,5);
+   const results=await Promise.all(selected.map(async ({uid})=>{const report=await syncInteractions(uid,true);return {uid,report};}));
+   const failed=results.filter(r=>r.report.status==='error').length,pending=results.filter(r=>r.report.pendingPeriods>0).length;
+   return {ok:true,cursor,checked:selected.length,failed,pending,complete:batch.length<=5,nextCursor:batch.length>5?selected.at(-1).uid:''};
+  }
   if(b.operation==='coinRanking')return walletProfiles.list(b);
   if(b.operation==='dashboard'){const c=counts();return {ok:true,gameOrderCounts:orders.list(null).counts,interactionRules:{retroRate:interactionRewards.RETRO_RATE,retroCap:interactionRewards.RETRO_CAP,rate:interactionRewards.RATE,weeklyCap:interactionRewards.WEEK_CAP,weeklyPodium:interactionRewards.WEEK_BONUS,monthlyPodium:interactionRewards.MONTH_BONUS,cutoff:interactionRewards.CUTOFF},counts:c,chances:JSON.parse(rows('SELECT data FROM eco_settings WHERE id=?','chances')[0].data),shop:rows('SELECT data FROM eco_items').map(r=>JSON.parse(r.data)),stock:rows('SELECT hash,title,expires,bucket,image FROM eco_stock WHERE receipt IS NULL ORDER BY rowid DESC LIMIT 100'),pending:rows('SELECT id,uid,kind,at FROM eco_receipts WHERE status=? ORDER BY at DESC LIMIT 30','pending')};}
   if(b.operation==='stockStatus'){if(!Array.isArray(b.hashes)||b.hashes.length>500||b.hashes.some(h=>typeof h!=='string'||!(/^[a-f0-9]{64}$/).test(h)))throw fail(400,'Confira os identificadores do estoque.');return {ok:true,stock:[...new Set(b.hashes)].flatMap(hash=>rows('SELECT s.hash,s.title,s.expires,s.bucket,s.image,s.receipt,r.status AS deliveryStatus FROM eco_stock s LEFT JOIN eco_receipts r ON r.id=s.receipt WHERE s.hash=?',hash).map(({receipt,deliveryStatus,...item})=>({...item,status:receipt?(deliveryStatus==='pending'?'pending':'claimed'):item.expires&&item.expires<=now()?'expired':'available'})))};}

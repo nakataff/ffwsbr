@@ -1,5 +1,5 @@
-import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261014-game-shop-v1';
-import {WHEEL_PRIZES,prizeAngle,landingAngle,labelPosition} from './economy-wheel.mjs?v=20261014-game-shop-v1';
+import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261014-shop-save-v2';
+import {WHEEL_PRIZES,prizeAngle,landingAngle,labelPosition} from './economy-wheel.mjs?v=20261014-shop-save-v2';
 const coinUnit=n=>Number(n)===1?'CFF COIN':'CFF COINS';
 const prizeLabel=p=>p.id==='code'?p.label:Number(p.points||0).toLocaleString('pt-BR')+' '+coinUnit(p.points);
 const ledgerLabel=label=>String(label||'').replace(/^Roleta diária: (\d+) pontos?$/,(_,n)=>'Roleta diária: '+n+' '+coinUnit(n));
