@@ -181,3 +181,11 @@
 .eco-interactions .eco-interaction-pending{padding:10px 12px;border:1px solid #5d4e2e;border-radius:9px;color:#ddc58c;background:#292419;font-size:12px;line-height:1.5}
 .eco-interaction-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:650px){.eco-interaction-grid{grid-template-columns:1fr;gap:10px}.eco-interaction-card{padding:17px}.eco-interaction-podium{padding:15px}.eco-interaction-total>strong{font-size:28px}.eco-interaction-podium th,.eco-interaction-podium td{padding:10px 3px}.eco-interactions .cff-profile-panel-head>.cff-account-button{min-height:40px}.eco-interaction-podium>p span{display:block;margin:4px 0 0}}
+
+.eco-monthly-goal{margin-bottom:14px;border-color:#346b56;background:linear-gradient(125deg,#102e2b,#101c2c)}
+.eco-monthly-goal-stats{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.eco-monthly-goal-stats>strong{color:#a2ebce;font-size:20px;font-variant-numeric:tabular-nums}
+.eco-monthly-goal-stats>strong small{font-size:12px;color:#9db7be;font-weight:500}
+.eco-monthly-goal progress{accent-color:#79ddb5}
+.eco-monthly-goal progress::-webkit-progress-value{background:#79ddb5}
+.eco-monthly-goal progress::-moz-progress-bar{background:#79ddb5}

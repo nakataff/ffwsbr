@@ -18,7 +18,7 @@ function legacyWallet(s,uid,source,paid,spent=0){
  s.sql.exec('INSERT INTO eco_wallet(uid,balance,earned,spent) VALUES(?,?,?,?)',uid,paid-spent,paid,spent);
  s.sql.exec('INSERT INTO eco_ledger VALUES(?,?,?,?,?,?,?)','interaction-retro:ig-'+uid,uid,paid,'interaction_retro',I.CUTOFF,'Bônus de interações anteriores','');
  if(spent)s.sql.exec('INSERT INTO eco_ledger VALUES(?,?,?,?,?,?,?)','legacy-spend:'+uid,uid,-spent,'redeem',I.CUTOFF,'Loja: Moldura','');
- s.sql.exec('INSERT INTO eco_interaction_sync VALUES(?,?,?)',uid,I.CUTOFF+60000,JSON.stringify({status:'ready',username:'user_'+uid,week:'2026-10-12',month:'2026-10',updatedAt:I.CUTOFF+60000}));
+ s.sql.exec('INSERT INTO eco_interaction_sync VALUES(?,?,?)',uid,I.CUTOFF+60000,JSON.stringify({status:'ready',username:'user_'+uid,week:'2026-10-12',month:'2026-10',day:'2026-10-13',updatedAt:I.CUTOFF+60000}));
 }
 test('legacy wallets receive only the complement before a cached read, including coins already spent',async()=>{
  const s=setup();legacyWallet(s,'a',1000,50,30);s.reports.user_a.retroPoints=999999;
@@ -50,4 +50,31 @@ test('ranking synchronization visits all existing wallets in bounded batches bef
 });
 test('ranking batch reports source failures without blocking existing balances or other wallets',async()=>{
  const s=setup();legacyWallet(s,'a',1000,50);s.sql.exec('INSERT INTO eco_wallet(uid,balance,earned) VALUES(?,?,?)','b',10,10);s.setError(true);s.setTime(I.CUTOFF+1000000);const r=await s.core.adminHandle(admin,{operation:'syncCoinRanking'});assert.equal(r.checked,2);assert.equal(r.failed,2);assert(r.complete);const balances=await s.core.adminHandle(admin,{operation:'coinRanking'});assert.equal(balances.entries.find(p=>p.uid==='a').balance,200);assert.equal(balances.entries.find(p=>p.uid==='b').balance,10);
+});
+const dates=(month,count,start=1)=>Array.from({length:count},(_,i)=>`${month}-${String(start+i).padStart(2,'0')}`);
+test('25 distinct interaction days fund the default code without roulette, checkins, retroactive or podium rewards',async()=>{
+ const s=setup();s.reports.user_a={userKey:'ig-a',retroPoints:0,weeks:[],months:[],participationDays:dates('2026-11',25)};s.setTime(Date.parse('2026-11-25T15:00:00Z'));
+ const states=await Promise.all(Array.from({length:4},()=>s.core.handle(actor('a'),{operation:'state',points:99999,participationDays:dates('2026-11',30)})));
+ for(const state of states){assert.equal(state.wallet.balance,1000);assert.equal(state.shop.find(p=>p.kind==='code').price,1000);assert.equal(state.interactions.participation.days,25);assert.equal(state.interactions.participation.credited,1000);}
+ assert.equal(s.sql.exec("SELECT COUNT(*) AS n FROM eco_ledger WHERE kind='interaction_participation'")[0].n,1);assert.equal(s.calls.podium,0);
+ s.setTime(Date.parse('2026-11-30T15:00:00Z'));s.reports.user_a.participationDays=dates('2026-11',30);assert.equal((await s.core.state(actor('a'),true)).wallet.balance,1000);
+ await s.core.adminHandle(admin,{operation:'addStock',code:'MONTHLYCODE1234',title:'Codiguinho mensal',bucket:'shop'});
+ await s.core.handle(actor('a'),{operation:'redeem',itemId:'code-default',nonce:crypto.randomUUID()});assert.equal((await s.core.state(actor('a'))).wallet.balance,0);assert.equal(Object.keys(s.data).filter(p=>p.startsWith('communityCodeGifts/a/')).length,1);
+});
+test('participation counts each valid date once, starts on launch and pays only incremental credits',async()=>{
+ const s=setup();s.reports.user_a={userKey:'ig-a',retroPoints:0,weeks:[],months:[],participationDays:['2026-09-30','2026-10-14','2026-10-14','2026-10-16','2026-02-30','bad',null]};s.setTime(Date.parse('2026-10-14T15:00:00Z'));
+ let state=await s.core.state(actor('a'));assert.equal(state.wallet.balance,40);assert.equal(state.interactions.participation.days,1);
+ s.setTime(Date.parse('2026-10-16T15:00:00Z'));state=await s.core.state(actor('a'));assert.equal(state.wallet.balance,80);
+ s.reports.user_a.participationDays=['2026-10-14'];s.setTime(Date.parse('2026-10-16T16:00:00Z'));assert.equal((await s.core.state(actor('a'),true)).wallet.balance,80);
+ s.reports.user_b={...s.reports.user_a,userKey:'ig-a'};assert.equal((await s.core.state(actor('b'))).wallet.balance,0);
+});
+test('participation includes earlier October days, resets by Brasilia month and collects missed months once',async()=>{
+ const s=setup();s.reports.user_a={userKey:'ig-a',retroPoints:0,weeks:[],months:[],participationDays:[...dates('2026-10',31),...dates('2026-11',25)]};s.setTime(Date.parse('2026-11-01T02:59:59Z'));
+ let state=await s.core.state(actor('a'));assert.equal(state.wallet.balance,1000);assert.equal(state.interactions.participation.days,25);
+ s.setTime(Date.parse('2026-11-01T03:00:00Z'));state=await s.core.state(actor('a'));assert.equal(state.wallet.balance,1040);assert.equal(state.interactions.participation.days,1);assert.equal(state.interactions.participation.credited,40);
+ s.setTime(Date.parse('2026-12-01T03:00:00Z'));state=await s.core.state(actor('a'));assert.equal(state.wallet.balance,2000);assert.equal(state.interactions.participation.days,0);assert.equal(state.interactions.participation.credited,0);assert.equal((await s.core.state(actor('a'))).wallet.balance,2000);
+});
+test('daily cache expires at Brasilia midnight even if the previous synchronization was seconds ago',async()=>{
+ const s=setup();s.reports.user_a={userKey:'ig-a',retroPoints:0,weeks:[],months:[],participationDays:['2026-11-03']};s.setTime(Date.parse('2026-11-04T02:59:59Z'));assert.equal((await s.core.state(actor('a'))).wallet.balance,40);
+ s.reports.user_a.participationDays.push('2026-11-04');s.setTime(Date.parse('2026-11-04T03:00:00Z'));assert.equal((await s.core.state(actor('a'))).wallet.balance,80);assert.equal(s.calls.profile,2);
 });

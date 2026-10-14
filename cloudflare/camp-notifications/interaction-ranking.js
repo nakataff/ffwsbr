@@ -16,11 +16,12 @@ export function createInteractionRanking(db){
    if(!key)return null;
    const user=await db.prepare('SELECT u.user_key,u.username,u.points_all,(SELECT COALESCE(SUM(points),0) FROM awards WHERE user_key=u.user_key AND created_at>?2 AND created_at<=?3) AS newPoints FROM users u WHERE u.user_key=?1').bind(key,cutoff,now).first();if(!user)return null;
    const today=day(now),firstDay=day(cutoff),firstWeek=monday(firstDay);
-   const [weeks,months]=await Promise.all([
+   const [weeks,months,participationDays]=await Promise.all([
     all("SELECT date(day_key,'-'||((CAST(strftime('%w',day_key) AS INTEGER)+6)%7)||' days') AS week,COALESCE(SUM(CASE WHEN created_at>?2 AND created_at<=?3 THEN points ELSE 0 END),0) AS points FROM awards WHERE user_key=?1 AND day_key>=?4 AND day_key<=?5 GROUP BY week ORDER BY week",key,cutoff,now,firstWeek,today),
-    all('SELECT DISTINCT month_key AS month FROM awards WHERE user_key=?1 AND month_key>=?2 AND month_key<=?3 ORDER BY month_key',key,firstDay.slice(0,7),today.slice(0,7))
+    all('SELECT DISTINCT month_key AS month FROM awards WHERE user_key=?1 AND month_key>=?2 AND month_key<=?3 ORDER BY month_key',key,firstDay.slice(0,7),today.slice(0,7)),
+    all("SELECT DISTINCT day_key AS day FROM awards WHERE user_key=?1 AND day_key>=?2 AND day_key<=?3 AND created_at<=?4 AND points>0 AND type IN ('comment','story') ORDER BY day_key",key,'2026-10-01',today,now)
    ]);
-   return {userKey:String(key),username:clean(user.username),retroPoints:Math.max(0,Number(user.points_all||0)-Number(user.newPoints||0)),weeks:weeks.map(r=>({week:r.week,points:Math.max(0,Number(r.points||0))})),months:months.map(r=>r.month)};
+   return {userKey:String(key),username:clean(user.username),retroPoints:Math.max(0,Number(user.points_all||0)-Number(user.newPoints||0)),weeks:weeks.map(r=>({week:r.week,points:Math.max(0,Number(r.points||0))})),months:months.map(r=>r.month),participationDays:participationDays.map(r=>r.day)};
   },
   async podium(type,key,now){
    const today=day(now);let start,end,table,column;

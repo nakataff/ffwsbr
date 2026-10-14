@@ -4,7 +4,9 @@ A carteira de pontos é independente do ranking de interações. Os pontos do ra
 
 ## Como participar
 
-Abra `conta.html?tab=points`, entre com Google e complete o cadastro. O check-in vale 1 ponto por dia; a roleta tem um giro gratuito por dia. O dia muda à meia-noite de Brasília. Cadastro completo e Instagram confirmado liberam mais 3 pontos, uma vez. Check-in ou giro em cinco datas da mesma semana (segunda a domingo) liberam 3 pontos adicionais automaticamente.
+Entre com Google em `conta.html` e complete o cadastro. O cartão **Check-in diário** no início do próprio perfil confirma a moeda e, com Instagram verificado, também a presença no ranking. A Loja mantém o mesmo check-in; as duas entradas compartilham o crédito diário. Se o ranking falhar, o crédito da carteira fica salvo e o usuário pode tentar confirmar o ranking novamente, sem crédito duplicado. O dia e a sessão do Instagram são conferidos no servidor; o navegador não escolhe a identidade premiada.
+
+Abra `conta.html?tab=points` para ver a carteira e a roleta. O check-in vale 1 ponto por dia; a roleta tem um giro gratuito por dia. O dia muda à meia-noite de Brasília. Cadastro completo e Instagram confirmado liberam mais 3 pontos, uma vez. Check-in ou giro em cinco datas da mesma semana (segunda a domingo) liberam 3 pontos adicionais automaticamente.
 
 | Prêmio da roleta | Chance inicial |
 | --- | --- |
@@ -50,7 +52,7 @@ As fotos do controle de codiguinhos acompanham as novas reservas. Ao desbloquear
 
 Uploads são reduzidos a até 384 pixels no navegador. Imagens iguais são guardadas uma única vez no SQLite e servidas por uma URL de conteúdo imutável com cache. Somente as fotos de produtos ficam disponíveis nesse endpoint; códigos, saldos e destinatários continuam privados. O Firebase não recebe uma coleção extra de imagens.
 
-A roleta tem seis setores visuais, chances explícitas, giro contínuo durante o pedido, pelo menos seis voltas e desaceleração até o prêmio confirmado pelo servidor. Uma janela apresenta o prêmio e o saldo atualizado. A preferência de movimento reduzido é respeitada. Sem estoque, os avisos da roleta e da loja aparecem separadamente; os 1% do código passam para 1 ponto (81% com a configuração padrão).
+A roleta tem seis setores visuais, com um presente genérico no setor de codiguinhos, giro contínuo durante o pedido, pelo menos seis voltas e desaceleração até o prêmio confirmado pelo servidor. Uma janela apresenta o prêmio e o saldo atualizado. A preferência de movimento reduzido é respeitada. Sem estoque, os avisos da roleta e da loja aparecem separadamente; os 1% do código passam para 1 ponto (81% com a configuração padrão).
 
 A atualização das chances é aplicada uma vez na implantação, preservando saldos, giros antigos, códigos e preços já cadastrados. Alterações posteriores feitas pelo administrador continuam valendo após reinícios.
 
@@ -61,6 +63,14 @@ A área de pontos não exibe porcentagens; as chances continuam validadas no ser
 No controle de codiguinhos, o painel de pontos aparece depois do resumo de códigos, com formulários separados para reservar e editar. Etiquetas sobre a foto indicam Loja, Roleta ou Roleta e loja e a quantidade de cada destino. Cada código reservado também mostra uma etiqueta com acesso à edição. O destino pode ser alterado somente enquanto o código estiver válido e não reservado para um resgate; a troca preserva foto, título e validade.
 
 O admin consulta o estado de todos os códigos visíveis por hashes em lotes de até 500, sem expor códigos no retorno. As consultas são reaproveitadas por um minuto; alterações e o botão de disponibilidade atualizam imediatamente. Fotos que faltam no estoque são sincronizadas ao desbloquear o controle; o botão de fotos permite forçar a atualização das imagens já cadastradas. Códigos entregues ou com entrega pendente continuam bloqueados para envio manual.
+
+## Meta mensal de um codiguinho
+
+Desde **01/10/2026**, cada data de Brasília com pelo menos um comentário válido ou Story aprovado no ranking rende **40 CFF COINS**. Várias interações na mesma data contam uma vez. A meta é **25 dias × 40 = 1.000 CFF COINS por mês**, suficiente para o preço padrão de um codiguinho, sem contar sorte na roleta, check-in, bônus de Top 3 ou histórico. O resgate depende de estoque e mantém o intervalo de 30 dias. Preços personalizados do administrador são preservados.
+
+O teto mensal é 1.000 moedas. Check-ins, palpites e outros bônus de pontos não substituem comentário ou Story nessa meta. Os dias válidos já registrados desde 01/10 também contam, para reconhecer a participação anterior à publicação da regra. Os demais bônus continuam somando. A Loja mostra dias válidos, moedas recebidas, meta e regra resumida; o painel Bônus do administrador apresenta a mesma política.
+
+O leitor D1 seleciona apenas datas distintas de prêmios positivos de tipo `comment` ou `story`, sem datas ou registros futuros. A carteira vincula os créditos à identidade estável do Instagram e paga apenas a diferença em transação SQLite, com chave única por identidade, mês e total. O cache também vence na mudança de dia de Brasília. Meses anteriores elegíveis podem ser creditados depois; os saldos e créditos existentes são mantidos. Não é criado um novo banco ou listener do Firebase.
 
 ## Bônus de interações e Top 3
 

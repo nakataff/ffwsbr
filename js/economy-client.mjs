@@ -3,7 +3,7 @@ const KEY='cff-pending-invite-v1';
 export function rememberInvite(){try{const code=new URL(location.href).searchParams.get('invite');if(/^[A-F0-9]{12}$/i.test(code||''))localStorage.setItem(KEY,JSON.stringify({code:code.toUpperCase(),at:Date.now()}));}catch{}}
 export async function economyRequest(auth,operation,body={},admin=false){
  const user=auth.currentUser;if(!user)throw Error('Entre com Google para continuar.');
- const token=await user.getIdToken();const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({...body,action:admin?'economyAdmin':'economy',operation}),signal:AbortSignal.timeout(30000)});
+ const token=await user.getIdToken();const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({...body,action:admin?'economyAdmin':'economy',operation}),signal:AbortSignal.timeout(operation==='profileCheckin'?45000:30000)});
  const data=await r.json();if(!r.ok||data.error)throw Error(data.error||'Não foi possível acessar os pontos agora.');if(auth.currentUser?.uid!==user.uid)throw Error('Sua conta mudou. Atualize a página.');return data;
 }
 let attaching=null;
@@ -12,5 +12,5 @@ export async function attachPendingReferral(auth){
  attaching=economyRequest(auth,'attachReferral',{code:invite.code}).then(()=>{try{localStorage.removeItem(KEY);}catch{}}).finally(()=>{attaching=null;});return attaching;
 }
 export const escapeEconomy=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function loadEconomyStyle(){if(!document.querySelector('link[data-economy-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/economy.css?v=20261014-bonus-layout-v1';l.dataset.economyStyle='1';document.head.append(l);}}
+export function loadEconomyStyle(){if(!document.querySelector('link[data-economy-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/economy.css?v=20261014-monthly-coins-v1';l.dataset.economyStyle='1';document.head.append(l);}}
 
