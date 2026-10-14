@@ -1,5 +1,5 @@
-import {mountEconomy} from './economy-ui.js?v=20261013-economy-v3';
-import {rememberInvite,attachPendingReferral} from './economy-client.mjs?v=20261013-economy-v3';
+import {mountEconomy} from './economy-ui.js?v=20261013-interaction-bonuses-v1';
+import {rememberInvite,attachPendingReferral} from './economy-client.mjs?v=20261013-interaction-bonuses-v1';
 rememberInvite();
 import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261013-code-gifts-v1';
 import {categoriesFor} from './profile-category-model.mjs?v=20261013-categories-v1';

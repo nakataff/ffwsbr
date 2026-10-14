@@ -1,3 +1,4 @@
+import {createInteractionRanking} from './interaction-ranking.js';
 import economyMedia from '../../functions/economy-media.js';
 import economyCore from '../../functions/economy.js';
 import codeGifts from '../../functions/code-gifts.js';
@@ -24,8 +25,8 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:12,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
-  else if(request.method==='GET'&&/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:13,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  else if(request.method==='GET'&&(/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)||url.pathname==='/economy-interactions/health')&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -35,7 +36,7 @@ export default {
 };
 export class NotificationHub extends DurableObject {
  constructor(ctx,env) {
-  super(ctx,env);this.ctx=ctx;this.goalSecret=env.CFF_GOAL_SERVICE_ACCOUNT;this.sql=ctx.storage.sql;this.officialTableCache=new Map();
+  super(ctx,env);this.ctx=ctx;this.goalSecret=env.CFF_GOAL_SERVICE_ACCOUNT;this.interactionRanking=createInteractionRanking(env.COMMUNITY_DB);this.sql=ctx.storage.sql;this.officialTableCache=new Map();
   this.sql.exec(`CREATE TABLE IF NOT EXISTS catalog(id TEXT PRIMARY KEY,data TEXT NOT NULL);
    CREATE TABLE IF NOT EXISTS snapshots(tournament TEXT,day INTEGER,dropno INTEGER,data TEXT,at INTEGER,PRIMARY KEY(tournament,day,dropno));
    CREATE TABLE IF NOT EXISTS preferences(uid TEXT,tournament TEXT,data TEXT,PRIMARY KEY(uid,tournament));
@@ -95,6 +96,8 @@ export class NotificationHub extends DurableObject {
   return {devices:devices.length,accepted};
  }
  async fetch(request){
+  if(request.method==='GET'&&new URL(request.url).pathname==='/economy-interactions/health'){try{if(!this.interactionRanking)throw Error('missing');await this.interactionRanking.probe();return json({ok:true,interactionRanking:true});}catch{return json({ok:false,error:'Ranking de interações indisponível.'},503);}}
+
   try{
    const mediaId=request.method==='GET'&&new URL(request.url).pathname.match(/^\/economy-media\/([a-f0-9]{64})$/)?.[1];if(mediaId){const media=economyMedia.read(this.sql,mediaId);if(!media)return json({error:'Imagem não encontrada.'},404);return new Response(Uint8Array.from(atob(media.base64),c=>c.charCodeAt(0)),{headers:{'Content-Type':media.type,'Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'}});}
    const token=String(request.headers.get('Authorization')||'').match(/^Bearer (.+)$/)?.[1],user=await verifyToken(token),uid=user.uid;
@@ -107,7 +110,7 @@ export class NotificationHub extends DurableObject {
    if(active&&rate.requests>=30)throw Object.assign(Error('Aguarde um minuto antes de tentar novamente.'),{status:429});
    this.sql.exec('INSERT OR REPLACE INTO limits VALUES(?,?,?,?)',uid,rate?.test_at||0,active?rate.request_at:now,active?rate.requests+1:1);
    if(action==='economy'||action==='economyAdmin'){
-    const economy=economyCore.createEconomy({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),db:goalDatabase(this.goalSecret),verifySession:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();}});
+    const economy=economyCore.createEconomy({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),db:goalDatabase(this.goalSecret),ranking:this.interactionRanking,verifySession:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();}});
     return json(await (action==='economyAdmin'?economy.adminHandle(user,b):economy.handle(user,b)));
    }
    if(action==='findGiftRecipient')return json(await codeGifts.findRecipient(goalDatabase(this.goalSecret),user,b.query));

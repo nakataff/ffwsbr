@@ -1,6 +1,6 @@
 # Carteira, roleta e loja da Central
 
-A carteira de pontos é independente do ranking de interações. Os saldos começam em zero; os pontos antigos do ranking não são convertidos nem consumidos por resgates.
+A carteira de pontos é independente do ranking de interações. Os pontos do ranking continuam intactos. A carteira recebe uma bonificação proporcional às interações, sem converter ou consumir a pontuação competitiva original.
 
 ## Como participar
 
@@ -61,3 +61,17 @@ A área de pontos não exibe porcentagens; as chances continuam validadas no ser
 No controle de codiguinhos, o painel de pontos aparece depois do resumo de códigos, com formulários separados para reservar e editar. Etiquetas sobre a foto indicam Loja, Roleta ou Roleta e loja e a quantidade de cada destino. Cada código reservado também mostra uma etiqueta com acesso à edição. O destino pode ser alterado somente enquanto o código estiver válido e não reservado para um resgate; a troca preserva foto, título e validade.
 
 O admin consulta o estado de todos os códigos visíveis por hashes em lotes de até 500, sem expor códigos no retorno. As consultas são reaproveitadas por um minuto; alterações e o botão de disponibilidade atualizam imediatamente. Fotos que faltam no estoque são sincronizadas ao desbloquear o controle; o botão de fotos permite forçar a atualização das imagens já cadastradas. Códigos entregues ou com entrega pendente continuam bloqueados para envio manual.
+
+## Bônus de interações e Top 3
+
+A partir de 13/10/2026 às 20h44 de Brasília (`2026-10-13T23:44:00Z`), a carteira reconhece o histórico de participação. O bônus retroativo é `min(100, floor(pontos anteriores / 20))`, concedido uma única vez para cada identidade confirmada do Instagram. As novas interações rendem `min(10, floor(pontos novos da semana / 20))` pontos por semana. Atualizações creditam somente a diferença ainda não recebida; correções que diminuam o ranking não retiram créditos já pagos. Não há dupla contagem dos pontos anteriores ao início do sistema.
+
+O Top 3 semanal paga 5, 3 e 2 pontos; o mensal paga 10, 7 e 5. Esses bônus são adicionais ao limite de conversão semanal. A primeira semana elegível começa em 12/10/2026; o primeiro mês é outubro de 2026. Os pódios são conferidos somente depois do período encerrar no horário de Brasília. Semanas e meses anteriores ao início recebem reconhecimento pelo bônus retroativo proporcional, sem bônus adicional de pódio.
+
+Os créditos são conferidos automaticamente ao abrir a Loja e ao consultar uma pessoa no admin de pontos. A Loja tem **Conferir bônus** e mostra retroativo recebido, progresso semanal e soma dos bônus de Top 3. O administrador vê os créditos na consulta da carteira. Quem vincular seu Instagram posteriormente também pode receber o histórico anterior e os períodos elegíveis ainda não pagos.
+
+A identidade estável do Instagram impede que uma pessoa repita o bônus mudando de nome ou usando outra conta. Créditos e marcos ficam no SQLite privado, com transações e chaves únicas. O leitor consulta o D1 existente por um binding, somente com SELECTs, sem listener adicional no Firebase e sem criar outro banco. A conferência normal é reaproveitada por 15 minutos; mudanças de semana/mês e períodos pendentes provocam nova conferência. Pódios encerrados são guardados uma vez para todas as carteiras, usando o snapshot do ranking quando disponível, e não são recalculados após o pagamento.
+
+A leitura de períodos atrasados é limitada a 12 pódios por pedido, preservando o restante para a próxima conferência. Falhas na leitura do ranking exibem um aviso e não bloqueiam o saldo ou as demais recompensas. A consulta pública `/economy-interactions/health` verifica apenas o acesso às tabelas, sem dados pessoais ou créditos.
+
+Validação adicional: `node --test functions/test/economy-interactions.test.cjs` e `cloudflare/camp-notifications/test/interaction-ranking.test.mjs`, incluindo limites, repetição, concorrência, identidade, corte do histórico e fechamento de períodos.

@@ -13,8 +13,10 @@ on:
       - 'functions/global-chat.js'
       - 'functions/code-gifts.js'
       - 'functions/economy.js'
+      - 'functions/economy-interactions.js'
       - 'functions/economy-media.js'
       - 'functions/test/economy.test.cjs'
+      - 'functions/test/economy-interactions.test.cjs'
       - 'js/economy-*.mjs'
       - 'js/economy-ui.js'
       - 'js/admin-economy*.js'
@@ -46,7 +48,7 @@ jobs:
       - name: Test profile results and account invitation
         run: node --test test/account-welcome.test.mjs test/camp-results-view.test.mjs test/economy-wheel.test.mjs
       - name: Test automatic profile rewards
-        run: node --test functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs
+        run: node --test functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-interactions.test.cjs
       - name: Check points interfaces
         run: node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js
       - name: Check referral account verification access
@@ -77,8 +79,17 @@ jobs:
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
           for attempt in 1 2 3 4 5 6 7 8; do
-            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==12||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==13||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
               echo 'Notification service is ready.'
+              break
+            fi
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
+      - name: Confirm interaction ranking database access
+        run: |
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 20 --output interaction-health.json https://cff-camp-notifications.nakataffb4.workers.dev/economy-interactions/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("interaction-health.json","utf8"));if(h.ok!==true||h.interactionRanking!==true)process.exit(1);console.log("Interaction ranking access is ready.");'; then
               break
             fi
             test "$attempt" -lt 8 || exit 1
