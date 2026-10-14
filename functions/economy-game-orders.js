@@ -5,9 +5,9 @@ const gameId=value=>typeof value==='string'&&/^[1-9][0-9]{5,19}$/.test(value);
 function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS eco_game_orders(id TEXT PRIMARY KEY,uid TEXT NOT NULL,nonce TEXT UNIQUE NOT NULL,item TEXT NOT NULL,data TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('pending','delivered','cancelled','rejected')),at INTEGER NOT NULL,updated_at INTEGER NOT NULL,byuid TEXT NOT NULL,note TEXT NOT NULL);
  CREATE INDEX IF NOT EXISTS eco_game_orders_uid ON eco_game_orders(uid,at DESC);
  CREATE INDEX IF NOT EXISTS eco_game_orders_status ON eco_game_orders(status,at DESC);`);}
-function create({sql,transaction,credit,now}){
+function create({sql,transaction,credit,now,gifts}){
  const rows=(q,...a)=>{const r=sql.exec(q,...a);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
- const view=r=>({id:r.id,uid:r.uid,itemId:r.item,...JSON.parse(r.data),status:r.status,at:r.at,updatedAt:r.updated_at,note:r.note});
+ const view=r=>({id:r.id,uid:r.uid,itemId:r.item,...JSON.parse(r.data),status:r.status,at:r.at,updatedAt:r.updated_at,note:r.note,delivery:gifts?.view(r.id)||null});
  function list(uid,body={}){
   const offset=Number(body.offset||0),status=uid?'all':body.status||'pending';if(!Number.isInteger(offset)||offset<0||offset>100000||!['all','pending','delivered','cancelled','rejected'].includes(status))throw fail(400,'Confira o filtro e a página de pedidos.');
   const where=uid?'uid=?':status==='all'?'1=1':'status=?',args=uid?[uid]:status==='all'?[]:[status],total=rows('SELECT COUNT(*) AS n FROM eco_game_orders WHERE '+where,...args)[0].n,selected=rows('SELECT * FROM eco_game_orders WHERE '+where+' ORDER BY at DESC,rowid DESC LIMIT ? OFFSET ?',...args,20,offset);
@@ -22,7 +22,7 @@ function create({sql,transaction,credit,now}){
    if(!item?.enabled||item.kind!=='game')throw fail(409,'Este item do jogo não está disponível. Atualize a loja.');
    if(body.expectedPrice!==item.price||body.revision!==item.revision)throw fail(409,'O anúncio foi atualizado. Confira a imagem e o preço novamente. Suas moedas não foram gastas.');
    if(rows("SELECT COUNT(*) AS n FROM eco_game_orders WHERE uid=? AND status='pending'",uid)[0].n>=10)throw fail(400,'Você já tem dez pedidos pendentes. Aguarde uma entrega ou cancele um pedido.');
-   const id=crypto.randomUUID(),data={title:item.title,description:item.description,imageUrl:item.imageUrl,price:item.price,gameId:body.gameId,recipientName:String(profile.name).slice(0,80),recipientUsername:String(profile.username).slice(0,24)};
+   const id=crypto.randomUUID(),data={title:item.title,description:item.description,imageUrl:item.imageUrl,price:item.price,revision:item.revision,gameId:body.gameId,recipientName:String(profile.name).slice(0,80),recipientUsername:String(profile.username).slice(0,24)};
    credit(uid,-item.price,'game_purchase','game-buy:'+id,'Pedido do jogo: '+item.title);
    sql.exec('INSERT INTO eco_game_orders VALUES(?,?,?,?,?,?,?,?,?,?)',id,uid,body.nonce,item.id,JSON.stringify(data),'pending',now(),now(),'','');
    return {ok:true,order:view(rows('SELECT * FROM eco_game_orders WHERE id=?',id)[0])};
@@ -35,6 +35,8 @@ function create({sql,transaction,credit,now}){
    const order=rows('SELECT * FROM eco_game_orders WHERE id=?'+(adminUid?'':' AND uid=?'),body.orderId,...(adminUid?[]:[uid]))[0];if(!order)throw fail(404,'Pedido não encontrado.');
    if(order.status===desired)return {ok:true,order:view(order),duplicate:true};
    if(order.status!=='pending')throw fail(409,'Este pedido já foi '+({delivered:'enviado',cancelled:'cancelado',rejected:'recusado'})[order.status]+'. Atualize a lista.');
+   if(desired==='delivered'&&!gifts?.confirmed(order.id))throw fail(409,'Entrega ainda não confirmada no servidor. Não é possível dar saída.');
+   if(desired!=='delivered'&&gifts?.locked(order.id))throw fail(409,'Envio em andamento ou aguardando verificação. Não é possível estornar até confirmar que o item não foi enviado.');
    if(desired!=='delivered'){const data=JSON.parse(order.data);credit(order.uid,data.price,'game_refund','game-refund:'+order.id,(desired==='rejected'?'Estorno por recusa: ':'Estorno por cancelamento: ')+data.title,adminUid||uid);}
    sql.exec('UPDATE eco_game_orders SET status=?,updated_at=?,byuid=?,note=? WHERE id=? AND status=?',desired,now(),adminUid||uid,desired==='cancelled'?'Cancelado pelo comprador':note,order.id,'pending');
    return {ok:true,order:view(rows('SELECT * FROM eco_game_orders WHERE id=?',order.id)[0])};

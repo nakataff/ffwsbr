@@ -1,0 +1,18 @@
+'use strict';
+const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),{createFixture,seed}=require('./fixture.cjs');
+const root=path.resolve(__dirname,'../..'),port=Number(process.env.CFF_GIFT_LAB_PORT||4173),host='127.0.0.1';
+const bridge=`const getApps=()=>[{name:'[DEFAULT]'}],getAuth=()=>({currentUser:{uid:'lab-admin',email:'admin@centralfreefire.com.br'}}),getDatabase=()=>({}),ref=(_db,p)=>p,get=async()=>({val:()=>({})}),onAuthStateChanged=(auth,fn)=>fn(auth.currentUser),prepareEconomyPhoto=async()=>{throw Error('Upload indisponível neste laboratório.');},esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const economyRequest=async(_auth,operation,body)=>{const r=await fetch('/lab-api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation,...body})});const data=await r.json();if(!r.ok)throw Error(data.error);return JSON.parse(JSON.stringify(data).replaceAll('https://centralfreefire.com.br/edition/gift.webp','/edition/gift.webp'));};\n`;
+async function start(){const s=createFixture();await seed(s);await seed(s);
+ const server=http.createServer(async(req,res)=>{res.setHeader('Cache-Control','no-store');res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-src 'none'; base-uri 'none'; form-action 'self'");res.setHeader('X-Content-Type-Options','nosniff');
+ const json=(code,data)=>{res.writeHead(code,{'Content-Type':'application/json'});res.end(JSON.stringify(data));};
+ if(req.headers.host!==`${host}:${port}`){json(403,{error:'Host bloqueado.'});return;}
+ try{if(req.url==='/lab-api'&&req.method==='POST'){if(req.headers.origin!==`http://${host}:${port}`)throw Object.assign(Error('Origem bloqueada.'),{status:403});let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>20000)throw Object.assign(Error('Corpo grande demais.'),{status:413});}const body=JSON.parse(raw);if(/token|password|credential|senha/i.test(raw))throw Object.assign(Error('Credenciais proibidas no laboratório.'),{status:400});let result;
+  if(body.operation==='labScenario'){s.sim.setScenario(body.scenario);result={ok:true};}else if(body.operation==='labResolve'){s.sim.resolve();result={ok:true};}else if(body.operation==='labBuyer'){result=await s.core.state(s.buyer);}else if(body.operation==='labCancel'){result=await s.core.handle(s.buyer,{operation:'cancelGameOrder',orderId:body.orderId});}else result=await s.core.adminHandle(s.admin,body);json(200,result);return;}
+ const url=new URL(req.url,`http://${host}:${port}`);let file;
+ if(url.pathname==='/'||url.pathname==='/admin-pontos.html')file='lab/game-gifts/index.html';else if(url.pathname==='/lab-admin.js'){res.writeHead(200,{'Content-Type':'text/javascript'});res.end(bridge+fs.readFileSync(path.join(root,'js/admin-economy.js'),'utf8').replace(/^import .*\n/gm,''));return;}
+ else if(['/css/economy.css','/css/public-account.css','/edition/gift.webp','/lab/game-gifts/controls.js'].includes(url.pathname))file=url.pathname.slice(1);else{json(404,{error:'Rota não disponível no laboratório.'});return;}
+ res.writeHead(200,{'Content-Type':file.endsWith('.css')?'text/css':file.endsWith('.js')?'text/javascript':file.endsWith('.webp')?'image/webp':'text/html; charset=utf-8'});res.end(fs.readFileSync(path.join(root,file)));
+ }catch(e){json(e.status||400,{error:e.message});}});
+ server.listen(port,host,()=>console.log(`Laboratório SIMULADO: http://${host}:${port}/admin-pontos.html#eco-panel-orders\nDados SQLite em memória; reiniciar apaga os testes. Sem Firebase/Garena.`));return server;}
+if(require.main===module)start();module.exports={start};
