@@ -1,4 +1,4 @@
-# Carteira, roleta e loja da Central
+# CFF COINS, roleta e loja da Central
 
 A carteira de pontos é independente do ranking de interações. Os pontos do ranking continuam intactos. A carteira recebe uma bonificação proporcional às interações, sem converter ou consumir a pontuação competitiva original.
 
@@ -75,3 +75,11 @@ A identidade estável do Instagram impede que uma pessoa repita o bônus mudando
 A leitura de períodos atrasados é limitada a 12 pódios por pedido, preservando o restante para a próxima conferência. Falhas na leitura do ranking exibem um aviso e não bloqueiam o saldo ou as demais recompensas. A consulta pública `/economy-interactions/health` verifica apenas o acesso às tabelas, sem dados pessoais ou créditos.
 
 Validação adicional: `node --test functions/test/economy-interactions.test.cjs` e `cloudflare/camp-notifications/test/interaction-ranking.test.mjs`, incluindo limites, repetição, concorrência, identidade, corte do histórico e fechamento de períodos.
+
+## Nome da moeda e ranking de carteiras
+
+A moeda da carteira se chama **CFF COINS**. A mudança é apenas de nome: os saldos, preços, limites, histórico e cálculos continuam com os mesmos valores. Os pontos do ranking de interações continuam separados: cada 20 pontos desse ranking liberam 1 CFF COIN, conforme os limites acima. Resultados antigos da roleta são apresentados com o nome atual da moeda, preservando os registros originais.
+
+O admin de CFF COINS e loja (`admin-pontos.html`) começa com um ranking privado. Ele pode ser ordenado pelo saldo disponível ou pelo total ganho. Mostra posição, pessoa, saldo, total ganho e total de saídas, com atalhos ao perfil e à consulta da carteira. O ranking inclui carteiras com movimentações e tem páginas de 20 participantes. Os totais da comunidade aparecem no mesmo painel. A consulta não sincroniza nem credita recompensas de outras pessoas.
+
+O endpoint `economyAdmin/coinRanking` aceita apenas a conta administrativa real. Nome e usuário do perfil são mantidos junto à carteira; carteiras anteriores são identificadas por leituras pequenas do perfil, em grupos de cinco, com reaproveitamento por 24 horas. O ranking usa os valores já lançados na carteira; bônus pendentes são conferidos quando a pessoa abre a Loja ou quando o admin consulta sua carteira.
