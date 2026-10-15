@@ -8,7 +8,7 @@
   <script src="js/config.min.js?v=20261013-economy-v3"></script>
   <script type="module" src="js/admin-codiguinhos-sync.js?v=20260815-recovery-v2"></script>
   <script src="js/admin-code-state.js?v=20261014-code-admin-v1"></script>
-  <link rel="stylesheet" href="css/admin-codiguinhos-ui.css?v=20261014-code-admin-v1">
+  <link rel="stylesheet" href="css/admin-codiguinhos-ui.css?v=20261015-gift-overlay-v1">
   <style>
     :root{
       --bg:#070914;
@@ -912,10 +912,10 @@
     @media(max-width:520px){.secure-gate{padding:8px}.secure-card{padding:18px}.secure-actions{display:grid}.secure-actions button,.secure-actions a{width:100%;min-width:0}.cloud-status{width:100%;justify-content:center}}
 
   
-    /* Sobreposição própria dos códigos reservados como recompensa. */
-    .card.eco-reward-available{border-color:rgba(90,167,255,.65);background:rgba(7,25,51,.86)}
+    /* Mesmo carimbo para recompensas e presentes enviados. */
+    .card.eco-reward-available,.card.gift-sent:not(.gift-pending){border-color:rgba(90,167,255,.65);background:rgba(7,25,51,.86)}
     .card.eco-reward-claimed{border-color:rgba(255,48,79,.65);background:rgba(35,5,13,.86)}
-    .card.eco-reward-available::before,.card.eco-reward-claimed::before{
+    .card.eco-reward-available::before,.card.eco-reward-claimed::before,.card.gift-sent:not(.gift-pending)::before{
       position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;
       text-align:center;padding:22px;color:rgba(255,255,255,.84);font-weight:1000;
       font-size:clamp(26px,4.3vw,50px);letter-spacing:1.2px;line-height:1.05;
@@ -924,16 +924,17 @@
       backdrop-filter:blur(1.2px);overflow-wrap:normal;
     }
     .card.eco-reward-available::before{content:"RECOMPENSA DISPONÍVEL";background:linear-gradient(135deg,rgba(30,126,255,.28),rgba(4,58,135,.20))}
+    .card.gift-sent:not(.gift-pending)::before{content:"PRESENTE ENVIADO";background:linear-gradient(135deg,rgba(30,126,255,.28),rgba(4,58,135,.20))}
     .card.eco-reward-claimed::before{content:"RECOMPENSA RESGATADA";background:linear-gradient(135deg,rgba(255,0,38,.24),rgba(95,0,18,.18))}
-    .card.eco-reward-available::after,.card.eco-reward-claimed::after{
+    .card.eco-reward-available::after,.card.eco-reward-claimed::after,.card.gift-sent:not(.gift-pending)::after{
       content:"RECOMPENSA";position:absolute;top:13px;right:-45px;z-index:8;
       transform:rotate(35deg);background:#fff;font-weight:1000;font-size:10px;
       letter-spacing:1px;padding:6px 54px;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;
     }
-    .card.eco-reward-available::after{color:#164e97}.card.eco-reward-claimed::after{color:var(--red-2)}
-    .card.eco-reward-available>* ,.card.eco-reward-claimed>*{position:relative;z-index:5}
-    .card.eco-reward-available>.eco-code-destination,.card.eco-reward-claimed>.eco-code-destination{z-index:9}
-    @media(max-width:520px){.card.eco-reward-available::before,.card.eco-reward-claimed::before{font-size:clamp(24px,7vw,34px);padding:18px}}
+    .card.eco-reward-available::after,.card.gift-sent:not(.gift-pending)::after{color:#164e97}.card.gift-sent:not(.gift-pending)::after{content:"PRESENTE"}.card.eco-reward-claimed::after{color:var(--red-2)}
+    .card.eco-reward-available>* ,.card.eco-reward-claimed>*,.card.gift-sent:not(.gift-pending)>*{position:relative;z-index:5}
+    .card.eco-reward-available>.eco-code-destination,.card.eco-reward-claimed>.eco-code-destination,.card.gift-sent:not(.gift-pending)>.code-gift-stamp{z-index:9}
+    @media(max-width:520px){.card.eco-reward-available::before,.card.eco-reward-claimed::before,.card.gift-sent:not(.gift-pending)::before{font-size:clamp(24px,7vw,34px);padding:18px}}
   </style>
   <link rel="stylesheet" href="css/admin-codiguinhos-mostruario.css?v=20261008-v2">
 </head>
