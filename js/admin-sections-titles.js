@@ -1,8 +1,9 @@
+import {mountAdminDashboard} from './admin-dashboard-layout.mjs?v=20261014-panel-layout-v1';
 import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import { getDatabase, ref, get, set, remove, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
-const VERSION = '20260909-admin-sections-titles-v1';
+const VERSION = '20261014-panel-layout-v1';
 const ADMIN_EMAIL = 'admin@centralfreefire.com.br';
 const config = window.CFF_CONFIG && window.CFF_CONFIG.firebase;
 if (!config) throw new Error('Configuração do Firebase não encontrada.');
@@ -47,14 +48,6 @@ function injectStyles() {
   document.head.appendChild(style);
 }
 
-function createView(key) {
-  const view = document.createElement('div');
-  view.className = 'cff-admin-view';
-  view.dataset.adminView = key;
-  view.hidden = true;
-  return view;
-}
-
 function buildTitlesPanel() {
   const panel = document.createElement('section');
   panel.className = 'admin-panel cff-titles-panel';
@@ -85,71 +78,18 @@ function buildTitlesPanel() {
   return panel;
 }
 
+let dashboardLayout=null;
 function organizeDashboard() {
-  const dashboard = $('#admin-dashboard');
-  const welcome = dashboard && $('.admin-welcome', dashboard);
-  if (!dashboard || !welcome || $('.cff-admin-tabs', dashboard)) return;
-
+  const dashboard=$('#admin-dashboard');
+  if(!dashboard||dashboardLayout)return;
   injectStyles();
-  const tabs = document.createElement('nav');
-  tabs.className = 'cff-admin-tabs';
-  tabs.setAttribute('aria-label', 'Seções do painel');
-  const sections = [
-    ['analytics', 'ANALYTICS'],
-    ['lives', 'TRANSMISSÕES'],
-    ['news', 'NOTÍCIAS'],
-    ['titles', 'TÍTULOS']
-  ];
-  tabs.innerHTML = sections.map(([key, label]) => `<button class="cff-admin-tab" type="button" data-admin-tab="${key}">${label}</button>`).join('');
-
-  const privatePanel = Array.from(dashboard.children).find((node) => node.classList && node.classList.contains('admin-central-tools-panel'));
-  (privatePanel || welcome).insertAdjacentElement('afterend', tabs);
-
-  const views = Object.fromEntries(sections.map(([key]) => [key, createView(key)]));
-  tabs.insertAdjacentElement('afterend', views.titles);
-  tabs.insertAdjacentElement('afterend', views.news);
-  tabs.insertAdjacentElement('afterend', views.lives);
-  tabs.insertAdjacentElement('afterend', views.analytics);
-
-  const statGrid = Array.from(dashboard.children).find((node) => node.classList && node.classList.contains('admin-stat-grid'));
-  const dashGrid = Array.from(dashboard.children).find((node) => node.classList && node.classList.contains('admin-dashboard-grid'));
-  const gaPanel = $('.admin-ga-panel', dashboard);
-  const livePanel = $('.admin-live-panel', dashboard);
-  const editorPanel = $('.admin-editor-panel', dashboard);
-  const managementPanel = $('.admin-management-panel', dashboard);
-  [statGrid, dashGrid, gaPanel].filter(Boolean).forEach((node) => views.analytics.appendChild(node));
-  [livePanel].filter(Boolean).forEach((node) => views.lives.appendChild(node));
-  [editorPanel, managementPanel].filter(Boolean).forEach((node) => views.news.appendChild(node));
-  views.titles.appendChild(buildTitlesPanel());
-
-  tabs.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-admin-tab]');
-    if (button) selectSection(button.dataset.adminTab);
-  });
-
-  dashboard.addEventListener('click', (event) => {
-    if (event.target.closest('[data-edit-news],#admin-new-news,#admin-import-local,#admin-import-sheet')) selectSection('news');
-    if (event.target.closest('[data-edit-live],[data-duplicate-live],#admin-new-live')) selectSection('lives');
-  }, true);
-
-  bindTitleEvents();
-  const saved = localStorage.getItem('cff_admin_section_v1');
-  selectSection(['analytics','lives','news','titles'].includes(saved) ? saved : 'analytics');
+  dashboardLayout=mountAdminDashboard(dashboard,{titlesPanel:buildTitlesPanel(),onSelect:key=>{
+    activeSection=key;
+    if(key==='titles'&&auth.currentUser&&!titlesLoaded)loadTitles();
+  }});
+  if(dashboardLayout)bindTitleEvents();
 }
-
-function selectSection(key) {
-  const dashboard = $('#admin-dashboard');
-  if (!dashboard) return;
-  activeSection = key;
-  dashboard.querySelectorAll('[data-admin-view]').forEach((view) => { view.hidden = view.dataset.adminView !== key; });
-  dashboard.querySelectorAll('[data-admin-tab]').forEach((button) => {
-    const active = button.dataset.adminTab === key;
-    button.classList.toggle('is-active', active);
-    button.setAttribute('aria-selected', active ? 'true' : 'false');
-  });
-  try { localStorage.setItem('cff_admin_section_v1', key); } catch (_) {}
-  if (key === 'titles' && auth.currentUser && !titlesLoaded) loadTitles();
-}
+function selectSection(key) { dashboardLayout?.select(key); }
 
 function titleMessage(text, type = '') {
   const el = $('#cff-title-message');
