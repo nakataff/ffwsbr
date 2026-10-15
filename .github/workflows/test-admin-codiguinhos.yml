@@ -11,6 +11,7 @@ on:
       - 'functions/code-gifts.js'
       - 'functions/test/code-gifts.test.cjs'
       - 'test/admin-code*'
+      - 'test/code-vouchers-ui.test.cjs'
       - '.github/workflows/test-admin-codiguinhos.yml'
   workflow_dispatch:
 permissions:
@@ -31,4 +32,4 @@ jobs:
       - name: Test private status reconciliation, stock filters and gift dialog
         env:
           NODE_PATH: /tmp/cff-codes-test/node_modules
-        run: node --test --test-timeout=10000 test/admin-codiguinhos.test.cjs test/admin-code-gift-sync.test.mjs functions/test/code-gifts.test.cjs
+        run: node --test --test-timeout=10000 test/admin-codiguinhos.test.cjs test/code-vouchers-ui.test.cjs test/admin-code-gift-sync.test.mjs functions/test/code-gifts.test.cjs

@@ -67,6 +67,20 @@ test('economy gateway verifies signed identities, private wallets, real account 
  const profileCheckin=await api(alice,{action:'economy',operation:'profileCheckin',session:'forged',username:'bob',points:9999});assert.equal(profileCheckin.rankingStatus,'done');assert.equal(profileCheckin.coinsAwarded,false);assert.equal(profileCheckin.ranking,true);assert.equal(rankingCheckinCalls,1);
  assert.equal((await api(alice,{action:'economy',operation:'profileCheckin'})).rankingStatus,'done');assert.equal(rankingCheckinCalls,1);assert.equal((await api(alice,{action:'economy',operation:'profileCheckinStatus'})).ranking,true);
  sqlite.exec('DELETE FROM limits');
+ // Vouchers use the same signed gateway and reserve the chosen code without coins.
+ data['communityUsernames/bob']='bob';
+ assert.equal((await api(alice,{action:'economyAdmin',operation:'grantVoucher'})).status,403);
+ assert.equal((await api(admin,{action:'economyAdmin',operation:'findVoucherRecipient',username:'@bob'})).recipient.uid,'bob');
+ const voucherBody={action:'economyAdmin',operation:'grantVoucher',targetUid:'bob',expectedUsername:'bob',expiresAt:Date.now()+86400000,message:'Seu vale',nonce:crypto.randomUUID()},voucher=await api(admin,voucherBody);assert.equal(voucher.status,200);assert.equal((await api(admin,voucherBody)).voucher.id,voucher.voucher.id);
+ assert.equal((await api(admin,{action:'economyAdmin',operation:'saveVoucherConfig',imageUrl:photo})).status,200);
+ assert.equal((await api(admin,{action:'economyAdmin',operation:'addStock',code:'VOUCHERMOCK1234',title:'Escolha do vale',bucket:'shop'})).status,200);
+ const voucherState=await api(bob,{action:'economy',operation:'state'});assert.equal(voucherState.vouchers.availableCount,1);assert.equal(voucherState.wallet.balance,0);
+ const voucherRedeem={action:'economy',operation:'redeem',payment:'voucher',itemId:'code-default',codeChoice:voucherState.shop.find(p=>p.kind==='code').codeChoice,voucherId:voucher.voucher.id,nonce:crypto.randomUUID()};
+ assert.equal((await api(alice,voucherRedeem)).status,409);assert.equal((await api(bob,voucherRedeem)).status,200);assert.equal((await api(bob,voucherRedeem)).status,200);
+ const redeemed=await api(bob,{action:'economy',operation:'state'});assert.equal(redeemed.wallet.balance,0);assert.equal(redeemed.vouchers.entries[0].status,'used');assert.equal(redeemed.codeRedeemAvailableAt,0);assert.equal(Object.keys(data).filter(p=>p.startsWith('communityCodeGifts/bob/')).length,1);
+ assert.equal((await api(admin,{action:'economyAdmin',operation:'listVouchers',status:'used'})).total,1);
+ const voucherHealth=await worker.fetch(new Request('https://notify.test/health'),bindings);assert.equal((await voucherHealth.json()).codeVouchers,true);
+ sqlite.exec('DELETE FROM limits');
  const careerPublic=await worker.fetch(new Request('https://notify.test/careers/person?id=cauan7'),bindings);assert.equal(careerPublic.status,200);const careerData=await careerPublic.json();assert.equal(careerData.person.id,'cauan7');assert(!JSON.stringify(careerData).includes('japabkr'));assert.match(careerPublic.headers.get('Cache-Control'),/max-age=60/);
  const unchanged=await worker.fetch(new Request('https://notify.test/careers/person?id=cauan7',{headers:{'If-None-Match':careerPublic.headers.get('ETag')}}),bindings);assert.equal(unchanged.status,304);
  assert.equal((await api(alice,{action:'careerAdmin',operation:'search'})).status,403);const careerPage=await api(admin,{action:'careerAdmin',operation:'search'});assert.equal(careerPage.entries.length,20);assert(careerPage.total>=378);
