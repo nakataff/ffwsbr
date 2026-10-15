@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-10-14",
   "source": "DADOS DO SITE - Logos.tsv",
   "sourceRows": 60,
   "logos": {
@@ -102,7 +102,8 @@
     "ALFA 34": "a34.webp",
     "VIRTUS PRO": "Virtus Pro.webp",
     "ANTISOCIAL TEAM": "ast.webp",
-    "LYON": "lyon.webp"
+    "LYON": "lyon.webp",
+    "W7M ESPORTS": "https://i.postimg.cc/yx39wjkN/w7m.webp"
   },
   "aliases": {
     "CRUZEIRO": "CRUZEIRO ESPORTS",
@@ -143,6 +144,7 @@
     "HAWK": "HAWK GAMING",
     "ANTISOCIAL": "ANTISOCIAL TEAM",
     "AST": "ANTISOCIAL TEAM",
-    "ATS": "ANTISOCIAL TEAM"
+    "ATS": "ANTISOCIAL TEAM",
+    "W7M": "W7M ESPORTS"
   }
 }

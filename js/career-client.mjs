@@ -5,7 +5,7 @@ export const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<
 export function periodLabel(value={}){let date=value.date||'';if(/^\d{4}-\d{2}-\d{2}$/.test(date))date=date.split('-').reverse().join('/');else if(/^\d{4}-\d{2}$/.test(date))date=date.slice(5)+'/'+date.slice(0,4);return [date,value.edition].filter(Boolean).join(' · ')||'Não informado';}
 export const certaintyLabel=value=>value?.certainty==='confirmed'?'Confirmado':value?.certainty==='estimated'?'Estimado':'A confirmar';
 export const personHref=id=>'/carreira.html?id='+encodeURIComponent(id);
-export const teamHref=name=>'/carreira.html?team='+encodeURIComponent(name);
+export const teamHref=name=>'/equipe-historica.html?time='+encodeURIComponent(name);
 const cache=new Map(),pending=new Map(),TTL=60000;
 export async function readCareer(kind,query,{force=false}={}){
  if(!['person','team'].includes(kind))throw Error('Consulta inválida.');const params=new URLSearchParams({...query,view:'roster-v1'}),url=CAREER_API+'/careers/'+kind+'?'+params,key=url,stored=cache.get(key);

@@ -1,6 +1,6 @@
-import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel} from './career-client.mjs?v=20261015-roster-trail-v3';
+import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel} from './career-client.mjs?v=20261015-team-links-v4';
 const loaded=new WeakMap();
-function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261015-roster-trail-v3';link.dataset.careerStyle='1';document.head.append(link);}
+function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261015-team-links-v4';link.dataset.careerStyle='1';document.head.append(link);}
 function currentHtml(p){return p.current.length?p.current.map(t=>`<a href="${teamHref(t.teamName)}">${esc(t.teamName)}</a><span>${ROLES[t.role]}</span>`).join(' · '):p.availability==='free_agent'?`Sem equipe / F/A${p.freeAgentSince?.date?' · desde '+esc(periodLabel(p.freeAgentSince)):''}`:p.availability==='retired'?'Aposentado':'Vínculo atual a confirmar';}
 const trail=p=>careerTrail(p,{resolveLogo:(name,logo)=>window.cffResolveTeamLogo?.(name,logo)||logo||'escudo.webp'});
 function hideLegacy(node){if(!node.hidden)node.hidden=true;if(node.dataset.careerHidden!=='1')node.dataset.careerHidden='1';}

@@ -1,7 +1,7 @@
-import {initCareerDepartures} from './career-departures.js?v=20261015-roster-trail-v3';
+import {initCareerDepartures} from './career-departures.js?v=20261015-team-links-v4';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,setPersistence,browserLocalPersistence,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
-import {careerAdmin,ROLES,STATUSES,esc,tenureCards,personHref,periodLabel} from './career-client.mjs?v=20261015-roster-trail-v3';
+import {careerAdmin,ROLES,STATUSES,esc,tenureCards,personHref,periodLabel} from './career-client.mjs?v=20261015-team-links-v4';
 const app=getApps().find(a=>a.name==='[DEFAULT]')||initializeApp(window.CFF_CONFIG.firebase),auth=getAuth(app),$=s=>document.querySelector(s),ADMIN='admin@centralfreefire.com.br';
 let selected=null,tab='tenures',offset=0,page=null,busy=false,sequence=0,personSequence=0,searchTimer,teamTimer,editorState=null;
 const call=(op,b={})=>careerAdmin(auth,op,b),day=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
