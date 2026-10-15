@@ -66,6 +66,12 @@ test('economy gateway verifies signed identities, private wallets, real account 
  sqlite.exec('DELETE FROM limits');
  const profileCheckin=await api(alice,{action:'economy',operation:'profileCheckin',session:'forged',username:'bob',points:9999});assert.equal(profileCheckin.rankingStatus,'done');assert.equal(profileCheckin.coinsAwarded,false);assert.equal(profileCheckin.ranking,true);assert.equal(rankingCheckinCalls,1);
  assert.equal((await api(alice,{action:'economy',operation:'profileCheckin'})).rankingStatus,'done');assert.equal(rankingCheckinCalls,1);assert.equal((await api(alice,{action:'economy',operation:'profileCheckinStatus'})).ranking,true);
+ sqlite.exec('DELETE FROM limits');
+ const careerPublic=await worker.fetch(new Request('https://notify.test/careers/person?id=cauan7'),bindings);assert.equal(careerPublic.status,200);const careerData=await careerPublic.json();assert.equal(careerData.person.id,'cauan7');assert(!JSON.stringify(careerData).includes('japabkr'));assert.match(careerPublic.headers.get('Cache-Control'),/max-age=60/);
+ const unchanged=await worker.fetch(new Request('https://notify.test/careers/person?id=cauan7',{headers:{'If-None-Match':careerPublic.headers.get('ETag')}}),bindings);assert.equal(unchanged.status,304);
+ assert.equal((await api(alice,{action:'careerAdmin',operation:'search'})).status,403);const careerPage=await api(admin,{action:'careerAdmin',operation:'search'});assert.equal(careerPage.entries.length,20);assert(careerPage.total>=378);
+ const careerSaved=await api(admin,{action:'careerAdmin',operation:'saveTenure',personId:'cauan7',revision:careerData.person.revision,nonce:crypto.randomUUID(),tenure:{teamName:'Equipe do teste de integração',role:'assistant_coach',status:'active',start:{date:'2021-01-19',certainty:'confirmed'},end:{}}});assert.equal(careerSaved.status,200);assert.equal(careerSaved.person.current[0].role,'assistant_coach');
+ const currentCareer=await worker.fetch(new Request('https://notify.test/careers/person?id=cauan7'),bindings);assert.notEqual(currentCareer.headers.get('ETag'),careerPublic.headers.get('ETag'));assert.equal((await currentCareer.json()).person.current[0].teamName,'Equipe do teste de integração');
  const health=await worker.fetch(new Request('https://notify.test/health'),{NOTIFICATIONS:{},CFF_GOAL_SERVICE_ACCOUNT:'configured'});assert.equal((await health.json()).economy,true);
 });
 

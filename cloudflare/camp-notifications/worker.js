@@ -1,3 +1,4 @@
+import careerCore from '../../functions/careers.js';
 import {createInteractionRanking} from './interaction-ranking.js';
 import economyMedia from '../../functions/economy-media.js';
 import economyCore from '../../functions/economy.js';
@@ -22,11 +23,11 @@ export default {
  async fetch(request,env) {
   const origin=request.headers.get('Origin'),url=new URL(request.url);
   if(origin&&!ORIGINS.has(origin))return json({error:'Origem não permitida.'},403);
-  const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
+  const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type,If-None-Match','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:18,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
-  else if(request.method==='GET'&&(/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)||url.pathname==='/economy-interactions/health')&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:19,careers:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  else if(request.method==='GET'&&(/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)||url.pathname==='/economy-interactions/health'||/^\/careers\/(person|team)$/.test(url.pathname))&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -57,6 +58,7 @@ export class NotificationHub extends DurableObject {
   economyCore.initEconomy(this.sql);
  }
  rows(query,...args){return this.sql.exec(query,...args).toArray();}
+ careers(){if(!this.careerStore)this.careerStore=careerCore.create({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn)});return this.careerStore;}
  config(id){const row=this.rows('SELECT data FROM catalog WHERE id=?',id)[0];return row?JSON.parse(row.data):null;}
  catalog(){return Object.fromEntries(this.rows('SELECT id,data FROM catalog').map(r=>[r.id,JSON.parse(r.data)]));}
  vapid(){let row=this.rows("SELECT data FROM meta WHERE id='vapid'")[0];if(!row){const value=webpush.generateVAPIDKeys();this.sql.exec("INSERT INTO meta VALUES('vapid',?)",JSON.stringify(value));return value;}return JSON.parse(row.data);}
@@ -99,6 +101,8 @@ export class NotificationHub extends DurableObject {
   if(request.method==='GET'&&new URL(request.url).pathname==='/economy-interactions/health'){try{if(!this.interactionRanking)throw Error('missing');await this.interactionRanking.probe();return json({ok:true,interactionRanking:true});}catch{return json({ok:false,error:'Ranking de interações indisponível.'},503);}}
 
   try{
+   const careerRoute=request.method==='GET'&&new URL(request.url).pathname.match(/^\/careers\/(person|team)$/)?.[1];
+   if(careerRoute){const url=new URL(request.url),result=this.careers().publicRead(careerRoute,Object.fromEntries(url.searchParams)),entity=result.person,stamp=careerCore.key(entity?.id||result.team.id)+'-'+(entity?.revision||result.version)+'-'+careerCore.key(careerCore.day(Date.now())),etag='"career-'+stamp+'"',headers={'Cache-Control':'public, max-age=60, must-revalidate','ETag':etag,'X-Content-Type-Options':'nosniff'};if(request.headers.get('If-None-Match')===etag)return new Response(null,{status:304,headers});return Response.json(result,{headers});}
    const mediaId=request.method==='GET'&&new URL(request.url).pathname.match(/^\/economy-media\/([a-f0-9]{64})$/)?.[1];if(mediaId){const media=economyMedia.read(this.sql,mediaId);if(!media)return json({error:'Imagem não encontrada.'},404);return new Response(Uint8Array.from(atob(media.base64),c=>c.charCodeAt(0)),{headers:{'Content-Type':media.type,'Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'}});}
    const token=String(request.headers.get('Authorization')||'').match(/^Bearer (.+)$/)?.[1],user=await verifyToken(token),uid=user.uid;
    if(Number(request.headers.get('Content-Length')||0)>180000)throw Error('Pedido muito grande.');
@@ -109,6 +113,7 @@ export class NotificationHub extends DurableObject {
    const rate=this.rows('SELECT * FROM limits WHERE uid=?',uid)[0],now=Date.now(),active=rate&&now-rate.request_at<60000;
    if(active&&rate.requests>=30)throw Object.assign(Error('Aguarde um minuto antes de tentar novamente.'),{status:429});
    this.sql.exec('INSERT OR REPLACE INTO limits VALUES(?,?,?,?)',uid,rate?.test_at||0,active?rate.request_at:now,active?rate.requests+1:1);
+   if(action==='careerAdmin'){admin();return json(await this.careers().admin(user,b));}
    if(action==='economy'||action==='economyAdmin'){
     const economy=economyCore.createEconomy({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),db:goalDatabase(this.goalSecret),ranking:this.interactionRanking,communityCheckin:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session}),signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível registrar o check-in agora.');return r.json();},verifySession:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();}});
     return json(await (action==='economyAdmin'?economy.adminHandle(user,b):economy.handle(user,b)));

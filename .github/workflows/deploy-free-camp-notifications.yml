@@ -13,6 +13,16 @@ on:
       - 'functions/global-chat.js'
       - 'functions/code-gifts.js'
       - 'functions/economy.js'
+      - 'functions/careers.js'
+      - 'functions/career-seed.json'
+      - 'functions/test/careers.test.cjs'
+      - 'js/career-*.mjs'
+      - 'js/career-public.js'
+      - 'js/admin-careers.js'
+      - 'admin-carreiras.html'
+      - 'carreira.html'
+      - 'css/careers.css'
+      - 'test/career-interfaces.test.cjs'
       - 'functions/economy-game-orders.js'
       - 'functions/economy-ranking.js'
       - 'functions/economy-interactions.js'
@@ -55,7 +65,7 @@ jobs:
       - name: Test profile results and account invitation
         run: node --test test/account-welcome.test.mjs test/camp-results-view.test.mjs test/economy-wheel.test.mjs test/admin-economy-form.test.mjs
       - name: Test automatic profile rewards
-        run: node --test functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs functions/test/profile-checkin.test.cjs
+        run: node --test functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs functions/test/profile-checkin.test.cjs functions/test/careers.test.cjs
       - name: Test profile checkin and monthly goal interfaces
         env:
           NODE_PATH: /tmp/cff-coins-test/node_modules
@@ -63,9 +73,9 @@ jobs:
           mkdir -p /tmp/cff-coins-test
           cp test/game-gifts-browser-package.json /tmp/cff-coins-test/package.json
           npm install --prefix /tmp/cff-coins-test --no-audit --no-fund
-          node --test --test-timeout=10000 test/profile-coins.test.cjs
+          node --test --test-timeout=10000 test/profile-coins.test.cjs test/career-interfaces.test.cjs
       - name: Check points interfaces
-        run: node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js && node --check js/profile-checkin.mjs
+        run: node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js && node --check js/profile-checkin.mjs && node --check js/admin-careers.js && node --check js/career-client.mjs && node --check js/career-public.js
       - name: Check referral account verification access
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -94,7 +104,7 @@ jobs:
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
           for attempt in 1 2 3 4 5 6 7 8; do
-            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==18||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==19||h.careers!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
               echo 'Notification service is ready.'
               break
             fi

@@ -1,9 +1,9 @@
-import {mountAdminDashboard} from './admin-dashboard-layout.mjs?v=20261014-panel-layout-v1';
+import {mountAdminDashboard} from './admin-dashboard-layout.mjs?v=20261014-careers-v1';
 import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import { getDatabase, ref, get, set, remove, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
-const VERSION = '20261014-panel-layout-v1';
+const VERSION = '20261014-careers-v1';
 const ADMIN_EMAIL = 'admin@centralfreefire.com.br';
 const config = window.CFF_CONFIG && window.CFF_CONFIG.firebase;
 if (!config) throw new Error('Configuração do Firebase não encontrada.');
