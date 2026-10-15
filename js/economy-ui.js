@@ -1,4 +1,4 @@
-import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261015-code-vouchers-v1';
+import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261015-code-vouchers-v2';
 import {WHEEL_PRIZES,prizeAngle,landingAngle,labelPosition} from './economy-wheel.mjs?v=20261014-shop-save-v2';
 import {checkinMessage} from './profile-checkin.mjs?v=20261014-monthly-coins-v1';
 const coinUnit=n=>Number(n)===1?'CFF COIN':'CFF COINS';

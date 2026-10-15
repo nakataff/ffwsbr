@@ -1,6 +1,6 @@
 import {instagramLinkHtml} from './profile-instagram-link.mjs?v=20261014-instagram-status-v1';
-import {mountEconomy} from './economy-ui.js?v=20261015-code-vouchers-v1';
-import {rememberInvite,attachPendingReferral} from './economy-client.mjs?v=20261015-code-vouchers-v1';
+import {mountEconomy} from './economy-ui.js?v=20261015-code-vouchers-v2';
+import {rememberInvite,attachPendingReferral} from './economy-client.mjs?v=20261015-code-vouchers-v2';
 import {createProfileCheckin} from './profile-checkin.mjs?v=20261014-monthly-coins-v1';
 rememberInvite();
 import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261013-code-gifts-v1';

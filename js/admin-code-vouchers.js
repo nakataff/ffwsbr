@@ -1,4 +1,4 @@
-import {economyRequest,escapeEconomy as esc,loadEconomyStyle} from './economy-client.mjs?v=20261015-code-vouchers-v1';
+import {economyRequest,escapeEconomy as esc,loadEconomyStyle} from './economy-client.mjs?v=20261015-code-vouchers-v2';
 import {prepareEconomyPhoto} from './economy-photo.mjs?v=20261014-cff-coins-v1';
 const labels={available:'Disponível',used:'Trocado',reserved:'Entrega em andamento',expired:'Expirado',revoked:'Cancelado'};
 const time=at=>new Date(at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});

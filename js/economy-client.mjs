@@ -12,5 +12,4 @@ export async function attachPendingReferral(auth){
  attaching=economyRequest(auth,'attachReferral',{code:invite.code}).then(()=>{try{localStorage.removeItem(KEY);}catch{}}).finally(()=>{attaching=null;});return attaching;
 }
 export const escapeEconomy=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function loadEconomyStyle(){if(!document.querySelector('link[data-economy-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/economy.css?v=20261015-code-vouchers-v1';l.dataset.economyStyle='1';document.head.append(l);}}
-
+export function loadEconomyStyle(){let l=document.querySelector('link[data-economy-style]');if(!l){l=document.createElement('link');l.rel='stylesheet';l.dataset.economyStyle='1';document.head.append(l);}l.href='/css/economy.css?v=20261015-code-vouchers-v2';}
