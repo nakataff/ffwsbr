@@ -124,3 +124,10 @@ No `admin-codiguinhos.html`, a aba **Vales Codiguinho** permite enviar uma image
 Na loja da conta, cada codiguinho mostra **CFF COINS / 1 VALE CODIGUINHO** e botões separados. A troca por vale usa primeiro aquele que vence antes. Vale não gasta moedas e não entra no intervalo de 30 dias das compras com moedas; pode trocar por qualquer codiguinho disponível na loja, nunca por imagem de perfil ou item enviado no jogo. Não há garantia de estoque futuro.
 
 `eco_vouchers` guarda a titularidade, validade, remetente, mensagem e recibo; índices por titular/validade e data evitam carregar a base inteira. O consumo do vale e a reserva do estoque são uma única transação SQLite. O código segue a entrega privada já existente em Presentes. Se a entrega falhar, o recibo continua pendente e pode ser retomado mesmo depois do vencimento, sem cobrar outro vale. Vales reservados não podem ser cancelados. O estado da conta traz a quantidade válida, o próximo vale e os últimos 20 registros; o admin consulta 20 por página. Nenhuma regra nova de escrita pública no Firebase é necessária.
+
+
+## Abertura direta de codiguinhos
+
+Resgates com moedas ou vales e retomadas de entregas devolvem o `giftId` privado do destinatário. A loja abre a mesma janela de código do inventário, com copiar e atalho para o resgate oficial; o código continua salvo em Presentes. A roleta tem um botão para abrir diretamente o prêmio entregue. O recibo não devolve o código em texto: a abertura continua passando pelo endpoint autenticado `openCodeGift`, com conferência da conta e sem novo débito. A loja mantém um botão para reabrir o último codiguinho da sessão.
+
+No conta.html, o vínculo do Instagram aparece no início do perfil e da loja. O bloco gera o código, orienta o envio no direct e, após a confirmação do servidor, salva pela rotina autenticada existente. Não consulta o servidor em loop; geração e conferência dependem de clique. Um código pendente é preservado durante redesenhos e na sessão do navegador, separado por UID. Trocas de conta invalidam respostas antigas.
