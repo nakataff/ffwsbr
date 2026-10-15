@@ -8,8 +8,9 @@ const text=(v,max=100)=>String(v??'').trim().slice(0,max);
 const day=now=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(now));return ['year','month','day'].map(k=>p.find(x=>x.type===k).value).join('-');};
 function boundary(value={}){
  if(value.date!=null&&String(value.date).trim().length>10)throw fail(400,'Confira a data informada.');
- const date=text(value.date,10),edition=text(value.edition,100),certainty=['confirmed','estimated','unknown'].includes(value.certainty)?value.certainty:'unknown';let precision='unknown';
- if(date){if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&!Number.isNaN(Date.parse(date+'T12:00:00Z'))&&new Date(date+'T12:00:00Z').toISOString().slice(0,10)===date)precision='day';else if(/^\d{4}-(0[1-9]|1[0-2])$/.test(date))precision='month';else if(/^(19|20)\d{2}$/.test(date))precision='year';else throw fail(400,'Use uma data válida: AAAA, AAAA-MM ou AAAA-MM-DD.');if(date<'1990'||date>'2099-12-31')throw fail(400,'Confira o ano da data.');}
+ let date=text(value.date,10);if(/^\d{2}\/\d{2}\/\d{4}$/.test(date))date=date.split('/').reverse().join('-');else if(/^\d{2}\/\d{4}$/.test(date))date=date.slice(3)+'-'+date.slice(0,2);
+ const edition=text(value.edition,100),certainty=['confirmed','estimated','unknown'].includes(value.certainty)?value.certainty:'unknown';let precision='unknown';
+ if(date){if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&!Number.isNaN(Date.parse(date+'T12:00:00Z'))&&new Date(date+'T12:00:00Z').toISOString().slice(0,10)===date)precision='day';else if(/^\d{4}-(0[1-9]|1[0-2])$/.test(date))precision='month';else if(/^(19|20)\d{2}$/.test(date))precision='year';else throw fail(400,'Use uma data válida: DD/MM/AAAA, MM/AAAA ou AAAA.');if(date<'1990'||date>'2099-12-31')throw fail(400,'Confira o ano da data.');}
  else if(edition)precision='edition';
  return {date,edition,precision,certainty:precision==='unknown'?'unknown':certainty==='unknown'?'estimated':certainty};
 }

@@ -2,7 +2,7 @@
 
 Abra `admin-carreiras.html` com a conta administrativa habitual. O painel principal tem o atalho **Jogadores e comissão**. Busque uma pessoa, abra seu histórico e use **Adicionar passagem**, **Editar** ou **Registrar transferência**. Transferências encerram a passagem escolhida e criam outra em uma única transação. A aba **Cadastro** permite criar pessoas, atualizar nicks/aliases, categoria e disponibilidade; a aba **Alterações** mostra as últimas vinte edições e permite desfazer a última, sem sobrescrever uma edição concorrente.
 
-Os cargos são jogador, head coach, coach, assistant coach, analista, manager e outro. Entrada e saída aceitam ano, ano/mês ou data completa, além de edição e indicação de confirmado/estimado. Data vazia não é inventada. Cadastros importados ficam a revisar: a primeira/última participação em uma edição não comprova a contratação/desligamento. O vínculo só aparece como atual quando marcado ativo, empréstimo ou substituto dentro do período. Aposentado e sem equipe são situações explícitas da pessoa.
+Os cargos são jogador, head coach, coach, assistant coach, analista, manager e outro. Entrada e saída aceitam DD/MM/AAAA, MM/AAAA ou apenas o ano (e também o formato ISO), além de edição e indicação de confirmado/estimado. Data vazia não é inventada. Cadastros importados ficam a revisar: a primeira/última participação em uma edição não comprova a contratação/desligamento. O vínculo só aparece como atual quando marcado ativo, empréstimo ou substituto dentro do período. Aposentado e sem equipe são situações explícitas da pessoa.
 
 ## Armazenamento e consultas pequenas
 
