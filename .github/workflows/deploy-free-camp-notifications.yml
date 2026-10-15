@@ -15,6 +15,12 @@ on:
       - 'functions/economy.js'
       - 'functions/careers.js'
       - 'functions/career-seed.json'
+      - 'functions/career-registrations.json'
+      - 'player-data/wb-registration-sources.json'
+      - 'player-data/edition-teams.json'
+      - 'scripts/build-career-registrations.py'
+      - 'ffws-br-*/players.json'
+      - 'ffws-br-*/player-meta.json'
       - 'functions/test/careers.test.cjs'
       - 'js/career-*.mjs'
       - 'js/career-public.js'
@@ -61,6 +67,8 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Add CLOUDFLARE_ACCOUNT_ID in repository Actions secrets.'; exit 1; }
       - run: npm install --no-audit --no-fund
         working-directory: cloudflare/camp-notifications
+      - name: Build current WB registration index
+        run: python3 scripts/build-career-registrations.py
       - run: npm test
         working-directory: cloudflare/camp-notifications
       - name: Test profile results and account invitation
@@ -105,7 +113,7 @@ jobs:
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
           for attempt in 1 2 3 4 5 6 7 8; do
-            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==20||h.careers!==true||h.careerDepartures!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==21||h.registrationRosters!==true||h.careers!==true||h.careerDepartures!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
               echo 'Notification service is ready.'
               break
             fi

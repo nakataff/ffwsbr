@@ -1,5 +1,6 @@
 'use strict';
 const DEFAULT_SEED=require('./career-seed.json');
+const DEFAULT_REGISTRATION=require('./career-registrations.json');
 const ROLES={player:'Jogador',head_coach:'Head coach',coach:'Coach',assistant_coach:'Assistant coach',analyst:'Analista',manager:'Manager',other:'Outro'};
 const STATUS={unverified:'A revisar',active:'Ativo',ended:'Encerrado',loan:'Empréstimo',substitute:'Substituto'};
 const fail=(status,message)=>Object.assign(Error(message),{status});
@@ -27,11 +28,11 @@ function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS career_people(id TEXT PR
  CREATE INDEX IF NOT EXISTS career_changes_person ON career_changes(person,at DESC);
  CREATE TABLE IF NOT EXISTS career_requests(nonce TEXT PRIMARY KEY,actor TEXT,body TEXT,response TEXT);
  CREATE TABLE IF NOT EXISTS career_meta(id TEXT PRIMARY KEY,value INTEGER);`);}
-function create({sql,transaction,seed=DEFAULT_SEED,now=()=>Date.now()}){
+function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,now=()=>Date.now()}){
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  function aliases(id,values,table='career_aliases',column='person'){sql.exec('DELETE FROM '+table+' WHERE '+column+'=?',id);for(const alias of new Set(values.map(key).filter(Boolean)))sql.exec('INSERT OR IGNORE INTO '+table+' VALUES(?,?)',alias,id);}
  let ready=false;
- function ensure(){if(ready)return;init(sql);if(rows("SELECT value FROM career_meta WHERE id='seed'").length){ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});ready=true;}
+ function ensure(){if(ready)return;init(sql);if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();ready=true;}
  const revision=()=>rows("SELECT value FROM career_meta WHERE id='version'")[0]?.value||1;
  const records=id=>rows('SELECT data FROM career_tenures WHERE person=? ORDER BY ord,id',id).map(r=>JSON.parse(r.data));
  const active=t=>!t.deleted&&['active','loan','substitute'].includes(t.status)&&(!bounds(t.start)||bounds(t.start)<=day(now()))&&(!bounds(t.end,true)||bounds(t.end,true)>=day(now()));
@@ -44,7 +45,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,now=()=>Date.now()}){
   if(teamId&&!chosen.length)throw fail(400,'Selecione ao menos uma passagem por pessoa.');
   if(all.some(t=>ongoing(t)&&!tenureIds.includes(t.id)))throw fail(409,'Há outro vínculo aberto neste cadastro. Encerre ou confira todos os vínculos antes de deixar a pessoa F/A.');
   for(const t of chosen){if(bounds(t.start)&&bounds(info.end,true)&&bounds(t.start)>bounds(info.end,true))throw fail(400,'A saída não pode ser anterior à entrada de '+t.teamName+'.');t.end=info.end;t.status='ended';t.departure={reason:info.reason,source:info.source,sourceUrl:info.sourceUrl};sql.exec('UPDATE career_tenures SET data=? WHERE id=? AND person=?',JSON.stringify(t),t.id,id);}
-  const p=JSON.parse(rows('SELECT data FROM career_people WHERE id=?',id)[0].data);p.availability='free_agent';p.freeAgentSince=info.end;p.freeAgentReason=info.reason;sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(p),id);
+  const p=JSON.parse(rows('SELECT data FROM career_people WHERE id=?',id)[0].data);p.availability='free_agent';p.affiliationSource='manual';p.affiliationEdition=registration?.edition||'';p.freeAgentSince=info.end;p.freeAgentReason=info.reason;sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(p),id);
  }
  function departureCandidates(b){
   const t=findTeam(b.teamId||b.teamName);if(!t)throw fail(404,'Escolha uma equipe cadastrada.');const {limit,offset}=pagination(b),include=b.includeUnverified===true;
@@ -53,7 +54,34 @@ function create({sql,transaction,seed=DEFAULT_SEED,now=()=>Date.now()}){
   const entries=rows('SELECT id,name,kind,revision FROM career_people p WHERE '+where+' ORDER BY norm,id LIMIT ? OFFSET ?',...args,limit,offset).map(p=>{const all=records(p.id);return {personId:p.id,name:p.name,kind:p.kind,revision:p.revision,tenures:all.filter(x=>x.teamId===t.id&&!x.deleted&&(ongoing(x)||include&&x.status==='unverified')).map(({id,teamName,role,status,start,end})=>({id,teamName,role,status,start,end})),otherTeams:[...new Set(all.filter(x=>ongoing(x)&&x.teamId!==t.id).map(x=>x.teamName))]};});
   return {ok:true,team:t,entries,total,limit,offset,hasMore:offset+limit<total};
  }
- function person(id){const row=rows('SELECT * FROM career_people WHERE id=?',id)[0];if(!row)throw fail(404,'Pessoa não encontrada.');const p=JSON.parse(row.data),tenures=records(id).filter(t=>!t.deleted);return {...p,revision:row.revision,updatedAt:row.updated_at,tenures,current:['free_agent','retired'].includes(p.availability)?[]:tenures.filter(active),managed:row.revision>1,version:revision()};}
+ function syncRegistration(){
+  if(!registration?.complete||!registration.edition||!registration.version)return;
+  const marker='wb-registration:'+registration.version;if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+  transaction(()=>{
+   const ids=new Set([...Object.keys(registration.previous||{}),...Object.keys(registration.entries||{})]);
+   for(const id of ids){
+    const before=snapshot(id);if(!before||before.person.kind!=='player')continue;
+    const p=JSON.parse(before.person.data),override=['active','free_agent','retired'].includes(p.availability)&&(p.affiliationSource==='manual'?(p.affiliationEdition||registration.legacyOverrideEdition)===registration.edition:!p.affiliationSource&&before.person.revision>1&&(p.affiliationEdition||registration.legacyOverrideEdition)===registration.edition);
+    if(override)continue;
+    const current=registration.entries?.[id],previous=registration.previous?.[id],registered=!!current&&!current.left,all=records(id).filter(t=>!t.deleted),last=all.at(-1),unknown={date:'',edition:'',precision:'unknown',certainty:'unknown'};
+    const endFor=t=>boundary({edition:(current?.left&&current.teamId===t.teamId?registration.edition:previous?.teamId===t.teamId?previous.edition:t.registrationEdition||t.end?.edition)||'',certainty:'estimated'});
+    for(const t of all){if(ongoing(t)&&(!registered||t.teamId!==current.teamId)){t.status='ended';if(!t.end?.date)t.end=endFor(t);sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(t),t.id);}}
+    if(registered){
+     const team=saveTeam(current.teamName);let t=last&&last.teamId===team.id&&last.role==='player'&&last.status!=='ended'?{...last}:null;
+     if(!t)t={id:'registration-'+crypto.randomUUID(),teamId:team.id,teamName:team.name,role:'player',order:Math.max(0,...all.map(t=>t.order))+1,source:'Inscrição '+registration.edition,sourceUrl:'',notes:'',start:{...unknown,edition:registration.edition,precision:'edition',certainty:'estimated'}};
+     if(!t.start?.date&&!t.start?.edition)t.start={...unknown,edition:previous?.teamId===team.id?previous.edition:registration.edition,precision:'edition',certainty:'estimated'};
+     t.status=current.status==='substitute'?'substitute':'active';t.end=unknown;t.registrationEdition=registration.edition;
+     sql.exec('INSERT OR REPLACE INTO career_tenures VALUES(?,?,?,?,?)',t.id,id,t.teamId,t.order,JSON.stringify(t));p.availability='active';delete p.freeAgentSince;delete p.freeAgentReason;
+    }else{
+     if(last&&last.status!=='ended'){last.status='ended';if(!last.end?.date)last.end=endFor(last);sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(last),last.id);}
+     p.availability='free_agent';p.freeAgentSince={...unknown,edition:registration.edition,precision:'edition',certainty:'estimated'};
+    }
+    p.affiliationSource='registration';p.affiliationEdition=registration.edition;sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(p),id);audit(id,{uid:'wb-registration-sync'},'registrationSync',before);
+   }
+   sql.exec('INSERT INTO career_meta VALUES(?,1)',marker);
+  });
+ }
+ function person(id){const row=rows('SELECT * FROM career_people WHERE id=?',id)[0];if(!row)throw fail(404,'Pessoa não encontrada.');const p=JSON.parse(row.data),tenures=records(id).filter(t=>!t.deleted),logos=new Map(rows('SELECT tm.id,json_extract(tm.data,\'$.logo\') AS logo FROM career_teams tm WHERE tm.id IN (SELECT team FROM career_tenures WHERE person=?)',id).map(t=>[t.id,t.logo]));for(const t of tenures)t.logo=logos.get(t.teamId)||'escudo.webp';return {...p,revision:row.revision,updatedAt:row.updated_at,tenures,current:['free_agent','retired'].includes(p.availability)?[]:tenures.filter(active),managed:row.revision>1,version:revision()};}
  function findPerson(query){const id=text(query.id,100),name=text(query.name,100);if(id&&rows('SELECT id FROM career_people WHERE id=?',id).length)return person(id);const candidates=rows('SELECT DISTINCT person AS id FROM career_aliases WHERE alias=? LIMIT 3',key(name||id));if(candidates.length>1)throw fail(409,'Nome ambíguo. Abra pelo identificador da pessoa.');if(!candidates.length)throw fail(404,'Pessoa não encontrada.');return person(candidates[0].id);}
  function findTeam(name){const exact=rows('SELECT * FROM career_teams WHERE id=?',text(name,100))[0];if(exact)return JSON.parse(exact.data);const matches=rows('SELECT t.data FROM career_teams t JOIN career_team_aliases a ON a.team=t.id WHERE a.alias=? LIMIT 2',key(name));if(matches.length!==1)return null;return JSON.parse(matches[0].data);}
  const pagination=b=>({limit:Math.min(20,Math.max(1,Number.isSafeInteger(Number(b.limit))?Number(b.limit):20)),offset:Math.min(10000,Math.max(0,Number.isSafeInteger(Number(b.offset))?Number(b.offset):0))});
@@ -85,18 +113,18 @@ function create({sql,transaction,seed=DEFAULT_SEED,now=()=>Date.now()}){
    if(op==='savePerson'){
     const name=text(b.name,100),kind=['player','staff'].includes(b.kind)?b.kind:'player',availability=['unknown','active','free_agent','retired'].includes(b.availability)?b.availability:'unknown',values=Array.isArray(b.aliases)?b.aliases.slice(0,30).map(a=>text(a,100)).filter(Boolean):[];if(name.length<2||!key(name))throw fail(400,'Informe o nome.');if(!before&&rows('SELECT person FROM career_aliases WHERE alias=? LIMIT 1',key(name)).length)throw fail(409,'Este nome já está no catálogo. Pesquise antes de criar outro cadastro.');
     if(before&&['free_agent','retired'].includes(availability)&&records(id).some(ongoing))throw fail(400,'Encerre a passagem ativa antes de marcar Sem equipe ou Aposentado.');
-    const old=before?JSON.parse(before.person.data):{},data={...old,id,name,kind,availability,aliases:[...new Set([name,...values])],photo:old.photo||'silhueta.webp',currentTeamHint:old.currentTeamHint||''};sql.exec('INSERT OR REPLACE INTO career_people VALUES(?,?,?,?,?,?,?)',id,name,key(name),kind,JSON.stringify(data),before?.person.revision||0,now());aliases(id,[id,name,...data.aliases]);
+    const old=before?JSON.parse(before.person.data):{},data={...old,id,name,kind,availability,aliases:[...new Set([name,...values])],photo:old.photo||'silhueta.webp',currentTeamHint:old.currentTeamHint||''};sql.exec('INSERT OR REPLACE INTO career_people VALUES(?,?,?,?,?,?,?)',id,name,key(name),kind,JSON.stringify(data),before?.person.revision||0,now());if(before&&availability!==old.availability){data.affiliationSource='manual';data.affiliationEdition=registration?.edition||'';if(availability!=='free_agent'){delete data.freeAgentSince;delete data.freeAgentReason;}sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(data),id);}aliases(id,[id,name,...data.aliases]);
    }else if(op==='saveTenure'||op==='transfer'){
     if(records(id).filter(t=>!t.deleted).length>=200&&!b.tenure?.id)throw fail(400,'Limite de 200 passagens por pessoa.');const raw=b.tenure||{},old=raw.id?rows('SELECT data,person FROM career_tenures WHERE id=?',text(raw.id,150))[0]:null;if(raw.id&&(!old||old.person!==id))throw fail(404,'Passagem não encontrada nesta pessoa.');const t=cleanTenure({...raw,personId:id},old?raw.id:null,old?JSON.parse(old.data):null);
     if(op==='transfer'){const source=rows('SELECT * FROM career_tenures WHERE id=? AND person=?',text(b.fromTenureId,150),id)[0];if(!source)throw fail(404,'Escolha a passagem anterior.');const previous=JSON.parse(source.data);if(previous.deleted||previous.status==='ended')throw fail(409,'A passagem anterior já está encerrada.');const end=boundary(b.departure);if(!end.date&&!end.edition)throw fail(400,'Informe a saída ou a edição da passagem anterior.');if(bounds(previous.start)&&bounds(end,true)&&bounds(previous.start)>bounds(end,true))throw fail(400,'Confira a data de saída.');if(bounds(t.start)&&bounds(end)&&bounds(t.start)<bounds(end))throw fail(400,'A nova entrada não pode ser anterior à saída informada.');previous.end=end;previous.status='ended';sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(previous),source.id);}
-    sql.exec('INSERT OR REPLACE INTO career_tenures VALUES(?,?,?,?,?)',t.id,id,t.teamId,t.order,JSON.stringify(t));if(['active','loan','substitute'].includes(t.status)){const profile=JSON.parse(rows('SELECT data FROM career_people WHERE id=?',id)[0].data);profile.availability='active';delete profile.freeAgentSince;delete profile.freeAgentReason;sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(profile),id);}
+    sql.exec('INSERT OR REPLACE INTO career_tenures VALUES(?,?,?,?,?)',t.id,id,t.teamId,t.order,JSON.stringify(t));if(['active','loan','substitute'].includes(t.status)){const profile=JSON.parse(rows('SELECT data FROM career_people WHERE id=?',id)[0].data);profile.availability='active';profile.affiliationSource='manual';profile.affiliationEdition=registration?.edition||'';delete profile.freeAgentSince;delete profile.freeAgentReason;sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(profile),id);}
    }else if(op==='releasePerson'){release(id,b.tenureIds,departureInfo(b));
    }else if(op==='archiveTenure'){const row=rows('SELECT data FROM career_tenures WHERE id=? AND person=?',text(b.tenureId,150),id)[0];if(!row)throw fail(404,'Passagem não encontrada.');const t=JSON.parse(row.data);t.deleted=true;sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(t),t.id);
    }else if(op==='undo'){const change=rows('SELECT * FROM career_changes WHERE id=? AND person=?',text(b.changeId,100),id)[0];if(!change||change.after_revision!==before.person.revision)throw fail(409,'Só é possível desfazer a última alteração deste cadastro.');const original=JSON.parse(change.before_data);if(!original)throw fail(400,'Para preservar o histórico, um cadastro novo não é removido por esta ação.');restore(original,id);sql.exec('UPDATE career_people SET revision=? WHERE id=?',before.person.revision,id);}
    audit(id,identity,op,before);const result={ok:true,person:person(id)};sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;
   });
  }
- function publicRead(kind,query){ensure();return kind==='person'?{ok:true,person:findPerson(query)}:team(query);}
+ function publicRead(kind,query){ensure();if(kind!=='person')return team(query);const p=findPerson(query),entries=p.current.length?team({id:p.current[0].teamId,scope:'current',limit:20}).entries:[];p.teammates=entries.filter(t=>t.personId!==p.id).filter((t,i,a)=>a.findIndex(x=>x.personId===t.personId)===i).map(t=>({id:t.personId,name:t.name,photo:t.photo,role:t.role,teamId:t.teamId,teamName:t.teamName}));return {ok:true,person:p};}
  return {admin,publicRead,ensure};
 }
 module.exports={create,init,key,boundary,bounds,day,ROLES,STATUS};
