@@ -1,5 +1,5 @@
-import {createCodeGiftOpener} from './code-gift-opener.mjs?v=20261015-account-actions-v1';
-import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261015-account-actions-v1';
+import {createCodeGiftOpener} from './code-gift-opener.mjs?v=20261015-code-returns-v1';
+import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261015-code-returns-v1';
 import {WHEEL_PRIZES,prizeAngle,landingAngle,labelPosition} from './economy-wheel.mjs?v=20261014-shop-save-v2';
 import {checkinMessage} from './profile-checkin.mjs?v=20261014-monthly-coins-v1';
 const coinUnit=n=>Number(n)===1?'CFF COIN':'CFF COINS';
@@ -7,7 +7,7 @@ const prizeLabel=p=>p.id==='code'?p.label:Number(p.points||0).toLocaleString('pt
 const ledgerLabel=label=>String(label||'').replace(/^Roleta diária: (\d+) pontos?$/,(_,n)=>'Roleta diária: '+n+' '+coinUnit(n));
 const number=n=>Number(n||0).toLocaleString('pt-BR'),date=at=>new Date(at).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'});
 export function mountEconomy(root,{auth,image=()=>'',hydrate=()=>{}}){
- loadEconomyStyle();const uid=auth.currentUser?.uid;let live=true,state=null,busy=false,spinning=false,result='',rotation=null,running=null,landing=null,dialog=null,gameOrdersPage=null,lastGift=null;const opener=createCodeGiftOpener({auth,uid}),nonces=new Map();
+ loadEconomyStyle();const uid=auth.currentUser?.uid;let live=true,state=null,busy=false,spinning=false,result='',rotation=null,running=null,landing=null,dialog=null,gameOrdersPage=null,lastGift=null;const opener=createCodeGiftOpener({auth,uid,onReturned:async()=>{lastGift=null;result='Codiguinho devolvido ao estoque. O estorno já foi registrado.';try{await refresh();}catch(error){result+=' '+error.message;render();}}}),nonces=new Map();
  const valid=()=>live&&root.isConnected&&auth.currentUser?.uid===uid;
  const reduced=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches===true;
  function wheel(){return `<div class="eco-wheel-stage" aria-label="Roleta diária com prêmios em CFF COINS e codiguinhos."><span class="eco-wheel-pointer" aria-hidden="true"></span><div class="eco-wheel-disc" data-eco-wheel style="transform:rotate(${rotation||0}deg);background:conic-gradient(${WHEEL_PRIZES.map((p,i)=>`${p.color} ${i*60}deg ${(i+1)*60}deg`).join(',')})">${WHEEL_PRIZES.map((p,i)=>{const xy=labelPosition(i);return `<div class="eco-wheel-prize" style="left:${xy.x}%;top:${xy.y}%;transform:translate(-50%,-50%) rotate(${-(rotation||0)}deg)">${p.id==='code'?`<img src="/edition/gift.webp" alt="" aria-hidden="true" data-eco-photo><small>CODIGUINHO</small>`:`<b>${p.points}</b><small>${p.points===1?'CFF COIN':'CFF COINS'}</small>`}</div>`;}).join('')}</div><div class="eco-wheel-center" aria-hidden="true"><span>CFF</span><small>GIRO DIÁRIO</small></div></div>`;}

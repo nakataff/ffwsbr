@@ -131,3 +131,12 @@ Na loja da conta, cada codiguinho mostra **CFF COINS / 1 VALE CODIGUINHO** e bot
 Resgates com moedas ou vales e retomadas de entregas devolvem o `giftId` privado do destinatário. A loja abre a mesma janela de código do inventário, com copiar e atalho para o resgate oficial; o código continua salvo em Presentes. A roleta tem um botão para abrir diretamente o prêmio entregue. O recibo não devolve o código em texto: a abertura continua passando pelo endpoint autenticado `openCodeGift`, com conferência da conta e sem novo débito. A loja mantém um botão para reabrir o último codiguinho da sessão.
 
 No conta.html, o vínculo do Instagram aparece no início do perfil e da loja. O bloco gera o código, orienta o envio no direct e, após a confirmação do servidor, salva pela rotina autenticada existente. Não consulta o servidor em loop; geração e conferência dependem de clique. Um código pendente é preservado durante redesenhos e na sessão do navegador, separado por UID. Trocas de conta invalidam respostas antigas.
+
+
+## Devolução administrativa de codiguinhos
+
+A aba Devoluções do admin-codiguinhos lista entregas e devoluções em páginas de 20 registros. A janela do presente aberto também oferece Devolver ao estoque para a conta administradora. A confirmação exige declarar que o código continua válido e não foi usado no jogo, informar motivo e escolher loja, roleta ou ambos. O site não consulta nem confirma o uso na Garena. Códigos expirados e presentes manuais fora do estoque não podem usar esta devolução.
+
+A devolução registra uma intenção em eco_code_returns, marca o recibo como returning, substitui o presente por um registro sem código e devolve a atribuição ao estoque. Somente após essas etapas, uma transação libera o estoque, estorna exatamente o débito original (sem aumentar o total ganho), restaura o vale com a validade original e marca o recibo como returned. A devolução permite repetir tentativas sem duplicar o estorno. Recibos devolvidos deixam de contar para o limite de compra de 30 dias e não podem ser entregues novamente. Um prêmio devolvido da roleta não concede um novo giro.
+
+O presente antigo é preservado como devolvido, sem o código; abrir pelo endereço ou recibo antigo é recusado. As atribuições trazem dados de reconciliação para retirar o carimbo antigo do controle criptografado, preservando uma entrega nova do mesmo código. O backend continua exigindo a conta administradora real; a opção não fica disponível ao comprador comum.

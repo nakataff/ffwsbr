@@ -41,6 +41,7 @@ async function giftStatus(db,identity,hashes){
  for(let i=0;i<unique.length;i+=12){
   const entries=await Promise.all(unique.slice(i,i+12).map(async hash=>{
    const assigned=await db.get('communityCodeGiftAssignments/'+hash);
+   if(assigned?.uid==='economy-stock'&&assigned.returnedGiftId)return {hash,returned:true,giftId:assigned.returnedGiftId,sentAt:assigned.returnedAt,bucket:assigned.bucket};
    if(!assigned||!validUid(assigned.uid)||!/^codegift-[a-f0-9-]{36}$/.test(assigned.giftId||''))return null;
    const gift=await db.get('communityCodeGifts/'+assigned.uid+'/'+assigned.giftId);
    return {hash,uid:assigned.uid,giftId:assigned.giftId,username:String(assigned.recipientUsername||''),name:String(assigned.recipientName||''),sentAt:Number(gift?.sentAt||assigned.sentAt||0),openedAt:Number(gift?.openedAt||0),pending:!gift};
@@ -53,7 +54,7 @@ async function openCodeGift(db,identity,giftId,now=Date.now()){
  if(!validUid(identity?.uid))throw fail(401,'Entre na sua conta para abrir o presente.');
  if(!/^codegift-[a-f0-9-]{36}$/.test(giftId||''))throw fail(400,'Presente inválido.');
  const path='communityCodeGifts/'+identity.uid+'/'+giftId;
- const gift=await db.transact(path,old=>{if(!old)throw fail(404,'Presente não encontrado no seu inventário.');return old.openedAt?old:{...old,openedAt:now};});
+ const gift=await db.transact(path,old=>{if(!old)throw fail(404,'Presente não encontrado no seu inventário.');if(old.returnedAt)throw fail(410,'Este codiguinho foi devolvido ao estoque pelo administrador.');return old.openedAt?old:{...old,openedAt:now};});
  return {ok:true,gift};
 }
 module.exports={findRecipient,sendCodeGift,openCodeGift,giftStatus};

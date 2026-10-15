@@ -79,6 +79,12 @@ test('economy gateway verifies signed identities, private wallets, real account 
  assert.equal((await api(alice,voucherRedeem)).status,409);assert.equal((await api(bob,voucherRedeem)).status,200);assert.equal((await api(bob,voucherRedeem)).status,200);
  const redeemed=await api(bob,{action:'economy',operation:'state'});assert.equal(redeemed.wallet.balance,0);assert.equal(redeemed.vouchers.entries[0].status,'used');assert.equal(redeemed.codeRedeemAvailableAt,0);assert.equal(Object.keys(data).filter(p=>p.startsWith('communityCodeGifts/bob/')).length,1);
  assert.equal((await api(admin,{action:'economyAdmin',operation:'listVouchers',status:'used'})).total,1);
+ sqlite.exec('DELETE FROM limits');
+ assert.equal((await api(bob,{action:'economyAdmin',operation:'returnCode'})).status,403);
+ const codeDelivery=await api(admin,{action:'economyAdmin',operation:'codeDeliveries'}),deliveredBob=codeDelivery.entries.find(d=>d.uid==='bob');assert(deliveredBob);assert.equal(codeDelivery.limit,20);
+ const returnBody={action:'economyAdmin',operation:'returnCode',receiptId:deliveredBob.receiptId,bucket:'shop',reason:'Teste de integração',confirmUnused:true};
+ assert.equal((await api(admin,{...returnBody,confirmUnused:false})).status,400);assert.equal((await api(admin,returnBody)).delivery.status,'returned');assert.equal((await api(admin,returnBody)).duplicate,true);
+ assert.equal((await api(bob,{action:'openCodeGift',giftId:deliveredBob.giftId})).status,410);const restored=await api(bob,{action:'economy',operation:'state'});assert.equal(restored.vouchers.availableCount,1);assert.equal(restored.wallet.balance,0);assert.equal(restored.codeStock.shop,1);
  const voucherHealth=await worker.fetch(new Request('https://notify.test/health'),bindings);assert.equal((await voucherHealth.json()).codeVouchers,true);
  sqlite.exec('DELETE FROM limits');
  const careerPublic=await worker.fetch(new Request('https://notify.test/careers/person?id=cauan7'),bindings);assert.equal(careerPublic.status,200);const careerData=await careerPublic.json();assert.equal(careerData.person.id,'cauan7');assert(!JSON.stringify(careerData).includes('japabkr'));assert.match(careerPublic.headers.get('Cache-Control'),/max-age=60/);

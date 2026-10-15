@@ -2847,7 +2847,7 @@
         if(!controleDesbloqueado)return;
         let changed=false;
         const codes=listarCodigos(true),byCode=new Map(codes.map(row=>[row.codigo.toUpperCase(),row.codigo]));
-        for(const record of records){const original=byCode.get(record.code);if(!original)continue;const d=dadosCodigo(original);if(record.pending&&d.presente&&!d.presente.pending)continue;
+        for(const record of records){const original=byCode.get(record.code);if(!original)continue;const d=dadosCodigo(original);if(record.returned){if(d.presente&&d.presente.giftId!==record.giftId)continue;const receiver='Reservado para '+(record.bucket==='roulette'?'roleta':record.bucket==='both'?'roleta/loja':'loja');if(d.presente||d.entregue||d.dataResgate||d.resultado||d.recebeu!==receiver){delete d.presente;d.entregue=false;d.dataResgate='';d.resultado='';d.recebeu=receiver;d.atualizadoEm=new Date().toISOString();changed=true;}continue;}if(record.pending&&d.presente&&!d.presente.pending)continue;
           const gift={uid:record.uid,giftId:record.giftId,sentAt:record.sentAt,username:record.username,openedAt:record.openedAt||0,pending:Boolean(record.pending)};
           if(JSON.stringify(d.presente)!==JSON.stringify(gift)){d.presente=gift;d.recebeu='@'+record.username+' · presente no site';d.atualizadoEm=new Date().toISOString();changed=true;}
         }
@@ -2889,7 +2889,7 @@
     });
   </script>
   <script src="js/admin-codiguinhos-mostruario.js?v=20261008-v2"></script>
-<script src="js/admin-codiguinhos-ui.js?v=20261015-code-vouchers-v2"></script>
-<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261014-code-admin-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261015-code-vouchers-v2";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script></body>
+<script src="js/admin-codiguinhos-ui.js?v=20261015-code-returns-v1"></script>
+<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261015-code-returns-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261015-code-returns-v1";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script><script type="module">import {bootAdminCodeReturns} from "./js/admin-code-returns.js?v=20261015-code-returns-v1";bootAdminCodeReturns().catch(()=>{const el=document.getElementById("eco-code-returns-root");if(el)el.textContent="Não foi possível carregar as devoluções. Atualize a página.";});</script></body>
 </html>
 

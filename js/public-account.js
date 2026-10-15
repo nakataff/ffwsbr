@@ -1,10 +1,10 @@
-import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015-account-actions-v1';
+import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015-code-returns-v1';
 import {instagramLinkHtml} from './profile-instagram-link.mjs?v=20261014-instagram-status-v1';
-import {mountEconomy} from './economy-ui.js?v=20261015-account-actions-v1';
-import {rememberInvite,attachPendingReferral} from './economy-client.mjs?v=20261015-account-actions-v1';
+import {mountEconomy} from './economy-ui.js?v=20261015-code-returns-v1';
+import {rememberInvite,attachPendingReferral} from './economy-client.mjs?v=20261015-code-returns-v1';
 import {createProfileCheckin} from './profile-checkin.mjs?v=20261014-monthly-coins-v1';
 rememberInvite();
-import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261015-account-actions-v1';
+import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261015-code-returns-v1';
 import {categoriesFor} from './profile-category-model.mjs?v=20261013-categories-v1';
 import {frameChoices,frameScaleFor,selectedFrame} from './profile-frame-model.mjs?v=20261013-profile-frames-v1';
 import {createAccountWelcome} from './account-welcome.mjs?v=20261013-notifications-hub-v1';
@@ -16,7 +16,7 @@ import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, G
 import { getDatabase, ref, get, set, update, onValue, runTransaction, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 import { profileOptions, findOption, approvedImage, hydrateProfileImages, warmProfileImages, DEFAULT_AVATAR, activeGrants, catalogAvailable,ACCESS_LABELS,automaticAvatar,instagramKey } from './community-profile-data.js?v=20261013-goal-rewards-v1';
-const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261015-account-actions-v1';
+const API='https://cff-instagram-community.nakataffb4.workers.dev',SESSION='cff_daily_checkin_session_v1',OWNER='cff_community_account_owner_v1',VERSION='20261015-code-returns-v1';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const readLocal=k=>{try{return localStorage.getItem(k)||''}catch{return''}},writeLocal=(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch{}};
 let user=null,database,auth,unsub=[],generation=0,tab='overview',lists={favorites:{},comparisons:{},tournamentIndex:{},activity:{}},community=null,communityStatus=null,preferences={},profile={},busy=false,loaded=false;
