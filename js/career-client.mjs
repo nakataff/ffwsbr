@@ -8,7 +8,7 @@ export const personHref=id=>'/carreira.html?id='+encodeURIComponent(id);
 export const teamHref=name=>'/carreira.html?team='+encodeURIComponent(name);
 const cache=new Map(),pending=new Map(),TTL=60000;
 export async function readCareer(kind,query,{force=false}={}){
- if(!['person','team'].includes(kind))throw Error('Consulta inválida.');const params=new URLSearchParams(query),url=CAREER_API+'/careers/'+kind+'?'+params,key=url,stored=cache.get(key);
+ if(!['person','team'].includes(kind))throw Error('Consulta inválida.');const params=new URLSearchParams({...query,view:'roster-v1'}),url=CAREER_API+'/careers/'+kind+'?'+params,key=url,stored=cache.get(key);
  if(!force&&stored&&Date.now()-stored.at<TTL)return stored.data;if(pending.has(key))return pending.get(key);
  const job=(async()=>{const response=await fetch(url,{cache:force?'reload':'no-cache',signal:AbortSignal.timeout(6000)}),data=await response.json();if(!response.ok)throw Error(data.error||'Histórico indisponível.');cache.set(key,{at:Date.now(),data});if(cache.size>50)cache.delete(cache.keys().next().value);return data;})();pending.set(key,job);try{return await job;}finally{pending.delete(key);}
 }

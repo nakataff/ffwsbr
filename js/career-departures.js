@@ -1,4 +1,4 @@
-import {esc,ROLES,STATUSES,periodLabel} from './career-client.mjs?v=20261015-roster-trail-v1';
+import {esc,ROLES,STATUSES,periodLabel} from './career-client.mjs?v=20261015-roster-trail-v2';
 
 // This editor keeps only the requested team page and explicit selections in memory.
 export function initCareerDepartures({call,getSelected,canOpen,onBusy,onSaved}){
