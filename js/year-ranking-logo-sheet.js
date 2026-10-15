@@ -1,7 +1,7 @@
 (()=>{'use strict';
 if(window.__cffYearRankingSheetLogos)return;
 window.__cffYearRankingSheetLogos=true;
-const V='20261015-shared-sheet-logos-v8';
+const V='20261015-career-directory-v1';
 const DEFAULT_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv';
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,'');
 const map={},aliases={},priorities={};
@@ -67,8 +67,8 @@ async function load(){
  })().finally(()=>{loadPromise=null});
  return loadPromise;
 }
-function find(name){const k=norm(name);if(k==='LYON')return window.CFF_GLOBAL_TEAM_LOGOS?.logos?.LYON||LYON_TEAM_LOGO;const best=[k,aliases[k]].filter(key=>key&&map[key]).sort((a,b)=>(priorities[b]??-1)-(priorities[a]??-1))[0];return map[best]||''}
-function globalLogo(name){
+function find(name){const central=window.cffCareerTeamIdentity?.(name);if(central?.logo)return central.logo;const k=norm(name);if(k==='LYON')return window.CFF_GLOBAL_TEAM_LOGOS?.logos?.LYON||LYON_TEAM_LOGO;const best=[k,aliases[k]].filter(key=>key&&map[key]).sort((a,b)=>(priorities[b]??-1)-(priorities[a]??-1))[0];return map[best]||''}
+function globalLogo(name){const central=window.cffCareerTeamIdentity?.(name);if(central?.logo)return central.logo;
  const k=norm(name),assets=window.CFF_GLOBAL_TEAM_LOGOS;
  const local=assets?.logos?.[k];
  if(k==='LYON')return local||LYON_TEAM_LOGO;
@@ -81,6 +81,8 @@ function globalLogo(name){
 }
 
 function setImg(img,team){
+ if(img?.dataset?.careerTeamLogo)return;
+ const central=window.cffCareerTeamIdentity?.(team);if(central?.logo){if(img&&img.getAttribute('src')!==central.logo)img.src=central.logo;return;}
  const isGlobal=Boolean(img?.dataset?.cffGlobalTeamLogo);
  const src=isGlobal?globalLogo(team):find(team);if(!img||!src)return;
  const warning=img.closest?.('.ffws-global-team-roster-head')?.querySelector('.ffws-global-logo-pending');
@@ -125,5 +127,7 @@ window.cffFindLiveTeamLogo=find;
 window.cffResolveGlobalTeamLogo=globalLogo;
 window.cffReloadYearSheetLogos=()=>{ready=false;return load()};
 window.cffPatchYearTeamLogos=patch;
+import('/js/career-team-identities.mjs?v=20261015-career-directory-v1').catch(()=>{});
+document.addEventListener('cff:career-identities-ready',patch);
 load();
 })();

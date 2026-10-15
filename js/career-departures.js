@@ -1,4 +1,4 @@
-import {esc,ROLES,STATUSES,periodLabel} from './career-client.mjs?v=20261015-team-links-v4';
+import {esc,ROLES,STATUSES,periodLabel} from './career-client.mjs?v=20261015-career-directory-v1';
 
 // This editor keeps only the requested team page and explicit selections in memory.
 export function initCareerDepartures({call,getSelected,canOpen,onBusy,onSaved}){
@@ -65,5 +65,5 @@ export function initCareerDepartures({call,getSelected,canOpen,onBusy,onSaved}){
  });
  document.querySelectorAll('[data-release-close]').forEach(button=>button.addEventListener('click',()=>{if(!busy){request++;dialog.close?.();dialog.removeAttribute('open');}}));
  dialog.addEventListener('cancel',event=>{if(busy)event.preventDefault();else request++;});
- return {openPerson:()=>open(true),openTeam:()=>open(false),reset(){request++;suggestion++;clearTimeout(timer);choices.clear();dialog.close?.();dialog.removeAttribute('open');}};
+ return {openPerson:()=>open(true),openTeam:name=>{open(false);if(typeof name==='string'&&dialog.open){$('#career-release-team-input').value=name;load();}},reset(){request++;suggestion++;clearTimeout(timer);choices.clear();dialog.close?.();dialog.removeAttribute('open');}};
 }
