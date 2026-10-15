@@ -57,4 +57,17 @@ async function openCodeGift(db,identity,giftId,now=Date.now()){
  const gift=await db.transact(path,old=>{if(!old)throw fail(404,'Presente não encontrado no seu inventário.');if(old.returnedAt)throw fail(410,'Este codiguinho foi devolvido ao estoque pelo administrador.');return old.openedAt?old:{...old,openedAt:now};});
  return {ok:true,gift};
 }
-module.exports={findRecipient,sendCodeGift,openCodeGift,giftStatus};
+// Personal organization only: no stock, receipt, grant or wallet changes.
+async function archiveGift(db,identity,raw,now=Date.now()){
+ if(!validUid(identity?.uid))throw fail(401,'Entre na sua conta para organizar os presentes.');
+ const kind=raw?.kind,id=raw?.giftId;
+ if(!['code','profile'].includes(kind)||typeof raw.archived!=='boolean'||typeof id!=='string'||!(/^[A-Za-z0-9_-]{1,128}$/).test(id)||kind==='code'&&!/^codegift-[a-f0-9-]{36}$/.test(id))throw fail(400,'Presente inválido.');
+ const path=(kind==='code'?'communityCodeGifts/':'communityGifts/')+identity.uid+'/'+id;
+ const gift=await db.transact(path,old=>{
+  if(!old)throw fail(404,'Presente não encontrado no seu inventário.');
+  if(raw.archived&&kind==='code'&&!old.openedAt&&!old.returnedAt)throw fail(409,'Abra o presente antes de arquivar.');
+  return {...old,archivedAt:raw.archived?(old.archivedAt||now):0};
+ });
+ return {ok:true,giftId:id,kind,archivedAt:gift.archivedAt};
+}
+module.exports={findRecipient,sendCodeGift,openCodeGift,giftStatus,archiveGift};

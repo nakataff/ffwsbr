@@ -82,6 +82,11 @@ test('economy gateway verifies signed identities, private wallets, real account 
  sqlite.exec('DELETE FROM limits');
  assert.equal((await api(bob,{action:'economyAdmin',operation:'returnCode'})).status,403);
  const codeDelivery=await api(admin,{action:'economyAdmin',operation:'codeDeliveries'}),deliveredBob=codeDelivery.entries.find(d=>d.uid==='bob');assert(deliveredBob);assert.equal(codeDelivery.limit,20);
+ const archiveBody={action:'archiveGift',kind:'code',giftId:deliveredBob.giftId,archived:true};
+ assert.equal((await api(bob,archiveBody)).status,409);assert.equal((await api(alice,archiveBody)).status,404);
+ assert.equal((await api(bob,{action:'openCodeGift',giftId:deliveredBob.giftId})).status,200);
+ const archiveResult=await api(bob,archiveBody);assert.equal(archiveResult.status,200);assert(archiveResult.archivedAt>0);assert.equal(archiveResult.code,undefined);
+ assert.equal((await api(bob,{...archiveBody,archived:false})).archivedAt,0);assert.equal((await api(bob,{action:'economy',operation:'state'})).wallet.balance,0);
  const returnBody={action:'economyAdmin',operation:'returnCode',receiptId:deliveredBob.receiptId,bucket:'shop',reason:'Teste de integração',confirmUnused:true};
  assert.equal((await api(admin,{...returnBody,confirmUnused:false})).status,400);assert.equal((await api(admin,returnBody)).delivery.status,'returned');assert.equal((await api(admin,returnBody)).duplicate,true);
  assert.equal((await api(bob,{action:'openCodeGift',giftId:deliveredBob.giftId})).status,410);const restored=await api(bob,{action:'economy',operation:'state'});assert.equal(restored.vouchers.availableCount,1);assert.equal(restored.wallet.balance,0);assert.equal(restored.codeStock.shop,1);

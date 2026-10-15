@@ -18,3 +18,7 @@ test('the actual profile header distinguishes private, public linked and automat
  context.communityStatus={status:'verified',username:'pessoa_ig'};context.instagramLinkState='linked';assert(context.window.header().includes('@pessoa_ig'));
  const marker={outerHTML:''};context.window.refresh({querySelector:()=>marker});assert(marker.outerHTML.includes('data-instagram-state="linked"'));context.communityStatus=null;context.instagramLinkState='pending';context.window.refresh({querySelector:()=>marker});assert(marker.outerHTML.includes('Instagram aguardando confirmação'));
 });
+test('compact public Instagram fits in a single pill while preserving protected verification and accessible labels',()=>{
+ const html=instagramLinkHtml({compact:true,link:{username:'long_username_example'},canManage:false});assert(html.includes('cff-instagram-pill'));assert(html.includes('aria-label="Instagram vinculado e confirmado: @long_username_example"'));assert(!html.includes('<p>'));assert(!html.includes('Gerenciar vínculo'));assert(html.includes('https://www.instagram.com/long_username_example/'));
+ const automatic=instagramLinkHtml({compact:true,automatic:true,rankingUsername:'ranking_only',link:{username:'ranking_only'}});assert(automatic.includes('Instagram não vinculado'));assert(!automatic.includes('https://www.instagram.com/'));assert(!automatic.includes('is-linked'));
+});

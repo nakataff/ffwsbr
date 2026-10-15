@@ -26,7 +26,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type,If-None-Match','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:24,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:25,giftArchive:true,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
   else if(request.method==='GET'&&(/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)||url.pathname==='/economy-interactions/health'||/^\/careers\/(person|team)$/.test(url.pathname))&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
@@ -121,6 +121,7 @@ export class NotificationHub extends DurableObject {
    if(action==='findGiftRecipient')return json(await codeGifts.findRecipient(goalDatabase(this.goalSecret),user,b.query));
    if(action==='codeGiftStatus')return json(await codeGifts.giftStatus(goalDatabase(this.goalSecret),user,b.hashes));
    if(action==='sendCodeGift')return json(await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b));
+   if(action==='archiveGift')return json(await codeGifts.archiveGift(goalDatabase(this.goalSecret),user,b));
    if(action==='openCodeGift')return json(await codeGifts.openCodeGift(goalDatabase(this.goalSecret),user,b.giftId));
    if(action==='chatSend')return json(await globalChat.sendMessage(goalDatabase(this.goalSecret),user,b.text));
    if(action==='chatModerate')return json(await globalChat.moderation(goalDatabase(this.goalSecret),user,b));

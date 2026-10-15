@@ -24,3 +24,28 @@ test('status lookup accepts bounded hashes only and ignores unassigned economy s
  const db=database();for(const hashes of ['bad',['bad'],Array(21).fill('a'.repeat(64))])await assert.rejects(C.giftStatus(db,admin,hashes),{status:400});
  db.data['communityCodeGiftAssignments/'+'b'.repeat(64)]={uid:'economy-stock',giftId:'stock-'+'b'.repeat(64)};assert.equal((await C.giftStatus(db,admin,['b'.repeat(64)])).gifts.length,0);assert.equal(db.writes,0);
 });
+test('the recipient can archive an opened code and restore it without changing delivery, stock, wallet or code',async()=>{
+ const db=database(),sent=await C.sendCodeGift(db,admin,raw,now);await C.openCodeGift(db,{uid:'person'},sent.giftId,now+10);
+ const otherPaths=Object.fromEntries(Object.entries(db.data).filter(([p])=>p!=='communityCodeGifts/person/'+sent.giftId));
+ const request={giftId:sent.giftId,kind:'code',archived:true};
+ const archived=await C.archiveGift(db,{uid:'person'},request,now+20);assert.equal(archived.archivedAt,now+20);assert.equal(archived.code,undefined);
+ assert.equal((await C.archiveGift(db,{uid:'person'},request,now+30)).archivedAt,now+20);
+ assert.equal((await C.openCodeGift(db,{uid:'person'},sent.giftId,now+40)).gift.code,raw.code);
+ const restored=await C.archiveGift(db,{uid:'person'},{...request,archived:false},now+50);assert.equal(restored.archivedAt,0);
+ const gift=db.data['communityCodeGifts/person/'+sent.giftId];assert.equal(gift.code,raw.code);assert.equal(gift.openedAt,now+10);assert.equal(gift.sentAt,now);assert.equal(gift.usedAt,undefined);
+ assert.deepEqual(Object.fromEntries(Object.entries(db.data).filter(([p])=>p!=='communityCodeGifts/person/'+sent.giftId)),otherPaths);
+});
+test('archiving requires the owner, an existing gift, a safe identifier and an explicit boolean',async()=>{
+ const db=database(),sent=await C.sendCodeGift(db,admin,raw,now),request={giftId:sent.giftId,kind:'code',archived:true},writes=db.writes;
+ await assert.rejects(C.archiveGift(db,{uid:'person'},request,now),{status:409});
+ for(const identity of [admin,{uid:'other'}])await assert.rejects(C.archiveGift(db,identity,request,now),{status:404});
+ await assert.rejects(C.archiveGift(db,{},request,now),{status:401});
+ for(const change of [{giftId:'../person'},{kind:'wallet'},{archived:'true'},{giftId:'bad'}, {archived:undefined}])await assert.rejects(C.archiveGift(db,{uid:'person'},{...request,...change},now),{status:400});
+ assert.equal(db.writes,writes);
+});
+test('cosmetic gifts can be archived while their unlock and badges are preserved; returned codes cannot be reopened',async()=>{
+ const db=database();db.data['communityGifts/person/cosmetic-1']={assetId:'avatar-1',kind:'avatar',grantedAt:now};db.data['communityImageOwnership/person/avatar-1']={grantedAt:now};
+ await C.archiveGift(db,{uid:'person'},{giftId:'cosmetic-1',kind:'profile',archived:true},now+10);
+ assert.deepEqual(db.data['communityImageOwnership/person/avatar-1'],{grantedAt:now});assert.equal(db.data['communityGifts/person/cosmetic-1'].assetId,'avatar-1');
+ const giftId='codegift-'+id;db.data['communityCodeGifts/person/'+giftId]={title:'Devolvido',returnedAt:now};await C.archiveGift(db,{uid:'person'},{giftId,kind:'code',archived:true},now+10);await C.archiveGift(db,{uid:'person'},{giftId,kind:'code',archived:false},now+20);await assert.rejects(C.openCodeGift(db,{uid:'person'},giftId,now+30),{status:410});
+});
