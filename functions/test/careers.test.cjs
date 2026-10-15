@@ -13,3 +13,48 @@ test('ambiguous aliases fail safely, source links are validated and public respo
 test('availability cannot contradict active team records and dates remain untouched when another passage is edited',async()=>{const s=setup();let r=await edit(s,'saveTenure',{tenure:tenure()});const first=r.person.tenures[0];await assert.rejects(edit(s,'savePerson',{name:'Jogador 00',kind:'player',availability:'free_agent'}),{status:400});r=await edit(s,'saveTenure',{tenure:tenure({id:first.id,status:'ended',end:{date:'2025-08-01',certainty:'confirmed'}})});r=await edit(s,'savePerson',{name:'Jogador 00',kind:'player',availability:'free_agent'});assert.equal(r.person.current.length,0);assert.equal(s.core.publicRead('team',{name:'LOUD',scope:'current'}).entries.length,0);assert.equal(r.person.tenures[0].start.date,'2021-01-19');assert.equal(r.person.tenures[0].end.date,'2025-08-01');});
 
 test('Brazilian date entry is normalized without losing partial precision',()=>{assert.equal(C.boundary({date:'19/01/2021',certainty:'confirmed'}).date,'2021-01-19');assert.equal(C.boundary({date:'08/2025',certainty:'estimated'}).date,'2025-08');assert.equal(C.boundary({date:'08/2025'}).precision,'month');assert.throws(()=>C.boundary({date:'30/02/2026'}),{status:400});});
+
+test('individual F/A closes chosen open periods, preserves history and supports undo',async()=>{
+ const s=setup();let r=await edit(s,'saveTenure',{tenure:tenure()});const old=r.person.tenures[0];
+ r=await edit(s,'saveTenure',{tenure:tenure({status:'ended',start:{date:'2019'},end:{date:'2020'}})});const historical=r.person.tenures[1];
+ r=await edit(s,'releasePerson',{tenureIds:[old.id],departure:{date:'14/10/2026',certainty:'confirmed'},reason:'Organização pausou as atividades',source:'Anúncio oficial',sourceUrl:'https://example.test/anuncio'});
+ assert.equal(r.person.availability,'free_agent');assert.equal(r.person.freeAgentSince.date,'2026-10-14');assert.equal(r.person.current.length,0);assert.deepEqual(r.person.tenures[1],historical);assert.equal(r.person.tenures[0].start.date,'2021-01-19');assert.equal(r.person.tenures[0].end.date,'2026-10-14');assert.equal(r.person.tenures[0].departure.reason,'Organização pausou as atividades');assert.equal(s.core.publicRead('team',{name:'LOUD',scope:'current'}).total,0);
+ const h=await s.core.admin(admin,{operation:'history',personId:'p0'});assert.equal(h.entries[0].kind,'releasePerson');r=await edit(s,'undo',{changeId:h.entries[0].id});assert.equal(r.person.availability,'active');assert.equal(r.person.current.length,1);assert.equal(r.person.tenures[0].end.date,'');
+});
+test('F/A supports people without an open passage and never closes unselected imported histories',async()=>{
+ const s=setup();let r=await edit(s,'saveTenure',{tenure:tenure({status:'unverified',start:{edition:'LBFF 3'}})});const imported=r.person.tenures[0];
+ r=await edit(s,'releasePerson',{tenureIds:[],departure:{edition:'FFWS 2026',certainty:'estimated'}});assert.equal(r.person.availability,'free_agent');assert.deepEqual(r.person.tenures[0],imported);
+ r=await edit(s,'releasePerson',{personId:'p1',tenureIds:[],departure:{date:'14/10/2026'}});assert.equal(r.person.tenures.length,0);assert.equal(r.person.availability,'free_agent');
+});
+test('team departure preview is bounded, excludes historical and unverified rows by default and includes staff',async()=>{
+ const s=setup();for(let i=0;i<25;i++)await edit(s,'saveTenure',{personId:'p'+i,tenure:tenure({role:i%2?'manager':'player'})});
+ await edit(s,'saveTenure',{personId:'p25',tenure:tenure({status:'unverified'})});await edit(s,'saveTenure',{personId:'p26',tenure:tenure({status:'ended',end:{date:'2025'}})});
+ let r=await s.core.admin(admin,{operation:'departureCandidates',teamName:'LOUD SNICKERS',limit:999});assert.equal(r.entries.length,20);assert.equal(r.total,25);assert(r.entries.some(p=>p.kind==='staff'));assert(!r.entries.some(p=>p.personId==='p25'));assert(r.entries.every(p=>!('aliases'in p)&&!('photo'in p)));
+ r=await s.core.admin(admin,{operation:'departureCandidates',teamName:'LOUD',offset:20,includeUnverified:true});assert.equal(r.entries.length,6);assert.equal(r.total,26);assert.equal(r.entries.at(-1).tenures[0].status,'unverified');assert(!r.hasMore);
+});
+test('bulk departure affects only reviewed selections, is atomic, idempotent and undoable per person',async()=>{
+ const s=setup();for(let i=0;i<3;i++)await edit(s,'saveTenure',{personId:'p'+i,tenure:tenure({role:i===1?'coach':'player'})});
+ const preview=await s.core.admin(admin,{operation:'departureCandidates',teamName:'LOUD'}),members=preview.entries.slice(0,2).map(p=>({personId:p.personId,revision:p.revision,tenureIds:p.tenures.map(t=>t.id)})),body={operation:'bulkDeparture',nonce:nonce(),teamId:'loud',members,departure:{date:'14/10/2026',certainty:'confirmed'},reason:'Pausa da equipe'};
+ const r=await s.core.admin(admin,body);assert.equal(r.affected.length,2);assert.deepEqual(await s.core.admin(admin,body),r);assert.equal(s.core.publicRead('person',{id:'p0'}).person.revision,3);assert.equal(s.core.publicRead('person',{id:'p1'}).person.availability,'free_agent');assert.equal(s.core.publicRead('person',{id:'p2'}).person.current.length,1);assert.equal(s.core.publicRead('team',{name:'LOUD',scope:'current'}).total,1);
+ const history=await s.core.admin(admin,{operation:'history',personId:'p1'});assert.equal(history.entries[0].kind,'bulkDeparture');await edit(s,'undo',{personId:'p1',changeId:history.entries[0].id});assert.equal(s.core.publicRead('person',{id:'p1'}).person.current.length,1);assert.equal(s.core.publicRead('person',{id:'p0'}).person.current.length,0);
+});
+test('one stale member rolls back the whole batch, including prior people and audit entries',async()=>{
+ const s=setup();for(let i=0;i<2;i++)await edit(s,'saveTenure',{personId:'p'+i,tenure:tenure()});const preview=await s.core.admin(admin,{operation:'departureCandidates',teamName:'LOUD'}),members=preview.entries.map(p=>({personId:p.personId,revision:p.revision,tenureIds:p.tenures.map(t=>t.id)}));members[1].revision--;
+ await assert.rejects(s.core.admin(admin,{operation:'bulkDeparture',nonce:nonce(),teamId:'loud',members,departure:{date:'14/10/2026'}}),{status:409});assert.equal(s.core.publicRead('team',{name:'LOUD',scope:'current'}).total,2);assert.equal(s.core.publicRead('person',{id:'p0'}).person.revision,2);assert.equal((await s.core.admin(admin,{operation:'history',personId:'p0'})).entries.length,1);
+});
+test('departures reject cross-team tampering, omitted active affiliations, future/invalid exits and non-admins',async()=>{
+ const s=setup();let r=await edit(s,'saveTenure',{tenure:tenure()});const first=r.person.tenures[0];r=await edit(s,'saveTenure',{tenure:tenure({teamId:undefined,teamName:'Outra equipe',role:'analyst'})});const second=r.person.tenures[1];
+ const preview=await s.core.admin(admin,{operation:'departureCandidates',teamName:'LOUD'});assert.deepEqual(preview.entries[0].otherTeams,['Outra equipe']);
+ const body={operation:'bulkDeparture',nonce:nonce(),teamId:'loud',members:[{personId:'p0',revision:r.person.revision,tenureIds:[second.id]}],departure:{date:'14/10/2026'}};
+ await assert.rejects(s.core.admin(admin,body),{status:409});await assert.rejects(s.core.admin({uid:'user',admin:false},body),{status:403});
+ await assert.rejects(edit(s,'releasePerson',{tenureIds:[first.id],departure:{date:'14/10/2026'}}),{status:409});
+ for(const date of ['31/02/2026','16/10/2026','18/01/2021'])await assert.rejects(edit(s,'releasePerson',{tenureIds:[first.id,second.id],departure:{date}}),{status:400});
+ await assert.rejects(edit(s,'releasePerson',{tenureIds:[first.id,second.id],departure:{date:'14/10/2026'},sourceUrl:'javascript:alert(1)'}),{status:400});
+ assert.equal(s.core.publicRead('person',{id:'p0'}).person.current.length,2);
+});
+test('explicit imported departures and partial current-month ends stay visible to review',async()=>{
+ const s=setup();let r=await edit(s,'saveTenure',{tenure:tenure({status:'unverified',start:{edition:'LBFF 3'}})});const id=r.person.tenures[0].id;
+ let preview=await s.core.admin(admin,{operation:'departureCandidates',teamName:'LOUD',includeUnverified:true});assert.equal(preview.entries.length,1);
+ r=await edit(s,'releasePerson',{tenureIds:[id],departure:{date:'08/2025',certainty:'estimated'}});assert.equal(r.person.tenures[0].end.precision,'month');assert.equal(r.person.tenures[0].start.edition,'LBFF 3');
+ await edit(s,'saveTenure',{personId:'p1',tenure:tenure({end:{date:'2026-10',certainty:'estimated'}})});preview=await s.core.admin(admin,{operation:'departureCandidates',teamName:'LOUD'});assert.equal(preview.entries[0].personId,'p1');
+});
