@@ -1,6 +1,12 @@
 (function(){
  'use strict';
  const LAYOUT_KEY='cff-tasks-card-layout-v1',MAX_COPIES=20;
+ function icon(kind){
+  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.7');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+  if(kind==='grip'){for(const x of [9,15])for(const y of [6,12,18]){const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',x);dot.setAttribute('cy',y);dot.setAttribute('r','1');svg.append(dot);}}
+  else{const path=document.createElementNS(ns,'path');path.setAttribute('d',kind==='up'?'M12 19V5m-5 5 5-5 5 5':kind==='down'?'M12 5v14m-5-5 5 5 5-5':'m7 10 5 5 5-5');svg.append(path);}
+  return svg;
+ }
  function copies(value){
   if(value===undefined||value===null)return [];
   if(!Array.isArray(value)||value.length>MAX_COPIES)throw Error('Use até 20 copies por tarefa.');
@@ -47,7 +53,7 @@
    // Extra details follow the same disclosure as the card body.
    const chips=card.querySelector('.planning-chips');if(chips)body.append(chips);
    const detailsId='task-details-'+api.uid();body.id=detailsId;
-   const toggle=node('button','card-disclosure');toggle.type='button';toggle.setAttribute('aria-controls',detailsId);card.querySelector('.card-top').append(toggle);
+   const toggle=node('button','card-disclosure');toggle.type='button';toggle.setAttribute('aria-controls',detailsId);toggle.append(icon('chevron'));card.querySelector('.card-top').append(toggle);
    const summary=node('div','card-compact-summary');
    const badge=node('span','compact-deadline',t.date?(t.startDate&&t.startDate!==t.date?t.startDate.slice(8)+'/'+t.startDate.slice(5,7)+' até ':'')+t.date.slice(8)+'/'+t.date.slice(5,7)+(t.time?' · '+t.time:''):'Sem data');summary.append(badge);
    if(t.subtasks.length)summary.append(node('span','compact-progress',t.subtasks.filter(s=>s.done).length+'/'+t.subtasks.length+' etapas'));
@@ -55,7 +61,7 @@
    if(t.focusDate===window.CFF_TASKS_PLAN.today())summary.append(node('span','compact-priority','★ Meu dia'));
    const countdown=body.querySelector('[data-countdown]');if(countdown){const c=countdown.cloneNode(true);c.classList.add('compact-countdown');summary.append(c);}
    card.insertBefore(summary,body);quickCopies(card,t,body);
-   const apply=()=>{const fold=collapsed(t);card.classList.toggle('card-collapsed',fold);body.hidden=fold;summary.hidden=!fold;toggle.textContent=fold?'⌄':'⌃';toggle.setAttribute('aria-expanded',String(!fold));toggle.setAttribute('aria-label',(fold?'Expandir detalhes de ':'Recolher detalhes de ')+t.title);toggle.title=toggle.getAttribute('aria-label');};
+   const apply=()=>{const fold=collapsed(t);card.classList.toggle('card-collapsed',fold);body.hidden=fold;summary.hidden=!fold;toggle.setAttribute('aria-expanded',String(!fold));toggle.setAttribute('aria-label',(fold?'Expandir detalhes de ':'Recolher detalhes de ')+t.title);toggle.title=toggle.getAttribute('aria-label');};
    toggle.onclick=()=>setCollapsed(t,!collapsed(t));controllers.set(card,apply);apply();
   }
   const section=node('section','form-section task-copy-section');section.id='task-copy-section';
@@ -76,5 +82,5 @@
   add.onclick=()=>{const draft=api.getDraft();if(!draft)return;draft.copies??=[];if(draft.copies.length>=MAX_COPIES){api.toast('Use até 20 copies por tarefa.');return;}draft.copies.push({id:api.uid(),label:draft.copies.length?'':'Insta',text:''});renderCopies();list.lastElementChild.querySelector('.copy-label').focus();};
   return {edit(draft){draft.copies=copies(draft.copies);renderCopies();},readDraft(){const draft=api.getDraft();if(draft)draft.copies=copies(draft.copies);},decorate,decorateColumn,copyText};
  }
- window.CFF_TASKS_CONTENT={copies,mount};
+ window.CFF_TASKS_CONTENT={copies,mount,icon};
 })();

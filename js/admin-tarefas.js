@@ -244,9 +244,9 @@ function moveCardStep(id,direction){
 }
 function decorateCardOrder(card,t,index,total){
  if(state.settings.view!=='board')return;
- const bar=el('div','card-reorder'),grip=el('span','card-drag-grip','⠿ Arrastar');grip.title='Arraste para escolher a posição na coluna';bar.append(grip);
- for(const [direction,label,icon] of [[-1,'cima','↑'],[1,'baixo','↓']]){const b=el('button','card-move '+(direction<0?'card-move-up':'card-move-down'),icon);b.type='button';b.disabled=direction<0?index===0:index===total-1;b.title='Mover para '+label;b.setAttribute('aria-label','Mover '+t.title+' para '+label);b.onclick=()=>moveCardStep(t.id,direction);bar.append(b);}
- card.querySelector('.card-head').prepend(bar);
+ const bar=el('div','card-reorder'),grip=el('span','card-drag-grip');grip.append(window.CFF_TASKS_CONTENT.icon('grip'));grip.title='Arraste para escolher a posição na coluna';bar.append(grip);
+ for(const [direction,label] of [[-1,'cima'],[1,'baixo']]){const b=el('button','card-move '+(direction<0?'card-move-up':'card-move-down'));b.append(window.CFF_TASKS_CONTENT.icon(direction<0?'up':'down'));b.type='button';b.disabled=direction<0?index===0:index===total-1;b.title='Mover para '+label;b.setAttribute('aria-label','Mover '+t.title+' para '+label);b.onclick=()=>moveCardStep(t.id,direction);bar.append(b);}
+ const head=card.querySelector('.card-head'),tools=el('div','card-utilities'),service=head.querySelector('.card-service'),toggle=head.querySelector('.card-disclosure');if(service)tools.append(service);if(toggle)bar.append(toggle);tools.append(bar);head.prepend(tools);
 }
 function columnDropTarget(col,e){
  const cards=Array.from(col.querySelectorAll('.card')).filter(c=>c.dataset.taskId!==dragId);
