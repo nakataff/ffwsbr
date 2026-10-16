@@ -10,15 +10,16 @@
  const instant=(d,t)=>window.CFF_TASKS_DAILY.instant(d,t);
  const active=t=>!['done','cancelled'].includes(t.status);
  function extra(t,data={}){
-  const startDate=date(t.startDate),publishDate=date(t.publishDate),publishTime=time(t.publishTime),focusDate=date(t.focusDate);
+  const startDate=date(t.startDate),publishDate=date(t.publishDate),publishTime=time(t.publishTime),scheduledDate=date(t.scheduledDate),scheduledTime=time(t.scheduledTime),focusDate=date(t.focusDate);
   if(startDate&&(!t.date||startDate>t.date))throw Error('O início da entrega precisa ser igual ou anterior à data final.');
   if(publishTime&&!publishDate)throw Error('Defina a data de publicação antes do horário.');
+  if(scheduledTime&&!scheduledDate)throw Error('Defina a data do agendamento antes do horário agendado.');
   const r=t.repeat||{},frequency=['weekly','monthly'].includes(r.frequency)?r.frequency:'none',interval=Number(r.interval||1),until=date(r.until);
   if(!Number.isInteger(interval)||interval<1||interval>12)throw Error('Repetição inválida.');if(frequency!=='none'&&!t.date)throw Error('Uma tarefa recorrente precisa de data de entrega.');if(until&&t.date&&until<t.date)throw Error('A repetição não pode terminar antes da primeira entrega.');
   const a=t.approval||{},state=Object.hasOwn(approvals,a.state)?a.state:'none',sentAt=a.sentAt||'';if(sentAt&&!Number.isFinite(Date.parse(sentAt)))throw Error('Data de aprovação inválida.');
   const projectId=(data.projects||[]).some(p=>p.id===t.projectId)?t.projectId:'',companyId=(data.projectCompanies||[]).some(c=>c.id===t.companyId&&c.projectId===projectId)?t.companyId:'';
   let publishedUrl=text(t.publishedUrl||'',3000);if(publishedUrl){const u=new URL(publishedUrl);if(!['https:','http:'].includes(u.protocol)||u.username||u.password)throw Error('Use um link http ou https para a publicação.');publishedUrl=u.href;}
-  return {startDate,publishDate,publishTime,publishedUrl,projectId,companyId,assignee:text(t.assignee||'',80),focusDate,focusOrder:Number.isInteger(t.focusOrder)&&t.focusOrder>=0&&t.focusOrder<3?t.focusOrder:0,notify:t.notify!==false,repeat:{frequency,interval,until,anchorDay:Number(r.anchorDay)||Number((t.date||'').slice(8))||1},seriesId:text(t.seriesId||t.id,150),approval:{state,person:text(a.person||'',80),sentAt,note:text(a.note||'',2000)}};
+  return {startDate,publishDate,publishTime,scheduledDate,scheduledTime,publishedUrl,projectId,companyId,assignee:text(t.assignee||'',80),focusDate,focusOrder:Number.isInteger(t.focusOrder)&&t.focusOrder>=0&&t.focusOrder<3?t.focusOrder:0,notify:t.notify!==false,repeat:{frequency,interval,until,anchorDay:Number(r.anchorDay)||Number((t.date||'').slice(8))||1},seriesId:text(t.seriesId||t.id,150),approval:{state,person:text(a.person||'',80),sentAt,note:text(a.note||'',2000)}};
  }
  function settings(raw={}){return {notifications:window.CFF_TASKS_NOTIFICATIONS.preferences(raw)};}
  function inWindow(t,d=today()){return !!t.date&&(t.startDate?t.startDate<=d&&d<=t.date:t.date===d);}
@@ -32,7 +33,7 @@
   }
   if(r.until&&next>r.until)return null;
   const shift=distance(base,next),id='repeat-'+(t.seriesId||t.id).slice(0,110)+'-'+next,stamp=new Date().toISOString(),copy=JSON.parse(JSON.stringify(t));
-  return {...copy,id,seriesId:t.seriesId||t.id,date:next,startDate:t.startDate?addDays(t.startDate,shift):'',publishDate:t.publishDate?addDays(t.publishDate,shift):'',publishedUrl:'',boardOrder:null,status:'todo',previousStatus:'todo',focusDate:'',focusOrder:0,completedAt:null,cancelledAt:null,createdAt:stamp,updatedAt:stamp,subtasks:t.subtasks.map((s,i)=>({...s,id:id+'-s'+i,done:false})),approval:{...copy.approval,state:copy.approval.state==='none'?'none':'pending',sentAt:'',note:''},history:[{id:id+'-created',at:stamp,action:'Criada pela repetição de '+t.title}]};
+  return {...copy,id,seriesId:t.seriesId||t.id,date:next,startDate:t.startDate?addDays(t.startDate,shift):'',publishDate:t.publishDate?addDays(t.publishDate,shift):'',scheduledDate:'',scheduledTime:'',publishedUrl:'',boardOrder:null,status:'todo',previousStatus:'todo',focusDate:'',focusOrder:0,completedAt:null,cancelledAt:null,createdAt:stamp,updatedAt:stamp,subtasks:t.subtasks.map((s,i)=>({...s,id:id+'-s'+i,done:false})),approval:{...copy.approval,state:copy.approval.state==='none'?'none':'pending',sentAt:'',note:''},history:[{id:id+'-created',at:stamp,action:'Criada pela repetição de '+t.title}]};
  }
  function shiftTask(t,target,source=t.date){const delta=distance(source,target);return {date:t.date?addDays(t.date,delta):target,startDate:t.startDate?addDays(t.startDate,delta):''};}
  function events(state,at=Date.now()){return window.CFF_TASKS_NOTIFICATIONS.events(state,at);}
