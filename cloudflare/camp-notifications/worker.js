@@ -1,3 +1,4 @@
+import adminTasks from '../../functions/admin-tasks-service.js';
 import careerCore from '../../functions/careers.js';
 import {createInteractionRanking} from './interaction-ranking.js';
 import economyMedia from '../../functions/economy-media.js';
@@ -24,11 +25,12 @@ export default {
  async fetch(request,env) {
   const origin=request.headers.get('Origin'),url=new URL(request.url);
   if(origin&&!ORIGINS.has(origin))return json({error:'Origem não permitida.'},403);
-  const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type,If-None-Match','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
+  const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type,If-None-Match,X-File-Name,X-File-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:29,profileEmblems:true,chatCustomization:true,chatLiveRoles:true,careerDirectory:true,giftArchive:true,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:30,adminTasks:true,profileEmblems:true,chatCustomization:true,chatLiveRoles:true,careerDirectory:true,giftArchive:true,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
   else if(request.method==='GET'&&(/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)||url.pathname==='/economy-interactions/health'||(/^\/careers\/(person|team)$/.test(url.pathname)||/^\/careers\/logo\/[a-f0-9-]{36}$/.test(url.pathname)))&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
+  else if(/^\/tasks\/(api|files\/[A-Za-z0-9_-]{1,150})$/.test(url.pathname)&&['GET','POST'].includes(request.method)&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-tasks-v1')).fetch(request);
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
   else response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
@@ -38,7 +40,7 @@ export default {
 };
 export class NotificationHub extends DurableObject {
  constructor(ctx,env) {
-  super(ctx,env);this.ctx=ctx;this.goalSecret=env.CFF_GOAL_SERVICE_ACCOUNT;this.interactionRanking=createInteractionRanking(env.COMMUNITY_DB);this.sql=ctx.storage.sql;this.officialTableCache=new Map();
+  super(ctx,env);this.ctx=ctx;this.env=env;this.goalSecret=env.CFF_GOAL_SERVICE_ACCOUNT;this.interactionRanking=createInteractionRanking(env.COMMUNITY_DB);this.sql=ctx.storage.sql;this.officialTableCache=new Map();
   this.sql.exec(`CREATE TABLE IF NOT EXISTS catalog(id TEXT PRIMARY KEY,data TEXT NOT NULL);
    CREATE TABLE IF NOT EXISTS snapshots(tournament TEXT,day INTEGER,dropno INTEGER,data TEXT,at INTEGER,PRIMARY KEY(tournament,day,dropno));
    CREATE TABLE IF NOT EXISTS preferences(uid TEXT,tournament TEXT,data TEXT,PRIMARY KEY(uid,tournament));
@@ -59,6 +61,7 @@ export class NotificationHub extends DurableObject {
   economyCore.initEconomy(this.sql);
  }
  rows(query,...args){return this.sql.exec(query,...args).toArray();}
+ tasks(){if(!this.tasksService){this.sql.exec("INSERT OR REPLACE INTO meta VALUES('tasks-instance','1')");this.tasksService=adminTasks.create({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),setAlarm:at=>this.ctx.storage.setAlarm(at),deleteAlarm:()=>this.ctx.storage.deleteAlarm(),push:async(uid,message)=>{const response=await this.env.NOTIFICATIONS.get(this.env.NOTIFICATIONS.idFromName('cff-v1')).fetch(new Request('https://tasks-internal/private-task-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid,message})}));if(!response.ok)throw Error('Não foi possível enviar o lembrete.');return response.json();}});}return this.tasksService;}
  careers(){if(!this.careerStore)this.careerStore=careerCore.create({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn)});return this.careerStore;}
  config(id){const row=this.rows('SELECT data FROM catalog WHERE id=?',id)[0];return row?JSON.parse(row.data):null;}
  catalog(){return Object.fromEntries(this.rows('SELECT id,data FROM catalog').map(r=>[r.id,JSON.parse(r.data)]));}
@@ -93,7 +96,7 @@ export class NotificationHub extends DurableObject {
  async push(uid,event){
   const devices=this.rows('SELECT id,data FROM devices WHERE uid=?',uid),vapid=this.vapid();
   const {title,body}=notificationContent(event),prefix=event.status==='test'||event.kind==='start'?'':event.status==='official'?'Oficial · ':'Parcial · ';
-  const payload=JSON.stringify({title,body:prefix+body,icon:logoUrl(event.logo),image:logoUrl(event.logo),tag:event.inboxId,url:event.day&&event.drop&&event.kind!=='start'?'/conta.html?tab=notifications&tournament='+encodeURIComponent(event.tournamentId)+'&day='+event.day+'&drop='+event.drop:streamUrl(event.streamUrl)||'/conta.html?tab=notifications',streamUrl:streamUrl(event.streamUrl)});
+  const payload=event.kind==='task'?JSON.stringify({title:String(event.title).slice(0,120),body:String(event.body).slice(0,300),tag:event.inboxId,url:'/admin-tarefas.html'+(event.taskId?'?task='+encodeURIComponent(event.taskId):''),icon:'/central%20free%20fire.webp'}):JSON.stringify({title,body:prefix+body,icon:logoUrl(event.logo),image:logoUrl(event.logo),tag:event.inboxId,url:event.day&&event.drop&&event.kind!=='start'?'/conta.html?tab=notifications&tournament='+encodeURIComponent(event.tournamentId)+'&day='+event.day+'&drop='+event.drop:streamUrl(event.streamUrl)||'/conta.html?tab=notifications',streamUrl:streamUrl(event.streamUrl)});
   let accepted=0;
   for(const d of devices)try{const subscription=C.subscription(JSON.parse(d.data)),details=webpush.generateRequestDetails(subscription,payload,{vapidDetails:{subject:'https://centralfreefire.com.br',...vapid},TTL:300});const response=await fetch(details.endpoint,{method:'POST',headers:details.headers,body:details.body,redirect:'manual',signal:AbortSignal.timeout(8000)});await response.body?.cancel();if(response.ok)accepted++;else if([404,410].includes(response.status))this.sql.exec('DELETE FROM devices WHERE id=? AND uid=?',d.id,uid);}catch{}
   return {devices:devices.length,accepted};
@@ -102,6 +105,11 @@ export class NotificationHub extends DurableObject {
   if(request.method==='GET'&&new URL(request.url).pathname==='/economy-interactions/health'){try{if(!this.interactionRanking)throw Error('missing');await this.interactionRanking.probe();return json({ok:true,interactionRanking:true});}catch{return json({ok:false,error:'Ranking de interações indisponível.'},503);}}
 
   try{
+   const taskPath=new URL(request.url).pathname;
+   // The public gateway never forwards this private route. Only the task scheduler
+   // can reach it through the Durable Object binding; no bearer token is exposed.
+   if(taskPath==='/private-task-push'&&request.method==='POST'){const bytes=await request.arrayBuffer();if(bytes.byteLength>5000)throw Error('Pedido inválido.');const {uid,message}=JSON.parse(new TextDecoder().decode(bytes));if(!/^[A-Za-z0-9_-]{1,128}$/.test(uid||'')||!message||message.taskId&&!/^[A-Za-z0-9_-]{1,150}$/.test(message.taskId))throw Error('Lembrete inválido.');return json(await this.push(uid,{...message,kind:'task',inboxId:message.tag}));}
+   if(taskPath.startsWith('/tasks/')){const token=String(request.headers.get('Authorization')||'').match(/^Bearer (.+)$/)?.[1],user=await verifyToken(token);if(user.email!=='admin@centralfreefire.com.br')return json({error:'Acesso exclusivo do administrador.'},403);return await this.tasks().handle(request,user);}
    const careerLogoId=request.method==='GET'&&new URL(request.url).pathname.match(/^\/careers\/logo\/([a-f0-9-]{36})$/)?.[1];if(careerLogoId){const logo=this.careers().logo(careerLogoId);if(!logo)return json({error:'Escudo não encontrado.'},404);return new Response(Uint8Array.from(atob(logo.base64),c=>c.charCodeAt(0)),{headers:{'Content-Type':logo.type,'Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'}});}
    const careerRoute=request.method==='GET'&&new URL(request.url).pathname.match(/^\/careers\/(person|team)$/)?.[1];
    if(careerRoute){const url=new URL(request.url),result=this.careers().publicRead(careerRoute,Object.fromEntries(url.searchParams)),entity=result.person,variant=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(url.search)))].slice(0,8).map(v=>v.toString(16).padStart(2,'0')).join(''),stamp=variant+'-'+careerCore.key(entity?.id||result.team?.id||'identities')+'-'+(entity?.revision||result.version)+'-'+(entity?.version||result.version)+'-'+careerCore.key(careerCore.day(Date.now())),etag='"career-'+stamp+'"',headers={'Cache-Control':'public, max-age=60, must-revalidate','ETag':etag,'X-Content-Type-Options':'nosniff'};if(request.headers.get('If-None-Match')===etag)return new Response(null,{status:304,headers});return Response.json(result,{headers});}
@@ -231,6 +239,7 @@ export class NotificationHub extends DurableObject {
  }
  async official(stage,day,drop){const response=await fetch(`${LIVE}/${stage}/drops/${day}/${drop}.json`,{signal:AbortSignal.timeout(5000)});if(!response.ok)throw Error('Não foi possível conferir T1 + P1. Tente novamente.');return response.json();}
  async alarm(){
+  if(this.rows("SELECT data FROM meta WHERE id='tasks-instance'").length){await this.tasks().alarm();return;}
   try{
    const now=Date.now();this.sql.exec('DELETE FROM pending WHERE expires<?',now);
    for(const pending of this.rows('SELECT * FROM pending WHERE check_at<=? ORDER BY check_at LIMIT 3',now)){

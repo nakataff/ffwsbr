@@ -13,6 +13,7 @@
 <script>try{const s=JSON.parse(localStorage.getItem('meu-quadro-v1')||'null');if(s?.theme==='light')document.documentElement.dataset.theme='light';}catch{}</script>
 <link rel="stylesheet" href="css/admin-tarefas.css?v=20261006-useful-links-v2">
 <link rel="stylesheet" href="css/admin-tarefas-projects.css?v=20261008-project-actions-v1">
+<link rel="stylesheet" href="css/admin-tarefas-planning.css?v=20261016-planning-v1">
 </head>
 <body class="cff-auth-pending">
 <div id="cff-tasks-auth" class="cff-tasks-auth"><div class="cff-tasks-auth-card"><strong>Quadro de tarefas</strong><p data-cff-auth-status role="status">Validando sua sessão do painel…</p><a class="quiet" href="admin.html">Voltar ao painel</a></div></div>
@@ -47,7 +48,7 @@
   <div class="project-filters"><label class="sr-only" for="project-search">Pesquisar no projeto</label><input id="project-search" type="search" placeholder="Buscar empresa, rede ou texto…"><label class="sr-only" for="project-status-filter">Filtrar status</label><select id="project-status-filter"><option value="">Todos os status</option><option value="pending">Só pendências</option><option value="todo">A fazer</option><option value="doing">Em andamento</option><option value="info">Falta informação</option><option value="approval">Aguardando aprovação</option><option value="done">Concluído</option><option value="rejected">Recusado</option></select><label class="sr-only" for="project-platform-filter">Filtrar rede social</label><select id="project-platform-filter"><option value="">Todas as redes</option></select></div>
   <div class="projects-layout"><aside class="project-companies"><div class="section-head"><h3>Empresas</h3><button type="button" class="small-btn" id="project-add-company">+ Empresa</button></div><label class="sr-only" for="project-company-select">Escolher empresa</label><select id="project-company-select"></select><nav id="project-company-list" aria-label="Empresas do projeto"></nav></aside><div id="project-company-content"></div></div>
  </section>
- <footer class="footer"><span id="save-status">Salvamento automático neste navegador.</span><div class="footer-buttons"><button class="quiet" id="sync-now">Sincronizar agora</button><button class="quiet" id="export">Exportar backup completo</button><button class="quiet" id="import">Importar backup</button></div></footer>
+ <footer class="footer"><span id="save-status">Salvamento automático neste navegador.</span><div class="footer-buttons"><button class="quiet" id="sync-now">Sincronizar agora</button><button class="quiet" id="export">Backup do quadro ativo</button><button class="quiet" id="import">Importar backup</button></div></footer>
 </main>
 <dialog id="editor">
  <form id="task-form"><div class="dialog-top"><h2 id="editor-title">Nova tarefa</h2><div class="editor-top-actions"><button type="button" class="editor-icon-btn discard" id="discard-dialog" aria-label="Descartar alterações" title="Descartar alterações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2h-1l-1 14H6L5 7H4V5h4l1-2Zm-1.9 4 .85 12h8.1l.85-12H7.1ZM10 9h2v8h-2V9Zm4 0h2v8h-2V9Z"/></svg></button><button type="submit" class="editor-icon-btn save" id="save-task-top" aria-label="Salvar tarefa" title="Salvar tarefa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l3 3v15H4V3Zm2 2v14h12V7.2L15.8 5H15v5H8V5H6Zm4 0v3h3V5h-3Zm-1 8h6v4H9v-4Z"/></svg></button></div></div>
@@ -78,11 +79,13 @@
 <script src="js/admin-tarefas-projects-seed.js?v=20261008-projects-v1"></script>
 <script src="js/admin-tarefas-project-history.js?v=20261008-project-actions-v1"></script>
 <script src="js/admin-tarefas-project-reports.js?v=20261008-project-actions-v1"></script>
-<script src="js/admin-tarefas-projects.js?v=20261008-project-actions-v1"></script>
-<script src="js/admin-tarefas-sync.js?v=20261008-projects-v1"></script>
+<script src="js/admin-tarefas-projects.js?v=20261016-planning-v1"></script>
+<script src="js/admin-tarefas-sync.js?v=20261016-planning-v1"></script>
 <script src="js/admin-tarefas-daily.js?v=20261006-useful-links-v2"></script>
-<script defer src="js/admin-tarefas.js?v=20261008-projects-v2"></script>
-<script type="module" src="js/admin-tarefas-auth.js?v=20261006-useful-links-v2"></script>
+<script src="js/admin-tarefas-plan.js?v=20261016-planning-v1"></script>
+<script src="js/admin-tarefas-workspace.js?v=20261016-planning-v1"></script>
+<script defer src="js/admin-tarefas.js?v=20261016-planning-v1"></script>
+<script type="module" src="js/admin-tarefas-auth.js?v=20261016-planning-v1"></script>
 </body>
 </html>
 

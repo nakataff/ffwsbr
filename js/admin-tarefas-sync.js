@@ -2,12 +2,12 @@
   'use strict';
   const clone = value => JSON.parse(JSON.stringify(value));
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  const lists = ['tasks', 'notes', 'usefulLinks', 'dailyPosts', 'services', 'columns', 'platforms', 'tags', 'projects', 'projectCompanies', 'projectNetworks', 'projectFields'];
+  const lists = ['tasks', 'templates', 'notes', 'usefulLinks', 'dailyPosts', 'services', 'columns', 'platforms', 'tags', 'projects', 'projectCompanies', 'projectNetworks', 'projectFields'];
   // Realtime Database omits empty arrays. Repair older board payloads before validation.
   function decode(payload) {
     if (!payload) return null;
     const state = typeof payload.stateJson === 'string' ? JSON.parse(payload.stateJson) : clone(payload.state || payload);
-    if (!state || ![1, 2].includes(state.version)) throw Error('Quadro da nuvem inválido');
+    if (!state || ![1, 2, 3].includes(state.version)) throw Error('Quadro da nuvem inválido');
     lists.forEach(key => { if (state[key] == null) state[key] = key === 'services' ? clone(window.CFF_TASKS_DEFAULT_SERVICES || []) : []; });
     state.tasks.forEach(task => {
       ['platforms', 'tags', 'links', 'subtasks', 'attachments', 'history'].forEach(key => { if (task[key] == null) task[key] = []; });
@@ -32,7 +32,7 @@
       const before = new Map((base[key] || []).map(item => [item.id, item]));
       const after = new Map((local[key] || []).map(item => [item.id, item]));
       const current = new Map((remote[key] || []).map(item => [item.id, clone(item)]));
-      before.forEach((_, id) => { if (!after.has(id)) current.delete(id); });
+      before.forEach((item, id) => { if (!after.has(id) && !(key==='tasks' && current.has(id) && !same(item,current.get(id)))) current.delete(id); });
       after.forEach((item, id) => {
         // Two devices may initialise the same supplied project at once.
         // Compare against its original defaults so untouched seed data cannot erase edits.

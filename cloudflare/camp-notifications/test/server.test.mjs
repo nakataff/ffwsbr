@@ -165,3 +165,21 @@ test('official union rejects incomplete or mismatched results and applies second
 });
 
 test('finished final uses Champion Rush eligibility before the winning drop, not simply the highest points',async()=>{const {default:R}=await import('../../../functions/camp-results-core.js');const roster={fx:{name:'FLUXO W7M'},los:{name:'LOS'},other:{name:'Outro'}};const games=Array.from({length:7},(_,i)=>({day:i<6?1:2,drop:i<6?i+1:1,status:'official',complete:true,rows:[{teamId:'fx',team:'FLUXO W7M',position:i===6?1:3,points:30,kills:3},{teamId:'los',team:'LOS',position:2,points:40,kills:4},{teamId:'other',team:'Outro',position:i===6?3:1,points:0,kills:0}]}));const state=R.tournamentState(games,roster,'final',{championPoint:160});assert.equal(state.finished,true);assert.equal(state.champion.teamId,'fx');assert.deepEqual(state.closingMatch,{day:2,drop:1});assert.equal(R.tournamentState(games.slice(0,5),roster,'final',{}).finished,false);assert.equal(R.tournamentState(games.map((g,i)=>i===2?{...g,status:'partial'}:g),roster,'final',{}).finished,false);assert.equal(R.tournamentState(games.slice(1),roster,'final',{}).finished,false);});
+
+test('private task routes authenticate, isolate storage and reuse admin devices without exposing the internal sender',async()=>{
+ const mainContext=context(),taskContext=context(),instances=new Map(),binding={idFromName:name=>name,get:name=>({fetch:request=>instances.get(name).fetch(request)})};
+ const main=new NotificationHub(mainContext,{NOTIFICATIONS:binding}),tasks=new NotificationHub(taskContext,{NOTIFICATIONS:binding});instances.set('cff-v1',main);instances.set('cff-tasks-v1',tasks);
+ const call=(path,jwt=admin,body={operation:'notifications'},method='POST')=>worker.fetch(new Request('https://notify.test'+path,{method,headers:{Origin:'https://centralfreefire.com.br',Authorization:'Bearer '+jwt},...(method==='POST'?{body:JSON.stringify(body)}:{})}),{NOTIFICATIONS:binding});
+ assert.equal((await call('/tasks/api','')).status,401);
+ assert.equal((await call('/tasks/api',member)).status,403);
+ assert.equal(tasks.rows("SELECT * FROM meta WHERE id='tasks-instance'").length,0);
+ assert.equal((await call('/tasks/files/missing',member,{},'GET')).status,403);
+ assert.equal((await call('/tasks/api',admin)).status,200);
+ assert.equal(main.rows("SELECT * FROM meta WHERE id='tasks-instance'").length,0);
+ assert.equal(tasks.rows("SELECT * FROM meta WHERE id='tasks-instance'").length,1);
+ assert.equal((await call('/private-task-push',member,{uid:'admin',message:{title:'Spoof',body:'Wrong'}})).status,405);
+ await main.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+admin},body:JSON.stringify({action:'device',subscription:subscription('admin-task-device')})}));
+ const before=payloads.length,result=await call('/tasks/api',admin,{operation:'testNotification'});assert.equal(result.status,200);assert.equal((await result.json()).accepted,1);assert.equal(payloads.length,before+1);assert.equal(payloads.at(-1).title,'Lembretes de tarefas ativados');assert.equal(payloads.at(-1).url,'/admin-tarefas.html');
+ const at=Date.now()+60000;await call('/tasks/api',admin,{operation:'schedule',revision:Date.now(),enabled:true,events:[{id:'task-admin:due:'+at,taskId:'task-admin',title:'Arte privada',kind:'due',at}]});
+ tasks.sql.exec('UPDATE task_queue SET due=0');await tasks.alarm();assert.equal(payloads.at(-1).body,'Arte privada');assert.equal(payloads.at(-1).url,'/admin-tarefas.html?task=task-admin');assert.equal(main.rows('SELECT * FROM inbox WHERE uid=?','member').length,0);assert.equal(tasks.rows('SELECT * FROM task_queue').length,0);assert.equal((await call('/tasks/api',admin)).status,200);
+});

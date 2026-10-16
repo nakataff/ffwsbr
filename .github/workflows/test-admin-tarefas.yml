@@ -1,0 +1,38 @@
+name: Test admin task planning
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'admin-tarefas.html'
+      - 'js/admin-tarefas*.js'
+      - 'css/admin-tarefas*.css'
+      - 'test/admin-tarefas-planning.test.cjs'
+      - 'functions/admin-tasks-service.js'
+      - 'functions/test/admin-tasks-service.test.cjs'
+      - '.github/workflows/test-admin-tarefas.yml'
+  pull_request:
+    paths:
+      - 'admin-tarefas.html'
+      - 'js/admin-tarefas*.js'
+      - 'test/admin-tarefas-planning.test.cjs'
+      - 'functions/admin-tasks-service.js'
+jobs:
+  planning:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runtime
+        run: |
+          mkdir -p /tmp/cff-task-tests
+          cp test/game-gifts-browser-package.json /tmp/cff-task-tests/package.json
+          npm install --prefix /tmp/cff-task-tests --no-audit --no-fund
+      - name: Test board, dates, recurrence, archive and private reminders
+        env:
+          NODE_PATH: /tmp/cff-task-tests/node_modules
+        run: node --test test/admin-tarefas-planning.test.cjs functions/test/admin-tasks-service.test.cjs
+      - name: Check syntax
+        run: |
+          for file in js/admin-tarefas*.js functions/admin-tasks-service.js; do node --check "$file" || exit 1; done
