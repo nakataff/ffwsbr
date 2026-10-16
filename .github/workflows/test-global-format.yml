@@ -1,0 +1,35 @@
+name: Test Global Finals format
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ffws-global-2026/**'
+      - 'js/season-routes.js'
+      - 'js/shared-navigation.js'
+      - 'js/site-shell-fast.min.js'
+      - 'index.html'
+      - 'test/global-format-2026.test.cjs'
+      - '.github/workflows/test-global-format.yml'
+  pull_request:
+    paths:
+      - 'ffws-global-2026/**'
+      - 'test/global-format-2026.test.cjs'
+jobs:
+  global-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install DOM test runtime
+        run: |
+          mkdir -p /tmp/cff-global-tests
+          cp test/game-gifts-browser-package.json /tmp/cff-global-tests/package.json
+          npm install --prefix /tmp/cff-global-tests --no-audit --no-fund
+      - name: Validate format, calendar and rendering
+        env:
+          NODE_PATH: /tmp/cff-global-tests/node_modules
+        run: node --test test/global-format-2026.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs
+      - name: Check syntax
+        run: node --check ffws-global-2026/global.js && node --check ffws-global-2026/config.js && node --check js/season-routes.js && node --check js/shared-navigation.js && node --check js/site-shell-fast.min.js
