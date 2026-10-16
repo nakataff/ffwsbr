@@ -54,3 +54,31 @@ qualquer queda e acessar seu histórico privado. Preferências de alertas ficam
 recolhidas. Os resultados e o histórico mantêm a autenticação existente.
 O convite de conta é exclusivo para visitantes deslogados, tem fechamento
 por X, Agora não e Escape, e respeita uma hora de dispensa nesse navegador.
+
+### Chat customization (2026-10-16)
+
+`admin-chat.html` provides Appearance, People, Reports and History tabs. The real
+Firebase administrator can configure dark colors/slow mode, find a person using
+the existing exact nickname/Instagram/slug index, assign or remove a moderator,
+and enable or override a person's name color. Moderator removal restores their
+previous role. Cosmetic administrator labels still do not grant moderation access.
+The authenticated administrator's chat identity always uses `administrator`, even
+if the separate cosmetic role record is missing or says `member`.
+
+The existing API adds `chatStatus`, `chatPreferences`, `chatReport`,
+`chatModerationData` and `chatAdmin`. `chatSend` accepts a reply reference and resolves
+the original message and up to five @Central usernames server-side. Profiles choose
+at most two owned, active badges; ownership is checked on preferences and every send.
+Messages and public per-person chat identities contain only public appearance data.
+Settings/pins are public; preferences, styles, reports, audit and rate-limit records
+are server-only. The Firebase rules update must ship with this release.
+
+The public listener keeps only the last 100 messages. Per-person identities and
+custom image metadata subscribe only while relevant to the current conversation;
+builtin avatars reuse the static catalog. Closing the chat tears down conversation
+listeners and keeps only the existing small latest-message notification listener.
+Reports and audit are loaded in batches of 50 only when moderation opens that tab.
+Slow mode is validated server-side (5–120 seconds; moderators keep five seconds).
+Reports are deduplicated per reporter/message and rate limited. Deleting a message
+also removes its pin and redacts recent reply previews; audit preserves moderation
+reasons without publishing them in the conversation.

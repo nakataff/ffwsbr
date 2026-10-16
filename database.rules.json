@@ -959,10 +959,55 @@
         "$uid": {
           ".read": "auth != null && auth.uid == $uid",
           ".write": false
-        }
+        },
+        ".indexOn": [
+          "at"
+        ]
       },
       "latest": {
         ".read": true,
+        ".write": false
+      },
+      "settings": {
+        ".read": true,
+        ".write": false
+      },
+      "pinned": {
+        ".read": true,
+        ".write": false
+      },
+      "identities": {
+        ".read": false,
+        ".write": false,
+        "$uid": {
+          ".read": true
+        }
+      },
+      "preferences": {
+        ".read": false,
+        ".write": false
+      },
+      "styles": {
+        ".read": false,
+        ".write": false
+      },
+      "moderators": {
+        ".read": false,
+        ".write": false
+      },
+      "reports": {
+        ".read": false,
+        ".write": false,
+        ".indexOn": [
+          "status"
+        ]
+      },
+      "audit": {
+        ".read": false,
+        ".write": false
+      },
+      "reportLimits": {
+        ".read": false,
         ".write": false
       }
     },

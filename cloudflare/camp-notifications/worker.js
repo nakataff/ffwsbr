@@ -26,7 +26,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type,If-None-Match','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:26,careerDirectory:true,giftArchive:true,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:27,chatCustomization:true,careerDirectory:true,giftArchive:true,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
   else if(request.method==='GET'&&(/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)||url.pathname==='/economy-interactions/health'||(/^\/careers\/(person|team)$/.test(url.pathname)||/^\/careers\/logo\/[a-f0-9-]{36}$/.test(url.pathname)))&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
   else if(!env.NOTIFICATIONS)response=json({error:'Serviço de avisos ainda em configuração.'},503);
@@ -124,8 +124,13 @@ export class NotificationHub extends DurableObject {
    if(action==='sendCodeGift')return json(await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b));
    if(action==='archiveGift')return json(await codeGifts.archiveGift(goalDatabase(this.goalSecret),user,b));
    if(action==='openCodeGift')return json(await codeGifts.openCodeGift(goalDatabase(this.goalSecret),user,b.giftId));
-   if(action==='chatSend')return json(await globalChat.sendMessage(goalDatabase(this.goalSecret),user,b.text));
+   if(action==='chatSend')return json(await globalChat.sendMessage(goalDatabase(this.goalSecret),user,b));
    if(action==='chatModerate')return json(await globalChat.moderation(goalDatabase(this.goalSecret),user,b));
+   if(action==='chatStatus')return json(await globalChat.chatStatus(goalDatabase(this.goalSecret),user));
+   if(action==='chatPreferences')return json(await globalChat.preferences(goalDatabase(this.goalSecret),user,b));
+   if(action==='chatReport')return json(await globalChat.report(goalDatabase(this.goalSecret),user,b));
+   if(action==='chatModerationData')return json(await globalChat.moderationData(goalDatabase(this.goalSecret),user,b));
+   if(action==='chatAdmin')return json(await globalChat.adminChat(goalDatabase(this.goalSecret),user,b));
    if(action==='syncProfileIdentity')return json(await profileIdentity.syncVerifiedProfile(goalDatabase(this.goalSecret),user,async session=>{
     const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});
     if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();

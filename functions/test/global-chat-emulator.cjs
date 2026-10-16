@@ -16,6 +16,11 @@ async function main(){
   await assertSucceeds(admin.ref('globalChat/restrictions').once('value'));
   await assertFails(cosmetic.ref('globalChat/restrictions').once('value'));
   for(const db of [alice,mod,admin]){await assertFails(db.ref('globalChat/messages/fake').set({text:'fake'}));await assertFails(db.ref('globalChat/messages/1791910000000-0123456789abcdef').remove());await assertFails(db.ref('globalChat/restrictions/alice').remove());await assertFails(db.ref('globalChat/limits/alice').once('value'));await assertFails(db.ref('globalChat/limits/alice').set({lastAt:0}));}
+  await env.withSecurityRulesDisabled(ctx=>ctx.database().ref('globalChat').update({settings:{accent:'#aaddff'},pinned:{text:'Aviso'},identities:{alice:{roleId:'member'}},reports:{report:{reason:'Privado'}}}));
+  for(const path of ['globalChat/settings','globalChat/pinned','globalChat/identities/alice'])await assertSucceeds(anonymous.ref(path).once('value'));
+  await assertFails(anonymous.ref('globalChat/identities').once('value'));
+  for(const client of [anonymous,alice,mod,admin])for(const key of ['reports','audit','preferences','styles','moderators','reportLimits'])await assertFails(client.ref('globalChat/'+key).once('value'));
+  for(const client of [alice,mod,admin])for(const key of ['settings','pinned','identities/alice','preferences/alice','styles/alice'])await assertFails(client.ref('globalChat/'+key).set({roleId:'administrator'}));
   await assertFails(alice.ref('communityAccountRoles/alice/roleId').set('moderator'));
   console.log('Global chat: bounded public history, private restrictions, and server-only writes passed.');
  }finally{await env.cleanup();}
