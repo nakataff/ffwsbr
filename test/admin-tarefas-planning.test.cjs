@@ -63,6 +63,57 @@ test('collapse controls work per task and per column, persist locally and never 
   b.read('renderBoard()');assert(![...w.document.querySelectorAll('.card')].find(c=>c.dataset.taskId===id).querySelector('.card-body').hidden);assert.equal(JSON.stringify(b.state()),before);assert.equal(b.read('syncDirty'),false);const layout=JSON.parse(w.localStorage.getItem('cff-tasks-card-layout-v1'));b2=await board(structuredClone(b.state()),{layout});assert(![...b2.w.document.querySelectorAll('.card')].find(c=>c.dataset.taskId===id).querySelector('.card-body').hidden);assert(b2.w.document.querySelector('.column[data-status="doing"] .card-body').hidden);
  }finally{b2?.w.close();w.close();}
 });
+test('full column collapse hides the whole content, keeps card preferences and survives reload',async()=>{
+ const seed={version:1,tasks:[
+  {id:'one',title:'Primeira',note:'Detalhes A',date:'2026-10-23',time:'',status:'todo'},
+  {id:'two',title:'Segunda',note:'Detalhes B',date:'2026-10-23',time:'',status:'todo'},
+  {id:'doing',title:'Em andamento',note:'Outros',date:'2026-10-23',time:'',status:'doing'}
+ ]};
+ const b=await board(seed),{w}=b;let restored;
+ const column=(win,status)=>win.document.querySelector('.column[data-status="'+status+'"]');
+ try{
+  await b.read('taskWorkspaceApi().sync()');
+  const original=JSON.stringify(b.state()),todo=()=>column(w,'todo'),doing=()=>column(w,'doing');
+  // Keep a per-card exception while collapsing only the enclosing column.
+  todo().querySelector('.column-collapse').click();
+  todo().querySelector('.card-disclosure').click();
+  const expandedCardId=todo().querySelectorAll('.card')[1].dataset.taskId;
+  const initialCardState=[...todo().querySelectorAll('.card-body')].map(body=>body.hidden);
+  assert.equal(todo().querySelector('.column-full-toggle').getAttribute('aria-expanded'),'true');
+  todo().querySelector('.column-full-toggle').click();
+  assert(todo().classList.contains('column-fully-collapsed'));
+  assert(todo().querySelector('.cards').hidden);
+  assert(todo().querySelector('.add-column').hidden);
+  assert.equal(todo().querySelector('.column-full-toggle').getAttribute('aria-expanded'),'false');
+  assert.match(todo().querySelector('.column-full-toggle').getAttribute('aria-label'),/Expandir coluna/);
+  assert.equal(todo().querySelector('.count').textContent,'2');
+  assert(!doing().classList.contains('column-fully-collapsed'));
+  assert(!doing().querySelector('.cards').hidden);
+  assert.match(w.document.getElementById('board').style.getPropertyValue('--task-column-tracks'),/180px/);
+  const foldedLayout=JSON.parse(w.localStorage.getItem('cff-tasks-card-layout-v1'));
+  assert.equal(foldedLayout.foldedColumns.todo,true);
+  assert.equal(JSON.stringify(b.state()),original);
+  assert.equal(b.read('syncDirty'),false);
+  restored=await board(structuredClone(b.state()),{layout:foldedLayout});
+  const todoRestored=column(restored.w,'todo');
+  assert(todoRestored.classList.contains('column-fully-collapsed'));
+  assert(todoRestored.querySelector('.cards').hidden);
+  todoRestored.querySelector('.column-full-toggle').click();
+  const open=column(restored.w,'todo');
+  assert(!open.classList.contains('column-fully-collapsed'));
+  assert(!open.querySelector('.cards').hidden);
+  assert(!open.querySelector('.add-column').hidden);
+  assert.deepEqual([...open.querySelectorAll('.card-body')].map(body=>body.hidden),initialCardState);
+  assert.equal(restored.w.localStorage.getItem('cff-tasks-card-layout-v1').includes('"todo":false'),true);
+  assert.equal([...open.querySelectorAll('.card')].filter(card=>card.dataset.taskId===expandedCardId).length,1);
+  // Empty columns must be foldable too.
+  const empty=column(restored.w,'cancelled');
+  empty.querySelector('.column-full-toggle').click();
+  assert(column(restored.w,'cancelled').classList.contains('column-fully-collapsed'));
+  assert.equal(restored.errors.length,0,restored.errors.map(e=>e.message).join('\n'));
+  assert.equal(b.errors.length,0,b.errors.map(e=>e.message).join('\n'));
+ }finally{restored?.w.close();w.close();}
+});
 test('copy synchronization preserves edits to different captions and concurrent edits during removal',()=>{
  const {S}=model(),a={id:'a',label:'Insta',text:'Original A'},c={id:'b',label:'Stories',text:'Original B'},base={version:5,tasks:[task({copies:[a,c]})],settings:{}},local=structuredClone(base),remote=structuredClone(base);local.tasks[0].copies[0].text='Texto no PC';remote.tasks[0].copies[1].text='Texto no celular';let merged=S.merge(base,local,remote);assert.equal(merged.tasks[0].copies[0].text,'Texto no PC');assert.equal(merged.tasks[0].copies[1].text,'Texto no celular');local.tasks[0].copies=[c];remote.tasks[0].copies[0].text='Edição remota importante';merged=S.merge(base,local,remote);assert(merged.tasks[0].copies.some(c=>c.text==='Edição remota importante'));const unchanged=structuredClone(base);merged=S.merge(base,local,unchanged);assert.equal(merged.tasks[0].copies.length,1);
 });
