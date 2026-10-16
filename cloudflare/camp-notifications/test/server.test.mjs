@@ -182,4 +182,9 @@ test('private task routes authenticate, isolate storage and reuse admin devices 
  const before=payloads.length,result=await call('/tasks/api',admin,{operation:'testNotification'});assert.equal(result.status,200);assert.equal((await result.json()).accepted,1);assert.equal(payloads.length,before+1);assert.equal(payloads.at(-1).title,'Lembretes de tarefas ativados');assert.equal(payloads.at(-1).url,'/admin-tarefas.html');
  const at=Date.now()+60000;await call('/tasks/api',admin,{operation:'schedule',revision:Date.now(),enabled:true,events:[{id:'task-admin:due:'+at,taskId:'task-admin',title:'Arte privada',kind:'due',at}]});
  tasks.sql.exec('UPDATE task_queue SET due=0');await tasks.alarm();assert.equal(payloads.at(-1).body,'Arte privada');assert.equal(payloads.at(-1).url,'/admin-tarefas.html?task=task-admin');assert.equal(main.rows('SELECT * FROM inbox WHERE uid=?','member').length,0);assert.equal(tasks.rows('SELECT * FROM task_queue').length,0);assert.equal((await call('/tasks/api',admin)).status,200);
+ const {default:N}=await import('../../../js/admin-tarefas-notifications.js');const today=N.dayAt(Date.now()),yesterday=N.addDays(today,-1);
+ await call('/tasks/api',admin,{operation:'schedule',revision:Date.now()+1,enabled:true,events:[],digest:{enabled:true,time:'23:59',tasks:[{id:'daily-item',title:'Conferir a Central',date:yesterday}]}});
+ // Same-day daily IDs survive the mocked early alarm; no Firebase board fetch occurs.
+ tasks.sql.exec('UPDATE task_queue SET due=0');await tasks.alarm();assert.equal(payloads.at(-1).url,'/admin-tarefas.html?view=day');assert(payloads.at(-1).body.includes('Conferir a Central'));
+ const history=await (await call('/tasks/api',admin)).json();assert(history.items.some(i=>i.view==='day'));assert.equal(main.rows('SELECT * FROM inbox WHERE uid=?','member').length,0);
 });

@@ -20,7 +20,7 @@
   let publishedUrl=text(t.publishedUrl||'',3000);if(publishedUrl){const u=new URL(publishedUrl);if(!['https:','http:'].includes(u.protocol)||u.username||u.password)throw Error('Use um link http ou https para a publicação.');publishedUrl=u.href;}
   return {startDate,publishDate,publishTime,publishedUrl,projectId,companyId,assignee:text(t.assignee||'',80),focusDate,focusOrder:Number.isInteger(t.focusOrder)&&t.focusOrder>=0&&t.focusOrder<3?t.focusOrder:0,notify:t.notify!==false,repeat:{frequency,interval,until,anchorDay:Number(r.anchorDay)||Number((t.date||'').slice(8))||1},seriesId:text(t.seriesId||t.id,150),approval:{state,person:text(a.person||'',80),sentAt,note:text(a.note||'',2000)}};
  }
- function settings(raw={}){const n=raw.notifications||{};return {notifications:{enabled:n.enabled===true,leadMinutes:[15,30,60,180,1440].includes(Number(n.leadMinutes))?Number(n.leadMinutes):60,start:n.start!==false,due:n.due!==false,publication:n.publication!==false,defaultTime:time(n.defaultTime||'09:00')}};}
+ function settings(raw={}){return {notifications:window.CFF_TASKS_NOTIFICATIONS.preferences(raw)};}
  function inWindow(t,d=today()){return !!t.date&&(t.startDate?t.startDate<=d&&d<=t.date:t.date===d);}
  function nextRepeat(t,day=today()){
   if(t.status!=='done'||!t.date||!['weekly','monthly'].includes(t.repeat?.frequency))return null;
@@ -35,12 +35,7 @@
   return {...copy,id,seriesId:t.seriesId||t.id,date:next,startDate:t.startDate?addDays(t.startDate,shift):'',publishDate:t.publishDate?addDays(t.publishDate,shift):'',publishedUrl:'',status:'todo',previousStatus:'todo',focusDate:'',focusOrder:0,completedAt:null,cancelledAt:null,createdAt:stamp,updatedAt:stamp,subtasks:t.subtasks.map((s,i)=>({...s,id:id+'-s'+i,done:false})),approval:{...copy.approval,state:copy.approval.state==='none'?'none':'pending',sentAt:'',note:''},history:[{id:id+'-created',at:stamp,action:'Criada pela repetição de '+t.title}]};
  }
  function shiftTask(t,target,source=t.date){const delta=distance(source,target);return {date:t.date?addDays(t.date,delta):target,startDate:t.startDate?addDays(t.startDate,delta):''};}
- function events(state,at=Date.now()){
-  const p=settings(state.settings).notifications;if(!p.enabled)return [];
-  const events=[];const add=(t,kind,stamp)=>{if(stamp>=at-60000&&stamp<=at+370*86400000)events.push({id:t.id+':'+kind+':'+stamp,taskId:t.id,title:t.title,kind,at:stamp});};
-  for(const t of state.tasks){if(!active(t)||t.notify===false)continue;if(t.startDate&&p.start)add(t,'start',instant(t.startDate,p.defaultTime));if(t.date){const due=instant(t.date,t.time||p.defaultTime);add(t,'reminder',due-p.leadMinutes*60000);if(p.due)add(t,'due',due);}if(t.publishDate&&p.publication)add(t,'publication',instant(t.publishDate,t.publishTime||p.defaultTime));}
-  return events.sort((a,b)=>a.at-b.at);
- }
+ function events(state,at=Date.now()){return window.CFF_TASKS_NOTIFICATIONS.events(state,at);}
  const templates=[
   {id:'cff-news',name:'Notícia da Central',title:'Nova notícia',note:'Informação principal:\nFonte e confirmação:\nTexto para a arte:\nLegenda:',service:'social',steps:['Confirmar informação e fonte','Separar fotos e logos','Criar arte','Revisar texto e dados','Publicar e salvar o link']},
   {id:'mmr-post',name:'Post do MMR',title:'Post do MMR',note:'Objetivo da publicação:\nMensagem principal:\nChamada para ação:\nReferências:',service:'social',steps:['Preparar briefing','Produzir arte ou vídeo','Escrever legenda','Enviar para aprovação','Agendar publicação']},

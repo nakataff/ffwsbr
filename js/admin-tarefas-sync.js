@@ -7,7 +7,7 @@
   function decode(payload) {
     if (!payload) return null;
     const state = typeof payload.stateJson === 'string' ? JSON.parse(payload.stateJson) : clone(payload.state || payload);
-    if (!state || ![1, 2, 3].includes(state.version)) throw Error('Quadro da nuvem inválido');
+    if (!state || ![1, 2, 3, 4].includes(state.version)) throw Error('Quadro da nuvem inválido');
     lists.forEach(key => { if (state[key] == null) state[key] = key === 'services' ? clone(window.CFF_TASKS_DEFAULT_SERVICES || []) : []; });
     state.tasks.forEach(task => {
       ['platforms', 'tags', 'links', 'subtasks', 'attachments', 'history'].forEach(key => { if (task[key] == null) task[key] = []; });

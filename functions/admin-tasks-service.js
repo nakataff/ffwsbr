@@ -1,4 +1,5 @@
 'use strict';
+const N=require('../js/admin-tarefas-notifications.js');
 const MAX_FILE=25*1024*1024,MAX_TOTAL=150*1024*1024,CHUNK=512*1024;
 const fail=(status,message)=>Object.assign(Error(message),{status});
 const validId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,150}$/.test(id);
@@ -14,11 +15,17 @@ function create({sql,transaction,setAlarm,deleteAlarm,push,now=Date.now}){
  CREATE INDEX IF NOT EXISTS task_archive_month ON task_archives(month,id);
  CREATE TABLE IF NOT EXISTS task_queue(id TEXT PRIMARY KEY,task_id TEXT,title TEXT,kind TEXT,due INTEGER,attempts INTEGER DEFAULT 0);
  CREATE INDEX IF NOT EXISTS task_queue_due ON task_queue(due);
+ CREATE TABLE IF NOT EXISTS task_event_details(id TEXT PRIMARY KEY,data TEXT);
  CREATE TABLE IF NOT EXISTS task_sent(id TEXT PRIMARY KEY,data TEXT,at INTEGER);
  CREATE TABLE IF NOT EXISTS task_config(id TEXT PRIMARY KEY,data TEXT);
  CREATE TABLE IF NOT EXISTS task_limits(uid TEXT PRIMARY KEY,at INTEGER,count INTEGER);`);
  const config=()=>JSON.parse(rows("SELECT data FROM task_config WHERE id='schedule'")[0]?.data||'{}');
- async function schedule(){const next=rows('SELECT due FROM task_queue ORDER BY due LIMIT 1')[0];if(next)await setAlarm(Math.max(now()+1000,next.due));else await deleteAlarm();}
+ function ensureSummary(){
+  const owner=config(),d=owner.digest;if(!owner.enabled||!d?.enabled||rows("SELECT id FROM task_queue WHERE kind='summary' LIMIT 1").length)return;
+  let day=N.dayAt(now()),due=N.instant(day,d.time);if(due<now()){day=N.addDays(day,1);due=N.instant(day,d.time);}
+  for(let i=0;i<3;i++){const id='daily-summary:summary:'+day;if(!rows('SELECT id FROM task_sent WHERE id=?',id).length){sql.exec('INSERT OR IGNORE INTO task_queue VALUES(?,?,?,?,?,0)',id,'daily-summary','Resumo diário','summary',due);return;}day=N.addDays(day,1);due=N.instant(day,d.time);}
+ }
+ async function schedule(){ensureSummary();const next=rows('SELECT due FROM task_queue ORDER BY due LIMIT 1')[0];if(next)await setAlarm(Math.max(now()+1000,next.due));else await deleteAlarm();}
  function requireAdmin(user){if(user?.email!=='admin@centralfreefire.com.br'||!validId(user.uid))throw fail(403,'Acesso exclusivo do administrador.');}
  async function file(request,id){
   if(!validId(id))throw fail(400,'Anexo inválido.');
@@ -68,22 +75,31 @@ function create({sql,transaction,setAlarm,deleteAlarm,push,now=Date.now}){
   if(op==='schedule'){
    if(!Number.isSafeInteger(b.revision)||b.revision<0||!Array.isArray(b.events)||b.events.length>2000||typeof b.enabled!=='boolean')throw fail(400,'Configuração de lembretes inválida.');
    if(b.revision<(config().revision||0))return json({ok:true,stale:true});
-   const events=b.enabled?b.events:[];for(const e of events){if(!validId(e.taskId)||typeof e.id!=='string'||!e.id.startsWith(e.taskId+':')||e.id.length>240||!['start','reminder','due','publication'].includes(e.kind)||!Number.isSafeInteger(e.at)||e.at<at-86400000||e.at>at+370*86400000)throw fail(400,'Lembrete inválido.');clean(e.title,200);}
-   transaction(()=>{const previous=new Map(rows('SELECT id,attempts FROM task_queue').map(r=>[r.id,r.attempts]));sql.exec('DELETE FROM task_queue');for(const e of events){if(rows('SELECT id FROM task_sent WHERE id=?',e.id)[0])continue;sql.exec('INSERT OR REPLACE INTO task_queue VALUES(?,?,?,?,?,?)',e.id,e.taskId,e.title,e.kind,e.at,previous.get(e.id)||0);}sql.exec("INSERT OR REPLACE INTO task_config VALUES('schedule',?)",JSON.stringify({revision:b.revision,uid:user.uid,enabled:b.enabled}));});await schedule();return json({ok:true,pending:rows('SELECT COUNT(*) AS n FROM task_queue')[0].n});
+   const events=b.enabled?b.events:[];for(const e of events){if(!validId(e.taskId)||typeof e.id!=='string'||!e.id.startsWith(e.taskId+':')||e.id.length>240||!['start','reminder','due','publication','overdue','approval'].includes(e.kind)||!Number.isSafeInteger(e.at)||e.at<at-86400000||e.at>at+370*86400000)throw fail(400,'Lembrete inválido.');clean(e.title,200);if(e.body!==undefined)clean(e.body,500);}
+   let summaryConfig;try{summaryConfig=N.validateDigest(b.digest);}catch(error){throw fail(400,error.message);}if(!b.enabled)summaryConfig={...summaryConfig,enabled:false,tasks:[]};
+   transaction(()=>{const previous=new Map(rows('SELECT id,attempts FROM task_queue').map(r=>[r.id,r.attempts]));sql.exec('DELETE FROM task_queue');sql.exec('DELETE FROM task_event_details');for(const e of events){if(rows('SELECT id FROM task_sent WHERE id=?',e.id)[0])continue;sql.exec('INSERT OR REPLACE INTO task_queue VALUES(?,?,?,?,?,?)',e.id,e.taskId,e.title,e.kind,e.at,previous.get(e.id)||0);if(e.body)sql.exec('INSERT OR REPLACE INTO task_event_details VALUES(?,?)',e.id,JSON.stringify({body:e.body}));}sql.exec("INSERT OR REPLACE INTO task_config VALUES('schedule',?)",JSON.stringify({revision:b.revision,uid:user.uid,enabled:b.enabled,digest:summaryConfig}));});await schedule();return json({ok:true,pending:rows('SELECT COUNT(*) AS n FROM task_queue')[0].n});
   }
-  if(op==='notifications'){return json({ok:true,items:rows('SELECT id,data,at FROM task_sent ORDER BY at DESC LIMIT 50').map(r=>({id:r.id,...JSON.parse(r.data),at:r.at})),pending:rows('SELECT COUNT(*) AS n FROM task_queue')[0].n});}
+  if(op==='notifications'){return json({ok:true,items:rows('SELECT id,data,at FROM task_sent ORDER BY at DESC LIMIT 50').map(r=>({id:r.id,...JSON.parse(r.data),at:r.at})).filter(r=>!r.skipped),pending:rows('SELECT COUNT(*) AS n FROM task_queue')[0].n});}
   if(op==='testNotification'){const old=Number(rows("SELECT data FROM task_config WHERE id='test'")[0]?.data||0);if(at-old<60000)throw fail(429,'Aguarde um minuto entre testes.');sql.exec("INSERT OR REPLACE INTO task_config VALUES('test',?)",String(at));return json({ok:true,...await push(user.uid,{title:'Lembretes de tarefas ativados',body:'Os avisos deste quadro chegarão neste aparelho.',taskId:'',tag:'cff-tasks-test'})});}
   throw fail(400,'Operação inválida.');
  }
+ function removeEvent(id){sql.exec('DELETE FROM task_queue WHERE id=?',id);sql.exec('DELETE FROM task_event_details WHERE id=?',id);}
  async function alarm(){const at=now(),owner=config();for(const e of rows('SELECT * FROM task_queue WHERE due<=? ORDER BY due LIMIT 5',at)){
-   if(!owner.enabled){sql.exec('DELETE FROM task_queue WHERE id=?',e.id);continue;}
-   const labels={start:'Prazo de entrega aberto',reminder:'Seu prazo está chegando',due:'Lembrete de entrega',publication:'Hora de publicar'},message={title:labels[e.kind],body:e.title,taskId:e.task_id,tag:'task-'+e.id};
+   if(!owner.enabled){removeEvent(e.id);continue;}
+   const labels={start:'Prazo de entrega aberto',reminder:'Seu prazo está chegando',due:'Lembrete de entrega',publication:'Hora de publicar',overdue:'Entrega atrasada',approval:'Aprovação pendente'};
+   const details=JSON.parse(rows('SELECT data FROM task_event_details WHERE id=?',e.id)[0]?.data||'{}');
+   let message={title:labels[e.kind],body:details.body||e.title,taskId:e.task_id,tag:'task-'+e.id};
+   if(e.kind==='summary'){
+    const day=e.id.slice(-10),summary=owner.digest?.enabled&&day===N.dayAt(at)?N.summary(owner.digest.tasks,day):null;
+    if(!summary){transaction(()=>{sql.exec('INSERT OR IGNORE INTO task_sent VALUES(?,?,?)',e.id,JSON.stringify({skipped:true}),at);removeEvent(e.id);});continue;}
+    message={...summary,tag:'task-'+e.id,view:'day'};
+   }
    try{const result=await push(owner.uid,message);if(!result.accepted&&result.devices&&e.attempts<2){sql.exec('UPDATE task_queue SET attempts=attempts+1,due=? WHERE id=?',at+300000,e.id);continue;}
-    transaction(()=>{sql.exec('INSERT OR IGNORE INTO task_sent VALUES(?,?,?)',e.id,JSON.stringify({...message,delivered:result.accepted>0}),at);sql.exec('DELETE FROM task_queue WHERE id=?',e.id);});
-   }catch{if(e.attempts<2)sql.exec('UPDATE task_queue SET attempts=attempts+1,due=? WHERE id=?',at+300000,e.id);else{sql.exec('INSERT OR IGNORE INTO task_sent VALUES(?,?,?)',e.id,JSON.stringify({...message,delivered:false}),at);sql.exec('DELETE FROM task_queue WHERE id=?',e.id);}}
+    transaction(()=>{sql.exec('INSERT OR IGNORE INTO task_sent VALUES(?,?,?)',e.id,JSON.stringify({...message,delivered:result.accepted>0}),at);removeEvent(e.id);});
+   }catch{if(e.attempts<2)sql.exec('UPDATE task_queue SET attempts=attempts+1,due=? WHERE id=?',at+300000,e.id);else{sql.exec('INSERT OR IGNORE INTO task_sent VALUES(?,?,?)',e.id,JSON.stringify({...message,delivered:false}),at);removeEvent(e.id);}}
   }
-  // Retain a small private history while keeping sent IDs for the current schedule window.
-  sql.exec('DELETE FROM task_sent WHERE at<?',at-370*86400000);await schedule();
+  // One-off receipts survive preference changes and reconnects, including after a year.
+  sql.exec("DELETE FROM task_sent WHERE at<? AND id NOT LIKE '%:overdue:%' AND id NOT LIKE '%:approval:%'",at-370*86400000);await schedule();
  }
  return {handle,alarm,schedule};
 }
