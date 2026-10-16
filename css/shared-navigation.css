@@ -62,3 +62,5 @@
   .cff-mobile-header .cff-account-access:not(:has(img)){width:auto!important;max-width:58px!important}
   .cff-mobile-header .cff-mobile-search-button:focus-visible,.cff-mobile-header .nav-mobile-search-btn:focus-visible{outline:2px solid #00c8ff;outline-offset:2px}
 }
+.cff-unified-menu .cff-menu-featured{gap:10px;margin-top:14px;border:1px solid #6c5c2b;background:linear-gradient(110deg,#d4b23b10,#0b1420);color:#f0d87d}
+.cff-menu-featured img{width:30px;height:26px;object-fit:contain;flex:none}.cff-menu-featured>span{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:11px;letter-spacing:.25px}.cff-menu-featured small{font-size:8px;letter-spacing:1.4px;color:#a69b70}.cff-unified-menu .cff-menu-featured:hover,.cff-unified-menu .cff-menu-featured.active{background:#d4b23b14;color:#ffe8a2;border-color:#ad9140;box-shadow:inset 3px 0 #e7c53d}
