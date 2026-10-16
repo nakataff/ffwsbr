@@ -39,8 +39,14 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Confirm version, initialize D1 through the existing binding and warm the ranking
         run: |
-          curl --fail --silent --show-error --retry 6 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 20 --output health.json https://cff-instagram-community.nakataffb4.workers.dev/health
-          node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));if(h.version!=="20261016-saved-months-v1"||h.storyReviewVersion!=="20261012-story-review-v1"||h.profileInsightsVersion!=="20261012-community-profile-v1")throw Error("Unexpected community version");'
+          for attempt in 1 2 3 4 5 6; do
+            curl --fail --silent --show-error --retry 2 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 20 --output health.json https://cff-instagram-community.nakataffb4.workers.dev/health
+            if node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));if(h.version!=="20261016-saved-months-v1"||h.storyReviewVersion!=="20261012-story-review-v1"||h.profileInsightsVersion!=="20261012-community-profile-v1")throw Error("Waiting for community version to propagate");'; then
+              break
+            fi
+            test "$attempt" -lt 6 || exit 1
+            sleep 5
+          done
           curl --fail --silent --show-error --retry 3 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 30 --output ranking.json 'https://cff-instagram-community.nakataffb4.workers.dev/api/ranking?period=week'
           node -e 'const r=JSON.parse(require("node:fs").readFileSync("ranking.json","utf8"));if(!r.users||r.period?.type!=="week"||r.rules?.storyApprovalRequired!==true)throw Error("Public ranking check failed");console.log("Optimized community Worker is ready.");'
           curl --fail --silent --show-error --retry 3 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 30 --output months.json 'https://cff-instagram-community.nakataffb4.workers.dev/api/ranking/months?limit=24'
