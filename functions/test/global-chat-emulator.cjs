@@ -31,6 +31,10 @@ async function main(){
    for(const path of ['communityEmblemCatalog/verified','communityEmblemAssignments/alice','communityEmblemHistory/alice/entry'])await assertFails(client.ref(path).set({emblemId:'verified'}));
   }
   console.log('Emblems: public display, no user enumeration, private history and server-only grants passed.');
+  await env.withSecurityRulesDisabled(ctx=>ctx.database().ref().update({'communityProfiles/alice':{name:'Alice',public:true},'communityAccountRoles/alice':{roleId:'moderator'}}));
+  await assertSucceeds(anonymous.ref('communityAccountRoles/alice').once('value'));
+  await assertFails(anonymous.ref('communityAccountRoles').once('value'));
+  for(const client of [anonymous,alice,mod,admin])await assertFails(client.ref('globalChat/identities/alice/realAdministrator').set(true));
   console.log('Global chat: bounded public history, private restrictions, and server-only writes passed.');
  }finally{await env.cleanup();}
 }

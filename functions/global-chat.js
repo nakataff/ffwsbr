@@ -20,7 +20,7 @@ async function context(db,identity){
  if(!validUid(identity?.uid))throw fail(401,'Entre com Google para participar.');
  const roles=await db.get('communityAccountRoles/'+identity.uid),aliases={administrador:'administrator',administrator:'administrator',moderador:'moderator',moderator:'moderator',influenciador:'influencer',apoiador:'supporter',membro:'member'};
  const roleId=roles?.roleId||(roles?.administrator===true?'administrator':aliases[String(roles?.title||'').trim().toLowerCase()]||'member');
- return {uid:identity.uid,moderator:authorized(identity,roles),roles:{...(roles||{}),roleId,...(identity.email===ADMIN?{roleId:'administrator',administrator:true}:{})}};
+ return {uid:identity.uid,administrator:identity.email===ADMIN,moderator:authorized(identity,roles),roles:{...(roles||{}),roleId,...(identity.email===ADMIN?{roleId:'administrator',administrator:true}:{})}};
 }
 async function sendMessage(db,identity,raw,now=Date.now(),random=crypto.randomUUID().replace(/-/g,'').slice(0,16)){
  const request=typeof raw==='string'?{text:raw}:raw||{},text=messageText(request.text),actor=await context(db,identity);
@@ -68,7 +68,7 @@ async function publicIdentity(db,actor,profile){
  const [preference,style]=await Promise.all([db.get('globalChat/preferences/'+actor.uid),db.get('globalChat/styles/'+actor.uid)]);
  const badges=await selectedBadges(db,actor.uid,preference?.badgeIds||[]);
  let color='';try{color=nameColor(style?.nameColor||(style?.allowNameColor||actor.roles.administrator?preference?.nameColor:''));}catch{}
- return {name:String(profile?.name||'Membro').slice(0,80),username:String(profile?.username||''),avatarId:String(profile?.avatarId||'default'),roleId:actor.roles.roleId||'member',badgeIds:badges,nameColor:color};
+ return {name:String(profile?.name||'Membro').slice(0,80),username:String(profile?.username||''),avatarId:String(profile?.avatarId||'default'),roleId:actor.administrator?'administrator':actor.roles.roleId||'member',realAdministrator:actor.administrator===true,badgeIds:badges,nameColor:color};
 }
 async function chatStatus(db,identity){
  const actor=await context(db,identity),profile=await db.get('communityProfiles/'+actor.uid),author=await publicIdentity(db,actor,profile);
@@ -153,7 +153,7 @@ async function adminChat(db,identity,request,now=Date.now()){
   else if(previous.roleId==='moderator'){const roleId=saved?.previousRole&&saved.previousRole!=='moderator'?saved.previousRole:'member';await db.update({['globalChat/moderators/'+target]:null,['communityAccountRoles/'+target]:{...previous,roleId,administrator:roleId==='administrator',title:'',updatedAt:now}});}
  }
  const roles=await db.get('communityAccountRoles/'+target)||{},publicProfile=await db.get('communityProfiles/'+target);
- if(publicProfile?.public===true)await db.update({['globalChat/identities/'+target]:await publicIdentity(db,{uid:target,roles:{...roles,...(target===identity.uid?{roleId:'administrator',administrator:true}:{})}},publicProfile)});
+ if(publicProfile?.public===true){const previousIdentity=await db.get('globalChat/identities/'+target);await db.update({['globalChat/identities/'+target]:await publicIdentity(db,{uid:target,administrator:target===identity.uid||previousIdentity?.realAdministrator===true,roles},publicProfile)});}
  await audit(db,actor,operation,{targetUid:target,name:profile.name},now);return {ok:true};
 }
 module.exports={messageText,sendMessage,moderation,context,checkRestriction,settings,chatStatus,preferences,report,moderationData,adminChat};

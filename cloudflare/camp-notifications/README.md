@@ -100,3 +100,13 @@ privado, carregado pelo painel em até 20 registros. Todas as gravações são
 feitas no servidor. A arte reutiliza imagens imutáveis em `communityProfileImages`.
 Perfil e chat observam apenas as pessoas visíveis; fechar o chat encerra essas
 assinaturas. A atualização das regras Firebase acompanha esta versão.
+
+### Atualização imediata dos cargos no chat (2026-10-16)
+
+O chat observa `communityAccountRoles/<uid>` apenas para os autores presentes
+no histórico limitado. Conceder, trocar ou retirar um cargo pelo painel de perfis
+atualiza a identificação nas mensagens antigas, mesmo se a pessoa estiver offline.
+Os observadores são encerrados quando o autor sai do histórico ou o chat fecha.
+O marcador público `realAdministrator` é escrito somente pelo servidor após
+validar a conta administrativa; cargos visuais não podem produzir esse marcador.
+A autorização de moderação continua sendo verificada pelo servidor em cada ação.
