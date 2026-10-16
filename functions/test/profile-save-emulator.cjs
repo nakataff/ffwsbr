@@ -38,6 +38,22 @@ process.exitCode=1;
     await db.ref().update({['userAccounts/'+uid+'/profile/avatarId']:'freeAvatar',['communityProfiles/'+uid+'/avatarId']:'freeAvatar',['userAccounts/'+uid+'/profile/coverId']:'freeCover',['communityProfiles/'+uid+'/coverId']:'freeCover'});
     await assert.rejects(db.ref().update({['userAccounts/'+uid+'/profile/avatarId']:'lockedAvatar',['communityProfiles/'+uid+'/avatarId']:'lockedAvatar'}));
    }
+   if(!process.env.PROFILE_DIAGNOSTIC_FIXTURE){
+    await env.withSecurityRulesDisabled(ctx=>ctx.database().ref().update({['communityProfileCatalog/freeFrame']:{kind:'frame',enabled:true,accessRule:'all'},['communityProfileCatalog/lockedFrame']:{kind:'frame',enabled:true,accessRule:'manual'},['communityProfileCatalog/winner']:{kind:'badge',enabled:true},['communityMembers/'+uid]:{name:'Alice',joinedAt:Date.now()}}));
+    const frameChanges=id=>({['userAccounts/'+uid+'/profile/frameId']:id,['communityProfiles/'+uid+'/frameId']:id});
+    await db.ref().update(frameChanges('freeFrame'));await db.ref().update(frameChanges(''));
+    await assert.rejects(db.ref().update(frameChanges('lockedFrame')));
+    await assert.rejects(db.ref().update(frameChanges('freeAvatar')));
+    await assert.rejects(env.authenticatedContext('other',{email:'other@example.com'}).database().ref().update(frameChanges('freeFrame')));
+    const at=Date.now(),grant={badgeId:'winner',reason:'Premiação rápida',week:'2026-10-16',grantedAt:at,status:'active'},gift={assetId:'winner',kind:'badge',message:'Parabéns!',grantedAt:at},award={['communityBadgeGrants/'+uid+'/grant-quick-test']:grant,['communityBadgeOwnership/'+uid+'/winner']:true,['communityGifts/'+uid+'/gift-quick-test']:gift};
+    await assert.rejects(db.ref().update(award));
+    await env.authenticatedContext('admin',{email:'admin@centralfreefire.com.br'}).database().ref().update(award);
+    assert.equal((await db.ref('communityBadgeOwnership/'+uid+'/winner').get()).val(),true);
+    assert.equal((await db.ref('communityGifts/'+uid+'/gift-quick-test/assetId').get()).val(),'winner');
+    assert.equal((await db.ref('userAccounts/'+uid+'/profile/avatarId').get()).val(),'freeAvatar');
+    assert.equal((await db.ref('userAccounts/'+uid+'/profile/coverId').get()).val(),'freeCover');
+    console.log('Direct frame changes and atomic administrator badge gifts: PASS');
+   }
    console.log('Known styles, empty style, image access and owner isolation: PASS');
   }
  }finally{await env.cleanup();}
