@@ -475,7 +475,7 @@ async function importBackup(file){if(!file)return;const button=$('import');butto
 async function fetchTaskFile(id){if(files.has(id))return files.get(id);if(db){try{const cached=await request(db.transaction('files','readonly').objectStore('files').get(id));if(cached?.blob){files.set(id,cached.blob);return cached.blob;}}catch{}}if(!window.CFF_TASKS_CLOUD)throw Error('Entre no painel para baixar este anexo.');const blob=await window.CFF_TASKS_CLOUD.downloadFile(id);files.set(id,blob);try{await transact(state,[{id,blob}]);}catch{toast('Anexo baixado. A cópia local não pôde ser salva neste navegador.');}return blob;}
 function taskWorkspaceApi(){return {getState:()=>state,getDraft:()=>draft,getFiles:()=>files,uid,now,copy,toast,history,makeCard,sortTasks,matches,open:openEditor,save,render:renderBoard,normalise,
  create:task=>{const next=normalise({...copy(state),tasks:[...state.tasks,task]});state=next;save();renderBoard();},
- update:(task,patch,label='Tarefa atualizada')=>{const t=state.tasks.find(x=>x.id===task.id);if(!t)return;Object.assign(t,patch);history(t,label);save();renderBoard();},
+ update:(task,patch,label='Tarefa atualizada')=>{const t=state.tasks.find(x=>x.id===task.id);if(!t)return;const candidate={...t,...patch};if(patch.date&&patch.date!==t.date)candidate.repeat={...t.repeat,anchorDay:Number(patch.date.slice(8))};const metadata=window.CFF_TASKS_PLAN.extra(candidate,state);Object.assign(t,patch,metadata);history(t,label);save();renderBoard();},
  replace:next=>{state=normalise(next);return save();},
  sync:async()=>{await saveQueue;await flushCloud();if(syncDirty||!cloudReady)throw Error('Aguardando sincronização. Sua cópia foi preservada.');},
  synced:()=>cloudReady&&!syncDirty,revision:()=>cloudRevision,
