@@ -46,3 +46,18 @@
   .column-fully-collapsed{padding:10px 12px}
 }
 @media(prefers-reduced-motion:reduce){.column-full-toggle svg{transition:none}}
+
+/* Optional, confirmed publication scheduling distinct from the delivery deadline. */
+.planning-scheduled-block{
+  margin:12px 0;padding:12px 13px;border:1px solid var(--line);
+  border-radius:8px;background:var(--soft);
+}
+.planning-scheduled-heading{font-size:13px;font-weight:650;color:var(--ink);margin-bottom:8px}
+.planning-scheduled-block .row{margin:0 0 8px}
+.planning-scheduled-block .hint{font-size:11px;line-height:1.5}
+.planning-chip-scheduled{color:var(--green);border-color:var(--green);background:var(--panel);font-weight:650}
+@media(max-width:700px){
+  .planning-scheduled-block{padding:11px 10px}
+  .planning-scheduled-block .row{display:flex;flex-wrap:wrap;gap:8px}
+  .planning-scheduled-block .row>.field{min-width:145px;flex:1 1 145px}
+}
