@@ -551,3 +551,10 @@ html[data-theme=dark] [data-status-tone=orange]{--status-bg:#443528;--status-ink
 .useful-remove-url{margin-top:6px;color:var(--danger)}
 .useful-remove-url:disabled{opacity:.35;cursor:default}
 #useful-link-form>.useful-form-actions{margin-top:12px;flex-wrap:wrap}
+.card-reorder{display:flex;align-items:center;gap:4px;margin:-3px -3px 7px;color:#aab4c5;font-size:11px}
+.card-drag-grip{flex:1;cursor:grab;user-select:none;padding:3px}
+.card-move{display:grid;place-items:center;width:28px;height:28px;border:1px solid #ffffff1f;border-radius:5px;background:transparent;color:#c5cfdf;font-size:15px}
+.card-move:hover:not(:disabled){background:#ffffff12;color:#fff}
+.card-move:disabled{opacity:.3;cursor:default}
+.card.drop-before{box-shadow:0 -4px 0 0 var(--accent)}
+.card.drop-after{box-shadow:0 4px 0 0 var(--accent)}

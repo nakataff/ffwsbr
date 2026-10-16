@@ -32,7 +32,7 @@
   }
   if(r.until&&next>r.until)return null;
   const shift=distance(base,next),id='repeat-'+(t.seriesId||t.id).slice(0,110)+'-'+next,stamp=new Date().toISOString(),copy=JSON.parse(JSON.stringify(t));
-  return {...copy,id,seriesId:t.seriesId||t.id,date:next,startDate:t.startDate?addDays(t.startDate,shift):'',publishDate:t.publishDate?addDays(t.publishDate,shift):'',publishedUrl:'',status:'todo',previousStatus:'todo',focusDate:'',focusOrder:0,completedAt:null,cancelledAt:null,createdAt:stamp,updatedAt:stamp,subtasks:t.subtasks.map((s,i)=>({...s,id:id+'-s'+i,done:false})),approval:{...copy.approval,state:copy.approval.state==='none'?'none':'pending',sentAt:'',note:''},history:[{id:id+'-created',at:stamp,action:'Criada pela repetição de '+t.title}]};
+  return {...copy,id,seriesId:t.seriesId||t.id,date:next,startDate:t.startDate?addDays(t.startDate,shift):'',publishDate:t.publishDate?addDays(t.publishDate,shift):'',publishedUrl:'',boardOrder:null,status:'todo',previousStatus:'todo',focusDate:'',focusOrder:0,completedAt:null,cancelledAt:null,createdAt:stamp,updatedAt:stamp,subtasks:t.subtasks.map((s,i)=>({...s,id:id+'-s'+i,done:false})),approval:{...copy.approval,state:copy.approval.state==='none'?'none':'pending',sentAt:'',note:''},history:[{id:id+'-created',at:stamp,action:'Criada pela repetição de '+t.title}]};
  }
  function shiftTask(t,target,source=t.date){const delta=distance(source,target);return {date:t.date?addDays(t.date,delta):target,startDate:t.startDate?addDays(t.startDate,delta):''};}
  function events(state,at=Date.now()){return window.CFF_TASKS_NOTIFICATIONS.events(state,at);}

@@ -11,7 +11,7 @@
 <link rel="icon" type="image/webp" href="central free fire.webp">
 <script src="js/config.min.js?v=20260629-laff-json-v1"></script>
 <script>try{const s=JSON.parse(localStorage.getItem('meu-quadro-v1')||'null');if(s?.theme==='light')document.documentElement.dataset.theme='light';}catch{}</script>
-<link rel="stylesheet" href="css/admin-tarefas.css?v=20261006-useful-links-v2">
+<link rel="stylesheet" href="css/admin-tarefas.css?v=20261016-order-v1">
 <link rel="stylesheet" href="css/admin-tarefas-projects.css?v=20261008-project-actions-v1">
 <link rel="stylesheet" href="css/admin-tarefas-planning.css?v=20261016-copy-v1">
 </head>
@@ -23,7 +23,7 @@
  <nav class="workspace-tabs" aria-label="Área de trabalho"><button type="button" data-workspace-view="tasks" aria-pressed="true">✓ Tarefas</button><button type="button" data-workspace-view="projects" aria-pressed="false">▤ Projetos</button></nav>
  <section id="tasks-view" aria-label="Tarefas">
  <div class="toolbar"><div class="search"><input type="search" id="search" placeholder="Buscar tarefa, detalhe ou link…" aria-label="Buscar tarefas"></div><div class="toolbar-mobile-row"><button class="quiet filters-toggle" id="toggle-filters" type="button" aria-expanded="false" aria-controls="advanced-filter-area">☷ Exibir filtros</button><div class="segmented view-switch" aria-label="Tipo de visualização"><button data-view="board" aria-pressed="true">Quadro</button><button data-view="agenda" aria-pressed="false">Agenda</button></div></div><div class="segmented deadline-filters" aria-label="Filtrar prazo"><button data-filter="all" aria-pressed="true">Todas</button><button data-filter="today" aria-pressed="false">Hoje</button><button data-filter="soon" aria-pressed="false">Prazo próximo</button><button data-filter="late" aria-pressed="false">Atrasadas</button></div></div>
- <div class="advanced-filters" id="advanced-filter-area"><select id="filter-platform" aria-label="Filtrar por plataforma"><option value="">Todas as plataformas</option></select><select id="filter-tag" aria-label="Filtrar por etiqueta"><option value="">Todas as etiquetas</option></select><select id="filter-status" aria-label="Filtrar por coluna"><option value="">Todas as colunas</option></select><button class="quiet filter-important" id="filter-important" aria-pressed="false">☆ Só importantes</button><select id="sort" aria-label="Ordenar tarefas"><option value="deadline">Prazo mais próximo</option><option value="important">Importantes primeiro</option><option value="newest">Mais recentes</option><option value="title">Nome da tarefa</option></select><button class="small-btn" id="reset-filters">Limpar filtros</button></div>
+ <div class="advanced-filters" id="advanced-filter-area"><select id="filter-platform" aria-label="Filtrar por plataforma"><option value="">Todas as plataformas</option></select><select id="filter-tag" aria-label="Filtrar por etiqueta"><option value="">Todas as etiquetas</option></select><select id="filter-status" aria-label="Filtrar por coluna"><option value="">Todas as colunas</option></select><button class="quiet filter-important" id="filter-important" aria-pressed="false">☆ Só importantes</button><select id="sort" aria-label="Ordenar tarefas"><option value="manual">Ordem manual</option><option value="deadline">Prazo mais próximo</option><option value="important">Importantes primeiro</option><option value="newest">Mais recentes</option><option value="title">Nome da tarefa</option></select><button class="small-btn" id="reset-filters">Limpar filtros</button></div>
  <div class="summary"><span id="progress-text">Carregando seu quadro…</span><div class="track" aria-hidden="true"><span id="progress-bar"></span></div><span id="visible-count"></span><span class="hidden-info" id="hidden-info"></span></div>
  <div class="alert-banner" id="deadline-alert"><span id="deadline-alert-text"></span><button class="small-btn" id="show-urgent">Ver tarefas</button></div>
  <div class="workspace"><div class="board-area"><section class="board" id="board" aria-label="Quadro de tarefas"><p class="loading">Carregando…</p></section><section id="agenda" aria-label="Agenda de tarefas" hidden></section></div><aside class="desk-tools" aria-label="Lembretes, links e posts diários">
@@ -84,9 +84,9 @@
 <script src="js/admin-tarefas-daily.js?v=20261006-useful-links-v2"></script>
 <script src="js/admin-tarefas-notifications.js?v=20261016-reminders-v1"></script>
 <script src="js/admin-tarefas-content.js?v=20261016-copy-v1"></script>
-<script src="js/admin-tarefas-plan.js?v=20261016-reminders-v1"></script>
+<script src="js/admin-tarefas-plan.js?v=20261016-order-v1"></script>
 <script src="js/admin-tarefas-workspace.js?v=20261016-copy-v1"></script>
-<script defer src="js/admin-tarefas.js?v=20261016-copy-v1"></script>
+<script defer src="js/admin-tarefas.js?v=20261016-order-v1"></script>
 <script type="module" src="js/admin-tarefas-auth.js?v=20261016-copy-v1"></script>
 </body>
 </html>
