@@ -18,7 +18,9 @@ function authorized(identity,roles){return identity.email===ADMIN||roles?.roleId
 function checkRestriction(restriction,now){if(restriction?.blocked===true)throw fail(403,'Seu acesso ao envio de mensagens foi bloqueado.');if(Number(restriction?.mutedUntil)>now)throw fail(403,'Você está silenciado até '+new Date(restriction.mutedUntil).toLocaleTimeString('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit'})+'.');}
 async function context(db,identity){
  if(!validUid(identity?.uid))throw fail(401,'Entre com Google para participar.');
- const roles=await db.get('communityAccountRoles/'+identity.uid);return {uid:identity.uid,moderator:authorized(identity,roles),roles:{...(roles||{}),...(identity.email===ADMIN?{roleId:'administrator',administrator:true}:{})}};
+ const roles=await db.get('communityAccountRoles/'+identity.uid),aliases={administrador:'administrator',administrator:'administrator',moderador:'moderator',moderator:'moderator',influenciador:'influencer',apoiador:'supporter',membro:'member'};
+ const roleId=roles?.roleId||(roles?.administrator===true?'administrator':aliases[String(roles?.title||'').trim().toLowerCase()]||'member');
+ return {uid:identity.uid,moderator:authorized(identity,roles),roles:{...(roles||{}),roleId,...(identity.email===ADMIN?{roleId:'administrator',administrator:true}:{})}};
 }
 async function sendMessage(db,identity,raw,now=Date.now(),random=crypto.randomUUID().replace(/-/g,'').slice(0,16)){
  const request=typeof raw==='string'?{text:raw}:raw||{},text=messageText(request.text),actor=await context(db,identity);
