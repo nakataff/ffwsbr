@@ -14,3 +14,35 @@
 .card-disclosure[aria-expanded=true] svg{transform:rotate(180deg)}
 @media(pointer:coarse){.card-head .card-disclosure{width:24px;height:24px}}
 @media(prefers-reduced-motion:reduce){.card-disclosure svg{transition:none}}
+
+
+/* Recolher a coluna inteira: só o cabeçalho permanece, sem alterar os cards. */
+@media(min-width:1001px){
+  .board{grid-template-columns:var(--task-column-tracks,repeat(var(--cols,4),minmax(245px,1fr)))}
+}
+@media(min-width:701px) and (max-width:1000px){
+  .board{grid-template-columns:var(--task-column-tracks-compact,repeat(var(--cols,4),260px))}
+}
+.column-full-toggle{
+  display:grid;place-items:center;width:24px;height:24px;padding:0;margin-left:3px;
+  border:1px solid var(--line);border-radius:6px;background:var(--card);
+  color:var(--muted);cursor:pointer;flex:none;
+}
+.column-full-toggle:hover{background:var(--soft);color:var(--accent)}
+.column-full-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.column-full-toggle svg{width:14px;height:14px;transition:transform .16s ease;pointer-events:none}
+.column-full-toggle[aria-expanded=true] svg{transform:rotate(180deg)}
+.column-fully-collapsed{min-height:0;padding:10px 9px;align-self:start}
+.column-fully-collapsed .column-head{margin:0;min-width:0;flex-wrap:nowrap;gap:5px}
+.column-fully-collapsed .column-head>span:not(.dot):not(.count){
+  min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.column-fully-collapsed .column-head .count{flex:none}
+.column-fully-collapsed .column-collapse,
+.column-fully-collapsed .column-hide{display:none}
+.column-fully-collapsed .column-full-toggle{margin-left:auto}
+@media(max-width:700px){
+  .column-full-toggle{width:30px;height:30px}
+  .column-fully-collapsed{padding:10px 12px}
+}
+@media(prefers-reduced-motion:reduce){.column-full-toggle svg{transition:none}}
