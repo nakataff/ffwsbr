@@ -175,7 +175,7 @@
     });
     window.addEventListener('pagehide',()=>{if(timer){clearTimeout(timer);api.save();}});
     pickProject();render();
-    return {refresh:()=>{history.sync();pickProject();refresh();},switchView};
+    return {refresh:()=>{history.sync();pickProject();refresh();},refreshTasks:()=>{if(view!=='projects')return;root.querySelector('.project-linked-tasks')?.remove();const c=companies().find(c=>c.id===companyId);if(c)renderLinkedTasks(c);},switchView};
   }
   let baseline=null;
   function seedBaseline(key,id){if(!baseline){baseline={};seed(baseline);}return baseline[key]?.find(row=>row.id===id);}
