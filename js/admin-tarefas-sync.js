@@ -7,10 +7,10 @@
   function decode(payload) {
     if (!payload) return null;
     const state = typeof payload.stateJson === 'string' ? JSON.parse(payload.stateJson) : clone(payload.state || payload);
-    if (!state || ![1, 2, 3, 4].includes(state.version)) throw Error('Quadro da nuvem inválido');
+    if (!state || ![1, 2, 3, 4, 5].includes(state.version)) throw Error('Quadro da nuvem inválido');
     lists.forEach(key => { if (state[key] == null) state[key] = key === 'services' ? clone(window.CFF_TASKS_DEFAULT_SERVICES || []) : []; });
     state.tasks.forEach(task => {
-      ['platforms', 'tags', 'links', 'subtasks', 'attachments', 'history'].forEach(key => { if (task[key] == null) task[key] = []; });
+      ['platforms', 'tags', 'links', 'subtasks', 'attachments', 'history', 'copies'].forEach(key => { if (task[key] == null) task[key] = []; });
     });
     return state;
   }
@@ -19,10 +19,17 @@
     for (const key of new Set([...Object.keys(base || {}), ...Object.keys(local || {})])) {
       if (same(base?.[key], local?.[key])) continue;
       if (local?.[key] === undefined) delete result[key];
+      else if (key === 'copies' && Array.isArray(local[key])) result[key] = mergeCopies(base?.[key] || [], local[key], remote?.[key] || []);
       else if (key === 'completedDates') result[key] = fields(base?.[key], local[key], remote?.[key]);
       else result[key] = clone(local[key]);
     }
     return result;
+  }
+  function mergeCopies(base, local, remote) {
+    const before=new Map(base.map(c=>[c.id,c])),after=new Map(local.map(c=>[c.id,c])),current=new Map(remote.map(c=>[c.id,clone(c)]));
+    for(const [id,item] of before)if(!after.has(id)&&(!current.has(id)||same(item,current.get(id))))current.delete(id);
+    for(const [id,item] of after){const previous=before.get(id);if(!previous)current.set(id,clone(item));else if(!same(previous,item))current.set(id,fields(previous,item,current.get(id)||previous));}
+    return [...current.values()];
   }
   // Apply only this device's edits to the latest server state, preserving other edits.
   function merge(base, local, remote) {

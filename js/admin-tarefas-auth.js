@@ -54,7 +54,7 @@ if (!config) {
           if (legacy.exists()) {
             const payload = legacy.val();
             const migrated = await runTransaction(cloudRef, current => current || {
-              schemaVersion: 4,
+              schemaVersion: 5,
               stateJson: JSON.stringify(window.CFF_TASKS_SYNC.decode(payload)),
               updatedAt: serverTimestamp(),
               updatedBy: auth.currentUser.email,
@@ -70,9 +70,9 @@ if (!config) {
         const result = await runTransaction(cloudRef, current => {
           const remote = current ? window.CFF_TASKS_SYNC.decode(current) : (base || state);
           const merged = window.CFF_TASKS_SYNC.merge(base, state, remote);
-          merged.version = 4;
+          merged.version = 5;
           return {
-            schemaVersion: 4,
+            schemaVersion: 5,
             stateJson: JSON.stringify(merged),
             updatedAt: serverTimestamp(),
             updatedBy: auth.currentUser.email,
