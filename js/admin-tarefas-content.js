@@ -20,17 +20,41 @@
  function mount(api){
   const $=id=>document.getElementById(id),node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
   let layout=readLayout();const controllers=new WeakMap();
-  function readLayout(){try{const value=JSON.parse(localStorage.getItem(LAYOUT_KEY)||'{}');return {columns:value?.columns&&typeof value.columns==='object'&&!Array.isArray(value.columns)?value.columns:{},cards:value?.cards&&typeof value.cards==='object'&&!Array.isArray(value.cards)?value.cards:{}};}catch{return {columns:{},cards:{}};}}
-  function persistLayout(){try{const ids=new Set(api.getState().tasks.map(t=>t.id));const cards=Object.fromEntries(Object.entries(layout.cards).filter(([id,v])=>ids.has(id)&&typeof v==='boolean'));localStorage.setItem(LAYOUT_KEY,JSON.stringify({columns:layout.columns,cards}));}catch{api.toast('Visualização alterada. Não foi possível lembrar esta preferência neste navegador.');}}
+  function readLayout(){try{const value=JSON.parse(localStorage.getItem(LAYOUT_KEY)||'{}');return {columns:value?.columns&&typeof value.columns==='object'&&!Array.isArray(value.columns)?value.columns:{},cards:value?.cards&&typeof value.cards==='object'&&!Array.isArray(value.cards)?value.cards:{},foldedColumns:value?.foldedColumns&&typeof value.foldedColumns==='object'&&!Array.isArray(value.foldedColumns)?value.foldedColumns:{}};}catch{return {columns:{},cards:{},foldedColumns:{}};}}
+  function persistLayout(){try{const ids=new Set(api.getState().tasks.map(t=>t.id));const cards=Object.fromEntries(Object.entries(layout.cards).filter(([id,v])=>ids.has(id)&&typeof v==='boolean'));const validColumns=new Set(api.getState().columns.map(c=>c.id));const foldedColumns=Object.fromEntries(Object.entries(layout.foldedColumns).filter(([id,v])=>validColumns.has(id)&&typeof v==='boolean'));localStorage.setItem(LAYOUT_KEY,JSON.stringify({columns:layout.columns,cards,foldedColumns}));}catch{api.toast('Visualização alterada. Não foi possível lembrar esta preferência neste navegador.');}}
   function collapsed(t){if(Object.hasOwn(layout.cards,t.id)&&typeof layout.cards[t.id]==='boolean')return layout.cards[t.id];return typeof layout.columns[t.status]==='boolean'?layout.columns[t.status]:true;}
+  function isColumnFolded(status){return layout.foldedColumns[status]===true;}
   function allCollapsed(status){const tasks=api.getState().tasks.filter(t=>t.status===status);return !tasks.length||tasks.every(collapsed);}
   function refreshColumnButtons(){for(const b of document.querySelectorAll('.column-collapse')){const folded=allCollapsed(b.dataset.status);b.textContent=folded?'Expandir cards':'Recolher cards';b.setAttribute('aria-label',(folded?'Expandir':'Recolher')+' todos os cards de '+b.dataset.name);b.title=b.getAttribute('aria-label');}}
   function setCollapsed(t,value){Object.defineProperty(layout.cards,t.id,{value,writable:true,enumerable:true,configurable:true});persistLayout();for(const card of document.querySelectorAll('.card'))if(card.dataset.taskId===t.id)controllers.get(card)?.();refreshColumnButtons();}
+  function decorateColumnBody(col,column){
+   const folded=isColumnFolded(column.id);
+   col.classList.toggle('column-fully-collapsed',folded);
+   const cards=col.querySelector('.cards'),add=col.querySelector('.add-column');
+   if(cards)cards.hidden=folded;
+   if(add)add.hidden=folded;
+  }
   function decorateColumn(head,column){
    const b=node('button','column-collapse');b.type='button';b.dataset.status=column.id;b.dataset.name=column.name;b.disabled=!api.getState().tasks.some(t=>t.status===column.id);
    b.textContent=allCollapsed(column.id)?'Expandir cards':'Recolher cards';b.setAttribute('aria-label',(allCollapsed(column.id)?'Expandir':'Recolher')+' todos os cards de '+column.name);b.title=b.getAttribute('aria-label');
    b.onclick=()=>{const value=!allCollapsed(column.id);Object.defineProperty(layout.columns,column.id,{value,writable:true,enumerable:true,configurable:true});for(const t of api.getState().tasks)if(t.status===column.id)delete layout.cards[t.id];persistLayout();api.render();Array.from(document.querySelectorAll('.column-collapse')).find(e=>e.dataset.status===column.id)?.focus({preventScroll:true});};
    head.insertBefore(b,head.querySelector('.column-hide'));
+   const fold=node('button','column-full-toggle');
+   fold.type='button';fold.dataset.status=column.id;
+   fold.append(icon('chevron'));fold.setAttribute('aria-controls','column-cards-'+column.id);
+   const folded=isColumnFolded(column.id);
+   fold.setAttribute('aria-expanded',String(!folded));
+   fold.setAttribute('aria-label',(folded?'Expandir coluna ':'Recolher completamente a coluna ')+column.name);
+   fold.title=fold.getAttribute('aria-label');
+   fold.onclick=()=>{
+    const previousScroll=$('board').scrollLeft;
+    layout.foldedColumns[column.id]=!isColumnFolded(column.id);
+    persistLayout();api.render();
+    $('board').scrollLeft=previousScroll;
+    const button=Array.from(document.querySelectorAll('.column-full-toggle')).find(item=>item.dataset.status===column.id);
+    button?.focus({preventScroll:true});
+   };
+   head.insertBefore(fold,b);
   }
   async function copyText(text){
    try{if(!navigator.clipboard?.writeText)throw Error('Clipboard indisponível');await navigator.clipboard.writeText(text);return;}
@@ -80,7 +104,7 @@
    });
   }
   add.onclick=()=>{const draft=api.getDraft();if(!draft)return;draft.copies??=[];if(draft.copies.length>=MAX_COPIES){api.toast('Use até 20 copies por tarefa.');return;}draft.copies.push({id:api.uid(),label:draft.copies.length?'':'Insta',text:''});renderCopies();list.lastElementChild.querySelector('.copy-label').focus();};
-  return {edit(draft){draft.copies=copies(draft.copies);renderCopies();},readDraft(){const draft=api.getDraft();if(draft)draft.copies=copies(draft.copies);},decorate,decorateColumn,copyText};
+  return {edit(draft){draft.copies=copies(draft.copies);renderCopies();},readDraft(){const draft=api.getDraft();if(draft)draft.copies=copies(draft.copies);},decorate,decorateColumn,decorateColumnBody,isColumnFolded,copyText};
  }
  window.CFF_TASKS_CONTENT={copies,mount,icon};
 })();
