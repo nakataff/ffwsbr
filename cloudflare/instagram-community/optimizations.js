@@ -1,12 +1,12 @@
 // Public payloads only: session/user-specific prediction responses never enter this cache.
-export const OPTIMIZATION_VERSION = '20261012-d1-savings-v1';
+export const OPTIMIZATION_VERSION = '20261016-saved-months-v1';
 const states = new WeakMap();
 function state(db) {
   if (!states.has(db)) states.set(db, { cache: new Map(), pending: new Map() });
   return states.get(db);
 }
 
-export async function cachedPublic(db, key, ttl, load) {
+export async function cachedPublic(db, key, ttl, load, revisionSql = '') {
   const local = state(db), now = Date.now();
   const hit = local.cache.get(key);
   if (hit?.expiresAt > now) return hit.payload;
@@ -26,12 +26,18 @@ export async function cachedPublic(db, key, ttl, load) {
         return payload;
       } catch (_) { /* Rebuild a malformed/old cache entry. */ }
     }
+    const revision = revisionSql ? Number((await db.prepare(revisionSql).first())?.version || 0) : 0;
     const payload = await load();
     const expiresAt = Date.now() + ttl;
     try {
-      await db.prepare(`INSERT INTO community_response_cache (cache_key,payload,expires_at) VALUES (?1,?2,?3)
+      const args = [key, JSON.stringify(payload), expiresAt];
+      if (revisionSql) args.push(revision);
+      const saved = await db.prepare(`INSERT INTO community_response_cache (cache_key,payload,expires_at)
+        SELECT ?1,?2,?3 ${revisionSql ? `WHERE (${revisionSql})=?4` : ''}
         ON CONFLICT(cache_key) DO UPDATE SET payload=excluded.payload, expires_at=excluded.expires_at`)
-        .bind(key, JSON.stringify(payload), expiresAt).run();
+        .bind(...args).run();
+      // A correction during the rebuild must not republish an invalidated history.
+      if (revisionSql && !saved.meta?.changes) return payload;
     } catch (_) { /* Cache writes are optional; preserve the successful query result. */ }
     remember(local, key, payload, expiresAt);
     return payload;
@@ -108,9 +114,45 @@ function trigger(table, operation, refs) {
     WHEN ${refs.map(ref => `(${ref}.day_key<${currentMonday} OR substr(${ref}.day_key,1,7)<strftime('%Y-%m','now','-3 hours'))`).join(' OR ')}
     BEGIN ${refs.map(invalidation).join('\n')} END`;
 }
+
+// One small row per recorded month. Boundary repairs seek the covering index;
+// normal reads never have to rediscover months/dates by scanning the award ledger.
+const addMonth = `INSERT INTO ranking_month_catalog(month_key,first_day,last_day)
+  VALUES(NEW.month_key,NEW.day_key,NEW.day_key)
+  ON CONFLICT(month_key) DO UPDATE SET
+    first_day=MIN(first_day,excluded.first_day),last_day=MAX(last_day,excluded.last_day);`;
+const repairMonth = `UPDATE ranking_month_catalog SET
+  first_day=COALESCE((SELECT day_key FROM awards WHERE month_key=OLD.month_key ORDER BY day_key LIMIT 1),''),
+  last_day=COALESCE((SELECT day_key FROM awards WHERE month_key=OLD.month_key ORDER BY day_key DESC LIMIT 1),'')
+  WHERE month_key=OLD.month_key AND (first_day=OLD.day_key OR last_day=OLD.day_key);
+  DELETE FROM ranking_month_catalog WHERE month_key=OLD.month_key AND first_day='';`;
+export const MONTH_CATALOG_SCHEMA = [
+  'CREATE INDEX IF NOT EXISTS idx_awards_month_day ON awards(month_key,day_key)',
+  'CREATE TABLE IF NOT EXISTS ranking_month_catalog(month_key TEXT PRIMARY KEY,first_day TEXT NOT NULL,last_day TEXT NOT NULL)',
+  `CREATE TRIGGER IF NOT EXISTS cff_month_catalog_insert AFTER INSERT ON awards BEGIN ${addMonth} END`,
+  `CREATE TRIGGER IF NOT EXISTS cff_month_catalog_delete AFTER DELETE ON awards BEGIN ${repairMonth} END`,
+  `CREATE TRIGGER IF NOT EXISTS cff_month_catalog_update AFTER UPDATE OF month_key,day_key ON awards
+    WHEN OLD.month_key IS NOT NEW.month_key OR OLD.day_key IS NOT NEW.day_key
+    BEGIN ${repairMonth} ${addMonth} END`,
+  // This guard runs before reading awards. The backfill and marker are installed
+  // in the same D1 batch transaction, so retries/cold starts do not rescan history.
+  `INSERT INTO ranking_month_catalog(month_key,first_day,last_day)
+    SELECT month_key,MIN(day_key),MAX(day_key) FROM awards
+    WHERE NOT EXISTS(SELECT 1 FROM community_period_versions WHERE period_key='migration:month-catalog-v1')
+    GROUP BY month_key
+    ON CONFLICT(month_key) DO UPDATE SET first_day=excluded.first_day,last_day=excluded.last_day`,
+  "INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES('migration:month-catalog-v1',1)",
+];
+
+export async function monthCoverage(db, monthKey) {
+  return db.prepare('SELECT first_day AS firstDay,last_day AS lastDay FROM ranking_month_catalog WHERE month_key=?1')
+    .bind(monthKey).first();
+}
+
 export const OPTIMIZATION_SCHEMA = [
   'CREATE TABLE IF NOT EXISTS community_response_cache (cache_key TEXT PRIMARY KEY,payload TEXT NOT NULL,expires_at INTEGER NOT NULL)',
   'CREATE TABLE IF NOT EXISTS community_period_versions (period_key TEXT PRIMARY KEY,version INTEGER NOT NULL DEFAULT 0)',
+  ...MONTH_CATALOG_SCHEMA,
   'CREATE TABLE IF NOT EXISTS weekly_ranking_snapshots (week_key TEXT PRIMARY KEY,payload TEXT NOT NULL,created_at INTEGER NOT NULL)',
   'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY,payload TEXT NOT NULL,created_at INTEGER NOT NULL)',
   "CREATE TABLE IF NOT EXISTS prediction_settlements (job_key TEXT PRIMARY KEY,signature TEXT NOT NULL,status TEXT NOT NULL,lease_token TEXT NOT NULL,lease_until INTEGER NOT NULL,completed_at INTEGER NOT NULL DEFAULT 0)",

@@ -1,6 +1,6 @@
 import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutcomes,profileInsights,peerScores} from './profile-insights.js';
 import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, instagramPost } from './story-reviews.js';
-import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
+import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, monthCoverage, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
   storyApprovalRequired: true,
@@ -148,12 +148,24 @@ function json(data, status = 200, request = null, extraHeaders = {}) {
 async function ensurePerformanceIndexes(env) {
   if (performanceIndexesReady) return true;
   if (!performanceIndexesPromise) {
-    performanceIndexesPromise = env.DB.batch(
-      PERFORMANCE_INDEXES.map((sql) => env.DB.prepare(sql))
-    ).then(() => {
+    performanceIndexesPromise = (async () => {
+      // Cold instances only check one durable marker. Apply the additive schema
+      // once per release, including its backfill, in a single atomic D1 batch.
+      const schemaKey = 'schema:' + OPTIMIZATION_VERSION;
+      let applied;
+      try {
+        applied = await env.DB.prepare('SELECT version FROM community_period_versions WHERE period_key=?1')
+          .bind(schemaKey).first();
+      } catch (_) { /* The very first deployment may not have the marker table. */ }
+      if (!applied?.version) {
+        await env.DB.batch([
+          ...PERFORMANCE_INDEXES.map((sql) => env.DB.prepare(sql)),
+          env.DB.prepare('INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES(?1,1)').bind(schemaKey),
+        ]);
+      }
       performanceIndexesReady = true;
       return true;
-    }).catch((error) => {
+    })().catch((error) => {
       performanceIndexesPromise = null;
       console.error('D1 performance indexes could not be ensured', error);
       return false;
@@ -2132,11 +2144,7 @@ async function computeMonthlySnapshot(env, monthKey) {
     LIMIT 500
   `).bind(monthKey, bounds.firstDay, bounds.lastDay).all();
 
-  const coverage = await env.DB.prepare(`
-    SELECT MIN(day_key) AS firstDay, MAX(day_key) AS lastDay
-    FROM awards
-    WHERE month_key = ?1
-  `).bind(monthKey).first();
+  const coverage = await monthCoverage(env.DB, monthKey);
 
   const users = {};
   let updatedAt = 0;
@@ -2251,13 +2259,31 @@ async function getOrCreateMonthlySnapshot(env, monthKey) {
 async function closedMonthKeys(env, limit = 60) {
   const currentMonth = dateKeys(Date.now()).monthKey;
   const rows = await env.DB.prepare(`
-    SELECT DISTINCT month_key AS monthKey
-    FROM awards
+    SELECT month_key AS monthKey
+    FROM ranking_month_catalog
     WHERE month_key < ?1
     ORDER BY month_key DESC
     LIMIT ?2
   `).bind(currentMonth, Math.max(1, Math.min(Number(limit) || 60, 60))).all();
   return (rows.results || []).map(row => String(row.monthKey || '')).filter(validMonthKey);
+}
+
+async function monthlySummaries(env) {
+  const currentMonth = dateKeys(Date.now()).monthKey;
+  return cachedPublic(env.DB, `history:months:${currentMonth}`, 86_400_000, async () => {
+    const months = await closedMonthKeys(env, 60), snapshots = [];
+    for (let i = 0; i < months.length; i += 8) {
+      snapshots.push(...await Promise.all(months.slice(i, i + 8).map(month => getOrCreateMonthlySnapshot(env, month))));
+    }
+    return snapshots.filter(Boolean).map(snapshot => ({
+      month: snapshot.month,
+      participants: Number(snapshot.participants || 0),
+      firstDay: String(snapshot.firstDay || ''),
+      lastDay: String(snapshot.lastDay || ''),
+      winner: snapshot.winner || null,
+      frozen: true,
+    }));
+  }, "SELECT COALESCE(SUM(version),0) AS version FROM community_period_versions WHERE period_key LIKE 'month:%'");
 }
 
 async function publicRankingResponse(request,env,url) {
@@ -2417,11 +2443,7 @@ async function getRanking(request, env, url) {
   let firstRecordedDay = '';
   let lastRecordedDay = '';
   if (period === 'month') {
-    const coverage = await env.DB.prepare(`
-      SELECT MIN(day_key) AS firstDay, MAX(day_key) AS lastDay
-      FROM awards
-      WHERE month_key = ?1
-    `).bind(monthKey).first();
+    const coverage = await monthCoverage(env.DB, monthKey);
     firstRecordedDay = String(coverage?.firstDay || '');
     lastRecordedDay = String(coverage?.lastDay || '');
   }
@@ -2447,18 +2469,9 @@ async function getRanking(request, env, url) {
 
 
 async function getMonthlyHistory(request, env, url) {
-  const rawLimit = Number(url.searchParams.get('limit'));
+  const rawLimit = Number(url.searchParams.get('limit') || 24);
   const limit = Math.max(1, Math.min(Number.isFinite(rawLimit) ? Math.floor(rawLimit) : 24, 60));
-  const months = await closedMonthKeys(env, limit);
-  const snapshots = await Promise.all(months.map(month => getOrCreateMonthlySnapshot(env, month)));
-  const history = snapshots.filter(Boolean).map(snapshot => ({
-    month: snapshot.month,
-    participants: Number(snapshot.participants || 0),
-    firstDay: String(snapshot.firstDay || ''),
-    lastDay: String(snapshot.lastDay || ''),
-    winner: snapshot.winner || null,
-    frozen: true,
-  }));
+  const history = (await monthlySummaries(env)).slice(0, limit);
   return json({ ok: true, frozen: true, history }, 200, request, { 'Cache-Control': 'public, max-age=3600' });
 }
 
@@ -2500,11 +2513,10 @@ async function getAchievementProfile(request, env, url) {
     `).bind(userKey).first(),
     env.DB.prepare("SELECT COUNT(*) AS total FROM awards WHERE user_key=?1 AND type='checkin'").bind(userKey).first(),
     weeklyWinnerCount(env,userKey,username),
-    closedMonthKeys(env, 60),
+    monthlySummaries(env),
   ]);
 
-  const snapshots = await Promise.all(months.map(month => getOrCreateMonthlySnapshot(env, month)));
-  const monthWins = snapshots.filter(s => s?.winner?.userKey === userKey || String(s?.winner?.username||'').toLowerCase() === username).length;
+  const monthWins = months.filter(s => s?.winner?.userKey === userKey || String(s?.winner?.username||'').toLowerCase() === username).length;
 
   const metrics = {
     total_points: Number(user.points_all || 0),

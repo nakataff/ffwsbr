@@ -14,6 +14,15 @@ are preserved by `wrangler.jsonc` (`keep_vars: true`).
 - Closed-week rankings are computed once and saved with their participant count and
   winner. History responses reuse these snapshots for 15 minutes. Closed-week lists
   are stored for a day and reset by backdated writes.
+- Month discovery and coverage use `ranking_month_catalog`: one saved row per
+  recorded month, maintained by SQLite triggers on award inserts, date moves and
+  deletes. The first deployment backfills existing months once in the same atomic
+  batch as its migration marker. Later visits never scan awards to discover months
+  or their first/last dates. Boundary repairs use the `(month_key, day_key)` index.
+- Closed monthly rankings reuse their durable snapshots. Monthly history and
+  monthly-win badges share one compact saved summary for up to a day, across
+  profiles and Worker instances. A month rollover selects a new summary key;
+  backdated award/activity changes invalidate the affected snapshots and history.
 - SQLite triggers invalidate the affected weekly/monthly snapshots when old awards or
   active days are inserted, updated or deleted. Source revisions stop a concurrent
   rebuild from saving an outdated snapshot. Cached responses in an existing instance
@@ -48,12 +57,16 @@ publish races, monthly snapshots, persistent settlement locking, payouts and pag
 The `Deploy Instagram Community (Cloudflare)` GitHub Actions workflow runs on changes
 to this directory. It uses the existing repository secrets `CLOUDFLARE_API_TOKEN` and
 `CLOUDFLARE_ACCOUNT_ID`. The token needs access to this account's Workers scripts.
-The existing Worker DB binding initializes its own additive/idempotent schema on the
-first API request; a separate D1 administration permission is not required for deployment.
+The existing Worker DB binding initializes its own additive/idempotent schema once per
+release, atomically with a durable schema marker. Cold instances check that single
+marker instead of replaying bootstrap/cache cleanup queries. A separate D1
+administration permission is not required for deployment.
 
 The workflow tests first, publishes the existing Worker, checks `/health` for
-`20261012-d1-savings-v1`, then initializes the schema and warms `/api/ranking?period=week`.
-`migrations/2026-10-12-shared-cache.sql` contains the same schema for manual SQL deployments.
+`20261016-saved-months-v1`, then initializes the schema and warms `/api/ranking?period=week`.
+`migrations/2026-10-12-shared-cache.sql` and
+`migrations/2026-10-16-month-catalog.sql` provide the cache and month catalog for
+manual SQL deployments. `schema.sql` includes both for a fresh database.
 
 No new paid service or database is created. Existing Instagram tokens and webhook
 configuration remain in Cloudflare. Failed deployment/API checks stop the workflow.
@@ -63,6 +76,7 @@ For a manual deployment from an authenticated environment:
 ```sh
 npm install
 npx wrangler d1 execute cff-instagram-community --remote --file=migrations/2026-10-12-shared-cache.sql
+npx wrangler d1 execute cff-instagram-community --remote --file=migrations/2026-10-16-month-catalog.sql
 npm run deploy
 ```
 
