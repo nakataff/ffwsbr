@@ -82,3 +82,21 @@ Slow mode is validated server-side (5–120 seconds; moderators keep five second
 Reports are deduplicated per reporter/message and rate limited. Deleting a message
 also removes its pin and redacts recent reply previews; audit preserves moderation
 reasons without publishing them in the conversation.
+
+### Emblemas da comunidade (2026-10-16)
+
+Em `admin-perfis.html` → Emblemas, o administrador pode cadastrar a arte,
+conceder ou retirar um emblema pelo @, Instagram vinculado ou link do perfil.
+O primeiro tipo é `verified` (Verificado), disponível sem arte inicial.
+A imagem é opcional e pode ser enviada depois; até lá há um selo provisório.
+Cada pessoa exibe um emblema, acima do avatar e da moldura no perfil, e junto
+ao avatar no chat. Emblemas não concedem cargos ou permissões.
+
+A ação autenticada `emblemAdmin` permite `catalog`, `findPerson`, `saveCatalog`
+e `assign`, restritas ao administrador real. O catálogo pequeno é público
+em `communityEmblemCatalog`; `communityEmblemAssignments/<uid>` permite leitura
+individual, sem listar todos os usuários. `communityEmblemHistory/<uid>` é
+privado, carregado pelo painel em até 20 registros. Todas as gravações são
+feitas no servidor. A arte reutiliza imagens imutáveis em `communityProfileImages`.
+Perfil e chat observam apenas as pessoas visíveis; fechar o chat encerra essas
+assinaturas. A atualização das regras Firebase acompanha esta versão.

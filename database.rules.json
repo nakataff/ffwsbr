@@ -1021,6 +1021,22 @@
     "communityCodeGiftAssignments": {
       ".read": false,
       ".write": false
+    },
+    "communityEmblemCatalog": {
+      ".read": true,
+      ".write": false
+    },
+    "communityEmblemAssignments": {
+      ".read": false,
+      ".write": false,
+      "$uid": {
+        ".read": true,
+        ".write": false
+      }
+    },
+    "communityEmblemHistory": {
+      ".read": false,
+      ".write": false
     }
   }
 }

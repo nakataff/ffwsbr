@@ -22,6 +22,15 @@ async function main(){
   for(const client of [anonymous,alice,mod,admin])for(const key of ['reports','audit','preferences','styles','moderators','reportLimits'])await assertFails(client.ref('globalChat/'+key).once('value'));
   for(const client of [alice,mod,admin])for(const key of ['settings','pinned','identities/alice','preferences/alice','styles/alice'])await assertFails(client.ref('globalChat/'+key).set({roleId:'administrator'}));
   await assertFails(alice.ref('communityAccountRoles/alice/roleId').set('moderator'));
+  await env.withSecurityRulesDisabled(ctx=>ctx.database().ref().update({communityEmblemCatalog:{verified:{title:'Verificado',enabled:true}},communityEmblemAssignments:{alice:{emblemId:'verified'}},communityEmblemHistory:{alice:{entry:{to:'verified',at:1}}}}));
+  await assertSucceeds(anonymous.ref('communityEmblemCatalog').once('value'));
+  await assertSucceeds(anonymous.ref('communityEmblemAssignments/alice').once('value'));
+  for(const client of [anonymous,alice,mod,admin]){
+   await assertFails(client.ref('communityEmblemAssignments').once('value'));
+   await assertFails(client.ref('communityEmblemHistory/alice').once('value'));
+   for(const path of ['communityEmblemCatalog/verified','communityEmblemAssignments/alice','communityEmblemHistory/alice/entry'])await assertFails(client.ref(path).set({emblemId:'verified'}));
+  }
+  console.log('Emblems: public display, no user enumeration, private history and server-only grants passed.');
   console.log('Global chat: bounded public history, private restrictions, and server-only writes passed.');
  }finally{await env.cleanup();}
 }
