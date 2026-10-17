@@ -20,6 +20,25 @@ module.exports=function directory({rows,sql,pagination,key,text,fail,day,now,fin
   const entries=rows('SELECT p.* FROM career_people p WHERE '+filter+' ORDER BY p.norm,p.id LIMIT ? OFFSET ?',...args,limit,offset).map(p=>{const entry=personSummary(p);if(b.review)entry.issues=Object.entries(checks()).filter(([,check])=>rows('SELECT 1 FROM career_people p WHERE p.id=? AND '+check,p.id).length).map(([id])=>id);return entry;});
   return {ok:true,entries,total,limit,offset,hasMore:offset+limit<total};
  }
+ // Public bounded name/alias search backed by current saved career passages.
+ function publicSearch(b){
+  const q=key(text(b.query,80).trim());
+  if(q.length<2)return {ok:true,entries:[],total:0,version:revision()};
+  const limit=12,pattern='%'+q+'%',entries=rows(`SELECT p.* FROM career_people p
+   WHERE p.norm LIKE ? OR EXISTS(SELECT 1 FROM career_aliases a WHERE a.person=p.id AND a.alias LIKE ?)
+   ORDER BY CASE WHEN p.norm=? THEN 0 WHEN p.norm LIKE ? THEN 1 ELSE 2 END,p.norm,p.id LIMIT ?`,
+   pattern,pattern,q,q+'%',limit).map(p=>{
+    const data=JSON.parse(p.data),current=personSummary(p).current;
+    const status=['free_agent','retired'].includes(data.availability)?data.availability:
+      current.length?'active':'unknown';
+    return {id:p.id,name:p.name,kind:p.kind==='staff'?'staff':'player',
+      team:current.map(x=>x.name).join(' · '),
+      role:current[0]?.role||data.defaultRole||'',
+      status,photo:typeof data.photo==='string'&&data.photo.length<500?data.photo:'silhueta.webp',
+      managed:p.revision>1};
+   });
+  return {ok:true,entries,total:entries.length,version:revision()};
+ }
  const conflicts=id=>rows('SELECT DISTINCT b.alias,tm.id,tm.name FROM career_team_aliases a JOIN career_team_aliases b ON a.alias=b.alias AND a.team<>b.team JOIN career_teams tm ON tm.id=b.team WHERE a.team=? ORDER BY tm.norm LIMIT 5',id);
  const duplicate="EXISTS(SELECT 1 FROM career_team_aliases a JOIN career_team_aliases b ON a.alias=b.alias AND a.team<>b.team WHERE a.team=tm.id)";
  function teamSummary(row){const t=JSON.parse(row.data),counts=rows(`SELECT COUNT(DISTINCT CASE WHEN ${live()} AND json_extract(t.data,'$.role')='player' THEN t.person END) AS players,COUNT(DISTINCT CASE WHEN ${live()} AND json_extract(t.data,'$.role')<>'player' THEN t.person END) AS staff,COUNT(DISTINCT CASE WHEN ${live()} THEN t.person END) AS members,COUNT(*) AS tenures,SUM(CASE WHEN json_extract(t.data,'$.status')='unverified' THEN 1 ELSE 0 END) AS unverified FROM career_tenures t JOIN career_people p ON p.id=t.person WHERE t.team=? AND ${visible}`,t.id)[0];return {...t,revision:t.revision||1,state:t.state||'unknown',pageName:t.pageName||t.name,...counts};}
@@ -65,5 +84,5 @@ module.exports=function directory({rows,sql,pagination,key,text,fail,day,now,fin
  }
  function validLogo(value){if(value.length>94000)return false;if(/^data:image\/(webp|png);base64,[A-Za-z0-9+/]+={0,2}$/.test(value))return true;if(/^https:\/\//i.test(value)){try{const u=new URL(value);return !!u.hostname&&!u.username&&!u.password;}catch{return false;}}return /^\/?[A-Za-z0-9_ %().\/-]+\.(webp|png|jpe?g)(?:\?[A-Za-z0-9_=&%.-]+)?$/i.test(value)&&!value.startsWith('//')&&!value.split('/').includes('..');}
  function teamHistory(b){const id=findTeam(b.teamId)?.id;if(!id)throw fail(404,'Equipe não encontrada.');return {ok:true,entries:rows('SELECT id,at,after_revision AS revision FROM career_team_changes WHERE team=? ORDER BY at DESC,rowid DESC LIMIT 20',id)};}
- return {search,teams,resolve,teamDetail,reviewSummary,saveTeamProfile,teamHistory,source};
+ return {search,publicSearch,teams,resolve,teamDetail,reviewSummary,saveTeamProfile,teamHistory,source};
 };
