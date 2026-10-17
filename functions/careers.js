@@ -237,7 +237,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
 sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;
   });
  }
- function publicRead(kind,query){ensure();if(kind==='market'){const result=market.list(query,true);return {...result,version:result.version+'-'+revision()};}if(kind!=='person')return team(query);const p=findPerson(query),entries=p.current.length?team({id:p.current[0].teamId,scope:'current',limit:20}).entries:[];p.teammates=entries.filter(t=>t.personId!==p.id).filter((t,i,a)=>a.findIndex(x=>x.personId===t.personId)===i).map(t=>({id:t.personId,name:t.name,photo:t.photo,role:t.role,teamId:t.teamId,teamName:t.teamName}));return {ok:true,person:p};}
+ function publicRead(kind,query){ensure();if(kind==='search')return directory.publicSearch(query);if(kind==='market'){const result=market.list(query,true);return {...result,version:result.version+'-'+revision()};}if(kind!=='person')return team(query);const p=findPerson(query),entries=p.current.length?team({id:p.current[0].teamId,scope:'current',limit:20}).entries:[];p.teammates=entries.filter(t=>t.personId!==p.id).filter((t,i,a)=>a.findIndex(x=>x.personId===t.personId)===i).map(t=>({id:t.personId,name:t.name,photo:t.photo,role:t.role,teamId:t.teamId,teamName:t.teamName}));return {ok:true,person:p};}
  return {admin,publicRead,ensure,logo(id){ensure();if(!/^[a-f0-9-]{36}$/.test(id||''))return null;const value=rows('SELECT data FROM career_team_logos WHERE id=?',id)[0]?.data;if(!value)return null;const [header,base64]=value.split(',');return {type:header.includes('webp')?'image/webp':'image/png',base64};}};
 }
 module.exports={create,init,key,boundary,bounds,day,ROLES,STATUS};
