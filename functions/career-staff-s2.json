@@ -1,0 +1,139 @@
+{
+  "version": "wb-2026-s2-staff-v1",
+  "edition": "WB 2026 S2",
+  "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/Brazil/2026/Split_2",
+  "description": "Staff listed in the 2026 Split 2 participant rosters; date of employment and post-event departures are not inferred. Unknown/TBD slots omitted.",
+  "people": [
+    {
+      "name": "JOKER",
+      "team": "LOUD SNICKERS",
+      "role": "head_coach",
+      "id": "joker"
+    },
+    {
+      "name": "LIPÃO",
+      "team": "LOS",
+      "role": "head_coach"
+    },
+    {
+      "name": "Jaya",
+      "team": "LOS",
+      "role": "analyst",
+      "id": "jaya"
+    },
+    {
+      "name": "Ribas",
+      "team": "RUSH GAMING",
+      "role": "head_coach"
+    },
+    {
+      "name": "C9",
+      "team": "RUSH GAMING",
+      "role": "analyst"
+    },
+    {
+      "name": "LUUUKING",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "id": "luuuking"
+    },
+    {
+      "name": "Renan",
+      "team": "FLUXO W7M",
+      "role": "analyst",
+      "id": "renan-staff"
+    },
+    {
+      "name": "PUTSGRILO",
+      "team": "TEAM SOLID",
+      "role": "head_coach",
+      "id": "putsgrilo"
+    },
+    {
+      "name": "Jhan",
+      "team": "TEAM SOLID",
+      "role": "analyst"
+    },
+    {
+      "name": "Capgui",
+      "team": "INTZ",
+      "role": "coach"
+    },
+    {
+      "name": "Pereira",
+      "team": "INTZ",
+      "role": "assistant_coach"
+    },
+    {
+      "name": "Abreu",
+      "team": "RISE GAMING",
+      "role": "head_coach"
+    },
+    {
+      "name": "King9",
+      "team": "RISE GAMING",
+      "role": "analyst"
+    },
+    {
+      "name": "Queiroz",
+      "team": "ALPHA7",
+      "role": "head_coach"
+    },
+    {
+      "name": "FRANK",
+      "team": "ALPHA7",
+      "role": "analyst"
+    },
+    {
+      "name": "WF9",
+      "team": "INFLUENCE RAGE",
+      "role": "head_coach"
+    },
+    {
+      "name": "PEDRO",
+      "team": "INFLUENCE RAGE",
+      "role": "analyst"
+    },
+    {
+      "name": "VT",
+      "team": "LOOPS",
+      "role": "head_coach"
+    },
+    {
+      "name": "Bryan",
+      "team": "LOOPS",
+      "role": "analyst"
+    },
+    {
+      "name": "CL7",
+      "team": "CIVIS",
+      "role": "head_coach"
+    },
+    {
+      "name": "LZZ",
+      "team": "CIVIS",
+      "role": "analyst"
+    },
+    {
+      "name": "Azay",
+      "team": "AFROGAMES",
+      "role": "head_coach",
+      "id": "azay"
+    },
+    {
+      "name": "DARK",
+      "team": "CPT VOX",
+      "role": "head_coach"
+    },
+    {
+      "name": "João Pedro",
+      "team": "SX TET",
+      "role": "head_coach"
+    },
+    {
+      "name": "SANTOS",
+      "team": "SX TET",
+      "role": "analyst"
+    }
+  ]
+}
