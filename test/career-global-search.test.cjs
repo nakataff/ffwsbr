@@ -60,3 +60,27 @@ test('local suggestions stay fast while server lookup waits for a pause in typin
   assert.deepEqual(queries,['santos']);
  }finally{dom.window.close();}
 });
+
+
+test('Joker staff and LYON player are separate search suggestions even when the live career API is unavailable',async()=>{
+ const actual=JSON.parse(fs.readFileSync(require.resolve('../search-index-lite.json'),'utf8'));
+ const player=actual.items.find(x=>x.id==='joker'),coach=actual.items.find(x=>x.id==='joker-coach');
+ assert.equal(player.type,'player');assert.match(player.sub,/LYON/i);
+ assert.equal(coach.type,'staff');assert.match(coach.sub,/LOUD/);
+ assert.equal(coach.url,'/carreira.html?id=joker-coach');
+ assert.notEqual(player.id,coach.id);
+ const dom=new JSDOM('<input id="global-search-desktop"><div id="search-results-desktop"></div>',{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}),w=dom.window;
+ w.requestIdleCallback=()=>{};w.AbortSignal=AbortSignal;
+ w.fetch=async url=>String(url).includes('search-index-lite.json')?{ok:true,json:async()=>actual}:String(url).includes('teams.json')?{ok:true,json:async()=>({teams:[]})}:Promise.reject(Error('Quota Cloudflare excedida'));
+ try{
+  w.eval(fs.readFileSync(require.resolve('../js/search-fast.min.js'),'utf8'));w.document.dispatchEvent(new w.Event('DOMContentLoaded',{bubbles:true}));
+  const input=w.document.querySelector('#global-search-desktop');input.value='joker';input.dispatchEvent(new w.Event('input',{bubbles:true}));
+  await sleep(500);
+  const result=w.document.querySelector('#search-results-desktop');
+  assert(result.querySelector('[data-fast-type="staff"][data-fast-id="joker-coach"]'));
+  assert(result.querySelector('[data-fast-type="player"][data-fast-id="joker"]'));
+  assert(result.querySelector('[data-fast-type="player"][data-fast-id="joker7"]'));
+  input.value='joker coach';input.dispatchEvent(new w.Event('input',{bubbles:true}));await sleep(160);
+  assert(result.querySelector('[data-fast-id="joker-coach"]'));
+ }finally{w.close();}
+});
