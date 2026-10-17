@@ -4,7 +4,8 @@ module.exports=function({sql,rows,transaction,text,fail,key,now,day,roles,findTe
  let ready=false;
  const get=id=>{const r=rows('SELECT data,revision FROM career_market WHERE id=?',id)[0];return r?{...JSON.parse(r.data),revision:r.revision}:null;};
  const url=(s,max=1500)=>{s=text(s,max);if(!s)return '';if(s.startsWith('/')&&!s.startsWith('//')&&!/[<>"\\]/.test(s))return s;let u;try{u=new URL(s);}catch{throw fail(400,'Use um endereço HTTPS válido.');}if(u.protocol!=='https:'||u.username||u.password)throw fail(400,'Use um endereço HTTPS válido.');return u.href;};
- const photo=s=>url(s||'');
+ // Catalogue portraits can be site assets; source links still require HTTPS.
+ const photo=value=>{const s=text(value,1500);if(/^[\p{L}\p{N}_ .()/-]+\.(?:webp|png|jpe?g|gif|avif)$/iu.test(s)&&!s.startsWith('/')&&!s.split('/').includes('..'))return s;return url(s);};
  function ensure(){if(ready)return;sql.exec(`CREATE TABLE IF NOT EXISTS career_market(id TEXT PRIMARY KEY,person TEXT,publication TEXT,status TEXT,sort_at INTEGER,data TEXT,revision INTEGER);
  CREATE INDEX IF NOT EXISTS career_market_public ON career_market(publication,sort_at DESC,id);
  CREATE INDEX IF NOT EXISTS career_market_person ON career_market(person);
