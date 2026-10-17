@@ -125,3 +125,60 @@ test('a manual staff competition is selected and saved with its cargo and never 
 test('late competition responses cannot reveal private editor content after logout',async()=>{const f=await fixture({competitionsSeed:COMPETITION_FIXTURE});try{f.$('[data-career-person=p0]').click();await tick();f.$('[data-career-new-tenure]').click();const actual=f.w.careerAdmin;let release;f.w.careerAdmin=async(...args)=>{if(args[1]==='competitionOptions')await new Promise(r=>release=r);return actual(...args);};const root=f.$('[data-career-competitions]');root.open=true;root.dispatchEvent(new f.w.Event('toggle'));await tick();f.auth.currentUser=null;f.w.__authChange(null);release();await tick();assert(!root.textContent);assert(!f.$('#career-editor').open);assert(f.$('#career-dashboard').hidden);}finally{f.close();}});
 
 test('public participation details stay collapsed, escape edition names and preserve existing statistics and compact team arrows',async()=>{const client=await import('../js/career-client.mjs'),dom=new JSDOM('<main id="person"><div class="profile-name">Santos</div><div id="kills">123</div></main>',{url:'https://centralfreefire.com.br/test',runScripts:'outside-only'}),w=dom.window;Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,tenureCards:client.tenureCards,careerTrail:client.careerTrail,personHref:client.personHref,teamHref:client.teamHref,periodLabel:client.periodLabel,readCareer:async()=>({person:{id:'person-santos',name:'Santos',kind:'staff',managed:true,availability:'free_agent',current:[],teammates:[],tenures:[{id:'t1',teamId:'loud',teamName:'LOUD',role:'analyst',status:'ended',start:{},end:{date:'2026-10-12'},competitions:[{id:'laff',name:'LAFF 2026 S1 <script>teste</script>',family:'LAFF'}]}]}})});try{w.eval(fs.readFileSync(require.resolve('../js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));await w.mountPersonCareer(w.document.querySelector('#person'),{id:'person-santos'});const details=w.document.querySelector('[data-career-competition-details]');assert(details);assert(!details.open);assert(details.textContent.includes('LAFF 2026 S1'));assert(!details.querySelector('script'));assert.equal(w.document.querySelector('#kills').textContent,'123');assert(w.document.querySelector('.career-trail-arrow'));}finally{w.close();}});
+
+
+test('standalone staff career has competitive-style hero and detailed passages without inventing awards',async()=>{
+ const client=await import('../js/career-client.mjs'),
+ dom=new JSDOM('<body><div id="career-public-root"></div></body>',{url:'https://centralfreefire.com.br/carreira.html?id=person-santos',runScripts:'outside-only'}),
+ w=dom.window;
+ const person={id:'person-santos',name:'Santos',kind:'staff',photo:'https://images.example.com/santos.webp',managed:true,
+  availability:'free_agent',freeAgentSince:{date:'2026-10-12'},current:[],teammates:[],
+  tenures:[
+   {id:'t1',teamId:'sx-tet',teamName:'SX TET',teamPageName:'SX TET',logo:'sx-tet.webp',role:'analyst',status:'ended',order:1,start:{edition:'LAFF 2026 S1'},end:{date:'2026-10-12'},notes:'Saída oficial <script>alert(1)</script>',competitions:[{id:'laff-26',name:'LAFF 2026 S1 <script>alert(1)</script>',family:'LAFF'}]},
+   {id:'t2',teamId:'fluxo',teamName:'Fluxo W7M',logo:'fluxo.webp',role:'coach',status:'ended',order:2,start:{date:'2025-06'},end:{date:'2025-11'},competitions:[]}
+  ]};
+ Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,
+  tenureCards:client.tenureCards,careerTrail:client.careerTrail,personHref:client.personHref,
+  teamHref:client.teamHref,periodLabel:client.periodLabel,readCareer:async()=>({person})});
+ try{
+  w.eval(fs.readFileSync(require.resolve('../js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));
+  await w.mountPersonCareer(w.document.querySelector('#career-public-root'),{id:person.id},{standalone:true});
+  const root=w.document.querySelector('#career-public-root');
+  assert(root.querySelector('.career-pro-hero'));
+  assert.equal(root.querySelector('.career-pro-heading h1').textContent,'Santos');
+  assert.equal(root.querySelector('.career-pro-role').textContent,'Coach');
+  assert.match(root.querySelector('.career-pro-availability').textContent,/Sem equipe \/ F\/A/);
+  assert.equal(root.querySelector('.career-pro-portrait img').getAttribute('src'),'https://images.example.com/santos.webp');
+  assert.equal(root.querySelectorAll('.career-pro-metrics strong')[0].textContent,'2');
+  assert.equal(root.querySelectorAll('.career-pro-metrics strong')[2].textContent,'1');
+  assert.equal(root.querySelectorAll('.career-pro-tenure').length,2);
+  assert(root.querySelector('[data-career-passage=t1] a[href*="equipe-historica"]'));
+  assert.match(root.querySelector('[data-career-passage=t1]').textContent,/Analista/);
+  assert.match(root.querySelector('[data-career-passage=t1]').textContent,/LAFF 2026 S1/);
+  assert.match(root.querySelector('[data-career-passage=t1]').textContent,/Não informada/);
+  assert(!root.querySelector('script'));
+  assert(!/TÍTULOS COLETIVOS|PRÊMIOS INDIVIDUAIS/.test(root.textContent));
+  assert.match(root.querySelector('.career-pro-tenure-footer').textContent,/Ver página da equipe/);
+ }finally{w.close();}
+});
+test('standalone staff profile accepts no photo or passage without breaking presentation',async()=>{
+ const client=await import('../js/career-client.mjs'),dom=new JSDOM('<body><div id="career-public-root"></div></body>',{url:'https://centralfreefire.com.br/carreira.html?id=person-new',runScripts:'outside-only'}),w=dom.window;
+ Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,tenureCards:client.tenureCards,careerTrail:client.careerTrail,personHref:client.personHref,teamHref:client.teamHref,periodLabel:client.periodLabel,readCareer:async()=>({person:{id:'person-new',name:'João Pedro',kind:'staff',availability:'unknown',current:[],tenures:[],photo:''}})});
+ try{w.eval(fs.readFileSync(require.resolve('../js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));await w.mountPersonCareer(w.document.querySelector('#career-public-root'),{id:'person-new'},{standalone:true});const root=w.document.querySelector('#career-public-root');assert.match(root.querySelector('.career-pro-empty').textContent,/Nenhuma passagem/);assert.equal(root.querySelector('.career-pro-portrait img').getAttribute('src'),'silhueta.webp');assert.equal(root.querySelectorAll('.career-pro-metrics strong')[0].textContent,'0');}finally{w.close();}
+});
+test('admin can edit staff photograph independently of team logos and career records',async()=>{
+ const f=await fixture();try{
+  f.$('[data-career-section=staff]').click();await tick();f.$('#career-new-person').click();
+  let form=f.$('#career-create-people form');form.elements.personName.value='Técnico Novo';form.elements.personRole.value='analyst';form.dispatchEvent(new f.w.SubmitEvent('submit',{bubbles:true,cancelable:true}));await tick();
+  f.$('[data-career-tab=profile]').click();form=f.$('#career-profile-form');
+  assert(form.elements.photo);
+  assert.equal(form.querySelector('[data-career-photo-preview').getAttribute('src'),'silhueta.webp');
+  form.elements.photo.value='https://example.com/staff/tecnico.webp';form.elements.photo.dispatchEvent(new f.w.Event('change'));
+  assert.equal(form.querySelector('[data-career-photo-preview]').getAttribute('src'),'https://example.com/staff/tecnico.webp');
+  form.dispatchEvent(new f.w.SubmitEvent('submit',{bubbles:true,cancelable:true}));await tick();
+  const saved=f.core.publicRead('person',{name:'Técnico Novo'}).person;
+  assert.equal(saved.photo,'https://example.com/staff/tecnico.webp');
+  assert.equal(saved.tenures.length,0);
+  assert.equal(f.calls.findLast(c=>c.operation==='savePerson').body.photo,'https://example.com/staff/tecnico.webp');
+ }finally{f.close();}
+});
