@@ -118,3 +118,13 @@
 .career-photo-edit input{display:block;width:100%;box-sizing:border-box}
 .career-photo-edit small{display:block;margin-top:8px;line-height:1.5;color:#85aabd}
 @media(max-width:480px){.career-photo-edit{align-items:flex-start}.career-photo-edit>img{width:58px;height:58px;flex-basis:58px}}
+
+
+/* Distinguish athletic retirement from retirement from the esports workforce. */
+.career-ex-player{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.career-ex-player>input{flex:0 0 auto;margin:3px 0 0;accent-color:#00c8ff}
+.career-ex-player>span{display:grid;gap:5px;min-width:0}
+.career-ex-player strong{font-size:13px;color:#e9f5ff}
+.career-ex-player small{font-size:11px;line-height:1.5;color:#87aabc}
+.career-pro-ex-player{display:inline-block;vertical-align:middle;width:max-content;max-width:100%;margin:0 8px 10px 0;padding:5px 10px;border-radius:20px;border:1px solid #877344;background:#352d19;color:#ffda8d;font-size:11px;font-weight:750}
+.career-inline-current>.career-pro-ex-player{display:block;margin-top:9px;width:fit-content}
