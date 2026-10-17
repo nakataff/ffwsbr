@@ -18,7 +18,7 @@ import adminEditor from '../../functions/admin-profile-editor.js';
 import {verifyToken} from './auth.js';
 const ORIGINS=new Set(['https://centralfreefire.com.br','https://www.centralfreefire.com.br']);
 const LIVE='https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2';
-const DAY=861800000;
+const DAY=86400000;
 function logoUrl(value){try{const u=new URL(String(value||''));return u.protocol==='https:'&&['centralfreefire.com.br','www.centralfreefire.com.br'].includes(u.hostname)&&!u.port&&!u.username&&!u.password&&u.href.length<=2048?u.href:'';}catch{return '';}}
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 export default {
@@ -58,6 +58,12 @@ export class NotificationHub extends DurableObject {
    CREATE INDEX IF NOT EXISTS pending_check ON pending(check_at);
    CREATE TABLE IF NOT EXISTS limits(uid TEXT PRIMARY KEY,test_at INTEGER,request_at INTEGER,requests INTEGER);
    CREATE TABLE IF NOT EXISTS meta(id TEXT PRIMARY KEY,data TEXT);`);
+  // Older builds treated one day as almost ten, retaining automatic checks for
+  // nearly 70 days. Correct existing deadlines once, without touching results.
+  if(!this.rows("SELECT data FROM meta WHERE id='pending-retention-v2'").length)this.ctx.storage.transactionSync(()=>{
+   this.sql.exec('UPDATE pending SET expires=expires-?',7*(861800000-DAY));
+   this.sql.exec("INSERT INTO meta VALUES('pending-retention-v2','1')");
+  });
   economyCore.initEconomy(this.sql);
  }
  rows(query,...args){return this.sql.exec(query,...args).toArray();}

@@ -189,3 +189,24 @@ test('private task routes authenticate, isolate storage and reuse admin devices 
  tasks.sql.exec('UPDATE task_queue SET due=0');await tasks.alarm();assert.equal(payloads.at(-1).url,'/admin-tarefas.html?view=day');assert(payloads.at(-1).body.includes('Conferir a Central'));
  const history=await (await call('/tasks/api',admin)).json();assert(history.items.some(i=>i.view==='day'));assert.equal(main.rows('SELECT * FROM inbox WHERE uid=?','member').length,0);
 });
+
+test('automatic result checks expire after seven real days and legacy deadlines migrate only once',async()=>{
+ const DAY=86400000,LEGACY_DAY=861800000,at=Date.now(),c=context();
+ c.storage.sql.exec('CREATE TABLE pending(id TEXT PRIMARY KEY,tournament TEXT,day INTEGER,dropno INTEGER,check_at INTEGER,expires INTEGER)');
+ c.storage.sql.exec('INSERT INTO pending VALUES(?,?,?,?,?,?)','recent','ffws-br-final',1,1,at+DAY,at-2*DAY+7*LEGACY_DAY);
+ c.storage.sql.exec('INSERT INTO pending VALUES(?,?,?,?,?,?)','expired','ffws-br-final',1,2,at+DAY,at-8*DAY+7*LEGACY_DAY);
+ const h=new NotificationHub(c,{});
+ assert.equal(h.rows('SELECT expires FROM pending WHERE id=?','recent')[0].expires,at+5*DAY);
+ assert.equal(h.rows('SELECT expires FROM pending WHERE id=?','expired')[0].expires,at-DAY);
+ h.sql.exec('INSERT INTO snapshots VALUES(?,?,?,?,?)','historic',1,1,'{"status":"official","points":100}',at);
+ const restarted=new NotificationHub(c,{});
+ assert.equal(restarted.rows('SELECT expires FROM pending WHERE id=?','recent')[0].expires,at+5*DAY);
+ await restarted.alarm();
+ assert.equal(restarted.rows('SELECT id FROM pending WHERE id=?','expired').length,0);
+ assert.equal(restarted.rows('SELECT data FROM snapshots WHERE tournament=?','historic')[0].data,'{"status":"official","points":100}');
+ const call=async(action,body)=>{const r=await restarted.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+admin},body:JSON.stringify({action,...body})}));assert.equal(r.status,200,await r.text());};
+ await call('configure',configure);official=null;
+ const before=Date.now();await call('publish',publish);const after=Date.now();
+ const deadline=restarted.rows('SELECT expires FROM pending WHERE id=?',id+':2:17')[0].expires;
+ assert(deadline>=before+7*DAY&&deadline<=after+7*DAY);
+});
