@@ -172,3 +172,35 @@ test('quick creation supports profile only, active staff, unknown departure date
 test('ended staff passage with an edition-only arrival publishes the departure on its end date and can explicitly leave F/A',async()=>{const s=setup();const created=await s.core.admin(admin,{operation:'createPeople',nonce:nonce(),mode:'none',people:[{name:'Santos',role:'analyst'}]});const p=created.people[0],request={operation:'saveTenure',nonce:nonce(),personId:p.id,revision:p.revision,publishMarket:true,leaveFreeAgent:true,confirmNewTeam:true,tenure:{teamName:'SX TET',role:'analyst',status:'ended',start:{edition:'LAFF 2026 S1',certainty:'confirmed'},end:{date:'12/10/2026',certainty:'confirmed'},order:1,notes:'Saída junto com o elenco'}};const r=await s.core.admin(admin,request);assert(r.market);assert.equal(r.person.availability,'free_agent');assert.equal(r.person.current.length,0);assert.equal(r.person.tenures[0].start.date,'');assert.equal(r.person.tenures[0].start.edition,'LAFF 2026 S1');assert.equal(r.person.freeAgentSince.date,'2026-10-12');const feed=s.core.publicRead('market',{});assert.equal(feed.total,1);assert.equal(feed.entries[0].timeOrigem,'SX TET');assert.equal(feed.entries[0].timeDestino,'');assert.equal(feed.entries[0].atualizacao,'12/10/2026');assert.equal(feed.entries[0].role,'Analista');assert(feed.entries[0].notes.includes('Saída junto com o elenco'));assert.equal(r.market.careerExitTenureId,r.person.tenures[0].id);assert.deepEqual(await s.core.admin(admin,request),r);const again=await s.core.admin(admin,{...request,nonce:nonce(),revision:r.person.revision,tenure:{...request.tenure,id:r.person.tenures[0].id}});assert(again.marketAlreadyPublished);assert.equal(s.core.publicRead('market',{}).total,1);});
 test('publishing an ended historic passage preserves a later team and refuses an incorrect F/A change atomically',async()=>{const s=setup();let p=(await edit(s,'saveTenure',{tenure:tenure({status:'ended',end:{date:'2025-01-01'}})})).person;const old=p.tenures[0];p=(await edit(s,'saveTenure',{tenure:tenure({teamId:undefined,teamName:'W7M',order:2,start:{date:'2025-01-02'}})})).person;await assert.rejects(edit(s,'saveTenure',{tenure:{...old,notes:'Não deve salvar'},publishMarket:true,leaveFreeAgent:true}),{status:409});assert.equal(s.core.publicRead('market',{}).total,0);assert.equal(s.core.publicRead('person',{id:'p0'}).person.revision,p.revision);assert.equal(s.core.publicRead('person',{id:'p0'}).person.tenures[0].notes,'');const r=await edit(s,'saveTenure',{tenure:old,publishMarket:true});assert.equal(r.person.current[0].teamName,'W7M');assert.equal(r.person.availability,'active');assert.equal(s.core.publicRead('market',{}).entries[0].timeDestino,'W7M');});
 test('ended editor publishes an existing individual draft without duplicating it, and rejects future F/A dates',async()=>{const s=setup();let p=(await edit(s,'saveTenure',{tenure:tenure({status:'ended',end:{date:'2026-10-12'}})})).person;await edit(s,'savePerson',{name:p.name,kind:'player',availability:'free_agent'});let list=await s.core.admin(admin,{operation:'marketDepartureCandidates',teamId:'loud'});await s.core.admin(admin,exportRequest(list,{publication:'draft'}));p=s.core.publicRead('person',{id:'p0'}).person;assert.equal(s.core.publicRead('market',{}).total,0);const r=await edit(s,'saveTenure',{tenure:p.tenures[0],publishMarket:true,leaveFreeAgent:true});assert.equal(r.market.publication,'published');assert.equal(s.core.publicRead('market',{}).total,1);assert.equal((await s.core.admin(admin,{operation:'marketList'})).total,1);await assert.rejects(edit(s,'saveTenure',{tenure:{...p.tenures[0],end:{date:'2099-12-01'}},publishMarket:true,leaveFreeAgent:true}),{status:400});assert.equal(s.core.publicRead('person',{id:'p0'}).person.tenures[0].end.date,'2026-10-12');});
+
+
+test('public name search follows current career team and includes new staff profiles without private fields',async()=>{
+ const s=setup();
+ const before=s.core.publicRead('search',{query:'Nick0'});
+ assert.equal(before.entries[0].id,'p0');
+ assert.equal(before.entries[0].status,'unknown');
+ let person=(await edit(s,'saveTenure',{tenure:tenure()})).person;
+ let listing=s.core.publicRead('search',{query:'Jogador 00'});
+ assert.equal(listing.entries[0].team,'LOUD');
+ assert.equal(listing.entries[0].status,'active');
+ const previous=person.current[0];
+ person=(await edit(s,'transfer',{fromTenureId:previous.id,departure:{date:'2025-08-01'},tenure:tenure({teamId:undefined,teamName:'W7M',start:{date:'2025-08-02'}})})).person;
+ listing=s.core.publicRead('search',{query:'Nick0'});
+ assert.equal(listing.entries[0].team,'W7M');
+ assert.equal(listing.entries[0].status,'active');
+ const created=await s.core.admin(admin,{operation:'createPeople',nonce:nonce(),people:[{name:'Santos',role:'analyst'}],mode:'ended',teamId:'loud',start:{edition:'LAFF 2026 S1'},end:{date:'2026-10-12'}});
+ assert.equal(created.people.length,1);
+ const result=s.core.publicRead('search',{query:'santos'});
+ assert.equal(result.total,1);
+ const staff=result.entries[0];
+ assert.equal(staff.kind,'staff');
+ assert.equal(staff.team,'');
+ assert.equal(staff.status,'free_agent');
+ assert.equal(staff.role,'analyst');
+ assert(staff.id.startsWith('person-'));
+ assert.equal(s.core.publicRead('person',{id:staff.id}).person.tenures[0].teamName,'LOUD');
+ assert(!JSON.stringify(result).includes('email'));
+ assert(!JSON.stringify(result).includes('tenures'));
+ assert.equal(s.core.publicRead('search',{query:'s'}).total,0);
+ assert(s.core.publicRead('search',{query:'Jogador'}).entries.length<=12);
+});
