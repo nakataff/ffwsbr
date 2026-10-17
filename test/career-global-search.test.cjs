@@ -20,7 +20,7 @@ test('global search takes current team from live careers, finds new staff and fa
  try{
   w.eval(fs.readFileSync(require.resolve('../js/search-fast.min.js'),'utf8'));
   w.document.dispatchEvent(new w.Event('DOMContentLoaded',{bubbles:true}));
-  const search=async query=>{input.value=query;input.dispatchEvent(new w.Event('input',{bubbles:true}));await sleep(170);};
+  const search=async query=>{input.value=query;input.dispatchEvent(new w.Event('input',{bubbles:true}));await sleep(430);};
   await search('mt7');
   assert.equal(results.querySelectorAll('[data-fast-type=player]').length,1);
   assert.match(results.textContent,/LOUD/);
@@ -32,5 +32,31 @@ test('global search takes current team from live careers, finds new staff and fa
   await search('offline');
   assert(results.querySelector('[data-fast-id=offline]'));
   assert(queries.includes('mt7')&&queries.includes('santos'));
+ }finally{dom.window.close();}
+});
+
+test('local suggestions stay fast while server lookup waits for a pause in typing',async()=>{
+ const dom=new JSDOM('<input id="global-search-desktop"><div id="search-results-desktop"></div>',{url:'https://centralfreefire.com.br/index.html',runScripts:'outside-only'}),w=dom.window;
+ const queries=[],input=w.document.querySelector('input'),results=w.document.querySelector('#search-results-desktop');
+ w.requestIdleCallback=()=>{};w.AbortSignal=AbortSignal;
+ w.fetch=async url=>{
+  const target=String(url);
+  if(target.includes('search-index-lite.json'))return {ok:true,json:async()=>staticIndex};
+  if(target.includes('teams.json'))return {ok:true,json:async()=>({teams:[]})};
+  queries.push(new URL(target).searchParams.get('query'));
+  return {ok:true,json:async()=>({entries:[]})};
+ };
+ const type=q=>{input.value=q;input.dispatchEvent(new w.Event('input',{bubbles:true}));};
+ try{
+  w.eval(fs.readFileSync(require.resolve('../js/search-fast.min.js'),'utf8'));
+  w.document.dispatchEvent(new w.Event('DOMContentLoaded',{bubbles:true}));
+  type('mt7');await sleep(170);
+  assert(results.querySelector('[data-fast-id=mt7]'));
+  assert.deepEqual(queries,[]);
+  type('sant');await sleep(120);type('santo');await sleep(120);type('santos');await sleep(430);
+  assert.deepEqual(queries,['santos']);
+  type('santos');await sleep(430);assert.deepEqual(queries,['santos']);
+  type('ca');await sleep(120);type('');await sleep(430);
+  assert.deepEqual(queries,['santos']);
  }finally{dom.window.close();}
 });

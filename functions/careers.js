@@ -24,8 +24,10 @@ const bounds=(b,end=false)=>!b?.date?'':b.precision==='year'?b.date+(end?'-12-31
 function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS career_people(id TEXT PRIMARY KEY,name TEXT,norm TEXT,kind TEXT,data TEXT,revision INTEGER,updated_at INTEGER);
  CREATE INDEX IF NOT EXISTS career_people_norm ON career_people(norm,id);
  CREATE TABLE IF NOT EXISTS career_aliases(alias TEXT,person TEXT,PRIMARY KEY(alias,person));
+ CREATE INDEX IF NOT EXISTS career_aliases_person ON career_aliases(person,alias);
  CREATE TABLE IF NOT EXISTS career_teams(id TEXT PRIMARY KEY,name TEXT,norm TEXT,data TEXT);
  CREATE TABLE IF NOT EXISTS career_team_aliases(alias TEXT,team TEXT,PRIMARY KEY(alias,team));
+ CREATE INDEX IF NOT EXISTS career_team_aliases_team ON career_team_aliases(team,alias);
  CREATE TABLE IF NOT EXISTS career_tenures(id TEXT PRIMARY KEY,person TEXT,team TEXT,ord INTEGER,data TEXT);
  CREATE INDEX IF NOT EXISTS career_tenures_person ON career_tenures(person,ord,id);
  CREATE INDEX IF NOT EXISTS career_tenures_team ON career_tenures(team,person);

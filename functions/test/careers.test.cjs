@@ -222,3 +222,23 @@ test('profile photo is managed independently of role, team and competition histo
  assert.equal(updated.photo,'silhueta.webp');
  assert.equal(updated.current[0].teamName,'LOUD');
 });
+
+test('name searches use indexed alias lookups instead of scanning every alias for every person or team',async()=>{
+ const sqlite=new DatabaseSync(':memory:'),queries=[];
+ const sql={exec(q,...args){let result=[];for(const query of q.split(';').filter(s=>s.trim())){queries.push({query,args});const statement=sqlite.prepare(query);result=statement.columns().length?statement.all(...args):(statement.run(...args),[]);}return result;}};
+ const transaction=fn=>{sqlite.exec('BEGIN');try{const r=fn();sqlite.exec('COMMIT');return r;}catch(e){sqlite.exec('ROLLBACK');throw e;}};
+ try{
+  const core=C.create({sql,transaction,now:()=>Date.parse('2026-10-17T12:00:00Z')});core.ensure();queries.length=0;
+  assert(core.publicRead('search',{query:'cauan'}).entries.some(p=>p.id==='cauan7'));
+  assert.equal(core.publicRead('search',{query:'zzzzunknown'}).entries.length,0);
+  assert((await core.admin(admin,{operation:'search',query:'cauan'})).entries.some(p=>p.id==='cauan7'));
+  assert((await core.admin(admin,{operation:'teams',query:'loud'})).entries.length);
+  const searches=queries.filter(({query})=>query.includes('EXISTS(SELECT 1 FROM career_aliases a')||query.includes('EXISTS(SELECT 1 FROM career_team_aliases a'));
+  assert(searches.length>=5);
+  for(const {query,args} of searches){
+   const plans=sqlite.prepare('EXPLAIN QUERY PLAN '+query).all(...args).map(p=>p.detail);
+   assert(!plans.some(p=>/^SCAN a\b/.test(p)),plans.join('\n'));
+   assert(plans.some(p=>/SEARCH a USING .*INDEX.*\((person|team)=\?\)/.test(p)),plans.join('\n'));
+  }
+ }finally{sqlite.close();}
+});
