@@ -168,6 +168,19 @@ jobs:
             test "$attempt" -lt 8 || exit 1
             sleep 5
           done
+      - name: Inspect live careers roster
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output career-live-check.json --write-out '%{http_code}' 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/search?query=luuuking')
+            echo "Careers public search HTTP $status (attempt $attempt)"
+            if test "$status" = 200 && node -e 'const j=require("./career-live-check.json");if(j.ok!==true||!Array.isArray(j.entries))process.exit(1);console.log("Live career names available:",j.entries.map(p=>p.name).join(", "));'; then
+              break
+            fi
+            head -c 900 career-live-check.json || true
+            echo
+            test "$attempt" -lt 6 || exit 1
+            sleep 5
+          done
       - name: Confirm interaction ranking database access
         run: |
           for attempt in 1 2 3 4 5 6 7 8; do
