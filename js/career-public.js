@@ -47,7 +47,7 @@ function standalonePerson(p){
  return `<div class="career-pro-profile${p.kind==='staff'?' is-staff':''}">
  <section class="career-pro-hero" aria-label="Identificação de ${esc(p.name)}">
   <div class="career-pro-portrait"><img src="${esc(photo)}" alt="Foto de ${esc(p.name)}" onerror="this.onerror=null;this.src='/silhueta.webp'" decoding="async"></div>
-  <div class="career-pro-heading"><span class="career-pro-eyebrow">${p.kind==='staff'?'COMISSÃO TÉCNICA':'CARREIRA PROFISSIONAL'}</span><h1>${esc(p.name)}</h1><p class="career-pro-role">${esc(role)}</p><span class="career-pro-availability"><span aria-hidden="true"></span>${esc(status)}</span>${p.availability==='free_agent'&&p.freeAgentSince?.date?`<p class="career-pro-since">Sem equipe desde ${esc(periodLabel(p.freeAgentSince))}</p>`:''}</div>
+  <div class="career-pro-heading"><span class="career-pro-eyebrow">${p.kind==='staff'?'COMISSÃO TÉCNICA':'CARREIRA PROFISSIONAL'}</span><h1>${esc(p.name)}</h1><p class="career-pro-role">${esc(role)}</p>${p.playerRetired?'<span class="career-pro-ex-player">Ex-jogador · carreira como atleta encerrada</span>':''}<span class="career-pro-availability"><span aria-hidden="true"></span>${esc(status)}</span>${p.availability==='free_agent'&&p.freeAgentSince?.date?`<p class="career-pro-since">Sem equipe desde ${esc(periodLabel(p.freeAgentSince))}</p>`:''}</div>
  </section>
  <section class="career-pro-metrics" aria-label="Resumo do histórico">
   <div><strong>${teams.size}</strong><span>${plurality(teams.size,'Equipe registrada','Equipes registradas')}</span></div>
@@ -77,7 +77,7 @@ function applyPerson(root,p,{standalone=false}={}){
  const kicker=root.querySelector('.profile-kicker,.cff-player-hero-kicker');const label=p.current.length?(p.kind==='staff'?'COMISSÃO TÉCNICA':'JOGADOR EM ATIVIDADE'):p.availability==='free_agent'?'SEM EQUIPE / F/A':p.availability==='retired'?'APOSENTADO':'EQUIPE A CONFIRMAR';if(kicker&&kicker.textContent!==label)kicker.textContent=label;
  root.querySelectorAll('.profile-team,.profile-team-logo,.cff-player-hero-team-btn,.cff-player-hero-team-orbit,.cff-rosterless-badge,#pp-team,.profile-teammates:not([data-career-teammates]),#pp-teammates-section').forEach(hideLegacy);
  if(!p.current.length)root.querySelectorAll('.profile-badge').forEach(node=>{if(/^(titular|reserva|capitão|saiu)$/i.test(node.textContent.trim()))hideLegacy(node);});
- let current=root.querySelector('[data-career-current]');if(!current){current=document.createElement('div');current.dataset.careerCurrent='1';current.className='career-inline-current';const header=root.querySelector('.profile-identity,.cff-player-hero-content,.player-profile-header');(header||list.parentNode).append(current);}setHtml(current,currentHtml(p));
+ let current=root.querySelector('[data-career-current]');if(!current){current=document.createElement('div');current.dataset.careerCurrent='1';current.className='career-inline-current';const header=root.querySelector('.profile-identity,.cff-player-hero-content,.player-profile-header');(header||list.parentNode).append(current);}setHtml(current,currentHtml(p)+(p.playerRetired?'<span class="career-pro-ex-player">Ex-jogador · carreira como atleta encerrada</span>':''));
  let teammates=root.querySelector('[data-career-teammates]');const peers=p.current.length?(p.teammates||[]):[];
  if(!peers.length){teammates?.remove();return;}
  if(!teammates){teammates=document.createElement('details');teammates.className='profile-teammates career-teammates';teammates.dataset.careerTeammates='1';current.after(teammates);}
