@@ -45,6 +45,13 @@ for p in read('player-profile-summary-2026.json').get('players',[]):
  for field,edition in [('ffws','WB 2026 S1'),('ewc','EWC 2026')]:
   row=p.get(field) or {}
   if float(row.get('matches') or 0)>0:add(p.get('name',''),edition,row.get('team',''))
+# Independently verified coaching results are deliberately separate from player statistics.
+# Keeping the source here prevents a deployment rebuild from removing staff editions.
+for entry in read('player-data/staff/verified-coaching-competitions.json')['entries']:
+ person=entry['personId']
+ role=entry['role']
+ if role not in ('coach','head_coach','assistant_coach','analyst','manager'):continue
+ add(person,entry['edition'],entry['team'],role)
 # Actual future event in the site catalogue; its participants are not inferred.
 event('FFWS Global Finals 2026')
 for name in ['LAFF 2025 S1','LAFF 2026 S1']:event(name)
