@@ -182,3 +182,24 @@ test('admin can edit staff photograph independently of team logos and career rec
   assert.equal(f.calls.findLast(c=>c.operation==='savePerson').body.photo,'https://example.com/staff/tecnico.webp');
  }finally{f.close();}
 });
+
+
+test('team history uses sourced read-only S2 staff when the career service reaches its database quota',async()=>{
+ const client=await import('../js/career-client.mjs'),dom=new JSDOM('<body><main id="career-public-root"></main></body>',{url:'https://centralfreefire.com.br/carreira.html?team=FLUXO%20W7M',runScripts:'outside-only'}),w=dom.window;
+ const roster={edition:'WB 2026 S2',source:'https://liquipedia.net/freefire/Free_Fire_World_Series/Brazil/2026/Split_2',
+  people:[{name:'LUUUKING',team:'FLUXO W7M',role:'head_coach'},{name:'Renan',team:'FLUXO W7M',role:'analyst'},{name:'SANTOS',team:'SX TET',role:'analyst'}]};
+ Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,tenureCards:client.tenureCards,careerTrail:client.careerTrail,personHref:client.personHref,teamHref:client.teamHref,periodLabel:client.periodLabel,
+  readCareer:async()=>{throw Error('Quota exhausted');},
+  fetch:async url=>{assert.match(String(url),/wb-2026-s2-public/);return {ok:true,json:async()=>roster};}});
+ try{
+  w.eval(fs.readFileSync(require.resolve('../js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));
+  w.mountTeamCareer(w.document.querySelector('#career-public-root'),'FLUXO W7M',{standalone:true});await tick();
+  const panel=w.document.querySelector('[data-career-team]');
+  assert(panel.querySelector('[data-staff-s2-public]'));
+  assert.match(panel.textContent,/LUUUKING/);assert.match(panel.textContent,/Renan/);
+  assert.doesNotMatch(panel.textContent,/SANTOS/);
+  assert.match(panel.textContent,/Lista histórica do campeonato/);
+  assert.doesNotMatch(panel.textContent,/Vínculo atual|Ativo/);
+  assert(panel.querySelector('[data-career-team-retry]'));
+ }finally{w.close();}
+});
