@@ -194,7 +194,12 @@ jobs:
           JS
       - name: Confirm public Mercado feed
         run: |
-          curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output market-health.json 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/market?limit=20'
+          # Durable Objects can briefly serve their previous class while the new Worker propagates.
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 20 --output market-health.json 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/market?limit=20'; then break; fi
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
           node <<'JS'
           const result=JSON.parse(require('node:fs').readFileSync('market-health.json','utf8'));
           if(result.ok!==true||!Array.isArray(result.entries)||result.entries.length>20||!Number.isInteger(result.total)||result.entries.some(e=>e.publication||e.actor))process.exit(1);
