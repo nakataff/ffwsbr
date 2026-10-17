@@ -9571,11 +9571,11 @@
       "currentTeam": "LYON",
       "history": [
         {
-          "team": "TEAM SOLID",
-          "cargo": "Coach",
-          "source": "Planilha de passagens",
+          "team": "LYON",
+          "cargo": "Jogador",
+          "source": "Cadastro do jogador da LYON · EWC 2026",
           "order": 1,
-          "logo": "Team Solid 2.webp"
+          "logo": "lyon.webp"
         }
       ]
     },
@@ -10323,6 +10323,34 @@
           "source": "WB 2026 S2",
           "order": 1,
           "logo": "Team Solid 2.webp"
+        }
+      ]
+    },
+    "joker-coach": {
+      "id": "joker-coach",
+      "name": "JOKER (coach)",
+      "aliases": [
+        "JOKER (coach)",
+        "JOKER Coach",
+        "JOKER (Brazilian Coach)"
+      ],
+      "photo": "silhueta.webp",
+      "hasProfile": true,
+      "currentTeam": "LOUD SNICKERS",
+      "history": [
+        {
+          "team": "TEAM SOLID",
+          "cargo": "Coach",
+          "source": "Planilha de passagens",
+          "order": 1,
+          "logo": "Team Solid 2.webp"
+        },
+        {
+          "team": "LOUD SNICKERS",
+          "cargo": "Head Coach",
+          "source": "Inscrição na FFWS BR 2026 S2",
+          "order": 2,
+          "logo": "loud 2.webp"
         }
       ]
     }
@@ -16153,8 +16181,8 @@
           "hasProfile": false
         },
         {
-          "id": "joker",
-          "name": "Joker",
+          "id": "joker-coach",
+          "name": "JOKER (coach)",
           "photo": "silhueta.webp",
           "cargo": "Coach",
           "order": 1,

@@ -4,10 +4,11 @@
   "description": "Comissão registrada como participante da FFWS BR 2026 S2. Não confirma vínculo atual, transferências ou desligamentos após a inscrição.",
   "people": [
     {
-      "name": "JOKER",
+      "name": "JOKER (coach)",
       "team": "LOUD SNICKERS",
       "role": "head_coach",
-      "logo": "loud 2.webp"
+      "logo": "loud 2.webp",
+      "id": "joker-coach"
     },
     {
       "name": "LIPÃO",

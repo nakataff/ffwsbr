@@ -11,10 +11,10 @@
         "Joker"
       ],
       "photo": "silhueta.webp",
-      "country": "",
+      "country": "cl",
       "role": "SUPORTE",
       "currentTeam": "LYON",
-      "currentTeamLogo": "escudo.webp",
+      "currentTeamLogo": "lyon.webp",
       "competitions": [
         {
           "key": "ewc-2026",
@@ -50,10 +50,10 @@
       ],
       "teamHistory": [
         {
-          "team": "TEAM SOLID",
-          "cargo": "Coach",
-          "logo": "Team Solid 2.webp",
-          "edition": ""
+          "team": "LYON",
+          "cargo": "Jogador",
+          "logo": "lyon.webp",
+          "edition": "EWC 2026"
         }
       ],
       "allTime": {

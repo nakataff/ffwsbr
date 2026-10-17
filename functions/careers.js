@@ -4,6 +4,7 @@ const DEFAULT_REGISTRATION=require('./career-registrations.json');
 const STAFF_S2=require('./career-staff-s2.json');
 const STAFF_HISTORY=require('./career-staff-history.json');
 const createStaffHistory=require('./career-staff-history');
+const createJokerIdentity=require('./career-joker-identity');
 const createDirectory=require('./career-directory');
 const createMarket=require('./career-market');
 const createCompetitions=require('./career-competitions');
@@ -40,11 +41,11 @@ function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS career_people(id TEXT PR
  CREATE TABLE IF NOT EXISTS career_team_changes(id TEXT PRIMARY KEY,team TEXT,at INTEGER,actor TEXT,before_data TEXT,after_revision INTEGER);
  CREATE INDEX IF NOT EXISTS career_team_changes_team ON career_team_changes(team,at DESC);
  CREATE TABLE IF NOT EXISTS career_meta(id TEXT PRIMARY KEY,value INTEGER);`);}
-function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,staffRoster=seed===DEFAULT_SEED?STAFF_S2:null,staffHistory=seed===DEFAULT_SEED?STAFF_HISTORY:null,now=()=>Date.now(),competitionsSeed=seed===DEFAULT_SEED?COMPETITIONS_SEED:{...COMPETITIONS_SEED,people:{}}}){
+function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,staffRoster=seed===DEFAULT_SEED?STAFF_S2:null,staffHistory=seed===DEFAULT_SEED?STAFF_HISTORY:null,repairIdentities=seed===DEFAULT_SEED,now=()=>Date.now(),competitionsSeed=seed===DEFAULT_SEED?COMPETITIONS_SEED:{...COMPETITIONS_SEED,people:{}}}){
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  function aliases(id,values,table='career_aliases',column='person'){sql.exec('DELETE FROM '+table+' WHERE '+column+'=?',id);for(const alias of new Set(values.map(key).filter(Boolean)))sql.exec('INSERT OR IGNORE INTO '+table+' VALUES(?,?)',alias,id);}
  let ready=false;
- function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();syncStaffRoster();historicalStaff.ensure();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();syncStaffRoster();historicalStaff.ensure();ready=true;}
+ function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();ready=true;}
  const revision=()=>rows("SELECT value FROM career_meta WHERE id='version'")[0]?.value||1;
  const records=id=>rows('SELECT data FROM career_tenures WHERE person=? ORDER BY ord,id',id).map(r=>JSON.parse(r.data));
  const active=t=>!t.deleted&&['active','loan','substitute'].includes(t.status)&&(!bounds(t.start)||bounds(t.start)<=day(now()))&&(!bounds(t.end,true)||bounds(t.end,true)>=day(now()));
@@ -89,7 +90,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
     const row=rows('SELECT * FROM career_people WHERE id=?',personId)[0];
     // Never reintroduce a staff member as active after an administrator has manually
     // recorded a release, transfer, new role or F/A status.
-    if(row&&rows("SELECT 1 FROM career_changes WHERE person=? AND kind NOT IN ('registrationSync','staffRosterSync','historicalRosterSync') LIMIT 1",personId).length)continue;
+    if(row&&rows("SELECT 1 FROM career_changes WHERE person=? AND kind NOT IN ('registrationSync','staffRosterSync','historicalRosterSync','identitySplit') LIMIT 1",personId).length)continue;
     const before=row?snapshot(personId):null;
     const old=row?JSON.parse(row.data):{};
     const hadPlayerRole=records(personId).some(t=>t.role==='player');
@@ -191,6 +192,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   }
   audit(id,identity,'marketTransfer',before);return {tenureId,revision:before.person.revision+1};
  }
+ const identityRepairs=createJokerIdentity({sql,rows,transaction,seed,enabled:repairIdentities,key,now,records,snapshot,audit,aliases,active});
  const historicalStaff=createStaffHistory({sql,rows,transaction,data:staffHistory,key,now,findTeam,records,snapshot,audit});
  const competitions=createCompetitions({sql,rows,key,text,fail,findTeam,records,data:competitionsSeed,participations:historicalStaff.participations,getPerson:id=>{const row=rows('SELECT data FROM career_people WHERE id=?',id)[0];return row?JSON.parse(row.data):null;}});
  const market=createMarket({sql,rows,transaction,text,fail,key,now,day,roles:ROLES,findTeam,person:id=>{const row=rows('SELECT name,data FROM career_people WHERE id=?',id)[0];if(!row)throw fail(404,'Pessoa não encontrada.');const p=JSON.parse(row.data);return {name:row.name,photo:p.photo};},applyCareer:applyMarketCareer,seed:seed===DEFAULT_SEED?require('./market-seed.json'):[]});
@@ -265,7 +267,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   if(op==='teamHistory')return directory.teamHistory(b);
   if(op==='person')return {ok:true,person:person(text(b.personId,100)),roles:ROLES,statuses:STATUS};
   if(op==='departureCandidates')return departureCandidates(b);
-  if(op==='history')return {ok:true,entries:rows('SELECT id,at,actor,kind,after_revision AS revision,CASE WHEN LENGTH(before_data)=4 THEN 0 ELSE 1 END AS canUndo FROM career_changes WHERE person=? ORDER BY at DESC,rowid DESC LIMIT 20',text(b.personId,100))};
+  if(op==='history')return {ok:true,entries:rows("SELECT id,at,actor,kind,after_revision AS revision,CASE WHEN LENGTH(before_data)=4 OR kind IN ('identitySplit','identitySplitManual') THEN 0 ELSE 1 END AS canUndo FROM career_changes WHERE person=? ORDER BY at DESC,rowid DESC LIMIT 20",text(b.personId,100))};
   if(op==='summary')return {ok:true,people:rows('SELECT COUNT(*) AS n FROM career_people')[0].n,teams:rows('SELECT COUNT(*) AS n FROM career_teams')[0].n,tenures:rows("SELECT COUNT(*) AS n FROM career_tenures WHERE COALESCE(json_extract(data,'$.deleted'),0)=0")[0].n,version:revision()};
   if(!['competitionCreate','createPeople','savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave','marketDelete','marketExportDepartures'].includes(op))throw fail(400,'Operação desconhecida.');
   if(!/^[a-f0-9-]{36}$/i.test(b.nonce||''))throw fail(400,'Reabra o formulário para preparar a alteração.');
@@ -308,7 +310,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
     if(['active','loan','substitute'].includes(t.status)){const profile=JSON.parse(rows('SELECT data FROM career_people WHERE id=?',id)[0].data);profile.availability='active';profile.affiliationSource='manual';profile.affiliationEdition=registration?.edition||'';delete profile.freeAgentSince;delete profile.freeAgentReason;sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(profile),id);}
    }else if(op==='releasePerson'){release(id,b.tenureIds,departureInfo(b));
    }else if(op==='archiveTenure'){const row=rows('SELECT data FROM career_tenures WHERE id=? AND person=?',text(b.tenureId,150),id)[0];if(!row)throw fail(404,'Passagem não encontrada.');const t=JSON.parse(row.data);t.deleted=true;sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(t),t.id);
-   }else if(op==='undo'){const change=rows('SELECT * FROM career_changes WHERE id=? AND person=?',text(b.changeId,100),id)[0];if(!change||change.after_revision!==before.person.revision)throw fail(409,'Só é possível desfazer a última alteração deste cadastro.');const original=JSON.parse(change.before_data);if(!original)throw fail(400,'Para preservar o histórico, um cadastro novo não é removido por esta ação.');restore(original,id);sql.exec('UPDATE career_people SET revision=? WHERE id=?',before.person.revision,id);}
+   }else if(op==='undo'){const change=rows('SELECT * FROM career_changes WHERE id=? AND person=?',text(b.changeId,100),id)[0];if(!change||change.after_revision!==before.person.revision)throw fail(409,'Só é possível desfazer a última alteração deste cadastro.');if(['identitySplit','identitySplitManual'].includes(change.kind))throw fail(400,'A separação de identidades não pode ser desfeita. Edite o cadastro correto de cada pessoa.');const original=JSON.parse(change.before_data);if(!original)throw fail(400,'Para preservar o histórico, um cadastro novo não é removido por esta ação.');restore(original,id);sql.exec('UPDATE career_people SET revision=? WHERE id=?',before.person.revision,id);}
    audit(id,identity,op,before);const result={ok:true,person:person(id)};
    if(b.publishMarket===true&&['transfer','saveTenure'].includes(op)){
     const t=result.person.tenures.find(t=>t.id===b.tenure?.id)||result.person.tenures.find(t=>!before.tenures.some(old=>old.id===t.id));

@@ -328,16 +328,16 @@
         "passageOrder": 1
       },
       {
-        "id": "joker",
-        "name": "Joker",
+        "id": "joker-coach",
+        "name": "JOKER (coach)",
         "photo": "silhueta.webp",
-        "currentTeam": "LYON",
+        "currentTeam": "LOUD SNICKERS",
         "isCurrent": false,
         "hasProfile": true,
         "cargo": "Coach",
-        "kills": 88,
-        "matches": 29,
-        "avg": 3.03,
+        "kills": 0,
+        "matches": 0,
+        "avg": 0,
         "editions": [],
         "passageOrder": 1
       },

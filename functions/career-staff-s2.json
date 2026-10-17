@@ -5,10 +5,10 @@
   "description": "Staff listed in the 2026 Split 2 participant rosters; date of employment and post-event departures are not inferred. Unknown/TBD slots omitted.",
   "people": [
     {
-      "name": "JOKER",
+      "name": "JOKER (coach)",
       "team": "LOUD SNICKERS",
       "role": "head_coach",
-      "id": "joker"
+      "id": "joker-coach"
     },
     {
       "name": "LIPÃO",
