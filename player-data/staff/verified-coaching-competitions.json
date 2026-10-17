@@ -1,0 +1,61 @@
+{
+  "description": "Verified coaching tournament participation. Not athlete kills, matches, or dates of employment. Preserve separate staff identities.",
+  "entries": [
+    {
+      "personId": "luuuking",
+      "edition": "FFWS BR 2024",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/Brazil/2024"
+    },
+    {
+      "personId": "luuuking",
+      "edition": "FFWS Global Finals 2024",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/2024"
+    },
+    {
+      "personId": "luuuking",
+      "edition": "FFWS BR 2025 S1",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/Brazil/2025/Split_1"
+    },
+    {
+      "personId": "luuuking",
+      "edition": "FFWS BR 2025 S2",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/Brazil/2025/Split_2"
+    },
+    {
+      "personId": "luuuking",
+      "edition": "FFWS Global Finals 2025",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/2025"
+    },
+    {
+      "personId": "luuuking",
+      "edition": "FFWS BR 2026 S1",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/Brazil/2026/Split_1"
+    },
+    {
+      "personId": "luuuking",
+      "edition": "EWC 2026",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Esports_World_Cup/2026"
+    },
+    {
+      "personId": "luuuking",
+      "edition": "FFWS BR 2026 S2",
+      "team": "FLUXO W7M",
+      "role": "head_coach",
+      "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/Brazil/2026/Split_2"
+    }
+  ]
+}
