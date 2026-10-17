@@ -90,6 +90,23 @@ export async function mountPersonCareer(root,query,{standalone=false}={}){
  try{const [result]=await Promise.all([readCareer('person',query),window.cffLoadTeamLogoMap?.().catch(()=>null)]);if(loaded.get(root)!==entry||!root.isConnected)return;style();entry.person=result.person;applyPerson(root,result.person,{standalone});}
  catch(error){if(standalone&&loaded.get(root)===entry)root.innerHTML=`<section class="career-empty"><h1>Histórico indisponível</h1><p>${esc(error.message)}</p><button type="button" data-career-retry>Tentar novamente</button></section>`;root.querySelector('[data-career-retry]')?.addEventListener('click',()=>{loaded.delete(root);mountPersonCareer(root,query,{standalone});});}
 }
+
+const STAFF_S2_URL='/player-data/staff/wb-2026-s2-public.json?v=20261017-staff-s2-v1';
+function canonicalStaffTeam(name){
+ const key=String(name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ return ({loud:'loudsnickers',fluxo:'fluxow7m',alpha7esports:'alpha7',afgesports:'afrogames',loopssports:'loops',civissports:'civis'})[key]||key;
+}
+async function staffRosterFallback(team){
+ try{
+  const response=await fetch(STAFF_S2_URL,{cache:'force-cache'});
+  if(!response.ok)throw Error('Cadastro do campeonato indisponível');
+  const data=await response.json();
+  const entries=(data.people||[]).filter(p=>canonicalStaffTeam(p.team)===canonicalStaffTeam(team));
+  if(!entries.length)return '';
+  const rows=entries.map(p=>'<div class="career-staff-fallback-row"><span class="career-staff-fallback-name">'+esc(p.name)+'</span><span>'+esc(ROLES[p.role]||p.role)+'</span></div>').join('');
+  return '<section class="career-staff-tournament-fallback" data-staff-s2-public><h3>Comissão registrada · WB 2026 S2</h3><p class="career-hint">Lista histórica do campeonato. Não confirma vínculo atual nem reverte saídas ou transferências registradas no painel.</p>'+rows+'<p class="career-hint"><a href="'+esc(data.source)+'" target="_blank" rel="noopener noreferrer">Fonte: participantes da FFWS BR 2026 S2 ↗</a></p></section>';
+ }catch{return '';}
+}
 export function mountTeamCareer(root,name,{standalone=false}={}){
  const marker='team:'+name;if(loaded.get(root)?.key===marker)return;const entry={key:marker,scope:'current',offset:0,request:0};loaded.set(root,entry);style();let panel;
  const rosterHeading=root.querySelector('#cff-current-roster h2');if(rosterHeading&&rosterHeading.textContent==='Elenco atual')rosterHeading.textContent='Elenco da WB 2026 S2';
@@ -97,7 +114,7 @@ export function mountTeamCareer(root,name,{standalone=false}={}){
  else{panel=root.querySelector('[data-career-team]');if(!panel){panel=document.createElement('section');panel.className='career-panel career-public';panel.dataset.careerTeam='1';const anchor=root.querySelector('#cff-current-roster')||root.querySelector('#tp-players-cards-container');if(anchor)anchor.after(panel);else root.append(panel);}}
  panel.innerHTML='<h2>Histórico de vínculos</h2><p class="career-hint">Consulte as entradas, saídas e cargos desta equipe.</p>';
  async function load(){const request=++entry.request;panel.innerHTML='<p role="status">Carregando vínculos desta equipe…</p>';try{const data=await readCareer('team',{name,scope:entry.scope,offset:String(entry.offset)});if(loaded.get(root)!==entry||request!==entry.request||!root.isConnected)return;panel.innerHTML=`<h2>Jogadores e comissão · vínculos</h2><p class="career-public-subtitle">O elenco de uma competição e os vínculos atuais podem ser diferentes.</p><div class="career-scope-buttons"><button type="button" data-career-scope="current" aria-pressed="${entry.scope==='current'}">Vínculos atuais</button><button type="button" data-career-scope="all" aria-pressed="${entry.scope==='all'}">Todas as passagens</button></div>${data.entries.map(t=>`<article class="career-roster-row"><a href="${personHref(t.personId)}">${esc(t.name)}</a><div><small>${ROLES[t.role]} · ${STATUSES[t.status]}</small><small>${esc(periodLabel(t.start))} → ${esc(periodLabel(t.end))}</small></div></article>`).join('')||'<p class="career-hint">Nenhum vínculo confirmado neste filtro. Os registros importados podem ser consultados em Todas as passagens.</p>'}<div class="career-pagination"><button type="button" data-career-page="previous"${data.offset?'':' disabled'}>Anterior</button><span>${data.total?data.offset+1:0}–${data.offset+data.entries.length} de ${data.total}</span><button type="button" data-career-page="next"${data.hasMore?'':' disabled'}>Próxima</button></div>`;
- }catch(error){if(loaded.get(root)===entry)panel.innerHTML=`<h2>Histórico de vínculos</h2><p class="career-hint">${esc(error.message)}</p><button type="button" data-career-team-retry>Tentar novamente</button>`;}}
+ }catch(error){const roster=await staffRosterFallback(name);if(loaded.get(root)===entry&&request===entry.request)panel.innerHTML=`<h2>Histórico de vínculos</h2><p class="career-hint">Consulta de carreiras temporariamente indisponível.</p>${roster}<button type="button" data-career-team-retry>Tentar novamente</button>`;}}
  panel.addEventListener('click',event=>{const scope=event.target.closest('[data-career-scope]'),page=event.target.closest('[data-career-page]');if(scope){entry.scope=scope.dataset.careerScope;entry.offset=0;load();}else if(page&&!page.disabled){entry.offset=Math.max(0,entry.offset+(page.dataset.careerPage==='next'?20:-20));load();}else if(event.target.closest('[data-career-team-retry]'))load();});
  if(standalone||!('IntersectionObserver' in window))load();else{const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){observer.disconnect();load();}},{rootMargin:'200px'});observer.observe(panel);}
 }
