@@ -41,6 +41,12 @@ on:
       - 'test/account-direct-actions.test.cjs'
       - 'test/code-vouchers-ui.test.cjs'
       - 'functions/careers.js'
+      - 'functions/career-staff-history.js'
+      - 'functions/career-staff-history.json'
+      - 'functions/test/career-staff-history.test.cjs'
+      - 'scripts/build-career-staff-history.py'
+      - 'team-aliases.json'
+      - 'novos-torneios/lbff-*.json'
       - 'functions/test/career-competitions.test.cjs'
       - 'functions/career-competitions.js'
       - 'functions/career-competitions-seed.json'
@@ -116,13 +122,13 @@ jobs:
       - run: npm install --no-audit --no-fund
         working-directory: cloudflare/camp-notifications
       - name: Build current WB registration index
-        run: python3 scripts/build-career-registrations.py && python3 scripts/build-career-competitions.py
+        run: python3 scripts/build-career-registrations.py && python3 scripts/build-career-staff-history.py && python3 scripts/build-career-competitions.py
       - run: npm test
         working-directory: cloudflare/camp-notifications
       - name: Test profile results and account invitation
         run: node --test test/account-welcome.test.mjs test/camp-results-view.test.mjs test/economy-wheel.test.mjs test/admin-economy-form.test.mjs
       - name: Test automatic profile rewards
-        run: node --test functions/test/admin-tasks-service.test.cjs functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/profile-emblems.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs functions/test/profile-checkin.test.cjs functions/test/career-competitions.test.cjs functions/test/careers.test.cjs functions/test/career-staff-s2.test.cjs
+        run: node --test functions/test/admin-tasks-service.test.cjs functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/profile-emblems.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs functions/test/profile-checkin.test.cjs functions/test/career-competitions.test.cjs functions/test/careers.test.cjs functions/test/career-staff-s2.test.cjs functions/test/career-staff-history.test.cjs
       - name: Test profile checkin and monthly goal interfaces
         env:
           NODE_PATH: /tmp/cff-coins-test/node_modules
@@ -132,7 +138,7 @@ jobs:
           npm install --prefix /tmp/cff-coins-test --no-audit --no-fund
           node --test --test-timeout=10000 test/global-chat-ui.test.cjs test/profile-emblems.test.cjs test/profile-coins.test.cjs test/code-vouchers-ui.test.cjs test/account-direct-actions.test.cjs test/code-returns-ui.test.cjs test/profile-inventory.test.cjs test/career-interfaces.test.cjs test/career-global-search.test.cjs test/career-market-public.test.cjs test/career-team-identities.test.cjs test/historical-team-fixes.test.cjs
       - name: Check points interfaces
-        run: node --check js/search-fast.min.js && node --check functions/career-competitions.js && node --check js/career-competitions-admin.mjs && node --check js/career-person-create.mjs && node --check functions/career-market.js && node --check js/career-market-admin.mjs && node --check js/career-market-export.mjs && node --check js/mercado-status-performance-hotfix.min.js && node --check functions/career-directory.js && node --check js/career-directory-admin.mjs && node --check js/career-team-identities.mjs && node --check js/gift-archive.mjs && node --check js/profile-inventory.mjs && node --check functions/economy-code-returns.js && node --check js/code-return.mjs && node --check js/admin-code-returns.js && node --check js/code-gift-opener.mjs && node --check js/account-instagram-connect.mjs && node --check js/recipient-code-gifts.js && node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check functions/economy-vouchers.js && node --check js/admin-code-vouchers.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js && node --check js/profile-checkin.mjs && node --check js/admin-careers.js && node --check js/career-client.mjs && node --check js/career-public.js && node --check js/player-roster-status-repair.js && node --check js/career-departures.js
+        run: node --check js/search-fast.min.js && node --check functions/career-staff-history.js && node --check functions/career-competitions.js && node --check js/career-competitions-admin.mjs && node --check js/career-person-create.mjs && node --check functions/career-market.js && node --check js/career-market-admin.mjs && node --check js/career-market-export.mjs && node --check js/mercado-status-performance-hotfix.min.js && node --check functions/career-directory.js && node --check js/career-directory-admin.mjs && node --check js/career-team-identities.mjs && node --check js/gift-archive.mjs && node --check js/profile-inventory.mjs && node --check functions/economy-code-returns.js && node --check js/code-return.mjs && node --check js/admin-code-returns.js && node --check js/code-gift-opener.mjs && node --check js/account-instagram-connect.mjs && node --check js/recipient-code-gifts.js && node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check functions/economy-vouchers.js && node --check js/admin-code-vouchers.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js && node --check js/profile-checkin.mjs && node --check js/admin-careers.js && node --check js/career-client.mjs && node --check js/career-public.js && node --check js/player-roster-status-repair.js && node --check js/career-departures.js
       - name: Check referral account verification access
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -170,7 +176,7 @@ jobs:
           done
       - name: Inspect live careers roster
         run: |
-          status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output career-live-check.json --write-out '%{http_code}' 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/search?query=luuuking')
+          status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output career-live-check.json --write-out '%{http_code}' 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/search?query=souto')
           echo "Public careers API HTTP $status"
           if test "$status" != 200; then
             echo 'Cloudflare Durable Objects may have reached its free-tier rows-read quota.'
