@@ -27,6 +27,7 @@ export function initCareerDepartures({call,getSelected,canOpen,onBusy,onSaved}){
  function open(single){
   if(!canOpen())return;request++;mode=single?'person':'team';person=single?getSelected():null;if(single&&!person?.id)return;
   team=null;page=null;offset=0;choices.clear();form.reset();nonce=crypto.randomUUID();form.elements.date.value=today();message('');$('#career-release-team').hidden=single;
+  $('#career-release-market-option').hidden=single;
   $('#career-release-title').textContent=single?'Deixar sem equipe / F/A':'Saída em massa por equipe';
   $('#career-release-list-title').textContent=single?'Confira os vínculos que serão encerrados':'Quem vai sair?';
   if(single){choices.set(person.id,{personId:person.id,name:person.name,revision:person.revision,tenureIds:person.tenures.filter(ongoing).map(t=>t.id)});renderPage();}
@@ -57,7 +58,7 @@ export function initCareerDepartures({call,getSelected,canOpen,onBusy,onSaved}){
   event.preventDefault();if(busy||!form.reportValidity())return;const members=[...choices.values()].filter(p=>p.tenureIds.length).map(({personId,revision,tenureIds})=>({personId,revision,tenureIds}));
   if(mode==='team'&&(!team||!members.length)){message('Busque a equipe e selecione as passagens.');return;}
   if(mode==='person'&&(getSelected()?.id!==person.id||getSelected()?.revision!==person.revision)){message('O cadastro mudou. Reabra esta janela.');return;}
-  const values=new FormData(form),body={nonce,departure:{date:values.get('date'),edition:values.get('edition'),certainty:values.get('certainty')},reason:values.get('reason'),source:values.get('source'),sourceUrl:values.get('sourceUrl'),...(mode==='person'?{personId:person.id,revision:person.revision,tenureIds:choices.get(person.id)?.tenureIds||[]}:{teamId:team.id,members})};
+  const values=new FormData(form),body={nonce,publishMarket:mode==='team'&&values.get('publishMarket')==='on',departure:{date:values.get('date'),edition:values.get('edition'),certainty:values.get('certainty')},reason:values.get('reason'),source:values.get('source'),sourceUrl:values.get('sourceUrl'),...(mode==='person'?{personId:person.id,revision:person.revision,tenureIds:choices.get(person.id)?.tenureIds||[]}:{teamId:team.id,members})};
   busy=true;onBusy(true);const controls=[...form.elements],disabled=controls.map(el=>el.disabled);controls.forEach(el=>el.disabled=true);message('Registrando as saídas em conjunto…');
   try{const result=await call(mode==='person'?'releasePerson':'bulkDeparture',body);dialog.close?.();dialog.removeAttribute('open');request++;await onSaved(result,mode);}
   catch(error){message(error.message+' Se houve falha de conexão, tente novamente sem mudar os dados: o mesmo pedido não é aplicado duas vezes.');}
