@@ -168,6 +168,19 @@ jobs:
             test "$attempt" -lt 8 || exit 1
             sleep 5
           done
+      - name: Diagnose public career requests
+        working-directory: cloudflare/camp-notifications
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          timeout 15s npx wrangler tail cff-camp-notifications --format=json --status=error > /tmp/cff-career-tail.log 2>&1 &
+          tailpid=$!
+          sleep 4
+          curl --silent --show-error --output /tmp/cff-career-response --write-out 'Career probe HTTP %{http_code}\n' 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/search?query=luuuking' || true
+          wait $tailpid || true
+          echo 'Exception message(s), if provided by Cloudflare:'
+          grep -E -i 'exception|error|stack|sqlite|durable|TypeError|ReferenceError|RangeError' /tmp/cff-career-tail.log | cut -c 1-800 | head -30 || true
       - name: Inspect live careers roster
         run: |
           for attempt in 1 2 3 4 5 6; do
