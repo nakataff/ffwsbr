@@ -1,6 +1,7 @@
 'use strict';
 const DEFAULT_SEED=require('./career-seed.json');
 const DEFAULT_REGISTRATION=require('./career-registrations.json');
+const STAFF_S2=require('./career-staff-s2.json');
 const createDirectory=require('./career-directory');
 const createMarket=require('./career-market');
 const createCompetitions=require('./career-competitions');
@@ -35,11 +36,11 @@ function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS career_people(id TEXT PR
  CREATE TABLE IF NOT EXISTS career_team_changes(id TEXT PRIMARY KEY,team TEXT,at INTEGER,actor TEXT,before_data TEXT,after_revision INTEGER);
  CREATE INDEX IF NOT EXISTS career_team_changes_team ON career_team_changes(team,at DESC);
  CREATE TABLE IF NOT EXISTS career_meta(id TEXT PRIMARY KEY,value INTEGER);`);}
-function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,now=()=>Date.now(),competitionsSeed=seed===DEFAULT_SEED?COMPETITIONS_SEED:{...COMPETITIONS_SEED,people:{}}}){
+function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,staffRoster=seed===DEFAULT_SEED?STAFF_S2:null,now=()=>Date.now(),competitionsSeed=seed===DEFAULT_SEED?COMPETITIONS_SEED:{...COMPETITIONS_SEED,people:{}}}){
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  function aliases(id,values,table='career_aliases',column='person'){sql.exec('DELETE FROM '+table+' WHERE '+column+'=?',id);for(const alias of new Set(values.map(key).filter(Boolean)))sql.exec('INSERT OR IGNORE INTO '+table+' VALUES(?,?)',alias,id);}
  let ready=false;
- function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();ready=true;}
+ function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();syncStaffRoster();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();syncStaffRoster();ready=true;}
  const revision=()=>rows("SELECT value FROM career_meta WHERE id='version'")[0]?.value||1;
  const records=id=>rows('SELECT data FROM career_tenures WHERE person=? ORDER BY ord,id',id).map(r=>JSON.parse(r.data));
  const active=t=>!t.deleted&&['active','loan','substitute'].includes(t.status)&&(!bounds(t.start)||bounds(t.start)<=day(now()))&&(!bounds(t.end,true)||bounds(t.end,true)>=day(now()));
@@ -61,13 +62,80 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   const entries=rows('SELECT id,name,kind,revision FROM career_people p WHERE '+where+' ORDER BY norm,id LIMIT ? OFFSET ?',...args,limit,offset).map(p=>{const all=records(p.id);return {personId:p.id,name:p.name,kind:p.kind,revision:p.revision,tenures:all.filter(x=>x.teamId===t.id&&!x.deleted&&(ongoing(x)||include&&x.status==='unverified')).map(({id,teamName,role,status,start,end})=>({id,teamName,role,status,start,end})),otherTeams:[...new Set(all.filter(x=>ongoing(x)&&x.teamId!==t.id).map(x=>x.teamName))]};});
   return {ok:true,team:t,entries,total,limit,offset,hasMore:offset+limit<total};
  }
+ function syncStaffRoster(){
+  if(!staffRoster?.version||!Array.isArray(staffRoster.people))return;
+  const marker='staff-roster:'+staffRoster.version;
+  if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+  transaction(()=>{
+   if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+   for(const raw of staffRoster.people){
+    const team=findTeam(raw.team);if(!team||!ROLES[raw.role])continue;
+    const wanted=key(raw.name);if(!wanted)continue;
+    let personId=raw.id&&rows('SELECT id FROM career_people WHERE id=?',raw.id)[0]?.id||'';
+    if(!personId){
+     const matches=rows('SELECT DISTINCT p.id FROM career_aliases a JOIN career_people p ON p.id=a.person WHERE a.alias=? LIMIT 3',wanted);
+     if(matches.length===1)personId=matches[0].id;
+     else if(matches.length>1){
+      const withTeam=matches.filter(m=>records(m.id).some(t=>t.teamId===team.id&&t.role===raw.role));
+      if(withTeam.length===1)personId=withTeam[0].id;else continue;
+     }
+    }
+    const created=!personId;
+    if(created)personId='staff-s2-'+wanted;
+    const row=rows('SELECT * FROM career_people WHERE id=?',personId)[0];
+    // Never reintroduce a staff member as active after an administrator has manually
+    // recorded a release, transfer, new role or F/A status.
+    if(row&&rows("SELECT 1 FROM career_changes WHERE person=? AND kind NOT IN ('registrationSync','staffRosterSync') LIMIT 1",personId).length)continue;
+    const before=row?snapshot(personId):null;
+    const old=row?JSON.parse(row.data):{};
+    const hadPlayerRole=records(personId).some(t=>t.role==='player');
+    const data={...old,id:personId,name:row?.name||raw.name,
+      aliases:old.aliases||[raw.name],photo:old.photo||'silhueta.webp',
+      kind:old.kind||'staff',defaultRole:raw.role,
+      availability:'active',currentTeamHint:team.name,
+      affiliationSource:'staffRoster',affiliationEdition:staffRoster.edition,
+      ...(personId==='luuuking'?{playerRetired:true}:{})};
+    if(created){
+     sql.exec('INSERT INTO career_people VALUES(?,?,?,?,?,?,?)',personId,data.name,key(data.name),data.kind,JSON.stringify(data),1,now());
+     aliases(personId,[personId,data.name,...data.aliases]);
+    }else{
+     delete data.freeAgentSince;delete data.freeAgentReason;
+     sql.exec('UPDATE career_people SET data=?,updated_at=? WHERE id=?',JSON.stringify(data),now(),personId);
+    }
+    const all=records(personId),existing=all.filter(t=>!t.deleted&&t.teamId===team.id&&t.role===raw.role).at(-1);
+    if(existing){
+     // A documented S2 roster confirms the role, but not the exact joining date.
+     if(existing.status==='unverified'||existing.status==='ended'&&!existing.end?.date){
+      existing.status='active';existing.end={date:'',edition:'',precision:'unknown',certainty:'unknown'};
+      if(!existing.start?.date&&!existing.start?.edition)existing.start={date:'',edition:staffRoster.edition,precision:'edition',certainty:'estimated'};
+      existing.source=staffRoster.source;existing.notes=existing.notes||'Inscrição de comissão na WB 2026 S2. Data exata de contratação não confirmada.';
+      sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(existing),existing.id);
+     }
+    }else{
+     const id='staff-s2-tenure-'+personId+'-'+team.id+'-'+raw.role;
+     const t={id,teamId:team.id,teamName:team.name,role:raw.role,status:'active',
+      order:Math.max(0,...all.map(t=>t.order||0))+1,
+      start:{date:'',edition:staffRoster.edition,precision:'edition',certainty:'estimated'},
+      end:{date:'',edition:'',precision:'unknown',certainty:'unknown'},
+      source:staffRoster.source,sourceUrl:staffRoster.source,
+      notes:'Equipe técnica registrada na WB 2026 S2; data exata de entrada não confirmada.'};
+     sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',id,personId,team.id,t.order,JSON.stringify(t));
+    }
+    // A former player may continue as coach without retiring from esports.
+    if(hadPlayerRole&&personId==='luuuking')data.playerRetired=true;
+    sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(data),personId);
+    audit(personId,{uid:'staff-roster-s2'},'staffRosterSync',before);
+   }
+   sql.exec('INSERT INTO career_meta VALUES(?,1)',marker);
+  });
+ }
  function syncRegistration(){
   if(!registration?.complete||!registration.edition||!registration.version)return;
   const marker='wb-registration:'+registration.version;if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
   transaction(()=>{
    const ids=new Set([...Object.keys(registration.previous||{}),...Object.keys(registration.entries||{})]);
    for(const id of ids){
-    const before=snapshot(id);if(!before||before.person.kind!=='player')continue;
+    const before=snapshot(id);if(!before||before.person.kind!=='player'||records(id).some(t=>t.role!=='player'&&['active','loan','substitute'].includes(t.status)))continue;
     const p=JSON.parse(before.person.data),override=['active','free_agent','retired'].includes(p.availability)&&(p.affiliationSource==='manual'?(p.affiliationEdition||registration.legacyOverrideEdition)===registration.edition:!p.affiliationSource&&before.person.revision>1&&(p.affiliationEdition||registration.legacyOverrideEdition)===registration.edition);
     if(override)continue;
     const current=registration.entries?.[id],previous=registration.previous?.[id],registered=!!current&&!current.left,all=records(id).filter(t=>!t.deleted),last=all.at(-1),unknown={date:'',edition:'',precision:'unknown',certainty:'unknown'};
