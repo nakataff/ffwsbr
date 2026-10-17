@@ -41,6 +41,12 @@ on:
       - 'test/account-direct-actions.test.cjs'
       - 'test/code-vouchers-ui.test.cjs'
       - 'functions/careers.js'
+      - 'functions/career-market.js'
+      - 'functions/market-seed.json'
+      - 'js/career-market-admin.mjs'
+      - 'js/mercado-status-performance-hotfix.min.js'
+      - 'js/charts-market.min.js'
+      - 'test/career-market-public.test.cjs'
       - 'functions/career-directory.js'
       - 'js/career-directory-admin.mjs'
       - 'js/career-team-identities.mjs'
@@ -115,9 +121,9 @@ jobs:
           mkdir -p /tmp/cff-coins-test
           cp test/game-gifts-browser-package.json /tmp/cff-coins-test/package.json
           npm install --prefix /tmp/cff-coins-test --no-audit --no-fund
-          node --test --test-timeout=10000 test/global-chat-ui.test.cjs test/profile-emblems.test.cjs test/profile-coins.test.cjs test/code-vouchers-ui.test.cjs test/account-direct-actions.test.cjs test/code-returns-ui.test.cjs test/profile-inventory.test.cjs test/career-interfaces.test.cjs test/career-team-identities.test.cjs test/historical-team-fixes.test.cjs
+          node --test --test-timeout=10000 test/global-chat-ui.test.cjs test/profile-emblems.test.cjs test/profile-coins.test.cjs test/code-vouchers-ui.test.cjs test/account-direct-actions.test.cjs test/code-returns-ui.test.cjs test/profile-inventory.test.cjs test/career-interfaces.test.cjs test/career-market-public.test.cjs test/career-team-identities.test.cjs test/historical-team-fixes.test.cjs
       - name: Check points interfaces
-        run: node --check functions/career-directory.js && node --check js/career-directory-admin.mjs && node --check js/career-team-identities.mjs && node --check js/gift-archive.mjs && node --check js/profile-inventory.mjs && node --check functions/economy-code-returns.js && node --check js/code-return.mjs && node --check js/admin-code-returns.js && node --check js/code-gift-opener.mjs && node --check js/account-instagram-connect.mjs && node --check js/recipient-code-gifts.js && node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check functions/economy-vouchers.js && node --check js/admin-code-vouchers.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js && node --check js/profile-checkin.mjs && node --check js/admin-careers.js && node --check js/career-client.mjs && node --check js/career-public.js && node --check js/player-roster-status-repair.js && node --check js/career-departures.js
+        run: node --check functions/career-market.js && node --check js/career-market-admin.mjs && node --check js/mercado-status-performance-hotfix.min.js && node --check functions/career-directory.js && node --check js/career-directory-admin.mjs && node --check js/career-team-identities.mjs && node --check js/gift-archive.mjs && node --check js/profile-inventory.mjs && node --check functions/economy-code-returns.js && node --check js/code-return.mjs && node --check js/admin-code-returns.js && node --check js/code-gift-opener.mjs && node --check js/account-instagram-connect.mjs && node --check js/recipient-code-gifts.js && node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check functions/economy-vouchers.js && node --check js/admin-code-vouchers.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js && node --check js/profile-checkin.mjs && node --check js/admin-careers.js && node --check js/career-client.mjs && node --check js/career-public.js && node --check js/player-roster-status-repair.js && node --check js/career-departures.js
       - name: Check referral account verification access
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -146,7 +152,7 @@ jobs:
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
           for attempt in 1 2 3 4 5 6 7 8; do
-            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==31||h.adminTaskReminderOptions!==true||h.adminTasks!==true||h.profileEmblems!==true||h.chatCustomization!==true||h.chatLiveRoles!==true||h.careerDirectory!==true||h.giftArchive!==true||h.codeReturns!==true||h.directCodeGift!==true||h.codeVouchers!==true||h.registrationRosters!==true||h.careers!==true||h.careerDepartures!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==31||h.adminTaskReminderOptions!==true||h.adminTasks!==true||h.profileEmblems!==true||h.chatCustomization!==true||h.chatLiveRoles!==true||h.careerMarket!==true||h.careerDirectory!==true||h.giftArchive!==true||h.codeReturns!==true||h.directCodeGift!==true||h.codeVouchers!==true||h.registrationRosters!==true||h.careers!==true||h.careerDepartures!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
               echo 'Notification service is ready.'
               break
             fi
@@ -185,6 +191,14 @@ jobs:
             return rows.length===12&&rows.length===teams.length;
           }).map(([key])=>Number(key)).sort((a,b)=>a-b);
           console.log('Official final Day 2 drops: '+JSON.stringify(available));
+          JS
+      - name: Confirm public Mercado feed
+        run: |
+          curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output market-health.json 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/market?limit=20'
+          node <<'JS'
+          const result=JSON.parse(require('node:fs').readFileSync('market-health.json','utf8'));
+          if(result.ok!==true||!Array.isArray(result.entries)||result.entries.length>20||!Number.isInteger(result.total)||result.entries.some(e=>e.publication||e.actor))process.exit(1);
+          console.log(JSON.stringify({publicMarket:true,total:result.total,page:result.entries.length}));
           JS
       - name: Confirm completed final state
         run: |

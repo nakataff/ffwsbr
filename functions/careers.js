@@ -2,6 +2,7 @@
 const DEFAULT_SEED=require('./career-seed.json');
 const DEFAULT_REGISTRATION=require('./career-registrations.json');
 const createDirectory=require('./career-directory');
+const createMarket=require('./career-market');
 const ROLES={player:'Jogador',head_coach:'Head coach',coach:'Coach',assistant_coach:'Assistant coach',analyst:'Analista',manager:'Manager',other:'Outro'};
 const STATUS={unverified:'A revisar',active:'Ativo',ended:'Encerrado',loan:'Empréstimo',substitute:'Substituto'};
 const fail=(status,message)=>Object.assign(Error(message),{status});
@@ -36,7 +37,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  function aliases(id,values,table='career_aliases',column='person'){sql.exec('DELETE FROM '+table+' WHERE '+column+'=?',id);for(const alias of new Set(values.map(key).filter(Boolean)))sql.exec('INSERT OR IGNORE INTO '+table+' VALUES(?,?)',alias,id);}
  let ready=false;
- function ensure(){if(ready)return;init(sql);if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();ready=true;}
+ function ensure(){if(ready)return;init(sql);market.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();ready=true;}
  const revision=()=>rows("SELECT value FROM career_meta WHERE id='version'")[0]?.value||1;
  const records=id=>rows('SELECT data FROM career_tenures WHERE person=? ORDER BY ord,id',id).map(r=>JSON.parse(r.data));
  const active=t=>!t.deleted&&['active','loan','substitute'].includes(t.status)&&(!bounds(t.start)||bounds(t.start)<=day(now()))&&(!bounds(t.end,true)||bounds(t.end,true)>=day(now()));
@@ -96,8 +97,31 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
  function audit(id,identity,kind,before){sql.exec('UPDATE career_people SET revision=revision+1,updated_at=? WHERE id=?',now(),id);const rev=rows('SELECT revision FROM career_people WHERE id=?',id)[0]?.revision||0;sql.exec('INSERT INTO career_changes VALUES(?,?,?,?,?,?,?)',crypto.randomUUID(),id,now(),identity.uid,kind,JSON.stringify(before),rev);sql.exec("UPDATE career_meta SET value=value+1 WHERE id='version'");}
  function saveTeam(name){const old=findTeam(name);if(old)return old;name=text(name,100);const id=key(name);if(!id||name.length<2)throw fail(400,'Informe a equipe.');const t={id,name,logo:'escudo.webp',aliases:[name]};sql.exec('INSERT INTO career_teams VALUES(?,?,?,?)',id,name,key(name),JSON.stringify(t));aliases(id,[id,name],'career_team_aliases','team');return t;}
  function cleanTenure(b,id,old){const name=b.teamId||b.teamName;if(!findTeam(name)&&b.confirmNewTeam!==true)throw fail(409,'Equipe nova. Confirme o cadastro da equipe antes de salvar a passagem.');const t=saveTeam(name),start=boundary(b.start),end=boundary(b.end);if(!ROLES[b.role]||!STATUS[b.status])throw fail(400,'Confira cargo e situação.');if(bounds(start)&&bounds(end,true)&&bounds(start)>bounds(end,true))throw fail(400,'A saída não pode ser anterior à entrada.');if(['active','loan','substitute'].includes(b.status)&&end.date&&bounds(end,true)<day(now()))throw fail(400,'Uma passagem encerrada no passado deve ter situação Encerrado.');const sourceUrl=text(b.sourceUrl,1500);if(sourceUrl){let u;try{u=new URL(sourceUrl);}catch{throw fail(400,'Use um link HTTPS para a fonte.');}if(u.protocol!=='https:'||u.username||u.password)throw fail(400,'Use um link HTTPS para a fonte.');}return {...(old?.departure?{departure:old.departure}:{}),id:id||crypto.randomUUID(),teamId:t.id,teamName:t.name,role:b.role,status:b.status,start,end,source:text(b.source,250),sourceUrl,notes:text(b.notes,1000),order:Number.isSafeInteger(Number(b.order))?Math.min(10000,Math.max(1,Number(b.order))):old?.order||records(b.personId).length+1};}
+ function applyMarketCareer(e,b,identity){
+  const before=snapshot(e.personId);if(!before)throw fail(404,'Pessoa não encontrada.');if(before.person.revision!==b.personRevision)throw fail(409,'A carreira mudou. Reabra a movimentação antes de aplicar.');
+  if(!e.date||e.date>day(now()))throw fail(400,'Informe uma data efetiva até hoje para atualizar a carreira.');
+  const all=records(e.personId),open=all.filter(ongoing),from=b.fromTenureId?all.find(t=>t.id===b.fromTenureId):null,origin=findTeam(e.fromId||e.fromName),destination=findTeam(e.toId||e.toName),fa=v=>['','semclube','semequipe','semequipefa','semclubefa','fa','freeagent'].includes(key(v));
+  if(from&&(!ongoing(from)||!origin||from.teamId!==origin.id))throw fail(409,'A passagem de origem mudou. Confira o vínculo escolhido.');
+  if(open.length&&(open.length!==1||!from||open[0].id!==from.id))throw fail(409,'Escolha a passagem atual de origem e confira os outros vínculos abertos.');
+  if(!open.length&&from)throw fail(409,'Esta passagem já foi encerrada.');
+  const end={date:e.date,certainty:'confirmed'},id=e.personId;let tenureId='';
+  if(e.status==='contrato-renovado'){
+   if(!from||!destination||destination.id!==from.teamId)throw fail(400,'Uma renovação precisa da mesma equipe atual na origem e no destino.');tenureId=from.id;
+  }else if(fa(e.toName)){
+   if(!from)throw fail(400,'Escolha a passagem que será encerrada.');release(id,[from.id],departureInfo({departure:end,source:e.source,sourceUrl:e.sourceUrl,reason:e.notes}));
+  }else{
+   if(!destination)throw fail(400,'Cadastre a equipe de destino na aba Times antes de aplicar a carreira.');if(from?.teamId===destination.id)throw fail(400,'Para a mesma equipe, use Contrato renovado.');
+   if(from){if(bounds(from.start)>e.date)throw fail(400,'A saída não pode ser anterior à entrada.');from.end=boundary(end);from.status='ended';sql.exec('UPDATE career_tenures SET data=? WHERE id=? AND person=?',JSON.stringify(from),from.id,id);}
+   if(all.filter(t=>!t.deleted).length>=200)throw fail(400,'Limite de passagens atingido.');const t=cleanTenure({personId:id,teamId:destination.id,role:e.role,status:'active',start:end,end:{},source:e.source,sourceUrl:e.sourceUrl,notes:e.notes},null);tenureId=t.id;sql.exec('INSERT INTO career_tenures VALUES(?,?,?,?,?)',t.id,id,t.teamId,t.order,JSON.stringify(t));
+   const p=JSON.parse(before.person.data);p.availability='active';p.affiliationSource='manual';p.affiliationEdition=registration?.edition||'';delete p.freeAgentSince;delete p.freeAgentReason;sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(p),id);
+  }
+  audit(id,identity,'marketTransfer',before);return {tenureId,revision:before.person.revision+1};
+ }
+ const market=createMarket({sql,rows,transaction,text,fail,key,now,day,roles:ROLES,findTeam,person:id=>{const row=rows('SELECT name,data FROM career_people WHERE id=?',id)[0];if(!row)throw fail(404,'Pessoa não encontrada.');const p=JSON.parse(row.data);return {name:row.name,photo:p.photo};},applyCareer:applyMarketCareer,seed:seed===DEFAULT_SEED?require('./market-seed.json'):[]});
  const directory=createDirectory({rows,sql,pagination,key,text,fail,day,now,findTeam,revision,roles:ROLES});
  async function admin(identity,b){if(!identity?.admin)throw fail(403,'Somente administrador.');ensure();const op=b.operation;
+  if(op==='marketList')return market.list(b);
+  if(op==='marketHistory')return market.history(b.entryId);
   if(op==='search')return directory.search(b);
   if(op==='teams')return directory.teams(b);
   if(op==='teamDetail')return directory.teamDetail(b);
@@ -108,10 +132,11 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   if(op==='departureCandidates')return departureCandidates(b);
   if(op==='history')return {ok:true,entries:rows('SELECT id,at,actor,kind,after_revision AS revision,CASE WHEN LENGTH(before_data)=4 THEN 0 ELSE 1 END AS canUndo FROM career_changes WHERE person=? ORDER BY at DESC,rowid DESC LIMIT 20',text(b.personId,100))};
   if(op==='summary')return {ok:true,people:rows('SELECT COUNT(*) AS n FROM career_people')[0].n,teams:rows('SELECT COUNT(*) AS n FROM career_teams')[0].n,tenures:rows("SELECT COUNT(*) AS n FROM career_tenures WHERE COALESCE(json_extract(data,'$.deleted'),0)=0")[0].n,version:revision()};
-  if(!['savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam'].includes(op))throw fail(400,'Operação desconhecida.');
+  if(!['savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave'].includes(op))throw fail(400,'Operação desconhecida.');
   if(!/^[a-f0-9-]{36}$/i.test(b.nonce||''))throw fail(400,'Reabra o formulário para preparar a alteração.');
   return transaction(()=>{
    const body=JSON.stringify(b),prior=rows('SELECT * FROM career_requests WHERE nonce=?',b.nonce)[0];if(prior){if(prior.actor!==identity.uid||prior.body!==body)throw fail(409,'Este pedido já foi usado em outra alteração.');return JSON.parse(prior.response);}
+   if(op==='marketSave'){const result=market.save(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='saveTeam'){const result=directory.saveTeamProfile(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='bulkDeparture'){
     const t=findTeam(b.teamId);if(!t)throw fail(404,'Equipe não encontrada.');const members=b.members;
@@ -132,10 +157,17 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
    }else if(op==='releasePerson'){release(id,b.tenureIds,departureInfo(b));
    }else if(op==='archiveTenure'){const row=rows('SELECT data FROM career_tenures WHERE id=? AND person=?',text(b.tenureId,150),id)[0];if(!row)throw fail(404,'Passagem não encontrada.');const t=JSON.parse(row.data);t.deleted=true;sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(t),t.id);
    }else if(op==='undo'){const change=rows('SELECT * FROM career_changes WHERE id=? AND person=?',text(b.changeId,100),id)[0];if(!change||change.after_revision!==before.person.revision)throw fail(409,'Só é possível desfazer a última alteração deste cadastro.');const original=JSON.parse(change.before_data);if(!original)throw fail(400,'Para preservar o histórico, um cadastro novo não é removido por esta ação.');restore(original,id);sql.exec('UPDATE career_people SET revision=? WHERE id=?',before.person.revision,id);}
-   audit(id,identity,op,before);const result={ok:true,person:person(id)};sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;
+   audit(id,identity,op,before);const result={ok:true,person:person(id)};
+   if(b.publishMarket===true&&['transfer','saveTenure'].includes(op)){
+    const t=result.person.tenures.find(t=>t.id===b.tenure?.id)||result.person.tenures.find(t=>!before.tenures.some(old=>old.id===t.id));
+    if(!t||!['active','loan','substitute'].includes(t.status))throw fail(400,'Publique uma passagem ativa ou use a aba Mercado para preparar um rascunho.');
+    const previous=op==='transfer'?before.tenures.map(r=>JSON.parse(r.data)).find(t=>t.id===b.fromTenureId):null;
+    result.market=market.save(identity,{entry:{id:'career-'+t.id,personId:id,role:t.role,status:'fechado',publication:'published',name:result.person.name,fromId:previous?.teamId||'',fromName:previous?.teamName||'',toId:t.teamId,toName:t.teamName,date:t.start.precision==='day'?t.start.date:'',source:t.source,sourceUrl:t.sourceUrl,notes:t.notes,careerTenureId:t.id,careerRevision:result.person.revision}},{fromCareer:true}).entry;
+   }
+sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;
   });
  }
- function publicRead(kind,query){ensure();if(kind!=='person')return team(query);const p=findPerson(query),entries=p.current.length?team({id:p.current[0].teamId,scope:'current',limit:20}).entries:[];p.teammates=entries.filter(t=>t.personId!==p.id).filter((t,i,a)=>a.findIndex(x=>x.personId===t.personId)===i).map(t=>({id:t.personId,name:t.name,photo:t.photo,role:t.role,teamId:t.teamId,teamName:t.teamName}));return {ok:true,person:p};}
+ function publicRead(kind,query){ensure();if(kind==='market'){const result=market.list(query,true);return {...result,version:result.version+'-'+revision()};}if(kind!=='person')return team(query);const p=findPerson(query),entries=p.current.length?team({id:p.current[0].teamId,scope:'current',limit:20}).entries:[];p.teammates=entries.filter(t=>t.personId!==p.id).filter((t,i,a)=>a.findIndex(x=>x.personId===t.personId)===i).map(t=>({id:t.personId,name:t.name,photo:t.photo,role:t.role,teamId:t.teamId,teamName:t.teamName}));return {ok:true,person:p};}
  return {admin,publicRead,ensure,logo(id){ensure();if(!/^[a-f0-9-]{36}$/.test(id||''))return null;const value=rows('SELECT data FROM career_team_logos WHERE id=?',id)[0]?.data;if(!value)return null;const [header,base64]=value.split(',');return {type:header.includes('webp')?'image/webp':'image/png',base64};}};
 }
 module.exports={create,init,key,boundary,bounds,day,ROLES,STATUS};
