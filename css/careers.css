@@ -137,3 +137,59 @@
 .career-staff-fallback-row{display:flex;align-items:center;justify-content:space-between;gap:15px;border-top:1px solid #264458;padding:10px 2px;font-size:12px;color:#b5d6e8}
 .career-staff-fallback-name{color:#eefaff;font-size:13px;font-weight:750}
 .career-staff-tournament-fallback a{color:#7cdefa;font-size:11px}
+
+/* Static team/edition results; downloaded only when this section is opened. */
+.career-results{margin:28px 0;border:1px solid #28506a;border-radius:16px;background:linear-gradient(145deg,#0b2333,#101c2c);color:#e8f5ff;overflow:hidden;font-family:Arial,sans-serif}
+.career-results>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px;cursor:pointer;list-style:none}
+.career-results summary::-webkit-details-marker{display:none}
+.career-results>summary>span:first-child{display:grid;gap:6px}
+.career-results>summary small{font-size:10px;letter-spacing:1.5px;color:#67d5ed;font-weight:700}
+.career-results>summary strong{font-size:22px;letter-spacing:-.5px}
+.career-results-open-label{display:flex;align-items:center;gap:10px;font-size:12px;color:#b4d8e9;white-space:nowrap}
+.career-results-open-label>span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#17384b;font-size:18px;transition:transform .2s}
+.career-results[open] .career-results-open-label>span{transform:rotate(180deg)}
+.career-results summary:focus-visible,.career-results select:focus-visible,.career-results button:focus-visible{outline:2px solid #6fe2ff;outline-offset:-3px}
+.career-results [data-career-results-body]{padding:0 24px 24px}
+.career-results-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px}
+.career-results-metrics>div{padding:17px 12px;border:1px solid #244456;border-radius:10px;background:#0d1c2b;display:grid;gap:6px}
+.career-results-metrics strong{font-size:25px;color:#f4d18a}
+.career-results-metrics span{font-size:11px;color:#b1c7d6}
+.career-results .career-pro-muted{font-size:12px;line-height:1.65;color:#a8c1d1;margin:12px 0}
+.career-results-filters{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;margin:23px 0 12px}
+.career-results-filters label{display:grid;gap:7px;font-size:11px;color:#b4d3e5}
+.career-results-filters select{width:100%;min-width:0;padding:10px 12px;border:1px solid #365668;border-radius:7px;background:#102a3b;color:#f3f9ff;font:inherit;font-size:13px}
+.career-results-count{font-size:11px;color:#8eacbf;margin:14px 0}
+.career-results-edition{border:1px solid #294657;border-radius:9px;background:#0d1f2e;margin:9px 0;overflow:hidden}
+.career-results-edition>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;padding:16px;list-style:none}
+.career-results-edition>summary>span:first-child{display:grid;gap:6px;min-width:0}
+.career-results-edition>summary strong{font-size:14px;line-height:1.5}
+.career-results-edition>summary small{font-size:11px;line-height:1.5;color:#a6c5d8}
+.career-results-edition>summary:after,.career-results-roster>summary:after,.career-results-evolution>summary:after{content:'+';flex-shrink:0;font:18px Arial;color:#7ccfe5;margin-left:6px}
+.career-results-edition[open]>summary:after,.career-results-roster[open]>summary:after,.career-results-evolution[open]>summary:after{content:'−'}
+.career-results-placement{display:grid;gap:4px;margin-left:auto;text-align:right;color:#f2d799;font-size:12px;line-height:1.5}
+.career-results-edition-body{border-top:1px solid #294657;padding:6px 16px 18px}
+.career-results-period{font-size:11px;line-height:1.6;color:#b3cbdb;margin:13px 0}
+.career-results-period.is-partial{color:#f0cb88}
+.career-results-table-wrap{overflow-x:auto;margin:14px 0;border:1px solid #2a4458;border-radius:7px}
+.career-results table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap;color:#dbedf7}
+.career-results caption{text-align:left;padding:11px 12px;font-size:11px;color:#9dc4d7;background:#11293a}
+.career-results th,.career-results td{text-align:right;padding:12px 10px;border-bottom:1px solid #243e50}
+.career-results th:first-child{text-align:left}
+.career-results thead th{font-size:10px;color:#93bfd4;font-weight:600}
+.career-results tbody th{font-size:11px;font-weight:500}
+.career-results-roster{margin:12px 0;border-top:1px solid #294657}
+.career-results-roster>summary,.career-results-evolution>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;gap:10px;padding:14px 0;font-size:12px;color:#c4e0ef}
+.career-results-roster>div{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.career-results h4{font-size:11px;color:#8db9d0;margin:8px 0 12px}
+.career-results-roster ul{padding:0;margin:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:7px}
+.career-results-roster li{display:grid;gap:5px;background:#142e40;padding:10px;border-radius:6px;overflow-wrap:anywhere}
+.career-results-roster li strong{font-size:12px}.career-results-roster li small{font-size:10px;color:#9ebdce}
+.career-results-team-link{display:inline-block;color:#77ddf6;font-size:11px;margin:8px 12px 5px 0;text-decoration:none}
+.career-results-edition-body>small{display:block}
+.career-results-evolution{margin-top:20px;border-top:1px solid #315368}
+.career-results-evolution>summary{font-size:14px;font-weight:700}.career-results-evolution>summary small{margin-left:auto;font-size:11px;color:#91b5cb;font-weight:400}
+.career-results-evolution ol{display:flex;flex-wrap:wrap;list-style:none;gap:8px;margin:0 0 20px;padding:0}
+.career-results-evolution li{display:grid;gap:7px;padding:12px;background:#173246;border-radius:7px;max-width:100%}
+.career-results-evolution li span{font-size:10px;color:#9ebdce}.career-results-evolution li strong{font-size:11px;color:#f0d295;overflow-wrap:anywhere}
+.career-results button{background:#173f57;border:1px solid #416779;color:#e5f6ff;border-radius:7px;padding:10px 14px;font-size:12px;cursor:pointer}
+@media(max-width:600px){.career-results>summary{padding:18px 16px}.career-results>summary strong{font-size:19px}.career-results-open-label{font-size:0}.career-results [data-career-results-body]{padding:0 14px 18px}.career-results-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.career-results-filters{grid-template-columns:1fr 1fr}.career-results-filters label:nth-child(2){grid-column:2;grid-row:1}.career-results-filters label:last-child{grid-column:1/-1}.career-results-edition>summary{padding:14px 11px;gap:9px}.career-results-edition>summary strong{font-size:12px}.career-results-placement{font-size:11px;max-width:40%}.career-results-roster>div{grid-template-columns:1fr}.career-results-roster ul{grid-template-columns:repeat(2,minmax(0,1fr))}.career-results-edition-body{padding:3px 10px 14px}}

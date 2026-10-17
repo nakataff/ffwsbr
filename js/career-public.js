@@ -1,7 +1,7 @@
 import './career-team-identities.mjs?v=20261015-career-directory-v1';
 import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel} from './career-client.mjs?v=20261017-staff-profile-v1';
 const loaded=new WeakMap();
-function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261017-staff-profile-v1';link.dataset.careerStyle='1';document.head.append(link);}
+function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261017-coach-results-v1';link.dataset.careerStyle='1';document.head.append(link);}
 function currentHtml(p){return p.current.length?p.current.map(t=>`<a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span>${ROLES[t.role]}</span>`).join(' · '):p.availability==='free_agent'?`Sem equipe / F/A${p.freeAgentSince?.date?' · desde '+esc(periodLabel(p.freeAgentSince)):''}`:p.availability==='retired'?'Aposentado':'Vínculo atual a confirmar';}
 const trail=p=>careerTrail(p,{resolveLogo:(name,logo,managed)=>managed?logo:window.cffResolveTeamLogo?.(name,logo)||logo||'escudo.webp'});
 function hideLegacy(node){if(!node.hidden)node.hidden=true;if(node.dataset.careerHidden!=='1')node.dataset.careerHidden='1';}
@@ -63,8 +63,25 @@ function standalonePerson(p){
  ${!p.id.startsWith('person-')?`<p class="career-pro-stats-link"><a href="/jogador.html?id=${encodeURIComponent(p.id)}">Consultar estatísticas e conquistas registradas ↗</a></p>`:''}
  </div>`;
 }
+const resultPanels=new WeakMap();
+function attachCoachResults(root,p,standalone){
+ const hasStaff=(p.tenures||[]).some(t=>!t.deleted&&t.role&&t.role!=='player');
+ let panel=root.querySelector('[data-career-results]');
+ if(!hasStaff){panel?.remove();return;}
+ const signature=JSON.stringify([p.id,p.tenures]);
+ if(panel&&resultPanels.get(panel)===signature)return;
+ panel?.remove();panel=document.createElement('details');panel.className='career-results';panel.dataset.careerResults='1';
+ panel.innerHTML='<summary><span><small>COMISSÃO TÉCNICA</small><strong>Resultados por split</strong></span><span class="career-results-open-label">Ver resultados <span aria-hidden="true">⌄</span></span></summary><div data-career-results-body></div>';
+ resultPanels.set(panel,signature);
+ if(standalone){const anchor=root.querySelector('.career-pro-history');anchor.after(panel);}else root.append(panel);
+ panel.addEventListener('toggle',async()=>{
+  if(!panel.open||panel.dataset.loading==='1')return;panel.dataset.loading='1';
+  try{const module=await import('./career-results.mjs?v=20261017-coach-results-v1');if(panel.isConnected)await module.mountCoachResults(panel,p);}
+  catch{delete panel.dataset.loading;panel.querySelector('[data-career-results-body]').textContent='Resultados indisponíveis. Feche e abra esta seção para tentar novamente.';}
+ });
+}
 function applyPerson(root,p,{standalone=false}={}){
- if(standalone){document.title=p.name+' · Carreira | Central Free Fire';setHtml(root,standalonePerson(p));return;}
+ if(standalone){document.title=p.name+' · Carreira | Central Free Fire';setHtml(root,standalonePerson(p));attachCoachResults(root,p,true);return;}
  // Preserve the existing section and its position, replacing only the old list.
  root.querySelectorAll('[data-career-person-history]').forEach(node=>node.remove());
  let list=root.querySelector('#profile-team-history,#pp-team-history-container,[data-career-history-list]');
@@ -72,6 +89,7 @@ function applyPerson(root,p,{standalone=false}={}){
  if(!list.classList.contains('career-trail'))list.classList.add('career-trail');setHtml(list,trail(p));
  const legacySection=list.closest('.profile-section');for(const node of [list,legacySection])if(node){if(node.hidden)node.hidden=false;if(node.hasAttribute('data-career-hidden'))node.removeAttribute('data-career-hidden');}
  let competitions=root.querySelector('[data-career-competitions-panel]');const competitionHtml=competitionDetails(p);if(competitionHtml){if(!competitions){competitions=document.createElement('div');competitions.dataset.careerCompetitionsPanel='1';list.after(competitions);}setHtml(competitions,competitionHtml);}else competitions?.remove();
+ attachCoachResults(root,p,false);
  if(!p.managed)return;
  if(root.dataset.careerManaged!=='1')root.dataset.careerManaged='1';
  const kicker=root.querySelector('.profile-kicker,.cff-player-hero-kicker');const label=p.current.length?(p.kind==='staff'?'COMISSÃO TÉCNICA':'JOGADOR EM ATIVIDADE'):p.availability==='free_agent'?'SEM EQUIPE / F/A':p.availability==='retired'?'APOSENTADO':'EQUIPE A CONFIRMAR';if(kicker&&kicker.textContent!==label)kicker.textContent=label;
