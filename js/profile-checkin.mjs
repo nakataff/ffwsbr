@@ -1,4 +1,4 @@
-import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261014-monthly-coins-v1';
+import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261017-header-wallet-v1';
 export const checkinDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 export function checkinMessage(data){
  const coins=data.coinsAwarded?'+1 CFF COIN recebida.':'A CFF COIN de hoje já está na sua carteira.';

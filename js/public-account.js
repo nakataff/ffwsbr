@@ -2,9 +2,10 @@ import {createEmblemDisplay} from './profile-emblems.mjs?v=20261016-emblems-v1';
 import {INVENTORY_TABS,inventoryAssets} from './profile-inventory.mjs?v=20261015-inventory-v1';
 import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015-inventory-v1';
 import {instagramLinkHtml} from './profile-instagram-link.mjs?v=20261015-inventory-v1';
-import {mountEconomy} from './economy-ui.js?v=20261015-inventory-v1';
-import {rememberInvite,attachPendingReferral} from './economy-client.mjs?v=20261015-inventory-v1';
-import {createProfileCheckin} from './profile-checkin.mjs?v=20261014-monthly-coins-v1';
+import {mountEconomy} from './economy-ui.js?v=20261017-header-wallet-v1';
+import {rememberInvite,attachPendingReferral,economyRequest} from './economy-client.mjs?v=20261017-header-wallet-v1';
+import {createHeaderWallet} from './header-wallet.mjs?v=20261017-header-wallet-v1';
+import {createProfileCheckin} from './profile-checkin.mjs?v=20261017-header-wallet-v1';
 rememberInvite();
 import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261015-inventory-v1';
 import {categoriesFor} from './profile-category-model.mjs?v=20261013-categories-v1';
@@ -28,6 +29,7 @@ let registrationReady=false,instagramAnchorHandled=false;let accountLoadError=nu
 let stopCodeGiftInventory=null,stopEconomy=null,inventoryTab='gifts',inventoryLimit=24,inventoryGiftView={archived:false,limit:20};
 const instagramConnect=createInstagramConnect({currentUser:()=>user,linked:()=>communityStatus,loading:()=>instagramLinkState==='checking',existingSession:()=>readLocal(OWNER)&&readLocal(OWNER)!==user?.uid?'':readLocal(SESSION),save:token=>rememberInstagram(token),disconnect:()=>forgetInstagram()});
 const profileCheckin=createProfileCheckin({auth:()=>auth,onCompleted:()=>{if(tab==='overview')loadProfileStats(true);}});
+const headerWallet=createHeaderWallet({auth:()=>auth,request:economyRequest,defer:()=>!!$('cff-account-root')&&!(viewUid||viewInstagram||viewSlug)&&['overview','points'].includes(tab)});
 let favoriteFeed=null,favoriteJob=null,gifts={},commentBusy=false,editVisualDraft=null;
 let resolveReady;const ready=new Promise(r=>resolveReady=r);let loadGeneration=0,toastTimer;
 if(!document.querySelector('link[href*="public-account.css"]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/public-account.css?v='+VERSION;document.head.append(l);}
@@ -357,7 +359,7 @@ function injectAccountAccess(){
  document.addEventListener('click',e=>{const entry=e.target.closest('[data-account-entry]');if(!entry)return;e.preventDefault();e.stopImmediatePropagation();if(!user)return login();let menu=$('cff-account-menu');if(menu){menu.remove();return;}menu=document.createElement('div');menu.id='cff-account-menu';menu.className='cff-account-menu';menu.innerHTML=`<strong>${esc(profile.name||user.displayName||'Minha conta')}</strong><a href="/conta.html">Meu perfil e progresso</a><a href="/conta.html?tab=friends">Minha comunidade</a><a href="/conta.html?tab=favorites">Meus favoritos</a><a href="/conta.html?tab=notifications">Meus avisos</a><a href="/conta.html?tab=inventory">Meu inventário</a><a href="/conta.html?tab=edit">Editar perfil</a>${button('Sair','logout')}`;document.body.append(menu);const r=entry.getBoundingClientRect();menu.style.top=Math.max(12,Math.min(r.bottom+8,innerHeight-menu.offsetHeight-12))+'px';menu.style.right=Math.min(Math.max(12,innerWidth-r.right),Math.max(12,innerWidth-menu.offsetWidth-12))+'px';menu.querySelector('a')?.focus();},true);
  document.addEventListener('click',e=>{if(!e.target.closest('#cff-account-menu,[data-account-entry]'))$('cff-account-menu')?.remove();});document.addEventListener('keydown',e=>{if(e.key==='Escape')$('cff-account-menu')?.remove();});updateAccountAccess();
 }
-function updateAccountAccess(){document.querySelectorAll('[data-account-entry]').forEach(n=>{n.innerHTML=user?`${avatar(profile,grants,'cff-account-access-avatar')}<span>${esc(profile.name||user.displayName||'Minha conta')}</span>`:'<span>Entrar</span>';n.setAttribute('aria-label',user?'Abrir menu da minha conta':'Entrar com Google');});if(database)hydrateProfileImages(document,database);if(!user)$('cff-account-menu')?.remove();}
+function updateAccountAccess(){document.querySelectorAll('[data-account-entry]').forEach(n=>{n.innerHTML=user?`${avatar(profile,grants,'cff-account-access-avatar')}<span>${esc(profile.name||user.displayName||'Minha conta')}</span>`:'<span>Entrar</span>';n.setAttribute('aria-label',user?'Abrir menu da minha conta':'Entrar com Google');});headerWallet.sync();if(database)hydrateProfileImages(document,database);if(!user)$('cff-account-menu')?.remove();}
 document.addEventListener('click',e=>{const action=e.target.closest('[data-account-action]')?.dataset.accountAction;if(action==='edit-profile'){editVisualDraft={avatarId:String(profile.avatarId||'default'),coverId:String(profile.coverId||''),frameId:String(profile.frameId||'')};tab='edit';render();}if(action==='badges-tab'){switchProfileTab('badges');}});
 const requestedTab=new URLSearchParams(location.search).get('tab');if(['edit','favorites','inventory','gifts','history','badges','notifications','friends','points'].includes(requestedTab)){tab=['gifts','badges'].includes(requestedTab)?'inventory':requestedTab;inventoryTab=requestedTab==='badges'?'badges':INVENTORY_TABS.some(([id])=>id===new URLSearchParams(location.search).get('section'))?new URLSearchParams(location.search).get('section'):'gifts';}
 function switchProfileTab(nextTab){if(['gifts','badges'].includes(nextTab)){inventoryTab=nextTab;nextTab='inventory';}const form=$('cff-profile-editor');if(tab==='edit'&&nextTab!=='edit'&&form?.dataset.dirty==='true'&&!confirm('Descartar as alterações que ainda não foram salvas?'))return false;if(tab==='edit'&&nextTab!=='edit')clearEditVisualDraft();tab=nextTab;if(tab==='edit')ensureEditVisualDraft();if(tab==='history')loadProfileHistory();render();return true;}

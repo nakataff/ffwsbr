@@ -8,8 +8,8 @@ function setup(){
  return {core,sql,data,calls,setTime:t=>{time=t;checked=false;},setOffline:v=>offline=v,setChecked:v=>checked=v,setVerified:v=>verified=v};
 }
 test('profile checkin credits the wallet and the linked ranking with only the server saved session',async()=>{
- const s=setup();assert.deepEqual(await s.core.handle(user,{operation:'profileCheckinStatus'}),{ok:true,day:'2026-10-14',coins:false,ranking:false});
- const r=await s.core.handle(user,{operation:'profileCheckin',session:'forged',username:'other',targetUid:'someone',points:9999});assert.equal(r.coinsAwarded,true);assert.equal(r.rankingStatus,'done');assert.equal(r.ranking,true);assert.equal(r.coins,true);assert.equal(s.calls.checkin,1);
+ const s=setup();assert.deepEqual(await s.core.handle(user,{operation:'profileCheckinStatus'}),{ok:true,day:'2026-10-14',coins:false,ranking:false,wallet:{balance:0}});
+ const r=await s.core.handle(user,{operation:'profileCheckin',session:'forged',username:'other',targetUid:'someone',points:9999});assert.equal(r.wallet.balance,1);assert.equal(r.coinsAwarded,true);assert.equal(r.rankingStatus,'done');assert.equal(r.ranking,true);assert.equal(r.coins,true);assert.equal(s.calls.checkin,1);
  const repeated=await s.core.handle(user,{operation:'profileCheckin'});assert.equal(repeated.coinsAwarded,false);assert.equal(repeated.rankingStatus,'done');assert.equal(s.calls.verify,1);assert.equal(s.calls.checkin,1);assert.equal((await s.core.state(user)).wallet.balance,1);
 });
 test('a ranking failure can be retried without losing or duplicating the wallet coin',async()=>{
