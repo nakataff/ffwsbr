@@ -172,7 +172,7 @@ test('admin can edit staff photograph independently of team logos and career rec
   let form=f.$('#career-create-people form');form.elements.personName.value='Técnico Novo';form.elements.personRole.value='analyst';form.dispatchEvent(new f.w.SubmitEvent('submit',{bubbles:true,cancelable:true}));await tick();
   f.$('[data-career-tab=profile]').click();form=f.$('#career-profile-form');
   assert(form.elements.photo);
-  assert.equal(form.querySelector('[data-career-photo-preview').getAttribute('src'),'silhueta.webp');
+  assert.equal(form.querySelector('[data-career-photo-preview]').getAttribute('src'),'silhueta.webp');
   form.elements.photo.value='https://example.com/staff/tecnico.webp';form.elements.photo.dispatchEvent(new f.w.Event('change'));
   assert.equal(form.querySelector('[data-career-photo-preview]').getAttribute('src'),'https://example.com/staff/tecnico.webp');
   form.dispatchEvent(new f.w.SubmitEvent('submit',{bubbles:true,cancelable:true}));await tick();
