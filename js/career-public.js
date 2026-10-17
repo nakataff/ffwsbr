@@ -1,15 +1,70 @@
 import './career-team-identities.mjs?v=20261015-career-directory-v1';
-import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel} from './career-client.mjs?v=20261017-competitions-v1';
+import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel} from './career-client.mjs?v=20261017-staff-profile-v1';
 const loaded=new WeakMap();
-function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261017-competitions-v1';link.dataset.careerStyle='1';document.head.append(link);}
+function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261017-staff-profile-v1';link.dataset.careerStyle='1';document.head.append(link);}
 function currentHtml(p){return p.current.length?p.current.map(t=>`<a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span>${ROLES[t.role]}</span>`).join(' · '):p.availability==='free_agent'?`Sem equipe / F/A${p.freeAgentSince?.date?' · desde '+esc(periodLabel(p.freeAgentSince)):''}`:p.availability==='retired'?'Aposentado':'Vínculo atual a confirmar';}
 const trail=p=>careerTrail(p,{resolveLogo:(name,logo,managed)=>managed?logo:window.cffResolveTeamLogo?.(name,logo)||logo||'escudo.webp'});
 function hideLegacy(node){if(!node.hidden)node.hidden=true;if(node.dataset.careerHidden!=='1')node.dataset.careerHidden='1';}
 const rendered=new WeakMap();
 function setHtml(node,html){const previous=rendered.get(node);if(previous?.input===html&&previous.first===node.firstChild&&previous.last===node.lastChild)return;node.innerHTML=html;rendered.set(node,{input:html,first:node.firstChild,last:node.lastChild});}
 function competitionDetails(p){const tenures=(p.tenures||[]).filter(t=>t.competitions?.length);return tenures.length?`<details class="career-competition-public" data-career-competition-details><summary>Competições por equipe</summary>${tenures.map(t=>`<div><strong>${esc(t.teamName)} · ${esc(ROLES[t.role]||t.role)}</strong><p class="career-participation-chips">${t.competitions.map(c=>`<span>${esc(c.name)}</span>`).join('')}</p></div>`).join('')}</details>`:'';}
+
+const knownImage=value=>{
+ const raw=String(value||'').trim();
+ if(!raw||raw.startsWith('//')||raw.includes('..'))return 'silhueta.webp';
+ if(/^https:\/\//i.test(raw)){try{const u=new URL(raw);if(u.username||u.password)return 'silhueta.webp';return raw;}catch{return 'silhueta.webp';}}
+ return /^\/?[a-z\d_ %().\/-]+\.(?:webp|png|jpe?g)(?:\?[a-z\d_=&%.-]+)?$/i.test(raw)?raw:'silhueta.webp';
+};
+const plurality=(count,singular,plural)=>count===1?singular:plural;
+function standalonePerson(p){
+ const all=(p.tenures||[]).filter(t=>!t.deleted).slice().sort((a,b)=>(b.order||0)-(a.order||0));
+ const current=new Set((p.current||[]).map(t=>t.id));
+ const teams=new Set(all.map(t=>t.teamId||t.teamName));
+ const editions=new Set(all.flatMap(t=>(t.competitions||[]).map(c=>c.id||c.name)));
+ const role=ROLES[p.current?.[0]?.role||all[0]?.role||p.defaultRole]||(p.kind==='staff'?'Profissional de esports':'Jogador');
+ const status=p.availability==='free_agent'?'Sem equipe / F/A':p.availability==='retired'?'Aposentado':p.current?.length?p.current.map(t=>t.teamName).join(' · '):'Equipe a confirmar';
+ const photo=knownImage(p.photo);
+ const present=all.map((t,i)=>{
+  const active=current.has(t.id),ended=t.status==='ended',team=t.teamName||'Equipe a confirmar';
+  const logo=knownImage(t.logoManaged?t.logo:window.cffResolveTeamLogo?.(team,t.logo)||t.logo||'escudo.webp');
+  const start=t.start?.date?esc(periodLabel({date:t.start.date})):'Não informada';
+  const end=t.end?.date?esc(periodLabel({date:t.end.date})):ended?'Não informada':active?'Em andamento':'Não informada';
+  const competitions=Array.isArray(t.competitions)?t.competitions:[];
+  const editionsHtml=competitions.length?`<div class="career-pro-competitions">${competitions.map(x=>`<span>${esc(x.name)}</span>`).join('')}</div>`:'<p class="career-pro-muted">Nenhuma competição vinculada a esta passagem no cadastro.</p>';
+  const references=[t.start?.edition&&`<span>Entrada: ${esc(t.start.edition)}</span>`,t.end?.edition&&`<span>Saída: ${esc(t.end.edition)}</span>`].filter(Boolean);
+  return `<article class="career-pro-tenure" data-career-passage="${esc(t.id||'')}">
+    <div class="career-pro-tenure-head"><div class="career-pro-team-identity">
+      <a class="career-pro-team-logo" href="${teamHref(t.teamPageName||team)}" aria-label="Abrir dados da equipe ${esc(team)}"><img src="${esc(logo)}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/escudo.webp'"></a>
+      <div><span class="career-pro-eyebrow">PASSAGEM ${String(all.length-i).padStart(2,'0')}</span><h3>${esc(team)}</h3><p>${esc(ROLES[t.role]||t.role||'Cargo a confirmar')}</p></div>
+    </div><span class="career-pro-tenure-status${active?' is-active':ended?' is-ended':''}">${active?'Vínculo atual':ended?'Passagem encerrada':esc(STATUSES[t.status]||'A confirmar')}</span></div>
+    <div class="career-pro-tenure-dates"><div><small>Entrada · data</small><strong>${start}</strong></div><div><small>Saída · data</small><strong>${end}</strong></div></div>
+    ${references.length?`<p class="career-pro-edition-reference"><strong>Edições de referência</strong><span>${references.join(' · ')}</span></p>`:''}
+    <div class="career-pro-tenure-competitions"><div class="career-pro-subhead"><h4>Competições vinculadas</h4><small>${competitions.length} ${plurality(competitions.length,'edição','edições')}</small></div>${editionsHtml}</div>
+    ${t.notes?`<p class="career-pro-notes"><strong>Observações</strong> ${esc(t.notes)}</p>`:''}
+    <div class="career-pro-tenure-footer"><span>Dados da organização e histórico de elencos</span><a href="${teamHref(t.teamPageName||team)}">Ver página da equipe <span aria-hidden="true">↗</span></a></div>
+   </article>`;
+ }).join('');
+ return `<div class="career-pro-profile${p.kind==='staff'?' is-staff':''}">
+ <section class="career-pro-hero" aria-label="Identificação de ${esc(p.name)}">
+  <div class="career-pro-portrait"><img src="${esc(photo)}" alt="Foto de ${esc(p.name)}" onerror="this.onerror=null;this.src='/silhueta.webp'" decoding="async"></div>
+  <div class="career-pro-heading"><span class="career-pro-eyebrow">${p.kind==='staff'?'COMISSÃO TÉCNICA':'CARREIRA PROFISSIONAL'}</span><h1>${esc(p.name)}</h1><p class="career-pro-role">${esc(role)}</p><span class="career-pro-availability"><span aria-hidden="true"></span>${esc(status)}</span>${p.availability==='free_agent'&&p.freeAgentSince?.date?`<p class="career-pro-since">Sem equipe desde ${esc(periodLabel(p.freeAgentSince))}</p>`:''}</div>
+ </section>
+ <section class="career-pro-metrics" aria-label="Resumo do histórico">
+  <div><strong>${teams.size}</strong><span>${plurality(teams.size,'Equipe registrada','Equipes registradas')}</span></div>
+  <div><strong>${all.length}</strong><span>${plurality(all.length,'Passagem registrada','Passagens registradas')}</span></div>
+  <div><strong>${editions.size}</strong><span>${plurality(editions.size,'Edição vinculada','Edições vinculadas')}</span></div>
+ </section>
+ <section class="career-pro-history"><div class="career-pro-section-title"><div><span class="career-pro-eyebrow">TRAJETÓRIA</span><h2>Passagens por equipes</h2></div><span>Da primeira à organização mais recente</span></div>
+ <div class="career-trail">${trail(p)}</div>
+ </section>
+ <section class="career-pro-details"><div class="career-pro-section-title"><div><span class="career-pro-eyebrow">REGISTROS DE CARREIRA</span><h2>Dados de cada passagem</h2></div><span>Vínculos e competições do cadastro central</span></div>
+ ${present||'<div class="career-pro-empty">Nenhuma passagem registrada até o momento.</div>'}
+ </section>
+ ${!p.id.startsWith('person-')?`<p class="career-pro-stats-link"><a href="/jogador.html?id=${encodeURIComponent(p.id)}">Consultar estatísticas e conquistas registradas ↗</a></p>`:''}
+ </div>`;
+}
 function applyPerson(root,p,{standalone=false}={}){
- if(standalone){document.title=p.name+' · Carreira | Central Free Fire';setHtml(root,`<h1>${esc(p.name)}</h1><div class="career-current-links">${currentHtml(p)}</div>${p.id.startsWith('person-')?'':`<p><a href="/jogador.html?id=${encodeURIComponent(p.id)}">Ver estatísticas ↗</a></p>`}<section class="career-panel"><h2>Passagens por equipes</h2><div class="career-trail">${trail(p)}</div>${competitionDetails(p)}</section>`);return;}
+ if(standalone){document.title=p.name+' · Carreira | Central Free Fire';setHtml(root,standalonePerson(p));return;}
  // Preserve the existing section and its position, replacing only the old list.
  root.querySelectorAll('[data-career-person-history]').forEach(node=>node.remove());
  let list=root.querySelector('#profile-team-history,#pp-team-history-container,[data-career-history-list]');
