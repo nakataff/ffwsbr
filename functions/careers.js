@@ -118,8 +118,30 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   audit(id,identity,'marketTransfer',before);return {tenureId,revision:before.person.revision+1};
  }
  const market=createMarket({sql,rows,transaction,text,fail,key,now,day,roles:ROLES,findTeam,person:id=>{const row=rows('SELECT name,data FROM career_people WHERE id=?',id)[0];if(!row)throw fail(404,'Pessoa não encontrada.');const p=JSON.parse(row.data);return {name:row.name,photo:p.photo};},applyCareer:applyMarketCareer,seed:seed===DEFAULT_SEED?require('./market-seed.json'):[]});
+ function priorMarketExit(id,t){return market.get('career-exit-'+t.id)||rows("SELECT data,revision FROM career_market WHERE person=? AND (json_extract(data,'$.careerExitTenureId')=? OR (json_extract(data,'$.fromId')=? AND json_extract(data,'$.date')=? AND json_extract(data,'$.date')<>'' AND status='fechado')) ORDER BY sort_at DESC LIMIT 1",id,t.id,t.teamId,t.end?.precision==='day'?t.end.date:'').map(r=>({...JSON.parse(r.data),revision:r.revision}))[0]||null;}
+ function departurePreview(p,t){
+  const all=records(p.id).filter(t=>!t.deleted),next=all.find(n=>n.order>t.order),latest=!all.some(n=>n.order>t.order),data=JSON.parse(p.data),existing=priorMarketExit(p.id,t),destination=next?findTeam(next.teamId):null;
+  return {personId:p.id,name:p.name,revision:p.revision,tenureId:t.id,teamId:t.teamId,teamName:findTeam(t.teamId)?.name||t.teamName,role:t.role,end:t.end,toId:destination?.id||'',toName:destination?.name||(latest&&data.availability==='free_agent'?'Sem equipe / F/A':'Destino não informado'),alreadyExported:existing?{id:existing.id,publication:existing.publication}:null};
+ }
+ function marketDepartureCandidates(b){
+  const t=findTeam(b.teamId||b.teamName);if(!t)throw fail(404,'Escolha uma equipe cadastrada.');const {limit,offset}=pagination(b),latest=b.includeHistorical!==true;
+  const where="t.team=? AND COALESCE(json_extract(t.data,'$.deleted'),0)=0 AND json_extract(t.data,'$.status')='ended'"+(latest?" AND json_extract(p.data,'$.availability')='free_agent' AND t.ord=(SELECT MAX(x.ord) FROM career_tenures x WHERE x.person=p.id AND COALESCE(json_extract(x.data,'$.deleted'),0)=0)":""),args=[t.id],total=rows('SELECT COUNT(*) AS n FROM career_tenures t JOIN career_people p ON p.id=t.person WHERE '+where,...args)[0].n;
+  const entries=rows("SELECT p.id,p.name,p.data,p.revision,t.data AS tenure FROM career_tenures t JOIN career_people p ON p.id=t.person WHERE "+where+" ORDER BY COALESCE(json_extract(t.data,'$.end.date'),'') DESC,p.norm,t.ord DESC,t.id LIMIT ? OFFSET ?",...args,limit,offset).map(p=>departurePreview(p,JSON.parse(p.tenure)));
+  return {ok:true,team:{id:t.id,name:t.name},entries,total,offset,limit,hasMore:offset+entries.length<total};
+ }
+ function exportMarketDepartures(identity,b){
+  const team=findTeam(b.teamId);if(!team)throw fail(404,'Equipe não encontrada.');if(!['draft','published'].includes(b.publication||'published'))throw fail(400,'Escolha Rascunho ou Publicado.');const items=b.members;
+  if(!Array.isArray(items)||!items.length||items.length>100||new Set(items.map(p=>p?.tenureId)).size!==items.length)throw fail(400,'Selecione de 1 a 100 saídas, sem repetições.');
+  const prepared=items.map(item=>{if(!item||typeof item.personId!=='string'||typeof item.tenureId!=='string'||!Number.isSafeInteger(item.revision))throw fail(400,'Seleção inválida.');const p=rows('SELECT * FROM career_people WHERE id=?',item.personId)[0];if(!p)throw fail(404,'Pessoa não encontrada.');if(p.revision!==item.revision)throw fail(409,'A carreira de '+p.name+' mudou. Atualize a prévia; nenhuma saída foi exportada.');const t=records(p.id).find(t=>t.id===item.tenureId);if(!t||t.deleted||t.status!=='ended'||t.teamId!==team.id)throw fail(409,'Uma saída selecionada mudou ou não pertence à equipe. Atualize a prévia.');return {p,t,preview:departurePreview(p,t)};});
+  const exported=[],skipped=[];
+  for(const {p,t,preview}of prepared){if(preview.alreadyExported){skipped.push(preview.alreadyExported.id);continue;}const period=[t.end?.precision==='day'?'':t.end?.date,t.end?.edition,t.end?.certainty==='estimated'?'Informação estimada':''].filter(Boolean).join(' · '),notes=[t.departure?.reason,period?'Saída: '+period:''].filter(Boolean).join(' · ');
+   const r=market.save(identity,{entry:{id:'career-exit-'+t.id,personId:p.id,name:p.name,fromId:team.id,fromName:team.name,toId:preview.toId,toName:preview.toName,role:t.role,date:t.end?.precision==='day'?t.end.date:'',status:'fechado',publication:b.publication==='draft'?'draft':'published',source:t.departure?.source||t.source,sourceUrl:t.departure?.sourceUrl||t.sourceUrl,notes,careerTenureId:t.id,careerExitTenureId:t.id,careerRevision:p.revision}},{fromCareer:true});exported.push(r.entry.id);
+  }
+  return {ok:true,exported,skipped,team:{id:team.id,name:team.name}};
+ }
  const directory=createDirectory({rows,sql,pagination,key,text,fail,day,now,findTeam,revision,roles:ROLES});
  async function admin(identity,b){if(!identity?.admin)throw fail(403,'Somente administrador.');ensure();const op=b.operation;
+  if(op==='marketDepartureCandidates')return marketDepartureCandidates(b);
   if(op==='marketList')return market.list(b);
   if(op==='marketHistory')return market.history(b.entryId);
   if(op==='search')return directory.search(b);
@@ -132,10 +154,11 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   if(op==='departureCandidates')return departureCandidates(b);
   if(op==='history')return {ok:true,entries:rows('SELECT id,at,actor,kind,after_revision AS revision,CASE WHEN LENGTH(before_data)=4 THEN 0 ELSE 1 END AS canUndo FROM career_changes WHERE person=? ORDER BY at DESC,rowid DESC LIMIT 20',text(b.personId,100))};
   if(op==='summary')return {ok:true,people:rows('SELECT COUNT(*) AS n FROM career_people')[0].n,teams:rows('SELECT COUNT(*) AS n FROM career_teams')[0].n,tenures:rows("SELECT COUNT(*) AS n FROM career_tenures WHERE COALESCE(json_extract(data,'$.deleted'),0)=0")[0].n,version:revision()};
-  if(!['savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave'].includes(op))throw fail(400,'Operação desconhecida.');
+  if(!['savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave','marketExportDepartures'].includes(op))throw fail(400,'Operação desconhecida.');
   if(!/^[a-f0-9-]{36}$/i.test(b.nonce||''))throw fail(400,'Reabra o formulário para preparar a alteração.');
   return transaction(()=>{
    const body=JSON.stringify(b),prior=rows('SELECT * FROM career_requests WHERE nonce=?',b.nonce)[0];if(prior){if(prior.actor!==identity.uid||prior.body!==body)throw fail(409,'Este pedido já foi usado em outra alteração.');return JSON.parse(prior.response);}
+   if(op==='marketExportDepartures'){const result=exportMarketDepartures(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='marketSave'){const result=market.save(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='saveTeam'){const result=directory.saveTeamProfile(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='bulkDeparture'){
@@ -162,7 +185,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
     const t=result.person.tenures.find(t=>t.id===b.tenure?.id)||result.person.tenures.find(t=>!before.tenures.some(old=>old.id===t.id));
     if(!t||!['active','loan','substitute'].includes(t.status))throw fail(400,'Publique uma passagem ativa ou use a aba Mercado para preparar um rascunho.');
     const previous=op==='transfer'?before.tenures.map(r=>JSON.parse(r.data)).find(t=>t.id===b.fromTenureId):null;
-    result.market=market.save(identity,{entry:{id:'career-'+t.id,personId:id,role:t.role,status:'fechado',publication:'published',name:result.person.name,fromId:previous?.teamId||'',fromName:previous?.teamName||'',toId:t.teamId,toName:t.teamName,date:t.start.precision==='day'?t.start.date:'',source:t.source,sourceUrl:t.sourceUrl,notes:t.notes,careerTenureId:t.id,careerRevision:result.person.revision}},{fromCareer:true}).entry;
+    result.market=market.save(identity,{entry:{id:'career-'+t.id,personId:id,role:t.role,status:'fechado',publication:'published',name:result.person.name,fromId:previous?.teamId||'',fromName:previous?.teamName||'',toId:t.teamId,toName:t.teamName,date:t.start.precision==='day'?t.start.date:'',source:t.source,sourceUrl:t.sourceUrl,notes:t.notes,careerTenureId:t.id,careerExitTenureId:previous?.id||'',careerRevision:result.person.revision}},{fromCareer:true}).entry;
    }
 sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;
   });
