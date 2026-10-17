@@ -128,3 +128,12 @@
 .career-ex-player small{font-size:11px;line-height:1.5;color:#87aabc}
 .career-pro-ex-player{display:inline-block;vertical-align:middle;width:max-content;max-width:100%;margin:0 8px 10px 0;padding:5px 10px;border-radius:20px;border:1px solid #877344;background:#352d19;color:#ffda8d;font-size:11px;font-weight:750}
 .career-inline-current>.career-pro-ex-player{display:block;margin-top:9px;width:fit-content}
+
+
+/* Read-only FFWS S2 coaching roster when the live database hits a quota limit. */
+.career-staff-tournament-fallback{margin:18px 0;border:1px solid #28506a;border-radius:11px;padding:15px;background:#0d2535}
+.career-staff-tournament-fallback h3{margin:0 0 8px;color:#e3f7ff;font-size:16px}
+.career-staff-tournament-fallback>.career-hint{margin:7px 0 13px;color:#a2bbcc;font-size:12px;line-height:1.5}
+.career-staff-fallback-row{display:flex;align-items:center;justify-content:space-between;gap:15px;border-top:1px solid #264458;padding:10px 2px;font-size:12px;color:#b5d6e8}
+.career-staff-fallback-name{color:#eefaff;font-size:13px;font-weight:750}
+.career-staff-tournament-fallback a{color:#7cdefa;font-size:11px}
