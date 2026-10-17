@@ -12,13 +12,48 @@ async function fixture({admin=false}={}){
  'firebase-app':{getApps:()=>[{name:'cff-public-accounts'}],initializeApp:()=>({})},
  'firebase-auth':{getAuth:()=>({}),setPersistence:async()=>{},onAuthStateChanged:(_a,cb)=>{queueMicrotask(()=>cb(user));return()=>{};}},
  'firebase-database':{getDatabase:()=>({}),ref:(_d,path)=>path,query:(path,...args)=>({path,args}),orderByKey:()=>({orderBy:'$key'}),limitToLast:n=>({limit:n}),onValue:(reference,cb)=>{const path=typeof reference==='string'?reference:reference.path;if(typeof reference==='object')assert.equal(reference.args[1].limit,100);reads.push(path);if(!subscriptions.has(path))subscriptions.set(path,new Set());subscriptions.get(path).add(cb);queueMicrotask(()=>cb({val:()=>data[path]??null}));return()=>subscriptions.get(path).delete(cb);},get:async path=>({val:()=>data[path]??null})},
- 'community-profile-data':{profileOptions:async()=>({}),approvedImage:(_o,_c,_id,cls)=>`<img class="${cls}" alt="Arte">`,hydrateProfileImages(){}},'profile-role-data':roleData};
+ 'community-profile-data':{profileOptions:async()=>({frames:[{id:'frame-bronze-1',kind:'frame',image:'/assets/profile-frames/bronze-1.png',frameScale:1.35}]}),approvedImage:(_o,_c,_id,cls)=>`<img class="${cls}" alt="Arte">`,hydrateProfileImages(){}},'profile-role-data':roleData};
  w.__import=async url=>modules[Object.keys(modules).find(k=>url.includes(k))];
  w.fetch=async(_url,init)=>{const body=JSON.parse(init.body);calls.push(body);let result={ok:true};if(body.action==='chatStatus'||body.action==='chatPreferences'){const identity={roleId:admin?'administrator':'member',username:'nakata',badgeIds:body.badgeIds||['earned'],nameColor:''};data['globalChat/identities/person']=identity;emit('globalChat/identities/person');result={...result,administrator:admin,moderator:admin,identity,preference:{badgeIds:body.badgeIds||[]},allowNameColor:admin,ownedBadges:['earned']};}return {ok:true,json:async()=>result};};
  w.eval(fs.readFileSync('js/profile-emblems.mjs','utf8').replace(/^export /gm,''));
+ w.eval(fs.readFileSync('js/profile-frame-model.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync('js/global-chat.js','utf8').replace(/^import .*\n/gm,'').replaceAll('import(','window.__import('));await tick();
  return {w,data,calls,reads,subscriptions,emit,open:async()=>{w.document.querySelector('.cff-chat-launch').click();await tick();},close:()=>w.close()};
 }
+test('chat displays equipped profile frame, updates it live and leaves the avatar and emblem untouched',async()=>{
+ const f=await fixture();
+ try{
+  f.data['communityProfiles/other/frameId']='frame-bronze-1';
+  await f.open();
+  const row=()=>f.w.document.querySelector('[data-chat-message="'+id+'"]');
+  assert.equal(row().querySelector('.cff-chat-avatar')?.tagName,'IMG');
+  assert.equal(row().querySelector('.cff-chat-frame-layer img.cff-chat-frame-image')?.tagName,'IMG');
+  assert.equal(row().querySelector('.cff-chat-frame-layer').style.getPropertyValue('--cff-chat-frame-scale'),'1.35');
+  assert.equal(row().querySelectorAll('.cff-chat-avatar').length,1);
+  assert(row().querySelector('.cff-emblem-slot'));
+  assert(f.reads.includes('communityProfiles/other/frameId'));
+  assert(!f.reads.includes('communityProfiles'));
+  // New custom frame is not rendered until an active catalog entry arrives.
+  f.data['communityProfiles/other/frameId']='custom-frame';
+  f.emit('communityProfiles/other/frameId');
+  await tick();
+  assert.equal(row().querySelector('.cff-chat-frame-layer'),null);
+  f.data['communityProfileCatalog/custom-frame']={enabled:true,kind:'frame',title:'Prata',assetId:'webp-123',frameScale:1.6};
+  f.emit('communityProfileCatalog/custom-frame');
+  await tick();
+  assert.equal(row().querySelector('.cff-chat-frame-layer').style.getPropertyValue('--cff-chat-frame-scale'),'1.6');
+  f.data['communityProfileCatalog/custom-frame']={enabled:false,kind:'frame',title:'Prata',assetId:'webp-123'};
+  f.emit('communityProfileCatalog/custom-frame');await tick();
+  assert.equal(row().querySelector('.cff-chat-frame-layer'),null);
+  f.data['communityProfiles/other/frameId']='';
+  f.emit('communityProfiles/other/frameId');await tick();
+  assert.equal(row().querySelector('.cff-chat-frame-layer'),null);
+  assert.equal(row().querySelectorAll('.cff-chat-avatar').length,1);
+  f.w.document.querySelector('.cff-chat-close').click();
+  assert.equal(f.subscriptions.get('communityProfiles/other/frameId').size,0);
+  assert.equal(f.subscriptions.get('communityProfileCatalog/custom-frame').size,0);
+ }finally{f.close();}
+});
 test('public chat keeps bounded subscriptions, updates administrator badge and removes all conversation listeners when closed',async()=>{const f=await fixture({admin:true});try{f.data['globalChat/messages'][replyId]={uid:'person',name:'Nakata',roleId:'member',text:'Salve',at:1791910006000};await f.open();assert.match(f.w.document.querySelector(`[data-chat-message="${replyId}"]`).textContent,/Administrador/);assert.equal(f.w.document.querySelector('[data-chat-moderation]').hidden,false);assert.equal(f.w.document.querySelector('.cff-chat-message-text img'),null);assert.match(f.w.document.querySelector('.cff-chat-message-text').textContent,/<img src=x>/);assert(!f.reads.includes('communityProfiles'));assert(!f.reads.includes('communityProfileCatalog'));assert.equal(f.w.document.querySelector('#cff-global-chat').style.getPropertyValue('--chat-accent'),'#aaffdd');f.w.document.querySelector('.cff-chat-close').click();for(const [path,rows]of f.subscriptions)assert.equal(rows.size,path==='globalChat/latest'?1:0,path);}finally{f.close();}});
 test('reply submission carries only the selected reference; action dialog offers reports and earned badge preferences',async()=>{const f=await fixture();try{await f.open();const d=f.w.document;d.querySelector('[data-chat-reply]').click();assert.equal(d.querySelector('[data-chat-replying]').hidden,false);const input=d.querySelector('#cff-chat-text');input.value='Respondendo @alice';input.dispatchEvent(new f.w.Event('input'));d.querySelector('.cff-chat-composer').dispatchEvent(new f.w.Event('submit',{bubbles:true,cancelable:true}));await tick();const sent=f.calls.find(c=>c.action==='chatSend');assert.equal(sent.replyTo,id);assert.equal(sent.text,'Respondendo @alice');assert.equal(d.querySelector('[data-chat-replying]').hidden,true);d.querySelector('[data-chat-options]').click();assert(d.querySelector('[data-chat-action-dialog]').open);const choices=[...d.querySelector('[name=operation]').options].map(o=>o.value);assert(choices.includes('report'));assert(!choices.includes('delete'));d.querySelector('[data-close-dialog]').click();d.querySelector('[data-chat-personalize]').click();await tick();assert.match(d.querySelector('[data-chat-badge-options]').textContent,/Campeão/);d.querySelector('[name=badges]').checked=true;d.querySelector('[data-chat-preferences-form]').dispatchEvent(new f.w.Event('submit',{cancelable:true}));await tick();assert.deepEqual(f.calls.find(c=>c.action==='chatPreferences').badgeIds,['earned']);}finally{f.close();}});
 test('mentions highlight only the intended account, revoked badge selection clears and message actions include moderation for the actual admin',async()=>{const f=await fixture({admin:true});try{f.data['globalChat/messages'][id].mentions=[{uid:'person',username:'nakata'}];f.data['globalChat/identities/other']={roleId:'moderator',badgeIds:['earned']};await f.open();const d=f.w.document;assert(d.querySelector('.is-mentioned'));assert(d.querySelector('[data-chat-badge]'));f.data['globalChat/identities/other']={roleId:'member'};f.emit('globalChat/identities/other');await tick();assert.equal(d.querySelector('[data-chat-badge]'),null);d.querySelector('[data-chat-options]').click();const select=d.querySelector('[name=operation]');assert([...select.options].some(o=>o.value==='pin'));select.value='mute';select.dispatchEvent(new f.w.Event('change'));assert.equal(d.querySelector('[data-chat-duration]').hidden,false);}finally{f.close();}});
