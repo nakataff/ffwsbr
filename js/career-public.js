@@ -2,7 +2,7 @@ import './career-team-identities.mjs?v=20261015-career-directory-v1';
 import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel} from './career-client.mjs?v=20261017-staff-profile-v1';
 const loaded=new WeakMap();
 function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261017-coach-results-v1';link.dataset.careerStyle='1';document.head.append(link);}
-function currentHtml(p){return p.current.length?p.current.map(t=>`<a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span>${ROLES[t.role]}</span>`).join(' · '):p.availability==='free_agent'?`Sem equipe / F/A${p.freeAgentSince?.date?' · desde '+esc(periodLabel(p.freeAgentSince)):''}`:p.availability==='retired'?'Aposentado':'Vínculo atual a confirmar';}
+function currentHtml(p){return p.current.length?p.current.map(t=>`<a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span class="career-current-role">${esc(ROLES[t.role]||t.role)}</span>`).join(' · '):p.availability==='free_agent'?`Sem equipe / F/A${p.freeAgentSince?.date?' · desde '+esc(periodLabel(p.freeAgentSince)):''}`:p.availability==='retired'?'Aposentado':'Vínculo atual a confirmar';}
 const trail=p=>careerTrail(p,{resolveLogo:(name,logo,managed)=>managed?logo:window.cffResolveTeamLogo?.(name,logo)||logo||'escudo.webp'});
 function hideLegacy(node){if(!node.hidden)node.hidden=true;if(node.dataset.careerHidden!=='1')node.dataset.careerHidden='1';}
 const rendered=new WeakMap();
@@ -92,7 +92,7 @@ function applyPerson(root,p,{standalone=false}={}){
  attachCoachResults(root,p,false);
  if(!p.managed)return;
  if(root.dataset.careerManaged!=='1')root.dataset.careerManaged='1';
- const kicker=root.querySelector('.profile-kicker,.cff-player-hero-kicker');const label=p.current.length?(p.kind==='staff'?'COMISSÃO TÉCNICA':'JOGADOR EM ATIVIDADE'):p.availability==='free_agent'?'SEM EQUIPE / F/A':p.availability==='retired'?'APOSENTADO':'EQUIPE A CONFIRMAR';if(kicker&&kicker.textContent!==label)kicker.textContent=label;
+ const kicker=root.querySelector('.profile-kicker,.cff-player-hero-kicker');const label=p.current.length?(p.current.some(t=>t.role!=='player')?'COMISSÃO TÉCNICA':'JOGADOR EM ATIVIDADE'):p.availability==='free_agent'?'SEM EQUIPE / F/A':p.availability==='retired'?'APOSENTADO':'EQUIPE A CONFIRMAR';if(kicker&&kicker.textContent!==label)kicker.textContent=label;
  root.querySelectorAll('.profile-team,.profile-team-logo,.cff-player-hero-team-btn,.cff-player-hero-team-orbit,.cff-rosterless-badge,#pp-team,.profile-teammates:not([data-career-teammates]),#pp-teammates-section').forEach(hideLegacy);
  if(!p.current.length)root.querySelectorAll('.profile-badge').forEach(node=>{if(/^(titular|reserva|capitão|saiu)$/i.test(node.textContent.trim()))hideLegacy(node);});
  let current=root.querySelector('[data-career-current]');if(!current){current=document.createElement('div');current.dataset.careerCurrent='1';current.className='career-inline-current';const header=root.querySelector('.profile-identity,.cff-player-hero-content,.player-profile-header');(header||list.parentNode).append(current);}setHtml(current,currentHtml(p)+(p.playerRetired?'<span class="career-pro-ex-player">Ex-jogador · carreira como atleta encerrada</span>':''));
