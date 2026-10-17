@@ -204,3 +204,21 @@ test('public name search follows current career team and includes new staff prof
  assert.equal(s.core.publicRead('search',{query:'s'}).total,0);
  assert(s.core.publicRead('search',{query:'Jogador'}).entries.length<=12);
 });
+
+
+test('profile photo is managed independently of role, team and competition history, with unsafe URLs rejected',async()=>{
+ const s=setup();
+ let p=s.core.publicRead('person',{id:'p0'}).person;
+ const current=p.photo;
+ p=(await edit(s,'savePerson',{name:p.name,kind:p.kind,availability:p.availability,aliases:p.aliases||[],photo:'https://example.com/coaches/santos.webp'})).person;
+ assert.equal(p.photo,'https://example.com/coaches/santos.webp');
+ let updated=(await edit(s,'saveTenure',{tenure:tenure()})).person;
+ assert.equal(updated.photo,'https://example.com/coaches/santos.webp');
+ assert.equal(updated.current[0].teamName,'LOUD');
+ const before=updated.revision;
+ await assert.rejects(edit(s,'savePerson',{name:updated.name,kind:updated.kind,availability:updated.availability,photo:'javascript:alert(1)'}),{status:400});
+ assert.equal(s.core.publicRead('person',{id:'p0'}).person.revision,before);
+ updated=(await edit(s,'savePerson',{name:updated.name,kind:updated.kind,availability:updated.availability,photo:''})).person;
+ assert.equal(updated.photo,'silhueta.webp');
+ assert.equal(updated.current[0].teamName,'LOUD');
+});
