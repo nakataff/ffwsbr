@@ -1,9 +1,9 @@
-import {mountMarketDepartureExport} from './career-market-export.mjs?v=20261017-market-group-v1';
+import {mountMarketDepartureExport} from './career-market-export.mjs?v=20261017-people-v1';
 import {esc,ROLES} from './career-client.mjs?v=20261015-career-directory-v1';
 const STATUS={rumor:'Rumor',negociando:'Negociando','falta-anunciar':'Falta anunciar',fechado:'Fechado',melou:'Melou','contrato-renovado':'Contrato renovado'},PUB={draft:'Rascunho',published:'Publicado',archived:'Arquivado',deleted:'Excluído'};
-export function mountCareerMarket({call,valid,canOpen=()=>true,onApplied=()=>{}}){
+export function mountCareerMarket({call,valid,canOpen=()=>true,onApplied=()=>{},createPeople=()=>{}}){
  const $=s=>document.querySelector(s),root=$('#career-market-panel'),tab=$('[data-career-market-tab]');let active=false,seq=0,offset=0,page=null,editing=null,person=null,saving=false,timer,peopleSeq=0,teamsSeq=0;
- const departureExport=mountMarketDepartureExport({call,valid,onSaved:async r=>{show(true);if(!root.children.length)shell();offset=0;await load();notify(`${r.memberCount??r.exported.length} saída(s) exportada(s) em ${r.exported.length} card(s)${r.skipped.length?' · '+r.skipped.length+' já existente(s)':''}. Carreiras preservadas.`);}});
+ const departureExport=mountMarketDepartureExport({call,valid,createPeople,onSaved:async r=>{show(true);if(!root.children.length)shell();offset=0;await load();notify(`${r.memberCount??r.exported.length} saída(s) exportada(s) em ${r.exported.length} card(s)${r.skipped.length?' · '+r.skipped.length+' já existente(s)':''}. Carreiras preservadas.`);}});
  const dialog=document.createElement('dialog');dialog.className='career-editor market-editor';dialog.id='market-editor';dialog.setAttribute('aria-labelledby','market-editor-title');document.body.append(dialog);
  const notify=text=>{const e=dialog.open?dialog.querySelector('[data-market-message]'):root.querySelector('[data-market-message]');if(e)e.textContent=text;};
  const show=value=>{active=value;root.hidden=!value;$('.career-workspace').hidden=value;$('#career-summary').hidden=value;$('#career-bulk-departure').hidden=value;tab.setAttribute('aria-pressed',String(value));if(value){$('#career-new-person').hidden=true;$('#career-new-team').hidden=true;document.querySelectorAll('[data-career-section]').forEach(b=>b.setAttribute('aria-pressed','false'));}};

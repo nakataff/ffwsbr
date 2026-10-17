@@ -135,7 +135,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   const prepared=items.map(item=>{if(!item||typeof item.personId!=='string'||typeof item.tenureId!=='string'||!Number.isSafeInteger(item.revision))throw fail(400,'Seleção inválida.');const p=rows('SELECT * FROM career_people WHERE id=?',item.personId)[0];if(!p)throw fail(404,'Pessoa não encontrada.');if(p.revision!==item.revision)throw fail(409,'A carreira de '+p.name+' mudou. Atualize a prévia; nenhuma saída foi exportada.');const t=records(p.id).find(t=>t.id===item.tenureId);if(!t||t.deleted||t.status!=='ended'||t.teamId!==team.id)throw fail(409,'Uma saída selecionada mudou ou não pertence à equipe. Atualize a prévia.');return {p,t,preview:departurePreview(p,t)};});
   const exported=[],skipped=[],replaced=[],groups=new Map(),selectedIds=new Set(items.map(m=>m.tenureId));
   // Only combine exits with the same destination and recorded period. Distinct events stay distinct.
-  for(const item of prepared){const {t,preview}=item,k=b.grouped===false?t.id:JSON.stringify([preview.toId||preview.toName,t.end?.date||'',t.end?.edition||'',t.end?.precision||'',t.end?.certainty||'']);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(item);}
+  for(const item of prepared){const {t,preview}=item,k=b.grouped===false?t.id:JSON.stringify([preview.toId||preview.toName,t.end?.date||'',t.end?.edition||'',t.end?.precision||'']);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(item);}
   for(const group of groups.values()){
    const existing=[...new Set(group.map(x=>x.preview.alreadyExported?.id).filter(Boolean))].map(id=>market.get(id));
    const groupIds=new Set(group.map(x=>x.t.id));
@@ -143,12 +143,38 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
    if(group.length===1&&existing.length){skipped.push(existing[0].id);continue;}
    for(const old of existing){const links=old.members?.length?old.members.map(m=>m.tenureId):[old.careerExitTenureId];if(links.some(id=>!selectedIds.has(id)||!groupIds.has(id)))throw fail(409,'Selecione todos os integrantes do card já agrupado antes de reagrupar.');for(const x of group.filter(x=>x.preview.alreadyExported?.id===old.id)){const item=items.find(m=>m.tenureId===x.t.id);if(item.marketRevision!==old.revision)throw fail(409,'Uma movimentação já publicada mudou. Atualize a prévia antes de agrupar.');}}
    for(const old of existing){market.remove(identity,{entryId:old.id,revision:old.revision});replaced.push(old.id);}
-   const {p,t,preview}=group[0],multiple=group.length>1,period=[t.end?.precision==='day'?'':t.end?.date,t.end?.edition,t.end?.certainty==='estimated'?'Informação estimada':''].filter(Boolean).join(' · '),notes=[...new Set(group.map(x=>x.t.departure?.reason).filter(Boolean)),period?'Saída: '+period:''].filter(Boolean).join(' · '),sameRole=group.every(x=>x.t.role===t.role),source=[...new Set(group.map(x=>x.t.departure?.source||x.t.source||''))],sourceUrls=[...new Set(group.map(x=>x.t.departure?.sourceUrl||x.t.sourceUrl||''))];
+   const {p,t,preview}=group[0],multiple=group.length>1,period=[t.end?.precision==='day'?'':t.end?.date,t.end?.edition,group.some(x=>x.t.end?.certainty==='estimated')?'Informação estimada':''].filter(Boolean).join(' · '),notes=[...new Set(group.map(x=>x.t.departure?.reason).filter(Boolean)),period?'Saída: '+period:''].filter(Boolean).join(' · '),sameRole=group.every(x=>x.t.role===t.role),source=[...new Set(group.map(x=>x.t.departure?.source||x.t.source||''))],sourceUrls=[...new Set(group.map(x=>x.t.departure?.sourceUrl||x.t.sourceUrl||''))];
    const r=market.save(identity,{entry:{id:multiple?'career-group-'+crypto.randomUUID():'career-exit-'+crypto.randomUUID(),personId:multiple?'':p.id,name:p.name,fromId:team.id,fromName:team.name,toId:preview.toId,toName:preview.toName,role:sameRole?t.role:'other',roleLabel:sameRole?'':'Jogadores e staff',date:t.end?.precision==='day'?t.end.date:'',status:'fechado',publication:b.publication==='draft'?'draft':'published',source:source.length===1?source[0]:'',sourceUrl:sourceUrls.length===1?sourceUrls[0]:'',notes,careerTenureId:multiple?'':t.id,careerExitTenureId:multiple?'':t.id,careerRevision:multiple?0:p.revision,members:group.map(x=>({personId:x.p.id,tenureId:x.t.id,name:x.p.name,photo:JSON.parse(x.p.data).photo||'',role:x.t.role}))}},{fromCareer:true});exported.push(r.entry.id);
   }
   return {ok:true,exported,skipped,replaced,memberCount:prepared.length-skipped.length,team:{id:team.id,name:team.name}};
  }
 
+ function createPeople(identity,b){
+  if(!Array.isArray(b.people)||!b.people.length||b.people.length>20)throw fail(400,'Cadastre de 1 a 20 pessoas por vez.');
+  const mode=b.mode||'none';if(!['none','active','ended'].includes(mode))throw fail(400,'Confira a situação da passagem.');
+  const team=mode==='none'?null:findTeam(b.teamId||b.teamName);if(mode!=='none'&&!team)throw fail(400,'Escolha uma equipe cadastrada.');
+  const start=boundary(b.start),end=boundary(mode==='ended'?b.end:{});
+  if(mode==='ended'&&end.date&&bounds(end)>day(now()))throw fail(400,'A saída para F/A não pode ficar no futuro.');
+  if(mode==='active'&&start.date&&bounds(start)>day(now()))throw fail(400,'A entrada no elenco atual não pode ficar no futuro.');
+  const names=new Set(),prepared=b.people.map(raw=>{
+   const name=text(raw?.name,100),role=raw?.role;if(name.length<2||!key(name)||!Object.hasOwn(ROLES,role))throw fail(400,'Informe o nome e o cargo de cada pessoa.');
+   if(names.has(key(name)))throw fail(409,'O nome “'+name+'” está repetido na lista.');names.add(key(name));
+   const existing=rows('SELECT p.name FROM career_aliases a JOIN career_people p ON p.id=a.person WHERE a.alias=? LIMIT 1',key(name))[0];
+   if(existing)throw fail(409,'“'+name+'” já está no catálogo como '+existing.name+'. Abra o cadastro existente para adicionar a passagem. Nenhuma pessoa foi criada.');
+   const id='person-'+crypto.randomUUID(),t=team?cleanTenure({personId:id,teamId:team.id,role,status:mode==='ended'?'ended':'active',start,end,source:b.source,sourceUrl:b.sourceUrl,notes:b.reason,order:1}):null;
+   return {id,name,role,t};
+  });
+  const people=[],departures=[];
+  for(const {id,name,role,t} of prepared){
+   const data={id,name,kind:role==='player'?'player':'staff',defaultRole:role,availability:'unknown',aliases:[name],photo:'silhueta.webp',currentTeamHint:''};
+   sql.exec('INSERT INTO career_people VALUES(?,?,?,?,?,?,?)',id,name,key(name),data.kind,JSON.stringify(data),0,now());aliases(id,[id,name]);audit(id,identity,'savePerson',null);
+   if(t){const before=snapshot(id);if(mode==='ended'){t.departure={reason:text(b.reason,500),source:t.source,sourceUrl:t.sourceUrl};data.availability='free_agent';data.freeAgentSince=end;data.freeAgentReason=t.departure.reason;}else data.availability='active';data.affiliationSource='manual';data.affiliationEdition=registration?.edition||'';
+    sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(data),id);sql.exec('INSERT INTO career_tenures VALUES(?,?,?,?,?)',t.id,id,t.teamId,t.order,JSON.stringify(t));audit(id,identity,'saveTenure',before);
+   }
+   const p=person(id);people.push(p);if(t&&mode==='ended')departures.push(departurePreview(rows('SELECT * FROM career_people WHERE id=?',id)[0],t));
+  }
+  return {ok:true,people,departures,team:team?{id:team.id,name:team.name}:null};
+ }
  const directory=createDirectory({rows,sql,pagination,key,text,fail,day,now,findTeam,revision,roles:ROLES});
  async function admin(identity,b){if(!identity?.admin)throw fail(403,'Somente administrador.');ensure();const op=b.operation;
   if(op==='marketDepartureCandidates')return marketDepartureCandidates(b);
@@ -164,10 +190,11 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   if(op==='departureCandidates')return departureCandidates(b);
   if(op==='history')return {ok:true,entries:rows('SELECT id,at,actor,kind,after_revision AS revision,CASE WHEN LENGTH(before_data)=4 THEN 0 ELSE 1 END AS canUndo FROM career_changes WHERE person=? ORDER BY at DESC,rowid DESC LIMIT 20',text(b.personId,100))};
   if(op==='summary')return {ok:true,people:rows('SELECT COUNT(*) AS n FROM career_people')[0].n,teams:rows('SELECT COUNT(*) AS n FROM career_teams')[0].n,tenures:rows("SELECT COUNT(*) AS n FROM career_tenures WHERE COALESCE(json_extract(data,'$.deleted'),0)=0")[0].n,version:revision()};
-  if(!['savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave','marketDelete','marketExportDepartures'].includes(op))throw fail(400,'Operação desconhecida.');
+  if(!['createPeople','savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave','marketDelete','marketExportDepartures'].includes(op))throw fail(400,'Operação desconhecida.');
   if(!/^[a-f0-9-]{36}$/i.test(b.nonce||''))throw fail(400,'Reabra o formulário para preparar a alteração.');
   return transaction(()=>{
    const body=JSON.stringify(b),prior=rows('SELECT * FROM career_requests WHERE nonce=?',b.nonce)[0];if(prior){if(prior.actor!==identity.uid||prior.body!==body)throw fail(409,'Este pedido já foi usado em outra alteração.');return JSON.parse(prior.response);}
+   if(op==='createPeople'){const result=createPeople(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='marketExportDepartures'){const result=exportMarketDepartures(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='marketSave'||op==='marketDelete'){const result=op==='marketDelete'?market.remove(identity,b):market.save(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='saveTeam'){const result=directory.saveTeamProfile(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
