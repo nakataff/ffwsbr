@@ -222,3 +222,37 @@
 .career-results.career-results-tab [data-career-results-body]{padding:0}
 .career-pro-profile .career-pro-history{padding:23px}
 @media(max-width:600px){.career-profile-tabs{margin:18px 0 23px;gap:1px;padding:4px}.career-profile-tabs button{padding:12px 10px;font-size:11px}.career-pro-profile .career-pro-tenure-head{padding:14px 12px;gap:10px}.career-pro-tenure-head strong{font-size:12px}.career-pro-tenure-head small{font-size:10px}.career-passage-body{padding:0 13px 15px}.career-overview-editions{padding:17px}.career-pro-profile .career-pro-history{padding:18px}.career-pro-profile .career-pro-tenure-status{padding:5px 6px;font-size:9px}}
+
+/* Cadastro de profissionais: seletor de fotos e redes sociais opcionais. */
+.career-photo-choose{margin-top:12px;width:auto;max-width:100%;white-space:normal}
+.career-social-field{min-width:0;margin:0;padding:14px;border:1px solid #2c455a;border-radius:12px}
+.career-social-field legend{padding:0 8px;color:#d7edfc;font-weight:800;font-size:13px}
+.career-social-field>.career-hint{margin:0 0 15px}
+.career-social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.career-social-grid label{display:grid;gap:7px;min-width:0}
+.career-social-grid input{width:100%;min-width:0;box-sizing:border-box}
+.career-photo-picker{width:min(800px,calc(100vw - 28px));max-width:none;max-height:min(86vh,900px);padding:21px;border:1px solid #32516a;border-radius:18px;background:#091522;color:#f2f8ff;box-shadow:0 22px 70px #000b}
+.career-photo-picker::backdrop{background:#000a}
+.career-photo-picker-head{display:flex;justify-content:space-between;align-items:start;gap:16px}
+.career-photo-picker-head h2{margin:0;font-size:20px}
+.career-photo-picker-head p{margin:5px 0 13px;color:#94b4c8;font-size:12px}
+.career-photo-picker-head button{border:0;background:transparent;color:#fff;font-size:26px;cursor:pointer}
+.career-photo-search-label{display:grid;gap:8px;font-size:12px;color:#add1e7}
+.career-photo-search-label input{width:100%;box-sizing:border-box;padding:11px;background:#06101f;color:#fff;border:1px solid #315371;border-radius:9px;font:inherit}
+.career-photo-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;max-height:48vh;overflow-y:auto;margin:15px 0}
+.career-photo-option{display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:9px 5px;border:1px solid #294259;border-radius:11px;background:#0d2030;color:#eef7ff;cursor:pointer}
+.career-photo-option:hover,.career-photo-option:focus-visible{border-color:#00c8ff;outline:none;background:#123248}
+.career-photo-option img{width:70px;height:70px;object-fit:cover;object-position:center top;border-radius:50%;background:#09131f}
+.career-photo-option span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:850}
+.career-photo-option small{font-size:10px;color:#93bed5}
+.career-photo-picker-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.career-pro-socials{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.career-pro-socials a{display:inline-flex;align-items:center;padding:8px 11px;border:1px solid #285b76;border-radius:8px;background:rgba(0,200,255,.075);color:#9be5ff;text-decoration:none;font-size:12px;font-weight:800}
+.career-pro-socials a:hover,.career-pro-socials a:focus-visible{border-color:#00c8ff;background:rgba(0,200,255,.17)}
+@media(max-width:580px){
+ .career-social-grid{grid-template-columns:minmax(0,1fr)}
+ .career-photo-picker{padding:14px}
+ .career-photo-picker-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .career-photo-option img{width:58px;height:58px}
+ .career-pro-socials{gap:6px}
+}
