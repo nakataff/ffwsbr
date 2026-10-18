@@ -31,6 +31,7 @@ async function fixture({delay,fail,initialId,url='https://centralfreefire.com.br
  const dom=new JSDOM(html,{url,runScripts:'outside-only'}),w=dom.window,calls=[],requested=[];
  Object.assign(w,{cffInitialTournament:initialId||'',logos:{},playerAliasMap:{},AbortSignal,withCacheBuster:u=>u,scrollTo(){},loadLbffData:async()=>{calls.push('FULL_PLAYER_CATALOG');},getTeamLogo:()=> 'escudo.webp',dbTeamLogos:{},teamLogos:{},teamLogoMap:{},dbTeamAliases:{},lbffData:null,
   fetch:async url=>{const raw=String(url);requested.push(raw);const p=raw.split('?')[0].replace(/^\/+/, '');calls.push(p);if(fail?.(p))return {ok:false,status:503};if(delay)await delay(p);if(fs.existsSync(p))return {ok:true,json:async()=>read(p),text:async()=>fs.readFileSync(p,'utf8')};return {ok:false,status:404,text:async()=>''};}});
+ const sharedLogos=fs.readFileSync('js/home-news-lives.min.js','utf8'),logoStart=sharedLogos.indexOf('function resolveLeagueLogo(');w.eval(sharedLogos.slice(logoStart,sharedLogos.indexOf('let globalLivesData=',logoStart)));
  try{w.eval(fs.readFileSync('js/other-tournaments.min.js','utf8'));await w.loadNovosTorneios();await tick();}catch(e){w.close();throw e;}
  return {w,calls,requested,dom,close:()=>w.close()};
 }

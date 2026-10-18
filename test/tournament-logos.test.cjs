@@ -10,3 +10,13 @@ test('the existing league-logo resolver gives World Series global titles the off
  const script=fs.readFileSync('js/home-news-lives.min.js','utf8'),start=script.indexOf('function resolveLeagueLogo('),end=script.indexOf('let globalLivesData=',start);vm.runInContext(script.slice(start,end),c);
  assert.equal(c.resolveLeagueLogo('Free Fire World Series - Global Finals 2024'),logos.GLOBAL_LOGO);assert.equal(c.resolveLeagueLogo('LBFF 2021'),'lbff.webp');
 });
+test('a direct archive load resolves local logos without the legacy league table and uses it if loaded later',()=>{
+ const c={window:{cffResolveTournamentLogo:logos.resolve}};vm.createContext(c);
+ const script=fs.readFileSync('js/home-news-lives.min.js','utf8'),start=script.indexOf('function resolveLeagueLogo('),end=script.indexOf('let globalLivesData=',start);vm.runInContext(script.slice(start,end),c);
+ assert.equal(c.resolveLeagueLogo('LBFF 2021'),'lbff.webp');
+ assert.equal(c.resolveLeagueLogo('C.O.P.A. Free Fire 2023'),'copaff23.webp');
+ assert.equal(c.resolveLeagueLogo('Liga sem logo registrado'),'trofeu.webp');
+ assert.equal(c.resolveLeagueLogo('FFWS Global Finals 2024'),logos.GLOBAL_LOGO);
+ c.leagueLogos={'LIGA TESTE':'custom.webp'};
+ assert.equal(c.resolveLeagueLogo('Liga Teste'),'custom.webp');
+});
