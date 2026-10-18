@@ -26,13 +26,13 @@ test('truncated templates, missing matches and unresolved team aliases fail befo
  const code=`import importlib.util,json,copy\ns=importlib.util.spec_from_file_location('world_import','scripts/import-liquipedia-worlds.py');m=importlib.util.module_from_spec(s);import sys;sys.modules[s.name]=m;s.loader.exec_module(m)\ntry:m.templates('{{TeamCard|team=X')\nexcept ValueError:pass\nelse:raise AssertionError('Truncation accepted')\nc=copy.deepcopy(json.load(open('imports/liquipedia-worlds/manifest.json'))['events'][0]);del c['teamAliases']['ilmn s2k']\ntry:m.compile_event(c)\nexcept (ValueError,AssertionError):pass\nelse:raise AssertionError('Unknown alias accepted')\nprint('Rejected malformed and ambiguous input')`;
  assert.match(execFileSync('python3',['-c',code],{encoding:'utf8'}),/Rejected malformed/);
 });
-async function fixture({delay,fail,initialId}={}){
+async function fixture({delay,fail,initialId,url='https://centralfreefire.com.br/index.html#outros-torneios'}={}){
  const html=['ot-list-view','ot-details-view','ot-grid-torneios','ot-details-tabs','ot-details-stats','ot-dynamic-container','ot-title','ot-year','ot-details-badge','ot-roster-modal','ot-roster-title','ot-roster-list','ot-radar-content','ot-count-torneios','ot-count-equipes','ot-count-premios'].map(id=>'<div id="'+id+'"></div>').join('')+'<img id="ot-details-logo"><img id="ot-roster-logo">';
- const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/index.html#outros-torneios',runScripts:'outside-only'}),w=dom.window,calls=[];
+ const dom=new JSDOM(html,{url,runScripts:'outside-only'}),w=dom.window,calls=[],requested=[];
  Object.assign(w,{cffInitialTournament:initialId||'',currentOtData:null,logos:{},playerAliasMap:{},AbortSignal,withCacheBuster:u=>u,scrollTo(){},loadLbffData:async()=>{calls.push('FULL_PLAYER_CATALOG');},getTeamLogo:()=> 'escudo.webp',dbTeamLogos:{},teamLogos:{},teamLogoMap:{},dbTeamAliases:{},lbffData:null,
-  fetch:async url=>{const p=String(url).split('?')[0];calls.push(p);if(fail?.(p))return {ok:false,status:503};if(delay)await delay(p);if(fs.existsSync(p))return {ok:true,json:async()=>read(p),text:async()=>fs.readFileSync(p,'utf8')};return {ok:false,status:404,text:async()=>''};}});
+  fetch:async url=>{const raw=String(url);requested.push(raw);const p=raw.split('?')[0].replace(/^\/+/, '');calls.push(p);if(fail?.(p))return {ok:false,status:503};if(delay)await delay(p);if(fs.existsSync(p))return {ok:true,json:async()=>read(p),text:async()=>fs.readFileSync(p,'utf8')};return {ok:false,status:404,text:async()=>''};}});
  try{w.eval(fs.readFileSync('js/other-tournaments.min.js','utf8'));await w.loadNovosTorneios();await tick();}catch(e){w.close();throw e;}
- return {w,calls,dom,close:()=>w.close()};
+ return {w,calls,requested,dom,close:()=>w.close()};
 }
 test('cards fetch only a small manifest; opening a world fetches exactly its detail once and safely handles apostrophes',async()=>{
  const f=await fixture();try{
@@ -237,5 +237,25 @@ test('Copa FF 2023: grupos auditados, final de 6 quedas, top 5 de abates e premi
   assert.equal(table.querySelectorAll('tbody tr').length,5);
   assert.match(table.textContent,/Raone7/);
   assert.match(table.textContent,/58/);
+ }finally{f.close();}
+});
+
+test('archive filters work on deep links and use root-relative URLs for all Copa JSON requests',async()=>{
+ const f=await fixture({url:'https://centralfreefire.com.br/outros-torneios/'});try{
+  const doc=f.w.document;
+  doc.getElementById('ot-list-view').insertAdjacentHTML('afterbegin',
+   '<input id="ot-search"><select id="ot-filter-year"><option value="all">Todos os anos</option></select><select id="ot-filter-tier"><option value="all">Todos os tiers</option></select><select id="ot-filter-region"><option value="all">Todas as regiões</option></select>');
+  f.w.setOtMainView('tournaments');await tick();
+  const list=doc.getElementById('ot-grid-torneios');
+  assert.doesNotMatch(list.textContent,/Não foi possível carregar/);
+  assert(list.querySelectorAll('.ot-tournament-card').length>=24);
+  assert([...doc.getElementById('ot-filter-year').options].some(x=>x.value==='2023'));
+  assert(f.requested.some(path=>path==='/novos-torneios/index.json'));
+  doc.getElementById('ot-search').value='Copa Free Fire 2023';
+  f.w.renderOutrosTorneiosList();
+  assert.match(list.textContent,/C.O.P.A. Free Fire 2023/);
+  await f.w.openOtherTournament('copa-ff-2023');
+  assert(f.requested.some(path=>path.startsWith('/novos-torneios/copa-ff-2023.json')));
+  assert.equal(f.w.currentOtData.id,'copa-ff-2023');
  }finally{f.close();}
 });
