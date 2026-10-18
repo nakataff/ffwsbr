@@ -64,7 +64,47 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
    sql.exec('INSERT INTO career_meta VALUES(?,?)',marker,'1');
   });
  }
- function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();ready=true;}
+ // Evidência confirmada de participação do treinador Frois na FFWS BR 2026 S1,
+ // ausente no seed histórico inicial. Não modifica vínculos atuais nem escolhas manuais.
+ function syncFroisVirtusS1(){
+  const marker='reviewed-frois-virtus-2026-s1-v1';
+  if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+  transaction(()=>{
+   if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+   const personRow=rows('SELECT * FROM career_people WHERE id=?','frois')[0];
+   const team=rows('SELECT data FROM career_teams WHERE id=?','virtuspro')[0];
+   if(personRow&&team){
+    const old=JSON.parse(personRow.data);
+    const before=snapshot('frois');
+    const ts=records('frois'),existing=ts.find(t=>!t.deleted&&t.teamId==='virtuspro'&&['coach','head_coach'].includes(t.role));
+    let changed=false;
+    if(!existing){
+     const t={id:'reviewed-frois-virtus-2026-s1',teamId:'virtuspro',teamName:'VIRTUS PRO',role:'coach',status:'ended',
+      order:Math.max(0,...ts.map(t=>t.order||0))+1,
+      start:{date:'2026-01-28',precision:'day',certainty:'confirmed',edition:'FFWS BR 2026 S1'},
+      end:{date:'2026-06-06',precision:'day',certainty:'confirmed',edition:'FFWS BR 2026 S1'},
+      competitionIds:['ffwsbr2026s1'],
+      source:'Anúncio oficial da Virtus.pro e escalação da FFWS BR 2026 S1',
+      sourceUrl:'https://virtus.pro/news/virtus-pro-return-to-free-fire',
+      notes:'Treinador registrado pela Virtus.pro na edição; passagem histórica encerrada, não é vínculo atual.'};
+     sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,'frois',t.teamId,t.order,JSON.stringify(t));
+     changed=true;
+    }else if(!Array.isArray(existing.competitionIds)){
+     existing.competitionIds=['ffwsbr2026s1'];
+     sql.exec('UPDATE career_tenures SET data=? WHERE id=? AND person=?',JSON.stringify(existing),existing.id,'frois');
+     changed=true;
+    }
+    if(!old.photo||old.photo==='silhueta.webp'){
+     old.photo='/assets/coaches/frois.webp';
+     sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(old),'frois');
+     changed=true;
+    }
+    if(changed)audit('frois',{uid:'verified-tournament-roster'},'rosterEvidenceSync',before);
+   }
+   sql.exec('INSERT INTO career_meta VALUES(?,?)',marker,'1');
+  });
+ }
+ function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();syncFroisVirtusS1();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();syncFroisVirtusS1();ready=true;}
  const revision=()=>rows("SELECT value FROM career_meta WHERE id='version'")[0]?.value||1;
  const records=id=>rows('SELECT data FROM career_tenures WHERE person=? ORDER BY ord,id',id).map(r=>JSON.parse(r.data));
  const active=t=>!t.deleted&&['active','loan','substitute'].includes(t.status)&&(!bounds(t.start)||bounds(t.start)<=day(now()))&&(!bounds(t.end,true)||bounds(t.end,true)>=day(now()));
