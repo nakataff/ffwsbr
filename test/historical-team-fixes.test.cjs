@@ -32,7 +32,7 @@ test('Frois resolves the existing Mundial Apex asset in his trail and passage us
  dom=new JSDOM('<main id="person"></main>',{url:'https://centralfreefire.com.br/carreira.html?id=frois',runScripts:'outside-only'}),w=dom.window;
  const tenure={id:'manual-apex',teamId:'teamapexgaming',teamName:'Team Apex Gaming',teamPageName:'Team Apex Gaming',logo:'escudo.webp',role:'coach',status:'active',order:1,start:{date:'2026-08-28',edition:'FFMIC 2026 Fall'},end:{},competitions:[]};
  const person={id:'frois',name:'Frois',kind:'staff',country:'br',photo:'silhueta.webp',availability:'active',current:[tenure],tenures:[tenure]};
- Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,tenureCards:client.tenureCards,careerTrail:client.careerTrail,personHref:client.personHref,teamHref:client.teamHref,periodLabel:client.periodLabel,
+ Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,tenureCards:client.tenureCards,careerTrail:client.careerTrail,orderedTenures:client.orderedTenures,competitionPeriodLabel:client.competitionPeriodLabel,personHref:client.personHref,teamHref:client.teamHref,periodLabel:client.periodLabel,
   readCareer:async(kind,query)=>{calls.push({kind,query});return {person};},fetch:async url=>{calls.push({url:String(url)});return {ok:true,json:async()=>map};}});
  try{
   w.eval(fs.readFileSync('js/team-logo-resolver.min.js','utf8'));

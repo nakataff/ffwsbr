@@ -1,4 +1,4 @@
-"""Small server index of explicit person/team competition records; no date inference."""
+"""Small server index of explicit participation and event periods, never contract dates."""
 from pathlib import Path
 import hashlib,json,re,unicodedata
 ROOT=Path(__file__).resolve().parents[1]
@@ -68,7 +68,38 @@ for path in sorted((ROOT/'novos-torneios').glob('ffws-*.json')):
 # Actual future event in the site catalogue; its participants are not inferred.
 event('FFWS Global Finals 2026')
 for name in ['LAFF 2025 S1','LAFF 2026 S1']:event(name)
-out={'catalog':list(catalog.values()),'people':records}
+# Event periods are compiled offline. Reading one career never downloads the
+# tournament archive, team snapshots, or the full registration database.
+periods={}
+def period_id(name):
+ name=re.sub(r'^WB\s+(20\d{2})',r'FFWS BR \1',str(name),flags=re.I)
+ return key(name)
+def period(ident,entry):
+ if not ident:return
+ value=periods.setdefault(ident,{})
+ year=entry.get('year')
+ if str(year).isdigit() and 2000<=int(year)<=2099:value['year']=int(year)
+ for field in ['startDate','endDate']:
+  date=str(entry.get(field) or '')
+  if re.fullmatch(r'20\d{2}-\d{2}-\d{2}',date):
+   value[field]=(min if field=='startDate' else max)(value.get(field,date),date)
+ if not value:periods.pop(ident,None)
+manifest=read('career-data/results/manifest.json')
+for file in sorted(set(manifest['teams'].values())):
+ for entry in read('career-data/results/'+file).get('editions',[]):period(entry['id'],entry)
+for path in sorted((ROOT/'novos-torneios').glob('*.json')):
+ entry=json.loads(path.read_text())
+ if not isinstance(entry,dict) or not entry.get('name'):continue
+ ident=entry.get('careerId') or period_id(entry['name'])
+ period(ident,entry)
+ # Reviewed event-level dates override summaries whose stages may end earlier.
+ for field in ['startDate','endDate']:
+  if re.fullmatch(r'20\d{2}-\d{2}-\d{2}',str(entry.get(field) or '')):periods[ident][field]=entry[field]
+ alias=period_id(entry['name'])
+ if ident in periods:periods[alias]=periods[ident].copy()
+rounds=read('ffws-global-2026/dates.json')['rounds']
+period('ffwsglobalfinals2026',{'year':2026,'startDate':min(r['date'] for r in rounds),'endDate':max(r['date'] for r in rounds)})
+out={'catalog':list(catalog.values()),'people':records,'periods':dict(sorted(periods.items()))}
 out['version']=hashlib.sha256(json.dumps(out,sort_keys=True).encode()).hexdigest()[:16]
 p=ROOT/'functions/career-competitions-seed.json';p.write_text(json.dumps(out,ensure_ascii=False,separators=(',',':'))+'\n')
 print(f'{len(catalog)} editions, {sum(map(len,records.values()))} records, {p.stat().st_size} bytes (server only)')

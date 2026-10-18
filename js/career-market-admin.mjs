@@ -1,5 +1,5 @@
 import {mountMarketDepartureExport} from './career-market-export.mjs?v=20261017-people-v1';
-import {esc,ROLES} from './career-client.mjs?v=20261018-career-organized-v1';
+import {esc,ROLES} from './career-client.mjs?v=20261018-career-chronology-v1';
 const STATUS={rumor:'Rumor',negociando:'Negociando','falta-anunciar':'Falta anunciar',fechado:'Fechado',melou:'Melou','contrato-renovado':'Contrato renovado'},PUB={draft:'Rascunho',published:'Publicado',archived:'Arquivado',deleted:'Excluído'};
 export function mountCareerMarket({call,valid,canOpen=()=>true,onApplied=()=>{},createPeople=()=>{}}){
  const $=s=>document.querySelector(s),root=$('#career-market-panel'),tab=$('[data-career-market-tab]');let active=false,seq=0,offset=0,page=null,editing=null,person=null,saving=false,timer,peopleSeq=0,teamsSeq=0;

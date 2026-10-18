@@ -14,16 +14,48 @@ export async function readCareer(kind,query,{force=false}={}){
  const job=(async()=>{const response=await fetch(url,{cache:force?'reload':'no-cache',signal:AbortSignal.timeout(6000)}),data=await response.json();if(!response.ok)throw Error(data.error||'Histórico indisponível.');cache.set(key,{at:Date.now(),data});if(cache.size>50)cache.delete(cache.keys().next().value);return data;})();pending.set(key,job);try{return await job;}finally{pending.delete(key);}
 }
 export async function careerAdmin(auth,operation,body={}){const user=auth.currentUser;if(!user)throw Error('Entre no painel para continuar.');const token=await user.getIdToken(),response=await fetch(CAREER_API+'/api',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({...body,action:'careerAdmin',operation}),signal:AbortSignal.timeout(20000)}),data=await response.json();if(auth.currentUser?.uid!==user.uid)throw Error('Sua conta mudou. Entre novamente.');if(!response.ok)throw Error(data.error||'Não foi possível concluir a alteração.');if(!['search','teams','person','history','summary','departureCandidates','teamDetail','resolveTeam','reviewSummary','teamHistory'].includes(operation))cache.clear();return data;}
-export function tenureCards(tenures,{admin=false}={}){return tenures.map(t=>`<article class="career-tenure${t.status==='unverified'?' is-unverified':''}"><div class="career-tenure-head"><div><a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span>${esc(ROLES[t.role]||t.role)}</span></div><span class="career-status career-status-${esc(t.status)}">${STATUSES[t.status]||esc(t.status)}</span></div><div class="career-dates"><div><small>ENTRADA</small><strong>${esc(periodLabel(t.start))}</strong><span>${certaintyLabel(t.start)}</span></div><div><small>SAÍDA</small><strong>${t.status==='active'&&!t.end?.date&&!t.end?.edition?'Em atividade':esc(periodLabel(t.end))}</strong><span>${certaintyLabel(t.end)}</span></div></div>${t.source||t.sourceUrl?`<p class="career-source">Fonte: ${t.sourceUrl?`<a href="${esc(t.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(t.source||'Ver anúncio')} ↗</a>`:esc(t.source)}</p>`:''}${t.departure?.reason||t.departure?.source||t.departure?.sourceUrl?`<p class="career-source">Saída: ${esc(t.departure.reason)}${t.departure.source||t.departure.sourceUrl?` · ${t.departure.sourceUrl?`<a href="${esc(t.departure.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(t.departure.source||'Ver anúncio')} ↗</a>`:esc(t.departure.source)}`:''}</p>`:''}${t.competitions?.length?`<p class="career-participation-chips">${t.competitions.map(c=>`<span>${esc(c.name)}</span>`).join('')}</p>`:''}${t.notes?`<p class="career-notes">${esc(t.notes)}</p>`:''}${admin?`<div class="career-row-actions"><button type="button" data-career-edit="${esc(t.id)}">Editar</button>${t.status!=='ended'?`<button type="button" data-career-transfer="${esc(t.id)}">Registrar transferência</button>`:''}<button type="button" data-career-archive="${esc(t.id)}">Arquivar</button></div>`:''}</article>`).join('');}
+export function tenureCards(tenures,{admin=false,person}={}){return orderedTenures(person||{tenures}).map(t=>`<article class="career-tenure${t.status==='unverified'?' is-unverified':''}"><div class="career-tenure-head"><div><a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span>${esc(ROLES[t.role]||t.role)}</span></div><span class="career-status career-status-${esc(t.status)}">${STATUSES[t.status]||esc(t.status)}</span></div><div class="career-dates"><div><small>ENTRADA</small><strong>${esc(periodLabel(t.start))}</strong><span>${certaintyLabel(t.start)}</span></div><div><small>SAÍDA</small><strong>${t.status==='active'&&!t.end?.date&&!t.end?.edition?'Em atividade':esc(periodLabel(t.end))}</strong><span>${certaintyLabel(t.end)}</span></div></div>${t.source||t.sourceUrl?`<p class="career-source">Fonte: ${t.sourceUrl?`<a href="${esc(t.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(t.source||'Ver anúncio')} ↗</a>`:esc(t.source)}</p>`:''}${t.departure?.reason||t.departure?.source||t.departure?.sourceUrl?`<p class="career-source">Saída: ${esc(t.departure.reason)}${t.departure.source||t.departure.sourceUrl?` · ${t.departure.sourceUrl?`<a href="${esc(t.departure.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(t.departure.source||'Ver anúncio')} ↗</a>`:esc(t.departure.source)}`:''}</p>`:''}${t.competitions?.length?`<p class="career-participation-chips">${t.competitions.map(c=>`<span>${esc(c.name)}</span>`).join('')}</p>`:''}${t.notes?`<p class="career-notes">${esc(t.notes)}</p>`:''}${admin?`<div class="career-row-actions"><button type="button" data-career-edit="${esc(t.id)}">Editar</button>${t.status!=='ended'?`<button type="button" data-career-transfer="${esc(t.id)}">Registrar transferência</button>`:''}<button type="button" data-career-archive="${esc(t.id)}">Arquivar</button></div>`:''}</article>`).join('');}
 
+function dateRange(value){
+ const date=String(value||'');
+ if(/^20\d{2}$/.test(date))return [date+'-01-01',date+'-12-31'];
+ if(/^20\d{2}-(0[1-9]|1[0-2])$/.test(date)){const [y,m]=date.split('-').map(Number);return [date+'-01',date+'-'+new Date(Date.UTC(y,m,0)).getUTCDate()];}
+ if(/^20\d{2}-\d{2}-\d{2}$/.test(date)){const stamp=Date.parse(date+'T12:00Z');if(Number.isFinite(stamp)&&new Date(stamp).toISOString().slice(0,10)===date)return [date,date];}
+ return null;
+}
+function recordedPeriod(tenure){
+ const periods=(tenure.competitions||[]).map(c=>{
+  const p=c.period||{},year=p.year||String(c.name||'').match(/\b20\d{2}\b/)?.[0];
+  const start=dateRange(p.startDate),end=dateRange(p.endDate),annual=dateRange(year);
+  return {start:start?.[0]||end?.[0]||annual?.[0],end:end?.[1]||start?.[1]||annual?.[1],yearOnly:!start&&!end};
+ }).filter(p=>p.start&&p.end);
+ return periods.length?{start:periods.map(p=>p.start).sort()[0],end:periods.map(p=>p.end).sort().at(-1),yearOnly:periods.every(p=>p.yearOnly)}:null;
+}
+export function competitionPeriodLabel(tenure){
+ const period=recordedPeriod(tenure);if(!period)return '';
+ const first=period.yearOnly?period.start.slice(0,4):periodLabel({date:period.start}),last=period.yearOnly?period.end.slice(0,4):periodLabel({date:period.end});
+ return 'Participações registradas: '+first+(first!==last?' → '+last:'')+' · estimativa pelos torneios';
+}
+export function orderedTenures(person,{newestFirst=false}={}){
+ const current=new Set((person.current||[]).map(t=>t.id).filter(Boolean));
+ const rows=(person.tenures||[]).filter(t=>!t.deleted).map((tenure,index)=>{
+  const period=recordedPeriod(tenure),start=dateRange(tenure.start?.date),end=dateRange(tenure.end?.date);
+  const active=!['free_agent','retired'].includes(person.availability)&&(current.has(tenure.id)||!Array.isArray(person.current)&&['active','loan','substitute'].includes(tenure.status));
+  return {tenure,index,active,start:start?.[0]||period?.start||end?.[0]||'',end:end?.[1]||period?.end||start?.[1]||''};
+ });
+ rows.sort((a,b)=>Number(a.active)-Number(b.active)||Number(!!a.start)-Number(!!b.start)||a.start.localeCompare(b.start)||a.end.localeCompare(b.end)||(Number(a.tenure.order)||0)-(Number(b.tenure.order)||0)||a.index-b.index);
+ // Unknown periods retain their imported order together; they never become
+ // fabricated contract dates. The authoritative current link stays at the end.
+ const result=rows.map(r=>r.tenure);return newestFirst?result.reverse():result;
+}
 export function careerTrail(person,{resolveLogo=(_name,logo)=>logo||'escudo.webp'}={}){
  const rows=[],teamKey=t=>t.teamId||String(t.teamName||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
- for(const t of [...(person.tenures||[])].filter(t=>!t.deleted).sort((a,b)=>a.order-b.order)){
+ for(const t of orderedTenures(person)){
   const previous=rows.at(-1);if(previous&&teamKey(previous)===teamKey(t)&&previous.role===t.role){rows[rows.length-1]={...t,start:previous.start};}else rows.push({...t});
  }
  const current=new Set((person.current||[]).map(t=>t.id));
  const cards=rows.map(t=>{
-  const active=current.has(t.id),dates=[t.start,t.end].filter(b=>b?.date||b?.edition).map(periodLabel).join(' → '),role=t.role!=='player'?ROLES[t.role]||t.role:'';
+  const active=current.has(t.id),dates=[t.start,t.end].filter(b=>b?.date||b?.edition).map(periodLabel).join(' → ')||competitionPeriodLabel(t),role=t.role!=='player'?ROLES[t.role]||t.role:'';
   return `<a class="career-trail-team${active?' is-current':''}" href="${teamHref(t.teamPageName||t.teamName)}"${dates?` title="${esc(dates)}"`:''}><span class="career-trail-label">${active?'Atual':esc(role)}</span><span class="career-trail-logo"><img src="${esc(resolveLogo(t.teamName,t.logo,t.logoManaged))}" alt="" loading="lazy" decoding="async" ${t.logoManaged?'data-career-team-logo="1"':`data-team-logo="${esc(t.teamName)}"`}></span><strong>${esc(t.teamName)}</strong></a>`;
  });
  if(person.availability==='free_agent'||person.availability==='retired')cards.push(`<span class="career-trail-team is-current"><span class="career-trail-label">Atual</span><span class="career-trail-logo career-trail-free">${person.availability==='retired'?'—':'F/A'}</span><strong>${person.availability==='retired'?'Aposentado':'Sem equipe'}</strong></span>`);

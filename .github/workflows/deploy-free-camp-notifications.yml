@@ -58,6 +58,8 @@ on:
       - 'functions/career-competitions.js'
       - 'functions/career-competitions-seed.json'
       - 'scripts/build-career-competitions.py'
+      - 'career-data/results/**'
+      - 'ffws-global-2026/dates.json'
       - 'functions/career-market.js'
       - 'functions/market-seed.json'
       - 'js/career-market-admin.mjs'

@@ -1,4 +1,4 @@
-import {esc,ROLES,teamHref,periodLabel} from './career-client.mjs?v=20261018-career-organized-v1';
+import {esc,ROLES,teamHref,periodLabel} from './career-client.mjs?v=20261018-career-chronology-v1';
 
 const BASE='/career-data/results/',requests=new Map(),mounted=new WeakMap();
 const key=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
