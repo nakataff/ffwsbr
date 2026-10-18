@@ -6,7 +6,7 @@ module.exports=function({sql,rows,key,text,fail,findTeam,getPerson,records,data,
  const canonicalTeam=(value,cache=new Map())=>{if(cache.has(value))return cache.get(value);let id;try{id=findTeam(value)?.id||key(value);}catch{id=key(value);}cache.set(value,id);return id;};
  function detected(person,tenures,target,cache=new Map(),imported=participations(person.id)){
   const entries=data.people[person.id]||[],team=target.teamId||canonicalTeam(target.teamName,cache),out=[];
-  for(const r of [...entries,...imported]){if(imported.includes(r)&&(!r.tenure||r.tenure!==target.id))continue;if((r.role!==target.role&&!(r.tenure&&['coach','head_coach'].includes(r.role)&&['coach','head_coach'].includes(target.role)))||canonicalTeam(r.team,cache)!==team)continue;const candidates=tenures.filter(t=>!t.deleted&&t.teamId===team&&t.role===target.role);if(!r.tenure&&(target.id?candidates.length!==1||candidates[0].id!==target.id:candidates.length>0))continue;out.push(r.id);}
+  for(const r of [...entries,...imported]){if(imported.includes(r)&&(!r.tenure||r.tenure!==target.id))continue;if((r.role!==target.role&&!(['coach','head_coach'].includes(r.role)&&['coach','head_coach'].includes(target.role)))||canonicalTeam(r.team,cache)!==team)continue;const candidates=tenures.filter(t=>!t.deleted&&t.teamId===team&&t.role===target.role);if(!r.tenure&&(target.id?candidates.length!==1||candidates[0].id!==target.id:candidates.length>0))continue;out.push(r.id);}
   return [...new Set(out)].slice(0,100);
  }
  function labels(ids,detectedIds=[]){if(!ids.length)return [];const found=rows('SELECT id,name,family FROM career_competitions WHERE id IN ('+ids.map(()=>'?').join(',')+') ORDER BY name',...ids);return found.map(c=>({...c,source:detectedIds.includes(c.id)?'site':'manual'}));}

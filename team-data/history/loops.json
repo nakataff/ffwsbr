@@ -218,8 +218,28 @@
       }
     ],
     "currentCount": 5,
-    "formerCount": 7
+    "formerCount": 7,
+    "staff": [
+      {
+        "id": "staff-history-butter",
+        "name": "BUTTER",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S2"
+        ]
+      }
+    ]
   },
   "titles": [],
-  "results": []
+  "results": [
+    {
+      "torneio": "FFWS BR 2025 S2",
+      "data": "2025-10-05",
+      "place": "12º",
+      "source": "novos-torneios/wb-2025-s2.json"
+    }
+  ]
 }

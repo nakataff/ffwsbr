@@ -14,7 +14,10 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       },
       {
@@ -28,7 +31,10 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       },
       {
@@ -42,7 +48,10 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       },
       {
@@ -56,7 +65,10 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       },
       {
@@ -70,7 +82,9 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["WB 2026 S2"],
+        "editions": [
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       },
       {
@@ -84,20 +98,31 @@
         "kills": 710,
         "matches": 430,
         "avg": 1.65,
-        "editions": ["WB 2025 S2", "WB 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "WB 2025 S2",
+          "WB 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 3
       }
     ],
     "currentCount": 6,
-    "formerCount": 0
+    "formerCount": 0,
+    "staff": []
   },
   "titles": [],
   "results": [
     {
+      "torneio": "FFWS BR 2026 S2",
+      "data": "2026-10-11",
+      "place": "12º",
+      "source": "ffws-br-2026-s2/career-summary.json"
+    },
+    {
       "torneio": "LAFF 2026 S1",
       "data": "2026",
-      "place": "5th",
-      "tier": "Final"
+      "place": "5º",
+      "source": "dados laff/classificacao.json"
     }
   ]
 }

@@ -152,13 +152,13 @@ test('standalone staff career has competitive-style hero and detailed passages w
   assert.equal(root.querySelectorAll('.career-pro-metrics strong')[0].textContent,'2');
   assert.equal(root.querySelectorAll('.career-pro-metrics strong')[2].textContent,'1');
   assert.equal(root.querySelectorAll('.career-pro-tenure').length,2);
-  assert(root.querySelector('[data-career-passage=t1] a[href*="equipe-historica"]'));
+  assert(root.querySelector('[data-career-passage=t1] a[href="/equipe/sx-tet"]'));
   assert.match(root.querySelector('[data-career-passage=t1]').textContent,/Analista/);
   assert.match(root.querySelector('[data-career-passage=t1]').textContent,/LAFF 2026 S1/);
-  assert.match(root.querySelector('[data-career-passage=t1]').textContent,/Não informada/);
+  assert.match(root.querySelector('[data-career-passage=t1]').textContent,/12\/10\/2026/);assert(root.querySelector('[data-profile-panel=career]').hidden);assert(!root.querySelector('[data-career-passage=t1]').open);
   assert(!root.querySelector('script'));
   assert(!/TÍTULOS COLETIVOS|PRÊMIOS INDIVIDUAIS/.test(root.textContent));
-  assert.match(root.querySelector('.career-pro-tenure-footer').textContent,/Ver página da equipe/);
+  assert.match(root.querySelector('[data-career-passage=t1] .career-results-team-link').textContent,/Ver equipe/);
  }finally{w.close();}
 });
 test('standalone staff profile accepts no photo or passage without breaking presentation',async()=>{

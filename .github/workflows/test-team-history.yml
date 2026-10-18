@@ -6,6 +6,19 @@ on:
       - 'js/historical-teams.min.js'
       - 'js/career-client.mjs'
       - 'js/career-public.js'
+      - 'js/team-routes.mjs'
+      - 'js/team-page-fast.min.js'
+      - 'css/careers.css'
+      - 'team-data/historical/**'
+      - 'team-data/historical-index.json'
+      - 'team-data/history/**'
+      - 'scripts/build-team-views.py'
+      - 'scripts/snapshot-career-s2.cjs'
+      - 'career-data/events/**'
+      - 'test/team-career-views.test.cjs'
+      - 'dados laff/**'
+      - 'laff-2025-s1-finals.json'
+      - 'resultados.json'
       - 'js/career-results.mjs'
       - 'career-data/results/**'
       - 'scripts/build-career-results.py'
@@ -20,6 +33,7 @@ on:
       - 'ewc 2026/datas.json'
       - 'ffws-br-2026-*/teams.json'
       - 'ffws-br-2026-s2/radar-summary.json'
+      - 'ffws-br-2026-s2/career-summary.json'
       - 'test/career-results.test.cjs'
       - 'js/year-ranking-logo-sheet.js'
       - 'js/team-logo-resolver.min.js'
@@ -49,6 +63,8 @@ jobs:
       - name: Check data, logo refresh and normal team links
         env:
           NODE_PATH: /tmp/cff-team-history-test/node_modules
-        run: node --test --test-timeout=10000 test/historical-team-fixes.test.cjs test/global-team-logos.test.cjs test/team-profile.test.cjs test/tournament-logos.test.cjs test/career-results.test.cjs
+        run: node --test --test-timeout=10000 test/historical-team-fixes.test.cjs test/global-team-logos.test.cjs test/team-profile.test.cjs test/tournament-logos.test.cjs test/career-results.test.cjs test/team-career-views.test.cjs
+      - name: Check generated canonical team views
+        run: python3 scripts/build-team-views.py --check
       - name: Check changed browser modules
         run: node --check js/historical-teams.min.js && node --check js/year-ranking-logo-sheet.js && node --check js/team-logo-resolver.min.js && node --check js/career-client.mjs && node --check js/career-results.mjs && node --check js/career-public.js

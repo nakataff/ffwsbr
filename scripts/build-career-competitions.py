@@ -52,6 +52,8 @@ for entry in read('player-data/staff/verified-coaching-competitions.json')['entr
  role=entry['role']
  if role not in ('coach','head_coach','assistant_coach','analyst','manager'):continue
  add(person,entry['edition'],entry['team'],role)
+# Catalog/evidence from the bounded roster import, keyed by explicit professional ID.
+for c in read('functions/career-staff-history.json')['catalog']:catalog[c['id']]=c
 # Actual future event in the site catalogue; its participants are not inferred.
 event('FFWS Global Finals 2026')
 for name in ['LAFF 2025 S1','LAFF 2026 S1']:event(name)

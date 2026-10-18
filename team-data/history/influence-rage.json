@@ -352,8 +352,73 @@
       }
     ],
     "currentCount": 5,
-    "formerCount": 16
+    "formerCount": 16,
+    "staff": [
+      {
+        "id": "staff-history-stark-coach",
+        "name": "Stark (coach)",
+        "photo": "silhueta.webp",
+        "cargo": "other",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2024"
+        ]
+      },
+      {
+        "id": "staff-s2-capgui",
+        "name": "Capgui",
+        "photo": "silhueta.webp",
+        "cargo": "analyst",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1"
+        ]
+      },
+      {
+        "id": "pereira",
+        "name": "Pereira",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1"
+        ]
+      },
+      {
+        "id": "staff-s2-wf9",
+        "name": "WF9",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S2"
+        ]
+      }
+    ]
   },
   "titles": [],
-  "results": []
+  "results": [
+    {
+      "torneio": "FFWS BR 2026 S2",
+      "data": "2026-10-11",
+      "place": "4º",
+      "source": "ffws-br-2026-s2/career-summary.json"
+    },
+    {
+      "torneio": "FFWS BR 2026 S1",
+      "data": "2026-05-31",
+      "place": "10º",
+      "source": "team-results-2026.json"
+    },
+    {
+      "torneio": "FFWS BR 2024",
+      "data": "",
+      "place": "8º",
+      "source": "novos-torneios/wb-2024.json"
+    }
+  ]
 }

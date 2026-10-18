@@ -9,7 +9,7 @@ const createDirectory=require('./career-directory');
 const createMarket=require('./career-market');
 const createCompetitions=require('./career-competitions');
 const COMPETITIONS_SEED=require('./career-competitions-seed.json');
-const ROLES={player:'Jogador',head_coach:'Head coach',coach:'Coach',assistant_coach:'Assistant coach',analyst:'Analista',manager:'Manager',other:'Outro'};
+const ROLES={player:'Jogador',head_coach:'Head coach',coach:'Coach',assistant_coach:'Assistant coach',analyst:'Analista',manager:'Manager',other:'Comissão / cargo não informado'};
 const STATUS={unverified:'A revisar',active:'Ativo',ended:'Encerrado',loan:'Empréstimo',substitute:'Substituto'};
 const fail=(status,message)=>Object.assign(Error(message),{status});
 const key=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');

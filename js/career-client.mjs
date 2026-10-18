@@ -1,11 +1,12 @@
+import {canonicalTeamHref} from './team-routes.mjs?v=20261018-career-organized-v1';
 export const CAREER_API='https://cff-camp-notifications.nakataffb4.workers.dev';
-export const ROLES={player:'Jogador',head_coach:'Head coach',coach:'Coach',assistant_coach:'Assistant coach',analyst:'Analista',manager:'Manager',other:'Outro'};
+export const ROLES={player:'Jogador',head_coach:'Head coach',coach:'Coach',assistant_coach:'Assistant coach',analyst:'Analista',manager:'Manager',other:'Comissão / cargo não informado'};
 export const STATUSES={unverified:'A revisar',active:'Ativo',ended:'Encerrado',loan:'Empréstimo',substitute:'Substituto'};
 export const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function periodLabel(value={}){let date=value.date||'';if(/^\d{4}-\d{2}-\d{2}$/.test(date))date=date.split('-').reverse().join('/');else if(/^\d{4}-\d{2}$/.test(date))date=date.slice(5)+'/'+date.slice(0,4);return [date,value.edition].filter(Boolean).join(' · ')||'Não informado';}
 export const certaintyLabel=value=>value?.certainty==='confirmed'?'Confirmado':value?.certainty==='estimated'?'Estimado':'A confirmar';
 export const personHref=id=>'/carreira.html?id='+encodeURIComponent(id);
-export const teamHref=name=>'/equipe-historica.html?time='+encodeURIComponent(name);
+export const teamHref=canonicalTeamHref;
 const cache=new Map(),pending=new Map(),TTL=60000;
 export async function readCareer(kind,query,{force=false}={}){
  if(!['person','team'].includes(kind))throw Error('Consulta inválida.');const params=new URLSearchParams({...query,view:'roster-v1'}),url=CAREER_API+'/careers/'+kind+'?'+params,key=url,stored=cache.get(key);

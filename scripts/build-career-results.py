@@ -13,6 +13,15 @@ def key(value): return re.sub('[^a-z0-9]', '', unicodedata.normalize('NFD', str(
 def packed(value): return json.dumps(value, ensure_ascii=False, separators=(',', ':')) + '\n'
 def number(value): return value if isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0 else None
 
+def staff_role(value):
+    s=key(value)
+    if 'assistant' in s:return 'assistant_coach'
+    if 'headcoach' in s:return 'head_coach'
+    if s in ['analyst','analst','analista']:return 'analyst'
+    if 'manager' in s:return 'manager'
+    if 'coach' in s or s in ['tecnico','tec']:return 'coach'
+    return 'other'
+
 def build():
     seed = read('functions/career-seed.json')
     names = {key(n): t['id'] for t in seed['teams'] for n in [t['id'], t['name'], *t.get('aliases', [])]}
@@ -33,7 +42,7 @@ def build():
             source=source, stages=[], players=[], staff=[], **extra))
     def roster(entry, item):
         entry['players'] = [dict(name=p['n'], role='player') for p in item.get('p', []) if p.get('n')]
-        entry['staff'] = [dict(name=p['n'], role=p.get('r', 'coach')) for p in item.get('s', []) if p.get('n')]
+        entry['staff'] = [dict(name=p['n'], role=staff_role(p.get('r', 'staff'))) for p in item.get('s', []) if p.get('n')]
     def table(data, table, cid, name, family, year, source, final=False, overall=False):
         cols = table.get('cols', [])
         for raw in table.get('rows', []):
@@ -77,10 +86,15 @@ def build():
 
     # 2024 has one annual final: do not attribute that title to each split.
     data = read('novos-torneios/wb-2024.json')
-    for split in [1, 2]:
+    for item in data['teams']['items']:
+        roster(edition(item.get('n') or item['o'], 'ffwsbr2024', 'FFWS BR 2024', 'FFWS_BR', 2024, 'novos-torneios/wb-2024.json', startDate=data.get('startDate',''),endDate=data.get('endDate','')),item)
+    table(data,data['standings'][0],'ffwsbr2024','FFWS BR 2024','FFWS_BR',2024,'novos-torneios/wb-2024.json')
+    table(data,data['final'],'ffwsbr2024','FFWS BR 2024','FFWS_BR',2024,'novos-torneios/wb-2024.json',final=True)
+    # Split-specific weekly tables remain informational; only the annual edition has a champion.
+    for split in [1,2]:
         for standings in data['standings']:
             if standings['title'].startswith('Fase '+str(split)+' -'):
-                table(data, standings, f'ffwsbr2024s{split}', f'FFWS BR 2024 S{split}', 'FFWS_BR', 2024, 'novos-torneios/wb-2024.json')
+                table(data,standings,f'ffwsbr2024s{split}',f'FFWS BR 2024 S{split}','FFWS_BR',2024,'novos-torneios/wb-2024.json')
 
     # Prepared official summaries already include Champion Rush placement overrides.
     summaries = read('team-results-2026.json')
@@ -108,26 +122,62 @@ def build():
         entry = teams.get(tid(team.get('dataName') or team['name']), {}).get('ewc2026') or teams.get(tid(team['name']), {}).get('ewc2026')
         if entry:
             entry['players'] = [dict(name=p['name'], role='player') for p in team.get('players', []) if not p.get('staff')]
-            entry['staff'] = [dict(name=p['name'], role='coach') for p in team.get('players', []) if p.get('staff')]
+            entry['staff'] = [dict(name=p['name'], role=staff_role(p.get('role','staff'))) for p in team.get('players', []) if p.get('staff')]
     for split in [1, 2]:
         cid = f'ffwsbr2026s{split}'; base = f'ffws-br-2026-s{split}'
         for team in read(base+'/teams.json')['teams']:
-            entry = edition(team['name'], cid, f'FFWS BR 2026 S{split}', 'FFWS_BR', 2026, base+'/radar-summary.json')
+            entry = edition(team['name'], cid, f'FFWS BR 2026 S{split}', 'FFWS_BR', 2026, base+'/career-summary.json')
             entry['players'] = [dict(name=n, role='player') for n in team['players']]
         if split == 2:
-            data = read(base+'/radar-summary.json'); dates = read(base+'/teams.json').get('schedule', [])
-            for sid, label in [('classificatoria','Classificatória'), ('final','Grande final')]:
+            data = read(base+'/career-summary.json'); dates = read(base+'/teams.json').get('schedule', [])
+            for sid, label in [('classificatoria','Classificatória'),('segundaFase','Segunda fase'), ('final','Grande final')]:
                 for row in data.get(sid, {}).get('rows', []):
-                    entry = edition(row['team'], cid, 'FFWS BR 2026 S2', 'FFWS_BR', 2026, base+'/radar-summary.json', updatedAt=data.get('updatedAt',''))
-                    stage = {k:v for k,v in row.items() if k in ['position','points','kills','booyahs','matches']}
-                    stage.update(id=sid, label=label, finished=bool(data[sid].get('finished')), isFinal=sid=='final', champion=sid=='final' and data[sid].get('finished') is True and row.get('position')==1)
+                    if not number(row.get('matches')): continue
+                    entry = edition(row['team'], cid, 'FFWS BR 2026 S2', 'FFWS_BR', 2026, base+'/career-summary.json', updatedAt=data.get('updatedAt',''))
+                    stage = {k:v for k,v in row.items() if k in ['position','points','kills','booyahs','matches','bonus']}
+                    stage.update(id=sid, label=label, finished=bool(data[sid].get('finished')), isFinal=sid=='final', champion=sid=='final' and data[sid].get('finished') is True and key(row['team'])==key(data[sid].get('champion') or data[sid].get('confirmedChampion')))
                     entry['stages'].append(stage)
             for entry in [events[cid] for events in teams.values() if cid in events]:
                 ds = [d['date'] for d in dates if d.get('date')]
-                if ds: entry.update(startDate=min(ds), endDate=max(ds))
+                if ds: entry.update(startDate=min(ds), endDate=max(ds), finalDate=max(ds))
             for person in read('functions/career-staff-s2.json')['people']:
                 entry = teams[tid(person['team'])][cid]
                 entry['staff'].append(dict(name=person['name'], role=person['role']))
+
+    # Existing historical world finals provide placements, not fabricated per-match stats.
+    for team, rows in read('resultados.json').items():
+        for row in rows:
+            match=re.fullmatch(r'Free Fire World Series - Global Finals (2024|2025)',row.get('torneio',''),re.I)
+            place=re.fullmatch(r'(\d+)(?:st|nd|rd|th|º)?',str(row.get('place','')),re.I)
+            if not match or not place:continue
+            year=match[1];position=int(place[1]);cid='ffwsglobalfinals'+year
+            entry=edition(team,cid,'FFWS Global Finals '+year,'MUNDIAL',year,'resultados.json',endDate=row.get('data',''),finalDate=row.get('data',''))
+            entry['stages']=[dict(id='final',label='Classificação final',position=position,finished=True,isFinal=position<=12,champion=position==1)]
+    for sid,label,path in [('groups','Classificatória','dados laff/classificacao.json'),('last-chance','Repescagem','dados laff/repescagem.json'),('final','Grande final','dados laff/final.json')]:
+        data=read(path);rows=data['laffStandings'] if isinstance(data,dict) else data
+        for row in rows:
+            entry=edition(row['team'],'laff2026s1','LAFF 2026 S1','LAFF',2026,path)
+            stage=dict(id=sid,label=label,position=row['rank'],finished=True,isFinal=sid=='final',champion=sid=='final' and row['rank']==1)
+            for dest,source in [('points','pontos'),('kills','kills'),('booyahs','booyah'),('matches','quedas')]:
+                if number(row.get(source)) is not None:stage[dest]=row[source]
+            entry['stages'].append(stage)
+    for pos,row in enumerate(read('laff-2025-s1-finals.json')['teams'],1):
+        entry=edition(row['team'],'laff2025s1','LAFF 2025 S1','LAFF',2025,'laff-2025-s1-finals.json')
+        entry['stages']=[dict(id='final',label='Grande final',position=pos,points=row['points'],kills=row['kills'],booyahs=row['booyah'],matches=row['matches'],finished=True,isFinal=True,champion=pos==1)]
+    # Extension point for reviewed future ZIP imports: normalize once before publishing.
+    # No raw HTML, nickname guessing, or archive parsing is performed by the visitor.
+    for path in sorted((ROOT/'career-data/events').glob('*.json')):
+        data=json.loads(path.read_text())
+        assert re.fullmatch(r'[a-z0-9]+',data['id']) and data['family'] in ['MUNDIAL','FFWS_BR','LAFF','LBFF','EWC','OUTROS']
+        for team in data['teams']:
+            entry=edition(team['name'],data['id'],data['name'],data['family'],data['year'],str(path.relative_to(ROOT)))
+            for field in ['startDate','endDate','finalDate','updatedAt']:
+                if data.get(field):entry[field]=data[field]
+            entry['stages']=team.get('stages',[])
+            for stage in entry['stages']:
+                assert isinstance(stage.get('finished'),bool) and stage.get('label')
+                assert not stage.get('champion') or stage.get('isFinal') and stage['finished']
+            entry['players']=team.get('players',[]);entry['staff']=team.get('staff',[])
 
     files = {}; manifest = dict(schema=1, aliases={}, teams={})
     for ident, events in sorted(teams.items()):

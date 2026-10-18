@@ -148,38 +148,6 @@
         "passageOrder": 3
       },
       {
-        "id": "luuuking",
-        "name": "LUUUKING",
-        "photo": "silhueta.webp",
-        "currentTeam": "FLUXO W7M",
-        "isCurrent": false,
-        "hasProfile": true,
-        "cargo": "Head Coach",
-        "kills": 116,
-        "matches": 167,
-        "avg": 0.69,
-        "editions": [
-          "LBFF 3",
-          "LBFF 4",
-          "LBFF 5"
-        ],
-        "passageOrder": 3
-      },
-      {
-        "id": "renan-staff",
-        "name": "Renan_Staff",
-        "photo": "silhueta.webp",
-        "currentTeam": "",
-        "isCurrent": false,
-        "hasProfile": false,
-        "cargo": "Analista",
-        "kills": 0,
-        "matches": 0,
-        "avg": 0.0,
-        "editions": [],
-        "passageOrder": 3
-      },
-      {
         "id": "nobru",
         "name": "Nobru",
         "photo": "silhueta.webp",
@@ -305,21 +273,102 @@
       }
     ],
     "currentCount": 5,
-    "formerCount": 12
+    "formerCount": 12,
+    "staff": [
+      {
+        "id": "wanheda",
+        "name": "Wanheda",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 9"
+        ]
+      },
+      {
+        "id": "staff-history-k9",
+        "name": "K9",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 4",
+          "LBFF 5",
+          "LBFF 6",
+          "LBFF 7",
+          "LBFF 8"
+        ]
+      },
+      {
+        "id": "luuuking",
+        "name": "LUUUKING",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2024",
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "EWC 2026"
+        ]
+      },
+      {
+        "id": "putsgrilo",
+        "name": "PUTSGRILO",
+        "photo": "silhueta.webp",
+        "cargo": "analyst",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 9"
+        ]
+      },
+      {
+        "id": "renan-staff",
+        "name": "Renan",
+        "photo": "silhueta.webp",
+        "cargo": "analyst",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2024",
+          "WB 2025 S1",
+          "WB 2025 S2",
+          "EWC 2026"
+        ]
+      },
+      {
+        "id": "staff-history-saymon",
+        "name": "Saymon",
+        "photo": "silhueta.webp",
+        "cargo": "manager",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      }
+    ]
   },
   "titles": [
     {
-      "event": "FFWS Brasil 2026 S2",
+      "event": "FFWS BR 2026 S2",
       "type": "Campeão",
       "date": "2026-10-11",
       "tier": "A-Tier",
       "logo": "wb.webp",
       "url": "/ffws-br-s2/final",
-      "featured": true
+      "featured": true,
+      "source": "ffws-br-2026-s2/career-summary.json"
     },
     {
       "event": "Yuta Invitational",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2026-03-26",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -327,6 +376,7 @@
     {
       "event": "CPN Arena 2026",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2026-03-09",
       "tier": "C-Tier",
       "logo": "trofeu.webp"
@@ -334,6 +384,7 @@
     {
       "event": "Copa GWL Mobile 2026 Stage 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2026-03-03",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -341,13 +392,21 @@
     {
       "event": "Showmatch Yuta 2026",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2026-01-16",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
     },
     {
+      "event": "FFWS BR 2025 S2",
+      "type": "Campeão",
+      "date": "2025-10-05",
+      "source": "novos-torneios/wb-2025-s2.json"
+    },
+    {
       "event": "Copa GWL Mobile 2025 Stage 4",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-09-17",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -355,6 +414,7 @@
     {
       "event": "Lidoma Endless Series 2025 - Brazil Regional Championship",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-08-28",
       "tier": "C-Tier",
       "logo": "trofeu.webp"
@@ -362,6 +422,7 @@
     {
       "event": "Liga Marinho Season 2",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-07-10",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -369,6 +430,7 @@
     {
       "event": "Copa GWL Mobile 2025 Stage 3",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-07-04",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -376,6 +438,7 @@
     {
       "event": "Liga DS Season 4",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-05-28",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -383,6 +446,7 @@
     {
       "event": "Copa Davi Season 3",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-04-25",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -390,6 +454,7 @@
     {
       "event": "Liga do Rei Elite Mobile 2025",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-04-24",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -397,6 +462,7 @@
     {
       "event": "Fora da Safe Invitational Mobile 2025 Split 2",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-03-30",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -404,6 +470,7 @@
     {
       "event": "Liga Doutrina Mobile 2025 Week 2",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-03-11",
       "tier": "Weekly",
       "logo": "trofeu.webp"
@@ -411,6 +478,7 @@
     {
       "event": "Liga Doutrina Mobile 2025 Week 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-02-12",
       "tier": "Weekly",
       "logo": "trofeu.webp"
@@ -418,6 +486,7 @@
     {
       "event": "Fora da Safe Invitational Mobile 2025 Split 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-01-22",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -425,6 +494,7 @@
     {
       "event": "ESL Snapdragon Pro Series Season 5: Latin America Challenge",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2024-12-08",
       "tier": "A-Tier",
       "logo": "trofeu.webp"
@@ -432,44 +502,58 @@
     {
       "event": "Free Fire World Series - Global Finals 2024",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2024-11-24",
       "tier": "S-Tier",
       "logo": "/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png"
     },
     {
+      "event": "FFWS Global Finals 2024",
+      "type": "Campeão",
+      "date": "2024-11-24",
+      "source": "resultados.json"
+    },
+    {
       "event": "Copa GWL Mobile 2023 Stage 3",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2023-10-10",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
     },
     {
-      "event": "Liga Brasileira de Free Fire 2021: Series A - Stage 1",
+      "event": "LBFF 4",
       "type": "Campeão",
+      "source": "novos-torneios/lbff-4.json",
       "date": "2021-03-20",
       "tier": "A-Tier",
       "logo": "trofeu.webp"
+    },
+    {
+      "event": "FFWS BR 2024",
+      "type": "Campeão",
+      "source": "novos-torneios/wb-2024.json",
+      "date": ""
     }
   ],
   "results": [
     {
-      "torneio": "FFWS Brasil 2026 S2",
+      "torneio": "FFWS BR 2026 S2",
       "data": "2026-10-11",
       "place": "1º",
-      "tier": "A-Tier",
-      "url": "/ffws-br-s2/final"
+      "source": "ffws-br-2026-s2/career-summary.json"
     },
     {
+      "torneio": "EWC 2026",
       "data": "2026-07-18",
-      "tier": "S-Tier",
       "place": "5º",
-      "torneio": "EWC 2026 - Final"
+      "source": "team-results-2026.json"
     },
     {
+      "torneio": "FFWS BR 2026 S1",
       "data": "2026-05-31",
-      "tier": "S-Tier",
       "place": "4º",
-      "torneio": "WB 2026 S1 - Final"
+      "source": "team-results-2026.json"
     },
     {
       "data": "2026-04-09",
@@ -530,6 +614,66 @@
       "tier": "D-Tier",
       "place": "1st",
       "torneio": "Showmatch Yuta 2026"
+    },
+    {
+      "torneio": "FFWS BR 2025 S2",
+      "data": "2025-10-05",
+      "place": "1º",
+      "source": "novos-torneios/wb-2025-s2.json"
+    },
+    {
+      "torneio": "FFWS BR 2025 S1",
+      "data": "2025-06-22",
+      "place": "2º",
+      "source": "novos-torneios/wb-2025-s1.json"
+    },
+    {
+      "torneio": "FFWS Global Finals 2024",
+      "data": "2024-11-24",
+      "place": "1º",
+      "source": "resultados.json"
+    },
+    {
+      "torneio": "LBFF 9",
+      "data": "",
+      "place": "4º",
+      "source": "novos-torneios/lbff-9.json"
+    },
+    {
+      "torneio": "LBFF 8",
+      "data": "",
+      "place": "5º",
+      "source": "novos-torneios/lbff-8.json"
+    },
+    {
+      "torneio": "LBFF 7",
+      "data": "",
+      "place": "5º",
+      "source": "novos-torneios/lbff-7.json"
+    },
+    {
+      "torneio": "LBFF 6",
+      "data": "",
+      "place": "3º",
+      "source": "novos-torneios/lbff-6.json"
+    },
+    {
+      "torneio": "LBFF 5",
+      "data": "",
+      "place": "3º",
+      "source": "novos-torneios/lbff-5.json"
+    },
+    {
+      "torneio": "LBFF 4",
+      "data": "",
+      "place": "1º",
+      "source": "novos-torneios/lbff-4.json"
+    },
+    {
+      "torneio": "FFWS BR 2024",
+      "data": "",
+      "place": "1º",
+      "source": "novos-torneios/wb-2024.json"
     }
   ]
 }

@@ -5,7 +5,7 @@ import {createCareerDirectory} from './career-directory-admin.mjs?v=20261017-peo
 import {initCareerDepartures} from './career-departures.js?v=20261017-people-v1';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,setPersistence,browserLocalPersistence,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
-import {careerAdmin,ROLES,STATUSES,esc,tenureCards,personHref,periodLabel} from './career-client.mjs?v=20261017-competitions-v1';
+import {careerAdmin,ROLES,STATUSES,esc,tenureCards,personHref,periodLabel} from './career-client.mjs?v=20261018-career-organized-v1';
 const app=getApps().find(a=>a.name==='[DEFAULT]')||initializeApp(window.CFF_CONFIG.firebase),auth=getAuth(app),$=s=>document.querySelector(s),ADMIN='admin@centralfreefire.com.br';
 let directory=null,editorSubmitting=false;
 let selected=null,tab='tenures',offset=0,page=null,busy=false,sequence=0,personSequence=0,searchTimer,teamTimer,editorState=null;

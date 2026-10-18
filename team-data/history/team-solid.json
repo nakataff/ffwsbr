@@ -264,22 +264,6 @@
         "passageOrder": 2
       },
       {
-        "id": "putsgrilo",
-        "name": "PUTSGRILO",
-        "photo": "silhueta.webp",
-        "currentTeam": "TEAM SOLID",
-        "isCurrent": false,
-        "hasProfile": true,
-        "cargo": "Head Coach",
-        "kills": 1,
-        "matches": 1,
-        "avg": 1.0,
-        "editions": [
-          "LBFF 9"
-        ],
-        "passageOrder": 2
-      },
-      {
         "id": "bzp",
         "name": "BZP",
         "photo": "bzp.webp",
@@ -311,34 +295,6 @@
         "editions": [
           "LBFF 9"
         ],
-        "passageOrder": 1
-      },
-      {
-        "id": "jaya",
-        "name": "Jaya",
-        "photo": "silhueta.webp",
-        "currentTeam": "",
-        "isCurrent": false,
-        "hasProfile": false,
-        "cargo": "Analista",
-        "kills": 0,
-        "matches": 0,
-        "avg": 0.0,
-        "editions": [],
-        "passageOrder": 1
-      },
-      {
-        "id": "joker-coach",
-        "name": "JOKER (coach)",
-        "photo": "silhueta.webp",
-        "currentTeam": "LOUD SNICKERS",
-        "isCurrent": false,
-        "hasProfile": true,
-        "cargo": "Coach",
-        "kills": 0,
-        "matches": 0,
-        "avg": 0,
-        "editions": [],
         "passageOrder": 1
       },
       {
@@ -429,12 +385,107 @@
       }
     ],
     "currentCount": 5,
-    "formerCount": 20
+    "formerCount": 20,
+    "staff": [
+      {
+        "id": "staff-history-croft",
+        "name": "CROFT",
+        "photo": "silhueta.webp",
+        "cargo": "head_coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 5"
+        ]
+      },
+      {
+        "id": "staff-history-blake",
+        "name": "Blake",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 6"
+        ]
+      },
+      {
+        "id": "staff-s2-lipao",
+        "name": "LIPÃO",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 9"
+        ]
+      },
+      {
+        "id": "staff-history-vinycrz",
+        "name": "VinyCrz",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 9"
+        ]
+      },
+      {
+        "id": "staff-s2-jhan",
+        "name": "Jhan",
+        "photo": "silhueta.webp",
+        "cargo": "analyst",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      },
+      {
+        "id": "joker-coach",
+        "name": "JOKER (coach)",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2024",
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      },
+      {
+        "id": "jaya",
+        "name": "Jaya",
+        "photo": "silhueta.webp",
+        "cargo": "other",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2024"
+        ]
+      },
+      {
+        "id": "staff-history-stormi",
+        "name": "Stormi",
+        "photo": "silhueta.webp",
+        "cargo": "manager",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      }
+    ]
   },
   "titles": [
     {
       "event": "Goat League Season 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-11-21",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -442,6 +493,7 @@
     {
       "event": "Aquecimento do Amoras Pré Mundial",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-10-20",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -449,6 +501,7 @@
     {
       "event": "Copa All In Mobile Season 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-09-23",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -456,6 +509,7 @@
     {
       "event": "Copa Diamond Season 3",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-06-05",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -463,6 +517,7 @@
     {
       "event": "All In Mobile Elite S3",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-04-25",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -470,6 +525,7 @@
     {
       "event": "RED Wave Cup Elite Season 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-03-24",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -477,6 +533,7 @@
     {
       "event": "Copa Diamond Season 2",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-03-20",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -484,6 +541,7 @@
     {
       "event": "Del Rei Season 2",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2024-12-09",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -491,6 +549,7 @@
     {
       "event": "Liga Brasileira de Free Fire - Series B 2021 Stage 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2021-03-28",
       "tier": "B-Tier",
       "logo": "trofeu.webp"
@@ -498,6 +557,7 @@
     {
       "event": "Free Fire Talents Mobile 6",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2021-03-02",
       "tier": "C-Tier",
       "logo": "trofeu.webp"
@@ -505,10 +565,16 @@
   ],
   "results": [
     {
-      "data": "2026-05-31",
-      "tier": "S-Tier",
+      "torneio": "FFWS BR 2026 S2",
+      "data": "2026-10-11",
       "place": "5º",
-      "torneio": "WB 2026 S1 - Final"
+      "source": "ffws-br-2026-s2/career-summary.json"
+    },
+    {
+      "torneio": "FFWS BR 2026 S1",
+      "data": "2026-05-31",
+      "place": "5º",
+      "source": "team-results-2026.json"
     },
     {
       "data": "2026-04-08",
@@ -543,14 +609,14 @@
     {
       "data": "2026-01-23",
       "tier": "D-Tier",
-      "place": "2nd",
-      "torneio": "Liga LPT Season 1"
+      "place": "5th",
+      "torneio": "Liga Marinho Season 3"
     },
     {
       "data": "2026-01-23",
       "tier": "D-Tier",
-      "place": "5th",
-      "torneio": "Liga Marinho Season 3"
+      "place": "2nd",
+      "torneio": "Liga LPT Season 1"
     },
     {
       "data": "2026-01-21",
@@ -575,6 +641,48 @@
       "tier": "C-Tier",
       "place": "2nd",
       "torneio": "Maranhao Gamer Challenge 2025"
+    },
+    {
+      "torneio": "FFWS Global Finals 2025",
+      "data": "2025-11-15",
+      "place": "5º",
+      "source": "resultados.json"
+    },
+    {
+      "torneio": "FFWS BR 2025 S2",
+      "data": "2025-10-05",
+      "place": "2º",
+      "source": "novos-torneios/wb-2025-s2.json"
+    },
+    {
+      "torneio": "FFWS BR 2025 S1",
+      "data": "2025-06-22",
+      "place": "9º",
+      "source": "novos-torneios/wb-2025-s1.json"
+    },
+    {
+      "torneio": "LBFF 9",
+      "data": "",
+      "place": "6º",
+      "source": "novos-torneios/lbff-9.json"
+    },
+    {
+      "torneio": "LBFF 6",
+      "data": "",
+      "place": "12º",
+      "source": "novos-torneios/lbff-6.json"
+    },
+    {
+      "torneio": "LBFF 5",
+      "data": "",
+      "place": "12º",
+      "source": "novos-torneios/lbff-5.json"
+    },
+    {
+      "torneio": "FFWS BR 2024",
+      "data": "",
+      "place": "6º",
+      "source": "novos-torneios/wb-2024.json"
     }
   ]
 }

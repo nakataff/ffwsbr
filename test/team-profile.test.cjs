@@ -8,7 +8,7 @@ test('campaign averages exclude bonus and compare the same played stages',()=>{
 });
 test('Fluxo championship is persisted once, dated, linked and featured ahead of other trophies',()=>{
  const d=read('team-data/history/fluxo-w7m.json'),titles=model.titles(d.titles);
- assert.equal(titles[0].event,'FFWS Brasil 2026 S2');assert.equal(titles[0].date,'2026-10-11');assert.equal(d.titles.filter(t=>t.event===titles[0].event).length,1);assert(fs.existsSync(titles[0].url.slice(1)+'/index.html'));assert(fs.existsSync(titles[0].logo));assert.equal(d.results[0].place,'1º');assert.equal(model.titles([...d.titles,titles[0]]).length,d.titles.length);
+ assert.equal(titles[0].event,'FFWS BR 2026 S2');assert.equal(titles[0].date,'2026-10-11');assert.equal(d.titles.filter(t=>t.event===titles[0].event).length,1);assert(fs.existsSync(titles[0].url.slice(1)+'/index.html'));assert(fs.existsSync(titles[0].logo));assert.equal(d.results[0].place,'1º');assert.equal(model.titles([...d.titles,titles[0]]).length,d.titles.length);
 });
 function environment(query='fluxo-w7m',overrides={}){
  const nodes=new Map(),seasonButtons=new Map(),root={style:{setProperty(){}}};
@@ -24,8 +24,8 @@ test('profile renders before pending photo/logo maps and separates roster, resul
  const e=environment();await e.qa.init();await tick();
  assert(e.page.innerHTML.includes('cff-profile-nav'));assert(e.page.innerHTML.includes('cff-profile-history'));
  assert(e.nodes.get('cff-current-roster').innerHTML.includes('Elenco atual'));assert(e.nodes.get('cff-season-panel').innerHTML.includes('Pontos por queda'));
- assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS Brasil 2026 S2'));assert(e.nodes.get('cff-team-titles-mount').innerHTML.includes('11/10/2026'));assert(e.nodes.get('cff-team-results-mount').innerHTML.includes('FFWS Brasil 2026 S2'));
- e.qa.state.titleYear='2024';e.qa.renderTitles(e.qa.state.historyData);assert(!e.nodes.get('cff-team-titles-mount').innerHTML.includes('FFWS Brasil 2026 S2'));assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS Brasil 2026 S2'));
+ assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS BR 2026 S2'));assert(e.nodes.get('cff-team-titles-mount').innerHTML.includes('11/10/2026'));assert(e.nodes.get('cff-team-results-mount').innerHTML.includes('FFWS BR 2026 S2'));
+ e.qa.state.titleYear='2024';e.qa.renderTitles(e.qa.state.historyData);assert(!e.nodes.get('cff-team-titles-mount').innerHTML.includes('FFWS BR 2026 S2'));assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS BR 2026 S2'));
  const p=e.qa.state.current.players.bops||Object.values(e.qa.state.current.players)[0];p.currentRoster.left=true;e.qa.renderCurrentRoster();const html=e.nodes.get('cff-current-roster').innerHTML;assert(!html.includes('<h3>'+p.name+'</h3>'));assert(html.includes('Saídas registradas'));
  assert(!e.qa.titleCard({event:'Unsafe',url:'javascript:alert(1)'}).includes('href='));
 });
@@ -52,5 +52,5 @@ test('profile anchors and highlights remain on the team page even with base href
 test('team trophies use the shared global logo and preserve the Brazilian tournament logo',async()=>{
  const e=environment();await e.qa.init();await tick();
  assert(e.qa.titleCard({event:'Free Fire World Series - Global Finals 2024',logo:'trofeu.webp'}).includes('/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png'));
- assert(e.qa.titleCard({event:'FFWS Brasil 2026 S2',logo:'wb.webp'}).includes('src="wb.webp"'));
+ assert(e.qa.titleCard({event:'FFWS BR 2026 S2',logo:'wb.webp'}).includes('src="wb.webp"'));
 });

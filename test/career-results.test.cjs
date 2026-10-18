@@ -9,7 +9,7 @@ test('snapshots are deterministic, retain distinct W7M identities and never turn
  assert.notEqual(manifest.aliases.w7mesports,manifest.aliases.fluxow7m);
  const w7m=snapshot('w7mesports').editions.find(e=>e.id==='ffwsbr2025s1');assert.equal(w7m.stages.find(s=>s.isFinal).position,10);
  const loud=snapshot('loudsnickers'),s1=loud.editions.find(e=>e.id==='ffwsbr2026s1');assert.equal(s1.stages.find(s=>s.isFinal).position,1);assert(s1.stages.find(s=>s.isFinal).champion);
- const s2=loud.editions.find(e=>e.id==='ffwsbr2026s2');assert(!s2.stages.some(s=>s.champion||s.isFinal));assert(s2.staff.some(p=>p.name==='JOKER (coach)'));
+ const s2=loud.editions.find(e=>e.id==='ffwsbr2026s2');assert.equal(s2.stages.length,3);assert.equal(s2.stages.find(s=>s.isFinal).position,2);assert.equal(s2.stages.find(s=>s.id==='segundaFase').points,540);assert.equal(s2.stages.find(s=>s.isFinal).matches,13);assert(!s2.stages.some(s=>s.champion));assert(s2.staff.some(p=>p.name==='JOKER (coach)'));
  const lbff9=loud.editions.find(e=>e.id==='lbff9');assert(!Object.hasOwn(lbff9.stages.find(s=>s.isFinal),'kills'));assert(!Object.hasOwn(lbff9.stages.find(s=>s.isFinal),'booyahs'));
  for(const id of ['ffwsbr2024s1','ffwsbr2024s2'])assert(!loud.editions.find(e=>e.id===id).stages.some(s=>s.champion));
  const liquid=snapshot('teamliquid');assert(liquid.editions.find(e=>e.id==='lbff1').stages.some(s=>s.champion));
@@ -31,7 +31,7 @@ test('a departure before the final does not acquire the teams championship; part
  assert(m.participationPeriod({...t,end:{date:'2026-05'}},event).awardEligible);
  assert(!m.participationPeriod({...t,end:{date:'2026-04'}},event).awardEligible);
  assert(m.participationPeriod({...t,end:{},start:{date:'2026-07-01'}},event).outside);
- assert.equal(m.participationPeriod(tenure(),event).label,'Datas do vínculo não informadas');
+ assert.equal(m.participationPeriod(tenure(),event).label,'Participação registrada nesta edição');
  const unknown=m.linkCoachResults({tenures:[tenure({competitions:[competition('custom','Mundial 2025','MUNDIAL')]})]},manifest,new Map());
  assert.deepEqual(m.coachSummary(unknown),{editions:1,finals:0,titles:0,international:1});
 });
@@ -67,12 +67,26 @@ test('failed static downloads offer an explicit retry and coalesced successful f
   assert.equal(f.calls.length,3);assert(!f.body.textContent.includes('incompletos'));assert(f.body.querySelector('.career-results-roster'));
  }finally{f.close();}
 });
-test('the public profile inserts a collapsed lazy section without fetching snapshots, retains it on redraw and excludes pure players',async()=>{
+test('the public profile inserts lazy result tabs without fetching snapshots, retains it on redraw and excludes pure players',async()=>{
  const p={id:'souto',name:'Souto',kind:'staff',current:[],tenures:[tenure()],availability:'unknown'};const f=await fixture(p);
  try{
   f.w.eval(fs.readFileSync(path.join(root,'js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));
-  await f.w.mountPersonCareer(f.body,{id:'souto'},{standalone:true});const panel=f.body.querySelector('[data-career-results]');assert(panel);assert(!panel.open);assert.equal(f.calls.length,0);
+  await f.w.mountPersonCareer(f.body,{id:'souto'},{standalone:true});const panel=f.body.querySelector('[data-career-results]');assert(panel);assert(panel.closest('[role=tabpanel]').hidden);assert.equal(f.body.querySelectorAll('[role=tab]').length,4);assert.equal(f.calls.length,0);f.body.querySelector('[data-profile-tab=career]').click();assert(!f.body.querySelector('[data-profile-panel=career]').hidden);assert([...f.body.querySelectorAll('.career-pro-tenure')].every(d=>!d.open));assert(!f.body.querySelector('.career-pro-stats-link'));assert.equal(f.calls.length,0);
   await f.w.mountPersonCareer(f.body,{id:'souto'},{standalone:true});assert.equal(f.body.querySelector('[data-career-results]'),panel);
   p.tenures[0].role='player';await f.w.mountPersonCareer(f.body,{id:'souto'},{standalone:true});assert(!f.body.querySelector('[data-career-results]'));assert.equal(f.calls.length,0);
+ }finally{f.close();}
+});
+
+test('profile tabs fetch only relevant static files on demand, share downloads across awards and exclude athlete titles',async()=>{
+ const p={id:'joker-coach',name:'JOKER (coach)',kind:'staff',availability:'active',current:[],tenures:[tenure({teamId:'loudsnickers',teamName:'LOUD SNICKERS',competitions:[competition('ffwsbr2026s2','FFWS BR 2026 S2','FFWS_BR')]}),tenure({id:'athlete',teamId:'teamliquid',role:'player'})]};
+ const f=await fixture(p);try{
+  const source=fs.readFileSync(path.join(root,'js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,'').replace(/await import\('\.\/career-results\.mjs\?v=[^']+'\)/g,'await Promise.resolve({mountCoachResults:window.mountCoachResults})');
+  f.w.eval(source);await f.w.mountPersonCareer(f.body,{id:p.id},{standalone:true});assert.equal(f.calls.length,0);
+  const click=async id=>{f.body.querySelector('[data-profile-tab='+id+']').click();for(let i=0;i<8;i++)await new Promise(r=>setTimeout(r,0));};
+  await click('competitions');assert.equal(f.calls.length,2);assert(f.calls[1].includes('loudsnickers-'));assert(!f.calls.some(u=>u.includes('teamliquid-')));
+  const competitions=f.body.querySelector('[data-profile-panel=competitions]');assert(!competitions.hidden);assert(competitions.textContent.includes('Segunda fase'));assert(competitions.textContent.includes('540'));assert(competitions.textContent.includes('185'));assert(competitions.querySelectorAll('.career-results-edition').length===1);
+  await click('awards');assert.equal(f.calls.length,2);assert.equal(f.body.querySelector('[data-profile-panel=awards] .career-results-metrics strong').textContent,'1');
+  await click('career');assert.equal(f.calls.length,2);assert(f.body.querySelector('[data-profile-panel=competitions]').hidden);
+  const tab=f.body.querySelector('[data-profile-tab=career]');tab.dispatchEvent(new f.w.KeyboardEvent('keydown',{key:'Home',bubbles:true}));assert.equal(f.body.querySelector('[data-profile-tab=overview]').getAttribute('aria-selected'),'true');
  }finally{f.close();}
 });

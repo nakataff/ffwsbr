@@ -1,4 +1,4 @@
-import {esc} from './career-client.mjs?v=20261017-competitions-v1';
+import {esc} from './career-client.mjs?v=20261018-career-organized-v1';
 const FAMILIES={LAFF:'LAFF',MUNDIAL:'Mundial',FFWS_BR:'FFWS BR',LBFF:'LBFF',EWC:'EWC',OUTROS:'Outras'};
 export function mountCareerCompetitions({form,call,valid,getContext,onDirty=()=>{}}){
  const root=form.querySelector('[data-career-competitions]'),$=s=>root.querySelector(s);let selected=new Map(),detected=[],changed=false,initialized=false,loaded=false,pending=false,creating=false,offset=0,page=null,seq=0,context='',timer,createRequest=null;

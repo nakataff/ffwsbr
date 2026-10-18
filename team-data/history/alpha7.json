@@ -181,20 +181,6 @@
         "passageOrder": 4
       },
       {
-        "id": "frois",
-        "name": "Frois",
-        "photo": "silhueta.webp",
-        "currentTeam": "",
-        "isCurrent": false,
-        "hasProfile": false,
-        "cargo": "Coach",
-        "kills": 0,
-        "matches": 0,
-        "avg": 0.0,
-        "editions": [],
-        "passageOrder": 3
-      },
-      {
         "id": "mitinx",
         "name": "MitinX",
         "photo": "mitin.webp",
@@ -231,8 +217,58 @@
       }
     ],
     "currentCount": 5,
-    "formerCount": 8
+    "formerCount": 8,
+    "staff": [
+      {
+        "id": "staff-history-correia",
+        "name": "CORREIA",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S2"
+        ]
+      },
+      {
+        "id": "staff-s2-frank",
+        "name": "FRANK",
+        "photo": "silhueta.webp",
+        "cargo": "analyst",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      }
+    ]
   },
   "titles": [],
-  "results": []
+  "results": [
+    {
+      "torneio": "FFWS BR 2026 S2",
+      "data": "2026-10-11",
+      "place": "7º",
+      "source": "ffws-br-2026-s2/career-summary.json"
+    },
+    {
+      "torneio": "FFWS BR 2026 S1",
+      "data": "2026-05-31",
+      "place": "9º",
+      "source": "team-results-2026.json"
+    },
+    {
+      "torneio": "FFWS BR 2025 S2",
+      "data": "2025-10-05",
+      "place": "5º",
+      "source": "novos-torneios/wb-2025-s2.json"
+    },
+    {
+      "torneio": "FFWS BR 2025 S1",
+      "data": "2025-06-22",
+      "place": "5º",
+      "source": "novos-torneios/wb-2025-s1.json"
+    }
+  ]
 }

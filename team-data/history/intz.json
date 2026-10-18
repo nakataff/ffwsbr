@@ -488,8 +488,64 @@
       }
     ],
     "currentCount": 5,
-    "formerCount": 23
+    "formerCount": 23,
+    "staff": [
+      {
+        "id": "staff-history-batman",
+        "name": "Batman",
+        "photo": "silhueta.webp",
+        "cargo": "head_coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 1",
+          "LBFF 3",
+          "LBFF 4"
+        ]
+      },
+      {
+        "id": "staff-history-stark-coach",
+        "name": "Stark (coach)",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 9"
+        ]
+      },
+      {
+        "id": "vazily",
+        "name": "VAZILY",
+        "photo": "silhueta.webp",
+        "cargo": "head_coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 5"
+        ]
+      }
+    ]
   },
   "titles": [],
-  "results": []
+  "results": [
+    {
+      "torneio": "FFWS BR 2026 S2",
+      "data": "2026-10-11",
+      "place": "11º",
+      "source": "ffws-br-2026-s2/career-summary.json"
+    },
+    {
+      "torneio": "FFWS BR 2026 S1",
+      "data": "2026-05-31",
+      "place": "6º",
+      "source": "team-results-2026.json"
+    },
+    {
+      "torneio": "LBFF 1",
+      "data": "",
+      "place": "5º",
+      "source": "novos-torneios/lbff-1.json"
+    }
+  ]
 }

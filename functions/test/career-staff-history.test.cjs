@@ -12,8 +12,8 @@ const edit=(core,operation,b)=>core.admin(admin,{operation,nonce:crypto.randomUU
 test('LBFF staff identities, aliases and competitions unify without merging unrelated players or claiming current contracts',()=>{
  const x=fixture();try{
   const core=x.core();core.ensure();
-  assert.equal(manifest.rawRecords,148);assert.equal(manifest.people.length,64);
-  assert.equal(x.db.prepare('SELECT COUNT(*) n FROM career_roster_participations').get().n,148);
+  assert.equal(manifest.rawRecords,259);assert.equal(manifest.people.length,106);
+  assert.equal(x.db.prepare('SELECT COUNT(*) n FROM career_roster_participations').get().n,259);
   const souto=core.publicRead('person',{name:'Matheus Souto'}).person;
   assert.equal(souto.id,'staff-history-souto');assert.equal(souto.kind,'staff');assert.equal(souto.current.length,0);
   assert.equal(core.publicRead('person',{name:'Souto'}).person.id,souto.id);
@@ -27,9 +27,9 @@ test('LBFF staff identities, aliases and competitions unify without merging unre
   }
   const luuuking=get(core,'luuuking');assert(luuuking.current.some(t=>t.teamId==='fluxow7m'&&t.role==='head_coach'));
   const magic=luuuking.tenures.filter(t=>t.teamId==='magicsquad');assert.equal(magic.length,1);assert.deepEqual(magic[0].competitions.map(c=>c.id),['lbff7','lbff8','lbff9']);
-  const vazily=get(core,'vazily');assert(vazily.tenures.some(t=>t.role==='player'));assert(vazily.tenures.some(t=>t.role==='coach'&&t.teamId==='intz'&&t.competitions.some(c=>c.id==='lbff5')));
+  const vazily=get(core,'vazily');assert(vazily.tenures.some(t=>t.role==='player'));assert(vazily.tenures.some(t=>['coach','head_coach'].includes(t.role)&&t.teamId==='intz'&&t.competitions.some(c=>c.id==='lbff5')));
   const k9=get(core,'staff-history-k9'),keyd=k9.tenures.filter(t=>t.teamId==='vivokeyd');assert.equal(keyd.length,2);assert.deepEqual(keyd.map(t=>t.competitions.map(c=>c.id)),[['lbff1','lbff3'],['lbff9']]);
-  assert.deepEqual(k9.tenures.map(t=>t.teamId),['vivokeyd','fluxow7m','vivokeyd']);
+  assert.deepEqual(k9.tenures.filter(t=>t.competitions.some(c=>c.family==='LBFF')).map(t=>t.teamId),['vivokeyd','fluxow7m','vivokeyd']);
   assert(x.db.prepare('SELECT data FROM career_tenures').all().every(r=>{const t=JSON.parse(r.data);return Number.isSafeInteger(t.order)&&t.order>=1;}));
   assert(!JSON.stringify(souto).includes('before_data'));assert(!JSON.stringify(souto).includes('rawRecords'));
  }finally{x.db.close();}
@@ -77,3 +77,26 @@ test('duplicate manual aliases are left for review without creating a third prof
 });
 
 test('former players with historical coaching records appear in the staff directory without a false current contract',async()=>{const x=fixture();try{const core=x.core();for(const query of ['Avenger','Wanheda','VAZILY']){const list=await core.admin(admin,{operation:'search',kind:'staff',query});assert(list.entries.some(p=>p.id===query.toLowerCase()),query);const p=get(core,query.toLowerCase());assert(!p.current.some(t=>t.role==='coach'));}}finally{x.db.close();}});
+
+test('2024 annual, 2025 splits and EWC staff link to their professional roles while Joker/player and unknown roles stay separate',()=>{
+ const x=fixture();try{
+  const c=x.core(),joker=get(c,'joker-coach'),player=get(c,'joker');
+  const ids=joker.tenures.filter(t=>t.teamId==='teamsolid').flatMap(t=>t.competitions.map(c=>c.id));
+  assert(ids.includes('ffwsbr2025s1'));assert(ids.includes('ffwsbr2025s2'));assert(ids.includes('ffwsbr2024'));
+  assert(joker.tenures.some(t=>t.teamId==='loudsnickers'&&t.competitions.some(c=>c.id==='ewc2026')));assert(player.tenures.every(t=>t.role==='player'));
+  const viana=manifest.people.find(p=>p.name==='VIANA'),profile=get(c,viana.id);assert(profile.tenures.some(t=>t.teamId==='loudsnickers'&&t.role==='analyst'&&t.competitions.some(c=>c.id==='ewc2026')));
+  const unknown=manifest.people.find(p=>p.name==='SANTIAGO');assert(unknown.records.some(r=>r.role==='other'&&r.competitionId==='ffwsbr2024'));
+  const before=JSON.stringify(joker.current);x.trace.length=0;get(c,'joker-coach');assert.equal(JSON.stringify(get(c,'joker-coach').current),before);assert(x.trace.filter(t=>t.query.includes('FROM career_roster_participations')).every(t=>t.query.includes('WHERE person=?')));
+ }finally{x.db.close();}
+});
+
+test('upgrading the prior LBFF import preserves manually closed contracts and explicit edition choices without recurring import writes',async()=>{
+ const x=fixture();try{
+  const old={...manifest,version:'previous-lbff-test',people:manifest.people.map(p=>({...p,records:p.records.filter(r=>r.competitionId.startsWith('lbff')).map(r=>({...r,role:r.role==='head_coach'?'coach':r.role}))})).filter(p=>p.records.length)};
+  const prior=x.core(old);let p=get(prior,'joker-coach');const t=p.current[0];
+  p=(await edit(prior,'saveTenure',{personId:p.id,revision:p.revision,tenure:{...t,status:'ended',end:{date:'2026-10-15'},competitionIds:[]}})).person;
+  p=(await edit(prior,'savePerson',{personId:p.id,revision:p.revision,name:p.name,kind:'staff',availability:'free_agent',aliases:p.aliases})).person;
+  const upgraded=get(x.core(),'joker-coach');assert.equal(upgraded.current.length,0);assert.equal(upgraded.availability,'free_agent');const kept=upgraded.tenures.find(r=>r.id===t.id);assert.equal(kept.end.date,'2026-10-15');assert.deepEqual(kept.competitions,[]);assert(upgraded.tenures.some(t=>t.competitions.some(c=>c.id==='ffwsbr2025s1')));
+  x.trace.length=0;x.core().ensure();assert(!x.trace.some(t=>/^\s*(INSERT|UPDATE|DELETE)/i.test(t.query)));
+ }finally{x.db.close();}
+});

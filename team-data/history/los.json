@@ -305,20 +305,6 @@
         "passageOrder": 2
       },
       {
-        "id": "jaya",
-        "name": "Jaya",
-        "photo": "silhueta.webp",
-        "currentTeam": "",
-        "isCurrent": false,
-        "hasProfile": false,
-        "cargo": "Analista",
-        "kills": 0,
-        "matches": 0,
-        "avg": 0,
-        "editions": [],
-        "passageOrder": 2
-      },
-      {
         "id": "leals",
         "name": "LEALS",
         "photo": "silhueta.webp",
@@ -518,12 +504,108 @@
       }
     ],
     "currentCount": 5,
-    "formerCount": 25
+    "formerCount": 25,
+    "staff": [
+      {
+        "id": "staff-history-walter",
+        "name": "WALTER",
+        "photo": "silhueta.webp",
+        "cargo": "head_coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 3"
+        ]
+      },
+      {
+        "id": "staff-history-cauan",
+        "name": "Cauan",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 5",
+          "LBFF 6"
+        ]
+      },
+      {
+        "id": "staff-history-butter",
+        "name": "BUTTER",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "LBFF 7",
+          "LBFF 8"
+        ]
+      },
+      {
+        "id": "staff-s2-lipao",
+        "name": "LIPÃO",
+        "photo": "silhueta.webp",
+        "cargo": "coach",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      },
+      {
+        "id": "staff-history-izuki",
+        "name": "Izuki",
+        "photo": "silhueta.webp",
+        "cargo": "other",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2024"
+        ]
+      },
+      {
+        "id": "fon",
+        "name": "FON",
+        "photo": "silhueta.webp",
+        "cargo": "other",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2024"
+        ]
+      },
+      {
+        "id": "jaya",
+        "name": "Jaya",
+        "photo": "silhueta.webp",
+        "cargo": "analyst",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      },
+      {
+        "id": "staff-history-icaro",
+        "name": "Icaro",
+        "photo": "silhueta.webp",
+        "cargo": "manager",
+        "hasProfile": true,
+        "isCurrent": false,
+        "editions": [
+          "WB 2025 S1",
+          "WB 2025 S2"
+        ]
+      }
+    ]
   },
   "titles": [
     {
       "event": "Showmatch do Amoras 2026",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2026-01-21",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -531,6 +613,7 @@
     {
       "event": "Maranhao Gamer Challenge 2025",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-12-06",
       "tier": "C-Tier",
       "logo": "trofeu.webp"
@@ -538,13 +621,21 @@
     {
       "event": "Lidoma Endless Series 2025 - Americas Intercontinental Clash",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-09-25",
       "tier": "B-Tier",
       "logo": "trofeu.webp"
     },
     {
+      "event": "FFWS BR 2025 S1",
+      "type": "Campeão",
+      "date": "2025-06-22",
+      "source": "novos-torneios/wb-2025-s1.json"
+    },
+    {
       "event": "Liga FNT Black Elite Season 11",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-06-02",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -552,6 +643,7 @@
     {
       "event": "Liga Doutrina Mobile Season 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-05-15",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -559,6 +651,7 @@
     {
       "event": "Del Rei Season 4",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-05-09",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -566,6 +659,7 @@
     {
       "event": "Del Rei Season 3",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2025-02-26",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -573,6 +667,7 @@
     {
       "event": "Liga LSX Brasileirão",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2024-10-22",
       "tier": "D-Tier",
       "logo": "trofeu.webp"
@@ -580,6 +675,7 @@
     {
       "event": "Liga LBR Mobile Season 1",
       "type": "Campeão",
+      "source": "resultados.json",
       "date": "2021-01-23",
       "tier": "C-Tier",
       "logo": "trofeu.webp"
@@ -587,16 +683,22 @@
   ],
   "results": [
     {
-      "data": "2026-07-18",
-      "tier": "S-Tier",
-      "place": "8º",
-      "torneio": "EWC 2026 - Final"
+      "torneio": "FFWS BR 2026 S2",
+      "data": "2026-10-11",
+      "place": "6º",
+      "source": "ffws-br-2026-s2/career-summary.json"
     },
     {
+      "torneio": "EWC 2026",
+      "data": "2026-07-18",
+      "place": "8º",
+      "source": "team-results-2026.json"
+    },
+    {
+      "torneio": "FFWS BR 2026 S1",
       "data": "2026-05-31",
-      "tier": "S-Tier",
       "place": "2º",
-      "torneio": "WB 2026 S1 - Final"
+      "source": "team-results-2026.json"
     },
     {
       "data": "2026-04-09",
@@ -637,14 +739,14 @@
     {
       "data": "2026-01-23",
       "tier": "D-Tier",
-      "place": "10th",
-      "torneio": "Liga LPT Season 1"
+      "place": "2nd",
+      "torneio": "Liga Marinho Season 3"
     },
     {
       "data": "2026-01-23",
       "tier": "D-Tier",
-      "place": "2nd",
-      "torneio": "Liga Marinho Season 3"
+      "place": "10th",
+      "torneio": "Liga LPT Season 1"
     },
     {
       "data": "2026-01-21",
@@ -657,6 +759,42 @@
       "tier": "D-Tier",
       "place": "2nd",
       "torneio": "Showmatch Yuta 2026"
+    },
+    {
+      "torneio": "FFWS BR 2025 S2",
+      "data": "2025-10-05",
+      "place": "7º",
+      "source": "novos-torneios/wb-2025-s2.json"
+    },
+    {
+      "torneio": "FFWS BR 2025 S1",
+      "data": "2025-06-22",
+      "place": "1º",
+      "source": "novos-torneios/wb-2025-s1.json"
+    },
+    {
+      "torneio": "LBFF 8",
+      "data": "",
+      "place": "6º",
+      "source": "novos-torneios/lbff-8.json"
+    },
+    {
+      "torneio": "LBFF 7",
+      "data": "",
+      "place": "4º",
+      "source": "novos-torneios/lbff-7.json"
+    },
+    {
+      "torneio": "LBFF 6",
+      "data": "",
+      "place": "7º",
+      "source": "novos-torneios/lbff-6.json"
+    },
+    {
+      "torneio": "LBFF 5",
+      "data": "",
+      "place": "11º",
+      "source": "novos-torneios/lbff-5.json"
     }
   ]
 }

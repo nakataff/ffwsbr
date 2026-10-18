@@ -191,8 +191,23 @@
       }
     ],
     "currentCount": 6,
-    "formerCount": 5
+    "formerCount": 5,
+    "staff": []
   },
-  "titles": [],
-  "results": []
+  "titles": [
+    {
+      "event": "LAFF 2025 S1",
+      "type": "Campeão",
+      "date": "",
+      "source": "laff-2025-s1-finals.json"
+    }
+  ],
+  "results": [
+    {
+      "torneio": "LAFF 2025 S1",
+      "data": "",
+      "place": "1º",
+      "source": "laff-2025-s1-finals.json"
+    }
+  ]
 }

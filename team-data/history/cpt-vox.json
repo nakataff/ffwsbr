@@ -14,7 +14,10 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       },
       {
@@ -28,7 +31,10 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       },
       {
@@ -42,7 +48,12 @@
         "kills": 77,
         "matches": 94,
         "avg": 0.82,
-        "editions": ["WB 2024 F2", "WB 2025 S1", "LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "WB 2024 F2",
+          "WB 2025 S1",
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 2
       },
       {
@@ -56,7 +67,12 @@
         "kills": 194,
         "matches": 205,
         "avg": 0.95,
-        "editions": ["WB 2024 F1", "WB 2024 F2", "LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "WB 2024 F1",
+          "WB 2024 F2",
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 3
       },
       {
@@ -70,28 +86,39 @@
         "kills": 0,
         "matches": 0,
         "avg": 0.0,
-        "editions": ["LAFF 2026 S1", "WB 2026 S2"],
+        "editions": [
+          "LAFF 2026 S1",
+          "WB 2026 S2"
+        ],
         "passageOrder": 1
       }
     ],
     "currentCount": 5,
-    "formerCount": 0
+    "formerCount": 0,
+    "staff": []
   },
   "titles": [
     {
-      "type": "Campeã",
+      "type": "Campeão",
       "event": "LAFF 2026 S1",
       "date": "2026",
       "tier": "LAFF",
-      "logo": "laff.webp"
+      "logo": "laff.webp",
+      "source": "dados laff/classificacao.json"
     }
   ],
   "results": [
     {
+      "torneio": "FFWS BR 2026 S2",
+      "data": "2026-10-11",
+      "place": "10º",
+      "source": "ffws-br-2026-s2/career-summary.json"
+    },
+    {
       "torneio": "LAFF 2026 S1",
       "data": "2026",
-      "place": "1st",
-      "tier": "Campeã"
+      "place": "1º",
+      "source": "dados laff/classificacao.json"
     }
   ]
 }

@@ -1,4 +1,4 @@
-import {esc,ROLES,teamHref,periodLabel} from './career-client.mjs?v=20261017-staff-profile-v1';
+import {esc,ROLES,teamHref,periodLabel} from './career-client.mjs?v=20261018-career-organized-v1';
 
 const BASE='/career-data/results/',requests=new Map(),mounted=new WeakMap();
 const key=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -22,7 +22,7 @@ export function participationPeriod(tenure,event){
  const final=event.finalDate;
  const leftBeforeFinal=!!(end&&final&&end[1]<final),joinedAfterFinal=!!(start&&final&&start[0]>final);
  return {partial,outside,awardEligible:!outside&&!leftBeforeFinal&&!joinedAfterFinal&&(!partial||!!final),
-  label:outside?'Datas do vínculo fora do período da edição':partial?'Participação parcial':start||end?'Período do vínculo registrado':'Datas do vínculo não informadas'};
+  label:outside?'Datas do vínculo fora do período da edição':partial?'Participação parcial':start||end?'Período do vínculo registrado':'Participação registrada nesta edição'};
 }
 export function linkCoachResults(person,manifest,snapshots){
  const records=new Map();
@@ -32,6 +32,7 @@ export function linkCoachResults(person,manifest,snapshots){
   for(const competition of tenure.competitions||[]){
    const id=(teamId||key(tenure.teamId||tenure.teamName))+':'+competition.id;
    const event=snapshots.get(teamId)?.editions?.find(e=>e.id===competition.id);
+   if(/^ffwsbr2024s[12]$/.test(competition.id)&&(tenure.competitions||[]).some(c=>c.id==='ffwsbr2024'))continue;
    let record=records.get(id);
    if(!record){record={id,teamId,team:tenure.teamName,teamPageName:tenure.teamPageName||tenure.teamName,
     competition,event,year:event?.year||Number(competition.name?.match(/\b20\d{2}\b/)?.[0])||null,tenures:[],periods:[]};records.set(id,record);}
@@ -46,7 +47,7 @@ export function coachSummary(records){
  return {editions:new Set(records.map(r=>r.competition.id)).size,
   finals:new Set(records.filter(r=>eligible(r)&&finalStage(r)?.finished).map(r=>r.competition.id)).size,
   titles:new Set(records.filter(r=>eligible(r)&&r.event?.stages?.some(s=>s.finished&&s.champion)).map(r=>r.competition.id)).size,
-  international:new Set(records.filter(r=>['MUNDIAL','EWC','LAFF'].includes(r.competition.family)).map(r=>r.competition.id)).size};
+  international:new Set(records.filter(r=>['MUNDIAL','EWC'].includes(r.competition.family)).map(r=>r.competition.id)).size};
 }
 function resultLabel(record){
  const stages=record.event?.stages||[],stage=finalStage(record)||stages.at(-1);
@@ -84,16 +85,17 @@ async function loadRecords(person){
  await Promise.all(Array.from({length:Math.min(3,queue.length)},async()=>{while(queue.length){const id=queue.shift(),file=manifest.teams[id];try{if(!/^[a-z0-9]+-[a-f0-9]{12}\.json$/.test(file))throw Error('Arquivo inválido');snapshots.set(id,await json(file));}catch{failed++;}}}));
  return {records:linkCoachResults(person,manifest,snapshots),failed};
 }
-export async function mountCoachResults(panel,person){
+export async function mountCoachResults(panel,person,{awards=false}={}){
  if(mounted.has(panel))return mounted.get(panel);
  const body=panel.querySelector('[data-career-results-body]');
  const job=(async()=>{
   body.innerHTML='<p role="status">Carregando resultados das equipes deste perfil…</p>';
   try{
-   const {records,failed}=await loadRecords(person);if(!panel.isConnected)return;
+   const {records:allRecords,failed}=await loadRecords(person);
+   const records=awards?allRecords.filter(r=>r.periods.some(p=>p.awardEligible)&&r.event?.stages?.some(s=>s.finished&&(s.champion||s.isFinal))):allRecords;if(!panel.isConnected)return;
    const metrics=coachSummary(records);
    const select=(name,title,values)=>`<label>${title}<select data-results-filter="${name}"><option value="">Todos</option>${values.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join('')}</select></label>`;
-   body.innerHTML=`<div class="career-results-metrics"><div><strong>${metrics.editions}</strong><span>Edições vinculadas</span></div><div><strong>${metrics.finals}</strong><span>Finais registradas</span></div><div><strong>${metrics.titles}</strong><span>Títulos da equipe</span></div><div><strong>${metrics.international}</strong><span>Internacionais</span></div></div><p class="career-pro-muted">Resultados das equipes nas edições vinculadas à atuação na comissão. Campos sem dados aparecem como “—”.${failed?' Parte dos resultados não pôde ser carregada. Os totais de finais e títulos estão incompletos.':''}</p>${records.length?`<div class="career-results-filters">${select('year','Ano',[...new Set(records.map(r=>r.year).filter(Boolean))].sort((a,b)=>b-a).map(y=>[y,y]))}${select('team','Equipe',[...new Set(records.map(r=>r.team))].sort().map(t=>[t,t]))}${select('family','Competição',[...new Set(records.map(r=>r.competition.family))].sort().map(f=>[f,({FFWS_BR:'FFWS BR',MUNDIAL:'Mundial'})[f]||f]))}</div><p class="career-results-count" aria-live="polite"></p><div data-results-list></div><div data-results-evolution></div>`:'<p class="career-pro-muted">Nenhuma competição vinculada às passagens na comissão. O administrador pode selecioná-las ao editar cada passagem.</p>'}`;
+   body.innerHTML=`<div class="career-results-metrics"><div><strong>${metrics.editions}</strong><span>Edições vinculadas</span></div><div><strong>${metrics.finals}</strong><span>Finais registradas</span></div><div><strong>${metrics.titles}</strong><span>Títulos da equipe</span></div><div><strong>${metrics.international}</strong><span>Internacionais</span></div></div><p class="career-pro-muted">Resultados das equipes nas edições vinculadas à atuação na comissão. Campos sem dados aparecem como “—”.${failed?' Parte dos resultados não pôde ser carregada. Os totais de finais e títulos estão incompletos.':''}</p>${records.length?`<div class="career-results-filters">${select('year','Ano',[...new Set(records.map(r=>r.year).filter(Boolean))].sort((a,b)=>b-a).map(y=>[y,y]))}${select('team','Equipe',[...new Set(records.map(r=>r.team))].sort().map(t=>[t,t]))}${select('family','Competição',[...new Set(records.map(r=>r.competition.family))].sort().map(f=>[f,({FFWS_BR:'FFWS BR',MUNDIAL:'Mundial'})[f]||f]))}</div><p class="career-results-count" aria-live="polite"></p><div data-results-list></div><div data-results-evolution></div>`:`<p class="career-pro-muted">${awards?'Nenhuma final ou título confirmado nas participações registradas.':'Nenhuma competição vinculada às passagens na comissão. O administrador pode selecioná-las ao editar cada passagem.'}</p>`}`;
    if(!records.length)return;
    const render=()=>{
     const filters=Object.fromEntries([...body.querySelectorAll('[data-results-filter]')].map(s=>[s.dataset.resultsFilter,s.value]));

@@ -3,7 +3,7 @@
 module.exports=function({sql,rows,transaction,data,key,now,findTeam,records,snapshot,audit}){
  let ready=false;
  const family=role=>['coach','head_coach'].includes(role)?'coach':role;
- const rank=edition=>/^LBFF\s+(\d+)$/i.exec(edition||'')?.[1]*1||Infinity;
+ const rank=edition=>{const lbff=/^LBFF\s+(\d+)$/i.exec(edition||'');if(lbff)return Number(lbff[1]);const year=String(edition||'').match(/20\d{2}/)?.[0],split=String(edition||'').match(/S([12])$/)?.[1]||0;return year?1000+Number(year)*10+Number(split):Infinity;};
  const unique=list=>[...new Set(list.filter(Boolean))];
  function resolve(table,column,names){const values=unique(names.map(key));return values.length?rows(`SELECT DISTINCT ${column} AS id FROM ${table} WHERE alias IN (${values.map(()=>'?').join(',')})`,...values):[];}
  function addAliases(table,column,id,names){
@@ -46,10 +46,10 @@ module.exports=function({sql,rows,transaction,data,key,now,findTeam,records,snap
     if(!row){created++;sql.exec('INSERT INTO career_people VALUES(?,?,?,?,?,?,?)',id,profile.name,key(profile.name),profile.kind,JSON.stringify(profile),1,now());}
     else if(changed)sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(profile),id);
     const original=records(id),all=[...original],groups=[];
-    for(const r of raw.records){const teamId=teamIds.get(r.teamId);if(!teamId)continue;const prior=groups.at(-1);if(prior?.teamId===teamId&&prior.role===r.role)prior.records.push(r);else groups.push({teamId,role:r.role,records:[r]});}
+    for(const r of raw.records){const teamId=teamIds.get(r.teamId);if(!teamId)continue;const prior=groups.at(-1);if(prior?.teamId===teamId&&family(prior.role)===family(r.role))prior.records.push(r);else groups.push({teamId,role:r.role,records:[r]});}
     const used=new Set();let addedTenures=false;
     for(const group of groups){
-     const ids=group.records.map(r=>r.competitionId),candidates=original.filter(t=>t.teamId===group.teamId&&family(t.role)===family(group.role)),visible=candidates.filter(t=>!t.deleted);
+     const ids=group.records.map(r=>r.competitionId),candidates=original.filter(t=>t.teamId===group.teamId&&(group.role==='other'?t.role!=='player':family(t.role)===family(group.role))),visible=candidates.filter(t=>!t.deleted);
      const explicit=visible.filter(t=>ids.some(id=>(t.competitionIds||[]).includes(id)));
      let target=explicit.length===1?explicit[0]:visible.length===1&&!used.has(visible[0].id)?visible[0]:null;
      // Archived passages and ambiguous repeat stints stay under administrator control.
@@ -59,12 +59,12 @@ module.exports=function({sql,rows,transaction,data,key,now,findTeam,records,snap
       const at=next?sorted.indexOf(next):sorted.length,previous=sorted[at-1],order=next?previous?(previous.order+next.order)/2:next.order-1:(previous?.order||0)+1;
       target={id:'staff-lbff-'+id+'-'+group.teamId+'-'+group.role+'-'+first.competitionId,teamId:team.id,teamName:team.name,role:group.role,status:'ended',order,
        start:{date:'',edition:first.edition,precision:'edition',certainty:'estimated'},end:{date:'',edition:last.edition,precision:'edition',certainty:'estimated'},
-       source:'Comissão registrada nas LBFFs',sourceUrl:'https://centralfreefire.com.br/'+first.source,
+       source:'Comissão registrada nas competições do site',sourceUrl:'https://centralfreefire.com.br/'+first.source,
        notes:'Participações históricas registradas no site. As edições não comprovam datas de contratação ou saída nem vínculo atual.'};
       sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',target.id,id,team.id,order,JSON.stringify(target));all.push(target);changed=true;addedTenures=true;
      }
-     if(target)used.add(target.id);
-     for(const r of group.records){sql.exec('INSERT OR IGNORE INTO career_roster_participations VALUES(?,?,?,?,?,?)',id,r.competitionId,group.teamId,target?.role||group.role,target?.id||'',r.source);linked++;}
+     if(target&&group.role!=='other')used.add(target.id);
+     for(const r of group.records){sql.exec('INSERT INTO career_roster_participations VALUES(?,?,?,?,?,?) ON CONFLICT(person,competition,team,role) DO UPDATE SET tenure=excluded.tenure WHERE career_roster_participations.tenure=\'\' AND excluded.tenure<>\'\'',id,r.competitionId,group.teamId,target?.role||group.role,target?.id||'',r.source);linked++;}
     }
     // Insert between existing passages without changing their relative order.
     // The admin editor requires positive integer positions.
