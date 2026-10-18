@@ -87,7 +87,7 @@ def order_rows(rows,official=None,champion=None):
         official.get(r[2],999) if official else 999,-sum(d[1]==1 for d in r[9]),-r[4],r[9][-1][1]))
     for pos,row in enumerate(rows,1):row[0]=pos
 
-def match_table(match,resolve,title,sid,*,official=None,final=False,headstart=None,champion=None,anomalies=None):
+def match_table(match,resolve,title,sid,*,official=None,final=False,headstart=None,champion=None,anomalies=None,corrections=None):
     p=match.args;kp=integer(p.get('p_kill',''));assert kp is not None,'Pontuação por abate ausente'
     placement={str(n):integer(p.get('p'+str(n),'0')) for n in range(1,13)}
     assert all(v is not None for v in placement.values()),'Tabela de pontuação inválida'
@@ -97,7 +97,7 @@ def match_table(match,resolve,title,sid,*,official=None,final=False,headstart=No
         m=first(value,'Map');assert m,'Mapa sem template'
         maps.append([int(field[3:]),{'Purgatory':'Purgatório','Nexterra':'Nova Terra'}.get(clean(m.args.get('map','')),clean(m.args.get('map',''))),date(m.args.get('date','')),clean(m.args.get('vod',''))])
     maps.sort();assert [m[0] for m in maps]==list(range(1,len(maps)+1)) and maps,'Quedas incompletas'
-    rows=[]
+    rows=[];applied=set()
     for field,value in p.items():
         if not re.fullmatch(r'opponent\d+',field):continue
         opponent=first(value,'TeamOpponent');assert opponent
@@ -107,11 +107,18 @@ def match_table(match,resolve,title,sid,*,official=None,final=False,headstart=No
             if not score:raise ValueError(f'{title}: {team}, queda {number} sem MS')
             pos=integer(score.args.get('1',''));kills=integer(score.args.get('2',''))
             assert pos is not None and 1<=pos<=12 and kills is not None,f'{title}: posição/abates ausentes'
+            for i,correction in enumerate(corrections or []):
+                if (correction['stageId'],correction['team'],correction['match'])!=(sid,team,number):continue
+                assert [pos,kills]==correction['from'],('Correção desatualizada',sid,team,number)
+                pos,kills=correction['to'];assert 1<=pos<=12 and kills>=0,'Correção inválida'
+                assert i not in applied,'Correção aplicada mais de uma vez'
+                applied.add(i)
             pp=placement[str(pos)];drops.append([number,pos,kills,pp,kills*kp,pp+kills*kp])
         kills=sum(d[2] for d in drops);pp=sum(d[3] for d in drops);points=pp+kills*kp
         bonus=integer(q.get('startingpoints','0'));assert bonus is not None,'Bônus inválido'
         if headstart is not None:assert headstart.get(team)==bonus,('Bônus diverge do resumo',team,bonus,headstart.get(team))
         rows.append([None,original,team,bonus,kills,pp,kills*kp,points,points+bonus,drops])
+    assert applied=={i for i,c in enumerate(corrections or []) if c['stageId']==sid},'Correção sem registro correspondente'
     assert len({r[2] for r in rows})==len(rows),'Equipe repetida na rodada'
     for number,_,_,_ in maps:
         positions=[r[9][number-1][1] for r in rows]
@@ -147,7 +154,7 @@ def modern_stages(cfg,all_t,resolve,prize_order,report):
         for k,v in initial.args.items():
             if re.fullmatch(r'team\d+',k):bonus[resolve(v)]=integer(initial.args['hs_pts'+k[4:]])
     b=by_id[cfg['finalBracket']];champion=min(prize_order,key=prize_order.get) if cfg.get('championRush') else None
-    final=match_table(first(b.args['R1M1'],'Match'),resolve,'Grande final','final',official=prize_order,final=True,headstart=bonus or None,champion=champion,anomalies=cfg.get('sourceAnomalies'))
+    final=match_table(first(b.args['R1M1'],'Match'),resolve,'Grande final','final',official=prize_order,final=True,headstart=bonus or None,champion=champion,anomalies=cfg.get('sourceAnomalies'),corrections=cfg.get('scoreCorrections'))
     ko=by_id[cfg['knockoutList']];daily=[]
     for n in range(1,7):daily.append(match_table(first(ko.args['M'+str(n)],'Match'),resolve,f'Knockout · Dia {n}','knockout-day-'+str(n),anomalies=cfg.get('sourceAnomalies')))
     combined={}
@@ -252,6 +259,11 @@ def compile_event(cfg):
     cs_templates=[t for t in all_t if other_inf and t.start>=other_inf.start]
     if other_inf:all_t=[t for t in all_t if t.start<other_inf.start]
     report={'id':cfg['id'],'sourceFile':cfg['file'],'sha256':hashlib.sha256(raw.encode()).hexdigest(),'warnings':[]}
+    if cfg.get('scoreCorrections'):
+        for correction in cfg['scoreCorrections']:
+            evidence=ROOT/correction['evidence']['file']
+            assert hashlib.sha256(evidence.read_bytes()).hexdigest()==correction['evidence']['sha256'],'Evidência da correção alterada'
+        report['corrections']=cfg['scoreCorrections']
     items=[];aliases={};unresolved=set();headers=[(m.start(),len(m[1]),m[2].strip()) for m in re.finditer(r'(?m)^(={2,6})\s*([^=\n]+?)\s*\1\s*$',text)]
     for t in all_t:
         if t.name.lower()!='teamcard':continue

@@ -73,11 +73,15 @@ classificação. Esses valores não são distribuídos artificialmente entre tim
 RZX 2024 recebeu colocação/premiação na fonte mas não disputou por problemas
 de visto; Esports Orig e Virtus.pro 2022 também não disputaram.
 
-Dois problemas do material recebido permanecem sinalizados na interface:
+Uma inconsistência do material recebido permanece sinalizada na interface:
 
 - Knockout 2024, dia 5, queda 1: dois 12º lugares e nenhum 10º. Os totais
   coincidem com o resumo recebido, mas a colocação exige revisão.
-- Final BR 2025, queda 4: Fluxo e Heavy em 9º e ausência do 7º lugar.
+A final BR 2025, queda 4, foi corrigida com o placar enviado pelo administrador
+em 18/10/2026: Heavy ficou em 7º, com 6 abates e 4 pontos de colocação (10 no total).
+O arquivo original permanece intacto; `scoreCorrections` registra a troca de
+9º para 7º, a evidência e seu SHA-256. O importador exige que o valor original
+coincida antes de aplicar a correção e valida novamente as posições e os totais.
 
 Essas exceções são limitadas à sequência exata de posições no manifest, geram
 avisos e não autorizam aceitar novas inconsistências. Não se escolhe qual equipe

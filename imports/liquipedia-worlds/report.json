@@ -2839,8 +2839,27 @@
         "Comissão não informada: Heavy",
         "Comissão não informada: Red Cliff",
         "A fonte declara US$ 1,000,000 no total; as linhas de premiação coletiva somam US$ 978,000. Valores preservados sem preencher a diferença.",
-        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado.",
-        "A fonte registra Fluxo e Heavy em 9º na queda 4 da final de 2025 e não informa um 7º lugar. Os pontos calculados mantêm o registro recebido; essa queda aguarda revisão da fonte."
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado."
+      ],
+      "corrections": [
+        {
+          "stageId": "final",
+          "team": "Heavy",
+          "match": 4,
+          "from": [
+            9,
+            6
+          ],
+          "to": [
+            7,
+            6
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/ffws-2025-final-game4.png",
+            "sha256": "34cb8385001d0ec8217241e4c0aaae6c68cd0d13b49cfe72c35d4117ff23b88a",
+            "description": "Placar Grand Finals Game 4 enviado pelo administrador em 18/10/2026: Heavy, 6 abates + 4 pontos de colocação = 10 pontos."
+          }
+        }
       ],
       "dailyStages": [
         {

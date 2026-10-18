@@ -375,7 +375,7 @@
       "dataNotes": [
         "Clash Squad e Battle Royale possuem campeões, resultados e premiações independentes.",
         "A final do Battle Royale usa Champion Rush de 80 pontos, não apenas a ordem decrescente de pontos.",
-        "A fonte registra Fluxo e Heavy em 9º na queda 4 da final de 2025 e não informa um 7º lugar. Os pontos calculados mantêm o registro recebido; essa queda aguarda revisão da fonte."
+        "Heavy: 7º lugar, 6 abates e 10 pontos na queda 4 da final, conferidos com a imagem do placar enviada pelo administrador em 18/10/2026."
       ],
       "finalBracket": "ffwsgf25gf",
       "knockoutList": "ffwsgf25ks",
@@ -386,25 +386,26 @@
         "final:1;up;Campeão",
         "knockout-week1:1-8;up;Clash Squad"
       ],
-      "sourceAnomalies": {
-        "final:4": {
-          "positions": [
-            12,
+      "scoreCorrections": [
+        {
+          "stageId": "final",
+          "team": "Heavy",
+          "match": 4,
+          "from": [
             9,
-            8,
-            11,
-            6,
-            1,
-            2,
-            3,
-            10,
-            4,
-            9,
-            5
+            6
           ],
-          "note": "A fonte registra Fluxo e Heavy em 9º na queda 4 da final de 2025 e não informa um 7º lugar. Os pontos calculados mantêm o registro recebido; essa queda aguarda revisão da fonte."
+          "to": [
+            7,
+            6
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/ffws-2025-final-game4.png",
+            "sha256": "34cb8385001d0ec8217241e4c0aaae6c68cd0d13b49cfe72c35d4117ff23b88a",
+            "description": "Placar Grand Finals Game 4 enviado pelo administrador em 18/10/2026: Heavy, 6 abates + 4 pontos de colocação = 10 pontos."
+          }
         }
-      }
+      ]
     }
   ],
   "pending": []
