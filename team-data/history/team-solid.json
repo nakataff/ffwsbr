@@ -440,7 +440,8 @@
         "isCurrent": false,
         "editions": [
           "WB 2025 S1",
-          "WB 2025 S2"
+          "WB 2025 S2",
+          "FFWS Global Finals 2025"
         ]
       },
       {
@@ -453,7 +454,8 @@
         "editions": [
           "WB 2024",
           "WB 2025 S1",
-          "WB 2025 S2"
+          "WB 2025 S2",
+          "FFWS Global Finals 2025"
         ]
       },
       {
@@ -476,7 +478,8 @@
         "isCurrent": false,
         "editions": [
           "WB 2025 S1",
-          "WB 2025 S2"
+          "WB 2025 S2",
+          "FFWS Global Finals 2025"
         ]
       }
     ]
@@ -646,7 +649,8 @@
       "torneio": "FFWS Global Finals 2025",
       "data": "2025-11-15",
       "place": "5º",
-      "source": "resultados.json"
+      "source": "novos-torneios/ffws-2025.json",
+      "url": "/index.html?torneio=ffws-2025#outros-torneios"
     },
     {
       "torneio": "FFWS BR 2025 S2",

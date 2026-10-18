@@ -12,8 +12,8 @@ const edit=(core,operation,b)=>core.admin(admin,{operation,nonce:crypto.randomUU
 test('LBFF staff identities, aliases and competitions unify without merging unrelated players or claiming current contracts',()=>{
  const x=fixture();try{
   const core=x.core();core.ensure();
-  assert.equal(manifest.rawRecords,266);assert.equal(manifest.people.length,106);
-  assert.equal(x.db.prepare('SELECT COUNT(*) n FROM career_roster_participations').get().n,266);
+  assert.equal(manifest.rawRecords,290);assert.equal(manifest.people.length,106);
+  assert.equal(x.db.prepare('SELECT COUNT(*) n FROM career_roster_participations').get().n,290);
   const souto=core.publicRead('person',{name:'Matheus Souto'}).person;
   assert.equal(souto.id,'staff-history-souto');assert.equal(souto.kind,'staff');assert.equal(souto.current.length,0);
   assert.equal(core.publicRead('person',{name:'Souto'}).person.id,souto.id);
@@ -26,7 +26,7 @@ test('LBFF staff identities, aliases and competitions unify without merging unre
    const p=get(core,id);assert.equal(p.kind,'staff');assert(p.tenures.length>1);assert(p.tenures.every(t=>t.role!=='player'&&t.status==='ended'&&!t.start.date&&!t.end.date));
   }
   const luuuking=get(core,'luuuking');assert(luuuking.current.some(t=>t.teamId==='fluxow7m'&&t.role==='head_coach'));
-  const magic=luuuking.tenures.filter(t=>t.teamId==='magicsquad');assert.equal(magic.length,1);assert.deepEqual(magic[0].competitions.map(c=>c.id),['lbff7','lbff8','lbff9']);
+  const magic=luuuking.tenures.filter(t=>t.teamId==='magicsquad');assert.equal(magic.length,1);assert.deepEqual(magic[0].competitions.map(c=>c.id),['ffws2022bangkok','ffws2023','lbff7','lbff8','lbff9']);
   const vazily=get(core,'vazily');assert(vazily.tenures.some(t=>t.role==='player'));assert(vazily.tenures.some(t=>['coach','head_coach'].includes(t.role)&&t.teamId==='intz'&&t.competitions.some(c=>c.id==='lbff5')));
   const k9=get(core,'staff-history-k9'),keyd=k9.tenures.filter(t=>t.teamId==='vivokeyd');assert.equal(keyd.length,2);assert.deepEqual(keyd.map(t=>t.competitions.map(c=>c.id)),[['lbff1','lbff3'],['lbff9']]);
   assert.deepEqual(k9.tenures.filter(t=>t.competitions.some(c=>c.family==='LBFF')).map(t=>t.teamId),['vivokeyd','fluxow7m','vivokeyd']);
@@ -104,10 +104,18 @@ test('upgrading the prior LBFF import preserves manually closed contracts and ex
 test('pilot world rosters link the reviewed coach identities and the registered players without reopening any contract',()=>{
  const x=fixture();try{
   const core=x.core(),frois=get(core,'frois'),stark=get(core,'staff-history-stark-coach'),athlete=get(core,'stark');
-  for(const id of ['ffws2021singapore','ffws2022sentosa'])assert(frois.tenures.some(t=>t.teamId==='loudsnickers'&&t.competitions.some(c=>c.id===id)),id);
+  for(const id of ['ffws2021singapore','ffws2022sentosa','ffws2023'])assert(frois.tenures.some(t=>t.teamId==='loudsnickers'&&t.competitions.some(c=>c.id===id)),id);
   assert(stark.tenures.some(t=>t.teamId==='vivokeyd'&&t.competitions.some(c=>c.id==='ffws2022sentosa')));assert(!athlete.tenures.some(t=>t.competitions.some(c=>c.id==='ffws2022sentosa')));
   const chef=get(core,'staff-history-chefexl');assert(chef.tenures.some(t=>t.teamId==='corinthians'&&t.competitions.some(c=>c.id==='ffws2019')));assert(!chef.current.length);
   const nobru=get(core,'nobru');assert(nobru.tenures.some(t=>t.teamId==='corinthians'&&t.role==='player'&&t.competitions.some(c=>c.id==='ffws2019')));
   assert(!frois.tenures.some(t=>t.competitions.some(c=>c.id==='ffws2019')),'No coach was invented for LOUD 2019');
+ }finally{x.db.close();}
+});
+
+test('remaining world staff records attach to reviewed identities and keep both Joker roles separate',()=>{
+ const x=fixture();try{const core=x.core(),lu=get(core,'luuuking'),coach=get(core,'joker-coach'),athlete=get(core,'joker');
+ for(const id of ['ffws2022bangkok','ffws2023','ffwsglobalfinals2024','ffwsglobalfinals2025'])assert(lu.tenures.some(t=>['coach','head_coach'].includes(t.role)&&t.competitions.some(c=>c.id===id)),id);
+ assert(coach.tenures.some(t=>t.teamId==='teamsolid'&&t.role==='coach'&&t.competitions.some(c=>c.id==='ffwsglobalfinals2025')));assert(!athlete.tenures.some(t=>t.teamId==='teamsolid'&&t.role==='coach'));
+ assert(get(core,'staff-history-trap-coach').tenures.some(t=>t.role==='coach'&&t.competitions.some(c=>c.id==='ffwsglobalfinals2024')));
  }finally{x.db.close();}
 });

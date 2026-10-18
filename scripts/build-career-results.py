@@ -51,7 +51,7 @@ def build():
             entry = edition(team, cid, name, family, year, source,
                 startDate=data.get('startDate', ''), endDate=data.get('endDate', ''))
             stage = dict(id='final' if final else 'overall' if overall else table.get('stageId','groups'),
-                label='Grande final' if final else 'Classificação final' if overall else 'Play-ins' if table.get('stageId')=='playins' else 'Point Rush' if 'Point Rush' in table.get('title', '') else 'Fase de grupos',
+                label='Grande final' if final else table['title'] if data.get('pilot') else 'Classificação final' if overall else 'Play-ins' if table.get('stageId')=='playins' else 'Point Rush' if 'Point Rush' in table.get('title', '') else 'Fase de grupos',
                 position=number(row.get('pos')), points=number(row.get('total', row.get('points'))), finished=True,
                 isFinal=final, champion=(final or overall) and row.get('pos') == 1)
             # Never convert weighted kill points into kills or missing values into zero.
@@ -64,6 +64,7 @@ def build():
                 placements = [m[pi] if len(m) > pi else None for m in matches] if pi >= 0 else []
                 if placements and all(number(p) is not None and p > 0 for p in placements):
                     stage['booyahs'] = placements.count(1)
+            if table.get('dataNotes'):stage['dataNotes']=table['dataNotes']
             entry['stages'].append({k:v for k,v in stage.items() if v is not None})
             if final:
                 dates = [str(m[2])[:10] for m in table.get('maps', []) if len(m) > 2 and re.match(r'^\d{4}-\d{2}-\d{2}', str(m[2]))]
@@ -162,6 +163,7 @@ def build():
             if not match or not place:continue
             year=match[1];position=int(place[1]);cid='ffwsglobalfinals'+year
             entry=edition(team,cid,'FFWS Global Finals '+year,'MUNDIAL',year,'resultados.json',endDate=row.get('data',''),finalDate=row.get('data',''))
+            if entry['source'].startswith('novos-torneios/ffws-'):continue
             entry['stages']=[dict(id='final',label='Classificação final',position=position,finished=True,isFinal=position<=12,champion=position==1)]
     for sid,label,path in [('groups','Classificatória','dados laff/classificacao.json'),('last-chance','Repescagem','dados laff/repescagem.json'),('final','Grande final','dados laff/final.json')]:
         data=read(path);rows=data['laffStandings'] if isinstance(data,dict) else data

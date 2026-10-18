@@ -1,29 +1,48 @@
-# Mundiais da Liquipedia — lote piloto 1
+# Mundiais da Liquipedia — importação estática
 
-Este lote publica **somente três** campeonatos do ZIP enviado em 17/10/2026:
-FFWS 2019, FFWS 2021 Singapura e FFWS 2022 Sentosa. 2023, 2024 e 2025 ficam
-explicitamente pendentes no manifest; não são importados por aproximação.
+Sete edições revisadas: 2019, Singapura 2021, Sentosa 2022, Bangkok 2022,
+2023, Global Finals 2024 e Global Finals 2025. O segundo lote foi autorizado
+em 18/10/2026; Bangkok veio em TXT separado, as outras edições no ZIP original.
 
-## Como funciona
+## Arquitetura
 
-1. Os TXT originais selecionados estão em `sources/*.wiki`.
-2. `manifest.json` contém IDs, formato em português, aliases de equipes revisados
-   dentro de cada torneio e vínculos explícitos com pessoas já cadastradas.
-3. `scripts/import-liquipedia-worlds.py` lê templates aninhados de forma estrutural,
-   sem executar wiki, HTML ou JavaScript. Processa Infobox, TeamCard, Match/Map/MS,
-   TeamPrizePool e AwardPrizePool. Transmissões, narradores, referências e conteúdo
-   que não alimenta os dados do site ficam fora do JSON público.
-4. O importador confere posições únicas por queda, quantidade de equipes, todas as
-   quedas, somas de pontos e ordem final contra a premiação. Desempates explícitos
-   da fonte são preservados. Alias desconhecido, template truncado ou queda sem
-   estatística interrompem a compilação.
-5. `report.json` registra o hash das fontes, dados disponíveis, ausências e pessoas
-   que ainda não tiveram sua identidade ligada ao cadastro. Pessoas não vinculadas
-   aparecem normalmente no elenco; não são associadas a um homônimo por apelido.
+- `sources/*.wiki` preserva os arquivos recebidos. Eles não são executados.
+- `manifest.json` mapeia templates, formatos em português, aliases por torneio,
+  identidades profissionais revisadas e anomalias específicas da fonte.
+- `scripts/import-liquipedia-worlds.py` processa templates aninhados offline,
+  rejeita dados truncados, equipes desconhecidas, quedas incompletas e erros
+  de soma. Nenhum compilador consulta rede, Firebase, Worker ou banco.
+- `novos-torneios/*.json` contém só os dados relevantes, com a mesma estrutura
+  para o renderizador compartilhado. Não há uma implementação por torneio.
+- O catálogo público só contém metadados e hashes. Abrir um torneio baixa
+  somente seu arquivo, com cache e deduplicação de pedidos simultâneos.
+- O Radar tem um resumo estático separado sem elencos, mapas ou estatísticas
+  por queda. Não baixa todos os torneios e não lê o banco para calcular arquivo.
+- Resultados para carreiras e equipes são compilados por equipe. Só os vínculos
+  de pessoa explicitamente revisados entram no serviço de carreiras. Não se
+  inferem contratos, datas de contratação, saída, retorno ou time atual.
 
-A pontuação histórica de 2019 (20 por abate e tabela de 300 pontos) é mantida na
-classificação. O Radar recebe uma conversão pré-calculada pelas posições e abates
-originais; não divide o total por 20 e não altera o resultado oficial.
+## Formatos e verificações
+
+O importador lê Infobox, TeamCard, Bracket, Matchlist, Match, Map, MS,
+TeamPrizePool, AwardPrizePool, HeadstartPointsTable e resumos de classificação.
+Transmissões, narradores, código HTML e referências editoriais ficam fora do JSON.
+
+- 2019: conserva 20 pontos por abate e a tabela antiga. O Radar converte usando
+  cada colocação e abate original, sem dividir incorretamente o total por 20.
+- 2021/2022: play-ins e final independentes; participantes que não viajaram não
+  recebem quedas nem participações esportivas.
+- 2023/2024: 36 quedas no Knockout, 24 por equipe. Resumos independentes são
+  conferidos com as quedas. Point Rush tem dois dias; os bônus calculados
+  reconciliam com os pontos iniciais da final. Não somamos todos os pontos de
+  Point Rush à final e não contamos vitória de fase como título mundial.
+- 2025: a elegibilidade do Champion Rush é verificada antes de cada queda;
+  o título exige Booyah após alcançar 80 pontos. Clash Squad tem uma aba
+  independente, 13 séries, suíça MD3 e playoffs MD5; campeão, premiação e MVP
+  não se misturam ao Battle Royale ou aos históricos de títulos BR.
+- A ordem final é conferida com a premiação. A fonte define o desempate em
+  finais; nas fases calculadas usam-se Booyahs, abates e última colocação.
+- `report.json` registra hashes, ausências, nomes sem vínculo e divergências.
 
 ## Atualizar e conferir
 
@@ -36,37 +55,30 @@ python3 scripts/build-career-results.py
 python3 scripts/build-team-views.py
 python3 scripts/import-liquipedia-worlds.py --check
 python3 scripts/build-tournament-catalog.py --check
+python3 scripts/build-career-results.py --check
+python3 scripts/build-team-views.py --check
 ```
 
-O catálogo público contém apenas metadados de cards e o hash de cada JSON. Abrir um
-campeonato baixa somente o arquivo dele. Pedidos simultâneos são unificados, erros
-podem ser repetidos e respostas antigas não substituem a seleção atual. O Radar é
-um download estático separado com os campos necessários, incluindo os resultados
-encerrados de 2026; não busca todo o arquivo ao vivo nem o cadastro de jogadores.
-Nenhum desses compiladores consulta Cloudflare/Firebase. A atualização do índice
-servidor de comissão usa o marcador de migração existente, uma vez por versão.
-Consultas seguintes continuam indexadas por pessoa.
+## Limitações explícitas
 
-## Ausências e divergências que permanecem visíveis
+As fontes Overview não contêm estatísticas individuais completas. Não se criam
+abates/dano/assistências individuais a partir de totais da equipe. Pessoas
+estrangeiras ou homônimos não revisados aparecem nos elencos sem links incorretos.
+Joker coach brasileiro é separado de Joker jogador chileno; Trap coach também é
+uma identidade distinta do jogador Trap.
 
-- Singapura: 18 equipes jogaram; quatro classificadas não viajaram. Elas ficam
-  separadas das participantes e não recebem quedas nem participações esportivas.
-- 2019: total anunciado de US$400 mil, linhas coletivas de US$380 mil e um prêmio
-  individual de US$22 mil na fonte. A diferença não foi completada nem corrigida.
-- Singapura 2021: total anunciado de US$2 milhões; linhas coletivas somam
-  US$1,97 milhão. O prêmio conjunto de Team TG/Riot não foi dividido sem evidência.
-- As páginas Overview não contêm a estatística completa de cada jogador. A seção
-  parcial de 2019 “Most Kills” não tem escopo suficiente para virar ranking geral.
-  Não são inferidos abates individuais a partir do resultado da equipe.
-- Algumas equipes não têm comissão informada. Isso aparece como ausência, nunca
-  como um coach criado a partir de narradores/analistas de transmissão.
-- As identidades de brasileiros vinculadas no manifest foram conferidas com os
-  apelidos e passagens da mesma organização no cadastro existente. Links ambíguos
-  (como JAPA/Japa04) e profissionais estrangeiros aguardam revisão específica.
-- O ZIP não contém Bangkok 2022. Esse campeonato não é criado com os dados de
-  Sentosa, que é outra edição.
+A premiação coletiva de 2019 e 2021 não fecha com o total anunciado. Em 2023,
+2024 e 2025 há prêmios individuais/por equipe do dia separados da tabela de
+classificação. Esses valores não são distribuídos artificialmente entre times.
+RZX 2024 recebeu colocação/premiação na fonte mas não disputou por problemas
+de visto; Esports Orig e Virtus.pro 2022 também não disputaram.
 
-Os próximos três arquivos usam estruturas mais recentes e só entrarão no próximo
-lote, depois que o piloto for avaliado. Novos tipos de template precisam ser
-adicionados ao importador com exemplos e validações; não há parser genérico no
-navegador que tente adivinhar estruturas desconhecidas.
+Dois problemas do material recebido permanecem sinalizados na interface:
+
+- Knockout 2024, dia 5, queda 1: dois 12º lugares e nenhum 10º. Os totais
+  coincidem com o resumo recebido, mas a colocação exige revisão.
+- Final BR 2025, queda 4: Fluxo e Heavy em 9º e ausência do 7º lugar.
+
+Essas exceções são limitadas à sequência exata de posições no manifest, geram
+avisos e não autorizam aceitar novas inconsistências. Não se escolhe qual equipe
+teve a posição errada por suposição. O arquivo original permanece intacto.

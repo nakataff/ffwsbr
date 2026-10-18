@@ -1,0 +1,1464 @@
+{{DISPLAYTITLE:Free Fire World Series - Global Finals 2024}}
+{{FFWS 2024 Navbox}}
+<section begin="FFWS2024Tabs"/>{{Tabs static
+|name1=Overview				|link1=Free_Fire_World_Series/2024
+|name2=Knockout Stage		|link2=Free_Fire_World_Series/2024/Knockout_Stage
+|name3=Point Rush			|link3=Free_Fire_World_Series/2024/Point_Rush
+|name4=Qualification		|link4=Free_Fire_World_Series/2024/Qualification
+|name5=Statistics			|link5=Free_Fire_World_Series/2024/Statistics
+|name6=Additional Content	|link6=Free_Fire_World_Series/2024/Additional_Content
+}}<section end="FFWS2024Tabs"/>
+{{Infobox league
+|liquipediatier=1 |highlighted=true
+|name=Free Fire World Series - Global Finals 2024
+|tickername=FFWS Global Finals 2024
+|shortname=2024
+|series=Free Fire World Series |abbreviation=FFWS
+|image=Free Fire World Series 2022 lightmode.png |imagedark=Free Fire World Series 2022 darkmode.png
+|icon=Free Fire World Series 2021 icon.png
+|caption='''"Take the Spotlight"'''
+|organizer=Garena
+|sponsor=[https://www.samsung.com/ Samsung Galaxy]<br>[https://www.kaspersky.com.br/ Kaspersky]<br>[https://play.google.com/ Google Play]<br>[https://www.pringles.com/pt/home.html Pringles]
+|garena-sponsored=true
+|team_number=18
+|type=Offline
+|country=Brazil
+|city=Rio de Janeiro
+|venue=Rio Centro Convention |venuelink=https://en.wikipedia.org/wiki/Riocentro |venuedesc=Knockout Stage
+|venue2=Carioca Arena 1 |venue2link=https://en.wikipedia.org/wiki/Carioca_Arena_1 |venue2desc=Point Rush & Grand Finals
+|prizepoolusd=1,000,000
+|sdate=2024-11-08 |edate=2024-11-24
+|web=https://www.ffesports.com/
+|instagram=ffesports.global
+|youtube=@freefireesportsofficial |youtube2=@GarenaFreeFireGlobal
+|facebook=
+|mode=squad |perspective=tpp
+|previous=Free_Fire_World_Series/2023{{!}}2023
+|next=Free_Fire_World_Series/2025{{!}}2025
+}}
+
+'''Free Fire World Series - Global Finals 2024''' is the final event of the 2024 competitive season, organized by [[Garena]].
+
+==About==
+* {{Team|RZX Esports}} did not participate due to VISA issues and the team is automatically awarded 18th place. The championship continued with 17 teams.<ref name="rzx visa issue">{{Cite web|url=https://www.instagram.com/p/DCCU3HuTIaD/ |title=A Fighter's Journey Interrupted. |publisher='''Garena Free Fire Esports''' |date=2024-11-06}}</ref>
+* {{TeamIcon|btr dlt}}&nbsp;{{Player|BTR.Kojaa|link=Kojaaaa}} violated the league's rules and was banned from playing for 1 day and fined $500 {{Abbr/USD}}.<ref name="kojaa violate rule">{{Cite web|url=https://www.facebook.com/legendgarenafreefirevn/posts/pfbid02oHxUmg1BFA5nksaHbEnfFyDxqFY9LTcTCmFr5SXRsLuXVgFNgyXvxviBZGFXwrJgl |title=THÔNG BÁO XỬ PHẠT - TUYỂN THỦ BTR.KOJAA |trans_title=NOTICE OF SANCTION - PLAYER BTR.KOJAA |language={{FlagNoLink|vn}} ''Vietnamese'' |publisher='''Huyền Thoại Sinh Tồn - Free Fire''' |date=2024-11-16}}</ref>
+* {{TeamIcon|hua}}&nbsp;{{Player|HUA.Popi|link=Popi}} violated the league's rules and was banned from playing for 1 day and fined $500 {{Abbr/USD}}.<ref name="popi violate rule">{{Cite web|url=https://www.facebook.com/legendgarenafreefirevn/posts/pfbid0oNyurDcyPCum8CUDY4E9qn8NAq25aQ5LujdVqFbL8RdzFPLjC6WLRut1GsVtrW2Ml |title=THÔNG BÁO XỬ PHẠT - TUYỂN THỦ HUA.POPI |trans_title=NOTICE OF SANCTION - PLAYER HUA.POPI |language={{FlagNoLink|vn}} ''Vietnamese'' |publisher='''Huyền Thoại Sinh Tồn - Free Fire''' |date=2024-11-22}}</ref>
+
+===Format===
+* '''Knockout Stage:''''' November 8th - 17th, 2024 at the Rio Centro Convention, {{FlagNoLink|br}} Rio de Janeiro
+** 18 teams, divided into 3 groups of 6 teams.
+** 2 weeks:
+*** Each week consist of 3 matchdays.
+*** Each matchday consist of 6 matches.
+** {{Bgcolortext|up|Top 12 teams}} advance to ''Point Rush'' and ''Grand Finals''.
+<div style="margin-top:12px"></div>
+* '''Point Rush:''''' November 22nd - 23rd, 2024 at the Carioca Arena 1, {{FlagNoLink|br}} Rio de Janeiro
+** 12 teams.
+** 12 matches (6 each day).
+** Teams receive Headstart Points after each day based on their daily standings.
+<div style="margin-top:12px"></div>
+* '''Grand Finals:''''' November 24th, 2024 at the Carioca Arena 1, {{FlagNoLink|br}} Rio de Janeiro
+** 12 teams.
+** 6 matches.
+
+====Points Distribution====
+{{box|start|padding=20px}}
+{{Points12|showtb=true|show_toggle=false|tmargin=10px 0 0 0}}
+{{box|break}}
+{| class="wikitable" style="text-align:center;margin-top:10px"
+! colspan="2"| Headstart Points<br><small>(earned in Points Rush per day)</small>
+|-
+! Place !! width="75px"| Points
+|-
+| {{Placement|1}} || 10
+|-
+| {{Placement|2}} || 7
+|-
+| {{Placement|3}} || 5
+|-
+| {{Placement|4}} || 3
+|-
+| {{Placement|5}} || 2
+|-
+| {{Placement|6}} || 1
+|-
+| {{Placement|7-12}} || 0
+|}
+{{box|end}}
+
+====Schedule====
+{{box|start|padding=1em}}<section begin="Schedule"/><div class="table-responsive">
+{| class="wikitable" style="text-align:center;margin-top:10px"
+! colspan="4"| Tournament Schedule
+|-
+! width="80px"| Stage
+! width="50px"| Day
+! width="140px"| Date
+! width="90px" | Group
+|-
+! rowspan="7"| Knockout
+|-
+| '''1'''
+| November 8th
+| AB
+|-
+| '''2'''
+| November 9th
+| BC
+|-
+| '''3'''
+| November 10th
+| AC
+|-
+| '''4'''
+| November 15th
+| AB
+|-
+| '''5'''
+| November 16th
+| BC
+|-
+| '''6'''
+| November 17th
+| AC<noinclude>
+|-
+! rowspan="2"| Point<br>Rush
+| '''1'''
+| November 22nd
+| rowspan="3"| Top 12
+|-
+| '''2'''
+| November 23rd
+|-
+! colspan="2"| Grand Finals
+| November 24th</noinclude>
+|}</div><section end="Schedule"/>{{box|break}}<section begin="MapRotation"/>
+{{MapRotation|BPAKNR|margin-top=10px}}<section end="MapRotation"/>
+{{box|end}}
+
+==Prize Pool==
+{{TeamPrizePool
+|{{Slot|usdprize=300,000|{{Opponent|fx}} }}
+|{{Slot|usdprize=150,000|{{Opponent|rrq}} }}
+|{{Slot|usdprize=70,000 |{{Opponent|bru}} }}
+|{{Slot|usdprize=60,000 |{{Opponent|e1}} }}
+|{{Slot|usdprize=55,000 |{{Opponent|twisted minds}} }}
+|{{Slot|usdprize=50,000 |{{Opponent|png}} }}
+|{{Slot|usdprize=45,000 |{{Opponent|wag}} }}
+|{{Slot|usdprize=40,000 |{{Opponent|flcn}} }}
+|{{Slot|usdprize=35,000 |{{Opponent|sccp}} }}
+|{{Slot|usdprize=29,500 |{{Opponent|hua}} }}
+|{{Slot|usdprize=25,500 |{{Opponent|bigetron delta}} }}
+|{{Slot|usdprize=25,000 |{{Opponent|aaa}} }}
+|{{Slot|usdprize=15,000 |date=2024-11-17 |{{Opponent|EVOS Divine}} }}
+|{{Slot|usdprize=15,000 |date=2024-11-17 |{{Opponent|CLG}} }}
+|{{Slot|usdprize=15,000 |date=2024-11-17 |{{Opponent|RETA Esports}} }}
+|{{Slot|usdprize=15,000 |date=2024-11-17 |{{Opponent|Six Karma}} }}
+|{{Slot|usdprize=15,000 |date=2024-11-17 |{{Opponent|Wask}} }}
+|{{Slot|usdprize=15,000 |date=2024-11-17 |{{Opponent|Rezurrection X Esports}} }}
+|adjacentContent=<div>
+{{AwardPrizePool
+|{{Slot|award=Finals MVP |usdprize=10,000 |{{Opponent|Bops|flag=br|team=fluxo}} }}
+|{{Slot|award=MVP        |usdprize=10,000 |{{Opponent|Wassana|flag=th|team=buriram united}} }}
+|{{Slot|award=Predator   |usdprize= 5,000 |{{Opponent|Joena|flag=th|team=buriram united}} }}
+}}<div style="margin-top:10px"></div>
+{{AwardPrizePool|type={{TeamOpponent}}|cutafter=9
+|{{Slot|award=Team of the Day - Knockout Stage Day 1|usdprize=1,000 |{{Opponent|twisted minds}} }}
+|{{Slot|award=Team of the Day - Knockout Stage Day 2|usdprize=1,000 |{{Opponent|wag}} }}
+|{{Slot|award=Team of the Day - Knockout Stage Day 3|usdprize=1,000 |{{Opponent|buriram united}} }}
+|{{Slot|award=Team of the Day - Knockout Stage Day 4|usdprize=1,000 |{{Opponent|buriram united}} }}
+|{{Slot|award=Team of the Day - Knockout Stage Day 5|usdprize=1,000 |{{Opponent|fluxo}} }}
+|{{Slot|award=Team of the Day - Knockout Stage Day 6|usdprize=1,000 |{{Opponent|buriram united}} }}
+|{{Slot|award=Team of the Day - Points Rush Day 1	|usdprize=1,000 |{{Opponent|buriram united}} }}
+|{{Slot|award=Team of the Day - Points Rush Day 2	|usdprize=1,000 |{{Opponent|rrq kazu}} }}
+|{{Slot|award=Team of the Day - Grand Finals		|usdprize=1,000 |{{Opponent|fluxo}} }}
+}}</div>
+}}
+
+==Participants==
+{{TeamCardToggleButton|tcht=190|playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Team Falcons |flag=th
+|p1=COZQ
+|p2=ONEMORE
+|p3=ONFIRE
+|p4=PETER
+|p5=KERORO|p5wins=1
+|t2title=Staff
+|t2c1=Conan|t2c1pos={{Abbr|C|Coach}}
+|t2c2=SAINOI|t2c2flag=th|t2c2pos={{Abbr|M|Manager}}
+|qualifier=[[Esports_World_Cup/2024|Esports World Cup]]
+}}
+{{TeamCard
+|team=Buriram United |flag=th
+|p1=GETHIGH|p1wins=1
+|p2=JOENA|p2wins=2
+|p3=Moshi|p3wins=1
+|p4=Wassana
+|p5=D_Long|p5wins=2
+|t2title=Staff
+|t2c1=Namo|t2c1pos={{Abbr|C|Coach}}|t2c1winsc=2
+|t2c2=Zeenon|t2c2pos={{Abbr|M|Manager}}|t2c2wins=1
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=Twisted Minds |flag=th
+|p1=DIAMOND
+|p2=NAMELESS
+|p3=Smingch
+|p4=XPOZY
+|p5=PORPOR |p5flag=th
+|t2title=Staff
+|t2c1=Poseidon|t2c1pos={{Abbr|C|Coach}}
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=Attack All Around |flag=th
+|p1=POONGOD
+|p2=FOLKYY|p2wins=1
+|p3=JUMPGOD
+|p4=LIMIT
+|p5=COUGAR
+|t2title=Staff
+|t2c1=Cloudy|t2c1pos={{Abbr|C|Coach}}
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=WAG |flag=vn
+|p1=Cyrus
+|p2=Krillin
+|p3=TheGhost
+|p4=Alan	|p4link=Alan (Vietnamese Player)
+|p5=Xbor	|p5flag=vn
+|t2title=Staff
+|t2c1=ThanhNha|t2c1pos={{Abbr|C|Coach}}
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=RRQ Kazu |flag=id
+|p1=Abay
+|p2=Dutzz
+|p3=Razor
+|p4=Maal
+|p5=C1benk	|p5flag=id
+|t2title=Staff
+|t2c1=Adi|t2c1flag=|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Lorenz|t2c2flag=|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=TomoMKS|t2c3flag=id|t2c3pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=EVOS Divine |flag=id
+|p1=AbaaaX
+|p2=Bara
+|p3=aimGOD
+|p4=Reyyy
+|p5=Geday
+|t2title=Staff
+|t2c1=Manggiskun|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Adien|t2c2flag=id|t2c2pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=Bigetron Delta |flag=id
+|p1=Kyong
+|p2=Dhikz
+|p3=Ikal
+|p4=Kojaaaa
+|p5=Nemzz	|p5flag=id
+|t2title=Staff
+|t2c1=Chrisjo|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Raihann|t2c2flag=id|t2c2pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=HUA Esports |flag=vn
+|p1=Death
+|p2=Popi
+|p3=Shin
+|p4=YanBin
+|p5=TrKien
+|t2title=Staff
+|t2c1=Beo|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Dung|t2c2flag=vn|t2c2pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Southeast_Asia/2024/Fall|FFWS Southeast Asia]]
+}}
+{{TeamCard
+|team=Fluxo |flag=br
+|p1=MT7|p1flag=br
+|p2=Bops|p2flag=br|p2wins=1
+|p3=But|p3flag=br|p3wins=1
+|p4=Giuh.87|p4flag=br|p4wins=1
+|t2title=Staff
+|t2c1=LUUUKING|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}|t2c1winsc=1
+|t2c2=Renan|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}|t2c2winsc=1
+|t2c3=Saymon|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Brazil/2024|FFWS BR - Grp.Stage]]
+}}
+{{TeamCard
+|team=paiN Gaming |flag=br
+|p1=ITALO
+|p2=Gus
+|p3=Motovea7
+|p4=Noda
+|p5=PETERxl
+|t2title=Staff
+|t2c1=Trap|t2c1link=Trap_(Brazilian_Coach)|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Sbriça|t2c2flag=br|t2c2pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Brazil/2024|FFWS BR - Finals]]
+}}
+{{TeamCard
+|team=Corinthians |flag=br
+|p1=Nikeboy
+|p2=Bahiazx
+|p3=Hak
+|p4=O Mala
+|p5=NandoX
+|t2title=Staff
+|t2c1=Abreu|t2c1flag=br|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Madrugada|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|t2c3=Vick|t2c3flag=br|t2c3pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Brazil/2024|FFWS BR - Finals]]
+}}
+{{TeamCard
+|team=E1 Sports |flag=br
+|p1=IguiNmvp
+|p2=PÃO7
+|p3=VITINxp
+|p4=Bombom
+|p5=Vitin9
+|t2title=Staff
+|t2c1=Ninja|t2c1flag=br|t2c1link=Ninja (Brazilian Coach)|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Jhan|t2c2flag=br|t2c2pos={{Abbr|A|Analyst}}
+|qualifier=[[Free_Fire_World_Series/Brazil/2024|FFWS BR - Finals]]
+}}
+{{TeamCard
+|team=Six Karma |flag=mx
+|p1=BAD
+|p2=Nicko
+|p3=POCHO
+|p4=SoyDella
+|p5=UNKNOWN
+|t2title=Staff
+|t2c1=PUMA|t2c1pos={{Abbr|C|Coach}}
+|qualifier=[[Free_Fire_World_Series/Latin_America/2024/Points|FFWS LATAM - Points]]
+}}
+{{TeamCard
+|team=RETA Esports |flag=mx
+|p1=Carlxs
+|p2=Chris
+|p3=LopesXL
+|p4=Vidalao
+|p5=Chix	|p5flag=cl
+|qualifier=[[Free_Fire_World_Series/Latin_America/2024/Points|FFWS LATAM - Points]]
+}}
+{{TeamCard
+|team=CLG |flag=cl
+|p1=DXRK	|p1flag=co
+|p2=FAQ7
+|p3=Floki	|p3flag=co
+|p4=Joker	|p4flag=cl
+|p5=Puzhin	|p5flag=cl
+|t2title=Staff
+|t2c1=Wanheda|t2c1pos={{Abbr|C|Coach}}
+|t2c2=Saav|t2c2flag=co|t2c2pos={{Abbr|M|Manager}}
+|qualifier=[[Free_Fire_World_Series/Latin_America/2024/Points|FFWS LATAM - Points]]
+}}
+{{TeamCard
+|team=WASK |flag=ma
+|p1=BIGBOSS
+|p2=DOMIN	|p2flag=ma
+|p3=MR ALI
+|p4=Leonimo	|p4flag=ma
+|t2title=Staff
+|t2c1=S9AND7|t2c1flag=ma|t2c1pos={{Abbr|C|Coach}}
+<!--|t2c2=MARCO|t2c2flag=ma|t2c2pos={{Abbr|M|Manager}}-->
+|qualifier=[[Free_Fire_World_Series/Middle_East_and_Africa/2024|FFWS Middle East & Africa]]
+}}
+{{TeamCard columns end}}
+===Former Participant===
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=RZX Esports |link=Rezurrection X |flag=pk
+|p1=Hogo
+|p2=KAI
+|p3=Raptor	|p3flag=pk
+|p4=Rizz	|p4flag=pk|p4link=RIZZ (Pakistani Player)
+|p5=Danny	|p5dnp=true
+|qualifier=[[Free_Fire_World_Series/Pakistan/2024|FFWS Pakistan]]
+}}
+:* {{TeamShort|RZX Esports}} will not be participating due to VISA issues. The team is awarded 18th place and their slot will not be replaced.<ref name="rzx visa issue"/>
+{{TeamCard columns end}}
+
+==Results==
+===Knockout Stage===
+<section begin="GroupDraw"/>
+{{GroupDraw3x6 |title=Knockout Group Draw
+|g1t1=bru |g1t2=twisted minds |g1t3=hua |g1t4=rrq |g1t5=reta |g1t6freetext=<s>{{TeamShort|rzx}}</s><noinclude><ref name="rzx visa issue"/></noinclude>
+|g2t1=clg |g2t2=fx |g2t3=evos id |g2t4=btr dlt |g2t5=sccp |g2t6=wask
+|g3t1=6k |g3t2=flcn |g3t3=aaa |g3t4=png |g3t5=wag |g3t6=e1
+}}<section end="GroupDraw"/>
+<div style="margin:10px 0 10px 0>'''''[[/Knockout_Stage|Click here for detailed Knockout Stage standings]]'''''</div>
+{{box|start|padding=1em}}
+{{FfaStandings|title=Knockout Stage Standings|bg=1-12=up, 13-17=down
+|round1={{Round|title=Place <br>Points|started=true|finished=true}}
+|round2={{Round|title=Kill <br>Points|started=true|finished=true}}
+|{{TeamOpponent|bru|r1=222|r2=235}}
+|{{TeamOpponent|twisted minds|r1=145|r2=186}}
+|{{TeamOpponent|flcn|r1=144|r2=186}}
+|{{TeamOpponent|fx|r1=148|r2=178}}
+|{{TeamOpponent|aaa|r1=129|r2=181}}
+|{{TeamOpponent|wag|r1=131|r2=166}}
+|{{TeamOpponent|sccp|r1=125|r2=135}}
+|{{TeamOpponent|btr dlt|r1=119|r2=124}}
+|{{TeamOpponent|e1|r1=119|r2=124}}
+|{{TeamOpponent|png|r1=107|r2=131}}
+|{{TeamOpponent|rrq|r1=116|r2=119}}
+|{{TeamOpponent|hua|r1=111|r2=116}}
+|{{TeamOpponent|evos id|r1=90|r2=95}}
+|{{TeamOpponent|clg|r1=100|r2=81}}
+|{{TeamOpponent|reta|r1=95|r2=80}}
+|{{TeamOpponent|6k|r1=75|r2=62}}
+|{{TeamOpponent|wask|r1=75|r2=54}}
+}}
+{{box|break}}
+{{Legend|up=y|down=y|margin-top=7|uptitle=Qualified for '''[[#Points_Rush|Points Rush]]''' & '''[[#Grand_Finals|Grand Finals]]'''}}
+{{box|end}}
+
+===Point Rush===
+<div style="margin:0 0 10px 0>'''''[[/Point_Rush|Click here for detailed Point Rush standings]]'''''</div><div class="table-responsive">
+{| class="wikitable" style="text-align:center;margin:0 0 0 0"
+! colspan="7"| Point Rush Standings
+|-
+! rowspan="2"| #
+! width="175px" rowspan="2"| Team
+! colspan="2" style="border-right-width:3px !important"| Day 1
+! colspan="2" style="border-right-width:3px !important"| Day 2
+! width="110px" rowspan="2"| Headstart<br>Total
+|-
+! width="90px" | Standings
+! style="width:90px; border-right-width:3px !important" | {{Abbr|HP|Headstart Points}}
+! width="90px" | Standings
+! style="width:90px; border-right-width:3px !important" | {{Abbr|HP|Headstart Points}}
+|-
+| '''1.''' || align="left"| {{TeamShort|bru}}	|| 88 || style="border-right-width:3px !important" | 10 || 78  || style="border-right-width:3px !important" | 7  || '''17'''
+|-
+| '''2.''' || align="left"| {{TeamShort|rrq}}	|| 80 || style="border-right-width:3px !important" | 3  || 107 || style="border-right-width:3px !important" | 10 || '''13'''
+|-'''
+| '''3.''' || align="left"| {{TeamShort|wag}}	|| 83 || style="border-right-width:3px !important" | 7  || 60  || style="border-right-width:3px !important" | 2  || '''9'''
+|-
+| '''4.''' || align="left"| {{TeamShort|twis}}	|| 73 || style="border-right-width:3px !important" | 2  || 72  || style="border-right-width:3px !important" | 5  || '''7'''
+|-
+| '''5.''' || align="left"| {{TeamShort|btr dlt}}|| 82 || style="border-right-width:3px !important" | 5  || 54  || style="border-right-width:3px !important" | 0  || '''5'''
+|-
+| '''6.''' || align="left"| {{TeamShort|png}}	|| 36 || style="border-right-width:3px !important" | 0  || 67  || style="border-right-width:3px !important" | 3  || '''3'''
+|-
+| '''7.''' || align="left"| {{TeamShort|aaa}}	|| 64 || style="border-right-width:3px !important" | 1  || 57  || style="border-right-width:3px !important" | 1  || '''2'''
+|-
+| '''8.''' || align="left"| {{TeamShort|fx}}	|| 64 || style="border-right-width:3px !important" | 0  || 53  || style="border-right-width:3px !important" | 0  || '''0'''
+|-
+| '''9.''' || align="left"| {{TeamShort|flcn}}	|| 35 || style="border-right-width:3px !important" | 0  || 39  || style="border-right-width:3px !important" | 0  || '''0'''
+|-
+| '''10.'''|| align="left"| {{TeamShort|sccp}}	|| 51 || style="border-right-width:3px !important" | 0  || 51  || style="border-right-width:3px !important" | 0  || '''0'''
+|-
+| '''11.'''|| align="left"| {{TeamShort|e1}}	|| 58 || style="border-right-width:3px !important" | 0  || 30  || style="border-right-width:3px !important" | 0  || '''0'''
+|-
+| '''12.'''|| align="left"| {{TeamShort|hua}}	|| 33 || style="border-right-width:3px !important" | 0  || 42  || style="border-right-width:3px !important" | 0  || '''0'''
+|}
+
+===Grand Finals===
+{{HiddenDataBox|tournament={{PAGENAME}}
+|name=Free Fire World Series - Global Finals 2024: Grand Finals
+|tickername=FFWS Global Finals 2024 - Finals
+|icon=Free_Fire_World_Series_2021_icon.png
+|date=2024-11-24
+}}
+{{HeadstartPointsTable |title=Initial Grand Finals Points
+|team1=bru				|hs_pts1=17
+|team2=rrq				|hs_pts2=13
+|team3=wag				|hs_pts3=9
+|team4=twisted minds	|hs_pts4=7
+|team5=btr dlt			|hs_pts5=5
+|team6=png				|hs_pts6=3
+|team7=aaa				|hs_pts7=2
+|team8=flcn				|hs_pts8=0
+|team9=fx				|hs_pts9=0
+|team10=sccp			|hs_pts10=0
+|team11=e1				|hs_pts11=0
+|team12=hua				|hs_pts12=0
+}}
+{{Bracket|Bracket/2|id=ffwsgf24gf
+|R1M1header=Grand Finals
+|R1M1={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+|map1={{Map
+	|date=November 24, 2024 - 11:15 {{Abbr/BRT}} |finished=true
+	|map=Bermuda
+	|teamfirst=rrq
+	|teamsecond=e1
+	|teamthird=twisted minds
+	|youtube=Free Fire Esports Official
+	|mvp=Abay |mvppoints=5
+	|vod=https://youtu.be/Taou0VdzV8M |vod1=https://youtu.be/cm7J4dZqxYk
+	}}
+|map2={{Map
+	|date=November 24, 2024 - 11:45 {{Abbr/BRT}} |finished=true
+	|map=Purgatory
+	|teamfirst=fx
+	|teamsecond=rrq
+	|teamthird=e1
+	|youtube=Free Fire Esports Official
+	|mvp=Bops |mvppoints=2
+	|vod=https://youtu.be/Taou0VdzV8M |vod1=https://youtu.be/cm7J4dZqxYk
+	}}
+|map3={{Map
+	|date=November 24, 2024 - 12:25 {{Abbr/BRT}} |finished=true
+	|map=Alpine
+	|teamfirst=fx
+	|teamsecond=bru
+	|teamthird=png
+	|youtube=Free Fire Esports Official
+	|mvp=But |mvppoints=3
+	|vod=https://youtu.be/Taou0VdzV8M |vod1=https://youtu.be/cm7J4dZqxYk
+	}}
+|map4={{Map
+	|date=November 24, 2024 - 12:55 {{Abbr/BRT}} |finished=true
+	|map=Kalahari
+	|teamfirst=twisted minds
+	|teamsecond=sccp
+	|teamthird=fx
+	|youtube=Free Fire Esports Official
+	|mvp=NAMELESS |mvppoints=3
+	|vod=https://youtu.be/Taou0VdzV8M |vod1=https://youtu.be/cm7J4dZqxYk
+	}}
+|map5={{Map
+	|date=November 24, 2024 - 13:35 {{Abbr/BRT}} |finished=true
+	|map=Nexterra
+	|teamfirst=png
+	|teamsecond=wag
+	|teamthird=twisted minds
+	|youtube=Free Fire Esports Official
+	|mvp=Motovea7 |mvppoints=8
+	|vod=https://youtu.be/Taou0VdzV8M |vod1=https://youtu.be/cm7J4dZqxYk
+	}}
+|map6={{Map
+	|date=November 24, 2024 - 14:15 {{Abbr/BRT}} |finished=true
+	|map=Kalahari
+	|teamfirst=fx
+	|teamsecond=twisted minds
+	|teamthird=flcn
+	|youtube=Free Fire Esports Official
+	|mvp=But |mvppoints=
+	|vod=https://youtu.be/Taou0VdzV8M |vod1=https://youtu.be/cm7J4dZqxYk
+	}}
+|opponent1={{TeamOpponent|bru			|startingpoints=17 |m1={{MS|8|3}}	|m2={{MS|6|5}}	|m3={{MS|2|15}}	|m4={{MS|9|4}}	|m5={{MS|7|0}}	|m6={{MS|5|5}} }}
+|opponent2={{TeamOpponent|twisted minds	|startingpoints=7  |m1={{MS|3|1}}	|m2={{MS|7|6}}	|m3={{MS|11|0}}	|m4={{MS|1|10}}	|m5={{MS|3|3}}	|m6={{MS|2|3}} }}
+|opponent3={{TeamOpponent|flcn			|startingpoints=0  |m1={{MS|7|5}}	|m2={{MS|4|10}}	|m3={{MS|6|8}}	|m4={{MS|8|1}}	|m5={{MS|8|2}}	|m6={{MS|3|7}} }}
+|opponent4={{TeamOpponent|fx			|startingpoints=0  |m1={{MS|5|0}}	|m2={{MS|1|10}}	|m3={{MS|1|5}}	|m4={{MS|3|3}}	|m5={{MS|12|1}}	|m6={{MS|1|17}} }}
+|opponent5={{TeamOpponent|aaa			|startingpoints=2  |m1={{MS|12|0}}	|m2={{MS|5|0}}	|m3={{MS|9|1}}	|m4={{MS|10|1}}	|m5={{MS|9|3}}	|m6={{MS|11|1}} }}
+|opponent6={{TeamOpponent|wag			|startingpoints=9  |m1={{MS|4|3}}	|m2={{MS|10|0}}	|m3={{MS|5|7}}	|m4={{MS|6|2}}	|m5={{MS|2|11}}	|m6={{MS|9|3}} }}
+|opponent7={{TeamOpponent|sccp			|startingpoints=0  |m1={{MS|11|4}}	|m2={{MS|11|4}}	|m3={{MS|8|0}}	|m4={{MS|2|15}}	|m5={{MS|4|2}}	|m6={{MS|4|9}} }}
+|opponent8={{TeamOpponent|btr dlt		|startingpoints=5  |m1={{MS|9|1}}	|m2={{MS|12|1}}	|m3={{MS|12|1}}	|m4={{MS|11|5}}	|m5={{MS|11|5}}	|m6={{MS|10|4}} }}
+|opponent9={{TeamOpponent|e1			|startingpoints=0  |m1={{MS|2|15}}	|m2={{MS|3|7}}	|m3={{MS|7|3}}	|m4={{MS|4|10}}	|m5={{MS|6|1}}	|m6={{MS|8|2}} }}
+|opponent10={{TeamOpponent|png			|startingpoints=3  |m1={{MS|10|1}}	|m2={{MS|8|0}}	|m3={{MS|3|2}}	|m4={{MS|5|8}}	|m5={{MS|1|24}}	|m6={{MS|12|0}} }}
+|opponent11={{TeamOpponent|rrq			|startingpoints=13 |m1={{MS|1|12}}	|m2={{MS|2|3}}	|m3={{MS|4|8}}	|m4={{MS|12|0}}	|m5={{MS|5|3}}	|m6={{MS|6|5}} }}
+|opponent12={{TeamOpponent|hua			|startingpoints=0  |m1={{MS|6|10}}	|m2={{MS|9|4}}	|m3={{MS|10|1}}	|m4={{MS|7|4}}	|m5={{MS|10|0}}	|m6={{MS|7|5}} }}
+	}}
+}}
+
+==Broadcast==
+===Talents===
+{{Tabs dynamic|name1=English & Portugese|name2=Asia Broadcasts|name3=Spanish|name4=Arabic|hide-showall=true
+|content1=<!-- EN & PTBR -->
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=English Stage Host |lang=en
+|b1=Yoonsul
+}}
+{{BroadcasterCard
+|position=English Commentator |lang=en
+|b1=HusKKiee
+|b2=TheMustachio AJ
+|b3=GentlemanGaming
+|b4=Danelie
+|b5=GideonQ
+}}
+{{BroadcasterCard
+|position=Translator |lang=en
+|b1=Bunlatrix
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Portugese Stage Host
+|b1=Camilota XP
+}}
+{{BroadcasterCard
+|position=Portugese Analyst
+|b1=Rajah
+|b2=PEU
+}}
+{{BroadcasterCard
+|position=Portugese Interviewer
+|b1=Carol Bombshell
+}}
+{{BroadcasterCard
+|position=Portugese Commentator
+|b1=Cabelo Gamer
+|b2=Carlos Andrade
+}}
+{{box|end}}
+|content2=<!-- Asia -->
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Indonesian Host |lang=id
+|b1=Bebyli
+}}
+{{BroadcasterCard
+|position=Indonesian Commentator |lang=id
+|b1=Beby Embun
+|b2=Julia
+|b3=King Kodok
+|b4=Bigan
+|b5=Adji Sven
+|b6=Skyla
+|b7=Surya Darma
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Thai Host |lang=th
+|b1=Yuki Dekyou
+}}
+{{BroadcasterCard
+|position=Thai Commentator |lang=th
+|b1=LastCrosser
+|b2=Brighto
+|b3=Ballx3
+|b4=BuGTa
+|b5=Zena
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Vietnamese Commentator |lang=vn
+|b1=Rikaki
+|b2=Quang Bẹp
+|b3=Hùng Cam
+|b4=Bee Bực Bội
+|b5=Jeeker
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Malay Commentator |lang=my
+|b1=AddMaths
+|b2=AlphaXYankee	|b2link=Alpha
+|b3=Abang Man
+|b4=Sotong Gaming |b4name=Dauzz Eliyass |b4flag=my
+|b5=
+}}
+{{BroadcasterCard
+|position=Hindi Commentator |lang=in
+|b1=Gaming Aura
+|b2=MambaSR
+|b3=Rocky & RDX
+|b4=Chirayu
+}}
+{{box|end}}
+|content3=<!-- ESMX -->
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Spanish Host
+|b1=Kronopia
+}}
+{{BroadcasterCard
+|position=Spanish Analyst
+|b1=Mirveces
+|b2=Romeo
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Spanish Commentator
+|b1=Morancita	|b1name=Grecia Moran |b1flag=mx
+|b2=Mérida
+|b3=Jeisson
+|b4=XavyBecker
+}}
+{{box|end}}
+|content4=<!-- AR -->
+{{BroadcasterCard
+|position=Arabic Commentator |lang=ar
+|b1=Moody
+|b2=Seven
+|b3=9A39A3
+|b4=Yassu
+|b5=La5dher
+|b6=Salmane|b6flag=ma|b6name=Salmane Ben Yahia
+}}
+}}
+
+===Streams===
+{{Streams
+|lang1=usuk	|youtube1=Free Fire Esports Official
+|lang2=ptbr	|youtube2=Free Fire Brasil |tiktok2=ffesportsbr
+|lang3=id	|youtube3=FF Esports ID	|tiktok3=ff.esports.id|facebook3=Free Fire Esports ID
+|lang4=th	|youtube4=Free Fire Esports TH |facebook4=Free Fire Esports TH |tiktok4=ffesportsth
+|lang5=vn	|youtube5=Huyền Thoại Sinh Tồn - Free Fire Esports |facebook5=Huyền Thoại Sinh Tồn - Free Fire |tiktok5=freefireesportsvn
+|lang6=my	|youtube6=Free Fire Malaysia |facebook6=Garena Free Fire MY
+|lang7=esmx	|youtube7=Garena Free Fire LATAM |facebook7=Free Fire Esports Latam |tiktok7=freefirelatino
+|lang8=mena	|youtube8=Garena Free Fire MENA |facebook8=Free Fire Esports MENA |tiktok8=garenafreefirearabic
+|lang9=in	|youtube9=Free Fire Esports Official
+}}
+
+==Additional Content==
+===Country Representation===
+{{Country representation}}
+
+==References==
+{{Reflist}}
+{{FFGE Navbox}}
+
+{{DISPLAYTITLE:Free Fire World Series - Global Finals 2024: Knockout Stage}}
+{{#section:Free_Fire_World_Series/2024|FFWS2024Tabs}}
+{{HiddenDataBox
+|name=Free Fire World Series - Global Finals 2024: Knockout Stage
+|tickername=FFWS Global Finals 2024 - Knockout
+|icon=Free_Fire_World_Series_2021_icon.png
+|sdate=2024-11-08 |edate=2024-11-17
+}}
+==Format==
+* '''FFWS 2024 - Knockout Stage:''''' November 8th - 17th, 2024
+** 18 teams, divided into 3 groups of 6 teams.
+** 2 weeks:
+*** Each week consist of 3 matchdays.
+*** Each matchday consist of 6 matches.
+** {{Bgcolortext|up|'''Top 12 teams'''}} qualify for '''Points Rush''' and '''Grand Finals'''.
+<h3>Schedules</h3>
+{{box|start|padding=1em}}
+{{#section:Free_Fire_World_Series/2024|Schedule}}
+{{box|break}}
+{{#section:Free_Fire_World_Series/2024|MapRotation}}
+{{box|end}}
+<h3>Group Draw</h3>
+{{#section:Free_Fire_World_Series/2024|GroupDraw}}
+==Results==
+{{box|start}}{{Tabs dynamic |hide-showall=true |This=1
+|name1=Overall Standings
+|name2=Daily Standings
+}}<!--
+Overall
+-->{{Tabs dynamic/tab|1}}{{box|start|padding=1em}}<section begin="Knockout"/>
+{{League standings without lobby |title=Knockout Stage Standings |rounds=6 |rname=Day
+|bg1=up |bg2=up |bg3=up |bg4=up |bg5=up |bg6=up |bg7=up |bg8=up |bg9=up |bg10=up |bg11=up |bg12=up
+|bg13=down |bg14=down |bg15=down |bg16=down |bg17=down |bg18=down
+<!--Group A -->
+|p1flag=th |p1team=bru			|p1results=  101, -  , 136, 103 , -  , 117
+|p2flag=th |p2team=twisted minds|p2results=  121, -  , 69 ,  77 , -  , 64
+|p3flag=vn |p3team=hua			|p3results=  81 , -  , 26 ,  61 , -  , 56
+|p4flag=id |p4team=rrq			|p4results=  68 , -  , 38 ,  58 , -  , 71
+|p5flag=mx |p5team=reta			|p5results=  45 , -  , 55 ,  45 , -  , 30
+<!--Group B -->
+|p6flag=cl |p6team=clg			|p6results=  37 , 54 , -  ,  56 , 34 , -
+|p7flag=br |p7team=fx			|p7results=  65 , 87 , -  ,  75 , 99 , -
+|p8flag=id |p8team=evos id		|p8results=  43 , 30 , -  ,  63 , 49 , -
+|p9flag=id |p9team=btr dlt		|p9results=  63 , 47 , -  ,  67 , 66 , -
+|p10flag=br|p10team=sccp		|p10results= 52 , 51 , -  ,  62 , 95 , -
+|p11flag=ma|p11team=wask		|p11results= 20 , 33 , -  ,  25 , 51 , -
+<!--Group C -->
+|p12flag=mx|p12team=6k			|p12results= - ,  43 , 41 , - , 12 , 41
+|p13flag=th|p13team=flcn		|p13results= - ,  73 , 68 , - , 95 , 94
+|p14flag=th|p14team=aaa			|p14results= - ,  94 , 49 , - , 89 , 78
+|p15flag=br|p15team=png			|p15results= - ,  52 , 73 , - , 55 , 58
+|p16flag=vn|p16team=wag			|p16results= - ,  95 , 98 , - , 42 , 62
+|p17flag=br|p17team=e1			|p17results= - ,  60 , 48 , - , 68 , 67
+}}<section end="Knockout"/>
+{{box|break}}
+{{Legend|up=y|down=y|margin-top=7
+|uptitle=Qualified for '''Point Rush''' & '''Grand Finals'''
+}}
+{{box|end}}<!--
+Detailed Standings
+-->{{Tabs dynamic/tab|2}}
+{{Matchlist|id=ffwsgf24ks
+|M1header=Day 1
+|M2header=Day 2
+|M3header=Day 3
+|M4header=Day 4
+|M5header=Day 5
+|M6header=Day 6
+
+|M1={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 8, 2024 - 11:15 {{Abbr/BRT}} |finished=true
+		|map=Bermuda |group=AB
+		|teamfirst=hua
+		|teamsecond=fx
+		|teamthird=bru
+		|mvp=Death|mvppoints=6
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=MbBW3yqObMQ |vod1=https://www.youtube.com/watch?v=fbXiqVXjUe0
+		}}
+	|map2={{Map
+		|date=November 8, 2024 - 11:45 {{Abbr/BRT}} |finished=true
+		|map=Purgatory |group=AB
+		|teamfirst=bru
+		|teamsecond=twisted minds
+		|teamthird=sccp
+		|mvp=GETHIGH|mvppoints=6
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=MbBW3yqObMQ |vod1=https://www.youtube.com/watch?v=fbXiqVXjUe0
+		}}
+	|map3={{Map
+		|date=November 8, 2024 - 12:25 {{Abbr/BRT}} |finished=true
+		|map=Alpine |group=AB
+		|teamfirst=bru
+		|teamsecond=fx
+		|teamthird=rrq
+		|mvp=GETHIGH|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=MbBW3yqObMQ |vod1=https://www.youtube.com/watch?v=fbXiqVXjUe0
+		}}
+	|map4={{Map
+		|date=November 8, 2024 - 12:55 {{Abbr/BRT}} |finished=true
+		|map=Kalahari |group=AB
+		|teamfirst=twisted minds
+		|teamsecond=evos id
+		|teamthird=hua
+		|mvp=DIAMOND|mvppoints=7
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=MbBW3yqObMQ |vod1=https://www.youtube.com/watch?v=fbXiqVXjUe0
+		}}
+	|map5={{Map
+		|date=November 8, 2024 - 13:35 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=AB
+		|teamfirst=twisted minds
+		|teamsecond=bru
+		|teamthird=btr dlt
+		|mvp=SMING|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=MbBW3yqObMQ |vod1=https://www.youtube.com/watch?v=fbXiqVXjUe0
+		}}
+	|map6={{Map
+		|date=November 8, 2024 - 14:15 {{Abbr/BRT}} |finished=true
+		|map=Purgatory |group=AB
+		|teamfirst=rrq
+		|teamsecond=twisted minds
+		|teamthird=hua
+		|mvp=Razor|mvppoints=3
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=MbBW3yqObMQ |vod1=https://www.youtube.com/watch?v=fbXiqVXjUe0
+		}}
+|opponent1={{TeamOpponent|bru		|m1={{MS|3|9}}|m2={{MS|1|8}}|m3={{MS|1|9}}|m4={{MS|4|5}}|m5={{MS|2|12}}|m6={{MS|5|4}} }}
+|opponent2={{TeamOpponent|twis		|m1={{MS|4|5}}|m2={{MS|2|15}}|m3={{MS|9|6}}|m4={{MS|1|15}}|m5={{MS|1|15}}|m6={{MS|2|14}} }}
+|opponent3={{TeamOpponent|hua		|m1={{MS|1|19}}|m2={{MS|6|5}}|m3={{MS|10|1}}|m4={{MS|3|6}}|m5={{MS|8|5}}|m6={{MS|3|8}} }}
+|opponent4={{TeamOpponent|rrq		|m1={{MS|5|0}}|m2={{MS|11|4}}|m3={{MS|3|6}}|m4={{MS|9|5}}|m5={{MS|5|6}}|m6={{MS|1|13}} }}
+|opponent5={{TeamOpponent|reta		|m1={{MS|11|0}}|m2={{MS|9|2}}|m3={{MS|7|3}}|m4={{MS|5|4}}|m5={{MS|4|4}}|m6={{MS|4|6}} }}
+|opponent6={{TeamOpponent|clg		|m1={{MS|7|4}}|m2={{MS|4|2}}|m3={{MS|5|5}}|m4={{MS|10|1}}|m5={{MS|11|0}}|m6={{MS|8|4}} }}
+|opponent7={{TeamOpponent|fx		|m1={{MS|2|8}}|m2={{MS|5|3}}|m3={{MS|2|9}}|m4={{MS|7|4}}|m5={{MS|7|2}}|m6={{MS|7|3}} }}
+|opponent8={{TeamOpponent|evos id	|m1={{MS|10|2}}|m2={{MS|10|2}}|m3={{MS|8|7}}|m4={{MS|2|13}}|m5={{MS|10|2}}|m6={{MS|10|1}} }}
+|opponent9={{TeamOpponent|btr dlt	|m1={{MS|6|2}}|m2={{MS|7|9}}|m3={{MS|4|3}}|m4={{MS|6|7}}|m5={{MS|3|7}}|m6={{MS|6|1}} }}
+|opponent10={{TeamOpponent|sccp		|m1={{MS|9|0}}|m2={{MS|3|9}}|m3={{MS|6|4}}|m4={{MS|11|7}}|m5={{MS|6|4}}|m6={{MS|11|8}} }}
+|opponent11={{TeamOpponent|wask		|m1={{MS|8|0}}|m2={{MS|8|2}}|m3={{MS|11|0}}|m4={{MS|8|1}}|m5={{MS|9|2}}|m6={{MS|9|2}} }}
+	}}
+
+|M2={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 9, 2024 - 11:15 {{Abbr/BRT}} |finished=true
+		|map=Bermuda |group=BC
+		|teamfirst=FX
+		|teamsecond=pain
+		|teamthird=clg
+		|mvp=MT7|mvppoints=6
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=rNIlvi4S99g |vod1=
+		}}
+	|map2={{Map
+		|date=November 9, 2024 - 11:45 {{Abbr/BRT}} |finished=true
+		|map=Purgatory |group=BC
+		|teamfirst=clg
+		|teamsecond=Bigetron Delta
+		|teamthird=pain
+		|mvp=DXRK10|mvppoints=3
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=rNIlvi4S99g |vod1=
+		}}
+	|map3={{Map
+		|date=November 9, 2024 - 12:25 {{Abbr/BRT}} |finished=true
+		|map=Alpine |group=BC
+		|teamfirst=wag
+		|teamsecond=wask
+		|teamthird=team falcons
+		|mvp=Krillin|mvppoints=8
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=rNIlvi4S99g |vod1=
+		}}
+	|map4={{Map
+		|date=November 9, 2024 - 12:55 {{Abbr/BRT}} |finished=true
+		|map=Kalahari |group=BC
+		|teamfirst=sccp
+		|teamsecond=fx
+		|teamthird=aaa
+		|mvp=NandoX|mvppoints=6
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=rNIlvi4S99g |vod1=
+		}}
+	|map5={{Map
+		|date=November 9, 2024 - 13:35 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=BC
+		|teamfirst=aaa
+		|teamsecond=team falcons
+		|teamthird=6k
+		|mvp=LIMIT|mvppoints=7
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=rNIlvi4S99g |vod1=
+		}}
+	|map6={{Map
+		|date=November 9, 2024 - 14:15 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=BC
+		|teamfirst=aaa
+		|teamsecond=wag
+		|teamthird=sccp
+		|mvp=LIMIT|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=rNIlvi4S99g |vod1=
+		}}
+|opponent1={{TeamOpponent|clg|m1={{MS|3|3}}|m2={{MS|1|7}}|m3={{MS|5|9}}|m4={{MS|10|0}}|m5={{MS|9|4}}|m6={{MS|12|2}} }}
+|opponent2={{TeamOpponent|fx|m1={{MS|1|14}}|m2={{MS|8|5}}|m3={{MS|9|5}}|m4={{MS|2|11}}|m5={{MS|5|6}}|m6={{MS|5|8}} }}
+|opponent3={{TeamOpponent|evos id|m1={{MS|7|0}}|m2={{MS|9|2}}|m3={{MS|4|3}}|m4={{MS|5|3}}|m5={{MS|10|2}}|m6={{MS|11|0}} }}
+|opponent4={{TeamOpponent|btr dlt|m1={{MS|11|0}}|m2={{MS|2|16}}|m3={{MS|11|1}}|m4={{MS|6|6}}|m5={{MS|11|0}}|m6={{MS|4|3}} }}
+|opponent5={{TeamOpponent|sccp|m1={{MS|8|0}}|m2={{MS|11|3}}|m3={{MS|7|0}}|m4={{MS|1|10}}|m5={{MS|7|5}}|m6={{MS|3|2}} }}
+|opponent6={{TeamOpponent|wask|m1={{MS|10|0}}|m2={{MS|12|0}}|m3={{MS|2|5}}|m4={{MS|8|2}}|m5={{MS|12|0}}|m6={{MS|6|8}} }}
+|opponent7={{TeamOpponent|6k|m1={{MS|6|0}}|m2={{MS|7|2}}|m3={{MS|10|2}}|m4={{MS|7|4}}|m5={{MS|3|5}}|m6={{MS|8|5}} }}
+|opponent8={{TeamOpponent|flcn |m1={{MS|9|5}}|m2={{MS|6|9}}|m3={{MS|3|9}}|m4={{MS|4|4}}|m5={{MS|2|9}}|m6={{MS|10|5}} }}
+|opponent9={{TeamOpponent|aaa|m1={{MS|5|6}}|m2={{MS|10|2}}|m3={{MS|6|4}}|m4={{MS|11|6}}|m5={{MS|1|21}}|m6={{MS|1|19}} }}
+|opponent10={{TeamOpponent|png|m1={{MS|2|6}}|m2={{MS|3|5}}|m3={{MS|12|0}}|m4={{MS|12|0}}|m5={{MS|6|9}}|m6={{MS|9|8}} }}
+|opponent11={{TeamOpponent|wag|m1={{MS|12|1}}|m2={{MS|5|8}}|m3={{MS|1|22}}|m4={{MS|3|11}}|m5={{MS|8|2}}|m6={{MS|2|13}} }}
+|opponent12={{TeamOpponent|e1|m1={{MS|4|6}}|m2={{MS|4|9}}|m3={{MS|8|4}}|m4={{MS|9|1}}|m5={{MS|4|2}}|m6={{MS|7|8}} }}
+	}}
+
+|M3={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 10, 2024 - 11:15 {{Abbr/BRT}} |finished=true
+		|map=Bermuda |group=AC
+		|teamfirst=buriram
+		|teamsecond=flcn
+		|teamthird=E1
+		|mvp=WASSANA|mvppoints=6
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=UXO_oirSuRE |vod1=
+		}}
+	|map2={{Map
+		|date=November 10, 2024 - 11:45 {{Abbr/BRT}} |finished=true
+		|map=Purgatory |group=AC
+		|teamfirst=buriram
+		|teamsecond=e1
+		|teamthird=reta
+		|mvp=WASSANA|mvppoints=8
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=UXO_oirSuRE |vod1=
+		}}
+	|map3={{Map
+		|date=November 10, 2024 - 12:25 {{Abbr/BRT}} |finished=true
+		|map=Alpine |group=AC
+		|teamfirst=wag
+		|teamsecond=buriram
+		|teamthird=twisted minds
+		|mvp=CYRUS|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=UXO_oirSuRE |vod1=
+		}}
+	|map4={{Map
+		|date=November 10, 2024 - 12:55 {{Abbr/BRT}} |finished=true
+		|map=Kalahari |group=AC
+		|teamfirst=buriram
+		|teamsecond=wag
+		|teamthird=twm
+		|mvp=JOENA|mvppoints=7
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=UXO_oirSuRE |vod1=
+		}}
+	|map5={{Map
+		|date=November 10, 2024 - 13:35 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=AC
+		|teamfirst=twm
+		|teamsecond=buriram
+		|teamthird=png
+		|mvp=DIAMOND|mvppoints=8
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=UXO_oirSuRE |vod1=
+		}}
+	|map6={{Map
+		|date=November 10, 2024 - 14:15 {{Abbr/BRT}} |finished=true
+		|map=Bermuda |group=AC
+		|teamfirst=wag
+		|teamsecond=png
+		|teamthird=6k
+		|mvp=ALAN|mvppoints=7
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=UXO_oirSuRE |vod1=
+		}}
+|opponent1={{TeamOpponent|bru|m1={{MS|1|20}}|m2={{MS|1|15}}|m3={{MS|2|10}}|m4={{MS|1|20}}|m5={{MS|2|10}}|m6={{MS|5|1}} }}
+|opponent2={{TeamOpponent|twisted minds|m1={{MS|10|3}}|m2={{MS|9|5}}|m3={{MS|3|10}}|m4={{MS|3|6}}|m5={{MS|1|13}}|m6={{MS|10|0}} }}
+|opponent3={{TeamOpponent|hua|m1={{MS|7|0}}|m2={{MS|11|0}}|m3={{MS|5|1}}|m4={{MS|10|7}}|m5={{MS|6|2}}|m6={{MS|11|0}} }}
+|opponent4={{TeamOpponent|rrq|m1={{MS|11|1}}|m2={{MS|5|0}}|m3={{MS|11|0}}|m4={{MS|5|8}}|m5={{MS|8|8}}|m6={{MS|9|4}} }}
+|opponent5={{TeamOpponent|reta|m1={{MS|4|5}}|m2={{MS|3|5}}|m3={{MS|9|3}}|m4={{MS|9|4}}|m5={{MS|5|7}}|m6={{MS|6|1}} }}
+|opponent6={{TeamOpponent|6k|m1={{MS|5|3}}|m2={{MS|10|3}}|m3={{MS|6|1}}|m4={{MS|8|5}}|m5={{MS|10|1}}|m6={{MS|3|4}} }}
+|opponent7={{TeamOpponent|flcn|m1={{MS|2|8}}|m2={{MS|8|2}}|m3={{MS|7|6}}|m4={{MS|6|10}}|m5={{MS|7|6}}|m6={{MS|4|4}} }}
+|opponent8={{TeamOpponent|aaa|m1={{MS|9|5}}|m2={{MS|6|5}}|m3={{MS|8|3}}|m4={{MS|7|0}}|m5={{MS|4|4}}|m6={{MS|7|7}} }}
+|opponent9={{TeamOpponent|png|m1={{MS|6|1}}|m2={{MS|7|0}}|m3={{MS|4|14}}|m4={{MS|11|4}}|m5={{MS|3|9}}|m6={{MS|2|12}} }}
+|opponent10={{TeamOpponent|wag|m1={{MS|8|4}}|m2={{MS|4|12}}|m3={{MS|1|12}}|m4={{MS|2|7}}|m5={{MS|9|0}}|m6={{MS|1|18}} }}
+|opponent11={{TeamOpponent|e1|m1={{MS|3|3}}|m2={{MS|2|2}}|m3={{MS|10|0}}|m4={{MS|4|7}}|m5={{MS|11|1}}|m6={{MS|8|7}} }}
+	}}
+
+|M4={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 15, 2024 - 11:15 {{Abbr/BRT}} |finished=true
+		|map=Bermuda |group=AB
+		|teamfirst=reta
+		|teamsecond=clg
+		|teamthird=sccp
+		|mvp=Vidalao|mvppoints=2
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=eCN5rD4k3IA
+		}}
+	|map2={{Map
+		|date=November 15, 2024 - 11:45 {{Abbr/BRT}} |finished=true
+		|map=Purgatory |group=AB
+		|teamfirst=RRQ
+		|teamsecond=SCCP
+		|teamthird=BRU
+		|mvp=Dutzz|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=eCN5rD4k3IA
+		}}
+	|map3={{Map
+		|date=November 15, 2024 - 12:25 {{Abbr/BRT}} |finished=true
+		|map=Alpine |group=AB
+		|teamfirst=twm
+		|teamsecond=clg
+		|teamthird=reta
+		|mvp=Smingch|mvppoints=7
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=eCN5rD4k3IA
+		}}
+	|map4={{Map
+		|date=November 15, 2024 - 12:55 {{Abbr/BRT}} |finished=true
+		|map=Kalahari |group=AB
+		|teamfirst=bru
+		|teamsecond=clg
+		|teamthird=evos id
+		|mvp=GETHIGHT|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=eCN5rD4k3IA
+		}}
+	|map5={{Map
+		|date=November 15, 2024 - 13:35 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=AB
+		|teamfirst=bru
+		|teamsecond=fx
+		|teamthird=evos id
+		|mvp=JOENA|mvppoints=8
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=eCN5rD4k3IA
+		}}
+	|map6={{Map
+		|date=November 15, 2024 - 14:15 {{Abbr/BRT}} |finished=true
+		|map= |group=AB
+		|teamfirst=bru
+		|teamsecond=fx
+		|teamthird=twm
+		|mvp=WASSANA|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=eCN5rD4k3IA
+		}}
+|opponent1={{TeamOpponent|bru|m1={{MS|6|5}}|m2={{MS|3|5}}|m3={{MS|8|6}}|m4={{MS|1|13}}|m5={{MS|1|12}}|m6={{MS|1|10}} }}
+|opponent2={{TeamOpponent|twisted minds|m1={{MS|5|2}}|m2={{MS|9|1}}|m3={{MS|1|19}}|m4={{MS|9|0}}|m5={{MS|9|9}}|m6={{MS|3|14}} }}
+|opponent3={{TeamOpponent|hua|m1={{MS|4|11}}|m2={{MS|8|4}}|m3={{MS|4|5}}|m4={{MS|5|3}}|m5={{MS|5|6}}|m6={{MS|9|4}} }}
+|opponent4={{TeamOpponent|rrq|m1={{MS|11|1}}|m2={{MS|1|16}}|m3={{MS|11|1}}|m4={{MS|7|7}}|m5={{MS|6|4}}|m6={{MS|8|5}} }}
+|opponent5={{TeamOpponent|reta|m1={{MS|1|7}}|m2={{MS|7|3}}|m3={{MS|3|5}}|m4={{MS|11|1}}|m5={{MS|10|3}}|m6={{MS|10|0}} }}
+|opponent6={{TeamOpponent|clg|m1={{MS|2|10}}|m2={{MS|10|0}}|m3={{MS|2|8}}|m4={{MS|2|4}}|m5={{MS|8|2}}|m6={{MS|11|1}} }}
+|opponent7={{TeamOpponent|fx|m1={{MS|9|0}}|m2={{MS|6|6}}|m3={{MS|5|6}}|m4={{MS|6|2}}|m5={{MS|2|14}}|m6={{MS|2|11}} }}
+|opponent8={{TeamOpponent|evos id|m1={{MS|8|1}}|m2={{MS|4|3}}|m3={{MS|9|3}}|m4={{MS|3|4}}|m5={{MS|3|10}}|m6={{MS|6|9}} }}
+|opponent9={{TeamOpponent|btr dlt|m1={{MS|7|14}}|m2={{MS|5|3}}|m3={{MS|7|4}}|m4={{MS|4|12}}|m5={{MS|11|1}}|m6={{MS|4|5}} }}
+|opponent10={{TeamOpponent|sccp|m1={{MS|3|7}}|m2={{MS|2|10}}|m3={{MS|6|5}}|m4={{MS|8|0}}|m5={{MS|4|2}}|m6={{MS|7|2}} }}
+|opponent11={{TeamOpponent|wask|m1={{MS|10|4}}|m2={{MS|11|0}}|m3={{MS|10|1}}|m4={{MS|10|0}}|m5={{MS|7|6}}|m6={{MS|5|1}} }}
+	}}
+
+|M5={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 16, 2024 - 11:15 {{Abbr/BRT}} |finished=true
+		|map=Bermuda |group=BC
+		|teamfirst=flcn
+		|teamsecond=e1
+		|teamthird=sccp
+		|mvp=KERORO|mvppoints=6
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=_4NqDElEi44
+		}}
+	|map2={{Map
+		|date=November 16, 2024 - 11:45 {{Abbr/BRT}} |finished=true
+		|map=Purgatory |group=BC
+		|teamfirst=sccp
+		|teamsecond=flcn
+		|teamthird=fx
+		|mvp=Hak|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=_4NqDElEi44
+		}}
+	|map3={{Map
+		|date=November 16, 2024 - 12:25 {{Abbr/BRT}} |finished=true
+		|map=Alpine |group=BC
+		|teamfirst=flcn
+		|teamsecond=clg
+		|teamthird=fx
+		|mvp=ONFIRE|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=_4NqDElEi44
+		}}
+	|map4={{Map
+		|date=November 16, 2024 - 12:55 {{Abbr/BRT}} |finished=true
+		|map=Kalahari |group=BC
+		|teamfirst=aaa
+		|teamsecond=e1
+		|teamthird=flcn
+		|mvp=LIMIT|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=_4NqDElEi44
+		}}
+	|map5={{Map
+		|date=November 16, 2024 - 13:35 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=BC
+		|teamfirst=btr dlt
+		|teamsecond=sccp
+		|teamthird=wask
+		|mvp=Nemzz|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=_4NqDElEi44
+		}}
+	|map6={{Map
+		|date=November 16, 2024 - 14:15 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=BC
+		|teamfirst=fx
+		|teamsecond=wag
+		|teamthird=aaa
+		|mvp=Bops|mvppoints=8
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=_4NqDElEi44
+		}}
+|opponent1={{TeamOpponent|clg|m1={{MS|12|3}}|m2={{MS|10|3}}|m3={{MS|1|3}}|m4={{MS|10|2}}|m5={{MS|6|2}}|m6={{MS|11|2}} }}
+|opponent2={{TeamOpponent|fx|m1={{MS|5|8}}|m2={{MS|3|10}}|m3={{MS|3|9}}|m4={{MS|12|5}}|m5={{MS|7|7}}|m6={{MS|1|22}} }}
+|opponent3={{TeamOpponent|evos id|m1={{MS|7|0}}|m2={{MS|5|8}}|m3={{MS|9|6}}|m4={{MS|6|13}}|m5={{MS|9|0}}|m6={{MS|9|1}} }}
+|opponent4={{TeamOpponent|btr dlt|m1={{MS|4|1}}|m2={{MS|6|6}}|m3={{MS|10|2}}|m4={{MS|5|9}}|m5={{MS|1|11}}|m6={{MS|6|1}} }}
+|opponent5={{TeamOpponent|sccp|m1={{MS|3|16}}|m2={{MS|1|13}}|m3={{MS|7|7}}|m4={{MS|7|1}}|m5={{MS|2|18}}|m6={{MS|10|2}} |placement=2}}
+|opponent6={{TeamOpponent|wask|m1={{MS|9|0}}|m2={{MS|4|2}}|m3={{MS|5|4}}|m4={{MS|9|1}}|m5={{MS|3|8}}|m6={{MS|5|5}} }}
+|opponent7={{TeamOpponent|6k|m1={{MS|8|0}}|m2={{MS|12|0}}|m3={{MS|11|0}}|m4={{MS|8|6}}|m5={{MS|12|0}}|m6={{MS|12|0}} }}
+|opponent8={{TeamOpponent|flcn|m1={{MS|1|14}}|m2={{MS|2|3}}|m3={{MS|2|16}}|m4={{MS|3|6}}|m5={{MS|10|5}}|m6={{MS|4|5}} |placement=3}}
+|opponent9={{TeamOpponent|aaa|m1={{MS|11|4}}|m2={{MS|7|8}}|m3={{MS|8|2}}|m4={{MS|1|18}}|m5={{MS|5|7}}|m6={{MS|3|17}} }}
+|opponent10={{TeamOpponent|png|m1={{MS|6|10}}|m2={{MS|11|1}}|m3={{MS|12|2}}|m4={{MS|4|4}}|m5={{MS|8|10}}|m6={{MS|8|10}} }}
+|opponent11={{TeamOpponent|wag|m1={{MS|12|0}}|m2={{MS|8|4}}|m3={{MS|6|5}}|m4={{MS|11|2}}|m5={{MS|4|4}}|m6={{MS|2|3}} }}
+|opponent12={{TeamOpponent|e1|m1={{MS|2|5}}|m2={{MS|9|1}}|m3={{MS|4|12}}|m4={{MS|2|8}}|m5={{MS|11|5}}|m6={{MS|7|6}} }}
+	}}
+
+|M6={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 17, 2024 - 11:15 {{Abbr/BRT}} |finished=true
+		|map=Bermuda |group=AC
+		|teamfirst=bru
+		|teamsecond=flcn
+		|teamthird=rrq
+		|mvp=Moshi|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=dQgkLnfdEhE
+		}}
+	|map2={{Map
+		|date=November 17, 2024 - 11:45 {{Abbr/BRT}} |finished=true
+		|map=Purgatory |group=AC
+		|teamfirst=bru
+		|teamsecond=png
+		|teamthird=twisted minds
+		|mvp=wassana|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=dQgkLnfdEhE
+		}}
+	|map3={{Map
+		|date=November 17, 2024 - 12:25 {{Abbr/BRT}} |finished=true
+		|map=Alpine |group=AC
+		|teamfirst=rrq
+		|teamsecond=hua
+		|teamthird=wag
+		|mvp=dutzz|mvppoints=1
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=dQgkLnfdEhE
+		}}
+	|map4={{Map
+		|date=November 17, 2024 - 12:55 {{Abbr/BRT}} |finished=true
+		|map=Kalahari |group=AC
+		|teamfirst=6k
+		|teamsecond=e1
+		|teamthird=bru
+		|mvp=BAD|mvppoints=4
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=dQgkLnfdEhE
+		}}
+	|map5={{Map
+		|date=November 17, 2024 - 13:35 {{Abbr/BRT}} |finished=true
+		|map=Nexterra |group=AC
+		|teamfirst=bru
+		|teamsecond=wag
+		|teamthird=png
+		|mvp=wassana|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=dQgkLnfdEhE
+		}}
+	|map6={{Map
+		|date=November 17, 2024 - 14:15 {{Abbr/BRT}} |finished=true
+		|map=Alpine |group=AC
+		|teamfirst=aaa
+		|teamsecond=twisted minds
+		|teamthird=rrq
+		|mvp=LIMIT|mvppoints=5
+		|youtube=Free Fire Esports Official
+		|vod=https://www.youtube.com/watch?v=dQgkLnfdEhE
+		}}
+|opponent1={{TeamOpponent|bru|m1={{MS|1|14}}|m2={{MS|1|16}}|m3={{MS|5|9}}|m4={{MS|3|5}}|m5={{MS|1|15}}|m6={{MS|5|2}} }}
+|opponent2={{TeamOpponent|twisted minds|m1={{MS|4|7}}|m2={{MS|3|11}}|m3={{MS|11|2}}|m4={{MS|8|5}}|m5={{MS|8|3}}|m6={{MS|2|6}} }}
+|opponent3={{TeamOpponent|hua|m1={{MS|10|2}}|m2={{MS|5|5}}|m3={{MS|2|8}}|m4={{MS|9|2}}|m5={{MS|9|8}}|m6={{MS|4|4}} }}
+|opponent4={{TeamOpponent|rrq|m1={{MS|3|3}}|m2={{MS|8|1}}|m3={{MS|1|7}}|m4={{MS|5|5}}|m5={{MS|7|6}}|m6={{MS|3|8}} }}
+|opponent5={{TeamOpponent|reta|m1={{MS|7|0}}|m2={{MS|10|0}}|m3={{MS|8|2}}|m4={{MS|7|9}}|m5={{MS|11|0}}|m6={{MS|10|6}} }}
+|opponent6={{TeamOpponent|6k|m1={{MS|8|2}}|m2={{MS|11|0}}|m3={{MS|9|6}}|m4={{MS|1|8}}|m5={{MS|10|3}}|m6={{MS|9|2}} }}
+|opponent7={{TeamOpponent|flcn|m1={{MS|2|15}}|m2={{MS|9|6}}|m3={{MS|4|8}}|m4={{MS|6|10}}|m5={{MS|4|16}}|m6={{MS|7|5}} }}
+|opponent8={{TeamOpponent|aaa|m1={{MS|9|3}}|m2={{MS|6|7}}|m3={{MS|7|3}}|m4={{MS|4|11}}|m5={{MS|6|3}}|m6={{MS|1|16}} }}
+|opponent9={{TeamOpponent|png|m1={{MS|5|7}}|m2={{MS|2|5}}|m3={{MS|6|4}}|m4={{MS|10|2}}|m5={{MS|3|3}}|m6={{MS|8|5}} }}
+|opponent10={{TeamOpponent|wag|m1={{MS|11|0}}|m2={{MS|4|0}}|m3={{MS|3|14}}|m4={{MS|11|3}}|m5={{MS|2|17}}|m6={{MS|11|4}} }}
+|opponent11={{TeamOpponent|e1|m1={{MS|6|3}}|m2={{MS|7|1}}|m3={{MS|10|8}}|m4={{MS|2|13}}|m5={{MS|5|7}}|m6={{MS|6|5}} }}
+	}}
+}}
+{{Tabs dynamic/end}}{{box|end}}
+
+{{DISPLAYTITLE:Free Fire World Series - Global Finals 2024: Point Rush}}
+{{#section:Free_Fire_World_Series/2024|FFWS2024Tabs}}
+{{HiddenDataBox
+|name=Free Fire World Series - Global Finals 2024: Point Rush
+|tickername=FFWS Global Finals 2024 - Point Rush
+|icon=Free_Fire_World_Series_2021_icon.png
+|sdate=2024-11-22 |edate=2024-11-23
+}}
+==Format==
+* '''FFWS Global Finals 2024 - Point Rush:''''' November 22nd - 23rd, 2024
+** 12 teams.
+** 12 matches (6 each day).
+** Teams receive {{Bgcolortext|up|''Grand Finals Headstart Points''}} based on their daily standings each day.
+<h3>Schedules</h3>
+{{box|start|padding=1em}}<div class="table-responsive">
+{| class="wikitable" style="text-align:center;margin-top:10px"
+! colspan="4"| Tournament Schedule
+|-
+! width="80px" | Stage
+! width="50px" | Day
+! width="140px"| Date
+|-
+! rowspan="2"| Point<br>Rush
+| '''1'''
+| November 22nd
+|-
+| '''2'''
+| November 23rd
+|}</div>{{box|break}}
+{{#section:Free_Fire_World_Series/2024|MapRotation}}
+{{box|end}}
+<h3>Points Distribution</h3>
+{{box|start|padding=20px}}
+{{Points12|showtb=true|show_toggle=false|tmargin=10px 0 0 0}}
+{{box|break}}
+{| class="wikitable" style="text-align:center;margin-top:10px"
+! colspan="2"| Headstart Points<br><small>(earned in Points Rush per day)</small>
+|-
+! Place !! width="75px"| Points
+|-
+| {{Placement|1}} || 10
+|-
+| {{Placement|2}} || 7
+|-
+| {{Placement|3}} || 5
+|-
+| {{Placement|4}} || 3
+|-
+| {{Placement|5}} || 2
+|-
+| {{Placement|6}} || 1
+|-
+| {{Placement|7-12}} || 0
+|}
+{{box|end}}
+
+==Results==
+{{Tabs dynamic |This=1 |hide-showall=true
+|name1=Headstart Points Standings
+|name2=Day 1
+|name3=Day 2
+}}
+
+<!-- Tab 1: Headstart Points Standings -->
+{{Tabs dynamic/tab|1}}
+<section begin="HeadstartPts"/>{{box|start|padding=1em}}
+{{FfaStandings|title=Points Rush - Headstart Points Standings
+|round1={{Round|title=Day 1|started=true|finished=true}}
+|round2={{Round|title=Day 2|started=true|finished=true}}
+|{{TeamOpponent|bru|r1=10|r2=7}}
+|{{TeamOpponent|rrq|r1=3|r2=10}}
+|{{TeamOpponent|twisted minds|r1=2|r2=5}}
+|{{TeamOpponent|wag|r1=7|r2=2}}
+|{{TeamOpponent|png|r1=0|r2=3}}
+|{{TeamOpponent|aaa|r1=1|r2=1}}
+|{{TeamOpponent|btr dlt|r1=5|r2=0}}
+|{{TeamOpponent|flcn|r1=0|r2=0}}
+|{{TeamOpponent|fx|r1=0|r2=0}}
+|{{TeamOpponent|sccp|r1=0|r2=0}}
+|{{TeamOpponent|e1|r1=0|r2=0}}
+|{{TeamOpponent|hua|r1=0|r2=0}}
+}}
+{{box|end}}<section end="HeadstartPts"/>
+
+<!-- Tab 2: Day 1 -->
+{{Tabs dynamic/tab|2}}
+<section begin="PRDay1"/>
+{{HiddenDataBox
+|name=Free Fire World Series 2024 - Point Rush Day 1
+|tickername=FFWS Global Finals 2024 - Point Rush D1
+|date=2024-11-22
+}}
+{{box|start|padding=2em}}
+{{Bracket|Bracket/2|id=ffws24prd1
+|R1M1header=Day 1
+|R1M1={{Match|finished=true
+    |p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1 |p11=0 |p12=0
+    |map1={{Map|date=November 22, 2024 - 11:15 {{Abbr/BRT}}|finished=true|map=Bermuda|mvp=VITINxp|mvppoints=3|vod=https://youtu.be/jpBBYTxIy9s|vod1=https://youtu.be/7qhh0ZFTfc4}}
+    |map2={{Map|date=November 22, 2024 - 11:45 {{Abbr/BRT}}|finished=true|map=Purgatory|mvp=Alan_(Vietnamese_Player){{!}}Alan|mvppoints=5|vod=https://youtu.be/jpBBYTxIy9s|vod1=https://youtu.be/7qhh0ZFTfc4}}
+    |map3={{Map|date=November 22, 2024 - 12:25 {{Abbr/BRT}}|finished=true|map=Alpine|vod=https://youtu.be/jpBBYTxIy9s|vod1=https://youtu.be/7qhh0ZFTfc4}}
+    |map4={{Map|date=November 22, 2024 - 12:55 {{Abbr/BRT}}|finished=true|map=Kalahari|vod=https://youtu.be/jpBBYTxIy9s|vod1=https://youtu.be/7qhh0ZFTfc4}}
+    |map5={{Map|date=November 22, 2024 - 13:35 {{Abbr/BRT}}|finished=true|map=Nexterra|vod=https://youtu.be/jpBBYTxIy9s|vod1=https://youtu.be/7qhh0ZFTfc4}}
+    |map6={{Map|date=November 22, 2024 - 14:15 {{Abbr/BRT}}|finished=true|vod=https://youtu.be/jpBBYTxIy9s|vod1=https://youtu.be/7qhh0ZFTfc4}}
+    |opponent1={{TeamOpponent|bru|m1={{MS|7|4}}|m2={{MS|4|11}}|m3={{MS|10|5}}|m4={{MS|1|14}}|m5={{MS|5|3}}|m6={{MS|3|13}}}}
+    |opponent2={{TeamOpponent|twisted minds|m1={{MS|6|3}}|m2={{MS|5|2}}|m3={{MS|6|3}}|m4={{MS|7|5}}|m5={{MS|3|6}}|m6={{MS|2|17}}}}
+    |opponent3={{TeamOpponent|flcn|m1={{MS|9|5}}|m2={{MS|12|0}}|m3={{MS|11|4}}|m4={{MS|12|4}}|m5={{MS|7|4}}|m6={{MS|8|9}}}}
+    |opponent4={{TeamOpponent|fx|m1={{MS|11|1}}|m2={{MS|11|0}}|m3={{MS|2|10}}|m4={{MS|2|5}}|m5={{MS|1|13}}|m6={{MS|6|0}}}}
+    |opponent5={{TeamOpponent|aaa|m1={{MS|10|0}}|m2={{MS|2|8}}|m3={{MS|1|10}}|m4={{MS|11|0}}|m5={{MS|8|8}}|m6={{MS|5|7}}}}
+    |opponent6={{TeamOpponent|wag|m1={{MS|4|11}}|m2={{MS|1|12}}|m3={{MS|5|10}}|m4={{MS|3|7}}|m5={{MS|9|3}}|m6={{MS|9|3}}}}
+    |opponent7={{TeamOpponent|sccp|m1={{MS|12|0}}|m2={{MS|9|4}}|m3={{MS|8|2}}|m4={{MS|4|12}}|m5={{MS|2|11}}|m6={{MS|12|1}}}}
+    |opponent8={{TeamOpponent|btr dlt|m1={{MS|3|7}}|m2={{MS|6|5}}|m3={{MS|3|10}}|m4={{MS|9|0}}|m5={{MS|6|6}}|m6={{MS|1|14}}}}
+    |opponent9={{TeamOpponent|e1|m1={{MS|1|7}}|m2={{MS|7|6}}|m3={{MS|7|3}}|m4={{MS|5|1}}|m5={{MS|4|5}}|m6={{MS|10|2}}}}
+    |opponent10={{TeamOpponent|png|m1={{MS|8|0}}|m2={{MS|3|7}}|m3={{MS|9|1}}|m4={{MS|6|4}}|m5={{MS|10|4}}|m6={{MS|11|1}}}}
+    |opponent11={{TeamOpponent|rrq|m1={{MS|2|14}}|m2={{MS|8|0}}|m3={{MS|4|8}}|m4={{MS|8|9}}|m5={{MS|11|12}}|m6={{MS|4|8}}}}
+    |opponent12={{TeamOpponent|hua|m1={{MS|5|0}}|m2={{MS|10|3}}|m3={{MS|12|1}}|m4={{MS|10|9}}|m5={{MS|12|2}}|m6={{MS|7|6}}}}
+}}
+}}
+{{box|break}}
+<div class="table-responsive" style="white-space:nowrap">
+{| class="wikitable" style="text-align:center; margin:8px 0 0 0"
+! colspan="3"| Day 1 Bonus Points Standings
+|-
+! # !! width="170px"| Team !! Headstart Pts.
+|-
+| '''1.''' || style="text-align:left" | {{TeamShort|bru}} || '''10'''
+|-
+| '''2.''' || style="text-align:left" | {{TeamShort|wag}} || '''7'''
+|-
+| '''3.''' || style="text-align:left" | {{TeamShort|btr dlt}} || '''5'''
+|-
+| '''4.''' || style="text-align:left" | {{TeamShort|rrq}} || '''3'''
+|-
+| '''5.''' || style="text-align:left" | {{TeamShort|twisted minds}} || '''2'''
+|-
+| '''6.''' || style="text-align:left" | {{TeamShort|aaa}} || '''1'''
+|-
+| '''7.''' || style="text-align:left" | {{TeamShort|fx}} || '''0'''
+|-
+| '''8.''' || style="text-align:left" | {{TeamShort|e1}} || '''0'''
+|-
+| '''9.''' || style="text-align:left" | {{TeamShort|sccp}} || '''0'''
+|-
+| '''10.''' || style="text-align:left" | {{TeamShort|png}} || '''0'''
+|-
+| '''11.''' || style="text-align:left" | {{TeamShort|flcn}} || '''0'''
+|-
+| '''12.''' || style="text-align:left" | {{TeamShort|hua}} || '''0'''
+|}</div>
+{{box|end}}<section end="PRDay1"/>
+
+<!-- Tab 3: Day 2 -->
+{{Tabs dynamic/tab|3}}
+<section begin="PRDay2"/>
+{{HiddenDataBox
+|name=Free Fire World Series 2024 - Point Rush Day 2
+|tickername=FFWS Global Finals 2024 - Point Rush D2
+|date=2024-11-23
+}}
+{{box|start|padding=2em}}
+{{Bracket|Bracket/2|id=ffws24prd2
+|R1M1header=Point Rush Day 2 Standings
+|R1M1={{Match|finished=true
+    |p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1 |p11=0 |p12=0
+    |map1={{Map|date=November 23, 2024 - 11:15 {{Abbr/BRT}}|finished=true|map=Bermuda|vod=https://youtu.be/HFXUScn__24|vod1=https://youtu.be/omrFdXeq6Q4}}
+    |map2={{Map|date=November 23, 2024 - 11:45 {{Abbr/BRT}}|finished=true|map=Purgatory|vod=https://youtu.be/HFXUScn__24|vod1=https://youtu.be/omrFdXeq6Q4}}
+    |map3={{Map|date=November 23, 2024 - 12:25 {{Abbr/BRT}}|finished=true|map=Alpine|vod=https://youtu.be/HFXUScn__24|vod1=https://youtu.be/omrFdXeq6Q4}}
+    |map4={{Map|date=November 23, 2024 - 12:55 {{Abbr/BRT}}|finished=true|map=Kalahari|vod=https://youtu.be/HFXUScn__24|vod1=https://youtu.be/omrFdXeq6Q4}}
+    |map5={{Map|date=November 23, 2024 - 13:35 {{Abbr/BRT}}|finished=true|map=Nexterra|vod=https://youtu.be/HFXUScn__24|vod1=https://youtu.be/omrFdXeq6Q4}}
+    |map6={{Map|date=November 23, 2024 - 14:15 {{Abbr/BRT}}|finished=true|vod=https://youtu.be/HFXUScn__24|vod1=https://youtu.be/omrFdXeq6Q4}}
+    |opponent1={{TeamOpponent|bru|m1={{MS|1|13}}|m2={{MS|11|1}}|m3={{MS|8|3}}|m4={{MS|4|9}}|m5={{MS|8|3}}|m6={{MS|1|12}}}}
+    |opponent2={{TeamOpponent|twisted minds|m1={{MS|3|4}}|m2={{MS|2|7}}|m3={{MS|2|8}}|m4={{MS|8|2}}|m5={{MS|2|12}}|m6={{MS|10|0}}}}
+    |opponent3={{TeamOpponent|flcn|m1={{MS|9|6}}|m2={{MS|10|2}}|m3={{MS|3|9}}|m4={{MS|9|1}}|m5={{MS|6|2}}|m6={{MS|12|1}}}}
+    |opponent4={{TeamOpponent|fx|m1={{MS|8|5}}|m2={{MS|8|4}}|m3={{MS|12|1}}|m4={{MS|5|4}}|m5={{MS|3|10}}|m6={{MS|8|6}}}}
+    |opponent5={{TeamOpponent|aaa|m1={{MS|4|7}}|m2={{MS|4|4}}|m3={{MS|9|1}}|m4={{MS|7|6}}|m5={{MS|9|4}}|m6={{MS|3|5}}}}
+    |opponent6={{TeamOpponent|wag|m1={{MS|12|0}}|m2={{MS|5|6}}|m3={{MS|5|6}}|m4={{MS|1|12}}|m5={{MS|4|4}}|m6={{MS|11|1}}}}
+    |opponent7={{TeamOpponent|sccp|m1={{MS|11|5}}|m2={{MS|1|17}}|m3={{MS|11|0}}|m4={{MS|10|4}}|m5={{MS|10|0}}|m6={{MS|4|4}}}}
+    |opponent8={{TeamOpponent|btr dlt|m1={{MS|6|2}}|m2={{MS|7|0}}|m3={{MS|7|4}}|m4={{MS|2|16}}|m5={{MS|12|1}}|m6={{MS|9|7}}}}
+    |opponent9={{TeamOpponent|e1|m1={{MS|5|3}}|m2={{MS|9|1}}|m3={{MS|10|0}}|m4={{MS|11|8}}|m5={{MS|11|1}}|m6={{MS|5|2}}}}
+    |opponent10={{TeamOpponent|png|m1={{MS|7|1}}|m2={{MS|6|1}}|m3={{MS|6|4}}|m4={{MS|3|6}}|m5={{MS|1|13}}|m6={{MS|6|3}}}}
+    |opponent11={{TeamOpponent|rrq|m1={{MS|2|7}}|m2={{MS|3|9}}|m3={{MS|1|16}}|m4={{MS|6|4}}|m5={{MS|7|13}}|m6={{MS|2|11}}}}
+    |opponent12={{TeamOpponent|hua|m1={{MS|10|0}}|m2={{MS|12|1}}|m3={{MS|4|11}}|m4={{MS|12|0}}|m5={{MS|5|1}}|m6={{MS|7|11}}}}
+}}
+}}
+{{box|break}}
+<div class="table-responsive" style="white-space:nowrap">
+{| class="wikitable" style="text-align:center; margin:8px 0 0 0"
+! colspan="3"| Day 2 Bonus Points Standings
+|-
+! # !! width="170px"| Team !! Headstart Pts.
+|-
+| '''1.''' || style="text-align:left" | {{TeamShort|rrq}} || '''10'''
+|-
+| '''2.''' || style="text-align:left" | {{TeamShort|bru}} || '''7'''
+|-
+| '''3.''' || style="text-align:left" | {{TeamShort|twisted minds}} || '''5'''
+|-
+| '''4.''' || style="text-align:left" | {{TeamShort|png}} || '''3'''
+|-
+| '''5.''' || style="text-align:left" | {{TeamShort|wag}} || '''2'''
+|-
+| '''6.''' || style="text-align:left" | {{TeamShort|aaa}} || '''1'''
+|-
+| '''7.''' || style="text-align:left" | {{TeamShort|btr dlt}} || '''0'''
+|-
+| '''8.''' || style="text-align:left" | {{TeamShort|fx}} || '''0'''
+|-
+| '''9.''' || style="text-align:left" | {{TeamShort|sccp}} || '''0'''
+|-
+| '''10.''' || style="text-align:left" | {{TeamShort|hua}} || '''0'''
+|-
+| '''11.''' || style="text-align:left" | {{TeamShort|flcn}} || '''0'''
+|-
+| '''12.''' || style="text-align:left" | {{TeamShort|e1}} || '''0'''
+|}</div>
+{{box|end}}<section end="PRDay2"/>
+
+{{Tabs dynamic/end}}

@@ -1,14 +1,14 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{execFileSync}=require('node:child_process'),{JSDOM}=require('jsdom');
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),tick=async()=>{for(let i=0;i<10;i++)await new Promise(r=>setTimeout(r,0));};
 const ids=['ffws-2019','ffws-2021-singapore','ffws-2022-sentosa'];
-test('the bounded importer reproduces exactly three reviewed worlds and independently reconciles each final',()=>{
+test('the bounded importer reproduces seven reviewed worlds and independently reconciles each final',()=>{
  execFileSync('python3',['scripts/import-liquipedia-worlds.py','--check']);execFileSync('python3',['scripts/build-tournament-catalog.py','--check']);
  const expected=[['Corinthians',2300,49,8],['Phoenix Force',113,48,6],['Attack All Around',92,42,6]];
  for(const [i,id]of ids.entries()){
   const d=read('novos-torneios/'+id+'.json'),f=d.final,row=f.rows[0];assert.deepEqual([row[2],row[8],row[4],f.maps.length],expected[i]);assert(d.pilot);assert(!d.playerRanking);
-  for(const s of [...d.standings,f])for(const row of s.rows){assert.equal(row[8],row[9].reduce((n,m)=>n+m[5],0));assert.equal(row[4],row[9].reduce((n,m)=>n+m[2],0));}
+  for(const s of [...d.standings,f])for(const row of s.rows){assert.equal(row[8],row[9].reduce((n,m)=>n+m[5],0)+row[3]);assert.equal(row[4],row[9].reduce((n,m)=>n+m[2],0));}
  }
- const m=read('novos-torneios/index.json');assert.equal(m.entries.length,m.files.length);assert.equal(m.files.filter(f=>f.startsWith('ffws-')).length,3);assert(!m.files.includes('ffws-2023.json'));
+ const m=read('novos-torneios/index.json');assert.equal(m.entries.length,m.files.length);assert.equal(m.files.filter(f=>f.startsWith('ffws-')).length,7);assert(m.files.includes('ffws-2023.json'));
  assert(fs.statSync('novos-torneios/index.json').size<23000);
  const radar=read('novos-torneios/'+m.radarFile).events.find(t=>t.id==='ffws-2019');assert.equal(radar.final.rows[0][2],108); // 49 kills + modern placement points, not 2300/20.
 });
@@ -63,4 +63,26 @@ test('a failed detail offers retry and the Radar uses its compact snapshot witho
 
 test('an initial tournament survives legacy query cleanup and is restored after its single lazy download',async()=>{
  const f=await fixture({initialId:'ffws-2019'});try{assert.equal(f.w.currentOtData.id,'ffws-2019');assert.equal(new URLSearchParams(f.w.location.search).get('torneio'),'ffws-2019');assert.equal(f.w.cffInitialTournament,'');assert.equal(f.w.document.querySelector('#ot-details-view').style.display,'block');assert.equal(f.calls.filter(p=>p==='novos-torneios/ffws-2019.json').length,1);f.w.closeOtherTournament();assert.equal(f.w.cffInitialTournament,'');assert(!f.w.location.search.includes('torneio'));}finally{f.close();}
+});
+
+test('the four remaining worlds preserve headstarts, withdrawals and the Champion Rush winner',()=>{
+ const expected=[['ffws-2022-bangkok','EVOS Phoenix',117,8,17],['ffws-2023','Magic Squad',112,6,18],['ffws-2024','Fluxo',86,6,17],['ffws-2025','Buriram United Esports',103,7,18]];
+ for(const [id,winner,total,drops,teams] of expected){const d=read('novos-torneios/'+id+'.json');assert.equal(d.final.rows[0][2],winner);assert.equal(d.final.rows[0][8],total);assert.equal(d.final.maps.length,drops);assert.equal(d.teams.items.length,teams);for(const s of [...d.standings,d.final])for(const r of s.rows)assert.equal(r[8],r[9].reduce((n,m)=>n+m[5],0)+r[3]);}
+ const d23=read('novos-torneios/ffws-2023.json');assert.equal(d23.final.rows[0][3],12);assert.equal(d23.final.rows[0][7],100);assert.equal(d23.standings.filter(s=>s.type==='pointRush').length,2);assert(d23.standings[0].rows.every(r=>r[9].length===24));
+ const d24=read('novos-torneios/ffws-2024.json');assert.equal(d24.withdrawnTeams[0].n,'RZX Esports');assert(d24.prizePool.rows.some(r=>r[2]==='RZX Esports'&&r[4]==='Não disputou'));assert.equal(d24.standings[0].rows[0][8],457);
+ const d25=read('novos-torneios/ffws-2025.json');assert.equal(d25.final.championRush.threshold,80);assert.equal(d25.final.championRush.winningMatch,7);assert.equal(d25.clashSquad.champion,'All Gamers Global');assert.equal(d25.clashSquad.series.length,13);assert.equal(d25.clashSquad.swiss.filter(r=>r.wins===2).length,4);assert.equal(d25.awards.find(a=>a.award==='MVP da final').player,'Wassana');assert(!d25.awards.some(a=>a.player==='DEW'));assert.equal(d25.teams.items.find(t=>t.n==='Team Solid').s.find(p=>p.r==='coach').personId,'joker-coach');assert.equal(d25.teams.items.find(t=>t.n==='Rainbow7').p.find(p=>p.n==='Joker').personId,'joker');
+ const manifest=read('career-data/results/manifest.json'),fluxo=read('career-data/results/'+manifest.teams.fluxow7m);const world24=fluxo.editions.find(e=>e.id==='ffwsglobalfinals2024');assert(world24.detailHref);assert.equal(world24.stages.find(s=>s.isFinal).points,86);assert.equal(world24.stages.find(s=>s.isFinal).matches,6);assert.equal(world24.stages.filter(s=>s.champion).length,1);
+ const radar=read('novos-torneios/'+read('novos-torneios/index.json').radarFile);assert(radar.events.every(d=>d.standings.every(s=>!s.cols.includes('matches')&&!s.cols.includes('results'))));assert(fs.statSync('novos-torneios/'+read('novos-torneios/index.json').radarFile).size<35000);
+});
+test('only explicit source anomalies are accepted and the eligibility rule cannot be bypassed',()=>{
+ const code=`import runpy,json,copy\nm=runpy.run_path('scripts/import-liquipedia-worlds.py');events=json.load(open('imports/liquipedia-worlds/manifest.json'))['events']\nfor year in [2024,2025]:\n c=copy.deepcopy(next(e for e in events if e['year']==year));c.pop('sourceAnomalies')\n try:m['compile_event'](c)\n except AssertionError:pass\n else:raise AssertionError('Unreviewed source conflict accepted')\nprint('Unreviewed conflicts rejected')`;
+ assert.match(execFileSync('python3',['-c',code],{encoding:'utf8'}),/rejected/);
+ const r=read('imports/liquipedia-worlds/report.json');assert.equal(r.imported,7);assert(r.reports.find(r=>r.id==='ffws-2025').warnings.some(n=>n.includes('Heavy')));
+});
+test('shared world UI shows initial bonus, phase drops and independent Clash Squad without extra catalogue reads',async()=>{
+ const f=await fixture();try{
+  await f.w.openOtherTournament('ffws-2023');assert(f.w.document.querySelector('#ot-details-tabs').textContent.includes('Knockout'));assert(!f.w.document.querySelector('#ot-details-tabs').textContent.includes('Play-ins'));assert(f.w.document.querySelector('.ot-final-table thead').textContent.includes('Inicial'));assert(f.w.document.querySelector('.ot-final-table tbody tr').textContent.includes('112'));
+  await f.w.changeOtTab('worldDrops');assert.equal(f.w.document.querySelectorAll('.ot-final-table tbody tr').length,12);assert.equal(f.w.document.querySelectorAll('.ot-world-selects select')[1].options.length,36);f.w.otSelectWorldStage('point-rush-1');assert.equal(f.w.document.querySelectorAll('.ot-world-selects select')[1].options.length,6);
+  await f.w.openOtherTournament('ffws-2025');assert(f.w.document.querySelector('.ot-source-issue').textContent.includes('Heavy'));await f.w.changeOtTab('clash');assert(f.w.document.querySelector('#ot-dynamic-container').textContent.includes('All Gamers Global'));assert(!f.w.document.querySelector('#ot-dynamic-container').textContent.includes('COMO O BÔNUS FUNCIONA'));assert(f.w.document.querySelector('#ot-dynamic-container').textContent.includes('Suíça'));assert(!f.calls.includes('FULL_PLAYER_CATALOG'));assert.equal(f.calls.filter(p=>p.startsWith('novos-torneios/')).length,3);
+ }finally{f.close();}
 });

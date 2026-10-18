@@ -388,6 +388,7 @@
           "LBFF 8",
           "FFWS 2022 Sentosa",
           "LBFF 9",
+          "FFWS 2023",
           "WB 2024"
         ]
       },
@@ -402,6 +403,7 @@
           "FFWS 2021 Singapura",
           "FFWS 2022 Sentosa",
           "LBFF 9",
+          "FFWS 2023",
           "WB 2024"
         ]
       },
@@ -701,6 +703,13 @@
       "data": "2025-06-22",
       "place": "7º",
       "source": "novos-torneios/wb-2025-s1.json"
+    },
+    {
+      "torneio": "FFWS 2023",
+      "data": "2023-11-26",
+      "place": "7º",
+      "source": "novos-torneios/ffws-2023.json",
+      "url": "/index.html?torneio=ffws-2023#outros-torneios"
     },
     {
       "torneio": "FFWS 2022 Sentosa",

@@ -20,9 +20,11 @@ def build():
         mini={k:d[k] for k in ['id','name','year'] if k in d};mini['standings']=[]
         for st in d.get('standings',[])[:1]:
             if st.get('type')=='pointRush':continue
-            mini['standings'].append({k:st[k] for k in ['cols','rows','title','drops'] if k in st})
+            keep=[c for c in st['cols'] if c in ['pos','team','teamOriginal','total','points','clashBonus','radarPoints']]
+            mini['standings'].append(dict(title=st['title'],drops=st.get('drops',0),cols=keep,rows=[[row[st['cols'].index(c)] for c in keep] for row in st['rows']]))
         if d.get('final'):
             st=d['final'];mini['final']={k:st[k] for k in ['maps','killPoint','placementPoints'] if k in st}
+            mini['final']['maps']=[[m[0]] for m in st.get('maps',[])]
             rows=[];cols=st['cols'];mc=st.get('matchCols',[])
             for row in st['rows']:
                 r=dict(zip(cols,row));p=r.get('finalPts',r.get('total'));norm=None

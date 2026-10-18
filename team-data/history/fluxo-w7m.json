@@ -311,8 +311,10 @@
         "isCurrent": false,
         "editions": [
           "WB 2024",
+          "FFWS Global Finals 2024",
           "WB 2025 S1",
           "WB 2025 S2",
+          "FFWS Global Finals 2025",
           "EWC 2026"
         ]
       },
@@ -336,8 +338,10 @@
         "isCurrent": false,
         "editions": [
           "WB 2024",
+          "FFWS Global Finals 2024",
           "WB 2025 S1",
           "WB 2025 S2",
+          "FFWS Global Finals 2025",
           "EWC 2026"
         ]
       },
@@ -349,6 +353,7 @@
         "hasProfile": true,
         "isCurrent": false,
         "editions": [
+          "FFWS Global Finals 2024",
           "WB 2025 S1",
           "WB 2025 S2"
         ]
@@ -503,7 +508,7 @@
     {
       "event": "FFWS Global Finals 2024",
       "type": "Campeão",
-      "source": "resultados.json",
+      "source": "novos-torneios/ffws-2024.json",
       "date": "2024-11-24",
       "tier": "S-Tier",
       "logo": "/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png"
@@ -611,6 +616,13 @@
       "torneio": "Showmatch Yuta 2026"
     },
     {
+      "torneio": "FFWS Global Finals 2025",
+      "data": "2025-11-15",
+      "place": "2º",
+      "source": "novos-torneios/ffws-2025.json",
+      "url": "/index.html?torneio=ffws-2025#outros-torneios"
+    },
+    {
       "torneio": "FFWS BR 2025 S2",
       "data": "2025-10-05",
       "place": "1º",
@@ -626,7 +638,8 @@
       "torneio": "FFWS Global Finals 2024",
       "data": "2024-11-24",
       "place": "1º",
-      "source": "resultados.json"
+      "source": "novos-torneios/ffws-2024.json",
+      "url": "/index.html?torneio=ffws-2024#outros-torneios"
     },
     {
       "torneio": "FFWS 2021 Singapura",

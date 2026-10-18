@@ -49,7 +49,7 @@ function bindProfileTabs(root,p){
   if(!['competitions','awards'].includes(id))return;
   const panel=root.querySelector(`[data-career-results="${id}"]`);
   panel.querySelector('[data-career-results-body]').innerHTML||= '<p role="status">Carregando resultados…</p>';
-  try{const module=await import('./career-results.mjs?v=20261018-worlds-pilot-v1');if(panel.isConnected)await module.mountCoachResults(panel,p,{awards:id==='awards'});}
+  try{const module=await import('./career-results.mjs?v=20261018-worlds-complete-v3');if(panel.isConnected)await module.mountCoachResults(panel,p,{awards:id==='awards'});}
   catch{panel.querySelector('[data-career-results-body]').innerHTML='<p>Não foi possível carregar os resultados.</p><button type="button" data-open-profile-tab="'+id+'">Tentar novamente</button>';}
  };
  root.onclick=event=>{const button=event.target.closest('[data-profile-tab],[data-open-profile-tab]');if(button)choose(button.dataset.profileTab||button.dataset.openProfileTab);};
@@ -68,7 +68,7 @@ function attachCoachResults(root,p,standalone){
  if(standalone){const anchor=root.querySelector('.career-pro-history');anchor.after(panel);}else root.append(panel);
  panel.addEventListener('toggle',async()=>{
   if(!panel.open||panel.dataset.loading==='1')return;panel.dataset.loading='1';
-  try{const module=await import('./career-results.mjs?v=20261018-worlds-pilot-v1');if(panel.isConnected)await module.mountCoachResults(panel,p);}
+  try{const module=await import('./career-results.mjs?v=20261018-worlds-complete-v3');if(panel.isConnected)await module.mountCoachResults(panel,p);}
   catch{delete panel.dataset.loading;panel.querySelector('[data-career-results-body]').textContent='Resultados indisponíveis. Feche e abra esta seção para tentar novamente.';}
  });
 }
