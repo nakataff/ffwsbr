@@ -56,7 +56,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
    if(p){
     const data=JSON.parse(p.data);
     if(!data.photo||data.photo==='silhueta.webp'){
-     data.photo='luuuking.webp';
+     data.photo='/luuuking.webp';
      sql.exec('UPDATE career_people SET data=?,revision=revision+1,updated_at=? WHERE id=?',JSON.stringify(data),now(),'luuuking');
      sql.exec("UPDATE career_meta SET value=value+1 WHERE id='version'");
     }
