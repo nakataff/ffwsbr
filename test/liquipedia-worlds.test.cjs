@@ -29,13 +29,14 @@ test('truncated templates, missing matches and unresolved team aliases fail befo
 async function fixture({delay,fail,initialId,url='https://centralfreefire.com.br/index.html#outros-torneios'}={}){
  const html=['ot-list-view','ot-details-view','ot-grid-torneios','ot-details-tabs','ot-details-stats','ot-dynamic-container','ot-title','ot-year','ot-details-badge','ot-roster-modal','ot-roster-title','ot-roster-list','ot-radar-content','ot-count-torneios','ot-count-equipes','ot-count-premios'].map(id=>'<div id="'+id+'"></div>').join('')+'<img id="ot-details-logo"><img id="ot-roster-logo">';
  const dom=new JSDOM(html,{url,runScripts:'outside-only'}),w=dom.window,calls=[],requested=[];
- Object.assign(w,{cffInitialTournament:initialId||'',currentOtData:null,logos:{},playerAliasMap:{},AbortSignal,withCacheBuster:u=>u,scrollTo(){},loadLbffData:async()=>{calls.push('FULL_PLAYER_CATALOG');},getTeamLogo:()=> 'escudo.webp',dbTeamLogos:{},teamLogos:{},teamLogoMap:{},dbTeamAliases:{},lbffData:null,
+ Object.assign(w,{cffInitialTournament:initialId||'',logos:{},playerAliasMap:{},AbortSignal,withCacheBuster:u=>u,scrollTo(){},loadLbffData:async()=>{calls.push('FULL_PLAYER_CATALOG');},getTeamLogo:()=> 'escudo.webp',dbTeamLogos:{},teamLogos:{},teamLogoMap:{},dbTeamAliases:{},lbffData:null,
   fetch:async url=>{const raw=String(url);requested.push(raw);const p=raw.split('?')[0].replace(/^\/+/, '');calls.push(p);if(fail?.(p))return {ok:false,status:503};if(delay)await delay(p);if(fs.existsSync(p))return {ok:true,json:async()=>read(p),text:async()=>fs.readFileSync(p,'utf8')};return {ok:false,status:404,text:async()=>''};}});
  try{w.eval(fs.readFileSync('js/other-tournaments.min.js','utf8'));await w.loadNovosTorneios();await tick();}catch(e){w.close();throw e;}
  return {w,calls,requested,dom,close:()=>w.close()};
 }
 test('cards fetch only a small manifest; opening a world fetches exactly its detail once and safely handles apostrophes',async()=>{
  const f=await fixture();try{
+  assert.equal(f.w.currentOtData,null);assert.equal(f.w.document.querySelectorAll('.ot-tournament-card').length,f.w.dbNovosTorneios.length);
   assert.equal(f.calls.filter(p=>p.startsWith('novos-torneios/')).length,1);assert(!f.calls.includes('FULL_PLAYER_CATALOG'));assert(f.w.dbNovosTorneios.every(t=>t.summary));
   await Promise.all([f.w.openOtherTournament(ids[1]),f.w.otEnsureTournament(ids[1])]);assert.equal(f.calls.filter(p=>p.startsWith('novos-torneios/')).length,2);
   assert(f.w.document.querySelector('#ot-details-stats').textContent.includes('Phoenix Force'));assert(f.w.document.querySelector('#ot-details-stats').textContent.includes('18'));
