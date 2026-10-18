@@ -109,3 +109,35 @@ test('2026 archive opens tournament details with one click, without loading old 
   assert.equal(f.calls.filter(p=>p==='novos-torneios/index.json').length,1);
  }finally{f.close();}
 });
+
+test('Copa FF 2020: published standings, final points, MVP and source-only fields are consistent',async()=>{
+ const d=read('novos-torneios/copa-ff-2020.json'),manifest=read('novos-torneios/index.json');
+ const card=manifest.copaEntries.find(e=>e.id==='copa-ff-2020');
+ assert(card);assert.equal(card.logo,'copaff20.webp');
+ assert.equal(d.teams.items.length,18);
+ assert.equal(d.teams.items.reduce((n,t)=>n+t.p.length,0),104);
+ assert.equal(d.teams.items.reduce((n,t)=>n+t.s.length,0),18);
+ const stage=d.standings[0],final=d.final;
+ assert.equal(stage.rows.length,18);
+ assert.deepEqual(stage.rows.map(row=>row[3]),stage.rows.map(row=>row[4].reduce((a,b)=>a+b,0)));
+ assert.equal(stage.rows[0][2],'B4 ESPORTS');
+ assert.equal(stage.rows[0][3],1417);
+ assert.equal(final.rows.length,12);
+ assert.equal(final.maps.length,12);
+ assert.equal(final.scoreMode,'pointsOnly');
+ assert.deepEqual(final.matchCols,['match','total']);
+ assert(final.rows.every(row=>row[6].length===12&&row[5]===row[3]+row[6].reduce((sum,m)=>sum+m[1],0)));
+ assert.deepEqual(final.rows.slice(0,3).map(row=>[row[2],row[5]]),[['BLACK DRAGONS',309],['PAIN GAMING',264],['RED CANIDS',259]]);
+ assert.equal(d.prizePool.rows.reduce((n,r)=>n+(r[3]||0),0),35000);
+ assert.equal(d.awards[0].player,'Geerty');
+ assert(d.teams.items.find(t=>t.n==='FEAR').s.some(p=>p.n==='Frois'&&p.personId==='frois'));
+ const f=await fixture();try{
+  assert(f.w.dbNovosTorneios.some(e=>e.id===d.id));
+  await f.w.openOtherTournament(d.id);
+  assert.equal(f.w.currentOtData.id,d.id);
+  assert.match(f.w.document.getElementById('ot-title').textContent,/C.O.P.A. Free Fire 2020/);
+  assert.match(f.w.document.getElementById('ot-details-tabs').textContent,/Final/);
+  assert.match(f.w.document.getElementById('ot-dynamic-container').textContent,/309/);
+  assert(!f.calls.includes('FULL_PLAYER_CATALOG'));
+ }finally{f.close();}
+});
