@@ -24,6 +24,7 @@ on:
       - 'scripts/snapshot-career-s2.cjs'
       - 'career-data/events/**'
       - 'test/team-career-views.test.cjs'
+      - 'test/team-profile.test.cjs'
       - 'dados laff/**'
       - 'laff-2025-s1-finals.json'
       - 'resultados.json'
