@@ -1,4 +1,4 @@
-import {esc,ROLES,periodLabel} from './career-client.mjs?v=20261018-career-chronology-v1';
+import {esc,ROLES,periodLabel} from './career-client.mjs?v=20261018-career-chronology-v2';
 export function mountMarketDepartureExport({call,valid,onSaved=()=>{},createPeople=()=>{}}){
  const dialog=document.createElement('dialog');dialog.id='market-export-departures';dialog.className='career-editor';dialog.setAttribute('aria-labelledby','market-export-title');document.body.append(dialog);
  let page=null,offset=0,selected=new Map(),busy=false,seq=0,teamSeq=0,timer,request=null;

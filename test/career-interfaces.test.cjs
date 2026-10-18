@@ -19,10 +19,22 @@ test('competition periods sort undated passages while manual dates win and unkno
   {id:'early',order:3,competitions:[{name:'LBFF 1',period:{year:2020}}]},
   {id:'unknown',order:5,competitions:[]},{id:'unknown-first',order:4,competitions:[]}
  ]};
- assert.deepEqual(client.orderedTenures(person).map(t=>t.id),['unknown-first','unknown','early','manual','late']);
+ assert.deepEqual(client.orderedTenures(person).map(t=>t.id),['early','unknown-first','unknown','manual','late']);
  assert.match(client.competitionPeriodLabel(person.tenures[2]),/2020.*estimativa/);
  assert(!client.competitionPeriodLabel(person.tenures[2]).includes('01/01'));
  assert.equal(client.competitionPeriodLabel({competitions:[{period:{startDate:'2026-99-99'}}]}),'');
+});
+test('undated Alpha7 stays between LOUD and Corinthians while a late Virtus Pro import moves before current Apex',async()=>{
+ const client=await import('../js/career-client.mjs'),person={current:[{id:'apex'}],tenures:[
+  {id:'fear',order:1},
+  {id:'loud',order:2,competitions:[{period:{year:2021}},{period:{year:2024,startDate:'2024-11-08',endDate:'2024-11-24'}}]},
+  {id:'alpha7',order:3},
+  {id:'corinthians',order:4,competitions:[{period:{year:2025,startDate:'2025-04-05',endDate:'2025-06-22'}}]},
+  {id:'apex',order:5,start:{date:'2026-08-28'}},
+  {id:'vp',order:6,start:{date:'2026-01-28'},end:{date:'2026-06-06'}}
+ ]};
+ assert.deepEqual(client.orderedTenures(person).map(t=>t.id),['fear','loud','alpha7','corinthians','vp','apex']);
+ const label=client.competitionPeriodLabel(person.tenures[1]);assert(label.includes('2021 → 24/11/2024'));assert(!label.includes('01/01/2021'));
 });
 function backend(competitionsSeed){const db=new DatabaseSync(':memory:'),sql={exec(q,...args){let r=[];for(const query of q.split(';').filter(x=>x.trim())){const s=db.prepare(query);r=s.columns().length?s.all(...args):(s.run(...args),[]);}return r;}},transaction=fn=>{db.exec('BEGIN');try{const r=fn();db.exec('COMMIT');return r;}catch(e){db.exec('ROLLBACK');throw e;}},seed={teams:[{id:'loud',name:'LOUD',aliases:['LOUD']}],people:Array.from({length:25},(_,i)=>({id:'p'+i,name:'Jogador '+String(i).padStart(2,'0'),kind:'player',aliases:['Nick'+i],availability:'unknown',tenures:[]}))};return C.create({sql,transaction,seed,...(competitionsSeed?{competitionsSeed}:{})});}
 async function fixture(options={}){const client=await import('../js/career-client.mjs'),dom=new JSDOM(fs.readFileSync(require.resolve('../admin-carreiras.html'),'utf8'),{url:'https://centralfreefire.com.br/admin-carreiras.html',runScripts:'outside-only'}),w=dom.window,auth={currentUser:{uid:'admin',email:'admin@centralfreefire.com.br'}},core=backend(options.competitionsSeed),calls=[];w.structuredClone=structuredClone;Object.assign(w,{ROLES:client.ROLES,STATUSES:client.STATUSES,esc:client.esc,tenureCards:client.tenureCards,careerTrail:client.careerTrail,orderedTenures:client.orderedTenures,competitionPeriodLabel:client.competitionPeriodLabel,personHref:client.personHref,periodLabel:client.periodLabel});w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};w.CFF_CONFIG={firebase:{}};w.getApps=()=>[{name:'[DEFAULT]'}];w.getAuth=()=>auth;w.browserLocalPersistence={};w.setPersistence=async()=>{};w.onAuthStateChanged=(_,fn)=>{w.__authChange=fn;return fn(auth.currentUser);};w.careerAdmin=async(_auth,operation,body={})=>{calls.push({operation,body});return core.admin({uid:'admin',admin:true},{operation,...body});};w.eval(fs.readFileSync(require.resolve('../js/career-departures.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));w.eval(fs.readFileSync(require.resolve('../js/career-directory-admin.mjs'),'utf8').replace(/^export /gm,''));w.eval(fs.readFileSync(require.resolve('../js/career-market-export.mjs'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));w.eval(fs.readFileSync(require.resolve('../js/career-market-admin.mjs'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));w.eval(fs.readFileSync(require.resolve('../js/career-person-create.mjs'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));w.eval(fs.readFileSync(require.resolve('../js/career-competitions-admin.mjs'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));w.eval(fs.readFileSync(require.resolve('../js/admin-careers.js'),'utf8').replace(/^import .*\n/gm,''));await tick();return {w,auth,core,calls,$:s=>w.document.querySelector(s),close:()=>w.close()};}

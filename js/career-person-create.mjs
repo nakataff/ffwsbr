@@ -1,4 +1,4 @@
-import {esc,ROLES,periodLabel} from './career-client.mjs?v=20261018-career-chronology-v1';
+import {esc,ROLES,periodLabel} from './career-client.mjs?v=20261018-career-chronology-v2';
 
 // Create people and their first passage together, without fetching the catalogue.
 export function mountCareerPersonCreate({call,valid,canOpen=()=>true,onSaved=()=>{}}){

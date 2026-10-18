@@ -29,11 +29,13 @@ function recordedPeriod(tenure){
   const start=dateRange(p.startDate),end=dateRange(p.endDate),annual=dateRange(year);
   return {start:start?.[0]||end?.[0]||annual?.[0],end:end?.[1]||start?.[1]||annual?.[1],yearOnly:!start&&!end};
  }).filter(p=>p.start&&p.end);
- return periods.length?{start:periods.map(p=>p.start).sort()[0],end:periods.map(p=>p.end).sort().at(-1),yearOnly:periods.every(p=>p.yearOnly)}:null;
+ if(!periods.length)return null;
+ const first=periods.slice().sort((a,b)=>a.start.localeCompare(b.start))[0],last=periods.slice().sort((a,b)=>b.end.localeCompare(a.end))[0];
+ return {start:first.start,end:last.end,startYearOnly:first.yearOnly,endYearOnly:last.yearOnly};
 }
 export function competitionPeriodLabel(tenure){
  const period=recordedPeriod(tenure);if(!period)return '';
- const first=period.yearOnly?period.start.slice(0,4):periodLabel({date:period.start}),last=period.yearOnly?period.end.slice(0,4):periodLabel({date:period.end});
+ const first=period.startYearOnly?period.start.slice(0,4):periodLabel({date:period.start}),last=period.endYearOnly?period.end.slice(0,4):periodLabel({date:period.end});
  return 'Participações registradas: '+first+(first!==last?' → '+last:'')+' · estimativa pelos torneios';
 }
 export function orderedTenures(person,{newestFirst=false}={}){
@@ -43,10 +45,22 @@ export function orderedTenures(person,{newestFirst=false}={}){
   const active=!['free_agent','retired'].includes(person.availability)&&(current.has(tenure.id)||!Array.isArray(person.current)&&['active','loan','substitute'].includes(tenure.status));
   return {tenure,index,active,start:start?.[0]||period?.start||end?.[0]||'',end:end?.[1]||period?.end||start?.[1]||''};
  });
- rows.sort((a,b)=>Number(a.active)-Number(b.active)||Number(!!a.start)-Number(!!b.start)||a.start.localeCompare(b.start)||a.end.localeCompare(b.end)||(Number(a.tenure.order)||0)-(Number(b.tenure.order)||0)||a.index-b.index);
- // Unknown periods retain their imported order together; they never become
- // fabricated contract dates. The authoritative current link stays at the end.
- const result=rows.map(r=>r.tenure);return newestFirst?result.reverse():result;
+ const byOrder=(a,b)=>(Number(a.tenure.order)||0)-(Number(b.tenure.order)||0)||a.index-b.index;
+ const byDate=(a,b)=>a.start.localeCompare(b.start)||a.end.localeCompare(b.end)||byOrder(a,b);
+ const historical=rows.filter(r=>!r.active).sort(byOrder),dated=historical.filter(r=>r.start).sort(byDate);
+ const rank=new Map(dated.map((r,i)=>[r,i])),gaps=Array.from({length:dated.length+1},()=>[]),next=[];
+ let following=null;for(let i=historical.length-1;i>=0;i--){next[i]=following;if(historical[i].start)following=historical[i];}
+ let previous=null;
+ for(let i=0;i<historical.length;i++){
+  const row=historical[i];if(row.start){previous=row;continue;}
+  const after=next[i],slot=after&&(!previous||rank.get(previous)<rank.get(after))?rank.get(after):previous?rank.get(previous)+1:0;
+  gaps[slot].push(row);
+ }
+ // Unknown passages stay between their existing dated neighbors. No dates or
+ // contracts are invented, and authoritative current links remain at the end.
+ const result=[];for(let i=0;i<=dated.length;i++){result.push(...gaps[i].map(r=>r.tenure));if(dated[i])result.push(dated[i].tenure);}
+ result.push(...rows.filter(r=>r.active).sort(byDate).map(r=>r.tenure));
+ return newestFirst?result.reverse():result;
 }
 export function careerTrail(person,{resolveLogo=(_name,logo)=>logo||'escudo.webp'}={}){
  const rows=[],teamKey=t=>t.teamId||String(t.teamName||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();

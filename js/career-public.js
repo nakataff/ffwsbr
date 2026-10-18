@@ -1,5 +1,5 @@
 import './career-team-identities.mjs?v=20261015-career-directory-v1';
-import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel,orderedTenures,competitionPeriodLabel} from './career-client.mjs?v=20261018-career-chronology-v1';
+import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel,orderedTenures,competitionPeriodLabel} from './career-client.mjs?v=20261018-career-chronology-v2';
 const loaded=new WeakMap();
 function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261018-career-photo-social-frois-v1';link.dataset.careerStyle='1';document.head.append(link);}
 function currentHtml(p){return p.current.length?p.current.map(t=>`<a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span class="career-current-role"> · ${esc(ROLES[t.role]||t.role)}</span>`).join(' · '):p.availability==='free_agent'?`Sem equipe / F/A${p.freeAgentSince?.date?' · desde '+esc(periodLabel(p.freeAgentSince)):''}`:p.availability==='retired'?'Aposentado':'Vínculo atual a confirmar';}
