@@ -6,6 +6,7 @@ const sleep=()=>new Promise(resolve=>setImmediate(resolve));
 async function mount(at,{mobile=false,offline=false}={}){
  const dom=new JSDOM(read('index.html'),{url:'https://centralfreefire.com.br/',runScripts:'outside-only'});
  const w=dom.window,requests=[];let now=Date.parse(at),interval=null;
+ Object.defineProperty(w.document,'hidden',{get:()=>false});
  w.Date.now=()=>now;
  w.matchMedia=()=>({matches:mobile,addEventListener(){}});
  w.setInterval=fn=>{interval=fn;return 5;};w.clearInterval=()=>{interval=null;};
