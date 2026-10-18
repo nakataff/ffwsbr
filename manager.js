@@ -2543,9 +2543,10 @@ function mvpPhaseRow(row, phase) {
 }
 
 function openAdmin() {
+  // Ferramenta de edição local do simulador, sem privilégios no site ou no Firebase.
+  // Uma senha guardada no JavaScript público não oferece autenticação.
   if (!state.adminUnlocked) {
-    const password = window.prompt("Senha admin");
-    if (password !== "147") return;
+    if (!window.confirm("Abrir o editor local do WB Manager? As mudanças afetam somente este simulador.")) return;
     state.adminUnlocked = true;
   }
   $("adminPanel").classList.add("open");
