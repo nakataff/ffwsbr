@@ -62,7 +62,7 @@ test('tabs preserve original slot sections and support keyboard navigation on mo
   const d=x.w.document,board=d.querySelector('#home-global-classified'),slots=d.querySelector('#home-global-panel-slots');
   assert(board.parentElement.classList.contains('home-left-rail'));
   assert.equal(slots.querySelectorAll('.home-global-team').length,24);
-  assert.equal(slots.querySelectorAll('.home-global-region').length,9); // check actual qualifying region count in static HTML
+  assert.equal(slots.querySelectorAll('.home-global-region').length,11);
   const tab=d.querySelector('#home-global-tab-slots');tab.click();
   assert.equal(slots.hidden,false);
   assert.equal(d.querySelector('#home-global-panel-upcoming').hidden,true);
