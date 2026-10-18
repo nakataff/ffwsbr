@@ -22,7 +22,7 @@ function environment(query='fluxo-w7m',overrides={}){
 }
 test('profile renders before pending photo/logo maps and separates roster, results and trophies',async()=>{
  const e=environment();await e.qa.init();await tick();
- assert(e.page.innerHTML.includes('cff-profile-nav'));assert(e.page.innerHTML.includes('cff-profile-history'));
+ assert(e.page.innerHTML.includes('cff-profile-nav'),e.page.innerHTML.slice(0,1000));assert(e.page.innerHTML.includes('cff-profile-history'));
  assert(e.nodes.get('cff-current-roster').innerHTML.includes('Elenco atual'));assert(e.nodes.get('cff-season-panel').innerHTML.includes('Pontos por queda'));
  assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS BR 2026 S2'));assert(e.nodes.get('cff-team-titles-mount').innerHTML.includes('11/10/2026'));assert(e.nodes.get('cff-team-results-mount').innerHTML.includes('FFWS BR 2026 S2'));
  e.qa.state.titleYear='2024';e.qa.renderTitles(e.qa.state.historyData);assert(!e.nodes.get('cff-team-titles-mount').innerHTML.includes('FFWS BR 2026 S2'));assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS BR 2026 S2'));
@@ -30,7 +30,7 @@ test('profile renders before pending photo/logo maps and separates roster, resul
  assert(!e.qa.titleCard({event:'Unsafe',url:'javascript:alert(1)'}).includes('href='));
 });
 test('all 14 current team routes and their historical competitions render without errors',async()=>{
- for(const t of read('ffws-br-2026-s2/teams.json').teams){const slug=model.norm(t.name)==='loudsnickers'?'loud-snickers':t.name.toLowerCase().replace(/ /g,'-');const e=environment(slug);await e.qa.init();assert(!e.page.innerHTML.includes('Equipe não encontrada'),t.name);assert(e.nodes.get('cff-current-roster').innerHTML.includes('Elenco atual'),t.name);for(const key of ['s1','ewc','s2']){await e.qa.selectSeason(key);assert(!e.nodes.get('cff-season-panel').innerHTML.includes('Não foi possível'),t.name+': '+key)}await tick();}
+ for(const t of read('ffws-br-2026-s2/teams.json').teams){const slug=model.norm(t.name)==='loudsnickers'?'loud-snickers':t.name.toLowerCase().replace(/ /g,'-');const e=environment(slug);await e.qa.init();assert(!e.page.innerHTML.includes('Equipe não encontrada'),t.name+' '+e.page.innerHTML.slice(0,700));assert(e.nodes.get('cff-current-roster').innerHTML.includes('Elenco atual'),t.name);for(const key of ['s1','ewc','s2']){await e.qa.selectSeason(key);assert(!e.nodes.get('cff-season-panel').innerHTML.includes('Não foi possível'),t.name+': '+key)}await tick();}
 });
 test('late season responses do not replace a newly selected season',async()=>{
  let resolve;const e=environment('fluxo-w7m',{'team-data/seasons/fluxo-w7m.json':()=>new Promise(r=>resolve=()=>r({ok:true,json:async()=>read('team-data/seasons/fluxo-w7m.json')}))});await e.qa.init();const pending=e.qa.selectSeason('s1');await e.qa.selectSeason('s2');resolve();await pending;assert(e.nodes.get('cff-season-panel').innerHTML.includes('WB 2026 S2'));assert(!e.nodes.get('cff-season-panel').innerHTML.includes('<h2>WB 2026 S1</h2>'));
