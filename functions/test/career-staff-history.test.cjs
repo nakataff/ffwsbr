@@ -119,3 +119,33 @@ test('remaining world staff records attach to reviewed identities and keep both 
  assert(get(core,'staff-history-trap-coach').tenures.some(t=>t.role==='coach'&&t.competitions.some(c=>c.id==='ffwsglobalfinals2024')));
  }finally{x.db.close();}
 });
+
+test('Frois has a historical Virtus.pro result for FFWS BR 2026 S1, without becoming currently contracted',async()=>{
+ const x=fixture();try{
+  const core=x.core();
+  const frois=get(core,'frois');
+  assert.equal(frois.photo,'/assets/coaches/frois.webp');
+  const virtus=frois.tenures.filter(t=>t.teamId==='virtuspro'&&!t.deleted);
+  assert.equal(virtus.length,1);
+  assert.equal(virtus[0].status,'ended');
+  assert.equal(virtus[0].role,'coach');
+  assert.equal(virtus[0].start?.date,'2026-01-28');
+  assert.equal(virtus[0].end?.date,'2026-06-06');
+  assert(virtus[0].competitions.some(c=>c.id==='ffwsbr2026s1'));
+  assert(!frois.current.some(t=>t.teamId==='virtuspro'));
+  assert.match(virtus[0].sourceUrl,/^https:\/\/virtus\.pro\//);
+  const before=x.db.prepare('SELECT COUNT(*) AS n FROM career_tenures WHERE person=? AND team=?').get('frois','virtuspro').n;
+  x.core().ensure();
+  assert.equal(x.db.prepare('SELECT COUNT(*) AS n FROM career_tenures WHERE person=? AND team=?').get('frois','virtuspro').n,before);
+ }finally{x.db.close();}
+});
+
+test('Optional career social links must be HTTPS on the expected provider',async()=>{
+ const x=fixture();try{
+  const core=x.core(),p=get(core,'frois');
+  const updated=(await edit(core,'savePerson',{personId:p.id,revision:p.revision,name:p.name,kind:'staff',availability:p.availability,aliases:p.aliases,photo:p.photo,social:{instagram:'https://www.instagram.com/frois/',x:'https://x.com/frois',tiktok:'',youtube:'',twitch:'',liquipedia:''}})).person;
+  assert.equal(updated.social.instagram,'https://www.instagram.com/frois/');
+  assert.equal(core.publicRead('person',{id:'frois'}).person.social.x,'https://x.com/frois');
+  await assert.rejects(edit(core,'savePerson',{personId:updated.id,revision:updated.revision,name:updated.name,kind:'staff',availability:updated.availability,aliases:updated.aliases,social:{instagram:'https://phishing.example/steal',x:'',tiktok:'',youtube:'',twitch:'',liquipedia:''}}),/Domínio não permitido/);
+ }finally{x.db.close();}
+});
