@@ -176,7 +176,11 @@ test('Copa FF 2022: 24 equipes, seis dias, 8 quedas com pontos por colocação e
  assert.deepEqual(f.rows.slice(0,3).map(r=>[r[c.team],r[c.total]]),[['BD VASCO',105],['LOUD',99],['TEAM LIQUID',84]]);
  assert.equal(d.prizePool.currency,'BRL');
  assert.equal(d.prizePool.rows.reduce((n,r)=>n+(r[3]||0),0),1000000);
- assert.deepEqual(d.awards.map(a=>a.player),['RAONE7','Ruan']);
+ assert.deepEqual(d.awards.map(a=>a.player),['RAONE7','Ruan (Divinéia)']);
+ assert.equal(d.teams.items.find(t=>t.n==='LOS').p.find(p=>p.personId==='ruan').n,'RUANx5');
+ assert.equal(d.teams.items.find(t=>t.n==='DIVINÉIA').p.find(p=>p.n.startsWith('Ruan')).personId,undefined);
+ assert(d.teams.items.find(t=>t.n==='INCO GAMING').p.some(p=>p.n==='Luiz (iNCO)'));
+ assert(d.teams.items.find(t=>t.n==='DIVINÉIA').p.some(p=>p.n==='Luiz (Divinéia)'));
  assert(d.teams.items.find(t=>t.n==='MAGIC SQUAD').s.some(p=>p.personId==='luuuking'));
  assert(d.teams.items.find(t=>t.n==='LOUD').s.some(p=>p.personId==='frois'));
  const ui=await fixture();try{
