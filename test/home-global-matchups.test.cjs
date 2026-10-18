@@ -43,9 +43,9 @@ test('homepage opens on knockout matchups from published dates and displays corr
   const first=d.querySelector('.home-global-match-head');
   assert.match(first.textContent,/GRUPO A × GRUPO B/);
   assert.match(first.textContent,/06\/11\/2026 · 04:00h/);
-  assert.equal(d.querySelectorAll('.home-global-match-group').length,2);
-  assert.equal(d.querySelectorAll('.home-global-match-team').length,12);
-  assert.equal(d.querySelectorAll('.home-global-match-team img[src^="/home-assets/teams/global/"]').length,12);
+  assert.equal(d.querySelectorAll('#home-global-upcoming-content > .home-global-matchup .home-global-match-group').length,2);
+  assert.equal(d.querySelectorAll('#home-global-upcoming-content > .home-global-matchup .home-global-match-team').length,12);
+  assert.equal(d.querySelectorAll('#home-global-upcoming-content > .home-global-matchup .home-global-match-team img[src^="/home-assets/teams/global/"]').length,12);
   assert.match(d.querySelector('.home-global-match-group').textContent,/STG/);
   assert.match(d.querySelectorAll('.home-global-match-group')[1].textContent,/LOUD/);
   assert.equal(d.querySelectorAll('.home-global-fixture-row').length,3);
