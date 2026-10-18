@@ -1,4 +1,4 @@
-name: Deploy Profile Database Rules
+name: Profile Rules Regression Tests
 on:
   push:
     branches: [main]
@@ -18,14 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-      - run: npm install -g firebase-tools
       - run: npm install
         working-directory: functions
-      - run: node --test functions/test/profile-save.test.cjs functions/test/admin-profile-editor.test.cjs functions/test/profile-directory-sync.test.cjs functions/test/profile-roles.test.cjs functions/test/profile-community-rules.test.cjs test/profile-community.test.mjs test/profile-story-card.test.mjs test/profile-frames.test.mjs functions/test/profile-goals.test.cjs test/profile-categories.test.mjs
-      - run: firebase deploy --only database --project central-free-fire --non-interactive
+      - run: node --test functions/test/security-public-rules.test.cjs functions/test/profile-save.test.cjs functions/test/admin-profile-editor.test.cjs functions/test/profile-directory-sync.test.cjs functions/test/profile-roles.test.cjs functions/test/profile-community-rules.test.cjs test/profile-community.test.mjs test/profile-story-card.test.mjs test/profile-frames.test.mjs functions/test/profile-goals.test.cjs test/profile-categories.test.mjs
 
 
 
