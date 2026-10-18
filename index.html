@@ -70,7 +70,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <!-- Dados históricos são carregados sob demanda para não bloquear a home. -->
 <link rel="stylesheet" href="css/bundle.min.css?v=20260904-sidebar-nested-v22">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/home-ffws-s2.css?v=20261018-selecao-torneio-v1">
+<link rel="stylesheet" href="css/home-ffws-s2.css?v=20261018-mobile-rankings-v1">
 <link rel="stylesheet" href="css/site-nav-freeze.css?v=20260901-nav-unified-v11">
 <link rel="stylesheet" href="css/site-back-navigation.css?v=20260902-back-accent-v30">
 <link rel="stylesheet" href="css/search-fast.css?v=20260728-search-layout-v1">
@@ -665,7 +665,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
 
     <div class="home-main-layout">
-        <aside class="home-left-rail" aria-label="Transmissões e rankings da WB 2026 S2">
+        <aside class="home-left-rail" aria-label="Transmissões e rankings do torneio" data-home-rankings-event="WB 2026 S2">
             <div class="home-widget home-rail-live home-transmission-widget">
                 <h3 class="home-transmission-title">
                     <svg class="home-transmission-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -710,7 +710,22 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 </div>
             </div>
 
-            <div class="home-widget home-rail-ranking">
+            <button type="button" class="home-rankings-mobile-toggle" id="home-rankings-mobile-toggle" aria-controls="home-ranking-teams home-ranking-kills home-ranking-damage home-ranking-assists" aria-expanded="false">
+                <span class="home-rankings-mobile-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19V11M10 19V5M16 19V9M22 19V13"/>
+                    </svg>
+                </span>
+                <span class="home-rankings-mobile-copy">
+                    <span class="home-rankings-mobile-title" data-home-rankings-title>RANKINGS • WB 2026 S2</span>
+                    <span class="home-rankings-mobile-subtitle">Classificação · Abates · Dano · Assistências</span>
+                </span>
+                <span class="home-rankings-mobile-action"><span data-home-rankings-action>VER RANKINGS</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+
+            <div class="home-widget home-rail-ranking" id="home-ranking-teams">
                 <h3>🏆 Top 6 Classificação</h3>
                 <div class="home-widget-body home-rail-table-body">
                     <table class="home-rail-rank-table home-rail-team-table"><thead><tr><th>#</th><th class="home-rank-media-head" aria-label="Logo"></th><th>E</th><th>P</th><th>K</th></tr></thead><tbody id="home-tbody-teams"></tbody></table>
@@ -718,7 +733,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 <button class="home-widget-link-btn" onclick="navigate('ffws-br-s2-classificatoria')">Ver tabela completa →</button>
             </div>
 
-            <div class="home-widget home-rail-ranking">
+            <div class="home-widget home-rail-ranking" id="home-ranking-kills">
                 <h3>🎯 Top 6 Abates</h3>
                 <div class="home-widget-body home-rail-table-body">
                     <table class="home-rail-rank-table home-rail-player-table"><thead><tr><th>#</th><th class="home-rank-media-head" aria-label="Foto"></th><th>J</th><th>K</th><th>Q</th></tr></thead><tbody id="home-tbody-players"></tbody></table>
@@ -726,7 +741,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 <button class="home-widget-link-btn" onclick="navigate('ffws-br-s2-mvp')">Ver ranking completo →</button>
             </div>
 
-            <div class="home-widget home-rail-ranking">
+            <div class="home-widget home-rail-ranking" id="home-ranking-damage">
                 <h3>💥 Top 6 Dano</h3>
                 <div class="home-widget-body home-rail-table-body">
                     <table class="home-rail-rank-table home-rail-player-table"><thead><tr><th>#</th><th class="home-rank-media-head" aria-label="Foto"></th><th>J</th><th>DMG</th><th>Q</th></tr></thead><tbody id="home-tbody-damage"></tbody></table>
@@ -734,7 +749,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 <button class="home-widget-link-btn" onclick="navigate('ffws-br-s2-mvp')">Ver ranking completo →</button>
             </div>
 
-            <div class="home-widget home-rail-ranking">
+            <div class="home-widget home-rail-ranking" id="home-ranking-assists">
                 <h3>🤝 Top 6 Assistências</h3>
                 <div class="home-widget-body home-rail-table-body">
                     <table class="home-rail-rank-table home-rail-player-table"><thead><tr><th>#</th><th class="home-rank-media-head" aria-label="Foto"></th><th>J</th><th>AST.</th><th>Q</th></tr></thead><tbody id="home-tbody-assists"></tbody></table>
@@ -2525,6 +2540,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/year-ranking-logo-sheet.js?v=20261018-global-career-logos-v1"></script>
 <script type="module" src="js/firebase-votes.min.js?v=20260917-restore-mercado-v1"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
+<script defer src="js/home-mobile-rankings.js?v=20261018-mobile-rankings-v1"></script>
 <script defer src="js/home-current-results.min.js?v=20261018-selecao-torneio-v1"></script>
 <script defer src="js/home-year-2026.min.js?v=20261012-global-local-logos-v7"></script>
 </main>
