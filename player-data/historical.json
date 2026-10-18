@@ -20,14 +20,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 0.0
+        "avg": 0
       },
       "editions": [
         {
           "edition": "WB 2024 F1",
           "kills": 0,
           "matches": 1,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         }
       ],
@@ -511,14 +511,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 0.0
+        "avg": 0
       },
       "editions": [
         {
           "edition": "LBFF 7",
           "kills": 0,
           "matches": 4,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         }
       ],
@@ -2075,14 +2075,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 1.0
+        "avg": 1
       },
       "editions": [
         {
           "edition": "LBFF 9",
           "kills": 1,
           "matches": 1,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         }
       ],
@@ -2287,7 +2287,7 @@
           "edition": "LBFF 3",
           "kills": 4,
           "matches": 4,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -2923,7 +2923,7 @@
           "edition": "LBFF 5",
           "kills": 0,
           "matches": 8,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         },
         {
@@ -4050,7 +4050,7 @@
       "aliases": [
         "LUUUKING"
       ],
-      "photo": "silhueta.webp",
+      "photo": "luuuking.webp",
       "country": "",
       "role": "",
       "lastTeam": "FLUXO W7M",
@@ -4468,14 +4468,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 0.0
+        "avg": 0
       },
       "editions": [
         {
           "edition": "LBFF 1",
           "kills": 0,
           "matches": 2,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         }
       ],
@@ -4943,7 +4943,7 @@
           "edition": "LBFF 5",
           "kills": 81,
           "matches": 81,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -6649,7 +6649,7 @@
           "edition": "LBFF 8",
           "kills": 5,
           "matches": 5,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -7694,7 +7694,7 @@
           "edition": "LBFF 4",
           "kills": 81,
           "matches": 81,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -7996,7 +7996,7 @@
           "edition": "WB 2025 S1",
           "kills": 2,
           "matches": 2,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -8306,14 +8306,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 1.0
+        "avg": 1
       },
       "editions": [
         {
           "edition": "WB 2025 S1",
           "kills": 37,
           "matches": 37,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         }
       ],
@@ -9183,7 +9183,7 @@
           "edition": "LBFF 8",
           "kills": 80,
           "matches": 80,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -10334,7 +10334,7 @@
           "edition": "LBFF 9",
           "kills": 42,
           "matches": 42,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -10348,7 +10348,7 @@
           "edition": "WB 2024 F2",
           "kills": 49,
           "matches": 49,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -11108,14 +11108,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 0.0
+        "avg": 0
       },
       "editions": [
         {
           "edition": "LBFF 5",
           "kills": 0,
           "matches": 9,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         }
       ],
@@ -13119,14 +13119,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 0.0
+        "avg": 0
       },
       "editions": [
         {
           "edition": "LBFF 1",
           "kills": 0,
           "matches": 4,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         }
       ],
@@ -13582,7 +13582,7 @@
           "edition": "LBFF 1",
           "kills": 16,
           "matches": 16,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -13722,14 +13722,14 @@
         "damage": 0,
         "assists": 0,
         "mvp": 0,
-        "avg": 0.0
+        "avg": 0
       },
       "editions": [
         {
           "edition": "LBFF 6",
           "kills": 0,
           "matches": 4,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         }
       ],
@@ -13834,7 +13834,7 @@
           "edition": "WB 2026 S1",
           "kills": 33,
           "matches": 33,
-          "avg": 1.0,
+          "avg": 1,
           "team": "CIVIS",
           "damage": 20815,
           "assists": 31,
@@ -13895,7 +13895,7 @@
           "edition": "WB 2024 F2",
           "kills": 79,
           "matches": 79,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         }
       ],
@@ -14331,7 +14331,7 @@
           "edition": "LBFF 5",
           "kills": 0,
           "matches": 9,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         },
         {
@@ -14704,7 +14704,7 @@
           "edition": "LBFF 8",
           "kills": 60,
           "matches": 60,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         }
       ],
@@ -15594,7 +15594,7 @@
           "edition": "LBFF 1",
           "kills": 28,
           "matches": 28,
-          "avg": 1.0,
+          "avg": 1,
           "team": ""
         },
         {
@@ -15629,7 +15629,7 @@
           "edition": "LBFF 8",
           "kills": 0,
           "matches": 20,
-          "avg": 0.0,
+          "avg": 0,
           "team": ""
         }
       ],
