@@ -97,3 +97,29 @@
   .home-global-versus{font-size:20px}
 }
 @media(prefers-reduced-motion:reduce){.home-global-tab{transition:none}}
+
+
+/* Expandable previews of upcoming Knockout pairings. */
+.home-global-fixture{min-width:0;border-top:1px solid #253146}
+.home-global-fixture:first-of-type{border-top:1px solid #253146}
+.home-global-fixture>.home-global-fixture-row{display:flex;cursor:pointer;border-top:0;list-style:none;transition:background .15s}
+.home-global-fixture>.home-global-fixture-row::-webkit-details-marker{display:none}
+.home-global-fixture>.home-global-fixture-row::marker{content:''}
+.home-global-fixture>.home-global-fixture-row:hover{background:#18243a}
+.home-global-fixture>.home-global-fixture-row:focus-visible{outline:2px solid #ffe182;outline-offset:-2px;border-radius:7px}
+.home-global-fixture[open]>.home-global-fixture-row{background:#16243a}
+.home-global-fixture-chevron{flex:none;display:grid;place-items:center;width:20px;height:20px;border:1px solid #485573;border-radius:6px;color:#e5cb71;font-size:21px;line-height:1;transition:transform .15s}
+.home-global-fixture[open] .home-global-fixture-chevron{transform:rotate(180deg);border-color:#bf9e49}
+.home-global-fixture-expanded{padding:6px 8px 16px;border-top:1px solid #2b3c51}
+.home-global-fixture-expanded-heading{margin:6px 0 12px;color:#aab9d0;font-size:11px;line-height:1.5}
+.home-global-fixture-expanded .home-global-matchup{width:100%}
+.home-global-fixture-expanded .home-global-match-group{background:#111b2d}
+.home-global-fixture-expanded .home-global-match-team{background:#111a2d}
+.home-global-fixture-expanded .home-global-future-teams{margin:0;padding:14px;font-size:12px}
+@media(max-width:600px){
+ .home-global-fixture>.home-global-fixture-row{gap:8px}
+ .home-global-fixture-chevron{width:18px;height:18px;font-size:18px}
+ .home-global-fixture-expanded{padding:7px 2px 14px}
+ .home-global-fixture-expanded-heading{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.home-global-fixture>.home-global-fixture-row,.home-global-fixture-chevron{transition:none}}
