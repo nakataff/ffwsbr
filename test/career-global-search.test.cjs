@@ -135,3 +135,35 @@ test('LUUUKING championship history and awards include verified coaching years w
  assert.equal(hist.allTime.kills,116);
  assert.equal(hist.allTime.matches,167);
 });
+
+test('Nikeboy search does not announce an outdated team or switch shirt after live status arrives',async()=>{
+ const dom=new JSDOM('<input id="global-search-desktop"><div id="search-results-desktop"></div>',{url:'https://centralfreefire.com.br/index.html',runScripts:'outside-only'}),w=dom.window;
+ const input=w.document.querySelector('input'),box=w.document.querySelector('#search-results-desktop');
+ w.requestIdleCallback=()=>{};w.AbortSignal=AbortSignal;
+ w.fetch=async url=>{
+  const target=String(url);
+  if(target.includes('search-index-lite.json'))return {ok:true,json:async()=>({items:[{type:'player',id:'nikeboy',title:'Nikeboy',sub:'SX TET',image:'player-photos/s2/nikeboy.webp',aliases:[]}]})};
+  if(target.includes('teams.json'))return {ok:true,json:async()=>({teams:[]})};
+  await sleep(70);
+  return {ok:true,json:async()=>({entries:[{id:'nikeboy',name:'Nikeboy',kind:'player',team:'',role:'player',status:'free_agent',photo:'outro-uniforme.webp'}]})};
+ };
+ try{
+  w.eval(fs.readFileSync(require.resolve('../js/search-fast.min.js'),'utf8'));
+  w.document.dispatchEvent(new w.Event('DOMContentLoaded',{bubbles:true}));
+  input.value='nikeboy';input.dispatchEvent(new w.Event('input',{bubbles:true}));await sleep(180);
+  assert.match(box.textContent,/Consultando situação atual/);
+  assert.doesNotMatch(box.textContent,/SX TET/);
+  assert.match(box.querySelector('img').getAttribute('src'),/player-photos\/s2\/nikeboy\.webp/);
+  await sleep(400);
+  assert.match(box.textContent,/Sem equipe \/ F\/A/);
+  assert.equal(box.querySelectorAll('[data-fast-id=nikeboy]').length,1);
+  assert.match(box.querySelector('img').getAttribute('src'),/player-photos\/s2\/nikeboy\.webp/);
+ }finally{w.close();}
+});
+
+test('standalone career page shares the standard site header and navigation',()=>{
+ const html=fs.readFileSync(require.resolve('../carreira.html'),'utf8');
+ for(const id of ['cff-public-menu-open','cff-public-sidebar-nav','cff-public-search-input','cff-public-search-results','career-public-root'])assert.match(html,new RegExp('id="'+id+'"'));
+ assert.match(html,/js\/shared-navigation\.js/);
+ assert.match(html,/js\/public-shell\.min\.js/);
+});
