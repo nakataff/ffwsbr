@@ -10,6 +10,17 @@
 .cff-header-wallet small{font:700 8px/1 Arial,sans-serif;letter-spacing:1px;color:#b6aa89}
 .cff-account-page-head>.cff-account-access-group,.topbar-inner>.cff-account-access-group{margin-left:auto}
 .start-screen>.cff-account-access-group{position:absolute;top:16px;right:16px;z-index:5}
+/* Reserve real space for search. The legacy absolutely positioned input covered the wallet. */
+@media(min-width:769px){
+ .nav-desktop{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+ .nav-desktop-right{min-width:0;gap:10px}
+ .nav-desktop-right>.cff-account-access-group{flex:0 0 auto}
+ .nav-search-wrapper-desktop{flex:0 1 auto;min-width:36px;max-width:260px;gap:4px}
+ .nav-search-wrapper-desktop input{position:static!important;right:auto!important;box-sizing:border-box;flex:0 1 auto;min-width:0;width:0!important;padding:7px 0!important;border-width:0;}
+ .nav-search-wrapper-desktop.open input{width:clamp(100px,16vw,220px)!important;padding:7px 12px!important;border-width:1px;}
+ .nav-search-wrapper-desktop .nav-search-toggle-btn{flex:0 0 36px;min-width:36px;justify-content:center}
+ .nav-search-wrapper-desktop .search-results-dropdown{top:calc(100% + 10px);width:min(360px,calc(100vw - 40px));box-sizing:border-box}
+}
 @media(max-width:768px){
  .cff-account-access-group{gap:5px}
  .cff-header-wallet{min-height:36px;padding:3px 8px 3px 4px;gap:4px}

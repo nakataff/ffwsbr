@@ -31,6 +31,6 @@ export function createHeaderWallet({auth,request,defer=()=>false}){
  const unsubscribe=subscribeWalletBalance(value=>{if(value.uid===uid&&getUid()===uid)draw();});
  const resume=()=>{if(getUid()===uid&&uid){draw();load();}};
  window.addEventListener('focus',resume);window.addEventListener('pageshow',resume);
- if(!document.querySelector('[data-header-wallet-style]')){const style=document.createElement('link');style.rel='stylesheet';style.href='/css/header-wallet.css?v=20261017-header-wallet-v1';style.dataset.headerWalletStyle='1';document.head.append(style);}
+ if(!document.querySelector('[data-header-wallet-style]')){const style=document.createElement('link');style.rel='stylesheet';style.href='/css/header-wallet.css?v=20261018-search-layout-v2';style.dataset.headerWalletStyle='1';document.head.append(style);}
  return {sync,stop(){unsubscribe();window.removeEventListener('focus',resume);window.removeEventListener('pageshow',resume);}};
 }

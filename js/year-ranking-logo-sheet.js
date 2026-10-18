@@ -1,7 +1,7 @@
 (()=>{'use strict';
 if(window.__cffYearRankingSheetLogos)return;
 window.__cffYearRankingSheetLogos=true;
-const V='20261015-career-directory-v1';
+const V='20261018-global-career-logos-v1';
 const DEFAULT_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv';
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,'');
 const map={},aliases={},priorities={};

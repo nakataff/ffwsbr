@@ -4,7 +4,7 @@ import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015
 import {instagramLinkHtml} from './profile-instagram-link.mjs?v=20261015-inventory-v1';
 import {mountEconomy} from './economy-ui.js?v=20261017-header-wallet-v1';
 import {rememberInvite,attachPendingReferral,economyRequest} from './economy-client.mjs?v=20261017-header-wallet-v1';
-import {createHeaderWallet} from './header-wallet.mjs?v=20261017-header-wallet-v1';
+import {createHeaderWallet} from './header-wallet.mjs?v=20261018-search-layout-v2';
 import {createProfileCheckin} from './profile-checkin.mjs?v=20261017-header-wallet-v1';
 rememberInvite();
 import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261015-inventory-v1';
