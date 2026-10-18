@@ -84,3 +84,54 @@ test('Joker staff and LYON player are separate search suggestions even when the 
   assert(result.querySelector('[data-fast-id="joker-coach"]'));
  }finally{w.close();}
 });
+
+
+test('LUUUKING is the same pictured Head Coach in instant and live search results, with no duplicate historic profile',async()=>{
+ const actual=JSON.parse(fs.readFileSync(require.resolve('../search-index-lite.json'),'utf8'));
+ const original=actual.items.filter(x=>x.id==='luuuking');
+ assert.equal(original.length,1);
+ assert.equal(original[0].type,'player');
+ assert.equal(original[0].image,'/luuuking.webp');
+ assert.match(original[0].sub,/Head Coach · FLUXO W7M/);
+ const w=new JSDOM('<input id="global-search-desktop"><div id="search-results-desktop"></div>',{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}).window;
+ w.requestIdleCallback=()=>{};w.AbortSignal=AbortSignal;
+ w.fetch=async url=>{
+  const u=String(url);
+  if(u.includes('search-index-lite.json'))return {ok:true,json:async()=>actual};
+  if(u.includes('teams.json'))return {ok:true,json:async()=>({teams:[]})};
+  return {ok:true,json:async()=>({entries:[{id:'luuuking',name:'LUUUKING',kind:'player',team:'FLUXO W7M',role:'head_coach',status:'active',photo:'silhueta.webp'}]})};
+ };
+ try{
+  w.eval(fs.readFileSync(require.resolve('../js/search-fast.min.js'),'utf8'));
+  w.document.dispatchEvent(new w.Event('DOMContentLoaded',{bubbles:true}));
+  const input=w.document.querySelector('input'),result=w.document.querySelector('#search-results-desktop');
+  input.value='luuuking';input.dispatchEvent(new w.Event('input',{bubbles:true}));await sleep(190);
+  assert.equal(result.querySelectorAll('[data-fast-id=luuuking]').length,1);
+  assert.equal(result.querySelector('[data-fast-id=luuuking] img').getAttribute('src'),'/luuuking.webp');
+  assert.match(result.querySelector('[data-fast-id=luuuking] small').textContent,/Head Coach · FLUXO W7M/);
+  await sleep(400);
+  assert.equal(result.querySelectorAll('[data-fast-id=luuuking]').length,1);
+  assert.equal(result.querySelector('[data-fast-id=luuuking] img').getAttribute('src'),'/luuuking.webp');
+  assert.match(result.querySelector('[data-fast-id=luuuking] small').textContent,/Head Coach · FLUXO W7M/);
+  assert.doesNotMatch(result.textContent,/Perfil histórico/);
+ }finally{w.close();}
+});
+test('LUUUKING championship history and awards include verified coaching years without duplicating the athlete LBFF 1',()=>{
+ const j=JSON.parse(fs.readFileSync(require.resolve('../player-data/titles-local.json'),'utf8'));
+ const collective=j.collective.filter(x=>(x.players||[]).some(name=>name.toLowerCase()==='luuuking'));
+ const personal=j.individual.filter(x=>x.player?.toLowerCase()==='luuuking');
+ assert.equal(collective.length,11);
+ assert.equal(personal.length,6);
+ assert.equal(new Set(collective.map(x=>x.event+'|'+x.team)).size,collective.length);
+ for(const event of ['LBFF 1','FFWS 2023','WB 2024','FFWS Global Finals 2024','WB 2025 S2','WB 2026 S2','C.O.P.A. Free Fire 2025','C.O.P.A. Free Fire 2026']){
+  assert(collective.some(x=>x.event===event),event);
+ }
+ assert(collective.find(x=>x.event==='LBFF 1').type==='Campeão');
+ assert(collective.filter(x=>x.event!=='LBFF 1').every(x=>x.team==='FLUXO W7M'||x.team==='MAGIC SQUAD'));
+ assert(personal.some(x=>x.event==='WB 2026 S1'&&x.type.includes('Coach')));
+ const hist=JSON.parse(fs.readFileSync(require.resolve('../player-data/historical.json'),'utf8')).players.luuuking;
+ const current=JSON.parse(fs.readFileSync(require.resolve('../player-data/staff/fluxo-w7m.json'),'utf8')).players.luuuking;
+ assert.equal(hist.photo,'/luuuking.webp');assert.equal(current.photo,'/luuuking.webp');
+ assert.equal(hist.allTime.kills,116);
+ assert.equal(hist.allTime.matches,167);
+});
