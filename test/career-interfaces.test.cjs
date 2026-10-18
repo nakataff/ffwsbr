@@ -203,3 +203,29 @@ test('team history uses sourced read-only S2 staff when the career service reach
   assert(panel.querySelector('[data-career-team-retry]'));
  }finally{w.close();}
 });
+
+test('admin photo picker finds Frois in repo and saves optional social profiles',async()=>{
+ const f=await fixture();try{
+  f.w.fetch=async url=>{
+   assert.equal(String(url),'/data/career-photo-catalog.json');
+   return {ok:true,json:async()=>({photos:[{name:'frois',path:'/assets/coaches/frois.webp',kind:'coach'},{name:'joker',path:'/assets/coaches/joker.webp',kind:'coach'}]})};
+  };
+  f.$('[data-career-person="p0"]').click();await tick();
+  f.$('[data-career-tab="profile"]').click();
+  let form=f.$('#career-profile-form');
+  assert(form.querySelector('[data-career-choose-photo]'));
+  assert(form.elements.social_instagram);
+  form.querySelector('[data-career-choose-photo]').click();await tick();
+  const image=f.$('#career-photo-picker [data-photo-path="/assets/coaches/frois.webp"]');
+  assert(image,'existing Frois photo appears in search results');
+  image.click();
+  assert.equal(form.elements.photo.value,'/assets/coaches/frois.webp');
+  assert.equal(form.querySelector('[data-career-photo-preview]').getAttribute('src'),'/assets/coaches/frois.webp');
+  form.elements.social_instagram.value='https://instagram.com/frois/';
+  form.dispatchEvent(new f.w.SubmitEvent('submit',{bubbles:true,cancelable:true}));await tick();
+  const saved=f.core.publicRead('person',{id:'p0'}).person;
+  assert.equal(saved.photo,'/assets/coaches/frois.webp');
+  assert.equal(saved.social.instagram,'https://instagram.com/frois/');
+  assert.equal(f.calls.findLast(x=>x.operation==='savePerson').body.social.instagram,'https://instagram.com/frois/');
+ }finally{f.close();}
+});
