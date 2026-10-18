@@ -216,6 +216,7 @@ test('admin photo picker finds Frois in repo and saves optional social profiles'
   assert(form.querySelector('[data-career-choose-photo]'));
   assert(form.elements.social_instagram);
   form.querySelector('[data-career-choose-photo]').click();await tick();
+  const photoSearch=f.$('#career-photo-picker [data-photo-search]');photoSearch.value='Frois';photoSearch.dispatchEvent(new f.w.Event('input'));
   const image=f.$('#career-photo-picker [data-photo-path="/assets/coaches/frois.webp"]');
   assert(image,'existing Frois photo appears in search results');
   image.click();
