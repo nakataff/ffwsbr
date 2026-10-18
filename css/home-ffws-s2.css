@@ -1597,3 +1597,50 @@
   .home-weekly-selection-widget{min-height:405px}
   .home-weekly-selection-widget .home-weekly-selection-list{grid-template-rows:repeat(5,minmax(54px,1fr))}
 }
+
+
+/* Home responsiva: rankings recolhidos no celular, prontos para troca de torneio.
+   Os quatro widgets/tabelas continuam inalterados; sem novas consultas de dados. */
+.home-rankings-mobile-toggle{display:none}
+@media (max-width:620px){
+  .home-left-rail.home-rankings-ready > .home-rankings-mobile-toggle{
+    display:flex;
+    width:100%;
+    min-width:0;
+    align-items:center;
+    gap:12px;
+    padding:14px 13px;
+    border:1px solid rgba(0,200,255,.28);
+    border-radius:12px;
+    background:linear-gradient(110deg,rgba(0,200,255,.095),rgba(9,16,29,.98) 70%);
+    color:#f5f8ff;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .home-rankings-mobile-toggle:focus-visible{outline:2px solid var(--accent,#00c8ff);outline-offset:3px}
+  .home-rankings-mobile-icon{
+    display:grid;
+    flex:0 0 38px;
+    width:38px;
+    height:38px;
+    place-items:center;
+    border-radius:10px;
+    background:rgba(0,200,255,.12);
+    color:var(--accent,#00c8ff);
+  }
+  .home-rankings-mobile-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+  .home-rankings-mobile-title{overflow:hidden;font-size:.78rem;font-weight:950;letter-spacing:.035em;text-overflow:ellipsis;white-space:nowrap}
+  .home-rankings-mobile-subtitle{color:#8da9c4;font-size:.60rem;font-weight:700;line-height:1.35}
+  .home-rankings-mobile-action{display:flex;align-items:center;gap:5px;flex:0 0 auto;color:var(--accent,#00c8ff);font-size:.63rem;font-weight:950;white-space:nowrap}
+  .home-rankings-mobile-action svg{width:15px;height:15px;transition:transform .2s ease}
+  .home-left-rail.home-rankings-ready:not(.is-rankings-expanded) > .home-rail-ranking{display:none}
+  .home-left-rail.is-rankings-expanded .home-rankings-mobile-action svg{transform:rotate(180deg)}
+  .home-left-rail.is-rankings-expanded > .home-rail-ranking{display:flex}
+}
+@media (max-width:360px){
+  .home-rankings-mobile-action{font-size:.55rem}
+  .home-rankings-mobile-toggle{gap:9px}
+  .home-rankings-mobile-subtitle{font-size:.55rem}
+}
