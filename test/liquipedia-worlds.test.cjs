@@ -26,10 +26,10 @@ test('truncated templates, missing matches and unresolved team aliases fail befo
  const code=`import importlib.util,json,copy\ns=importlib.util.spec_from_file_location('world_import','scripts/import-liquipedia-worlds.py');m=importlib.util.module_from_spec(s);import sys;sys.modules[s.name]=m;s.loader.exec_module(m)\ntry:m.templates('{{TeamCard|team=X')\nexcept ValueError:pass\nelse:raise AssertionError('Truncation accepted')\nc=copy.deepcopy(json.load(open('imports/liquipedia-worlds/manifest.json'))['events'][0]);del c['teamAliases']['ilmn s2k']\ntry:m.compile_event(c)\nexcept (ValueError,AssertionError):pass\nelse:raise AssertionError('Unknown alias accepted')\nprint('Rejected malformed and ambiguous input')`;
  assert.match(execFileSync('python3',['-c',code],{encoding:'utf8'}),/Rejected malformed/);
 });
-async function fixture({delay,fail}={}){
+async function fixture({delay,fail,initialId}={}){
  const html=['ot-list-view','ot-details-view','ot-grid-torneios','ot-details-tabs','ot-details-stats','ot-dynamic-container','ot-title','ot-year','ot-details-badge','ot-roster-modal','ot-roster-title','ot-roster-list','ot-radar-content','ot-count-torneios','ot-count-equipes','ot-count-premios'].map(id=>'<div id="'+id+'"></div>').join('')+'<img id="ot-details-logo"><img id="ot-roster-logo">';
  const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/index.html#outros-torneios',runScripts:'outside-only'}),w=dom.window,calls=[];
- Object.assign(w,{currentOtData:null,logos:{},playerAliasMap:{},AbortSignal,withCacheBuster:u=>u,scrollTo(){},loadLbffData:async()=>{calls.push('FULL_PLAYER_CATALOG');},getTeamLogo:()=> 'escudo.webp',dbTeamLogos:{},teamLogos:{},teamLogoMap:{},dbTeamAliases:{},lbffData:null,
+ Object.assign(w,{cffInitialTournament:initialId||'',currentOtData:null,logos:{},playerAliasMap:{},AbortSignal,withCacheBuster:u=>u,scrollTo(){},loadLbffData:async()=>{calls.push('FULL_PLAYER_CATALOG');},getTeamLogo:()=> 'escudo.webp',dbTeamLogos:{},teamLogos:{},teamLogoMap:{},dbTeamAliases:{},lbffData:null,
   fetch:async url=>{const p=String(url).split('?')[0];calls.push(p);if(fail?.(p))return {ok:false,status:503};if(delay)await delay(p);if(fs.existsSync(p))return {ok:true,json:async()=>read(p),text:async()=>fs.readFileSync(p,'utf8')};return {ok:false,status:404,text:async()=>''};}});
  try{w.eval(fs.readFileSync('js/other-tournaments.min.js','utf8'));await w.loadNovosTorneios();await tick();}catch(e){w.close();throw e;}
  return {w,calls,dom,close:()=>w.close()};
@@ -59,4 +59,8 @@ test('a failed detail offers retry and the Radar uses its compact snapshot witho
   f.w.otMainView='radar';f.w.renderOtRadar();await tick();assert(f.w.document.querySelector('#ot-radar-content').textContent.includes('Radar Estatístico'));
   assert.equal(f.calls.filter(p=>/^novos-torneios\/radar-/.test(p)).length,1);assert(!f.calls.some(p=>p.includes('stages.json')||p.includes('firebaseio')||p.includes('radar-summary.json')));assert.equal(f.calls.filter(p=>/novos-torneios\/(?:lbff|wb)-/.test(p)).length,0);
  }finally{f.close();}
+});
+
+test('an initial tournament survives legacy query cleanup and is restored after its single lazy download',async()=>{
+ const f=await fixture({initialId:'ffws-2019'});try{assert.equal(f.w.currentOtData.id,'ffws-2019');assert.equal(new URLSearchParams(f.w.location.search).get('torneio'),'ffws-2019');assert.equal(f.w.cffInitialTournament,'');assert.equal(f.w.document.querySelector('#ot-details-view').style.display,'block');assert.equal(f.calls.filter(p=>p==='novos-torneios/ffws-2019.json').length,1);f.w.closeOtherTournament();assert.equal(f.w.cffInitialTournament,'');assert(!f.w.location.search.includes('torneio'));}finally{f.close();}
 });

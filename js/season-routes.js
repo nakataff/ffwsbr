@@ -1,4 +1,7 @@
 (()=>{'use strict';
+// Keep an explicit tournament link across legacy navigation initialization.
+const initialTournament=new URLSearchParams(location.search).get('torneio');
+if(initialTournament&&/^[a-z0-9-]{1,100}$/.test(initialTournament))window.cffInitialTournament=initialTournament;
 const sections=['classificatoria','segunda-fase','final','mvp','equipes','datas','selecoes','stats','notas','comparar'];
 const prefixes=['ffws-br-s2','ffws-global-2026'];
 const pages=new Map(prefixes.flatMap(prefix=>sections.map(section=>[prefix+'-'+section,'/'+prefix+'/'+section])));
