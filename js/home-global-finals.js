@@ -6,8 +6,10 @@
   if (!board || !rail || !center) return;
   const mobile = window.matchMedia('(max-width: 900px)');
   const place = () => {
-    if (mobile.matches) rail.insertBefore(board, rail.firstElementChild);
-    else center.insertBefore(board, center.firstElementChild);
+    const target = mobile.matches ? rail : center;
+    const support = document.querySelector('#home .home-support');
+    target.insertBefore(board, target.firstElementChild);
+    if (support) target.insertBefore(support, board);
   };
   place();
   mobile.addEventListener('change', place);
