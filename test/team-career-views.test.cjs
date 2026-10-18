@@ -4,7 +4,7 @@ const index=read('team-data/historical-index.json');
 test('compiled team views stay current, share exactly one set of titles and exclude tenth place from championships',()=>{
  execFileSync('python3',['scripts/build-team-views.py','--check']);
  const entry=index.teams.find(t=>t.name==='LOUD SNICKERS'),historical=read('team-data/historical/'+entry.file),normal=read('team-data/history/loud-snickers.json');
- assert.deepEqual(historical.collectiveTitles,normal.titles);assert.equal(normal.titles.length,21);assert(!normal.titles.some(t=>t.event==='Goat League Season 1'));assert.equal(historical.participations.find(p=>p.event==='FFWS BR 2026 S1').position,1);
+ assert.equal(read('team-data/history/fluxo-w7m.json').titles.filter(t=>/Global Finals 2024/.test(t.event)).length,1);assert.deepEqual(historical.collectiveTitles,normal.titles);assert.equal(normal.titles.length,21);assert(!normal.titles.some(t=>t.event==='Goat League Season 1'));assert.equal(historical.participations.find(p=>p.event==='FFWS BR 2026 S1').position,1);
  assert.equal(historical.participations.filter(p=>p.event==='FFWS BR 2026 S1').length,1);assert(historical.staff.some(p=>p.id==='joker-coach'));assert(!normal.history.players.some(p=>p.id==='frois'));assert(normal.history.staff.some(p=>p.id==='frois'));
  assert(fs.statSync('team-data/historical-index.json').size<65000);assert(!fs.readFileSync('team-data/historical-index.json','utf8').includes('collectiveTitles'));
 });

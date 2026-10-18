@@ -8,7 +8,7 @@ def packed(d):return json.dumps(d,ensure_ascii=False,separators=(',',':'))+'\n'
 def event_id(s):
     s=re.sub(r'\s*[-–:]\s*Final$','',str(s),flags=re.I)
     s=re.sub(r'^(?:WB|FFWS Brasil|FFWS BR)\s+','FFWS BR ',s,flags=re.I)
-    aliases={'lbff2023':'lbff9','ligabrasileiradefreefire2022seriesastage1':'lbff7','ligabrasileiradefreefire2022seriesastage2':'lbff8',
+    aliases={'freefireworldseriesglobalfinals2024':'ffwsglobalfinals2024','freefireworldseriesglobalfinals2025':'ffwsglobalfinals2025','esportsworldcup2026':'ewc2026','lbff2023':'lbff9','ligabrasileiradefreefire2022seriesastage1':'lbff7','ligabrasileiradefreefire2022seriesastage2':'lbff8',
       'ligabrasileiradefreefire2021seriesastage1':'lbff4','ligabrasileiradefreefire2021seriesastage2':'lbff5','ligabrasileiradefreefire2021seriesastage3':'lbff6',
       'ligabrasileiradefreefire2020seriesastage1':'lbff1','ligabrasileiradefreefire2020seriesastage3':'lbff3'}
     return aliases.get(key(s),key(s))

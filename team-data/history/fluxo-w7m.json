@@ -500,18 +500,12 @@
       "logo": "trofeu.webp"
     },
     {
-      "event": "Free Fire World Series - Global Finals 2024",
+      "event": "FFWS Global Finals 2024",
       "type": "Campeão",
       "source": "resultados.json",
       "date": "2024-11-24",
       "tier": "S-Tier",
       "logo": "/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png"
-    },
-    {
-      "event": "FFWS Global Finals 2024",
-      "type": "Campeão",
-      "date": "2024-11-24",
-      "source": "resultados.json"
     },
     {
       "event": "Copa GWL Mobile 2023 Stage 3",
