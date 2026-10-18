@@ -92,3 +92,20 @@ test('reviewed Heavy and CLG scores reconcile placements, elimination points and
  const d24=read('novos-torneios/ffws-2024.json'),ko=d24.standings.find(s=>s.stageId==='knockout'),clg=ko.rows.find(r=>r[2]==='CLG');assert.deepEqual(clg[9].find(m=>m[0]===25),[25,10,2,1,2,3]);assert.equal(clg[8],181);assert.equal(clg[4],80);assert.equal(clg[5],101);assert(!ko.dataNotes);assert.deepEqual(ko.rows.flatMap(r=>r[9].filter(m=>m[0]===25).map(m=>m[1])).sort((a,b)=>a-b),Array.from({length:12},(_,i)=>i+1));assert(read('imports/liquipedia-worlds/manifest.json').events.every(e=>!Object.keys(e.sourceAnomalies||{}).length));
  const code=`import runpy,json,copy\nm=runpy.run_path('scripts/import-liquipedia-worlds.py');c=copy.deepcopy(json.load(open('imports/liquipedia-worlds/manifest.json'))['events'][-1]);c['scoreCorrections'][0]['from']=[8,6]\ntry:m['compile_event'](c)\nexcept AssertionError:pass\nelse:raise AssertionError('Stale correction accepted')\nprint('Stale correction rejected')`;assert.match(execFileSync('python3',['-c',code],{encoding:'utf8'}),/rejected/);
 });
+
+test('2026 archive opens tournament details with one click, without loading old WB modules',async()=>{
+ const f=await fixture();try{
+  const w=f.w;
+  w.cffEnsureLegacy=async()=>{f.calls.push('FULL_PLAYER_CATALOG');};
+  w.document.body.insertAdjacentHTML('beforeend','<div id="ot-year2026-panel"><div id="ot-year-events-panel"><div id="ot-year-events-content"></div></div><div id="ot-year-titles-panel" hidden><div id="ot-year-titles-content"></div></div><div id="ot-year-mvp-panel" hidden><div id="ot-year-mvp-content"></div></div></div><div id="ot-tournaments-panel" hidden></div><div id="ot-radar-panel" hidden></div>');
+  w.setOtMainView('year2026');await tick();await tick();
+  const btn=w.document.querySelector('#ot-year-events-content [data-detail]');
+  assert(btn,'A tournament in 2026 should have a details button');
+  const target=btn.dataset.detail;
+  btn.click();await tick();await tick();
+  assert.equal(w.currentOtData?.id,target,'First click must open the requested tournament');
+  assert.equal(w.document.getElementById('ot-details-view').style.display,'block');
+  assert.equal(f.calls.filter(p=>p==='FULL_PLAYER_CATALOG').length,0);
+  assert.equal(f.calls.filter(p=>p==='novos-torneios/index.json').length,1);
+ }finally{f.close();}
+});
