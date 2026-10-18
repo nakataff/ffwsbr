@@ -192,3 +192,50 @@ test('Copa FF 2022: 24 equipes, seis dias, 8 quedas com pontos por colocação e
   assert(!ui.calls.includes('FULL_PLAYER_CATALOG'));
  }finally{ui.close();}
 });
+
+test('Copa FF 2023: grupos auditados, final de 6 quedas, top 5 de abates e premiação',async()=>{
+ const d=read('novos-torneios/copa-ff-2023.json'),index=read('novos-torneios/index.json');
+ const card=index.copaEntries.find(item=>item.id===d.id);
+ assert(card);assert.equal(card.logo,'copaff23.webp');assert.equal(card.champion,'MAGIC SQUAD');
+ assert.equal(card.teamCount,18);
+ assert.equal(d.teams.items.length,18);
+ assert.equal(d.teams.items.reduce((s,t)=>s+t.p.length,0),93);
+ assert.equal(d.teams.items.reduce((s,t)=>s+t.s.length,0),16);
+ assert.equal(new Set(d.teams.items.map(t=>t.n)).size,18);
+ assert.deepEqual([...new Set(d.teams.items.map(t=>t.group))].sort(),['A','B','C']);
+ assert(d.teams.items.find(t=>t.n==='MAGIC SQUAD').s.some(p=>p.personId==='luuuking'));
+ assert(d.teams.items.find(t=>t.n==='LOUD').s.some(p=>p.personId==='frois'));
+ const groups=d.standings[0];assert.equal(groups.rows.length,18);
+ assert.equal(groups.rounds.length,8);
+ assert(groups.rows.every(row=>row[4].length===8&&row[3]===row[4].reduce((s,n)=>s+(n??0),0)));
+ assert(groups.rows.every((row,i)=>i===0||groups.rows[i-1][3]>=row[3]));
+ assert.equal(groups.rows[0][2],'KEYD STARS');assert.equal(groups.rows[0][3],331);
+ assert.equal(groups.rows[1][2],'MAGIC SQUAD');assert.equal(groups.rows[1][3],312);
+ const final=d.final;
+ assert.equal(final.scoreMode,'pointsOnly');
+ assert.deepEqual(final.matchCols,['match','total']);
+ assert.equal(final.rows.length,12);
+ assert.equal(final.maps.length,6);
+ assert(final.rows.every(row=>row[6].length===6&&row[5]===row[3]+row[6].reduce((s,m)=>s+m[1],0)));
+ assert.deepEqual(final.rows.slice(0,3).map(row=>[row[2],row[5]]),[['MAGIC SQUAD',87],['LOUD',73],['KEYD STARS',71]]);
+ assert.deepEqual(final.rows.slice(3,5).map(row=>[row[2],row[5]]),[['MIBR',65],['FLUXO',65]]);
+ assert.deepEqual(new Set(final.rows.map(row=>row[2])),new Set(groups.rows.slice(0,12).map(row=>row[2])));
+ assert.equal(d.prizePool.currency,'BRL');
+ assert.equal(d.prizePool.rows.reduce((s,r)=>s+(r[3]||0),0),200000);
+ assert.equal(d.awards[0].player,'Raone7');
+ assert.deepEqual(d.individualRanking.rows.map(r=>r[3]),[58,56,56,55,54]);
+ const f=await fixture();try{
+  assert(f.w.dbNovosTorneios.some(x=>x.id===d.id));
+  await f.w.openOtherTournament(d.id);
+  assert.equal(f.w.currentOtData.id,d.id);
+  assert.match(f.w.document.getElementById('ot-title').textContent,/C.O.P.A. Free Fire 2023/);
+  assert(f.calls.includes('novos-torneios/copa-ff-2023.json'));
+  assert(!f.calls.includes('FULL_PLAYER_CATALOG'));
+  await f.w.changeOtTab('awards');
+  const table=f.w.document.querySelector('#ot-dynamic-container .ot-standings-table');
+  assert(table,'ranking individual precisa estar visível na aba de prêmios');
+  assert.equal(table.querySelectorAll('tbody tr').length,5);
+  assert.match(table.textContent,/Raone7/);
+  assert.match(table.textContent,/58/);
+ }finally{f.close();}
+});
