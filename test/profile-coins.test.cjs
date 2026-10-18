@@ -1,6 +1,54 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),{JSDOM}=require('jsdom');
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const tick=async()=>{for(let i=0;i<8;i++)await new Promise(resolve=>setTimeout(resolve,0));};
+function adminCoinsFixture(hash='',batches=[]){
+ const dom=new JSDOM('<p id="eco-admin-status"></p><div id="eco-admin-root"></div>',{url:'https://centralfreefire.com.br/admin-pontos.html'+hash,runScripts:'outside-only'}),w=dom.window,calls=[],intervals=[];
+ const auth={currentUser:{uid:'admin',email:'admin@centralfreefire.com.br'}};let onAuth;
+ Object.assign(w,{getApps:()=>[{name:'[DEFAULT]'}],getAuth:()=>auth,getDatabase:()=>({}),ref:(_db,path)=>path,get:async()=>({val:()=>({})}),onAuthStateChanged:(_auth,fn)=>{onAuth=fn;},esc:String,prepareEconomyPhoto:async()=>'',setInterval:fn=>{intervals.push(fn);}});
+ w.economyRequest=async(_auth,op,body)=>{calls.push({op,body});
+  if(op==='dashboard')return {pending:[],counts:{},chances:[],shop:[],stock:[],gameOrderCounts:{}};
+  if(op==='coinRanking')return {entries:[],total:0,totals:{balance:0,earned:0,spent:0},offset:body.offset||0,sort:body.sort||'balance',limit:20,hasMore:false,updatedAt:Date.now()};
+  if(op==='syncCoinRanking')return batches.shift()||{checked:1,failed:0,pending:0,complete:true,nextCursor:''};
+  throw Error('Unexpected operation '+op);
+ };
+ w.eval(fs.readFileSync(require.resolve('../js/admin-economy.js'),'utf8').replace(/^import .*\n/gm,''));
+ return {w,calls,intervals,root:w.document.querySelector('#eco-admin-root'),start:async()=>{onAuth(auth.currentUser);await tick();},close:()=>w.close()};
+}
+test('opening and refreshing the admin ranking reads saved balances without checking every wallet or polling',async()=>{
+ const a=adminCoinsFixture();try{
+  await a.start();assert.deepEqual(a.calls.map(c=>c.op),['dashboard','coinRanking']);assert.equal(a.intervals.length,0);
+  a.root.querySelector('[data-refresh-coins]').click();await tick();
+  assert.deepEqual(a.calls.map(c=>c.op),['dashboard','coinRanking','coinRanking']);
+  const order=a.root.querySelector('[data-coin-sort]');order.value='earned';order.dispatchEvent(new a.w.Event('change',{bubbles:true}));await tick();
+  assert.equal(a.calls.at(-1).body.sort,'earned');assert(!a.calls.some(c=>c.op==='syncCoinRanking'));
+ }finally{a.close();}
+});
+test('opening another admin tab loads the ranking only when requested and reuses it on tab switches',async()=>{
+ const a=adminCoinsFixture('#eco-panel-stock');try{
+  await a.start();assert.deepEqual(a.calls.map(c=>c.op),['dashboard']);
+  a.root.querySelector('[data-admin-tab=ranking]').click();await tick();
+  assert.deepEqual(a.calls.map(c=>c.op),['dashboard','coinRanking']);
+  a.root.querySelector('[data-admin-tab=stock]').click();await tick();a.root.querySelector('[data-admin-tab=ranking]').click();await tick();
+  assert.equal(a.calls.filter(c=>c.op==='coinRanking').length,1);assert(!a.calls.some(c=>c.op==='syncCoinRanking'));
+ }finally{a.close();}
+});
+test('only the separate bonus button scans bounded batches, ignores duplicate clicks and then refreshes balances',async()=>{
+ const a=adminCoinsFixture('',[{checked:5,failed:0,pending:0,complete:false,nextCursor:'wallet-5'},{checked:1,failed:0,pending:0,complete:true,nextCursor:''}]);try{
+  await a.start();const button=a.root.querySelector('[data-sync-bonuses]');button.click();button.click();await tick();
+  assert.deepEqual(a.calls.filter(c=>c.op==='syncCoinRanking').map(c=>c.body.cursor),['','wallet-5']);
+  assert.equal(a.calls.at(-1).op,'coinRanking');assert(a.root.textContent.includes('6 carteiras'));assert(!button.disabled);
+  assert(a.w.document.querySelector('#eco-admin-status').textContent.includes('manual concluída'));
+ }finally{a.close();}
+});
+test('a partial bonus scan waits for an explicit continuation rather than a normal ranking refresh',async()=>{
+ const a=adminCoinsFixture('',Array.from({length:13},(_,i)=>({checked:5,failed:0,pending:0,complete:i===12,nextCursor:i===12?'':'wallet-'+(i+1)})));try{
+  await a.start();a.root.querySelector('[data-sync-bonuses]').click();await tick();assert.equal(a.calls.filter(c=>c.op==='syncCoinRanking').length,12);
+  assert.match(a.root.querySelector('[data-sync-bonuses]').textContent,/Continuar/);
+  a.root.querySelector('[data-refresh-coins]').click();await tick();assert.equal(a.calls.filter(c=>c.op==='syncCoinRanking').length,12);
+  a.root.querySelector('[data-sync-bonuses]').click();await tick();assert.equal(a.calls.filter(c=>c.op==='syncCoinRanking').length,13);
+  assert.equal(a.calls.filter(c=>c.op==='syncCoinRanking').at(-1).body.cursor,'wallet-12');
+ }finally{a.close();}
+});
 function fixture(){const dom=new JSDOM('<div id="root"></div>',{url:'https://centralfreefire.com.br/conta.html',runScripts:'outside-only'}),w=dom.window;w.createCodeGiftOpener=()=>({open:async()=>true,stop(){}});w.esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const evaluate=path=>w.eval(fs.readFileSync(require.resolve('../'+path),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));evaluate('js/profile-checkin.mjs');return {w,root:w.document.querySelector('#root'),evaluate,close:()=>w.close()};}
 test('profile checkin survives profile redraws, reports partial success and retries the ranking',async()=>{
  const a=fixture();try{const auth={currentUser:{uid:'person'}},calls=[];let complete=0;
