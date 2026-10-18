@@ -1644,3 +1644,55 @@
   .home-rankings-mobile-toggle{gap:9px}
   .home-rankings-mobile-subtitle{font-size:.55rem}
 }
+
+
+/* Home mobile v2: Mercado primeiro, depois seleção + rankings num único expansor.
+   Os rankings são movidos (não duplicados) e voltam para a lateral no desktop. */
+.home-tournament-mobile-content{display:contents}
+.home-mobile-rankings-list{display:none}
+@media (max-width:620px){
+  .home-center-column .home-live-market-grid > .home-mercado-widget{order:-1}
+  .home-center-column .home-live-market-grid > .home-live-selection-stack{order:0}
+  .home-live-selection-stack#home-tournament-selection-panel{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-width:0;
+  }
+  #home-tournament-selection-panel.home-rankings-ready > .home-rankings-mobile-toggle,
+  .home-center-column.home-scenario-ready > .home-scenario-mobile-toggle{
+    display:flex;
+    width:100%;
+    min-width:0;
+    align-items:center;
+    gap:12px;
+    padding:14px 13px;
+    border:1px solid rgba(0,200,255,.28);
+    border-radius:12px;
+    background:linear-gradient(110deg,rgba(0,200,255,.095),rgba(9,16,29,.98) 70%);
+    color:#f5f8ff;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .home-center-column.home-scenario-ready > .home-scenario-mobile-toggle{margin:0 0 14px}
+  #home-tournament-selection-panel.home-rankings-ready:not(.is-rankings-expanded) > .home-tournament-mobile-content{display:none}
+  #home-tournament-selection-panel.is-rankings-expanded > .home-tournament-mobile-content{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    min-width:0;
+  }
+  #home-tournament-selection-panel .home-mobile-rankings-list.home-left-rail{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:12px;
+    min-width:0;
+  }
+  #home-tournament-selection-panel .home-mobile-rankings-list .home-rail-ranking{display:flex;min-width:0}
+  #home-tournament-selection-panel.is-rankings-expanded .home-rankings-mobile-action svg,
+  .home-center-column.is-scenario-expanded > .home-scenario-mobile-toggle .home-rankings-mobile-action svg{transform:rotate(180deg)}
+  .home-center-column.home-scenario-ready:not(.is-scenario-expanded) > #home-year-latest-section,
+  .home-center-column.home-scenario-ready:not(.is-scenario-expanded) > #home-year-rankings-section{display:none!important}
+}
