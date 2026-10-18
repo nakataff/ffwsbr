@@ -1,0 +1,596 @@
+{{DISPLAYTITLE:Free Fire World Series 2022 Sentosa}}
+{{FFWS 2022.1 Navbox}}
+{{EventTabs}}
+{{Infobox league
+|liquipediatier=1
+|name=Free Fire World Series 2022 Sentosa |highlighted=true
+|shortname=2022 Sentosa
+|tickername=FFWS 2022 Sentosa
+|series=Free Fire World Series |abbreviation=FFWS
+|image=Free Fire World Series 2022 lightmode.png |imagedark=Free Fire World Series 2022 darkmode.png
+|icon=Free Fire World Series 2021 icon.png
+|organizer=Garena
+|organizer2=IO Esports
+|sponsor=
+|garena-sponsored=true
+|type=Offline
+|country=Singapore
+|city=Sentosa
+|venue=[https://en.m.wikipedia.org/wiki/Resorts_World_Sentosa Resort World Sentosa Convention Centre]
+|prizepoolusd=1,820,000
+|sdate=2022-05-14 |edate=2022-05-21
+|web=https://www.ffesports.com/global/en
+|youtube=channel/UCBT9wRDMPzL-Fp9Fw4DCIVg
+|facebook=FreeFireSA
+|team_number=18
+|mode=squad |perspective=tpp
+|caption=Slogan: '''Heroes Arise'''
+|previous=Free_Fire_World_Series/2021/November{{!}}<s>Nov 2021</s>
+|previous2=Free_Fire_World_Series/2021/Singapore{{!}}Singapore 2021
+|next=Free_Fire_World_Series/2022/Bangkok{{!}}Bangkok 2022
+}}
+<p style="padding-top:15px">'''Free Fire World Series''' ('''FFWS''' in short) is a [[Global_Events|Global]] tournament held biannually by [[Garena]].</p>
+
+==About==
+{{TextDropdown|section=Notes|title=For event notes|width=65%}}
+{{Note||Note<sup>1</sup>:{{LeagueIconSmall/pro league cis}} [[Free Fire Pro League/CIS/Season 4|FFPL CIS Season 4]] cancelled.<ref>{{cite web|url=https://www.instagram.com/p/CbTO7sGMOmw/ |title=Было принято решение об отмене 4-го сезона FREE FIRE Pro League (FFPL) CIS в силу обстоятельств, делающих проведение турнира невозможным.|trans_title=It was decided to cancel the 4th season of the FREE FIRE Pro League (FFPL) CIS due to the inability to host the tournament. |date=2022-03-19|author='''Free Fire Esports CIS'''|language={{Flag|ru}} Rusian}}</ref> So teams from [[:Category:CIS|CIS]] can't participate in World Series.}}
+<br>
+{{note||Note<sup>2</sup>:{{LeagueIconSmall/india championship}} [[Free_Fire_India_Championship/2022/Spring|FFIC 2022 Spring]] postponed until further notice due to the Indian government's Free Fire ban. So teams from [[:Category:India|India]] can't participate in World Series.<ref>{{cite web|url=https://www.facebook.com/legendgarenafreefirevn/posts/296171446015927 |title=Ấn Độ và CIS là 2 khu vực sẽ không có mặt tại FFWS 2022 Sentosa |trans_title=India and CIS are two regions not participating in FFWS 2022 Sentosa |date=2022-04-20|author=''''Huyền Thoại Sinh Tồn - Free Fire'''|publisher=|language={{Flag|vn}} Vietnamese}}</ref>}} 
+{{TextDropdown|end}}
+
+===Broadcast Talent===
+{{Tabs dynamic|name1=English|name2=Americas|name3=EMEA|name4=SEA|name5=South Asia|This=1|hide-showall=true}}
+{{Tabs dynamic/tab|1}}
+{{BroadcasterCard
+|position=Stage Host|lang=English
+|b1=Charmaine Yee |b1flag=sg |b1name=Yee Kah Yan
+}}
+{{BroadcasterCard
+|position=English Commentator|lang=English
+|b1=ABSTRACT |b1flag=sg |b1name=Eugene Eu
+|b2=Oeriso   |b2flag=sg
+|b3=Hauler
+|b4=Tom Pickering
+}}
+{{Tabs dynamic/tab|2}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Brazil Stage Host|lang=Portuguese
+|b1=Camilota XP|b1name=Camila Silveira|b1flag=br
+}}
+{{BroadcasterCard
+|position=Brazil Interviewer|lang=Portuguese
+|b1=Carol Bombshell|b1flag=br
+}}
+{{BroadcasterCard
+|position=Brazil Analyst|lang=Portuguese
+|b1=Croft|b1flag=br
+|b2=JokerPOA|b2flag=br
+|b3=01pires|b3flag=br
+}}
+{{BroadcasterCard
+|position=Brazil Commentator|lang=Portuguese
+|b1=MurilloShooow|b1flag=br|b1name=Murillo Medeiros
+|b2=Samuca|b2flag=br
+|b3=Carlos Andrade|b3flag=br
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Spanish Stage Host|lang=Spanish
+|b1=Silvixgd
+|b2=Mérida|b2flag=co
+}}
+{{BroadcasterCard
+|position=Spanish Analyst|lang=Spanish
+|b1=CRISROJO
+|b2=Ormeño|b2flag=pe|b2name=Luis Ormeño
+}}
+{{BroadcasterCard
+|position=Spanish Commentator|lang=Spanish
+|b1=XavyBecker|b1flag=mx|b1name=Javier Linares
+|b2=AlanQ|b2flag=mx|b2name=Alan Quintana
+}}
+{{box|end}}
+{{Tabs dynamic/tab|3}}
+{{box|start|padding=2em}}
+{{BroadcasterCard
+|position=Arabic Commentator|lang=Arabic
+|b1=Abdou|b1flag=tn|b1name=Abdelwahed Telmoudi
+|b2=Remixer|b2flag=sa |b2name=Omar Mohammed Saleh
+|b3=Makaveli|b3flag=dz |b3name=Sofian Shublaq
+|b4=Boughrib YT|b4flag=tn
+|b5=EL Pappy|b5flag=tn|b5name=Hichem Nouioui
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Russian Stage Host|lang=Russian
+|b1=Zais
+}}
+{{BroadcasterCard
+|position=Russian Commentator|lang=Russian
+|b1=Zloba
+|b2=Sheyl|b2flag=ru|b2name=Nikita Demeshov
+}}
+{{BroadcasterCard
+|position=Turkish Caster|lang=Turkish
+|b1=BorisPeace|b1flag=tr|b1name=Barış Gürer
+|b2=Bogachan|b2flag=tr|b2name=Boğaçhan Aydın
+}}
+{{box|end}}
+{{Tabs dynamic/tab|4}}
+{{box|start|padding=2em}}
+{{BroadcasterCard
+|position=Vietnamese Commentator|lang=Vietnamese
+|b1=Quang Bẹp
+|b2=Việt Phương
+|b3=Jeeker
+|b4=Bee Bực Bội
+|b5=Hùng Cam
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Indonesian Commentator|lang=Indonesian
+|b1=Bigan|b1flag=id
+|b2=Azzuri|b2flag=id
+|b3=Julia|b3flag=id
+}}
+{{BroadcasterCard
+|position=Indonesian Analyst|lang=Indonesian
+|b1=Bung Surya|b1name=Surya Darma|b1flag=id
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Malay Commentator|lang=Malay
+|b1=Abiyek |b1flag=my
+|b2=Ikuto
+|b3=TashBunny
+}}
+{{BroadcasterCard
+|position=Tagalog Commentator|lang=Tagalog
+|b1=GentlemanGaming
+|b2=KukuTV |b2flag=ph
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Thai Stage Host|lang=Thai
+|b1=Yukidekyou|b1name=Phattakanya Thanutong|b1flag=th
+|b2=Look PMek|b2flag=th
+}}
+{{BroadcasterCard
+|position=Thai Caster|lang=Thai
+|b1=Brighto|b1flag=th
+|b2=BuGTa|b2flag=th
+|b3=Ball x3|b3flag=th
+|b4=Zena|b4flag=th
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Chinese Caster|lang=Chinese
+|b1=Lan Yueliang|b1flag=tw
+|b2=Jiang Lin Shushu|b2flag=tw
+}}
+{{box|end}}
+{{Tabs dynamic/tab|5}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Indian Commentator|lang=Hindi
+|b1=MambaSR
+|b2=Evil
+|b3=Gaming With AB
+|b4=Gaming Aura
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Producer
+|b1=Bloodline|b1name=Danish Ayub|b1flag=pk
+}}
+{{BroadcasterCard
+|position=Urdu Commentator|lang=Urdu
+|b1=Sallu|b1name=Suleman Afridi|b1flag=pk
+|b2=Dowdy |b2name=Dowdy Bary Munh Wala|b2flag=pk
+|b3=Mak |b3name=Mohtashim Mak |b3flag=pk
+}}
+{{BroadcasterCard
+|position=Pakistani Guest|lang=Urdu
+|b1=Godzilla
+|b2=Saif
+|b3=KAI
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Nepali Commentator|lang=Nepali
+|b1=Mama G |b1flag=np
+|b2=Samip.K |b2flag=np
+|b3=JHUSE |b3flag=np
+|b4=Susan |b4flag=np
+|b5=Samdi |b5flag=np
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Bengali Caster|lang=Bengali
+|b1=Ananno Masud |b1flag=bd
+|b2=Nushrat On Air|b2flag=bd
+}}
+{{box|end}}
+{{Tabs dynamic/end}}
+
+===Format===
+<big>'''FFWS 2022 - Sentosa:''' May 14th - May 21st, 2022 at the [https://en.m.wikipedia.org/wiki/Resorts_World_Sentosa RWS Convention Centre], {{Flag|sg}} Sentosa.''</big>
+:''18 Teams from 10 Regional Leagues
+<div style="margin-top:20px"></div>
+* '''Play-ins:''''' May 14th
+** 10 teams.
+** 6 matches.
+** {{Bgcolortext|up|Top 4}} advance to the ''Finals''.
+<div style="margin-top:10px"></div>
+* '''Finals:''''' May 21st
+** 12 teams:
+*** 8 Teams directly invited
+*** Top 4 from Play-ins
+** 6 matches.
+<br/>
+{{Points12|showtb=true}}
+
+==Prize Pool==
+{{TeamPrizePool
+|{{Slot |usdprize=500,000|{{Opponent|aaa}} }}
+|{{Slot |usdprize=250,000|{{Opponent|evos th}} }}
+|{{Slot |usdprize=100,000|{{Opponent|vasto mundo}} }}
+|{{Slot |usdprize=100,000|{{Opponent|keyd}} }}
+|{{Slot |usdprize=90,000 |{{Opponent|evos divine}} }}
+|{{Slot |usdprize=90,000 |{{Opponent|vgm}} }}
+|{{Slot |usdprize=80,000 |{{Opponent|loud}} }}
+|{{Slot |usdprize=80,000 |{{Opponent|echo esports}} }}
+|{{Slot |usdprize=70,000 |{{Opponent|farang esports}} }}
+|{{Slot |usdprize=70,000 |{{Opponent|team flash}} }}
+|{{Slot |usdprize=60,000 |{{Opponent|mineros esports}} }}
+|{{Slot |usdprize=60,000 |{{Opponent|wask}} }}
+|{{Slot |usdprize=50,000 |date=2022-05-14|{{Opponent|Ignis Esports}} }}
+|{{Slot |usdprize=50,000 |date=2022-05-14|{{Opponent|lgds}} }}
+|{{Slot |usdprize=50,000 |date=2022-05-14|{{Opponent|All Stars E-Sport}} }}
+|{{Slot |usdprize=40,000 |date=2022-05-14|{{Opponent|hob}} }}
+|{{Slot |usdprize=40,000 |date=2022-05-14|{{Opponent|todak}} }}
+|{{Slot |usdprize=40,000 |date=2022-05-14|{{Opponent|fuego}} }}
+|adjacentContent=
+{{AwardPrizePool
+|{{Slot |award=MVP |{{Opponent|JLXNOKILL|flag=th|team=aaa}} }}
+}}
+}}
+
+==Participants==
+{{TeamCardToggleButton|tcht=210}}
+===Finals Teams===
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|flag=br|team=LOUD
+|p1=Kroonos
+|p2=Noda
+|p3=Lost|p3flag=br
+|p4=Cauan7
+|p5=Brabox
+|c=Frois
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|placement=2
+|placementicon={{LeagueIconSmall/world series|World Series 2021 Singapore}} '''(2021 Singapore)'''
+|qualifier={{LeagueIconSmall/lbff}} [[Liga Brasileira de Free Fire/2022/Stage 1/Series A|Liga Brasileira]]
+|inotes={{NoteBig
+|n1=April 25th - {{player|Will|flag=br}} is banned from FFWS 2022 Sentosa due to violation of [[Liga_Brasileira_de_Free_Fire|LBFF]] rules during the [[Liga_Brasileira_de_Free_Fire/2022/Stage_1/Series_A|Season 7]] of this league.<ref>{{cite web|url=https://www.ffesportsbr.com.br/2022/04/25/comunicado-9/ |title=O jogador WILL, da LOUD, está suspenso da LBFF 8 e não participará do FFWS em maio.|author='''Garena Brasil'''|language={{Flag|pt}} Portuguese|trans_title=LOUD player WILL is suspended from LBFF 8 and will not participate in FFWS in May. |date=2022-04-25}}</ref> LOUD will be able to register a new player to replace him.
+|n2=April 29th - {{player|Brabox|flag=br}} is back to replace [[Will]].<ref>{{cite web|url=https://mobile.twitter.com/loud_braboxp/status/1520058110253096961 |title=Brabox is Back|author='''Pedro Assunção'''|language={{Flag|usuk}} English|trans_title= |date=2022-04-29}}</ref>
+}}
+}}
+{{TeamCard
+|flag=latam|team=Mineros eSports
+|p1=Qluso|p1flag=ar
+|p2=Fede|p2flag=ar
+|p3=Fixa03|p3flag=ar
+|p4=JOTA|p4flag=chile|p4link=JOTA (Chilean Player)
+|p5=PABLO|p5link=PABLO (Argentine player)|p5flag=ar
+|p6=|p6flag=
+|c=LUKAS|cflag=ar
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/free fire league}} [[Free Fire League Latinoamerica/2022/Opening|League Latinoamerica]]
+}}
+{{TeamCard
+|flag=eu|team=Vasto Mundo
+|image=Vasto mundo 2022.png
+|p1=Lucka|p1flag=pt
+|p2=Crushr09|p2flag=pt
+|p3=Nunes|p3flag=br
+|p4=BLAZER|p4flag=pt
+|p5=Alex09|p5flag=de
+|p6=TLopes|p6flag=pt
+|c=Moises|cflag=br
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/europe pro league}} [[Europe Pro League/Season 4|Europe Pro League]]
+}}
+{{TeamCard
+|flag=mena|team=WASK
+|p1=ABDO007|p1flag=ma
+|p2=DOWLY|p2flag=ma
+|p3=ZIZOX|p3flag=ma
+|p4=MR ALI|p4flag=ma
+|p5=GENIUS|p5flag=ma
+|p6=|p6flag=
+|p7=|p7flag=
+|c=MACRO|cflag=ma
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/arab league}} [[Free Fire Arab League/Season 5|Arab League]]
+|inotes={{NoteBig
+|n1=May 1st - {{team|mces africa}} rebrand to {{team|wask}}.<ref>{{cite web|url=https://www.instagram.com/p/Cc_7rqkokLz/ |title=WASK " Warriors in Mask" الاسم الرسمي الجديد لفريقنا و أكادميتنا المختصة على الساحة الاحترافية FREE FIREبسرفر 🇲🇦 MENA. |language={{Flag|mena}} Arabic|trans_title=WASK "Warriors in Mask", the new official name of our Free Fire professional team and academy, on the 🇲🇦 MENA server. |author='''WASK'''|date=2022-05-01}}</ref>
+}}
+}}
+{{TeamCard
+|flag=vn|team=Team Flash
+|p1=CEO|p1flag=vn
+|p2=Brian
+|p3=Floren|p3flag=vn
+|p4=Shin
+|p5=Bloody
+|p6=Beo|p6flag=
+|placement=6
+|placementicon={{LeagueIconSmall/ws 2019|World Series 2021 Singapore}} '''(2019 Rio)'''
+|qualifier={{LeagueIconSmall/vfl}} [[Vietnam Free Fire League/Series A/2022/Spring|Vietnam League]]
+}}
+{{TeamCard
+|flag=th|team=EVOS Phoenix|image=EVOS_Esports_Phoenix_allmode.png
+|p1=TheCruz|p1flag=th|p1wins=1
+|p2=JOENA|p2flag=th |p2wins=1
+|p3=D_Long|p3flag=th |p3wins=1
+|p4=Moshi|p4flag=th 
+|p5=Return|p5flag=th
+|p6=GETBU|p6flag=th
+|c=Namo|cflag=th|cwinsc=1
+|placement=1
+|placementicon={{LeagueIconSmall/world series|World Series 2021 Singapore}} '''(2021 Singapore)'''
+|qualifier={{LeagueIconSmall/pro league th}} [[Free Fire Pro League/Thailand/Season 6|Pro League TH]]
+}}
+{{TeamCard
+|flag=id|team=EVOS Divine
+|image=
+|p1=MR05|p1wins=1
+|p2=AbaaaX
+|p3=Bion
+|p4=Street
+|p5=SAM13|p5wins=1
+|c=Manay |c1wins=1
+|placement=1
+|placementicon={{LeagueIconSmall/world cup|World Cup 2019 Bangkok}} '''(2019 Bangkok)'''
+|qualifier={{LeagueIconSmall/master league}} [[Free_Fire_Master_League/Season_5/Division_1|Master League]]
+}}
+{{TeamCard
+|flag=my|team=Farang Esports
+|p1=Jembal|p1flag=my
+|p2=Bayet|p2flag=my
+|p3=Spade|p3flag=my
+|p4=2Bad|p4flag=my
+|p5=Pablo|p5link=Pablo (Malaysian player)|p5flag=my
+|p6=Jezbuu|p6flag=my
+|p7=|p7flag=
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/mcp majors}} [[MCP Majors/Season 3|MCP Majors]]
+}}
+{{TeamCard columns end}}
+===Play-ins Teams===
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|flag=br|team=Keyd
+|image=
+|p1=MODESTIA
+|p2=General
+|p3=DeadGOD
+|p4=NANDO9
+|p5=KBÇÃO
+|c=Stark
+|p6=|p6flag=
+|p7=|p7flag=
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/lbff}} [[Liga Brasileira de Free Fire/2022/Stage 1/Series A|Liga Brasileira]]
+}}
+{{TeamCard
+|flag=latin america|team=Ignis Esports
+|p1=CarlosTD
+|p2=Jeisson
+|p3=Orellana 
+|p4=Erickk|p4flag=mx
+|p5=Cano|p5flag=co
+|c=PUMA|cflag=mx
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/free fire league}} [[Free Fire League Latinoamerica/2022/Opening|League Latinoamerica]]
+}}
+{{TeamCard
+|flag=north america|team=Fuego
+|p1=HACKSINO |p1flag=mx
+|p2=Euris|p2flag=do
+|p3=CLEVER |p3flag=do
+|p4=INTO |p4flag=do
+|p5=C4LV1N |p5flag=do
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/free fire pro series}} [[North_America/Pro_Series/Season_2|Pro Series]]
+|inotes={{NoteBig
+|n1=April 14th - {{team|Osaka}}, champion of [[North_America/Pro_Series/Season_2|Pro Series]], was disqualified from their league, lost the title and the World Series spot. <ref>{{cite web|url=https://twitter.com/Osaka__GG/status/1514451053978300417 |title=Comunicado sobre descalificación de la Free Pro Series |language={{Flag|es}} Spanish |trans_title=Release on disqualification of the Free Pro Series |publisher= |author='''Osaka'''|date=2022-04-14}}</ref>
+|n2=April 21st - {{team|Fuego}} will replace {{team|Osaka}} at the FFWS 2022 Sentosa. <ref>{{cite web|url=https://www.instagram.com/p/Ccl5vvOB1D6/ |title=lease welcome the team that will be representing NA at #FFWS! |language={{Flag|usuk}} English |publisher= |author='''Garena Free Fire North America'''|date=2022-04-21}}</ref>
+}}
+}}
+{{TeamCard
+|flag=mena|team=All Stars E-Sport
+|image=All_Star_E-Sport_Apr_2022_allmode.png
+|p1=OTHMANE|p1flag=ma
+|p2=REMIND|p2flag=tn
+|p3=JRDY|p3flag=sy
+|p4=G18|p4link=G18 (Algerian player)|p4flag=dz
+|p5=MADI7|p5flag=ma
+|p6=ADEM|p6flag=
+|c=Canibal|cflag=dz
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/arab league}} [[Free Fire Arab League/Season 5|Arab League]]
+|inotes={{NoteBig
+|n1=April 22nd - {{player|OTHMANE|flag=ma}} joined the team.<ref>{{cite web|url=https://www.instagram.com/p/Ccq33e2tJWv/|title=WELCOME OTHMANE|author='''All Stars E-Sport'''|language={{Flag|usuk}} English |date=2022-04-22}}</ref>
+}}
+}}
+{{TeamCard
+|flag=pk|team=House of Blood
+|p1=KAI|p1flag=pk
+|p2=VENOM|p2flag=pk
+|p3=Hogo|p3flag=pk
+|p4=Snakeye|p4flag=pk
+|p5=Danny|p5flag=pk
+|p6=|p6flag=
+|c=Leader|cflag=pk
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/free fire pakistan league}} [[Free Fire Pakistan_League/Season 3|Pakistan League]]
+|inotes={{NoteBig
+|n1=May 11st - [[House of Blood]] cooperate with '''GameBird''', rename to GameBirdxHOB.<ref>{{cite web|url=https://esports.ff.garena.pk/news/129/offcial-house-of-blood-receives-sponsorship-from-gamebird-before-right-before-ffws-playins |title=House Of Blood receives sponsorship from GameBird right before FFWS Play-ins|author=Free Fire Esports Pakistan|language={{Flag|usuk}} English |date=2022-05-11}}</ref> 
+}}
+}}
+{{TeamCard
+|flag=vn|team=V Gaming
+|p1=BinXu|p1flag=vn
+|p2=DacLop|p2flag=vn
+|p3=VanThanh|p3flag=vn
+|p4=TNha|p4flag=vn
+|p6=|p6flag=
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/vfl}} [[Vietnam Free Fire League/Series A/2022/Spring|Vietnam League]]
+}}
+{{TeamCard
+|flag=th|team=Attack All Around
+|p1=FOLKYY|p1flag=th
+|p2=JLXNOKILL|p2flag=th
+|p3=HOYSANG|p3flag=th
+|p4=POOKEIEI|p4flag=th
+|p5=KERORO|p5flag=th
+|c=JAZPER|cflag=th
+|placement=17
+|placementicon={{LeagueIconSmall/world series|World Series 2021 Singapore}} '''(2021 Singapore)'''
+|qualifier={{LeagueIconSmall/pro league th}} [[Free Fire Pro League/Thailand/Season 6|Pro League TH]]
+|inotes={{NoteBig
+|n1=April 18th - {{player|POONGOD|flag=th}} can't come to Sentosa because it's still under the age limit, and will be displayed by {{player|FOLKYY|flag=th}} during the tournament.<ref>{{cite web|url=https://www.facebook.com/440413459450815/posts/2176865842472226/ |language={{Flag|th}} Thai|title=STAND IN FOLKYY AAA FREE FIRE WORLD SERIES 2022|author='''Attack All Around''' |date=2022-04-18}}</ref>
+|n2=April 29th - {{player|Bruno (Thai Player){{!}}Bruno|flag=th}} left the team.<ref>{{cite web|url=https://www.facebook.com/440413459450815/posts/2185380554954088/ |language={{Flag|th}} Thai|title=ขอบคุณ Bruno หนึ่งในสมาชิกทีม AAA.FF |trans_title=Thanks to Bruno, one of the AAA.FF team members|author='''Attack All Around''' |date=2022-04-29}}</ref>
+}}
+}}
+{{TeamCard
+|flag=id|team=ECHO Esports
+|p1=Kucai24|p1flag=id
+|p2=Kiba|p2flag=id
+|p3=Dutzz|p3flag=id
+|p4=Ombaac|p4flag=id
+|p5=Kojaaaa|p5flag=id
+|p6=|p6flag=id
+|c=CHRISJO|cflag=id
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/indonesia masters}} [[Free Fire Indonesia Masters/2022/Spring|Indonesia Masters ]]
+}}
+{{TeamCard
+|flag=my|team=Todak
+|p1=Aimz|p1flag=my
+|p2=SPARKz|p2flag=my
+|p3=PYDRO|p3flag=my
+|p4=AFIQQz|p4flag=my
+|p5=CHILL|p5flag=my
+|placement=
+|placementicon=
+|qualifier={{LeagueIconSmall/mcp majors}} [[MCP Majors/Season 3|MCP Majors]]
+}}
+{{TeamCard
+|flag=tw|team=LGDS
+|p1=RORO|p1flag=tw
+|p2=BRUCE.|p2flag=tw
+|p3=YUANN|p3flag=tw
+|p4=NG|p4flag=tw
+|p5=IYO|p5flag=tw
+|placement=4
+|placementicon={{LeagueIconSmall/ws 2019|World Series 2019 Rio}} '''(2019 Rio)'''
+|qualifier={{LeagueIconSmall/champions cup taiwan}} [[Free_Fire_Spring_Cup/2022|Spring Cup ]]
+}}
+{{TeamCard columns end}}
+
+==Results==
+{{Bracket|Bracket/2L1D|id=ffws2022sf
+|R1M1header=Play-ins |R1M1={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|bg=1-4=up,5-10=down
+|map1={{Map|date=May 14, 2022 - 21:00 {{Abbr/MYT}}|finished=true|map=Bermuda  |vod=https://youtu.be/y6yYKnvfaQs}}
+|map2={{Map|date=May 14, 2022 - 21:40 {{Abbr/MYT}}|finished=true|map=Kalahari |vod=https://youtu.be/y6yYKnvfaQs}}
+|map3={{Map|date=May 14, 2022 - 22:00 {{Abbr/MYT}}|finished=true|map=Purgatory|vod=https://youtu.be/y6yYKnvfaQs}}
+|map4={{Map|date=May 14, 2022 - 22:30 {{Abbr/MYT}}|finished=true|map=Bermuda  |vod=https://youtu.be/y6yYKnvfaQs}}
+|map5={{Map|date=May 14, 2022 - 23:00 {{Abbr/MYT}}|finished=true|map=Kalahari |vod=https://youtu.be/y6yYKnvfaQs}}
+|map6={{Map|date=May 14, 2022 - 23:30 {{Abbr/MYT}}|finished=true|map=Purgatory|vod=https://youtu.be/y6yYKnvfaQs}}
+|opponent1={{TeamOpponent|LGDS				|m1={{MS|10|0}}|m2={{MS|8|5}} |m3={{MS|3|13}}|m4={{MS|2|4}} |m5={{MS|4|7}} |m6={{MS|7|4}} }}
+|opponent2={{TeamOpponent|House of Blood	|m1={{MS|9|3}} |m2={{MS|5|3}} |m3={{MS|6|2}} |m4={{MS|10|0}}|m5={{MS|6|2}} |m6={{MS|8|4}} }}
+|opponent3={{TeamOpponent|Ignis Esports		|m1={{MS|3|2}} |m2={{MS|9|2}} |m3={{MS|2|10}}|m4={{MS|5|9}} |m5={{MS|9|0}} |m6={{MS|1|9}} }}
+|opponent4={{TeamOpponent|All Stars E-Sport	|m1={{MS|5|1}} |m2={{MS|7|3}} |m3={{MS|7|2}} |m4={{MS|6|0}} |m5={{MS|8|3}} |m6={{MS|4|5}} }}
+|opponent5={{TeamOpponent|aaa				|m1={{MS|2|8}} |m2={{MS|3|6}} |m3={{MS|4|7}} |m4={{MS|8|6}} |m5={{MS|1|10}}|m6={{MS|6|2}} }}
+|opponent6={{TeamOpponent|keyd				|m1={{MS|6|4}} |m2={{MS|1|8}} |m3={{MS|5|1}} |m4={{MS|1|12}}|m5={{MS|5|0}} |m6={{MS|2|7}} }}
+|opponent7={{TeamOpponent|ECHO Esports		|m1={{MS|1|14}}|m2={{MS|4|6}} |m3={{MS|8|0}} |m4={{MS|3|3}} |m5={{MS|2|12}}|m6={{MS|5|4}} }}
+|opponent8={{TeamOpponent|todak				|m1={{MS|7|0}} |m2={{MS|6|1}} |m3={{MS|10|3}}|m4={{MS|7|3}} |m5={{MS|10|0}}|m6={{MS|9|5}} }}
+|opponent9={{TeamOpponent|vgm				|m1={{MS|4|4}} |m2={{MS|2|5}} |m3={{MS|1|4}} |m4={{MS|4|1}} |m5={{MS|3|7}} |m6={{MS|3|5}} }}
+|opponent10={{TeamOpponent|FUEGO			|m1={{MS|8|0}} |m2={{MS|10|1}}|m3={{MS|9|0}} |m4={{MS|9|0}} |m5={{MS|7|9}} |m6={{MS|10|1}}}}
+	}}
+
+|R2M1header=Grand Finals |R2M1={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+|map1={{Map|date=May 21, 2022 - 21:00 {{Abbr/SGT}}|finished=true|map=Bermuda  |vod=https://youtu.be/Vr-qXUB6rZo}}
+|map2={{Map|date=May 21, 2022 - 21:40 {{Abbr/SGT}}|finished=true|map=Kalahari |vod=https://youtu.be/Vr-qXUB6rZo}}
+|map3={{Map|date=May 21, 2022 - 22:00 {{Abbr/SGT}}|finished=true|map=Purgatory|vod=https://youtu.be/Vr-qXUB6rZo}}
+|map4={{Map|date=May 21, 2022 - 22:30 {{Abbr/SGT}}|finished=true|map=Bermuda  |vod=https://youtu.be/Vr-qXUB6rZo}}
+|map5={{Map|date=May 21, 2022 - 23:00 {{Abbr/SGT}}|finished=true|map=Kalahari |vod=https://youtu.be/Vr-qXUB6rZo}}
+|map6={{Map|date=May 21, 2022 - 23:30 {{Abbr/SGT}}|finished=true|map=Purgatory|vod=https://youtu.be/Vr-qXUB6rZo}}
+|opponent1={{TeamOpponent|evos divine		|m1={{MS|6|5}} |m2={{MS|7|6}} |m3={{MS|4|0}} |m4={{MS|5|6}} |m5={{MS|4|8}} |m6={{MS|7|2}}  }}
+|opponent2={{TeamOpponent|Vasto Mundo		|m1={{MS|5|3}} |m2={{MS|3|9}} |m3={{MS|6|9}} |m4={{MS|12|0}}|m5={{MS|1|9}} |m6={{MS|2|5}}  }}
+|opponent3={{TeamOpponent|mineros esports	|m1={{MS|11|0}}|m2={{MS|12|1}}|m3={{MS|7|8}} |m4={{MS|3|0}} |m5={{MS|7|5}} |m6={{MS|9|2}}  }}
+|opponent4={{TeamOpponent|wask				|m1={{MS|9|0}} |m2={{MS|5|1}} |m3={{MS|10|2}}|m4={{MS|8|2}} |m5={{MS|8|3}} |m6={{MS|8|3}}  }}
+|opponent5={{TeamOpponent|evos th			|m1={{MS|10|3}}|m2={{MS|1|18}}|m3={{MS|1|10}}|m4={{MS|4|13}}|m5={{MS|3|7}} |m6={{MS|11|0}} }}
+|opponent6={{TeamOpponent|Farang Esports	|m1={{MS|8|3}} |m2={{MS|8|5}} |m3={{MS|9|6}} |m4={{MS|11|1}}|m5={{MS|11|1}}|m6={{MS|4|6}} |placement=9}}
+|opponent7={{TeamOpponent|loud				|m1={{MS|7|8}} |m2={{MS|10|5}}|m3={{MS|5|9}} |m4={{MS|10|0}}|m5={{MS|10|0}}|m6={{MS|6|6}}  }}
+|opponent8={{TeamOpponent|team flash		|m1={{MS|12|0}}|m2={{MS|9|1}} |m3={{MS|8|3}} |m4={{MS|2|12}}|m5={{MS|9|4}} |m6={{MS|10|0}}|placement=10}}
+|opponent9={{TeamOpponent|ECHO Esports		|m1={{MS|4|3}} |m2={{MS|4|2}} |m3={{MS|11|0}}|m4={{MS|7|2}} |m5={{MS|12|1}}|m6={{MS|3|4}}  }}
+|opponent10={{TeamOpponent|aaa				|m1={{MS|2|10}}|m2={{MS|2|3}} |m3={{MS|3|3}} |m4={{MS|1|14}}|m5={{MS|5|2}} |m6={{MS|5|10}} }}
+|opponent11={{TeamOpponent|keyd				|m1={{MS|1|4}} |m2={{MS|6|5}} |m3={{MS|12|0}}|m4={{MS|6|1}} |m5={{MS|2|8}} |m6={{MS|1|12}} }}
+|opponent12={{TeamOpponent|vgm				|m1={{MS|3|8}} |m2={{MS|11|1}}|m3={{MS|2|11}}|m4={{MS|9|0}} |m5={{MS|6|3}} |m6={{MS|12|4}} }}
+	}}
+}}
+
+==Additional Data==
+===Country Representation===
+{{Country representation}}
+
+===Streams===
+{{Streams
+|lang1=usuk |youtube1=Free Fire Esports Official
+|lang2=ptbr |youtube2=Free Fire Brazil |stream2=https://booyah.live/studio/34850987
+|lang3=es |youtube3=Free Fire LATAM |stream3=https://booyah.live/booyahlatam
+|lang4=id |youtube4=Free Fire Esports ID |facebook4=Free Fire Esports ID
+|lang5=th |youtube5=Free Fire Esports TH |facebook5=Free Fire Esports TH
+|lang6=my |youtube6=Free Fire Malaysia|facebook6=freefiremalaysia
+|lang7=bd |youtube7=Free Fire Bangladesh Official |stream7=https://booyah.live/ffbdbangla
+|lang8=in |youtube8=Free Fire Esports Official
+|lang9=pk |youtube9=Garena Free Fire Pakistan |facebook9=Free Fire Esports Pakistan
+|lang10=tw |youtube10=Free Fire 我要活下去
+|lang11=tr |youtube11=Garena Free Fire Türkiye
+|lang12=ro |youtube12=Free Fire Esports EU
+|lang13=pt |youtube13=Free Fire Esports EU
+|lang14=al |youtube14=Free Fire Esports EU
+|lang15=ph |youtube15=Garena Free Fire PH
+|lang16=sa |youtube16=Garena Free Fire MENA
+|lang17=ru |youtube17=Free Fire CIS |twitch17=Free Fire CIS
+|lang18=vn |youtube18=Huyền Thoại Sinh Tồn - Free Fire Esports |facebook18=Huyền Thoại Sinh Tồn - Free Fire
+|lang19=np |youtube19=Free Fire Nepal
+}}
+
+==References==
+{{Reflist|2}}
+{{FFGE Navbox}}

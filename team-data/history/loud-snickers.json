@@ -383,8 +383,10 @@
           "LBFF 4",
           "LBFF 5",
           "LBFF 6",
+          "FFWS 2021 Singapura",
           "LBFF 7",
           "LBFF 8",
+          "FFWS 2022 Sentosa",
           "LBFF 9",
           "WB 2024"
         ]
@@ -397,6 +399,8 @@
         "hasProfile": true,
         "isCurrent": false,
         "editions": [
+          "FFWS 2021 Singapura",
+          "FFWS 2022 Sentosa",
           "LBFF 9",
           "WB 2024"
         ]
@@ -697,6 +701,27 @@
       "data": "2025-06-22",
       "place": "7º",
       "source": "novos-torneios/wb-2025-s1.json"
+    },
+    {
+      "torneio": "FFWS 2022 Sentosa",
+      "data": "2022-05-21",
+      "place": "7º",
+      "source": "novos-torneios/ffws-2022-sentosa.json",
+      "url": "/index.html?torneio=ffws-2022-sentosa#outros-torneios"
+    },
+    {
+      "torneio": "FFWS 2021 Singapura",
+      "data": "2021-05-30",
+      "place": "2º",
+      "source": "novos-torneios/ffws-2021-singapore.json",
+      "url": "/index.html?torneio=ffws-2021-singapore#outros-torneios"
+    },
+    {
+      "torneio": "FFWS 2019",
+      "data": "2019-11-16",
+      "place": "9º",
+      "source": "novos-torneios/ffws-2019.json",
+      "url": "/index.html?torneio=ffws-2019#outros-torneios"
     },
     {
       "torneio": "LBFF 9",

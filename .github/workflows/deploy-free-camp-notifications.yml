@@ -50,6 +50,8 @@ on:
       - 'functions/career-staff-history.json'
       - 'functions/test/career-staff-history.test.cjs'
       - 'scripts/build-career-staff-history.py'
+      - 'novos-torneios/ffws-*.json'
+      - 'imports/liquipedia-worlds/**'
       - 'team-aliases.json'
       - 'novos-torneios/lbff-*.json'
       - 'functions/test/career-competitions.test.cjs'

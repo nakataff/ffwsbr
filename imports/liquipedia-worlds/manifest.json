@@ -1,0 +1,115 @@
+{
+  "batch": 1,
+  "events": [
+    {
+      "id": "ffws-2019",
+      "careerId": "ffws2019",
+      "name": "FFWS 2019",
+      "year": 2019,
+      "file": "ffws-2019.wiki",
+      "sourceUrl": "https://liquipedia.net/freefire/Free_Fire_World_Series/2019",
+      "location": "Rio de Janeiro, Brasil · Parque Olímpico da Barra",
+      "format": "Grande final: 16 de novembro de 2019, no Rio de Janeiro.\n12 equipes classificadas pelas ligas regionais.\n8 quedas, alternando Bermuda e Purgatório.\nPontuação histórica: 20 pontos por abate; colocação de 300/200/170/135/105/80/60/45/30/20/10/0.\nA equipe com mais pontos ao fim das oito quedas é a campeã.",
+      "teamAliases": {
+        "ilmn s2k": "Illuminate Slow TwoK",
+        "samurai team": "Team Samurái",
+        "sccp": "Corinthians",
+        "chr": "Sbornaya ChR",
+        "arctic gaming méxico orig": "Arctic Gaming México"
+      },
+      "personLinks": {
+        "Corinthians|coach|CHEFEXL": "staff-history-chefexl",
+        "Corinthians|player|LEVELUP": "levelup",
+        "Corinthians|player|FIXA": "fixa-10",
+        "Corinthians|player|Nobru": "nobru",
+        "Corinthians|player|01pires": "01pires",
+        "LOUD|player|ViniZx": "vinizx",
+        "LOUD|player|Will": "will",
+        "LOUD|player|Bradoock": "bradoock",
+        "LOUD|player|ShariiN": "shariin"
+      },
+      "dataNotes": [
+        "Pontuação original de 2019 preservada; pontos por abate não equivalem à quantidade de abates."
+      ]
+    },
+    {
+      "id": "ffws-2021-singapore",
+      "careerId": "ffws2021singapore",
+      "name": "FFWS 2021 Singapura",
+      "year": 2021,
+      "file": "ffws-2021-singapore.wiki",
+      "sourceUrl": "https://liquipedia.net/freefire/Free_Fire_World_Series/2021/Singapore",
+      "location": "Singapura · Marina Bay Sands",
+      "format": "Play-ins: 28 de maio de 2021.\n9 equipes disputam 6 quedas; as três melhores avançam para a final.\nGrande final: 30 de maio de 2021.\n12 equipes: nove classificadas diretamente e três vindas dos play-ins.\n6 quedas; 1 ponto por abate e colocação de 12/9/8/7/6/5/4/3/2/1/0/0.\n18 equipes disputaram o torneio. Team Elite, Galaxy Racer, Team TG e Riot não viajaram por restrições da pandemia e não contam como participantes que jogaram.",
+      "teamAliases": {
+        "evos th": "Phoenix Force",
+        "evos phoenix as force": "Phoenix Force",
+        "vip esports": "VIP E-Sport",
+        "singularity.invincible": "SNG.Invincible",
+        "gods plan": "God's Plan",
+        "evos esports id": "EVOS Divine",
+        "hq": "HQ Esports"
+      },
+      "personLinks": {
+        "Fluxo|coach|K9": "staff-history-k9",
+        "LOUD|coach|Frois": "frois",
+        "LOUD|analyst|FRANK": "staff-s2-frank",
+        "Fluxo|player|Nobru": "nobru",
+        "Fluxo|player|JapaBKR": "japabkr",
+        "Fluxo|player|Syaz": "syaz",
+        "Fluxo|player|GØDKILL": "g-dkill",
+        "LOUD|player|Will": "will",
+        "LOUD|player|ViniZx": "vinizx",
+        "LOUD|player|Cauan7": "cauan7",
+        "LOUD|player|Noda": "noda",
+        "LOUD|player|Brabox": "brabox",
+        "LOUD|player|Kroonos": "kroonos"
+      },
+      "dataNotes": [
+        "Quatro equipes classificadas não viajaram por restrições da pandemia. A premiação delas é separada da participação esportiva.",
+        "Empates preservam as posições explícitas da fonte; a ordem da final é conferida com a premiação."
+      ],
+      "advance": 3
+    },
+    {
+      "id": "ffws-2022-sentosa",
+      "careerId": "ffws2022sentosa",
+      "name": "FFWS 2022 Sentosa",
+      "year": 2022,
+      "file": "ffws-2022-sentosa.wiki",
+      "sourceUrl": "https://liquipedia.net/freefire/Free_Fire_World_Series/2022/Sentosa",
+      "location": "Sentosa, Singapura",
+      "format": "Play-ins: 14 de maio de 2022.\n10 equipes disputam 6 quedas; as quatro melhores avançam para a final.\nGrande final: 21 de maio de 2022.\n12 equipes: oito classificadas diretamente e quatro vindas dos play-ins.\n6 quedas; 1 ponto por abate e colocação de 12/9/8/7/6/5/4/3/2/1/0/0.\n18 equipes disputaram o torneio; os pontos dos play-ins não são somados aos da final.",
+      "teamAliases": {
+        "aaa": "Attack All Around",
+        "evos th": "EVOS Phoenix",
+        "vgm": "V Gaming",
+        "hob": "House of Blood"
+      },
+      "personLinks": {
+        "LOUD|coach|Frois": "frois",
+        "LOUD|analyst|FRANK": "staff-s2-frank",
+        "Keyd|coach|Stark": "staff-history-stark-coach",
+        "LOUD|player|Kroonos": "kroonos",
+        "LOUD|player|Noda": "noda",
+        "LOUD|player|Lost": "lost21",
+        "LOUD|player|Cauan7": "cauan7",
+        "LOUD|player|Brabox": "brabox",
+        "Keyd|player|MODESTIA": "modestia",
+        "Keyd|player|General": "general",
+        "Keyd|player|DeadGOD": "deadgod",
+        "Keyd|player|NANDO9": "nando9",
+        "Keyd|player|KBÇÃO": "kbcao"
+      },
+      "dataNotes": [
+        "A participação da LOUD usa o elenco efetivamente inscrito com Brabox; Will não é incluído como participante."
+      ],
+      "advance": 4
+    }
+  ],
+  "pending": [
+    "Free Fire World Series 2023.txt",
+    "Free Fire World Series - Global Finals 2024.txt",
+    "Free Fire World Series - Global Finals 2025.txt"
+  ]
+}

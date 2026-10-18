@@ -8,13 +8,24 @@ def packed(d):return json.dumps(d,ensure_ascii=False,separators=(',',':'))+'\n'
 def event_id(s):
     s=re.sub(r'\s*[-–:]\s*Final$','',str(s),flags=re.I)
     s=re.sub(r'^(?:WB|FFWS Brasil|FFWS BR)\s+','FFWS BR ',s,flags=re.I)
-    aliases={'freefireworldseriesglobalfinals2024':'ffwsglobalfinals2024','freefireworldseriesglobalfinals2025':'ffwsglobalfinals2025','esportsworldcup2026':'ewc2026','lbff2023':'lbff9','ligabrasileiradefreefire2022seriesastage1':'lbff7','ligabrasileiradefreefire2022seriesastage2':'lbff8',
+    aliases={'ffws2021singapura':'ffws2021singapore','freefireworldseries2019':'ffws2019','freefireworldseries2021singapore':'ffws2021singapore','freefireworldseries2022sentosa':'ffws2022sentosa','freefireworldseriesglobalfinals2024':'ffwsglobalfinals2024','freefireworldseriesglobalfinals2025':'ffwsglobalfinals2025','esportsworldcup2026':'ewc2026','lbff2023':'lbff9','ligabrasileiradefreefire2022seriesastage1':'lbff7','ligabrasileiradefreefire2022seriesastage2':'lbff8',
       'ligabrasileiradefreefire2021seriesastage1':'lbff4','ligabrasileiradefreefire2021seriesastage2':'lbff5','ligabrasileiradefreefire2021seriesastage3':'lbff6',
       'ligabrasileiradefreefire2020seriesastage1':'lbff1','ligabrasileiradefreefire2020seriesastage3':'lbff3'}
     return aliases.get(key(s),key(s))
 
 def build():
     original=read('team-data/historical-teams.json');manifest=read('career-data/results/manifest.json')
+    # New historical world teams are materialized here; no catalogue scan in public pages.
+    known={manifest['aliases'].get(key(t['name']),key(t['name'])):t for t in original['teams']}
+    for path in sorted((ROOT/'novos-torneios').glob('ffws-*.json')):
+        event=json.loads(path.read_text())
+        if not event.get('pilot'):continue
+        for item in event['teams']['items']:
+            name=item['n'];ident=manifest['aliases'].get(key(name),key(name))
+            if ident in known:continue
+            slug=re.sub('[^a-z0-9]+','-',unicodedata.normalize('NFD',name).encode('ascii','ignore').decode().lower()).strip('-')
+            team=dict(name=name,slug=slug,aliases=[name],logo='escudo.webp',isCurrentS2=False,participations=[],collectiveTitles=[],individualTitles=[],notablePlayers=[],staff=[],players=[dict(id='',name=p['n'],photo='silhueta.webp',cargo='Jogador',isCurrent=False,hasProfile=False,kills=None,matches=None) for p in item['p']])
+            original['teams'].append(team);known[ident]=team
     raw_results=read('resultados.json');out={};index=[];routes={}
     staff=read('functions/career-staff-history.json')['people'];people={p['id']:p for p in read('functions/career-seed.json')['people']}
     current=read('ffws-br-2026-s2/teams.json')['teams']
@@ -55,7 +66,7 @@ def build():
             if not stage or not stage.get('finished'):continue
             old=participations.get(eid,{})
             row={'event':e['name'],'year':e['year'],'position':stage.get('position'),'status':'Campeão' if stage.get('champion') else stage['label'],
-                 'date':e.get('endDate') or old.get('date',''),'source':e['source']}
+                 'date':e.get('endDate') or old.get('date',''),'source':e['source'],**({'url':e['detailHref']} if e.get('detailHref') else {})}
             participations[eid]=row
             if stage.get('champion'):
                 titles[eid]={**titles.get(eid,{}),'event':e['name'],'type':'Campeão','date':row['date'] or titles.get(eid,{}).get('date',''),'source':e['source']}
@@ -71,7 +82,7 @@ def build():
             for eid,e in events.items():
                 stage=next((s for s in e['stages'] if s.get('isFinal') or s.get('id')=='overall'),None)
                 if stage and stage.get('finished') and stage.get('position'):
-                    results[eid]={'torneio':e['name'],'data':e.get('endDate') or results.get(eid,{}).get('data',''),'place':str(stage['position'])+'º','source':e['source']}
+                    results[eid]={'torneio':e['name'],'data':e.get('endDate') or results.get(eid,{}).get('data',''),'place':str(stage['position'])+'º','source':e['source'],**({'url':e['detailHref']} if e.get('detailHref') else {})}
             normal['results']=sorted(results.values(),key=lambda r:(r.get('data',''),r.get('torneio','')),reverse=True)
             out[normal_path]=json.dumps(normal,ensure_ascii=False,indent=2)+'\n'
         content=packed(team);file=slug+'-'+hashlib.sha256(content.encode()).hexdigest()[:12]+'.json'

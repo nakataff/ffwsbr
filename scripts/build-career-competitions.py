@@ -54,6 +54,17 @@ for entry in read('player-data/staff/verified-coaching-competitions.json')['entr
  add(person,entry['edition'],entry['team'],role)
 # Catalog/evidence from the bounded roster import, keyed by explicit professional ID.
 for c in read('functions/career-staff-history.json')['catalog']:catalog[c['id']]=c
+# Pilot roster links were reviewed by person, role and historical organization.
+for path in sorted((ROOT/'novos-torneios').glob('ffws-*.json')):
+ d=json.loads(path.read_text())
+ if not d.get('pilot'):continue
+ eid=d['careerId'];catalog[eid]={'id':eid,'name':d['name'],'family':'MUNDIAL'}
+ for team in d['teams']['items']:
+  for p in team.get('p',[]):
+   ident=p.get('personId')
+   if ident not in ids:continue
+   record={'id':eid,'team':team['n'],'role':'player'}
+   if record not in records.setdefault(ident,[]):records[ident].append(record)
 # Actual future event in the site catalogue; its participants are not inferred.
 event('FFWS Global Finals 2026')
 for name in ['LAFF 2025 S1','LAFF 2026 S1']:event(name)

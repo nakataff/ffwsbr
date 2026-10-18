@@ -51,26 +51,35 @@ for path in sorted((ROOT/'novos-torneios').glob('*.json'),key=lambda p:p.name):
  if not re.match(r'^(lbff-\d+|wb-2024|wb-2025-s[12])$',path.stem):continue
  d=json.loads(path.read_text());edition=d['name'];edition_id=path.stem.replace('-','') if path.stem.startswith('lbff') else 'ffwsbr'+path.stem[3:].replace('-','')
  sources.append((d,edition,edition_id,'novos-torneios/'+path.name))
+for path in sorted((ROOT/'novos-torneios').glob('ffws-*.json')):
+ d=json.loads(path.read_text())
+ if d.get('pilot') and d.get('careerId'):sources.append((d,d['name'],d['careerId'],'novos-torneios/'+path.name))
 ewc=read('ewc 2026/times.json')
 sources.append(({'teams':{'items':[{'n':t.get('dataName') or t['name'],'s':[{'n':p['name'],'r':p.get('role','staff')} for p in t.get('players',[]) if p.get('staff')]} for t in ewc['teams']]}},'EWC 2026','ewc2026','ewc 2026/times.json'))
 for d,edition,edition_id,source in sources:
- catalog.append({'id':edition_id,'name':edition.replace('WB ','FFWS BR '),'family':'LBFF' if edition_id.startswith('lbff') else 'EWC' if edition_id.startswith('ewc') else 'FFWS_BR'})
+ catalog.append({'id':edition_id,'name':edition.replace('WB ','FFWS BR '),'family':'LBFF' if edition_id.startswith('lbff') else 'EWC' if edition_id.startswith('ewc') else 'MUNDIAL' if edition_id.startswith('ffws') and not edition_id.startswith('ffwsbr') else 'FFWS_BR'})
  for item in d['teams']['items']:
   raw_team=item.get('n') or item['o'];tid=team_names.get(key(raw_team),key(raw_team))
   team=teams.setdefault(tid,{'id':tid,'name':seed_teams.get(tid,{}).get('name',raw_team.upper()),'logo':seed_teams.get(tid,{}).get('logo','escudo.webp'),'aliases':[]})
   if raw_team not in team['aliases']:team['aliases'].append(raw_team)
   for raw in item.get('s',[]):
    name=raw['n'].strip()
+   # International roster names are linked only by reviewed, contextual identities.
+   if d.get('pilot') and not raw.get('personId'):continue
    if not name or name.upper() in ['TBD','TBA','UNKNOWN','-']:continue
    raw_count+=1;override=identities.get(key(name),{});ident_key=override.get('key',key(name));names=override.get('aliases',[name]);matches=person_aliases[key(name)]
-   ident=override.get('id') or (next(iter(matches)) if len(matches)==1 else 'staff-history-'+ident_key)
+   ident=raw.get('personId') or override.get('id') or (next(iter(matches)) if len(matches)==1 else 'staff-history-'+ident_key)
    p=compiled.setdefault(ident_key,{'id':ident,'name':override.get('name',name),'aliases':[],'excludeIds':override.get('excludeIds',[]),'records':[]})
    for alias in [*names,*([raw['l']] if raw.get('l') else [])]:
     if alias not in p['aliases']:p['aliases'].append(alias)
    if override.get('evidence'):p['identitySource']=override['evidence']
    record={'competitionId':edition_id,'edition':edition,'teamId':tid,'role':role(raw.get('r','coach')),'source':source,'wikiLink':raw.get('l','')}
    if record not in p['records']:p['records'].append(record)
-out={'description':'Participações registradas nas comissões das LBFFs, FFWS BR e EWC. Não comprova datas de contratação, saída ou vínculo atual.','catalog':catalog,'teams':list(teams.values()),'people':[{**p,'records':sorted(p['records'],key=lambda r:(int(re.search(r'\d+',r['edition']).group()) if r['edition'].startswith('LBFF') else 1000+int(re.search(r'20\d\d',r['edition']).group())*10+int(r['edition'][-1]) if r['edition'][-1:].isdigit() else 99999,r['competitionId']))} for p in compiled.values()],'rawRecords':raw_count}
+def edition_rank(r):
+ m=re.search(r'20\d\d',r['edition']);lb=re.fullmatch(r'LBFF (\d+)',r['edition'])
+ if lb:return (2020 if int(lb[1])<=3 else 2021 if int(lb[1])<=6 else 2022 if int(lb[1])<=8 else 2023,int(lb[1]),r['competitionId'])
+ return (int(m[0]) if m else 9999,100,r['competitionId'])
+out={'description':'Participações registradas nas comissões das LBFFs, FFWS BR, EWC e mundiais revisados. Não comprova datas de contratação, saída ou vínculo atual.','catalog':catalog,'teams':list(teams.values()),'people':[{**p,'records':sorted(p['records'],key=edition_rank)} for p in compiled.values()],'rawRecords':raw_count}
 out['version']=hashlib.sha256(json.dumps(out,sort_keys=True,ensure_ascii=False).encode()).hexdigest()[:16]
 p=ROOT/'functions/career-staff-history.json';p.write_text(json.dumps(out,ensure_ascii=False,separators=(',',':'))+'\n')
 print(f'{raw_count} staff records, {len(compiled)} identities, {len(teams)} teams, {p.stat().st_size} bytes (server only)')

@@ -51,7 +51,7 @@ module.exports=function({sql,rows,transaction,data,key,now,findTeam,records,snap
     for(const group of groups){
      const ids=group.records.map(r=>r.competitionId),candidates=original.filter(t=>t.teamId===group.teamId&&(group.role==='other'?t.role!=='player':family(t.role)===family(group.role))),visible=candidates.filter(t=>!t.deleted);
      const explicit=visible.filter(t=>ids.some(id=>(t.competitionIds||[]).includes(id)));
-     let target=explicit.length===1?explicit[0]:visible.length===1&&!used.has(visible[0].id)?visible[0]:null;
+     let target=explicit.length===1?explicit[0]:visible.length===1&&(group.role==='other'||!used.has(visible[0].id))?visible[0]:null;
      // Archived passages and ambiguous repeat stints stay under administrator control.
      if(!target&&!candidates.length){
       const first=group.records[0],last=group.records.at(-1),team=findTeam(group.teamId),sorted=[...all].sort((a,b)=>a.order-b.order);

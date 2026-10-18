@@ -50,8 +50,8 @@ def build():
             if not team: continue
             entry = edition(team, cid, name, family, year, source,
                 startDate=data.get('startDate', ''), endDate=data.get('endDate', ''))
-            stage = dict(id='final' if final else 'overall' if overall else 'groups',
-                label='Grande final' if final else 'Classificação final' if overall else 'Point Rush' if 'Point Rush' in table.get('title', '') else 'Fase de grupos',
+            stage = dict(id='final' if final else 'overall' if overall else table.get('stageId','groups'),
+                label='Grande final' if final else 'Classificação final' if overall else 'Play-ins' if table.get('stageId')=='playins' else 'Point Rush' if 'Point Rush' in table.get('title', '') else 'Fase de grupos',
                 position=number(row.get('pos')), points=number(row.get('total', row.get('points'))), finished=True,
                 isFinal=final, champion=(final or overall) and row.get('pos') == 1)
             # Never convert weighted kill points into kills or missing values into zero.
@@ -83,6 +83,16 @@ def build():
         for standings in data.get('standings', []):
             table(data, standings, cid, name, family, data['year'], source, overall=cid == 'lbff1')
         if data.get('final'): table(data, data['final'], cid, name, family, data['year'], source, final=True)
+
+    # Reviewed, normalized world-event pilot. Raw wiki code is never read at runtime.
+    for path in sorted((ROOT/'novos-torneios').glob('ffws-*.json')):
+        data=json.loads(path.read_text())
+        if not data.get('pilot') or not data.get('careerId'):continue
+        cid=data['careerId'];source=str(path.relative_to(ROOT))
+        for item in data['teams']['items']:
+            roster(edition(item['n'],cid,data['name'],'MUNDIAL',data['year'],source,startDate=data['startDate'],endDate=data['endDate'],detailHref='/index.html?torneio='+data['id']+'#outros-torneios'),item)
+        for standings in data.get('standings',[]):table(data,standings,cid,data['name'],'MUNDIAL',data['year'],source)
+        table(data,data['final'],cid,data['name'],'MUNDIAL',data['year'],source,final=True)
 
     # 2024 has one annual final: do not attribute that title to each split.
     data = read('novos-torneios/wb-2024.json')

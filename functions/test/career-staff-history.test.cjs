@@ -12,8 +12,8 @@ const edit=(core,operation,b)=>core.admin(admin,{operation,nonce:crypto.randomUU
 test('LBFF staff identities, aliases and competitions unify without merging unrelated players or claiming current contracts',()=>{
  const x=fixture();try{
   const core=x.core();core.ensure();
-  assert.equal(manifest.rawRecords,259);assert.equal(manifest.people.length,106);
-  assert.equal(x.db.prepare('SELECT COUNT(*) n FROM career_roster_participations').get().n,259);
+  assert.equal(manifest.rawRecords,266);assert.equal(manifest.people.length,106);
+  assert.equal(x.db.prepare('SELECT COUNT(*) n FROM career_roster_participations').get().n,266);
   const souto=core.publicRead('person',{name:'Matheus Souto'}).person;
   assert.equal(souto.id,'staff-history-souto');assert.equal(souto.kind,'staff');assert.equal(souto.current.length,0);
   assert.equal(core.publicRead('person',{name:'Souto'}).person.id,souto.id);
@@ -98,5 +98,16 @@ test('upgrading the prior LBFF import preserves manually closed contracts and ex
   p=(await edit(prior,'savePerson',{personId:p.id,revision:p.revision,name:p.name,kind:'staff',availability:'free_agent',aliases:p.aliases})).person;
   const upgraded=get(x.core(),'joker-coach');assert.equal(upgraded.current.length,0);assert.equal(upgraded.availability,'free_agent');const kept=upgraded.tenures.find(r=>r.id===t.id);assert.equal(kept.end.date,'2026-10-15');assert.deepEqual(kept.competitions,[]);assert(upgraded.tenures.some(t=>t.competitions.some(c=>c.id==='ffwsbr2025s1')));
   x.trace.length=0;x.core().ensure();assert(!x.trace.some(t=>/^\s*(INSERT|UPDATE|DELETE)/i.test(t.query)));
+ }finally{x.db.close();}
+});
+
+test('pilot world rosters link the reviewed coach identities and the registered players without reopening any contract',()=>{
+ const x=fixture();try{
+  const core=x.core(),frois=get(core,'frois'),stark=get(core,'staff-history-stark-coach'),athlete=get(core,'stark');
+  for(const id of ['ffws2021singapore','ffws2022sentosa'])assert(frois.tenures.some(t=>t.teamId==='loudsnickers'&&t.competitions.some(c=>c.id===id)),id);
+  assert(stark.tenures.some(t=>t.teamId==='vivokeyd'&&t.competitions.some(c=>c.id==='ffws2022sentosa')));assert(!athlete.tenures.some(t=>t.competitions.some(c=>c.id==='ffws2022sentosa')));
+  const chef=get(core,'staff-history-chefexl');assert(chef.tenures.some(t=>t.teamId==='corinthians'&&t.competitions.some(c=>c.id==='ffws2019')));assert(!chef.current.length);
+  const nobru=get(core,'nobru');assert(nobru.tenures.some(t=>t.teamId==='corinthians'&&t.role==='player'&&t.competitions.some(c=>c.id==='ffws2019')));
+  assert(!frois.tenures.some(t=>t.competitions.some(c=>c.id==='ffws2019')),'No coach was invented for LOUD 2019');
  }finally{x.db.close();}
 });

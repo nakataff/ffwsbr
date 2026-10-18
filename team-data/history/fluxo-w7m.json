@@ -297,6 +297,7 @@
           "LBFF 4",
           "LBFF 5",
           "LBFF 6",
+          "FFWS 2021 Singapura",
           "LBFF 7",
           "LBFF 8"
         ]
@@ -626,6 +627,13 @@
       "data": "2024-11-24",
       "place": "1º",
       "source": "resultados.json"
+    },
+    {
+      "torneio": "FFWS 2021 Singapura",
+      "data": "2021-05-30",
+      "place": "4º",
+      "source": "novos-torneios/ffws-2021-singapore.json",
+      "url": "/index.html?torneio=ffws-2021-singapore#outros-torneios"
     },
     {
       "torneio": "LBFF 9",
