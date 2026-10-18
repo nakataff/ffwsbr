@@ -57,6 +57,34 @@ test('homepage opens on knockout matchups from published dates and displays corr
   assert(x.requests.some(p=>p.includes('dates.json')));
  }finally{x.close();}
 });
+test('upcoming fixture cards are clickable and expand to the same two six-team groups without changing the main matchup',async()=>{
+ const x=await mount('2026-10-18T11:00:00-03:00');
+ try{
+  const d=x.w.document,panels=[...d.querySelectorAll('.home-global-fixture')];
+  assert.equal(panels.length,3);
+  assert.equal(panels[0].tagName,'DETAILS');
+  assert.equal(panels[0].querySelector('summary').tagName,'SUMMARY');
+  assert.equal(panels[0].open,false);
+  panels[0].querySelector('summary').click();
+  await sleep();
+  assert.equal(panels[0].open,true);
+  assert.equal(panels[0].querySelectorAll('.home-global-match-group').length,2);
+  assert.equal(panels[0].querySelectorAll('.home-global-match-team').length,12);
+  assert.equal(panels[0].querySelectorAll('.home-global-match-team img').length,12);
+  assert.match(panels[0].querySelector('.home-global-fixture-expanded').textContent,/GRUPO C/);
+  assert.match(panels[0].querySelector('.home-global-fixture-expanded').textContent,/GRUPO D/);
+  assert.equal(d.querySelectorAll('.home-global-upcoming-content>.home-global-matchup .home-global-match-team').length,12);
+  panels[1].querySelector('summary').click();
+  await sleep();
+  assert.equal(panels[1].open,true);
+  assert.equal(panels[0].open,false);
+  panels[1].querySelector('summary').click();await sleep();
+  assert.equal(panels[1].open,false);
+  d.querySelector('#home-global-tab-slots').click();
+  assert.equal(d.querySelector('#home-global-panel-slots').hidden,false);
+  assert.equal(d.querySelectorAll('#home-global-panel-slots .home-global-team').length,24);
+ }finally{x.close();}
+});
 test('tabs preserve original slot sections and support keyboard navigation on mobile',async()=>{
  const x=await mount('2026-10-18T11:00:00-03:00',{mobile:true});
  try{
@@ -74,16 +102,28 @@ test('tabs preserve original slot sections and support keyboard navigation on mo
   assert.equal(d.querySelector('#home-global-tab-upcoming').getAttribute('tabindex'),'0');
  }finally{x.close();}
 });
-test('countdown advances to following confirmed group matchup, with no invented live status',async()=>{
+test('scheduled 04:00 round stays highlighted until estimated 08:30 end, then the 09:00 matchup takes over automatically',async()=>{
  const x=await mount('2026-11-06T03:59:59-03:00');
  try{
-  const d=x.w.document;
-  assert.equal(d.querySelector('.home-global-countdown').dataset.start,'2026-11-06T04:00:00-03:00');
+  const d=x.w.document,focus=()=>d.querySelector('.home-global-match-head').textContent,
+  start=()=>d.querySelector('.home-global-countdown').dataset.start;
+  assert.equal(start(),'2026-11-06T04:00:00-03:00');
+  assert.match(focus(),/GRUPO A × GRUPO B/);
   x.setNow('2026-11-06T04:00:01-03:00');x.tick();
-  assert.equal(d.querySelector('.home-global-countdown').dataset.start,'2026-11-06T09:00:00-03:00');
-  assert.match(d.querySelector('.home-global-match-head').textContent,/GRUPO C × GRUPO D/);
-  assert.equal(d.querySelectorAll('.home-global-match-team').length,12);
-  assert(!d.querySelector('.home-global-match-head').textContent.includes('AO VIVO'));
+  assert.equal(start(),'2026-11-06T08:30:00-03:00');
+  assert.match(focus(),/GRUPO A × GRUPO B/);
+  assert.match(d.querySelector('#home-global-countdown-label').textContent,/TROCA DE DESTAQUE PREVISTA/);
+  assert.match(d.querySelector('.home-global-countdown time').textContent,/ESTIMATIVA/);
+  x.setNow('2026-11-06T08:29:59-03:00');x.tick();
+  assert.match(focus(),/GRUPO A × GRUPO B/);
+  x.setNow('2026-11-06T08:30:00-03:00');x.tick();
+  assert.equal(start(),'2026-11-06T09:00:00-03:00');
+  assert.match(focus(),/GRUPO C × GRUPO D/);
+  x.setNow('2026-11-06T09:00:01-03:00');x.tick();
+  assert.equal(start(),'2026-11-06T13:30:00-03:00');
+  assert.match(focus(),/GRUPO C × GRUPO D/);
+  assert.equal(d.querySelectorAll('.home-global-matchup')[0].querySelectorAll('.home-global-match-team').length,12);
+  assert(!focus().includes('AO VIVO'));
  }finally{x.close();}
 });
 test('later phase shows scheduled dates but does not guess team identities; after final it shows results shortcut',async()=>{
