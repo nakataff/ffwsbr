@@ -242,3 +242,15 @@ test('name searches use indexed alias lookups instead of scanning every alias fo
   }
  }finally{sqlite.close();}
 });
+
+
+test('existing LUUUKING profile gets its real portrait once without changing custom admin images',()=>{
+ const person=photo=>({id:'luuuking',name:'LUUUKING',aliases:['LUUUKING'],kind:'player',photo,availability:'active',tenures:[]});
+ const seed=photo=>({teams:[{id:'fluxow7m',name:'FLUXO W7M',aliases:['Fluxo']}],people:[person(photo)]});
+ const repaired=setup(seed('silhueta.webp'));
+ const result=repaired.core.publicRead('person',{id:'luuuking'}).person;
+ assert.equal(result.photo,'/luuuking.webp');
+ assert.equal(repaired.core.publicRead('search',{query:'luuuking'}).entries[0].photo,'/luuuking.webp');
+ assert.equal(repaired.core.publicRead('person',{id:'luuuking'}).person.revision,result.revision);
+ assert.equal(setup(seed('https://example.com/coaches/custom.webp')).core.publicRead('person',{id:'luuuking'}).person.photo,'https://example.com/coaches/custom.webp');
+});
