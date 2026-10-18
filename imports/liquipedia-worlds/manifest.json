@@ -276,7 +276,7 @@
       },
       "dataNotes": [
         "RZX Esports não disputou por problemas de visto; a fonte atribui o 18º lugar e a premiação, sem participação esportiva.",
-        "O arquivo registra dois 12º lugares e nenhum 10º na queda 1 do dia 5 do Knockout 2024. Os totais coincidem com o resumo do arquivo, mas a colocação dessa queda aguarda revisão da fonte; nenhum resultado foi substituído por suposição."
+        "Dia 5, queda 1 do Knockout: CLG em 10º com 2 abates, AAA em 11º com 4 e WAG em 12º sem abates, conforme revisão do administrador em 18/10/2026. O total de pontos da CLG permanece igual."
       ],
       "finalBracket": "ffwsgf24gf",
       "knockoutList": "ffwsgf24ks",
@@ -303,25 +303,26 @@
         "knockout:13-18;down;Eliminado",
         "final:1;up;Campeão"
       ],
-      "sourceAnomalies": {
-        "knockout-day-5:1": {
-          "positions": [
+      "scoreCorrections": [
+        {
+          "stageId": "knockout-day-5",
+          "team": "CLG",
+          "match": 1,
+          "from": [
             12,
-            5,
-            7,
-            4,
-            3,
-            9,
-            8,
-            1,
-            11,
-            6,
-            12,
+            3
+          ],
+          "to": [
+            10,
             2
           ],
-          "note": "O arquivo registra dois 12º lugares e nenhum 10º na queda 1 do dia 5 do Knockout 2024. Os totais coincidem com o resumo do arquivo, mas a colocação dessa queda aguarda revisão da fonte; nenhum resultado foi substituído por suposição."
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/score-review-20261018.txt",
+            "sha256": "ccf3d05d35220ee3aaa1fb032394e1afe8808baf201f2174ce8510ef15a8aa98",
+            "description": "Correções confirmadas pelo administrador após conferir as duas edições em 18/10/2026."
+          }
         }
-      }
+      ]
     },
     {
       "id": "ffws-2025",
@@ -375,7 +376,8 @@
       "dataNotes": [
         "Clash Squad e Battle Royale possuem campeões, resultados e premiações independentes.",
         "A final do Battle Royale usa Champion Rush de 80 pontos, não apenas a ordem decrescente de pontos.",
-        "Heavy: 7º lugar, 6 abates e 10 pontos na queda 4 da final, conferidos com a imagem do placar enviada pelo administrador em 18/10/2026."
+        "Heavy: 7º lugar, 6 abates e 10 pontos na queda 4 da final, conferidos com a imagem do placar enviada pelo administrador em 18/10/2026.",
+        "Heavy: 3 abates na última queda da final, conforme revisão do administrador em 18/10/2026. Total da final: 24 de eliminação + 24 de colocação = 48 pontos."
       ],
       "finalBracket": "ffwsgf25gf",
       "knockoutList": "ffwsgf25ks",
@@ -403,6 +405,24 @@
             "file": "imports/liquipedia-worlds/evidence/ffws-2025-final-game4.png",
             "sha256": "34cb8385001d0ec8217241e4c0aaae6c68cd0d13b49cfe72c35d4117ff23b88a",
             "description": "Placar Grand Finals Game 4 enviado pelo administrador em 18/10/2026: Heavy, 6 abates + 4 pontos de colocação = 10 pontos."
+          }
+        },
+        {
+          "stageId": "final",
+          "team": "Heavy",
+          "match": 7,
+          "from": [
+            12,
+            5
+          ],
+          "to": [
+            12,
+            3
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/score-review-20261018.txt",
+            "sha256": "ccf3d05d35220ee3aaa1fb032394e1afe8808baf201f2174ce8510ef15a8aa98",
+            "description": "Correções confirmadas pelo administrador após conferir as duas edições em 18/10/2026."
           }
         }
       ]

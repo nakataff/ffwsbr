@@ -2323,10 +2323,29 @@
         "Comissão não informada: RETA Esports",
         "A fonte declara US$ 1,000,000 no total; as linhas de premiação coletiva somam US$ 975,000. Valores preservados sem preencher a diferença.",
         "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado.",
-        "O arquivo registra dois 12º lugares e nenhum 10º na queda 1 do dia 5 do Knockout 2024. Os totais coincidem com o resumo do arquivo, mas a colocação dessa queda aguarda revisão da fonte; nenhum resultado foi substituído por suposição.",
         "Knockout · Classificação geral: mapa não informado nas quedas 24",
         "Point Rush · Dia 1: mapa não informado nas quedas 6",
         "Point Rush · Dia 2: mapa não informado nas quedas 6"
+      ],
+      "corrections": [
+        {
+          "stageId": "knockout-day-5",
+          "team": "CLG",
+          "match": 1,
+          "from": [
+            12,
+            3
+          ],
+          "to": [
+            10,
+            2
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/score-review-20261018.txt",
+            "sha256": "ccf3d05d35220ee3aaa1fb032394e1afe8808baf201f2174ce8510ef15a8aa98",
+            "description": "Correções confirmadas pelo administrador após conferir as duas edições em 18/10/2026."
+          }
+        }
       ],
       "dailyStages": [
         {
@@ -2858,6 +2877,24 @@
             "file": "imports/liquipedia-worlds/evidence/ffws-2025-final-game4.png",
             "sha256": "34cb8385001d0ec8217241e4c0aaae6c68cd0d13b49cfe72c35d4117ff23b88a",
             "description": "Placar Grand Finals Game 4 enviado pelo administrador em 18/10/2026: Heavy, 6 abates + 4 pontos de colocação = 10 pontos."
+          }
+        },
+        {
+          "stageId": "final",
+          "team": "Heavy",
+          "match": 7,
+          "from": [
+            12,
+            5
+          ],
+          "to": [
+            12,
+            3
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/score-review-20261018.txt",
+            "sha256": "ccf3d05d35220ee3aaa1fb032394e1afe8808baf201f2174ce8510ef15a8aa98",
+            "description": "Correções confirmadas pelo administrador após conferir as duas edições em 18/10/2026."
           }
         }
       ],

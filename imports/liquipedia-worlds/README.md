@@ -73,16 +73,17 @@ classificação. Esses valores não são distribuídos artificialmente entre tim
 RZX 2024 recebeu colocação/premiação na fonte mas não disputou por problemas
 de visto; Esports Orig e Virtus.pro 2022 também não disputaram.
 
-Uma inconsistência do material recebido permanece sinalizada na interface:
+As duas inconsistências de posição foram resolvidas com evidências do administrador:
 
-- Knockout 2024, dia 5, queda 1: dois 12º lugares e nenhum 10º. Os totais
-  coincidem com o resumo recebido, mas a colocação exige revisão.
-A final BR 2025, queda 4, foi corrigida com o placar enviado pelo administrador
-em 18/10/2026: Heavy ficou em 7º, com 6 abates e 4 pontos de colocação (10 no total).
-O arquivo original permanece intacto; `scoreCorrections` registra a troca de
-9º para 7º, a evidência e seu SHA-256. O importador exige que o valor original
-coincida antes de aplicar a correção e valida novamente as posições e os totais.
+- Final 2025, queda 4: Heavy em 7º, 6 abates e 10 pontos, conforme imagem do placar.
+- Final 2025, queda 7: Heavy fez 3 abates, não 5. Total final de 48 pontos,
+  com 24 de eliminação e 24 de colocação; posição final permanece em 11º.
+- Knockout 2024, dia 5, queda 1: CLG em 10º com 2 abates; AAA em 11º com 4;
+  WAG em 12º com zero. CLG mantém 3 pontos na queda; seu resumo ganha um
+  ponto de colocação e perde um de eliminação, mantendo o total.
 
-Essas exceções são limitadas à sequência exata de posições no manifest, geram
-avisos e não autorizam aceitar novas inconsistências. Não se escolhe qual equipe
-teve a posição errada por suposição. O arquivo original permanece intacto.
+`scoreCorrections` registra os valores originais e corrigidos, evidências e seus
+SHA-256. A imagem e a confirmação textual estão em `evidence/`. O código exige
+que o valor original coincida, aplica cada correção uma vez e valida novamente
+posições, totais e resumos. Fontes originais permanecem intactas; não há exceção
+pendente permitindo posições duplicadas nessas quedas.

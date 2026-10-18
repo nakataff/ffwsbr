@@ -156,7 +156,7 @@ def modern_stages(cfg,all_t,resolve,prize_order,report):
     b=by_id[cfg['finalBracket']];champion=min(prize_order,key=prize_order.get) if cfg.get('championRush') else None
     final=match_table(first(b.args['R1M1'],'Match'),resolve,'Grande final','final',official=prize_order,final=True,headstart=bonus or None,champion=champion,anomalies=cfg.get('sourceAnomalies'),corrections=cfg.get('scoreCorrections'))
     ko=by_id[cfg['knockoutList']];daily=[]
-    for n in range(1,7):daily.append(match_table(first(ko.args['M'+str(n)],'Match'),resolve,f'Knockout · Dia {n}','knockout-day-'+str(n),anomalies=cfg.get('sourceAnomalies')))
+    for n in range(1,7):daily.append(match_table(first(ko.args['M'+str(n)],'Match'),resolve,f'Knockout · Dia {n}','knockout-day-'+str(n),anomalies=cfg.get('sourceAnomalies'),corrections=cfg.get('scoreCorrections')))
     combined={}
     for i,table in enumerate(daily):
         for row in table['rows']:
@@ -182,7 +182,14 @@ def modern_stages(cfg,all_t,resolve,prize_order,report):
         for k,v in summary.args.items():
             if not k.isdigit():continue
             q=first(v,'TeamOpponent').args;row=combined[resolve(q['1'])]
-            assert [row[5],row[4]]==[integer(q['r1']),integer(q['r2'])],('Resumo geral divergente',row[2])
+            expected=[integer(q['r1']),integer(q['r2'])]
+            for correction in cfg.get('scoreCorrections',[]):
+                if correction['team']!=row[2] or not correction['stageId'].startswith('knockout-day-'):continue
+                table=next(t for t in daily if t['stageId']==correction['stageId'])
+                old_pos,old_kills=correction['from'];new_pos,new_kills=correction['to']
+                expected[0]+=table['placementPoints'][str(new_pos)]-table['placementPoints'][str(old_pos)]
+                expected[1]+=new_kills-old_kills
+            assert [row[5],row[4]]==expected,('Resumo geral divergente',row[2])
             official_order.append(row[2])
         assert set(official_order)==set(combined),'Resumo Knockout incompleto'
         order_rows(rows,{n:i for i,n in enumerate(official_order,1)})
