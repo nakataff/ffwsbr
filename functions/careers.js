@@ -319,7 +319,25 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
      }
      photo=value||'silhueta.webp';
     }
-    const data={...old,id,name,kind,availability,aliases:[...new Set([name,...values])],photo,playerRetired:Object.hasOwn(b,'playerRetired')?b.playerRetired===true:old.playerRetired===true,currentTeamHint:old.currentTeamHint||''};sql.exec('INSERT OR REPLACE INTO career_people VALUES(?,?,?,?,?,?,?)',id,name,key(name),kind,JSON.stringify(data),before?.person.revision||0,now());if(before&&availability!==old.availability){data.affiliationSource='manual';data.affiliationEdition=registration?.edition||'';if(availability!=='free_agent'){delete data.freeAgentSince;delete data.freeAgentReason;}sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(data),id);}aliases(id,[id,name,...data.aliases]);
+     const socialHosts={
+      instagram:['instagram.com'],x:['x.com','twitter.com'],
+      tiktok:['tiktok.com'],youtube:['youtube.com','youtu.be'],
+      twitch:['twitch.tv'],liquipedia:['liquipedia.net']
+    };
+    let social=old.social&&typeof old.social==='object'&&!Array.isArray(old.social)?{...old.social}:{};
+    if(Object.hasOwn(b,'social')){
+      if(!b.social||typeof b.social!=='object'||Array.isArray(b.social))throw fail(400,'Confira os links das redes sociais.');
+      const next={};
+      for(const [network,hosts] of Object.entries(socialHosts)){
+        const value=text(b.social[network],500).trim();
+        if(!value)continue;
+        let url;try{url=new URL(value);}catch{throw fail(400,'Use a URL completa HTTPS para '+network+'.');}
+        if(url.protocol!=='https:'||url.username||url.password||!hosts.some(host=>url.hostname===host||url.hostname==='www.'+host||network==='youtube'&&url.hostname==='m.youtube.com'))throw fail(400,'Domínio não permitido para '+network+'.');
+        next[network]=url.href;
+      }
+      social=next;
+    }
+   const data={...old,id,name,kind,availability,aliases:[...new Set([name,...values])],social,photo,playerRetired:Object.hasOwn(b,'playerRetired')?b.playerRetired===true:old.playerRetired===true,currentTeamHint:old.currentTeamHint||''};sql.exec('INSERT OR REPLACE INTO career_people VALUES(?,?,?,?,?,?,?)',id,name,key(name),kind,JSON.stringify(data),before?.person.revision||0,now());if(before&&availability!==old.availability){data.affiliationSource='manual';data.affiliationEdition=registration?.edition||'';if(availability!=='free_agent'){delete data.freeAgentSince;delete data.freeAgentReason;}sql.exec('UPDATE career_people SET data=? WHERE id=?',JSON.stringify(data),id);}aliases(id,[id,name,...data.aliases]);
    }else if(op==='saveTenure'||op==='transfer'){
     if(records(id).filter(t=>!t.deleted).length>=200&&!b.tenure?.id)throw fail(400,'Limite de 200 passagens por pessoa.');const raw=b.tenure||{},old=raw.id?rows('SELECT data,person FROM career_tenures WHERE id=?',text(raw.id,150))[0]:null;if(raw.id&&(!old||old.person!==id))throw fail(404,'Passagem não encontrada nesta pessoa.');const t=cleanTenure({...raw,personId:id,confirmNewTeam:b.confirmNewTeam===true},old?raw.id:null,old?JSON.parse(old.data):null);
     if(op==='transfer'){const source=rows('SELECT * FROM career_tenures WHERE id=? AND person=?',text(b.fromTenureId,150),id)[0];if(!source)throw fail(404,'Escolha a passagem anterior.');const previous=JSON.parse(source.data);if(previous.deleted||previous.status==='ended')throw fail(409,'A passagem anterior já está encerrada.');const end=boundary(b.departure);if(!end.date&&!end.edition)throw fail(400,'Informe a saída ou a edição da passagem anterior.');if(bounds(previous.start)&&bounds(end,true)&&bounds(previous.start)>bounds(end,true))throw fail(400,'Confira a data de saída.');if(bounds(t.start)&&bounds(end)&&bounds(t.start)<bounds(end))throw fail(400,'A nova entrada não pode ser anterior à saída informada.');previous.end=end;previous.status='ended';sql.exec('UPDATE career_tenures SET data=? WHERE id=?',JSON.stringify(previous),source.id);}
