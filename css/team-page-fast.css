@@ -73,3 +73,6 @@ body.cff-modal-open{overflow:hidden}.cff-team-ranking-modal[hidden]{display:none
  .cff-title-card span{overflow-wrap:anywhere}
 }
 @media(prefers-reduced-motion:reduce){.cff-team-page *{animation:none!important;transition:none!important}}
+
+/* Cards da comissão técnica, preservando o layout original da página. */
+.cff-team-coaches{margin-top:26px}.cff-team-coaches .cff-history-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
