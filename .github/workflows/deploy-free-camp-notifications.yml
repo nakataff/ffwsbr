@@ -91,6 +91,7 @@ on:
       - 'carreira.html'
       - 'css/careers.css'
       - 'test/career-interfaces.test.cjs'
+      - 'test/historical-team-fixes.test.cjs'
       - 'functions/economy-game-orders.js'
       - 'functions/economy-ranking.js'
       - 'functions/economy-interactions.js'
