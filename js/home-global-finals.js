@@ -69,7 +69,7 @@
   let loaded=false;
 
   function setCountdown(round,index,started=false){
-    if(!round){countdown.hidden=true;target=NaN;return;}
+    if(!round){countdown.hidden=true;target=NaN;clearInterval(timer);timer=null;return;}
     countdown.hidden=false;
     target=started?estimatedEnd(round,index):startOf(round);
     const localDate=new Date(target-3*60*60*1000);
