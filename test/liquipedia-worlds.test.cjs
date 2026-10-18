@@ -141,3 +141,50 @@ test('Copa FF 2020: published standings, final points, MVP and source-only field
   assert(!f.calls.includes('FULL_PLAYER_CATALOG'));
  }finally{f.close();}
 });
+
+test('Copa FF 2022: 24 equipes, seis dias, 8 quedas com pontos por colocação e abates',async()=>{
+ const d=read('novos-torneios/copa-ff-2022.json'),manifest=read('novos-torneios/index.json');
+ const card=manifest.copaEntries.find(e=>e.id===d.id);
+ assert(card);assert.equal(card.logo,'copaff22.webp');
+ assert.equal(card.champion,'BD VASCO');assert.equal(card.teamCount,24);
+ assert.equal(d.teams.items.length,24);
+ assert.equal(d.teams.items.reduce((n,t)=>n+t.p.length,0),130);
+ assert.equal(d.teams.items.reduce((n,t)=>n+t.s.length,0),18);
+ assert.deepEqual([...new Set(d.teams.items.map(t=>t.group))].sort(),['A','B','C','D']);
+ const groups=d.standings[0];assert.equal(groups.rows.length,24);
+ assert.deepEqual(groups.rounds,['Dia 1','Dia 2','Dia 3','Dia 4','Dia 5','Dia 6']);
+ for(const r of groups.rows){
+  assert.equal(r[4].length,6);
+  assert.equal(r[4].reduce((n,v)=>n+(v??0),0),r[3]);
+  assert.equal(r[4].filter(v=>v!==null).length,3);
+ }
+ const f=d.final;assert.equal(f.maps.length,8);assert.equal(f.rows.length,12);
+ assert.equal(f.scoreMode,'placementKills');
+ assert.deepEqual(f.matchCols,['match','placement','kills','placementPts','killPts','total']);
+ const c=Object.fromEntries(f.cols.map((k,i)=>[k,i]));
+ for(const r of f.rows){
+  const matches=r[c.matches];assert.equal(matches.length,8);
+  for(const m of matches){
+   assert.equal(m[3],f.placementPoints[m[1]-1]);
+   assert.equal(m[4],m[2]);
+   assert.equal(m[5],m[3]+m[4]);
+  }
+  assert.equal(r[c.kills],matches.reduce((n,m)=>n+m[2],0));
+  assert.equal(r[c.finalPts],matches.reduce((n,m)=>n+m[5],0));
+  assert.equal(r[c.total],r[c.headstart]+r[c.finalPts]);
+ }
+ assert.deepEqual(f.rows.slice(0,3).map(r=>[r[c.team],r[c.total]]),[['BD VASCO',105],['LOUD',99],['TEAM LIQUID',84]]);
+ assert.equal(d.prizePool.currency,'BRL');
+ assert.equal(d.prizePool.rows.reduce((n,r)=>n+(r[3]||0),0),1000000);
+ assert.deepEqual(d.awards.map(a=>a.player),['RAONE7','Ruan']);
+ assert(d.teams.items.find(t=>t.n==='MAGIC SQUAD').s.some(p=>p.personId==='luuuking'));
+ assert(d.teams.items.find(t=>t.n==='LOUD').s.some(p=>p.personId==='frois'));
+ const ui=await fixture();try{
+  assert(ui.w.dbNovosTorneios.some(x=>x.id===d.id));
+  await ui.w.openOtherTournament(d.id);
+  assert.equal(ui.w.currentOtData.id,d.id);
+  assert.match(ui.w.document.getElementById('ot-title').textContent,/C.O.P.A. Free Fire 2022/);
+  assert(ui.calls.includes('novos-torneios/copa-ff-2022.json'));
+  assert(!ui.calls.includes('FULL_PLAYER_CATALOG'));
+ }finally{ui.close();}
+});
