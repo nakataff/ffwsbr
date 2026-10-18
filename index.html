@@ -70,7 +70,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <!-- Dados históricos são carregados sob demanda para não bloquear a home. -->
 <link rel="stylesheet" href="css/bundle.min.css?v=20260904-sidebar-nested-v22">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/home-ffws-s2.css?v=20261004-world-qualified-v13">
+<link rel="stylesheet" href="css/home-ffws-s2.css?v=20261018-selecao-torneio-v1">
 <link rel="stylesheet" href="css/site-nav-freeze.css?v=20260901-nav-unified-v11">
 <link rel="stylesheet" href="css/site-back-navigation.css?v=20260902-back-accent-v30">
 <link rel="stylesheet" href="css/search-fast.css?v=20260728-search-layout-v1">
@@ -767,13 +767,13 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         <div class="home-live-selection-stack">
             <div class="home-widget home-weekly-selection-widget">
                 <div class="home-weekly-selection-head">
-                    <h3>⭐ Seleção da Semana</h3>
+                    <h3>⭐ Seleção do Torneio</h3>
                     <span id="home-weekly-selection-meta">CARREGANDO</span>
                 </div>
                 <div id="home-weekly-selection-list" class="home-weekly-selection-list">
                     <div class="home-weekly-empty">Carregando seleção...</div>
                 </div>
-                <button type="button" class="home-widget-link-btn" onclick="navigate('ffws-br-s2-selecoes')">Ver seleções →</button>
+                <button type="button" class="home-widget-link-btn" onclick="navigate('ffws-br-s2-selecoes');window.setFFWSS2SelectionTab?.('torneio')">Ver seleção completa →</button>
             </div>
         </div>
 
@@ -2525,7 +2525,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="js/year-ranking-logo-sheet.js?v=20261018-global-career-logos-v1"></script>
 <script type="module" src="js/firebase-votes.min.js?v=20260917-restore-mercado-v1"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
-<script defer src="js/home-current-results.min.js?v=20261011-season-closed-v31"></script>
+<script defer src="js/home-current-results.min.js?v=20261018-selecao-torneio-v1"></script>
 <script defer src="js/home-year-2026.min.js?v=20261012-global-local-logos-v7"></script>
 </main>
 
