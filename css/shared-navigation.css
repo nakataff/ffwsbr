@@ -64,3 +64,54 @@
 }
 .cff-unified-menu .cff-menu-featured{gap:10px;margin-top:14px;border:1px solid #6c5c2b;background:linear-gradient(110deg,#d4b23b10,#0b1420);color:#f0d87d}
 .cff-menu-featured img{width:30px;height:26px;object-fit:contain;flex:none}.cff-menu-featured>span{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:11px;letter-spacing:.25px}.cff-menu-featured small{font-size:8px;letter-spacing:1.4px;color:#a69b70}.cff-unified-menu .cff-menu-featured:hover,.cff-unified-menu .cff-menu-featured.active{background:#d4b23b14;color:#ffe8a2;border-color:#ad9140;box-shadow:inset 3px 0 #e7c53d}
+
+
+/* Sidebar: reserve a real lane for the scrollbar and constrain the wallet/profile row.
+   The account widget injects a flex group after the menu mounts; without min-width:0
+   its full-width profile link extends beneath the scrollbar. */
+#sidebar-panel,#cff-public-sidebar{box-sizing:border-box}
+#sidebar-panel>.sidebar-nav.cff-unified-menu,
+#cff-public-sidebar #cff-public-sidebar-nav.cff-unified-menu{
+  box-sizing:border-box;
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  scrollbar-gutter:stable;
+  scrollbar-width:thin;
+  padding-right:18px!important;
+}
+#sidebar-panel .cff-unified-menu>.cff-account-access-group,
+#cff-public-sidebar .cff-unified-menu>.cff-account-access-group{
+  box-sizing:border-box;
+  display:flex!important;
+  flex:0 0 auto!important;
+  align-items:center;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  gap:8px;
+}
+#sidebar-panel .cff-unified-menu>.cff-account-access-group>[data-account-entry],
+#cff-public-sidebar .cff-unified-menu>.cff-account-access-group>[data-account-entry]{
+  box-sizing:border-box;
+  width:auto!important;
+  min-width:0!important;
+  max-width:100%;
+  flex:1 1 0!important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#sidebar-panel .cff-unified-menu>.cff-account-access-group>.cff-header-wallet,
+#cff-public-sidebar .cff-unified-menu>.cff-account-access-group>.cff-header-wallet{flex:0 0 auto!important}
+#sidebar-panel .cff-unified-menu .cff-menu-link,
+#cff-public-sidebar .cff-unified-menu .cff-menu-link{min-width:0;max-width:100%}
+@media(max-width:370px){
+ #sidebar-panel>.sidebar-nav.cff-unified-menu,
+ #cff-public-sidebar #cff-public-sidebar-nav.cff-unified-menu{padding-right:15px!important}
+ #sidebar-panel .cff-unified-menu>.cff-account-access-group,
+ #cff-public-sidebar .cff-unified-menu>.cff-account-access-group{gap:5px}
+}
