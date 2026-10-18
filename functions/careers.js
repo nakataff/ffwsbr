@@ -45,7 +45,26 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  function aliases(id,values,table='career_aliases',column='person'){sql.exec('DELETE FROM '+table+' WHERE '+column+'=?',id);for(const alias of new Set(values.map(key).filter(Boolean)))sql.exec('INSERT OR IGNORE INTO '+table+' VALUES(?,?)',alias,id);}
  let ready=false;
- function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();ready=true;}
+ // Repair only the placeholder portrait in the already-persisted profile.
+ // Do not override photos manually supplied by an administrator.
+ function syncLuuukingPortrait(){
+  const marker='profile-asset:luuuking-20261018-v1';
+  if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+  transaction(()=>{
+   if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+   const p=rows('SELECT data FROM career_people WHERE id=?','luuuking')[0];
+   if(p){
+    const data=JSON.parse(p.data);
+    if(!data.photo||data.photo==='silhueta.webp'){
+     data.photo='luuuking.webp';
+     sql.exec('UPDATE career_people SET data=?,revision=revision+1,updated_at=? WHERE id=?',JSON.stringify(data),now(),'luuuking');
+     sql.exec("UPDATE career_meta SET value=value+1 WHERE id='version'");
+    }
+   }
+   sql.exec('INSERT INTO career_meta VALUES(?,?)',marker,'1');
+  });
+ }
+ function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();ready=true;}
  const revision=()=>rows("SELECT value FROM career_meta WHERE id='version'")[0]?.value||1;
  const records=id=>rows('SELECT data FROM career_tenures WHERE person=? ORDER BY ord,id',id).map(r=>JSON.parse(r.data));
  const active=t=>!t.deleted&&['active','loan','substitute'].includes(t.status)&&(!bounds(t.start)||bounds(t.start)<=day(now()))&&(!bounds(t.end,true)||bounds(t.end,true)>=day(now()));
