@@ -230,9 +230,9 @@ test('FFCP bulk parser identifies mission metadata and disambiguates November 6'
  ].join('\n');
  const rows=M.parse(input);
  assert.equal(rows.length,4);
- assert.deepEqual(rows.map(x=>x.title),['Finais da WB','Dino Fogo','Gateiro FF','Terror Noturno']);
- assert.deepEqual(rows.map(x=>x.date),['2026-10-11','2026-10-23','2026-10-30','2026-11-06']);
- assert.deepEqual(rows.map(x=>x.startDate),['2026-10-05','2026-10-10','2026-10-17','2026-10-24']);
+ assert.deepEqual(Array.from(rows,x=>x.title),['Finais da WB','Dino Fogo','Gateiro FF','Terror Noturno']);
+ assert.deepEqual(Array.from(rows,x=>x.date),['2026-10-11','2026-10-23','2026-10-30','2026-11-06']);
+ assert.deepEqual(Array.from(rows,x=>x.startDate),['2026-10-05','2026-10-10','2026-10-17','2026-10-24']);
  assert.equal(rows[0].hashtags,'#FFWSBR #WBSplit2');
  assert.equal(rows[1].code,'??');
  assert.match(rows[2].items,/Gateira/);
@@ -247,7 +247,7 @@ test('FFCP missions import once, appear in separate navigation, remain editable 
   const initial=b.state().tasks.filter(t=>t.ffcp);
   assert.equal(initial.length,4);
   assert.equal(b.state().settings.ffcpSeedVersion,1);
-  assert.deepEqual(initial.map(t=>t.date),['2026-10-11','2026-10-23','2026-10-30','2026-11-06']);
+  assert.deepEqual(Array.from(initial,t=>t.date),['2026-10-11','2026-10-23','2026-10-30','2026-11-06']);
   $('ffcp-side-shortcut').click();
   assert.equal($('tasks-view').hidden,true);
   assert.equal($('ffcp-missions-view').hidden,false);
