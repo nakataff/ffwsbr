@@ -55,10 +55,10 @@ function task(item,id,now){
  return {id,title:item.title,note:item.instructions||'',date:item.date||'',time:'',status:'todo',previousStatus:'todo',important:false,color:'lilac',service:'social',serviceIcon:'',platforms:[],tags:[],links:[],subtasks:[],attachments:[],history:[],createdAt:now,updatedAt:now,completedAt:null,cancelledAt:null,notify:true,startDate:item.startDate||'',ffcp:meta({code:item.code,hashtags:item.hashtags,items:item.items,source:item.source||'ffcp'})};
 }
 function seed(state){
- if(Number(state.settings?.ffcpSeedVersion)>=1)return false;
+ if(Number(state.settings?.ffcpSeedVersion)>=2)return false;
  const now=new Date().toISOString(),existing=new Set((state.tasks||[]).map(t=>key(t.title)+'|'+t.date));
  for(let i=0;i<examples.length;i++){const item=examples[i];if(!existing.has(key(item.title)+'|'+item.date))state.tasks.push(task(item,'ffcp-2026-oct-'+(i+1),now));}
- state.settings.ffcpSeedVersion=1;
+ state.settings.ffcpSeedVersion=2;
  return true;
 }
 const e=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
@@ -67,6 +67,10 @@ function mount(api,projects){
  const root=document.getElementById('ffcp-missions-view');
  const list=root.querySelector('[data-ffcp-list]'),summary=root.querySelector('[data-ffcp-summary]'),paste=root.querySelector('[data-ffcp-paste]'),preview=root.querySelector('[data-ffcp-preview]');
  const state=api.getState,missions=()=>state().tasks.filter(t=>t.ffcp);
+ let showArchived=false;
+ const archived=t=>t.ffcp?.source==='archived';
+ const archiveToggle=root.querySelector('[data-ffcp-show-archived]');
+ archiveToggle?.addEventListener('click',()=>{showArchived=!showArchived;archiveToggle.textContent=showArchived?'Ocultar arquivadas':'Ver arquivadas';archiveToggle.setAttribute('aria-pressed',String(showArchived));render();});
  const open=()=>{projects.switchView('missions');render();};
  document.getElementById('ffcp-side-shortcut')?.addEventListener('click',open);
  document.querySelector('[data-ffcp-alerts]')?.addEventListener('click',()=>document.getElementById('task-notifications')?.click());
@@ -88,7 +92,7 @@ function mount(api,projects){
    const v=new FormData(form),start=clean(v.get('startDate')),due=clean(v.get('date'));
    if((start&&!due)||(start&&due&&start>due)){status.textContent='O início precisa ser anterior ou igual ao prazo final.';return;}
    try{
-    const patch={title:text(v.get('title'),200),startDate:start,date:due,note:text(v.get('instructions'),4000),notify:toggle.checked,ffcp:meta({code:v.get('code'),hashtags:v.get('hashtags'),items:v.get('items'),source:'ffcp'})};
+    const patch={title:text(v.get('title'),200),startDate:start,date:due,note:text(v.get('instructions'),4000),notify:toggle.checked,ffcp:meta({code:v.get('code'),hashtags:v.get('hashtags'),items:v.get('items'),source:original.ffcp?.source||'ffcp'})};
     if(!patch.title)throw Error('Informe o nome da missão.');
     api.update(original,patch,'Missão FFCP editada');d.close();render();
    }catch(error){status.textContent=error.message;}
@@ -99,20 +103,24 @@ function mount(api,projects){
  function render(){
   if(root.hidden)return;
   const today=window.CFF_TASKS_PLAN.today(),all=missions();
-  const pending=all.filter(t=>!['done','cancelled'].includes(t.status)),expired=pending.filter(t=>t.date&&t.date<today),soon=pending.filter(t=>t.date&&t.date>=today&&t.date<=window.CFF_TASKS_PLAN.addDays(today,3));
-  summary.textContent=all.length+' missões · '+pending.length+' pendentes · '+all.filter(t=>t.status==='done').length+' concluídas'+(expired.length?' · '+expired.length+' com prazo encerrado':'')+(soon.length?' · '+soon.length+' urgentes':'');
-  const ordered=[...all].sort((a,b)=>Number(a.status==='done')-Number(b.status==='done')||(a.date||'9999').localeCompare(b.date||'9999')||a.title.localeCompare(b.title,'pt-BR'));
+  const active=all.filter(t=>!archived(t)),pending=active.filter(t=>!['done','cancelled'].includes(t.status)),expired=pending.filter(t=>t.date&&t.date<today),soon=pending.filter(t=>t.date&&t.date>=today&&t.date<=window.CFF_TASKS_PLAN.addDays(today,3));
+  summary.textContent=active.length+' missões ativas · '+pending.length+' pendentes · '+active.filter(t=>t.status==='done').length+' concluídas · '+(all.length-active.length)+' arquivadas'+(expired.length?' · '+expired.length+' com prazo encerrado':'')+(soon.length?' · '+soon.length+' urgentes':'');
+  const ordered=[...(showArchived?all:active)].sort((a,b)=>Number(a.status==='done')-Number(b.status==='done')||(a.date||'9999').localeCompare(b.date||'9999')||a.title.localeCompare(b.title,'pt-BR'));
   list.replaceChildren();
-  if(!ordered.length)list.append(e('p','hint','Nenhuma missão cadastrada. Cole um comunicado acima.'));
+  if(!ordered.length)list.append(e('p','hint',showArchived?'Nenhuma missão cadastrada ou arquivada.':'Nenhuma missão ativa. Use “Ver arquivadas” ou importe um comunicado.'));
   for(const t of ordered){
-   const finished=t.status==='done',expired=!finished&&t.date&&t.date<today,notStarted=!finished&&t.startDate&&t.startDate>today,urgent=!finished&&t.date&&t.date>=today&&t.date<=window.CFF_TASKS_PLAN.addDays(today,3);
-   const card=e('article','ffcp-card'+(finished?' ffcp-finished':'')+(expired?' ffcp-expired':''));
+   const isArchived=archived(t),finished=t.status==='done',expired=!isArchived&&!finished&&t.date&&t.date<today,notStarted=!finished&&t.startDate&&t.startDate>today,urgent=!isArchived&&!finished&&t.date&&t.date>=today&&t.date<=window.CFF_TASKS_PLAN.addDays(today,3);
+   const card=e('article','ffcp-card'+(finished?' ffcp-finished':'')+(expired?' ffcp-expired':'')+(isArchived?' ffcp-archived':''));
    const head=e('div','ffcp-card-head'),caption=e('div','ffcp-card-caption'),h=e('h3','',t.title),badges=e('div','ffcp-badges');
-   badges.append(pill(finished?'Concluída':expired?'Prazo encerrado':notStarted?'Em breve':urgent?'Prazo próximo':'Em andamento',finished?'done':expired?'expired':urgent?'urgent':''));
+   badges.append(pill(isArchived?'Arquivada':finished?'Concluída':expired?'Prazo encerrado':notStarted?'Em breve':urgent?'Prazo próximo':'Em andamento',finished?'done':expired?'expired':urgent?'urgent':''));
    if(t.startDate||t.date)badges.append(pill((t.startDate?day(t.startDate).slice(0,5):'—')+' até '+(t.date?day(t.date).slice(0,5):'—')));
    if(t.notify!==false)badges.append(pill('🔔 Lembrete'));
    caption.append(h,badges);const actions=e('div','ffcp-actions'),complete=e('button','small-btn',finished?'↶ Reabrir':'✓ Concluir'),edit=e('button','small-btn','Editar');complete.type=edit.type='button';
-   complete.onclick=()=>{api.completeTask(t,finished?'todo':'done');render();};edit.onclick=()=>editMission(t);actions.append(complete,edit);head.append(caption,actions);card.append(head);
+   complete.onclick=()=>{api.completeTask(t,finished?'todo':'done');render();};edit.onclick=()=>editMission(t);
+   const archive=e('button','small-btn',isArchived?'↶ Restaurar':'Arquivar'),remove=e('button','small-btn ffcp-danger','Excluir');archive.type=remove.type='button';
+   archive.onclick=()=>{api.update(t,{ffcp:meta({...t.ffcp,source:isArchived?'ffcp':'archived'})},isArchived?'Missão restaurada':'Missão arquivada');render();};
+   remove.onclick=async()=>{if(!confirm('Excluir permanentemente a missão “'+t.title+'”? Esta ação não poderá ser desfeita.'))return;const next=api.copy(state());next.tasks=next.tasks.filter(item=>item.id!==t.id);try{await api.replace(next);render();}catch(err){preview.textContent='Erro ao excluir missão: '+err.message;}};
+   if(isArchived)complete.disabled=true;actions.append(complete,edit,archive,remove);head.append(caption,actions);card.append(head);
    const tags=e('div','ffcp-meta');if(t.ffcp?.hashtags)tags.append(pill(t.ffcp.hashtags));if(t.ffcp?.code)tags.append(pill('Códiguin: '+t.ffcp.code));if(t.ffcp?.items)tags.append(e('p','ffcp-items','Itens: '+t.ffcp.items));card.append(tags);
    if(t.note){const details=e('details','ffcp-instructions'),toggle=e('summary','','Ver instruções completas'),body=e('p','',t.note);details.append(toggle,body);card.append(details);}
    list.append(card);
