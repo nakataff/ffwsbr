@@ -255,6 +255,12 @@
     return `<article class="cff-pred-custom"><strong>${esc(p.label||'Palpite extra')}</strong><small>${esc(p.question||'')}</small><div class="cff-pred-input-row" style="margin-top:9px"><select class="cff-pred-control" data-custom-option="${esc(p.id)}" ${editable?'':'disabled'}><option value="">Escolha</option>${(p.options||[]).map(o=>`<option value="${esc(o.id)}" ${d.option===o.id?'selected':''}>${esc(o.label)}</option>`).join('')}</select>${editable?`<button class="cff-pred-save" type="button" data-save-custom="${esc(p.id)}" ${d.option?'':'disabled'}>Salvar</button>`:`<div class="cff-pred-day-status">${v?`Seu palpite: ${esc((p.options||[]).find(o=>o.id===v.option)?.label||v.option)}`:'Encerrado'}</div>`}</div></article>`;
   }
 
+  function updatePredictionAvailability(data){
+    const days=Array.isArray(data?.days)?data.days:[];
+    const custom=Array.isArray(data?.predictions)?data.predictions.filter(p=>p.category==='custom'):[];
+    window.dispatchEvent(new CustomEvent('cff:predictions-availability',{detail:{available:days.length>0||custom.length>0}}));
+  }
+
   function render(){
     const root=mount();if(!root)return;
     const data=state.payload||{},days=Array.isArray(data.days)?data.days:[];
@@ -318,7 +324,7 @@
       let latest=null;
       for(const p of dayPredictions(day).filter(p=>['best','worst','mvp'].includes(p.metric)))latest=await submitOne(p,draftFor(p));
       dayPredictions(day).forEach(p=>{state.drafts.delete(p.id);state.playerSearch.delete(p.id)});
-      if(latest?.all)state.payload=latest.all;else await load(false);
+      if(latest?.all){state.payload=latest.all;updatePredictionAvailability(state.payload);}else await load(false);
       render();
     }catch(e){console.error('[CFF Predictions day]',e);alert(e.message||'Não foi possível salvar os palpites.')}
     finally{state.busy=false;render()}
@@ -328,7 +334,7 @@
     const p=findPrediction(id),d=p?draftFor(p):null;
     if(!p||!d?.option||state.busy)return;
     state.busy=true;
-    try{const data=await submitOne(p,d);if(data?.all)state.payload=data.all;state.drafts.delete(id);render()}
+    try{const data=await submitOne(p,d);if(data?.all){state.payload=data.all;updatePredictionAvailability(state.payload);}state.drafts.delete(id);render()}
     catch(e){console.error('[CFF custom prediction]',e)}
     finally{state.busy=false}
   }
@@ -339,6 +345,7 @@
     try{
       const current=session(),qs=new URLSearchParams();if(current)qs.set('session',current);qs.set('_',String(Date.now()));
       const payload=await request('/api/predictions?'+qs.toString());if(current!==session())return;state.payload=payload;
+      updatePredictionAvailability(payload);
       render();
       loadRanking();
     }catch(e){
