@@ -3,6 +3,7 @@ import careerCore from '../../functions/careers.js';
 import {createInteractionRanking} from './interaction-ranking.js';
 import economyMedia from '../../functions/economy-media.js';
 import economyCore from '../../functions/economy.js';
+import userInbox from '../../functions/user-inbox.js';
 import codeGifts from '../../functions/code-gifts.js';
 import globalChat from '../../functions/global-chat.js';
 import profileEmblems from '../../functions/profile-emblems.js';
@@ -28,7 +29,7 @@ export default {
   const headers={'Access-Control-Allow-Origin':origin||'https://centralfreefire.com.br','Vary':'Origin','Access-Control-Allow-Headers':'Authorization,Content-Type,If-None-Match,X-File-Name,X-File-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   let response;
-  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:34,dailyChallenges:true,adminRewardsIntegration:true,dailyQuiz:true,adminTaskReminderOptions:true,adminTasks:true,profileEmblems:true,chatCustomization:true,chatLiveRoles:true,careerDirectory:true,careerMarket:true,giftArchive:true,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
+  if(url.pathname==='/health'&&request.method==='GET')response=json({ok:!!env.NOTIFICATIONS,service:'cff-camp-notifications',version:35,userInbox:true,dailyChallenges:true,adminRewardsIntegration:true,dailyQuiz:true,adminTaskReminderOptions:true,adminTasks:true,profileEmblems:true,chatCustomization:true,chatLiveRoles:true,careerDirectory:true,careerMarket:true,giftArchive:true,codeReturns:true,directCodeGift:true,codeVouchers:true,careers:true,careerDepartures:true,registrationRosters:true,monthlyParticipation:{daily:40,days:25,cap:1000},profileCheckin:true,coinRankingSync:true,gameOrders:true,retroactiveRate:5,retroactiveCap:500,currency:'CFF COINS',coinRanking:true,interactionRanking:!!env.COMMUNITY_DB,economy:!!env.CFF_GOAL_SERVICE_ACCOUNT,codeGifts:!!env.CFF_GOAL_SERVICE_ACCOUNT,globalChat:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileIdentitySync:!!env.CFF_GOAL_SERVICE_ACCOUNT,profileGoalRewards:!!env.CFF_GOAL_SERVICE_ACCOUNT});
   else if(request.method==='GET'&&(/^\/economy-media\/[a-f0-9]{64}$/.test(url.pathname)||url.pathname==='/economy-interactions/health'||(/^\/careers\/(person|team|market|search)$/.test(url.pathname)||/^\/careers\/logo\/[a-f0-9-]{36}$/.test(url.pathname)))&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-v1')).fetch(request);
   else if(/^\/tasks\/(api|files\/[A-Za-z0-9_-]{1,150})$/.test(url.pathname)&&['GET','POST'].includes(request.method)&&env.NOTIFICATIONS)response=await env.NOTIFICATIONS.get(env.NOTIFICATIONS.idFromName('cff-tasks-v1')).fetch(request);
   else if(url.pathname!=='/api'||request.method!=='POST')response=json({error:'Use POST /api.'},405);
@@ -66,6 +67,7 @@ export class NotificationHub extends DurableObject {
   });
   economyCore.initEconomy(this.sql);
  }
+ userInbox(){return userInbox.create({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),db:goalDatabase(this.goalSecret)});}
  rows(query,...args){return this.sql.exec(query,...args).toArray();}
  tasks(){if(!this.tasksService){this.sql.exec("INSERT OR REPLACE INTO meta VALUES('tasks-instance','1')");this.tasksService=adminTasks.create({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),setAlarm:at=>this.ctx.storage.setAlarm(at),deleteAlarm:()=>this.ctx.storage.deleteAlarm(),push:async(uid,message)=>{const response=await this.env.NOTIFICATIONS.get(this.env.NOTIFICATIONS.idFromName('cff-v1')).fetch(new Request('https://tasks-internal/private-task-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid,message})}));if(!response.ok)throw Error('Não foi possível enviar o lembrete.');return response.json();}});}return this.tasksService;}
  careers(){if(!this.careerStore)this.careerStore=careerCore.create({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn)});return this.careerStore;}
@@ -136,10 +138,10 @@ export class NotificationHub extends DurableObject {
    }
    if(action==='findGiftRecipient')return json(await codeGifts.findRecipient(goalDatabase(this.goalSecret),user,b.query));
    if(action==='codeGiftStatus')return json(await codeGifts.giftStatus(goalDatabase(this.goalSecret),user,b.hashes));
-   if(action==='sendCodeGift')return json(await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b));
+   if(action==='sendCodeGift'){const result=await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b);this.ctx.storage.transactionSync(()=>this.userInbox().reward({id:'codegift:'+result.giftId,uid:result.recipient.uid,title:'Você recebeu um codiguinho!',body:result.gift.title+(result.gift.message?' — '+result.gift.message:''),url:'/conta.html?tab=inventory&section=gifts&gift='+encodeURIComponent(result.giftId),button:'Abrir presente',expiresAt:result.gift.expiresAt||0,at:result.gift.sentAt}));return json(result);}
    if(action==='archiveGift')return json(await codeGifts.archiveGift(goalDatabase(this.goalSecret),user,b));
    if(action==='openCodeGift')return json(await codeGifts.openCodeGift(goalDatabase(this.goalSecret),user,b.giftId));
-   if(action==='emblemAdmin')return json(await profileEmblems.adminHandle(goalDatabase(this.goalSecret),user,b));
+   if(action==='emblemAdmin'){const result=await profileEmblems.adminHandle(goalDatabase(this.goalSecret),user,b);if(b.operation==='assign'&&result.assignment?.emblemId)this.ctx.storage.transactionSync(()=>this.userInbox().reward({id:'emblem:'+b.targetUid+':'+result.assignment.emblemId+':'+result.assignment.grantedAt,uid:b.targetUid,title:'Você recebeu um emblema!',body:'Seu novo emblema já aparece no perfil e no chat da Central.',url:'/conta.html',button:'Ver meu perfil',at:result.assignment.grantedAt}));return json(result);}
    if(action==='chatSend')return json(await globalChat.sendMessage(goalDatabase(this.goalSecret),user,b));
    if(action==='chatModerate')return json(await globalChat.moderation(goalDatabase(this.goalSecret),user,b));
    if(action==='chatStatus')return json(await globalChat.chatStatus(goalDatabase(this.goalSecret),user));
@@ -151,7 +153,7 @@ export class NotificationHub extends DurableObject {
     const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});
     if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();
    }));
-   if(action==='claimProfileGoals'){return json(await profileGoals.claimProfileGoals(goalDatabase(this.goalSecret),user,async username=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/achievements/profile?username='+encodeURIComponent(username),{signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível conferir os pontos agora.');return r.json();}));}
+   if(action==='claimProfileGoals'){return json(await profileGoals.claimProfileGoals(goalDatabase(this.goalSecret),user,async username=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/achievements/profile?username='+encodeURIComponent(username),{signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível conferir os pontos agora.');return r.json();},Date.now(),notice=>this.ctx.storage.transactionSync(()=>this.userInbox().reward(notice))));}
    if(action==='adminReadProfile'||action==='adminEditProfile'){
     admin();const database={ref:(path='')=>({get:async()=>{const r=await fetch('https://central-free-fire-default-rtdb.firebaseio.com/'+path.split('/').map(encodeURIComponent).join('/')+'.json?auth='+encodeURIComponent(token),{signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error('Não foi possível ler o perfil.');const value=await r.json();return {val:()=>value,exists:()=>value!==null};},update:async changes=>{const r=await fetch('https://central-free-fire-default-rtdb.firebaseio.com/.json?auth='+encodeURIComponent(token),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(changes),signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error('Não foi possível salvar o perfil.');}})};
     return json(action==='adminReadProfile'?await adminEditor.readProfile(database,user,b.uid):await adminEditor.editProfile(database,user,b.uid,b.profile));

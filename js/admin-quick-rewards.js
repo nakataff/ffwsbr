@@ -42,14 +42,7 @@ export function mountQuickRewards({auth,db,esc,toast,catalog:currentCatalog,opti
   if(auth.currentUser?.uid!==account.uid)throw Error('A conta conectada mudou.');
   if(profile?.username!==target.username)throw Error('O @ da pessoa mudou. Busque a conta novamente antes de enviar.');
   if(item.kind==='emblem')await api({action:'emblemAdmin',operation:'assign',targetUid:target.uid,expectedUsername:target.username,emblemId:item.id});
-  else{
-   const fresh=(await get(ref(db,'communityProfileCatalog/'+item.id))).val();if(!fresh?.enabled||fresh.kind!==item.kind||fresh.accessRule==='admin')throw Error('Este item não está mais disponível. Atualize os itens.');
-   const message=sendForm.elements.message.value.trim(),week=item.kind==='badge'?sendForm.elements.week.value:'',grantedAt=Date.now(),changes={};
-   if(item.kind==='badge'){changes['communityBadgeGrants/'+target.uid+'/grant-'+requestId]={badgeId:item.id,reason:message,week,grantedAt,status:'active'};changes['communityBadgeOwnership/'+target.uid+'/'+item.id]=true;}
-   else changes['communityImageOwnership/'+target.uid+'/'+item.id]={source:'admin',grantedAt};
-   if(sendForm.elements.gift.checked)changes['communityGifts/'+target.uid+'/gift-'+requestId]={assetId:item.id,kind:item.kind,message,grantedAt};
-   if(auth.currentUser?.uid!==account.uid)throw Error('A conta conectada mudou.');await update(ref(db),changes);
-  }
+  else await api({action:'economyAdmin',operation:'inboxGrantReward',nonce:requestId,targetUid:target.uid,expectedUsername:target.username,assetId:item.id,message:sendForm.elements.message.value.trim(),week:item.kind==='badge'?sendForm.elements.week.value:'',gift:sendForm.elements.gift.checked});
   if(auth.currentUser?.uid!==account.uid)return;
   if(person?.uid===target.uid){if(item.kind==='emblem')inventory.assignment={emblemId:item.id};else if(item.kind==='badge')inventory.badges[item.id]=true;else inventory.images[item.id]={source:'admin'};renderItems();}
   selection=null;dialog.close();toast((item.kind==='emblem'?'Emblema concedido':'Item entregue')+' para @'+target.username+'.');

@@ -1,8 +1,8 @@
-import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261019-daily-quiz-v1';
+import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261019-inbox-v1';
 const NAMES={quiz:'Quiz',player:'Quem é o jogador?',career:'Pistas da carreira',lineup:'Monte a escalação'};
 export function mountDailyQuiz(root,{auth,request=economyRequest}={}){
  const uid=auth.currentUser?.uid;let live=true,state=null,busy=false,message='',cursor=0,selected=null,interval=null,anchor=0,serverTime=0,timeoutAttempt='';
- const valid=()=>live&&auth.currentUser?.uid===uid&&root.isConnected,call=(op,body={})=>request(auth,op,body),disabled=()=>busy?' disabled':'';
+ const valid=()=>live&&auth.currentUser?.uid===uid&&root.isConnected,call=(op,body={})=>request(auth,op,op==='quizStatus'?{...body,includeInbox:true}:body),disabled=()=>busy?' disabled':'';
  const answered=q=>q?.answered===true||q?.selected!==undefined;
  const remaining=q=>q?.expiresAt?Math.max(0,q.expiresAt-serverTime-(performance.now()-anchor)):Infinity;
  const body=index=>({day:state.day,roundId:state.roundId,index});

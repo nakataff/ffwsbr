@@ -1,4 +1,4 @@
-import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261017-header-wallet-v1';
+import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261019-inbox-v1';
 export const checkinDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 export function checkinMessage(data){
  const coins=data.coinsAwarded?'+1 CFF COIN recebida.':'A CFF COIN de hoje já está na sua carteira.';
@@ -19,7 +19,7 @@ export function createProfileCheckin({auth: getAuth,onCompleted=()=>{}}){
  function mount(container){root=container;if(!root)return;const current=getAuth()?.currentUser?.uid,today=checkinDay();
   if(current!==uid||today!==day){uid=current;day=today;data=null;message='';busy=false;loading=null;}
   if(!current)return;
-  if(!data&&!loading){const identity=current,requestedDay=day;loading=economyRequest(getAuth(),'profileCheckinStatus').then(result=>{if(identity!==uid||requestedDay!==day||!active(identity))return;data=result;if(data.coins&&data.ranking)message='Sua presença de hoje já foi confirmada.';}).catch(()=>{}).finally(()=>{if(identity===uid&&requestedDay===day){loading=null;draw();}});}
+  if(!data&&!loading){const identity=current,requestedDay=day;loading=economyRequest(getAuth(),'profileCheckinStatus',{includeInbox:true}).then(result=>{if(identity!==uid||requestedDay!==day||!active(identity))return;data=result;if(data.coins&&data.ranking)message='Sua presença de hoje já foi confirmada.';}).catch(()=>{}).finally(()=>{if(identity===uid&&requestedDay===day){loading=null;draw();}});}
   draw();
  }
  window.addEventListener('cff:daily-checkin',event=>{if(event.detail?.uid!==uid||event.detail.day!==day)return;data=event.detail;message=checkinMessage(data);draw();});

@@ -8,7 +8,7 @@ function init(sql){
  CREATE INDEX IF NOT EXISTS eco_vouchers_at ON eco_vouchers(at DESC);
  CREATE TABLE IF NOT EXISTS eco_weekly_voucher_awards(week TEXT PRIMARY KEY,voucher TEXT UNIQUE NOT NULL);`);
 }
-function create({sql,transaction,db,eligible,now}){
+function create({sql,transaction,db,eligible,now,notify=()=>{}}){
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  const config=()=>JSON.parse(rows('SELECT data FROM eco_settings WHERE id=?','voucher-config')[0]?.data||'{"imageUrl":"/edition/gift.webp"}');
  const status=r=>r.receipt?(r.deliveryStatus==='pending'?'reserved':'used'):r.revokedAt?'revoked':r.expires<=now()?'expired':'available';
@@ -35,7 +35,7 @@ function create({sql,transaction,db,eligible,now}){
    if(awardWeek&&rows('SELECT id FROM eco_vouchers WHERE nonce=?',b.nonce).length)throw fail(409,'Este identificador já foi usado em outro envio de vale. Reabra o formulário.');
    const p=await eligible(b.targetUid);if(p.username!==b.expectedUsername)throw fail(409,'O destinatário mudou. Pesquise e confira o @ novamente.');
    if(b.expiresAt<=now())throw fail(400,'A validade do vale deve estar no futuro.');
-   return transaction(()=>{const old=previous();if(old)return matches(old);if(b.expiresAt<=now())throw fail(400,'A validade do vale deve estar no futuro.');const id=crypto.randomUUID();sql.exec('INSERT INTO eco_vouchers(id,nonce,uid,username,name,expires,at,byuid,message) VALUES(?,?,?,?,?,?,?,?,?)',id,b.nonce,b.targetUid,p.username,p.name,b.expiresAt,now(),identity.uid,b.message.trim());if(awardWeek)sql.exec('INSERT INTO eco_weekly_voucher_awards VALUES(?,?)',awardWeek,id);return {ok:true,voucher:publicRow(rows('SELECT * FROM eco_vouchers WHERE id=?',id)[0])};});
+   return transaction(()=>{const old=previous();if(old)return matches(old);if(b.expiresAt<=now())throw fail(400,'A validade do vale deve estar no futuro.');const id=crypto.randomUUID();sql.exec('INSERT INTO eco_vouchers(id,nonce,uid,username,name,expires,at,byuid,message) VALUES(?,?,?,?,?,?,?,?,?)',id,b.nonce,b.targetUid,p.username,p.name,b.expiresAt,now(),identity.uid,b.message.trim());if(awardWeek)sql.exec('INSERT INTO eco_weekly_voucher_awards VALUES(?,?)',awardWeek,id);notify({id:'voucher:'+id,uid:b.targetUid,title:'Você recebeu um Vale Codiguinho!',body:b.message.trim()||'Troque seu vale por um codiguinho disponível na loja. Confira a validade no seu inventário.',url:'/conta.html?tab=points',button:'Usar na loja',expiresAt:b.expiresAt});return {ok:true,voucher:publicRow(rows('SELECT * FROM eco_vouchers WHERE id=?',id)[0])};});
   }
   if(b.operation==='listVouchers'){
    const offset=b.offset??0,filter=b.status||'all';if(!Number.isSafeInteger(offset)||offset<0||!['all','available','used','reserved','expired','revoked'].includes(filter))throw fail(400,'Confira o filtro de vales.');

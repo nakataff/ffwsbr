@@ -1,5 +1,5 @@
 import {createCodeGiftOpener} from './code-gift-opener.mjs?v=20261015-inventory-v1';
-import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261017-header-wallet-v1';
+import {economyRequest,escapeEconomy as esc,loadEconomyStyle,attachPendingReferral} from './economy-client.mjs?v=20261019-inbox-v1';
 import {WHEEL_PRIZES,prizeAngle,landingAngle,labelPosition} from './economy-wheel.mjs?v=20261014-shop-save-v2';
 import {checkinMessage} from './profile-checkin.mjs?v=20261014-monthly-coins-v1';
 const coinUnit=n=>Number(n)===1?'CFF COIN':'CFF COINS';

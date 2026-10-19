@@ -117,5 +117,21 @@ test('economy gateway verifies signed identities, private wallets, real account 
  const draftMarket=await api(admin,{action:'careerAdmin',operation:'marketSave',nonce:crypto.randomUUID(),entry:{name:'Pessoa do teste',fromName:'LOUD',toName:'W7M',role:'coach',status:'rumor',publication:'draft',date:'2026-10-14'}});assert.equal(draftMarket.status,200);assert.equal((await (await worker.fetch(new Request('https://notify.test/careers/market'),bindings)).json()).total,48);
  const publishedMarket=await api(admin,{action:'careerAdmin',operation:'marketSave',nonce:crypto.randomUUID(),revision:draftMarket.entry.revision,entry:{...draftMarket.entry,publication:'published'}});assert.equal(publishedMarket.status,200);const publishedFeed=await worker.fetch(new Request('https://notify.test/careers/market?limit=100',{headers:{'If-None-Match':marketPublic.headers.get('ETag')}}),bindings);assert.equal(publishedFeed.status,200);const publishedRows=await publishedFeed.json();assert.equal(publishedRows.total,49);assert.equal(publishedRows.entries[0].jogador,'Pessoa do teste');assert.equal(publishedRows.entries[0].careerManaged,true);assert(!JSON.stringify(publishedRows).includes('actor'));
  const health=await worker.fetch(new Request('https://notify.test/health'),{NOTIFICATIONS:{},CFF_GOAL_SERVICE_ACCOUNT:'configured'});assert.equal((await health.json()).economy,true);
+ // Inbox messages use the same signed gateway; broadcasts never copy to every account.
+ sqlite.exec('DELETE FROM limits');
+ const inboxBody={action:'economyAdmin',operation:'inboxSend',nonce:crypto.randomUUID(),audience:'all',title:'Novidade da Central',body:'Um comunicado compartilhado.'};
+ assert.equal((await api(alice,inboxBody)).status,403);const announcement=await api(admin,inboxBody);assert.equal(announcement.status,200);assert((await api(admin,inboxBody)).duplicate);
+ const aliceInbox=await api(alice,{action:'economy',operation:'inboxList'});assert(aliceInbox.entries.some(m=>m.title==='Novidade da Central'));assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM user_inbox_messages WHERE audience='*'").get().n,1);
+ assert.equal((await api(bob,{action:'economy',operation:'wallet',includeInbox:true})).inbox.hasNew,true);
+ const manualGift={action:'sendCodeGift',targetUid:'bob',expectedUsername:'bob',requestId:crypto.randomUUID(),code:'INBOXCODE12345',title:'Presente da caixa',message:'Valeu!',expiresAt:Date.now()+86400000};
+ const codeSent=await api(admin,manualGift);assert.equal(codeSent.status,200);assert.equal((await api(admin,manualGift)).giftId,codeSent.giftId);
+ const bobInbox=await api(bob,{action:'economy',operation:'inboxList'});assert.equal(bobInbox.entries.filter(m=>m.url.includes(codeSent.giftId)).length,1);assert(!JSON.stringify(bobInbox).includes('INBOXCODE12345'));
+ const emblemBody={action:'emblemAdmin',operation:'assign',targetUid:'bob',expectedUsername:'bob',emblemId:'verified'};assert.equal((await api(admin,emblemBody)).status,200);assert((await api(admin,emblemBody)).unchanged);
+ assert.equal((await api(bob,{action:'economy',operation:'inboxList'})).entries.filter(m=>m.title==='Você recebeu um emblema!').length,1);
+ assert.equal((await api(admin,{...inboxBody,operation:'inboxEdit',id:announcement.id,title:'Comunicado corrigido'})).status,200);
+ assert((await api(alice,{action:'economy',operation:'inboxList'})).entries.some(m=>m.title==='Comunicado corrigido'));
+ assert.equal((await api(admin,{action:'economyAdmin',operation:'inboxRevoke',id:announcement.id})).status,200);
+ assert(!(await api(alice,{action:'economy',operation:'inboxList'})).entries.some(m=>m.title==='Comunicado corrigido'));
+
 });
 

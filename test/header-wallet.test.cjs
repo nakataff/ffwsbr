@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const tick=async()=>{for(let i=0;i<6;i++)await new Promise(r=>setTimeout(r,0));};
 function fixture(){
  const dom=new JSDOM('<div class="nav-desktop-right"><button data-account-entry>Perfil</button></div><div class="nav-mobile-right"><button data-account-entry>Perfil</button></div>',{url:'https://centralfreefire.com.br',runScripts:'outside-only'}),w=dom.window;
- for(const p of ['wallet-balance.mjs','header-wallet.mjs'])w.eval(fs.readFileSync(require.resolve('../js/'+p),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));
+ for(const p of ['wallet-balance.mjs','inbox-store.mjs','header-wallet.mjs'])w.eval(fs.readFileSync(require.resolve('../js/'+p),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));
  return {w,auth:{currentUser:null},links:()=>[...w.document.querySelectorAll('[data-header-wallet]')],close:()=>w.close()};
 }
 test('desktop and mobile share one cached request, display exact balances and link to the shop',async()=>{

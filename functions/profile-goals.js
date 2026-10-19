@@ -1,7 +1,7 @@
 'use strict';
 const METRICS=new Set(['total_points','week_wins','month_wins','prediction_wins','prediction_votes','prediction_combo','active_days','comments','stories','checkins']);
 const KINDS=new Set(['badge','frame','avatar','cover']);
-async function claimProfileGoals(db,identity,loadMetrics,now=Date.now()){
+async function claimProfileGoals(db,identity,loadMetrics,now=Date.now(),notify=()=>{}){
  const uid=identity?.uid;if(typeof uid!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(uid))throw Object.assign(Error('Entre novamente na sua conta.'),{status:401});
  const [link,goals,catalog,owned,badges,grants]=await Promise.all(['communityInstagramLinks/'+uid,'communityBadgeGoals','communityProfileCatalog','communityImageOwnership/'+uid,'communityBadgeOwnership/'+uid,'communityBadgeGrants/'+uid].map(path=>db.get(path)));
  const username=String(link?.username||'').toLowerCase();if(!/^[a-z0-9_.]{1,64}$/.test(username))return {ok:true,unlocked:[]};
@@ -23,6 +23,7 @@ async function claimProfileGoals(db,identity,loadMetrics,now=Date.now()){
   unlocked.push({assetId,kind:item.kind,title:item.title});
  }
  if(unlocked.length)await db.update(changes);
+ for(const item of unlocked)notify({id:'goal:'+uid+':'+item.assetId,uid,title:'Nova conquista desbloqueada!',body:item.title,url:'/conta.html?tab=inventory',button:'Ver conquista',at:now});
  return {ok:true,unlocked};
 }
 module.exports={claimProfileGoals};
