@@ -1,8 +1,4 @@
 /* Missões FFCP: cards compactos, texto colado livre e acesso lateral no desktop. */
-.ffcp-side-shortcut{position:fixed;z-index:75;top:48%;left:0;display:flex;align-items:center;gap:9px;padding:14px 13px;border:1px solid var(--line);border-left:0;border-radius:0 12px 12px 0;background:var(--card);box-shadow:var(--shadow);max-width:46px;overflow:hidden;white-space:nowrap;font-weight:750;transition:max-width .18s ease,border-color .18s ease}
-.ffcp-side-shortcut:hover,.ffcp-side-shortcut:focus-visible,.ffcp-side-shortcut[aria-pressed=true]{max-width:190px;border-color:var(--accent);background:var(--soft)}
-.ffcp-side-shortcut span{opacity:0;transition:opacity .16s}
-.ffcp-side-shortcut:hover span,.ffcp-side-shortcut:focus-visible span,.ffcp-side-shortcut[aria-pressed=true] span{opacity:1}
 #ffcp-missions-view{padding:16px 0 28px;min-width:0}
 #ffcp-missions-view[hidden]{display:none!important}
 .ffcp-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:18px}
@@ -45,3 +41,11 @@
 .ffcp-editor{width:min(690px,calc(100vw - 22px));max-width:none}
 @media(max-width:1050px){.ffcp-missions-list{grid-template-columns:1fr}}
 @media(max-width:700px){.ffcp-side-shortcut{display:none}.ffcp-heading h2{font-size:22px}.ffcp-card{padding:14px}.ffcp-card-head{display:grid;gap:12px}.ffcp-edit-form{grid-template-columns:1fr}.ffcp-import-panel{padding:13px}.ffcp-import-actions .primary{width:100%}.ffcp-editor{padding:14px}}
+
+/* O acesso às missões pertence à barra de ferramentas direita, não à borda esquerda. */
+.tool-tabs .ffcp-side-shortcut{display:grid;place-items:center;width:60px;height:60px;min-width:0;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow);font-size:24px;color:var(--accent)}
+.tool-tabs .ffcp-side-shortcut:hover,.tool-tabs .ffcp-side-shortcut:focus-visible{background:var(--soft);border-color:var(--accent)}
+.ffcp-archive-toggle{margin-left:auto;font-size:12px}
+.ffcp-actions .ffcp-danger{color:var(--danger);border-color:var(--danger)}
+.ffcp-card.ffcp-archived{opacity:.7}
+@media(max-width:700px){.tool-tabs .ffcp-side-shortcut{display:grid;width:50px;height:50px}}
