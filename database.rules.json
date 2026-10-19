@@ -30,6 +30,23 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['id','name','url']) && newData.child('id').isString() && newData.child('id').val() == $id && newData.child('name').isString() && newData.child('name').val().length >= 1 && newData.child('name').val().length <= 120 && newData.child('url').isString() && newData.child('url').val().length >= 8 && newData.child('url').val().length <= 500)"
       }
     },
+      "adminLiveTournaments": {
+        ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        "$id": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "!newData.exists() || (newData.hasChildren(['id','name','revision','updatedAt']) && newData.child('id').val() == $id && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 120 && newData.child('revision').isNumber() && newData.child('revision').val() == (data.exists() ? data.child('revision').val() + 1 : 1) && newData.child('updatedAt').isNumber())"
+        }
+      },
+      "adminLiveTournamentIndex": {
+        ".read": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+        ".indexOn": [
+          "updatedAt"
+        ],
+        "$id": {
+          ".write": "auth != null && auth.token.email == 'admin@centralfreefire.com.br'",
+          ".validate": "!newData.exists() || (newData.hasChildren(['id','name','updatedAt','revision','slots','phases']) && newData.child('id').val() == $id && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 120 && newData.child('slots').isNumber() && newData.child('slots').val() <= 180 && newData.child('phases').isNumber() && newData.child('phases').val() <= 16)"
+        }
+      },
     "adminLives": {
       ".read": true,
       "$id": {

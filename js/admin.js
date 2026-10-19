@@ -1,4 +1,4 @@
-import './admin-core.js?v=20260930-official-videos-v10';
+import './admin-core.js?v=20261019-tournaments-v1';
 import './admin-sections-titles.js?v=20261019-inbox-v1';
 import './admin-titles-extras.js?v=20260909-admin-title-extras-v1';
 import './admin-editor-link.js?v=20260913-central-tools-v2';

@@ -1,6 +1,8 @@
+import {mountTournamentScheduler} from './admin-live-tournaments.mjs?v=20261019-tournaments-v1';
+import {createTournamentRepository} from './live-tournament-store.mjs?v=20261019-tournaments-v1';
 import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
-import { getDatabase, ref, get, set, remove, update, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+import { getDatabase, ref, get, set, remove, update, serverTimestamp,query,orderByChild,limitToLast,endBefore } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
 
 const ADMIN_EMAIL = 'admin@centralfreefire.com.br';
 const config = window.CFF_CONFIG && window.CFF_CONFIG.firebase;
@@ -29,6 +31,12 @@ let savedLiveChannels = [];
 let officialVideoSchedule = [];
 let officialBroadcastVideos = {};
 let activeAdminLiveTab = 'agenda';
+let tournamentScheduler=null;
+function openTournamentScheduler(){
+ if(!isAdmin(auth.currentUser))return;if(tournamentScheduler){tournamentScheduler.refreshChannels();return;}
+ const repository=createTournamentRepository({auth,read:path=>get(ref(database,path)).then(s=>s.val()),write:changes=>update(ref(database),changes),list:async cursor=>{const constraints=[orderByChild('updatedAt'),...(cursor?[endBefore(cursor.at,cursor.id)]:[]),limitToLast(26)],snapshot=await get(query(ref(database,'adminLiveTournamentIndex'),...constraints)),rows=Object.values(snapshot.val()||{}).sort((a,b)=>b.updatedAt-a.updatedAt||b.id.localeCompare(a.id)),entries=rows.slice(0,25),last=entries.at(-1);return {entries,cursor:rows.length>25?{at:last.updatedAt,id:last.id}:null};}});
+ tournamentScheduler=mountTournamentScheduler($('#admin-live-tab-tournaments'),{auth,repository,channels:()=>savedLiveChannels,onPublished:()=>{try{localStorage.removeItem('cff-public-live-agenda-v1');localStorage.setItem('cff-live-schedule-revision-v1',String(Date.now()));}catch{}loadAdminLives();}});
+}
 const LIVE_SAVED_CHANNEL_KEY = 'cff-admin-live-saved-channel-v1';
 let selectedSavedLiveChannelId = (() => { try { return localStorage.getItem(LIVE_SAVED_CHANNEL_KEY) || ''; } catch (_) { return ''; } })();
 let allNews = [];
@@ -640,12 +648,13 @@ function syncLiveEmbedField() {
 }
 
 function setAdminLiveTab(name) {
-  activeAdminLiveTab = name === 'official-videos' ? 'official-videos' : 'agenda';
+  activeAdminLiveTab = ['official-videos','tournaments'].includes(name) ? name : 'agenda';
   document.querySelectorAll('[data-admin-live-tab]').forEach((button) => {
     const active = button.dataset.adminLiveTab === activeAdminLiveTab;
     button.classList.toggle('is-active', active);
     button.setAttribute('aria-selected', active ? 'true' : 'false');
   });
+  const tournaments=$('#admin-live-tab-tournaments');if(tournaments)tournaments.hidden=activeAdminLiveTab!=='tournaments';if(activeAdminLiveTab==='tournaments')openTournamentScheduler();
   const agenda = $('#admin-live-tab-agenda');
   const official = $('#admin-live-tab-official-videos');
   if (agenda) agenda.hidden = activeAdminLiveTab !== 'agenda';
@@ -653,7 +662,7 @@ function setAdminLiveTab(name) {
   const newLive = $('#admin-new-live');
   if (newLive) newLive.hidden = activeAdminLiveTab !== 'agenda';
   const title = $('#live-editor-title');
-  if (title) title.textContent = activeAdminLiveTab === 'official-videos'
+  if (title) title.textContent = activeAdminLiveTab==='tournaments'?'Torneios e programação':activeAdminLiveTab === 'official-videos'
     ? 'Vídeos oficiais'
     : ($('#live-original-id')?.value ? 'Editar live' : 'Nova live');
 }
@@ -1078,7 +1087,7 @@ async function loadAdminLives() {
   try {
     const snap = await get(ref(database, 'adminLives'));
     const data = snap.val() || {};
-    allLives = Object.keys(data).map((id) => normalizeLive(data[id], id)).filter((item) => item.id && item.torneio);
+    allLives = Object.keys(data).filter(id=>!data[id]?.tournamentId).map((id) => normalizeLive(data[id], id)).filter((item) => item.id && item.torneio);
     renderLiveList();
   } catch (error) {
     liveList.innerHTML = '<div class="admin-empty">Não foi possível carregar as lives do painel</div>';
@@ -1546,9 +1555,10 @@ onAuthStateChanged(auth, async (user) => {
   dashboard.hidden = !allowed;
   logoutButton.hidden = !allowed;
   if (abuseToolsButton) abuseToolsButton.hidden = !allowed;
+  if(!allowed){tournamentScheduler?.stop();tournamentScheduler=null;}
   if (!allowed && abuseDialog?.open) abuseDialog.close();
   if (user && !allowed) await signOut(auth);
-  if (allowed) { clearForm(); await loadSavedLiveChannels(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives(), loadOfficialBroadcastVideos()]); }
+  if (allowed) { clearForm(); await loadSavedLiveChannels(); clearLiveForm(); await Promise.all([loadDashboard(), loadAdminLives(), loadOfficialBroadcastVideos()]);if(activeAdminLiveTab==='tournaments')openTournamentScheduler(); }
 });
 
 async function recalculateCommunityRanking() {
@@ -1663,6 +1673,7 @@ $('#admin-official-video-form')?.addEventListener('submit', saveOfficialBroadcas
 $('#official-video-round')?.addEventListener('change', (event) => fillOfficialVideoForm(event.target.value));
 $('#official-video-remove')?.addEventListener('click', removeOfficialBroadcastVideo);
 $('#admin-new-live')?.addEventListener('click', () => { setAdminLiveTab('agenda'); clearLiveForm(); });
+$('#admin-create-tournament')?.addEventListener('click',()=>{setAdminLiveTab('tournaments');$('#admin-live-tab-tournaments [data-t-new]')?.click();});
 $('#admin-clear-live')?.addEventListener('click', clearLiveForm);
 $('#live-add-alt-link')?.addEventListener('click', () => $('#live-alt-links')?.appendChild(liveAltRow()));
 $('#live-embed-enabled')?.addEventListener('change', syncLiveEmbedField);

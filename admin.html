@@ -27,7 +27,8 @@
   <link rel="stylesheet" href="css/admin-dashboard.css?v=20261019-audience-redesign-v1">
   <script src="js/config.min.js?v=20261019-chat-visibility-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
-  <script type="module" src="js/admin.js?v=20261019-inbox-v1"></script>
+  <script type="module" src="js/admin.js?v=20261019-tournaments-v1"></script>
+<link rel="stylesheet" href="/css/admin-live-tournaments.css?v=20261019-tournaments-v1">
 </head>
 <body>
   <main class="admin-shell">
@@ -152,11 +153,12 @@
       <section class="admin-panel admin-live-panel">
         <div class="admin-panel-head admin-panel-head-wrap">
           <div><p class="admin-eyebrow">Transmissões</p><h2 id="live-editor-title">Nova live</h2><p class="admin-muted">Cadastre a programação no horário de Brasília. A home troca automaticamente entre agendada, ao vivo e encerrada.</p></div>
-          <button id="admin-new-live" class="admin-btn admin-btn-ghost" type="button">+ Nova live</button>
+          <div class="admin-form-actions"><button id="admin-create-tournament" class="admin-btn admin-btn-primary" type="button">+ Criar torneio</button><button id="admin-new-live" class="admin-btn admin-btn-ghost" type="button">+ Nova live</button></div>
         </div>
 
         <div class="admin-live-tabs" role="tablist" aria-label="Ferramentas de transmissão">
           <button class="admin-live-tab is-active" type="button" data-admin-live-tab="agenda" aria-selected="true">📡 Agenda e lives</button>
+          <button class="admin-live-tab" type="button" data-admin-live-tab="tournaments" aria-selected="false">🏆 Torneios e fases</button>
           <button class="admin-live-tab" type="button" data-admin-live-tab="official-videos" aria-selected="false">▶ Vídeos oficiais</button>
         </div>
 
@@ -212,6 +214,8 @@
         </div>
         <div id="admin-live-list" class="admin-live-list"><div class="admin-empty">Carregando lives...</div></div>
         </div>
+
+        <div id="admin-live-tab-tournaments" class="admin-live-tab-panel" hidden></div>
 
         <div id="admin-live-tab-official-videos" class="admin-live-tab-panel" hidden>
           <div class="admin-official-video-intro">

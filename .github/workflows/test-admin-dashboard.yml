@@ -4,6 +4,14 @@ on:
     branches: [main]
     paths:
       - 'admin.html'
+      - 'js/admin-core.js'
+      - 'js/admin-live-tournaments.mjs'
+      - 'js/live-tournament-model.mjs'
+      - 'js/live-tournament-store.mjs'
+      - 'js/home-live-widget.min.js'
+      - 'css/admin-live-tournaments.css'
+      - 'test/live-tournaments.test.cjs'
+      - 'test/live-tournaments-ui.test.cjs'
       - 'css/admin-dashboard.css'
       - 'js/admin.js'
       - 'js/admin-sections-titles.js'
@@ -31,4 +39,4 @@ jobs:
       - name: Test navigation, tool search and original editor bindings
         env:
           NODE_PATH: /tmp/cff-dashboard-test/node_modules
-        run: node --test --test-timeout=10000 test/admin-dashboard.test.cjs
+        run: node --test --test-timeout=10000 test/live-tournaments.test.cjs test/live-tournaments-ui.test.cjs test/admin-dashboard.test.cjs
