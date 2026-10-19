@@ -14,7 +14,7 @@
   const home=document.getElementById('home');
   if(suppressed()||document.hidden||home&&!home.classList.contains('active')||document.querySelector('dialog[open],.modal-overlay.active,#sidebar-panel.active'))return;
   panel=document.createElement('aside');panel.className='cff-quiz-invite';panel.setAttribute('aria-label','Quiz diário da Central');
-  panel.innerHTML='<button type="button" class="cff-quiz-invite-close" aria-label="Fechar convite do quiz por 1 dia">×</button><span class="cff-quiz-invite-kicker">DESAFIO DIÁRIO</span><h2>Manja de Free Fire?</h2><p>São 3 perguntinhas por dia para testar seu conhecimento e ganhar CFF COINS por acerto.</p><div><a href="/conta.html?tab=quiz">Jogar o quiz <span aria-hidden="true">↗</span></a><button type="button" data-quiz-invite-later>Agora não</button></div><small>Grátis · Novas perguntas todos os dias</small>';
+  panel.innerHTML='<button type="button" class="cff-quiz-invite-close" aria-label="Fechar convite do quiz por 1 dia">×</button><span class="cff-quiz-invite-kicker">DESAFIO DIÁRIO</span><h2>Manja de Free Fire?</h2><p>São 3 desafios variados por dia. Acerte tudo para ganhar mais 5 CFF COINS de bônus!</p><div><a href="/conta.html?tab=quiz">Jogar desafios <span aria-hidden="true">↗</span></a><button type="button" data-quiz-invite-later>Agora não</button></div><small>Grátis · Novos desafios todos os dias</small>';
   panel.querySelector('.cff-quiz-invite-close').addEventListener('click',dismiss);panel.querySelector('[data-quiz-invite-later]').addEventListener('click',dismiss);panel.querySelector('a').addEventListener('click',()=>{write('localStorage',KEY,Date.now()+DAY);remove();});
   document.body.append(panel);write('sessionStorage',SEEN,Date.now());
  }

@@ -2,17 +2,18 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),{Database
 const E=require('../economy'),Q=require('../economy-quiz');
 const user={uid:'quiz-user',provider:'google.com'},admin={uid:'admin',email:'admin@centralfreefire.com.br'};
 const bank=Array.from({length:12},(_,i)=>({id:'fixture-'+i,prompt:'Qual alternativa fictícia corresponde ao exemplo '+i+'?',category:'Teste fictício',options:['Certa '+i,'Errada A '+i,'Errada B '+i,'Errada C '+i],answer:0,explanation:'Explicação fictícia '+i,sourceUrl:'https://example.com/fonte/'+i,enabled:true}));
-function setup(){
+function setup({imageLoader=async()=>'data:image/webp;base64,AAAA'}={}){
  const sqlite=new DatabaseSync(':memory:'),queries=[],gets=[];
  const sql={exec(query,...args){queries.push({query,args});let result=[];for(const q of query.split(';').map(x=>x.trim()).filter(Boolean)){const s=sqlite.prepare(q);result=s.columns().length?s.all(...args):(s.run(...args),[]);}return result;}};
  E.initEconomy(sql);let time=Date.parse('2026-10-19T15:00:00-03:00'),ticket=.31;
  const transaction=f=>{sqlite.exec('BEGIN');try{const r=f();sqlite.exec('COMMIT');return r;}catch(e){sqlite.exec('ROLLBACK');throw e;}};
  const db={get:async path=>{gets.push(path);return {name:'Pessoa',username:'pessoa',gender:'masculino'};}};
- const core=E.createEconomy({sql,transaction,db,now:()=>time,random:()=>ticket});
+ const core=E.createEconomy({sql,transaction,db,now:()=>time,random:()=>ticket,quizImageLoader:imageLoader});
  const install=async()=>{await core.adminHandle(admin,{operation:'quizImport',questions:bank});await core.adminHandle(admin,{operation:'quizSaveConfig',enabled:true,reward:5});};
  const privateRound=uid=>JSON.parse(sql.exec('SELECT data FROM eco_quiz_rounds WHERE uid=? AND day=?',uid||user.uid,E.dayKey(time))[0].data);
- const answer=(s,index,choice)=>core.handle(user,{operation:'quizAnswer',day:s.day,roundId:s.roundId,index,choice});
- return {core,sql,queries,gets,install,privateRound,answer,setTime:v=>time=v,setTicket:v=>ticket=v,close:()=>sqlite.close()};
+ const open=(s,index)=>core.handle(user,{operation:'quizOpen',day:s.day,roundId:s.roundId,index});
+ const answer=async(s,index,choice)=>{await open(s,index);return core.handle(user,{operation:'quizAnswer',day:s.day,roundId:s.roundId,index,choice});};
+ return {core,sql,queries,gets,install,privateRound,answer,open,setTime:v=>time=v,setTicket:v=>ticket=v,close:()=>sqlite.close()};
 }
 test('quiz defaults paused; administration and import are inaccessible to players',async()=>{
  const s=setup();try{
@@ -26,8 +27,8 @@ test('quiz defaults paused; administration and import are inaccessible to player
 test('start freezes three questions, shuffles options, leaks no key and reuses the daily round',async()=>{
  const s=setup();try{await s.install();s.queries.length=0;s.gets.length=0;
   const first=await s.core.handle(user,{operation:'quizStart'}),second=await s.core.handle(user,{operation:'quizStart'});
-  assert.equal(first.questions.length,3);assert.deepEqual(first,second);assert.equal(new Set(first.questions.map(q=>q.prompt)).size,3);
-  for(const q of first.questions){assert.deepEqual(Object.keys(q).sort(),['index','prompt','category','options'].sort());assert(!('answer' in q));assert(!('sourceUrl' in q));}
+  assert.equal(first.questions.length,3);assert.deepEqual(first,second);assert.equal(new Set(s.privateRound().questions.map(q=>q.prompt)).size,3);
+  for(const q of first.questions){assert(!q.locked||!('prompt' in q));assert(!('answer' in q));assert(!('sourceUrl' in q));}
   assert.equal(s.sql.exec('SELECT COUNT(*) AS n FROM eco_quiz_rounds')[0].n,1);
   assert(s.queries.filter(x=>x.query.includes('JOIN eco_quiz_questions')).every(x=>x.query.includes('WHERE p.slot=?')));
   assert.equal(s.queries.filter(x=>x.query.includes('JOIN eco_quiz_questions')).length,3);
@@ -55,11 +56,11 @@ test('users cannot select questions, forge dates, skip slots or change the serve
  }finally{s.close();}
 });
 test('Brasilia midnight unlocks a new set and the private cursor traverses the bank without early repetition',async()=>{
- const s=setup();try{await s.install();let first=await s.core.handle(user,{operation:'quizStart'});const seen=new Set(first.questions.map(q=>q.prompt));
+ const s=setup();try{await s.install();let first=await s.core.handle(user,{operation:'quizStart'});const seen=new Set(s.privateRound().questions.map(q=>q.prompt));
   s.setTime(Date.parse('2026-10-20T02:59:59Z'));assert.equal((await s.core.handle(user,{operation:'quizStart'})).roundId,first.roundId);
   for(let day=20;day<=22;day++){
    s.setTime(Date.parse(`2026-10-${day}T03:00:00Z`));const next=await s.core.handle(user,{operation:'quizStart'});
-   assert.notEqual(next.roundId,first.roundId);for(const q of next.questions){assert(!seen.has(q.prompt));seen.add(q.prompt);}
+   assert.notEqual(next.roundId,first.roundId);for(const q of s.privateRound().questions){assert(!seen.has(q.prompt));seen.add(q.prompt);}
    assert.equal(next.resetAt,Date.parse(`2026-10-${day+1}T03:00:00Z`));
   }
   assert.equal(seen.size,12);await assert.rejects(s.answer(first,0,0),{status:409});
@@ -88,5 +89,65 @@ test('a pause blocks new answers and imports remain bounded and paginated',async
   await assert.rejects(s.core.adminHandle(admin,{operation:'quizImport',questions:Array(51).fill(bank[0])}),{status:400});
   assert.throws(()=>Q.validateQuestion({...bank[0],sourceUrl:'javascript:alert(1)'}),{status:400});
   await assert.rejects(s.core.adminHandle(admin,{operation:'quizSaveConfig',enabled:true,reward:51}),{status:400});
+ }finally{s.close();}
+});
+
+const mixed=[{...bank[0],id:'mixed-quiz',kind:'quiz'},{...bank[1],id:'mixed-career',kind:'career',clues:['Equipe fictícia A','Equipe fictícia B','Equipe fictícia C']},{...bank[2],id:'mixed-lineup',kind:'lineup',options:['Jogador A','Jogador B','Jogador C','Jogador D','Jogador E','Jogador F','Jogador G','Jogador H'],answers:[0,1,2,3],pickCount:4}];
+async function installMixed(s,questions=mixed){await s.core.adminHandle(admin,{operation:'quizImport',questions});await s.core.adminHandle(admin,{operation:'quizSaveConfig',enabled:true,reward:5});}
+test('mixed formats are distinct, future content stays sealed, and perfect completion pays one five-coin bonus',async()=>{
+ const s=setup();try{await installMixed(s);let state=await s.core.handle(user,{operation:'quizStart'});const r=s.privateRound();assert.equal(new Set(r.questions.map(q=>q.kind)).size,3);
+ for(const q of state.questions.slice(1)){assert.equal(q.locked,true);for(const key of ['prompt','options','clues','answer','answers','imagePath','sourceUrl'])assert(!(key in q),key);}
+ for(let index=0;index<3;index++){state=await s.open(state,index);const q=r.questions[index],body={operation:'quizAnswer',day:state.day,roundId:state.roundId,index,...(q.kind==='lineup'?{choices:q.answers}:{choice:q.answer})};state=await s.core.handle(user,body);if(index===2){const retry=await s.core.handle(user,body);assert.equal(retry.wallet.balance,20);}}
+ assert.equal(state.earned,20);assert.equal(state.bonusEarned,5);assert.equal(state.wallet.balance,20);assert.equal(s.sql.exec("SELECT COUNT(*) n FROM eco_ledger WHERE kind='quiz_bonus'")[0].n,1);
+ }finally{s.close();}
+});
+test('server deadlines survive reload, forged clocks and repeated opens; expired answers cannot earn coins',async()=>{
+ const s=setup();try{await s.install();let state=await s.core.handle(user,{operation:'quizStart'}),deadline=state.questions[0].expiresAt;assert.equal(deadline-state.serverNow,25000);
+ s.setTime(deadline-1000);assert.equal((await s.open(state,0)).questions[0].expiresAt,deadline);assert.equal((await s.core.handle(user,{operation:'quizStatus'})).questions[0].expiresAt,deadline);
+ s.setTime(deadline);state=await s.core.handle(user,{operation:'quizAnswer',day:state.day,roundId:state.roundId,index:0,choice:s.privateRound().questions[0].answer,expiresAt:deadline+999999,serverNow:0});assert(state.questions[0].timedOut);assert.equal(state.wallet.balance,0);
+ state=await s.core.handle(user,{operation:'quizStatus'});assert.equal(state.answered,1);assert(state.questions[1].locked);assert(!('prompt' in state.questions[1]));
+ s.setTime(deadline+100000);state=await s.open(state,1);assert.equal(state.questions[1].expiresAt-state.serverNow,25000);assert.equal(state.earned,0);
+ }finally{s.close();}
+});
+test('lineup has strict four-player selection and proportional coins, while partial completion never earns the bonus',async()=>{
+ const s=setup();try{await installMixed(s);let state=await s.core.handle(user,{operation:'quizStart'});const r=s.privateRound();for(let i=0;i<3;i++){state=await s.open(state,i);const q=r.questions[i];if(q.kind==='lineup'){
+ const request=choices=>s.core.handle(user,{operation:'quizAnswer',day:state.day,roundId:state.roundId,index:i,choices});await assert.rejects(request([0,0,0,0]),{status:400});await assert.rejects(request(q.answers.slice(0,3)),{status:400});
+ const wrong=q.options.map((_,j)=>j).find(j=>!q.answers.includes(j));state=await request([...q.answers.slice(0,3),wrong]);assert.equal(state.questions[i].hits,3);assert.equal(state.questions[i].coins,3);
+ }else state=await s.answer(state,i,q.answer);}
+ assert.equal(state.earned,13);assert.equal(state.bonusEarned,0);
+ }finally{s.close();}
+});
+test('a failed bonus credit rolls back the final answer and safe retries pay the full amount once',async()=>{
+ const s=setup();try{await s.install();let state=await s.core.handle(user,{operation:'quizStart'}),r=s.privateRound();for(let i=0;i<2;i++)state=await s.answer(state,i,r.questions[i].answer);await s.open(state,2);
+ const exec=s.sql.exec;let broken=true;s.sql.exec=(query,...args)=>{if(broken&&query.startsWith('INSERT INTO eco_ledger')&&args.includes('quiz_bonus'))throw Error('bonus unavailable');return exec(query,...args);};
+ await assert.rejects(s.answer(state,2,r.questions[2].answer),/bonus unavailable/);assert.equal(s.privateRound().answers.length,2);assert.equal(s.sql.exec('SELECT balance FROM eco_wallet WHERE uid=?',user.uid)[0].balance,10);
+ broken=false;state=await s.answer(state,2,r.questions[2].answer);assert.equal(state.earned,20);assert.equal(state.wallet.balance,20);
+ }finally{s.close();}
+});
+test('photo names and URLs are never sent to players, images are loaded before starting the timer',async()=>{
+ const s=setup();try{await installMixed(s,[0,1,2].map(i=>({...bank[i],kind:'player',imagePath:'player-photos/s2/synthetic.webp'})));const state=await s.core.handle(user,{operation:'quizStart'});assert(state.questions[0].imageData.startsWith('data:image/webp;'));const serialized=JSON.stringify(state);assert(!serialized.includes('synthetic.webp'));assert(!serialized.includes('imagePath'));assert(!serialized.includes('sourceUrl'));assert.equal(state.questions[0].expiresAt-state.serverNow,20000);
+ }finally{s.close();}
+});
+test('legacy completed rounds receive the requested perfect bonus once, keeping prior answers and rewards',async()=>{
+ const s=setup();try{await s.install();let state=await s.core.handle(user,{operation:'quizStart'});const r=s.privateRound();r.schema=undefined;r.bonusPaid=undefined;r.answers=r.questions.map(q=>({selected:q.answer,correct:true,coins:5}));s.sql.exec('UPDATE eco_quiz_rounds SET data=? WHERE uid=? AND day=?',JSON.stringify(r),user.uid,state.day);
+ state=await s.core.handle(user,{operation:'quizStatus'});assert.equal(state.earned,20);assert.equal(state.bonusEarned,5);await s.core.handle(user,{operation:'quizStatus'});assert.equal(s.sql.exec("SELECT COUNT(*) n FROM eco_ledger WHERE kind='quiz_bonus'")[0].n,1);
+ }finally{s.close();}
+});
+
+test('generated private bank installs once and preserves administrator pauses across source updates',async()=>{
+ const built=require('../daily-challenges-seed'),original={...built},s=setup();try{
+  built.version='synthetic-seed-v1';built.questions=mixed.map((q,i)=>({...q,id:'built-synthetic-'+i}));let result=await s.core.adminHandle(admin,{operation:'quizConfig'});assert.equal(result.config.count,3);
+  s.queries.length=0;await s.core.handle(user,{operation:'quizStatus'});assert(!s.queries.some(q=>q.query.includes('FROM eco_quiz_questions')));
+  await s.core.adminHandle(admin,{operation:'quizImport',questions:[{...built.questions[0],enabled:false}]});built.version='synthetic-seed-v2';result=await s.core.adminHandle(admin,{operation:'quizConfig'});assert.equal(result.config.count,2);
+  const list=await s.core.adminHandle(admin,{operation:'quizList'});assert.equal(list.entries.find(q=>q.id==='built-synthetic-0').enabled,false);
+ }finally{Object.assign(built,original);s.close();}
+});
+
+
+test('a photo fetch failure preserves the draw and starts no timer until a successful retry finishes loading',async()=>{
+ let broken=true;const s=setup({imageLoader:async()=>{s.setTime(Date.parse('2026-10-19T16:00:00-03:00'));if(broken)throw Error('photo unavailable');return 'data:image/webp;base64,AAAA';}});try{
+ await installMixed(s,[0,1,2].map(i=>({...bank[i],kind:'player',imagePath:'player-photos/s2/synthetic.webp'})));
+ await assert.rejects(s.core.handle(user,{operation:'quizStart'}),/photo unavailable/);const r=s.privateRound();assert.equal(Object.keys(r.started).length,0);broken=false;
+ const state=await s.core.handle(user,{operation:'quizStart'});assert.equal(state.roundId,r.id);assert(state.questions[0].locked);const opened=await s.open(state,0);assert.equal(opened.questions[0].expiresAt,Date.parse('2026-10-19T16:00:20-03:00'));
  }finally{s.close();}
 });

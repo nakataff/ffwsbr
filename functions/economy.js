@@ -48,7 +48,7 @@ function initEconomy(sql){
  sql.exec('INSERT OR IGNORE INTO eco_settings VALUES(?,?)','chances',JSON.stringify(DEFAULT_CHANCES));
  sql.exec('INSERT OR IGNORE INTO eco_items VALUES(?,?)','code-default',JSON.stringify({id:'code-default',kind:'code',title:'Um codiguinho',price:1000,enabled:true,description:'Um código de item do Free Fire, conforme o estoque disponível.'}));
 }
-function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,ranking=null,now=()=>Date.now(),random=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}}){
+function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,ranking=null,quizImageLoader,now=()=>Date.now(),random=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}}){
  const rows=(q,...args)=>{const result=sql.exec(q,...args);return typeof result.toArray==='function'?result.toArray():Array.from(result);};
  const actor=identity=>{if(!validUid(identity?.uid))throw fail(401,'Entre com Google para acessar suas CFF COINS.');if(identity.provider!=='google.com'&&identity.email!==ADMIN)throw fail(403,'Entre com Google para participar do sistema de CFF COINS.');return identity.uid;};
  const admin=identity=>{actor(identity);if(identity.email!==ADMIN)throw fail(403,'Somente o administrador pode gerenciar a carteira de CFF COINS e o estoque.');};
@@ -60,7 +60,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
  const interactions=interactionRewards.create({sql,transaction,db,ranking,credit,now});
  const syncInteractions=async(uid,force=false,p=null)=>{try{return await interactions.sync(uid,force,p);}catch{return {...interactions.summary(uid),status:'error',message:'Não foi possível atualizar os bônus de interações agora. Seu saldo continua disponível.'};}};
  const eligible=async uid=>{const p=await db.get('userAccounts/'+uid+'/profile');if(!p?.name||!/^[a-z0-9_]{3,24}$/.test(p.username||'')||!['masculino','feminino'].includes(p.gender))throw fail(403,'Complete seu cadastro em Minha conta para participar.');walletProfiles.remember(uid,p);return p;};
- const quiz=quizCore.create({sql,transaction,credit,wallet:uid=>rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0},eligible,dayKey,now,random});
+ const quiz=quizCore.create({sql,transaction,credit,wallet:uid=>rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0},eligible,dayKey,now,random,imageLoader:quizImageLoader});
  const vouchers=voucherCore.create({sql,transaction,db,eligible,now});
  const adminTools=adminToolsCore.create({sql,transaction,db,ranking,vouchers,eligible,dayKey,weekKey,now});
  const linked=async uid=>{const [link,community,owner]=await Promise.all(['communityInstagramLinks/'+uid,'userAccounts/'+uid+'/community','communityOwnerInstagram'].map(p=>db.get(p)));if(owner?.uid===uid&&owner.username==='nakataff')return 'nakataff';if(!link?.username||!community?.session)return '';const status=await verifySession(community.session);return status?.status==='verified'&&String(status.username).toLowerCase()===link.username?link.username:'';};
@@ -100,6 +100,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
   if(b.operation==='profileCheckinStatus')return {ok:true,...checkinStatus(uid),wallet:rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0}};
   if(b.operation==='quizStatus')return quiz.status(uid);
   if(b.operation==='quizStart')return quiz.start(uid);
+  if(b.operation==='quizOpen')return quiz.open(uid,b);
   if(b.operation==='quizAnswer')return quiz.answer(uid,b);
   if(b.operation==='gameOrders')return orders.list(uid,b);
   if(b.operation==='cancelGameOrder')return orders.transition(uid,b);
