@@ -55,5 +55,6 @@ test('the actual account render mounts only the selected inventory collection an
   a.w.inventoryTab='avatars';a.w.render();assert.equal(stops,1);assert.equal(mounts,1);assert(a.w.document.querySelector('.cff-inventory-grid'));assert(!a.w.document.querySelector('#cff-code-gift-inventory'));assert.equal(a.w.document.querySelector('[data-inventory-tab=avatars]').getAttribute('aria-pressed'),'true');
   a.w.inventoryTab='badges';a.w.render();assert.match(a.w.document.querySelector('.cff-inventory-content').textContent,/Insígnias organizadas/);
   let quizMounts=0,quizStops=0;a.w.mountDailyQuiz=host=>{quizMounts++;assert.equal(host.dataset.uid,'person');host.innerHTML='<p>Quiz montado</p>';return()=>quizStops++;};a.w.tab='quiz';a.w.render();a.w.render();assert.equal(quizMounts,1);assert.equal(a.w.document.querySelector('[data-account-tab=quiz]').getAttribute('aria-selected'),'true');a.w.tab='inventory';a.w.render();assert.equal(quizStops,1);
+  a.w.user=null;a.w.tab='quiz';a.w.button=(label,action)=>'<button data-account-action="'+action+'">'+label+'</button>';a.w.render();assert.equal(a.w.document.querySelector('h1').textContent,'Quiz da Central');assert.match(a.w.document.title,/Quiz diário/);assert.match(a.w.document.querySelector('[data-account-action=login]').textContent,/Entrar e jogar/);assert.equal(quizMounts,1);
  }finally{a.close();}
 });
