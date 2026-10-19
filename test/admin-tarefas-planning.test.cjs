@@ -7,7 +7,7 @@ test('inclusive delivery intervals, Brasília instants, separate publication and
 test('recurrence retains month-end anchor, resets work, skips past dates and uses deterministic IDs',()=>{const {P}=model(),t=task({status:'done',date:'2028-01-31',startDate:'2028-01-29',publishDate:'2028-02-01',focusDate:'2028-01-31',publishedUrl:'https://example.test',repeat:{frequency:'monthly',interval:1,anchorDay:31,until:''},approval:{state:'approved',person:'Cliente',sentAt:'2028-01-01',note:'ok'}});const a=P.nextRepeat(t,'2028-02-01');assert.equal(a.date,'2028-02-29');assert.equal(a.startDate,'2028-02-27');assert.equal(a.publishDate,'2028-03-01');assert.equal(a.focusDate,'');assert.equal(a.publishedUrl,'');assert.equal(a.subtasks[0].done,false);assert.equal(a.approval.state,'pending');assert.equal(a.id,P.nextRepeat(t,'2028-02-01').id);const b=P.nextRepeat({...a,status:'done'},'2028-03-01');assert.equal(b.date,'2028-03-31');assert.equal(P.nextRepeat({...t,repeat:{...t.repeat,until:'2028-02-28'}},'2028-02-01'),null);assert.equal(P.nextRepeat({...t,repeat:{frequency:'weekly',interval:1}},'2028-04-01').date,'2028-04-03');});
 test('notification schedules respect task settings and statuses; completed tasks cancel future notices',()=>{const {P}=model(),at=Date.parse('2026-10-15T00:00Z'),state={settings:{notifications:{enabled:true,defaultTime:'09:00',leadMinutes:60}},tasks:[task({startDate:'2026-10-16',publishDate:'2026-10-24',publishTime:'10:00'})]};let events=P.events(state,at);assert.equal(events.length,4);assert.equal(events.find(e=>e.kind==='start').at,Date.parse('2026-10-16T12:00Z'));assert.equal(events.find(e=>e.kind==='reminder').at,Date.parse('2026-10-23T17:00Z'));state.tasks[0].status='done';assert.equal(P.events(state,at).length,0);state.tasks[0].status='todo';state.tasks[0].notify=false;assert.equal(P.events(state,at).length,0);state.tasks[0].notify=true;state.settings.notifications.enabled=false;assert.equal(P.events(state,at).length,0);});
 test('sync preserves edits made on another device during archive and merges templates',()=>{const {S}=model(),base={version:3,tasks:[task()],templates:[],settings:{}},local=structuredClone(base),remote=structuredClone(base);local.tasks=[];remote.tasks[0].title='Editada no outro aparelho';remote.templates=[{id:'custom',name:'Meu modelo'}];const merged=S.merge(base,local,remote);assert.equal(merged.tasks.length,1);assert.equal(merged.tasks[0].title,'Editada no outro aparelho');assert.equal(merged.templates.length,1);assert.equal(S.merge(base,local,base).tasks.length,0);});
-async function board(seed,options={}){const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e));const dom=new JSDOM(read('admin-tarefas.html'),{url:'https://centralfreefire.com.br/admin-tarefas.html',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc}),w=dom.window;w.structuredClone=structuredClone;w.CSS={escape:s=>s};w.scrollTo=()=>{};w.HTMLElement.prototype.scrollIntoView=()=>{};w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};w.confirm=()=>true;w.alert=message=>{throw Error(message);};let snapshot=null,revision=Date.now();const calls=[];w.CFF_TASKS_CLOUD={clientId:'test',load:async()=>snapshot,save:async local=>{snapshot={stateJson:JSON.stringify(local),updatedAt:++revision};return snapshot;},subscribe:()=>()=>{},uploadFile:async()=>({ok:true}),downloadFile:async()=>new w.Blob(['test'],{type:'image/png'}),taskRequest:async body=>{calls.push(body);if(options.request)return options.request(body);if(body.operation==='archiveMonths')return {months:[]};if(body.operation==='notifications')return {items:[],pending:0};return {ok:true};}};if(options.layout!==undefined)w.localStorage.setItem('cff-tasks-card-layout-v1',JSON.stringify(options.layout));if(seed)w.localStorage.setItem('meu-quadro-v1',JSON.stringify(seed));w.CFF_TASKS_AUTHORIZED=true;for(const f of ['projects-seed','project-history','project-reports','projects','sync','daily','notifications','content','plan','workspace',''])vm.runInContext(read('js/admin-tarefas'+(f?'-'+f:'')+'.js'),dom.getInternalVMContext());for(let i=0;i<100&&!w.document.querySelector('#task-models');i++)await new Promise(r=>setTimeout(r,5));assert(w.document.querySelector('#task-models'),'board booted');return {dom,w,errors,calls,state:()=>w.eval('state'),read:expression=>w.eval(expression)};}
+async function board(seed,options={}){const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e));const dom=new JSDOM(read('admin-tarefas.html'),{url:'https://centralfreefire.com.br/admin-tarefas.html',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc}),w=dom.window;w.structuredClone=structuredClone;w.CSS={escape:s=>s};w.scrollTo=()=>{};w.HTMLElement.prototype.scrollIntoView=()=>{};w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};w.confirm=()=>true;w.alert=message=>{throw Error(message);};let snapshot=null,revision=Date.now();const calls=[];w.CFF_TASKS_CLOUD={clientId:'test',load:async()=>snapshot,save:async local=>{snapshot={stateJson:JSON.stringify(local),updatedAt:++revision};return snapshot;},subscribe:()=>()=>{},uploadFile:async()=>({ok:true}),downloadFile:async()=>new w.Blob(['test'],{type:'image/png'}),taskRequest:async body=>{calls.push(body);if(options.request)return options.request(body);if(body.operation==='archiveMonths')return {months:[]};if(body.operation==='notifications')return {items:[],pending:0};return {ok:true};}};if(options.layout!==undefined)w.localStorage.setItem('cff-tasks-card-layout-v1',JSON.stringify(options.layout));if(seed)w.localStorage.setItem('meu-quadro-v1',JSON.stringify(seed));w.CFF_TASKS_AUTHORIZED=true;for(const f of ['projects-seed','project-history','project-reports','projects','sync','daily','notifications','content','plan','workspace','missions','']){vm.runInContext(read('js/admin-tarefas'+(f?'-'+f:'')+'.js'),dom.getInternalVMContext());if(f==='missions'&&!options.ffcpSeed)w.CFF_TASKS_MISSIONS.seed=()=>false;}for(let i=0;i<100&&!w.document.querySelector('#task-models');i++)await new Promise(r=>setTimeout(r,5));assert(w.document.querySelector('#task-models'),'board booted');return {dom,w,errors,calls,state:()=>w.eval('state'),read:expression=>w.eval(expression)};}
 function input(w,id,value){const e=w.document.getElementById(id);e.value=value;e.dispatchEvent(new w.Event('input',{bubbles:true}));return e;}
 test('post scheduling is optional and separate from delivery deadline and planned publication',async()=>{
  const b=await board(),{w}=b,$=id=>w.document.getElementById(id);
@@ -212,6 +212,70 @@ test('push test checks browser subscription before calling the server',async()=>
   assert.match(result.textContent,/inscrição push ativa/i);
   assert.equal(b.calls.filter(x=>x.operation==='testNotification').length,0);
   assert.equal(testButton.disabled,false);
+  assert.equal(b.errors.length,0);
+ }finally{w.close();}
+});
+
+test('FFCP bulk parser identifies mission metadata and disambiguates November 6',()=>{
+ const context=vm.createContext({window:{},Date,console});
+ vm.runInContext(read('js/admin-tarefas-missions.js'),context);
+ const M=context.window.CFF_TASKS_MISSIONS;
+ const input=[
+  '1 - Finais da WB','    ● Período da missão: 05/10 a 11/10','    ● Códiguin da semana: ???','    ● Hashtag: #FFWSBR #WBSplit2','Instruções: Divulgar as finais com link para a transmissão.',
+  '','2 - Dino Fogo','    ● Itens: Conjunto Dino Fogo e Conjunto Dino Chama','    ● Período da missão: 10/10 a 23/10','    ● Códiguin da semana: ??','    ● Hashtag: #DinoFF','Instruções: Divulgar as skins no Vira-Carta.',
+  '','3 - Gateiro FF','    ● Itens: Conjunto Gateiro, Conjunto Gateira','    ● Período da missão: 17/10 a 30/10','    ● Códiguin da semana: ???','    ● Hashtag: #GatoFF','Instruções: Divulgar os itens do Desconto Maluco.',
+  '','4 -Terror Noturno','    ● Itens: Conjunto Terror Noturno, Conjunto Criatura Macabra, Conjunto Aparição Noturna.',
+  '    ● Período da missão: 24/10 a 11/06','    ● Códiguin da semana: ??','    ● Hashtag: #TerrorFF',
+  'Instruções: Evento de 24 de outubro até o dia 6 de novembro.'
+ ].join('\n');
+ const rows=M.parse(input);
+ assert.equal(rows.length,4);
+ assert.deepEqual(rows.map(x=>x.title),['Finais da WB','Dino Fogo','Gateiro FF','Terror Noturno']);
+ assert.deepEqual(rows.map(x=>x.date),['2026-10-11','2026-10-23','2026-10-30','2026-11-06']);
+ assert.deepEqual(rows.map(x=>x.startDate),['2026-10-05','2026-10-10','2026-10-17','2026-10-24']);
+ assert.equal(rows[0].hashtags,'#FFWSBR #WBSplit2');
+ assert.equal(rows[1].code,'??');
+ assert.match(rows[2].items,/Gateira/);
+ assert.match(rows[3].warnings.join(' '),/interpretada/);
+ assert.match(rows[3].instructions,/novembro/);
+ assert.throws(()=>M.parse('sem títulos'),/Nenhuma missão/);
+});
+
+test('FFCP missions import once, appear in separate navigation, remain editable and schedule-compatible',async()=>{
+ const b=await board(undefined,{ffcpSeed:true}),w=b.w,$=id=>w.document.getElementById(id);
+ try{
+  const initial=b.state().tasks.filter(t=>t.ffcp);
+  assert.equal(initial.length,4);
+  assert.equal(b.state().settings.ffcpSeedVersion,1);
+  assert.deepEqual(initial.map(t=>t.date),['2026-10-11','2026-10-23','2026-10-30','2026-11-06']);
+  $('ffcp-side-shortcut').click();
+  assert.equal($('tasks-view').hidden,true);
+  assert.equal($('ffcp-missions-view').hidden,false);
+  assert.equal(w.document.querySelectorAll('.ffcp-card').length,4);
+  assert.equal(w.document.querySelectorAll('.ffcp-instructions:not([open])').length,4);
+  let first=[...w.document.querySelectorAll('.ffcp-card')].find(el=>el.querySelector('h3').textContent==='Terror Noturno');
+  first.querySelectorAll('button')[1].click();
+  const form=w.document.querySelector('.ffcp-editor form');
+  form.elements.code.value='COD2026';
+  form.elements.hashtags.value='#TerrorFF #FFCP';
+  form.dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+  assert.equal(b.state().tasks.find(t=>t.title==='Terror Noturno').ffcp.code,'COD2026');
+  first=[...w.document.querySelectorAll('.ffcp-card')].find(el=>el.querySelector('h3').textContent==='Terror Noturno');
+  first.querySelectorAll('button')[0].click();
+  assert.equal(b.state().tasks.find(t=>t.title==='Terror Noturno').status,'done');
+  assert.equal(b.state().tasks.find(t=>t.title==='Terror Noturno').notify,true);
+  const source=[
+   '5 - Teste Novo','● Itens: Item novo','● Período da missão: 27/10 a 30/10','● Hashtag: #NovoFF','Instruções: Fazer um post.'
+  ].join('\n');
+  w.confirm=()=>true;
+  $('ffcp-paste').value=source;
+  w.document.querySelector('[data-ffcp-import]').click();
+  assert.equal(b.state().tasks.filter(t=>t.ffcp).length,5);
+  const newTask=b.state().tasks.find(t=>t.title==='Teste Novo');
+  assert.equal(newTask.ffcp.hashtags,'#NovoFF');
+  assert.equal(newTask.notify,true);
+  const normalized=b.read('normalise(state)');
+  assert.equal(normalized.tasks.find(t=>t.id===newTask.id).ffcp.items,'Item novo');
   assert.equal(b.errors.length,0);
  }finally{w.close();}
 });
