@@ -45,9 +45,18 @@ test('the actual gift form requires recipient confirmation, uses a dialog and re
 });
 test('stock manager mounts inside its own tab and a card shortcut opens that tab',async()=>{
  const a=setup();try{
-  Object.defineProperty(a.w.crypto,'subtle',{value:crypto.subtle});a.w.TextEncoder=TextEncoder;a.w.getApps=()=>[{name:'[DEFAULT]'}];a.w.initializeApp=()=>({});const admin={uid:'admin',email:'admin@centralfreefire.com.br'};a.w.getAuth=()=>({currentUser:admin});a.w.onAuthStateChanged=(_auth,fn)=>fn(admin);a.w.economyRequest=async()=>({stock:[]});a.w.loadEconomyStyle=()=>{};a.w.esc=String;a.w.prepareEconomyPhoto=async x=>x;
+  Object.defineProperty(a.w.crypto,'subtle',{value:crypto.subtle});a.w.TextEncoder=TextEncoder;a.w.getApps=()=>[{name:'[DEFAULT]'}];a.w.initializeApp=()=>({});const admin={uid:'admin',email:'admin@centralfreefire.com.br'};a.w.getAuth=()=>({currentUser:admin});a.w.onAuthStateChanged=(_auth,fn)=>fn(admin);a.w.createStockBridge=(await import('../js/admin-stock-bridge.mjs')).createStockBridge;a.w.economyRequest=async()=>({stock:[],entries:[],nextCursor:0,hasMore:false});a.w.loadEconomyStyle=()=>{};a.w.esc=String;a.w.prepareEconomyPhoto=async x=>x;
   a.w.eval(fs.readFileSync(require.resolve('../js/admin-economy-stock.js'),'utf8').replace(/^import .*\n/gm,''));for(let n=0;n<15;n++)await new Promise(r=>setTimeout(r,0));
   assert.equal(a.$('#eco-code-stock').parentElement.id,'codes-panel-rewards');assert.equal(a.$('#codes-panel-rewards').hidden,true);a.$('[data-economy-stock="BCDEFG123456"]').click();assert.equal(a.$('#codes-panel-rewards').hidden,false);assert.equal(a.$('[name=code]').value,'BCDEFG123456');assert.equal(a.$('[data-reserve-submit]').disabled,false);
  }finally{a.close();}
 });
 test('a returned code loses its old gift stamp without clearing an unrelated newer gift',async()=>{const a=setup();try{await a.source.reconcile([{code:'ABCDEF123456',returned:true,giftId:'different-gift',sentAt:Date.now(),bucket:'shop'}]);assert.match(a.$('[data-stock-code="ABCDEF123456"]').textContent,/PRESENTE ENVIADO/);await a.source.reconcile([{code:'ABCDEF123456',returned:true,giftId:'codegift-test',sentAt:Date.now(),bucket:'shop'}]);const card=a.$('[data-stock-code="ABCDEF123456"]');assert(!card.classList.contains('gift-sent'));assert.doesNotMatch(card.textContent,/PRESENTE ENVIADO/);assert.equal(card.querySelector('.receiver').value,'Reservado para loja');assert(!a.source.history().some(r=>r.giftId==='codegift-test'));const saves=a.saves();await a.source.reconcile([{code:'ABCDEF123456',returned:true,giftId:'codegift-test',sentAt:Date.now(),bucket:'shop'}]);assert.equal(a.saves(),saves);}finally{a.close();}});
+
+test('codes created in the coin panel join the unlocked encrypted inventory with photo and reservation, without duplication',async()=>{
+ const a=setup();try{
+  const row={hash:'a'.repeat(64),code:'NEWSHOPCODE123',title:'Calça de teste',expires:Date.parse('2026-12-01T23:59:59-03:00'),bucket:'shop',image:'https://centralfreefire.com.br/item.webp'};
+  await a.source.importStock([row],1);const item=a.source.inventory().find(x=>x.code===row.code);assert(item);assert.equal(item.title,row.title);assert.equal(item.imageUrl,row.image);assert.equal(item.expires,'2026-12-01');assert.equal(a.source.bridgeCursor(),1);assert(!a.source.read().some(x=>x.code===row.code));assert.equal(a.$('[data-stock-code="NEWSHOPCODE123"] .receiver').value,'Reservado para loja');
+  const saves=a.saves();await a.source.importStock([row],1);assert.equal(a.saves(),saves);assert.equal(a.source.inventory().filter(x=>x.code===row.code).length,1);
+  await a.w.bloquearCodiguinhos();assert.equal(a.source.inventory(),null);await assert.rejects(a.source.importStock([row],2),/Desbloqueie/);
+ }finally{a.close();}
+});

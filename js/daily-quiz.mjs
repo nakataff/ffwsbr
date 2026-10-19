@@ -15,7 +15,7 @@ export function mountDailyQuiz(root,{auth,request=economyRequest}={}){
  }
  async function perform(op,body={}){
   if(busy||!valid())return;busy=true;message='';render();
-  try{const data=await call(op,body);if(!valid())return;state=data;if(op!=='quizAnswer'){cursor=data.answered===3?3:data.answered;selected=null;}}
+  try{const data=await call(op,body);if(!valid())return;state=data;if(data.complete){try{localStorage.setItem('cff-quiz-completed-day-v1',data.day);}catch{}window.dispatchEvent(new CustomEvent('cff:quiz-complete'));}if(op!=='quizAnswer'){cursor=data.answered===3?3:data.answered;selected=null;}}
   catch(error){if(valid())message=error.message;}
   finally{busy=false;render();}
  }

@@ -1325,6 +1325,7 @@
     function somenteData(valor){ return valor ? String(valor).slice(0,10) : ""; }
 
     function formatarData(yyyyMmDd){
+      if(yyyyMmDd==='9999-12-31')return "Sem validade";
       if(!yyyyMmDd) return "Sem data";
       const [y,m,d] = String(yyyyMmDd).split("-");
       if(!y || !m || !d) return yyyyMmDd;
@@ -2840,6 +2841,25 @@
     
     window.CFF_CODE_DELIVERY_SOURCE={
       refresh(){render();},
+      bridgeCursor(){return Number(memoria.__preferencias?.stockBridgeSeq)||0;},
+      async importStock(entries,cursor){
+        if(!controleDesbloqueado)throw Error('Desbloqueie o controle para sincronizar o estoque.');
+        const known=new Set(listarCodigos(true).map(row=>row.codigo.toUpperCase()));let changed=false;
+        for(const row of entries){
+          if(!row||!/^[a-f0-9]{64}$/.test(row.hash)||!/^[A-Z0-9-]{5,64}$/.test(row.code)||known.has(row.code))continue;
+          const title=String(row.title||'Codiguinho').slice(0,100),expires=Number(row.expires)||0;
+          const end=expires?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(expires)):'9999-12-31';
+          const image=String(row.image||''),signature=JSON.stringify([title,end,image]);
+          let group=grupos.find(g=>configGrupo(g).stockBridgeSignature===signature);
+          if(!group){group={id:'loja-'+String(row.hash),nome:title,item:title,inicio:hojeISO(),fim:end,cor:'#24b9d6',manual:true,codigos:[]};grupos.push(group);const cfg=configGrupo(group);cfg.stockBridgeSignature=signature;if(image)cfg.imagem=image;}
+          group.codigos.push(row.code);known.add(row.code);
+          const data=dadosCodigo(row.code);data.recebeu='Reservado para '+(row.bucket==='roulette'?'roleta':row.bucket==='both'?'roleta/loja':'loja');data.atualizadoEm=new Date().toISOString();changed=true;
+        }
+        memoria.__preferencias||={};const advance=cursor>Number(memoria.__preferencias.stockBridgeSeq||0);
+        if(advance)memoria.__preferencias.stockBridgeSeq=cursor;
+        if(changed||advance){salvarMemoria();if(changed){popularFiltroGrupo();render();}await window.CodiguinhosCloud.flush();}
+      },
+
       inventory(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>g.codigos.map(code=>({code:code.toUpperCase(),groupId:String(g.id),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||''})));},
       stockPhotos(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().filter(g=>imagemGrupo(g)).map(g=>({imageUrl:imagemGrupo(g),codes:g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!d.presente&&String(d.recebeu||'').startsWith('Reservado para ');}).map(code=>code.toUpperCase())})).filter(g=>g.codes.length);},
       history(){if(!controleDesbloqueado)return [];return listarCodigos(true).filter(row=>row.dados.presente).map(row=>({code:row.codigo,title:row.grupo.item||row.grupo.nome,...row.dados.presente}));},
@@ -2889,7 +2909,7 @@
     });
   </script>
   <script src="js/admin-codiguinhos-mostruario.js?v=20261008-v2"></script>
-<script src="js/admin-codiguinhos-ui.js?v=20261015-code-returns-v1"></script>
-<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261015-code-returns-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261015-code-returns-v1";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script><script type="module">import {bootAdminCodeReturns} from "./js/admin-code-returns.js?v=20261015-code-returns-v1";bootAdminCodeReturns().catch(()=>{const el=document.getElementById("eco-code-returns-root");if(el)el.textContent="Não foi possível carregar as devoluções. Atualize a página.";});</script></body>
+<script src="js/admin-codiguinhos-ui.js?v=20261019-admin-integration-v1"></script>
+<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261019-admin-integration-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261015-code-returns-v1";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script><script type="module">import {bootAdminCodeReturns} from "./js/admin-code-returns.js?v=20261015-code-returns-v1";bootAdminCodeReturns().catch(()=>{const el=document.getElementById("eco-code-returns-root");if(el)el.textContent="Não foi possível carregar as devoluções. Atualize a página.";});</script></body>
 </html>
 

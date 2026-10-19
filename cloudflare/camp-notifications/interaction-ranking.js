@@ -8,6 +8,7 @@ export function createInteractionRanking(db){
  if(!db)return null;
  const all=async(q,...values)=>(await db.prepare(q).bind(...values).all()).results||[];
  return {
+  async identity(userKey){const row=await db.prepare('SELECT username FROM users WHERE user_key=?1').bind(userKey).first();return row?{username:clean(row.username)}:null;},
   async probe(){await Promise.all(['users','awards','active_days','checkin_sessions','weekly_ranking_snapshots','monthly_ranking_snapshots'].map(table=>db.prepare('SELECT * FROM '+table+' LIMIT 0').all()));return true;},
   async profile({username,session,owner},cutoff,now){
    let key;

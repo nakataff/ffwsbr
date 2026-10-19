@@ -19,7 +19,7 @@
   function show() {
     if (suppressed() || document.hidden || !document.getElementById('home')?.classList.contains('active')) return;
     // Never queue another invitation behind a welcome or other open overlay.
-    if (document.querySelector('dialog[open],.modal-overlay.active,#sidebar-panel.active')) return;
+    if (document.querySelector('dialog[open],.modal-overlay.active,#sidebar-panel.active,.cff-quiz-invite')) return;
     if (typeof HTMLDialogElement === 'undefined' || !HTMLDialogElement.prototype.showModal) return;
     if (!write('sessionStorage', SESSION, Date.now())) return;
     const previousFocus = document.activeElement;

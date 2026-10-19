@@ -1,4 +1,4 @@
-import {mountDailyQuiz} from './daily-quiz.mjs?v=20261019-daily-quiz-v1';
+import {mountDailyQuiz} from './daily-quiz.mjs?v=20261019-admin-integration-v1';
 import {createEmblemDisplay} from './profile-emblems.mjs?v=20261016-emblems-v1';
 import {INVENTORY_TABS,inventoryAssets} from './profile-inventory.mjs?v=20261015-inventory-v1';
 import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015-inventory-v1';

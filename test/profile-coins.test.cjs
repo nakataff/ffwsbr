@@ -70,3 +70,16 @@ test('the roulette uses a generic gift while the prize catalogue retains distinc
   const button=a.root.querySelector('[data-eco="checkin"]');assert.equal(button.disabled,false);button.click();await tick();assert(calls.includes('profileCheckin'));assert.equal(a.root.querySelector('[data-eco="checkin"]').disabled,true);assert.match(a.root.querySelector('.eco-status').textContent,/ranking confirmado/);stop();
  }finally{a.close();}
 });
+
+test('integrated admin tabs keep weekly and inventory queries lazy and new shop codes request private control synchronization',async()=>{
+ const a=adminCoinsFixture();try{
+  a.w.eval(fs.readFileSync(require.resolve('../js/admin-economy-tools.mjs'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));
+  const original=a.w.economyRequest,recipient={uid:'person',name:'Pessoa',username:'pessoa'};
+  a.w.economyRequest=async(auth,op,body,admin)=>{if(['weeklyWinners','findVoucherRecipient','memberInventory','addStock'].includes(op)){a.calls.push({op,body});if(op==='weeklyWinners')return {entries:[],nextBefore:'2026-10-12'};if(op==='findVoucherRecipient')return {recipient};if(op==='memberInventory')return {recipient,category:'codes',entries:[],pending:[],hasMore:false,nextCursor:''};return {ok:true};}return original(auth,op,body,admin);};
+  await a.start();assert.deepEqual(a.calls.map(c=>c.op),['dashboard','coinRanking']);
+  a.root.querySelector('[data-admin-tab=winners]').click();await tick();assert.equal(a.calls.at(-1).op,'weeklyWinners');
+  a.root.querySelector('[data-admin-tab=inventory]').click();await tick();assert.equal(a.calls.at(-1).op,'weeklyWinners');
+  const search=a.root.querySelector('[data-tools-find]');search.elements.username.value='@pessoa';search.dispatchEvent(new a.w.Event('submit',{bubbles:true,cancelable:true}));await tick();assert.deepEqual(a.calls.slice(-2).map(c=>c.op),['findVoucherRecipient','memberInventory']);assert.equal(a.calls.at(-1).body.targetUid,'person');
+  a.root.querySelector('[data-add-shop-code]').click();const form=a.root.querySelector('#eco-stock');assert.equal(form.elements.bucket.value,'shop');form.elements.title.value='Prêmio teste';form.elements.code.value='PRIVATECODE123';form.dispatchEvent(new a.w.Event('submit',{bubbles:true,cancelable:true}));await tick();const saved=a.calls.find(c=>c.op==='addStock');assert.equal(saved.body.catalogSync,true);assert.equal(saved.body.bucket,'shop');assert(!String(a.w.localStorage.getItem('cff-stock-updated-v1')).includes('PRIVATECODE123'));assert(!a.calls.some(c=>c.op==='syncCoinRanking'));
+ }finally{a.close();}
+});
