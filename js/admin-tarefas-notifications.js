@@ -41,5 +41,16 @@
   const ids=new Set(),tasks=value.tasks.map(t=>{if(!t||typeof t.id!=='string'||!/^[-\w]{1,150}$/.test(t.id)||ids.has(t.id)||typeof t.title!=='string'||!t.title.trim()||t.title.length>200)throw Error('Tarefa inválida no resumo.');ids.add(t.id);for(const k of ['date','startDate','publishDate','focusDate'])if(t[k]&&!isDate(t[k]))throw Error('Data inválida no resumo.');if(t.startDate&&(!t.date||t.startDate>t.date)||t.time&&!isTime(t.time))throw Error('Prazo inválido no resumo.');return {id:t.id,title:t.title,date:t.date||'',startDate:t.startDate||'',time:t.time||'',publishDate:t.publishDate||'',focusDate:t.focusDate||'',focusOrder:[0,1,2].includes(t.focusOrder)?t.focusOrder:0};});
   return {enabled:value.enabled,time:value.time,tasks:value.enabled?tasks:[]};
  }
- return {preferences,events,digest,summary,validateDigest,dayAt,instant,addDays,isDate,isTime,offsets};
+ function explainPushError(error,isBrave=false){
+  const message=String(error?.message||error||'').trim();
+  if(/Registration failed\s*-\s*push service error|push service error/i.test(message)){
+   return 'O navegador permitiu as notificações, mas não conseguiu se conectar ao serviço de push. '+
+    (isBrave?'No Brave, abra brave://settings/privacy, ative “Usar serviços do Google para mensagens push”, reinicie o navegador e tente “Ativar neste aparelho” novamente.':
+     'Se estiver no Brave, abra brave://settings/privacy e ative “Usar serviços do Google para mensagens push”. Reinicie o navegador e tente novamente. Se persistir, teste no Chrome ou Edge.');
+  }
+  if(/InvalidStateError|applicationServerKey|VAPID|invalid.*key/i.test(message))return 'O registro de notificações foi recusado. Atualize esta página; se persistir, pode haver uma inscrição antiga ou chave de push incompatível. Detalhe: '+message.slice(0,150);
+  if(/NotAllowedError|permission denied|denied/i.test(message))return 'As notificações foram bloqueadas. Nas configurações do site no navegador, altere a permissão para Permitir e tente novamente.';
+  return message||'Não foi possível ativar os avisos neste aparelho.';
+ }
+ return {preferences,events,digest,summary,validateDigest,dayAt,instant,addDays,isDate,isTime,offsets,explainPushError};
 });
