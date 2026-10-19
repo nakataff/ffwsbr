@@ -113,3 +113,12 @@ Level visuals are cosmetic (`communityStyle`) and rendered only when the
 server's lifetime score meets the threshold. Levels: Novato 0, Participante 100,
 Veterano 500, Elite 1500, Lenda 5000. The 1080×1920 story card is generated
 locally and downloaded/shared only at the user's request.
+
+
+### Batch review (2026-10-19)
+
+The story queue now offers compact thumbnails, image zoom, local handle/week filters over the loaded page, selection of up to 20 stories from the same account/week, and a shared confirmation dialog. The reviewer chooses the original post once for stories showing the same publication. Approval is never inferred from an image. Unavailable previews still require checking the Instagram conversation. Batch rejection has a shared reason and explicit confirmation.
+
+`POST /api/admin/stories/review-batch` verifies the admin once and accepts 1–20 distinct keys. It returns an individual result per story, including conflicts and already-completed decisions. Each approval still goes through the existing atomic SQL triggers for original publication dates, weekly eligibility, daily caps and duplicate credit. Credit failures roll back that story while other valid decisions proceed. A retry cannot award the same story again.
+
+Successful decisions update the current UI queue without fetching it again or discarding unresolved selections. There is no polling. Queue pages stay limited to 50; search/week filters do not trigger extra reads. The original-post selector shares the account/week catalog within the page. The Worker reuses at most 100 recent Meta posts per account for 2 minutes, with at most 8 accounts per database binding and concurrent request coalescing; failed lookups retry after 10 seconds. Timestamp eligibility is still checked separately for every story. Batch processing evaluates bonuses once per affected person/week and invalidates public ranking caches once per group, not once per card. Existing scores and review history are unchanged.

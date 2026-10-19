@@ -1,4 +1,4 @@
-export const STORY_REVIEW_VERSION = '20261012-story-review-v1';
+export const STORY_REVIEW_VERSION = '20261019-story-batch-v1';
 const monday = day => `date(${day}, '-' || ((CAST(strftime('%w',${day}) AS INTEGER)+6)%7) || ' days')`;
 export const STORY_REVIEW_SCHEMA = [
  `CREATE TABLE IF NOT EXISTS story_reviews (
