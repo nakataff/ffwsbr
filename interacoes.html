@@ -123,6 +123,7 @@
     #community-ranking-view .ig-podium-item{padding:17px 12px}
     #community-ranking-view .ig-table td{padding-top:15px;padding-bottom:15px}
     #community-predictions-view{display:grid;gap:16px}
+    .community-main-tab[hidden]{display:none!important}
     @media(max-width:650px){.community-main-tabs{grid-template-columns:1fr}.community-main-tab{text-align:left;padding:0 14px}}
 
   </style>
@@ -244,7 +245,8 @@
   const buttons=[...document.querySelectorAll('[data-community-tab]')];
   const views=[...document.querySelectorAll('[data-community-view]')];
   function openTab(name,{updateHash=true}={}){
-    const target=name==='predictions'?'predictions':'ranking';
+    const predictionTab=document.querySelector('[data-community-tab="predictions"]');
+    const target=name==='predictions'&&!predictionTab?.hidden?'predictions':'ranking';
     buttons.forEach(btn=>btn.classList.toggle('is-active',btn.dataset.communityTab===target));
     views.forEach(view=>{view.hidden=view.dataset.communityView!==target});
     if(updateHash){
@@ -252,6 +254,14 @@
       history.replaceState(null,'',location.pathname+location.search+hash);
     }
   }
+  window.addEventListener('cff:predictions-availability',event=>{
+    const available=Boolean(event.detail?.available);
+    const tab=document.querySelector('[data-community-tab="predictions"]');
+    if(!tab)return;
+    tab.hidden=!available;
+    if(!available&&document.querySelector('[data-community-view="predictions"]:not([hidden])'))openTab('ranking');
+    if(available&&location.hash==='#palpites')openTab('predictions',{updateHash:false});
+  });
   window.cffOpenCommunityTab=openTab;
   buttons.forEach(btn=>btn.addEventListener('click',()=>openTab(btn.dataset.communityTab)));
   openTab(location.hash==='#palpites'?'predictions':'ranking',{updateHash:false});
@@ -492,7 +502,7 @@
 <script data-cff-community-checkin src="js/community-checkin.js?v=20261014-loading-v1"></script>
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
 
-<script data-cff-community-prediction src="js/community-prediction-v5.js?v=20261006-account-v1"></script>
+<script data-cff-community-prediction src="js/community-prediction-v5.js?v=20261019-hide-empty-v1"></script>
 <script data-cff-community-promos src="js/community-promos.js?v=20260929-giveaway-winner-v5"></script>
 
 <script type="module" src="/js/public-account.js?v=20261019-mixed-challenges-v1"></script>
