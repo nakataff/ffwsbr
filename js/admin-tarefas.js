@@ -7,7 +7,7 @@ const serviceById=id=>state.services.find(service=>service.id===id);
 const $=id=>document.getElementById(id),el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;},uid=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),now=()=>new Date().toISOString(),copy=value=>structuredClone(value);
 const today=()=>window.CFF_TASKS_PLAN.today();
 function fresh(){return {version:5,templates:[],projects:[],projectCompanies:[],projectNetworks:[],projectFields:[],tasks:[],notes:[],usefulLinks:[],dailyPosts:[],services:copy(DEFAULT_SERVICES),theme:'dark',columns:copy(BASE_COLUMNS),platforms:[{id:'instagram',name:'Instagram'},{id:'x',name:'X'},{id:'facebook',name:'Facebook'},{id:'tiktok',name:'TikTok'},{id:'youtube',name:'YouTube'},{id:'site',name:'Site'}],tags:[],settings:{warningMinutes:60,view:'board',sort:'deadline'}};}
-let projectsUI=null,planUI=null,contentUI=null,cloudRevision=0;
+let projectsUI=null,planUI=null,contentUI=null,missionsUI=null,cloudRevision=0;
 let state=fresh(),files=new Map(),db=null,storageBlocked=false,saveQueue=Promise.resolve(),dragId=null,draft=null,draftFiles=new Map(),previewUrls=[],toastTimer,booted=false,openNoteId=null,editNoteId=null,failedFileChanges=new Map();
 let cloudUnsubscribe=null,cloudTimer=null,cloudPendingState=null,cloudSaveChain=Promise.resolve(),cloudReady=false,applyingRemote=false,syncBase=null,syncDirty=false,cloudBusy=false,cloudRetry=null;
 const filters={text:'',deadline:'all',platform:'',tag:'',status:'',important:false};
@@ -26,7 +26,7 @@ function normalise(data){
  function references(list,ids){if(!Array.isArray(list)||list.some(id=>!ids.has(id)))throw Error('Referência inválida');return [...new Set(list)];}
  const parseTask=t=>{
   const status=text(t.status,150,false);if(!statusIds.has(status))throw Error('Coluna inválida');const date=text(t.date,10),time=text(t.time,5);if(!validDate(date)||(time&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(time))||(time&&!date))throw Error('Prazo inválido');const prev=statusIds.has(t.previousStatus)&&!['done','cancelled'].includes(t.previousStatus)?t.previousStatus:'todo';
-  return {...window.CFF_TASKS_PLAN.extra(t,data),id:t.id,boardOrder:Number.isInteger(t.boardOrder)&&t.boardOrder>=0&&t.boardOrder<10000?t.boardOrder:null,copies:window.CFF_TASKS_CONTENT.copies(t.copies),title:text(t.title,200,false).trim(),note:text(t.note,4000),date,time,status,previousStatus:prev,important:legacy?false:!!t.important,color:legacy?'none':Object.hasOwn(COLORS,t.color)?t.color:'none',service:legacy?'':serviceIds.has(String(t.service||''))?String(t.service):'',serviceIcon:legacy?'':cleanServiceIcon(t.serviceIcon||''),platforms:legacy?[]:references(t.platforms,platformIds),tags:legacy?[]:references(t.tags,tagIds),links:legacy?[]:uniqueList(t.links,l=>({id:l.id,url:cleanUrl(text(l.url,3000,false)),label:text(l.label,200),imageUrl:cleanUrl(text(l.imageUrl||'',3000))})),subtasks:legacy?[]:uniqueList(t.subtasks,s=>({id:s.id,text:text(s.text,300,false),done:!!s.done})),attachments:legacy?[]:uniqueList(t.attachments,a=>({id:a.id,name:text(a.name,255,false),type:text(a.type,200),remote:a.remote===true,size:Number.isFinite(a.size)&&a.size>=0?a.size:(()=>{throw Error('Anexo inválido')})()})),createdAt:legacy?now():iso(t.createdAt)||now(),updatedAt:legacy?now():iso(t.updatedAt)||now(),completedAt:legacy?null:iso(t.completedAt),cancelledAt:legacy?null:iso(t.cancelledAt),history:legacy?[]:uniqueList(t.history,h=>({id:h.id,at:iso(h.at)||now(),action:text(h.action,1000,false)}))};
+  return {...window.CFF_TASKS_PLAN.extra(t,data),...(t.ffcp?{ffcp:window.CFF_TASKS_MISSIONS.meta(t.ffcp)}:{}),id:t.id,boardOrder:Number.isInteger(t.boardOrder)&&t.boardOrder>=0&&t.boardOrder<10000?t.boardOrder:null,copies:window.CFF_TASKS_CONTENT.copies(t.copies),title:text(t.title,200,false).trim(),note:text(t.note,4000),date,time,status,previousStatus:prev,important:legacy?false:!!t.important,color:legacy?'none':Object.hasOwn(COLORS,t.color)?t.color:'none',service:legacy?'':serviceIds.has(String(t.service||''))?String(t.service):'',serviceIcon:legacy?'':cleanServiceIcon(t.serviceIcon||''),platforms:legacy?[]:references(t.platforms,platformIds),tags:legacy?[]:references(t.tags,tagIds),links:legacy?[]:uniqueList(t.links,l=>({id:l.id,url:cleanUrl(text(l.url,3000,false)),label:text(l.label,200),imageUrl:cleanUrl(text(l.imageUrl||'',3000))})),subtasks:legacy?[]:uniqueList(t.subtasks,s=>({id:s.id,text:text(s.text,300,false),done:!!s.done})),attachments:legacy?[]:uniqueList(t.attachments,a=>({id:a.id,name:text(a.name,255,false),type:text(a.type,200),remote:a.remote===true,size:Number.isFinite(a.size)&&a.size>=0?a.size:(()=>{throw Error('Anexo inválido')})()})),createdAt:legacy?now():iso(t.createdAt)||now(),updatedAt:legacy?now():iso(t.updatedAt)||now(),completedAt:legacy?null:iso(t.completedAt),cancelledAt:legacy?null:iso(t.cancelledAt),history:legacy?[]:uniqueList(t.history,h=>({id:h.id,at:iso(h.at)||now(),action:text(h.action,1000,false)}))};
  };
  const tasks=uniqueList(data.tasks,parseTask),templates=uniqueList(data.templates||[],t=>({id:t.id,name:text(t.name,80,false),task:parseTask({...t.task,platforms:(t.task.platforms||[]).filter(id=>platformIds.has(id)),tags:(t.task.tags||[]).filter(id=>tagIds.has(id)),status:statusIds.has(t.task.status)?t.task.status:'todo'})}));
  const notes=uniqueList(data.notes===undefined?[]:data.notes,(n,index)=>{if(!Object.hasOwn(NOTE_COLORS,n.color))throw Error('Cor inválida');return {id:n.id,title:n.title===undefined?'Lembrete '+(index+1):text(n.title,60,false),text:text(n.text,5000),color:n.color};});if(data.theme!==undefined&&!['light','dark'].includes(data.theme))throw Error('Tema inválido');const settings=legacy?base.settings:data.settings||{};
@@ -44,7 +44,7 @@ function normalise(data){
   for(const [date,done] of Object.entries(completedDates)){if(!date||!validDate(date)||typeof done!=='boolean')throw Error('Conclusão diária inválida');}
   return {id:post.id,title:text(post.title,140,false).trim(),days:[...new Set(days)].sort(),time,completedDates:copy(completedDates)};
  });
- return {version:5,...window.CFF_TASKS_PROJECTS.normalise(data),tasks,templates,notes,usefulLinks,dailyPosts,services,theme:data.theme||'dark',columns,platforms,tags,settings:{warningMinutes:[15,30,60,180,1440].includes(Number(settings.warningMinutes))?Number(settings.warningMinutes):60,...window.CFF_TASKS_PLAN.settings(settings),view:['agenda','day','calendar','archive'].includes(settings.view)?settings.view:'board',sort:['manual','deadline','important','newest','title'].includes(settings.sort)?settings.sort:'deadline'}};
+ return {version:5,...window.CFF_TASKS_PROJECTS.normalise(data),tasks,templates,notes,usefulLinks,dailyPosts,services,theme:data.theme||'dark',columns,platforms,tags,settings:{warningMinutes:[15,30,60,180,1440].includes(Number(settings.warningMinutes))?Number(settings.warningMinutes):60,...window.CFF_TASKS_PLAN.settings(settings),ffcpSeedVersion:Number(settings.ffcpSeedVersion)>=1?1:0,view:['agenda','day','calendar','archive'].includes(settings.view)?settings.view:'board',sort:['manual','deadline','important','newest','title'].includes(settings.sort)?settings.sort:'deadline'}};
 }
 function toast(message){clearTimeout(toastTimer);$('toast').textContent=message;$('toast').classList.add('show');toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3000);}
 function notice(message){$('storage-notice').textContent=message;$('storage-notice').classList.add('visible');$('save-status').textContent='Falha ao salvar · Exporte um backup antes de fechar.';}
@@ -94,6 +94,7 @@ function checkpoint(){
 }
 function repaintCloud(){
  projectsUI?.refresh();
+ missionsUI?.render();
  applyTheme();refreshFilters();renderBoard();
  // Keep typing uninterrupted. The focused note is refreshed when editing finishes.
  if(!document.activeElement?.closest('.sticky-body'))renderNotes();
@@ -276,6 +277,7 @@ function updateSummary(){const done=state.tasks.filter(t=>t.status==='done').len
 function updateAlerts(){const near=state.tasks.filter(t=>{const r=remaining(t);return ['urgent','soon'].includes(r.level);});$('deadline-alert').classList.toggle('visible',near.length>0);$('deadline-alert-text').textContent=near.length===1?'Uma tarefa está perto do prazo.':`${near.length} tarefas estão perto do prazo.`;}
 function renderBoard(){
  projectsUI?.refreshTasks?.();
+ missionsUI?.render();
  const board=$('board'),agenda=$('agenda');board.replaceChildren();agenda.replaceChildren();const visible=state.columns.filter(c=>!c.hidden),ids=new Set(visible.map(c=>c.id)),shown=state.tasks.filter(t=>ids.has(t.status)&&matches(t));board.hidden=state.settings.view!=='board';agenda.hidden=state.settings.view!=='agenda';document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===state.settings.view)));
  $('visible-count').textContent=shown.length+' tarefa'+(shown.length===1?'':'s')+' visível'+(shown.length===1?'':'s');updateSummary();updateAlerts();planUI?.render();if(!['board','agenda'].includes(state.settings.view))return;
  if(!visible.length){const empty=el('div','all-hidden','Todas as colunas estão ocultas.'),b=el('button','quiet','Mostrar colunas');b.addEventListener('click',openColumns);empty.append(el('br'),b);(state.settings.view==='board'?board:agenda).append(empty);board.style.setProperty('--cols','1');return;}
@@ -523,6 +525,8 @@ function wire(){
  projectsUI=window.CFF_TASKS_PROJECTS.mount({getState:()=>state,save,toast,linkedTasks:id=>state.tasks.filter(t=>t.companyId===id),openTask:t=>openEditor(t.status,t),newTask:(projectId,companyId)=>planUI?.newTask({projectId,companyId})});
  planUI=window.CFF_TASKS_WORKSPACE.mount(taskWorkspaceApi());
  contentUI=window.CFF_TASKS_CONTENT.mount(taskWorkspaceApi());
+ missionsUI=window.CFF_TASKS_MISSIONS.mount(taskWorkspaceApi(),projectsUI);
+ window.CFF_TASKS_MISSIONS_UI=missionsUI;
  wireDeskTools();wireDailyPosts();wireServices();document.addEventListener('change',e=>{if(e.target.matches('.status-picker'))styleStatusSelect(e.target);});
  const filterToggle=$('toggle-filters');
  if(filterToggle)filterToggle.addEventListener('click',()=>{
@@ -557,7 +561,7 @@ async function boot(){
  if(!storageBlocked)await initCloudSync(false);
  if(db){try{const ids=[...new Set(state.tasks.flatMap(t=>t.attachments.map(a=>a.id)))],store=db.transaction('files','readonly').objectStore('files'),stored=await Promise.all(ids.map(id=>request(store.get(id))));stored.filter(Boolean).forEach(f=>files.set(f.id,f.blob));}catch{}}
  if(state.tasks.some(t=>t.attachments.some(a=>!a.remote&&!files.has(a.id))))cloudStatus('Alguns anexos precisam ser sincronizados pelo aparelho onde foram adicionados.');
- if(!storageBlocked&&window.CFF_TASKS_PROJECTS.seed(state))save();
+ if(!storageBlocked){const seededProjects=window.CFF_TASKS_PROJECTS.seed(state),seededMissions=window.CFF_TASKS_MISSIONS.seed(state);if(seededProjects||seededMissions)save();}
  wire();applyTheme();refreshFilters();renderNotes();renderUsefulLinks();renderDailyPosts();renderBoard();booted=true;planUI?.boot();
  if(!db&&!storageBlocked)notice('Anexos locais indisponíveis neste navegador. Tarefas e lembretes continuam sincronizados pela nuvem.');
  if(window.CFF_TASKS_CLOUD&&cloudReady&&!$('storage-notice').classList.contains('visible'))cloudStatus('Sincronizado na nuvem · cópia local ativa.');
