@@ -78,8 +78,24 @@
     state().settings.notifications={enabled:f.enabled.checked,leadMinutes:leadTimes[0]||prefs.leadMinutes,leadTimes,defaultTime:f.time.value,start:f.start.checked,reminder:f.reminder.checked,due:f.due.checked,publication:f.publication.checked,overdue:f.overdue.checked,approval:f.approval.checked,approvalDays:Number(f.approvalDays.value),summary:f.summary.checked,summaryTime:f.summaryTime.value};
     const submit=form.querySelector('[type=submit]');submit.disabled=true;api.save();try{await api.sync();await schedule(true);result.textContent='Preferências salvas. '+(!f.enabled.checked?'Notificações desativadas.':NotificationPermission()==='granted'?'Este aparelho permite notificações.':'Ative neste aparelho para receber os avisos.');}catch(error){result.textContent=error.message;}finally{submit.disabled=false;}
    };
-   d.querySelector('.activate-push').onclick=async()=>{try{await cloud().enableNotifications();result.textContent='Notificações ativadas neste aparelho. Escolha os tipos e salve as preferências.';f.enabled.checked=true;updateControls();}catch(e){result.textContent=e.message;}};
-   d.querySelector('.test-push').onclick=async()=>{try{const r=await request({operation:'testNotification'});result.textContent=r.accepted?'Teste enviado ao(s) aparelho(s) ativado(s).':'Nenhum aparelho recebeu o teste. Ative as notificações neste aparelho.';}catch(e){result.textContent=e.message;}};
+   const pushHelp=error=>window.CFF_TASKS_NOTIFICATIONS.explainPushError(error,Boolean(navigator.brave));
+   const hasLocalPush=async()=>{if(!navigator.serviceWorker||typeof navigator.serviceWorker.getRegistration!=='function')return false;const registration=await navigator.serviceWorker.getRegistration('/');return Boolean(await registration?.pushManager?.getSubscription());};
+   const activateButton=d.querySelector('.activate-push'),testButton=d.querySelector('.test-push');
+   activateButton.onclick=async()=>{
+    activateButton.disabled=true;result.textContent='Conectando este aparelho ao serviço de notificações…';
+    try{await cloud().enableNotifications();result.textContent='Aparelho registrado para push. Escolha os tipos e salve as preferências.';f.enabled.checked=true;updateControls();}
+    catch(e){result.textContent=pushHelp(e);}
+    finally{activateButton.disabled=false;}
+   };
+   testButton.onclick=async()=>{
+    testButton.disabled=true;result.textContent='Conferindo o cadastro de notificações deste aparelho…';
+    try{
+     if(NotificationPermission()!=='granted'||!await hasLocalPush()){result.textContent='Este aparelho ainda não tem uma inscrição push ativa. Mesmo com a permissão liberada, é necessário clicar em “Ativar neste aparelho” e concluir o cadastro antes de testar.';return;}
+     const r=await request({operation:'testNotification'});
+     result.textContent=r.accepted?'Serviço push aceitou '+r.accepted+' envio(s). A entrega depende do navegador estar conectado.':r.devices?'O aparelho está cadastrado, mas o serviço push recusou o teste. Verifique as configurações de push do navegador e tente novamente.':'Nenhum aparelho está cadastrado no servidor. Clique em “Ativar neste aparelho” para registrar novamente.';
+    }catch(e){result.textContent=pushHelp(e);}
+    finally{testButton.disabled=false;}
+   };
    try{const r=await request({operation:'notifications'}),history=d.querySelector('.notification-history');history.replaceChildren(node('p','hint',r.pending+' lembretes agendados.'));for(const item of r.items){const row=button(item.title+' · '+item.body+' · '+new Date(item.at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+(item.delivered?'':' · Sem confirmação de envio'),()=>{if(item.view==='day'){d.close();state().settings.view='day';api.save();api.render();return;}const t=state().tasks.find(x=>x.id===item.taskId);if(t){d.close();api.open(t.status,t);}else api.toast('A tarefa pode ter sido arquivada ou removida.');});history.append(row);}}catch(e){d.querySelector('.notification-history').textContent=e.message;}
   }
   function NotificationPermission(){return typeof Notification==='undefined'?'unsupported':Notification.permission;}
