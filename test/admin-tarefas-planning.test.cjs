@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const {JSDOM,VirtualConsole}=require('jsdom');
 const root=require('node:path').resolve(__dirname,'..'),read=p=>fs.readFileSync(root+'/'+p,'utf8');
-function model(){const context=vm.createContext({window:{},URL,Date,console});for(const file of ['daily','notifications','content','plan','sync'])vm.runInContext(read('js/admin-tarefas-'+file+'.js'),context);return {P:context.window.CFF_TASKS_PLAN,S:context.window.CFF_TASKS_SYNC};}
+function model(){const context=vm.createContext({window:{},URL,Date,console});for(const file of ['daily','notifications','content','plan','sync'])vm.runInContext(read('js/admin-tarefas-'+file+'.js'),context);return {P:context.window.CFF_TASKS_PLAN,S:context.window.CFF_TASKS_SYNC,N:context.window.CFF_TASKS_NOTIFICATIONS};}
 const task=(extra={})=>({id:'task-1',title:'Post da Central',note:'Detalhes',date:'2026-10-23',time:'15:00',status:'todo',previousStatus:'todo',important:false,color:'none',service:'',serviceIcon:'',platforms:[],tags:[],links:[],subtasks:[{id:'step',text:'Revisar',done:true}],attachments:[],history:[],createdAt:'2026-10-16T12:00:00Z',updatedAt:'2026-10-16T12:00:00Z',completedAt:null,cancelledAt:null,...extra});
 test('inclusive delivery intervals, Brasília instants, separate publication and validation',()=>{const {P}=model(),t=task({startDate:'2026-10-16',publishDate:'2026-10-25'});assert(P.inWindow(t,'2026-10-16'));assert(P.inWindow(t,'2026-10-23'));assert(!P.inWindow(t,'2026-10-24'));assert.equal(P.instant('2026-10-16','09:00'),Date.parse('2026-10-16T12:00Z'));assert.throws(()=>P.extra({...t,startDate:'2026-10-24'}),/início/);assert.throws(()=>P.extra({...t,publishDate:'',publishTime:'12:00'}),/publicação/);assert.throws(()=>P.extra({...t,publishedUrl:'javascript:alert(1)'}));const shift=P.shiftTask(t,'2026-10-20','2026-10-16');assert.equal(shift.startDate,'2026-10-20');assert.equal(shift.date,'2026-10-27');assert.equal(t.publishDate,'2026-10-25');const day=P.myDay([t],'2026-10-20');assert.equal(day.today.length,1);assert.equal(day.late.length,0);assert.equal(P.myDay([t],'2026-10-24').late.length,1);});
 test('recurrence retains month-end anchor, resets work, skips past dates and uses deterministic IDs',()=>{const {P}=model(),t=task({status:'done',date:'2028-01-31',startDate:'2028-01-29',publishDate:'2028-02-01',focusDate:'2028-01-31',publishedUrl:'https://example.test',repeat:{frequency:'monthly',interval:1,anchorDay:31,until:''},approval:{state:'approved',person:'Cliente',sentAt:'2028-01-01',note:'ok'}});const a=P.nextRepeat(t,'2028-02-01');assert.equal(a.date,'2028-02-29');assert.equal(a.startDate,'2028-02-27');assert.equal(a.publishDate,'2028-03-01');assert.equal(a.focusDate,'');assert.equal(a.publishedUrl,'');assert.equal(a.subtasks[0].done,false);assert.equal(a.approval.state,'pending');assert.equal(a.id,P.nextRepeat(t,'2028-02-01').id);const b=P.nextRepeat({...a,status:'done'},'2028-03-01');assert.equal(b.date,'2028-03-31');assert.equal(P.nextRepeat({...t,repeat:{...t.repeat,until:'2028-02-28'}},'2028-02-01'),null);assert.equal(P.nextRepeat({...t,repeat:{frequency:'weekly',interval:1}},'2028-04-01').date,'2028-04-03');});
@@ -191,4 +191,27 @@ test('drag and drop chooses an insertion point, preserves filtered cards and cha
 test('reordering sync preserves remote content edits and validates optional positions in old backups',async()=>{
  const {S}=model(),base={version:5,tasks:[task({id:'a',boardOrder:0}),task({id:'b',boardOrder:1})],settings:{sort:'deadline'}},local=structuredClone(base),remote=structuredClone(base);local.tasks[0].boardOrder=1;local.tasks[1].boardOrder=0;local.settings.sort='manual';remote.tasks[0].note='Editada em outro aparelho';remote.tasks.push(task({id:'remote'}));const merged=S.merge(base,local,remote);assert.equal(merged.tasks[0].note,'Editada em outro aparelho');assert.equal(merged.tasks[1].boardOrder,0);assert.equal(merged.tasks.length,3);assert.equal(merged.settings.sort,'manual');
  const b=await board({version:1,tasks:[task()]});try{assert.equal(b.state().tasks[0].boardOrder,null);for(const value of [-1,Infinity,'1',10000]){const seed=structuredClone(b.state());seed.tasks[0].boardOrder=value;assert.equal(b.read('normalise('+JSON.stringify(seed)+').tasks[0].boardOrder'),null);}assert.equal(b.errors.length,0);}finally{b.w.close();}
+});
+
+test('Brave push-service failure is actionable rather than a raw registration error',()=>{
+ const {N}=model();
+ const explanation=N.explainPushError({name:'AbortError',message:'Registration failed - push service error'},true);
+ assert.match(explanation,/brave:\/\/settings\/privacy/i);
+ assert.match(explanation,/mensagens push/i);
+ assert.doesNotMatch(explanation,/Registration failed/i);
+ assert.match(N.explainPushError('NotAllowedError: permission denied'),/bloqueadas/i);
+ assert.match(N.explainPushError(new Error('Conexão temporariamente indisponível')),/Conexão/);
+});
+
+test('push test checks browser subscription before calling the server',async()=>{
+ const b=await board();const {w}=b;
+ try{
+  w.document.querySelector('#task-notifications').click();
+  const modal=w.document.querySelector('.planning-dialog'),testButton=modal.querySelector('.test-push'),result=modal.querySelector('.notification-result');
+  testButton.click();await new Promise(resolve=>setTimeout(resolve,30));
+  assert.match(result.textContent,/inscrição push ativa/i);
+  assert.equal(b.calls.filter(x=>x.operation==='testNotification').length,0);
+  assert.equal(testButton.disabled,false);
+  assert.equal(b.errors.length,0);
+ }finally{w.close();}
 });
