@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const YEAR=2026;
+const YEAR=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric'}).format(new Date()));
 const clean=value=>String(value||'').replace(/\r/g,'').trim();
 const day=date=>date?date.slice(8,10)+'/'+date.slice(5,7)+'/'+date.slice(0,4):'';
 const key=value=>clean(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/[^a-z0-9]+/g,'');
