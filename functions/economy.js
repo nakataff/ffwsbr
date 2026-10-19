@@ -1,5 +1,6 @@
 'use strict';
 const media=require('./economy-media');
+const quizCore=require('./economy-quiz');
 const voucherCore=require('./economy-vouchers');
 const codeReturns=require('./economy-code-returns');
 const interactionRewards=require('./economy-interactions');
@@ -14,6 +15,7 @@ function weekKey(day){const d=new Date(day+'T12:00:00Z');d.setUTCDate(d.getUTCDa
 const DEFAULT_CHANCES=[{id:'p1',points:1,chance:80},{id:'p3',points:3,chance:10},{id:'p10',points:10,chance:5},{id:'p25',points:25,chance:3},{id:'p50',points:50,chance:1},{id:'code',points:0,chance:1}];
 function drawPrize(chances,ticket){let sum=0;for(const prize of chances){sum+=prize.chance*100;if(ticket<sum)return prize;}throw fail(500,'Não foi possível conferir o giro.');}
 function initEconomy(sql){
+ quizCore.init(sql);
  interactionRewards.init(sql);
  coinRanking.init(sql);
  gameOrders.init(sql);
@@ -56,6 +58,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
  const interactions=interactionRewards.create({sql,transaction,db,ranking,credit,now});
  const syncInteractions=async(uid,force=false,p=null)=>{try{return await interactions.sync(uid,force,p);}catch{return {...interactions.summary(uid),status:'error',message:'Não foi possível atualizar os bônus de interações agora. Seu saldo continua disponível.'};}};
  const eligible=async uid=>{const p=await db.get('userAccounts/'+uid+'/profile');if(!p?.name||!/^[a-z0-9_]{3,24}$/.test(p.username||'')||!['masculino','feminino'].includes(p.gender))throw fail(403,'Complete seu cadastro em Minha conta para participar.');walletProfiles.remember(uid,p);return p;};
+ const quiz=quizCore.create({sql,transaction,credit,wallet:uid=>rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0},eligible,dayKey,now,random});
  const vouchers=voucherCore.create({sql,transaction,db,eligible,now});
  const linked=async uid=>{const [link,community,owner]=await Promise.all(['communityInstagramLinks/'+uid,'userAccounts/'+uid+'/community','communityOwnerInstagram'].map(p=>db.get(p)));if(owner?.uid===uid&&owner.username==='nakataff')return 'nakataff';if(!link?.username||!community?.session)return '';const status=await verifySession(community.session);return status?.status==='verified'&&String(status.username).toLowerCase()===link.username?link.username:'';};
  const stock=(bucket,choice=null)=>rows('SELECT hash,title,expires,bucket,image FROM eco_stock WHERE receipt IS NULL AND (expires=0 OR expires>?) AND (bucket=? OR bucket=?)'+(choice?' AND title=? AND image=?':'')+' ORDER BY rowid LIMIT 1',now(),bucket,'both',...(choice?[choice.title,choice.imageUrl]:[]))[0];
@@ -92,6 +95,9 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
   // Header reads one primary-key row. Never synchronizes rankings, scans stock or creates a wallet.
   if(b.operation==='wallet')return {ok:true,currency:'CFF COINS',wallet:rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0}};
   if(b.operation==='profileCheckinStatus')return {ok:true,...checkinStatus(uid),wallet:rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0}};
+  if(b.operation==='quizStatus')return quiz.status(uid);
+  if(b.operation==='quizStart')return quiz.start(uid);
+  if(b.operation==='quizAnswer')return quiz.answer(uid,b);
   if(b.operation==='gameOrders')return orders.list(uid,b);
   if(b.operation==='cancelGameOrder')return orders.transition(uid,b);
   if(b.operation==='buyGameItem'){const p=await eligible(uid);return orders.buy(uid,b,p);}
@@ -130,6 +136,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
   throw fail(400,'Ação de carteira inválida.');
  }
  async function adminHandle(identity,b){admin(identity);
+  if(['quizConfig','quizSaveConfig','quizImport','quizList'].includes(b.operation))return quiz.admin(b);
   if(b.operation==='codeReturnPreview')return returns.preview(b);
   if(b.operation==='codeDeliveries')return returns.list(b);
   if(b.operation==='returnCode')return returns.giveBack(identity,b);

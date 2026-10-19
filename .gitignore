@@ -23,3 +23,8 @@ node_modules/
 .coverage/
 __pycache__/
 .DS_Store
+
+# Banco e gabaritos privados do quiz: importar somente pelo painel autenticado.
+.private-quiz/
+quiz-privado/
+quiz-cff-banco-privado*.json

@@ -5,7 +5,7 @@ export function rememberInvite(){try{const code=new URL(location.href).searchPar
 export async function economyRequest(auth,operation,body={},admin=false){
  const user=auth.currentUser,startedAt=Date.now();if(!user)throw Error('Entre com Google para continuar.');
  const token=await user.getIdToken();const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({...body,action:admin?'economyAdmin':'economy',operation}),signal:AbortSignal.timeout(operation==='profileCheckin'?45000:30000)});
- const data=await r.json();if(!r.ok||data.error)throw Error(data.error||'Não foi possível acessar os pontos agora.');if(auth.currentUser?.uid!==user.uid)throw Error('Sua conta mudou. Atualize a página.');if(!admin&&(!['wallet','profileCheckinStatus'].includes(operation)||!(walletSnapshot(user.uid)?.at>startedAt)))publishWalletBalance(user.uid,data.wallet);return data;
+ const data=await r.json();if(!r.ok||data.error)throw Error(data.error||'Não foi possível acessar os pontos agora.');if(auth.currentUser?.uid!==user.uid)throw Error('Sua conta mudou. Atualize a página.');if(!admin&&(!['wallet','profileCheckinStatus','quizStatus'].includes(operation)||!(walletSnapshot(user.uid)?.at>startedAt)))publishWalletBalance(user.uid,data.wallet);return data;
 }
 let attaching=null;
 export async function attachPendingReferral(auth){
