@@ -1,7 +1,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),{JSDOM}=require('jsdom');
 const tick=async()=>{for(let i=0;i<12;i++)await new Promise(r=>setTimeout(r,0));};
 const id='1791910000000-0123456789abcdef',replyId='1791910006000-fedcba9876543210';
-async function fixture({admin=false}={}){
+async function fixture({admin=false,visible=true}={}){
  const dom=new JSDOM('<body></body>',{url:'https://centralfreefire.com.br/conta.html',runScripts:'outside-only'}),w=dom.window,subscriptions=new Map(),calls=[],reads=[];
  const data={'.info/connected':true,'communityProfileDefaults':{},'communityRoleCatalog':{},'globalChat/settings':{accent:'#aaffdd',slowSeconds:30},'globalChat/messages':{[id]:{uid:'other',name:'Alice',username:'alice',roleId:'member',text:'Olá @nakata <img src=x>',at:1791910000000}},'userAccounts/person/profile':{name:'Nakata',username:'nakata',gender:'masculino',public:true},'communityAccountRoles/person':{roleId:'member'},'communityProfileCatalog/earned':{kind:'badge',title:'Campeão',description:'Venceu o mês',enabled:true}};
  const user={uid:'person',email:admin?'admin@centralfreefire.com.br':'user@test',getIdToken:async()=>'token'};
@@ -15,6 +15,8 @@ async function fixture({admin=false}={}){
  'community-profile-data':{profileOptions:async()=>({frames:[{id:'frame-bronze-1',kind:'frame',image:'/assets/profile-frames/bronze-1.png',frameScale:1.35}]}),approvedImage:(_o,_c,_id,cls)=>`<img class="${cls}" alt="Arte">`,hydrateProfileImages(){}},'profile-role-data':roleData};
  w.__import=async url=>modules[Object.keys(modules).find(k=>url.includes(k))];
  w.fetch=async(_url,init)=>{const body=JSON.parse(init.body);calls.push(body);let result={ok:true};if(body.action==='chatStatus'||body.action==='chatPreferences'){const identity={roleId:admin?'administrator':'member',username:'nakata',badgeIds:body.badgeIds||['earned'],nameColor:''};data['globalChat/identities/person']=identity;emit('globalChat/identities/person');result={...result,administrator:admin,moderator:admin,identity,preference:{badgeIds:body.badgeIds||[]},allowNameColor:admin,ownedBadges:['earned']};}return {ok:true,json:async()=>result};};
+ if(!visible)w.localStorage.setItem('cff-chat-visible-v1','0');
+ w.eval(fs.readFileSync('js/chat-visibility.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync('js/profile-emblems.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync('js/profile-frame-model.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync('js/global-chat.js','utf8').replace(/^import .*\n/gm,'').replaceAll('import(','window.__import('));await tick();
@@ -64,3 +66,37 @@ test('chat displays only the authoritative emblem and keeps it after appearance 
 test('saved profile role overrides stale chat identities and updates old messages immediately, including revocation',async()=>{const f=await fixture();try{f.data['communityAccountRoles/other']={roleId:'moderator'};f.data['globalChat/identities/other']={roleId:'member'};await f.open();const role=()=>f.w.document.querySelector(`[data-chat-message="${id}"] .cff-chat-role`).textContent;assert.equal(role(),'Moderador');f.data['communityAccountRoles/other']={roleId:'influencer'};f.emit('communityAccountRoles/other');await tick();assert.equal(role(),'Influenciador');f.data['communityAccountRoles/other']=null;f.emit('communityAccountRoles/other');await tick();assert.equal(role(),'Membro');assert(!f.reads.includes('communityAccountRoles'));f.w.document.querySelector('.cff-chat-close').click();for(const [path,callbacks]of f.subscriptions)if(path.startsWith('communityAccountRoles/'))assert.equal(callbacks.size,0,path);}finally{f.close();}});
 test('a protected administrator identity keeps its badge even when its cosmetic profile role is member',async()=>{const f=await fixture();try{f.data['communityAccountRoles/other']={roleId:'member'};f.data['globalChat/identities/other']={roleId:'administrator',realAdministrator:true};await f.open();assert.equal(f.w.document.querySelector(`[data-chat-message="${id}"] .cff-chat-role`).textContent,'Administrador');assert(f.w.document.querySelector('[data-chat-moderation]').hidden);}finally{f.close();}});
 test('participant role observers are removed when their messages leave the bounded history',async()=>{const f=await fixture();try{await f.open();assert.equal(f.subscriptions.get('communityAccountRoles/other').size,1);f.data['globalChat/messages']={[replyId]:{uid:'someone',name:'Outro',roleId:'member',text:'Oi',at:1791910006000}};f.emit('globalChat/messages');await tick();assert.equal(f.subscriptions.get('communityAccountRoles/other').size,0);assert.equal(f.subscriptions.get('communityAccountRoles/someone').size,1);}finally{f.close();}});
+
+
+test('hiding the chat closes it without stealing focus and stops every listener, including unread notifications',async()=>{
+ const f=await fixture();try{
+  await f.open();const d=f.w.document,control=d.createElement('button');d.body.append(control);control.focus();
+  f.w.setChatVisible(false);
+  assert.equal(d.getElementById('cff-global-chat').hidden,true);
+  assert.equal(d.getElementById('cff-chat-panel').hidden,true);
+  assert.equal(d.activeElement,control);
+  for(const [path,callbacks]of f.subscriptions)assert.equal(callbacks.size,0,path);
+  assert.equal(f.w.localStorage.getItem('cff-chat-visible-v1'),'0');
+  d.querySelector('.cff-chat-launch').click();await tick();
+  for(const [path,callbacks]of f.subscriptions)assert.equal(callbacks.size,0,path);
+  f.w.setChatVisible(true);await tick();
+  assert.equal(d.getElementById('cff-global-chat').hidden,false);
+  assert.equal(f.subscriptions.get('globalChat/latest').size,1);
+  assert.equal(d.getElementById('cff-chat-panel').hidden,true);
+  await f.open();assert.equal(d.getElementById('cff-chat-panel').hidden,false);
+ }finally{f.close();}
+});
+test('a saved hidden preference starts with no database subscriptions and can be restored from another tab',async()=>{
+ const f=await fixture({visible:false});try{
+  assert.equal(f.w.document.getElementById('cff-global-chat').hidden,true);
+  assert.equal(f.reads.length,0);assert.equal(f.calls.length,0);
+  f.w.localStorage.setItem('cff-chat-visible-v1','1');
+  f.w.dispatchEvent(new f.w.StorageEvent('storage',{key:'cff-chat-visible-v1',newValue:'1'}));await tick();
+  assert.equal(f.w.document.getElementById('cff-global-chat').hidden,false);
+  assert.deepEqual(f.reads,['globalChat/latest']);
+  f.w.localStorage.setItem('cff-chat-visible-v1','0');
+  f.w.dispatchEvent(new f.w.StorageEvent('storage',{key:'cff-chat-visible-v1',newValue:'0'}));
+  assert.equal(f.w.document.getElementById('cff-global-chat').hidden,true);
+  assert.equal(f.subscriptions.get('globalChat/latest').size,0);
+ }finally{f.close();}
+});
