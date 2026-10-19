@@ -2162,7 +2162,7 @@
               <label class="check"><input type="checkbox" ${dados.entregue ? "checked" : ""} onchange="setEntregue('${codigo}', this.checked)" /> 🔒 Código resgatado</label>
               <button class="secondary small" data-copy="${codigo}" onclick="copiarCodigo('${codigo}')">Copiar código</button>
               <button type="button" class="secondary small" data-code-gift-send="${escapeHTML(codigo)}"${dados.entregue||String(dados.recebeu||'').trim()||dados.presente||st.tipo!=='available'?' disabled':''}>🎁 Enviar ao perfil</button>
-              <button type="button" class="secondary small" data-economy-stock="${escapeHTML(codigo.toUpperCase())}"${dados.entregue||String(dados.recebeu||'').trim()||dados.presente||st.tipo!=='available'?' disabled':''}>💎 Reservar para roleta/loja</button>
+              <button type="button" class="secondary small" data-economy-stock="${escapeHTML(codigo.toUpperCase())}"${dados.entregue||String(dados.recebeu||'').trim()||dados.presente||st.tipo!=='available'?' disabled':''}>💎 Reservar para a loja</button>
             </div>`;
           cards.appendChild(card);
         });
@@ -2910,6 +2910,6 @@
   </script>
   <script src="js/admin-codiguinhos-mostruario.js?v=20261008-v2"></script>
 <script src="js/admin-codiguinhos-ui.js?v=20261019-admin-integration-v1"></script>
-<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261019-admin-integration-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261015-code-returns-v1";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script><script type="module">import {bootAdminCodeReturns} from "./js/admin-code-returns.js?v=20261015-code-returns-v1";bootAdminCodeReturns().catch(()=>{const el=document.getElementById("eco-code-returns-root");if(el)el.textContent="Não foi possível carregar as devoluções. Atualize a página.";});</script></body>
+<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261019-roulette-vouchers-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261019-roulette-vouchers-v1";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script><script type="module">import {bootAdminCodeReturns} from "./js/admin-code-returns.js?v=20261015-code-returns-v1";bootAdminCodeReturns().catch(()=>{const el=document.getElementById("eco-code-returns-root");if(el)el.textContent="Não foi possível carregar as devoluções. Atualize a página.";});</script></body>
 </html>
 
