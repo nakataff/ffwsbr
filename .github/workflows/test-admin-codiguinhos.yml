@@ -7,6 +7,11 @@ on:
       - 'js/admin-code*'
       - 'js/admin-codiguinhos*'
       - 'js/admin-economy-stock.js'
+      - 'js/economy-ui.js'
+      - 'js/economy-shop.mjs'
+      - 'js/header-wallet.mjs'
+      - 'test/economy-shop.test.cjs'
+      - 'test/header-wallet.test.cjs'
       - 'css/admin-codiguinhos-ui.css'
       - 'functions/code-gifts.js'
       - 'functions/test/code-gifts.test.cjs'
@@ -34,4 +39,4 @@ jobs:
       - name: Test private status reconciliation, stock filters and gift dialog
         env:
           NODE_PATH: /tmp/cff-codes-test/node_modules
-        run: node --test --test-timeout=10000 test/admin-codiguinhos.test.cjs test/code-vouchers-ui.test.cjs test/code-returns-ui.test.cjs test/admin-code-gift-sync.test.mjs functions/test/code-gifts.test.cjs
+        run: node --test --test-timeout=10000 test/economy-shop.test.cjs test/header-wallet.test.cjs test/admin-codiguinhos.test.cjs test/code-vouchers-ui.test.cjs test/code-returns-ui.test.cjs test/admin-code-gift-sync.test.mjs functions/test/code-gifts.test.cjs

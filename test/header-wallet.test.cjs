@@ -10,7 +10,7 @@ test('desktop and mobile share one cached request, display exact balances and li
   const ui=f.w.createHeaderWallet({auth:()=>f.auth,request:async(_auth,op)=>{assert.equal(op,'wallet');calls++;return {wallet:{balance:1234}};}});
   ui.sync();assert(f.links().every(n=>n.hidden));assert.equal(calls,0);
   f.auth.currentUser={uid:'one'};for(let i=0;i<15;i++)ui.sync();await tick();assert.equal(calls,1);
-  for(const n of f.links()){assert(!n.hidden);assert.equal(n.querySelector('strong').textContent,'1.234');assert.equal(n.getAttribute('href'),'/conta.html?tab=points');assert.equal(n.querySelector('img').getAttribute('src'),'/edition/moeda%20cff.webp');assert.match(n.getAttribute('aria-label'),/1.234 CFF COINS/);}
+  for(const n of f.links()){assert(!n.hidden);assert.equal(n.querySelector('strong').textContent,'1.234');assert.equal(n.getAttribute('href'),'/conta.html?tab=points&shopSection=shop#eco-shop');assert.equal(n.querySelector('img').getAttribute('src'),'/edition/moeda%20cff.webp');assert.match(n.getAttribute('aria-label'),/1.234 CFF COINS/);}
   f.w.publishWalletBalance('one',{balance:2345});assert(f.links().every(n=>n.querySelector('strong').textContent==='2.345'));
   f.w.dispatchEvent(new f.w.Event('focus'));ui.sync();await tick();assert.equal(calls,1);assert.equal(f.w.document.querySelectorAll('[data-account-access-group]').length,2);ui.stop();
  }finally{f.close();}
