@@ -24,7 +24,7 @@
   <title>Painel Administrativo | Central Free Fire</title>
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/admin.css?v=20261008-tools-v1">
-  <link rel="stylesheet" href="css/admin-dashboard.css?v=20261014-careers-v1">
+  <link rel="stylesheet" href="css/admin-dashboard.css?v=20261019-audience-redesign-v1">
   <script src="js/config.min.js?v=20261019-chat-visibility-v1"></script>
   <script defer src="js/admin-image-upload.js?v=20260919-auto-webp-v2"></script>
   <script type="module" src="js/admin.js?v=20261016-quick-rewards-v1"></script>
@@ -109,8 +109,8 @@
       </div>
 
       <div class="admin-dashboard-grid">
-        <section class="admin-panel">
-          <div class="admin-panel-head"><div><p class="admin-eyebrow">Audiência</p><h2>Páginas mais vistas</h2></div></div>
+        <section class="admin-panel admin-audience-top">
+          <div class="admin-panel-head"><div><p class="admin-eyebrow">◉ AUDIÊNCIA</p><h2>Páginas mais vistas</h2><p class="admin-muted">Conteúdos que estão atraindo mais acessos</p></div><span class="admin-audience-head-icon" aria-hidden="true">↗</span></div>
           <div id="admin-top-pages" class="admin-ranking"><div class="admin-empty">Ainda não há visualizações registradas</div></div>
         </section>
         <section class="admin-panel">
@@ -119,29 +119,29 @@
         </section>
       </div>
 
-      <section class="admin-panel admin-ga-panel">
+      <section class="admin-panel admin-ga-panel admin-audience-studio">
         <div class="admin-panel-head admin-panel-head-wrap">
-          <div><p class="admin-eyebrow">Google Analytics 4</p><h2>Audiência oficial do site</h2><p class="admin-muted">Conecte sua conta Google para consultar os dados da propriedade sem colocar senha ou segredo no código</p></div>
+          <div class="admin-audience-intro"><span class="admin-audience-kicker"><span class="admin-audience-kicker-dot"></span> CENTRAL DE AUDIÊNCIA <span class="admin-audience-source">GOOGLE ANALYTICS 4</span></span><h2>Seu site em números<span class="admin-audience-title-mark">.</span></h2><p class="admin-muted">Acompanhe visitantes, sessões e páginas em um só lugar, com dados oficiais do Analytics.</p></div>
           <div class="admin-inline-actions">
             <button id="ga-refresh" class="admin-btn admin-btn-ghost" type="button" disabled>↻ Atualizar</button>
             <button id="ga-connect" class="admin-btn admin-btn-primary" type="button">Conectar Google Analytics</button>
           </div>
         </div>
-        <div class="admin-ga-settings">
+        <details class="admin-audience-config" id="admin-audience-config"><summary><span><strong>⚙ Configuração do Analytics</strong><small>Conta, propriedade e período de análise</small></span><span class="admin-audience-config-arrow" aria-hidden="true">⌄</span></summary><div class="admin-ga-settings">
           <div class="admin-field"><label for="ga-client-id">OAuth Client ID</label><input id="ga-client-id" autocomplete="off" placeholder="000000000000-xxxx.apps.googleusercontent.com"></div>
           <div class="admin-field"><label for="ga-property-id">ID numérico da propriedade GA4</label><input id="ga-property-id" inputmode="numeric" autocomplete="off" placeholder="123456789"></div>
           <div class="admin-field"><label for="ga-period">Período</label><select id="ga-period"><option value="7">Últimos 7 dias</option><option value="28" selected>Últimos 28 dias</option><option value="90">Últimos 90 dias</option></select></div>
           <div class="admin-field admin-ga-save-field"><button id="ga-save-settings" class="admin-btn admin-btn-ghost" type="button">Salvar configuração</button></div>
-        </div>
+        </div></details>
         <p id="ga-message" class="admin-message" aria-live="polite">Preencha o Client ID e o ID da propriedade para conectar</p>
         <div id="ga-results" hidden>
           <div class="admin-stat-grid admin-ga-stat-grid">
-            <article class="admin-stat-card"><span>Usuários ativos</span><strong id="ga-active-users">0</strong><small>No período selecionado</small></article>
-            <article class="admin-stat-card"><span>Sessões</span><strong id="ga-sessions">0</strong><small>No período selecionado</small></article>
-            <article class="admin-stat-card"><span>Visualizações</span><strong id="ga-page-views">0</strong><small>No período selecionado</small></article>
-            <article class="admin-stat-card"><span>Agora no site</span><strong id="ga-realtime-users">0</strong><small>Usuários ativos em tempo real</small></article>
+            <article class="admin-stat-card admin-audience-metric"><span class="admin-audience-metric-icon">◉</span><span>Usuários ativos</span><strong id="ga-active-users">0</strong><small>No período selecionado</small></article>
+            <article class="admin-stat-card admin-audience-metric"><span class="admin-audience-metric-icon">↗</span><span>Sessões</span><strong id="ga-sessions">0</strong><small>No período selecionado</small></article>
+            <article class="admin-stat-card admin-audience-metric"><span class="admin-audience-metric-icon">▤</span><span>Visualizações</span><strong id="ga-page-views">0</strong><small>No período selecionado</small></article>
+            <article class="admin-stat-card admin-audience-metric admin-audience-live"><span class="admin-audience-metric-icon">●</span><span>Agora no site</span><strong id="ga-realtime-users">0</strong><small>Usuários ativos em tempo real</small></article>
           </div>
-          <div class="admin-ga-ranking-wrap">
+          <div class="admin-ga-ranking-wrap"><div class="admin-audience-ranking-label">DESEMPENHO DE CONTEÚDO</div>
             <div class="admin-panel-head"><div><p class="admin-eyebrow">Google Analytics</p><h3>Páginas mais vistas no período</h3></div></div>
             <div id="ga-top-pages" class="admin-ranking"><div class="admin-empty">Conecte o Analytics para carregar os dados</div></div>
           </div>
