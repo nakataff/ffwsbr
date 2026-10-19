@@ -247,8 +247,10 @@
 .career-photo-option small{font-size:10px;color:#93bed5}
 .career-photo-picker-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
 .career-pro-socials{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
-.career-pro-socials a{display:inline-flex;align-items:center;padding:8px 11px;border:1px solid #285b76;border-radius:8px;background:rgba(0,200,255,.075);color:#9be5ff;text-decoration:none;font-size:12px;font-weight:800}
+.career-pro-socials a{display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;box-sizing:border-box;border:1px solid #285b76;border-radius:12px;background:rgba(8,22,35,.7);text-decoration:none}
+.career-pro-socials img{display:block;width:28px;height:28px;object-fit:contain}
 .career-pro-socials a:hover,.career-pro-socials a:focus-visible{border-color:#00c8ff;background:rgba(0,200,255,.17)}
+.career-pro-socials a:focus-visible{outline:2px solid #9be5ff;outline-offset:3px}
 @media(max-width:580px){
  .career-social-grid{grid-template-columns:minmax(0,1fr)}
  .career-photo-picker{padding:14px}

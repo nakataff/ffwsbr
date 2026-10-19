@@ -202,6 +202,39 @@ test('standalone staff profile accepts no photo or passage without breaking pres
  Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,tenureCards:client.tenureCards,careerTrail:client.careerTrail,orderedTenures:client.orderedTenures,competitionPeriodLabel:client.competitionPeriodLabel,personHref:client.personHref,teamHref:client.teamHref,periodLabel:client.periodLabel,readCareer:async()=>({person:{id:'person-new',name:'João Pedro',kind:'staff',availability:'unknown',current:[],tenures:[],photo:''}})});
  try{w.eval(fs.readFileSync(require.resolve('../js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));await w.mountPersonCareer(w.document.querySelector('#career-public-root'),{id:'person-new'},{standalone:true});const root=w.document.querySelector('#career-public-root');assert.match(root.querySelector('.career-pro-empty').textContent,/Nenhuma passagem/);assert.equal(root.querySelector('.career-pro-portrait img').getAttribute('src'),'silhueta.webp');assert.equal(root.querySelectorAll('.career-pro-metrics strong')[0].textContent,'0');}finally{w.close();}
 });
+test('profile social icons preserve valid links and omit missing or unsafe networks without extra reads',async()=>{
+ const client=await import('../js/career-client.mjs');
+ const cases=[
+  {social:{instagram:'https://www.instagram.com/froisx/',x:'https://x.com/frois',tiktok:'https://www.tiktok.com/@frois',youtube:'https://www.youtube.com/@froisff',twitch:'https://www.twitch.tv/frois',liquipedia:'https://liquipedia.net/freefire/Frois'},keys:['instagram','x','tiktok','youtube','twitch','liquipedia']},
+  {social:{instagram:'https://instagram.com.evil.example/user',x:'javascript:alert(1)',tiktok:'http://tiktok.com/@user',youtube:'https://m.youtube.com/@froisff',twitch:'https://user:password@twitch.tv/user',liquipedia:''},keys:['youtube']},
+  {social:{},keys:[]}
+ ];
+ for(const {social,keys} of cases){
+  const dom=new JSDOM('<body><div id="career-public-root"></div></body>',{url:'https://centralfreefire.com.br/carreira.html?id=frois',runScripts:'outside-only'}),w=dom.window;
+  let reads=0,fetches=0;
+  Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,tenureCards:client.tenureCards,careerTrail:client.careerTrail,orderedTenures:client.orderedTenures,competitionPeriodLabel:client.competitionPeriodLabel,personHref:client.personHref,teamHref:client.teamHref,periodLabel:client.periodLabel,
+   readCareer:async()=>{reads++;return {person:{id:'frois',name:'Frois',kind:'staff',availability:'unknown',current:[],tenures:[],social}};},fetch:async()=>{fetches++;throw Error('Unexpected fetch');}});
+  try{
+   w.eval(fs.readFileSync(require.resolve('../js/career-public.js'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,''));
+   await w.mountPersonCareer(w.document.querySelector('#career-public-root'),{id:'frois'},{standalone:true});
+   const group=w.document.querySelector('.career-pro-socials'),links=[...w.document.querySelectorAll('.career-pro-socials a')];
+   assert.equal(!!group,keys.length>0);
+   assert.equal(links.length,keys.length);
+   for(const [index,link] of links.entries()){
+    assert.equal(link.href,social[keys[index]]);
+    assert.equal(link.target,'_blank');
+    assert.equal(link.rel,'noopener noreferrer nofollow');
+    assert.equal(link.getAttribute('aria-label'),link.title+' de Frois');
+    const icon=link.querySelector('img');
+    assert.equal(icon.getAttribute('src'),'/assets/social/'+keys[index]+'.webp');
+    assert.equal(icon.alt,'');
+    assert.equal(icon.getAttribute('width'),'28');
+    assert.equal(icon.getAttribute('height'),'28');
+   }
+   assert.equal(reads,1);assert.equal(fetches,0);
+  }finally{w.close();}
+ }
+});
 test('admin can edit staff photograph independently of team logos and career records',async()=>{
  const f=await fixture();try{
   f.$('[data-career-section=staff]').click();await tick();f.$('#career-new-person').click();
