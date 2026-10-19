@@ -258,12 +258,13 @@
   function updatePredictionAvailability(data){
     const days=Array.isArray(data?.days)?data.days:[];
     const custom=Array.isArray(data?.predictions)?data.predictions.filter(p=>p.category==='custom'):[];
-    window.dispatchEvent(new CustomEvent('cff:predictions-availability',{detail:{available:days.length>0||custom.length>0}}));
+    window.dispatchEvent(new CustomEvent('cff:predictions-availability',{detail:{available:days.some(day=>Number(day.closesAt)>Date.now())||custom.some(p=>Number(p.closesAt)>Date.now())}}));
   }
 
   function render(){
     const root=mount();if(!root)return;
     const data=state.payload||{},days=Array.isArray(data.days)?data.days:[];
+    updatePredictionAvailability(data);
     if(!days.length){root.innerHTML='<div class="cff-pred-empty">Nenhum fim de semana de palpites disponível agora.</div>';return}
     if(!state.activeDay||!days.some(d=>num(d.day)===num(state.activeDay))){
       const future=days.find(d=>Number(d.closesAt)>Date.now())||days[0];
