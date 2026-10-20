@@ -121,6 +121,7 @@ etapas. Um jogador que trocou de equipe não deve ganhar dados da outra passagem
 
 ## Rotas e carregamento
 
+- `ffws-br-s2/inicio/index.html`: entrada para abrir ou atualizar o link direto do Início; redireciona ao shell preservando o recorte.
 - `index.html`: contêineres das páginas e entrada dos estilos/scripts.
 - `js/season-routes.js`: relação entre URL amigável e ID da página.
 - `js/shared-navigation.js`: menu compartilhado.

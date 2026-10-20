@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'ffws-br-2026-s2/inicio*'
+      - 'ffws-br-s2/inicio/**'
       - 'ffws-br-2026-s2/players.json'
       - 'ffws-br-2026-s2/player-name-map.json'
       - 'ffws-br-2026-s2/career-summary.json'

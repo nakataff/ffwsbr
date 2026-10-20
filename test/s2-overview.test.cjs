@@ -89,3 +89,12 @@ test('generator refuses incomplete exports and duplicate player drops before pro
   assert.throws(()=>buildSummaries(args),/Etapa incompleta: segundaFase/);
   args.players.entries.push({...args.players.entries[0]}); assert.throws(()=>buildSummaries(args),/duplicado/);
 });
+test('direct tournament link has a hosting entry and preserves query parameters on redirect', () => {
+  const vm=require('node:vm'),html=fs.readFileSync('ffws-br-s2/inicio/index.html','utf8');let redirect='';
+  vm.runInNewContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],{location:{search:'?source=shared',replace:url=>redirect=url}});
+  assert.equal(redirect,'/index.html?source=shared#ffws-br-s2-inicio');
+  const context={window:{},location:{search:'?source=shared',pathname:'/index.html',hash:'#ffws-br-s2-inicio'},URLSearchParams};
+  vm.runInNewContext(fs.readFileSync('js/season-routes.js','utf8'),context);
+  assert.equal(context.window.CFF_SEASON_ROUTES.pageFromLocation(),'ffws-br-s2-inicio');
+  assert.equal(context.window.CFF_SEASON_ROUTES.pathForPage('ffws-br-s2-inicio'),'/ffws-br-s2/inicio');
+});
