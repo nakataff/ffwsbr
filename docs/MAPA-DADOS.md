@@ -286,7 +286,8 @@ Nenhuma modificação é publicada ao digitar.
   branch principal do GitHub. O workflow
   `.github/workflows/rebuild-annual-ranking.yml` chama o gerador offline,
   confere pontuações/totais e publica os resumos
-  `ranking-data/brasil-2025.json` / `brasil-2026.json`.
+  `ranking-data/brasil-2025.json` / `brasil-2026.json`, e solicita uma
+  compilação do GitHub Pages para publicar a atualização gerada pelo robô.
 - O workflow `test-s2-overview.yml` recalcula os resumos localmente
   antes de testar. Confirmar a conclusão dos workflows no GitHub Actions;
   se falharem, o site mantém o resumo antigo.
