@@ -13,7 +13,7 @@ const events=()=>data.events.filter(e=>e.status==='finished');
 const result=(row,id)=>row.results.find(r=>r.event===id);
 const pointsFor=(event,pos)=>data.pointsByEvent?.[event.id]?.[pos-1]??data.basePoints[pos-1]*event.weight;
 const filtered=()=>data.rows.filter(r=>norm(r.team).includes(norm(state.search)));
-function logo(src){if(/^https:\/\/i.test(src||'')){try{const u=new URL(src);if(u.hostname==='i.postimg.cc'&&/\.(webp|png|jpe?g)$/i.test(u.pathname))return u.href;}catch{}}return src&&!/[:\\]|^\/\//.test(src)&&!src.split('/').includes('..')?'/'+src.replace(/^\//,''):'/escudo.webp';}
+function logo(src){if(String(src||'').startsWith('https://')){try{const u=new URL(src);if(u.hostname==='i.postimg.cc'&&/\.(webp|png|jpe?g)$/i.test(u.pathname))return u.href;}catch{}}return src&&!/[:\\]|^\/\//.test(src)&&!src.split('/').includes('..')?'/'+src.replace(/^\//,''):'/escudo.webp';}
 function image(row){return `<img src="${esc(logo(row.logo))}" alt="" width="36" height="36" loading="lazy" decoding="async" data-team-logo="${esc(row.team)}" data-annual-logo>`;}
 function sourceLink(event){try{const u=new URL(event.source,location.origin);return u.origin===location.origin||u.protocol==='https:'?esc(u.href):'#';}catch(_){return '#';}}
 function url(view=state.view){const u=new URL('/ranking-anual.html',location.origin);u.searchParams.set('ano',String(state.year));u.searchParams.set('visao',view);if(state.search)u.searchParams.set('busca',state.search);return u.href;}
