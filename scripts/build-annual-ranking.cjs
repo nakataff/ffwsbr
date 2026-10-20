@@ -45,6 +45,11 @@ function global2026Standings(source,participants,canonical){
 function build(inputs){
   const [config,s1,s2]=inputs,canonical=v=>{const name=String(v||'').trim().toUpperCase();return config.aliases[name]||name;};
   const base=p=>{if(!Number.isInteger(p)||p<1||p>config.basePoints.length)throw Error('Colocação inválida: '+p);return config.basePoints[p-1];};
+  const overrides=config.pointsByEvent||{},ids=['copa','s1','s2','ewc','global'];
+  for(const [id,values] of Object.entries(overrides)){
+    if(!ids.includes(id)||!Array.isArray(values)||values.length!==config.basePoints.length||values.some(v=>!Number.isInteger(v)||v<0||v>100000))throw Error('Pontuação personalizada inválida: '+id);
+  }
+  const score=(id,position)=>overrides[id]?overrides[id][position-1]:base(position)*config.weights[id];
   const year=config.year,metadata=new Map(),event=(id,label,name,source,standings,status='finished')=>({id,label,name,weight:config.weights[id],status,source,standings});
   if(!config.copa.finished||config.copa.standings.length!==config.copa.teamCount)throw Error('Copa incompleta');
   let events=[event('copa','Copa FF',`Copa FF ${year}`,config.copa.source,config.copa.standings)];
@@ -75,13 +80,13 @@ function build(inputs){
         const candidate=metadata.get(name)?.logo||'escudo.webp';
         teams.set(name,{team:name,logo:fs.existsSync(path.join(ROOT,candidate))?candidate:'escudo.webp',results:[]});
       }
-      teams.get(name).results.push({event:e.id,position,points:base(position)*e.weight});
+      teams.get(name).results.push({event:e.id,position,points:score(e.id,position)});
     }
   }
   const tie=r=>[r.total,r.results.find(x=>x.event==='global')?.position??999,r.results.find(x=>x.event==='ewc')?.position??999,r.results.filter(x=>['s1','s2'].includes(x.event)&&x.position===1).length];
   const rows=[...teams.values()].map(r=>({...r,total:r.results.reduce((n,x)=>n+x.points,0)})).sort((a,b)=>{const x=tie(a),y=tie(b);return y[0]-x[0]||x[1]-y[1]||x[2]-y[2]||y[3]-x[3]||a.team.localeCompare(b.team,'pt-BR');});
   let last='',rank=0;rows.forEach((r,i)=>{const key=JSON.stringify(tie(r));if(last!==key)rank=i+1;last=key;r.rank=rank;});
-  return {year,region:config.region,updatedAt:config.updatedAt,partial:events.some(e=>e.status==='upcoming'),methodVersion:config.methodVersion,basePoints:config.basePoints,events:events.map(({standings,...e})=>e),rows};
+  return {year,region:config.region,updatedAt:config.updatedAt,partial:events.some(e=>e.status==='upcoming'),methodVersion:config.methodVersion,basePoints:config.basePoints,...(Object.keys(overrides).length?{pointsByEvent:overrides}:{}),events:events.map(({standings,...e})=>e),rows};
 }
 if(require.main===module){
   const arg=process.argv.find(a=>a.startsWith('--year=')),years=arg?[Number(arg.split('=')[1])]:Object.keys(YEAR_FILES).map(Number);
