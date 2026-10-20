@@ -16,7 +16,7 @@ async function ui({search='',failure=false,delayed=false}={}){
 test('year ranking matches all 27 reviewed totals, merges sponsor aliases and omits the upcoming Global',()=>{
   const generated=build(inputs()),stored=read('ranking-data/brasil-2026.json');const {sources,...body}=stored;assert.deepEqual(body,generated);assert.equal(generated.rows.length,27);
   const expected={'LOUD':1705,'FLUXO W7M':1190,'LOS':775,'RUSH GAMING':735,'TEAM SOLID':390,'INFLUENCE RAGE':285,'ALPHA7':225,'RISE GAMING':218,'INTZ':215,'E1 SPORTS':130,'LINE 10':150,'SX TET':75,'CPT VOX':75,'VIRTUS PRO':70,'CIVIS':56,'LOOPS':56,'AXS FUSION':49,'AFROGAMES':45,'ALFA 34':35,'VASCO ESPORTS':32,'ANGELS OUTPLAY':28,'ANTISOCIAL TEAM':8,'XLD GAMING':8,'INCO GAMING':4,'DR3 PIT':4,'MG7 ESPORTS':4,'SIX EIGHT':4};
-  for(const r of generated.rows){if(read('ranking-data/brasil-2026-source.json').methodVersion===2)assert.equal(r.total,expected[r.team],r.team);assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));for(const x of r.results)assert.equal(x.points,generated.basePoints[x.position-1]*generated.events.find(e=>e.id===x.event).weight);assert(!r.results.some(x=>x.event==='global'));assert(fs.existsSync(r.logo),r.logo);}
+  for(const r of generated.rows){if(read('ranking-data/brasil-2026-source.json').methodVersion===2)assert.equal(r.total,expected[r.team],r.team);assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));for(const x of r.results)assert.equal(x.points,generated.pointsByEvent?.[x.event]?.[x.position-1]??generated.basePoints[x.position-1]*generated.events.find(e=>e.id===x.event).weight);assert(!r.results.some(x=>x.event==='global'));assert(fs.existsSync(r.logo),r.logo);}
   assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='copa')).length,24);assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='s1')).length,16);assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='s2')).length,14);assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='ewc')).length,3);
   assert.equal(generated.events.find(e=>e.id==='global').weight,7);assert.equal(generated.partial,true);assert(fs.statSync('ranking-data/brasil-2026.json').size<9000);
 });
@@ -127,7 +127,7 @@ test('points editor previews new podium scores and can isolate a single year wit
     const first=w.document.querySelector('[data-band="0"]');first.value='250';
     first.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();
     assert.equal($('download').disabled,false);
-    assert.equal(w.document.querySelector('[data-score="0:copa"]').textContent,'250');
+    assert.equal(w.document.querySelector('[data-direct="0:copa"]').value,'250');
     assert($('preview').textContent.includes('1.240')); // Fluxo W7M gained 50 Copa points
     $('year').value='2025';$('year').dispatchEvent(new w.Event('change',{bubbles:true}));
     assert.equal(w.document.querySelector('[data-band="0"]').value,'250');
@@ -141,6 +141,10 @@ test('points editor previews new podium scores and can isolate a single year wit
     assert.equal($('download').disabled,true);
     $('year').value='2025';$('year').dispatchEvent(new w.Event('change',{bubbles:true}));
     assert.equal(w.document.querySelector('[data-band="0"]').value,'300');
+    const direct=w.document.querySelector('[data-direct="1:copa"]');direct.value='999';
+    direct.dispatchEvent(new w.Event('input',{bubbles:true}));
+    assert.equal(w.document.querySelector('[data-direct="1:copa"]').value,'999');
+    assert.equal(w.document.querySelector('[data-direct="1:s1"]').value,'450');
     assert.equal(calls.length,4); // no additional network requests for previews
   }finally{w.close();}
 });
