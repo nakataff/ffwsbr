@@ -141,7 +141,7 @@
   .cff-bottom-navigation a.is-current{background:#123246;color:#6bdcff}
   .cff-bottom-navigation a:focus-visible{outline:2px solid #00c8ff;outline-offset:-2px}
   body:has(.cff-bottom-navigation){padding-bottom:calc(74px + env(safe-area-inset-bottom))!important}
-  body:has(.cff-bottom-navigation) .cff-chat-launch{bottom:calc(88px + env(safe-area-inset-bottom))!important}
+  body:has(.cff-bottom-navigation) #cff-global-chat .cff-chat-launch{bottom:calc(88px + env(safe-area-inset-bottom))!important}
   body:has(.cff-bottom-navigation) .cff-chat-panel:not([hidden]){z-index:9000}
 }
 @media(max-width:360px){.cff-bottom-navigation a{font-size:9px}.cff-bottom-navigation a svg{width:19px;height:19px}}
