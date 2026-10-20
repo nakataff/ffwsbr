@@ -1,17 +1,17 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const {JSDOM}=require('jsdom'),{build,FILES}=require('../scripts/build-annual-ranking.cjs');
+const {JSDOM}=require('jsdom'),{build,FILES,YEAR_FILES}=require('../scripts/build-annual-ranking.cjs');
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),tick=async()=>{for(let i=0;i<8;i++)await new Promise(r=>setImmediate(r));};
 const inputs=()=>FILES.map(read);
-async function ui({search='',failure=false}={}){
-  const dom=new JSDOM('<main id="annual-ranking"></main>',{url:'https://centralfreefire.com.br/ranking-anual.html'+search,runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,calls=[],copies=[],cards=[];let fail=failure;
-  w.fetch=async url=>{calls.push(String(url));if(fail){fail=false;return {ok:false};}return {ok:true,json:async()=>read('ranking-data/brasil-2026.json')};};
+async function ui({search='',failure=false,delayed=false}={}){
+  const dom=new JSDOM('<main id="annual-ranking"></main>',{url:'https://centralfreefire.com.br/ranking-anual.html'+search,runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,calls=[],copies=[],cards=[],pending=[];let fail=failure;
+  w.fetch=async url=>{calls.push(String(url));if(fail){fail=false;return {ok:false};}const year=Number(String(url).match(/brasil-(202[56])/)[1]);if(delayed)await new Promise(resolve=>pending.push({year,resolve}));return {ok:true,json:async()=>read(`ranking-data/brasil-${year}.json`)};};
   w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
   Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>copies.push(value)}});
   w.openTestCard=async payload=>cards.push(payload);
-  w.eval(fs.readFileSync('js/annual-ranking.mjs','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v5')",'{openRankingCard:window.openTestCard}'));
+  w.eval(fs.readFileSync('js/annual-ranking.mjs','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v6')",'{openRankingCard:window.openTestCard}'));
   await tick();
-  return {w,calls,copies,cards,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await tick();},search:async value=>{const e=w.document.querySelector('[data-annual-search]');e.value=value;e.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();},close:()=>w.close()};
+  return {w,calls,copies,cards,pending,year:async value=>{const e=w.document.querySelector('[data-annual-year]');e.value=String(value);e.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();},$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await tick();},search:async value=>{const e=w.document.querySelector('[data-annual-search]');e.value=value;e.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();},close:()=>w.close()};
 }
 test('year ranking matches all 27 reviewed totals, merges sponsor aliases and omits the upcoming Global',()=>{
   const generated=build(inputs()),stored=read('ranking-data/brasil-2026.json');const {sources,...body}=stored;assert.deepEqual(body,generated);assert.equal(generated.rows.length,27);
@@ -50,4 +50,51 @@ test('Histórico contains the annual page on home and standalone menus, with its
     vm.runInContext(fs.readFileSync('js/shared-navigation.js','utf8'),dom.getInternalVMContext());dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     const link=dom.window.document.querySelector('[data-cff-group="historico"] a[href="/ranking-anual.html"]');assert(link);assert.equal(link.getAttribute('aria-current'),'page');assert(link.closest('details').open);
   }finally{dom.window.close();}
+});
+
+test('2025 includes every closed BR event, with Fluxo and W7M separate and the four correct EWC representatives',()=>{
+  const generated=build(YEAR_FILES[2025].map(read)),{sources,...stored}=read('ranking-data/brasil-2025.json');assert.deepEqual(generated,stored);
+  assert.equal(generated.partial,false);assert.equal(generated.rows.length,20);assert.equal(generated.events.length,5);
+  const totals={'FLUXO':1325,'LOS':688,'TEAM SOLID':685,'PAIN GAMING':495,'E1 SPORTS':390,'LOUD':335,'ALFA 34':385};
+  for(const [name,total] of Object.entries(totals))assert.equal(generated.rows.find(r=>r.team===name).total,total,name);
+  const team=n=>generated.rows.find(r=>r.team===n),position=(n,id)=>team(n).results.find(r=>r.event===id)?.position;
+  assert.equal(position('FLUXO','s1'),2);assert.equal(position('W7M ESPORTS','s1'),10);assert.equal(position('W7M ESPORTS','s2'),11);assert(!team('FLUXO W7M'));
+  assert.equal(position('PAIN GAMING','ewc'),8);assert.equal(position('ALFA 34','ewc'),17);assert.equal(position('TEAM SOLID','ewc'),undefined);
+  assert.deepEqual(generated.rows.filter(r=>r.results.some(x=>x.event==='ewc')).map(r=>r.team).sort(),['ALFA 34','FLUXO','LOS','PAIN GAMING']);
+  assert.equal(position('FLUXO','global'),2);assert.equal(position('TEAM SOLID','global'),5);assert.equal(position('E1 SPORTS','global'),12);
+  assert.equal(team('FLUXO').results.length,5);assert.equal(team('SAVEX GAMING').results.length,2);assert.equal(team('RUSH GAMING').results.length,1);
+  for(const r of generated.rows){assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));assert(fs.existsSync(r.logo));}
+  assert(fs.statSync('ranking-data/brasil-2025.json').size<7000);
+});
+test('future Global counts BR teams in the final, repescagem and first-phase eliminations, and rejects incomplete results',()=>{
+  const src=inputs(),g=src[4],names=src[7].teams.map(t=>t.name),loud='LOUD',los='LOS',fluxo='FLUXO W7M';
+  const order=names.filter(n=>n!==los);order.splice(20,0,los);
+  const row=(team,i)=>({team,position:i+1});
+  const direct=[fluxo,...order.slice(0,18).filter(n=>![loud,fluxo].includes(n))].slice(0,8);
+  const last=order.slice(0,20).filter(n=>!direct.includes(n));last.splice(last.indexOf(loud),1);last.splice(4,0,loud);
+  g.finished=true;g.classificatoria={finished:true,rows:order.map(row)};g.lastChance={finished:true,rows:last.map(row)};g.final={finished:true,rows:[...direct,...last.slice(0,4)].map(row)};
+  const result=build(src),global=n=>result.rows.find(r=>r.team===n).results.find(r=>r.event==='global');
+  assert.equal(result.partial,false);assert.equal(global(fluxo).position,1);assert.equal(global(fluxo).points,700);
+  assert.equal(global(loud).position,13);assert.equal(global(loud).points,56);assert.equal(global(los).position,21);assert.equal(global(los).points,28);
+  assert.equal(result.rows.filter(r=>r.results.some(x=>x.event==='global')).length,3);
+  const missing=structuredClone(src);missing[4].lastChance.rows.pop();assert.throws(()=>build(missing),/repescagem incompleta/);
+  const wrong=structuredClone(src);wrong[4].final.rows[1].team=loud;assert.throws(()=>build(wrong),/inconsistente/);
+  const early=structuredClone(src);early[4].final.finished=false;assert.throws(()=>build(early),/não encerradas/);
+});
+test('year selection loads only the chosen static file, caches each year and preserves year in links and cards',async()=>{
+  const u=await ui({search:'?ano=2025&visao=competicoes'});try{
+    assert.equal(u.calls.length,1);assert(u.calls[0].includes('brasil-2025'));assert(u.$('h1').textContent.includes('2025'));assert(u.w.document.title.includes('2025'));assert(!u.$('.annual-upcoming'));assert.equal(u.all('.annual-event').length,20*5);assert(u.$('.annual-odd-events'));
+    await u.click('[data-annual-share]');const p=u.cards[0],v=p.views.find(v=>v.id===p.viewId);assert.equal(v.annualColumns.length,5);assert(new URL(v.url).searchParams.get('ano')==='2025');assert.equal(v.rows[0].points,1325);
+    await u.year(2026);assert(u.$('.annual-upcoming'));assert.equal(u.calls.length,2);assert.equal(new URL(u.w.location.href).searchParams.get('ano'),'2026');
+    await u.year(2025);assert.equal(u.calls.length,2);assert(u.$('h1').textContent.includes('2025'));assert(u.$('.annual-detailed'));
+    await u.click('[data-annual-link]');assert.equal(new URL(u.copies[0]).searchParams.get('ano'),'2025');
+  }finally{u.close();}
+});
+test('rapid year switches cannot display a stale response and reuse in-flight downloads',async()=>{
+  const u=await ui({delayed:true});try{
+    assert.equal(u.pending[0].year,2026);await u.year(2025);assert.equal(u.pending.length,2);
+    u.pending.find(p=>p.year===2025).resolve();await tick();assert(u.$('h1').textContent.includes('2025'));
+    u.pending.find(p=>p.year===2026).resolve();await tick();assert(u.$('h1').textContent.includes('2025'));
+    await u.year(2026);assert.equal(u.calls.length,2);assert(u.$('h1').textContent.includes('2026'));assert.equal(u.$('#annual-ranking').getAttribute('aria-busy'),null);
+  }finally{u.close();}
 });

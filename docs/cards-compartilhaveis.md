@@ -76,7 +76,7 @@ ponderados ou `null` quando a equipe não participou. `points` é o total anual.
 As duas views permitem trocar entre total e competições dentro da janela.
 Este modo permite tabela Top 3/5/10 ou Equipe em destaque, escolhendo qualquer equipe do recorte, sem estatísticas de partidas.
 Legenda e imagem preservam a posição original das equipes e o recorte do link.
-As entradas novas importam `ranking-share-cards.mjs?v=20261020-cards-v5`.
+As entradas novas importam `ranking-share-cards.mjs?v=20261020-cards-v6`.
 
 - `ranking-share-model.mjs`: opções validadas, formato, legenda, link e dados.
 - `ranking-share-renderer.mjs`: desenho Canvas; recebe imagens já resolvidas.

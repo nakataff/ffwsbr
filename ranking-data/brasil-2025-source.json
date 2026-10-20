@@ -1,0 +1,174 @@
+{
+  "year": 2025,
+  "region": "Brasil",
+  "updatedAt": "2026-10-20",
+  "methodVersion": 1,
+  "basePoints": [
+    100,
+    80,
+    65,
+    55,
+    45,
+    45,
+    35,
+    35,
+    25,
+    25,
+    15,
+    15,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "weights": {
+    "copa": 1,
+    "s1": 3,
+    "s2": 3,
+    "ewc": 5,
+    "global": 7
+  },
+  "aliases": {
+    "LOUD SNICKERS": "LOUD",
+    "FLUXO W7M": "FLUXO",
+    "ALFA34": "ALFA 34",
+    "AXS": "AXS FUSION",
+    "SAVEX RUSH GAMING": "SAVEX GAMING"
+  },
+  "copa": {
+    "finished": true,
+    "teamCount": 16,
+    "source": "https://liquipedia.net/freefire/C.O.P.A._Free_Fire/2025",
+    "reference": "https://escharts.com/tournaments/free-fire/cop-free-fire-2025",
+    "standings": [
+      {
+        "team": "FLUXO",
+        "position": 1
+      },
+      {
+        "team": "PAIN GAMING",
+        "position": 2
+      },
+      {
+        "team": "LOUD",
+        "position": 3
+      },
+      {
+        "team": "TEAM SOLID",
+        "position": 4
+      },
+      {
+        "team": "E1 SPORTS",
+        "position": 5
+      },
+      {
+        "team": "ALFA 34",
+        "position": 6
+      },
+      {
+        "team": "INCO GAMING",
+        "position": 7
+      },
+      {
+        "team": "CORINTHIANS",
+        "position": 8
+      },
+      {
+        "team": "SAVEX GAMING",
+        "position": 9
+      },
+      {
+        "team": "TEC TOY CRIPZ",
+        "position": 10
+      },
+      {
+        "team": "VASCO ESPORTS",
+        "position": 11
+      },
+      {
+        "team": "ALPHA7",
+        "position": 12
+      },
+      {
+        "team": "LOS",
+        "position": 13
+      },
+      {
+        "team": "W7M ESPORTS",
+        "position": 14
+      },
+      {
+        "team": "FLAMENGO ESPORTS",
+        "position": 15
+      },
+      {
+        "team": "INFLUENCE RAGE",
+        "position": 16
+      }
+    ]
+  },
+  "ewc": {
+    "finished": true,
+    "source": "https://liquipedia.net/freefire/Esports_World_Cup/2025",
+    "participants": [
+      "LOS",
+      "PAIN GAMING",
+      "FLUXO",
+      "ALFA 34"
+    ],
+    "standings": [
+      {
+        "team": "LOS",
+        "position": 4
+      },
+      {
+        "team": "PAIN GAMING",
+        "position": 8
+      },
+      {
+        "team": "FLUXO",
+        "position": 10
+      },
+      {
+        "team": "ALFA 34",
+        "position": 17
+      }
+    ],
+    "notes": "Somente Battle Royale. Alfa 34 foi eliminado no Knockout (17º). O antigo resultados.json atribui o 8º lugar à Team Solid; a classificação do evento confirma paiN Gaming."
+  },
+  "logos": {
+    "ALFA 34": "a34.webp",
+    "ALPHA7": "A7 2.webp",
+    "AXS FUSION": "AXS BRANCA.webp",
+    "CORINTHIANS": "sccp.webp",
+    "E1 SPORTS": "E1.webp",
+    "FLAMENGO ESPORTS": "https://i.postimg.cc/BZgT788s/flamengo.webp",
+    "FLUXO": "Fluxo 2.webp",
+    "INCO GAMING": "https://i.postimg.cc/XYGTQnxR/inco.webp",
+    "INFLUENCE RAGE": "Influence Rage.webp",
+    "LOOPS ESPORTS": "escudo.webp",
+    "LOS": "Los.webp",
+    "LOUD": "escudo.webp",
+    "PAIN GAMING": "pain.webp",
+    "RED CANIDS": "red.webp",
+    "RUSH GAMING": "Rush.webp",
+    "SAVEX GAMING": "escudo.webp",
+    "TEAM SOLID": "Team Solid 2.webp",
+    "TEC TOY CRIPZ": "escudo.webp",
+    "VASCO ESPORTS": "Vasco.webp",
+    "W7M ESPORTS": "https://i.postimg.cc/yx39wjkN/w7m.webp"
+  },
+  "notes": [
+    "Fluxo e W7M Esports disputaram 2025 separadamente. O nome normalizado FLUXO W7M no arquivo da WB S1 identifica o Fluxo daquele split; não somar W7M ESPORTS.",
+    "Copa: 16 equipes, classificação geral do evento, incluindo eliminados na repescagem. SAVEx Rush Gaming é a SAVEX GAMING desta edição, não a RUSH GAMING da WB S2.",
+    "As três equipes brasileiras do Global chegaram à final. Clash Squad não entra no ranking Battle Royale."
+  ]
+}

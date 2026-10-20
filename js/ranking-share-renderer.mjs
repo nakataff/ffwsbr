@@ -1,4 +1,4 @@
-import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v5';
+import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v6';
 const INK='#f3f6fb',MUTED='#9bafc8';
 function rounded(ctx,x,y,w,h,r=12){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function box(ctx,x,y,w,h,fill,stroke){rounded(ctx,x,y,w,h);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}}
@@ -74,7 +74,7 @@ export function renderRankingCard(canvas,data,options,assets={}) {
       labels.forEach((label,i)=>{
         const x=margin+i*(cellW+gap);
         box(ctx,x,y,cellW,detailH,'#111e32','#263b55');
-        text(ctx,label.toLocaleUpperCase('pt-BR'),x+cellW/2,y+detailH*.27,cellW-20,wide?13:20,MUTED,'center');
+        stat(ctx,label.toLocaleUpperCase('pt-BR'),x+cellW/2,y+detailH*.27,cellW-20,wide?13:20,MUTED,'center');
         stat(ctx,formatValue(row.annualValues[i]),x+cellW/2,y+detailH*.76,cellW-20,wide?32:52,INK,'center');
       });
     }
@@ -84,7 +84,7 @@ export function renderRankingCard(canvas,data,options,assets={}) {
     const positions=[...labels,'TOTAL'].map((label,i)=>({label,x:margin+teamW+cellW*(i+1)-12}));
     text(ctx,'#',margin+10,contentY+16,30,wide?11:15,MUTED);
     text(ctx,'EQUIPE',margin+rankW+12,contentY+16,teamW-rankW-20,wide?12:16,MUTED);
-    positions.forEach(p=>text(ctx,p.label,p.x,contentY+16,cellW-12,wide?11:15,MUTED,'right'));
+    positions.forEach(p=>stat(ctx,p.label,p.x,contentY+16,cellW-12,wide?11:15,MUTED,'right'));
     rows.forEach((row,i)=>{
       const y=contentY+header+i*rowH,center=y+(rowH-5)/2,selected=data.rows.indexOf(row)===options.highlight;
       box(ctx,margin,y,width,rowH-5,selected?options.accent+'25':'#111e32',selected?options.accent:'#20304a');ctx.textBaseline='middle';

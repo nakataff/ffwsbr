@@ -166,18 +166,23 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 ### Ranking anual de equipes
 
 Entrada: `/ranking-anual.html`, no menu **Histórico → Ranking anual**.
-Atualmente cobre Brasil 2026, com 27 equipes. A página usa o mesmo cabeçalho,
-menu e identidade das páginas públicas e busca somente um JSON de 6 KB.
+Cobre Brasil 2026 (27 equipes, parcial) e 2025 (20 equipes, encerrado). O seletor
+de temporada busca apenas o JSON do ano escolhido (5–6 KB). Anos já abertos
+ficam em memória; trocar visualização, buscar, ver campanha ou compartilhar não
+faz novas consultas. Mantém o cabeçalho, menu e identidade das páginas públicas.
 
 | Arquivo | Função |
 | --- | --- |
+| `ranking-data/brasil-2025-source.json` | Pesos e aliases exclusivos de 2025, logos locais, classificação da Copa (16 equipes) e quatro brasileiros na EWC com fontes revisadas |
+| `ranking-data/brasil-2025.json` | Ranking encerrado de 2025; duas WBs e Global vêm dos três arquivos `novos-torneios/*2025*.json`, sem Clash Squad |
 | `ranking-data/brasil-2026-source.json` | Metodologia v1, pesos, aliases e classificação completa da Copa FF, com referência da fonte externa |
-| `scripts/build-annual-ranking.cjs` | Gera o ranking offline usando a fonte da Copa, `ffws-br-2026-s1/stages.json`, `ffws-br-2026-s2/career-summary.json` e `ewc 2026/final.json`; confere `ffws-global-2026/stages.json` para o status do Mundial |
+| `scripts/build-annual-ranking.cjs` | Gera o ranking offline usando a fonte da Copa, `ffws-br-2026-s1/stages.json`, `ffws-br-2026-s2/career-summary.json` e `ewc 2026/final.json`; para 2025 usa os três torneios históricos e as classificações revisadas da Copa/EWC; confere fases e cadastro de equipes do Global 2026 |
 | `ranking-data/brasil-2026.json` | Resultado derivado: total, posição, pontos e colocação por evento, logos locais, competições pendentes e hashes das fontes |
 | `js/annual-ranking.mjs`, `css/annual-ranking.css` | Busca local, total/competições, janela de campanha e adaptação para cards no mobile |
 
 Regenerar com `node scripts/build-annual-ranking.cjs` e verificar com o mesmo
-comando acrescido de `--check`. Atualize a data na fonte após revisar mudanças e
+comando acrescido de `--check`. Ambos os anos são gerados/conferidos por padrão;
+use `--year=2025` ou `--year=2026` para limitar. Atualize a data na fonte após revisar mudanças e
 as versões do módulo/CSS/JSON quando publicar uma nova classificação. A CI
 confere a correspondência com as fontes e os totais revisados. Não consultar
 Firebase, Durable Objects, planilhas ou bases completas por visitante.
@@ -189,12 +194,28 @@ e aliases da mesma equipe são unificados; transferências de jogadores não
 transferem pontos. Ordem de desempate: colocação no Global, na EWC, títulos de
 WB. Empates restantes recebem a mesma posição, sem desempate alfabético.
 
-O Mundial permanece pendente e não pontua antes do encerramento. Quando terminar,
-revisar a classificação final **de todos os representantes brasileiros**, incluindo
-eliminados antes da final, antes de regenerar. O resultado atual usa Copa ×1,
-WB S1/S2 ×3, EWC ×5 e reserva Global ×7.
+O Mundial 2026 permanece pendente e não pontua antes do encerramento. Para incluí-lo:
 
-Links preservam `ano=2026`, `visao=total|competicoes` e `busca`. Compartilhamento
+1. Atualizar `ffws-global-2026/teams.json` (região `BR` identifica os brasileiros).
+2. Preencher em `stages.json` os resultados completos: classificatória (24),
+   `lastChance` (12) e final (12), com `team`, `position` e cada `finished: true`.
+   Marcar também o `finished` da raiz após a final.
+3. Regenerar o ranking de 2026 e publicar com a data/cache atualizados.
+
+O gerador já converte a repescagem: 5º–12º viram 13º–20º gerais; eliminados da
+Fase 1 ficam em 21º–24º. Os 12 finalistas mantêm a posição oficial. Valida as
+24 equipes e os cruzamentos de fases, impedindo publicar um Mundial encerrado
+que ignore brasileiros eliminados. Peso Global ×7; restantes Copa ×1,
+WB S1/S2 ×3 e EWC ×5. Isso roda offline, sem varreduras por visitante.
+
+**Atenção aos aliases de 2025:** `FLUXO W7M` no arquivo antigo da WB S1 é o
+Fluxo daquele ano. Unificar somente com `FLUXO`; `W7M ESPORTS` disputou os dois
+splits separadamente. `SAVEx Rush Gaming` da Copa corresponde à SAVEX GAMING,
+sem transferir seus pontos à RUSH GAMING da S2. Na EWC 2025 os brasileiros são
+LOS (4º), paiN (8º), Fluxo (10º), Alfa 34 (17º). Não usar `resultados.json` nessa
+conta: há um 8º lugar atribuído à Team Solid, que não disputou essa edição.
+
+Links preservam `ano=2025|2026`, `visao=total|competicoes` e `busca`. Compartilhamento
 reaproveita os dados visíveis e suas posições originais. O editor comum aceita
 `mode: 'annual'`, `annualColumns` e `rows[].annualValues`, com duas views. Os cards
 anuais exportam tabela Top 3/5/10 para manter legibilidade ou Equipe em destaque

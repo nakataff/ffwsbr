@@ -169,3 +169,17 @@ test('annual editor offers team spotlight for teams outside the Top 10 and retai
   await u.change('view','total');assert.equal(u.$('[name="template"]').value,'leader');assert.equal(u.$('[name="first"]').value,String(i));assert(u.$('[name="caption"]').value.includes('12º SX TET: 75 pontos CFF'));assert(!u.$('[name="caption"]').value.includes('WB S2:'));
  }finally{u.close();}
 });
+
+
+test('closed 2025 cards preserve all five competitions including Global in table and team spotlight',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,source=read('ranking-data/brasil-2025.json'),events=source.events;
+ const data=m.normalizePayload({id:'annual-2025',kind:'teams',mode:'annual',metric:'points',title:'Ranking anual CFF',event:'Brasil 2025',stage:'Por competição · Ano encerrado',annualColumns:events.map(e=>e.label),url:'https://centralfreefire.com.br/ranking-anual.html?ano=2025&visao=competicoes',rows:source.rows.map(r=>({rank:r.rank,name:r.team,points:r.total,annualValues:events.map(e=>r.results.find(x=>x.event===e.id)?.points??null)}))});
+ assert.equal(data.annualColumns.length,5);assert.deepEqual(data.rows[0].annualValues,[100,240,300,125,560]);
+ for(const template of ['table','leader'])for(const format of Object.keys(m.FORMATS)){
+  const options=m.normalizeOptions({format,template,first:0},data),canvas=createCanvas(1,1),ctx=canvas.getContext('2d'),painted=[],original=ctx.fillText.bind(ctx);ctx.fillText=(t,x,y)=>{painted.push({text:String(t),x,y});original(t,x,y);};renderRankingCard(canvas,data,options);
+  assert(painted.some(p=>p.text.toUpperCase()==='GLOBAL FINALS'));assert(painted.some(p=>p.text==='560'));assert(painted.some(p=>/1[.,]325|1325/.test(p.text)));
+  assert(Math.max(...painted.map(p=>p.y))<canvas.height*(format==='story'?.76:format==='feed'?.86:.94));
+  const caption=m.captionFor(data,options);assert(caption.includes('Global Finals: 560'));assert(caption.includes('ano=2025'));
+  if(process.env.CFF_CARD_RENDER_DIR){fs.mkdirSync(process.env.CFF_CARD_RENDER_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.CFF_CARD_RENDER_DIR,`annual-2025-${template}-${format}.png`),canvas.toBuffer('image/png'));}
+ }
+});
