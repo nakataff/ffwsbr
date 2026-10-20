@@ -152,3 +152,109 @@
 }
 @media(max-width:360px){.cff-bottom-navigation a{font-size:9px}.cff-bottom-navigation a svg{width:19px;height:19px}}
 @media(min-width:769px){.cff-bottom-navigation{display:none!important}}
+
+
+/* 2026: cabeçalho mobile editorial sem atalho expansível e sem carteira duplicada. */
+@media(max-width:768px){
+  .cff-mobile-header .cff-shortcuts-toggle,.cff-mobile-shortcuts{display:none!important}
+  .cff-mobile-header .cff-mobile-brand{
+    display:flex!important;flex-direction:row!important;align-items:center;justify-content:center;
+    grid-column:2!important;grid-row:1!important;
+    min-width:0!important;width:auto!important;height:100%!important;
+  }
+  .cff-mobile-header .cff-mobile-brand .nav-mobile-home-btn,
+  .cff-mobile-header .cff-mobile-brand .cff-public-brand{
+    display:flex!important;align-items:center;justify-content:center;
+    width:48px!important;min-width:48px!important;max-width:48px!important;
+    height:48px!important;margin:0!important;padding:0!important;
+  }
+  .cff-mobile-header .cff-mobile-brand img{
+    width:46px!important;height:44px!important;max-width:46px!important;object-fit:contain!important;
+  }
+  .cff-mobile-header .cff-mobile-brand .cff-public-brand>span{display:none!important}
+  .cff-mobile-header>.nav-mob-menu-btn,
+  .cff-mobile-header>.cff-public-left{
+    display:flex!important;align-items:center;justify-content:flex-start;justify-self:start!important;
+    min-width:40px;max-width:54px;grid-column:1!important;grid-row:1!important;
+  }
+  .cff-mobile-header>.nav-mobile-right,
+  .cff-mobile-header>.cff-public-account-host{
+    position:static!important;grid-column:3!important;grid-row:1!important;justify-self:end!important;
+    max-width:112px!important;width:auto!important;min-width:0!important;
+    padding:0!important;margin:0!important;gap:2px!important;
+    display:flex!important;align-items:center!important;justify-content:flex-end!important;
+  }
+  .cff-mobile-header .cff-account-access-group{display:contents!important}
+  .cff-mobile-header [data-header-wallet],
+  .cff-mobile-header [data-account-entry]{display:none!important}
+  .cff-mobile-header [data-header-inbox]:not([hidden]){
+    display:grid!important;place-items:center!important;flex:0 0 42px!important;
+    width:42px!important;height:42px!important;min-width:42px!important;
+    max-width:42px!important;padding:0!important;margin:0!important;
+  }
+  .cff-mobile-header [data-header-inbox] svg{width:20px!important;height:20px!important}
+  .cff-mobile-header .nav-mobile-search-btn,.cff-mobile-header .cff-mobile-search-button{
+    flex:0 0 42px!important;min-width:42px!important;width:42px!important;height:42px!important;
+    margin:0!important;padding:7px!important;
+  }
+  .cff-bottom-navigation a{gap:3px!important}
+  .cff-bottom-navigation .cff-dock-avatar{
+    display:block!important;object-fit:cover!important;object-position:center!important;
+    width:27px!important;height:27px!important;flex:none!important;
+    border-radius:50%!important;border:2px solid #3d7c9e!important;background:#132e43!important;
+  }
+}
+/* Camada de perfil e preferências: as configurações não afetam os painéis do site. */
+.cff-dock-dialog{
+  box-sizing:border-box!important;position:fixed;
+  width:min(440px,calc(100vw - 20px))!important;max-width:440px!important;
+  max-height:min(86dvh,750px)!important;margin:auto!important;padding:0!important;
+  overflow:auto!important;overscroll-behavior:contain;
+  border:1px solid #315470!important;border-radius:19px!important;
+  background:#0b1727!important;color:#eaf4ff!important;
+  box-shadow:0 22px 75px #000c!important;color-scheme:dark;
+  font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  text-align:left!important;text-transform:none!important;
+}
+.cff-dock-dialog::backdrop{background:#02060dc9;backdrop-filter:blur(3px)}
+.cff-dock-dialog *{box-sizing:border-box}
+.cff-dock-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:19px 19px 12px}
+.cff-dock-sheet-head small{font-size:10px;letter-spacing:1.4px;font-weight:800;color:#6bcff3}
+.cff-dock-sheet-head h2{font-size:22px;line-height:1.1;margin:5px 0 0!important;color:#f4faff}
+.cff-dock-sheet-head button{border:1px solid #324b63;border-radius:10px;background:#15293a;color:#e8f5ff;width:36px;height:36px;font-size:23px}
+.cff-dock-account-line{display:flex;align-items:center;gap:13px;padding:6px 19px 15px}
+.cff-dock-profile-image{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;border:1px solid #386989;background:#152d41;overflow:hidden;flex:none}
+.cff-dock-profile-image img{width:100%;height:100%;object-fit:cover}
+.cff-dock-profile-image svg{width:27px;height:27px}
+.cff-dock-account-line strong{display:block;font-size:15px;color:#fff}
+.cff-dock-account-line span{display:block;margin-top:2px;color:#829db8;font-size:11px}
+.cff-dock-coins{display:flex;align-items:center;gap:11px;margin:0 19px 17px;padding:11px 13px;border:1px solid #756039;border-radius:12px;background:linear-gradient(120deg,#302918,#142338);color:#fce6a3;text-decoration:none!important}
+.cff-dock-coins img{width:38px;height:38px;object-fit:contain}
+.cff-dock-coins>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:2px}
+.cff-dock-coins strong{font-size:18px;color:#fff7d6}
+.cff-dock-coins small{font-size:10px;color:#c9b17e;letter-spacing:.4px;font-weight:750}
+.cff-dock-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:0 19px 17px}
+.cff-dock-actions a,.cff-dock-actions button{display:flex;justify-content:center;align-items:center;min-height:43px;padding:9px 8px;border:1px solid #304761;border-radius:10px;background:#13283a;color:#d9edff;text-decoration:none;font:700 12px/1.2 system-ui,sans-serif;text-align:center}
+.cff-dock-actions [data-dock-login]:not([hidden]){grid-column:1/-1;background:#14516a;color:#fff}
+.cff-dock-config{border-top:1px solid #29445c;padding:0 19px 18px}
+.cff-dock-config>summary{display:flex;align-items:center;justify-content:space-between;min-height:60px;padding:12px 0;color:#b4eafc;font-size:13px;font-weight:800;cursor:pointer;list-style:none}
+.cff-dock-config>summary::-webkit-details-marker{display:none}
+.cff-dock-config>p{color:#9eb4c9;font-size:12px;margin:1px 0 13px}
+.cff-dock-editor-row{padding:12px;margin:0 0 9px;border:1px solid #29465f;border-radius:12px;background:#101f32}
+.cff-dock-editor-row>strong{display:block;color:#dff2ff;margin-bottom:10px}
+.cff-dock-editor-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cff-dock-editor-fields label{display:flex;flex-direction:column;gap:5px;color:#8fb1ca;font-size:11px;font-weight:750}
+.cff-dock-editor-fields label:first-child{grid-column:1/-1}
+.cff-dock-editor-fields select{width:100%;min-width:0;max-width:100%;padding:9px 5px;border:1px solid #3a5871;border-radius:8px;background:#0a1928;color:#eff7ff;font:600 12px system-ui}
+.cff-dock-editor-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
+.cff-dock-editor-actions button{padding:10px 13px;border:1px solid #41647c;border-radius:9px;background:#142b40;color:#cdefff;font-weight:750}
+.cff-dock-editor-actions button:last-child{background:#117da3;border-color:#00bbed;color:#fff}
+.cff-dock-config>small{display:block;font-size:10px;color:#859fb5}
+@media(max-width:600px){
+ .cff-dock-dialog{max-height:calc(100dvh - 34px)!important}
+ .cff-dock-sheet-head{padding:15px 14px 10px}
+ .cff-dock-account-line{padding:5px 14px 14px}
+ .cff-dock-coins{margin:0 14px 14px}
+ .cff-dock-actions{padding:0 14px 14px}
+ .cff-dock-config{padding:0 14px 16px}
+}
