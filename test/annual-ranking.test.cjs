@@ -109,14 +109,30 @@ test('annual methodology exposes its source configuration and retains v2 podium 
 });
 
 
+test('one customized Copa placement changes only that event and validates its full table',()=>{
+  const normal=build(inputs()),src=inputs(),cfg=src[0];
+  cfg.pointsByEvent={copa:cfg.basePoints.map(x=>x*cfg.weights.copa)};
+  cfg.pointsByEvent.copa[0]=321;
+  const custom=build(src),before=normal.rows.find(r=>r.team==='FLUXO W7M'),after=custom.rows.find(r=>r.team==='FLUXO W7M');
+  assert.equal(after.total,before.total+121);
+  assert.equal(after.results.find(r=>r.event==='copa').points,321);
+  assert.equal(after.results.find(r=>r.event==='s2').points,before.results.find(r=>r.event==='s2').points);
+  assert.deepEqual(custom.pointsByEvent.copa,cfg.pointsByEvent.copa);
+  cfg.pointsByEvent.copa.pop();
+  assert.throws(()=>build(src),/Pontuação personalizada inválida/);
+});
+
 test('points editor previews new podium scores and can isolate a single year without publishing',async()=>{
   const html='<select id="year"><option value="2026">2026</option><option value="2025">2025</option></select>'+
     '<input id="sync" type="checkbox" checked><div id="weights"></div><table><tbody id="bands"></tbody></table>'+
     '<table><tbody id="preview"></tbody></table><p id="preview-info"></p><p id="status"></p>'+
     '<button id="reset"></button><button id="download"></button><button id="download-both"></button>';
   const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/admin-ranking-anual.html',runScripts:'outside-only'});
-  const w=dom.window,calls=[];
+  const w=dom.window,calls=[],exports=[];
   w.structuredClone=global.structuredClone;
+  w.Blob=class {constructor(parts){exports.push(parts.join(''));}};
+  w.URL.createObjectURL=()=> 'blob:test';w.URL.revokeObjectURL=()=>{};
+  w.HTMLAnchorElement.prototype.click=function(){};
   w.fetch=async url=>{calls.push(String(url));const name=String(url).split('/').pop();return {ok:true,json:async()=>read('ranking-data/'+name)};};
   try{
     w.eval(fs.readFileSync('js/annual-points-editor.mjs','utf8'));await tick();
@@ -146,6 +162,12 @@ test('points editor previews new podium scores and can isolate a single year wit
     direct.dispatchEvent(new w.Event('input',{bubbles:true}));
     assert.equal(w.document.querySelector('[data-direct="1:copa"]').value,'999');
     assert.equal(w.document.querySelector('[data-direct="1:s1"]').value,'450');
+    $('download').click();
+    const saved=JSON.parse(exports[0]);
+    assert.equal(saved.methodVersion,read('ranking-data/brasil-2025-source.json').methodVersion+1);
+    assert.equal(saved.basePoints[0],300);
+    assert.equal(saved.pointsByEvent.copa[1],999);
+    assert.equal(saved.pointsByEvent.s1,undefined);
     assert.equal(calls.length,4); // no additional network requests for previews
   }finally{w.close();}
 });
