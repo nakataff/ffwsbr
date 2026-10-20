@@ -30,3 +30,29 @@ Acesse `conta.html?tab=inbox`. A administração envia, edita e retira comunicad
 `node --test functions/test/user-inbox.test.cjs`
 
 `NODE_PATH=<dependências de navegador> node --test test/user-inbox.test.cjs test/header-wallet.test.cjs test/quick-rewards.test.cjs test/profile-inventory.test.cjs`
+
+## Janela de mensagens recentes
+
+O ícone de envelope do cabeçalho abre `js/inbox-popover.mjs`, com seis mensagens
+recentes, texto expansível e botões de recompensas. O rodapé **Ver tudo no perfil**
+continua apontando para `conta.html?tab=inbox`. Ctrl/Cmd/clique alternativo preserva
+o link normal. Se o módulo não carregar, o ícone abre a caixa completa.
+
+- Módulo e `css/inbox-popover.css` carregam somente no clique. Não há novas
+  requisições ao abrir a página, além do resumo que já acompanha o saldo.
+- `inboxPreview` reutiliza a consulta indexada, limitada a sete candidatos pessoais
+  e sete compartilhados e até seis marcações. Não busca vinte itens para exibir seis.
+- O cache compartilhado do servidor distingue os limites de prévia e caixa completa.
+  Nenhuma prévia reduz a paginação de vinte mensagens da página de perfil.
+- O navegador reutiliza a prévia por sessenta segundos. Metadados com mensagem
+  mais recente invalidam esse cache; Atualizar tem intervalo de trinta segundos.
+  Não existe polling nem timer para buscar mensagens em segundo plano.
+- O indicador de novidades é limpo ao abrir. A leitura individual só é registrada
+  ao expandir uma mensagem ou usar seu botão, sem marcar todas automaticamente.
+- O conteúdo fica só em memória. Sair, mudar de conta ou destruir o cabeçalho
+  remove a janela e o cache privado; respostas atrasadas são ignoradas.
+- Diálogo nativo com foco, fechamento por Escape/backdrop e retorno ao ícone.
+  Mobile usa largura de tela com margens e rolagem interna.
+
+Testes adicionais: `test/inbox-popover.test.cjs` e cenários de prévia em
+`functions/test/user-inbox.test.cjs`. Health do Worker: versão 39, `inboxPreview: true`.

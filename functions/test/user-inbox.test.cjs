@@ -49,3 +49,16 @@ test('profile reward delivery keeps a frozen receipt, retries external writes sa
 test('archived filters paginate independently and announcements never disclose recipient handles to other users',async()=>{
  const s=setup();await s.core.manage(admin,message({audience:'selected',usernames:['alice','bob']}));const page=await s.core.handle(user,{operation:'inboxList'});assert(!JSON.stringify(page).includes('bob'));const id=page.entries[0].id;await s.core.handle(user,{operation:'inboxArchive',id,archived:true});assert.equal((await s.core.handle(user,{operation:'inboxList',archived:true,category:'notice'})).entries.length,1);assert.equal((await s.core.handle(user,{operation:'inboxList',archived:true,category:'reward'})).entries.length,0);
 });
+
+test('floating preview reads only six candidates per audience and never expands into a full-history scan',async()=>{
+ const s=setup();for(let i=0;i<60;i++)s.core.reward({id:'preview-'+i,uid:i%2?'alice':'*',title:'Recado '+i});for(let i=0;i<100;i++)s.core.reward({id:'other-'+i,uid:'bob',title:'Privada de Bob'});
+ s.queries.length=0;s.reads.length=0;const result=await s.economy.handle(user,{operation:'inboxPreview',targetUid:'bob',before:1,archived:true});
+ assert.equal(result.entries.length,6);assert.deepEqual(result.entries.map(m=>m.id),[60,59,58,57,56,55]);assert(result.hasMore);assert(!result.summary.hasNew);assert(result.entries.every(m=>!m.read));assert.equal(s.reads.length,0);
+ const candidates=s.queries.filter(x=>x.q.includes('WHERE audience=? AND seq<?'));assert.equal(candidates.length,2);assert(candidates.every(x=>x.args.at(-1)===7));assert.equal(s.queries.filter(x=>x.q.startsWith('SELECT isRead,archived')).length,6);assert(!s.queries.some(x=>/OFFSET|COUNT\(/.test(x.q)));
+ assert.equal((await s.core.handle(user,{operation:'inboxList'})).entries.length,20,'preview cache never truncates the full inbox');assert.equal(s.sql.exec('SELECT COUNT(*) n FROM user_inbox_marks')[0].n,0);
+ await assert.rejects(s.core.handle({}, {operation:'inboxPreview'}),{status:401});
+});
+test('preview omits archived, revoked and expired entries without scanning to fill six slots',async()=>{
+ const s=setup();for(let i=0;i<8;i++)s.core.reward({id:'bounded-'+i,uid:'alice',title:'Recado '+i,expiresAt:i===7?at+1:0});const page=await s.core.handle(user,{operation:'inboxPreview'});await s.core.handle(user,{operation:'inboxArchive',id:page.entries[1].id,archived:true});s.setTime(at+2);s.queries.length=0;
+ const next=await s.core.handle(user,{operation:'inboxPreview'});assert.equal(next.entries.length,4);assert(next.hasMore);assert(!next.entries.some(m=>m.id===8||m.id===7));assert.equal(s.queries.filter(x=>x.q.includes('WHERE audience=? AND seq<?')).length,1,'shared broadcast candidates use the bounded cache');
+});

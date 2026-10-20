@@ -35,24 +35,24 @@ function create({sql,transaction,db,now=()=>Date.now()}){
  }
  function reward(input){return add({...input,category:'reward'});}
  function cursor(value){if(value==null||value==='')return Number.MAX_SAFE_INTEGER;if(!Number.isSafeInteger(value)||value<1)throw fail(400,'Página inválida.');return value;}
- function base(audience,before,category){
-  const key=before+':'+category,cached=audience==='*'&&cache.get(key);if(cached&&now()-cached.at<60000)return cached.rows;
-  const result=category==='all'?rows('SELECT * FROM user_inbox_messages WHERE audience=? AND seq<? ORDER BY seq DESC LIMIT 21',audience,before):rows('SELECT * FROM user_inbox_messages WHERE audience=? AND category=? AND seq<? ORDER BY seq DESC LIMIT 21',audience,category,before);
+ function base(audience,before,category,limit=PAGE){
+  const key=before+':'+category+':'+limit,cached=audience==='*'&&cache.get(key);if(cached&&now()-cached.at<60000)return cached.rows;
+  const result=category==='all'?rows('SELECT * FROM user_inbox_messages WHERE audience=? AND seq<? ORDER BY seq DESC LIMIT ?',audience,before,limit+1):rows('SELECT * FROM user_inbox_messages WHERE audience=? AND category=? AND seq<? ORDER BY seq DESC LIMIT ?',audience,category,before,limit+1);
   if(audience==='*'){if(cache.size>=64)cache.delete(cache.keys().next().value);cache.set(key,{at:now(),rows:result});}return result;
  }
  function publicRow(r,state={}){return {id:r.seq,category:r.category,scope:r.audience==='*'?'all':'personal',sentAt:r.at,expiresAt:r.expires,read:r.seq<=state.readThrough||!!r.isRead,archived:!!r.archived,...JSON.parse(r.data)};}
  function visible(r){return !r.revoked&&(!r.expires||r.expires>now());}
  function list(uid,b){
-  const before=cursor(b.before),category=b.category||'all',archived=b.archived===true;if(!['all','reward','notice'].includes(category)||b.archived!=null&&typeof b.archived!=='boolean')throw fail(400,'Filtro inválido.');
+  const limit=b.preview===true?6:PAGE,before=cursor(b.before),category=b.category||'all',archived=b.archived===true;if(!['all','reward','notice'].includes(category)||b.archived!=null&&typeof b.archived!=='boolean')throw fail(400,'Filtro inválido.');
   return transaction(()=>{
    const snapshot=summary(uid).latest,state=rows('SELECT * FROM user_inbox_state WHERE uid=?',uid)[0]||{readThrough:0};let candidates;
    if(archived){candidates=rows(`SELECT m.*,k.isRead,k.archived FROM user_inbox_marks k JOIN user_inbox_messages m ON m.seq=k.seq WHERE k.uid=? AND k.archived=1 AND k.seq<? ORDER BY k.seq DESC LIMIT 21`,uid,before).filter(r=>r.audience==='*'||r.audience===uid);}
-   else candidates=[...base(uid,before,category),...base('*',before,category)].sort((a,b)=>b.seq-a.seq);
-   const taken=candidates.slice(0,PAGE),marks=new Map();
+   else candidates=[...base(uid,before,category,limit),...base('*',before,category,limit)].sort((a,b)=>b.seq-a.seq);
+   const taken=candidates.slice(0,limit),marks=new Map();
    for(const r of taken){const m=archived?r:rows('SELECT isRead,archived FROM user_inbox_marks WHERE uid=? AND seq=?',uid,r.seq)[0];if(m)marks.set(r.seq,m);}
    const entries=taken.filter(r=>visible(r)&&(category==='all'||r.category===category)&&!!marks.get(r.seq)?.archived===archived).map(r=>publicRow({...r,...marks.get(r.seq)},state));
    if(before===Number.MAX_SAFE_INTEGER)sql.exec('INSERT INTO user_inbox_state(uid,opened) VALUES(?,?) ON CONFLICT(uid) DO UPDATE SET opened=MAX(opened,excluded.opened)',uid,snapshot);
-   return {ok:true,entries,hasMore:candidates.length>PAGE,nextCursor:candidates.length>PAGE?taken.at(-1).seq:null,snapshot,summary:summary(uid)};
+   return {ok:true,entries,hasMore:candidates.length>limit,nextCursor:candidates.length>limit?taken.at(-1).seq:null,snapshot,summary:summary(uid)};
   });
  }
  function accessible(uid,id){if(!Number.isSafeInteger(id)||id<1)throw fail(400,'Mensagem inválida.');const row=rows('SELECT * FROM user_inbox_messages WHERE seq=?',id)[0];if(!row||row.audience!=='*'&&row.audience!==uid||!visible(row))throw fail(404,'Mensagem indisponível.');return row;}
@@ -97,6 +97,7 @@ function create({sql,transaction,db,now=()=>Date.now()}){
  }
  async function handle(user,b){const uid=identity(user);if(user.provider&&user.provider!=='google.com'&&user.email!==ADMIN)throw fail(403,'Entre com Google.');
   if(b.operation==='inboxList')return list(uid,b);
+  if(b.operation==='inboxPreview')return list(uid,{preview:true,category:'all',archived:false});
   if(['inboxRead','inboxArchive','inboxReadAll'].includes(b.operation))return mark(uid,b);
   if(b.operation==='inboxSummary')return {ok:true,summary:summary(uid)};
   throw fail(400,'Operação de mensagem inválida.');
