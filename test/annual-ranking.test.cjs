@@ -39,7 +39,7 @@ test('one static fetch supports both complete views, search and the team calcula
 test('deep links restore the view and search; sharing freezes visible rows without fetching or renumbering',async()=>{
   const u=await ui({search:'?ano=2026&visao=competicoes&busca=SX'});try{
     assert.equal(u.all('.annual-table tbody tr').length,1);assert(u.$('.annual-detailed'));await u.click('[data-annual-link]');const url=new URL(u.copies[0]);assert.equal(url.searchParams.get('visao'),'competicoes');assert.equal(url.searchParams.get('busca'),'SX');
-    await u.click('[data-annual-share]');const p=u.cards[0],selected=p.views.find(v=>v.id===p.viewId);assert(selected);assert.equal(selected.annualColumns.length,4);assert.equal(selected.rows[0].rank,12);const sx=read('ranking-data/brasil-2026.json').rows.find(r=>r.team==='SX TET');assert.equal(selected.rows[0].points,sx.total);assert.deepEqual(Array.from(selected.rows[0].annualValues),[null,null,sx.results.find(r=>r.event==='s2').points,null]);assert.equal(u.calls.length,1);
+    await u.click('[data-annual-share]');const p=u.cards[0],selected=p.views.find(v=>v.id===p.viewId);assert(selected);assert.equal(selected.annualColumns.length,4);assert.equal(selected.rows[0].rank,read('ranking-data/brasil-2026.json').rows.find(r=>r.team==='SX TET').rank);const sx=read('ranking-data/brasil-2026.json').rows.find(r=>r.team==='SX TET');assert.equal(selected.rows[0].points,sx.total);assert.deepEqual(Array.from(selected.rows[0].annualValues),[null,null,sx.results.find(r=>r.event==='s2').points,null]);assert.equal(u.calls.length,1);
   }finally{u.close();}
 });
 test('a failed static download can be retried without account or database calls',async()=>{
