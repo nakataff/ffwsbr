@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'ranking-anual.html'
+      - 'admin-ranking-anual.html'
+      - 'js/annual-points-editor.mjs'
       - 'ranking-data/**'
       - 'css/annual-ranking.css'
       - 'js/annual-ranking.mjs'
@@ -51,6 +53,8 @@ jobs:
         run: |
           node --check js/annual-ranking.mjs
           node --check scripts/build-annual-ranking.cjs
+          node --check js/annual-points-editor.mjs
+          node scripts/build-annual-ranking.cjs
           node scripts/build-annual-ranking.cjs --check
           node --check ffws-br-2026-s2/inicio.js
           node --check scripts/build-s2-overview.cjs
