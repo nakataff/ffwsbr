@@ -121,17 +121,23 @@
 .cff-bottom-navigation{display:none}
 @media(max-width:768px){
   .cff-bottom-navigation{
-    position:fixed!important;z-index:8000;left:0;right:0;bottom:0;
-    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
-    align-items:stretch;min-height:65px;
+    /* Override the site's global nav { top:0; position:sticky }.
+       top:0 + bottom:0 previously stretched the fixed bar over the whole iPhone viewport. */
+    position:fixed!important;top:auto!important;bottom:0!important;left:0!important;right:0!important;
+    width:100%!important;height:calc(70px + env(safe-area-inset-bottom,0px))!important;
+    min-height:0!important;max-height:calc(70px + env(safe-area-inset-bottom,0px))!important;
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    grid-template-rows:minmax(0,1fr)!important;align-content:center!important;
+    align-items:stretch!important;overflow:hidden!important;
     padding:5px max(5px,env(safe-area-inset-left)) calc(5px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-right));
     border-top:1px solid #23425b;
     background:rgba(5,13,24,.97);box-shadow:0 -12px 32px #0008;
-    box-sizing:border-box;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    box-sizing:border-box;text-transform:none!important;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   }
   .cff-bottom-navigation a{
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-    min-width:0;min-height:53px;margin:0;padding:5px 1px;border-radius:10px;
+    min-width:0!important;min-height:0!important;height:100%;max-height:55px;margin:0;padding:5px 1px;border-radius:10px;
     color:#96adc5;text-decoration:none;
     font:750 10px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif;
     letter-spacing:0;text-transform:none;text-align:center;
