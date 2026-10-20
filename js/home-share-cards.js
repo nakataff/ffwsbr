@@ -55,7 +55,7 @@
     const stamp='DADOS EXIBIDOS NO SITE • '+new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());
     ctx.fillText(stamp,margin,headingY+82);
     const top=format==='story'?560:375;
-    const rowHeight=format==='story'?137:108;
+    const rowHeight=format==='story'?137:100;
     ctx.textBaseline='middle';
     data.rows.forEach((item,i)=>{
       const y=top+i*rowHeight;
