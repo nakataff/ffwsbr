@@ -77,7 +77,7 @@ function build(inputs){
       if(!name||seen.has(name))throw Error('Equipe duplicada em '+e.id+': '+name);
       seen.add(name);
       if(!teams.has(name)){
-        const candidate=metadata.get(name)?.logo||'escudo.webp';
+        const candidate=config.logos?.[name]||metadata.get(name)?.logo||'escudo.webp';
         teams.set(name,{team:name,logo:fs.existsSync(path.join(ROOT,candidate))?candidate:'escudo.webp',results:[]});
       }
       teams.get(name).results.push({event:e.id,position,points:score(e.id,position)});
