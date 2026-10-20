@@ -6,7 +6,7 @@
   "methodology": {
     "status": "to-define",
     "annualReference": {
-      "version": 1,
+      "version": 2,
       "files": [
         "ranking-data/brasil-2025-source.json",
         "ranking-data/brasil-2026-source.json"

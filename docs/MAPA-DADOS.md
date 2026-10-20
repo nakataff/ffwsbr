@@ -185,7 +185,7 @@ faz novas consultas. Mantém o cabeçalho, menu e identidade das páginas públi
 | --- | --- |
 | `ranking-data/brasil-2025-source.json` | Pesos e aliases exclusivos de 2025, logos locais, classificação da Copa (16 equipes) e quatro brasileiros na EWC com fontes revisadas |
 | `ranking-data/brasil-2025.json` | Ranking encerrado de 2025; duas WBs e Global vêm dos três arquivos `novos-torneios/*2025*.json`, sem Clash Squad |
-| `ranking-data/brasil-2026-source.json` | Metodologia v1, pesos, aliases e classificação completa da Copa FF, com referência da fonte externa |
+| `ranking-data/brasil-2026-source.json` | Metodologia v2, pesos, aliases e classificação completa da Copa FF, com referência da fonte externa |
 | `scripts/build-annual-ranking.cjs` | Gera o ranking offline usando a fonte da Copa, `ffws-br-2026-s1/stages.json`, `ffws-br-2026-s2/career-summary.json` e `ewc 2026/final.json`; para 2025 usa os três torneios históricos e as classificações revisadas da Copa/EWC; confere fases e cadastro de equipes do Global 2026 |
 | `ranking-data/brasil-2026.json` | Resultado derivado: total, posição, pontos e colocação por evento, logos locais, competições pendentes e hashes das fontes |
 | `js/annual-ranking.mjs`, `css/annual-ranking.css` | Busca local, total/competições, janela de campanha e adaptação para cards no mobile |
@@ -196,6 +196,13 @@ use `--year=2025` ou `--year=2026` para limitar. Atualize a data na fonte após 
 as versões do módulo/CSS/JSON quando publicar uma nova classificação. A CI
 confere a correspondência com as fontes e os totais revisados. Não consultar
 Firebase, Durable Objects, planilhas ou bases completas por visitante.
+
+**Metodologia anual v2 (20/10/2026):** pódio com 200 / 150 / 120 pontos base,
+em vez de 100 / 80 / 65. Demais posições e pesos permanecem iguais. Aplicado a
+2025 e 2026: os três melhores da Copa (200 / 150 / 120) superam 7º–8º da WB
+(35 × 3 = 105). Campeões de WB/EWC/Global passam a 600 / 1.000 / 1.400.
+Recalcular os totais e cards; não alterar resultados ou colocações dos torneios.
+A metodologia do histórico continua pendente de definição própria.
 
 Cada evento conta somente a colocação final; eliminados antes da final recebem
 sua posição da classificatória. Não somar pontos das fases como se fossem
