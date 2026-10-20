@@ -21,5 +21,5 @@ export function watchChatVisibility(change){
 
 // Administrative tools do not mount the public community widget.
 export function isChatPageAllowed(pathname=location.pathname){
- return !/(^|\/)admin(?:[-/.]|$)/i.test(pathname);
+ return !/(^|\/)(?:admin(?:[-/.]|$)|(?:painel|dashboard)(?:[-/.]|$))/i.test(pathname);
 }
