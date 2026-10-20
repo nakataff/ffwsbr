@@ -5,7 +5,7 @@
   const season = [['Classificatória','classificatoria'],['Segunda fase','segunda-fase'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Datas','datas'],['Seleções da season','selecoes'],['Estatísticas gerais','stats'],['Notas CFF','notas'],['Comparar jogadores','comparar']];
   const groups = [
     ['brasil','Torneios Brasil',[
-      ['s2','WB 2026 S2',routes('ffws-br-s2-',season)],
+      ['s2','WB 2026 S2',[['Início','ffws-br-s2-inicio'],...routes('ffws-br-s2-',season)]],
       ['s1','WB 2026 S1',[['Classificatória','tabela'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Datas','datas'],['Seleções da season','selecao-da-semana'],['Estatísticas gerais','stats'],['Notas CFF','notas-cff'],['Comparar jogadores','comparar-1v1']]],
       ['laff','LAFF 2026 S1',routes('laff-',season.filter(([,key]) => !['segunda-fase','final','notas','comparar'].includes(key)))],
       ['s25','WB 2025 S2',routes('ffws-br-2025-s2-',season.filter(([,key]) => key !== 'segunda-fase').concat([['Contra Squad','contra-squad']]))]
