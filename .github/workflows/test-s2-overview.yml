@@ -1,0 +1,34 @@
+name: Test S2 tournament overview
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ffws-br-2026-s2/inicio*'
+      - 'ffws-br-2026-s2/players.json'
+      - 'ffws-br-2026-s2/player-name-map.json'
+      - 'ffws-br-2026-s2/career-summary.json'
+      - 'scripts/build-s2-overview.cjs'
+      - 'js/ffws-live-provider.js'
+      - 'test/s2-overview.test.cjs'
+      - '.github/workflows/test-s2-overview.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '22'
+      - name: Install isolated DOM test dependency
+        run: npm install --prefix /tmp/cff-overview-tests jsdom@26.1.0 --no-audit --no-fund
+      - name: Check syntax and exercise static data and tabs
+        env:
+          NODE_PATH: /tmp/cff-overview-tests/node_modules
+        run: |
+          node --check ffws-br-2026-s2/inicio.js
+          node --check scripts/build-s2-overview.cjs
+          node --check js/site-shell-fast.min.js
+          node --test test/s2-overview.test.cjs

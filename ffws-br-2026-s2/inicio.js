@@ -1,143 +1,145 @@
 (() => {
-'use strict';
-if(window.CFFS2Inicio)return;
-const root=document.getElementById('ffws-br-s2-inicio-content');
-if(!root)return;
-const VERSION='20261019-inicio-compact-v1';
-const BASE='/ffws-br-2026-s2/';
-const files={
-  summary:BASE+'career-summary.json?v=20261011',
-  mvp:BASE+'inicio-mvp-top10.json?v='+VERSION,
-  squads:BASE+'inicio-elencos.json?v='+VERSION
-};
-const cache=new Map();
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const num=v=>Number(v)||0;
-const fmt=v=>num(v).toLocaleString('pt-BR');
-const links={classificatoria:'/ffws-br-s2/classificatoria',segundaFase:'/ffws-br-s2/segunda-fase',final:'/ffws-br-s2/final',mvp:'/ffws-br-s2/mvp',equipes:'/ffws-br-s2/equipes'};
-const stages=[
- {id:'classificatoria',name:'Classificatória',short:'Classificatória'},
- {id:'segundaFase',name:'Segunda fase',short:'2ª fase'},
- {id:'final',name:'Grande Final',short:'Final'}
-];
-const state={tab:'tabela',stage:'final',mvpStage:'geral',team:''};
-let requestId=0,initialized=false;
-const query=selector=>root.querySelector(selector);
-function get(key){
- if(!cache.has(key)){
-   cache.set(key,fetch(files[key],{cache:'default'}).then(r=>{
-      if(!r.ok)throw Error('Dados temporariamente indisponíveis');
+  'use strict';
+  if (window.CFFS2Inicio) return;
+  const root = document.getElementById('ffws-br-s2-inicio-content');
+  if (!root) return;
+  const VERSION = '20261020-inicio-v2';
+  const BASE = '/ffws-br-2026-s2/';
+  const files = {summary: BASE + 'inicio-resumo.json?v=' + VERSION, mvp: BASE + 'inicio-mvp-top10.json?v=' + VERSION, squads: BASE + 'inicio-elencos.json?v=' + VERSION};
+  const cache = new Map();
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
+  const num = v => Number(v) || 0;
+  const fmt = v => num(v).toLocaleString('pt-BR');
+  const links = {classificatoria:'/ffws-br-s2/classificatoria', segundaFase:'/ffws-br-s2/segunda-fase', final:'/ffws-br-s2/final', mvp:'/ffws-br-s2/mvp', equipes:'/ffws-br-s2/equipes'};
+  const stages = [{id:'classificatoria', name:'Classificatória'}, {id:'segundaFase', name:'Segunda fase', short:'2ª fase'}, {id:'final', name:'Final'}];
+  const tabs = [{id:'tabela', name:'Tabela'}, {id:'mvp', name:'Ranking MVP'}, {id:'equipes', name:'Equipes'}];
+  const state = {tab:'tabela', stage:'final', mvpStage:'geral', team:''};
+  let requestId = 0, initialized = false, summaryData = null;
+  const query = selector => root.querySelector(selector);
+  function get(key) {
+    if (!cache.has(key)) cache.set(key, fetch(files[key], {cache:'default'}).then(r => {
+      if (!r.ok) throw Error('Resumo indisponível');
       return r.json();
-   }).catch(e=>{cache.delete(key);throw e;}));
- }
- return cache.get(key);
-}
-function buttons(items,current,attribute){
- return items.map(x=>'<button type="button" data-s2-'+attribute+'="'+esc(x.id)+'" class="'+(x.id===current?'is-active':'')+'" aria-pressed="'+String(x.id===current)+'">'+esc(x.short||x.name)+'</button>').join('');
-}
-function link(url,text){return '<a class="s2-start-complete" href="'+esc(url)+'">'+esc(text)+' <span aria-hidden="true">→</span></a>';}
-function nameLink(name,team){
- return '<a href="/jogador.html?jogador='+encodeURIComponent(name)+'&time='+encodeURIComponent(team)+'">'+esc(name)+'</a>';
-}
-function eventLink(team){
- return '<a href="/equipe.html?time='+encodeURIComponent(team)+'">'+esc(team)+'</a>';
-}
-function formatSections(summary){
- const info=summary?.format||{},blocks=[
-  ['01','Classificatória',info.classificatoria?.description||'14 equipes • 14 rodadas • 12 avançam.'],
-  ['02','Segunda fase',info.segundaFase?.description||'12 equipes • bônus da classificatória • duas vagas no Mundial.'],
-  ['03','Grande Final',info.final?.description||'Champion Rush • Match Point 160 • disputa pelo título.']
- ];
- const world=summary?.final?.worldQualifiedFromStage2||[];
- const champion=summary?.final?.champion||'A definir';
- return '<section class="s2-start-format" aria-label="Formato da competição">'+
- '<div class="s2-start-format-head"><h2>Como funciona a WB 2026 S2?</h2><p>Três etapas até a decisão do título brasileiro.</p></div>'+
- '<div class="s2-start-format-grid">'+blocks.map(([number,title,description])=>'<article><span class="s2-start-step">'+number+'</span><h3>'+esc(title)+'</h3><p>'+esc(description)+'</p></article>').join('')+'</div>'+
- '<div class="s2-start-results"><span><small>CAMPEÃO</small><strong>🏆 '+esc(champion)+'</strong></span>'+
- '<span><small>CLASSIFICADOS PELA 2ª FASE</small><strong>🌎 '+esc(world.join(' • ')||'Consultar resultado')+'</strong></span></div></section>';
-}
-function skeleton(){
- root.innerHTML='<div class="s2-start"><section class="s2-start-hero"><p class="s2-start-kicker">FREE FIRE • BRASIL • TEMPORADA 2026</p><div class="s2-start-hero-title"><div><h1>WB 2026 S2</h1><p>Acompanhe o formato, as classificações, os destaques individuais e os elencos desta edição.</p></div><span class="s2-start-status">ENCERRADO</span></div></section><div class="s2-start-loading">Preparando o resumo do torneio…</div></div>';
-}
-function layout(summary){
- root.innerHTML='<div class="s2-start">'+
- '<section class="s2-start-hero"><p class="s2-start-kicker">FREE FIRE • BRASIL • TEMPORADA 2026</p><div class="s2-start-hero-title"><div><h1>WB 2026 S2</h1><p>Resultados, jogadores e estatísticas essenciais, sem precisar abrir todas as páginas.</p></div><span class="s2-start-status">ENCERRADO</span></div></section>'+
- formatSections(summary)+
- '<section class="s2-start-data" aria-label="Dados da competição"><div class="s2-start-data-head"><h2>Explore o torneio</h2><p>Resumo rápido · consulte as páginas completas para análises detalhadas.</p></div>'+
- '<div role="tablist" class="s2-start-tabs" aria-label="Informações do torneio">'+[
-  ['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']
- ].map(([id,title])=>'<button type="button" role="tab" data-s2-tab="'+id+'" aria-selected="'+String(id===state.tab)+'">'+title+'</button>').join('')+
- '</div><div id="s2-start-pane" role="tabpanel" aria-live="polite"></div></section></div>';
-}
-function stageTable(summary){
- const item=stages.find(x=>x.id===state.stage)||stages[2];
- const rows=Array.isArray(summary?.[item.id]?.rows)?summary[item.id].rows.filter(r=>Number.isFinite(Number(r.points))&&num(r.matches)>0):[];
- const leader=rows.slice().sort((a,b)=>num(a.position)-num(b.position));
- const th='<thead><tr><th>#</th><th>Equipe</th><th>Pontos</th><th>Abates</th><th>Booyahs</th></tr></thead>';
- const body=leader.length?'<tbody>'+leader.map((row,index)=>{
-  const highlighted=index<3?' s2-start-top3':'';
-  return '<tr class="'+highlighted+'"><td class="s2-start-rank">'+esc(row.position||index+1)+'º</td><td>'+eventLink(row.team)+'</td><td class="s2-start-number">'+fmt(row.points)+'</td><td class="s2-start-number">'+fmt(row.kills)+'</td><td class="s2-start-number">'+fmt(row.booyahs)+'</td></tr>';
- }).join('')+'</tbody>':'<tbody><tr><td colspan="5" class="s2-start-empty">Resumo não disponível nesta etapa. Confira a página completa.</td></tr></tbody>';
- return '<div class="s2-start-subtabs" aria-label="Etapa da tabela">'+buttons(stages,state.stage,'stage')+'</div>'+
- '<div class="s2-start-table-wrap"><table class="s2-start-table">'+th+body+'</table></div>'+
- '<div class="s2-start-under"><small>'+esc(item.name)+' · '+rows.length+' equipes</small>'+link(links[item.id],'Ver tabela completa')+'</div>';
-}
-function mvpTable(data){
- const available=data?.coverage?.[state.mvpStage]||'indisponivel';
- const partial=available==='parcial';
- const entries=Array.isArray(data?.top10?.[state.mvpStage])?data.top10[state.mvpStage].slice(0,10):[];
- const list=[{id:'geral',short:'Geral'},...stages];
- const top='<div class="s2-start-subtabs" aria-label="Etapa do MVP">'+buttons(list,state.mvpStage,'mvp-stage')+'</div>';
- const banner=partial?'<p class="s2-start-notice">Dados parciais: o Top 10 mostrado inclui somente a classificatória. A 2ª fase e a final ainda não constam no resumo individual leve; não é o ranking geral definitivo.</p>':'';
- if(!entries.length) return top+'<div class="s2-start-empty">O resumo individual desta etapa ainda não está consolidado neste arquivo compacto. Acesse o ranking completo para consultar os dados disponíveis.</div>'+link(links.mvp,'Abrir Ranking MVP completo');
- return top+banner+'<div class="s2-start-table-wrap"><table class="s2-start-table"><thead><tr><th>#</th><th>Jogador</th><th>Equipe</th><th>Abates</th><th>K/Q</th></tr></thead><tbody>'+
- entries.map((row,index)=>'<tr><td class="s2-start-rank">'+(index+1)+'º</td><td class="s2-start-player">'+nameLink(row.name,row.team)+'</td><td>'+esc(row.team)+'</td><td class="s2-start-number">'+fmt(row.kills)+'</td><td class="s2-start-number">'+(num(row.matches)?(num(row.kills)/num(row.matches)).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'</td></tr>').join('')+
- '</tbody></table></div><div class="s2-start-under"><small>Exibindo apenas Top 10 · '+esc(data.updatedAt||'')+'</small>'+link(links.mvp,'Ver Ranking MVP completo')+'</div>';
-}
-function squadView(data){
- const teams=Array.isArray(data?.teams)?data.teams:[];
- if(!teams.length)return '<div class="s2-start-empty">Elencos indisponíveis.</div>'+link(links.equipes,'Ver equipes completas');
- if(!teams.some(t=>t.name===state.team))state.team=teams[0].name;
- const team=teams.find(t=>t.name===state.team)||teams[0];
- const selector='<label class="s2-start-team-filter">Escolher equipe <select data-s2-team aria-label="Selecionar equipe">'+teams.map(t=>'<option value="'+esc(t.name)+'"'+(t.name===state.team?' selected':'')+'>'+esc(t.name)+'</option>').join('')+'</select></label>';
- const players=(team.players||[]);
- const pList='<div class="s2-start-roster">'+players.map(row=>
-  '<div class="s2-start-roster-player"><div><strong>'+nameLink(row.name,team.name)+'</strong><small>'+esc(row.role||'Jogador')+(row.status==='Saiu'?' · Saiu durante a temporada':'')+'</small></div><span>'+ (num(row.matches)>0?'Participou da classificatória':'Elenco registrado')+'</span></div>'
- ).join('')+'</div>';
- return selector+'<div class="s2-start-team-head"><h3>'+esc(team.name)+'</h3><span>'+players.length+' jogadores registrados</span></div>'+
- pList+'<p class="s2-start-caption">Participações verificadas com os dados individuais da classificatória. Outros nomes constam nos elencos registrados; as demais fases ainda não estão consolidadas neste resumo.</p>'+
- '<div class="s2-start-under">'+link('/equipe.html?time='+encodeURIComponent(team.name),'Perfil da equipe')+link(links.equipes,'Ver todas as equipes')+'</div>';
-}
-async function renderPane(){
- const pane=query('#s2-start-pane');
- if(!pane)return;
- const seq=++requestId;
- pane.innerHTML='<div class="s2-start-loading">Carregando resumo…</div>';
- try{
-  const key=state.tab==='tabela'?'summary':state.tab==='mvp'?'mvp':'squads';
-  const data=await get(key);
-  if(seq!==requestId)return;
-  pane.innerHTML=state.tab==='tabela'?stageTable(data):state.tab==='mvp'?mvpTable(data):squadView(data);
- }catch(error){
-  if(seq!==requestId)return;
-  pane.innerHTML='<div class="s2-start-empty">Não foi possível carregar o resumo. Verifique a conexão e tente novamente.</div><button type="button" data-s2-retry>Tentar novamente</button>';
- }
-}
-async function boot(){
- if(initialized)return;
- initialized=true;skeleton();
- try{const summary=await get('summary');layout(summary);renderPane();}
- catch(error){root.innerHTML='<div class="s2-start"><div class="s2-start-empty">Não foi possível carregar os dados resumidos da WB 2026 S2. Atualize a página para tentar novamente.</div></div>';}
-}
-root.addEventListener('click',event=>{
- const btn=event.target.closest('button');
- if(!btn)return;
- if(btn.dataset.s2Tab){state.tab=btn.dataset.s2Tab;root.querySelectorAll('[data-s2-tab]').forEach(n=>n.setAttribute('aria-selected',String(n===btn)));renderPane();}
- else if(btn.dataset.s2Stage){state.stage=btn.dataset.s2Stage;renderPane();}
- else if(btn.dataset.s2MvpStage){state.mvpStage=btn.dataset.s2MvpStage;renderPane();}
- else if(btn.matches('[data-s2-retry]')){initialized=false;boot();}
-});
-root.addEventListener('change',event=>{if(event.target.matches('[data-s2-team]')){state.team=event.target.value;renderPane();}});
-window.CFFS2Inicio={boot};
-boot();
+    }).catch(error => {cache.delete(key); throw error;}));
+    return cache.get(key);
+  }
+  function buttons(items, current, attribute) {
+    return items.map(x => `<button type="button" data-s2-${attribute}="${x.id}" class="${x.id === current ? 'is-active' : ''}" aria-pressed="${x.id === current}">${esc(x.short || x.name)}</button>`).join('');
+  }
+  const teamMeta = name => summaryData?.teams?.find(t => t.name === name) || {name, abbreviation:name, logo:'escudo.webp'};
+  function asset(src) {
+    const value = String(src || '');
+    // All assets come from the repository; refuse external or script URLs.
+    return value && !/[:\\]|^\/\//.test(value) && !value.split('/').includes('..') ? '/' + value.replace(/^\//, '') : '/escudo.webp';
+  }
+  function image(src, alt, kind = 'team') {
+    return `<img class="s2-start-${kind}-image" src="${esc(asset(src))}" alt="${esc(alt)}" width="${kind === 'player' ? 40 : 28}" height="${kind === 'player' ? 40 : 28}" loading="lazy" decoding="async" data-s2-fallback="${kind === 'player' ? '/silhueta.webp' : '/escudo.webp'}">`;
+  }
+  function teamLink(name, compact = false) {
+    const t = teamMeta(name);
+    return `<a class="s2-start-team-link${compact ? ' is-compact' : ''}" href="/equipe.html?time=${encodeURIComponent(name)}" aria-label="${esc(name)}">${image(t.logo, '')}<span class="s2-start-team-full">${esc(name)}</span><span class="s2-start-team-short" aria-hidden="true">${esc(t.abbreviation)}</span></a>`;
+  }
+  function nameLink(name, team) {
+    return `<a class="s2-start-player-link" href="/jogador.html?jogador=${encodeURIComponent(name)}&time=${encodeURIComponent(team)}">${esc(name)}</a>`;
+  }
+  function link(url, text) {
+    return `<a class="s2-start-complete" href="${esc(url)}">${esc(text)} <span aria-hidden="true">→</span></a>`;
+  }
+  function dateLabel(value) {
+    const date = new Date(String(value) + 'T12:00:00Z');
+    return Number.isNaN(date.valueOf()) ? '' : date.toLocaleDateString('pt-BR', {day:'2-digit', month:'short', timeZone:'UTC'}).replace('.', '');
+  }
+  function formatSections(summary) {
+    const brief = ['14 equipes · 12 avançam · 2 rebaixadas', '12 equipes · bônus · 2 vagas no Mundial', '2 dias · Champion Rush · 160 pontos'];
+    return `<details class="s2-start-format"><summary><span>Como funciona o torneio</span><small>Classificatória · Segunda fase · Final</small><span class="s2-start-chevron" aria-hidden="true">⌄</span></summary><div class="s2-start-format-grid">${stages.map((s, i) => `<article><h3>${esc(s.name)}</h3><strong>${brief[i]}</strong><p>${esc(summary.format?.[s.id]?.description || '')}</p>${link(links[s.id], 'Ver etapa')}</article>`).join('')}</div></details>`;
+  }
+  function hero(summary) {
+    return `<section class="ffws-s2-hero s2-start-hero"><div class="s2-start-title-row"><div><div class="ffws-s2-kicker">FFWS BRASIL 2026 SPLIT 2</div><h1>WB 2026 S2</h1><p>${dateLabel(summary.dateStart)} a ${dateLabel(summary.dateEnd)} de 2026 <span aria-hidden="true">·</span> 14 equipes</p></div><span class="s2-start-status">${summary.finished ? 'Encerrado' : 'Em andamento'}</span></div><div class="s2-start-results"><div class="s2-start-champion"><small>Campeão brasileiro</small>${summary.champion ? teamLink(summary.champion) : '<strong>A definir</strong>'}</div><div class="s2-start-qualified"><small>Vagas no Mundial pela 2ª fase</small><div>${(summary.worldQualifiedFromStage2 || []).map(t => teamLink(t)).join('') || '<strong>A definir</strong>'}</div></div></div></section>`;
+  }
+  function layout(summary) {
+    root.innerHTML = `<div class="s2-start ffws-s2-shell">${hero(summary)}<section class="ffws-s2-panel s2-start-data" aria-label="Resumo da competição"><div class="s2-start-tabs" role="tablist" aria-label="Informações do torneio">${tabs.map(t => `<button type="button" id="s2-start-tab-${t.id}" role="tab" data-s2-tab="${t.id}" aria-controls="s2-start-pane" aria-selected="${t.id === state.tab}" tabindex="${t.id === state.tab ? 0 : -1}">${t.name}</button>`).join('')}</div><div id="s2-start-pane" role="tabpanel" aria-labelledby="s2-start-tab-${state.tab}" aria-live="polite" tabindex="0"></div></section>${formatSections(summary)}<nav class="s2-start-shortcuts" aria-label="Mais sobre a competição">${link('/ffws-br-s2/datas', 'Calendário')}${link('/ffws-br-s2/stats', 'Estatísticas gerais')}${link('/ffws-br-s2/selecoes', 'Seleções da season')}</nav></div>`;
+  }
+  function stageTable(data) {
+    const stage = stages.find(s => s.id === state.stage) || stages[2];
+    const rows = (data.stages?.[stage.id]?.rows || []).filter(r => num(r.matches) > 0).slice().sort((a, b) => num(a.position) - num(b.position));
+    const world = new Set(data.worldQualifiedTeams || [data.champion, ...data.worldQualifiedFromStage2]);
+    const legend = stage.id === 'classificatoria' ? '<span class="is-advance">1º–12º: Segunda fase</span><span class="is-relegated">13º–14º: Rebaixados</span>' : stage.id === 'segundaFase' ? '<span class="is-world">1º e 2º: Mundial</span><span>12 equipes na Final · pontos incluem bônus</span>' : '<span class="is-champion">Campeão</span><span class="is-qualified">Classificados ao Mundial</span>';
+    return `<div class="s2-start-subtabs" role="group" aria-label="Etapa da tabela">${buttons(stages, state.stage, 'stage')}</div><div class="s2-start-section-head"><h2>${esc(stage.name)}</h2><span class="ffws-s2-badge">${rows.length} equipes</span></div><div class="s2-start-table-wrap ffws-s2-table-wrap"><table class="s2-start-table ffws-s2-table"><caption class="s2-start-sr">Classificação da ${esc(stage.name)} da WB 2026 S2</caption><thead><tr><th scope="col">#</th><th scope="col" class="team-col">Equipe</th><th scope="col">PTS</th><th scope="col" class="s2-start-secondary">B!</th><th scope="col">K</th><th scope="col">Q</th></tr></thead><tbody>${rows.map((r, i) => {
+      const zone = stage.id === 'classificatoria' ? (i < 12 ? 'advance' : 'relegated') : stage.id === 'segundaFase' ? (i < 2 ? 'world' : '') : r.team === data.champion ? 'champion' : world.has(r.team) ? 'qualified' : '';
+      return `<tr class="s2-start-zone-${zone}"><td class="ffws-s2-rank">${r.position || i + 1}º</td><td class="team-col">${teamLink(r.team)}</td><td class="s2-start-points">${fmt(r.points)}</td><td class="s2-start-secondary">${fmt(r.booyahs)}</td><td>${fmt(r.kills)}</td><td>${fmt(r.matches)}</td></tr>`;
+    }).join('') || '<tr><td colspan="6">Resumo ainda indisponível.</td></tr>'}</tbody></table></div><div class="s2-start-legend">${legend}</div><div class="s2-start-under"><small>PTS: pontos · B!: Booyahs · K: abates · Q: quedas</small>${link(links[stage.id], 'Ver tabela completa')}</div>`;
+  }
+  function mvpTable(data) {
+    const list = [{id:'geral', name:'Geral'}, ...stages], selected = list.find(s => s.id === state.mvpStage);
+    const entries = (data.top10?.[state.mvpStage] || []).slice(0, 10);
+    const top = `<div class="s2-start-subtabs" role="group" aria-label="Etapa do MVP">${buttons(list, state.mvpStage, 'mvp-stage')}</div><div class="s2-start-section-head"><div><h2>Top 10 · ${esc(selected.name)}</h2><p>${state.mvpStage === 'geral' ? 'Classificatória, segunda fase e final somadas.' : 'Estatísticas somente desta etapa.'}</p></div><span class="ffws-s2-badge">${entries.length} jogadores</span></div>`;
+    if (!entries.length) return top + '<p class="s2-start-empty">Ainda não há dados deste recorte.</p>' + link(links.mvp, 'Ver Ranking MVP completo');
+    const coverage = data.coverage?.[state.mvpStage];
+    return top + (coverage === 'completo' ? '' : '<p class="s2-start-notice">Resumo parcial desta etapa.</p>') + `<div class="s2-start-table-wrap ffws-s2-table-wrap"><table class="s2-start-table ffws-s2-table s2-start-mvp"><caption class="s2-start-sr">Top 10 de abates · ${esc(selected.name)}</caption><thead><tr><th scope="col">#</th><th scope="col" class="team-col">Jogador</th><th scope="col" class="team-col">Equipe</th><th scope="col">K</th><th scope="col" class="s2-start-secondary">Dano</th><th scope="col" class="s2-start-secondary">Assist.</th><th scope="col">Q</th><th scope="col" class="s2-start-secondary">K/Q</th></tr></thead><tbody>${entries.map((r, i) => `<tr><td class="ffws-s2-rank">${i + 1}º</td><td class="team-col">${nameLink(r.name, r.team)}</td><td class="team-col">${teamLink(r.team, true)}</td><td class="s2-start-points">${fmt(r.kills)}</td><td class="s2-start-secondary">${fmt(r.damage)}</td><td class="s2-start-secondary">${fmt(r.assists)}</td><td>${fmt(r.matches)}</td><td class="s2-start-secondary">${num(r.matches) ? (num(r.kills) / num(r.matches)).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '—'}</td></tr>`).join('')}</tbody></table></div><div class="s2-start-under"><small>K: abates · Q: quedas · K/Q: média por queda</small>${link(links.mvp, 'Ver Ranking MVP completo')}</div>`;
+  }
+  function squadView(data) {
+    const teams = data.teams || [];
+    if (!teams.length) return '<p class="s2-start-empty">Elencos indisponíveis.</p>';
+    if (!teams.some(t => t.name === state.team)) state.team = teams[0].name;
+    const team = teams.find(t => t.name === state.team), players = team.players || [];
+    const played = players.filter(p => num(p.matches) > 0).length;
+    const roles = {GRAN:'Granadeiro', SUP:'Suporte', RUSH:'Rush', '3':'3º homem'};
+    return `<label class="s2-start-team-filter">Escolher equipe<select data-s2-team aria-label="Selecionar equipe">${teams.map(t => `<option value="${esc(t.name)}"${t.name === state.team ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label><div class="s2-start-team-head">${image(team.logo, '')}<div><h2>${esc(team.name)}</h2><p>${played} jogadores com participação · ${players.length} no elenco registrado</p></div></div><div class="s2-start-roster">${players.map(p => `<article class="s2-start-roster-player${p.status === 'Saiu' ? ' is-former' : ''}">${image(p.photo, '', 'player')}<div><h3>${nameLink(p.name, team.name)}</h3><p>${esc(roles[p.role] || p.role || 'Jogador')} · ${esc(p.status || 'Elenco registrado')}${p.captain ? ' · Capitão' : ''}${p.rookie ? ' · Estreante' : ''}</p><div class="s2-start-participation">${stages.filter(s => num(p.matchesByStage?.[s.id]) > 0).map(s => `<span>${esc(s.short || s.name)}: ${num(p.matchesByStage[s.id])} Q</span>`).join('') || '<span>Sem quedas registradas</span>'}</div></div></article>`).join('')}</div><p class="s2-start-caption">Inclui quem participou durante o torneio, mesmo após sair da equipe. Q = quedas jogadas em cada etapa.</p><div class="s2-start-under">${link('/equipe.html?time=' + encodeURIComponent(team.name), 'Perfil da equipe')}${link(links.equipes, 'Ver todas as equipes')}</div>`;
+  }
+  async function renderPane() {
+    const pane = query('#s2-start-pane');
+    if (!pane) return;
+    pane.setAttribute('aria-labelledby', 's2-start-tab-' + state.tab);
+    const seq = ++requestId;
+    pane.setAttribute('aria-busy', 'true');
+    pane.innerHTML = '<p class="s2-start-loading">Carregando resumo…</p>';
+    try {
+      const data = await get(state.tab === 'tabela' ? 'summary' : state.tab === 'mvp' ? 'mvp' : 'squads');
+      if (seq !== requestId) return;
+      pane.innerHTML = state.tab === 'tabela' ? stageTable(data) : state.tab === 'mvp' ? mvpTable(data) : squadView(data);
+    } catch (_) {
+      if (seq !== requestId) return;
+      pane.innerHTML = '<p class="s2-start-empty">Não foi possível carregar o resumo.</p><button class="s2-start-complete" type="button" data-s2-retry>Tentar novamente</button>';
+    } finally {if (seq === requestId) pane.removeAttribute('aria-busy');}
+  }
+  function activateTab(id) {
+    if (!tabs.some(t => t.id === id)) return;
+    state.tab = id;
+    root.querySelectorAll('[data-s2-tab]').forEach(button => {
+      const active = button.dataset.s2Tab === id;
+      button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
+    });
+    renderPane();
+  }
+  async function boot() {
+    if (initialized) return;
+    initialized = true;
+    root.innerHTML = '<div class="s2-start"><p class="s2-start-loading">Preparando o resumo da WB 2026 S2…</p></div>';
+    try {summaryData = await get('summary'); layout(summaryData); renderPane();}
+    catch (_) {initialized = false; root.innerHTML = '<div class="s2-start"><p class="s2-start-empty">Não foi possível carregar o torneio.</p><button type="button" class="s2-start-complete" data-s2-boot-retry>Tentar novamente</button></div>';}
+  }
+  root.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    if (button.dataset.s2Tab) activateTab(button.dataset.s2Tab);
+    else if (button.dataset.s2Stage && stages.some(s => s.id === button.dataset.s2Stage)) {state.stage = button.dataset.s2Stage; renderPane();}
+    else if (button.dataset.s2MvpStage && ['geral', ...stages.map(s => s.id)].includes(button.dataset.s2MvpStage)) {state.mvpStage = button.dataset.s2MvpStage; renderPane();}
+    else if (button.hasAttribute('data-s2-retry')) renderPane();
+    else if (button.hasAttribute('data-s2-boot-retry')) boot();
+  });
+  root.addEventListener('keydown', event => {
+    const button = event.target.closest('[data-s2-tab]');
+    if (!button || !['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const current = tabs.findIndex(t => t.id === button.dataset.s2Tab);
+    const index = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    activateTab(tabs[index].id); query(`[data-s2-tab="${tabs[index].id}"]`).focus();
+  });
+  root.addEventListener('change', event => {if (event.target.matches('[data-s2-team]')) {state.team = event.target.value; renderPane();}});
+  root.addEventListener('error', event => {
+    const img = event.target;
+    if (img.matches?.('img[data-s2-fallback]')) {const fallback = img.dataset.s2Fallback; delete img.dataset.s2Fallback; img.src = fallback;}
+  }, true);
+  window.CFFS2Inicio = {boot};
+  boot();
 })();

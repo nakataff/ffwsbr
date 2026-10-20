@@ -1,9 +1,14 @@
+GUIA ATUALIZADO DOS DADOS: ../docs/MAPA-DADOS.md
+O guia distingue as bases estáticas da classificatória, os complementos ao vivo
+e os três resumos compactos usados pelo Início.
+
 FFWS BRASIL 2026 SPLIT 2
 
 Arquivos:
 - teams.json: equipes, abreviações, logos e futuros elencos.
 - stages.json: formato, classificações e resultados por rodada/queda.
-- players.json: estatísticas individuais para Ranking MVP, Notas CFF, Seleções e Comparar 1V1.
+- players.json: cadastro e estatísticas da classificatória; js/ffws-live-provider.js
+  acrescenta os dados individuais da segunda fase e final nas páginas completas.
 - dates.json: calendário das três etapas.
 - config.js: diferenças da temporada e variáveis do layout compartilhado.
 - s2.js / s2.css: lógica e estilos exclusivos das páginas da S2.
@@ -18,10 +23,8 @@ legendas, mapas ou zonas de classificação da S2, edite apenas config.js.
 O renderizador compartilhado cuida de participantes, painel de formato,
 filtros, tabela, nomes completos no desktop e abreviações no mobile.
 
-Logos pendentes:
-- AFROGAMES
-- CPT VOX
-- SX TET
+Logos: consultar os caminhos atuais em teams.json. As logos de AFROGAMES,
+CPT VOX e SX TET já estão cadastradas.
 
 Formato esperado de uma rodada em stages.json:
 {
@@ -35,7 +38,7 @@ Formato esperado de uma rodada em stages.json:
 Na Final, use days[].matches[] para manter os filtros por dia, mapa e queda.
 
 ELENCOS E NOMES CANÔNICOS
-- players.json contém 72 jogadores e os campos de titularidade, função, capitão, destaque e estreante.
+- players.json contém os jogadores cadastrados e os campos de titularidade, função, capitão, destaque e estreante.
 - player-name-map.json registra o comparativo entre o nickname da planilha e o nome canônico usado no site.
 - A marca de estreante não copia cegamente a planilha: LC777, JNmvp7, TREVOR9 e Ângelo7 foram removidos por já terem disputado a elite brasileira.
 - Estreantes confirmados da S2: Nielffx, BRABOXX7, gbzinn7, Sant10s, dnsetzz, Henry10, Gbtrem22, bad9, Seven7zk e IsackSR.
