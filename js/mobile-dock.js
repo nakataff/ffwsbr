@@ -26,7 +26,7 @@ const iconNames={home:'Casa',globe:'Globo',chart:'Gráfico',users:'Pessoas',trop
 const groups=[
  {id:'main',title:'Principal',pages:[['Início','home','home'],['Mercado','mercado','bolt'],['Tier Constructor','/tier-constructor.html','star']]},
  {id:'worlds',title:'Mundial 2026',pages:[['Mundial','ffws-global-2026-formato','globe'],['Fase 1','ffws-global-2026-classificatoria','calendar'],['Fase 2','ffws-global-2026-segunda-fase','chart'],['Last Chance','ffws-global-2026-last-chance','bolt'],['Grande Final','ffws-global-2026-final','trophy'],['MVP Mundial','ffws-global-2026-mvp','medal'],['Equipes Mundial','ffws-global-2026-equipes','users']]},
- {id:'stats',title:'Estatísticas e WB',pages:[['Estatísticas','registro-detalhado','chart'],['Hall da Fama','hall-da-fama','trophy'],['Ranking MVP','ffws-br-s2-mvp','medal'],['Final WB','ffws-br-s2-final','trophy'],['Notas CFF','ffws-br-s2-notas','star'],['Comparar 1v1','ffws-br-s2-comparar','swords'],['Carreiras','/carreira.html','users']]},
+ {id:'stats',title:'Estatísticas e WB',pages:[['Estatísticas','registro-detalhado','chart'],['Hall da Fama','hall-da-fama','trophy'],['Ranking MVP','ffws-br-s2-mvp','medal'],['Final WB','ffws-br-s2-final','trophy'],['Notas CFF','ffws-br-s2-notas','star'],['Comparar 1v1','ffws-br-s2-comparar','swords'],['Equipes históricas','/equipes-historicas.html','users']]},
  {id:'community',title:'Comunidade e conta',pages:[['Comunidade','/interacoes.html','users'],['Loja CFF','/conta.html?tab=points&shopSection=shop#eco-shop','coins'],['Inventário','/conta.html?tab=inventory','gift'],['Desafios diários','/conta.html?tab=quiz','fire'],['Meu perfil','/conta.html','home']]}
 ];
 const pages=groups.flatMap(g=>g.pages.map(([label,route,icon])=>({label,route,icon,group:g.id})));
