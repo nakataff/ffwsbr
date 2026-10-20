@@ -49,7 +49,7 @@ function build(inputs){
   for(const [id,values] of Object.entries(overrides)){
     if(!ids.includes(id)||!Array.isArray(values)||values.length!==config.basePoints.length||values.some(v=>!Number.isInteger(v)||v<0||v>100000))throw Error('Pontuação personalizada inválida: '+id);
   }
-  const score=(id,position)=>overrides[id]?overrides[id][position-1]:base(position)*config.weights[id];
+  const score=(id,position)=>{const standard=base(position)*config.weights[id];return overrides[id]?overrides[id][position-1]:standard;};
   const year=config.year,metadata=new Map(),event=(id,label,name,source,standings,status='finished')=>({id,label,name,weight:config.weights[id],status,source,standings});
   if(!config.copa.finished||config.copa.standings.length!==config.copa.teamCount)throw Error('Copa incompleta');
   let events=[event('copa','Copa FF',`Copa FF ${year}`,config.copa.source,config.copa.standings)];
