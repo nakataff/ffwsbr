@@ -31,7 +31,7 @@ test('one static fetch supports both complete views, search and the team calcula
     assert.equal(u.calls.length,1);assert.equal(u.all('.annual-table tbody tr').length,27);assert.equal(u.all('.annual-event').length,0);
     await u.click('[data-annual-view="competicoes"]');assert.equal(u.all('.annual-event').length,27*4);assert.equal(u.calls.length,1);
     await u.search('loud');assert.equal(u.all('.annual-table tbody tr').length,1);assert(u.$('.annual-table').textContent.includes('600'));assert.equal(new URL(u.w.location.href).searchParams.get('busca'),'loud');
-    const b=u.$('[data-annual-team="LOUD"]');b.focus();await u.click('[data-annual-team="LOUD"]');assert(u.$('dialog').open);const loud=read('ranking-data/brasil-2026.json').rows.find(r=>r.team==='LOUD');assert(u.$('#annual-campaign').textContent.includes(loud.results.map(r=>r.points).join(' + ')+' = '+loud.total));assert(u.$('#annual-campaign').textContent.includes(read('ranking-data/brasil-2026.json').basePoints[2]+' pontos base × peso '+read('ranking-data/brasil-2026-source.json').weights.ewc));
+    const b=u.$('[data-annual-team="LOUD"]');b.focus();await u.click('[data-annual-team="LOUD"]');assert(u.$('dialog').open);const loud=read('ranking-data/brasil-2026.json').rows.find(r=>r.team==='LOUD');assert(u.$('#annual-campaign').textContent.includes(loud.results.map(r=>r.points).join(' + ')+' = '+loud.total));assert(u.$('#annual-campaign').textContent.includes('pontuação personalizada da competição'));
     await u.click('[data-annual-close]');assert(!u.$('dialog').open);assert.equal(u.w.document.activeElement,b);assert.equal(u.calls.length,1);
     await u.search('sem resultado');assert(u.$('.annual-empty'));assert(u.$('[data-annual-share]').disabled);await u.click('[data-annual-clear]');assert.equal(u.all('.annual-table tbody tr').length,27);
   }finally{u.close();}
@@ -129,7 +129,7 @@ test('one customized Copa placement changes only that event and validates its fu
   cfg.pointsByEvent={copa:cfg.basePoints.map(x=>x*cfg.weights.copa)};
   cfg.pointsByEvent.copa[0]=321;
   const custom=build(src),before=normal.rows.find(r=>r.team==='FLUXO W7M'),after=custom.rows.find(r=>r.team==='FLUXO W7M');
-  assert.equal(after.total,before.total+121);
+  assert.equal(after.total,before.total+321-before.results.find(r=>r.event==='copa').points);
   assert.equal(after.results.find(r=>r.event==='copa').points,321);
   assert.equal(after.results.find(r=>r.event==='s2').points,before.results.find(r=>r.event==='s2').points);
   assert.deepEqual(custom.pointsByEvent.copa,cfg.pointsByEvent.copa);
@@ -158,8 +158,8 @@ test('points editor previews new podium scores and can isolate a single year wit
     const first=w.document.querySelector('[data-band="0"]');first.value='250';
     first.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();
     assert.equal($('download').disabled,false);
-    assert.equal(w.document.querySelector('[data-direct="0:copa"]').value,'250');
-    const estimate=(y,team,podium)=>{const ranked=read('ranking-data/brasil-'+y+'.json'),source=read('ranking-data/brasil-'+y+'-source.json'),row=ranked.rows.find(r=>r.team===team);return (row.total+(podium-source.basePoints[0])*row.results.filter(r=>r.position===1).reduce((total,r)=>total+source.weights[r.event],0)).toLocaleString('pt-BR');};
+    assert.equal(w.document.querySelector('[data-direct="0:copa"]').value,String(read('ranking-data/brasil-2026-source.json').pointsByEvent.copa[0]));
+    const estimate=(y,team,podium)=>{const ranked=read('ranking-data/brasil-'+y+'.json'),source=read('ranking-data/brasil-'+y+'-source.json'),row=ranked.rows.find(r=>r.team===team);return row.results.reduce((sum,r)=>sum+(source.pointsByEvent?.[r.event]?.[r.position-1]??(r.position===1?podium:source.basePoints[r.position-1])*source.weights[r.event]),0).toLocaleString('pt-BR');};
     assert($('preview').textContent.includes(estimate(2026,'FLUXO W7M',250)));
     $('year').value='2025';$('year').dispatchEvent(new w.Event('change',{bubbles:true}));
     assert.equal(w.document.querySelector('[data-band="0"]').value,'250');
@@ -176,13 +176,13 @@ test('points editor previews new podium scores and can isolate a single year wit
     const direct=w.document.querySelector('[data-direct="1:copa"]');direct.value='999';
     direct.dispatchEvent(new w.Event('input',{bubbles:true}));
     assert.equal(w.document.querySelector('[data-direct="1:copa"]').value,'999');
-    assert.equal(w.document.querySelector('[data-direct="1:s1"]').value,'450');
+    assert.equal(w.document.querySelector('[data-direct="1:s1"]').value,String(read('ranking-data/brasil-2025-source.json').pointsByEvent.s1[1]));
     $('download').click();
     const saved=JSON.parse(exports[0]);
     assert.equal(saved.methodVersion,read('ranking-data/brasil-2025-source.json').methodVersion+1);
     assert.equal(saved.basePoints[0],300);
     assert.equal(saved.pointsByEvent.copa[1],999);
-    assert.equal(saved.pointsByEvent.s1,undefined);
+    assert.deepEqual(saved.pointsByEvent.s1,read('ranking-data/brasil-2025-source.json').pointsByEvent.s1);
     assert.equal(calls.length,4); // no additional network requests for previews
   }finally{w.close();}
 });
