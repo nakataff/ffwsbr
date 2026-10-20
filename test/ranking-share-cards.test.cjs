@@ -142,7 +142,30 @@ test('annual cards show weighted points, no irrelevant kill statistics and both 
 test('annual editor restores the detailed view, switches to total and downloads a user-triggered PNG',async()=>{
  const u=await editor();try{
   const source=read('ranking-data/brasil-2026.json'),events=source.events.filter(e=>e.status==='finished'),make=id=>({id,kind:'teams',mode:'annual',metric:'points',event:'Brasil 2026',stage:id==='events'?'Por competição':'Pontuação total',annualColumns:id==='events'?events.map(e=>e.label):[],rows:source.rows.map(r=>({rank:r.rank,name:r.team,points:r.total,annualValues:events.map(e=>r.results.find(x=>x.event===e.id)?.points??null)}))});
-  await u.open({views:[make('total'),make('events')],viewId:'events'});assert.equal(u.$('[name="view"]').value,'events');assert.equal(u.$('[name="rowCount"]').value,'10');assert(u.$('[name="rowCount"] option[value="all"]').hidden);assert(u.$('[name="template"]').disabled);assert(u.$('[name="caption"]').value.includes('EWC: 325'));
+  await u.open({views:[make('total'),make('events')],viewId:'events'});assert.equal(u.$('[name="view"]').value,'events');assert.equal(u.$('[name="rowCount"]').value,'10');assert(u.$('[name="rowCount"] option[value="all"]').hidden);assert(!u.$('[name="template"]').disabled);assert(u.$('[name="caption"]').value.includes('EWC: 325'));
   await u.change('view','total');assert(!u.$('[name="caption"]').value.includes('EWC: 325'));u.$('[data-card-action="download"]').click();await tick();assert.equal(u.downloads.length,1);assert.equal(u.shares.length,0);
+ }finally{u.close();}
+});
+
+test('annual team spotlight preserves the chosen rank and points, with and without competition totals in every format',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,source=read('ranking-data/brasil-2026.json'),events=source.events.filter(e=>e.status==='finished');
+ const row=source.rows.find(r=>r.team==='INFLUENCE RAGE'),images=new Map([[row.logo,await loadImage(row.logo)],['/central free fire.webp',await loadImage('central free fire.webp')]]);
+ for(const detail of [false,true])for(const format of Object.keys(m.FORMATS)){
+  const data=m.normalizePayload({id:'annual-team',mode:'annual',kind:'teams',metric:'points',title:'Ranking anual CFF',event:'Brasil 2026',stage:detail?'Por competição':'Pontuação total',annualColumns:detail?events.map(e=>e.label):[],rows:[{name:'OTHER',rank:1,points:920},{name:row.team,team:row.team,rank:row.rank,points:row.total,logo:row.logo,annualValues:events.map(e=>row.results.find(r=>r.event===e.id)?.points??null)}]});
+  const options=m.normalizeOptions({template:'leader',first:1,format},data);assert.equal(options.template,'leader');assert.equal(m.selectedRows(data,options).length,1);
+  const canvas=createCanvas(1,1),ctx=canvas.getContext('2d'),painted=[],original=ctx.fillText.bind(ctx);ctx.fillText=(t,x,y)=>{painted.push({text:String(t),x,y});original(t,x,y);};renderRankingCard(canvas,data,options,{images});
+  assert(painted.some(p=>p.text==='6º NO RANKING ANUAL'));assert(painted.some(p=>p.text==='INFLUENCE RAGE'));assert(painted.some(p=>p.text==='285'));assert(!painted.some(p=>p.text==='920'));assert.equal(painted.some(p=>p.text==='EWC'),detail);assert(!painted.some(p=>/ABATES|QUEDAS|BOOYAHS/.test(p.text)));
+  assert(Math.max(...painted.map(p=>p.y))<canvas.height*(format==='story'?.76:format==='feed'?.86:.94));
+  const caption=m.captionFor(data,options);assert(caption.includes('INFLUENCE RAGE EM DESTAQUE'));assert(caption.includes('6º INFLUENCE RAGE: 285 pontos CFF'));
+  if(process.env.CFF_CARD_RENDER_DIR){fs.mkdirSync(process.env.CFF_CARD_RENDER_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.CFF_CARD_RENDER_DIR,'annual-spotlight-'+format+'-'+detail+'.png'),canvas.toBuffer('image/png'));}
+ }
+});
+test('annual editor offers team spotlight for teams outside the Top 10 and retains selection when switching views',async()=>{
+ const u=await editor();try{
+  const source=read('ranking-data/brasil-2026.json'),events=source.events.filter(e=>e.status==='finished'),make=id=>({id,kind:'teams',mode:'annual',metric:'points',event:'Brasil 2026',stage:id==='events'?'Por competição':'Pontuação total',annualColumns:id==='events'?events.map(e=>e.label):[],rows:source.rows.map(r=>({rank:r.rank,name:r.team,points:r.total,annualValues:events.map(e=>r.results.find(x=>x.event===e.id)?.points??null)}))});
+  await u.open({views:[make('total'),make('events')],viewId:'events'});assert(!u.$('[name="template"] option[value="leader"]').hidden);
+  await u.change('template','leader');assert(!u.$('[data-card-first]').hidden);assert(u.$('[data-card-table-only]').hidden);
+  const i=source.rows.findIndex(r=>r.team==='SX TET');await u.change('first',String(i));assert(u.$('[name="caption"]').value.includes('12º SX TET: 75 pontos CFF'));assert(!u.$('[name="caption"]').value.includes('920 pontos CFF'));
+  await u.change('view','total');assert.equal(u.$('[name="template"]').value,'leader');assert.equal(u.$('[name="first"]').value,String(i));assert(u.$('[name="caption"]').value.includes('12º SX TET: 75 pontos CFF'));assert(!u.$('[name="caption"]').value.includes('WB S2:'));
  }finally{u.close();}
 });

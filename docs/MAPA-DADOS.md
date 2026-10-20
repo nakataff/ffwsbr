@@ -197,7 +197,8 @@ WB S1/S2 ×3, EWC ×5 e reserva Global ×7.
 Links preservam `ano=2026`, `visao=total|competicoes` e `busca`. Compartilhamento
 reaproveita os dados visíveis e suas posições originais. O editor comum aceita
 `mode: 'annual'`, `annualColumns` e `rows[].annualValues`, com duas views. Os cards
-anuais exportam Top 3/5/10 para manter legibilidade; o link abre o ranking completo.
+anuais exportam tabela Top 3/5/10 para manter legibilidade ou Equipe em destaque
+com qualquer equipe do recorte; o link abre o ranking completo.
 Nenhum abate, Booyah ou número de quedas é inventado para esses cards.
 
 O Início da S2 (tabela, MVP e equipes) e os quatro rankings da home usam o mesmo editor. A tabela pode exportar todos os times e a aba Equipes oferece um card com métricas selecionáveis por fase, usando os totais compactos de `inicio-elencos.json`.

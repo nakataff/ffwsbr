@@ -41,7 +41,7 @@ function cardPayload(){
 }
 async function share(button){
   button.disabled=true;
-  try{const payload=cardPayload();const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v=20261020-cards-v4');await openRankingCard(payload);}
+  try{const payload=cardPayload();const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v=20261020-cards-v5');await openRankingCard(payload);}
   catch(error){query('.annual-feedback').textContent=error.message||'Não foi possível abrir o editor. Tente novamente.';}
   finally{button.disabled=!filtered().length;}
 }

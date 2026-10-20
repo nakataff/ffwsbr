@@ -74,9 +74,9 @@ O ranking anual (`ranking-anual.html`) também usa o editor. Seu adaptador
 `annualColumns` com os nomes das competições e `rows[].annualValues` com os pontos
 ponderados ou `null` quando a equipe não participou. `points` é o total anual.
 As duas views permitem trocar entre total e competições dentro da janela.
-Este modo usa somente a tabela, Top 3/5/10, sem estatísticas de partidas.
+Este modo permite tabela Top 3/5/10 ou Equipe em destaque, escolhendo qualquer equipe do recorte, sem estatísticas de partidas.
 Legenda e imagem preservam a posição original das equipes e o recorte do link.
-As entradas novas importam `ranking-share-cards.mjs?v=20261020-cards-v4`.
+As entradas novas importam `ranking-share-cards.mjs?v=20261020-cards-v5`.
 
 - `ranking-share-model.mjs`: opções validadas, formato, legenda, link e dados.
 - `ranking-share-renderer.mjs`: desenho Canvas; recebe imagens já resolvidas.

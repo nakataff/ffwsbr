@@ -9,7 +9,7 @@ async function ui({search='',failure=false}={}){
   w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
   Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>copies.push(value)}});
   w.openTestCard=async payload=>cards.push(payload);
-  w.eval(fs.readFileSync('js/annual-ranking.mjs','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v4')",'{openRankingCard:window.openTestCard}'));
+  w.eval(fs.readFileSync('js/annual-ranking.mjs','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v5')",'{openRankingCard:window.openTestCard}'));
   await tick();
   return {w,calls,copies,cards,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await tick();},search:async value=>{const e=w.document.querySelector('[data-annual-search]');e.value=value;e.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();},close:()=>w.close()};
 }

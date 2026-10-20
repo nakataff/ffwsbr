@@ -1,4 +1,4 @@
-import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v4';
+import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v5';
 const INK='#f3f6fb',MUTED='#9bafc8';
 function rounded(ctx,x,y,w,h,r=12){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function box(ctx,x,y,w,h,fill,stroke){rounded(ctx,x,y,w,h);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}}
@@ -48,6 +48,36 @@ export function renderRankingCard(canvas,data,options,assets={}) {
       text(ctx,STAT_LABELS[key],x+20,y+Math.min(32,cellH*.32),cellW-40,wide?14:Math.min(22,cellH*.19),MUTED);
       stat(ctx,statText(row,key),x+20,y+cellH*.77,cellW-40,wide?Math.min(40,cellH*.43):Math.min(76,cellH*.43),i===0?options.accent:INK);
     });
+  } else if(data.mode==='annual'&&options.template==='leader') {
+    const row=rows[0];if(!row)throw Error('Escolha uma equipe para destacar.');
+    const width=w-margin*2,labels=data.annualColumns||[],gap=wide?10:14;
+    const detailH=labels.length?(wide?90:Math.min(190,contentHeight*.26)):0;
+    const heroH=contentHeight-detailH-(labels.length?20:0),img=getImage(row);
+    box(ctx,margin,contentY,width,heroH,'#101e32',options.accent);
+    if(wide){
+      const logoSize=Math.min(150,heroH*.72),max=width-(img?logoSize+80:60),left=margin+26;
+      picture(ctx,img,w-margin-logoSize-24,contentY+(heroH-logoSize)/2,logoSize,logoSize);
+      text(ctx,row.rank+'º NO RANKING ANUAL',left,contentY+heroH*.18,max,16,options.accent);
+      stat(ctx,row.name,left,contentY+heroH*.4,max,36);
+      stat(ctx,formatValue(row.points),left,contentY+heroH*.77,max,72,options.accent);
+      text(ctx,'PONTOS CFF',left,contentY+heroH*.77+25,max,16,MUTED);
+    }else{
+      const logoSize=Math.min(165,heroH*.3),center=w/2;
+      picture(ctx,img,center-logoSize/2,contentY+20,logoSize,logoSize);
+      text(ctx,row.rank+'º NO RANKING ANUAL',center,contentY+heroH*(img?.44:.22),width-50,24,options.accent,'center');
+      stat(ctx,row.name,center,contentY+heroH*(img?.55:.38),width-50,54,INK,'center');
+      stat(ctx,formatValue(row.points),center,contentY+heroH*(img?.83:.75),width-50,116,options.accent,'center');
+      text(ctx,'PONTOS CFF',center,contentY+heroH*(img?.83:.75)+38,width-50,24,MUTED,'center');
+    }
+    if(labels.length){
+      const cellW=(width-gap*(labels.length-1))/labels.length,y=contentY+heroH+20;
+      labels.forEach((label,i)=>{
+        const x=margin+i*(cellW+gap);
+        box(ctx,x,y,cellW,detailH,'#111e32','#263b55');
+        text(ctx,label.toLocaleUpperCase('pt-BR'),x+cellW/2,y+detailH*.27,cellW-20,wide?13:20,MUTED,'center');
+        stat(ctx,formatValue(row.annualValues[i]),x+cellW/2,y+detailH*.76,cellW-20,wide?32:52,INK,'center');
+      });
+    }
   } else if(data.mode==='annual') {
     const width=w-margin*2,labels=data.annualColumns||[],detail=labels.length>0,header=wide?28:40;
     const rowH=(contentHeight-header)/Math.max(1,rows.length),rankW=wide?34:46,teamW=detail?width*.34:width*.68,cellW=(width-teamW)/Math.max(1,labels.length+1);
