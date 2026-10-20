@@ -1,24 +1,24 @@
 # Cards de estatísticas compartilháveis
 
-Primeira integração: Início da WB 2026 S2 (tabela e MVP) e os quatro rankings já
+Primeira integração: Início da WB 2026 S2 (tabela, MVP e equipes) e os quatro rankings já
 existentes na home (classificação, abates, dano e assistências).
 
 ## O que o usuário encontra
 
 - Botão **Criar card** ao lado do título do ranking no Início, ou **Card** na home.
 - Janela com três seções: Modelo, Personalizar e Legenda, com prévia visível.
-- Modelos: tabela, destaque de uma pessoa/equipe e comparação de duas.
-- Top 3, Top 5 ou Top 10, limitado aos dados disponíveis no recorte aberto.
+- Modelos: tabela, destaque, comparação e **Equipe em números** na aba Equipes.
+- Top 3, Top 5, Top 10 ou **Todos os times** nas tabelas coletivas. A classificatória exporta suas 14 equipes; segunda fase e final, 12. MVP continua limitado ao Top 10 já carregado.
 - Feed 1218 × 1291, quadrado 1080 × 1080, Stories 1080 × 1920 e horizontal 1200 × 630.
 - Tema CFF, competição, cor da equipe selecionada ou cor personalizada.
-- Destaque de uma linha, logos, fotos opcionais e QR Code opcional.
+- Destaque de uma linha, logos, fotos e QR Code opcional. Fotos dos jogadores ficam ativadas por padrão e também aparecem na comparação horizontal.
 - Fonte, etapa e data real da atualização, quando fornecida pela página.
 - As linhas ocupam a altura útil disponível, inclusive em Top 3 e Top 5, com fotos e números proporcionais. Comparações mantêm espaço entre o valor principal e os dados adicionais.
 - Marca e endereço CFF sempre presentes. Feed e Stories reservam área inferior
   para que textos e controles das redes sociais não cubram as informações.
 - Download PNG, legenda editável com cópia do link e compartilhamento nativo
   de arquivos quando o aparelho/navegador disponibiliza essa função.
-- Preferências visuais em `localStorage`, chave `cff_ranking_card_style_v1`.
+- Preferências visuais em `localStorage`, chave `cff_ranking_card_style_v2`.
   Não salva números do ranking, legenda pessoal nem seleção de jogadores.
 
 ## Dados e custo
@@ -38,7 +38,7 @@ não transformar informação ausente em zero para inventar uma comparação.
 No clique do botão, obtenha os dados do estado já carregado ou da tabela visível:
 
 ```js
-const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2');
+const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v3');
 await openRankingCard({
   id: 'wb-s2-mvp-final',
   kind: 'players', // ou teams
@@ -102,3 +102,25 @@ Se alterar o editor, atualize os identificadores de versão dos imports entre os
 três módulos, dos adaptadores e do CSS. No Início, atualize também a versão em
 `site-shell-fast.min.js` e sua referência em `index.html`. Não habilite publicação
 automática: a exportação abre o compartilhamento apenas quando a pessoa clica.
+
+## Card da equipe
+
+Na aba Equipes, selecione o time e clique em **Criar card**. O editor recebe
+`mode: 'team'`, `views` com até quatro fases já carregadas e `viewId` inicial.
+Cada view contém `id`, `stage`, `rows` e a URL com `aba=equipes`, `etapa` e `time`.
+Só aparecem as fases efetivamente disputadas pela equipe.
+
+É possível escolher abates, quedas, média de abates por queda, assistências,
+dano, pontos e Booyahs. As opções sem dados ficam desabilitadas e ao menos uma
+estatística é mantida. A legenda usa os mesmos números e o link da fase atual.
+
+`inicio-elencos.json` contém `statsByStage`, gerado pelo script existente.
+Abates, pontos, Booyahs e quedas vêm da tabela coletiva; dano e assistências
+somam os registros individuais da equipe. Quedas são da equipe e não a soma
+das quedas de quatro jogadores. O Geral soma as etapas, mas omite pontos para
+não contar novamente o bônus carregado à segunda fase. A média é calculada
+com os totais de abates e quedas, sem tirar a média das médias.
+
+O arquivo de elencos passa de cerca de 16,9 KB para 21,9 KB e continua sendo
+baixado apenas na aba Equipes. Trocar fases e métricas no editor não faz novas
+consultas; exportação e desenho continuam inteiramente no navegador.

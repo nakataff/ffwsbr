@@ -1,4 +1,4 @@
-import {FORMATS,selectedRows,metricLabel,formatValue,dateText} from './ranking-share-model.mjs?v=20261020-cards-v2';
+import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v3';
 const INK='#f3f6fb',MUTED='#9bafc8';
 function rounded(ctx,x,y,w,h,r=12){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function box(ctx,x,y,w,h,fill,stroke){rounded(ctx,x,y,w,h);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}}
@@ -28,13 +28,27 @@ export function renderRankingCard(canvas,data,options,assets={}) {
   const glow=ctx.createRadialGradient(w*.9,0,5,w*.9,0,w);glow.addColorStop(0,options.accent+'20');glow.addColorStop(1,options.accent+'00');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
   ctx.fillStyle=options.accent;ctx.fillRect(0,0,w,7);
   text(ctx,'CENTRAL FREE FIRE · ESTATÍSTICAS',margin,top,w-margin*2,wide?16:20,options.accent);
-  const heading=options.template==='compare'?'COMPARAÇÃO':options.template==='leader'?'EM DESTAQUE':data.title.toLocaleUpperCase('pt-BR');
+  const heading=options.template==='team'?'EQUIPE EM NÚMEROS':options.template==='compare'?'COMPARAÇÃO':options.template==='leader'?'EM DESTAQUE':data.title.toLocaleUpperCase('pt-BR');
   text(ctx,heading,margin,top+(wide?46:65),w-margin*2,wide?40:58);
   text(ctx,[data.event,data.stage].filter(Boolean).join(' · '),margin,top+(wide?77:107),w-margin*2,wide?20:25,MUTED);
-  text(ctx,[options.template==='table'?'TOP '+rows.length:'RECORTE DO RANKING',data.updatedAt?'DADOS: '+dateText(data.updatedAt):''].filter(Boolean).join('  ·  '),margin,top+(wide?102:140),w-margin*2,wide?14:17,MUTED);
+  text(ctx,[options.template==='table'?(options.rowCount==='all'?'TABELA COMPLETA · '+rows.length+' EQUIPES':'TOP '+rows.length):options.template==='team'?'ESTATÍSTICAS DA EQUIPE':'RECORTE DO RANKING',data.updatedAt?'DADOS: '+dateText(data.updatedAt):''].filter(Boolean).join('  ·  '),margin,top+(wide?102:140),w-margin*2,wide?14:17,MUTED);
   const contentY=top+(wide?130:178),contentBottom=footerY-25,contentHeight=contentBottom-contentY;
   const getImage=row=>images.get(options.showPhotos&&data.kind==='players'?row.photo:options.showLogos?row.logo:'');
-  if(options.template==='table') {
+  if(options.template==='team') {
+    const row=rows[0];if(!row)throw Error('Equipe sem dados para este recorte.');
+    const width=w-margin*2,identityH=wide?75:Math.min(155,contentHeight*.24),logoSize=wide?62:identityH-22;
+    const image=getImage(row),nameX=margin+(image?logoSize+22:0);
+    picture(ctx,image,margin,contentY,logoSize,logoSize);
+    text(ctx,row.name,nameX,contentY+(wide?36:60),width-(nameX-margin),wide?34:48);
+    text(ctx,data.stage==='Geral'?'Etapas disputadas somadas':'Dados somente desta etapa',nameX,contentY+(wide?62:96),width-(nameX-margin),wide?16:22,MUTED);
+    const keys=options.stats,columns=wide?Math.min(4,keys.length):Math.min(2,keys.length),count=Math.ceil(keys.length/columns),gap=wide?12:18,gridY=contentY+identityH,cellW=(width-gap*(columns-1))/columns,cellH=(contentBottom-gridY-gap*(count-1))/count;
+    keys.forEach((key,i)=>{
+      const x=margin+(i%columns)*(cellW+gap),y=gridY+Math.floor(i/columns)*(cellH+gap);
+      box(ctx,x,y,cellW,cellH,'#111e32',i===0?options.accent:'#263b55');
+      text(ctx,STAT_LABELS[key],x+20,y+Math.min(32,cellH*.32),cellW-40,wide?14:Math.min(22,cellH*.19),MUTED);
+      stat(ctx,statText(row,key),x+20,y+cellH*.77,cellW-40,wide?Math.min(40,cellH*.43):Math.min(76,cellH*.43),i===0?options.accent:INK);
+    });
+  } else if(options.template==='table') {
     const columns=wide&&rows.length>5?2:1,gap=28,colW=(w-margin*2-gap*(columns-1))/columns;
     const groups=Array.from({length:columns},(_,col)=>rows.slice(col*Math.ceil(rows.length/columns),(col+1)*Math.ceil(rows.length/columns)));
     groups.forEach((group,col)=>{
@@ -76,16 +90,17 @@ export function renderRankingCard(canvas,data,options,assets={}) {
   } else {
     const gap=20,cw=(w-margin*2-gap)/2;
     rows.forEach((row,i)=>{
-      const x=margin+i*(cw+gap),img=getImage(row),photoH=!wide&&img?Math.min(cw*.94,contentHeight*(contentHeight<700?.30:.38)):0;
+      const x=margin+i*(cw+gap),img=getImage(row),photoH=!wide&&img?Math.min(cw*.94,contentHeight*(contentHeight<700?.30:.38)):0,widePhoto=wide&&img?cw*.3:0,labelWidth=cw-48-(widePhoto?widePhoto+12:0);
       box(ctx,x,contentY,cw,contentHeight,'#101e32',i===0?options.accent:'#263b55');
+      if(widePhoto)picture(ctx,img,x+cw-widePhoto-12,contentY+38,widePhoto,contentHeight-55);
       let y=contentY+30;
       text(ctx,row.rank+'º NO RANKING',x+24,y,cw-48,wide?14:19,options.accent);
       if(photoH){picture(ctx,img,x+24,y+15,cw-48,photoH);y+=photoH+32;}else y+=wide?34:52;
-      text(ctx,row.name,x+24,y,cw-48,wide?26:42);y+=wide?27:44;
-      if(data.kind==='players'){text(ctx,row.team,x+24,y,cw-48,wide?15:22,MUTED);y+=wide?26:46;}
+      text(ctx,row.name,x+24,y,labelWidth,wide?26:42);y+=wide?27:44;
+      if(data.kind==='players'){text(ctx,row.team,x+24,y,labelWidth,wide?15:22,MUTED);y+=wide?26:46;}
       const statsY=contentBottom-(wide?36:146),valueY=wide?y+34:statsY-88,valueFont=wide?52:Math.min(108,Math.max(52,(valueY-y+20)/.8));
-      stat(ctx,formatValue(row[data.metric]),x+24,valueY,cw-48,valueFont,options.accent);
-      text(ctx,metricLabel(data.metric),x+24,valueY+(wide?24:38),cw-48,wide?14:23,MUTED);
+      stat(ctx,formatValue(row[data.metric]),x+24,valueY,labelWidth,valueFont,options.accent);
+      text(ctx,metricLabel(data.metric),x+24,valueY+(wide?24:38),labelWidth,wide?14:23,MUTED);
       const stats=data.kind==='teams'?[['ABATES',row.kills],['BOOYAHS',row.booyahs],['QUEDAS',row.matches]]:[['QUEDAS',row.matches],['DANO',row.damage],['ASSISTÊNCIAS',row.assists]];
       if(!wide)stats.forEach(([label,value],j)=>{text(ctx,label,x+24,statsY+j*43,cw*.6,20,MUTED);stat(ctx,formatValue(value),x+cw-24,statsY+j*43,cw*.4,26,INK,'right');});
       else text(ctx,`${formatValue(row.matches)} quedas`,x+24,statsY+13,cw-48,16,MUTED);

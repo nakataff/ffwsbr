@@ -3,7 +3,7 @@
   if (window.CFFS2Inicio) return;
   const root = document.getElementById('ffws-br-s2-inicio-content');
   if (!root) return;
-  const VERSION = '20261020-inicio-share-v4';
+  const VERSION = '20261020-inicio-share-v5';
   const BASE = '/ffws-br-2026-s2/';
   const files = {summary: BASE + 'inicio-resumo.json?v=' + VERSION, mvp: BASE + 'inicio-mvp-top10.json?v=' + VERSION, squads: BASE + 'inicio-elencos.json?v=' + VERSION};
   const cache = new Map();
@@ -16,7 +16,7 @@
   const params = new URLSearchParams(location.search);
   const initialTab = ['tabela','mvp','equipes'].includes(params.get('aba')) ? params.get('aba') : 'tabela';
   const initialStage = params.get('etapa');
-  const state = {tab:initialTab, stage:stages.some(s => s.id === initialStage) ? initialStage : 'final', mvpStage:['geral', ...stages.map(s => s.id)].includes(initialStage) ? initialStage : 'geral', team:''};
+  const state = {tab:initialTab, stage:stages.some(s => s.id === initialStage) ? initialStage : 'final', mvpStage:['geral', ...stages.map(s => s.id)].includes(initialStage) ? initialStage : 'geral', team:params.get('time')||''};
   let currentCard = null;
   function cardButton() {return '<button type="button" class="s2-start-complete s2-start-share" data-s2-share aria-label="Criar card deste recorte">↗ Criar card</button>';}
   function cardSource(rows, kind, stage, updatedAt) {
@@ -27,7 +27,7 @@
     if (!currentCard) return;
     const payload = currentCard;
     button.disabled = true;
-    try {const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2'); await openRankingCard(payload);}
+    try {const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v3'); await openRankingCard(payload);}
     catch (error) {let note = query('[data-s2-share-status]'); if (!note) {note = document.createElement('p'); note.dataset.s2ShareStatus=''; note.setAttribute('role','status'); query('#s2-start-pane')?.append(note);} note.textContent=error.message || 'Não foi possível abrir o editor. Tente novamente.';}
     finally {button.disabled = false;}
   }
@@ -101,9 +101,11 @@
     if (!teams.length) return '<p class="s2-start-empty">Elencos indisponíveis.</p>';
     if (!teams.some(t => t.name === state.team)) state.team = teams[0].name;
     const team = teams.find(t => t.name === state.team), players = team.players || [];
+    const views = [{id:'geral', name:'Geral'}, ...stages].filter(stage => team.statsByStage?.[stage.id]?.matches > 0).map(stage => ({id:stage.id, mode:'team', kind:'teams', title:'Equipe em números', event:data.tournament, stage:stage.name, updatedAt:data.updatedAt, metric:'kills', url:'https://centralfreefire.com.br/ffws-br-s2/inicio?aba=equipes&etapa='+stage.id+'&time='+encodeURIComponent(team.name), rows:[{name:team.name, team:team.name, logo:team.logo, ...team.statsByStage[stage.id]}]}));
+    currentCard = views.length ? {...views[0], views, viewId:initialStage || 'geral'} : null;
     const played = players.filter(p => num(p.matches) > 0).length;
     const roles = {GRAN:'Granadeiro', SUP:'Suporte', RUSH:'Rush', '3':'3º homem'};
-    return `<label class="s2-start-team-filter">Escolher equipe<select data-s2-team aria-label="Selecionar equipe">${teams.map(t => `<option value="${esc(t.name)}"${t.name === state.team ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label><div class="s2-start-team-head">${image(team.logo, '')}<div><h2>${esc(team.name)}</h2><p>${played} jogadores com participação · ${players.length} no elenco registrado</p></div></div><div class="s2-start-roster">${players.map(p => `<article class="s2-start-roster-player${p.status === 'Saiu' ? ' is-former' : ''}">${image(p.photo, '', 'player')}<div><h3>${nameLink(p.name, team.name)}</h3><p>${esc(roles[p.role] || p.role || 'Jogador')} · ${esc(p.status || 'Elenco registrado')}${p.captain ? ' · Capitão' : ''}${p.rookie ? ' · Estreante' : ''}</p><div class="s2-start-participation">${stages.filter(s => num(p.matchesByStage?.[s.id]) > 0).map(s => `<span>${esc(s.short || s.name)}: ${num(p.matchesByStage[s.id])} Q</span>`).join('') || '<span>Sem quedas registradas</span>'}</div></div></article>`).join('')}</div><p class="s2-start-caption">Inclui quem participou durante o torneio, mesmo após sair da equipe. Q = quedas jogadas em cada etapa.</p><div class="s2-start-under">${link('/equipe.html?time=' + encodeURIComponent(team.name), 'Perfil da equipe')}${link(links.equipes, 'Ver todas as equipes')}</div>`;
+    return `<label class="s2-start-team-filter">Escolher equipe<select data-s2-team aria-label="Selecionar equipe">${teams.map(t => `<option value="${esc(t.name)}"${t.name === state.team ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label><div class="s2-start-team-head">${image(team.logo, '')}<div><h2>${esc(team.name)}</h2><p>${played} jogadores com participação · ${players.length} no elenco registrado</p></div>${currentCard ? cardButton() : ''}</div><div class="s2-start-roster">${players.map(p => `<article class="s2-start-roster-player${p.status === 'Saiu' ? ' is-former' : ''}">${image(p.photo, '', 'player')}<div><h3>${nameLink(p.name, team.name)}</h3><p>${esc(roles[p.role] || p.role || 'Jogador')} · ${esc(p.status || 'Elenco registrado')}${p.captain ? ' · Capitão' : ''}${p.rookie ? ' · Estreante' : ''}</p><div class="s2-start-participation">${stages.filter(s => num(p.matchesByStage?.[s.id]) > 0).map(s => `<span>${esc(s.short || s.name)}: ${num(p.matchesByStage[s.id])} Q</span>`).join('') || '<span>Sem quedas registradas</span>'}</div></div></article>`).join('')}</div><p class="s2-start-caption">Inclui quem participou durante o torneio, mesmo após sair da equipe. Q = quedas jogadas em cada etapa.</p><div class="s2-start-under">${link('/equipe.html?time=' + encodeURIComponent(team.name), 'Perfil da equipe')}${link(links.equipes, 'Ver todas as equipes')}</div>`;
   }
   async function renderPane() {
     const pane = query('#s2-start-pane');

@@ -64,7 +64,16 @@ function buildSummaries({players, teams, summary, dates, photos, live}) {
     const roster = (players.players || []).filter(p => norm(p.team) === norm(team.name));
     const known = new Set(roster.map(p => norm(p.name)));
     for (const row of rows.geral.filter(r => norm(r.team) === norm(team.name))) if (!known.has(norm(row.name))) roster.push({name: row.name, team: team.name});
-    return {...team, players: roster.map(p => {
+    const statsByStage = {};
+    for (const stage of STAGES) {
+      const result = (summary[stage]?.rows || []).find(r => norm(r.team) === norm(team.name));
+      if (!result || !num(result.matches)) continue;
+      const individuals = rows[stage].filter(r => norm(r.team) === norm(team.name));
+      statsByStage[stage] = {points:num(result.points), kills:num(result.kills), booyahs:num(result.booyahs), matches:num(result.matches), damage:individuals.reduce((n,r)=>n+r.damage,0), assists:individuals.reduce((n,r)=>n+r.assists,0)};
+    }
+    // General points would double-count the carry-over bonus. Only show points within a stage.
+    statsByStage.geral = Object.fromEntries(['kills','booyahs','matches','damage','assists'].map(key => [key,Object.values(statsByStage).reduce((n,r)=>n+r[key],0)]));
+    return {...team, statsByStage, players: roster.map(p => {
       const key = norm(p.name) + '__' + norm(team.name);
       const matchesByStage = Object.fromEntries(STAGES.map(s => [s, num(byStage[s].get(key)?.matches)]));
       const photo = p.photo || p.image || photos.photos?.[norm(p.name).toLowerCase()] || 'silhueta.webp';

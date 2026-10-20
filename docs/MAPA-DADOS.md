@@ -45,7 +45,7 @@ um arquivo chamado `wb.json` que deva ser presumido como fonte de tudo.
 | --- | --- | --- |
 | `ffws-br-2026-s2/inicio-resumo.json` | Datas, logos, formato, campeão e tabelas das três etapas | 5,4 KB |
 | `ffws-br-2026-s2/inicio-mvp-top10.json` | Apenas Top 10 de **Geral, Classificatória, Segunda fase e Final** | 5,9 KB |
-| `ffws-br-2026-s2/inicio-elencos.json` | Jogadores por equipe, função, status, foto e quedas disputadas em cada etapa | 16,9 KB |
+| `ffws-br-2026-s2/inicio-elencos.json` | Jogadores por equipe, função, status, foto, quedas e `statsByStage` com totais coletivos para os cards | 21,9 KB |
 | `ffws-br-2026-s2/inicio.js` e `inicio.css` | Interface do Início; usa os componentes de `s2.css` | Não carregar `s2.js` e seus dados completos somente para mostrar esse resumo |
 | `scripts/build-s2-overview.cjs` | Gera os três arquivos anteriores usando as fontes existentes | Execução local, sem chamadas de rede |
 
@@ -135,7 +135,7 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 
 ## Cards compartilháveis
 
-O Início da S2 e os quatro rankings da home usam o mesmo editor.
+O Início da S2 (tabela, MVP e equipes) e os quatro rankings da home usam o mesmo editor. A tabela pode exportar todos os times e a aba Equipes oferece um card com métricas selecionáveis por fase, usando os totais compactos de `inicio-elencos.json`.
 Guia de integração: [docs/cards-compartilhaveis.md](cards-compartilhaveis.md).
 
 | Arquivo | Função |

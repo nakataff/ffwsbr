@@ -52,9 +52,9 @@ async function editor(){
  Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async t=>copies.push(t)}});w.navigator.share=async args=>shares.push(args);w.navigator.canShare=()=>true;
  w.__model=m;w.__renderer=r;
  let src=fs.readFileSync('js/ranking-share-cards.mjs','utf8').replace(/^import .*\n/gm,'').replace(/export (async )?function /g,(_,a)=>`${a||''}function `);
- src='const {FORMATS,normalizePayload,normalizeOptions,rememberedOptions,selectedRows,captionFor,captionWithLink,cardFilename}=window.__model;const {renderRankingCard}=window.__renderer;\n'+src+'\nwindow.openRankingCard=openRankingCard;';w.eval(src);
+ src='const {FORMATS,normalizePayload,normalizeOptions,rememberedOptions,selectedRows,STAT_LABELS,statValue,captionFor,captionWithLink,cardFilename}=window.__model;const {renderRankingCard}=window.__renderer;\n'+src+'\nwindow.openRankingCard=openRankingCard;';w.eval(src);
  const $=s=>w.document.querySelector(s),change=async(name,value)=>{const input=$(`[name="${name}"]`);if(input.type==='checkbox')input.checked=value;else input.value=value;input.dispatchEvent(new w.Event('change',{bubbles:true}));await wait(()=>$('[data-card-action="download"]')?.disabled===false);};
- return {w,$,requests,downloads,copies,shares,change,open:()=>w.openRankingCard(raw()),close:()=>dom.window.close()};
+ return {w,$,requests,downloads,copies,shares,change,open:(payload=raw())=>w.openRankingCard(payload),close:()=>dom.window.close()};
 }
 test('actual editor exports a PNG, copies editable caption with link, shares only on click and remembers style',async()=>{
  const u=await editor();try{
@@ -77,7 +77,7 @@ test('share cancellation is silent and browsers without native sharing download 
 
 test('home card adapter captures current numbers and full team identities without a ranking fetch',async()=>{
  const html='<aside data-home-rankings-event="WB 2026 S2"><section id="home-ranking-kills"><h3>Top 6 Abates</h3><table><tbody><tr><td class="home-rank-pos">1</td><td class="home-rank-media"><img src="home-assets/players/yago.webp"></td><td class="home-rank-main"><a href="jogador.html?jogador=Yago&time=LOS"><b>Yago</b><small>LOS</small></a></td><td class="home-rank-number">1.234</td><td class="home-rank-number">121</td></tr></tbody></table></section></aside>';
- const d=new JSDOM(html,{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}),w=d.window;const captured=[];w.openTestCard=async data=>captured.push(data);w.eval(fs.readFileSync('js/home-share-cards.js','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2')","{openRankingCard:window.openTestCard}"));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));w.document.querySelector('button').click();await tick();
+ const d=new JSDOM(html,{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}),w=d.window;const captured=[];w.openTestCard=async data=>captured.push(data);w.eval(fs.readFileSync('js/home-share-cards.js','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v3')","{openRankingCard:window.openTestCard}"));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));w.document.querySelector('button').click();await tick();
  assert.equal(captured[0].rows[0].kills,1234);assert.equal(captured[0].rows[0].matches,121);assert.equal(captured[0].rows[0].team,'LOS');assert.equal(captured[0].rows[0].damage,undefined);d.window.close();
 });
 test('short tables fill the usable height, while comparison metrics keep a readable gap above details',async()=>{
@@ -90,4 +90,37 @@ test('short tables fill the usable height, while comparison metrics keep a reada
   painted.length=0;renderRankingCard(c,data,m.normalizeOptions({format,template:'compare',showPhotos:true,showQR:true},data),{images});
   const label=painted.find(x=>x.text==='ABATES'),detail=painted.find(x=>x.text==='QUEDAS');assert(detail.y-label.y>=40,format+' comparison spacing');
  }
+});
+
+function teamPayload(){const squads=read('ffws-br-2026-s2/inicio-elencos.json'),team=squads.teams.find(t=>t.name==='LOS');const views=Object.entries(team.statsByStage).map(([id,stats])=>({id,mode:'team',kind:'teams',title:'Equipe em números',event:'WB 2026 S2',stage:id==='geral'?'Geral':id==='segundaFase'?'Segunda fase':id==='final'?'Final':'Classificatória',updatedAt:squads.updatedAt,url:'https://centralfreefire.com.br/ffws-br-s2/inicio?aba=equipes&etapa='+id+'&time=LOS',rows:[{name:team.name,team:team.name,logo:team.logo,...stats}]}));return {...views[0],views,viewId:'geral'};}
+test('complete team tables include all fourteen entrants in each export format within the safe area',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,summary=read('ffws-br-2026-s2/inicio-resumo.json'),data=m.normalizePayload({kind:'teams',metric:'points',title:'Classificação',stage:'Classificatória',rows:summary.stages.classificatoria.rows.map(r=>({...r,name:r.team}))});
+ for(const format of Object.keys(m.FORMATS)){
+  const options=m.normalizeOptions({rowCount:'all',format,showQR:true},data);assert.equal(m.selectedRows(data,options).length,14);assert.equal(options.rowCount,'all');
+  const c=createCanvas(1,1),ctx=c.getContext('2d'),texts=[];const fill=ctx.fillText.bind(ctx);ctx.fillText=(t,x,y)=>{texts.push({text:String(t),y});fill(t,x,y);};renderRankingCard(c,data,options);
+  assert(texts.some(t=>t.text==='14º'));assert(texts.some(t=>t.text==='CIVIS'));assert(texts.some(t=>t.text.includes('TABELA COMPLETA')));assert(Math.max(...texts.map(t=>t.y))<c.height*(format==='story'?.76:format==='feed'?.86:.94));
+  if(process.env.CFF_CARD_RENDER_DIR)fs.writeFileSync(path.join(process.env.CFF_CARD_RENDER_DIR,format+'-all-teams.png'),c.toBuffer('image/png'));
+ }
+});
+test('player portraits are enabled by default and drawn in highlight and comparison including horizontal cards',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,data=m.normalizePayload(raw()),images=new Map();for(const row of data.rows.slice(0,2))images.set(row.photo,await loadImage(row.photo));
+ for(const format of Object.keys(m.FORMATS))for(const template of ['leader','compare']){const options=m.normalizeOptions({format,template},data),c=createCanvas(1,1),ctx=c.getContext('2d'),drawn=[];const draw=ctx.drawImage.bind(ctx);ctx.drawImage=(...args)=>{drawn.push(args[0]);draw(...args);};renderRankingCard(c,data,options,{images});assert(drawn.includes(images.get(data.rows[0].photo)));if(template==='compare')assert(drawn.includes(images.get(data.rows[1].photo)));}
+ assert.equal(m.normalizeOptions({showPhotos:false},data).showPhotos,false);
+});
+test('team cards render only selected available metrics in every format and captions use the same values',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,payload=teamPayload(),data=m.normalizePayload(payload.views.find(v=>v.id==='final')),images=new Map([[data.rows[0].logo,await loadImage(data.rows[0].logo)]]);
+ for(const format of Object.keys(m.FORMATS)){
+  const options=m.normalizeOptions({format,stats:Object.keys(m.STAT_LABELS),showQR:true},data),c=createCanvas(1,1),ctx=c.getContext('2d'),painted=[];const fill=ctx.fillText.bind(ctx);ctx.fillText=(t,x,y)=>{painted.push({text:String(t),y});fill(t,x,y);};renderRankingCard(c,data,options,{images});assert.equal(options.template,'team');assert.equal(options.stats.length,7);assert(painted.some(t=>t.text==='6,62'));assert(painted.some(t=>t.text==='BOOYAHS'));assert(painted.some(t=>t.text==='DANO'));assert(Math.max(...painted.map(t=>t.y))<c.height*(format==='story'?.76:format==='feed'?.86:.94));
+  if(process.env.CFF_CARD_RENDER_DIR)fs.writeFileSync(path.join(process.env.CFF_CARD_RENDER_DIR,format+'-team.png'),c.toBuffer('image/png'));
+ }
+ const general=m.normalizePayload(payload.views.find(v=>v.id==='geral')),options=m.normalizeOptions({stats:['points','average','kills','garbage']},general);assert.deepEqual(options.stats,['average','kills']);const caption=m.captionFor(general,options);assert(caption.includes('ABATES / QUEDA: 8,73'));assert(!caption.includes('PONTOS:'));assert(!caption.includes('DANO:'));assert(caption.includes('time=LOS'));
+});
+test('team editor switches preloaded phases and chosen metrics without fetching rankings, and includes all-team option',async()=>{
+ const u=await editor();try{
+  await u.open(teamPayload());assert.equal(u.$('[name="template"]').value,'team');assert.equal(u.$('[name="view"]').value,'geral');assert(u.$('[data-card-stat="points"]').disabled);assert(!u.$('[data-card-stats]').hidden);
+  const before=u.requests.length;await u.change('view','final');assert(!u.$('[data-card-stat="points"]').disabled);assert(u.$('[name="caption"]').value.includes('Final'));assert(u.$('[name="caption"]').value.includes('etapa=final&time=LOS'));assert.equal(u.requests.length,before);
+  const damage=u.$('[data-card-stat="damage"]');damage.checked=true;damage.dispatchEvent(new u.w.Event('change',{bubbles:true}));await wait(()=>!u.$('[data-card-action="download"]').disabled);assert(u.$('[name="caption"]').value.includes('DANO:'));
+  const summary=read('ffws-br-2026-s2/inicio-resumo.json');await u.open({kind:'teams',metric:'points',rows:summary.stages.classificatoria.rows.map(r=>({...r,name:r.team}))});await u.change('rowCount','all');assert.equal(u.$('[name="rowCount"]').selectedOptions[0].textContent,'Todos os times · 14');
+  await u.open();assert(u.$('[name="rowCount"] option[value="all"]').hidden);assert(u.$('[name="showPhotos"]').checked);assert(u.requests.some(x=>x.includes('player-photos/s2/yago.webp')));
+ }finally{u.close();}
 });

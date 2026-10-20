@@ -11,7 +11,7 @@ async function ui(overrides = {}, search = '') {
   const w = dom.window, calls = [];
   w.fetch = async url => {const p = String(url).split('?')[0].replace(/^\//, ''); calls.push(p); return overrides[p] ? overrides[p]() : {ok:true, json:async () => read(p)};};
   w.__cards=[];w.openTestCard=async payload=>{w.__cards.push(payload);};
-  w.eval(fs.readFileSync(BASE + 'inicio.js', 'utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2')","{openRankingCard:window.openTestCard}"));
+  w.eval(fs.readFileSync(BASE + 'inicio.js', 'utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v3')","{openRankingCard:window.openTestCard}"));
   await settle();
   return {w, dom, calls, $:s => w.document.querySelector(s), click:async s => {w.document.querySelector(s).click(); await settle();}, close:() => dom.window.close()};
 }
@@ -106,5 +106,19 @@ test('shared link restores its MVP stage and shares the already loaded snapshot 
   await u.click('[data-s2-share]');const card=u.w.__cards[0];assert.equal(card.rows.length,10);assert.equal(card.rows[0].kills,84);assert.equal(card.stage,'Segunda fase');assert.equal(new URL(card.url).searchParams.get('etapa'),'segundaFase');
   assert.deepEqual(u.calls,[BASE+'inicio-resumo.json',BASE+'inicio-mvp-top10.json']);
   await u.click('[data-s2-mvp-stage="final"]');await u.click('[data-s2-share]');assert.equal(u.w.__cards[1].rows[0].name,'MT7');assert.equal(u.w.__cards[0].rows[0].name,'Lyon');
+ }finally{u.close();}
+});
+
+test('compact team stats use collective drop counts, preserve stage points and omit aggregate points',()=>{
+ const squads=read(BASE+'inicio-elencos.json'),summary=read(BASE+'inicio-resumo.json'),players=read(BASE+'players.json');
+ for(const team of squads.teams){const stats=team.statsByStage;for(const stage of ['classificatoria','segundaFase','final']){const official=summary.stages[stage].rows.find(r=>r.team===team.name);if(!official){assert.equal(stats[stage],undefined);continue;}for(const key of ['kills','points','matches','booyahs'])assert.equal(stats[stage][key],official[key],team.name+' '+stage+' '+key);}
+  assert.equal(stats.geral.points,undefined);for(const key of ['kills','matches','damage','assists','booyahs'])assert.equal(stats.geral[key],Object.entries(stats).filter(([s])=>s!=='geral').reduce((n,[,r])=>n+r[key],0));
+  const source=players.entries.filter(r=>r.team===team.name);assert.equal(stats.classificatoria.damage,source.reduce((n,r)=>n+(Number(r.damage)||0),0));assert.equal(stats.classificatoria.assists,source.reduce((n,r)=>n+(Number(r.assists)||0),0));
+ }
+ assert.equal(squads.teams.find(t=>t.name==='LOS').statsByStage.geral.matches,121);assert(fs.statSync(BASE+'inicio-elencos.json').size<23000);
+});
+test('team sharing restores the selected squad and phase and reuses the two small files',async()=>{
+ const u=await ui({},'?aba=equipes&etapa=final&time=LOS');try{assert.equal(u.$('[data-s2-team]').value,'LOS');await u.click('[data-s2-share]');const payload=u.w.__cards[0];assert.equal(payload.mode,'team');assert.equal(payload.viewId,'final');assert.equal(payload.views.length,4);assert.equal(payload.views.find(v=>v.id==='final').rows[0].kills,86);assert.equal(payload.views.find(v=>v.id==='geral').rows[0].matches,121);assert.deepEqual(u.calls,[BASE+'inicio-resumo.json',BASE+'inicio-elencos.json']);
+  u.$('[data-s2-team]').value='LOOPS';u.$('[data-s2-team]').dispatchEvent(new u.w.Event('change',{bubbles:true}));await settle();await u.click('[data-s2-share]');assert.equal(u.w.__cards[1].views.length,2);assert(!u.w.__cards[1].views.some(v=>v.id==='final'));
  }finally{u.close();}
 });
