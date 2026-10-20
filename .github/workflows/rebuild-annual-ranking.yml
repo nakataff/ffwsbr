@@ -1,0 +1,60 @@
+name: Rebuild annual ranking after scoring edits
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ranking-data/brasil-2025-source.json'
+      - 'ranking-data/brasil-2026-source.json'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: annual-ranking-build
+  cancel-in-progress: false
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate editor configuration and regenerate compact annual rankings
+        run: |
+          node --check scripts/build-annual-ranking.cjs
+          node scripts/build-annual-ranking.cjs
+          node scripts/build-annual-ranking.cjs --check
+          node - <<'NODE'
+          const assert=require('node:assert/strict');
+          for (const year of [2025,2026]){
+            const source=require('./ranking-data/brasil-'+year+'-source.json');
+            const ranking=require('./ranking-data/brasil-'+year+'.json');
+            assert.equal(ranking.methodVersion,source.methodVersion);
+            assert.equal(ranking.updatedAt,source.updatedAt);
+            assert.equal(source.basePoints.length,24);
+            for (const p of source.basePoints) assert(Number.isInteger(p)&&p>=0&&p<=10000);
+            for (const w of Object.values(source.weights)) assert(Number.isInteger(w)&&w>=0&&w<=100);
+            for (const [event,values] of Object.entries(source.pointsByEvent||{})){
+              assert(['copa','s1','s2','ewc','global'].includes(event));
+              assert(Array.isArray(values)&&values.length===24);
+              assert(values.every(v=>Number.isInteger(v)&&v>=0&&v<=100000));
+            }
+            for (const row of ranking.rows){
+              for (const result of row.results)
+                assert.equal(result.points,source.pointsByEvent?.[result.event]?.[result.position-1]??source.basePoints[result.position-1]*source.weights[result.event]);
+              assert.equal(row.total,row.results.reduce((a,b)=>a+b.points,0));
+            }
+            assert(ranking.rows.every((r,i,a)=>i===0||a[i-1].total>=r.total));
+          }
+          NODE
+      - name: Commit refreshed JSONs if configuration changed
+        run: |
+          git add ranking-data/brasil-2025.json ranking-data/brasil-2026.json
+          if git diff --cached --quiet; then
+            echo 'Rankings already up to date.'
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Recalculate annual ranking after scoring configuration edit'
+          git push
