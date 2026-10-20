@@ -40,7 +40,7 @@ function campaign(team,button){
 }
 function closeCampaign(){query('dialog').close();opener?.focus();}
 function cardPayload(){
-  const rows=filtered().map(r=>({rank:r.rank,name:r.team,team:r.team,logo:r.logo,points:r.total,annualValues:events().map(e=>result(r,e.id)?.points??null)}));
+  const rows=filtered().map(r=>({rank:r.rank,name:r.team,team:r.team,logo:window.cffCareerTeamIdentity?.(r.team)?.logo||r.logo,points:r.total,annualValues:events().map(e=>result(r,e.id)?.points??null)}));
   const make=view=>({id:`ranking-brasil-${data.year}-${view}`,kind:'teams',mode:'annual',title:'Ranking anual CFF',event:`Brasil ${data.year}`,stage:`${view==='competicoes'?'Por competição':'Pontuação total'} · ${data.partial?'Parcial do ano':'Ano encerrado'} · Método v${data.methodVersion}`,updatedAt:data.updatedAt,metric:'points',url:url(view),annualColumns:view==='competicoes'?events().map(e=>e.label):[],rows});
   return {views:['total','competicoes'].map(id=>({id,...make(id)})),viewId:`ranking-brasil-${data.year}-${state.view}`};
 }
