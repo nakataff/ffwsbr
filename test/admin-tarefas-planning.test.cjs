@@ -246,7 +246,7 @@ test('FFCP missions import once, appear in separate navigation, remain editable 
  try{
   const initial=b.state().tasks.filter(t=>t.ffcp);
   assert.equal(initial.length,4);
-  assert.equal(b.state().settings.ffcpSeedVersion,1);
+  assert.equal(b.state().settings.ffcpSeedVersion,2);
   assert.deepEqual(Array.from(initial,t=>t.date),['2026-10-11','2026-10-23','2026-10-30','2026-11-06']);
   $('ffcp-side-shortcut').click();
   assert.equal($('tasks-view').hidden,true);
