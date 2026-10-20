@@ -1,0 +1,148 @@
+{
+  "year": 2026,
+  "region": "Brasil",
+  "updatedAt": "2026-10-20",
+  "methodVersion": 1,
+  "basePoints": [
+    100,
+    80,
+    65,
+    55,
+    45,
+    45,
+    35,
+    35,
+    25,
+    25,
+    15,
+    15,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "weights": {
+    "copa": 1,
+    "s1": 3,
+    "s2": 3,
+    "ewc": 5,
+    "global": 7
+  },
+  "aliases": {
+    "LOUD SNICKERS": "LOUD",
+    "MIBR LOS": "LOS",
+    "FLUXO": "FLUXO W7M",
+    "OUTPLAY ESPORTS": "ANGELS OUTPLAY"
+  },
+  "copa": {
+    "source": "https://escharts.com/tournaments/free-fire/cop-free-fire-2026",
+    "reference": "https://liquipedia.net/freefire/C.O.P.A._Free_Fire/2026",
+    "finished": true,
+    "standings": [
+      {
+        "team": "FLUXO W7M",
+        "position": 1
+      },
+      {
+        "team": "LINE 10",
+        "position": 2
+      },
+      {
+        "team": "TEAM SOLID",
+        "position": 3
+      },
+      {
+        "team": "LOUD",
+        "position": 4
+      },
+      {
+        "team": "ALPHA7",
+        "position": 5
+      },
+      {
+        "team": "INFLUENCE RAGE",
+        "position": 6
+      },
+      {
+        "team": "ALFA 34",
+        "position": 7
+      },
+      {
+        "team": "INTZ",
+        "position": 8
+      },
+      {
+        "team": "E1 SPORTS",
+        "position": 9
+      },
+      {
+        "team": "VIRTUS PRO",
+        "position": 10
+      },
+      {
+        "team": "LOS",
+        "position": 11
+      },
+      {
+        "team": "RUSH GAMING",
+        "position": 12
+      },
+      {
+        "team": "LOOPS",
+        "position": 13
+      },
+      {
+        "team": "XLD GAMING",
+        "position": 14
+      },
+      {
+        "team": "CIVIS",
+        "position": 15
+      },
+      {
+        "team": "ANTISOCIAL TEAM",
+        "position": 16
+      },
+      {
+        "team": "VASCO ESPORTS",
+        "position": 17
+      },
+      {
+        "team": "RISE GAMING",
+        "position": 18
+      },
+      {
+        "team": "AXS FUSION",
+        "position": 19
+      },
+      {
+        "team": "INCO GAMING",
+        "position": 20
+      },
+      {
+        "team": "ANGELS OUTPLAY",
+        "position": 21
+      },
+      {
+        "team": "MG7 ESPORTS",
+        "position": 22
+      },
+      {
+        "team": "SIX EIGHT",
+        "position": 23
+      },
+      {
+        "team": "DR3 PIT",
+        "position": 24
+      }
+    ]
+  }
+}

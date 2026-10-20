@@ -1,4 +1,4 @@
-import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v3';
+import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v4';
 const INK='#f3f6fb',MUTED='#9bafc8';
 function rounded(ctx,x,y,w,h,r=12){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function box(ctx,x,y,w,h,fill,stroke){rounded(ctx,x,y,w,h);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}}
@@ -47,6 +47,23 @@ export function renderRankingCard(canvas,data,options,assets={}) {
       box(ctx,x,y,cellW,cellH,'#111e32',i===0?options.accent:'#263b55');
       text(ctx,STAT_LABELS[key],x+20,y+Math.min(32,cellH*.32),cellW-40,wide?14:Math.min(22,cellH*.19),MUTED);
       stat(ctx,statText(row,key),x+20,y+cellH*.77,cellW-40,wide?Math.min(40,cellH*.43):Math.min(76,cellH*.43),i===0?options.accent:INK);
+    });
+  } else if(data.mode==='annual') {
+    const width=w-margin*2,labels=data.annualColumns||[],detail=labels.length>0,header=wide?28:40;
+    const rowH=(contentHeight-header)/Math.max(1,rows.length),rankW=wide?34:46,teamW=detail?width*.34:width*.68,cellW=(width-teamW)/Math.max(1,labels.length+1);
+    const positions=[...labels,'TOTAL'].map((label,i)=>({label,x:margin+teamW+cellW*(i+1)-12}));
+    text(ctx,'#',margin+10,contentY+16,30,wide?11:15,MUTED);
+    text(ctx,'EQUIPE',margin+rankW+12,contentY+16,teamW-rankW-20,wide?12:16,MUTED);
+    positions.forEach(p=>text(ctx,p.label,p.x,contentY+16,cellW-12,wide?11:15,MUTED,'right'));
+    rows.forEach((row,i)=>{
+      const y=contentY+header+i*rowH,center=y+(rowH-5)/2,selected=data.rows.indexOf(row)===options.highlight;
+      box(ctx,margin,y,width,rowH-5,selected?options.accent+'25':'#111e32',selected?options.accent:'#20304a');ctx.textBaseline='middle';
+      stat(ctx,row.rank+'º',margin+10,center,rankW-5,Math.min(wide?19:29,rowH*.45),options.accent);
+      const img=getImage(row),size=Math.min(wide?25:50,rowH*.63),nameX=margin+rankW+12+(img?size+10:0);
+      picture(ctx,img,margin+rankW+12,center-size/2,size,size);
+      stat(ctx,row.name,nameX,center,margin+teamW-nameX-12,Math.min(wide?18:29,rowH*.4));
+      positions.forEach((p,j)=>stat(ctx,formatValue(j===labels.length?row.points:row.annualValues[j]),p.x,center,cellW-18,Math.min(wide?21:34,rowH*.45),j===labels.length?options.accent:INK,'right'));
+      ctx.textBaseline='alphabetic';
     });
   } else if(options.template==='table') {
     const columns=wide&&rows.length>5?2:1,gap=28,colW=(w-margin*2-gap*(columns-1))/columns;

@@ -124,3 +124,25 @@ test('team editor switches preloaded phases and chosen metrics without fetching 
   await u.open();assert(u.$('[name="rowCount"] option[value="all"]').hidden);assert(u.$('[name="showPhotos"]').checked);assert(u.requests.some(x=>x.includes('player-photos/s2/yago.webp')));
  }finally{u.close();}
 });
+
+test('annual cards show weighted points, no irrelevant kill statistics and both view snapshots in all safe formats',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,source=read('ranking-data/brasil-2026.json'),events=source.events.filter(e=>e.status==='finished');
+ for(const detailed of [false,true]){
+  const data=m.normalizePayload({id:'anual-2026',kind:'teams',mode:'annual',metric:'points',title:'Ranking anual CFF',event:'Brasil 2026',stage:detailed?'Por competição':'Pontuação total',annualColumns:detailed?events.map(e=>e.label):[],updatedAt:source.updatedAt,url:'https://centralfreefire.com.br/ranking-anual.html?ano=2026&visao='+ (detailed?'competicoes':'total'),rows:source.rows.map(r=>({rank:r.rank,name:r.team,team:r.team,logo:r.logo,points:r.total,annualValues:events.map(e=>r.results.find(x=>x.event===e.id)?.points??null)}))});
+  for(const format of Object.keys(m.FORMATS)){
+   const options=m.normalizeOptions({format,rowCount:'all',template:'compare'},data);assert.equal(options.rowCount,10);assert.equal(options.template,'table');
+   const canvas=createCanvas(1,1),ctx=canvas.getContext('2d'),painted=[],original=ctx.fillText.bind(ctx);ctx.fillText=(t,x,y)=>{painted.push({text:String(t),x,y});original(t,x,y);};renderRankingCard(canvas,data,options);
+   assert(painted.some(p=>p.text==='920'));assert(painted.some(p=>p.text==='TOTAL'));assert(!painted.some(p=>/ABATES|QUEDAS|BOOYAHS/.test(p.text)));assert.equal(painted.some(p=>p.text==='EWC'),detailed);
+   assert(Math.max(...painted.map(p=>p.y))<canvas.height*(format==='story'?.76:format==='feed'?.86:.94));assert(canvas.toBuffer('image/png').length>5000);
+   if(process.env.CFF_CARD_RENDER_DIR){fs.mkdirSync(process.env.CFF_CARD_RENDER_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.CFF_CARD_RENDER_DIR,'annual-'+format+'-'+(detailed?'all-events':'total')+'.png'),canvas.toBuffer('image/png'));}
+  }
+  const caption=m.captionFor(data,m.normalizeOptions({},data));assert(caption.includes('920 pontos CFF'));assert(caption.includes('Metodologia própria'));assert(caption.includes(data.url));assert(!caption.includes('quedas'));
+ }
+});
+test('annual editor restores the detailed view, switches to total and downloads a user-triggered PNG',async()=>{
+ const u=await editor();try{
+  const source=read('ranking-data/brasil-2026.json'),events=source.events.filter(e=>e.status==='finished'),make=id=>({id,kind:'teams',mode:'annual',metric:'points',event:'Brasil 2026',stage:id==='events'?'Por competição':'Pontuação total',annualColumns:id==='events'?events.map(e=>e.label):[],rows:source.rows.map(r=>({rank:r.rank,name:r.team,points:r.total,annualValues:events.map(e=>r.results.find(x=>x.event===e.id)?.points??null)}))});
+  await u.open({views:[make('total'),make('events')],viewId:'events'});assert.equal(u.$('[name="view"]').value,'events');assert.equal(u.$('[name="rowCount"]').value,'10');assert(u.$('[name="rowCount"] option[value="all"]').hidden);assert(u.$('[name="template"]').disabled);assert(u.$('[name="caption"]').value.includes('EWC: 325'));
+  await u.change('view','total');assert(!u.$('[name="caption"]').value.includes('EWC: 325'));u.$('[data-card-action="download"]').click();await tick();assert.equal(u.downloads.length,1);assert.equal(u.shares.length,0);
+ }finally{u.close();}
+});

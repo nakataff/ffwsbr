@@ -1,6 +1,6 @@
-import {FORMATS,normalizePayload,normalizeOptions,rememberedOptions,selectedRows,STAT_LABELS,statValue,captionFor,captionWithLink,cardFilename} from './ranking-share-model.mjs?v=20261020-cards-v3';
-import {renderRankingCard} from './ranking-share-renderer.mjs?v=20261020-cards-v3';
-const VERSION='20261020-cards-v3',PREFS='cff_ranking_card_style_v2';
+import {FORMATS,normalizePayload,normalizeOptions,rememberedOptions,selectedRows,STAT_LABELS,statValue,captionFor,captionWithLink,cardFilename} from './ranking-share-model.mjs?v=20261020-cards-v4';
+import {renderRankingCard} from './ranking-share-renderer.mjs?v=20261020-cards-v4';
+const VERSION='20261020-cards-v4',PREFS='cff_ranking_card_style_v2';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const images=new Map();let cssPromise,qrPromise,dialog,active,options,canvas,file,drawSequence=0,captionDirty=false,opener,views=[];
 const $=s=>dialog.querySelector(s);
@@ -117,10 +117,12 @@ export async function openRankingCard(payload){
   $('[data-card-context]').textContent=[data.event,data.stage].filter(Boolean).join(' · ');
   $('[name="first"]').innerHTML=fieldOptions();$('[name="second"]').innerHTML=fieldOptions();
   $('[name="highlight"]').innerHTML='<option value="-1">Nenhuma</option>'+fieldOptions();
-  $('[name="rowCount"]').querySelectorAll('option').forEach(o=>{o.hidden=o.value==='all'&&data.kind!=='teams';o.textContent=o.value==='all'?'Todos os times · '+data.rows.length:'Top '+Math.min(Number(o.value),data.rows.length);});
+  $('[name="rowCount"]').querySelectorAll('option').forEach(o=>{o.hidden=o.value==='all'&&(data.kind!=='teams'||data.mode==='annual');o.textContent=o.value==='all'?'Todos os times · '+data.rows.length:'Top '+Math.min(Number(o.value),data.rows.length);});
+  $('[data-card-view]').firstChild.textContent=data.mode==='annual'?'Visualização':'Etapa';
   $('[data-card-view]').hidden=views.length<2;$('[name="view"]').innerHTML=views.map(v=>`<option value="${esc(v.id)}">${esc(v.data.stage)}</option>`).join('');$('[name="view"]').value=chosen?.id||'';
-  $('[name="template"]').querySelectorAll('option').forEach(o=>{o.hidden=data.mode==='team'?o.value!=='team':o.value==='team';o.disabled=o.hidden;});
-  $('[name="template"]').disabled=data.mode==='team';
+  $('[name="template"]').querySelectorAll('option').forEach(o=>{o.hidden=data.mode==='annual'?o.value!=='table':data.mode==='team'?o.value!=='team':o.value==='team';o.disabled=o.hidden;});
+  $('[name="template"]').disabled=['team','annual'].includes(data.mode);
   $('[name="template"] option[value="compare"]').disabled=data.rows.length<2;
+  $('[data-card-panel="model"] .cff-card-hint').textContent=data.mode==='annual'?'Até 10 equipes por imagem para preservar a leitura. Use o link para consultar o ranking completo.':'A etapa e os números são os mesmos do recorte aberto no site.';
   syncFields();changeStep('model');$('.cff-card-preview').replaceChildren();if(!dialog.open)dialog.showModal();await refresh();
 }

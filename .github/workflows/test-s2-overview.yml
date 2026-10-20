@@ -1,8 +1,17 @@
-name: Test S2 tournament overview
+name: Test tournament overviews and annual ranking
 on:
   push:
     branches: [main]
     paths:
+      - 'ranking-anual.html'
+      - 'ranking-data/**'
+      - 'css/annual-ranking.css'
+      - 'js/annual-ranking.mjs'
+      - 'scripts/build-annual-ranking.cjs'
+      - 'test/annual-ranking.test.cjs'
+      - 'ffws-br-2026-s1/stages.json'
+      - 'ewc 2026/final.json'
+      - 'ffws-global-2026/stages.json'
       - 'ffws-br-2026-s2/inicio*'
       - 'ffws-br-s2/inicio/**'
       - 'ffws-br-2026-s2/players.json'
@@ -34,10 +43,13 @@ jobs:
         env:
           NODE_PATH: /tmp/cff-overview-tests/node_modules
         run: |
+          node --check js/annual-ranking.mjs
+          node --check scripts/build-annual-ranking.cjs
+          node scripts/build-annual-ranking.cjs --check
           node --check ffws-br-2026-s2/inicio.js
           node --check scripts/build-s2-overview.cjs
           node --check js/site-shell-fast.min.js
           node --check js/ranking-share-cards.mjs
           node --check js/ranking-share-renderer.mjs
           node --check js/ranking-share-model.mjs
-          node --test test/s2-overview.test.cjs test/ranking-share-cards.test.cjs
+          node --test test/annual-ranking.test.cjs test/s2-overview.test.cjs test/ranking-share-cards.test.cjs

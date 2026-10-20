@@ -163,6 +163,43 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 
 ## Cards compartilháveis
 
+### Ranking anual de equipes
+
+Entrada: `/ranking-anual.html`, no menu **Histórico → Ranking anual**.
+Atualmente cobre Brasil 2026, com 27 equipes. A página usa o mesmo cabeçalho,
+menu e identidade das páginas públicas e busca somente um JSON de 6 KB.
+
+| Arquivo | Função |
+| --- | --- |
+| `ranking-data/brasil-2026-source.json` | Metodologia v1, pesos, aliases e classificação completa da Copa FF, com referência da fonte externa |
+| `scripts/build-annual-ranking.cjs` | Gera o ranking offline usando a fonte da Copa, `ffws-br-2026-s1/stages.json`, `ffws-br-2026-s2/career-summary.json` e `ewc 2026/final.json`; confere `ffws-global-2026/stages.json` para o status do Mundial |
+| `ranking-data/brasil-2026.json` | Resultado derivado: total, posição, pontos e colocação por evento, logos locais, competições pendentes e hashes das fontes |
+| `js/annual-ranking.mjs`, `css/annual-ranking.css` | Busca local, total/competições, janela de campanha e adaptação para cards no mobile |
+
+Regenerar com `node scripts/build-annual-ranking.cjs` e verificar com o mesmo
+comando acrescido de `--check`. Atualize a data na fonte após revisar mudanças e
+as versões do módulo/CSS/JSON quando publicar uma nova classificação. A CI
+confere a correspondência com as fontes e os totais revisados. Não consultar
+Firebase, Durable Objects, planilhas ou bases completas por visitante.
+
+Cada evento conta somente a colocação final; eliminados antes da final recebem
+sua posição da classificatória. Não somar pontos das fases como se fossem
+torneios diferentes. Champion Rush preserva o campeão oficial. Patrocinadores
+e aliases da mesma equipe são unificados; transferências de jogadores não
+transferem pontos. Ordem de desempate: colocação no Global, na EWC, títulos de
+WB. Empates restantes recebem a mesma posição, sem desempate alfabético.
+
+O Mundial permanece pendente e não pontua antes do encerramento. Quando terminar,
+revisar a classificação final **de todos os representantes brasileiros**, incluindo
+eliminados antes da final, antes de regenerar. O resultado atual usa Copa ×1,
+WB S1/S2 ×3, EWC ×5 e reserva Global ×7.
+
+Links preservam `ano=2026`, `visao=total|competicoes` e `busca`. Compartilhamento
+reaproveita os dados visíveis e suas posições originais. O editor comum aceita
+`mode: 'annual'`, `annualColumns` e `rows[].annualValues`, com duas views. Os cards
+anuais exportam Top 3/5/10 para manter legibilidade; o link abre o ranking completo.
+Nenhum abate, Booyah ou número de quedas é inventado para esses cards.
+
 O Início da S2 (tabela, MVP e equipes) e os quatro rankings da home usam o mesmo editor. A tabela pode exportar todos os times e a aba Equipes oferece um card com métricas selecionáveis por fase, usando os totais compactos de `inicio-elencos.json`.
 Guia de integração: [docs/cards-compartilhaveis.md](cards-compartilhaveis.md).
 

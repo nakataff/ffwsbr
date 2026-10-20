@@ -18,7 +18,7 @@
     ]]
   ];
   const mainLinks = [['Minha conta / Entrar','/conta.html'],['Início','home'],['Mercado da bala','mercado'],['Tier Constructor','/tier-constructor.html'],['Camp ao vivo','/camp-ao-vivo.html'],['WB Manager Beta','/manager.html']];
-  const historyLinks = [['Hall da Fama','hall-da-fama'],['Registro detalhado','registro-detalhado'],['Outros torneios','outros-torneios'],['Equipes históricas','/equipes-historicas.html'],['Outras equipes','outras-equipes']];
+  const historyLinks = [['Hall da Fama','hall-da-fama'],['Registro detalhado','registro-detalhado'],['Ranking anual','/ranking-anual.html'],['Outros torneios','outros-torneios'],['Equipes históricas','/equipes-historicas.html'],['Outras equipes','outras-equipes']];
   const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const href = route => route.startsWith('/') ? route : (window.CFF_SEASON_ROUTES?.pathForPage(route) || '/index.html#' + route);
   const link = ([label,route]) => `<a class="cff-menu-link" href="${esc(href(route))}" data-cff-route="${esc(route)}" ${route==='/conta.html'?'data-account-entry':''}>${esc(label)}</a>`;
@@ -44,7 +44,7 @@
     if(path.includes('conta.html')||path.startsWith('/perfil/'))return 'profile';
     if(path.includes('interacoes.html')||path.includes('comunidade.html'))return 'community';
     if(String(page).startsWith('ffws-global-2026-')||path.includes('ffws-global-2026'))return 'worlds';
-    if(/(?:stats|mvp|registro|notas|comparar|ranking)/i.test(String(page)))return 'stats';
+    if(path.includes('ranking-anual.html')||/(?:stats|mvp|registro|notas|comparar|ranking)/i.test(String(page)))return 'stats';
     return 'home';
   }
   function updateBottomNav(page) {
