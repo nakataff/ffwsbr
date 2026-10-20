@@ -72,6 +72,12 @@
       if(link)go(event,link.dataset.cffBottomRoute);
     });
     document.body.append(nav);
+    if(!document.querySelector('script[data-cff-mobile-dock]')){
+      const script=document.createElement('script');
+      script.src='/js/mobile-dock.js?v=20261020-mobile-custom-v1';
+      script.dataset.cffMobileDock='1';
+      document.head.append(script);
+    }
     updateBottomNav(current());
   }
   function setActive(page) {
@@ -92,24 +98,48 @@
     bar.classList.add('cff-mobile-header');
     const logo=bar.querySelector('.nav-mobile-home-btn,.cff-public-brand');
     if(!logo)return;
-    if(homeBar){homeBar.querySelector('.nav-mobile-tabs')?.remove();homeBar.querySelector('.nav-mobile-search-btn')?.classList.remove('cff-search-in-shortcuts');homeBar.insertBefore(logo,homeBar.querySelector('.nav-mobile-right'));}
+    // Logo central fixa, sem seta e sem uma segunda navegação expansível.
+    if(homeBar){
+      homeBar.querySelector('.nav-mobile-tabs')?.remove();
+      homeBar.insertBefore(logo,homeBar.querySelector('.nav-mobile-right'));
+    }
     let actions=bar.querySelector('.nav-mobile-right,.cff-public-account-host');
-    if(!actions){actions=document.createElement('div');actions.className='cff-public-account-host';const search=bar.querySelector('.cff-public-search');if(search)actions.append(search);bar.append(actions);}
+    if(!actions){
+      actions=document.createElement('div');actions.className='cff-public-account-host';
+      const search=bar.querySelector('.cff-public-search');if(search)actions.append(search);
+      bar.append(actions);
+    }
     let searchButton=actions.querySelector('.nav-mobile-search-btn,.cff-mobile-search-button');
-    if(!searchButton){searchButton=document.createElement('button');searchButton.type='button';searchButton.className='cff-mobile-search-button';searchButton.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5"></path></svg>';actions.prepend(searchButton);searchButton.addEventListener('click',()=>{const open=!publicBar.classList.contains('cff-mobile-search-open');publicBar.classList.toggle('cff-mobile-search-open',open);searchButton.setAttribute('aria-expanded',String(open));if(open)publicBar.querySelector('#cff-public-search-input')?.focus();});}
-    searchButton.classList.remove('cff-search-in-shortcuts');searchButton.setAttribute('aria-label','Buscar no site');
-    const brand=document.createElement('div');brand.className='cff-mobile-brand';logo.before(brand);brand.append(logo);
-    const toggle=document.createElement('button');toggle.type='button';toggle.className='cff-shortcuts-toggle';toggle.setAttribute('aria-label','Abrir atalhos');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','cff-mobile-shortcuts');toggle.innerHTML='<span aria-hidden="true">⌄</span>';brand.append(toggle);
-    const panel=document.createElement('div');panel.id='cff-mobile-shortcuts';panel.className='cff-mobile-shortcuts';panel.hidden=true;
-    panel.innerHTML=[['Final','final'],['Stats','stats'],['MVP','mvp'],['Equipes','equipes']].map(([title,route])=>`<a data-cff-shortcut="${route}" href="${href('ffws-br-s2-'+route)}">${title}</a>`).join('');
-    (homeBar?.closest('nav[role="navigation"]')||publicBar).append(panel);
-    const dismiss=()=>{panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Abrir atalhos');};
-    toggle.addEventListener('click',()=>{const open=panel.hidden;panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Fechar atalhos':'Abrir atalhos');});
-    panel.addEventListener('click',event=>{const a=event.target.closest('a[data-cff-route]');if(a){go(event,a.dataset.cffRoute);dismiss();}if(event.target.closest('[data-cff-quick-search]')){dismiss();if(homeBar)window.toggleMobileSearch?.();else{publicBar.classList.toggle('cff-mobile-search-open');publicBar.querySelector('#cff-public-search-input')?.focus();}}});
-    document.addEventListener('click',event=>{if(!brand.contains(event.target)&&!panel.contains(event.target))dismiss();});
-    document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!panel.hidden){dismiss();toggle.focus();}publicBar?.classList.remove('cff-mobile-search-open');if(publicBar)searchButton.setAttribute('aria-expanded','false');}});
-    const main=document.querySelector('#main-content,main');if(main){const row=document.createElement('div');row.className='cff-mobile-return';const back=document.createElement('button');back.type='button';back.textContent='← Voltar';back.addEventListener('click',()=>{if(window.cffGoBack)window.cffGoBack();else location.href='/index.html';});row.append(back);if(homeBar)main.prepend(row);else main.before(row);}
-    installBottomNav();
+    if(!searchButton){
+      searchButton=document.createElement('button');searchButton.type='button';searchButton.className='cff-mobile-search-button';
+      searchButton.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5"></path></svg>';
+      actions.prepend(searchButton);
+      searchButton.addEventListener('click',()=>{
+        if(!publicBar)return;
+        const opened=!publicBar.classList.contains('cff-mobile-search-open');
+        publicBar.classList.toggle('cff-mobile-search-open',opened);
+        searchButton.setAttribute('aria-expanded',String(opened));
+        if(opened)publicBar.querySelector('#cff-public-search-input')?.focus();
+      });
+    }
+    searchButton.classList.remove('cff-search-in-shortcuts');
+    searchButton.setAttribute('aria-label','Buscar no site');
+    const brand=document.createElement('div');brand.className='cff-mobile-brand';
+    logo.before(brand);brand.append(logo);
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&publicBar?.classList.contains('cff-mobile-search-open')){
+        publicBar.classList.remove('cff-mobile-search-open');
+        searchButton.setAttribute('aria-expanded','false');
+        searchButton.focus();
+      }
+    });
+    const main=document.querySelector('#main-content,main');
+    if(main){
+      const row=document.createElement('div');row.className='cff-mobile-return';
+      const back=document.createElement('button');back.type='button';back.textContent='← Voltar';
+      back.addEventListener('click',()=>{if(window.cffGoBack)window.cffGoBack();else location.href='/index.html';});
+      row.append(back);if(homeBar)main.prepend(row);else main.before(row);
+    }
   }
   window.CFFNavigation={mount,setActive};
   function boot(){mount(document.querySelector('#sidebar-panel .sidebar-nav'));mount(document.getElementById('cff-public-sidebar-nav'));setupMobile();installBottomNav();setActive(current());}
