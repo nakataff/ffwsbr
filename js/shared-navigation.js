@@ -75,7 +75,7 @@
     document.body.append(nav);
     if(!document.querySelector('script[data-cff-mobile-dock]')){
       const script=document.createElement('script');
-      script.src='/js/mobile-dock.js?v=20261020-mobile-custom-v2';
+      script.src='/js/mobile-dock.js?v=20261020-mobile-custom-v3';
       script.dataset.cffMobileDock='1';
       document.head.append(script);
     }
