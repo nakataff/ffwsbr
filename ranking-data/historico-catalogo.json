@@ -1,0 +1,502 @@
+{
+  "schemaVersion": 1,
+  "status": "planning",
+  "updatedAt": "2026-10-20",
+  "scope": null,
+  "methodology": {
+    "status": "to-define",
+    "annualReference": {
+      "version": 1,
+      "files": [
+        "ranking-data/brasil-2025-source.json",
+        "ranking-data/brasil-2026-source.json"
+      ]
+    },
+    "notes": "Os pesos do anual são referência. Pesos históricos, alcance regional e comparação entre épocas ainda serão definidos com Matheus."
+  },
+  "events": [
+    {
+      "id": "copa-ff-2020",
+      "name": "C.O.P.A. Free Fire 2020",
+      "year": 2020,
+      "family": "copa-ff",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/copa-ff-2020.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "copa-ff-2022",
+      "name": "C.O.P.A. Free Fire 2022: Corrida do Milhão",
+      "year": 2022,
+      "family": "copa-ff",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/copa-ff-2022.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "copa-ff-2023",
+      "name": "C.O.P.A. Free Fire 2023",
+      "year": 2023,
+      "family": "copa-ff",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/copa-ff-2023.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "ffws-2019",
+      "name": "FFWS 2019",
+      "year": 2019,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/ffws-2019.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "ffws-2021-singapore",
+      "name": "FFWS 2021 Singapura",
+      "year": 2021,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/ffws-2021-singapore.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "ffws-2022-bangkok",
+      "name": "FFWS 2022 Bangkok",
+      "year": 2022,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/ffws-2022-bangkok.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "ffws-2022-sentosa",
+      "name": "FFWS 2022 Sentosa",
+      "year": 2022,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/ffws-2022-sentosa.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "ffws-2023",
+      "name": "FFWS 2023",
+      "year": 2023,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/ffws-2023.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "ffws-2024",
+      "name": "FFWS Global Finals 2024",
+      "year": 2024,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/ffws-2024.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "ffws-2025",
+      "name": "FFWS Global Finals 2025",
+      "year": 2025,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/ffws-2025.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-1",
+      "name": "LBFF 1",
+      "year": "2020",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-1.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-3",
+      "name": "LBFF 3",
+      "year": "2020",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-3.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-4",
+      "name": "LBFF 4",
+      "year": "2021",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-4.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-5",
+      "name": "LBFF 5",
+      "year": "2021",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-5.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-6",
+      "name": "LBFF 6",
+      "year": "2021",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-6.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-7",
+      "name": "LBFF 7",
+      "year": "2022",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-7.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-8",
+      "name": "LBFF 8",
+      "year": "2022",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-8.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "lbff-9",
+      "name": "LBFF 9",
+      "year": "2023",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/lbff-9.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "wb-2024",
+      "name": "WB 2024",
+      "year": "2024",
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/wb-2024.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "wb-2025-s1",
+      "name": "WB 2025 S1",
+      "year": 2025,
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/wb-2025-s1.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "wb-2025-s2",
+      "name": "WB 2025 S2",
+      "year": 2025,
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "novos-torneios/wb-2025-s2.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": []
+    },
+    {
+      "id": "copa-ff-2025",
+      "name": "Copa FF 2025",
+      "year": 2025,
+      "family": "copa-ff",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "ranking-data/brasil-2025-source.json",
+          "pointer": "/copa"
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": [
+        "Fonte compacta com classificação; o anual já usa estes resultados. Revisar identidade histórica e cobertura antes da inclusão."
+      ]
+    },
+    {
+      "id": "copa-ff-2026",
+      "name": "Copa FF 2026",
+      "year": 2026,
+      "family": "copa-ff",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "ranking-data/brasil-2026-source.json",
+          "pointer": "/copa"
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": [
+        "Fonte compacta com classificação; o anual já usa estes resultados. Revisar identidade histórica e cobertura antes da inclusão."
+      ]
+    },
+    {
+      "id": "ffws-br-2026-s1",
+      "name": "FFWS BR 2026 S1",
+      "year": 2026,
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "ffws-br-2026-s1/stages.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": [
+        "Usar cadastro ffws-br-2026-s1/teams.json para resolver equipes."
+      ]
+    },
+    {
+      "id": "ffws-br-2026-s2",
+      "name": "FFWS BR 2026 S2",
+      "year": 2026,
+      "family": "br-national",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "ffws-br-2026-s2/career-summary.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": [
+        "Resumo coletivo encerrado; evitar a fonte individual completa ou consultas ao vivo."
+      ]
+    },
+    {
+      "id": "ewc-2025",
+      "name": "Esports World Cup 2025",
+      "year": 2025,
+      "family": "esports-world-cup",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "ranking-data/brasil-2025-source.json",
+          "pointer": "/ewc"
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": [
+        "Recorte apenas dos quatro representantes brasileiros; insuficiente para um ranking de todas as equipes do mundo."
+      ]
+    },
+    {
+      "id": "ewc-2026",
+      "name": "Esports World Cup 2026",
+      "year": 2026,
+      "family": "esports-world-cup",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "ewc 2026/final.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": [
+        "Final disponível; conferir também brasileiros eliminados antes da final e classificação geral do evento."
+      ]
+    },
+    {
+      "id": "ffws-global-2026",
+      "name": "FFWS Global Finals 2026",
+      "year": 2026,
+      "family": "ffws-global",
+      "discipline": "battle-royale",
+      "sources": [
+        {
+          "file": "ffws-global-2026/stages.json",
+          "pointer": ""
+        }
+      ],
+      "reviewStatus": "pending",
+      "scoringProfile": null,
+      "notes": [
+        "Pendente de encerramento. A preparação do anual já valida final, repescagem e eliminados na Fase 1."
+      ]
+    }
+  ],
+  "pendingFamilies": [
+    {
+      "id": "copa-america",
+      "name": "Copa América",
+      "status": "awaiting-sources",
+      "notes": "Matheus vai enviar as edições e fontes; não inferir datas ou classificações."
+    },
+    {
+      "id": "ffcs-americas",
+      "name": "FFCS Americas",
+      "status": "awaiting-sources",
+      "notes": "Manter identidade própria de evento; não confundir automaticamente com FFWS."
+    },
+    {
+      "id": "free-fire-world-cup",
+      "name": "Free Fire World Cup",
+      "status": "awaiting-sources",
+      "notes": "Manter separada da Esports World Cup (EWC). Confirmar edições nas fontes."
+    }
+  ],
+  "coverageNote": "Inventário inicial de fontes locais, não lista exaustiva de todas as competições realizadas. Fonte disponível não significa classificação geral completa ou aprovação para pontuar. Nenhum evento pontua a partir deste catálogo."
+}

@@ -163,6 +163,16 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 
 ## Cards compartilháveis
 
+### Ranking histórico — preparação futura
+
+Ponto de continuação: [docs/RANKING-HISTORICO.md](RANKING-HISTORICO.md).
+O catálogo `ranking-data/historico-catalogo.json` reúne as fontes locais por edição
+e as famílias ainda aguardando material (Copa América, FFCS Americas e World Cup).
+É um inventário de preparação, sem consumo pelo frontend ou cálculo público.
+Pesos novos e alcance do histórico ainda serão definidos com o Matheus.
+Preservar identidades por época e incluir eliminados antes da final; a soma futura
+será offline com resumos estáticos e detalhes carregados apenas ao abrir.
+
 ### Ranking anual de equipes
 
 Entrada: `/ranking-anual.html`, no menu **Histórico → Ranking anual**.
