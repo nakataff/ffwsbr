@@ -11,17 +11,18 @@ const today=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',ye
 let year=2026,ready=false,busy=false,invalid=false;
 function altered(y){
   const old=original.get(y).source,now=drafts.get(y);
-  return JSON.stringify([old.basePoints,old.weights])!==JSON.stringify([now.basePoints,now.weights]);
+  return JSON.stringify([old.basePoints,old.weights,old.pointsByEvent||{}])!==JSON.stringify([now.basePoints,now.weights,now.pointsByEvent||{}]);
 }
 function apply(callback){
   callback(drafts.get(year));
   if($('sync').checked)callback(drafts.get(year===2026?2025:2026));
 }
+function points(conf,id,position){return conf.pointsByEvent?.[id]?.[position-1]??conf.basePoints[position-1]*conf.weights[id];}
 function recompute(y){
   const saved=original.get(y).ranking,conf=drafts.get(y);
   const active=saved.events.filter(e=>e.status==='finished');
   const rows=saved.rows.map(row=>{
-    const results=row.results.map(r=>({event:r.event,position:r.position,points:conf.basePoints[r.position-1]*conf.weights[r.event]}));
+    const results=row.results.map(r=>({event:r.event,position:r.position,points:points(conf,r.event,r.position)}));
     return {...row,results,total:results.reduce((sum,r)=>sum+r.points,0),oldTotal:row.total,oldRank:row.rank};
   });
   function tie(row){
@@ -47,7 +48,7 @@ function bands(){
     const label=from===to?from+'º':from+'º–'+to+'º';
     const base=conf.basePoints[from-1];
     return '<tr><th scope="row">'+label+'</th><td><input type="number" min="0" max="10000" step="1" aria-label="Pontos base '+label+'" data-band="'+i+'" value="'+base+'"></td>'+
-      ['copa','s1','ewc','global'].map(id=>'<td data-score="'+i+':'+id+'">'+format(base*conf.weights[id])+'</td>').join('')+'</tr>';
+      ['copa','s1','s2','ewc','global'].map(id=>'<td><input type="number" min="0" max="100000" step="1" class="direct-points" data-direct="'+i+':'+id+'" aria-label="Pontos '+EVENT_LABELS[id]+' · '+label+'" value="'+points(conf,id,from)+'"></td>').join('')+'</tr>';
   }).join('');
 }
 function preview(){
@@ -73,14 +74,15 @@ function render(){
   weights();bands();preview();invalid=false;updateButtons();
 }
 function verify(value,kind){
-  const max=kind==='weight'?100:10000;
+  const max=kind==='weight'?100:kind==='direct'?100000:10000;
   return value.trim()!==''&&Number.isInteger(Number(value))&&Number(value)>=0&&Number(value)<=max;
 }
 function recalcVisible(){
   const conf=drafts.get(year);
-  for(const td of document.querySelectorAll('[data-score]')){
-    const [band,id]=td.dataset.score.split(':'),from=BANDS[Number(band)][0];
-    td.textContent=format(conf.basePoints[from-1]*conf.weights[id]);
+  for(const input of document.querySelectorAll('[data-direct]')){
+    const [band,id]=input.dataset.direct.split(':'),from=BANDS[Number(band)][0];
+    const value=String(points(conf,id,from));
+    if(input!==document.activeElement&&input.value!==value)input.value=value;
   }
   preview();invalid=false;updateButtons();
 }
@@ -125,23 +127,33 @@ $('reset').addEventListener('click',()=>{
   for(const y of ($('sync').checked?YEARS:[year])){
     const src=original.get(y).source,conf=drafts.get(y);
     conf.basePoints=[...src.basePoints];conf.weights={...src.weights};
+    if(src.pointsByEvent)conf.pointsByEvent=structuredClone(src.pointsByEvent);else delete conf.pointsByEvent;
   }
   render();
 });
 document.addEventListener('input',event=>{
   const input=event.target;
-  if(!ready||!input.matches('[data-weight],[data-band]'))return;
-  const kind=input.hasAttribute('data-weight')?'weight':'band';
+  if(!ready||!input.matches('[data-weight],[data-band],[data-direct]'))return;
+  const kind=input.hasAttribute('data-weight')?'weight':input.hasAttribute('data-direct')?'direct':'band';
   if(!verify(input.value,kind)){
     invalid=true;$('status').className='bad';
-    $('status').textContent='Informe números inteiros entre 0 e '+(kind==='weight'?'100':'10.000')+'.';
+    $('status').textContent='Informe números inteiros entre 0 e '+(kind==='weight'?'100':kind==='direct'?'100.000':'10.000')+'.';
     $('download').disabled=true;$('download-both').disabled=true;return;
   }
   $('status').className='';
   const value=Number(input.value),id=input.dataset.weight,band=Number(input.dataset.band);
   apply(conf=>{
-    if(kind==='weight')conf.weights[id]=value;
-    else {const [from,to]=BANDS[band];for(let p=from;p<=to;p++)conf.basePoints[p-1]=value;}
+    if(kind==='weight'){
+      conf.weights[id]=value;
+      if(conf.pointsByEvent)delete conf.pointsByEvent[id];
+    }else if(kind==='direct'){
+      const [index,event]=input.dataset.direct.split(':'),[from,to]=BANDS[Number(index)];
+      conf.pointsByEvent=conf.pointsByEvent||{};
+      if(!conf.pointsByEvent[event])conf.pointsByEvent[event]=Array.from({length:24},(_,i)=>points(conf,event,i+1));
+      for(let p=from;p<=to;p++)conf.pointsByEvent[event][p-1]=value;
+    }else{
+      const [from,to]=BANDS[band];for(let p=from;p<=to;p++)conf.basePoints[p-1]=value;
+    }
   });
   recalcVisible();
 });
