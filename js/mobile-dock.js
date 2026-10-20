@@ -40,7 +40,7 @@ const pageNow=()=>window.CFF_SEASON_ROUTES?.pageFromLocation?.()||document.query
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}}
 function selected(route,page){
  if(route.startsWith('/')){const u=new URL(route,location.origin);return u.pathname===location.pathname&&(!u.search||u.search===location.search);}
- return route===page||(route==='ffws-global-2026-formato'&&String(page).startsWith('ffws-global-2026-'))||
+ return (route==='home'?page==='home'&&/^\/(?:index\.html)?$/.test(location.pathname):route===page)||(route==='ffws-global-2026-formato'&&String(page).startsWith('ffws-global-2026-'))||
  (route==='registro-detalhado'&&/(?:stats|mvp|registro|comparar|notas)/.test(page));
 }
 function accessEntry(){return [...document.querySelectorAll('[data-account-entry]')].find(e=>e.querySelector('img'))||document.querySelector('[data-account-entry]');}
