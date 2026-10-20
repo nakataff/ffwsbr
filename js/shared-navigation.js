@@ -48,6 +48,7 @@
     return 'home';
   }
   function updateBottomNav(page) {
+    if(window.CFFMobileDock){window.CFFMobileDock.refresh(page);return;}
     const root=document.querySelector('.cff-bottom-navigation');if(!root)return;
     const key=bottomCategory(page);
     root.querySelectorAll('a[data-cff-bottom]').forEach(a=>{
