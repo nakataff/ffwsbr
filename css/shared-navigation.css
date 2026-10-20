@@ -258,3 +258,6 @@
  .cff-dock-actions{padding:0 14px 14px}
  .cff-dock-config{padding:0 14px 16px}
 }
+
+/* Evitar que títulos escolhidos pelo usuário ocupem outros botões no dock. */
+@media(max-width:768px){.cff-bottom-navigation a>span{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
