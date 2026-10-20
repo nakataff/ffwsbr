@@ -1,26 +1,28 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),{JSDOM}=require('jsdom');
 const tick=async()=>{for(let i=0;i<12;i++)await new Promise(r=>setTimeout(r,0));};
 const id='1791910000000-0123456789abcdef',replyId='1791910006000-fedcba9876543210';
-async function fixture({admin=false,visible=true}={}){
- const dom=new JSDOM('<body></body>',{url:'https://centralfreefire.com.br/conta.html',runScripts:'outside-only'}),w=dom.window,subscriptions=new Map(),calls=[],reads=[];
+async function fixture({admin=false,visible=true,path='/conta.html',disabled=false}={}){
+ const dom=new JSDOM('<body></body>',{url:'https://centralfreefire.com.br'+path,runScripts:'outside-only'}),w=dom.window,subscriptions=new Map(),calls=[],reads=[];
  const data={'.info/connected':true,'communityProfileDefaults':{},'communityRoleCatalog':{},'globalChat/settings':{accent:'#aaffdd',slowSeconds:30},'globalChat/messages':{[id]:{uid:'other',name:'Alice',username:'alice',roleId:'member',text:'Olá @nakata <img src=x>',at:1791910000000}},'userAccounts/person/profile':{name:'Nakata',username:'nakata',gender:'masculino',public:true},'communityAccountRoles/person':{roleId:'member'},'communityProfileCatalog/earned':{kind:'badge',title:'Campeão',description:'Venceu o mês',enabled:true}};
+ let authCallback;
  const user={uid:'person',email:admin?'admin@centralfreefire.com.br':'user@test',getIdToken:async()=>'token'};
  const emit=path=>{for(const cb of subscriptions.get(path)||[])cb({val:()=>data[path]??null});};
  w.AbortSignal=AbortSignal;w.matchMedia=()=>({matches:false});w.HTMLElement.prototype.scrollIntoView=function(){};w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};w.CFF_CONFIG={firebase:{}};
  const roleData=await import('../js/profile-role-data.mjs');
  const modules={
  'firebase-app':{getApps:()=>[{name:'cff-public-accounts'}],initializeApp:()=>({})},
- 'firebase-auth':{getAuth:()=>({}),setPersistence:async()=>{},onAuthStateChanged:(_a,cb)=>{queueMicrotask(()=>cb(user));return()=>{};}},
+ 'firebase-auth':{getAuth:()=>({}),setPersistence:async()=>{},onAuthStateChanged:(_a,cb)=>{authCallback=cb;queueMicrotask(()=>cb(user));return()=>{};}},
  'firebase-database':{getDatabase:()=>({}),ref:(_d,path)=>path,query:(path,...args)=>({path,args}),orderByKey:()=>({orderBy:'$key'}),limitToLast:n=>({limit:n}),onValue:(reference,cb)=>{const path=typeof reference==='string'?reference:reference.path;if(typeof reference==='object')assert.equal(reference.args[1].limit,100);reads.push(path);if(!subscriptions.has(path))subscriptions.set(path,new Set());subscriptions.get(path).add(cb);queueMicrotask(()=>cb({val:()=>data[path]??null}));return()=>subscriptions.get(path).delete(cb);},get:async path=>({val:()=>data[path]??null})},
  'community-profile-data':{profileOptions:async()=>({frames:[{id:'frame-bronze-1',kind:'frame',image:'/assets/profile-frames/bronze-1.png',frameScale:1.35}]}),approvedImage:(_o,_c,_id,cls)=>`<img class="${cls}" alt="Arte">`,hydrateProfileImages(){}},'profile-role-data':roleData};
  w.__import=async url=>modules[Object.keys(modules).find(k=>url.includes(k))];
  w.fetch=async(_url,init)=>{const body=JSON.parse(init.body);calls.push(body);let result={ok:true};if(body.action==='chatStatus'||body.action==='chatPreferences'){const identity={roleId:admin?'administrator':'member',username:'nakata',badgeIds:body.badgeIds||['earned'],nameColor:''};data['globalChat/identities/person']=identity;emit('globalChat/identities/person');result={...result,administrator:admin,moderator:admin,identity,preference:{badgeIds:body.badgeIds||[]},allowNameColor:admin,ownedBadges:['earned']};}return {ok:true,json:async()=>result};};
+ if(disabled)w.document.documentElement.dataset.cffChat='off';
  if(!visible)w.localStorage.setItem('cff-chat-visible-v1','0');
  w.eval(fs.readFileSync('js/chat-visibility.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync('js/profile-emblems.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync('js/profile-frame-model.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync('js/global-chat.js','utf8').replace(/^import .*\n/gm,'').replaceAll('import(','window.__import('));await tick();
- return {w,data,calls,reads,subscriptions,emit,open:async()=>{w.document.querySelector('.cff-chat-launch').click();await tick();},close:()=>w.close()};
+ return {w,data,calls,reads,subscriptions,emit,changeUser:next=>authCallback?.(next),open:async()=>{w.document.querySelector('.cff-chat-launch').click();await tick();},close:()=>w.close()};
 }
 test('chat displays equipped profile frame, updates it live and leaves the avatar and emblem untouched',async()=>{
  const f=await fixture();
@@ -99,4 +101,39 @@ test('a saved hidden preference starts with no database subscriptions and can be
   assert.equal(f.w.document.getElementById('cff-global-chat').hidden,true);
   assert.equal(f.subscriptions.get('globalChat/latest').size,0);
  }finally{f.close();}
+});
+
+test('administrative routes never mount the widget, load its styles or subscribe to the conversation',async()=>{
+ for(const path of ['/admin.html','/admin-carreiras.html','/admin-chat.html','/admin-perfis.html','/admin/','/tools/admin-tarefas.html']){
+  const f=await fixture({path});try{assert.equal(f.w.document.getElementById('cff-global-chat'),null,path);assert.equal(f.w.document.querySelector('link[href*="global-chat.css"]'),null);assert.equal(f.reads.length,0);assert.equal(f.calls.length,0);}finally{f.close();}
+ }
+ const f=await fixture({disabled:true});try{assert.equal(f.w.document.getElementById('cff-global-chat'),null);assert.equal(f.reads.length,0);}finally{f.close();}
+});
+test('own messages face the other side and author alignment follows account changes',async()=>{
+ const f=await fixture();try{
+  f.data['globalChat/messages'][replyId]={uid:'person',name:'Nakata',roleId:'member',text:'Minha mensagem',at:1791910006000};await f.open();const d=f.w.document,own=()=>d.querySelector(`[data-chat-message="${replyId}"]`),other=()=>d.querySelector(`[data-chat-message="${id}"]`);
+  assert(own().classList.contains('is-own'));assert(!other().classList.contains('is-own'));
+  const style=d.createElement('style');style.textContent=fs.readFileSync('css/global-chat.css','utf8');d.head.append(style);
+  assert.equal(f.w.getComputedStyle(own()).flexDirection,'row-reverse');assert.equal(parseFloat(f.w.getComputedStyle(own().querySelector('.cff-chat-message-text')).borderTopRightRadius),0);
+  assert.equal(parseFloat(f.w.getComputedStyle(other().querySelector('.cff-chat-message-text')).borderTopLeftRadius),0);
+  f.changeUser(null);await tick();assert(!own().classList.contains('is-own'));assert(!other().classList.contains('is-own'));
+  f.changeUser({uid:'other',email:'other@test',getIdToken:async()=>'token'});await tick();assert(!own().classList.contains('is-own'));assert(other().classList.contains('is-own'));
+ }finally{f.close();}
+});
+test('giveaway form styles cannot stretch the launcher or alter chat buttons',async()=>{
+ const f=await fixture({path:'/sorteio-comunidade.html'});try{
+  const d=f.w.document,style=d.createElement('style'),giveaway=fs.readFileSync('sorteio-comunidade.html','utf8');style.textContent=giveaway.match(/<style>([\s\S]*?)<\/style>/)[1]+fs.readFileSync('css/global-chat.css','utf8');d.head.append(style);
+  const shell=d.createElement('main');shell.className='shell';shell.innerHTML='<button>Participar do sorteio</button>';d.body.append(shell);
+  assert.equal(f.w.getComputedStyle(shell.querySelector('button')).width,'100%');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).width,'max-content');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).height,'auto');
+  assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-close')).width,'32px');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-close')).height,'32px');
+  assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).textTransform,'none');
+ }finally{f.close();}
+});
+test('the shared bootstrap skips public chat imports on admin pages and supports an explicit page opt-out',async()=>{
+ const source=fs.readFileSync('js/config.min.js','utf8').replaceAll('import(','window.__import(');
+ for(const [path,disabled,expected]of [['/admin.html',false,0],['/admin-chat.html',false,0],['/admin/tarefas',false,0],['/index.html',false,1],['/sorteio-comunidade.html',false,1],['/conta.html',true,0]]){
+  const dom=new JSDOM('<body></body>',{url:'https://centralfreefire.com.br'+path,runScripts:'outside-only'}),w=dom.window,calls=[];
+  try{if(disabled)w.document.documentElement.dataset.cffChat='off';w.__import=async url=>calls.push(url);w.eval(source);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));await tick();assert.equal(calls.length,expected,path);assert(calls.every(url=>url.includes('global-chat.js?v=20261020-chat-layout-v1')));}finally{w.close();}
+ }
+ for(const path of ['admin-chat.html','admin-perfis.html'])assert(!fs.readFileSync(path,'utf8').includes('src="/js/global-chat.js'));
 });

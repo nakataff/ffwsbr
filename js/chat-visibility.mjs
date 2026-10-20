@@ -18,3 +18,8 @@ export function watchChatVisibility(change){
  change(isChatVisible());
  return()=>{window.removeEventListener(EVENT,local);window.removeEventListener('storage',stored);};
 }
+
+// Administrative tools do not mount the public community widget.
+export function isChatPageAllowed(pathname=location.pathname){
+ return !/(^|\/)admin(?:[-/.]|$)/i.test(pathname);
+}
