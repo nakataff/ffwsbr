@@ -111,8 +111,8 @@ test('annual methodology exposes its source configuration and retains v2 podium 
 
 test('points editor previews new podium scores and can isolate a single year without publishing',async()=>{
   const html='<select id="year"><option value="2026">2026</option><option value="2025">2025</option></select>'+
-    '<input id="sync" type="checkbox" checked><div id="weights"></div><tbody id="bands"></tbody>'+
-    '<tbody id="preview"></tbody><p id="preview-info"></p><p id="status"></p>'+
+    '<input id="sync" type="checkbox" checked><div id="weights"></div><table><tbody id="bands"></tbody></table>'+
+    '<table><tbody id="preview"></tbody></table><p id="preview-info"></p><p id="status"></p>'+
     '<button id="reset"></button><button id="download"></button><button id="download-both"></button>';
   const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/admin-ranking-anual.html',runScripts:'outside-only'});
   const w=dom.window,calls=[];
