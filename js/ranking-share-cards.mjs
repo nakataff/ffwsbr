@@ -15,10 +15,11 @@ export function localImagePath(src){
 }
 function loadImage(src){
   if(images.has(src))return images.get(src);
-  const path=localImagePath(src);if(!path)return Promise.resolve(null);
+  const workerLogo=/^https:\/\/cff-camp-notifications\.nakataffb4\.workers\.dev\/careers\/logo\/[0-9a-f-]{36}$/i.test(String(src||''));
+  const path=workerLogo?src:localImagePath(src);if(!path)return Promise.resolve(null);
   const promise=new Promise(resolve=>{const img=new Image();const timer=setTimeout(()=>finish(null),5000);let done=false;
     function finish(result){if(done)return;done=true;clearTimeout(timer);resolve(result);}
-    img.decoding='async';img.onload=()=>finish(img);img.onerror=()=>finish(null);img.src=path;
+    img.decoding='async';if(workerLogo)img.crossOrigin='anonymous';img.onload=()=>finish(img);img.onerror=()=>finish(null);img.src=path;
   });images.set(src,promise);return promise;
 }
 function qrGenerator(){
