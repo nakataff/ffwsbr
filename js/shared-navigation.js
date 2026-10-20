@@ -38,6 +38,42 @@
     setActive(current());
   }
   const current = () => window.CFF_SEASON_ROUTES?.pageFromLocation() || document.querySelector('.page.active')?.id || location.hash.slice(1) || 'home';
+  // Um único menu de acesso rápido, exclusivo das páginas públicas no celular.
+  function bottomCategory(page) {
+    const path=location.pathname.toLowerCase();
+    if(path.includes('conta.html')||path.startsWith('/perfil/'))return 'profile';
+    if(path.includes('interacoes.html')||path.includes('comunidade.html'))return 'community';
+    if(String(page).startsWith('ffws-global-2026-')||path.includes('ffws-global-2026'))return 'worlds';
+    if(/(?:stats|mvp|registro|notas|comparar|ranking)/i.test(String(page)))return 'stats';
+    return 'home';
+  }
+  function updateBottomNav(page) {
+    const root=document.querySelector('.cff-bottom-navigation');if(!root)return;
+    const key=bottomCategory(page);
+    root.querySelectorAll('a[data-cff-bottom]').forEach(a=>{
+      const selected=a.dataset.cffBottom===key;
+      a.classList.toggle('is-current',selected);
+      if(selected)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+    });
+  }
+  function installBottomNav() {
+    if(document.querySelector('.cff-bottom-navigation') || /(^|\/)admin(?:[-/.]|$)/i.test(location.pathname))return;
+    const links=[
+      ['home','Início','home','<path d="m3 10 9-7 9 7v11h-6v-7H9v7H3z"/>'],
+      ['worlds','Mundial','ffws-global-2026-formato','<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c4 5 4 13 0 18M12 3c-4 5-4 13 0 18"/>'],
+      ['stats','Estatísticas','registro-detalhado','<path d="M4 20V11m6 9V5m6 15v-8m4 8H2"/>'],
+      ['community','Comunidade','/interacoes.html','<path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m12 0v-2a4 4 0 0 0-3-3.87M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17 3a4 4 0 0 1 0 8"/>'],
+      ['profile','Perfil','/conta.html','<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>']
+    ];
+    const nav=document.createElement('nav');nav.className='cff-bottom-navigation';nav.setAttribute('aria-label','Navegação rápida');
+    nav.innerHTML=links.map(([key,label,route,svg])=>'<a data-cff-bottom="'+key+'" data-cff-bottom-route="'+route+'" href="'+esc(href(route))+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+svg+'</svg><span>'+label+'</span></a>').join('');
+    nav.addEventListener('click',event=>{
+      const link=event.target.closest('a[data-cff-bottom-route]');
+      if(link)go(event,link.dataset.cffBottomRoute);
+    });
+    document.body.append(nav);
+    updateBottomNav(current());
+  }
   function setActive(page) {
     document.querySelectorAll('.cff-unified-menu').forEach(root => {
       root.querySelectorAll('[data-cff-route]').forEach(a => {
@@ -47,6 +83,7 @@
       });
     });
     const row=document.querySelector('.cff-mobile-return'); if(row)row.hidden=Boolean(document.getElementById('main-content') && page==='home');
+    updateBottomNav(page);
     const quick=document.getElementById('cff-mobile-shortcuts'); if(quick){const prefix=page.startsWith('ffws-global-2026-')?'ffws-global-2026-':page.startsWith('ffws-br-2025-s2-')?'ffws-br-2025-s2-':'ffws-br-s2-';quick.querySelectorAll('[data-cff-shortcut]').forEach(a=>{const route=prefix+a.dataset.cffShortcut;a.dataset.cffRoute=route;a.href=href(route);a.classList.toggle('active',route===page);});}
   }
   function setupMobile() {
@@ -72,6 +109,7 @@
     document.addEventListener('click',event=>{if(!brand.contains(event.target)&&!panel.contains(event.target))dismiss();});
     document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!panel.hidden){dismiss();toggle.focus();}publicBar?.classList.remove('cff-mobile-search-open');if(publicBar)searchButton.setAttribute('aria-expanded','false');}});
     const main=document.querySelector('#main-content,main');if(main){const row=document.createElement('div');row.className='cff-mobile-return';const back=document.createElement('button');back.type='button';back.textContent='← Voltar';back.addEventListener('click',()=>{if(window.cffGoBack)window.cffGoBack();else location.href='/index.html';});row.append(back);if(homeBar)main.prepend(row);else main.before(row);}
+    installBottomNav();
   }
   window.CFFNavigation={mount,setActive};
   function boot(){mount(document.querySelector('#sidebar-panel .sidebar-nav'));mount(document.getElementById('cff-public-sidebar-nav'));setupMobile();setActive(current());}
