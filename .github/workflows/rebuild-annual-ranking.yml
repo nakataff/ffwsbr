@@ -36,9 +36,14 @@ jobs:
             assert.equal(source.basePoints.length,24);
             for (const p of source.basePoints) assert(Number.isInteger(p)&&p>=0&&p<=10000);
             for (const w of Object.values(source.weights)) assert(Number.isInteger(w)&&w>=0&&w<=100);
+            for (const [event,values] of Object.entries(source.pointsByEvent||{})){
+              assert(['copa','s1','s2','ewc','global'].includes(event));
+              assert(Array.isArray(values)&&values.length===24);
+              assert(values.every(v=>Number.isInteger(v)&&v>=0&&v<=100000));
+            }
             for (const row of ranking.rows){
               for (const result of row.results)
-                assert.equal(result.points,source.basePoints[result.position-1]*source.weights[result.event]);
+                assert.equal(result.points,source.pointsByEvent?.[result.event]?.[result.position-1]??source.basePoints[result.position-1]*source.weights[result.event]);
               assert.equal(row.total,row.results.reduce((a,b)=>a+b.points,0));
             }
             assert(ranking.rows.every((r,i,a)=>i===0||a[i-1].total>=r.total));
