@@ -107,6 +107,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
   if(b.operation==='quizStart')return quiz.start(uid);
   if(b.operation==='quizOpen')return quiz.open(uid,b);
   if(b.operation==='quizAnswer')return quiz.answer(uid,b);
+  if(b.operation==='quizSkip')return quiz.skip(uid,b);
   if(b.operation==='gameOrders')return orders.list(uid,b);
   if(b.operation==='cancelGameOrder')return orders.transition(uid,b);
   if(b.operation==='buyGameItem'){const p=await eligible(uid);return orders.buy(uid,b,p);}

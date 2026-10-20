@@ -1,6 +1,6 @@
 import {mountUserInbox} from './user-inbox.mjs?v=20261019-inbox-v1';
 import {isChatVisible,setChatVisible,watchChatVisibility} from './chat-visibility.mjs?v=20261019-chat-visibility-v1';
-import {mountDailyQuiz} from './daily-quiz.mjs?v=20261019-inbox-v1';
+import {mountDailyQuiz} from './daily-quiz.mjs?v=20261020-quiz-skip-v1';
 import {createEmblemDisplay} from './profile-emblems.mjs?v=20261016-emblems-v1';
 import {INVENTORY_TABS,inventoryAssets} from './profile-inventory.mjs?v=20261015-inventory-v1';
 import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015-inventory-v1';

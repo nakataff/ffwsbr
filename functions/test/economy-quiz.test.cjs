@@ -171,3 +171,27 @@ test('manually registered photos remain bounded and external failures start no t
   assert.equal(Q.validateQuestion({...bank[0],kind:'player',imagePath:'/player-photos/s2/synthetic.webp'}).imagePath,'player-photos/s2/synthetic.webp');
  }finally{s.close();global.fetch=nativeFetch;}
 });
+
+test('skip recovers a broken first photo, preserves the draw and pays only the remaining correct answers',async()=>{
+ let broken=true;const s=setup({imageLoader:async()=>{if(broken)throw Error('photo unavailable');return 'data:image/webp;base64,AAAA';}});try{
+  await installMixed(s,[0,1,2].map(i=>({...bank[i],kind:'player',imagePath:'fixtures/missing.webp'})));
+  await assert.rejects(s.core.handle(user,{operation:'quizStart'}),/photo unavailable/);
+  let state=await s.core.handle(user,{operation:'quizStatus'});const drawn=s.privateRound(),ids=drawn.questions.map(q=>q.id),skip={operation:'quizSkip',day:state.day,roundId:state.roundId,index:0};s.gets.length=0;
+  state=await s.core.handle(user,skip);assert.equal(state.answered,1);assert(state.questions[0].skipped);assert.equal(state.earned,0);assert(state.questions[1].locked);assert(!('correctAnswer' in state.questions[0]));assert(!('options' in state.questions[0]));assert.equal(Object.keys(s.privateRound().started).length,0);
+  assert.deepEqual(await s.core.handle(user,skip),state);assert.deepEqual(s.privateRound().questions.map(q=>q.id),ids);assert.deepEqual(s.gets,[]);
+  broken=false;for(let index=1;index<3;index++)state=await s.answer(state,index,s.privateRound().questions[index].answer);
+  assert(state.complete);assert.equal(state.earned,10);assert.equal(state.bonusEarned,0);assert.equal(state.wallet.balance,10);assert.equal((await s.core.handle(user,skip)).earned,10);
+  assert.equal((await s.core.handle(user,{operation:'quizAnswer',day:state.day,roundId:state.roundId,index:0,choice:drawn.questions[0].answer})).earned,10);
+ }finally{s.close();}
+});
+test('skip is current-slot-only, private, bounded to the daily three and never removes an existing reward',async()=>{
+ const s=setup();try{await s.install();let state=await s.core.handle(user,{operation:'quizStart'});const request=(index,extra={})=>s.core.handle(user,{operation:'quizSkip',day:state.day,roundId:state.roundId,index,...extra});
+  for(const index of [-1,3,1.5,'0'])await assert.rejects(request(index),{status:400});await assert.rejects(request(1),{status:409});await assert.rejects(request(0,{day:'2026-10-18'}),{status:409});await assert.rejects(request(0,{roundId:'other-round'}),{status:409});await assert.rejects(s.core.handle({...user,uid:'stranger'},{operation:'quizSkip',day:state.day,roundId:state.roundId,index:0}),{status:409});
+  state=await s.answer(state,0,s.privateRound().questions[0].answer);state=await request(0);assert.equal(state.wallet.balance,5);assert(state.questions[0].correct);assert(!state.questions[0].skipped);
+  for(const index of [1,2])state=await request(index);assert(state.complete);assert.equal(state.earned,5);assert.equal(state.bonusEarned,0);assert.equal((await s.core.handle(user,{operation:'quizStart'})).roundId,state.roundId);assert.equal(s.sql.exec("SELECT COUNT(*) n FROM eco_ledger WHERE kind='quiz_bonus'")[0].n,0);
+ }finally{s.close();}
+});
+test('skip wins safely against an in-flight photo load and cannot reopen or reveal the skipped slot',async()=>{
+ let release;const s=setup({imageLoader:()=>new Promise(r=>release=r)});try{await installMixed(s,[0,1,2].map(i=>({...bank[i],kind:'player',imagePath:'fixtures/delayed.webp'})));const pending=s.core.handle(user,{operation:'quizStart'});while(!release)await new Promise(r=>setTimeout(r,0));let state=await s.core.handle(user,{operation:'quizStatus'});state=await s.core.handle(user,{operation:'quizSkip',day:state.day,roundId:state.roundId,index:0});release('data:image/webp;base64,AAAA');const late=await pending;assert.deepEqual(late,state);assert(late.questions[0].skipped);assert(!('imageData' in late.questions[0]));assert.equal(Object.keys(s.privateRound().started).length,0);
+ }finally{s.close();}
+});

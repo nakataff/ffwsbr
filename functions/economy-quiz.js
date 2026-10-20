@@ -58,7 +58,7 @@ function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageL
  function expire(uid,day,r){const i=r?.answers.length;if(i<DAILY&&r.started?.[i]&&now()>=r.started[i].expiresAt){r.answers.push({selected:null,correct:false,coins:0,timedOut:true});saveRound(uid,day,r);}return r;}
  function present(uid,c,r,day){
   return {ok:true,schema:2,day,serverNow:now(),resetAt:Date.parse(day+'T00:00:00-03:00')+86400000,enabled:c.enabled&&!!(r||c.count>=DAILY),limit:DAILY,reward:r?.reward??c.reward,bonus:BONUS,bonusEarned:r?.bonusPaid||0,roundId:r?.id||'',earned:r?r.answers.reduce((n,a)=>n+a.coins,0)+(r.bonusPaid||0):0,answered:r?.answers.length||0,complete:r?.answers.length===DAILY,
-   questions:r?r.questions.map((q,index)=>{const a=r.answers[index],active=r.started?.[index],base={index,kind:q.kind||'quiz',timeLimit:q.timeLimit||LIMITS[q.kind||'quiz']};if(!a&&!active)return {...base,locked:true};return {...base,locked:false,prompt:q.prompt,category:q.category,options:q.options,...(q.clues?{clues:q.clues}:{}),...(q.pickCount?{pickCount:q.pickCount}:{}),...(q.imageData?{imageData:q.imageData}:{}),...(active?{expiresAt:active.expiresAt}:{}),...(a?{answered:true,selected:a.selected,correct:a.correct,correctAnswer:q.kind==='lineup'?q.answers:q.answer,explanation:q.explanation,sourceUrl:q.sourceUrl,coins:a.coins,timedOut:!!a.timedOut,hits:a.hits}: {})};}):[],wallet:wallet(uid)};
+   questions:r?r.questions.map((q,index)=>{const a=r.answers[index],active=r.started?.[index],base={index,kind:q.kind||'quiz',timeLimit:q.timeLimit||LIMITS[q.kind||'quiz']};if(a?.skipped)return {...base,locked:false,answered:true,skipped:true,selected:null,correct:false,coins:0};if(!a&&!active)return {...base,locked:true};return {...base,locked:false,prompt:q.prompt,category:q.category,options:q.options,...(q.clues?{clues:q.clues}:{}),...(q.pickCount?{pickCount:q.pickCount}:{}),...(q.imageData?{imageData:q.imageData}:{}),...(active?{expiresAt:active.expiresAt}:{}),...(a?{answered:true,selected:a.selected,correct:a.correct,correctAnswer:q.kind==='lineup'?q.answers:q.answer,explanation:q.explanation,sourceUrl:q.sourceUrl,coins:a.coins,timedOut:!!a.timedOut,hits:a.hits}: {})};}):[],wallet:wallet(uid)};
  }
  function status(uid){const c=prepare();return transaction(()=>{const day=dayKey(now()),r=expire(uid,day,upgrade(uid,day,round(uid,day)));return present(uid,c,r,day);});}
  function getRound(uid,b){const day=dayKey(now()),r=upgrade(uid,day,round(uid,day));if(b.day!==day||!r||b.roundId!==r.id)throw fail(409,'Os desafios de hoje mudaram. Atualize para continuar.');return{day,r};}
@@ -83,13 +83,23 @@ function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageL
   if(!Number.isInteger(b.index)||b.index<0||b.index>=DAILY)throw fail(400,'Desafio inválido.');
   return transaction(()=>{const c=config(),{day,r}=getRound(uid,b),q=r.questions[b.index],old=r.answers[b.index];
    const selected=q.kind==='lineup'?(Array.isArray(b.choices)?b.choices.slice().sort((a,b)=>a-b):null):b.choice;
-   if(old){if(old.timedOut||b.choice===null||JSON.stringify(old.selected)===JSON.stringify(selected))return present(uid,c,r,day);throw fail(409,'Sua primeira resposta já foi registrada.');}
+   if(old){if(old.skipped||old.timedOut||b.choice===null||JSON.stringify(old.selected)===JSON.stringify(selected))return present(uid,c,r,day);throw fail(409,'Sua primeira resposta já foi registrada.');}
    if(!c.enabled)throw fail(409,'Os desafios estão pausados.');if(b.index!==r.answers.length||!r.started?.[b.index])throw fail(409,'Inicie o desafio atual primeiro.');
    if(now()>=r.started[b.index].expiresAt){expire(uid,day,r);return present(uid,c,r,day);}
    if(q.kind==='lineup'){if(!selected||selected.length!==q.pickCount||new Set(selected).size!==selected.length||selected.some(i=>!Number.isInteger(i)||i<0||i>=q.options.length))throw fail(400,'Escolha quatro jogadores diferentes.');}
    else if(!Number.isInteger(selected)||selected<0||selected>=4)throw fail(400,'Escolha uma alternativa válida.');
    const hits=q.kind==='lineup'?selected.filter(i=>q.answers.includes(i)).length:undefined,correct=q.kind==='lineup'?hits===q.pickCount:q.answer===selected,coins=q.kind==='lineup'?Math.floor(r.reward*hits/q.pickCount):correct?r.reward:0;
    if(coins)credit(uid,coins,'quiz','quiz:'+uid+':'+day+':'+b.index,'Desafio diário '+(b.index+1));r.answers.push({selected,correct,coins,...(hits!==undefined?{hits}:{})});bonus(uid,day,r);saveRound(uid,day,r);return present(uid,c,r,day);
+  });
+ }
+ function skip(uid,b){
+  if(!Number.isInteger(b.index)||b.index<0||b.index>=DAILY)throw fail(400,'Desafio inválido.');
+  return transaction(()=>{const c=config(),{day,r}=getRound(uid,b);
+   // Repeated requests refer to the original slot, never to the next challenge.
+   if(r.answers[b.index])return present(uid,c,r,day);
+   if(!c.enabled)throw fail(409,'Os desafios estão pausados.');
+   if(b.index!==r.answers.length)throw fail(409,'Pule apenas o desafio atual.');
+   r.answers.push({selected:null,correct:false,coins:0,skipped:true});saveRound(uid,day,r);return present(uid,c,r,day);
   });
  }
  function admin(b){
@@ -99,6 +109,6 @@ function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageL
   if(b.operation==='quizList'){const offset=Number.isInteger(b.offset)&&b.offset>=0&&b.offset<=100000?b.offset:0,entries=rows('SELECT data FROM eco_quiz_questions ORDER BY id LIMIT 21 OFFSET ?',offset).map(r=>JSON.parse(r.data));return {ok:true,entries:entries.slice(0,20),hasMore:entries.length>20,offset,limit:20};}
   throw fail(400,'Ação do quiz inválida.');
  }
- return {status,start,open,answer,admin};
+ return {status,start,open,answer,skip,admin};
 }
 module.exports={init,create,validateQuestion,LIMITS,loadImage,localPhotoCount:()=>Object.keys(seed.photos||{}).length};

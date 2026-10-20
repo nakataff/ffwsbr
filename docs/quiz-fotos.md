@@ -45,3 +45,23 @@ node --test functions/test/economy-quiz.test.cjs test/daily-challenges-generator
 
 Nunca comite o arquivo gerado com perguntas/gabaritos. A rota `/health` do Worker
 informa `quizLocalPhotos: true` quando o pacote de fotos foi incluído no deploy.
+
+## Pular um desafio com falha
+
+Na conta, “Problema neste desafio?” oferece **Pular sem moedas**. O bloco abre
+quando uma operação falha ou o navegador não consegue decodificar a foto.
+
+- `quizSkip` recebe dia, ID da rodada e índice. Só conclui o desafio atual e
+  preserva o sorteio, os próximos desafios e as moedas anteriores.
+- Pode concluir um desafio que ainda não iniciou, inclusive quando a primeira
+  foto falhou. Nesse caso, a interface consulta `quizStatus` uma única vez para
+  recuperar a rodada já salva. Não há polling, novo sorteio ou varredura de usuários.
+- O salto é definitivo: zero moedas nesse desafio e sem bônus de três acertos.
+  O resumo o identifica como pulado, sem divulgar alternativas ou gabarito.
+- Repetir a requisição não pula o próximo desafio. Se uma resposta já foi
+  registrada, o salto mantém a resposta e sua recompensa, inclusive em corridas.
+- Uma foto que termine de carregar após o salto não reabre a questão.
+- O próximo desafio continua fechado até a pessoa clicar para iniciá-lo.
+
+Testes: `functions/test/economy-quiz.test.cjs` e `test/daily-quiz.test.cjs`.
+O health do Worker publica `quizSkip: true` a partir da versão 38.
