@@ -14,7 +14,7 @@ const result=(row,id)=>row.results.find(r=>r.event===id);
 const pointsFor=(event,pos)=>data.pointsByEvent?.[event.id]?.[pos-1]??data.basePoints[pos-1]*event.weight;
 const filtered=()=>data.rows.filter(r=>norm(r.team).includes(norm(state.search)));
 function logo(src){return src&&!/[:\\]|^\/\//.test(src)&&!src.split('/').includes('..')?'/'+src.replace(/^\//,''):'/escudo.webp';}
-function image(row){return `<img src="${esc(logo(row.logo))}" alt="" width="36" height="36" loading="lazy" decoding="async" data-annual-logo>`;}
+function image(row){return `<img src="${esc(logo(row.logo))}" alt="" width="36" height="36" loading="lazy" decoding="async" data-team-logo="${esc(row.team)}" data-annual-logo>`;}
 function sourceLink(event){try{const u=new URL(event.source,location.origin);return u.origin===location.origin||u.protocol==='https:'?esc(u.href):'#';}catch(_){return '#';}}
 function url(view=state.view){const u=new URL('/ranking-anual.html',location.origin);u.searchParams.set('ano',String(state.year));u.searchParams.set('visao',view);if(state.search)u.searchParams.set('busca',state.search);return u.href;}
 function yearPicker(){return `<label class="annual-year">Temporada<select data-annual-year aria-label="Ano do ranking">${YEARS.map(y=>`<option value="${y}" ${y===state.year?'selected':''}>Brasil ${y}</option>`).join('')}</select></label>`;}
@@ -40,7 +40,7 @@ function campaign(team,button){
 }
 function closeCampaign(){query('dialog').close();opener?.focus();}
 function cardPayload(){
-  const rows=filtered().map(r=>({rank:r.rank,name:r.team,team:r.team,logo:r.logo,points:r.total,annualValues:events().map(e=>result(r,e.id)?.points??null)}));
+  const rows=filtered().map(r=>({rank:r.rank,name:r.team,team:r.team,logo:window.cffCareerTeamIdentity?.(r.team)?.logo||r.logo,points:r.total,annualValues:events().map(e=>result(r,e.id)?.points??null)}));
   const make=view=>({id:`ranking-brasil-${data.year}-${view}`,kind:'teams',mode:'annual',title:'Ranking anual CFF',event:`Brasil ${data.year}`,stage:`${view==='competicoes'?'Por competição':'Pontuação total'} · ${data.partial?'Parcial do ano':'Ano encerrado'} · Método v${data.methodVersion}`,updatedAt:data.updatedAt,metric:'points',url:url(view),annualColumns:view==='competicoes'?events().map(e=>e.label):[],rows});
   return {views:['total','competicoes'].map(id=>({id,...make(id)})),viewId:`ranking-brasil-${data.year}-${state.view}`};
 }
