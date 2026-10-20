@@ -85,8 +85,7 @@
     return c;
   }
   function capture(widget){
-    const config=targets[widget.id],event=getText(document.querySelector('[data-home-rankings-event]'))||
-      document.querySelector('[data-home-rankings-event]')?.dataset.homeRankingsEvent||'FREE FIRE COMPETITIVO';
+    const config=targets[widget.id],event=document.querySelector('[data-home-rankings-event]')?.dataset.homeRankingsEvent||'FREE FIRE COMPETITIVO';
     const renderedTitle=getText($('h3',widget)).replace(/^[^\p{L}\d]+/u,'');
     return {title:renderedTitle.toLocaleUpperCase('pt-BR')||config.title,
       event:String(event).trim()||'FREE FIRE COMPETITIVO',primary:config.primary,rows:rows(widget)};
