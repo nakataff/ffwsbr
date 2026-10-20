@@ -128,10 +128,11 @@ test('points editor previews new podium scores and can isolate a single year wit
     first.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();
     assert.equal($('download').disabled,false);
     assert.equal(w.document.querySelector('[data-direct="0:copa"]').value,'250');
-    assert($('preview').textContent.includes('1.240')); // Fluxo W7M gained 50 Copa points
+    const estimate=(y,team,podium)=>{const ranked=read('ranking-data/brasil-'+y+'.json'),source=read('ranking-data/brasil-'+y+'-source.json'),row=ranked.rows.find(r=>r.team===team);return (row.total+(podium-source.basePoints[0])*row.results.filter(r=>r.position===1).reduce((total,r)=>total+source.weights[r.event],0)).toLocaleString('pt-BR');};
+    assert($('preview').textContent.includes(estimate(2026,'FLUXO W7M',250)));
     $('year').value='2025';$('year').dispatchEvent(new w.Event('change',{bubbles:true}));
     assert.equal(w.document.querySelector('[data-band="0"]').value,'250');
-    assert($('preview').textContent.includes('2.475')); // Fluxo 2025 also gained 50
+    assert($('preview').textContent.includes(estimate(2025,'FLUXO',250)));
     $('sync').checked=false;$('sync').dispatchEvent(new w.Event('change',{bubbles:true}));
     const second=w.document.querySelector('[data-band="0"]');second.value='300';
     second.dispatchEvent(new w.Event('input',{bubbles:true}));
