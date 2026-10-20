@@ -3,8 +3,8 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const ROOT=path.join(__dirname,'..'),read=p=>JSON.parse(fs.readFileSync(path.join(ROOT,p),'utf8'));
 const YEAR_FILES={
-  2026:['ranking-data/brasil-2026-source.json','ffws-br-2026-s1/stages.json','ffws-br-2026-s2/career-summary.json','ewc 2026/final.json','ffws-global-2026/stages.json','ffws-br-2026-s1/teams.json','ffws-br-2026-s2/teams.json','ffws-global-2026/teams.json'],
-  2025:['ranking-data/brasil-2025-source.json','novos-torneios/wb-2025-s1.json','novos-torneios/wb-2025-s2.json','novos-torneios/ffws-2025.json']
+  2026:['ranking-data/brasil-2026-source.json','ffws-br-2026-s1/stages.json','ffws-br-2026-s2/career-summary.json','ewc 2026/final.json','ffws-global-2026/stages.json','ffws-br-2026-s1/teams.json','ffws-br-2026-s2/teams.json','ffws-global-2026/teams.json','team-data/logo-map.json'],
+  2025:['ranking-data/brasil-2025-source.json','novos-torneios/wb-2025-s1.json','novos-torneios/wb-2025-s2.json','novos-torneios/ffws-2025.json','team-data/logo-map.json']
 };
 const FILES=YEAR_FILES[2026];
 function completeStandings(finalRows,previousRows,count,canonical,label){
@@ -50,7 +50,7 @@ function build(inputs){
     if(!ids.includes(id)||!Array.isArray(values)||values.length!==config.basePoints.length||values.some(v=>!Number.isInteger(v)||v<0||v>100000))throw Error('Pontuação personalizada inválida: '+id);
   }
   const score=(id,position)=>{const standard=base(position)*config.weights[id];return overrides[id]?overrides[id][position-1]:standard;};
-  const year=config.year,metadata=new Map(),event=(id,label,name,source,standings,status='finished')=>({id,label,name,weight:config.weights[id],status,source,standings});
+  const year=config.year,metadata=new Map(),logoMap=inputs.at(-1)?.logos||{},event=(id,label,name,source,standings,status='finished')=>({id,label,name,weight:config.weights[id],status,source,standings});
   if(!config.copa.finished||config.copa.standings.length!==config.copa.teamCount)throw Error('Copa incompleta');
   let events=[event('copa','Copa FF',`Copa FF ${year}`,config.copa.source,config.copa.standings)];
   if(year===2026){
@@ -77,8 +77,14 @@ function build(inputs){
       if(!name||seen.has(name))throw Error('Equipe duplicada em '+e.id+': '+name);
       seen.add(name);
       if(!teams.has(name)){
-        const candidate=config.logos?.[name]||metadata.get(name)?.logo||'escudo.webp';
-        teams.set(name,{team:name,logo:fs.existsSync(path.join(ROOT,candidate))?candidate:'escudo.webp',results:[]});
+        // Prefer local assets, but allow HTTPS image sources already present in the reviewed logo catalog.
+        // A placeholder must not hide a real logo from another source.
+        const candidates=[config.logos?.[name],metadata.get(name)?.logo,logoMap[name]];
+        const valid=value=>typeof value==='string'&&
+          (value.startsWith('https://')?(()=>{try{const url=new URL(value);return !url.username&&!url.password&&/\.(?:webp|png|jpe?g)$/i.test(url.pathname);}catch{return false;}})():
+          !value.includes('..')&&!path.isAbsolute(value)&&fs.existsSync(path.join(ROOT,value)));
+        const candidate=candidates.find(value=>value&&value!=='escudo.webp'&&valid(value))||'escudo.webp';
+        teams.set(name,{team:name,logo:candidate,results:[]});
       }
       teams.get(name).results.push({event:e.id,position,points:score(e.id,position)});
     }
