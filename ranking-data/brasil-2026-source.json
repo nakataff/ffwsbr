@@ -42,6 +42,9 @@
     "FLUXO": "FLUXO W7M",
     "OUTPLAY ESPORTS": "ANGELS OUTPLAY"
   },
+  "logos": {
+    "LINE 10": "line 10.webp"
+  },
   "copa": {
     "source": "https://escharts.com/tournaments/free-fire/cop-free-fire-2026",
     "reference": "https://liquipedia.net/freefire/C.O.P.A._Free_Fire/2026",
