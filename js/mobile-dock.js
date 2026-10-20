@@ -67,7 +67,7 @@ function refresh(page=pageNow()){
   a.classList.toggle('is-current',on);if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
  }
  const profile=bar.querySelector('[data-cff-bottom="profile"]');
- if(profile){const on=location.pathname==='/conta.html';profile.classList.toggle('is-current',on);if(on)profile.setAttribute('aria-current','page');else profile.removeAttribute('aria-current');}
+ if(profile){const on=location.pathname==='/conta.html'||location.pathname.startsWith('/perfil/');profile.classList.toggle('is-current',on);if(on)profile.setAttribute('aria-current','page');else profile.removeAttribute('aria-current');}
  syncAvatar();
 }
 function balance(){return [...document.querySelectorAll('[data-header-wallet] [data-wallet-value]')].map(e=>e.textContent.trim()).find(s=>s&&s!=='—')||'—';}
