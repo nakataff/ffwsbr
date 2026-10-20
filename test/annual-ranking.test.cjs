@@ -66,6 +66,21 @@ test('2025 includes every closed BR event, with Fluxo and W7M separate and the f
   for(const r of generated.rows){assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));assert(fs.existsSync(r.logo));}
   assert(fs.statSync('ranking-data/brasil-2025.json').size<7000);
 });
+test('2025 and 2026 reuse valid crests from local assets or reviewed external catalog without mixing organizations',()=>{
+  const s25=build(YEAR_FILES[2025].map(read));
+  const logo25=team=>s25.rows.find(r=>r.team===team)?.logo;
+  assert.equal(logo25('LOUD'),'loud 2.webp');
+  assert.equal(logo25('LOOPS ESPORTS'),'Loops 1.webp');
+  assert.equal(logo25('W7M ESPORTS'),'https://i.postimg.cc/yx39wjkN/w7m.webp');
+  assert.equal(logo25('INCO GAMING'),'https://i.postimg.cc/XYGTQnxR/inco.webp');
+  assert.equal(logo25('FLAMENGO ESPORTS'),'https://i.postimg.cc/BZgT788s/flamengo.webp');
+  assert.notEqual(logo25('FLUXO'),logo25('W7M ESPORTS'));
+  const s26=build(inputs()),logo26=team=>s26.rows.find(r=>r.team===team)?.logo;
+  assert.equal(logo26('LINE 10'),'line 10.webp');
+  assert.equal(logo26('LOUD'),'loud 2.webp');
+  assert.equal(logo26('LOOPS'),'Loops 1.webp');
+  assert.equal(logo26('ALFA 34'),'a34.webp');
+});
 test('future Global counts BR teams in the final, repescagem and first-phase eliminations, and rejects incomplete results',()=>{
   const src=inputs(),g=src[4],names=src[7].teams.map(t=>t.name),loud='LOUD',los='LOS',fluxo='FLUXO W7M';
   const order=names.filter(n=>n!==los);order.splice(20,0,los);
