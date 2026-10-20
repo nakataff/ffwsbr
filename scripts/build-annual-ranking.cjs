@@ -81,7 +81,7 @@ function build(inputs){
         // A placeholder must not hide a real logo from another source.
         const candidates=[config.logos?.[name],metadata.get(name)?.logo,logoMap[name]];
         const valid=value=>typeof value==='string'&&
-          (/^https:\/\/i.test(value)?(()=>{try{const url=new URL(value);return !url.username&&!url.password&&/\.(?:webp|png|jpe?g)$/i.test(url.pathname);}catch{return false;}})():
+          (value.startsWith('https://')?(()=>{try{const url=new URL(value);return !url.username&&!url.password&&/\.(?:webp|png|jpe?g)$/i.test(url.pathname);}catch{return false;}})():
           !value.includes('..')&&!path.isAbsolute(value)&&fs.existsSync(path.join(ROOT,value)));
         const candidate=candidates.find(value=>value&&value!=='escudo.webp'&&valid(value))||'escudo.webp';
         teams.set(name,{team:name,logo:candidate,results:[]});
