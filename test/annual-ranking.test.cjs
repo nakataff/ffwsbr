@@ -107,3 +107,40 @@ test('annual methodology exposes its source configuration and retains v2 podium 
     assert.deepEqual(d.events.map(e=>[e.id,e.weight]),[['copa',src.weights.copa],['s1',src.weights.s1],['s2',src.weights.s2],['ewc',src.weights.ewc],['global',src.weights.global]]);
   }
 });
+
+
+test('points editor previews new podium scores and can isolate a single year without publishing',async()=>{
+  const html='<select id="year"><option value="2026">2026</option><option value="2025">2025</option></select>'+
+    '<input id="sync" type="checkbox" checked><div id="weights"></div><tbody id="bands"></tbody>'+
+    '<tbody id="preview"></tbody><p id="preview-info"></p><p id="status"></p>'+
+    '<button id="reset"></button><button id="download"></button><button id="download-both"></button>';
+  const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/admin-ranking-anual.html',runScripts:'outside-only'});
+  const w=dom.window,calls=[];
+  w.structuredClone=global.structuredClone;
+  w.fetch=async url=>{calls.push(String(url));const name=String(url).split('/').pop();return {ok:true,json:async()=>read('ranking-data/'+name)};};
+  try{
+    w.eval(fs.readFileSync('js/annual-points-editor.mjs','utf8'));await tick();
+    const $=id=>w.document.getElementById(id);
+    assert.equal(calls.length,4);
+    assert.equal(w.document.querySelector('[data-band="0"]').value,'200');
+    assert.equal($('download').disabled,true);
+    const first=w.document.querySelector('[data-band="0"]');first.value='250';
+    first.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();
+    assert.equal($('download').disabled,false);
+    assert.equal(w.document.querySelector('[data-score="0:copa"]').textContent,'250');
+    assert($('preview').textContent.includes('1.240')); // Fluxo W7M gained 50 Copa points
+    $('year').value='2025';$('year').dispatchEvent(new w.Event('change',{bubbles:true}));
+    assert.equal(w.document.querySelector('[data-band="0"]').value,'250');
+    assert($('preview').textContent.includes('2.475')); // Fluxo 2025 also gained 50
+    $('sync').checked=false;$('sync').dispatchEvent(new w.Event('change',{bubbles:true}));
+    const second=w.document.querySelector('[data-band="0"]');second.value='300';
+    second.dispatchEvent(new w.Event('input',{bubbles:true}));
+    $('year').value='2026';$('year').dispatchEvent(new w.Event('change',{bubbles:true}));
+    assert.equal(w.document.querySelector('[data-band="0"]').value,'250');
+    $('reset').click();assert.equal(w.document.querySelector('[data-band="0"]').value,'200');
+    assert.equal($('download').disabled,true);
+    $('year').value='2025';$('year').dispatchEvent(new w.Event('change',{bubbles:true}));
+    assert.equal(w.document.querySelector('[data-band="0"]').value,'300');
+    assert.equal(calls.length,4); // no additional network requests for previews
+  }finally{w.close();}
+});
