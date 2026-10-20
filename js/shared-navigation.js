@@ -112,7 +112,7 @@
     installBottomNav();
   }
   window.CFFNavigation={mount,setActive};
-  function boot(){mount(document.querySelector('#sidebar-panel .sidebar-nav'));mount(document.getElementById('cff-public-sidebar-nav'));setupMobile();setActive(current());}
+  function boot(){mount(document.querySelector('#sidebar-panel .sidebar-nav'));mount(document.getElementById('cff-public-sidebar-nav'));setupMobile();installBottomNav();setActive(current());}
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot,{once:true}):boot();
   window.addEventListener('hashchange',()=>setActive(current()));
   window.addEventListener('cff:pretty-route',()=>setActive(current()));
