@@ -18,9 +18,47 @@ export async function warmProfileImages(ids,db){
  await Promise.all(unique.map(async id=>{if(imageValueCache.has(id))return imageValueCache.get(id);let promise=imageCache.get(id);if(!promise){promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{const value=s.val();if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');imageValueCache.set(id,value);return value;}).catch(e=>{imageCache.delete(id);throw e;});imageCache.set(id,promise);}try{const value=await promise;imageValueCache.set(id,value);const preload=new Image();preload.src=value;try{await preload.decode();}catch{}return value;}catch{return'';}}));
 }
 export function hydrateProfileImages(root,db){
- const nodes=[...root.querySelectorAll('img[data-profile-asset]')];if(!nodes.length)return;
- const load=async node=>{const id=node.dataset.profileAsset;node.removeAttribute('data-profile-asset');try{let promise=imageCache.get(id);if(!promise){promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{const value=s.val();if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');return value;}).catch(e=>{imageCache.delete(id);throw e;});imageCache.set(id,promise);}const data=await promise;imageValueCache.set(id,data);const preload=new Image();preload.src=data;try{await preload.decode();}catch{}if(node.isConnected){node.src=data;node.classList.remove('cff-profile-asset-pending');node.classList.add('cff-profile-asset-ready');}}catch{node.classList.remove('cff-profile-asset-pending');node.alt='Imagem indisponível';}};
- if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){observer.unobserve(e.target);load(e.target);}}),{rootMargin:'180px'});nodes.forEach(n=>observer.observe(n));setTimeout(()=>observer.disconnect(),120000);}else nodes.forEach(load);
+ const nodes=[...root.querySelectorAll('img[data-profile-asset]')];
+ if(!nodes.length)return;
+ const load=async node=>{
+  const id=node.dataset.profileAsset;
+  if(!id||node.dataset.profileAssetLoading==='1')return;
+  node.dataset.profileAssetLoading='1';
+  try{
+   let promise=imageCache.get(id);
+   if(!promise){
+    promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{
+     const value=s.val();
+     if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');
+     imageValueCache.set(id,value);return value;
+    }).catch(e=>{imageCache.delete(id);throw e;});
+    imageCache.set(id,promise);
+   }
+   const data=await promise;
+   imageValueCache.set(id,data);
+   const preload=new Image();preload.src=data;
+   try{await preload.decode();}catch{}
+   if(node.isConnected&&node.dataset.profileAsset===id){
+    node.src=data;
+    node.classList.remove('cff-profile-asset-pending');
+    node.classList.add('cff-profile-asset-ready');
+    node.removeAttribute('data-profile-asset');
+   }
+  }catch{
+   if(node.isConnected){node.classList.remove('cff-profile-asset-pending');node.alt='Imagem temporariamente indisponível';}
+  }finally{delete node.dataset.profileAssetLoading;}
+ };
+ // Os elementos do cabeçalho devem carregar mesmo quando a Loja está selecionada.
+ const eager=nodes.filter(n=>n.closest('.cff-profile-hero, .cff-profile-portrait, .cff-profile-public-banner'));
+ eager.forEach(load);
+ const lazy=nodes.filter(n=>!eager.includes(n));
+ if('IntersectionObserver'in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(e=>{
+   if(e.isIntersecting){observer.unobserve(e.target);load(e.target);}
+  }),{rootMargin:'450px'});
+  lazy.forEach(n=>observer.observe(n));
+  setTimeout(()=>observer.disconnect(),120000);
+ }else lazy.forEach(load);
 }
 export function activeGrants(grants){return Object.entries(grants||{}).filter(([,g])=>g.status==='active').map(([id,g])=>({id,...g}));}
 export function hasBadge(grants,badgeId){return activeGrants(grants).some(g=>g.badgeId===badgeId);}
