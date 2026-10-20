@@ -11,7 +11,7 @@
       ['s25','WB 2025 S2',routes('ffws-br-2025-s2-',season.filter(([,key]) => key !== 'segunda-fase').concat([['Contra Squad','contra-squad']]))]
     ]],
     ['internacional','Torneios internacionais',[
-      ['global26','FFWS Global Finals 2026',routes('ffws-global-2026-',[['Formato','formato'],['Knockout • Fase 1','classificatoria'],['Knockout • Fase 2','segunda-fase'],['Repescagem','last-chance'],['Grande Final','final'],...season.slice(3)])],
+      ['global26','FFWS Global Finals 2026',routes('ffws-global-2026-',[['Início','inicio'],['Formato','formato'],['Knockout • Fase 1','classificatoria'],['Knockout • Fase 2','segunda-fase'],['Repescagem','last-chance'],['Grande Final','final'],...season.slice(3)])],
       ['ewc','EWC 2026',routes('ewc-',[['Fase de grupos','grupos'],['Repescagem','repescagem'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Estatísticas gerais','stats']])],
       ['sea','FFWS SEA 2026 S1',[['Visão geral','ffws-sea-2026-s1']]],
       ['latam','FFWS LATAM S1',[['Visão geral','ffws-latam-s1']]]
@@ -23,7 +23,7 @@
   const href = route => route.startsWith('/') ? route : (window.CFF_SEASON_ROUTES?.pathForPage(route) || '/index.html#' + route);
   const link = ([label,route]) => `<a class="cff-menu-link" href="${esc(href(route))}" data-cff-route="${esc(route)}" ${route==='/conta.html'?'data-account-entry':''}>${esc(label)}</a>`;
   const details = (key,title,body,extra='') => `<details class="cff-menu-group ${extra}" data-cff-group="${key}"><summary>${esc(title)}<span aria-hidden="true">⌄</span></summary><div class="cff-menu-items">${body}</div></details>`;
-  const featured = `<a class="cff-menu-link cff-menu-featured" data-cff-featured data-cff-route="ffws-global-2026-formato" href="${esc(href('ffws-global-2026-formato'))}"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="30" height="26" alt=""><span><small>EM DESTAQUE</small>FFWS GLOBAL FINALS 2026</span></a>`;
+  const featured = `<a class="cff-menu-link cff-menu-featured" data-cff-featured data-cff-route="ffws-global-2026-inicio" href="${esc(href('ffws-global-2026-inicio'))}"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="30" height="26" alt=""><span><small>EM DESTAQUE</small>FFWS GLOBAL FINALS 2026</span></a>`;
   const menu = '<div class="cff-menu-label">Principal</div>' + mainLinks.map(link).join('') + featured + groups.map(([key,title,events]) => details(key,title,events.map(([id,name,entries]) => details(id,name,entries.map(link).join(''),'cff-menu-tournament')).join(''))).join('') + details('historico','Histórico',historyLinks.map(link).join('')) + details('contato','Contato',link(['Sobre','sobre'])) + '<div class="cff-menu-label">Sistema</div><button class="cff-menu-refresh" type="button">Atualizar dados</button>';
   const close = () => { window.closeSidebar?.(); document.getElementById('cff-public-menu-close')?.click(); };
   function go(event, route) {
@@ -61,7 +61,7 @@
     if(document.querySelector('.cff-bottom-navigation') || /(^|\/)admin(?:[-/.]|$)/i.test(location.pathname))return;
     const links=[
       ['home','Início','home','<path d="m3 10 9-7 9 7v11h-6v-7H9v7H3z"/>'],
-      ['worlds','Mundial','ffws-global-2026-formato','<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c4 5 4 13 0 18M12 3c-4 5-4 13 0 18"/>'],
+      ['worlds','Mundial','ffws-global-2026-inicio','<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c4 5 4 13 0 18M12 3c-4 5-4 13 0 18"/>'],
       ['stats','Estatísticas','registro-detalhado','<path d="M4 20V11m6 9V5m6 15v-8m4 8H2"/>'],
       ['community','Comunidade','/interacoes.html','<path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m12 0v-2a4 4 0 0 0-3-3.87M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17 3a4 4 0 0 1 0 8"/>'],
       ['profile','Perfil','/conta.html','<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>']

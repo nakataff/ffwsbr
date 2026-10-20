@@ -13,6 +13,8 @@ on:
       - 'js/site-shell-fast.min.js'
       - 'index.html'
       - 'test/global-format-2026.test.cjs'
+      - 'test/global-overview.test.cjs'
+      - 'scripts/build-global-overview.cjs'
       - 'test/home-global-matchups.test.cjs'
       - 'test/home-support.test.cjs'
       - '.github/workflows/test-global-format.yml'
@@ -20,6 +22,8 @@ on:
     paths:
       - 'ffws-global-2026/**'
       - 'test/global-format-2026.test.cjs'
+      - 'test/global-overview.test.cjs'
+      - 'scripts/build-global-overview.cjs'
 jobs:
   global-format:
     runs-on: ubuntu-latest
@@ -36,6 +40,8 @@ jobs:
       - name: Validate format, calendar and rendering
         env:
           NODE_PATH: /tmp/cff-global-tests/node_modules
-        run: node --test test/global-format-2026.test.cjs test/home-global-matchups.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs test/home-support.test.cjs
+        run: node --test test/global-overview.test.cjs test/global-format-2026.test.cjs test/home-global-matchups.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs test/home-support.test.cjs
+      - name: Check generated overview
+        run: node scripts/build-global-overview.cjs --check
       - name: Check syntax
-        run: node --check ffws-global-2026/global.js && node --check ffws-global-2026/config.js && node --check js/season-routes.js && node --check js/shared-navigation.js && node --check js/home-global-finals.js && node --check js/home-support.js && node --check js/site-shell-fast.min.js
+        run: node --check ffws-global-2026/inicio.js && node --check scripts/build-global-overview.cjs && node --check ffws-global-2026/global.js && node --check ffws-global-2026/config.js && node --check js/season-routes.js && node --check js/shared-navigation.js && node --check js/home-global-finals.js && node --check js/home-support.js && node --check js/site-shell-fast.min.js

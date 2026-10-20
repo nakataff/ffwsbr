@@ -87,6 +87,34 @@ etapas. Um jogador que trocou de equipe não deve ganhar dados da outra passagem
 
 ## Outras competições e arquivos com nomes parecidos
 
+### Início do Mundial 2026
+
+Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu).
+Reutiliza `ffws-global-2026/global.css` para manter a identidade das outras páginas.
+O módulo `ffws-global-2026/inicio.js` é independente de `global.js`: não baixa a
+base completa nem faz consultas ao Firebase/Durable Objects.
+
+| Arquivo | Conteúdo / carregamento |
+| --- | --- |
+| `ffws-global-2026/inicio-resumo.json` | Formato, 24 equipes com logos/grupos, calendário e tabelas por fase/dia. Cerca de 10,4 KB antes dos resultados; único JSON inicial do módulo |
+| `ffws-global-2026/inicio-mvp-top10.json` | Top 10 Geral, Fase 1, Fase 2, Repescagem e Final. Buscado só na aba MVP |
+| `ffws-global-2026/inicio-elencos.json` | Jogadores/comissão cadastrados nesta edição, por ID de equipe. Buscado só na aba Equipes; nunca inferir elenco do Mundial a partir de outro torneio |
+| `scripts/build-global-overview.cjs` | Gera os três resumos offline a partir de `stages.json`, `dates.json`, `teams.json`, `groups.json` e `players.json` da mesma pasta |
+
+Depois de cadastrar resultados ou elencos, execute `node scripts/build-global-overview.cjs`
+e `node scripts/build-global-overview.cjs --check`. A CI verifica se os resumos
+correspondem às fontes. Atualize `VERSION` em `inicio.js` e as referências de
+`inicio.js`/`inicio.css` no shell, além da versão do shell em `index.html`.
+
+**Fase 2 tem classificações independentes por dia; não gerar uma tabela acumulada.**
+A Final preserva a ordem oficial de `stages.final.rows`, pois Champion Rush pode
+ter um campeão com menos pontos que outra equipe. MVP soma por jogador **e equipe**,
+ordenando por abates, dano e assistências. O cronômetro só faz cálculos locais;
+as janelas estimadas das rodadas seguem a home e não comprovam transmissão ao vivo.
+Parâmetros: `aba=tabela|mvp|equipes`, `etapa=classificatoria|segundaFase|lastChance|final|geral`,
+`dia` para a tabela e `grupo=A|B|C|D` para equipes. Valores ausentes não inventam
+resultados, rankings ou elencos.
+
 | Caminho | Finalidade / cuidados |
 | --- | --- |
 | `ffws-br-2026-s1/` | Fontes da S1: `players.json`, `stages.json`, `teams.json`, `dates.json`, `player-stats.json`, `home-results.json`, `stats-static.json`, `radar-summary.json` e `player-meta.json`. O `players.json` usa esquema compacto com `fields`, índices e arrays; não é igual ao da S2 |
