@@ -44,7 +44,7 @@ um arquivo chamado `wb.json` que deva ser presumido como fonte de tudo.
 | Arquivo | Conteúdo | Tamanho aproximado sem compressão |
 | --- | --- | --- |
 | `ffws-br-2026-s2/inicio-resumo.json` | Datas, logos, formato, campeão e tabelas das três etapas | 5,4 KB |
-| `ffws-br-2026-s2/inicio-mvp-top10.json` | Apenas Top 10 de **Geral, Classificatória, Segunda fase e Final** | 4,4 KB |
+| `ffws-br-2026-s2/inicio-mvp-top10.json` | Apenas Top 10 de **Geral, Classificatória, Segunda fase e Final** | 5,9 KB |
 | `ffws-br-2026-s2/inicio-elencos.json` | Jogadores por equipe, função, status, foto e quedas disputadas em cada etapa | 16,9 KB |
 | `ffws-br-2026-s2/inicio.js` e `inicio.css` | Interface do Início; usa os componentes de `s2.css` | Não carregar `s2.js` e seus dados completos somente para mostrar esse resumo |
 | `scripts/build-s2-overview.cjs` | Gera os três arquivos anteriores usando as fontes existentes | Execução local, sem chamadas de rede |
@@ -52,7 +52,7 @@ um arquivo chamado `wb.json` que deva ser presumido como fonte de tudo.
 O Início baixa somente `inicio-resumo.json` ao abrir. MVP e elencos são buscados
 no primeiro acesso à respectiva aba, com cache em memória e cache HTTP normal.
 Trocar a etapa do MVP não faz outra leitura: os quatro Top 10 estão no mesmo JSON.
-Fotos e logos vêm dos arquivos já existentes, com carregamento preguiçoso.
+Fotos e logos vêm dos arquivos já existentes, com carregamento preguiçoso. O Top 10 inclui caminhos de fotos, sem baixar as imagens para montar a tabela.
 Não há polling nem consulta ao banco de dados neste módulo.
 
 O ranking segue a mesma regra do MVP completo: **abates, depois dano, depois
@@ -132,3 +132,22 @@ etapas. Um jogador que trocou de equipe não deve ganhar dados da outra passagem
 reutilizar os arquivos estáticos. Dados encerrados não precisam de listeners,
 polling ou recálculos por visitante. Requisições de arquivos estáticos continuam
 existindo, mas não geram consultas de linhas aos Durable Objects.
+
+## Cards compartilháveis
+
+O Início da S2 e os quatro rankings da home usam o mesmo editor.
+Guia de integração: [docs/cards-compartilhaveis.md](cards-compartilhaveis.md).
+
+| Arquivo | Função |
+| --- | --- |
+| `js/ranking-share-model.mjs` | Validação, opções, legenda, formatos e links de recortes |
+| `js/ranking-share-renderer.mjs` | Desenha os PNGs localmente no canvas |
+| `js/ranking-share-cards.mjs` | Janela, prévia, preferências, download, cópia e compartilhamento |
+| `css/ranking-share-cards.css` | Estilo isolado da janela; carregado ao clicar |
+| `js/home-share-cards.js` | Adaptador dos rankings já renderizados na home |
+| `ffws-br-2026-s2/inicio.js` | Adaptador do resumo S2; fornece a tabela/etapa já carregada |
+| `js/vendor/qrcode-generator.js` | QR Code local, carregado somente com a opção ativada |
+
+No Início, `?aba=mvp&etapa=segundaFase` restaura exatamente o recorte compartilhado.
+Parâmetros aceitos: `aba=tabela|mvp|equipes`; `etapa=classificatoria|segundaFase|final`
+e `geral` para MVP. O editor não consulta os dados do ranking nem o banco.

@@ -6,11 +6,12 @@ const read = p => JSON.parse(fs.readFileSync(p));
 const BASE = 'ffws-br-2026-s2/';
 const tick = () => new Promise(resolve => setImmediate(resolve));
 async function settle() {for (let i = 0; i < 8; i++) await tick();}
-async function ui(overrides = {}) {
-  const dom = new JSDOM('<main><div id="ffws-br-s2-inicio-content"></div></main>', {url:'https://centralfreefire.com.br/ffws-br-s2/inicio', runScripts:'outside-only'});
+async function ui(overrides = {}, search = '') {
+  const dom = new JSDOM('<main><div id="ffws-br-s2-inicio-content"></div></main>', {url:'https://centralfreefire.com.br/ffws-br-s2/inicio'+search, runScripts:'outside-only'});
   const w = dom.window, calls = [];
   w.fetch = async url => {const p = String(url).split('?')[0].replace(/^\//, ''); calls.push(p); return overrides[p] ? overrides[p]() : {ok:true, json:async () => read(p)};};
-  w.eval(fs.readFileSync(BASE + 'inicio.js', 'utf8'));
+  w.__cards=[];w.openTestCard=async payload=>{w.__cards.push(payload);};
+  w.eval(fs.readFileSync(BASE + 'inicio.js', 'utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v1')","{openRankingCard:window.openTestCard}"));
   await settle();
   return {w, dom, calls, $:s => w.document.querySelector(s), click:async s => {w.document.querySelector(s).click(); await settle();}, close:() => dom.window.close()};
 }
@@ -97,4 +98,13 @@ test('direct tournament link has a hosting entry and preserves query parameters 
   vm.runInNewContext(fs.readFileSync('js/season-routes.js','utf8'),context);
   assert.equal(context.window.CFF_SEASON_ROUTES.pageFromLocation(),'ffws-br-s2-inicio');
   assert.equal(context.window.CFF_SEASON_ROUTES.pathForPage('ffws-br-s2-inicio'),'/ffws-br-s2/inicio');
+});
+
+test('shared link restores its MVP stage and shares the already loaded snapshot without new data reads', async () => {
+ const u=await ui({},'?aba=mvp&etapa=segundaFase');try {
+  assert.equal(u.$('[data-s2-tab="mvp"]').getAttribute('aria-selected'),'true');assert(u.$('table tbody tr').textContent.includes('Lyon'));
+  await u.click('[data-s2-share]');const card=u.w.__cards[0];assert.equal(card.rows.length,10);assert.equal(card.rows[0].kills,84);assert.equal(card.stage,'Segunda fase');assert.equal(new URL(card.url).searchParams.get('etapa'),'segundaFase');
+  assert.deepEqual(u.calls,[BASE+'inicio-resumo.json',BASE+'inicio-mvp-top10.json']);
+  await u.click('[data-s2-mvp-stage="final"]');await u.click('[data-s2-share]');assert.equal(u.w.__cards[1].rows[0].name,'MT7');assert.equal(u.w.__cards[0].rows[0].name,'Lyon');
+ }finally{u.close();}
 });

@@ -58,7 +58,7 @@ function buildSummaries({players, teams, summary, dates, photos, live}) {
   }
   rows.geral = aggregate(entries.filter(e => STAGES.includes(e.stage))); coverage.geral = 'completo';
   const teamIndex = teams.teams.map(t => ({name: t.name, abbreviation: t.abbreviation, logo: t.logo || 'escudo.webp'}));
-  const rankings = {tournament: summary.tournament, updatedAt, source, coverage, drops, top10: Object.fromEntries([...STAGES, 'geral'].map(stage => [stage, rows[stage].slice(0, 10)]))};
+  const rankings = {tournament: summary.tournament, updatedAt, source, coverage, drops, top10: Object.fromEntries([...STAGES, 'geral'].map(stage => [stage, rows[stage].slice(0, 10).map(row => ({...row, photo: photos.photos?.[norm(row.name).toLowerCase()] || 'silhueta.webp'}))]))};
   const byStage = Object.fromEntries(STAGES.map(s => [s, new Map(rows[s].map(r => [norm(r.name) + '__' + norm(r.team), r]))]));
   const squads = {tournament: summary.tournament, updatedAt, source, teams: teamIndex.map(team => {
     const roster = (players.players || []).filter(p => norm(p.team) === norm(team.name));

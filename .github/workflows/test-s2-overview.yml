@@ -11,6 +11,11 @@ on:
       - 'scripts/build-s2-overview.cjs'
       - 'js/ffws-live-provider.js'
       - 'test/s2-overview.test.cjs'
+      - 'test/ranking-share-cards.test.cjs'
+      - 'js/ranking-share-*.mjs'
+      - 'js/home-share-cards.js'
+      - 'css/ranking-share-cards.css'
+      - 'js/vendor/qrcode*'
       - '.github/workflows/test-s2-overview.yml'
   workflow_dispatch:
 permissions:
@@ -24,7 +29,7 @@ jobs:
         with:
           node-version: '22'
       - name: Install isolated DOM test dependency
-        run: npm install --prefix /tmp/cff-overview-tests jsdom@26.1.0 --no-audit --no-fund
+        run: npm install --prefix /tmp/cff-overview-tests jsdom@26.1.0 @napi-rs/canvas@0.1.100 jsqr@1.4.0 --no-audit --no-fund
       - name: Check syntax and exercise static data and tabs
         env:
           NODE_PATH: /tmp/cff-overview-tests/node_modules
@@ -32,4 +37,7 @@ jobs:
           node --check ffws-br-2026-s2/inicio.js
           node --check scripts/build-s2-overview.cjs
           node --check js/site-shell-fast.min.js
-          node --test test/s2-overview.test.cjs
+          node --check js/ranking-share-cards.mjs
+          node --check js/ranking-share-renderer.mjs
+          node --check js/ranking-share-model.mjs
+          node --test test/s2-overview.test.cjs test/ranking-share-cards.test.cjs

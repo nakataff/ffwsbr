@@ -3,7 +3,7 @@
   if (window.CFFS2Inicio) return;
   const root = document.getElementById('ffws-br-s2-inicio-content');
   if (!root) return;
-  const VERSION = '20261020-inicio-v2';
+  const VERSION = '20261020-inicio-share-v3';
   const BASE = '/ffws-br-2026-s2/';
   const files = {summary: BASE + 'inicio-resumo.json?v=' + VERSION, mvp: BASE + 'inicio-mvp-top10.json?v=' + VERSION, squads: BASE + 'inicio-elencos.json?v=' + VERSION};
   const cache = new Map();
@@ -13,7 +13,24 @@
   const links = {classificatoria:'/ffws-br-s2/classificatoria', segundaFase:'/ffws-br-s2/segunda-fase', final:'/ffws-br-s2/final', mvp:'/ffws-br-s2/mvp', equipes:'/ffws-br-s2/equipes'};
   const stages = [{id:'classificatoria', name:'Classificatória'}, {id:'segundaFase', name:'Segunda fase', short:'2ª fase'}, {id:'final', name:'Final'}];
   const tabs = [{id:'tabela', name:'Tabela'}, {id:'mvp', name:'Ranking MVP'}, {id:'equipes', name:'Equipes'}];
-  const state = {tab:'tabela', stage:'final', mvpStage:'geral', team:''};
+  const params = new URLSearchParams(location.search);
+  const initialTab = ['tabela','mvp','equipes'].includes(params.get('aba')) ? params.get('aba') : 'tabela';
+  const initialStage = params.get('etapa');
+  const state = {tab:initialTab, stage:stages.some(s => s.id === initialStage) ? initialStage : 'final', mvpStage:['geral', ...stages.map(s => s.id)].includes(initialStage) ? initialStage : 'geral', team:''};
+  let currentCard = null;
+  function cardButton() {return '<button type="button" class="s2-start-complete s2-start-share" data-s2-share aria-label="Criar card deste recorte">↗ Criar card</button>';}
+  function cardSource(rows, kind, stage, updatedAt) {
+    const tab = kind === 'players' ? 'mvp' : 'tabela';
+    return {id:'wb-s2-'+tab+'-'+stage, kind, title:kind === 'players' ? 'Ranking de abates' : 'Classificação', event:'WB 2026 S2', stage:stage === 'geral' ? 'Geral' : stages.find(s => s.id === stage)?.name || stage, updatedAt, metric:kind === 'players' ? 'kills' : 'points', url:'https://centralfreefire.com.br/ffws-br-s2/inicio?aba='+tab+'&etapa='+stage, rows:rows.map((r,i) => ({...r, rank:r.position || i+1, name:kind === 'teams' ? r.team : r.name, logo:teamMeta(r.team).logo}))};
+  }
+  async function shareCard(button) {
+    if (!currentCard) return;
+    const payload = currentCard;
+    button.disabled = true;
+    try {const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v1'); await openRankingCard(payload);}
+    catch (error) {let note = query('[data-s2-share-status]'); if (!note) {note = document.createElement('p'); note.dataset.s2ShareStatus=''; note.setAttribute('role','status'); query('#s2-start-pane')?.append(note);} note.textContent=error.message || 'Não foi possível abrir o editor. Tente novamente.';}
+    finally {button.disabled = false;}
+  }
   let requestId = 0, initialized = false, summaryData = null;
   const query = selector => root.querySelector(selector);
   function get(key) {
@@ -62,9 +79,10 @@
   function stageTable(data) {
     const stage = stages.find(s => s.id === state.stage) || stages[2];
     const rows = (data.stages?.[stage.id]?.rows || []).filter(r => num(r.matches) > 0).slice().sort((a, b) => num(a.position) - num(b.position));
+    currentCard = cardSource(rows, 'teams', stage.id, data.updatedAt);
     const world = new Set(data.worldQualifiedTeams || [data.champion, ...data.worldQualifiedFromStage2]);
     const legend = stage.id === 'classificatoria' ? '<span class="is-advance">1º–12º: Segunda fase</span><span class="is-relegated">13º–14º: Rebaixados</span>' : stage.id === 'segundaFase' ? '<span class="is-world">1º e 2º: Mundial</span><span>12 equipes na Final · pontos incluem bônus</span>' : '<span class="is-champion">Campeão</span><span class="is-qualified">Classificados ao Mundial</span>';
-    return `<div class="s2-start-subtabs" role="group" aria-label="Etapa da tabela">${buttons(stages, state.stage, 'stage')}</div><div class="s2-start-section-head"><h2>${esc(stage.name)}</h2><span class="ffws-s2-badge">${rows.length} equipes</span></div><div class="s2-start-table-wrap ffws-s2-table-wrap"><table class="s2-start-table ffws-s2-table"><caption class="s2-start-sr">Classificação da ${esc(stage.name)} da WB 2026 S2</caption><thead><tr><th scope="col">#</th><th scope="col" class="team-col">Equipe</th><th scope="col">PTS</th><th scope="col" class="s2-start-secondary">B!</th><th scope="col">K</th><th scope="col">Q</th></tr></thead><tbody>${rows.map((r, i) => {
+    return `<div class="s2-start-subtabs" role="group" aria-label="Etapa da tabela">${buttons(stages, state.stage, 'stage')}</div><div class="s2-start-section-head"><h2>${esc(stage.name)}</h2><div class="s2-start-section-actions"><span class="ffws-s2-badge">${rows.length} equipes</span>${rows.length ? cardButton() : ''}</div></div><div class="s2-start-table-wrap ffws-s2-table-wrap"><table class="s2-start-table ffws-s2-table"><caption class="s2-start-sr">Classificação da ${esc(stage.name)} da WB 2026 S2</caption><thead><tr><th scope="col">#</th><th scope="col" class="team-col">Equipe</th><th scope="col">PTS</th><th scope="col" class="s2-start-secondary">B!</th><th scope="col">K</th><th scope="col">Q</th></tr></thead><tbody>${rows.map((r, i) => {
       const zone = stage.id === 'classificatoria' ? (i < 12 ? 'advance' : 'relegated') : stage.id === 'segundaFase' ? (i < 2 ? 'world' : '') : r.team === data.champion ? 'champion' : world.has(r.team) ? 'qualified' : '';
       return `<tr class="s2-start-zone-${zone}"><td class="ffws-s2-rank">${r.position || i + 1}º</td><td class="team-col">${teamLink(r.team)}</td><td class="s2-start-points">${fmt(r.points)}</td><td class="s2-start-secondary">${fmt(r.booyahs)}</td><td>${fmt(r.kills)}</td><td>${fmt(r.matches)}</td></tr>`;
     }).join('') || '<tr><td colspan="6">Resumo ainda indisponível.</td></tr>'}</tbody></table></div><div class="s2-start-legend">${legend}</div><div class="s2-start-under"><small>PTS: pontos · B!: Booyahs · K: abates · Q: quedas</small>${link(links[stage.id], 'Ver tabela completa')}</div>`;
@@ -72,7 +90,8 @@
   function mvpTable(data) {
     const list = [{id:'geral', name:'Geral'}, ...stages], selected = list.find(s => s.id === state.mvpStage);
     const entries = (data.top10?.[state.mvpStage] || []).slice(0, 10);
-    const top = `<div class="s2-start-subtabs" role="group" aria-label="Etapa do MVP">${buttons(list, state.mvpStage, 'mvp-stage')}</div><div class="s2-start-section-head"><div><h2>Top 10 · ${esc(selected.name)}</h2><p>${state.mvpStage === 'geral' ? 'Classificatória, segunda fase e final somadas.' : 'Estatísticas somente desta etapa.'}</p></div><span class="ffws-s2-badge">${entries.length} jogadores</span></div>`;
+    currentCard = entries.length ? cardSource(entries, 'players', state.mvpStage, data.updatedAt) : null;
+    const top = `<div class="s2-start-subtabs" role="group" aria-label="Etapa do MVP">${buttons(list, state.mvpStage, 'mvp-stage')}</div><div class="s2-start-section-head"><div><h2>Top 10 · ${esc(selected.name)}</h2><p>${state.mvpStage === 'geral' ? 'Classificatória, segunda fase e final somadas.' : 'Estatísticas somente desta etapa.'}</p></div><div class="s2-start-section-actions"><span class="ffws-s2-badge">${entries.length} jogadores</span>${entries.length ? cardButton() : ''}</div></div>`;
     if (!entries.length) return top + '<p class="s2-start-empty">Ainda não há dados deste recorte.</p>' + link(links.mvp, 'Ver Ranking MVP completo');
     const coverage = data.coverage?.[state.mvpStage];
     return top + (coverage === 'completo' ? '' : '<p class="s2-start-notice">Resumo parcial desta etapa.</p>') + `<div class="s2-start-table-wrap ffws-s2-table-wrap"><table class="s2-start-table ffws-s2-table s2-start-mvp"><caption class="s2-start-sr">Top 10 de abates · ${esc(selected.name)}</caption><thead><tr><th scope="col">#</th><th scope="col" class="team-col">Jogador</th><th scope="col" class="team-col">Equipe</th><th scope="col">K</th><th scope="col" class="s2-start-secondary">Dano</th><th scope="col" class="s2-start-secondary">Assist.</th><th scope="col">Q</th><th scope="col" class="s2-start-secondary">K/Q</th></tr></thead><tbody>${entries.map((r, i) => `<tr><td class="ffws-s2-rank">${i + 1}º</td><td class="team-col">${nameLink(r.name, r.team)}</td><td class="team-col">${teamLink(r.team, true)}</td><td class="s2-start-points">${fmt(r.kills)}</td><td class="s2-start-secondary">${fmt(r.damage)}</td><td class="s2-start-secondary">${fmt(r.assists)}</td><td>${fmt(r.matches)}</td><td class="s2-start-secondary">${num(r.matches) ? (num(r.kills) / num(r.matches)).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '—'}</td></tr>`).join('')}</tbody></table></div><div class="s2-start-under"><small>K: abates · Q: quedas · K/Q: média por queda</small>${link(links.mvp, 'Ver Ranking MVP completo')}</div>`;
@@ -91,6 +110,7 @@
     if (!pane) return;
     pane.setAttribute('aria-labelledby', 's2-start-tab-' + state.tab);
     const seq = ++requestId;
+    currentCard = null;
     pane.setAttribute('aria-busy', 'true');
     pane.innerHTML = '<p class="s2-start-loading">Carregando resumo…</p>';
     try {
@@ -121,7 +141,8 @@
   root.addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button) return;
-    if (button.dataset.s2Tab) activateTab(button.dataset.s2Tab);
+    if (button.hasAttribute('data-s2-share')) shareCard(button);
+    else if (button.dataset.s2Tab) activateTab(button.dataset.s2Tab);
     else if (button.dataset.s2Stage && stages.some(s => s.id === button.dataset.s2Stage)) {state.stage = button.dataset.s2Stage; renderPane();}
     else if (button.dataset.s2MvpStage && ['geral', ...stages.map(s => s.id)].includes(button.dataset.s2MvpStage)) {state.mvpStage = button.dataset.s2MvpStage; renderPane();}
     else if (button.hasAttribute('data-s2-retry')) renderPane();

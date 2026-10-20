@@ -114,3 +114,11 @@
  .s2-start-team-filter{max-width:none}
 }
 @media(prefers-reduced-motion:reduce){.s2-start-chevron{transition:none}}
+
+.s2-start-share{margin-left:auto;background:rgba(0,200,255,.1)}
+.s2-start-share:disabled{opacity:.5;cursor:wait}
+[data-s2-share-status]{font-size:.8rem;color:#ffbdc3}
+@media(max-width:760px){.s2-start-share{margin-left:0}}
+
+.s2-start-section-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+@media(max-width:520px){.s2-start-section-actions{gap:6px}.s2-start-section-actions .ffws-s2-badge{display:none}.s2-start-section-actions .s2-start-share{padding:8px;font-size:.68rem}}
