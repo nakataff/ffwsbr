@@ -262,3 +262,34 @@ e `geral` para MVP. O editor não consulta os dados do ranking nem o banco.
 privado e chama `build-daily-challenge-photos.cjs` para incluir retratos pequenos
 no Worker. O arquivo versionado `daily-challenges-seed.js` é somente placeholder.
 As questões de foto prontas não consultam o site ou o banco para carregar a imagem.
+
+### Editor de pontuação anual (2025/2026)
+
+Entrada no painel: **Ferramentas da Central → Pontuação do ranking anual**,
+em `/admin-ranking-anual.html`. É um editor local e responsivo, sem autenticação
+de gravação remota: carrega somente a configuração e o JSON compacto de cada ano,
+recalcula a prévia em memória e não faz chamadas para Firebase ou Cloudflare.
+Nenhuma modificação é publicada ao digitar.
+
+- Os arquivos editáveis são `ranking-data/brasil-2025-source.json` e
+  `ranking-data/brasil-2026-source.json`: `basePoints[0..23]` para as colocações
+  1º–24º e `weights` para Copa, WB S1, WB S2, EWC e Global.
+- A opção 'aplicar aos dois anos' vale para as **próximas alterações**; permite
+  distinguir as metodologias de 2025 e 2026 quando necessário.
+- Cada download preserva todas as fontes, nomes e resultados, altera apenas os
+  parâmetros de pontuação, incrementa `methodVersion` e atualiza `updatedAt`.
+- Substituir **somente o arquivo source baixado** na pasta `ranking-data` da
+  branch principal do GitHub. O workflow
+  `.github/workflows/rebuild-annual-ranking.yml` chama o gerador offline,
+  confere pontuações/totais e publica os resumos
+  `ranking-data/brasil-2025.json` / `brasil-2026.json`.
+- O workflow `test-s2-overview.yml` recalcula os resumos localmente
+  antes de testar. Confirmar a conclusão dos workflows no GitHub Actions;
+  se falharem, o site mantém o resumo antigo.
+- O ranking público continua lendo só um JSON do ano selecionado, sem
+  recalcular classificação durante visitas; a resposta usa revalidação de cache.
+
+Importante: o editor **não altera colocações oficiais nem inclui torneios**;
+essas mudanças exigem atualizar as fontes do evento e regenerar o ranking com
+`scripts/build-annual-ranking.cjs`. O futuro ranking histórico possui
+metodologia independente.
