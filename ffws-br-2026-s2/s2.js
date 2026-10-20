@@ -109,6 +109,7 @@
 
   function stageNavigation(stageKey) {
     const stages = [
+      ['inicio', 'Início do torneio', '/ffws-br-s2/inicio'],
       ['classificatoria', 'Classificatória', '/ffws-br-s2/classificatoria'],
       ['segundaFase', 'Segunda Fase', '/ffws-br-s2/segunda-fase'],
       ['final', 'Final', '/ffws-br-s2/final']
