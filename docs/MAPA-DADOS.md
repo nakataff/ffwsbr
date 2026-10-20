@@ -274,6 +274,10 @@ Nenhuma modificação é publicada ao digitar.
 - Os arquivos editáveis são `ranking-data/brasil-2025-source.json` e
   `ranking-data/brasil-2026-source.json`: `basePoints[0..23]` para as colocações
   1º–24º e `weights` para Copa, WB S1, WB S2, EWC e Global.
+  Também é possível editar cada torneio e colocação diretamente: nesse caso o
+  editor salva `pointsByEvent` com uma tabela inteira de 24 valores para a
+  competição editada. Esses valores têm prioridade sobre base × multiplicador.
+  Alterar o peso de uma competição remove as personalizações somente dela.
 - A opção 'aplicar aos dois anos' vale para as **próximas alterações**; permite
   distinguir as metodologias de 2025 e 2026 quando necessário.
 - Cada download preserva todas as fontes, nomes e resultados, altera apenas os
