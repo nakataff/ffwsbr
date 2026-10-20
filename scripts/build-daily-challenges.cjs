@@ -23,5 +23,5 @@ function generate(){
  }
  const version=crypto.createHash('sha256').update(JSON.stringify(questions)).digest('hex').slice(0,20);return{version,questions};
 }
-if(require.main===module){const bank=generate(),target=process.argv[2]||path.join(root,'functions/daily-challenges-seed.js');fs.writeFileSync(target,"'use strict';\nmodule.exports="+JSON.stringify(bank)+';\n',{mode:0o600});console.log(JSON.stringify({generated:bank.questions.length,counts:Object.fromEntries(['player','career','lineup'].map(kind=>[kind,bank.questions.filter(q=>q.kind===kind).length])),version:bank.version}));}
+if(require.main===module)(async()=>{const bank=generate();bank.photos=await require('./build-daily-challenge-photos.cjs').buildPhotos(bank);const target=process.argv[2]||path.join(root,'functions/daily-challenges-seed.js');fs.writeFileSync(target,"'use strict';\nmodule.exports="+JSON.stringify(bank)+';\n',{mode:0o600});console.log(JSON.stringify({generated:bank.questions.length,counts:Object.fromEntries(['player','career','lineup'].map(kind=>[kind,bank.questions.filter(q=>q.kind===kind).length])),photos:Object.keys(bank.photos).length,photoBytes:Buffer.byteLength(JSON.stringify(bank.photos)),version:bank.version}));})().catch(error=>{console.error(error.message);process.exitCode=1;});
 module.exports={generate};

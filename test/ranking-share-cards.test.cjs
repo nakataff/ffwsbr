@@ -77,6 +77,17 @@ test('share cancellation is silent and browsers without native sharing download 
 
 test('home card adapter captures current numbers and full team identities without a ranking fetch',async()=>{
  const html='<aside data-home-rankings-event="WB 2026 S2"><section id="home-ranking-kills"><h3>Top 6 Abates</h3><table><tbody><tr><td class="home-rank-pos">1</td><td class="home-rank-media"><img src="home-assets/players/yago.webp"></td><td class="home-rank-main"><a href="jogador.html?jogador=Yago&time=LOS"><b>Yago</b><small>LOS</small></a></td><td class="home-rank-number">1.234</td><td class="home-rank-number">121</td></tr></tbody></table></section></aside>';
- const d=new JSDOM(html,{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}),w=d.window;const captured=[];w.openTestCard=async data=>captured.push(data);w.eval(fs.readFileSync('js/home-share-cards.js','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v1')","{openRankingCard:window.openTestCard}"));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));w.document.querySelector('button').click();await tick();
+ const d=new JSDOM(html,{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}),w=d.window;const captured=[];w.openTestCard=async data=>captured.push(data);w.eval(fs.readFileSync('js/home-share-cards.js','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2')","{openRankingCard:window.openTestCard}"));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));w.document.querySelector('button').click();await tick();
  assert.equal(captured[0].rows[0].kills,1234);assert.equal(captured[0].rows[0].matches,121);assert.equal(captured[0].rows[0].team,'LOS');assert.equal(captured[0].rows[0].damage,undefined);d.window.close();
+});
+test('short tables fill the usable height, while comparison metrics keep a readable gap above details',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,data=m.normalizePayload(raw()),images=new Map();
+ for(const row of data.rows)images.set(row.photo,await loadImage(row.photo));
+ for(const format of ['feed','story','square']){
+  const c=createCanvas(1,1),ctx=c.getContext('2d'),painted=[];const draw=ctx.fillText.bind(ctx);ctx.fillText=(text,x,y)=>{painted.push({text:String(text),x,y});draw(text,x,y);};
+  renderRankingCard(c,data,m.normalizeOptions({format,template:'table',rowCount:3},data),{images});
+  const first=painted.find(x=>x.text==='1º'),last=painted.find(x=>x.text==='3º');assert(last.y-first.y>c.height*.25,format);
+  painted.length=0;renderRankingCard(c,data,m.normalizeOptions({format,template:'compare',showPhotos:true,showQR:true},data),{images});
+  const label=painted.find(x=>x.text==='ABATES'),detail=painted.find(x=>x.text==='QUEDAS');assert(detail.y-label.y>=40,format+' comparison spacing');
+ }
 });

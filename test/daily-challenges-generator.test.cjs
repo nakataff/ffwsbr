@@ -7,3 +7,9 @@ test('private deployment bank uses registered four-player rosters, real local ph
  const placeholder=require('../functions/daily-challenges-seed');assert.equal(placeholder.questions.length,0,'only a blank placeholder belongs in the repository');
  assert.match(JSON.parse(fs.readFileSync('cloudflare/camp-notifications/package.json','utf8')).scripts.predeploy,/build-daily-challenges/);
 });
+test('deployment bundles compact portraits for every generated photo challenge without exposing the private bank',async()=>{
+ const {buildPhotos}=require('../scripts/build-daily-challenge-photos.cjs'),bank=generate(),photos=await buildPhotos(bank);
+ const paths=[...new Set(bank.questions.filter(q=>q.kind==='player').map(q=>q.imagePath))];assert.equal(Object.keys(photos).length,paths.length);
+ let total=0;for(const path of paths){assert.match(photos[path],/^data:image\/webp;base64,[A-Za-z0-9+/=]+$/);const bytes=Buffer.from(photos[path].split(',')[1],'base64');assert.equal(bytes.subarray(0,4).toString(),'RIFF');assert.equal(bytes.subarray(8,12).toString(),'WEBP');assert(bytes.length<64*1024);total+=bytes.length;}
+ assert(total<1024*1024);assert.deepEqual(require('../functions/daily-challenges-seed').photos,{});
+});

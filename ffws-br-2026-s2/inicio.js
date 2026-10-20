@@ -3,7 +3,7 @@
   if (window.CFFS2Inicio) return;
   const root = document.getElementById('ffws-br-s2-inicio-content');
   if (!root) return;
-  const VERSION = '20261020-inicio-share-v3';
+  const VERSION = '20261020-inicio-share-v4';
   const BASE = '/ffws-br-2026-s2/';
   const files = {summary: BASE + 'inicio-resumo.json?v=' + VERSION, mvp: BASE + 'inicio-mvp-top10.json?v=' + VERSION, squads: BASE + 'inicio-elencos.json?v=' + VERSION};
   const cache = new Map();
@@ -27,7 +27,7 @@
     if (!currentCard) return;
     const payload = currentCard;
     button.disabled = true;
-    try {const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v1'); await openRankingCard(payload);}
+    try {const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2'); await openRankingCard(payload);}
     catch (error) {let note = query('[data-s2-share-status]'); if (!note) {note = document.createElement('p'); note.dataset.s2ShareStatus=''; note.setAttribute('role','status'); query('#s2-start-pane')?.append(note);} note.textContent=error.message || 'Não foi possível abrir o editor. Tente novamente.';}
     finally {button.disabled = false;}
   }

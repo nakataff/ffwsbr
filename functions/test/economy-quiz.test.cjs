@@ -151,3 +151,23 @@ test('a photo fetch failure preserves the draw and starts no timer until a succe
  const state=await s.core.handle(user,{operation:'quizStart'});assert.equal(state.roundId,r.id);assert(state.questions[0].locked);const opened=await s.open(state,0);assert.equal(opened.questions[0].expiresAt,Date.parse('2026-10-19T16:00:20-03:00'));
  }finally{s.close();}
 });
+
+test('bundled portraits open existing rounds without network requests and keep photo paths private',async()=>{
+ const seed=require('../daily-challenges-seed'),original=seed.photos,nativeFetch=global.fetch;let fetches=0;
+ seed.photos={'player-photos/s2/synthetic.webp':'data:image/webp;base64,AAAA'};
+ global.fetch=async()=>{fetches++;throw Error('site temporarily unavailable');};
+ const s=setup({imageLoader:Q.loadImage});try{
+  await installMixed(s,[0,1,2].map(i=>({...bank[i],kind:'player',imagePath:'/player-photos/s2/synthetic.webp'})));
+  const state=await s.core.handle(user,{operation:'quizStart'});assert.equal(state.questions[0].imageData,seed.photos['player-photos/s2/synthetic.webp']);assert.equal(fetches,0);assert.equal(state.questions[0].expiresAt-state.serverNow,20000);assert.equal(Q.localPhotoCount(),1);
+  assert(!JSON.stringify(state).includes('imagePath'));assert(!JSON.stringify(state).includes('synthetic.webp'));
+  assert.equal(await Q.loadImage('/player-photos/s2/synthetic.webp'),state.questions[0].imageData);assert.equal(fetches,0);
+ }finally{s.close();global.fetch=nativeFetch;seed.photos=original;}
+});
+test('manually registered photos remain bounded and external failures start no timer',async()=>{
+ const nativeFetch=global.fetch;let calls=0;global.fetch=async()=>{calls++;return new Response('not found',{status:404});};
+ const s=setup({imageLoader:Q.loadImage});try{
+  await installMixed(s,[0,1,2].map(i=>({...bank[i],kind:'player',imagePath:'fixtures/unavailable-photo.webp'})));
+  await assert.rejects(s.core.handle(user,{operation:'quizStart'}),{status:503});assert.equal(Object.keys(s.privateRound().started).length,0);assert.equal(calls,1);
+  assert.equal(Q.validateQuestion({...bank[0],kind:'player',imagePath:'/player-photos/s2/synthetic.webp'}).imagePath,'player-photos/s2/synthetic.webp');
+ }finally{s.close();global.fetch=nativeFetch;}
+});

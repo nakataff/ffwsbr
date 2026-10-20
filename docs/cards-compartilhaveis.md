@@ -13,6 +13,7 @@ existentes na home (classificação, abates, dano e assistências).
 - Tema CFF, competição, cor da equipe selecionada ou cor personalizada.
 - Destaque de uma linha, logos, fotos opcionais e QR Code opcional.
 - Fonte, etapa e data real da atualização, quando fornecida pela página.
+- As linhas ocupam a altura útil disponível, inclusive em Top 3 e Top 5, com fotos e números proporcionais. Comparações mantêm espaço entre o valor principal e os dados adicionais.
 - Marca e endereço CFF sempre presentes. Feed e Stories reservam área inferior
   para que textos e controles das redes sociais não cubram as informações.
 - Download PNG, legenda editável com cópia do link e compartilhamento nativo
@@ -37,7 +38,7 @@ não transformar informação ausente em zero para inventar uma comparação.
 No clique do botão, obtenha os dados do estado já carregado ou da tabela visível:
 
 ```js
-const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v1');
+const {openRankingCard} = await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2');
 await openRankingCard({
   id: 'wb-s2-mvp-final',
   kind: 'players', // ou teams

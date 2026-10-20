@@ -19,7 +19,7 @@
   function boot(){Object.keys(targets).forEach(id=>{
     const widget=document.getElementById(id);if(!widget||widget.querySelector('.cff-ranking-share-trigger'))return;
     const button=document.createElement('button');button.type='button';button.className='cff-ranking-share-trigger';button.textContent='↗ Card';button.setAttribute('aria-label','Criar card compartilhável: '+targets[id].title.toLocaleUpperCase('pt-BR'));
-    button.addEventListener('click',async()=>{button.disabled=true;try{const data=capture(widget);const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v=20261020-cards-v1');await openRankingCard(data);}catch(error){let note=widget.querySelector('[data-card-error]');if(!note){note=document.createElement('p');note.dataset.cardError='';note.setAttribute('role','status');widget.append(note);}note.textContent=error.message||'Não foi possível criar o card.';}finally{button.disabled=false;}});widget.append(button);
+    button.addEventListener('click',async()=>{button.disabled=true;try{const data=capture(widget);const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2');await openRankingCard(data);}catch(error){let note=widget.querySelector('[data-card-error]');if(!note){note=document.createElement('p');note.dataset.cardError='';note.setAttribute('role','status');widget.append(note);}note.textContent=error.message||'Não foi possível criar o card.';}finally{button.disabled=false;}});widget.append(button);
   });}
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot,{once:true}):boot();
 })();

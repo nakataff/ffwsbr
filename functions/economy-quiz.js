@@ -3,7 +3,7 @@
 const seed=require('./daily-challenges-seed');
 const fail=(status,message)=>Object.assign(new Error(message),{status}),DAILY=3,BONUS=5;
 const LIMITS={quiz:25,player:20,career:30,lineup:45};
-const imagePath=v=>typeof v==='string'&&v.length<=300&&!v.includes('..')&&/^[a-zA-Z0-9_ /.-]+\.(webp|png|jpe?g)$/i.test(v)?v:'';
+const imagePath=v=>typeof v==='string'&&v.length<=300&&!v.includes('..')&&/^[a-zA-Z0-9_ /.-]+\.(webp|png|jpe?g)$/i.test(v)?v.replace(/^\/+/, ''):'';
 function init(sql){
  sql.exec(`CREATE TABLE IF NOT EXISTS eco_quiz_settings(id INTEGER PRIMARY KEY,data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS eco_quiz_questions(id TEXT PRIMARY KEY,data TEXT NOT NULL,enabled INTEGER NOT NULL);
@@ -29,11 +29,13 @@ function validateQuestion(input){
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 const photoCache=new Map();
 async function loadImage(path){
- if(!imagePath(path))throw fail(400,'Foto inválida.');const existing=photoCache.get(path);if(existing&&existing.until>Date.now())return existing.promise;
+ path=imagePath(path);if(!path)throw fail(400,'Foto inválida.');
+ const bundled=seed.photos?.[path];if(typeof bundled==='string'&&/^data:image\/webp;base64,[A-Za-z0-9+/=]+$/.test(bundled))return bundled;
+ const existing=photoCache.get(path);if(existing&&existing.until>Date.now())return existing.promise;
  if(photoCache.size>=16)photoCache.delete(photoCache.keys().next().value);
  const entry={until:Date.now()+3600000};entry.promise=(async()=>{
   const url='https://centralfreefire.com.br/'+path.split('/').map(encodeURIComponent).join('/'),r=await fetch(url,{signal:AbortSignal.timeout(10000),redirect:'error'});
-  const type=(r.headers.get('content-type')||'').split(';')[0];if(!r.ok||!['image/webp','image/png','image/jpeg'].includes(type))throw fail(503,'Não foi possível carregar a foto. Tente novamente; o tempo ainda não começou.');
+  const type=(r.headers.get('content-type')||'').split(';')[0].trim().toLowerCase();if(!r.ok||!['image/webp','image/png','image/jpeg'].includes(type))throw fail(503,'Não foi possível carregar a foto. Tente novamente; o tempo ainda não começou.');
   const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.length>512*1024)throw fail(503,'Foto indisponível para o desafio. Tente novamente mais tarde.');let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);return 'data:'+type+';base64,'+btoa(binary);
  })().catch(error=>{photoCache.delete(path);throw error.status?error:fail(503,'Não foi possível carregar a foto. Tente novamente; o tempo ainda não começou.');});photoCache.set(path,entry);return entry.promise;
 }
@@ -99,4 +101,4 @@ function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageL
  }
  return {status,start,open,answer,admin};
 }
-module.exports={init,create,validateQuestion,LIMITS};
+module.exports={init,create,validateQuestion,LIMITS,loadImage,localPhotoCount:()=>Object.keys(seed.photos||{}).length};

@@ -151,3 +151,10 @@ Guia de integração: [docs/cards-compartilhaveis.md](cards-compartilhaveis.md).
 No Início, `?aba=mvp&etapa=segundaFase` restaura exatamente o recorte compartilhado.
 Parâmetros aceitos: `aba=tabela|mvp|equipes`; `etapa=classificatoria|segundaFase|final`
 e `geral` para MVP. O editor não consulta os dados do ranking nem o banco.
+
+## Fotos do quiz
+
+[Guia de fotos do quiz](quiz-fotos.md): `build-daily-challenges.cjs` gera o banco
+privado e chama `build-daily-challenge-photos.cjs` para incluir retratos pequenos
+no Worker. O arquivo versionado `daily-challenges-seed.js` é somente placeholder.
+As questões de foto prontas não consultam o site ou o banco para carregar a imagem.

@@ -11,7 +11,7 @@ async function ui(overrides = {}, search = '') {
   const w = dom.window, calls = [];
   w.fetch = async url => {const p = String(url).split('?')[0].replace(/^\//, ''); calls.push(p); return overrides[p] ? overrides[p]() : {ok:true, json:async () => read(p)};};
   w.__cards=[];w.openTestCard=async payload=>{w.__cards.push(payload);};
-  w.eval(fs.readFileSync(BASE + 'inicio.js', 'utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v1')","{openRankingCard:window.openTestCard}"));
+  w.eval(fs.readFileSync(BASE + 'inicio.js', 'utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v2')","{openRankingCard:window.openTestCard}"));
   await settle();
   return {w, dom, calls, $:s => w.document.querySelector(s), click:async s => {w.document.querySelector(s).click(); await settle();}, close:() => dom.window.close()};
 }
