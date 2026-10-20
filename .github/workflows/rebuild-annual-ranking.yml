@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  pages: write
 concurrency:
   group: annual-ranking-build
   cancel-in-progress: false
@@ -50,6 +51,7 @@ jobs:
           }
           NODE
       - name: Commit refreshed JSONs if configuration changed
+        id: publish
         run: |
           git add ranking-data/brasil-2025.json ranking-data/brasil-2026.json
           if git diff --cached --quiet; then
@@ -58,3 +60,9 @@ jobs:
           fi
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Recalculate annual ranking after scoring configuration edit'
           git push
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+      - name: Request GitHub Pages build for generated results
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "/repos/${{ github.repository }}/pages/builds"
