@@ -1,7 +1,7 @@
 import {isChatVisible,watchChatVisibility,isChatPageAllowed} from './chat-visibility.mjs?v=20261020-chat-layout-v1';
 import {createEmblemDisplay,emblemSlot} from './profile-emblems.mjs?v=20261016-emblems-v1';
 import {selectedFrame,frameScaleFor} from './profile-frame-model.mjs?v=20261013-profile-frames-v1';
-const VERSION='20261020-chat-layout-v1';
+const VERSION='20261020-chat-layout-v2';
 const SERVICE='https://cff-camp-notifications.nakataffb4.workers.dev/api',ADMIN='admin@centralfreefire.com.br';
 const icon='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-4 3V11.5A7.5 7.5 0 0 1 9.5 4h3a7.5 7.5 0 0 1 7.5 7.5Z"/><path d="M7 10h8M7 14h5"/></svg>';
 if(isChatPageAllowed()&&document.documentElement.dataset.cffChat!=='off'&&document.body?.dataset.cffChat!=='off'&&!document.getElementById('cff-global-chat'))mountChat();
