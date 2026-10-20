@@ -1,0 +1,26 @@
+/* Cards de rankings: exportação sem bibliotecas nem novas consultas. */
+.home-rail-ranking{position:relative}
+.home-rail-ranking>.cff-ranking-share-trigger{
+ position:absolute;top:9px;right:9px;z-index:2;
+ min-height:32px;padding:5px 9px;
+ border:1px solid #39738d;border-radius:8px;background:#102c3d;color:#9be8fa;
+ font:800 11px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:0;cursor:pointer;
+}
+.home-rail-ranking>.cff-ranking-share-trigger:hover{background:#184059;border-color:#00c8ff}
+.home-rail-ranking>h3{padding-right:92px!important}
+.cff-share-dialog{width:min(520px,calc(100vw - 20px));max-width:520px;max-height:92dvh;overflow-y:auto;padding:18px;border:1px solid #2f5d7b;border-radius:18px;background:#0a1422;color:#f1f8ff;box-shadow:0 22px 90px #000c;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.cff-share-dialog::backdrop{background:#030710d9;backdrop-filter:blur(4px)}
+.cff-share-top,.cff-share-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.cff-share-top small{font-size:10px;letter-spacing:1.7px;color:#61d7f2;font-weight:850}
+.cff-share-top h2{margin:4px 0 0;font-size:23px;color:#fff}
+.cff-share-close{width:36px;height:36px;border:1px solid #284156;border-radius:9px;background:#14283a;color:#dceaff;font-size:23px;cursor:pointer}
+.cff-share-format{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:16px 0;color:#9bb3ca;font-size:12px}
+.cff-share-format select{max-width:230px;min-height:39px;padding:7px 10px;border:1px solid #3a5b71;border-radius:8px;background:#0f2335;color:#f0f8ff;font:700 12px system-ui}
+.cff-share-preview{display:flex;justify-content:center;align-items:center;min-height:180px;max-height:54dvh;overflow:hidden;border:1px solid #284156;border-radius:11px;background:#07101b}
+.cff-share-preview canvas{display:block;width:auto;height:auto;max-width:100%;max-height:54dvh}
+.cff-share-status{min-height:18px;margin:10px 0;color:#9ac2d7;font-size:12px}
+.cff-share-actions{justify-content:flex-end;flex-wrap:wrap}
+.cff-share-actions button{min-height:42px;padding:9px 15px;border:1px solid #36637d;border-radius:9px;background:#193a51;color:#edfaff;font-weight:800;cursor:pointer}
+.cff-share-actions button:last-child{background:#00a9d7;color:#03101a;border-color:#00c8ff}
+.cff-share-actions button:disabled{opacity:.45;cursor:wait}
+@media(max-width:620px){.home-rail-ranking>.cff-ranking-share-trigger{top:8px;right:8px}.cff-share-dialog{padding:12px}.cff-share-preview{max-height:51dvh}.cff-share-preview canvas{max-height:51dvh}}
