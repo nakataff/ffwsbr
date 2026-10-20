@@ -122,9 +122,11 @@ $('sync').addEventListener('change',()=>{if($('sync').checked&&ready){
 }});
 $('reset').addEventListener('click',()=>{
   if(!ready)return;
-  const originalSource=original.get(year).source;
-  const action=conf=>{conf.basePoints=[...originalSource.basePoints];conf.weights={...originalSource.weights};};
-  apply(action);render();
+  for(const y of ($('sync').checked?YEARS:[year])){
+    const src=original.get(y).source,conf=drafts.get(y);
+    conf.basePoints=[...src.basePoints];conf.weights={...src.weights};
+  }
+  render();
 });
 document.addEventListener('input',event=>{
   const input=event.target;
