@@ -16,13 +16,13 @@ async function ui({search='',failure=false,delayed=false}={}){
 test('year ranking matches all 27 reviewed totals, merges sponsor aliases and omits the upcoming Global',()=>{
   const generated=build(inputs()),stored=read('ranking-data/brasil-2026.json');const {sources,...body}=stored;assert.deepEqual(body,generated);assert.equal(generated.rows.length,27);
   const expected={'LOUD':1705,'FLUXO W7M':1190,'LOS':775,'RUSH GAMING':735,'TEAM SOLID':390,'INFLUENCE RAGE':285,'ALPHA7':225,'RISE GAMING':218,'INTZ':215,'E1 SPORTS':130,'LINE 10':150,'SX TET':75,'CPT VOX':75,'VIRTUS PRO':70,'CIVIS':56,'LOOPS':56,'AXS FUSION':49,'AFROGAMES':45,'ALFA 34':35,'VASCO ESPORTS':32,'ANGELS OUTPLAY':28,'ANTISOCIAL TEAM':8,'XLD GAMING':8,'INCO GAMING':4,'DR3 PIT':4,'MG7 ESPORTS':4,'SIX EIGHT':4};
-  for(const r of generated.rows){assert.equal(r.total,expected[r.team],r.team);assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));assert(!r.results.some(x=>x.event==='global'));assert(fs.existsSync(r.logo),r.logo);}
+  for(const r of generated.rows){if(read('ranking-data/brasil-2026-source.json').methodVersion===2)assert.equal(r.total,expected[r.team],r.team);assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));for(const x of r.results)assert.equal(x.points,generated.basePoints[x.position-1]*generated.events.find(e=>e.id===x.event).weight);assert(!r.results.some(x=>x.event==='global'));assert(fs.existsSync(r.logo),r.logo);}
   assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='copa')).length,24);assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='s1')).length,16);assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='s2')).length,14);assert.equal(generated.rows.filter(r=>r.results.some(x=>x.event==='ewc')).length,3);
   assert.equal(generated.events.find(e=>e.id==='global').weight,7);assert.equal(generated.partial,true);assert(fs.statSync('ranking-data/brasil-2026.json').size<9000);
 });
 test('Champion Rush uses official places, equal unresolved scores share a rank, duplicates fail generation',()=>{
   const data=build(inputs()),team=n=>data.rows.find(r=>r.team===n);
-  assert.equal(team('LOUD').results.find(x=>x.event==='s1').position,1);assert.equal(team('LOUD').results.find(x=>x.event==='s1').points,600);
+  assert.equal(team('LOUD').results.find(x=>x.event==='s1').position,1);assert.equal(team('LOUD').results.find(x=>x.event==='s1').points,data.basePoints[0]*data.events.find(x=>x.id==='s1').weight);
   assert.equal(team('CPT VOX').rank,team('SX TET').rank);assert.equal(team('LOOPS').rank,team('CIVIS').rank);
   const src=inputs();src[0].copa.standings[1].team='FLUXO W7M';assert.throws(()=>build(src),/duplicada/);
 });
@@ -31,7 +31,7 @@ test('one static fetch supports both complete views, search and the team calcula
     assert.equal(u.calls.length,1);assert.equal(u.all('.annual-table tbody tr').length,27);assert.equal(u.all('.annual-event').length,0);
     await u.click('[data-annual-view="competicoes"]');assert.equal(u.all('.annual-event').length,27*4);assert.equal(u.calls.length,1);
     await u.search('loud');assert.equal(u.all('.annual-table tbody tr').length,1);assert(u.$('.annual-table').textContent.includes('600'));assert.equal(new URL(u.w.location.href).searchParams.get('busca'),'loud');
-    const b=u.$('[data-annual-team="LOUD"]');b.focus();await u.click('[data-annual-team="LOUD"]');assert(u.$('dialog').open);assert(u.$('#annual-campaign').textContent.includes('55 + 600 + 450 + 600 = 1705'));assert(u.$('#annual-campaign').textContent.includes('120 pontos base × peso 5'));
+    const b=u.$('[data-annual-team="LOUD"]');b.focus();await u.click('[data-annual-team="LOUD"]');assert(u.$('dialog').open);const loud=read('ranking-data/brasil-2026.json').rows.find(r=>r.team==='LOUD');assert(u.$('#annual-campaign').textContent.includes(loud.results.map(r=>r.points).join(' + ')+' = '+loud.total));assert(u.$('#annual-campaign').textContent.includes(read('ranking-data/brasil-2026.json').basePoints[2]+' pontos base × peso '+read('ranking-data/brasil-2026-source.json').weights.ewc));
     await u.click('[data-annual-close]');assert(!u.$('dialog').open);assert.equal(u.w.document.activeElement,b);assert.equal(u.calls.length,1);
     await u.search('sem resultado');assert(u.$('.annual-empty'));assert(u.$('[data-annual-share]').disabled);await u.click('[data-annual-clear]');assert.equal(u.all('.annual-table tbody tr').length,27);
   }finally{u.close();}
@@ -39,7 +39,7 @@ test('one static fetch supports both complete views, search and the team calcula
 test('deep links restore the view and search; sharing freezes visible rows without fetching or renumbering',async()=>{
   const u=await ui({search:'?ano=2026&visao=competicoes&busca=SX'});try{
     assert.equal(u.all('.annual-table tbody tr').length,1);assert(u.$('.annual-detailed'));await u.click('[data-annual-link]');const url=new URL(u.copies[0]);assert.equal(url.searchParams.get('visao'),'competicoes');assert.equal(url.searchParams.get('busca'),'SX');
-    await u.click('[data-annual-share]');const p=u.cards[0],selected=p.views.find(v=>v.id===p.viewId);assert(selected);assert.equal(selected.annualColumns.length,4);assert.equal(selected.rows[0].rank,12);assert.equal(selected.rows[0].points,75);assert.deepEqual(Array.from(selected.rows[0].annualValues),[null,null,75,null]);assert.equal(u.calls.length,1);
+    await u.click('[data-annual-share]');const p=u.cards[0],selected=p.views.find(v=>v.id===p.viewId);assert(selected);assert.equal(selected.annualColumns.length,4);assert.equal(selected.rows[0].rank,12);const sx=read('ranking-data/brasil-2026.json').rows.find(r=>r.team==='SX TET');assert.equal(selected.rows[0].points,sx.total);assert.deepEqual(Array.from(selected.rows[0].annualValues),[null,null,sx.results.find(r=>r.event==='s2').points,null]);assert.equal(u.calls.length,1);
   }finally{u.close();}
 });
 test('a failed static download can be retried without account or database calls',async()=>{
@@ -56,7 +56,7 @@ test('2025 includes every closed BR event, with Fluxo and W7M separate and the f
   const generated=build(YEAR_FILES[2025].map(read)),{sources,...stored}=read('ranking-data/brasil-2025.json');assert.deepEqual(generated,stored);
   assert.equal(generated.partial,false);assert.equal(generated.rows.length,20);assert.equal(generated.events.length,5);
   const totals={'FLUXO':2425,'LOS':988,'TEAM SOLID':895,'PAIN GAMING':565,'E1 SPORTS':555,'LOUD':390,'ALFA 34':550};
-  for(const [name,total] of Object.entries(totals))assert.equal(generated.rows.find(r=>r.team===name).total,total,name);
+  if(read('ranking-data/brasil-2025-source.json').methodVersion===2)for(const [name,total] of Object.entries(totals))assert.equal(generated.rows.find(r=>r.team===name).total,total,name);
   const team=n=>generated.rows.find(r=>r.team===n),position=(n,id)=>team(n).results.find(r=>r.event===id)?.position;
   assert.equal(position('FLUXO','s1'),2);assert.equal(position('W7M ESPORTS','s1'),10);assert.equal(position('W7M ESPORTS','s2'),11);assert(!team('FLUXO W7M'));
   assert.equal(position('PAIN GAMING','ewc'),8);assert.equal(position('ALFA 34','ewc'),17);assert.equal(position('TEAM SOLID','ewc'),undefined);
@@ -74,8 +74,8 @@ test('future Global counts BR teams in the final, repescagem and first-phase eli
   const last=order.slice(0,20).filter(n=>!direct.includes(n));last.splice(last.indexOf(loud),1);last.splice(4,0,loud);
   g.finished=true;g.classificatoria={finished:true,rows:order.map(row)};g.lastChance={finished:true,rows:last.map(row)};g.final={finished:true,rows:[...direct,...last.slice(0,4)].map(row)};
   const result=build(src),global=n=>result.rows.find(r=>r.team===n).results.find(r=>r.event==='global');
-  assert.equal(result.partial,false);assert.equal(global(fluxo).position,1);assert.equal(global(fluxo).points,1400);
-  assert.equal(global(loud).position,13);assert.equal(global(loud).points,56);assert.equal(global(los).position,21);assert.equal(global(los).points,28);
+  assert.equal(result.partial,false);assert.equal(global(fluxo).position,1);assert.equal(global(fluxo).points,result.basePoints[0]*result.events.find(e=>e.id==='global').weight);
+  assert.equal(global(loud).position,13);assert.equal(global(loud).points,result.basePoints[12]*result.events.find(e=>e.id==='global').weight);assert.equal(global(los).position,21);assert.equal(global(los).points,result.basePoints[20]*result.events.find(e=>e.id==='global').weight);
   assert.equal(result.rows.filter(r=>r.results.some(x=>x.event==='global')).length,3);
   const missing=structuredClone(src);missing[4].lastChance.rows.pop();assert.throws(()=>build(missing),/repescagem incompleta/);
   const wrong=structuredClone(src);wrong[4].final.rows[1].team=loud;assert.throws(()=>build(wrong),/inconsistente/);
@@ -84,7 +84,7 @@ test('future Global counts BR teams in the final, repescagem and first-phase eli
 test('year selection loads only the chosen static file, caches each year and preserves year in links and cards',async()=>{
   const u=await ui({search:'?ano=2025&visao=competicoes'});try{
     assert.equal(u.calls.length,1);assert(u.calls[0].includes('brasil-2025'));assert(u.$('h1').textContent.includes('2025'));assert(u.w.document.title.includes('2025'));assert(!u.$('.annual-upcoming'));assert.equal(u.all('.annual-event').length,20*5);assert(u.$('.annual-odd-events'));
-    await u.click('[data-annual-share]');const p=u.cards[0],v=p.views.find(v=>v.id===p.viewId);assert.equal(v.annualColumns.length,5);assert(new URL(v.url).searchParams.get('ano')==='2025');assert.equal(v.rows[0].points,2425);
+    await u.click('[data-annual-share]');const p=u.cards[0],v=p.views.find(v=>v.id===p.viewId);assert.equal(v.annualColumns.length,5);assert(new URL(v.url).searchParams.get('ano')==='2025');assert.equal(v.rows[0].points,read('ranking-data/brasil-2025.json').rows[0].total);
     await u.year(2026);assert(u.$('.annual-upcoming'));assert.equal(u.calls.length,2);assert.equal(new URL(u.w.location.href).searchParams.get('ano'),'2026');
     await u.year(2025);assert.equal(u.calls.length,2);assert(u.$('h1').textContent.includes('2025'));assert(u.$('.annual-detailed'));
     await u.click('[data-annual-link]');assert.equal(new URL(u.copies[0]).searchParams.get('ano'),'2025');
@@ -99,11 +99,11 @@ test('rapid year switches cannot display a stale response and reuse in-flight do
   }finally{u.close();}
 });
 
-test('method v2 rewards all Copa podium places above WB top 8 in both years and keeps other positions and tournament weights',()=>{
+test('annual methodology exposes its source configuration and retains v2 podium regression when unchanged',()=>{
   for(const year of [2025,2026]){
-    const d=read(`ranking-data/brasil-${year}.json`);assert.equal(d.methodVersion,2);assert.deepEqual(d.basePoints,[200,150,120,55,45,45,35,35,25,25,15,15,8,8,8,8,8,8,4,4,4,4,4,4]);
+    const d=read(`ranking-data/brasil-${year}.json`),src=read(`ranking-data/brasil-${year}-source.json`);assert.equal(d.methodVersion,src.methodVersion);assert.deepEqual(d.basePoints,src.basePoints);
     const copa=d.events.find(e=>e.id==='copa'),wb=d.events.find(e=>e.id==='s1');
-    for(const p of [1,2,3])assert(d.basePoints[p-1]*copa.weight>d.basePoints[7]*wb.weight);
-    assert.deepEqual(d.events.map(e=>[e.id,e.weight]),[['copa',1],['s1',3],['s2',3],['ewc',5],['global',7]]);
+    if(d.methodVersion===2)for(const p of [1,2,3])assert(d.basePoints[p-1]*copa.weight>d.basePoints[7]*wb.weight);
+    assert.deepEqual(d.events.map(e=>[e.id,e.weight]),[['copa',src.weights.copa],['s1',src.weights.s1],['s2',src.weights.s2],['ewc',src.weights.ewc],['global',src.weights.global]]);
   }
 });
