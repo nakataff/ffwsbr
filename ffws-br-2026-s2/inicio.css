@@ -1,0 +1,95 @@
+/* WB 2026 S2 • Início: CSS isolado e carregado apenas nesta rota */
+.s2-start{--s2-bg:#07111d;--s2-card:#0b1727;--s2-line:#253951;--s2-muted:#91a9c0;--s2-accent:#00c8ff;max-width:1180px;margin:0 auto 50px;display:grid;gap:20px;color:#f4faff;font-family:Inter,"Segoe UI",system-ui,sans-serif;box-sizing:border-box}
+.s2-start *, .s2-start *::before,.s2-start *::after{box-sizing:border-box}
+.s2-start-hero,.s2-start-format,.s2-start-data{background:linear-gradient(145deg,#0b192b,#08111f);border:1px solid var(--s2-line);border-radius:17px;overflow:hidden}
+.s2-start-hero{padding:29px clamp(16px,4vw,32px);background:radial-gradient(circle at 92% -10%,rgba(0,200,255,.1),transparent 52%),linear-gradient(130deg,#102235,#08121f)}
+.s2-start-kicker{color:#63cfff!important;font-size:11px!important;font-weight:900!important;letter-spacing:1.4px;margin:0 0 10px!important}
+.s2-start-hero-title{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.s2-start-hero h1{color:#f5faff!important;font-size:clamp(28px,5.6vw,48px)!important;line-height:1.06!important;font-weight:1000!important;letter-spacing:.01em!important;margin:0 0 10px!important}
+.s2-start-hero-title p{max-width:670px;font-size:13px;line-height:1.55;color:#9eb9ce;margin:0!important}
+.s2-start-status{display:inline-flex;flex-shrink:0;padding:8px 11px;border-radius:999px;border:1px solid #3f776e;background:#103a36;color:#78e1ba;font-size:10px;font-weight:900;letter-spacing:.08em}
+.s2-start-format{padding:24px}
+.s2-start-format-head h2,.s2-start-data-head h2{font-size:clamp(17px,3vw,21px);font-weight:900;color:#fff;margin:0 0 6px}
+.s2-start-format-head p,.s2-start-data-head p{font-size:12px;line-height:1.5;color:var(--s2-muted);margin:0}
+.s2-start-format-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.s2-start-format-grid article{border-radius:12px;padding:17px;border:1px solid #2b425b;background:#112235;min-width:0}
+.s2-start-step{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#173e54;color:#5ddaff;font-size:13px;font-weight:900}
+.s2-start-format-grid h3{color:#f4faff;font-size:15px;margin:12px 0 5px;line-height:1.2}
+.s2-start-format-grid p{margin:0;color:#aec3d6;line-height:1.55;font-size:12px}
+.s2-start-results{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
+.s2-start-results>span{display:flex;flex-direction:column;gap:5px;border:1px solid #34475b;border-radius:11px;padding:13px 15px;background:#0b2030}
+.s2-start-results small{font-size:10px;font-weight:900;letter-spacing:.07em;color:#91b2c7}
+.s2-start-results strong{font-size:14px;font-weight:850;color:#f9faff;line-height:1.3}
+.s2-start-data{padding:0 0 18px}
+.s2-start-data-head{padding:23px 23px 15px}
+.s2-start-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 17px;border-radius:11px;border:1px solid #294258;padding:5px;background:#081521}
+.s2-start-tabs button{min-width:0;min-height:43px;margin:0!important;padding:9px 5px;border-radius:8px;border:1px solid transparent;background:transparent;color:#9cbed6;cursor:pointer;font:850 12px/1.15 Inter,"Segoe UI",system-ui,sans-serif;letter-spacing:.025em;white-space:nowrap}
+.s2-start-tabs button[aria-selected=true]{color:#cef2ff;background:#10384d;border-color:#196b8a}
+.s2-start-tabs button:focus-visible,.s2-start-subtabs button:focus-visible,.s2-start-team-filter select:focus-visible{outline:2px solid var(--s2-accent);outline-offset:2px}
+#s2-start-pane{padding:18px 23px 6px}
+.s2-start-subtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.s2-start-subtabs button{min-height:36px;min-width:0;margin:0!important;padding:7px 12px;border:1px solid #284058;border-radius:8px;background:#102034;color:#a1b9d0;font:800 11px/1.1 Inter,"Segoe UI",sans-serif;cursor:pointer}
+.s2-start-subtabs button.is-active{border-color:#00a9d6;background:#113a50;color:#77dfff}
+.s2-start-table-wrap{width:100%;overflow-x:auto;overscroll-behavior-inline:contain;border:1px solid #253b51;border-radius:12px;background:#08121f}
+.s2-start-table{width:100%;border-collapse:collapse;table-layout:auto;color:#e7f2ff;font-size:12px}
+.s2-start-table th{background:#13283c;color:#8eafc6;text-align:left;font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.035em;padding:12px 11px}
+.s2-start-table td{padding:11px;border-top:1px solid #1a2c40;vertical-align:middle}
+.s2-start-table th:nth-child(n+3),.s2-start-table td:nth-child(n+3){text-align:right;font-variant-numeric:tabular-nums}
+.s2-start-table td>a{color:#f2faff;text-decoration:none;font-weight:800;overflow-wrap:anywhere}
+.s2-start-table td>a:hover{color:#42d9ff;text-decoration:underline}
+.s2-start-table tr.s2-start-top3{background:#102339}
+.s2-start-table .s2-start-rank{color:#52cfff;font-weight:950;width:39px;white-space:nowrap}
+.s2-start-table .s2-start-number{font-weight:800;white-space:nowrap}
+.s2-start-under{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:15px}
+.s2-start-under small{color:#809cb5;font-size:11px}
+.s2-start-complete{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:8px 14px;border:1px solid #2e647c;border-radius:9px;color:#9ce7fc!important;background:#153144;text-decoration:none!important;font-size:12px;font-weight:900}
+.s2-start-complete:hover{border-color:#00c8ff;color:#fff!important}
+.s2-start-loading,.s2-start-empty{padding:33px 17px;text-align:center;color:#91aec6;font-size:13px;line-height:1.6}
+.s2-start-empty{text-align:left}
+.s2-start-notice{padding:12px 14px;background:#322913;border:1px solid #6a562e;border-radius:9px;color:#f4d18b;font-size:12px;line-height:1.5;margin:0 0 12px}
+.s2-start-team-filter{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:12px;font-weight:900;color:#c9dcef;margin:0 0 14px}
+.s2-start-team-filter select{min-width:0;max-width:75%;padding:9px 12px;background:#102236;border:1px solid #375672;border-radius:9px;color:#f4faff;font:700 12px Inter,"Segoe UI",sans-serif}
+.s2-start-team-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #294157}
+.s2-start-team-head h3{margin:0;font-size:18px;color:#f4faff}
+.s2-start-team-head span{font-size:11px;color:#96b0c5}
+.s2-start-roster{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.s2-start-roster-player{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:12px;border:1px solid #284057;border-radius:11px;background:#102135;min-width:0}
+.s2-start-roster-player>div{min-width:0}
+.s2-start-roster-player strong{display:block;font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.s2-start-roster-player strong a{color:#edf9ff;text-decoration:none}
+.s2-start-roster-player small{display:block;font-size:10px;color:#8eabc6;margin-top:2px}
+.s2-start-roster-player>span{max-width:114px;flex-shrink:0;text-align:right;font-size:10px;color:#69cdea;line-height:1.35}
+.s2-start-caption{color:#8dabca;font-size:11px;line-height:1.6;margin:14px 0 0}
+@media(max-width:680px){
+ .s2-start{gap:13px;margin:0 0 25px}
+ .s2-start-hero{padding:18px 15px}
+ .s2-start-kicker{font-size:9px!important}
+ .s2-start-hero h1{font-size:28px!important}
+ .s2-start-hero-title p{font-size:11px}
+ .s2-start-status{padding:6px 7px;font-size:8px}
+ .s2-start-format{padding:16px}
+ .s2-start-format-grid{grid-template-columns:1fr;gap:8px;margin-top:13px}
+ .s2-start-format-grid article{padding:12px}
+ .s2-start-step{float:left;margin-right:12px;width:28px;height:28px}
+ .s2-start-format-grid h3{font-size:13px;margin:0 0 4px}
+ .s2-start-format-grid p{font-size:11px}
+ .s2-start-results{gap:8px}
+ .s2-start-results>span{padding:11px}
+ .s2-start-results strong{font-size:11px}
+ .s2-start-results small{font-size:9px}
+ .s2-start-data-head{padding:17px 14px 12px}
+ .s2-start-tabs{margin:0 9px}
+ #s2-start-pane{padding:14px 10px 4px}
+ .s2-start-subtabs{gap:6px}
+ .s2-start-subtabs button{padding:8px 9px;font-size:10px}
+ .s2-start-table{font-size:11px}
+ .s2-start-table th{padding:10px 7px;font-size:9px}
+ .s2-start-table td{padding:10px 7px}
+ .s2-start-table .s2-start-rank{width:29px}
+ .s2-start-table td:nth-child(4),.s2-start-table th:nth-child(4){display:none}
+ .s2-start-roster{grid-template-columns:1fr}
+ .s2-start-team-filter{flex-direction:column;align-items:stretch}
+ .s2-start-team-filter select{max-width:100%;width:100%}
+ .s2-start-under{align-items:stretch}
+ .s2-start-complete{flex:1;min-width:0}
+}
