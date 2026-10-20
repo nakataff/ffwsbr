@@ -63,7 +63,7 @@ test('2025 includes every closed BR event, with Fluxo and W7M separate and the f
   assert.deepEqual(generated.rows.filter(r=>r.results.some(x=>x.event==='ewc')).map(r=>r.team).sort(),['ALFA 34','FLUXO','LOS','PAIN GAMING']);
   assert.equal(position('FLUXO','global'),2);assert.equal(position('TEAM SOLID','global'),5);assert.equal(position('E1 SPORTS','global'),12);
   assert.equal(team('FLUXO').results.length,5);assert.equal(team('SAVEX GAMING').results.length,2);assert.equal(team('RUSH GAMING').results.length,1);
-  for(const r of generated.rows){assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));assert(fs.existsSync(r.logo));}
+  for(const r of generated.rows){assert.equal(r.total,r.results.reduce((s,x)=>s+x.points,0));assert(r.logo.startsWith('https://')||fs.existsSync(r.logo));}
   assert(fs.statSync('ranking-data/brasil-2025.json').size<7000);
 });
 test('2025 and 2026 reuse valid crests from local assets or reviewed external catalog without mixing organizations',()=>{
