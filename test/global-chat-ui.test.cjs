@@ -124,7 +124,7 @@ test('giveaway form styles cannot stretch the launcher or alter chat buttons',as
  const f=await fixture({path:'/sorteio-comunidade.html'});try{
   const d=f.w.document,style=d.createElement('style'),giveaway=fs.readFileSync('sorteio-comunidade.html','utf8');style.textContent=giveaway.match(/<style>([\s\S]*?)<\/style>/)[1]+fs.readFileSync('css/global-chat.css','utf8');d.head.append(style);
   const shell=d.createElement('main');shell.className='shell';shell.innerHTML='<button>Participar do sorteio</button>';d.body.append(shell);
-  assert.equal(f.w.getComputedStyle(shell.querySelector('button')).width,'100%');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).width,'max-content');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).height,'auto');
+  assert.equal(f.w.getComputedStyle(shell.querySelector('button')).width,'100%');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).width,'auto');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).height,'auto');
   assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-close')).width,'32px');assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-close')).height,'32px');
   assert.equal(f.w.getComputedStyle(d.querySelector('.cff-chat-launch')).textTransform,'none');
  }finally{f.close();}
@@ -133,7 +133,7 @@ test('the shared bootstrap skips public chat imports on admin pages and supports
  const source=fs.readFileSync('js/config.min.js','utf8').replaceAll('import(','window.__import(');
  for(const [path,disabled,expected]of [['/admin.html',false,0],['/admin-chat.html',false,0],['/admin/tarefas',false,0],['/index.html',false,1],['/sorteio-comunidade.html',false,1],['/conta.html',true,0]]){
   const dom=new JSDOM('<body></body>',{url:'https://centralfreefire.com.br'+path,runScripts:'outside-only'}),w=dom.window,calls=[];
-  try{if(disabled)w.document.documentElement.dataset.cffChat='off';w.__import=async url=>calls.push(url);w.eval(source);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));await tick();assert.equal(calls.length,expected,path);assert(calls.every(url=>url.includes('global-chat.js?v=20261020-chat-layout-v1')));}finally{w.close();}
+  try{if(disabled)w.document.documentElement.dataset.cffChat='off';w.__import=async url=>calls.push(url);w.eval(source);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));await tick();assert.equal(calls.length,expected,path);assert(calls.every(url=>url.includes('global-chat.js?v=20261020-chat-layout-v2')));}finally{w.close();}
  }
  for(const path of ['admin-chat.html','admin-perfis.html'])assert(!fs.readFileSync(path,'utf8').includes('src="/js/global-chat.js'));
 });
