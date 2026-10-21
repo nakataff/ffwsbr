@@ -391,7 +391,7 @@
     return `<td class="ewc-team-cell">
       <span class="ewc-team-visuals">
         ${flag ? `<img class="ewc-team-country" src="${escapeHtml(flag)}" alt="${escapeHtml(team?.countryName || '')}" title="${escapeHtml(team?.countryName || '')}" onerror="this.style.display='none'">` : '<span class="ewc-team-country-placeholder" aria-hidden="true"></span>'}
-        <img class="ewc-team-logo" src="${escapeHtml(resolveLogo(teamName))}" alt="${escapeHtml(full)}" onerror="this.onerror=null;this.src='escudo.webp'">
+        <img data-team-logo="${escapeHtml(teamName)}" data-team-date="2026-07-15" class="ewc-team-logo" src="${escapeHtml(resolveLogo(teamName))}" alt="${escapeHtml(full)}" onerror="this.onerror=null;this.src='escudo.webp'">
       </span>
       <span class="ewc-team-name-full">${escapeHtml(full)}</span>
       <span class="ewc-team-name-short">${escapeHtml(short)}</span>
@@ -739,7 +739,7 @@
     return `<button type="button" class="ewc-leader-team" onclick="openEWCTeamProfile(${jsString(teamName)})" title="${escapeHtml(full)}">
       <span class="ewc-leader-visuals">
         ${flag ? `<img class="ewc-leader-flag" src="${escapeHtml(flag)}" alt="${escapeHtml(team?.countryName || '')}" onerror="this.style.display='none'">` : '<span class="ewc-leader-flag-placeholder" aria-hidden="true"></span>'}
-        <img class="ewc-leader-logo" src="${escapeHtml(resolveLogo(teamName))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'">
+        <img data-team-logo="${escapeHtml(teamName)}" data-team-date="2026-07-15" class="ewc-leader-logo" src="${escapeHtml(resolveLogo(teamName))}" alt="" onerror="this.onerror=null;this.src='escudo.webp'">
       </span>
       <span class="ewc-leader-name-full">${escapeHtml(full)}</span>
       <span class="ewc-leader-name-short">${escapeHtml(short)}</span>
@@ -902,7 +902,7 @@
     const countryFlag = team.countryFlag ? `${BASE}${team.countryFlag}` : '';
     return `<article class="ewc-participant-card">
       <button type="button" class="ewc-participant-head" onclick="openEWCTeamProfile(${jsString(team.name)})">
-        <span class="ewc-participant-logo"><img src="${escapeHtml(resolveLogo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"></span>
+        <span class="ewc-participant-logo"><img data-team-logo="${escapeHtml(team.name)}" data-team-date="2026-07-15" src="${escapeHtml(resolveLogo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"></span>
         <span class="ewc-participant-title"><strong>${escapeHtml(team.name)}</strong><small>${countryFlag ? `<img class="ewc-card-country" src="${escapeHtml(countryFlag)}" alt="">` : ''}${escapeHtml(`${team.countryName ? `${team.countryName} • ` : ''}${team.group ? `Grupo ${team.group} • ` : ''}${team.qualification || 'A confirmar'}`)}</small></span>
         <span class="ewc-participant-count">${players.length} J</span>
       </button>
@@ -1126,7 +1126,7 @@
             ${rows.length ? rows.map((row, index) => `<tr>
               <td class="ewc-rank">${index + 1}º</td>
               <td class="ewc-player-name-cell"><button type="button" onclick="openEWCPlayerProfile(${jsString(row.name)}, ${jsString(row.team)})">${escapeHtml(row.name)}</button><small>${escapeHtml(row.roleShort || row.role)}</small></td>
-              <td><button type="button" class="ewc-player-team" onclick="openEWCTeamProfile(${jsString(row.team)})"><img src="${escapeHtml(resolveLogo(row.team))}" alt="${escapeHtml(row.team)}" onerror="this.onerror=null;this.src='escudo.webp'"><span class="ewc-player-team-full">${escapeHtml(teamDisplayName(row.team))}</span><span class="ewc-player-team-short">${escapeHtml(teamAbbreviation(row.team))}</span></button></td>
+              <td><button type="button" class="ewc-player-team" onclick="openEWCTeamProfile(${jsString(row.team)})"><img data-team-logo="${escapeHtml(row.team)}" data-team-date="2026-07-15" src="${escapeHtml(resolveLogo(row.team))}" alt="${escapeHtml(row.team)}" onerror="this.onerror=null;this.src='escudo.webp'"><span class="ewc-player-team-full">${escapeHtml(teamDisplayName(row.team))}</span><span class="ewc-player-team-short">${escapeHtml(teamAbbreviation(row.team))}</span></button></td>
               <td class="ewc-player-kills">${row.kills}</td><td class="ewc-player-detail-col">${row.damage.toLocaleString('pt-BR')}</td>
               <td class="ewc-player-detail-col">${row.assists}</td><td>${row.matches}</td>
             </tr>`).join('') : `<tr><td colspan="7"><div class="ewc-empty ewc-player-empty">${stageHasData ? 'Nenhum jogador encontrado para os filtros selecionados.' : 'A Final ainda não possui dados individuais.'}</div></td></tr>`}
@@ -1188,7 +1188,7 @@
 
     root.innerHTML = `<div class="ewc-shell">
       <section class="ewc-profile-hero">
-        <span class="ewc-profile-team-visual"><img class="ewc-profile-logo" src="${escapeHtml(resolveLogo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'">${countryFlag ? `<img class="ewc-profile-country" src="${escapeHtml(countryFlag)}" alt="${escapeHtml(team.countryName || '')}">` : ''}</span>
+        <span class="ewc-profile-team-visual"><img data-team-logo="${escapeHtml(team.name)}" data-team-date="2026-07-15" class="ewc-profile-logo" src="${escapeHtml(resolveLogo(team.name))}" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'">${countryFlag ? `<img class="ewc-profile-country" src="${escapeHtml(countryFlag)}" alt="${escapeHtml(team.countryName || '')}">` : ''}</span>
         <div><div class="ewc-kicker">EWC 2026</div><h1>${escapeHtml(team.name)}</h1><p>${escapeHtml(`${team.countryName ? `${team.countryName} • ` : ''}${team.qualification || 'A confirmar'}`)}</p></div>
       </section>
       ${stageCards ? `<section class="ewc-panel ewc-profile-section"><div class="ewc-panel-inner"><h2>Campanha na EWC 2026</h2><div class="ewc-profile-stage-grid">${stageCards}</div></div></section>` : ''}

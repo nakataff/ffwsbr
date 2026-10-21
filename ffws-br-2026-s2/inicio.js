@@ -3,7 +3,7 @@
   if (window.CFFS2Inicio) return;
   const root = document.getElementById('ffws-br-s2-inicio-content');
   if (!root) return;
-  const VERSION = '20261020-inicio-share-v5';
+  const VERSION = '20261021-team-eras-v1';
   const BASE = '/ffws-br-2026-s2/';
   const files = {summary: BASE + 'inicio-resumo.json?v=' + VERSION, mvp: BASE + 'inicio-mvp-top10.json?v=' + VERSION, squads: BASE + 'inicio-elencos.json?v=' + VERSION};
   const cache = new Map();
@@ -50,11 +50,11 @@
     return value && !/[:\\]|^\/\//.test(value) && !value.split('/').includes('..') ? '/' + value.replace(/^\//, '') : '/escudo.webp';
   }
   function image(src, alt, kind = 'team') {
-    return `<img class="s2-start-${kind}-image" src="${esc(asset(src))}" alt="${esc(alt)}" width="${kind === 'player' ? 40 : 28}" height="${kind === 'player' ? 40 : 28}" loading="lazy" decoding="async" data-s2-fallback="${kind === 'player' ? '/silhueta.webp' : '/escudo.webp'}">`;
+    return `<img ${kind==='team'?'data-team-logo="'+esc(alt)+'" data-team-date="2026-08-01"':''} class="s2-start-${kind}-image" src="${esc(asset(src))}" alt="${esc(alt)}" width="${kind === 'player' ? 40 : 28}" height="${kind === 'player' ? 40 : 28}" loading="lazy" decoding="async" data-s2-fallback="${kind === 'player' ? '/silhueta.webp' : '/escudo.webp'}">`;
   }
   function teamLink(name, compact = false) {
     const t = teamMeta(name);
-    return `<a class="s2-start-team-link${compact ? ' is-compact' : ''}" href="/equipe.html?time=${encodeURIComponent(name)}" aria-label="${esc(name)}">${image(t.logo, '')}<span class="s2-start-team-full">${esc(name)}</span><span class="s2-start-team-short" aria-hidden="true">${esc(t.abbreviation)}</span></a>`;
+    return `<a class="s2-start-team-link${compact ? ' is-compact' : ''}" href="/equipe.html?time=${encodeURIComponent(name)}" aria-label="${esc(name)}">${image(t.logo, name)}<span class="s2-start-team-full">${esc(name)}</span><span class="s2-start-team-short" aria-hidden="true">${esc(t.abbreviation)}</span></a>`;
   }
   function nameLink(name, team) {
     return `<a class="s2-start-player-link" href="/jogador.html?jogador=${encodeURIComponent(name)}&time=${encodeURIComponent(team)}">${esc(name)}</a>`;
@@ -105,7 +105,7 @@
     currentCard = views.length ? {...views[0], views, viewId:initialStage || 'geral'} : null;
     const played = players.filter(p => num(p.matches) > 0).length;
     const roles = {GRAN:'Granadeiro', SUP:'Suporte', RUSH:'Rush', '3':'3º homem'};
-    return `<label class="s2-start-team-filter">Escolher equipe<select data-s2-team aria-label="Selecionar equipe">${teams.map(t => `<option value="${esc(t.name)}"${t.name === state.team ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label><div class="s2-start-team-head">${image(team.logo, '')}<div><h2>${esc(team.name)}</h2><p>${played} jogadores com participação · ${players.length} no elenco registrado</p></div>${currentCard ? cardButton() : ''}</div><div class="s2-start-roster">${players.map(p => `<article class="s2-start-roster-player${p.status === 'Saiu' ? ' is-former' : ''}">${image(p.photo, '', 'player')}<div><h3>${nameLink(p.name, team.name)}</h3><p>${esc(roles[p.role] || p.role || 'Jogador')} · ${esc(p.status || 'Elenco registrado')}${p.captain ? ' · Capitão' : ''}${p.rookie ? ' · Estreante' : ''}</p><div class="s2-start-participation">${stages.filter(s => num(p.matchesByStage?.[s.id]) > 0).map(s => `<span>${esc(s.short || s.name)}: ${num(p.matchesByStage[s.id])} Q</span>`).join('') || '<span>Sem quedas registradas</span>'}</div></div></article>`).join('')}</div><p class="s2-start-caption">Inclui quem participou durante o torneio, mesmo após sair da equipe. Q = quedas jogadas em cada etapa.</p><div class="s2-start-under">${link('/equipe.html?time=' + encodeURIComponent(team.name), 'Perfil da equipe')}${link(links.equipes, 'Ver todas as equipes')}</div>`;
+    return `<label class="s2-start-team-filter">Escolher equipe<select data-s2-team aria-label="Selecionar equipe">${teams.map(t => `<option value="${esc(t.name)}"${t.name === state.team ? ' selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label><div class="s2-start-team-head">${image(team.logo, team.name)}<div><h2>${esc(team.name)}</h2><p>${played} jogadores com participação · ${players.length} no elenco registrado</p></div>${currentCard ? cardButton() : ''}</div><div class="s2-start-roster">${players.map(p => `<article class="s2-start-roster-player${p.status === 'Saiu' ? ' is-former' : ''}">${image(p.photo, '', 'player')}<div><h3>${nameLink(p.name, team.name)}</h3><p>${esc(roles[p.role] || p.role || 'Jogador')} · ${esc(p.status || 'Elenco registrado')}${p.captain ? ' · Capitão' : ''}${p.rookie ? ' · Estreante' : ''}</p><div class="s2-start-participation">${stages.filter(s => num(p.matchesByStage?.[s.id]) > 0).map(s => `<span>${esc(s.short || s.name)}: ${num(p.matchesByStage[s.id])} Q</span>`).join('') || '<span>Sem quedas registradas</span>'}</div></div></article>`).join('')}</div><p class="s2-start-caption">Inclui quem participou durante o torneio, mesmo após sair da equipe. Q = quedas jogadas em cada etapa.</p><div class="s2-start-under">${link('/equipe.html?time=' + encodeURIComponent(team.name), 'Perfil da equipe')}${link(links.equipes, 'Ver todas as equipes')}</div>`;
   }
   async function renderPane() {
     const pane = query('#s2-start-pane');

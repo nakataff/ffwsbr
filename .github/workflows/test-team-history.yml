@@ -8,6 +8,7 @@ on:
       - 'js/career-public.js'
       - 'js/other-tournaments.min.js'
       - 'js/career-team-identities.mjs'
+      - 'js/team-identity-history.js'
       - 'test/career-team-identities.test.cjs'
       - 'imports/liquipedia-worlds/**'
       - 'scripts/import-liquipedia-worlds.py'

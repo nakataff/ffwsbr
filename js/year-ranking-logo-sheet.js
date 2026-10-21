@@ -67,8 +67,8 @@ async function load(){
  })().finally(()=>{loadPromise=null});
  return loadPromise;
 }
-function find(name){const central=window.cffCareerTeamIdentity?.(name);if(central?.logo)return central.logo;const k=norm(name);if(k==='LYON')return window.CFF_GLOBAL_TEAM_LOGOS?.logos?.LYON||LYON_TEAM_LOGO;const best=[k,aliases[k]].filter(key=>key&&map[key]).sort((a,b)=>(priorities[b]??-1)-(priorities[a]??-1))[0];return map[best]||''}
-function globalLogo(name){const central=window.cffCareerTeamIdentity?.(name);if(central?.logo)return central.logo;
+function find(name,at){const central=window.cffCareerTeamIdentity?.(name,at);if(central?.logo)return central.logo;const k=norm(name);if(k==='LYON')return window.CFF_GLOBAL_TEAM_LOGOS?.logos?.LYON||LYON_TEAM_LOGO;const best=[k,aliases[k]].filter(key=>key&&map[key]).sort((a,b)=>(priorities[b]??-1)-(priorities[a]??-1))[0];return map[best]||''}
+function globalLogo(name,at){const central=window.cffCareerTeamIdentity?.(name,at);if(central?.logo)return central.logo;
  const k=norm(name),assets=window.CFF_GLOBAL_TEAM_LOGOS;
  const local=assets?.logos?.[k];
  if(k==='LYON')return local||LYON_TEAM_LOGO;
@@ -82,9 +82,9 @@ function globalLogo(name){const central=window.cffCareerTeamIdentity?.(name);if(
 
 function setImg(img,team){
  if(img?.dataset?.careerTeamLogo)return;
- const central=window.cffCareerTeamIdentity?.(team);if(central?.logo){if(img&&img.dataset.cffCareerLogoFailed!==central.logo&&img.getAttribute('src')!==central.logo)img.src=central.logo;return;}
+ const at=img?.closest?.('[data-team-date]')?.dataset.teamDate||'',central=window.cffCareerTeamIdentity?.(team,at);if(central?.logo){if(img&&img.dataset.cffCareerLogoFailed!==central.logo&&img.getAttribute('src')!==central.logo)img.src=central.logo;return;}
  const isGlobal=Boolean(img?.dataset?.cffGlobalTeamLogo);
- const src=isGlobal?globalLogo(team):find(team);if(!img||!src)return;
+ const src=isGlobal?globalLogo(team,at):find(team,at);if(!img||!src)return;
  const warning=img.closest?.('.ffws-global-team-roster-head')?.querySelector('.ffws-global-logo-pending');
  if(warning)warning.hidden=true;
  if((img.getAttribute('src')||'')===src)return;
@@ -127,7 +127,7 @@ window.cffFindLiveTeamLogo=find;
 window.cffResolveGlobalTeamLogo=globalLogo;
 window.cffReloadYearSheetLogos=()=>{ready=false;return load()};
 window.cffPatchYearTeamLogos=patch;
-import('/js/career-team-identities.mjs?v=20261021-unified-team-logos-v1').catch(()=>{});
+import('/js/career-team-identities.mjs?v=20261021-team-eras-v1').catch(()=>{});
 document.addEventListener('cff:career-identities-ready',patch);
 load();
 })();

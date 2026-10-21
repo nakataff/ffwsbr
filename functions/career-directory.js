@@ -1,4 +1,5 @@
 'use strict';
+const Identity=require('../js/team-identity-history.js');
 // Small indexed directory pages. Full career records stay on the server.
 module.exports=function directory({rows,sql,pagination,key,text,fail,day,now,findTeam,revision,roles}){
  const live=(t='t',p='p')=>`COALESCE(json_extract(${t}.data,'$.deleted'),0)=0 AND json_extract(${t}.data,'$.status') IN ('active','loan','substitute') AND COALESCE(json_extract(${p}.data,'$.availability'),'unknown') NOT IN ('free_agent','retired') AND (COALESCE(json_extract(${t}.data,'$.start.date'),'')='' OR json_extract(${t}.data,'$.start.date')<=substr('${day(now())}',1,length(json_extract(${t}.data,'$.start.date')))) AND (COALESCE(json_extract(${t}.data,'$.end.date'),'')='' OR json_extract(${t}.data,'$.end.date')>=substr('${day(now())}',1,length(json_extract(${t}.data,'$.end.date'))))`;
@@ -41,7 +42,7 @@ module.exports=function directory({rows,sql,pagination,key,text,fail,day,now,fin
  }
  const conflicts=id=>rows('SELECT DISTINCT b.alias,tm.id,tm.name FROM career_team_aliases a JOIN career_team_aliases b ON a.alias=b.alias AND a.team<>b.team JOIN career_teams tm ON tm.id=b.team WHERE a.team=? ORDER BY tm.norm LIMIT 5',id);
  const duplicate="EXISTS(SELECT 1 FROM career_team_aliases a JOIN career_team_aliases b ON a.alias=b.alias AND a.team<>b.team WHERE a.team=tm.id)";
- function teamSummary(row){const t=JSON.parse(row.data),counts=rows(`SELECT COUNT(DISTINCT CASE WHEN ${live()} AND json_extract(t.data,'$.role')='player' THEN t.person END) AS players,COUNT(DISTINCT CASE WHEN ${live()} AND json_extract(t.data,'$.role')<>'player' THEN t.person END) AS staff,COUNT(DISTINCT CASE WHEN ${live()} THEN t.person END) AS members,COUNT(*) AS tenures,SUM(CASE WHEN json_extract(t.data,'$.status')='unverified' THEN 1 ELSE 0 END) AS unverified FROM career_tenures t JOIN career_people p ON p.id=t.person WHERE t.team=? AND ${visible}`,t.id)[0];return {...t,revision:t.revision||1,state:t.state||'unknown',pageName:t.pageName||t.name,...counts};}
+ function teamSummary(row){const t=Identity.select(JSON.parse(row.data),day(now())),counts=rows(`SELECT COUNT(DISTINCT CASE WHEN ${live()} AND json_extract(t.data,'$.role')='player' THEN t.person END) AS players,COUNT(DISTINCT CASE WHEN ${live()} AND json_extract(t.data,'$.role')<>'player' THEN t.person END) AS staff,COUNT(DISTINCT CASE WHEN ${live()} THEN t.person END) AS members,COUNT(*) AS tenures,SUM(CASE WHEN json_extract(t.data,'$.status')='unverified' THEN 1 ELSE 0 END) AS unverified FROM career_tenures t JOIN career_people p ON p.id=t.person WHERE t.team=? AND ${visible}`,t.id)[0];return {...t,revision:t.revision||1,state:t.state||'unknown',pageName:t.pageName||t.name,...counts};}
  function teams(b){const {limit,offset}=pagination(b),q=key(text(b.query,100)),where=["(?='' OR tm.norm LIKE ? OR EXISTS(SELECT 1 FROM career_team_aliases a WHERE a.team=tm.id AND a.alias LIKE ?))"],args=[q,'%'+q+'%','%'+q+'%'];
   if(['active','paused','historical','unknown'].includes(b.state)){where.push("COALESCE(json_extract(tm.data,'$.state'),'unknown')=?");args.push(b.state);}
   if(b.roster==='with'||b.roster==='empty')where.push((b.roster==='empty'?'NOT ':'')+`EXISTS(SELECT 1 FROM career_tenures t JOIN career_people p ON p.id=t.person WHERE t.team=tm.id AND ${live()})`);
@@ -69,15 +70,21 @@ module.exports=function directory({rows,sql,pagination,key,text,fail,day,now,fin
  function reviewSummary(){return Object.fromEntries(Object.entries(checks()).map(([id,check])=>[id,rows('SELECT COUNT(*) AS n FROM career_people p WHERE '+check)[0].n]).concat([['duplicates',rows('SELECT COUNT(*) AS n FROM career_teams tm WHERE '+duplicate)[0].n]]));}
  function saveTeamProfile(identity,b){
   const old=b.teamId?findTeam(b.teamId):null;if(b.teamId&&!old)throw fail(404,'Equipe não encontrada.');if(old&&(old.revision||1)!==b.revision)throw fail(409,'Esta equipe mudou. Recarregue antes de salvar.');
-  const name=text(b.name,100);if(name.length<2||!key(name))throw fail(400,'Informe o nome da equipe.');
+  let name=text(b.name,100),short=text(b.short,12),history;const hasHistory=Object.prototype.hasOwnProperty.call(b,'identityHistory');
+  try{history=Identity.normalize(hasHistory?b.identityHistory:old?.identityHistory||[]);}catch(error){throw fail(400,error.message);}
+  let logo=text(b.logo,95000)||'escudo.webp';
+  if(history.length){if(!hasHistory){let active=0;history.forEach((p,i)=>{if(!p.from||p.from<=day(now()))active=i;});history[active]={...history[active],name,logo,short};}
+   const current=Identity.select({name,logo,short,identityHistory:history},day(now()));name=current.name;logo=current.logo;short=current.short;
+  }if(name.length<2||!key(name))throw fail(400,'Informe o nome da equipe.');
   if(!['active','paused','historical','unknown'].includes(b.state))throw fail(400,'Confira a situação da organização.');
   const id=old?.id||key(name);if(!old&&(findTeam(name)||rows('SELECT id FROM career_teams WHERE id=?',id).length))throw fail(409,'Esta equipe já existe. Abra o cadastro encontrado.');
-  const aliasesList=[...new Set([old?.name,old?.pageName,name,...(Array.isArray(b.aliases)?b.aliases:[])].filter(Boolean).map(n=>text(n,100)))];if(aliasesList.length>40)throw fail(400,'Use até 40 nomes alternativos.');
+  const aliasesList=[...new Set([old?.name,old?.pageName,name,...(Array.isArray(b.aliases)?b.aliases:[]),...history.map(p=>p.name)].filter(Boolean).map(n=>text(n,100)))];if(aliasesList.length>40)throw fail(400,'Use até 40 nomes alternativos.');
   const priorKeys=new Set([old?.id,old?.name,...old?.aliases||[]].filter(Boolean).map(key));
   for(const alias of [name,...aliasesList]){if(priorKeys.has(key(alias)))continue;if(rows('SELECT team FROM career_team_aliases WHERE alias=? AND team<>? LIMIT 1',key(alias),id).length)throw fail(409,'O nome “'+alias+'” já pertence a outra equipe. Confira os nomes alternativos.');}
-  let logo=text(b.logo,95000)||'escudo.webp';if(!validLogo(logo))throw fail(400,'Use uma imagem PNG/WebP, um caminho do site ou um link HTTPS válido para o escudo.');
-  if(logo.startsWith('data:')){const imageId=crypto.randomUUID();sql.exec('INSERT INTO career_team_logos VALUES(?,?)',imageId,logo);logo='https://cff-camp-notifications.nakataffb4.workers.dev/careers/logo/'+imageId;}
-  const next={...(old||{}),id,name,short:text(b.short,12),state:b.state,logo,aliases:aliasesList,pageName:old?.pageName||old?.name||name,metadataManaged:true,revision:(old?(old.revision||1):0)+1,updatedAt:now()};
+  if(!validLogo(logo))throw fail(400,'Use uma imagem PNG/WebP, um caminho do site ou um link HTTPS válido para o escudo.');
+  const storeLogo=value=>{if(!validLogo(value))throw fail(400,'Confira os escudos dos períodos. Use PNG/JPG/WebP, caminho local ou link HTTPS.');if(!value.startsWith('data:'))return value;const imageId=crypto.randomUUID();sql.exec('INSERT INTO career_team_logos VALUES(?,?)',imageId,value);return 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/logo/'+imageId;};
+  history=history.map(p=>({...p,logo:storeLogo(p.logo)}));logo=history.length?Identity.select({identityHistory:history},day(now())).logo:storeLogo(logo);
+  const next={...(old||{}),id,name,short,state:b.state,logo,identityHistory:history,aliases:aliasesList,pageName:old?.pageName||old?.name||name,metadataManaged:true,revision:(old?(old.revision||1):0)+1,updatedAt:now()};
   sql.exec('INSERT OR REPLACE INTO career_teams VALUES(?,?,?,?)',id,name,key(name),JSON.stringify(next));sql.exec('DELETE FROM career_team_aliases WHERE team=?',id);for(const alias of new Set([id,...aliasesList].map(key).filter(Boolean)))sql.exec('INSERT INTO career_team_aliases VALUES(?,?)',alias,id);
   sql.exec('INSERT INTO career_team_changes VALUES(?,?,?,?,?,?)',crypto.randomUUID(),id,now(),identity.uid,old?JSON.stringify(old):'null',next.revision);sql.exec("UPDATE career_meta SET value=value+1 WHERE id='version'");
   return {ok:true,team:next};

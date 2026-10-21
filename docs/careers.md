@@ -79,3 +79,47 @@ Links de imagem inválidos caem no escudo padrão, sem ciclo de retentativas.
 Ao modificar o resolvedor compartilhado, atualizar as versões dos consumidores
 públicos e do shell. Testes de Sentosa em `test/liquipedia-worlds.test.cjs` e de
 cache/visibilidade/janela em `test/career-team-identities.test.cjs`.
+
+## Identidade histórica da organização (nome e escudo por data)
+
+No diretório Times, abra a organização e use **Registrar mudança** ou a aba
+**Nome e escudo no tempo**. A primeira ficha é o nome/escudo anterior à primeira
+mudança e fica sem data de fundação. Cada ficha seguinte define **A partir de**,
+nome, sigla, escudo, tipo (renomeação, patrocínio, fusão, absorção ou outro),
+organização envolvida como referência, observação pública e fonte opcional.
+O calendário de prévia permite conferir a apresentação antes de salvar.
+O escudo aceita o banco existente, link/caminho ou envio reduzido a até 256 px.
+
+`saveTeam` aceita `identityHistory`, com até 24 períodos. Validação e seleção
+estão no modelo puro compartilhado `js/team-identity-history.js`, usado pelo
+servidor e pelas interfaces. Datas completas são únicas, válidas e ordenadas;
+a mudança vale inclusive no dia informado. Nomes de todos os períodos viram
+aliases da **mesma organização**, com os controles existentes de conflito,
+revisão, nonce, transação e auditoria. Uma fusão registrada no Fluxo não absorve
+os resultados nem os aliases da W7M Esports anterior. Relacionar uma organização
+como referência não transfere jogadores, títulos, estatísticas ou pontos.
+
+Mudanças futuras são projetadas pelo relógio, sem agendador, gravação diária
+ou atualização de cada torneio. O ID e `pageName` permanecem estáveis. Sem
+histórico configurado, o comportamento anterior é preservado. Corrigir o nome
+ou escudo pelo Cadastro atualiza somente o período vigente; para uma mudança
+nova com preservação do anterior, usar Registrar mudança. Datas de anúncios
+não são presumidas nem inseridas automaticamente a partir dos exemplos.
+
+O resolvedor público recebe os períodos junto das mesmas identidades visíveis
+(até 20 organizações por lote; cache de 60 segundos), sem consultas adicionais
+por data. `data-team-date` no elemento/ancestral informa a data do contexto;
+`data-team-name` permite atualizar rótulos sem alterar resultados ou ações.
+Torneios usam a data inicial informada pela fonte, rankings anuais usam 31/12,
+e cabeçalhos da organização usam a identidade atual. Nomes e escudos históricos
+continuam apontando ao `pageName` estável da organização atual. As páginas BR
+S1/S2, EWC, Global, Inícios, Outros torneios, rankings e recortes de temporada
+recebem esse contexto. Passagens encerradas usam a saída ou última participação
+conhecida; vínculos atuais usam a identidade vigente. Resultados de coaches
+escolhem o nome por split e agrupam evolução pelo ID, sem contar renomeações
+como organizações distintas.
+
+Testes: `functions/test/team-identity-history.test.cjs`, cenários de calendário
+em `test/career-interfaces.test.cjs` e de duas datas na mesma página em
+`test/career-team-identities.test.cjs`. Os exemplos de datas nos testes são
+sintéticos; não são configurações reais de LOUD ou Fluxo.

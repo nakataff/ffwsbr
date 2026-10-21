@@ -39,7 +39,7 @@ async function fixture(person,fetcher){
  const client=await import('../js/career-client.mjs'),dom=new JSDOM('<main id="root"></main>',{url:'https://centralfreefire.com.br/test',runScripts:'outside-only'}),w=dom.window,calls=[];
  Object.assign(w,{esc:client.esc,ROLES:client.ROLES,STATUSES:client.STATUSES,teamHref:client.teamHref,personHref:client.personHref,periodLabel:client.periodLabel,careerTrail:client.careerTrail,orderedTenures:client.orderedTenures,competitionPeriodLabel:client.competitionPeriodLabel,tenureCards:client.tenureCards,
   readCareer:async()=>({person}),AbortSignal,fetch:async(url,options)=>{calls.push(String(url));return fetcher?fetcher(url,options):{ok:true,json:async()=>read(String(url).split('?')[0].replace(/^\//,''))};}});
- w.eval(fs.readFileSync(path.join(root,'js/career-results.mjs'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,'')+'\nwindow.mountCoachResults=mountCoachResults;');
+ w.eval(fs.readFileSync(path.join(root,'js/team-identity-history.js'),'utf8'));w.eval(fs.readFileSync(path.join(root,'js/career-results.mjs'),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,'')+'\nwindow.mountCoachResults=mountCoachResults;');
  return {w,calls,dom,body:w.document.querySelector('#root'),close:()=>w.close()};
 }
 test('results download only associated teams once, filter locally and preserve roster escaping and missing data',async()=>{

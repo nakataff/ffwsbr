@@ -141,6 +141,7 @@ resultados, rankings ou elencos.
 | `player-data/staff/` e `assets/coaches/` | Comissão técnica, identidades e fotos dos coaches |
 | `player-data/passagens.json`, `historical.json`, `titles-local.json` | Passagens, histórico e títulos; complementar com registros/correções existentes |
 | `team-data/logo-map.json`, `team-aliases.json` | Logos de reserva e nomes equivalentes. A logo salva no admin-carreiras tem prioridade por `js/career-team-identities.mjs`; inclusive em Outros torneios, imagens usam `data-team-logo`, sem carregar o cadastro inteiro |
+| `js/team-identity-history.js` | Modelo compartilhado de nomes e escudos por data. `identityHistory` fica no cadastro central da organização; configure em admin-carreiras → Times → Nome e escudo no tempo. O contexto público usa `data-team-date`, sem duplicar times ou reatribuir resultados |
 | `data/team-logo-catalog.json` | Índice estático leve de escudos para o admin-carreiras, com nomes, aliases e origens; gerado por `scripts/build-team-logo-catalog.cjs`. A galeria `js/career-logo-picker.mjs` carrega sob demanda e filtra localmente, sem consultas ao Cloudflare |
 | `team-data/historical-index.json` e `historical/` | Índice e perfis das equipes históricas |
 | `team-data/seasons/` e `history/` | Campanhas e histórico por equipe |

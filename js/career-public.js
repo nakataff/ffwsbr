@@ -1,7 +1,7 @@
-import './career-team-identities.mjs?v=20261021-unified-team-logos-v1';
+import './career-team-identities.mjs?v=20261021-team-eras-v1';
 import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel,orderedTenures,competitionPeriodLabel} from './career-client.mjs?v=20261018-career-chronology-v2';
 const loaded=new WeakMap();
-function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261019-profile-social-icons-v1';link.dataset.careerStyle='1';document.head.append(link);}
+function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261021-team-eras-v1';link.dataset.careerStyle='1';document.head.append(link);}
 function currentHtml(p){return p.current.length?p.current.map(t=>`<a href="${teamHref(t.teamPageName||t.teamName)}">${esc(t.teamName)}</a><span class="career-current-role"> · ${esc(ROLES[t.role]||t.role)}</span>`).join(' · '):p.availability==='free_agent'?`Sem equipe / F/A${p.freeAgentSince?.date?' · desde '+esc(periodLabel(p.freeAgentSince)):''}`:p.availability==='retired'?'Aposentado':'Vínculo atual a confirmar';}
 const trail=p=>careerTrail(p,{resolveLogo:(name,logo,managed)=>managed?logo:window.cffResolveTeamLogo?.(name,logo)||logo||'escudo.webp'});
 function hideLegacy(node){if(!node.hidden)node.hidden=true;if(node.dataset.careerHidden!=='1')node.dataset.careerHidden='1';}
@@ -59,7 +59,7 @@ function bindProfileTabs(root,p){
   if(!['competitions','awards'].includes(id))return;
   const panel=root.querySelector(`[data-career-results="${id}"]`);
   panel.querySelector('[data-career-results-body]').innerHTML||= '<p role="status">Carregando resultados…</p>';
-  try{const module=await import('./career-results.mjs?v=20261018-worlds-complete-v3');if(panel.isConnected)await module.mountCoachResults(panel,p,{awards:id==='awards'});}
+  try{const module=await import('./career-results.mjs?v=20261021-team-eras-v1');if(panel.isConnected)await module.mountCoachResults(panel,p,{awards:id==='awards'});}
   catch{panel.querySelector('[data-career-results-body]').innerHTML='<p>Não foi possível carregar os resultados.</p><button type="button" data-open-profile-tab="'+id+'">Tentar novamente</button>';}
  };
  root.onclick=event=>{const button=event.target.closest('[data-profile-tab],[data-open-profile-tab]');if(button)choose(button.dataset.profileTab||button.dataset.openProfileTab);};
@@ -78,7 +78,7 @@ function attachCoachResults(root,p,standalone){
  if(standalone){const anchor=root.querySelector('.career-pro-history');anchor.after(panel);}else root.append(panel);
  panel.addEventListener('toggle',async()=>{
   if(!panel.open||panel.dataset.loading==='1')return;panel.dataset.loading='1';
-  try{const module=await import('./career-results.mjs?v=20261018-worlds-complete-v3');if(panel.isConnected)await module.mountCoachResults(panel,p);}
+  try{const module=await import('./career-results.mjs?v=20261021-team-eras-v1');if(panel.isConnected)await module.mountCoachResults(panel,p);}
   catch{delete panel.dataset.loading;panel.querySelector('[data-career-results-body]').textContent='Resultados indisponíveis. Feche e abra esta seção para tentar novamente.';}
  });
 }

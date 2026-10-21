@@ -1,3 +1,4 @@
+import './team-identity-history.js?v=20261021-team-eras-v1';
 import {esc,ROLES,teamHref,periodLabel} from './career-client.mjs?v=20261018-career-chronology-v2';
 
 const BASE='/career-data/results/',requests=new Map(),mounted=new WeakMap();
@@ -34,7 +35,7 @@ export function linkCoachResults(person,manifest,snapshots){
    const event=snapshots.get(teamId)?.editions?.find(e=>e.id===competition.id);
    if(/^ffwsbr2024s[12]$/.test(competition.id)&&(tenure.competitions||[]).some(c=>c.id==='ffwsbr2024'))continue;
    let record=records.get(id);
-   if(!record){record={id,teamId,team:tenure.teamName,teamPageName:tenure.teamPageName||tenure.teamName,
+   if(!record){const identity=globalThis.CFFTeamIdentityHistory.select({name:tenure.teamName,identityHistory:tenure.identityHistory},event?.startDate||competition.period?.startDate||String(event?.year||''));record={id,teamId,team:identity.name,teamPageName:tenure.teamPageName||tenure.teamName,
     competition,event,year:event?.year||Number(competition.name?.match(/\b20\d{2}\b/)?.[0])||null,tenures:[],periods:[]};records.set(id,record);}
    record.tenures.push(tenure);record.periods.push(participationPeriod(tenure,event||{}));
   }
@@ -74,8 +75,8 @@ function recordHtml(record){
 }
 function evolutionHtml(records){
  const teams=new Map();
- for(const r of [...records].reverse()){if(!teams.has(r.team))teams.set(r.team,[]);teams.get(r.team).push(r);}
- return `<details class="career-results-evolution"><summary>Evolução por equipe <small>${teams.size} equipe(s)</small></summary>${[...teams].map(([team,rows])=>`<div><h4>${esc(team)}</h4><ol>${rows.map(r=>`<li><span>${esc(r.competition.name)}</span><strong>${esc(resultLabel(r))}</strong></li>`).join('')}</ol></div>`).join('')}</details>`;
+ for(const r of [...records].reverse()){const id=r.teamId||r.teamPageName||r.team;if(!teams.has(id))teams.set(id,[]);teams.get(id).push(r);}
+ return `<details class="career-results-evolution"><summary>Evolução por equipe <small>${teams.size} equipe(s)</small></summary>${[...teams].map(([,rows])=>`<div><h4>${esc(rows.at(-1).teamPageName||rows.at(-1).team)}</h4><ol>${rows.map(r=>`<li><span>${esc(r.competition.name)}</span><strong>${esc(resultLabel(r))}</strong></li>`).join('')}</ol></div>`).join('')}</details>`;
 }
 async function loadRecords(person){
  const manifest=await json('manifest.json'),ids=new Set();

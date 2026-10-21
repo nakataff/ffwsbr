@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION='20261020-global-inicio-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261021-team-eras-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
@@ -23,7 +23,7 @@
     const src=String(value||'');
     return src&&!/[:\\]|^\/\//.test(src)&&!src.split('/').includes('..')?'/'+src.replace(/^\//,''):'/escudo.webp';
   }
-  function image(team) {return `<img src="${esc(asset(team.logo))}" alt="" width="28" height="28" loading="lazy" decoding="async" data-global-start-fallback>`;}
+  function image(team) {return `<img data-team-logo="${esc(team.name)}" data-team-date="2026-11-06" src="${esc(asset(team.logo))}" alt="" width="28" height="28" loading="lazy" decoding="async" data-global-start-fallback>`;}
   function meta(name) {return summary.teams.find(t=>t.name===name||t.id===name||t.abbreviation===name)||{name,abbreviation:name};}
   function teamName(team) {return `<span class="global-start-team">${image(team)}<span><span class="global-start-full">${esc(team.name)}</span><span class="global-start-short">${esc(team.abbreviation)}</span></span></span>`;}
   function link(path,label) {return `<a class="global-start-link" href="${BASE+path}">${esc(label)} <span aria-hidden="true">→</span></a>`;}

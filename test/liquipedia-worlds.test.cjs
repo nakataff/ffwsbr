@@ -265,7 +265,7 @@ test('archive filters work on deep links and use root-relative URLs for all Copa
 test('Sentosa tables, rosters and prizes share central admin logos and static defaults through existing aliases',async()=>{
  const f=await fixture();try{
   const w=f.w,map=read('team-data/logo-map.json'),requests=[];w.cffFindLiveTeamLogo=name=>map.logos[name]||'';
-  w.eval(fs.readFileSync('js/career-team-identities.mjs','utf8').split("if(typeof document")[0].replace(/^export /gm,''));
+  w.eval(fs.readFileSync('js/team-routes.mjs','utf8').replace('export const canonicalTeamHref','window.canonicalTeamHref'));w.eval(fs.readFileSync('js/team-identity-history.js','utf8'));w.eval(fs.readFileSync('js/career-team-identities.mjs','utf8').split("if(typeof document")[0].replace(/^import .*\n/gm,'').replace(/^export /gm,''));
   await w.openOtherTournament('ffws-2022-sentosa');await w.changeOtTab('final');const root=w.document.querySelector('#ot-dynamic-container');
   const stop=w.mountCareerTeamIdentities({root,request:async names=>{requests.push(names);return{teams:[{id:'attackallaround',name:'ATTACK ALL AROUND',aliases:['Attack All Around','aaa'],metadataManaged:true,logo:'https://i.postimg.cc/KjrjmvPY/aaa.webp'}]}}});
   await new Promise(r=>setTimeout(r,420));
