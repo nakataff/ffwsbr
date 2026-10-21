@@ -9,6 +9,11 @@ on:
       - 'js/other-tournaments.min.js'
       - 'js/career-team-identities.mjs'
       - 'js/team-identity-history.js'
+      - 'js/tournament-logos.js'
+      - 'js/tournament-assets-admin.mjs'
+      - 'data/tournament-assets.json'
+      - 'scripts/build-tournament-assets.py'
+      - 'test/tournament-assets-ui.test.cjs'
       - 'test/career-team-identities.test.cjs'
       - 'imports/liquipedia-worlds/**'
       - 'scripts/import-liquipedia-worlds.py'
@@ -75,10 +80,10 @@ jobs:
       - name: Check data, logo refresh and normal team links
         env:
           NODE_PATH: /tmp/cff-team-history-test/node_modules
-        run: node --test --test-timeout=10000 test/historical-team-fixes.test.cjs test/career-team-identities.test.cjs test/global-team-logos.test.cjs test/team-profile.test.cjs test/tournament-logos.test.cjs test/career-results.test.cjs test/team-career-views.test.cjs test/liquipedia-worlds.test.cjs
+        run: node --test --test-timeout=10000 test/historical-team-fixes.test.cjs test/career-team-identities.test.cjs test/global-team-logos.test.cjs test/team-profile.test.cjs test/tournament-logos.test.cjs test/tournament-assets-ui.test.cjs test/career-results.test.cjs test/team-career-views.test.cjs test/liquipedia-worlds.test.cjs
       - name: Check imported world sources and lightweight tournament catalogue
         run: python3 scripts/import-liquipedia-worlds.py --check && python3 scripts/build-tournament-catalog.py --check
       - name: Check generated canonical team views
-        run: python3 scripts/build-team-views.py --check
+        run: python3 scripts/build-team-views.py --check && python3 scripts/build-tournament-assets.py --check
       - name: Check changed browser modules
         run: node --check js/historical-teams.min.js && node --check js/year-ranking-logo-sheet.js && node --check js/team-logo-resolver.min.js && node --check js/career-client.mjs && node --check js/career-results.mjs && node --check js/career-public.js

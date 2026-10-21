@@ -123,3 +123,40 @@ Testes: `functions/test/team-identity-history.test.cjs`, cenários de calendári
 em `test/career-interfaces.test.cjs` e de duas datas na mesma página em
 `test/career-team-identities.test.cjs`. Os exemplos de datas nos testes são
 sintéticos; não são configurações reais de LOUD ou Fluxo.
+
+
+## Logos de campeonatos e apresentação do elenco
+
+No topo de **admin-carreiras**, abra **Logos de campeonatos**. A busca e o filtro
+“Só sem logo” usam `data/tournament-assets.json` (cerca de 11 KB) em memória.
+Selecione a competição, use uma imagem já disponível, cole HTTPS/caminho do site
+ou envie PNG/JPG/WebP. O upload é reduzido localmente a WebP de até 256 px.
+Salvar vazio restaura a seleção automática. Nomes equivalentes se aplicam à mesma
+edição; não agrupar anos diferentes como aliases. Não há imagem inventada para
+uma competição sem material: o gerenciador sinaliza a pendência.
+
+`functions/career-tournament-assets.js` mantém somente as personalizações em um
+documento de até 300 itens na tabela `career_tournament_assets`, separado de
+pessoas, passagens e resultados. Salvar usa a mesma autenticação, nonce e transação
+do painel, com revisão para evitar sobrescrever outra edição. Uploads reutilizam
+`career_team_logos` e URLs imutáveis. A API pública omite o responsável pela edição.
+
+`GET /careers/tournaments` tem cache no navegador e na borda por 60 segundos,
+além do documento em memória no Durable Object. Uma leitura indexada de uma linha
+atualiza o cache; não percorre pessoas ou torneios. A página busca o catálogo e as
+personalizações uma única vez quando aparecem imagens `data-tournament-name`,
+sem polling, chamadas por card ou consultas por filtro. Atualizações públicas
+podem levar até dois minutos por causa do cache. Os arquivos competitivos não são
+reescritos: a apresentação resolve a logo compartilhada.
+
+Regerar o catálogo offline após adicionar competições:
+`python scripts/build-tournament-assets.py`; conferir com `--check`.
+Os títulos e resultados da equipe priorizam o tier, com data decrescente dentro
+da categoria. Resultados também oferecem ordem cronológica e expansão local.
+O tier registrado tem prioridade; quando ausente, as famílias Mundial/EWC e
+LBFF/WB usam suas categorias gerais S e A. Nenhuma pontuação é alterada.
+
+Jogadores e comissão são agrupados localmente a partir da mesma página de até
+20 passagens. Fotos são carregadas sob demanda. Alternar Na equipe/Todas as
+passagens mantém a paginação e o cache existente; clicar no filtro já ativo não
+repete a leitura. A interface distingue cadastro central do elenco de um torneio.

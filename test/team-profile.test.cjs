@@ -6,9 +6,9 @@ test('campaign averages exclude bonus and compare the same played stages',()=>{
  const data={classificatoria:{rows:[{team:'A',points:100,kills:50,booyahs:2,matches:10},{team:'B',points:80,kills:40,booyahs:1,matches:10}]},segundaFase:{rows:[{team:'A',points:70,bonus:50,kills:10,booyahs:1,matches:2},{team:'B',points:62,bonus:42,kills:8,booyahs:0,matches:2}]},final:{rows:[{team:'A',points:0,matches:0}]}};
  const x=model.campaign(data,'A');assert.equal(x.totals.points,120);assert.equal(x.totals.matches,12);assert.equal(x.rates.points,10);assert.equal(x.benchmark.points,220/24);assert.equal(x.rounds.length,2);assert.equal(model.campaign(data,'missing').rates.points,null);
 });
-test('Fluxo championship is persisted once, dated, linked and featured ahead of other trophies',()=>{
+test('Fluxo championship is preserved while the trophy list prioritizes tier',()=>{
  const d=read('team-data/history/fluxo-w7m.json'),titles=model.titles(d.titles);
- assert.equal(titles[0].event,'FFWS BR 2026 S2');assert.equal(titles[0].date,'2026-10-11');assert.equal(d.titles.filter(t=>t.event===titles[0].event).length,1);assert(fs.existsSync(titles[0].url.slice(1)+'/index.html'));assert(fs.existsSync(titles[0].logo));assert.equal(d.results[0].place,'1º');assert.equal(model.titles([...d.titles,titles[0]]).length,d.titles.length);
+ const champion=titles.find(t=>t.event==='FFWS BR 2026 S2');assert.equal(titles[0].event,'FFWS Global Finals 2024');assert.equal(champion.date,'2026-10-11');assert.equal(d.titles.filter(t=>t.event===champion.event).length,1);assert(fs.existsSync(champion.url.slice(1)+'/index.html'));assert(fs.existsSync(champion.logo));assert.equal(d.results[0].place,'1º');assert.equal(model.titles([...d.titles,titles[0]]).length,d.titles.length);
 });
 function environment(query='fluxo-w7m',overrides={}){
  const nodes=new Map(),seasonButtons=new Map(),root={style:{setProperty(){}}};
@@ -24,7 +24,7 @@ test('profile renders before pending photo/logo maps and separates roster, resul
  const e=environment();await e.qa.init();await tick();
  assert(e.page.innerHTML.includes('cff-profile-nav'),e.page.innerHTML.slice(0,1000));assert(e.page.innerHTML.includes('cff-profile-history'));
  assert(e.nodes.get('cff-current-roster').innerHTML.includes('Elenco atual'));assert(e.nodes.get('cff-season-panel').innerHTML.includes('Pontos por queda'));
- assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS BR 2026 S2'));assert(e.nodes.get('cff-team-titles-mount').innerHTML.includes('11/10/2026'));assert(e.nodes.get('cff-team-results-mount').innerHTML.includes('FFWS BR 2026 S2'));
+ assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS BR 2026 S2'));assert(e.nodes.get('cff-team-titles-mount').innerHTML.includes('11/10/2026'));assert(e.nodes.get('cff-team-results-mount').innerHTML.includes('EWC 2026'));
  e.qa.state.titleYear='2024';e.qa.renderTitles(e.qa.state.historyData);assert(!e.nodes.get('cff-team-titles-mount').innerHTML.includes('FFWS BR 2026 S2'));assert(e.nodes.get('cff-team-highlights').innerHTML.includes('FFWS BR 2026 S2'));
  const p=e.qa.state.current.players.bops||Object.values(e.qa.state.current.players)[0];p.currentRoster.left=true;e.qa.renderCurrentRoster();const html=e.nodes.get('cff-current-roster').innerHTML;assert(!html.includes('<h3>'+p.name+'</h3>'));assert(html.includes('Saídas registradas'));
  assert(!e.qa.titleCard({event:'Unsafe',url:'javascript:alert(1)'}).includes('href='));
