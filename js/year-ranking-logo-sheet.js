@@ -82,7 +82,7 @@ function globalLogo(name,at){const central=window.cffCareerTeamIdentity?.(name,a
 
 function setImg(img,team){
  if(img?.dataset?.careerTeamLogo)return;
- const at=img?.closest?.('[data-team-date]')?.dataset.teamDate||'',central=window.cffCareerTeamIdentity?.(team,at);if(central?.logo){if(img&&img.dataset.cffCareerLogoFailed!==central.logo&&img.getAttribute('src')!==central.logo)img.src=central.logo;return;}
+ const at=img?.closest?.('[data-team-date]')?.dataset?.teamDate||'',central=window.cffCareerTeamIdentity?.(team,at);if(central?.logo){if(img&&img.dataset.cffCareerLogoFailed!==central.logo&&img.getAttribute('src')!==central.logo)img.src=central.logo;return;}
  const isGlobal=Boolean(img?.dataset?.cffGlobalTeamLogo);
  const src=isGlobal?globalLogo(team,at):find(team,at);if(!img||!src)return;
  const warning=img.closest?.('.ffws-global-team-roster-head')?.querySelector('.ffws-global-logo-pending');
