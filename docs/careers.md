@@ -59,3 +59,23 @@ As páginas públicas consultam identidades apenas das equipes visíveis, em lot
 Operações administrativas adicionais: `teamDetail`, `resolveTeam`, `reviewSummary`, `saveTeam` e `teamHistory`. A consulta pública `GET /careers/team?identities=[...]` retorna somente metadados revisados das equipes solicitadas, no máximo vinte; `metadata=1` consulta uma única identidade. A variante de consulta integra o ETag. Testes adicionais: `test/career-team-identities.test.cjs` e cenários novos nos testes de carreiras e no gateway autenticado.
 
 O banco de escudos usa `data/team-logo-catalog.json` (cerca de 20 KB), gerado offline por `node scripts/build-team-logo-catalog.cjs` a partir dos cadastros, históricos, mapa de logos e banco do tier constructor. Não consulta a API do GitHub, Cloudflare ou planilhas para pesquisar. Carrega uma única vez ao abrir uma equipe/galeria e mostra até 24 imagens inicialmente, com `loading=lazy`. Cadastros sem escudo aproveitam a correspondência exata de nome/alias do índice; escudos personalizados são preservados. A escolha apenas prepara o formulário: `Salvar equipe` publica a alteração no cadastro central. Ao atualizar o índice, incrementar a versão da URL em `js/career-logo-picker.mjs` para renovar o cache. Testes: `test/career-logo-picker.test.cjs` e `test/career-interfaces.test.cjs`.
+
+
+### Escudo único nas páginas públicas
+
+`admin-carreiras.html` é a edição central. `js/career-team-identities.mjs`
+consulta somente as identidades de imagens visíveis (máximo 20 por lote,
+cache positivo/negativo de um minuto) e aplica a logo manual antes de planilhas
+ou arquivos antigos. `data-team-logo` identifica a organização; usar os aliases
+já existentes em `team-aliases.json` ao gerar a marcação (Keyd → Vivo Keyd).
+A tabela mantém o nome e os resultados da edição; trocar escudo não os altera.
+
+`js/other-tournaments.min.js` usa essa mesma marcação em tabelas, elencos,
+premiação, cards, radar e janela do elenco. `otGetTeamLogo` consulta primeiro o
+cadastro central e depois o banco estático compartilhado; não consulta outra
+base individual nem baixa o cadastro inteiro. Imagens reutilizadas mudam sua
+identidade ao trocar a equipe da janela. Redesenhar abas reaproveita o cache.
+Links de imagem inválidos caem no escudo padrão, sem ciclo de retentativas.
+Ao modificar o resolvedor compartilhado, atualizar as versões dos consumidores
+públicos e do shell. Testes de Sentosa em `test/liquipedia-worlds.test.cjs` e de
+cache/visibilidade/janela em `test/career-team-identities.test.cjs`.

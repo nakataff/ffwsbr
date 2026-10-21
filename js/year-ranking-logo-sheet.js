@@ -82,7 +82,7 @@ function globalLogo(name){const central=window.cffCareerTeamIdentity?.(name);if(
 
 function setImg(img,team){
  if(img?.dataset?.careerTeamLogo)return;
- const central=window.cffCareerTeamIdentity?.(team);if(central?.logo){if(img&&img.getAttribute('src')!==central.logo)img.src=central.logo;return;}
+ const central=window.cffCareerTeamIdentity?.(team);if(central?.logo){if(img&&img.dataset.cffCareerLogoFailed!==central.logo&&img.getAttribute('src')!==central.logo)img.src=central.logo;return;}
  const isGlobal=Boolean(img?.dataset?.cffGlobalTeamLogo);
  const src=isGlobal?globalLogo(team):find(team);if(!img||!src)return;
  const warning=img.closest?.('.ffws-global-team-roster-head')?.querySelector('.ffws-global-logo-pending');
@@ -127,7 +127,7 @@ window.cffFindLiveTeamLogo=find;
 window.cffResolveGlobalTeamLogo=globalLogo;
 window.cffReloadYearSheetLogos=()=>{ready=false;return load()};
 window.cffPatchYearTeamLogos=patch;
-import('/js/career-team-identities.mjs?v=20261015-career-directory-v1').catch(()=>{});
+import('/js/career-team-identities.mjs?v=20261021-unified-team-logos-v1').catch(()=>{});
 document.addEventListener('cff:career-identities-ready',patch);
 load();
 })();

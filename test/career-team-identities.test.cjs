@@ -13,3 +13,12 @@ test('public team header uses managed identity and leaves titles and competition
 test('managed career logos and stable historical URLs take precedence over spreadsheet display aliases',async()=>{
  const client=await import('../js/career-client.mjs'),html=client.careerTrail({tenures:[{id:'t1',order:1,teamId:'loud',teamName:'Novo nome',teamPageName:'LOUD',role:'player',logoManaged:true,logo:'/managed.webp'}],current:[]},{resolveLogo:(_name,logo,managed)=>managed?logo:'/sheet.webp'});assert(html.includes('/managed.webp'));assert(html.includes('/equipe/loud-snickers'));assert(!html.includes('data-team-logo='));assert(html.includes('data-career-team-logo="1"'));
 });
+
+test('a reused roster image resolves its new team, legacy src rewrites are repaired from cache and broken managed URLs are not retried in a loop',async()=>{
+ const f=fixture('<main><img id="modal" data-team-logo="LOUD" src="old.webp"></main>');try{
+  const calls=[],stop=f.w.mountCareerTeamIdentities({request:async names=>{calls.push(names);return{teams:names.map(name=>({id:name,name,metadataManaged:true,logo:name==='LOUD'?'/loud.webp':'/aaa.webp'}))}}});
+  await tick(400);const image=f.w.document.querySelector('img');assert.equal(image.getAttribute('src'),'/loud.webp');image.src='legacy.webp';await tick(240);assert.equal(image.getAttribute('src'),'/loud.webp');assert.equal(calls.length,1);
+  image.dataset.teamLogo='Attack All Around';image.src='escudo.webp';await tick(450);assert.equal(image.getAttribute('src'),'/aaa.webp');assert.equal(calls.length,2);
+  image.dispatchEvent(new f.w.Event('error'));image.src='escudo.webp';await tick(450);assert.equal(image.getAttribute('src'),'escudo.webp');assert.equal(image.dataset.cffCareerLogoFailed,'/aaa.webp');assert.equal(calls.length,2);stop();
+ }finally{f.close()}
+});

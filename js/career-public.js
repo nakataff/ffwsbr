@@ -1,4 +1,4 @@
-import './career-team-identities.mjs?v=20261015-career-directory-v1';
+import './career-team-identities.mjs?v=20261021-unified-team-logos-v1';
 import {readCareer,esc,ROLES,STATUSES,tenureCards,careerTrail,personHref,teamHref,periodLabel,orderedTenures,competitionPeriodLabel} from './career-client.mjs?v=20261018-career-chronology-v2';
 const loaded=new WeakMap();
 function style(){if(document.querySelector('[data-career-style]')||document.querySelector('link[href*="css/careers.css"]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/css/careers.css?v=20261019-profile-social-icons-v1';link.dataset.careerStyle='1';document.head.append(link);}

@@ -261,3 +261,19 @@ test('archive filters work on deep links and use root-relative URLs for all Copa
   assert.equal(f.w.currentOtData.id,'copa-ff-2023');
  }finally{f.close();}
 });
+
+test('Sentosa tables, rosters and prizes share central admin logos and static defaults through existing aliases',async()=>{
+ const f=await fixture();try{
+  const w=f.w,map=read('team-data/logo-map.json'),requests=[];w.cffFindLiveTeamLogo=name=>map.logos[name]||'';
+  w.eval(fs.readFileSync('js/career-team-identities.mjs','utf8').split("if(typeof document")[0].replace(/^export /gm,''));
+  await w.openOtherTournament('ffws-2022-sentosa');await w.changeOtTab('final');const root=w.document.querySelector('#ot-dynamic-container');
+  const stop=w.mountCareerTeamIdentities({root,request:async names=>{requests.push(names);return{teams:[{id:'attackallaround',name:'ATTACK ALL AROUND',aliases:['Attack All Around','aaa'],metadataManaged:true,logo:'https://i.postimg.cc/KjrjmvPY/aaa.webp'}]}}});
+  await new Promise(r=>setTimeout(r,420));
+  const byTeam=name=>[...root.querySelectorAll('.ot-team-click')].find(cell=>cell.textContent.trim()===name).querySelector('img');
+  assert.equal(byTeam('Attack All Around').getAttribute('src'),'https://i.postimg.cc/KjrjmvPY/aaa.webp');assert.equal(byTeam('LOUD').getAttribute('src'),map.logos['LOUD SNICKERS']);assert.equal(byTeam('Keyd').getAttribute('src'),map.logos['VIVO KEYD']);
+  assert.equal(byTeam('Keyd').dataset.teamLogo,'VIVO KEYD');assert(requests.every(names=>names.length<=20));const before=requests.length;
+  for(const tab of ['standings','teams','prize','awards','final']){await w.changeOtTab(tab);await new Promise(r=>setTimeout(r,220));for(const image of root.querySelectorAll('img[data-team-logo="Attack All Around"]'))assert.equal(image.getAttribute('src'),'https://i.postimg.cc/KjrjmvPY/aaa.webp');}
+  const queried=requests.flat().map(name=>name.toLowerCase().replace(/[^a-z0-9]/g,''));assert.equal(new Set(queried).size,queried.length,'Each identity is queried once, including negative cache entries');assert(requests.length<=before+1);const cached=requests.length;await w.changeOtTab('final');await new Promise(r=>setTimeout(r,250));assert.equal(requests.length,cached);assert(root.textContent.includes('92'));assert(!f.calls.includes('FULL_PLAYER_CATALOG'));
+  w.openOtTeamRoster('ffws-2022-sentosa','Attack All Around');assert.equal(w.document.querySelector('#ot-roster-logo').dataset.teamLogo,'Attack All Around');assert.equal(w.document.querySelector('#ot-roster-logo').getAttribute('src'),'https://i.postimg.cc/KjrjmvPY/aaa.webp');stop();
+ }finally{f.close()}
+});
