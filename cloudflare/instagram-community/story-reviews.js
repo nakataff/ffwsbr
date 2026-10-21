@@ -1,4 +1,4 @@
-export const STORY_REVIEW_VERSION = '20261019-story-batch-v1';
+export const STORY_REVIEW_VERSION = '20261020-story-auto-v1';
 const monday = day => `date(${day}, '-' || ((CAST(strftime('%w',${day}) AS INTEGER)+6)%7) || ' days')`;
 export const STORY_REVIEW_SCHEMA = [
  `CREATE TABLE IF NOT EXISTS story_reviews (
@@ -13,9 +13,10 @@ export const STORY_REVIEW_SCHEMA = [
  'CREATE INDEX IF NOT EXISTS idx_story_reviews_queue ON story_reviews(status,event_at,mention_key)',
  'CREATE INDEX IF NOT EXISTS idx_story_reviews_user_week ON story_reviews(user_key,week_key,status)',
  "CREATE UNIQUE INDEX IF NOT EXISTS idx_story_review_post_once ON story_reviews(user_key,post_key) WHERE status='approved'",
- `CREATE TRIGGER IF NOT EXISTS cff_story_review_guard BEFORE UPDATE ON story_reviews
+ 'DROP TRIGGER IF EXISTS cff_story_review_guard',
+ `CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_auto_v1 BEFORE UPDATE ON story_reviews
  WHEN NEW.status='approved' AND OLD.status='pending' BEGIN
- SELECT CASE WHEN NEW.post_key='' OR NEW.post_url='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual')
+ SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual','auto') OR (NEW.verification<>'auto' AND NEW.post_url='') OR (NEW.verification='auto' AND (NEW.post_key<>'auto:'||NEW.story_id OR NEW.published_at<>NEW.event_at))
  THEN RAISE(ABORT,'story_missing_post') END;
  SELECT CASE WHEN ${monday("date(NEW.published_at/1000,'unixepoch','-3 hours')")}<>NEW.week_key OR NEW.published_at>NEW.event_at+300000
  THEN RAISE(ABORT,'story_wrong_week') END;
@@ -44,6 +45,37 @@ export const STORY_REVIEW_SCHEMA = [
  INSERT INTO story_daily(user_key,day_key,count) VALUES(NEW.user_key,NEW.day_key,1)
  ON CONFLICT(user_key,day_key) DO UPDATE SET count=count+1;
  END`,
+ // One transaction-local context row makes ledger reversals use bounded deltas.
+ 'CREATE TABLE IF NOT EXISTS story_rejection_context (mention_key TEXT PRIMARY KEY,user_key TEXT NOT NULL,week_key TEXT NOT NULL)',
+ `CREATE TRIGGER IF NOT EXISTS cff_story_rejection_delta_v1 AFTER DELETE ON awards
+ WHEN EXISTS(SELECT 1 FROM story_rejection_context WHERE user_key=OLD.user_key AND OLD.day_key BETWEEN week_key AND date(week_key,'+6 days')) BEGIN
+ UPDATE users SET points_all=MAX(0,points_all-OLD.points),story_mentions_all=MAX(0,story_mentions_all-CASE WHEN OLD.type='story' THEN 1 ELSE 0 END) WHERE user_key=OLD.user_key;
+ UPDATE monthly_users SET points=MAX(0,points-OLD.points),story_mentions=MAX(0,story_mentions-CASE WHEN OLD.type='story' THEN 1 ELSE 0 END) WHERE user_key=OLD.user_key AND month_key=OLD.month_key;
+ UPDATE users SET active_days_all=MAX(0,active_days_all-1) WHERE user_key=OLD.user_key AND OLD.type='story'
+ AND EXISTS(SELECT 1 FROM active_days WHERE user_key=OLD.user_key AND day_key=OLD.day_key)
+ AND NOT EXISTS(SELECT 1 FROM awards WHERE user_key=OLD.user_key AND day_key=OLD.day_key AND type IN ('comment','story','checkin','prediction_vote','bonus_code'));
+ UPDATE monthly_users SET active_days=MAX(0,active_days-1) WHERE user_key=OLD.user_key AND month_key=OLD.month_key AND OLD.type='story'
+ AND EXISTS(SELECT 1 FROM active_days WHERE user_key=OLD.user_key AND day_key=OLD.day_key)
+ AND NOT EXISTS(SELECT 1 FROM awards WHERE user_key=OLD.user_key AND day_key=OLD.day_key AND type IN ('comment','story','checkin','prediction_vote','bonus_code'));
+ DELETE FROM active_days WHERE user_key=OLD.user_key AND day_key=OLD.day_key AND OLD.type='story'
+ AND NOT EXISTS(SELECT 1 FROM awards WHERE user_key=OLD.user_key AND day_key=OLD.day_key AND type IN ('comment','story','checkin','prediction_vote','bonus_code'));
+ UPDATE story_daily SET count=MAX(0,count-1) WHERE user_key=OLD.user_key AND day_key=OLD.day_key AND OLD.type='story';
+ DELETE FROM story_daily WHERE user_key=OLD.user_key AND day_key=OLD.day_key AND count=0;
+ END`,
+ `CREATE TRIGGER IF NOT EXISTS cff_story_review_revoke_auto_v1 AFTER UPDATE ON story_reviews
+ WHEN OLD.status='approved' AND NEW.status='rejected' BEGIN
+ INSERT INTO story_rejection_context(mention_key,user_key,week_key) VALUES(NEW.mention_key,NEW.user_key,NEW.week_key);
+ DELETE FROM awards WHERE award_key=NEW.mention_key AND type='story';
+ DELETE FROM awards WHERE user_key=NEW.user_key AND day_key BETWEEN NEW.week_key AND date(NEW.week_key,'+6 days') AND (
+ type='bonus_mission'
+ OR (type='bonus_mix' AND NOT EXISTS(SELECT 1 FROM awards WHERE user_key=NEW.user_key AND day_key BETWEEN NEW.week_key AND date(NEW.week_key,'+6 days') AND type='story'))
+ OR (type='bonus_streak_3' AND (SELECT COUNT(*) FROM active_days WHERE user_key=NEW.user_key AND day_key BETWEEN NEW.week_key AND date(NEW.week_key,'+6 days'))<3)
+ OR (type='bonus_streak_5' AND (SELECT COUNT(*) FROM active_days WHERE user_key=NEW.user_key AND day_key BETWEEN NEW.week_key AND date(NEW.week_key,'+6 days'))<5)
+ OR (type='bonus_streak_7' AND (SELECT COUNT(*) FROM active_days WHERE user_key=NEW.user_key AND day_key BETWEEN NEW.week_key AND date(NEW.week_key,'+6 days'))<7));
+ DELETE FROM story_rejection_context WHERE mention_key=NEW.mention_key;
+ END`,
+ "DELETE FROM community_response_cache WHERE cache_key LIKE 'ranking:%' AND NOT EXISTS(SELECT 1 FROM community_period_versions WHERE period_key='policy:story-auto-v1')",
+ "INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES('policy:story-auto-v1',1)",
 ];
 export function instagramPost(value) {
  try {const url=new URL(String(value||'').trim());if(url.protocol!=='https:'||!['instagram.com','www.instagram.com'].includes(url.hostname)||url.username||url.password||url.port)return null;
@@ -62,16 +94,27 @@ export async function queueStory(db,row){
 export async function reviewStory(db,key,decision,post,actor,note=''){
  const row=await db.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();
  if(!row)return {status:404,error:'Story não encontrado.'};
- if(row.status!=='pending')return row.status===decision?{status:200,alreadyReviewed:true,row}:{status:409,error:'Esse story já foi revisado.'};
- if(decision==='approved'&&(!post?.key||!post?.url||!Number.isFinite(post.publishedAt)||post.publishedAt<=0))return{status:400,error:'Informe a publicação original e sua data.'};
+ if(row.status!=='pending'&&!(row.status==='approved'&&decision==='rejected'))return row.status===decision?{status:200,alreadyReviewed:true,row}:{status:409,error:'Esse story já foi revisado.'};
+ if(decision==='approved'&&(!post?.key||(post.verification!=='auto'&&!post.url)||!Number.isFinite(post.publishedAt)||post.publishedAt<=0))return{status:400,error:'Informe a publicação original e sua data.'};
  try{
  const result=await db.prepare(`UPDATE story_reviews SET status=?1,post_key=?2,post_url=?3,published_at=?4,verification=?5,
- reviewed_at=?6,reviewed_by=?7,note=?8 WHERE mention_key=?9 AND status='pending'`)
- .bind(decision,post?.key||'',post?.url||'',post?.publishedAt||0,post?.verification||'',Date.now(),actor,String(note).slice(0,300),key).run();
+ reviewed_at=?6,reviewed_by=?7,note=?8 WHERE mention_key=?9 AND status=?10`)
+ .bind(decision,post?.key||row.post_key,post?.url||row.post_url,post?.publishedAt||row.published_at,post?.verification||row.verification,Date.now(),actor,String(note).slice(0,300),key,row.status).run();
  const saved=await db.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();
- return saved.status===decision?{status:200,alreadyReviewed:!result.meta?.changes,row:saved}:{status:409,error:'Outra revisão já foi registrada.'};
+ return saved.status===decision?{status:200,alreadyReviewed:!result.meta?.changes,changed:!!result.meta?.changes,reversed:!!result.meta?.changes&&row.status==='approved'&&decision==='rejected',row:saved}:{status:409,error:'Outra revisão já foi registrada.'};
  }catch(error){const text=String(error?.message||error);
  const messages=[['story_wrong_week','O post original precisa ser da mesma semana do story e publicado antes dele.'],['story_daily_limit','Esta pessoa já tem 3 stories pontuados nesse dia.'],['story_missing_post','Confirme a publicação original antes de aprovar.'],['story_already_awarded','Esse story já recebeu pontos.'],['story_reviews.user_key, story_reviews.post_key','Esta publicação já pontuou para essa pessoa.']];
  const found=messages.find(([code])=>text.includes(code));if(found)return {status:409,error:found[1]};throw error;
  }
+}
+
+// A signed mention proves receipt, not the original post visible inside the image.
+// Auto mode deduplicates the story ID and keeps the existing 3/day atomic cap.
+export async function autoApproveStory(db,key){
+ const row=await db.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();
+ if(!row)return {status:200,alreadyReviewed:true,row:null};
+ if(row.status!=='pending')return {status:200,alreadyReviewed:true,row};
+ const result=await reviewStory(db,key,'approved',{key:'auto:'+row.story_id,url:'',publishedAt:row.event_at,verification:'auto'},'system:auto');
+ if(result.error&&result.error.includes('3 stories'))return reviewStory(db,key,'rejected',null,'system:auto','Limite diário: esta pessoa já recebeu pontos por 3 stories neste dia.');
+ return result;
 }

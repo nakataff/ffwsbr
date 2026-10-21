@@ -255,7 +255,7 @@ test('the actual settlement credits winners once, including across worker instan
 
 test('schema bootstrap is repeatable',()=>{
  const db=fixture();for(const sql of OPTIMIZATION_SCHEMA)db.sqlite.exec(sql);
- assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,11);
+ assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,13);
 });
 
 
@@ -270,10 +270,18 @@ test('production fetch bootstraps optimization schema before serving rankings',a
  const day=w.weekKeys().weekStartKey;seed(db,day,'a','alice',3);
  const response=await w.default.fetch(new Request('https://cff.test/api/ranking?period=week'),{DB:db},{});
  assert.equal(response.status,200);assert.equal((await response.json()).users.a.points,3);
- assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,11);
+ assert.equal(db.sqlite.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type='trigger'").get().n,13);
  const cold=await workerInternals('new isolate after successful migration');
  const other=database(db.sqlite);
  assert.equal(await cold.ensurePerformanceIndexes({DB:other}),true);
  assert.equal(other.queries.length,1);
  assert(other.queries[0].startsWith('SELECT version FROM community_period_versions'));
+});
+
+test('an existing deployed schema marker still applies the new story policy once',async()=>{
+ const db=fixture();db.sqlite.exec("INSERT OR IGNORE INTO community_period_versions VALUES('schema:20261016-saved-months-v1',1);DROP TRIGGER cff_story_review_guard_auto_v1;CREATE TRIGGER cff_story_review_guard BEFORE UPDATE ON story_reviews WHEN NEW.status='approved' BEGIN SELECT RAISE(ABORT,'old manual guard'); END;");
+ const cold=await workerInternals('upgrade existing manual review deployment');assert.equal(await cold.ensurePerformanceIndexes({DB:db}),true);
+ assert.equal(db.sqlite.prepare("SELECT COUNT(*) n FROM sqlite_master WHERE type='trigger' AND name='cff_story_review_guard'").get().n,0);
+ assert.equal(db.sqlite.prepare("SELECT COUNT(*) n FROM sqlite_master WHERE type='trigger' AND name='cff_story_review_guard_auto_v1'").get().n,1);
+ assert(db.sqlite.prepare("SELECT version FROM community_period_versions WHERE period_key='schema:20261016-saved-months-v1:20261020-story-auto-v1'").get());
 });

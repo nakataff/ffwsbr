@@ -298,3 +298,30 @@ Importante: o editor **não altera colocações oficiais nem inclui torneios**;
 essas mudanças exigem atualizar as fontes do evento e regenerar o ranking com
 `scripts/build-annual-ranking.cjs`. O futuro ranking histórico possui
 metodologia independente.
+
+### Stories da comunidade: aprovação automática e rejeição
+
+- `admin-stories.html`, `js/admin-stories.js`, `css/admin-stories.css`: painel
+  autenticado, inicialmente em Aprovados; carrega 50 registros por página,
+  permite selecionar até 20, ampliar a prévia e rejeitar com motivo. Busca e
+  filtro de semana operam localmente. Sem polling ou consulta ao catálogo Meta.
+- `cloudflare/instagram-community/worker.js`: recebe somente webhooks com
+  assinatura Meta válida, identifica a menção e credita automaticamente.
+  Admin pode aprovar pendentes antigos em grupo sem informar a publicação.
+- `cloudflare/instagram-community/story-reviews.js`: regras SQL e operações
+  idempotentes. Cada ID de story vale 5 pontos, até 3 por pessoa/dia (Brasília).
+  Recebimento confirma menção, não valida o conteúdo compartilhado; a revisão
+  posterior do conteúdo cabe ao administrador. A antiga restrição automática
+  de uma publicação original por pessoa/semana não se aplica ao modo automático.
+- Rejeição de aprovado muda o status e retira seu lançamento/contadores na
+  mesma transação SQLite. Remove bônus semanais dependentes, reavalia a missão
+  com a configuração vigente e invalida os resumos afetados. Mantém histórico
+  da revisão, motivo, data e responsável. Repetir uma entrega ou rejeição não
+  duplica crédito nem desconto. Rejeitado não volta a pontuar em retries.
+- `schema.sql` espelha o schema do módulo; a migração idempotente está em
+  `migrations/2026-10-20-story-auto.sql`. O marcador de inicialização inclui
+  `STORY_REVIEW_VERSION`: ao mudar o schema, atualizar essa versão e a checagem
+  de saúde no workflow de deploy. Uma nova instância faz só uma consulta ao
+  marcador; a aplicação do schema ocorre uma vez por versão.
+- Testes: `npm test` na pasta do Worker e
+  `test/admin-stories-ui.test.cjs` (JSDOM). Não aprovar registros reais para testar.
