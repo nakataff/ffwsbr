@@ -328,3 +328,27 @@ metodologia independente.
   marcador; a aplicação do schema ocorre uma vez por versão.
 - Testes: `npm test` na pasta do Worker e
   `test/admin-stories-ui.test.cjs` (JSDOM). Não aprovar registros reais para testar.
+
+
+## Apoiadores da vaquinha
+
+- `admin-apoiadores.html`, `js/admin-supporters.js`, `js/supporters-admin.mjs` e
+  `css/admin-supporters.css`: painel autenticado, atalho em admin → Comunidade
+  e recompensas → Apoiadores da vaquinha. Cadastrar nome público/@, data e
+  visibilidade após conferir o apoio na LivePix. Cadastro manual; sem conexão
+  à API da campanha, valores, comprovantes, e-mails ou vínculos automáticos.
+- `functions/community-supporters.js`: documento de até 300 registros em uma
+  única linha `community_supporters/list`. Revisão otimista, transação e nonce
+  do serviço administrativo existente. Ocultar preserva o registro privado.
+- `GET /careers/supporters`: retorna no máximo seis entradas visíveis, ordenadas
+  por data de apoio e depois por cadastro. Só publica ID, nome público e data.
+  A memória do serviço, o navegador e a borda reutilizam cache de 60 segundos;
+  edição pode levar até dois minutos para aparecer. Não lê pessoas ou carteiras.
+- `js/home-supporters.js` e o bloco `data-home-supporters` em `index.html`:
+  nomes dentro do card da vaquinha, carregados uma vez ao ficar visível na home.
+  Sem polling, lista completa ou dependência da LivePix durante a visita.
+  Nenhum exemplo de teste é gravado no mural público. Na ausência de cadastros,
+  fica uma mensagem de agradecimento e o link para contribuir continua ativo.
+- Testes: `functions/test/community-supporters.test.cjs` (autorização, cache,
+  publicação limitada, ocultação e retries idempotentes) e
+  `test/community-supporters-ui.test.cjs` (home, painel e limpeza ao sair).

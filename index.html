@@ -416,7 +416,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <style id="home-year-hub-css">
-.home-support{display:flex;align-items:center;gap:18px;margin:0 0 25px;padding:24px;border:1px solid rgba(98,222,181,.5);border-top:3px solid #80e8c4;border-radius:16px;background:linear-gradient(115deg,#163b35,#101f2a 72%);box-shadow:0 8px 26px rgba(0,0,0,.16);min-width:0}
+.home-support{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin:0 0 25px;padding:24px;border:1px solid rgba(98,222,181,.5);border-top:3px solid #80e8c4;border-radius:16px;background:linear-gradient(115deg,#163b35,#101f2a 72%);box-shadow:0 8px 26px rgba(0,0,0,.16);min-width:0}
 .home-support-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:14px;background:rgba(98,222,181,.1);color:#80e8c4}
 .home-support-icon svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .home-support-copy{flex:1;min-width:0}
@@ -430,6 +430,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .home-support-link svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .home-support-action small{color:#adbdce;font-size:.65rem}
 @media(max-width:650px){.home-support{flex-wrap:wrap;gap:14px;padding:18px}.home-support-icon{flex-basis:38px;width:38px;height:38px;border-radius:11px}.home-support-copy{flex-basis:calc(100% - 52px)}.home-support-copy h2{font-size:1rem}.home-support-action{width:100%;align-items:stretch}.home-support-action small{text-align:center}}
+.home-supporters{flex-basis:100%;min-width:0;border-top:1px solid rgba(128,232,196,.18);padding-top:16px;margin-top:2px}.home-supporters-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:7px 14px;margin-bottom:10px}.home-supporters-heading h3{margin:0;color:#d5efe5;font-size:.76rem;font-weight:700;letter-spacing:.02em}.home-supporters-heading>span{font-size:.66rem;color:#87a99f}.home-supporters-list{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}.home-supporters-list[hidden],.home-supporters-empty[hidden]{display:none}.home-supporter{display:flex;align-items:center;gap:7px;max-width:100%;padding:6px 10px;border:1px solid rgba(128,232,196,.16);border-radius:20px;background:rgba(4,19,21,.28)}.home-supporter-heart{color:#80e8c4;font-size:15px;line-height:1}.home-supporter-name{min-width:0;overflow-wrap:anywhere;color:#d9e9e4;font-size:.72rem;font-weight:600}.home-supporters-empty{margin:0;color:#8faea5;font-size:.7rem;line-height:1.5}@media(max-width:480px){.home-supporters{padding-top:13px}.home-supporters-heading>span{font-size:.62rem}.home-supporter{padding:6px 9px}.home-supporter-name{font-size:.69rem}}
 #cff-support-dialog{box-sizing:border-box;width:calc(100% - 32px);max-width:440px;max-height:calc(100dvh - 32px);overflow:auto;padding:30px;border:1px solid rgba(128,232,196,.45);border-top:3px solid #80e8c4;border-radius:20px;background:linear-gradient(145deg,#15352e,#101925 60%);color:#fff;box-shadow:0 20px 70px rgba(0,0,0,.35)}
 #cff-support-dialog::backdrop{background:rgba(3,9,16,.48)}
 #cff-support-dialog .home-support-icon{margin:0 0 18px}
@@ -776,6 +777,11 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3h7v7M21 3 10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path></svg>
             </a>
             <small>Contribuição voluntária via LivePix</small>
+        </div>
+            <div class="home-supporters" data-home-supporters aria-labelledby="home-supporters-title">
+            <div class="home-supporters-heading"><h3 id="home-supporters-title">Apoiadores recentes</h3><span>Obrigado por fortalecer a Central ♡</span></div>
+            <p class="home-supporters-empty" data-supporters-empty>Os apoios confirmados serão reconhecidos aqui. Obrigado por fazer parte!</p>
+            <ul class="home-supporters-list" data-supporters-list hidden></ul>
         </div>
     </section>
 
@@ -2573,6 +2579,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script type="module" src="/js/public-account.js?v=20261020-inbox-popover-v1"></script>
 <script defer src="js/notas-cff-info.js?v=20261012-global-v1"></script>
 <script defer src="js/home-global-finals.js?v=20261018-expandable-rounds-v2"></script>
+<script defer src="js/home-supporters.js?v=20261021-supporters-v1"></script>
 <script defer src="js/home-support.js?v=20261019-quiz-coordination-v1"></script>
 <script type="module" src="/js/global-chat.js?v=20261020-chat-layout-v1"></script><script type="module" src="/js/career-public.js?v=20261021-tournament-assets-v1"></script>
 </body>

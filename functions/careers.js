@@ -8,6 +8,7 @@ const createStaffHistory=require('./career-staff-history');
 const createJokerIdentity=require('./career-joker-identity');
 const createDirectory=require('./career-directory');
 const createTournamentAssets=require('./career-tournament-assets');
+const createCommunitySupporters=require('./community-supporters');
 const createMarket=require('./career-market');
 const createCompetitions=require('./career-competitions');
 const COMPETITIONS_SEED=require('./career-competitions-seed.json');
@@ -42,6 +43,7 @@ function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS career_people(id TEXT PR
  CREATE TABLE IF NOT EXISTS career_team_logos(id TEXT PRIMARY KEY,data TEXT);
  CREATE TABLE IF NOT EXISTS career_team_changes(id TEXT PRIMARY KEY,team TEXT,at INTEGER,actor TEXT,before_data TEXT,after_revision INTEGER);
  CREATE INDEX IF NOT EXISTS career_team_changes_team ON career_team_changes(team,at DESC);
+ CREATE TABLE IF NOT EXISTS community_supporters(id TEXT PRIMARY KEY,data TEXT);
  CREATE TABLE IF NOT EXISTS career_tournament_assets(id TEXT PRIMARY KEY,data TEXT);
  CREATE TABLE IF NOT EXISTS career_meta(id TEXT PRIMARY KEY,value INTEGER);`);}
 function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,staffRoster=seed===DEFAULT_SEED?STAFF_S2:null,staffHistory=seed===DEFAULT_SEED?STAFF_HISTORY:null,repairIdentities=seed===DEFAULT_SEED,now=()=>Date.now(),competitionsSeed=seed===DEFAULT_SEED?COMPETITIONS_SEED:{...COMPETITIONS_SEED,people:{}}}){
@@ -315,9 +317,11 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   }
   return {ok:true,people,departures,team:team?{id:team.id,name:team.name}:null};
  }
+ const supporters=createCommunitySupporters({sql,rows,text,fail,now,day});
  const tournamentAssets=createTournamentAssets({sql,rows,key,text,fail,now});
  const directory=createDirectory({rows,sql,pagination,key,text,fail,day,now,findTeam,revision,roles:ROLES});
  async function admin(identity,b){if(!identity?.admin)throw fail(403,'Somente administrador.');ensure();const op=b.operation;
+  if(op==='supporterList')return supporters.list();
   if(op==='tournamentAssets')return tournamentAssets.publicRead();
   if(op==='competitionOptions')return competitions.options(b);
   if(op==='marketDepartureCandidates')return marketDepartureCandidates(b);
@@ -333,10 +337,11 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   if(op==='departureCandidates')return departureCandidates(b);
   if(op==='history')return {ok:true,entries:rows("SELECT id,at,actor,kind,after_revision AS revision,CASE WHEN LENGTH(before_data)=4 OR kind IN ('identitySplit','identitySplitManual') THEN 0 ELSE 1 END AS canUndo FROM career_changes WHERE person=? ORDER BY at DESC,rowid DESC LIMIT 20",text(b.personId,100))};
   if(op==='summary')return {ok:true,people:rows('SELECT COUNT(*) AS n FROM career_people')[0].n,teams:rows('SELECT COUNT(*) AS n FROM career_teams')[0].n,tenures:rows("SELECT COUNT(*) AS n FROM career_tenures WHERE COALESCE(json_extract(data,'$.deleted'),0)=0")[0].n,version:revision()};
-  if(!['saveTournamentAsset','competitionCreate','createPeople','savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave','marketDelete','marketExportDepartures'].includes(op))throw fail(400,'Operação desconhecida.');
+  if(!['supporterSave','saveTournamentAsset','competitionCreate','createPeople','savePerson','saveTenure','archiveTenure','transfer','undo','releasePerson','bulkDeparture','saveTeam','marketSave','marketDelete','marketExportDepartures'].includes(op))throw fail(400,'Operação desconhecida.');
   if(!/^[a-f0-9-]{36}$/i.test(b.nonce||''))throw fail(400,'Reabra o formulário para preparar a alteração.');
   return transaction(()=>{
    const body=JSON.stringify(b),prior=rows('SELECT * FROM career_requests WHERE nonce=?',b.nonce)[0];if(prior){if(prior.actor!==identity.uid||prior.body!==body)throw fail(409,'Este pedido já foi usado em outra alteração.');return JSON.parse(prior.response);}
+   if(op==='supporterSave'){const result=supporters.save(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='saveTournamentAsset'){const result=tournamentAssets.save(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='competitionCreate'){const result=competitions.create(b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
    if(op==='createPeople'){const result=createPeople(identity,b);sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;}
@@ -406,7 +411,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
 sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));return result;
   });
  }
- function publicRead(kind,query){ensure();if(kind==='tournaments')return tournamentAssets.publicRead();if(kind==='search')return directory.publicSearch(query);if(kind==='market'){const result=market.list(query,true);return {...result,version:result.version+'-'+revision()};}if(kind!=='person')return team(query);const p=findPerson(query),entries=p.current.length?team({id:p.current[0].teamId,scope:'current',limit:20}).entries:[];p.teammates=entries.filter(t=>t.personId!==p.id).filter((t,i,a)=>a.findIndex(x=>x.personId===t.personId)===i).map(t=>({id:t.personId,name:t.name,photo:t.photo,role:t.role,teamId:t.teamId,teamName:t.teamName}));return {ok:true,person:p};}
+ function publicRead(kind,query){ensure();if(kind==='supporters')return supporters.publicRead();if(kind==='tournaments')return tournamentAssets.publicRead();if(kind==='search')return directory.publicSearch(query);if(kind==='market'){const result=market.list(query,true);return {...result,version:result.version+'-'+revision()};}if(kind!=='person')return team(query);const p=findPerson(query),entries=p.current.length?team({id:p.current[0].teamId,scope:'current',limit:20}).entries:[];p.teammates=entries.filter(t=>t.personId!==p.id).filter((t,i,a)=>a.findIndex(x=>x.personId===t.personId)===i).map(t=>({id:t.personId,name:t.name,photo:t.photo,role:t.role,teamId:t.teamId,teamName:t.teamName}));return {ok:true,person:p};}
  return {admin,publicRead,ensure,logo(id){ensure();if(!/^[a-f0-9-]{36}$/.test(id||''))return null;const value=rows('SELECT data FROM career_team_logos WHERE id=?',id)[0]?.data;if(!value)return null;const [header,base64]=value.split(',');return {type:header.includes('webp')?'image/webp':'image/png',base64};}};
 }
 module.exports={create,init,key,boundary,bounds,day,ROLES,STATUS};
