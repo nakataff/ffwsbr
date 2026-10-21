@@ -258,3 +258,10 @@
  .career-photo-option img{width:58px;height:58px}
  .career-pro-socials{gap:6px}
 }
+
+/* Static team-image library: only the visible image tiles are mounted. */
+.career-logo-library{width:min(840px,calc(100vw - 24px));max-width:none;max-height:88vh;overflow-y:auto;border:1px solid #32516a;border-radius:18px;padding:22px;background:#091522;color:#f2f8ff;box-shadow:0 22px 70px #000b}
+.career-logo-library::backdrop{background:#000b}.career-logo-library [hidden]{display:none!important}
+.career-logo-library-head,.career-logo-library-tools{display:flex;justify-content:space-between;align-items:center;gap:12px}.career-logo-library-head{align-items:start;margin-bottom:18px}.career-logo-library-head h2{font-size:23px;margin:6px 0}.career-logo-library-head>button{border:0;background:transparent;color:#c2d7e7;font-size:28px;cursor:pointer}.career-logo-library>label{display:grid;gap:7px;font-size:13px}.career-logo-library-tools{flex-wrap:wrap;margin:14px 0}.career-logo-library-tools>p{color:#a7bdd0;font-size:12px;margin:0}
+.career-logo-library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0 18px}.career-logo-library-option{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0;padding:14px 9px;border:1px solid #2a4158;border-radius:12px;background:#102033;color:#eef8ff;cursor:pointer;text-align:center}.career-logo-library-option:hover,.career-logo-library-option:focus-visible,.career-logo-library-option.is-selected{border-color:#63d4ef;background:#163247}.career-logo-library-option img{object-fit:contain;max-width:100%;margin-bottom:4px}.career-logo-library-option strong{font-size:12px;overflow-wrap:anywhere}.career-logo-library-option small,.career-logo-library-option span{font-size:10px;color:#9fbacf;overflow-wrap:anywhere;max-width:100%}.career-logo-library-option:disabled{opacity:.45;cursor:not-allowed}.career-logo-library-launch{margin-bottom:16px}
+@media(max-width:560px){.career-logo-library{padding:14px}.career-logo-library-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.career-logo-library-head h2{font-size:20px}}
