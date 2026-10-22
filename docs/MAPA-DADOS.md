@@ -166,6 +166,28 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 
 ## Cards compartilháveis
 
+### Hall da Fama: equipes no ranking por edição
+
+`js/hall-fame-lite.min.js` usa o time de cada edição: primeiro o campo
+`team`/`equipe` de `lbffData.json` (ou `player-stats.json` para a S2 atual),
+depois o elenco estático de `player-data/edition-teams.json`. Ausência de registro
+mostra **Sem equipe registrada**, nunca a equipe atual ou “Inativo”. O ranking
+geral continua mostrando a equipe atual, e o link do jogador continua abrindo
+seu perfil habitual.
+
+O seletor **Mostrar equipe** alterna entre **Equipe da edição** (padrão) e
+**Equipe atual**. A ordenação por equipe acompanha o modo, mantendo os mesmos
+abates/quedas/médias e a seleção de edições. Alternar não faz novas requisições.
+
+Ao selecionar várias edições, a soma mantém os mesmos abates/quedas e mostra as
+equipes do recorte, agrupando escudos iguais; o título de cada escudo lista suas
+edições. Escudos vêm de `team-data/logo-map.json`, com aliases locais e dados
+de identidade já presentes no cache compartilhado. As datas iniciais das WBs
+2025/2026 vêm dos calendários/fontes locais; edições antigas têm precisão de ano.
+Não busca cadastro de carreiras, nem acrescenta leituras ao Cloudflare. Mudanças
+na seleção e os eventos de atualização de logos apenas redesenham em memória.
+Regressão: `test/hall-edition-teams.test.cjs`; versões de cache no shell e no HTML.
+
 ### Ranking histórico — preparação futura
 
 Ponto de continuação: [docs/RANKING-HISTORICO.md](RANKING-HISTORICO.md).
