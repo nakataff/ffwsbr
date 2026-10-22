@@ -615,7 +615,7 @@
           ".validate": "newData.isString() && root.child('communityProfileCatalog').child(newData.val()).child('kind').val() == 'badge'"
         },
         "metric": {
-          ".validate": "newData.isString() && newData.val().matches(/^(total_points|week_wins|month_wins|prediction_wins|prediction_votes|prediction_combo|active_days|comments|stories|checkins)$/)"
+          ".validate": "newData.isString() && newData.val().matches(/^(total_points|week_wins|month_wins|prediction_wins|prediction_votes|prediction_combo|active_days|comments|stories|checkins|quiz_correct|quiz_perfect_days|quiz_quiz_correct|quiz_player_correct|quiz_career_correct|quiz_lineup_correct)$/)"
         },
         "target": {
           ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000000"

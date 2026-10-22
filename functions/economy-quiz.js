@@ -1,10 +1,12 @@
 'use strict';
 // The deployed seed is generated privately by CI; the repository contains a blank placeholder.
 const seed=require('./daily-challenges-seed');
+const progress=require('./quiz-progress');
 const fail=(status,message)=>Object.assign(new Error(message),{status}),DAILY=3,BONUS=5;
 const LIMITS={quiz:25,player:20,career:30,lineup:45};
 const imagePath=v=>typeof v==='string'&&v.length<=300&&!v.includes('..')&&/^[a-zA-Z0-9_ /.-]+\.(webp|png|jpe?g)$/i.test(v)?v.replace(/^\/+/, ''):'';
 function init(sql){
+ progress.init(sql);
  sql.exec(`CREATE TABLE IF NOT EXISTS eco_quiz_settings(id INTEGER PRIMARY KEY,data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS eco_quiz_questions(id TEXT PRIMARY KEY,data TEXT NOT NULL,enabled INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS eco_quiz_pool(slot INTEGER PRIMARY KEY,question_id TEXT NOT NULL UNIQUE);
@@ -42,8 +44,8 @@ async function loadImage(path){
 function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageLoader=loadImage}){
  const rows=(q,...args)=>Array.from(sql.exec(q,...args)),config=()=>JSON.parse(rows('SELECT data FROM eco_quiz_settings WHERE id=1')[0].data);
  const saveConfig=c=>sql.exec('UPDATE eco_quiz_settings SET data=? WHERE id=1',JSON.stringify(c));
- const round=(uid,day)=>{const r=rows('SELECT data FROM eco_quiz_rounds WHERE uid=? AND day=?',uid,day)[0];return r?JSON.parse(r.data):null;};
- const saveRound=(uid,day,r)=>sql.exec('INSERT INTO eco_quiz_rounds VALUES(?,?,?) ON CONFLICT(uid,day) DO UPDATE SET data=excluded.data',uid,day,JSON.stringify(r));
+ const round=(uid,day)=>{const row=rows('SELECT data FROM eco_quiz_rounds WHERE uid=? AND day=?',uid,day)[0];if(!row)return null;const r=JSON.parse(row.data);if(!r.goalTracking)r.goalTracking={answered:r.answers.length,perfect:r.answers.length===DAILY&&r.answers.every(a=>a.correct)};return r;};
+ const saveRound=(uid,day,r)=>{progress.track(sql,uid,r,now());sql.exec('INSERT INTO eco_quiz_rounds VALUES(?,?,?) ON CONFLICT(uid,day) DO UPDATE SET data=excluded.data',uid,day,JSON.stringify(r));};
  const shuffle=values=>{const out=values.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;};
  function rebuild(c){
   const entries=shuffle(rows('SELECT id,data FROM eco_quiz_questions WHERE enabled=1 ORDER BY id')),counts={};sql.exec('DELETE FROM eco_quiz_pool');sql.exec('DELETE FROM eco_quiz_kind_pool');
@@ -57,7 +59,7 @@ function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageL
  function upgrade(uid,day,r){if(r&&!r.schema){r.schema=2;r.bonusPaid=0;r.started={};r.questions=r.questions.map(q=>({...q,kind:q.kind||'quiz',timeLimit:LIMITS[q.kind||'quiz']}));bonus(uid,day,r);saveRound(uid,day,r);}return r;}
  function expire(uid,day,r){const i=r?.answers.length;if(i<DAILY&&r.started?.[i]&&now()>=r.started[i].expiresAt){r.answers.push({selected:null,correct:false,coins:0,timedOut:true});saveRound(uid,day,r);}return r;}
  function present(uid,c,r,day){
-  return {ok:true,schema:2,day,serverNow:now(),resetAt:Date.parse(day+'T00:00:00-03:00')+86400000,enabled:c.enabled&&!!(r||c.count>=DAILY),limit:DAILY,reward:r?.reward??c.reward,bonus:BONUS,bonusEarned:r?.bonusPaid||0,roundId:r?.id||'',earned:r?r.answers.reduce((n,a)=>n+a.coins,0)+(r.bonusPaid||0):0,answered:r?.answers.length||0,complete:r?.answers.length===DAILY,
+  return {ok:true,schema:2,achievements:progress.read(sql,uid),day,serverNow:now(),resetAt:Date.parse(day+'T00:00:00-03:00')+86400000,enabled:c.enabled&&!!(r||c.count>=DAILY),limit:DAILY,reward:r?.reward??c.reward,bonus:BONUS,bonusEarned:r?.bonusPaid||0,roundId:r?.id||'',earned:r?r.answers.reduce((n,a)=>n+a.coins,0)+(r.bonusPaid||0):0,answered:r?.answers.length||0,complete:r?.answers.length===DAILY,
    questions:r?r.questions.map((q,index)=>{const a=r.answers[index],active=r.started?.[index],base={index,kind:q.kind||'quiz',timeLimit:q.timeLimit||LIMITS[q.kind||'quiz']};if(a?.skipped)return {...base,locked:false,answered:true,skipped:true,selected:null,correct:false,coins:0};if(!a&&!active)return {...base,locked:true};return {...base,locked:false,prompt:q.prompt,category:q.category,options:q.options,...(q.clues?{clues:q.clues}:{}),...(q.pickCount?{pickCount:q.pickCount}:{}),...(q.imageData?{imageData:q.imageData}:{}),...(active?{expiresAt:active.expiresAt}:{}),...(a?{answered:true,selected:a.selected,correct:a.correct,correctAnswer:q.kind==='lineup'?q.answers:q.answer,explanation:q.explanation,sourceUrl:q.sourceUrl,coins:a.coins,timedOut:!!a.timedOut,hits:a.hits}: {})};}):[],wallet:wallet(uid)};
  }
  function status(uid){const c=prepare();return transaction(()=>{const day=dayKey(now()),r=expire(uid,day,upgrade(uid,day,round(uid,day)));return present(uid,c,r,day);});}
@@ -76,7 +78,7 @@ function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageL
    const questions=[];for(const kind of chosen){const count=c.kindCounts[kind];let cursor=rows('SELECT version,next_slot,stride FROM eco_quiz_kind_cursor WHERE uid=? AND kind=?',uid,kind)[0];if(!cursor||cursor.version!==c.version){let stride=Math.max(1,Math.floor(random()*count));while(gcd(stride,count)!==1)stride=(stride+1)%count||1;cursor={version:c.version,next_slot:Math.floor(random()*count),stride};}
     const value=rows('SELECT q.data FROM eco_quiz_kind_pool p JOIN eco_quiz_questions q ON q.id=p.question_id WHERE p.slot=? AND p.kind=?',cursor.next_slot,kind)[0];if(!value)throw fail(503,'Não foi possível preparar o desafio.');const q=JSON.parse(value.data),order=shuffle(q.options.map((_,i)=>i));questions.push({...q,options:order.map(i=>q.options[i]),...(kind==='lineup'?{answers:order.map((v,i)=>q.answers.includes(v)?i:-1).filter(i=>i>=0)}:{answer:order.indexOf(q.answer)}),timeLimit:LIMITS[kind]});cursor.next_slot=(cursor.next_slot+cursor.stride)%count;sql.exec('INSERT INTO eco_quiz_kind_cursor VALUES(?,?,?,?,?) ON CONFLICT(uid,kind) DO UPDATE SET version=excluded.version,next_slot=excluded.next_slot,stride=excluded.stride',uid,kind,c.version,cursor.next_slot,cursor.stride);
    }
-   const r={schema:2,id:crypto.randomUUID(),reward:c.reward,bonusPaid:0,questions,answers:[],started:{}};saveRound(uid,day,r);sql.exec('DELETE FROM eco_quiz_rounds WHERE uid=? AND day<?',uid,day);fresh=true;return present(uid,c,r,day);
+   const r={schema:2,id:crypto.randomUUID(),reward:c.reward,bonusPaid:0,questions,answers:[],started:{},goalTracking:{answered:0,perfect:false}};saveRound(uid,day,r);sql.exec('DELETE FROM eco_quiz_rounds WHERE uid=? AND day<?',uid,day);fresh=true;return present(uid,c,r,day);
   });return fresh?open(uid,{day:data.day,roundId:data.roundId,index:0}):data;
  }
  function answer(uid,b){

@@ -1,3 +1,4 @@
+import {QUIZ_METRICS,quizGoalLabel,appendQuizGoalOptions} from './quiz-goals.mjs?v=20261022-quiz-goals-v1';
 import {economyRequest} from './economy-client.mjs?v=20261019-inbox-v1';
 import {mountQuickRewards} from './admin-quick-rewards.js?v=20261019-inbox-v1';
 import {mountEmblemManager} from './admin-emblems.js?v=20261016-emblems-v1';
@@ -22,7 +23,7 @@ let roleCatalog={},badgeGoals={},profileDefaults={avatarId:'default',coverId:''}
 let profileCategories={},categoryUnsub=null;
 function categoryOptionsFor(kind){return categoriesFor(kind,profileCategories);}
 function categoryLabelFor(item){return categoryLabel(item,profileCategories);}
-const GOAL_METRICS={
+const GOAL_METRICS={...QUIZ_METRICS,
   total_points:'Pontos totais',
   week_wins:'Melhor da semana',
   month_wins:'Melhor do mês',
@@ -34,7 +35,7 @@ const GOAL_METRICS={
   stories:'Marcações em Stories',
   checkins:'Check-ins'
 };
-function goalDefaultLabel(metric,target){const t=Number(target||1);const names={total_points:`${t.toLocaleString('pt-BR')} pontos acumulados`,week_wins:`Melhor da semana ${t} vez${t===1?'':'es'}`,month_wins:`Melhor do mês ${t} vez${t===1?'':'es'}`,prediction_wins:`${t} acerto${t===1?'':'s'} em palpites`,prediction_votes:`${t} palpite${t===1?'':'s'} enviado${t===1?'':'s'}`,prediction_combo:`Acertou melhor + pior ${t} vez${t===1?'':'es'}`,active_days:`${t} dia${t===1?'':'s'} ativo${t===1?'':'s'}`,comments:`${t} comentário${t===1?'':'s'} válido${t===1?'':'s'}`,stories:`${t} marcação${t===1?'':'ões'} em Stories`,checkins:`${t} check-in${t===1?'':'s'}`};return names[metric]||'Objetivo automático';}
+function goalDefaultLabel(metric,target){const t=Number(target||1);const names={total_points:`${t.toLocaleString('pt-BR')} pontos acumulados`,week_wins:`Melhor da semana ${t} vez${t===1?'':'es'}`,month_wins:`Melhor do mês ${t} vez${t===1?'':'es'}`,prediction_wins:`${t} acerto${t===1?'':'s'} em palpites`,prediction_votes:`${t} palpite${t===1?'':'s'} enviado${t===1?'':'s'}`,prediction_combo:`Acertou melhor + pior ${t} vez${t===1?'':'es'}`,active_days:`${t} dia${t===1?'':'s'} ativo${t===1?'':'s'}`,comments:`${t} comentário${t===1?'':'s'} válido${t===1?'':'s'}`,stories:`${t} marcação${t===1?'':'ões'} em Stories`,checkins:`${t} check-in${t===1?'':'s'}`};return quizGoalLabel(metric,t)||names[metric]||'Objetivo automático';}
 function toast(text){const el=$('profile-admin-toast');el.textContent=text;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.hidden=true,5000);}
 function admin(){if(auth.currentUser?.email!==ADMIN)throw Error('Acesso restrito.');}
 function updateCategoryField(preferred=''){const field=$('profile-category-field'),kind=form.elements.kind.value,options=categoryOptionsFor(kind);if(!field)return;field.hidden=!Object.keys(options).length;if(field.hidden)return;const current=preferred||form.elements.category.value,select=form.elements.category;select.innerHTML=Object.entries(options).map(([id,label])=>`<option value="${id}">${label}</option>`).join('');const fallback=kind==='badge'?'special':'special';select.value=Object.hasOwn(options,current)?current:fallback;}
@@ -178,6 +179,7 @@ async function confirmDirectory({uid=selected,quiet=false}={}){
 }
 
 const goalForm=$('profile-goal-form');
+if(goalForm){appendQuizGoalOptions(goalForm.elements.metric);const note=document.createElement('p');note.className='cff-profile-muted';note.textContent='Quiz: acertos e dias com 3/3 acumulam sem prazo. Só desafios completos contam; escalações parciais não. A recompensa é liberada ao concluir os desafios ou atualizar as conquistas.';goalForm.append(note);}
 function goalAssetId(g){return g?.assetId||g?.badgeId||'';}
 function fillGoalBadges(){if(!goalForm)return;const kind=goalForm.elements.rewardType.value,current=goalForm.elements.assetId.value;goalForm.elements.assetId.innerHTML='<option value="">Escolha uma recompensa</option>'+Object.entries(catalog).filter(([,x])=>x.kind===kind&&x.enabled&&x.accessRule!=='admin').map(([id,x])=>`<option value="${id}">${esc(x.title)}</option>`).join('');if([...goalForm.elements.assetId.options].some(o=>o.value===current))goalForm.elements.assetId.value=current;}
 goalForm?.elements.rewardType.addEventListener('change',fillGoalBadges);

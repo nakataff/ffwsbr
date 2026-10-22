@@ -283,6 +283,45 @@ e `geral` para MVP. O editor não consulta os dados do ranking nem o banco.
 
 ## Fotos do quiz
 
+### Conquistas por conhecimento (quiz)
+
+Criar a imagem em **admin-perfis → Catálogo → Insígnia** e a regra em
+**Objetivos → Objetivo e recompensa**. O grupo **Conhecimento de Free Fire**
+oferece acertos completos acumulados (`quiz_correct`), dias com 3/3
+(`quiz_perfect_days`) e acertos por formato (`quiz_quiz_correct`,
+`quiz_player_correct`, `quiz_career_correct`, `quiz_lineup_correct`). Nomes,
+imagens, metas e disponibilidade são definidos pelo administrador; nenhum
+item ou objetivo é criado automaticamente por esta implantação.
+
+- `functions/quiz-progress.js`: uma linha SQLite pequena por UID em
+  `eco_quiz_progress`. Contadores são atualizados na mesma transação da resposta
+  e das moedas; o checkpoint no registro diário impede duplicações em retries.
+  Só resposta totalmente correta conta. Parcial de escalação conserva as moedas,
+  mas não soma conquista. Pulo/erro/tempo esgotado não contam. Dias perfeitos não
+  precisam ser consecutivos. O progresso sobrevive à limpeza dos quizzes diários.
+- Respostas anteriores à implantação não são reconstruídas nem creditadas
+  retroativamente. O banco de perguntas continua privado e não é varrido para
+  atualizar conquistas. Cada resposta pública do quiz lê somente o resumo do UID.
+- `functions/profile-goals.js` e `Notifications.claimGoals`: o servidor busca os
+  contadores pelo UID autenticado. Não aceita números enviados pelo navegador ou
+  por respostas do ranking de Instagram. Quiz funciona sem Instagram vinculado.
+  Configuração/catálogo têm cache de 60 segundos no serviço; consulta posse apenas
+  quando existe meta alcançada. Nenhuma leitura do cadastro inteiro de usuários.
+- Ao concluir os três desafios, o Worker tenta liberar as metas de quiz usando o
+  inventário existente e envia aviso idempotente à caixa de entrada. Falha na
+  entrega mantém moedas e progresso; abrir o perfil ou **Atualizar conquistas**
+  permite nova tentativa e aplica objetivos criados depois. Recompensa permanece
+  na coleção mesmo após desativar/excluir a regra. Insígnias usam os mesmos grants
+  consumidos pelo perfil público e pelo seletor de insígnias do chat.
+- `js/quiz-goals.mjs`: opções do editor e barras de progresso em
+  **conta → Inventário → Insígnias**. `daily-quiz.mjs` mostra totais acumulados no
+  resultado, anuncia novas conquistas e abre diretamente a coleção correta.
+  Sem polling, ranking adicional ou histórico completo.
+- `database.rules.json` autoriza somente as seis novas métricas nas regras
+  administrativas existentes; posse/grants continuam graváveis pelo serviço.
+- Testes: `functions/test/economy-quiz.test.cjs`, `functions/test/profile-goals.test.cjs`,
+  `test/quiz-goals-ui.test.cjs`, além das regressões do inventário e quiz.
+
 [Guia de fotos do quiz](quiz-fotos.md): `build-daily-challenges.cjs` gera o banco
 privado e chama `build-daily-challenge-photos.cjs` para incluir retratos pequenos
 no Worker. O arquivo versionado `daily-challenges-seed.js` é somente placeholder.
