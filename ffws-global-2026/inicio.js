@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261021-team-eras-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261023-global-teams-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
@@ -46,9 +46,9 @@
   function groupMembers(group) {return summary.teams.filter(t=>t.group===group);}
   function groupCard(group,upcoming=false,squads=[]) {
     return `<article class="global-start-group"><h3>Grupo ${esc(group)}</h3><div>${groupMembers(group).map(t=>{
-      if(upcoming) return `<a class="global-start-fixture-team" href="${BASE}inicio?aba=equipes&grupo=${group}">${teamName(t)}</a>`;
+      if(upcoming) return `<a class="global-start-fixture-team" href="${BASE}equipes?time=${esc(t.id)}">${teamName(t)}</a>`;
       const players=squads.find(s=>s.id===t.id)?.players||[];
-      return `<details class="global-start-roster"><summary>${teamName(t)}<span aria-hidden="true">⌄</span></summary><div>${players.length?players.map(p=>`<p><strong>${esc(p.name)}</strong><small>${esc(({RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'})[p.role]||p.role||'Jogador')}${p.captain?' · Capitão':''}</small></p>`).join(''):'<p class="global-start-muted">Elenco ainda não cadastrado para este Mundial.</p>'}</div></details>`;
+      return `<details class="global-start-roster"><summary>${teamName(t)}<span aria-hidden="true">⌄</span></summary><div>${players.length?players.map(p=>`<p><strong>${esc(p.name)}</strong><small>${esc(({RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'})[p.role]||p.role||'Jogador')}${p.captain?' · Capitão':''}</small></p>`).join(''):'<p class="global-start-muted">Elenco ainda não cadastrado para este Mundial.</p>'}<a class="global-start-link" href="${BASE}equipes?time=${esc(t.id)}">Ver equipe e estatísticas ↗</a></div></details>`;
     }).join('')}</div></article>`;
   }
   function tick() {

@@ -20,6 +20,7 @@ on:
       - 'index.html'
       - 'test/global-format-2026.test.cjs'
       - 'test/global-overview.test.cjs'
+      - 'test/global-teams.test.cjs'
       - 'scripts/build-global-overview.cjs'
       - 'test/home-global-matchups.test.cjs'
       - 'test/home-support.test.cjs'
@@ -29,6 +30,7 @@ on:
       - 'ffws-global-2026/**'
       - 'test/global-format-2026.test.cjs'
       - 'test/global-overview.test.cjs'
+      - 'test/global-teams.test.cjs'
       - 'scripts/build-global-overview.cjs'
 jobs:
   global-format:
@@ -46,7 +48,7 @@ jobs:
       - name: Validate format, calendar and rendering
         env:
           NODE_PATH: /tmp/cff-global-tests/node_modules
-        run: node --test test/global-overview.test.cjs test/global-format-2026.test.cjs test/home-global-matchups.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs test/home-support.test.cjs test/community-supporters-ui.test.cjs test/admin-dashboard.test.cjs
+        run: node --test test/global-teams.test.cjs test/global-overview.test.cjs test/global-format-2026.test.cjs test/home-global-matchups.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs test/home-support.test.cjs test/community-supporters-ui.test.cjs test/admin-dashboard.test.cjs
       - name: Check generated overview
         run: node scripts/build-global-overview.cjs --check
       - name: Check syntax

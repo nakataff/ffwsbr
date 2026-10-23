@@ -73,7 +73,24 @@ function build({stages, dates, teams, groups, players}) {
   const roster=(players.players||[]).filter(p=>!p.left && norm(p.rosterStatus)!=='SAIU');
   const squads=metadata.map(t=>({id:t.id,players:roster.filter(p=>norm(p.team)===norm(t.name)||norm(p.team)===norm(t.abbreviation)).sort((a,b)=>Number(!!b.starter)-Number(!!a.starter)||num(a.order)-num(b.order)).map(p=>({name:p.name,role:p.roleShort||p.role||'',captain:!!p.captain,starter:!!p.starter}))}));
   const updatedAt=[stages.updatedAt,dates.updatedAt,teams.updatedAt,groups.updatedAt,players.updatedAt].filter(Boolean).sort().at(-1);
+  // One small public snapshot: never fetch the complete players database on this page.
+  const sameTeam=(value,t)=>[t.name,t.abbreviation,t.id,t.wikiName].some(alias=>norm(alias)===norm(value));
+  const sumEntries=entries=>entries.length ? entries.reduce((r,e)=>({kills:r.kills+num(e.kills),damage:r.damage+num(e.damage),assists:r.assists+num(e.assists),matches:r.matches+(num(e.matches)||1)}),{kills:0,damage:0,assists:0,matches:0}) : null;
+  const teamProfiles=teams.teams.map(t=>{
+    const members=roster.filter(p=>sameTeam(p.team,t));
+    const statsByStage=Object.fromEntries(keys.map(key=>{
+      const events=eventsFor(stages,key).map(e=>({...e,results:results(e).filter(r=>sameTeam(r.team||r.equipe,t))})).filter(e=>e.results.length);
+      const rows=aggregate(events),fallback=compactRows(stages[key]?.rows||[]).find(r=>sameTeam(r.team,t));
+      // Phase 2 totals are descriptive statistics only, never a cumulative standing.
+      return [key,rows.length?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,rows[0][k]])):fallback?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,fallback[k]])):null];
+    }));
+    return {...metadata.find(m=>m.id===t.id),region:t.region,qualification:t.qualification,statsByStage,
+      players:members.map(p=>({name:p.name,type:p.type==='staff'||/coach|analista|manager|treinador/i.test(p.role||'')?'staff':'player',role:p.role||p.roleShort||'',country:p.country||p.flag||'',
+        statsByStage:Object.fromEntries(['geral',...keys].map(key=>[key,sumEntries((players.entries||[]).filter(e=>sameTeam(e.team,t)&&norm(e.name||e.player)===norm(p.name)&&(key==='geral'?keys.includes(e.stage):e.stage===key)))]))})),
+      fixtures:dates.rounds.filter(r=>r.stage==='classificatoria'&&r.groups?.includes(groupById.get(t.id))).map(r=>({date:r.date,time:r.time24,label:r.label,groups:r.groups}))};
+  });
   return {
+    'equipes-resumo.json':{updatedAt,teams:teamProfiles},
     'inicio-resumo.json':{tournament:stages.tournament,updatedAt,finished:!!stages.finished,format,teams:metadata,tables,rounds:dates.rounds.map(r=>({key:r.key,stage:r.stage,day:r.day,label:r.label,date:r.date,time24:r.time24,groups:r.groups,matches:r.matches}))},
     'inicio-mvp-top10.json':{updatedAt,top10},
     'inicio-elencos.json':{updatedAt,teams:squads}

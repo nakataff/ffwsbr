@@ -544,10 +544,7 @@
     });
   }
 
-  function renderTeams(){
-    const root=document.getElementById('ffws-global-2026-equipes-content');if(!root)return;
-    root.innerHTML=`<div class="ffws-global-shell">${hero('Equipes','Os 24 participantes da FFWS Global Finals 2026')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Participantes</h2><p>Equipes e origem da classificação</p></div><span class="ffws-global-badge">${state.teams.length} times</span></div><div class="ffws-global-teams-grid ffws-global-rosters-grid">${state.teams.map(team=>{const roster=playersForTeam(team.name);return `<article class="ffws-global-team-card ffws-global-team-roster-card" id="global-team-${escapeHtml(team.id)}"><header class="ffws-global-team-roster-head"><img src="${escapeHtml(logo(team.name))}" data-cff-global-team-logo="${escapeHtml(team.name)}" loading="eager" decoding="async" alt="${escapeHtml(team.name)}" onerror="this.onerror=null;this.src='escudo.webp'"><div><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.abbreviation)} • ${escapeHtml(team.region||'Internacional')}</small>${logo(team.name)==='escudo.webp'?'<small class="ffws-global-logo-pending">Logo a cadastrar</small>':''}</div></header><p class="global-qualification">${escapeHtml(team.qualification?.competition||'')} • ${number(team.qualification?.placement)}º colocado</p><details class="global-roster-details"><summary>Ver elenco</summary><div class="ffws-global-roster-list">${roster.length?roster.map(p=>`<div class="ffws-global-roster-player"><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(playerRoleLabel(p))}</small></div>`).join(''):'<div class="ffws-global-roster-empty">Elenco a cadastrar.</div>'}</div></details></article>`}).join('')}</div></div></section></div>`;
-  }
+  function renderTeams(){window.CFFGlobalTeams?.boot();}
 
   function scheduleStart(item) {
     const time = String(item?.time24 || '13:00');
@@ -2230,9 +2227,9 @@
   function globalEmptyStage(pageId){
     const section=pageId.slice(PAGE_PREFIX.length),key=section==='segunda-fase'?'segundaFase':section==='last-chance'?'lastChance':section,root=document.getElementById(pageId+'-content');if(!root)return;
     const title=stageLabel(key);
-    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase ainda não foram cadastradas.</p><a class="global-participants-link" href="/ffws-global-2026/equipes" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-global-2026-equipes');return false;}">Ver os 24 participantes →</a></div></div></section><section class="ffws-global-panel"><div class="ffws-global-panel-inner"><h2>Participantes do torneio</h2><div class="global-participants-grid">${state.teams.map(t=>`<div class="global-participant"><img loading="lazy" src="${escapeHtml(logo(t.name))}" data-cff-global-team-logo="${escapeHtml(t.name)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><span>${escapeHtml(t.name)}</span></div>`).join('')}</div></div></section></div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase ainda não foram cadastradas.</p><a class="global-participants-link" href="/ffws-global-2026/equipes" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-global-2026-equipes');return false;}">Ver os 24 participantes →</a></div></div></section><section class="ffws-global-panel"><div class="ffws-global-panel-inner"><h2>Participantes do torneio</h2><div class="global-participants-grid">${state.teams.map(t=>`<a class="global-participant" href="/ffws-global-2026/equipes?time=${encodeURIComponent(t.id)}"><img loading="lazy" src="${escapeHtml(logo(t.name))}" data-cff-global-team-logo="${escapeHtml(t.name)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><span>${escapeHtml(t.name)}</span></a>`).join('')}</div></div></section></div>`;
   }
-  window.openFFWSGlobalTeam=function(name){navigate('ffws-global-2026-equipes');};
+  window.openFFWSGlobalTeam=function(name){const t=teamByName(name);const url=new URL(location.href);if(t)url.searchParams.set('time',t.id);history.replaceState(null,'',url);navigate('ffws-global-2026-equipes');};
   window.openFFWSGlobalPlayer=function(name,team){const url=new URL('/jogador.html',location.origin);url.searchParams.set('jogador',name);url.searchParams.set('time',team);location.href=url.pathname+url.search;};
   function renderPage(pageId) {
     if (!state.loaded) return;
@@ -2257,6 +2254,8 @@
 
   function activate(pageId) {
     if (!PAGE_IDS.has(pageId)) return;
+    // Equipes has its own compact static snapshot; never start the full data loaders.
+    if(pageId==='ffws-global-2026-equipes'){window.CFFGlobalTeams?.boot();return;}
     if (pageId !== 'ffws-global-2026-stats' && state.dropReport?.bodyOverflow !== undefined) {
       const modal = document.getElementById('ffws-global-drop-report-modal');
       if (modal) modal.hidden = true;

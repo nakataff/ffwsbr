@@ -1,6 +1,248 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "updatedAt": "2026-10-12",
-  "players": [],
-  "entries": []
+  "updatedAt": "2026-10-23",
+  "players": [
+    {
+      "name": "Fellow",
+      "team": "Bigetron by Vitality",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "Tiuszz",
+      "team": "Bigetron by Vitality",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "C1b3nk",
+      "team": "Bigetron by Vitality",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "Kyongg",
+      "team": "Bigetron by Vitality",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "Kojaa",
+      "team": "Bigetron by Vitality",
+      "order": 5,
+      "type": "player"
+    },
+    {
+      "name": "MTai",
+      "team": "GOW",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "Dyan",
+      "team": "GOW",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "Gocu",
+      "team": "GOW",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "Demon",
+      "team": "GOW",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "Piciu",
+      "team": "GOW",
+      "order": 5,
+      "type": "player"
+    },
+    {
+      "name": "Alan",
+      "team": "P Esports",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "BeDep",
+      "team": "P Esports",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "CTuan",
+      "team": "P Esports",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "LBT",
+      "team": "P Esports",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "Nero",
+      "team": "P Esports",
+      "order": 5,
+      "type": "player"
+    },
+    {
+      "name": "TEAMSR",
+      "team": "All Gamers Global",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "NAMELESS",
+      "team": "All Gamers Global",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "DEW",
+      "team": "All Gamers Global",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "SAIFA",
+      "team": "All Gamers Global",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "BAROS",
+      "team": "All Gamers Global",
+      "order": 5,
+      "type": "player"
+    },
+    {
+      "name": "TheGod",
+      "team": "Team Flash",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "TheZom",
+      "team": "Team Flash",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "ABCD",
+      "team": "Team Flash",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "NLuann",
+      "team": "Team Flash",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "MinkCuog",
+      "team": "Team Flash",
+      "order": 5,
+      "type": "player"
+    },
+    {
+      "name": "Jeek",
+      "team": "RRQ",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "Ranz",
+      "team": "RRQ",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "Maal",
+      "team": "RRQ",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "Abay",
+      "team": "RRQ",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "Dutzz",
+      "team": "RRQ",
+      "order": 5,
+      "type": "player"
+    },
+    {
+      "name": "Putraxx",
+      "team": "ONIC",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "Adam",
+      "team": "ONIC",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "Crime",
+      "team": "ONIC",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "Geday",
+      "team": "ONIC",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "POOM",
+      "team": "ONIC",
+      "order": 5,
+      "type": "player"
+    },
+    {
+      "name": "WASSANA",
+      "team": "Buriram United Esports",
+      "order": 1,
+      "type": "player"
+    },
+    {
+      "name": "JOENA",
+      "team": "Buriram United Esports",
+      "order": 2,
+      "type": "player"
+    },
+    {
+      "name": "MOSHI",
+      "team": "Buriram United Esports",
+      "order": 3,
+      "type": "player"
+    },
+    {
+      "name": "TERNA",
+      "team": "Buriram United Esports",
+      "order": 4,
+      "type": "player"
+    },
+    {
+      "name": "GETNA",
+      "team": "Buriram United Esports",
+      "order": 5,
+      "type": "player"
+    }
+  ],
+  "entries": [],
+  "rosterSource": "Elencos fornecidos pelo administrador em 23/10/2026. LYON comentada na origem e nomes vazios não foram importados."
 }

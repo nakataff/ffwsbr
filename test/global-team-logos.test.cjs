@@ -30,6 +30,6 @@ test('Mundial render ignores stale pending flags and never selects the player ph
  const c={document:doc,window:{addEventListener(){},cffFindLiveTeamLogo(){return 'lyon.webp'}},location:{hash:'',pathname:'/index.html'},console,setTimeout,clearTimeout,URL,URLSearchParams};vm.createContext(c);vm.runInContext(fs.readFileSync('js/global-team-logos.js','utf8'),c);
  let src=fs.readFileSync('ffws-global-2026/global.js','utf8');src=src.replace("  if (document.readyState === 'loading')","  window.__qa={state,renderPage,logo};\n  if (document.readyState === 'loading')");vm.runInContext(src,c);
  const qa=c.window.__qa;qa.state.loaded=true;qa.state.teams=JSON.parse(fs.readFileSync('ffws-global-2026/teams.json')).teams.map(t=>({...t,logoPending:true}));
- qa.renderPage('ffws-global-2026-equipes');const html=roots.get('ffws-global-2026-equipes-content').innerHTML;
- assert(!html.includes('Logo a cadastrar'));assert.equal(qa.logo('LYON'),'home-assets/teams/global/lyon.webp');assert.equal(qa.logo('Lyon'),'home-assets/teams/global/lyon.webp');
+ let delegated=0;c.window.CFFGlobalTeams={boot(){delegated++;}};qa.renderPage('ffws-global-2026-equipes');assert.equal(delegated,1);
+ assert.equal(qa.logo('LYON'),'home-assets/teams/global/lyon.webp');assert.equal(qa.logo('Lyon'),'home-assets/teams/global/lyon.webp');
 });
