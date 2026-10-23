@@ -536,3 +536,13 @@ metodologia independente.
   inesperado. Corpos externos e descrições livres nunca chegam ao painel.
   Requisições autenticadas pedem JSON; vencimento numérico ou string numérica
   do token é aceito, com a mesma reutilização de token e cache de 10 minutos.
+
+### Localizador de artes prontas (admin-tarefas)
+
+- Interface: `js/admin-tarefas-locator.js` e `css/admin-tarefas-locator.css`. O atalho FFCP fica somente na lateral; o Localizador é uma aba independente.
+- Dados privados: `functions/task-locator.js`, integrado no serviço autenticado `functions/admin-tasks-service.js`, usando o Durable Object existente. Não publica os links no GitHub e não inclui as artes no JSON inteiro do quadro/Firebase.
+- Operações: `locatorList`, `locatorGet`, `locatorSave`, `locatorFavorite`, `locatorDelete`; acesso exclusivo do administrador. Tabelas criadas somente no primeiro acesso ao Localizador.
+- Lista paginada: 24 resumos, cursor e índices por tipo/favorito/data. Busca FTS5 por nome, projeto, formato, palavras-chave e rótulos de links/legendas. Não indexa o corpo longo das legendas. Busca ao enviar o formulário; sem varredura periódica nem carregamento de imagens.
+- Cada arte: nome, tipo, projeto/cliente, formato, favorito, até 20 palavras-chave, 12 links (primeiro é principal), 8 versões de legenda e observações. Detalhe completo buscado por ID só ao abrir/editar/copiar legenda. Cache em memória de 60 segundos, páginas e detalhes limitados; não persiste dados privados no armazenamento local.
+- Limite de 1.000 artes; revisão por registro evita sobrescrever mudanças em outro aparelho. Reenvio idêntico não duplica registros. Excluir o cadastro não exclui o arquivo original no Canva/Drive/etc.
+- O backup do quadro ativo e sua importação não incluem nem alteram o catálogo independente do Localizador.

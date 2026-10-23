@@ -8,6 +8,9 @@ on:
       - 'css/admin-tarefas*.css'
       - 'test/admin-tarefas-planning.test.cjs'
       - 'functions/admin-tasks-service.js'
+      - 'functions/task-locator.js'
+      - 'functions/test/task-locator.test.cjs'
+      - 'test/admin-tarefas-locator.test.cjs'
       - 'functions/test/admin-tasks-service.test.cjs'
       - '.github/workflows/test-admin-tarefas.yml'
   pull_request:
@@ -16,6 +19,9 @@ on:
       - 'js/admin-tarefas*.js'
       - 'test/admin-tarefas-planning.test.cjs'
       - 'functions/admin-tasks-service.js'
+      - 'functions/task-locator.js'
+      - 'functions/test/task-locator.test.cjs'
+      - 'test/admin-tarefas-locator.test.cjs'
 jobs:
   planning:
     runs-on: ubuntu-latest
@@ -32,7 +38,7 @@ jobs:
       - name: Test board, dates, recurrence, archive and private reminders
         env:
           NODE_PATH: /tmp/cff-task-tests/node_modules
-        run: node --test test/admin-tarefas-planning.test.cjs functions/test/admin-tasks-service.test.cjs
+        run: node --test test/admin-tarefas-planning.test.cjs functions/test/admin-tasks-service.test.cjs functions/test/task-locator.test.cjs test/admin-tarefas-locator.test.cjs
       - name: Check syntax
         run: |
-          for file in js/admin-tarefas*.js functions/admin-tasks-service.js; do node --check "$file" || exit 1; done
+          for file in js/admin-tarefas*.js functions/admin-tasks-service.js functions/task-locator.js; do node --check "$file" || exit 1; done

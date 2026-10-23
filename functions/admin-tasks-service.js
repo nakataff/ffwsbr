@@ -1,5 +1,6 @@
 'use strict';
 const N=require('../js/admin-tarefas-notifications.js');
+const locatorCore=require('./task-locator.js');
 const MAX_FILE=25*1024*1024,MAX_TOTAL=150*1024*1024,CHUNK=512*1024;
 const fail=(status,message)=>Object.assign(Error(message),{status});
 const validId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,150}$/.test(id);
@@ -8,6 +9,7 @@ const json=(v,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-
 async function digest(value){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',value))].map(v=>v.toString(16).padStart(2,'0')).join('');}
 async function body(request,max){if(Number(request.headers.get('Content-Length')||0)>max)throw fail(413,'Arquivo ou pedido acima do limite.');const reader=request.body?.getReader(),chunks=[];let length=0;if(reader)for(;;){const {done,value}=await reader.read();if(done)break;length+=value.byteLength;if(length>max){await reader.cancel();throw fail(413,'Arquivo ou pedido acima do limite.');}chunks.push(value);}const bytes=new Uint8Array(length);let at=0;for(const chunk of chunks){bytes.set(chunk,at);at+=chunk.length;}return bytes;}
 function create({sql,transaction,setAlarm,deleteAlarm,push,now=Date.now}){
+ let locator;
  const rows=(q,...args)=>sql.exec(q,...args).toArray();
  sql.exec(`CREATE TABLE IF NOT EXISTS task_files(id TEXT PRIMARY KEY,name TEXT,mime TEXT,bytes INTEGER,hash TEXT,at INTEGER);
  CREATE TABLE IF NOT EXISTS task_file_chunks(id TEXT,n INTEGER,data BLOB,PRIMARY KEY(id,n));
@@ -51,6 +53,7 @@ function create({sql,transaction,setAlarm,deleteAlarm,push,now=Date.now}){
   if(url.pathname!=='/tasks/api'||request.method!=='POST')throw fail(404,'Operação não encontrada.');
   let b;try{b=JSON.parse(new TextDecoder().decode(await body(request,2*1024*1024)));}catch(e){if(e.status)throw e;throw fail(400,'Pedido inválido.');}
   const op=b.operation;
+  if(['locatorList','locatorGet','locatorSave','locatorDelete','locatorFavorite'].includes(op)){locator??=locatorCore.create({sql,transaction,now});return json(locator.handle(op,b));}
   if(op==='fileStatus'){const ids=b.ids;if(!Array.isArray(ids)||ids.length>100||ids.some(id=>!validId(id)))throw fail(400,'Lista de anexos inválida.');return json({ok:true,files:Object.fromEntries(ids.map(id=>[id,rows('SELECT bytes,hash FROM task_files WHERE id=?',id)[0]||null]))});}
   if(op==='archive'){
    if(!Array.isArray(b.items)||!b.items.length||b.items.length>25)throw fail(400,'Arquive até 25 tarefas de cada vez.');

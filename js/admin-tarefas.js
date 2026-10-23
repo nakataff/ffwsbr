@@ -525,6 +525,7 @@ function wire(){
  projectsUI=window.CFF_TASKS_PROJECTS.mount({getState:()=>state,save,toast,linkedTasks:id=>state.tasks.filter(t=>t.companyId===id),openTask:t=>openEditor(t.status,t),newTask:(projectId,companyId)=>planUI?.newTask({projectId,companyId})});
  planUI=window.CFF_TASKS_WORKSPACE.mount(taskWorkspaceApi());
  contentUI=window.CFF_TASKS_CONTENT.mount(taskWorkspaceApi());
+ window.CFF_TASKS_LOCATOR_UI=window.CFF_TASKS_LOCATOR?.mount(taskWorkspaceApi());
  missionsUI=window.CFF_TASKS_MISSIONS.mount(taskWorkspaceApi(),projectsUI);
  window.CFF_TASKS_MISSIONS_UI=missionsUI;
  wireDeskTools();wireDailyPosts();wireServices();document.addEventListener('change',e=>{if(e.target.matches('.status-picker'))styleStatusSelect(e.target);});
