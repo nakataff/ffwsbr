@@ -7,6 +7,8 @@ on:
       - 'index.html'
       - 'css/mercado.css'
       - 'js/mercado-page.js'
+      - 'js/team-logo-resolver.min.js'
+      - 'team-data/logo-map.json'
       - 'js/mercado-votes.mjs'
       - 'js/root-page-redirects.js'
       - 'js/shared-navigation.js'
@@ -22,6 +24,8 @@ on:
       - 'mercado.html'
       - 'css/mercado.css'
       - 'js/mercado-page.js'
+      - 'js/team-logo-resolver.min.js'
+      - 'team-data/logo-map.json'
       - 'js/mercado-votes.mjs'
       - 'js/root-page-redirects.js'
       - 'test/mercado-page.test.cjs'
@@ -43,4 +47,4 @@ jobs:
           NODE_PATH: /tmp/cff-mercado-tests/node_modules
         run: node --test test/mercado-page.test.cjs test/career-market-public.test.cjs
       - name: Check syntax
-        run: node --check js/mercado-page.js && node --check js/mercado-votes.mjs && node --check js/root-page-redirects.js && node --check js/shared-navigation.js && node --check js/mobile-dock.js && node --check js/site-shell-fast.min.js
+        run: node --check js/team-logo-resolver.min.js && node --check js/mercado-page.js && node --check js/mercado-votes.mjs && node --check js/root-page-redirects.js && node --check js/shared-navigation.js && node --check js/mobile-dock.js && node --check js/site-shell-fast.min.js

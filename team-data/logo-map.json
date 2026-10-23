@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-18",
+  "updatedAt": "2026-10-23",
   "source": "DADOS DO SITE - Logos.tsv",
   "sourceRows": 60,
   "logos": {
@@ -147,6 +147,9 @@
     "AST": "ANTISOCIAL TEAM",
     "ATS": "ANTISOCIAL TEAM",
     "W7M": "W7M ESPORTS",
-    "TAG": "TEAM APEX GAMING"
+    "TAG": "TEAM APEX GAMING",
+    "TEAM APEX": "TEAM APEX GAMING",
+    "APEX GAMING": "TEAM APEX GAMING",
+    "TEAM APEX GAMING (TAG)": "TEAM APEX GAMING"
   }
 }

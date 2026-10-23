@@ -3,20 +3,20 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const {JSDOM}=require('jsdom'),read=p=>fs.readFileSync(p,'utf8');
 const settle=async()=>{for(let i=0;i<6;i++)await new Promise(r=>setImmediate(r));};
 const rows=[{id:'m1',jogador:'MT7',status:'fechado',timeOrigem:'LOUD',timeDestino:'W7M',escudoOrigem:'',escudoDestino:'',foto:'silhueta.webp',careerManaged:true,atualizacao:'23/10/2026'}, {id:'m2',jogador:'Joker',personId:'coach-loud-joker',role:'Coach',status:'rumor',timeOrigem:'LOUD',timeDestino:'',careerManaged:true}];
-async function ui({cache,offline=false,pages=false}={}){
+async function ui({cache,offline=false,pages=false,feed=rows}={}){
  const dom=new JSDOM(read('mercado.html'),{url:'https://centralfreefire.com.br/mercado.html?time=btr&grupo=A',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,calls=[],votes=[];
  w.console.warn=()=>{};w.console.error=()=>{};w.CFF_CONFIG={sheets:{mercado:'https://example.invalid/old-sheet'}};w.fbLoadVotes=()=>{};w.fbVote=(...a)=>votes.push(a);
  w.requestAnimationFrame=fn=>{fn();return 1;};w.AbortController=AbortController;
  if(cache)w.localStorage.setItem('cff_mercado_api_cache_v1',JSON.stringify(cache));
  w.fetch=async url=>{url=String(url);calls.push(url);let data;
-  if(url.includes('/careers/market')){if(offline)throw Error('Offline');data={ok:true,entries:pages&&url.includes('offset=')?[{...rows[0],id:'m3',jogador:'Yago'}]:rows,total:3,hasMore:pages&&!url.includes('offset=')};}
-  else if(url.includes('logo-map.json'))data={logos:{LOUD:'loud.webp',W7M:'w7m.webp'},aliases:{}};
+  if(url.includes('/careers/market')){if(offline)throw Error('Offline');data={ok:true,entries:pages&&url.includes('offset=')?[{...rows[0],id:'m3',jogador:'Yago'}]:feed,total:3,hasMore:pages&&!url.includes('offset=')};}
+  else if(url.includes('logo-map.json')){data=JSON.parse(read('team-data/logo-map.json'));data.logos.LOUD='loud.webp';}
   else if(url.includes('routes.json'))data={routes:{mt7:'s:fluxo-w7m',yago:'s:los'}};
   else if(url.includes('market-fallback'))data={entries:rows};
   else throw Error('Unexpected request '+url);
   return {ok:true,json:async()=>structuredClone(data),text:async()=>JSON.stringify(data)};
  };
- for(const script of ['js/charts-market.min.js','js/mercado-status-performance-hotfix.min.js','js/mercado-page.js'])vm.runInContext(read(script),dom.getInternalVMContext());
+ for(const script of ['js/charts-market.min.js','js/mercado-status-performance-hotfix.min.js','js/team-logo-resolver.min.js','js/mercado-page.js'])vm.runInContext(read(script),dom.getInternalVMContext());
  await settle();return {w,dom,calls,votes,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],close:()=>w.close()};
 }
 test('Mercado is real standalone HTML and no longer a hidden page inside the index',()=>{
@@ -53,4 +53,24 @@ test('shared menus and saved mobile shortcuts link directly and mark the standal
 });
 test('standalone voting reuses existing storage and subscribes only once',async()=>{
  let subscriptions=0;const c={window:{fbLoadVotes:()=>subscriptions++},mercadoHasLoaded:true};vm.runInNewContext(read('js/mercado-votes.mjs').replace(/^import .*;$/m,''),c);c.window.fbLoadVotes();c.window.fbLoadVotes();assert.equal(subscriptions,1);
+});
+
+test('Apex short names and generic crests reuse the existing local Mundial logo with one cached map',async()=>{
+ const names=['Team Apex Gaming','Team Apex','TAG','Apex Gaming','Team Apex Gaming (TAG)'],feed=names.map((name,i)=>({...rows[0],id:'apex-'+i,jogador:'Frois '+i,timeDestino:name,escudoDestino:i%2?'escudo.webp':'/silhueta.webp?old=1'}));
+ const u=await ui({feed});try{
+  const crests=u.all('.mercado-card-clubs').map(c=>c.querySelectorAll('.mercado-club img')[1]);assert.equal(crests.length,names.length);
+  for(const [i,img]of crests.entries()){assert(img.src.endsWith('/home-assets/teams/global/tag.webp'));assert.equal(img.dataset.teamLogo,names[i]);assert.equal(img.getAttribute('onerror'),null);}
+  assert.equal(u.calls.filter(x=>x.includes('logo-map.json')).length,1);assert.equal(u.calls.filter(x=>x.includes('/careers/market')).length,1);
+  assert(!u.calls.some(x=>x.includes('/careers/team')||x.includes('teams.json')));
+ }finally{u.close();}
+});
+test('a broken explicit Apex crest retries the local asset once, without remapping player portraits',async()=>{
+ const feed=[{...rows[0],id:'apex-broken',jogador:'Santos',foto:'photos/santos-analista.webp',timeDestino:'TEAM APEX',escudoDestino:'https://old.invalid/apex.png'}];
+ const u=await ui({feed});try{
+  const img=u.$('.mercado-card-clubs').querySelectorAll('.mercado-club img')[1],portrait=u.$('.mercado-card-avatar');assert.equal(img.src,'https://old.invalid/apex.png');
+  img.dispatchEvent(new u.w.Event('error'));assert(img.src.endsWith('/home-assets/teams/global/tag.webp'));
+  portrait.dispatchEvent(new u.w.Event('error'));assert(portrait.src.endsWith('/photos/santos-analista.webp'));assert(!portrait.dataset.teamLogo);
+  img.dispatchEvent(new u.w.Event('error'));assert(img.src.endsWith('/escudo.webp'));assert.equal(img.dataset.cffLogoFallback,'done');
+  img.dispatchEvent(new u.w.Event('error'));assert(img.src.endsWith('/escudo.webp'));assert.equal(u.calls.filter(x=>x.includes('/careers/market')).length,1);
+ }finally{u.close();}
 });

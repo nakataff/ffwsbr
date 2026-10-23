@@ -3,16 +3,12 @@
   'use strict';
   if(window.CFFMercadoPage)return;
   const root=document.getElementById('mercado');if(!root)return;
-  const VERSION='20261023-market-page-v1';
+  const VERSION='20261023-market-logos-v2';
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z\d]/gi,'').toUpperCase();
   const slug=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z\d]+/g,'-').replace(/^-|-$/g,'');
-  let logos={},aliases={},routes={};
+  let routes={};
   const originalLogo=window.resolveEscudo;
-  window.resolveEscudo=(explicit,name)=>{
-    if(explicit?.trim())return explicit.trim();
-    const key=norm(name),canonical=Object.entries(aliases).find(([alias])=>norm(alias)===key)?.[1]||name;
-    return Object.entries(logos).find(([name])=>norm(name)===norm(canonical))?.[1]||originalLogo?.(explicit,name)||'escudo.webp';
-  };
+  window.resolveEscudo=(explicit,name)=>window.cffResolveTeamLogo?.(name,explicit||'')||originalLogo?.(explicit,name)||'escudo.webp';
   function enrich(){
     root.querySelectorAll('.mercado-card[data-market-index]').forEach(card=>{
       const row=mercadoData[Number(card.dataset.marketIndex)];if(!row)return;
@@ -25,6 +21,14 @@
         else if(row.personId&&names.length===1)url='/carreira.html?id='+encodeURIComponent(row.personId);
         if(!url)return;
         const link=document.createElement('a');link.className='mercado-player-name-link';link.href=url;link.textContent=name;link.title='Ver perfil de '+name;node.replaceWith(link);
+      });
+      // Only club crests use the shared fallback; person photos remain independent.
+      card.querySelectorAll('.mercado-club').forEach(club=>{
+        const name=club.querySelector('.mercado-club-name')?.textContent.trim(),img=club.querySelector('img');
+        if(!name||!img||['SEMCLUBE','SEMEQUIPE','FA','FREEAGENT'].includes(norm(name)))return;
+        img.dataset.teamLogo=name;
+        // A legacy inline handler would overwrite the shared retry with escudo.webp.
+        img.onerror=null;img.removeAttribute('onerror');
       });
       card.querySelectorAll('div.mercado-club').forEach(club=>{
         const name=club.querySelector('.mercado-club-name')?.textContent.trim();
@@ -53,8 +57,7 @@
   load();
   // Small local indices only. Do not import competitive data or the career catalogue.
   const read=path=>fetch(path+'?v='+VERSION,{cache:'default'}).then(r=>{if(!r.ok)throw Error();return r.json();});
-  Promise.allSettled([read('/team-data/logo-map.json'),read('/player-data/routes.json')]).then(([teams,players])=>{
-    if(teams.status==='fulfilled'){logos=teams.value.logos||{};aliases=teams.value.aliases||{};}
+  Promise.allSettled([window.cffLoadTeamLogoMap?.(),read('/player-data/routes.json')]).then(([,players])=>{
     if(players.status==='fulfilled')routes=players.value.routes||{};
     if(typeof mercadoHasLoaded!=='undefined'&&mercadoHasLoaded)window.renderMercado(true);
   });

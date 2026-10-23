@@ -175,7 +175,11 @@ resultados, rankings ou elencos.
 - `js/mercado-page.js` reaproveita `charts-market.min.js` e
   `mercado-status-performance-hotfix.min.js`, nesta ordem, sem carregar Chart.js,
   dados competitivos ou o catálogo de carreiras. Os índices locais de logos e
-  rotas de jogadores são pequenos; perfis e equipes usam links normais.
+  rotas de jogadores são pequenos; perfis e equipes usam links normais. Escudos
+  usam `js/team-logo-resolver.min.js`, inclusive os aliases de Team Apex Gaming.
+  Escudo genérico não substitui uma logo conhecida; falha de URL salva tenta a
+  imagem do mapa estático antes do placeholder. Imagens de pessoas não recebem
+  `data-team-logo`, evitando confundir Santos (analista) com o clube de futebol.
 - A fonte continua `/careers/market?limit=100`, com o mesmo cache local de dois
   minutos, cache público existente, snapshot offline e continuação só por clique.
   Migrar de HTML não cria tabelas nem novas consultas por item. Não há polling da lista.
