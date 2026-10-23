@@ -35,10 +35,11 @@ const lookup=route=>pages.find(p=>p.route===route);
 const read=()=>{try{const a=JSON.parse(localStorage.getItem(KEY));return defaults.map((d,i)=>({route:lookup(a?.[i]?.route)?a[i].route:d.route,icon:iconPaths[a?.[i]?.icon]?a[i].icon:d.icon}));}catch{return defaults.map(d=>({...d}));}};
 let state=read(),sheet=null;
 const svg=key=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(iconPaths[key]||iconPaths.home)+'</svg>';
-const href=route=>route.startsWith('/')?route:window.CFF_SEASON_ROUTES?.pathForPage(route)||'/index.html#'+route;
+const href=route=>route==='mercado'?'/mercado.html':route.startsWith('/')?route:window.CFF_SEASON_ROUTES?.pathForPage(route)||'/index.html#'+route;
 const pageNow=()=>window.CFF_SEASON_ROUTES?.pageFromLocation?.()||document.querySelector('.page.active')?.id||location.hash.slice(1)||'home';
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}}
 function selected(route,page){
+ if(route==='mercado')return location.pathname==='/mercado.html';
  if(route.startsWith('/')){const u=new URL(route,location.origin);return u.pathname===location.pathname&&(!u.search||u.search===location.search);}
  return (route==='home'?page==='home'&&/^\/(?:index\.html)?$/.test(location.pathname):route===page)||(route==='ffws-global-2026-formato'&&String(page).startsWith('ffws-global-2026-'))||
  (route==='registro-detalhado'&&/(?:stats|mvp|registro|comparar|notas)/.test(page));

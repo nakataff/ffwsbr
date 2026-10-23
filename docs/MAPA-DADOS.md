@@ -165,6 +165,34 @@ resultados, rankings ou elencos.
 
 ## Rotas e carregamento
 
+### Mercado da Bala: primeiro HTML separado
+
+- `mercado.html` contém a página completa, fora do index, com o cabeçalho público
+  existente, filtros acessíveis, lista e paginação. Não é um redirecionamento para
+  `index.html`; o index conserva somente o resumo de seis movimentações da home.
+- `css/mercado.css` contém os estilos do Mercado extraídos do bundle legado e a
+  adaptação do contêiner independente; não baixa CSS de competições.
+- `js/mercado-page.js` reaproveita `charts-market.min.js` e
+  `mercado-status-performance-hotfix.min.js`, nesta ordem, sem carregar Chart.js,
+  dados competitivos ou o catálogo de carreiras. Os índices locais de logos e
+  rotas de jogadores são pequenos; perfis e equipes usam links normais.
+- A fonte continua `/careers/market?limit=100`, com o mesmo cache local de dois
+  minutos, cache público existente, snapshot offline e continuação só por clique.
+  Migrar de HTML não cria tabelas nem novas consultas por item. Não há polling da lista.
+- `js/mercado-votes.mjs` reutiliza os votos existentes e limita sua assinatura a
+  uma por página. Não migra, zera nem copia votos. Cabeçalho/conta continuam os
+  módulos públicos compartilhados já usados nas páginas independentes.
+- `js/root-page-redirects.js`, carregado cedo no index, preserva `/#mercado` e
+  `/index.html?time=btr#mercado` encaminhando para `/mercado.html`, sem parâmetros
+  da equipe anterior. `fastNavigate('mercado')` também abre o HTML diretamente.
+- `js/shared-navigation.js` e `js/mobile-dock.js` conservam a chave `mercado` dos
+  atalhos já salvos, mas usam `/mercado.html` e marcam a página ativa corretamente.
+  O item da busca em `search-index-lite.json` também aponta para o HTML novo.
+- Regressões e CI: `test/mercado-page.test.cjs`, `test/career-market-public.test.cjs`
+  e `.github/workflows/test-mercado-page.yml`. As outras páginas continuam no
+  modelo anterior; migrá-las separadamente, sem duplicar suas bases de dados.
+
+
 - `ffws-br-s2/inicio/index.html`: entrada para abrir ou atualizar o link direto do Início; redireciona ao shell preservando o recorte.
 - `index.html`: contêineres das páginas e entrada dos estilos/scripts.
 - `js/season-routes.js`: relação entre URL amigável e ID da página.

@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <base href="/">
+<script src="/js/root-page-redirects.js?v=20261023-market-page-v1"></script>
 <script defer src="/js/season-routes.js?v=20261023-global-team-pages-v1"></script>
 <script>
 (function () {
@@ -813,7 +814,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                     <div class="home-mercado-empty">Carregando transferências...</div>
                 </div>
             </div>
-            <button onclick="navigate('mercado')" class="home-widget-link-btn">Ver Mercado Completo →</button>
+            <a href="/mercado.html" class="home-widget-link-btn">Ver Mercado Completo →</a>
         </div>
     </div>
 
@@ -1080,46 +1081,6 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </div>
 
 <!-- PAGE: MERCADO DA BOLA -->
-<div id="mercado" class="page">
-    <div class="mercado-header">
-        <h1 class="mercado-title">Mercado da Bala</h1>
-        <p class="mercado-subtitle">Transferências · Negociações · Rumores · Renovações</p>
-    </div>
-
-    <div class="mercado-filters" id="mercado-filters">
-        <div class="mercado-filter-chip active" data-filter="all" onclick="filterMercado(this, 'all')">📋 Todos</div>
-        <div class="mercado-filter-chip" data-filter="rumor" onclick="filterMercado(this, 'rumor')">
-            <img decoding="async" loading="lazy" src="rumor.webp" onerror="this.style.display='none'"> Rumor
-        </div>
-        <div class="mercado-filter-chip" data-filter="negociando" onclick="filterMercado(this, 'negociando')">
-            <img decoding="async" loading="lazy" src="negociando.webp" onerror="this.style.display='none'"> Negociando
-        </div>
-        <div class="mercado-filter-chip" data-filter="fechado" onclick="filterMercado(this, 'fechado')">
-            <img decoding="async" loading="lazy" src="fechado.webp" onerror="this.style.display='none'"> Fechado
-        </div>
-        <div class="mercado-filter-chip" data-filter="falta-anunciar" onclick="filterMercado(this, 'falta-anunciar')">
-            <img decoding="async" loading="lazy" src="falta-anunciar.webp" onerror="this.style.display='none'"> Falta anunciar
-        </div>
-        <div class="mercado-filter-chip" data-filter="contrato-renovado" onclick="filterMercado(this, 'contrato-renovado')">
-            <img decoding="async" loading="lazy" src="contrato-renovado.webp" onerror="this.style.display='none'"> Contrato renovado
-        </div>
-        <div class="mercado-filter-chip" data-filter="melou" onclick="filterMercado(this, 'melou')">
-            <img decoding="async" loading="lazy" src="melou.webp" onerror="this.style.display='none'"> Melou
-        </div>
-    </div>
-
-    <div class="filters" style="justify-content: center; margin-bottom: 25px;">
-        <label style="color: var(--text-muted); font-weight: bold;">Envolvendo a Equipe:</label>
-        <select id="mercado-team-filter" onchange="renderMercado()" style="max-width: 300px; padding: 10px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none;">
-            <option value="all">Todas as Equipes</option>
-        </select>
-    </div>
-
-    <div id="mercado-list" class="mercado-list">
-        <div class="mercado-empty">Carregando negociações...</div>
-    </div>
-</div>
-
 <div id="selecao-da-semana" class="page" data-team-date="2026-03-21">
         <div class="season-selection-hero">
             <div class="season-selection-kicker">WB 2026 S1</div>
@@ -2577,8 +2538,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20261017-person-identities-v1"></script>
-<script defer src="/js/shared-navigation.js?v=20261020-annual-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261023-global-team-pages-v1"></script>
+<script defer src="/js/shared-navigation.js?v=20261023-market-page-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261023-market-page-v1"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>

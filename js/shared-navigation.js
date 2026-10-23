@@ -20,14 +20,14 @@
   const mainLinks = [['Minha conta / Entrar','/conta.html'],['Início','home'],['Mercado da bala','mercado'],['Tier Constructor','/tier-constructor.html'],['Camp ao vivo','/camp-ao-vivo.html'],['WB Manager Beta','/manager.html']];
   const historyLinks = [['Hall da Fama','hall-da-fama'],['Registro detalhado','registro-detalhado'],['Ranking anual','/ranking-anual.html'],['Outros torneios','outros-torneios'],['Equipes históricas','/equipes-historicas.html'],['Outras equipes','outras-equipes']];
   const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const href = route => route.startsWith('/') ? route : (window.CFF_SEASON_ROUTES?.pathForPage(route) || '/index.html#' + route);
+  const href = route => route==='mercado'?'/mercado.html':route.startsWith('/') ? route : (window.CFF_SEASON_ROUTES?.pathForPage(route) || '/index.html#' + route);
   const link = ([label,route]) => `<a class="cff-menu-link" href="${esc(href(route))}" data-cff-route="${esc(route)}" ${route==='/conta.html'?'data-account-entry':''}>${esc(label)}</a>`;
   const details = (key,title,body,extra='') => `<details class="cff-menu-group ${extra}" data-cff-group="${key}"><summary>${esc(title)}<span aria-hidden="true">⌄</span></summary><div class="cff-menu-items">${body}</div></details>`;
   const featured = `<a class="cff-menu-link cff-menu-featured" data-cff-featured data-cff-route="ffws-global-2026-inicio" href="${esc(href('ffws-global-2026-inicio'))}"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="30" height="26" alt=""><span><small>EM DESTAQUE</small>FFWS GLOBAL FINALS 2026</span></a>`;
   const menu = '<div class="cff-menu-label">Principal</div>' + mainLinks.map(link).join('') + featured + groups.map(([key,title,events]) => details(key,title,events.map(([id,name,entries]) => details(id,name,entries.map(link).join(''),'cff-menu-tournament')).join(''))).join('') + details('historico','Histórico',historyLinks.map(link).join('')) + details('contato','Contato',link(['Sobre','sobre'])) + '<div class="cff-menu-label">Sistema</div><button class="cff-menu-refresh" type="button">Atualizar dados</button>';
   const close = () => { window.closeSidebar?.(); document.getElementById('cff-public-menu-close')?.click(); };
   function go(event, route) {
-    if(event.button!==0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || route.startsWith('/')) return;
+    if(event.button!==0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || route.startsWith('/') || route==='mercado') return;
     if(document.getElementById('main-content') && typeof window.navigate === 'function') {event.preventDefault(); close(); window.navigate(route);}
   }
   function mount(root) {
@@ -75,7 +75,7 @@
     document.body.append(nav);
     if(!document.querySelector('script[data-cff-mobile-dock]')){
       const script=document.createElement('script');
-      script.src='/js/mobile-dock.js?v=20261019-wb-overview-v1';
+      script.src='/js/mobile-dock.js?v=20261023-market-page-v1';
       script.dataset.cffMobileDock='1';
       document.head.append(script);
     }
@@ -84,7 +84,7 @@
   function setActive(page) {
     document.querySelectorAll('.cff-unified-menu').forEach(root => {
       root.querySelectorAll('[data-cff-route]').forEach(a => {
-        const route=a.dataset.cffRoute, active=route.startsWith('/') ? location.pathname===route : document.getElementById('main-content') && route===page;
+        const route=a.dataset.cffRoute, active=route==='mercado'?location.pathname==='/mercado.html':route.startsWith('/') ? location.pathname===route : document.getElementById('main-content') && route===page;
         a.classList.toggle('active',Boolean(active)); if(active){a.setAttribute('aria-current','page'); for(let parent=a.parentElement; parent && parent!==root; parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;}else a.removeAttribute('aria-current');
         if(a.hasAttribute('data-cff-featured'))a.classList.toggle('active',Boolean(document.getElementById('main-content') && page.startsWith('ffws-global-2026-')));
       });

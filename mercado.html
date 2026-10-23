@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR"><head><base href="/"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050810"><title>Mercado da Bala | Central Free Fire</title><meta name="description" content="Transferências, negociações, rumores e renovações do cenário competitivo de Free Fire."><link rel="canonical" href="https://centralfreefire.com.br/mercado.html"><link rel="icon" type="image/webp" href="central free fire.webp"><link rel="stylesheet" href="/css/public-shell.css?v=20260901-nav-unified-v11"><link rel="stylesheet" href="/css/shared-navigation.css?v=20261020-mobile-custom-v4"><link rel="stylesheet" href="/css/mercado.css?v=20261023-market-page-v1"><script defer src="/js/config.min.js?v=20261020-chat-layout-v1"></script></head><body>
+<a class="mercado-skip" href="#mercado">Pular para o conteúdo</a>
+<header class="cff-public-topbar">
+  <div class="cff-public-left">
+    <button class="cff-public-menu-button" id="cff-public-menu-open" type="button" aria-label="Abrir menu">☰</button>
+    <div class="cff-public-teams">
+      <button class="cff-public-teams-button" id="cff-public-teams-toggle" type="button" aria-expanded="false">EQUIPES ▼</button>
+      <div class="cff-public-teams-dropdown" id="cff-public-teams-dropdown">
+        <div class="cff-public-teams-grid" id="cff-public-teams-grid"></div>
+      </div>
+    </div>
+  </div>
+  <a class="cff-public-brand" href="index.html" aria-label="Ir para o início"><img src="central free fire.webp" alt="Central Free Fire"><span>CENTRAL FREE FIRE</span></a>
+  <div class="cff-public-search"><div class="cff-public-search-row"><input id="cff-public-search-input" type="search" placeholder="BUSCAR JOGADOR, EQUIPE OU PÁGINA..." autocomplete="off" aria-label="Buscar no site"><button id="cff-public-search-submit" type="button" aria-label="Buscar">⌕</button></div><div id="cff-public-search-results" class="cff-public-search-results"></div></div>
+</header>
+<div class="cff-public-overlay" id="cff-public-overlay"></div><aside class="cff-public-sidebar" id="cff-public-sidebar" aria-label="Menu lateral"><div class="cff-public-sidebar-head"><span>MENU</span><button class="cff-public-sidebar-close" id="cff-public-menu-close" type="button" aria-label="Fechar menu">✕</button></div><nav class="cff-public-sidebar-nav" id="cff-public-sidebar-nav"></nav></aside>
+<main id="mercado" class="mercado-page">
+    <div class="mercado-header">
+        <h1 class="mercado-title">Mercado da Bala</h1>
+        <p class="mercado-subtitle">Transferências · Negociações · Rumores · Renovações</p>
+    </div>
+
+    <div class="mercado-filters" id="mercado-filters">
+        <button type="button" class="mercado-filter-chip active" data-filter="all" aria-pressed="true" onclick="filterMercado(this, 'all')">📋 Todos</button>
+        <button type="button" class="mercado-filter-chip" data-filter="rumor" aria-pressed="false" onclick="filterMercado(this, 'rumor')">
+            <img alt="" decoding="async" loading="lazy" src="rumor.webp" onerror="this.style.display='none'"> Rumor
+        </button>
+        <button type="button" class="mercado-filter-chip" data-filter="negociando" aria-pressed="false" onclick="filterMercado(this, 'negociando')">
+            <img alt="" decoding="async" loading="lazy" src="negociando.webp" onerror="this.style.display='none'"> Negociando
+        </button>
+        <button type="button" class="mercado-filter-chip" data-filter="fechado" aria-pressed="false" onclick="filterMercado(this, 'fechado')">
+            <img alt="" decoding="async" loading="lazy" src="fechado.webp" onerror="this.style.display='none'"> Fechado
+        </button>
+        <button type="button" class="mercado-filter-chip" data-filter="falta-anunciar" aria-pressed="false" onclick="filterMercado(this, 'falta-anunciar')">
+            <img alt="" decoding="async" loading="lazy" src="falta-anunciar.webp" onerror="this.style.display='none'"> Falta anunciar
+        </button>
+        <button type="button" class="mercado-filter-chip" data-filter="contrato-renovado" aria-pressed="false" onclick="filterMercado(this, 'contrato-renovado')">
+            <img alt="" decoding="async" loading="lazy" src="contrato-renovado.webp" onerror="this.style.display='none'"> Contrato renovado
+        </button>
+        <button type="button" class="mercado-filter-chip" data-filter="melou" aria-pressed="false" onclick="filterMercado(this, 'melou')">
+            <img alt="" decoding="async" loading="lazy" src="melou.webp" onerror="this.style.display='none'"> Melou
+        </button>
+    </div>
+
+    <div class="filters" style="justify-content: center; margin-bottom: 25px;">
+        <label for="mercado-team-filter" style="color: var(--text-muted); font-weight: bold;">Envolvendo a Equipe:</label>
+        <select id="mercado-team-filter" onchange="renderMercado()" style="max-width: 300px; padding: 10px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border); background: #0d1220; color: white; outline: none;">
+            <option value="all">Todas as Equipes</option>
+        </select>
+    </div>
+
+    <div id="mercado-list" class="mercado-list">
+        <div class="mercado-empty" role="status">Carregando negociações...</div>
+    </div>
+<p class="mercado-page-back"><a href="/">← Voltar ao início</a></p>
+</main>
+<noscript><p class="mercado-empty">Ative o JavaScript para carregar as movimentações e usar os filtros.</p></noscript>
+<script defer src="/js/shared-navigation.js?v=20261023-market-page-v1"></script>
+<script defer src="/js/public-shell.min.js?v=20261011-header-actions-v2"></script>
+<script defer src="/js/player-photo-resolver.min.js?v=20261017-person-identities-v1"></script>
+<script defer src="/js/charts-market.min.js?v=20261017-competitions-v1"></script>
+<script defer src="/js/mercado-status-performance-hotfix.min.js?v=20261017-market-v1"></script>
+<script defer src="/js/mercado-page.js?v=20261023-market-page-v1"></script>
+<script type="module" src="/js/mercado-votes.mjs?v=20261023-market-page-v1"></script>
+<script type="module" src="/js/public-account.js?v=20261023-inbox-alerts-v1"></script>
+</body></html>
