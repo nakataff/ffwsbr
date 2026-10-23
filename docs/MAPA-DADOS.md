@@ -89,10 +89,12 @@ etapas. Um jogador que trocou de equipe não deve ganhar dados da outra passagem
 
 ### Equipes do Mundial 2026
 
-Página `/ffws-global-2026/equipes`: cards com busca/filtro por grupo e janela de
-elenco, comissão, estatísticas por fase e agenda. `equipes.js` carrega apenas
+Lista `/ffws-global-2026/equipes`: cards com busca/filtro por grupo. Cada time
+abre uma página própria em `/ffws-global-2026/equipe?time=<id>`, com elenco,
+comissão, estatísticas por fase, agenda e demais times do grupo. `equipes.js` carrega apenas
 `equipes-resumo.json` (~28 KB estático, gerado pelo mesmo build do Início), uma vez.
-Os links `?time=<id>` abrem o time diretamente; inclusive os cards da home. Não
+Os cards da home, do Início e da lista apontam para essas páginas. Links antigos
+`/equipes?time=<id>` continuam compatíveis por redirecionamento. Não
 carrega o cadastro inteiro, resultados detalhados, Firebase ou Durable Objects.
 Fonte única de pessoas: `ffws-global-2026/players.json`; não inferir elencos de
 outros torneios nem misturar jogadores homônimos de equipes diferentes.

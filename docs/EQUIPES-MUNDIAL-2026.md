@@ -1,7 +1,9 @@
 # Equipes do Mundial 2026
 
-Página: `/ffws-global-2026/equipes`. Um link direto abre a janela da equipe:
-`/ffws-global-2026/equipes?time=btr`. Os cards da home também usam esses links.
+Lista: `/ffws-global-2026/equipes`. Cada equipe tem uma página própria, por exemplo:
+`/ffws-global-2026/equipe?time=btr`. Os cards da home e do Início usam esses links.
+A rota `equipe/index.html` preserva o ID ao atualizar a página; links antigos em
+`/equipes?time=btr` também redirecionam para a página completa. Não há modal.
 
 ## Atualizar sem duplicar o cadastro
 
@@ -38,15 +40,16 @@ função de jogo, escalação titular ou estatística foi inferido.
 `equipes.js` baixa somente `equipes-resumo.json` (aproximadamente 28 KB sem compressão)
 na primeira abertura. Esse arquivo inclui os 24 times, elenco, seis rodadas por equipe
 na Fase 1 e estatísticas resumidas. Buscar, filtrar, abrir comissão, trocar etapa e
-compartilhar reutilizam a memória. Não usa Firebase, Durable Objects, polling nem
+compartilhar reutilizam a memória da página. O mesmo template serve aos 24 times. Não usa Firebase, Durable Objects, polling nem
 os arquivos detalhados do torneio. Logos reaproveitam os arquivos locais existentes;
 o resolvedor compartilhado do site continua podendo aplicar o cache central já usado.
 
 Sem dados mostra “—”; desempenho real com zero mostra `0`. Estatísticas são exclusivas
 do Mundial 2026, agregadas por nome **e equipe**, sem puxar o histórico de homônimos.
 A Fase 2 pode mostrar totais descritivos de abates/quedas, mas não uma classificação
-acumulada: seus pontos são zerados a cada dia. A janela usa `dialog` nativo, fecha
-com Escape/toque fora e devolve o foco ao card. Só abre ao clicar ou usar link direto.
+acumulada: seus pontos são zerados a cada dia. A página completa usa o shell e o menu do Mundial: cabeçalho, desempenho, elenco/
+comissão, agenda e demais participantes do grupo. Links nativos permitem abrir em
+nova aba e voltar pelo navegador. O PC usa colunas; o celular empilha as seções.
 
 Regressões: `test/global-teams.test.cjs`, `test/global-overview.test.cjs` e
 `test/global-format-2026.test.cjs`, incluídas na CI do Mundial.

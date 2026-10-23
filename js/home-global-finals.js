@@ -89,7 +89,7 @@
       if(!team)return '';
       const short=compact[id]||team.abbreviation||team.name;
       const image=urlImage(team.logo);
-      return '<a class="home-global-match-team" href="/ffws-global-2026/equipes?time='+encodeURIComponent(id)+'" aria-label="Ver elenco e estatísticas de '+esc(team.name)+'" title="'+esc(team.name)+'">'+(image?'<img src="'+esc(image)+'" loading="lazy" decoding="async" alt="" onerror="this.hidden=true">':'')+'<strong>'+esc(short)+'</strong></a>';
+      return '<a class="home-global-match-team" href="/ffws-global-2026/equipe?time='+encodeURIComponent(id)+'" aria-label="Ver elenco e estatísticas de '+esc(team.name)+'" title="'+esc(team.name)+'">'+(image?'<img src="'+esc(image)+'" loading="lazy" decoding="async" alt="" onerror="this.hidden=true">':'')+'<strong>'+esc(short)+'</strong></a>';
     }).join('')+'</div></div>';
   }
 

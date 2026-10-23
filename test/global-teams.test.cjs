@@ -4,12 +4,12 @@ const {JSDOM}=require('jsdom'),{build}=require('../scripts/build-global-overview
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),base='ffws-global-2026/';
 const sources=()=>Object.fromEntries(['stages','dates','teams','groups','players'].map(k=>[k,read(base+k+'.json')]));
 const settle=async()=>{for(let i=0;i<5;i++)await new Promise(r=>setImmediate(r));};
-async function ui({search='',fail=false,snapshot}={}){
- const dom=new JSDOM('<div class="page active" id="ffws-global-2026-equipes"><div id="ffws-global-2026-equipes-content"></div></div>',{url:'https://centralfreefire.com.br/ffws-global-2026/equipes'+search,runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,calls=[];
- w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
+async function ui({search='',page='equipes',fail=false,snapshot}={}){
+ const dom=new JSDOM(['equipes','equipe'].map(p=>`<div class="page ${p===page?'active':''}" id="ffws-global-2026-${p}"><div id="ffws-global-2026-${p}-content"></div></div>`).join(''),{url:'https://centralfreefire.com.br/ffws-global-2026/'+page+search,runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,calls=[];
+ w.navigate=id=>{w.document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));w.history.replaceState(null,'','/ffws-global-2026/'+id.replace('ffws-global-2026-','')+w.location.search);w.CFFGlobalTeams?.boot();};
  w.fetch=async url=>{calls.push(url);return {ok:!fail||calls.length>1,json:async()=>snapshot||read(base+'equipes-resumo.json')};};
  w.eval(fs.readFileSync(base+'equipes.js','utf8'));await settle();
- return {w,calls,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await settle();},change:async(s,v,event='change')=>{const e=w.document.querySelector(s);e.value=v;e.dispatchEvent(new w.Event(event,{bubbles:true}));await settle();},close:()=>w.close()};
+ return {w,calls,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await settle();},change:async(s,v,event='change')=>{const e=w.document.querySelector(s);e.value=v;e.dispatchEvent(new w.Event(event,{bubbles:true}));await settle();},visit:async id=>{w.history.replaceState(null,'','/ffws-global-2026/equipe?time='+id);w.navigate('ffws-global-2026-equipe');await settle();},close:()=>w.close()};
 }
 test('supplied rosters preserve eight teams, 40 players and pending LYON/LOUD without guessed coaches',()=>{
  const s=read(base+'equipes-resumo.json');assert.equal(s.teams.length,24);assert.equal(s.teams.flatMap(t=>t.players).length,40);assert.equal(s.teams.filter(t=>t.players.length).length,8);
@@ -24,25 +24,35 @@ test('snapshot stats isolate name AND team, include real zero, and preserve inde
  const o=build(i),t=o['equipes-resumo.json'].teams.find(t=>t.id==='btr');
  assert.equal(t.players[0].statsByStage.classificatoria.kills,0);assert.equal(t.players[0].statsByStage.geral.kills,7);assert.equal(t.players[0].statsByStage.geral.matches,3);assert.equal(t.statsByStage.segundaFase.kills,7);assert.equal(t.statsByStage.segundaFase.matches,2);assert.deepEqual(o['inicio-resumo.json'].tables.segundaFase.rows,[]);
 });
-test('one static fetch supports filters, searchable players, accessible native modal and direct deep links',async()=>{
+test('directory uses native team-page links, searchable players and group filters without extra reads',async()=>{
  const u=await ui();try{
   assert.equal(u.all('[data-gteam]').length,24);assert.equal(u.calls.length,1);assert(u.$('[data-gteams-count]').textContent.includes('24 de 24'));
   await u.change('[data-gteams-group]','B');assert.equal(u.all('[data-gteam]').length,6);
   await u.change('[data-gteams-group]','');await u.change('[data-gteams-search]','Fellow','input');assert.equal(u.all('[data-gteam]').length,1);
-  u.$('[data-gteam="btr"]').focus();await u.click('[data-gteam="btr"]');assert(u.$('dialog').open);assert.equal(u.all('.gteam-roster>div').length,5);assert(u.$('dialog').textContent.includes('Fellow'));assert.equal(new URL(u.w.location.href).searchParams.get('time'),'btr');
-  await u.click('[data-gteam-section="staff"]');assert(u.$('dialog').textContent.includes('Comissão técnica a confirmar'));assert.equal(u.$('[data-gteam-section="staff"]').getAttribute('aria-pressed'),'true');
-  await u.change('[data-gteam-stage]','segundaFase');assert(u.$('dialog').textContent.includes('independente a cada dia'));
-  u.$('dialog').dispatchEvent(new u.w.Event('cancel',{cancelable:true}));assert(!u.$('dialog').open);assert.equal(new URL(u.w.location.href).searchParams.get('time'),null);assert.equal(u.w.document.activeElement.dataset.gteam,'btr');
+  const card=u.$('[data-gteam="btr"]');assert.equal(card.tagName,'A');assert.equal(card.getAttribute('href'),'/ffws-global-2026/equipe?time=btr');
+  await u.visit('btr');assert(u.$('.gteam-profile'));assert(!u.$('dialog'));assert.equal(u.all('.gteam-roster>div').length,5);assert.equal(u.$('.gteam-profile h1').textContent,'Bigetron by Vitality');assert.equal(u.all('.gteam-profile-schedule>div').length,6);assert.equal(u.all('.gteam-profile-peers a').length,5);assert.equal(u.calls.length,1);
+  await u.click('[data-gteam-section="staff"]');assert(u.$('.gteam-profile').textContent.includes('Comissão técnica a confirmar'));assert.equal(u.$('[data-gteam-section="staff"]').getAttribute('aria-pressed'),'true');
+  await u.change('[data-gteam-stage]','segundaFase');assert(u.$('.gteam-profile').textContent.includes('independente a cada dia'));assert.equal(u.calls.length,1);
   await u.w.CFFGlobalTeams.boot();assert.equal(u.calls.length,1);
+  u.w.navigate('ffws-global-2026-equipes');await settle();assert(u.$('.page.active .gteams-grid'));assert.equal(u.calls.length,1);
  }finally{u.close();}
- const direct=await ui({search:'?time=loud'});try{assert(direct.$('dialog').open);assert(direct.$('dialog').textContent.includes('Elenco ainda não confirmado'));assert(direct.$('dialog').textContent.includes('—'));}finally{direct.close();}
 });
-test('share copies exact public link, HTML is escaped, and leaving the page closes the modal',async()=>{
+test('direct team page has its own heading, title, navigation, placeholders and no floating window',async()=>{
+ const u=await ui({page:'equipe',search:'?time=loud'});try{assert(u.$('.gteam-profile'));assert.equal(u.$('h1').textContent,'LOUD');assert(u.w.document.title.startsWith('LOUD · Mundial 2026'));assert(u.$('.gteam-profile').textContent.includes('Elenco ainda não confirmado'));assert(u.$('.gteam-profile').textContent.includes('—'));assert(!u.$('dialog'));assert.equal(u.all('[data-gteam]').length,0);assert(u.$('.gteam-breadcrumb a[href="/ffws-global-2026/equipes"]'));assert.equal(u.calls.length,1);}finally{u.close();}
+ const missing=await ui({page:'equipe',search:'?time=unknown'});try{assert(missing.$('h1').textContent.includes('Equipe não encontrada'));assert(!missing.$('.gteam-profile'));}finally{missing.close();}
+
+});
+test('share copies the dedicated page, HTML is escaped, and filters retain keyboard focus',async()=>{
  const snapshot=read(base+'equipes-resumo.json');snapshot.teams.find(t=>t.id==='btr').players[0].name='<img src=x onerror=alert(1)>';
- const u=await ui({search:'?time=btr',snapshot});try{assert(!u.$('dialog img[src="x"]'));assert(u.$('dialog').textContent.includes('<img src=x'));let copied='';Object.defineProperty(u.w.navigator,'clipboard',{value:{writeText:async x=>copied=x}});await u.click('[data-gteam-share]');assert.equal(copied,'https://centralfreefire.com.br/ffws-global-2026/equipes?time=btr');assert(u.$('[data-gteam-share-status]').textContent.includes('copiado'));u.$('#ffws-global-2026-equipes').classList.remove('active');await settle();assert(!u.$('dialog').open);assert.equal(u.calls.length,1);}finally{u.close();}
+ const u=await ui({page:'equipe',search:'?time=btr',snapshot});try{assert(!u.$('img[src="x"]'));assert(u.$('.gteam-profile').textContent.includes('<img src=x'));let copied='';Object.defineProperty(u.w.navigator,'clipboard',{value:{writeText:async x=>copied=x}});await u.click('[data-gteam-share]');assert.equal(copied,'https://centralfreefire.com.br/ffws-global-2026/equipe?time=btr');assert(u.$('[data-gteam-share-status]').textContent.includes('copiado'));await u.click('[data-gteam-section="staff"]');assert.equal(u.w.document.activeElement.dataset.gteamSection,'staff');await u.change('[data-gteam-stage]','final');assert(u.w.document.activeElement.matches('[data-gteam-stage]'));assert.equal(u.calls.length,1);}finally{u.close();}
 });
-test('failed snapshot offers retry and full Mundial module never overwrites teams or starts its loaders',async()=>{
- const u=await ui({fail:true});try{assert(u.$('[data-gteams-retry]'));await u.click('[data-gteams-retry]');assert.equal(u.all('[data-gteam]').length,24);u.w.FFWS_GLOBAL_2026_CONFIG={};u.w.eval(fs.readFileSync(base+'global.js','utf8'));await settle();assert.equal(u.calls.length,2);assert(u.$('.gteams-grid'));}finally{u.close();}
- const shell=fs.readFileSync('js/site-shell-fast.min.js','utf8');assert(shell.indexOf("page==='ffws-global-2026-equipes'")<shell.indexOf("page.startsWith('ffws-global-2026-')"));
- const html=fs.readFileSync('index.html','utf8'),links=[...html.matchAll(/<a class="home-global-team(?: [^"]*)?"[^>]*>/g)];assert.equal(links.length,24);for(const [tag] of links){assert(tag.includes('equipes?time='));assert(!tag.includes('onclick='));}
+test('failed snapshot retries and the full Mundial module does not fetch or overwrite these pages',async()=>{
+ const u=await ui({fail:true});try{assert(u.$('[data-gteams-retry]'));await u.click('[data-gteams-retry]');assert.equal(u.all('[data-gteam]').length,24);u.w.FFWS_GLOBAL_2026_CONFIG={};u.w.eval(fs.readFileSync(base+'global.js','utf8'));await settle();assert.equal(u.calls.length,2);assert(u.$('.gteams-grid'));await u.visit('btr');assert(u.$('.gteam-profile'));assert.equal(u.calls.length,2);}finally{u.close();}
+ const shell=fs.readFileSync('js/site-shell-fast.min.js','utf8');assert(shell.indexOf("page==='ffws-global-2026-equipe'")<shell.indexOf("page.startsWith('ffws-global-2026-')"));
+ const html=fs.readFileSync('index.html','utf8'),links=[...html.matchAll(/<a class="home-global-team(?: [^"]*)?"[^>]*>/g)];assert.equal(links.length,24);for(const [tag] of links){assert(tag.includes('equipe?time='));assert(!tag.includes('onclick='));}
+});
+test('separate route and refresh entry retain the team ID and old shared links remain compatible',()=>{
+ const c={window:{},URLSearchParams,location:{pathname:'/ffws-global-2026/equipe/',search:'?time=btr',hash:''}};require('node:vm').runInNewContext(fs.readFileSync('js/season-routes.js','utf8'),c);assert.equal(c.window.CFF_SEASON_ROUTES.pageFromLocation(),'ffws-global-2026-equipe');assert.equal(c.window.CFF_SEASON_ROUTES.pathForPage('ffws-global-2026-equipe'),'/ffws-global-2026/equipe');
+ const entry=fs.readFileSync(base+'equipe/index.html','utf8');let url='';require('node:vm').runInNewContext(entry.match(/<script>(.*?)<\/script>/s)[1],{location:{search:'?time=btr',replace:x=>url=x}});assert.equal(url,'/index.html?time=btr#ffws-global-2026-equipe');
+ const old=fs.readFileSync(base+'equipes/index.html','utf8');require('node:vm').runInNewContext(old.match(/<script>(.*?)<\/script>/s)[1],{URLSearchParams,location:{search:'?time=btr',replace:x=>url=x}});assert.equal(url,'/index.html?time=btr#ffws-global-2026-equipe');
 });

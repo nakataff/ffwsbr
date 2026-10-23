@@ -57,7 +57,7 @@ test('homepage opens on knockout matchups from published dates and displays corr
   for(const card of d.querySelectorAll('.home-global-match-team')){
    assert.equal(card.tagName,'A');
    const url=new URL(card.href),id=url.searchParams.get('time'),team=teamData.teams.find(t=>t.id===id);
-   assert(team);assert.equal(url.pathname,'/ffws-global-2026/equipes');
+   assert(team);assert.equal(url.pathname,'/ffws-global-2026/equipe');
    assert(card.getAttribute('aria-label').includes(team.name));
    assert.equal(card.querySelector('img').getAttribute('src'),'/'+team.logo);
    assert(!card.hasAttribute('onclick'));

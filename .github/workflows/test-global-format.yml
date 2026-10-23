@@ -52,4 +52,4 @@ jobs:
       - name: Check generated overview
         run: node scripts/build-global-overview.cjs --check
       - name: Check syntax
-        run: node --check ffws-global-2026/inicio.js && node --check scripts/build-global-overview.cjs && node --check ffws-global-2026/global.js && node --check ffws-global-2026/config.js && node --check js/season-routes.js && node --check js/shared-navigation.js && node --check js/home-global-finals.js && node --check js/home-supporters.js && node --check js/admin-supporters.js && node --check js/supporters-admin.mjs && node --check js/home-support.js && node --check js/site-shell-fast.min.js
+        run: node --check ffws-global-2026/equipes.js && node --check ffws-global-2026/inicio.js && node --check scripts/build-global-overview.cjs && node --check ffws-global-2026/global.js && node --check ffws-global-2026/config.js && node --check js/season-routes.js && node --check js/shared-navigation.js && node --check js/home-global-finals.js && node --check js/home-supporters.js && node --check js/admin-supporters.js && node --check js/supporters-admin.mjs && node --check js/home-support.js && node --check js/site-shell-fast.min.js
