@@ -1,0 +1,63 @@
+name: Publish full WB 2026 S2 Hall statistics
+on:
+  pull_request:
+    paths:
+      - 'scripts/build-hall-s2.cjs'
+      - 'js/hall-fame-lite.min.js'
+      - '.github/workflows/publish-hall-s2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build-hall-s2.cjs'
+      - 'ffws-br-2026-s2/players.json'
+      - 'ffws-br-2026-s2/inicio-mvp-top10.json'
+      - 'ffws-br-2026-s2/career-summary.json'
+      - '.github/workflows/publish-hall-s2.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: publish-hall-2026-s2
+  cancel-in-progress: false
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate official finished stages and build a compact Hall snapshot
+        run: |
+          node --check scripts/build-hall-s2.cjs
+          node scripts/build-hall-s2.cjs
+          node scripts/build-hall-s2.cjs --check
+          node - <<'NODE'
+          const assert=require('node:assert/strict');
+          const r=require('./ffws-br-2026-s2/hall-player-stats.json');
+          const latest=require('./ffws-br-2026-s2/inicio-mvp-top10.json');
+          assert.equal(r.updatedAt,latest.updatedAt);
+          assert.deepEqual(r.drops,latest.drops);
+          assert(Object.values(r.players).some(p=>p.name==='Yago'&&p.kills===359&&p.matches===121));
+          assert(Object.values(r.players).some(p=>p.name==='MT7'&&p.kills===332&&p.matches===121));
+          NODE
+      - name: Commit generated compact JSON
+        id: publish
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          git add ffws-br-2026-s2/hall-player-stats.json
+          if git diff --cached --quiet; then
+            echo "No changes to publish"
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Publish complete S2 stats for Hall da Fama'
+          git push
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+      - name: Request GitHub Pages rebuild
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "/repos/${{ github.repository }}/pages/builds"
