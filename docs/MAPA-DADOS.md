@@ -501,3 +501,32 @@ metodologia independente.
 - Testes: `functions/test/community-supporters.test.cjs` (autorização, cache,
   publicação limitada, ocultação e retries idempotentes) e
   `test/community-supporters-ui.test.cjs` (home, painel e limpeza ao sair).
+
+### Diagnóstico da conexão LivePix
+
+- `functions/livepix-diagnostic.js`: teste privado `careerAdmin/supporterLivepixTest`,
+  autorizado pelo gateway de `cloudflare/camp-notifications/worker.js` antes de
+  qualquer chamada externa. Usa os Secrets `LIVEPIX_CLIENT_ID` e
+  `LIVEPIX_CLIENT_SECRET` do Worker de produção. Credenciais e tokens ficam
+  no servidor; o token é reutilizado até perto do vencimento.
+- Botão **Testar conexão** em `admin-apoiadores.html`: não roda ao abrir a página.
+  Consulta conta, primeira página de até 20 pagamentos e 20 mensagens pela API
+  oficial, e a página pública fixa da campanha `central-free-fire`. Sem leitura
+  de carteiras, nova tabela, gravação de doações, webhook ou agendamento.
+- Resultados (inclusive falhas) ficam em memória por 10 minutos na instância,
+  com deduplicação de testes simultâneos. Não recebe URL ou credenciais pelo
+  navegador e não segue redirects nas requisições externas. Respostas limitadas
+  a 180 KB; prazos de 6 segundos por chamada.
+- Só retorna diagnóstico resumido: conta conectada, contagens, permissões,
+  progresso público da campanha, presença de campos de associação e quantidade
+  de referências possivelmente correspondentes. Nunca retorna tokens, segredos,
+  comprovantes, nomes dos doadores, textos de mensagens ou registros brutos.
+- O vínculo dos apoios de vaquinha à API e as preferências de anonimato ainda
+  precisam ser validados com registros reais. **Publicação automática desativada**.
+  O mural público e o cadastro manual continuam funcionando como antes.
+- Fontes: `https://docs.livepix.gg/api`,
+  `https://api.livepix.gg/open-api.json` e
+  `https://vaquinha.livepix.gg/central-free-fire` (consulta pública em 23/10/2026).
+- Testes: `functions/test/livepix-diagnostic.test.cjs`,
+  `cloudflare/camp-notifications/test/economy-api.test.mjs` e
+  `test/community-supporters-ui.test.cjs`.

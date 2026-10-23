@@ -33,6 +33,10 @@ test('economy gateway verifies signed identities, private wallets, real account 
  const secret=JSON.stringify({project_id:'central-free-fire',client_email:'test@central-free-fire.iam.gserviceaccount.com',private_key:pair.privateKey.export({type:'pkcs8',format:'pem'})}),hub=new NotificationHub(ctx,{CFF_GOAL_SERVICE_ACCOUNT:secret,COMMUNITY_DB:rankingDb});
  const alice=jwt('alice'),bob=jwt('bob'),admin=jwt('admin','admin@centralfreefire.com.br');
  const api=async(token,body)=>{const r=await hub.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify(body)}));return {status:r.status,...await r.json()};};
+ assert.equal((await api('',{action:'careerAdmin',operation:'supporterLivepixTest'})).status,401);
+ assert.equal((await api(alice,{action:'careerAdmin',operation:'supporterLivepixTest'})).status,403);
+ const livepix=await api(admin,{action:'careerAdmin',operation:'supporterLivepixTest'});assert.equal(livepix.status,200);assert.equal(livepix.connection,'missing_secrets');assert.equal(livepix.automatic,false);
+ sqlite.exec('DELETE FROM limits');
  assert.equal((await api('',{action:'economy',operation:'state'})).status,401);
  assert.equal((await api(alice,{action:'economyAdmin',operation:'adjust',targetUid:'alice',delta:1000,reason:'Forged',nonce:crypto.randomUUID()})).status,403);
  await api(alice,{action:'economy',operation:'checkin',targetUid:'bob',points:1000});
