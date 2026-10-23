@@ -168,6 +168,15 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 
 ### Hall da Fama: equipes no ranking por edição
 
+**Ranking por ano:** a função `editionYear` de `hall-fame-lite.min.js` agrupa
+LBFFs 1–3 em 2020, 4–6 em 2021, 7–8 em 2022 e 9 em 2023; WBs usam o ano do
+nome. A LBFF 2 não tem dados cadastrados e não é inventada. O botão pequeno
+**Resumo** abre os líderes anuais por abates, independentemente dos filtros da
+tabela completa. Reutiliza os mesmos agregados e o detalhe por split ao clicar
+no líder; computa o resumo uma vez em memória, sem novas requisições. A ordem
+de desempate acompanha o ranking anual: abates, quedas, nome. Regressão em
+`test/hall-year-summary.test.cjs` cobre datas, totais, expansão e ausência de rede.
+
 `js/hall-fame-lite.min.js` usa o time de cada edição: primeiro o campo
 `team`/`equipe` de `lbffData.json` (ou `player-stats.json` para a S2 atual),
 depois o elenco estático de `player-data/edition-teams.json`. Ausência de registro

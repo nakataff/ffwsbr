@@ -289,6 +289,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .hall-summary-compare-note span{color:#41617e}
 .hall-player-summary-empty{color:var(--text-muted);padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:10px;background:rgba(0,0,0,.12)}
 .hall-year-tools{display:grid;grid-template-columns:120px 150px minmax(180px,1fr) minmax(180px,1fr) auto;gap:10px;align-items:end;margin:0 0 12px}
+.hall-year-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.hall-year-heading .hall-extra-title{margin:0}.hall-year-summary-toggle{padding:6px 10px!important;min-height:30px;font-size:.74rem;white-space:nowrap}.hall-year-summary-toggle[aria-expanded="true"]{color:var(--accent);border-color:var(--accent)}
+.hall-year-summary{margin-bottom:18px}.hall-year-summary-note{color:var(--text-muted);font-size:.76rem;margin:0 0 10px}#table-hall-year-summary{width:100%}#table-hall-year-summary .hall-year-main-row{cursor:pointer}#table-hall-year-summary .hall-year-main-row:hover,#table-hall-year-summary .is-expanded{background:rgba(0,200,255,.065)}#table-hall-year-summary .hall-year-main-row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .hall-year-field{display:grid;gap:5px;min-width:0}.hall-year-field label{color:var(--text-muted);font-size:.7rem;font-weight:900}.hall-year-field select,.hall-year-field input{width:100%;min-width:0}
 .hall-year-min-drops{display:flex;align-items:center;gap:7px;min-height:42px;color:#fff;font-size:.72rem;font-weight:900;white-space:nowrap}.hall-year-min-drops input{width:16px;height:16px;accent-color:var(--accent)}
 .hall-year-meta{margin:2px 0 10px;color:#7292af;font-size:.7rem;font-weight:850}
@@ -328,6 +330,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 #table-hall-year-ranking th:nth-child(1),#table-hall-year-ranking td:nth-child(1){width:30px!important}#table-hall-year-ranking th:nth-child(2),#table-hall-year-ranking td:nth-child(2){width:auto!important;text-align:left!important}
 #table-hall-year-ranking th:nth-child(3),#table-hall-year-ranking td:nth-child(3),#table-hall-year-ranking th:nth-child(4),#table-hall-year-ranking td:nth-child(4){width:44px!important}
 #table-hall-year-ranking th:nth-child(5),#table-hall-year-ranking td:nth-child(5){width:52px!important}#table-hall-year-ranking .hall-player-link{display:block!important;width:100%;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem!important}
+#table-hall-year-summary{table-layout:fixed;width:100%;min-width:0}#table-hall-year-summary th,#table-hall-year-summary td{padding-left:3px;padding-right:3px;overflow:hidden}#table-hall-year-summary th:first-child{width:44px}#table-hall-year-summary th:nth-child(3),#table-hall-year-summary th:nth-child(4){width:44px}#table-hall-year-summary th:nth-child(5){width:48px}#table-hall-year-summary .hall-year-main-row{font-size:.76rem}
 .hall-year-player-name{font-size:.8rem}
 .hall-year-detail{padding:6px 5px 8px}.hall-year-detail-top{padding:1px 3px 6px}.hall-year-detail-top>strong,.hall-year-collapse{font-size:.54rem}.hall-year-detail-head,.hall-year-detail-row{grid-template-columns:58px minmax(56px,1fr) 34px 34px 42px;gap:3px}.hall-year-detail-head{padding:0 3px 4px;font-size:.5rem}.hall-year-detail-row{padding:6px 3px;font-size:.6rem}.hall-year-detail-row .hall-team-full{display:none!important}.hall-year-detail-row .hall-team-short{display:inline!important}
 .hall-extra-section .table-container{overflow-x:auto}#table-hall-edition-leaders th,#table-hall-edition-leaders td{padding:9px 8px;font-size:.82rem}#table-hall-edition-leaders th:first-child,#table-hall-edition-leaders td:first-child{min-width:92px;text-align:left}
@@ -2162,8 +2165,21 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
         </div>
 
         <section class="hall-extra-section" id="hall-year-ranking-section">
-            <h2 class="hall-extra-title">Ranking por Ano</h2>
+            <div class="hall-year-heading">
+                <h2 class="hall-extra-title">Ranking por Ano</h2>
+                <button type="button" id="hall-year-summary-toggle" class="btn-action hall-year-summary-toggle" aria-expanded="false" aria-controls="hall-year-summary" onclick="cffHallToggleYearSummary()" disabled>Resumo</button>
+            </div>
             <p class="hall-extra-subtitle">Soma todas as edições disputadas no mesmo ano. Pesquise por jogador ou equipe e ordene por abates, quedas ou média.</p>
+
+            <div id="hall-year-summary" class="hall-year-summary" hidden>
+                <p class="hall-year-summary-note">Líder em abates de cada ano, nas edições cadastradas. Clique no jogador para ver os números por LBFF/WB.</p>
+                <div class="table-container">
+                    <table id="table-hall-year-summary" aria-label="Líderes em abates por ano">
+                        <thead><tr><th>Ano</th><th style="text-align:left">Jogador</th><th><span class="full-name-desktop">Abates</span><span class="short-name-mobile">K</span></th><th><span class="full-name-desktop">Quedas</span><span class="short-name-mobile">Q</span></th><th>Média</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
 
             <div class="hall-year-tools">
                 <div class="hall-year-field">
@@ -2561,7 +2577,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 <script defer src="js/player-photo-resolver.min.js?v=20261017-person-identities-v1"></script>
 <script defer src="/js/shared-navigation.js?v=20261020-annual-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261022-hall-edition-teams-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261023-hall-year-summary-v1"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>
