@@ -29,7 +29,7 @@ test('directory uses native team-page links, searchable players and group filter
   assert.equal(u.all('[data-gteam]').length,24);assert.equal(u.calls.length,1);assert(u.$('[data-gteams-count]').textContent.includes('24 de 24'));
   await u.change('[data-gteams-group]','B');assert.equal(u.all('[data-gteam]').length,6);
   await u.change('[data-gteams-group]','');await u.change('[data-gteams-search]','Fellow','input');assert.equal(u.all('[data-gteam]').length,1);
-  const card=u.$('[data-gteam="btr"]');assert.equal(card.tagName,'A');assert.equal(card.getAttribute('href'),'/ffws-global-2026/equipe?time=btr');
+  const card=u.$('[data-gteam="btr"]');assert.equal(card.tagName,'ARTICLE');assert.equal(card.querySelector('a').getAttribute('href'),'/ffws-global-2026/equipe?time=btr');
   await u.visit('btr');assert(u.$('.gteam-profile'));assert(!u.$('dialog'));assert.equal(u.all('.gteam-roster>div').length,5);assert.equal(u.$('.gteam-profile h1').textContent,'Bigetron by Vitality');assert.equal(u.all('.gteam-profile-schedule>div').length,6);assert.equal(u.all('.gteam-profile-peers a').length,5);assert.equal(u.calls.length,1);
   await u.click('[data-gteam-section="staff"]');assert(u.$('.gteam-profile').textContent.includes('Comissão técnica a confirmar'));assert.equal(u.$('[data-gteam-section="staff"]').getAttribute('aria-pressed'),'true');
   await u.change('[data-gteam-stage]','segundaFase');assert(u.$('.gteam-profile').textContent.includes('independente a cada dia'));assert.equal(u.calls.length,1);
@@ -55,4 +55,25 @@ test('separate route and refresh entry retain the team ID and old shared links r
  const c={window:{},URLSearchParams,location:{pathname:'/ffws-global-2026/equipe/',search:'?time=btr',hash:''}};require('node:vm').runInNewContext(fs.readFileSync('js/season-routes.js','utf8'),c);assert.equal(c.window.CFF_SEASON_ROUTES.pageFromLocation(),'ffws-global-2026-equipe');assert.equal(c.window.CFF_SEASON_ROUTES.pathForPage('ffws-global-2026-equipe'),'/ffws-global-2026/equipe');
  const entry=fs.readFileSync(base+'equipe/index.html','utf8');let url='';require('node:vm').runInNewContext(entry.match(/<script>(.*?)<\/script>/s)[1],{location:{search:'?time=btr',replace:x=>url=x}});assert.equal(url,'/index.html?time=btr#ffws-global-2026-equipe');
  const old=fs.readFileSync(base+'equipes/index.html','utf8');require('node:vm').runInNewContext(old.match(/<script>(.*?)<\/script>/s)[1],{URLSearchParams,location:{search:'?time=btr',replace:x=>url=x}});assert.equal(url,'/index.html?time=btr#ffws-global-2026-equipe');
+});
+
+test('compact cards show qualified teams, per-player local flags and independent roster/staff tabs',async()=>{
+ const u=await ui();try{
+  const btr=u.$('[data-gteam="btr"]');assert.equal(btr.tagName,'ARTICLE');assert(btr.querySelector('.gteam-status').textContent.includes('Classificado'));assert(btr.querySelector('.gteam-qualifier').textContent.includes('1º'));assert.equal(btr.querySelectorAll('.gteam-card-roster li').length,5);
+  for(const img of btr.querySelectorAll('[data-player-flag]')){assert.equal(img.getAttribute('src'),'/flag/id.webp');assert.equal(img.getAttribute('alt'),'Indonésia');}
+  const onic=u.$('[data-gteam="onic"]');assert.equal(onic.querySelectorAll('img[src="/flag/th.webp"]').length,1);assert.equal(onic.querySelectorAll('img[src="/flag/id.webp"]').length,4);
+  await u.click('[data-gteam="btr"] [data-gteam-card-tab="staff"]');assert(btr.querySelector('[data-gteam-card-panel]').textContent.includes('Comissão técnica a confirmar'));assert.equal(btr.querySelector('[data-gteam-card-tab="staff"]').getAttribute('aria-selected'),'true');assert.equal(onic.querySelector('[data-gteam-card-tab="players"]').getAttribute('aria-selected'),'true');
+  btr.querySelector('[data-gteam-card-tab="staff"]').dispatchEvent(new u.w.KeyboardEvent('keydown',{key:'Home',bubbles:true}));assert.equal(u.w.document.activeElement.dataset.gteamCardTab,'players');assert.equal(btr.querySelectorAll('[data-player-flag]').length,5);
+  await u.click('[data-gteam="btr"] [data-gteam-fold]');assert.equal(btr.querySelector('[data-gteam-fold]').getAttribute('aria-expanded'),'false');assert(btr.querySelector('#gteam-content-btr').hidden);
+  await u.change('[data-gteams-search]','Fellow','input');assert.equal(u.all('[data-gteam]').length,1);assert(u.$('#gteam-content-btr').hidden);await u.click('[data-gteam="btr"] [data-gteam-fold]');assert(!u.$('#gteam-content-btr').hidden);assert.equal(u.calls.length,1);assert(!u.$('dialog'));
+  assert.equal(u.$('[data-gteam="btr"] .gteam-card-footer a').getAttribute('href'),'/ffws-global-2026/equipe?time=btr');
+ }finally{u.close();}
+});
+test('flags use individual countries, valid local assets and a neutral fallback, never organization logos',async()=>{
+ const input=read(base+'players.json');assert.equal(input.players.filter(p=>p.country).length,40);for(const p of input.players){const asset=fs.readFileSync('flag/'+p.country+'.webp');assert.equal(asset.toString('ascii',8,12),'WEBP');}
+ const snapshot=read(base+'equipes-resumo.json'),btr=snapshot.teams.find(t=>t.id==='btr');btr.players[0].country='../../bad';
+ const u=await ui({snapshot});try{
+  const card=u.$('[data-gteam="btr"]');assert(!card.querySelector('img[src*="bad"]'));assert(card.querySelector('.gteam-flag-missing'));const flag=card.querySelector('[data-player-flag]');flag.dispatchEvent(new u.w.Event('error'));assert.equal(card.querySelectorAll('[data-player-flag]').length,3);assert(!card.querySelector('.gteam-card-roster img[src$="escudo.webp"]'));assert.equal(u.calls.length,1);
+  await u.visit('btr');assert.equal(u.all('.gteam-profile .gteam-person-name [data-player-flag]').length,4);
+ }finally{u.close();}
 });

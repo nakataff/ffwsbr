@@ -9,7 +9,8 @@ A rota `equipe/index.html` preserva o ID ao atualizar a página; links antigos e
 
 - **Elenco e comissão:** editar somente `ffws-global-2026/players.json`, lista `players`.
   Cada pessoa tem `name`, `team` (nome exato de `teams.json`), `order`, `type`
-  (`player` ou `staff`) e, opcionalmente, `role` (Coach, Analista, Manager etc.).
+  (`player` ou `staff`), `country` (código da bandeira, como `br`, `id`, `vn`, `th`)
+  e, opcionalmente, `role` (Coach, Analista, Manager etc.).
   Não precisa preencher jogadores ou coaches desconhecidos: a página mostra a confirmar.
   `left: true` ou `rosterStatus: "Saiu"` remove a pessoa do elenco da edição.
 - **Equipes, escudos e vaga conquistada:** `teams.json`. Grupos: `groups.json`.
@@ -53,3 +54,24 @@ nova aba e voltar pelo navegador. O PC usa colunas; o celular empilha as seçõe
 
 Regressões: `test/global-teams.test.cjs`, `test/global-overview.test.cjs` e
 `test/global-format-2026.test.cjs`, incluídas na CI do Mundial.
+
+## Cards e bandeiras
+
+A lista usa cards compactos com equipe/escudo, selo Classificado, competição e
+colocação da vaga conquistada, abas Elenco/Comissão e linhas individuais. O botão
+pequeno recolhe o elenco; estado das abas e recolhimento resiste à busca e ao filtro
+dentro da mesma visita. Nome, escudo e rodapé continuam abrindo a página da equipe.
+As abas aceitam setas, Home/End e teclado; não abrem uma janela flutuante.
+
+As bandeiras vêm da pasta `flag` fornecida pelo Matheus: `country: "id"` usa
+`/flag/id.webp`. Cada pessoa tem seu próprio país. ONIC tem POOM (th) e quatro
+jogadores da Indonésia (id); não inferir país somente pela equipe. País ausente ou
+arquivo com falha mostra um marcador neutro, nunca um escudo de organização.
+Bandeiras também aparecem no elenco da página completa. Os arquivos são locais,
+carregados sob demanda, e trocar abas/filtros não baixa outro JSON nem consulta banco.
+
+As nacionalidades dos 35 jogadores dos sete primeiros elencos vêm das bandeiras
+da referência enviada pelo administrador; as dos cinco da Buriram foram conferidas em:
+- https://esports.ff.gameid.garena.co.id/tim/buriram-united-esports/ffws-sea-2026-spring
+- https://liquipedia.net/freefire/GETHIGH (registra GETNA como outro nickname)
+Nenhum elenco/nickname foi substituído pelo de outra competição durante essa conferência.
