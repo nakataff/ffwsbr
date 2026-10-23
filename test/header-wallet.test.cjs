@@ -17,9 +17,9 @@ test('desktop and mobile share one cached request, display exact balances and li
 });
 test('a fresh cached balance survives navigation and profile/shop reads supply it without another header request',async()=>{
  const f=fixture();try{
-  let calls=0;f.auth.currentUser={uid:'one'};f.w.localStorage.setItem('cff-wallet-balance-v1',JSON.stringify({uid:'one',balance:98765,at:Date.now()}));
+  let calls=0;f.auth.currentUser={uid:'one'};f.w.publishInbox('one',{hasNew:false,latest:0});f.w.localStorage.setItem('cff-wallet-balance-v1',JSON.stringify({uid:'one',balance:98765,at:Date.now()}));
   const ui=f.w.createHeaderWallet({auth:()=>f.auth,request:async()=>{calls++;return {wallet:{balance:0}};}});ui.sync();await tick();assert.equal(calls,0);assert(f.links().every(n=>n.textContent.includes('98.765')));ui.stop();
-  f.auth.currentUser={uid:'two'};const deferred=f.w.createHeaderWallet({auth:()=>f.auth,request:async()=>{calls++;},defer:()=>true});deferred.sync();await tick();assert.equal(calls,0);assert(f.links().every(n=>n.querySelector('strong').textContent==='—'));
+  f.auth.currentUser={uid:'two'};f.w.publishInbox('two',{hasNew:false,latest:0});const deferred=f.w.createHeaderWallet({auth:()=>f.auth,request:async()=>{calls++;},defer:()=>true});deferred.sync();await tick();assert.equal(calls,0);assert(f.links().every(n=>n.querySelector('strong').textContent==='—'));
   f.w.publishWalletBalance('two',{balance:40});assert(f.links().every(n=>n.querySelector('strong').textContent==='40'));assert.equal(calls,0);deferred.stop();
  }finally{f.close();}
 });
@@ -39,7 +39,7 @@ test('errors never show a fabricated zero, repeated redraws back off and no poll
 });
 test('cache expires only on navigation/focus and an older header response cannot undo a recent checkin',async()=>{
  const f=fixture();try{
-  let now=Date.now(),calls=0,release;f.w.Date.now=()=>now;f.auth.currentUser={uid:'one'};f.w.publishWalletBalance('one',{balance:50});
+  let now=Date.now(),calls=0,release;f.w.Date.now=()=>now;f.auth.currentUser={uid:'one'};f.w.publishWalletBalance('one',{balance:50});f.w.publishInbox('one',{hasNew:false,latest:0});
   const ui=f.w.createHeaderWallet({auth:()=>f.auth,request:()=>{calls++;return new Promise(r=>release=r);}});ui.sync();await tick();assert.equal(calls,0);
   now+=5*60*1000+1;assert.equal(calls,0);f.w.dispatchEvent(new f.w.Event('focus'));await tick();assert.equal(calls,1);
   now++;f.w.publishWalletBalance('one',{balance:51});release({wallet:{balance:50}});await tick();assert(f.links().every(n=>n.querySelector('strong').textContent==='51'));ui.stop();
@@ -51,5 +51,17 @@ test('economy responses publish only the signed-in accounts wallet and ignore ad
   f.w.fetch=async()=>({ok:true,json:async()=>({wallet:{balance:77}})});await f.w.economyRequest(f.auth,'state');assert.equal(f.w.walletSnapshot('one').balance,77);
   f.w.fetch=async()=>({ok:true,json:async()=>({wallet:{balance:999}})});await f.w.economyRequest(f.auth,'memberWallet',{},true);assert.equal(f.w.walletSnapshot('one').balance,77);
   let release;f.w.fetch=()=>new Promise(r=>release=r);const pending=f.w.economyRequest(f.auth,'wallet');await tick();f.auth.currentUser={uid:'two'};release({ok:true,json:async()=>({wallet:{balance:123}})});await assert.rejects(pending,/Sua conta mudou/);assert.equal(f.w.walletSnapshot('two'),null);
+ }finally{f.close();}
+});
+
+test('new message dot refreshes independently from a cached wallet, including deferred account pages, without polling',async()=>{
+ const f=fixture();try{let now=Date.now(),calls=[],release;f.w.Date.now=()=>now;f.auth.currentUser={uid:'one'};f.w.publishWalletBalance('one',{balance:50});
+  let intervals=0;f.w.setInterval=()=>intervals++;
+  const ui=f.w.createHeaderWallet({auth:()=>f.auth,defer:()=>true,request:async(_auth,op)=>{calls.push(op);return new Promise(r=>release=r);}});
+  for(let i=0;i<10;i++)ui.sync();await tick();assert.deepEqual(calls,['inboxSummary']);release({summary:{hasNew:true,latest:5}});await tick();assert([...f.w.document.querySelectorAll('[data-header-inbox] i')].every(n=>!n.hidden));assert(f.links().every(n=>n.textContent.includes('50')));
+  f.w.dispatchEvent(new f.w.Event('focus'));await tick();assert.equal(calls.length,1);
+  now+=60001;assert.equal(calls.length,1);f.w.document.dispatchEvent(new f.w.Event('visibilitychange'));await tick();assert.deepEqual(calls,['inboxSummary','inboxSummary']);
+  now++;f.w.publishInbox('one',{hasNew:false,latest:5});release({summary:{hasNew:true,latest:5}});await tick();assert([...f.w.document.querySelectorAll('[data-header-inbox] i')].every(n=>n.hidden),'an older check cannot restore a dot after opening messages');assert.equal(intervals,0);
+  assert.match(fs.readFileSync('css/header-wallet.css','utf8'),/background:#ff4655/);ui.stop();
  }finally{f.close();}
 });

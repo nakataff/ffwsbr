@@ -400,6 +400,38 @@ metodologia independente.
   `test/admin-stories-ui.test.cjs` (JSDOM). Não aprovar registros reais para testar.
 
 
+## Mensagens, atalhos e avisos dos pedidos no jogo
+
+- `admin-mensagens.html` / `js/admin-inbox.mjs`: atalhos locais para Loja,
+  Presentes, Vales, Meus pedidos, Insígnias, Quiz, Check-in/moedas e Perfil.
+  Preenchem link e rótulo do botão, preservando destinatários e texto; invalidam
+  uma revisão antiga. Prévia/atalhos não enviam mensagens. O fluxo de confirmar
+  envio permanece igual. A seção **Avisos automáticos** explica os disparos.
+- `functions/economy-game-orders.js`: pedido recebido, envio confirmado pelo
+  administrador, recusa com motivo e estorno, cancelamento com estorno. O aviso
+  usa `game-order:{id}:{status}`, UID do comprador e link direto para
+  `/conta.html?tab=points&shopSection=orders`. Não é integração com a Garena:
+  comprar no jogo precisa ser seguido de **marcar o pedido como enviado** no
+  painel. Não reconstrói/envia avisos de pedidos antigos em lote.
+- A função `notify` vem da mesma instância de `user-inbox` de `economy.js` e roda
+  dentro da transação da compra/baixa/estorno. Falha ao salvar o aviso desfaz
+  estado e moedas; retry pode concluir sem duplicar. Nenhuma busca por usuários
+  ou consulta ao Firebase é acrescentada ao atualizar o pedido.
+- Continuam os avisos de vales (incluindo roleta), entregas de codiguinhos/itens
+  de perfil, insígnias, emblemas e objetivos. Comunicados gerais usam uma linha
+  compartilhada, sem distribuir uma cópia por usuário.
+- `js/header-wallet.mjs` / `css/header-wallet.css`: a bolinha de novidades é
+  **vermelha**. Metadados da caixa têm validade independente do saldo: com saldo
+  fresco/adiado, pede só `inboxSummary`, que lê cabeçalhos por chave primária;
+  com saldo vencido, reaproveita `wallet` com `includeInbox`. Verifica ao entrar,
+  voltar ao foco ou tornar a página visível, com cache de 60 segundos e backoff.
+  Sem polling, listas de mensagens, históricos ou leitura de carteiras em lote.
+  Abrir a caixa confirma a visualização das novidades e limpa a bolinha; os
+  estados individuais de leitura das mensagens permanecem separados.
+- Testes: `functions/test/economy-game-orders.test.cjs`,
+  `functions/test/user-inbox.test.cjs`, `test/header-wallet.test.cjs`,
+  `test/user-inbox.test.cjs` e `test/inbox-popover.test.cjs`.
+
 ## Apoiadores da vaquinha
 
 - `admin-apoiadores.html`, `js/admin-supporters.js`, `js/supporters-admin.mjs` e

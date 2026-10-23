@@ -23,3 +23,23 @@ test('closed order history paginates without overlap and cancellation still work
  const first=await s.core.adminHandle(admin,{operation:'gameOrders',status:'cancelled'}),second=await s.core.adminHandle(admin,{operation:'gameOrders',status:'cancelled',offset:20});assert.equal(first.total,25);assert.equal(first.entries.length,20);assert.equal(second.entries.length,5);assert.equal(first.hasMore,true);assert.equal(second.hasMore,false);assert.equal(new Set([...first.entries,...second.entries].map(o=>o.id)).size,25);
  const order=(await s.core.handle(a,{...body,nonce:crypto.randomUUID()})).order;delete s.data['userAccounts/a/profile'];await s.core.handle(a,{operation:'cancelGameOrder',orderId:order.id});assert.equal((await s.core.state(a)).wallet.balance,100);
 });
+
+test('game orders notify the buyer once on receipt and delivery, with a direct private order link',async()=>{
+ const s=setup(),body=await prepare(s);try{const first=await s.core.handle(a,body);await s.core.handle(a,body);let page=await s.core.handle(a,{operation:'inboxList'});assert.equal(page.entries.length,1);assert.match(page.entries[0].title,/Pedido recebido/);assert.equal(page.entries[0].url,'/conta.html?tab=points&shopSection=orders');assert.equal((await s.core.handle(b,{operation:'inboxList'})).entries.length,0);
+  await s.core.adminHandle(admin,{operation:'finishGameOrder',orderId:first.order.id,status:'delivered',note:'Enviado para o ID informado'});await s.core.adminHandle(admin,{operation:'finishGameOrder',orderId:first.order.id,status:'delivered'});page=await s.core.handle(a,{operation:'inboxList'});assert.equal(page.entries.length,2);assert.match(page.entries[0].title,/presente foi enviado/);assert.match(page.entries[0].body,/Enviado para o ID informado/);assert.equal((await s.core.state(a)).wallet.balance,20);
+ }finally{s.sqlite.close();}
+});
+
+test('refusals and cancellations announce the exact refund once and never claim that a present was sent',async()=>{
+ for(const status of ['rejected','cancelled']){const s=setup(),body=await prepare(s);try{const {order}=await s.core.handle(a,body),request={operation:status==='rejected'?'finishGameOrder':'cancelGameOrder',orderId:order.id,status,note:'Item indisponível'};
+  for(let i=0;i<2;i++)await(status==='rejected'?s.core.adminHandle(admin,request):s.core.handle(a,request));const list=await s.core.handle(a,{operation:'inboxList'});assert.equal(list.entries.length,2);assert.match(list.entries[0].body,/80 CFF COINS foram devolvidas/);assert(!list.entries[0].title.includes('enviado'));if(status==='rejected')assert.match(list.entries[0].body,/Item indisponível/);assert.equal((await s.core.state(a)).wallet.balance,100);
+ }finally{s.sqlite.close();}}
+});
+
+test('a notification write failure rolls back purchase, dispatch or refund with its order state',async()=>{
+ for(const action of ['buy','delivered','rejected']){const s=setup(),body=await prepare(s);try{const order=action==='buy'?null:(await s.core.handle(a,body)).order,exec=s.sql.exec;
+  s.sql.exec=(q,...args)=>{if(q.startsWith('INSERT OR IGNORE INTO user_inbox_messages'))throw Error('notice unavailable');return exec(q,...args);};
+  await assert.rejects(action==='buy'?s.core.handle(a,body):s.core.adminHandle(admin,{operation:'finishGameOrder',orderId:order.id,status:action,note:'Indisponível'}),/notice unavailable/);s.sql.exec=exec;
+  const state=await s.core.state(a);assert.equal(state.wallet.balance,action==='buy'?100:20);assert.equal(state.gameOrders.entries.length,action==='buy'?0:1);if(order)assert.equal(state.gameOrders.entries[0].status,'pending');
+ }finally{s.sqlite.close();}}
+});

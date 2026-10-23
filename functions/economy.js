@@ -59,12 +59,12 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
  const wallet=uid=>{sql.exec('INSERT OR IGNORE INTO eco_wallet(uid) VALUES(?)',uid);return rows('SELECT balance,earned,spent FROM eco_wallet WHERE uid=?',uid)[0];};
  const credit=(uid,delta,kind,id,label,by='')=>{wallet(uid);const old=rows('SELECT uid,delta,kind,label FROM eco_ledger WHERE id=?',id)[0];if(old){if(old.uid!==uid||old.delta!==delta||old.kind!==kind||old.label!==label)throw fail(409,'Este pedido já foi registrado com outros dados. Confira o histórico antes de ajustar.');return false;}const w=wallet(uid);if(w.balance+delta<0)throw fail(400,'Saldo insuficiente.');sql.exec('UPDATE eco_wallet SET balance=balance+?,earned=earned+?,spent=spent+? WHERE uid=?',delta,['game_refund','code_refund'].includes(kind)?0:Math.max(0,delta),['game_refund','code_refund'].includes(kind)?-delta:Math.max(0,-delta),uid);sql.exec('INSERT INTO eco_ledger VALUES(?,?,?,?,?,?,?)',id,uid,delta,kind,now(),label,by);return true;};
  const returns=codeReturns.create({sql,transaction,db,credit,now});
- const orders=gameOrders.create({sql,transaction,credit,now});
+ const inbox=inboxCore.create({sql,transaction,db,now});
+ const orders=gameOrders.create({sql,transaction,credit,now,notify:notice=>inbox.reward(notice)});
  const interactions=interactionRewards.create({sql,transaction,db,ranking,credit,now});
  const syncInteractions=async(uid,force=false,p=null)=>{try{return await interactions.sync(uid,force,p);}catch{return {...interactions.summary(uid),status:'error',message:'Não foi possível atualizar os bônus de interações agora. Seu saldo continua disponível.'};}};
  const eligible=async uid=>{const p=await db.get('userAccounts/'+uid+'/profile');if(!p?.name||!/^[a-z0-9_]{3,24}$/.test(p.username||'')||!['masculino','feminino'].includes(p.gender))throw fail(403,'Complete seu cadastro em Minha conta para participar.');walletProfiles.remember(uid,p);return p;};
  const quiz=quizCore.create({sql,transaction,credit,wallet:uid=>rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0},eligible,dayKey,now,random,imageLoader:quizImageLoader});
- const inbox=inboxCore.create({sql,transaction,db,now});
  const vouchers=voucherCore.create({sql,transaction,db,eligible,now,notify:inbox.reward});
  const adminTools=adminToolsCore.create({sql,transaction,db,ranking,vouchers,eligible,dayKey,weekKey,now});
  const linked=async uid=>{const [link,community,owner]=await Promise.all(['communityInstagramLinks/'+uid,'userAccounts/'+uid+'/community','communityOwnerInstagram'].map(p=>db.get(p)));if(owner?.uid===uid&&owner.username==='nakataff')return 'nakataff';if(!link?.username||!community?.session)return '';const status=await verifySession(community.session);return status?.status==='verified'&&String(status.username).toLowerCase()===link.username?link.username:'';};

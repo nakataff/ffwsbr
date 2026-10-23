@@ -8,7 +8,7 @@ import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015
 import {instagramLinkHtml} from './profile-instagram-link.mjs?v=20261015-inventory-v1';
 import {mountEconomy} from './economy-ui.js?v=20261019-roulette-vouchers-v1';
 import {rememberInvite,attachPendingReferral,economyRequest} from './economy-client.mjs?v=20261019-inbox-v1';
-import {createHeaderWallet} from './header-wallet.mjs?v=20261020-inbox-popover-v1';
+import {createHeaderWallet} from './header-wallet.mjs?v=20261023-inbox-alerts-v1';
 import {createProfileCheckin} from './profile-checkin.mjs?v=20261019-inbox-v1';
 rememberInvite();
 if(!document.querySelector('link[data-user-inbox]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/user-inbox.css?v=20261019-inbox-v1';l.dataset.userInbox='1';document.head.append(l);}

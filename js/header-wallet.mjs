@@ -1,4 +1,4 @@
-import {inboxSnapshot,forgetInbox,subscribeInbox} from './inbox-store.mjs?v=20261019-inbox-v1';
+import {inboxSnapshot,publishInbox,forgetInbox,subscribeInbox} from './inbox-store.mjs?v=20261019-inbox-v1';
 import {walletSnapshot,walletFresh,publishWalletBalance,forgetWalletBalance,subscribeWalletBalance} from './wallet-balance.mjs?v=20261017-header-wallet-v1';
 
 export function createHeaderWallet({auth,request,defer=()=>false,loadInbox=()=>import('./inbox-popover.mjs?v=20261020-inbox-popover-v1')}){
@@ -24,12 +24,13 @@ export function createHeaderWallet({auth,request,defer=()=>false,loadInbox=()=>i
   }
  }
  async function load(){
-  const current=uid,startedAt=Date.now();if(!current||pending||Date.now()<retryAfter||walletFresh(walletSnapshot(current)))return;
-  const job=Promise.resolve().then(()=>request(auth(),'wallet',{includeInbox:true})).then(result=>{if(uid===current&&getUid()===current){const cached=walletSnapshot(current);if(!(cached?.at>startedAt)&&(!walletFresh(cached)||cached.balance!==result.wallet?.balance))publishWalletBalance(current,result.wallet);}}).catch(()=>{if(uid===current)retryAfter=Date.now()+60000;}).finally(()=>{if(pending===job)pending=null;if(uid===current)draw();});pending=job;return job;
+  const current=uid,startedAt=Date.now(),inbox=inboxSnapshot(current),needsWallet=!defer()&&!walletFresh(walletSnapshot(current)),needsInbox=!inbox||startedAt-inbox.at>=60000;
+  if(!current||pending||document.visibilityState==='hidden'||Date.now()<retryAfter||!needsWallet&&!needsInbox)return;
+  const job=Promise.resolve().then(()=>request(auth(),needsWallet?'wallet':'inboxSummary',needsWallet?{includeInbox:true}:{})).then(result=>{if(uid===current&&getUid()===current){if(needsWallet){const cached=walletSnapshot(current);if(!(cached?.at>startedAt)&&(!walletFresh(cached)||cached.balance!==result.wallet?.balance))publishWalletBalance(current,result.wallet);}const summary=result.inbox||result.summary;if(summary&&!(inboxSnapshot(current)?.at>startedAt))publishInbox(current,summary);}}).catch(()=>{if(uid===current)retryAfter=Date.now()+60000;}).finally(()=>{if(pending===job)pending=null;if(uid===current)draw();});pending=job;return job;
  }
  function sync(){
   const current=getUid();if(current!==uid){++inboxGeneration;popover?.destroy();popover=null;inboxJob=null;document.querySelectorAll('[data-header-inbox]').forEach(n=>n.setAttribute('aria-expanded','false'));if(uid){forgetWalletBalance(uid);forgetInbox(uid);}uid=current;pending=null;retryAfter=0;}
-  draw();if(uid&&!defer())load();
+  draw();if(uid)load();
  }
  const inboxClick=event=>{
   const trigger=event.target.closest('[data-header-inbox]');if(!trigger||trigger.hidden||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||!getUid())return;
@@ -42,6 +43,7 @@ export function createHeaderWallet({auth,request,defer=()=>false,loadInbox=()=>i
  const unsubscribe=subscribeWalletBalance(value=>{if(value.uid===uid&&getUid()===uid)draw();});
  const resume=()=>{if(getUid()===uid&&uid){draw();load();}};
  window.addEventListener('focus',resume);window.addEventListener('pageshow',resume);
- if(!document.querySelector('[data-header-wallet-style]')){const style=document.createElement('link');style.rel='stylesheet';style.href='/css/header-wallet.css?v=20261020-inbox-popover-v1';style.dataset.headerWalletStyle='1';document.head.append(style);}
- return {sync,stop(){++inboxGeneration;popover?.destroy();popover=null;inboxJob=null;document.removeEventListener('click',inboxClick);unsubscribe();stopInbox();window.removeEventListener('focus',resume);window.removeEventListener('pageshow',resume);}};
+ document.addEventListener('visibilitychange',resume);
+ if(!document.querySelector('[data-header-wallet-style]')){const style=document.createElement('link');style.rel='stylesheet';style.href='/css/header-wallet.css?v=20261023-inbox-alerts-v1';style.dataset.headerWalletStyle='1';document.head.append(style);}
+ return {sync,stop(){++inboxGeneration;popover?.destroy();popover=null;inboxJob=null;document.removeEventListener('click',inboxClick);unsubscribe();stopInbox();window.removeEventListener('focus',resume);window.removeEventListener('pageshow',resume);document.removeEventListener('visibilitychange',resume);}};
 }
