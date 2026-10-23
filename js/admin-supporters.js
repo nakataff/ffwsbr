@@ -1,4 +1,4 @@
-import {mountSupportersAdmin} from './supporters-admin.mjs?v=20261023-livepix-test-v1';
+import {mountSupportersAdmin} from './supporters-admin.mjs?v=20261023-livepix-test-v2';
 import {careerAdmin,esc} from './career-client.mjs?v=20261018-career-chronology-v2';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,setPersistence,browserLocalPersistence,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';

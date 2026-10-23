@@ -530,3 +530,9 @@ metodologia independente.
 - Testes: `functions/test/livepix-diagnostic.test.cjs`,
   `cloudflare/camp-notifications/test/economy-api.test.mjs` e
   `test/community-supporters-ui.test.cjs`.
+
+- Diagnóstico v2: erros de OAuth exibem somente códigos permitidos e HTTP,
+  distinguindo credenciais/permissões, indisponibilidade, timeout e formato
+  inesperado. Corpos externos e descrições livres nunca chegam ao painel.
+  Requisições autenticadas pedem JSON; vencimento numérico ou string numérica
+  do token é aceito, com a mesma reutilização de token e cache de 10 minutos.
