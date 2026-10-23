@@ -3,7 +3,7 @@ const read=path=>JSON.parse(fs.readFileSync(path,'utf8'));
 async function setup({historic=read('lbffData.json'),current=read('ffws-br-2026-s2/player-stats.json'),editions=read('player-data/edition-teams.json')}={}){
  const html=fs.readFileSync('index.html','utf8'),mode=html.match(/<select id="hist-edition-team-mode"[\s\S]*?<\/select>/)[0],heading=html.match(/<span class="full-name-desktop" id="hist-edition-team-heading">[\s\S]*?<\/span>/)[0];
  const dom=new JSDOM(mode+heading+'<div id="edition-filters"></div><table id="table-history"><tbody></tbody></table><table id="table-edition-history"><tbody></tbody></table>',{url:'https://centralfreefire.com.br/index.html#hall-da-fama',runScripts:'outside-only'}),w=dom.window,calls=[];
- const data={'lbffData.json':historic,'ffws-br-2026-s2/player-stats.json':current,'team-data/player-team-career.json':{teams:{}},'team-data/logo-map.json':read('team-data/logo-map.json'),'player-data/edition-teams.json':editions,'team-aliases.json':read('team-aliases.json')};
+ const data={'lbffData.json':historic,'ffws-br-2026-s2/hall-player-stats.json':current,'team-data/player-team-career.json':{teams:{}},'team-data/logo-map.json':read('team-data/logo-map.json'),'player-data/edition-teams.json':editions,'team-aliases.json':read('team-aliases.json')};
  w.fetch=async url=>{calls.push(String(url));const path=String(url).split('?')[0];assert(path in data,'only existing static sources may load: '+url);return {ok:true,json:async()=>data[path]};};
  w.eval(fs.readFileSync('js/hall-fame-lite.min.js','utf8'));await w.cffHallLiteBoot();
  const select=(...wanted)=>{for(const button of [...w.document.querySelectorAll('#edition-filters .day-chip.active')])w.toggleEdition(button.textContent);for(const ed of wanted)w.toggleEdition(ed);};
