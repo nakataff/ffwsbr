@@ -39,7 +39,7 @@
 .home-global-group-head span{font-size:12px;font-weight:900;letter-spacing:1px;color:#ffcb52}
 .home-global-group-head small{font-size:9px;font-weight:750;color:#778fa9;white-space:nowrap}
 .home-global-match-teams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-.home-global-match-team{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:86px;padding:7px 4px 6px;border:1px solid #333c53;border-radius:9px;background:#101628}
+.home-global-match-team{text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:86px;padding:7px 4px 6px;border:1px solid #333c53;border-radius:9px;background:#101628}
 .home-global-match-team img{height:49px;width:49px;max-width:100%;object-fit:contain;filter:drop-shadow(0 3px 5px #0007)}
 .home-global-match-team strong{max-width:100%;color:#f6eac3;font-size:10px;font-weight:900;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-global-next-list{border:1px solid #393f53;background:#0a111d;border-radius:12px;padding:14px}
@@ -123,3 +123,7 @@
  .home-global-fixture-expanded-heading{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.home-global-fixture>.home-global-fixture-row,.home-global-fixture-chevron{transition:none}}
+
+/* Team links in the featured matchup and expanded upcoming rounds. */
+.home-global-match-team:hover{border-color:#00c8ff;background:#15223a}
+.home-global-match-team:focus-visible{outline:2px solid #00c8ff;outline-offset:3px}

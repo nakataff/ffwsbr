@@ -53,6 +53,16 @@ test('homepage opens on knockout matchups from published dates and displays corr
   assert.match(d.querySelector('.home-global-fixture-row').textContent,/GRUPO D/);
   assert.equal(d.querySelector('.home-global-countdown').dataset.start,'2026-11-06T04:00:00-03:00');
   assert.equal(d.querySelector('.home-global-calendar-link').getAttribute('href'),'/ffws-global-2026/datas');
+  // All matchup previews share the same native links, including upcoming rounds.
+  for(const card of d.querySelectorAll('.home-global-match-team')){
+   assert.equal(card.tagName,'A');
+   const url=new URL(card.href),id=url.searchParams.get('time'),team=teamData.teams.find(t=>t.id===id);
+   assert(team);assert.equal(url.pathname,'/ffws-global-2026/equipes');
+   assert(card.getAttribute('aria-label').includes(team.name));
+   assert.equal(card.querySelector('img').getAttribute('src'),'/'+team.logo);
+   assert(!card.hasAttribute('onclick'));
+  }
+  assert.equal(x.requests.length,3); // Links do not fetch rosters for home visitors.
   assert(x.requests.some(p=>p.includes('groups.json')));
   assert(x.requests.some(p=>p.includes('dates.json')));
  }finally{x.close();}
