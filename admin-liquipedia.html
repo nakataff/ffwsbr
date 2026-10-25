@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editor de Torneios - Liquipedia</title>
   <meta name="robots" content="noindex,nofollow,noarchive">
-<link rel="stylesheet" href="admin-liquipedia/app.css?v=20261025-mvp-dnf-v1">
+<link rel="stylesheet" href="admin-liquipedia/app.css?v=20261025-broadcast-bank-v2">
 <script src="js/config.min.js?v=20261020-chat-layout-v1"></script>
 </head>
 <body class="cff-auth-pending">
@@ -638,11 +638,11 @@
         <div class="format-preview-tools">
           <div>
             <div class="small-title" style="margin:0">Talents personalizáveis</div>
-            <div class="hint" style="margin-top:3px">Cargos padrão: Host, Caster e Commentator. Você pode editar os cargos ou adicionar mais pessoas. Cargos sem talento preenchido ficam fora do código.</div>
+            <div class="hint" style="margin-top:3px">Cargos padrão: Host, Caster e Commentator. Cada cargo pode ter várias pessoas no mesmo BroadcasterCard. Use Guardar para reutilizar um talento. Cargos sem talento preenchido ficam fora do código.</div>
           </div>
           <button class="green" onclick="addBroadcastTalent()">+ Adicionar cargo</button>
         </div>
-        <div id="broadcastTalents" class="broadcast-list"></div>
+        <div id="broadcastTalents" class="broadcast-list"></div><details class="section-import"><summary>Banco de talentos salvos</summary><div id="broadcastLibrary" class="section-import-body"></div><p class="hint">O banco faz parte do projeto salvo e do backup JSON. Limpar os cargos não apaga os talentos guardados.</p></details>
         <datalist id="broadcastRoles"><option value="Host"></option><option value="Caster"></option><option value="Commentator"></option></datalist>
         <details open class="section-import">
           <summary>👁 Preview do final do código</summary>
@@ -660,7 +660,7 @@
 <datalist id="editorSavedTeamNames"></datalist>
 
 <script defer src="admin-liquipedia/seed.js?v=20261003-v4"></script>
-<script defer src="admin-liquipedia/app.js?v=20261025-mvp-dnf-v1"></script>
+<script defer src="admin-liquipedia/app.js?v=20261025-broadcast-bank-v2"></script>
 <script defer src="admin-liquipedia/enhancements.js?v=20261003-v4"></script>
 <script type="module" src="admin-liquipedia/cloud.js?v=20261003-v4"></script>
 </body>

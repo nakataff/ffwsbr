@@ -32,7 +32,7 @@ const createDefaultState = () => {
   return {
     settings:defaultSettings(), infobox:defaultInfobox(), formatStages:defaultFormatStages(), groupRoundConfigs:defaultGroupRoundConfigs(), teams, finalDetailedMaps:[],
     prizeOrder:teams.map(t=>t.uid), groupOrder:teams.map(t=>t.uid), finalOrder:teams.map(t=>t.uid), groupFocusedGroups:[], teamDB:[],
-    broadcastTalents:defaultBroadcastTalents(), broadcastDefaultsInitialized:true, tournamentPresets:[], projectId:newTeamUid(),
+    broadcastLibrary:[], broadcastTalents:defaultBroadcastTalents(), broadcastDefaultsInitialized:true, tournamentPresets:[], projectId:newTeamUid(),
     aliases:{enabled:true, players:{}, teams:{}}
   };
 };
@@ -207,17 +207,23 @@ function parseWikiDateText(text){
   const single=parseEnglishDateToken(raw); if(single)return{startDate:single,endDate:'',dateText:'',singleDay:true}; return{startDate:'',endDate:'',dateText:raw,singleDay:false};
 }
 
-function blankBroadcastTalent(position=''){ return {position,b1:'',flag:'br',name:''}; }
-function defaultBroadcastTalents(){ return ['Host','Caster','Commentator'].map(blankBroadcastTalent); }
-function normalizeBroadcastTalent(item,index=0){ const defaults=['Host','Caster','Commentator']; return {...blankBroadcastTalent(defaults[index]||''),...(item||{}),position:clean(item?.position)||defaults[index]||'',b1:clean(item?.b1),flag:hasOwn(item||{},'flag')?clean(item.flag):'br',name:clean(item?.name)}; }
+function blankBroadcastPerson(){return {b1:'',flag:'br',name:''};}
+function normalizeBroadcastPerson(p){return {b1:clean(p?.b1),flag:hasOwn(p||{},'flag')?clean(p.flag):'br',name:clean(p?.name)};}
+function blankBroadcastTalent(position=''){return {position,b1:'',flag:'br',name:'',people:[blankBroadcastPerson()]};}
+function defaultBroadcastTalents(){return ['Host','Caster','Commentator'].map(blankBroadcastTalent);}
+function normalizeBroadcastTalent(item,index=0){
+ const defaults=['Host','Caster','Commentator'];
+ const people=Array.isArray(item?.people)&&item.people.length?item.people.map(normalizeBroadcastPerson):[normalizeBroadcastPerson(item)];
+ return {...(item||{}),...people[0],position:clean(item?.position)||defaults[index]||'',people};
+}
 function broadcastWikiLines(){
   const lines=['==Broadcast==','===Talents===',''];
   (state.broadcastTalents||[]).forEach((talent,index)=>{
     const t=normalizeBroadcastTalent(talent,index);
-    if(!t.b1&&!t.name)return;
+    const people=t.people.filter(p=>p.b1||p.name);if(!people.length)return;
     lines.push('{{BroadcasterCard');
     lines.push(`|position=${t.position}`);
-    lines.push(`|b1=${t.b1}      |b1flag=${t.flag}|b1name=${t.name}`);
+    people.forEach((p,j)=>lines.push(`|b${j+1}=${p.b1}      |b${j+1}flag=${p.flag}${p.name||j===0?`|b${j+1}name=${p.name}`:''}`));
     lines.push('}}');
   });
   lines.push('');
@@ -238,12 +244,23 @@ function broadcastWikiLines(){
   return lines;
 }
 function renderBroadcast(){
-  if(!Array.isArray(state.broadcastTalents)) state.broadcastTalents=[];
-  const root=$('broadcastTalents'); if(!root)return;
-  root.innerHTML=state.broadcastTalents.length?state.broadcastTalents.map((talent,i)=>`<div class="broadcast-row"><div><label>Nome do cargo</label><input list="broadcastRoles" value="${esc(talent.position)}" oninput="updateBroadcastTalent(${i},'position',this.value)" placeholder="Ex.: Host & Caster"></div><div><label>Página/ID do talento (b1)</label><input value="${esc(talent.b1)}" oninput="updateBroadcastTalent(${i},'b1',this.value)" placeholder="Nome na Liquipedia"></div><div><label>Flag</label><input value="${esc(hasOwn(talent,'flag')?talent.flag:'br')}" oninput="updateBroadcastTalent(${i},'flag',this.value)" placeholder="br"></div><div><label>Nome exibido (b1name)</label><input value="${esc(talent.name)}" oninput="updateBroadcastTalent(${i},'name',this.value)" placeholder="Opcional"></div><button class="tiny red" onclick="removeBroadcastTalent(${i})">Remover</button></div>`).join(''):'<div class="format-empty">Nenhum cargo adicionado. Clique em “Adicionar cargo”.</div>';
-  updateBroadcastPreview();
+ if(!Array.isArray(state.broadcastTalents))state.broadcastTalents=[];
+ if(!Array.isArray(state.broadcastLibrary))state.broadcastLibrary=[];
+ const root=$('broadcastTalents');if(!root)return;
+ root.innerHTML=state.broadcastTalents.map((raw,i)=>{
+  const t=normalizeBroadcastTalent(raw,i);state.broadcastTalents[i]=t;
+  return `<section class="broadcast-group"><div class="broadcast-group-head"><label>Função deste slot<input list="broadcastRoles" value="${esc(t.position)}" oninput="updateBroadcastTalent(${i},'position',this.value)"></label><button class="tiny red" onclick="removeBroadcastTalent(${i})">Remover cargo</button></div>${t.people.map((p,j)=>`<div class="broadcast-person-row"><div><label>Pessoa ${j+1} · página/ID</label><input value="${esc(p.b1)}" oninput="updateBroadcastPerson(${i},${j},'b1',this.value)" placeholder="Nome na Liquipedia"></div><div><label>Flag</label><input value="${esc(p.flag)}" oninput="updateBroadcastPerson(${i},${j},'flag',this.value)" placeholder="br"></div><div><label>Nome exibido (opcional)</label><input value="${esc(p.name)}" oninput="updateBroadcastPerson(${i},${j},'name',this.value)"></div><div class="actions"><button class="tiny" onclick="saveBroadcastPerson(${i},${j})">Guardar</button><button class="tiny red" onclick="removeBroadcastPerson(${i},${j})" aria-label="Remover pessoa ${j+1}">×</button></div></div>`).join('')}<div class="broadcast-group-actions"><button class="tiny green" onclick="addBroadcastPerson(${i})">+ Pessoa neste cargo</button><select aria-label="Adicionar talento salvo ao cargo ${i+1}" onchange="addSavedBroadcaster(${i},this.value)"><option value="">Adicionar do banco de talentos…</option>${state.broadcastLibrary.map((p,k)=>`<option value="${k}">${esc(p.b1)}${p.position?' · '+esc(p.position):''}</option>`).join('')}</select></div></section>`;
+ }).join('')||'<div class="format-empty">Nenhum cargo adicionado.</div>';
+ const bank=$('broadcastLibrary');if(bank)bank.innerHTML=state.broadcastLibrary.map((p,i)=>`<div class="broadcast-library-row"><span><strong>${esc(p.b1)}</strong> · ${esc(p.flag)}${p.position?' · '+esc(p.position):''}</span><button class="tiny red" onclick="removeSavedBroadcaster(${i})">Excluir do banco</button></div>`).join('')||'<p class="hint">Use Guardar ao lado de uma pessoa para reutilizá-la em outros campeonatos.</p>';
+ updateBroadcastPreview();
 }
-function updateBroadcastTalent(i,key,value){ if(!state.broadcastTalents?.[i])return; state.broadcastTalents[i][key]=value; updateBroadcastPreview(); autoSave(false); }
+function updateBroadcastTalent(i,key,value){if(!state.broadcastTalents?.[i])return;state.broadcastTalents[i][key]=value;if(['b1','flag','name'].includes(key))state.broadcastTalents[i].people[0][key]=value;updateBroadcastPreview();autoSave(false);}
+function updateBroadcastPerson(i,j,key,value){const t=state.broadcastTalents[i];if(!t?.people?.[j])return;t.people[j][key]=value;if(j===0)t[key]=value;updateBroadcastPreview();autoSave(false);}
+function addBroadcastPerson(i){const t=state.broadcastTalents[i];if(!t)return;t.people.push(blankBroadcastPerson());renderBroadcast();autoSave(false);}
+function removeBroadcastPerson(i,j){const t=state.broadcastTalents[i];if(!t)return;t.people.splice(j,1);if(!t.people.length)t.people.push(blankBroadcastPerson());Object.assign(t,t.people[0]);renderBroadcast();autoSave(false);}
+function saveBroadcastPerson(i,j){const t=state.broadcastTalents[i],p=t?.people?.[j];if(!clean(p?.b1)){flash('copyStatus','Preencha a página/ID do talento antes de guardar.');return;}const saved={...normalizeBroadcastPerson(p),position:clean(t.position)},idx=state.broadcastLibrary.findIndex(item=>clean(item.b1).toLowerCase()===saved.b1.toLowerCase());if(idx<0)state.broadcastLibrary.push(saved);else state.broadcastLibrary[idx]=saved;renderBroadcast();autoSave(false);if(typeof editorImportant==='function')editorImportant('talento-salvo');flash('copyStatus','Talento guardado no banco.');}
+function addSavedBroadcaster(i,value){if(value==='')return;const t=state.broadcastTalents[i],p=state.broadcastLibrary[Number(value)];if(!t||!p)return;const empty=t.people.findIndex(person=>!clean(person.b1)&&!clean(person.name));if(empty<0)t.people.push(normalizeBroadcastPerson(p));else t.people[empty]=normalizeBroadcastPerson(p);Object.assign(t,t.people[0]);renderBroadcast();autoSave(false);}
+function removeSavedBroadcaster(i){state.broadcastLibrary.splice(i,1);renderBroadcast();autoSave(false);if(typeof editorImportant==='function')editorImportant('talento-excluido');}
 function addBroadcastTalent(position=''){ state.broadcastTalents=Array.isArray(state.broadcastTalents)?state.broadcastTalents:[]; const next=position||['Host','Caster','Commentator'].find(role=>!state.broadcastTalents.some(t=>clean(t.position)===role))||''; state.broadcastTalents.push(blankBroadcastTalent(next)); renderBroadcast(); autoSave(false); }
 function removeBroadcastTalent(i){ state.broadcastTalents.splice(i,1); renderBroadcast(); autoSave(false); }
 function updateBroadcastPreview(){ const el=$('broadcastPreview');if(el)el.value=broadcastWikiLines().join('\n'); }
@@ -2288,6 +2305,7 @@ function normalizeState(obj){
   out.teams=Array.isArray(obj?.teams)?obj.teams.map(t=>{const team={...blankTeam(),...t,prizeDnf:t?.prizeDnf===true||t?.prizeDnf==='true',allowIncomplete:!!t?.allowIncomplete,players:Array.isArray(t?.players)?t.players.map(p=>({name:clean(p?.name),flag:normalizedFlag(p),link:clean(p?.link),team:clean(p?.team),role:clean(p?.role)})):blankTeam().players,coach:{name:clean(t?.coach?.name),flag:normalizedFlag(t?.coach),role:clean(t?.coach?.role)||'head coach'},analyst:{name:clean(t?.analyst?.name),flag:normalizedFlag(t?.analyst),role:clean(t?.analyst?.role)||'analyst'}};team.championActivated=t?.championActivated===true||String(t?.championActivated)==='true';team.finalPlacement=clean(t?.finalPlacement);team.finalTiebreaker=clean(t?.finalTiebreaker);team.finalMatches=Array.isArray(t?.finalMatches)?t.finalMatches.map(m=>({match:Number(m?.match)||0,placement:clean(m?.placement),kills:clean(m?.kills)})).filter(m=>m.match>0):[];team.groupRounds=Array.isArray(t?.groupRounds)?t.groupRounds.map(clean):[];while(team.groupRounds.length<roundCount)team.groupRounds.push('');team.groupRounds=team.groupRounds.slice(0,roundCount);team.groupFfaGroup=clean(t?.groupFfaGroup);return team;}):base.teams;
   out.finalDetailedMaps=Array.isArray(obj?.finalDetailedMaps)?obj.finalDetailedMaps.map((m,i)=>({match:Number(m?.match)||i+1,date:clean(m?.date),map:clean(m?.map),mvp:clean(m?.mvp),vod:clean(m?.vod)})).filter(m=>m.match>0):[];
   out.teamDB=Array.isArray(obj?.teamDB)?obj.teamDB.map(normalizeRosterTeam).filter(t=>clean(t.name)):[];
+  out.broadcastLibrary=Array.isArray(obj?.broadcastLibrary)?obj.broadcastLibrary.filter(p=>clean(p?.b1)).map(p=>({...normalizeBroadcastPerson(p),position:clean(p.position)})):[];
   out.broadcastTalents=Array.isArray(obj?.broadcastTalents)?obj.broadcastTalents.map(normalizeBroadcastTalent):base.broadcastTalents.map(normalizeBroadcastTalent);
   if(!out.broadcastTalents.length&&!obj?.broadcastDefaultsInitialized)out.broadcastTalents=defaultBroadcastTalents();
   out.broadcastDefaultsInitialized=true;
@@ -2313,8 +2331,8 @@ function normalizeState(obj){
 function clearAll(){
   if(!confirm('Zerar o torneio atual? O banco de times e os aliases serão preservados.')) return;
   const savedDb=Array.isArray(state.teamDB)?state.teamDB:[]; const savedAliases=safeClone(state.aliases||{enabled:true,players:{},teams:{}});
-  saveEditorRecovery('Antes de zerar'); const presets=safeClone(state.tournamentPresets||[]);
-  state=createDefaultState(); state.tournamentPresets=presets; state.cffPresetsInitializedV1=true; state.cffSeedImportedV1=true; state.teamDB=savedDb; state.aliases=savedAliases; resetParticipantTransientState();discardRosterDraft(); renderAll(); $('editorPresetName').value=''; $('output').value=''; autoSave(false);
+  saveEditorRecovery('Antes de zerar'); const presets=safeClone(state.tournamentPresets||[]),talentBank=safeClone(state.broadcastLibrary||[]);
+  state=createDefaultState(); state.broadcastLibrary=talentBank; state.tournamentPresets=presets; state.cffPresetsInitializedV1=true; state.cffSeedImportedV1=true; state.teamDB=savedDb; state.aliases=savedAliases; resetParticipantTransientState();discardRosterDraft(); renderAll(); $('editorPresetName').value=''; $('output').value=''; autoSave(false);
 }
 function exportJSON(){
   const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
@@ -2381,7 +2399,9 @@ function parseBroadcastTalents(wiki){
   const talents=[]; const re=/\{\{BroadcasterCard([\s\S]*?)\}\}/gi; let m;
   while((m=re.exec(wiki))){
     const block=m[1]||'', get=key=>clean((block.match(new RegExp('(?:^|\\|)'+key+'=([^|\\n\\r}]*)','i'))||[,''])[1]);
-    talents.push(normalizeBroadcastTalent({position:get('position'),b1:get('b1'),flag:get('b1flag'),name:get('b1name')},talents.length));
+    const indices=[...new Set([...block.matchAll(/\|b(\d+)\s*=/gi)].map(x=>Number(x[1])))].sort((a,b)=>a-b);
+    const people=indices.map(n=>({b1:get('b'+n),flag:get('b'+n+'flag'),name:get('b'+n+'name')}));
+    talents.push(normalizeBroadcastTalent({position:get('position'),people},talents.length));
   }
   return talents;
 }
