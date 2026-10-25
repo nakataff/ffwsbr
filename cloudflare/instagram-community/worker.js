@@ -91,7 +91,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
 ]);
 
 export default {
-  async scheduled(controller,env,ctx){ctx.waitUntil(purgeExpiredStoryPreviews(env.DB));},
+  async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env))await purgeExpiredStoryPreviews(env.DB);})());},
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
