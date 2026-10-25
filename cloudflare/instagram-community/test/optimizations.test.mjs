@@ -283,5 +283,5 @@ test('an existing deployed schema marker still applies the new story policy once
  const cold=await workerInternals('upgrade existing manual review deployment');assert.equal(await cold.ensurePerformanceIndexes({DB:db}),true);
  assert.equal(db.sqlite.prepare("SELECT COUNT(*) n FROM sqlite_master WHERE type='trigger' AND name='cff_story_review_guard'").get().n,0);
  assert.equal(db.sqlite.prepare("SELECT COUNT(*) n FROM sqlite_master WHERE type='trigger' AND name='cff_story_review_guard_auto_v1'").get().n,1);
- assert(db.sqlite.prepare("SELECT version FROM community_period_versions WHERE period_key='schema:20261016-saved-months-v1:20261020-story-auto-v1'").get());
+ assert(db.sqlite.prepare("SELECT version FROM community_period_versions WHERE period_key='schema:20261016-saved-months-v1:20261020-story-auto-v1:story-previews-v1'").get());
 });
