@@ -300,7 +300,7 @@ G7X, g7x, G7X</textarea>
                         <button class="btn-mini" type="button" onclick="toggleDropSettingsPanel()">⚙️ Opções</button>
                         <div id="drop-settings-panel" class="drop-settings-panel">
                             <h4>Opções de lançar queda</h4>
-                            <label class="switch" title="Equipes em tons neutros; somente campos pendentes e o campo em edição recebem destaque laranja.">DESTACAR SÓ O QUE FALTA PREENCHER <input type="checkbox" id="drop-opt-elimination-focus"></label>
+                            <label class="switch" title="Ao registrar a colocação, tira a saturação da cor e da logo da equipe e marca um X. Campos pendentes continuam destacados.">EQUIPES ELIMINADAS EM PRETO E BRANCO <input type="checkbox" id="drop-opt-elimination-focus"></label>
                             <label class="switch">BOTÃO RANDOM <input type="checkbox" id="drop-opt-random" checked onchange="syncDropLaunchOptionsFromUi()"></label>
                             <label class="switch">LIMPAR MAPAS <input type="checkbox" id="drop-opt-clear-maps" checked onchange="syncDropLaunchOptionsFromUi()"></label>
                             <label class="switch">LIMPAR TODAS COLOCAÇÕES <input type="checkbox" id="drop-opt-clear-placements" checked onchange="syncDropLaunchOptionsFromUi()"></label>
@@ -530,8 +530,8 @@ G7X, g7x, G7X</textarea>
     <script type="module" src="admin-camp-ao-vivo/auth.js?v=20261001-camp-v4"></script>
     <script src="admin-camp-ao-vivo/app-loader.js?v=20261025-multi-focus-v1"></script>
     <script type="module" src="admin-camp-ao-vivo/notifications.js?v=20261010-results-v1"></script>
-<script defer src="admin-camp-ao-vivo/elimination-focus.js?v=20261025-elimination-v1"></script>
-<script defer src="admin-camp-ao-vivo/placement-live.js?v=20261025-placement-v1"></script>
+<script defer src="admin-camp-ao-vivo/elimination-focus.js?v=20261025-elimination-v2"></script>
+<script defer src="admin-camp-ao-vivo/placement-live.js?v=20261025-placement-v2"></script>
 </body>
 </html>
 

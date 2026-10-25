@@ -22,7 +22,7 @@
  }
  let queued=false;function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;sync();});}
  // Update radios before legacy handlers read the previous selected position.
- document.addEventListener('input',event=>{if(!container.contains(event.target))return;if(event.target.matches('input[id^="place-"]'))apply(event.target);schedule();},true);
+ document.addEventListener('input',event=>{if(!container.contains(event.target)||event.target.matches('input[type=radio],input[type=checkbox]'))return;if(event.target.matches('input[id^="place-"]'))apply(event.target);schedule();},true);
  document.addEventListener('change',event=>{if(container.contains(event.target)||event.target.id==='drop-num')schedule();});
  new MutationObserver(schedule).observe(container,{childList:true,subtree:true});
  window.addEventListener('cff:camp-core-ready',schedule);window.addEventListener('cff:camp-drops-cleared',schedule);sync();

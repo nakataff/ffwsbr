@@ -2,14 +2,13 @@
  'use strict';
  const control=document.getElementById('drop-opt-elimination-focus'),container=document.getElementById('teams-inputs-container');
  if(!control||!container)return;
- const key='cff-camp-elimination-focus-v1';let queued=false;
- try{control.checked=localStorage.getItem(key)==='1';}catch{}
+ const key='cff-camp-elimination-focus-v2';let queued=false;
+ try{control.checked=localStorage.getItem(key)!=='0';}catch{}
  const style=document.createElement('style');style.textContent=`
- body.cff-elimination-focus #teams-inputs-container .team-row{background:#15191f!important;border-color:#424851!important;box-shadow:none!important;color:#c6cbd2!important}
- body.cff-elimination-focus #teams-inputs-container .team-row img{filter:grayscale(1)}
- body.cff-elimination-focus #teams-inputs-container .team-row input:not([type=checkbox]):not([type=radio]),body.cff-elimination-focus #teams-inputs-container .team-row select{background:#20252c!important;border-color:#525964!important;color:#d5d9df!important;box-shadow:none!important;outline:none!important}
- body.cff-elimination-focus #teams-inputs-container .team-row.cff-elim-complete{filter:grayscale(1)}
- body.cff-elimination-focus #teams-inputs-container .team-row:focus-within{filter:none}
+ body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated{background:#181b20!important;border-color:#555b63!important;box-shadow:none!important}
+ body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated .team-flex{filter:grayscale(1)!important;position:relative;padding-right:30px!important}
+ body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated .team-flex::after{content:'✕';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:900;color:#fff;text-shadow:0 1px 4px #000;pointer-events:none}
+ body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated input:not([type=checkbox]):not([type=radio]),body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated select{background:#20252c!important;border-color:#525964!important;color:#d5d9df!important;box-shadow:none!important;outline:none!important}
  body.cff-elimination-focus #teams-inputs-container .team-row .cff-entry-needed,body.cff-elimination-focus #teams-inputs-container .team-row input:focus,body.cff-elimination-focus #teams-inputs-container .team-row select:focus{background:#3a2918!important;border:2px solid #ffa52b!important;color:#fff0d8!important;outline:1px solid #ffa52b!important;outline-offset:1px!important}
  .cff-elim-marker{display:none;font-size:10px;line-height:1.4;color:#c6cbd2;grid-column:1/-1;flex-basis:100%;padding:3px 5px;pointer-events:none}
  body.cff-elimination-focus .cff-elim-marker{display:block}
@@ -34,12 +33,13 @@
    total++;const p=position(row),fields=[...row.querySelectorAll('[data-required="1"]')].filter(visible),missing=fields.filter(f=>!filled(f));
    const complete=p!==null&&fields.length>0&&missing.length===0;if(p!==null)placed++;if(p!==null&&!complete)pending++;
    row.classList.toggle('cff-elim-complete',enabled&&complete);
+   row.classList.toggle('cff-team-eliminated',enabled&&p!==null&&p>1);
    row.querySelectorAll('.cff-entry-needed').forEach(f=>{if(!enabled||p===null||!missing.includes(f))f.classList.remove('cff-entry-needed');});
    if(enabled&&p!==null)missing.forEach(f=>f.classList.add('cff-entry-needed'));
    let marker=row.querySelector('.cff-elim-marker');
    if(!enabled){marker?.remove();return;}
    if(!marker){marker=document.createElement('span');marker.className='cff-elim-marker';row.append(marker);}
-   const text=p===null?'Sem colocação registrada':complete?'✓ '+p+'º · preenchido':p+'º · '+missing.length+' campo(s) pendente(s)';
+   const text=p===null?'Sem colocação registrada':(p===1?'BOOYAH · 1º':'✕ Eliminada · '+p+'º')+(complete?' · ✓ preenchido':' · '+missing.length+' campo(s) pendente(s)');
    if(marker.textContent!==text)marker.textContent=text;
   });
   const text=placed+'/'+total+' com colocação · '+pending+' equipe(s) com preenchimento pendente';if(summary.textContent!==text)summary.textContent=text;
