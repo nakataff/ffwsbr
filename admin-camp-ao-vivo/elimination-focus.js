@@ -5,11 +5,13 @@
  const key='cff-camp-elimination-focus-v2';let queued=false;
  try{control.checked=localStorage.getItem(key)!=='0';}catch{}
  const style=document.createElement('style');style.textContent=`
- body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated{background:#181b20!important;border-color:#555b63!important;box-shadow:none!important}
  body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated .team-flex{filter:grayscale(1)!important;position:relative;padding-right:30px!important}
  body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated .team-flex::after{content:'✕';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:900;color:#fff;text-shadow:0 1px 4px #000;pointer-events:none}
- body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated input:not([type=checkbox]):not([type=radio]),body.cff-elimination-focus #teams-inputs-container .team-row.cff-team-eliminated select{background:#20252c!important;border-color:#525964!important;color:#d5d9df!important;box-shadow:none!important;outline:none!important}
- body.cff-elimination-focus #teams-inputs-container .team-row .cff-entry-needed,body.cff-elimination-focus #teams-inputs-container .team-row input:focus,body.cff-elimination-focus #teams-inputs-container .team-row select:focus{background:#3a2918!important;border:2px solid #ffa52b!important;color:#fff0d8!important;outline:1px solid #ffa52b!important;outline-offset:1px!important}
+ body.cff-elimination-focus #teams-inputs-container .team-row input:focus,body.cff-elimination-focus #teams-inputs-container .team-row select:focus{outline:2px solid #ffa52b!important;outline-offset:2px!important}
+ body #teams-inputs-container .team-row[data-cff-slot-state="empty"] :is(input[data-required="1"],input.cff-extra-input):not(:disabled){background:#321d20!important;border-color:#dc655f!important;color:#ffd8d5!important}
+ body #teams-inputs-container .team-row[data-cff-slot-state="partial"] :is(input[data-required="1"],input.cff-extra-input):not(:disabled){background:#332b16!important;border-color:#dfb638!important;color:#fff3bf!important}
+ body #teams-inputs-container .team-row[data-cff-slot-state="complete"] :is(input[data-required="1"],input.cff-extra-input):not(:disabled){background:#193223!important;border-color:#59ad70!important;color:#d7ffd9!important}
+ body #teams-inputs-container .team-row input.cff-extra-input[aria-invalid="true"]{background:#321d20!important;border-color:#dc655f!important;color:#ffd8d5!important}
  .cff-elim-marker{display:none;font-size:10px;line-height:1.4;color:#c6cbd2;grid-column:1/-1;flex-basis:100%;padding:3px 5px;pointer-events:none}
  body.cff-elimination-focus .cff-elim-marker{display:block}
  #cff-elim-summary{font-size:11px;color:#bdc5d0;padding:4px 0}#cff-elim-summary[hidden]{display:none}
@@ -30,7 +32,9 @@
   queued=false;const enabled=control.checked;document.body.classList.toggle('cff-elimination-focus',enabled);summary.hidden=!enabled;
   let placed=0,pending=0,total=0;
   container.querySelectorAll('.team-row').forEach(row=>{
-   total++;const p=position(row),fields=[...row.querySelectorAll('[data-required="1"]')].filter(visible),missing=fields.filter(f=>!filled(f));
+   total++;const p=position(row),fields=[...row.querySelectorAll('[data-required="1"],input.cff-extra-input')].filter(visible),missing=fields.filter(f=>!filled(f)||f.getAttribute('aria-invalid')==='true');
+   const slotState=fields.length===missing.length?'empty':missing.length?'partial':'complete';
+   if(row.dataset.cffSlotState!==slotState)row.dataset.cffSlotState=slotState;
    const complete=p!==null&&fields.length>0&&missing.length===0;if(p!==null)placed++;if(p!==null&&!complete)pending++;
    row.classList.toggle('cff-elim-complete',enabled&&complete);
    row.classList.toggle('cff-team-eliminated',enabled&&p!==null&&p>1);
@@ -48,6 +52,6 @@
  control.addEventListener('change',()=>{try{localStorage.setItem(key,control.checked?'1':'0');}catch{}sync();});
  document.addEventListener('input',schedule);document.addEventListener('change',schedule);container.addEventListener('focusin',schedule);
  new MutationObserver(schedule).observe(container,{childList:true,subtree:true});
- window.addEventListener('cff:camp-core-ready',schedule);window.addEventListener('cff:camp-drops-cleared',schedule);
+ window.addEventListener('cff:camp-core-ready',schedule);window.addEventListener('cff:camp-drops-cleared',schedule);window.addEventListener('cff:camp-extra-entries-rendered',schedule);
  sync();
 })();

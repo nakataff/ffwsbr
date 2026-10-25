@@ -158,7 +158,7 @@
           document.body.appendChild(persistence);
           };
           const entries=document.createElement('script');
-          entries.src='admin-camp-ao-vivo/launch-extras.js?v=20261025-multi-focus-v1';
+          entries.src='admin-camp-ao-vivo/launch-extras.js?v=20261025-slot-colors-v3';
           entries.async=false;
           entries.onload=startPersistence;
           entries.onerror=()=>{console.warn('[Camp ao vivo] entradas extras indisponíveis');startPersistence()};

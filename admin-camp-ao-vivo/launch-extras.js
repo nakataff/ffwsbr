@@ -314,7 +314,7 @@
       if(warning.textContent!==text)warning.textContent=text;
       warning.hidden=!text;
     });
-    buildSlotFocusUi();syncSlotFocusUi();restoreSlotFocus();
+    buildSlotFocusUi();syncSlotFocusUi();restoreSlotFocus();window.dispatchEvent(new Event('cff:camp-extra-entries-rendered'));
   }
   function queueRender(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;renderRows()})}
   function installDataHooks(){
