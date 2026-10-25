@@ -1,0 +1,37 @@
+.cff-account-access-group{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;min-width:0;vertical-align:middle}
+.cff-account-access-group>.cff-account-access{margin:0!important}
+.cff-header-wallet{display:inline-flex;align-items:center;justify-content:center;gap:7px;box-sizing:border-box;min-height:40px;padding:4px 12px 4px 6px;border:1px solid #756038;border-radius:22px;background:linear-gradient(120deg,#28251a,#101c2c 80%);color:#ffdf96;text-decoration:none!important;white-space:nowrap;flex:none;box-shadow:inset 0 1px 0 #ffe8a212;transition:border-color .15s,background .15s}
+[data-header-wallet][hidden]{display:none!important}
+.cff-header-wallet:hover{border-color:#d9b15e;background:linear-gradient(120deg,#352e1b,#14283c 80%)}
+.cff-header-wallet:focus-visible{outline:2px solid #ffe3a1;outline-offset:3px}
+.cff-header-wallet>img{width:32px!important;height:32px!important;object-fit:contain;flex:none;filter:drop-shadow(0 1px 3px #0008)}
+.cff-header-wallet>span{display:grid;gap:2px;text-align:left}
+.cff-header-wallet strong{font:800 14px/1 Arial,sans-serif;font-variant-numeric:tabular-nums;color:#ffe4a7;letter-spacing:.2px}
+.cff-header-wallet small{font:700 8px/1 Arial,sans-serif;letter-spacing:1px;color:#b6aa89}
+.cff-account-page-head>.cff-account-access-group,.topbar-inner>.cff-account-access-group{margin-left:auto}
+.start-screen>.cff-account-access-group{position:absolute;top:16px;right:16px;z-index:5}
+/* Reserve real space for search. The legacy absolutely positioned input covered the wallet. */
+@media(min-width:769px){
+ .nav-desktop{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+ .nav-desktop-right{min-width:0;gap:10px}
+ .nav-desktop-right>.cff-account-access-group{flex:0 0 auto}
+ .nav-search-wrapper-desktop{flex:0 1 auto;min-width:36px;max-width:260px;gap:4px}
+ .nav-search-wrapper-desktop input{position:static!important;right:auto!important;box-sizing:border-box;flex:0 1 auto;min-width:0;width:0!important;padding:7px 0!important;border-width:0;}
+ .nav-search-wrapper-desktop.open input{width:clamp(100px,16vw,220px)!important;padding:7px 12px!important;border-width:1px;}
+ .nav-search-wrapper-desktop .nav-search-toggle-btn{flex:0 0 36px;min-width:36px;justify-content:center}
+ .nav-search-wrapper-desktop .search-results-dropdown{top:calc(100% + 10px);width:min(360px,calc(100vw - 40px));box-sizing:border-box}
+}
+@media(max-width:768px){
+ .cff-account-access-group{gap:5px}
+ .cff-header-wallet{min-height:36px;padding:3px 8px 3px 4px;gap:4px}
+ .cff-header-wallet>img{width:26px!important;height:26px!important}
+ .cff-header-wallet strong{font-size:12px;letter-spacing:0}
+ .cff-header-wallet small{display:none}
+ .cff-mobile-header:has([data-header-wallet]:not([hidden])){grid-template-columns:40px minmax(40px,1fr) auto!important;gap:6px!important}
+ .cff-mobile-header:has([data-header-wallet]:not([hidden]))>.nav-mobile-right,.cff-mobile-header:has([data-header-wallet]:not([hidden]))>.cff-public-account-host{position:static!important;max-width:none!important;width:auto!important;grid-column:3!important;grid-row:1!important;gap:3px!important}
+ .cff-mobile-header:has([data-header-wallet]:not([hidden])) .nav-mobile-search-btn,.cff-mobile-header:has([data-header-wallet]:not([hidden])) .cff-mobile-search-button{width:30px!important;min-width:30px!important;flex-basis:30px!important;padding:4px!important}
+ .cff-mobile-header .cff-account-access-group>.cff-account-access{width:36px!important;height:36px!important;min-width:36px!important;padding:3px!important}
+ .cff-mobile-header .cff-account-access-group>.cff-account-access img{width:28px!important;height:28px!important}
+}
+
+.cff-header-inbox{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;border:1px solid #35445b;border-radius:50%;background:#101b2b;color:#d7e6ff;text-decoration:none}.cff-header-inbox:hover{background:#21324b;border-color:#6887b1}.cff-header-inbox i{position:absolute;right:1px;top:1px;width:9px;height:9px;border-radius:50%;background:#ff4655;box-shadow:0 0 0 2px #0a1220}.cff-header-inbox[hidden],.cff-header-inbox i[hidden]{display:none!important}@media(max-width:600px){.cff-account-access-group{gap:5px}.cff-header-inbox{width:30px;height:30px}.cff-header-inbox svg{width:16px;height:16px}}

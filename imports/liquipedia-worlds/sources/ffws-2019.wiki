@@ -1,0 +1,373 @@
+{{DISPLAYTITLE:Free Fire World Series 2019}}
+{{FFWS 2019 Navbox}}
+{{Tabs static
+|name1=Overview		|link1=Free_Fire_World_Series/2019
+|name2=Statistics	|link2=Free_Fire_World_Series/2019/Statistics
+}}
+{{Infobox league
+|liquipediatier=1 |highlighted=true
+|name=Free Fire World Series 2019
+|tickername=FFWS 2019
+|shortname=2019
+|series=Free Fire World Series |abbreviation=FFWS
+|image=Free Fire World Series 2019 Rio allmode.png
+|icon=Free Fire World Series 2019 Rio allmode.png
+|organizer=Garena
+|sponsor=[http://www.burgerking.com.br/ Burger King]<br>[https://next.me/ Next.me]
+|garena-sponsored=true
+|type=Offline
+|mode=squad
+|perspective=TPP
+|country=Brazil
+|city=Rio de Janeiro
+|venue=[https://en.wikipedia.org/wiki/Barra_Olympic_Park Barra Olympic Park]
+|prizepoolusd=400,000
+|date=2019-11-16
+|twitter=esportsfreefire
+|youtube=channel/UC2u849W-BNFXJUNociHYrqw
+|facebook=freefireEN
+|team_number=12
+|previous=Free_Fire_World_Cup/2019{{!}}FFWC Bangkok 2019
+|next=Free_Fire_World_Cup/2020{{!}}<s>FFWC Jakarta 2020</s>
+|next2=Free_Fire_World_Series/2021/Singapore{{!}}FFWS Singapore 2021
+}}
+
+'''Free Fire World Series''' ('''FFWS''' in short) is a [[Global_Events|Global]] tournament organized by Garena.
+
+'''FFWS 2019''' is the first edition in the series and marks as the final event and the World Championship of 2019's Free Fire competitive season. Qualified are the 12 best teams throughout all regional leagues in the second half of 2019.
+
+==About==
+===Broadcast Talent===
+{{Tabs dynamic|name1=Brazil|name2=English|name3=Thai|name4=Asia|name5=Latin America|This=1|hide-showall=true}}
+{{Tabs dynamic/tab|1}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Stage Host
+|b1=Camilota XP|b1name=Camila Silveira|b1flag=br
+}}
+{{BroadcasterCard
+|position=Desk Host
+|b1=AnaXisde|b1name=Ana Paula Cardoso|b1flag=br
+}}
+{{BroadcasterCard
+|position=Interviewer
+|b1=Tawna|b1name=Carol Oliveira|b1flag=br
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Commentator
+|b1=MurilloShooow|b1flag=br|b1name=Murillo Medeiros
+|b2=Diego Hads
+}}
+{{BroadcasterCard
+|position=Analyst
+|b1=Felpy |b1name=Felipe Cardoso |b1flag=br
+|b2=Luis Folha|b2name=Luis Meyet|b2flag=br
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Guest Analyst
+|b1=Cerol|b1flag=br|b1name=
+|b2=GGeasy66|b2name=Ramon Ramalho|b2flag=br
+|b3=Weedzao |b3flag=br
+|b4=Bruno PlayHard|b4flag=br
+}}
+{{box|end}}
+{{Tabs dynamic/tab|2}}
+{{BroadcasterCard
+|position=English Commentator|lang=English
+|b1=Qontra|b1name=Aaron Chan|b1flag=my
+|b2=Play of the Jay|b2flag=my|b2name=Jay Lim
+}}
+{{Tabs dynamic/tab|3}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Thai Commentator|lang=Thai
+|b1=BIKII|b1flag=th
+|b2=Cena|b2flag=th
+|b3=Ta|b3flag=th
+|b4=VV|b4flag=th
+}}
+{{box|end}}
+{{Tabs dynamic/tab|4}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Indian Commentator|lang=India
+|b1=Gaming Aura|b1flag=in
+|b2=Arrow IB|b2flag=in
+|b3=Prerna Potts|b3flag=in
+}}
+{{BroadcasterCard
+|position=Vietnamese Commentator|lang=Vietnam
+|b1=Quang Hung|b1flag=vn
+|b2=Huy Hoang|b2flag=vn
+|b3=Quoc Anh|b3flag=vn
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Indonesian Commentator|lang=Bahasa
+|b1=Skyla|b1flag=id|b1name=M. Redondoranggina Leon
+|b2=Lihan|b2flag=id
+|b3=Adji Sven|b3flag=id|b3name=Adji Hadi Perdana
+|b4name=Alanuari Wicaksono|b4=Doggo|b4flag=id
+|b5name=M Al-fariz Firdaus|b5=Viscaloid29|b5flag=id
+}}
+{{box|break|padding=1em}}
+{{BroadcasterCard
+|position=Middle East Commentator|lang=Arabic
+|b1=Heroshima|b1flag=ma|b1name=Jamal Abaid
+|b2=Maha|b2name=Maha Makarem|b2flag=sa
+|b3=BNL|b3name=Oussema Elloumi|b3flag=sa
+|b4=7Chich|b4name=Amine Cherif|b4flag=tn
+}}
+{{box|end}}
+{{Tabs dynamic/tab|5}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Analysts & Commentator
+|b1=XavyBecker|b1flag=mx|b1name=Javier Linares
+|b2=CantorGames|b2flag=co|b2name=Alejandro Cantor
+|b3=Punicher|b3flag=ar|b3name=Leonardo Villoldo
+}}
+{{box|end}}
+{{Tabs dynamic/end}}
+
+===Format===
+* '''FFWS 2019:''''' November 16th, 2019 &mdash; in Barra Olympic Park, {{FlagNoLink|br}} Rio De Janeiro.''
+** 12 teams:
+*** {{Bgcolortext|stayup|Top 2}} of {{FlagNoLink|br}}&nbsp;[[Free Fire Pro League/Brazil/Season 3|Pro League Brazil Season 3]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|th}}&nbsp;[[Free Fire Pro League/Thailand/Season 1|Pro League Thailand Season 1]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|id}}&nbsp;[[Free Fire Indonesia Masters/Season 2|Indonesia Masters Season 2]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|vn}}&nbsp;[[Arena of Survival/2019|Arena of Survival 2019]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|my}}&nbsp;{{FlagNoLink|tw}}&nbsp;[[Free Fire Southeast Asia Championship/2019|SEA Championship 2019]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|middle east}}&nbsp;[[Free Fire Arab Series/Season 2|Arab Series Season 2]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|in}}&nbsp;[[Free Fire India Today League/2019|India Today League 2019]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|eu}}&nbsp;{{FlagNoLink|ru}}&nbsp;[[Free Fire Eurasia Cup/2019|Eurasia Cup 2019]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|latin america}}&nbsp;[[Free Fire League Latinoamerica/Norte/Season 2|League Latinoamerica North Season 2]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|south america}}&nbsp;[[Free Fire League Latinoamerica/Sur/Season 2|League Latinoamerica South Season 2]]
+*** {{Bgcolortext|stayup|Winner}} of {{FlagNoLink|north america}}&nbsp;{{FlagNoLink|mx}}&nbsp;[[Free Fire League Norteamerica/2019|League Norteamerica 2019]]
+** 8 Matches
+<br/>
+{{Points300}}
+
+==Prize Pool==
+{{TeamPrizePool
+|{{Slot|usdprize=200,000|{{Opponent|corinthians}} }}
+|{{Slot|usdprize=80,000 |{{Opponent|sbornaya chr}} }}
+|{{Slot|usdprize=40,000 |{{Opponent|ilmn s2k}} }}
+|{{Slot|usdprize=12,000 |{{Opponent|lgds}} }}
+|{{Slot|usdprize=10,000 |{{Opponent|infinity esports}} }}
+|{{Slot|usdprize=10,000 |{{Opponent|team flash}} }}
+|{{Slot|usdprize=6,000	|{{Opponent|arctic gaming méxico}} }}
+|{{Slot|usdprize=6,000	|{{Opponent|dranix esports}} }}
+|{{Slot|usdprize=4,000	|{{Opponent|loud}} }}
+|{{Slot|usdprize=4,000	|{{Opponent|infinity yt}} }}
+|{{Slot|usdprize=4,000	|{{Opponent|nawabzade gaming}} }}
+|{{Slot|usdprize=4,000	|{{Opponent|samurai team}} }}
+|adjacentContent=
+	{{AwardPrizePool
+	|{{Slot |award=MVP|usdprize=22,000|{{Opponent|Nobru|flag=br|team=corinthians}} }}
+	}}
+}}
+
+==Participants==
+{{TeamCardToggleButton|tcht=190}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Corinthians
+|p1=LEVELUP |p1flag=br
+|p2=FIXA |p2flag=br
+|p3=Nobru |p3flag=br
+|p4=JAPA |p4flag=br
+|p5=01pires |p5flag=br
+|c=CHEFEXL|cflag=br
+|flag=br
+|qualifier=[[Free Fire Pro League/Brazil/Season 3|Pro League BR]]
+}}
+{{TeamCard
+|team=LOUD
+|p1=ViniZx |p1flag=br
+|p2=Will |p2flag=br
+|p3=Bradoock |p3flag=br
+|p4=ShariiN |p4flag=br
+|p5=Voltan |p5flag=br
+|flag=br
+|qualifier=[[Free Fire Pro League/Brazil/Season 3|Pro League BR]]
+}}
+{{TeamCard
+|team=Illuminate Slow TwoK
+|p1=D-Long |p1flag=th
+|p2=Ethan |p2flag=th
+|p3=Muetob |p3flag=th
+|p4=Luffy |p4flag=th
+|p5=JUSTIN
+|flag=th
+|qualifier=[[Free Fire Pro League/Thailand/Season 1|Pro League TH]]
+}}
+{{TeamCard
+|team=Dranix Esports
+|p1=DeviL |p1flag=id
+|p2=Delta |p2flag=id
+|p3=Bay |p3flag=id
+|p4=Bion |p4flag=id
+|flag=id
+|qualifier=[[Free Fire Indonesia Masters/Season 2|Indonesia Masters]]
+}}
+{{TeamCard
+|team=Team Flash
+|notes=2
+|p1=Clear |p1flag=vn
+|p2=Minow |p2flag=vn
+|p3=DNP |p3flag=vn
+|p4=Cool |p4flag=vn
+|p5=RyukVN|p5flag=vn
+|flag=vn
+|qualifier=[[Arena of Survival/2019|Arena of Survival]]
+}}
+{{TeamCard
+|team=LGDS
+|notes=1
+|p1=ETA |p1flag=tw
+|p2=YOYO |p2flag=tw
+|p3=ANGU |p3flag=tw
+|p4=RORO |p4flag=tw
+|p5=OREO |p5flag=tw
+|flag=tw
+|qualifier=[[Free Fire Southeast Asia Championship/2019|SEA Championship]]
+}}
+{{TeamCard
+|team=Nawabzade Gaming
+|p1=VRC-1000|p1flag=in
+|p2=RADHE BHAI|p2flag=in
+|p3=RADHE THAKOR|p3flag=in
+|p4=GJ JIGAR|p4flag=in
+|p5=ILUMINATI|p5flag=in
+|flag=in
+|qualifier=[[Free Fire India Today League/2019|India Today League]]
+}}
+{{TeamCard
+|team=Sbornaya ChR
+|p1=Dzarmaro |p1flag=ru
+|p2=Pokritel |p2flag=ru
+|p3=Kadyrov |p3flag=ru
+|p4=Mers1 |p4flag=ru
+|p5=Tumso
+|flag=ru
+|qualifier=[[Free Fire Eurasia Cup/2019|Eurasia Cup]]
+}}
+{{TeamCard
+|team=Infinity YT
+|p1=Ninja|p1flag=dz|p1link=Ninja (Algerian Player)
+|p2=HardCrew |p2flag=dz
+|p3=NasroDvl |p3flag=tn
+|p4=BrbZinou |p4flag=tn
+|p5=SHADIO|p5flag=dz
+|p6=LastBoss
+|flag=africa
+|qualifier=[[Free Fire Arab Series/Season 2|Arab Series]]
+}}
+{{TeamCard
+|team=Infinity Esports
+|p1=Narucho |p1flag=nicaragua
+|p2=Jeisson |p2flag=ecuador
+|p3=Lupaco |p3flag=co
+|p4=Carlos|p4link=CarlosTD |p4flag=ecuador
+|p5=Monkey|p5flag=honduras
+|flag=latin america
+|qualifier=[[Free Fire League Latinoamerica/Norte/Season 2|League LATAM North]]
+}}
+{{TeamCard
+|team=Team Samurái
+|p1=Alex18 |p1flag=peru
+|p2=14Delta |p2flag=ar
+|p3=Ragnar |p3flag=ar
+|p4=MICHAEL |p4flag=bolivia
+|p5=Hassan|p5flag=py
+|flag=south america
+|qualifier=[[Free Fire League Latinoamerica/Sur/Season 2|League LATAM South]]
+}}
+{{TeamCard
+|team=Arctic Gaming México
+|p1=Jona14 |p1flag=mx
+|p2=Vega |p2flag=mx
+|p3=MECHAS7 |p3flag=mx
+|p4=Meme |p4flag=mx
+|p5=Profe
+|c=PUMA|cflag=mx
+|flag=mx
+|qualifier=[[Free Fire League Norteamerica/2019|League North America]]
+}}
+{{TeamCard columns end}}
+{{NoteBig
+|n1='''[[Goddess]]''' rebranded to '''[[LGDS]]'''
+|n2=Roster of '''King of Free Fire''' signed by '''[[Team Flash]]'''
+}}
+
+==Results==
+{{Bracket|Bracket/2|id=ffws2019gf
+|R1M1={{Match|finished=true
+	|p_kill=20 |p1=300 |p2=200 |p3=170 |p4=135 |p5=105 |p6=80 |p7=60 |p8=45 |p9=30 |p10=20 |p11=10 |p12=0
+|map1={{Map|date=November 16, 2019 |finished=true|map=Bermuda}}
+|map2={{Map|date=November 16, 2019 |finished=true|map=Purgatory}}
+|map3={{Map|date=November 16, 2019 |finished=true|map=Bermuda}}
+|map4={{Map|date=November 16, 2019 |finished=true|map=Purgatory}}
+|map5={{Map|date=November 16, 2019 |finished=true|map=Bermuda}}
+|map6={{Map|date=November 16, 2019 |finished=true|map=Purgatory}}
+|map7={{Map|date=November 16, 2019 |finished=true|map=Bermuda}}
+|map8={{Map|date=November 16, 2019 |finished=true|map=Purgatory}}
+|opponent1={{TeamOpponent|corinthians			|m1={{MS|2|7}} |m2={{MS|2|12}}|m3={{MS|9|3}} |m4={{MS|8|3}} |m5={{MS|2|4}} |m6={{MS|8|4}} |m7={{MS|1|7}} |m8={{MS|1|9}}  }}
+|opponent2={{TeamOpponent|sbornaya chr			|m1={{MS|3|5}} |m2={{MS|1|3}} |m3={{MS|1|11}}|m4={{MS|3|5}} |m5={{MS|3|5}} |m6={{MS|2|3}} |m7={{MS|2|1}} |m8={{MS|10|0}} }}
+|opponent3={{TeamOpponent|ilmn s2k				|m1={{MS|1|10}}|m2={{MS|6|3}} |m3={{MS|2|5}} |m4={{MS|6|5}} |m5={{MS|5|2}} |m6={{MS|4|8}} |m7={{MS|5|7}} |m8={{MS|4|4}}  }}
+|opponent4={{TeamOpponent|lgds					|m1={{MS|8|0}} |m2={{MS|3|7}} |m3={{MS|7|2}} |m4={{MS|12|0}}|m5={{MS|1|10}}|m6={{MS|1|6}} |m7={{MS|6|5}} |m8={{MS|7|4}}  }}
+|opponent5={{TeamOpponent|infinity esports		|m1={{MS|9|4}} |m2={{MS|9|1}} |m3={{MS|6|7}} |m4={{MS|1|13}}|m5={{MS|8|5}} |m6={{MS|5|2}} |m7={{MS|11|0}}|m8={{MS|2|7}}  }}
+|opponent6={{TeamOpponent|team flash			|m1={{MS|10|3}}|m2={{MS|5|7}} |m3={{MS|5|6}} |m4={{MS|2|6}} |m5={{MS|9|3}} |m6={{MS|9|0}} |m7={{MS|4|5}} |m8={{MS|3|3}}  }}
+|opponent7={{TeamOpponent|arctic gaming méxico	|m1={{MS|11|2}}|m2={{MS|10|0}}|m3={{MS|3|5}} |m4={{MS|7|0}} |m5={{MS|4|5}} |m6={{MS|11|2}}|m7={{MS|3|5}} |m8={{MS|5|7}}  }}
+|opponent8={{TeamOpponent|dranix esports		|m1={{MS|4|6}} |m2={{MS|12|0}}|m3={{MS|11|0}}|m4={{MS|11|0}}|m5={{MS|12|0}}|m6={{MS|6|5}} |m7={{MS|7|7}} |m8={{MS|11|7}} }}
+|opponent9={{TeamOpponent|loud					|m1={{MS|7|3}} |m2={{MS|7|3}} |m3={{MS|8|0}} |m4={{MS|4|12}}|m5={{MS|11|0}}|m6={{MS|10|2}}|m7={{MS|10|2}}|m8={{MS|12|0}} }}
+|opponent10={{TeamOpponent|infinity yt			|m1={{MS|12|1}}|m2={{MS|4|5}} |m3={{MS|4|1}} |m4={{MS|9|1}} |m5={{MS|6|1}} |m6={{MS|7|3}} |m7={{MS|12|0}}|m8={{MS|8|2}}  }}
+|opponent11={{TeamOpponent|nawabzade gaming		|m1={{MS|5|2}} |m2={{MS|11|0}}|m3={{MS|12|0}}|m4={{MS|5|0}} |m5={{MS|7|0}} |m6={{MS|3|3}} |m7={{MS|9|1}} |m8={{MS|9|0}}  }}
+|opponent12={{TeamOpponent|samurai team			|m1={{MS|6|0}} |m2={{MS|8|0}} |m3={{MS|10|3}}|m4={{MS|10|0}}|m5={{MS|10|2}}|m6={{MS|12|2}}|m7={{MS|8|1}} |m8={{MS|6|1}}  }}
+	}}
+}}
+
+==Additional Content==
+===Player Performance===
+{{box|start|padding=2em}}
+<h4>Best players by Match</h4>
+{{AwardPrizePool|cutafter=8
+|{{Slot |award=King of the Match #1|{{Opponent|FIXA|flag=br|team=sccp}} }}
+|{{Slot |award=King of the Match #2|{{Opponent|Japa04|flag=br|team=sccp}} }}
+|{{Slot |award=King of the Match #3|{{Opponent|Dzarmaro|flag=ru|team=chr}} }}
+|{{Slot |award=King of the Match #4|{{Opponent|Jeisson|flag=ec|team=infinity esports}} }}
+|{{Slot |award=King of the Match #5|{{Opponent|YOYO|flag=tw|team=lgds}} }}
+|{{Slot |award=King of the Match #6|{{Opponent|ANGU|flag=tw|team=lgds}} }}
+|{{Slot |award=King of the Match #7|{{Opponent|FIXA|flag=br|team=sccp}} }}
+|{{Slot |award=King of the Match #8|{{Opponent|LEVELUP|flag=br|team=sccp}} }}
+}}
+{{box|break}}
+<h4>Players with Most Kills</h4>
+{| class="wikitable" style="text-align:center; margin-top:0"
+! colspan="3"|Most Kills
+|-
+! #
+! width=310px|Player
+! Total
+|-
+| {{Placement|1}} || align="left"|{{Player|Luffy|flag=th|team=Illuminate Slow TwoK}}		|| 18
+|-
+| {{Placement|2}} || align="left"|{{Player|LEVELUP|flag=br|team=sccp}}						|| 14
+|-
+| {{Placement|3}} || align="left"|{{Player|FIXA|flag=br|team=sccp}}							|| 13
+|-
+| {{Placement|3}} || align="left"|{{Player|MECHAS7|flag=mx|team=arctic gaming méxico orig}}	|| 13
+|-
+| {{Placement|5}} || align="left"|{{Player|Nobru|flag=br|team=sccp}}						|| 12
+|-
+| {{Placement|5}} || align="left"|{{Player|D-Long|flag=th|team=Illuminate Slow TwoK}}		|| 12
+|}
+<small>''To see the full list [[/Statistics|click here]] </small>
+{{box|end}}
+
+==References==
+{{Reflist}}
+{{FFGE Navbox}}

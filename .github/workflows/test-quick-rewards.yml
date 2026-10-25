@@ -1,0 +1,42 @@
+name: Test Quick Rewards and Frame Picker
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'js/admin-quick-rewards.js'
+      - 'css/admin-quick-rewards.css'
+      - 'js/admin-perfis.js'
+      - 'admin-perfis.html'
+      - 'js/public-account.js'
+      - 'js/global-chat.js'
+      - 'js/config.min.js'
+      - 'css/global-chat.css'
+      - 'sorteio-comunidade.html'
+      - 'js/chat-visibility.mjs'
+      - 'test/global-chat-ui.test.cjs'
+      - 'test/chat-visibility-ui.test.cjs'
+      - 'css/community-profile.css'
+      - 'test/quick-rewards.test.cjs'
+      - '.github/workflows/test-quick-rewards.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser test dependencies
+        run: |
+          mkdir -p /tmp/cff-rewards-test
+          cp test/game-gifts-browser-package.json /tmp/cff-rewards-test/package.json
+          npm install --prefix /tmp/cff-rewards-test --no-audit --no-fund
+      - name: Check scripts
+        run: node --check js/admin-quick-rewards.js && node --check js/admin-perfis.js && node --check js/public-account.js && node --check js/global-chat.js && node --check js/chat-visibility.mjs
+      - name: Test delivery and direct frame changes
+        env:
+          NODE_PATH: /tmp/cff-rewards-test/node_modules
+        run: node --test --test-timeout=10000 test/quick-rewards.test.cjs test/global-chat-ui.test.cjs test/chat-visibility-ui.test.cjs test/profile-emblems.test.cjs test/profile-inventory.test.cjs test/profile-frames.test.mjs test/profile-instagram-link.test.mjs

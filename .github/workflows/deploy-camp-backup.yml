@@ -1,0 +1,46 @@
+name: Deploy Camp GitHub Backup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Install Functions dependencies
+        working-directory: functions
+        run: npm install
+
+      - name: Sync GitHub backup secret
+        shell: bash
+        env:
+          GITHUB_CAMP_TOKEN: ${{ secrets.GITHUB_CAMP_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GITHUB_CAMP_TOKEN:-}" ]; then
+            echo "Secret GITHUB_CAMP_TOKEN não configurado no repositório."
+            exit 1
+          fi
+          printf '%s' "$GITHUB_CAMP_TOKEN" | firebase functions:secrets:set GITHUB_CAMP_TOKEN --project central-free-fire --force
+
+      - name: Deploy camp backup function
+        run: firebase deploy --only functions:campGithubBackup --project central-free-fire --non-interactive

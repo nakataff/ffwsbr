@@ -1,0 +1,166 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "ALPHA7",
+  "players": {
+    "sam7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 138,
+        "damage": 108588,
+        "assists": 188,
+        "matches": 104,
+        "mvp": 2,
+        "record": 7,
+        "team": "ALPHA7",
+        "rankKills": 30,
+        "rankDamage": 23,
+        "rankAssists": 23,
+        "stages": {
+          "classificatoria": {
+            "kills": 124,
+            "damage": 96458,
+            "assists": 164,
+            "matches": 90,
+            "mvp": 2
+          },
+          "final": {
+            "kills": 14,
+            "damage": 12130,
+            "assists": 24,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
+      }
+    },
+    "brisa7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 25,
+        "damage": 18026,
+        "assists": 76,
+        "matches": 27,
+        "mvp": 0,
+        "record": 5,
+        "team": "ALPHA7",
+        "rankKills": 73,
+        "rankDamage": 73,
+        "rankAssists": 61,
+        "stages": {
+          "classificatoria": {
+            "kills": 16,
+            "damage": 14263,
+            "assists": 60,
+            "matches": 23,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 9,
+            "damage": 3763,
+            "assists": 16,
+            "matches": 4,
+            "mvp": 0
+          }
+        }
+      }
+    },
+    "mitomvp": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 154,
+        "damage": 102796,
+        "assists": 160,
+        "matches": 102,
+        "mvp": 1,
+        "record": 7,
+        "team": "ALPHA7",
+        "rankKills": 23,
+        "rankDamage": 26,
+        "rankAssists": 30,
+        "stages": {
+          "classificatoria": {
+            "kills": 133,
+            "damage": 87871,
+            "assists": 140,
+            "matches": 88,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 21,
+            "damage": 14925,
+            "assists": 20,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
+      }
+    },
+    "lc777": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 140,
+        "damage": 142755,
+        "assists": 141,
+        "matches": 85,
+        "mvp": 3,
+        "record": 7,
+        "team": "RUSH GAMING",
+        "rankKills": 28,
+        "rankDamage": 9,
+        "rankAssists": 40,
+        "stages": {
+          "classificatoria": {
+            "kills": 120,
+            "damage": 128470,
+            "assists": 132,
+            "matches": 77,
+            "mvp": 2
+          },
+          "final": {
+            "kills": 20,
+            "damage": 14285,
+            "assists": 9,
+            "matches": 8,
+            "mvp": 1
+          }
+        }
+      }
+    },
+    "jnmvp7": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 238,
+        "damage": 133023,
+        "assists": 171,
+        "matches": 104,
+        "mvp": 7,
+        "record": 11,
+        "team": "ALPHA7",
+        "rankKills": 3,
+        "rankDamage": 14,
+        "rankAssists": 29,
+        "stages": {
+          "classificatoria": {
+            "kills": 206,
+            "damage": 116845,
+            "assists": 153,
+            "matches": 90,
+            "mvp": 6
+          },
+          "final": {
+            "kills": 32,
+            "damage": 16178,
+            "assists": 18,
+            "matches": 14,
+            "mvp": 1
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+name: Collect Global Finals Logos
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/collect-global-logos.py'
+      - '.github/workflows/collect-global-logos.yml'
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow
+      - name: Read the team-logo sheet and prepare optimized assets
+        run: python scripts/collect-global-logos.py

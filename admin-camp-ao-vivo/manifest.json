@@ -1,0 +1,231 @@
+{
+  "version": "2026-10-01-camp-v4",
+  "source": "camp(1).rar",
+  "original_entry": "index.html",
+  "module_count": 32,
+  "modules": [
+    {
+      "path": "js/01-core.js",
+      "sha256": "c48d0390e1a33c3e2c5341b139413f8f71900d60e44693ddf898fa4f8b882c63",
+      "bytes": 196687
+    },
+    {
+      "path": "js/02-torneio-multidias.js",
+      "sha256": "80ae1d1c541a6168ec30b673cd27112abd31736eadeea542f86d950368c57e55",
+      "bytes": 68277
+    },
+    {
+      "path": "js/03-times-e-desempates.js",
+      "sha256": "4c6a137de32f2dc8d3f96acec7081846fb1579b1394322b2eeabea6bab33a711",
+      "bytes": 137049
+    },
+    {
+      "path": "js/04-stages-e-limpeza.js",
+      "sha256": "4b676bcb1352d45a84e4fd766bde73c77cdd2eafce6c415100989a8500b48d73",
+      "bytes": 46083
+    },
+    {
+      "path": "js/05-importacao-avancada.js",
+      "sha256": "976bd09a522be344cb5d069a03621e119c4f385f8fc5f738916fc4ec8237f0dd",
+      "bytes": 29038
+    },
+    {
+      "path": "js/modo-simples/01-interface-simples.js",
+      "sha256": "e00601006d2413105db36fb9ed46f5c5053b2d17a6d4a031bbdb245a4966eccb",
+      "bytes": 15465
+    },
+    {
+      "path": "js/modo-simples/02-top12.js",
+      "sha256": "f40b047cd2db73c5d01e94e96052e6287687d687b8448801f634c1b04f42e1ba",
+      "bytes": 2694
+    },
+    {
+      "path": "js/modo-simples/03-colocacao-simples.js",
+      "sha256": "8a99f681ad68c2a91ff5f7a7552fde9bf857e26008f2fb33d97ec554f2785917",
+      "bytes": 21955
+    },
+    {
+      "path": "js/modo-simples/04-fase-grupos-legendas-bg.js",
+      "sha256": "ab17315408f14a762733004587d378ee4a72307230881d7299d3386e8f4e3e5a",
+      "bytes": 28781
+    },
+    {
+      "path": "js/modo-simples/05-kills-e-ferramentas-tabela.js",
+      "sha256": "14ac300f927800643440ca9a4b7852134d8bbddd5e6841a7f1f72f8cfa2877b6",
+      "bytes": 30545
+    },
+    {
+      "path": "js/modo-simples/06-importacao-wiki-segura.js",
+      "sha256": "5a746e163722cd0d8f6db04c3f3d2be46003af3fc5db16656b7572989d542402",
+      "bytes": 17404
+    },
+    {
+      "path": "js/modo-simples/07-ajustes-estaveis.js",
+      "sha256": "f9c7b1d87b96885074764537697004e8baee17a8ddcd52b3f62ac010b1ab3734",
+      "bytes": 44905
+    },
+    {
+      "path": "js/modo-simples/08-logos-automaticas.js",
+      "sha256": "d7b8069353bee9111152282c2d461b291935fa801a75cb89cdf391c6458fd19c",
+      "bytes": 20871
+    },
+    {
+      "path": "js/modo-simples/09-visual-lancamento.js",
+      "sha256": "92f8a738b290b08ede13eed1b9c6c152f2a1d1740010f53f04c7c6af25ab02ee",
+      "bytes": 7904
+    },
+    {
+      "path": "js/modo-simples/10-status-e-ordem.js",
+      "sha256": "0b9e1bcf8288fdde89f41f7a864bf6cd70aa2936a4ba8298226f50c54e6b5241",
+      "bytes": 12786
+    },
+    {
+      "path": "js/modo-simples/11-ordem-por-queda.js",
+      "sha256": "ce2d8a18624f4bd9e0cb951064252d122b7b0114a5d5f0e8ad8c8b19f88ecfd2",
+      "bytes": 13984
+    },
+    {
+      "path": "js/modo-simples/12-paises-e-bandeiras.js",
+      "sha256": "9363ec1088572d594c96d862871e4c4e63545d485e2676b1ad71e834e1faa80c",
+      "bytes": 27337
+    },
+    {
+      "path": "js/modo-simples/13-times-ficticios.js",
+      "sha256": "3dd7b94df2f4b3f8192b72f54332c0fb2f617c8887dbb00df8c12950e77dfc14",
+      "bytes": 15270
+    },
+    {
+      "path": "js/modo-simples/14-champion-rush-e-emojis.js",
+      "sha256": "44a0c0dc7b377d4d4c819fc266f16dc88fb3afc8d80bb424f8c698d298f6e802",
+      "bytes": 35940
+    },
+    {
+      "path": "js/modo-simples/15-bandeiras-emojis-escudo.js",
+      "sha256": "9b01800d647ead42f2fcee1e30cd9725e759bb0da27f9de41b2bff906a457156",
+      "bytes": 11507
+    },
+    {
+      "path": "js/modo-simples/16-polimento-tabela.js",
+      "sha256": "d3a2b7aef8c0356294db3584155bf483cc7e86ce88018beeba4e6949a6ae4795",
+      "bytes": 8945
+    },
+    {
+      "path": "js/modo-simples/17-posicao-pontuacao-final.js",
+      "sha256": "1eae14dfd79d828e232d11c12762bcb9d417a473aa996afb0fa2da313a7572e2",
+      "bytes": 23478
+    },
+    {
+      "path": "js/07-leitor-wiki-blocos.js",
+      "sha256": "ca1fc5f77defd037e998c041dc0448f44cf0664be9c182fb14a7806fd8be3e30",
+      "bytes": 23579
+    },
+    {
+      "path": "js/modo-simples/18-modo-torneio.js",
+      "sha256": "c9619432b0103a144240e3266e2ddfa2568a87d4778ed8063f06c6a3f6aff3c9",
+      "bytes": 117469
+    },
+    {
+      "path": "js/modo-simples/19-interface-torneio.js",
+      "sha256": "f56dcf24aa37a9575beeb9928704cd9598d5e07d308c5dff0cf2cdf11077d9f9",
+      "bytes": 17636
+    },
+    {
+      "path": "js/modo-simples/20-atualizacao-ao-vivo.js",
+      "sha256": "8d928f02d9235b0f89638c26a610e3c96676e6a2fe6a91b956d22c8f141aa786",
+      "bytes": 8029
+    },
+    {
+      "path": "js/modo-simples/21-controles-tabela-torneio.js",
+      "sha256": "f480a72a48d0eaf1d7fccb9eab9fa41f291f058cf93dcc37d4d740e81de77ee9",
+      "bytes": 8160
+    },
+    {
+      "path": "js/modo-simples/22-grade-lancamento-top12.js",
+      "sha256": "e44512d46e0ee3a770d4d31a148a58d710b4a76a068504681a53c0c9e828afb4",
+      "bytes": 34922
+    },
+    {
+      "path": "js/modo-simples/23-ordem-canonica-queda.js",
+      "sha256": "7c9f70b81565124da36f561cd8d2e851adacd259d2dc87e084c838612aa1270e",
+      "bytes": 10649
+    },
+    {
+      "path": "js/modo-simples/24-perfil-times.js",
+      "sha256": "dd970d5cf430a6e4486d0d20c63088b8e03aac9db97c28fb2dc3b8ba053d3c9d",
+      "bytes": 48746
+    },
+    {
+      "path": "js/modo-simples/25-importar-csv-torneio.js",
+      "sha256": "0b2351b101616882689ca8ee8dee8a6bca114488466d98c886558e60dc709da8",
+      "bytes": 35140
+    },
+    {
+      "path": "js/modo-simples/26-filtro-quedas-torneio.js",
+      "sha256": "9431ab81cf8240b85be38675a83242d8031e8d55ce1f49124c6994fdd3344405",
+      "bytes": 18858
+    }
+  ],
+  "bundle": {
+    "raw_bytes": 1140168,
+    "gzip_bytes": 240091,
+    "sha256_gzip": "b2528bb2461e893187b0ddb63b6e89349d8b390605530c6d4645ab58aceafd71"
+  },
+  "presets": [
+    "data/backup-ffws-br-2026-s2-segunda-fase.json",
+    "data/backup-torneio.json"
+  ],
+  "deployment": {
+    "admin-camp-ao-vivo.html": {
+      "bytes": 36755,
+      "sha256": "60e274592b1e311e6dd0d1ad894f087a19fcb9191e3aad4b74029688f4efe6fd"
+    },
+    "auth.js": {
+      "bytes": 1053,
+      "sha256": "e63fc4730ececbdd4d31c4c8df2c925460d7b552204b08c32dd2e0e7dbecf4b8"
+    },
+    "app-loader.js": {
+      "bytes": 3757,
+      "sha256": "7ac117135b467a1eaeddab92c0f0fd708d9707b99d83f082ac04c673fd6f4027"
+    },
+    "enhancements.js": {
+      "bytes": 15161,
+      "sha256": "a11ae59fbe9a5186fe78b897a9b946efefa82ca914a9bea03296151111084131"
+    },
+    "integrations.js": {
+      "bytes": 28610,
+      "sha256": "3f41ac7821de87c534e5e94367f117f6a436083ff3fb50fd659487a8cb73bb05"
+    },
+    "app.css.gz": {
+      "bytes": 16725,
+      "sha256": "94ff60e67fc03f38998a2a43b07e99b9f6e118f6d2417b2a0c78ebc8bf84e871"
+    },
+    "app.part01.gz": {
+      "bytes": 49152,
+      "sha256": "341b664086ee078d07c1c7ed94c2a4d3e091ca6cbcab18260f309da9e301f44c"
+    },
+    "app.part02.gz": {
+      "bytes": 49152,
+      "sha256": "750586fc18e0c5d89358d0059425b2df7459385aece62285a06809e310413c33"
+    },
+    "app.part03.gz": {
+      "bytes": 49152,
+      "sha256": "9d4b9552a37367c3e0503734a1b2f6a96d703e719c46ef944f716877ec6f0c80"
+    },
+    "app.part04.gz": {
+      "bytes": 49152,
+      "sha256": "14387f55dfaa410c2c337934f0fd6b97e7fcc9d1a532e3ed348cba069be9829d"
+    },
+    "app.part05.gz": {
+      "bytes": 43483,
+      "sha256": "e4e3ca8b8b86ec8e5d15db3bc33a635d085eb42756886fa3108835ed1c08eba6"
+    },
+    "data/backup-ffws-br-2026-s2-segunda-fase.json": {
+      "bytes": 45932,
+      "sha256": "5e50e91784da7dbe3363254c16248981549c33a9388b334854c4746e5dfda67e"
+    },
+    "data/backup-torneio.json": {
+      "bytes": 9003,
+      "sha256": "635c92689c606fa88fbd5eb5279e345d960f38f83e6ae356c21f60ff6a14d048"
+    }
+  }
+}

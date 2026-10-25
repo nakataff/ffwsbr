@@ -1,0 +1,105 @@
+"""Small server index of explicit participation and event periods, never contract dates."""
+from pathlib import Path
+import hashlib,json,re,unicodedata
+ROOT=Path(__file__).resolve().parents[1]
+def read(p):return json.loads((ROOT/p).read_text())
+def key(s):return re.sub('[^a-z0-9]','',unicodedata.normalize('NFD',str(s)).encode('ascii','ignore').decode().lower())
+seed=read('functions/career-seed.json'); ids={p['id'] for p in seed['people']};aliases={}
+for p in seed['people']:
+ for n in [p['id'],p['name'],*p.get('aliases',[])]:aliases.setdefault(key(n),set()).add(p['id'])
+def pid(name):
+ if name in ids:return name
+ values=aliases.get(key(name),set());return next(iter(values)) if len(values)==1 else None
+catalog={};records={}
+def event(name):
+ name=name.strip(); name=re.sub(r'^(?:WB|FFWS BR(?:ASIL)?)\s+(20\d\d)\s+[FS]([12])$',r'FFWS BR \1 S\2',name,flags=re.I)
+ k=key(name)
+ family='LBFF' if k.startswith('lbff') else 'LAFF' if k.startswith('laff') else 'FFWS_BR' if k.startswith('ffwsbr') else 'MUNDIAL' if any(x in k for x in ['global','mundial','worldseries']) else 'EWC' if k.startswith('ewc') else 'OUTROS'
+ if k:catalog[k]={'id':k,'name':name,'family':family}
+ return k
+def add(person,edition,team,role='player'):
+ ident=pid(person)
+ if not edition or not team:return
+ eid=event(edition)
+ if not ident:return
+ record={'id':eid,'team':team,'role':role}
+ if record not in records.setdefault(ident,[]):records[ident].append(record)
+for person,editions in read('player-data/edition-teams.json')['players'].items():
+ for edition,team in editions.items():add(person,edition,team)
+for base in ['basic','s2','staff']:
+ for path in sorted((ROOT/'player-data'/base).glob('*.json')):
+  for person,p in json.loads(path.read_text()).get('players',{}).items():
+   for c in p.get('editions',[])+p.get('competitions',[]):
+    if c.get('team') and float(c.get('matches') or 0)>0:add(person,c.get('edition') or c.get('name',''),c['team'])
+   if base=='staff':
+    for h in p.get('teamHistory',[]):
+     raw=key(h.get('cargo',p.get('role','')))
+     role='analyst' if 'analis' in raw else 'assistant_coach' if 'assistant' in raw else 'head_coach' if 'headcoach' in raw else 'manager' if 'manager' in raw else 'coach' if 'coach' in raw else 'player'
+     add(person,h.get('edition',''),h.get('team',''),role)
+for path in sorted(ROOT.glob('ffws-br-*/players.json')):
+ d=json.loads(path.read_text());players=d.get('players',[])
+ if isinstance(players,list):
+  for p in players:
+   if isinstance(p,dict):add(p.get('name',''),d.get('tournament',''),p.get('team',''))
+for p in read('player-profile-summary-2026.json').get('players',[]):
+ for field,edition in [('ffws','WB 2026 S1'),('ewc','EWC 2026')]:
+  row=p.get(field) or {}
+  if float(row.get('matches') or 0)>0:add(p.get('name',''),edition,row.get('team',''))
+# Independently verified coaching results are deliberately separate from player statistics.
+# Keeping the source here prevents a deployment rebuild from removing staff editions.
+for entry in read('player-data/staff/verified-coaching-competitions.json')['entries']:
+ person=entry['personId']
+ role=entry['role']
+ if role not in ('coach','head_coach','assistant_coach','analyst','manager'):continue
+ add(person,entry['edition'],entry['team'],role)
+# Catalog/evidence from the bounded roster import, keyed by explicit professional ID.
+for c in read('functions/career-staff-history.json')['catalog']:catalog[c['id']]=c
+# Pilot roster links were reviewed by person, role and historical organization.
+for path in sorted((ROOT/'novos-torneios').glob('ffws-*.json')):
+ d=json.loads(path.read_text())
+ if not d.get('pilot'):continue
+ eid=d['careerId'];catalog[eid]={'id':eid,'name':d['name'],'family':'MUNDIAL'}
+ for team in d['teams']['items']:
+  for p in team.get('p',[]):
+   ident=p.get('personId')
+   if ident not in ids:continue
+   record={'id':eid,'team':team['n'],'role':'player'}
+   if record not in records.setdefault(ident,[]):records[ident].append(record)
+# Actual future event in the site catalogue; its participants are not inferred.
+event('FFWS Global Finals 2026')
+for name in ['LAFF 2025 S1','LAFF 2026 S1']:event(name)
+# Event periods are compiled offline. Reading one career never downloads the
+# tournament archive, team snapshots, or the full registration database.
+periods={}
+def period_id(name):
+ name=re.sub(r'^WB\s+(20\d{2})',r'FFWS BR \1',str(name),flags=re.I)
+ return key(name)
+def period(ident,entry):
+ if not ident:return
+ value=periods.setdefault(ident,{})
+ year=entry.get('year')
+ if str(year).isdigit() and 2000<=int(year)<=2099:value['year']=int(year)
+ for field in ['startDate','endDate']:
+  date=str(entry.get(field) or '')
+  if re.fullmatch(r'20\d{2}-\d{2}-\d{2}',date):
+   value[field]=(min if field=='startDate' else max)(value.get(field,date),date)
+ if not value:periods.pop(ident,None)
+manifest=read('career-data/results/manifest.json')
+for file in sorted(set(manifest['teams'].values())):
+ for entry in read('career-data/results/'+file).get('editions',[]):period(entry['id'],entry)
+for path in sorted((ROOT/'novos-torneios').glob('*.json')):
+ entry=json.loads(path.read_text())
+ if not isinstance(entry,dict) or not entry.get('name'):continue
+ ident=entry.get('careerId') or period_id(entry['name'])
+ period(ident,entry)
+ # Reviewed event-level dates override summaries whose stages may end earlier.
+ for field in ['startDate','endDate']:
+  if re.fullmatch(r'20\d{2}-\d{2}-\d{2}',str(entry.get(field) or '')):periods[ident][field]=entry[field]
+ alias=period_id(entry['name'])
+ if ident in periods:periods[alias]=periods[ident].copy()
+rounds=read('ffws-global-2026/dates.json')['rounds']
+period('ffwsglobalfinals2026',{'year':2026,'startDate':min(r['date'] for r in rounds),'endDate':max(r['date'] for r in rounds)})
+out={'catalog':list(catalog.values()),'people':records,'periods':dict(sorted(periods.items()))}
+out['version']=hashlib.sha256(json.dumps(out,sort_keys=True).encode()).hexdigest()[:16]
+p=ROOT/'functions/career-competitions-seed.json';p.write_text(json.dumps(out,ensure_ascii=False,separators=(',',':'))+'\n')
+print(f'{len(catalog)} editions, {sum(map(len,records.values()))} records, {p.stat().st_size} bytes (server only)')

@@ -1,0 +1,1 @@
+window.FFWS_GLOBAL_2026_CONFIG={teamsUrl:'ffws-global-2026/teams.json?v=20261012-global-local-logos-v7',stagesUrl:'ffws-global-2026/stages.json?v=20261016-global-format-v1',playersUrl:'ffws-global-2026/players.json?v=20261023-global-teams-v1',datesUrl:'ffws-global-2026/dates.json?v=20261016-global-format-v1',selectionWeeks:{},secondPhaseWeeks:{}};

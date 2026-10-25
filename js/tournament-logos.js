@@ -1,0 +1,22 @@
+/* Shared competition identity: static fallbacks, compact catalogue, admin overrides. */
+(function(root,factory){const api=factory(root);if(typeof module==='object'&&module.exports)module.exports=api;else{root.CFFTournamentAssets=api;root.cffResolveTournamentLogo=api.resolve;api.mount?.();}})(typeof window==='object'?window:globalThis,root=>{
+'use strict';
+const GLOBAL_LOGO='/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png',VERSION='20261021-tournament-assets-v1';
+const key=value=>String(value||'').replace(/^(?:WB|FFWS BRASIL)\s+/i,'FFWS BR ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const local=new Map(),custom=new Map(),tiers=new Map();let promise;
+function isGlobal(event){const value=String(event||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim();if(!/\b(?:FFWS|FREE FIRE WORLD SERIES|WORLD SERIES)\b/.test(value))return false;if(/\b(?:GLOBAL|WORLD FINALS|MUNDIAL|SINGAPORE|SINGAPURA|SENTOSA|BANGKOK)\b/.test(value))return true;if(/\b(?:BRASIL|BRAZIL|BR|SEA|LATAM|INDIA|MENA|NEPAL|PAKISTAN|PAQUISTAO|USA|BANGLADESH|AFRICA|EUROPE|AMERICAS|REGIONAL)\b/.test(value))return false;return /\b(?:FFWS|FREE FIRE WORLD SERIES|WORLD SERIES)\s+20\d{2}\b/.test(value)}
+function fallback(event){const name=String(event||'').toUpperCase();if(isGlobal(event))return GLOBAL_LOGO;if(/\bLBFF\b/.test(name))return '/lbff.webp';if(/\b(?:WB|FFWS\s+(?:BR|BRASIL|BRAZIL))\b/.test(name))return '/wb.webp';if(/\bLAFF\b/.test(name))return '/laff.webp';if(/C\.?O\.?P\.?A\.?\s*(?:FF|FREE FIRE)/.test(name)){const year=name.match(/20(?:20|22|23|24|25|26)/)?.[0];return year?'/copaff'+year.slice(2)+'.webp':'';}return '';}
+const usable=logo=>logo&&!/(?:^|\/)(?:trofeu|escudo)\.webp(?:\?|$)/i.test(logo);
+function resolve(event,current='trofeu.webp'){const k=key(event);return custom.get(k)|| (isGlobal(event)?GLOBAL_LOGO:'') ||local.get(k)||(usable(current)?current:'')||fallback(event)||current;}
+function ingest(entries,map){for(const row of entries||[])for(const name of [row.id,row.name,...row.aliases||[]]){if(usable(row.logo))map.set(key(name),row.logo);if(row.tier)tiers.set(key(name),row.tier);}}
+function tier(event,current=''){if(current)return current;const known=tiers.get(key(event));if(known)return known;const name=String(event||'').toUpperCase();return isGlobal(event)||/\b(?:EWC|ESPORTS WORLD CUP)\b/.test(name)?'S-Tier':/\b(?:LBFF|WB|FFWS BR|FFWS BRASIL)\b/.test(name)?'A-Tier':'';}
+function patch(){if(typeof document==='undefined')return;document.querySelectorAll('img[data-tournament-name]').forEach(img=>{if(!img.dataset.tournamentFallback)img.dataset.tournamentFallback=img.getAttribute('src')||'trofeu.webp';const src=resolve(img.dataset.tournamentName,img.dataset.tournamentFallback);if(img.dataset.tournamentFailed!==src&&img.getAttribute('src')!==src)img.src=src;});}
+function load(){if(promise)return promise;promise=Promise.allSettled([
+ fetch('/data/tournament-assets.json?v='+VERSION,{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(d=>ingest(d.entries,local)),
+ fetch('https://cff-camp-notifications.nakataffb4.workers.dev/careers/tournaments',{signal:AbortSignal.timeout(6000)}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(d=>ingest(d.entries,custom))
+]).then(()=>{patch();root.dispatchEvent?.(new Event('cff:tournament-assets-ready'));});return promise;}
+const tierWeight=tier=>({S:5,A:4,B:3,C:2,D:1})[String(tier||'').toUpperCase().charAt(0)]||0;
+const order=items=>[...(items||[])].sort((a,b)=>tierWeight(tier(b.event,b.tier))-tierWeight(tier(a.event,a.tier))||String(b.date||b.endDate||b.data||b.year||'').localeCompare(String(a.date||a.endDate||a.data||a.year||'')));
+function mount(){if(typeof document==='undefined')return;let timer;const scan=()=>{patch();if(document.querySelector('img[data-tournament-name]'))load();};const start=()=>{document.addEventListener('error',e=>{const img=e.target;if(img?.matches?.('img[data-tournament-name]'))img.dataset.tournamentFailed=img.getAttribute('src');},true);new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(scan,100);}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-tournament-name']});scan();};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();}
+return{GLOBAL_LOGO,key,isGlobal,resolve,fallback,ingest,patch,load,mount,tierWeight,tier,order};
+});

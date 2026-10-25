@@ -1,0 +1,26 @@
+name: Profile Rules Regression Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'database.rules.json'
+      - 'functions/admin-profile-editor.js'
+      - 'functions/admin-profile-options.json'
+      - '.github/workflows/deploy-community-profiles.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: functions
+      - run: node --test functions/test/security-public-rules.test.cjs functions/test/profile-save.test.cjs functions/test/admin-profile-editor.test.cjs functions/test/profile-directory-sync.test.cjs functions/test/profile-roles.test.cjs functions/test/profile-community-rules.test.cjs test/profile-community.test.mjs test/profile-story-card.test.mjs test/profile-frames.test.mjs functions/test/profile-goals.test.cjs test/profile-categories.test.mjs
+
+
+

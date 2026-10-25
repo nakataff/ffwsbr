@@ -1,0 +1,3438 @@
+{
+  "batch": 2,
+  "imported": 7,
+  "reports": [
+    {
+      "id": "ffws-2019",
+      "sourceFile": "ffws-2019.wiki",
+      "sha256": "65a0e2b957ca948093a662867462bf28f8c57b8b6d89199e9e3b82de71af5c0f",
+      "warnings": [
+        "Comissão não informada: LOUD",
+        "Comissão não informada: Illuminate Slow TwoK",
+        "Comissão não informada: Dranix Esports",
+        "Comissão não informada: Team Flash",
+        "Comissão não informada: LGDS",
+        "Comissão não informada: Nawabzade Gaming",
+        "Comissão não informada: Sbornaya ChR",
+        "Comissão não informada: Infinity YT",
+        "Comissão não informada: Infinity Esports",
+        "Comissão não informada: Team Samurái",
+        "A fonte declara US$ 400,000 no total; as linhas de premiação coletiva somam US$ 380,000. Valores preservados sem preencher a diferença.",
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado.",
+        "A seção Most Kills é parcial e não informa o escopo completo; não foi tratada como ranking geral de jogadores."
+      ],
+      "unlinkedPeople": [
+        {
+          "team": "Corinthians",
+          "name": "JAPA",
+          "role": "player"
+        },
+        {
+          "team": "LOUD",
+          "name": "Voltan",
+          "role": "player"
+        },
+        {
+          "team": "Illuminate Slow TwoK",
+          "name": "D-Long",
+          "role": "player"
+        },
+        {
+          "team": "Illuminate Slow TwoK",
+          "name": "Ethan",
+          "role": "player"
+        },
+        {
+          "team": "Illuminate Slow TwoK",
+          "name": "Muetob",
+          "role": "player"
+        },
+        {
+          "team": "Illuminate Slow TwoK",
+          "name": "Luffy",
+          "role": "player"
+        },
+        {
+          "team": "Illuminate Slow TwoK",
+          "name": "JUSTIN",
+          "role": "player"
+        },
+        {
+          "team": "Dranix Esports",
+          "name": "DeviL",
+          "role": "player"
+        },
+        {
+          "team": "Dranix Esports",
+          "name": "Delta",
+          "role": "player"
+        },
+        {
+          "team": "Dranix Esports",
+          "name": "Bay",
+          "role": "player"
+        },
+        {
+          "team": "Dranix Esports",
+          "name": "Bion",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Clear",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Minow",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "DNP",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Cool",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "RyukVN",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "ETA",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "YOYO",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "ANGU",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "RORO",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "OREO",
+          "role": "player"
+        },
+        {
+          "team": "Nawabzade Gaming",
+          "name": "VRC-1000",
+          "role": "player"
+        },
+        {
+          "team": "Nawabzade Gaming",
+          "name": "RADHE BHAI",
+          "role": "player"
+        },
+        {
+          "team": "Nawabzade Gaming",
+          "name": "RADHE THAKOR",
+          "role": "player"
+        },
+        {
+          "team": "Nawabzade Gaming",
+          "name": "GJ JIGAR",
+          "role": "player"
+        },
+        {
+          "team": "Nawabzade Gaming",
+          "name": "ILUMINATI",
+          "role": "player"
+        },
+        {
+          "team": "Sbornaya ChR",
+          "name": "Dzarmaro",
+          "role": "player"
+        },
+        {
+          "team": "Sbornaya ChR",
+          "name": "Pokritel",
+          "role": "player"
+        },
+        {
+          "team": "Sbornaya ChR",
+          "name": "Kadyrov",
+          "role": "player"
+        },
+        {
+          "team": "Sbornaya ChR",
+          "name": "Mers1",
+          "role": "player"
+        },
+        {
+          "team": "Sbornaya ChR",
+          "name": "Tumso",
+          "role": "player"
+        },
+        {
+          "team": "Infinity YT",
+          "name": "Ninja",
+          "role": "player"
+        },
+        {
+          "team": "Infinity YT",
+          "name": "HardCrew",
+          "role": "player"
+        },
+        {
+          "team": "Infinity YT",
+          "name": "NasroDvl",
+          "role": "player"
+        },
+        {
+          "team": "Infinity YT",
+          "name": "BrbZinou",
+          "role": "player"
+        },
+        {
+          "team": "Infinity YT",
+          "name": "SHADIO",
+          "role": "player"
+        },
+        {
+          "team": "Infinity YT",
+          "name": "LastBoss",
+          "role": "player"
+        },
+        {
+          "team": "Infinity Esports",
+          "name": "Narucho",
+          "role": "player"
+        },
+        {
+          "team": "Infinity Esports",
+          "name": "Jeisson",
+          "role": "player"
+        },
+        {
+          "team": "Infinity Esports",
+          "name": "Lupaco",
+          "role": "player"
+        },
+        {
+          "team": "Infinity Esports",
+          "name": "Carlos",
+          "role": "player"
+        },
+        {
+          "team": "Infinity Esports",
+          "name": "Monkey",
+          "role": "player"
+        },
+        {
+          "team": "Team Samurái",
+          "name": "Alex18",
+          "role": "player"
+        },
+        {
+          "team": "Team Samurái",
+          "name": "14Delta",
+          "role": "player"
+        },
+        {
+          "team": "Team Samurái",
+          "name": "Ragnar",
+          "role": "player"
+        },
+        {
+          "team": "Team Samurái",
+          "name": "MICHAEL",
+          "role": "player"
+        },
+        {
+          "team": "Team Samurái",
+          "name": "Hassan",
+          "role": "player"
+        },
+        {
+          "team": "Arctic Gaming México",
+          "name": "Jona14",
+          "role": "player"
+        },
+        {
+          "team": "Arctic Gaming México",
+          "name": "Vega",
+          "role": "player"
+        },
+        {
+          "team": "Arctic Gaming México",
+          "name": "MECHAS7",
+          "role": "player"
+        },
+        {
+          "team": "Arctic Gaming México",
+          "name": "Meme",
+          "role": "player"
+        },
+        {
+          "team": "Arctic Gaming México",
+          "name": "Profe",
+          "role": "player"
+        },
+        {
+          "team": "Arctic Gaming México",
+          "name": "PUMA",
+          "role": "coach"
+        }
+      ],
+      "teams": 12,
+      "withdrawn": [],
+      "players": 60,
+      "staff": 2,
+      "stages": [
+        {
+          "name": "Grande final",
+          "teams": 12,
+          "drops": 8
+        }
+      ]
+    },
+    {
+      "id": "ffws-2021-singapore",
+      "sourceFile": "ffws-2021-singapore.wiki",
+      "sha256": "2d3983359312cd3443f9daf5adca72ddfcc613579e8450e58e359b9d0acea8c8",
+      "warnings": [
+        "Comissão não informada: LGDS",
+        "Comissão não informada: Silence",
+        "Comissão não informada: Burst The Sky",
+        "Comissão não informada: NEWGANK",
+        "Comissão não informada: vaiXourar",
+        "Comissão não informada: DEA",
+        "Comissão não informada: SNG.Invincible",
+        "Comissão não informada: HQ Esports",
+        "A fonte declara US$ 2,000,000 no total; as linhas de premiação coletiva somam US$ 1,970,000. Valores preservados sem preencher a diferença.",
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado."
+      ],
+      "unlinkedPeople": [
+        {
+          "team": "VIP E-Sport",
+          "name": "Jask iq",
+          "role": "player"
+        },
+        {
+          "team": "VIP E-Sport",
+          "name": "joke",
+          "role": "player"
+        },
+        {
+          "team": "VIP E-Sport",
+          "name": "xshadow",
+          "role": "player"
+        },
+        {
+          "team": "VIP E-Sport",
+          "name": "Tarek",
+          "role": "player"
+        },
+        {
+          "team": "VIP E-Sport",
+          "name": "Ninja",
+          "role": "player"
+        },
+        {
+          "team": "VIP E-Sport",
+          "name": "Canibal",
+          "role": "coach"
+        },
+        {
+          "team": "LGDS",
+          "name": "YUANN",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "ETA",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "RORO",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "BRUCE.",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "TING W",
+          "role": "player"
+        },
+        {
+          "team": "Silence",
+          "name": "Dzarmaro",
+          "role": "player"
+        },
+        {
+          "team": "Silence",
+          "name": "VaJniy",
+          "role": "player"
+        },
+        {
+          "team": "Silence",
+          "name": "Tasher",
+          "role": "player"
+        },
+        {
+          "team": "Silence",
+          "name": "Skyrix",
+          "role": "player"
+        },
+        {
+          "team": "Silence",
+          "name": "DD",
+          "role": "player"
+        },
+        {
+          "team": "Silence",
+          "name": "Pokritel",
+          "role": "player"
+        },
+        {
+          "team": "Geek Fam",
+          "name": "Haziq",
+          "role": "player"
+        },
+        {
+          "team": "Geek Fam",
+          "name": "Akiq",
+          "role": "player"
+        },
+        {
+          "team": "Geek Fam",
+          "name": "Apiz",
+          "role": "player"
+        },
+        {
+          "team": "Geek Fam",
+          "name": "Shoyu",
+          "role": "player"
+        },
+        {
+          "team": "Geek Fam",
+          "name": "XZACK",
+          "role": "player"
+        },
+        {
+          "team": "Geek Fam",
+          "name": "Son tuah",
+          "role": "coach"
+        },
+        {
+          "team": "Fluxo",
+          "name": "F4K",
+          "role": "player"
+        },
+        {
+          "team": "Team Aze",
+          "name": "CarlosTD",
+          "role": "player"
+        },
+        {
+          "team": "Team Aze",
+          "name": "Ayala",
+          "role": "player"
+        },
+        {
+          "team": "Team Aze",
+          "name": "Narucho",
+          "role": "player"
+        },
+        {
+          "team": "Team Aze",
+          "name": "TIKI444",
+          "role": "player"
+        },
+        {
+          "team": "Team Aze",
+          "name": "Neira",
+          "role": "player"
+        },
+        {
+          "team": "Team Aze",
+          "name": "VANE",
+          "role": "coach"
+        },
+        {
+          "team": "Phoenix Force",
+          "name": "Joena",
+          "role": "player"
+        },
+        {
+          "team": "Phoenix Force",
+          "name": "Rambo",
+          "role": "player"
+        },
+        {
+          "team": "Phoenix Force",
+          "name": "TheCruz",
+          "role": "player"
+        },
+        {
+          "team": "Phoenix Force",
+          "name": "D_Long",
+          "role": "player"
+        },
+        {
+          "team": "Phoenix Force",
+          "name": "Zeenon",
+          "role": "player"
+        },
+        {
+          "team": "Phoenix Force",
+          "name": "Lukz",
+          "role": "player"
+        },
+        {
+          "team": "Phoenix Force",
+          "name": "Namo",
+          "role": "coach"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "SAM13",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Abu",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "MR05",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Street",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Kenzoo",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Manay",
+          "role": "coach"
+        },
+        {
+          "team": "Burst The Sky",
+          "name": "Shin",
+          "role": "player"
+        },
+        {
+          "team": "Burst The Sky",
+          "name": "DQS",
+          "role": "player"
+        },
+        {
+          "team": "Burst The Sky",
+          "name": "Beo",
+          "role": "player"
+        },
+        {
+          "team": "Burst The Sky",
+          "name": "Comdem",
+          "role": "player"
+        },
+        {
+          "team": "Burst The Sky",
+          "name": "Dark",
+          "role": "player"
+        },
+        {
+          "team": "NEWGANK",
+          "name": "M4RYJANE",
+          "role": "player"
+        },
+        {
+          "team": "NEWGANK",
+          "name": "HAZEL",
+          "role": "player"
+        },
+        {
+          "team": "NEWGANK",
+          "name": "MIRA",
+          "role": "player"
+        },
+        {
+          "team": "NEWGANK",
+          "name": "MRFROST",
+          "role": "player"
+        },
+        {
+          "team": "vaiXourar",
+          "name": "Crushr09",
+          "role": "player"
+        },
+        {
+          "team": "vaiXourar",
+          "name": "Almas09",
+          "role": "player"
+        },
+        {
+          "team": "vaiXourar",
+          "name": "FRANCOXXS",
+          "role": "player"
+        },
+        {
+          "team": "vaiXourar",
+          "name": "JANITO6",
+          "role": "player"
+        },
+        {
+          "team": "vaiXourar",
+          "name": "Meneses7",
+          "role": "player"
+        },
+        {
+          "team": "DEA",
+          "name": "HardCrew",
+          "role": "player"
+        },
+        {
+          "team": "DEA",
+          "name": "JORDY",
+          "role": "player"
+        },
+        {
+          "team": "DEA",
+          "name": "RA2D",
+          "role": "player"
+        },
+        {
+          "team": "DEA",
+          "name": "TAREK",
+          "role": "player"
+        },
+        {
+          "team": "DEA",
+          "name": "REMIND",
+          "role": "player"
+        },
+        {
+          "team": "DEA",
+          "name": "Don",
+          "role": "player"
+        },
+        {
+          "team": "SNG.Invincible",
+          "name": "Orange",
+          "role": "player"
+        },
+        {
+          "team": "SNG.Invincible",
+          "name": "NeZa1s",
+          "role": "player"
+        },
+        {
+          "team": "SNG.Invincible",
+          "name": "Kadyrov",
+          "role": "player"
+        },
+        {
+          "team": "SNG.Invincible",
+          "name": "Moskv1n",
+          "role": "player"
+        },
+        {
+          "team": "SNG.Invincible",
+          "name": "Mers1",
+          "role": "player"
+        },
+        {
+          "team": "SNG.Invincible",
+          "name": "Kobra",
+          "role": "player"
+        },
+        {
+          "team": "God's Plan",
+          "name": "Andres",
+          "role": "player"
+        },
+        {
+          "team": "God's Plan",
+          "name": "Godkarma",
+          "role": "player"
+        },
+        {
+          "team": "God's Plan",
+          "name": "Cárdenas",
+          "role": "player"
+        },
+        {
+          "team": "God's Plan",
+          "name": "Rein58",
+          "role": "player"
+        },
+        {
+          "team": "God's Plan",
+          "name": "OMXR",
+          "role": "player"
+        },
+        {
+          "team": "God's Plan",
+          "name": "Ninja",
+          "role": "player"
+        },
+        {
+          "team": "God's Plan",
+          "name": "Bravo",
+          "role": "coach"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "HOYSANG",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "POOKGOD",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "CARAMEL",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "BRUNO",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "Jame",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "JAZPER",
+          "role": "coach"
+        },
+        {
+          "team": "First Raiders Bravo",
+          "name": "Darkol",
+          "role": "player"
+        },
+        {
+          "team": "First Raiders Bravo",
+          "name": "IamSouza",
+          "role": "player"
+        },
+        {
+          "team": "First Raiders Bravo",
+          "name": "Scooperz",
+          "role": "player"
+        },
+        {
+          "team": "First Raiders Bravo",
+          "name": "Jokerr",
+          "role": "player"
+        },
+        {
+          "team": "First Raiders Bravo",
+          "name": "Ombaac",
+          "role": "player"
+        },
+        {
+          "team": "First Raiders Bravo",
+          "name": "Diwann",
+          "role": "player"
+        },
+        {
+          "team": "First Raiders Bravo",
+          "name": "Manggis Kun",
+          "role": "coach"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "Thaison",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "FunkyM",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "Neo",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "NangK",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "Artemis",
+          "role": "player"
+        }
+      ],
+      "teams": 18,
+      "withdrawn": [
+        "Galaxy Racer",
+        "Team Elite",
+        "Team TG",
+        "Riot"
+      ],
+      "players": 96,
+      "staff": 11,
+      "stages": [
+        {
+          "name": "Play-ins",
+          "teams": 9,
+          "drops": 6
+        },
+        {
+          "name": "Grande final",
+          "teams": 12,
+          "drops": 6
+        }
+      ]
+    },
+    {
+      "id": "ffws-2022-sentosa",
+      "sourceFile": "ffws-2022-sentosa.wiki",
+      "sha256": "8106f6f47dff09f0d9e2c799283a023c9881d4312cf035de14ed6fdf7b2779c8",
+      "warnings": [
+        "Comissão não informada: Team Flash",
+        "Comissão não informada: Farang Esports",
+        "Comissão não informada: Fuego",
+        "Comissão não informada: V Gaming",
+        "Comissão não informada: Todak",
+        "Comissão não informada: LGDS",
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado."
+      ],
+      "unlinkedPeople": [
+        {
+          "team": "Mineros eSports",
+          "name": "Qluso",
+          "role": "player"
+        },
+        {
+          "team": "Mineros eSports",
+          "name": "Fede",
+          "role": "player"
+        },
+        {
+          "team": "Mineros eSports",
+          "name": "Fixa03",
+          "role": "player"
+        },
+        {
+          "team": "Mineros eSports",
+          "name": "JOTA",
+          "role": "player"
+        },
+        {
+          "team": "Mineros eSports",
+          "name": "PABLO",
+          "role": "player"
+        },
+        {
+          "team": "Mineros eSports",
+          "name": "LUKAS",
+          "role": "coach"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Lucka",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Crushr09",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Nunes",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "BLAZER",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Alex09",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "TLopes",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Moises",
+          "role": "coach"
+        },
+        {
+          "team": "WASK",
+          "name": "ABDO007",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "DOWLY",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "ZIZOX",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "MR ALI",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "GENIUS",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "MACRO",
+          "role": "coach"
+        },
+        {
+          "team": "Team Flash",
+          "name": "CEO",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Brian",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Floren",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Shin",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Bloody",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Beo",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "TheCruz",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "JOENA",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "D_Long",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "Moshi",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "Return",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "GETBU",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "Namo",
+          "role": "coach"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "MR05",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "AbaaaX",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Bion",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Street",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "SAM13",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Manay",
+          "role": "coach"
+        },
+        {
+          "team": "Farang Esports",
+          "name": "Jembal",
+          "role": "player"
+        },
+        {
+          "team": "Farang Esports",
+          "name": "Bayet",
+          "role": "player"
+        },
+        {
+          "team": "Farang Esports",
+          "name": "Spade",
+          "role": "player"
+        },
+        {
+          "team": "Farang Esports",
+          "name": "2Bad",
+          "role": "player"
+        },
+        {
+          "team": "Farang Esports",
+          "name": "Pablo",
+          "role": "player"
+        },
+        {
+          "team": "Farang Esports",
+          "name": "Jezbuu",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "CarlosTD",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Jeisson",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Orellana",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Erickk",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Cano",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "PUMA",
+          "role": "coach"
+        },
+        {
+          "team": "Fuego",
+          "name": "HACKSINO",
+          "role": "player"
+        },
+        {
+          "team": "Fuego",
+          "name": "Euris",
+          "role": "player"
+        },
+        {
+          "team": "Fuego",
+          "name": "CLEVER",
+          "role": "player"
+        },
+        {
+          "team": "Fuego",
+          "name": "INTO",
+          "role": "player"
+        },
+        {
+          "team": "Fuego",
+          "name": "C4LV1N",
+          "role": "player"
+        },
+        {
+          "team": "All Stars E-Sport",
+          "name": "OTHMANE",
+          "role": "player"
+        },
+        {
+          "team": "All Stars E-Sport",
+          "name": "REMIND",
+          "role": "player"
+        },
+        {
+          "team": "All Stars E-Sport",
+          "name": "JRDY",
+          "role": "player"
+        },
+        {
+          "team": "All Stars E-Sport",
+          "name": "G18",
+          "role": "player"
+        },
+        {
+          "team": "All Stars E-Sport",
+          "name": "MADI7",
+          "role": "player"
+        },
+        {
+          "team": "All Stars E-Sport",
+          "name": "ADEM",
+          "role": "player"
+        },
+        {
+          "team": "All Stars E-Sport",
+          "name": "Canibal",
+          "role": "coach"
+        },
+        {
+          "team": "House of Blood",
+          "name": "KAI",
+          "role": "player"
+        },
+        {
+          "team": "House of Blood",
+          "name": "VENOM",
+          "role": "player"
+        },
+        {
+          "team": "House of Blood",
+          "name": "Hogo",
+          "role": "player"
+        },
+        {
+          "team": "House of Blood",
+          "name": "Snakeye",
+          "role": "player"
+        },
+        {
+          "team": "House of Blood",
+          "name": "Danny",
+          "role": "player"
+        },
+        {
+          "team": "House of Blood",
+          "name": "Leader",
+          "role": "coach"
+        },
+        {
+          "team": "V Gaming",
+          "name": "BinXu",
+          "role": "player"
+        },
+        {
+          "team": "V Gaming",
+          "name": "DacLop",
+          "role": "player"
+        },
+        {
+          "team": "V Gaming",
+          "name": "VanThanh",
+          "role": "player"
+        },
+        {
+          "team": "V Gaming",
+          "name": "TNha",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "FOLKYY",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "JLXNOKILL",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "HOYSANG",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "POOKEIEI",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "KERORO",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "JAZPER",
+          "role": "coach"
+        },
+        {
+          "team": "ECHO Esports",
+          "name": "Kucai24",
+          "role": "player"
+        },
+        {
+          "team": "ECHO Esports",
+          "name": "Kiba",
+          "role": "player"
+        },
+        {
+          "team": "ECHO Esports",
+          "name": "Dutzz",
+          "role": "player"
+        },
+        {
+          "team": "ECHO Esports",
+          "name": "Ombaac",
+          "role": "player"
+        },
+        {
+          "team": "ECHO Esports",
+          "name": "Kojaaaa",
+          "role": "player"
+        },
+        {
+          "team": "ECHO Esports",
+          "name": "CHRISJO",
+          "role": "coach"
+        },
+        {
+          "team": "Todak",
+          "name": "Aimz",
+          "role": "player"
+        },
+        {
+          "team": "Todak",
+          "name": "SPARKz",
+          "role": "player"
+        },
+        {
+          "team": "Todak",
+          "name": "PYDRO",
+          "role": "player"
+        },
+        {
+          "team": "Todak",
+          "name": "AFIQQz",
+          "role": "player"
+        },
+        {
+          "team": "Todak",
+          "name": "CHILL",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "RORO",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "BRUCE.",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "YUANN",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "NG",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "IYO",
+          "role": "player"
+        }
+      ],
+      "teams": 18,
+      "withdrawn": [],
+      "players": 94,
+      "staff": 13,
+      "stages": [
+        {
+          "name": "Play-ins",
+          "teams": 10,
+          "drops": 6
+        },
+        {
+          "name": "Grande final",
+          "teams": 12,
+          "drops": 6
+        }
+      ]
+    },
+    {
+      "id": "ffws-2022-bangkok",
+      "sourceFile": "ffws-2022-bangkok.wiki",
+      "sha256": "97d4b93dfad39228dd2ac3775bb7af890071953df83dd5bedd2bde4f6ab72dd2",
+      "warnings": [
+        "Comissão não informada: Vasto Mundo",
+        "Comissão não informada: HQ Esports",
+        "Comissão não informada: Naguara Team",
+        "Comissão não informada: Infinity VX",
+        "Comissão não informada: Team Hotshot",
+        "Comissão não informada: Expand",
+        "Comissão não informada: LGDS",
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado."
+      ],
+      "unlinkedPeople": [
+        {
+          "team": "Ignis Esports",
+          "name": "CarlosTD",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Jeisson",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Erickk",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Nascary",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "Cano",
+          "role": "player"
+        },
+        {
+          "team": "Ignis Esports",
+          "name": "ELI",
+          "role": "coach"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Lucka",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Crushr09",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Nunes",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "BLAZER",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "Alex09",
+          "role": "player"
+        },
+        {
+          "team": "Vasto Mundo",
+          "name": "TLopes",
+          "role": "player"
+        },
+        {
+          "team": "ALPHA",
+          "name": "REMIND",
+          "role": "player"
+        },
+        {
+          "team": "ALPHA",
+          "name": "G18",
+          "role": "player"
+        },
+        {
+          "team": "ALPHA",
+          "name": "RA2D",
+          "role": "player"
+        },
+        {
+          "team": "ALPHA",
+          "name": "G8L",
+          "role": "player"
+        },
+        {
+          "team": "ALPHA",
+          "name": "Canibal",
+          "role": "coach"
+        },
+        {
+          "team": "Nigma Galaxy",
+          "name": "DAREN",
+          "role": "player"
+        },
+        {
+          "team": "Nigma Galaxy",
+          "name": "DEW",
+          "role": "player"
+        },
+        {
+          "team": "Nigma Galaxy",
+          "name": "STOP",
+          "role": "player"
+        },
+        {
+          "team": "Nigma Galaxy",
+          "name": "Fiwgod",
+          "role": "player"
+        },
+        {
+          "team": "Nigma Galaxy",
+          "name": "KAPOM",
+          "role": "player"
+        },
+        {
+          "team": "Nigma Galaxy",
+          "name": "Caramel",
+          "role": "player"
+        },
+        {
+          "team": "Nigma Galaxy",
+          "name": "XPENSION",
+          "role": "coach"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "ThaiSon",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "FunkyM",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "Hand",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "NeoNao",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "Artemis",
+          "role": "player"
+        },
+        {
+          "team": "HQ Esports",
+          "name": "TheGhost",
+          "role": "player"
+        },
+        {
+          "team": "AV Radicals",
+          "name": "TANAMO",
+          "role": "player"
+        },
+        {
+          "team": "AV Radicals",
+          "name": "RAYMIEL",
+          "role": "player"
+        },
+        {
+          "team": "AV Radicals",
+          "name": "RETOOHS",
+          "role": "player"
+        },
+        {
+          "team": "AV Radicals",
+          "name": "WINE",
+          "role": "player"
+        },
+        {
+          "team": "AV Radicals",
+          "name": "PIPANDA",
+          "role": "player"
+        },
+        {
+          "team": "AV Radicals",
+          "name": "ALICE",
+          "role": "coach"
+        },
+        {
+          "team": "Saudara e-Sports",
+          "name": "Jojooo",
+          "role": "player"
+        },
+        {
+          "team": "Saudara e-Sports",
+          "name": "Bara",
+          "role": "player"
+        },
+        {
+          "team": "Saudara e-Sports",
+          "name": "Reyyy",
+          "role": "player"
+        },
+        {
+          "team": "Saudara e-Sports",
+          "name": "Geday",
+          "role": "player"
+        },
+        {
+          "team": "Saudara e-Sports",
+          "name": "Khuple",
+          "role": "player"
+        },
+        {
+          "team": "Saudara e-Sports",
+          "name": "Edih",
+          "role": "player"
+        },
+        {
+          "team": "Saudara e-Sports",
+          "name": "Manted",
+          "role": "coach"
+        },
+        {
+          "team": "Naguara Team",
+          "name": "YECOLZNX",
+          "role": "player"
+        },
+        {
+          "team": "Naguara Team",
+          "name": "Bran",
+          "role": "player"
+        },
+        {
+          "team": "Naguara Team",
+          "name": "FAQ7",
+          "role": "player"
+        },
+        {
+          "team": "Naguara Team",
+          "name": "CURRY",
+          "role": "player"
+        },
+        {
+          "team": "Naguara Team",
+          "name": "MAXI",
+          "role": "player"
+        },
+        {
+          "team": "Infinity VX",
+          "name": "ABDOU BN",
+          "role": "player"
+        },
+        {
+          "team": "Infinity VX",
+          "name": "9TL",
+          "role": "player"
+        },
+        {
+          "team": "Infinity VX",
+          "name": "NEXTAZ",
+          "role": "player"
+        },
+        {
+          "team": "Infinity VX",
+          "name": "A-HRCH",
+          "role": "player"
+        },
+        {
+          "team": "Team Hotshot",
+          "name": "Sikaa 55",
+          "role": "player"
+        },
+        {
+          "team": "Team Hotshot",
+          "name": "Shawal77",
+          "role": "player"
+        },
+        {
+          "team": "Team Hotshot",
+          "name": "Anas",
+          "role": "player"
+        },
+        {
+          "team": "Team Hotshot",
+          "name": "HasuEXE",
+          "role": "player"
+        },
+        {
+          "team": "Team Hotshot",
+          "name": "Sajid",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "GODCRUZ",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "JOENA",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "D_Long",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "Moshi",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "ALRAEDY",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "GETHIGH",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Phoenix",
+          "name": "Namo",
+          "role": "coach"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Brian",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Beo",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "Shin",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "YanBin",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "CII",
+          "role": "player"
+        },
+        {
+          "team": "Team Flash",
+          "name": "MinT",
+          "role": "analyst"
+        },
+        {
+          "team": "Expand",
+          "name": "Cobraa",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "XRoy",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "2fast",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "TheAxel",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "Syaa",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Legaeloth",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Razor",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "PacMan",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Maybee",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Adi",
+          "role": "coach"
+        },
+        {
+          "team": "LGDS",
+          "name": "YUANN",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "RORO",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "BRUCE.",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "NG",
+          "role": "player"
+        },
+        {
+          "team": "LGDS",
+          "name": "Peanut",
+          "role": "player"
+        }
+      ],
+      "teams": 17,
+      "withdrawn": [],
+      "players": 97,
+      "staff": 12,
+      "stages": [
+        {
+          "name": "Play-ins",
+          "teams": 9,
+          "drops": 8
+        },
+        {
+          "name": "Grande final",
+          "teams": 12,
+          "drops": 8
+        }
+      ]
+    },
+    {
+      "id": "ffws-2023",
+      "sourceFile": "ffws-2023.wiki",
+      "sha256": "3aeb88ec91a98f4aa7d6ec6b946d1f4294afd4655e7344170ab682bc114e107f",
+      "warnings": [
+        "Comissão não informada: EXP Esports",
+        "Comissão não informada: P Esports",
+        "Comissão não informada: GOW",
+        "Comissão não informada: WAG",
+        "Comissão não informada: Expand",
+        "Comissão não informada: Hotshot Esports",
+        "A fonte declara US$ 1,000,000 no total; as linhas de premiação coletiva somam US$ 990,000. Valores preservados sem preencher a diferença.",
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado."
+      ],
+      "dailyStages": [
+        {
+          "name": "Knockout · Dia 1",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 2",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 3",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 4",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 5",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 6",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Point Rush · Dia 1",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Point Rush · Dia 2",
+          "teams": 12,
+          "drops": 6
+        }
+      ],
+      "unlinkedPeople": [
+        {
+          "team": "Furious Gaming",
+          "name": "UNKNOWN",
+          "role": "player"
+        },
+        {
+          "team": "Furious Gaming",
+          "name": "SoyDella",
+          "role": "player"
+        },
+        {
+          "team": "Furious Gaming",
+          "name": "POCHO",
+          "role": "player"
+        },
+        {
+          "team": "Furious Gaming",
+          "name": "BAD",
+          "role": "player"
+        },
+        {
+          "team": "Furious Gaming",
+          "name": "Nicko",
+          "role": "player"
+        },
+        {
+          "team": "Furious Gaming",
+          "name": "CRISROJO",
+          "role": "coach"
+        },
+        {
+          "team": "Furious Gaming",
+          "name": "Yg",
+          "role": "analyst"
+        },
+        {
+          "team": "All Glory Gaming",
+          "name": "LopesXL",
+          "role": "player"
+        },
+        {
+          "team": "All Glory Gaming",
+          "name": "Stiward",
+          "role": "player"
+        },
+        {
+          "team": "All Glory Gaming",
+          "name": "Sebas",
+          "role": "player"
+        },
+        {
+          "team": "All Glory Gaming",
+          "name": "Joel",
+          "role": "player"
+        },
+        {
+          "team": "All Glory Gaming",
+          "name": "Verito",
+          "role": "player"
+        },
+        {
+          "team": "All Glory Gaming",
+          "name": "Sullivan",
+          "role": "coach"
+        },
+        {
+          "team": "Osaka",
+          "name": "KOES",
+          "role": "player"
+        },
+        {
+          "team": "Osaka",
+          "name": "Chris",
+          "role": "player"
+        },
+        {
+          "team": "Osaka",
+          "name": "Pájaro",
+          "role": "player"
+        },
+        {
+          "team": "Osaka",
+          "name": "Esteban",
+          "role": "player"
+        },
+        {
+          "team": "Osaka",
+          "name": "Jostin",
+          "role": "player"
+        },
+        {
+          "team": "Osaka",
+          "name": "Maverick",
+          "role": "coach"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "JOENA",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "Moshi",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "GETHIGH",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "ALRAEDY",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "Wassana",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "Namo",
+          "role": "coach"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "D_Long",
+          "role": "analyst"
+        },
+        {
+          "team": "EXP Esports",
+          "name": "DEW",
+          "role": "player"
+        },
+        {
+          "team": "EXP Esports",
+          "name": "CASPER",
+          "role": "player"
+        },
+        {
+          "team": "EXP Esports",
+          "name": "STOP",
+          "role": "player"
+        },
+        {
+          "team": "EXP Esports",
+          "name": "Caramel",
+          "role": "player"
+        },
+        {
+          "team": "EXP Esports",
+          "name": "XPENSION",
+          "role": "player"
+        },
+        {
+          "team": "CGGG",
+          "name": "LOOK",
+          "role": "player"
+        },
+        {
+          "team": "CGGG",
+          "name": "ONEMORE",
+          "role": "player"
+        },
+        {
+          "team": "CGGG",
+          "name": "ONFIRE",
+          "role": "player"
+        },
+        {
+          "team": "CGGG",
+          "name": "COZQ",
+          "role": "player"
+        },
+        {
+          "team": "CGGG",
+          "name": "PETER",
+          "role": "player"
+        },
+        {
+          "team": "CGGG",
+          "name": "Conan",
+          "role": "coach"
+        },
+        {
+          "team": "POCO Star",
+          "name": "Leem",
+          "role": "player"
+        },
+        {
+          "team": "POCO Star",
+          "name": "Faiz",
+          "role": "player"
+        },
+        {
+          "team": "POCO Star",
+          "name": "18Deer",
+          "role": "player"
+        },
+        {
+          "team": "POCO Star",
+          "name": "Razz",
+          "role": "player"
+        },
+        {
+          "team": "POCO Star",
+          "name": "Mercy",
+          "role": "player"
+        },
+        {
+          "team": "POCO Star",
+          "name": "Fayad",
+          "role": "coach"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Darkol",
+          "role": "player"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Ikal",
+          "role": "player"
+        },
+        {
+          "team": "Thorrad",
+          "name": "NORTH",
+          "role": "player"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Daviddz",
+          "role": "player"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Lozzy",
+          "role": "player"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Uway",
+          "role": "player"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Fluxyss",
+          "role": "coach"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Manted",
+          "role": "analyst"
+        },
+        {
+          "team": "Thorrad",
+          "name": "Jonsan",
+          "role": "manager"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Legaeloth",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Abay",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Wings",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Razor",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Dutzz",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Valdo",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Adi",
+          "role": "coach"
+        },
+        {
+          "team": "P Esports",
+          "name": "DNP",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "DontCry",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "HoangAnh",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "Newk",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "Nero",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "KimChon",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "Mr07",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "DyanN",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "IZAGOD",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "DQuang",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "Voly",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "TheGhost",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Dolphin",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Krillin",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Cyrus",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Calm",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "TheAxel",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "2fast",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "Cobraa",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "Tomo",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "CrimeMKS",
+          "role": "player"
+        },
+        {
+          "team": "Expand",
+          "name": "Qeeboy",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Action",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Sajid",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Hasuexe",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Anas",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Sikaa",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "MR ALI",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "DOWLY",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "ZIZOX",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "GENIUS",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "YSN7",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "MACRO",
+          "role": "coach"
+        }
+      ],
+      "teams": 18,
+      "withdrawn": [],
+      "players": 94,
+      "staff": 19,
+      "stages": [
+        {
+          "name": "Knockout · Classificação geral",
+          "teams": 18,
+          "drops": 24
+        },
+        {
+          "name": "Point Rush · Dia 1",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Point Rush · Dia 2",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Grande final",
+          "teams": 12,
+          "drops": 6
+        }
+      ]
+    },
+    {
+      "id": "ffws-2024",
+      "sourceFile": "ffws-2024.wiki",
+      "sha256": "4d498d2bef1a054697752547565229d14c6fec936f63c7208bfee2c2f78d0f64",
+      "warnings": [
+        "Comissão não informada: RETA Esports",
+        "A fonte declara US$ 1,000,000 no total; as linhas de premiação coletiva somam US$ 975,000. Valores preservados sem preencher a diferença.",
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado.",
+        "Knockout · Classificação geral: mapa não informado nas quedas 24",
+        "Point Rush · Dia 1: mapa não informado nas quedas 6",
+        "Point Rush · Dia 2: mapa não informado nas quedas 6"
+      ],
+      "corrections": [
+        {
+          "stageId": "knockout-day-5",
+          "team": "CLG",
+          "match": 1,
+          "from": [
+            12,
+            3
+          ],
+          "to": [
+            10,
+            2
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/score-review-20261018.txt",
+            "sha256": "ccf3d05d35220ee3aaa1fb032394e1afe8808baf201f2174ce8510ef15a8aa98",
+            "description": "Correções confirmadas pelo administrador após conferir as duas edições em 18/10/2026."
+          }
+        }
+      ],
+      "dailyStages": [
+        {
+          "name": "Knockout · Dia 1",
+          "teams": 11,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 2",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 3",
+          "teams": 11,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 4",
+          "teams": 11,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 5",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 6",
+          "teams": 11,
+          "drops": 6
+        },
+        {
+          "name": "Point Rush · Dia 1",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Point Rush · Dia 2",
+          "teams": 12,
+          "drops": 6
+        }
+      ],
+      "unlinkedPeople": [
+        {
+          "team": "Team Falcons",
+          "name": "COZQ",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "ONEMORE",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "ONFIRE",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "PETER",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "KERORO",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "Conan",
+          "role": "coach"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "SAINOI",
+          "role": "manager"
+        },
+        {
+          "team": "Buriram United",
+          "name": "GETHIGH",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United",
+          "name": "JOENA",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United",
+          "name": "Moshi",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United",
+          "name": "Wassana",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United",
+          "name": "D_Long",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United",
+          "name": "Namo",
+          "role": "coach"
+        },
+        {
+          "team": "Buriram United",
+          "name": "Zeenon",
+          "role": "manager"
+        },
+        {
+          "team": "Twisted Minds",
+          "name": "DIAMOND",
+          "role": "player"
+        },
+        {
+          "team": "Twisted Minds",
+          "name": "NAMELESS",
+          "role": "player"
+        },
+        {
+          "team": "Twisted Minds",
+          "name": "Smingch",
+          "role": "player"
+        },
+        {
+          "team": "Twisted Minds",
+          "name": "XPOZY",
+          "role": "player"
+        },
+        {
+          "team": "Twisted Minds",
+          "name": "PORPOR",
+          "role": "player"
+        },
+        {
+          "team": "Twisted Minds",
+          "name": "Poseidon",
+          "role": "coach"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "POONGOD",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "FOLKYY",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "JUMPGOD",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "LIMIT",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "COUGAR",
+          "role": "player"
+        },
+        {
+          "team": "Attack All Around",
+          "name": "Cloudy",
+          "role": "coach"
+        },
+        {
+          "team": "WAG",
+          "name": "Cyrus",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Krillin",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "TheGhost",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Alan",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Xbor",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "ThanhNha",
+          "role": "coach"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Abay",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Dutzz",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Razor",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Maal",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "C1benk",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Adi",
+          "role": "coach"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Lorenz",
+          "role": "analyst"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "TomoMKS",
+          "role": "manager"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "AbaaaX",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Bara",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "aimGOD",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Reyyy",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Geday",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Manggiskun",
+          "role": "coach"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Adien",
+          "role": "manager"
+        },
+        {
+          "team": "Bigetron Delta",
+          "name": "Kyong",
+          "role": "player"
+        },
+        {
+          "team": "Bigetron Delta",
+          "name": "Dhikz",
+          "role": "player"
+        },
+        {
+          "team": "Bigetron Delta",
+          "name": "Ikal",
+          "role": "player"
+        },
+        {
+          "team": "Bigetron Delta",
+          "name": "Kojaaaa",
+          "role": "player"
+        },
+        {
+          "team": "Bigetron Delta",
+          "name": "Nemzz",
+          "role": "player"
+        },
+        {
+          "team": "Bigetron Delta",
+          "name": "Chrisjo",
+          "role": "coach"
+        },
+        {
+          "team": "Bigetron Delta",
+          "name": "Raihann",
+          "role": "manager"
+        },
+        {
+          "team": "HUA Esports",
+          "name": "Death",
+          "role": "player"
+        },
+        {
+          "team": "HUA Esports",
+          "name": "Popi",
+          "role": "player"
+        },
+        {
+          "team": "HUA Esports",
+          "name": "Shin",
+          "role": "player"
+        },
+        {
+          "team": "HUA Esports",
+          "name": "YanBin",
+          "role": "player"
+        },
+        {
+          "team": "HUA Esports",
+          "name": "TrKien",
+          "role": "player"
+        },
+        {
+          "team": "HUA Esports",
+          "name": "Beo",
+          "role": "coach"
+        },
+        {
+          "team": "HUA Esports",
+          "name": "Dung",
+          "role": "manager"
+        },
+        {
+          "team": "Corinthians",
+          "name": "Madrugada",
+          "role": "analyst"
+        },
+        {
+          "team": "Corinthians",
+          "name": "Vick",
+          "role": "manager"
+        },
+        {
+          "team": "Six Karma",
+          "name": "BAD",
+          "role": "player"
+        },
+        {
+          "team": "Six Karma",
+          "name": "Nicko",
+          "role": "player"
+        },
+        {
+          "team": "Six Karma",
+          "name": "POCHO",
+          "role": "player"
+        },
+        {
+          "team": "Six Karma",
+          "name": "SoyDella",
+          "role": "player"
+        },
+        {
+          "team": "Six Karma",
+          "name": "UNKNOWN",
+          "role": "player"
+        },
+        {
+          "team": "Six Karma",
+          "name": "PUMA",
+          "role": "coach"
+        },
+        {
+          "team": "RETA Esports",
+          "name": "Carlxs",
+          "role": "player"
+        },
+        {
+          "team": "RETA Esports",
+          "name": "Chris",
+          "role": "player"
+        },
+        {
+          "team": "RETA Esports",
+          "name": "LopesXL",
+          "role": "player"
+        },
+        {
+          "team": "RETA Esports",
+          "name": "Vidalao",
+          "role": "player"
+        },
+        {
+          "team": "RETA Esports",
+          "name": "Chix",
+          "role": "player"
+        },
+        {
+          "team": "CLG",
+          "name": "DXRK",
+          "role": "player"
+        },
+        {
+          "team": "CLG",
+          "name": "FAQ7",
+          "role": "player"
+        },
+        {
+          "team": "CLG",
+          "name": "Floki",
+          "role": "player"
+        },
+        {
+          "team": "CLG",
+          "name": "Joker",
+          "role": "player"
+        },
+        {
+          "team": "CLG",
+          "name": "Puzhin",
+          "role": "player"
+        },
+        {
+          "team": "CLG",
+          "name": "Wanheda",
+          "role": "coach"
+        },
+        {
+          "team": "CLG",
+          "name": "Saav",
+          "role": "manager"
+        },
+        {
+          "team": "WASK",
+          "name": "BIGBOSS",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "DOMIN",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "MR ALI",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "Leonimo",
+          "role": "player"
+        },
+        {
+          "team": "WASK",
+          "name": "S9AND7",
+          "role": "coach"
+        }
+      ],
+      "teams": 17,
+      "withdrawn": [
+        "RZX Esports"
+      ],
+      "players": 88,
+      "staff": 30,
+      "stages": [
+        {
+          "name": "Knockout · Classificação geral",
+          "teams": 17,
+          "drops": 24
+        },
+        {
+          "name": "Point Rush · Dia 1",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Point Rush · Dia 2",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Grande final",
+          "teams": 12,
+          "drops": 6
+        }
+      ]
+    },
+    {
+      "id": "ffws-2025",
+      "sourceFile": "ffws-2025.wiki",
+      "sha256": "715a7db18fcdf2ff504e9065558a98e4d4d8112898bbd8cfe6885445c605c968",
+      "warnings": [
+        "Comissão não informada: Heavy",
+        "Comissão não informada: Red Cliff",
+        "A fonte declara US$ 1,000,000 no total; as linhas de premiação coletiva somam US$ 978,000. Valores preservados sem preencher a diferença.",
+        "Estatísticas individuais completas não estão nesta página Overview; ranking pessoal não importado."
+      ],
+      "corrections": [
+        {
+          "stageId": "final",
+          "team": "Heavy",
+          "match": 4,
+          "from": [
+            9,
+            6
+          ],
+          "to": [
+            7,
+            6
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/ffws-2025-final-game4.png",
+            "sha256": "34cb8385001d0ec8217241e4c0aaae6c68cd0d13b49cfe72c35d4117ff23b88a",
+            "description": "Placar Grand Finals Game 4 enviado pelo administrador em 18/10/2026: Heavy, 6 abates + 4 pontos de colocação = 10 pontos."
+          }
+        },
+        {
+          "stageId": "final",
+          "team": "Heavy",
+          "match": 7,
+          "from": [
+            12,
+            5
+          ],
+          "to": [
+            12,
+            3
+          ],
+          "evidence": {
+            "file": "imports/liquipedia-worlds/evidence/score-review-20261018.txt",
+            "sha256": "ccf3d05d35220ee3aaa1fb032394e1afe8808baf201f2174ce8510ef15a8aa98",
+            "description": "Correções confirmadas pelo administrador após conferir as duas edições em 18/10/2026."
+          }
+        }
+      ],
+      "dailyStages": [
+        {
+          "name": "Knockout · Dia 1",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 2",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 3",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 4",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 5",
+          "teams": 12,
+          "drops": 6
+        },
+        {
+          "name": "Knockout · Dia 6",
+          "teams": 12,
+          "drops": 6
+        }
+      ],
+      "unlinkedPeople": [
+        {
+          "team": "EVOS Divine",
+          "name": "Reyyy",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Koceel",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Rasyah",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "AbaaaX",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "AimGOD",
+          "role": "player"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Leem",
+          "role": "coach"
+        },
+        {
+          "team": "EVOS Divine",
+          "name": "Adien",
+          "role": "manager"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "ONEMORE",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "PEENA",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "KERORO",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "LIMIT",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "ONFIRE",
+          "role": "player"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "Conan",
+          "role": "coach"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "COZQ",
+          "role": "analyst"
+        },
+        {
+          "team": "Team Falcons",
+          "name": "SAINOI",
+          "role": "manager"
+        },
+        {
+          "team": "Heavy",
+          "name": "Alan",
+          "role": "player"
+        },
+        {
+          "team": "Heavy",
+          "name": "Mufasa",
+          "role": "player"
+        },
+        {
+          "team": "Heavy",
+          "name": "KhaBi",
+          "role": "player"
+        },
+        {
+          "team": "Heavy",
+          "name": "BHuy",
+          "role": "player"
+        },
+        {
+          "team": "Heavy",
+          "name": "DontCry",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Abay",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "18Deer",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Dutzz",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Maal",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Ikal",
+          "role": "player"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Adi",
+          "role": "coach"
+        },
+        {
+          "team": "RRQ Kazu",
+          "name": "Lorenz",
+          "role": "analyst"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "WASSANA",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "JOENA",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "GETHIGH",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "MOSHI",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "THECRUZ",
+          "role": "player"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "D_Long",
+          "role": "coach"
+        },
+        {
+          "team": "Buriram United Esports",
+          "name": "ZEENON",
+          "role": "manager"
+        },
+        {
+          "team": "All Gamers Global",
+          "name": "SAIFA",
+          "role": "player"
+        },
+        {
+          "team": "All Gamers Global",
+          "name": "CHINOY",
+          "role": "player"
+        },
+        {
+          "team": "All Gamers Global",
+          "name": "BAROS",
+          "role": "player"
+        },
+        {
+          "team": "All Gamers Global",
+          "name": "DEW",
+          "role": "player"
+        },
+        {
+          "team": "All Gamers Global",
+          "name": "TEAMSR",
+          "role": "player"
+        },
+        {
+          "team": "All Gamers Global",
+          "name": "XPENSION",
+          "role": "coach"
+        },
+        {
+          "team": "All Gamers Global",
+          "name": "BIKIIX2",
+          "role": "manager"
+        },
+        {
+          "team": "GOW",
+          "name": "Dyan",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "AKhoi",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "Demon",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "Hans",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "Rip",
+          "role": "player"
+        },
+        {
+          "team": "GOW",
+          "name": "4Sure",
+          "role": "coach"
+        },
+        {
+          "team": "P Esports",
+          "name": "LBT",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "Nolan",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "Nero",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "LaoHo",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "Jonah",
+          "role": "player"
+        },
+        {
+          "team": "P Esports",
+          "name": "DNP",
+          "role": "coach"
+        },
+        {
+          "team": "WAG",
+          "name": "TQuy",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Xbor",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "Cyrus",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "PLS1",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "VanVo",
+          "role": "player"
+        },
+        {
+          "team": "WAG",
+          "name": "TheGhost",
+          "role": "coach"
+        },
+        {
+          "team": "WAG",
+          "name": "Calm",
+          "role": "manager"
+        },
+        {
+          "team": "Rainbow7",
+          "name": "Haax",
+          "role": "player"
+        },
+        {
+          "team": "Rainbow7",
+          "name": "Gamezking",
+          "role": "player"
+        },
+        {
+          "team": "Rainbow7",
+          "name": "Della",
+          "role": "player"
+        },
+        {
+          "team": "Rainbow7",
+          "name": "Turbo",
+          "role": "player"
+        },
+        {
+          "team": "Rainbow7",
+          "name": "Benja",
+          "role": "coach"
+        },
+        {
+          "team": "Nova Legion",
+          "name": "LopesXL",
+          "role": "player"
+        },
+        {
+          "team": "Nova Legion",
+          "name": "Trix",
+          "role": "player"
+        },
+        {
+          "team": "Nova Legion",
+          "name": "Floki",
+          "role": "player"
+        },
+        {
+          "team": "Nova Legion",
+          "name": "Sebas",
+          "role": "player"
+        },
+        {
+          "team": "Nova Legion",
+          "name": "Qluso",
+          "role": "player"
+        },
+        {
+          "team": "Nova Legion",
+          "name": "Kira",
+          "role": "coach"
+        },
+        {
+          "team": "Red Hawks",
+          "name": "BLADE",
+          "role": "player"
+        },
+        {
+          "team": "Red Hawks",
+          "name": "NEJAD",
+          "role": "player"
+        },
+        {
+          "team": "Red Hawks",
+          "name": "KUTTUSH",
+          "role": "player"
+        },
+        {
+          "team": "Red Hawks",
+          "name": "FLICKER",
+          "role": "player"
+        },
+        {
+          "team": "Red Hawks",
+          "name": "KAFI",
+          "role": "player"
+        },
+        {
+          "team": "Red Hawks",
+          "name": "Duker",
+          "role": "coach"
+        },
+        {
+          "team": "Red Hawks",
+          "name": "Shahriar Shishier",
+          "role": "manager"
+        },
+        {
+          "team": "Red Cliff",
+          "name": "REX",
+          "role": "player"
+        },
+        {
+          "team": "Red Cliff",
+          "name": "HOPE",
+          "role": "player"
+        },
+        {
+          "team": "Red Cliff",
+          "name": "ASHIK",
+          "role": "player"
+        },
+        {
+          "team": "Red Cliff",
+          "name": "FAHIM",
+          "role": "player"
+        },
+        {
+          "team": "Red Cliff",
+          "name": "LIKHU",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Anas",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Action",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Leo",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Sajid",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Hasuu 11",
+          "role": "player"
+        },
+        {
+          "team": "Hotshot Esports",
+          "name": "Manggiskun",
+          "role": "coach"
+        },
+        {
+          "team": "Clear Vision Esports",
+          "name": "DOWLY",
+          "role": "player"
+        },
+        {
+          "team": "Clear Vision Esports",
+          "name": "Z4CK",
+          "role": "player"
+        },
+        {
+          "team": "Clear Vision Esports",
+          "name": "PROBAY",
+          "role": "player"
+        },
+        {
+          "team": "Clear Vision Esports",
+          "name": "SHARIN",
+          "role": "player"
+        },
+        {
+          "team": "Clear Vision Esports",
+          "name": "Younes",
+          "role": "player"
+        },
+        {
+          "team": "Clear Vision Esports",
+          "name": "S9AND7",
+          "role": "coach"
+        }
+      ],
+      "teams": 18,
+      "withdrawn": [],
+      "players": 90,
+      "staff": 28,
+      "stages": [
+        {
+          "name": "Knockout · Classificação geral",
+          "teams": 18,
+          "drops": 24
+        },
+        {
+          "name": "Knockout · Semana 1 (vagas no Clash Squad)",
+          "teams": 18,
+          "drops": 12
+        },
+        {
+          "name": "Grande final",
+          "teams": 12,
+          "drops": 7
+        }
+      ],
+      "clashSquad": {
+        "teams": 8,
+        "series": 13,
+        "champion": "All Gamers Global"
+      }
+    }
+  ]
+}

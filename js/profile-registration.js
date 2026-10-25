@@ -1,0 +1,17 @@
+export function registrationComplete(p){return !!p?.name&&/^[a-z0-9_]{3,24}$/.test(p.username||'')&&['masculino','feminino'].includes(p.gender);}
+export function registrationValues(raw,p,catalog){
+ const name=String(raw.name||'').trim(),username=String(raw.username||'').trim().replace(/^@/,'').toLowerCase(),gender=String(raw.gender||'');
+ if(!name||name.length>80)throw Error('Preencha um nome de até 80 caracteres.');
+ if(!/^[a-z0-9_]{3,24}$/.test(username))throw Error('Use de 3 a 24 letras, números ou _ no nome de usuário.');
+ if(!['masculino','feminino'].includes(gender))throw Error('Selecione masculino ou feminino.');
+ const character=gender==='feminino'?'kelly':'adam';const find=kind=>Object.entries(catalog).find(([,x])=>x.enabled&&x.kind===kind&&(x.accessRule||'all')==='all'&&!x.unlockBadge&&String(x.title).trim().toLowerCase()===character)?.[0];
+ const standard=kind=>Object.entries(catalog).filter(([,x])=>x.kind===kind&&['adam','kelly'].includes(String(x.title).trim().toLowerCase())).map(([id])=>id);
+ const avatarId=(!p.avatarId||p.avatarId==='default'||standard('avatar').includes(p.avatarId))?find('avatar')||'default':p.avatarId;
+ const coverId=(!p.coverId||standard('cover').includes(p.coverId))?find('cover')||'':p.coverId;
+ return {...p,name,username,gender,avatarId,coverId,motto:p.motto||'',avatarRingColor:p.avatarRingColor||'#7C5CFF',theme:p.theme||'cyan',mainTeam:p.mainTeam||'',favoritePlayer:p.favoritePlayer||'',teamIdsJson:p.teamIdsJson||'[]',featuredBadgesJson:p.featuredBadgesJson||'[]',public:p.public!==false};
+}
+export function mountRegistration(root,{profile,catalog,esc,save,signOut}){
+ root.innerHTML=`<section class="cff-profile-panel cff-registration"><span class="cff-profile-eyebrow">BEM-VINDO À CENTRAL</span><h1>Complete seu cadastro</h1><p>Escolha como você quer aparecer na comunidade.</p><form><label class="cff-account-field">Nome<input name="name" maxlength="80" value="${esc(profile.name||'')}" required autocomplete="name"></label><label class="cff-account-field">Nome de usuário<input name="username" maxlength="24" minlength="3" pattern="[A-Za-z0-9_]{3,24}" value="${esc(profile.username||'')}" required autocomplete="username" placeholder="Ex.: torcedor_ff"></label><small>Seu @ na Central. Não precisa ser o mesmo do Instagram.</small><fieldset><legend>Gênero</legend><label><input type="radio" name="gender" value="masculino" required${profile.gender==='masculino'?' checked':''}> Masculino · Adam</label><label><input type="radio" name="gender" value="feminino" required${profile.gender==='feminino'?' checked':''}> Feminino · Kelly</label></fieldset><p class="cff-profile-muted">Foto e capa padrão de acordo com sua escolha. Depois você pode personalizar.</p><button class="cff-account-button primary" type="submit">Concluir cadastro</button><p role="status"></p></form><button type="button" class="cff-account-button" data-registration-out>Sair da conta</button></section>`;
+ const form=root.querySelector('form'),status=form.querySelector('[role=status]');form.onsubmit=async e=>{e.preventDefault();const submit=form.querySelector('[type=submit]');submit.disabled=true;status.textContent='Salvando cadastro…';try{const f=new FormData(form);await save(registrationValues(Object.fromEntries(f),profile,catalog));}catch(error){status.textContent=error.message||'Não foi possível concluir o cadastro. Tente novamente.';}finally{submit.disabled=false;}};
+ root.querySelector('[data-registration-out]').onclick=signOut;
+}

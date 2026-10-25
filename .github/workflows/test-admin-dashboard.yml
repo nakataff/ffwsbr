@@ -1,0 +1,42 @@
+name: Test Admin Dashboard
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'admin.html'
+      - 'js/admin-core.js'
+      - 'js/admin-live-tournaments.mjs'
+      - 'js/live-tournament-model.mjs'
+      - 'js/live-tournament-store.mjs'
+      - 'js/home-live-widget.min.js'
+      - 'css/admin-live-tournaments.css'
+      - 'test/live-tournaments.test.cjs'
+      - 'test/live-tournaments-ui.test.cjs'
+      - 'css/admin-dashboard.css'
+      - 'js/admin.js'
+      - 'js/admin-sections-titles.js'
+      - 'js/admin-dashboard-layout.mjs'
+      - 'test/admin-dashboard.test.cjs'
+      - '.github/workflows/test-admin-dashboard.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+      - name: Install isolated DOM test dependency
+        run: |
+          mkdir -p /tmp/cff-dashboard-test
+          cp test/game-gifts-browser-package.json /tmp/cff-dashboard-test/package.json
+          npm install --prefix /tmp/cff-dashboard-test --no-audit --no-fund
+      - name: Check dashboard scripts
+        run: node --check js/admin.js && node --check js/admin-dashboard-layout.mjs && node --check js/admin-sections-titles.js
+      - name: Test navigation, tool search and original editor bindings
+        env:
+          NODE_PATH: /tmp/cff-dashboard-test/node_modules
+        run: node --test --test-timeout=10000 test/live-tournaments.test.cjs test/live-tournaments-ui.test.cjs test/admin-dashboard.test.cjs

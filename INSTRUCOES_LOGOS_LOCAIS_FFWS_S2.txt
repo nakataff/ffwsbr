@@ -1,0 +1,7 @@
+Adicione estes três arquivos na raiz do site, na mesma pasta do index.html:
+
+- sx tet.webp
+- cpt vox.webp
+- afg.webp
+
+O código já está configurado para priorizar essas imagens locais antes das logos da planilha.

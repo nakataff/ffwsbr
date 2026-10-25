@@ -1,0 +1,10 @@
+PATCH — PERFIS, ABAS, LOGOS E MENU PÚBLICO
+
+- A página do jogador agora usa abas de competição. WB 2026 S2 abre primeiro.
+- Dados detalhados de WB 2026 S1/EWC/LAFF/SEA são carregados somente quando a aba é escolhida nos jogadores da temporada atual.
+- Busca e menu lateral foram incluídos nas páginas jogador.html e equipe.html.
+- O link RANKING MVP foi removido do cabeçalho do jogador.
+- A planilha DADOS DO SITE - Logos.tsv foi convertida em team-data/logo-map.json, com aliases e logos locais seguros.
+- Perfis e passagens resolvem logos pelo nome normalizado e usam escudo genérico somente quando não existe correspondência.
+
+Versão: 20260728-player-tabs-shell-logos-v1

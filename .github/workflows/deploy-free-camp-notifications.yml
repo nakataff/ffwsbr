@@ -1,0 +1,309 @@
+name: Deploy Free Camp Notifications
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'cloudflare/camp-notifications/**'
+      - 'functions/admin-tasks-service.js'
+      - 'functions/task-locator.js'
+      - 'functions/test/task-locator.test.cjs'
+      - 'js/admin-tarefas-notifications.js'
+      - 'functions/test/admin-tasks-service.test.cjs'
+      - 'functions/camp-notifications-core.js'
+      - 'functions/camp-results-core.js'
+      - 'functions/admin-profile-editor.js'
+      - 'functions/profile-goals.js'
+      - 'functions/profile-identity-sync.js'
+      - 'functions/profile-emblems.js'
+      - 'functions/test/profile-emblems.test.cjs'
+      - 'js/profile-emblems.mjs'
+      - 'js/admin-emblems.js'
+      - 'test/profile-emblems.test.cjs'
+      - 'functions/global-chat.js'
+      - 'js/global-chat.js'
+      - 'js/admin-chat.js'
+      - 'css/global-chat.css'
+      - 'admin-chat.html'
+      - 'test/global-chat-ui.test.cjs'
+      - 'functions/code-gifts.js'
+      - 'functions/economy.js'
+      - 'functions/user-inbox.js'
+      - 'functions/test/user-inbox.test.cjs'
+      - 'js/inbox-store.mjs'
+      - 'js/user-inbox.mjs'
+      - 'js/admin-inbox.mjs'
+      - 'js/admin-inbox-page.js'
+      - 'admin-mensagens.html'
+      - 'css/user-inbox.css'
+      - 'test/user-inbox.test.cjs'
+      - 'functions/economy-quiz.js'
+      - 'functions/quiz-progress.js'
+      - 'js/quiz-goals.mjs'
+      - 'test/quiz-goals-ui.test.cjs'
+      - 'functions/daily-challenges-seed.js'
+      - 'scripts/build-daily-challenges.cjs'
+      - 'scripts/build-daily-challenge-photos.cjs'
+      - 'ffws-br-2026-s2/players.json'
+      - 'player-data/photo-map.json'
+      - 'test/daily-challenges-generator.test.cjs'
+      - 'functions/economy-admin-tools.js'
+      - 'functions/test/economy-admin-tools.test.cjs'
+      - 'js/admin-economy-tools.mjs'
+      - 'js/admin-stock-bridge.mjs'
+      - 'test/admin-economy-tools.test.cjs'
+      - 'test/quiz-invite.test.cjs'
+      - 'functions/test/economy-quiz.test.cjs'
+      - 'js/daily-quiz.mjs'
+      - 'js/admin-quiz.js'
+      - 'test/daily-quiz.test.cjs'
+      - 'admin-quiz.html'
+      - 'css/daily-quiz.css'
+      - 'functions/economy-code-returns.js'
+      - 'js/code-return.mjs'
+      - 'js/admin-code-returns.js'
+      - 'test/code-returns-ui.test.cjs'
+      - 'functions/economy-vouchers.js'
+      - 'js/admin-code-vouchers.js'
+      - 'js/code-gift-opener.mjs'
+      - 'js/recipient-code-gifts.js'
+      - 'js/gift-archive.mjs'
+      - 'js/profile-inventory.mjs'
+      - 'test/profile-inventory.test.cjs'
+      - 'js/account-instagram-connect.mjs'
+      - 'test/account-direct-actions.test.cjs'
+      - 'test/code-vouchers-ui.test.cjs'
+      - 'functions/careers.js'
+      - 'functions/career-staff-history.js'
+      - 'functions/career-joker-identity.js'
+      - 'functions/test/career-joker-identity.test.cjs'
+      - 'player-data/staff/joker-coach.json'
+      - 'player-data/passagens.json'
+      - 'scripts/build-career-seed.py'
+      - 'functions/career-staff-history.json'
+      - 'functions/test/career-staff-history.test.cjs'
+      - 'scripts/build-career-staff-history.py'
+      - 'novos-torneios/ffws-*.json'
+      - 'imports/liquipedia-worlds/**'
+      - 'team-aliases.json'
+      - 'novos-torneios/lbff-*.json'
+      - 'functions/test/career-competitions.test.cjs'
+      - 'functions/career-competitions.js'
+      - 'functions/career-competitions-seed.json'
+      - 'scripts/build-career-competitions.py'
+      - 'career-data/results/**'
+      - 'ffws-global-2026/dates.json'
+      - 'functions/career-market.js'
+      - 'functions/market-seed.json'
+      - 'js/career-market-admin.mjs'
+      - 'js/career-market-export.mjs'
+      - 'js/mercado-status-performance-hotfix.min.js'
+      - 'js/charts-market.min.js'
+      - 'test/career-market-public.test.cjs'
+      - 'functions/career-directory.js'
+      - 'functions/career-tournament-assets.js'
+      - 'functions/livepix-diagnostic.js'
+      - 'functions/test/livepix-diagnostic.test.cjs'
+      - 'functions/community-supporters.js'
+      - 'functions/test/community-supporters.test.cjs'
+      - 'js/admin-supporters.js'
+      - 'js/supporters-admin.mjs'
+      - 'functions/test/tournament-assets.test.cjs'
+      - 'js/tournament-assets-admin.mjs'
+      - 'js/tournament-logos.js'
+      - 'js/team-identity-history.js'
+      - 'js/career-team-history-admin.mjs'
+      - 'functions/test/team-identity-history.test.cjs'
+      - 'js/search-fast.min.js'
+      - 'test/career-global-search.test.cjs'
+      - 'js/career-directory-admin.mjs'
+      - 'js/career-logo-picker.mjs'
+      - 'data/team-logo-catalog.json'
+      - 'scripts/build-team-logo-catalog.cjs'
+      - 'test/career-logo-picker.test.cjs'
+      - 'js/career-team-identities.mjs'
+      - 'test/career-team-identities.test.cjs'
+      - 'js/year-ranking-logo-sheet.js'
+      - 'functions/career-seed.json'
+      - 'functions/career-registrations.json'
+      - 'player-data/wb-registration-sources.json'
+      - 'player-data/edition-teams.json'
+      - 'scripts/build-career-registrations.py'
+      - 'ffws-br-*/players.json'
+      - 'ffws-br-*/player-meta.json'
+      - 'functions/test/careers.test.cjs'
+      - 'functions/test/career-staff-s2.test.cjs'
+      - 'functions/career-staff-s2.json'
+      - 'js/career-*.mjs'
+      - 'js/career-public.js'
+      - 'js/player-roster-status-repair.js'
+      - 'js/career-departures.js'
+      - 'js/admin-careers.js'
+      - 'admin-carreiras.html'
+      - 'carreira.html'
+      - 'css/careers.css'
+      - 'test/career-interfaces.test.cjs'
+      - 'test/historical-team-fixes.test.cjs'
+      - 'functions/economy-game-orders.js'
+      - 'functions/economy-ranking.js'
+      - 'functions/economy-interactions.js'
+      - 'functions/economy-media.js'
+      - 'functions/test/economy.test.cjs'
+      - 'functions/test/economy-game-orders.test.cjs'
+      - 'functions/test/economy-interactions.test.cjs'
+      - 'functions/test/profile-checkin.test.cjs'
+      - 'js/profile-checkin.mjs'
+      - 'test/profile-coins.test.cjs'
+      - 'js/economy-*.mjs'
+      - 'js/economy-ui.js'
+      - 'js/header-wallet.mjs'
+      - 'js/inbox-popover.mjs'
+      - 'css/inbox-popover.css'
+      - 'test/inbox-popover.test.cjs'
+      - 'js/wallet-balance.mjs'
+      - 'css/header-wallet.css'
+      - 'test/header-wallet.test.cjs'
+      - 'js/admin-economy*.js'
+      - 'test/economy-wheel.test.mjs'
+      - 'test/admin-economy-form.test.mjs'
+      - 'functions/admin-profile-options.json'
+      - 'js/camp-notification-content.js'
+      - '.github/workflows/deploy-free-camp-notifications.yml'
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '22'
+      - name: Check Cloudflare access
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Add CLOUDFLARE_API_TOKEN in repository Actions secrets.'; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Add CLOUDFLARE_ACCOUNT_ID in repository Actions secrets.'; exit 1; }
+      - run: npm install --no-audit --no-fund
+        working-directory: cloudflare/camp-notifications
+      - name: Build current WB registration index
+        run: python3 scripts/build-career-registrations.py && python3 scripts/build-career-staff-history.py && python3 scripts/build-career-competitions.py
+      - run: npm test
+        working-directory: cloudflare/camp-notifications
+      - name: Test profile results and account invitation
+        run: node --test test/daily-challenges-generator.test.cjs test/account-welcome.test.mjs test/camp-results-view.test.mjs test/economy-wheel.test.mjs test/admin-economy-form.test.mjs
+      - name: Test automatic profile rewards
+        run: node --test functions/test/task-locator.test.cjs functions/test/user-inbox.test.cjs functions/test/admin-tasks-service.test.cjs functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/profile-emblems.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-quiz.test.cjs functions/test/economy-admin-tools.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs functions/test/profile-checkin.test.cjs functions/test/career-competitions.test.cjs functions/test/careers.test.cjs functions/test/team-identity-history.test.cjs functions/test/tournament-assets.test.cjs functions/test/community-supporters.test.cjs functions/test/livepix-diagnostic.test.cjs functions/test/career-staff-s2.test.cjs functions/test/career-staff-history.test.cjs functions/test/career-joker-identity.test.cjs
+      - name: Test profile checkin and monthly goal interfaces
+        env:
+          NODE_PATH: /tmp/cff-coins-test/node_modules
+        run: |
+          mkdir -p /tmp/cff-coins-test
+          cp test/game-gifts-browser-package.json /tmp/cff-coins-test/package.json
+          npm install --prefix /tmp/cff-coins-test --no-audit --no-fund
+          node --test --test-timeout=10000 test/economy-shop.test.cjs test/economy-wheel.test.mjs test/user-inbox.test.cjs test/inbox-popover.test.cjs test/admin-economy-tools.test.cjs test/quiz-invite.test.cjs test/daily-quiz.test.cjs test/quiz-goals-ui.test.cjs test/header-wallet.test.cjs test/global-chat-ui.test.cjs test/profile-emblems.test.cjs test/profile-coins.test.cjs test/code-vouchers-ui.test.cjs test/account-direct-actions.test.cjs test/code-returns-ui.test.cjs test/profile-inventory.test.cjs test/career-interfaces.test.cjs test/career-logo-picker.test.cjs test/career-global-search.test.cjs test/career-market-public.test.cjs test/community-supporters-ui.test.cjs test/career-team-identities.test.cjs test/historical-team-fixes.test.cjs
+      - name: Check points interfaces
+        run: node --check js/search-fast.min.js && node --check functions/career-joker-identity.js && node --check functions/career-staff-history.js && node --check functions/career-competitions.js && node --check js/career-competitions-admin.mjs && node --check js/career-person-create.mjs && node --check functions/career-market.js && node --check js/career-market-admin.mjs && node --check js/career-market-export.mjs && node --check js/mercado-status-performance-hotfix.min.js && node --check functions/career-directory.js && node --check js/career-directory-admin.mjs && node --check js/career-logo-picker.mjs && node --check js/career-team-identities.mjs && node --check js/gift-archive.mjs && node --check js/profile-inventory.mjs && node --check functions/economy-code-returns.js && node --check js/code-return.mjs && node --check js/admin-code-returns.js && node --check js/code-gift-opener.mjs && node --check js/account-instagram-connect.mjs && node --check js/recipient-code-gifts.js && node --check js/economy-photo.mjs && node --check js/economy-wheel.mjs && node --check js/economy-client.mjs && node --check js/economy-ui.js && node --check functions/economy-vouchers.js && node --check js/admin-code-vouchers.js && node --check js/admin-economy.js && node --check js/admin-economy-stock.js && node --check js/public-account.js && node --check js/profile-checkin.mjs && node --check js/admin-careers.js && node --check js/career-client.mjs && node --check js/career-public.js && node --check js/player-roster-status-repair.js && node --check js/career-departures.js
+      - name: Check referral account verification access
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          node --input-type=module <<'JS'
+          import {goalDatabase} from './cloudflare/camp-notifications/goal-database.js';
+          // One deliberately absent UID verifies Auth read access without downloading users.
+          try { await goalDatabase(process.env.FIREBASE_SERVICE_ACCOUNT).accountCreatedAt('cff-economy-access-check'); }
+          catch(error) { if(error.message !== 'Conta indisponível.') throw error; }
+          console.log('Referral account verification access is ready.');
+          JS
+      - name: Configure automatic reward service
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" | npx wrangler secret put CFF_GOAL_SERVICE_ACCOUNT
+        working-directory: cloudflare/camp-notifications
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy the standalone free Worker
+        run: npm run deploy
+        working-directory: cloudflare/camp-notifications
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Confirm the public service
+        run: |
+          # A new workers.dev route can briefly return 404 during propagation.
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const fs=require("node:fs"),expected=Number(fs.readFileSync("cloudflare/camp-notifications/worker.js","utf8").match(/service:[^,]+,version:(\d+)/)?.[1]),h=JSON.parse(fs.readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version,expected}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==expected||h.taskLocator!==true||h.livepixDiagnostic!==true||h.inboxPreview!==true||h.quizSkip!==true||h.quizAchievements!==true||h.quizLocalPhotos!==true||h.rouletteVouchers!==true||h.userInbox!==true||h.dailyQuiz!==true||h.dailyChallenges!==true||h.adminRewardsIntegration!==true||h.adminTaskReminderOptions!==true||h.adminTasks!==true||h.profileEmblems!==true||h.chatCustomization!==true||h.chatLiveRoles!==true||h.careerMarket!==true||h.careerDirectory!==true||h.communitySupporters!==true||h.tournamentAssets!==true||h.teamIdentityHistory!==true||h.giftArchive!==true||h.codeReturns!==true||h.directCodeGift!==true||h.codeVouchers!==true||h.registrationRosters!==true||h.careers!==true||h.careerDepartures!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.gameOrderNotices!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
+              echo 'Notification service is ready.'
+              break
+            fi
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
+      - name: Inspect live careers roster
+        run: |
+          status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output career-live-check.json --write-out '%{http_code}' 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/search?query=souto')
+          echo "Public careers API HTTP $status"
+          if test "$status" != 200; then
+            echo 'Cloudflare Durable Objects may have reached its free-tier rows-read quota.'
+            head -c 200 career-live-check.json || true
+            exit 1
+          fi
+          node -e 'const j=require("./career-live-check.json");if(j.ok!==true||!Array.isArray(j.entries))process.exit(1);console.log("Public career search available.");'
+      - name: Confirm interaction ranking database access
+        run: |
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 20 --output interaction-health.json https://cff-camp-notifications.nakataffb4.workers.dev/economy-interactions/health && node -e 'const h=JSON.parse(require("node:fs").readFileSync("interaction-health.json","utf8"));if(h.ok!==true||h.interactionRanking!==true)process.exit(1);console.log("Interaction ranking access is ready.");'; then
+              break
+            fi
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
+      - name: Confirm roulette stock schema
+        run: |
+          for attempt in 1 2 3 4 5 6 7 8; do
+            media_status=$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output economy-media.json --write-out '%{http_code}' https://cff-camp-notifications.nakataffb4.workers.dev/economy-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+            if test "$media_status" = 404 && node -e 'const response=JSON.parse(require("node:fs").readFileSync("economy-media.json","utf8"));if(response.error!=="Imagem não encontrada.")process.exit(1);console.log("Roulette SQLite schema is ready.");'; then
+              break
+            fi
+            echo "Waiting for the roulette image route (HTTP $media_status)."
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
+      - name: Check official final Day 2 availability
+        run: |
+          curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output official-day-two.json https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2/final/drops/2.json
+          node <<'JS'
+          const fs=require('node:fs'),C=require('./functions/camp-notifications-core.js');
+          const data=JSON.parse(fs.readFileSync('official-day-two.json','utf8'))||{};
+          const available=Object.entries(data).filter(([key,value])=>{
+            const teams=Object.values(value?.teams||{}),roster=Object.fromEntries(teams.map(t=>[C.key(t.team),{name:t.team}]));
+            const rows=C.officialRows(value,roster);
+            return rows.length===12&&rows.length===teams.length;
+          }).map(([key])=>Number(key)).sort((a,b)=>a-b);
+          console.log('Official final Day 2 drops: '+JSON.stringify(available));
+          JS
+      - name: Confirm public Mercado feed
+        run: |
+          # Durable Objects can briefly serve their previous class while the new Worker propagates.
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 20 --output market-health.json 'https://cff-camp-notifications.nakataffb4.workers.dev/careers/market?limit=20'; then break; fi
+            test "$attempt" -lt 8 || exit 1
+            sleep 5
+          done
+          node <<'JS'
+          const result=JSON.parse(require('node:fs').readFileSync('market-health.json','utf8'));
+          if(result.ok!==true||!Array.isArray(result.entries)||result.entries.length>20||!Number.isInteger(result.total)||result.entries.some(e=>e.publication||e.actor))process.exit(1);
+          console.log(JSON.stringify({publicMarket:true,total:result.total,page:result.entries.length}));
+          JS
+      - name: Confirm completed final state
+        run: |
+          curl --fail --silent --show-error --retry 2 --connect-timeout 10 --max-time 20 --output official-final.json https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/2026-s2/final.json
+          node <<'JS'
+          const fs=require('node:fs'),C=require('./functions/camp-notifications-core.js'),R=require('./functions/camp-results-core.js');
+          const live=JSON.parse(fs.readFileSync('official-final.json','utf8'))||{},roster={};
+          for(const day of Object.values(live.drops||{}))for(const match of Object.values(day||{}))for(const team of Object.values(match?.teams||{}))roster[C.key(team.team)]={name:team.team};
+          console.log('Final tournament state: '+JSON.stringify(R.tournamentState(R.mergeOfficialMatches([],live,roster,'final'),roster,'final',live)));
+          JS
+

@@ -1,0 +1,51 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),{DatabaseSync}=require('node:sqlite'),C=require('../careers');
+const admin={uid:'admin',admin:true},nonce=()=>crypto.randomUUID();
+const data={version:'test-v1',catalog:[{id:'lbff9',name:'LBFF 9',family:'LBFF'},{id:'global25',name:'FFWS Global Finals 2025',family:'MUNDIAL'},{id:'laff26',name:'LAFF 2026 S1',family:'LAFF'},...Array.from({length:25},(_,i)=>({id:'event'+i,name:'Evento '+i,family:'OUTROS'}))],people:{p0:[{id:'lbff9',team:'LOUD',role:'player'},{id:'global25',team:'LOUD',role:'player'},{id:'laff26',team:'W7M',role:'player'}],p1:[{id:'lbff9',team:'LOUD',role:'player'}]}};
+function fixture(){const sqlite=new DatabaseSync(':memory:'),sql={exec(q,...args){let r=[];for(const part of q.split(';').filter(p=>p.trim())){const s=sqlite.prepare(part);r=s.columns().length?s.all(...args):(s.run(...args),[]);}return r;}},transaction=fn=>{sqlite.exec('BEGIN');try{const r=fn();sqlite.exec('COMMIT');return r;}catch(e){sqlite.exec('ROLLBACK');throw e;}},seed={teams:[{id:'loud',name:'LOUD',aliases:['LOUD SNICKERS']},{id:'w7m',name:'W7M',aliases:['W7M ESPORTS']}],people:[{id:'p0',name:'Pessoa',aliases:['Nick'],kind:'player',tenures:[]},{id:'p1',name:'Santos',kind:'staff',tenures:[]}]},make=()=>C.create({sql,transaction,seed,competitionsSeed:data,now:()=>Date.parse('2026-10-17T12:00Z')});return {core:make(),make,sqlite};}
+const get=(s,id='p0')=>s.core.publicRead('person',{id}).person;
+const save=(s,tenure,extra={})=>s.core.admin(admin,{operation:'saveTenure',personId:'p0',revision:get(s).revision,nonce:nonce(),tenure,...extra});
+const passage=extra=>({teamId:'loud',role:'player',status:'ended',order:1,start:{date:'2021'},end:{date:'2025'},...extra});
+test('known tournament periods decorate one selected career without extra queries or rewriting its contractual boundaries',async()=>{
+ const s=fixture();let p=(await save(s,passage({competitionIds:['lbff9']}))).person;const before=structuredClone(p.tenures[0]);
+ data.periods={lbff9:{year:2023,startDate:'2023-04-15',endDate:'2023-08-05'}};
+ try {
+  p=get(s);assert.deepEqual(p.tenures[0].competitions[0].period,data.periods.lbff9);
+  assert.deepEqual(p.tenures[0].start,before.start);assert.deepEqual(p.tenures[0].end,before.end);assert.equal(p.tenures[0].order,before.order);
+  assert(!Object.hasOwn(JSON.parse(s.sqlite.prepare('SELECT data FROM career_tenures WHERE id=?').get(p.tenures[0].id).data),'period'));
+ } finally {delete data.periods;}
+});
+test('indexed recorded editions are preselected only for the matching person, team and role, with bounded category searches',async()=>{const s=fixture();const p=(await save(s,passage())).person;assert.deepEqual(new Set(p.tenures[0].competitions.map(c=>c.id)),new Set(['lbff9','global25']));assert(p.tenures[0].competitions.every(c=>c.source==='site'));const query={operation:'competitionOptions',personId:'p0',tenureId:p.tenures[0].id,teamName:'LOUD SNICKERS',role:'player'};const result=await s.core.admin(admin,{...query,limit:999});assert.equal(result.limit,20);assert.equal(result.entries.length,20);assert(result.hasMore);assert.equal(result.selected.length,2);assert(!result.selected.some(c=>c.id==='laff26'));const filtered=await s.core.admin(admin,{...query,family:'MUNDIAL'});assert.equal(filtered.entries.length,1);assert.equal(filtered.selected.length,2);await assert.rejects(s.core.admin({uid:'other'},query),{status:403});await assert.rejects(s.core.admin(admin,{...query,personId:'p1'}),{status:404});const staff=await s.core.admin(admin,{operation:'competitionOptions',personId:'p1',teamName:'LOUD',role:'analyst'});assert.equal(staff.selected.length,0);});
+test('manual selections, explicit empty selection and resetting records persist through edits, restarts and undo without changing passage dates',async()=>{const s=fixture();let p=(await save(s,passage())).person;const original=p.tenures[0];p=(await save(s,{...original,competitionIds:['global25']})).person;assert.deepEqual(p.tenures[0].competitions.map(c=>c.id),['global25']);p=(await save(s,{id:original.id,...passage(),notes:'Outra observação'})).person;assert.deepEqual(p.tenures[0].competitionIds,['global25']);s.core=s.make();assert.deepEqual(get(s).tenures[0].competitionIds,['global25']);p=(await save(s,{...p.tenures[0],competitionIds:[]})).person;assert.equal(p.tenures[0].competitions.length,0);const history=await s.core.admin(admin,{operation:'history',personId:'p0'});p=(await s.core.admin(admin,{operation:'undo',personId:'p0',revision:p.revision,changeId:history.entries[0].id,nonce:nonce()})).person;assert.deepEqual(p.tenures[0].competitionIds,['global25']);p=(await save(s,{...p.tenures[0],competitionIds:null})).person;assert.equal(p.tenures[0].competitions.length,2);assert(!Object.hasOwn(p.tenures[0],'competitionIds'));assert.deepEqual(p.tenures[0].start,original.start);assert.deepEqual(p.tenures[0].end,original.end);const before=get(s).revision;await assert.rejects(save(s,{...p.tenures[0],competitionIds:['unknown']}),{status:400});await assert.rejects(save(s,{...p.tenures[0],competitionIds:['lbff9','lbff9']}),{status:400});assert.equal(get(s).revision,before);});
+test('manual competition creation is admin-only and retryable and becomes public only when selected on a passage',async()=>{const s=fixture();get(s);const body={operation:'competitionCreate',nonce:nonce(),name:'LAFF 2026 S2',family:'LAFF'};await assert.rejects(s.core.admin({uid:'other'},body),{status:403});const created=await s.core.admin(admin,body);assert.deepEqual(await s.core.admin(admin,body),created);assert.equal(s.sqlite.prepare('SELECT COUNT(*) AS n FROM career_competitions WHERE id=?').get(created.competition.id).n,1);let p=(await save(s,passage({competitionIds:[created.competition.id]}))).person;assert.equal(p.tenures[0].competitions[0].name,'LAFF 2026 S2');assert.equal(p.tenures[0].competitions[0].source,'manual');assert(!JSON.stringify(p.tenures[0].competitions).includes('admin'));const canonical=await s.core.admin(admin,{...body,nonce:nonce(),name:'WB 2026 S2',family:'FFWS_BR'});const duplicate=await s.core.admin(admin,{...body,nonce:nonce(),name:'FFWS BR 2026 S2',family:'FFWS_BR'});assert.equal(canonical.competition.id,duplicate.competition.id);});
+test('multiple stays at the same team require an explicit assignment and a changed team does not inherit manual editions',async()=>{const s=fixture();let p=(await save(s,passage())).person;const first=p.tenures[0];p=(await save(s,passage({order:2,start:{date:'2026'},end:{date:'2026'}}))).person;assert(p.tenures.every(t=>!t.competitions.length));p=(await save(s,{...first,competitionIds:['lbff9']})).person;assert.equal(p.tenures.find(t=>t.id===first.id).competitions.length,1);p=(await save(s,{id:first.id,...passage({teamId:'w7m'})})).person;assert(!Object.hasOwn(p.tenures.find(t=>t.id===first.id),'competitionIds'));assert.deepEqual(p.tenures.find(t=>t.id===first.id).competitions.map(c=>c.id),['laff26']);});
+test('the real participation seed includes explicit LBFF, FFWS BR, LAFF and EWC evidence without inferring new staff histories',()=>{const seed=require('../career-competitions-seed.json');assert(seed.people.cauan7.some(c=>c.id==='lbff4'&&c.team.toUpperCase()==='LOUD'));assert(seed.catalog.some(c=>c.family==='LAFF'));assert(seed.catalog.some(c=>c.family==='EWC'));assert(seed.catalog.some(c=>c.family==='MUNDIAL'));assert(!seed.people['person-santos']);assert(!JSON.stringify(seed).includes('photo-map'));});
+
+
+test('LUUUKING official splits are tied to coaching tenure, not LBFF athlete stats, and rebuilt from verified source',()=>{
+ const real=require('../career-competitions-seed.json'),source=require('../../player-data/staff/verified-coaching-competitions.json');
+ const script=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'../../scripts/build-career-competitions.py'),'utf8');
+ assert.match(script,/verified-coaching-competitions\.json/);
+ assert.equal(source.entries.filter(x=>x.personId==='luuuking').length,8);
+ const expected=new Set(['ffwsbr2024','ffwsbr2025s1','ffwsbr2025s2','ffwsbr2026s1','ffwsbr2026s2','ffwsglobalfinals2024','ffwsglobalfinals2025','ewc2026']);
+ const recorded=real.people.luuuking.filter(x=>x.role==='head_coach');
+ assert.deepEqual(new Set(recorded.map(x=>x.id)),expected);
+ assert(recorded.every(x=>x.team==='FLUXO W7M'));
+ const db=new DatabaseSync(':memory:'),
+ sql={exec(q,...args){let result=[];for(const part of q.split(';').filter(p=>p.trim())){const s=db.prepare(part);result=s.columns().length?s.all(...args):(s.run(...args),[]);}return result;}},
+ transaction=fn=>{db.exec('BEGIN');try{const value=fn();db.exec('COMMIT');return value;}catch(e){db.exec('ROLLBACK');throw e;}};
+ const miniSeed={teams:[{id:'teamliquid',name:'TEAM LIQUID',aliases:['Team Liquid']},{id:'fluxow7m',name:'FLUXO W7M',aliases:['Fluxo']}],
+ people:[{id:'luuuking',name:'LUUUKING',kind:'player',availability:'active',aliases:['LUUUKING'],
+ tenures:[{id:'as-player',teamId:'teamliquid',teamName:'TEAM LIQUID',role:'player',status:'ended',order:1,start:{date:'2020'},end:{date:'2021'}},
+ {id:'as-coach',teamId:'fluxow7m',teamName:'FLUXO W7M',role:'head_coach',status:'active',order:2,start:{},end:{}}]}]};
+ try{
+  const core=C.create({sql,transaction,seed:miniSeed,registration:null,staffRoster:null,staffHistory:null,repairIdentities:false,competitionsSeed:real,now:()=>Date.parse('2026-10-17T17:00:00Z')});
+  const p=core.publicRead('person',{id:'luuuking'}).person,
+  player=p.tenures.find(x=>x.id==='as-player'),coach=p.tenures.find(x=>x.id==='as-coach');
+  assert.deepEqual(new Set(coach.competitions.map(x=>x.id)),expected);
+  assert.deepEqual(new Set(player.competitions.map(x=>x.id)),new Set(['lbff1','lbff3','lbff4','lbff5']));
+  assert.equal(p.current[0].role,'head_coach');
+  assert.equal(coach.start.date||'','');
+  assert(coach.competitions.some(x=>x.name==='FFWS BR 2025 S1'));
+  assert(coach.competitions.some(x=>x.name==='FFWS BR 2026 S2'));
+ }finally{db.close();}
+});

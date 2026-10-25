@@ -1,0 +1,412 @@
+{
+  "tournament": "FFWS Global Finals 2026",
+  "updatedAt": "2026-10-16",
+  "event": {
+    "name": "FFWS Global Finals 2026",
+    "organizer": "Garena",
+    "slogan": "Reach Your Prime",
+    "teamCount": 24,
+    "type": "Presencial",
+    "city": "Bangkok",
+    "country": "Tailândia",
+    "startDate": "2026-11-06",
+    "endDate": "2026-11-28",
+    "dateLabel": "6 a 28 de novembro de 2026",
+    "finalVenue": "BITEC LIVE",
+    "finalTeamCount": 12,
+    "prizePool": null,
+    "matchCount": null,
+    "broadcastSchedule": {
+      "classificatoria": [
+        "04:00",
+        "09:00"
+      ],
+      "segundaFase": [
+        "07:00"
+      ],
+      "lastChance": [
+        "07:00"
+      ],
+      "final": [
+        "07:00"
+      ]
+    },
+    "fixedMatchesBeforeFinal": 106,
+    "championRushPoint": 110,
+    "timeZone": "America/Sao_Paulo"
+  },
+  "stages": [
+    {
+      "id": "classificatoria",
+      "name": "Knockout • Fase 1",
+      "startDate": "2026-11-06",
+      "endDate": "2026-11-15",
+      "date": "6 a 15 de novembro de 2026",
+      "summary": "24 equipes divididas em quatro grupos de seis. Os grupos se enfrentam em sistema de todos contra todos durante duas semanas. Cada equipe joga seis rodadas, com seis quedas por rodada: 36 quedas por equipe.",
+      "time": "04h e 09h • horário de Brasília"
+    },
+    {
+      "id": "segundaFase",
+      "name": "Knockout • Fase 2",
+      "startDate": "2026-11-19",
+      "endDate": "2026-11-22",
+      "date": "19 a 22 de novembro de 2026",
+      "summary": "18 equipes entram de forma escalonada, conforme a classificação da Fase 1. São quatro dias com 12 equipes e seis quedas por dia. A pontuação é zerada entre os dias e os dois melhores de cada dia garantem vaga na Grande Final.",
+      "time": "07h • horário de Brasília"
+    },
+    {
+      "id": "lastChance",
+      "name": "Repescagem • Last Chance",
+      "startDate": "2026-11-27",
+      "endDate": "2026-11-27",
+      "date": "27 de novembro de 2026",
+      "summary": "12 equipes disputam as quatro últimas vagas na Grande Final em dez quedas. Participam o 19º e o 20º colocados da Fase 1 e as dez equipes restantes da Fase 2.",
+      "time": "07h • horário de Brasília"
+    },
+    {
+      "id": "final",
+      "name": "Grande Final",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "date": "28 de novembro de 2026 • BITEC LIVE, Bangkok",
+      "summary": "12 equipes disputam o título em um único dia no BITEC LIVE, em Bangkok, Tailândia. A decisão utiliza Champion Rush com 110 pontos para ativação e sem limite de quedas.",
+      "time": "07h • horário de Brasília"
+    }
+  ],
+  "rounds": [
+    {
+      "key": "classificatoria-1",
+      "stage": "classificatoria",
+      "round": 1,
+      "week": 1,
+      "day": 1,
+      "dayInWeek": 1,
+      "session": 1,
+      "label": "Semana 1 · Dia 1 · Rodada 1",
+      "date": "2026-11-06",
+      "dateLabel": "6 de novembro",
+      "time24": "04:00",
+      "time": "04h00",
+      "groups": [
+        "A",
+        "B"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-2",
+      "stage": "classificatoria",
+      "round": 2,
+      "week": 1,
+      "day": 1,
+      "dayInWeek": 1,
+      "session": 2,
+      "label": "Semana 1 · Dia 1 · Rodada 2",
+      "date": "2026-11-06",
+      "dateLabel": "6 de novembro",
+      "time24": "09:00",
+      "time": "09h00",
+      "groups": [
+        "C",
+        "D"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-3",
+      "stage": "classificatoria",
+      "round": 3,
+      "week": 1,
+      "day": 2,
+      "dayInWeek": 2,
+      "session": 1,
+      "label": "Semana 1 · Dia 2 · Rodada 1",
+      "date": "2026-11-07",
+      "dateLabel": "7 de novembro",
+      "time24": "04:00",
+      "time": "04h00",
+      "groups": [
+        "A",
+        "C"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-4",
+      "stage": "classificatoria",
+      "round": 4,
+      "week": 1,
+      "day": 2,
+      "dayInWeek": 2,
+      "session": 2,
+      "label": "Semana 1 · Dia 2 · Rodada 2",
+      "date": "2026-11-07",
+      "dateLabel": "7 de novembro",
+      "time24": "09:00",
+      "time": "09h00",
+      "groups": [
+        "B",
+        "D"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-5",
+      "stage": "classificatoria",
+      "round": 5,
+      "week": 1,
+      "day": 3,
+      "dayInWeek": 3,
+      "session": 1,
+      "label": "Semana 1 · Dia 3 · Rodada 1",
+      "date": "2026-11-08",
+      "dateLabel": "8 de novembro",
+      "time24": "04:00",
+      "time": "04h00",
+      "groups": [
+        "A",
+        "D"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-6",
+      "stage": "classificatoria",
+      "round": 6,
+      "week": 1,
+      "day": 3,
+      "dayInWeek": 3,
+      "session": 2,
+      "label": "Semana 1 · Dia 3 · Rodada 2",
+      "date": "2026-11-08",
+      "dateLabel": "8 de novembro",
+      "time24": "09:00",
+      "time": "09h00",
+      "groups": [
+        "B",
+        "C"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-7",
+      "stage": "classificatoria",
+      "round": 7,
+      "week": 2,
+      "day": 4,
+      "dayInWeek": 1,
+      "session": 1,
+      "label": "Semana 2 · Dia 1 · Rodada 1",
+      "date": "2026-11-13",
+      "dateLabel": "13 de novembro",
+      "time24": "04:00",
+      "time": "04h00",
+      "groups": [
+        "C",
+        "D"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-8",
+      "stage": "classificatoria",
+      "round": 8,
+      "week": 2,
+      "day": 4,
+      "dayInWeek": 1,
+      "session": 2,
+      "label": "Semana 2 · Dia 1 · Rodada 2",
+      "date": "2026-11-13",
+      "dateLabel": "13 de novembro",
+      "time24": "09:00",
+      "time": "09h00",
+      "groups": [
+        "A",
+        "B"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-9",
+      "stage": "classificatoria",
+      "round": 9,
+      "week": 2,
+      "day": 5,
+      "dayInWeek": 2,
+      "session": 1,
+      "label": "Semana 2 · Dia 2 · Rodada 1",
+      "date": "2026-11-14",
+      "dateLabel": "14 de novembro",
+      "time24": "04:00",
+      "time": "04h00",
+      "groups": [
+        "B",
+        "D"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-10",
+      "stage": "classificatoria",
+      "round": 10,
+      "week": 2,
+      "day": 5,
+      "dayInWeek": 2,
+      "session": 2,
+      "label": "Semana 2 · Dia 2 · Rodada 2",
+      "date": "2026-11-14",
+      "dateLabel": "14 de novembro",
+      "time24": "09:00",
+      "time": "09h00",
+      "groups": [
+        "A",
+        "C"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-11",
+      "stage": "classificatoria",
+      "round": 11,
+      "week": 2,
+      "day": 6,
+      "dayInWeek": 3,
+      "session": 1,
+      "label": "Semana 2 · Dia 3 · Rodada 1",
+      "date": "2026-11-15",
+      "dateLabel": "15 de novembro",
+      "time24": "04:00",
+      "time": "04h00",
+      "groups": [
+        "B",
+        "C"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "classificatoria-12",
+      "stage": "classificatoria",
+      "round": 12,
+      "week": 2,
+      "day": 6,
+      "dayInWeek": 3,
+      "session": 2,
+      "label": "Semana 2 · Dia 3 · Rodada 2",
+      "date": "2026-11-15",
+      "dateLabel": "15 de novembro",
+      "time24": "09:00",
+      "time": "09h00",
+      "groups": [
+        "A",
+        "D"
+      ],
+      "teamCount": 12,
+      "matches": 6
+    },
+    {
+      "key": "segundaFase-1",
+      "stage": "segundaFase",
+      "round": 1,
+      "day": 1,
+      "label": "Dia 1",
+      "date": "2026-11-19",
+      "dateLabel": "19 de novembro",
+      "time24": "07:00",
+      "time": "07h00",
+      "teamCount": 12,
+      "matches": 6,
+      "entrants": "As 12 equipes do Pool 1 (1º ao 12º da Fase 1).",
+      "advance": "Top 2 → Grande Final",
+      "remaining": "Outras dez → Dia 2"
+    },
+    {
+      "key": "segundaFase-2",
+      "stage": "segundaFase",
+      "round": 2,
+      "day": 2,
+      "label": "Dia 2",
+      "date": "2026-11-20",
+      "dateLabel": "20 de novembro",
+      "time24": "07:00",
+      "time": "07h00",
+      "teamCount": 12,
+      "matches": 6,
+      "entrants": "Dez equipes do Dia 1 + Pool 2 (13º e 14º da Fase 1).",
+      "advance": "Top 2 → Grande Final",
+      "remaining": "Outras dez → Dia 3"
+    },
+    {
+      "key": "segundaFase-3",
+      "stage": "segundaFase",
+      "round": 3,
+      "day": 3,
+      "label": "Dia 3",
+      "date": "2026-11-21",
+      "dateLabel": "21 de novembro",
+      "time24": "07:00",
+      "time": "07h00",
+      "teamCount": 12,
+      "matches": 6,
+      "entrants": "Dez equipes do Dia 2 + Pool 3 (15º e 16º da Fase 1).",
+      "advance": "Top 2 → Grande Final",
+      "remaining": "Outras dez → Dia 4"
+    },
+    {
+      "key": "segundaFase-4",
+      "stage": "segundaFase",
+      "round": 4,
+      "day": 4,
+      "label": "Dia 4",
+      "date": "2026-11-22",
+      "dateLabel": "22 de novembro",
+      "time24": "07:00",
+      "time": "07h00",
+      "teamCount": 12,
+      "matches": 6,
+      "entrants": "Dez equipes do Dia 3 + Pool 4 (17º e 18º da Fase 1).",
+      "advance": "Top 2 → Grande Final",
+      "remaining": "Outras dez → Repescagem"
+    },
+    {
+      "key": "lastChance-1",
+      "stage": "lastChance",
+      "round": 1,
+      "day": 1,
+      "label": "Repescagem",
+      "date": "2026-11-27",
+      "dateLabel": "27 de novembro",
+      "time24": "07:00",
+      "time": "07h00",
+      "teamCount": 12,
+      "matches": 10,
+      "unlimitedMatches": false
+    },
+    {
+      "key": "final-1",
+      "stage": "final",
+      "round": 1,
+      "day": 1,
+      "label": "Grande Final",
+      "date": "2026-11-28",
+      "dateLabel": "28 de novembro",
+      "time24": "07:00",
+      "time": "07h00",
+      "teamCount": 12,
+      "matches": null,
+      "unlimitedMatches": true
+    }
+  ],
+  "timeZone": "America/Sao_Paulo",
+  "timeZoneLabel": "Horário de Brasília (UTC−3)"
+}

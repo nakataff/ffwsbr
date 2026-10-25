@@ -1,0 +1,22 @@
+GOOGLE ANALYTICS 4 NO PAINEL ADMINISTRATIVO
+
+O painel não usa senha do Google nem Client Secret no código.
+Ele usa autorização OAuth da sua própria conta Google e solicita apenas leitura do Analytics.
+
+CONFIGURAÇÃO ÚNICA
+
+1. Abra o Google Cloud Console com a mesma conta que administra o Analytics.
+2. Selecione ou crie um projeto.
+3. Ative a API: Google Analytics Data API.
+4. Configure a tela de consentimento OAuth.
+5. Crie uma credencial OAuth 2.0 do tipo Aplicativo da Web.
+6. Em Origens JavaScript autorizadas, adicione:
+   https://centralfreefire.com.br
+   e, caso use www:
+   https://www.centralfreefire.com.br
+7. Copie o Client ID terminado em .apps.googleusercontent.com. Não é necessário colocar Client Secret no site.
+8. No Google Analytics, abra Administrador > Detalhes da propriedade e copie o ID NUMÉRICO da propriedade GA4.
+9. Entre em /admin.html, preencha o Client ID e o ID da propriedade, salve e clique em Conectar Google Analytics.
+
+A configuração fica salva apenas no navegador usado para administrar o site.
+O token de acesso do Google fica somente na memória da aba e expira automaticamente.

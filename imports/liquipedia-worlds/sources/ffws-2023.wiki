@@ -1,0 +1,1338 @@
+{{DISPLAYTITLE:Free Fire World Series 2023}}
+{{FFWS 2023 Navbox}}
+<section begin="FFWS2023Tabs"/>{{Tabs static
+|name1=Overview				|link1=Free_Fire_World_Series/2023
+|name2=Knockout				|link2=Free_Fire_World_Series/2023/Knockout
+|name3=Points Rush			|link3=Free_Fire_World_Series/2023/Points_Rush
+|name4=Qualification		|link4=Free_Fire_World_Series/2023/Qualification
+|name5=Statistics			|link5=Free_Fire_World_Series/2023/Statistics
+|name6=Additional Content	|link6=Free_Fire_World_Series/2023/Additional_Content
+}}<section end="FFWS2023Tabs"/>
+{{Infobox league
+|liquipediatier=1 |highlighted=true
+|name=Free Fire World Series 2023
+|tickername=FFWS 2023
+|shortname=2023
+|series=Free Fire World Series |abbreviation=FFWS
+|image=Free Fire World Series 2022 lightmode.png |imagedark=Free Fire World Series 2022 darkmode.png
+|icon=Free Fire World Series 2021 icon.png
+|organizer=Garena
+|sponsor=
+|garena-sponsored=true
+|type=Offline
+|country=Thailand
+|city=Bangkok
+|venue=
+|prizepoolusd=1,000,000
+|caption=Slogan: '''Own the Glory'''
+|sdate=2023-11-10 |edate=2023-11-26
+|web=https://www.ffesports.com/
+|instagram=ffesports.global
+|youtube=@freefireesportsofficial |youtube2=@GarenaFreeFireGlobal
+|facebook=
+|team_number=18
+|mode=squad |perspective=tpp
+|previous=Free_Fire_World_Series/2022/Bangkok{{!}}Bangkok 2022
+|next=Free_Fire_World_Series/2024{{!}}Global Finals 2024
+}}
+
+'''Free Fire World Series''' ('''FFWS''' in short) is the final event of the 2023 competitive season, organized by [[Garena]].
+
+==About==
+===Broadcast Talent===
+{{Tabs dynamic|name1=English|name2=Thai|name3=Indonesian|name4=Vietnamese|name5=Malay|name6=Portuguese|name7=Spanish|name8=Arabic|name9=Hindi|hide-showall=true}}<!--
+EN
+-->{{Tabs dynamic/tab|1}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Stage Host
+|b1=Orn Patteera|b1flag=th|b1name=Patteera Sarutipongpokin
+}}
+{{box|break}}
+{{BroadcasterCard |position=English Commentator
+|b1=Danelie
+|b2=TheMustachio AJ
+|b3=HusKKiee
+}}
+{{box|end}}<!--
+TH
+-->{{Tabs dynamic/tab|2}}
+{{box|start|padding=1em}}
+{{BroadcasterCard |position=Thai Host
+|b1=LookPeeMek
+|b2=Yukidekyou
+}}
+{{box|break}}
+{{BroadcasterCard |position=Thai Commentator
+|b1=Brighto
+|b2=Ballx3
+|b3=Bugta
+|b4=Zena
+}}
+{{box|end}}<!--
+ID
+-->{{Tabs dynamic/tab|3}}
+{{box|start|padding=1em}}
+{{BroadcasterCard |position=Indonesian Commentator
+|b1=Bung Surya
+|b2=Adji Sven
+|b3=Skyla
+|b4=Bigan
+}}
+{{box|break}}
+{{BroadcasterCard |position=Indonesian Guest Commentator
+|b1=TWE Rizaa |b1link=RIZAA
+|b2=ONIC.G |b2link=G
+|b3=AzrieL
+}}
+{{box|break}}
+{{BroadcasterCard |position=Indonesian Shoutcaster
+|b1=Bebyli
+}}
+{{box|end}}<!--
+VN
+-->{{Tabs dynamic/tab|4}}
+{{BroadcasterCard |position=Vietnamese Commentator
+|b1=Hung Cam
+|b2=Bee Buc Boi
+|b3=Rikaki
+|b4=Jeeker
+}}<!--
+MY
+-->{{Tabs dynamic/tab|5}}
+{{BroadcasterCard |position=Malay Commentator
+|b1=HajiYaad
+|b2=AddMaths
+|b3=Obvy
+|b4=Ashedz
+}}<!--
+PTBR
+-->{{Tabs dynamic/tab|6}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Host
+|b1=Camilota XP
+}}
+{{BroadcasterCard
+|position=Analyst
+|b1=Cabelo Gamer
+|b2=Isa13
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Caster
+|b1=Carlos Andrade
+}}
+{{BroadcasterCard
+|position=''In loco'' Interviewer
+|b1=BravaFF|b1flag=br
+|b2=Carol Bombshell
+}}
+{{box|end}}<!--
+ESMX
+-->{{Tabs dynamic/tab|7}}
+{{box|start|padding=1em}}
+{{BroadcasterCard
+|position=Host
+|b1=Silvixgd
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Caster
+|b1=XavyBecker
+|b2=AlanQ
+}}
+{{box|break}}
+{{BroadcasterCard
+|position=Analyst
+|b1=Punicher
+|b2=Can
+|b3=Romeo
+|b4=Rusito|b4flag=cr|b4name=
+}}
+{{box|end}}<!--
+AR
+-->{{Tabs dynamic/tab|8}}
+{{BroadcasterCard |position=Arabic Commentator
+|b1=Moody
+|b2=Seven
+}}<!--
+IN
+-->{{Tabs dynamic/tab|9}}
+{{BroadcasterCard|position=Indian Commentator|lang=Hindi
+|b1=Gaming With AB
+|b2=Evil
+|b3=MambaSR
+|b4=Star Tania
+}}
+{{Tabs dynamic/end}}
+
+===Format===
+* '''Knockout:''''' <section begin="KnockoutFormat"/>November 10th - 19th, 2023
+** 18 teams.
+** ''Round-Robin Format:'' 18 teams split into 3 groups of 6.
+** 2 weekends:
+*** Each with 3 matchdays.
+*** Each matchday consist of 6 matches.<section end="KnockoutFormat"/>
+** {{Bgcolortext|up|Top 12 teams}} qualify for ''Points Rush'' and  ''Grand Finals''.
+<div style="margin-top:12px"></div>
+* '''Points Rush:''''' <section begin="PRFormat"/>November 24th - 25th, 2023
+** 12 teams.
+** 6 matches each day.
+** Teams will receive ''Headstart Points'' after each day based on their daily standings.<section end="PRFormat"/>
+<div style="margin-top:12px"></div>
+* '''Grand Finals:''''' November 26th, 2023
+** 12 teams.
+** 6 matches.
+
+====Schedule====
+{{box|start|padding=2em}}<section begin="Schedule"/>
+{| class="wikitable" style="text-align:center;margin-top:10px"
+! colspan="4"| Tournament Schedule
+|-
+! width="80px"| Stage
+! width="50px"| Day
+! width="160px"| Date
+! width="115px"| Group
+|-
+! rowspan="7"| Knockout
+|-
+| '''1'''
+| November 10th
+| AB
+|-
+| '''2'''
+| November 11th
+| BC
+|-
+| '''3'''
+| November 12th
+| AC
+|-
+| '''4'''
+| November 17th
+| AB
+|-
+| '''5'''
+| November 18th
+| BC
+|-
+| '''6'''
+| November 19th
+| AC<noinclude>
+|-
+! rowspan="2"| Points<br>Rush
+| '''1'''
+| November 24th
+| rowspan="3"| Top 12
+|-
+| '''2'''
+| November 25th
+|-
+! colspan="2"| Grand<br>Finals
+| November 26th</noinclude>
+|}<section end="Schedule"/>{{box|break}}<section begin="Map Rotation"/><div class="table-responsive">
+{| class="wikitable" style="text-align:center;<noinclude>margin:10px 0 0 0</noinclude><includeonly>margin:1em 0 0 0</includeonly>"
+! colspan="6"| Map Rotation
+|-
+! Match #
+! width="100px"| Map
+|-
+| '''1
+| Bermuda
+|-
+| '''2
+| Purgatory
+|-
+| '''3
+| Alpine
+|-
+| '''4
+| Kalahari
+|-
+| '''5
+| Nexterra
+|-
+| '''6
+| {{Abbr|''Random''|A random map will be chosen among the 5 map pools.}}
+|}</div><section end="Map Rotation"/>{{box|end}}
+
+====Points Distribution====
+{{box|start|padding=2em}}
+{{Points12|showtb=true|show_toggle=false|tmargin=10px 0 0 0}}
+{{box|break}}
+{| class="wikitable" style="text-align:center;margin-top:10px"
+! colspan="4"| Headstart Points<br><small>(earned in Points Rush per day)</small>
+|-
+! width="75px"| Place !! Points
+|-
+| {{Placement|1}}		|| 8
+|-
+| {{Placement|2}}		|| 6
+|-
+| {{Placement|3}}		|| 5
+|-
+| {{Placement|4}}		|| 4
+|-
+| {{Placement|5}}		|| 3
+|-
+| {{Placement|6}}		|| 2
+|-
+| {{Placement|7-10}}	|| 1
+|-
+| {{Placement|11-12}}	|| 0
+|}
+{{box|end}}
+
+==Prize Pool==
+{{TeamPrizePool
+|{{Slot |usdprize=300,000|{{Opponent|msquad}} }}
+|{{Slot |usdprize=150,000|{{Opponent|buriram united esports}} }}
+|{{Slot |usdprize=65,000 |{{Opponent|cggg}} }}
+|{{Slot |usdprize=60,000 |{{Opponent|rrq kazu}} }}
+|{{Slot |usdprize=55,000 |{{Opponent|wag}} }}
+|{{Slot |usdprize=50,000 |{{Opponent|exp esports}} }}
+|{{Slot |usdprize=45,000 |{{Opponent|loud}} }}
+|{{Slot |usdprize=40,000 |{{Opponent|indostars}} }}
+|{{Slot |usdprize=35,000 |{{Opponent|thorrad}} }}
+|{{Slot |usdprize=30,000 |{{Opponent|expand}} }}
+|{{Slot |usdprize=27,000 |{{Opponent|gow}} }}
+|{{Slot |usdprize=25,000 |{{Opponent|pesp}} }}
+|{{Slot |usdprize=18,000 |date=2023-11-19 |{{Opponent|hotshot esports}} }}
+|{{Slot |usdprize=18,000 |date=2023-11-19 |{{Opponent|mibr}} }}
+|{{Slot |usdprize=18,000 |date=2023-11-19 |{{Opponent|all glory gaming}} }}
+|{{Slot |usdprize=18,000 |date=2023-11-19 |{{Opponent|osaka}} }}
+|{{Slot |usdprize=18,000 |date=2023-11-19 |{{Opponent|furious gaming}} }}
+|{{Slot |usdprize=18,000 |date=2023-11-19 |{{Opponent|wask}} }}
+|adjacentContent=
+	{{AwardPrizePool
+	|{{Slot|award=MVP |usdprize=10,000 |{{Opponent|DEW|flag=th|team=exp esports}} }}
+	}}
+}}
+
+==Participants==
+{{TeamCardToggleButton|tcht=210|playerinfo=true}}
+{{TeamCard columns start|cols=4}}
+{{TeamCard
+|team=Magic Squad |flag=br
+|link=Magic Squad BR
+|p1=Yago|p1flag=br
+|p2=Erick11|p2flag=br
+|p3=Bops|p3flag=br
+|p4=Giuh|p4flag=br
+|p5=But|p5flag=br
+|c=LUUUKING|cflag=br
+|t2title=Staff
+|t2c1=Renan|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|placement=4|placementicon={{LeagueIconSmall/world series|date=2022-11-01|Free_Fire_World_Series/2022/Bangkok}} '''(2022 Bangkok)'''
+|qualifier={{LeagueIconSmall/lbff|}} [[Liga_Brasileira_de_Free_Fire/2023/Stage_1/Series_A|LBFF Regular Season]]
+}}
+{{TeamCard
+|team=LOUD |flag=br
+|p1=Lost|p1flag=br
+|p2=Cauan7|p2flag=br
+|p3=Noda|p3flag=br
+|p4=Draxx|p4flag=br
+|p5=México|p5flag=br
+|c=Frois|cflag=br
+|t2title=Staff
+|t2c1=FRANK|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|placement=2|placementicon={{LeagueIconSmall/world series|date=2021|Free_Fire_World_Series/2021/Singapore}} '''(2021 Singapore)'''
+|qualifier={{LeagueIconSmall/lbff|}} [[Liga_Brasileira_de_Free_Fire/2023/Stage_1/Series_A|LBFF Finals]]
+}}
+{{TeamCard
+|team=MIBR |flag=br
+|p1=RIGBY|p1flag=br
+|p2=Pitbull|p2flag=br|p2link=Pitbull (Erickmvp)
+|p3=Zetsu9|p3flag=br
+|p4=STARK7|p4flag=br
+|p5=João7|p5flag=br
+|c=S1NK|cflag=br
+|t2title=Staff
+|t2c1=CORREIA|t2c1flag=br|t2c1pos={{Abbr|A|Analyst}}
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/lbff|}} [[Liga_Brasileira_de_Free_Fire/2023/Stage_1/Series_A|LBFF Finals]]
+}}
+{{TeamCard
+|team=Furious Gaming |flag=ar
+|p1=UNKNOWN
+|p2=SoyDella
+|p3=POCHO
+|p4=BAD
+|p5=Nicko|p5flag=
+|c=CRISROJO|cflag=
+|t2title=Staff
+|t2c1=Yg|t2c1pos={{Abbr|A|Analyst}}|t2c1flag=in
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/free fire league latinoamerica|}} [[Free_Fire_League_Latinoamerica/2023/Points|FFL Points]]
+}}
+{{TeamCard
+|team=All Glory Gaming |flag=mx
+|p1=LopesXL
+|p2=Stiward
+|p3=Sebas
+|p4=Joel
+|p5=Verito|p5flag=co
+|c=Sullivan|cflag=
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/free fire league latinoamerica|}} [[Free_Fire_League_Latinoamerica/2023/Points|FFL Points]]
+}}
+{{TeamCard
+|team=Osaka|flag=co
+|p1=KOES
+|p2=Chris
+|p3=Pájaro
+|p4=Esteban|p4flag=cl
+|p5=Jostin
+|c=Maverick
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/free fire league latinoamerica|}} [[Free_Fire_League_Latinoamerica/2023/Points|FFL Points]]
+}}
+{{TeamCard
+|team=Buriram United Esports|flag=th
+|p1=JOENA|p1wins=2
+|p2=Moshi|p2wins=1
+|p3=GETHIGH|p3wins=1
+|p4=ALRAEDY|p4wins=1
+|p5=Wassana|p5flag=th
+|c=Namo|cwinsc=2
+|t2title=Staff
+|t2c1=D_Long|t2c1pos={{Abbr|A|Analyst}}|t2c1wins=2
+|qualifier={{LeagueIconSmall/pro league th|date=2023-10-15|}} [[Free Fire Pro League/Thailand/2023|Pro League TH]]
+|inotes={{NoteBig
+|n1=November 1st - {{team|Buriram United x EVOS|flag=th}} rebrands to {{team|Buriram United Esports|flag=th}}.<ref>{{cite web|url=https://www.facebook.com/EVOSROVTH/posts/pfbid0MsQRuXg6wmYGH5B2evhipDkYV1VjHMagWTGV18vuXsRX7X8WJnUDyGBQ9YVbCtrul |title=ทางเราขอประกาศว่าต่อจากนี้ EVOS PHOENIX จะใช้ชื่อทีมเป็น BRUTD และเรายินดีเป็นอย่างยิ่งที่ทางสโมสรบุรีรัมย์ยูไนเต็ดอีสปอร์ตจะทำการดูแลน้อง ๆ ของเราให้ได้สร้างผลงานที่ยิ่งใหญ่ต่อไปเรื่อย ๆ |language={{Flag|th}} Thai|trans_title=We would like to announce that from now on, EVOS PHOENIX will be known as BRUTD and we are very pleased that Buriram United Esports club will take care of our team members and help them achieve greater success in the future|publisher='''EVOS TH'''|author=|date=2023-11-01}}</ref>
+}}
+}}
+{{TeamCard
+|team=EXP Esports|flag=th
+|p1=DEW
+|p2=CASPER
+|p3=STOP
+|p4=Caramel
+|p5=XPENSION
+|c=|cflag=
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/pro league th|date=2023-10-15|}} [[Free Fire Pro League/Thailand/2023|Pro League TH]]
+}}
+{{TeamCard
+|team=CGGG|flag=th
+|p1=LOOK
+|p2=ONEMORE
+|p3=ONFIRE
+|p4=COZQ
+|p5=PETER
+|c=Conan
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/pro league th|date=2023-10-15|}} [[Free Fire Pro League/Thailand/2023|Pro League TH]]
+}}
+{{TeamCard
+|team=POCO Star|flag=id
+|p1=Leem
+|p2=Faiz
+|p3=18Deer
+|p4=Razz
+|p5=Mercy|p5link=MadeJV
+|c=Fayad
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/master league|}} [[Free_Fire_Master_League/Season_8|FFML League]]
+}}
+{{TeamCard
+|team=Thorrad |flag=id
+|p1=Darkol
+|p2=Ikal
+|p3=NORTH
+|p4=Daviddz|p4flag=id
+|p5=Lozzy
+|p6=Uway
+|c=Fluxyss
+|t2title=Staff
+|t2c1=Manted|t2c1pos={{Abbr|A|Analyst}}
+|t2c2=Jonsan|t2c2pos={{Abbr|M|Manager}}|t2c2flag=id
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/master league|}} [[Free_Fire_Master_League/Season_8|FFML Finals]]
+}}
+{{TeamCard
+|team=RRQ Kazu |flag=id
+|p1=Legaeloth
+|p2=Abay
+|p3=Wings
+|p4=Razor
+|p5=Dutzz
+|p6=Valdo|p6flag=id
+|c=Adi
+|placement=7|placementicon={{LeagueIconSmall/world series|date=2022-11-01|Free_Fire_World_Series/2022/Bangkok}} '''(2022 Bangkok)'''
+|qualifier={{LeagueIconSmall/master league|}} [[Free_Fire_Master_League/Season_8|FFML Finals]]
+}}
+{{TeamCard
+|team=P Esports|flag=vn
+|p1=DNP
+|p2=DontCry
+|p3=HoangAnh
+|p4=Newk
+|p5=Nero|p5link=Nero (Vietnamese Player)
+|p6=KimChon
+|c=|cflag=
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/vfl|}} [[Vietnam_Free_Fire_League/2023/Summer/Battle_Royale|Vietnam League]]
+}}
+{{TeamCard
+|team=GOW|flag=vn
+|p1=Mr07
+|p2=DyanN
+|p3=IZAGOD
+|p4=DQuang
+|p5=Voly
+|c=|cflag=
+|placement= |placementicon=
+|qualifier={{LeagueIconSmall/vfl|}} [[Vietnam_Free_Fire_League/2023/Summer/Battle_Royale|Vietnam League]]
+}}
+{{TeamCard
+|team=WAG|flag=vn
+|p1=TheGhost
+|p2=Dolphin
+|p3=Krillin
+|p4=Cyrus
+|p5=Calm
+|inotes={{NoteBig
+|n1=Coach {{player|Dark|flag=vn}} will not travel to Bangkok.<ref>{{cite web|url=https://www.facebook.com/permalink.php?story_fbid=pfbid031XVp1vzuetUwwhN5fFfbuaAHzEgtcGrtqyk2N5m2XPNesw7izY9Qa1XeQ1YD9ieRl&id=100093557746006 |title=Theo thông tin từ bình luận viên Rikaki,WAG.Dark sẽ không đi Thái Lan cùng WAG|language={{Flag|vn}} Vietnamese|trans_title=According to information from commentator Rikaki, WAG.Dark will not go to Thailand with WAG|publisher='''Vietnam Esport FF News'''|author=|date=2023-11-03}}</ref>
+}}
+|placement=4 |placementicon={{LeagueIconSmall/world cup|date=2019-04-07|Free_Fire_World_cup/2019/Bangkok}} '''(2019 Bangkok)'''
+|qualifier={{LeagueIconSmall/vfl|}} [[Vietnam_Free_Fire_League/2023/Summer/Battle_Royale|Vietnam League]]
+}}
+{{TeamCard
+|team=Expand |flag=my
+|p1=TheAxel
+|p2=2fast
+|p3=Cobraa
+|p4=Tomo	|p4flag=id
+|p5=CrimeMKS
+|p6=Qeeboy	|p6flag=my
+|qualifier={{LeagueIconSmall/mcps majors|}} [[MCPS Majors/Season 6|MCPS Majors]]
+}}
+{{TeamCard
+|team=Hotshot Esports |flag=pk
+|p1=Action|p1flag=pk
+|p2=Sajid|p2flag=pk
+|p3=Hasuexe|p3flag=pk|p3link=Hasuu 11
+|p4=Anas|p4flag=pk
+|p5=Sikaa|p5flag=pk|p5link=Sikaa 55
+|placement=14|placementicon={{LeagueIconSmall/world series|date=2022-11-01|Free_Fire_World_Series/2022/Bangkok}} '''(2022 Bangkok)'''
+|qualifier=[[Free Fire World Series/2023/Pakistan|Pakistan Qualifiers]]
+}}
+{{TeamCard
+|team=WASK |flag=ma
+|p1=MR ALI
+|p2=DOWLY
+|p3=ZIZOX
+|p4=GENIUS
+|p5=YSN7|p5flag=ma
+|c=MACRO|cflag=ma
+|placement=12|placementicon={{LeagueIconSmall/world series|date=2022-11-01|Free_Fire_World_Series/2022/Sentosa}} '''(2022 Sentosa)'''
+|qualifier={{LeagueIconSmall/mea league|date=2023-10-01|}} [[Free Fire MEA League/Season 7|MEA League]]
+}}
+{{TeamCard columns end}}
+
+==Results==
+===Knockout===
+<section begin="Group Draw"/>
+{{GroupDraw3x6|title=Knockout Group Draw |style=margin:0 0 12px 0
+|g1t1=thorrad|g1t2=buriram united esports|g1t3=mibr|g1t4=all glory Gaming|g1t5=msquad|g1t6=hotshot esports
+|g2t1=furious gaming|g2t2=wask|g2t3=rrq kazu|g2t4=gow|g2t5=cggg|g2t6=wag
+|g3t1=loud|g3t2=pesp|g3t3=expand|g3t4=exp esports|g3t5=osaka|g3t6=poco star
+}}<section end="Group Draw"/>
+
+'''''[[{{PAGENAME}}/Knockout|Click here for more information about the Knockout Stage matches.]]'''''
+
+{{LPDB storage|false}}{{#section:{{PAGENAME}}/Knockout|KnockoutStandings}}{{LPDB storage|true}}
+
+===Points Rush===
+{{LPDB storage|false}}{{#section:{{PAGENAME}}/Points_Rush|PRResults}}{{LPDB storage|true}}
+
+===Grand Finals===
+{{HiddenDataBox
+|tournament={{PAGENAME}}
+|name=Free Fire World Series 2023 - Grand Finals
+|tickername=FFWS 2023 - Finals
+|date=2023-11-26
+}}
+<section begin="FinalsResult"/>
+{{HeadstartPointsTable |title=Initial Grand Finals Points
+|team1=cggg			|hs_pts1=13
+|team2=mgs br		|hs_pts2=12
+|team3=bru			|hs_pts3=11
+|team4=rrq kazu		|hs_pts4=8
+|team5=loud			|hs_pts5=5
+|team6=exp			|hs_pts6=4
+|team7=thorrad		|hs_pts7=3
+|team8=expand		|hs_pts8=3
+|team9=wag			|hs_pts9=2
+|team10=poco star	|hs_pts10=1
+|team11=pesp		|hs_pts11=1
+|team12=gow			|hs_pts12=1
+}}
+{{Bracket|Bracket/2|id=ffws2023gf
+|R1M1header=Grand Finals Standings
+|R1M1={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 26, 2023 - 19:15 {{Abbr/ICT}} |finished=true
+		|map=Bermuda
+		|teamfirst=wag
+		|teamsecond=exp
+		|teamthird=loud
+		|mvp=Dolphin
+		|vod=https://youtu.be/5x8vvKlwWsU
+		}}
+	|map2={{Map
+		|date=November 26, 2023 - 19:45 {{Abbr/ICT}} |finished=true
+		|map=Purgatory
+		|teamfirst=msquad
+		|teamsecond=exp
+		|teamthird=poco star
+		|mvp=Bops
+		|vod=https://youtu.be/5x8vvKlwWsU
+		}}
+	|map3={{Map
+		|date=November 26, 2023 - 20:25 {{Abbr/ICT}} |finished=true
+		|map=Alpine
+		|teamfirst=bru
+		|teamsecond=msquad
+		|teamthird=loud
+		|mvp=Moshi
+		|vod=https://youtu.be/5x8vvKlwWsU
+		}}
+	|map4={{Map
+		|date=November 26, 2023 - 20:55 {{Abbr/ICT}} |finished=true
+		|map=Kalahari
+		|teamfirst=bru
+		|teamsecond=thorrad
+		|teamthird=msquad
+		|mvp=GETHIGH
+		|vod=https://youtu.be/5x8vvKlwWsU
+		}}
+	|map5={{Map
+		|date=November 26, 2023 - 21:35 {{Abbr/ICT}} |finished=true
+		|map=Nexterra
+		|teamfirst=msquad
+		|teamsecond=poco star
+		|teamthird=cggg
+		|mvp=
+		|vod=https://youtu.be/5x8vvKlwWsU
+		}}
+	|map6={{Map
+		|date=November 26, 2023 - 22:10 {{Abbr/ICT}} |finished=true
+		|map=Nexterra
+		|teamfirst=msquad
+		|teamsecond=wag
+		|teamthird=bru
+		|mvp=Yago
+		|vod=https://youtu.be/5x8vvKlwWsU
+		}}
+|opponent1={{TeamOpponent|exp		|m1={{MS|2|11}}|m2={{MS|2|9}} |m3={{MS|11|3}}|m4={{MS|8|1}} |m5={{MS|9|2}} |m6={{MS|6|10}}|startingpoints=4 }}
+|opponent2={{TeamOpponent|bru		|m1={{MS|5|9}} |m2={{MS|9|1}} |m3={{MS|1|11}}|m4={{MS|1|11}}|m5={{MS|4|2}} |m6={{MS|3|3}} |startingpoints=11}}
+|opponent3={{TeamOpponent|cggg		|m1={{MS|4|6}} |m2={{MS|6|8}} |m3={{MS|7|12}}|m4={{MS|10|0}}|m5={{MS|3|8}} |m6={{MS|4|10}}|startingpoints=13}}
+|opponent4={{TeamOpponent|mgs br	|m1={{MS|9|1}} |m2={{MS|1|6}} |m3={{MS|2|11}}|m4={{MS|3|5}} |m5={{MS|1|14}}|m6={{MS|1|8}} |startingpoints=12}}
+|opponent5={{TeamOpponent|rrq kazu	|m1={{MS|8|4}} |m2={{MS|11|1}}|m3={{MS|6|4}} |m4={{MS|4|9}} |m5={{MS|6|12}}|m6={{MS|5|8}} |startingpoints=8 }}
+|opponent6={{TeamOpponent|loud		|m1={{MS|3|13}}|m2={{MS|5|4}} |m3={{MS|3|12}}|m4={{MS|5|2}} |m5={{MS|12|0}}|m6={{MS|9|0}} |startingpoints=5 }}
+|opponent7={{TeamOpponent|poco star |m1={{MS|7|3}} |m2={{MS|3|5}} |m3={{MS|5|4}} |m4={{MS|7|0}} |m5={{MS|2|7}} |m6={{MS|7|9}} |startingpoints=1 }}
+|opponent8={{TeamOpponent|wag		|m1={{MS|1|6}} |m2={{MS|4|3}} |m3={{MS|9|3}} |m4={{MS|6|5}} |m5={{MS|5|6}} |m6={{MS|2|4}} |startingpoints=2 }}
+|opponent9={{TeamOpponent|thorrad	|m1={{MS|10|7}}|m2={{MS|10|9}}|m3={{MS|12|0}}|m4={{MS|2|10}}|m5={{MS|10|0}}|m6={{MS|10|2}}|startingpoints=3 }}
+|opponent10={{TeamOpponent|expand	|m1={{MS|11|0}}|m2={{MS|8|0}} |m3={{MS|4|1}} |m4={{MS|9|3}} |m5={{MS|7|0}} |m6={{MS|11|5}}|startingpoints=3 }}
+|opponent11={{TeamOpponent|pesp		|m1={{MS|12|0}}|m2={{MS|12|0}}|m3={{MS|10|4}}|m4={{MS|12|0}}|m5={{MS|8|5}} |m6={{MS|12|0}}|startingpoints=1 }}
+|opponent12={{TeamOpponent|gow		|m1={{MS|6|0}} |m2={{MS|7|3}} |m3={{MS|8|0}} |m4={{MS|11|2}}|m5={{MS|11|1}}|m6={{MS|8|3}} |startingpoints=1 }}
+	}}
+}}
+
+==Additional Data==
+===Streams===
+{{Streams
+|lang1=uk |youtube1=Free Fire Esports Official
+|lang2=uk |youtube2=Garena Free Fire Global
+|lang3=th |youtube3=Free Fire Esports TH |facebook3=Free Fire Esports TH |tiktok3=ffesportsth
+|lang4=my |youtube4=Free Fire Malaysia |facebook4=Garena Free Fire MY
+|lang5=ptbr |youtube5=Free Fire Brasil |twitch5=ffesportsbr
+|lang6=id |youtube6=FF Esports ID|tiktok6=ff.esports.id|facebook6=Free Fire Esports ID
+|lang7=id |youtube7=Garena Free Fire Indonesia
+|lang8=vn |youtube8=Huyền Thoại Sinh Tồn - Free Fire Esports |facebook8=Huyền Thoại Sinh Tồn - Free Fire |tiktok8=freefireesportsvn
+|lang9=mena|youtube9=Garena Free Fire MENA |facebook9=Free Fire Esports MENA
+|lang10=in |youtube10=Free Fire Esports Official
+|lang11=esmx |youtube11=Garena Free Fire LATAM
+}}
+
+===Country Representation===
+{{Country representation}}
+
+==Additional Content==
+{{See also|altphrase=Main article|l1=Additional Content|{{PAGENAME}}/Additional_Content}}
+
+==References==
+{{Reflist}}
+{{FFGE Navbox}}
+
+{{DISPLAYTITLE:Free Fire World Series 2023 - Knockout Stage}}
+{{#section:{{BASEPAGENAME}}|FFWS2023Tabs}}
+{{HiddenDataBox
+|name=Free Fire World Series 2023 - Knockout Stage
+|tickername=FFWS 2023 - Knockout
+|sdate=2023-11-10 |edate=2023-11-26
+}}
+==Format==
+* '''FFWS 2023 - Knockout Stage:'''''{{#section:Free Fire World Series/2023|KnockoutFormat}}
+** {{Bgcolortext|up|'''Top 12 teams'''}} qualify for '''Points Rush''' and '''Grand Finals'''.
+==Group Draw==
+{{#section:Free Fire World Series/2023|Group Draw}}
+==Schedule==
+{{#section:Free Fire World Series/2023|Schedule}}
+
+==Results==
+{{box|start}}{{Tabs dynamic |hide-showall=true |This=1
+|name1=Overall Standings
+|name2=Daily Standings
+}}<!--
+Overall
+-->{{Tabs dynamic/tab|1}}<section begin="KnockoutStandings"/>{{box|start|padding=1em}}
+{{League standings without lobby custom |title=Knockout Standings |rounds=6 |roundname=Day
+|round1edate=November 10, 2023 - 22:40 {{Abbr/ICT}}	|round2edate=November 11, 2023 - 22:40 {{Abbr/ICT}}
+|round3edate=November 12, 2023 - 22:40 {{Abbr/ICT}} |round4edate=November 17, 2023 - 22:40 {{Abbr/ICT}}
+|round5edate=November 18, 2023 - 22:40 {{Abbr/ICT}}	|edate=November 19, 2023 - 22:40 {{Abbr/ICT}}
+|pbg1=up |pbg2=up |pbg3=up |pbg4=up |pbg5=up |pbg6=up |pbg7=up |pbg8=up |pbg9=up |pbg10=up |pbg11=up |pbg12=up |pbg13=down |pbg14=down |pbg15=down |pbg16=down |pbg17=down |pbg18=down
+<!--Group A -->
+|flag1=id |team1=thorrad				|standings1=  45 , -  , 64 , 76 , -  , 36 |bg1=up
+|flag2=th |team2=buriram united esports	|standings2=  105, -  , 84 , 90 , -  , 97 |bg2=up
+|flag3=br |team3=mibr					|standings3=  59 , -  , 14 , 59 , -  , 28 |bg3=down
+|flag4=mx |team4=all glory Gaming		|standings4=  44 , -  , 27 , 57 , -  , 25 |bg4=down
+|flag5=br |team5=msquad					|standings5=  92 , -  , 58 , 84 , -  , 69 |bg5=up
+|flag6=pk |team6=hotshot esports		|standings6=  30 , -  , 48 , 45 , -  , 48 |bg6=down
+<!--Group B -->
+|flag7=ar |team7=furious gaming			|standings7=  41 , 58 , -  , 20 , 22 , -  |bg7=down
+|flag8=ma |team8=wask					|standings8=  25 , 39 , -  , 29 , 11 , -  |bg8=down
+|flag9=id |team9=rrq kazu				|standings9=  80 , 97 , -  , 54 , 60 , -  |bg9=up
+|flag10=vn|team10=gow					|standings10= 53 , 43 , -  , 36 , 45 , -  |bg10=up
+|flag11=th|team11=cggg					|standings11= 76 , 90 , -  , 108, 102, -  |bg11=up
+|flag12=vn|team12=wag					|standings12= 63 , 39 , -  , 62 , 80 , -  |bg12=up
+<!--Group C -->
+|flag13=br|team13=loud					|standings13= -  , 66 , 72 , -  , 90 , 61 |bg13=up
+|flag14=vn|team14=pesp					|standings14= -  , 47 , 27 , -  , 68 , 40 |bg14=up
+|flag15=my|team15=expand				|standings15= -  , 45 , 58 , -  , 55 , 48 |bg15=up
+|flag16=th|team16=exp esports			|standings16= -  , 101, 112, -  , 77 , 123 |bg16=up
+|flag17=co|team17=osaka					|standings17= -  , 47 , 33 , -  , 29 , 35 |bg17=down
+|flag18=id|team18=poco star				|standings18= -  , 64 , 79 , -  , 54 , 86 |bg18=up
+}}
+{{box|break}}
+{{Legend|up=y|down=y|margin-top=7
+|uptitle=Qualified for '''<includeonly>[[#Points_Rush|</includeonly>Points Rush<includeonly>]]</includeonly>''' and '''<includeonly>[[#Grand_Finals|</includeonly>Grand Finals<includeonly>]]</includeonly>'''
+}}
+{{box|end}}<section end="KnockoutStandings"/><!--
+Detailed Standings
+-->{{Tabs dynamic/tab|2}}
+{{Matchlist|id=ffws2023ks
+|M1header=Day 1
+|M2header=Day 2
+|M3header=Day 3
+|M4header=Day 4
+|M5header=Day 5
+|M6header=Day 6
+
+|M1={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 10, 2023 - 19:15 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=AB
+		|teamfirst=gow
+		|teamsecond=furious gaming
+		|teamthird=msquad
+		|mvp=DyanN
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/t5KN5Puxq4o
+		}}
+	|map2={{Map
+		|date=November 10, 2023 - 19:45 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=AB
+		|teamfirst=msquad
+		|teamsecond=buriram united esports
+		|teamthird=rrq kazu
+		|mvp=Bops
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/t5KN5Puxq4o
+		}}
+	|map3={{Map
+		|date=November 10, 2023 - 20:25 {{Abbr/ICT}} |finished=true
+		|map=Alpine |group=AB
+		|teamfirst=msquad
+		|teamsecond=cggg
+		|teamthird=all glory gaming
+		|mvp=Giuh
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/t5KN5Puxq4o
+		}}
+	|map4={{Map
+		|date=November 10, 2023 - 20:55 {{Abbr/ICT}} |finished=true
+		|map=Kalahari |group=AB
+		|teamfirst=buriram united esports
+		|teamsecond=msquad
+		|teamthird=rrq kazu
+		|mvp=JOENA
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/t5KN5Puxq4o
+		}}
+	|map5={{Map
+		|date=November 10, 2023 - 21:35 {{Abbr/ICT}} |finished=true
+		|map=Nexterra |group=AB
+		|teamfirst=buriram united esports
+		|teamsecond=mibr
+		|teamthird=all glory gaming
+		|mvp=Wassana
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/t5KN5Puxq4o
+		}}
+	|map6={{Map
+		|date=November 10, 2023 - 22:10 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=AB
+		|teamfirst=gow
+		|teamsecond=cggg
+		|teamthird=wag
+		|mvp=DQuang
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/t5KN5Puxq4o
+		}}
+|opponent1={{TeamOpponent|thorrad |m1={{MS|9|1}} |m2={{MS|7|7}} |m3={{MS|4|6}} |m4={{MS|10|0}} |m5={{MS|12|4}} |m6={{MS|5|7}} }}
+|opponent2={{TeamOpponent|buriram united esports |m1={{MS|6|2}} |m2={{MS|2|10}} |m3={{MS|7|10}} |m4={{MS|1|12}} |m5={{MS|1|19}} |m6={{MS|7|6}} }}
+|opponent3={{TeamOpponent|mibr |m1={{MS|11|0}} |m2={{MS|6|10}} |m3={{MS|10|5}} |m4={{MS|7|7}} |m5={{MS|2|9}} |m6={{MS|4|2}} }}
+|opponent4={{TeamOpponent|all glory gaming |m1={{MS|12|3}} |m2={{MS|5|3}} |m3={{MS|3|2}} |m4={{MS|12|0}} |m5={{MS|3|7}} |m6={{MS|11|7}} }}
+|opponent5={{TeamOpponent|msquad |m1={{MS|3|6}} |m2={{MS|1|9}} |m3={{MS|1|16}} |m4={{MS|2|10}} |m5={{MS|11|7}} |m6={{MS|10|2}} }}
+|opponent6={{TeamOpponent|hotshot esports |m1={{MS|8|0}} |m2={{MS|4|8}} |m3={{MS|12|1}} |m4={{MS|8|4}} |m5={{MS|8|0}} |m6={{MS|12|1}} }}
+|opponent7={{TeamOpponent|furious gaming |m1={{MS|2|11}} |m2={{MS|12|0}} |m3={{MS|11|2}} |m4={{MS|9|1}} |m5={{MS|7|8}} |m6={{MS|8|1}} }}
+|opponent8={{TeamOpponent|wask |m1={{MS|10|0}} |m2={{MS|10|0}} |m3={{MS|8|3}} |m4={{MS|5|5}} |m5={{MS|10|2}} |m6={{MS|9|1}} }}
+|opponent9={{TeamOpponent|rrq kazu |m1={{MS|5|6}} |m2={{MS|3|8}} |m3={{MS|5|6}} |m4={{MS|3|6}} |m5={{MS|6|8}} |m6={{MS|6|8}} }}
+|opponent10={{TeamOpponent|gow |m1={{MS|1|9}} |m2={{MS|9|5}} |m3={{MS|9|1}} |m4={{MS|11|0}} |m5={{MS|9|0}} |m6={{MS|1|8}} }}
+|opponent11={{TeamOpponent|cggg |m1={{MS|7|6}} |m2={{MS|8|0}} |m3={{MS|2|11}} |m4={{MS|4|6}} |m5={{MS|4|4}} |m6={{MS|2|10}} }}
+|opponent12={{TeamOpponent|wag |m1={{MS|4|8}} |m2={{MS|11|1}} |m3={{MS|6|6}} |m4={{MS|6|4}} |m5={{MS|5|6}} |m6={{MS|3|7}} }}
+	}}
+
+|M2={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 11, 2023 - 19:15 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=BC
+		|teamfirst=exp
+		|teamsecond=loud
+		|teamthird=rrq kazu
+		|mvp=DEW
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/FjgJlHCdxN8
+		}}
+	|map2={{Map
+		|date=November 11, 2023 - 19:45 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=BC
+		|teamfirst=rrq kazu
+		|teamsecond=poco star
+		|teamthird=wask
+		|mvp=Razor
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/FjgJlHCdxN8
+		}}
+	|map3={{Map
+		|date=November 11, 2023 - 20:25 {{Abbr/ICT}} |finished=true
+		|map=Alpine |group=BC
+		|teamfirst=exp
+		|teamsecond=loud
+		|teamthird=gow
+		|mvp=DEW
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/FjgJlHCdxN8
+		}}
+	|map4={{Map
+		|date=November 11, 2023 - 20:55 {{Abbr/ICT}} |finished=true
+		|map=Kalahari |group=BC
+		|teamfirst=rrq kazu
+		|teamsecond=wask
+		|teamthird=poco star
+		|mvp=Dutzz
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/FjgJlHCdxN8
+		}}
+	|map5={{Map
+		|date=November 11, 2023 - 21:35 {{Abbr/ICT}} |finished=true
+		|map=Nexterra |group=BC
+		|teamfirst=cggg
+		|teamsecond=gow
+		|teamthird=wag
+		|mvp=ONEMORE
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/FjgJlHCdxN8
+		}}
+	|map6={{Map
+		|date=November 11, 2023 - 22:10 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=BC
+		|teamfirst=osaka
+		|teamsecond=gow
+		|teamthird=expand
+		|mvp=Chris
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/FjgJlHCdxN8
+		}}
+|opponent1={{TeamOpponent|furious gaming |m1={{MS|4|4}} |m2={{MS|6|5}} |m3={{MS|4|5}} |m4={{MS|7|0}} |m5={{MS|6|10}} |m6={{MS|5|0}} }}
+|opponent2={{TeamOpponent|wask |m1={{MS|9|2}} |m2={{MS|3|1}} |m3={{MS|9|4}} |m4={{MS|2|4}} |m5={{MS|10|5}} |m6={{MS|11|1}} }}
+|opponent3={{TeamOpponent|rrq kazu |m1={{MS|3|8}} |m2={{MS|1|8}} |m3={{MS|10|2}} |m4={{MS|1|25}} |m5={{MS|9|2}} |m6={{MS|4|10}} }}
+|opponent4={{TeamOpponent|gow |m1={{MS|11|0}} |m2={{MS|9|1}} |m3={{MS|3|2}} |m4={{MS|10|2}} |m5={{MS|2|0}} |m6={{MS|2|9}} }}
+|opponent5={{TeamOpponent|cggg |m1={{MS|12|3}} |m2={{MS|4|14}} |m3={{MS|5|13}} |m4={{MS|6|12}} |m5={{MS|1|13}} |m6={{MS|12|5}} }}
+|opponent6={{TeamOpponent|wag |m1={{MS|7|7}} |m2={{MS|11|3}} |m3={{MS|12|0}} |m4={{MS|5|0}} |m5={{MS|3|9}} |m6={{MS|9|0}} }}
+|opponent7={{TeamOpponent|loud |m1={{MS|2|11}} |m2={{MS|7|2}} |m3={{MS|2|11}} |m4={{MS|9|2}} |m5={{MS|8|10}} |m6={{MS|10|2}} }}
+|opponent8={{TeamOpponent|pesp |m1={{MS|6|5}} |m2={{MS|8|8}} |m3={{MS|8|6}} |m4={{MS|11|6}} |m5={{MS|12|1}} |m6={{MS|7|6}} }}
+|opponent9={{TeamOpponent|expand |m1={{MS|8|0}} |m2={{MS|5|1}} |m3={{MS|11|2}} |m4={{MS|8|5}} |m5={{MS|11|7}} |m6={{MS|3|10}} }}
+|opponent10={{TeamOpponent|exp esports |m1={{MS|1|19}} |m2={{MS|10|6}} |m3={{MS|1|13}} |m4={{MS|4|5}} |m5={{MS|4|8}} |m6={{MS|6|6}} }}
+|opponent11={{TeamOpponent|osaka |m1={{MS|10|4}} |m2={{MS|12|1}} |m3={{MS|7|1}} |m4={{MS|12|0}} |m5={{MS|5|8}} |m6={{MS|1|10}} }}
+|opponent12={{TeamOpponent|poco star |m1={{MS|5|8}} |m2={{MS|2|2}} |m3={{MS|6|9}} |m4={{MS|3|3}} |m5={{MS|7|0}} |m6={{MS|8|7}} }}
+	}}
+
+|M3={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 12, 2023 - 19:15 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=AC
+		|teamfirst=loud
+		|teamsecond=msquad
+		|teamthird=poco star
+		|mvp=Cauan7
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/uYkJjUWKveo
+		}}
+	|map2={{Map
+		|date=November 12, 2023 - 19:45 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=AC
+		|teamfirst=buriram
+		|teamsecond=msquad
+		|teamthird=thorrad
+		|mvp=GETHIGH
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/uYkJjUWKveo
+		}}
+	|map3={{Map
+		|date=November 12, 2023 - 20:25 {{Abbr/ICT}} |finished=true
+		|map=Alpine |group=AC
+		|teamfirst=thorrad
+		|teamsecond=exp
+		|teamthird=hotshot
+		|mvp=Ikal
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/uYkJjUWKveo
+		}}
+	|map4={{Map
+		|date=November 12, 2023 - 20:55 {{Abbr/ICT}} |finished=true
+		|map=Kalahari |group=AC
+		|teamfirst=exp
+		|teamsecond=msquad
+		|teamthird=loud
+		|mvp=DEW
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/uYkJjUWKveo
+		}}
+	|map5={{Map
+		|date=November 12, 2023 - 21:35 {{Abbr/ICT}} |finished=true
+		|map=Nexterra |group=AC
+		|teamfirst=poco star
+		|teamsecond=buriram
+		|teamthird=expand
+		|mvp=Faiz
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/uYkJjUWKveo
+		}}
+	|map6={{Map
+		|date=November 12, 2023 - 22:10 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=AC
+		|teamfirst=exp
+		|teamsecond=buriram
+		|teamthird=expand
+		|mvp=CARAMEL
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/uYkJjUWKveo
+		}}
+|opponent1={{TeamOpponent|thorrad |m1={{MS|8|1}} |m2={{MS|3|5}} |m3={{MS|1|15}} |m4={{MS|4|10}} |m5={{MS|9|0}} |m6={{MS|11|1}} }}
+|opponent2={{TeamOpponent|buriram united esports |m1={{MS|7|1}} |m2={{MS|1|11}} |m3={{MS|6|6}} |m4={{MS|10|2}} |m5={{MS|2|11}} |m6={{MS|2|13}} }}
+|opponent3={{TeamOpponent|mibr |m1={{MS|11|1}} |m2={{MS|9|0}} |m3={{MS|10|0}} |m4={{MS|11|0}} |m5={{MS|8|2}} |m6={{MS|8|2}} }}
+|opponent4={{TeamOpponent|all glory Gaming |m1={{MS|6|4}} |m2={{MS|12|1}} |m3={{MS|12|1}} |m4={{MS|9|2}} |m5={{MS|5|6}} |m6={{MS|12|0}} }}
+|opponent5={{TeamOpponent|msquad |m1={{MS|2|6}} |m2={{MS|2|7}} |m3={{MS|9|0}} |m4={{MS|2|2}} |m5={{MS|7|1}} |m6={{MS|5|3}} }}
+|opponent6={{TeamOpponent|hotshot esports |m1={{MS|9|1}} |m2={{MS|8|0}} |m3={{MS|3|2}} |m4={{MS|6|4}} |m5={{MS|6|16}} |m6={{MS|9|0}} }}
+|opponent7={{TeamOpponent|loud |m1={{MS|1|13}} |m2={{MS|5|5}} |m3={{MS|7|1}} |m4={{MS|3|3}} |m5={{MS|12|1}} |m6={{MS|4|12}} }}
+|opponent8={{TeamOpponent|pesp |m1={{MS|12|1}} |m2={{MS|6|11}} |m3={{MS|11|1}} |m4={{MS|12|0}} |m5={{MS|10|0}} |m6={{MS|7|4}} }}
+|opponent9={{TeamOpponent|expand |m1={{MS|10|0}} |m2={{MS|4|3}} |m3={{MS|4|2}} |m4={{MS|7|8}} |m5={{MS|3|8}} |m6={{MS|3|2}} }}
+|opponent10={{TeamOpponent|exp esports |m1={{MS|5|11}} |m2={{MS|7|5}} |m3={{MS|2|9}} |m4={{MS|1|14}} |m5={{MS|4|7}} |m6={{MS|1|16}} }}
+|opponent11={{TeamOpponent|osaka |m1={{MS|4|1}} |m2={{MS|11|1}} |m3={{MS|8|4}} |m4={{MS|8|4}} |m5={{MS|11|3}} |m6={{MS|6|2}} }}
+|opponent12={{TeamOpponent|poco star |m1={{MS|3|7}} |m2={{MS|10|2}} |m3={{MS|5|10}} |m4={{MS|5|8}} |m5={{MS|1|16}} |m6={{MS|10|2}} }}
+	}}
+
+|M4={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 17, 2023 - 19:15 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=AB
+		|teamfirst=thorrad
+		|teamsecond=all glory Gaming
+		|teamthird=wask
+		|mvp=Ikal
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/oD_tj4Xxp6g
+		}}
+	|map2={{Map
+		|date=November 17, 2023 - 19:45 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=AB
+		|teamfirst=msquad
+		|teamsecond=gow
+		|teamthird=buriram
+		|mvp=Giuh
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/oD_tj4Xxp6g
+		}}
+	|map3={{Map
+		|date=November 17, 2023 - 20:25 {{Abbr/ICT}} |finished=true
+		|map=Alpine |group=AB
+		|teamfirst=cggg
+		|teamsecond=mibr
+		|teamthird=thorrad
+		|mvp=PETER
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/oD_tj4Xxp6g
+		}}
+	|map4={{Map
+		|date=November 17, 2023 - 20:55 {{Abbr/ICT}} |finished=true
+		|map=Kalahari |group=AB
+		|teamfirst=thorrad
+		|teamsecond=hotshot
+		|teamthird=cggg
+		|mvp=Lozzy
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/oD_tj4Xxp6g
+		}}
+	|map5={{Map
+		|date=November 17, 2023 - 21:35 {{Abbr/ICT}} |finished=true
+		|map=Nexterra |group=AB
+		|teamfirst=buriram
+		|teamsecond=rrq kazu
+		|teamthird=all glory gaming
+		|mvp=Moshi
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/oD_tj4Xxp6g
+		}}
+	|map6={{Map
+		|date=November 17, 2023 - 22:10 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=AB
+		|teamfirst=wag
+		|teamsecond=mibr
+		|teamthird=msquad
+		|mvp=Krillin
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/oD_tj4Xxp6g
+		}}
+|opponent1={{TeamOpponent|thorrad |m1={{MS|1|16}} |m2={{MS|11|2}} |m3={{MS|3|6}} |m4={{MS|1|13}} |m5={{MS|11|7}} |m6={{MS|12|0}} }}
+|opponent2={{TeamOpponent|buriram united esports |m1={{MS|4|5}} |m2={{MS|3|5}} |m3={{MS|5|12}} |m4={{MS|7|4}} |m5={{MS|1|16}} |m6={{MS|5|5}} }}
+|opponent3={{TeamOpponent|mibr |m1={{MS|8|4}} |m2={{MS|8|5}} |m3={{MS|2|8}} |m4={{MS|9|1}} |m5={{MS|6|3}} |m6={{MS|2|7}} }}
+|opponent4={{TeamOpponent|all glory gaming |m1={{MS|2|5}} |m2={{MS|4|6}} |m3={{MS|9|0}} |m4={{MS|6|2}} |m5={{MS|3|6}} |m6={{MS|8|4}} }}
+|opponent5={{TeamOpponent|msquad |m1={{MS|9|1}} |m2={{MS|1|18}} |m3={{MS|6|3}} |m4={{MS|4|9}} |m5={{MS|4|5}} |m6={{MS|3|7}} }}
+|opponent6={{TeamOpponent|hotshot esports |m1={{MS|11|1}} |m2={{MS|10|5}} |m3={{MS|4|1}} |m4={{MS|2|13}} |m5={{MS|9|2}} |m6={{MS|7|0}} }}
+|opponent7={{TeamOpponent|furious gaming |m1={{MS|10|1}} |m2={{MS|6|2}} |m3={{MS|10|5}} |m4={{MS|12|1}} |m5={{MS|12|3}} |m6={{MS|11|1}} }}
+|opponent8={{TeamOpponent|wask |m1={{MS|3|2}} |m2={{MS|12|2}} |m3={{MS|11|0}} |m4={{MS|8|2}} |m5={{MS|10|4}} |m6={{MS|9|5}} }}
+|opponent9={{TeamOpponent|rrq kazu |m1={{MS|5|3}} |m2={{MS|9|5}} |m3={{MS|8|3}} |m4={{MS|11|6}} |m5={{MS|2|12}} |m6={{MS|10|4}} }}
+|opponent10={{TeamOpponent|gow |m1={{MS|12|0}} |m2={{MS|2|7}} |m3={{MS|12|2}} |m4={{MS|10|0}} |m5={{MS|7|6}} |m6={{MS|6|2}} }}
+|opponent11={{TeamOpponent|cggg |m1={{MS|7|10}} |m2={{MS|7|9}} |m3={{MS|1|14}} |m4={{MS|3|14}} |m5={{MS|5|11}} |m6={{MS|4|9}} }}
+|opponent12={{TeamOpponent|wag |m1={{MS|6|2}} |m2={{MS|5|0}} |m3={{MS|7|3}} |m4={{MS|5|6}} |m5={{MS|8|3}} |m6={{MS|1|12}} }}
+	}}
+
+|M5={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 18, 2023 - 19:15 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=BC
+		|teamfirst=poco star
+		|teamsecond=exp
+		|teamthird=cggg
+		|mvp=Leem
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/vsBB7B6GS30
+		}}
+	|map2={{Map
+		|date=November 18, 2023 - 19:45 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=BC
+		|teamfirst=pesp
+		|teamsecond=gow
+		|teamthird=expand
+		|mvp=DontCry
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/vsBB7B6GS30
+		}}
+	|map3={{Map
+		|date=November 18, 2023 - 20:25 {{Abbr/ICT}} |finished=true
+		|map=Alpine |group=BC
+		|teamfirst=wag
+		|teamsecond=rrq kazu
+		|teamthird=exp
+		|mvp=Krillin
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/vsBB7B6GS30
+		}}
+	|map4={{Map
+		|date=November 18, 2023 - 20:55 {{Abbr/ICT}} |finished=true
+		|map=Kalahari |group=BC
+		|teamfirst=rrq kazu
+		|teamsecond=cggg
+		|teamthird=expand
+		|mvp=Abay
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/vsBB7B6GS30
+		}}
+	|map5={{Map
+		|date=November 18, 2023 - 21:35 {{Abbr/ICT}} |finished=true
+		|map=Nexterra |group=BC
+		|teamfirst=cggg
+		|teamsecond=exp
+		|teamthird=loud
+		|mvp=PETER
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/vsBB7B6GS30
+		}}
+	|map6={{Map
+		|date=November 18, 2023 - 22:10 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=BC
+		|teamfirst=loud
+		|teamsecond=wag
+		|teamthird=cggg
+		|mvp=Lost
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/vsBB7B6GS30
+		}}
+|opponent1={{TeamOpponent|furious gaming |m1={{MS|10|1}} |m2={{MS|8|3}} |m3={{MS|7|1}} |m4={{MS|8|2}} |m5={{MS|10|1}} |m6={{MS|11|2}} }}
+|opponent2={{TeamOpponent|wask |m1={{MS|12|0}} |m2={{MS|12|0}} |m3={{MS|10|1}} |m4={{MS|10|1}} |m5={{MS|12|0}} |m6={{MS|7|3}} }}
+|opponent3={{TeamOpponent|rrq kazu |m1={{MS|9|5}} |m2={{MS|11|3}} |m3={{MS|2|11}} |m4={{MS|1|13}} |m5={{MS|7|1}} |m6={{MS|12|0}} }}
+|opponent4={{TeamOpponent|gow |m1={{MS|11|0}} |m2={{MS|2|6}} |m3={{MS|5|3}} |m4={{MS|12|1}} |m5={{MS|9|1}} |m6={{MS|4|10}} }}
+|opponent5={{TeamOpponent|cggg |m1={{MS|3|2}} |m2={{MS|5|7}} |m3={{MS|8|6}} |m4={{MS|2|23}} |m5={{MS|1|16}} |m6={{MS|3|2}} }}
+|opponent6={{TeamOpponent|wag |m1={{MS|4|0}} |m2={{MS|7|1}} |m3={{MS|1|14}} |m4={{MS|5|5}} |m5={{MS|5|6}} |m6={{MS|2|10}} }}
+|opponent7={{TeamOpponent|loud |m1={{MS|7|15}} |m2={{MS|4|14}} |m3={{MS|12|1}} |m4={{MS|9|1}} |m5={{MS|3|14}} |m6={{MS|1|12}} }}
+|opponent8={{TeamOpponent|pesp |m1={{MS|5|7}} |m2={{MS|1|10}} |m3={{MS|4|10}} |m4={{MS|4|2}} |m5={{MS|11|0}} |m6={{MS|6|2}} }}
+|opponent9={{TeamOpponent|expand |m1={{MS|6|2}} |m2={{MS|3|4}} |m3={{MS|9|2}} |m4={{MS|3|5}} |m5={{MS|6|3}} |m6={{MS|5|5}} }}
+|opponent10={{TeamOpponent|exp esports |m1={{MS|2|10}} |m2={{MS|10|3}} |m3={{MS|3|8}} |m4={{MS|7|5}} |m5={{MS|2|10}} |m6={{MS|9|8}} }}
+|opponent11={{TeamOpponent|osaka |m1={{MS|8|2}} |m2={{MS|6|4}} |m3={{MS|11|3}} |m4={{MS|11|2}} |m5={{MS|4|2}} |m6={{MS|10|0}} }}
+|opponent12={{TeamOpponent|poco star |m1={{MS|1|14}} |m2={{MS|9|3}} |m3={{MS|6|0}} |m4={{MS|6|3}} |m5={{MS|8|0}} |m6={{MS|8|4}} }}
+	}}
+
+|M6={{Match|finished=true
+	|p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1
+	|youtube=Free Fire Esports Official
+	|map1={{Map
+		|date=November 19, 2023 - 19:15 {{Abbr/ICT}} |finished=true
+		|map=Bermuda |group=AC
+		|teamfirst=buriram
+		|teamsecond=msquad
+		|teamthird=expand
+		|mvp=Moshi
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/2v0etCU10dg
+		}}
+	|map2={{Map
+		|date=November 19, 2023 - 19:45 {{Abbr/ICT}} |finished=true
+		|map=Purgatory |group=AC
+		|teamfirst=poco star
+		|teamsecond=exp
+		|teamthird=loud
+		|mvp=18Deer
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/2v0etCU10dg
+		}}
+	|map3={{Map
+		|date=November 19, 2023 - 20:25 {{Abbr/ICT}} |finished=true
+		|map=Alpine |group=AC
+		|teamfirst=hotshot
+		|teamsecond=buriram
+		|teamthird=exp
+		|mvp=HasuEXE
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/2v0etCU10dg
+		}}
+	|map4={{Map
+		|date=November 19, 2023 - 20:55 {{Abbr/ICT}} |finished=true
+		|map=Kalahari |group=AC
+		|teamfirst=buriram
+		|teamsecond=poco star
+		|teamthird=exp
+		|mvp=Joena
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/2v0etCU10dg
+		}}
+	|map5={{Map
+		|date=November 19, 2023 - 21:35 {{Abbr/ICT}} |finished=true
+		|map=Nexterra |group=AC
+		|teamfirst=exp
+		|teamsecond=thorrad
+		|teamthird=poco star
+		|mvp=DEW
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/2v0etCU10dg
+		}}
+	|map6={{Map
+		|date=November 19, 2023 - 22:10 {{Abbr/ICT}} |finished=true
+		|map=Kalahari |group=AC
+		|teamfirst=exp
+		|teamsecond=msquad
+		|teamthird=all glory gaming
+		|mvp=DEW
+		|youtube=Free Fire Esports Official
+		|vod=https://youtu.be/2v0etCU10dg
+		}}
+|opponent1={{TeamOpponent|thorrad |m1={{MS|12|2}} |m2={{MS|8|5}} |m3={{MS|10|1}} |m4={{MS|10|0}} |m5={{MS|2|14}} |m6={{MS|12|0}} }}
+|opponent2={{TeamOpponent|buriram united esports |m1={{MS|1|20}} |m2={{MS|12|0}} |m3={{MS|2|17}} |m4={{MS|1|10}} |m5={{MS|11|2}} |m6={{MS|7|11}} }}
+|opponent3={{TeamOpponent|mibr |m1={{MS|11|2}} |m2={{MS|9|2}} |m3={{MS|8|3}} |m4={{MS|6|6}} |m5={{MS|7|1}} |m6={{MS|11|0}} }}
+|opponent4={{TeamOpponent|all glory Gaming |m1={{MS|9|2}} |m2={{MS|10|1}} |m3={{MS|11|3}} |m4={{MS|12|3}} |m5={{MS|8|2}} |m6={{MS|3|0}} }}
+|opponent5={{TeamOpponent|msquad |m1={{MS|2|6}} |m2={{MS|6|1}} |m3={{MS|5|5}} |m4={{MS|4|7}} |m5={{MS|9|1}} |m6={{MS|2|11}} }}
+|opponent6={{TeamOpponent|hotshot esports |m1={{MS|4|2}} |m2={{MS|11|1}} |m3={{MS|1|6}} |m4={{MS|9|3}} |m5={{MS|5|2}} |m6={{MS|5|1}} }}
+|opponent7={{TeamOpponent|loud |m1={{MS|7|11}} |m2={{MS|3|11}} |m3={{MS|7|8}} |m4={{MS|7|4}} |m5={{MS|12|0}} |m6={{MS|9|5}} }}
+|opponent8={{TeamOpponent|pesp |m1={{MS|8|1}} |m2={{MS|5|1}} |m3={{MS|9|0}} |m4={{MS|8|3}} |m5={{MS|4|10}} |m6={{MS|10|3}} }}
+|opponent9={{TeamOpponent|expand |m1={{MS|3|4}} |m2={{MS|7|2}} |m3={{MS|6|7}} |m4={{MS|5|1}} |m5={{MS|10|0}} |m6={{MS|4|3}} }}
+|opponent10={{TeamOpponent|exp esports |m1={{MS|6|2}} |m2={{MS|2|8}} |m3={{MS|3|8}} |m4={{MS|3|17}} |m5={{MS|1|16}} |m6={{MS|1|18}} }}
+|opponent11={{TeamOpponent|osaka |m1={{MS|10|1}} |m2={{MS|4|11}} |m3={{MS|12|1}} |m4={{MS|11|4}} |m5={{MS|6|1}} |m6={{MS|8|1}} }}
+|opponent12={{TeamOpponent|poco star |m1={{MS|5|5}} |m2={{MS|1|11}} |m3={{MS|4|2}} |m4={{MS|2|2}} |m5={{MS|3|14}} |m6={{MS|6|5}} }}
+	}}
+}}
+{{Tabs dynamic/end}}{{box|end}}
+
+{{DISPLAYTITLE:Free Fire World Series 2023 - Points Rush Matches}}
+{{EventTabs}}
+{{HiddenDataBox
+|name=Free Fire World Series 2023 - Points Rush
+|tickername=FFWS 2023 - Pts. Rush
+|icon=Free_Fire_World_Series_2021_icon.png
+|sdate=2023-11-24 |edate=2023-11-25
+}}
+==Format==
+* '''FFWS 2023 - Points Rush:''''' {{#section:Free Fire World Series/2023|PRFormat}}
+
+===Points Distribution===
+{{box|start|padding=2em}}
+{{Points12|showtb=true|show_toggle=false|tmargin=10px 0 0 0}}
+{{box|break}}
+{| class="wikitable" style="text-align:center;margin-top:10px"
+! colspan="4"| Headstart Points<br><small>(earned in Points Rush per day)</small>
+|-
+! width="75px"| Place !! Points
+|-
+| {{Placement|1}}		|| 8
+|-
+| {{Placement|2}}		|| 6
+|-
+| {{Placement|3}}		|| 5
+|-
+| {{Placement|4}}		|| 4
+|-
+| {{Placement|5}}		|| 3
+|-
+| {{Placement|6}}		|| 2
+|-
+| {{Placement|7-10}}	|| 1
+|-
+| {{Placement|11-12}}	|| 0
+|}
+{{box|end}}
+
+====Point Rush====
+{{box|start}}{{Tabs dynamic|name1=Day 1|name2=Day 2|hide-showall=true|This=1}}<!--
+==================== DAY 1 ====================
+-->{{Tabs dynamic/tab|1}}
+{{box|start}}{{Tabs dynamic|name1=Headstart Points Ranking|name2=Match Standings|hide-showall=true|This=2}}<!--
+Day 1 Headstart
+-->{{Tabs dynamic/tab|1}}
+{{HeadstartPointsTable
+|title=Day 1 Headstart Points Standings
+|team1=cggg |hs_pts1=8
+|team2=mgs br |hs_pts2=6
+|team3=loud |hs_pts3=5
+|team4=rrq kazu |hs_pts4=4
+|team5=buriram |hs_pts5=3
+|team6=expand |hs_pts6=2
+|team7=wag |hs_pts7=1
+|team8=exp |hs_pts8=1
+|team9=gow |hs_pts9=1
+|team10=thorrad |hs_pts10=1
+|team11=pesp |hs_pts11=0
+|team12=poco star |hs_pts12=0
+}}<!--
+Day 1 PR Matches
+-->{{Tabs dynamic/tab|2}}
+{{Bracket|Bracket/2|id=ffws23prd1
+|R1M1header=Day 1 Matches
+|R1M1={{Match|finished=true
+    |p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1 |p11=0 |p12=0
+    |youtube=Free Fire Esports Official
+    |map1={{Map|date=November 24, 2023 - 19:15 {{Abbr/ICT}}|finished=true|map=Bermuda|vod=https://www.youtube.com/watch?v=HyZ0Q950dho}}
+    |map2={{Map|date=November 24, 2023 - 19:45 {{Abbr/ICT}}|finished=true|map=Purgatory|vod=https://www.youtube.com/watch?v=HyZ0Q950dho}}
+    |map3={{Map|date=November 24, 2023 - 20:25 {{Abbr/ICT}}|finished=true|map=Alpine|vod=https://www.youtube.com/watch?v=HyZ0Q950dho}}
+    |map4={{Map|date=November 24, 2023 - 20:55 {{Abbr/ICT}}|finished=true|map=Kalahari|vod=https://www.youtube.com/watch?v=HyZ0Q950dho}}
+    |map5={{Map|date=November 24, 2023 - 21:35 {{Abbr/ICT}}|finished=true|map=Nexterra|vod=https://www.youtube.com/watch?v=HyZ0Q950dho}}
+    |map6={{Map|date=November 24, 2023 - 22:10 {{Abbr/ICT}}|finished=true|map=Kalahari|vod=https://www.youtube.com/watch?v=HyZ0Q950dho}}
+    |opponent1={{TeamOpponent|exp|m1={{MS|4|4}}|m2={{MS|1|7}}|m3={{MS|10|4}}|m4={{MS|3|11}}|m5={{MS|11|0}}|m6={{MS|12|1}}|placement=1}}
+    |opponent2={{TeamOpponent|buriram|m1={{MS|10|6}}|m2={{MS|10|1}}|m3={{MS|9|6}}|m4={{MS|5|6}}|m5={{MS|3|9}}|m6={{MS|5|14}}}}
+    |opponent3={{TeamOpponent|cggg|m1={{MS|9|0}}|m2={{MS|2|13}}|m3={{MS|3|10}}|m4={{MS|12|2}}|m5={{MS|2|10}}|m6={{MS|1|9}}|placement=1}}
+    |opponent4={{TeamOpponent|mgs br|m1={{MS|3|6}}|m2={{MS|5|4}}|m3={{MS|1|12}}|m4={{MS|10|4}}|m5={{MS|1|11}}|m6={{MS|7|2}}|placement=1}}
+    |opponent5={{TeamOpponent|rrq kazu|m1={{MS|2|15}}|m2={{MS|4|10}}|m3={{MS|7|6}}|m4={{MS|9|9}}|m5={{MS|10|5}}|m6={{MS|11|5}}}}
+    |opponent6={{TeamOpponent|loud|m1={{MS|6|7}}|m2={{MS|3|2}}|m3={{MS|2|6}}|m4={{MS|1|13}}|m5={{MS|12|0}}|m6={{MS|3|8}}|placement=1}}
+    |opponent7={{TeamOpponent|poco star|m1={{MS|11|0}}|m2={{MS|11|1}}|m3={{MS|12|0}}|m4={{MS|6|3}}|m5={{MS|6|8}}|m6={{MS|2|5}}}}
+    |opponent8={{TeamOpponent|wag|m1={{MS|7|0}}|m2={{MS|7|4}}|m3={{MS|8|2}}|m4={{MS|2|16}}|m5={{MS|4|3}}|m6={{MS|6|0}}}}
+    |opponent9={{TeamOpponent|thorrad|m1={{MS|8|6}}|m2={{MS|8|3}}|m3={{MS|11|2}}|m4={{MS|7|4}}|m5={{MS|5|8}}|m6={{MS|10|0}}}}
+    |opponent10={{TeamOpponent|expand|m1={{MS|1|12}}|m2={{MS|9|0}}|m3={{MS|6|1}}|m4={{MS|4|3}}|m5={{MS|9|1}}|m6={{MS|4|7}}|placement=1}}
+    |opponent11={{TeamOpponent|pesp|m1={{MS|12|0}}|m2={{MS|12|1}}|m3={{MS|4|8}}|m4={{MS|11|2}}|m5={{MS|7|9}}|m6={{MS|8|2}}}}
+    |opponent12={{TeamOpponent|gow|m1={{MS|5|6}}|m2={{MS|6|6}}|m3={{MS|5|4}}|m4={{MS|8|5}}|m5={{MS|8|1}}|m6={{MS|9|6}}}}
+}}
+}}
+{{Tabs dynamic/end}}{{box|end}}
+<!--
+==================== DAY 2 ====================
+-->{{Tabs dynamic/tab|2}}
+{{box|start}}{{Tabs dynamic|name1=Headstart Points Ranking|name2=Match Standings|hide-showall=true|This=2}}<!--
+Day 2 Headstart
+-->{{Tabs dynamic/tab|1}}
+{{HeadstartPointsTable
+|title=Day 2 Headstart Points Standings
+|team1=buriram |hs_pts1=8
+|team2=mgs br |hs_pts2=6
+|team3=cggg |hs_pts3=5
+|team4=rrq kazu |hs_pts4=4
+|team5=exp |hs_pts5=3
+|team6=thorrad |hs_pts6=2
+|team7=wag |hs_pts7=1
+|team8=expand |hs_pts8=1
+|team9=pesp |hs_pts9=1
+|team10=poco star |hs_pts10=1
+|team11=loud |hs_pts11=0
+|team12=gow |hs_pts12=0
+}}<!--
+Day 2 PR Matches
+-->{{Tabs dynamic/tab|2}}
+{{Bracket|Bracket/2|id=ffws23prd2
+|R1M1header=Day 2 Matches
+|R1M1={{Match|finished=true
+    |p_kill=1 |p1=12 |p2=9 |p3=8 |p4=7 |p5=6 |p6=5 |p7=4 |p8=3 |p9=2 |p10=1 |p11=0 |p12=0
+    |youtube=Free Fire Esports Official
+    |map1={{Map|date=November 25, 2023 - 19:15 {{Abbr/ICT}}|finished=true|map=Bermuda|vod=https://youtu.be/NSxEiLEhz9k}}
+    |map2={{Map|date=November 25, 2023 - 19:45 {{Abbr/ICT}}|finished=true|map=Purgatory|vod=https://youtu.be/NSxEiLEhz9k}}
+    |map3={{Map|date=November 25, 2023 - 20:25 {{Abbr/ICT}}|finished=true|map=Alpine|vod=https://youtu.be/NSxEiLEhz9k}}
+    |map4={{Map|date=November 25, 2023 - 20:55 {{Abbr/ICT}}|finished=true|map=Kalahari|vod=https://youtu.be/NSxEiLEhz9k}}
+    |map5={{Map|date=November 25, 2023 - 21:35 {{Abbr/ICT}}|finished=true|map=Nexterra|vod=https://youtu.be/NSxEiLEhz9k}}
+    |map6={{Map|date=November 25, 2023 - 22:10 {{Abbr/ICT}}|finished=true|map=Alpine|vod=https://youtu.be/NSxEiLEhz9k}}
+    |opponent1={{TeamOpponent|exp|m1={{MS|8|2}}|m2={{MS|4|5}}|m3={{MS|9|8}}|m4={{MS|3|2}}|m5={{MS|5|11}}|m6={{MS|6|10}}}}
+    |opponent2={{TeamOpponent|buriram|m1={{MS|7|2}}|m2={{MS|6|3}}|m3={{MS|4|8}}|m4={{MS|6|6}}|m5={{MS|2|10}}|m6={{MS|1|11}}|placement=1}}
+    |opponent3={{TeamOpponent|cggg|m1={{MS|2|9}}|m2={{MS|1|16}}|m3={{MS|7|8}}|m4={{MS|10|6}}|m5={{MS|10|1}}|m6={{MS|8|6}}|placement=1}}
+    |opponent4={{TeamOpponent|mgs br|m1={{MS|4|6}}|m2={{MS|5|3}}|m3={{MS|1|12}}|m4={{MS|2|6}}|m5={{MS|4|4}}|m6={{MS|9|4}}|placement=1}}
+    |opponent5={{TeamOpponent|rrq kazu|m1={{MS|9|1}}|m2={{MS|11|2}}|m3={{MS|6|3}}|m4={{MS|1|20}}|m5={{MS|6|8}}|m6={{MS|2|3}}|placement=1}}
+    |opponent6={{TeamOpponent|loud|m1={{MS|3|8}}|m2={{MS|7|2}}|m3={{MS|12|1}}|m4={{MS|5|3}}|m5={{MS|12|0}}|m6={{MS|12|0}}}}
+    |opponent7={{TeamOpponent|poco star|m1={{MS|6|7}}|m2={{MS|12|0}}|m3={{MS|10|1}}|m4={{MS|8|1}}|m5={{MS|3|13}}|m6={{MS|11|0}}}}
+    |opponent8={{TeamOpponent|wag|m1={{MS|10|0}}|m2={{MS|10|1}}|m3={{MS|2|8}}|m4={{MS|11|0}}|m5={{MS|1|15}}|m6={{MS|3|10}}|placement=1}}
+    |opponent9={{TeamOpponent|thorrad|m1={{MS|1|18}}|m2={{MS|9|5}}|m3={{MS|3|3}}|m4={{MS|9|3}}|m5={{MS|7|6}}|m6={{MS|10|4}}|placement=1}}
+    |opponent10={{TeamOpponent|expand|m1={{MS|5|4}}|m2={{MS|2|6}}|m3={{MS|8|3}}|m4={{MS|4|3}}|m5={{MS|8|5}}|m6={{MS|7|9}}}}
+    |opponent11={{TeamOpponent|pesp|m1={{MS|11|0}}|m2={{MS|3|13}}|m3={{MS|5|12}}|m4={{MS|12|4}}|m5={{MS|11|0}}|m6={{MS|4|6}}}}
+    |opponent12={{TeamOpponent|gow|m1={{MS|12|1}}|m2={{MS|8|2}}|m3={{MS|11|1}}|m4={{MS|7|5}}|m5={{MS|9|0}}|m6={{MS|5|3}}}}
+}}
+}}
+{{Tabs dynamic/end}}{{box|end}}
+{{Tabs dynamic/end}}{{box|end}}

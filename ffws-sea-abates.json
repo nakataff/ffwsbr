@@ -1,0 +1,1840 @@
+{
+  "updatedAt": "2026-05-23",
+  "competition": "FFWS SEA 2026 S1",
+  "type": "kills-ranking",
+  "stages": [
+    {
+      "key": "fase2-dia1",
+      "title": "Fase 2 - Dia 1",
+      "rows": [
+        {
+          "jogador": "BRU.WASSANA",
+          "funcao": "Rusher",
+          "abates": 10,
+          "dano": 7805,
+          "assistencias": 17,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.JOENA",
+          "funcao": "Bomber",
+          "abates": 15,
+          "dano": 10786,
+          "assistencias": 20,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.MOSHI",
+          "funcao": "Sniper",
+          "abates": 16,
+          "dano": 12189,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.GETHIGHXL",
+          "funcao": "Support",
+          "abates": 2,
+          "dano": 3872,
+          "assistencias": 21,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.ONFIRE",
+          "funcao": "Rusher",
+          "abates": 7,
+          "dano": 7508,
+          "assistencias": 16,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.KERORO",
+          "funcao": "Bomber",
+          "abates": 6,
+          "dano": 5899,
+          "assistencias": 14,
+          "quedas": 4,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.PEENA",
+          "funcao": "Rusher",
+          "abates": 14,
+          "dano": 6999,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.RATCHA",
+          "funcao": "Rusher",
+          "abates": 0,
+          "dano": 319,
+          "assistencias": 0,
+          "quedas": 2,
+          "mvp": 0
+        },
+        {
+          "jogador": "AG.DEW",
+          "funcao": "Sniper",
+          "abates": 17,
+          "dano": 11791,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AG.SAIFA",
+          "funcao": "Rusher",
+          "abates": 18,
+          "dano": 12177,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AG.BAROS",
+          "funcao": "Bomber",
+          "abates": 10,
+          "dano": 8311,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AG.NAMELESS",
+          "funcao": "Support",
+          "abates": 9,
+          "dano": 5588,
+          "assistencias": 15,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.JUMP",
+          "funcao": "Rifler",
+          "abates": 5,
+          "dano": 3198,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.XPOZY",
+          "funcao": "Sniper",
+          "abates": 1,
+          "dano": 2000,
+          "assistencias": 2,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.DIAMOND",
+          "funcao": "Bomber",
+          "abates": 8,
+          "dano": 6232,
+          "assistencias": 4,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.THEBAS",
+          "funcao": "Rusher",
+          "abates": 2,
+          "dano": 2198,
+          "assistencias": 7,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.HOANGM",
+          "funcao": "Bomber",
+          "abates": 4,
+          "dano": 3313,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.PLS1",
+          "funcao": "Sniper",
+          "abates": 5,
+          "dano": 4911,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.TQUY",
+          "funcao": "Rusher",
+          "abates": 3,
+          "dano": 3220,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.NHAN7",
+          "funcao": "Support",
+          "abates": 8,
+          "dano": 5258,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.MUFASA",
+          "funcao": "Support",
+          "abates": 8,
+          "dano": 3686,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.ALAN",
+          "funcao": "Bomber",
+          "abates": 8,
+          "dano": 6104,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.DONTCRY",
+          "funcao": "Rusher",
+          "abates": 5,
+          "dano": 5505,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.THEGOD",
+          "funcao": "Sniper",
+          "abates": 13,
+          "dano": 10509,
+          "assistencias": 18,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.MINKCUOG",
+          "funcao": "Support",
+          "abates": 4,
+          "dano": 4375,
+          "assistencias": 33,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BTR.DHIKZ",
+          "funcao": "Rusher",
+          "abates": 12,
+          "dano": 7697,
+          "assistencias": 17,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BTR.C1B3NK",
+          "funcao": "Sniper",
+          "abates": 18,
+          "dano": 11691,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BTR.JOOEEEL",
+          "funcao": "Sniper",
+          "abates": 7,
+          "dano": 9086,
+          "assistencias": 16,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.ADAM",
+          "funcao": "Rusher",
+          "abates": 12,
+          "dano": 7370,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.XYRO",
+          "funcao": "Rifler",
+          "abates": 6,
+          "dano": 3992,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.PUTRA",
+          "funcao": "Rusher",
+          "abates": 7,
+          "dano": 4217,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.CRIME",
+          "funcao": "Sniper",
+          "abates": 7,
+          "dano": 6186,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.DUTZZ",
+          "funcao": "Bomber",
+          "abates": 6,
+          "dano": 7386,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.MAAL77",
+          "funcao": "Sniper",
+          "abates": 9,
+          "dano": 7893,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.ABAY",
+          "funcao": "Rusher",
+          "abates": 13,
+          "dano": 8242,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.18DEER",
+          "funcao": "Rusher",
+          "abates": 3,
+          "dano": 4184,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.TRAPZ",
+          "funcao": "Bomber",
+          "abates": 5,
+          "dano": 4287,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.NOKII10",
+          "funcao": "Rusher",
+          "abates": 9,
+          "dano": 4029,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.FAIZZ",
+          "funcao": "Sniper",
+          "abates": 10,
+          "dano": 8386,
+          "assistencias": 7,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.ALIFF",
+          "funcao": "Rusher",
+          "abates": 9,
+          "dano": 5298,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.JUN",
+          "funcao": "Bomber",
+          "abates": 12,
+          "dano": 7545,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.ZUEZZ",
+          "funcao": "Rusher",
+          "abates": 12,
+          "dano": 7565,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.AZRIEL25",
+          "funcao": "Rusher",
+          "abates": 9,
+          "dano": 5242,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.LIMITX7",
+          "funcao": "Sniper",
+          "abates": 8,
+          "dano": 6870,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "HEV.CTUAN",
+          "funcao": "Sniper",
+          "abates": 14,
+          "dano": 7959,
+          "assistencias": 7,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "FL.ABCD",
+          "funcao": "Rusher",
+          "abates": 21,
+          "dano": 8615,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "FL.THEZOM",
+          "funcao": "Bomber",
+          "abates": 9,
+          "dano": 7357,
+          "assistencias": 17,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "BTR.KOJAA",
+          "funcao": "Bomber",
+          "abates": 22,
+          "dano": 10509,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "AUR.THEAXEL",
+          "funcao": "Support",
+          "abates": 16,
+          "dano": 13942,
+          "assistencias": 18,
+          "quedas": 6,
+          "mvp": 1
+        }
+      ]
+    },
+    {
+      "key": "fase2-dia2",
+      "title": "Fase 2 - Dia 2",
+      "rows": [
+        {
+          "jogador": "BRU.JOENA",
+          "funcao": "Bomber",
+          "abates": 8,
+          "dano": 8718,
+          "assistencias": 19,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.MOSHI",
+          "funcao": "Sniper",
+          "abates": 12,
+          "dano": 11769,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.GETHIGHXL",
+          "funcao": "Support",
+          "abates": 9,
+          "dano": 4192,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.ONFIRE",
+          "funcao": "Rusher",
+          "abates": 4,
+          "dano": 4082,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.LIMITX7",
+          "funcao": "Sniper",
+          "abates": 7,
+          "dano": 8635,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.KERORO",
+          "funcao": "Bomber",
+          "abates": 11,
+          "dano": 6906,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.PEENA",
+          "funcao": "Rusher",
+          "abates": 8,
+          "dano": 5133,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.JUMP",
+          "funcao": "Rifler",
+          "abates": 7,
+          "dano": 3264,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.XPOZY",
+          "funcao": "Sniper",
+          "abates": 6,
+          "dano": 4478,
+          "assistencias": 1,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.DIAMOND",
+          "funcao": "Bomber",
+          "abates": 3,
+          "dano": 5382,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.THEBAS",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 4989,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.PLS1",
+          "funcao": "Sniper",
+          "abates": 5,
+          "dano": 6893,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.TQUY",
+          "funcao": "Rusher",
+          "abates": 12,
+          "dano": 6287,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.NHAN7",
+          "funcao": "Support",
+          "abates": 10,
+          "dano": 4021,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.CTUAN",
+          "funcao": "Sniper",
+          "abates": 7,
+          "dano": 6152,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.MUFASA",
+          "funcao": "Support",
+          "abates": 7,
+          "dano": 3000,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.ALAN",
+          "funcao": "Bomber",
+          "abates": 7,
+          "dano": 5175,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.DONTCRY",
+          "funcao": "Rusher",
+          "abates": 4,
+          "dano": 4477,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "GOW.DEMON",
+          "funcao": "Rusher",
+          "abates": 15,
+          "dano": 7364,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "GOW.GOCU",
+          "funcao": "Rusher",
+          "abates": 9,
+          "dano": 6274,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.ABCD",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 4333,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.THEGOD",
+          "funcao": "Sniper",
+          "abates": 7,
+          "dano": 7639,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.MINKCUOG",
+          "funcao": "Support",
+          "abates": 9,
+          "dano": 4279,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.ADAM",
+          "funcao": "Rusher",
+          "abates": 2,
+          "dano": 2448,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.XYRO",
+          "funcao": "Rifler",
+          "abates": 5,
+          "dano": 5897,
+          "assistencias": 7,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.PUTRA",
+          "funcao": "Rusher",
+          "abates": 4,
+          "dano": 1227,
+          "assistencias": 1,
+          "quedas": 4,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.CRIME",
+          "funcao": "Sniper",
+          "abates": 7,
+          "dano": 5233,
+          "assistencias": 3,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.DEMONZ",
+          "funcao": "Rusher",
+          "abates": 1,
+          "dano": 711,
+          "assistencias": 2,
+          "quedas": 2,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.DUTZZ",
+          "funcao": "Bomber",
+          "abates": 14,
+          "dano": 9938,
+          "assistencias": 21,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.ABAY",
+          "funcao": "Rusher",
+          "abates": 17,
+          "dano": 11548,
+          "assistencias": 19,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.18DEER",
+          "funcao": "Rusher",
+          "abates": 0,
+          "dano": 93,
+          "assistencias": 0,
+          "quedas": 1,
+          "mvp": 0
+        },
+        {
+          "jogador": "RRQ.RANZEIEII",
+          "funcao": "Rusher",
+          "abates": 15,
+          "dano": 6571,
+          "assistencias": 11,
+          "quedas": 5,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.JUANN",
+          "funcao": "Rusher",
+          "abates": 9,
+          "dano": 6353,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.RYNNN",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 3553,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.CILLZYY",
+          "funcao": "Rusher",
+          "abates": 3,
+          "dano": 2524,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.SH1NZY",
+          "funcao": "Rusher",
+          "abates": 7,
+          "dano": 2282,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.TRAPZ",
+          "funcao": "Bomber",
+          "abates": 3,
+          "dano": 2266,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.NOKII10",
+          "funcao": "Rusher",
+          "abates": 7,
+          "dano": 3512,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.FAIZZ",
+          "funcao": "Sniper",
+          "abates": 4,
+          "dano": 5274,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.ALIFF",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 3862,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.JUN",
+          "funcao": "Bomber",
+          "abates": 2,
+          "dano": 3146,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.ZUEZZ",
+          "funcao": "Rusher",
+          "abates": 9,
+          "dano": 5247,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.THEAXEL",
+          "funcao": "Support",
+          "abates": 6,
+          "dano": 3968,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.AZRIEL25",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 3223,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.WASSANA",
+          "funcao": "Rusher",
+          "abates": 13,
+          "dano": 10393,
+          "assistencias": 15,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "WAG.HOANGM",
+          "funcao": "Bomber",
+          "abates": 8,
+          "dano": 4680,
+          "assistencias": 19,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "GOW.DYAN",
+          "funcao": "Bomber",
+          "abates": 9,
+          "dano": 10866,
+          "assistencias": 18,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "GOW.DEATH",
+          "funcao": "Sniper",
+          "abates": 15,
+          "dano": 12685,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "FL.THEZOM",
+          "funcao": "Bomber",
+          "abates": 11,
+          "dano": 5754,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "RRQ.MAAL77",
+          "funcao": "Sniper",
+          "abates": 11,
+          "dano": 10702,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 1
+        }
+      ]
+    },
+    {
+      "key": "fase2-dia3",
+      "title": "Fase 2 - Dia 3",
+      "rows": [
+        {
+          "jogador": "BRU.WASSANA",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 5984,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.JOENA",
+          "funcao": "Bomber",
+          "abates": 5,
+          "dano": 6719,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.MOSHI",
+          "funcao": "Sniper",
+          "abates": 7,
+          "dano": 6163,
+          "assistencias": 3,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.GETHIGHXL",
+          "funcao": "Support",
+          "abates": 5,
+          "dano": 2868,
+          "assistencias": 7,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.LIMITX7",
+          "funcao": "Sniper",
+          "abates": 16,
+          "dano": 11123,
+          "assistencias": 18,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.KERORO",
+          "funcao": "Bomber",
+          "abates": 9,
+          "dano": 6299,
+          "assistencias": 20,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FLCN.RATCHA",
+          "funcao": "Rusher",
+          "abates": 12,
+          "dano": 6807,
+          "assistencias": 16,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.JUMP",
+          "funcao": "Rifler",
+          "abates": 17,
+          "dano": 5994,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.XPOZY",
+          "funcao": "Sniper",
+          "abates": 12,
+          "dano": 10121,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.THEBAS",
+          "funcao": "Rusher",
+          "abates": 10,
+          "dano": 8136,
+          "assistencias": 25,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.LONGKONG",
+          "funcao": "Bomber",
+          "abates": 6,
+          "dano": 6444,
+          "assistencias": 16,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.PABLO",
+          "funcao": "Support",
+          "abates": 16,
+          "dano": 6350,
+          "assistencias": 15,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.ANUSIT",
+          "funcao": "Sniper",
+          "abates": 10,
+          "dano": 6768,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.TAWAN",
+          "funcao": "Rusher",
+          "abates": 12,
+          "dano": 7373,
+          "assistencias": 19,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.HOANGM",
+          "funcao": "Bomber",
+          "abates": 10,
+          "dano": 6032,
+          "assistencias": 15,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.PLS1",
+          "funcao": "Sniper",
+          "abates": 10,
+          "dano": 7870,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.NHAN7",
+          "funcao": "Support",
+          "abates": 8,
+          "dano": 4911,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.CTUAN",
+          "funcao": "Sniper",
+          "abates": 6,
+          "dano": 6328,
+          "assistencias": 6,
+          "quedas": 5,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.MUFASA",
+          "funcao": "Support",
+          "abates": 5,
+          "dano": 5462,
+          "assistencias": 16,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.ALAN",
+          "funcao": "Bomber",
+          "abates": 9,
+          "dano": 6916,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.DONTCRY",
+          "funcao": "Rusher",
+          "abates": 12,
+          "dano": 9375,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.BHUY",
+          "funcao": "Sniper",
+          "abates": 1,
+          "dano": 1839,
+          "assistencias": 4,
+          "quedas": 1,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.ABCD",
+          "funcao": "Rusher",
+          "abates": 7,
+          "dano": 5467,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.THEZOM",
+          "funcao": "Bomber",
+          "abates": 8,
+          "dano": 8426,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.THEGOD",
+          "funcao": "Sniper",
+          "abates": 8,
+          "dano": 9255,
+          "assistencias": 4,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.MINKCUOG",
+          "funcao": "Support",
+          "abates": 8,
+          "dano": 4789,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "EVOS.RASYAH",
+          "funcao": "Sniper",
+          "abates": 11,
+          "dano": 11558,
+          "assistencias": 23,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "EVOS.KOCEEL",
+          "funcao": "Bomber",
+          "abates": 12,
+          "dano": 7922,
+          "assistencias": 21,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "EVOS.AIMGOD",
+          "funcao": "Rusher",
+          "abates": 13,
+          "dano": 5385,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "EVOS.REYYY",
+          "funcao": "Rusher",
+          "abates": 19,
+          "dano": 8471,
+          "assistencias": 21,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.XYRO",
+          "funcao": "Rifler",
+          "abates": 8,
+          "dano": 5834,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.CRIME",
+          "funcao": "Sniper",
+          "abates": 11,
+          "dano": 6613,
+          "assistencias": 1,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.DEMONZ",
+          "funcao": "Rusher",
+          "abates": 8,
+          "dano": 4502,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.JUANN",
+          "funcao": "Rusher",
+          "abates": 11,
+          "dano": 4938,
+          "assistencias": 5,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.RYNNN",
+          "funcao": "Rusher",
+          "abates": 5,
+          "dano": 6117,
+          "assistencias": 13,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.CILLZYY",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 4093,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.SH1NZY",
+          "funcao": "Rusher",
+          "abates": 1,
+          "dano": 3035,
+          "assistencias": 14,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.TRAPZ",
+          "funcao": "Bomber",
+          "abates": 4,
+          "dano": 2880,
+          "assistencias": 4,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.NOKII10",
+          "funcao": "Rusher",
+          "abates": 6,
+          "dano": 3287,
+          "assistencias": 8,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.FAIZZ",
+          "funcao": "Sniper",
+          "abates": 4,
+          "dano": 5773,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.ALIFF",
+          "funcao": "Rusher",
+          "abates": 5,
+          "dano": 4161,
+          "assistencias": 6,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.JUN",
+          "funcao": "Bomber",
+          "abates": 7,
+          "dano": 7184,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.ZUEZZ",
+          "funcao": "Rusher",
+          "abates": 7,
+          "dano": 4249,
+          "assistencias": 9,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.THEAXEL",
+          "funcao": "Support",
+          "abates": 11,
+          "dano": 9668,
+          "assistencias": 11,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.AZRIEL25",
+          "funcao": "Rusher",
+          "abates": 3,
+          "dano": 2760,
+          "assistencias": 12,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "TWIS.DIAMOND",
+          "funcao": "Bomber",
+          "abates": 19,
+          "dano": 11298,
+          "assistencias": 17,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "ONIC.ADAM",
+          "funcao": "Rusher",
+          "abates": 7,
+          "dano": 8873,
+          "assistencias": 19,
+          "quedas": 6,
+          "mvp": 1
+        },
+        {
+          "jogador": "FLCN.PEENA",
+          "funcao": "Rusher",
+          "abates": 18,
+          "dano": 9816,
+          "assistencias": 15,
+          "quedas": 6,
+          "mvp": 2
+        },
+        {
+          "jogador": "WAG.TQUY",
+          "funcao": "Rusher",
+          "abates": 14,
+          "dano": 6654,
+          "assistencias": 10,
+          "quedas": 6,
+          "mvp": 2
+        }
+      ]
+    },
+    {
+      "key": "last-chance",
+      "title": "Last Chance",
+      "rows": [
+        {
+          "jogador": "BRU.WASSANA",
+          "funcao": "Rusher",
+          "abates": 25,
+          "dano": 21445,
+          "assistencias": 42,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.GETHIGHXL",
+          "funcao": "Support",
+          "abates": 18,
+          "dano": 7437,
+          "assistencias": 37,
+          "quedas": 12,
+          "mvp": 0
+        },
+        {
+          "jogador": "BRU.TERNA",
+          "funcao": "Support",
+          "abates": 9,
+          "dano": 4849,
+          "assistencias": 7,
+          "quedas": 6,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.PABLO",
+          "funcao": "Support",
+          "abates": 30,
+          "dano": 18671,
+          "assistencias": 44,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.ANUSIT",
+          "funcao": "Sniper",
+          "abates": 19,
+          "dano": 17470,
+          "assistencias": 28,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.TAWAN",
+          "funcao": "Rusher",
+          "abates": 24,
+          "dano": 18680,
+          "assistencias": 42,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.WINTER",
+          "funcao": "Support",
+          "abates": 2,
+          "dano": 896,
+          "assistencias": 2,
+          "quedas": 2,
+          "mvp": 0
+        },
+        {
+          "jogador": "PE.LBT",
+          "funcao": "Rusher",
+          "abates": 32,
+          "dano": 18521,
+          "assistencias": 33,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "PE.NOLAN",
+          "funcao": "Rusher",
+          "abates": 18,
+          "dano": 11060,
+          "assistencias": 30,
+          "quedas": 14,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.HOANGM",
+          "funcao": "Bomber",
+          "abates": 32,
+          "dano": 19796,
+          "assistencias": 41,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.PLS1",
+          "funcao": "Sniper",
+          "abates": 31,
+          "dano": 24714,
+          "assistencias": 26,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.TQUY",
+          "funcao": "Rusher",
+          "abates": 39,
+          "dano": 26758,
+          "assistencias": 48,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "WAG.NHAN7",
+          "funcao": "Support",
+          "abates": 32,
+          "dano": 17090,
+          "assistencias": 37,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.CTUAN",
+          "funcao": "Sniper",
+          "abates": 25,
+          "dano": 19798,
+          "assistencias": 19,
+          "quedas": 14,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.ALAN",
+          "funcao": "Bomber",
+          "abates": 25,
+          "dano": 19670,
+          "assistencias": 30,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.DONTCRY",
+          "funcao": "Rusher",
+          "abates": 23,
+          "dano": 18004,
+          "assistencias": 30,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "HEV.BHUY",
+          "funcao": "Sniper",
+          "abates": 3,
+          "dano": 2267,
+          "assistencias": 0,
+          "quedas": 4,
+          "mvp": 0
+        },
+        {
+          "jogador": "FL.ABCD",
+          "funcao": "Rusher",
+          "abates": 33,
+          "dano": 19246,
+          "assistencias": 33,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "EVOS.KOCEEL",
+          "funcao": "Bomber",
+          "abates": 23,
+          "dano": 16403,
+          "assistencias": 43,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "EVOS.AIMGOD",
+          "funcao": "Rusher",
+          "abates": 25,
+          "dano": 16124,
+          "assistencias": 25,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "EVOS.REYYY",
+          "funcao": "Rusher",
+          "abates": 24,
+          "dano": 16454,
+          "assistencias": 53,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.ADAM",
+          "funcao": "Rusher",
+          "abates": 21,
+          "dano": 13454,
+          "assistencias": 25,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.XYRO",
+          "funcao": "Rifler",
+          "abates": 11,
+          "dano": 10989,
+          "assistencias": 25,
+          "quedas": 16,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.PUTRA",
+          "funcao": "Rusher",
+          "abates": 15,
+          "dano": 10364,
+          "assistencias": 22,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.CRIME",
+          "funcao": "Sniper",
+          "abates": 29,
+          "dano": 20645,
+          "assistencias": 14,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ONIC.DEMONZ",
+          "funcao": "Rusher",
+          "abates": 0,
+          "dano": 449,
+          "assistencias": 2,
+          "quedas": 2,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.JUANN",
+          "funcao": "Rusher",
+          "abates": 18,
+          "dano": 10673,
+          "assistencias": 20,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.CILLZYY",
+          "funcao": "Rusher",
+          "abates": 11,
+          "dano": 8603,
+          "assistencias": 22,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "SE.SH1NZY",
+          "funcao": "Rusher",
+          "abates": 11,
+          "dano": 7508,
+          "assistencias": 26,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.TRAPZ",
+          "funcao": "Bomber",
+          "abates": 10,
+          "dano": 9172,
+          "assistencias": 15,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.NOKII10",
+          "funcao": "Rusher",
+          "abates": 16,
+          "dano": 9987,
+          "assistencias": 27,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.FAIZZ",
+          "funcao": "Sniper",
+          "abates": 23,
+          "dano": 19491,
+          "assistencias": 12,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "ACD.ALIFF",
+          "funcao": "Rusher",
+          "abates": 16,
+          "dano": 12274,
+          "assistencias": 19,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "MEC.YANNZ",
+          "funcao": "Sniper",
+          "abates": 10,
+          "dano": 12704,
+          "assistencias": 30,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "MEC.DRIANN",
+          "funcao": "Support",
+          "abates": 25,
+          "dano": 16587,
+          "assistencias": 31,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "MEC.VIRUZZ",
+          "funcao": "Rusher",
+          "abates": 21,
+          "dano": 18203,
+          "assistencias": 19,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.ZUEZZ",
+          "funcao": "Rusher",
+          "abates": 38,
+          "dano": 23405,
+          "assistencias": 62,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.THEAXEL",
+          "funcao": "Support",
+          "abates": 40,
+          "dano": 26659,
+          "assistencias": 38,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "AUR.AZRIEL25",
+          "funcao": "Rusher",
+          "abates": 47,
+          "dano": 20517,
+          "assistencias": 41,
+          "quedas": 18,
+          "mvp": 0
+        },
+        {
+          "jogador": "PE.DMH",
+          "funcao": "",
+          "abates": 1,
+          "dano": 850,
+          "assistencias": 8,
+          "quedas": 4,
+          "mvp": 0
+        },
+        {
+          "jogador": "AVD.LONGKONG",
+          "funcao": "Bomber",
+          "abates": 31,
+          "dano": 18339,
+          "assistencias": 30,
+          "quedas": 16,
+          "mvp": 1
+        },
+        {
+          "jogador": "PE.NERO",
+          "funcao": "Bomber",
+          "abates": 35,
+          "dano": 26082,
+          "assistencias": 43,
+          "quedas": 18,
+          "mvp": 1
+        },
+        {
+          "jogador": "PE.LAOHO",
+          "funcao": "Sniper",
+          "abates": 22,
+          "dano": 25370,
+          "assistencias": 30,
+          "quedas": 18,
+          "mvp": 1
+        },
+        {
+          "jogador": "HEV.MUFASA",
+          "funcao": "Support",
+          "abates": 29,
+          "dano": 19008,
+          "assistencias": 31,
+          "quedas": 18,
+          "mvp": 1
+        },
+        {
+          "jogador": "FL.MINKCUOG",
+          "funcao": "Support",
+          "abates": 26,
+          "dano": 20768,
+          "assistencias": 72,
+          "quedas": 18,
+          "mvp": 1
+        },
+        {
+          "jogador": "EVOS.RASYAH",
+          "funcao": "Sniper",
+          "abates": 34,
+          "dano": 33191,
+          "assistencias": 30,
+          "quedas": 18,
+          "mvp": 1
+        },
+        {
+          "jogador": "SE.RYNNN",
+          "funcao": "Rusher",
+          "abates": 20,
+          "dano": 13098,
+          "assistencias": 22,
+          "quedas": 18,
+          "mvp": 1
+        },
+        {
+          "jogador": "MEC.GETBU",
+          "funcao": "Rusher",
+          "abates": 19,
+          "dano": 11861,
+          "assistencias": 27,
+          "quedas": 18,
+          "mvp": 1
+        },
+        {
+          "jogador": "BRU.JOENA",
+          "funcao": "Bomber",
+          "abates": 34,
+          "dano": 31123,
+          "assistencias": 43,
+          "quedas": 18,
+          "mvp": 2
+        },
+        {
+          "jogador": "BRU.MOSHI",
+          "funcao": "Sniper",
+          "abates": 43,
+          "dano": 35887,
+          "assistencias": 28,
+          "quedas": 18,
+          "mvp": 2
+        },
+        {
+          "jogador": "FL.THEZOM",
+          "funcao": "Bomber",
+          "abates": 44,
+          "dano": 32634,
+          "assistencias": 53,
+          "quedas": 18,
+          "mvp": 2
+        },
+        {
+          "jogador": "FL.THEGOD",
+          "funcao": "Sniper",
+          "abates": 56,
+          "dano": 46124,
+          "assistencias": 46,
+          "quedas": 18,
+          "mvp": 2
+        },
+        {
+          "jogador": "AUR.JUN",
+          "funcao": "Bomber",
+          "abates": 40,
+          "dano": 25766,
+          "assistencias": 43,
+          "quedas": 18,
+          "mvp": 2
+        }
+      ]
+    }
+  ]
+}

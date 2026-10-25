@@ -1,0 +1,1 @@
+Extraia os arquivos mantendo as pastas. O patch adiciona a página tier-constructor.html e atualiza apenas o menu e o índice de busca.

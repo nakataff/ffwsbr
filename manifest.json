@@ -1,0 +1,22 @@
+{
+  "name": "Central Free Fire",
+  "short_name": "CFF",
+  "start_url": "/?v=20260520-auto-cache-v2",
+  "display": "standalone",
+  "background_color": "#050810",
+  "theme_color": "#00c8ff",
+  "icons": [
+    {
+      "src": "central free fire.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "central free fire.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ],
+  "scope": "/",
+  "id": "/"
+}

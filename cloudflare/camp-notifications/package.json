@@ -1,0 +1,1 @@
+{"name":"cff-camp-notifications","private":true,"type":"module","scripts":{"deploy":"wrangler deploy","check":"wrangler deploy --dry-run","test":"node --test test/*.test.mjs","predeploy":"node ../../scripts/build-daily-challenges.cjs"},"dependencies":{"web-push":"3.6.7"},"devDependencies":{"wrangler":"^4.0.0","@napi-rs/canvas":"0.1.100"}}

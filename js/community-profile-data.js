@@ -1,0 +1,71 @@
+import {BUILTIN_FRAMES} from './profile-frame-model.mjs?v=20261013-profile-frames-v1';
+import { ref, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+export const PROFILE_VERSION='20261013-profile-frames-v1';
+export const escapeProfile=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const DEFAULT_AVATAR='/central%20free%20fire.webp';
+let optionsPromise;const imageCache=new Map(),imageValueCache=new Map();
+export function profileOptions(){return optionsPromise||=fetch('/profile-options.json?v='+PROFILE_VERSION).then(r=>{if(!r.ok)throw Error('Catálogo indisponível');return r.json().then(data=>({...data,frames:BUILTIN_FRAMES}))}).catch(e=>{optionsPromise=null;throw e});}
+export function findOption(options,id){return [...(options?.teams||[]),...(options?.players||[]),...(options?.frames||[])].find(x=>x.id===id);}
+export function imageUrl(path){return new URL(path||DEFAULT_AVATAR,location.origin+'/').href;}
+export function approvedImage(options,catalog,id,cls='',alt=''){
+ const opt=findOption(options,id),item=catalog?.[id],remote=(item?.enabled||item?.kind==='badge')&&item.assetId,cached=remote?imageValueCache.get(item.assetId):'';
+ const placeholder='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',src=opt?imageUrl(opt.image):(cached||remote?cached||placeholder:DEFAULT_AVATAR);
+ const pending=remote&&!cached?' cff-profile-asset-pending':'',critical=/cff-profile-avatar|cff-profile-cover-image|cff-profile-frame-image/.test(String(cls||''));
+ return `<img class="${escapeProfile(cls)}${pending}" src="${escapeProfile(src)}" alt="${escapeProfile(alt||opt?.name||item?.title||'Avatar Central')}" loading="${critical?'eager':'lazy'}" decoding="async"${critical?' fetchpriority="high"':''}${remote&&!cached?` data-profile-asset="${escapeProfile(item.assetId)}"`:''}>`;
+}
+export async function warmProfileImages(ids,db){
+ const unique=[...new Set((ids||[]).filter(Boolean))];
+ await Promise.all(unique.map(async id=>{if(imageValueCache.has(id))return imageValueCache.get(id);let promise=imageCache.get(id);if(!promise){promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{const value=s.val();if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');imageValueCache.set(id,value);return value;}).catch(e=>{imageCache.delete(id);throw e;});imageCache.set(id,promise);}try{const value=await promise;imageValueCache.set(id,value);const preload=new Image();preload.src=value;try{await preload.decode();}catch{}return value;}catch{return'';}}));
+}
+export function hydrateProfileImages(root,db){
+ const nodes=[...root.querySelectorAll('img[data-profile-asset]')];
+ if(!nodes.length)return;
+ const load=async node=>{
+  const id=node.dataset.profileAsset;
+  if(!id||node.dataset.profileAssetLoading==='1')return;
+  node.dataset.profileAssetLoading='1';
+  try{
+   let promise=imageCache.get(id);
+   if(!promise){
+    promise=get(ref(db,'communityProfileImages/'+id)).then(s=>{
+     const value=s.val();
+     if(typeof value!=='string'||!value.startsWith('data:image/webp;base64,')||value.length>140000)throw Error('Imagem indisponível');
+     imageValueCache.set(id,value);return value;
+    }).catch(e=>{imageCache.delete(id);throw e;});
+    imageCache.set(id,promise);
+   }
+   const data=await promise;
+   imageValueCache.set(id,data);
+   const preload=new Image();preload.src=data;
+   try{await preload.decode();}catch{}
+   if(node.isConnected&&node.dataset.profileAsset===id){
+    node.src=data;
+    node.classList.remove('cff-profile-asset-pending');
+    node.classList.add('cff-profile-asset-ready');
+    node.removeAttribute('data-profile-asset');
+   }
+  }catch{
+   if(node.isConnected){node.classList.remove('cff-profile-asset-pending');node.alt='Imagem temporariamente indisponível';}
+  }finally{delete node.dataset.profileAssetLoading;}
+ };
+ // Os elementos do cabeçalho devem carregar mesmo quando a Loja está selecionada.
+ const eager=nodes.filter(n=>n.closest('.cff-profile-hero, .cff-profile-portrait, .cff-profile-public-banner'));
+ eager.forEach(load);
+ const lazy=nodes.filter(n=>!eager.includes(n));
+ if('IntersectionObserver'in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(e=>{
+   if(e.isIntersecting){observer.unobserve(e.target);load(e.target);}
+  }),{rootMargin:'450px'});
+  lazy.forEach(n=>observer.observe(n));
+  setTimeout(()=>observer.disconnect(),120000);
+ }else lazy.forEach(load);
+}
+export function activeGrants(grants){return Object.entries(grants||{}).filter(([,g])=>g.status==='active').map(([id,g])=>({id,...g}));}
+export function hasBadge(grants,badgeId){return activeGrants(grants).some(g=>g.badgeId===badgeId);}
+export const ACCESS_LABELS={all:'Disponível para todos',weekly:'Campeão semanal',monthly:'Melhor do mês',top3:'Top 3 da comunidade',event:'Evento especial',supporter:'Apoiador da Central',code:'Via código',manual:'Liberação manual',admin:'Somente administradores',badge:'Por insígnia',goal:'Por objetivo'};
+export function catalogAvailable(item,grants,ownership={},roles={},id=''){if(!item?.enabled)return false;const access=item.accessRule||(item.unlockBadge?'badge':'all');if(ownership[id])return true;if(access==='admin')return roles.administrator===true;return ['all','badge'].includes(access)&&(!item.unlockBadge||hasBadge(grants,item.unlockBadge));}
+export function automaticAvatar(name,options,catalog={}){let hash=2166136261;for(const c of String(name||'').toLowerCase()){hash^=c.charCodeAt(0);hash=Math.imul(hash,16777619);}const pool=[...(options?.players||[]),...Object.entries(catalog).filter(([,x])=>x.kind==='avatar'&&x.enabled&&(x.accessRule||'all')==='all'&&!x.unlockBadge).map(([id])=>({id}))];return pool.length?pool[(hash>>>0)%pool.length].id:'default';}
+export const instagramKey=name=>String(name||'').toLowerCase().replace(/\./g,',');
+
+
+

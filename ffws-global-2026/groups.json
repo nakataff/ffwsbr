@@ -1,0 +1,40 @@
+{
+  "tournament": "FFWS Global Finals 2026",
+  "source": "Arte oficial de grupos divulgada em outubro de 2026",
+  "description": "Distribuição inicial do Knockout Stage por quatro grupos. Identificadores correspondem a ffws-global-2026/teams.json; horários/confrontos vêm de dates.json.",
+  "updatedAt": "2026-10-18",
+  "groups": {
+    "A": [
+      "stellar-esport",
+      "total-winner-esports",
+      "bru",
+      "onic",
+      "gundynasty",
+      "tsg-pros"
+    ],
+    "B": [
+      "rrq",
+      "gow",
+      "horaa-esports",
+      "xprojekt",
+      "blue-cheese",
+      "loud"
+    ],
+    "C": [
+      "pe",
+      "lyon",
+      "fx",
+      "resurrection-esports",
+      "btr",
+      "p-esports"
+    ],
+    "D": [
+      "team-inf",
+      "los",
+      "team-flash",
+      "ag-al",
+      "paradox-gaming",
+      "tag"
+    ]
+  }
+}

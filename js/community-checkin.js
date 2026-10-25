@@ -1,0 +1,313 @@
+(() => {
+  'use strict';
+
+  if (!/\/(?:interacoes\.html)?$/i.test(location.pathname) && !/interacoes\.html$/i.test(location.pathname)) return;
+  if (window.__CFF_COMMUNITY_CHECKIN_V2__) return;
+  window.__CFF_COMMUNITY_CHECKIN_V2__ = true;
+
+  const API = 'https://cff-instagram-community.nakataffb4.workers.dev';
+  const STORAGE_KEY = 'cff_daily_checkin_session_v1';
+  let busy = false;
+
+  function esc(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function session() {
+    try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (_) { return ''; }
+  }
+
+  function saveSession(value) {
+    try {
+      if (value) localStorage.setItem(STORAGE_KEY, value);
+      else localStorage.removeItem(STORAGE_KEY);
+    } catch (_) {}
+  }
+
+  async function request(path, options = {}) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch(API + path, {
+        ...options,
+        cache: 'no-store',
+        headers: { Accept: 'application/json', ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) },
+        signal: controller.signal,
+      });
+      let data = {};
+      try { data = await response.json(); } catch (error) { if (response.ok) throw error; }
+      if (!response.ok || data?.ok === false) {
+        const error = new Error(data?.error || `HTTP ${response.status}`);
+        error.status = response.status;
+        error.data = data;
+        throw error;
+      }
+      return data;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  function injectCss() {
+    if (document.getElementById('cff-community-checkin-css')) return;
+    const style = document.createElement('style');
+    style.id = 'cff-community-checkin-css';
+    style.textContent = `
+      .cff-checkin{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr);gap:0;margin:0 0 18px;border:1px solid rgba(0,200,255,.28);border-radius:18px;background:linear-gradient(135deg,rgba(0,200,255,.09),rgba(11,17,29,.98) 50%,rgba(8,14,24,.99));overflow:hidden;box-shadow:0 16px 42px rgba(0,0,0,.18)}
+      .cff-checkin-copy{padding:22px 24px;min-width:0}
+      .cff-checkin-kicker{color:#00c8ff;font-size:.68rem;font-weight:1000;letter-spacing:1.5px;text-transform:uppercase}
+      .cff-checkin h2{margin:6px 0 8px;color:#fff;font-size:clamp(1.35rem,3vw,2rem);font-weight:1000;line-height:1;text-transform:uppercase}
+      .cff-checkin h2 span{color:#00c8ff}
+      .cff-checkin-copy p{margin:0;max-width:680px;color:#88a4c3;font-size:.82rem;line-height:1.55;font-weight:700}
+      .cff-checkin-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:15px}
+      .cff-checkin-step{display:flex;align-items:center;gap:8px;min-width:0;padding:8px 9px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(255,255,255,.025);color:#8aa5c3;font-size:.64rem;font-weight:850}
+      .cff-checkin-step b{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:rgba(0,200,255,.12);color:#00c8ff;font-size:.64rem}
+      .cff-checkin-box{display:flex;align-items:center;justify-content:center;padding:16px;border-left:1px solid rgba(0,200,255,.12);background:rgba(0,0,0,.12)}
+      .cff-checkin-panel{width:100%;padding:15px;border:1px solid rgba(255,255,255,.08);border-radius:13px;background:#080e18;text-align:center}
+      .cff-checkin-status{display:inline-flex;align-items:center;gap:7px;color:#90aac6;font-size:.66rem;font-weight:950;letter-spacing:.7px;text-transform:uppercase}
+      .cff-checkin-status::before{content:"";width:7px;height:7px;border-radius:50%;background:#00c8ff;box-shadow:0 0 10px rgba(0,200,255,.65)}
+      .cff-checkin-code{display:block;margin:9px auto 11px;color:#fff;font-size:1.45rem;font-weight:1000;letter-spacing:2px}
+      .cff-checkin-user{display:block;margin:8px 0 4px;color:#fff;font-size:1.02rem;font-weight:1000}
+      .cff-checkin-help{margin:0 0 11px;color:#718daa;font-size:.7rem;line-height:1.4}
+      .cff-checkin-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:7px}
+      .cff-checkin-btn{border:1px solid rgba(0,200,255,.28);border-radius:9px;padding:9px 12px;background:rgba(0,200,255,.10);color:#dff8ff;font-size:.7rem;font-weight:1000;text-transform:uppercase;cursor:pointer;text-decoration:none}
+      .cff-checkin-btn:hover{border-color:#00c8ff;background:rgba(0,200,255,.16)}
+      .cff-checkin-btn.primary{min-height:43px;border-color:#00c8ff;background:#00c8ff;color:#03111a;box-shadow:0 8px 22px rgba(0,200,255,.22);font-size:.73rem}
+      .cff-checkin-btn[disabled]{opacity:.55;cursor:default}
+      .cff-checkin-swap{margin-top:10px;border:0;background:none;color:#627d9a;font-size:.63rem;font-weight:900;text-transform:uppercase;cursor:pointer}
+      .cff-checkin-success{color:#7ee2a8!important}
+      .cff-checkin-error{color:#ff9ca8!important}
+      @media(max-width:800px){.cff-checkin{grid-template-columns:1fr}.cff-checkin-box{border-left:0;border-top:1px solid rgba(0,200,255,.12)}.cff-checkin-copy{padding:18px}.cff-checkin-box{padding:12px}.cff-checkin-steps{grid-template-columns:1fr}.cff-checkin-actions .cff-checkin-btn{width:100%}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function injectRule() {
+    const rules = document.querySelector('.ig-rules');
+    if (!rules || document.getElementById('ig-rule-checkin')) return;
+    const row = document.createElement('div');
+    row.className = 'ig-rule';
+    row.id = 'ig-rule-checkin';
+    row.innerHTML = '<div class="ig-rule-icon">✅</div><div><strong>Check-in diário</strong><small>Entre no site e faça um check-in por dia após vincular seu Instagram.</small></div><div class="ig-rule-points">+1 pt</div>';
+    const note = rules.querySelector('.ig-note');
+    if (note) rules.insertBefore(row, note);
+    else rules.appendChild(row);
+  }
+
+  function mount() {
+    if (document.getElementById('cff-community-checkin')) return document.getElementById('cff-community-checkin');
+    const target = document.getElementById('cff-checkin-mount');
+    const toolbar = document.querySelector('.ig-toolbar');
+    if (!target && !toolbar) return null;
+    injectCss();
+    injectRule();
+    const section = document.createElement('section');
+    section.className = 'cff-checkin';
+    section.id = 'cff-community-checkin';
+    section.innerHTML = `
+      <div class="cff-checkin-copy">
+        <div class="cff-checkin-kicker">✅ Não esqueça seu ponto diário</div>
+        <h2>Check-in diário <span>+1 ponto</span></h2>
+        <p>Depois de vincular seu Instagram uma vez, é só voltar aqui todos os dias e tocar no botão de check-in. Leva poucos segundos e conta no Ranking da Comunidade.</p>
+        <div class="cff-checkin-steps">
+          <span class="cff-checkin-step"><b>1</b> Vincule seu Instagram</span>
+          <span class="cff-checkin-step"><b>2</b> Volte uma vez por dia</span>
+          <span class="cff-checkin-step"><b>3</b> Clique e ganhe +1 ponto</span>
+        </div>
+      </div>
+      <div class="cff-checkin-box"><div class="cff-checkin-panel" id="cff-checkin-panel"><span class="cff-checkin-status">Carregando seu check-in</span></div></div>`;
+    if (target) target.appendChild(section); else toolbar.parentNode.insertBefore(section, toolbar);
+    return section;
+  }
+
+  function panel() { return document.getElementById('cff-checkin-panel'); }
+
+  function renderLoading(text = 'Carregando') {
+    const root = panel();
+    if (root) root.innerHTML = `<span class="cff-checkin-status">${esc(text)}</span>`;
+  }
+
+  function renderUnavailable() {
+    const root = panel();
+    if (!root) return;
+    root.innerHTML = '<span class="cff-checkin-status cff-checkin-error">Indisponível agora</span><p class="cff-checkin-help" style="margin-top:9px">A conexão com o check-in demorou ou falhou. Tente novamente daqui a pouco.</p><div class="cff-checkin-actions"><button class="cff-checkin-btn" id="cff-checkin-retry" type="button">Tentar novamente</button></div>';
+    document.getElementById('cff-checkin-retry')?.addEventListener('click', bootSession);
+  }
+
+  function renderPending(data) {
+    const root = panel();
+    if (!root) return;
+    const code = String(data?.code || '');
+    root.innerHTML = `
+      <span class="cff-checkin-status">Aguardando vínculo</span>
+      <strong class="cff-checkin-code">${esc(code)}</strong>
+      <p class="cff-checkin-help">Mande exatamente este código por DM para <strong>@nakataff</strong>. Depois de enviar, clique em <strong>Já enviei</strong> para confirmar. A página não fica consultando o servidor sozinha.</p>
+      <div class="cff-checkin-actions">
+        <button class="cff-checkin-btn" id="cff-checkin-copy" type="button">Copiar código</button>
+        <a class="cff-checkin-btn" href="https://www.instagram.com/nakataff/" target="_blank" rel="noopener">Abrir @nakataff</a>
+        <button class="cff-checkin-btn primary" id="cff-checkin-sent" type="button">Já enviei</button>
+      </div>`;
+    document.getElementById('cff-checkin-copy')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch (_) {
+        const area = document.createElement('textarea'); area.value = code; document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove();
+      }
+      const button = document.getElementById('cff-checkin-copy');
+      if (button) { button.textContent = 'Copiado!'; setTimeout(() => { button.textContent = 'Copiar código'; }, 1200); }
+    });
+    document.getElementById('cff-checkin-sent')?.addEventListener('click', checkStatus);
+  }
+
+  async function restartLink(message = 'Gerar um novo código de vínculo para este navegador?') {
+    if (busy) return;
+    if (!confirm(message)) return;
+    saveSession('');
+    renderLoading('Gerando novo código');
+    try {
+      await startSession();
+    } catch (error) {
+      console.error('[CFF Check-in relink]', error);
+      renderUnavailable();
+    }
+  }
+
+  function renderVerified(data) {
+    const root = panel();
+    if (!root) return;
+    const checked = Boolean(data?.checkedInToday);
+    const username = String(data?.username || '').trim();
+    const unresolved = !username || /^usuario_/i.test(username);
+    const attempts = Array.isArray(data?.debug?.identity) ? data.debug.identity : [];
+    const debugText = unresolved && attempts.length
+      ? attempts.map((item) => {
+          const code = item?.error?.code ? ` #${item.error.code}${item?.error?.subcode ? '/' + item.error.subcode : ''}` : '';
+          const msg = item?.error?.message ? `: ${item.error.message}` : (item?.username ? `: @${item.username}` : '');
+          return `${item.base || 'graph'} ${item.status || 0}${code}${msg}`;
+        }).join(' | ')
+      : '';
+    root.innerHTML = `
+      <span class="cff-checkin-status ${checked ? 'cff-checkin-success' : ''}">${checked ? 'Check-in concluído hoje' : 'Instagram vinculado'}</span>
+      <strong class="cff-checkin-user">${unresolved ? 'Instagram não identificado' : '@' + esc(username)}</strong>
+      <p class="cff-checkin-help ${unresolved ? 'cff-checkin-error' : ''}">${unresolved ? 'A Meta confirmou a conta, mas não devolveu o @ corretamente. Gere um novo código e envie novamente pela conta certa.' : (checked ? 'Você já garantiu o ponto de hoje. Volte amanhã para pontuar de novo.' : 'Tudo certo. Seu Instagram já está confirmado neste navegador.')}</p>
+      ${debugText ? `<p class="cff-checkin-help" style="margin-top:-4px;word-break:break-word;opacity:.85"><strong>Diagnóstico Meta:</strong> ${esc(debugText)}</p>` : ''}
+      <div class="cff-checkin-actions">
+        <button class="cff-checkin-btn primary" id="cff-checkin-do" type="button" ${checked ? 'disabled' : ''}>${checked ? 'Feito hoje ✓' : 'Fazer check-in de hoje • +1'}</button>
+        <button class="cff-checkin-btn" id="cff-checkin-relink" type="button">Vincular novamente por código</button>
+      </div>
+      <button class="cff-checkin-swap" id="cff-checkin-swap" type="button">Trocar conta neste navegador</button>
+      <div class="cff-checkin-actions">${window.CFF_ACCOUNT?.user?'<button class="cff-checkin-btn" id="cff-checkin-google-save" type="button">Salvar vínculo na conta Google</button>':'<a class="cff-checkin-btn" href="conta.html">Entrar com Google e guardar o vínculo</a>'}</div>`;
+    document.getElementById('cff-checkin-google-save')?.addEventListener('click',async()=>{try{await window.CFF_ACCOUNT.rememberInstagram(session());}catch(error){window.CFF_ACCOUNT.toast('Não foi possível salvar o vínculo. Tente novamente.');}});
+    document.getElementById('cff-checkin-do')?.addEventListener('click', doCheckin);
+    document.getElementById('cff-checkin-relink')?.addEventListener('click', () => restartLink('Gerar um novo código para confirmar novamente seu Instagram neste navegador?'));
+    document.getElementById('cff-checkin-swap')?.addEventListener('click', () => restartLink('Desvincular este navegador e conectar outro Instagram?'));
+  }
+
+  function renderExpired() {
+    const root = panel();
+    if (!root) return;
+    root.innerHTML = '<span class="cff-checkin-status">Código expirado</span><p class="cff-checkin-help" style="margin-top:9px">Por segurança, o código de vínculo vale por 15 minutos.</p><div class="cff-checkin-actions"><button class="cff-checkin-btn primary" id="cff-checkin-new" type="button">Gerar novo código</button></div>';
+    document.getElementById('cff-checkin-new')?.addEventListener('click', () => { saveSession(''); bootSession(); });
+  }
+
+  async function startSession() {
+    const data = await request('/api/checkin/start', { method: 'POST', body: '{}' });
+    if (!data?.session) throw new Error('Sessão inválida');
+    saveSession(data.session);
+    renderPending(data);
+  }
+
+  async function checkStatus() {
+    const current = session();
+    if (!current) return startSession();
+    try {
+      const data = await request('/api/checkin/status?session=' + encodeURIComponent(current));
+      if(current!==session())return bootSession();
+      if (data?.status === 'verified') return renderVerified(data);
+      if (data?.status === 'expired') return renderExpired();
+      if (data?.status === 'pending') return renderPending(data);
+      saveSession('');
+      return startSession();
+    } catch (error) {
+      if (error.status === 404) { saveSession(''); return startSession(); }
+      throw error;
+    }
+  }
+
+  async function doCheckin() {
+    if (busy) return;
+    busy = true;
+    const button = document.getElementById('cff-checkin-do');
+    if (button) { button.disabled = true; button.textContent = 'Confirmando...'; }
+    try {
+      const data = await request('/api/checkin', { method: 'POST', body: JSON.stringify({ session: session() }) });
+      renderVerified({ username: data?.username, checkedInToday: true });
+      const root = panel();
+      const help = root?.querySelector('.cff-checkin-help');
+      if (help && data?.awarded) help.textContent = '+1 ponto! Seu check-in de hoje foi contabilizado no ranking.';
+    } catch (_) {
+      if (button) { button.disabled = false; button.textContent = 'Fazer check-in de hoje • +1'; }
+      const root = panel();
+      const help = root?.querySelector('.cff-checkin-help');
+      if (help) { help.textContent = 'Não foi possível confirmar agora. Tente novamente.'; help.classList.add('cff-checkin-error'); }
+    } finally {
+      busy = false;
+    }
+  }
+
+  function renderIdle() {
+    const root = panel();
+    if (!root) return;
+    root.innerHTML = `
+      <span class="cff-checkin-status">Check-in disponível</span>
+      <strong class="cff-checkin-user">+1 ponto por dia</strong>
+      <p class="cff-checkin-help">O servidor só será consultado quando você realmente iniciar ou confirmar o check-in.</p>
+      <div class="cff-checkin-actions">
+        <button class="cff-checkin-btn primary" id="cff-checkin-start" type="button">Vincular Instagram / começar</button>
+      </div>`;
+    document.getElementById('cff-checkin-start')?.addEventListener('click', async () => {
+      renderLoading('Gerando código');
+      try { await startSession(); } catch (error) { console.error('[CFF Check-in start]', error); renderUnavailable(); }
+    });
+  }
+
+  async function bootSession() {
+    const linked=window.CFF_ACCOUNT?.instagram;if(linked?.source==='admin'&&linked.username==='nakataff'){const root=panel();if(root)root.innerHTML='<span class="cff-checkin-status cff-checkin-success">Conta da página vinculada</span><strong class="cff-checkin-user">@nakataff</strong><p class="cff-checkin-help">Este perfil Google está vinculado a @nakataff pelo administrador.</p><a class="cff-checkin-btn" href="conta.html">Abrir meu perfil</a>';return;}
+    try {
+      if (session()) {
+        renderLoading();
+        await checkStatus();
+      } else {
+        renderIdle();
+      }
+    } catch (error) {
+      console.error('[CFF Check-in]', error);
+      renderUnavailable();
+    }
+  }
+
+  function loadWeeklyHistory() {
+    if (document.querySelector('script[data-cff-week-history]')) return;
+    const script = document.createElement('script');
+    script.src = 'js/community-week-history.js?v=20261014-loading-v1';
+    script.dataset.cffWeekHistory = '1';
+    document.head.appendChild(script);
+  }
+
+  function boot() {
+    if (!mount()) return;
+    loadWeeklyHistory();
+    if(window.CFF_ACCOUNT)window.CFF_ACCOUNT.ready.then(bootSession);else bootSession();
+  }
+  window.addEventListener('cff:community-session-changed',bootSession);
+  window.addEventListener('cff:account-instagram-changed',bootSession);
+  window.addEventListener('cff:account-changed',()=>{if(panel())bootSession();});
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+  else boot();
+})();

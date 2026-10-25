@@ -1,0 +1,304 @@
+{
+  "schema": 1,
+  "id": "showmatch-yuta-2026",
+  "name": "Showmatch Yuta 2026",
+  "shortName": "2026 Yuta",
+  "year": "2026",
+  "startDate": "2026-01-16",
+  "endDate": "2026-01-16",
+  "tier": "Showmatch",
+  "region": "BRASIL",
+  "status": "AMADOR",
+  "eventType": "Online",
+  "organizer": "Copa Yuta",
+  "instagram": "copa.yuta",
+  "youtube": "@xtreinoyuta",
+  "source": "Código fornecido pelo usuário (Liquipedia)",
+  "format": "Grande Final: 16 de janeiro de 2026\n12 equipes\nChampion Rush: 80 pontos, máximo de 10 quedas",
+  "championRush": {
+    "enabled": true,
+    "threshold": 80,
+    "maxMatches": 10
+  },
+  "final": {
+    "type": "final",
+    "source": "liquipedia-code-user",
+    "format": "ffaStandings",
+    "scoreMode": "pointsOnly",
+    "title": "Grande Final",
+    "maps": [],
+    "cols": [
+      "pos",
+      "teamOriginal",
+      "team",
+      "total"
+    ],
+    "rows": [
+      [1, "fx", "FLUXO W7M", 122],
+      [2, "los", "LOS", 114],
+      [3, "e1", "E1 SPORTS", 111],
+      [4, "vp", "VIRTUS PRO", 88],
+      [5, "loud", "LOUD", 86],
+      [6, "a7", "ALPHA7", 85],
+      [7, "inf", "INFLUENCE RAGE", 84],
+      [8, "ts", "TEAM SOLID", 67],
+      [9, "cvs", "CIVIS", 61],
+      [10, "out", "ANGELS OUTPLAY", 58],
+      [11, "crvg", "VASCO ESPORTS", 53],
+      [12, "lps", "LOOPS", 39]
+    ]
+  },
+  "teams": {
+    "type": "teams",
+    "source": "liquipedia-code-user",
+    "format": "teamCardParticipants",
+    "items": [
+      {
+        "id": "influence-rage",
+        "o": "inf",
+        "n": "INFLUENCE RAGE",
+        "q": "Convidado",
+        "p": [
+          {"n": "Lippe!", "f": "br"},
+          {"n": "Razure", "f": "br"},
+          {"n": "Igor7", "f": "br"},
+          {"n": "RUSH", "f": "br"}
+        ],
+        "s": [
+          {"n": "WF9", "f": "br", "r": "head coach", "t": "staff"},
+          {"n": "Pedro", "f": "br", "r": "analyst", "t": "staff"}
+        ]
+      },
+      {
+        "id": "angels-outplay",
+        "o": "out",
+        "n": "ANGELS OUTPLAY",
+        "q": "Convidado",
+        "p": [
+          {"n": "Ousadin", "f": "br"},
+          {"n": "Theus7", "f": "br"},
+          {"n": "Lubilu", "f": "br"},
+          {"n": "EryckBau", "f": "br"}
+        ],
+        "s": [
+          {"n": "Wolf", "f": "br", "r": "head coach", "t": "staff"},
+          {"n": "Congiu", "f": "br", "r": "analyst", "t": "staff"}
+        ]
+      },
+      {
+        "id": "alpha7",
+        "o": "a7",
+        "n": "ALPHA7",
+        "q": "Convidado",
+        "p": [
+          {"n": "JNMVP", "f": "br"},
+          {"n": "MitoMvp", "f": "br"},
+          {"n": "SAM7", "f": "br"},
+          {"n": "NeyWP", "f": "br"},
+          {"n": "Brisa7", "f": "br"}
+        ],
+        "s": [
+          {"n": "Queiroz", "f": "br", "r": "head coach", "t": "staff"}
+        ]
+      },
+      {
+        "id": "vasco-esports",
+        "o": "crvg",
+        "n": "VASCO ESPORTS",
+        "q": "Convidado",
+        "p": [
+          {"n": "Oculto 1", "f": "br"},
+          {"n": "Oculto 2", "f": "br"},
+          {"n": "Oculto 3", "f": "br"},
+          {"n": "BielGOD", "f": "br"}
+        ],
+        "s": []
+      },
+      {
+        "id": "virtus-pro",
+        "o": "vp",
+        "n": "VIRTUS PRO",
+        "q": "Convidado",
+        "p": [
+          {"n": "Oculto 1", "f": "br"},
+          {"n": "Oculto 2", "f": "br"},
+          {"n": "Oculto 3", "f": "br"},
+          {"n": "Oculto 4", "f": "br"}
+        ],
+        "s": [
+          {"n": "Frois", "f": "br", "r": "head coach", "t": "staff"},
+          {"n": "Jotape", "f": "br", "r": "analyst", "t": "staff"}
+        ]
+      },
+      {
+        "id": "loops",
+        "o": "lps",
+        "n": "LOOPS",
+        "q": "Convidado",
+        "p": [
+          {"n": "João7", "f": "br"},
+          {"n": "Kakazk", "f": "br"},
+          {"n": "Draxx7", "f": "br"},
+          {"n": "STARK7", "f": "br"}
+        ],
+        "s": [
+          {"n": "VT", "f": "br", "r": "head coach", "t": "staff"},
+          {"n": "Bryan", "f": "br", "r": "analyst", "t": "staff"}
+        ]
+      },
+      {
+        "id": "loud",
+        "o": "loud",
+        "n": "LOUD",
+        "q": "Convidado",
+        "p": [
+          {"n": "GYOMEI", "f": "br", "l": "Trap"},
+          {"n": "AKAZA", "f": "br", "l": "Nickz7"},
+          {"n": "PAETHI", "f": "br", "l": "HAK"},
+          {"n": "ZENITSU", "f": "br", "l": "Guaxa7"},
+          {"n": "ZZZ", "f": "br", "l": "bzp10"}
+        ],
+        "s": [
+          {"n": "JOKER", "f": "br", "r": "head coach", "t": "staff"},
+          {"n": "VIANA", "f": "br", "r": "analyst", "t": "staff"}
+        ]
+      },
+      {
+        "id": "fluxo-w7m",
+        "o": "fx",
+        "n": "FLUXO W7M",
+        "q": "Convidado",
+        "p": [
+          {"n": "Bops", "f": "br"},
+          {"n": "Giuh", "f": "br"},
+          {"n": "But", "f": "br"},
+          {"n": "MT7", "f": "br"},
+          {"n": "Proxx7", "f": "br"}
+        ],
+        "s": [
+          {"n": "LUUUKING", "f": "br", "r": "head coach", "t": "staff"},
+          {"n": "Renan", "f": "br", "r": "analyst", "t": "staff"}
+        ]
+      },
+      {
+        "id": "los",
+        "o": "los",
+        "n": "LOS",
+        "q": "Convidado",
+        "p": [
+          {"n": "Raone7", "f": "br"},
+          {"n": "General", "f": "br"},
+          {"n": "Rigby245", "f": "br"},
+          {"n": "Yago", "f": "br"},
+          {"n": "mtsexy", "f": "br"}
+        ],
+        "s": [
+          {"n": "LIPÃO", "f": "br", "r": "head coach", "t": "staff"},
+          {"n": "Jaya", "f": "br", "r": "analyst", "t": "staff"}
+        ]
+      },
+      {
+        "id": "team-solid",
+        "o": "ts",
+        "n": "TEAM SOLID",
+        "q": "Convidado",
+        "p": [
+          {"n": "PIASTRI81", "f": "br"},
+          {"n": "NEYMARJR", "f": "br"},
+          {"n": "VETTEL", "f": "br"},
+          {"n": "LEWIS44", "f": "br"}
+        ],
+        "s": [
+          {"n": "PUTSGRILO", "f": "br", "r": "head coach", "t": "staff"}
+        ]
+      },
+      {
+        "id": "e1-sports",
+        "o": "e1",
+        "n": "E1 SPORTS",
+        "q": "Convidado",
+        "p": [
+          {"n": "LYON", "f": "br"},
+          {"n": "PÃO7", "f": "br"},
+          {"n": "VITINxp", "f": "br"},
+          {"n": "Vitin9", "f": "br"},
+          {"n": "Bombom", "f": "br"}
+        ],
+        "s": [
+          {"n": "Ninja", "f": "br", "r": "head coach", "t": "staff", "l": "Ninja (Brazilian Coach)"}
+        ]
+      },
+      {
+        "id": "civis",
+        "o": "cvs",
+        "n": "CIVIS",
+        "q": "Convidado",
+        "p": [
+          {"n": "JOTA99", "f": "br"},
+          {"n": "Hazardx7", "f": "br"},
+          {"n": "AceMvp", "f": "br"},
+          {"n": "Chryszx", "f": "br"}
+        ],
+        "s": []
+      }
+    ]
+  },
+  "prizePool": {
+    "type": "teamPrizePool",
+    "source": "liquipedia-code-user",
+    "format": "teamPrizePool",
+    "currency": "BRL",
+    "cols": [
+      "pos",
+      "teamOriginal",
+      "team",
+      "prize"
+    ],
+    "rows": [
+      [1, "fx", "FLUXO W7M", 1000],
+      [2, "los", "LOS", 0],
+      [3, "e1", "E1 SPORTS", 0],
+      [4, "vp", "VIRTUS PRO", 0],
+      [5, "loud", "LOUD", 0],
+      [6, "a7", "ALPHA7", 0],
+      [7, "inf", "INFLUENCE RAGE", 0],
+      [8, "ts", "TEAM SOLID", 0],
+      [9, "cvs", "CIVIS", 0],
+      [10, "out", "ANGELS OUTPLAY", 0],
+      [11, "crvg", "VASCO ESPORTS", 0],
+      [12, "lps", "LOOPS", 0]
+    ]
+  },
+  "aliases": {
+    "fx": "FLUXO W7M",
+    "fluxo w7m": "FLUXO W7M",
+    "los": "LOS",
+    "e1": "E1 SPORTS",
+    "e1 sports": "E1 SPORTS",
+    "vp": "VIRTUS PRO",
+    "virtus pro": "VIRTUS PRO",
+    "loud": "LOUD",
+    "a7": "ALPHA7",
+    "alpha7": "ALPHA7",
+    "inf": "INFLUENCE RAGE",
+    "influence rage": "INFLUENCE RAGE",
+    "ts": "TEAM SOLID",
+    "team solid": "TEAM SOLID",
+    "cvs": "CIVIS",
+    "civis": "CIVIS",
+    "out": "ANGELS OUTPLAY",
+    "angels outplay": "ANGELS OUTPLAY",
+    "crvg": "VASCO ESPORTS",
+    "vasco esports": "VASCO ESPORTS",
+    "lps": "LOOPS",
+    "loops": "LOOPS"
+  },
+  "awards": [
+    {
+      "award": "MVP",
+      "player": "VITINxp",
+      "team": "E1 SPORTS",
+      "note": ""
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "updatedAt": "2026-07-28",
+  "team": "RISE GAMING",
+  "players": {
+    "mala": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 122,
+        "damage": 77551,
+        "assists": 260,
+        "matches": 95,
+        "mvp": 0,
+        "record": 5,
+        "team": "VIRTUS PRO",
+        "rankKills": 40,
+        "rankDamage": 45,
+        "rankAssists": 6,
+        "stages": {
+          "classificatoria": {
+            "kills": 109,
+            "damage": 69314,
+            "assists": 239,
+            "matches": 81,
+            "mvp": 0
+          },
+          "final": {
+            "kills": 13,
+            "damage": 8237,
+            "assists": 21,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
+      }
+    },
+    "erick11": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 150,
+        "damage": 94333,
+        "assists": 142,
+        "matches": 96,
+        "mvp": 1,
+        "record": 7,
+        "team": "RISE GAMING",
+        "rankKills": 25,
+        "rankDamage": 33,
+        "rankAssists": 39,
+        "stages": {
+          "classificatoria": {
+            "kills": 128,
+            "damage": 80208,
+            "assists": 124,
+            "matches": 82,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 22,
+            "damage": 14125,
+            "assists": 18,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
+      }
+    },
+    "naandox": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 143,
+        "damage": 107330,
+        "assists": 205,
+        "matches": 102,
+        "mvp": 1,
+        "record": 8,
+        "team": "RISE GAMING",
+        "rankKills": 26,
+        "rankDamage": 24,
+        "rankAssists": 14,
+        "stages": {
+          "classificatoria": {
+            "kills": 122,
+            "damage": 90868,
+            "assists": 171,
+            "matches": 88,
+            "mvp": 1
+          },
+          "final": {
+            "kills": 21,
+            "damage": 16462,
+            "assists": 34,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
+      }
+    },
+    "kakazk": {
+      "s1": {
+        "key": "s1",
+        "name": "WB 2026 S1",
+        "kills": 193,
+        "damage": 165856,
+        "assists": 159,
+        "matches": 103,
+        "mvp": 5,
+        "record": 8,
+        "team": "RISE GAMING",
+        "rankKills": 10,
+        "rankDamage": 3,
+        "rankAssists": 31,
+        "stages": {
+          "classificatoria": {
+            "kills": 170,
+            "damage": 144778,
+            "assists": 138,
+            "matches": 89,
+            "mvp": 5
+          },
+          "final": {
+            "kills": 23,
+            "damage": 21078,
+            "assists": 21,
+            "matches": 14,
+            "mvp": 0
+          }
+        }
+      }
+    }
+  }
+}

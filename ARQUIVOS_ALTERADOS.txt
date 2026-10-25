@@ -1,0 +1,44 @@
+PATCH: PAINEL ADMINISTRATIVO, NOTÍCIAS E CONTADORES
+Data: 06/08/2026
+
+NOVOS ARQUIVOS
+- admin.html
+- css/admin.css
+- js/admin.js
+- js/news-admin-provider.js
+- js/news-engagement.js
+- js/site-analytics.js
+- FIREBASE_ADMIN_SETUP.txt
+- firebase-database-rules-admin.example.json
+
+ARQUIVOS ALTERADOS
+- index.html
+- noticia.html
+- jogador.html
+- equipe.html
+- equipe-historica.html
+- equipes-historicas.html
+- manager.html
+- tier-constructor.html
+- 404.html
+- robots.txt
+- noticias/exposed-mandela-e-denunciado-por-cheat/index.html
+- noticias/garena-anuncia-data-de-retorno-da-laff/index.html
+- noticias/jackmvp7-surge-como-nova-promessa-do-cenario/index.html
+- noticias/loud-e-virtus-pro-estao-zerados-de-top-12-no-split/index.html
+- noticias/mt7-e-saifa-veja-a-comparacao-dos-mvp-do-brasil-e-sea/index.html
+- noticias/team-solid-e-campea-da-liga-marinho/index.html
+- noticias/vitin9-e-novo-reforco-da-loops/index.html
+- noticias/yago-se-aproxima-dos-2000-abates-na-wb/index.html
+
+PRINCIPAIS MUDANÇAS
+- Login exclusivo pelo Firebase Authentication, sem senha gravada no código.
+- Painel com totais de visualizações, curtidas, páginas mais vistas e últimas notícias atualizadas.
+- Editor de notícias com rascunho, destaque, prévia, edição, exclusão e importação da planilha atual.
+- Notícias do painel combinadas com as notícias antigas da planilha; o painel tem prioridade quando o slug é igual.
+- Contadores de visualizações e curtidas nas notícias dinâmicas e nas páginas estáticas existentes.
+- Rastreamento leve de páginas/seções, uma visualização por sessão.
+- admin.html bloqueado no robots.txt e com meta noindex.
+
+ANTES DE PUBLICAR
+Leia FIREBASE_ADMIN_SETUP.txt e configure Authentication + Realtime Database Rules.

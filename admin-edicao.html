@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Edição | Painel Central Free Fire</title>
+  <link rel="icon" type="image/webp" href="central free fire.webp">
+  <link rel="preload" href="assets/fonts/avilock-bold.woff2" as="font" type="font/woff2" crossorigin>
+  <style>@font-face{font-family:'Avilock';src:url('assets/fonts/avilock-bold.woff2') format('woff2');font-style:normal;font-weight:700;font-display:swap}</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20260923-fade-strength-v13">
+  <script src="js/config.min.js?v=20261020-chat-layout-v1"></script>
+  <script type="module" src="js/admin-edicao.js?v=20261005-position-controls-v1"></script>
+  <script defer src="js/admin-edicao-autosave.js?v=20261005-position-controls-v1"></script>
+  <script defer src="js/admin-edicao-enhancements.js?v=20261005-position-controls-v1"></script>
+  <script defer src="js/admin-edicao-studio-v2.js?v=20261005-position-controls-v1"></script>
+  <script defer src="js/admin-edicao-photo-coverage.js?v=20261005-position-controls-v1"></script>
+  <script defer src="js/admin-edicao-position.js?v=20261005-position-controls-v1"></script>
+</head>
+<body>
+  <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
+    <header class="admin-header">
+      <a class="admin-brand" href="index.html"><img src="central free fire.webp" alt="Central Free Fire"><span>Central Free Fire</span></a>
+      <div class="admin-header-actions">
+        <a class="admin-btn admin-btn-ghost" href="admin.html">← Painel</a>
+        <span class="admin-btn admin-btn-primary photo-editor-current-tab" aria-current="page">🎨 Edição</span>
+        <a class="admin-btn admin-btn-ghost" href="index.html">Ver site</a>
+      </div>
+    </header>
+
+    <section class="photo-editor-heading">
+      <div>
+        <p class="admin-eyebrow">Ferramenta privada</p>
+        <h1>Edição de arte</h1>
+        <p class="admin-muted">Encaixe a foto no layout, adicione PIP e textos e exporte pronta para publicação. No celular/iPad, a pinça pode ser travada pelo cadeado do Zoom.</p>
+      </div>
+      <div class="photo-editor-heading-actions">
+        <label class="admin-btn admin-btn-primary photo-editor-file-button">
+          Foto principal
+          <input id="photo-editor-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        </label>
+        <button id="photo-editor-add-pip-top" class="admin-btn admin-btn-primary" type="button">+ P.I.P.</button>
+        <button id="photo-editor-delete-main" class="admin-btn admin-btn-ghost photo-editor-delete-main" type="button" title="Apagar foto principal" aria-label="Apagar foto principal" disabled>🗑</button>
+        <button id="photo-editor-reset-all" class="admin-btn admin-btn-ghost" type="button">Resetar arte</button>
+      </div>
+    </section>
+
+    <section class="photo-editor-layout">
+      <aside class="admin-panel photo-editor-controls" aria-label="Controles de edição">
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title">
+            <div><p class="admin-eyebrow">Imagem</p><h2>Enquadramento</h2></div>
+            <span id="photo-editor-image-name" class="photo-editor-file-name">Nenhuma foto</span>
+          </div>
+
+          <div class="photo-editor-button-grid">
+            <button id="photo-editor-fit-cover" class="admin-btn admin-btn-ghost" type="button">Preencher</button>
+            <button id="photo-editor-fit-contain" class="admin-btn admin-btn-ghost" type="button">Encaixar inteira • topo</button>
+            <button id="photo-editor-center" class="admin-btn admin-btn-ghost" type="button">Centralizar</button>
+            <button id="photo-editor-flip" class="admin-btn admin-btn-ghost" type="button">↔ Espelhar</button>
+          </div>
+
+          <div class="photo-editor-slider-row">
+            <div class="photo-editor-range-head">
+              <span>Zoom <output id="photo-editor-zoom-value">100%</output></span>
+              <button id="photo-editor-pinch-lock" class="photo-editor-lock-button" type="button" aria-pressed="false" title="Travar pinça">🔓 Pinça</button>
+            </div>
+            <input id="photo-editor-zoom" type="range" min="5" max="800" value="100" step="1">
+          </div>
+
+          <label class="photo-editor-slider-row" for="photo-editor-rotation">
+            <span>Rotação <output id="photo-editor-rotation-value">0°</output></span>
+            <input id="photo-editor-rotation" type="range" min="-180" max="180" value="0" step="1">
+          </label>
+
+          <p class="photo-editor-hint">Fotos novas entram por padrão em <strong>Encaixar inteira</strong>, alinhadas no topo. No preview, arraste a foto com o mouse ou dedo. A pinça com dois dedos controla o zoom enquanto o cadeado estiver aberto.</p>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Ajustes</p><h2>Foto</h2></div><button id="photo-editor-reset-adjustments" class="photo-editor-mini-button" type="button">Padrão</button></div>
+
+          <label class="photo-editor-slider-row" for="photo-editor-brightness">
+            <span>Brilho <output id="photo-editor-brightness-value">100%</output></span>
+            <input id="photo-editor-brightness" type="range" min="50" max="150" value="100" step="1">
+          </label>
+          <label class="photo-editor-slider-row" for="photo-editor-contrast">
+            <span>Contraste <output id="photo-editor-contrast-value">100%</output></span>
+            <input id="photo-editor-contrast" type="range" min="50" max="160" value="100" step="1">
+          </label>
+          <label class="photo-editor-slider-row" for="photo-editor-saturation">
+            <span>Saturação <output id="photo-editor-saturation-value">100%</output></span>
+            <input id="photo-editor-saturation" type="range" min="0" max="200" value="100" step="1">
+          </label>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">P.I.P.</p><h2>Imagens sobrepostas</h2></div><span id="photo-editor-pip-status" class="photo-editor-status-pill">Sem imagem</span></div>
+          <label class="photo-editor-frame-loader">
+            <span>+ Adicionar P.I.P.</span>
+            <input id="photo-editor-pip-file" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+            <small>Sem limite artificial. Cada imagem vira uma camada independente.</small>
+          </label>
+          <div class="photo-editor-pip-actions">
+            <button id="photo-editor-paste-image" class="admin-btn admin-btn-ghost" type="button">Colar imagem</button>
+            <button id="photo-editor-duplicate-pip" class="admin-btn admin-btn-ghost" type="button">Duplicar</button>
+          </div>
+          <div id="photo-editor-pip-layers" class="photo-editor-pip-layers" aria-label="Camadas P.I.P."></div>
+          <label class="photo-editor-check"><input id="photo-editor-pip-enabled" type="checkbox" checked> Mostrar P.I.P. selecionado</label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-size"><span>Tamanho <output id="photo-editor-pip-size-value">28%</output></span><input id="photo-editor-pip-size" type="range" min="3" max="180" value="28" step="0.5"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-rotation"><span>Rotação <output id="photo-editor-pip-rotation-value">0°</output></span><input id="photo-editor-pip-rotation" type="range" min="-180" max="180" value="0" step="1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-x"><span>Posição horizontal <output id="photo-editor-pip-x-value">75%</output></span><input id="photo-editor-pip-x" type="range" min="-20" max="120" value="75" step="0.1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-y"><span>Posição vertical <output id="photo-editor-pip-y-value">25%</output></span><input id="photo-editor-pip-y" type="range" min="-20" max="120" value="25" step="0.1"></label>
+          <label class="photo-editor-slider-row" for="photo-editor-pip-opacity"><span>Opacidade <output id="photo-editor-pip-opacity-value">100%</output></span><input id="photo-editor-pip-opacity" type="range" min="0" max="100" value="100" step="1"></label>
+
+          <details class="photo-editor-pip-effect-group" open>
+            <summary>Contorno</summary>
+            <label class="photo-editor-check"><input id="photo-editor-pip-stroke-enabled" type="checkbox"> Mostrar contorno</label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-stroke-width"><span>Espessura <output id="photo-editor-pip-stroke-width-value">6 px</output></span><input id="photo-editor-pip-stroke-width" type="range" min="0" max="40" value="6" step="1"></label>
+            <div class="photo-editor-pip-color-row"><label for="photo-editor-pip-stroke-color">Cor</label><input id="photo-editor-pip-stroke-color" class="photo-editor-color" type="color" value="#ffffff"></div>
+          </details>
+
+          <details class="photo-editor-pip-effect-group" open>
+            <summary>Sombra</summary>
+            <label class="photo-editor-check"><input id="photo-editor-pip-shadow-enabled" type="checkbox" checked> Mostrar sombra</label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-size"><span>Tamanho <output id="photo-editor-pip-shadow-size-value">10 px</output></span><input id="photo-editor-pip-shadow-size" type="range" min="0" max="80" value="10" step="1"></label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-blur"><span>Desfoque <output id="photo-editor-pip-shadow-blur-value">24 px</output></span><input id="photo-editor-pip-shadow-blur" type="range" min="0" max="140" value="24" step="1"></label>
+            <div class="photo-editor-pip-color-row"><label for="photo-editor-pip-shadow-color">Cor</label><input id="photo-editor-pip-shadow-color" class="photo-editor-color" type="color" value="#000000"></div>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-opacity"><span>Opacidade <output id="photo-editor-pip-shadow-opacity-value">45%</output></span><input id="photo-editor-pip-shadow-opacity" type="range" min="0" max="100" value="45" step="1"></label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-x"><span>Distância horizontal <output id="photo-editor-pip-shadow-x-value">0 px</output></span><input id="photo-editor-pip-shadow-x" type="range" min="-120" max="120" value="0" step="1"></label>
+            <label class="photo-editor-slider-row" for="photo-editor-pip-shadow-y"><span>Distância vertical <output id="photo-editor-pip-shadow-y-value">18 px</output></span><input id="photo-editor-pip-shadow-y" type="range" min="-120" max="120" value="18" step="1"></label>
+          </details>
+          <div class="photo-editor-pip-order-actions">
+            <button id="photo-editor-pip-back" class="photo-editor-mini-button" type="button">← Descer camada</button>
+            <button id="photo-editor-pip-front" class="photo-editor-mini-button" type="button">Subir camada →</button>
+          </div>
+          <button id="photo-editor-clear-pip" class="admin-btn admin-btn-ghost admin-btn-block" type="button">Remover selecionado</button>
+          <p class="photo-editor-hint">Clique/toque no P.I.P. na arte para selecionar. Arraste para mover e use os cantos para redimensionar. Ctrl+V / Cmd+V cola uma imagem direto.</p>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title">
+            <div><p class="admin-eyebrow">Texto</p><h2>Camadas de texto</h2></div>
+            <span id="photo-editor-font-status" class="photo-editor-status-pill">Avilock automática</span>
+          </div>
+          <div class="photo-editor-text-toolbar">
+            <div id="photo-editor-text-layers" class="photo-editor-text-layers" aria-label="Camadas de texto"></div>
+            <button id="photo-editor-add-text" class="admin-btn admin-btn-ghost" type="button">+ Adicionar texto</button>
+            <button id="photo-editor-remove-text" class="photo-editor-mini-button photo-editor-remove-text" type="button">Remover atual</button>
+          </div>
+          <div class="admin-field">
+            <label for="photo-editor-text">Texto da arte</label>
+            <textarea id="photo-editor-text" rows="3" maxlength="220" wrap="off" placeholder="Digite o título ou chamada"></textarea>
+          </div>
+          <div class="admin-field">
+            <label for="photo-editor-font-family">Fonte</label>
+            <select id="photo-editor-font-family">
+              <option value="Avilock" selected>Avilock</option>
+              <option value="Anton">Anton</option>
+              <option value="Bebas Neue">Bebas Neue</option>
+              <option value="Oswald">Oswald</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Impact">Impact</option>
+            </select>
+          </div>
+          <div class="photo-editor-two-cols">
+            <div class="admin-field">
+              <label for="photo-editor-font-size">Tamanho</label>
+              <input id="photo-editor-font-size" type="number" min="40" max="500" step="5" value="190">
+            </div>
+            <div class="admin-field">
+              <label for="photo-editor-text-color">Cor</label>
+              <input id="photo-editor-text-color" class="photo-editor-color" type="color" value="#ffffff">
+            </div>
+          </div>
+          <label class="photo-editor-slider-row" for="photo-editor-text-x">
+            <span>Posição horizontal <output id="photo-editor-text-x-value">50%</output></span>
+            <input id="photo-editor-text-x" type="range" min="5" max="95" value="50" step="1">
+          </label>
+          <label class="photo-editor-slider-row" for="photo-editor-text-y">
+            <span>Posição vertical <output id="photo-editor-text-y-value">86%</output></span>
+            <input id="photo-editor-text-y" type="range" min="8" max="94" value="86" step="1">
+          </label>
+          <label class="photo-editor-slider-row" for="photo-editor-text-spacing">
+            <span>Espaçamento dos parágrafos <output id="photo-editor-text-spacing-value">106%</output></span>
+            <input id="photo-editor-text-spacing" type="range" min="70" max="180" value="106" step="2">
+          </label>
+          <label class="photo-editor-check"><input id="photo-editor-text-shadow" type="checkbox" checked> Sombra leve</label>
+
+          <div class="photo-editor-button-grid photo-editor-text-default-actions">
+            <button id="photo-editor-save-text-defaults" class="admin-btn admin-btn-ghost" type="button">Salvar como padrão</button>
+            <button id="photo-editor-apply-text-defaults" class="admin-btn admin-btn-ghost" type="button">Aplicar padrão</button>
+          </div>
+
+          <label class="photo-editor-frame-loader photo-editor-font-loader" style="display:none">
+            <span>Avilock</span>
+            <input id="photo-editor-font-file" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2">
+            <small>Fallback manual da Avilock.</small>
+          </label>
+          <p class="photo-editor-hint">A Avilock agora vem do próprio site. O editor só quebra uma linha quando você apertar Enter.</p>
+        </div>
+
+        <div class="photo-editor-control-section">
+          <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Moldura</p><h2>Imagem da frente</h2></div><span id="photo-editor-frame-status" class="photo-editor-status-pill is-ready">Ativa</span></div>
+          <label class="photo-editor-check"><input id="photo-editor-frame-enabled" type="checkbox" checked> Mostrar moldura</label>
+          <label class="photo-editor-frame-loader">
+            <span>Usar um PNG/WEBP da frente</span>
+            <input id="photo-editor-frame-file" type="file" accept="image/png,image/webp">
+            <small>Carregue a arte da frente aqui. Ela ficará por cima da foto e a escolha fica salva neste navegador.</small>
+          </label>
+          <button id="photo-editor-clear-frame" class="admin-btn admin-btn-ghost admin-btn-block" type="button">Voltar para a moldura padrão</button>
+        </div>
+      </aside>
+
+      <section class="admin-panel photo-editor-workspace">
+        <div class="photo-editor-preview-head">
+          <div><p class="admin-eyebrow">Preview</p><h2>3000 × 3749</h2></div>
+          <span id="photo-editor-canvas-status" class="admin-muted">Adicione uma foto para começar</span>
+        </div>
+        <div id="photo-editor-stage" class="photo-editor-stage" tabindex="0" aria-label="Área de edição. Arraste a foto para reposicionar.">
+          <canvas id="photo-editor-canvas" width="3000" height="3749"></canvas>
+          <div id="photo-editor-empty" class="photo-editor-empty">
+            <strong>Adicione a foto que vai entrar na arte</strong>
+            <span>PNG, JPG ou WEBP</span>
+          </div>
+        </div>
+        <div class="photo-editor-stage-help">Dica: no computador, use a roda do mouse para zoom. No celular/iPad, use pinça com dois dedos ou trave a pinça pelo cadeado.</div>
+      </section>
+
+      <aside class="admin-panel photo-editor-export">
+        <div class="photo-editor-section-title"><div><p class="admin-eyebrow">Saída</p><h2>Exportar</h2></div></div>
+        <div class="admin-field">
+          <label for="photo-editor-size">Tamanho</label>
+          <select id="photo-editor-size">
+            <option value="3000x3749" selected>Original — 3000 × 3749</option>
+            <option value="1200x1500">Feed 4:5 — 1200 × 1500</option>
+            <option value="1080x1350">Instagram 4:5 — 1080 × 1350</option>
+          </select>
+        </div>
+        <div class="admin-field">
+          <label for="photo-editor-format">Formato</label>
+          <select id="photo-editor-format"><option value="png" selected>PNG</option><option value="jpg">JPG</option></select>
+        </div>
+        <label id="photo-editor-quality-wrap" class="photo-editor-slider-row" for="photo-editor-quality" hidden>
+          <span>Qualidade JPG <output id="photo-editor-quality-value">92%</output></span>
+          <input id="photo-editor-quality" type="range" min="60" max="100" value="92" step="1">
+        </label>
+        <div class="admin-field"><label for="photo-editor-file-name">Nome do arquivo</label><input id="photo-editor-file-name" value="central-free-fire-edit" maxlength="80"></div>
+        <button id="photo-editor-download" class="admin-btn admin-btn-primary admin-btn-block photo-editor-download" type="button" disabled>Baixar arte</button>
+        <p id="photo-editor-message" class="admin-message" aria-live="polite"></p>
+        <div class="photo-editor-export-info">
+          <strong>Camadas</strong>
+          <span>1. Foto</span><span>2. Moldura da frente</span><span>3. P.I.P.s</span><span>4. Textos</span>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="photo-editor-delete-main-dialog" class="photo-editor-confirm-dialog">
+    <form method="dialog" class="photo-editor-confirm-card">
+      <div class="photo-editor-confirm-icon">🗑</div>
+      <h2>Remover foto principal?</h2>
+      <p>A foto principal será removida da arte. P.I.P.s, textos e moldura continuam no projeto.</p>
+      <div class="photo-editor-confirm-actions">
+        <button value="cancel" class="admin-btn admin-btn-ghost" type="submit">Cancelar</button>
+        <button id="photo-editor-confirm-delete-main" value="remove" class="admin-btn admin-btn-danger" type="submit">Remover foto</button>
+      </div>
+    </form>
+  </dialog>
+
+  <section id="photo-editor-auth-message" class="photo-editor-auth-message">
+    <div class="admin-login-card"><div class="admin-login-icon">🔒</div><p class="admin-eyebrow">Acesso restrito</p><h1>Validando sessão</h1><p class="admin-muted">Esta ferramenta usa o mesmo login do painel administrativo.</p></div>
+  </section>
+  <script>
+    (()=>{
+      const css='700 190px "Avilock"';
+      const markReady=()=>{
+        const status=document.getElementById('photo-editor-font-status');
+        if(status){status.textContent='Avilock automática';status.classList.add('is-ready');status.classList.remove('is-warning');}
+        const input=document.getElementById('photo-editor-text');
+        if(input) input.dispatchEvent(new Event('input',{bubbles:true}));
+      };
+      document.fonts.load(css).then(()=>{
+        if(!document.fonts.check(css)) return;
+        markReady();
+        const status=document.getElementById('photo-editor-font-status');
+        if(status){new MutationObserver(()=>{if(status.textContent!=='Avilock automática') markReady();}).observe(status,{childList:true,subtree:true,characterData:true});}
+        setTimeout(markReady,500);
+        setTimeout(markReady,1500);
+      }).catch(()=>{});
+    })();
+  </script>
+</body>
+</html>
