@@ -35,5 +35,8 @@ jobs:
           node --check js/admin-interaction-audit.mjs
           node --check cloudflare/camp-notifications/interaction-ranking.js
           node --check cloudflare/camp-notifications/worker.js
+      - name: Install notification Worker runtime dependency
+        run: npm install --omit=dev --no-audit --no-fund
+        working-directory: cloudflare/camp-notifications
       - name: Test per-user report totals and private administrative access
         run: node --test --test-timeout=60000 cloudflare/camp-notifications/test/interaction-ranking.test.mjs cloudflare/camp-notifications/test/economy-api.test.mjs test/admin-economy-form.test.mjs
