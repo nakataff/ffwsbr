@@ -1,8 +1,0 @@
-{
-  "series": "WB Brasil",
-  "legacyOverrideEdition": "WB 2026 S2",
-  "editions": [
-    {"edition": "WB 2026 S1", "complete": true, "path": "ffws-br-2026-s1/player-meta.json"},
-    {"edition": "WB 2026 S2", "complete": true, "path": "ffws-br-2026-s2/players.json"}
-  ]
-}

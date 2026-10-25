@@ -1,6 +1,0 @@
-const KEY='cff-inbox-summary-v1',listeners=new Set(),values=new Map();
-export function inboxSnapshot(uid){if(!uid)return null;if(values.has(uid))return values.get(uid);try{const v=JSON.parse(localStorage.getItem(KEY));if(v?.uid===uid&&Number.isSafeInteger(v.latest)&&typeof v.hasNew==='boolean'){values.set(uid,v);return v;}}catch{}return null;}
-export function publishInbox(uid,summary){if(!uid||!summary||!Number.isSafeInteger(summary.latest)||typeof summary.hasNew!=='boolean')return;const value={uid,latest:summary.latest,hasNew:summary.hasNew,at:Date.now()};values.set(uid,value);try{localStorage.setItem(KEY,JSON.stringify(value));}catch{}listeners.forEach(fn=>fn(value));}
-export function forgetInbox(uid){values.delete(uid);try{if(JSON.parse(localStorage.getItem(KEY))?.uid===uid)localStorage.removeItem(KEY);}catch{}}
-export function subscribeInbox(fn){listeners.add(fn);return()=>listeners.delete(fn);}
-if(typeof window!=='undefined')window.addEventListener('storage',e=>{if(e.key!==KEY)return;if(!e.newValue){values.clear();listeners.forEach(fn=>fn({}));return;}try{const v=JSON.parse(e.newValue);if(v?.uid&&typeof v.hasNew==='boolean'&&Number.isSafeInteger(v.latest)){values.set(v.uid,v);listeners.forEach(fn=>fn(v));}}catch{}});

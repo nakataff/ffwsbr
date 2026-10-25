@@ -1,4 +1,0 @@
-export const WHEEL_PRIZES=[{id:'p1',points:1,label:'1 CFF COIN',color:'#2455ad'},{id:'p3',points:3,label:'3 CFF COINS',color:'#6146a6'},{id:'p10',points:10,label:'10 CFF COINS',color:'#137878'},{id:'p25',points:25,label:'25 CFF COINS',color:'#82502b'},{id:'p50',points:50,label:'50 CFF COINS',color:'#9b741b'},{id:'voucher',points:0,label:'Vale Codiguinho',color:'#a83265'}];
-export function prizeAngle(id){const index=WHEEL_PRIZES.findIndex(p=>p.id===(id==='code'?'voucher':id));if(index<0)throw Error('Prêmio desconhecido.');return (360-(index+.5)*360/WHEEL_PRIZES.length)%360;}
-export function landingAngle(id,current=0){const normalized=((current%360)+360)%360,landing=prizeAngle(id);return current-normalized+6*360+landing+(landing<normalized?360:0);}
-export function labelPosition(index){const angle=(index+.5)*2*Math.PI/WHEEL_PRIZES.length;return {x:50+34*Math.sin(angle),y:50-34*Math.cos(angle)};}

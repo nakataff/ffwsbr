@@ -10,7 +10,7 @@ import {instagramLinkHtml} from './profile-instagram-link.mjs?v=20261015-invento
 import {mountEconomy} from './economy-ui.js?v=20261019-roulette-vouchers-v1';
 import {rememberInvite,attachPendingReferral,economyRequest} from './economy-client.mjs?v=20261019-inbox-v1';
 import {createHeaderWallet} from './header-wallet.mjs?v=20261023-inbox-alerts-v1';
-import {createProfileCheckin} from './profile-checkin.mjs?v=20261025-daily-v1';
+import {createProfileCheckin} from './profile-checkin.mjs?v=20261025-checkin-disabled-v1';
 rememberInvite();
 if(!document.querySelector('link[data-user-inbox]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/user-inbox.css?v=20261019-inbox-v1';l.dataset.userInbox='1';document.head.append(l);}
 import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261019-inbox-v1';

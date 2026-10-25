@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin.html
-
-Sitemap: https://centralfreefire.com.br/sitemap.xml
-Sitemap: https://centralfreefire.com.br/news-sitemap.xml
