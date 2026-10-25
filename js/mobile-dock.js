@@ -33,7 +33,7 @@ const pages=groups.flatMap(g=>g.pages.map(([label,route,icon])=>({label,route,ic
 const defaults=[{route:'home',icon:'home'},{route:'ffws-global-2026-formato',icon:'globe'},{route:'registro-detalhado',icon:'chart'},{route:'/interacoes.html',icon:'users'}];
 const lookup=route=>pages.find(p=>p.route===route);
 const read=()=>{try{const a=JSON.parse(localStorage.getItem(KEY));return defaults.map((d,i)=>({route:lookup(a?.[i]?.route)?a[i].route:d.route,icon:iconPaths[a?.[i]?.icon]?a[i].icon:d.icon}));}catch{return defaults.map(d=>({...d}));}};
-let state=read(),sheet=null;
+let state=read(),sheet=null,accountReady=false,accountReadyWatched=false;
 const svg=key=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(iconPaths[key]||iconPaths.home)+'</svg>';
 const href=route=>route==='mercado'?'/mercado.html':route.startsWith('/')?route:window.CFF_SEASON_ROUTES?.pathForPage(route)||'/index.html#'+route;
 const pageNow=()=>window.CFF_SEASON_ROUTES?.pageFromLocation?.()||document.querySelector('.page.active')?.id||location.hash.slice(1)||'home';
@@ -74,12 +74,13 @@ function refresh(page=pageNow()){
 function balance(){return [...document.querySelectorAll('[data-header-wallet] [data-wallet-value]')].map(e=>e.textContent.trim()).find(s=>s&&s!=='—')||'—';}
 function syncSheet(){
  if(!sheet)return;
- const signed=!!avatar();
- sheet.querySelector('[data-dock-name]').textContent=signed?(accessEntry()?.textContent.trim()||'Meu perfil'):'Visitante';
+ const signed=!!window.CFF_ACCOUNT?.user;
+ if(!accountReadyWatched&&window.CFF_ACCOUNT?.ready){accountReadyWatched=true;window.CFF_ACCOUNT.ready.then(()=>{accountReady=true;if(sheet?.open)syncSheet();});}
+ sheet.querySelector('[data-dock-name]').textContent=signed?(window.CFF_ACCOUNT?.user?.name||'Meu perfil'):'Visitante';
  sheet.querySelector('[data-dock-balance]').textContent=signed?balance():'—';
  const art=sheet.querySelector('[data-dock-avatar]'),src=avatar()?.getAttribute('src');
  if(art)art.innerHTML=src?'<img alt="" src="'+esc(src)+'">':svg('users');
- sheet.querySelector('[data-dock-login]').hidden=signed;
+ sheet.querySelector('[data-dock-login]').hidden=signed||!accountReady;window.CFF_DAILY_TASKS?.draw();
 }
 function editorRow(i){
  const item=state[i],p=lookup(item.route),g=groups.find(group=>group.id===p?.group)||groups[0];
@@ -93,9 +94,10 @@ function open(){
   sheet=document.createElement('dialog');sheet.className='cff-dock-dialog';
   sheet.setAttribute('aria-label','Meu perfil e atalhos');
   sheet.innerHTML=[
-   '<div class="cff-dock-sheet-head"><div><small>CENTRAL FREE FIRE</small><h2>Meu espaço</h2></div><button type="button" data-dock-close aria-label="Fechar">×</button></div>',
-   '<div class="cff-dock-account-line"><div class="cff-dock-profile-image" data-dock-avatar></div><div><strong data-dock-name>Minha conta</strong><span>Seu espaço na comunidade</span></div></div>',
+   '<div class="cff-dock-sheet-head"><div><small>CENTRAL FREE FIRE</small><h2>Minha Central</h2></div><button type="button" data-dock-close aria-label="Fechar">×</button></div>',
+   '<div class="cff-dock-account-line"><div class="cff-dock-profile-image" data-dock-avatar></div><div><strong data-dock-name>Minha conta</strong><span>Seu perfil, moedas e atividades</span></div></div>',
    '<a class="cff-dock-coins" href="/conta.html?tab=points&shopSection=shop#eco-shop"><img src="/edition/moeda%20cff.webp" alt=""><span><strong data-dock-balance>—</strong><small>CFF COINS · ABRIR LOJA</small></span><span>↗</span></a>',
+   '<div data-daily-tasks></div>',
    '<div class="cff-dock-actions"><a href="/conta.html">Meu perfil</a><a href="/conta.html?tab=edit">Configurações e edição</a><a href="/conta.html?tab=inventory">Inventário</a><a href="/conta.html?tab=notifications">Notificações</a><button type="button" data-dock-login hidden>Entrar com Google</button></div>',
    '<details class="cff-dock-config"><summary>⚙ Personalizar barra inferior <span>⌄</span></summary><p>Escolha a página e o ícone dos quatro primeiros atalhos. O perfil permanece fixo na quinta posição.</p><div data-dock-editor></div><div class="cff-dock-editor-actions"><button type="button" data-dock-reset>Restaurar padrão</button><button type="button" data-dock-finish>Concluir</button></div><small>Preferências salvas neste navegador</small></details>'
   ].join('');
@@ -137,6 +139,7 @@ function observeAccount(){
  syncAvatar();
 }
 window.addEventListener('cff:account-access-rendered',observeAccount);
+window.addEventListener('cff:account-changed',()=>{if(sheet?.open)syncSheet();});
 window.addEventListener('hashchange',()=>refresh());
 window.addEventListener('popstate',()=>refresh());
 window.addEventListener('cff:pretty-route',()=>refresh());

@@ -75,7 +75,7 @@
     document.body.append(nav);
     if(!document.querySelector('script[data-cff-mobile-dock]')){
       const script=document.createElement('script');
-      script.src='/js/mobile-dock.js?v=20261023-market-page-v1';
+      script.src='/js/mobile-dock.js?v=20261025-daily-v1';
       script.dataset.cffMobileDock='1';
       document.head.append(script);
     }
