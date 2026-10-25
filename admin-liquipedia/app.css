@@ -268,3 +268,5 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:none;color-scheme:d
 @media(max-width:700px){.app-header-main>.actions>*{flex:0 0 auto;white-space:nowrap;width:max-content}.player-line.link-open.team-open>.player-team-field{grid-column:1/-1}.player-line.link-open.team-open>.player-actions-button{width:100%}}
 
 .staff-include-label{display:flex;align-items:center;gap:8px;min-height:18px;margin-bottom:6px;color:#cbd5e1}.staff-include-label input[type="checkbox"]{width:15px;height:15px;margin:0;accent-color:var(--accent);cursor:pointer}.staff-excluded{opacity:.45}
+
+.prize-dnf-toggle{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap;margin-top:7px;color:var(--muted)}.prize-dnf-toggle input[type=checkbox]{width:14px;min-width:14px;height:14px;margin:0;accent-color:#f59e0b}

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editor de Torneios - Liquipedia</title>
   <meta name="robots" content="noindex,nofollow,noarchive">
-<link rel="stylesheet" href="admin-liquipedia/app.css?v=20261003-v4">
+<link rel="stylesheet" href="admin-liquipedia/app.css?v=20261025-mvp-dnf-v1">
 <script src="js/config.min.js?v=20261020-chat-layout-v1"></script>
 </head>
 <body class="cff-auth-pending">
@@ -348,7 +348,7 @@
           <div class="settings-disclosure-body">
             <div class="row4">
               <div><label>Incluir MVP?</label><select id="includeMvp" onchange="state.settings.includeMvp=this.value; autoSave();"><option value="true">Sim</option><option value="false">Não</option></select></div>
-              <div><label>Prêmio em dinheiro do MVP (opcional)</label><input id="mvpPrize" type="number" min="0" step="0.01" data-path="settings.mvpPrize" oninput="bindInput(this)" placeholder="Ex.: 2000"></div>
+              <div><label>Prêmio em dinheiro do MVP (opcional)</label><input id="mvpPrize" type="number" min="0" step="0.01" data-path="settings.mvpPrize" oninput="bindInput(this)" placeholder="Vazio ou 0 = sem prêmio"></div>
               <div><label>MVP - jogador</label><input id="mvpPlayer" data-path="settings.mvpPlayer" oninput="bindInput(this)" placeholder="tbd"></div>
               <div><label>MVP - flag</label><input id="mvpFlag" data-path="settings.mvpFlag" oninput="bindInput(this)" placeholder="br"></div>
               <div><label>MVP - time</label><input id="mvpTeam" list="editorSavedTeamNames" data-path="settings.mvpTeam" oninput="bindInput(this)" placeholder="código do time"></div>
@@ -660,7 +660,7 @@
 <datalist id="editorSavedTeamNames"></datalist>
 
 <script defer src="admin-liquipedia/seed.js?v=20261003-v4"></script>
-<script defer src="admin-liquipedia/app.js?v=20261003-v4"></script>
+<script defer src="admin-liquipedia/app.js?v=20261025-mvp-dnf-v1"></script>
 <script defer src="admin-liquipedia/enhancements.js?v=20261003-v4"></script>
 <script type="module" src="admin-liquipedia/cloud.js?v=20261003-v4"></script>
 </body>

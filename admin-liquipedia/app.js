@@ -4,7 +4,7 @@ function newTeamUid(){ teamUidSequence += 1; return `team-${Date.now().toString(
 function staffIncluded(team,role){const value=team?.[role==='coach'?'includeCoach':'includeAnalyst'];return value!==false&&value!=='false';}
 const blankPlayer = () => ({name:'',flag:'br',link:'',team:'',role:''});
 const blankTeam = () => ({
-  uid:newTeamUid(), name:'', standingTeam:'', prizeTeam:'', groupTeam:'', qual:'invite', qualMethod:'', qualPage:'', qualText:'', qualPlacement:'', prize:'', prizeDate:'', allowIncomplete:false,
+  uid:newTeamUid(), name:'', standingTeam:'', prizeTeam:'', groupTeam:'', qual:'invite', qualMethod:'', qualPage:'', qualText:'', qualPlacement:'', prize:'', prizeDate:'', prizeDnf:false, allowIncomplete:false,
   players:[blankPlayer(),blankPlayer(),blankPlayer(),blankPlayer()],
   includeCoach:true, includeAnalyst:true,
   coach:{name:'',flag:'br',role:'head coach'}, analyst:{name:'',flag:'br',role:'analyst'},
@@ -778,9 +778,9 @@ function renderPrize(){
   rows.innerHTML = orderedPrizeEntries().map(({team:t,teamIndex:i,orderIndex})=>{
     const hasPreset = presets.includes(String(t.prize ?? ''));
     const options = presets.map(p=>`<option value="${esc(p)}" ${String(t.prize)==String(p)?'selected':''}>R$ ${esc(p)}</option>`).join('') + `<option value="custom" ${hasPreset?'':'selected'}>Personalizado</option>`;
-    const status=orderIndex<qualified?'<span class="classification-badge up">FINAL</span>':'<span class="classification-badge down">ELIMINADO</span>';
+    const status=t.prizeDnf?'<span class="classification-badge down">DNF</span>':orderIndex<qualified?'<span class="classification-badge up">FINAL</span>':'<span class="classification-badge down">ELIMINADO</span>';
     return `<div class="prize-line sortable-row" data-sort-row data-sort-scope="prize" data-sort-index="${orderIndex}">
-      <div><div class="team-number">${orderIndex+1}</div>${status}</div>
+      <div><div class="team-number">${orderIndex+1}</div>${status}<label class="prize-dnf-toggle" title="Não terminou o torneio"><input type="checkbox" ${t.prizeDnf?'checked':''} onchange="updateTeam(${i},'prizeDnf',this.checked);renderPrize()"> DNF</label></div>
       <div class="sortable-team-cell">${reorderHandleHtml('prize',orderIndex,effectivePrizeTeam(t)||`time ${orderIndex+1}`)}<div class="focus-cell">${focusLabel('Time no Prize Pool','prize','team')}<input id="prizeTeam${i}" ${focusAttrs('prize','team')} value="${esc(effectivePrizeTeam(t))}" oninput="updatePrizeTeamAliasInput(${i},this.value)"><div id="aliasPrizeTeam${i}" class="alias-suggestion hidden"></div></div></div>
       <div class="focus-cell">${focusLabel('Valor rápido','prize','preset')}<select ${focusAttrs('prize','preset')} onchange="choosePrize(${i},this.value)">${options}</select></div>
       <div class="focus-cell">${focusLabel('Valor editável','prize','value')}<input ${focusAttrs('prize','value')} value="${esc(t.prize)}" oninput="updateTeam(${i},'prize',this.value)"></div>
@@ -1848,9 +1848,10 @@ function prizeSlotLine(t,index){
   const provisional = state.settings.prizePoolMode === 'values_only';
   const team = provisional ? '' : paddedOpponentName(effectivePrizeTeam(t));
   const parts=['{{Slot'];
+  if(!provisional&&t.prizeDnf===true)parts.push('dnf=true');
   if(hasPrizeValue(t.prize)) parts.push(`localprize=${clean(t.prize)}`);
   const qualCount=Math.max(0,Math.min(state.teams.length,Number(state.settings.prizeQualCount)||0));
-  if(!provisional && state.settings.prizeQualEnabled==='true' && index<qualCount) parts.push('qualified1=y');
+  if(!provisional && !t.prizeDnf && state.settings.prizeQualEnabled==='true' && index<qualCount) parts.push('qualified1=y');
   parts.push(`{{Opponent|${team}${team?' ':''}}}`);
   if(!provisional && clean(t.prizeDate)) parts.push(`date=${clean(t.prizeDate)}`);
   return `|${parts.join('|')} }}`;
@@ -2111,6 +2112,12 @@ function smartInfobox(force=false){
   set('team_number',String(state.settings.teamCount)); set('localcurrency',state.settings.localCurrency||'brl');
   fillSettingsInputs(); autoSave(false); flash('copyStatus',`Campeonato reconhecido como "${title}".`);
 }
+function mvpAwardWikiLines(s){
+  const prize=clean(s.mvpPrize),paid=prize!==''&&Number.isFinite(Number(prize))&&Number(prize)>0;
+  return ['|adjacentContent=',`{{AwardPrizePool${paid?` |localcurrency=${val(s.localCurrency,'brl')}`:''}`,
+    `|{{Slot |award=MVP${paid?`|localprize=${prize}`:''}|{{Opponent|${val(s.mvpPlayer,'tbd')}|flag=${val(s.mvpFlag,'br')}|team=${val(s.mvpTeam,'')}}} }}`,'}}'];
+}
+
 function generateWiki(showStatus=false){
   const s = state.settings;
   const legacyQ=(state.formatStages||[]).find(x=>x.type==='qualifier'),legacyF=(state.formatStages||[]).find(x=>x.type==='final');
@@ -2124,12 +2131,7 @@ function generateWiki(showStatus=false){
   lines.push(prizePoolHeaderLine());
   lines.push(...prizeQualificationLines());
   orderedPrizeTeams().forEach((t,i)=> lines.push(prizeSlotLine(t,i)));
-  if(s.prizePoolMode!=='values_only' && s.includeMvp !== 'false'){
-    lines.push('|adjacentContent=');
-    lines.push(`{{AwardPrizePool |localcurrency=${val(s.localCurrency,'brl')}`);
-    lines.push(`|{{Slot |award=MVP${clean(s.mvpPrize)?`|localprize=${clean(s.mvpPrize)}`:''}|{{Opponent|${val(s.mvpPlayer,'tbd')}|flag=${val(s.mvpFlag,'br')}|team=${val(s.mvpTeam,'')} }} }}`);
-    lines.push('}}');
-  }
+  if(s.prizePoolMode!=='values_only' && s.includeMvp !== 'false')lines.push(...mvpAwardWikiLines(s));
   lines.push('}}');
   lines.push('');
   lines.push(participantsHeading());
@@ -2283,7 +2285,7 @@ function normalizeState(obj){
   if(['Overall Standings','Grand Finals Overall Standings','Champion Rush Overall Standings'].includes(clean(out.settings.standingsTitle))) out.settings.standingsTitle='Finals Standings';
   out.groupRoundConfigs=Array.isArray(obj?.groupRoundConfigs)?obj.groupRoundConfigs.map((r,i)=>({title:clean(r?.title)||`Day ${i+1}`,started:normalizeRoundBoolean(r?.started),finished:normalizeRoundBoolean(r?.finished)})):defaultGroupRoundConfigs();
   const roundCount=Number(out.settings.groupFfaRounds)||3; while(out.groupRoundConfigs.length<roundCount)out.groupRoundConfigs.push({title:`Day ${out.groupRoundConfigs.length+1}`,started:'',finished:''}); out.groupRoundConfigs=out.groupRoundConfigs.slice(0,roundCount);
-  out.teams=Array.isArray(obj?.teams)?obj.teams.map(t=>{const team={...blankTeam(),...t,allowIncomplete:!!t?.allowIncomplete,players:Array.isArray(t?.players)?t.players.map(p=>({name:clean(p?.name),flag:normalizedFlag(p),link:clean(p?.link),team:clean(p?.team),role:clean(p?.role)})):blankTeam().players,coach:{name:clean(t?.coach?.name),flag:normalizedFlag(t?.coach),role:clean(t?.coach?.role)||'head coach'},analyst:{name:clean(t?.analyst?.name),flag:normalizedFlag(t?.analyst),role:clean(t?.analyst?.role)||'analyst'}};team.championActivated=t?.championActivated===true||String(t?.championActivated)==='true';team.finalPlacement=clean(t?.finalPlacement);team.finalTiebreaker=clean(t?.finalTiebreaker);team.finalMatches=Array.isArray(t?.finalMatches)?t.finalMatches.map(m=>({match:Number(m?.match)||0,placement:clean(m?.placement),kills:clean(m?.kills)})).filter(m=>m.match>0):[];team.groupRounds=Array.isArray(t?.groupRounds)?t.groupRounds.map(clean):[];while(team.groupRounds.length<roundCount)team.groupRounds.push('');team.groupRounds=team.groupRounds.slice(0,roundCount);team.groupFfaGroup=clean(t?.groupFfaGroup);return team;}):base.teams;
+  out.teams=Array.isArray(obj?.teams)?obj.teams.map(t=>{const team={...blankTeam(),...t,prizeDnf:t?.prizeDnf===true||t?.prizeDnf==='true',allowIncomplete:!!t?.allowIncomplete,players:Array.isArray(t?.players)?t.players.map(p=>({name:clean(p?.name),flag:normalizedFlag(p),link:clean(p?.link),team:clean(p?.team),role:clean(p?.role)})):blankTeam().players,coach:{name:clean(t?.coach?.name),flag:normalizedFlag(t?.coach),role:clean(t?.coach?.role)||'head coach'},analyst:{name:clean(t?.analyst?.name),flag:normalizedFlag(t?.analyst),role:clean(t?.analyst?.role)||'analyst'}};team.championActivated=t?.championActivated===true||String(t?.championActivated)==='true';team.finalPlacement=clean(t?.finalPlacement);team.finalTiebreaker=clean(t?.finalTiebreaker);team.finalMatches=Array.isArray(t?.finalMatches)?t.finalMatches.map(m=>({match:Number(m?.match)||0,placement:clean(m?.placement),kills:clean(m?.kills)})).filter(m=>m.match>0):[];team.groupRounds=Array.isArray(t?.groupRounds)?t.groupRounds.map(clean):[];while(team.groupRounds.length<roundCount)team.groupRounds.push('');team.groupRounds=team.groupRounds.slice(0,roundCount);team.groupFfaGroup=clean(t?.groupFfaGroup);return team;}):base.teams;
   out.finalDetailedMaps=Array.isArray(obj?.finalDetailedMaps)?obj.finalDetailedMaps.map((m,i)=>({match:Number(m?.match)||i+1,date:clean(m?.date),map:clean(m?.map),mvp:clean(m?.mvp),vod:clean(m?.vod)})).filter(m=>m.match>0):[];
   out.teamDB=Array.isArray(obj?.teamDB)?obj.teamDB.map(normalizeRosterTeam).filter(t=>clean(t.name)):[];
   out.broadcastTalents=Array.isArray(obj?.broadcastTalents)?obj.broadcastTalents.map(normalizeBroadcastTalent):base.broadcastTalents.map(normalizeBroadcastTalent);
@@ -2391,9 +2393,9 @@ function parsePrizeRows(wiki){
   const mvpPrize=wiki.match(/award=MVP[^\n]*?\|localprize=([^|}\s]+)/i);
   const rows=[];
   wiki.split(/\r?\n/).forEach(line=>{
-    if(!/\{\{Slot\|/i.test(line)||!/\{\{Opponent\|/i.test(line)||/award=MVP/i.test(line))return;
+    if(!/\{\{Slot\s*\|/i.test(line)||!/\{\{Opponent\|/i.test(line)||/award=MVP/i.test(line))return;
     const name=(line.match(/\{\{Opponent\|([^|}]*)/i)||[])[1]; if(name===undefined)return;
-    rows.push({name:clean(name),prize:clean((line.match(/\|localprize=([^|}]*)/i)||[])[1]),date:clean((line.match(/\|date=([^|}\s]*)/i)||[])[1]),qualified:/\|qualified1\s*=\s*y/i.test(line)});
+    rows.push({name:clean(name),dnf:/\|dnf\s*=\s*true(?=[\s|}])/i.test(line),prize:clean((line.match(/\|localprize=([^|}]*)/i)||[])[1]),date:clean((line.match(/\|date=([^|}\s]*)/i)||[])[1]),qualified:/\|qualified1\s*=\s*y/i.test(line)});
   });
   return {rows,currency:currency?clean(currency[1]):'',importValue:imp?clean(imp[1]):'',cutAfter:cut?clean(cut[1]):'',prizeSummary:summary?clean(summary[1]):'',qualifies,mvp,mvpPrize:mvpPrize?clean(mvpPrize[1]):'',qualifiedCount:rows.filter(r=>r.qualified).length};
 }
@@ -2680,7 +2682,7 @@ function resetImportedSection(target,section){
   if(section==='infobox') target.infobox=Object.fromEntries(Object.keys(defaultInfobox()).map(k=>[k,'']));
   if(section==='about'){ Object.assign(target.settings,{qualifierDates:'',qualifierTeams:'',qualifyTop:'',finalDate:'',finalMatches:'',formatPreset:'custom',formatShowSources:'false',formatIncludeTotal:'false',formatIncludeInvited:'false',formatIncludeQualifier:'false',formatTotalTeams:'',formatInvitedTeams:'',formatQualifierTeams:'',pointsTemplate:'',pointsShowTb:'false',groupStageText:'',standingsTitle:'Finals Standings'}); target.formatStages=[]; }
   if(section==='broadcast'){target.broadcastTalents=defaultBroadcastTalents();target.broadcastDefaultsInitialized=true;}
-  if(section==='prize'){ Object.assign(target.settings,{localCurrency:'brl',prizeImport:'false',prizePoolMode:'complete',includeMvp:'false',mvpPrize:'',mvpPlayer:'',mvpFlag:'br',mvpTeam:'',prizeQualEnabled:'false',prizeQualCount:'0',prizeQualPage:'',prizeQualName:'',prizeCutAfter:'',prizeSummary:'false',prizeEliminatedDate:'',prizeEliminationRanges:[]}); target.teams.forEach(t=>{t.prize='0';t.prizeTeam='';t.prizeDate='';}); target.prizeOrder=target.teams.map(t=>t.uid); }
+  if(section==='prize'){ Object.assign(target.settings,{localCurrency:'brl',prizeImport:'false',prizePoolMode:'complete',includeMvp:'false',mvpPrize:'',mvpPlayer:'',mvpFlag:'br',mvpTeam:'',prizeQualEnabled:'false',prizeQualCount:'0',prizeQualPage:'',prizeQualName:'',prizeCutAfter:'',prizeSummary:'false',prizeEliminatedDate:'',prizeEliminationRanges:[]}); target.teams.forEach(t=>{t.prize='0';t.prizeTeam='';t.prizeDate='';t.prizeDnf=false;}); target.prizeOrder=target.teams.map(t=>t.uid); }
   if(section==='participants') target.teams=target.teams.map(t=>({...t,name:'',qual:'invite',qualMethod:'',qualPage:'',qualText:'',qualPlacement:'',players:[blankPlayer(),blankPlayer(),blankPlayer(),blankPlayer()],coach:{name:'',flag:'br',role:'head coach'},analyst:{name:'',flag:'br',role:'analyst'},allowIncomplete:false}));
   if(section==='groupStage'){ Object.assign(target.settings,{groupStageIncluded:'true',groupStandingsEnabled:'false',groupStageHeading:'Group Stage',groupStandingsType:'overall',groupStandingsTitle:'Group Stage Standings',groupQualifyCount:String(Math.min(12,target.settings.teamCount)),groupEliminatedCount:String(Math.max(0,target.settings.teamCount-12)),groupAdvanceTo:'Finals',groupOverallMode:'complete',groupAutoPlacement:'false',groupFfaRounds:'3',groupFfaImport:'false',groupFfaCumulative:'false',groupFfaGroupsEnabled:'false',groupFfaGroupMode:'manual',groupFfaGroupNames:'A, B, C, D',groupFfaTeamsPerGroup:'6'}); target.groupRoundConfigs=defaultGroupRoundConfigs(); target.groupFocusedGroups=[]; target.teams.forEach(t=>Object.assign(t,{groupTeam:'',groupBooyah:'0',groupMp:'',groupKp:'',groupPp:'',groupTotal:'',groupRounds:['','',''],groupFfaGroup:''})); target.groupOrder=target.teams.map(t=>t.uid); }
   if(section==='overall'){ Object.assign(target.settings,{finalStandingsEnabled:'true',finalStageText:'To be Determined',winnerIndex:'',winnerUid:'',autoPlacement:'false',headstartEnabled:'false',finalTeamCount:'',finalCodeMode:'simple',finalBracketId:'',finalMatchpoint:'',finalKillPoint:'1',finalPlacementPoints:'12,9,8,7,6,5,4,3,2,1,0,0',finalWinnerMatch:'',finalTwitch:'',finalYoutube:'',finalDetailedHeader:'Champion Rush',finalOverviewTitle:'Champion Rush Standings Overview'}); target.finalDetailedMaps=[]; target.teams.forEach(t=>Object.assign(t,{standingTeam:'',booyah:'0',mp:'',kp:'',pp:'',total:'',bp:'',championActivated:false,finalPlacement:'',finalTiebreaker:'',finalMatches:[]})); target.finalOrder=target.teams.map(t=>t.uid); }
@@ -2689,7 +2691,7 @@ function applyWikiImport(wiki,sections,replace=false){
   const target=normalizeState(safeClone(state)); if(replace) sections.forEach(s=>resetImportedSection(target,s));
   if(sections.includes('infobox')) parseInfoboxInto(target,wiki);
   if(sections.includes('about')) parseAboutInto(target,wiki);
-  if(sections.includes('prize')){ const data=parsePrizeRows(wiki); target.settings.prizePoolMode=data.rows.length&&data.rows.every(r=>!clean(r.name))?'values_only':'complete'; if(data.currency) target.settings.localCurrency=data.currency; if(data.importValue) target.settings.prizeImport=data.importValue; if(data.cutAfter)target.settings.prizeCutAfter=data.cutAfter;if(data.prizeSummary!=='')target.settings.prizeSummary=data.prizeSummary;if(data.qualifies){target.settings.prizeQualEnabled='true';target.settings.prizeQualPage=clean(data.qualifies[1]);target.settings.prizeQualName=clean(data.qualifies[2]);target.settings.prizeQualCount=String(data.qualifiedCount);} if(data.mvp){target.settings.includeMvp='true';target.settings.mvpPlayer=clean(data.mvp[1])||'tbd';target.settings.mvpFlag=clean(data.mvp[2])||'br';target.settings.mvpTeam=clean(data.mvp[3]);target.settings.mvpPrize=clean(data.mvpPrize);} else if(/TeamPrizePool/i.test(wiki)) target.settings.includeMvp='false'; ensureImportCapacity(target,data.rows.length); data.rows.forEach((p,i)=>{ if(target.teams[i]){target.teams[i].prizeTeam=p.name;if(!target.teams[i].name&&p.name)target.teams[i].name=p.name;target.teams[i].prize=p.prize;target.teams[i].prizeDate=p.date;} }); target.prizeOrder=target.teams.map(t=>t.uid); }
+  if(sections.includes('prize')){ const data=parsePrizeRows(wiki); target.settings.prizePoolMode=data.rows.length&&data.rows.every(r=>!clean(r.name))?'values_only':'complete'; if(data.currency) target.settings.localCurrency=data.currency; if(data.importValue) target.settings.prizeImport=data.importValue; if(data.cutAfter)target.settings.prizeCutAfter=data.cutAfter;if(data.prizeSummary!=='')target.settings.prizeSummary=data.prizeSummary;if(data.qualifies){target.settings.prizeQualEnabled='true';target.settings.prizeQualPage=clean(data.qualifies[1]);target.settings.prizeQualName=clean(data.qualifies[2]);target.settings.prizeQualCount=String(data.qualifiedCount);} if(data.mvp){target.settings.includeMvp='true';target.settings.mvpPlayer=clean(data.mvp[1])||'tbd';target.settings.mvpFlag=clean(data.mvp[2])||'br';target.settings.mvpTeam=clean(data.mvp[3]);target.settings.mvpPrize=clean(data.mvpPrize);} else if(/TeamPrizePool/i.test(wiki)) target.settings.includeMvp='false'; ensureImportCapacity(target,data.rows.length); data.rows.forEach((p,i)=>{ if(target.teams[i]){target.teams[i].prizeTeam=p.name;if(!target.teams[i].name&&p.name)target.teams[i].name=p.name;target.teams[i].prize=p.prize;target.teams[i].prizeDate=p.date;target.teams[i].prizeDnf=p.dnf===true;} }); target.prizeOrder=target.teams.map(t=>t.uid); }
   if(sections.includes('participants')){ const teams=parseParticipantTeams(wiki); ensureImportCapacity(target,teams.length); teams.forEach((r,i)=>{target.teams[i]=rosterToTeam(r,target.teams[i]);}); if(teams.some(t=>(t.players||[]).some(p=>clean(p.role)))) target.settings.includePlayerRoles='true'; else if(replace) target.settings.includePlayerRoles='false'; }
   if(sections.includes('groupStage')){ const resultSlice=sectionBetween(wiki,'==Results==','===Grand Finals==='); if(resultSlice && !/===\s*[^=\n]+\s*===/i.test(resultSlice)){ target.settings.groupStageIncluded='false'; target.settings.groupStandingsEnabled='false'; } else { target.settings.groupStageIncluded='true'; const groupSource=resultSlice||wiki; parseGroupStandingsInto(target,groupSource); } }
   if(sections.includes('broadcast')){ const talents=parseBroadcastTalents(wiki); if(talents.length || /==Broadcast==/i.test(wiki)) target.broadcastTalents=talents; }

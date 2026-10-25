@@ -1,0 +1,10 @@
+const test=require('node:test'),assert=require('node:assert/strict'),vm=require('vm'),fs=require('fs');
+const source=fs.readFileSync('admin-liquipedia/app.js','utf8');
+function setup(){const ctx=vm.createContext({clean:v=>String(v??'').trim(),val:(v,f)=>String(v??'').trim()||f,state:{settings:{prizePoolMode:'complete',prizeQualEnabled:'true',prizeQualCount:'2'},teams:[{},{}]},paddedOpponentName:v=>v,effectivePrizeTeam:t=>t.name,hasPrizeValue:v=>String(v??'')!==''&&Number(v)!==0});
+ for(const [start,end] of [['function mvpAwardWikiLines','function generateWiki'],['function prizeSlotLine','function participantTeamWiki'],['function parsePrizeRows','function parseParticipantTeams']])vm.runInContext(source.slice(source.indexOf(start),source.indexOf(end)),ctx);return ctx;}
+test('MVP without prize emits precisely the award-only template; monetary awards retain currency',()=>{const c=setup(),s={mvpPlayer:'brota10',mvpFlag:'br',mvpTeam:'xld',localCurrency:'brl'};
+ const expected='|adjacentContent=\n{{AwardPrizePool\n|{{Slot |award=MVP|{{Opponent|brota10|flag=br|team=xld}} }}\n}}';
+ for(const prize of ['', '0'])assert.equal(c.mvpAwardWikiLines({...s,mvpPrize:prize}).join('\n'),expected);
+ const paid=c.mvpAwardWikiLines({...s,mvpPrize:'2000'}).join('\n');assert(paid.includes('localcurrency=brl'));assert(paid.includes('localprize=2000'));
+});
+test('DNF is emitted, imports back and cannot also carry qualified1',()=>{const c=setup();const line=c.prizeSlotLine({name:'fx',prizeDnf:true,prize:''},0);assert.equal(line,'|{{Slot|dnf=true|{{Opponent|fx }} }}');assert(!line.includes('qualified1'));const parsed=c.parsePrizeRows('{{TeamPrizePool\n'+line+'\n}}');assert.equal(parsed.rows[0].dnf,true);assert.equal(parsed.rows[0].name,'fx');assert.equal(c.parsePrizeRows('|{{Slot|{{Opponent|loud}} }}').rows[0].dnf,false);assert(c.prizeSlotLine({name:'loud',prize:'1000'},0).includes('qualified1=y'));c.state.settings.prizePoolMode='values_only';assert(!c.prizeSlotLine({name:'fx',prizeDnf:true,prize:'1000'},0).includes('dnf=true'));});
