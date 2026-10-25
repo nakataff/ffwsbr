@@ -52,6 +52,6 @@
  control.addEventListener('change',()=>{try{localStorage.setItem(key,control.checked?'1':'0');}catch{}sync();});
  document.addEventListener('input',schedule);document.addEventListener('change',schedule);container.addEventListener('focusin',schedule);
  new MutationObserver(schedule).observe(container,{childList:true,subtree:true});
- window.addEventListener('cff:camp-core-ready',schedule);window.addEventListener('cff:camp-drops-cleared',schedule);window.addEventListener('cff:camp-extra-entries-rendered',schedule);
+ window.addEventListener('cff:camp-placement-changed',schedule);window.addEventListener('cff:camp-core-ready',schedule);window.addEventListener('cff:camp-drops-cleared',schedule);window.addEventListener('cff:camp-extra-entries-rendered',schedule);
  sync();
 })();

@@ -4,6 +4,7 @@ on:
     paths:
       - 'admin-camp-ao-vivo/launch-extras.js'
       - 'admin-camp-ao-vivo/placement-live.js'
+      - 'admin-camp-ao-vivo/app.js.gz'
       - 'admin-camp-ao-vivo/elimination-focus.js'
       - 'test/camp-*.test.cjs'
       - '.github/workflows/camp-launch-tests.yml'

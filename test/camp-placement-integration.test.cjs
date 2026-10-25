@@ -6,7 +6,7 @@ test('actual legacy launcher handles Top 12 clicks, changes and clearing with al
  try{
   w.fetch=async()=>({ok:false,json:async()=>({})});w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.getClientRects=()=>[{}];w.HTMLElement.prototype.scrollIntoView=()=>{};
   const backup=JSON.parse(fs.readFileSync('admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-final.json','utf8'));
-  backup.config.detailMode='detailed';backup.currentInputMode='detail-pos-kills';backup.drops=[];w.localStorage.setItem('ffws_autosave',JSON.stringify(backup));
+  backup.config.cffLaunchExtraFieldsV1={enabled:true,fields:[{id:'tot-k',kind:'totalKills'},{id:'tot-p',kind:'totalPoints'}]};backup.config.detailMode='detailed';backup.currentInputMode='detail-pos-kills';backup.drops=[];w.localStorage.setItem('ffws_autosave',JSON.stringify(backup));
   // These deferred scripts run before the asynchronously decoded legacy bundle.
   for(const f of ['placement-live.js','elimination-focus.js'])w.eval(fs.readFileSync('admin-camp-ao-vivo/'+f,'utf8'));
   let core=zlib.gunzipSync(fs.readFileSync('admin-camp-ao-vivo/app.js.gz')).toString();
@@ -16,7 +16,7 @@ test('actual legacy launcher handles Top 12 clicks, changes and clearing with al
   await wait(350);w.document.getElementById('input-mode').value='detail-pos-kills';w.handleInputModeChange();await wait(150);
   const initial=w.document.querySelector('[data-v46-position="12"]'),code=initial.dataset.v46Team;
   const field=()=>w.document.getElementById('place-'+code),radio=n=>w.document.querySelector('[data-v46-team="'+code+'"][data-v46-position="'+n+'"]');
-  const click=async n=>{const r=radio(n);r.dispatchEvent(new w.MouseEvent('pointerdown',{bubbles:true}));r.closest('label').querySelector('span').click();await wait(120);};
+  let clickIndex=0;const click=async n=>{const r=radio(n);r.dispatchEvent(new w.MouseEvent('pointerdown',{bubbles:true}));if(clickIndex++%2===0)r.click();else r.closest('label').querySelector('span').click();await wait(120);};
   await click(12);assert.equal(field().value,'12');assert(radio(12).checked);assert(field().closest('.team-row').classList.contains('cff-team-eliminated'));
   await click(6);assert.equal(field().value,'6');assert(radio(6).checked);assert(!radio(12).checked);
   await click(12);assert.equal(field().value,'12');assert(radio(12).checked);

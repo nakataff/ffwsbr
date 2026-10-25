@@ -72,7 +72,7 @@
 
       const [cssSource,appSource,presetResponse]=await Promise.all([
         gunzipUrl('admin-camp-ao-vivo/app.css.gz?v=20261001-camp-v4'),
-        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261011-cp-crown-v1'),
+        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261025-native-placement-v4'),
         presetPromise
       ]);
 
