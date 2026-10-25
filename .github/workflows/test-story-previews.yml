@@ -1,0 +1,44 @@
+name: Test temporary story previews
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/instagram-community/**'
+      - 'admin-stories.html'
+      - 'js/admin-stories.js'
+      - 'css/admin-stories.css'
+      - 'test/admin-stories-ui.test.cjs'
+      - '.github/workflows/test-story-previews.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cloudflare/instagram-community/story-previews.js'
+      - 'cloudflare/instagram-community/test/story-previews.test.mjs'
+      - 'js/admin-stories.js'
+      - '.github/workflows/test-story-previews.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Worker and browser JavaScript
+        run: |
+          node --check cloudflare/instagram-community/story-previews.js
+          node --check cloudflare/instagram-community/worker.js
+          node --check js/admin-stories.js
+      - name: Test preview security, retention and Instagram ranking integration
+        run: npm test
+        working-directory: cloudflare/instagram-community
+      - name: Install isolated UI test dependency
+        run: |
+          mkdir -p /tmp/cff-story-preview-test
+          cp test/game-gifts-browser-package.json /tmp/cff-story-preview-test/package.json
+          npm install --prefix /tmp/cff-story-preview-test --no-audit --no-fund
+      - name: Test private preview UI and unchanged moderation
+        env:
+          NODE_PATH: /tmp/cff-story-preview-test/node_modules
+        run: node --test --test-timeout=15000 test/admin-stories-ui.test.cjs
