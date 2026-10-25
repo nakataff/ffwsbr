@@ -21,6 +21,23 @@
   });
  }
  let queued=false;function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;sync();});}
+ // A placement click is one numeric edit. Do not let legacy click/input/change
+ // handlers race each other or depend on the radio's transient native state.
+ window.addEventListener('click',event=>{
+  const radio=event.target.closest?.('input[data-v46-position]')||event.target.closest?.('.v46-placement-choice')?.querySelector('input[data-v46-position]');
+  if(!radio||!container.contains(radio)||radio.disabled)return;
+  const row=radio.closest('.team-row'),field=row?.querySelector('input[id^="place-"]');
+  if(!field||field.disabled||field.readOnly)return;
+  const n=Number(radio.dataset.v46Position),next=position(field)===n?'':String(n),id=field.id;
+  event.preventDefault();event.stopImmediatePropagation();
+  // Native canceled clicks may restore the previous radio state after dispatch.
+  queueMicrotask(()=>{
+   const current=document.getElementById(id);if(!current)return;
+   current.value=next;apply(current);
+   current.dispatchEvent(new Event('input',{bubbles:true}));
+   sync();
+  });
+ },true);
  // Update radios before legacy handlers read the previous selected position.
  document.addEventListener('input',event=>{if(!container.contains(event.target)||event.target.matches('input[type=radio],input[type=checkbox]'))return;if(event.target.matches('input[id^="place-"]'))apply(event.target);schedule();},true);
  document.addEventListener('change',event=>{if(container.contains(event.target)||event.target.id==='drop-num')schedule();});
