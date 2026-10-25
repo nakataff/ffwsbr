@@ -55,7 +55,7 @@
     workspace.onload=done;workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
   }
   function loadTournamentSetup(){
-    const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261025-workflow-v2';
+    const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261025-workflow-v3';
     setup.onload=()=>{
       const wiki=document.createElement('script');wiki.src='admin-camp-ao-vivo/final-wiki.js?v=20261005-final-wiki-v1';
       wiki.onload=loadWorkspace;

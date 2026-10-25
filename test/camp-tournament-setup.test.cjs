@@ -16,7 +16,7 @@ test('phase UI collapses inactive phases, separates finishing and toggles Champi
  const h=harness(),w=h.w;try{const active=w.document.querySelector('.cff-phase.active');assert(active.open);assert(!w.document.querySelector('.cff-phase:not(.active)').open);assert(!active.querySelector('.cff-phase-finish').open);const select=active.querySelector('[data-field=format]'),name=active.querySelector('[data-field=name]');select.value='classic';select.dispatchEvent(new w.Event('change',{bubbles:true}));assert([...active.querySelectorAll('[data-champion-field]')].every(e=>e.hidden));assert.equal(active.querySelector('[data-field=name]'),name)}finally{w.close()}
 });
 test('invalid qualification count cannot replace the current tournament',async()=>{
- const h=harness(),w=h.w;try{const field=w.document.querySelector('.active [data-field=advance]');field.value='2';field.dispatchEvent(new w.Event('change',{bubbles:true}));await w.CFF_TOURNAMENT_SETUP.applyPhase();assert.equal(h.applied.length,0);assert.match(h.messages.at(-1)[0],/menor/);assert.equal(w.CFF_TOURNAMENT_SETUP.getPlan().activeId,'Qualificatória');assert(!w.document.querySelector('[data-phase-apply]').disabled)}finally{w.close()}
+ const h=harness(),w=h.w;try{const field=w.document.querySelector('.active [data-field=advance]');field.value='3';field.dispatchEvent(new w.Event('change',{bubbles:true}));await w.CFF_TOURNAMENT_SETUP.applyPhase();assert.equal(h.applied.length,0);assert.match(h.messages.at(-1)[0],/maior/);assert.equal(w.CFF_TOURNAMENT_SETUP.getPlan().activeId,'Qualificatória');assert(!w.document.querySelector('[data-phase-apply]').disabled)}finally{w.close()}
 });
 test('phase transition uses source Champion Rush rules, preserves a snapshot and restores saved results',async()=>{
  const h=harness(),w=h.w;try{await w.CFF_TOURNAMENT_SETUP.openPhase('Final');assert.deepEqual(h.applied[0].selectedTeams,['A']);assert(h.applied[0].drops.every(drop=>drop.points.A===null));const plan=w.CFF_TOURNAMENT_SETUP.getPlan();assert.equal(plan.activeId,'Final');assert.equal(plan.phases[0].snapshot.drops[0].points.B,300);assert.equal(JSON.parse(w.localStorage.getItem('cff_camp_before_phase_change_v1')).backup.drops[0].points.A,110);await w.CFF_TOURNAMENT_SETUP.openPhase('Qualificatória');assert.equal(h.applied[1].drops[0].points.B,300);assert.deepEqual(h.applied[1].selectedTeams,['A','B'])}finally{w.close()}
@@ -26,4 +26,13 @@ test('failed transition rolls back the active phase and completion flags',async(
 });
 test('malformed recovery JSON and missing FFWS integration produce messages instead of uncaught errors',()=>{
  const h=harness(),w=h.w;try{w.localStorage.setItem('cff_camp_before_phase_change_v1','{broken');w.document.getElementById('cff-phase-recover').click();assert.match(h.messages.at(-1)[0],/Não foi possível ler/);w.document.getElementById('cff-final-import').click();assert.match(h.messages.at(-1)[0],/Integração FFWS indisponível/)}finally{w.close()}
+});
+
+test('all teams can advance from a phase without eliminations, such as Point Rush',async()=>{
+ const h=harness(),w=h.w;try{
+  const change=(selector,value)=>{const field=w.document.querySelector(selector);field.value=value;field.dispatchEvent(new w.Event('change',{bubbles:true}))};
+  change('.active [data-field=advance]','2');change('.cff-phase:not(.active) [data-field=teams]','2');
+  await w.CFF_TOURNAMENT_SETUP.applyPhase();assert.equal(h.applied.length,1);
+  await w.CFF_TOURNAMENT_SETUP.advance();assert.equal(w.CFF_TOURNAMENT_SETUP.getPlan().activeId,'Final');assert.deepEqual(h.applied.at(-1).selectedTeams,['A','B']);assert.deepEqual(Array.from(w.CFF_TOURNAMENT_SETUP.getPlan().phases[0].eliminated),[]);
+ }finally{w.close()}
 });

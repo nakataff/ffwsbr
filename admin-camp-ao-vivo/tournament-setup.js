@@ -59,7 +59,7 @@
   }
   function validatePhase(p){
     for(const key of ['teams','days','firstDrops','laterDrops'])if(!Number.isSafeInteger(p[key])||p[key]<1)throw new Error('Preencha times, dias e quedas com números inteiros maiores que zero.');
-    if(!Number.isSafeInteger(p.advance)||p.advance<0||p.advance>=p.teams)throw new Error('Classificados deve ser menor que o total de times. Use 0 na última fase.');
+    if(!Number.isSafeInteger(p.advance)||p.advance<0||p.advance>p.teams)throw new Error('Classificados não pode ser maior que o total de times. Use 0 na última fase.');
     if(!String(p.name||'').trim())throw new Error('Dê um nome para a fase.');
     if(p.format==='champion'&&(!Number.isSafeInteger(p.cp)||p.cp<1))throw new Error('Informe um Champion Point maior que zero.');
   }
