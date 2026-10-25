@@ -9,5 +9,10 @@
       "database_name": "cff-instagram-community",
       "database_id": "48e14987-34f9-4591-874f-c45c513dcb39"
     }
-  ]
+  ],
+  "triggers": {
+    "crons": [
+      "5 4 * * *"
+    ]
+  }
 }
