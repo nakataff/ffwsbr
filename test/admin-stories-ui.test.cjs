@@ -66,3 +66,17 @@ test('logout clears previews and queue and discards a delayed administrative res
   assert(f.d.querySelector('#story-app').hidden);assert(!f.d.querySelector('#sr-review-dialog').open);assert.equal(f.d.querySelectorAll('[data-key]').length,0);assert(!f.d.querySelector('#sr-message').textContent.includes('+5'));
  }finally{f.close();}
 });
+
+test('archived miniatures replace expired Instagram URLs without extra listing fetches or changing moderation',async()=>{
+ const old='https://lookaside.fbsbx.com/story1.jpg',preview='/api/admin/story-preview?key=story%3Aig_user1%3As1&expires=1793150000000&sig='+'a'.repeat(64);
+ const f=await fixture({items:[item(1,{status:'approved',verification:'auto',mediaUrl:old,previewArchived:true,previewUrl:preview}),item(2,{status:'approved',mediaUrl:old,previewArchived:false,previewUrl:''})]});
+ try{
+  const first=f.d.querySelectorAll('.sr-card')[0],second=f.d.querySelectorAll('.sr-card')[1];
+  assert(first.querySelector('img').getAttribute('src').startsWith('https://cff-instagram-community.nakataffb4.workers.dev/api/admin/story-preview?'));
+  assert.match(first.textContent,/Miniatura temporária salva/);
+  assert.equal(second.querySelector('img').getAttribute('src'),old);
+  first.querySelector('[data-preview-story]').click();
+  assert.match(f.d.querySelector('#sr-preview-image img').src,/\/api\/admin\/story-preview/);
+  assert.equal(f.calls.length,1);
+ }finally{f.close();}
+});
