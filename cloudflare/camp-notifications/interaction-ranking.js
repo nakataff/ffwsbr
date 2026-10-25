@@ -16,14 +16,14 @@ export function createInteractionRanking(db){
    const user=await db.prepare('SELECT user_key,username,points_all FROM users WHERE username=?1 COLLATE NOCASE LIMIT 1').bind(nick).first();
    if(!user)return {ok:true,found:false,username:nick};
    const today=day(now),selected=String(date||today);
-   if(!/^20\\d{2}-(0[1-9]|1[0-2])-[0-3]\\d$/.test(selected)||Number.isNaN(Date.parse(selected+'T12:00:00Z'))||selected>today)throw Object.assign(Error('Selecione uma data válida, até hoje.'),{status:400});
+   if(!/^20\d{2}-(0[1-9]|1[0-2])-[0-3]\d$/.test(selected)||Number.isNaN(Date.parse(selected+'T12:00:00Z'))||selected>today)throw Object.assign(Error('Selecione uma data válida, até hoje.'),{status:400});
    let start,end;
    if(period==='day'){start=end=selected;}
    else if(period==='week'){start=monday(selected);end=shift(start,6);}
    else if(period==='month'){start=selected.slice(0,7)+'-01';end=shift(shiftMonth(start),-1);}
    else if(period==='custom'){
     start=String(from||'');end=String(to||'');
-    if(!/^20\\d{2}-\\d{2}-\\d{2}$/.test(start)||!/^20\\d{2}-\\d{2}-\\d{2}$/.test(end)||Number.isNaN(Date.parse(start+'T12:00:00Z'))||Number.isNaN(Date.parse(end+'T12:00:00Z'))||start>end||end>today||(Date.parse(end+'T12:00:00Z')-Date.parse(start+'T12:00:00Z'))/86400000>90)throw Object.assign(Error('Escolha um período de até 91 dias, sem datas futuras.'),{status:400});
+    if(!/^20\d{2}-\d{2}-\d{2}$/.test(start)||!/^20\d{2}-\d{2}-\d{2}$/.test(end)||Number.isNaN(Date.parse(start+'T12:00:00Z'))||Number.isNaN(Date.parse(end+'T12:00:00Z'))||start>end||end>today||(Date.parse(end+'T12:00:00Z')-Date.parse(start+'T12:00:00Z'))/86400000>90)throw Object.assign(Error('Escolha um período de até 91 dias, sem datas futuras.'),{status:400});
    }else throw Object.assign(Error('Período inválido.'),{status:400});
    if(end>today)end=today;
    const page=Number(offset);
