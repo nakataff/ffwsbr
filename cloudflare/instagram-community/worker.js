@@ -1,5 +1,6 @@
 import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutcomes,profileInsights,peerScores} from './profile-insights.js';
 import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, autoApproveStory, instagramPost } from './story-reviews.js';
+import {STORY_PREVIEW_SCHEMA,storeStoryPreview,purgeExpiredStoryPreviews,previewLink,getSignedStoryPreview} from './story-previews.js';
 import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, monthCoverage, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
@@ -74,6 +75,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
   ...OPTIMIZATION_SCHEMA,
   ...PROFILE_INSIGHTS_SCHEMA,
   ...STORY_REVIEW_SCHEMA,
+  ...STORY_PREVIEW_SCHEMA,
   'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
   'CREATE INDEX IF NOT EXISTS idx_awards_type_award_key ON awards (type, award_key)',
@@ -89,6 +91,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
 ]);
 
 export default {
+  async scheduled(controller,env,ctx){ctx.waitUntil(purgeExpiredStoryPreviews(env.DB));},
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
@@ -101,7 +104,7 @@ export default {
 
     if (url.pathname === '/webhook') {
       if (request.method === 'GET') return verifyWebhook(url, env);
-      if (request.method === 'POST') return receiveWebhook(request, env);
+      if (request.method === 'POST') return receiveWebhook(request, env, ctx);
       return new Response('Method Not Allowed', { status: 405 });
     }
 
@@ -117,6 +120,7 @@ export default {
     if (url.pathname === '/api/prediction/ranking' && request.method === 'GET') return getPredictionRanking(request, env, url);
     if (url.pathname === '/api/prediction/profile' && request.method === 'GET') return getPredictionProfile(request, env, url);
     if (url.pathname === '/api/admin/stories' && request.method === 'GET') return getAdminStories(request,env,url);
+    if (url.pathname === '/api/admin/story-preview' && request.method === 'GET') return getSignedStoryPreview(request,env,url);
     if (url.pathname === '/api/admin/story-posts' && request.method === 'GET') return getAdminStoryPosts(request,env,url);
     if (url.pathname === '/api/admin/stories/review-batch' && request.method === 'POST') return reviewAdminStoryBatch(request,env);
     if (url.pathname === '/api/admin/stories/review' && request.method === 'POST') return reviewAdminStory(request,env);
@@ -155,7 +159,7 @@ async function ensurePerformanceIndexes(env) {
     performanceIndexesPromise = (async () => {
       // Cold instances only check one durable marker. Apply the additive schema
       // once per release, including its backfill, in a single atomic D1 batch.
-      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION;
+      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION + ':story-previews-v1';
       let applied;
       try {
         applied = await env.DB.prepare('SELECT version FROM community_period_versions WHERE period_key=?1')
@@ -305,7 +309,7 @@ function timingSafeStringEqual(a, b) {
   return diff === 0;
 }
 
-async function receiveWebhook(request, env) {
+async function receiveWebhook(request, env, ctx) {
   const rawBody = await request.arrayBuffer();
   const signature = request.headers.get('x-hub-signature-256') || '';
   if (!(await validMetaSignature(rawBody, signature, env.META_APP_SECRET))) return new Response('Invalid signature', { status: 401 });
@@ -331,7 +335,7 @@ async function receiveWebhook(request, env) {
       for (const event of messaging) {
         if (await processCheckinVerification(env, event)) continue;
         const story = findStoryMention(event);
-        if (story) await processStoryMention(env, event, {...story,accountId:String(event?.recipient?.id||entry.id||'')});
+        if (story) await processStoryMention(env, event, {...story,accountId:String(event?.recipient?.id||entry.id||'')},ctx);
         else await logMessagingShape(env, event);
       }
 
@@ -430,19 +434,20 @@ function findStoryMention(event) {
   };
 }
 
-async function processStoryMention(env, event, story) {
+async function processStoryMention(env, event, story, ctx) {
   const identity=String(event?.sender?.id||'').trim();if(!identity||!story.storyId)return;
   const timestamp=Number(event.timestamp);if(!Number.isFinite(timestamp)||timestamp<=0)return;
   const eventAt=normalizeTimestamp(timestamp);if(eventAt>Date.now()+300000)return;
   let username=cleanUsername(event?.sender?.username);
   const key=await userKey(identity,username),mentionKey=`story:${key}:${story.storyId}`;
-  const known=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(mentionKey).first();if(known){if(known.status==='pending'){const result=await autoApproveStory(env.DB,mentionKey);if(result.error)throw Error(result.error);await finishStoryReviews(env,[result]);}return;}
+  const known=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(mentionKey).first();if(known){if(known.status==='pending'){const result=await autoApproveStory(env.DB,mentionKey);if(result.error)throw Error(result.error);await finishStoryReviews(env,[result]);if(result.row?.status==='approved'&&result.row.media_url)ctx?.waitUntil(storeStoryPreview(env,result.row));}return;}
   if(!username&&story.messageId)username=await fetchMessageUsername(story.messageId,env.INSTAGRAM_ACCESS_TOKEN);
   if(!username){const user=await env.DB.prepare('SELECT username FROM users WHERE user_key=?1').bind(key).first();username=cleanUsername(user?.username)}
   const {dayKey}=dateKeys(eventAt),{weekStartKey}=weekKeys(eventAt);
   await queueStory(env.DB,{key:mentionKey,userKey:key,identity,username:username||fallbackUsername(identity),accountId:story.accountId,
     storyId:story.storyId,messageId:story.messageId,mediaUrl:story.mediaUrl,timestamp:eventAt,dayKey,weekKey:weekStartKey});
   const result=await autoApproveStory(env.DB,mentionKey);if(result.error)throw Error(result.error);await finishStoryReviews(env,[result]);
+  if(result.row?.status==='approved'&&result.row.media_url)ctx?.waitUntil(storeStoryPreview(env,result.row));
 }
 
 async function fetchInstagramGraphJson(objectId, fields, accessToken, signal) {
@@ -1650,9 +1655,10 @@ async function getAdminStories(request,env,url){
  const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const status=['pending','approved','rejected'].includes(url.searchParams.get('status'))?url.searchParams.get('status'):'approved';
  const cursor=String(url.searchParams.get('cursor')||'');const before=Number(cursor.split('|')[0])||Number.MAX_SAFE_INTEGER,after=cursor.slice(cursor.indexOf('|')+1);
- const result=await env.DB.prepare(`SELECT * FROM story_reviews WHERE status=?1 AND (event_at<?2 OR (event_at=?2 AND mention_key>?3)) ORDER BY event_at DESC,mention_key ASC LIMIT 51`).bind(status,before,after).all();
+ const result=await env.DB.prepare(`SELECT r.*,t.expires_at AS preview_expires FROM story_reviews r LEFT JOIN story_thumbnails t ON t.mention_key=r.mention_key AND t.expires_at>?4 WHERE r.status=?1 AND (r.event_at<?2 OR (r.event_at=?2 AND r.mention_key>?3)) ORDER BY r.event_at DESC,r.mention_key ASC LIMIT 51`).bind(status,before,after,Date.now()).all();
  const rows=(result.results||[]).slice(0,50),last=rows.at(-1),counts=await env.DB.prepare("SELECT status,COUNT(*) AS count FROM story_reviews GROUP BY status").all();
- return json({ok:true,stories:rows.map(publicStoryReview),counts:Object.fromEntries((counts.results||[]).map(r=>[r.status,Number(r.count)])),cursor:result.results?.length>50?`${last.event_at}|${last.mention_key}`:'',rules:{points:5,dailyLimit:3,approvalRequired:false,autoApproval:true,currentWeekOnly:false}},200,request);
+ const stories=await Promise.all(rows.map(async row=>({...publicStoryReview(row),previewUrl:row.preview_expires?await previewLink(row.mention_key,Number(row.preview_expires),env.META_APP_SECRET):'',previewArchived:!!row.preview_expires})));
+ return json({ok:true,stories,counts:Object.fromEntries((counts.results||[]).map(r=>[r.status,Number(r.count)])),cursor:result.results?.length>50?`${last.event_at}|${last.mention_key}`:'',rules:{points:5,dailyLimit:3,approvalRequired:false,autoApproval:true,currentWeekOnly:false}},200,request);
 }
 const storyPostCaches=new WeakMap();
 async function ownStoryPosts(env,row){
