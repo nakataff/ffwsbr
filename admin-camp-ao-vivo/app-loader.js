@@ -49,12 +49,17 @@
         'window.addEventListener("cff:camp-core-ready",');
   }
 
+  function loadWorkspace(){
+    const workspace=document.createElement('script');workspace.src='admin-camp-ao-vivo/workspace.js?v=20261025-workflow-v2';
+    const done=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
+    workspace.onload=done;workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
+  }
   function loadTournamentSetup(){
-    const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261005-hours-panel-v2';
+    const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261025-workflow-v2';
     setup.onload=()=>{
       const wiki=document.createElement('script');wiki.src='admin-camp-ao-vivo/final-wiki.js?v=20261005-final-wiki-v1';
-      wiki.onload=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
-      wiki.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • código da final indisponível')};
+      wiki.onload=loadWorkspace;
+      wiki.onerror=loadWorkspace;
       document.body.appendChild(wiki);
     };
     setup.onerror=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • configuração simplificada indisponível')};
@@ -72,7 +77,7 @@
 
       const [cssSource,appSource,presetResponse]=await Promise.all([
         gunzipUrl('admin-camp-ao-vivo/app.css.gz?v=20261001-camp-v4'),
-        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261025-native-placement-v4'),
+        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261025-workflow-v2'),
         presetPromise
       ]);
 
@@ -132,7 +137,7 @@
           return;
         }
         const extra=document.createElement('script');
-        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261005-final-phases-v1';
+        extra.src='admin-camp-ao-vivo/enhancements.js?v=20261025-workflow-v2';
         extra.async=false;
         extra.onload=()=>{
           const startPersistence=()=>{

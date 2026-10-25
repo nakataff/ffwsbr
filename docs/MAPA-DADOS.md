@@ -546,3 +546,12 @@ metodologia independente.
 - Cada arte: nome, tipo, projeto/cliente, formato, favorito, até 20 palavras-chave, 12 links (primeiro é principal), 8 versões de legenda e observações. Detalhe completo buscado por ID só ao abrir/editar/copiar legenda. Cache em memória de 60 segundos, páginas e detalhes limitados; não persiste dados privados no armazenamento local.
 - Limite de 1.000 artes; revisão por registro evita sobrescrever mudanças em outro aparelho. Reenvio idêntico não duplica registros. Excluir o cadastro não exclui o arquivo original no Canva/Drive/etc.
 - O backup do quadro ativo e sua importação não incluem nem alteram o catálogo independente do Localizador.
+
+
+## Camp ao vivo — painel administrativo
+
+- `admin-camp-ao-vivo.html` mantém os controles originais; `app-loader.js` carrega o núcleo comprimido e os complementos em ordem.
+- `admin-camp-ao-vivo/tournament-setup.js` gerencia fases, classificados e snapshots locais de cada fase.
+- `admin-camp-ao-vivo/workspace.js` e `workspace.css` organizam a navegação por etapas, o diálogo de times/dias e as opções de lançamento. Não consultam APIs nem alteram a pontuação.
+- O lançamento continua no `app.js.gz`; a revisão de edição por equipe impede que uma limpeza agendada de bolinha apague uma posição mais recente ou outra queda. Ao alterar o núcleo, descomprima, valide JavaScript e recomprima com gzip determinístico (`mtime=0`).
+- Verificação: `NODE_PATH=<pasta-com-jsdom>/node_modules node --test test/camp-*.test.cjs`. A suíte cobre bolinhas, cores, focos, salvamento/restauração e transições de fase.

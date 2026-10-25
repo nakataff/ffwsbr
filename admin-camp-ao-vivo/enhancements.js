@@ -836,8 +836,8 @@
     }
     const random=$('#cff-random-drawings');if(random)random.checked=launchDesign.randomDrawings;
     const groups=[
-      ['entry','Preenchimento',true,['.v32-drop-order-box','#drop-opt-auto-update-row','#drop-opt-simple-placement-row','#drop-opt-simple-kills-row','#drop-opt-count-kills-without-placement-row','#drop-opt-v57-team-score-row','#drop-opt-v81-top12-last-row']],
-      ['visual','Cores e visual',true,['#cff-launch-edit-mode','#cff-customize-colors-row','#cff-auto-colors','#cff-black-headers-row','#cff-random-drawings-row','#cff-launch-logo-config','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
+      ['entry','Preenchimento e acompanhamento',true,['label:has(#drop-opt-elimination-focus)','.v32-drop-order-box','#drop-opt-auto-update-row','#drop-opt-simple-placement-row','#drop-opt-simple-kills-row','#drop-opt-count-kills-without-placement-row','#drop-opt-v57-team-score-row','#drop-opt-v81-top12-last-row']],
+      ['visual','Cores, logos e aparência',false,['#cff-launch-edit-mode','#cff-customize-colors-row','#cff-auto-colors','#cff-black-headers-row','#cff-random-drawings-row','#cff-launch-logo-config','#drop-opt-v59-short-names-row','#drop-opt-v59-show-logos-row','label:has(#drop-opt-legends)']],
       ['tools','Botões e ferramentas',false,['label:has(#drop-opt-random)','label:has(#drop-opt-clear-maps)','label:has(#drop-opt-clear-placements)','#v34-hide-buttons-panel','#cff-clear-slot-row','#cff-hide-drawing-dice-row','#v40-estimator-box','#v95-tournament-csv-tools','#tiebreak-panel-v28']],
       ['clear','Limpar dados',false,['#v33-remove-team-panel','#v38-clear-drops-box']]
     ];
