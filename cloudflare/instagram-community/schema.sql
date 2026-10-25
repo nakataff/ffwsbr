@@ -71,6 +71,9 @@ CREATE INDEX IF NOT EXISTS idx_monthly_points
 CREATE INDEX IF NOT EXISTS idx_users_points
   ON users (points_all DESC);
 
+CREATE INDEX IF NOT EXISTS idx_users_username_nocase
+  ON users (username COLLATE NOCASE);
+
 CREATE INDEX IF NOT EXISTS idx_awards_created_at
   ON awards (created_at DESC);
 

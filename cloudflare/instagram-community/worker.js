@@ -85,6 +85,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
   'CREATE INDEX IF NOT EXISTS idx_active_days_day_user ON active_days (day_key, user_key)',
   'CREATE INDEX IF NOT EXISTS idx_monthly_points ON monthly_users (month_key, points DESC)',
   'CREATE INDEX IF NOT EXISTS idx_users_points ON users (points_all DESC)',
+  'CREATE INDEX IF NOT EXISTS idx_users_username_nocase ON users (username COLLATE NOCASE)',
 ]);
 
 export default {

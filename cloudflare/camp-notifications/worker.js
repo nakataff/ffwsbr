@@ -140,6 +140,11 @@ export class NotificationHub extends DurableObject {
    const rate=this.rows('SELECT * FROM limits WHERE uid=?',uid)[0],now=Date.now(),active=rate&&now-rate.request_at<60000;
    if(active&&rate.requests>=30)throw Object.assign(Error('Aguarde um minuto antes de tentar novamente.'),{status:429});
    this.sql.exec('INSERT OR REPLACE INTO limits VALUES(?,?,?,?)',uid,rate?.test_at||0,active?rate.request_at:now,active?rate.requests+1:1);
+   if(action==='economyAdmin'&&b.operation==='interactionReport'){
+    admin();
+    if(!this.interactionRanking)throw Object.assign(Error('Banco de interações indisponível.'),{status:503});
+    return json(await this.interactionRanking.adminReport(b,Date.now()));
+   }
    if(action==='careerAdmin'){admin();if(b.operation==='supporterLivepixTest'){this.livepixDiagnostic??=livepixDiagnostic.create({env:this.env});return json(await this.livepixDiagnostic.check());}return json(await this.careers().admin(user,b));}
    if(action==='economy'||action==='economyAdmin'){
     const economy=economyCore.createEconomy({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),db:goalDatabase(this.goalSecret),ranking:this.interactionRanking,communityCheckin:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session}),signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível registrar o check-in agora.');return r.json();},verifySession:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();}});
