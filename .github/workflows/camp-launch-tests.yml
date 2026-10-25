@@ -1,0 +1,25 @@
+name: Camp launch UI tests
+on:
+  push:
+    paths:
+      - 'admin-camp-ao-vivo/launch-extras.js'
+      - 'admin-camp-ao-vivo/placement-live.js'
+      - 'admin-camp-ao-vivo/elimination-focus.js'
+      - 'test/camp-*.test.cjs'
+      - '.github/workflows/camp-launch-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix /tmp/cff-camp-tests --no-save --no-audit --no-fund jsdom@26.1.0
+      - run: node --test test/camp-multi-focus.test.cjs test/camp-elimination-focus.test.cjs
+        env:
+          NODE_PATH: /tmp/cff-camp-tests/node_modules
+      - run: node --check admin-camp-ao-vivo/launch-extras.js && node --check admin-camp-ao-vivo/placement-live.js
