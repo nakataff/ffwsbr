@@ -46,7 +46,9 @@ registros da edição, sem atribuir prêmio oficial de MVP.
 `js/global-player-profile.js` só busca dados do Mundial para um ID desse manifesto,
 ignora staff e valida o ID de retorno. O leitor existente `player-page.min.js`
 carrega esse resumo em paralelo às suas hidratações e mescla depois delas.
-Um bloco próprio mostra equipe, abates, quedas, média e link da edição. Antes das
+A aba Mundial 2026 aparece em Desempenho por competição, junto das outras edições,
+com filtros por fase, equipe, abates, quedas, média, dano, assistências e link da edição.
+Nenhum bloco do Mundial é inserido acima das abas. Antes das
 partidas, números são traços e não entram nos totais históricos. Depois de jogar,
 o histórico recebe uma edição com link, e os totais aplicam apenas a diferença
 para um registro existente da mesma edição, evitando duplicação. Falha no resumo
