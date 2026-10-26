@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261023-global-team-pages-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261026-global-rosters-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
@@ -44,11 +44,17 @@
     return Math.min(startOf(r)+(r.stage==='lastChance'?7.5:4.5)*3600000,summary.rounds[i+1]?startOf(summary.rounds[i+1]):Infinity);
   }
   function groupMembers(group) {return summary.teams.filter(t=>t.group===group);}
+  function playerFlag(player) {
+    const code=String(player.country||'').toLowerCase();
+    if(!/^[a-z]{2}$/.test(code))return '<span class="global-start-flag-pending" role="img" aria-label="País a confirmar">—</span>';
+    let name=code.toUpperCase();try{name=new Intl.DisplayNames(['pt-BR'],{type:'region'}).of(name)}catch{}
+    return `<img class="global-start-player-flag" src="/flag/${esc(code)}.webp" width="20" height="13" alt="${esc(name)}" title="${esc(name)}" loading="lazy" decoding="async">`;
+  }
   function groupCard(group,upcoming=false,squads=[]) {
     return `<article class="global-start-group"><h3>Grupo ${esc(group)}</h3><div>${groupMembers(group).map(t=>{
       if(upcoming) return `<a class="global-start-fixture-team" href="${BASE}equipe?time=${esc(t.id)}">${teamName(t)}</a>`;
       const players=squads.find(s=>s.id===t.id)?.players||[];
-      return `<details class="global-start-roster"><summary>${teamName(t)}<span aria-hidden="true">⌄</span></summary><div>${players.length?players.map(p=>`<p><strong>${esc(p.name)}</strong><small>${esc(({RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'})[p.role]||p.role||'Jogador')}${p.captain?' · Capitão':''}</small></p>`).join(''):'<p class="global-start-muted">Elenco ainda não cadastrado para este Mundial.</p>'}<a class="global-start-link" href="${BASE}equipe?time=${esc(t.id)}">Ver equipe e estatísticas ↗</a></div></details>`;
+      return `<details class="global-start-roster"><summary>${teamName(t)}<span aria-hidden="true">⌄</span></summary><div>${players.length?players.map(p=>`<p><strong>${playerFlag(p)}${esc(p.name)}</strong><small>${esc(({RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'})[p.role]||p.role||'Jogador')}${p.captain?' · Capitão':''}</small></p>`).join(''):'<p class="global-start-muted">Elenco ainda não cadastrado para este Mundial.</p>'}<a class="global-start-link" href="${BASE}equipe?time=${esc(t.id)}">Ver equipe e estatísticas ↗</a></div></details>`;
     }).join('')}</div></article>`;
   }
   function tick() {

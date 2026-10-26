@@ -49,7 +49,7 @@ test('tabs load once on demand, support filters, accessible keyboard navigation 
   const u=await ui();try{
     await u.click('[data-global-start-tab="mvp"]');assert(u.$('#global-start-pane').textContent.includes('Top 10 · Geral'));assert(u.$('[data-global-start-mvp-stage="geral"]').getAttribute('aria-pressed')==='true');
     await u.click('[data-global-start-mvp-stage="lastChance"]');assert.equal(new URL(u.w.location.href).searchParams.get('etapa'),'lastChance');
-    await u.click('[data-global-start-tab="equipes"]');assert.equal(u.all('.global-start-groups .global-start-group').length,4);assert.equal(u.all('.global-start-roster').length,24);
+    await u.click('[data-global-start-tab="equipes"]');assert.equal(u.all('.global-start-groups .global-start-group').length,4);assert.equal(u.all('.global-start-roster').length,24);assert.equal(u.all('.global-start-player-flag').length,119);assert.equal(u.all('.global-start-flag-pending').length,1);
     await u.change('[data-global-start-group]','B');assert.equal(u.all('.global-start-roster').length,6);assert(u.$('.global-start-groups').textContent.includes('LOUD'));assert.equal(new URL(u.w.location.href).searchParams.get('grupo'),'B');
     u.$('[data-global-start-tab="equipes"]').dispatchEvent(new u.w.KeyboardEvent('keydown',{key:'Home',bubbles:true}));await settle();assert.equal(u.$('[role=tab][aria-selected=true]').textContent,'Tabela');
     await u.click('[data-global-start-tab="mvp"]');await u.click('[data-global-start-tab="equipes"]');

@@ -11,11 +11,11 @@ async function ui({search='',page='equipes',fail=false,snapshot}={}){
  w.eval(fs.readFileSync(base+'equipes.js','utf8'));await settle();
  return {w,calls,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await settle();},change:async(s,v,event='change')=>{const e=w.document.querySelector(s);e.value=v;e.dispatchEvent(new w.Event(event,{bubbles:true}));await settle();},visit:async id=>{w.history.replaceState(null,'','/ffws-global-2026/equipe?time='+id);w.navigate('ffws-global-2026-equipe');await settle();},close:()=>w.close()};
 }
-test('supplied rosters preserve eight teams, 40 players and pending LYON/LOUD without guessed coaches',()=>{
- const s=read(base+'equipes-resumo.json');assert.equal(s.teams.length,24);assert.equal(s.teams.flatMap(t=>t.players).length,40);assert.equal(s.teams.filter(t=>t.players.length).length,8);
- for(const id of ['lyon','loud'])assert.equal(s.teams.find(t=>t.id===id).players.length,0);
+test('supplied rosters cover all 24 teams and 120 players without guessed staff or statistics',()=>{
+ const s=read(base+'equipes-resumo.json');assert.equal(s.teams.length,24);assert.equal(s.teams.flatMap(t=>t.players).length,120);assert(s.teams.every(t=>t.players.length===5));
+ assert.deepEqual(s.teams.find(t=>t.id==='lyon').players.map(p=>p.name),['Haax','SoyDella','Gamezking','Joacozd','Joker']);
  assert(s.teams.every(t=>t.fixtures.length===6));assert(s.teams.every(t=>Object.values(t.statsByStage).every(v=>v===null)));assert(s.teams.flatMap(t=>t.players).every(p=>p.type==='player'&&p.statsByStage.geral===null));
- assert.equal(s.teams.find(t=>t.id==='btr').players[2].name,'C1b3nk');assert(Buffer.byteLength(JSON.stringify(s))<32000);
+ assert.equal(s.teams.find(t=>t.id==='btr').players[2].name,'C1b3nk');assert(Buffer.byteLength(JSON.stringify(s))<50000);
 });
 test('snapshot stats isolate name AND team, include real zero, and preserve independent daily phase-two tables',()=>{
  const i=sources(),team=i.teams.teams.find(t=>t.id==='btr');
@@ -38,7 +38,7 @@ test('directory uses native team-page links, searchable players and group filter
  }finally{u.close();}
 });
 test('direct team page has its own heading, title, navigation, placeholders and no floating window',async()=>{
- const u=await ui({page:'equipe',search:'?time=loud'});try{assert(u.$('.gteam-profile'));assert.equal(u.$('h1').textContent,'LOUD');assert(u.w.document.title.startsWith('LOUD · Mundial 2026'));assert(u.$('.gteam-profile').textContent.includes('Elenco ainda não confirmado'));assert(u.$('.gteam-profile').textContent.includes('—'));assert(!u.$('dialog'));assert.equal(u.all('[data-gteam]').length,0);assert(u.$('.gteam-breadcrumb a[href="/ffws-global-2026/equipes"]'));assert.equal(u.calls.length,1);}finally{u.close();}
+ const u=await ui({page:'equipe',search:'?time=loud'});try{assert(u.$('.gteam-profile'));assert.equal(u.$('h1').textContent,'LOUD');assert(u.w.document.title.startsWith('LOUD · Mundial 2026'));assert.equal(u.all('.gteam-roster>div').length,5);assert(u.$('.gteam-profile').textContent.includes('Nickz7'));assert(u.$('.gteam-profile').textContent.includes('—'));assert(!u.$('dialog'));assert.equal(u.all('[data-gteam]').length,0);assert(u.$('.gteam-breadcrumb a[href="/ffws-global-2026/equipes"]'));assert.equal(u.calls.length,1);}finally{u.close();}
  const missing=await ui({page:'equipe',search:'?time=unknown'});try{assert(missing.$('h1').textContent.includes('Equipe não encontrada'));assert(!missing.$('.gteam-profile'));}finally{missing.close();}
 
 });
@@ -70,10 +70,17 @@ test('compact cards show qualified teams, per-player local flags and independent
  }finally{u.close();}
 });
 test('flags use individual countries, valid local assets and a neutral fallback, never organization logos',async()=>{
- const input=read(base+'players.json');assert.equal(input.players.filter(p=>p.country).length,40);for(const p of input.players){const asset=fs.readFileSync('flag/'+p.country+'.webp');assert.equal(asset.toString('ascii',8,12),'WEBP');}
+ const input=read(base+'players.json');assert.equal(input.players.filter(p=>p.country).length,119);assert.deepEqual(input.players.filter(p=>!p.country).map(p=>p.name),['Ericka']);for(const p of input.players.filter(p=>p.country)){const asset=fs.readFileSync('flag/'+p.country+'.webp');assert.equal(asset.toString('ascii',8,12),'WEBP');}
  const snapshot=read(base+'equipes-resumo.json'),btr=snapshot.teams.find(t=>t.id==='btr');btr.players[0].country='../../bad';
  const u=await ui({snapshot});try{
   const card=u.$('[data-gteam="btr"]');assert(!card.querySelector('img[src*="bad"]'));assert(card.querySelector('.gteam-flag-missing'));const flag=card.querySelector('[data-player-flag]');flag.dispatchEvent(new u.w.Event('error'));assert.equal(card.querySelectorAll('[data-player-flag]').length,3);assert(!card.querySelector('.gteam-card-roster img[src$="escudo.webp"]'));assert.equal(u.calls.length,1);
   await u.visit('btr');assert.equal(u.all('.gteam-profile .gteam-person-name [data-player-flag]').length,4);
  }finally{u.close();}
+});
+
+test('new mixed-nationality rosters preserve each person’s country and unknown Ericka stays neutral',async()=>{
+ const input=read(base+'players.json'),country=(team,name)=>input.players.find(p=>p.team===team&&p.name===name)?.country;
+ for(const [team,name,flag] of [['LYON','Haax','br'],['LYON','SoyDella','ar'],['LYON','Joker','cl'],['Blue Cheese','Stu','pe'],['GunDynasty','David444','do'],['Stellar Esport','Lotex','ni'],['Stellar Esport','Lins7','br'],['Stellar Esport','Salami','us']])assert.equal(country(team,name),flag);
+ assert(input.players.filter(p=>p.team==='ParadoX Gaming').every(p=>p.country==='za'));
+ const u=await ui({page:'equipe',search:'?time=stellar-esport'});try{assert.equal(u.all('.gteam-person-name [data-player-flag]').length,4);assert(u.$('.gteam-person-name .gteam-flag-missing'));assert(!u.$('.gteam-profile img[src="/flag/.webp"]'));assert(u.$('.gteam-person-name img[src="/flag/ni.webp"]'));assert.equal(u.calls.length,1)}finally{u.close()}
 });

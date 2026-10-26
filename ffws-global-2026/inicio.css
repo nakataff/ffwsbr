@@ -78,3 +78,7 @@ ol.global-start-pools{padding-left:28px}.global-start-time{color:#ccecff;font-we
  .global-start-under{gap:10px}.global-start-link{font-size:.73rem}
 }
 @media(max-width:360px){.global-start-brief{font-size:.66rem}.global-start-team{font-size:.7rem}.global-start-fixture-team{padding:9px 6px}.global-start-table .global-start-team{gap:4px}}
+
+.global-start-roster p strong{display:inline-flex;align-items:center;gap:7px;max-width:100%;overflow-wrap:anywhere}
+.global-start-player-flag{width:20px;height:13px;object-fit:cover;flex-shrink:0;border-radius:2px}
+.global-start-flag-pending{display:inline-block;width:20px;text-align:center;color:var(--text-muted)}

@@ -29,16 +29,21 @@ A mesma fonte atualiza a página Equipes, o Início e as páginas completas da e
 A interface não escreve no GitHub: por enquanto, atualizar o elenco é uma edição
 nessa fonte única seguida da geração offline, sem criar mais um cadastro em banco.
 
-## Cobertura em 23/10/2026
+## Cobertura em 26/10/2026
 
-40 jogadores de oito equipes, fornecidos pelo administrador: BTR, GOW, P Esports,
-All Gamers Global, Team Flash, RRQ, ONIC e Buriram. O trecho LYON estava comentado
-na origem e o da LOUD tinha nomes vazios; ambos permanecem pendentes. Nenhum coach,
-função de jogo, escalação titular ou estatística foi inferido.
+120 jogadores das 24 equipes, cinco por elenco, a partir do texto e dos dois prints
+fornecidos pelo administrador. Foram completadas LYON, as três equipes brasileiras,
+América Latina, América do Norte, Bangladesh, Paquistão, Nepal, MENA, África e Índia;
+as oito equipes do Sudeste Asiático foram preservadas e revisadas no mesmo envio.
+Funções de jogo vêm do texto: Rusher, Granadeiro, Suporte, Sniper e Rifler.
+119 jogadores têm país informado. Ericka (Stellar Esport) permanece com país a
+confirmar, ausente no texto e no print; Lotex segue `ni` (Nicarágua), conforme o
+campo explícito do texto. Nomes vazios de coaches foram ignorados; não foram
+inventados comissão, titulares ou resultados.
 
 ## Custo e regras
 
-`equipes.js` baixa somente `equipes-resumo.json` (aproximadamente 28 KB sem compressão)
+`equipes.js` baixa somente `equipes-resumo.json` (aproximadamente 42 KB sem compressão)
 na primeira abertura. Esse arquivo inclui os 24 times, elenco, seis rodadas por equipe
 na Fase 1 e estatísticas resumidas. Buscar, filtrar, abrir comissão, trocar etapa e
 compartilhar reutilizam a memória da página. O mesmo template serve aos 24 times. Não usa Firebase, Durable Objects, polling nem
@@ -75,3 +80,6 @@ da referência enviada pelo administrador; as dos cinco da Buriram foram conferi
 - https://esports.ff.gameid.garena.co.id/tim/buriram-united-esports/ffws-sea-2026-spring
 - https://liquipedia.net/freefire/GETHIGH (registra GETNA como outro nickname)
 Nenhum elenco/nickname foi substituído pelo de outra competição durante essa conferência.
+
+As bandeiras individuais também são preservadas em `inicio-elencos.json` e exibidas
+na aba Equipes do Início do Mundial. O arquivo continua carregado somente nessa aba.

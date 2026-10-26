@@ -1,288 +1,983 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "updatedAt": "2026-10-23",
+  "updatedAt": "2026-10-26",
   "players": [
+    {
+      "name": "Haax",
+      "team": "LYON",
+      "order": 1,
+      "type": "player",
+      "country": "br",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "SoyDella",
+      "team": "LYON",
+      "order": 2,
+      "type": "player",
+      "country": "ar",
+      "role": "Rusher"
+    },
+    {
+      "name": "Gamezking",
+      "team": "LYON",
+      "order": 3,
+      "type": "player",
+      "country": "cl",
+      "role": "Rusher"
+    },
+    {
+      "name": "Joacozd",
+      "team": "LYON",
+      "order": 4,
+      "type": "player",
+      "country": "cl",
+      "role": "Suporte"
+    },
+    {
+      "name": "Joker",
+      "team": "LYON",
+      "order": 5,
+      "type": "player",
+      "country": "cl",
+      "role": "Suporte"
+    },
     {
       "name": "Fellow",
       "team": "Bigetron by Vitality",
       "order": 1,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Rusher"
     },
     {
       "name": "Tiuszz",
       "team": "Bigetron by Vitality",
       "order": 2,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Rusher"
     },
     {
       "name": "C1b3nk",
       "team": "Bigetron by Vitality",
       "order": 3,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Sniper"
     },
     {
       "name": "Kyongg",
       "team": "Bigetron by Vitality",
       "order": 4,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Rusher"
     },
     {
       "name": "Kojaa",
       "team": "Bigetron by Vitality",
       "order": 5,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Granadeiro"
     },
     {
       "name": "MTai",
       "team": "GOW",
       "order": 1,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Suporte"
     },
     {
       "name": "Dyan",
       "team": "GOW",
       "order": 2,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Granadeiro"
     },
     {
       "name": "Gocu",
       "team": "GOW",
       "order": 3,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Rusher"
     },
     {
       "name": "Demon",
       "team": "GOW",
       "order": 4,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Rusher",
+      "wikiLink": "Demon_(Vietnamese_Player)"
     },
     {
       "name": "Piciu",
       "team": "GOW",
       "order": 5,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Suporte"
     },
     {
       "name": "Alan",
       "team": "P Esports",
       "order": 1,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Granadeiro",
+      "wikiLink": "Alan (Vietnamese Player)"
     },
     {
       "name": "BeDep",
       "team": "P Esports",
       "order": 2,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Suporte"
     },
     {
       "name": "CTuan",
       "team": "P Esports",
       "order": 3,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Sniper"
     },
     {
       "name": "LBT",
       "team": "P Esports",
       "order": 4,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Rusher"
     },
     {
       "name": "Nero",
       "team": "P Esports",
       "order": 5,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Granadeiro",
+      "wikiLink": "Nero (Vietnamese Player)"
     },
     {
       "name": "TEAMSR",
       "team": "All Gamers Global",
       "order": 1,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Rusher"
     },
     {
       "name": "NAMELESS",
       "team": "All Gamers Global",
       "order": 2,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Suporte"
     },
     {
       "name": "DEW",
       "team": "All Gamers Global",
       "order": 3,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Sniper"
     },
     {
       "name": "SAIFA",
       "team": "All Gamers Global",
       "order": 4,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Rusher"
     },
     {
       "name": "BAROS",
       "team": "All Gamers Global",
       "order": 5,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Granadeiro"
     },
     {
       "name": "TheGod",
       "team": "Team Flash",
       "order": 1,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Sniper"
     },
     {
       "name": "TheZom",
       "team": "Team Flash",
       "order": 2,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Granadeiro"
     },
     {
       "name": "ABCD",
       "team": "Team Flash",
       "order": 3,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Rusher"
     },
     {
       "name": "NLuann",
       "team": "Team Flash",
       "order": 4,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Sniper"
     },
     {
       "name": "MinkCuog",
       "team": "Team Flash",
       "order": 5,
       "type": "player",
-      "country": "vn"
+      "country": "vn",
+      "role": "Suporte"
     },
     {
       "name": "Jeek",
       "team": "RRQ",
       "order": 1,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Sniper"
     },
     {
       "name": "Ranz",
       "team": "RRQ",
       "order": 2,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Rusher"
     },
     {
       "name": "Maal",
       "team": "RRQ",
       "order": 3,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Sniper"
     },
     {
       "name": "Abay",
       "team": "RRQ",
       "order": 4,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Rusher"
     },
     {
       "name": "Dutzz",
       "team": "RRQ",
       "order": 5,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Granadeiro"
     },
     {
       "name": "Putraxx",
       "team": "ONIC",
       "order": 1,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Rusher"
     },
     {
       "name": "Adam",
       "team": "ONIC",
       "order": 2,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Rusher"
     },
     {
       "name": "Crime",
       "team": "ONIC",
       "order": 3,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Suporte"
     },
     {
       "name": "Geday",
       "team": "ONIC",
       "order": 4,
       "type": "player",
-      "country": "id"
+      "country": "id",
+      "role": "Granadeiro"
     },
     {
       "name": "POOM",
       "team": "ONIC",
       "order": 5,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Sniper"
     },
     {
       "name": "WASSANA",
       "team": "Buriram United Esports",
       "order": 1,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Rusher",
+      "worldTitles": 1
     },
     {
       "name": "JOENA",
       "team": "Buriram United Esports",
       "order": 2,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Granadeiro",
+      "worldTitles": 3
     },
     {
       "name": "MOSHI",
       "team": "Buriram United Esports",
       "order": 3,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Sniper",
+      "worldTitles": 2
     },
     {
       "name": "TERNA",
       "team": "Buriram United Esports",
       "order": 4,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Suporte"
     },
     {
       "name": "GETNA",
       "team": "Buriram United Esports",
       "order": 5,
       "type": "player",
-      "country": "th"
+      "country": "th",
+      "role": "Suporte",
+      "worldTitles": 2
+    },
+    {
+      "name": "Nickz7",
+      "team": "LOUD",
+      "order": 1,
+      "type": "player",
+      "country": "br",
+      "role": "Rusher"
+    },
+    {
+      "name": "Bzp10",
+      "team": "LOUD",
+      "order": 2,
+      "type": "player",
+      "country": "br",
+      "role": "Suporte"
+    },
+    {
+      "name": "Trap",
+      "team": "LOUD",
+      "order": 3,
+      "type": "player",
+      "country": "br",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "GUAXA7",
+      "team": "LOUD",
+      "order": 4,
+      "type": "player",
+      "country": "br",
+      "role": "Sniper"
+    },
+    {
+      "name": "Hak",
+      "team": "LOUD",
+      "order": 5,
+      "type": "player",
+      "country": "br",
+      "role": "Suporte"
+    },
+    {
+      "name": "General",
+      "team": "LOS",
+      "order": 1,
+      "type": "player",
+      "country": "br",
+      "role": "Rusher"
+    },
+    {
+      "name": "Raone7",
+      "team": "LOS",
+      "order": 2,
+      "type": "player",
+      "country": "br",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "Yago",
+      "team": "LOS",
+      "order": 3,
+      "type": "player",
+      "country": "br",
+      "role": "Sniper",
+      "worldTitles": 1
+    },
+    {
+      "name": "RIGBY",
+      "team": "LOS",
+      "order": 4,
+      "type": "player",
+      "country": "br",
+      "role": "Rusher"
+    },
+    {
+      "name": "mtsexy",
+      "team": "LOS",
+      "order": 5,
+      "type": "player",
+      "country": "br",
+      "role": "Rusher"
+    },
+    {
+      "name": "Bops",
+      "team": "FLUXO W7M",
+      "order": 1,
+      "type": "player",
+      "country": "br",
+      "role": "Granadeiro",
+      "worldTitles": 2
+    },
+    {
+      "name": "BuTziN",
+      "team": "FLUXO W7M",
+      "order": 2,
+      "type": "player",
+      "country": "br",
+      "role": "Rusher",
+      "worldTitles": 2
+    },
+    {
+      "name": "MT7",
+      "team": "FLUXO W7M",
+      "order": 3,
+      "type": "player",
+      "country": "br",
+      "role": "Sniper",
+      "worldTitles": 1
+    },
+    {
+      "name": "Giuh",
+      "team": "FLUXO W7M",
+      "order": 4,
+      "type": "player",
+      "country": "br",
+      "role": "Rusher",
+      "worldTitles": 2
+    },
+    {
+      "name": "Proxx7",
+      "team": "FLUXO W7M",
+      "order": 5,
+      "type": "player",
+      "country": "br",
+      "role": "Rusher"
+    },
+    {
+      "name": "Jostin",
+      "team": "Blue Cheese",
+      "order": 1,
+      "type": "player",
+      "country": "ec",
+      "role": "Rusher"
+    },
+    {
+      "name": "Esteban",
+      "team": "Blue Cheese",
+      "order": 2,
+      "type": "player",
+      "country": "cl",
+      "role": "Rusher"
+    },
+    {
+      "name": "Krowa",
+      "team": "Blue Cheese",
+      "order": 3,
+      "type": "player",
+      "country": "ar",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "Stu",
+      "team": "Blue Cheese",
+      "order": 4,
+      "type": "player",
+      "country": "pe",
+      "role": "Suporte"
+    },
+    {
+      "name": "Naranjo",
+      "team": "Blue Cheese",
+      "order": 5,
+      "type": "player",
+      "country": "co",
+      "role": "Rusher"
+    },
+    {
+      "name": "Andrexz",
+      "team": "GunDynasty",
+      "order": 1,
+      "type": "player",
+      "country": "co",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "David444",
+      "team": "GunDynasty",
+      "order": 2,
+      "type": "player",
+      "country": "do",
+      "role": "Rusher"
+    },
+    {
+      "name": "Bnlxxy",
+      "team": "GunDynasty",
+      "order": 3,
+      "type": "player",
+      "country": "ar",
+      "role": "Suporte",
+      "wikiLink": "BNL"
+    },
+    {
+      "name": "RushFXP",
+      "team": "GunDynasty",
+      "order": 4,
+      "type": "player",
+      "country": "ar",
+      "role": "Rusher"
+    },
+    {
+      "name": "Lukkz7",
+      "team": "GunDynasty",
+      "order": 5,
+      "type": "player",
+      "country": "ar",
+      "role": "Rusher"
+    },
+    {
+      "name": "Lotex",
+      "team": "Stellar Esport",
+      "order": 1,
+      "type": "player",
+      "country": "ni",
+      "role": "Sniper"
+    },
+    {
+      "name": "Ericka",
+      "team": "Stellar Esport",
+      "order": 2,
+      "type": "player",
+      "country": "",
+      "role": "Rusher"
+    },
+    {
+      "name": "Lins7",
+      "team": "Stellar Esport",
+      "order": 3,
+      "type": "player",
+      "country": "br",
+      "role": "Sniper"
+    },
+    {
+      "name": "Loro",
+      "team": "Stellar Esport",
+      "order": 4,
+      "type": "player",
+      "country": "mx",
+      "role": "Rusher"
+    },
+    {
+      "name": "Salami",
+      "team": "Stellar Esport",
+      "order": 5,
+      "type": "player",
+      "country": "us",
+      "role": "Sniper"
+    },
+    {
+      "name": "RUSTY",
+      "team": "Team INF",
+      "order": 1,
+      "type": "player",
+      "country": "bd",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "MIKEY",
+      "team": "Team INF",
+      "order": 2,
+      "type": "player",
+      "country": "bd",
+      "role": "Sniper"
+    },
+    {
+      "name": "OVI",
+      "team": "Team INF",
+      "order": 3,
+      "type": "player",
+      "country": "bd",
+      "role": "Rusher"
+    },
+    {
+      "name": "MATRIX",
+      "team": "Team INF",
+      "order": 4,
+      "type": "player",
+      "country": "bd",
+      "role": "Suporte"
+    },
+    {
+      "name": "ROMAN",
+      "team": "Team INF",
+      "order": 5,
+      "type": "player",
+      "country": "bd",
+      "role": "Rusher"
+    },
+    {
+      "name": "RASEL",
+      "team": "PIRATE ESPORTS",
+      "order": 1,
+      "type": "player",
+      "country": "bd",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "TAJZ",
+      "team": "PIRATE ESPORTS",
+      "order": 2,
+      "type": "player",
+      "country": "bd",
+      "role": "Rusher"
+    },
+    {
+      "name": "TOKI",
+      "team": "PIRATE ESPORTS",
+      "order": 3,
+      "type": "player",
+      "country": "bd",
+      "role": "Sniper"
+    },
+    {
+      "name": "AZOIC",
+      "team": "PIRATE ESPORTS",
+      "order": 4,
+      "type": "player",
+      "country": "bd",
+      "role": "Sniper"
+    },
+    {
+      "name": "FLAMEX",
+      "team": "PIRATE ESPORTS",
+      "order": 5,
+      "type": "player",
+      "country": "bd",
+      "role": "Suporte"
+    },
+    {
+      "name": "AFLATOON",
+      "team": "Total Winner Esports",
+      "order": 1,
+      "type": "player",
+      "country": "pk",
+      "role": "Sniper"
+    },
+    {
+      "name": "PRINCE",
+      "team": "Total Winner Esports",
+      "order": 2,
+      "type": "player",
+      "country": "pk",
+      "role": "Rusher"
+    },
+    {
+      "name": "HUNTER",
+      "team": "Total Winner Esports",
+      "order": 3,
+      "type": "player",
+      "country": "pk",
+      "role": "Granadeiro",
+      "wikiLink": "HUNTER (Pakistani Player)"
+    },
+    {
+      "name": "SAMI",
+      "team": "Total Winner Esports",
+      "order": 4,
+      "type": "player",
+      "country": "pk",
+      "role": "Rusher",
+      "wikiLink": "SAMI (Pakistani Player)"
+    },
+    {
+      "name": "MOMIN",
+      "team": "Total Winner Esports",
+      "order": 5,
+      "type": "player",
+      "country": "pk",
+      "role": "Rusher"
+    },
+    {
+      "name": "STOPz",
+      "team": "Horaa Esports",
+      "order": 1,
+      "type": "player",
+      "country": "np",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "BHUDU",
+      "team": "Horaa Esports",
+      "order": 2,
+      "type": "player",
+      "country": "np",
+      "role": "Sniper"
+    },
+    {
+      "name": "SPARSY",
+      "team": "Horaa Esports",
+      "order": 3,
+      "type": "player",
+      "country": "np",
+      "role": "Rusher"
+    },
+    {
+      "name": "BLUEe",
+      "team": "Horaa Esports",
+      "order": 4,
+      "type": "player",
+      "country": "np",
+      "role": "Rusher"
+    },
+    {
+      "name": "SAVAGE",
+      "team": "Horaa Esports",
+      "order": 5,
+      "type": "player",
+      "country": "np",
+      "role": "Rusher"
+    },
+    {
+      "name": "SKYITO",
+      "team": "xProjekt",
+      "order": 1,
+      "type": "player",
+      "country": "ma",
+      "role": "Rusher"
+    },
+    {
+      "name": "POKIIX",
+      "team": "xProjekt",
+      "order": 2,
+      "type": "player",
+      "country": "ma",
+      "role": "Sniper"
+    },
+    {
+      "name": "Z4CK",
+      "team": "xProjekt",
+      "order": 3,
+      "type": "player",
+      "country": "ma",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "LBEHJA",
+      "team": "xProjekt",
+      "order": 4,
+      "type": "player",
+      "country": "ma",
+      "role": "Rusher"
+    },
+    {
+      "name": "PERUVI",
+      "team": "xProjekt",
+      "order": 5,
+      "type": "player",
+      "country": "ma",
+      "role": "Rifler"
+    },
+    {
+      "name": "WINDY",
+      "team": "ParadoX Gaming",
+      "order": 1,
+      "type": "player",
+      "country": "za",
+      "role": "Rusher"
+    },
+    {
+      "name": "SNEAKY",
+      "team": "ParadoX Gaming",
+      "order": 2,
+      "type": "player",
+      "country": "za",
+      "role": "Sniper"
+    },
+    {
+      "name": "DENRIQUE",
+      "team": "ParadoX Gaming",
+      "order": 3,
+      "type": "player",
+      "country": "za",
+      "role": "Suporte"
+    },
+    {
+      "name": "L2K",
+      "team": "ParadoX Gaming",
+      "order": 4,
+      "type": "player",
+      "country": "za",
+      "role": "Suporte"
+    },
+    {
+      "name": "LEDX",
+      "team": "ParadoX Gaming",
+      "order": 5,
+      "type": "player",
+      "country": "za",
+      "role": "Sniper"
+    },
+    {
+      "name": "KD",
+      "team": "Team Apex Gaming",
+      "order": 1,
+      "type": "player",
+      "country": "in",
+      "role": "Sniper"
+    },
+    {
+      "name": "SAHIL",
+      "team": "Team Apex Gaming",
+      "order": 2,
+      "type": "player",
+      "country": "in",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "SHOTO",
+      "team": "Team Apex Gaming",
+      "order": 3,
+      "type": "player",
+      "country": "in",
+      "role": "Rusher"
+    },
+    {
+      "name": "WOLVIN",
+      "team": "Team Apex Gaming",
+      "order": 4,
+      "type": "player",
+      "country": "in",
+      "role": "Suporte"
+    },
+    {
+      "name": "LOUIS",
+      "team": "Team Apex Gaming",
+      "order": 5,
+      "type": "player",
+      "country": "in",
+      "role": "Rusher"
+    },
+    {
+      "name": "DAAFIQ",
+      "team": "Resurrection Esports",
+      "order": 1,
+      "type": "player",
+      "country": "in",
+      "role": "Rusher"
+    },
+    {
+      "name": "ZIYAN",
+      "team": "Resurrection Esports",
+      "order": 2,
+      "type": "player",
+      "country": "in",
+      "role": "Sniper"
+    },
+    {
+      "name": "SIDAK",
+      "team": "Resurrection Esports",
+      "order": 3,
+      "type": "player",
+      "country": "in",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "UJJWAL",
+      "team": "Resurrection Esports",
+      "order": 4,
+      "type": "player",
+      "country": "in",
+      "role": "Suporte"
+    },
+    {
+      "name": "KRISH",
+      "team": "Resurrection Esports",
+      "order": 5,
+      "type": "player",
+      "country": "in",
+      "role": "Rusher"
+    },
+    {
+      "name": "STRUGGLE",
+      "team": "TSG Pros",
+      "order": 1,
+      "type": "player",
+      "country": "in",
+      "role": "Granadeiro"
+    },
+    {
+      "name": "SALLU09",
+      "team": "TSG Pros",
+      "order": 2,
+      "type": "player",
+      "country": "in",
+      "role": "Sniper"
+    },
+    {
+      "name": "BLOOD14",
+      "team": "TSG Pros",
+      "order": 3,
+      "type": "player",
+      "country": "in",
+      "role": "Rusher"
+    },
+    {
+      "name": "SOMI",
+      "team": "TSG Pros",
+      "order": 4,
+      "type": "player",
+      "country": "in",
+      "role": "Rusher"
+    },
+    {
+      "name": "ARJUNN",
+      "team": "TSG Pros",
+      "order": 5,
+      "type": "player",
+      "country": "in",
+      "role": "Sniper"
     }
   ],
   "entries": [],
-  "rosterSource": "Elencos fornecidos pelo administrador em 23/10/2026. LYON comentada na origem e nomes vazios não foram importados."
+  "rosterSource": "Elencos e funções fornecidos pelo administrador em 26/10/2026, conferidos com os dois prints de participantes. País por pessoa conforme o campo flag do texto (Lotex: ni); Ericka sem país informado no texto e no print. Nomes vazios da comissão não foram importados."
 }

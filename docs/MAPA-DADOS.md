@@ -94,7 +94,7 @@ Comissão, recolhimento e bandeiras por pessoa (`players.json → country`, imag
 locais `flag/{código}.webp`), busca e filtro por grupo. Trocar abas não faz consultas. Cada time
 abre uma página própria em `/ffws-global-2026/equipe?time=<id>`, com elenco,
 comissão, estatísticas por fase, agenda e demais times do grupo. `equipes.js` carrega apenas
-`equipes-resumo.json` (~28 KB estático, gerado pelo mesmo build do Início), uma vez.
+`equipes-resumo.json` (~42 KB estático, gerado pelo mesmo build do Início), uma vez.
 Os cards da home, do Início e da lista apontam para essas páginas. Links antigos
 `/equipes?time=<id>` continuam compatíveis por redirecionamento. Não
 carrega o cadastro inteiro, resultados detalhados, Firebase ou Durable Objects.

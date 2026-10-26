@@ -6,7 +6,7 @@
   const roots={[DIRECTORY]:document.getElementById(DIRECTORY+'-content'),[TEAM]:document.getElementById(TEAM+'-content')};
   if(!roots[DIRECTORY]||!roots[TEAM])return;
   let root=roots[DIRECTORY];
-  const VERSION='20261023-global-flags-v1';
+  const VERSION='20261026-global-rosters-v1';
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   const stages=[['geral','Geral'],['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Final']];

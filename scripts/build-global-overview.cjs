@@ -71,7 +71,7 @@ function build({stages, dates, teams, groups, players}) {
     top10[key]=[...ranks.values()].sort((a,b)=>b.kills-a.kills||b.damage-a.damage||b.assists-a.assists).slice(0,10);
   }
   const roster=(players.players||[]).filter(p=>!p.left && norm(p.rosterStatus)!=='SAIU');
-  const squads=metadata.map(t=>({id:t.id,players:roster.filter(p=>norm(p.team)===norm(t.name)||norm(p.team)===norm(t.abbreviation)).sort((a,b)=>Number(!!b.starter)-Number(!!a.starter)||num(a.order)-num(b.order)).map(p=>({name:p.name,role:p.roleShort||p.role||'',captain:!!p.captain,starter:!!p.starter}))}));
+  const squads=metadata.map(t=>({id:t.id,players:roster.filter(p=>norm(p.team)===norm(t.name)||norm(p.team)===norm(t.abbreviation)).sort((a,b)=>Number(!!b.starter)-Number(!!a.starter)||num(a.order)-num(b.order)).map(p=>({name:p.name,role:p.roleShort||p.role||'',country:p.country||p.flag||'',captain:!!p.captain,starter:!!p.starter}))}));
   const updatedAt=[stages.updatedAt,dates.updatedAt,teams.updatedAt,groups.updatedAt,players.updatedAt].filter(Boolean).sort().at(-1);
   // One small public snapshot: never fetch the complete players database on this page.
   const sameTeam=(value,t)=>[t.name,t.abbreviation,t.id,t.wikiName].some(alias=>norm(alias)===norm(value));
