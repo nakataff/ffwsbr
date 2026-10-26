@@ -1,0 +1,84 @@
+name: Rebuild Copa FF 2026 complete groups
+on:
+  push:
+    branches:
+      - fix/copa-2026-complete-groups-20261026
+      - main
+    paths:
+      - 'imports/copa-ff-2026/sources/grupos-ab.csv'
+      - 'imports/copa-ff-2026/sources/grupos-cd.csv'
+      - 'imports/copa-ff-2026/sources/geral-ab.csv'
+      - 'imports/copa-ff-2026/sources/geral-cd.csv'
+      - 'imports/copa-ff-2026/sources/repescagem.csv'
+      - 'imports/copa-ff-2026/sources/final.csv'
+      - 'scripts/build-copa-2026.py'
+      - 'scripts/build-copa-player-profiles.py'
+      - '.github/workflows/rebuild-copa-2026.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: rebuild-copa-2026-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild all static Copa group rankings and player snapshots
+        run: |
+          python3 scripts/build-copa-2026.py
+          python3 scripts/build-copa-player-profiles.py
+          python3 scripts/build-hall-extra-events.py
+          python3 scripts/build-copa-2026.py --check
+          python3 scripts/build-copa-player-profiles.py --check
+          python3 scripts/build-hall-extra-events.py --check
+      - name: Assert complete coverage and preservation of overall career scores
+        run: |
+          python3 - <<'PY'
+          import csv,json
+          from pathlib import Path
+          root=Path('.')
+          r=json.loads((root/'imports/copa-ff-2026/report.json').read_text())
+          d=json.loads((root/'novos-torneios/copa-ff-2026.json').read_text())
+          assert r['coverage']=='complete-stages'
+          assert r['counts']=={'geral':110,'grupos':110,'repescagem':50,'final':52}
+          assert r['groupParts']['counts']==[55,55] and r['groupParts']['identicalDuplicatesRemoved']==0
+          assert r['groupParts']['previousRowsPreserved']==100
+          assert not r['generalVsStageDifferences'] and not r['playersMissingFromGeneral']
+          assert len(r['teamValidation'])==24 and sum(t['playerMatches'] for t in r['teamValidation'])==4*sum(t['matches'] for t in r['teamValidation'])
+          assert d['playerRankings']['grupos']['coverage']=='complete'
+          assert sum(row[3] for row in d['playerRankings']['grupos']['rows'])==2709
+          assert sum(row[3] for row in d['playerRanking']['rows'])==4187
+          assert len(d['playerRankings']['grupos']['rows'])==110
+          for player,kills in [('yoko7',8),('proxx7',7),('mtsexy',1),('master77',0)]:
+            p=json.loads((root/f'copa-ff-2026/player-data/{player}.json').read_text())
+            assert p['stageCoverage']['grupos']=='complete' and p['stats']['grupos']['kills']==kills,(player,p)
+          print('Grupos da Copa 2026: todos os 110 participantes completos, incluindo zero abates.')
+          PY
+      - name: Install isolated browser test dependencies
+        run: |
+          mkdir -p /tmp/cff-copa-tests
+          cp test/game-gifts-browser-package.json /tmp/cff-copa-tests/package.json
+          npm install --prefix /tmp/cff-copa-tests --no-audit --no-fund
+      - name: Run Copa profiles and Hall regression tests before publication
+        env:
+          NODE_PATH: /tmp/cff-copa-tests/node_modules
+        run: node --test --test-timeout=12000 test/copa-hall-events.test.cjs test/copa-player-profile.test.cjs
+      - name: Commit generated static files for production
+        run: |
+          git add imports/copa-ff-2026/sources/geral.csv imports/copa-ff-2026/sources/grupos.csv \
+            imports/copa-ff-2026/report.json imports/copa-ff-2026/player-profiles-report.json \
+            novos-torneios/copa-ff-2026.json novos-torneios/index.json \
+            ranking-data/hall-extra-events.json js/copa-player-manifest.js copa-ff-2026/player-data
+          if git diff --cached --quiet; then
+            echo 'Already fully generated'
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Publish all 110 Copa FF 2026 group participants'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
