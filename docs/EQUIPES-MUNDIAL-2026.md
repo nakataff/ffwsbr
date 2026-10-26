@@ -20,8 +20,9 @@ A rota `equipe/index.html` preserva o ID ao atualizar a página; links antigos e
   Cada registro individual informa `name` (ou `player`), `team`, `stage`, `kills`,
   `damage`, `assists`, e `matches` quando agregar mais de uma queda. Etapas:
   `classificatoria`, `segundaFase`, `lastChance`, `final`.
-- Depois de alterar, execute `node scripts/build-global-overview.cjs`, seguido de
-  `node scripts/build-global-overview.cjs --check`. Não editar os quatro resumos
+- Depois de alterar, execute `node scripts/build-global-overview.cjs` e
+  `node scripts/build-global-players.cjs`, conferindo ambos com `--check`.
+  Veja também `docs/JOGADORES-MUNDIAL-2026.md` para identidades e perfis. Não editar os quatro resumos
   gerados à mão. Atualize as versões em `equipes.js`, `inicio.js`, `config.js`,
   no shell e no `index.html` ao publicar.
 

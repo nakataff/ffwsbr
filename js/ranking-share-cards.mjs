@@ -114,7 +114,7 @@ async function action(type){
 export async function openRankingCard(payload){
   views=(Array.isArray(payload.views)?payload.views:[]).slice(0,4).map(v=>({id:String(v.id),data:normalizePayload(v)})).filter(v=>v.data.rows.length);
   const chosen=views.find(v=>v.id===payload.viewId)||views[0],data=chosen?.data||normalizePayload(payload);if(!data.rows.length)throw Error('Este recorte ainda não tem resultados.');
-  await styles();ensureDialog();opener=document.activeElement;active=data;options=normalizeOptions(readPreferences(),active);captionDirty=false;file=null;
+  await styles();ensureDialog();opener=document.activeElement;active=data;options=normalizeOptions({...readPreferences(),...(payload.initialOptions||{})},active);captionDirty=false;file=null;
   $('[data-card-context]').textContent=[data.event,data.stage].filter(Boolean).join(' · ');
   $('[name="first"]').innerHTML=fieldOptions();$('[name="second"]').innerHTML=fieldOptions();
   $('[name="highlight"]').innerHTML='<option value="-1">Nenhuma</option>'+fieldOptions();

@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261026-global-navigation-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261026-world-players-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
@@ -38,7 +38,7 @@
       calendar:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-14 5h3m4 0h3"/>'
     };
     const items=[['equipes','Equipes','teams'],['classificatoria','Fase 1','01'],['segunda-fase','Fase 2','02'],['last-chance','Repescagem','return'],['final','Grande Final','trophy'],['datas','Calendário','calendar']];
-    const more=[['mvp','Ranking MVP'],['stats','Estatísticas'],['selecoes','Seleções'],['comparar','Comparar jogadores'],['notas','Notas CFF'],['formato','Formato completo']];
+    const more=[['jogadores','Jogadores'],['mvp','Ranking MVP'],['stats','Estatísticas'],['selecoes','Seleções'],['comparar','Comparar jogadores'],['notas','Notas CFF'],['formato','Formato completo']];
     return `<nav class="global-start-navigation" aria-label="Páginas do Mundial"><div class="global-start-navigation-label">Explore o Mundial</div><div class="global-start-navigation-grid">${items.map(([path,label,kind])=>`<a class="global-start-nav-item" href="${BASE+path}"><span class="global-start-nav-icon" aria-hidden="true">${icons[kind]?`<svg viewBox="0 0 24 24" width="21" height="21" focusable="false">${icons[kind]}</svg>`:kind}</span><span>${label}</span></a>`).join('')}</div><details class="global-start-nav-more"><summary>Rankings, estatísticas e mais <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true" focusable="false"><path d="m5 7 5 5 5-5"/></svg></summary><div class="global-start-nav-extra">${more.map(([path,label])=>`<a href="${BASE+path}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</div></details></nav>`;
   }
   function format() {
@@ -65,7 +65,7 @@
     return `<article class="global-start-group"><h3>Grupo ${esc(group)}</h3><div>${groupMembers(group).map(t=>{
       if(upcoming) return `<a class="global-start-fixture-team" href="${BASE}equipe?time=${esc(t.id)}">${teamName(t)}</a>`;
       const players=squads.find(s=>s.id===t.id)?.players||[];
-      return `<details class="global-start-roster"><summary>${teamName(t)}<span aria-hidden="true">⌄</span></summary><div>${players.length?players.map(p=>`<p><strong>${playerFlag(p)}${esc(p.name)}</strong><small>${esc(({RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'})[p.role]||p.role||'Jogador')}${p.captain?' · Capitão':''}</small></p>`).join(''):'<p class="global-start-muted">Elenco ainda não cadastrado para este Mundial.</p>'}<a class="global-start-link" href="${BASE}equipe?time=${esc(t.id)}">Ver equipe e estatísticas ↗</a></div></details>`;
+      return `<details class="global-start-roster"><summary>${teamName(t)}<span aria-hidden="true">⌄</span></summary><div>${players.length?players.map(p=>`<p><strong>${playerFlag(p)}${p.id?`<a href="/ffws-global-2026/jogador?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>`:esc(p.name)}</strong><small>${esc(({RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'})[p.role]||p.role||'Jogador')}${p.captain?' · Capitão':''}</small></p>`).join(''):'<p class="global-start-muted">Elenco ainda não cadastrado para este Mundial.</p>'}<a class="global-start-link" href="${BASE}equipe?time=${esc(t.id)}">Ver equipe e estatísticas ↗</a></div></details>`;
     }).join('')}</div></article>`;
   }
   function tick() {

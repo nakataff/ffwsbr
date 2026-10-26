@@ -108,6 +108,15 @@ Fonte única de pessoas: `ffws-global-2026/players.json`; não inferir elencos d
 outros torneios nem misturar jogadores homônimos de equipes diferentes.
 Guia de atualização/cobertura: [EQUIPES-MUNDIAL-2026.md](EQUIPES-MUNDIAL-2026.md).
 
+### Jogadores do Mundial 2026
+
+`ffws-global-2026/jogadores/index.html` e `jogador/index.html` são páginas completas
+independentes. `players.json` é a fonte do torneio; IDs e vínculos de carreira
+ficam em `player-identities.json`. `scripts/build-global-players.cjs` gera o índice,
+120 resumos individuais, detalhes sob demanda e o manifesto de integração com
+os perfis normais. Não somar resultados de homônimos. Guia:
+[JOGADORES-MUNDIAL-2026.md](JOGADORES-MUNDIAL-2026.md).
+
 ### Início do Mundial 2026
 
 Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu).
@@ -127,7 +136,7 @@ primeira seção depois do cabeçalho.
 | `scripts/build-global-overview.cjs` | Gera os três resumos offline a partir de `stages.json`, `dates.json`, `teams.json`, `groups.json` e `players.json` da mesma pasta |
 
 Depois de cadastrar resultados ou elencos, execute `node scripts/build-global-overview.cjs`
-e `node scripts/build-global-overview.cjs --check`. A CI verifica se os resumos
+e `node scripts/build-global-players.cjs`; confira ambos com `--check`. A CI verifica se os resumos
 correspondem às fontes. Atualize `VERSION` em `inicio.js` e as referências de
 `inicio.js`/`inicio.css` no shell, além da versão do shell em `index.html`.
 

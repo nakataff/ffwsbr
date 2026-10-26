@@ -71,7 +71,7 @@ function build({stages, dates, teams, groups, players}) {
     top10[key]=[...ranks.values()].sort((a,b)=>b.kills-a.kills||b.damage-a.damage||b.assists-a.assists).slice(0,10);
   }
   const roster=(players.players||[]).filter(p=>!p.left && norm(p.rosterStatus)!=='SAIU');
-  const squads=metadata.map(t=>({id:t.id,players:roster.filter(p=>norm(p.team)===norm(t.name)||norm(p.team)===norm(t.abbreviation)).sort((a,b)=>Number(!!b.starter)-Number(!!a.starter)||num(a.order)-num(b.order)).map(p=>({name:p.name,role:p.roleShort||p.role||'',country:p.country||p.flag||'',captain:!!p.captain,starter:!!p.starter}))}));
+  const squads=metadata.map(t=>({id:t.id,players:roster.filter(p=>norm(p.team)===norm(t.name)||norm(p.team)===norm(t.abbreviation)).sort((a,b)=>Number(!!b.starter)-Number(!!a.starter)||num(a.order)-num(b.order)).map(p=>({id:p.id||'',name:p.name,role:p.roleShort||p.role||'',country:p.country||p.flag||'',captain:!!p.captain,starter:!!p.starter}))}));
   const updatedAt=[stages.updatedAt,dates.updatedAt,teams.updatedAt,groups.updatedAt,players.updatedAt].filter(Boolean).sort().at(-1);
   // One small public snapshot: never fetch the complete players database on this page.
   const sameTeam=(value,t)=>[t.name,t.abbreviation,t.id,t.wikiName].some(alias=>norm(alias)===norm(value));
@@ -85,7 +85,7 @@ function build({stages, dates, teams, groups, players}) {
       return [key,rows.length?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,rows[0][k]])):fallback?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,fallback[k]])):null];
     }));
     return {...metadata.find(m=>m.id===t.id),region:t.region,qualification:t.qualification,statsByStage,
-      players:members.map(p=>({name:p.name,type:p.type==='staff'||/coach|analista|manager|treinador/i.test(p.role||'')?'staff':'player',role:p.role||p.roleShort||'',country:p.country||p.flag||'',
+      players:members.map(p=>({id:p.id||'',name:p.name,type:p.type==='staff'||/coach|analista|manager|treinador/i.test(p.role||'')?'staff':'player',role:p.role||p.roleShort||'',country:p.country||p.flag||'',
         statsByStage:Object.fromEntries(['geral',...keys].map(key=>[key,sumEntries((players.entries||[]).filter(e=>sameTeam(e.team,t)&&norm(e.name||e.player)===norm(p.name)&&(key==='geral'?keys.includes(e.stage):e.stage===key)))]))})),
       fixtures:dates.rounds.filter(r=>r.stage==='classificatoria'&&r.groups?.includes(groupById.get(t.id))).map(r=>({date:r.date,time:r.time24,label:r.label,groups:r.groups}))};
   });

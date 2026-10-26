@@ -146,7 +146,7 @@
 
   function teamByName(name) {
     const key = normalize(name);
-    return state.teams.find(team => normalize(team.name) === key || normalize(team.abbreviation) === key) || null;
+    return state.teams.find(team => [team.name, team.abbreviation, team.id, team.wikiName].some(alias => alias && normalize(alias) === key)) || null;
   }
 
   function logo(teamName) {
@@ -2249,7 +2249,7 @@
     root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${key==='classificatoria'?'':'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div></div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
   }
   window.openFFWSGlobalTeam=function(name){const t=teamByName(name);const url=new URL(location.href);if(t)url.searchParams.set('time',t.id);else url.searchParams.delete('time');history.replaceState(null,'',url);navigate(t?'ffws-global-2026-equipe':'ffws-global-2026-equipes');};
-  window.openFFWSGlobalPlayer=function(name,team){const url=new URL('/jogador.html',location.origin);url.searchParams.set('jogador',name);url.searchParams.set('time',team);location.href=url.pathname+url.search;};
+  window.openFFWSGlobalPlayer=function(name,team){const target=teamByName(team);const person=(state.players.players||[]).find(p=>normalize(p.name)===normalize(name)&&(target?teamByName(p.team)?.id===target.id:normalize(p.team)===normalize(team)));location.href=person?.id?'/ffws-global-2026/jogador?id='+encodeURIComponent(person.id):'/ffws-global-2026/jogadores?q='+encodeURIComponent(name);};
   function renderPage(pageId) {
     if (!state.loaded) return;
     const suffix=pageId.slice(PAGE_PREFIX.length),stageKey=suffix==='segunda-fase'?'segundaFase':suffix==='last-chance'?'lastChance':suffix;

@@ -183,3 +183,14 @@ test('closed 2025 cards preserve all five competitions including Global in table
   if(process.env.CFF_CARD_RENDER_DIR){fs.mkdirSync(process.env.CFF_CARD_RENDER_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.CFF_CARD_RENDER_DIR,`annual-2025-${template}-${format}.png`),canvas.toBuffer('image/png'));}
  }
 });
+
+test('edition profiles choose individual or comparison on open while preserving saved format and source identities',async()=>{
+ const u=await editor();try{
+  await u.open();await u.change('format','story');u.$('[data-card-action="close"]').click();
+  const payload={...raw(),initialOptions:{template:'leader',first:0},rows:raw().rows.slice(0,1)};
+  await u.open(payload);assert.equal(u.$('[name="template"]').value,'leader');assert.equal(u.$('[name="format"]').value,'story');
+  u.$('[data-card-action="close"]').click();
+  await u.open({...raw(),rows:raw().rows.slice(0,2),initialOptions:{template:'compare',first:0,second:1}});
+  assert.equal(u.$('[name="template"]').value,'compare');assert.equal(u.$('[name="first"]').value,'0');assert.equal(u.$('[name="second"]').value,'1');assert.equal(u.$('[name="format"]').value,'story');assert(!u.requests.some(x=>/firebase|workers|players\.json/.test(x)));
+ }finally{u.close()}
+});

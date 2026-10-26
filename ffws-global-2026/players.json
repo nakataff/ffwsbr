@@ -8,7 +8,8 @@
       "order": 1,
       "type": "player",
       "country": "br",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "lyon-haax"
     },
     {
       "name": "SoyDella",
@@ -16,7 +17,8 @@
       "order": 2,
       "type": "player",
       "country": "ar",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "lyon-soydella"
     },
     {
       "name": "Gamezking",
@@ -24,7 +26,8 @@
       "order": 3,
       "type": "player",
       "country": "cl",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "lyon-gamezking"
     },
     {
       "name": "Joacozd",
@@ -32,7 +35,8 @@
       "order": 4,
       "type": "player",
       "country": "cl",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "lyon-joacozd"
     },
     {
       "name": "Joker",
@@ -40,7 +44,8 @@
       "order": 5,
       "type": "player",
       "country": "cl",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "lyon-joker"
     },
     {
       "name": "Fellow",
@@ -48,7 +53,8 @@
       "order": 1,
       "type": "player",
       "country": "id",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "btr-fellow"
     },
     {
       "name": "Tiuszz",
@@ -56,7 +62,8 @@
       "order": 2,
       "type": "player",
       "country": "id",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "btr-tiuszz"
     },
     {
       "name": "C1b3nk",
@@ -64,7 +71,8 @@
       "order": 3,
       "type": "player",
       "country": "id",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "btr-c1b3nk"
     },
     {
       "name": "Kyongg",
@@ -72,7 +80,8 @@
       "order": 4,
       "type": "player",
       "country": "id",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "btr-kyongg"
     },
     {
       "name": "Kojaa",
@@ -80,7 +89,8 @@
       "order": 5,
       "type": "player",
       "country": "id",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "btr-kojaa"
     },
     {
       "name": "MTai",
@@ -88,7 +98,8 @@
       "order": 1,
       "type": "player",
       "country": "vn",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "gow-mtai"
     },
     {
       "name": "Dyan",
@@ -96,7 +107,8 @@
       "order": 2,
       "type": "player",
       "country": "vn",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "gow-dyan"
     },
     {
       "name": "Gocu",
@@ -104,7 +116,8 @@
       "order": 3,
       "type": "player",
       "country": "vn",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "gow-gocu"
     },
     {
       "name": "Demon",
@@ -113,7 +126,8 @@
       "type": "player",
       "country": "vn",
       "role": "Rusher",
-      "wikiLink": "Demon_(Vietnamese_Player)"
+      "wikiLink": "Demon_(Vietnamese_Player)",
+      "id": "gow-demon"
     },
     {
       "name": "Piciu",
@@ -121,7 +135,8 @@
       "order": 5,
       "type": "player",
       "country": "vn",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "gow-piciu"
     },
     {
       "name": "Alan",
@@ -130,7 +145,8 @@
       "type": "player",
       "country": "vn",
       "role": "Granadeiro",
-      "wikiLink": "Alan (Vietnamese Player)"
+      "wikiLink": "Alan (Vietnamese Player)",
+      "id": "p-esports-alan"
     },
     {
       "name": "BeDep",
@@ -138,7 +154,8 @@
       "order": 2,
       "type": "player",
       "country": "vn",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "p-esports-bedep"
     },
     {
       "name": "CTuan",
@@ -146,7 +163,8 @@
       "order": 3,
       "type": "player",
       "country": "vn",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "p-esports-ctuan"
     },
     {
       "name": "LBT",
@@ -154,7 +172,8 @@
       "order": 4,
       "type": "player",
       "country": "vn",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "p-esports-lbt"
     },
     {
       "name": "Nero",
@@ -163,7 +182,8 @@
       "type": "player",
       "country": "vn",
       "role": "Granadeiro",
-      "wikiLink": "Nero (Vietnamese Player)"
+      "wikiLink": "Nero (Vietnamese Player)",
+      "id": "p-esports-nero"
     },
     {
       "name": "TEAMSR",
@@ -171,7 +191,8 @@
       "order": 1,
       "type": "player",
       "country": "th",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "ag-al-teamsr"
     },
     {
       "name": "NAMELESS",
@@ -179,7 +200,8 @@
       "order": 2,
       "type": "player",
       "country": "th",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "ag-al-nameless"
     },
     {
       "name": "DEW",
@@ -187,7 +209,8 @@
       "order": 3,
       "type": "player",
       "country": "th",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "ag-al-dew"
     },
     {
       "name": "SAIFA",
@@ -195,7 +218,8 @@
       "order": 4,
       "type": "player",
       "country": "th",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "ag-al-saifa"
     },
     {
       "name": "BAROS",
@@ -203,7 +227,8 @@
       "order": 5,
       "type": "player",
       "country": "th",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "ag-al-baros"
     },
     {
       "name": "TheGod",
@@ -211,7 +236,8 @@
       "order": 1,
       "type": "player",
       "country": "vn",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "team-flash-thegod"
     },
     {
       "name": "TheZom",
@@ -219,7 +245,8 @@
       "order": 2,
       "type": "player",
       "country": "vn",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "team-flash-thezom"
     },
     {
       "name": "ABCD",
@@ -227,7 +254,8 @@
       "order": 3,
       "type": "player",
       "country": "vn",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "team-flash-abcd"
     },
     {
       "name": "NLuann",
@@ -235,7 +263,8 @@
       "order": 4,
       "type": "player",
       "country": "vn",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "team-flash-nluann"
     },
     {
       "name": "MinkCuog",
@@ -243,7 +272,8 @@
       "order": 5,
       "type": "player",
       "country": "vn",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "team-flash-minkcuog"
     },
     {
       "name": "Jeek",
@@ -251,7 +281,8 @@
       "order": 1,
       "type": "player",
       "country": "id",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "rrq-jeek"
     },
     {
       "name": "Ranz",
@@ -259,7 +290,8 @@
       "order": 2,
       "type": "player",
       "country": "id",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "rrq-ranz"
     },
     {
       "name": "Maal",
@@ -267,7 +299,8 @@
       "order": 3,
       "type": "player",
       "country": "id",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "rrq-maal"
     },
     {
       "name": "Abay",
@@ -275,7 +308,8 @@
       "order": 4,
       "type": "player",
       "country": "id",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "rrq-abay"
     },
     {
       "name": "Dutzz",
@@ -283,7 +317,8 @@
       "order": 5,
       "type": "player",
       "country": "id",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "rrq-dutzz"
     },
     {
       "name": "Putraxx",
@@ -291,7 +326,8 @@
       "order": 1,
       "type": "player",
       "country": "id",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "onic-putraxx"
     },
     {
       "name": "Adam",
@@ -299,7 +335,8 @@
       "order": 2,
       "type": "player",
       "country": "id",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "onic-adam"
     },
     {
       "name": "Crime",
@@ -307,7 +344,8 @@
       "order": 3,
       "type": "player",
       "country": "id",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "onic-crime"
     },
     {
       "name": "Geday",
@@ -315,7 +353,8 @@
       "order": 4,
       "type": "player",
       "country": "id",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "onic-geday"
     },
     {
       "name": "POOM",
@@ -323,7 +362,8 @@
       "order": 5,
       "type": "player",
       "country": "th",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "onic-poom"
     },
     {
       "name": "WASSANA",
@@ -332,7 +372,8 @@
       "type": "player",
       "country": "th",
       "role": "Rusher",
-      "worldTitles": 1
+      "worldTitles": 1,
+      "id": "bru-wassana"
     },
     {
       "name": "JOENA",
@@ -341,7 +382,8 @@
       "type": "player",
       "country": "th",
       "role": "Granadeiro",
-      "worldTitles": 3
+      "worldTitles": 3,
+      "id": "bru-joena"
     },
     {
       "name": "MOSHI",
@@ -350,7 +392,8 @@
       "type": "player",
       "country": "th",
       "role": "Sniper",
-      "worldTitles": 2
+      "worldTitles": 2,
+      "id": "bru-moshi"
     },
     {
       "name": "TERNA",
@@ -358,7 +401,8 @@
       "order": 4,
       "type": "player",
       "country": "th",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "bru-terna"
     },
     {
       "name": "GETNA",
@@ -367,7 +411,8 @@
       "type": "player",
       "country": "th",
       "role": "Suporte",
-      "worldTitles": 2
+      "worldTitles": 2,
+      "id": "bru-getna"
     },
     {
       "name": "Nickz7",
@@ -375,7 +420,8 @@
       "order": 1,
       "type": "player",
       "country": "br",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "loud-nickz7"
     },
     {
       "name": "Bzp10",
@@ -383,7 +429,8 @@
       "order": 2,
       "type": "player",
       "country": "br",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "loud-bzp10"
     },
     {
       "name": "Trap",
@@ -391,7 +438,8 @@
       "order": 3,
       "type": "player",
       "country": "br",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "loud-trap"
     },
     {
       "name": "GUAXA7",
@@ -399,7 +447,8 @@
       "order": 4,
       "type": "player",
       "country": "br",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "loud-guaxa7"
     },
     {
       "name": "Hak",
@@ -407,7 +456,8 @@
       "order": 5,
       "type": "player",
       "country": "br",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "loud-hak"
     },
     {
       "name": "General",
@@ -415,7 +465,8 @@
       "order": 1,
       "type": "player",
       "country": "br",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "los-general"
     },
     {
       "name": "Raone7",
@@ -423,7 +474,8 @@
       "order": 2,
       "type": "player",
       "country": "br",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "los-raone7"
     },
     {
       "name": "Yago",
@@ -432,7 +484,8 @@
       "type": "player",
       "country": "br",
       "role": "Sniper",
-      "worldTitles": 1
+      "worldTitles": 1,
+      "id": "los-yago"
     },
     {
       "name": "RIGBY",
@@ -440,7 +493,8 @@
       "order": 4,
       "type": "player",
       "country": "br",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "los-rigby"
     },
     {
       "name": "mtsexy",
@@ -448,7 +502,8 @@
       "order": 5,
       "type": "player",
       "country": "br",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "los-mtsexy"
     },
     {
       "name": "Bops",
@@ -457,7 +512,8 @@
       "type": "player",
       "country": "br",
       "role": "Granadeiro",
-      "worldTitles": 2
+      "worldTitles": 2,
+      "id": "fx-bops"
     },
     {
       "name": "BuTziN",
@@ -466,7 +522,8 @@
       "type": "player",
       "country": "br",
       "role": "Rusher",
-      "worldTitles": 2
+      "worldTitles": 2,
+      "id": "fx-butzin"
     },
     {
       "name": "MT7",
@@ -475,7 +532,8 @@
       "type": "player",
       "country": "br",
       "role": "Sniper",
-      "worldTitles": 1
+      "worldTitles": 1,
+      "id": "fx-mt7"
     },
     {
       "name": "Giuh",
@@ -484,7 +542,8 @@
       "type": "player",
       "country": "br",
       "role": "Rusher",
-      "worldTitles": 2
+      "worldTitles": 2,
+      "id": "fx-giuh"
     },
     {
       "name": "Proxx7",
@@ -492,7 +551,8 @@
       "order": 5,
       "type": "player",
       "country": "br",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "fx-proxx7"
     },
     {
       "name": "Jostin",
@@ -500,7 +560,8 @@
       "order": 1,
       "type": "player",
       "country": "ec",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "blue-cheese-jostin"
     },
     {
       "name": "Esteban",
@@ -508,7 +569,8 @@
       "order": 2,
       "type": "player",
       "country": "cl",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "blue-cheese-esteban"
     },
     {
       "name": "Krowa",
@@ -516,7 +578,8 @@
       "order": 3,
       "type": "player",
       "country": "ar",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "blue-cheese-krowa"
     },
     {
       "name": "Stu",
@@ -524,7 +587,8 @@
       "order": 4,
       "type": "player",
       "country": "pe",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "blue-cheese-stu"
     },
     {
       "name": "Naranjo",
@@ -532,7 +596,8 @@
       "order": 5,
       "type": "player",
       "country": "co",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "blue-cheese-naranjo"
     },
     {
       "name": "Andrexz",
@@ -540,7 +605,8 @@
       "order": 1,
       "type": "player",
       "country": "co",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "gundynasty-andrexz"
     },
     {
       "name": "David444",
@@ -548,7 +614,8 @@
       "order": 2,
       "type": "player",
       "country": "do",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "gundynasty-david444"
     },
     {
       "name": "Bnlxxy",
@@ -557,7 +624,8 @@
       "type": "player",
       "country": "ar",
       "role": "Suporte",
-      "wikiLink": "BNL"
+      "wikiLink": "BNL",
+      "id": "gundynasty-bnlxxy"
     },
     {
       "name": "RushFXP",
@@ -565,7 +633,8 @@
       "order": 4,
       "type": "player",
       "country": "ar",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "gundynasty-rushfxp"
     },
     {
       "name": "Lukkz7",
@@ -573,7 +642,8 @@
       "order": 5,
       "type": "player",
       "country": "ar",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "gundynasty-lukkz7"
     },
     {
       "name": "Lotex",
@@ -581,7 +651,8 @@
       "order": 1,
       "type": "player",
       "country": "ni",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "stellar-esport-lotex"
     },
     {
       "name": "Ericka",
@@ -589,7 +660,8 @@
       "order": 2,
       "type": "player",
       "country": "",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "stellar-esport-ericka"
     },
     {
       "name": "Lins7",
@@ -597,7 +669,8 @@
       "order": 3,
       "type": "player",
       "country": "br",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "stellar-esport-lins7"
     },
     {
       "name": "Loro",
@@ -605,7 +678,8 @@
       "order": 4,
       "type": "player",
       "country": "mx",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "stellar-esport-loro"
     },
     {
       "name": "Salami",
@@ -613,7 +687,8 @@
       "order": 5,
       "type": "player",
       "country": "us",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "stellar-esport-salami"
     },
     {
       "name": "RUSTY",
@@ -621,7 +696,8 @@
       "order": 1,
       "type": "player",
       "country": "bd",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "team-inf-rusty"
     },
     {
       "name": "MIKEY",
@@ -629,7 +705,8 @@
       "order": 2,
       "type": "player",
       "country": "bd",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "team-inf-mikey"
     },
     {
       "name": "OVI",
@@ -637,7 +714,8 @@
       "order": 3,
       "type": "player",
       "country": "bd",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "team-inf-ovi"
     },
     {
       "name": "MATRIX",
@@ -645,7 +723,8 @@
       "order": 4,
       "type": "player",
       "country": "bd",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "team-inf-matrix"
     },
     {
       "name": "ROMAN",
@@ -653,7 +732,8 @@
       "order": 5,
       "type": "player",
       "country": "bd",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "team-inf-roman"
     },
     {
       "name": "RASEL",
@@ -661,7 +741,8 @@
       "order": 1,
       "type": "player",
       "country": "bd",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "pe-rasel"
     },
     {
       "name": "TAJZ",
@@ -669,7 +750,8 @@
       "order": 2,
       "type": "player",
       "country": "bd",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "pe-tajz"
     },
     {
       "name": "TOKI",
@@ -677,7 +759,8 @@
       "order": 3,
       "type": "player",
       "country": "bd",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "pe-toki"
     },
     {
       "name": "AZOIC",
@@ -685,7 +768,8 @@
       "order": 4,
       "type": "player",
       "country": "bd",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "pe-azoic"
     },
     {
       "name": "FLAMEX",
@@ -693,7 +777,8 @@
       "order": 5,
       "type": "player",
       "country": "bd",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "pe-flamex"
     },
     {
       "name": "AFLATOON",
@@ -701,7 +786,8 @@
       "order": 1,
       "type": "player",
       "country": "pk",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "total-winner-esports-aflatoon"
     },
     {
       "name": "PRINCE",
@@ -709,7 +795,8 @@
       "order": 2,
       "type": "player",
       "country": "pk",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "total-winner-esports-prince"
     },
     {
       "name": "HUNTER",
@@ -718,7 +805,8 @@
       "type": "player",
       "country": "pk",
       "role": "Granadeiro",
-      "wikiLink": "HUNTER (Pakistani Player)"
+      "wikiLink": "HUNTER (Pakistani Player)",
+      "id": "total-winner-esports-hunter"
     },
     {
       "name": "SAMI",
@@ -727,7 +815,8 @@
       "type": "player",
       "country": "pk",
       "role": "Rusher",
-      "wikiLink": "SAMI (Pakistani Player)"
+      "wikiLink": "SAMI (Pakistani Player)",
+      "id": "total-winner-esports-sami"
     },
     {
       "name": "MOMIN",
@@ -735,7 +824,8 @@
       "order": 5,
       "type": "player",
       "country": "pk",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "total-winner-esports-momin"
     },
     {
       "name": "STOPz",
@@ -743,7 +833,8 @@
       "order": 1,
       "type": "player",
       "country": "np",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "horaa-esports-stopz"
     },
     {
       "name": "BHUDU",
@@ -751,7 +842,8 @@
       "order": 2,
       "type": "player",
       "country": "np",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "horaa-esports-bhudu"
     },
     {
       "name": "SPARSY",
@@ -759,7 +851,8 @@
       "order": 3,
       "type": "player",
       "country": "np",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "horaa-esports-sparsy"
     },
     {
       "name": "BLUEe",
@@ -767,7 +860,8 @@
       "order": 4,
       "type": "player",
       "country": "np",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "horaa-esports-bluee"
     },
     {
       "name": "SAVAGE",
@@ -775,7 +869,8 @@
       "order": 5,
       "type": "player",
       "country": "np",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "horaa-esports-savage"
     },
     {
       "name": "SKYITO",
@@ -783,7 +878,8 @@
       "order": 1,
       "type": "player",
       "country": "ma",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "xprojekt-skyito"
     },
     {
       "name": "POKIIX",
@@ -791,7 +887,8 @@
       "order": 2,
       "type": "player",
       "country": "ma",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "xprojekt-pokiix"
     },
     {
       "name": "Z4CK",
@@ -799,7 +896,8 @@
       "order": 3,
       "type": "player",
       "country": "ma",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "xprojekt-z4ck"
     },
     {
       "name": "LBEHJA",
@@ -807,7 +905,8 @@
       "order": 4,
       "type": "player",
       "country": "ma",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "xprojekt-lbehja"
     },
     {
       "name": "PERUVI",
@@ -815,7 +914,8 @@
       "order": 5,
       "type": "player",
       "country": "ma",
-      "role": "Rifler"
+      "role": "Rifler",
+      "id": "xprojekt-peruvi"
     },
     {
       "name": "WINDY",
@@ -823,7 +923,8 @@
       "order": 1,
       "type": "player",
       "country": "za",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "paradox-gaming-windy"
     },
     {
       "name": "SNEAKY",
@@ -831,7 +932,8 @@
       "order": 2,
       "type": "player",
       "country": "za",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "paradox-gaming-sneaky"
     },
     {
       "name": "DENRIQUE",
@@ -839,7 +941,8 @@
       "order": 3,
       "type": "player",
       "country": "za",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "paradox-gaming-denrique"
     },
     {
       "name": "L2K",
@@ -847,7 +950,8 @@
       "order": 4,
       "type": "player",
       "country": "za",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "paradox-gaming-l2k"
     },
     {
       "name": "LEDX",
@@ -855,7 +959,8 @@
       "order": 5,
       "type": "player",
       "country": "za",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "paradox-gaming-ledx"
     },
     {
       "name": "KD",
@@ -863,7 +968,8 @@
       "order": 1,
       "type": "player",
       "country": "in",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "tag-kd"
     },
     {
       "name": "SAHIL",
@@ -871,7 +977,8 @@
       "order": 2,
       "type": "player",
       "country": "in",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "tag-sahil"
     },
     {
       "name": "SHOTO",
@@ -879,7 +986,8 @@
       "order": 3,
       "type": "player",
       "country": "in",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "tag-shoto"
     },
     {
       "name": "WOLVIN",
@@ -887,7 +995,8 @@
       "order": 4,
       "type": "player",
       "country": "in",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "tag-wolvin"
     },
     {
       "name": "LOUIS",
@@ -895,7 +1004,8 @@
       "order": 5,
       "type": "player",
       "country": "in",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "tag-louis"
     },
     {
       "name": "DAAFIQ",
@@ -903,7 +1013,8 @@
       "order": 1,
       "type": "player",
       "country": "in",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "resurrection-esports-daafiq"
     },
     {
       "name": "ZIYAN",
@@ -911,7 +1022,8 @@
       "order": 2,
       "type": "player",
       "country": "in",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "resurrection-esports-ziyan"
     },
     {
       "name": "SIDAK",
@@ -919,7 +1031,8 @@
       "order": 3,
       "type": "player",
       "country": "in",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "resurrection-esports-sidak"
     },
     {
       "name": "UJJWAL",
@@ -927,7 +1040,8 @@
       "order": 4,
       "type": "player",
       "country": "in",
-      "role": "Suporte"
+      "role": "Suporte",
+      "id": "resurrection-esports-ujjwal"
     },
     {
       "name": "KRISH",
@@ -935,7 +1049,8 @@
       "order": 5,
       "type": "player",
       "country": "in",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "resurrection-esports-krish"
     },
     {
       "name": "STRUGGLE",
@@ -943,7 +1058,8 @@
       "order": 1,
       "type": "player",
       "country": "in",
-      "role": "Granadeiro"
+      "role": "Granadeiro",
+      "id": "tsg-pros-struggle"
     },
     {
       "name": "SALLU09",
@@ -951,7 +1067,8 @@
       "order": 2,
       "type": "player",
       "country": "in",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "tsg-pros-sallu09"
     },
     {
       "name": "BLOOD14",
@@ -959,7 +1076,8 @@
       "order": 3,
       "type": "player",
       "country": "in",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "tsg-pros-blood14"
     },
     {
       "name": "SOMI",
@@ -967,7 +1085,8 @@
       "order": 4,
       "type": "player",
       "country": "in",
-      "role": "Rusher"
+      "role": "Rusher",
+      "id": "tsg-pros-somi"
     },
     {
       "name": "ARJUNN",
@@ -975,7 +1094,8 @@
       "order": 5,
       "type": "player",
       "country": "in",
-      "role": "Sniper"
+      "role": "Sniper",
+      "id": "tsg-pros-arjunn"
     }
   ],
   "entries": [],

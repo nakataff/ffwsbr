@@ -1,0 +1,659 @@
+{
+  "version": 1,
+  "note": "Vínculos explícitos por identidade e equipe; generalId vazio não deve ser inferido pelo nickname. Manter id estável ao renomear jogadores e adicionar aliases quando necessário.",
+  "players": [
+    {
+      "id": "lyon-haax",
+      "teamId": "lyon",
+      "name": "Haax",
+      "generalId": "haax"
+    },
+    {
+      "id": "lyon-soydella",
+      "teamId": "lyon",
+      "name": "SoyDella",
+      "generalId": "soydella"
+    },
+    {
+      "id": "lyon-gamezking",
+      "teamId": "lyon",
+      "name": "Gamezking",
+      "generalId": "gamezking"
+    },
+    {
+      "id": "lyon-joacozd",
+      "teamId": "lyon",
+      "name": "Joacozd",
+      "generalId": "joacozd"
+    },
+    {
+      "id": "lyon-joker",
+      "teamId": "lyon",
+      "name": "Joker",
+      "generalId": "joker"
+    },
+    {
+      "id": "btr-fellow",
+      "teamId": "btr",
+      "name": "Fellow"
+    },
+    {
+      "id": "btr-tiuszz",
+      "teamId": "btr",
+      "name": "Tiuszz"
+    },
+    {
+      "id": "btr-c1b3nk",
+      "teamId": "btr",
+      "name": "C1b3nk",
+      "generalId": "c1b3nk"
+    },
+    {
+      "id": "btr-kyongg",
+      "teamId": "btr",
+      "name": "Kyongg",
+      "generalId": "kyongg"
+    },
+    {
+      "id": "btr-kojaa",
+      "teamId": "btr",
+      "name": "Kojaa",
+      "generalId": "kojaa"
+    },
+    {
+      "id": "gow-mtai",
+      "teamId": "gow",
+      "name": "MTai"
+    },
+    {
+      "id": "gow-dyan",
+      "teamId": "gow",
+      "name": "Dyan",
+      "generalId": "dyan"
+    },
+    {
+      "id": "gow-gocu",
+      "teamId": "gow",
+      "name": "Gocu",
+      "generalId": "gocu"
+    },
+    {
+      "id": "gow-demon",
+      "teamId": "gow",
+      "name": "Demon",
+      "generalId": "demon"
+    },
+    {
+      "id": "gow-piciu",
+      "teamId": "gow",
+      "name": "Piciu"
+    },
+    {
+      "id": "p-esports-alan",
+      "teamId": "p-esports",
+      "name": "Alan"
+    },
+    {
+      "id": "p-esports-bedep",
+      "teamId": "p-esports",
+      "name": "BeDep"
+    },
+    {
+      "id": "p-esports-ctuan",
+      "teamId": "p-esports",
+      "name": "CTuan"
+    },
+    {
+      "id": "p-esports-lbt",
+      "teamId": "p-esports",
+      "name": "LBT"
+    },
+    {
+      "id": "p-esports-nero",
+      "teamId": "p-esports",
+      "name": "Nero"
+    },
+    {
+      "id": "ag-al-teamsr",
+      "teamId": "ag-al",
+      "name": "TEAMSR"
+    },
+    {
+      "id": "ag-al-nameless",
+      "teamId": "ag-al",
+      "name": "NAMELESS",
+      "generalId": "nameless"
+    },
+    {
+      "id": "ag-al-dew",
+      "teamId": "ag-al",
+      "name": "DEW",
+      "generalId": "dew"
+    },
+    {
+      "id": "ag-al-saifa",
+      "teamId": "ag-al",
+      "name": "SAIFA",
+      "generalId": "saifa"
+    },
+    {
+      "id": "ag-al-baros",
+      "teamId": "ag-al",
+      "name": "BAROS",
+      "generalId": "baros"
+    },
+    {
+      "id": "team-flash-thegod",
+      "teamId": "team-flash",
+      "name": "TheGod",
+      "generalId": "thegod"
+    },
+    {
+      "id": "team-flash-thezom",
+      "teamId": "team-flash",
+      "name": "TheZom",
+      "generalId": "thezom"
+    },
+    {
+      "id": "team-flash-abcd",
+      "teamId": "team-flash",
+      "name": "ABCD",
+      "generalId": "abcd"
+    },
+    {
+      "id": "team-flash-nluann",
+      "teamId": "team-flash",
+      "name": "NLuann"
+    },
+    {
+      "id": "team-flash-minkcuog",
+      "teamId": "team-flash",
+      "name": "MinkCuog",
+      "generalId": "minkcuog"
+    },
+    {
+      "id": "rrq-jeek",
+      "teamId": "rrq",
+      "name": "Jeek"
+    },
+    {
+      "id": "rrq-ranz",
+      "teamId": "rrq",
+      "name": "Ranz",
+      "generalId": "ranz"
+    },
+    {
+      "id": "rrq-maal",
+      "teamId": "rrq",
+      "name": "Maal",
+      "generalId": "maal"
+    },
+    {
+      "id": "rrq-abay",
+      "teamId": "rrq",
+      "name": "Abay",
+      "generalId": "abay"
+    },
+    {
+      "id": "rrq-dutzz",
+      "teamId": "rrq",
+      "name": "Dutzz",
+      "generalId": "dutzz"
+    },
+    {
+      "id": "onic-putraxx",
+      "teamId": "onic",
+      "name": "Putraxx"
+    },
+    {
+      "id": "onic-adam",
+      "teamId": "onic",
+      "name": "Adam",
+      "generalId": "adam"
+    },
+    {
+      "id": "onic-crime",
+      "teamId": "onic",
+      "name": "Crime",
+      "generalId": "crime"
+    },
+    {
+      "id": "onic-geday",
+      "teamId": "onic",
+      "name": "Geday"
+    },
+    {
+      "id": "onic-poom",
+      "teamId": "onic",
+      "name": "POOM"
+    },
+    {
+      "id": "bru-wassana",
+      "teamId": "bru",
+      "name": "WASSANA",
+      "generalId": "wassana"
+    },
+    {
+      "id": "bru-joena",
+      "teamId": "bru",
+      "name": "JOENA",
+      "generalId": "joena"
+    },
+    {
+      "id": "bru-moshi",
+      "teamId": "bru",
+      "name": "MOSHI",
+      "generalId": "moshi"
+    },
+    {
+      "id": "bru-terna",
+      "teamId": "bru",
+      "name": "TERNA",
+      "generalId": "terna"
+    },
+    {
+      "id": "bru-getna",
+      "teamId": "bru",
+      "name": "GETNA"
+    },
+    {
+      "id": "loud-nickz7",
+      "teamId": "loud",
+      "name": "Nickz7",
+      "generalId": "nickz"
+    },
+    {
+      "id": "loud-bzp10",
+      "teamId": "loud",
+      "name": "Bzp10",
+      "generalId": "bzp"
+    },
+    {
+      "id": "loud-trap",
+      "teamId": "loud",
+      "name": "Trap",
+      "generalId": "trap"
+    },
+    {
+      "id": "loud-guaxa7",
+      "teamId": "loud",
+      "name": "GUAXA7",
+      "generalId": "guaxa"
+    },
+    {
+      "id": "loud-hak",
+      "teamId": "loud",
+      "name": "Hak",
+      "generalId": "hak"
+    },
+    {
+      "id": "los-general",
+      "teamId": "los",
+      "name": "General",
+      "generalId": "general"
+    },
+    {
+      "id": "los-raone7",
+      "teamId": "los",
+      "name": "Raone7",
+      "generalId": "raone7"
+    },
+    {
+      "id": "los-yago",
+      "teamId": "los",
+      "name": "Yago",
+      "generalId": "yago"
+    },
+    {
+      "id": "los-rigby",
+      "teamId": "los",
+      "name": "RIGBY",
+      "generalId": "rigby245"
+    },
+    {
+      "id": "los-mtsexy",
+      "teamId": "los",
+      "name": "mtsexy",
+      "generalId": "mtsexy"
+    },
+    {
+      "id": "fx-bops",
+      "teamId": "fx",
+      "name": "Bops",
+      "generalId": "bops"
+    },
+    {
+      "id": "fx-butzin",
+      "teamId": "fx",
+      "name": "BuTziN",
+      "generalId": "butzin"
+    },
+    {
+      "id": "fx-mt7",
+      "teamId": "fx",
+      "name": "MT7",
+      "generalId": "mt7"
+    },
+    {
+      "id": "fx-giuh",
+      "teamId": "fx",
+      "name": "Giuh",
+      "generalId": "giuh"
+    },
+    {
+      "id": "fx-proxx7",
+      "teamId": "fx",
+      "name": "Proxx7",
+      "generalId": "proxx7"
+    },
+    {
+      "id": "blue-cheese-jostin",
+      "teamId": "blue-cheese",
+      "name": "Jostin"
+    },
+    {
+      "id": "blue-cheese-esteban",
+      "teamId": "blue-cheese",
+      "name": "Esteban"
+    },
+    {
+      "id": "blue-cheese-krowa",
+      "teamId": "blue-cheese",
+      "name": "Krowa"
+    },
+    {
+      "id": "blue-cheese-stu",
+      "teamId": "blue-cheese",
+      "name": "Stu"
+    },
+    {
+      "id": "blue-cheese-naranjo",
+      "teamId": "blue-cheese",
+      "name": "Naranjo"
+    },
+    {
+      "id": "gundynasty-andrexz",
+      "teamId": "gundynasty",
+      "name": "Andrexz"
+    },
+    {
+      "id": "gundynasty-david444",
+      "teamId": "gundynasty",
+      "name": "David444",
+      "generalId": "david444"
+    },
+    {
+      "id": "gundynasty-bnlxxy",
+      "teamId": "gundynasty",
+      "name": "Bnlxxy"
+    },
+    {
+      "id": "gundynasty-rushfxp",
+      "teamId": "gundynasty",
+      "name": "RushFXP"
+    },
+    {
+      "id": "gundynasty-lukkz7",
+      "teamId": "gundynasty",
+      "name": "Lukkz7"
+    },
+    {
+      "id": "stellar-esport-lotex",
+      "teamId": "stellar-esport",
+      "name": "Lotex"
+    },
+    {
+      "id": "stellar-esport-ericka",
+      "teamId": "stellar-esport",
+      "name": "Ericka"
+    },
+    {
+      "id": "stellar-esport-lins7",
+      "teamId": "stellar-esport",
+      "name": "Lins7"
+    },
+    {
+      "id": "stellar-esport-loro",
+      "teamId": "stellar-esport",
+      "name": "Loro"
+    },
+    {
+      "id": "stellar-esport-salami",
+      "teamId": "stellar-esport",
+      "name": "Salami"
+    },
+    {
+      "id": "team-inf-rusty",
+      "teamId": "team-inf",
+      "name": "RUSTY"
+    },
+    {
+      "id": "team-inf-mikey",
+      "teamId": "team-inf",
+      "name": "MIKEY"
+    },
+    {
+      "id": "team-inf-ovi",
+      "teamId": "team-inf",
+      "name": "OVI"
+    },
+    {
+      "id": "team-inf-matrix",
+      "teamId": "team-inf",
+      "name": "MATRIX"
+    },
+    {
+      "id": "team-inf-roman",
+      "teamId": "team-inf",
+      "name": "ROMAN"
+    },
+    {
+      "id": "pe-rasel",
+      "teamId": "pe",
+      "name": "RASEL"
+    },
+    {
+      "id": "pe-tajz",
+      "teamId": "pe",
+      "name": "TAJZ"
+    },
+    {
+      "id": "pe-toki",
+      "teamId": "pe",
+      "name": "TOKI"
+    },
+    {
+      "id": "pe-azoic",
+      "teamId": "pe",
+      "name": "AZOIC"
+    },
+    {
+      "id": "pe-flamex",
+      "teamId": "pe",
+      "name": "FLAMEX"
+    },
+    {
+      "id": "total-winner-esports-aflatoon",
+      "teamId": "total-winner-esports",
+      "name": "AFLATOON"
+    },
+    {
+      "id": "total-winner-esports-prince",
+      "teamId": "total-winner-esports",
+      "name": "PRINCE"
+    },
+    {
+      "id": "total-winner-esports-hunter",
+      "teamId": "total-winner-esports",
+      "name": "HUNTER"
+    },
+    {
+      "id": "total-winner-esports-sami",
+      "teamId": "total-winner-esports",
+      "name": "SAMI"
+    },
+    {
+      "id": "total-winner-esports-momin",
+      "teamId": "total-winner-esports",
+      "name": "MOMIN"
+    },
+    {
+      "id": "horaa-esports-stopz",
+      "teamId": "horaa-esports",
+      "name": "STOPz"
+    },
+    {
+      "id": "horaa-esports-bhudu",
+      "teamId": "horaa-esports",
+      "name": "BHUDU"
+    },
+    {
+      "id": "horaa-esports-sparsy",
+      "teamId": "horaa-esports",
+      "name": "SPARSY"
+    },
+    {
+      "id": "horaa-esports-bluee",
+      "teamId": "horaa-esports",
+      "name": "BLUEe"
+    },
+    {
+      "id": "horaa-esports-savage",
+      "teamId": "horaa-esports",
+      "name": "SAVAGE"
+    },
+    {
+      "id": "xprojekt-skyito",
+      "teamId": "xprojekt",
+      "name": "SKYITO"
+    },
+    {
+      "id": "xprojekt-pokiix",
+      "teamId": "xprojekt",
+      "name": "POKIIX"
+    },
+    {
+      "id": "xprojekt-z4ck",
+      "teamId": "xprojekt",
+      "name": "Z4CK"
+    },
+    {
+      "id": "xprojekt-lbehja",
+      "teamId": "xprojekt",
+      "name": "LBEHJA"
+    },
+    {
+      "id": "xprojekt-peruvi",
+      "teamId": "xprojekt",
+      "name": "PERUVI"
+    },
+    {
+      "id": "paradox-gaming-windy",
+      "teamId": "paradox-gaming",
+      "name": "WINDY",
+      "generalId": "windy"
+    },
+    {
+      "id": "paradox-gaming-sneaky",
+      "teamId": "paradox-gaming",
+      "name": "SNEAKY",
+      "generalId": "sneaky"
+    },
+    {
+      "id": "paradox-gaming-denrique",
+      "teamId": "paradox-gaming",
+      "name": "DENRIQUE",
+      "generalId": "denrique"
+    },
+    {
+      "id": "paradox-gaming-l2k",
+      "teamId": "paradox-gaming",
+      "name": "L2K",
+      "generalId": "l2k"
+    },
+    {
+      "id": "paradox-gaming-ledx",
+      "teamId": "paradox-gaming",
+      "name": "LEDX"
+    },
+    {
+      "id": "tag-kd",
+      "teamId": "tag",
+      "name": "KD",
+      "generalId": "kd"
+    },
+    {
+      "id": "tag-sahil",
+      "teamId": "tag",
+      "name": "SAHIL",
+      "generalId": "sahil"
+    },
+    {
+      "id": "tag-shoto",
+      "teamId": "tag",
+      "name": "SHOTO",
+      "generalId": "shoto"
+    },
+    {
+      "id": "tag-wolvin",
+      "teamId": "tag",
+      "name": "WOLVIN",
+      "generalId": "wolvin"
+    },
+    {
+      "id": "tag-louis",
+      "teamId": "tag",
+      "name": "LOUIS"
+    },
+    {
+      "id": "resurrection-esports-daafiq",
+      "teamId": "resurrection-esports",
+      "name": "DAAFIQ"
+    },
+    {
+      "id": "resurrection-esports-ziyan",
+      "teamId": "resurrection-esports",
+      "name": "ZIYAN"
+    },
+    {
+      "id": "resurrection-esports-sidak",
+      "teamId": "resurrection-esports",
+      "name": "SIDAK"
+    },
+    {
+      "id": "resurrection-esports-ujjwal",
+      "teamId": "resurrection-esports",
+      "name": "UJJWAL"
+    },
+    {
+      "id": "resurrection-esports-krish",
+      "teamId": "resurrection-esports",
+      "name": "KRISH"
+    },
+    {
+      "id": "tsg-pros-struggle",
+      "teamId": "tsg-pros",
+      "name": "STRUGGLE"
+    },
+    {
+      "id": "tsg-pros-sallu09",
+      "teamId": "tsg-pros",
+      "name": "SALLU09"
+    },
+    {
+      "id": "tsg-pros-blood14",
+      "teamId": "tsg-pros",
+      "name": "BLOOD14"
+    },
+    {
+      "id": "tsg-pros-somi",
+      "teamId": "tsg-pros",
+      "name": "SOMI"
+    },
+    {
+      "id": "tsg-pros-arjunn",
+      "teamId": "tsg-pros",
+      "name": "ARJUNN"
+    }
+  ]
+}
