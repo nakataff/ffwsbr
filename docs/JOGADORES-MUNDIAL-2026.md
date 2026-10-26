@@ -46,7 +46,8 @@ registros da edição, sem atribuir prêmio oficial de MVP.
 `js/global-player-profile.js` só busca dados do Mundial para um ID desse manifesto,
 ignora staff e valida o ID de retorno. O leitor existente `player-page.min.js`
 carrega esse resumo em paralelo às suas hidratações e mescla depois delas.
-A aba Mundial 2026 aparece em Desempenho por competição, junto das outras edições,
+A aba GLOBAL SERIES 2026 aparece em Desempenho por competição, antes de WB 2026 S2,
+EWC 2026 e WB 2026 S1, e vem selecionada ao abrir o perfil,
 com filtros por fase, equipe, abates, quedas, média, dano, assistências e link da edição.
 Nenhum bloco do Mundial é inserido acima das abas. Antes das
 partidas, números são traços e não entram nos totais históricos. Depois de jogar,
