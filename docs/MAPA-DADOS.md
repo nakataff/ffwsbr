@@ -89,6 +89,12 @@ etapas. Um jogador que trocou de equipe não deve ganhar dados da outra passagem
 
 ### Equipes do Mundial 2026
 
+Na Classificatória sem resultados, `global.js` mostra os Grupos A–D a partir de
+`groups.json`. Esse JSON pequeno é carregado só ao abrir a Fase 1 e reutilizado
+em memória. Os links abrem o perfil da equipe nesta edição; fases posteriores
+não apresentam todos os 24 participantes como se já estivessem classificados.
+
+
 Lista `/ffws-global-2026/equipes`: cards compactos com classificação, abas Elenco/
 Comissão, recolhimento e bandeiras por pessoa (`players.json → country`, imagens
 locais `flag/{código}.webp`), busca e filtro por grupo. Trocar abas não faz consultas. Cada time

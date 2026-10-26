@@ -23,6 +23,8 @@
     stages: null,
     players: { players: [], entries: [] },
     dates: { stages: [] },
+    groups: null,
+    groupsLoading: null,
     stageFilter: {
       classificatoria: { period: 'all', map: 'all', drop: 'all' },
       segundaFase: { period: ['1'], map: [], drop: [] },
@@ -87,6 +89,16 @@
       return state;
     }).finally(() => { state.loading = null; });
     return state.loading;
+  }
+
+  function loadGroupsData() {
+    if(state.groups)return Promise.resolve(state.groups);
+    if(state.groupsLoading)return state.groupsLoading;
+    state.groupsLoading=getJson(CONFIG.groupsUrl||'ffws-global-2026/groups.json?v=20261018')
+      .then(data=>{state.groups=data;return data})
+      .catch(()=>null) // A missing groups file must not block results or invent group membership.
+      .finally(()=>{state.groupsLoading=null});
+    return state.groupsLoading;
   }
 
   function loadPlayersData() {
@@ -2224,10 +2236,17 @@
     </div></div>`;
   }
 
+  function phaseOneGroups() {
+    const groups=state.groups?.groups||{};
+    const ids=['A','B','C','D'].flatMap(group=>Array.isArray(groups[group])?groups[group]:[]);
+    const teamsById=new Map(state.teams.map(team=>[team.id,team]));
+    const complete=ids.length===24&&new Set(ids).size===24&&['A','B','C','D'].every(group=>groups[group]?.length===6)&&ids.every(id=>teamsById.has(id));
+    return `<section class="ffws-global-panel global-knockout-groups"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Grupos da Fase 1</h2><p>24 equipes · 4 grupos de 6</p></div><a class="global-participants-link" href="/ffws-global-2026/equipes">Ver todos os elencos <span aria-hidden="true">↗</span></a></div><p class="global-knockout-help">Toque em uma equipe para ver seus jogadores e o desempenho no Mundial.</p>${complete?`<div class="global-knockout-group-grid">${['A','B','C','D'].map(group=>`<article class="global-knockout-group" aria-labelledby="global-knockout-group-${group}"><header><h3 id="global-knockout-group-${group}">Grupo ${group}</h3><span>6 equipes</span></header><ul>${groups[group].map(id=>{const team=teamsById.get(id);return `<li><a class="global-knockout-team" href="/ffws-global-2026/equipe?time=${encodeURIComponent(team.id)}"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" data-cff-global-team-logo="${escapeHtml(team.name)}" data-team-date="2026-11-06" width="34" height="34" alt="" onerror="this.onerror=null;this.src='/escudo.webp'"><span class="global-knockout-team-name">${escapeHtml(team.name)}</span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" focusable="false"><path d="M4 12 12 4M4 4h8v8"/></svg></a></li>`}).join('')}</ul></article>`).join('')}</div>`:'<p class="global-knockout-help">Não foi possível mostrar os grupos agora. A página de equipes continua disponível no botão acima.</p>'}</div></section>`;
+  }
   function globalEmptyStage(pageId){
     const section=pageId.slice(PAGE_PREFIX.length),key=section==='segunda-fase'?'segundaFase':section==='last-chance'?'lastChance':section,root=document.getElementById(pageId+'-content');if(!root)return;
     const title=stageLabel(key);
-    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase ainda não foram cadastradas.</p><a class="global-participants-link" href="/ffws-global-2026/equipes" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-global-2026-equipes');return false;}">Ver os 24 participantes →</a></div></div></section><section class="ffws-global-panel"><div class="ffws-global-panel-inner"><h2>Participantes do torneio</h2><div class="global-participants-grid">${state.teams.map(t=>`<a class="global-participant" href="/ffws-global-2026/equipe?time=${encodeURIComponent(t.id)}"><img loading="lazy" src="${escapeHtml(logo(t.name))}" data-cff-global-team-logo="${escapeHtml(t.name)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><span>${escapeHtml(t.name)}</span></a>`).join('')}</div></div></section></div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${key==='classificatoria'?'':'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div></div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
   }
   window.openFFWSGlobalTeam=function(name){const t=teamByName(name);const url=new URL(location.href);if(t)url.searchParams.set('time',t.id);else url.searchParams.delete('time');history.replaceState(null,'',url);navigate(t?'ffws-global-2026-equipe':'ffws-global-2026-equipes');};
   window.openFFWSGlobalPlayer=function(name,team){const url=new URL('/jogador.html',location.origin);url.searchParams.set('jogador',name);url.searchParams.set('time',team);location.href=url.pathname+url.search;};
@@ -2270,6 +2289,7 @@
     const needsPlayers = new Set(['ffws-global-2026-mvp', 'ffws-global-2026-equipes', 'ffws-global-2026-selecoes', 'ffws-global-2026-stats', 'ffws-global-2026-notas', 'ffws-global-2026-comparar', 'ffws-global-2026-formato']).has(pageId);
     const needsPhotos = new Set(['ffws-global-2026-equipes', 'ffws-global-2026-selecoes']).has(pageId);
     loadData()
+      .then(() => pageId === 'ffws-global-2026-classificatoria' ? loadGroupsData() : null)
       .then(() => needsPlayers ? loadPlayersData() : null)
       .then(() => needsPhotos && typeof window.cffLoadPlayerPhotoMap === 'function' ? window.cffLoadPlayerPhotoMap().catch(() => null) : null)
       .then(() => renderPage(pageId))
