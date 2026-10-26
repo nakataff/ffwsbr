@@ -234,6 +234,32 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 
 ### Hall da Fama: equipes no ranking por edição
 
+**Competições opcionais no ranking por ano:** o padrão continua somente LBFF /
+FFWS Brasil. `js/hall-year-competitions.js` permite incluir Copa FF e EWC; baixa
+`ranking-data/hall-extra-events.json` (~9,6 KB) uma vez ao abrir o filtro. Seleção,
+busca, ano, resumo e detalhes por competição são calculados em memória. Tabelas
+geral/por edição e perfis normais não recebem esses totais automaticamente.
+O resumo de líderes acompanha a seleção de competições, mantendo independentes
+os filtros de jogador/equipe/ordenação da tabela. Sem dados não significa zero;
+Global Series 2026 fica desabilitado enquanto não houver resultados individuais
+publicados nessa base. Cadastros com apenas elenco ou prêmios não entram.
+
+`scripts/build-hall-extra-events.py` gera o resumo offline de Copa FF 2026
+(100 registros do Geral, **parcial**) e EWC 2026 (103 jogadores da base local).
+Identidades brasileiras da EWC têm vínculos explícitos por nome/equipe;
+internacionais recebem chaves próprias para não fundir homônimos. Para atualizar,
+execute o gerador e `--check`; novas competições precisam ter fonte individual,
+identidades revisadas e cobertura declarada antes de serem incluídas.
+
+**Copa FF 2026 em Outros torneios:** `novos-torneios/copa-ff-2026.json`, entrada
+leve em `index.json → copaEntries`, quatro tabelas em `playerRankings` (Geral,
+grupos, repescagem, final), seletor local de etapa. Sem estatísticas por queda.
+`scripts/build-copa-2026.py` preserva os CSVs e produz relatório de divergências;
+guia/cobertura em [imports/copa-ff-2026/README.md](../imports/copa-ff-2026/README.md).
+Não tratar 100 linhas como todos os jogadores nem somar as fases ao Geral.
+Regressões de importação/filtros/indisponibilidade/cache em
+`test/copa-hall-events.test.cjs`.
+
 **Ranking por ano:** a função `editionYear` de `hall-fame-lite.min.js` agrupa
 LBFFs 1–3 em 2020, 4–6 em 2021, 7–8 em 2022 e 9 em 2023; WBs usam o ano do
 nome. A LBFF 2 não tem dados cadastrados e não é inventada. O botão pequeno

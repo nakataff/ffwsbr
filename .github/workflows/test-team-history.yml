@@ -10,6 +10,13 @@ on:
       - 'js/career-team-identities.mjs'
       - 'js/team-identity-history.js'
       - 'js/hall-fame-lite.min.js'
+      - 'js/hall-year-competitions.js'
+      - 'ranking-data/hall-extra-events.json'
+      - 'imports/copa-ff-2026/**'
+      - 'scripts/build-copa-2026.py'
+      - 'scripts/build-hall-extra-events.py'
+      - 'novos-torneios/copa-ff-2026.json'
+      - 'test/copa-hall-events.test.cjs'
       - 'player-data/edition-teams.json'
       - 'lbffData.json'
       - 'test/hall-edition-teams.test.cjs'
@@ -85,10 +92,10 @@ jobs:
       - name: Check data, logo refresh and normal team links
         env:
           NODE_PATH: /tmp/cff-team-history-test/node_modules
-        run: node --test --test-timeout=10000 test/hall-edition-teams.test.cjs test/hall-year-summary.test.cjs test/historical-team-fixes.test.cjs test/career-team-identities.test.cjs test/global-team-logos.test.cjs test/team-profile.test.cjs test/tournament-logos.test.cjs test/tournament-assets-ui.test.cjs test/career-results.test.cjs test/team-career-views.test.cjs test/liquipedia-worlds.test.cjs
+        run: node --test --test-timeout=10000 test/hall-edition-teams.test.cjs test/hall-year-summary.test.cjs test/copa-hall-events.test.cjs test/historical-team-fixes.test.cjs test/career-team-identities.test.cjs test/global-team-logos.test.cjs test/team-profile.test.cjs test/tournament-logos.test.cjs test/tournament-assets-ui.test.cjs test/career-results.test.cjs test/team-career-views.test.cjs test/liquipedia-worlds.test.cjs
       - name: Check imported world sources and lightweight tournament catalogue
-        run: python3 scripts/import-liquipedia-worlds.py --check && python3 scripts/build-tournament-catalog.py --check
+        run: python3 scripts/build-copa-2026.py --check && python3 scripts/build-hall-extra-events.py --check && python3 scripts/import-liquipedia-worlds.py --check && python3 scripts/build-tournament-catalog.py --check
       - name: Check generated canonical team views
         run: python3 scripts/build-team-views.py --check && python3 scripts/build-tournament-assets.py --check
       - name: Check changed browser modules
-        run: node --check js/historical-teams.min.js && node --check js/year-ranking-logo-sheet.js && node --check js/team-logo-resolver.min.js && node --check js/career-client.mjs && node --check js/career-results.mjs && node --check js/career-public.js
+        run: node --check js/hall-year-competitions.js && node --check js/historical-teams.min.js && node --check js/year-ranking-logo-sheet.js && node --check js/team-logo-resolver.min.js && node --check js/career-client.mjs && node --check js/career-results.mjs && node --check js/career-public.js

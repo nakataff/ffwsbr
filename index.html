@@ -294,6 +294,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 .hall-year-summary{margin-bottom:18px}.hall-year-summary-note{color:var(--text-muted);font-size:.76rem;margin:0 0 10px}#table-hall-year-summary{width:100%}#table-hall-year-summary .hall-year-main-row{cursor:pointer}#table-hall-year-summary .hall-year-main-row:hover,#table-hall-year-summary .is-expanded{background:rgba(0,200,255,.065)}#table-hall-year-summary .hall-year-main-row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .hall-year-field{display:grid;gap:5px;min-width:0}.hall-year-field label{color:var(--text-muted);font-size:.7rem;font-weight:900}.hall-year-field select,.hall-year-field input{width:100%;min-width:0}
 .hall-year-min-drops{display:flex;align-items:center;gap:7px;min-height:42px;color:#fff;font-size:.72rem;font-weight:900;white-space:nowrap}.hall-year-min-drops input{width:16px;height:16px;accent-color:var(--accent)}
+.hall-year-competitions{margin:8px 0;border:1px solid var(--border);border-radius:10px;background:var(--panel-bg)}.hall-year-competitions summary{padding:13px 15px;cursor:pointer;color:var(--text);font-size:.82rem;font-weight:800;overflow-wrap:anywhere}.hall-year-competitions summary span{color:var(--accent);font-size:.74rem;margin-left:8px}.hall-year-competitions fieldset{border:0;border-top:1px solid var(--border);padding:12px 15px 15px;margin:0;display:flex;flex-wrap:wrap;gap:10px 20px}.hall-year-competitions legend{font-size:.72rem;color:var(--text-muted);padding:0 5px}.hall-year-competitions label{display:flex;align-items:center;gap:8px;font-size:.78rem;min-height:32px}.hall-year-competitions label small{color:var(--text-muted);font-size:.65rem}.hall-year-competitions input{accent-color:var(--accent);width:17px;height:17px}.hall-year-competitions label:has(input:disabled){opacity:.5}.hall-year-coverage{color:var(--text-muted);font-size:.74rem;line-height:1.65;margin:9px 0 14px;overflow-wrap:anywhere}.hall-year-coverage button{font-size:.72rem;padding:5px 9px}.hall-year-detail-row>span:first-child{overflow-wrap:anywhere;white-space:normal;line-height:1.4}
 .hall-year-meta{margin:2px 0 10px;color:#7292af;font-size:.7rem;font-weight:850}
 #table-hall-year-ranking{width:100%}#table-hall-year-ranking th{white-space:nowrap}
 #table-hall-year-ranking .hall-year-sort-btn::after{content:"—";font-size:.8em;opacity:.5}
@@ -2131,7 +2132,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 <h2 class="hall-extra-title">Ranking por Ano</h2>
                 <button type="button" id="hall-year-summary-toggle" class="btn-action hall-year-summary-toggle" aria-expanded="false" aria-controls="hall-year-summary" onclick="cffHallToggleYearSummary()" disabled>Resumo</button>
             </div>
-            <p class="hall-extra-subtitle">Soma todas as edições disputadas no mesmo ano. Pesquise por jogador ou equipe e ordene por abates, quedas ou média.</p>
+            <p class="hall-extra-subtitle">Por padrão, soma LBFF e FFWS Brasil. Você pode incluir outras competições com dados individuais disponíveis.</p>
 
             <div id="hall-year-summary" class="hall-year-summary" hidden>
                 <p class="hall-year-summary-note">Líder em abates de cada ano, nas edições cadastradas. Clique no jogador para ver os números por LBFF/WB.</p>
@@ -2172,6 +2173,16 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
                 </label>
             </div>
 
+            <details id="hall-year-competitions" class="hall-year-competitions">
+                <summary>Competições <span id="hall-year-competitions-label">LBFF / FFWS Brasil</span></summary>
+                <fieldset><legend>Somar no ranking e no resumo</legend>
+                    <label><input type="checkbox" data-hall-family="league" checked> LBFF / FFWS Brasil</label>
+                    <label><input type="checkbox" data-hall-family="copa"> Copa FF</label>
+                    <label><input type="checkbox" data-hall-family="ewc"> EWC</label>
+                    <label><input type="checkbox" data-hall-family="global"> Global Series</label>
+                </fieldset>
+            </details>
+            <p id="hall-year-coverage" class="hall-year-coverage" role="status">Somente competições com dados individuais cadastrados entram na soma. A cobertura varia por ano; nem todos os torneios estão disponíveis.</p>
             <div id="hall-year-meta" class="hall-year-meta"></div>
 
             <div class="table-container">
@@ -2539,7 +2550,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 <script defer src="js/player-photo-resolver.min.js?v=20261017-person-identities-v1"></script>
 <script defer src="/js/shared-navigation.js?v=20261026-world-players-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261026-world-players-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261026-copa-hall-v1"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>

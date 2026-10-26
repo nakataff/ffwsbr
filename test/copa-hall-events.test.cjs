@@ -1,0 +1,46 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process'),{JSDOM}=require('jsdom');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const tick=async()=>{for(let i=0;i<3;i++)await new Promise(r=>setTimeout(r,0));};
+async function hall({fail=false}={}){
+ const html=fs.readFileSync('index.html','utf8'),section=html.match(/<section class="hall-extra-section" id="hall-year-ranking-section">[\s\S]*?<\/section>/)[0],dom=new JSDOM(section,{url:'https://centralfreefire.com.br/index.html#hall-da-fama',runScripts:'outside-only'}),w=dom.window,calls=[];
+ w.fetch=async url=>{const p=String(url).split('?')[0];calls.push(p);if(fail&&p==='ranking-data/hall-extra-events.json')return {ok:false};assert(!/firebase|workers|economy/.test(p));return {ok:true,json:async()=>read(p)};};
+ w.eval(fs.readFileSync('js/hall-year-competitions.js','utf8'));w.eval(fs.readFileSync('js/hall-fame-lite.min.js','utf8'));await w.cffHallLiteBoot();
+ return {w,doc:w.document,calls,close:()=>w.close(),choose:(id,on)=>{const input=w.document.querySelector('[data-hall-family="'+id+'"]');input.checked=on;input.dispatchEvent(new w.Event('change'));}};
+}
+test('CSV import reproduces source values and explicitly preserves incomplete coverage',()=>{
+ execFileSync('python3',['scripts/build-copa-2026.py','--check']);execFileSync('python3',['scripts/build-hall-extra-events.py','--check']);
+ const d=read('novos-torneios/copa-ff-2026.json'),r=read('imports/copa-ff-2026/report.json');assert.deepEqual(r.counts,{geral:100,grupos:100,repescagem:50,final:52});
+ assert.equal(d.teams.items.length,24);assert.equal(d.playerRanking.rows.reduce((n,r)=>n+r[3],0),4139);assert.equal(d.playerRankings.final.rows.reduce((n,r)=>n+r[3],0),1092);assert(d.playerRankings.repescagem.rows.some(r=>r[3]===0));
+ assert.equal(d.playerRanking.rows[0][1],'Lc777');assert.equal(d.playerRanking.rows[0][3],82);assert.equal(d.playerRanking.rows[0][4],40);assert.equal(d.playerRankings.final.rows[0][1],'MITINX');assert.equal(d.playerRankings.final.rows[0][3],33);
+ assert.equal(r.playersMissingFromGeneral.length,4);assert.deepEqual(r.generalVsStageDifferences.map(p=>p.name),['Proxx7','Shotzzrx']);assert.equal(d.playerRanking.coverage,'partial');assert.equal(d.playerRankings.grupos.coverage,'partial');assert(!d.final&&!d.entries);assert.equal(d.awards.length,0);
+ const e=read('ranking-data/hall-extra-events.json').events;assert.equal(e[0].rows.length,100);assert.equal(e[1].rows.length,103);assert.equal(e[2].coverage,'unavailable');assert(fs.statSync('ranking-data/hall-extra-events.json').size<12000);
+ assert.equal(e[0].rows.find(r=>r[1]==='Yago')[0],'YAGO');assert.equal(e[0].rows.find(r=>r[1]==='BYTE333')[0],'BYTE333');assert.notEqual(e[0].rows.find(r=>r[1]==='xGuto7')[0],'XGUTO');assert.notEqual(e[0].rows.find(r=>r[1]==='Pollux23')[0],'POLLUX7');
+ assert.equal(e[1].rows.find(r=>r[1]==='NICKZ')[0],'NICKZ');assert.notEqual(e[1].rows.find(r=>r[1]==='Joker')[0],'JOKER');
+});
+test('default is league only; extra data loads once on demand and cannot double count stage totals',async()=>{
+ const h=await hall();try{const {w,doc}=h;assert.equal(h.calls.length,6);w.setHallYear(2026);w.setHallYearPlayerSearch('Yago');const cell=()=>doc.querySelector('#table-hall-year-ranking .hall-year-main-row').cells[2];const base=+cell().textContent;
+  h.choose('copa',true);await w.CFF_HALL_YEAR_EXTRAS.load();assert.equal(+cell().textContent,base+78);assert.match(doc.querySelector('#hall-year-coverage').textContent,/100 linhas/);w.cffHallToggleYearPlayer('YAGO');let rows=[...doc.querySelectorAll('.hall-year-detail-row')];assert.equal(rows.filter(r=>r.textContent.includes('Copa FF')).length,1);assert.equal(rows.reduce((s,r)=>s+Number(r.querySelector('strong').textContent),0),base+78);
+  h.choose('ewc',true);assert.equal(+cell().textContent,base+78+47);w.cffHallToggleYearPlayer('YAGO');assert.equal(doc.querySelectorAll('.hall-year-detail-row').length,4);
+  h.choose('league',false);assert.equal(+cell().textContent,125);h.choose('copa',false);assert.equal(+cell().textContent,47);assert.equal(h.calls.length,7);w.setHallYearMetric('avg');w.setHallYearMinDrops(true);w.setHallYearTeamSearch('LOS');w.changeHallYearPage(1);assert.equal(h.calls.length,7);
+  await Promise.all([w.CFF_HALL_YEAR_EXTRAS.load(),w.CFF_HALL_YEAR_EXTRAS.load()]);assert.equal(h.calls.length,7);
+ }finally{h.close();}
+});
+test('year availability, empty choices and summary follow the selected competitions',async()=>{
+ const h=await hall();try{const {w,doc}=h;await w.CFF_HALL_YEAR_EXTRAS.load();h.choose('copa',true);h.choose('league',false);w.cffHallToggleYearSummary();let summary=[...doc.querySelectorAll('#table-hall-year-summary .hall-year-main-row')];assert.equal(summary.length,1);assert.equal(summary[0].cells[1].textContent,'LC777');assert.equal(summary[0].cells[2].textContent,'82');
+  w.setHallYear(2025);assert.match(doc.querySelector('#hall-year-coverage').textContent,/Sem dados neste ano: Copa FF/);assert.equal(doc.querySelectorAll('#table-hall-year-ranking .hall-year-main-row').length,0);assert(doc.querySelector('[data-hall-family="global"]').disabled);
+  h.choose('copa',false);assert.equal(doc.querySelectorAll('#table-hall-year-summary .hall-year-main-row').length,0);assert.equal(doc.querySelectorAll('#table-hall-year-ranking .hall-year-main-row').length,0);
+  h.choose('league',true);assert.equal(doc.querySelectorAll('#table-hall-year-summary .hall-year-main-row').length,7);assert.equal(h.calls.length,7);
+ }finally{h.close();}
+});
+test('failed extras leave the league ranking usable and offer a bounded explicit retry',async()=>{
+ const h=await hall({fail:true});try{const {w,doc}=h;w.setHallYearPlayerSearch('Yago');const before=doc.querySelector('#table-hall-year-ranking tbody').textContent;h.choose('copa',true);await w.CFF_HALL_YEAR_EXTRAS.load();assert.equal(doc.querySelector('#table-hall-year-ranking tbody').textContent,before);assert.match(doc.querySelector('#hall-year-coverage').textContent,/Não foi possível/);assert(doc.querySelector('#hall-year-extra-retry'));await tick();assert.equal(h.calls.length,7,'no automatic polling or retries');
+ }finally{h.close();}
+});
+test('Copa shared tournament UI selects four stages locally and does not fetch the league or player catalog',async()=>{
+ const section=['ot-list-view','ot-details-view','ot-grid-torneios','ot-details-tabs','ot-details-stats','ot-dynamic-container','ot-title','ot-year','ot-details-badge','ot-roster-modal','ot-roster-title','ot-roster-list'].map(id=>'<div id="'+id+'"></div>').join('')+'<img id="ot-details-logo">';
+ const dom=new JSDOM(section,{url:'https://centralfreefire.com.br/index.html#outros-torneios',runScripts:'outside-only'}),w=dom.window;try{
+  Object.assign(w,{scrollTo(){},logos:{},dbTeamLogos:{},teamLogos:{},teamLogoMap:{},dbTeamAliases:{},playerAliasMap:{},lbffData:null});w.fetch=async()=>{throw Error('Unexpected request');};w.eval(fs.readFileSync('js/other-tournaments.min.js','utf8'));const d=read('novos-torneios/copa-ff-2026.json');w.dbNovosTorneios=[d];w.novosTorneiosLoaded=true;w.otOpenLoadedTournament(d.id,false);assert.equal(w.currentOtTab,'players');assert.equal(w.document.querySelectorAll('.ot-player-ranking-table tbody tr').length,100);assert.match(w.document.querySelector('.ot-source-issue').textContent,/parcial/);assert(!w.document.querySelector('#ot-details-stats').textContent.includes('Lc777'),'kill leader is not invented as an MVP award');
+  w.otSelectPlayerStage('final');assert.equal(w.document.querySelectorAll('.ot-player-ranking-table tbody tr').length,52);assert.match(w.document.querySelector('.ot-player-ranking-table tbody tr').textContent,/MITINX/);assert.match(w.document.querySelector('.ot-player-ranking-table tbody tr').textContent,/33/);
+  w.otSelectPlayerStage('repescagem');assert.equal(w.document.querySelectorAll('.ot-player-ranking-table tbody tr').length,50);w.otSelectPlayerStage('grupos');assert.equal(w.document.querySelectorAll('.ot-player-ranking-table tbody tr').length,100);w.otSelectPlayerStage('bad');assert.equal(w.otPlayerRankingStage,'grupos');
+ }finally{w.close();}
+});
