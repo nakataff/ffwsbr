@@ -16,7 +16,7 @@ def build():
         if key not in known:key='copa2026:'+key
         assert key not in keys,('Ambiguous identity',name);keys.add(key)
         rows.append([key,known.get(norm(canonical),canonical),r[at['team']],r[at['kills']],r[at['matches']]])
-    events=[dict(id='copa-ff-2026',family='copa',name='Copa FF 2026',year=2026,coverage='partial',note='Geral com 100 linhas exportadas. Há jogadores ausentes; o total anual deste recorte pode estar incompleto.',url='index.html?torneio=copa-ff-2026#outros-torneios',rows=rows)]
+    events=[dict(id='copa-ff-2026',family='copa',name='Copa FF 2026',year=2026,coverage=ranking['coverage'],note=ranking['note'],url='index.html?torneio=copa-ff-2026#outros-torneios',rows=rows)]
     # Confirmed Brazilian players/teams in the EWC roster; international homonyms stay separate.
     links={('Trap','LOUD'):'TRAP',('Rigby245','MIBR LOS'):'Rigby245',('MT7','Fluxo w7m'):'MT7',('Yago','MIBR LOS'):'Yago',('Butzin','Fluxo w7m'):'BuTziN',('bzp10','LOUD'):'BZP',('Giuh','Fluxo w7m'):'Giuh',('Nickz7','LOUD'):'NICKZ',('GUAXA7','LOUD'):'GUAXA',('Raone7','MIBR LOS'):'Raone7',('Bops','Fluxo w7m'):'Bops',('General','MIBR LOS'):'General',('mtsexy','MIBR LOS'):'mtsexy'}
     ewc=read('ewc 2026/abates.json');rows=[];seen=set()

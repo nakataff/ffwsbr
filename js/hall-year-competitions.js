@@ -2,7 +2,7 @@
 // Data is requested at most once, when the picker is opened or an extra is selected.
 (()=>{
 'use strict';
-const VERSION='20261026-copa-hall-v1';
+const VERSION='20261026-copa-general-full-v4';
 let data=null,pending=null,error=false;
 const families=new Set(['league']);
 const labels={league:'LBFF / FFWS Brasil',copa:'Copa FF',ewc:'EWC',global:'Global Series'};
@@ -25,7 +25,7 @@ function render(year=window.CFF_HALL_YEAR?.year?.()){
  if(error)text+=' Não foi possível carregar outras competições. Os dados de LBFF/FFWS Brasil continuam disponíveis.';
  if(data){const included=events(year);text+=' Extras incluídos em '+year+': '+(included.map(e=>e.name+(e.coverage==='partial'?' (parcial)':'')).join(', ')||'nenhum')+'.';
   const absent=[...families].filter(f=>f!=='league'&&!included.some(e=>e.family===f));if(absent.length)text+=' Sem dados neste ano: '+absent.map(f=>labels[f]).join(', ')+'.';
-  if(included.some(e=>e.coverage==='partial'))text+=' Copa FF 2026: Geral com 100 linhas exportadas; faltam jogadores. Os totais deste recorte podem estar incompletos.';
+  for(const e of included.filter(e=>e.coverage==='partial'))text+=' '+e.name+': '+e.note;
  }
  box.innerHTML=esc(text)+(error?' <button type="button" id="hall-year-extra-retry" class="btn-action">Tentar carregar extras</button>':'');
  document.getElementById('hall-year-extra-retry')?.addEventListener('click',load);

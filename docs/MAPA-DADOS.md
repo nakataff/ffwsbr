@@ -236,7 +236,7 @@ existindo, mas não geram consultas de linhas aos Durable Objects.
 
 **Competições opcionais no ranking por ano:** o padrão continua somente LBFF /
 FFWS Brasil. `js/hall-year-competitions.js` permite incluir Copa FF e EWC; baixa
-`ranking-data/hall-extra-events.json` (~9,6 KB) uma vez ao abrir o filtro. Seleção,
+`ranking-data/hall-extra-events.json` (~10 KB) uma vez ao abrir o filtro. Seleção,
 busca, ano, resumo e detalhes por competição são calculados em memória. Tabelas
 geral/por edição e perfis normais não recebem esses totais automaticamente.
 O resumo de líderes acompanha a seleção de competições, mantendo independentes
@@ -245,7 +245,7 @@ Global Series 2026 fica desabilitado enquanto não houver resultados individuais
 publicados nessa base. Cadastros com apenas elenco ou prêmios não entram.
 
 `scripts/build-hall-extra-events.py` gera o resumo offline de Copa FF 2026
-(100 registros do Geral, **parcial**) e EWC 2026 (103 jogadores da base local).
+(110 registros do Geral, consolidado de A+B e C+D) e EWC 2026 (103 jogadores da base local).
 Identidades brasileiras da EWC têm vínculos explícitos por nome/equipe;
 internacionais recebem chaves próprias para não fundir homônimos. Para atualizar,
 execute o gerador e `--check`; novas competições precisam ter fonte individual,
@@ -258,17 +258,19 @@ MVPs são reutilizados desse registro (sem duplicar a linha de 2026). Quatro tab
 grupos, repescagem, final), seletor local de etapa. Sem estatísticas por queda.
 `scripts/build-copa-2026.py` preserva os CSVs e produz relatório de divergências;
 guia/cobertura em [imports/copa-ff-2026/README.md](../imports/copa-ff-2026/README.md).
-Não tratar 100 linhas como todos os jogadores nem somar as fases ao Geral.
+O Geral consolidado usa duas partes de 55 registros. Grupos ainda tem apenas
+100 linhas e permanece parcial; não somar etapas ao Geral. O importador confere
+os 100 registros anteriores e o total de quatro atletas por queda em cada time.
 
-**Copa FF nos perfis normais:** `scripts/build-copa-player-profiles.py` gera 100
+**Copa FF nos perfis normais:** `scripts/build-copa-player-profiles.py` gera 104
 arquivos individuais em `copa-ff-2026/player-data/` (menos de 1,8 KB cada) e
 `js/copa-player-manifest.js` (menos de 2,2 KB). A aba **Copa FF 2026** fica depois
 de WB 2026 S1. `js/copa-player-profile.js` carrega somente o arquivo do jogador
 no primeiro acesso à aba; fases e retornos usam memória. Não recalcula a carreira
-inteira nem acrescenta DB/polling. Geral e grupos têm aviso de cobertura parcial;
+inteira nem acrescenta DB/polling. Somente Grupos tem aviso de cobertura parcial;
 ausência de linha fica como desconhecida, nunca zero. O relatório
-`imports/copa-ff-2026/player-profiles-report.json` lista quatro nomes ainda sem
-perfil existente seguro (THEUS7, ousadin, PH10 e LUBILU). Não fundir homônimos
+`imports/copa-ff-2026/player-profiles-report.json` lista seis nomes ainda sem
+perfil existente seguro (THEUS7, ousadin, PH10, LUBILU, StriKezk e RICKB4). Não fundir homônimos
 nem criar vínculos aproximados. Atualizar fonte, executar o gerador e `--check`,
 e incrementar caches em `jogador.html` ao mudar os dados.
 Regressões de importação/filtros/indisponibilidade/cache em

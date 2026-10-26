@@ -1,39 +1,39 @@
-# Copa FF 2026 — importação provisória
+# Copa FF 2026 — dados agregados
 
-Os quatro CSVs em `sources/` foram enviados pelo administrador em 26/10/2026,
-exportados do dashboard público da Garena. São agregados por jogador e equipe,
-nunca dados por queda. Preservar os originais ao atualizar a importação.
+Os CSVs foram enviados pelo administrador em 26/10/2026, exportados do dashboard
+público da Garena. São agregados por jogador e equipe, não resultados por queda.
 
-- Geral: 100 linhas, 4.139 abates registrados. **Não representa uma lista completa.**
-- Grupos: 100 linhas; exportação também pode estar limitada.
-- Repescagem: 50 linhas conforme o export enviado.
-- Final: 52 linhas conforme o export enviado (há substituições).
+- **Geral completo:** `sources/geral-ab.csv` e `geral-cd.csv`, com 55 linhas cada,
+  consolidados em `geral.csv`: 110 jogadores, 24 equipes, 4.187 abates registrados.
+  Não há duplicações. Os 100 registros do primeiro envio permanecem idênticos.
+- **Grupos parcial:** `grupos.csv` mantém as 100 linhas do envio anterior.
+- Repescagem: 50 linhas conforme o CSV enviado.
+- Final: 52 linhas conforme o CSV enviado (há substituições).
 
-ITAL0$$, bad9, LUBILU e mtsexy aparecem em etapas, mas não no Geral. Proxx7 e
-Shotzzrx têm totais do Geral superiores à soma das etapas enviadas, pois faltam
-suas linhas de grupos. Não acrescentar estimativas ao Geral, nem somar Geral
-com etapas. O relatório gerado documenta todas as divergências e hashes.
+`geral-primeiro-export.csv` preserva a primeira exportação limitada. `geral.csv`
+é gerado; as duas partes originais são as fontes do Geral. O importador confere
+que todos os jogadores das etapas estão no Geral e que as quedas de cada time
+fecham com quatro atletas por partida (18 grupos, 6 repescagem, 16 final).
+
+Dez jogadores foram recuperados, incluindo três com zero abates. As divergências
+entre o Geral e a soma das etapas são documentadas no relatório: há dez jogadores
+com registros de grupos ausentes no CSV de 100 linhas. Não estimar esses registros
+nem somar Geral com etapas. O Hall usa apenas o Geral consolidado e por isso não
+exibe mais o aviso de parcial para a Copa. Nos perfis, o aviso fica só em Grupos.
 
 `python3 scripts/build-copa-2026.py` gera o detalhe para Outros torneios e atualiza
-a entrada desta Copa em `novos-torneios/index.json → copaEntries`.
+a entrada em `novos-torneios/index.json → copaEntries`.
 `python3 scripts/build-hall-extra-events.py` gera o recorte opcional do Hall.
-Ambos aceitam `--check`. Depois, atualizar os caches do shell/Hall.
-
-Yago.exe → Yago (LOS), EricKinng → Ericking (RUSH) e BYTE33 → BYTE333 (Team Solid)
-são correções explícitas desta edição. xGuto7 e Pollux23 permanecem separados de
-xGUTO/Pollux7; não fazer correspondência aproximada de nomes.
-
-Não há novas consultas a Firebase ou Durable Objects. O detalhe da Copa é
-carregado apenas quando aberto, e o Hall baixa seu pequeno resumo opcional só
-ao abrir o filtro de competições. As tabelas geral e por edição do Hall continuam
-restritas à liga brasileira.
+`python3 scripts/build-copa-player-profiles.py` gera 104 arquivos por perfil e o
+manifesto de participação. Todos aceitam `--check`. Atualizar os caches do shell,
+Hall e perfil depois de regenerar. Tudo é estático; não há acesso ao banco.
 
 A Copa já constava em `year2026.events` como `copa-free-fire-2026`. Esse registro
-agora tem `detailId=copa-ff-2026`: o botão da lista abre o mesmo detalhe do arquivo.
-Nome, data, premiação total e MVPs são reaproveitados desse registro original.
-Não criar uma segunda linha na lista de eventos de 2026.
+tem `detailId=copa-ff-2026`: o botão da lista abre o mesmo detalhe do arquivo.
+Nome, data, premiação total e MVPs vêm desse registro original. Não duplicar o evento.
 
-`python3 scripts/build-copa-player-profiles.py` gera os recortes por perfil e o
-manifesto de participação. Use `--check` para validar. Trocas de etapa não fazem
-novas consultas. Nomes sem identidade existente exata ficam no relatório, sem
-ser fundidos com outra pessoa.
+Yago.exe → Yago (LOS), EricKinng → Ericking (RUSH) e BYTE33 → BYTE333 (Team Solid)
+são correções explícitas desta edição. xGuto7 e Pollux23 continuam separados de
+xGUTO/Pollux7. Seis nomes ainda não têm perfil existente com identidade segura:
+THEUS7, ousadin, PH10, LUBILU, StriKezk e RICKB4. Eles continuam no torneio e no
+Hall com seus dados; não fazer correspondência aproximada para vincular perfis.

@@ -22,8 +22,8 @@ def build():
         if len(matches)!=1:
             unmapped.append(dict(name=name,team=team,reason='Sem perfil existente com identidade exata e não ambígua'));continue
         pid=matches[0]['id'];assert pid not in snapshots,('Duplicated identity',pid)
-        snapshots[pid]=dict(schema=1,eventId='copa-ff-2026',generalId=pid,sourceName=name,team=team,coverage='partial',stats=stages,
-            notes='Dados agregados dos CSVs enviados. Geral e grupos foram limitados a 100 linhas. Ausência de linha não significa zero.')
+        snapshots[pid]=dict(schema=1,eventId='copa-ff-2026',generalId=pid,sourceName=name,team=team,coverage=event['playerRanking']['coverage'],stageCoverage={key:r['coverage'] for key,r in event['playerRankings'].items()},stats=stages,
+            notes='Geral consolidado das exportações A+B e C+D. Apenas a fase de grupos permanece parcial (100 linhas). Ausência de linha não significa zero.')
     outputs={f'copa-ff-2026/player-data/{pid}.json':packed(data) for pid,data in sorted(snapshots.items())}
     outputs['js/copa-player-manifest.js']='/* Generated explicit Copa profile identities. */\nwindow.CFF_COPA_2026_PLAYERS='+json.dumps({pid:True for pid in sorted(snapshots)},separators=(',',':'))+';\n'
     outputs['imports/copa-ff-2026/player-profiles-report.json']=packed(dict(linkedProfiles=len(snapshots),unmapped=unmapped))
