@@ -108,6 +108,10 @@ Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu)
 Reutiliza `ffws-global-2026/global.css` para manter a identidade das outras páginas.
 O módulo `ffws-global-2026/inicio.js` é independente de `global.js`: não baixa a
 base completa nem faz consultas ao Firebase/Durable Objects.
+O cabeçalho oferece atalhos nativos para equipes, quatro etapas e calendário, com
+rankings, estatísticas, seleções, comparação, notas e formato em “Rankings, estatísticas e mais”.
+Os atalhos não antecipam o carregamento das páginas; o formato continua sendo a
+primeira seção depois do cabeçalho.
 
 | Arquivo | Conteúdo / carregamento |
 | --- | --- |
