@@ -1,5 +1,6 @@
 """Import public Garena CSV exports without inventing per-drop results or missing totals."""
 from pathlib import Path
+from decimal import Decimal,ROUND_HALF_UP
 import argparse,csv,hashlib,json,unicodedata
 ROOT=Path(__file__).resolve().parents[1]
 def read(p):return json.loads((ROOT/p).read_text())
@@ -28,7 +29,7 @@ def build():
             values=[int(r[c]) for c in ['Abates','Quedas','Dano','Assists','MVP']]
             assert all(v>=0 for v in values) and values[1]>0
             k,q,d,a,m=values
-            out.append([i+1,name,TEAM.get(team,team),k,q,round(k/q,2),d,a,m])
+            out.append([i+1,name,TEAM.get(team,team),k,q,float((Decimal(k)/Decimal(q)).quantize(Decimal("0.01"),rounding=ROUND_HALF_UP)),d,a,m])
         raw[key]=rows
         rankings[key]=dict(type='playerRanking',title='Copa FF 2026 · '+label,label=label,tabLabel='Jogadores',cols=COLS,rows=out,
             coverage='partial' if key in ['geral','grupos'] else 'exported',

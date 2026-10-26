@@ -1,6 +1,6 @@
 /* Copa tab: one small selected-player snapshot, fetched only when its tab opens. */
 (()=>{'use strict';
-const VERSION='20261026-copa-profile-v1',cache=new Map(),serial=new WeakMap();
+const VERSION='20261026-copa-profile-v2',cache=new Map(),serial=new WeakMap();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const stages=[['geral','Geral'],['grupos','Fase de grupos'],['repescagem','Repescagem'],['final','Final']];
 function eligible(p){return p?.profileType!=='staff'&&!!window.CFF_COPA_2026_PLAYERS?.[p?.id];}

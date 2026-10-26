@@ -10,7 +10,7 @@ test('Copa snapshots reproduce exact CSV stages and explicit existing player ide
  execFileSync('python3',['scripts/build-copa-player-profiles.py','--check']);const report=read('imports/copa-ff-2026/player-profiles-report.json');assert.equal(report.linkedProfiles,100);assert.equal(report.unmapped.length,4);
  const y=read('copa-ff-2026/player-data/yago.json');assert.equal(y.sourceName,'Yago.exe');assert.equal(y.stats.geral.kills,78);assert.equal(y.stats.final.kills,31);assert.equal(y.stats.geral.matches,34);assert(!y.stats.repescagem);
  assert.equal(read('copa-ff-2026/player-data/lost21.json').sourceName,'Lost');assert.equal(read('copa-ff-2026/player-data/byte333.json').sourceName,'BYTE33');assert.equal(read('copa-ff-2026/player-data/xguto7.json').sourceName,'xGuto7');assert(!fs.existsSync('copa-ff-2026/player-data/xguto.json'));
- assert(!read('copa-ff-2026/player-data/mtsexy.json').stats.geral);assert.equal(read('copa-ff-2026/player-data/mtsexy.json').stats.final.kills,9);
+ assert(!read('copa-ff-2026/player-data/mtsexy.json').stats.geral);assert.equal(read('copa-ff-2026/player-data/mtsexy.json').stats.final.kills,9);assert.equal(read('copa-ff-2026/player-data/mtsexy.json').stats.final.average,1.13);
  assert(fs.statSync('js/copa-player-manifest.js').size<2200);for(const file of fs.readdirSync('copa-ff-2026/player-data'))assert(fs.statSync('copa-ff-2026/player-data/'+file).size<1800);
 });
 test('only the selected Copa tab fetches one player file, stage changes use memory and absent records stay unknown',async()=>{
