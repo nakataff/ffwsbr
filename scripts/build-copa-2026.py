@@ -54,7 +54,7 @@ def build():
     general,duplicates=merge_general(parts)
     group_parts=[read_csv(ROOT/f'imports/copa-ff-2026/sources/grupos-{part}.csv') for part in ['ab','cd']]
     groups,group_duplicates=merge_general(group_parts)
-    previous_groups=read_csv(ROOT/'imports/copa-ff-2026/sources/grupos.csv')
+    previous_groups=read_csv(ROOT/'imports/copa-ff-2026/sources/grupos-primeiro-export.csv')
     group_index={(r['Jogador'],r['Equipe']):r for r in groups}
     assert len(groups)==110 and len(group_index)==110 and len(previous_groups)==100,'Fase de grupos não contém 110 jogadores únicos'
     for row in previous_groups:
