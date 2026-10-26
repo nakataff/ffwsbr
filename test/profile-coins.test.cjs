@@ -11,6 +11,7 @@ function adminCoinsFixture(hash='',batches=[]){
   if(op==='syncCoinRanking')return batches.shift()||{checked:1,failed:0,pending:0,complete:true,nextCursor:''};
   throw Error('Unexpected operation '+op);
  };
+ w.eval(fs.readFileSync('js/admin-code-promotions.mjs','utf8').replace(/^export /gm,''));
  w.eval(fs.readFileSync(require.resolve('../js/admin-economy.js'),'utf8').replace(/^import .*\n/gm,''));
  return {w,calls,intervals,root:w.document.querySelector('#eco-admin-root'),start:async()=>{onAuth(auth.currentUser);await tick();},close:()=>w.close()};
 }

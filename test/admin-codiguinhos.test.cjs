@@ -46,6 +46,7 @@ test('the actual gift form requires recipient confirmation, uses a dialog and re
 test('stock manager mounts inside its own tab and a card shortcut opens that tab',async()=>{
  const a=setup();try{
   Object.defineProperty(a.w.crypto,'subtle',{value:crypto.subtle});a.w.TextEncoder=TextEncoder;a.w.getApps=()=>[{name:'[DEFAULT]'}];a.w.initializeApp=()=>({});const admin={uid:'admin',email:'admin@centralfreefire.com.br'};a.w.getAuth=()=>({currentUser:admin});a.w.onAuthStateChanged=(_auth,fn)=>fn(admin);a.w.createStockBridge=(await import('../js/admin-stock-bridge.mjs')).createStockBridge;a.w.economyRequest=async()=>({stock:[],entries:[],nextCursor:0,hasMore:false});a.w.loadEconomyStyle=()=>{};a.w.esc=String;a.w.prepareEconomyPhoto=async x=>x;
+  a.w.eval(fs.readFileSync('js/admin-code-promotions.mjs','utf8').replace(/^export /gm,''));
   a.w.eval(fs.readFileSync(require.resolve('../js/admin-economy-stock.js'),'utf8').replace(/^import .*\n/gm,''));for(let n=0;n<15;n++)await new Promise(r=>setTimeout(r,0));
   assert.equal(a.$('#eco-code-stock').parentElement.id,'codes-panel-rewards');assert.equal(a.$('#codes-panel-rewards').hidden,true);a.$('[data-economy-stock="BCDEFG123456"]').click();assert.equal(a.$('#codes-panel-rewards').hidden,false);assert.equal(a.$('[name=code]').value,'BCDEFG123456');assert.equal(a.$('[data-reserve-submit]').disabled,false);
  }finally{a.close();}

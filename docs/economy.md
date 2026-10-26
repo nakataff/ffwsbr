@@ -175,3 +175,26 @@ Server deadlines are immutable: photo 20s, quiz 25s, career 30s, lineup 45s. Ref
 `scripts/build-daily-challenges.cjs` derives photo/career/roster content from existing site records during the Worker's predeploy step. It overwrites `functions/daily-challenges-seed.js` only in the deployment working directory. The committed file is an empty placeholder; the complete bank and answer key are never committed or shipped to the static site. Stable content hashes install updated seeds once into private storage, preserving admin pauses and existing round snapshots. Existing admin import/edit/pause controls support all formats. Rosters explicitly refer to four starters marked in the edition registration data; reserves or subsequent substitutions are excluded. Career clues assert team membership, not an unverified chronology.
 
 Daily boundaries stay at midnight BRT. Legacy in-progress rounds keep their frozen questions/answers and gain deadlines only when an unanswered challenge is opened. Already-perfect legacy rounds can receive the new once-per-day bonus without replaying prior answers. Timers reduce time available for external searches; they do not establish that someone answered without help.
+
+## Promoções por prêmio (26/10/2026)
+
+Em `admin-codiguinhos.html → Recompensas → Codiguinhos da loja → Promoções da loja`,
+escolha o prêmio, marque Ativar promoção e informe o preço menor que o preço normal.
+O mesmo formulário está em `admin-pontos.html → Loja`. A promoção aplica a todos os
+códigos desse título, inclusive reposições, até ser desativada. O preço original
+mostrado é o preço real atual de `code-default`; nunca é um valor fictício para desconto.
+
+`functions/economy-code-promotions.js` mantém `eco_code_promotions`, uma linha por título.
+As consultas existentes de estoque agregam a promoção por chave e a menor validade
+válida; não há polling nem outra chamada da loja. O índice por título/recibo/validade
+limita a busca do código. O cabeçalho continua consultando somente sua carteira.
+As opções da loja mostram preço atual, preço anterior riscado e porcentagem de desconto.
+Mostram validade em Brasília, com destaque nos últimos 7 dias (hoje/amanhã/dias).
+Variantes de imagem usam o estoque que vence antes. Códigos vencidos somem da loja.
+
+Ao confirmar com moedas, o navegador envia o preço exibido; o servidor calcula o
+preço atual do título reservado dentro da mesma transação. Mudança de preço ou uma
+validade antecipada exige atualizar a loja, sem cobrar nem reservar. Repetir o mesmo
+pedido preserva o pagamento original. O estorno continua baseado no débito real do
+ledger, mesmo que o administrador altere o preço depois. Vales continuam custando
+1 vale. A validação e o limite de um resgate com moedas a cada 30 dias permanecem.
