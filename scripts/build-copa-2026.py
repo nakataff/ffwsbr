@@ -51,8 +51,9 @@ def build():
         format='Dados individuais disponíveis por Geral, fase de grupos, repescagem e final. Exportações agregadas; o detalhamento por queda ainda não foi enviado.',
         teams=dict(type='teams',items=[dict(id=norm(name).lower(),o=name,n=name,p=[dict(n=n,r='player',t='player') for n in sorted(names)],s=[]) for name,names in sorted(teams.items())]),
         standings=[],awards=[],playerRanking=rankings['geral'],playerRankings=rankings,playerLinks=PLAYER,source=dict(name='Garena — Dashboard Público: COPAFF 2026; CSVs enviados pelo administrador',url='https://datastudio.google.com/reporting/5e0ee6fe-e51c-4fd6-a820-e611a69d1770/page/p_fckf0lsrgd',providedAt='2026-10-26'),dataNotes=notes)
+    event['champion']=next(r['team'] for r in read('ranking-data/brasil-2026-source.json')['copa']['standings'] if r['position']==1)
     content=packed(event);manifest=read('novos-torneios/index.json');entries=[e for e in manifest.get('copaEntries',[]) if e['id']!=event['id']]
-    entries.append(dict(id=event['id'],name=event['name'],year=2026,tier='A',region='BRASIL',status='OFICIAL',family='COPA_FF',logo=event['logo'],organizer='Garena',version=hashlib.sha256(content.encode()).hexdigest()[:12],teamNames=list(teams),detailsFile='copa-ff-2026.json',summary=True,champion='',mvp='',teamCount=len(teams),awardCount=0))
+    entries.append(dict(id=event['id'],name=event['name'],year=2026,tier='A',region='BRASIL',status='OFICIAL',family='COPA_FF',logo=event['logo'],organizer='Garena',version=hashlib.sha256(content.encode()).hexdigest()[:12],teamNames=list(teams),detailsFile='copa-ff-2026.json',summary=True,champion=event['champion'],mvp='',teamCount=len(teams),awardCount=0))
     manifest['copaEntries']=entries
     report=dict(sourceHashes=hashes,counts={k:len(v['rows']) for k,v in rankings.items()},coverage='partial',playersMissingFromGeneral=missing,generalVsStageDifferences=diffs)
     return {'novos-torneios/copa-ff-2026.json':content,'novos-torneios/index.json':packed(manifest),'imports/copa-ff-2026/report.json':packed(report)}
