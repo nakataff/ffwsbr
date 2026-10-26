@@ -10,6 +10,8 @@ TEAM={'ALFA34':'ALFA 34','ANTISOCIAL':'ANTISOCIAL TEAM','MG7 E-SPORTS':'MG7 ESPO
 PLAYER={'Yago.exe':'Yago','EricKinng':'Ericking','BYTE33':'BYTE333'}
 COLS=['pos','player','team','kills','matches','avgKills','damage','assists','mvps']
 def build():
+    manifest=read('novos-torneios/index.json')
+    archive=next(e for e in manifest['year2026']['events'] if e['id']=='copa-free-fire-2026')
     rankings={};hashes={};raw={}
     labels={'geral':'Geral','grupos':'Fase de grupos','repescagem':'Repescagem','final':'Final'}
     for key,label in labels.items():
@@ -52,8 +54,16 @@ def build():
         teams=dict(type='teams',items=[dict(id=norm(name).lower(),o=name,n=name,p=[dict(n=n,r='player',t='player') for n in sorted(names)],s=[]) for name,names in sorted(teams.items())]),
         standings=[],awards=[],playerRanking=rankings['geral'],playerRankings=rankings,playerLinks=PLAYER,source=dict(name='Garena — Dashboard Público: COPAFF 2026; CSVs enviados pelo administrador',url='https://datastudio.google.com/reporting/5e0ee6fe-e51c-4fd6-a820-e611a69d1770/page/p_fckf0lsrgd',providedAt='2026-10-26'),dataNotes=notes)
     event['champion']=next(r['team'] for r in read('ranking-data/brasil-2026-source.json')['copa']['standings'] if r['position']==1)
-    content=packed(event);manifest=read('novos-torneios/index.json');entries=[e for e in manifest.get('copaEntries',[]) if e['id']!=event['id']]
-    entries.append(dict(id=event['id'],name=event['name'],year=2026,tier='A',region='BRASIL',status='OFICIAL',family='COPA_FF',logo=event['logo'],organizer='Garena',version=hashlib.sha256(content.encode()).hexdigest()[:12],teamNames=list(teams),detailsFile='copa-ff-2026.json',summary=True,champion=event['champion'],mvp='',teamCount=len(teams),awardCount=0))
+    # The event already exists in Torneios 2026. Its original metadata is authoritative.
+    archive['detailId']=event['id']
+    event.update(name=archive['name'],date=archive['date'],currency='BRL',prizeTotal=int(''.join(c for c in archive['prize'] if c.isdigit())),archiveId=archive['id'])
+    for name in archive.get('mvp',[]):
+        matches=[r for r in rankings['geral']['rows'] if norm(r[1])==norm(name)]
+        assert len(matches)==1,('Ambiguous archive MVP',name)
+        event['awards'].append(dict(award='MVP',player=name,team=matches[0][2],note='Premiação já cadastrada na lista Torneios 2026.'))
+    event['dataNotes'].append('Data, premiação total e MVPs reutilizados do cadastro existente em Torneios 2026; não inferidos do ranking de abates.')
+    content=packed(event);entries=[e for e in manifest.get('copaEntries',[]) if e['id']!=event['id']]
+    entries.append(dict(id=event['id'],name=event['name'],year=2026,tier='A',region='BRASIL',status='OFICIAL',family='COPA_FF',logo=event['logo'],organizer='Garena',version=hashlib.sha256(content.encode()).hexdigest()[:12],teamNames=list(teams),detailsFile='copa-ff-2026.json',summary=True,champion=event['champion'],mvp=' / '.join(archive.get('mvp',[])),teamCount=len(teams),awardCount=len(event['awards']),date=archive['date']))
     manifest['copaEntries']=entries
     report=dict(sourceHashes=hashes,counts={k:len(v['rows']) for k,v in rankings.items()},coverage='partial',playersMissingFromGeneral=missing,generalVsStageDifferences=diffs)
     return {'novos-torneios/copa-ff-2026.json':content,'novos-torneios/index.json':packed(manifest),'imports/copa-ff-2026/report.json':packed(report)}

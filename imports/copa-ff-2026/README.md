@@ -15,7 +15,7 @@ suas linhas de grupos. Não acrescentar estimativas ao Geral, nem somar Geral
 com etapas. O relatório gerado documenta todas as divergências e hashes.
 
 `python3 scripts/build-copa-2026.py` gera o detalhe para Outros torneios e atualiza
-somente a entrada desta Copa em `novos-torneios/index.json → copaEntries`.
+a entrada desta Copa em `novos-torneios/index.json → copaEntries`.
 `python3 scripts/build-hall-extra-events.py` gera o recorte opcional do Hall.
 Ambos aceitam `--check`. Depois, atualizar os caches do shell/Hall.
 
@@ -27,3 +27,13 @@ Não há novas consultas a Firebase ou Durable Objects. O detalhe da Copa é
 carregado apenas quando aberto, e o Hall baixa seu pequeno resumo opcional só
 ao abrir o filtro de competições. As tabelas geral e por edição do Hall continuam
 restritas à liga brasileira.
+
+A Copa já constava em `year2026.events` como `copa-free-fire-2026`. Esse registro
+agora tem `detailId=copa-ff-2026`: o botão da lista abre o mesmo detalhe do arquivo.
+Nome, data, premiação total e MVPs são reaproveitados desse registro original.
+Não criar uma segunda linha na lista de eventos de 2026.
+
+`python3 scripts/build-copa-player-profiles.py` gera os recortes por perfil e o
+manifesto de participação. Use `--check` para validar. Trocas de etapa não fazem
+novas consultas. Nomes sem identidade existente exata ficam no relatório, sem
+ser fundidos com outra pessoa.

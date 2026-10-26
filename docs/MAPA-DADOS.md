@@ -252,11 +252,25 @@ execute o gerador e `--check`; novas competições precisam ter fonte individual
 identidades revisadas e cobertura declarada antes de serem incluídas.
 
 **Copa FF 2026 em Outros torneios:** `novos-torneios/copa-ff-2026.json`, entrada
-leve em `index.json → copaEntries`, quatro tabelas em `playerRankings` (Geral,
+leve em `index.json → copaEntries`, vinculada ao registro preexistente
+`year2026.events → copa-free-fire-2026` por `detailId`. Nome, data, premiação e
+MVPs são reutilizados desse registro (sem duplicar a linha de 2026). Quatro tabelas em `playerRankings` (Geral,
 grupos, repescagem, final), seletor local de etapa. Sem estatísticas por queda.
 `scripts/build-copa-2026.py` preserva os CSVs e produz relatório de divergências;
 guia/cobertura em [imports/copa-ff-2026/README.md](../imports/copa-ff-2026/README.md).
 Não tratar 100 linhas como todos os jogadores nem somar as fases ao Geral.
+
+**Copa FF nos perfis normais:** `scripts/build-copa-player-profiles.py` gera 100
+arquivos individuais em `copa-ff-2026/player-data/` (menos de 1,8 KB cada) e
+`js/copa-player-manifest.js` (menos de 2,2 KB). A aba **Copa FF 2026** fica depois
+de WB 2026 S1. `js/copa-player-profile.js` carrega somente o arquivo do jogador
+no primeiro acesso à aba; fases e retornos usam memória. Não recalcula a carreira
+inteira nem acrescenta DB/polling. Geral e grupos têm aviso de cobertura parcial;
+ausência de linha fica como desconhecida, nunca zero. O relatório
+`imports/copa-ff-2026/player-profiles-report.json` lista quatro nomes ainda sem
+perfil existente seguro (THEUS7, ousadin, PH10 e LUBILU). Não fundir homônimos
+nem criar vínculos aproximados. Atualizar fonte, executar o gerador e `--check`,
+e incrementar caches em `jogador.html` ao mudar os dados.
 Regressões de importação/filtros/indisponibilidade/cache em
 `test/copa-hall-events.test.cjs`.
 
