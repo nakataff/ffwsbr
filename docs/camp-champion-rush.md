@@ -50,3 +50,19 @@ reproduz estado antigo de classificatória, alternância de interface, restaura�
 exportação `matchpoint`, pontuações isoladas e conservação dos resultados.
 O evento `cff:camp-final-controls-ready` reposiciona o seletor da final depois
 da criação tardia do controle no pacote antigo, sem polling ou novos observers.
+
+## Booyah com pontuação ainda pendente
+
+O título é reconhecido assim que o Booyah é marcado para uma equipe que já
+alcançou o limite **antes dessa queda**. Não é preciso preencher os abates ou
+os pontos de nenhuma equipe na queda decisiva. Os campos vazios continuam
+pendentes: não recebem zero nem pontuações presumidas. O backup conserva esse
+estado e o Wiki mantém a colocação conhecida e os abates em branco.
+
+O reconhecimento anterior exigia `getDropHasScore` e o modelo de exportação
+exigia abates válidos, atrasando o campeão até o lançamento da pontuação.
+Ambos agora dependem do Booyah e dos pontos acumulados nas quedas anteriores.
+A troca para formato clássico também recalcula e remove a indicação de campeão.
+O teste de regressão reproduz o clique real com todos os pontos da última queda
+vazios, troca de Booyah, troca de formato, limite atingido na mesma queda e
+restauração do backup. Nenhuma consulta adicional ao servidor foi acrescentada.

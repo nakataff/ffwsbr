@@ -57,7 +57,7 @@
   function loadTournamentSetup(){
     const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261028-champion-final-v1';
     setup.onload=()=>{
-      const wiki=document.createElement('script');wiki.src='admin-camp-ao-vivo/final-wiki.js?v=20261028-champion-final-v1';
+      const wiki=document.createElement('script');wiki.src='admin-camp-ao-vivo/final-wiki.js?v=20261028-champion-booyah-v2';
       wiki.onload=loadWorkspace;
       wiki.onerror=loadWorkspace;
       document.body.appendChild(wiki);
@@ -77,7 +77,7 @@
 
       const [cssSource,appSource,presetResponse]=await Promise.all([
         gunzipUrl('admin-camp-ao-vivo/app.css.gz?v=20261001-camp-v4'),
-        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261028-champion-final-v1'),
+        gunzipUrl('admin-camp-ao-vivo/app.js.gz?v=20261028-champion-booyah-v2'),
         presetPromise
       ]);
 

@@ -1,18 +1,19 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),zlib=require('node:zlib'),{JSDOM,VirtualConsole}=require('jsdom');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
-async function editor(){
+async function editor({pendingBooyah=false}={}){
  const html=fs.readFileSync('admin-camp-ao-vivo.html','utf8').replace(/<script\b[\s\S]*?<\/script>/g,''),vc=new VirtualConsole();
  const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/admin-camp-ao-vivo.html',runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc}),w=dom.window;
  const data=JSON.parse(fs.readFileSync('admin-camp-ao-vivo/data/backup-ffws-br-2026-s2-final.json','utf8')),codes=data.selectedTeams.slice(0,2),[a,b]=codes;
  Object.assign(data.config,{tournamentName:'Copa de teste',quedas:'2',tournamentDays:1,cp:'110',finalMode:'champion',championEnabled:false,startingEnabled:true,detailMode:'detailed',v68ChampionRushUnlimited:true,cffInterfaceMode:'complete'});
  data.config.cffTournamentPhasesV1={version:1,activeId:'old-qualifier',phases:[{id:'old-qualifier',name:'Classificatória',teams:2,advance:1,days:1,firstDrops:2,laterDrops:2,format:'classic',cp:160,unlimited:false}]};
  data.selectedTeams=codes;data.startingPoints={[a]:100,[b]:0};data.drops=[{points:{[a]:11,[b]:8},placements:{[a]:2,[b]:3},kills:{[a]:2,[b]:0},top12:{},booyah:'',map:'Bermuda'},{points:{[a]:15,[b]:9},placements:{[a]:1,[b]:2},kills:{[a]:3,[b]:0},top12:{},booyah:a,map:'Purgatorio'}];
+ if(pendingBooyah)data.drops[1]={points:{},kills:{},placements:{},top12:{},booyah:'',map:'Purgatorio'};
  Object.assign(data.tournamentModeV1,{enabled:true,name:'Copa de teste — Classificatória',days:[],view:'day',editingDayId:'',draftDayNumber:1,rosterCodes:codes,draftActiveCodes:codes});Object.assign(data.tournamentModeV1.config,{expectedTeams:2,teamsPerRound:2,advanceCount:1});
  w.fetch=async()=>({ok:false,json:async()=>({})});w.alert=()=>{};w.confirm=()=>true;w.document.execCommand=()=>true;w.HTMLElement.prototype.getClientRects=()=>[{}];w.HTMLElement.prototype.scrollIntoView=()=>{};
  w.localStorage.setItem('ffws_autosave',JSON.stringify(data));w.localStorage.setItem('ffws_v41_interface_mode','complete');w.__CFF_CAMP_INITIAL_BACKUP__=data;
  let core=zlib.gunzipSync(fs.readFileSync('admin-camp-ao-vivo/app.js.gz')).toString();core=core.replace('window.onload = () => {','window.__INIT__ = () => {').replace(/window\.addEventListener\(\s*(['"])load\1\s*,/g,'window.addEventListener("cff:camp-core-ready",');
  w.eval(core);w.__INIT__();w.dispatchEvent(new w.Event('cff:camp-core-ready'));w.__CFF_CAMP_READY__=true;
- for(const f of ['enhancements.js','tournament-setup.js','final-wiki.js','workspace.js'])w.eval(fs.readFileSync('admin-camp-ao-vivo/'+f,'utf8'));
+ for(const f of ['enhancements.js','launch-extras.js','tournament-setup.js','final-wiki.js','workspace.js'])w.eval(fs.readFileSync('admin-camp-ao-vivo/'+f,'utf8'));
  await wait(400);w.v41SetInterfaceMode('complete');await wait(50);
  return {w,codes,data,close:()=>w.close()};
 }
@@ -47,5 +48,27 @@ test('a retained qualifying day cannot add points to the complete final or auto-
   const model=w.CFF_FINAL_WIKI.model(w.collectBackupData(true));assert.equal(model.rows.find(r=>r.code===a).total,126);assert.equal(model.rows.find(r=>r.code===b).total,17);assert.equal(model.winner,a);
   const selector=w.document.getElementById('drop-num');selector.value='2';w.loadDropData();w.saveDrop();await wait(180);
   const restored=w.collectBackupData(true);assert.equal(restored.tournamentModeV1.days.length,1);assert.equal(restored.tournamentModeV1.days[0].stats[a].total,900);assert.equal(restored.drops[1].points[a],15);
+ }finally{f.close();}
+});
+
+test('an already eligible team becomes champion on Booyah before entering any scores; corrections and restore remain consistent', {timeout:60000},async()=>{
+ const f=await editor({pendingBooyah:true}),w=f.w,[a,b]=f.codes;try{
+  const select=w.document.getElementById('drop-num');select.value='2';w.loadDropData();
+  const banner=w.document.getElementById('champion-banner');assert.equal(banner.style.display,'none');
+  w.document.getElementById('boo-'+a).click();await wait(180);
+  assert.equal(banner.style.display,'block','Booyah alone must recognize a previously activated team');
+  assert(w.document.querySelector('#summary-tbody tr.winner-row'));assert.equal(w.document.getElementById('kills-'+a).value,'');
+  const saved=w.collectBackupData(true),last=saved.drops[1];assert.equal(last.booyah,a);assert.equal(last.points[a],null);assert.equal(last.points[b],null);assert.equal(last.kills[a],null);
+  let model=w.CFF_FINAL_WIKI.model(saved);assert.equal(model.winner,a);assert.equal(model.winnerMatch,2);assert.equal(model.rows.find(r=>r.code===a).total,111);assert.equal(model.maps[1].played,true);assert.equal(model.maps[1].scores.get(a).points,null);
+  assert.match(w.CFF_FINAL_WIKI.build(saved),/won through Champion Rush after Booyah at Match 2/);
+  w.document.getElementById('boo-'+b).click();await wait(180);assert.equal(banner.style.display,'none','changing Booyah to an ineligible team must retract the title');
+  w.document.getElementById('boo-'+a).click();await wait(180);assert.equal(banner.style.display,'block');
+  const format=w.document.getElementById('final-mode');format.value='classic';format.dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(banner.style.display,'none');
+  format.value='champion';format.dispatchEvent(new w.Event('change',{bubbles:true}));
+  w.document.getElementById('champion-point').value='130';w.renderSummary();assert.equal(banner.style.display,'none');
+  const kills=w.document.getElementById('kills-'+a);kills.value='20';kills.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(180);
+  assert.equal(banner.style.display,'none','reaching the threshold on the Booyah map must not crown the team');assert.equal(w.CFF_FINAL_WIKI.model(w.collectBackupData(true)).winner,null);
+  w.document.getElementById('backup-input').value=JSON.stringify(saved);w.importBackup();await wait(400);assert.equal(banner.style.display,'block');
+  model=w.CFF_FINAL_WIKI.model(w.collectBackupData(false));assert.equal(model.winner,a);assert.equal(model.rows.find(r=>r.code===a).total,111);assert.equal(w.collectBackupData(false).drops[1].kills[a],null);
  }finally{f.close();}
 });

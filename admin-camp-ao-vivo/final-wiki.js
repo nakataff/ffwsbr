@@ -56,7 +56,7 @@
     const byCode=new Map(rows.map(r=>[r.code,r])),maps=[];let winner=null,winnerMatch=0;
     for(const entry of entries){
       let drops=entry.snapshot.drops||[],last=-1;
-      drops.forEach((d,i)=>{if(codes.some(code=>score(d,code,detailed).points!==null))last=i});
+      drops.forEach((d,i)=>{if(codes.includes(d.booyah)||codes.some(code=>score(d,code,detailed).points!==null))last=i});
       // The unlimited editor keeps an empty next slot; it is not a played map.
       const unlimited=entry.snapshot.config?.v68ChampionRushUnlimited||(champion&&phaseOf(data)?.unlimited&&entry.number>1);
       if(last>=0&&unlimited)drops=drops.slice(0,last+1);
@@ -65,8 +65,8 @@
       if(entry.local&&entry.number===1&&fixedFirst>0)drops=drops.slice(0,Math.max(fixedFirst,last+1));
       for(let i=0;i<drops.length;i++){
         const d=drops[i],scores=new Map(codes.map(code=>[code,score(d,code,detailed)])),before=byCode.get(d.booyah)?.total||0;
-        const played=[...scores.values()].some(s=>s.points!==null);
-        if(champion&&!winner&&d.booyah&&scores.get(d.booyah)?.valid&&before>=cp){winner=d.booyah;winnerMatch=maps.length+1}
+        const played=codes.includes(d.booyah)||[...scores.values()].some(s=>s.points!==null);
+        if(champion&&!winner&&codes.includes(d.booyah)&&before>=cp){winner=d.booyah;winnerMatch=maps.length+1}
         maps.push({drop:d,date:mapDate(entry,i),scores,played});
         scores.forEach((s,code)=>{if(s.points===null)return;const r=byCode.get(code);r.total+=s.points;r.matches++;r.lastPlace=s.place??Infinity;r.lastPoints=s.points;if(s.place===1)r.booyahs++;
           if(!detailed)return;if(s.kills!==null){r.kills+=s.kills;r.placement+=s.points-s.kills}else{r.unknownKills=true;if(s.place!==null)r.placement+=getPlacementPoints(s.place);else r.unknownPlacement=true}
@@ -114,7 +114,7 @@
       const tied=m.hasScores&&m.rows.some(o=>o.code!==r.code&&o.total===r.total),shifted=m.winner&&m.natural.findIndex(o=>o.code===r.code)!==i;
       const placement=m.winner===r.code||shifted||tied?'|placement='+(i+1):'';
       match+=`\n    |opponent${i+1}={{TeamOpponent|${r.code}${m.hasBonus&&r.starting?'|startingpoints='+r.starting:''}${placement}\n`;
-      const parts=m.maps.map((x,j)=>{const s=x.scores.get(r.code);return`m${j+1}={{MS|${m.detailed?(s.valid?s.place+'|'+s.kills:(s.place!==null&&x.drop.unknownKills?.[r.code]?s.place+'| ':' | ')):'p='+(s.points??'  ')}}}`});
+      const parts=m.maps.map((x,j)=>{const s=x.scores.get(r.code);return`m${j+1}={{MS|${m.detailed?(s.valid?s.place+'|'+s.kills:(s.place!==null&&(x.drop.unknownKills?.[r.code]||s.kills===null)?s.place+'| ':' | ')):'p='+(s.points??'  ')}}}`});
       for(let j=0;j<parts.length;j+=6)match+='        |'+parts.slice(j,j+6).join('\t|')+'\n';match+='        }}\n';
     });match+='}}\n';
     const id=typeof getOrCreateMatchlistId==='function'?getOrCreateMatchlistId():cfg.matchlistId||'finals';
