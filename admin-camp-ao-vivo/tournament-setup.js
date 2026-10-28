@@ -8,12 +8,13 @@
   const originalCollect=window.collectBackupData;
   let importing=false,syncing=false,lastDayKey='',plan,busy=false;
   const phase=()=>plan.phases.find(p=>p.id===plan.activeId)||plan.phases[0];
-  function makePhase(name='Fase 1',teams=18,advance=12){return{id:'phase-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name,teams,advance,days:1,firstDrops:6,laterDrops:6,unlimited:false,format:'classic',cp:160,lastDate:'',completed:false,eliminated:[]}}
+  const completeFinal=()=>document.body.classList.contains('v41-complete-mode');
+  function makePhase(name='Classificatória',teams=18,advance=12){return{id:'phase-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name,teams,advance,days:1,firstDrops:6,laterDrops:6,unlimited:false,format:'classic',cp:160,lastDate:'',completed:false,eliminated:[]}}
   function derive(data){
     const p=data?.config?.cffTournamentPhasesV1;
     if(p?.version===1&&Array.isArray(p.phases)&&p.phases.length&&p.phases.some(x=>x.id===p.activeId))return clone(p);
     const state=data?.tournamentModeV1,final=/final/i.test(state?.name||data?.config?.tournamentName||'');
-    const item=makePhase(final?'Final':'Fase 1',state?.config?.expectedTeams||data?.selectedTeams?.length||18,final?0:12);
+    const item=makePhase(final?'Final':'Classificatória',state?.config?.expectedTeams||data?.selectedTeams?.length||18,final?0:12);
     item.days=final?2:number(data?.config?.tournamentDays,1);item.format=final?'champion':'classic';item.unlimited=final;item.firstDrops=number(data?.config?.quedas,6);
     return{version:1,activeId:item.id,phases:[item]};
   }
@@ -53,7 +54,7 @@
   }
   function emptyDrop(codes){const dict=()=>Object.fromEntries(codes.map(c=>[c,null]));return{map:'',date:'',booyah:'',inputMode:'detail-pos-kills',points:dict(),kills:dict(),placements:dict(),top12:Object.fromEntries(codes.map(c=>[c,false])),unknownKills:{},estimatedKills:{},mvp:'',mvppoint:''}}
   function configured(data,p){
-    const mode=data.tournamentModeV1||{};data.config={...data.config,championEnabled:p.format==='champion',cp:String(p.cp),finalMode:p.format,tournamentDays:p.days,v68ChampionRushUnlimited:p.format==='champion'&&p.unlimited&&number(mode.draftDayNumber,1)>1,cffTournamentPhasesV1:clone(plan)};
+    const mode=data.tournamentModeV1||{};data.config={...data.config,cffInterfaceMode:'tournament',championEnabled:p.format==='champion',cp:String(p.cp),finalMode:p.format,tournamentDays:p.days,v68ChampionRushUnlimited:p.format==='champion'&&p.unlimited&&number(mode.draftDayNumber,1)>1,cffTournamentPhasesV1:clone(plan)};
     data.tournamentModeV1={...mode,enabled:true,config:{...mode.config,expectedTeams:p.teams,advanceCount:p.advance,teamsPerRound:Math.min(number(mode.config?.teamsPerRound,p.teams)||p.teams,p.teams)}};
     return data;
   }
@@ -114,6 +115,7 @@
   const wrappedPrize=function(){if(!plan.phases.some(p=>p.completed))return originalPrize.apply(this,arguments);const out=prizeCode(),field=$('prizepool-code');field.value=out;field.select();document.execCommand('copy');notify('Prizepool gerado com as datas dos eliminados.');return out};
   window.generatePrizepool=wrappedPrize;try{generatePrizepool=wrappedPrize}catch(_){}
   function syncDay(){
+    if(completeFinal()){syncInterfaceUi();return;}
     if(importing||syncing)return;const state=api()?.getState?.(),p=phase();if(!state?.enabled||!p)return;
     const day=number(state.draftDayNumber,1),key=p.id+':'+day;if(key===lastDayKey)return;lastDayKey=key;syncing=true;
     try{
@@ -125,6 +127,12 @@
       persist();
     }finally{syncing=false}
   }
+  function syncInterfaceUi(){
+    const final=completeFinal(),host=$('cff-admin-tournament-setup');if(!host)return;
+    host.querySelector('header h2').textContent=final?'1. Montar a final':'1. Montar o campeonato';
+    $('cff-phase-details').hidden=final;$('cff-complete-final-note').hidden=!final;
+    if(final)$('cff-phase-current').textContent=`Final • ${number($('tournament-days')?.value,1)} dia(s) • ${$('final-mode')?.value==='classic'?'Clássica':'Champion Rush · '+number($('champion-point')?.value,0)+' pontos'}`;
+  }
   function renderPhases(){
     const host=$('cff-phase-list');if(!host)return;
     host.innerHTML=plan.phases.map((p,i)=>`<details class="cff-phase ${p.id===plan.activeId?'active':''}" data-phase="${esc(p.id)}" ${p.id===plan.activeId?'open':''}>
@@ -133,13 +141,14 @@
       <p class="cff-phase-hint">Planeje a fase aqui e aplique as configurações. Quedas com resultados não são apagadas ao ajustar a quantidade.</p>
       ${p.id===plan.activeId?'<div class="cff-phase-actions"><button class="btn-mini cff-primary-action" type="button" data-phase-apply>Aplicar configurações da fase</button></div><details class="cff-phase-finish"><summary>Encerrar esta fase e levar os classificados</summary><p class="cff-phase-hint">Use apenas depois de conferir os resultados. Preencha o último dia da fase e cadastre a próxima com a mesma quantidade de classificados.</p><button class="btn-mini" type="button" data-phase-advance>Conferir e avançar →</button></details>':`<button type="button" class="btn-mini" data-phase-open="${esc(p.id)}">${p.snapshot?'Continuar fase salva':'Abrir esta fase'}</button>`}</details>`).join('');
     function field(label,key,value,type='number'){return `<label>${label}<input data-field="${key}" type="${type}" ${type==='number'?`min="${key==='advance'?0:1}" step="1"`:''} value="${esc(value)}"></label>`}
-    window.dispatchEvent(new Event('cff:camp-phases-rendered'));
+    syncInterfaceUi();window.dispatchEvent(new Event('cff:camp-phases-rendered'));
   }
 
   function setup(){
     const grid=document.querySelector('.setup-grid');if(!grid)return;
     const card=document.createElement('section');card.id='cff-admin-tournament-setup';card.innerHTML='<header><div><h2>1. Montar o campeonato</h2><p id="cff-phase-current"></p></div><button class="btn-mini" type="button" id="cff-final-import">↻ Carregar Final FFWS</button></header><p class="cff-phase-hint">Comece pelos dados do dia. Depois configure as fases, escolha os times e organize os dias de disputa.</p><div id="cff-admin-basic"></div><div class="cff-phase-actions"><button type="button" class="btn-mini" data-admin-tab="roster">2. Escolher times</button><button type="button" class="btn-mini" data-admin-tab="days">3. Dias e descansos</button><button type="button" class="btn-mini" data-admin-tab="general">Tabela geral</button></div><details id="cff-phase-details" open><summary>Fases e classificados</summary><div id="cff-phase-list"></div><button class="btn-mini" type="button" id="cff-add-phase">+ Adicionar fase</button><p class="cff-phase-hint">Encerrar e avançar salva os resultados e leva os classificados para a próxima fase. A data do último dia entra no Prizepool dos eliminados.</p></details><button class="btn-mini" type="button" id="cff-phase-recover">Baixar backup anterior</button><details id="cff-admin-advanced"><summary>Avançado: horários, pontuação e código Wiki</summary><div class="cff-admin-rules" id="cff-admin-rule-settings"></div></details>';
     grid.before(card);$('cff-admin-basic').append(grid);for(const group of [...grid.children])if(!group.querySelector('#tournament-name,#match-date,#num-quedas,#tournament-days'))$('cff-admin-rule-settings').append(group);
+    const finalNote=document.createElement('div');finalNote.id='cff-complete-final-note';finalNote.hidden=true;finalNote.innerHTML='<p class="cff-phase-hint">No modo completo, este editor é uma final. O formato e o Champion Point vêm das configurações avançadas. Os dados das outras fases ficam preservados no modo torneio.</p><button type="button" class="btn-mini" data-final-format>Configurar formato da final</button>';$('cff-phase-details').before(finalNote);
     const time=$('auto-time-panel');if(time){
       $('cff-admin-rule-settings').append(time);
       const triggers=[...card.querySelectorAll('[onclick="toggleV19TimePanel()"]')],toggle=window.toggleV19TimePanel;
@@ -154,6 +163,7 @@
       syncHours();
     }
     card.addEventListener('click',async e=>{
+      if(e.target.closest('[data-final-format]')){$('cff-admin-advanced').open=true;const input=$('final-mode');input?.scrollIntoView({block:'center',behavior:'smooth'});input?.focus();}
       const tab=e.target.closest('[data-admin-tab]');if(tab){api()?.open?.();document.querySelector(`[data-v76-tab="${tab.dataset.adminTab}"]`)?.click()}
       const open=e.target.closest('[data-phase-open]');if(open){if(confirm('Abrir esta fase? A fase atual ficará salva.'))try{await openPhase(open.dataset.phaseOpen)}catch(err){notify(err.message,'err')}}
       if(e.target.closest('[data-phase-apply]'))applyPhase();if(e.target.closest('[data-phase-advance]'))advance();
@@ -178,8 +188,11 @@
     #cff-admin-tournament-setup{margin:16px 0;padding:18px;border:1px solid #294054;border-radius:16px;background:#0c1620;color:#ddecf6;min-width:0}#cff-admin-tournament-setup>header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}#cff-admin-tournament-setup h2{margin:0;font-size:1.05rem}#cff-phase-current{margin:6px 0 0;color:#8fd3ee;font-size:.8rem}#cff-admin-tournament-setup .setup-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;align-items:start;gap:14px;margin:0}#cff-admin-tournament-setup .form-group{min-width:0;width:auto!important;grid-column:auto!important}#cff-admin-tournament-setup label{display:flex;flex-direction:column;gap:6px;color:#a8bed4;font:700 .73rem/1.35 system-ui}#cff-admin-tournament-setup input,#cff-admin-tournament-setup select{width:100%;min-width:0;box-sizing:border-box;min-height:38px;font-size:.85rem;padding:8px;border:1px solid #294054;background:#08121c;color:#fff;border-radius:8px}#cff-admin-tournament-setup input[type=checkbox]{width:16px;min-height:16px;height:16px;flex-shrink:0}#cff-admin-tournament-setup summary{font-size:.84rem;font-weight:800;cursor:pointer;padding:14px 0}#cff-admin-tournament-setup details{border-top:1px solid #263747;margin-top:14px}.cff-phase{padding:14px;border:1px solid #2b3d4f;border-radius:12px;margin-bottom:12px}.cff-phase.active{border-color:#247fab}.cff-phase header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.cff-phase header span{font-size:.6rem;color:#6ddeae}.cff-phase-fields,.cff-admin-rules{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}#cff-admin-tournament-setup .cff-phase-check{flex-direction:row;align-items:center}.cff-phase-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.cff-phase-hint{font-size:.75rem;color:#8ba4b9;line-height:1.5}.cff-admin-rules{grid-template-columns:repeat(3,minmax(0,1fr))}.cff-admin-rules #auto-time-panel{grid-column:1/-1;width:100%}#cff-admin-tournament-setup .hint{font-size:.68rem;line-height:1.4;margin-top:6px}.cff-camp-integrations label{color:#a8bed4;font-size:.7rem}.cff-camp-integrations select{display:block;margin-top:4px}
     @media(max-width:1100px){.cff-phase-fields{grid-template-columns:repeat(3,minmax(0,1fr))}#cff-admin-tournament-setup .setup-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media(max-width:650px){#cff-admin-tournament-setup{padding:12px}.cff-phase-fields,.cff-admin-rules{grid-template-columns:repeat(2,minmax(0,1fr))}.cff-phase header{flex-wrap:wrap}#cff-admin-tournament-setup .setup-grid{grid-template-columns:1fr!important}.cff-admin-rules #auto-time-panel .v22-day-top-grid{grid-template-columns:1fr!important}}`;
   document.head.append(style);
-  window.CFF_TOURNAMENT_SETUP={getPlan:()=>clone(plan),getCurrentSummary:()=>({name:phase().name}),rank,prizeCode,getWinner,isLastDay:day=>day>=phase().days,applyPhase,openPhase,advance};
+  window.CFF_TOURNAMENT_SETUP={getPlan:()=>clone(plan),getCurrentSummary:()=>({name:completeFinal()?'Final':phase().name}),rank,prizeCode,getWinner,isLastDay:day=>day>=(completeFinal()?number($('tournament-days')?.value,1):phase().days),applyPhase,openPhase,advance};
   window.addEventListener('v76:tournament-state',()=>{if(!importing)setTimeout(syncDay,0)});
+  window.addEventListener('cff:camp-interface-change',()=>{lastDayKey='';syncInterfaceUi();if(!completeFinal())syncDay();window.CFF_CAMP_WORKSPACE?.refreshStatus?.();});
+  window.addEventListener('cff:camp-final-controls-ready',syncInterfaceUi);
+  for(const event of ['input','change'])document.addEventListener(event,e=>{if(completeFinal()&&['final-mode','champion-point','tournament-days'].includes(e.target?.id))syncInterfaceUi();});
   const reset=api()?.resetForNewTournament;
   if(reset)api().resetForNewTournament=function(){const p=makePhase();plan={version:1,activeId:p.id,phases:[p]};liveStage='';lastDayKey='';const result=reset.apply(this,arguments);renderPhases();return result};
   setup();

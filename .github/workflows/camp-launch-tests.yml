@@ -6,6 +6,7 @@ on:
       - 'admin-camp-ao-vivo/app-loader.js'
       - 'admin-camp-ao-vivo/workspace.*'
       - 'admin-camp-ao-vivo/tournament-setup.js'
+      - 'admin-camp-ao-vivo/final-wiki.js'
       - 'admin-camp-ao-vivo/enhancements.js'
       - 'admin-camp-ao-vivo/launch-extras.js'
       - 'admin-camp-ao-vivo/placement-live.js'
@@ -25,7 +26,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --prefix /tmp/cff-camp-tests --no-save --no-audit --no-fund jsdom@26.1.0
-      - run: node --test test/camp-*.test.cjs
+      - run: node --test --test-concurrency=1 test/camp-*.test.cjs
         env:
           NODE_PATH: /tmp/cff-camp-tests/node_modules
       - run: node --check admin-camp-ao-vivo/launch-extras.js && node --check admin-camp-ao-vivo/placement-live.js && node --check admin-camp-ao-vivo/tournament-setup.js && node --check admin-camp-ao-vivo/workspace.js && node --check admin-camp-ao-vivo/app-loader.js

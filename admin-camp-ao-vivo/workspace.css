@@ -1,4 +1,44 @@
-/* Layout only: score controls retain native events and traffic light colors. */
+/* Setup and layout: score controls retain native events and traffic light colors. */
+#cff-camp-mode-chooser{margin:18px 0;padding:20px;border:1px solid #30475d;border-radius:16px;background:#101d2a}
+.cff-mode-heading>span{font:800 .65rem/1.5 system-ui;letter-spacing:.12em;color:#80bbd7}.cff-mode-heading h2{margin:5px 0 16px;font:800 1.1rem/1.4 system-ui;color:#f2f8ff}
+#cff-camp-mode-chooser .v41-mode-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;padding:0;border:0;background:transparent}
+#cff-camp-mode-chooser .v41-mode-label{display:none}
+#cff-camp-mode-chooser [data-v41-mode=complete],#cff-camp-mode-chooser [data-v41-mode=tournament]{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-height:112px;padding:18px;text-align:left;border:1px solid #36526c;border-radius:12px;background:#142536;color:#afc6da;white-space:normal;text-transform:none;cursor:pointer}
+#cff-camp-mode-chooser [data-v41-mode].active{border-color:#63c6f2;background:linear-gradient(120deg,#163c53,#142536);box-shadow:inset 3px 0 #70d9ff}
+#cff-camp-mode-chooser .cff-mode-option-title{font:800 .72rem/1.4 system-ui;color:#8dd6f2}
+#cff-camp-mode-chooser strong{font:800 1.08rem/1.3 system-ui;color:#f0f7ff}
+#cff-camp-mode-chooser small{font:400 .78rem/1.55 system-ui;color:#a8bed4}
+#cff-camp-mode-chooser #v41-mode-help{grid-column:1/-1;margin:0;color:#92abc1;font:.76rem/1.6 system-ui}
+.cff-mode-extra{grid-column:1/-1;border-top:1px solid #2c4052;padding-top:8px}.cff-mode-extra summary{cursor:pointer;color:#839db4;font:.7rem/1.6 system-ui}.cff-mode-extra button{margin-top:10px}
+#cff-admin-tournament-setup .cff-setup-section{margin:18px 0 0;padding:17px;border:1px solid #2a4054;border-radius:12px;background:#0b1722;min-width:0}
+#cff-admin-tournament-setup .cff-setup-section h3{margin:0 0 5px;color:#e3f0fc;font-size:.92rem}
+#cff-admin-tournament-setup .cff-setup-section header p{margin:0 0 15px;color:#94afc5;font:.75rem/1.55 system-ui}
+#cff-admin-tournament-setup .cff-setup-section>summary{padding:0;font-size:.9rem;color:#e3f0fc}
+#cff-admin-tournament-setup .cff-setup-section[open]>summary{margin-bottom:14px}
+.cff-final-fields,.cff-round-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+#cff-final-options .form-group{min-width:0;width:auto!important;padding:0;border:0;background:transparent}
+#cff-final-options .v90-final-row{margin:0}
+#cff-final-options .v23-final-type-note{font-size:.71rem;line-height:1.55}
+#cff-final-options .cff-rule-inactive{opacity:.55}
+#cff-final-unlimited .v68-champion-toggle{margin:15px 0 0;padding:12px}
+#cff-final-unlimited label{flex-direction:row;align-items:center}
+#cff-final-schedule #auto-time-panel{display:block!important;position:static!important;width:100%!important;max-width:none!important;padding:0;margin:0;border:0;background:transparent;box-shadow:none}
+#cff-final-schedule .v19-panel-title,#cff-final-schedule .v20-days-note{display:none}
+#cff-final-schedule .v19-time-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
+#cff-final-schedule .v19-time-grid .switch{flex-direction:row;align-items:center}
+#cff-final-schedule .v22-day-head,#cff-final-schedule .v22-day-row{grid-template-columns:40px 110px minmax(140px,1fr) minmax(100px,.7fr) 70px;gap:8px}
+#cff-final-schedule .v22-day-head{font-size:.68rem;text-transform:none}
+#cff-final-schedule .v22-day-help{color:#86a2b9;font-size:.7rem;line-height:1.6;margin-top:12px}
+#cff-final-schedule .v22-day-row{margin:7px 0}
+#cff-admin-tournament-setup .v19-date-tools,#cff-admin-basic #v76-tournament-button,.cff-final-note-replaced{display:none!important}
+#cff-admin-tournament-setup .cff-reset-fields{border:0;margin:0;margin-right:auto;align-self:center}.cff-reset-fields summary{padding:6px 0!important;font-size:.7rem!important;color:#b4a0a5}.cff-reset-fields button{margin-top:7px}
+.cff-tournament-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.cff-tournament-steps article{padding:18px;border:1px solid #2c4358;border-radius:12px;background:#102130}
+.cff-tournament-steps small{color:#7ecbe8;font:800 .65rem/1.4 system-ui;letter-spacing:.08em}.cff-tournament-steps h3{margin:8px 0;color:#e4f0fb;font-size:.95rem}.cff-tournament-steps p{margin:0 0 14px;color:#9eb6cb;font:.77rem/1.6 system-ui}.cff-tournament-steps article>div{display:flex;gap:8px;flex-wrap:wrap}
+body.v41-tournament-mode #cff-admin-basic .setup-grid{grid-template-columns:minmax(0,1fr)!important}
+#cff-camp-import-tools>#cff-final-import,#cff-camp-import-tools>#cff-phase-recover{margin:0 0 14px 16px}
+@media(max-width:760px){#cff-camp-mode-chooser{padding:15px}#cff-camp-mode-chooser .v41-mode-switch{gap:9px}#cff-camp-mode-chooser [data-v41-mode=complete],#cff-camp-mode-chooser [data-v41-mode=tournament]{padding:14px;min-height:118px}.cff-tournament-steps{grid-template-columns:minmax(0,1fr)}#cff-final-schedule .v22-day-head{display:none}#cff-final-schedule .v22-day-row{grid-template-columns:45px minmax(0,1fr) minmax(0,1fr);padding:12px;border:1px solid #294054;border-radius:10px}#cff-final-schedule .v22-day-label{grid-row:span 2}#cff-final-schedule .v22-day-row input{min-width:0}}
+@media(max-width:480px){#cff-camp-mode-chooser .v41-mode-switch,.cff-final-fields,.cff-round-fields,#cff-final-schedule .v19-time-grid{grid-template-columns:minmax(0,1fr)}#cff-camp-mode-chooser [data-v41-mode=complete],#cff-camp-mode-chooser [data-v41-mode=tournament]{min-height:0}#cff-admin-tournament-setup .cff-setup-section{padding:13px}}
 #cff-camp-workflow{margin:18px 0;padding:18px;border:1px solid #30475d;border-radius:16px;background:#101d2a}
 #cff-camp-workflow strong{font-size:1rem;color:#f3f8ff}
 #cff-camp-workflow p{margin:6px 0 14px;color:#a8bed4;font-size:.8rem;line-height:1.55}

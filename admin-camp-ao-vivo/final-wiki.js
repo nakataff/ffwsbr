@@ -6,14 +6,15 @@
   let options={ffwsWorlds:false,showLegend:false};
   function restore(data){options={ffwsWorlds:data?.config?.cffFinalWikiV1?.ffwsWorlds===true,showLegend:data?.config?.cffFinalWikiV1?.showLegend===true};syncOptions()}
   function syncOptions(){if($('cff-final-ffws-rule'))$('cff-final-ffws-rule').checked=options.ffwsWorlds;if($('cff-final-worlds-legend'))$('cff-final-worlds-legend').checked=options.showLegend}
-  function phaseOf(data){const p=data.config?.cffTournamentPhasesV1;return p?.phases?.find(x=>x.id===p.activeId)}
+  const completeFinal=data=>data.config?.cffInterfaceMode==='complete'||document.body.classList.contains('v41-complete-mode');
+  function phaseOf(data){if(completeFinal(data))return;const p=data.config?.cffTournamentPhasesV1;return p?.phases?.find(x=>x.id===p.activeId)}
   function isMultiFinal(data){
     const p=phaseOf(data);if(p&&!/final/i.test(p.name))return false;
-    if(!p&&data.config?.tournamentType==='groups')return false;
+    if(!completeFinal(data)&&!p&&data.config?.tournamentType==='groups')return false;
     return Math.max(Number(p?.days)||0,Number(data.config?.tournamentDays)||1,data.tournamentModeV1?.days?.length||0)>1;
   }
   function dayEntries(data){
-    const m=data.tournamentModeV1||{},editing=m.days?.find(d=>d.id===m.editingDayId),number=editing?.number||Number(m.draftDayNumber)||1;
+    const m=completeFinal(data)?{}:data.tournamentModeV1||{},editing=m.days?.find(d=>d.id===m.editingDayId),number=editing?.number||Number(m.draftDayNumber)||1;
     if(!m.enabled)return[{number:1,snapshot:data,local:false}];
     const saved=(m.days||[]).filter(d=>d.id!==m.editingDayId&&d.number!==number).map(d=>{
       if(!d.editorSnapshot)throw new Error('O Dia '+d.number+' não possui as quedas detalhadas. Importe o backup completo desse dia antes de gerar a final.');
@@ -48,7 +49,7 @@
     return{points,kills,place,valid:place!==null&&kills!==null&&place>=1&&place<=12};
   }
   function model(data){
-    const c=data.config||{},entries=dayEntries(data),m=data.tournamentModeV1||{},codes=[...new Set([...(m.enabled?m.rosterCodes||[]:[]),...(data.selectedTeams||[]),...entries.flatMap(e=>e.snapshot.selectedTeams||[])])];
+    const c=data.config||{},entries=dayEntries(data),m=completeFinal(data)?{}:data.tournamentModeV1||{},codes=[...new Set([...(m.enabled?m.rosterCodes||[]:[]),...(data.selectedTeams||[]),...entries.flatMap(e=>e.snapshot.selectedTeams||[])])];
     const detailed=c.detailMode==='detailed',champion=c.finalMode==='champion'||(c.finalMode!=='classic'&&c.championEnabled!==false),cp=Number(c.cp)||160;
     const bonusEntry=entries.find(e=>e.snapshot.config?.startingEnabled),hasBonus=!!bonusEntry;
     const rows=codes.map(code=>({code,total:hasBonus?(num(bonusEntry.snapshot.startingPoints?.[code])||0):0,starting:hasBonus?(num(bonusEntry.snapshot.startingPoints?.[code])||0):0,matches:0,booyahs:0,placement:0,kills:0,lastPlace:Infinity,lastPoints:-Infinity,unknownKills:false,unknownPlacement:false}));
