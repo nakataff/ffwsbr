@@ -1350,6 +1350,18 @@
   overflow:hidden;
 }
 .home-transmission-widget .live-card .live-dot{grid-area:dot}
+.home-transmission-widget .live-card.ativo:not(.is-estimated) .live-dot{
+  background:#34e58b;
+  box-shadow:0 0 0 3px rgba(52,229,139,.14),0 0 10px rgba(52,229,139,.5);
+}
+.home-transmission-widget .live-card.ativo:not(.is-estimated) .live-card-badge{
+  color:#76f5b1;
+  background:rgba(52,229,139,.12);
+}
+.home-transmission-widget .live-card.ativo.is-estimated .live-dot{
+  background:#ffaa00;
+  box-shadow:0 0 8px rgba(255,170,0,.4);
+}
 .home-transmission-widget .live-card .live-card-info{
   grid-area:info;
   min-width:0;
