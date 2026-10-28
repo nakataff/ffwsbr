@@ -24,6 +24,7 @@ Em **Admin → Transmissões → Torneios e fases**, cadastre o torneio uma vez,
 - Encerrar agora altera só a projeção daquela rodada e sua situação privada. As demais alterações de rascunho não são publicadas por essa ação.
 - Uma rodada estruturada substitui uma listagem avulsa com mesmo nome e horário na home, preservando rodadas paralelas com identificadores diferentes.
 - As lives avulsas e os vídeos oficiais continuam nos editores atuais; o editor avulso não pode remover inadvertidamente as rodadas de um torneio.
+- Nas lives avulsas, `embedVideoId` só é enviado quando “Permitir assistir pelo site” está ativo e há um vídeo válido. Uma string vazia conta como campo existente no Firebase e é rejeitada pelas regras; desativar o player deve remover esse campo. O formulário mantém os dados preenchidos se uma gravação falhar.
 
 ## Custos e atualização
 

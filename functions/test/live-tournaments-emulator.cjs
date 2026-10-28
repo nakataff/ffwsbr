@@ -14,6 +14,14 @@ async function main(){if(!process.env.FIREBASE_DATABASE_EMULATOR_HOST)throw Erro
  const withdrawn=model.publicationChanges(pending.saved,pending.saved,'unpublish');await assertSucceeds(admin.ref().update(withdrawn.changes));assert(!(await anonymous.ref('adminLives').once('value')).exists());assert((await admin.ref('adminLiveTournaments/'+t.id).once('value')).exists());
  const removed=model.publicationChanges(withdrawn.saved,withdrawn.saved,'delete');await assertSucceeds(admin.ref().update(removed.changes));assert(!(await admin.ref('adminLiveTournaments/'+t.id).once('value')).exists());
  const empty=model.newTournament();empty.name='Só um rascunho';const emptyDraft=model.publicationChanges(null,empty,'draft');await assertSucceeds(admin.ref().update(emptyDraft.changes));assert((await admin.ref('adminLiveTournamentIndex').orderByChild('updatedAt').limitToLast(25).once('value')).exists());
- console.log('Tournament private drafts, protected index, atomic publication, stale revision rejection and withdrawal passed.');
+ // Individual channel transmissions must omit embedVideoId when no player is enabled.
+ const individual={id:'individual-test',torneio:'Live avulsa',canal:'FF Esports BR',url:'https://www.youtube.com/@ffesportsbr/live',inicio:'2026-11-06T04:00',duracaoMinutos:180,tipo:'misto',regiao:'brasil',nivel:'oficial',linkMode:'schedule',embedEnabled:false};
+ await assertFails(admin.ref('adminLives/'+individual.id).update({...individual,embedVideoId:''}));
+ await assertFails(alice.ref('adminLives/'+individual.id).update(individual));await assertFails(anonymous.ref('adminLives/'+individual.id).update(individual));
+ await assertSucceeds(admin.ref('adminLives/'+individual.id).update(individual));
+ await assertSucceeds(admin.ref('adminLives/'+individual.id).update({embedEnabled:true,embedUrl:'https://youtu.be/abcdefghijk',embedVideoId:'abcdefghijk'}));
+ await assertSucceeds(admin.ref('adminLives/'+individual.id).update({embedEnabled:false,embedUrl:null,embedVideoId:null}));
+ assert.equal((await anonymous.ref('adminLives/'+individual.id+'/embedVideoId').once()).exists(),false);
+ console.log('Tournament private drafts, protected index, atomic publication, stale revision rejection, withdrawal and individual transmissions passed.');
  }finally{await env.cleanup();}}
 main().catch(error=>{console.error(error);process.exitCode=1;});

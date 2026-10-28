@@ -14,3 +14,35 @@ test('the real admin tab activates the scheduler lazily while preserving individ
 test('loading individual lives excludes tournament projections from the legacy editor and cleanup list',async()=>{const dom=new JSDOM('<div id="admin-live-list"></div><p id="admin-live-message"></p>',{url:'https://centralfreefire.com.br/admin.html',runScripts:'outside-only'}),w=dom.window;try{w.$=s=>w.document.querySelector(s);w.liveList=w.document.querySelector('#admin-live-list');w.get=async()=>({val:()=>({legacy:{id:'legacy',torneio:'Avulsa'},projected:{...projection(),torneio:'Torneio'}})});w.ref=()=>'';w.normalizeLive=(x,id)=>({...x,id});w.renderLiveList=()=>{};w.setMessage=()=>{};const source=fs.readFileSync('js/admin-core.js','utf8'),fn=source.slice(source.indexOf('async function loadAdminLives()'),source.indexOf('async function saveLive('));w.eval('var allLives=[],database={};'+fn);await w.loadAdminLives();assert.equal(w.allLives.length,1);assert.equal(w.allLives[0].id,'legacy');}finally{w.close();}});
 
 test('a structured round replaces a matching individual listing while preserving parallel rounds and other tournaments',async()=>{const legacy=projection({id:'legacy',tournamentId:'',slotId:''}),parallel=projection({id:'parallel',slotId:'other-slot'}),other=projection({id:'other',torneio:'Outro torneio',tournamentId:'',slotId:''}),f=home({legacy,one:projection(),parallel,other});try{await tick();assert.equal(f.w.document.querySelectorAll('.live-card').length,3);assert.match(f.w.document.querySelector('#lives-upcoming-container').textContent,/Outro torneio/);}finally{f.close();}});
+
+// Run the real individual-live form and save handler against its actual validation rule.
+function individualLiveEditor(){
+ const dom=new JSDOM(fs.readFileSync('admin.html','utf8'),{url:'https://centralfreefire.com.br/admin.html',runScripts:'outside-only'}),w=dom.window,writes=[],stored={},source=fs.readFileSync('js/admin-core.js','utf8');let fail=false;
+ const snapshot=value=>({exists:()=>value!=null,val:()=>value??null,isString:()=>typeof value==='string',isNumber:()=>typeof value==='number'&&Number.isFinite(value),isBoolean:()=>typeof value==='boolean',hasChildren:keys=>keys.every(key=>value?.[key]!=null),child:key=>snapshot(value?.[key])});
+ const expression=JSON.parse(fs.readFileSync('database.rules.json','utf8')).rules.adminLives.$id['.validate'],validate=Function('newData','$id','return '+expression),accepts=row=>validate(snapshot(row),row.id);
+ w.$=s=>w.document.querySelector(s);w.liveForm=w.$('#admin-live-form');w.database={};w.allLives=[];w.serverTimestamp=()=>123456789;w.ref=(_db,path)=>path;
+ w.set=async(path,payload)=>{writes.push(structuredClone(payload));if(fail||!accepts(payload))throw Object.assign(Error('denied'),{code:'PERMISSION_DENIED'});stored[path]=structuredClone(payload);};
+ w.remove=async path=>{delete stored[path];};w.loadAdminLives=async()=>{};w.applyRememberedSavedLiveChannel=()=>{};w.syncLiveEmbedField=()=>{};w.renderLiveAltLinks=()=>w.$('#live-alt-links').replaceChildren();w.console.error=()=>{};
+ for(const name of ['setMessage','slugify','safeFirebaseKey','youtubeVideoId','readLiveAltLinks','readLiveForm','clearLiveForm','saveLive']){
+  const start=source.search(new RegExp('(?:async )?function '+name+'\\(')),rest=source.slice(start),end=rest.slice(1).search(/\n(?:async )?function /);assert(start>=0,name);w.eval(end<0?rest:rest.slice(0,end+1));
+ }
+ const field=(id,value)=>{w.$('#'+id).value=value;};field('live-tournament','Torneio teste');field('live-channel','FF Esports BR');field('live-url','https://www.youtube.com/@ffesportsbr/live');field('live-start','2026-11-06T04:00');
+ return {w,writes,stored,accepts,field,save:()=>w.saveLive({preventDefault(){}}),fail:next=>fail=next,close:()=>w.close()};
+}
+
+test('saving an individual channel live omits the empty video ID rejected by Firebase and retains the success message',async()=>{
+ const f=individualLiveEditor();try{await f.save();assert.equal(f.writes.length,1);const payload=f.writes[0];assert.equal(payload.embedEnabled,false);assert(!Object.hasOwn(payload,'embedVideoId'));assert.equal(f.accepts(payload),true);assert.equal(f.accepts({...payload,embedVideoId:''}),false);assert.equal(Object.keys(f.stored).length,1);assert.match(f.w.$('#admin-live-message').textContent,/Live salva/);assert(f.w.$('#admin-live-message').classList.contains('is-success'));assert.equal(f.w.$('#live-tournament').value,'');assert.equal(f.w.liveForm.querySelector('[type="submit"]').disabled,false);}finally{f.close();}
+});
+
+test('an embedded individual live saves a valid video ID and disabling it removes the previously saved video fields',async()=>{
+ const f=individualLiveEditor();try{f.w.$('#live-embed-enabled').checked=true;f.field('live-embed-url','https://youtu.be/abcdefghijk');await f.save();const embedded=f.writes[0];assert.equal(embedded.embedVideoId,'abcdefghijk');assert.equal(embedded.embedEnabled,true);assert(f.accepts(embedded));
+  f.field('live-original-id',embedded.id);f.field('live-tournament','Torneio atualizado');f.field('live-channel','Canal');f.field('live-start','2026-11-06T04:00');f.w.allLives=[embedded];f.w.$('#live-embed-enabled').checked=false;await f.save();const edited=f.stored['adminLives/'+embedded.id];assert.equal(Object.keys(f.stored).length,1);assert.equal(edited.embedEnabled,false);assert(!Object.hasOwn(edited,'embedVideoId'));assert(!Object.hasOwn(edited,'embedUrl'));assert.equal(edited.createdAt,embedded.createdAt);
+ }finally{f.close();}
+});
+
+test('invalid live inputs are stopped before writing and permission failures preserve the form for a successful retry',async()=>{
+ const f=individualLiveEditor();try{f.w.$('#live-embed-enabled').checked=true;await f.save();assert.equal(f.writes.length,0);assert.match(f.w.$('#admin-live-message').textContent,/link direto/);f.w.$('#live-embed-enabled').checked=false;
+  f.field('live-tournament','X');await f.save();assert.equal(f.writes.length,0);f.field('live-tournament','Torneio teste');f.field('live-duration-hours','72');f.field('live-duration-minutes','1');await f.save();assert.equal(f.writes.length,0);assert.match(f.w.$('#admin-live-message').textContent,/72 horas/);f.field('live-duration-hours','3');f.field('live-duration-minutes','0');
+  f.fail(true);await f.save();assert.equal(Object.keys(f.stored).length,0);assert.equal(f.w.$('#live-tournament').value,'Torneio teste');assert.equal(f.w.$('#live-start').value,'2026-11-06T04:00');assert.match(f.w.$('#admin-live-message').textContent,/campos preenchidos foram mantidos/);assert.equal(f.w.liveForm.querySelector('[type="submit"]').disabled,false);f.fail(false);await f.save();assert.equal(Object.keys(f.stored).length,1);assert.match(f.w.$('#admin-live-message').textContent,/Live salva/);
+ }finally{f.close();}
+});

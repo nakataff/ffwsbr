@@ -1100,7 +1100,8 @@ async function saveLive(event) {
   event.preventDefault();
   const item = readLiveForm();
   if (!item.torneio || !item.canal || !item.inicio) return setMessage($('#admin-live-message'), 'Preencha torneio, canal e dia/hora.', 'error');
-  if (item.duracaoMinutos <= 0) return setMessage($('#admin-live-message'), 'A duração precisa ser maior que zero.', 'error');
+  if (item.torneio.length < 2 || item.torneio.length > 120 || item.canal.length > 120) return setMessage($('#admin-live-message'), 'Use de 2 a 120 caracteres no nome do torneio e até 120 no canal.', 'error');
+  if (!Number.isFinite(item.duracaoMinutos) || item.duracaoMinutos <= 0 || item.duracaoMinutos > 4320) return setMessage($('#admin-live-message'), 'A duração precisa ser maior que zero e de até 72 horas.', 'error');
   const embedVideoId = item.embedEnabled ? youtubeVideoId(item.embedUrl || item.url) : '';
   if (item.embedEnabled && !embedVideoId) return setMessage($('#admin-live-message'), 'Para assistir pelo site, informe um link direto do vídeo/live do YouTube (watch?v=, youtu.be ou youtube.com/live/...).', 'error');
   const originalId = $('#live-original-id').value.trim();
@@ -1113,8 +1114,8 @@ async function saveLive(event) {
     canal: item.canal,
     url: item.url,
     embedEnabled: item.embedEnabled,
-    embedUrl: item.embedEnabled ? (item.embedUrl || item.url) : '',
-    embedVideoId,
+    // An empty video ID exists in RTDB and fails the optional ID validation.
+    ...(item.embedEnabled ? { embedUrl: item.embedUrl || item.url, embedVideoId } : {}),
     links: item.links,
     linkMode: item.linkMode,
     inicio: item.inicio,
@@ -1131,12 +1132,14 @@ async function saveLive(event) {
   try {
     await set(ref(database, 'adminLives/' + id), payload);
     if (originalId && originalId !== id) await remove(ref(database, 'adminLives/' + originalId));
-    setMessage($('#admin-live-message'), 'Live salva. A home atualiza automaticamente em até 1 minuto.', 'success');
     clearLiveForm();
+    setMessage($('#admin-live-message'), 'Live salva. A home atualiza automaticamente em até 5 minutos.', 'success');
     await loadAdminLives();
   } catch (error) {
     const code = String(error && error.code || '').trim();
-    setMessage($('#admin-live-message'), code
+    setMessage($('#admin-live-message'), /permission.denied/i.test(code)
+      ? 'O Firebase recusou o salvamento. Confira se você está conectado à conta administrativa. Os campos preenchidos foram mantidos.'
+      : code
       ? `Não foi possível salvar (${code}). Atualize a página e tente novamente.`
       : 'Não foi possível salvar a transmissão. Atualize a página e tente novamente.', 'error');
     console.error('Falha ao salvar adminLives:', error);
