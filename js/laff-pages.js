@@ -47,6 +47,20 @@
    return `<article class="laff-team-stage"><h3>${label}</h3>${result.status==='rejected'?'<p>Não foi possível carregar esta etapa.</p>':row?`<strong>${row.rank}º lugar</strong><dl><div><dt>Pontos</dt><dd>${fmt(row.pontos)}</dd></div><div><dt>Abates</dt><dd>${fmt(row.kills)}</dd></div><div><dt>Booyahs</dt><dd>${fmt(row.booyah)}</dd></div><div><dt>Quedas</dt><dd>${fmt(row.quedas)}</dd></div></dl>`:'<p>Não participou desta etapa.</p>'}</article>`;
   }).join('')+'</div>'+(results.some(r=>r.status==='rejected')?'<button type="button" class="btn-mini" data-laff-team-retry>Tentar novamente</button>':'');
  }
+ // Resolve portraits from the shared static map; never guess between same-name people.
+ function photo(name,team='',explicit=''){
+  const valid=url=>url&&!/(^|\/)silhueta\.webp(?:[?#]|$)/.test(url);
+  if(valid(explicit))return explicit;
+  const matches=(window.getLAFFPlayers?.()||[]).filter(p=>key(p.name)===key(name));
+  if(new Set(matches.map(p=>key(p.team))).size>1)return 'silhueta.webp';
+  const mapped=window.cffResolvePlayerPhoto?.(name);
+  if(valid(mapped))return mapped;
+  try{const old=typeof playerPhotos!=='undefined'?playerPhotos:window.playerPhotos;
+   const found=Object.keys(old||{}).find(n=>key(n)===key(name));
+   if(found&&valid(old[found]))return old[found];
+  }catch(_){}
+  return 'silhueta.webp';
+ }
  function readKills(){
   if(!killsPromise)killsPromise=fetch('dados laff/abates.json?v='+V,{cache:'default'}).then(r=>{if(!r.ok)throw Error('Abates indisponíveis');return r.text()}).catch(error=>{killsPromise=null;throw error});return killsPromise;
  }
@@ -61,5 +75,5 @@
   if(button.hasAttribute('data-laff-team-retry')){const name=$('laff-team-profile-content')?.dataset.laffTeam,team=window.getLAFFTeams?.().find(t=>t.name===name);if(team)renderTeam(team)}
  });
  const css=document.createElement('link');css.rel='stylesheet';css.href='css/laff-pages.css?v='+V;document.head.appendChild(css);
- window.CFF_LAFF_VIEWS={header,renderStats,renderDates,renderTeam,readKills};
+ window.CFF_LAFF_VIEWS={header,renderStats,renderDates,renderTeam,readKills,photo};
 })();

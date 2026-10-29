@@ -7,18 +7,18 @@ async function editor({fail=false,failKills=false,shell=false,page="classificato
  const w=dom.window,calls=[],scripts=[];let offline=fail,killsOffline=failKills;
  w.scrollTo=()=>{};w.alert=()=>{};w.navigate=id=>w.document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
  w.loadMercado=()=>{throw Error('Historical LAFF must not load the live market')};w.loadTeamLogos=()=>{throw Error('LAFF must not wait for a Google Sheet')};
- w.fetch=async url=>{const path=decodeURI(new URL(String(url),w.location.href).pathname).slice(1);calls.push(path);if((offline&&path==='dados laff/classificacao.json')||(killsOffline&&path==='dados laff/abates.json'))return{ok:false,status:503};assert(/^(dados laff\/|team-data\/logo-map.json)/.test(path),'unexpected dependency '+path);const text=read(path);return{ok:true,text:async()=>text,json:async()=>JSON.parse(text)};};
+ w.fetch=async url=>{const path=decodeURI(new URL(String(url),w.location.href).pathname).slice(1);calls.push(path);if((offline&&path==='dados laff/classificacao.json')||(killsOffline&&path==='dados laff/abates.json'))return{ok:false,status:503};assert(/^(dados laff\/|team-data\/logo-map.json|player-data\/photo-map.json)/.test(path),'unexpected dependency '+path);const text=read(path);return{ok:true,text:async()=>text,json:async()=>JSON.parse(text)};};
  // Deliberately load after DOMContentLoaded: this is how the real lazy shell runs.
  await wait(0);
  if(shell){
   const append=w.document.head.appendChild.bind(w.document.head);
   w.document.head.appendChild=node=>{const result=append(node);if(node.tagName==='SCRIPT'){
    const path=new URL(node.src).pathname.slice(1);scripts.push(path);
-   if(!['js/team-logo-resolver.min.js','js/laff-pages.js','js/laff.min.js'].includes(path)){node.onerror?.();return result;}
+   if(!['js/team-logo-resolver.min.js','js/player-photo-resolver.min.js','js/laff-pages.js','js/laff.min.js'].includes(path)){node.onerror?.();return result;}
    w.eval(read(path));node.onload?.();
   }return result;};
   w.eval(read('js/site-shell-fast.min.js'));await w.cffEnsureRoute('laff-'+page);
- }else{w.eval(read('js/team-logo-resolver.min.js'));w.eval(read('js/laff-pages.js'));w.eval(read('js/laff.min.js'));}
+ }else{w.eval(read('js/player-photo-resolver.min.js'));w.eval(read('js/team-logo-resolver.min.js'));w.eval(read('js/laff-pages.js'));w.eval(read('js/laff.min.js'));}
  return {w,calls,scripts,errors,online:()=>{offline=false;killsOffline=false},close:()=>w.close()};
 }
 test('LAFF loads lazily after DOM ready, with official standings and no legacy/Sheets/market dependency',async()=>{
@@ -26,7 +26,7 @@ test('LAFF loads lazily after DOM ready, with official standings and no legacy/S
   await wait(950);const d=f.w.document;
   assert.equal(d.querySelectorAll('.laff-classificacao-table tbody tr').length,24);assert(d.querySelector('#laff-classificatoria-content').textContent.includes('KABUM! FDS'));
   const row=[...d.querySelectorAll('.laff-classificacao-table tbody tr')].find(r=>r.textContent.includes('KABUM! FDS'));assert(row.textContent.includes('208'));assert(row.querySelector('img').src.includes('kabum-fds.webp'));
-  assert.deepEqual(f.scripts,['js/team-logo-resolver.min.js','js/laff-pages.js','js/laff.min.js']);assert.equal(f.calls.filter(p=>p==='dados laff/classificacao.json').length,1);
+  assert.deepEqual(f.scripts,['js/team-logo-resolver.min.js','js/player-photo-resolver.min.js','js/laff-pages.js','js/laff.min.js']);assert.equal(f.calls.filter(p=>p==='dados laff/classificacao.json').length,1);
   const count=f.calls.length;await f.w.cffEnsureRoute('laff-equipes');await f.w.cffEnsureRoute('laff-classificatoria');await f.w.loadLAFFData();assert.equal(f.calls.length,count);assert.deepEqual(f.errors,[]);
  }finally{f.close();}
 });
@@ -87,4 +87,28 @@ test('failed MVP and selection requests recover on demand without a permanent em
    assert(root.querySelector(page==='mvp'?'.laff-kills-table':'.laff-selection-stage'));assert(!root.textContent.includes('Não foi possível carregar'));assert.deepEqual(f.errors,[]);
   }finally{f.close();}
  }
+});
+test('LAFF selections and rosters reuse existing portraits with one static map and keep homonyms separate',async()=>{
+ const f=await editor({shell:true,page:'selecoes'});try{
+  await wait(120);const d=f.w.document;
+  const portraits=[...d.querySelectorAll('.laff-selection-player img')];
+  assert(portraits.some(img=>img.alt==='IsackSR'&&img.getAttribute('src')==='player-photos/s2/isacksr.webp'));
+  assert(portraits.some(img=>img.alt==='Trevor9'&&img.getAttribute('src')==='player-photos/s2/trevor9.webp'));
+  const files=JSON.parse(read('player-data/photo-map.json')).photos;
+  for(const p of f.w.getLAFFPlayers()){
+   const k=f.w.cffNormalizePlayerPhotoKey(p.name),expected=files[k];
+   if(expected&&k!=='biel7'){assert.equal(f.w.CFF_LAFF_VIEWS.photo(p.name,p.team,p.photo),expected);assert(/^https:\/\//.test(expected)||fs.existsSync(expected),'missing portrait '+expected);}
+  }
+  await f.w.openLAFFTeamProfile('CPT VOX');await wait(40);
+  const images=d.querySelectorAll('#laff-team-profile-content .laff-player-photo');
+  assert([...images].some(img=>img.alt==='Ângelo7'&&img.getAttribute('src')==='player-photos/s2/angelo7.webp'));
+  assert([...images].some(img=>img.alt==='bad9'&&img.getAttribute('src')==='player-photos/s2/bad9.webp'));
+  for(const team of ['RS TET','GOD E-SPORTS'])assert.equal(f.w.CFF_LAFF_VIEWS.photo('biel7',team),'silhueta.webp');
+  assert.equal(f.w.CFF_LAFF_VIEWS.photo('biel7','GOD E-SPORTS','specific-person.webp'),'specific-person.webp');
+  assert.equal(f.w.CFF_LAFF_VIEWS.photo('Jogador sem foto','CPT VOX'),'silhueta.webp');
+  assert.equal(f.w.CFF_LAFF_VIEWS.photo('Ângelo7','CPT VOX','tournament-photo.webp'),'tournament-photo.webp');
+  await f.w.cffEnsureRoute('laff-selecoes');await wait(40);
+  assert.equal(f.calls.filter(p=>p==='player-data/photo-map.json').length,1);
+  assert.deepEqual(f.errors,[]);
+ }finally{f.close();}
 });

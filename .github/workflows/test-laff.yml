@@ -7,6 +7,8 @@ on:
       - 'css/laff-pages.css'
       - 'js/site-shell-fast.min.js'
       - 'js/team-logo-resolver.min.js'
+      - 'js/player-photo-resolver.min.js'
+      - 'player-data/photo-map.json'
       - 'dados laff/**'
       - 'team-data/logo-map.json'
       - 'functions/career-team-catalog.*'

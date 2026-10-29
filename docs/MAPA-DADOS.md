@@ -202,6 +202,14 @@ O shell acompanha mudanças nativas de `#laff-*`, inclusive Voltar/Avançar.
 Os 110 registros de jogadores são identificados por nome **e equipe** nesta
 edição: os dois biel7 (RS TET e GOD E-SPORTS) não podem remover um ao outro do
 elenco. Links e seleção de função conservam o contexto da equipe.
+Fotos de elencos e seleções usam `js/player-photo-resolver.min.js` e o mesmo
+`player-data/photo-map.json` dos perfis, carregado uma vez antes do elenco.
+Fotos explícitas da edição têm prioridade. Para nicks repetidos em equipes
+separadas, só uma foto explícita pode identificar a pessoa: não aplicar o mapa
+global por nick a homônimos (ex.: biel7). Não carrega o core antigo, planilhas,
+base de carreiras ou banco para resolver retratos. A foto de brota10 já
+cadastrada na planilha pública foi incluída no mapa estático em 29/10/2026;
+as fotos locais existentes foram preservadas.
 
 ## Perfis, carreiras e imagens
 
