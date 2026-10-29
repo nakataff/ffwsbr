@@ -163,6 +163,28 @@ resultados, rankings ou elencos.
 | `ewc 2026/` | EWC 2026: tabelas, abates, equipes, calendário e perfis. O diretório tem espaço no nome |
 | `dados laff/` | Dados das competições LAFF; conferir a edição no próprio arquivo |
 
+### LAFF 2026 S1: carregamento e equipes no admin
+
+`#laff-classificatoria` carrega `js/laff.min.js` e o resolvedor compartilhado de
+escudos, sem inicializar a WB S1, Outros torneios, planilhas ou o Mercado da Bala.
+O módulo funciona mesmo quando baixado depois de `DOMContentLoaded`.
+As tabelas usam `dados laff/classificacao.json` (24 equipes), `repescagem.json`
+(12) e `final.json` (12); repescagem e final só são baixadas ao abrir a aba.
+Os JSONs estáticos têm versão fixa e cache HTTP; retornos e filtros reutilizam
+memória. Falha na classificatória mostra recuperação, sem substituir os
+resultados por zeros. Movimentações atuais não reescrevem o elenco histórico.
+
+`scripts/build-career-team-catalog.py` gera `functions/career-team-catalog.json`
+com as 24 equipes da LAFF e os escudos do mapa compartilhado. Verifique com
+`--check` depois de alterar as fontes. `functions/career-team-catalog.js` inclui
+somente equipes ausentes no cadastro central, na primeira operação administrativa
+de equipes; assim **admin-carreiras → Nova movimentação** encontra KABUM! FDS.
+Não cria pessoas, passagens nem movimentações. Nomes, aliases, fusões e escudos
+editados têm prioridade; KABUM histórica e KABUM! FDS não são fundidas por suposição.
+Um marcador indexado evita repetir a migração. Leituras públicas não executam
+essa sincronização; a busca administrativa continua paginada.
+Testes: `test/laff-loading.test.cjs` e `functions/test/career-team-catalog.test.cjs`.
+
 ## Perfis, carreiras e imagens
 
 | Caminho | O que procurar |

@@ -7,6 +7,8 @@ const STAFF_HISTORY=require('./career-staff-history.json');
 const createStaffHistory=require('./career-staff-history');
 const createJokerIdentity=require('./career-joker-identity');
 const createDirectory=require('./career-directory');
+const createTeamCatalog=require('./career-team-catalog');
+const TEAM_CATALOG=require('./career-team-catalog.json');
 const createTournamentAssets=require('./career-tournament-assets');
 const createCommunitySupporters=require('./community-supporters');
 const createMarket=require('./career-market');
@@ -46,7 +48,7 @@ function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS career_people(id TEXT PR
  CREATE TABLE IF NOT EXISTS community_supporters(id TEXT PRIMARY KEY,data TEXT);
  CREATE TABLE IF NOT EXISTS career_tournament_assets(id TEXT PRIMARY KEY,data TEXT);
  CREATE TABLE IF NOT EXISTS career_meta(id TEXT PRIMARY KEY,value INTEGER);`);}
-function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,staffRoster=seed===DEFAULT_SEED?STAFF_S2:null,staffHistory=seed===DEFAULT_SEED?STAFF_HISTORY:null,repairIdentities=seed===DEFAULT_SEED,now=()=>Date.now(),competitionsSeed=seed===DEFAULT_SEED?COMPETITIONS_SEED:{...COMPETITIONS_SEED,people:{}}}){
+function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_SEED?DEFAULT_REGISTRATION:null,staffRoster=seed===DEFAULT_SEED?STAFF_S2:null,staffHistory=seed===DEFAULT_SEED?STAFF_HISTORY:null,repairIdentities=seed===DEFAULT_SEED,now=()=>Date.now(),competitionsSeed=seed===DEFAULT_SEED?COMPETITIONS_SEED:{...COMPETITIONS_SEED,people:{}},teamCatalog=seed===DEFAULT_SEED?TEAM_CATALOG:null}){
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  function aliases(id,values,table='career_aliases',column='person'){sql.exec('DELETE FROM '+table+' WHERE '+column+'=?',id);for(const alias of new Set(values.map(key).filter(Boolean)))sql.exec('INSERT OR IGNORE INTO '+table+' VALUES(?,?)',alias,id);}
  let ready=false;
@@ -320,7 +322,9 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
  const supporters=createCommunitySupporters({sql,rows,text,fail,now,day});
  const tournamentAssets=createTournamentAssets({sql,rows,key,text,fail,now});
  const directory=createDirectory({rows,sql,pagination,key,text,fail,day,now,findTeam,revision,roles:ROLES});
+ const catalogue=createTeamCatalog({sql,rows,transaction,key,catalog:teamCatalog});
  async function admin(identity,b){if(!identity?.admin)throw fail(403,'Somente administrador.');ensure();const op=b.operation;
+  if(['teams','resolveTeam','teamDetail','saveTeam','marketSave','createPeople','saveTenure','transfer','summary'].includes(op))catalogue.ensure();
   if(op==='supporterList')return supporters.list();
   if(op==='tournamentAssets')return tournamentAssets.publicRead();
   if(op==='competitionOptions')return competitions.options(b);
