@@ -185,6 +185,24 @@ Um marcador indexado evita repetir a migração. Leituras públicas não executa
 essa sincronização; a busca administrativa continua paginada.
 Testes: `test/laff-loading.test.cjs` e `functions/test/career-team-catalog.test.cjs`.
 
+`js/laff-pages.js` e `css/laff-pages.css` complementam a navegação e as telas
+da edição, carregados somente na LAFF. Estatísticas alternam classificatória,
+repescagem e final, com Totais/Médias e paginação local. Perfis das equipes
+reutilizam as mesmas tabelas para a campanha por etapa; não exigem estatísticas
+individuais por queda para mostrar um resultado coletivo conhecido. Ausência na
+lista completa de uma fase é apresentada como não participação, nunca zero.
+Datas usa apenas o período geral já registrado (12–28/06/2026), informa o
+encerramento e não inventa horários de rodadas.
+
+`cffGetLAFFStageRows` compartilha resultados e requisições pendentes de uma fase.
+MVP e seleções compartilham `abates.json` pelo módulo de telas e reutilizam o
+elenco já carregado. Falhas têm retry por clique, sem polling/cache vazio
+permanente. Filtros, totais, médias e navegação não fazem leituras do banco.
+O shell acompanha mudanças nativas de `#laff-*`, inclusive Voltar/Avançar.
+Os 110 registros de jogadores são identificados por nome **e equipe** nesta
+edição: os dois biel7 (RS TET e GOD E-SPORTS) não podem remover um ao outro do
+elenco. Links e seleção de função conservam o contexto da equipe.
+
 ## Perfis, carreiras e imagens
 
 | Caminho | O que procurar |

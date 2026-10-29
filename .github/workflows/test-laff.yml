@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - 'js/laff.min.js'
+      - 'js/laff-pages.js'
+      - 'css/laff-pages.css'
       - 'js/site-shell-fast.min.js'
       - 'js/team-logo-resolver.min.js'
       - 'dados laff/**'
@@ -25,7 +27,7 @@ jobs:
           node-version: '22'
       - run: npm install --prefix /tmp/laff-tests --no-save --no-audit --no-fund jsdom@26.1.0
       - run: python3 scripts/build-career-team-catalog.py --check
-      - run: node --check js/laff.min.js && node --check js/site-shell-fast.min.js
+      - run: node --check js/laff.min.js && node --check js/laff-pages.js && node --check js/site-shell-fast.min.js
       - run: node --test test/laff-loading.test.cjs functions/test/career-team-catalog.test.cjs
         env:
           NODE_PATH: /tmp/laff-tests/node_modules
