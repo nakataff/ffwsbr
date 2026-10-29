@@ -64,7 +64,9 @@ test('team rosters retain homonymous players and stage results are shown without
   const players=f.w.getLAFFPlayers();assert.equal(players.length,110);assert.equal(players.filter(p=>p.name.toLowerCase()==='biel7').length,2);
   for(const name of ['RS TET','GOD E-SPORTS'])assert(f.w.getLAFFTeams().find(t=>t.name===name).players.some(p=>p.name==='biel7'));
   const opened=[];f.w.openPlayerProfile=(name,team)=>opened.push([name,team]);await f.w.openLAFFPlayerProfile('biel7','RS TET');await f.w.openLAFFPlayerProfile('biel7','GOD E-SPORTS');assert.deepEqual(opened,[['biel7','RS TET'],['biel7','GOD E-SPORTS']]);
-  await f.w.openLAFFTeamProfile('KABUM! FDS');await wait(50);const root=f.w.document.getElementById('laff-team-profile-content');assert(root.textContent.includes('Elenco na LAFF'));const stages=root.querySelectorAll('.laff-team-stage');assert.equal(stages.length,3);assert(stages[0].textContent.includes('208'));assert(stages[1].textContent.includes('48'));assert(stages[2].textContent.includes('Não participou'));assert(!root.textContent.includes('Sem informação.'));assert.deepEqual(f.errors,[]);
+  assert.equal(f.w.getLAFFTeams().find(t=>t.name==='KABUM! FDS').grupo,'A');
+  f.w.cffGetTeamMercadoDepartures=()=>[{jogador:'Saída atual que não pertence a esta edição'}];
+  await f.w.openLAFFTeamProfile('KABUM! FDS');await wait(50);const root=f.w.document.getElementById('laff-team-profile-content');assert(root.textContent.includes('Elenco na LAFF'));const stages=root.querySelectorAll('.laff-team-stage');assert.equal(stages.length,3);assert(stages[0].textContent.includes('208'));assert(stages[1].textContent.includes('48'));assert(stages[2].textContent.includes('Não participou'));assert(!root.textContent.includes('Sem informação.'));assert(!root.textContent.includes('Histórico de jogadores'));assert(!root.textContent.includes('Saída atual'));assert(!root.textContent.includes('Em breve'));assert(!root.textContent.includes('RSUHER'));assert.deepEqual(f.errors,[]);
  }finally{f.close();}
 });
 test('MVP phase and position filters, team-scoped player links and selections share one static kills response',async()=>{
