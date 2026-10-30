@@ -1,0 +1,27 @@
+name: Interaction ranking tutorial
+on:
+  push:
+    paths:
+      - 'js/interaction-guide.js'
+      - 'css/interaction-guide.css'
+      - 'js/home-community-ranking.js'
+      - 'js/service-worker-register.min.js'
+      - 'interacoes.html'
+      - 'test/interaction-guide.test.cjs'
+      - '.github/workflows/test-interaction-guide.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix /tmp/cff-guide-tests --no-save --no-audit --no-fund jsdom@26.1.0
+      - run: node --check js/interaction-guide.js && node --check js/home-community-ranking.js && node --check js/service-worker-register.min.js
+      - run: node --test test/interaction-guide.test.cjs test/home-support.test.cjs test/daily-tasks.test.cjs
+        env:
+          NODE_PATH: /tmp/cff-guide-tests/node_modules

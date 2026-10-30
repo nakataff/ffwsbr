@@ -34,6 +34,10 @@
       .home-community-points{color:#00c8ff;font-size:.72rem;font-weight:1000;white-space:nowrap}
       .home-community-empty{padding:18px 8px;color:#718aa8;font-size:.7rem;font-weight:800;line-height:1.45;text-align:center}
       .home-community-link{display:flex;min-height:34px;align-items:center;justify-content:center;border-top:1px solid rgba(255,255,255,.065);background:rgba(0,200,255,.045);color:#00c8ff;font-size:.66rem;font-weight:1000;letter-spacing:.075em;text-decoration:none;text-transform:uppercase}
+      .home-community-actions{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(255,255,255,.065)}
+      .home-community-actions .home-community-link{border-top:0;letter-spacing:.015em;min-height:42px;padding:6px;font-size:.65rem;text-align:center}
+      .home-community-help{display:flex;align-items:center;justify-content:center;gap:5px;color:#d2efff;font-size:.68rem;font-weight:800;text-decoration:none;background:#102030;border-right:1px solid #233449;min-height:42px;padding:6px}
+      .home-community-help:hover{background:#183449}.home-community-help:focus-visible{outline:2px solid #00c8ff;outline-offset:-3px}
       .home-community-link:hover{background:rgba(0,200,255,.085);color:#bcefff}
       .home-rail-interactions:focus-visible{outline:2px solid #00c8ff;outline-offset:2px}
       @media(max-width:900px){.home-left-rail .home-rail-interactions{grid-column:1 / -1}}
@@ -86,7 +90,7 @@
       <div class="home-widget-body home-community-body" id="home-community-body">
         <div class="home-community-empty">Carregando Top 3 da comunidade...</div>
       </div>
-      <a class="home-community-link" href="${FULL_RANKING_URL}">VER RANKING COMPLETO →</a>`;
+      <div class="home-community-actions"><a class="home-community-help" href="${FULL_RANKING_URL}#como-participar" data-open-interaction-guide aria-haspopup="dialog"><span aria-hidden="true">ⓘ</span> Como participar?</a><a class="home-community-link" href="${FULL_RANKING_URL}">VER RANKING →</a></div>`;
 
     live.parentNode.insertBefore(card, live);
 
@@ -95,6 +99,7 @@
       location.href = FULL_RANKING_URL;
     });
     card.addEventListener('keydown', (event) => {
+      if (event.target !== card) return;
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         location.href = FULL_RANKING_URL;
