@@ -1,0 +1,34 @@
+name: Monthly community pass
+on:
+  push:
+    paths:
+      - 'functions/season-pass.js'
+      - 'functions/economy.js'
+      - 'functions/economy-quiz.js'
+      - 'functions/economy-interactions.js'
+      - 'functions/economy-vouchers.js'
+      - 'functions/test/season-pass.test.cjs'
+      - 'js/season-pass.mjs'
+      - 'js/admin-season-pass.mjs'
+      - 'css/season-pass.css'
+      - 'css/admin-season-pass.css'
+      - 'admin-passe.html'
+      - 'test/season-pass-ui.test.cjs'
+      - '.github/workflows/test-season-pass.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix /tmp/cff-pass-tests --no-save --no-audit --no-fund jsdom@26.1.0
+      - run: node --check functions/season-pass.js && node --check js/season-pass.mjs && node --check js/admin-season-pass.mjs && node --check js/public-account.js
+      - run: node --test functions/test/season-pass.test.cjs functions/test/economy.test.cjs functions/test/economy-quiz.test.cjs functions/test/economy-interactions.test.cjs
+      - run: node --test test/season-pass-ui.test.cjs test/profile-inventory.test.cjs test/daily-tasks.test.cjs test/daily-quiz.test.cjs test/quiz-goals-ui.test.cjs
+        env:
+          NODE_PATH: /tmp/cff-pass-tests/node_modules

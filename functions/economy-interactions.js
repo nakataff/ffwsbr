@@ -9,7 +9,7 @@ function init(sql){sql.exec(`CREATE TABLE IF NOT EXISTS eco_interaction_identiti
  CREATE TABLE IF NOT EXISTS eco_interaction_claims(user_key TEXT,kind TEXT,period TEXT,points INTEGER,position INTEGER,PRIMARY KEY(user_key,kind,period));
  CREATE TABLE IF NOT EXISTS eco_interaction_periods(type TEXT,period TEXT,data TEXT,PRIMARY KEY(type,period));
  CREATE TABLE IF NOT EXISTS eco_interaction_sync(uid TEXT PRIMARY KEY,at INTEGER,data TEXT);`);}
-function create({sql,transaction,db,ranking,credit,now}){
+function create({sql,transaction,db,ranking,credit,now,recordParticipation=()=>{}}){
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  function summary(uid){const cached=rows('SELECT data FROM eco_interaction_sync WHERE uid=?',uid)[0],data=cached?JSON.parse(cached.data):{status:ranking?'not_checked':'unavailable'};const person=rows('SELECT * FROM eco_interaction_identities WHERE uid=?',uid)[0],current=week(day(now()));const participation=person?rows('SELECT points,position FROM eco_interaction_claims WHERE user_key=? AND kind=? AND period=?',person.user_key,'monthly_participation',day(now()).slice(0,7))[0]:null;return {...data,participation:{daily:PARTICIPATION_DAILY,targetDays:PARTICIPATION_DAYS,cap:PARTICIPATION_CAP,days:participation?.position||0,credited:participation?.points||0,start:PARTICIPATION_START},rate:RATE,retroRate:RETRO_RATE,retroCap:RETRO_CAP,weeklyCap:WEEK_CAP,weeklyPodium:WEEK_BONUS,monthlyPodium:MONTH_BONUS,cutoff:CUTOFF,retroCredit:person?.retro_credit||0,retroSource:person?.retro_source||0,week:current,weekCredited:person?rows('SELECT points FROM eco_interaction_claims WHERE user_key=? AND kind=? AND period=?',person.user_key,'conversion',current)[0]?.points||0:0,topBonuses:person?rows("SELECT COALESCE(SUM(points),0) AS points FROM eco_interaction_claims WHERE user_key=? AND kind IN ('week_top3','month_top3')",person.user_key)[0].points:0};}
  const remember=(uid,data)=>sql.exec('INSERT OR REPLACE INTO eco_interaction_sync VALUES(?,?,?)',uid,now(),JSON.stringify({...data,day:day(now()),month:day(now()).slice(0,7)}));
@@ -46,6 +46,7 @@ function create({sql,transaction,db,ranking,credit,now}){
    const participationMonths=new Map();
    for(const date of new Set(Array.isArray(report.participationDays)?report.participationDays:[])){
     if(typeof date!=='string'||!/^20\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(date)||new Date(date+'T12:00:00Z').toISOString().slice(0,10)!==date||date<PARTICIPATION_START||date>today)continue;
+    recordParticipation(uid,date);
     const month=date.slice(0,7);participationMonths.set(month,(participationMonths.get(month)||0)+1);
    }
    for(const [month,days] of participationMonths){

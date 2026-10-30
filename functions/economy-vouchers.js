@@ -14,7 +14,7 @@ function create({sql,transaction,db,eligible,now,notify=()=>{}}){
  const rouletteConfig=()=>{const c=config();return {validityDays:Number.isInteger(c.rouletteValidityDays)&&c.rouletteValidityDays>=1&&c.rouletteValidityDays<=365?c.rouletteValidityDays:30,imageUrl:c.imageUrl||'/edition/gift.webp'};};
  function saveRouletteConfig(days){if(!Number.isInteger(days)||days<1||days>365)throw fail(400,'A validade dos vales da roleta deve ser de 1 a 365 dias.');sql.exec('INSERT OR REPLACE INTO eco_settings VALUES(?,?)','voucher-config',JSON.stringify({...config(),rouletteValidityDays:days}));}
  const status=r=>r.receipt?(r.deliveryStatus==='pending'?'reserved':'used'):r.revokedAt?'revoked':r.expires<=now()?'expired':'available';
- const publicRow=r=>({id:r.id,source:r.byuid==='central-roulette'?'roulette':'admin',username:r.username,name:r.name,expiresAt:r.expires,sentAt:r.at,message:r.message,status:status(r),usedAt:r.usedAt||0,revokedAt:r.revokedAt||0,reason:r.reason||'',...(r.prize?{prize:r.prize}:{})});
+ const publicRow=r=>({id:r.id,source:r.byuid==='central-roulette'?'roulette':r.byuid==='central-pass'?'pass':'admin',username:r.username,name:r.name,expiresAt:r.expires,sentAt:r.at,message:r.message,status:status(r),usedAt:r.usedAt||0,revokedAt:r.revokedAt||0,reason:r.reason||'',...(r.prize?{prize:r.prize}:{})});
  const joined=`SELECT v.*,r.status AS deliveryStatus,r.at AS usedAt,json_extract(r.data,'$.result.label') AS prize FROM eco_vouchers v LEFT JOIN eco_receipts r ON r.id=v.receipt`;
  function state(uid){return {config:config(),availableCount:rows('SELECT COUNT(*) AS n FROM eco_vouchers WHERE uid=? AND receipt IS NULL AND revokedAt=0 AND expires>?',uid,now())[0].n,next:rows(joined+' WHERE v.uid=? AND v.receipt IS NULL AND v.revokedAt=0 AND v.expires>? ORDER BY v.expires,v.at,v.id LIMIT 1',uid,now()).map(publicRow)[0]||null,entries:rows(joined+' WHERE v.uid=? ORDER BY v.at DESC,v.rowid DESC LIMIT 20',uid).map(publicRow)};}
  function consume(uid,id,receipt){
@@ -60,6 +60,12 @@ function create({sql,transaction,db,eligible,now,notify=()=>{}}){
   notify({id:'voucher:'+id,uid,title:'Você ganhou um Vale Codiguinho na roleta!',body:'Escolha um codiguinho disponível na loja. Seu vale é válido por '+c.validityDays+' dias.',url:'/conta.html?tab=points&shopSection=vouchers',button:'Ver meu vale',expiresAt:expires,at});
   return publicRow(rows('SELECT * FROM eco_vouchers WHERE id=?',id)[0]);
  }
- return {state,consume,admin,weeklyAward,grantSpin,rouletteConfig,saveRouletteConfig,grantWeekly:(identity,b,week)=>admin(identity,{...b,operation:'grantVoucher'},week)};
+ function grantPass(uid,p,season,level,expires,at){
+  const nonce='pass:'+season+':'+level+':'+uid,old=rows('SELECT * FROM eco_vouchers WHERE nonce=?',nonce)[0];if(old)return publicRow(old);
+  const id=crypto.randomUUID(),message='Recompensa do passe '+season+' · nível '+level;
+  sql.exec('INSERT INTO eco_vouchers(id,nonce,uid,username,name,expires,at,byuid,message) VALUES(?,?,?,?,?,?,?,?,?)',id,nonce,uid,p.username,p.name,expires,at,'central-pass',message);
+  return publicRow(rows('SELECT * FROM eco_vouchers WHERE id=?',id)[0]);
+ }
+ return {state,consume,admin,weeklyAward,grantSpin,grantPass,rouletteConfig,saveRouletteConfig,grantWeekly:(identity,b,week)=>admin(identity,{...b,operation:'grantVoucher'},week)};
 }
 module.exports={init,create};

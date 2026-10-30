@@ -41,11 +41,11 @@ async function loadImage(path){
   const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.length>512*1024)throw fail(503,'Foto indisponível para o desafio. Tente novamente mais tarde.');let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);return 'data:'+type+';base64,'+btoa(binary);
  })().catch(error=>{photoCache.delete(path);throw error.status?error:fail(503,'Não foi possível carregar a foto. Tente novamente; o tempo ainda não começou.');});photoCache.set(path,entry);return entry.promise;
 }
-function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageLoader=loadImage}){
+function create({sql,transaction,credit,wallet,eligible,dayKey,now,random,imageLoader=loadImage,onComplete=()=>{}}){
  const rows=(q,...args)=>Array.from(sql.exec(q,...args)),config=()=>JSON.parse(rows('SELECT data FROM eco_quiz_settings WHERE id=1')[0].data);
  const saveConfig=c=>sql.exec('UPDATE eco_quiz_settings SET data=? WHERE id=1',JSON.stringify(c));
  const round=(uid,day)=>{const row=rows('SELECT data FROM eco_quiz_rounds WHERE uid=? AND day=?',uid,day)[0];if(!row)return null;const r=JSON.parse(row.data);if(!r.goalTracking)r.goalTracking={answered:r.answers.length,perfect:r.answers.length===DAILY&&r.answers.every(a=>a.correct)};return r;};
- const saveRound=(uid,day,r)=>{progress.track(sql,uid,r,now());sql.exec('INSERT INTO eco_quiz_rounds VALUES(?,?,?) ON CONFLICT(uid,day) DO UPDATE SET data=excluded.data',uid,day,JSON.stringify(r));};
+ const saveRound=(uid,day,r)=>{if(r.answers.length===DAILY&&r.answers.every(a=>!a.skipped&&!a.timedOut&&a.selected!==null&&a.selected!==undefined))onComplete(uid,day);progress.track(sql,uid,r,now());sql.exec('INSERT INTO eco_quiz_rounds VALUES(?,?,?) ON CONFLICT(uid,day) DO UPDATE SET data=excluded.data',uid,day,JSON.stringify(r));};
  const shuffle=values=>{const out=values.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;};
  function rebuild(c){
   const entries=shuffle(rows('SELECT id,data FROM eco_quiz_questions WHERE enabled=1 ORDER BY id')),counts={};sql.exec('DELETE FROM eco_quiz_pool');sql.exec('DELETE FROM eco_quiz_kind_pool');

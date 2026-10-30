@@ -1,4 +1,4 @@
-import {mountAdminDashboard} from './admin-dashboard-layout.mjs?v=20261021-supporters-v1';
+import {mountAdminDashboard} from './admin-dashboard-layout.mjs?v=20261030-pass-v1';
 import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import { getDatabase, ref, get, set, remove, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';

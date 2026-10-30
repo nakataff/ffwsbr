@@ -20,7 +20,7 @@ export function createProfileCheckin({auth: getAuth,onCompleted=()=>{}}){
  function mount(container){root=container;if(!root)return;const current=getAuth()?.currentUser?.uid,today=checkinDay();
   if(current!==uid||today!==day){uid=current;day=today;data=null;message='';busy=false;loading=null;}
   if(!current)return;
-  if(!data&&!loading){const identity=current,requestedDay=day;loading=economyRequest(getAuth(),'profileCheckinStatus',{includeInbox:true}).then(result=>{if(identity!==uid||requestedDay!==day||!active(identity))return;data=result;window.dispatchEvent(new CustomEvent('cff:daily-checkin-status',{detail:{uid:identity,...result}}));if(data.coins)message=data.ranking?'Sua presença de hoje já foi confirmada.':'A CFF COIN de hoje já está na sua carteira. A presença no ranking é conferida separadamente.';}).catch(()=>{}).finally(()=>{if(identity===uid&&requestedDay===day){loading=null;draw();}});}
+  if(!data&&!loading){const identity=current,requestedDay=day;loading=economyRequest(getAuth(),'profileCheckinStatus',{includeInbox:true,includePass:true}).then(result=>{if(identity!==uid||requestedDay!==day||!active(identity))return;data=result;window.dispatchEvent(new CustomEvent('cff:daily-checkin-status',{detail:{uid:identity,...result}}));if(data.coins)message=data.ranking?'Sua presença de hoje já foi confirmada.':'A CFF COIN de hoje já está na sua carteira. A presença no ranking é conferida separadamente.';}).catch(()=>{}).finally(()=>{if(identity===uid&&requestedDay===day){loading=null;draw();}});}
   draw();
  }
  window.addEventListener('cff:daily-checkin',event=>{if(event.detail?.uid!==uid||event.detail.day!==day)return;data=event.detail;message=checkinMessage(data);draw();});

@@ -3,7 +3,7 @@ const NAMES={quiz:'Quiz',player:'Quem é o jogador?',career:'Pistas da carreira'
 export function mountDailyQuiz(root,{auth,request=economyRequest}={}){
  const failedPhotos=new Set(),photoKey=()=>state?.roundId+':'+cursor;
  const uid=auth.currentUser?.uid;let live=true,state=null,busy=false,message='',cursor=0,selected=null,interval=null,anchor=0,serverTime=0,timeoutAttempt='';
- const valid=()=>live&&auth.currentUser?.uid===uid&&root.isConnected,call=(op,body={})=>request(auth,op,op==='quizStatus'?{...body,includeInbox:true}:body),disabled=()=>busy?' disabled':'';
+ const valid=()=>live&&auth.currentUser?.uid===uid&&root.isConnected,call=(op,body={})=>request(auth,op,op==='quizStatus'?{...body,includeInbox:true}:op==='quizAnswer'?{...body,includePass:true}:body),disabled=()=>busy?' disabled':'';
  const answered=q=>q?.answered===true||q?.selected!==undefined;
  const remaining=q=>q?.expiresAt?Math.max(0,q.expiresAt-serverTime-(performance.now()-anchor)):Infinity;
  const body=index=>({day:state.day,roundId:state.roundId,index});
@@ -28,7 +28,7 @@ export function mountDailyQuiz(root,{auth,request=economyRequest}={}){
  }
  async function perform(op,data={}){
   if(busy||!valid())return;busy=true;message='';render();
-  try{const next=await call(op,data);if(!valid())return;state=next;window.dispatchEvent(new CustomEvent('cff:daily-quiz-status',{detail:{uid,day:next.day,complete:!!next.complete}}));if(next.achievements?.metrics)window.dispatchEvent(new CustomEvent('cff:quiz-progress',{detail:{uid,metrics:next.achievements.metrics}}));serverTime=next.serverNow??Date.now();anchor=performance.now();if(next.complete){try{localStorage.setItem('cff-quiz-completed-day-v1',next.day);}catch{}window.dispatchEvent(new CustomEvent('cff:quiz-complete'));}if(op==='quizOpen'){cursor=data.index;selected=null;}else if(op!=='quizAnswer'){cursor=next.answered===3?3:next.answered;selected=null;}if(op==='quizSkip')message=next.questions[data.index]?.skipped?(next.complete?'Desafio pulado. Confira seu resultado.':'Desafio pulado. Você pode iniciar o próximo.'):'Progresso atualizado.';}
+  try{const next=await call(op,data);if(!valid())return;state=next;window.dispatchEvent(new CustomEvent('cff:daily-quiz-status',{detail:{uid,day:next.day,complete:!!next.complete,...(next.pass?{pass:next.pass}:{})}}));if(next.achievements?.metrics)window.dispatchEvent(new CustomEvent('cff:quiz-progress',{detail:{uid,metrics:next.achievements.metrics}}));serverTime=next.serverNow??Date.now();anchor=performance.now();if(next.complete){try{localStorage.setItem('cff-quiz-completed-day-v1',next.day);}catch{}window.dispatchEvent(new CustomEvent('cff:quiz-complete'));}if(op==='quizOpen'){cursor=data.index;selected=null;}else if(op!=='quizAnswer'){cursor=next.answered===3?3:next.answered;selected=null;}if(op==='quizSkip')message=next.questions[data.index]?.skipped?(next.complete?'Desafio pulado. Confira seu resultado.':'Desafio pulado. Você pode iniciar o próximo.'):'Progresso atualizado.';}
   catch(error){if(valid()){
    // Start may have saved the daily draw before loading a photo failed. Recover that same round once.
    if(op==='quizStart'&&!state?.roundId){try{const saved=await call('quizStatus');if(valid()){state=saved;serverTime=saved.serverNow??Date.now();anchor=performance.now();cursor=saved.answered;}}catch{}}
