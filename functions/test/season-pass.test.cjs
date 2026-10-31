@@ -2,9 +2,9 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),{DatabaseSync}=require('node:sqlite');
 const E=require('../economy'),P=require('../season-pass');
 const admin={uid:'admin',email:'admin@centralfreefire.com.br'},user={uid:'person',provider:'google.com'},friend={uid:'friend',provider:'google.com'},NOV=Date.parse('2026-11-01T12:00:00-03:00');
-function fixture(){
+function fixture(cursorMode=false){
  const sqlite=new DatabaseSync(':memory:'),queries=[],reads=[];
- const sql={exec(query,...args){queries.push({query,args});let result=[];for(const q of query.split(';').map(x=>x.trim()).filter(Boolean)){const stmt=sqlite.prepare(q);result=stmt.columns().length?stmt.all(...args):(stmt.run(...args),[]);}return result;}};E.initEconomy(sql);
+ const sql={exec(query,...args){queries.push({query,args});let result=[];for(const q of query.split(';').map(x=>x.trim()).filter(Boolean)){const stmt=sqlite.prepare(q);result=stmt.columns().length?stmt.all(...args):(stmt.run(...args),[]);}return cursorMode?{toArray:()=>result}:result;}};E.initEconomy(sql);
  let roll=.25,draws=0;let time=NOV,report={userKey:'instagram-person',username:'person',retroPoints:0,weeks:[],months:[],participationDays:[]};
  const data={};for(const id of ['person','friend','admin'])data['userAccounts/'+id+'/profile']={name:id,username:id,gender:'masculino'};
  data['communityProfileCatalog/frame-one']={title:'Moldura mensal',kind:'frame',enabled:true,accessRule:'manual'};data['communityProfileCatalog/badge-one']={title:'Concluiu o passe',kind:'badge',enabled:true,accessRule:'manual'};
@@ -85,4 +85,8 @@ test('November migration adds chests to untouched default rewards once, preservi
  f.sql.exec('UPDATE eco_pass_seasons SET data=?,revision=? WHERE id=?',JSON.stringify(legacy),7,legacy.id);f.sql.exec('DELETE FROM eco_settings WHERE id=?','pass-chests-november-v1');E.initEconomy(f.sql);let saved=JSON.parse(f.sql.exec('SELECT data FROM eco_pass_seasons WHERE id=?',legacy.id)[0].data);assert.equal(saved.title,'Meu título');assert.equal(saved.revision,8);assert.equal(saved.rewards[9].kind,'frame');assert.equal(saved.rewards[4].kind,'chest');E.initEconomy(f.sql);saved=JSON.parse(f.sql.exec('SELECT data FROM eco_pass_seasons WHERE id=?',legacy.id)[0].data);assert.equal(saved.revision,8);
  f.record('person','checkin');legacy.rewards[9]={level:10,kind:'coins',coins:5,title:'CFF COINS'};f.sql.exec('UPDATE eco_pass_seasons SET data=? WHERE id=?',JSON.stringify(legacy),legacy.id);f.sql.exec('DELETE FROM eco_settings WHERE id=?','pass-chests-november-v1');E.initEconomy(f.sql);saved=JSON.parse(f.sql.exec('SELECT data FROM eco_pass_seasons WHERE id=?',legacy.id)[0].data);assert.equal(saved.rewards[4].kind,'coins');
  }finally{f.close()}
+});
+
+test('the Worker cursor interface supports initialization, XP and chest delivery without relying on iterable rows',async()=>{
+ const f=fixture(true);try{f.time(Date.parse('2026-11-05T15:00:00Z'));f.earn('person',5);const before=await state(f);assert.equal(before.pass.level,5);assert.equal(before.pass.rewards[4].kind,'chest');const result=await claim(f,5);assert.equal(result.reward.source,'chest');assert.equal(result.wallet.balance,5);assert.equal(result.pass.rewards[4].openedCoins,5);}finally{f.close()}
 });

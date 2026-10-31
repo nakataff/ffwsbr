@@ -12,7 +12,9 @@ function template(id='2026-11'){
  const [y,m]=id.split('-').map(Number),end=new Date(Date.UTC(y,m,0,12)).toISOString().slice(0,10);
  return {id,title:id==='2026-11'?'Passe da Central · Rumo ao Mundial':'Passe da Central · '+id,description:'Participe, avance e resgate suas recompensas do mês.',cover:'',start:id+'-01',end,claimUntil:new Date(Date.parse(end+'T12:00:00Z')+7*DAY).toISOString().slice(0,10),xpPerLevel:100,enabled:true,published:id==='2026-11',revision:1,rewards:Array.from({length:20},(_,i)=>CHEST_LEVELS.includes(i+1)?chest(i+1):({level:i+1,kind:'coins',coins:i===18?10:5,title:'CFF COINS'}))};
 }
+function readRows(sql,q,...args){const cursor=sql.exec(q,...args);return typeof cursor.toArray==='function'?cursor.toArray():Array.from(cursor);}
 function init(sql){
+ const rows=(q,...args)=>readRows(sql,q,...args);
  sql.exec(`CREATE TABLE IF NOT EXISTS eco_pass_seasons(id TEXT PRIMARY KEY,data TEXT NOT NULL,published INTEGER NOT NULL,revision INTEGER NOT NULL);
  CREATE INDEX IF NOT EXISTS eco_pass_seasons_public ON eco_pass_seasons(published,id);
  CREATE TABLE IF NOT EXISTS eco_pass_progress(uid TEXT,season TEXT,xp INTEGER NOT NULL DEFAULT 0,updatedAt INTEGER NOT NULL,PRIMARY KEY(uid,season));
@@ -25,17 +27,17 @@ function init(sql){
  CREATE TABLE IF NOT EXISTS eco_pass_limits(season TEXT,level INTEGER,n INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(season,level));`);
  const c=template();sql.exec('INSERT OR IGNORE INTO eco_pass_seasons VALUES(?,?,?,?)',c.id,JSON.stringify(c),1,c.revision);
  // One bounded migration of the untouched November coin slots. Never replace manual rewards or earned progress.
- if(!Array.from(sql.exec('SELECT id FROM eco_settings WHERE id=?','pass-chests-november-v1')).length){
-  const saved=JSON.parse(Array.from(sql.exec('SELECT data FROM eco_pass_seasons WHERE id=?',c.id))[0].data);
-  const started=Array.from(sql.exec('SELECT 1 AS found FROM eco_pass_progress WHERE season=? LIMIT 1',c.id)).length;
+ if(!rows('SELECT id FROM eco_settings WHERE id=?','pass-chests-november-v1').length){
+  const saved=JSON.parse(rows('SELECT data FROM eco_pass_seasons WHERE id=?',c.id)[0].data);
+  const started=rows('SELECT 1 AS found FROM eco_pass_progress WHERE season=? LIMIT 1',c.id).length;
   let changed=false;
-  if(!started&&saved.rewards.length===20)for(const level of CHEST_LEVELS){const old=saved.rewards[level-1];if(old?.kind==='coins'&&old.coins===(level===20?50:5)&&old.title===(level===20?'Recompensa final':'CFF COINS')&&!Array.from(sql.exec('SELECT 1 AS found FROM eco_pass_claims WHERE season=? AND level=? LIMIT 1',c.id,level)).length){saved.rewards[level-1]=chest(level);changed=true;}}
+  if(!started&&saved.rewards.length===20)for(const level of CHEST_LEVELS){const old=saved.rewards[level-1];if(old?.kind==='coins'&&old.coins===(level===20?50:5)&&old.title===(level===20?'Recompensa final':'CFF COINS')&&!rows('SELECT 1 AS found FROM eco_pass_claims WHERE season=? AND level=? LIMIT 1',c.id,level).length){saved.rewards[level-1]=chest(level);changed=true;}}
   if(changed){saved.revision++;sql.exec('UPDATE eco_pass_seasons SET data=?,revision=? WHERE id=?',JSON.stringify(saved),saved.revision,c.id);}
   sql.exec('INSERT OR IGNORE INTO eco_settings VALUES(?,?)','pass-chests-november-v1','1');
  }
 }
 function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,now,random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296}){
- const rows=(q,...a)=>Array.from(sql.exec(q,...a));
+ const rows=(q,...a)=>readRows(sql,q,...a);
  const configs=new Map();
  function config(id){if(!month(id))return null;if(!configs.has(id))configs.set(id,JSON.parse(rows('SELECT data FROM eco_pass_seasons WHERE id=?',id)[0]?.data||'null'));return configs.get(id);}
  function selected(id){if(id){if(!month(id))throw fail(400,'Passe inválido.');return config(id);}
