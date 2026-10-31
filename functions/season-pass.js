@@ -5,10 +5,12 @@ const DAY=86400000,XP={checkin:20,quiz:40,interaction:40},BITS={checkin:1,quiz:2
 const month=v=>typeof v==='string'&&/^20\d{2}-(0[1-9]|1[0-2])$/.test(v);
 const date=v=>typeof v==='string'&&/^20\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(v)&&new Date(v+'T12:00:00Z').toISOString().slice(0,10)===v;
 const atEnd=d=>Date.parse(d+'T23:59:59.999-03:00');
+const CHEST_LEVELS=[5,10,15,20];
+const chest=level=>({level,kind:'chest',title:level===20?'Baú final':'Baú do passe',pool:level===20?[{coins:30,weight:50},{coins:40,weight:35},{coins:50,weight:15}]:[{coins:5,weight:60},{coins:10,weight:30},{coins:15,weight:10}]});
 function template(id='2026-11'){
  if(!month(id))throw fail(400,'Escolha o mês do passe.');
  const [y,m]=id.split('-').map(Number),end=new Date(Date.UTC(y,m,0,12)).toISOString().slice(0,10);
- return {id,title:id==='2026-11'?'Passe da Central · Rumo ao Mundial':'Passe da Central · '+id,description:'Participe, avance e resgate suas recompensas do mês.',cover:'',start:id+'-01',end,claimUntil:new Date(Date.parse(end+'T12:00:00Z')+7*DAY).toISOString().slice(0,10),xpPerLevel:100,enabled:true,published:id==='2026-11',revision:1,rewards:Array.from({length:20},(_,i)=>({level:i+1,kind:'coins',coins:i===19?50:i===18?10:5,title:i===19?'Recompensa final':'CFF COINS'}))};
+ return {id,title:id==='2026-11'?'Passe da Central · Rumo ao Mundial':'Passe da Central · '+id,description:'Participe, avance e resgate suas recompensas do mês.',cover:'',start:id+'-01',end,claimUntil:new Date(Date.parse(end+'T12:00:00Z')+7*DAY).toISOString().slice(0,10),xpPerLevel:100,enabled:true,published:id==='2026-11',revision:1,rewards:Array.from({length:20},(_,i)=>CHEST_LEVELS.includes(i+1)?chest(i+1):({level:i+1,kind:'coins',coins:i===18?10:5,title:'CFF COINS'}))};
 }
 function init(sql){
  sql.exec(`CREATE TABLE IF NOT EXISTS eco_pass_seasons(id TEXT PRIMARY KEY,data TEXT NOT NULL,published INTEGER NOT NULL,revision INTEGER NOT NULL);
@@ -22,8 +24,17 @@ function init(sql){
  CREATE INDEX IF NOT EXISTS eco_pass_claims_level ON eco_pass_claims(season,level);
  CREATE TABLE IF NOT EXISTS eco_pass_limits(season TEXT,level INTEGER,n INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(season,level));`);
  const c=template();sql.exec('INSERT OR IGNORE INTO eco_pass_seasons VALUES(?,?,?,?)',c.id,JSON.stringify(c),1,c.revision);
+ // One bounded migration of the untouched November coin slots. Never replace manual rewards or earned progress.
+ if(!Array.from(sql.exec('SELECT id FROM eco_settings WHERE id=?','pass-chests-november-v1')).length){
+  const saved=JSON.parse(Array.from(sql.exec('SELECT data FROM eco_pass_seasons WHERE id=?',c.id))[0].data);
+  const started=Array.from(sql.exec('SELECT 1 AS found FROM eco_pass_progress WHERE season=? LIMIT 1',c.id)).length;
+  let changed=false;
+  if(!started&&saved.rewards.length===20)for(const level of CHEST_LEVELS){const old=saved.rewards[level-1];if(old?.kind==='coins'&&old.coins===(level===20?50:5)&&old.title===(level===20?'Recompensa final':'CFF COINS')&&!Array.from(sql.exec('SELECT 1 AS found FROM eco_pass_claims WHERE season=? AND level=? LIMIT 1',c.id,level)).length){saved.rewards[level-1]=chest(level);changed=true;}}
+  if(changed){saved.revision++;sql.exec('UPDATE eco_pass_seasons SET data=?,revision=? WHERE id=?',JSON.stringify(saved),saved.revision,c.id);}
+  sql.exec('INSERT OR IGNORE INTO eco_settings VALUES(?,?)','pass-chests-november-v1','1');
+ }
 }
-function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,now}){
+function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,now,random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296}){
  const rows=(q,...a)=>Array.from(sql.exec(q,...a));
  const configs=new Map();
  function config(id){if(!month(id))return null;if(!configs.has(id))configs.set(id,JSON.parse(rows('SELECT data FROM eco_pass_seasons WHERE id=?',id)[0]?.data||'null'));return configs.get(id);}
@@ -46,9 +57,9 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
  }
  function summary(uid,id='',full=false){
   const c=selected(id);if(!c?.published)return {available:false};
-  const xp=rows('SELECT xp FROM eco_pass_progress WHERE uid=? AND season=?',uid,c.id)[0]?.xp||0,level=Math.min(c.rewards.length,Math.floor(xp/c.xpPerLevel)),claims=rows('SELECT level,status FROM eco_pass_claims WHERE uid=? AND season=? ORDER BY level',uid,c.id),claimed=new Map(claims.map(r=>[r.level,r.status])),s=status(c),ready=c.rewards.filter(r=>r.level<=level&&!claimed.has(r.level)&&r.kind!=='none').length,pending=claims.filter(r=>r.status==='pending').length,flags=rows('SELECT flags FROM eco_pass_days WHERE uid=? AND season=? AND day=?',uid,c.id,dayKey(now()))[0]?.flags||0;
+  const xp=rows('SELECT xp FROM eco_pass_progress WHERE uid=? AND season=?',uid,c.id)[0]?.xp||0,level=Math.min(c.rewards.length,Math.floor(xp/c.xpPerLevel)),claims=rows('SELECT level,status'+(full?',data':'')+' FROM eco_pass_claims WHERE uid=? AND season=? ORDER BY level',uid,c.id),claimed=new Map(claims.map(r=>[r.level,r.status])),s=status(c),ready=c.rewards.filter(r=>r.level<=level&&!claimed.has(r.level)&&r.kind!=='none').length,pending=claims.filter(r=>r.status==='pending').length,flags=rows('SELECT flags FROM eco_pass_days WHERE uid=? AND season=? AND day=?',uid,c.id,dayKey(now()))[0]?.flags||0;
   const value={available:true,id:c.id,title:c.title,description:c.description,cover:c.cover,start:c.start,end:c.end,claimUntil:c.claimUntil,status:s,level,levels:c.rewards.length,xp,xpPerLevel:c.xpPerLevel,maxXp:c.rewards.length*c.xpPerLevel,completed:level===c.rewards.length,ready:['active','claiming'].includes(s)?ready:0,pending,next:c.rewards.find(r=>r.level>level)||null,today:Object.keys(XP).map(kind=>({kind,xp:XP[kind],done:!!(flags&BITS[kind])})),revision:c.revision};
-  if(full){const limits=new Map(rows('SELECT level,n FROM eco_pass_limits WHERE season=?',c.id).map(r=>[r.level,r.n]));value.rewards=c.rewards.map(r=>({...r,status:claimed.get(r.level)||(['active','claiming'].includes(s)&&r.level<=level?'ready':r.level<=level?'expired':'locked'),...(r.kind==='voucher'?{remaining:Math.max(0,r.limit-(limits.get(r.level)||0))}:{})}));value.history=rows('SELECT p.season,p.xp,s.data FROM eco_pass_progress p JOIN eco_pass_seasons s ON s.id=p.season WHERE p.uid=? AND s.published=1 ORDER BY p.season DESC LIMIT 12',uid).map(r=>{const v=JSON.parse(r.data);return{id:v.id,title:v.title,level:Math.min(v.rewards.length,Math.floor(r.xp/v.xpPerLevel)),levels:v.rewards.length,completed:r.xp>=v.rewards.length*v.xpPerLevel}});}
+  if(full){const outcomes=new Map(claims.filter(r=>r.data).map(r=>[r.level,JSON.parse(r.data).reward]));const limits=new Map(rows('SELECT level,n FROM eco_pass_limits WHERE season=?',c.id).map(r=>[r.level,r.n]));value.rewards=c.rewards.map(r=>({...r,...(outcomes.get(r.level)?.source==='chest'?{openedCoins:outcomes.get(r.level).coins}:{}),status:claimed.get(r.level)||(['active','claiming'].includes(s)&&r.level<=level?'ready':r.level<=level?'expired':'locked'),...(r.kind==='voucher'?{remaining:Math.max(0,r.limit-(limits.get(r.level)||0))}:{})}));value.history=rows('SELECT p.season,p.xp,s.data FROM eco_pass_progress p JOIN eco_pass_seasons s ON s.id=p.season WHERE p.uid=? AND s.published=1 ORDER BY p.season DESC LIMIT 12',uid).map(r=>{const v=JSON.parse(r.data);return{id:v.id,title:v.title,level:Math.min(v.rewards.length,Math.floor(r.xp/v.xpPerLevel)),levels:v.rewards.length,completed:r.xp>=v.rewards.length*v.xpPerLevel}});}
   return value;
  }
  const safeUrl=v=>{v=String(v||'').trim();if(!v)return '';if(v.length>1000)throw fail(400,'Link de imagem muito longo.');if(/^\/(?!\/)[a-zA-Z0-9_./% -]+$/.test(v)&&!v.includes('..'))return v;let u;try{u=new URL(v)}catch{}if(u?.protocol!=='https:'||u.username||u.password)throw fail(400,'Use uma imagem HTTPS ou um caminho local.');return u.href;};
@@ -58,12 +69,16 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
   const days=Math.round((atEnd(input.end)-atEnd(input.start))/DAY)+1;if(input.rewards.length*input.xpPerLevel>days*100)throw fail(400,'A meta de XP precisa caber nos dias disponíveis do passe (até 100 XP por dia).');
   const out={id:input.id,title:input.title.trim(),description:input.description.trim(),cover:safeUrl(input.cover),start:input.start,end:input.end,claimUntil:input.claimUntil,xpPerLevel:input.xpPerLevel,enabled:input.enabled,published:input.published,rewards:[]};
   for(let i=0;i<input.rewards.length;i++){
-   const r=input.rewards[i];if(!r||r.level!==i+1||!['none','coins','avatar','cover','frame','badge','voucher'].includes(r.kind)||typeof r.title!=='string'||r.title.length>80)throw fail(400,'Confira o prêmio do nível '+(i+1)+'.');
+   const r=input.rewards[i];if(!r||r.level!==i+1||!['none','coins','avatar','cover','frame','badge','voucher','chest'].includes(r.kind)||typeof r.title!=='string'||r.title.length>80)throw fail(400,'Confira o prêmio do nível '+(i+1)+'.');
    let item={level:i+1,kind:r.kind,title:r.title.trim()};
    if(r.kind==='coins'){if(!Number.isInteger(r.coins)||r.coins<1||r.coins>500)throw fail(400,'Use de 1 a 500 moedas por nível.');item.coins=r.coins;}
    if(['avatar','cover','frame','badge'].includes(r.kind)){
     if(typeof r.assetId!=='string'||!/^[a-zA-Z0-9_-]{1,128}$/.test(r.assetId))throw fail(400,'Escolha um item do catálogo.');
     const asset=await db.get('communityProfileCatalog/'+r.assetId);if(!validAsset(asset)||asset.kind!==r.kind)throw fail(400,'O item do nível '+(i+1)+' está indisponível ou é exclusivo da administração.');item={...item,assetId:r.assetId,title:item.title||String(asset.title||'Recompensa').slice(0,80),imageUrl:typeof asset.imageUrl==='string'?safeUrl(asset.imageUrl):''};
+   }
+   if(r.kind==='chest'){
+    if(!Array.isArray(r.pool)||r.pool.length!==3||r.pool.some(v=>!Number.isInteger(v.coins)||v.coins<1||v.coins>500||!Number.isInteger(v.weight)||v.weight<1||v.weight>100)||r.pool.reduce((n,v)=>n+v.weight,0)!==100)throw fail(400,'O baú precisa de três valores de 1 a 500 moedas e chances que somem 100%.');
+    item.pool=r.pool.map(v=>({coins:v.coins,weight:v.weight}));
    }
    if(r.kind==='voucher'){
     if(!Number.isInteger(r.limit)||r.limit<1||r.limit>500||!Number.isInteger(r.fallbackCoins)||r.fallbackCoins<1||r.fallbackCoins>500||!date(r.expires)||r.expires<input.claimUntil)throw fail(400,'Defina de 1 a 500 vales, moedas após esgotar e validade igual ou posterior ao prazo de resgate.');
@@ -118,6 +133,11 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
    const latest=JSON.parse(rows('SELECT data FROM eco_pass_seasons WHERE id=?',c.id)[0].data);if(latest.revision!==c.revision||!latest.published||!['active','claiming'].includes(status(latest)))throw fail(409,'O passe mudou. Atualize antes de resgatar.');
    const xp=rows('SELECT xp FROM eco_pass_progress WHERE uid=? AND season=?',uid,c.id)[0]?.xp||0;
    let reward=c.rewards[b.level-1];if(!reward||reward.kind==='none'||xp<b.level*c.xpPerLevel)throw fail(403,'Esse nível ainda não foi liberado.');
+   if(reward.kind==='chest'){
+    const ticket=Math.floor(random()*100);if(!Number.isInteger(ticket)||ticket<0||ticket>=100)throw fail(500,'Não foi possível abrir o baú. Tente novamente.');
+    let total=0;const selected=reward.pool.find(option=>{total+=option.weight;return ticket<total});if(!selected)throw fail(500,'Confira as chances deste baú.');
+    reward={level:b.level,kind:'coins',coins:selected.coins,source:'chest',title:reward.title||'Baú do passe'};
+   }
    if(reward.kind==='voucher'){const used=rows('SELECT n FROM eco_pass_limits WHERE season=? AND level=?',c.id,b.level)[0]?.n||0;if(used>=reward.limit)reward={level:b.level,kind:'coins',coins:reward.fallbackCoins,title:'Moedas após esgotar os vales'};else sql.exec('INSERT INTO eco_pass_limits VALUES(?,?,1) ON CONFLICT(season,level) DO UPDATE SET n=n+1',c.id,b.level);}
    sql.exec('INSERT INTO eco_pass_claims VALUES(?,?,?,?,?,?)',uid,c.id,b.level,JSON.stringify({reward,profile:{name:p.name,username:p.username}}),'pending',now());
   });
@@ -139,4 +159,4 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
  }
  return {record,summary,claim,manage};
 }
-module.exports={init,create,template,XP,BITS};
+module.exports={init,create,template,chest,CHEST_LEVELS,XP,BITS};

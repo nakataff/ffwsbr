@@ -1,15 +1,16 @@
-import {createSeasonPassUI} from './season-pass.mjs?v=20261030-pass-v1';
+import {createSeasonPassUI} from './season-pass.mjs?v=20261031-pass-chests-v1';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import {economyRequest,escapeEconomy as esc} from './economy-client.mjs?v=20261030-pass-v1';
-const kinds={coins:'CFF COINS',avatar:'Avatar',cover:'Capa',frame:'Moldura',badge:'Insígnia',voucher:'Vale Codiguinho',none:'Só progresso'};
-const summary=r=>r.kind==='coins'?r.coins+' CFF COINS':r.kind==='voucher'?'Vale · limite '+r.limit+' · depois '+r.fallbackCoins+' moedas':r.title||kinds[r.kind];
+const kinds={chest:'Baú de moedas',coins:'CFF COINS',avatar:'Avatar',cover:'Capa',frame:'Moldura',badge:'Insígnia',voucher:'Vale Codiguinho',none:'Só progresso'};
+const summary=r=>r.kind==='chest'?(r.title||'Baú')+' · '+Math.min(...r.pool.map(x=>x.coins))+'–'+Math.max(...r.pool.map(x=>x.coins))+' moedas':r.kind==='coins'?r.coins+' CFF COINS':r.kind==='voucher'?'Vale · limite '+r.limit+' · depois '+r.fallbackCoins+' moedas':r.title||kinds[r.kind];
 export function mountSeasonPassAdmin(root,status,{auth,request=economyRequest}){
  let live=true,uid=auth.currentUser?.uid,busy=false,dirty=false,data=null,config=null,page=null;
  const valid=()=>live&&auth.currentUser?.uid===uid&&auth.currentUser?.email==='admin@centralfreefire.com.br';
  const call=(op,b={})=>request(auth,op,b,true),say=s=>{if(valid())status.textContent=s};
  function fields(r){
   const prefix='r'+r.level;
+  if(r.kind==='chest'){const pool=r.pool||[{coins:5,weight:60},{coins:10,weight:30},{coins:15,weight:10}];return '<p>Uma abertura gratuita por nível. As três chances devem somar 100%.</p>'+pool.map((p,i)=>`<div class="pass-admin-chest-option"><label>Prêmio ${i+1}: moedas<input name="${prefix}-chest-${i}-coins" type="number" min="1" max="500" required value="${p.coins}"></label><label>Chance (%)<input name="${prefix}-chest-${i}-weight" type="number" min="1" max="100" required value="${p.weight}"></label></div>`).join('');}
   if(r.kind==='coins')return `<label>Quantidade de moedas<input name="${prefix}-coins" type="number" min="1" max="500" required value="${r.coins||5}"></label>`;
   if(r.kind==='voucher')return `<label>Limite de vales<input name="${prefix}-limit" type="number" min="1" max="500" required value="${r.limit||5}"></label><label>Após esgotar: moedas<input name="${prefix}-fallback" type="number" min="1" max="500" required value="${r.fallbackCoins||50}"></label><label>Validade do vale<input name="${prefix}-expires" type="date" min="${config.claimUntil}" required value="${esc(r.expires||config.claimUntil)}"></label><p class="eco-note">O limite é compartilhado por todos os participantes. Quem resgatar depois recebe as moedas informadas. Reserve códigos suficientes na loja para honrar os vales.</p>`;
   if(r.kind==='none')return '<p>Este nível só marca progresso, sem entrega.</p>';
@@ -23,7 +24,7 @@ export function mountSeasonPassAdmin(root,status,{auth,request=economyRequest}){
   <section class="cff-profile-panel"><div class="pass-admin-toolbar"><div><h2>3. Entregas desta temporada</h2><p>Histórico de resgates, com 20 registros por página.</p></div><button type="button" class="cff-account-button" data-pass-admin="deliveries">Carregar entregas</button></div><div data-pass-deliveries></div></section>`;
  }
  function sync(){const f=root.querySelector('[data-pass-form]');if(!f)return;const v=new FormData(f);for(const key of ['title','description','cover','start','end','claimUntil'])config[key]=String(v.get(key)||'');config.xpPerLevel=Number(v.get('xpPerLevel'));config.published=v.get('published')==='true';config.enabled=v.get('enabled')==='true';
-  config.rewards=config.rewards.map(r=>{const p='r'+r.level,kind=String(v.get(p+'-kind')),out={level:r.level,kind,title:String(v.get(p+'-title')||'')};if(kind==='coins')out.coins=Number(v.get(p+'-coins')||r.coins||5);else if(kind==='voucher')Object.assign(out,{limit:Number(v.get(p+'-limit')||r.limit||5),fallbackCoins:Number(v.get(p+'-fallback')||r.fallbackCoins||50),expires:String(v.get(p+'-expires')||r.expires||config.claimUntil)});else if(kind!=='none')out.assetId=String(v.get(p+'-asset')||'');return out;});
+  config.rewards=config.rewards.map(r=>{const p='r'+r.level,kind=String(v.get(p+'-kind')),out={level:r.level,kind,title:String(v.get(p+'-title')||'')};if(kind==='chest')out.pool=Array.from({length:3},(_,i)=>({coins:Number(v.get(p+'-chest-'+i+'-coins')||r.pool?.[i]?.coins||[5,10,15][i]),weight:Number(v.get(p+'-chest-'+i+'-weight')||r.pool?.[i]?.weight||[60,30,10][i])}));else if(kind==='coins')out.coins=Number(v.get(p+'-coins')||r.coins||5);else if(kind==='voucher')Object.assign(out,{limit:Number(v.get(p+'-limit')||r.limit||5),fallbackCoins:Number(v.get(p+'-fallback')||r.fallbackCoins||50),expires:String(v.get(p+'-expires')||r.expires||config.claimUntil)});else if(kind!=='none')out.assetId=String(v.get(p+'-asset')||'');return out;});
  }
  async function load(season){const r=await call('passConfig',{season});if(!valid())return;data=r;config=structuredClone(r.config);dirty=false;page=null;render();say('Passe carregado. Revise as datas e os prêmios antes de salvar.');}
  async function run(fn){if(busy||!valid())return;busy=true;root.querySelectorAll('button,input,select').forEach(n=>n.disabled=true);try{await fn()}catch(e){say(e.message)}finally{busy=false;if(valid())root.querySelectorAll('button,input,select').forEach(n=>n.disabled=false);if(page)root.querySelectorAll('[data-pass-page]').forEach(n=>n.disabled=Number(n.dataset.passPage)>page.offset?!page.hasMore:page.offset===0)}}

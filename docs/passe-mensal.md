@@ -20,8 +20,19 @@ Máximo de 100 XP por dia. Vinte dias completos bastam para 2.000 XP. O progress
 para nos 2.000 XP da configuração inicial. XP, pontos do ranking e moedas são
 independentes; ganhar XP não debita nem converte os outros saldos.
 
-O padrão inicial dá **150 CFF COINS**: níveis 1–18 com 5 cada, nível 19 com 10 e
-nível 20 com 50. Os itens estéticos não são inventados: o administrador escolhe
+O padrão inicial tem **quatro baús gratuitos**, nos níveis 5, 10, 15 e 20.
+Os três primeiros sorteiam 5 moedas (60%), 10 (30%) ou 15 (10%). O último
+sorteia 30 (50%), 40 (35%) ou 50 (15%). As chances aparecem antes de abrir.
+Os outros níveis dão 5 moedas cada, exceto o 19, que dá 10: são 85 moedas fixas,
+mais os baús, totalizando **130 a 180 CFF COINS** (média de 144).
+
+Cada baú abre uma única vez por pessoa e nível, sem custo. O servidor sorteia
+e salva o resultado na mesma transação que reserva o resgate. Cliques repetidos,
+falhas de conexão e novas tentativas mantêm o prêmio original. A animação é local
+e respeita a preferência de movimento reduzido. Não há endpoint de sorteio extra.
+O admin pode editar os três valores e suas chances, cuja soma deve ser 100%.
+
+Os itens estéticos não são inventados: o administrador escolhe
 avatares, capas, molduras e insígnias ativos no catálogo existente. Os emblemas
 administrativos (ex.: verificado) não são prêmios do passe.
 
@@ -37,6 +48,10 @@ Depois de haver progresso, início, fim, XP por nível e quantidade de níveis s
 protegidos. O prazo de resgate pode aumentar, não diminuir. Não é possível
 remover da publicação um passe com participantes: use Pausar. Recompensas já
 resgatadas não podem mudar. Rascunhos futuros não afetam a temporada atual.
+
+A atualização de novembro troca apenas os quatro prêmios de moedas originais
+pelos baús, uma única vez e antes de existir progresso. Preserva prêmios editados
+manualmente, demais configurações e temporadas com XP já registrado.
 
 Vale Codiguinho é opcional. Exige limite global por nível, validade e uma
 quantidade de moedas alternativa depois de esgotar os vales. A regra é mostrada

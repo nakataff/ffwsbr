@@ -1,4 +1,4 @@
-import {createSeasonPassUI} from './season-pass.mjs?v=20261030-pass-v1';
+import {createSeasonPassUI} from './season-pass.mjs?v=20261031-pass-chests-v1';
 import './daily-tasks.mjs?v=20261025-daily-v1';
 import {QUIZ_METRICS,quizGoalLabel,quizGoalsHtml} from './quiz-goals.mjs?v=20261022-quiz-goals-v1';
 import {mountUserInbox} from './user-inbox.mjs?v=20261019-inbox-v1';
