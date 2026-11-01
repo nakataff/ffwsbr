@@ -1082,6 +1082,50 @@
       "$other": {
         ".validate": false
       }
+    },
+    "nakaGamingPublic": {
+      "site": {
+        ".read": true,
+        ".write": "auth != null && auth.token.email === 'admin@centralfreefire.com.br'",
+        ".validate": "newData.hasChildren(['schemaVersion', 'draftRevision', 'stateJson', 'publishedAt']) && newData.child('draftRevision').val() === root.child('nakaGamingAdmin/state/revision').val()",
+        "schemaVersion": {
+          ".validate": "newData.isNumber() && newData.val() === 1"
+        },
+        "draftRevision": {
+          ".validate": "newData.isNumber() && newData.val() >= 1"
+        },
+        "stateJson": {
+          ".validate": "newData.isString() && newData.val().length > 2 && newData.val().length <= 200000"
+        },
+        "publishedAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      },
+      "$other": {
+        ".validate": false
+      }
+    },
+    "nakaGamingMedia": {
+      "$imageId": {
+        ".read": true,
+        ".write": "auth != null && auth.token.email === 'admin@centralfreefire.com.br' && !data.exists()",
+        ".validate": "$imageId.matches(/^[a-zA-Z0-9_-]{10,80}$/) && newData.hasChildren(['dataUrl', 'createdAt', 'createdBy'])",
+        "dataUrl": {
+          ".validate": "newData.isString() && newData.val().length <= 110000 && newData.val().matches(/^data:image\\/webp;base64,[A-Za-z0-9+\\/=]+$/)"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now"
+        },
+        "createdBy": {
+          ".validate": "newData.isString() && newData.val() === auth.uid"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
     }
   }
 }
