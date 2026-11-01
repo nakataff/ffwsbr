@@ -16,7 +16,7 @@ function init(sql){sql.exec(`
  CREATE TABLE IF NOT EXISTS user_inbox_grants(nonce TEXT PRIMARY KEY,request TEXT NOT NULL,data TEXT NOT NULL,done INTEGER NOT NULL DEFAULT 0);
  CREATE TABLE IF NOT EXISTS user_inbox_dispatches(seq INTEGER PRIMARY KEY AUTOINCREMENT,nonce TEXT UNIQUE NOT NULL,request TEXT NOT NULL,data TEXT NOT NULL,at INTEGER NOT NULL,byuid TEXT NOT NULL,revoked INTEGER NOT NULL DEFAULT 0);
  `);}
-function create({sql,transaction,db,now=()=>Date.now()}){
+function create({sql,transaction,db,assertReward=()=>{},now=()=>Date.now()}){
  const rows=(q,...a)=>{const r=sql.exec(q,...a);return r.toArray?r.toArray():Array.from(r);};
  if(!shared.has(sql))shared.set(sql,new Map());const cache=shared.get(sql);
  function identity(user){if(!validUid(user?.uid))throw fail(401,'Entre com sua conta para abrir a caixa de entrada.');return user.uid;}
@@ -70,6 +70,7 @@ function create({sql,transaction,db,now=()=>Date.now()}){
  async function grantProfile(user,b){
   admin(user);const uid=b.targetUid,message=String(b.message||'').trim(),week=String(b.week||'');
   if(!validUid(uid)||!uuid(b.nonce)||typeof b.assetId!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(b.assetId)||message.length>160||week&&!/^\d{4}-\d{2}-\d{2}$/.test(week)||typeof b.gift!=='boolean')throw fail(400,'Confira a pessoa, o item e a mensagem.');
+  assertReward(uid);
   const request=JSON.stringify({uid,assetId:b.assetId,message,week,gift:b.gift,expectedUsername:b.expectedUsername||''});
   let saved=rows('SELECT * FROM user_inbox_grants WHERE nonce=?',b.nonce)[0];
   if(saved&&saved.request!==request)throw fail(409,'Este envio já foi usado com outros dados.');if(saved?.done)return {ok:true,duplicate:true};
@@ -84,7 +85,7 @@ function create({sql,transaction,db,now=()=>Date.now()}){
    const notice={id:'grant:'+b.nonce,uid,title:'Você recebeu '+({badge:'uma insígnia',avatar:'um avatar',cover:'uma capa',frame:'uma moldura'}[item.kind])+'!',body:item.title+(message?' — '+message:''),url:'/conta.html?tab=inventory&section='+(b.gift?'gifts':{badge:'badges',avatar:'avatars',cover:'covers',frame:'frames'}[item.kind]),button:'Ver no inventário',at:grantedAt};
    sql.exec('INSERT OR IGNORE INTO user_inbox_grants(nonce,request,data) VALUES(?,?,?)',b.nonce,request,JSON.stringify({changes,notice}));saved=rows('SELECT * FROM user_inbox_grants WHERE nonce=?',b.nonce)[0];if(saved.request!==request)throw fail(409,'Este envio mudou.');
   }
-  const data=JSON.parse(saved.data);await db.update(data.changes);
+  const data=JSON.parse(saved.data);assertReward(uid);await db.update(data.changes);
   transaction(()=>{reward(data.notice);sql.exec('UPDATE user_inbox_grants SET done=1 WHERE nonce=?',b.nonce);});return {ok:true};
  }
  async function notifyProfile(user,b){

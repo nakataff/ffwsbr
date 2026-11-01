@@ -50,6 +50,7 @@ async function syncProfile(db, uid) {
 }
 
 async function redeemCode(db, uid, raw) {
+  if((await db.ref('communityRewardRestrictions/'+uid+'/rewards').get()).val()===true)throw fail(403,'Esta conta está suspensa das premiações. Entre em contato com @nakataff.');
   const code = String(raw||'').trim().toUpperCase();
   if (!/^[A-Z0-9-]{5,32}$/.test(code)) throw fail(400,'Informe um código válido.');
   const codeHash=hash(code), snapshot=await db.ref('communityAvatarCodes/'+codeHash).get(), rule=snapshot.val();

@@ -153,5 +153,26 @@ test('economy gateway verifies signed identities, private wallets, real account 
  sqlite.exec('UPDATE eco_public_codes SET retryAt=0');await hub.alarm();assert.equal(sqlite.prepare('SELECT chatSent FROM eco_public_codes').get().chatSent,1);const announcements=Object.entries(data).filter(([path,value])=>path.startsWith('globalChat/messages/')&&value?.text?.includes('PUBLICCRON1234'));assert.equal(announcements.length,1);assert(announcements[0][1].text.includes('pode já ter sido resgatado'));await hub.alarm();assert.equal(Object.entries(data).filter(([path,value])=>path.startsWith('globalChat/messages/')&&value?.text?.includes('PUBLICCRON1234')).length,1);
  globalThis.fetch=broadcastFetch;
 
+ // Reward/store restrictions are checked for signed users and target recipients.
+ sqlite.exec('DELETE FROM limits');
+ const blockState=await api(admin,{action:'economyAdmin',operation:'restrictionGet',targetUid:'bob'});assert.equal(blockState.restriction.revision,0);
+ const blockRequest={action:'economyAdmin',operation:'restrictionSet',targetUid:'bob',expectedUsername:'bob',expectedRevision:0,shop:true,rewards:true,reason:'Motivo interno de teste',confirmed:true,nonce:crypto.randomUUID()};
+ assert.equal((await api(alice,blockRequest)).status,403);const banResult=await api(admin,blockRequest);assert.equal(banResult.status,200);assert.equal(data['communityRewardRestrictions/bob'].rewards,true);
+ assert.equal((await api(bob,{action:'economy',operation:'spin'})).status,403);assert.equal((await api(bob,{action:'economy',operation:'redeem',itemId:'code-default'})).status,403);assert.equal((await api(bob,{action:'claimProfileGoals'})).status,403);
+ assert.equal((await api(admin,{action:'sendCodeGift',targetUid:'bob',expectedUsername:'bob',title:'Teste bloqueado',code:'BLOCKEDCODE1234',requestId:crypto.randomUUID()})).status,403);
+ assert.equal((await api(admin,{action:'emblemAdmin',operation:'assign',targetUid:'bob',emblemId:'verified'})).status,403);
+ const blockedWallet=await api(bob,{action:'economy',operation:'state'});assert.equal(blockedWallet.status,200);assert(blockedWallet.restrictions.shop&&blockedWallet.restrictions.rewards);assert(!JSON.stringify(blockedWallet).includes('Motivo interno de teste'));
+ const releasedBan=await api(admin,{...blockRequest,shop:false,rewards:false,reason:'Revisão de teste',expectedRevision:1,nonce:crypto.randomUUID()});assert.equal(releasedBan.status,200);assert.equal(data['communityRewardRestrictions/bob'].rewards,false);
+
 });
 
+test('account lock orders pending deliveries before moderation, isolates users and recovers after failures',async()=>{
+ const hub=Object.create(NotificationHub.prototype),order=[];let release,started;
+ const ready=new Promise(r=>started=r),gate=new Promise(r=>release=r);
+ const delivery=hub.withAccountLock('alice',async()=>{order.push('delivery-start');started();await gate;order.push('delivery-done')});await ready;
+ const moderation=hub.withAccountLock('alice',async()=>{order.push('ban');throw Error('failed mirror')});
+ await hub.withAccountLock('bob',async()=>order.push('bob'));assert.deepEqual(order,['delivery-start','bob']);
+ release();await delivery;await assert.rejects(moderation,/failed mirror/);
+ await hub.withAccountLock('alice',async()=>order.push('retry'));
+ assert.deepEqual(order,['delivery-start','bob','delivery-done','ban','retry']);assert.equal(hub.accountLocks.size,0);
+});

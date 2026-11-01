@@ -56,6 +56,17 @@ process.exitCode=1;
    }
    console.log('Known styles, empty style, image access and owner isolation: PASS');
   }
+
+  const codeHash='a'.repeat(64),rewardId='restriction-code-avatar';
+  await env.withSecurityRulesDisabled(async ctx=>{await ctx.database().ref().update({['communityProfileCatalog/'+rewardId]:{kind:'avatar',enabled:true,accessRule:'code'},['communityAvatarCodes/'+codeHash]:{enabled:true,assetId:rewardId,expiresAt:0},['communityRewardRestrictions/'+uid]:{shop:true,rewards:true,revision:1,updatedAt:Date.now()}});});
+  assert.equal((await db.ref('communityRewardRestrictions/'+uid+'/rewards').get()).val(),true);
+  await assert.rejects(db.ref('communityRewardRestrictions/'+uid+'/rewards').set(false));
+  await assert.rejects(db.ref('communityCodeProofs/'+uid+'/'+rewardId).set(codeHash));
+  await env.withSecurityRulesDisabled(ctx=>ctx.database().ref('communityCodeProofs/'+uid+'/'+rewardId).set(codeHash));
+  await assert.rejects(db.ref('communityImageOwnership/'+uid+'/'+rewardId).set({source:'code',grantedAt:Date.now()}));
+  await env.withSecurityRulesDisabled(ctx=>ctx.database().ref('communityRewardRestrictions/'+uid+'/rewards').set(false));
+  await db.ref('communityImageOwnership/'+uid+'/'+rewardId).set({source:'code',grantedAt:Date.now()});
+  console.log('Reward suspension prevents forged flags, code proofs and direct cosmetic claims, and unlock restores access: PASS');
  }finally{await env.cleanup();}
 }
 main().catch(()=>{console.error('Emulator regression could not finish');process.exitCode=1;});

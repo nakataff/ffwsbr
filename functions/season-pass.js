@@ -36,7 +36,7 @@ function init(sql){
   sql.exec('INSERT OR IGNORE INTO eco_settings VALUES(?,?)','pass-chests-november-v1','1');
  }
 }
-function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,now,random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296}){
+function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,now,assertReward=()=>{},rewardAllowed=()=>true,random=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296}){
  const rows=(q,...a)=>readRows(sql,q,...a);
  const configs=new Map();
  function config(id){if(!month(id))return null;if(!configs.has(id))configs.set(id,JSON.parse(rows('SELECT data FROM eco_pass_seasons WHERE id=?',id)[0]?.data||'null'));return configs.get(id);}
@@ -47,6 +47,7 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
  }
  const status=c=>!c.enabled?'paused':dayKey(now())<c.start?'upcoming':dayKey(now())<=c.end?'active':now()<=atEnd(c.claimUntil)?'claiming':'ended';
  function record(uid,kind,day=dayKey(now())){
+  if(!rewardAllowed(uid))return;
   if(!BITS[kind]||!date(day)||day>dayKey(now()))return;
   const c=config(day.slice(0,7));if(!c?.published||!c.enabled||day<c.start||day>c.end)return;
   // A delayed validated Instagram interaction may recognize a past day until collection closes.
@@ -60,7 +61,7 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
  function summary(uid,id='',full=false){
   const c=selected(id);if(!c?.published)return {available:false};
   const xp=rows('SELECT xp FROM eco_pass_progress WHERE uid=? AND season=?',uid,c.id)[0]?.xp||0,level=Math.min(c.rewards.length,Math.floor(xp/c.xpPerLevel)),claims=rows('SELECT level,status'+(full?',data':'')+' FROM eco_pass_claims WHERE uid=? AND season=? ORDER BY level',uid,c.id),claimed=new Map(claims.map(r=>[r.level,r.status])),s=status(c),ready=c.rewards.filter(r=>r.level<=level&&!claimed.has(r.level)&&r.kind!=='none').length,pending=claims.filter(r=>r.status==='pending').length,flags=rows('SELECT flags FROM eco_pass_days WHERE uid=? AND season=? AND day=?',uid,c.id,dayKey(now()))[0]?.flags||0;
-  const value={available:true,id:c.id,title:c.title,description:c.description,cover:c.cover,start:c.start,end:c.end,claimUntil:c.claimUntil,status:s,level,levels:c.rewards.length,xp,xpPerLevel:c.xpPerLevel,maxXp:c.rewards.length*c.xpPerLevel,completed:level===c.rewards.length,ready:['active','claiming'].includes(s)?ready:0,pending,next:c.rewards.find(r=>r.level>level)||null,today:Object.keys(XP).map(kind=>({kind,xp:XP[kind],done:!!(flags&BITS[kind])})),revision:c.revision};
+  const value={available:true,rewardSuspended:!rewardAllowed(uid),id:c.id,title:c.title,description:c.description,cover:c.cover,start:c.start,end:c.end,claimUntil:c.claimUntil,status:s,level,levels:c.rewards.length,xp,xpPerLevel:c.xpPerLevel,maxXp:c.rewards.length*c.xpPerLevel,completed:level===c.rewards.length,ready:['active','claiming'].includes(s)?ready:0,pending,next:c.rewards.find(r=>r.level>level)||null,today:Object.keys(XP).map(kind=>({kind,xp:XP[kind],done:!!(flags&BITS[kind])})),revision:c.revision};
   if(full){const outcomes=new Map(claims.filter(r=>r.data).map(r=>[r.level,JSON.parse(r.data).reward]));const limits=new Map(rows('SELECT level,n FROM eco_pass_limits WHERE season=?',c.id).map(r=>[r.level,r.n]));value.rewards=c.rewards.map(r=>({...r,...(outcomes.get(r.level)?.source==='chest'?{openedCoins:outcomes.get(r.level).coins}:{}),status:claimed.get(r.level)||(['active','claiming'].includes(s)&&r.level<=level?'ready':r.level<=level?'expired':'locked'),...(r.kind==='voucher'?{remaining:Math.max(0,r.limit-(limits.get(r.level)||0))}:{})}));value.history=rows('SELECT p.season,p.xp,s.data FROM eco_pass_progress p JOIN eco_pass_seasons s ON s.id=p.season WHERE p.uid=? AND s.published=1 ORDER BY p.season DESC LIMIT 12',uid).map(r=>{const v=JSON.parse(r.data);return{id:v.id,title:v.title,level:Math.min(v.rewards.length,Math.floor(r.xp/v.xpPerLevel)),levels:v.rewards.length,completed:r.xp>=v.rewards.length*v.xpPerLevel}});}
   return value;
  }
@@ -105,6 +106,7 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
   });
  }
  async function deliver(uid,c,level){
+  assertReward(uid);
   const row=rows('SELECT * FROM eco_pass_claims WHERE uid=? AND season=? AND level=?',uid,c.id,level)[0];if(!row)throw fail(404,'Resgate do passe não encontrado.');
   const data=JSON.parse(row.data),reward=data.reward,message=c.title+' · nível '+level;
   if(row.status!=='done'){
@@ -124,6 +126,7 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
   return {ok:true,reward,pass:summary(uid,c.id,true),wallet:rows('SELECT balance FROM eco_wallet WHERE uid=?',uid)[0]||{balance:0}};
  }
  async function claim(uid,b){
+  assertReward(uid);
   if(!month(b.season)||!Number.isInteger(b.level)||b.level<1||b.level>50)throw fail(400,'Escolha um nível válido.');
   const c=config(b.season);if(!c)throw fail(404,'Passe não encontrado.');
   const old=rows('SELECT status FROM eco_pass_claims WHERE uid=? AND season=? AND level=?',uid,c.id,b.level)[0];if(old)return deliver(uid,c,b.level);
@@ -131,6 +134,7 @@ function create({sql,transaction,db,credit,eligible,grantVoucher,notify,dayKey,n
   if(b.expectedRevision!==c.revision)throw fail(409,'O passe mudou. Atualize e confira os prêmios antes de resgatar.');
   const p=await eligible(uid);
   transaction(()=>{
+   assertReward(uid);
    if(rows('SELECT status FROM eco_pass_claims WHERE uid=? AND season=? AND level=?',uid,c.id,b.level).length)return;
    const latest=JSON.parse(rows('SELECT data FROM eco_pass_seasons WHERE id=?',c.id)[0].data);if(latest.revision!==c.revision||!latest.published||!['active','claiming'].includes(status(latest)))throw fail(409,'O passe mudou. Atualize antes de resgatar.');
    const xp=rows('SELECT xp FROM eco_pass_progress WHERE uid=? AND season=?',uid,c.id)[0]?.xp||0;

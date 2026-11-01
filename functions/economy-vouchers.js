@@ -8,7 +8,7 @@ function init(sql){
  CREATE INDEX IF NOT EXISTS eco_vouchers_at ON eco_vouchers(at DESC);
  CREATE TABLE IF NOT EXISTS eco_weekly_voucher_awards(week TEXT PRIMARY KEY,voucher TEXT UNIQUE NOT NULL);`);
 }
-function create({sql,transaction,db,eligible,now,notify=()=>{}}){
+function create({sql,transaction,db,eligible,now,assertReward=()=>{},notify=()=>{}}){
  const rows=(q,...args)=>{const r=sql.exec(q,...args);return typeof r.toArray==='function'?r.toArray():Array.from(r);};
  const config=()=>JSON.parse(rows('SELECT data FROM eco_settings WHERE id=?','voucher-config')[0]?.data||'{"imageUrl":"/edition/gift.webp"}');
  const rouletteConfig=()=>{const c=config();return {validityDays:Number.isInteger(c.rouletteValidityDays)&&c.rouletteValidityDays>=1&&c.rouletteValidityDays<=365?c.rouletteValidityDays:30,imageUrl:c.imageUrl||'/edition/gift.webp'};};
@@ -37,7 +37,7 @@ function create({sql,transaction,db,eligible,now,notify=()=>{}}){
    if(awardWeek&&rows('SELECT id FROM eco_vouchers WHERE nonce=?',b.nonce).length)throw fail(409,'Este identificador já foi usado em outro envio de vale. Reabra o formulário.');
    const p=await eligible(b.targetUid);if(p.username!==b.expectedUsername)throw fail(409,'O destinatário mudou. Pesquise e confira o @ novamente.');
    if(b.expiresAt<=now())throw fail(400,'A validade do vale deve estar no futuro.');
-   return transaction(()=>{const old=previous();if(old)return matches(old);if(b.expiresAt<=now())throw fail(400,'A validade do vale deve estar no futuro.');const id=crypto.randomUUID();sql.exec('INSERT INTO eco_vouchers(id,nonce,uid,username,name,expires,at,byuid,message) VALUES(?,?,?,?,?,?,?,?,?)',id,b.nonce,b.targetUid,p.username,p.name,b.expiresAt,now(),identity.uid,b.message.trim());if(awardWeek)sql.exec('INSERT INTO eco_weekly_voucher_awards VALUES(?,?)',awardWeek,id);notify({id:'voucher:'+id,uid:b.targetUid,title:'Você recebeu um Vale Codiguinho!',body:b.message.trim()||'Troque seu vale por um codiguinho disponível na loja. Confira a validade no seu inventário.',url:'/conta.html?tab=points',button:'Usar na loja',expiresAt:b.expiresAt});return {ok:true,voucher:publicRow(rows('SELECT * FROM eco_vouchers WHERE id=?',id)[0])};});
+   return transaction(()=>{assertReward(b.targetUid);const old=previous();if(old)return matches(old);if(b.expiresAt<=now())throw fail(400,'A validade do vale deve estar no futuro.');const id=crypto.randomUUID();sql.exec('INSERT INTO eco_vouchers(id,nonce,uid,username,name,expires,at,byuid,message) VALUES(?,?,?,?,?,?,?,?,?)',id,b.nonce,b.targetUid,p.username,p.name,b.expiresAt,now(),identity.uid,b.message.trim());if(awardWeek)sql.exec('INSERT INTO eco_weekly_voucher_awards VALUES(?,?)',awardWeek,id);notify({id:'voucher:'+id,uid:b.targetUid,title:'Você recebeu um Vale Codiguinho!',body:b.message.trim()||'Troque seu vale por um codiguinho disponível na loja. Confira a validade no seu inventário.',url:'/conta.html?tab=points',button:'Usar na loja',expiresAt:b.expiresAt});return {ok:true,voucher:publicRow(rows('SELECT * FROM eco_vouchers WHERE id=?',id)[0])};});
   }
   if(b.operation==='listVouchers'){
    const offset=b.offset??0,filter=b.status||'all';if(!Number.isSafeInteger(offset)||offset<0||!['all','available','used','reserved','expired','revoked'].includes(filter))throw fail(400,'Confira o filtro de vales.');
@@ -53,6 +53,7 @@ function create({sql,transaction,db,eligible,now,notify=()=>{}}){
  // Called inside the daily spin transaction; the unique nonce and eco_daily
  // commit together. Retries never create another voucher or notification.
  function grantSpin(uid,p,day,at,c=rouletteConfig()){
+  assertReward(uid);
   const nonce='roulette:'+uid+':'+day,old=rows('SELECT * FROM eco_vouchers WHERE nonce=?',nonce)[0];
   if(old){if(old.uid!==uid)throw fail(409,'Confira o destinatário do vale.');return publicRow(old);}
   const expires=Math.floor((at-3*3600000)/86400000)*86400000+(c.validityDays+1)*86400000+3*3600000-1,id=crypto.randomUUID(),message='Prêmio da roleta diária da Central! Escolha um codiguinho disponível na loja.';
@@ -61,6 +62,7 @@ function create({sql,transaction,db,eligible,now,notify=()=>{}}){
   return publicRow(rows('SELECT * FROM eco_vouchers WHERE id=?',id)[0]);
  }
  function grantPass(uid,p,season,level,expires,at){
+  assertReward(uid);
   const nonce='pass:'+season+':'+level+':'+uid,old=rows('SELECT * FROM eco_vouchers WHERE nonce=?',nonce)[0];if(old)return publicRow(old);
   const id=crypto.randomUUID(),message='Recompensa do passe '+season+' · nível '+level;
   sql.exec('INSERT INTO eco_vouchers(id,nonce,uid,username,name,expires,at,byuid,message) VALUES(?,?,?,?,?,?,?,?,?)',id,nonce,uid,p.username,p.name,expires,at,'central-pass',message);

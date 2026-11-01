@@ -214,3 +214,5 @@
 .eco-code-rules{margin:18px 0;padding:16px;border:1px solid #d29b48;border-radius:12px;background:#bd7b1014}.eco-code-rules>strong{color:#ffce7e}.eco-code-rules p{font-size:.85rem;line-height:1.6;margin:8px 0;color:#d3deec}.eco-code-rules a{color:#ffce7e}.eco-code-reservation [data-code-reservation-until]{font-variant-numeric:tabular-nums;color:#ffd07e;font-weight:700}.eco-code-reservation small{display:block;line-height:1.5;margin-top:8px;color:#bdcce0}
 
 .eco-code-deadline{border:2px solid #ffbb62;background:#a8521424;text-align:left}.eco-code-deadline>strong{display:block;font-size:1.15rem;line-height:1.35}.eco-code-deadline b{color:#ffdaa4}.eco-code-deadline p{font-size:.93rem;line-height:1.65}
+
+.eco-account-suspended{border:1px solid #d17a5b;background:#8f3f201a}.eco-account-suspended>strong{display:block;color:#ffc7a2;font-size:1.15rem}.eco-account-suspended p{color:#d1deeb;line-height:1.6}.eco-account-suspended a{color:#ffd398}

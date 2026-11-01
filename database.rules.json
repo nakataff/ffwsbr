@@ -699,7 +699,7 @@
       "$uid": {
         ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br') || root.child('communityProfiles').child($uid).child('public').val() == true",
         "$asset": {
-          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (auth != null && auth.uid == $uid && !data.exists() && newData.child('source').val() == 'code' && root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('enabled').val() == true && root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('assetId').val() == $asset && (root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('expiresAt').val() == 0 || root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('expiresAt').val() >= now) && root.child('communityProfileCatalog').child($asset).child('enabled').val() == true && root.child('communityProfileCatalog').child($asset).child('accessRule').val() == 'code')",
+          ".write": "(auth != null && auth.token.email == 'admin@centralfreefire.com.br') || (auth != null && auth.uid == $uid && root.child('communityRewardRestrictions').child($uid).child('rewards').val() != true && !data.exists() && newData.child('source').val() == 'code' && root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('enabled').val() == true && root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('assetId').val() == $asset && (root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('expiresAt').val() == 0 || root.child('communityAvatarCodes').child(root.child('communityCodeProofs').child($uid).child($asset).val()).child('expiresAt').val() >= now) && root.child('communityProfileCatalog').child($asset).child('enabled').val() == true && root.child('communityProfileCatalog').child($asset).child('accessRule').val() == 'code')",
           ".validate": "newData.hasChildren(['source','grantedAt']) && root.child('communityProfileCatalog').child($asset).exists()",
           "source": {
             ".validate": "newData.val() == 'admin' || newData.val() == 'code' || newData.val() == 'goal'"
@@ -821,7 +821,7 @@
       "$uid": {
         ".read": "(auth != null && auth.uid == $uid) || (auth != null && auth.token.email == 'admin@centralfreefire.com.br')",
         "$asset": {
-          ".write": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && auth.uid == $uid && root.child('communityRewardRestrictions').child($uid).child('rewards').val() != true",
           ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{64}$/) && root.child('communityAvatarCodes').child(newData.val()).child('enabled').val() == true && root.child('communityAvatarCodes').child(newData.val()).child('assetId').val() == $asset && (root.child('communityAvatarCodes').child(newData.val()).child('expiresAt').val() == 0 || root.child('communityAvatarCodes').child(newData.val()).child('expiresAt').val() >= now) && root.child('communityProfileCatalog').child($asset).child('enabled').val() == true && root.child('communityProfileCatalog').child($asset).child('accessRule').val() == 'code'"
         }
       }
@@ -1298,6 +1298,13 @@
       },
       "$other": {
         ".validate": false
+      }
+    },
+    "communityRewardRestrictions": {
+      ".write": false,
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || auth.token.email == 'admin@centralfreefire.com.br')",
+        ".write": false
       }
     }
   }
