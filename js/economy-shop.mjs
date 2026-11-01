@@ -19,7 +19,7 @@ export function shopCatalog(items=[]){
  return [...grouped.values()];
 }
 export function canRescue(item,state,now=Date.now()){
- if(!item.available||item.owned||item.kind==='code'&&item.expiresAt&&item.expiresAt<=now)return false;
+ if(!item.available||item.owned||item.codeBlocked||item.kind==='code'&&state.codePolicy?.remaining===0||item.kind==='code'&&item.expiresAt&&item.expiresAt<=now)return false;
  const voucher=state.vouchers?.next;
  if(item.kind==='code'&&voucher&&voucher.expiresAt>now)return true;
  return Number(state.wallet.balance)>=Number(item.price)&&!(item.kind==='code'&&state.codeRedeemAvailableAt>now);

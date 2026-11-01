@@ -156,4 +156,14 @@ async function adminChat(db,identity,request,now=Date.now()){
  if(publicProfile?.public===true){const previousIdentity=await db.get('globalChat/identities/'+target);await db.update({['globalChat/identities/'+target]:await publicIdentity(db,{uid:target,administrator:target===identity.uid||previousIdentity?.realAdministrator===true,roles},publicProfile)});}
  await audit(db,actor,operation,{targetUid:target,name:profile.name},now);return {ok:true};
 }
-module.exports={messageText,sendMessage,moderation,context,checkRestriction,settings,chatStatus,preferences,report,moderationData,adminChat};
+// Internal scheduled notice; no client action exposes this writer. Its stable
+// message ID makes retries idempotent and never identifies the original buyer.
+async function publishCodeNotice(db,publication){
+ if(!/^[a-f0-9-]{36}$/.test(publication?.id||'')||!Number.isSafeInteger(publication.at)||!/^\d{13}$/.test(String(publication.at))||!(/^[A-Z0-9-]{5,64}$/).test(publication.code||''))throw fail(400,'Publicação de código inválida.');
+ const id=publication.at+'-'+publication.id.replace(/-/g,'').slice(0,16),uid='central-system';
+ const entry={uid,name:'Central · Aviso automático',avatarId:'default',roleId:'member',kind:'public-code',text:'🎁 CODIGUINHO PÚBLICO · '+String(publication.title).slice(0,100)+'\n'+publication.code+'\nCodiguinho enviado após o tempo limite de 3 minutos para resgatar. Testem: ele pode já ter sido resgatado. Venda proibida.',at:publication.at,username:'',badgeIds:[],nameColor:'#ffce7e'};
+ const recent=await db.recentChat(),keys=[...new Set([...Object.keys(recent||{}),id])].sort(),changes={['globalChat/messages/'+id]:entry};
+ for(const old of keys.slice(0,Math.max(0,keys.length-100)))changes['globalChat/messages/'+old]=null;
+ await db.update(changes);await db.transact('globalChat/latest',old=>old?.id&&old.id>id?old:{id,at:publication.at});return {ok:true,id};
+}
+module.exports={publishCodeNotice,messageText,sendMessage,moderation,context,checkRestriction,settings,chatStatus,preferences,report,moderationData,adminChat};

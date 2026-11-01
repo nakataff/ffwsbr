@@ -54,7 +54,7 @@ async function openCodeGift(db,identity,giftId,now=Date.now()){
  if(!validUid(identity?.uid))throw fail(401,'Entre na sua conta para abrir o presente.');
  if(!/^codegift-[a-f0-9-]{36}$/.test(giftId||''))throw fail(400,'Presente inválido.');
  const path='communityCodeGifts/'+identity.uid+'/'+giftId;
- const gift=await db.transact(path,old=>{if(!old)throw fail(404,'Presente não encontrado no seu inventário.');if(old.returnedAt)throw fail(410,'Este codiguinho foi devolvido ao estoque pelo administrador.');return old.openedAt?old:{...old,openedAt:now};});
+ const gift=await db.transact(path,old=>{if(!old)throw fail(404,'Presente não encontrado no seu inventário.');if(old.reservationReceipt)throw fail(409,'Abra esta reserva pela loja da Central.');if(old.returnedAt)throw fail(410,'Este codiguinho foi devolvido ao estoque pelo administrador.');return old.openedAt?old:{...old,openedAt:now};});
  return {ok:true,gift};
 }
 // Personal organization only: no stock, receipt, grant or wallet changes.
@@ -65,7 +65,7 @@ async function archiveGift(db,identity,raw,now=Date.now()){
  const path=(kind==='code'?'communityCodeGifts/':'communityGifts/')+identity.uid+'/'+id;
  const gift=await db.transact(path,old=>{
   if(!old)throw fail(404,'Presente não encontrado no seu inventário.');
-  if(raw.archived&&kind==='code'&&!old.openedAt&&!old.returnedAt)throw fail(409,'Abra o presente antes de arquivar.');
+  if(raw.archived&&kind==='code'&&!old.openedAt&&!old.returnedAt&&!(old.reserveUntil&&old.reserveUntil<=now))throw fail(409,'Abra o presente antes de arquivar.');
   return {...old,archivedAt:raw.archived?(old.archivedAt||now):0};
  });
  return {ok:true,giftId:id,kind,archivedAt:gift.archivedAt};

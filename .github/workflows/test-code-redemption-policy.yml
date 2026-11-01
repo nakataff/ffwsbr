@@ -1,0 +1,36 @@
+name: Code redemption policy
+on:
+  push:
+    paths:
+      - 'functions/economy-code-policy.js'
+      - 'functions/economy.js'
+      - 'functions/economy-code-returns.js'
+      - 'functions/global-chat.js'
+      - 'functions/code-gifts.js'
+      - 'functions/test/economy-code-policy.test.cjs'
+      - 'cloudflare/camp-notifications/worker.js'
+      - 'cloudflare/camp-notifications/test/economy-api.test.mjs'
+      - 'js/economy-ui.js'
+      - 'js/economy-shop.mjs'
+      - 'js/code-gift-opener.mjs'
+      - 'js/recipient-code-gifts.js'
+      - 'js/public-codes.js'
+      - 'interacoes.html'
+      - 'test/code-redemption-policy-ui.test.cjs'
+      - '.github/workflows/test-code-redemption-policy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix /tmp/cff-pass-tests --no-save --no-audit --no-fund jsdom@26.1.0
+      - run: node --test functions/test/economy-code-policy.test.cjs functions/test/economy.test.cjs functions/test/global-chat.test.cjs functions/test/code-gifts.test.cjs
+      - run: node --test test/code-redemption-policy-ui.test.cjs test/economy-shop.test.cjs test/profile-inventory.test.cjs test/code-vouchers-ui.test.cjs test/code-returns-ui.test.cjs test/interaction-guide.test.cjs
+        env:
+          NODE_PATH: /tmp/cff-pass-tests/node_modules

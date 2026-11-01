@@ -12,10 +12,10 @@ async function setup({modal=true,home=false}={}){
 }
 test('About and Interactions mount the same accessible 3-step guide and native FAQ without data requests',async()=>{
  const f=await setup();try{
-  for(const path of ['index.html','interacoes.html']){const html=read(path);assert(html.includes('data-interaction-guide'));assert(html.includes('js/interaction-guide.js?v=20261029-interaction-guide-v1'));assert(html.includes('css/interaction-guide.css?v=20261029-interaction-guide-v1'));}
-  const root=f.d.querySelector('[data-interaction-guide]');assert.equal(root.querySelectorAll('.cff-ig-guide-steps>li').length,3);assert.equal(root.querySelectorAll('details').length,6);
+  for(const path of ['index.html','interacoes.html']){const html=read(path);assert(html.includes('data-interaction-guide'));assert(html.includes('js/interaction-guide.js?v=20261101-code-policy-v1'));assert(html.includes('css/interaction-guide.css?v=20261029-interaction-guide-v1'));}
+  const root=f.d.querySelector('[data-interaction-guide]');assert.equal(root.querySelectorAll('.cff-ig-guide-steps>li').length,3);assert.equal(root.querySelectorAll('details').length,7);
   assert(root.textContent.includes('Já enviei · Confirmar Instagram'));assert(root.querySelector('a[href="/conta.html?tab=overview#cff-instagram-connect"]'));assert(root.querySelector('a[href="/conta.html?tab=points&shopSection=shop"]'));assert(root.querySelector('a[href="/conta.html?tab=quiz"]'));assert.equal(f.calls(),0);
-  f.w.CFF_INTERACTION_GUIDE.mount(root);assert.equal(root.querySelectorAll('details').length,6);assert.deepEqual(f.errors,[]);
+  f.w.CFF_INTERACTION_GUIDE.mount(root);assert.equal(root.querySelectorAll('details').length,7);assert.deepEqual(f.errors,[]);
  }finally{f.close()}
 });
 test('home help opens one modal, preserves the ranking destination, restores focus, and makes no new requests',async()=>{

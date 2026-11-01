@@ -59,7 +59,7 @@ test('25 distinct interaction days fund the default code without roulette, check
  assert.equal(s.sql.exec("SELECT COUNT(*) AS n FROM eco_ledger WHERE kind='interaction_participation'")[0].n,1);assert.equal(s.calls.podium,0);
  s.setTime(Date.parse('2026-11-30T15:00:00Z'));s.reports.user_a.participationDays=dates('2026-11',30);assert.equal((await s.core.state(actor('a'),true)).wallet.balance,1000);
  await s.core.adminHandle(admin,{operation:'addStock',code:'MONTHLYCODE1234',title:'Codiguinho mensal',bucket:'shop'});
- await s.core.handle(actor('a'),{operation:'redeem',itemId:'code-default',nonce:crypto.randomUUID()});assert.equal((await s.core.state(actor('a'))).wallet.balance,0);assert.equal(Object.keys(s.data).filter(p=>p.startsWith('communityCodeGifts/a/')).length,1);
+ await s.core.handle(actor('a'),{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',nonce:crypto.randomUUID()});assert.equal((await s.core.state(actor('a'))).wallet.balance,0);assert.equal(Object.keys(s.data).filter(p=>p.startsWith('communityCodeGifts/a/')).length,1);
 });
 test('participation counts each valid date once, starts on launch and pays only incremental credits',async()=>{
  const s=setup();s.reports.user_a={userKey:'ig-a',retroPoints:0,weeks:[],months:[],participationDays:['2026-09-30','2026-10-14','2026-10-14','2026-10-16','2026-02-30','bad',null]};s.setTime(Date.parse('2026-10-14T15:00:00Z'));

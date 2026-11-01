@@ -8,13 +8,13 @@ import {createEmblemDisplay} from './profile-emblems.mjs?v=20261016-emblems-v1';
 import {INVENTORY_TABS,inventoryAssets} from './profile-inventory.mjs?v=20261015-inventory-v1';
 import {createInstagramConnect} from './account-instagram-connect.mjs?v=20261015-inventory-v1';
 import {instagramLinkHtml} from './profile-instagram-link.mjs?v=20261015-inventory-v1';
-import {mountEconomy} from './economy-ui.js?v=20261026-code-promotions-v1';
+import {mountEconomy} from './economy-ui.js?v=20261101-code-policy-v1';
 import {rememberInvite,attachPendingReferral,economyRequest} from './economy-client.mjs?v=20261019-inbox-v1';
 import {createHeaderWallet} from './header-wallet.mjs?v=20261023-inbox-alerts-v1';
 import {createProfileCheckin} from './profile-checkin.mjs?v=20261030-pass-v1';
 rememberInvite();
 if(!document.querySelector('link[data-user-inbox]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/user-inbox.css?v=20261019-inbox-v1';l.dataset.userInbox='1';document.head.append(l);}
-import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261019-inbox-v1';
+import {mountRecipientCodeGifts} from './recipient-code-gifts.js?v=20261101-code-policy-v1';
 import {categoriesFor} from './profile-category-model.mjs?v=20261013-categories-v1';
 import {frameChoices,frameScaleFor,selectedFrame} from './profile-frame-model.mjs?v=20261013-profile-frames-v1';
 import {createAccountWelcome} from './account-welcome.mjs?v=20261013-notifications-hub-v1';
