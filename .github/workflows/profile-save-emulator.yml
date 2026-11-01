@@ -10,6 +10,7 @@ on:
       - 'functions/test/global-chat-emulator.cjs'
       - 'functions/test/code-gifts-emulator.cjs'
       - 'functions/test/live-tournaments-emulator.cjs'
+      - 'functions/test/naka-news-emulator.cjs'
       - 'js/live-tournament-model.mjs'
       - '.github/workflows/profile-save-emulator.yml'
   workflow_dispatch:
@@ -30,4 +31,4 @@ jobs:
       - run: npm install --no-save @firebase/rules-unit-testing firebase
         working-directory: functions
       - run: npm install -g firebase-tools
-      - run: firebase emulators:exec --config firebase.json --project demo-profile-save --only database 'node functions/test/profile-save-emulator.cjs && node functions/test/global-chat-emulator.cjs && node functions/test/code-gifts-emulator.cjs && node functions/test/live-tournaments-emulator.cjs'
+      - run: firebase emulators:exec --config firebase.json --project demo-profile-save --only database 'node functions/test/profile-save-emulator.cjs && node functions/test/global-chat-emulator.cjs && node functions/test/code-gifts-emulator.cjs && node functions/test/live-tournaments-emulator.cjs && node functions/test/naka-news-emulator.cjs'
