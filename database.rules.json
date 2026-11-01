@@ -1126,6 +1126,179 @@
           ".validate": false
         }
       }
+    },
+    "nakaGamingNews": {
+      ".read": "auth != null && auth.token.email === 'admin@centralfreefire.com.br'",
+      ".write": "auth != null && auth.token.email === 'admin@centralfreefire.com.br'",
+      "drafts": {
+        "$id": {
+          ".validate": "$id.matches(/^[a-z0-9-]{10,80}$/) && newData.hasChildren([\"id\",\"title\",\"excerpt\",\"category\",\"date\",\"cover\",\"status\",\"revision\",\"liveRevision\",\"sortKey\"]) && newData.hasChild('body') && newData.child('revision').val() === (data.exists() ? data.child('revision').val() + 1 : 1) && ((newData.child('status').val() === 'draft' && newData.child('liveRevision').val() === (data.exists() ? data.child('liveRevision').val() : 0)) || (newData.child('status').val() === 'published' && newData.child('liveRevision').val() === newData.child('revision').val()) || (newData.child('status').val() === 'archived' && newData.child('liveRevision').val() === 0))",
+          "id": {
+            ".validate": "newData.isString() && newData.val() === $id"
+          },
+          "title": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 140"
+          },
+          "excerpt": {
+            ".validate": "newData.isString() && newData.val().length <= 280"
+          },
+          "category": {
+            ".validate": "newData.isString() && (newData.val() === 'Resultados' || newData.val() === 'Novidades' || newData.val() === 'Projetos' || newData.val() === 'Organização')"
+          },
+          "date": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+          },
+          "cover": {
+            ".validate": "newData.isString() && newData.val().length <= 700"
+          },
+          "status": {
+            ".validate": "newData.isString() && (newData.val() === 'draft' || newData.val() === 'published' || newData.val() === 'archived')"
+          },
+          "revision": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() < 1000000000 && newData.val() % 1 === 0"
+          },
+          "liveRevision": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('revision').val() && newData.val() % 1 === 0"
+          },
+          "sortKey": {
+            ".validate": "newData.isString() && newData.val() === newData.parent().child('date').val() + '_' + $id"
+          },
+          "$other": {
+            ".validate": false
+          },
+          "body": {
+            ".validate": "newData.isString() && newData.val().length <= 20000 && (newData.parent().child('status').val() !== 'published' || newData.val().length > 0)"
+          }
+        }
+      },
+      "adminIndex": {
+        ".indexOn": [
+          "sortKey"
+        ],
+        "$id": {
+          ".validate": "$id.matches(/^[a-z0-9-]{10,80}$/) && newData.hasChildren([\"id\",\"title\",\"excerpt\",\"category\",\"date\",\"cover\",\"status\",\"revision\",\"liveRevision\",\"sortKey\"])",
+          "id": {
+            ".validate": "newData.isString() && newData.val() === $id"
+          },
+          "title": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 140"
+          },
+          "excerpt": {
+            ".validate": "newData.isString() && newData.val().length <= 280"
+          },
+          "category": {
+            ".validate": "newData.isString() && (newData.val() === 'Resultados' || newData.val() === 'Novidades' || newData.val() === 'Projetos' || newData.val() === 'Organização')"
+          },
+          "date": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+          },
+          "cover": {
+            ".validate": "newData.isString() && newData.val().length <= 700"
+          },
+          "status": {
+            ".validate": "newData.isString() && (newData.val() === 'draft' || newData.val() === 'published' || newData.val() === 'archived')"
+          },
+          "revision": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() < 1000000000 && newData.val() % 1 === 0"
+          },
+          "liveRevision": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('revision').val() && newData.val() % 1 === 0"
+          },
+          "sortKey": {
+            ".validate": "newData.isString() && newData.val() === newData.parent().child('date').val() + '_' + $id"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "publicIndex": {
+        ".read": true,
+        ".indexOn": [
+          "sortKey"
+        ],
+        "$id": {
+          ".validate": "$id.matches(/^[a-z0-9-]{10,80}$/) && newData.hasChildren([\"id\",\"title\",\"excerpt\",\"category\",\"date\",\"cover\",\"status\",\"revision\",\"liveRevision\",\"sortKey\"]) && newData.child('status').val() === 'published' && newData.child('liveRevision').val() === newData.child('revision').val()",
+          "id": {
+            ".validate": "newData.isString() && newData.val() === $id"
+          },
+          "title": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 140"
+          },
+          "excerpt": {
+            ".validate": "newData.isString() && newData.val().length <= 280"
+          },
+          "category": {
+            ".validate": "newData.isString() && (newData.val() === 'Resultados' || newData.val() === 'Novidades' || newData.val() === 'Projetos' || newData.val() === 'Organização')"
+          },
+          "date": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+          },
+          "cover": {
+            ".validate": "newData.isString() && newData.val().length <= 700"
+          },
+          "status": {
+            ".validate": "newData.isString() && (newData.val() === 'draft' || newData.val() === 'published' || newData.val() === 'archived')"
+          },
+          "revision": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() < 1000000000 && newData.val() % 1 === 0"
+          },
+          "liveRevision": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('revision').val() && newData.val() % 1 === 0"
+          },
+          "sortKey": {
+            ".validate": "newData.isString() && newData.val() === newData.parent().child('date').val() + '_' + $id"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "articles": {
+        "$id": {
+          ".read": true,
+          ".validate": "$id.matches(/^[a-z0-9-]{10,80}$/) && newData.hasChildren([\"id\",\"title\",\"excerpt\",\"category\",\"date\",\"cover\",\"status\",\"revision\",\"liveRevision\",\"sortKey\"]) && newData.child('status').val() === 'published' && newData.child('liveRevision').val() === newData.child('revision').val() && newData.hasChild('body')",
+          "id": {
+            ".validate": "newData.isString() && newData.val() === $id"
+          },
+          "title": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 140"
+          },
+          "excerpt": {
+            ".validate": "newData.isString() && newData.val().length <= 280"
+          },
+          "category": {
+            ".validate": "newData.isString() && (newData.val() === 'Resultados' || newData.val() === 'Novidades' || newData.val() === 'Projetos' || newData.val() === 'Organização')"
+          },
+          "date": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+          },
+          "cover": {
+            ".validate": "newData.isString() && newData.val().length <= 700"
+          },
+          "status": {
+            ".validate": "newData.isString() && (newData.val() === 'draft' || newData.val() === 'published' || newData.val() === 'archived')"
+          },
+          "revision": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() < 1000000000 && newData.val() % 1 === 0"
+          },
+          "liveRevision": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('revision').val() && newData.val() % 1 === 0"
+          },
+          "sortKey": {
+            ".validate": "newData.isString() && newData.val() === newData.parent().child('date').val() + '_' + $id"
+          },
+          "$other": {
+            ".validate": false
+          },
+          "body": {
+            ".validate": "newData.isString() && newData.val().length <= 20000 && (newData.parent().child('status').val() !== 'published' || newData.val().length > 0)"
+          }
+        }
+      },
+      "$other": {
+        ".validate": false
+      }
     }
   }
 }
