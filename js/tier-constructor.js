@@ -2698,11 +2698,12 @@
         editorDraft = { ...defaultImageEdit(), ...(imageData.edit || {}) };
         editorNameplateDraft = {
           nameplateText: imageData.nameplateText || "",
+          nameplateFontSize: imageData.nameplateFontSize || 0,
           nameplateOwnColors: imageData.nameplateOwnColors === true,
           nameplateBgColor: imageData.nameplateBgColor || state.settings.nameplateBgColor,
           nameplateTextColor: imageData.nameplateTextColor || state.settings.nameplateTextColor
         };
-        document.getElementById("editorNameplateText").value = editorNameplateDraft.nameplateText;
+        document.getElementById("editorNameplateText").value = getNameplate(imageData).text;
         syncEditorNameplatePreview();
         document.getElementById("editorOverlayAdvanced").open = Boolean(
           (editorDraft.text || "").trim() || editorDraft.bannerEnabled
@@ -2718,11 +2719,12 @@
         editorDraft = defaultImageEdit();
         editorNameplateDraft = {
           nameplateText: "",
+          nameplateFontSize: 0,
           nameplateOwnColors: false,
           nameplateBgColor: state.settings.nameplateBgColor,
           nameplateTextColor: state.settings.nameplateTextColor
         };
-        document.getElementById("editorNameplateText").value = "";
+        document.getElementById("editorNameplateText").value = getNameplate(state.images[currentEditorImageId]).text;
         syncEditorNameplatePreview();
         updateEditorControls();
         refreshEditorPreview();
@@ -3364,6 +3366,18 @@
       document.getElementById("editorNameplateText").addEventListener("input", event => {
         if (!editorNameplateDraft) return;
         editorNameplateDraft.nameplateText = event.target.value.slice(0,48);
+        syncEditorNameplatePreview();
+      });
+      const updateIndividualNameSize = raw => {
+        if (!editorNameplateDraft || raw === "") return;
+        editorNameplateDraft.nameplateFontSize = Math.max(7, Math.min(24, Math.round(Number(raw) || 13)));
+        syncEditorNameplatePreview();
+      };
+      document.getElementById("editorNameplateFontSizeRange").addEventListener("input", event => updateIndividualNameSize(event.target.value));
+      document.getElementById("editorNameplateFontSizeNumber").addEventListener("input", event => updateIndividualNameSize(event.target.value));
+      document.getElementById("editorNameplateFontSizeReset").addEventListener("click", () => {
+        if (!editorNameplateDraft) return;
+        editorNameplateDraft.nameplateFontSize = 0;
         syncEditorNameplatePreview();
       });
       document.getElementById("editorNameplateOwnColors").addEventListener("change", event => {
