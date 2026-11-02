@@ -384,3 +384,29 @@
     max-height:88px;
   }
 }
+
+/* Tipografia ajustável por imagem com foco em nomes longos. */
+.tier-editor-nameplate-sample{
+  min-height:28px;
+  line-height:1.4;
+  transition:font-size .1s ease;
+}
+.tier-nameplate-default-btn{
+  justify-self:start;
+  width:max-content;
+  max-width:100%;
+  margin:4px 0 0;
+  padding:7px 10px;
+  border:1px solid #3b4d6c;
+  border-radius:7px;
+  background:#1b253a;
+  color:#c6d9ff;
+  font-size:12px;
+}
+.tier-nameplate-default-btn:disabled{
+  opacity:.55;
+  cursor:default;
+}
+#editorNameplateFontSizeRange, #editorNameplateFontSizeNumber{
+  min-width:0;
+}
