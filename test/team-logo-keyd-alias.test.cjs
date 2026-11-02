@@ -12,7 +12,7 @@ const script=fs.readFileSync(path.join(base,'js/team-logo-resolver.min.js'),'utf
 test('Keyd, Keyd Stars e Vivo Keyd usam o arquivo de escudo existente',async()=>{
   assert.ok(fs.existsSync(path.join(base,'keyd.webp')),'keyd.webp precisa existir');
   assert.equal(map.logos['VIVO KEYD'],'keyd.webp');
-  for(const key of ['KEYD','KEYD STARS','VK','VIVO KEYD STARS'])assert.equal(map.aliases[key],'VIVO KEYD');
+  for(const key of ['KEYD','KEYD STARS','VK','VIVO KEYD STARS']){assert.equal(map.logos[key],'keyd.webp');assert.equal(map.aliases[key],undefined,'não alterar os nomes das equipes históricas');}
 
   const handlers={};
   const window={
