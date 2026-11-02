@@ -15,7 +15,8 @@
  const names={novoNome:'Nome do pacote',novoItem:'Recompensa',novoCor:'Cor de identificação',novoInicio:'Disponível a partir de',novoFim:'Data de validade',novoId:'Identificador (opcional)',novosCodigos:'Códigos, um por linha'};
  for(const [id,label]of Object.entries(names)){const field=byId(id);if(!field)continue;const wrap=document.createElement('label');wrap.className='codes-field'+(field.tagName==='TEXTAREA'?' is-wide':'');wrap.htmlFor=id;field.before(wrap);const text=document.createElement('span');text.textContent=label;wrap.append(text,field);}
  move(byId('removeManager'),'archive');const archive=byId('archiveManager');if(archive)archive.open=true;move(archive,'archive');
- const report=byId('reportBox');if(report){report.classList.add('open');report.querySelector('[onclick="toggleRelatorio()"]')?.remove();move(report,'reports');}
+ const report=byId('reportBox');if(report){report.classList.add('open');report.querySelector('[onclick="toggleRelatorio()"]')?.remove();move(report,'reports');const oldHeading=report.querySelector('.report-head h2');if(oldHeading)oldHeading.textContent='Relatório manual do estoque';}
+ panels.reports.querySelector('.codes-panel-heading').insertAdjacentHTML('afterend','<div id="eco-code-acquisitions-root"></div>');
  move(byId('eco-code-stock'),'rewards');
  panels.returns.insertAdjacentHTML('beforeend','<div id="eco-code-returns-root"></div>');
  panels.vouchers.insertAdjacentHTML('beforeend','<div id="eco-voucher-admin-root"></div>');
