@@ -53,6 +53,7 @@
         imageFrameEnabled: false,
         nameplateEnabled: false,
         nameplateHeight: 28,
+        nameplateFontSize: 13,
         nameplateBgColor: "#101827",
         nameplateTextColor: "#ffffff",
         backgroundFit: "cover",
@@ -557,6 +558,7 @@
           edit: { ...defaultImageEdit(), ...(image.edit || {}) },
           nameplateText: typeof image.nameplateText === "string" ? image.nameplateText.slice(0, 48) : "",
           nameplateOwnColors: image.nameplateOwnColors === true,
+          nameplateFontSize: Number.isFinite(Number(image.nameplateFontSize)) && Number(image.nameplateFontSize) >= 7 && Number(image.nameplateFontSize) <= 24 ? Math.round(Number(image.nameplateFontSize)) : 0,
           nameplateBgColor: /^#[0-9a-f]{6}$/i.test(image.nameplateBgColor || "") ? image.nameplateBgColor : "#101827",
           nameplateTextColor: /^#[0-9a-f]{6}$/i.test(image.nameplateTextColor || "") ? image.nameplateTextColor : "#ffffff"
         };
@@ -567,8 +569,21 @@
         return {
           text: (image.nameplateText || "").trim().slice(0, 48) || (image.name || "Imagem").replace(/\.(png|webp|jpe?g|gif)$/i, "").slice(0, 48),
           bgColor: custom ? image.nameplateBgColor : state.settings.nameplateBgColor,
-          textColor: custom ? image.nameplateTextColor : state.settings.nameplateTextColor
+          textColor: custom ? image.nameplateTextColor : state.settings.nameplateTextColor,
+          fontSize: image.nameplateFontSize >= 7 && image.nameplateFontSize <= 24 ? image.nameplateFontSize : (Number(state.settings.nameplateFontSize) || 13)
         };
+      }
+
+      function fitNameplateFontSize(ctx, text, size, width, height) {
+        let fontSize = Math.max(7, Math.min(24, Math.round(Number(size) || 13), Math.max(7, height - 4)));
+        if (ctx) {
+          ctx.font = "900 " + fontSize + "px Inter, Arial, sans-serif";
+          while (fontSize > 7 && ctx.measureText(text).width > width - 6) {
+            fontSize--;
+            ctx.font = "900 " + fontSize + "px Inter, Arial, sans-serif";
+          }
+        }
+        return fontSize;
       }
 
       function syncEditorNameplatePreview() {
@@ -579,8 +594,15 @@
         const bgField = document.getElementById("editorNameplateBg");
         const textField = document.getElementById("editorNameplateColor");
         const sample = document.getElementById("editorNameplateSample");
+        const sizeRange = document.getElementById("editorNameplateFontSizeRange");
+        const sizeNumber = document.getElementById("editorNameplateFontSizeNumber");
+        const sizeReset = document.getElementById("editorNameplateFontSizeReset");
         if (!sample) return;
         if (enabledField) enabledField.checked = state.settings.nameplateEnabled === true;
+        const selectedSize = editorNameplateDraft.nameplateFontSize || Number(state.settings.nameplateFontSize) || 13;
+        if (sizeRange) sizeRange.value = selectedSize;
+        if (sizeNumber) sizeNumber.value = selectedSize;
+        if (sizeReset) sizeReset.disabled = !editorNameplateDraft.nameplateFontSize;
         if (ownField) ownField.checked = editorNameplateDraft.nameplateOwnColors;
         if (bgField) {
           bgField.value = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateBgColor : state.settings.nameplateBgColor;
@@ -593,6 +615,7 @@
         sample.textContent = (editorNameplateDraft.nameplateText || "").trim() || state.images[currentEditorImageId].name || "Jogador";
         sample.style.backgroundColor = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateBgColor : state.settings.nameplateBgColor;
         sample.style.color = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateTextColor : state.settings.nameplateTextColor;
+        sample.style.fontSize = Math.min(selectedSize, Number(state.settings.nameplateHeight) - 4) + "px";
       }
 
       function normalizeStateImages() {
@@ -722,6 +745,8 @@
           bar.title = label.text;
           bar.style.backgroundColor = label.bgColor;
           bar.style.color = label.textColor;
+          const ctx = document.createElement("canvas").getContext("2d");
+          bar.style.fontSize = fitNameplateFontSize(ctx, label.text, label.fontSize, Number(state.settings.imageSize), Number(state.settings.nameplateHeight)) + "px";
           card.classList.add("has-nameplate");
           card.append(img, bar);
         }
@@ -1435,6 +1460,7 @@
             sourceSubtitle: image.sourceSubtitle || "",
             nameplateText: image.nameplateText || "",
             nameplateOwnColors: image.nameplateOwnColors === true,
+            ...(image.nameplateFontSize >= 7 ? {nameplateFontSize: image.nameplateFontSize} : {}),
             ...(image.nameplateOwnColors ? {
               nameplateBgColor: image.nameplateBgColor || "#101827",
               nameplateTextColor: image.nameplateTextColor || "#ffffff"
@@ -1873,6 +1899,7 @@
           ["boardWidth", "boardWidthRange", "boardWidthNumber"],
           ["imageSize", "imageSizeRange", "imageSizeNumber"],
           ["nameplateHeight", "nameplateHeightRange", "nameplateHeightNumber"],
+          ["nameplateFontSize", "nameplateFontSizeRange", "nameplateFontSizeNumber"],
           ["gap", "gapRange", "gapNumber"],
           ["rowMinHeight", "rowHeightRange", "rowHeightNumber"],
           ["overlay", "overlayRange", "overlayNumber"],
@@ -1943,7 +1970,7 @@
           if (key === "rowMinHeight") {
             render();
             renderRowManager();
-          } else if (key.startsWith("position") || key === "nameplateHeight") {
+          } else if (key.startsWith("position") || key === "nameplateHeight" || key === "nameplateFontSize") {
             render();
           }
           scheduleHistoryPush();
@@ -2942,13 +2969,9 @@
         const label = getNameplate(imageData);
         const fontFamily = "Inter, Arial, sans-serif";
         const maxWidth = tile - 6;
-        let fontSize = Math.max(8, Math.min(16, Math.round(tile * .145)));
         ctx.save();
+        const fontSize = fitNameplateFontSize(ctx, label.text, label.fontSize, tile, height);
         ctx.font = "900 " + fontSize + "px " + fontFamily;
-        while (ctx.measureText(label.text).width > maxWidth && fontSize > 7) {
-          fontSize -= 1;
-          ctx.font = "900 " + fontSize + "px " + fontFamily;
-        }
         ctx.fillStyle = label.bgColor;
         ctx.fillRect(x, imageY + tile, tile, height);
         ctx.beginPath();
@@ -3558,6 +3581,8 @@
       bindRangePair("labelWidthRange", "labelWidthNumber", "labelWidth");
       bindRangePair("boardWidthRange", "boardWidthNumber", "boardWidth");
       bindRangePair("imageSizeRange", "imageSizeNumber", "imageSize");
+      bindRangePair("nameplateHeightRange", "nameplateHeightNumber", "nameplateHeight");
+      bindRangePair("nameplateFontSizeRange", "nameplateFontSizeNumber", "nameplateFontSize");
       bindRangePair("gapRange", "gapNumber", "gap");
       bindRangePair("rowHeightRange", "rowHeightNumber", "rowMinHeight");
       bindRangePair("overlayRange", "overlayNumber", "overlay");
