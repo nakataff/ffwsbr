@@ -46,7 +46,7 @@ test('preset novo preserva projetos existentes e abre com tiers vazias',()=>{
  assert.match(preset.caption,/2026/);
  const html=read('tier-constructor.html'),js=read('js/tier-constructor.js');
  assert.match(html,/data-tier-preset="ffws-global-2026"/);
- assert.match(html,/tier-constructor\.js\?v=20261102-(?:world-2026|workspace|nameplates|text-scroll)-v1/);
+ assert.match(html,/tier-constructor\.js\?v=20261102-(?:world-2026|workspace|nameplates|text-scroll|name-size)-v1/);
  assert.match(js,/assets-index\.json\?v=20261102-world-2026-v1/);
  assert.match(js,/function loadTierPreset\(presetId/);
  assert.match(js,/assetIds \|\| \[\]/);
