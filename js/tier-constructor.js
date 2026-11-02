@@ -2916,7 +2916,30 @@
         return startX + width / 2;
       }
 
-      async function exportPNG() {
+      function drawExportNameplate(ctx, imageData, x, imageY, tile, height) {
+        const label = getNameplate(imageData);
+        const fontFamily = "Inter, Arial, sans-serif";
+        const maxWidth = tile - 6;
+        let fontSize = Math.max(8, Math.min(16, Math.round(tile * .145)));
+        ctx.save();
+        ctx.font = "900 " + fontSize + "px " + fontFamily;
+        while (ctx.measureText(label.text).width > maxWidth && fontSize > 7) {
+          fontSize -= 1;
+          ctx.font = "900 " + fontSize + "px " + fontFamily;
+        }
+        ctx.fillStyle = label.bgColor;
+        ctx.fillRect(x, imageY + tile, tile, height);
+        ctx.beginPath();
+        ctx.rect(x + 2, imageY + tile, tile - 4, height);
+        ctx.clip();
+        ctx.fillStyle = label.textColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label.text, x + tile / 2, imageY + tile + height / 2, maxWidth);
+        ctx.restore();
+      }
+
+      async function renderTierPngBlob() {
         try {
           const s = state.settings;
           const boardWidth = s.boardWidth;
@@ -2924,6 +2947,8 @@
           const contentWidth = boardWidth - labelWidth;
           const gap = s.gap;
           const tile = s.imageSize;
+          const nameplateHeight = s.nameplateEnabled ? s.nameplateHeight : 0;
+          const tileSlotHeight = tile + nameplateHeight;
           const columns = Math.max(1, Math.floor((contentWidth - gap) / (tile + gap)));
 
           const scale = 2;
@@ -2933,7 +2958,7 @@
           const rowLayouts = state.rows.map(row => {
             const baseRowHeight = getRowBaseHeight(row);
             const imageLines = Math.max(1, Math.ceil(row.images.length / columns));
-            const imageHeight = Math.max(baseRowHeight, imageLines * tile + (imageLines + 1) * gap);
+            const imageHeight = Math.max(baseRowHeight, imageLines * tileSlotHeight + (imageLines + 1) * gap);
             const textLayout = getRowTextLayout(tempCtx, row.name || "Row", labelWidth, s, imageHeight);
             const rowHeight = s.rowAutoHeight ? Math.max(imageHeight, textLayout.requiredHeight) : Math.max(baseRowHeight, imageHeight);
             return { rowHeight, textLayout };
@@ -3101,7 +3126,7 @@
               const col = index % columns;
               const line = Math.floor(index / columns);
               const x = labelWidth + gap + col * (tile + gap);
-              const imageY = y + gap + line * (tile + gap);
+              const imageY = y + gap + line * (tileSlotHeight + gap);
 
               const radius = Math.min(8, tile / 6);
               if (s.imageFrameEnabled) {
@@ -3148,6 +3173,9 @@
                 ctx.strokeStyle = "rgba(255,255,255,.22)";
                 ctx.strokeRect(x + .5, imageY + .5, tile - 1, tile - 1);
               }
+              if (s.nameplateEnabled) {
+                drawExportNameplate(ctx, state.images[id], x, imageY, tile, nameplateHeight);
+              }
             });
 
             y += rowHeight;
@@ -3160,6 +3188,15 @@
             }, "image/png", 1);
           });
 
+          return blob;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      async function exportPNG() {
+        try {
+          const blob = await renderTierPngBlob();
           const filename = "tier-list.png";
           const file = new File([blob], filename, { type: "image/png" });
           const mobileShareSupported =
