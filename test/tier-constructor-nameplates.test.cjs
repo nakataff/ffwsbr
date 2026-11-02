@@ -106,7 +106,7 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   const changed=w.document.querySelector('.tier-row .tier-image-nameplate');
   assert.equal(changed?.textContent,'LOUD SNICKERS');
   assert.equal(changed?.style.backgroundColor,'rgb(255, 0, 0)');
-  assert.equal(w.document.querySelector('.tier-row .image-card img').alt, '');
+  assert.equal(w.document.querySelector('.tier-row .image-card img').alt,'LOUD','nome original permanece associado à logo');
   assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate').textContent,'LOUD SNICKERS');
 
   w.document.getElementById('shareLinkBtn').click();
