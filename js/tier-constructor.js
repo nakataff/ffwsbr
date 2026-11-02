@@ -51,6 +51,10 @@
         separatorColor: "#3b3f48",
         backgroundColor: "#101217",
         imageFrameEnabled: false,
+        nameplateEnabled: false,
+        nameplateHeight: 28,
+        nameplateBgColor: "#101827",
+        nameplateTextColor: "#ffffff",
         backgroundFit: "cover",
         backgroundZoom: 100,
         backgroundPosX: 50,
@@ -136,6 +140,7 @@
       let lastAppliedEdit = null;
       let editorOriginalPreviewSrc = "";
       let editorOriginalEdit = null;
+      let editorNameplateDraft = null;
       let autosaveWarned = false;
       let currentBrowserProjectName = localStorage.getItem(CURRENT_PROJECT_KEY) || "";
       let namedProjectSaveTimer = null;
@@ -548,8 +553,43 @@
           src,
           originalSrc: src,
           previewSrc: image.previewSrc || image.src || src,
-          edit: { ...defaultImageEdit(), ...(image.edit || {}) }
+          edit: { ...defaultImageEdit(), ...(image.edit || {}) },
+          nameplateText: typeof image.nameplateText === "string" ? image.nameplateText.slice(0, 48) : "",
+          nameplateOwnColors: image.nameplateOwnColors === true,
+          nameplateBgColor: /^#[0-9a-f]{6}$/i.test(image.nameplateBgColor || "") ? image.nameplateBgColor : "#101827",
+          nameplateTextColor: /^#[0-9a-f]{6}$/i.test(image.nameplateTextColor || "") ? image.nameplateTextColor : "#ffffff"
         };
+      }
+
+      function getNameplate(image) {
+        const custom = image.nameplateOwnColors === true;
+        return {
+          text: (image.nameplateText || "").trim().slice(0, 48) || (image.name || "Imagem").replace(/\.(png|webp|jpe?g|gif)$/i, "").slice(0, 48),
+          bgColor: custom ? image.nameplateBgColor : state.settings.nameplateBgColor,
+          textColor: custom ? image.nameplateTextColor : state.settings.nameplateTextColor
+        };
+      }
+
+      function syncEditorNameplatePreview() {
+        if (!editorNameplateDraft || !currentEditorImageId) return;
+        const nameField = document.getElementById("editorNameplateText");
+        const ownField = document.getElementById("editorNameplateOwnColors");
+        const bgField = document.getElementById("editorNameplateBg");
+        const textField = document.getElementById("editorNameplateColor");
+        const sample = document.getElementById("editorNameplateSample");
+        if (!sample) return;
+        if (ownField) ownField.checked = editorNameplateDraft.nameplateOwnColors;
+        if (bgField) {
+          bgField.value = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateBgColor : state.settings.nameplateBgColor;
+          bgField.disabled = !editorNameplateDraft.nameplateOwnColors;
+        }
+        if (textField) {
+          textField.value = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateTextColor : state.settings.nameplateTextColor;
+          textField.disabled = !editorNameplateDraft.nameplateOwnColors;
+        }
+        sample.textContent = (editorNameplateDraft.nameplateText || "").trim() || state.images[currentEditorImageId].name || "Jogador";
+        sample.style.backgroundColor = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateBgColor : state.settings.nameplateBgColor;
+        sample.style.color = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateTextColor : state.settings.nameplateTextColor;
       }
 
       function normalizeStateImages() {
@@ -571,6 +611,7 @@
         els.root.style.setProperty("--board-width", `${s.boardWidth}px`);
         els.root.style.setProperty("--image-size", `${s.imageSize}px`);
         els.root.style.setProperty("--image-gap", `${s.gap}px`);
+        els.root.style.setProperty("--nameplate-height", `${s.nameplateHeight}px`);
         els.root.style.setProperty("--row-min-height", `${s.rowMinHeight}px`);
         els.root.style.setProperty("--separator-width", `${s.separatorWidth}px`);
         els.root.style.setProperty("--separator-color", s.separatorColor);
@@ -670,6 +711,18 @@
         img.src = data.previewSrc || data.src;
         img.alt = data.name || "Imagem da tier list";
 
+        if (state.settings.nameplateEnabled && zoneId !== "bank") {
+          const label = getNameplate(data);
+          const bar = document.createElement("span");
+          bar.className = "tier-image-nameplate";
+          bar.textContent = label.text;
+          bar.title = label.text;
+          bar.style.backgroundColor = label.bgColor;
+          bar.style.color = label.textColor;
+          card.classList.add("has-nameplate");
+          card.append(img, bar);
+        }
+
         const actions = document.createElement("div");
         actions.className = "card-actions";
 
@@ -695,7 +748,8 @@
         });
 
         actions.append(edit, remove);
-        card.append(img, actions);
+        if (!card.contains(img)) card.append(img);
+        card.append(actions);
 
         card.addEventListener("dragstart", () => {
           draggedImageId = imageId;
@@ -1809,6 +1863,7 @@
           ["labelWidth", "labelWidthRange", "labelWidthNumber"],
           ["boardWidth", "boardWidthRange", "boardWidthNumber"],
           ["imageSize", "imageSizeRange", "imageSizeNumber"],
+          ["nameplateHeight", "nameplateHeightRange", "nameplateHeightNumber"],
           ["gap", "gapRange", "gapNumber"],
           ["rowMinHeight", "rowHeightRange", "rowHeightNumber"],
           ["overlay", "overlayRange", "overlayNumber"],
@@ -1853,6 +1908,9 @@
         setControlValue("positionBgColorInput", state.settings.positionBgColor);
         setControlValue("positionTextStrokeColorInput", state.settings.positionTextStrokeColor);
         setControlValue("positionShadowColorInput", state.settings.positionShadowColor);
+        setControlValue("nameplateBgColorInput", state.settings.nameplateBgColor);
+        setControlValue("nameplateTextColorInput", state.settings.nameplateTextColor);
+        updateChoiceButtons("nameplateButtons", String(state.settings.nameplateEnabled));
       }
 
       function bindRangePair(rangeId, numberId, key) {
@@ -1876,7 +1934,7 @@
           if (key === "rowMinHeight") {
             render();
             renderRowManager();
-          } else if (key.startsWith("position")) {
+          } else if (key.startsWith("position") || key === "nameplateHeight") {
             render();
           }
           scheduleHistoryPush();
@@ -3134,7 +3192,7 @@
           const raw = button.dataset.value;
           state.settings[key] = raw === "true" ? true : raw === "false" ? false : raw;
           applySettings();
-          if (key.startsWith("position") || key === "rowAutoHeight") render();
+          if (key.startsWith("position") || key === "rowAutoHeight" || key === "nameplateEnabled") render();
           scheduleHistoryPush();
         });
       }
@@ -3258,6 +3316,13 @@
         showToast("Fundo removido.");
       });
 
+      for (const [id, key] of [["nameplateBgColorInput","nameplateBgColor"],["nameplateTextColorInput","nameplateTextColor"]]) {
+        document.getElementById(id).addEventListener("input", event => {
+          state.settings[key] = event.target.value;
+          render();
+          scheduleHistoryPush();
+        });
+      }
       document.getElementById("backgroundFit").addEventListener("change", event => {
         state.settings.backgroundFit = event.target.value;
         applySettings();
@@ -3356,6 +3421,7 @@
       bindChoiceGroup("rowAutoFitButtons", "rowAutoFit");
       bindChoiceGroup("rowAutoHeightButtons", "rowAutoHeight");
       bindChoiceGroup("imageFrameButtons", "imageFrameEnabled");
+      bindChoiceGroup("nameplateButtons", "nameplateEnabled");
       bindChoiceGroup("positionModeButtons", "positionMode");
       bindChoiceGroup("quickPositionButtons", "positionMode");
       bindChoiceGroup("positionScopeButtons", "positionScope");
