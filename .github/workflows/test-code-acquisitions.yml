@@ -1,0 +1,49 @@
+name: Test private code acquisition report
+on:
+  pull_request:
+    paths:
+      - 'functions/economy-code-report.js'
+      - 'functions/economy.js'
+      - 'functions/test/economy.test.cjs'
+      - 'js/admin-code-acquisitions.js'
+      - 'js/admin-codiguinhos-ui.js'
+      - 'admin-codiguinhos.html'
+      - 'test/code-acquisitions-ui.test.cjs'
+      - '.github/workflows/test-code-acquisitions.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'functions/economy-code-report.js'
+      - 'functions/economy.js'
+      - 'functions/test/economy.test.cjs'
+      - 'js/admin-code-acquisitions.js'
+      - 'js/admin-codiguinhos-ui.js'
+      - 'admin-codiguinhos.html'
+      - 'test/code-acquisitions-ui.test.cjs'
+      - '.github/workflows/test-code-acquisitions.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+jobs:
+  test-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install isolated browser test runtime
+        run: |
+          mkdir -p /tmp/cff-code-audit-test
+          cp test/game-gifts-browser-package.json /tmp/cff-code-audit-test/package.json
+          npm install --prefix /tmp/cff-code-audit-test --no-audit --no-fund
+      - name: Validate backend access controls, payments and browser report
+        env:
+          NODE_PATH: /tmp/cff-code-audit-test/node_modules
+        run: |
+          node --check functions/economy-code-report.js
+          node --check functions/economy.js
+          node --check js/admin-code-acquisitions.js
+          node --test --test-name-pattern='relatório privado de codiguinhos' functions/test/economy.test.cjs
+          node --test test/code-acquisitions-ui.test.cjs
