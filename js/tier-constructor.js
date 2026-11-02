@@ -3231,6 +3231,64 @@
         }
       }
 
+      async function putPngOnClipboard(blob) {
+        if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+          throw new Error("Seu navegador não permite copiar PNG diretamente. Use Compartilhar PNG ou Exportar PNG.");
+        }
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      }
+
+      async function copyTierPng() {
+        const button = document.getElementById("copyPngBtn");
+        button.disabled = true;
+        try {
+          const blob = await renderTierPngBlob();
+          await putPngOnClipboard(blob);
+          showToast("Imagem copiada! Cole no Discord, WhatsApp ou onde preferir.");
+        } catch (error) {
+          console.warn("Não foi possível copiar a tier como imagem.", error);
+          showToast(error?.message || "O navegador bloqueou a cópia. Use Exportar PNG.");
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      async function shareTierPng() {
+        const button = document.getElementById("sharePngBtn");
+        button.disabled = true;
+        try {
+          const blob = await renderTierPngBlob();
+          const file = new File([blob], "tier-list.png", { type: "image/png" });
+          const canShare = typeof navigator.share === "function"
+            && (typeof navigator.canShare !== "function" || navigator.canShare({ files: [file] }));
+          if (canShare) {
+            try {
+              await navigator.share({ files: [file], title: "Tier List", text: "Minha tier list no Central Free Fire" });
+              showToast("Imagem compartilhada.");
+              return;
+            } catch (error) {
+              if (error?.name === "AbortError") {
+                showToast("Compartilhamento cancelado.");
+                return;
+              }
+              console.warn("Compartilhamento nativo indisponível", error);
+            }
+          }
+          try {
+            await putPngOnClipboard(blob);
+            showToast("Compartilhamento nativo indisponível. Imagem copiada para colar.");
+          } catch (error) {
+            downloadBlob(blob, "tier-list.png", "image/png");
+            showToast("Compartilhamento não disponível aqui. PNG baixado.");
+          }
+        } catch (error) {
+          console.error("Falha ao preparar imagem para compartilhamento", error);
+          showToast("Não foi possível compartilhar a imagem.");
+        } finally {
+          button.disabled = false;
+        }
+      }
+
       function updateChoiceButtons(groupId, activeValue) {
         const group = document.getElementById(groupId);
         if (!group) return;
@@ -3352,6 +3410,8 @@
       });
 
       document.getElementById("exportBtn").addEventListener("click", exportPNG);
+      document.getElementById("copyPngBtn").addEventListener("click", copyTierPng);
+      document.getElementById("sharePngBtn").addEventListener("click", shareTierPng);
       document.getElementById("clearAllBtn").addEventListener("click", clearAllTierImages);
       document.getElementById("toggleCaptionPanelBtn").addEventListener("click", () => {
         setCaptionPanelCollapsed(!captionPanelCollapsed);
