@@ -9,6 +9,8 @@ on:
       - 'ffws-global-2026/teams.json'
       - 'ffws-global-2026/groups.json'
       - 'test/tier-constructor-global-2026.test.cjs'
+      - 'test/tier-constructor-workspace.test.cjs'
+      - 'css/tier-constructor-workspace.css'
       - '.github/workflows/test-tier-constructor.yml'
   push:
     branches: [main]
@@ -19,6 +21,8 @@ on:
       - 'ffws-global-2026/teams.json'
       - 'ffws-global-2026/groups.json'
       - 'test/tier-constructor-global-2026.test.cjs'
+      - 'test/tier-constructor-workspace.test.cjs'
+      - 'css/tier-constructor-workspace.css'
       - '.github/workflows/test-tier-constructor.yml'
   workflow_dispatch:
 
@@ -33,7 +37,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate Tier Constructor projects and official Mundial 2026 assets
+      - name: Install DOM runtime for interaction tests
+        run: |
+          mkdir -p /tmp/cff-tier-constructor-test
+          cp test/game-gifts-browser-package.json /tmp/cff-tier-constructor-test/package.json
+          npm install --prefix /tmp/cff-tier-constructor-test --no-audit --no-fund
+      - name: Validate project assets, responsive layout and toolbar behavior
+        env:
+          NODE_PATH: /tmp/cff-tier-constructor-test/node_modules
         run: |
           node --check js/tier-constructor.js
-          node --test test/tier-constructor-global-2026.test.cjs
+          node --test test/tier-constructor-global-2026.test.cjs test/tier-constructor-workspace.test.cjs
