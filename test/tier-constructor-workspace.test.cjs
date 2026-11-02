@@ -40,6 +40,7 @@ test('layout, modo limpo e configurações reagem aos cliques e mantêm as prefe
   dialog.showModal=()=>{dialog.open=true;};
   dialog.close=()=>{dialog.open=false;dialog.dispatchEvent(new w.Event('close'));};
  }
+ w.structuredClone=structuredClone;
  w.requestAnimationFrame=()=>1;
  w.matchMedia=()=>({matches:false,addListener(){},removeListener(){}});
  w.confirm=()=>true;
