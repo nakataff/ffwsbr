@@ -1,0 +1,176 @@
+/* Espaço de trabalho do Tier Constructor: banco e rows simultâneos, sem toolbar fixa.
+   Esta folha complementa os estilos do construtor sem alterar a exportação do canvas. */
+
+.tier-constructor-app{max-width:1820px}
+.tier-constructor-app .topbar{
+  position:static;
+  top:auto;
+  z-index:12;
+  box-shadow:none;
+  backdrop-filter:none;
+  background:#0c1424;
+}
+.tier-workspace-controls{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  padding:12px 15px;
+  background:#0d1322;
+  border:1px solid #21324f;
+  border-radius:12px;
+}
+.tier-bank-layout-control{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.tier-workspace-label{font-weight:800;color:#adc5e8;font-size:11px;letter-spacing:.07em}
+.tier-bank-layout-control .segmented{display:flex;gap:4px;border:1px solid #2d3c58;padding:4px;border-radius:9px;background:#080e1b}
+.tier-bank-layout-control .segmented button{border:0;border-radius:6px;background:transparent;color:#a8b7d5;font-size:12px;font-weight:700;padding:8px 13px}
+.tier-bank-layout-control .segmented button[aria-pressed="true"]{background:#6e7cff;color:#fff}
+.tier-clean-toggle{border-color:#354665;background:transparent;color:#dbe3f7;padding:10px 14px;font-size:12px;font-weight:750;margin-left:auto}
+.tier-clean-toggle[aria-pressed="true"]{background:#d1daff;border-color:#d1daff;color:#10192b}
+.tier-layout-help{font-size:12px;color:#98a9c7;display:none}
+
+.tier-editor-layout{
+  display:grid;
+  grid-template-columns:clamp(230px,23vw,320px) minmax(0,1fr);
+  align-items:start;
+  gap:12px;
+  min-width:0;
+}
+.tier-editor-layout>.panel{min-width:0}
+.tier-board-panel{grid-column:2;grid-row:1;overflow-x:auto;overscroll-behavior-x:contain}
+.tier-bank-panel{
+  grid-column:1;
+  grid-row:1;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  align-self:start;
+  position:sticky;
+  top:70px;
+  z-index:19;
+  max-height:calc(100dvh - 84px);
+  padding:12px;
+}
+.tier-bank-panel .bank-title{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.tier-bank-panel .bank-title h2{font-size:14px;line-height:1.3}
+.tier-bank-panel .count{font-size:11px;white-space:nowrap}
+.tier-bank-panel #imageBank{
+  display:flex;
+  flex-wrap:wrap;
+  align-content:flex-start;
+  gap:8px;
+  padding:8px;
+  min-height:110px;
+  max-height:calc(100dvh - 220px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  border-color:#31415f;
+  background:#0a1020;
+}
+.tier-editor-layout[data-bank-layout="left"] #imageBank .image-card{
+  flex:0 0 calc((100% - 8px)/2);
+  width:calc((100% - 8px)/2);
+  max-width:112px;
+  height:auto;
+  aspect-ratio:1;
+}
+.tier-editor-layout[data-bank-layout="left"] #imageBank .image-card img{width:100%;height:100%}
+.tier-bank-panel .empty-hint{font-size:12px;line-height:1.5;text-align:left}
+.tier-bank-panel .trash-panel{flex:none;margin-top:10px}
+.tier-editor-layout[data-bank-layout="bottom"]{grid-template-columns:minmax(0,1fr)}
+.tier-editor-layout[data-bank-layout="bottom"] .tier-board-panel{grid-column:1;grid-row:1}
+.tier-editor-layout[data-bank-layout="bottom"] .tier-bank-panel{grid-column:1;grid-row:2;position:static;max-height:none}
+.tier-editor-layout[data-bank-layout="bottom"] #imageBank{max-height:260px}
+.tier-editor-layout[data-bank-layout="bottom"] #imageBank .image-card{flex:0 0 var(--image-size);width:var(--image-size);height:var(--image-size);max-width:none;aspect-ratio:auto}
+.tier-editor-layout .tier-board-panel .tier-export{margin:0 auto}
+.tier-clean-mode .row-delete-button,
+.tier-clean-mode .row-tools,
+.tier-clean-mode .row-color,
+.tier-clean-mode .image-card .card-actions,
+.tier-clean-mode .row-height-control{display:none!important}
+.tier-clean-mode .row-name{cursor:default;outline:none}
+.tier-clean-mode .row-label:hover,.tier-clean-mode .image-card:hover{filter:none}
+
+@media(max-width:960px){
+  .tier-constructor-app .topbar{position:static}
+  .tier-workspace-controls{padding:10px;gap:10px}
+  .tier-bank-layout-control{display:none}
+  .tier-layout-help{display:block;flex:1 1 100%;order:3}
+  .tier-clean-toggle{margin-left:0;width:100%}
+  .tier-editor-layout,.tier-editor-layout[data-bank-layout="bottom"]{display:flex;flex-direction:column;gap:8px}
+  .tier-editor-layout .tier-bank-panel,
+  .tier-editor-layout[data-bank-layout="bottom"] .tier-bank-panel{
+    order:0;
+    width:100%;
+    position:sticky;
+    top:58px;
+    z-index:28;
+    max-height:none;
+    padding:9px;
+    border-radius:10px;
+    background:#0c172a;
+    box-shadow:0 10px 22px rgba(0,0,0,.45);
+  }
+  .tier-editor-layout .tier-board-panel,
+  .tier-editor-layout[data-bank-layout="bottom"] .tier-board-panel{order:1;width:100%;min-width:0}
+  .tier-bank-panel .bank-title{margin-bottom:5px}
+  .tier-bank-panel .bank-title h2{font-size:13px}
+  .tier-editor-layout .tier-bank-panel #imageBank{
+    display:flex;
+    flex-direction:row;
+    flex-wrap:nowrap;
+    align-items:center;
+    align-content:center;
+    max-height:104px;
+    min-height:96px;
+    height:96px;
+    padding:8px;
+    gap:10px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-width:thin;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x;
+  }
+  .tier-editor-layout #imageBank .image-card,
+  .tier-editor-layout[data-bank-layout="bottom"] #imageBank .image-card{
+    flex:0 0 76px;
+    width:76px;
+    height:76px;
+    max-width:76px;
+    aspect-ratio:1;
+  }
+  .tier-bank-panel .trash-panel{margin-top:5px}
+  .tier-bank-panel .trash-panel>summary{padding:5px 9px;font-size:11px}
+  .tier-bank-panel .mobile-drag-tip{display:none}
+  .tier-board-panel .tier-board{overflow:visible}
+  .tier-board-panel .tier-row>.row-label{position:sticky;left:0;z-index:4}
+  .tier-board-panel{scrollbar-width:thin}
+  body.settings-open .tier-constructor-app{padding-right:10px}
+}
+@media(max-width:600px){
+  .tier-constructor-app{padding:8px}
+  .tier-constructor-app .topbar{margin-bottom:8px}
+  .tier-constructor-app .brand{font-size:14px}
+  .tier-constructor-app .topbar-group{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tier-constructor-app .topbar-group>#addImagesBtn,
+  .tier-constructor-app .topbar-group>#addRowBtn,
+  .tier-constructor-app .topbar-group>#undoBtn,
+  .tier-constructor-app .topbar-group>#redoBtn{grid-column:auto;width:100%}
+  .tier-constructor-app .topbar-group>#undoBtn,
+  .tier-constructor-app .topbar-group>#redoBtn{min-height:38px}
+  .tier-constructor-app .topbar-group>.quick-position{padding:6px 8px}
+  .tier-constructor-app .topbar-group>.project-menu{width:100%}
+  .tier-constructor-app .caption-panel{padding:10px}
+  .tier-workspace-controls{padding:9px}
+  .tier-workspace-controls .tier-clean-toggle{padding:9px}
+  .tier-board-panel{padding:8px 8px 12px}
+  .tier-board-panel .tier-export{max-width:none}
+  .tier-editor-layout .tier-bank-panel,
+  .tier-editor-layout[data-bank-layout="bottom"] .tier-bank-panel{top:56px}
+  #settingsDialog.settings-drawer{width:100vw;max-width:100vw}
+}
+@media(prefers-reduced-motion:reduce){
+  .tier-editor-layout .image-card,.tier-workspace-controls button{transition:none}
+}
