@@ -11,9 +11,9 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261025-daily-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261102-text-scroll-v1"></script>
+  <script defer src="js/tier-constructor.js?v=20261102-name-size-v1"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261020-mobile-custom-v4">
-<link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-text-scroll-v1"></head>
+<link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1"></head>
 <body class="tier-constructor-page">
 
 <header class="cff-public-topbar">
@@ -294,10 +294,13 @@
           </div>
           <div class="setting"><div class="setting-info"><strong>Fundo da legenda</strong><small>Cor padrão da faixa sob a imagem.</small></div><div class="setting-control"><input id="nameplateBgColorInput" type="color" value="#101827"/><div></div></div></div>
           <div class="setting"><div class="setting-info"><strong>Cor do nome</strong><small>Cor padrão das letras. Pode ser personalizada para cada imagem.</small></div><div class="setting-control"><input id="nameplateTextColorInput" type="color" value="#ffffff"/><div></div></div></div>
+          <div class="setting"><div class="setting-info"><strong>Tamanho padrão do nome</strong><small>Ajusta as letras de todas as legendas, exceto as com tamanho personalizado.</small></div>
+            <div class="setting-control"><input id="nameplateFontSizeRange" type="range" min="7" max="24" step="1" value="13"/><div class="unit-input"><input id="nameplateFontSizeNumber" type="number" min="7" max="24" step="1" value="13"/><span>px</span></div></div>
+          </div>
           <div class="setting"><div class="setting-info"><strong>Altura da faixa</strong><small>Espaço reservado para o nome abaixo da imagem.</small></div>
             <div class="setting-control"><input id="nameplateHeightRange" type="range" min="18" max="55" step="1"/><div class="unit-input"><input id="nameplateHeightNumber" type="number" min="18" max="55" step="1"/><span>px</span></div></div>
           </div>
-          <p class="tier-nameplate-help">Para mudar o nome de uma imagem individualmente, use o lápis da imagem → aba Nome. A exportação PNG respeita todas as legendas.</p>
+          <p class="tier-nameplate-help">Para alterar o nome ou o tamanho de uma imagem específica, use o lápis da imagem → aba Texto. A exportação PNG respeita todas as legendas.</p>
         </section>
 
         <section class="settings-section" data-highlight-target="caption">
@@ -638,8 +641,12 @@
             <h3>Nome exibido na tier</h3>
             <div class="setting"><div class="setting-info"><strong>Mostrar legenda abaixo das imagens</strong><small>Ativa ou desativa a faixa de nome em toda esta tier, sem mudar os cadastros originais.</small></div><div class="setting-control"><input id="editorNameplateEnabled" type="checkbox"/><div></div></div></div>
             <p class="tier-nameplate-help">Use um nome curto, como BURIRAM no lugar de BURIRAM UNITED. A mudança vale só para esta tier, inclusive na exportação PNG.</p>
-            <div class="setting"><div class="setting-info"><strong>Nome curto (opcional)</strong><small>Ex.: BURIRAM, LOUD ou BRABOX. Em branco, mantém o nome original.</small></div>
-              <div class="setting-control editor-wide-control"><input id="editorNameplateText" type="text" maxlength="48" placeholder="Ex.: BURIRAM"/><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Nome exibido (editável)</strong><small>Já vem preenchido com o nome do time ou jogador. Ex.: troque BURIRAM UNITED por BURIRAM.</small></div>
+              <div class="setting-control editor-wide-control"><input id="editorNameplateText" type="text" maxlength="48" placeholder="Nome do time ou jogador"/><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Tamanho deste nome</strong><small>Aumente ou diminua a fonte somente desta equipe ou jogador. A legenda se adapta ao espaço da faixa.</small></div>
+              <div class="setting-control"><input id="editorNameplateFontSizeRange" type="range" min="7" max="24" step="1" value="13"/><div class="unit-input"><input id="editorNameplateFontSizeNumber" type="number" min="7" max="24" step="1" value="13"/><span>px</span></div></div>
+              <button id="editorNameplateFontSizeReset" type="button" class="tier-nameplate-default-btn">Usar tamanho padrão da tier</button>
+            </div>
             <div class="setting"><div class="setting-info"><strong>Usar cores próprias nesta imagem</strong><small>Se desligado, acompanha as cores gerais da tier.</small></div>
               <div class="setting-control"><input id="editorNameplateOwnColors" type="checkbox"/><div></div></div></div>
             <div class="setting"><div class="setting-info"><strong>Fundo desta legenda</strong></div><div class="setting-control"><input id="editorNameplateBg" type="color" value="#101827"/><div></div></div></div>
