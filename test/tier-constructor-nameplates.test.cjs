@@ -14,6 +14,9 @@ function createBrowser(){
  const w=dom.window,drawn=[],clips=[],shares=[];
  let uid=0;
  w.structuredClone=structuredClone;
+ w.TextEncoder=TextEncoder;
+ w.TextDecoder=TextDecoder;
+ w.CompressionStream=undefined;
  w.crypto.randomUUID=()=> 'uuid-'+(++uid);
  w.requestAnimationFrame=fn=>{Promise.resolve().then(fn);return 1};
  w.matchMedia=()=>({matches:true,addListener(){},removeListener(){}});
@@ -91,6 +94,15 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   const changed=w.document.querySelector('.tier-row .tier-image-nameplate');
   assert.equal(changed?.textContent,'LOUD SNICKERS');
   assert.equal(changed?.style.backgroundColor,'rgb(255, 0, 0)');
+  w.document.getElementById('shareLinkBtn').click();
+  await tick();
+  const link=w.document.getElementById('shareProjectUrl').value;
+  assert.match(link,/#tier=r\./,'o link deve incluir o projeto com as legendas');
+  const payload=link.split('#tier=r.')[1];
+  const shared=JSON.parse(Buffer.from(payload,'base64url').toString('utf8'));
+  assert.equal(shared.state.settings.nameplateEnabled,true);
+  assert.ok(Object.values(shared.state.images).some(i=>i.nameplateText==='LOUD SNICKERS'&&i.nameplateOwnColors===true&&i.nameplateBgColor==='#ff0000'));
+  w.document.getElementById('doneShareProjectBtn').click();
   w.document.querySelector('#nameplateButtons [data-value="false"]').click();
   assert.equal(w.document.querySelectorAll('.tier-image-nameplate').length,0);
  }finally{dom.window.close();}
