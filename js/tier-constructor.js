@@ -51,6 +51,10 @@
         separatorColor: "#3b3f48",
         backgroundColor: "#101217",
         imageFrameEnabled: false,
+        nameplateEnabled: false,
+        nameplateHeight: 28,
+        nameplateBgColor: "#101827",
+        nameplateTextColor: "#ffffff",
         backgroundFit: "cover",
         backgroundZoom: 100,
         backgroundPosX: 50,
@@ -136,6 +140,7 @@
       let lastAppliedEdit = null;
       let editorOriginalPreviewSrc = "";
       let editorOriginalEdit = null;
+      let editorNameplateDraft = null;
       let autosaveWarned = false;
       let currentBrowserProjectName = localStorage.getItem(CURRENT_PROJECT_KEY) || "";
       let namedProjectSaveTimer = null;
@@ -329,7 +334,7 @@
           button.className = "tier-asset-card";
           button.dataset.assetId = asset.id;
           const unavailable = asset.type === "player" && asset.available === false;
-          if (unavailable) button.disabled = true;
+          // Jogadores sem foto agora podem entrar na tier com a silhueta oficial.
 
           const image = document.createElement("img");
           image.src = asset.image || (asset.type === "team" ? "escudo.webp" : "silhueta.webp");
@@ -346,12 +351,12 @@
           const strong = document.createElement("strong");
           strong.textContent = asset.name;
           const small = document.createElement("small");
-          small.textContent = unavailable ? "Foto não cadastrada" : (asset.subtitle || (asset.type === "team" ? "Equipe" : "Jogador"));
+          small.textContent = unavailable ? "Silhueta disponível · sem foto" : (asset.subtitle || (asset.type === "team" ? "Equipe" : "Jogador"));
           copy.append(strong, small);
 
           const add = document.createElement("span");
           add.className = "tier-asset-add";
-          add.textContent = unavailable ? "—" : "+";
+          add.textContent = "+";
           button.append(image, copy, add);
           fragment.appendChild(button);
         });
@@ -389,9 +394,9 @@
       }
 
       async function registerTierAsset(asset) {
-        if (!asset || !asset.image || (asset.type === "player" && asset.available === false)) return null;
+        if (!asset || (!asset.image && asset.type !== "player")) return null;
         if (tierAssetAlreadyAdded(asset.id)) return null;
-        const src = await tierAssetSource(asset);
+        const src = await tierAssetSource(asset.type === "player" && (!asset.image || asset.available === false) ? {...asset,image:"silhueta.webp"} : asset);
         if (!src) return null;
         const id = crypto.randomUUID();
         state.images[id] = normalizeImageData({
@@ -426,7 +431,7 @@
 
       async function addVisibleTierAssets() {
         if (!tierVisibleAssets.length) return;
-        const available = tierVisibleAssets.filter(asset => asset.image && !(asset.type === "player" && asset.available === false) && !tierAssetAlreadyAdded(asset.id));
+        const available = tierVisibleAssets.filter(asset => (asset.image || asset.type === "player") && !tierAssetAlreadyAdded(asset.id));
         if (!available.length) {
           showToast("Todos os itens exibidos já estão no projeto.");
           return;
@@ -548,8 +553,43 @@
           src,
           originalSrc: src,
           previewSrc: image.previewSrc || image.src || src,
-          edit: { ...defaultImageEdit(), ...(image.edit || {}) }
+          edit: { ...defaultImageEdit(), ...(image.edit || {}) },
+          nameplateText: typeof image.nameplateText === "string" ? image.nameplateText.slice(0, 48) : "",
+          nameplateOwnColors: image.nameplateOwnColors === true,
+          nameplateBgColor: /^#[0-9a-f]{6}$/i.test(image.nameplateBgColor || "") ? image.nameplateBgColor : "#101827",
+          nameplateTextColor: /^#[0-9a-f]{6}$/i.test(image.nameplateTextColor || "") ? image.nameplateTextColor : "#ffffff"
         };
+      }
+
+      function getNameplate(image) {
+        const custom = image.nameplateOwnColors === true;
+        return {
+          text: (image.nameplateText || "").trim().slice(0, 48) || (image.name || "Imagem").replace(/\.(png|webp|jpe?g|gif)$/i, "").slice(0, 48),
+          bgColor: custom ? image.nameplateBgColor : state.settings.nameplateBgColor,
+          textColor: custom ? image.nameplateTextColor : state.settings.nameplateTextColor
+        };
+      }
+
+      function syncEditorNameplatePreview() {
+        if (!editorNameplateDraft || !currentEditorImageId) return;
+        const nameField = document.getElementById("editorNameplateText");
+        const ownField = document.getElementById("editorNameplateOwnColors");
+        const bgField = document.getElementById("editorNameplateBg");
+        const textField = document.getElementById("editorNameplateColor");
+        const sample = document.getElementById("editorNameplateSample");
+        if (!sample) return;
+        if (ownField) ownField.checked = editorNameplateDraft.nameplateOwnColors;
+        if (bgField) {
+          bgField.value = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateBgColor : state.settings.nameplateBgColor;
+          bgField.disabled = !editorNameplateDraft.nameplateOwnColors;
+        }
+        if (textField) {
+          textField.value = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateTextColor : state.settings.nameplateTextColor;
+          textField.disabled = !editorNameplateDraft.nameplateOwnColors;
+        }
+        sample.textContent = (editorNameplateDraft.nameplateText || "").trim() || state.images[currentEditorImageId].name || "Jogador";
+        sample.style.backgroundColor = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateBgColor : state.settings.nameplateBgColor;
+        sample.style.color = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateTextColor : state.settings.nameplateTextColor;
       }
 
       function normalizeStateImages() {
@@ -571,6 +611,7 @@
         els.root.style.setProperty("--board-width", `${s.boardWidth}px`);
         els.root.style.setProperty("--image-size", `${s.imageSize}px`);
         els.root.style.setProperty("--image-gap", `${s.gap}px`);
+        els.root.style.setProperty("--nameplate-height", `${s.nameplateHeight}px`);
         els.root.style.setProperty("--row-min-height", `${s.rowMinHeight}px`);
         els.root.style.setProperty("--separator-width", `${s.separatorWidth}px`);
         els.root.style.setProperty("--separator-color", s.separatorColor);
@@ -670,6 +711,18 @@
         img.src = data.previewSrc || data.src;
         img.alt = data.name || "Imagem da tier list";
 
+        if (state.settings.nameplateEnabled && zoneId !== "bank") {
+          const label = getNameplate(data);
+          const bar = document.createElement("span");
+          bar.className = "tier-image-nameplate";
+          bar.textContent = label.text;
+          bar.title = label.text;
+          bar.style.backgroundColor = label.bgColor;
+          bar.style.color = label.textColor;
+          card.classList.add("has-nameplate");
+          card.append(img, bar);
+        }
+
         const actions = document.createElement("div");
         actions.className = "card-actions";
 
@@ -695,7 +748,8 @@
         });
 
         actions.append(edit, remove);
-        card.append(img, actions);
+        if (!card.contains(img)) card.append(img);
+        card.append(actions);
 
         card.addEventListener("dragstart", () => {
           draggedImageId = imageId;
@@ -1042,7 +1096,7 @@
         badge.style.left = s.positionHorizontal === 'left' ? '4px' : 'auto';
         badge.style.right = s.positionHorizontal === 'right' ? '4px' : 'auto';
         badge.style.top = s.positionVertical === 'top' ? '4px' : 'auto';
-        badge.style.bottom = s.positionVertical === 'bottom' ? '4px' : 'auto';
+        badge.style.bottom = s.positionVertical === 'bottom' ? ((card.classList.contains('has-nameplate') ? s.nameplateHeight : 0) + 4) + 'px' : 'auto';
         badge.style.webkitTextStroke = `${s.positionTextStroke}px ${s.positionTextStrokeColor}`;
         badge.style.paintOrder = 'stroke fill';
         badge.style.textShadow = s.positionShadowSize > 0
@@ -1376,6 +1430,12 @@
             sourceAssetId: image.sourceAssetId || "",
             sourceType: image.sourceType || "",
             sourceSubtitle: image.sourceSubtitle || "",
+            nameplateText: image.nameplateText || "",
+            nameplateOwnColors: image.nameplateOwnColors === true,
+            ...(image.nameplateOwnColors ? {
+              nameplateBgColor: image.nameplateBgColor || "#101827",
+              nameplateTextColor: image.nameplateTextColor || "#ffffff"
+            } : {}),
             edit: compactChangedValues(image.edit || {}, defaultImageEdit())
           };
         }
@@ -1809,6 +1869,7 @@
           ["labelWidth", "labelWidthRange", "labelWidthNumber"],
           ["boardWidth", "boardWidthRange", "boardWidthNumber"],
           ["imageSize", "imageSizeRange", "imageSizeNumber"],
+          ["nameplateHeight", "nameplateHeightRange", "nameplateHeightNumber"],
           ["gap", "gapRange", "gapNumber"],
           ["rowMinHeight", "rowHeightRange", "rowHeightNumber"],
           ["overlay", "overlayRange", "overlayNumber"],
@@ -1853,6 +1914,9 @@
         setControlValue("positionBgColorInput", state.settings.positionBgColor);
         setControlValue("positionTextStrokeColorInput", state.settings.positionTextStrokeColor);
         setControlValue("positionShadowColorInput", state.settings.positionShadowColor);
+        setControlValue("nameplateBgColorInput", state.settings.nameplateBgColor);
+        setControlValue("nameplateTextColorInput", state.settings.nameplateTextColor);
+        updateChoiceButtons("nameplateButtons", String(state.settings.nameplateEnabled));
       }
 
       function bindRangePair(rangeId, numberId, key) {
@@ -1876,7 +1940,7 @@
           if (key === "rowMinHeight") {
             render();
             renderRowManager();
-          } else if (key.startsWith("position")) {
+          } else if (key.startsWith("position") || key === "nameplateHeight") {
             render();
           }
           scheduleHistoryPush();
@@ -2582,6 +2646,7 @@
         editorDraft = null;
         editorOriginalPreviewSrc = "";
         editorOriginalEdit = null;
+        editorNameplateDraft = null;
       }
 
       function openImageEditor(imageId) {
@@ -2591,6 +2656,14 @@
         editorOriginalPreviewSrc = imageData.previewSrc || imageData.originalSrc || imageData.src;
         editorOriginalEdit = { ...defaultImageEdit(), ...(imageData.edit || {}) };
         editorDraft = { ...defaultImageEdit(), ...(imageData.edit || {}) };
+        editorNameplateDraft = {
+          nameplateText: imageData.nameplateText || "",
+          nameplateOwnColors: imageData.nameplateOwnColors === true,
+          nameplateBgColor: imageData.nameplateBgColor || state.settings.nameplateBgColor,
+          nameplateTextColor: imageData.nameplateTextColor || state.settings.nameplateTextColor
+        };
+        document.getElementById("editorNameplateText").value = editorNameplateDraft.nameplateText;
+        syncEditorNameplatePreview();
         setEditorTab("image");
         updateEditorControls();
         refreshEditorPreview();
@@ -2600,6 +2673,14 @@
       function resetEditorDraft() {
         if (!currentEditorImageId) return;
         editorDraft = defaultImageEdit();
+        editorNameplateDraft = {
+          nameplateText: "",
+          nameplateOwnColors: false,
+          nameplateBgColor: state.settings.nameplateBgColor,
+          nameplateTextColor: state.settings.nameplateTextColor
+        };
+        document.getElementById("editorNameplateText").value = "";
+        syncEditorNameplatePreview();
         updateEditorControls();
         refreshEditorPreview();
       }
@@ -2608,6 +2689,7 @@
         if (!currentEditorImageId || !editorDraft) return;
         const imageData = state.images[currentEditorImageId];
         imageData.edit = { ...editorDraft };
+        if (editorNameplateDraft) Object.assign(imageData, editorNameplateDraft);
         lastAppliedEdit = { ...editorDraft };
         const previewCanvas = await renderImageComposition(imageData, editorDraft, 512);
         imageData.previewSrc = previewCanvas.toDataURL("image/png");
@@ -2840,7 +2922,30 @@
         return startX + width / 2;
       }
 
-      async function exportPNG() {
+      function drawExportNameplate(ctx, imageData, x, imageY, tile, height) {
+        const label = getNameplate(imageData);
+        const fontFamily = "Inter, Arial, sans-serif";
+        const maxWidth = tile - 6;
+        let fontSize = Math.max(8, Math.min(16, Math.round(tile * .145)));
+        ctx.save();
+        ctx.font = "900 " + fontSize + "px " + fontFamily;
+        while (ctx.measureText(label.text).width > maxWidth && fontSize > 7) {
+          fontSize -= 1;
+          ctx.font = "900 " + fontSize + "px " + fontFamily;
+        }
+        ctx.fillStyle = label.bgColor;
+        ctx.fillRect(x, imageY + tile, tile, height);
+        ctx.beginPath();
+        ctx.rect(x + 2, imageY + tile, tile - 4, height);
+        ctx.clip();
+        ctx.fillStyle = label.textColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label.text, x + tile / 2, imageY + tile + height / 2, maxWidth);
+        ctx.restore();
+      }
+
+      async function renderTierPngBlob() {
         try {
           const s = state.settings;
           const boardWidth = s.boardWidth;
@@ -2848,6 +2953,8 @@
           const contentWidth = boardWidth - labelWidth;
           const gap = s.gap;
           const tile = s.imageSize;
+          const nameplateHeight = s.nameplateEnabled ? s.nameplateHeight : 0;
+          const tileSlotHeight = tile + nameplateHeight;
           const columns = Math.max(1, Math.floor((contentWidth - gap) / (tile + gap)));
 
           const scale = 2;
@@ -2857,7 +2964,7 @@
           const rowLayouts = state.rows.map(row => {
             const baseRowHeight = getRowBaseHeight(row);
             const imageLines = Math.max(1, Math.ceil(row.images.length / columns));
-            const imageHeight = Math.max(baseRowHeight, imageLines * tile + (imageLines + 1) * gap);
+            const imageHeight = Math.max(baseRowHeight, imageLines * tileSlotHeight + (imageLines + 1) * gap);
             const textLayout = getRowTextLayout(tempCtx, row.name || "Row", labelWidth, s, imageHeight);
             const rowHeight = s.rowAutoHeight ? Math.max(imageHeight, textLayout.requiredHeight) : Math.max(baseRowHeight, imageHeight);
             return { rowHeight, textLayout };
@@ -3025,7 +3132,7 @@
               const col = index % columns;
               const line = Math.floor(index / columns);
               const x = labelWidth + gap + col * (tile + gap);
-              const imageY = y + gap + line * (tile + gap);
+              const imageY = y + gap + line * (tileSlotHeight + gap);
 
               const radius = Math.min(8, tile / 6);
               if (s.imageFrameEnabled) {
@@ -3072,6 +3179,9 @@
                 ctx.strokeStyle = "rgba(255,255,255,.22)";
                 ctx.strokeRect(x + .5, imageY + .5, tile - 1, tile - 1);
               }
+              if (s.nameplateEnabled) {
+                drawExportNameplate(ctx, state.images[id], x, imageY, tile, nameplateHeight);
+              }
             });
 
             y += rowHeight;
@@ -3084,6 +3194,15 @@
             }, "image/png", 1);
           });
 
+          return blob;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      async function exportPNG() {
+        try {
+          const blob = await renderTierPngBlob();
           const filename = "tier-list.png";
           const file = new File([blob], filename, { type: "image/png" });
           const mobileShareSupported =
@@ -3118,6 +3237,64 @@
         }
       }
 
+      async function putPngOnClipboard(blob) {
+        if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+          throw new Error("Seu navegador não permite copiar PNG diretamente. Use Compartilhar PNG ou Exportar PNG.");
+        }
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      }
+
+      async function copyTierPng() {
+        const button = document.getElementById("copyPngBtn");
+        button.disabled = true;
+        try {
+          const blob = await renderTierPngBlob();
+          await putPngOnClipboard(blob);
+          showToast("Imagem copiada! Cole no Discord, WhatsApp ou onde preferir.");
+        } catch (error) {
+          console.warn("Não foi possível copiar a tier como imagem.", error);
+          showToast(error?.message || "O navegador bloqueou a cópia. Use Exportar PNG.");
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      async function shareTierPng() {
+        const button = document.getElementById("sharePngBtn");
+        button.disabled = true;
+        try {
+          const blob = await renderTierPngBlob();
+          const file = new File([blob], "tier-list.png", { type: "image/png" });
+          const canShare = typeof navigator.share === "function"
+            && (typeof navigator.canShare !== "function" || navigator.canShare({ files: [file] }));
+          if (canShare) {
+            try {
+              await navigator.share({ files: [file], title: "Tier List", text: "Minha tier list no Central Free Fire" });
+              showToast("Imagem compartilhada.");
+              return;
+            } catch (error) {
+              if (error?.name === "AbortError") {
+                showToast("Compartilhamento cancelado.");
+                return;
+              }
+              console.warn("Compartilhamento nativo indisponível", error);
+            }
+          }
+          try {
+            await putPngOnClipboard(blob);
+            showToast("Compartilhamento nativo indisponível. Imagem copiada para colar.");
+          } catch (error) {
+            downloadBlob(blob, "tier-list.png", "image/png");
+            showToast("Compartilhamento não disponível aqui. PNG baixado.");
+          }
+        } catch (error) {
+          console.error("Falha ao preparar imagem para compartilhamento", error);
+          showToast("Não foi possível compartilhar a imagem.");
+        } finally {
+          button.disabled = false;
+        }
+      }
+
       function updateChoiceButtons(groupId, activeValue) {
         const group = document.getElementById(groupId);
         if (!group) return;
@@ -3134,11 +3311,28 @@
           const raw = button.dataset.value;
           state.settings[key] = raw === "true" ? true : raw === "false" ? false : raw;
           applySettings();
-          if (key.startsWith("position") || key === "rowAutoHeight") render();
+          if (key.startsWith("position") || key === "rowAutoHeight" || key === "nameplateEnabled") render();
           scheduleHistoryPush();
         });
       }
 
+      document.getElementById("editorNameplateText").addEventListener("input", event => {
+        if (!editorNameplateDraft) return;
+        editorNameplateDraft.nameplateText = event.target.value.slice(0,48);
+        syncEditorNameplatePreview();
+      });
+      document.getElementById("editorNameplateOwnColors").addEventListener("change", event => {
+        if (!editorNameplateDraft) return;
+        editorNameplateDraft.nameplateOwnColors = event.target.checked;
+        syncEditorNameplatePreview();
+      });
+      for (const [id,key] of [["editorNameplateBg","nameplateBgColor"],["editorNameplateColor","nameplateTextColor"]]) {
+        document.getElementById(id).addEventListener("input", event => {
+          if (!editorNameplateDraft) return;
+          editorNameplateDraft[key] = event.target.value;
+          syncEditorNameplatePreview();
+        });
+      }
       document.getElementById("addImagesBtn").addEventListener("click", () => els.imageInput.click());
       els.imageInput.addEventListener("change", async () => {
         await addImageFiles(els.imageInput.files);
@@ -3222,6 +3416,8 @@
       });
 
       document.getElementById("exportBtn").addEventListener("click", exportPNG);
+      document.getElementById("copyPngBtn").addEventListener("click", copyTierPng);
+      document.getElementById("sharePngBtn").addEventListener("click", shareTierPng);
       document.getElementById("clearAllBtn").addEventListener("click", clearAllTierImages);
       document.getElementById("toggleCaptionPanelBtn").addEventListener("click", () => {
         setCaptionPanelCollapsed(!captionPanelCollapsed);
@@ -3258,6 +3454,13 @@
         showToast("Fundo removido.");
       });
 
+      for (const [id, key] of [["nameplateBgColorInput","nameplateBgColor"],["nameplateTextColorInput","nameplateTextColor"]]) {
+        document.getElementById(id).addEventListener("input", event => {
+          state.settings[key] = event.target.value;
+          render();
+          scheduleHistoryPush();
+        });
+      }
       document.getElementById("backgroundFit").addEventListener("change", event => {
         state.settings.backgroundFit = event.target.value;
         applySettings();
@@ -3356,6 +3559,7 @@
       bindChoiceGroup("rowAutoFitButtons", "rowAutoFit");
       bindChoiceGroup("rowAutoHeightButtons", "rowAutoHeight");
       bindChoiceGroup("imageFrameButtons", "imageFrameEnabled");
+      bindChoiceGroup("nameplateButtons", "nameplateEnabled");
       bindChoiceGroup("positionModeButtons", "positionMode");
       bindChoiceGroup("quickPositionButtons", "positionMode");
       bindChoiceGroup("positionScopeButtons", "positionScope");

@@ -174,3 +174,49 @@
 @media(prefers-reduced-motion:reduce){
   .tier-editor-layout .image-card,.tier-workspace-controls button{transition:none}
 }
+
+/* Legendas independentes das fotos: mesma proporção na tier e na imagem exportada. */
+.tier-row .image-card.has-nameplate{
+  height:calc(var(--image-size) + var(--nameplate-height, 28px));
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  background:transparent;
+}
+.tier-row .image-card.has-nameplate>img{
+  display:block;
+  width:100%;
+  height:var(--image-size);
+  min-height:var(--image-size);
+  flex:0 0 var(--image-size);
+  object-fit:contain;
+}
+.tier-row .image-card .tier-image-nameplate{
+  display:block;
+  width:100%;
+  flex:0 0 var(--nameplate-height, 28px);
+  height:var(--nameplate-height, 28px);
+  line-height:var(--nameplate-height, 28px);
+  padding:0 3px;
+  box-sizing:border-box;
+  text-align:center;
+  font-family:Inter,Arial,sans-serif;
+  font-size:clamp(9px, calc(var(--image-size) * .135), 15px);
+  font-weight:900;
+  letter-spacing:.005em;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
+  user-select:none;
+  pointer-events:none;
+}
+.tier-nameplate-help{font-size:12px;line-height:1.55;color:#a8b7d5;margin:10px 0}
+#editorNameplateText{min-width:0;max-width:100%;width:100%;padding:10px}
+#editorNameplateOwnColors{width:20px;height:20px;accent-color:#697cfc;cursor:pointer}
+#editorNameplateBg:disabled,#editorNameplateColor:disabled{opacity:.4;cursor:not-allowed}
+.tier-editor-nameplate-sample{min-height:32px;max-width:100%;padding:8px 12px;border-radius:6px;box-sizing:border-box;text-align:center;font-size:15px;font-weight:900;line-height:1.4;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+@media(max-width:960px){
+  .tier-row .image-card.has-nameplate{height:calc(var(--image-size) + var(--nameplate-height, 28px))}
+  .tier-row .image-card.has-nameplate>img{height:var(--image-size)}
+  .tier-editor-layout #imageBank .image-card.has-nameplate{height:76px}
+}
