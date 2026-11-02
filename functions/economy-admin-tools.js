@@ -28,7 +28,7 @@ function create({sql,transaction,db,ranking,vouchers,eligible,dayKey,weekKey,now
   const identity=!linked&&ranking?.identity?await ranking.identity(top.userKey):null;
   const instagram=String(identity?.username||linked?.username||top.username||'').toLowerCase();
   let uid=linked?.uid;
-  if(!uid&&instagram){if(instagram==='nakataff')uid=(await db.get('communityOwnerInstagram'))?.uid;else uid=(await db.get('communityRankingProfiles/'+instagram.replace(/\\./g,',')))?.uid;}
+  if(!uid&&instagram){if(instagram==='nakataff')uid=(await db.get('communityOwnerInstagram'))?.uid;else uid=(await db.get('communityRankingProfiles/'+instagram.replace(/\./g,',')))?.uid;}
   let recipient=null;
   if(uidOK(uid)){const profile=await db.get('userAccounts/'+uid+'/profile');if(profile?.name&&/^[a-z0-9_]{3,24}$/.test(profile.username||''))recipient={uid,name:String(profile.name).slice(0,80),username:profile.username};}
   const restriction=uidOK(uid)?rows('SELECT rewards FROM eco_account_restrictions WHERE uid=?',uid)[0]:null;
