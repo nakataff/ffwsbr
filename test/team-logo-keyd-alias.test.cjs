@@ -12,7 +12,7 @@ const script=fs.readFileSync(path.join(base,'js/team-logo-resolver.min.js'),'utf
 test('Keyd, Keyd Stars e Vivo Keyd usam o arquivo de escudo existente',async()=>{
   assert.ok(fs.existsSync(path.join(base,'keyd.webp')),'keyd.webp precisa existir');
   assert.equal(map.logos['VIVO KEYD'],'keyd.webp');
-  for(const key of ['KEYD','KEYD STARS','VK','VIVO KEYD STARS']){assert.equal(map.logos[key],'keyd.webp');assert.equal(map.aliases[key],undefined,'não alterar os nomes das equipes históricas');}
+  for(const key of ['KEYD','KEYD STARS','VK','VIVO KEYD STARS']){assert.equal(map.logos[key],undefined,'não alterar nomes de equipes históricas');assert.equal(map.aliases[key],undefined,'não adicionar alias de identidade');}
 
   const handlers={};
   const window={
@@ -49,6 +49,6 @@ test('Keyd, Keyd Stars e Vivo Keyd usam o arquivo de escudo existente',async()=>
 
 test('perfil do jogador invalida o cache do resolvedor de escudos',()=>{
   const page=fs.readFileSync(path.join(base,'jogador.html'),'utf8');
-  assert.match(page,/team-logo-resolver\.min\.js\?v=20261102-keyd-aliases-v1/);
-  assert.match(script,/20261102-keyd-aliases-v1/);
+  assert.match(page,/team-logo-resolver\.min\.js\?v=20261102-keyd-visual-v2/);
+  assert.match(script,/20261102-keyd-visual-v2/);
 });
