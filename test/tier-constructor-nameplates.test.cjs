@@ -53,7 +53,7 @@ function createBrowser(){
 }
 
 test('controles de nome e compartilhamento estão disponíveis, mas legendas são opcionais',()=>{
- for(const id of ['nameplateButtons','nameplateBgColorInput','nameplateTextColorInput','nameplateHeightRange','editorNameplateText','editorNameplateOwnColors','editorNameplateBg','editorNameplateColor','copyPngBtn','sharePngBtn'])assert.ok(html.includes('id="'+id+'"'),id);
+ for(const id of ['nameplateButtons','nameplateBgColorInput','nameplateTextColorInput','nameplateHeightRange','nameplateFontSizeRange','nameplateFontSizeNumber','editorNameplateText','editorNameplateFontSizeRange','editorNameplateFontSizeNumber','editorNameplateFontSizeReset','editorNameplateOwnColors','editorNameplateBg','editorNameplateColor','copyPngBtn','sharePngBtn'])assert.ok(html.includes('id="'+id+'"'),id);
  assert.match(js,/nameplateEnabled: false/);
  assert.match(js,/nameplateOwnColors/);
  assert.match(css,/\.tier-image-nameplate/);
@@ -95,6 +95,11 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   assert.equal(w.document.getElementById('editorNameplateEnabled').checked,true);
 
   const input=w.document.getElementById('editorNameplateText');
+  assert.equal(input.value,'LOUD','campo já traz o nome original do time');
+  assert.equal(w.document.getElementById('editorNameplateFontSizeNumber').value,'13');
+  const sizeRange=w.document.getElementById('editorNameplateFontSizeRange');
+  sizeRange.value='10';sizeRange.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(w.document.getElementById('editorNameplateFontSizeNumber').value,'10');
   input.value='LOUD SNICKERS';input.dispatchEvent(new w.Event('input',{bubbles:true}));
   assert.equal(w.document.getElementById('editorNameplateSample').textContent,'LOUD SNICKERS');
   w.document.getElementById('editorNameplateOwnColors').click();
@@ -106,6 +111,7 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   const changed=w.document.querySelector('.tier-row .tier-image-nameplate');
   assert.equal(changed?.textContent,'LOUD SNICKERS');
   assert.equal(changed?.style.backgroundColor,'rgb(255, 0, 0)');
+  assert.equal(changed?.style.fontSize,'10px','o tamanho personalizado é exibido na tier');
   assert.equal(w.document.querySelector('.tier-row .image-card img').alt,'LOUD','nome original permanece associado à logo');
   assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate').textContent,'LOUD SNICKERS');
 
@@ -116,7 +122,7 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   const payload=link.split('#tier=r.')[1];
   const shared=JSON.parse(Buffer.from(payload,'base64url').toString('utf8'));
   assert.equal(shared.state.settings.nameplateEnabled,true);
-  assert.ok(Object.values(shared.state.images).some(i=>i.nameplateText==='LOUD SNICKERS'&&i.nameplateOwnColors===true&&i.nameplateBgColor==='#ff0000'));
+  assert.ok(Object.values(shared.state.images).some(i=>i.nameplateText==='LOUD SNICKERS'&&i.nameplateOwnColors===true&&i.nameplateBgColor==='#ff0000'&&i.nameplateFontSize===10));
   w.document.getElementById('doneShareProjectBtn').click();
   w.document.querySelector('#nameplateButtons [data-value="false"]').click();
   assert.equal(w.document.querySelectorAll('.tier-image-nameplate').length,0);
@@ -183,4 +189,41 @@ test('drawer rolável conserva cabeçalho e ações sem cobrir os campos',()=>{
  assert.match(css,/#imageEditorDialog\.editor-drawer \.dialog-inner\s*\{[^}]*grid-template-rows:auto minmax\(0,1fr\) auto/s);
  assert.match(css,/#imageEditorDialog\.editor-drawer \.editor-preview-panel\s*\{[^}]*grid-template-columns:/s);
  assert.match(js,/if \(scrollRegion\) scrollRegion\.scrollTop = 0/);
+});
+
+test('tamanho padrão vale para todos, mas o editor permite ajustar e restaurar por imagem',async()=>{
+ const {dom,w,drawn}=createBrowser();
+ try {
+  await tick();
+  w.document.getElementById('imageBank').querySelector('.image-card').click();
+  w.document.querySelector('.tier-row .dropzone').click();
+  w.document.querySelector('#nameplateButtons [data-value="true"]').click();
+  const globalRange=w.document.getElementById('nameplateFontSizeRange');
+  globalRange.value='20';globalRange.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(w.document.getElementById('nameplateFontSizeNumber').value,'20');
+  assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate').style.fontSize,'20px');
+  w.document.querySelector('.tier-row .image-card .edit-image').click();
+  w.document.querySelector('[data-editor-tab-button="text"]').click();
+  const input=w.document.getElementById('editorNameplateText');
+  assert.equal(input.value,'LOUD','nome é preenchido sem precisar digitar');
+  assert.equal(w.document.getElementById('editorNameplateFontSizeNumber').value,'20');
+  assert.equal(w.document.getElementById('editorNameplateFontSizeReset').disabled,true);
+  const individual=w.document.getElementById('editorNameplateFontSizeNumber');
+  individual.value='8';individual.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(w.document.getElementById('editorNameplateFontSizeRange').value,'8');
+  assert.equal(w.document.getElementById('editorNameplateFontSizeReset').disabled,false);
+  w.document.getElementById('saveEditorBtn').click();await tick();
+  assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate').style.fontSize,'8px');
+  globalRange.value='16';globalRange.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate').style.fontSize,'8px','personalização não muda com ajustes globais');
+  w.document.querySelector('.tier-row .image-card .edit-image').click();
+  w.document.querySelector('[data-editor-tab-button="text"]').click();
+  assert.equal(w.document.getElementById('editorNameplateText').value,'LOUD');
+  w.document.getElementById('editorNameplateFontSizeReset').click();
+  assert.equal(w.document.getElementById('editorNameplateFontSizeNumber').value,'16');
+  w.document.getElementById('saveEditorBtn').click();await tick();
+  assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate').style.fontSize,'16px');
+  w.document.getElementById('copyPngBtn').click();await tick();
+  assert.ok(drawn.some(d=>d.kind==='text'&&d.args[0]==='LOUD'),'exportação continua escrevendo a legenda');
+ } finally {dom.window.close();}
 });
