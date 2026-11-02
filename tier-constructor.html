@@ -11,8 +11,9 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261025-daily-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261102-world-2026-v1"></script>
-<link rel="stylesheet" href="/css/shared-navigation.css?v=20261020-mobile-custom-v4"></head>
+  <script defer src="js/tier-constructor.js?v=20261102-workspace-v1"></script>
+<link rel="stylesheet" href="/css/shared-navigation.css?v=20261020-mobile-custom-v4">
+<link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-workspace-v1"></head>
 <body class="tier-constructor-page">
 
 <header class="cff-public-topbar">
@@ -46,7 +47,7 @@
             <button type="button" data-value="false">Desativado</button>
           </div>
         </div>
-        <button id="settingsBtn" class="toolbar-btn" title="Configurações">⚙ <span>Configurações</span></button>
+        <button id="settingsBtn" class="toolbar-btn" type="button" title="Abrir ou fechar configurações" aria-expanded="false" aria-controls="settingsDialog">⚙ <span>Configurações</span></button>
         <details class="project-menu" id="projectMenu">
           <summary>Configurações de projeto ▾</summary>
           <div class="project-menu-panel">
@@ -93,6 +94,45 @@
       </section>
 
 
+      <div class="tier-workspace-controls" aria-label="Opções de visualização da área de trabalho">
+        <div class="tier-bank-layout-control">
+          <span class="tier-workspace-label">IMAGENS DO PROJETO</span>
+          <div class="segmented" id="tierBankLayoutButtons" role="group" aria-label="Local das imagens não classificadas">
+            <button type="button" data-layout="left" aria-pressed="true">À esquerda</button>
+            <button type="button" data-layout="bottom" aria-pressed="false">Abaixo</button>
+          </div>
+        </div>
+        <button type="button" id="toggleEditControlsBtn" class="tier-clean-toggle" aria-pressed="false">Ocultar controles de edição</button>
+        <span class="tier-layout-help">No celular, toque na logo e depois na row para posicioná-la.</span>
+      </div>
+      <div class="tier-editor-layout" id="tierEditorLayout" data-bank-layout="left">
+      <section class="panel tier-bank-panel" id="tierBankPanel" aria-label="Imagens para classificar">
+        <div class="bank-title">
+          <h2>Times para classificar</h2>
+          <span id="bankCount" class="count">0 imagens</span>
+        </div>
+        <div class="mobile-drag-tip">Toque em uma logo e depois em uma row para mover. Deslize para ver mais logos.</div>
+        <div id="imageBank" class="dropzone image-bank" data-zone="bank">
+          <div class="empty-hint">Adicione imagens e arraste para qualquer row.</div>
+        </div>
+
+        <details id="trashPanel" class="trash-panel">
+          <summary>🗑 Logos ocultas <span id="archivedCount" class="count">0 imagens</span></summary>
+          <div id="archivedBank" class="image-bank archived-bank trash-dropzone" data-zone="archive" aria-label="Lixeira de logos">
+            <div class="empty-hint">Nenhuma logo está oculta.</div>
+          </div>
+        </details>
+      </section>
+
+      <section class="panel board-scroll tier-board-panel" aria-label="Tier list editável">
+        <div id="tierExport" class="tier-export">
+          <div id="tierCaption" class="tier-caption"></div>
+          <div id="tierBoard" class="tier-board"></div>
+        </div>
+      </section>
+
+
+      </div>
       <details class="panel tier-site-library" id="tierSiteLibrary">
         <summary class="tier-library-summary">
           <div>
@@ -121,30 +161,6 @@
         </div>
       </details>
 
-      <section class="panel board-scroll">
-        <div id="tierExport" class="tier-export">
-          <div id="tierCaption" class="tier-caption"></div>
-          <div id="tierBoard" class="tier-board"></div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="bank-title">
-          <h2>Imagens ainda não classificadas</h2>
-          <span id="bankCount" class="count">0 imagens</span>
-        </div>
-        <div class="mobile-drag-tip">No mobile: toque em uma imagem para selecionar e depois toque em uma row ou em outra imagem para mover.</div>
-        <div id="imageBank" class="dropzone image-bank" data-zone="bank">
-          <div class="empty-hint">Adicione imagens e arraste para qualquer row.</div>
-        </div>
-
-        <details id="trashPanel" class="trash-panel">
-          <summary>🗑 Logos ocultas <span id="archivedCount" class="count">0 imagens</span></summary>
-          <div id="archivedBank" class="image-bank archived-bank trash-dropzone" data-zone="archive" aria-label="Lixeira de logos">
-            <div class="empty-hint">Nenhuma logo está oculta.</div>
-          </div>
-        </details>
-      </section>
     </main>
   </div>
 
