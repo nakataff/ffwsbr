@@ -334,7 +334,7 @@
           button.className = "tier-asset-card";
           button.dataset.assetId = asset.id;
           const unavailable = asset.type === "player" && asset.available === false;
-          if (unavailable) button.disabled = true;
+          // Jogadores sem foto agora podem entrar na tier com a silhueta oficial.
 
           const image = document.createElement("img");
           image.src = asset.image || (asset.type === "team" ? "escudo.webp" : "silhueta.webp");
@@ -351,12 +351,12 @@
           const strong = document.createElement("strong");
           strong.textContent = asset.name;
           const small = document.createElement("small");
-          small.textContent = unavailable ? "Foto não cadastrada" : (asset.subtitle || (asset.type === "team" ? "Equipe" : "Jogador"));
+          small.textContent = unavailable ? "Silhueta disponível · sem foto" : (asset.subtitle || (asset.type === "team" ? "Equipe" : "Jogador"));
           copy.append(strong, small);
 
           const add = document.createElement("span");
           add.className = "tier-asset-add";
-          add.textContent = unavailable ? "—" : "+";
+          add.textContent = "+";
           button.append(image, copy, add);
           fragment.appendChild(button);
         });
@@ -394,9 +394,9 @@
       }
 
       async function registerTierAsset(asset) {
-        if (!asset || !asset.image || (asset.type === "player" && asset.available === false)) return null;
+        if (!asset || (!asset.image && asset.type !== "player")) return null;
         if (tierAssetAlreadyAdded(asset.id)) return null;
-        const src = await tierAssetSource(asset);
+        const src = await tierAssetSource(asset.type === "player" && (!asset.image || asset.available === false) ? {...asset,image:"silhueta.webp"} : asset);
         if (!src) return null;
         const id = crypto.randomUUID();
         state.images[id] = normalizeImageData({
@@ -431,7 +431,7 @@
 
       async function addVisibleTierAssets() {
         if (!tierVisibleAssets.length) return;
-        const available = tierVisibleAssets.filter(asset => asset.image && !(asset.type === "player" && asset.available === false) && !tierAssetAlreadyAdded(asset.id));
+        const available = tierVisibleAssets.filter(asset => (asset.image || asset.type === "player") && !tierAssetAlreadyAdded(asset.id));
         if (!available.length) {
           showToast("Todos os itens exibidos já estão no projeto.");
           return;
@@ -2640,6 +2640,7 @@
         editorDraft = null;
         editorOriginalPreviewSrc = "";
         editorOriginalEdit = null;
+        editorNameplateDraft = null;
       }
 
       function openImageEditor(imageId) {
@@ -2649,6 +2650,14 @@
         editorOriginalPreviewSrc = imageData.previewSrc || imageData.originalSrc || imageData.src;
         editorOriginalEdit = { ...defaultImageEdit(), ...(imageData.edit || {}) };
         editorDraft = { ...defaultImageEdit(), ...(imageData.edit || {}) };
+        editorNameplateDraft = {
+          nameplateText: imageData.nameplateText || "",
+          nameplateOwnColors: imageData.nameplateOwnColors === true,
+          nameplateBgColor: imageData.nameplateBgColor || state.settings.nameplateBgColor,
+          nameplateTextColor: imageData.nameplateTextColor || state.settings.nameplateTextColor
+        };
+        document.getElementById("editorNameplateText").value = editorNameplateDraft.nameplateText;
+        syncEditorNameplatePreview();
         setEditorTab("image");
         updateEditorControls();
         refreshEditorPreview();
@@ -2658,6 +2667,14 @@
       function resetEditorDraft() {
         if (!currentEditorImageId) return;
         editorDraft = defaultImageEdit();
+        editorNameplateDraft = {
+          nameplateText: "",
+          nameplateOwnColors: false,
+          nameplateBgColor: state.settings.nameplateBgColor,
+          nameplateTextColor: state.settings.nameplateTextColor
+        };
+        document.getElementById("editorNameplateText").value = "";
+        syncEditorNameplatePreview();
         updateEditorControls();
         refreshEditorPreview();
       }
@@ -2666,6 +2683,7 @@
         if (!currentEditorImageId || !editorDraft) return;
         const imageData = state.images[currentEditorImageId];
         imageData.edit = { ...editorDraft };
+        if (editorNameplateDraft) Object.assign(imageData, editorNameplateDraft);
         lastAppliedEdit = { ...editorDraft };
         const previewCanvas = await renderImageComposition(imageData, editorDraft, 512);
         imageData.previewSrc = previewCanvas.toDataURL("image/png");
@@ -3197,6 +3215,23 @@
         });
       }
 
+      document.getElementById("editorNameplateText").addEventListener("input", event => {
+        if (!editorNameplateDraft) return;
+        editorNameplateDraft.nameplateText = event.target.value.slice(0,48);
+        syncEditorNameplatePreview();
+      });
+      document.getElementById("editorNameplateOwnColors").addEventListener("change", event => {
+        if (!editorNameplateDraft) return;
+        editorNameplateDraft.nameplateOwnColors = event.target.checked;
+        syncEditorNameplatePreview();
+      });
+      for (const [id,key] of [["editorNameplateBg","nameplateBgColor"],["editorNameplateColor","nameplateTextColor"]]) {
+        document.getElementById(id).addEventListener("input", event => {
+          if (!editorNameplateDraft) return;
+          editorNameplateDraft[key] = event.target.value;
+          syncEditorNameplatePreview();
+        });
+      }
       document.getElementById("addImagesBtn").addEventListener("click", () => els.imageInput.click());
       els.imageInput.addEventListener("change", async () => {
         await addImageFiles(els.imageInput.files);
