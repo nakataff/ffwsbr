@@ -102,3 +102,39 @@ test('voucher promotions cost one voucher and zero coins while legacy clients al
 test('only administrators can save real discounts, base price changes never fabricate savings, and existing stock survives initialization',async()=>{
  const s=setup();await s.core.adminHandle(admin,{operation:'addStock',code:'VALIDSALE111',title:'Promo',bucket:'shop'});await assert.rejects(s.core.adminHandle(user,{operation:'setCodePromotion',title:'Promo',salePrice:500}),{status:403});for(const price of [-1,1000,1001,'500',NaN,500.5])await assert.rejects(s.core.adminHandle(admin,{operation:'setCodePromotion',title:'Promo',salePrice:price}),{status:400});await assert.rejects(s.core.adminHandle(admin,{operation:'setCodePromotion',title:'Ausente',salePrice:500}),{status:409});await s.core.adminHandle(admin,{operation:'setCodePromotion',title:'Promo',salePrice:700});E.initEconomy(s.sql);assert.equal((await s.core.state(user)).shop[0].price,700);await s.core.adminHandle(admin,{operation:'saveItem',item:{id:'code-default',kind:'code',title:'Um código',price:600,enabled:true}});const item=(await s.core.state(user)).shop[0];assert.equal(item.price,600);assert.equal(item.originalPrice,600);const stock=(await s.core.adminHandle(admin,{operation:'dashboard'})).stock[0],status=await s.core.adminHandle(admin,{operation:'stockStatus',hashes:[stock.hash]});assert.equal(status.codePrice,600);assert.equal(status.stock[0].salePrice,700);
 });
+
+
+test('relatório privado de codiguinhos reúne compras e vales, códigos exatos e horários sem expor ao público',async()=>{
+ const s=setup(),first=crypto.randomUUID(),second=crypto.randomUUID(),notCode=crypto.randomUUID();
+ const codes=[['COINCODE123','Calça Angelical'],['VALECODE456','Camisa Rara']];
+ for(const [code,title] of codes)await s.core.adminHandle(admin,{operation:'addStock',code,title,bucket:'shop'});
+ const stock=s.sql.exec('SELECT hash,code,title FROM eco_stock ORDER BY rowid');
+ s.sql.exec('INSERT OR REPLACE INTO eco_wallet_profiles VALUES(?,?,?,?)','person','Pessoa Teste','pessoa',base);
+ s.sql.exec('INSERT OR REPLACE INTO eco_wallet_profiles VALUES(?,?,?,?)','friend','Amigo Teste','amigo',base);
+ s.sql.exec('INSERT INTO eco_receipts VALUES(?,?,?,?,?,?,?,?)',first,'person','nonce-1',base,'redeem','code-default',JSON.stringify({stockHash:stock[0].hash,result:{label:stock[0].title}}),'done');
+ s.sql.exec('INSERT INTO eco_receipts VALUES(?,?,?,?,?,?,?,?)',second,'friend','nonce-2',base+60000,'voucher','code-default',JSON.stringify({stockHash:stock[1].hash,result:{label:stock[1].title},publicAt:base+240000}),'done');
+ s.sql.exec('INSERT INTO eco_receipts VALUES(?,?,?,?,?,?,?,?)',notCode,'person','nonce-3',base+100000,'redeem','frame',JSON.stringify({result:{label:'Moldura'}}),'done');
+ s.sql.exec("INSERT INTO eco_code_reservations(receipt,uid,gift,deadline,status,openedAt,word) VALUES(?,?,?,?,?,?,?)",first,'person','gift-1',base+180000,'released',base+30000,'LOUD');
+ const report=await s.core.adminHandle(admin,{operation:'codeAcquisitions'});
+ assert.equal(report.total,2);
+ assert.deepEqual(report.entries.map(x=>x.code),['VALECODE456','COINCODE123']);
+ assert.equal(report.coins,1);
+ assert.equal(report.vouchers,1);
+ assert.equal(report.entries[0].username,'amigo');
+ assert.equal(report.entries[0].publicAt,base+240000);
+ assert.equal(report.entries[1].openedAt,base+30000);
+ assert.equal(report.entries[0].payment,'voucher');
+ assert.equal(report.entries[1].payment,'redeem');
+ const onlyCoins=await s.core.adminHandle(admin,{operation:'codeAcquisitions',source:'coins'});
+ assert.equal(onlyCoins.total,1);assert.equal(onlyCoins.entries[0].code,'COINCODE123');
+ const onlyVouchers=await s.core.adminHandle(admin,{operation:'codeAcquisitions',source:'voucher',query:'amigo'});
+ assert.equal(onlyVouchers.total,1);assert.equal(onlyVouchers.entries[0].code,'VALECODE456');
+ assert.equal((await s.core.adminHandle(admin,{operation:'codeAcquisitions',query:'pessoa'})).total,1);
+ assert.equal((await s.core.adminHandle(admin,{operation:'codeAcquisitions',from:'2026-10-14'})).total,0);
+ assert.equal((await s.core.adminHandle(admin,{operation:'codeAcquisitions',to:'2026-10-13'})).total,2);
+ await assert.rejects(s.core.adminHandle(user,{operation:'codeAcquisitions'}),{status:403});
+ await assert.rejects(s.core.handle(user,{operation:'codeAcquisitions'}),{status:400});
+ for(const input of [{source:'invalid'},{offset:-1},{query:'x'.repeat(80)},{from:'2026-99-99'},{from:'2026-11-01',to:'2026-10-01'}]){
+  await assert.rejects(s.core.adminHandle(admin,{operation:'codeAcquisitions',...input}),{status:400});
+ }
+});

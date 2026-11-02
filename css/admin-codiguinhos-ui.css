@@ -85,3 +85,32 @@ body.codes-admin-page{background:#090e19;padding:26px;color:#edf3ff}
 .codes-admin-page .card.gift-pending{border-color:#806b37;background:#2b2517}.codes-admin-page .gift-pending .code-gift-stamp{border-color:#806b37;background:#3a2f18}.gift-pending .code-gift-stamp strong{color:#f5d48f}
 
 .codes-admin-page .gift-sent:not(.gift-pending) .code-gift-stamp{border-color:#6088b3;background:linear-gradient(100deg,#234272,#305f8f);padding:10px 13px}.gift-sent:not(.gift-pending) .code-gift-stamp strong{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.gift-sent:not(.gift-pending) .code-gift-stamp span{color:#dcefff}.gift-sent:not(.gift-pending) .code-gift-stamp small{color:#bcd6ef}
+
+/* Histórico privado: compras e trocas por vale vindas do recibo SQLite. */
+.eco-code-audit{margin:0 0 22px;padding:18px;border:1px solid rgba(117,145,210,.35);border-radius:16px;background:linear-gradient(135deg,#111b31,#0c1325)}
+.eco-code-audit-head h3{font-size:21px;margin:6px 0}
+.eco-code-audit-head span{font-size:11px;color:#8bafff;font-weight:800;letter-spacing:.06em}
+.eco-code-audit-head p{font-size:13px;color:#adbed9;line-height:1.6;max-width:840px}
+.eco-code-audit-filters{display:grid;grid-template-columns:minmax(180px,2fr) repeat(3,minmax(120px,1fr));gap:10px;margin:18px 0 14px}
+.eco-code-audit-filters label{display:flex;flex-direction:column;gap:6px;min-width:0;color:#bed0ed;font-size:12px;font-weight:750}
+.eco-code-audit-filters input,.eco-code-audit-filters select{width:100%;min-height:41px;box-sizing:border-box;border:1px solid #394c70;background:#0b1121;color:#f3f6ff;border-radius:8px;padding:9px 11px;outline-offset:2px}
+.eco-code-audit-filters button,.eco-code-audit-paging button{border:1px solid #50658a;border-radius:8px;background:#1b2843;color:#f5f8ff;font-size:13px;font-weight:700;padding:10px 13px}
+.eco-code-audit-filters button[type=submit]{background:#687bff;border-color:#687bff;color:#fff}
+.eco-code-audit-filters button:disabled,.eco-code-audit-paging button:disabled{opacity:.5;cursor:default}
+.eco-code-audit-summary{font-weight:750;color:#d7e4ff;background:#202f4c;border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.eco-code-audit-results{display:grid;gap:8px}
+.eco-code-audit-row{display:flex;justify-content:space-between;align-items:center;gap:16px;min-width:0;padding:13px 14px;border:1px solid rgba(136,160,212,.23);border-radius:9px;background:#0c1322}
+.eco-code-audit-row-meta,.eco-code-audit-row-code{display:flex;flex-direction:column;gap:5px;min-width:0}
+.eco-code-audit-row-meta{flex:1}
+.eco-code-audit-row-meta strong{font-size:14px;color:#f7f9ff}
+.eco-code-audit-row-meta span{font-weight:750;color:#b7c9ef}
+.eco-code-audit-row-meta small,.eco-code-audit-row-code small{font-size:11px;line-height:1.5;color:#93a7c7}
+.eco-code-audit-row-code{min-width:min(230px,45%);align-items:flex-end}
+.eco-code-audit-row-code details{max-width:100%;width:100%;border:1px solid #45587c;padding:8px 10px;border-radius:7px}
+.eco-code-audit-row-code summary{font-size:12px;cursor:pointer;font-weight:800;color:#c6d8ff}
+.eco-code-audit-row-code code{display:block;max-width:100%;padding:8px 0 2px;white-space:normal;overflow-wrap:anywhere;color:#fff;font-weight:750;user-select:all}
+.eco-code-audit-paging{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0}
+.eco-code-audit-paging span{font-size:12px;color:#a9bbdb}
+.eco-code-audit [data-code-audit-status]{min-height:18px;color:#aac6ff;font-size:12px}
+@media(max-width:850px){.eco-code-audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:530px){.eco-code-audit{padding:12px}.eco-code-audit-filters{grid-template-columns:1fr}.eco-code-audit-row{flex-direction:column;align-items:stretch}.eco-code-audit-row-code{min-width:0;align-items:stretch}.eco-code-audit-paging{gap:6px}.eco-code-audit-filters button{width:100%}}
