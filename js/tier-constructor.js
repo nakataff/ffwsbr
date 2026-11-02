@@ -1096,7 +1096,7 @@
         badge.style.left = s.positionHorizontal === 'left' ? '4px' : 'auto';
         badge.style.right = s.positionHorizontal === 'right' ? '4px' : 'auto';
         badge.style.top = s.positionVertical === 'top' ? '4px' : 'auto';
-        badge.style.bottom = s.positionVertical === 'bottom' ? '4px' : 'auto';
+        badge.style.bottom = s.positionVertical === 'bottom' ? ((card.classList.contains('has-nameplate') ? s.nameplateHeight : 0) + 4) + 'px' : 'auto';
         badge.style.webkitTextStroke = `${s.positionTextStroke}px ${s.positionTextStrokeColor}`;
         badge.style.paintOrder = 'stroke fill';
         badge.style.textShadow = s.positionShadowSize > 0
