@@ -141,6 +141,29 @@
       let namedProjectSaveTimer = null;
       let touchSelectedImageId = null;
       let mobileMoveHintShown = false;
+      // UI-only preferences: do not change saved tier data or PNG export.
+      const TIER_BANK_LAYOUT_KEY = "tier_constructor_bank_layout_v1";
+      const TIER_EDIT_CONTROLS_KEY = "tier_constructor_hide_edit_controls_v1";
+      let tierBankLayout = localStorage.getItem(TIER_BANK_LAYOUT_KEY) === "bottom" ? "bottom" : "left";
+      let editControlsHidden = localStorage.getItem(TIER_EDIT_CONTROLS_KEY) === "true";
+
+      function applyTierWorkspacePreferences() {
+        const layout = document.getElementById("tierEditorLayout");
+        if (!layout) return;
+        layout.dataset.bankLayout = tierBankLayout;
+        layout.classList.toggle("tier-clean-mode", editControlsHidden);
+        document.getElementById("tierBankLayoutButtons")?.querySelectorAll("button[data-layout]").forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.layout === tierBankLayout));
+        });
+        const toggle = document.getElementById("toggleEditControlsBtn");
+        if (toggle) {
+          toggle.setAttribute("aria-pressed", String(editControlsHidden));
+          toggle.textContent = editControlsHidden ? "Mostrar controles de edição" : "Ocultar controles de edição";
+        }
+        layout.querySelectorAll(".tier-row .row-name").forEach(name => {
+          name.contentEditable = editControlsHidden ? "false" : "true";
+        });
+      }
 
 
       function tierNormalizeSearch(value) {
@@ -840,7 +863,7 @@
 
         const name = document.createElement("div");
         name.className = "row-name";
-        name.contentEditable = "true";
+        name.contentEditable = editControlsHidden ? "false" : "true";
         name.spellcheck = false;
         name.textContent = row.name;
         name.addEventListener("input", () => {
@@ -2529,11 +2552,13 @@
       function openSettingsPanel() {
         document.body.classList.add("settings-open");
         if (!els.settingsDialog.open) els.settingsDialog.show();
+        document.getElementById("settingsBtn")?.setAttribute("aria-expanded", "true");
       }
 
       function closeSettingsPanel() {
         if (els.settingsDialog.open) els.settingsDialog.close();
         document.body.classList.remove("settings-open");
+        document.getElementById("settingsBtn")?.setAttribute("aria-expanded", "false");
       }
 
       function setCaptionPanelCollapsed(collapsed) {
@@ -3124,10 +3149,27 @@
       els.undoBtn.addEventListener("click", undoHistory);
       els.redoBtn.addEventListener("click", redoHistory);
       document.getElementById("settingsBtn").addEventListener("click", () => {
+        if (els.settingsDialog.open) {
+          closeSettingsPanel();
+          return;
+        }
         renderRowManager();
         updateSettingsControls();
         openSettingsPanel();
       });
+      document.getElementById("tierBankLayoutButtons")?.addEventListener("click", event => {
+        const button = event.target.closest("button[data-layout]");
+        if (!button || !["left", "bottom"].includes(button.dataset.layout)) return;
+        tierBankLayout = button.dataset.layout;
+        localStorage.setItem(TIER_BANK_LAYOUT_KEY, tierBankLayout);
+        applyTierWorkspacePreferences();
+      });
+      document.getElementById("toggleEditControlsBtn")?.addEventListener("click", () => {
+        editControlsHidden = !editControlsHidden;
+        localStorage.setItem(TIER_EDIT_CONTROLS_KEY, String(editControlsHidden));
+        applyTierWorkspacePreferences();
+      });
+      applyTierWorkspacePreferences();
       document.getElementById("closeSettingsBtn").addEventListener("click", closeSettingsPanel);
       document.getElementById("doneSettingsBtn").addEventListener("click", closeSettingsPanel);
 
@@ -3542,7 +3584,10 @@
         event.preventDefault();
         els.shareProjectDialog.close();
       });
-      els.settingsDialog.addEventListener("close", () => document.body.classList.remove("settings-open"));
+      els.settingsDialog.addEventListener("close", () => {
+        document.body.classList.remove("settings-open");
+        document.getElementById("settingsBtn")?.setAttribute("aria-expanded", "false");
+      });
 
 
       els.imageEditorDialog.addEventListener("close", () => {
