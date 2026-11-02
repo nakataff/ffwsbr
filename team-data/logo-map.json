@@ -104,7 +104,11 @@
     "ANTISOCIAL TEAM": "ast.webp",
     "LYON": "lyon.webp",
     "W7M ESPORTS": "https://i.postimg.cc/yx39wjkN/w7m.webp",
-    "TEAM APEX GAMING": "home-assets/teams/global/tag.webp"
+    "TEAM APEX GAMING": "home-assets/teams/global/tag.webp",
+    "KEYD": "keyd.webp",
+    "KEYD STARS": "keyd.webp",
+    "VK": "keyd.webp",
+    "VIVO KEYD STARS": "keyd.webp"
   },
   "aliases": {
     "CRUZEIRO": "CRUZEIRO ESPORTS",
@@ -150,10 +154,6 @@
     "TAG": "TEAM APEX GAMING",
     "TEAM APEX": "TEAM APEX GAMING",
     "APEX GAMING": "TEAM APEX GAMING",
-    "TEAM APEX GAMING (TAG)": "TEAM APEX GAMING",
-    "KEYD": "VIVO KEYD",
-    "KEYD STARS": "VIVO KEYD",
-    "VK": "VIVO KEYD",
-    "VIVO KEYD STARS": "VIVO KEYD"
+    "TEAM APEX GAMING (TAG)": "TEAM APEX GAMING"
   }
 }
