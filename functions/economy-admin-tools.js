@@ -23,24 +23,34 @@ function create({sql,transaction,db,ranking,vouchers,eligible,dayKey,weekKey,now
   if(p.type!=='week'||p.key!==week||!Array.isArray(p.top3)||p.top3.length>3||p.top3.some((r,i)=>typeof r.userKey!=='string'||r.position!==i+1))throw fail(503,'Não foi possível conferir o resultado da semana.');
   return transaction(()=>{sql.exec('INSERT OR IGNORE INTO eco_interaction_periods VALUES(?,?,?)','week',week,JSON.stringify(p));return JSON.parse(rows('SELECT data FROM eco_interaction_periods WHERE type=? AND period=?','week',week)[0].data);});
  }
- async function winner(week){
-  const p=await podium(week),top=p.top3.find(x=>x.position===1);if(!top)return null;
+ async function resolveRanked(top){
   const linked=rows('SELECT uid,username FROM eco_interaction_identities WHERE user_key=?',top.userKey)[0];
-  const identity=!linked&&ranking?.identity?await ranking.identity(top.userKey):null,instagram=String(identity?.username||linked?.username||top.username||'').toLowerCase();
+  const identity=!linked&&ranking?.identity?await ranking.identity(top.userKey):null;
+  const instagram=String(identity?.username||linked?.username||top.username||'').toLowerCase();
   let uid=linked?.uid;
-  if(!uid&&instagram){if(instagram==='nakataff')uid=(await db.get('communityOwnerInstagram'))?.uid;else uid=(await db.get('communityRankingProfiles/'+instagram.replace(/\./g,',')))?.uid;}
+  if(!uid&&instagram){if(instagram==='nakataff')uid=(await db.get('communityOwnerInstagram'))?.uid;else uid=(await db.get('communityRankingProfiles/'+instagram.replace(/\\./g,',')))?.uid;}
   let recipient=null;
   if(uidOK(uid)){const profile=await db.get('userAccounts/'+uid+'/profile');if(profile?.name&&/^[a-z0-9_]{3,24}$/.test(profile.username||''))recipient={uid,name:String(profile.name).slice(0,80),username:profile.username};}
-  return {instagram,points:top.points,recipient};
+  const restriction=uidOK(uid)?rows('SELECT rewards FROM eco_account_restrictions WHERE uid=?',uid)[0]:null;
+  return {instagram,points:top.points,recipient,disqualified:!!restriction?.rewards,originalPosition:top.position};
+ }
+ async function winner(week){
+  const p=await podium(week),disqualified=[];
+  for(const top of p.top3){
+   const candidate=await resolveRanked(top);
+   if(candidate.disqualified){disqualified.push({instagram:candidate.instagram,position:top.position});continue;}
+   return {winner:candidate,disqualified};
+  }
+  return {winner:null,disqualified};
  }
  async function weeklyWinners(b){
   const before=b.before?closedWeek(b.before):weekKey(dayKey(now())),entries=[];
-  for(let i=1;i<=4;i++){const week=shift(before,-7*i),w=await winner(week);entries.push({week,end:shift(week,6),winner:w,award:vouchers.weeklyAward(week)});}
+  for(let i=1;i<=4;i++){const week=shift(before,-7*i),result=await winner(week);entries.push({week,end:shift(week,6),...result,award:vouchers.weeklyAward(week)});}
   return {ok:true,entries,nextBefore:entries.at(-1).week};
  }
  async function grantWeekly(identity,b){
-  const week=closedWeek(b.week),w=await winner(week);
-  if(!w?.recipient)throw fail(409,'O vencedor ainda não tem uma conta identificada na Central.');
+  const week=closedWeek(b.week),{winner:w}=await winner(week);
+  if(!w?.recipient)throw fail(409,'Não há vencedor elegível com conta identificada entre os três primeiros.');
   if(w.recipient.uid!==b.targetUid||w.recipient.username!==b.expectedUsername)throw fail(409,'Confira novamente o vencedor e a conta antes de enviar.');
   return vouchers.grantWeekly(identity,b,week);
  }
