@@ -19,8 +19,8 @@ test('banco e rows compartilham o editor; biblioteca e projetos existentes conti
  assert.ok(area.indexOf('id="imageBank"')<area.indexOf('id="tierBoard"'));
  for(const id of ['tierBankLayoutButtons','toggleEditControlsBtn','settingsBtn','projectMenu','tierSiteLibrary','tierAssetResults','imageBank','trashPanel','tierBoard'])assert.ok(html.includes('id="'+id+'"'),id);
  for(const preset of ['wb-2026-s1','wb-2026-s2','ewc-2026','ffws-global-2026'])assert.ok(html.includes('data-tier-preset="'+preset+'"'),preset);
- assert.match(html,/tier-constructor-workspace\.css\?v=20261102-(?:workspace|nameplates)-v1/);
- assert.match(html,/tier-constructor\.js\?v=20261102-(?:workspace|nameplates)-v1/);
+ assert.match(html,/tier-constructor-workspace\.css\?v=20261102-(?:workspace|nameplates|text-scroll)-v1/);
+ assert.match(html,/tier-constructor\.js\?v=20261102-(?:workspace|nameplates|text-scroll)-v1/);
 });
 test('toolbar sem sticky, banco lateral no PC e faixas roláveis no celular',()=>{
  assert.match(css,/\.tier-constructor-app \.topbar\s*\{[^}]*position:static/s);

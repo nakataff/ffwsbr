@@ -81,7 +81,19 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   assert.deepEqual([...w.document.querySelectorAll('.tier-row .tier-image-nameplate')].map(x=>x.textContent),['LOUD','Brabox']);
   const name=w.document.querySelector('.tier-row .image-card .edit-image');
   name.click();
-  w.document.querySelector('[data-editor-tab-button="nameplate"]').click();
+  w.document.querySelector('[data-editor-tab-button="text"]').click();
+  const editorTab=w.document.querySelector('[data-editor-tab="text"]');
+  assert.equal(editorTab.hidden,false);
+  assert.ok(editorTab.contains(w.document.getElementById('editorNameplateText')));
+  assert.ok(editorTab.contains(w.document.getElementById('editorText')));
+  assert.ok(!w.document.querySelector('[data-editor-tab-button="nameplate"]'));
+  const advanced=w.document.getElementById('editorOverlayAdvanced');
+  assert.equal(advanced.open,false,'opções avançadas começam recolhidas em imagem nova');
+  advanced.open=true;
+  assert.ok(advanced.contains(w.document.getElementById('editorText')));
+  advanced.open=false;
+  assert.equal(w.document.getElementById('editorNameplateEnabled').checked,true);
+
   const input=w.document.getElementById('editorNameplateText');
   input.value='LOUD SNICKERS';input.dispatchEvent(new w.Event('input',{bubbles:true}));
   assert.equal(w.document.getElementById('editorNameplateSample').textContent,'LOUD SNICKERS');
@@ -94,6 +106,9 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   const changed=w.document.querySelector('.tier-row .tier-image-nameplate');
   assert.equal(changed?.textContent,'LOUD SNICKERS');
   assert.equal(changed?.style.backgroundColor,'rgb(255, 0, 0)');
+  assert.equal(w.document.querySelector('.tier-row .image-card img').alt,'LOUD','nome original permanece associado à logo');
+  assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate').textContent,'LOUD SNICKERS');
+
   w.document.getElementById('shareLinkBtn').click();
   await tick();
   const link=w.document.getElementById('shareProjectUrl').value;
@@ -126,4 +141,46 @@ test('copiar e compartilhar PNG usam o resultado renderizado com as legendas',as
   assert.equal(shares.length,1,'compartilhamento nativo usa File');
   assert.equal(shares[0].files[0].name,'tier-list.png');
  }finally{dom.window.close();}
+});
+
+test('nome curto é alterado somente na tier e cancelamento da edição restaura visibilidade',async()=>{
+ const {dom,w}=createBrowser();
+ try {
+  await tick();
+  const bank=w.document.getElementById('imageBank');
+  bank.querySelector('.image-card').click();
+  w.document.querySelector('.tier-row .dropzone').click();
+  const card=w.document.querySelector('.tier-row .image-card');
+  card.querySelector('.edit-image').click();
+  w.document.querySelector('[data-editor-tab-button="text"]').click();
+  const shortName=w.document.getElementById('editorNameplateText');
+  shortName.value='BURIRAM';
+  shortName.dispatchEvent(new w.Event('input',{bubbles:true}));
+  w.document.getElementById('editorNameplateEnabled').click();
+  assert.ok(w.document.querySelector('.tier-row .tier-image-nameplate'));
+  w.document.getElementById('cancelEditorBtn').click();
+  assert.equal(w.document.querySelector('.tier-row .tier-image-nameplate'),null,'cancelar restaura a opção anterior');
+  card.querySelector('.edit-image').click();
+  w.document.querySelector('[data-editor-tab-button="text"]').click();
+  shortName.value='BURIRAM';
+  shortName.dispatchEvent(new w.Event('input',{bubbles:true}));
+  w.document.getElementById('editorNameplateEnabled').click();
+  w.document.getElementById('saveEditorBtn').click();
+  await tick();
+  const display=w.document.querySelector('.tier-row .tier-image-nameplate');
+  assert.equal(display?.textContent,'BURIRAM');
+  assert.equal(w.document.querySelector('.tier-row .image-card').dataset.imageId,card.dataset.imageId,'mantém o cadastro/ID');
+ } finally {dom.window.close()}
+});
+
+test('drawer rolável conserva cabeçalho e ações sem cobrir os campos',()=>{
+ const editor=w=>w.document.getElementById('imageEditorDialog');
+ const fragment=html.slice(html.indexOf('id="imageEditorDialog"'));
+ assert.ok(fragment.includes('id="editorScrollRegion"'));
+ assert.ok(fragment.includes('id="editorOverlayAdvanced"'));
+ assert.ok(fragment.includes('id="saveEditorBtn"'));
+ assert.match(css,/#imageEditorDialog\.editor-drawer \.editor-controls\s*\{[^}]*overflow-y:auto/s);
+ assert.match(css,/#imageEditorDialog\.editor-drawer \.dialog-inner\s*\{[^}]*grid-template-rows:auto minmax\(0,1fr\) auto/s);
+ assert.match(css,/#imageEditorDialog\.editor-drawer \.editor-preview-panel\s*\{[^}]*grid-template-columns:/s);
+ assert.match(js,/if \(scrollRegion\) scrollRegion\.scrollTop = 0/);
 });

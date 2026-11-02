@@ -141,6 +141,7 @@
       let editorOriginalPreviewSrc = "";
       let editorOriginalEdit = null;
       let editorNameplateDraft = null;
+      let editorOriginalNameplateEnabled = null;
       let autosaveWarned = false;
       let currentBrowserProjectName = localStorage.getItem(CURRENT_PROJECT_KEY) || "";
       let namedProjectSaveTimer = null;
@@ -573,11 +574,13 @@
       function syncEditorNameplatePreview() {
         if (!editorNameplateDraft || !currentEditorImageId) return;
         const nameField = document.getElementById("editorNameplateText");
+        const enabledField = document.getElementById("editorNameplateEnabled");
         const ownField = document.getElementById("editorNameplateOwnColors");
         const bgField = document.getElementById("editorNameplateBg");
         const textField = document.getElementById("editorNameplateColor");
         const sample = document.getElementById("editorNameplateSample");
         if (!sample) return;
+        if (enabledField) enabledField.checked = state.settings.nameplateEnabled === true;
         if (ownField) ownField.checked = editorNameplateDraft.nameplateOwnColors;
         if (bgField) {
           bgField.value = editorNameplateDraft.nameplateOwnColors ? editorNameplateDraft.nameplateBgColor : state.settings.nameplateBgColor;
@@ -2591,7 +2594,10 @@
       }
 
       function setEditorTab(tab) {
+        if (tab === "nameplate") tab = "text"; // Compatibilidade com abas antigas.
         currentEditorTab = tab;
+        const scrollRegion = document.getElementById("editorScrollRegion");
+        if (scrollRegion) scrollRegion.scrollTop = 0;
         document.querySelectorAll("[data-editor-tab-button]").forEach(button => {
           button.classList.toggle("active", button.dataset.editorTabButton === tab);
         });
@@ -2640,6 +2646,11 @@
           state.images[currentEditorImageId].previewSrc = editorOriginalPreviewSrc || state.images[currentEditorImageId].originalSrc || state.images[currentEditorImageId].src;
           syncEditedImageCard(currentEditorImageId, state.images[currentEditorImageId].previewSrc);
         }
+        if (revert && editorOriginalNameplateEnabled !== null
+            && state.settings.nameplateEnabled !== editorOriginalNameplateEnabled) {
+          state.settings.nameplateEnabled = editorOriginalNameplateEnabled;
+          render();
+        }
         if (els.imageEditorDialog.open) els.imageEditorDialog.close();
         document.body.classList.remove("editor-open");
         currentEditorImageId = null;
@@ -2647,12 +2658,14 @@
         editorOriginalPreviewSrc = "";
         editorOriginalEdit = null;
         editorNameplateDraft = null;
+        editorOriginalNameplateEnabled = null;
       }
 
       function openImageEditor(imageId) {
         const imageData = state.images[imageId];
         if (!imageData) return;
         currentEditorImageId = imageId;
+        editorOriginalNameplateEnabled = state.settings.nameplateEnabled;
         editorOriginalPreviewSrc = imageData.previewSrc || imageData.originalSrc || imageData.src;
         editorOriginalEdit = { ...defaultImageEdit(), ...(imageData.edit || {}) };
         editorDraft = { ...defaultImageEdit(), ...(imageData.edit || {}) };
@@ -2664,6 +2677,9 @@
         };
         document.getElementById("editorNameplateText").value = editorNameplateDraft.nameplateText;
         syncEditorNameplatePreview();
+        document.getElementById("editorOverlayAdvanced").open = Boolean(
+          (editorDraft.text || "").trim() || editorDraft.bannerEnabled
+        );
         setEditorTab("image");
         updateEditorControls();
         refreshEditorPreview();
@@ -3316,6 +3332,12 @@
         });
       }
 
+      document.getElementById("editorNameplateEnabled").addEventListener("change", event => {
+        if (!editorNameplateDraft) return;
+        state.settings.nameplateEnabled = event.target.checked;
+        syncEditorNameplatePreview();
+        render();
+      });
       document.getElementById("editorNameplateText").addEventListener("input", event => {
         if (!editorNameplateDraft) return;
         editorNameplateDraft.nameplateText = event.target.value.slice(0,48);
