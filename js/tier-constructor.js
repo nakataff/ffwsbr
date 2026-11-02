@@ -1430,6 +1430,12 @@
             sourceAssetId: image.sourceAssetId || "",
             sourceType: image.sourceType || "",
             sourceSubtitle: image.sourceSubtitle || "",
+            nameplateText: image.nameplateText || "",
+            nameplateOwnColors: image.nameplateOwnColors === true,
+            ...(image.nameplateOwnColors ? {
+              nameplateBgColor: image.nameplateBgColor || "#101827",
+              nameplateTextColor: image.nameplateTextColor || "#ffffff"
+            } : {}),
             edit: compactChangedValues(image.edit || {}, defaultImageEdit())
           };
         }
