@@ -24,7 +24,7 @@
       const BROWSER_AUTOSAVE_NAME = "__tierlist_autosave__";
       const CURRENT_PROJECT_KEY = "tierlist_current_browser_project";
 
-      const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20260801-v2";
+      const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20261102-world-2026-v1";
       const TIER_DEFAULT_PRESET_URL = "tier-constructor/default-wb-2026-s2.json?v=20260801-v1";
       const TIER_LOGO_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv";
       const TIER_SHARE_HASH_KEY = "tier";
