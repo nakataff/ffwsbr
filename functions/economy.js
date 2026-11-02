@@ -7,6 +7,7 @@ const quizCore=require('./economy-quiz');
 const adminToolsCore=require('./economy-admin-tools');
 const voucherCore=require('./economy-vouchers');
 const codeReturns=require('./economy-code-returns');
+const codeReport=require('./economy-code-report');
 const codePolicyCore=require('./economy-code-policy');
 const restrictionCore=require('./account-restrictions');
 const interactionRewards=require('./economy-interactions');
@@ -70,6 +71,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
  const credit=(uid,delta,kind,id,label,by='')=>{const old=rows('SELECT uid,delta,kind,label FROM eco_ledger WHERE id=?',id)[0];if(old){if(old.uid!==uid||old.delta!==delta||old.kind!==kind||old.label!==label)throw fail(409,'Este pedido já foi registrado com outros dados. Confira o histórico antes de ajustar.');return false;}if(delta<0&&['redeem','game_purchase'].includes(kind))restrictions.assertAllowed(uid,'shop');if(delta>0&&!['code_refund','game_refund'].includes(kind))assertReward(uid);const w=wallet(uid);if(w.balance+delta<0)throw fail(400,'Saldo insuficiente.');sql.exec('UPDATE eco_wallet SET balance=balance+?,earned=earned+?,spent=spent+? WHERE uid=?',delta,['game_refund','code_refund'].includes(kind)?0:Math.max(0,delta),['game_refund','code_refund'].includes(kind)?-delta:Math.max(0,-delta),uid);sql.exec('INSERT INTO eco_ledger VALUES(?,?,?,?,?,?,?)',id,uid,delta,kind,now(),label,by);return true;};
  const promotions=codePromotions.create({sql,transaction,now});
  const returns=codeReturns.create({sql,transaction,db,credit,now});
+ const codeAcquisitions=codeReport.create({sql});
  const inbox=inboxCore.create({sql,transaction,db,now,assertReward});
  const codePolicy=codePolicyCore.create({sql,transaction,notify:inbox.reward,now,dayKey});
  const orders=gameOrders.create({sql,transaction,credit,now,notify:notice=>inbox.reward(notice)});
@@ -213,6 +215,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
   if(['quizConfig','quizSaveConfig','quizImport','quizList'].includes(b.operation))return quiz.admin(b);
   if(b.operation==='codeReturnPreview')return returns.preview(b);
   if(b.operation==='codeDeliveries')return returns.list(b);
+  if(b.operation==='codeAcquisitions')return codeAcquisitions.list(b);
   if(b.operation==='returnCode')return returns.giveBack(identity,b);
   if(['voucherConfig','saveVoucherConfig','findVoucherRecipient','grantVoucher','listVouchers','revokeVoucher'].includes(b.operation))return vouchers.admin(identity,b);
   if(b.operation==='gameOrders')return orders.list(null,b);
