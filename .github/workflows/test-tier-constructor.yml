@@ -1,0 +1,39 @@
+name: Test Tier Constructor presets
+
+on:
+  pull_request:
+    paths:
+      - 'tier-constructor.html'
+      - 'js/tier-constructor.js'
+      - 'tier-constructor/assets-index.json'
+      - 'ffws-global-2026/teams.json'
+      - 'ffws-global-2026/groups.json'
+      - 'test/tier-constructor-global-2026.test.cjs'
+      - '.github/workflows/test-tier-constructor.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tier-constructor.html'
+      - 'js/tier-constructor.js'
+      - 'tier-constructor/assets-index.json'
+      - 'ffws-global-2026/teams.json'
+      - 'ffws-global-2026/groups.json'
+      - 'test/tier-constructor-global-2026.test.cjs'
+      - '.github/workflows/test-tier-constructor.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-presets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Tier Constructor projects and official Mundial 2026 assets
+        run: |
+          node --check js/tier-constructor.js
+          node --test test/tier-constructor-global-2026.test.cjs
