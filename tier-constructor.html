@@ -11,9 +11,9 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261025-daily-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261102-workspace-v1"></script>
+  <script defer src="js/tier-constructor.js?v=20261102-nameplates-v1"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261020-mobile-custom-v4">
-<link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-workspace-v1"></head>
+<link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-nameplates-v1"></head>
 <body class="tier-constructor-page">
 
 <header class="cff-public-topbar">
@@ -71,6 +71,8 @@
           </div>
         </details>
         <button id="shareLinkBtn" class="toolbar-btn">Compartilhar link</button>
+        <button id="copyPngBtn" type="button" class="toolbar-btn" title="Copiar PNG para colar em outro aplicativo">Copiar imagem</button>
+        <button id="sharePngBtn" type="button" class="toolbar-btn" title="Compartilhar a imagem PNG pronta">Compartilhar PNG</button>
         <button id="exportBtn" class="toolbar-btn">Exportar PNG</button>
       </div>
     </header>
@@ -283,6 +285,19 @@
               <div class="unit-input"><input id="rowHeightNumber" type="number" min="60" max="320" step="5" /><span>px</span></div>
             </div>
           </div>
+        </section>
+
+        <section class="settings-section" id="nameplateSettings">
+          <h3>Nome embaixo das imagens</h3>
+          <div class="setting"><div class="setting-info"><strong>Mostrar nomes de times e jogadores</strong><small>Ex.: logo da LOUD com LOUD em uma faixa abaixo. Funciona também com silhuetas de atletas sem foto.</small></div>
+            <div class="setting-control"><div class="segmented" id="nameplateButtons"><button type="button" data-value="false">Desativado</button><button type="button" data-value="true">Ativado</button></div><div></div></div>
+          </div>
+          <div class="setting"><div class="setting-info"><strong>Fundo da legenda</strong><small>Cor padrão da faixa sob a imagem.</small></div><div class="setting-control"><input id="nameplateBgColorInput" type="color" value="#101827"/><div></div></div></div>
+          <div class="setting"><div class="setting-info"><strong>Cor do nome</strong><small>Cor padrão das letras. Pode ser personalizada para cada imagem.</small></div><div class="setting-control"><input id="nameplateTextColorInput" type="color" value="#ffffff"/><div></div></div></div>
+          <div class="setting"><div class="setting-info"><strong>Altura da faixa</strong><small>Espaço reservado para o nome abaixo da imagem.</small></div>
+            <div class="setting-control"><input id="nameplateHeightRange" type="range" min="18" max="55" step="1"/><div class="unit-input"><input id="nameplateHeightNumber" type="number" min="18" max="55" step="1"/><span>px</span></div></div>
+          </div>
+          <p class="tier-nameplate-help">Para mudar o nome de uma imagem individualmente, use o lápis da imagem → aba Nome. A exportação PNG respeita todas as legendas.</p>
         </section>
 
         <section class="settings-section" data-highlight-target="caption">
@@ -592,6 +607,7 @@
             <button type="button" class="active" data-editor-tab-button="image">Imagem</button>
             <button type="button" data-editor-tab-button="background">Fundo</button>
             <button type="button" data-editor-tab-button="text">Texto</button>
+            <button type="button" data-editor-tab-button="nameplate">Nome</button>
             <button type="button" data-editor-tab-button="pip">PiP</button>
             <button type="button" data-editor-tab-button="actions">Ações</button>
           </div>
@@ -644,6 +660,18 @@
             <div class="setting"><div class="setting-info"><strong>Tamanho do PiP</strong><small>Controla o tamanho.</small></div><div class="setting-control"><input id="editorPipSizeRange" type="range" min="8" max="80" step="1" /><div class="unit-input"><input id="editorPipSizeNumber" type="number" min="8" max="80" step="1" /><span>%</span></div></div></div>
             <div class="setting"><div class="setting-info"><strong>Posição horizontal do PiP</strong><small>Move a imagem extra na horizontal.</small></div><div class="setting-control"><input id="editorPipXRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorPipXNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
             <div class="setting"><div class="setting-info"><strong>Posição vertical do PiP</strong><small>Move a imagem extra na vertical.</small></div><div class="setting-control"><input id="editorPipYRange" type="range" min="0" max="100" step="1" /><div class="unit-input"><input id="editorPipYNumber" type="number" min="0" max="100" step="1" /><span>%</span></div></div></div>
+          </section>
+
+          <section class="settings-section editor-section" data-editor-tab="nameplate" hidden>
+            <h3>Nome abaixo da imagem</h3>
+            <p class="tier-nameplate-help">A legenda fica em uma faixa independente abaixo da logo ou silhueta. Ela não altera o arquivo da foto.</p>
+            <div class="setting"><div class="setting-info"><strong>Nome exibido</strong><small>Ex.: LOUD, MT7 ou BRABOX. Se vazio, usa o nome original da imagem.</small></div>
+              <div class="setting-control editor-wide-control"><input id="editorNameplateText" type="text" maxlength="48" placeholder="Nome do time ou jogador"/><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Usar cores próprias nesta imagem</strong><small>Se desligado, acompanha as cores gerais da tier.</small></div>
+              <div class="setting-control"><input id="editorNameplateOwnColors" type="checkbox"/><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Fundo desta legenda</strong></div><div class="setting-control"><input id="editorNameplateBg" type="color" value="#101827"/><div></div></div></div>
+            <div class="setting"><div class="setting-info"><strong>Cor deste nome</strong></div><div class="setting-control"><input id="editorNameplateColor" type="color" value="#ffffff"/><div></div></div></div>
+            <p id="editorNameplateSample" class="tier-editor-nameplate-sample" aria-live="polite"></p>
           </section>
 
           <section class="settings-section editor-section" data-editor-tab="actions" hidden>
