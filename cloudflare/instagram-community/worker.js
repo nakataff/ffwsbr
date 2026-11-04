@@ -4,6 +4,7 @@ import {STORY_PREVIEW_SCHEMA,storeStoryPreview,purgeExpiredStoryPreviews,preview
 import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, monthCoverage, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
 import {createPredictionIdentity} from './global-prediction-identity.js';
 import {createGlobalPredictionService} from './global-prediction-service.js';
+import {TIER_SHARE_VERSION,TIER_SHARE_SCHEMA,createTierShare,getTierShare,purgeExpiredTierShares} from './tier-shares.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
   storyApprovalRequired: false,
@@ -78,6 +79,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
   ...PROFILE_INSIGHTS_SCHEMA,
   ...STORY_REVIEW_SCHEMA,
   ...STORY_PREVIEW_SCHEMA,
+  ...TIER_SHARE_SCHEMA,
   'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
   'CREATE INDEX IF NOT EXISTS idx_awards_type_award_key ON awards (type, award_key)',
@@ -97,12 +99,12 @@ const globalPredictionService=createGlobalPredictionService({fetchJson,json,getC
  resolveIdentity:createPredictionIdentity({getCheckinSession,userKey})});
 
 export default {
-  async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env))await purgeExpiredStoryPreviews(env.DB);})());},
+  async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env)){await purgeExpiredStoryPreviews(env.DB);await purgeExpiredTierShares(env.DB);}})());},
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION, globalPredictionsVersion: '20261104-standalone-v1' }, 200, request);
+    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION, globalPredictionsVersion: '20261104-standalone-v1', tierSharesVersion: TIER_SHARE_VERSION }, 200, request);
 
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
       if (!(await ensurePerformanceIndexes(env))) return json({ok:false,error:"Serviço temporariamente indisponível."},503,request);
@@ -114,6 +116,8 @@ export default {
       return new Response('Method Not Allowed', { status: 405 });
     }
 
+    if (url.pathname === '/api/tier-share' && request.method === 'POST') return createTierShare(request,env);
+    if (url.pathname.startsWith('/api/tier-share/') && request.method === 'GET') return getTierShare(request,env,url.pathname.slice('/api/tier-share/'.length));
     if (url.pathname === '/api/ranking' && request.method === 'GET') return publicRankingResponse(request, env, url);
     if (url.pathname === '/api/ranking/history' && request.method === 'GET') return getWeeklyHistory(request, env, url);
     if (url.pathname === '/api/ranking/months' && request.method === 'GET') return getMonthlyHistory(request, env, url);
