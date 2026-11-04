@@ -171,7 +171,7 @@ async function ensurePerformanceIndexes(env) {
     performanceIndexesPromise = (async () => {
       // Cold instances only check one durable marker. Apply the additive schema
       // once per release, including its backfill, in a single atomic D1 batch.
-      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION + ':story-previews-v1';
+      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION + ':story-previews-v1:tier-shares:' + TIER_SHARE_VERSION;
       let applied;
       try {
         applied = await env.DB.prepare('SELECT version FROM community_period_versions WHERE period_key=?1')
