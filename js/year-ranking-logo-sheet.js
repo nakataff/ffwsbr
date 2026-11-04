@@ -5,7 +5,7 @@ const V='20261018-global-career-logos-v1';
 const DEFAULT_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv';
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,'');
 const map={},aliases={},priorities={};
-const LYON_TEAM_LOGO='https://i.postimg.cc/XYGTQnxR/inco.webp';
+const LYON_TEAM_LOGO='home-assets/teams/global/lyon-gold.webp';
 let ready=false,loadPromise=null;
 const fallbackLogos={'SIX EIGHT':'https://i.postimg.cc/QNSc7JY0/SIX8.webp'};
 function cleanUrl(value){
