@@ -692,3 +692,11 @@ Os códigos Wiki dos 24 participantes foram conferidos com o bloco `TeamParticip
 O botão **Enviar resultados para o site** fica no início de **Resumos e códigos**. Ele abre um diálogo com as quedas completas, a classificação acumulada da Fase 1 (ou apenas o dia nas demais etapas) e a cobertura individual. Abrir, trocar a prévia ou cancelar não consulta o Firebase nem publica nada. Apenas **Confirmar e enviar ao site** autentica e envia o snapshot conferido. Uma edição posterior invalida a confirmação; uma queda incompleta fica no rascunho. O recibo por rodada torna a repetição de uma resposta perdida idempotente, e a revisão impede sobrescrever outro lançamento. Não reduzir o número de quedas já publicado.
 
 Verificações: `test/global-camp-review.test.cjs`, `test/global-camp-browser.test.cjs` e `test/global-camp-home.test.cjs`.
+
+#### Consulta de quedas e apresentação do Mundial
+
+O filtro `v94DropFilter` do núcleo comprimido também funciona na visualização completa (rodada isolada), usada pelo modelo do Mundial. O indicador **QUEDA** abre opções **Só esta queda** e **Acumulado até aqui**. O filtro é visual: restaura as quedas, o resumo integral usado em exportação e o campeão ao terminar a renderização; o envio ao site continua usando os resultados completos. A chave de seleção inclui a rodada oficial, para não carregar o filtro de um confronto para outro. A visão geral do modo torneio conserva seu cálculo próprio e não recebe o filtro diário.
+
+O título da tabela não inclui horário; datas e horários permanecem no calendário e nas configurações da rodada. `cffGlobalPresentationVersion: 5` marca a limpeza inicial dos indicadores regionais herdados em modelos antigos. Novos modelos começam sem emojis de classificação; as setas verdes/vermelhas de variação de posição continuam. O importador respeita `emojiRules` vazio, sem recriar a seta azul padrão. Verificação integrada: `test/camp-drop-history.test.cjs`.
+
+Na reabertura, os campos do modelo são restaurados do backup inicial protegido pelo loader. Para autosaves antigos que perderam essa identificação, a recuperação exige uma única combinação de data e grupos oficiais; metadados podem vir do histórico local, mas as pontuações atuais nunca são substituídas por um snapshot antigo.

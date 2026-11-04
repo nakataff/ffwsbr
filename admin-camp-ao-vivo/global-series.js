@@ -3,13 +3,13 @@
 if(window.CFF_GLOBAL_CAMP)return;
 const C=window.CFF_GLOBAL_CAMP_CORE,$=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x));
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const storage=window.localStorage,version='20261104-camp-model-v4';
+const storage=window.localStorage,version='20261104-camp-history-v5';
 const labels={classificatoria:'Classificatória · Fase 1',segundaFase:'Segunda fase · Pools',lastChance:'Repescagem',final:'Grande Final'};
 let meta,template,state=null,busy=false,preview=null,review=null,selectedStage='classificatoria',previousFocus=null,previousOverflow='',navDefaults=null;
 const originalCollect=window.collectBackupData,originalImport=window.importBackup;
-function restore(data){state=data?.config?.cffGlobalRound?{key:data.config.cffGlobalRound,archive:copy(data.config.cffGlobalArchive||{}),players:copy(data.config.cffGlobalPlayers||[]),revisions:copy(data.config.cffGlobalRevisions||{})}:null}
-restore(originalCollect?.(true));
-function collect(){const data=originalCollect.apply(this,arguments);if(data?.config&&state)Object.assign(data.config,{cffGlobalRound:state.key,cffGlobalArchive:copy(state.archive),cffGlobalPlayers:copy(state.players),cffGlobalRevisions:copy(state.revisions),cffTournamentModel:'ffws-global-2026'});return data}
+function restore(data){state=data?.config?.cffGlobalRound?{key:data.config.cffGlobalRound,archive:copy(data.config.cffGlobalArchive||{}),players:copy(data.config.cffGlobalPlayers||[]),revisions:copy(data.config.cffGlobalRevisions||{}),presentationVersion:Number(data.config.cffGlobalPresentationVersion)||0}:null}
+restore(window.__CFF_CAMP_INITIAL_BACKUP__||originalCollect?.(true));
+function collect(){const data=originalCollect.apply(this,arguments);if(data?.config&&state)Object.assign(data.config,{cffGlobalRound:state.key,cffGlobalArchive:copy(state.archive),cffGlobalPlayers:copy(state.players),cffGlobalRevisions:copy(state.revisions),cffTournamentModel:'ffws-global-2026',cffGlobalPresentationVersion:state.presentationVersion});return data}
 window.collectBackupData=collect;try{collectBackupData=collect}catch(_){}
 const wrappedImport=function(){let next;try{next=JSON.parse($('backup-input').value)}catch(_){}const before=state;if(next)restore(next);try{const result=originalImport.apply(this,arguments);render();return result}catch(e){state=before;throw e}};
 window.importBackup=wrappedImport;try{importBackup=wrappedImport}catch(_){}
@@ -104,8 +104,37 @@ function prepareLayout(section){
  $('cff-global-review-drop').addEventListener('change',renderReviewDrop);$('cff-global-review-confirm').addEventListener('click',()=>action(publishConfirmed));
  document.addEventListener('keydown',e=>{if(modal.hidden)return;if(e.key==='Escape'){e.preventDefault();closeReview()}if(e.key==='Tab'){const items=[...modal.querySelectorAll('button,select')].filter(el=>!el.disabled),first=items[0],last=items.at(-1);if(!first){e.preventDefault();return}if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 }
+function recoverModelIdentity(){
+ if(state)return;
+ const current=window.__CFF_CAMP_INITIAL_BACKUP__||originalCollect?.(true),cfg=current?.config||{};
+ if(!String(cfg.cffFfwsStage||'').startsWith('global-')&&!String(cfg.tournamentName||'').toLowerCase().startsWith(meta.name.toLowerCase()+' — '))return;
+ const date=String(cfg.date||cfg.daySettings?.[0]?.date||'').slice(0,10),ids=(current.selectedTeams||[]).map(code=>C.team(meta,code)?.id).sort();
+ if(ids.length!==12||new Set(ids).size!==12||ids.some(id=>!id))return;
+ const matches=meta.rounds.filter(r=>r.date===date&&(!r.groups||r.groups.flatMap(g=>meta.groups[g]).sort().join('|')===ids.join('|')));
+ if(matches.length!==1)return;
+ const round=matches[0];let saved=cfg;
+ // Older collectors could drop the custom model fields. Recover metadata only;
+ // never replace the current drop scores with an older backup.
+ try{const history=JSON.parse(storage.getItem('cff_camp_safe_history_v1')||'[]');const found=history.find(item=>item?.backup?.config?.cffGlobalRound===round.key);if(found)saved=found.backup.config}catch(_){}
+ restore({config:{...saved,cffGlobalRound:round.key}});
+}
+function migratePresentation(){
+ if(!state)return;
+ const input=$('tournament-name'),title=input?.value||'';
+ if(title.startsWith(meta.name+' — Fase 1 · ') && / · \d{2}:\d{2}$/.test(title)){
+  input.value=title.replace(/ · \d{2}:\d{2}$/,'');
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+ }
+ if(state.presentationVersion<5){
+  // Older ready-model imports inherited the Brazil qualifier legend from the browser.
+  const visual=$('emoji-visual-enabled');if(visual){visual.checked=false;visual.dispatchEvent(new Event('change',{bubbles:true}));}
+  const rules=$('emoji-rules-input');if(rules && /^⬆️?\s*:\s*1-2$/.test(rules.value.trim())){rules.value='';rules.dispatchEvent(new Event('input',{bubbles:true}));}
+  state.presentationVersion=5;window.renderSummary?.();persist();
+ }
+}
 async function boot(){try{
  [meta,template]=await Promise.all([`/ffws-global-2026/camp-model.json?v=${version}`,`/camp-ao-vivo/base.json?v=${version}`].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error('Não foi possível carregar o modelo do Mundial.');return r.json()}));
+ recoverModelIdentity();
  const descriptions={classificatoria:'24 times · 4 grupos · 6 dias',segundaFase:'4 dias · Top 2 por dia à final',lastChance:'12 times · 10 quedas · Top 4',final:'12 times · Champion Rush 110'};
  const section=document.createElement('section');section.id='cff-global-camp';section.className='cff-global-camp';section.innerHTML=`<header><div><small>1 · MONTAR CAMPEONATO · MODELO PRONTO</small><h2>FFWS Global Finals 2026</h2><p>Classificatória, pools, repescagem e final preparados. Os resultados ficam separados por rodada.</p></div><button type="button" id="cff-global-custom">Campeonato personalizado</button></header><nav id="cff-global-stage-cards" aria-label="Fases do Mundial">${Object.entries(labels).map(([key,label])=>`<button type="button" data-global-stage="${key}" aria-pressed="${key==='classificatoria'}"><strong>${esc(label)}</strong><small>${descriptions[key]}</small></button>`).join('')}</nav><div class="cff-global-actions"><label>Dia e rodada<select id="cff-global-round"></select></label><button type="button" id="cff-global-load" class="cff-global-primary">Carregar modelo e rodada</button></div><p id="cff-global-current"></p><p class="cff-global-route">Para publicar: <button type="button" id="cff-global-go-send">Resumos e códigos → Enviar resultados para o site</button></p><details id="cff-global-teams-detail"><summary>Times da rodada e códigos Wiki</summary><div id="cff-global-teams" class="cff-global-teams"></div></details><details><summary>Formato, pools e classificados</summary><p>Classificatória: 6, 7, 8, 13, 14 e 15/11. Dois confrontos por dia, às 04h e 09h, com seis quedas por confronto. Cada equipe joga 36 quedas.</p><p>Top 18 → segunda fase; 19º–20º → repescagem; 21º–24º eliminados. Segunda fase: 19 a 22/11, às 07h; pontos zerados a cada dia. Dia 1: top 12. Dias 2, 3 e 4: dez restantes + 13º/14º, 15º/16º e 17º/18º, respectivamente. Os dois melhores de cada dia vão à final.</p><p>Repescagem em 27/11 às 07h: dez restantes + 19º e 20º da classificatória; dez quedas, top 4 à final. Grande Final em 28/11 às 07h: Champion Rush 110, sem limite de quedas. Só vale Booyah depois da queda de ativação.</p><p>Os 12 times das etapas seguintes são calculados após a confirmação dos resultados necessários. Todos os horários são de Brasília.</p></details><details><summary>Importar código Wiki da rodada</summary><p>Cole um Match com TeamOpponent e MS (posição e abates). Os 24 códigos do Mundial são reconhecidos; primeiro confira a prévia.</p><textarea id="cff-global-wiki" rows="5" aria-label="Código Wiki da rodada" placeholder="{{Match |opponent1={{TeamOpponent|ag.al|m1={{MS|1|10}}}} ... }}"></textarea><div class="cff-global-actions"><button type="button" id="cff-global-wiki-read">Ler e conferir</button><button type="button" id="cff-global-wiki-apply" hidden>Aplicar quedas</button></div><pre id="cff-global-wiki-preview"></pre></details><details><summary>Abates, dano e assistências dos jogadores</summary><p>Totais desta rodada. Deixe vazio o dado que ainda não tem; o Wiki de times não informa as estatísticas individuais.</p><div class="cff-global-table"><table><thead><tr><th>Jogador</th><th>Abates</th><th>Dano</th><th>Assist.</th><th>Quedas</th></tr></thead><tbody id="cff-global-players-fields"></tbody></table></div><button type="button" id="cff-global-save-players">Salvar individuais no rascunho</button></details><div class="cff-global-actions"><button type="button" id="cff-global-pull">Puxar resultados publicados</button><button type="button" id="cff-global-recover">Baixar backup anterior</button></div><p id="cff-global-message" role="status" aria-live="polite"></p>`;
  prepareLayout(section);fillRounds(state?.key);
@@ -115,7 +144,7 @@ async function boot(){try{
  $('cff-global-wiki').addEventListener('input',()=>{preview=null;$('cff-global-wiki-apply').hidden=true});$('cff-global-players-fields').addEventListener('change',()=>{try{readPlayers()}catch(e){message(e.message,true)}});
  $('cff-global-recover').addEventListener('click',()=>action(()=>{const raw=storage.getItem('cff_global_before_switch_v1');if(!raw)throw Error('Nenhum backup anterior disponível.');const content=JSON.parse(raw).backup,url=URL.createObjectURL(new Blob([JSON.stringify(content,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='camp-antes-do-mundial.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}));
  const previousLogo=window.getLogo,globalLogo=function(name){const t=state&&C.team(meta,name);return t?'/'+t.logo.replace(/^\//,''):previousLogo?.apply(this,arguments)};globalLogo.__cffCampPatched=true;globalLogo.__cffCampOriginal=previousLogo;window.getLogo=globalLogo;try{getLogo=globalLogo}catch(_){}
- render();window.CFF_GLOBAL_CAMP={getMeta:()=>copy(meta),getState:()=>copy(state),openRound,publish:openReview,previewWiki};
+ migratePresentation();render();window.CFF_GLOBAL_CAMP={getMeta:()=>copy(meta),getRoundKey:()=>state?.key||'',getState:()=>copy(state),openRound,publish:openReview,previewWiki};
 }catch(e){console.error('[Modelo Mundial]',e);window.CFF_CAMP?.toast?.(e.message,'err')}}
 boot();
 })();

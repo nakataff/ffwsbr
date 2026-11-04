@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const PREFIX='cff_public_camp_v1:';
-  const VERSION='20261104-camp-model-v4';
+  const VERSION='20261104-camp-history-v5';
   const status=document.getElementById('cff-camp-load-status');
   const setStatus=text=>{if(status)status.textContent=text;};
   window.__CFF_CAMP_READY__=false;
@@ -72,7 +72,7 @@
       protectedRaw=native.getItem(PREFIX+'ffws_autosave');
       const [css,source]=await Promise.all([
         compressedText('admin-camp-ao-vivo/app.css.gz?v=20261001-camp-v4'),
-        compressedText('admin-camp-ao-vivo/app.js.gz?v=20261001-camp-v4')
+        compressedText('admin-camp-ao-vivo/app.js.gz?v=20261104-camp-history-v5')
       ]);
       const style=document.createElement('style');style.id='cff-camp-full-style';style.textContent=css.replace('tabela, quedas, wiki e publicação','tabelas e lançamento de quedas');document.head.appendChild(style);
       if(!source.includes('window.onload = () => {'))throw new Error('Inicializador do editor não encontrado.');
