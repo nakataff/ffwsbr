@@ -53,6 +53,52 @@
    (round.result?'<p class="gfp-verdict '+(correct?'is-hit':'')+'">Resultado: '+esc(answer.map(id=>selectedLabel(metric,id)?.label||id).join(' / ')||'—')+(selected?(correct?' · Acertou!':' · Não acertou'):'')+'</p>':'')+
    '</section>';
  }
+
+ function groupedDays(rounds){
+  const result=[];
+  for(const r of (rounds||[])){
+   const day=String(r.date||'');
+   if(!day)continue;
+   let current=result[result.length-1];
+   if(!current||current.date!==day){
+    current={date:day,rounds:[]};
+    result.push(current);
+   }
+   current.rounds.push(r);
+  }
+  return result;
+ }
+ function preferredRound(day){
+  const options=day?.rounds||[];
+  return (options.find(r=>r.ready&&r.closesAt>now())
+    ||options.find(r=>r.closesAt>now())
+    ||options[0])?.key||'';
+ }
+ function roundStatus(r){
+  if(r.status==='settled')return'Apurada';
+  if(r.closesAt<=now())return'Encerrada';
+  return r.ready?'Aberta':'A definir';
+ }
+ function dayNavigation(rounds,activeKey){
+  const days=groupedDays(rounds);
+  const index=Math.max(0,days.findIndex(day=>day.rounds.some(r=>r.key===activeKey)));
+  const day=days[index],roundsToday=day?.rounds||[];
+  if(!day)return'';
+  const first=roundsToday[0],total=days.length,canPrev=index>0,canNext=index<total-1;
+  const step=(direction,disabled,label,arrow)=>'<button type="button" class="gfp-day-arrow" data-gfp-day-step="'+direction+'"'+(disabled?' disabled':'')+' aria-label="'+label+'" title="'+label+'">'+arrow+'</button>';
+  return '<nav class="gfp-round-navigator" aria-label="Navegar entre os dias do Mundial">'+
+   '<div class="gfp-day-bar">'+
+   step('-1',!canPrev,'Ver dia anterior','‹')+
+   '<div class="gfp-day-center"><span class="gfp-day-eyebrow">'+esc(shortStage(first.stage))+' • Dia '+(index+1)+' de '+total+'</span>'+
+   '<strong>'+esc(fmtDate(first.closesAt))+' <span>• '+(roundsToday.length===2?'2 rodadas':'1 rodada')+'</span></strong></div>'+
+   step('1',!canNext,'Ver próximo dia','›')+
+   '</div><div class="gfp-day-rounds'+(roundsToday.length===1?' is-single':'')+'">'+
+   roundsToday.map(r=>'<button type="button" class="gfp-round'+(r.key===activeKey?' is-active':'')+'" data-gfp-round="'+esc(r.key)+'" aria-pressed="'+(r.key===activeKey)+'">'+
+    '<span class="gfp-round-line"><strong>Rodada '+Number(r.round||1)+'</strong><b>'+esc(fmtTime(r.closesAt))+'</b></span>'+
+    '<span class="gfp-round-detail">'+esc((r.groups||[]).length?'Grupos '+r.groups.join(' + '):shortStage(r.stage))+'</span>'+
+    '<span class="gfp-round-status">'+esc(roundStatus(r))+'</span></button>').join('')+
+   '</div></nav>';
+ }
  function render(){
   if(state.loading){root.innerHTML='<div class="gfp-loading">Carregando os palpites do Mundial…</div>';return}
   const d=state.data,round=d?.round;
@@ -64,11 +110,7 @@
    '<header class="gfp-hero"><div><span class="gfp-eyebrow">FFWS GLOBAL FINALS • 2026</span>'+
    '<h2>Palpites do Mundial</h2><p>Escolha a melhor equipe, a pior equipe e quem terá mais abates na rodada. Sem complicação.</p></div>'+
    '<div class="gfp-hero-meta"><strong>'+filled+'/3</strong><span>Escolhas feitas</span></div></header>'+
-   '<nav class="gfp-round-rail" aria-label="Escolha a rodada">'+(d.rounds||[]).map(r=>
-     '<button type="button" data-gfp-round="'+esc(r.key)+'" class="gfp-round'+(r.key===round.key?' is-active':'')+'" aria-pressed="'+(r.key===round.key)+'">'+
-      '<small>'+esc(shortStage(r.stage))+'</small><strong>'+esc(fmtDate(r.closesAt))+' • '+esc(fmtTime(r.closesAt))+'</strong>'+
-      '<span>'+esc(r.status==='settled'?'Apurado':r.closesAt<=now()?'Encerrado':!r.ready?'A definir':'Aberto')+'</span></button>'
-   ).join('')+'</nav>'+
+   dayNavigation(d.rounds,round.key)+
    '<div class="gfp-info-row"><div><span class="gfp-label">'+esc(shortStage(round.stage))+' • '+esc(round.label)+'</span>'+
      '<h3>'+esc(fmtDate(round.closesAt))+' às '+esc(fmtTime(round.closesAt))+'</h3>'+
      '<small>'+esc(round.groups?.length?'Grupos '+round.groups.join(' × ')+' · ':'')+round.teams.length+' equipes participantes</small></div>'+
@@ -122,8 +164,17 @@
   panel.innerHTML=optionsHTML(metric,input?.value||'');panel.hidden=false;state.activePicker=metric;
  }
  root.addEventListener('click',e=>{
+  const dayArrow=e.target.closest('[data-gfp-day-step]');
+  if(dayArrow&&!dayArrow.disabled){
+   const days=groupedDays(state.data?.rounds);
+   const active=days.findIndex(day=>day.rounds.some(r=>r.key===state.data?.round?.key));
+   const next=days[active+Number(dayArrow.dataset.gfpDayStep)];
+   const key=preferredRound(next);
+   if(key){state.message='';load(key,true);}
+   return;
+  }
   const tab=e.target.closest('[data-gfp-round]');
-  if(tab){state.message='';load(tab.dataset.gfpRound);return;}
+  if(tab){state.message='';if(tab.dataset.gfpRound!==state.data?.round?.key)load(tab.dataset.gfpRound,true);return;}
   const choice=e.target.closest('[data-gfp-choice]');
   if(choice){
    const round=state.data?.round;if(!round?.ready||now()>=round.closesAt)return;
