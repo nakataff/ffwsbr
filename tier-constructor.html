@@ -11,9 +11,10 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261025-daily-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261104-short-links-v1"></script>
+  <script defer src="js/tier-constructor.js?v=20261104-mobile-fullscreen-v1"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261020-mobile-custom-v4">
-<link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1"></head>
+<link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1">
+<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261104-v1"></head>
 <body class="tier-constructor-page">
 
 <header class="cff-public-topbar">
@@ -126,7 +127,12 @@
         </details>
       </section>
 
-      <section class="panel board-scroll tier-board-panel" aria-label="Tier list editável">
+      <section class="panel board-scroll tier-board-panel" id="tierBoardPanel" aria-label="Tier list editável">
+        <div class="tier-board-quick-bar">
+          <span>MINHA TIER LIST</span>
+          <button type="button" id="tierFocusEnterBtn" aria-label="Abrir apenas as tiers e equipes em tela cheia" aria-pressed="false">⛶ Tela cheia</button>
+        </div>
+        <button type="button" id="tierFocusExitBtn" aria-label="Sair da tela cheia e voltar ao editor" hidden>✕ Sair da tela cheia</button>
         <div id="tierExport" class="tier-export">
           <div id="tierCaption" class="tier-caption"></div>
           <div id="tierBoard" class="tier-board"></div>
