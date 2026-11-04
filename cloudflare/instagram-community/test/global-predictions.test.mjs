@@ -47,6 +47,7 @@ test('voto é validado no servidor, não aceita opções de outro confronto, dá
   fetchJson:async url=>{const match=url.split('/').pop().split('?')[0];return read(match);},
   json:(data,status)=>({status,data}),getCheckinSession:async(_env,session)=>session==='valid'?currentSession:null,
   predictionVoteFor:async(_env,id,key)=>saved.get(id+':'+key)||null,
+  resolveIdentity:async(request,_env,session)=>request.headers.get('Authorization')==='Bearer signed-account'||session==='valid'?currentSession:null,
   predictionBonus:async()=>({won:false,points:0}),encodeVoteSource:(id,option)=>id+'|'+option+'|',
   parseVoteSource:(id,str)=>str.startsWith(id+'|')?{option:str.split('|')[1]}:null,
   allPredictionVotes:async()=>[],settleOnce:async(_db,_k,_s,fn)=>fn(),
@@ -62,8 +63,8 @@ test('voto é validado no servidor, não aceita opções de outro confronto, dá
  try{
   const a=build()[0],roundKey=a.key,options=a.teams,player=a.players[0].id;
   const make=(best,worst,mvp,session='valid')=>({roundKey,session,best,worst,mvp});
-  async function vote(body){
-   return service.vote(new Request('https://example.test/api',{method:'POST',body:JSON.stringify(body)}),env,null,r=>r.json());
+  async function vote(body,token=''){
+   return service.vote(new Request('https://example.test/api',{method:'POST',headers:token?{Authorization:token}:{},body:JSON.stringify(body)}),env,null,r=>r.json());
   }
   assert.equal((await vote(make(options[0].id,options[0].id,player))).status,400);
   assert.equal((await vote(make(options[0].id,options[1].id,'invalid-id'))).status,400);
@@ -77,6 +78,10 @@ test('voto é validado no servidor, não aceita opções de outro confronto, dá
   assert.equal(second.data.participationAwarded,0);
   assert.equal(saved.get('gf26-classificatoria-1-best:verified-person').option,options[2].id);
   assert.equal(points.length,3);
+  const restored=await service.list(new Request('https://example.test/api',{headers:{Authorization:'Bearer signed-account'}}),env,new URL('https://example.test/api?round='+roundKey),null);
+  assert.equal(restored.data.linked,true);assert.equal(restored.data.votes.best,options[2].id);
+  const accountSave=await vote(make(options[0].id,options[1].id,player,''),'Bearer signed-account');
+  assert.equal(accountSave.status,200);assert.equal(accountSave.data.participationAwarded,0);assert.equal(points.length,3);
   current.time=lock;
   const late=await vote(make(options[0].id,options[1].id,player));
   assert.equal(late.status,409);

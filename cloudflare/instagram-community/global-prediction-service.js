@@ -6,7 +6,7 @@ const BASE='https://centralfreefire.com.br/ffws-global-2026/';
 const files=['dates.json','groups.json','teams.json','players.json','stages.json','palpites-resultados.json'];
 const validString=s=>String(s||'').trim();
 export function createGlobalPredictionService({fetchJson,json,getCheckinSession,predictionVoteFor,predictionBonus,
- encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce,captureOutcomes}){
+ encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce,captureOutcomes,resolveIdentity}){
  let cache={at:0,pending:null,data:null},sweep={at:0,signature:'',pending:null};
  async function source(){
   if(cache.data&&Date.now()-cache.at<75_000)return cache.data;
@@ -31,10 +31,10 @@ export function createGlobalPredictionService({fetchJson,json,getCheckinSession,
   return {key:round.key,stage:round.stage,date:round.date,time:round.time,closesAt:round.closesAt,
    label:round.label,groups:round.groups,ready:round.ready,status:round.status};
  }
- async function payload(env,session,key){
+ const identity=(request,env,session)=>resolveIdentity?resolveIdentity(request,env,session):session?getCheckinSession(env,session):null;
+ async function payload(env,user,key){
   const all=await rounds(),selected=forRound(all,key);
   if(!selected)return {ok:true,version:GLOBAL_PREDICTION_VERSION,linked:false,round:null,rounds:[]};
-  const user=session?await getCheckinSession(env,session):null;
   const linked=!!user?.verified_at&&!!user?.user_key;
   const votes={},bonuses={};
   if(linked){
@@ -53,10 +53,11 @@ export function createGlobalPredictionService({fetchJson,json,getCheckinSession,
    const key=validString(url.searchParams.get('round'));
    const all=await rounds();
    if(ctx?.waitUntil)ctx.waitUntil(maybeSettle(env,all).catch(error=>console.error('Global prediction settlement',error)));
-   return json(await payload(env,validString(url.searchParams.get('session')),key),200,request);
-  }catch(error){console.error('Global prediction list',error);return json({ok:false,error:'Não foi possível carregar os palpites do Mundial.'},503,request);}
+   return json(await payload(env,await identity(request,env,validString(url.searchParams.get('session'))),key),200,request);
+  }catch(error){console.error('Global prediction list',error);return json({ok:false,error:error.status?error.message:'Não foi possível carregar os palpites do Mundial.'},error.status||503,request);}
  }
  async function vote(request,env,ctx,readJson){
+  try{
   const body=await readJson(request);
   const key=validString(body?.roundKey),selected={best:validString(body?.best),worst:validString(body?.worst),mvp:validString(body?.mvp)};
   const list=await rounds(),round=list.find(r=>r.key===key);
@@ -66,7 +67,7 @@ export function createGlobalPredictionService({fetchJson,json,getCheckinSession,
   const predictions=globalPredictionChoices(round);
   for(const p of predictions)if(!p.options.some(x=>x.id===selected[p.metric]))
    return json({ok:false,error:'Seleção inválida: só participantes desta rodada são permitidos.'},400,request);
-  const user=await getCheckinSession(env,validString(body?.session));
+  const user=await identity(request,env,validString(body?.session));
   if(!user?.verified_at||!user?.user_key)return json({ok:false,error:'Vincule seu Instagram para participar dos palpites.'},403,request);
   if(Date.now()>=round.closesAt)return json({ok:false,error:'A rodada já começou. Não é possível alterar seus palpites.'},409,request);
   let earned=0,changes=0;
@@ -85,8 +86,9 @@ export function createGlobalPredictionService({fetchJson,json,getCheckinSession,
     if(updated.meta?.changes)changes++;
    }
   }
-  const response=await payload(env,validString(body?.session),key);
+  const response=await payload(env,user,key);
   return json({...response,saved:true,changes,participationAwarded:earned},200,request);
+  }catch(error){return json({ok:false,error:error.status?error.message:'Não foi possível salvar agora. Confira suas escolhas e tente novamente.'},error.status||503,request);}
  }
  async function settle(env,round){
   const ps=globalPredictionChoices(round);if(ps.length!==3||!round.result?.complete)return;

@@ -50,9 +50,13 @@ test('interface mostra 3 escolhas sem campo de abates, filtra participantes e sa
 test('aba de palpites permanece visível sem depender do fim de semana da FFWS BR',()=>{
  const html=fs.readFileSync('interacoes.html','utf8');
  assert(html.includes('data-community-tab="predictions">🎯 Palpites'));
- assert(html.includes('id="cff-global-predictions"'));
+ assert(!html.includes('id="cff-global-predictions"'));
+ assert(html.includes('/ffws-global-2026/palpites/'));
+ const standalone=fs.readFileSync('ffws-global-2026/palpites/index.html','utf8');
+ assert(standalone.includes('id="cff-global-predictions"'));
+ assert(standalone.includes('global-predictions.js'));
  assert(html.includes('gfp-legacy'));
- assert(html.includes('global-predictions.js'));
+ assert(!html.includes('src="/js/global-predictions.js'));
  assert(html.includes('global-predictions.css'));
 });
 
@@ -118,4 +122,44 @@ test('CSS reserva duas rodadas por dia no desktop e se adapta ao mobile sem faix
  const script=fs.readFileSync('js/global-predictions.js','utf8');
  assert(script.includes("dayNavigation(d.rounds,round.key)"));
  assert(!script.includes('<nav class="gfp-round-rail"'));
+});
+
+async function accountFixture({logged=false,existing={},failOnce=false,holdSave=false}={}){
+ const dom=new JSDOM('<div id="cff-global-predictions"></div>',{url:'https://centralfreefire.com.br/ffws-global-2026/palpites/',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window;
+ let user=logged?{uid:'alice'}:null,saved=existing,post=0,release;const requests=[];
+ const teams=[{id:'loud',label:'LOUD',short:'LOUD'},{id:'rrq',label:'RRQ',short:'RRQ'},{id:'lyon',label:'LYON',short:'LYON'}],players=[{id:'trap',label:'TRAP',team:'LOUD'}];
+ const round={key:'classificatoria-1',stage:'classificatoria',date:'2026-11-06',round:1,closesAt:Date.now()+3600000,label:'Rodada 1',groups:['A','B'],ready:true,status:'open',teams,players,result:null};
+ const data=(who=user,votes=who?.uid==='alice'?saved:{})=>({ok:true,round,rounds:[round],linked:!!who,username:who?.uid||'',votes});
+ w.CFF_ACCOUNT={ready:Promise.resolve(),get user(){return user},getIdToken:async()=> 'signed-'+user.uid};
+ w.fetch=async(url,options)=>{requests.push({url,headers:options.headers});if(options.method==='POST'){post++;const b=JSON.parse(options.body),who=user;if(failOnce&&post===1)return{ok:false,status:503,json:async()=>({ok:false,error:'Falha temporária. Tente novamente.'})};if(holdSave)await new Promise(r=>release=r);saved={best:b.best,worst:b.worst,mvp:b.mvp};return{ok:true,status:200,json:async()=>({...data(who,saved),saved:true,participationAwarded:3})};}return{ok:true,status:200,json:async()=>data()};};
+ w.eval(source);await settle(()=>w.document.querySelectorAll('.gfp-card').length===3);
+ const choose=(metric,id)=>{w.document.querySelector('[data-gfp-search="'+metric+'"]').focus();w.document.querySelector('[data-gfp-choice="'+metric+'"][data-option="'+id+'"]').click()};
+ return{w,requests,choose,get post(){return post},release:()=>release(),login(uid='alice'){user={uid};w.dispatchEvent(new w.Event('cff:account-changed'));},close:()=>w.close()};
+}
+test('same-page login enables saving without discarding guest choices and uses a signed token for the special account link',async()=>{
+ const f=await accountFixture();try{
+  f.choose('best','loud');f.choose('worst','rrq');f.choose('mvp','trap');assert(f.w.document.querySelector('[data-gfp-save]').disabled);assert.match(f.w.document.querySelector('.gfp-save-state').textContent,/Não salvo/);
+  const n=f.requests.length;f.login();await settle(()=>!f.w.document.querySelector('.gfp-auth'));
+  assert(!f.w.document.querySelector('[data-gfp-save]').disabled);assert.equal(f.w.document.querySelectorAll('.gfp-selected').length,3);assert.equal(f.requests.length,n+1);assert.equal(f.requests.at(-1).headers.Authorization,'Bearer signed-alice');
+  f.w.document.querySelector('[data-gfp-save]').click();await settle(()=>f.w.document.querySelector('.gfp-success'));assert.equal(f.post,1);assert.match(f.w.document.querySelector('.gfp-save-state').textContent,/Palpites salvos/);assert.equal(f.w.document.querySelectorAll('.gfp-tick.is-draft').length,0);
+ }finally{f.close()}
+});
+test('failed saves preserve choices, distinguish unsaved changes and retry without hiding the failure',async()=>{
+ const f=await accountFixture({logged:true,failOnce:true});try{
+  f.choose('best','loud');f.choose('worst','rrq');f.choose('mvp','trap');f.w.document.querySelector('[data-gfp-save]').click();await settle(()=>f.w.document.querySelector('.gfp-error'));
+  assert.equal(f.w.document.querySelectorAll('.gfp-selected').length,3);assert.match(f.w.document.querySelector('.gfp-save-state').textContent,/Não salvo/);assert(!f.w.document.querySelector('[data-gfp-save]').disabled);assert.equal(f.w.document.querySelector('.gfp-success'),null);
+  f.w.document.querySelector('[data-gfp-save]').click();await settle(()=>f.w.document.querySelector('.gfp-success'));assert.equal(f.post,2);
+  const count=f.requests.length;f.choose('best','lyon');assert.match(f.w.document.querySelector('.gfp-save-state').textContent,/Não salvo/);assert.equal(f.requests.length,count,'local edits/search never read the backend');
+ }finally{f.close()}
+});
+test('previous votes load as saved and an old account response cannot restore choices after switching accounts',async()=>{
+ const f=await accountFixture({logged:true,existing:{best:'loud',worst:'rrq',mvp:'trap'},holdSave:true});try{
+  assert.match(f.w.document.querySelector('.gfp-save-state').textContent,/Palpites salvos/);assert.equal(f.post,0);
+  f.choose('best','lyon');f.w.document.querySelector('[data-gfp-save]').click();await settle(()=>f.post===1);assert(f.w.document.querySelector('[data-gfp-round]').disabled);
+  f.login('bob');await settle(()=>f.w.document.querySelectorAll('.gfp-unselected').length===3);f.release();await new Promise(r=>setTimeout(r,20));assert.equal(f.w.document.querySelector('.gfp-success'),null);assert.equal(f.w.document.querySelectorAll('.gfp-selected').length,0);
+ }finally{f.close()}
+});
+test('standalone page and home provide accessible links without loading votes on Interactions or home',()=>{
+ const page=fs.readFileSync('ffws-global-2026/palpites/index.html','utf8'),home=fs.readFileSync('index.html','utf8'),interactions=fs.readFileSync('interacoes.html','utf8');
+ assert(page.includes('aria-current="page"'));assert(page.includes('Como funciona a pontuação?'));assert(page.includes('public-account.js'));assert(!page.includes('global.js'));assert(!home.includes('src="/js/global-predictions.js'));assert(!interactions.includes('src="/js/global-predictions.js'));assert(home.includes('home-global-predictions-link'));assert(home.includes('href="/ffws-global-2026/palpites/"'));
 });

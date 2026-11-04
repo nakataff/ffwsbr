@@ -4,6 +4,7 @@ on:
     paths:
       - 'js/daily-tasks.mjs'
       - 'js/global-predictions.js'
+      - 'ffws-global-2026/palpites/**'
       - 'css/global-predictions.css'
       - 'interacoes.html'
       - 'test/global-predictions-ui.test.cjs'

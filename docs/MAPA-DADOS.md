@@ -664,3 +664,9 @@ metodologia independente.
 - `admin-camp-ao-vivo/workspace.js` e `workspace.css` organizam a navegação por etapas, o diálogo de times/dias e as opções de lançamento. Não consultam APIs nem alteram a pontuação.
 - O lançamento continua no `app.js.gz`; a revisão de edição por equipe impede que uma limpeza agendada de bolinha apague uma posição mais recente ou outra queda. Ao alterar o núcleo, descomprima, valide JavaScript e recomprima com gzip determinístico (`mtime=0`).
 - Verificação: `NODE_PATH=<pasta-com-jsdom>/node_modules node --test test/camp-*.test.cjs`. A suíte cobre bolinhas, cores, focos, salvamento/restauração e transições de fase.
+
+### Palpites do Mundial 2026
+
+`ffws-global-2026/palpites/index.html` é uma página independente. `js/global-predictions.js` e `css/global-predictions.css` cuidam da interface. Home e Interações apenas apontam para ela, sem carregar votos por visitante. A pesquisa é local ao elenco da rodada; o contador não faz consultas.
+
+No Worker Instagram, `global-prediction-service.js` reutiliza o ledger `awards` existente, sem migrar os votos. `global-prediction-identity.js` aceita a sessão de check-in ou valida o token Firebase assinado e o vínculo salvo da própria conta, incluindo o vínculo especial do proprietário. Não confiar em @/UID enviados pelo navegador. O calendário, grupos e elencos são os JSON existentes com cache em memória; `palpites-resultados.json` guarda apurações confirmadas.

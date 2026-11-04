@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'cloudflare/instagram-community/**'
+      - 'cloudflare/camp-notifications/auth.js'
       - '.github/workflows/deploy-instagram-community-cloudflare.yml'
       - 'admin-stories.html'
       - 'js/admin-stories.js'
@@ -51,7 +52,7 @@ jobs:
         run: |
           for attempt in 1 2 3 4 5 6; do
             curl --fail --silent --show-error --retry 2 --retry-all-errors --retry-delay 5 --connect-timeout 10 --max-time 20 --output health.json https://cff-instagram-community.nakataffb4.workers.dev/health
-            if node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));if(h.version!=="20261016-saved-months-v1"||h.storyReviewVersion!=="20261020-story-auto-v1"||h.profileInsightsVersion!=="20261012-community-profile-v1")throw Error("Waiting for community version to propagate");'; then
+            if node -e 'const h=JSON.parse(require("node:fs").readFileSync("health.json","utf8"));if(h.version!=="20261016-saved-months-v1"||h.storyReviewVersion!=="20261020-story-auto-v1"||h.profileInsightsVersion!=="20261012-community-profile-v1"||h.globalPredictionsVersion!=="20261104-standalone-v1")throw Error("Waiting for community version to propagate");'; then
               break
             fi
             test "$attempt" -lt 6 || exit 1

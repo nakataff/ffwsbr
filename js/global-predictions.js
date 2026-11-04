@@ -5,11 +5,16 @@
  if(!root)return;
  const API='https://cff-instagram-community.nakataffb4.workers.dev';
  const SESSION='cff_daily_checkin_session_v1';
- const state={data:null,roundKey:'',drafts:new Map(),busy:false,error:'',message:'',loading:false,requestId:0,activePicker:''};
+ const state={data:null,roundKey:'',drafts:new Map(),busy:false,error:'',message:'',loading:false,requestId:0,activePicker:'',owner:'',refreshTimer:0};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
  const session=()=>{try{return localStorage.getItem(SESSION)||''}catch{return''}};
+ const accountKey=()=>window.CFF_ACCOUNT?.user?.uid?'uid:'+window.CFF_ACCOUNT.user.uid:session()?'session:'+session():'guest';
  const now=()=>Date.now();
+ const dirty=()=>['best','worst','mvp'].some(k=>(getDraft()[k]||'')!==(state.data?.votes?.[k]||''));
+ function syncOwner(){const next=accountKey();if(state.owner&&state.owner!==next&&state.owner!=='guest'){state.drafts.clear();state.data=null;state.message='';}state.owner=next;}
+ function refreshIdentity(){clearTimeout(state.refreshTimer);state.requestId++;state.busy=false;syncOwner();if(!state.data){state.loading=true;render();}state.refreshTimer=setTimeout(()=>load(state.roundKey,true),60);}
+
  const fmtDate=stamp=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit'}).format(new Date(stamp));
  const fmtTime=stamp=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(stamp));
  const shortStage=s=>({classificatoria:'FASE 1',segundaFase:'FASE 2',lastChance:'LAST CHANCE',final:'GRANDE FINAL'})[s]||'MUNDIAL';
@@ -44,7 +49,7 @@
   const answer=round.result?.[metric]||[],correct=round.result&&selected&&answer.includes(saved);
   return '<section class="gfp-card" data-gfp-field="'+metric+'"><div class="gfp-card-top"><span class="gfp-card-icon" aria-hidden="true">'+icon+'</span>'+
    '<div><small>'+esc(kicker)+'</small><h3>'+esc(label)+'</h3></div>'+
-   (selected?'<span class="gfp-tick" aria-label="Selecionado">✓</span>':'')+'</div>'+
+   (selected?'<span class="gfp-tick'+(state.data.votes?.[metric]===saved?'':' is-draft')+'" aria-label="'+(state.data.votes?.[metric]===saved?'Salvo':'Escolha ainda não salva')+'">'+(state.data.votes?.[metric]===saved?'✓':'•')+'</span>':'')+'</div>'+
    (selected?'<div class="gfp-selected">'+optionView(metric,selected)+'</div>':'<div class="gfp-unselected">Nenhum '+(metric==='mvp'?'jogador':'time')+' selecionado</div>')+
    (open?'<label class="gfp-search"><span class="sr-only">Buscar '+(metric==='mvp'?'jogador':'equipe')+'</span>'+
    '<input type="search" data-gfp-search="'+metric+'" placeholder="⌕ Buscar '+(metric==='mvp'?'jogador':'equipe')+'..." autocomplete="off" aria-label="Buscar '+(metric==='mvp'?'jogador':'equipe')+' participante"></label>'+
@@ -119,43 +124,52 @@
    (state.error?'<div class="gfp-error" role="alert">'+esc(state.error)+'</div>':'')+
    (state.message?'<div class="gfp-success" role="status">'+esc(state.message)+'</div>':'')+
    (!d.linked?'<div class="gfp-auth"><span>Para salvar seus palpites e receber pontos, vincule seu Instagram no check-in da comunidade.</span>'+
-    '<button type="button" data-gfp-checkin>Ir para o check-in</button></div>':'')+
+    '<a href="/conta.html#cff-instagram-connect" target="_blank" rel="noopener" data-gfp-checkin>Vincular Instagram ↗</a></div>':'')+
    (!round.ready?'<div class="gfp-placeholder">Os participantes desta rodada ainda não foram confirmados. As opções aparecerão automaticamente quando o confronto for definido.</div>':'')+
+   '<p class="gfp-save-state" role="status">'+(state.busy?'Salvando seus palpites…':draft.best&&draft.best===draft.worst?'Escolha equipes diferentes para melhor e pior':dirty()?'Não salvo · confirme no botão abaixo':filled===3?'✓ Palpites salvos nesta rodada':'Faça as três escolhas e confirme para salvar')+'</p>'+
    '<div class="gfp-fields">'+card('best','Melhor equipe','QUEM FARÁ MAIS PONTOS?','🏆')+
    card('worst','Pior equipe','QUEM FARÁ MENOS PONTOS?','📉')+
    card('mvp','MVP da rodada','QUEM TERÁ MAIS ABATES?','⭐')+'</div>'+
    '<div class="gfp-footer"><p>'+((round.closesAt>now())?'Você pode mudar as três escolhas quantas vezes quiser até '+fmtTime(round.closesAt)+' de '+fmtDate(round.closesAt)+'.':'Rodada iniciada: os palpites não podem mais ser alterados.')+
     '<br><span>+1 ponto por escolha enviada pela primeira vez • +5 por acerto • +3 se acertar as três.</span></p>'+
-   (round.status==='open'?'<button type="button" class="gfp-save" data-gfp-save '+(can&&valid?'':'disabled')+'>'+(Object.keys(d.votes||{}).length?'Salvar alterações':'Salvar meus palpites')+'</button>':
+   (round.status==='open'?'<button type="button" class="gfp-save" data-gfp-save '+(can&&valid?'':'disabled')+'>'+(state.busy?'Salvando…':Object.keys(d.votes||{}).length?'Salvar alterações':'Salvar meus palpites')+'</button>':
     '<span class="gfp-closed">'+(round.status==='settled'?'✓ Resultado apurado':'Palpites fechados')+'</span>')+'</div>'+
    '<p class="gfp-footnote">Os horários, os participantes e o fechamento são conferidos no servidor. Os acertos só são premiados após confirmação dos resultados.</p>'+
    '</div>';
+  if(state.busy)root.querySelectorAll('button,input').forEach(el=>el.disabled=true);
  }
  async function request(path,opts){
-  const r=await fetch(API+path,{...opts,headers:{'Content-Type':'application/json',...(opts?.headers||{})},cache:'no-store'});
+  const headers={'Content-Type':'application/json',...(opts?.headers||{})};
+  // Most participants use their existing check-in session. The signed account
+  // fallback covers the owner link and a saved Instagram on another device.
+  if((!session()||state.data?.linked===false)&&window.CFF_ACCOUNT?.user&&window.CFF_ACCOUNT.getIdToken){const token=await window.CFF_ACCOUNT.getIdToken();if(token)headers.Authorization='Bearer '+token;}
+  const r=await fetch(API+path,{...opts,headers,cache:'no-store',signal:AbortSignal.timeout(15000)});
   let data={};try{data=await r.json()}catch{}
   if(!r.ok||data.ok===false)throw Error(data.error||'Não foi possível salvar os palpites.');
   return data;
  }
  async function load(key='',silent=false){
-  const id=++state.requestId;
+  syncOwner();const owner=state.owner,id=++state.requestId;
   state.loading=!silent;state.error='';if(!silent)render();
   try{
    const qs=new URLSearchParams();if(key)qs.set('round',key);const token=session();if(token)qs.set('session',token);
    const data=await request('/api/global-predictions?'+qs);
-   if(id!==state.requestId)return;
-   state.data=data;state.roundKey=data.round?.key||'';state.loading=false;state.message='';render();
-  }catch(e){if(id!==state.requestId)return;state.loading=false;state.error=e.message;render();}
+   if(id!==state.requestId||owner!==accountKey())return;
+   state.data=data;state.roundKey=data.round?.key||'';
+   if(state.roundKey){const u=new URL(location.href);u.searchParams.set('rodada',state.roundKey);history.replaceState(null,'',u.pathname+u.search+u.hash);}state.loading=false;state.message='';render();
+  }catch(e){if(id!==state.requestId||owner!==accountKey())return;state.loading=false;state.error=e.message;render();}
  }
  async function save(){
   const round=state.data?.round,draft=getDraft();
   if(!round||state.busy||!state.data?.linked||!round.ready||now()>=round.closesAt||!['best','worst','mvp'].every(k=>draft[k])||draft.best===draft.worst)return;
+  const owner=accountKey(),id=++state.requestId;
   state.busy=true;state.error='';state.message='';render();
   try{
    const result=await request('/api/global-predictions/vote',{method:'POST',body:JSON.stringify({session:session(),roundKey:round.key,...draft})});
+   if(id!==state.requestId||owner!==accountKey())return;
    state.data=result;state.drafts.set(round.key,{...result.votes});state.message='Palpites salvos! '+(result.participationAwarded?'+'+result.participationAwarded+' ponto(s) de participação.':'Você pode alterar até o início da rodada.');
-  }catch(e){state.error=e.message;await load(round.key,true);state.error=e.message;}
-  finally{state.busy=false;render();}
+  }catch(e){if(id!==state.requestId||owner!==accountKey())return;state.error=e.message;state.message='';}
+  finally{if(id===state.requestId&&owner===accountKey()){state.busy=false;render();}}
  }
  function openResults(metric,input){
   const panel=root.querySelector('[data-gfp-options="'+metric+'"]');
@@ -164,6 +178,7 @@
   panel.innerHTML=optionsHTML(metric,input?.value||'');panel.hidden=false;state.activePicker=metric;
  }
  root.addEventListener('click',e=>{
+  if(state.busy)return;
   const dayArrow=e.target.closest('[data-gfp-day-step]');
   if(dayArrow&&!dayArrow.disabled){
    const days=groupedDays(state.data?.rounds);
@@ -183,7 +198,7 @@
   }
   if(e.target.closest('[data-gfp-save]')){save();return;}
   if(e.target.closest('[data-gfp-retry]')){load();return;}
-  if(e.target.closest('[data-gfp-checkin]')){window.cffOpenCommunityTab?.('ranking');document.getElementById('cff-checkin-mount')?.scrollIntoView?.({behavior:'smooth'});}
+
  });
  root.addEventListener('focusin',e=>{const input=e.target.closest('[data-gfp-search]');if(input)openResults(input.dataset.gfpSearch,input);});
  root.addEventListener('input',e=>{const input=e.target.closest('[data-gfp-search]');if(input)openResults(input.dataset.gfpSearch,input);});
@@ -201,7 +216,9 @@
   if(el.textContent!==countdown(r.closesAt))el.textContent=countdown(r.closesAt);
   if(r.closesAt<=now()&&r.status==='open'){r.status='closed';render();}
  },1000);
- window.addEventListener('storage',e=>{if(e.key===SESSION){state.drafts.clear();load(state.roundKey,true);}});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.data)load(state.roundKey,true);});
- load();
+ window.addEventListener('storage',e=>{if(e.key===SESSION)refreshIdentity();});
+ for(const event of ['cff:community-session-changed','cff:account-instagram-changed','cff:account-changed'])window.addEventListener(event,refreshIdentity);
+ window.addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue='';}});
+ const selected=new URL(location.href).searchParams.get('rodada')||'';
+ if(window.CFF_ACCOUNT?.ready)window.CFF_ACCOUNT.ready.then(()=>load(selected));else load(selected);
 })();

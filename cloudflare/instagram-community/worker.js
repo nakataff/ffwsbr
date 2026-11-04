@@ -2,6 +2,7 @@ import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutc
 import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, autoApproveStory, instagramPost } from './story-reviews.js';
 import {STORY_PREVIEW_SCHEMA,storeStoryPreview,purgeExpiredStoryPreviews,previewLink,getSignedStoryPreview} from './story-previews.js';
 import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, monthCoverage, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
+import {createPredictionIdentity} from './global-prediction-identity.js';
 import {createGlobalPredictionService} from './global-prediction-service.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
@@ -92,7 +93,8 @@ const PERFORMANCE_INDEXES = Object.freeze([
 ]);
 
 const globalPredictionService=createGlobalPredictionService({fetchJson,json,getCheckinSession,predictionVoteFor,predictionBonus,
- encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce,captureOutcomes});
+ encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce,captureOutcomes,
+ resolveIdentity:createPredictionIdentity({getCheckinSession,userKey})});
 
 export default {
   async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env))await purgeExpiredStoryPreviews(env.DB);})());},
@@ -100,7 +102,7 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION }, 200, request);
+    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION, globalPredictionsVersion: '20261104-standalone-v1' }, 200, request);
 
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
       if (!(await ensurePerformanceIndexes(env))) return json({ok:false,error:"Serviço temporariamente indisponível."},503,request);
