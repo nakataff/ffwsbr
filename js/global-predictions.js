@@ -6,7 +6,7 @@
  const API='https://cff-instagram-community.nakataffb4.workers.dev';
  const SESSION='cff_daily_checkin_session_v1';
  const state={data:null,roundKey:'',drafts:new Map(),busy:false,error:'',message:'',loading:false,requestId:0,activePicker:''};
- const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]));
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
  const session=()=>{try{return localStorage.getItem(SESSION)||''}catch{return''}};
  const now=()=>Date.now();
