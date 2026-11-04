@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#050810">
   <link rel="preconnect" href="https://cff-instagram-community.nakataffb4.workers.dev" crossorigin>
   <title>Ranking da Comunidade | Central Free Fire</title>
+  <link rel="stylesheet" href="/css/global-predictions.css?v=20261104-global-v1">
   <meta name="description" content="Ranking de interação da comunidade da Central Free Fire no Instagram.">
   <link rel="icon" type="image/webp" href="central free fire.webp">
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
@@ -203,7 +204,7 @@
 
   <nav class="community-main-tabs" aria-label="Comunidade">
     <button class="community-main-tab is-active" type="button" data-community-tab="ranking">🏆 Ranking<span>Classificação, pontos e check-in diário</span></button>
-    <button class="community-main-tab" type="button" data-community-tab="predictions" hidden>🎯 Palpites<span>Dois dias, MVP e palpites da comunidade</span></button>
+    <button class="community-main-tab" type="button" data-community-tab="predictions">🎯 Palpites<span>Global Finals 2026 · preveja os resultados</span></button>
   </nav>
 
   <section class="community-view" id="community-ranking-view" data-community-view="ranking">
@@ -256,8 +257,8 @@
   </section>
 
   <section class="community-view" id="community-predictions-view" data-community-view="predictions" hidden>
-    <div id="cff-predictions-mount"></div>
-    <div id="cff-prediction-ranking-mount"></div>
+    <div id="cff-global-predictions"></div>
+    <details class="gfp-legacy"><summary>Palpites anteriores da FFWS Brasil e ranking histórico</summary><div><div id="cff-predictions-mount"></div><div id="cff-prediction-ranking-mount"></div></div></details>
   </section>
 </main>
 
@@ -275,14 +276,8 @@
       history.replaceState(null,'',location.pathname+location.search+hash);
     }
   }
-  window.addEventListener('cff:predictions-availability',event=>{
-    const available=Boolean(event.detail?.available);
-    const tab=document.querySelector('[data-community-tab="predictions"]');
-    if(!tab)return;
-    tab.hidden=!available;
-    if(!available&&document.querySelector('[data-community-view="predictions"]:not([hidden])'))openTab('ranking');
-    if(available&&location.hash==='#palpites')openTab('predictions',{updateHash:false});
-  });
+  // A aba permanece disponível durante o Mundial e depois dele para o histórico.
+  // O evento de disponibilidade da FFWS BR não pode esconder os palpites da Global Finals.
   window.cffOpenCommunityTab=openTab;
   buttons.forEach(btn=>btn.addEventListener('click',()=>openTab(btn.dataset.communityTab)));
   openTab(location.hash==='#palpites'?'predictions':'ranking',{updateHash:false});
@@ -524,6 +519,7 @@
 <script src="js/site-analytics.js?v=20260806-admin-v1"></script>
 
 <script data-cff-community-prediction src="js/community-prediction-v5.js?v=20261019-hide-expired-v2"></script>
+<script defer src="/js/global-predictions.js?v=20261104-global-v1"></script>
 <script data-cff-community-promos src="js/community-promos.js?v=20260929-giveaway-winner-v5"></script>
 
 <script type="module" src="/js/public-account.js?v=20261104-menu-task-indicators-v1"></script>
