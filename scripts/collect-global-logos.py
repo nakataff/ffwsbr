@@ -1,5 +1,5 @@
 """Collect published team logos for review and same-origin delivery."""
-import base64,concurrent.futures,csv,io,json,re,unicodedata,urllib.request
+import base64,concurrent.futures,csv,io,json,re,unicodedata,urllib.request,urllib.parse
 from pathlib import Path
 from PIL import Image
 SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv'
@@ -31,7 +31,11 @@ def collect(team):
  candidates=[team['name'],team.get('wikiName',''),team['abbreviation']]
  if team['id']=='pe':candidates+=['PIRATES ESPORTS','PIRATE','PE']
  url=next((logos[norm(n)] for n in candidates if norm(n) in logos),'')
- if team['id']=='lyon':url=canonical
+ if team['id']=='lyon':
+  # LYON usa o escudo verificado do próprio repositório, nunca a planilha
+  # ou a foto homônima de um jogador.
+  data=Path(canonical).read_bytes()
+  url='https://centralfreefire.com.br/'+urllib.parse.quote(canonical)
  if not url and team.get('logo') and team['logo']!='escudo.webp':
   raw=team['logo']
   if raw.startswith('https://'):url=raw
