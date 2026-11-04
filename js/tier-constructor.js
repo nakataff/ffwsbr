@@ -27,10 +27,15 @@
       const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20261102-world-2026-v1";
       const TIER_DEFAULT_PRESET_URL = "tier-constructor/default-wb-2026-s2.json?v=20260801-v1";
       const TIER_LOGO_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv";
-      const TIER_SHARE_HASH_KEY = "tier";
+      const TIER_SHARE_HASH_KEY = "tier"; // compatibilidade com links antigos
+      const TIER_SHARE_SHORT_HASH_KEY = "s";
+      const TIER_SHARE_API = "https://cff-instagram-community.nakataffb4.workers.dev/api/tier-share";
       const TIER_SHARE_VERSION = 1;
-      const TIER_SHARE_SAFE_URL_LENGTH = 12000;
+      const TIER_SHARE_MAX_STORED_PAYLOAD_LENGTH = 1_500_000;
       const TIER_SHARE_MAX_PAYLOAD_LENGTH = 120000;
+      let lastSharePayload = "";
+      let lastShareUrl = "";
+      let lastShareExpiresAt = 0;
       let tierAssetData = null;
       let tierAssetPromise = null;
       let tierAssetType = "team";
@@ -1506,7 +1511,6 @@
       async function encodeShareProject() {
         const packageData = {
           version: TIER_SHARE_VERSION,
-          createdAt: new Date().toISOString(),
           state: createShareSnapshot()
         };
         const rawBytes = new TextEncoder().encode(JSON.stringify(packageData));
@@ -1586,10 +1590,64 @@
         }
       }
 
-      function buildShareUrl(payload) {
-        const url = new URL(window.location.href);
-        url.hash = `${TIER_SHARE_HASH_KEY}=${payload}`;
+      function buildShareUrl(id) {
+        const url = new URL("/tier-constructor.html", window.location.origin);
+        url.hash = `${TIER_SHARE_SHORT_HASH_KEY}=${id}`;
         return url.toString();
+      }
+
+      async function storeShortShareProject(payload) {
+        if (payload.length > TIER_SHARE_MAX_STORED_PAYLOAD_LENGTH) {
+          throw new Error("Este projeto tem imagens muito grandes para compartilhar por link. Use Baixar JSON.");
+        }
+        if (lastSharePayload === payload && lastShareUrl && lastShareExpiresAt > Date.now()) {
+          return { url: lastShareUrl, expiresAt: lastShareExpiresAt };
+        }
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        let response;
+        try {
+          response = await fetch(TIER_SHARE_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payload }),
+            cache: "no-store",
+            signal: controller.signal
+          });
+        } catch (error) {
+          throw new Error(error?.name === "AbortError"
+            ? "O servidor demorou para responder. Tente gerar o link novamente."
+            : "Não foi possível acessar o serviço de links curtos. Tente novamente.");
+        } finally {
+          clearTimeout(timeout);
+        }
+        let result = {};
+        try { result = await response.json(); } catch (_) {}
+        if (!response.ok || !result.ok || !/^[A-Za-z0-9_-]{12}$/.test(result.id || "")) {
+          throw new Error(result.error || "Não foi possível gerar o link curto. Tente novamente.");
+        }
+        const url = buildShareUrl(result.id);
+        lastSharePayload = payload;
+        lastShareUrl = url;
+        lastShareExpiresAt = Number(result.expiresAt) || (Date.now() + 365 * 86400000);
+        return { url, expiresAt: lastShareExpiresAt };
+      }
+
+      async function loadShortShareProject(id) {
+        if (!/^[A-Za-z0-9_-]{12}$/.test(id || "")) throw new Error("Código de compartilhamento inválido.");
+        let response;
+        try {
+          response = await fetch(`${TIER_SHARE_API}/${encodeURIComponent(id)}`, { cache: "no-store" });
+        } catch (_) {
+          throw new Error("Não foi possível buscar a tier compartilhada. Confira sua conexão.");
+        }
+        let result = {};
+        try { result = await response.json(); } catch (_) {}
+        if (!response.ok || !result.ok || typeof result.payload !== "string") {
+          throw new Error(result.error || "Este link não existe ou expirou.");
+        }
+        if (result.payload.length > TIER_SHARE_MAX_STORED_PAYLOAD_LENGTH) throw new Error("Projeto compartilhado muito grande.");
+        return result.payload;
       }
 
       function setShareDialogState({ url = "", message = "", error = false } = {}) {
@@ -1613,15 +1671,9 @@
         if (!els.shareProjectDialog.open) els.shareProjectDialog.showModal();
         try {
           const payload = await encodeShareProject();
-          const url = buildShareUrl(payload);
-          if (url.length > TIER_SHARE_SAFE_URL_LENGTH) {
-            setShareDialogState({
-              message: "Esta tier usa imagens enviadas do aparelho e ficou grande demais para um link confiável. Use Baixar JSON ou substitua essas imagens por itens da biblioteca do site.",
-              error: true
-            });
-            return;
-          }
-          setShareDialogState({ url, message: "Link pronto. Quem abrir poderá editar uma cópia da tier." });
+          const { url, expiresAt } = await storeShortShareProject(payload);
+          const validUntil = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(expiresAt));
+          setShareDialogState({ url, message: `Link curto pronto! Quem abrir poderá editar uma cópia da tier. Válido até ${validUntil}.` });
         } catch (error) {
           console.error("Falha ao criar link compartilhável", error);
           setShareDialogState({ message: error.message || "Não foi possível criar o link.", error: true });
@@ -1658,9 +1710,11 @@
         const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
         if (!hash) return false;
         const params = new URLSearchParams(hash);
-        const payload = params.get(TIER_SHARE_HASH_KEY);
-        if (!payload) return false;
+        const id = params.get(TIER_SHARE_SHORT_HASH_KEY);
+        const oldPayload = params.get(TIER_SHARE_HASH_KEY);
+        if (!id && !oldPayload) return false;
         try {
+          const payload = id ? await loadShortShareProject(id) : oldPayload;
           const project = await decodeShareProject(payload);
           const loaded = await hydrateSharedProject(project);
           isRestoringHistory = true;
