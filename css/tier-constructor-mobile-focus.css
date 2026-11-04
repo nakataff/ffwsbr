@@ -1,0 +1,200 @@
+/* Tier Constructor — visão limpa e tela cheia, sem alterar os pixels exportados do PNG.
+ * No celular o board é fluido e o banco vira uma bandeja fixa acima da navegação.
+ * No modo tela cheia só aparecem tiers, logos e um botão mínimo para voltar.
+ */
+.tier-board-quick-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:9px;
+  margin:0 0 10px;padding:2px 0 8px;border-bottom:1px solid #2a3b55;
+}
+.tier-board-quick-bar>span{font-size:11px;font-weight:850;letter-spacing:.085em;color:#9ebbd7}
+#tierFocusEnterBtn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid #326783;border-radius:9px;padding:9px 13px;
+  font-size:12px;font-weight:850;color:#c7f1ff;background:#0e2b40;min-height:38px;
+}
+#tierFocusEnterBtn:hover,#tierFocusEnterBtn:focus-visible{background:#154762;border-color:#1abce7}
+#tierFocusExitBtn[hidden]{display:none!important}
+#tierFocusExitBtn{display:none}
+.tier-row .row-name[contenteditable="true"]{cursor:text;caret-color:#0f1727;touch-action:manipulation}
+.tier-row .row-name[contenteditable="true"]:focus{
+  background:rgba(255,255,255,.28);
+  border-radius:5px;outline:2px solid #112334;outline-offset:3px;
+}
+.tier-row .row-name[contenteditable="true"]:empty::before{content:"Nome da faixa";opacity:.55}
+.tier-clean-mode .row-name[contenteditable="true"]{cursor:text}
+
+@media(max-width:960px){
+  /* Ajuste só visual: o PNG continua usando boardWidth, imageSize e fontes do projeto. */
+  .tier-constructor-app .tier-board-panel .tier-export{
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    margin:0!important;
+  }
+  .tier-constructor-app .tier-board-panel .tier-board{
+    width:100%;min-width:0;overflow:hidden;
+  }
+  .tier-constructor-app .tier-board-panel{overflow-x:hidden}
+}
+@media(max-width:760px){
+  .tier-constructor-app{padding:7px!important}
+  .tier-constructor-app .workspace{padding-bottom:170px}
+  .tier-constructor-app .tier-editor-layout{gap:0}
+  .tier-constructor-app .tier-workspace-controls{padding:7px 9px;gap:6px}
+  .tier-constructor-app .tier-layout-help{font-size:11px}
+  .tier-constructor-app .tier-board-panel{
+    border-radius:10px;padding:6px 5px 8px!important;
+    background:#0b1220;
+  }
+  .tier-board-quick-bar{padding:5px 5px 9px;margin-bottom:5px}
+  .tier-board-quick-bar>span{font-size:10px}
+  #tierFocusEnterBtn{padding:7px 10px;min-height:35px;font-size:11px}
+  .tier-constructor-app{
+    --label-width:clamp(90px,27vw,125px)!important;
+    --image-size:clamp(48px,14.6vw,62px)!important;
+    --image-gap:5px!important;
+    --row-min-height:84px!important;
+  }
+  .tier-constructor-app .tier-board-panel .tier-row{
+    grid-template-columns:var(--label-width) minmax(0,1fr)!important;
+    min-height:84px!important;height:auto!important;
+  }
+  .tier-constructor-app .tier-board-panel .tier-row>.row-label{
+    position:relative!important;left:auto!important;
+    padding:8px 5px!important;
+    font-size:clamp(12px,3.7vw,17px)!important;
+    align-items:center!important;text-align:center!important;
+  }
+  .tier-constructor-app .tier-board-panel .row-name{
+    font-size:clamp(12px,3.7vw,17px)!important;
+    line-height:1.14!important;
+    min-height:0!important;max-width:100%;
+    padding:3px 0!important;
+  }
+  .tier-constructor-app .tier-board-panel .tier-row>.dropzone{
+    min-height:84px!important;
+    padding:7px!important;gap:5px!important;
+    align-content:center;align-items:center;
+    justify-content:flex-start;
+  }
+  .tier-constructor-app .tier-board-panel .tier-row .image-card{
+    flex:0 0 var(--image-size)!important;
+    width:var(--image-size)!important;
+    height:var(--image-size)!important;
+    max-width:var(--image-size)!important;
+    border-radius:5px;
+    box-shadow:none;
+  }
+  .tier-constructor-app .tier-board-panel .tier-row .image-card.has-nameplate{
+    height:calc(var(--image-size) + var(--nameplate-height,28px))!important;
+    max-height:none!important;
+  }
+  .tier-constructor-app .tier-board-panel .tier-row .image-card.has-nameplate>img{
+    width:100%;height:var(--image-size);min-height:var(--image-size);flex-basis:var(--image-size);
+  }
+  .tier-constructor-app .tier-board-panel .row-tools,
+  .tier-constructor-app .tier-board-panel .row-delete-button,
+  .tier-constructor-app .tier-board-panel .row-color{display:none!important}
+  .tier-constructor-app .tier-board-panel .tier-row .image-card .card-actions{
+    top:0;right:0;opacity:0;
+  }
+  .tier-constructor-app .tier-board-panel .tier-row .image-card:focus-within .card-actions,
+  .tier-constructor-app .tier-board-panel .tier-row .image-card.touch-selected .card-actions{opacity:1}
+  .tier-constructor-app .tier-board-panel .image-rank-badge{font-size:9px!important;padding:2px 3px}
+  .tier-constructor-app .tier-board-panel .tier-image-nameplate{font-size:10px!important}
+  /* Bandeja de equipes, como nos tier makers mobile: sempre perto da mão. */
+  .tier-constructor-app .tier-editor-layout .tier-bank-panel,
+  .tier-constructor-app .tier-editor-layout[data-bank-layout="bottom"] .tier-bank-panel{
+    position:fixed!important;
+    top:auto!important;
+    left:0!important;right:0!important;
+    bottom:calc(70px + env(safe-area-inset-bottom,0px))!important;
+    z-index:120!important;
+    order:2;width:100%!important;
+    padding:7px 10px 6px!important;
+    max-height:min(36dvh,260px)!important;
+    overflow:auto;
+    border:1px solid #36516f;border-bottom:0;
+    border-radius:14px 14px 0 0!important;
+    background:rgba(9,18,32,.98)!important;
+    box-shadow:0 -6px 24px #0009!important;
+  }
+  .tier-constructor-app .tier-bank-panel .bank-title{
+    flex-wrap:nowrap;gap:8px;margin:0 2px 4px!important;
+  }
+  .tier-constructor-app .tier-bank-panel .bank-title h2{
+    font-size:12px!important;line-height:1.2;
+  }
+  .tier-constructor-app .tier-bank-panel .count{font-size:10px}
+  .tier-constructor-app .tier-editor-layout .tier-bank-panel #imageBank{
+    height:69px!important;min-height:69px!important;max-height:69px!important;
+    gap:7px!important;padding:6px!important;
+    background:#0b1525;
+  }
+  .tier-constructor-app .tier-editor-layout #imageBank .image-card,
+  .tier-constructor-app .tier-editor-layout[data-bank-layout="bottom"] #imageBank .image-card{
+    flex:0 0 55px!important;width:55px!important;height:55px!important;
+    max-width:55px!important;min-width:55px!important;
+  }
+  .tier-constructor-app .tier-bank-panel .trash-panel{margin-top:4px}
+  .tier-constructor-app .tier-bank-panel .trash-panel>summary{
+    font-size:10px;padding:4px 8px;
+  }
+  .tier-constructor-app .tier-bank-panel .trash-panel .archived-bank{max-height:110px;overflow:auto}
+  .tier-constructor-app .tier-editor-layout .tier-board-panel{order:1;width:100%}
+}
+@media(max-width:360px){
+  .tier-constructor-app{--label-width:86px!important;--image-size:46px!important}
+  .tier-constructor-app .tier-board-panel .tier-row>.row-label{font-size:12px!important}
+  .tier-constructor-app .tier-board-panel .row-name{font-size:12px!important}
+  .tier-constructor-app .tier-board-panel .tier-row>.dropzone{padding:5px!important;gap:4px!important}
+}
+/* Imersivo: funciona também no iPhone, sem depender da API Fullscreen. */
+body.tier-focus-mode{overflow:hidden!important}
+body.tier-focus-mode .tier-constructor-app .tier-board-panel{
+  position:fixed!important;inset:0!important;
+  top:0!important;left:0!important;right:0!important;bottom:0!important;
+  width:100vw!important;height:100dvh!important;
+  min-width:0!important;max-width:none!important;
+  z-index:2147483000!important;
+  padding:calc(52px + env(safe-area-inset-top,0px)) 0
+    calc(12px + env(safe-area-inset-bottom,0px))!important;
+  border:0!important;border-radius:0!important;
+  background:#080e17!important;
+  box-shadow:none!important;
+  display:block!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  overscroll-behavior:contain;
+}
+body.tier-focus-mode .tier-board-panel .tier-board-quick-bar{display:none!important}
+body.tier-focus-mode .tier-board-panel #tierFocusExitBtn:not([hidden]){
+  position:fixed;display:inline-flex;align-items:center;justify-content:center;
+  top:calc(8px + env(safe-area-inset-top,0px));right:12px;
+  z-index:2147483001;
+  border:1px solid #52718b;
+  border-radius:8px;background:#14263a;color:#e4f4ff;
+  min-height:37px;padding:7px 12px;font-size:12px;font-weight:850;
+}
+body.tier-focus-mode .tier-board-panel .tier-export{
+  width:min(100%,var(--board-width))!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0 auto!important;
+}
+body.tier-focus-mode .tier-board-panel #tierCaption{display:none!important}
+body.tier-focus-mode .tier-board-panel #tierBoard{margin:0!important}
+body.tier-focus-mode .tier-constructor-app .tier-board-panel .row-tools,
+body.tier-focus-mode .tier-constructor-app .tier-board-panel .row-color,
+body.tier-focus-mode .tier-constructor-app .tier-board-panel .row-delete-button,
+body.tier-focus-mode .tier-constructor-app .tier-board-panel .image-card .card-actions{display:none!important}
+body.tier-focus-mode .tier-constructor-app .tier-editor-layout .tier-bank-panel{display:none!important}
+@media(max-width:960px){
+ body.tier-focus-mode .tier-board-panel .tier-export{width:100%!important}
+}
+@media(max-width:760px){
+ body.tier-focus-mode .tier-constructor-app .tier-board-panel{
+  padding-top:calc(49px + env(safe-area-inset-top,0px))!important;
+  padding-bottom:env(safe-area-inset-bottom,0px)!important;
+ }
+ body.tier-focus-mode .tier-constructor-app .tier-board-panel .tier-row>.row-label{
+  position:relative!important;left:auto!important;
+ }
+}
