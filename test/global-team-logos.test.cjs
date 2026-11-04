@@ -15,9 +15,9 @@ function environment(){
  return {c,lyon,gow,player,card,finishSecondary,events};
 }
 test('logos appear immediately, including LYON, before sheets respond',async()=>{
- const e=environment();assert.equal(e.lyon.src,'home-assets/teams/global/lyon.webp');assert.equal(e.card.box.image.src,'home-assets/teams/global/p-esports.webp');assert.equal(e.card.caption.textContent,'P');assert(e.card.monogram.hidden);assert.equal(e.player.src,'lyon.webp');
+ const e=environment();assert.equal(e.lyon.src,'home-assets/teams/global/lyon-gold.webp');assert.equal(e.card.box.image.src,'home-assets/teams/global/p-esports.webp');assert.equal(e.card.caption.textContent,'P');assert(e.card.monogram.hidden);assert.equal(e.player.src,'lyon.webp');
  await new Promise(r=>setTimeout(r,0));assert.equal(e.gow.src,'https://updated/gow.webp');
- e.finishSecondary();await e.c.window.cffReloadYearSheetLogos();assert.equal(e.lyon.src,'home-assets/teams/global/lyon.webp');assert.equal(e.gow.src,'https://updated/gow.webp');assert.equal(e.player.src,'lyon.webp');
+ e.finishSecondary();await e.c.window.cffReloadYearSheetLogos();assert.equal(e.lyon.src,'home-assets/teams/global/lyon-gold.webp');assert.equal(e.gow.src,'https://updated/gow.webp');assert.equal(e.player.src,'lyon.webp');
 });
 test('all 24 canonical assets exist, have WebP signatures and stay under 250 KB together',()=>{
  const teams=JSON.parse(fs.readFileSync('ffws-global-2026/teams.json')).teams;assert.equal(teams.length,24);let total=0;const paths=new Set();
@@ -31,5 +31,21 @@ test('Mundial render ignores stale pending flags and never selects the player ph
  let src=fs.readFileSync('ffws-global-2026/global.js','utf8');src=src.replace("  if (document.readyState === 'loading')","  window.__qa={state,renderPage,logo};\n  if (document.readyState === 'loading')");vm.runInContext(src,c);
  const qa=c.window.__qa;qa.state.loaded=true;qa.state.teams=JSON.parse(fs.readFileSync('ffws-global-2026/teams.json')).teams.map(t=>({...t,logoPending:true}));
  let delegated=0;c.window.CFFGlobalTeams={boot(){delegated++;}};qa.renderPage('ffws-global-2026-equipes');assert.equal(delegated,1);
- assert.equal(qa.logo('LYON'),'home-assets/teams/global/lyon.webp');assert.equal(qa.logo('Lyon'),'home-assets/teams/global/lyon.webp');
+ assert.equal(qa.logo('LYON'),'home-assets/teams/global/lyon-gold.webp');assert.equal(qa.logo('Lyon'),'home-assets/teams/global/lyon-gold.webp');
+});
+
+
+test('escudo dourado da LYON não reutiliza a foto de jogador, e as versões do Mundial são iguais',()=>{
+ const fs=require('node:fs');
+ const official=fs.readFileSync('home-assets/teams/global/lyon-gold.webp');
+ assert.equal(official.toString('ascii',8,12),'WEBP');
+ assert(official.length>3000);
+ assert.deepEqual(fs.readFileSync('home-assets/teams/global/lyon.webp'),official,'Caminho legado mantém o novo escudo');
+ assert.notDeepEqual(fs.readFileSync('lyon.webp'),official,'Foto de jogador nunca deve substituir escudo');
+ const global=JSON.parse(fs.readFileSync('ffws-global-2026/teams.json','utf8')).teams.find(x=>x.id==='lyon');
+ assert.equal(global.logo,'home-assets/teams/global/lyon-gold.webp');
+ const logos=JSON.parse(fs.readFileSync('team-data/logo-map.json','utf8'));
+ assert.equal(logos.logos.LYON,'home-assets/teams/global/lyon-gold.webp');
+ const historic=JSON.parse(fs.readFileSync('team-data/historical/lyon-ec526a00eed2.json','utf8'));
+ assert.equal(historic.logo,'home-assets/teams/global/lyon-gold.webp');
 });
