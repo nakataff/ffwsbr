@@ -4,6 +4,28 @@ if(window.CFFMobileDock)return;
 const bar=document.querySelector('.cff-bottom-navigation');
 if(!bar)return;
 const KEY='cff-mobile-dock-v1';
+const CHAT_KEY='cff-chat-visible-v1';
+const CHAT_EVENT='cff:chat-visibility';
+function isChatVisible(){
+ try{return localStorage.getItem(CHAT_KEY)!=='0';}catch{return true;}
+}
+function syncChatToggle(){
+ const button=sheet?.querySelector('[data-dock-chat-toggle]');
+ if(!button)return;
+ const enabled=isChatVisible();
+ button.setAttribute('aria-checked',String(enabled));
+ button.title=enabled?'Ocultar botão do Chat Global':'Mostrar botão do Chat Global';
+ const text=sheet.querySelector('[data-dock-chat-status]');
+ if(text)text.textContent=enabled?'Botão visível no site':'Botão oculto neste navegador';
+}
+function changeChatVisibility(){
+ const visible=!isChatVisible();
+ try{localStorage.setItem(CHAT_KEY,visible?'1':'0');}catch{}
+ window.dispatchEvent(new CustomEvent(CHAT_EVENT,{detail:{visible}}));
+ syncChatToggle();
+}
+window.addEventListener(CHAT_EVENT,syncChatToggle);
+window.addEventListener('storage',event=>{if(event.key===CHAT_KEY||event.key===null)syncChatToggle();});
 const iconPaths={
  home:'<path d="m3 10 9-7 9 7v11h-6v-7H9v7H3z"/>',
  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c4 5 4 13 0 18M12 3c-4 5-4 13 0 18"/>',
@@ -99,11 +121,13 @@ function open(){
    '<a class="cff-dock-coins" href="/conta.html?tab=points&shopSection=shop#eco-shop"><img src="/edition/moeda%20cff.webp" alt=""><span><strong data-dock-balance>—</strong><small>CFF COINS · ABRIR LOJA</small></span><span>↗</span></a>',
    '<div data-daily-tasks></div>',
    '<div class="cff-dock-actions"><a href="/conta.html">Meu perfil</a><a href="/conta.html?tab=edit">Configurações e edição</a><a href="/conta.html?tab=inventory">Inventário</a><a href="/conta.html?tab=notifications">Notificações</a><button type="button" data-dock-login hidden>Entrar com Google</button></div>',
-   '<details class="cff-dock-config"><summary>⚙ Personalizar barra inferior <span>⌄</span></summary><p>Escolha a página e o ícone dos quatro primeiros atalhos. O perfil permanece fixo na quinta posição.</p><div data-dock-editor></div><div class="cff-dock-editor-actions"><button type="button" data-dock-reset>Restaurar padrão</button><button type="button" data-dock-finish>Concluir</button></div><small>Preferências salvas neste navegador</small></details>'
+   '<details class="cff-dock-config"><summary>⚙ Personalizar barra inferior <span>⌄</span></summary><p>Escolha a página e o ícone dos quatro primeiros atalhos. O perfil permanece fixo na quinta posição.</p><div data-dock-editor></div><div class="cff-dock-editor-actions"><button type="button" data-dock-reset>Restaurar padrão</button><button type="button" data-dock-finish>Concluir</button></div><small>Preferências salvas neste navegador</small></details>',
+   '<div class="cff-dock-chat-setting"><div class="cff-dock-chat-copy"><strong>Chat Global</strong><small data-dock-chat-status>Botão visível no site</small></div><button type="button" class="cff-dock-chat-switch" data-dock-chat-toggle role="switch" aria-label="Mostrar botão do Chat Global" aria-checked="true"><span aria-hidden="true"></span></button></div>'
   ].join('');
   document.body.append(sheet);
   sheet.querySelector('[data-dock-close]').addEventListener('click',()=>sheet.close());
   sheet.querySelector('[data-dock-finish]').addEventListener('click',()=>sheet.querySelector('.cff-dock-config').open=false);
+  sheet.querySelector('[data-dock-chat-toggle]').addEventListener('click',changeChatVisibility);
   sheet.querySelector('[data-dock-reset]').addEventListener('click',()=>{state=defaults.map(d=>({...d}));save();refresh();renderEditor();});
   sheet.querySelector('[data-dock-login]').addEventListener('click',()=>{sheet.close();const entry=accessEntry();if(entry)entry.click();else location.href='/conta.html';});
   sheet.addEventListener('click',event=>{if(event.target===sheet)sheet.close();});
@@ -124,7 +148,7 @@ function open(){
   });
   renderEditor();
  }
- syncSheet();sheet.showModal();
+ syncSheet();syncChatToggle();sheet.showModal();
 }
 bar.addEventListener('click',event=>{
  if(!event.target.closest('[data-cff-bottom="profile"]'))return;
