@@ -734,3 +734,5 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 .global-knockout-groups :is(a,summary):focus-visible{outline:2px solid #00c8ff;outline-offset:-3px;border-radius:5px}
 @media(max-width:1150px){.global-knockout-group-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.global-knockout-group-grid{grid-template-columns:1fr;gap:12px}.global-knockout-groups .ffws-global-panel-head{align-items:flex-start}.global-knockout-groups .global-participants-link{min-height:44px;display:inline-flex;align-items:center;gap:8px}.global-knockout-team{font-size:.86rem;min-height:58px}.global-knockout-help{font-size:.78rem}}
+
+.ffws-global-pred-link{display:inline-flex;align-items:center;justify-content:center;gap:10px;margin-top:15px;padding:12px 17px;border:1px solid #08bce3;border-radius:11px;background:linear-gradient(110deg,#073b56,#0b2539);color:#c7f7ff!important;font-size:13px;font-weight:950;text-decoration:none;box-shadow:0 5px 18px #0004;max-width:100%}.ffws-global-pred-link:hover,.ffws-global-pred-link:focus-visible{background:#095271;border-color:#67defa;color:#fff!important}
