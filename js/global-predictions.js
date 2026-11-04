@@ -148,9 +148,9 @@
   const r=state.data?.round,el=root.querySelector('[data-gfp-countdown]');
   if(!r||!el)return;
   if(el.textContent!==countdown(r.closesAt))el.textContent=countdown(r.closesAt);
-  if(r.closesAt<=now()&&root.querySelector('[data-gfp-save]'))render();
+  if(r.closesAt<=now()&&r.status==='open'){r.status='closed';render();}
  },1000);
- window.addEventListener('storage',e=>{if(e.key===SESSION)load(state.roundKey,true);});
+ window.addEventListener('storage',e=>{if(e.key===SESSION){state.drafts.clear();load(state.roundKey,true);}});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.data)load(state.roundKey,true);});
  load();
 })();
