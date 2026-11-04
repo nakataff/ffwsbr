@@ -4020,6 +4020,34 @@
 
       setupTrashDropzone();
 
+      // A abertura normal ou por link compartilhado vai direto para as rows,
+      // sem alterar a URL nem atrapalhar o carregamento de #s= e #tier=.
+      function scrollToTierRowsOnEntry() {
+        const panel = document.getElementById("tierBoardPanel");
+        if (!panel?.querySelector(".tier-row")) return;
+        const hash = window.location.hash;
+        // Respeitar âncoras intencionais que não sejam links de compartilhamento.
+        if (hash && !/^#(?:s=|tier=|rows$)/.test(hash)) return;
+        const align = () => {
+          if (document.body.classList.contains("tier-focus-mode")) return;
+          const heightIfOverlay = element => {
+            if (!element) return 0;
+            const position = window.getComputedStyle(element).position;
+            return position === "fixed" || position === "sticky" ? element.getBoundingClientRect().height : 0;
+          };
+          const publicHeader = heightIfOverlay(document.querySelector(".cff-public-topbar"));
+          const stickyEditorBar = heightIfOverlay(document.querySelector(".tier-constructor-app .topbar"));
+          const panelTop = panel.getBoundingClientRect().top + window.scrollY;
+          const target = Math.max(0, Math.round(panelTop - publicHeader - stickyEditorBar - 12));
+          // O painel contém o botão de tela cheia e a primeira row. Sem scroll suave,
+          // para abrir já na área útil sem uma animação longa no celular.
+          if (typeof window.scrollTo === "function") {
+            try { window.scrollTo({ top: target, left: 0, behavior: "auto" }); } catch (_) {}
+          }
+        };
+        requestAnimationFrame(() => requestAnimationFrame(align));
+      }
+
       const initializeBlankProject = () => {
         els.captionInput.value = state.caption;
         normalizeStateImages();
@@ -4066,5 +4094,5 @@
             initializeBlankProject();
           }
         }
-      })();
+      })().finally(scrollToTierRowsOnEntry);
     })();
