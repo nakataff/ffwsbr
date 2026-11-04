@@ -92,7 +92,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
 ]);
 
 const globalPredictionService=createGlobalPredictionService({fetchJson,json,getCheckinSession,predictionVoteFor,predictionBonus,
- encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce});
+ encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce,captureOutcomes});
 
 export default {
   async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env))await purgeExpiredStoryPreviews(env.DB);})());},
