@@ -110,3 +110,38 @@ test('visualização mobile usa tier fluida, banco compacto no rodapé e modo te
  assert.match(mobile,/\.tier-editor-layout \.tier-bank-panel\{display:none!important\}/);
  assert.match(mobile,/#tierCaption\{display:none!important\}/);
 });
+
+test('ao abrir o Tier Constructor a página posiciona as rows imediatamente, também em links compartilhados',()=>{
+ const start=js.indexOf('function scrollToTierRowsOnEntry()');
+ const end=js.indexOf('const initializeBlankProject',start);
+ assert(start>0&&end>start,'helper de navegação por rows deve existir');
+ const source=js.slice(start,end);
+ const run=hash=>{
+  const dom=new JSDOM('<header class="cff-public-topbar"></header><div class="tier-constructor-app"><header class="topbar"></header><section id="tierBoardPanel"><div class="tier-row">S</div></section></div>',{
+   url:'https://centralfreefire.com.br/tier-constructor.html'+hash,runScripts:'outside-only'
+  });
+  const w=dom.window,positions=[];
+  w.requestAnimationFrame=callback=>{callback();return 1;};
+  w.scrollTo=options=>positions.push(options);
+  w.getComputedStyle=el=>({position:el.classList.contains('cff-public-topbar')?'fixed':el.classList.contains('topbar')?'sticky':'static'});
+  const panel=w.document.getElementById('tierBoardPanel');
+  panel.getBoundingClientRect=()=>({top:920,height:650});
+  w.document.querySelector('.cff-public-topbar').getBoundingClientRect=()=>({height:68});
+  w.document.querySelector('.topbar').getBoundingClientRect=()=>({height:100});
+  w.eval(source+'window.__jump=scrollToTierRowsOnEntry;');
+  w.__jump();
+  return {w,dom,positions};
+ };
+ for(const hash of ['', '#s=ABCD1234test', '#tier=r.eyJ2ZXJzaW9uIjoxfQ', '#rows']){
+  const x=run(hash);
+  try{
+   assert.equal(x.positions.length,1,hash||'sem hash');
+   assert.equal(x.positions[0].top,740,'subtrai cabeçalhos fixos para exibir as rows');
+   assert.equal(x.positions[0].behavior,'auto');
+  }finally{x.dom.window.close();}
+ }
+ const other=run('#configuracoes');
+ try{assert.equal(other.positions.length,0,'âncora não relacionada ao editor deve ser respeitada');}
+ finally{other.dom.window.close();}
+ assert.match(js,/\}\)\(\)\.finally\(scrollToTierRowsOnEntry\)/,'rolagem acontece após o projeto terminar de carregar');
+});
