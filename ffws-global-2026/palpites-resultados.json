@@ -1,0 +1,6 @@
+{
+  "tournament": "FFWS Global Finals 2026",
+  "description": "Apuração opcional para os palpites. Cada rodada só é validada com verified=true e IDs oficiais de equipes e jogadores. Deixe rounds vazio até revisão; o servidor também pode extrair dados completos dos arquivos do Mundial.",
+  "updatedAt": "2026-11-04",
+  "rounds": {}
+}
