@@ -146,7 +146,7 @@
 
   function setup(){
     const grid=document.querySelector('.setup-grid');if(!grid)return;
-    const card=document.createElement('section');card.id='cff-admin-tournament-setup';card.innerHTML='<header><div><h2>1. Montar o campeonato</h2><p id="cff-phase-current"></p></div><button class="btn-mini" type="button" id="cff-final-import">↻ Carregar Final FFWS</button></header><p class="cff-phase-hint">Comece pelos dados do dia. Depois configure as fases, escolha os times e organize os dias de disputa.</p><div id="cff-admin-basic"></div><div class="cff-phase-actions"><button type="button" class="btn-mini" data-admin-tab="roster">2. Escolher times</button><button type="button" class="btn-mini" data-admin-tab="days">3. Dias e descansos</button><button type="button" class="btn-mini" data-admin-tab="general">Tabela geral</button></div><details id="cff-phase-details" open><summary>Fases e classificados</summary><div id="cff-phase-list"></div><button class="btn-mini" type="button" id="cff-add-phase">+ Adicionar fase</button><p class="cff-phase-hint">Encerrar e avançar salva os resultados e leva os classificados para a próxima fase. A data do último dia entra no Prizepool dos eliminados.</p></details><button class="btn-mini" type="button" id="cff-phase-recover">Baixar backup anterior</button><details id="cff-admin-advanced"><summary>Avançado: horários, pontuação e código Wiki</summary><div class="cff-admin-rules" id="cff-admin-rule-settings"></div></details>';
+    const card=document.createElement('section');card.id='cff-admin-tournament-setup';card.innerHTML='<header><div><h2>1. Montar o campeonato</h2><p id="cff-phase-current"></p></div></header><p class="cff-phase-hint">Comece pelos dados do dia. Depois configure as fases, escolha os times e organize os dias de disputa.</p><div id="cff-admin-basic"></div><div class="cff-phase-actions"><button type="button" class="btn-mini" data-admin-tab="roster">2. Escolher times</button><button type="button" class="btn-mini" data-admin-tab="days">3. Dias e descansos</button><button type="button" class="btn-mini" data-admin-tab="general">Tabela geral</button></div><details id="cff-phase-details" open><summary>Fases e classificados</summary><div id="cff-phase-list"></div><button class="btn-mini" type="button" id="cff-add-phase">+ Adicionar fase</button><p class="cff-phase-hint">Encerrar e avançar salva os resultados e leva os classificados para a próxima fase. A data do último dia entra no Prizepool dos eliminados.</p></details><button class="btn-mini" type="button" id="cff-phase-recover">Baixar backup anterior</button><details id="cff-admin-advanced"><summary>Avançado: horários, pontuação e código Wiki</summary><div class="cff-admin-rules" id="cff-admin-rule-settings"></div></details>';
     grid.before(card);$('cff-admin-basic').append(grid);for(const group of [...grid.children])if(!group.querySelector('#tournament-name,#match-date,#num-quedas,#tournament-days'))$('cff-admin-rule-settings').append(group);
     const finalNote=document.createElement('div');finalNote.id='cff-complete-final-note';finalNote.hidden=true;finalNote.innerHTML='<p class="cff-phase-hint">No modo completo, este editor é uma final. O formato e o Champion Point vêm das configurações avançadas. Os dados das outras fases ficam preservados no modo torneio.</p><button type="button" class="btn-mini" data-final-format>Configurar formato da final</button>';$('cff-phase-details').before(finalNote);
     const time=$('auto-time-panel');if(time){
@@ -175,7 +175,6 @@
       persist();lastDayKey='';
     });
     $('cff-add-phase').addEventListener('click',()=>{const current=plan.phases.at(-1),next=makePhase('Final',current.advance||12,0);next.days=2;plan.phases.push(next);persist();renderPhases()});
-    $('cff-final-import').addEventListener('click',()=>{const stage=$('cff-camp-live-stage');if(!stage||typeof window.CFF_CAMP_LIVE?.sync!=='function')return notify('Integração FFWS indisponível. Recarregue a página ou importe um backup JSON.','err');stage.value='final';window.CFF_CAMP_LIVE.sync()});
     $('cff-phase-recover').addEventListener('click',()=>{
       try{const raw=localStorage.getItem('cff_camp_before_phase_change_v1')||localStorage.getItem('cff_camp_before_live_sync_v1');
       if(!raw)return notify('Nenhuma troca de fase realizada ainda.','warn');
@@ -196,16 +195,4 @@
   const reset=api()?.resetForNewTournament;
   if(reset)api().resetForNewTournament=function(){const p=makePhase();plan={version:1,activeId:p.id,phases:[p]};liveStage='';lastDayKey='';const result=reset.apply(this,arguments);renderPhases();return result};
   setup();
-  const initial=collect();
-  if(/FFWS.*Segunda Fase/i.test(initial.tournamentModeV1?.name||initial.config?.tournamentName||'')&&!initial.config?.cffFfwsStage&&!localStorage.getItem('cff_ffws_final_migrated_20261005')){
-    (async()=>{try{
-      checkpoint(window.__CFF_CAMP_INITIAL_BACKUP__||initial);
-      const root=await window.CFF_CAMP_LIVE.fetchLiveRoot(),result=await window.CFF_CAMP_LIVE.buildLiveBackup(root,'final');
-      window.v37DetachStage?.();
-      await window.CFF_CAMP.applyBackupText(JSON.stringify(result.backup),'Final FFWS',false);
-      localStorage.setItem('cff_ffws_final_migrated_20261005','1');
-      notify('Final FFWS carregada. A Segunda Fase foi preservada no backup anterior.');
-    }catch(e){notify('Use Carregar Final FFWS para atualizar. Seu campeonato foi preservado.','warn')}})();
-  }
 })();
-

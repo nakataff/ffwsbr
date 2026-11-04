@@ -24,8 +24,8 @@ test('phase transition uses source Champion Rush rules, preserves a snapshot and
 test('failed transition rolls back the active phase and completion flags',async()=>{
  const h=harness(),w=h.w;try{h.fail();await w.CFF_TOURNAMENT_SETUP.advance();const plan=w.CFF_TOURNAMENT_SETUP.getPlan();assert.equal(plan.activeId,'Qualificatória');assert.equal(plan.phases[0].completed,false);assert.deepEqual(Array.from(plan.phases[0].eliminated),[]);assert.match(h.messages.at(-1)[0],/Falha simulada/);assert(!w.document.querySelector('[data-phase-apply]').disabled)}finally{w.close()}
 });
-test('malformed recovery JSON and missing FFWS integration produce messages instead of uncaught errors',()=>{
- const h=harness(),w=h.w;try{w.localStorage.setItem('cff_camp_before_phase_change_v1','{broken');w.document.getElementById('cff-phase-recover').click();assert.match(h.messages.at(-1)[0],/Não foi possível ler/);w.document.getElementById('cff-final-import').click();assert.match(h.messages.at(-1)[0],/Integração FFWS indisponível/)}finally{w.close()}
+test('malformed recovery JSON produces a message and the expired FFWS shortcut is absent',()=>{
+ const h=harness(),w=h.w;try{w.localStorage.setItem('cff_camp_before_phase_change_v1','{broken');w.document.getElementById('cff-phase-recover').click();assert.match(h.messages.at(-1)[0],/Não foi possível ler/);assert.equal(w.document.getElementById('cff-final-import'),null)}finally{w.close()}
 });
 
 test('all teams can advance from a phase without eliminations, such as Point Rush',async()=>{

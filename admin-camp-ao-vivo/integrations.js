@@ -62,16 +62,9 @@
   }
 
   function buildToolbar(){
-    const command=$('.cff-camp-command');if(!command||$('#cff-camp-integrations'))return;
-    const row=document.createElement('div');row.id='cff-camp-integrations';row.className='cff-camp-integrations';
-    row.innerHTML=`
-      <div class="cff-camp-integration-copy"><strong>Integrações Central FF</strong><small id="cff-camp-integration-status">Puxe as quedas já confirmadas no site e continue a tabela ao vivo sem publicar o rascunho.</small></div>
-      <label>Etapa FFWS<select id="cff-camp-live-stage" class="cff-camp-btn"><option value="final">Final</option><option value="segundaFase">Segunda Fase</option></select></label>
-      <button class="cff-camp-btn is-primary" id="cff-camp-live-sync" type="button">↻ FFWS ao vivo</button>
-      <button class="cff-camp-btn" id="cff-camp-publish-title" type="button">🏁 Enviar resultado</button>`;
-    command.appendChild(row);
-    $('#cff-camp-live-sync')?.addEventListener('click',syncFfwsLive);
-    $('#cff-camp-publish-title')?.addEventListener('click',openPublishModal);
+    const content=$('#summary-section .collapsible-content');if(!content||$('#cff-camp-integrations'))return;
+    const details=document.createElement('details');details.id='cff-camp-integrations';details.innerHTML='<summary>Mais opções · registrar título</summary><p class="cff-camp-modal-note">Use depois do fim do torneio para cadastrar o pódio em Títulos. O envio das quedas do Mundial fica no botão Enviar resultados para o site.</p><button class="cff-camp-btn" id="cff-camp-publish-title" type="button">Registrar pódio em Títulos</button>';
+    content.append(details);$('#cff-camp-publish-title').addEventListener('click',openPublishModal);
   }
 
   function ensureModal(){

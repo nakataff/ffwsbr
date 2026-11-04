@@ -16,6 +16,8 @@ on:
       - 'admin-camp-ao-vivo/app-loader.js'
       - 'test/global-camp-home.test.cjs'
       - 'test/global-camp-browser.test.cjs'
+      - 'test/global-camp-review.test.cjs'
+      - 'test/fixtures/global-camp-team-codes.json'
       - 'scripts/build-global-camp-model.cjs'
       - 'js/home-support.js'
       - 'js/home-supporters.js'
@@ -83,7 +85,7 @@ jobs:
       - name: Validate format, calendar and rendering
         env:
           NODE_PATH: /tmp/cff-global-tests/node_modules
-        run: node --test test/global-camp-home.test.cjs test/global-camp-browser.test.cjs test/global-players.test.cjs test/global-player-bridge.test.cjs test/copa-player-profile.test.cjs test/global-teams.test.cjs test/global-overview.test.cjs test/global-format-2026.test.cjs test/home-global-matchups.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs test/home-support.test.cjs test/community-supporters-ui.test.cjs test/admin-dashboard.test.cjs
+        run: node --test test/global-camp-review.test.cjs test/global-camp-home.test.cjs test/global-camp-browser.test.cjs test/global-players.test.cjs test/global-player-bridge.test.cjs test/copa-player-profile.test.cjs test/global-teams.test.cjs test/global-overview.test.cjs test/global-format-2026.test.cjs test/home-global-matchups.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs test/home-support.test.cjs test/community-supporters-ui.test.cjs test/admin-dashboard.test.cjs
       - name: Check generated overview
         run: node scripts/build-global-camp-model.cjs --check && node scripts/build-global-overview.cjs --check && node scripts/build-global-players.cjs --check && python3 scripts/build-copa-player-profiles.py --check
       - name: Check syntax

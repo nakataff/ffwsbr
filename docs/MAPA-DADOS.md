@@ -680,3 +680,15 @@ No Worker Instagram, `global-prediction-service.js` reutiliza o ledger `awards` 
 - `js/home-global-results.js`: a home lê **somente** `/ffwsLive/global-2026/home.json`, deduplica chamadas em andamento e guarda cache de 90 segundos por aba. Atualiza periodicamente apenas com home visível. Não carrega as quedas, todos os jogadores nem a FFWS BR encerrada para esses blocos.
 - Fase 1: classificação geral; Fase 2: somente o dia mais recente, com pontuação zerada; repescagem/final: a própria etapa. Seleção diária: 2 rush/3º homem, 1 granadeiro, 1 suporte, sem completar funções ausentes com dados inventados. Dados individuais vazios ficam indisponíveis; rankings mostram cobertura parcial quando necessário.
 - O Wiki de equipes contém posição e abates por equipe, não dano/assistências individuais. Estes são lançados no quadro de jogadores da rodada. A importação tem prévia, validação e confirmação separadas e nunca publica automaticamente.
+
+#### Modelo pronto e envio conferido no admin
+
+O modelo do Mundial aparece fora da seção recolhida de importação. A configuração manual fica em uma seção separada e o preset encerrado da WB S2 não aparece mais no painel nem é carregado automaticamente. Os backups antigos continuam importáveis.
+
+O modelo grava as quatro fases em `cffTournamentPhasesV1` com a fase ativa explícita, além da chave de rodada. O editor legado mantém o cálculo isolado de cada confronto; a interface do modelo informa a fase real, sem chamar a classificatória de final.
+
+Os códigos Wiki dos 24 participantes foram conferidos com o bloco `TeamParticipants` fornecido pelo administrador, preservados em `test/fixtures/global-camp-team-codes.json`. `teams.json.wikiName` é usado no catálogo e nos seletores do editor (por exemplo `ag.al`, `p esports`, `Pirate Esports`). `CFF_GLOBAL_CAMP_CORE.record(data,key,meta)` converte códigos para IDs canônicos ao publicar; `nativeDrop` faz a conversão inversa ao importar. Nunca alterar IDs usados em links, grupos e arquivos para corrigir um código Wiki.
+
+O botão **Enviar resultados para o site** fica no início de **Resumos e códigos**. Ele abre um diálogo com as quedas completas, a classificação acumulada da Fase 1 (ou apenas o dia nas demais etapas) e a cobertura individual. Abrir, trocar a prévia ou cancelar não consulta o Firebase nem publica nada. Apenas **Confirmar e enviar ao site** autentica e envia o snapshot conferido. Uma edição posterior invalida a confirmação; uma queda incompleta fica no rascunho. O recibo por rodada torna a repetição de uma resposta perdida idempotente, e a revisão impede sobrescrever outro lançamento. Não reduzir o número de quedas já publicado.
+
+Verificações: `test/global-camp-review.test.cjs`, `test/global-camp-browser.test.cjs` e `test/global-camp-home.test.cjs`.
