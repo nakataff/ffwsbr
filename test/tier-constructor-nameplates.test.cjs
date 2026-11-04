@@ -11,7 +11,7 @@ const tick=(ms=90)=>new Promise(resolve=>setTimeout(resolve,ms));
 
 function createBrowser(){
  const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/tier-constructor.html',runScripts:'outside-only',pretendToBeVisual:true});
- const w=dom.window,drawn=[],clips=[],shares=[];
+ const w=dom.window,drawn=[],clips=[],shares=[],renders=[],revoked=[],requests=[];
  let lastSharedPayload=null;
  let uid=0;
  w.structuredClone=structuredClone;
@@ -22,6 +22,7 @@ function createBrowser(){
  w.requestAnimationFrame=fn=>{Promise.resolve().then(fn);return 1};
  w.matchMedia=()=>({matches:true,addListener(){},removeListener(){}});
  w.confirm=()=>true;
+ w.scrollTo=()=>{};
  for(const dialog of w.document.querySelectorAll('dialog')){
   dialog.show=()=>{dialog.open=true};
   dialog.showModal=()=>{dialog.open=true};
@@ -29,19 +30,20 @@ function createBrowser(){
  }
  w.Image=class {constructor(){this.width=100;this.height=100;this.naturalWidth=100;this.naturalHeight=100;}set src(value){this._src=value;Promise.resolve().then(()=>this.onload?.())}get src(){return this._src}};
  w.HTMLCanvasElement.prototype.getContext=function(){
-  const ctx={canvas:this,measureText:t=>({width:String(t).length*7}),fillText:(...args)=>drawn.push({kind:'text',args}),fillRect:(...args)=>drawn.push({kind:'rect',args})};
+  const ctx={canvas:this,measureText:t=>({width:String(t).length*7}),fillText:(...args)=>drawn.push({kind:'text',args}),fillRect:(...args)=>drawn.push({kind:'rect',args}),drawImage:(...args)=>drawn.push({kind:'image',canvas:this,args})};
   return new Proxy(ctx,{get:(o,key)=>key in o?o[key]:()=>{},set:(o,key,value)=>{o[key]=value;return true}});
  };
- w.HTMLCanvasElement.prototype.toBlob=function(callback){callback(new w.Blob(['image'],{type:'image/png'}));};
+ w.HTMLCanvasElement.prototype.toBlob=function(callback){const blob=new w.Blob(['image'],{type:'image/png'});renders.push({width:this.width,height:this.height,blob});callback(blob);};
  w.HTMLCanvasElement.prototype.toDataURL=()=> 'data:image/png;base64,aGVsbG8=';
  w.URL.createObjectURL=()=> 'blob:mock';
- w.URL.revokeObjectURL=()=>{};
+ w.URL.revokeObjectURL=url=>revoked.push(url);
  w.HTMLAnchorElement.prototype.click=function(){};
  w.ClipboardItem=class {constructor(data){this.data=data}};
  Object.defineProperty(w.navigator,'clipboard',{value:{write:async items=>clips.push(items)},configurable:true});
  Object.defineProperty(w.navigator,'share',{value:async info=>shares.push(info),configurable:true});
  Object.defineProperty(w.navigator,'canShare',{value:()=>true,configurable:true});
  w.fetch=async(url,opts={})=>{
+  requests.push(String(url));
   if(String(url).includes('/api/tier-share')){
    if(opts.method==='POST'){
     lastSharedPayload=JSON.parse(opts.body).payload;
@@ -59,7 +61,7 @@ function createBrowser(){
   })};
  };
  w.eval(js);
- return {dom,w,drawn,clips,shares,getTierPayload:()=>lastSharedPayload};
+ return {dom,w,drawn,clips,shares,renders,revoked,requests,getTierPayload:()=>lastSharedPayload};
 }
 
 test('controles de nome e compartilhamento estão disponíveis, mas legendas são opcionais',()=>{
@@ -246,4 +248,51 @@ test('links antigos continuam abrindo e os novos consultam a API pelo ID',()=>{
  assert.match(js,/loadShortShareProject\(id\)/);
  assert.match(js,/decodeShareProject\(payload\)/);
  assert.match(js,/window\.location\.origin/);
+});
+
+
+test('preview uses exact PNG dimensions, fits all rows without cropping and every export respects the selected format',async()=>{
+ const h=createBrowser(),{w,dom,renders,drawn,requests,revoked}=h;
+ try{
+  await tick();
+  w.document.getElementById('imageBank').querySelector('.image-card').click();
+  w.document.querySelector('.tier-row .dropzone').click();
+  const rowsBefore=w.document.querySelectorAll('.tier-row').length, initialRequests=requests.length;
+  w.matchMedia=()=>({matches:false,addListener(){},removeListener(){}});
+  w.document.getElementById('tierFocusEnterBtn').click();
+  w.document.getElementById('imageBank').querySelector('.image-card').click();
+  w.document.querySelector('.tier-row .dropzone').click();
+  assert.equal(w.document.querySelectorAll('.tier-row .image-card').length,2,'desktop fullscreen also supports click-to-place');
+  w.document.getElementById('tierFocusPreviewBtn').click();await tick();
+  assert.equal(w.document.getElementById('tierPreviewDialog').open,true);
+  assert.equal(w.document.getElementById('tierPreviewImage').hidden,false);
+  for(const [format,width,height] of [['16:9',1920,1080],['1:1',1080,1080],['9:16',1080,1920]]){
+   const select=w.document.getElementById('tierExportFormat');select.value=format;select.dispatchEvent(new w.Event('change'));
+   await tick();
+   const last=renders.at(-1);assert.equal(last.width,width);assert.equal(last.height,height);
+   const fit=drawn.filter(d=>d.kind==='image'&&d.canvas.width===width&&d.canvas.height===height).at(-1);
+   assert(fit,'full tier is drawn onto the output canvas');
+   const [source,x,y,dw,dh]=fit.args;
+   assert(x>0&&y>0&&x+dw<width&&y+dh<height,'safe margins and no clipping');
+   assert(Math.abs(dw/dh-source.width/source.height)<.00001,'aspect preserved');
+   assert.equal(w.document.getElementById('tierPreviewDownloadBtn').disabled,false);
+   assert.match(w.document.getElementById('tierPreviewStatus').textContent,new RegExp(width+' × '+height));
+   w.document.getElementById('tierPreviewShareBtn').click();await tick();
+   assert.equal(h.shares.at(-1).files[0].size,last.blob.size);
+  }
+  assert.equal(w.document.querySelectorAll('.tier-row').length,rowsBefore);
+  assert.equal(w.document.getElementById('imageBank').querySelectorAll('.image-card').length,0,'all selected teams were moved to their rows');
+  assert.equal(requests.length,initialRequests,'format changes do not fetch backend data');
+  w.document.getElementById('closeTierPreviewBtn').click();
+  assert(revoked.length>=4,'old preview object URLs are released');
+  assert(w.document.body.classList.contains('tier-focus-mode'),'closing preview keeps fullscreen editing');
+  w.document.getElementById('copyPngBtn').click();await tick();
+  assert.equal(renders.at(-1).width,1080);assert.equal(renders.at(-1).height,1920);
+  assert.equal(JSON.parse(w.localStorage.getItem('tierlist_autosave_v1')).settings.exportFormat,'9:16');
+ }finally{dom.window.close();}
+});
+
+test('tier page prevents global chat from booting without changing other pages or the user preference',()=>{
+ assert.match(html,/<body[^>]*data-cff-chat="off"/);
+ const boot=read('js/config.min.js');assert(boot.includes("document.body?.dataset.cffChat==='off'"));
 });

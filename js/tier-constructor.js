@@ -46,6 +46,7 @@
       const tierAssetSourceCache = new Map();
 
       const DEFAULT_SETTINGS = {
+        exportFormat: "original",
         labelWidth: 150,
         boardWidth: 1100,
         imageSize: 100,
@@ -825,7 +826,7 @@
         });
 
         card.addEventListener("click", (event) => {
-          if (!isMobileInteractionMode()) return;
+          if (!isMobileInteractionMode() && !document.body.classList.contains("tier-focus-mode")) return;
           if (event.target.closest('.card-actions')) return;
           event.preventDefault();
           event.stopPropagation();
@@ -868,7 +869,7 @@
         });
 
         zone.addEventListener("click", (event) => {
-          if (!isMobileInteractionMode() || !touchSelectedImageId) return;
+          if ((!isMobileInteractionMode() && !document.body.classList.contains("tier-focus-mode")) || !touchSelectedImageId) return;
           if (event.target.closest('.image-card') || event.target.closest('button') || event.target.closest('input')) return;
           event.preventDefault();
           moveSelectedImageMobile(zone.dataset.zone);
@@ -3073,7 +3074,16 @@
         ctx.restore();
       }
 
-      async function renderTierPngBlob() {
+      const TIER_EXPORT_FORMATS = {
+        "16:9": { width: 1920, height: 1080, marginX: .04, marginY: .04 },
+        "1:1": { width: 1080, height: 1080, marginX: .05, marginY: .05 },
+        "9:16": { width: 1080, height: 1920, marginX: .06, marginY: .12 }
+      };
+      let tierPreviewBlob = null;
+      let tierPreviewUrl = "";
+      let tierPreviewRevision = 0;
+
+      async function renderTierPngBlob(format = state.settings.exportFormat) {
         try {
           const s = state.settings;
           const boardWidth = s.boardWidth;
@@ -3315,8 +3325,26 @@
             y += rowHeight;
           }
 
+          // Fit the complete rendering inside an exact output size; never crop rows.
+          let output = canvas;
+          const frame = TIER_EXPORT_FORMATS[format];
+          if (frame) {
+            output = document.createElement("canvas");
+            output.width = frame.width;
+            output.height = frame.height;
+            const out = output.getContext("2d");
+            out.fillStyle = s.backgroundColor || "#101217";
+            out.fillRect(0, 0, output.width, output.height);
+            const marginX = output.width * frame.marginX;
+            const marginY = output.height * frame.marginY;
+            const fit = Math.min((output.width - marginX * 2) / canvas.width, (output.height - marginY * 2) / canvas.height);
+            const width = canvas.width * fit, height = canvas.height * fit;
+            out.imageSmoothingEnabled = true;
+            out.imageSmoothingQuality = "high";
+            out.drawImage(canvas, (output.width - width) / 2, (output.height - height) / 2, width, height);
+          }
           const blob = await new Promise((resolve, reject) => {
-            canvas.toBlob(result => {
+            output.toBlob(result => {
               if (result) resolve(result);
               else reject(new Error("Falha ao criar PNG"));
             }, "image/png", 1);
@@ -3326,6 +3354,49 @@
         } catch (error) {
           throw error;
         }
+      }
+
+      function clearTierPreview() {
+        tierPreviewRevision++;
+        tierPreviewBlob = null;
+        if (tierPreviewUrl) URL.revokeObjectURL(tierPreviewUrl);
+        tierPreviewUrl = "";
+        const image = document.getElementById("tierPreviewImage");
+        image.hidden = true;
+        image.removeAttribute("src");
+        document.getElementById("tierPreviewDownloadBtn").disabled = true;
+        document.getElementById("tierPreviewShareBtn").disabled = true;
+      }
+
+      async function updateTierPreview() {
+        clearTierPreview();
+        const revision = tierPreviewRevision;
+        const status = document.getElementById("tierPreviewStatus");
+        status.textContent = "Preparando a imagem…";
+        try {
+          const blob = await renderTierPngBlob();
+          if (revision !== tierPreviewRevision || !document.getElementById("tierPreviewDialog").open) return;
+          tierPreviewBlob = blob;
+          tierPreviewUrl = URL.createObjectURL(blob);
+          const image = document.getElementById("tierPreviewImage");
+          image.src = tierPreviewUrl;
+          image.hidden = false;
+          const frame = TIER_EXPORT_FORMATS[state.settings.exportFormat];
+          status.textContent = frame ? `${frame.width} × ${frame.height} px · PNG pronto, sem cortes.` : "Tamanho original da tier · PNG pronto.";
+          document.getElementById("tierPreviewDownloadBtn").disabled = false;
+          document.getElementById("tierPreviewShareBtn").disabled = false;
+        } catch (error) {
+          if (revision === tierPreviewRevision) status.textContent = "Não foi possível gerar a prévia. Confira as imagens e tente novamente.";
+          console.warn("Prévia da tier indisponível", error);
+        }
+      }
+
+      function openTierPreview() {
+        const dialog = document.getElementById("tierPreviewDialog");
+        const select = document.getElementById("tierExportFormat");
+        select.value = TIER_EXPORT_FORMATS[state.settings.exportFormat] ? state.settings.exportFormat : "original";
+        if (!dialog.open) dialog.showModal();
+        updateTierPreview();
       }
 
       async function exportPNG() {
@@ -3500,7 +3571,7 @@
       document.getElementById("tierFocusEnterBtn")?.addEventListener("click", () => setTierFocusMode(true));
       document.getElementById("tierFocusExitBtn")?.addEventListener("click", () => setTierFocusMode(false));
       document.addEventListener("keydown", event => {
-        if (event.key === "Escape" && document.body.classList.contains("tier-focus-mode")) {
+        if (event.key === "Escape" && document.body.classList.contains("tier-focus-mode") && !document.querySelector("dialog[open]")) {
           event.preventDefault();
           setTierFocusMode(false);
         }
@@ -3569,6 +3640,31 @@
         els.projectInput.value = "";
       });
 
+      document.getElementById("previewTierBtn").addEventListener("click", openTierPreview);
+      document.getElementById("tierFocusPreviewBtn").addEventListener("click", openTierPreview);
+      document.getElementById("closeTierPreviewBtn").addEventListener("click", () => document.getElementById("tierPreviewDialog").close());
+      document.getElementById("tierPreviewDialog").addEventListener("close", clearTierPreview);
+      document.getElementById("tierExportFormat").addEventListener("change", event => {
+        state.settings.exportFormat = TIER_EXPORT_FORMATS[event.target.value] ? event.target.value : "original";
+        pushHistory();
+        updateTierPreview();
+      });
+      document.getElementById("tierPreviewDownloadBtn").addEventListener("click", () => {
+        if (tierPreviewBlob) downloadBlob(tierPreviewBlob, "tier-list.png", "image/png");
+      });
+      document.getElementById("tierPreviewShareBtn").addEventListener("click", async event => {
+        if (!tierPreviewBlob) return;
+        const button = event.currentTarget, blob = tierPreviewBlob;
+        button.disabled = true;
+        try {
+          const file = new File([blob], "tier-list.png", { type: "image/png" });
+          if (typeof navigator.share === "function" && (typeof navigator.canShare !== "function" || navigator.canShare({ files: [file] }))) {
+            await navigator.share({ files: [file], title: "Tier List", text: "Minha tier list no Central Free Fire" });
+          } else downloadBlob(blob, "tier-list.png", "image/png");
+        } catch (error) {
+          if (error?.name !== "AbortError") showToast("Não foi possível compartilhar. Use Baixar PNG.");
+        } finally { button.disabled = !tierPreviewBlob; }
+      });
       document.getElementById("exportBtn").addEventListener("click", exportPNG);
       document.getElementById("copyPngBtn").addEventListener("click", copyTierPng);
       document.getElementById("sharePngBtn").addEventListener("click", shareTierPng);

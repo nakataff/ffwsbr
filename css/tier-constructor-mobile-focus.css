@@ -1,6 +1,6 @@
-/* Tier Constructor — visão limpa e tela cheia, sem alterar os pixels exportados do PNG.
+/* Tier Constructor — visão limpa, tela cheia com banco de equipes e prévia do PNG.
  * No celular o board é fluido e o banco vira uma bandeja fixa acima da navegação.
- * No modo tela cheia só aparecem tiers, logos e um botão mínimo para voltar.
+ * No modo tela cheia as equipes continuam disponíveis na bandeja inferior.
  */
 .tier-board-quick-bar{
   display:flex;align-items:center;justify-content:space-between;gap:9px;
@@ -185,16 +185,77 @@ body.tier-focus-mode .tier-constructor-app .tier-board-panel .row-tools,
 body.tier-focus-mode .tier-constructor-app .tier-board-panel .row-color,
 body.tier-focus-mode .tier-constructor-app .tier-board-panel .row-delete-button,
 body.tier-focus-mode .tier-constructor-app .tier-board-panel .image-card .card-actions{display:none!important}
-body.tier-focus-mode .tier-constructor-app .tier-editor-layout .tier-bank-panel{display:none!important}
+/* Keep the actual bank/drop targets, so touch and drag/drop retain their handlers. */
+body.tier-focus-mode .tier-constructor-app .tier-editor-layout .tier-bank-panel{
+  display:flex!important;position:fixed!important;
+  left:0!important;right:0!important;top:auto!important;bottom:0!important;
+  width:100%!important;max-height:142px!important;
+  padding:7px 12px calc(7px + env(safe-area-inset-bottom,0px))!important;
+  z-index:2147483002!important;border-radius:12px 12px 0 0!important;
+  background:#0c172a!important;box-shadow:0 -6px 24px #0009;
+}
+body.tier-focus-mode .tier-bank-panel .bank-title{margin:0 0 5px!important}
+body.tier-focus-mode .tier-bank-panel .bank-title h2{font-size:12px!important}
+body.tier-focus-mode .tier-bank-panel #imageBank{
+  display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+  overflow-x:auto!important;overflow-y:hidden!important;align-items:center!important;
+  height:74px!important;min-height:74px!important;max-height:74px!important;gap:8px!important;padding:6px!important;
+}
+body.tier-focus-mode .tier-bank-panel #imageBank .image-card{
+  flex:0 0 58px!important;width:58px!important;height:58px!important;min-width:58px!important;max-width:58px!important;
+}
+body.tier-focus-mode .tier-bank-panel .trash-panel,
+body.tier-focus-mode .tier-bank-panel .mobile-drag-tip{display:none!important}
+body.tier-focus-mode .tier-constructor-app .tier-board-panel{
+  padding-bottom:calc(158px + env(safe-area-inset-bottom,0px))!important;
+}
+#tierFocusPreviewBtn{display:none}
+body.tier-focus-mode #tierFocusPreviewBtn{
+  display:block;position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:10px;
+  z-index:2147483001;border:1px solid #52718b;background:#14263a;color:#e4f4ff;
+  border-radius:8px;padding:7px 10px;min-height:37px;font-size:12px;
+}
 @media(max-width:960px){
  body.tier-focus-mode .tier-board-panel .tier-export{width:100%!important}
 }
 @media(max-width:760px){
  body.tier-focus-mode .tier-constructor-app .tier-board-panel{
   padding-top:calc(49px + env(safe-area-inset-top,0px))!important;
-  padding-bottom:env(safe-area-inset-bottom,0px)!important;
+  padding-bottom:calc(158px + env(safe-area-inset-bottom,0px))!important;
  }
  body.tier-focus-mode .tier-constructor-app .tier-board-panel .tier-row>.row-label{
   position:relative!important;left:auto!important;
  }
 }
+
+/* Same canvas pipeline as export/copy/share. Preview is generated only on demand. */
+.tier-board-quick-bar>span{margin-right:auto}
+#previewTierBtn{font-size:12px;padding:8px 10px;min-height:35px}
+#tierPreviewDialog{
+  width:min(960px,96vw);max-width:96vw;max-height:94dvh;padding:0;
+  border:1px solid #36516f;border-radius:14px;background:#0c1424;color:#e4f4ff;
+}
+#tierPreviewDialog[open]{display:flex;flex-direction:column;overflow:hidden}
+#tierPreviewDialog::backdrop{background:#020611df}
+#tierPreviewDialog .modal-header,#tierPreviewDialog .modal-actions{flex:none;padding:12px 16px;margin:0;background:#101c30}
+#tierPreviewDialog .modal-header h2{font-size:17px}
+.tier-preview-body{overflow-y:auto;min-height:0;padding:14px 16px}
+.tier-preview-body label{display:block;font-size:12px;margin-bottom:6px;color:#b5cce4}
+#tierExportFormat{width:100%;padding:11px;border:1px solid #36516f;border-radius:8px;background:#101c30;color:#fff}
+.tier-preview-help,#tierPreviewStatus{font-size:12px;line-height:1.5;color:#adc5de;margin:10px 0}
+.tier-preview-stage{display:flex;align-items:center;justify-content:center;min-height:120px;padding:10px;border-radius:10px;background:#050a12}
+#tierPreviewImage{display:block;width:auto;height:auto;max-width:100%;max-height:52dvh;object-fit:contain;box-shadow:0 4px 24px #0008}
+#tierPreviewImage[hidden]{display:none}
+body.tier-constructor-page #cff-global-chat{display:none!important}
+@media(max-width:600px){
+  #tierPreviewDialog{max-height:96dvh;width:96vw}
+  #tierPreviewDialog .modal-header,#tierPreviewDialog .modal-actions,.tier-preview-body{padding:10px}
+  #tierPreviewDialog .modal-actions{display:flex;flex-wrap:wrap;gap:8px}
+  #tierPreviewDialog .modal-actions button{flex:1;min-width:120px}
+  .tier-board-quick-bar{gap:5px;flex-wrap:wrap}
+  .tier-board-quick-bar>span{flex:1 1 100%}
+}
+
+.tier-focus-move-tip{display:none}
+body.tier-focus-mode .tier-focus-move-tip{display:block;font-size:11px;color:#a8bfd5}
+body.tier-focus-mode .tier-bank-panel .bank-title{flex-wrap:wrap!important}

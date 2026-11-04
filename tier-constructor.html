@@ -11,11 +11,11 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261104-chat-dock-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261104-chat-rows-v2"></script>
+  <script defer src="js/tier-constructor.js?v=20261104-tier-preview-v1"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261104-chat-dock-v1">
 <link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1">
-<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261104-v1"></head>
-<body class="tier-constructor-page">
+<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261104-tier-preview-v1"></head>
+<body class="tier-constructor-page" data-cff-chat="off">
 
 <header class="cff-public-topbar">
   <div class="cff-public-left">
@@ -112,6 +112,7 @@
       <section class="panel tier-bank-panel" id="tierBankPanel" aria-label="Imagens para classificar">
         <div class="bank-title">
           <h2>Imagens para classificar</h2>
+          <small class="tier-focus-move-tip">Toque ou clique na logo e depois na faixa.</small>
           <span id="bankCount" class="count">0 imagens</span>
         </div>
         <div class="mobile-drag-tip">Toque em uma logo e depois em uma row para mover. Deslize para ver mais logos.</div>
@@ -130,8 +131,10 @@
       <section class="panel board-scroll tier-board-panel" id="tierBoardPanel" aria-label="Tier list editável">
         <div class="tier-board-quick-bar">
           <span>MINHA TIER LIST</span>
+          <button type="button" id="previewTierBtn">Prévia e formatos</button>
           <button type="button" id="tierFocusEnterBtn" aria-label="Abrir apenas as tiers e equipes em tela cheia" aria-pressed="false">⛶ Tela cheia</button>
         </div>
+        <button type="button" id="tierFocusPreviewBtn">Prévia e formatos</button>
         <button type="button" id="tierFocusExitBtn" aria-label="Sair da tela cheia e voltar ao editor" hidden>✕ Sair da tela cheia</button>
         <div id="tierExport" class="tier-export">
           <div id="tierCaption" class="tier-caption"></div>
@@ -179,6 +182,23 @@
   <input id="editorBgInput" type="file" accept="image/*" class="hidden" />
   <input id="editorPipInput" type="file" accept="image/*" class="hidden" />
   <input id="applyAllBgInput" type="file" accept="image/*" class="hidden" />
+
+  <dialog id="tierPreviewDialog" aria-labelledby="tierPreviewTitle">
+    <div class="modal-header"><h2 id="tierPreviewTitle">Prévia da imagem</h2><button type="button" id="closeTierPreviewBtn" aria-label="Fechar prévia">×</button></div>
+    <div class="tier-preview-body">
+      <label for="tierExportFormat">Formato da imagem</label>
+      <select id="tierExportFormat">
+        <option value="original">Original — tamanho da tier</option>
+        <option value="16:9">16:9 — horizontal · 1920 × 1080</option>
+        <option value="1:1">1:1 — quadrado · 1080 × 1080</option>
+        <option value="9:16">9:16 — stories · 1080 × 1920</option>
+      </select>
+      <p class="tier-preview-help">Só as faixas e os times classificados entram na imagem. A tier inteira cabe no formato, sem cortes; stories têm margem extra no topo e no rodapé.</p>
+      <div class="tier-preview-stage"><img id="tierPreviewImage" alt="Prévia exata da imagem que será salva" hidden></div>
+      <p id="tierPreviewStatus" role="status" aria-live="polite"></p>
+    </div>
+    <div class="modal-actions"><button type="button" id="tierPreviewDownloadBtn" class="primary" disabled>Baixar PNG</button><button type="button" id="tierPreviewShareBtn" disabled>Compartilhar PNG</button></div>
+  </dialog>
 
   <dialog id="shareProjectDialog" class="share-project-dialog">
     <div class="modal-header">

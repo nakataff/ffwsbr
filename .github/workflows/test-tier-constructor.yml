@@ -12,6 +12,7 @@ on:
       - 'test/tier-constructor-workspace.test.cjs'
       - 'test/tier-constructor-nameplates.test.cjs'
       - 'css/tier-constructor-workspace.css'
+      - 'css/tier-constructor-mobile-focus.css'
       - '.github/workflows/test-tier-constructor.yml'
   push:
     branches: [main]
@@ -25,6 +26,7 @@ on:
       - 'test/tier-constructor-workspace.test.cjs'
       - 'test/tier-constructor-nameplates.test.cjs'
       - 'css/tier-constructor-workspace.css'
+      - 'css/tier-constructor-mobile-focus.css'
       - '.github/workflows/test-tier-constructor.yml'
   workflow_dispatch:
 

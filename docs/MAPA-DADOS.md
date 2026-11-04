@@ -700,3 +700,11 @@ O filtro `v94DropFilter` do núcleo comprimido também funciona na visualizaçã
 O título da tabela não inclui horário; datas e horários permanecem no calendário e nas configurações da rodada. `cffGlobalPresentationVersion: 5` marca a limpeza inicial dos indicadores regionais herdados em modelos antigos. Novos modelos começam sem emojis de classificação; as setas verdes/vermelhas de variação de posição continuam. O importador respeita `emojiRules` vazio, sem recriar a seta azul padrão. Verificação integrada: `test/camp-drop-history.test.cjs`.
 
 Na reabertura, os campos do modelo são restaurados do backup inicial protegido pelo loader. Para autosaves antigos que perderam essa identificação, a recuperação exige uma única combinação de data e grupos oficiais; metadados podem vir do histórico local, mas as pontuações atuais nunca são substituídas por um snapshot antigo.
+
+## Tier Constructor — edição, prévia e formatos
+
+- `tier-constructor.html` e `js/tier-constructor.js`: editor local; `renderTierPngBlob` é a mesma fonte para prévia, download, cópia e compartilhamento PNG.
+- `state.settings.exportFormat`: `original`, `16:9` (1920×1080), `1:1` (1080×1080), `9:16` (1080×1920). O formato é salvo no projeto/JSON/link. O canvas completo é ajustado com margens, sem cortar faixas; stories reservam 12% no topo e no rodapé. A bandeja não entra no PNG.
+- `css/tier-constructor-mobile-focus.css`: modo tela cheia mantém o banco original fixo embaixo e espaço de rolagem para a última row. Não duplicar o banco: seus elementos preservam arraste e toque/clique para posicionar.
+- A prévia só é gerada quando aberta ou ao trocar o formato; URLs temporárias são revogadas ao fechar/trocar. Não acrescenta consultas ao Cloudflare. A página usa `data-cff-chat="off"` para impedir a inicialização do chat.
+- Links curtos existentes continuam usando `/api/tier-share` no Worker da comunidade; não substituir o serviço ao alterar apenas o layout.
