@@ -47,3 +47,40 @@ test('dropdown items use text-only labels rather than decorative icon glyphs',()
  }
  assert(text.includes('window.CFF_DAILY_TASKS?.draw();const r=entry.getBoundingClientRect()'));
 });
+
+test('mobile dock mostra botão do Chat Global abaixo de Personalizar barra inferior e salva preferência global',()=>{
+ const d=new JSDOM('<nav class="cff-bottom-navigation"><a data-cff-bottom="profile"></a></nav>',{
+  url:'https://centralfreefire.com.br/tier-constructor.html',runScripts:'outside-only'
+ }),w=d.window;
+ try{
+  w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
+  w.HTMLDialogElement.prototype.close=function(){this.open=false;};
+  w.fetch=()=>{throw Error('A preferência não pode fazer requisições');};
+  const events=[];
+  w.addEventListener('cff:chat-visibility',event=>events.push(event.detail.visible));
+  w.eval(fs.readFileSync('js/mobile-dock.js','utf8'));
+  w.document.querySelector('[data-cff-bottom="profile"]').click();
+  const menu=w.document.querySelector('.cff-dock-dialog'),config=menu.querySelector('.cff-dock-config');
+  const setting=menu.querySelector('.cff-dock-chat-setting'),toggle=menu.querySelector('[data-dock-chat-toggle]');
+  assert(config&&setting&&toggle);
+  assert(config.compareDocumentPosition(setting)&w.Node.DOCUMENT_POSITION_FOLLOWING,
+   'A preferência deve ficar logo abaixo de Personalizar barra inferior');
+  assert.equal(toggle.getAttribute('role'),'switch');
+  assert.equal(toggle.getAttribute('aria-checked'),'true');
+  assert.match(setting.textContent,/Chat Global/);
+  toggle.click();
+  assert.equal(toggle.getAttribute('aria-checked'),'false');
+  assert.equal(w.localStorage.getItem('cff-chat-visible-v1'),'0');
+  assert.equal(menu.querySelector('[data-dock-chat-status]').textContent,'Botão oculto neste navegador');
+  assert.deepEqual(events,[false]);
+  menu.close();
+  w.document.querySelector('[data-cff-bottom="profile"]').click();
+  assert.equal(menu.querySelector('[data-dock-chat-toggle]').getAttribute('aria-checked'),'false');
+  toggle.click();
+  assert.equal(w.localStorage.getItem('cff-chat-visible-v1'),'1');
+  assert.deepEqual(events,[false,true]);
+  w.localStorage.setItem('cff-chat-visible-v1','0');
+  w.dispatchEvent(new w.StorageEvent('storage',{key:'cff-chat-visible-v1',newValue:'0'}));
+  assert.equal(toggle.getAttribute('aria-checked'),'false');
+ }finally{d.window.close();}
+});
