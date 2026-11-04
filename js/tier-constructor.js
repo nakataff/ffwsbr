@@ -173,10 +173,39 @@
           toggle.textContent = editControlsHidden ? "Mostrar controles de edição" : "Ocultar controles de edição";
         }
         layout.querySelectorAll(".tier-row .row-name").forEach(name => {
-          name.contentEditable = editControlsHidden ? "false" : "true";
+          name.contentEditable = "true";
         });
       }
 
+
+      let tierFocusScrollY = 0;
+
+      function setTierFocusMode(active) {
+        const panel = document.getElementById("tierBoardPanel");
+        const enter = document.getElementById("tierFocusEnterBtn");
+        const exit = document.getElementById("tierFocusExitBtn");
+        if (!panel || !enter || !exit) return;
+        const currentlyActive = document.body.classList.contains("tier-focus-mode");
+        if (active === currentlyActive) return;
+        if (active) {
+          tierFocusScrollY = window.scrollY || 0;
+          // CSS fullscreen works on iOS Safari, where requestFullscreen may not be supported.
+          document.body.classList.add("tier-focus-mode");
+          exit.hidden = false;
+          enter.setAttribute("aria-pressed", "true");
+          panel.scrollTop = 0;
+          exit.focus({ preventScroll: true });
+        } else {
+          document.body.classList.remove("tier-focus-mode");
+          exit.hidden = true;
+          enter.setAttribute("aria-pressed", "false");
+          enter.focus({ preventScroll: true });
+          if (typeof window.scrollTo === "function") {
+            try { window.scrollTo({ top: tierFocusScrollY, behavior: "instant" }); } catch (_) {}
+          }
+        }
+        requestAnimationFrame(fitAllRowTexts);
+      }
 
       function tierNormalizeSearch(value) {
         return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
@@ -950,7 +979,11 @@
 
         const name = document.createElement("div");
         name.className = "row-name";
-        name.contentEditable = editControlsHidden ? "false" : "true";
+        name.contentEditable = "true";
+        name.setAttribute("role", "textbox");
+        name.setAttribute("aria-label", `Editar nome da faixa ${row.name}`);
+        name.setAttribute("title", "Toque para editar o nome desta faixa");
+        name.setAttribute("tabindex", "0");
         name.spellcheck = false;
         name.textContent = row.name;
         name.addEventListener("input", () => {
@@ -3463,6 +3496,14 @@
         renderRowManager();
         updateSettingsControls();
         openSettingsPanel();
+      });
+      document.getElementById("tierFocusEnterBtn")?.addEventListener("click", () => setTierFocusMode(true));
+      document.getElementById("tierFocusExitBtn")?.addEventListener("click", () => setTierFocusMode(false));
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && document.body.classList.contains("tier-focus-mode")) {
+          event.preventDefault();
+          setTierFocusMode(false);
+        }
       });
       document.getElementById("tierBankLayoutButtons")?.addEventListener("click", event => {
         const button = event.target.closest("button[data-layout]");
