@@ -118,6 +118,7 @@
       <h1>${escapeHtml(title)}</h1>
       <p>${escapeHtml(subtitle)}</p>
       <div class="ffws-global-event-meta"><span>6 a 28 de novembro de 2026</span><span>Bangkok, Tailândia</span><span>24 equipes • Presencial • Garena</span><span>Reach Your Prime</span></div>
+      <a class="ffws-global-pred-link" href="/interacoes.html#palpites" aria-label="Participar dos palpites da rodada do Mundial">🎯 Fazer meus palpites <span aria-hidden="true">↗</span></a>
     </section>`;
   }
 
