@@ -96,3 +96,68 @@
  .gfp-error,.gfp-success,.gfp-auth,.gfp-placeholder{margin:0 12px 12px}
  .gfp-auth{flex-direction:column;align-items:stretch}
 }
+
+
+/* Navegação compacta: um dia por vez; até duas rodadas por dia no Knockout. */
+.gfp-hero{padding:18px 21px;gap:12px}
+.gfp-hero h2{font-size:clamp(21px,3vw,27px);margin:5px 0 4px}
+.gfp-hero-meta{padding:9px 13px;min-width:75px}
+.gfp-hero-meta strong{font-size:23px}
+.gfp-round-navigator{padding:11px 19px 13px;border-bottom:1px solid #203750;background:#0b1829}
+.gfp-day-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 auto 9px;max-width:580px}
+.gfp-day-arrow{display:grid;place-items:center;flex:none;width:34px;height:34px;border:1px solid #355574;border-radius:9px;background:#152c43;color:#b8eafa;font-size:24px;line-height:1;cursor:pointer;transition:background .14s ease,border-color .14s ease}
+.gfp-day-arrow:hover:not(:disabled),.gfp-day-arrow:focus-visible{background:#20516b;border-color:#45c4ed;outline:2px solid #00c8ff36}
+.gfp-day-arrow:disabled{opacity:.27;cursor:not-allowed}
+.gfp-day-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;flex:1;text-align:center}
+.gfp-day-eyebrow{font-size:9px;letter-spacing:.07em;color:#7fbad6;font-weight:900;line-height:1.15}
+.gfp-day-center strong{font-size:13px;line-height:1.25;color:#ecfaff;font-weight:950;font-variant-numeric:tabular-nums}
+.gfp-day-center strong span{font-size:11px;color:#9fbed6;font-weight:700}
+.gfp-day-rounds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:580px;margin:0 auto}
+.gfp-day-rounds.is-single{grid-template-columns:1fr;max-width:284px}
+.gfp-day-rounds .gfp-round{display:flex;flex-direction:column;gap:3px;min-width:0;min-height:55px;box-sizing:border-box;padding:8px 11px;border-radius:9px;background:#102239;border:1px solid #32526e;transition:background .14s ease,border-color .14s ease;cursor:pointer;text-align:left}
+.gfp-day-rounds .gfp-round:hover{background:#16324c;border-color:#4caed3}
+.gfp-day-rounds .gfp-round:focus-visible{outline:2px solid #78dfff;outline-offset:2px}
+.gfp-day-rounds .gfp-round.is-active{background:linear-gradient(100deg,#103d55,#0e2a42);border-color:#12bfe8;box-shadow:inset 0 0 0 1px #12bfe83d}
+.gfp-round-line{display:flex;justify-content:space-between;align-items:center;gap:12px;white-space:nowrap}
+.gfp-round-line strong{color:#edfaff;font-size:12px;line-height:1.25;font-weight:900}
+.gfp-round-line b{color:#78dfff;font-size:12px;font-variant-numeric:tabular-nums}
+.gfp-round-detail{font-size:10px;line-height:1.2;color:#9bb6cd;font-weight:600}
+.gfp-round-status{font-size:9px;line-height:1.15;font-weight:850;color:#ffcc91;text-transform:uppercase;letter-spacing:.04em}
+.gfp-round.is-active .gfp-round-status{color:#a0e9fa}
+.gfp-info-row{padding:14px 20px;gap:12px}
+.gfp-info-row h3{font-size:17px;margin:3px 0}
+.gfp-deadline{padding:8px 12px;min-width:145px}
+.gfp-deadline strong{font-size:14px}
+.gfp-fields{padding:0 19px 16px}
+.gfp-card{padding:13px}
+.gfp-card-top{margin-bottom:11px;min-height:39px}
+.gfp-card-top h3{font-size:15px}
+.gfp-selected,.gfp-unselected{min-height:56px;margin-bottom:10px}
+.gfp-footer{padding:12px 19px}
+.gfp-footnote{padding-bottom:12px}
+@media(max-width:650px){
+ .gfp-hero{padding:15px 13px}
+ .gfp-hero h2{font-size:21px}
+ .gfp-round-navigator{padding:10px 12px 12px}
+ .gfp-day-bar{gap:8px;margin-bottom:9px}
+ .gfp-day-arrow{width:40px;height:40px;font-size:25px}
+ .gfp-day-center strong{font-size:13px}
+ .gfp-day-center strong span{font-size:10px}
+ .gfp-day-rounds{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .gfp-day-rounds .gfp-round{padding:8px;min-height:58px}
+ .gfp-round-line{gap:5px}
+ .gfp-round-line strong{font-size:11px}
+ .gfp-round-line b{font-size:11px}
+ .gfp-round-detail{font-size:9px}
+ .gfp-info-row{padding:12px}
+ .gfp-info-row h3{font-size:15px}
+ .gfp-fields{padding:0 12px 14px}
+ .gfp-card{padding:12px}
+}
+@media(max-width:380px){
+ .gfp-day-rounds{grid-template-columns:1fr}
+ .gfp-day-rounds.is-single{grid-template-columns:1fr;max-width:none}
+ .gfp-day-rounds .gfp-round{min-height:48px}
+ .gfp-day-center strong span{display:block;margin-top:2px}
+ .gfp-day-arrow{width:37px;height:37px}
+}
