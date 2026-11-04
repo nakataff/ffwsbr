@@ -40,4 +40,4 @@ window.addEventListener('cff:daily-quiz-status',e=>record('quiz',e));
 window.addEventListener('storage',e=>{if(e.key===key(identity.uid))draw();});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)draw();});
 window.CFF_DAILY_TASKS={state,draw,setIdentity(next){identity=next;draw();}};
-const style=document.createElement('link');style.rel='stylesheet';style.href='/css/daily-tasks.css?v=20261025-daily-v1';document.head.append(style);
+const style=document.createElement('link');style.rel='stylesheet';style.href='/css/daily-tasks.css?v=20261104-account-menu-alerts-v2';document.head.append(style);
