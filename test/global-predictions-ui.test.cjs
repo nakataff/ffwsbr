@@ -55,3 +55,67 @@ test('aba de palpites permanece visível sem depender do fim de semana da FFWS B
  assert(html.includes('global-predictions.js'));
  assert(html.includes('global-predictions.css'));
 });
+
+test('navegação agrupa 2 rodadas por data na Fase 1, setas trocam dias e outras fases ficam compactas',async()=>{
+ const dom=new JSDOM('<div id="cff-global-predictions"></div>',{url:'https://centralfreefire.com.br/interacoes.html#palpites',runScripts:'outside-only',pretendToBeVisual:true});
+ const w=dom.window;
+ const teamList=[{id:'loud',label:'LOUD',short:'LOUD'},{id:'rrq',label:'RRQ',short:'RRQ'}];
+ const players=[{id:'loud-jogador',label:'Jogador LOUD',team:'LOUD'}];
+ const t=Date.now()+48*3600_000;
+ const make=(key,date,time,stage,round,groups)=>({
+  key,date,time,stage,round,label:'Rodada '+round,groups,closesAt:t+(round*3_600_000),ready:true,status:'open',
+  teams:teamList,players,result:null
+ });
+ const rounds=[
+  make('classificatoria-1','2026-11-06','04:00','classificatoria',1,['A','B']),
+  make('classificatoria-2','2026-11-06','09:00','classificatoria',2,['C','D']),
+  make('classificatoria-3','2026-11-07','04:00','classificatoria',3,['A','C']),
+  make('classificatoria-4','2026-11-07','09:00','classificatoria',4,['B','D']),
+  make('segundaFase-1','2026-11-19','07:00','segundaFase',1,[]),
+  make('final-1','2026-11-28','07:00','final',1,[])
+ ];
+ let requestCount=0;
+ w.fetch=async url=>{
+  requestCount++;
+  const key=new URL(String(url)).searchParams.get('round')||'classificatoria-1';
+  const r=rounds.find(x=>x.key===key);
+  return {ok:true,status:200,json:async()=>({ok:true,round:r,rounds,linked:false,username:'',votes:{},bonuses:{}})};
+ };
+ try {
+  w.eval(source);
+  await settle(()=>w.document.querySelectorAll('.gfp-day-rounds .gfp-round').length===2);
+  const getCards=()=>[...w.document.querySelectorAll('[data-gfp-round]')].map(e=>e.dataset.gfpRound);
+  assert.deepEqual(getCards(),['classificatoria-1','classificatoria-2'],'não exibir todas as rodadas ao mesmo tempo');
+  assert.equal(w.document.querySelectorAll('[data-gfp-day-step]').length,2);
+  assert(w.document.querySelector('[data-gfp-day-step="-1"]').disabled);
+  assert(!w.document.querySelector('[data-gfp-day-step="1"]').disabled);
+  assert(w.document.querySelector('.gfp-day-center').textContent.includes('Dia 1 de 4'));
+  assert(w.document.querySelector('.gfp-round.is-active').textContent.includes('Rodada 1'));
+  w.document.querySelector('[data-gfp-round="classificatoria-2"]').click();
+  await settle(()=>w.document.querySelector('[data-gfp-round="classificatoria-2"].is-active'));
+  assert.deepEqual(getCards(),['classificatoria-1','classificatoria-2']);
+  w.document.querySelector('[data-gfp-day-step="1"]').click();
+  await settle(()=>w.document.querySelector('[data-gfp-round="classificatoria-3"].is-active'));
+  assert.deepEqual(getCards(),['classificatoria-3','classificatoria-4']);
+  assert(w.document.querySelector('.gfp-day-center').textContent.includes('Dia 2 de 4'));
+  assert(w.document.querySelectorAll('.gfp-card').length===3);
+  w.document.querySelector('[data-gfp-day-step="1"]').click();
+  await settle(()=>w.document.querySelector('[data-gfp-round="segundaFase-1"].is-active'));
+  assert.deepEqual(getCards(),['segundaFase-1'],'rodada única deve ocupar somente um card');
+  assert(w.document.querySelector('.gfp-day-rounds.is-single'));
+  w.document.querySelector('[data-gfp-day-step="-1"]').click();
+  await settle(()=>w.document.querySelector('[data-gfp-round="classificatoria-3"].is-active'));
+  assert.deepEqual(getCards(),['classificatoria-3','classificatoria-4']);
+  assert.equal(requestCount,5);
+ } finally { w.close(); }
+});
+test('CSS reserva duas rodadas por dia no desktop e se adapta ao mobile sem faixa com 18 cartões',()=>{
+ const css=fs.readFileSync('css/global-predictions.css','utf8');
+ assert(css.includes('.gfp-day-rounds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'));
+ assert(css.includes('.gfp-day-arrow'));
+ assert(css.includes('@media(max-width:650px)'));
+ assert(css.includes('@media(max-width:380px)'));
+ const script=fs.readFileSync('js/global-predictions.js','utf8');
+ assert(script.includes("dayNavigation(d.rounds,round.key)"));
+ assert(!script.includes('<nav class="gfp-round-rail"'));
+});
