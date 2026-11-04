@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const PREFIX='cff_public_camp_v1:';
-  const VERSION='20261003-public-v4';
+  const VERSION='20261104-global-home-v1';
   const status=document.getElementById('cff-camp-load-status');
   const setStatus=text=>{if(status)status.textContent=text;};
   window.__CFF_CAMP_READY__=false;
@@ -91,6 +91,7 @@
       await addon('camp-ao-vivo/persistence.js');
       await addon('camp-ao-vivo/live.js');
       await addon('camp-ao-vivo/public-ui.js');
+      try{await addon('camp-ao-vivo/global-official.js')}catch(e){console.warn('[Mundial oficial]',e)}
       document.body.classList.remove('cff-assets-pending');setStatus('Pronto • seu campeonato salvo neste navegador');
     }catch(error){
       if(protectedRaw&&!window.__CFF_CAMP_READY__)native.setItem(PREFIX+'ffws_autosave',protectedRaw);
