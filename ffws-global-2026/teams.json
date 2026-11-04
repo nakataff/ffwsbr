@@ -7,7 +7,7 @@
       "name": "LYON",
       "abbreviation": "LYON",
       "wikiName": "LYON",
-      "logo": "home-assets/teams/global/lyon.webp",
+      "logo": "home-assets/teams/global/lyon-gold.webp",
       "logoPending": false,
       "players": [],
       "region": "EWC",
@@ -15,7 +15,7 @@
         "competition": "Esports World Cup",
         "placement": 1
       },
-      "logoSource": "https://i.postimg.cc/XYGTQnxR/inco.webp"
+      "logoSource": "home-assets/teams/global/lyon-gold.webp"
     },
     {
       "id": "btr",
