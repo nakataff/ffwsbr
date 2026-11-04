@@ -46,6 +46,8 @@ test('escudo dourado da LYON não reutiliza a foto de jogador, e as versões do 
  assert.equal(global.logo,'home-assets/teams/global/lyon-gold.webp');
  const logos=JSON.parse(fs.readFileSync('team-data/logo-map.json','utf8'));
  assert.equal(logos.logos.LYON,'home-assets/teams/global/lyon-gold.webp');
- const historic=JSON.parse(fs.readFileSync('team-data/historical/lyon-ec526a00eed2.json','utf8'));
+ const index=JSON.parse(fs.readFileSync('team-data/historical-index.json','utf8'));
+ const path=index.teams.find(t=>t.name==='LYON').file;
+ const historic=JSON.parse(fs.readFileSync('team-data/historical/'+path,'utf8'));
  assert.equal(historic.logo,'home-assets/teams/global/lyon-gold.webp');
 });
