@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261104-chat-dock-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261104-tier-preview-v1"></script>
+  <script defer src="js/tier-constructor.js?v=20261104-touch-drag-v1"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261104-chat-dock-v1">
 <link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1">
-<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261104-tier-preview-v1"></head>
+<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261104-touch-drag-v1"></head>
 <body class="tier-constructor-page" data-cff-chat="off">
 
 <header class="cff-public-topbar">
@@ -106,16 +106,16 @@
           </div>
         </div>
         <button type="button" id="toggleEditControlsBtn" class="tier-clean-toggle" aria-pressed="false">Ocultar controles de edição</button>
-        <span class="tier-layout-help">No celular, toque na logo e depois na row para posicioná-la.</span>
+        <span class="tier-layout-help">No celular, segure a logo e arraste. Ou toque na logo e depois na faixa.</span>
       </div>
       <div class="tier-editor-layout" id="tierEditorLayout" data-bank-layout="left">
       <section class="panel tier-bank-panel" id="tierBankPanel" aria-label="Imagens para classificar">
         <div class="bank-title">
           <h2>Imagens para classificar</h2>
-          <small class="tier-focus-move-tip">Toque ou clique na logo e depois na faixa.</small>
+          <small class="tier-focus-move-tip">Segure e arraste a logo. Ou toque/clique e escolha a faixa.</small>
           <span id="bankCount" class="count">0 imagens</span>
         </div>
-        <div class="mobile-drag-tip">Toque em uma logo e depois em uma row para mover. Deslize para ver mais logos.</div>
+        <div class="mobile-drag-tip">Segure uma logo para arrastar. Deslize rapidamente para ver mais logos.</div>
         <div id="imageBank" class="dropzone image-bank" data-zone="bank">
           <div class="empty-hint">Adicione imagens e arraste para qualquer row.</div>
         </div>

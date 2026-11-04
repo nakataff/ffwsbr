@@ -296,3 +296,105 @@ test('tier page prevents global chat from booting without changing other pages o
  assert.match(html,/<body[^>]*data-cff-chat="off"/);
  const boot=read('js/config.min.js');assert(boot.includes("document.body?.dataset.cffChat==='off'"));
 });
+
+
+function touchGesture(w,target,type,x=60,y=100,extra=[]){
+ const touch={identifier:1,clientX:x,clientY:y};
+ const event=new w.Event(type,{bubbles:true,cancelable:true});
+ Object.defineProperties(event,{touches:{value:type==='touchend'||type==='touchcancel'?[]:[touch,...extra]},changedTouches:{value:[touch]}});
+ target.dispatchEvent(event);return event;
+}
+function touchHarness(h){
+ const {w}=h;let hit=null,next=0;const frames=new Map();
+ w.document.elementFromPoint=()=>hit;
+ w.requestAnimationFrame=fn=>{const id=++next;frames.set(id,fn);return id};
+ w.cancelAnimationFrame=id=>frames.delete(id);
+ return {hit:el=>{hit=el},frame(){const entry=frames.entries().next().value;if(entry){frames.delete(entry[0]);entry[1]()}},frames};
+}
+
+test('touch hold moves teams from bank to row, between rows, before another team and back to bank',async()=>{
+ const h=createBrowser(),{w,dom,requests}=h;
+ try{
+  await tick();const api=touchHarness(h),d=w.document,initialRequests=requests.length;
+  async function drag(source,target){
+   api.hit(source);touchGesture(w,source,'touchstart');await tick(270);
+   assert(d.querySelector('.tier-touch-ghost'),'hold creates visual feedback');
+   api.hit(target);const move=touchGesture(w,source,'touchmove',250,250);
+   assert(move.defaultPrevented,'active drag prevents native scrolling');
+   assert((target.closest('.dropzone')||target.closest('.tier-row')?.querySelector('.dropzone')||target).classList.contains('tier-touch-target'));
+   touchGesture(w,source,'touchend',250,250);
+   assert.equal(d.querySelector('.tier-touch-ghost'),null);
+  }
+  const id=d.querySelector('#imageBank .image-card').dataset.imageId;
+  await drag(d.querySelector('#imageBank .image-card'),d.querySelector('.tier-row .row-name'));
+  assert.equal(d.querySelector('.tier-row .image-card').dataset.imageId,id,'dropping on row name is accepted');
+  await drag(d.querySelector('.tier-row .image-card'),d.querySelectorAll('.tier-row .dropzone')[1]);
+  assert.equal(d.querySelectorAll('.tier-row')[1].querySelector('.image-card').dataset.imageId,id);
+  await drag(d.querySelector('#imageBank .image-card'),d.querySelectorAll('.tier-row .dropzone')[1].querySelector('.image-card'));
+  const order=[...d.querySelectorAll('.tier-row')[1].querySelectorAll('.image-card')].map(el=>el.dataset.imageId);
+  assert.equal(order.length,2);assert.equal(order[1],id,'drop before a team reorders it');
+  await drag(d.querySelectorAll('.tier-row')[1].querySelector('.image-card'),d.getElementById('imageBank'));
+  assert.equal(d.querySelectorAll('#imageBank .image-card').length,1);
+  assert.equal(d.querySelectorAll('.tier-row .image-card').length,1);
+  const selected=d.querySelector('.tier-row .image-card');selected.click();
+  assert(!selected.classList.contains('touch-selected'),'synthetic click following drag is suppressed');
+  assert.equal(requests.length,initialRequests,'touch gestures never query the server');
+ }finally{dom.window.close()}
+});
+
+test('quick swipe keeps native scrolling, short taps keep click-to-place, and action buttons do not drag',async()=>{
+ const h=createBrowser(),{w,dom}=h;
+ try{
+  await tick();const api=touchHarness(h),d=w.document,card=d.querySelector('#imageBank .image-card');api.hit(card);
+  touchGesture(w,card,'touchstart',60,100);
+  const swipe=touchGesture(w,card,'touchmove',100,105);
+  assert.equal(swipe.defaultPrevented,false);await tick(270);
+  assert.equal(d.querySelector('.tier-touch-ghost'),null);
+  assert.equal(d.querySelectorAll('#imageBank .image-card').length,2);
+  touchGesture(w,card,'touchstart');touchGesture(w,card,'touchend');card.click();
+  d.querySelector('.tier-row .dropzone').click();
+  assert.equal(d.querySelectorAll('.tier-row .image-card').length,1,'quick tap fallback remains available');
+  const button=d.querySelector('#imageBank .edit-image');
+  touchGesture(w,button,'touchstart');await tick(270);assert.equal(d.querySelector('.tier-touch-ghost'),null);
+  touchGesture(w,button,'touchend');
+ }finally{dom.window.close()}
+});
+
+test('touch cancel, multitouch, blur and release outside a tier preserve the project and clear drag state',async()=>{
+ for(const cancel of ['touchcancel','multitouch','blur','outside','escape']){
+  const h=createBrowser(),{w,dom}=h;
+  try{
+   await tick();const api=touchHarness(h),d=w.document,card=d.querySelector('#imageBank .image-card'),before=w.localStorage.getItem('tierlist_autosave_v1');api.hit(card);
+   touchGesture(w,card,'touchstart');await tick(270);
+   assert(d.querySelector('.tier-touch-ghost'));
+   if(cancel==='touchcancel')touchGesture(w,card,'touchcancel');
+   if(cancel==='multitouch')touchGesture(w,card,'touchmove',60,100,[{identifier:2,clientX:90,clientY:100}]);
+   if(cancel==='blur')w.dispatchEvent(new w.Event('blur'));
+   if(cancel==='escape')d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+   if(cancel==='outside'){api.hit(d.body);touchGesture(w,card,'touchend',500,500)}
+   assert.equal(d.querySelector('.tier-touch-ghost'),null,cancel);
+   assert.equal(d.querySelectorAll('.tier-touch-target,.tier-touch-source').length,0);
+   assert.equal(d.body.classList.contains('tier-touch-dragging'),false);
+   assert.equal(w.localStorage.getItem('tierlist_autosave_v1'),before,cancel);
+   assert.equal(api.frames.size,0,'animation is stopped after gesture ends');
+  }finally{dom.window.close()}
+ }
+});
+
+test('touch drag scrolls fullscreen rows near the lower edge and blocks native HTML drag takeover',async()=>{
+ const h=createBrowser(),{w,dom}=h;
+ try{
+  await tick();const api=touchHarness(h),d=w.document;
+  d.getElementById('tierFocusEnterBtn').click();
+  const panel=d.getElementById('tierBoardPanel'),tray=d.getElementById('tierBankPanel'),card=d.querySelector('#imageBank .image-card');
+  tray.style.position='fixed';
+  tray.getBoundingClientRect=()=>({top:500,bottom:650,left:0,right:800});
+  api.frame(); // finish the layout frame scheduled by entering fullscreen
+  api.hit(card);touchGesture(w,card,'touchstart',60,550);await tick(270);
+  const native=new w.Event('dragstart',{bubbles:true,cancelable:true});card.dispatchEvent(native);assert(native.defaultPrevented);
+  api.hit(d.querySelector('.tier-row .dropzone'));touchGesture(w,card,'touchmove',250,480);
+  api.frame();assert(panel.scrollTop>0,'fullscreen panel scrolls to reach additional rows');
+  d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+  assert.equal(api.frames.size,0);assert(d.body.classList.contains('tier-focus-mode'),'Escape cancels drag before exiting fullscreen');
+ }finally{dom.window.close()}
+});

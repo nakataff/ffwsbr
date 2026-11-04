@@ -814,7 +814,8 @@
         if (!card.contains(img)) card.append(img);
         card.append(actions);
 
-        card.addEventListener("dragstart", () => {
+        card.addEventListener("dragstart", event => {
+          if (tierTouchDrag) { event.preventDefault(); return; }
           draggedImageId = imageId;
           card.classList.add("dragging");
         });
@@ -1189,6 +1190,140 @@
       function isMobileInteractionMode() {
         return window.matchMedia('(hover: none), (pointer: coarse)').matches || window.innerWidth <= 760;
       }
+
+      // Long press activates touch dragging; a quick swipe stays native scrolling.
+      let tierTouchDrag = null;
+      let tierTouchClickUntil = 0;
+
+      function touchDropTarget(x, y) {
+        const hit = document.elementFromPoint(x, y);
+        if (!hit || hit.closest("dialog,button,input,textarea")) return null;
+        let zone = hit.closest(".dropzone[data-zone]");
+        if (!zone) zone = hit.closest(".tier-row")?.querySelector(".dropzone[data-zone]");
+        if (!zone && hit.closest("#tierBankPanel")) zone = els.imageBank;
+        if (!zone || !zone.closest("#tierEditorLayout")) return null;
+        const before = hit.closest(".image-card[data-image-id]");
+        return { zone, before: before && zone.contains(before) ? before : null };
+      }
+
+      function updateTouchDragTarget() {
+        if (!tierTouchDrag?.active) return;
+        const drag = tierTouchDrag;
+        drag.ghost.style.transform = `translate3d(${drag.x - 34}px,${drag.y - 82}px,0)`;
+        document.querySelectorAll(".tier-touch-target,.tier-touch-before").forEach(el => el.classList.remove("tier-touch-target", "tier-touch-before"));
+        drag.target = touchDropTarget(drag.x, drag.y);
+        drag.target?.zone.classList.add("tier-touch-target");
+        if (drag.target?.before?.dataset.imageId !== drag.imageId) drag.target?.before?.classList.add("tier-touch-before");
+      }
+
+      function scrollWhileTouchDragging() {
+        const drag = tierTouchDrag;
+        if (!drag?.active) return;
+        if (!drag.card.isConnected) { finishTouchDrag(false); return; }
+        const bank = els.imageBank, bankRect = bank.getBoundingClientRect();
+        if (drag.target?.zone === bank) {
+          const shift = drag.x < bankRect.left + 38 ? -12 : drag.x > bankRect.right - 38 ? 12 : 0;
+          if (shift) bank.scrollLeft += shift;
+        } else {
+          const panel = document.getElementById("tierBoardPanel");
+          const fullscreen = document.body.classList.contains("tier-focus-mode");
+          const trayRect = document.getElementById("tierBankPanel").getBoundingClientRect();
+          const fixedTray = getComputedStyle(document.getElementById("tierBankPanel")).position === "fixed";
+          const bottom = fixedTray ? Math.min(innerHeight, trayRect.top) : innerHeight;
+          const top = fullscreen ? 50 : Math.max(50, document.querySelector(".cff-public-topbar")?.getBoundingClientRect().bottom || 0);
+          const delta = drag.y < top + 45 ? -Math.min(18, Math.max(3, (top + 45 - drag.y) / 3))
+            : drag.y > bottom - 45 ? Math.min(18, Math.max(3, (drag.y - bottom + 45) / 3)) : 0;
+          if (delta) {
+            if (fullscreen) panel.scrollTop += delta;
+            else window.scrollBy(0, delta);
+          }
+        }
+        updateTouchDragTarget();
+        drag.frame = requestAnimationFrame(scrollWhileTouchDragging);
+      }
+
+      function finishTouchDrag(drop) {
+        const drag = tierTouchDrag;
+        if (!drag) return;
+        tierTouchDrag = null;
+        clearTimeout(drag.timer);
+        if (drag.frame) cancelAnimationFrame(drag.frame);
+        drag.card.classList.remove("tier-touch-source");
+        drag.ghost?.remove();
+        document.body.classList.remove("tier-touch-dragging");
+        document.querySelectorAll(".tier-touch-target,.tier-touch-before").forEach(el => el.classList.remove("tier-touch-target", "tier-touch-before"));
+        if (!drag.active) return;
+        tierTouchClickUntil = Date.now() + 600;
+        clearTouchSelection();
+        if (!drop || !drag.target || !drag.target.zone.isConnected || drag.target.before?.dataset.imageId === drag.imageId) return;
+        const target = drag.target.zone.dataset.zone;
+        if (target === "archive") archiveImage(drag.imageId);
+        else moveImage(drag.imageId, target, drag.target.before?.dataset.imageId || null);
+      }
+
+      document.addEventListener("touchstart", event => {
+        if (event.touches.length !== 1) { finishTouchDrag(false); return; }
+        if (tierTouchDrag || document.querySelector("dialog[open]")) return;
+        const card = event.target.closest("#tierEditorLayout .image-card[data-image-id]");
+        if (!card || event.target.closest("button,input,textarea,[contenteditable='true']") || !state.images[card.dataset.imageId]) return;
+        const touch = event.touches[0];
+        const drag = tierTouchDrag = { card, imageId: card.dataset.imageId, identifier: touch.identifier, x: touch.clientX, y: touch.clientY, startX: touch.clientX, startY: touch.clientY, active: false };
+        drag.timer = setTimeout(() => {
+          if (tierTouchDrag !== drag) return;
+          if (!card.isConnected) { finishTouchDrag(false); return; }
+          drag.active = true;
+          clearTouchSelection();
+          const ghost = drag.ghost = document.createElement("div");
+          ghost.className = "tier-touch-ghost";
+          ghost.setAttribute("aria-hidden", "true");
+          const image = card.querySelector("img")?.cloneNode(true);
+          if (image) ghost.append(image);
+          const label = document.createElement("span");label.textContent = state.images[drag.imageId]?.name || "Imagem";
+          ghost.append(label);document.body.append(ghost);
+          card.classList.add("tier-touch-source");
+          document.body.classList.add("tier-touch-dragging");
+          updateTouchDragTarget();
+          drag.frame = requestAnimationFrame(scrollWhileTouchDragging);
+        }, 240);
+      }, { passive: true });
+      document.addEventListener("touchmove", event => {
+        const drag = tierTouchDrag;
+        if (!drag) return;
+        if (event.touches.length !== 1) { finishTouchDrag(false); return; }
+        const touch = Array.from(event.touches).find(item => item.identifier === drag.identifier);
+        if (!touch) { finishTouchDrag(false); return; }
+        drag.x = touch.clientX;drag.y = touch.clientY;
+        if (!drag.active) {
+          if (Math.hypot(drag.x - drag.startX, drag.y - drag.startY) > 9) finishTouchDrag(false);
+          return;
+        }
+        if (event.cancelable) event.preventDefault();
+        updateTouchDragTarget();
+      }, { passive: false });
+      document.addEventListener("touchend", event => {
+        if (!tierTouchDrag || !Array.from(event.changedTouches).some(item => item.identifier === tierTouchDrag.identifier)) return;
+        if (tierTouchDrag.active) {
+          const touch = Array.from(event.changedTouches).find(item => item.identifier === tierTouchDrag.identifier);
+          tierTouchDrag.x = touch.clientX;tierTouchDrag.y = touch.clientY;
+          updateTouchDragTarget();
+          if (event.cancelable) event.preventDefault();
+        }
+        finishTouchDrag(true);
+      }, { passive: false });
+      document.addEventListener("touchcancel", () => finishTouchDrag(false), { passive: true });
+      document.addEventListener("contextmenu", event => {
+        if (tierTouchDrag && event.target.closest("#tierEditorLayout .image-card")) event.preventDefault();
+      });
+      document.addEventListener("click", event => {
+        if (Date.now() < tierTouchClickUntil && event.target.closest("#tierEditorLayout")) {
+          event.preventDefault();event.stopImmediatePropagation();
+        }
+      }, true);
+      window.addEventListener("blur", () => finishTouchDrag(false));
+      document.addEventListener("visibilitychange", () => { if (document.hidden) finishTouchDrag(false); });
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && tierTouchDrag) { event.preventDefault();event.stopImmediatePropagation();finishTouchDrag(false); }
+      }, true);
 
       function updateTouchSelectionUI() {
         document.querySelectorAll('.image-card').forEach(card => {

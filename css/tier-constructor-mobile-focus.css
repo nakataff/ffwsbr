@@ -259,3 +259,18 @@ body.tier-constructor-page #cff-global-chat{display:none!important}
 .tier-focus-move-tip{display:none}
 body.tier-focus-mode .tier-focus-move-tip{display:block;font-size:11px;color:#a8bfd5}
 body.tier-focus-mode .tier-bank-panel .bank-title{flex-wrap:wrap!important}
+
+/* Touch Events preserve native scrolling until a short hold starts dragging. */
+#tierEditorLayout .image-card,#tierEditorLayout .image-card img{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.tier-touch-ghost{
+ position:fixed;left:0;top:0;width:68px;z-index:2147483100;
+ pointer-events:none!important;display:flex;flex-direction:column;align-items:center;
+ padding:5px;border:2px solid #8ca1ff;border-radius:10px;background:#14233aeF;
+ box-shadow:0 8px 24px #0009;will-change:transform;
+}
+.tier-touch-ghost img{width:54px;height:54px;object-fit:contain;pointer-events:none}
+.tier-touch-ghost span{font:700 9px/1.2 Inter,Arial,sans-serif;color:#fff;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tierEditorLayout .tier-touch-source{opacity:.28!important}
+#tierEditorLayout .tier-touch-target{outline:3px solid #8ca1ff!important;outline-offset:-3px;background:rgba(110,124,255,.22)!important}
+#tierEditorLayout .tier-touch-before{box-shadow:inset 4px 0 #b0baff!important}
+body.tier-touch-dragging,body.tier-touch-dragging #tierEditorLayout{cursor:grabbing;-webkit-user-select:none;user-select:none}

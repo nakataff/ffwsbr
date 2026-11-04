@@ -708,3 +708,7 @@ Na reabertura, os campos do modelo são restaurados do backup inicial protegido 
 - `css/tier-constructor-mobile-focus.css`: modo tela cheia mantém o banco original fixo embaixo e espaço de rolagem para a última row. Não duplicar o banco: seus elementos preservam arraste e toque/clique para posicionar.
 - A prévia só é gerada quando aberta ou ao trocar o formato; URLs temporárias são revogadas ao fechar/trocar. Não acrescenta consultas ao Cloudflare. A página usa `data-cff-chat="off"` para impedir a inicialização do chat.
 - Links curtos existentes continuam usando `/api/tier-share` no Worker da comunidade; não substituir o serviço ao alterar apenas o layout.
+
+### Arraste por toque no Tier Constructor
+
+`js/tier-constructor.js` registra os eventos de toque uma vez no documento: segurar 240 ms ativa o arraste; mover mais de 9 px antes desse prazo preserva a rolagem nativa. A logo flutuante e o destino destacado usam classes `tier-touch-*` na folha mobile. Soltar move via `moveImage`/`archiveImage`, preservando histórico/undo e autosave. Cancelamento, segundo dedo, perda de foco e Escape limpam o gesto sem mover. A rolagem automática só roda durante o arraste (bandeja horizontal, página ou painel em tela cheia). Não cria consultas de rede. Os testes de gestos ficam em `test/tier-constructor-nameplates.test.cjs`.
