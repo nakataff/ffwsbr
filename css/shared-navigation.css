@@ -261,3 +261,29 @@
 
 /* Evitar que títulos escolhidos pelo usuário ocupem outros botões no dock. */
 @media(max-width:768px){.cff-bottom-navigation a>span{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+
+/* O menu mobile de perfil expõe a mesma preferência do Chat Global do desktop. */
+.cff-dock-chat-setting{
+ display:flex;align-items:center;justify-content:space-between;gap:14px;
+ margin:0 19px 17px;padding:13px 14px;
+ border:1px solid #29465f;border-radius:11px;background:#101f32;
+}
+.cff-dock-chat-copy{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.cff-dock-chat-copy strong{font-size:13px;font-weight:850;color:#ebf7ff}
+.cff-dock-chat-copy small{font-size:11px;line-height:1.4;color:#9cb7ce}
+.cff-dock-dialog .cff-dock-chat-switch{
+ display:flex;align-items:center;justify-content:flex-start;
+ width:52px;min-width:52px;height:31px;padding:3px;flex:none;
+ border:1px solid #50617a;border-radius:999px;background:#26364a;
+ cursor:pointer;transition:background .18s,border-color .18s;
+}
+.cff-dock-dialog .cff-dock-chat-switch>span{
+ display:block;width:23px;height:23px;border-radius:50%;
+ background:#a9bacd;box-shadow:0 1px 4px #0007;
+ transform:translateX(0);transition:transform .18s,background .18s;
+}
+.cff-dock-dialog .cff-dock-chat-switch[aria-checked="true"]{background:#08799e;border-color:#00c8ff}
+.cff-dock-dialog .cff-dock-chat-switch[aria-checked="true"]>span{background:#fff;transform:translateX(20px)}
+.cff-dock-dialog .cff-dock-chat-switch:focus-visible{outline:2px solid #00c8ff;outline-offset:3px}
+@media(max-width:768px){.cff-dock-chat-setting{margin:0 14px 16px}}
