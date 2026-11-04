@@ -68,7 +68,7 @@ test('layout, modo limpo e configurações reagem aos cliques e mantêm as prefe
   assert.equal(direct.getAttribute('role'),'textbox');
   direct.innerText='Favoritos';
   direct.dispatchEvent(new w.Event('input',{bubbles:true}));
-  assert.equal(w.document.querySelector('#rowManagerDialog .row-manager-item input[type="text"]')?.value,'Favoritos','nome editado diretamente atualiza as configurações');
+  assert.equal(w.document.querySelector('#rowManager .row-manager-item input[type="text"]')?.value,'Favoritos','nome editado diretamente atualiza as configurações');
   const immersive=w.document.getElementById('tierFocusEnterBtn');
   const exit=w.document.getElementById('tierFocusExitBtn');
   assert.equal(exit.hidden,true);
