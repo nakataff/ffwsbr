@@ -20,7 +20,7 @@ test('banco e rows compartilham o editor; biblioteca e projetos existentes conti
  for(const id of ['tierBankLayoutButtons','toggleEditControlsBtn','settingsBtn','projectMenu','tierSiteLibrary','tierAssetResults','imageBank','trashPanel','tierBoard'])assert.ok(html.includes('id="'+id+'"'),id);
  for(const preset of ['wb-2026-s1','wb-2026-s2','ewc-2026','ffws-global-2026'])assert.ok(html.includes('data-tier-preset="'+preset+'"'),preset);
  assert.match(html,/tier-constructor-workspace\.css\?v=20261102-(?:workspace|nameplates|text-scroll|name-size)-v1/);
- assert.match(html,/tier-constructor\.js\?v=(?:20261104-short-links-v1|20261102-(?:workspace|nameplates|text-scroll|name-size)-v1)/);
+ assert.match(html,/tier-constructor\.js\?v=(?:20261104-(?:short-links|mobile-fullscreen)-v1|20261102-(?:workspace|nameplates|text-scroll|name-size)-v1)/);
 });
 test('toolbar sem sticky, banco lateral no PC e faixas roláveis no celular',()=>{
  assert.match(css,/\.tier-constructor-app \.topbar\s*\{[^}]*position:static/s);
@@ -63,7 +63,26 @@ test('layout, modo limpo e configurações reagem aos cliques e mantêm as prefe
   assert.ok(layout.classList.contains('tier-clean-mode'));
   assert.equal(clean.getAttribute('aria-pressed'),'true');
   assert.equal(w.localStorage.getItem('tier_constructor_hide_edit_controls_v1'),'true');
-  assert.ok([...layout.querySelectorAll('.tier-row .row-name')].every(n=>n.contentEditable==='false'));
+  assert.ok([...layout.querySelectorAll('.tier-row .row-name')].every(n=>n.contentEditable==='true'),'nomes continuam editáveis mesmo sem controles visuais');
+  const direct=layout.querySelector('.tier-row .row-name');
+  assert.equal(direct.getAttribute('role'),'textbox');
+  direct.innerText='Favoritos';
+  direct.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(w.document.querySelector('#rowManagerDialog .row-manager-item input[type="text"]')?.value,'Favoritos','nome editado diretamente atualiza as configurações');
+  const immersive=w.document.getElementById('tierFocusEnterBtn');
+  const exit=w.document.getElementById('tierFocusExitBtn');
+  assert.equal(exit.hidden,true);
+  immersive.click();
+  assert.ok(w.document.body.classList.contains('tier-focus-mode'));
+  assert.equal(immersive.getAttribute('aria-pressed'),'true');
+  assert.equal(exit.hidden,false);
+  assert.equal(direct.contentEditable,'true','nome permanece editável em tela cheia');
+  w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+  assert.ok(!w.document.body.classList.contains('tier-focus-mode'));
+  assert.equal(exit.hidden,true);
+  immersive.click();
+  exit.click();
+  assert.ok(!w.document.body.classList.contains('tier-focus-mode'));
   clean.click();
   assert.ok(!layout.classList.contains('tier-clean-mode'));
   assert.ok([...layout.querySelectorAll('.tier-row .row-name')].every(n=>n.contentEditable==='true'));
@@ -75,4 +94,19 @@ test('layout, modo limpo e configurações reagem aos cliques e mantêm as prefe
   assert.equal(dialog.open,false);
   assert.equal(settings.getAttribute('aria-expanded'),'false');
  }finally{w.close();}
+});
+
+
+test('visualização mobile usa tier fluida, banco compacto no rodapé e modo tela cheia sem menus',()=>{
+ const mobile=read('css/tier-constructor-mobile-focus.css');
+ assert.match(html,/id="tierFocusEnterBtn"/);
+ assert.match(html,/id="tierFocusExitBtn"/);
+ assert.match(html,/tier-constructor-mobile-focus\.css\?v=20261104-v1/);
+ assert.match(mobile,/grid-template-columns:var\(--label-width\) minmax\(0,1fr\)!important/);
+ assert.match(mobile,/position:fixed!important/);
+ assert.match(mobile,/bottom:calc\(70px \+ env\(safe-area-inset-bottom,0px\)\)/);
+ assert.match(mobile,/body\.tier-focus-mode/);
+ assert.match(mobile,/z-index:2147483000!important/);
+ assert.match(mobile,/\.tier-editor-layout \.tier-bank-panel\{display:none!important\}/);
+ assert.match(mobile,/#tierCaption\{display:none!important\}/);
 });
