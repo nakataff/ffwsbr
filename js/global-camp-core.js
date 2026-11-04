@@ -22,6 +22,7 @@ function validate(rec,meta){
   played.push({...clone(d),booyah:winner});
  }
  if(!played.length)throw Error('Preencha ao menos uma queda completa.');
+ if(round.stage==='final'){const totals={};let finished=false;for(const d of played){if(finished)throw Error('A final já terminou por Champion Rush. Remova as quedas posteriores ao Booyah do campeão.');finished=(totals[d.booyah]||0)>=meta.championPoint;for(const id of ids)totals[id]=(totals[id]||0)+Number(d.points[id]);}}
  if(round.matches&&played.length>round.matches)throw Error('Esta rodada excede o limite de quedas.');
  const rows=(rec.players||[]).map(raw=>{
   const p=meta.players.find(p=>p.id===raw.id);const t=p&&team(meta,p.team);
@@ -56,7 +57,7 @@ function backup(template,meta,key,archive={},official=false){
  data.teams=meta.teams.map(t=>`${t.name}, ${t.id}, ${t.abbreviation}`).join('\n');data.logos=meta.teams.map(t=>`${t.name}, /${t.logo.replace(/^\//,'')}`).join('\n');
  data.selectedTeams=ids;data.currentInputMode='detail-pos-kills';data.drops=saved?clone(saved.drops):Array.from({length:round.matches||1},()=>emptyDrop(ids));data.startingPoints=Object.fromEntries(ids.map(id=>[id,0]));data.placementOverrides={};
  const label=round.stage==='classificatoria'?`Fase 1 · ${round.groups.join(' × ')} · ${round.time24}`:round.stage==='segundaFase'?`Fase 2 · Dia ${round.day}`:round.stage==='lastChance'?'Repescagem':'Grande Final';
- data.config={...data.config,cffGlobalRound:key,cffGlobalArchive:clone(archive),cffGlobalPlayers:clone(saved?.players||[]),cffInterfaceMode:'complete',cffFfwsStage:'global-'+round.stage,cffTournamentPhasesV1:{version:1,activeId:key,phases:[{id:key,name:label,teams:12,advance:0,days:1,firstDrops:round.matches||1,laterDrops:round.matches||1,unlimited:final,format:final?'champion':'classic',cp:110,lastDate:round.date,completed:false}]},tournamentName:meta.name+' — '+label,date:round.date+' '+round.time24+' {{Abbr/BRT}}',tournamentDays:1,quedas:String(data.drops.length),championEnabled:final,cp:'110',finalMode:final?'champion':'classic',v68ChampionRushUnlimited:final,startingEnabled:false,autoTime:true,autoInterval:'30',daySettings:[{day:1,count:data.drops.length,date:round.date,time:round.time24,fuso:'BRT',start:round.date+' '+round.time24}],emojiRules:'',bgEnabled:false,bgRules:[],postTitle:meta.name+' — '+label};
+ data.config={...data.config,cffGlobalRound:key,cffGlobalArchive:clone(archive),cffGlobalPlayers:clone(saved?.players||[]),cffInterfaceMode:'complete',cffFfwsStage:'global-'+round.stage,cffTournamentPhasesV1:{version:1,activeId:key,phases:[{id:key,name:label,teams:12,advance:0,days:1,firstDrops:round.matches||1,laterDrops:round.matches||1,unlimited:final,format:final?'champion':'classic',cp:110,lastDate:round.date,completed:false}]},tournamentName:meta.name+' — '+label,date:round.date,tournamentDays:1,quedas:String(data.drops.length),championEnabled:final,cp:'110',finalMode:final?'champion':'classic',v68ChampionRushUnlimited:final,startingEnabled:false,autoTime:true,autoInterval:'30',daySettings:[{day:1,count:data.drops.length,date:round.date,time:round.time24,fuso:'BRT',start:round.date+' '+round.time24}],emojiRules:'',bgEnabled:false,bgRules:[],postTitle:meta.name+' — '+label};
  data.tournamentModeV1={version:7,enabled:false,view:'day',name:data.config.tournamentName,rosterCodes:ids,draftActiveCodes:ids,draftDayNumber:1,editingDayId:'',days:[],config:{teamsPerRound:12,expectedTeams:12,advanceCount:0}};return data;
 }
 function summary(records,meta){const available=meta.rounds.filter(r=>records[r.key]?.drops?.length);if(!available.length)return{version:1,updatedAt:Date.now(),stage:'classificatoria',teams:[],rankings:{kills:[],damage:[],assists:[]},days:[]};
@@ -78,7 +79,7 @@ function wiki(text,meta,participants){if(String(text).length>300000)throw Error(
  }}
  if(unknown.length)throw Error('Times não reconhecidos: '+unknown.join(', ')+'. Nenhum resultado foi alterado.');
  if(!drops.some(Boolean))throw Error('O código não contém posições e abates por queda. Um resumo de pontos não informa os dados individuais.');
- return drops.map(d=>d||emptyDrop(participants));
+ return Array.from({length:drops.length},(_,i)=>drops[i]||emptyDrop(participants));
 }
 return{norm,team,emptyDrop,record,validate,champion,rank,entrants,backup,summary,wiki,templates};
 });

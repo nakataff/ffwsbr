@@ -10,7 +10,7 @@ async function update(manual=false){if(working||document.hidden&&!manual)return;
  try{
  const base=String(window.CFF_CONFIG?.firebase?.databaseURL||'').replace(/\/$/,'');if(!base)throw Error('Configuração indisponível.');const summary=await json(base+'/ffwsLive/global-2026/home.json');
  if(!summary?.roundKey)throw Error('Ainda não há resultados do Mundial publicados.');if(!manual&&lastUpdate===summary.updatedAt)return;
- if(!model){[model,template]=await Promise.all([json('/ffws-global-2026/camp-model.json?v=20261104-global-home-v1'),json('/camp-ao-vivo/base.json')]);await import('/js/global-camp-core.js?v=20261104-global-home-v1')}
+ if(!model){[model,template]=await Promise.all([json('/ffws-global-2026/camp-model.json?v=20261104-global-home-v2'),json('/camp-ao-vivo/base.json')]);await import('/js/global-camp-core.js?v=20261104-global-home-v2')}
  const record=await json(base+'/ffwsLive/global-2026/rounds/'+encodeURIComponent(summary.roundKey)+'.json');if(!record)throw Error('Rodada oficial não encontrada.');const C=window.CFF_GLOBAL_CAMP_CORE,valid=C.validate(record,model);
  if(manual&&!confirm('Carregar a rodada oficial mais recente do Mundial? Seu campeonato atual ficará em um backup local.')){follow.checked=false;return;}
  if(manual)storage.setItem('cff_camp_before_global_official_v1',JSON.stringify(window.collectBackupData(true)));
