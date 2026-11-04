@@ -15,6 +15,20 @@ function draw(){
   if(pending&&!dot){dot=document.createElement('span');dot.dataset.dailyDot='';dot.className='cff-daily-dot';dot.setAttribute('role','img');dot.setAttribute('aria-label','Há atividades diárias para conferir');entry.append(dot);}
   if(!pending)dot?.remove();
  });
+ document.querySelectorAll('#cff-account-menu [data-cff-daily-action]').forEach(link=>{
+  const task=s.tasks.find(t=>t.id===link.dataset.cffDailyAction);
+  const waiting=!!(s.signed&&task&&!task.done&&!task.checking);
+  let dot=link.querySelector('[data-cff-menu-task-dot]');
+  if(waiting&&!dot){
+   dot=document.createElement('span');
+   dot.dataset.cffMenuTaskDot='';
+   dot.className='cff-menu-task-dot';
+   dot.setAttribute('role','img');
+   dot.setAttribute('aria-label','Pendente hoje');
+   link.append(dot);
+  }
+  if(!waiting)dot?.remove();
+ });
  document.querySelectorAll('[data-daily-tasks]').forEach(root=>{
   root.innerHTML=s.signed?'<section class="cff-daily-hub" aria-label="Atividades diárias"><header><div><small>SEU DIA NA CENTRAL</small><h2>O que fazer hoje</h2></div><span>'+s.tasks.filter(t=>t.done).length+'/3</span></header><div>'+s.tasks.map(t=>'<a class="cff-daily-task'+(t.done?' is-done':'')+'" href="'+t.href+'"><span class="cff-daily-task-icon" aria-hidden="true">'+(t.done?'✓':t.id==='quiz'?'✦':t.id==='instagram'?'@':'◷')+'</span><span><b>'+t.title+'</b><small>'+esc(t.done?(t.id==='instagram'?'Instagram vinculado':'Concluído hoje'):t.checking?'Conferindo vínculo…':t.copy)+'</small></span><em>'+(t.done?'✓':t.checking?'…':'Abrir ›')+'</em></a>').join('')+'</div><p>Check-in e desafios renovam à meia-noite de Brasília. Abra o atalho para conferir seu progresso.</p></section>':'<p class="cff-daily-guest">Entre na sua conta para fazer o check-in, jogar os desafios e ganhar moedas.</p>';
  });
