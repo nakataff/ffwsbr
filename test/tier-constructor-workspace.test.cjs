@@ -20,7 +20,7 @@ test('banco e rows compartilham o editor; biblioteca e projetos existentes conti
  for(const id of ['tierBankLayoutButtons','toggleEditControlsBtn','settingsBtn','projectMenu','tierSiteLibrary','tierAssetResults','imageBank','trashPanel','tierBoard'])assert.ok(html.includes('id="'+id+'"'),id);
  for(const preset of ['wb-2026-s1','wb-2026-s2','ewc-2026','ffws-global-2026'])assert.ok(html.includes('data-tier-preset="'+preset+'"'),preset);
  assert.match(html,/tier-constructor-workspace\.css\?v=20261102-(?:workspace|nameplates|text-scroll|name-size)-v1/);
- assert.match(html,/tier-constructor\.js\?v=(?:20261104-(?:short-links|mobile-fullscreen)-v1|20261102-(?:workspace|nameplates|text-scroll|name-size)-v1)/);
+ assert.match(html,/tier-constructor\.js\?v=(?:20261104-(?:short-links|mobile-fullscreen)-v1|20261104-chat-rows-v2|20261102-(?:workspace|nameplates|text-scroll|name-size)-v1)/);
 });
 test('toolbar sem sticky, banco lateral no PC e faixas roláveis no celular',()=>{
  assert.match(css,/\.tier-constructor-app \.topbar\s*\{[^}]*position:static/s);
