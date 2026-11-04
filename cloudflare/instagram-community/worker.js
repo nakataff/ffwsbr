@@ -2,6 +2,7 @@ import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutc
 import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, autoApproveStory, instagramPost } from './story-reviews.js';
 import {STORY_PREVIEW_SCHEMA,storeStoryPreview,purgeExpiredStoryPreviews,previewLink,getSignedStoryPreview} from './story-previews.js';
 import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, monthCoverage, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
+import {createGlobalPredictionService} from './global-prediction-service.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
   storyApprovalRequired: false,
@@ -90,6 +91,9 @@ const PERFORMANCE_INDEXES = Object.freeze([
   'CREATE INDEX IF NOT EXISTS idx_users_username_nocase ON users (username COLLATE NOCASE)',
 ]);
 
+const globalPredictionService=createGlobalPredictionService({fetchJson,json,getCheckinSession,predictionVoteFor,predictionBonus,
+ encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce});
+
 export default {
   async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env))await purgeExpiredStoryPreviews(env.DB);})());},
   async fetch(request, env, ctx) {
@@ -114,6 +118,8 @@ export default {
     if (url.pathname === '/api/community/profile' && request.method === 'GET') return getCommunityProfile(request,env,url);
     if (url.pathname === '/api/community/peers' && request.method === 'GET') return getCommunityPeers(request,env,url);
     if (url.pathname === '/api/achievements/profile' && request.method === 'GET') return getAchievementProfile(request, env, url);
+    if (url.pathname === '/api/global-predictions' && request.method === 'GET') return globalPredictionService.list(request,env,url,ctx);
+    if (url.pathname === '/api/global-predictions/vote' && request.method === 'POST') return globalPredictionService.vote(request,env,ctx,readJson);
     if (url.pathname === '/api/predictions' && request.method === 'GET') return getPredictions(request, env, url, ctx);
     if (url.pathname === '/api/prediction' && request.method === 'GET') return getPredictionLegacy(request, env, url, ctx);
     if (url.pathname === '/api/prediction/vote' && request.method === 'POST') return votePrediction(request, env, ctx);
