@@ -1,5 +1,5 @@
 import {createSeasonPassUI} from './season-pass.mjs?v=20261101-account-restrictions-v1';
-import './daily-tasks.mjs?v=20261025-daily-v1';
+import './daily-tasks.mjs?v=20261104-account-menu-alerts-v2';
 import {QUIZ_METRICS,quizGoalLabel,quizGoalsHtml} from './quiz-goals.mjs?v=20261022-quiz-goals-v1';
 import {mountUserInbox} from './user-inbox.mjs?v=20261019-inbox-v1';
 import {isChatVisible,setChatVisible,watchChatVisibility} from './chat-visibility.mjs?v=20261019-chat-visibility-v1';
