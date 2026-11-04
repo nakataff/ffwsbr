@@ -12,6 +12,7 @@ const tick=(ms=90)=>new Promise(resolve=>setTimeout(resolve,ms));
 function createBrowser(){
  const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/tier-constructor.html',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window,drawn=[],clips=[],shares=[];
+ let lastSharedPayload=null;
  let uid=0;
  w.structuredClone=structuredClone;
  w.TextEncoder=TextEncoder;
@@ -40,16 +41,25 @@ function createBrowser(){
  Object.defineProperty(w.navigator,'clipboard',{value:{write:async items=>clips.push(items)},configurable:true});
  Object.defineProperty(w.navigator,'share',{value:async info=>shares.push(info),configurable:true});
  Object.defineProperty(w.navigator,'canShare',{value:()=>true,configurable:true});
- w.fetch=async()=>({ok:true,json:async()=>({
-  rows:[{name:'S',color:'#ff7f7f'},{name:'A',color:'#ffbf7f'}],
-  assets:[
-   {id:'team:loud',name:'LOUD',type:'team',image:'loud.webp'},
-   {id:'player:sem-foto',name:'Brabox',type:'player',image:'silhueta.webp',available:false}
-  ],
-  caption:'TESTE'
- })});
+ w.fetch=async(url,opts={})=>{
+  if(String(url).includes('/api/tier-share')){
+   if(opts.method==='POST'){
+    lastSharedPayload=JSON.parse(opts.body).payload;
+    return {ok:true,json:async()=>({ok:true,id:'aB9cD0eF1gH2',expiresAt:Date.now()+365*86400000})};
+   }
+   return {ok:!!lastSharedPayload,json:async()=>({ok:!!lastSharedPayload,payload:lastSharedPayload})};
+  }
+  return {ok:true,json:async()=>({
+   rows:[{name:'S',color:'#ff7f7f'},{name:'A',color:'#ffbf7f'}],
+   assets:[
+    {id:'team:loud',name:'LOUD',type:'team',image:'loud.webp'},
+    {id:'player:sem-foto',name:'Brabox',type:'player',image:'silhueta.webp',available:false}
+   ],
+   caption:'TESTE'
+  })};
+ };
  w.eval(js);
- return {dom,w,drawn,clips,shares};
+ return {dom,w,drawn,clips,shares,getTierPayload:()=>lastSharedPayload};
 }
 
 test('controles de nome e compartilhamento estão disponíveis, mas legendas são opcionais',()=>{
@@ -62,7 +72,7 @@ test('controles de nome e compartilhamento estão disponíveis, mas legendas sã
 });
 
 test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao ativar',async()=>{
- const {dom,w}=createBrowser();
+ const {dom,w,getTierPayload}=createBrowser();
  try{
   await tick();
   const bank=w.document.getElementById('imageBank');
@@ -118,8 +128,10 @@ test('silhueta com nome e logo de time entram na tier e são exibidas apenas ao 
   w.document.getElementById('shareLinkBtn').click();
   await tick();
   const link=w.document.getElementById('shareProjectUrl').value;
-  assert.match(link,/#tier=r\./,'o link deve incluir o projeto com as legendas');
-  const payload=link.split('#tier=r.')[1];
+  assert.match(link,/#s=aB9cD0eF1gH2$/,'o endereço deve conter só um ID curto');
+  assert(link.length<100);
+  assert.match(getTierPayload(),/^r\./,'o projeto completo vai para o servidor');
+  const payload=getTierPayload().slice(2);
   const shared=JSON.parse(Buffer.from(payload,'base64url').toString('utf8'));
   assert.equal(shared.state.settings.nameplateEnabled,true);
   assert.ok(Object.values(shared.state.images).some(i=>i.nameplateText==='LOUD SNICKERS'&&i.nameplateOwnColors===true&&i.nameplateBgColor==='#ff0000'&&i.nameplateFontSize===10));
@@ -226,4 +238,12 @@ test('tamanho padrão vale para todos, mas o editor permite ajustar e restaurar 
   w.document.getElementById('copyPngBtn').click();await tick();
   assert.ok(drawn.some(d=>d.kind==='text'&&d.args[0]==='LOUD'),'exportação continua escrevendo a legenda');
  } finally {dom.window.close();}
+});
+
+test('links antigos continuam abrindo e os novos consultam a API pelo ID',()=>{
+ assert.match(js,/params\.get\(TIER_SHARE_HASH_KEY\)/);
+ assert.match(js,/params\.get\(TIER_SHARE_SHORT_HASH_KEY\)/);
+ assert.match(js,/loadShortShareProject\(id\)/);
+ assert.match(js,/decodeShareProject\(payload\)/);
+ assert.match(js,/window\.location\.origin/);
 });
