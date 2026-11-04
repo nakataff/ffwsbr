@@ -6,7 +6,7 @@ const BASE='https://centralfreefire.com.br/ffws-global-2026/';
 const files=['dates.json','groups.json','teams.json','players.json','stages.json','palpites-resultados.json'];
 const validString=s=>String(s||'').trim();
 export function createGlobalPredictionService({fetchJson,json,getCheckinSession,predictionVoteFor,predictionBonus,
- encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce}){
+ encodeVoteSource,parseVoteSource,awardInteraction,allPredictionVotes,settleOnce,captureOutcomes}){
  let cache={at:0,pending:null,data:null},sweep={at:0,signature:'',pending:null};
  async function source(){
   if(cache.data&&Date.now()-cache.at<75_000)return cache.data;
@@ -90,6 +90,9 @@ export function createGlobalPredictionService({fetchJson,json,getCheckinSession,
  }
  async function settle(env,round){
   const ps=globalPredictionChoices(round);if(ps.length!==3||!round.result?.complete)return;
+  if(captureOutcomes)await captureOutcomes(env.DB,ps.map(p=>({id:p.id,status:'settled',metric:p.metric,
+   kind:p.metric==='mvp'?'player':'team',closesAt:round.closesAt,
+   result:p.metric==='mvp'?{options:round.result.mvp}:{teams:round.result[p.metric]}})));
   const accepted=new Map(ps.map(p=>[p.metric,new Set(round.result[p.metric])]));
   const rows={};
   for(const p of ps)rows[p.metric]=await allPredictionVotes(env,p.id);
