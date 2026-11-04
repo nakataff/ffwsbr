@@ -3,6 +3,10 @@ on:
   push:
     paths:
       - 'js/daily-tasks.mjs'
+      - 'js/global-predictions.js'
+      - 'css/global-predictions.css'
+      - 'interacoes.html'
+      - 'test/global-predictions-ui.test.cjs'
       - 'js/public-account.js'
       - 'js/mobile-dock.js'
       - 'js/profile-checkin.mjs'
@@ -22,7 +26,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --prefix /tmp/cff-daily-tests --no-save --no-audit --no-fund jsdom@26.1.0
-      - run: node --test test/daily-tasks.test.cjs test/daily-quiz.test.cjs test/quiz-invite.test.cjs test/profile-inventory.test.cjs test/mercado-page.test.cjs test/quiz-goals-ui.test.cjs
+      - run: node --test test/global-predictions-ui.test.cjs test/daily-tasks.test.cjs test/daily-quiz.test.cjs test/quiz-invite.test.cjs test/profile-inventory.test.cjs test/mercado-page.test.cjs test/quiz-goals-ui.test.cjs
         env:
           NODE_PATH: /tmp/cff-daily-tests/node_modules
-      - run: node --check js/public-account.js && node --check js/mobile-dock.js && node --check js/daily-tasks.mjs && node --check js/profile-checkin.mjs
+      - run: node --check js/global-predictions.js && node --check js/public-account.js && node --check js/mobile-dock.js && node --check js/daily-tasks.mjs && node --check js/profile-checkin.mjs
