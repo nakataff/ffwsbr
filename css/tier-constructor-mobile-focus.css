@@ -274,3 +274,70 @@ body.tier-focus-mode .tier-bank-panel .bank-title{flex-wrap:wrap!important}
 #tierEditorLayout .tier-touch-target{outline:3px solid #8ca1ff!important;outline-offset:-3px;background:rgba(110,124,255,.22)!important}
 #tierEditorLayout .tier-touch-before{box-shadow:inset 4px 0 #b0baff!important}
 body.tier-touch-dragging,body.tier-touch-dragging #tierEditorLayout{cursor:grabbing;-webkit-user-select:none;user-select:none}
+
+
+/* Desktop focus mode: viewport-sized tier, read-only controls, full-width logo tray (2026-11-05). */
+body.tier-focus-mode #tierFocusPreviewBtn,
+body.tier-focus-mode .tier-constructor-app .tier-bank-panel .image-card .card-actions{
+  display:none!important;
+}
+@media(min-width:961px){
+  body.tier-focus-mode{
+    --tier-focus-tray-height:clamp(120px,16dvh,154px);
+  }
+  body.tier-focus-mode .tier-constructor-app .tier-board-panel{
+    padding:54px clamp(14px,1.3vw,28px)
+      calc(var(--tier-focus-tray-height) + 12px)!important;
+  }
+  body.tier-focus-mode .tier-board-panel .tier-export{
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin:0 auto!important;
+  }
+  body.tier-focus-mode .tier-board-panel .tier-board{
+    --label-width:clamp(170px,12.5vw,230px);
+    display:grid;
+    grid-auto-rows:minmax(118px,1fr);
+    min-height:calc(100dvh - 66px - var(--tier-focus-tray-height))!important;
+    border-radius:5px;
+  }
+  body.tier-focus-mode .tier-board-panel .tier-row{
+    min-height:0!important;
+  }
+  body.tier-focus-mode .tier-board-panel .tier-row>.row-label{
+    padding:12px clamp(12px,1.1vw,22px)!important;
+  }
+  body.tier-focus-mode .tier-board-panel .tier-row>.dropzone{
+    min-height:0!important;
+    align-content:center;
+    align-items:center;
+    padding:12px!important;
+  }
+  body.tier-focus-mode .tier-constructor-app .tier-editor-layout .tier-bank-panel{
+    height:var(--tier-focus-tray-height)!important;
+    max-height:var(--tier-focus-tray-height)!important;
+    min-height:0!important;
+    padding:9px 14px 8px!important;
+    border-radius:12px 12px 0 0!important;
+  }
+  body.tier-focus-mode .tier-bank-panel .bank-title{
+    flex-wrap:nowrap!important;
+    min-height:18px;
+    margin:0 0 5px!important;
+  }
+  body.tier-focus-mode .tier-bank-panel #imageBank{
+    flex:1 1 auto;
+    min-height:0!important;
+    max-height:none!important;
+    height:auto!important;
+    padding:5px 8px!important;
+  }
+  body.tier-focus-mode .tier-bank-panel #imageBank .image-card{
+    flex:0 0 clamp(62px,8.5dvh,82px)!important;
+    width:clamp(62px,8.5dvh,82px)!important;
+    height:clamp(62px,8.5dvh,82px)!important;
+    min-width:clamp(62px,8.5dvh,82px)!important;
+    max-width:clamp(62px,8.5dvh,82px)!important;
+  }
+}
