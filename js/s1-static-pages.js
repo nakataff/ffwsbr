@@ -10,6 +10,7 @@
   const esc = value => String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 
   async function getJson(path) {
+    if (window.cffLoadS1ArchiveJson) return window.cffLoadS1ArchiveJson(path);
     const response = await fetch(`${path}?v=${BUILD}`, { cache:'force-cache' });
     if (!response.ok) throw new Error(`${path}: ${response.status}`);
     return response.json();
@@ -139,6 +140,7 @@
 
   function schedule() { setTimeout(render,80); }
   window.cffS1StaticPagesRender = page => String(page || '') === PAGE ? render() : false;
+  if (document.body?.dataset.cffSeason === 's1') return;
   window.addEventListener('hashchange',schedule);
   document.addEventListener('DOMContentLoaded',schedule,{once:true});
   if (document.readyState !== 'loading') schedule();

@@ -73,6 +73,7 @@
   }
 
   function loadData() {
+    if (typeof window.cffLoadS1StageArchive === 'function') return window.cffLoadS1StageArchive();
     if (state.data) return Promise.resolve(state.data);
     if (!state.dataPromise) {
       state.dataPromise = fetch(DATA_URL, { cache: 'force-cache' })

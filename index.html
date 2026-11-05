@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <base href="/">
-<script src="/js/root-page-redirects.js?v=20261023-market-page-v1"></script>
+<script src="/js/root-page-redirects.js?v=20261105-s1-page-v1"></script>
 <script defer src="/js/season-routes.js?v=20261026-world-players-v1"></script>
 <script>
 (function () {
@@ -350,11 +350,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <link rel="stylesheet" href="ffws-br-2026-s2/s2.css?v=20261011-phase-navigation-v2">
 </noscript>
 
-<style id="cff-s1-stats-filter-hotfix">
-/* WB 2026 S1 - Estatísticas Gerais: dropdowns de seleção não podem ser cortados pelos blocos. */
-#stats .filters { overflow: visible !important; }
-#stats .multi-check-menu { z-index: 12000 !important; }
-</style>
+
 
 <style id="ot-clash-squad-styles">
 .ot-clash-rule{margin:14px 0 12px;padding:14px 16px;border:1px solid rgba(0,200,255,.22);background:rgba(0,200,255,.055);border-radius:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -917,72 +913,10 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 </div>
 
-    <!-- PAGE: TIMES -->
-<div id="tabela" class="page" data-team-date="2026-03-21">
-    <div id="ffws-br-s1-classificatoria-root"></div>
-</div>
 
-    <!-- NOVA PAGE: EQUIPES -->
-    <div id="equipes" class="page" data-team-date="2026-03-21">
-        <h2>Diretório de Equipes</h2>
-        <p style="color: var(--text-muted); margin-bottom: 30px;">Selecione uma equipe para ver estatísticas detalhadas e desempenho individual.</p>
-        <div class="teams-directory" id="teams-directory"></div>
-    </div>
 
-    <!-- PAGE: JOGADORES -->
-    <div id="mvp" class="page" data-team-date="2026-03-21">
-        <h2>Classificação Geral de Jogadores</h2>
- <div class="filters">
-            <label style="color: var(--text-muted); font-weight: bold;">Etapa:</label>
-            <select id="filter-stage-players" onchange="onPlayerStageFilterChanged()">
-                <option value="classificatoria">Classificatória</option>
-                <option value="final">Final</option>
-                <option value="geral">Geral</option>
-            </select>
 
-            <label style="color: var(--text-muted); font-weight: bold;">Equipe:</label>
-            <select id="filter-team-players" onchange="onPlayerTeamFilterChanged()">
-                <option value="all">Todas</option>
-            </select>
 
-            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Posição:</label>
-            <select id="filter-role-players" onchange="renderAllPlayers()">
-                <option value="all">Todas</option>
-                <option value="RUSH">Rush</option>
-                <option value="SUP">Suporte</option>
-                <option value="GRAN">Granadeiro</option>
-            </select>
-
-            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Novatos:</label>
-            <select id="filter-rookie-players" onchange="renderAllPlayers()">
-                <option value="all">Todos os Jogadores</option>
-                <option value="rookies">Apenas Novatos</option>
-            </select>
-            
-            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Dias:</label>
-            <div class="day-filters" id="player-day-filters"></div>
-
-            <span style="margin-left:auto; color:#888; font-size:0.9em;">* Clique no título da coluna para ordenar</span>
-        </div>
-        <button class="btn-action hide-on-desktop" id="btn-players-details" onclick="document.getElementById('table-players').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Detalhes' ? 'Ocultar Detalhes' : 'Ver Detalhes';" style="width: 100%; margin-bottom: 12px;">Ver Detalhes</button>
-        <div class="table-container">
-<table id="table-players">
-    <thead>
-        <tr>
-            <th style="width: 24px;">#</th>
-            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)"><span class="full-name-desktop">Jogador</span><span class="show-mobile-only">J</span> ↕</th>
-            <th onclick="sortTable('table-players', 2, false)"><span class="full-name-desktop">Equipe</span><span class="show-mobile-only">E</span> ↕</th>
-            <th onclick="sortTable('table-players', 3, true)"><span class="full-name-desktop">Abates</span><span class="show-mobile-only">K</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)"><span class="full-name-desktop">Dano</span><span class="show-mobile-only">D</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)"><span class="full-name-desktop">Assistências</span><span class="show-mobile-only">A</span> ↕</th>
-            <th onclick="sortTable('table-players', 6, true)"><span class="full-name-desktop">Quedas</span><span class="show-mobile-only">Q</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)"><span class="full-name-desktop">MVP</span><span class="show-mobile-only">👑</span> ↕</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-        </div>
-</div>
 
 <div id="wbamanger" class="page">
     <button class="btn-back" onclick="navigate('home')">← Voltar</button>
@@ -1099,58 +1033,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </div>
 
 <!-- PAGE: MERCADO DA BOLA -->
-<div id="selecao-da-semana" class="page" data-team-date="2026-03-21">
-        <div class="season-selection-hero">
-            <div class="season-selection-kicker">WB 2026 S1</div>
-            <h1>SELEÇÕES DA SEASON</h1>
-            <p>Os melhores jogadores por função: seleções semanais, classificatória, final e torneio.</p>
-        </div>
 
-        <div class="season-selection-tabs" id="selection-season-tabs"></div>
-
-        <section class="season-selection-panel season-selection-panel-week" id="selection-week-panel">
-            <div class="season-selection-section-head">
-                <div>
-                    <span class="season-selection-tag">Times da semana</span>
-                    <h2>Seleções semanais</h2>
-                </div>
-                <p>Escolha a semana para ver os destaques por posição.</p>
-            </div>
-            <div class="season-selection-filters" id="selection-week-filters"></div>
-            <div id="selection-week-container" class="selection-grid season-selection-grid"></div>
-        </section>
-
-        <section class="season-selection-panel season-selection-panel-classificatoria" id="selection-classificatoria-panel">
-            <div class="season-selection-section-head">
-                <div>
-                    <span class="season-selection-tag">Classificatória</span>
-                    <h2>Seleção da classificatória</h2>
-                </div>
-                <p>Melhores de cada posição levando em conta todos os dados da classificatória.</p>
-            </div>
-            <div id="selection-classificatoria-container" class="selection-grid season-selection-grid"></div>
-        </section>
-
-        <section class="season-selection-panel season-selection-panel-final" id="selection-final-panel">
-            <div class="season-selection-section-head">
-                <div>
-                    <span class="season-selection-tag">Final</span>
-                    <h2>Seleção da final</h2>
-                </div>
-            </div>
-            <div id="selection-final-container" class="selection-grid season-selection-grid"></div>
-        </section>
-
-        <section class="season-selection-panel season-selection-panel-torneio" id="selection-torneio-panel">
-            <div class="season-selection-section-head">
-                <div>
-                    <span class="season-selection-tag">Torneio</span>
-                    <h2>Seleção do torneio</h2>
-                </div>
-            </div>
-            <div id="selection-torneio-container" class="selection-grid season-selection-grid"></div>
-        </section>
-    </div>
 
 <div id="player-profile" class="page">
    <button class="btn-back" onclick="navigate(lastVisitedPage)">← Voltar</button>
@@ -1275,388 +1158,10 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     </div>
     
     <!-- PAGE: NOTAS CFF -->
-<div id="notas-cff" class="page" data-team-date="2026-03-21">
-    <div class="cff-page-hero">
-        <div>
-            <div class="cff-page-kicker">Sistema de avaliação</div>
-            <h2>Notas CFF</h2>
-            <p>Veja a avaliação dos jogadores na FFWS Brasil por dia e queda.</p>
-        </div>
-    </div>
 
-    <div id="cff-info-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-content cff-info-box">
-            <button class="modal-close" onclick="closeNotasCFFInfoModal()">×</button>
-            <h2>Como a Nota CFF é calculada?</h2>
-            <p>A nota de queda combina impacto individual e contexto da partida: abates, dano, assistências, MVP e posição final da equipe.</p>
-            <p>Na nota de dia, o sistema soma o desempenho das quedas jogadas no dia e aplica uma curva para destacar atuações históricas, principalmente grandes volumes de abates, dano alto e MVPs.</p>
-            <p>As médias gerais consideram apenas jogadores com participação mínima suficiente para evitar ranking inflado por poucas quedas.</p>
-        </div>
-    </div>
-
-    <h3 id="anchor-recordes-nota" class="cff-section-title">Recordes de Nota CFF</h3>
-    <div id="cff-records-grid" class="grid-cards cff-records-grid"></div>
-    <div class="cff-records-pager">
-        <button class="cff-record-pager-btn" onclick="cffMoveRecordsPage(-1)">‹</button>
-        <span id="cff-records-page-label">Recordes 1–4</span>
-        <button class="cff-record-pager-btn" onclick="cffMoveRecordsPage(1)">›</button>
-    </div>
-
-    <h3 class="cff-section-title">Ranking de Melhores Notas</h3>
-
-    <div class="filters cff-filters">
-        <label>Etapa:
-            <select id="cff-filter-stage" onchange="cffSetNotasCFFStage(this.value)">
-                <option value="classificatoria">Classificatória</option>
-                <option value="geral" selected>Geral</option>
-                <option value="final">Final</option>
-            </select>
-        </label>
-        <label>Equipe:
-            <select id="cff-filter-team" onchange="renderNotasCFFRanking()">
-                <option value="all">Todas</option>
-            </select>
-        </label>
-        <label>Role:
-            <select id="cff-filter-role" onchange="renderNotasCFFRanking()">
-                <option value="all">Todas</option>
-                <option value="RUSH">Rush</option>
-                <option value="SUP">Sup</option>
-                <option value="GRAN">Gran</option>
-            </select>
-        </label>
-        <label>Novatos:
-            <select id="cff-filter-rookie" onchange="renderNotasCFFRanking()">
-                <option value="all">Todos os Jogadores</option>
-                <option value="rookies">Apenas Estreantes</option>
-            </select>
-        </label>
-        <label>Confronto:
-            <select id="cff-filter-conf" onchange="renderNotasCFFRanking()">
-                <option value="all">Todos</option>
-                <option value="ABC">A x B x C</option>
-                <option value="BCD">B x C x D</option>
-                <option value="CDA">C x D x A</option>
-                <option value="DAB">D x A x B</option>
-            </select>
-        </label>
-        <label>Mapa:
-            <select id="cff-filter-map" onchange="renderNotasCFFRanking()">
-                <option value="all">Todos</option>
-                <option value="Bermuda">Bermuda</option>
-                <option value="Kalahari">Kalahari</option>
-                <option value="Purgatório">Purgatório</option>
-                <option value="Nova Terra">Nova Terra</option>
-                <option value="Solara">Solara</option>
-            </select>
-        </label>
-    </div>
-
-    <div class="cff-day-filter-box">
-        <span class="cff-filter-label">Dias:</span>
-        <div id="cff-day-buttons" class="cff-day-buttons"></div>
-    </div>
-
-    <div id="cff-drop-filter-wrap" class="cff-drop-filter-wrap" style="display:none;">
-        <button class="cff-drop-toggle" type="button" onclick="cffToggleDropFilter()">TODAS AS QUEDAS</button>
-        <div id="cff-drop-menu" class="cff-drop-menu" style="display:none;"></div>
-    </div>
-
-    <div class="cff-ranking-helper"><span id="cff-ranking-count">0</span> jogadores encontrados · Clique no nome da coluna para ordenar</div>
-
-    <div class="table-container cff-table-wrap">
-        <table id="table-notas-cff" class="cff-ranking-table">
-            <thead>
-                <tr>
-                    <th class="cff-sortable-th" onclick="setNotasCFFSort('rank')"># <span data-sort-icon="rank"></span></th>
-                    <th class="cff-sortable-th" style="text-align:left;" onclick="setNotasCFFSort('jogador')"><span class="desktop-label">Jogador</span><span class="mobile-label">J</span> <span data-sort-icon="jogador"></span></th>
-                    <th class="cff-sortable-th" onclick="setNotasCFFSort('equipe')"><span class="desktop-label">Equipe</span><span class="mobile-label">E</span> <span data-sort-icon="equipe"></span></th>
-                    <th class="cff-sortable-th" onclick="setNotasCFFSort('nota')">Nota <span data-sort-icon="nota">↓</span></th>
-                    <th class="cff-sortable-th" title="Abates" onclick="setNotasCFFSort('kills')"><span class="desktop-label">Abates</span><span class="mobile-label">K</span> <span data-sort-icon="kills"></span></th>
-                    <th class="cff-sortable-th" title="Assistências" onclick="setNotasCFFSort('assists')"><span class="desktop-label">Assistências</span><span class="mobile-label">A</span> <span data-sort-icon="assists"></span></th>
-                    <th class="cff-sortable-th" title="Dano" onclick="setNotasCFFSort('dano')"><span class="desktop-label">Dano</span><span class="mobile-label">D</span> <span data-sort-icon="dano"></span></th>
-                    <th class="cff-sortable-th" title="Quedas" onclick="setNotasCFFSort('quedas')"><span class="desktop-label">Quedas</span><span class="mobile-label">Q</span> <span data-sort-icon="quedas"></span></th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
 
     <!-- PAGE: MAPAS -->
-<div id="stats" class="page" data-team-date="2026-03-21">
-    <h2>Estatísticas Avançadas</h2>
 
-    <div style="background: rgba(255, 170, 0, 0.1); border-left: 4px solid var(--accent); border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
-        <span style="font-size: 1.8em;">⚠️</span>
-        <div>
-            <strong style="color: var(--accent); display: block; margin-bottom: 3px; font-size: 1.1em;">Aviso: Página em Construção</strong>
-            <span style="color: var(--text-muted); font-size: 0.95em;">Os dados e estatísticas desta seção ainda estão sendo aprimorados e podem conter erros ou inconsistências no momento.</span>
-        </div>
-    </div>
-
-    <h3 id="anchor-recordes-mapa" style="margin-top: 30px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-        Estastíticas Aprofundadas
-    </h3>
-
-    <!-- ATALHOS DE NAVEGAÇÃO DA PÁGINA -->
-    <div id="stats-page-nav" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; padding: 14px 16px; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 10px; align-items: center;">
-        <span style="color: var(--text-muted); font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; flex-shrink: 0;">Ir para:</span>
-        <button onclick="document.getElementById('anchor-recordes-mapa').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Recordes por Mapa</button>
-        <button onclick="document.getElementById('anchor-totais-equipe').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Totais por Equipe</button>
-        <button onclick="document.getElementById('anchor-medias-equipe').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Médias por Equipe</button>
-        <button onclick="document.getElementById('anchor-top3-equipe').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Equipes Por Queda</button>
-        <button onclick="document.getElementById('anchor-evolucao').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Evolução das Equipes</button>
-        <button onclick="document.getElementById('anchor-ranking-medias').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Ranking de Médias</button>
-        <button onclick="document.getElementById('anchor-ranking-totais').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Ranking de Totais</button>
-        <button onclick="document.getElementById('anchor-individual').scrollIntoView({behavior:'smooth', block:'start'})" style="background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8em; font-weight: 700; white-space: nowrap; transition: 0.2s;" onmouseover="this.style.background='rgba(0,200,255,0.2)'" onmouseout="this.style.background='rgba(0,200,255,0.08)'">Desempenho Individual</button>
-    </div>
-    <div class="filters stage-filter-bar" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; align-items: center;">
-        <label style="color: var(--text-muted); font-weight: bold;">Etapa:</label>
-        <select id="filter-stage-stats" onchange="onStatsStageFilterChanged()" style="max-width: 220px;">
-            <option value="classificatoria">Classificatória</option>
-            <option value="final">Final</option>
-            <option value="geral" selected>Geral</option>
-        </select>
-
-        <label style="color: var(--text-muted); font-weight: bold;">Dias:</label>
-        <div class="day-filters" id="top5-day-filters"></div>
-        
-        <label style="color: var(--text-muted); font-weight: bold; margin-left: auto;">Mapa:</label>
-        <select id="top5-map-filter" onchange="renderTop5Stats()" style="flex: 1; max-width: 300px;">
-            <option value="all">Visão Geral (Todos os Mapas)</option>
-            <option value="Bermuda">Bermuda</option>
-            <option value="Kalahari">Kalahari</option>
-            <option value="Purgatório">Purgatório</option>
-            <option value="Nova Terra">Nova Terra</option>
-            <option value="Solara">Solara</option>
-        </select>
-    </div>
-
-        
-    
-<div id="top5-container" style="margin-bottom: 40px;">
-    </div>
-
-    <h3 id="anchor-evolucao" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-        Comparação de Evolução das Equipes
-    </h3>
-    
-    <div class="filters" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; align-items: flex-start;">
-        <div style="display: flex; gap: 15px; width: 100%; flex-wrap: wrap; align-items: center;">
-            <label style="color: var(--text-muted); font-weight: bold;">Etapa:</label>
-            <select id="multi-chart-stage" onchange="renderMultiTeamChart()" style="max-width: 220px;">
-                <option value="classificatoria">Classificatória</option>
-                <option value="final">Final</option>
-            </select>
-            <label style="color: var(--text-muted); font-weight: bold;">Métrica do Gráfico:</label>
-            <select id="multi-chart-metric" onchange="renderMultiTeamChart()" style="max-width: 300px;">
-                <option value="pos_geral_dia">Posição Geral (Acumulada por Dia)</option>
-                <option value="pontos_dia">Pontos Totais por Dia</option>
-                <option value="kills_dia">Abates por Dia</option>
-            </select>
-        </div>
-        
-        <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap; align-items: center;">
-            <label style="color: var(--text-muted); font-weight: bold;">Selecione as Equipes (Max. 5):</label>
-            <div class="day-filters" id="multi-team-filters"></div>
-        </div>
-    </div>
-    
-    <div style="background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 40px;">
-        <canvas id="multi-team-evolution-chart" style="width:100%; max-height:400px;"></canvas>
-        <button type="button" class="chart-summary-toggle" onclick="toggleChartSummary('multi-team-chart-summary')">Ver legenda do gráfico</button>
-        <div id="multi-team-chart-summary" class="chart-summary-panel" hidden></div>
-    </div>
-
-    <h3 id="anchor-ranking-medias" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-        Ranking de Médias <span style="font-size: 0.6em; color: #aaa;">(Por Queda)</span>
-    </h3>
-    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Etapa:</label>
-        <select id="avg-stage-filter" onchange="cffSetStatsStageFromSection(this.value, 'renderTableAvg')" style="max-width: 190px;">
-            <option value="classificatoria">Classificatória</option>
-            <option value="geral" selected>Geral</option>
-            <option value="final">Final</option>
-        </select>
-        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
-        <div class="day-filters" id="avg-day-filters"></div>
-        
-        <select id="avg-conf-filter" onchange="renderTableAvg()" style="margin-left: auto; max-width: 200px;">
-            <option value="all">Todos os Confrontos</option>
-            <option value="ABC">Grupos A x B x C</option>
-            <option value="BCD">Grupos B x C x D</option>
-            <option value="CDA">Grupos C x D x A</option>
-            <option value="DAB">Grupos D x A x B</option>
-        </select>
-
-        <select id="avg-map-filter" onchange="renderTableAvg()" style="max-width: 200px;">
-            <option value="all">Todos os Mapas</option>
-            <option value="Bermuda">Bermuda</option>
-            <option value="Kalahari">Kalahari</option>
-            <option value="Purgatório">Purgatório</option>
-            <option value="Nova Terra">Nova Terra</option>
-            <option value="Solara">Solara</option>
-        </select>
-    </div>
-    <div class="table-container">
-        <table id="table-stats-avg">
-            <thead>
-                <tr>
-                    <th onclick="sortTable('table-stats-avg', 0, true)"># ↕</th>
-                    <th style="text-align:left;" onclick="sortTable('table-stats-avg', 1, false)">E ↕</th>
-                    <th onclick="sortTable('table-stats-avg', 2, true)" title="Média de Pontos">
-                        <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
-                    </th>
-                    <th onclick="sortTable('table-stats-avg', 3, true)" title="Média de Abates">
-                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
-                    </th>
-                    <th onclick="sortTable('table-stats-avg', 4, true)" title="Média de Colocação (Menor é melhor)">
-                        <span class="full-name-desktop">POS ↕</span><span class="short-name-mobile">C ↕</span>
-                    </th>
-                    <th class="hide-mobile" title="Quedas Jogadas">Q</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
-        <button id="btn-avg-expand" class="btn-action" onclick="toggleAvgTable()" style="width: 200px;">Ver Mais</button>
-    </div>
-
-<h3 id="anchor-ranking-totais" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-        Ranking de Totais <span style="font-size: 0.6em; color: #aaa;">(Acumulado)</span>
-    </h3>
-    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Etapa:</label>
-        <select id="total-stage-filter" onchange="cffSetStatsStageFromSection(this.value, 'renderTableTotal')" style="max-width: 190px;">
-            <option value="classificatoria">Classificatória</option>
-            <option value="geral" selected>Geral</option>
-            <option value="final">Final</option>
-        </select>
-        <label style="color: var(--text-muted); font-weight: bold; align-self: center;">Dias:</label>
-        <div class="day-filters" id="total-day-filters"></div>
-        
-        <select id="total-conf-filter" onchange="renderTableTotal()" style="margin-left: auto; max-width: 200px;">
-            <option value="all">Todos os Confrontos</option>
-            <option value="ABC">Grupos A x B x C</option>
-            <option value="BCD">Grupos B x C x D</option>
-            <option value="CDA">Grupos C x D x A</option>
-            <option value="DAB">Grupos D x A x B</option>
-        </select>
-
-        <select id="total-map-filter" onchange="renderTableTotal()" style="max-width: 200px;">
-            <option value="all">Todos os Mapas</option>
-            <option value="Bermuda">Bermuda</option>
-            <option value="Kalahari">Kalahari</option>
-            <option value="Purgatório">Purgatório</option>
-            <option value="Nova Terra">Nova Terra</option>
-            <option value="Solara">Solara</option>
-        </select>
-    </div>
-    <div class="table-container">
-        <table id="table-stats-total">
-            <thead>
-                <tr>
-                    <th onclick="sortTable('table-stats-total', 0, true)"># ↕</th>
-                    <th style="text-align:left;" onclick="sortTable('table-stats-total', 1, false)">E ↕</th>
-                    <th onclick="sortTable('table-stats-total', 2, true)">
-                        <span class="full-name-desktop">PTS ↕</span><span class="short-name-mobile">P ↕</span>
-                    </th>
-                    <th onclick="sortTable('table-stats-total', 3, true)" title="Booyahs">
-                        <span class="full-name-desktop">BOOYAH ↕</span><span class="short-name-mobile">B ↕</span>
-                    </th>
-                    <th onclick="sortTable('table-stats-total', 4, true)">
-                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
-        <button id="btn-total-expand" class="btn-action" onclick="toggleTotalTable()" style="width: 200px;">Ver Mais</button>
-    </div>
-
-   <h3 id="anchor-individual" style="margin-top: 40px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px;">
-        Desempenho Individual
-    </h3>
-    <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-        <select id="player-stats-stage-filter" onchange="cffSetStatsStageFromSection(this.value, 'renderPlayerStats')" style="max-width: 190px;">
-            <option value="classificatoria">Classificatória</option>
-            <option value="geral" selected>Geral</option>
-            <option value="final">Final</option>
-        </select>
-        <select id="filter-player-day" onchange="renderPlayerStats()">
-            <option value="all">Todos os Dias</option>
-        </select>
-
-        <select id="filter-player-conf" onchange="renderPlayerStats()">
-            <option value="all">Todos os Confrontos</option>
-            <option value="ABC">Grupos A x B x C</option>
-            <option value="BCD">Grupos B x C x D</option>
-            <option value="CDA">Grupos C x D x A</option>
-            <option value="DAB">Grupos D x A x B</option>
-        </select>
-
-        <select id="filter-player-map" onchange="renderPlayerStats()">
-            <option value="all">Todos os Mapas</option>
-            <option value="Bermuda">Bermuda</option>
-            <option value="Kalahari">Kalahari</option>
-            <option value="Purgatório">Purgatório</option>
-            <option value="Nova Terra">Nova Terra</option>
-            <option value="Solara">Solara</option>
-        </select>
-        <select id="filter-player-team" onchange="renderPlayerStats()">
-            <option value="all">Todas as Equipas</option>
-            <option value="LOS">LOS</option>
-            <option value="FLUXO W7M">FLUXO W7M</option>
-            <option value="LOUD SNICKERS">LOUD SNICKERS</option>
-            <option value="INTZ">INTZ</option>
-            <option value="TEAM SOLID">TEAM SOLID</option>
-            <option value="LOOPS">LOOPS</option>
-            <option value="RISE GAMING">RISE GAMING</option>
-            <option value="INFLUENCE RAGE">INFLUENCE RAGE</option>
-            <option value="CIVIS">CIVIS</option>
-            <option value="VASCO ESPORTS">VASCO ESPORTS</option>
-            <option value="AXS FUSION">AXS FUSION</option>
-            <option value="E1 SPORTS">E1 SPORTS</option>
-        </select>
-        <select id="filter-player-role" onchange="renderPlayerStats()">
-            <option value="all">Todas as Funções</option>
-            <option value="Rush">Rush</option>
-            <option value="SUP">Suporte</option>
-            <option value="GRAN">Granadeiro</option>
-        </select>
-
-        <select id="filter-player-rookie" onchange="renderPlayerStats()">
-            <option value="all">Todos os Jogadores</option>
-            <option value="rookies">Apenas Novatos</option>
-        </select>
-    </div>
-    <div class="table-container">
-        <table id="table-stats-players-detailed">
-            <thead>
-                <tr>
-                    <th onclick="sortTable('table-stats-players-detailed', 0, true)"># ↕</th>
-                    <th style="text-align:left;" onclick="sortTable('table-stats-players-detailed', 1, false)">JOGADOR ↕</th>
-                    <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 2, false)">ROLE ↕</th>
-                    <th onclick="sortTable('table-stats-players-detailed', 3, true)" title="Abates">
-                        <span class="full-name-desktop">KILLS ↕</span><span class="short-name-mobile">K ↕</span>
-                    </th>
-                    <th onclick="sortTable('table-stats-players-detailed', 4, true)">DANO ↕</th>
-                    <th class="hide-mobile" onclick="sortTable('table-stats-players-detailed', 5, true)">AST ↕</th>
-                    <th title="Quedas Jogadas" onclick="sortTable('table-stats-players-detailed', 6, true)">Q ↕</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    <div style="text-align: center; margin-top: -15px; margin-bottom: 30px;">
-        <button id="btn-player-expand" class="btn-action" onclick="togglePlayerTable()" style="width: 200px;">Ver Mais</button>
-    </div>
-
-</div>
 <div id="outros-torneios" class="page">
     <div id="ot-list-view">
         <div class="ot-hero-new">
@@ -2312,7 +1817,6 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     </div>
     </div>
 
-    <!-- PAGE: COMPARAR -->
     
 <div id="busca-global" class="page">
     <div class="global-search-page">
@@ -2333,42 +1837,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     </div>
 </div>
 
-<div id="comparar-1v1" class="page" data-team-date="2026-03-21">
-        <h2>Comparar Times e Jogadores</h2>
-        
-        <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
-            <h3 style="margin-top:0; color:#fff">Confronto de Times</h3>
-            <div class="filters" style="background:transparent; border:none; padding:0; margin-bottom:10px;">
-                <select id="comp-team-metric" onchange="renderCompareTeams()" title="Métrica da comparação">
-                    <option value="total">Abates totais</option>
-                    <option value="media">Média K/Q</option>
-                </select>
-                <select id="comp-t1" onchange="renderCompareTeams()"></select>
-                <span style="font-weight:bold; color:var(--accent);">VS</span>
-                <select id="comp-t2" onchange="renderCompareTeams()"></select>
-            </div>
-            <div class="compare-container" id="compare-teams-result"></div>
-        </div>
 
-        <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-            <h3 style="margin-top:0; color:#fff">Confronto de Jogadores</h3>
-            <div class="filters" style="background:transparent; border:none; padding:0; margin-bottom:10px;">
-                <select id="comp-player-region" onchange="switchComparePlayerRegion()">
-                    <option value="nacional">NACIONAL</option>
-                    <option value="internacional">INTERNACIONAL</option>
-                    <option value="brxgringos">BR X GRINGOS</option>
-                </select>
-                <select id="comp-player-metric" onchange="renderComparePlayers()" title="Métrica da comparação">
-                    <option value="total">Abates totais</option>
-                    <option value="media">Média K/Q</option>
-                </select>
-                <select id="comp-p1" onchange="renderComparePlayers()"></select>
-                <span style="font-weight:bold; color:var(--accent);">VS</span>
-                <select id="comp-p2" onchange="renderComparePlayers()"></select>
-            </div>
-            <div class="compare-container" id="compare-players-result"></div>
-        </div>
-    </div>
 
     <!-- PAGE: SOBRE / CONTATO -->
 <div id="sobre" class="page" data-about-source="site">
@@ -2414,107 +1883,9 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
     </section>
 </div>
 
-    <!-- PAGE: CRONOGRAMA -->
-<div id="datas" class="page" data-team-date="2026-03-21">
-    <h2>Cronograma e Próximos Confrontos - FFWS Brasil 2026</h2>
-    
-    <div id="next-match-timer" style="background: linear-gradient(90deg, #1c1c20 0%, #26262b 100%); border: 1px solid var(--border); border-left: 4px solid #ff4444; padding: 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
-        
-        <div style="min-width: 200px;">
-            <div style="color: var(--text-muted); font-size: 0.85em; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Próxima Transmissão</div>
-            <div id="countdown-display" style="font-size: 1.4em; font-weight: bold; color: #fff;">Carregando...</div>
-        </div>
 
-        <div id="next-match-groups" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
 
-        <a href="https://www.youtube.com/@FFesportsBR/live" target="_blank" class="live-status-btn offline" id="schedule-live-btn" style="width: auto; margin: 0; min-width: 200px;">
-            <img decoding="async" loading="lazy" src="youtube.webp" alt="YouTube" onerror="this.style.display='none'">
-            <span id="schedule-live-text">Aguardando Início</span>
-        </a>
 
-    </div> <p style="color: var(--text-muted); margin-bottom: 20px;">Acompanhe a agenda oficial das semanas finais e Grande Final do campeonato.</p>
-    
-    <div id="schedule-content"></div>
-</div>
-
-<div id="final" class="page" data-team-date="2026-03-21">
-    <button class="btn-back" onclick="navigate('home')">← Voltar</button>
-
-    <section class="final-hero-panel">
-        <div class="section-kicker">GRANDE FINAL</div>
-        <h1>Formato da final</h1>
-        <div class="final-format-grid">
-            <div class="final-format-item"><strong>Dia 1</strong><span>6 quedas</span></div>
-            <div class="final-format-item"><strong>Dia 2</strong><span>10 quedas</span></div>
-            <div class="final-format-item"><strong>Total</strong><span>16 quedas</span></div>
-            <div class="final-format-item"><strong>Champion Point</strong><span>160 pts</span></div>
-        </div>
-        <div class="final-rules-box">
-            Ao chegar em 160 pontos, a equipe fica apta ao título se vencer a próxima queda. Se nenhuma equipe confirmar o Champion Point com Booyah, o campeão será definido pela maior pontuação ao final das 16 quedas.
-        </div>
-        <button class="final-groups-table-btn" onclick="navigate('tabela')">Ver tabela da classificatória</button>
-    </section>
-
-    <section class="final-section-card">
-        <div class="final-section-head">
-            <div>
-                <span>Classificação</span>
-                <h2>Tabela da final</h2>
-            </div>
-        </div>
-        <div class="filters final-live-filters">
-            <label>Dia:</label>
-            <select id="final-day-filter" onchange="cffFinalOnDayFilterChanged()">
-                <option value="all">Geral</option>
-                <option value="1">Dia 1</option>
-                <option value="2">Dia 2</option>
-            </select>
-            <label>Queda:</label>
-            <div id="final-drop-filter-wrap" class="cff-drop-filter-wrap final-drop-filter-wrap">
-                <button id="final-drop-toggle" class="cff-drop-toggle" type="button" onclick="cffFinalToggleDropFilter()">TODAS AS QUEDAS</button>
-                <div id="final-drop-menu" class="cff-drop-menu final-drop-menu" style="display:none;"></div>
-            </div>
-            <label>Mapa:</label>
-            <select id="final-map-filter" onchange="cffFinalOnMapFilterChanged()">
-                <option value="all">Todos os mapas</option>
-                <option value="Bermuda">Bermuda</option>
-                <option value="Kalahari">Kalahari</option>
-                <option value="Purgatório">Purgatório</option>
-                <option value="Nova Terra">Nova Terra</option>
-                <option value="Solara">Solara</option>
-            </select>
-        </div>
-        <div id="final-live-summary" class="final-live-summary"></div>
-        <div class="table-container final-table-wrap">
-            <table id="final-teams-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th style="text-align:left;">Eqp</th>
-                        <th>Pts</th>
-                        <th>B!</th>
-                        <th>K</th>
-                        <th>Q</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="final-section-card">
-        <div class="final-section-head">
-            <div>
-                <span>Possibilidades</span>
-                <h2>Possibilidades da final</h2>
-            </div>
-            <small>Atualiza conforme a pontuação</small>
-        </div>
-        <div id="final-probability-grid" class="final-probability-grid">
-            <div class="home-confrontation-empty">Carregando possibilidades...</div>
-        </div>
-    </section>
-</div>
 
 <!-- Modal para Ranking de Confronto -->
 <div class="modal-overlay" id="results-modal" onclick="closeModal(event)">
@@ -2585,8 +1956,8 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20261029-laff-photos-v1"></script>
-<script defer src="/js/shared-navigation.js?v=20261104-chat-dock-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261029-laff-photos-v1"></script>
+<script defer src="/js/shared-navigation.js?v=20261105-s1-page-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261105-s1-page-v1"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>

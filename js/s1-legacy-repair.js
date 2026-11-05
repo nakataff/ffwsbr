@@ -493,8 +493,11 @@
   };
 
   window.cffRepairS1Page = repairPage;
+  window.cffLoadS1StageArchive = loadStageData;
   window.cffS1StandaloneRenderClassification = () => renderDirectStage('classificatoria');
   window.cffS1StandaloneRenderFinal = () => renderDirectStage('final');
+
+  if (document.body?.dataset.cffSeason === 's1') return;
 
   document.addEventListener('cff:modules-loaded', () => setTimeout(boot, 0));
   window.addEventListener('hashchange', () => setTimeout(boot, 0));

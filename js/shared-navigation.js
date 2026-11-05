@@ -6,7 +6,7 @@
   const groups = [
     ['brasil','Torneios Brasil',[
       ['s2','WB 2026 S2',[['Início','ffws-br-s2-inicio'],...routes('ffws-br-s2-',season)]],
-      ['s1','WB 2026 S1',[['Classificatória','tabela'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Datas','datas'],['Seleções da season','selecao-da-semana'],['Estatísticas gerais','stats'],['Notas CFF','notas-cff'],['Comparar jogadores','comparar-1v1']]],
+      ['s1','WB 2026 S1',routes('/ffws-br-s1.html#',[['Classificatória','tabela'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Datas','datas'],['Seleções da season','selecao-da-semana'],['Estatísticas gerais','stats'],['Notas CFF','notas-cff'],['Comparar jogadores','comparar-1v1']])],
       ['laff','LAFF 2026 S1',routes('laff-',season.filter(([,key]) => !['segunda-fase','final','notas','comparar'].includes(key)))],
       ['s25','WB 2025 S2',routes('ffws-br-2025-s2-',season.filter(([,key]) => key !== 'segunda-fase').concat([['Contra Squad','contra-squad']]))]
     ]],
@@ -84,7 +84,7 @@
   function setActive(page) {
     document.querySelectorAll('.cff-unified-menu').forEach(root => {
       root.querySelectorAll('[data-cff-route]').forEach(a => {
-        const route=a.dataset.cffRoute, active=route==='mercado'?location.pathname==='/mercado.html':route.startsWith('/') ? location.pathname===route : document.getElementById('main-content') && route===page;
+        const route=a.dataset.cffRoute, active=route==='mercado'?location.pathname==='/mercado.html':route.startsWith('/') ? (route.includes('#')?location.pathname+location.hash:location.pathname)===route : document.getElementById('main-content') && route===page;
         a.classList.toggle('active',Boolean(active)); if(active){a.setAttribute('aria-current','page'); for(let parent=a.parentElement; parent && parent!==root; parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;}else a.removeAttribute('aria-current');
         if(a.hasAttribute('data-cff-featured'))a.classList.toggle('active',Boolean(document.getElementById('main-content') && page.startsWith('ffws-global-2026-')));
       });

@@ -1,12 +1,13 @@
 /* Compatibility for pages moved out of the old index shell. */
 (() => {
   'use strict';
-  const pages={mercado:'/mercado.html'};
+  const season=['tabela','final','mvp','equipes','datas','selecao-da-semana','stats','notas-cff','comparar-1v1'];
+  const pages={mercado:'/mercado.html',...Object.fromEntries(season.map(page=>[page,'/ffws-br-s1.html#'+page]))};
   window.CFF_ROOT_PAGES=pages;
-  window.cffRootPageUrl=page=>pages[String(page||'')]||'';
+  window.cffRootPageUrl=(page,search='')=>Object.hasOwn(pages,page) ? pages[page].replace('#',search+'#') : '';
   function redirect(){
     if(!/^\/(?:index\.html)?$/.test(location.pathname))return;
-    const page=location.hash.slice(1),url=pages[page];
+    const page=location.hash.slice(1),url=window.cffRootPageUrl(page,location.search);
     if(url)location.replace(url);
   }
   redirect();

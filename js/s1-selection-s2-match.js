@@ -29,6 +29,7 @@
   const esc = value => String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 
   async function getJson(path) {
+    if (window.cffLoadS1ArchiveJson) return window.cffLoadS1ArchiveJson(path);
     const response = await fetch(`${path}?v=${BUILD}`, { cache:'force-cache' });
     if (!response.ok) throw new Error(`${path}: ${response.status}`);
     return response.json();
@@ -285,6 +286,7 @@
         <div class="s1s2-grid">${picks.map(card).join('')}</div>
         <div class="s1s2-archive">Dados finais congelados da WB 2026 S1. O arquivo detalhado de quedas só é carregado quando a aba semanal é aberta.</div></section>
       </div>`;
+      return true;
     } catch (error) {
       root.innerHTML = `<div data-s1s2-selection-root><div class="s1s2-loading">Não foi possível carregar as seleções. Atualize a página.</div></div>`;
       console.error('[S1 Selection S2 Match]', error);
@@ -315,6 +317,8 @@
   });
 
   function scheduleRender() { setTimeout(render, 80); }
+  window.cffS1SelectionRender = render;
+  if (document.body?.dataset.cffSeason === 's1') return;
   window.addEventListener('hashchange', scheduleRender);
   document.addEventListener('DOMContentLoaded', scheduleRender, { once:true });
   if (document.readyState !== 'loading') scheduleRender();

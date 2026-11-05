@@ -149,6 +149,20 @@ Parâmetros: `aba=tabela|mvp|equipes`, `etapa=classificatoria|segundaFase|lastCh
 `dia` para a tabela e `grupo=A|B|C|D` para equipes. Valores ausentes não inventam
 resultados, rankings ou elencos.
 
+## WB / FFWS BR 2026 S1
+
+A temporada tem HTML próprio em `/ffws-br-s1.html`, com as nove abas no
+menu. As URLs antigas da home (por exemplo, `/#tabela` e
+`/index.html#notas-cff`) redirecionam para a mesma aba. O redirecionamento
+fica em `js/root-page-redirects.js`; as entradas novas do menu apontam direto
+para a temporada em `js/shared-navigation.js`.
+
+A Classificatória e a Final usam `stages.json` compartilhado, com os filtros
+e o resultado oficial do Champion Rush. Datas usa apenas `dates.json`.
+Equipes e Comparar carregam resumos; o arquivo de jogadores por queda só
+é carregado quando a seção ou o filtro precisa dele. O carregamento por
+aba está em `js/site-shell-fast.min.js` e usa arquivos estáticos.
+
 | Caminho | Finalidade / cuidados |
 | --- | --- |
 | `ffws-br-2026-s1/` | Fontes da S1: `players.json`, `stages.json`, `teams.json`, `dates.json`, `player-stats.json`, `home-results.json`, `stats-static.json`, `radar-summary.json` e `player-meta.json`. O `players.json` usa esquema compacto com `fields`, índices e arrays; não é igual ao da S2 |
