@@ -340,7 +340,9 @@
       "type": "player",
       "country": "id",
       "role": "Sniper",
-      "id": "rrq-jeek"
+      "id": "rrq-jeek",
+      "photo": "ffws-global-2026/photos/160/rrq-jeek.webp",
+      "photoLarge": "ffws-global-2026/photos/480/rrq-jeek.webp"
     },
     {
       "name": "Ranz",
@@ -349,7 +351,9 @@
       "type": "player",
       "country": "id",
       "role": "Rusher",
-      "id": "rrq-ranz"
+      "id": "rrq-ranz",
+      "photo": "ffws-global-2026/photos/160/rrq-ranz.webp",
+      "photoLarge": "ffws-global-2026/photos/480/rrq-ranz.webp"
     },
     {
       "name": "Maal",
@@ -358,7 +362,9 @@
       "type": "player",
       "country": "id",
       "role": "Sniper",
-      "id": "rrq-maal"
+      "id": "rrq-maal",
+      "photo": "ffws-global-2026/photos/160/rrq-maal.webp",
+      "photoLarge": "ffws-global-2026/photos/480/rrq-maal.webp"
     },
     {
       "name": "Abay",
@@ -367,7 +373,9 @@
       "type": "player",
       "country": "id",
       "role": "Rusher",
-      "id": "rrq-abay"
+      "id": "rrq-abay",
+      "photo": "ffws-global-2026/photos/160/rrq-abay.webp",
+      "photoLarge": "ffws-global-2026/photos/480/rrq-abay.webp"
     },
     {
       "name": "Dutzz",
@@ -376,7 +384,9 @@
       "type": "player",
       "country": "id",
       "role": "Granadeiro",
-      "id": "rrq-dutzz"
+      "id": "rrq-dutzz",
+      "photo": "ffws-global-2026/photos/160/rrq-dutzz.webp",
+      "photoLarge": "ffws-global-2026/photos/480/rrq-dutzz.webp"
     },
     {
       "name": "Putraxx",
@@ -674,7 +684,9 @@
       "type": "player",
       "country": "ec",
       "role": "Rusher",
-      "id": "blue-cheese-jostin"
+      "id": "blue-cheese-jostin",
+      "photo": "ffws-global-2026/photos/160/blue-cheese-jostin.webp",
+      "photoLarge": "ffws-global-2026/photos/480/blue-cheese-jostin.webp"
     },
     {
       "name": "Esteban",
@@ -683,7 +695,9 @@
       "type": "player",
       "country": "cl",
       "role": "Rusher",
-      "id": "blue-cheese-esteban"
+      "id": "blue-cheese-esteban",
+      "photo": "ffws-global-2026/photos/160/blue-cheese-esteban.webp",
+      "photoLarge": "ffws-global-2026/photos/480/blue-cheese-esteban.webp"
     },
     {
       "name": "Krowa",
@@ -692,7 +706,9 @@
       "type": "player",
       "country": "ar",
       "role": "Granadeiro",
-      "id": "blue-cheese-krowa"
+      "id": "blue-cheese-krowa",
+      "photo": "ffws-global-2026/photos/160/blue-cheese-krowa.webp",
+      "photoLarge": "ffws-global-2026/photos/480/blue-cheese-krowa.webp"
     },
     {
       "name": "Stu",
@@ -701,7 +717,9 @@
       "type": "player",
       "country": "pe",
       "role": "Suporte",
-      "id": "blue-cheese-stu"
+      "id": "blue-cheese-stu",
+      "photo": "ffws-global-2026/photos/160/blue-cheese-stu.webp",
+      "photoLarge": "ffws-global-2026/photos/480/blue-cheese-stu.webp"
     },
     {
       "name": "Naranjo",
@@ -710,7 +728,9 @@
       "type": "player",
       "country": "co",
       "role": "Rusher",
-      "id": "blue-cheese-naranjo"
+      "id": "blue-cheese-naranjo",
+      "photo": "ffws-global-2026/photos/160/blue-cheese-naranjo.webp",
+      "photoLarge": "ffws-global-2026/photos/480/blue-cheese-naranjo.webp"
     },
     {
       "name": "Andrexz",
@@ -826,7 +846,9 @@
       "type": "player",
       "country": "bd",
       "role": "Granadeiro",
-      "id": "team-inf-rusty"
+      "id": "team-inf-rusty",
+      "photo": "ffws-global-2026/photos/160/team-inf-rusty.webp",
+      "photoLarge": "ffws-global-2026/photos/480/team-inf-rusty.webp"
     },
     {
       "name": "MIKEY",
@@ -835,7 +857,9 @@
       "type": "player",
       "country": "bd",
       "role": "Sniper",
-      "id": "team-inf-mikey"
+      "id": "team-inf-mikey",
+      "photo": "ffws-global-2026/photos/160/team-inf-mikey.webp",
+      "photoLarge": "ffws-global-2026/photos/480/team-inf-mikey.webp"
     },
     {
       "name": "OVI",
@@ -844,7 +868,9 @@
       "type": "player",
       "country": "bd",
       "role": "Rusher",
-      "id": "team-inf-ovi"
+      "id": "team-inf-ovi",
+      "photo": "ffws-global-2026/photos/160/team-inf-ovi.webp",
+      "photoLarge": "ffws-global-2026/photos/480/team-inf-ovi.webp"
     },
     {
       "name": "MATRIX",
@@ -853,7 +879,9 @@
       "type": "player",
       "country": "bd",
       "role": "Suporte",
-      "id": "team-inf-matrix"
+      "id": "team-inf-matrix",
+      "photo": "ffws-global-2026/photos/160/team-inf-matrix.webp",
+      "photoLarge": "ffws-global-2026/photos/480/team-inf-matrix.webp"
     },
     {
       "name": "ROMAN",
@@ -862,7 +890,9 @@
       "type": "player",
       "country": "bd",
       "role": "Rusher",
-      "id": "team-inf-roman"
+      "id": "team-inf-roman",
+      "photo": "ffws-global-2026/photos/160/team-inf-roman.webp",
+      "photoLarge": "ffws-global-2026/photos/480/team-inf-roman.webp"
     },
     {
       "name": "RASEL",
@@ -871,7 +901,9 @@
       "type": "player",
       "country": "bd",
       "role": "Granadeiro",
-      "id": "pe-rasel"
+      "id": "pe-rasel",
+      "photo": "ffws-global-2026/photos/160/pe-rasel.webp",
+      "photoLarge": "ffws-global-2026/photos/480/pe-rasel.webp"
     },
     {
       "name": "TAJZ",
@@ -880,7 +912,9 @@
       "type": "player",
       "country": "bd",
       "role": "Rusher",
-      "id": "pe-tajz"
+      "id": "pe-tajz",
+      "photo": "ffws-global-2026/photos/160/pe-tajz.webp",
+      "photoLarge": "ffws-global-2026/photos/480/pe-tajz.webp"
     },
     {
       "name": "TOKI",
@@ -889,7 +923,9 @@
       "type": "player",
       "country": "bd",
       "role": "Sniper",
-      "id": "pe-toki"
+      "id": "pe-toki",
+      "photo": "ffws-global-2026/photos/160/pe-toki.webp",
+      "photoLarge": "ffws-global-2026/photos/480/pe-toki.webp"
     },
     {
       "name": "AZOIC",
@@ -898,7 +934,9 @@
       "type": "player",
       "country": "bd",
       "role": "Sniper",
-      "id": "pe-azoic"
+      "id": "pe-azoic",
+      "photo": "ffws-global-2026/photos/160/pe-azoic.webp",
+      "photoLarge": "ffws-global-2026/photos/480/pe-azoic.webp"
     },
     {
       "name": "FLAMEX",
@@ -907,7 +945,9 @@
       "type": "player",
       "country": "bd",
       "role": "Suporte",
-      "id": "pe-flamex"
+      "id": "pe-flamex",
+      "photo": "ffws-global-2026/photos/160/pe-flamex.webp",
+      "photoLarge": "ffws-global-2026/photos/480/pe-flamex.webp"
     },
     {
       "name": "AFLATOON",
@@ -1083,7 +1123,9 @@
       "type": "player",
       "country": "za",
       "role": "Rusher",
-      "id": "paradox-gaming-windy"
+      "id": "paradox-gaming-windy",
+      "photo": "ffws-global-2026/photos/160/paradox-gaming-windy.webp",
+      "photoLarge": "ffws-global-2026/photos/480/paradox-gaming-windy.webp"
     },
     {
       "name": "SNEAKY",
@@ -1092,7 +1134,9 @@
       "type": "player",
       "country": "za",
       "role": "Sniper",
-      "id": "paradox-gaming-sneaky"
+      "id": "paradox-gaming-sneaky",
+      "photo": "ffws-global-2026/photos/160/paradox-gaming-sneaky.webp",
+      "photoLarge": "ffws-global-2026/photos/480/paradox-gaming-sneaky.webp"
     },
     {
       "name": "DENRIQUE",
@@ -1101,7 +1145,9 @@
       "type": "player",
       "country": "za",
       "role": "Suporte",
-      "id": "paradox-gaming-denrique"
+      "id": "paradox-gaming-denrique",
+      "photo": "ffws-global-2026/photos/160/paradox-gaming-denrique.webp",
+      "photoLarge": "ffws-global-2026/photos/480/paradox-gaming-denrique.webp"
     },
     {
       "name": "L2K",
@@ -1110,7 +1156,9 @@
       "type": "player",
       "country": "za",
       "role": "Suporte",
-      "id": "paradox-gaming-l2k"
+      "id": "paradox-gaming-l2k",
+      "photo": "ffws-global-2026/photos/160/paradox-gaming-l2k.webp",
+      "photoLarge": "ffws-global-2026/photos/480/paradox-gaming-l2k.webp"
     },
     {
       "name": "LEDX",
@@ -1119,7 +1167,9 @@
       "type": "player",
       "country": "za",
       "role": "Sniper",
-      "id": "paradox-gaming-ledx"
+      "id": "paradox-gaming-ledx",
+      "photo": "ffws-global-2026/photos/160/paradox-gaming-ledx.webp",
+      "photoLarge": "ffws-global-2026/photos/480/paradox-gaming-ledx.webp"
     },
     {
       "name": "KD",
@@ -1128,7 +1178,9 @@
       "type": "player",
       "country": "in",
       "role": "Sniper",
-      "id": "tag-kd"
+      "id": "tag-kd",
+      "photo": "ffws-global-2026/photos/160/tag-kd.webp",
+      "photoLarge": "ffws-global-2026/photos/480/tag-kd.webp"
     },
     {
       "name": "SAHIL",
@@ -1137,7 +1189,9 @@
       "type": "player",
       "country": "in",
       "role": "Granadeiro",
-      "id": "tag-sahil"
+      "id": "tag-sahil",
+      "photo": "ffws-global-2026/photos/160/tag-sahil.webp",
+      "photoLarge": "ffws-global-2026/photos/480/tag-sahil.webp"
     },
     {
       "name": "SHOTO",
@@ -1146,7 +1200,9 @@
       "type": "player",
       "country": "in",
       "role": "Rusher",
-      "id": "tag-shoto"
+      "id": "tag-shoto",
+      "photo": "ffws-global-2026/photos/160/tag-shoto.webp",
+      "photoLarge": "ffws-global-2026/photos/480/tag-shoto.webp"
     },
     {
       "name": "WOLVIN",
@@ -1155,7 +1211,9 @@
       "type": "player",
       "country": "in",
       "role": "Suporte",
-      "id": "tag-wolvin"
+      "id": "tag-wolvin",
+      "photo": "ffws-global-2026/photos/160/tag-wolvin.webp",
+      "photoLarge": "ffws-global-2026/photos/480/tag-wolvin.webp"
     },
     {
       "name": "LOUIS",
@@ -1164,7 +1222,9 @@
       "type": "player",
       "country": "in",
       "role": "Rusher",
-      "id": "tag-louis"
+      "id": "tag-louis",
+      "photo": "ffws-global-2026/photos/160/tag-louis.webp",
+      "photoLarge": "ffws-global-2026/photos/480/tag-louis.webp"
     },
     {
       "name": "DAAFIQ",
