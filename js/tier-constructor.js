@@ -173,8 +173,11 @@
           toggle.setAttribute("aria-pressed", String(editControlsHidden));
           toggle.textContent = editControlsHidden ? "Mostrar controles de edição" : "Ocultar controles de edição";
         }
+        const rowNamesEditable = !document.body.classList.contains("tier-focus-mode");
         layout.querySelectorAll(".tier-row .row-name").forEach(name => {
-          name.contentEditable = "true";
+          name.contentEditable = String(rowNamesEditable);
+          name.tabIndex = rowNamesEditable ? 0 : -1;
+          name.setAttribute("aria-readonly", String(!rowNamesEditable));
         });
       }
 
@@ -205,6 +208,7 @@
             try { window.scrollTo({ top: tierFocusScrollY, behavior: "instant" }); } catch (_) {}
           }
         }
+        applyTierWorkspacePreferences();
         requestAnimationFrame(fitAllRowTexts);
       }
 
@@ -981,11 +985,12 @@
 
         const name = document.createElement("div");
         name.className = "row-name";
-        name.contentEditable = "true";
+        name.contentEditable = String(!document.body.classList.contains("tier-focus-mode"));
         name.setAttribute("role", "textbox");
         name.setAttribute("aria-label", `Editar nome da faixa ${row.name}`);
         name.setAttribute("title", "Toque para editar o nome desta faixa");
-        name.setAttribute("tabindex", "0");
+        name.setAttribute("tabindex", document.body.classList.contains("tier-focus-mode") ? "-1" : "0");
+        name.setAttribute("aria-readonly", String(document.body.classList.contains("tier-focus-mode")));
         name.spellcheck = false;
         name.textContent = row.name;
         name.addEventListener("input", () => {
