@@ -254,7 +254,12 @@
     {
       "id": "bru-getna",
       "teamId": "bru",
-      "name": "GETNA"
+      "name": "GETHIGH",
+      "aliases": [
+        "GETNA",
+        "GETNA777",
+        "GETHIGHXL"
+      ]
     },
     {
       "id": "loud-nickz7",

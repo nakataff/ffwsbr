@@ -481,7 +481,7 @@
       "photoLarge": "ffws-global-2026/photos/480/bru-terna.webp"
     },
     {
-      "name": "GETNA",
+      "name": "GETHIGH",
       "team": "Buriram United Esports",
       "order": 5,
       "type": "player",
@@ -490,7 +490,12 @@
       "worldTitles": 2,
       "id": "bru-getna",
       "photo": "ffws-global-2026/photos/160/bru-getna.webp",
-      "photoLarge": "ffws-global-2026/photos/480/bru-getna.webp"
+      "photoLarge": "ffws-global-2026/photos/480/bru-getna.webp",
+      "aliases": [
+        "GETNA",
+        "GETNA777",
+        "GETHIGHXL"
+      ]
     },
     {
       "name": "Nickz7",

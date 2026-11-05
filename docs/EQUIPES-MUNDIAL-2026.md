@@ -80,7 +80,7 @@ As nacionalidades dos 35 jogadores dos sete primeiros elencos vêm das bandeiras
 da referência enviada pelo administrador; as dos cinco da Buriram foram conferidas em:
 - https://esports.ff.gameid.garena.co.id/tim/buriram-united-esports/ffws-sea-2026-spring
 - https://liquipedia.net/freefire/GETHIGH (registra GETNA como outro nickname)
-Nenhum elenco/nickname foi substituído pelo de outra competição durante essa conferência.
+GETHIGH é o nome público deste jogador da Buriram no Mundial. GETNA, GETNA777 e GETHIGHXL são aliases desta edição; o ID `bru-getna` mantém os links existentes.
 
 As bandeiras individuais também são preservadas em `inicio-elencos.json` e exibidas
 na aba Equipes do Início do Mundial. O arquivo continua carregado somente nessa aba.

@@ -56,10 +56,19 @@ function build({stages, dates, teams, groups, players}) {
     const rows = key==='segundaFase' ? [] : compactRows(phase.rows?.length ? phase.rows : aggregate(events));
     tables[key] = {finished:!!phase.finished,rows,days:days.map(day=>({day,date:schedule.find(r=>num(r.day)===day)?.date,rows:byDay[day]}))};
   }
+  const roster=(players.players||[]).filter(p=>!p.left && norm(p.rosterStatus)!=='SAIU');
+  const sameTeam=(value,t)=>[t.name,t.abbreviation,t.id,t.wikiName].some(alias=>norm(alias)===norm(value));
+  // Normalize a registered nickname only within the player's own team.
+  const entries=(players.entries||[]).map(e=>{
+    const t=teams.teams.find(t=>sameTeam(e.team,t));
+    if(!t)return e;
+    const candidates=roster.filter(p=>sameTeam(p.team,t)&&(e.playerId?p.id===e.playerId:[p.name,...(p.aliases||[])].some(alias=>norm(alias)===norm(e.name||e.player))));
+    return candidates.length===1?{...e,name:candidates[0].name,team:t.name}:e;
+  });
   const top10 = {};
   for (const key of ['geral',...keys]) {
     const ranks = new Map();
-    for (const e of players.entries || []) {
+    for (const e of entries) {
       if (key!=='geral' && e.stage!==key) continue;
       if (!keys.includes(e.stage) || !(e.name||e.player) || !e.team) continue;
       const id=norm(e.name||e.player)+'__'+norm(e.team);
@@ -70,11 +79,9 @@ function build({stages, dates, teams, groups, players}) {
     }
     top10[key]=[...ranks.values()].sort((a,b)=>b.kills-a.kills||b.damage-a.damage||b.assists-a.assists).slice(0,10);
   }
-  const roster=(players.players||[]).filter(p=>!p.left && norm(p.rosterStatus)!=='SAIU');
   const squads=metadata.map(t=>({id:t.id,players:roster.filter(p=>norm(p.team)===norm(t.name)||norm(p.team)===norm(t.abbreviation)).sort((a,b)=>Number(!!b.starter)-Number(!!a.starter)||num(a.order)-num(b.order)).map(p=>({id:p.id||'',name:p.name,role:p.roleShort||p.role||'',country:p.country||p.flag||'',captain:!!p.captain,starter:!!p.starter}))}));
   const updatedAt=[stages.updatedAt,dates.updatedAt,teams.updatedAt,groups.updatedAt,players.updatedAt].filter(Boolean).sort().at(-1);
   // One small public snapshot: never fetch the complete players database on this page.
-  const sameTeam=(value,t)=>[t.name,t.abbreviation,t.id,t.wikiName].some(alias=>norm(alias)===norm(value));
   const sumEntries=entries=>entries.length ? entries.reduce((r,e)=>({kills:r.kills+num(e.kills),damage:r.damage+num(e.damage),assists:r.assists+num(e.assists),matches:r.matches+(num(e.matches)||1)}),{kills:0,damage:0,assists:0,matches:0}) : null;
   const teamProfiles=teams.teams.map(t=>{
     const members=roster.filter(p=>sameTeam(p.team,t));
@@ -86,7 +93,7 @@ function build({stages, dates, teams, groups, players}) {
     }));
     return {...metadata.find(m=>m.id===t.id),region:t.region,qualification:t.qualification,statsByStage,
       players:members.map(p=>({id:p.id||'',name:p.name,type:p.type==='staff'||/coach|analista|manager|treinador/i.test(p.role||'')?'staff':'player',role:p.role||p.roleShort||'',country:p.country||p.flag||'',...(p.photo?{photo:p.photo}:{}),
-        statsByStage:Object.fromEntries(['geral',...keys].map(key=>[key,sumEntries((players.entries||[]).filter(e=>sameTeam(e.team,t)&&norm(e.name||e.player)===norm(p.name)&&(key==='geral'?keys.includes(e.stage):e.stage===key)))]))})),
+        statsByStage:Object.fromEntries(['geral',...keys].map(key=>[key,sumEntries(entries.filter(e=>sameTeam(e.team,t)&&norm(e.name||e.player)===norm(p.name)&&(key==='geral'?keys.includes(e.stage):e.stage===key)))]))})),
       fixtures:dates.rounds.filter(r=>r.stage==='classificatoria'&&r.groups?.includes(groupById.get(t.id))).map(r=>({date:r.date,time:r.time24,label:r.label,groups:r.groups}))};
   });
   return {
