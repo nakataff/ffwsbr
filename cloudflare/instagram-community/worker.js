@@ -104,7 +104,7 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION, globalPredictionsVersion: '20261104-standalone-v1', tierSharesVersion: TIER_SHARE_VERSION }, 200, request);
+    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION, globalPredictionsVersion: '20261104-standalone-v1', adminUidPinned:!!env.CFF_ADMIN_UID,adminIdentityVersion:'20261105-uid-v1', tierSharesVersion: TIER_SHARE_VERSION }, 200, request);
 
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
       if (!(await ensurePerformanceIndexes(env))) return json({ok:false,error:"Serviço temporariamente indisponível."},503,request);
@@ -1620,11 +1620,16 @@ async function verifyFirebaseUserToken(request) {
   }
 }
 
-async function verifyAdminFirebaseToken(request) {
+async function verifyAdminFirebaseToken(request,env) {
   const header = String(request.headers.get('Authorization') || '');
   const match = header.match(/^Bearer\s+(.+)$/i);
   if (!match) return null;
   const idToken = match[1];
+  if(idToken.length>12000||idToken.split('.').length!==3)return null;
+  // This prefilter is not authentication: RTDB or Identity Toolkit still validates the token.
+  const adminUid=String(env?.CFF_ADMIN_UID||'');
+  if(!/^[A-Za-z0-9_-]{1,128}$/.test(adminUid))return null;
+  try{const raw=idToken.split('.')[1];const claims=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(raw.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0))));if(claims.sub!==adminUid)return null;}catch{return null;}
 
   // Prefer Firebase Realtime Database itself as the verifier. The
   // adminDrafts node is readable only by the configured admin email,
@@ -1655,7 +1660,7 @@ async function verifyAdminFirebaseToken(request) {
     const data = await response.json();
     const user = Array.isArray(data?.users) ? data.users[0] : null;
     const email = String(user?.email || '').toLowerCase();
-    return email === ADMIN_EMAIL ? user : null;
+    return email === ADMIN_EMAIL && user.localId === adminUid ? user : null;
   } catch (_) {
     return null;
   }
@@ -1664,7 +1669,7 @@ async function verifyAdminFirebaseToken(request) {
 
 function publicStoryReview(row){return {key:row.mention_key,catalogKey:row.account_id+':'+row.week_key,username:row.username,storyId:row.story_id,messageId:row.message_id,mediaUrl:row.media_url,eventAt:row.event_at,weekStart:row.week_key,status:row.status,postUrl:row.post_url,publishedAt:row.published_at,verification:row.verification,note:row.note,reviewedAt:row.reviewed_at,reviewedBy:row.reviewed_by}}
 async function getAdminStories(request,env,url){
- const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const status=['pending','approved','rejected'].includes(url.searchParams.get('status'))?url.searchParams.get('status'):'approved';
  const cursor=String(url.searchParams.get('cursor')||'');const before=Number(cursor.split('|')[0])||Number.MAX_SAFE_INTEGER,after=cursor.slice(cursor.indexOf('|')+1);
  const result=await env.DB.prepare(`SELECT r.*,t.expires_at AS preview_expires FROM story_reviews r LEFT JOIN story_thumbnails t ON t.mention_key=r.mention_key AND t.expires_at>?4 WHERE r.status=?1 AND (r.event_at<?2 OR (r.event_at=?2 AND r.mention_key>?3)) ORDER BY r.event_at DESC,r.mention_key ASC LIMIT 51`).bind(status,before,after,Date.now()).all();
@@ -1691,7 +1696,7 @@ async function ownStoryPosts(env,row){
  return {available:true,posts:weekPosts.filter(p=>p.publishedAt<=row.event_at+300000),weekPosts,allPosts};
 }
 async function getAdminStoryPosts(request,env,url){
- const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const row=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(String(url.searchParams.get('key')||'')).first();if(!row)return json({ok:false,error:'Story não encontrado.'},404,request);
  const catalog=await ownStoryPosts(env,row);return json({ok:true,available:catalog.available,catalogKey:row.account_id+':'+row.week_key,posts:catalog.posts,weekPosts:catalog.weekPosts},200,request);
 }
@@ -1718,7 +1723,7 @@ async function finishStoryReviews(env,results){
  return false;
 }
 async function reviewAdminStory(request,env){
- const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const body=await readJson(request)||{},key=String(body.key||''),decision=body.decision==='approve'?'approved':body.decision==='reject'?'rejected':'';
  if(!decision)return json({ok:false,error:'Escolha aprovar ou rejeitar.'},400,request);
  const row=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();if(!row)return json({ok:false,error:'Story não encontrado.'},404,request);
@@ -1728,7 +1733,7 @@ async function reviewAdminStory(request,env){
  return json({ok:true,alreadyReviewed:result.alreadyReviewed,points:result.row.status==='approved'?5:0,reversed:!!result.reversed,story:publicStoryReview(result.row),refreshPending},200,request);
 }
 async function reviewAdminStoryBatch(request,env){
- const admin=await verifyAdminFirebaseToken(request);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const body=await readJson(request)||{},keys=body.keys,decision=body.decision==='approve'?'approved':body.decision==='reject'?'rejected':'';
  if(!decision||!Array.isArray(keys)||!keys.length||keys.length>20||keys.some(k=>typeof k!=='string'||!k||k.length>300)||new Set(keys).size!==keys.length)return json({ok:false,error:'Selecione de 1 a 20 stories diferentes e escolha aprovar ou rejeitar.'},400,request);
  if(decision==='approved'&&(body.confirmSamePost!==true||(body.auto!==true&&!instagramPost(body.postUrl))))return json({ok:false,error:'Escolha o post original e confirme a conferência dos stories selecionados.'},400,request);
@@ -1752,7 +1757,7 @@ function predictionIdFromSource(sourceId, knownIds = []) {
 }
 
 async function getAdminPredictionVotes(request, env) {
-  const admin = await verifyAdminFirebaseToken(request);
+  const admin = await verifyAdminFirebaseToken(request,env);
   if (!admin) return json({ ok: false, error: 'Acesso administrativo inválido.' }, 401, request);
 
   const [manual, auto, voteRows, bonusRows] = await Promise.all([

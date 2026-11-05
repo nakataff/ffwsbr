@@ -712,3 +712,13 @@ Na reabertura, os campos do modelo são restaurados do backup inicial protegido 
 ### Arraste por toque no Tier Constructor
 
 `js/tier-constructor.js` registra os eventos de toque uma vez no documento: segurar 240 ms ativa o arraste; mover mais de 9 px antes desse prazo preserva a rolagem nativa. A logo flutuante e o destino destacado usam classes `tier-touch-*` na folha mobile. Soltar move via `moveImage`/`archiveImage`, preservando histórico/undo e autosave. Cancelamento, segundo dedo, perda de foco e Escape limpam o gesto sem mover. A rolagem automática só roda durante o arraste (bandeja horizontal, página ou painel em tela cheia). Não cria consultas de rede. Os testes de gestos ficam em `test/tier-constructor-nameplates.test.cjs`.
+
+## Segurança de administração — UID fixo
+
+- `scripts/bootstrap-admin-identity.mjs` consulta apenas a conta administrativa já existente no Firebase Auth, usando a service account do deploy. Grava `serverSecurity/adminUid` na primeira implantação; recusa trocar o UID automaticamente caso a conta seja recriada. Não altera senha, provedores ou cadastros.
+- `database.rules.json` e o exemplo exigem o UID fixo além do e-mail em todas as permissões administrativas. `serverSecurity` não pode ser lido nem escrito por clientes, inclusive pelo administrador: manutenção somente pelo serviço confiável.
+- Os dois workflows Cloudflare configuram `CFF_ADMIN_UID` antes de publicar o Worker. Sem configuração válida, o acesso administrativo é negado. A checagem dos tokens continua no servidor; o e-mail exibido pela interface não concede permissões.
+- `functions/admin-identity.js` aplica a mesma política ao backup do camp e ao serviço legado de notificações. A leitura da política é pequena e fica em cache por 5 minutos; os Workers usam o binding, sem buscar o cadastro dos usuários.
+- `scripts/verify-admin-security.mjs` confirma as regras efetivamente publicadas após o deploy, sem imprimir dados privados.
+- Testes: `cloudflare/camp-notifications/test/auth-security.test.mjs` usa assinaturas RSA reais; `functions/test/admin-security-emulator.cjs` testa as regras compiladas em banco local de demonstração. O emulador usa REST com tokens simulados restritos ao projeto `demo-cff-admin-security`, jamais em produção.
+- Recuperação: não apagar/recriar a conta administrativa sem atualizar o UID por um operador com IAM do Firebase e republicar os dois Workers. Uma mudança detectada interrompe o deploy em vez de conceder acesso à conta nova.

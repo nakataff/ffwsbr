@@ -19,7 +19,14 @@ async function accessToken(secret){
 }
 export function goalDatabase(secret){
  const request=async(path,options={},query='')=>{const token=await accessToken(secret);const response=await fetch(BASE+'/'+path.split('/').map(encodeURIComponent).join('/')+'.json'+query,{...options,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)});if(!response.ok)throw Error('Não foi possível atualizar as recompensas agora.');return response.json();};
- return {async accountCreatedAt(uid){
+ return {async accountByEmail(email){
+  const token=await accessToken(secret),r=await fetch('https://identitytoolkit.googleapis.com/v1/projects/central-free-fire/accounts:lookup',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({email:[email]}),signal:AbortSignal.timeout(8000)});
+  if(!r.ok)throw Error('Administrator lookup unavailable.');
+  const matches=((await r.json()).users||[]).filter(u=>u.email===email);
+  if(matches.length>1)throw Error('Ambiguous administrator identity.');
+  const user=matches[0];
+  return user?{uid:user.localId,email:user.email,disabled:user.disabled===true}:null;
+ },async accountCreatedAt(uid){
   const token=await accessToken(secret),r=await fetch('https://identitytoolkit.googleapis.com/v1/projects/central-free-fire/accounts:lookup',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({localId:[uid]}),signal:AbortSignal.timeout(8000)});
   if(!r.ok)throw Error('Não foi possível conferir a data de criação da conta.');const user=(await r.json()).users?.find(u=>u.localId===uid);if(!user||user.disabled)throw Error('Conta indisponível.');return Number(user.createdAt);
  },get:path=>request(path),query:(path,params)=>request(path,{},'?'+new URLSearchParams(Object.fromEntries(Object.entries(params).map(([key,value])=>[key,JSON.stringify(value)])))),recentChat:()=>request('globalChat/messages',{},'?orderBy=%22%24key%22&limitToLast=110'),async transact(path,updater){

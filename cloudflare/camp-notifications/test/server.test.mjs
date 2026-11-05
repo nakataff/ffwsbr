@@ -17,7 +17,7 @@ let official=null,officialStageData=null,officialDays={},pushes=[],unavailable=f
 globalThis.fetch=async(url,options)=>{url=String(url);if(url.includes('googleapis.com/service_accounts'))return Response.json({keys:[jwk]},{headers:{'cache-control':'max-age=3600'}});if(url.includes('firebaseio.com')){if(unavailable)return new Response('',{status:503});return Response.json(/\/(final|segundaFase)\.json$/.test(url)?officialStageData:/\/drops\/\d+\.json/.test(url)?officialDays:official);}if(url.startsWith('https://fcm.googleapis.com/')){assert.equal(options.redirect,'manual');assert.equal(options.headers['Content-Encoding'],'aes128gcm');assert(options.body.length>20);pushes.push({url,headers:options.headers,body:options.body});return new Response(null,{status:201});}throw Error('Unexpected network '+url);};
 function context(){const db=new DatabaseSync(':memory:');let alarm=null;return {storage:{sql:{exec(query,...args){if(!args.length&&query.includes(';')){db.exec(query);return{toArray:()=>[]};}const statement=db.prepare(query);if(/^\s*(SELECT|PRAGMA)/i.test(query))return{toArray:()=>statement.all(...args)};statement.run(...args);return{toArray:()=>[]};}},transactionSync(fn){db.exec('BEGIN');try{const r=fn();db.exec('COMMIT');return r;}catch(e){db.exec('ROLLBACK');throw e;}},async setAlarm(value){alarm=value},async deleteAlarm(){alarm=null},async getAlarm(){return alarm}}};}
 const subscription=id=>{const ecdh=createECDH('prime256v1');ecdh.generateKeys();return{endpoint:'https://fcm.googleapis.com/fcm/send/'+id,keys:{p256dh:ecdh.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,7).toString('base64url')}};};
-const ctx=context(),hub=new NotificationHub(ctx,{}),id='ffws-br-final';
+const ctx=context(),hub=new NotificationHub(ctx,{CFF_ADMIN_UID:'admin'}),id='ffws-br-final';
 async function api(action,data={},jwt=member){const response=await hub.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return{status:response.status,...await response.json()};}
 const configure={tournamentId:id,name:'FFWS BR Final',enabled:true,teams:[{id:'fx',name:'Fluxo',logo:'https://centralfreefire.com.br/logos/fluxo.webp',aliases:['FLUXO W7M']},{id:'los',name:'LOS'}],officialStage:'final'};
 const publish={tournamentId:id,day:2,drop:17,result:{teamId:'fx',team:'spoof',position:4,kills:7,points:14,dayPoints:40,logo:'https://evil.test/logo.png'}};
@@ -59,7 +59,7 @@ test('free notification API: authentication, isolation, device ownership, delive
 });
 
 test('start and Booyah: separate opt-in, deduplication, live link and official confirmation',async()=>{
- const c=context(),h=new NotificationHub(c,{}),camp='test-event-types',fan=token('fan');official=null;pushes=[];payloads.length=0;
+ const c=context(),h=new NotificationHub(c,{CFF_ADMIN_UID:'admin'}),camp='test-event-types',fan=token('fan');official=null;pushes=[];payloads.length=0;
  async function call(action,data={},jwt=member){const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return {status:r.status,...await r.json()};}
  const cfg={...configure,tournamentId:camp,streamUrl:'https://www.youtube.com/watch?v=live'};
  assert.equal((await call('configure',{...cfg,streamUrl:'javascript:alert(1)'},admin)).status,400);
@@ -95,7 +95,7 @@ test('start and Booyah: separate opt-in, deduplication, live link and official c
 });
 
 test('admin can restart only the chosen non-official drop and preserve subscriptions',async()=>{
- const h=new NotificationHub(context(),{}),camp='test-restart';official=null;unavailable=false;
+ const h=new NotificationHub(context(),{CFF_ADMIN_UID:'admin'}),camp='test-restart';official=null;unavailable=false;
  async function call(action,data={},jwt=admin){const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return {status:r.status,...await r.json()};}
  await call('configure',{...configure,tournamentId:camp});await call('preferences',{tournamentId:camp,enabled:true,all:true},member);
  const a={tournamentId:camp,day:1,drop:1},b={...a,drop:2},start={...a,kind:'start',map:'Bermuda'};
@@ -114,11 +114,11 @@ test('admin can restart only the chosen non-official drop and preserve subscript
  official=null;h.sql.exec("UPDATE events SET status='official' WHERE dropno=1");assert.equal((await call('resetDrop',a)).status,400);
  await call('publish',{...start,day:2});assert.equal((await call('resetDay',a,member)).status,403);const batch=await call('resetDay',a);assert.equal(batch.removed,1);assert.deepEqual(batch.skipped,[1]);assert.equal(h.rows('SELECT id FROM events WHERE day=2').length,1);assert.equal(h.rows("SELECT id FROM events WHERE day=1 AND status='official'").length,1);assert.equal((await call('publish',{...start,drop:2})).duplicate,false);
 });
-test('profile editor gateway requires the real Firebase administrator identity',async()=>{const h=new NotificationHub(context(),{});async function call(jwt,uid){const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action:'adminReadProfile',uid})}));return r.status;}assert.equal(await call(member,'person'),403);assert.equal(await call(token('admin-password',{email:'admin@centralfreefire.com.br',email_verified:false}),'../person'),400);assert.equal(await call(admin,'../person'),400);});
+test('profile editor gateway requires the real Firebase administrator identity',async()=>{const h=new NotificationHub(context(),{CFF_ADMIN_UID:'admin'});async function call(jwt,uid){const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action:'adminReadProfile',uid})}));return r.status;}assert.equal(await call(member,'person'),403);assert.equal(await call(token('admin',{email:'admin@centralfreefire.com.br',email_verified:false}),'../person'),400);assert.equal(await call(admin,'../person'),400);});
 
 
 test('result tables: admin-only publication, corrections, totals, summary dedupe and T1/P1',async()=>{
- const h=new NotificationHub(context(),{}),camp='result-tables-test';official=null;officialDays={};unavailable=false;payloads.length=0;
+ const h=new NotificationHub(context(),{CFF_ADMIN_UID:'admin'}),camp='result-tables-test';official=null;officialDays={};unavailable=false;payloads.length=0;
  const call=async(action,data={},jwt=member)=>{const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return {status:r.status,...await r.json()};};
  await call('configure',{...configure,tournamentId:camp},admin);
  await call('preferences',{tournamentId:camp,enabled:true,all:true},member);
@@ -145,7 +145,7 @@ test('result tables: admin-only publication, corrections, totals, summary dedupe
 });
 
 test('Day 2 official drops after the only manually published drop appear without creating alerts',async()=>{
- const h=new NotificationHub(context(),{}),camp='official-day-two';official=null;officialDays={};officialStageData=null;unavailable=false;
+ const h=new NotificationHub(context(),{CFF_ADMIN_UID:'admin'}),camp='official-day-two';official=null;officialDays={};officialStageData=null;unavailable=false;
  const call=async(action,data={},jwt=member)=>{const r=await h.fetch(new Request('https://notify.test/api',{method:'POST',headers:{Authorization:'Bearer '+jwt},body:JSON.stringify({action,...data})}));return{status:r.status,...await r.json()};};
  await call('configure',{...configure,tournamentId:camp},admin);
  const first={day:2,drop:1,map:'Bermuda',participants:['fx','los'],rows:[{teamId:'fx',position:1,kills:5,points:17},{teamId:'los',position:2,kills:2,points:11}]};await call('publishResults',{tournamentId:camp,day:2,drop:1,matches:[first]},admin);
@@ -168,7 +168,7 @@ test('finished final uses Champion Rush eligibility before the winning drop, not
 
 test('private task routes authenticate, isolate storage and reuse admin devices without exposing the internal sender',async()=>{
  const mainContext=context(),taskContext=context(),instances=new Map(),binding={idFromName:name=>name,get:name=>({fetch:request=>instances.get(name).fetch(request)})};
- const main=new NotificationHub(mainContext,{NOTIFICATIONS:binding}),tasks=new NotificationHub(taskContext,{NOTIFICATIONS:binding});instances.set('cff-v1',main);instances.set('cff-tasks-v1',tasks);
+ const main=new NotificationHub(mainContext,{CFF_ADMIN_UID:'admin',NOTIFICATIONS:binding}),tasks=new NotificationHub(taskContext,{CFF_ADMIN_UID:'admin',NOTIFICATIONS:binding});instances.set('cff-v1',main);instances.set('cff-tasks-v1',tasks);
  const call=(path,jwt=admin,body={operation:'notifications'},method='POST')=>worker.fetch(new Request('https://notify.test'+path,{method,headers:{Origin:'https://centralfreefire.com.br',Authorization:'Bearer '+jwt},...(method==='POST'?{body:JSON.stringify(body)}:{})}),{NOTIFICATIONS:binding});
  assert.equal((await call('/tasks/api','')).status,401);
  assert.equal((await call('/tasks/api',member)).status,403);
@@ -195,11 +195,11 @@ test('automatic result checks expire after seven real days and legacy deadlines 
  c.storage.sql.exec('CREATE TABLE pending(id TEXT PRIMARY KEY,tournament TEXT,day INTEGER,dropno INTEGER,check_at INTEGER,expires INTEGER)');
  c.storage.sql.exec('INSERT INTO pending VALUES(?,?,?,?,?,?)','recent','ffws-br-final',1,1,at+DAY,at-2*DAY+7*LEGACY_DAY);
  c.storage.sql.exec('INSERT INTO pending VALUES(?,?,?,?,?,?)','expired','ffws-br-final',1,2,at+DAY,at-8*DAY+7*LEGACY_DAY);
- const h=new NotificationHub(c,{});
+ const h=new NotificationHub(c,{CFF_ADMIN_UID:'admin'});
  assert.equal(h.rows('SELECT expires FROM pending WHERE id=?','recent')[0].expires,at+5*DAY);
  assert.equal(h.rows('SELECT expires FROM pending WHERE id=?','expired')[0].expires,at-DAY);
  h.sql.exec('INSERT INTO snapshots VALUES(?,?,?,?,?)','historic',1,1,'{"status":"official","points":100}',at);
- const restarted=new NotificationHub(c,{});
+ const restarted=new NotificationHub(c,{CFF_ADMIN_UID:'admin'});
  assert.equal(restarted.rows('SELECT expires FROM pending WHERE id=?','recent')[0].expires,at+5*DAY);
  await restarted.alarm();
  assert.equal(restarted.rows('SELECT id FROM pending WHERE id=?','expired').length,0);

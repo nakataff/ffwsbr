@@ -7,10 +7,21 @@ on:
     paths:
       - 'database.rules.json'
       - 'firebase.json'
+      - 'functions/admin-identity.js'
+      - 'functions/index.js'
+      - 'scripts/bootstrap-admin-identity.mjs'
+      - 'scripts/verify-admin-security.mjs'
+      - 'functions/test/admin-identity.test.cjs'
+      - 'functions/test/admin-security-emulator.cjs'
+      - 'test/admin-bootstrap.test.mjs'
       - '.github/workflows/deploy-database-rules.yml'
 
 permissions:
   contents: read
+
+concurrency:
+  group: cff-security-rules
+  cancel-in-progress: false
 
 jobs:
   deploy-rules:
@@ -35,5 +46,40 @@ jobs:
       - name: Test profile privacy and community features
         run: node --test functions/test/security-public-rules.test.cjs functions/test/profile-save.test.cjs functions/test/profile-roles.test.cjs functions/test/profile-community-rules.test.cjs test/profile-community.test.mjs test/profile-story-card.test.mjs
 
+      - name: Test administrator identity and bootstrap
+        run: node --test functions/test/admin-identity.test.cjs test/admin-bootstrap.test.mjs
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install local security test dependencies
+        run: |
+          mkdir -p /tmp/cff-admin-security-test
+          npm install --prefix /tmp/cff-admin-security-test --no-audit --no-fund @firebase/rules-unit-testing@5 firebase@12
+
+      - name: Test compiled database rules in local emulator
+        env:
+          NODE_PATH: /tmp/cff-admin-security-test/node_modules
+        run: firebase emulators:exec --config firebase.json --project demo-cff-admin-security --only database 'node functions/test/admin-security-emulator.cjs'
+
+      - name: Pin the existing administrator without changing their login
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/bootstrap-admin-identity.mjs
+
       - name: Deploy database rules
         run: firebase deploy --only database --project central-free-fire --non-interactive
+
+      - name: Verify deployed database permissions
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/verify-admin-security.mjs
+
+      - name: Install existing backup function dependencies
+        run: npm install --no-audit --no-fund
+        working-directory: functions
+
+      - name: Deploy pinned administrator check for camp backup
+        run: firebase deploy --only functions:campGithubBackup --project central-free-fire --non-interactive

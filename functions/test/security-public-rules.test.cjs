@@ -14,7 +14,7 @@ function snapshot(value){
 }
 function check(expr,{auth=null,uid='alice',data=null,root={}}={}){
  if(typeof expr==='boolean')return expr;
- return Boolean(Function('auth','$uid','data','root','return '+expr)(auth,uid,snapshot(data),snapshot(root)));
+ return Boolean(Function('auth','$uid','data','root','return '+expr)(auth,uid,snapshot(data),snapshot({serverSecurity:{adminUid:'admin-uid'},...root})));
 }
 
 test('legacy voting stays readable, but no one can write arbitrary public votes',()=>{

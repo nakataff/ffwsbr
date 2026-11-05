@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'cloudflare/camp-notifications/**'
+      - 'scripts/bootstrap-admin-identity.mjs'
+      - 'cloudflare/camp-notifications/goal-database.js'
       - 'functions/admin-tasks-service.js'
       - 'functions/task-locator.js'
       - 'functions/test/task-locator.test.cjs'
@@ -246,6 +248,18 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Resolve the existing administrator UID
+        id: admin_identity
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/bootstrap-admin-identity.mjs
+      - name: Configure pinned administrator identity
+        run: printf '%s' "$CFF_ADMIN_UID" | npx wrangler secret put CFF_ADMIN_UID
+        working-directory: cloudflare/camp-notifications
+        env:
+          CFF_ADMIN_UID: ${{ steps.admin_identity.outputs.admin_uid }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Deploy the standalone free Worker
         run: npm run deploy
         working-directory: cloudflare/camp-notifications
@@ -256,7 +270,7 @@ jobs:
         run: |
           # A new workers.dev route can briefly return 404 during propagation.
           for attempt in 1 2 3 4 5 6 7 8; do
-            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const fs=require("node:fs"),expected=Number(fs.readFileSync("cloudflare/camp-notifications/worker.js","utf8").match(/service:[^,]+,version:(\d+)/)?.[1]),h=JSON.parse(fs.readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version,expected}));if(h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==expected||h.accountRestrictions!==true||h.codePromotions!==true||h.taskLocator!==true||h.livepixDiagnostic!==true||h.inboxPreview!==true||h.quizSkip!==true||h.quizAchievements!==true||h.quizLocalPhotos!==true||h.rouletteVouchers!==true||h.userInbox!==true||h.dailyQuiz!==true||h.dailyChallenges!==true||h.adminRewardsIntegration!==true||h.adminTaskReminderOptions!==true||h.adminTasks!==true||h.profileEmblems!==true||h.chatCustomization!==true||h.chatLiveRoles!==true||h.careerMarket!==true||h.careerDirectory!==true||h.communitySupporters!==true||h.tournamentAssets!==true||h.teamIdentityHistory!==true||h.giftArchive!==true||h.codeReturns!==true||h.directCodeGift!==true||h.codeVouchers!==true||h.registrationRosters!==true||h.careers!==true||h.careerDepartures!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.gameOrderNotices!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
+            if curl --fail --silent --show-error --connect-timeout 10 --max-time 15 --output health.json https://cff-camp-notifications.nakataffb4.workers.dev/health && node -e 'const fs=require("node:fs"),expected=Number(fs.readFileSync("cloudflare/camp-notifications/worker.js","utf8").match(/service:[^,]+,version:(\d+)/)?.[1]),h=JSON.parse(fs.readFileSync("health.json","utf8"));console.log(JSON.stringify({ok:h.ok,service:h.service,version:h.version,expected}));if(h.adminUidPinned!==true||h.adminIdentityVersion!=="20261105-uid-v1"||h.ok!==true||h.service!=="cff-camp-notifications"||h.version!==expected||h.accountRestrictions!==true||h.codePromotions!==true||h.taskLocator!==true||h.livepixDiagnostic!==true||h.inboxPreview!==true||h.quizSkip!==true||h.quizAchievements!==true||h.quizLocalPhotos!==true||h.rouletteVouchers!==true||h.userInbox!==true||h.dailyQuiz!==true||h.dailyChallenges!==true||h.adminRewardsIntegration!==true||h.adminTaskReminderOptions!==true||h.adminTasks!==true||h.profileEmblems!==true||h.chatCustomization!==true||h.chatLiveRoles!==true||h.careerMarket!==true||h.careerDirectory!==true||h.communitySupporters!==true||h.tournamentAssets!==true||h.teamIdentityHistory!==true||h.giftArchive!==true||h.codeReturns!==true||h.directCodeGift!==true||h.codeVouchers!==true||h.registrationRosters!==true||h.careers!==true||h.careerDepartures!==true||h.monthlyParticipation?.daily!==40||h.monthlyParticipation?.cap!==1000||h.profileCheckin!==true||h.coinRankingSync!==true||h.gameOrders!==true||h.gameOrderNotices!==true||h.retroactiveRate!==5||h.retroactiveCap!==500||h.currency!=="CFF COINS"||h.coinRanking!==true||h.interactionRanking!==true||h.economy!==true||h.codeGifts!==true||h.profileIdentitySync!==true||h.globalChat!==true)process.exit(1);'; then
               echo 'Notification service is ready.'
               break
             fi

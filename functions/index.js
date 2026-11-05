@@ -566,17 +566,14 @@ exports.instagramWebhook = onRequest(
 const CAMP_GITHUB_REPO = 'nakataff/ffwsbr';
 const CAMP_GITHUB_BRANCH = 'main';
 const CAMP_GITHUB_PATH = 'admin-camp-ao-vivo/data/autosave-live.json';
-const CAMP_ADMIN_EMAIL = 'admin@centralfreefire.com.br';
+const {requirePinnedAdmin}=require('./admin-identity');
 
 async function verifyCampAdmin(req) {
   const header = String(req.get('authorization') || '');
   const match = header.match(/^Bearer\s+(.+)$/i);
   if (!match) throw Object.assign(new Error('Token ausente.'), { statusCode: 401 });
   const decoded = await getAuth().verifyIdToken(match[1]);
-  if (String(decoded.email || '').toLowerCase() !== CAMP_ADMIN_EMAIL) {
-    throw Object.assign(new Error('Usuário não autorizado.'), { statusCode: 403 });
-  }
-  return decoded;
+  return requirePinnedAdmin(decoded,getDatabase());
 }
 
 function githubHeaders(token) {

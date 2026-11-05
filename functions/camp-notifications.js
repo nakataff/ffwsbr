@@ -5,6 +5,7 @@ const {getDatabase}=require('firebase-admin/database');
 const {getAuth}=require('firebase-admin/auth');
 const webpush=require('web-push');
 const C=require('./camp-notifications-core');
+const {requirePinnedAdmin}=require('./admin-identity');
 const REGION='southamerica-east1',ADMIN='admin@centralfreefire.com.br',ROOT='campNotifications';
 const opts={region:REGION,maxInstances:3,memory:'256MiB'};
 async function keys(db){const ref=db.ref(ROOT+'/private/vapid');const snap=await ref.get();if(snap.exists())return snap.val();const generated=webpush.generateVAPIDKeys();const claimed=await ref.transaction(old=>old||generated);return claimed.snapshot.val();}
@@ -30,7 +31,7 @@ exports.campNotificationApi=onRequest({...opts,cors:['https://centralfreefire.co
   if(Number(req.get('content-length')||0)>40000)throw Error('Pedido muito grande.');
   const match=String(req.get('authorization')||'').match(/^Bearer (.+)$/);if(!match)return res.status(401).json({error:'Entre com Google.'});
   const user=await getAuth().verifyIdToken(match[1]),db=getDatabase(),b=req.body||{},action=b.action,uid=user.uid;
-  const admin=()=>{if(user.email!==ADMIN)throw Object.assign(Error('Somente administrador.'),{status:403});};
+  const admin=()=>requirePinnedAdmin(user,db);
   if(action==='settings'){const [v,p]=await Promise.all([keys(db),db.ref(ROOT+'/private/preferences/'+uid).get()]);return res.json({publicKey:v.publicKey,preferences:p.val()||{}});}
   if(action==='preferences'){
    const id=C.text(b.tournamentId,100),t=(await db.ref(ROOT+'/catalog/'+id).get()).val();if(!t?.enabled)throw Error('Este torneio não está habilitado para avisos.');
@@ -51,7 +52,7 @@ exports.campNotificationApi=onRequest({...opts,cors:['https://centralfreefire.co
    const event={status:'test',at:Date.now(),inboxId:'test',team:'',tournamentName:'Teste Central FF'};await inbox(db,uid,event);const delivery=await deviceSend(db,uid,event);return res.json({ok:true,...delivery});
   }
   if(action==='configure'){
-   admin();const id=C.text(b.tournamentId,100);if(!/^[a-z0-9-]{5,100}$/.test(id))throw Error('Identificador inválido.');
+   await admin();const id=C.text(b.tournamentId,100);if(!/^[a-z0-9-]{5,100}$/.test(id))throw Error('Identificador inválido.');
    const teams={};for(const row of (Array.isArray(b.teams)?b.teams:[]).slice(0,100)){const teamId=C.key(row.id);if(teamId&&row.name)teams[teamId]={name:C.text(row.name,100),aliases:[...new Set([row.name,row.id,...(Array.isArray(row.aliases)?row.aliases:[])].map(x=>C.text(x,100)))].slice(0,10)};}
    if(!b.name||!Object.keys(teams).length)throw Error('Defina nome e times do torneio.');
    const old=(await db.ref(ROOT+'/catalog/'+id).get()).val();
@@ -62,7 +63,7 @@ exports.campNotificationApi=onRequest({...opts,cors:['https://centralfreefire.co
    await db.ref(ROOT+'/catalog/'+id).set(value);return res.json({ok:true,tournamentId:id});
   }
   if(action==='publish'){
-   admin();const id=C.text(b.tournamentId,100),t=(await db.ref(ROOT+'/catalog/'+id).get()).val();if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');
+   await admin();const id=C.text(b.tournamentId,100),t=(await db.ref(ROOT+'/catalog/'+id).get()).val();if(!t?.enabled)throw Error('Marque este torneio para permitir avisos.');
    const day=C.integer(b.day,1,365),drop=C.integer(b.drop,1,999),row=C.result(b.result);if(!t.teams?.[row.teamId])throw Error('Time não cadastrado neste torneio.');row.team=t.teams[row.teamId].name;
    if(row.points<row.kills)throw Error('Os pontos não podem ser menores que os abates.');
    if(t.officialStage){const value=(await db.ref(`ffwsLive/2026-s2/${t.officialStage}/drops/${day}/${drop}`).get()).val();if(C.officialRows(value,t.teams).some(r=>r.teamId===row.teamId))throw Error('Esta queda já tem T1 + P1 oficial.');}
