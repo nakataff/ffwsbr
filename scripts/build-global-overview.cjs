@@ -85,7 +85,7 @@ function build({stages, dates, teams, groups, players}) {
       return [key,rows.length?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,rows[0][k]])):fallback?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,fallback[k]])):null];
     }));
     return {...metadata.find(m=>m.id===t.id),region:t.region,qualification:t.qualification,statsByStage,
-      players:members.map(p=>({id:p.id||'',name:p.name,type:p.type==='staff'||/coach|analista|manager|treinador/i.test(p.role||'')?'staff':'player',role:p.role||p.roleShort||'',country:p.country||p.flag||'',
+      players:members.map(p=>({id:p.id||'',name:p.name,type:p.type==='staff'||/coach|analista|manager|treinador/i.test(p.role||'')?'staff':'player',role:p.role||p.roleShort||'',country:p.country||p.flag||'',...(p.photo?{photo:p.photo}:{}),
         statsByStage:Object.fromEntries(['geral',...keys].map(key=>[key,sumEntries((players.entries||[]).filter(e=>sameTeam(e.team,t)&&norm(e.name||e.player)===norm(p.name)&&(key==='geral'?keys.includes(e.stage):e.stage===key)))]))})),
       fixtures:dates.rounds.filter(r=>r.stage==='classificatoria'&&r.groups?.includes(groupById.get(t.id))).map(r=>({date:r.date,time:r.time24,label:r.label,groups:r.groups}))};
   });

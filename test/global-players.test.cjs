@@ -13,3 +13,14 @@ test('detail records load only on demand and a slow response cannot overwrite a 
 test('comparison loads its index and selected profile only by click; search is local and missing stats stay neutral',async()=>{const u=await ui();try{await u.click('[data-action=compare]');assert(u.$('dialog').open);assert(u.calls.includes(BASE+'jogadores-resumo.json'));const before=u.calls.length;await u.change('[data-compare-search]','Yago','input');assert.equal(u.$('[data-compare-pick]').options.length,1);assert(u.$('[data-compare-result]').textContent.includes('Yago'));assert(u.$('[data-compare-card]').disabled);assert(u.calls.length<=before+1);assert(!u.calls.some(p=>p.endsWith('players.json')))}finally{u.close()}});
 test('invalid IDs cannot fetch arbitrary paths and failed initial reads remain retryable',async()=>{const missing=await ui('jogador','?id=../../bad');try{assert.equal(missing.calls.length,0);assert(missing.$('h1').textContent.includes('Não foi possível'))}finally{missing.close()}let calls=0;const u=await ui('jogador','?id=loud-trap',{[BASE+'player-data/loud-trap.json']:()=>({ok:++calls>1,json:async()=>getProfile('loud-trap')})});try{assert(u.$('[data-action=retry]'));await u.click('[data-action=retry]');assert.equal(u.$('h1').textContent,'Trap');assert.equal(calls,2)}finally{u.close()}});
 test('both new routes use real standalone HTML and existing roster links target edition identities',()=>{for(const name of ['jogador','jogadores']){const html=fs.readFileSync(BASE+name+'/index.html','utf8');assert(html.includes('global-players-root'));assert(!html.includes('location.replace'));assert(!html.includes('player-page.min.js'))}assert(fs.readFileSync(BASE+'equipes.js','utf8').includes('gteam-world-player'));assert(fs.readFileSync('js/site-shell-fast.min.js','utf8').includes("page==='ffws-global-2026-jogadores'"))});
+test('official portraits use thumbnails in the directory and larger images in the edition profile',async()=>{
+ const expected=BASE+'photos/',dir=await ui('jogadores','?time=loud'),profile=await ui();
+ try{
+  assert.equal(dir.$('a[href$="id=loud-trap"] [data-person-photo]').getAttribute('src'),'/'+expected+'160/loud-trap.webp');
+  assert.equal(profile.$('.gp-hero [data-person-photo]').getAttribute('src'),'/'+expected+'480/loud-trap.webp');
+  const index=generated[BASE+'jogadores-resumo.json'];
+  const joker=index.players.find(p=>p.id==='lyon-joker');
+  assert.equal(joker.photo,expected+'160/lyon-joker.webp');
+  assert(!index.players.some(p=>p.photoLarge||p.photo.includes('/staff/')||p.photo.includes('/pending/')));
+ }finally{dir.close();profile.close()}
+});

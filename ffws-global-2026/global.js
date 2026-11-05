@@ -217,7 +217,9 @@
     return badges.join('');
   }
 
-  function playerPhoto(player) {
+  function playerPhoto(player, large=false) {
+    const official = large ? player?.photoLarge || player?.photo : player?.photo;
+    if (/^ffws-global-2026\/photos\/(?:160|480)\/[a-z0-9-]+\.webp$/.test(official || '')) return '/'+official;
     const explicit = player?.photo || player?.image || '';
     if (typeof window.cffResolvePlayerPhoto === 'function') return window.cffResolvePlayerPhoto(player?.name || player?.player, explicit);
     return explicit || 'silhueta.webp';
@@ -752,7 +754,7 @@
     const metaTeam = String(meta?.team || meta?.equipe || '').trim();
     const resolvedTeam = teamByName(rowTeam)?.name || teamByName(metaTeam)?.name || metaTeam || rowTeam;
     const role = selectionRole(row);
-    const photo = playerPhoto(meta);
+    const photo = playerPhoto(meta,true);
     const teamLogo = logo(resolvedTeam);
     const damage = `${(row.damage / 1000).toFixed(1)}K`;
     const glow = selectionGlow(config.color);
@@ -2159,7 +2161,7 @@
 
   function compareHero(row, side) {
     const meta=rosterPlayerByName(row?.name,row?.team)||{};
-    return `<article class="ffws-global-player-compare-hero ${side}"><img class="ffws-global-compare-photo" src="${escapeHtml(playerPhoto(meta))}" alt="${escapeHtml(row?.name||'Jogador')}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'"><div><img class="ffws-global-compare-team-logo" src="${escapeHtml(logo(row?.team))}" data-cff-global-team-logo="${escapeHtml(row?.team)}" alt=""><strong>${escapeHtml(row?.name||'—')}</strong><span>${escapeHtml(row?.team?abbreviation(row.team):'Sem equipe')}</span></div>${row?`<div class="cff-compare-favorites"><button type="button" title="Favoritar jogador" aria-label="Favoritar ${escapeHtml(row.name)}" onclick="window.CFFGlobalCompare.favorite('${escapeHtml(jsAttr(row.key))}','player')">☆</button><button type="button" title="Favoritar equipe" aria-label="Favoritar ${escapeHtml(abbreviation(row.team))}" onclick="window.CFFGlobalCompare.favorite('${escapeHtml(jsAttr(row.key))}','team')">♧</button></div>`:''}</article>`;
+    return `<article class="ffws-global-player-compare-hero ${side}"><img class="ffws-global-compare-photo" src="${escapeHtml(playerPhoto(meta,true))}" alt="${escapeHtml(row?.name||'Jogador')}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='silhueta.webp'"><div><img class="ffws-global-compare-team-logo" src="${escapeHtml(logo(row?.team))}" data-cff-global-team-logo="${escapeHtml(row?.team)}" alt=""><strong>${escapeHtml(row?.name||'—')}</strong><span>${escapeHtml(row?.team?abbreviation(row.team):'Sem equipe')}</span></div>${row?`<div class="cff-compare-favorites"><button type="button" title="Favoritar jogador" aria-label="Favoritar ${escapeHtml(row.name)}" onclick="window.CFFGlobalCompare.favorite('${escapeHtml(jsAttr(row.key))}','player')">☆</button><button type="button" title="Favoritar equipe" aria-label="Favoritar ${escapeHtml(abbreviation(row.team))}" onclick="window.CFFGlobalCompare.favorite('${escapeHtml(jsAttr(row.key))}','team')">♧</button></div>`:''}</article>`;
   }
 
   function compareMetric(label, a, b, lowerBetter = false, formatter = value => String(value)) {

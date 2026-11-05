@@ -117,6 +117,13 @@ ficam em `player-identities.json`. `scripts/build-global-players.cjs` gera o ín
 os perfis normais. Não somar resultados de homônimos. Guia:
 [JOGADORES-MUNDIAL-2026.md](JOGADORES-MUNDIAL-2026.md).
 
+Fotos oficiais do Mundial ficam em `ffws-global-2026/photos/160/` (listas e
+elencos) e `photos/480/` (perfis e cards). Use `photo` e `photoLarge`
+em `players.json`, com o ID da pessoa **e** a equipe desta edição.
+Depois, regenere os perfis, o resumo das equipes e o modelo do Camp.
+`photos/*/staff/` guarda fotos da comissão ainda sem cadastro e
+`photos/*/pending/` guarda fotos sem correspondência confirmada no elenco.
+
 ### Início do Mundial 2026
 
 Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu).
