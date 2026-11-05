@@ -13,8 +13,8 @@ async function main(){
   ...(mode==='archived'?{['publicIndex/'+id]:null,['articles/'+id]:null}:{})
  });
  try{
-  await env.withSecurityRulesDisabled(ctx=>ctx.database().ref('nakaGamingNews').set(null));
-  const owner=env.authenticatedContext('naka-owner',{email:'admin@centralfreefire.com.br'}).database();
+  await env.withSecurityRulesDisabled(ctx=>ctx.database().ref().update({'serverSecurity/adminUid':'admin',nakaGamingNews:null}));
+  const owner=env.authenticatedContext('admin',{email:'admin@centralfreefire.com.br'}).database();
   const anon=env.unauthenticatedContext().database();
   const visitor=env.authenticatedContext('visitor',{email:'visitor@example.com'}).database();
   await owner.ref('nakaGamingNews').update(changes(base,'draft'));

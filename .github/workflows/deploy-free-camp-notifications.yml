@@ -248,6 +248,8 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Test pinned administrator deployment policy
+        run: node --test functions/test/admin-identity.test.cjs test/admin-bootstrap.test.mjs
       - name: Resolve the existing administrator UID
         id: admin_identity
         env:

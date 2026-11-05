@@ -722,3 +722,5 @@ Na reabertura, os campos do modelo são restaurados do backup inicial protegido 
 - `scripts/verify-admin-security.mjs` confirma as regras efetivamente publicadas após o deploy, sem imprimir dados privados.
 - Testes: `cloudflare/camp-notifications/test/auth-security.test.mjs` usa assinaturas RSA reais; `functions/test/admin-security-emulator.cjs` testa as regras compiladas em banco local de demonstração. O emulador usa REST com tokens simulados restritos ao projeto `demo-cff-admin-security`, jamais em produção.
 - Recuperação: não apagar/recriar a conta administrativa sem atualizar o UID por um operador com IAM do Firebase e republicar os dois Workers. Uma mudança detectada interrompe o deploy em vez de conceder acesso à conta nova.
+
+O endpoint legado `campGithubBackup` retornou 404 nesta revisão. O código de validação por UID está preparado em `functions/index.js`; o deploy das regras não cria nem ativa essa função. Sua ativação continua no workflow manual de backup e depende das permissões/APIs do Google Cloud. A publicação de regras e dos Workers é independente desse serviço.

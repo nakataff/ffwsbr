@@ -9,6 +9,7 @@ function syntheticFixture(){
 async function main(){
  if(!process.env.FIREBASE_DATABASE_EMULATOR_HOST)throw Error('Only run against the local emulator');
  const {root,uid}=process.env.PROFILE_DIAGNOSTIC_FIXTURE?JSON.parse(fs.readFileSync(process.env.PROFILE_DIAGNOSTIC_FIXTURE,'utf8')):syntheticFixture();
+ root.serverSecurity={adminUid:'admin'};
  const env=await initializeTestEnvironment({projectId:'demo-profile-save',database:{host:'127.0.0.1',port:19000,rules:fs.readFileSync('database.rules.json','utf8')}});
  try{
   await env.withSecurityRulesDisabled(ctx=>ctx.database().ref().set(root));

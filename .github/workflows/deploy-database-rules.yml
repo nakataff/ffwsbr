@@ -76,10 +76,3 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/verify-admin-security.mjs
-
-      - name: Install existing backup function dependencies
-        run: npm install --no-audit --no-fund
-        working-directory: functions
-
-      - name: Deploy pinned administrator check for camp backup
-        run: firebase deploy --only functions:campGithubBackup --project central-free-fire --non-interactive
