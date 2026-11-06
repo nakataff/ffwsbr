@@ -111,6 +111,10 @@
 .ffws-global-drop-day-row{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;align-items:stretch;padding:10px;border:1px solid rgba(125,183,255,.12);border-radius:12px;background:rgba(255,255,255,.018)}
 .ffws-global-drop-day-label{display:flex;flex-direction:column;justify-content:center;padding:5px 8px;border-right:1px solid rgba(255,255,255,.08)}
 .ffws-global-drop-day-label small{color:#6683a8;font-size:.6rem;font-weight:900;text-transform:uppercase}.ffws-global-drop-day-label strong{margin-top:3px;color:#fff;font-size:.92rem}
+.ffws-global-drop-rounds{min-width:0;display:grid;gap:12px}
+.ffws-global-drop-round+.ffws-global-drop-round{padding-top:10px;border-top:1px solid rgba(125,183,255,.15)}
+.ffws-global-drop-round h3{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:0 0 8px;color:#eff6ff;font-size:.82rem}
+.ffws-global-drop-round h3 small{color:#99b5d4;font-size:.69rem;font-weight:650}
 .ffws-global-drop-buttons{display:grid;grid-template-columns:repeat(6,minmax(70px,1fr));gap:8px}
 .ffws-global-drop-buttons button{position:relative;min-width:0;border:1px solid #243b5b;border-radius:9px;background:#0b1425;color:#fff;padding:9px 6px;cursor:pointer;transition:border-color .15s ease,background .15s ease,transform .15s ease}
 .ffws-global-drop-buttons button:hover{border-color:var(--accent);background:rgba(0,200,255,.07);transform:translateY(-1px)}

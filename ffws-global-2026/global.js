@@ -117,7 +117,7 @@
         const roundDrop = index + 1;
         // Keep each drop unique within a calendar day, even when two sessions both start at Q1.
         const dropNumber = round.stage === 'classificatoria' ? ((round.session || 1) - 1) * round.matches + roundDrop : roundDrop;
-        (byStage[round.stage] ||= []).push({day: round.day, round: round.round, session: round.session, roundDrop, drop: dropNumber, date: round.date, map: typeof drop.map === 'string' ? drop.map : '', results});
+        (byStage[round.stage] ||= []).push({day: round.day, round: round.round, session: round.session, groups: round.groups, time: round.time, roundDrop, drop: dropNumber, date: round.date, map: typeof drop.map === 'string' ? drop.map : '', results});
       });
     }
     return byStage;
@@ -1091,10 +1091,20 @@
     return raw;
   }
 
+  function s2StatsDropNumber(event) {
+    return number(event?.roundDrop || event?.drop || event?.queda || event?.number);
+  }
+
+  function s2StatsDropLabel(event, short = false) {
+    const session = number(event?.session);
+    const drop = s2StatsDropNumber(event);
+    return short ? `${session ? `R${session} • ` : ''}Q${drop}` : `${session ? `Rodada ${session} • ` : ''}Queda ${drop}`;
+  }
+
   function s2StatsRecordContext(row, daily = false) {
     const parts = [s2StatsStageShortLabel(row.stage)];
     if (row.day) parts.push(`D${row.day}`);
-    if (!daily && row.drop) parts.push(`Q${row.drop}`);
+    if (!daily && row.drop) parts.push(s2StatsDropLabel(row, true));
     if (!daily && row.map) parts.push(s2StatsMapShortLabel(row.map));
     if (daily && row.matches) parts.push(`${row.matches}Q`);
     return parts.filter(Boolean).join(' • ');
@@ -1120,10 +1130,14 @@
   }
 
   function statsRecordRows(events, playerEntries) {
-    const playerDrop = playerEntries.map(entry => ({
+    const eventByDrop = new Map(events.map(event => [s2DropReportEventKey(event), event]));
+    const playerDrop = playerEntries.map(entry => {
+      const event = eventByDrop.get(s2DropReportEventKey({ ...entry, _stage: entry.stage }));
+      return {
       name: entry.name, team: entry.team, stage: entry.stage || 'classificatoria', day: number(entry.day), drop: number(entry.drop), map: entry.map || '',
+      roundDrop: event?.roundDrop, session: event?.session,
       kills: number(entry.kills), damage: number(entry.damage), assists: number(entry.assists), matches: 1
-    }));
+    }; });
 
     const playerDayMap = new Map();
     playerDrop.forEach(row => {
@@ -1149,7 +1163,7 @@
         const team = result.team || result.equipe;
         if (!team) return;
         teamDrop.push({
-          team, stage, day, drop, map, matches: 1,
+          team, stage, day, drop, map, roundDrop: event.roundDrop, session: event.session, matches: 1,
           points: number(result.points ?? result.pontos ?? (number(result.placementPoints) + number(result.kills))),
           kills: number(result.kills ?? result.abates),
           damage: number(damageByTeamDrop.get(`${stage}:${day}:${drop}:${normalize(team)}`))
@@ -1186,11 +1200,7 @@
   }
 
   function s2DropReportAllEvents() {
-    return ['classificatoria', 'segundaFase', 'lastChance', 'final'].flatMap(stage => stageEvents(stage).map((event, index) => ({
-      ...event,
-      _stage: stage,
-      _day: stage === 'final' ? (number(event.day) || index + 1) : (number(event.round) || number(event.day) || index + 1)
-    })));
+    return statsStageEvents('geral');
   }
 
   function s2DropReportFindEvent(key) {
@@ -1243,7 +1253,7 @@
     const booyah = teams.find(row => row.booyah || row.position === 1) || null;
     const topBy = (rows, getter, asc = false) => [...rows].sort((a, b) => asc ? number(getter(a)) - number(getter(b)) : number(getter(b)) - number(getter(a)))[0] || null;
     const report = {
-      mode: 'drop', key, event, stage, day, drop, map, maps: map ? [map] : [], dropsCount: 1, teams, players, booyah, booyahs: booyah ? [{ team: booyah.team, drop, map }] : [],
+      mode: 'drop', key, event, stage, day, drop, map, roundDrop: event.roundDrop, session: event.session, maps: map ? [map] : [], dropsCount: 1, teams, players, booyah, booyahs: booyah ? [{ team: booyah.team, drop, map }] : [],
       totals: {
         kills: teams.reduce((sum, row) => sum + row.kills, 0),
         points: teams.reduce((sum, row) => sum + row.points, 0),
@@ -1392,7 +1402,7 @@
     const rankOf = (value, values) => report.isPartialDay ? 0 : s2DropReportRank(value, values);
     const period = isDay ? (report.isPartialDay ? 'no recorte do dia' : 'no dia') : 'na queda';
     const heroTitle = isDay ? `${report.dropsCount} quedas disputadas` : (report.map || 'Mapa não informado');
-    const heroMeta = isDay ? `${s2StatsStageLabel(report.stage)} • Dia ${report.day}` : `${s2StatsStageLabel(report.stage)} • Dia ${report.day} • Queda ${report.drop}`;
+    const heroMeta = isDay ? `${s2StatsStageLabel(report.stage)} • Dia ${report.day}` : `${s2StatsStageLabel(report.stage)} • Dia ${report.day} • ${s2StatsDropLabel(report)}`;
     const mapLine = isDay && report.maps.length ? `<div class="ffws-global-day-map-list">${report.maps.map(map => `<span>${escapeHtml(map)}</span>`).join('')}</div>` : '';
     return `<div class="ffws-global-drop-report-overview">
       <div class="ffws-global-drop-report-hero"><div><span>${escapeHtml(heroMeta)}</span><h3>${escapeHtml(heroTitle)}</h3>${mapLine}</div>${s2DropReportBooyahHtml(report)}</div>
@@ -1430,7 +1440,7 @@
     const players = report.players.filter(row => normalize(row.team) === normalize(team.team)).sort((a, b) => b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
     const posLabel = report.mode === 'day' ? 'Posição no dia' : 'Posição na queda';
     return `<section class="ffws-global-drop-team-detail">
-      <div class="ffws-global-drop-team-detail-head"><div><img src="${escapeHtml(logo(team.team))}" data-cff-global-team-logo="${escapeHtml(team.team)}" onerror="this.onerror=null;this.src='escudo.webp'"><span><small>${escapeHtml(report.mode === 'day' ? `DIA ${report.day}` : `DIA ${report.day} • Q${report.drop}`)}</small><strong>${escapeHtml(team.team)}</strong></span></div><button type="button" onclick="hideFFWSGlobalDropReportTeam()">Fechar</button></div>
+      <div class="ffws-global-drop-team-detail-head"><div><img src="${escapeHtml(logo(team.team))}" data-cff-global-team-logo="${escapeHtml(team.team)}" onerror="this.onerror=null;this.src='escudo.webp'"><span><small>${escapeHtml(report.mode === 'day' ? `DIA ${report.day}` : `DIA ${report.day} • ${s2StatsDropLabel(report, true)}`)}</small><strong>${escapeHtml(team.team)}</strong></span></div><button type="button" onclick="hideFFWSGlobalDropReportTeam()">Fechar</button></div>
       <div class="ffws-global-team-detail-metrics">
         ${s2DropReportMetricCard(posLabel, `${team.position || '—'}º`)}
         ${s2DropReportMetricCard('Pontos', team.points)}
@@ -1546,11 +1556,11 @@
     if (!report) return;
     const tab = state.dropReport.tab || 'summary';
     const nav = s2DropReportNavigation(report);
-    const nextDropLabel = nav.nextDrop ? `D${number(nav.nextDrop._day)} • Q${number(nav.nextDrop.drop || nav.nextDrop.number)}` : 'Última queda';
+    const nextDropLabel = nav.nextDrop ? `D${number(nav.nextDrop._day)} • ${s2StatsDropLabel(nav.nextDrop, true)}` : 'Última queda';
     const nextDayLabel = nav.nextDay ? `D${number(nav.nextDay.day)}` : 'Último dia';
     const nextDropAction = nav.nextDrop ? `openFFWSGlobalDropReport('${s2DropReportEventKey(nav.nextDrop)}')` : '';
     const nextDayAction = nav.nextDay ? `openFFWSGlobalDayReport('${jsAttr(nav.nextDay.stage)}',${number(nav.nextDay.day)})` : '';
-    const topTitle = report.mode === 'day' ? `DIA ${report.day} • ${report.dropsCount} QUEDAS` : `DIA ${report.day} • QUEDA ${report.drop}`;
+    const topTitle = report.mode === 'day' ? `DIA ${report.day} • ${report.dropsCount} QUEDAS` : `DIA ${report.day} • ${s2StatsDropLabel(report).toUpperCase()}`;
     const topSub = report.mode === 'day' ? `${report.maps.length} mapa${report.maps.length === 1 ? '' : 's'} no recorte` : (report.map || '');
     body.innerHTML = `<div class="ffws-global-drop-report-top"><div class="ffws-global-drop-report-title"><small>${escapeHtml(s2StatsStageLabel(report.stage))}</small><strong>${escapeHtml(topTitle)}</strong><span>${escapeHtml(topSub)}</span></div><button type="button" class="ffws-global-drop-report-close" onclick="closeFFWSGlobalDropReport()" aria-label="Fechar relatório">×</button></div><div class="ffws-global-drop-report-nav-v11"><button type="button" class="ffws-global-drop-report-navbtn" ${nav.nextDrop?'':'disabled'} onclick="${nextDropAction}" aria-label="Ir para ${escapeHtml(nextDropLabel)}"><span class="ffws-global-drop-report-navcopy"><small>PRÓX. QUEDA</small><strong>${escapeHtml(nextDropLabel)}</strong></span><span class="ffws-global-drop-report-navarrow" aria-hidden="true">→</span></button><button type="button" class="ffws-global-drop-report-navbtn" ${nav.nextDay?'':'disabled'} onclick="${nextDayAction}" aria-label="Ir para ${escapeHtml(nextDayLabel)}"><span class="ffws-global-drop-report-navcopy"><small>PRÓX. DIA</small><strong>${escapeHtml(nextDayLabel)}</strong></span><span class="ffws-global-drop-report-navarrow" aria-hidden="true">→</span></button></div>${s2DropReportTabsHtml(tab)}<div class="ffws-global-drop-report-tabbody">${tab === 'teams' ? s2DropReportTeamsHtml(report) : tab === 'players' ? s2DropReportPlayersHtml(report) : s2DropReportSummaryHtml(report)}</div>`;
   }
@@ -1562,8 +1572,28 @@
       if (!groups.has(key)) groups.set(key, { stage: event._stage, day: event._day, events: [] });
       groups.get(key).events.push(event);
     });
-    return `<section id="anchor-s2-relatorio" class="ffws-global-panel ffws-global-drop-report-section"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Relatório de Quedas</h2><p>Clique no dia para ver o relatório agregado ou abra uma queda individual.</p></div><span class="ffws-global-badge">${events.length} quedas</span></div>
-      <div class="ffws-global-drop-day-list">${[...groups.values()].map(group => `<div class="ffws-global-drop-day-row"><button type="button" class="ffws-global-drop-day-label" onclick="openFFWSGlobalDayReport('${jsAttr(group.stage)}',${number(group.day)})"><span><small>${escapeHtml(s2StatsStageShortLabel(group.stage))}</small><strong>DIA ${group.day}</strong></span><em>VER DIA ›</em></button><div class="ffws-global-drop-buttons">${group.events.sort((a,b)=>number(a.drop||a.number)-number(b.drop||b.number)).map(event => { const report=s2DropReportBuild(event); const recordContext=s2DropReportSplitContext(); const bestPlayer=report?.leaders?.playerKills; const fire=bestPlayer && s2DropReportRank(bestPlayer.kills, recordContext.playerKills) <= 3; return `<button type="button" onclick="openFFWSGlobalDropReport('${s2DropReportEventKey(event)}')"><span>Q${number(event.drop || event.number)}</span>${fire?'<i aria-label="Top 3 do split">🔥</i>':''}<small>${escapeHtml(s2StatsMapShortLabel(event.map || event.mapa))}</small></button>`; }).join('')}</div></div>`).join('')}</div>
+    const recordContext = s2DropReportSplitContext();
+    const dropButton = event => {
+      const bestPlayer = s2DropReportBuild(event)?.leaders?.playerKills;
+      const fire = bestPlayer && s2DropReportRank(bestPlayer.kills, recordContext.playerKills) <= 3;
+      return `<button type="button" aria-label="${escapeHtml(s2StatsDropLabel(event))}" onclick="openFFWSGlobalDropReport('${s2DropReportEventKey(event)}')"><span>Q${s2StatsDropNumber(event)}</span>${fire ? '<i aria-label="Top 3 do split">🔥</i>' : ''}<small>${escapeHtml(s2StatsMapShortLabel(event.map || event.mapa))}</small></button>`;
+    };
+    const roundList = group => {
+      const rounds = new Map();
+      group.events.forEach(event => {
+        const session = number(event.session);
+        if (!rounds.has(session)) rounds.set(session, []);
+        rounds.get(session).push(event);
+      });
+      return [...rounds].sort(([a], [b]) => a - b).map(([session, events]) => {
+        const first = events[0];
+        const context = [Array.isArray(first.groups) ? `Grupos ${first.groups.join(' × ')}` : '', first.time].filter(Boolean).join(' • ');
+        const buttons = `<div class="ffws-global-drop-buttons">${events.sort((a, b) => s2StatsDropNumber(a) - s2StatsDropNumber(b)).map(dropButton).join('')}</div>`;
+        return session ? `<section class="ffws-global-drop-round"><h3>Rodada ${session}${context ? `<small>${escapeHtml(context)}</small>` : ''}</h3>${buttons}</section>` : buttons;
+      }).join('');
+    };
+    return `<section id="anchor-s2-relatorio" class="ffws-global-panel ffws-global-drop-report-section"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Relatório de Quedas</h2><p>Veja o resumo do dia ou abra uma queda na rodada correspondente.</p></div><span class="ffws-global-badge">${events.length} quedas no recorte</span></div>
+      <div class="ffws-global-drop-day-list">${[...groups.values()].map(group => `<div class="ffws-global-drop-day-row"><button type="button" class="ffws-global-drop-day-label" onclick="openFFWSGlobalDayReport('${jsAttr(group.stage)}',${number(group.day)})"><span><small>${escapeHtml(s2StatsStageShortLabel(group.stage))}</small><strong>DIA ${group.day}</strong></span><em>VER DIA ›</em></button><div class="ffws-global-drop-rounds">${roundList(group)}</div></div>`).join('')}</div>
     </div></section>`;
   }
 

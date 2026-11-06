@@ -37,6 +37,21 @@ test('Classificatória and Stats share published scores, preserve session filter
   assert(!statsRoot.textContent.includes('Mais Dano em uma Queda'));
   if(published===fixture){
    assert.deepEqual(Array.from(api.stageEvents('classificatoria'),e=>[e.day,e.round,e.roundDrop,e.drop]),[[1,1,1,1],[1,2,1,7]]);
+   const rounds=[...statsRoot.querySelectorAll('.ffws-global-drop-round')];
+   assert.equal(rounds.length,2);
+   assert.match(rounds[0].querySelector('h3').textContent,/Rodada 1.*Grupos A × B.*04h00/);
+   assert.match(rounds[1].querySelector('h3').textContent,/Rodada 2.*Grupos C × D.*09h00/);
+   assert.equal(rounds[0].querySelector('button span').textContent,'Q1');
+   assert.equal(rounds[1].querySelector('button span').textContent,'Q1');
+   w.openFFWSGlobalDropReport('classificatoria:1:1');
+   const report=d.querySelector('#ffws-global-drop-report-body');
+   assert.match(report.querySelector('.ffws-global-drop-report-navbtn').textContent,/D1 • R2 • Q1/);
+   w.openFFWSGlobalDropReport('classificatoria:1:7');
+   assert.match(report.querySelector('.ffws-global-drop-report-title').textContent,/DIA 1 • RODADA 2 • QUEDA 1/);
+   assert.match(report.querySelector('.ffws-global-drop-booyah').textContent,new RegExp(C.team(meta,fixture['classificatoria-2'].participants[0]).name));
+   w.openFFWSGlobalDayReport('classificatoria',1);
+   assert.match(report.querySelector('.ffws-global-drop-report-title').textContent,/DIA 1 • 2 QUEDAS/);
+   w.closeFFWSGlobalDropReport();
    w.setFFWSGlobalStageFilter('classificatoria','period','2');
    assert.equal(classRoot.querySelectorAll('tbody tr').length,12);
    assert.equal(Number(classRoot.querySelector('tbody .ffws-global-points-col').textContent),14);
