@@ -43,6 +43,7 @@
    let marker=row.querySelector('.cff-elim-marker');
    if(!enabled){marker?.remove();return;}
    if(!marker){marker=document.createElement('span');marker.className='cff-elim-marker';row.append(marker);}
+   marker.toggleAttribute('data-unplaced',p===null);
    const text=p===null?'Sem colocação registrada':(p===1?'BOOYAH · 1º':'✕ Eliminada · '+p+'º')+(complete?' · ✓ preenchido':' · '+missing.length+' campo(s) pendente(s)');
    if(marker.textContent!==text)marker.textContent=text;
   });

@@ -30,6 +30,37 @@
     }
     nav.querySelectorAll('[data-camp-go]').forEach(item=>item.setAttribute('aria-current',item===button?'step':'false'));
   });
+  const mobileMenu=$('cff-camp-mobile-menu'),mobileLaunch=$('cff-camp-mobile-launch'),shortcuts=$('cff-camp-nav');
+  if(mobileMenu&&mobileLaunch&&shortcuts){
+    const setMenu=open=>mobileMenu.setAttribute('aria-expanded',String(open));
+    mobileMenu.addEventListener('click',()=>setMenu(mobileMenu.getAttribute('aria-expanded')!=='true'));
+    mobileLaunch.addEventListener('click',()=>{setMenu(false);nav.querySelector('[data-camp-go="launch"]').click()});
+    shortcuts.addEventListener('click',event=>{
+      if(event.target.closest('button')&&mobileMenu.getClientRects().length){setMenu(false);mobileMenu.focus({preventScroll:true})}
+    });
+    shortcuts.closest('header').addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&mobileMenu.getAttribute('aria-expanded')==='true'){setMenu(false);mobileMenu.focus()}
+    });
+    mobileMenu.parentElement.hidden=false;
+  }
+  const entries=$('teams-inputs-container');
+  if(entries){
+    function prepareEntryControls(){
+      entries.querySelectorAll('.team-row > input[name="booyah"]').forEach(input=>{
+        if(input.nextElementSibling?.classList.contains('cff-mobile-booyah'))return;
+        const label=document.createElement('label');label.className='cff-mobile-booyah';label.htmlFor=input.id;label.textContent='Booyah';
+        input.setAttribute('aria-label','Booyah');
+        input.after(label);
+      });
+      entries.querySelectorAll('.team-row > .small-cell input[type="number"]').forEach(input=>{
+        if(!input.hasAttribute('inputmode'))input.inputMode='numeric';
+        const label=input.parentElement.querySelector('.micro-label')?.textContent;
+        if(label&&input.getAttribute('aria-label')!==label)input.setAttribute('aria-label',label);
+      });
+    }
+    new MutationObserver(prepareEntryControls).observe(entries,{childList:true,subtree:true});
+    prepareEntryControls();
+  }
   for(const selector of ['.teams-setup','.emoji-setup']){const section=document.querySelector(selector);if(section)section.open=false}
   const teams=document.querySelector('.teams-setup>summary');if(teams)teams.textContent='Banco de times e logos · adicionar ou editar cadastro';
   const actions=document.querySelector('.setup-actions-bar');if(actions)$('cff-admin-basic').append(actions);

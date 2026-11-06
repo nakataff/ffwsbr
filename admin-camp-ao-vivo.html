@@ -6,7 +6,7 @@
     <title>Camp ao vivo | Central Free Fire</title>
     <meta name="robots" content="noindex,nofollow,noarchive">
     <link rel="icon" type="image/webp" href="central free fire.webp">
-    <link rel="stylesheet" href="admin-camp-ao-vivo/workspace.css?v=20261028-champion-final-v1">
+    <link rel="stylesheet" href="admin-camp-ao-vivo/workspace.css?v=20261106-mobile-v1">
     
 
 
@@ -54,7 +54,11 @@
           <small id="cff-camp-load-status">Iniciando ferramentas…</small>
         </div>
       </div>
-      <nav class="cff-camp-nav" aria-label="Atalhos do camp">
+      <div class="cff-camp-mobile-nav" hidden>
+        <button class="cff-camp-btn" id="cff-camp-mobile-launch" type="button">Quedas</button>
+        <button class="cff-camp-btn" id="cff-camp-mobile-menu" type="button" aria-controls="cff-camp-nav" aria-expanded="false">Menu <span aria-hidden="true">⌄</span></button>
+      </div>
+      <nav class="cff-camp-nav" id="cff-camp-nav" aria-label="Atalhos do camp">
         <span class="cff-camp-save-state" id="cff-camp-save-state">● Auto-save local</span>
         <a class="cff-camp-btn" href="admin.html">← Admin</a>
         <button class="cff-camp-btn" id="cff-camp-logos" type="button">Logos</button>
@@ -314,18 +318,18 @@ G7X, g7x, G7X</textarea>
                 </div>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex:1">
-                        <label>Queda Atual</label>
+                        <label for="drop-num">Queda atual</label>
                         <select id="drop-num" onchange="loadDropData()"></select>
                     </div>
                     <div style="flex:1.4" id="input-mode-box">
-                        <label>Modo de Entrada</label>
+                        <label for="input-mode">Modo de entrada</label>
                         <select id="input-mode" onchange="handleInputModeChange()">
                             <option value="per-drop">Pontos da Queda</option>
                             <option value="cumulative">Total Acumulado</option>
                         </select>
                     </div>
                     <div style="flex:2" id="map-box">
-                        <label>Mapa</label>
+                        <label for="drop-map">Mapa</label>
                         <select id="drop-map" onchange="updateMapWarning(); updatePostPreview(); autoSave();">
                             <option value="" selected>Sem informação</option>
                             <option value="Bermuda">Bermuda</option>
@@ -529,9 +533,9 @@ G7X, g7x, G7X</textarea>
 
     <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script type="module" src="admin-camp-ao-vivo/auth.js?v=20261001-camp-v4"></script>
-    <script src="admin-camp-ao-vivo/app-loader.js?v=20261104-camp-history-v5"></script>
+    <script src="admin-camp-ao-vivo/app-loader.js?v=20261106-mobile-v1"></script>
     <script type="module" src="admin-camp-ao-vivo/notifications.js?v=20261010-results-v1"></script>
-<script defer src="admin-camp-ao-vivo/elimination-focus.js?v=20261025-native-placement-v4"></script>
+<script defer src="admin-camp-ao-vivo/elimination-focus.js?v=20261106-mobile-v1"></script>
 <script defer src="admin-camp-ao-vivo/placement-live.js?v=20261025-native-placement-v4"></script>
 </body>
 </html>
