@@ -108,6 +108,8 @@
     syncRaf=requestAnimationFrame(()=>{syncRaf=0;syncBox(force);});
   }
 
+  window.__CFF_ADMIN_EDICAO_SYNC_TRANSFORM_BOX__=scheduleBoxSync;
+
   function halfExtents(s){
     if(!s?.image)return{x:0,y:0};
     const iw=Number(s.image.naturalWidth||s.image.width||0),ih=Number(s.image.naturalHeight||s.image.height||0),sc=(Number(s.baseScale)||1)*(Number(s.zoom)||1),w=iw*sc,h=ih*sc,rad=(Number(s.rotation)||0)*Math.PI/180;
@@ -132,7 +134,7 @@
 
   function resolveSnap(axis,raw,e,s){
     const scale=axis==='x'?(W/gesture.renderW):(H/gesture.renderH),threshold=SNAP_PX*scale,release=RELEASE_PX*scale,list=candidates(axis,s),key=axis==='x'?'snapX':'snapY';
-    if(e.altKey){gesture[key]=null;clearGuide(axis);return raw;}
+    if(e.altKey||window.__CFF_ADMIN_EDICAO_GUIDES_ENABLED__?.()===false||s['cffLock'+axis.toUpperCase()]){gesture[key]=null;clearGuide(axis);return raw;}
     if(gesture[key]){
       const current=list.find(c=>c.id===gesture[key]);
       if(current&&Math.abs(raw-current.value)<=release){showGuide(axis,current.guide,current.label);return current.value;}
@@ -183,7 +185,7 @@
     e.preventDefault();e.stopPropagation();
     if(gesture.mode==='move'){
       const rawX=gesture.startStateX+(e.clientX-gesture.startX)*(W/gesture.renderW),rawY=gesture.startStateY+(e.clientY-gesture.startY)*(H/gesture.renderH);
-      s.x=resolveSnap('x',rawX,e,s);s.y=resolveSnap('y',rawY,e,s);
+      window.__CFF_ADMIN_EDICAO_MOVE_POSITION__?.(s,resolveSnap('x',rawX,e,s),resolveSnap('y',rawY,e,s));
     }else if(gesture.mode==='resize'){
       clearGuides();const d=Math.max(8,Math.hypot(e.clientX-gesture.centerX,e.clientY-gesture.centerY));s.zoom=clamp(gesture.startZoom*(d/gesture.startDistance),.05,8);syncZoomUi(s);
     }else if(gesture.mode==='rotate'){

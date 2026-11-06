@@ -75,7 +75,7 @@
         s.__cffEffectPass=true;
         try{
           const iw=Number(image.naturalWidth||image.width||1),ih=Number(image.naturalHeight||image.height||1),scale=Math.max(W/iw,H/ih)*1.075,dw=iw*scale,dh=ih*scale,dx=(W-dw)/2,dy=(H-dh)/2;
-          this.save();const sceneScaleX=Number(this.__cffScaleX)||1,sceneScaleY=Number(this.__cffScaleY)||1;this.setTransform(sceneScaleX,0,0,sceneScaleY,0,0);this.globalCompositeOperation='source-over';this.globalAlpha=1;this.shadowColor='transparent';this.shadowBlur=0;this.shadowOffsetX=0;this.shadowOffsetY=0;
+          this.save();const sceneScaleX=Number(this.__cffScaleX)||1,sceneScaleY=Number(this.__cffScaleY)||1;this.setTransform(sceneScaleX,0,0,sceneScaleY,this.__cffOffsetX||0,this.__cffOffsetY||0);this.globalCompositeOperation='source-over';this.globalAlpha=1;this.shadowColor='transparent';this.shadowBlur=0;this.shadowOffsetX=0;this.shadowOffsetY=0;
           this.filter=`brightness(${s.brightness||100}%) contrast(${s.contrast||100}%) saturate(${s.saturation||100}%) blur(${clamp(s.cffBlurAmount,20,220)}px)`;nativeDraw.call(this,image,dx,dy,dw,dh);this.filter='none';
           const dim=clamp(s.cffBlurDim,0,70)/100;if(dim>0){this.fillStyle=`rgba(0,0,0,${dim})`;this.fillRect(0,0,W,H);}this.restore();
         }finally{s.__cffEffectPass=false;}

@@ -13,14 +13,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
-  <link rel="stylesheet" href="css/admin-edicao.css?v=20260923-fade-strength-v13">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20261106-editor-placement-v1">
   <script src="js/config.min.js?v=20261020-chat-layout-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20261005-position-controls-v1"></script>
-  <script defer src="js/admin-edicao-autosave.js?v=20261005-position-controls-v1"></script>
-  <script defer src="js/admin-edicao-enhancements.js?v=20261005-position-controls-v1"></script>
-  <script defer src="js/admin-edicao-studio-v2.js?v=20261005-position-controls-v1"></script>
-  <script defer src="js/admin-edicao-photo-coverage.js?v=20261005-position-controls-v1"></script>
-  <script defer src="js/admin-edicao-position.js?v=20261005-position-controls-v1"></script>
+  <script type="module" src="js/admin-edicao.js?v=20261106-editor-placement-v1"></script>
+  <script defer src="js/admin-edicao-autosave.js?v=20261106-editor-placement-v1"></script>
+  <script defer src="js/admin-edicao-enhancements.js?v=20261106-editor-placement-v1"></script>
+  <script defer src="js/admin-edicao-studio-v2.js?v=20261106-editor-placement-v1"></script>
+  <script defer src="js/admin-edicao-photo-coverage.js?v=20261106-editor-placement-v1"></script>
+  <script defer src="js/admin-edicao-position.js?v=20261106-editor-placement-v1"></script>
 </head>
 <body>
   <main id="photo-editor-app" class="admin-shell photo-editor-app" hidden>
@@ -218,16 +218,18 @@
 
       <section class="admin-panel photo-editor-workspace">
         <div class="photo-editor-preview-head">
-          <div><p class="admin-eyebrow">Preview</p><h2>3000 × 3749</h2></div>
+          <div><p class="admin-eyebrow">Preview</p><h2 id="photo-editor-preview-size">3000 × 3749</h2></div>
           <span id="photo-editor-canvas-status" class="admin-muted">Adicione uma foto para começar</span>
         </div>
         <div id="photo-editor-stage" class="photo-editor-stage" tabindex="0" aria-label="Área de edição. Arraste a foto para reposicionar.">
           <canvas id="photo-editor-canvas" width="3000" height="3749"></canvas>
+          <div id="photo-editor-cff-preview" aria-hidden="true" hidden><div class="photo-editor-cff-crop"><span class="photo-editor-cff-safe"></span><span class="photo-editor-cff-buffer"></span><span class="photo-editor-cff-reserve">Área da moldura · 20%</span></div></div>
           <div id="photo-editor-empty" class="photo-editor-empty">
             <strong>Adicione a foto que vai entrar na arte</strong>
             <span>PNG, JPG ou WEBP</span>
           </div>
         </div>
+        <p class="photo-editor-hint" id="photo-editor-cff-note" hidden>Prévia do recorte: as faixas escuras de fora não saem na imagem. Use a linha tracejada para deixar texto e números acima da transição do degradê.</p>
         <div class="photo-editor-stage-help">Dica: no computador, use a roda do mouse para zoom. No celular/iPad, use pinça com dois dedos ou trave a pinça pelo cadeado.</div>
       </section>
 
@@ -239,6 +241,7 @@
             <option value="3000x3749" selected>Original — 3000 × 3749</option>
             <option value="1200x1500">Feed 4:5 — 1200 × 1500</option>
             <option value="1080x1350">Instagram 4:5 — 1080 × 1350</option>
+            <option value="1218x1291">Instagram CFF — 1218 × 1291</option>
           </select>
         </div>
         <div class="admin-field">

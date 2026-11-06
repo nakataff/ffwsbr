@@ -199,7 +199,8 @@
 
   function restoreOutput(meta){
     const o=meta?.output||{};
-    if($('#photo-editor-size')&&o.size)$('#photo-editor-size').value=o.size;
+    const size=$('#photo-editor-size');
+    if(size&&Array.from(size.options).some(option=>option.value===o.size)){size.value=o.size;size.dispatchEvent(new Event('change',{bubbles:true}));}
     if($('#photo-editor-format')&&o.format){$('#photo-editor-format').value=o.format;$('#photo-editor-format').dispatchEvent(new Event('change',{bubbles:true}));}
     if($('#photo-editor-quality')&&o.quality){$('#photo-editor-quality').value=o.quality;const out=$('#photo-editor-quality-value');if(out)out.textContent=`${o.quality}%`;}
     if($('#photo-editor-file-name')&&o.fileName)$('#photo-editor-file-name').value=o.fileName;
