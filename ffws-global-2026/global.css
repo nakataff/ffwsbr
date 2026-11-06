@@ -750,7 +750,7 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 .ffws-global-band-eliminated{--pool-color:#ff6678}
 .ffws-global-table tbody tr.ffws-global-pool-band{box-shadow:inset 4px 0 var(--pool-color);background:linear-gradient(90deg,color-mix(in srgb,var(--pool-color) 9%,transparent),rgba(255,255,255,.012) 35%)}
 .ffws-global-table tbody tr.ffws-global-pool-band:hover{background:linear-gradient(90deg,color-mix(in srgb,var(--pool-color) 15%,transparent),rgba(255,255,255,.025) 50%)}
-.ffws-global-table .ffws-global-pool-band .ffws-global-rank{color:var(--pool-color)}
+.ffws-global-table .ffws-global-pool-band .ffws-global-rank{color:var(--pool-color)!important}
 .ffws-global-pool-legend{margin:0 0 14px;color:#a9bdd5;font-size:.77rem}
 .ffws-global-pool-legend ul{list-style:none;margin:7px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,137px),1fr));gap:6px}
 .ffws-global-pool-legend li{display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid #27364c;border-radius:8px;background:#0b1422;min-width:0}
