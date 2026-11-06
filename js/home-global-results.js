@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=v=>Number(v||0).toLocaleString('pt-BR');
-const CACHE='cff_home_global_summary_v1',TTL=90000;let payload=null,loading=null,lastFetch=0,selectedDay='',dayChosen=false;
+const CACHE='cff_home_global_summary_v2',TTL=90000;let payload=null,loading=null,lastFetch=0,selectedDay='',dayChosen=false;
 function empty(text){return `<tr><td colspan="5" class="home-weekly-empty">${esc(text)}</td></tr>`}
 function playerLink(p){return '/ffws-global-2026/jogador/?id='+encodeURIComponent(p.id)}
 function playerRows(rows,metric){return rows.length?rows.slice(0,6).map((r,i)=>`<tr><td class="home-rank-pos">${i+1}</td><td class="home-rank-media"><a href="${playerLink(r)}"><img class="home-rank-avatar" src="${esc(r.photo||'/silhueta.webp')}" onerror="this.onerror=null;this.src='/silhueta.webp'" alt="" loading="lazy" width="32" height="32"></a></td><td class="home-rank-main"><a class="home-rank-identity" href="${playerLink(r)}"><span><b>${esc(r.name)}</b><small>${esc(r.team)}${r.coverage?.[metric]<r.matches?' · parcial':''}</small></span></a></td><td class="home-rank-number">${fmt(r[metric])}</td><td class="home-rank-number home-rank-matches">${fmt(r.coverage?.[metric]??r.matches)}</td></tr>`).join(''):empty('Aguardando dados individuais do Mundial.')}
@@ -18,8 +18,49 @@ function render(){
  const selector=$('home-global-selection-day');if(selector){selector.innerHTML=(p.days||[]).length?[...p.days].reverse().map(d=>`<option value="${esc(d.date)}">${d.date.split('-').reverse().slice(0,2).join('/')} · Seleção do dia</option>`).join(''):'<option value="">Aguardando primeiro dia</option>';if(dayChosen&&(p.days||[]).some(d=>d.date===selectedDay))selector.value=selectedDay;else selectedDay=selector.value;selector.disabled=!(p.days||[]).length;selector.onchange=()=>{dayChosen=true;selectedDay=selector.value;renderDay()}}
  renderDay();
 }
-async function load(){if(loading)return loading;if(Date.now()-lastFetch<TTL){render();return}const base=String(window.CFF_CONFIG?.firebase?.databaseURL||'').replace(/\/$/,'');if(!base){render();return}
- loading=(async()=>{try{const r=await fetch(base+'/ffwsLive/global-2026/home.json',{cache:'no-cache'});if(!r.ok)throw Error('HTTP '+r.status);payload=await r.json()||{teams:[],rankings:{},days:[]};lastFetch=Date.now();try{sessionStorage.setItem(CACHE,JSON.stringify({at:lastFetch,data:payload}))}catch(_){}render()}catch(e){console.warn('[Home Mundial] resumo indisponível',e);if(!payload){render();for(const id of ['home-tbody-teams','home-tbody-players','home-tbody-damage','home-tbody-assists'])if($(id))$(id).innerHTML=empty('Não foi possível atualizar. Tente recarregar a página.')}}finally{loading=null}})();return loading;
+async function enrich(){
+ const helper=window.CFFGlobalSelections;if(!helper)return;
+ const p=payload||{teams:[],rankings:{},days:[]};
+ const [standings,ranking]=await Promise.allSettled([helper.getStandings(),helper.getHomeRankings()]);
+ if(standings.status==='fulfilled'&&standings.value?.teams?.length){
+   const official=standings.value;
+   const published=Array.isArray(p.teams)?p.teams:[];
+   const officialDrops=Math.max(...official.teams.map(t=>Number(t.matches)||0));
+   const oldDrops=Math.max(0,...published.map(t=>Number(t.matches)||0));
+   if(!published.length||officialDrops>=oldDrops){
+     p.teams=official.teams;p.stage=official.stage;p.date=official.date;p.partial=official.partial;
+   }
+ }
+ if(ranking.status==='fulfilled'&&ranking.value?.kills?.length){
+   const current=p.rankings||{};
+   const siteMax=Math.max(0,...(current.kills||[]).map(r=>Number(r.matches)||0));
+   const fileMax=Math.max(0,...(ranking.value.kills||[]).map(r=>Number(r.matches)||0));
+   if(!current.kills?.length||fileMax>=siteMax){
+     p.rankings={...current,...ranking.value};
+   }
+ }
+ payload=p;
+}
+async function load(){
+ if(loading)return loading;
+ if(Date.now()-lastFetch<TTL&&payload){render();return}
+ loading=(async()=>{
+  const base=String(window.CFF_CONFIG?.firebase?.databaseURL||'').replace(/\/$/,'');
+  if(base){
+   try{
+    const r=await fetch(base+'/ffwsLive/global-2026/home.json',{cache:'no-cache'});
+    if(r.ok){
+      const summary=await r.json();
+      if(summary&&typeof summary==='object')payload=summary;
+    }
+   }catch(e){console.warn('[Home Mundial] resumo indisponível; consultando dados publicados',e)}
+  }
+  try{await enrich()}catch(e){console.warn('[Home Mundial] consulta secundária indisponível',e)}
+  lastFetch=Date.now();
+  try{sessionStorage.setItem(CACHE,JSON.stringify({at:lastFetch,data:payload}))}catch(_){}
+  render();
+ })().finally(()=>{loading=null});
+ return loading;
 }
 window.cffHomeRenderFinalStats=()=>{load();return true};
 function boot(){try{const cached=JSON.parse(sessionStorage.getItem(CACHE)||'null');if(cached?.data){payload=cached.data;lastFetch=Number(cached.at)||0}}catch(_){}
