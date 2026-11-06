@@ -37,7 +37,7 @@ const number=v=>Number(v)||0,fmt=v=>Math.round(number(v)).toLocaleString('pt-BR'
 const shortDate=date=>String(date||'').slice(8,10)+'/'+String(date||'').slice(5,7);
 const url=v=>/^https:\/\//i.test(String(v||''))?String(v):'/'+String(v||'').replace(/^\/+/,'');
 const state={page:{tab:'semanal',mode:'day',day:'',week:''},home:{mode:'day',day:'',week:''},start:{mode:'day',day:'',week:''}};
-let DATA=null,teamCache=null,playersPromise=null,officialRecords=null,officialPromise=null,officialAt=0,homeSummary=null;
+let DATA=null,teamCache=null,playersPromise=null,officialRecords=null,staticDay1=null,officialPromise=null,officialAt=0;
 function setData(players,teams){
  if(!players||!Array.isArray(players.entries)||!Array.isArray(players.players))return false;
  const list=Array.isArray(teams?.teams)?teams.teams:Array.isArray(teams)?teams:[];
@@ -64,32 +64,52 @@ async function loadOfficial(force=false){
  if(!force&&officialAt&&Date.now()-officialAt<90000)return officialRecords;
  if(officialPromise)return officialPromise;
  const base=String(window.CFF_CONFIG?.firebase?.databaseURL||'').replace(/\/$/,'');
- if(!base){officialAt=Date.now();return officialRecords}
- officialPromise=fetch(base+'/ffwsLive/global-2026/rounds.json',{cache:'no-cache',signal:window.AbortSignal?.timeout?.(8000)})
-  .then(r=>r.ok?r.json():null).then(records=>{
+ officialPromise=Promise.all([
+  fetch(BASE+'standings-day1.json?v=20261106-garena-official-v1',{cache:'default'}).then(r=>r.ok?r.json():null).catch(()=>null),
+  base?fetch(base+'/ffwsLive/global-2026/rounds.json',{cache:'no-cache',signal:window.AbortSignal?.timeout?.(8000)})
+   .then(r=>r.ok?r.json():null).catch(()=>null):Promise.resolve(null)
+ ]).then(([fallback,records])=>{
+   if(fallback?.date==='2026-11-06'&&Array.isArray(fallback.teams))staticDay1=fallback;
    if(records&&typeof records==='object')officialRecords=records;
    officialAt=Date.now();return officialRecords;
-  }).catch(()=>{officialAt=Date.now();return officialRecords}).finally(()=>{officialPromise=null});
+ }).catch(()=>{officialAt=Date.now();return officialRecords})
+   .finally(()=>{officialPromise=null});
  return officialPromise;
 }
 function collectStandings(filter){
- if(!DATA||!officialRecords)return [];
+ if(!DATA)return [];
  const teams=new Map(DATA.teams.map(t=>[t.id,t])),totals=new Map();
- for(const [key,rec] of Object.entries(officialRecords)){
+ const usableDrop=(ids,drop)=>ids.length===12&&drop&&ids.every(id=>
+   drop.points?.[id]!=null&&drop.kills?.[id]!=null&&drop.placements?.[id]!=null&&
+   Number.isFinite(Number(drop.points[id]))&&Number.isFinite(Number(drop.kills[id]))&&
+   Number.isInteger(Number(drop.placements[id]))&&Number(drop.placements[id])>=1&&Number(drop.placements[id])<=12);
+ const records=Object.entries(officialRecords||{});
+ const day1Good=records.filter(([key])=>roundStage(key)==='classificatoria'&&roundDate(key)==='2026-11-06')
+  .reduce((n,[,rec])=>n+(Array.isArray(rec?.participants)&&Array.isArray(rec?.drops)?
+   rec.drops.filter(drop=>usableDrop(rec.participants,drop)).length:0),0);
+ const useStaticDay1=Boolean(staticDay1?.teams?.length&&day1Good<12);
+ const add=(id,points,kills,booyahs,matches,lastPlace)=>{
+   const team=teams.get(id);if(!team||!matches)return;
+   let row=totals.get(id);
+   if(!row){row={id,name:team.name,logo:team.logo,team:team.name,points:0,kills:0,booyahs:0,matches:0,lastPlace:99};totals.set(id,row)}
+   row.points+=Number(points)||0;row.kills+=Number(kills)||0;row.booyahs+=Number(booyahs)||0;
+   row.matches+=Number(matches)||0;row.lastPlace=Number(lastPlace)||99;
+ };
+ if(useStaticDay1&&(!filter||filter('classificatoria','2026-11-06'))){
+   for(const row of staticDay1.teams)add(row.id,row.points,row.kills,row.booyahs,row.matches,row.lastPlace);
+ }
+ for(const [key,rec] of records){
   const stage=roundStage(key),date=roundDate(key,rec);
   if(!stage||!Array.isArray(rec?.participants)||!Array.isArray(rec?.drops))continue;
+  if(useStaticDay1&&stage==='classificatoria'&&date==='2026-11-06')continue;
   if(filter&&!filter(stage,date))continue;
   const ids=rec.participants.filter(id=>teams.has(id));
   for(const drop of rec.drops){
-   if(!drop||ids.length!==12||ids.some(id=>drop.points?.[id]==null||drop.kills?.[id]==null||drop.placements?.[id]==null||
-       !Number.isFinite(Number(drop.points[id]))||!Number.isFinite(Number(drop.kills[id]))||
-       !Number.isInteger(Number(drop.placements[id]))))continue;
+   if(!usableDrop(ids,drop))continue;
    for(const id of ids){
     const p=Number(drop.points[id]),k=Number(drop.kills[id]),place=Number(drop.placements[id]);
-    if(p<k||place<1||place>12)continue;
-    let row=totals.get(id);
-    if(!row){const team=teams.get(id);row={id,name:team.name,logo:team.logo,team:team.name,points:0,kills:0,booyahs:0,matches:0,lastPlace:99};totals.set(id,row)}
-    row.points+=p;row.kills+=k;row.booyahs+=Number(place===1);row.matches++;row.lastPlace=place;
+    if(p<k)continue;
+    add(id,p,k,Number(place===1),1,place);
    }
   }
  }
@@ -304,7 +324,7 @@ async function getStandings(){
  const stage=Object.keys(officialRecords||{}).filter(k=>roundStage(k)&&officialRecords[k]?.drops?.length)
   .sort((a,b)=>roundDate(a,officialRecords[a]).localeCompare(roundDate(b,officialRecords[b]))).at(-1);
  const activeStage=stage?roundStage(stage):'classificatoria';
- const latestDate=stage?roundDate(stage,officialRecords[stage]):'';
+ const latestDate=stage?roundDate(stage,officialRecords[stage]):(staticDay1?.date||'');
  const filter=activeStage==='classificatoria'?s=>s==='classificatoria':
   (s,d)=>s===activeStage&&d===latestDate;
  const standings=collectStandings(filter);
