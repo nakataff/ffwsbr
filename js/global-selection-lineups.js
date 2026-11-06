@@ -38,10 +38,13 @@ const shortDate=date=>String(date||'').slice(8,10)+'/'+String(date||'').slice(5,
 const url=v=>/^https:\/\//i.test(String(v||''))?String(v):'/'+String(v||'').replace(/^\/+/,'');
 const state={page:{tab:'semanal',mode:'day',day:'',week:''},home:{mode:'day',day:'',week:''},start:{mode:'day',day:'',week:''}};
 let DATA=null,teamCache=null,playersPromise=null,officialRecords=null,staticDay1=null,officialPromise=null,officialAt=0;
+let phaseCompletion={},remoteRosterPreferred=false,rosterCheckedAt=0,rosterRefresh=null;
 function setData(players,teams){
  if(!players||!Array.isArray(players.entries)||!Array.isArray(players.players))return false;
  const list=Array.isArray(teams?.teams)?teams.teams:Array.isArray(teams)?teams:[];
  if(!list.length)return false;
+ // A cópia buscada diretamente do servidor prevalece sobre o cache do carregador da página.
+ if(remoteRosterPreferred&&DATA&&players!==DATA.players&&players.entries.length<=DATA.entries.length)return true;
  DATA={players:players.players,entries:players.entries,teams:list};
  return true;
 }
@@ -210,6 +213,16 @@ function getPageSelection(){
  const day=dayList.find(d=>d.key===ui.day)||available.at(-1)||dayList[0];
  ui.day=day.key;return {type:'date',stage:day.stage,date:day.date};
 }
+function phaseProgress(stage){
+ const scheduled=MATCH_DAYS.filter(day=>day.stage===stage);
+ const published=scheduled.filter(day=>bucketEntries({type:'date',stage,date:day.date}).length>0);
+ const completed=phaseCompletion?.[stage]?.finished===true||
+  (stage==='classificatoria'&&availableDates().size>0&&MATCH_DAYS.filter(day=>day.stage==='segundaFase').some(day=>availableDates().has(day.key)))||
+  (stage==='segundaFase'&&MATCH_DAYS.some(day=>(day.stage==='lastChance'||day.stage==='final')&&availableDates().has(day.key)))||
+  (stage==='lastChance'&&MATCH_DAYS.some(day=>day.stage==='final'&&availableDates().has(day.key)));
+ return {count:published.length,total:scheduled.length,completed,
+  first:published[0]?.date||'',last:published.at(-1)?.date||''};
+}
 function pageFilter(){
  const ui=state.page,available=availableDates();
  if(ui.mode==='week'){
@@ -224,11 +237,27 @@ function pageFilter(){
   'DIA '+d.day+' · '+shortDate(d.date)+'<small>'+html(STAGE_NAMES[d.stage])+'</small></button>'
  ).join('')+'</div>';
 }
-function renderPage(root,players,teams){
+
+function refreshRosterForSelections(root){
+ if(rosterRefresh||Date.now()-rosterCheckedAt<300000)return;
+ rosterCheckedAt=Date.now();
+ rosterRefresh=fetch(BASE+'players.json?v=20261106-roles-corrected-v3',{cache:'no-cache'})
+  .then(r=>{if(!r.ok)throw Error('Atualização dos jogadores indisponível');return r.json()})
+  .then(players=>{
+   if(!DATA||!Array.isArray(players?.players)||!Array.isArray(players?.entries)||
+      players.entries.length<DATA.entries.length)return;
+   DATA={players:players.players,entries:players.entries,teams:DATA.teams};
+   remoteRosterPreferred=true;
+   if(root.isConnected!==false)renderPage(root,DATA.players,DATA.teams);
+  }).catch(()=>{}).finally(()=>{rosterRefresh=null});
+}
+function renderPage(root,players,teams,stages){
  if(!root)return false;
+ if(stages&&typeof stages==='object')phaseCompletion=stages;
  if(!setData(players,teams))return false;
  const ui=state.page,tab=TABS.find(t=>t.key===ui.tab)||TABS[0],selection=getPageSelection();
  const entries=bucketEntries(selection),hasEntries=entries.length>0;
+ const progress=ui.tab!=='semanal'&&ui.tab!=='torneio'?phaseProgress(ui.tab):null;
  const available=new Set(DATA.entries.map(e=>String(e.stage||'classificatoria')));
  const tabs='<div class="season-selection-tabs">'+TABS.map(t=>{
   const active=ui.tab===t.key,enabled=t.key==='semanal'||t.key==='torneio'&&available.has('final')||available.has(t.key);
@@ -242,14 +271,19 @@ function renderPage(root,players,teams){
  const subtitle=ui.tab==='semanal'?
    (ui.mode==='day'?shortDate(selection.date)+' · '+STAGE_NAMES[selection.stage]:
       WEEKS.find(w=>w.key===ui.week)?.days.map(d=>shortDate(d.date)).join(' a ')):
-   tab.name;
+   progress&&progress.count?
+    'Acumulado: '+progress.count+' de '+progress.total+' dias · '+shortDate(progress.first)+(progress.first!==progress.last?' a '+shortDate(progress.last):''):
+    tab.name;
+ const status=progress&&progress.count?
+   '<span class="cff-global-phase-status '+(progress.completed?'is-complete':'is-running')+'" role="status">'+
+   (progress.completed?'ENCERRADA':'EM ANDAMENTO')+'</span>':'';
  const cards=hasEntries?selectLineup(selection).map(p=>selectionCard(p,tab)).join(''):
   '<div class="season-selection-empty" style="--selection-color:'+tab.color+'"><p>Esta seleção ainda não tem resultados individuais publicados.</p></div>';
  root.innerHTML='<div class="ffws-global-selection-page cff-global-selections-page">'+
  '<div class="season-selection-hero"><div class="season-selection-kicker">FFWS GLOBAL FINALS 2026</div><h1>SELEÇÕES DA SEASON</h1></div>'+
  tabs+'<section class="season-selection-panel season-selection-panel-'+tab.panel+'">'+
  '<div class="season-selection-section-head"><div><span class="season-selection-tag">'+html(tab.title)+'</span><h2>'+html(ui.tab==='semanal'?'TIMES DA SEMANA':tab.name.toUpperCase())+'</h2>'+
- '<p class="cff-global-period-caption">'+html(subtitle||'')+'</p></div></div>'+controls+
+ '<p class="cff-global-period-caption">'+html(subtitle||'')+'</p></div>'+status+'</div>'+controls+
  '<div class="selection-grid season-selection-grid cff-global-selection-grid">'+cards+'</div>'+
  '<p class="cff-global-selection-note">2 Rush · 1 Granadeiro · 1 Suporte/Sniper · 1 Coach. A escolha do técnico considera o time com mais pontos oficiais no período; desempate por Booyahs e abates. Se os pontos ainda não estiverem publicados, o coach fica pendente.</p>'+
  '</section></div>';
@@ -264,6 +298,14 @@ function renderPage(root,players,teams){
    if(b.globalWeek)ui.week=b.globalWeek;
    renderPage(root,DATA.players,DATA.teams);
   });
+ }
+ // Revalida a planilha publicada ao abrir Seleções, sem exigir atualização manual do CSS ou JS.
+ refreshRosterForSelections(root);
+ if(!root.dataset.cffGlobalProgressMonitor){
+  root.dataset.cffGlobalProgressMonitor='1';
+  window.setInterval?.(()=>{
+   if(!document.hidden&&root.closest?.('.page')?.classList?.contains('active'))refreshRosterForSelections(root);
+  },300000);
  }
  if(!officialAt){
   loadOfficial().then(()=>{if(root.isConnected!==false&&DATA)renderPage(root,DATA.players,DATA.teams)});
