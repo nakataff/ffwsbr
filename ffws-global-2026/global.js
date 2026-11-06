@@ -42,7 +42,8 @@
     selectionWeekStage: 'segundaFase',
     selectionTab: 'torneio',
     mvpPage: 0,
-    playerFilters: { stage: [], team: [], role: [], country: [], rookie: [], day: [] },
+    mvpDetails: false,
+    playerFilters: { stage: [], day: [], round: [], team: [], role: [], country: [], rookie: [] },
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
     statsEvolution: { metric: 'position', teams: [] },
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
@@ -499,25 +500,57 @@
     return Array.isArray(state.players?.entries) ? state.players.entries : [];
   }
 
-  function multiFilter(key, title, options) {
-    const selected = state.playerFilters[key] || [];
-    const label = selected.length ? `${selected.length} selecionado${selected.length > 1 ? 's' : ''}` : `Todos`;
-    return `<div class="ffws-global-filter"><span>${escapeHtml(title)}:</span><div class="ffws-global-multi" data-global-multi="${escapeHtml(key)}">
-      <button type="button" onclick="toggleFFWSGlobalMulti('${key}')"><b>${escapeHtml(label)}</b><span>⌄</span></button>
-      <div class="ffws-global-multi-menu" id="ffws-global-multi-${escapeHtml(key)}" hidden>
-        <label><input type="checkbox" ${selected.length === 0 ? 'checked' : ''} onchange="clearFFWSGlobalMulti('${key}')"> Todos</label>
-        ${options.map(option => `<label><input type="checkbox" value="${escapeHtml(option.value)}" ${selected.includes(String(option.value)) ? 'checked' : ''} onchange="setFFWSGlobalMulti('${key}',this.value,this.checked)"> ${option.flag ? `<span>${escapeHtml(option.flag)}</span>` : ''}${escapeHtml(option.label)}</label>`).join('')}
-      </div>
-    </div></div>`;
+  const MVP_FILTER_LABELS = { stage: 'Etapa', day: 'Dia', round: 'Rodada', team: 'Equipe', role: 'Posição', country: 'País', rookie: 'Novatos' };
+  const mvpDayKey = entry => `${entry.stage}-${number(entry.day)}`;
+  const mvpRoundKey = entry => number(entry.round) ? `${entry.stage}-${number(entry.round)}` : '';
+  const mvpShortDate = date => String(date || '').slice(5).split('-').reverse().join('/');
+
+  function mvpFilter(key, options) {
+    const selected = state.playerFilters[key];
+    const title = MVP_FILTER_LABELS[key];
+    const label = selected.length === 1 ? (options.find(option => option.value === selected[0])?.label || selected[0])
+      : selected.length ? `${selected.length} selecionados` : 'Todos';
+    return `<div class="ffws-global-filter"><span id="mvp-filter-label-${key}">${title}</span>
+      <button type="button" data-mvp-filter="${key}" aria-haspopup="dialog" aria-controls="ffws-global-mvp-filter-dialog"
+        aria-labelledby="mvp-filter-label-${key} mvp-filter-value-${key}"${options.length ? '' : ' disabled'}>
+        <b id="mvp-filter-value-${key}">${escapeHtml(options.length ? label : 'Sem dados')}</b><span aria-hidden="true">⌄</span>
+      </button></div>`;
   }
 
-  function mvpOverallDay(entry) {
-    const day = number(entry?.day);
-    if (!day) return 0;
-    const stage = String(entry?.stage || '');
-    if(stage==='segundaFase')return day+new Set(stageEvents('classificatoria').map(e=>number(e.day||e.round))).size;
-    if(stage==='final')return day+['classificatoria','segundaFase'].reduce((n,k)=>n+new Set(stageEvents(k).map(e=>number(e.day||e.round))).size,0);
-    return day;
+  function bindMvpFilters(root, options) {
+    const dialog = root.querySelector('.ffws-global-mvp-filter-dialog');
+    const form = dialog.querySelector('form');
+    const optionList = form.querySelector('.ffws-global-mvp-filter-options');
+    let trigger;
+    for (const button of root.querySelectorAll('[data-mvp-filter]')) {
+      button.addEventListener('click', () => {
+        trigger = button;
+        const key = button.dataset.mvpFilter;
+        const selected = state.playerFilters[key];
+        dialog.querySelector('h3').textContent = MVP_FILTER_LABELS[key];
+        optionList.innerHTML = options[key].map(option => `<label>
+          <input type="checkbox" name="filter" value="${escapeHtml(option.value)}"${selected.includes(option.value) ? ' checked' : ''}>
+          <span>${option.flag ? escapeHtml(option.flag) + ' ' : ''}${escapeHtml(option.label)}</span>
+        </label>`).join('');
+        dialog.showModal();
+        optionList.scrollTop = 0;
+        dialog.querySelector('[data-mvp-close]').focus();
+      });
+    }
+    dialog.querySelector('[data-mvp-close]').addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-mvp-clear]').addEventListener('click', () => {
+      for (const input of optionList.querySelectorAll('input:checked')) input.checked = false;
+    });
+    dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const key = trigger.dataset.mvpFilter;
+      state.playerFilters[key] = [...optionList.querySelectorAll('input:checked')].map(input => input.value);
+      state.mvpPage = 0;
+      dialog.close();
+      renderMvp();
+      root.querySelector(`[data-mvp-filter="${key}"]`)?.focus({preventScroll:true});
+    });
   }
 
   function playerFilterOptions() {
@@ -525,7 +558,17 @@
     const roster = rosterPlayers();
     const playerSource = entries.length ? entries : roster;
     const teams = [...new Set((playerSource.length ? playerSource.map(entry => entry.team) : state.teams.map(team => team.name)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const days = [...new Set(entries.map(entry => mvpOverallDay(entry)).filter(Boolean))].sort((a, b) => a - b);
+    const roundKeys = new Set(entries.map(mvpRoundKey));
+    const dayKeys = new Set(entries.filter(entry => number(entry.day)).map(mvpDayKey));
+    const schedule = state.dates.rounds || [];
+    const days = [...new Map(schedule.map(round => [mvpDayKey(round), round.date]))];
+    const roundOptions = schedule.filter(round => roundKeys.has(mvpRoundKey(round))).map(round => {
+      const groups = round.groups?.join(' × ');
+      const label = round.stage === 'classificatoria'
+        ? `Rodada ${round.session || round.round} · ${groups || 'Fase 1'}`
+        : round.stage === 'segundaFase' ? `Fase 2 · Dia ${round.day}` : stageLabel(round.stage);
+      return {value: mvpRoundKey(round), label: `${label} · ${mvpShortDate(round.date)}`};
+    });
     const countries = [...new Set(playerSource.map(entry => String(entry.country || rosterPlayerByName(entry.name || entry.player, entry.team)?.country || 'br').toLowerCase()).filter(Boolean))];
     const countryNames = { br: 'Brasil' };
     return {
@@ -534,7 +577,8 @@
       role: [{ value: 'RUSH', label: 'Rush' }, { value: 'SUP', label: 'Suporte' }, { value: 'GRAN', label: 'Granadeiro' }, { value: '3', label: '3º homem' }],
       country: countries.map(country => ({ value: country, label: countryNames[country] || country.toUpperCase(), flag: country === 'br' ? '🇧🇷' : '' })),
       rookie: [{ value: 'rookie', label: 'Apenas estreantes' }, { value: 'veteran', label: 'Sem estreantes' }],
-      day: days.map(day => ({ value: String(day), label: `Dia ${day}` }))
+      day: days.map(([value, date], index) => ({value, label: `Dia ${index + 1} · ${mvpShortDate(date)}`})).filter(day => dayKeys.has(day.value)),
+      round: roundOptions
     };
   }
 
@@ -552,7 +596,8 @@
         && (!f.role.length || f.role.includes(String(entry.roleShort || entry.role || meta?.roleShort || '').toUpperCase()))
         && (!f.country.length || f.country.includes(country))
         && rookieMatch
-        && (!f.day.length || f.day.includes(String(mvpOverallDay(entry))));
+        && (!f.day.length || f.day.includes(mvpDayKey(entry)))
+        && (!f.round.length || f.round.includes(mvpRoundKey(entry)));
     });
     const aggregate = new Map();
     entries.forEach(entry => {
@@ -586,10 +631,18 @@
       <button type="button" aria-label="Próximo Top 10" ${state.mvpPage >= pageCount - 1 ? 'disabled' : ''} onclick="setFFWSGlobalMvpPage(${state.mvpPage + 1})">›</button>
     </div>` : '';
     root.innerHTML = `<div class="ffws-global-shell">${hero('Ranking MVP', 'Classificação individual da FFWS Global Finals 2026')}
-      <section class="ffws-global-panel ffws-global-mvp-panel"><div class="ffws-global-panel-inner">
-        <div class="ffws-global-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking por etapa, equipe, posição, país e dia.</p></div><span class="ffws-global-badge">${rows.length} jogadores</span></div>
-        <div class="ffws-global-filters">${multiFilter('stage', 'Etapa', options.stage)}${multiFilter('team', 'Equipe', options.team)}${multiFilter('role', 'Posição', options.role)}${multiFilter('country', 'País', options.country)}${multiFilter('rookie', 'Novatos', options.rookie)}${multiFilter('day', 'Dias', options.day)}</div>
-        <div class="ffws-global-mvp-mobile-tools"><span>Visual compacto: J · E · K · Q</span><button type="button" class="ffws-global-mvp-details-toggle" aria-expanded="false">Dados completos</button></div>
+      <section class="ffws-global-panel ffws-global-mvp-panel${state.mvpDetails ? ' show-details' : ''}"><div class="ffws-global-panel-inner">
+        <div class="ffws-global-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking por dia, rodada, etapa, equipe e mais.</p></div><span class="ffws-global-badge">${rows.length} jogadores</span></div>
+        <div class="ffws-global-filters ffws-global-mvp-filters">${Object.keys(MVP_FILTER_LABELS).map(key => mvpFilter(key, options[key])).join('')}</div>
+        <dialog class="ffws-global-mvp-filter-dialog" id="ffws-global-mvp-filter-dialog" aria-labelledby="ffws-global-mvp-filter-title">
+          <form>
+            <div class="ffws-global-mvp-filter-heading"><h3 id="ffws-global-mvp-filter-title"></h3><button type="button" data-mvp-close aria-label="Fechar sem aplicar">×</button></div>
+            <p>Selecione uma ou mais opções. Sem seleção, o filtro mostra tudo.</p>
+            <div class="ffws-global-mvp-filter-options"></div>
+            <div class="ffws-global-mvp-filter-actions"><button type="button" data-mvp-clear>Limpar seleção</button><button type="submit">Aplicar</button></div>
+          </form>
+        </dialog>
+        <div class="ffws-global-mvp-mobile-tools"><span>Visual compacto: J · E · K · Q</span><button type="button" class="ffws-global-mvp-details-toggle" aria-expanded="${state.mvpDetails}">${state.mvpDetails ? 'Ocultar detalhes' : 'Dados completos'}</button></div>
         <div class="ffws-global-table-wrap"><table class="ffws-global-table ffws-global-mvp-table"><thead><tr><th class="ffws-global-mvp-rank-col">#</th><th class="team-col ffws-global-mvp-player-col"><span class="ffws-global-desktop">Jogador</span><span class="ffws-global-mobile">J</span></th><th><span class="ffws-global-desktop">Eqp</span><span class="ffws-global-mobile">E</span></th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile">K/Q</th></tr></thead><tbody>
         ${pageRows.length ? pageRows.map((row, index) => {
           const rank = pageStart + index + 1;
@@ -607,14 +660,9 @@
         ${pager}
       </div></section></div>`;
 
+    bindMvpFilters(root, options);
     const detailsButton = root.querySelector('.ffws-global-mvp-details-toggle');
-    if (detailsButton) detailsButton.addEventListener('click', () => {
-      const panel = root.querySelector('.ffws-global-mvp-panel');
-      if (!panel) return;
-      const expanded = panel.classList.toggle('show-details');
-      detailsButton.setAttribute('aria-expanded', String(expanded));
-      detailsButton.textContent = expanded ? 'Ocultar detalhes' : 'Dados completos';
-    });
+    detailsButton.addEventListener('click', () => window.toggleFFWSGlobalMvpDetails(detailsButton));
   }
 
   function renderTeams(){window.CFFGlobalTeams?.boot();}
@@ -2658,23 +2706,16 @@
     const panel = button?.closest('.ffws-global-mvp-panel');
     if (!panel) return;
     const expanded = panel.classList.toggle('show-details');
+    state.mvpDetails = expanded;
     button.setAttribute('aria-expanded', String(expanded));
     button.textContent = expanded ? 'Ocultar detalhes' : 'Dados completos';
   };
-  window.toggleFFWSGlobalMulti = key => {
-    document.querySelectorAll('.ffws-global-multi-menu').forEach(menu => { if (menu.id !== `ffws-global-multi-${key}`) menu.hidden = true; });
-    const menu = document.getElementById(`ffws-global-multi-${key}`);
-    if (menu) menu.hidden = !menu.hidden;
-  };
   window.setFFWSGlobalMvpPage = page => { state.mvpPage = Math.max(0, number(page)); renderMvp(); };
-  window.clearFFWSGlobalMulti = key => { state.playerFilters[key] = []; state.mvpPage = 0; renderMvp(); };
-  window.setFFWSGlobalMulti = (key, value, checked) => {
-    const list = new Set(state.playerFilters[key] || []);
-    checked ? list.add(String(value)) : list.delete(String(value));
-    state.playerFilters[key] = [...list];
-    state.mvpPage = 0;
-    renderMvp();
-  };
+
+  window.addEventListener('hashchange', () => {
+    const dialog = document.getElementById('ffws-global-mvp-filter-dialog');
+    if (dialog?.open && location.hash !== '#ffws-global-2026-mvp') dialog.close();
+  });
 
   document.addEventListener('click', event => {
     if (!event.target.closest('.ffws-global-multi')) {

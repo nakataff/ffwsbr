@@ -34,6 +34,26 @@
 @media(max-width:620px){.ffws-global-compare-selectors{grid-template-columns:1fr}.ffws-global-compare-selectors b{text-align:center;padding:0}.ffws-global-player-compare-grid{grid-template-columns:1fr 1fr;gap:8px}.ffws-global-player-compare-hero{min-height:275px}.ffws-global-compare-photo{height:185px}.ffws-global-player-compare-hero>div{grid-template-columns:30px minmax(0,1fr);padding:58px 9px 11px}.ffws-global-compare-team-logo{width:30px;height:30px}.ffws-global-player-compare-hero strong{font-size:.82rem}.ffws-global-player-compare-hero span{font-size:.62rem}.ffws-global-compare-metric{grid-template-columns:minmax(54px,1fr) minmax(88px,1.2fr) minmax(54px,1fr);padding:9px 3px}.ffws-global-compare-metric strong{font-size:.82rem}.ffws-global-compare-metric span{font-size:.57rem}}
 
 /* ===== Ranking MVP: visão compacta mobile J | E | K | Q ===== */
+.ffws-global-mvp-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,148px),1fr));align-items:start}
+.ffws-global-mvp-filters .ffws-global-filter{min-width:0}
+.ffws-global-mvp-filters button,.ffws-global-mvp-filter-dialog button{font:inherit;font-weight:800;color:#e6f2ff;border:1px solid #2b496f;background:#0b1426;border-radius:9px;min-height:44px;padding:8px 11px;cursor:pointer}
+.ffws-global-mvp-filters button{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:6px;text-align:left}
+.ffws-global-mvp-filters button b{min-width:0;overflow-wrap:anywhere}
+.ffws-global-mvp-filters button:disabled{opacity:.55;cursor:default}
+.ffws-global-mvp-filter-dialog{position:fixed;inset:0;margin:auto;padding:0;max-width:calc(100% - 24px);width:450px;border:1px solid #365577;border-radius:16px;background:#101b2d;color:#e6f2ff;color-scheme:dark;overflow:hidden}
+.ffws-global-mvp-filter-dialog::backdrop{background:rgba(2,6,13,.76)}
+.ffws-global-mvp-filter-dialog form{display:flex;flex-direction:column;gap:12px;margin:0;padding:15px;max-height:82vh;max-height:min(82dvh,560px);box-sizing:border-box}
+.ffws-global-mvp-filter-heading,.ffws-global-mvp-filter-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
+.ffws-global-mvp-filter-heading h3,.ffws-global-mvp-filter-dialog p{margin:0}
+.ffws-global-mvp-filter-heading button{min-width:44px;font-size:1.25rem;line-height:1}
+.ffws-global-mvp-filter-dialog p{font-size:.82rem;color:#a9c2df}
+.ffws-global-mvp-filter-options{min-height:0;overflow-y:auto;overscroll-behavior:contain;border-block:1px solid #243a54}
+.ffws-global-mvp-filter-options label{display:flex;align-items:center;gap:10px;min-height:44px;padding:8px 4px;box-sizing:border-box;cursor:pointer}
+.ffws-global-mvp-filter-options label+label{border-top:1px solid #243a54}
+.ffws-global-mvp-filter-options input[type=checkbox]{flex:none;appearance:auto;position:static;width:18px;height:18px;margin:0;accent-color:#00c8ff}
+.ffws-global-mvp-filter-actions button{flex:1}
+.ffws-global-mvp-filter-actions button[type=submit]{background:#00b5e8;border-color:#00b5e8;color:#051221}
+@media(max-width:760px){.ffws-global-mvp-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .ffws-global-mvp-mobile-tools{display:none}
 .ffws-global-mvp-details-row{display:none}
 @media(max-width:760px){
