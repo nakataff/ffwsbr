@@ -403,10 +403,31 @@
     return Array.from({ length: total }, (_, index) => ({ team: `${prefix} #${index + 1}`, position: null, points: 0, booyahs: 0, kills: 0, placementPoints: 0, matches: 0, bonus: 0, placeholder: true }));
   }
 
+  // These are qualification bands for the overall standings, not for an isolated round.
+  const PHASE_ONE_BANDS = [
+    {key:'pool-1', from:1, to:12, label:'Pool 1', detail:'Fase 2 · Dia 1'},
+    {key:'pool-2', from:13, to:14, label:'Pool 2', detail:'Fase 2 · Dia 2'},
+    {key:'pool-3', from:15, to:16, label:'Pool 3', detail:'Fase 2 · Dia 3'},
+    {key:'pool-4', from:17, to:18, label:'Pool 4', detail:'Fase 2 · Dia 4'},
+    {key:'repechage', from:19, to:20, label:'Repescagem', detail:''},
+    {key:'eliminated', from:21, to:24, label:'Eliminação', detail:''}
+  ];
+  function phaseOneLegend() {
+    return `<div class="ffws-global-pool-legend"><strong>Faixas da classificação geral</strong>
+      <ul aria-label="Legenda de classificação">${PHASE_ONE_BANDS.map(band=>`<li class="ffws-global-pool-band ffws-global-band-${band.key}">
+        <span class="ffws-global-pool-swatch" aria-hidden="true"></span><span><b>${band.from}º–${band.to}º · ${band.label}</b>${band.detail?`<small>${band.detail}</small>`:''}</span>
+      </li>`).join('')}</ul>
+    </div>`;
+  }
+
   function rowClass(stageKey,row){
     if(stageKey==='final'&&isOverallStageFilter('final')&&normalize(state.stages?.final?.champion||'')===normalize(row.team))return 'ffws-global-row-champion';
-    if(stageKey==='classificatoria'&&!isOverallStageFilter(stageKey))return '';
-    const format=stageFormat(stageKey);if(stageKey==='classificatoria'){const pos=number(row.position);if(Array.isArray(format.lastChancePositions)&&format.lastChancePositions.includes(pos))return 'ffws-global-row-last-chance';if(Array.isArray(format.eliminatedPositions)&&format.eliminatedPositions.includes(pos))return 'ffws-global-row-eliminated';}
+    if(stageKey==='classificatoria'){
+      if(!isOverallStageFilter(stageKey))return '';
+      const position=number(row.position),band=PHASE_ONE_BANDS.find(item=>position>=item.from&&position<=item.to);
+      return band?`ffws-global-pool-band ffws-global-band-${band.key}`:'';
+    }
+    const format=stageFormat(stageKey);
     if(stageKey==='segundaFase'&&format.resetEachDay&&stageFilterValues(stageKey,'period').length!==1)return '';
     const advance=number(format.advance),position=number(row.position);
     return advance&&position&&position<=advance?'ffws-global-row-advance':'';
@@ -478,7 +499,7 @@
 
   function renderClassificatoria(rootId){
     const root=document.getElementById(rootId);if(!root)return;
-    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? (isOverallStageFilter('classificatoria') ? phaseOneLegend() : '') + stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
   }
 
   function renderStage(stageKey, rootId, title, subtitle) {

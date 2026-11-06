@@ -29,6 +29,11 @@ test('Classificatória and Stats share published scores, preserve session filter
   const first=classRoot.querySelector('tbody tr');
   assert(first.textContent.includes(winner.name));
   assert.equal(Number(first.querySelector('.ffws-global-points-col').textContent),winner.points);
+  const bands=['pool-1','pool-2','pool-3','pool-4','repechage','eliminated'];
+  const legend=[...classRoot.querySelectorAll('.ffws-global-pool-legend li')];
+  assert.equal(legend.length,6);
+  assert.deepEqual(legend.map(item=>item.querySelector('b').textContent),['1º–12º · Pool 1','13º–14º · Pool 2','15º–16º · Pool 3','17º–18º · Pool 4','19º–20º · Repescagem','21º–24º · Eliminação']);
+  assert.deepEqual(bands.map((band,i)=>[classRoot.querySelectorAll('tbody .ffws-global-band-'+band).length,legend[i].classList.contains('ffws-global-band-'+band)]),[[12,true],[2,true],[2,true],[2,true],[2,true],[4,true]]);
   assert(statsRoot.querySelector('#anchor-s2-totais-equipe'));
   assert(statsRoot.querySelector('#anchor-s2-medias-equipe'));
   assert(statsRoot.querySelector('#anchor-s2-rec-day-team'));
@@ -54,6 +59,7 @@ test('Classificatória and Stats share published scores, preserve session filter
    w.closeFFWSGlobalDropReport();
    w.setFFWSGlobalStageFilter('classificatoria','period','2');
    assert.equal(classRoot.querySelectorAll('tbody tr').length,12);
+   assert(!classRoot.querySelector('.ffws-global-pool-legend,.ffws-global-pool-band'));
    assert.equal(Number(classRoot.querySelector('tbody .ffws-global-points-col').textContent),14);
    const teams=api.aggregateStatsTeams(api.statsStageEvents('classificatoria'));
    assert.equal(teams.reduce((total,row)=>total+row.points,0),123);
