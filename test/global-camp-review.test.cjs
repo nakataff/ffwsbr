@@ -20,3 +20,20 @@ test('the finished Brazil S2 preset is absent from startup, toolbar and automate
 test('a concurrent change to another round cannot silently change the confirmed table',()=>{const r=filled(),other=filled('classificatoria-2'),root={rounds:{[other.key]:other},revisions:{}},preview=C.rank([r],meta);assert.throws(()=>C.publication(root,r,meta,0,'current-review',preview),/classificação foi atualizada/);});
 
 test('new ready rounds omit the start time from their title and do not inherit regional qualifying emojis',()=>{const d=C.backup(base,meta,'classificatoria-1');assert(!d.config.tournamentName.includes('04:00'));assert.equal(d.config.daySettings[0].time,'04:00');assert.equal(d.config.emojiVisualEnabled,false);assert.deepEqual(d.config.v68PositionEmojiLegend.rows,[]);assert.equal(d.config.cffGlobalPresentationVersion,5);});
+
+test('switching rounds keeps summary layout and does not carry scores or title into the new round',async()=>{
+ const h=await harness(),w=h.w;
+ try{
+  Object.assign(h.draft.config,{summaryTableStyle:'compact',showDropColumns:false,summaryColumnOrder:'team,total',headerHeight:77,postTitle:'Old round'});
+  w.document.getElementById('cff-global-round').value='classificatoria-2';
+  await w.CFF_GLOBAL_CAMP.openRound();
+  assert.equal(h.draft.config.cffGlobalRound,'classificatoria-2');
+  assert.equal(h.draft.config.summaryTableStyle,'compact');
+  assert.equal(h.draft.config.showDropColumns,false);
+  assert.equal(h.draft.config.summaryColumnOrder,'team,total');
+  assert.equal(h.draft.config.headerHeight,77);
+  assert.notEqual(h.draft.config.postTitle,'Old round');
+  assert.equal(h.draft.drops[0].booyah,'');
+  assert.equal(h.draft.config.cffGlobalArchive['classificatoria-1'].drops.length,2);
+ }finally{h.close()}
+});

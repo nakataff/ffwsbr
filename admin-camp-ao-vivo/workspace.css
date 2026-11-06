@@ -221,3 +221,11 @@ body>.container>h1{display:none!important}
   body #teams-inputs-container#teams-inputs-container .team-row>.cff-elim-marker{grid-column:1/-1;padding:0;font-size:.7rem}
   body #teams-inputs-container#teams-inputs-container .team-row>.cff-elim-marker[data-unplaced]{display:none}
 }
+
+.cff-camp-cloud{margin:0 0 14px;padding:13px;border:1px solid #34506b;border-radius:10px;background:#101e2c;color:#e7f3ff}
+.cff-camp-cloud p{margin:5px 0 9px;color:#a6bfd4;font-size:.8rem;line-height:1.45}
+.cff-camp-cloud>div{display:flex;gap:6px;flex-wrap:wrap}
+.cff-camp-cloud #cff-camp-cloud-status{margin:8px 0 0;color:#9cefc7}
+.cff-camp-cloud #cff-camp-cloud-status:empty{display:none}
+.cff-camp-cloud #cff-camp-cloud-status[data-error=true]{color:#ffa8ac}
+@media(max-width:600px){.cff-camp-cloud .cff-camp-btn{min-height:42px}}

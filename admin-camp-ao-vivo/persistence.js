@@ -6,15 +6,18 @@
   const HISTORY_KEY='cff_camp_safe_history_v1';
   const HISTORY_LIMIT=15;
   const ADMIN_EMAIL='admin@centralfreefire.com.br';
-  const REMOTE_ROOT='ffwsLive/campAoVivoBackup';
-  const GITHUB_BACKUP_PATH='admin-camp-ao-vivo/data/autosave-live.json';
+  const REMOTE_PATH='adminCampDraft/current';
+  const LEGACY_PATH='ffwsLive/campAoVivoBackup/current';
+  const SYNC_REV='cff_camp_sync_revision_v1';
+  const RESTORE_KEY='cff_camp_cloud_restore_v1';
+  const PREFERENCE_KEYS=['ffws_v51_table_tools','ffws_v57_stable_features'];
 
   let localTimer=0;
   let historyTimer=0;
   let lastFingerprint='';
   let firebasePromise=null;
   let saveDropPatched=false;
-  let githubUnavailableNotified=false;
+  let remoteQueue=Promise.resolve(),openingCloud=false,lastRemoteError='';
 
   const $=sel=>document.querySelector(sel);
 
@@ -178,98 +181,99 @@
         auth:authApi.getAuth(app),
         db:dbApi.getDatabase(app),
         ref:dbApi.ref,
-        set:dbApi.set,
-        update:dbApi.update
+        get:dbApi.get,
+        runTransaction:dbApi.runTransaction
       };
     });
     return firebasePromise;
   }
 
-  function safeSlug(value){
-    return String(value||'camp')
-      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-      .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,70)||'camp';
+  function cloudStatus(text,error=false){
+    const status=$('#cff-camp-cloud-status');
+    if(status){status.textContent=text;status.dataset.error=String(error);}
   }
-
-  async function saveFirebaseBackup(snapshot){
+  async function cloud(){
     const api=await firebase();
-    const user=api.auth.currentUser;
-    if(!user||String(user.email||'').toLowerCase()!==ADMIN_EMAIL)throw new Error('Sessão administrativa inválida.');
-
-    const key=`q${String(snapshot.drop||0).padStart(3,'0')}`;
-    const tournament=safeSlug(snapshot.tournamentName);
-    const payload={
-      updatedAt:Date.now(),
-      tournamentName:snapshot.tournamentName,
-      drop:snapshot.drop||0,
-      source:'admin-camp-ao-vivo',
-      backup:snapshot.backup
-    };
-    const updates={};
-    updates[`${REMOTE_ROOT}/current`]=payload;
-    updates[`${REMOTE_ROOT}/history/${tournament}/${key}`]=payload;
-    await api.update(api.ref(api.db),updates);
-    return true;
+    await api.auth.authStateReady();
+    if(api.auth.currentUser?.email?.toLowerCase()!==ADMIN_EMAIL)throw new Error('Entre com a conta administradora para acessar o rascunho.');
+    return api;
   }
-
-  async function saveGithubBackup(snapshot){
-    const config=window.CFF_CONFIG?.firebase;
-    const projectId=String(config?.projectId||'').trim();
-    if(!projectId)throw new Error('projectId do Firebase ausente.');
-
-    const api=await firebase();
-    const user=api.auth.currentUser;
-    if(!user||String(user.email||'').toLowerCase()!==ADMIN_EMAIL)throw new Error('Sessão administrativa inválida.');
-    const token=await user.getIdToken();
-
-    const endpoint=`https://southamerica-east1-${projectId}.cloudfunctions.net/campGithubBackup`;
-    const response=await fetch(endpoint,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':`Bearer ${token}`
-      },
-      body:JSON.stringify({
-        tournamentName:snapshot.tournamentName,
-        drop:snapshot.drop||0,
-        backup:snapshot.backup
-      })
-    });
-    if(!response.ok){
-      const text=await response.text().catch(()=>'');
-      throw new Error(`GitHub backup HTTP ${response.status}${text?': '+text.slice(0,160):''}`);
-    }
-    return response.json().catch(()=>({ok:true}));
-  }
-
-  async function saveRemoteAfterDrop(snapshot){
-    if(!snapshot)return;
-    let firebaseOk=false;
-    try{
-      await saveFirebaseBackup(snapshot);
-      firebaseOk=true;
-      setIndicator('Salvo no navegador + nuvem',`${snapshot.tournamentName} • queda ${snapshot.drop||'—'} salva também no Firebase`);
-    }catch(error){
-      console.warn('[Camp persistência] backup Firebase falhou',error);
-    }
-
-    try{
-      const result=await saveGithubBackup(snapshot);
-      setIndicator('Salvo no navegador + GitHub',`${snapshot.tournamentName} • queda ${snapshot.drop||'—'} • commit ${String(result?.commitSha||result?.commit_sha||'').slice(0,8)}`);
-      githubUnavailableNotified=false;
-    }catch(error){
-      console.warn('[Camp persistência] backup GitHub indisponível',error);
-      if(!firebaseOk)setIndicator('Salvo apenas no navegador','O backup remoto não respondeu; o backup local continua protegido.');
-      if(!githubUnavailableNotified){
-        githubUnavailableNotified=true;
-        window.CFF_CAMP?.toast?.(
-          firebaseOk
-            ? 'Queda protegida no navegador e Firebase. GitHub automático ainda não está ativo.'
-            : 'Queda salva no navegador; backup remoto indisponível.',
-          'warn'
-        );
+  function editable(data){return Array.isArray(data?.selectedTeams)&&data.selectedTeams.length>0&&Array.isArray(data.drops)&&!!data.config;}
+  function readPreferences(){return Object.fromEntries(PREFERENCE_KEYS.map(key=>[key,localStorage.getItem(key)]));}
+  function saveRemoteAfterDrop(snapshot){
+    if(!snapshot||openingCloud||!editable(snapshot.backup))return Promise.resolve(false);
+    const preferences=readPreferences(),drop=String($('#drop-num')?.value||'');
+    const save=async()=>{
+      try{
+        const api=await cloud(),ref=api.ref(api.db,REMOTE_PATH);
+        const base=localStorage.getItem(SYNC_REV)||'';
+        const remote=(await api.get(ref)).val();
+        if((remote?.revision||'')!==base)throw new Error('Outro aparelho tem uma cópia na nuvem. Abra essa cópia antes de continuar. Suas edições estão neste navegador; baixe um JSON para guardá-las.');
+        const json=JSON.stringify({backup:snapshot.backup,preferences,drop});
+        if(json.length>1500000)throw new Error('A cópia é grande demais para a nuvem. Use Baixar backup.');
+        const revision=crypto.randomUUID();
+        const saved=await api.runTransaction(ref,current=>(current?.revision||'')===base?{revision,updatedAt:Date.now(),json}:undefined,{applyLocally:false});
+        if(!saved.committed)throw new Error('A cópia mudou em outro aparelho. Abra a versão da nuvem antes de salvar.');
+        localStorage.setItem(SYNC_REV,revision);
+        lastRemoteError='';
+        const text='Salvo na nuvem: '+snapshot.tournamentName;
+        cloudStatus(text);setIndicator('Salvo no navegador + nuvem',text);
+        return true;
+      }catch(error){
+        const detail=/permission.denied/i.test(error.message||'')?'A cópia na nuvem ainda não está disponível para esta sessão.':error.message;
+        cloudStatus('Cópia na nuvem não salva. '+(detail||'Tente novamente.'),true);
+        setIndicator('Cópia local preservada');
+        if(snapshot.reason==='save-drop'&&lastRemoteError!==detail){
+          lastRemoteError=detail;
+          window.CFF_CAMP?.toast?.('Queda salva neste navegador. Confira a cópia na nuvem no início do painel.','warn');
+        }
+        return false;
       }
-    }
+    };
+    remoteQueue=remoteQueue.then(save,save);
+    return remoteQueue;
+  }
+  async function openCloud(){
+    if(openingCloud)return;
+    openingCloud=true;
+    const button=$('#cff-camp-cloud-open');button.disabled=true;
+    try{
+      cloudStatus('Buscando a última cópia na nuvem…');
+      await remoteQueue;
+      const api=await cloud(),remote=(await api.get(api.ref(api.db,REMOTE_PATH))).val();
+      const legacy=remote?null:(await api.get(api.ref(api.db,LEGACY_PATH))).val();
+      if(!remote&&!legacy)throw new Error('Não encontrei uma cópia na nuvem. No aparelho original, use Salvar na nuvem. Para recuperar placares já enviados, use Puxar resultados publicados.');
+      const entry=remote?JSON.parse(remote.json):{backup:legacy.backup,drop:String(legacy.drop||'')};
+      if(!editable(entry.backup))throw new Error('A cópia encontrada não tem os dados necessários. O rascunho local foi mantido.');
+      const date=remote?.updatedAt||legacy?.updatedAt;
+      const stamp=date?' · '+new Date(date).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'}):'';
+      const name=backupName(entry.backup);
+      if(!confirm('Abrir “'+name+'”'+stamp+'? A cópia deste aparelho ficará no backup anterior. Nada será publicado.')){
+        cloudStatus('Abertura cancelada. Seu rascunho continua neste navegador.');return;
+      }
+      const local=currentBackup();
+      if(editable(local))localStorage.setItem('cff_camp_before_cloud_v1',JSON.stringify({savedAt:Date.now(),backup:local,preferences:readPreferences()}));
+      sessionStorage.setItem(RESTORE_KEY,JSON.stringify({...entry,revision:remote?.revision||''}));
+      location.reload();
+    }catch(error){cloudStatus(error.message||'Não foi possível abrir a cópia na nuvem.',true);}
+    finally{openingCloud=false;button.disabled=false;}
+  }
+  function wireCloud(){
+    $('#cff-camp-cloud-open')?.addEventListener('click',openCloud);
+    $('#cff-camp-cloud-save')?.addEventListener('click',async event=>{
+      const button=event.currentTarget;button.disabled=true;
+      try{
+        const snapshot=saveLocalNow('cloud-save',true);
+        if(!editable(snapshot?.backup)){cloudStatus('Carregue uma rodada ou um campeonato antes de salvar.',true);return;}
+        cloudStatus('Salvando a cópia…');await saveRemoteAfterDrop(snapshot);
+      }finally{button.disabled=false;}
+    });
+    $('#cff-camp-cloud-previous')?.addEventListener('click',()=>{
+      const raw=localStorage.getItem('cff_camp_before_cloud_v1');
+      if(!raw){cloudStatus('Este navegador ainda não tem uma cópia anterior à abertura da nuvem.');return;}
+      const entry=JSON.parse(raw),url=URL.createObjectURL(new Blob([JSON.stringify(entry.backup,null,2)],{type:'application/json'}));
+      const a=document.createElement('a');a.href=url;a.download='camp-antes-da-nuvem.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    });
   }
 
   function patchSaveDrop(){
@@ -331,7 +335,7 @@
   function boot(){
     if(window.__CFF_CAMP_READY__!==true)return;
     if(restoreSafeIfCoreWasLost())return;
-    wire();
+    wire();wireCloud();
     saveLocalNow('boot',false);
     patchSaveDrop();
     [250,700,1500,3000].forEach(delay=>setTimeout(patchSaveDrop,delay));
@@ -354,8 +358,7 @@
           return false;
         },
         safeKey:SAFE_KEY,
-        historyKey:HISTORY_KEY,
-        githubPath:GITHUB_BACKUP_PATH
+        historyKey:HISTORY_KEY
       }
     };
   }

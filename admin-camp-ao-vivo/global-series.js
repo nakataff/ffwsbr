@@ -47,9 +47,18 @@ function render(){
  $('cff-global-players-fields').innerHTML=(state?meta.players.filter(p=>ids.includes(C.team(meta,p.team)?.id)):[]).map(p=>{const row=state.players.find(r=>r.id===p.id)||{};return `<tr data-global-player="${esc(p.id)}"><th scope="row">${esc(p.name)}<small>${esc(p.team)}</small></th>${['kills','damage','assists','matches'].map(k=>`<td><input type="number" min="${k==='matches'?1:0}" step="1" data-stat="${k}" aria-label="${esc(p.name)} — ${k}" value="${esc(row[k]??'')}" placeholder="—"></td>`).join('')}</tr>`}).join('');
  syncModelUi();
 }
+// Keep presentation and export preferences without importing scores or round identity.
+function keepSummarySettings(next,current){
+ const source=current?.config||{};
+ for(const key of ['tableSpacing','hideLogosSummary','summaryFullTable','showColTotal','showColBooyah','showColKills','showColPlacement','showColStarting','showColMatches','showColLastDrop','showLastDropDetails','summaryColumnOrder','summaryColumnWidths','summaryTableManualWidth','summaryTableStyle','showDropColumns','showGameDetails','headerHeight','emojiVisualEnabled','emojiRules','v68PositionEmojiLegend','v90ChampionShowActivatedLogos','postShowDrop','postShowMap','postShowBooyah','postShowBooyahCount','postShowKills','postShowPoints','postShowMvp','postShowMvpKills','postShowTableLine','cffFinalWikiV1']){
+  if(!source.cffGlobalRound&&['emojiVisualEnabled','emojiRules','v68PositionEmojiLegend'].includes(key))continue;
+  if(Object.hasOwn(source,key))next.config[key]=copy(source[key]);
+ }
+ return next;
+}
 async function openRound(){
  const key=$('cff-global-round').value,records=archived();for(const [k,r]of Object.entries(records))if(r.complete)records[k]=C.validate(r,meta);
- const next=C.backup(template,meta,key,records);next.config.cffGlobalRevisions=copy(state?.revisions||{});
+ const next=keepSummarySettings(C.backup(template,meta,key,records),data());next.config.cffGlobalRevisions=copy(state?.revisions||{});
  if(!confirm('Carregar esta rodada do Mundial? O campeonato atual será preservado em um backup neste navegador.'))return;
  checkpoint();await apply(next,'Global Finals 2026');message('Modelo carregado: '+labels[currentRound().stage]+'. Lance as quedas; para enviar, vá a Resumos e códigos.');
 }
@@ -86,8 +95,17 @@ async function publishConfirmed(){
  const result=await api.runTransaction(target,root=>C.publication(root,approval.current,meta,approval.expected,approval.receipt,approval.ranking),{applyLocally:false});
  if(!result.committed)throw Error('Não foi possível confirmar o envio. Seu rascunho foi preservado.');
  const root=result.snapshot.val();state.archive=root.rounds||{};state.revisions=root.revisions||{};persist();closeReview(true);message('Resultados enviados! A home recebe a tabela e os destaques do Mundial. Atualização em até 90 segundos.');
+ const storage=window.CFF_CAMP?.persistence;
+ if(storage)void storage.saveRemoteAfterDrop(storage.saveLocalNow('global-publish',true)).then(ok=>{if(!ok)message('Resultados publicados. O rascunho segue neste navegador; confira o aviso em Continuar no celular ou no PC.');});
 }
-async function pull(){if(!confirm('Puxar os resultados publicados do Mundial? O rascunho atual ficará no backup anterior.'))return;const api=await db(),root=(await api.get(api.ref(api.db,'ffwsLive/global-2026'))).val();if(!root?.rounds)throw Error('Ainda não há rodadas publicadas.');checkpoint();const key=state?.key||meta.rounds.find(r=>root.rounds[r.key])?.key,next=C.backup(template,meta,key,root.rounds);next.config.cffGlobalRevisions=root.revisions||{};await apply(next,'Mundial publicado');message('Resultados publicados carregados.');}
+async function pull(){
+ const api=await db(),root=(await api.get(api.ref(api.db,'ffwsLive/global-2026'))).val();
+ const round=meta.rounds.find(r=>r.key===root?.home?.roundKey&&root?.rounds?.[r.key]?.drops?.length)||meta.rounds.filter(r=>root?.rounds?.[r.key]?.drops?.length).at(-1);
+ if(!round)throw Error('Ainda não há rodadas publicadas.');
+ if(!confirm('Abrir a rodada publicada de '+roundText(round)+'? As opções da tabela deste navegador serão mantidas. O rascunho atual ficará no backup anterior.'))return;
+ checkpoint();const next=keepSummarySettings(C.backup(template,meta,round.key,root.rounds,true),data());
+ next.config.cffGlobalRevisions=root.revisions||{};await apply(next,'Mundial publicado');message('Resultados publicados carregados: '+roundText(round)+'.');
+}
 function previewWiki(){if(!state)throw Error('Carregue uma rodada do Mundial primeiro.');const drops=C.wiki($('cff-global-wiki').value,meta,data().selectedTeams),validated=C.validate({...C.record(data(),state.key,meta),drops,players:[]},meta);preview=validated.drops;$('cff-global-wiki-preview').textContent=C.rank([validated],meta).map((r,i)=>`${i+1}º ${r.name}: ${r.points} pts / ${r.kills} abates`).join('\n');$('cff-global-wiki-apply').hidden=false;message(`${preview.length} queda(s) lida(s). Confira a prévia antes de aplicar. Nenhum dado foi alterado.`)}
 async function applyWiki(){if(!preview)throw Error('Faça a prévia primeiro.');if(!confirm('Aplicar estas quedas à rodada atual? O estado anterior será preservado.'))return;checkpoint();const next=data(),round=currentRound();next.drops=preview.map(d=>C.nativeDrop(d,meta));while(next.drops.length<(round.matches||preview.length+1))next.drops.push(C.emptyDrop(next.selectedTeams));next.config.quedas=String(next.drops.length);next.config.cffGlobalPlayers=[];await apply(next,'Wiki do Mundial');preview=null;$('cff-global-wiki-apply').hidden=true;message('Quedas aplicadas. Os dados individuais podem ser informados abaixo; envie em Resumos e códigos.');}
 async function customTournament(){if(state){if(!confirm('Criar um campeonato personalizado? O Mundial atual ficará preservado no backup anterior.'))return;checkpoint();await apply(copy(template),'Campeonato personalizado')}const box=$('cff-global-custom-settings');box.hidden=false;box.open=true;show(box);}

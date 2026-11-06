@@ -6,7 +6,7 @@
     <title>Camp ao vivo | Central Free Fire</title>
     <meta name="robots" content="noindex,nofollow,noarchive">
     <link rel="icon" type="image/webp" href="central free fire.webp">
-    <link rel="stylesheet" href="admin-camp-ao-vivo/workspace.css?v=20261106-mobile-v1">
+    <link rel="stylesheet" href="admin-camp-ao-vivo/workspace.css?v=20261106-camp-sync-v1">
     
 
 
@@ -81,6 +81,17 @@
           <input class="cff-camp-file-input" id="cff-camp-file" type="file" accept=".json,application/json">
         </section>
         
+        <section class="cff-camp-cloud" aria-labelledby="cff-camp-cloud-title">
+          <strong id="cff-camp-cloud-title">Continuar no celular ou no PC</strong>
+          <p>A cópia na nuvem guarda o rascunho e as opções da tabela. A publicação no site é separada.</p>
+          <div>
+            <button class="cff-camp-btn is-primary" id="cff-camp-cloud-open" type="button">Abrir da nuvem</button>
+            <button class="cff-camp-btn" id="cff-camp-cloud-save" type="button">Salvar na nuvem</button>
+            <button class="cff-camp-btn" id="cff-camp-cloud-previous" type="button">Baixar cópia anterior</button>
+          </div>
+          <p id="cff-camp-cloud-status" role="status" aria-live="polite"></p>
+        </section>
+
         <div class="setup-grid">
             <div class="form-group">
                 <label>Nome do Torneio</label>
@@ -533,7 +544,7 @@ G7X, g7x, G7X</textarea>
 
     <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script type="module" src="admin-camp-ao-vivo/auth.js?v=20261001-camp-v4"></script>
-    <script src="admin-camp-ao-vivo/app-loader.js?v=20261106-mobile-v1"></script>
+    <script src="admin-camp-ao-vivo/app-loader.js?v=20261106-camp-sync-v1"></script>
     <script type="module" src="admin-camp-ao-vivo/notifications.js?v=20261010-results-v1"></script>
 <script defer src="admin-camp-ao-vivo/elimination-focus.js?v=20261106-mobile-v1"></script>
 <script defer src="admin-camp-ao-vivo/placement-live.js?v=20261025-native-placement-v4"></script>

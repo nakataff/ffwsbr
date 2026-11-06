@@ -25,6 +25,24 @@
     ));
   }
   function read(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(_){return null}}
+  function restoreCloudHandoff(){
+    const key='cff_camp_cloud_restore_v1';
+    const raw=sessionStorage.getItem(key);
+    if(!raw)return null;
+    sessionStorage.removeItem(key);
+    try{
+      const entry=JSON.parse(raw);
+      if(!entry.backup?.selectedTeams?.length||!Array.isArray(entry.backup.drops)||!entry.backup.config)return null;
+      localStorage.setItem('ffws_autosave',JSON.stringify(entry.backup));
+      for(const pref of ['ffws_v51_table_tools','ffws_v57_stable_features']){
+        if(!Object.hasOwn(entry.preferences||{},pref))continue;
+        const value=entry.preferences[pref];
+        if(value===null)localStorage.removeItem(pref);
+        else if(typeof value==='string')localStorage.setItem(pref,value);
+      }
+      return entry;
+    }catch(error){console.warn('[Camp] recuperação da nuvem incompleta',error);return null;}
+  }
   function prepareAutosave(){
     const core=read('ffws_autosave');
     if(hasTournament(core))return core;
@@ -52,7 +70,7 @@
   function loadWorkspace(){
     const workspace=document.createElement('script');workspace.src='admin-camp-ao-vivo/workspace.js?v=20261106-mobile-v1';
     const done=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
-    workspace.onload=()=>{const core=document.createElement('script');core.src='js/global-camp-core.js?v=20261104-camp-history-v5';core.onload=()=>{const model=document.createElement('script');model.src='admin-camp-ao-vivo/global-series.js?v=20261104-camp-history-v5';model.onload=done;model.onerror=done;document.body.appendChild(model)};core.onerror=done;document.body.appendChild(core)};workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
+    workspace.onload=()=>{const core=document.createElement('script');core.src='js/global-camp-core.js?v=20261104-camp-history-v5';core.onload=()=>{const model=document.createElement('script');model.src='admin-camp-ao-vivo/global-series.js?v=20261106-camp-sync-v1';model.onload=done;model.onerror=done;document.body.appendChild(model)};core.onerror=done;document.body.appendChild(core)};workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
   }
   function loadTournamentSetup(){
     const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261104-camp-history-v5';
@@ -69,6 +87,7 @@
     try{
       setStatus('Carregando ferramentas…');
       if(typeof DecompressionStream!=='function')throw new Error('Seu navegador precisa ser atualizado para abrir o Camp ao Vivo.');
+      const cloudEntry=restoreCloudHandoff();
       prepareAutosave();
       const shouldSeed=!localStorage.getItem('ffws_autosave');
       const presetPromise=shouldSeed
@@ -124,6 +143,13 @@
              !document.querySelector('#teams-inputs-container .team-row'))){
             throw new Error('O estado salvo não foi carregado. Seu backup anterior foi preservado.');
           }
+          if(cloudEntry){
+            const select=document.getElementById('drop-num');
+            if([...select.options].some(option=>option.value===cloudEntry.drop)){select.value=cloudEntry.drop;window.loadDropData?.();}
+            localStorage.setItem('cff_camp_sync_revision_v1',cloudEntry.revision||'');
+            const status=document.getElementById('cff-camp-cloud-status');
+            if(status)status.textContent='Cópia da nuvem aberta. Nada foi publicado.';
+          }
           window.__CFF_CAMP_READY__=true;
           releaseGuard();
         }catch(error){
@@ -142,7 +168,7 @@
         extra.onload=()=>{
           const startPersistence=()=>{
           const persistence=document.createElement('script');
-          persistence.src='admin-camp-ao-vivo/persistence.js?v=20261001-camp-persist-v3';
+          persistence.src='admin-camp-ao-vivo/persistence.js?v=20261106-camp-sync-v1';
           persistence.async=false;
           persistence.onload=()=>{
             const integrations=document.createElement('script');

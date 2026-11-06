@@ -18,6 +18,11 @@ async function expect(status,path,auth,body){const response=await request(path,a
   const admin=token('real-admin'),fake=token('impostor','admin@centralfreefire.com.br',true),alice=token('alice','alice@example.test');
   await expect(200,'adminTasks',admin);
   for(const auth of [fake,alice,null]){await expect(401,'adminTasks',auth);await expect(401,'adminTasks/injected',auth,{});}
+  const camp={revision:'01234567-0123-0123-0123-0123456789ab',updatedAt:1,json:'{"kills":{"ag.al":3}}'};
+  await expect(200,'adminCampDraft/current',admin,camp);
+  await expect(200,'adminCampDraft/current',admin);
+  await expect(401,'adminCampDraft/current',admin,{...camp,json:{bad:true}});
+  for(const auth of [fake,alice,null]){await expect(401,'adminCampDraft/current',auth);await expect(401,'adminCampDraft/current',auth,camp);}
   await expect(200,'userAccounts/alice',alice);
   for(const auth of [fake,null]){await expect(401,'userAccounts/alice',auth);await expect(401,'campNotifications/inboxes/alice',auth);}
   for(const auth of [admin,fake,alice,null]){await expect(401,'serverSecurity',auth);await expect(401,'serverSecurity/adminUid',auth,'impostor');}

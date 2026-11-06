@@ -722,6 +722,10 @@ O título da tabela não inclui horário; datas e horários permanecem no calend
 
 Na reabertura, os campos do modelo são restaurados do backup inicial protegido pelo loader. Para autosaves antigos que perderam essa identificação, a recuperação exige uma única combinação de data e grupos oficiais; metadados podem vir do histórico local, mas as pontuações atuais nunca são substituídas por um snapshot antigo.
 
+#### Rascunho do Camp entre aparelhos
+
+O painel sincroniza somente o rascunho no Firebase privado `adminCampDraft/current`, ao salvar uma queda, publicar o Mundial ou usar **Salvar na nuvem**. O valor do snapshot é JSON serializado, para manter arrays e códigos Wiki com ponto (ex.: `ag.al`). Só a conta administrativa com UID fixado pode ler e gravar. **Abrir da nuvem** pede confirmação e preserva a cópia anterior deste navegador; a revisão protege contra sobrescrever outro aparelho. O botão consulta o backup legado somente quando não existe uma cópia nova. Sem consultas periódicas e sem depender do serviço legado de backup GitHub. **Puxar resultados publicados** recupera a rodada publicada mais recente, preservando as opções visuais do navegador; ele não recupera edições que ficaram só no celular.
+
 ## Tier Constructor — edição, prévia e formatos
 
 - `tier-constructor.html` e `js/tier-constructor.js`: editor local; `renderTierPngBlob` é a mesma fonte para prévia, download, cópia e compartilhamento PNG.

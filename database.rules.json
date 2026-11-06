@@ -163,6 +163,17 @@
       ".read": "auth != null && (auth.token.email == 'admin@centralfreefire.com.br' && auth.uid == root.child('serverSecurity').child('adminUid').val())",
       ".write": "auth != null && (auth.token.email == 'admin@centralfreefire.com.br' && auth.uid == root.child('serverSecurity').child('adminUid').val())"
     },
+    "adminCampDraft": {
+      "current": {
+        ".read": "auth != null && (auth.token.email == 'admin@centralfreefire.com.br' && auth.uid == root.child('serverSecurity').child('adminUid').val())",
+        ".write": "auth != null && (auth.token.email == 'admin@centralfreefire.com.br' && auth.uid == root.child('serverSecurity').child('adminUid').val())",
+        ".validate": "newData.hasChildren(['revision','updatedAt','json'])",
+        "revision": {".validate": "newData.isString() && newData.val().length == 36"},
+        "updatedAt": {".validate": "newData.isNumber()"},
+        "json": {".validate": "newData.isString() && newData.val().length <= 1500000"},
+        "$other": {".validate": false}
+      }
+    },
     "ffwsLive": {
       ".read": true,
       ".write": "auth != null && (auth.token.email == 'admin@centralfreefire.com.br' && auth.uid == root.child('serverSecurity').child('adminUid').val())"

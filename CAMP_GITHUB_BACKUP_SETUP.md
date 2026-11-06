@@ -1,11 +1,8 @@
-# Backup automático do Camp ao Vivo no GitHub
+# Serviço legado de backup do Camp ao Vivo no GitHub
 
-O painel `admin-camp-ao-vivo.html` agora possui três camadas de proteção:
+O editor atual usa **Salvar na nuvem** e **Abrir da nuvem**, com um rascunho privado no Firebase em `adminCampDraft/current`. O serviço abaixo não é necessário para transferir uma tabela entre aparelhos. O botão **Baixar backup** continua disponível para cópias em JSON.
 
-1. Auto-save local a cada mudança.
-2. Backup remoto no Firebase após salvar uma queda.
-3. Backup no GitHub após salvar uma queda, gravando em:
-   `admin-camp-ao-vivo/data/autosave-live.json`
+As instruções a seguir documentam apenas a implantação do endpoint legado `campGithubBackup`. O editor atual não o chama automaticamente.
 
 ## Ativar o backup no GitHub
 
@@ -41,7 +38,7 @@ Actions > Deploy Camp GitHub Backup > Run workflow
 O workflow envia o token para o Secret Manager do Firebase e publica apenas a função
 `campGithubBackup`.
 
-Depois disso, cada clique válido em **Salvar Queda** gera/atualiza
+Quando chamado por um cliente legado autorizado, o endpoint gera/atualiza
 `admin-camp-ao-vivo/data/autosave-live.json` e cria um commit no histórico do repositório.
 
 ## Segurança
