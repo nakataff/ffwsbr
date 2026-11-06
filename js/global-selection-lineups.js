@@ -80,8 +80,9 @@ function collectStandings(filter){
   if(filter&&!filter(stage,date))continue;
   const ids=rec.participants.filter(id=>teams.has(id));
   for(const drop of rec.drops){
-   if(!drop||ids.some(id=>!Number.isFinite(Number(drop.points?.[id]))||
-       !Number.isFinite(Number(drop.kills?.[id]))||!Number.isInteger(Number(drop.placements?.[id]))))continue;
+   if(!drop||ids.length!==12||ids.some(id=>drop.points?.[id]==null||drop.kills?.[id]==null||drop.placements?.[id]==null||
+       !Number.isFinite(Number(drop.points[id]))||!Number.isFinite(Number(drop.kills[id]))||
+       !Number.isInteger(Number(drop.placements[id]))))continue;
    for(const id of ids){
     const p=Number(drop.points[id]),k=Number(drop.kills[id]),place=Number(drop.placements[id]);
     if(p<k||place<1||place>12)continue;
@@ -246,7 +247,7 @@ function renderPage(root,players,teams){
    renderPage(root,DATA.players,DATA.teams);
   });
  }
- if(!officialAt&&!officialPromise){
+ if(!officialAt){
   loadOfficial().then(()=>{if(root.isConnected!==false&&DATA)renderPage(root,DATA.players,DATA.teams)});
  }
  return true;
@@ -288,7 +289,7 @@ function renderSmall(host,context){
   host.addEventListener('click',e=>{const b=e.target.closest('[data-cff-mode]');if(!b)return;d.ui.mode=b.dataset.cffMode;renderSmall(host,context)});
   host.addEventListener('change',e=>{if(!e.target.matches('[data-cff-period]'))return;d.ui[d.ui.mode==='week'?'week':'day']=e.target.value;renderSmall(host,context)});
  }
- if(!officialAt&&!officialPromise){
+ if(!officialAt){
   loadOfficial().then(()=>{if(DATA&&host.isConnected!==false)renderSmall(host,context)});
  }
 }
@@ -302,12 +303,14 @@ async function renderStart(){
 }
 async function getStandings(){
  await loadPlayers();await loadOfficial();
- const stage=Object.keys(officialRecords||{}).filter(k=>roundStage(k)&&officialRecords[k]?.drops?.length).at(-1);
+ const stage=Object.keys(officialRecords||{}).filter(k=>roundStage(k)&&officialRecords[k]?.drops?.length)
+  .sort((a,b)=>roundDate(a,officialRecords[a]).localeCompare(roundDate(b,officialRecords[b]))).at(-1);
  const activeStage=stage?roundStage(stage):'classificatoria';
+ const latestDate=stage?roundDate(stage,officialRecords[stage]):'';
  const filter=activeStage==='classificatoria'?s=>s==='classificatoria':
-  (s,d)=>s===activeStage;
+  (s,d)=>s===activeStage&&d===latestDate;
  const standings=collectStandings(filter);
- return {teams:standings,stage:activeStage,date:stage?roundDate(stage,officialRecords[stage]):'',partial:false};
+ return {teams:standings,stage:activeStage,date:latestDate,partial:false};
 }
 async function getHomeRankings(){
  await loadPlayers();const all=playerRankings(DATA.entries);const rank=metric=>[...all].sort((a,b)=>b[metric]-a[metric]||b.kills-a.kills).slice(0,6).map(p=>({
