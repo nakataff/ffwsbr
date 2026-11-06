@@ -15,9 +15,27 @@ test('home debut countdown uses Brasília, ticks locally, pauses hidden pages an
  try{vm.runInContext(read('js/home-global-finals.js'),dom.getInternalVMContext());const box=w.document.querySelector('.home-global-countdown'),values=()=>[...box.querySelectorAll('[data-countdown-unit]')].map(e=>e.textContent);assert.equal(Date.parse(box.dataset.start),Date.parse(dates.rounds[0].date+'T'+dates.rounds[0].time24+':00-03:00'));assert.deepEqual(values(),['01','00','00','00']);at+=1000;interval();assert.deepEqual(values(),['00','23','59','59']);assert.equal(box.querySelector('a').href,'https://www.youtube.com/@ffesportsbr/live');assert.equal(box.querySelector('[role=timer]').getAttribute('aria-live'),'off');hidden=true;w.document.dispatchEvent(new w.Event('visibilitychange'));assert.equal(interval,null);hidden=false;at=Date.parse(box.dataset.start)+60000;w.document.dispatchEvent(new w.Event('visibilitychange'));assert.deepEqual(values(),['00','00','00','00']);assert.equal(interval,null);assert(box.classList.contains('has-started'));assert(box.textContent.includes('TRANSMISSÃO OFICIAL'));assert(!box.textContent.includes('AO VIVO'));assert.equal(w.document.querySelectorAll('.home-global-team').length,24);
  }finally{w.close();}
 });
-test('featured Mundial shortcut comes before Brasil, works in the shared sidebar and follows active tournament routes',()=>{
- const dom=new JSDOM('<main id="main-content"></main><div id="sidebar-panel"><nav class="sidebar-nav"></nav></div><nav id="cff-public-sidebar-nav"></nav>',{url:'https://centralfreefire.com.br/index.html#home',runScripts:'outside-only'}),w=dom.window;let destination='';w.navigate=page=>{destination=page;};
- try{vm.runInContext(read('js/season-routes.js'),dom.getInternalVMContext());vm.runInContext(read('js/shared-navigation.js'),dom.getInternalVMContext());w.document.dispatchEvent(new w.Event('DOMContentLoaded'));for(const root of w.document.querySelectorAll('.cff-unified-menu')){const shortcut=root.querySelector('[data-cff-featured]'),br=root.querySelector('[data-cff-group=brasil]');assert(shortcut);assert(shortcut.compareDocumentPosition(br)&w.Node.DOCUMENT_POSITION_FOLLOWING);assert.equal(shortcut.getAttribute('href'),'/ffws-global-2026/inicio');assert(root.querySelector('[data-cff-group=global26]'));}w.document.querySelector('[data-cff-featured]').click();assert.equal(destination,'ffws-global-2026-inicio');w.CFFNavigation.setActive('ffws-global-2026-datas');assert(w.document.querySelector('[data-cff-featured]').classList.contains('active'));w.CFFNavigation.setActive('home');assert(!w.document.querySelector('[data-cff-featured]').classList.contains('active'));
+test('featured Mundial menu expands in both sidebars without navigating and highlights the active route',()=>{
+ const dom=new JSDOM('<main id="main-content"></main><div id="sidebar-panel"><nav class="sidebar-nav"></nav></div><nav id="cff-public-sidebar-nav"></nav>',{url:'https://centralfreefire.com.br/index.html#home',runScripts:'outside-only'}),w=dom.window;
+ let destination='',closes=0;w.navigate=page=>{destination=page;};w.closeSidebar=()=>{closes++;};
+ try{
+  vm.runInContext(read('js/season-routes.js'),dom.getInternalVMContext());vm.runInContext(read('js/shared-navigation.js'),dom.getInternalVMContext());w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+  for(const root of w.document.querySelectorAll('.cff-unified-menu')){
+   const featured=root.querySelector('[data-cff-featured]'),international=root.querySelector('[data-cff-group=global26]'),br=root.querySelector('[data-cff-group=brasil]');
+   assert.equal(featured.tagName,'DETAILS');
+   assert(featured.compareDocumentPosition(br)&w.Node.DOCUMENT_POSITION_FOLLOWING);
+   assert.deepEqual([...featured.querySelectorAll('a')].map(a=>a.href),[...international.querySelectorAll('a')].map(a=>a.href));
+   assert.equal(featured.open,false);featured.querySelector('summary').click();assert.equal(featured.open,true);
+   assert.equal(destination,'');assert.equal(closes,0);
+   featured.querySelector('summary').click();assert.equal(featured.open,false);
+  }
+  w.CFFNavigation.setActive('ffws-global-2026-datas');
+  const featured=w.document.querySelector('[data-cff-featured]');
+  assert(featured.open);assert(featured.classList.contains('active'));
+  assert.equal(featured.querySelector('[aria-current=page]').getAttribute('href'),'/ffws-global-2026/datas');
+  assert(!w.document.querySelector('[data-cff-group=internacional]').open);
+  featured.querySelector('[data-cff-route=ffws-global-2026-inicio]').click();assert.equal(destination,'ffws-global-2026-inicio');
+  w.CFFNavigation.setActive('home');assert(!featured.classList.contains('active'));
  }finally{w.close();}
 });
 

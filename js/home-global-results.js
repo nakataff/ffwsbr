@@ -11,7 +11,8 @@ function renderDay(){const host=$('home-weekly-selection-list'),meta=$('home-wee
 }
 function render(){
  const p=payload||{teams:[],rankings:{},days:[]},stage={classificatoria:'FASE 1 · GERAL',segundaFase:'FASE 2 · DIA',lastChance:'REPESCAGEM',final:'GRANDE FINAL'}[p.stage]||'GLOBAL FINALS 2026';
- const title=$('home-ranking-teams')?.querySelector('h3');if(title)title.textContent='🏆 Top 6 · Global Finals';
+ const teamWidget=$('home-ranking-teams'),title=teamWidget?.querySelector('h3');if(title)title.textContent='🏆 Top 6 · Global Finals';
+ if(teamWidget)teamWidget.dataset.homeRankingStage=({classificatoria:'Fase 1 · Geral',segundaFase:'Fase 2',lastChance:'Repescagem',final:'Grande Final'})[p.stage]||'';
  document.querySelectorAll('[data-home-rankings-title]').forEach(el=>el.textContent='GLOBAL FINALS 2026 · DESTAQUES');
  const teams=$('home-tbody-teams');if(teams)teams.innerHTML=p.teams?.length?p.teams.slice(0,6).map((r,i)=>`<tr><td class="home-rank-pos">${i+1}</td><td class="home-rank-media"><a href="/ffws-global-2026/equipe?time=${encodeURIComponent(r.id)}"><img class="home-rank-team-logo" src="/${esc(String(r.logo||'escudo.webp').replace(/^\//,''))}" alt="" width="30" height="30" loading="lazy"></a></td><td class="home-rank-main"><a class="home-rank-identity" href="/ffws-global-2026/equipe?time=${encodeURIComponent(r.id)}"><span><b>${esc(r.name)}</b><small>${stage}${p.stage==='segundaFase'?' '+esc(p.date?.slice(8)):''}${p.partial?' · parcial':''}</small></span></a></td><td class="home-rank-number home-rank-points">${fmt(r.points)}</td><td class="home-rank-number">${fmt(r.kills)}</td></tr>`).join(''):empty('Mundial começa em 06/11. Aguardando resultados.');
  for(const [id,key]of [['home-tbody-players','kills'],['home-tbody-damage','damage'],['home-tbody-assists','assists']])if($(id))$(id).innerHTML=playerRows(p.rankings?.[key]||[],key);

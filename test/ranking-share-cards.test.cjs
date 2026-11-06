@@ -75,11 +75,24 @@ test('share cancellation is silent and browsers without native sharing download 
  const u=await editor();try{await u.open();u.w.navigator.share=async()=>{throw Object.assign(Error('Cancelado'),{name:'AbortError'});};u.$('[data-card-action="share"]').click();await tick();assert(!u.$('.cff-card-status').classList.contains('is-error'));u.w.navigator.canShare=()=>false;u.$('[data-card-action="share"]').click();await tick();assert.equal(u.downloads.length,1);}finally{u.close();}
 });
 
-test('home card adapter captures current numbers and full team identities without a ranking fetch',async()=>{
- const html='<aside data-home-rankings-event="WB 2026 S2"><section id="home-ranking-kills"><h3>Top 6 Abates</h3><table><tbody><tr><td class="home-rank-pos">1</td><td class="home-rank-media"><img src="home-assets/players/yago.webp"></td><td class="home-rank-main"><a href="jogador.html?jogador=Yago&time=LOS"><b>Yago</b><small>LOS</small></a></td><td class="home-rank-number">1.234</td><td class="home-rank-number">121</td></tr></tbody></table></section></aside>';
- const d=new JSDOM(html,{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}),w=d.window;const captured=[];w.openTestCard=async data=>captured.push(data);w.eval(fs.readFileSync('js/home-share-cards.js','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v3')","{openRankingCard:window.openTestCard}"));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));w.document.querySelector('button').click();await tick();
- assert.equal(captured[0].rows[0].kills,1234);assert.equal(captured[0].rows[0].matches,121);assert.equal(captured[0].rows[0].team,'LOS');assert.equal(captured[0].rows[0].damage,undefined);d.window.close();
+test('home cards use the displayed Mundial name, team names and actual stage rather than URL slugs',async()=>{
+ const source=fs.readFileSync('index.html','utf8');
+ const event=source.match(/data-home-rankings-event="([^"]+)"/)?.[1];assert.equal(event,'FFWS Global Finals 2026');
+ const html=`<aside data-home-rankings-event="${event}">
+  <section id="home-ranking-teams" data-home-ranking-stage="Fase 1 · Geral"><h3>🏆 Top 6 · Global Finals</h3><table><tbody><tr>
+  <td class="home-rank-pos">1</td><td class="home-rank-media"><img src="/logo.webp"></td><td class="home-rank-main"><a href="/ffws-global-2026/equipe?time=team-flash"><b>Team Flash</b><small>FASE 1 · GERAL</small></a></td><td class="home-rank-number">123</td><td class="home-rank-number">74</td></tr></tbody></table></section>
+  <section id="home-ranking-kills"><h3>Top 6 Abates</h3><table><tbody><tr><td class="home-rank-pos">1</td><td class="home-rank-media"><img src="/player.webp"></td><td class="home-rank-main"><a href="/ffws-global-2026/jogador?id=fx-butzin"><b>BuTziN</b><small>FLUXO W7M · parcial</small></a></td><td class="home-rank-number">1.234</td><td class="home-rank-number">121</td></tr></tbody></table></section></aside>`;
+ const d=new JSDOM(html,{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}),w=d.window;const captured=[];w.openTestCard=async data=>captured.push(data);w.eval(fs.readFileSync('js/home-share-cards.js','utf8').replace("await import('/js/ranking-share-cards.mjs?v=20261020-cards-v3')","{openRankingCard:window.openTestCard}"));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+ try{
+  w.document.querySelector('#home-ranking-teams button').click();w.document.querySelector('#home-ranking-kills button').click();await tick();
+  assert.equal(captured[0].event,'FFWS Global Finals 2026');assert.equal(captured[0].stage,'Fase 1 · Geral');
+  assert.equal(captured[0].rows[0].name,'Team Flash');assert.equal(captured[0].rows[0].team,'Team Flash');assert.equal(captured[0].rows[0].points,123);assert.equal(captured[0].rows[0].kills,74);
+  assert.equal(captured[1].rows[0].kills,1234);assert.equal(captured[1].rows[0].matches,121);assert.equal(captured[1].rows[0].team,'FLUXO W7M');assert.equal(captured[1].rows[0].damage,undefined);
+  const m=await modelPromise,data=m.normalizePayload(captured[0]),caption=m.captionFor(data,m.normalizeOptions({},data));
+  assert.match(caption,/FFWS GLOBAL FINALS 2026/);assert.match(caption,/Team Flash/);assert.doesNotMatch(caption,/WB 2026 S2|team-flash/);
+ }finally{d.window.close();}
 });
+
 test('short tables fill the usable height, while comparison metrics keep a readable gap above details',async()=>{
  const m=await modelPromise,{renderRankingCard}=await rendererPromise,data=m.normalizePayload(raw()),images=new Map();
  for(const row of data.rows)images.set(row.photo,await loadImage(row.photo));

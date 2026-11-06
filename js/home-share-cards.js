@@ -5,16 +5,17 @@
   const text=node=>String(node?.textContent||'').replace(/\s+/g,' ').trim();
   const value=node=>{const s=text(node);return s&&s!=='—'?Number(s.replace(/\./g,'').replace(',','.')):null;};
   function capture(widget){
-    const meta=targets[widget.id],event=document.querySelector('[data-home-rankings-event]')?.dataset.homeRankingsEvent||'Free Fire';
+    const meta=targets[widget.id],event=(widget.closest('[data-home-rankings-event]')||document.querySelector('[data-home-rankings-event]'))?.dataset.homeRankingsEvent||'Free Fire';
     const rows=[...widget.querySelectorAll('tbody tr')].map((tr,i)=>{
-      const link=tr.querySelector('.home-rank-main a'),nums=tr.querySelectorAll('.home-rank-number'),image=tr.querySelector('.home-rank-media img');
-      const url=new URL(link?.getAttribute('href')||'/',location.origin),team=url.searchParams.get('time')||text(tr.querySelector('.home-rank-main small'));
+      const nums=tr.querySelectorAll('.home-rank-number'),image=tr.querySelector('.home-rank-media img');
+      const name=text(tr.querySelector('.home-rank-main b'));
+      const team=meta.kind==='teams'?name:text(tr.querySelector('.home-rank-main small')).replace(/\s*·\s*parcial$/i,'');
       const metric=value(nums[0]);if(metric===null||!Number.isFinite(metric))return null;
-      const row={rank:value(tr.querySelector('.home-rank-pos'))||i+1,name:meta.kind==='teams'?team:text(tr.querySelector('.home-rank-main b')),team,[meta.metric]:metric};
+      const row={rank:value(tr.querySelector('.home-rank-pos'))||i+1,name,team,[meta.metric]:metric};
       if(meta.kind==='teams'){row.kills=value(nums[1]);row.logo=image?.getAttribute('src')||'';}else{row.matches=value(nums[1]);row.photo=image?.getAttribute('src')||'';}
       return row.name?row:null;
     }).filter(Boolean);
-    return {id:widget.id,title:meta.title,event,kind:meta.kind,metric:meta.metric,stage:meta.kind==='teams'?text(widget.querySelector('h3')).replace(/^.*Top\s*6\s*/i,'').trim():'Geral',url:'https://centralfreefire.com.br/index.html#home',rows};
+    return {id:widget.id,title:meta.title,event,kind:meta.kind,metric:meta.metric,stage:widget.dataset.homeRankingStage||'',url:'https://centralfreefire.com.br/index.html#home',rows};
   }
   function boot(){Object.keys(targets).forEach(id=>{
     const widget=document.getElementById(id);if(!widget||widget.querySelector('.cff-ranking-share-trigger'))return;

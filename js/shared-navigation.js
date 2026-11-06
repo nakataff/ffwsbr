@@ -3,6 +3,7 @@
   'use strict';
   const routes = (prefix, entries) => entries.map(([label, suffix]) => [label, prefix + suffix]);
   const season = [['Classificatória','classificatoria'],['Segunda fase','segunda-fase'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Datas','datas'],['Seleções da season','selecoes'],['Estatísticas gerais','stats'],['Notas CFF','notas'],['Comparar jogadores','comparar']];
+  const worldPages = routes('ffws-global-2026-',[['Início','inicio'],['Formato','formato'],['Knockout • Fase 1','classificatoria'],['Knockout • Fase 2','segunda-fase'],['Repescagem','last-chance'],['Grande Final','final'],['Jogadores','jogadores'],...season.slice(3)]);
   const groups = [
     ['brasil','Torneios Brasil',[
       ['s2','WB 2026 S2',[['Início','ffws-br-s2-inicio'],...routes('ffws-br-s2-',season)]],
@@ -11,7 +12,7 @@
       ['s25','WB 2025 S2',routes('ffws-br-2025-s2-',season.filter(([,key]) => key !== 'segunda-fase').concat([['Contra Squad','contra-squad']]))]
     ]],
     ['internacional','Torneios internacionais',[
-      ['global26','FFWS Global Finals 2026',routes('ffws-global-2026-',[['Início','inicio'],['Formato','formato'],['Knockout • Fase 1','classificatoria'],['Knockout • Fase 2','segunda-fase'],['Repescagem','last-chance'],['Grande Final','final'],['Jogadores','jogadores'],...season.slice(3)])],
+      ['global26','FFWS Global Finals 2026',worldPages],
       ['ewc','EWC 2026',routes('ewc-',[['Fase de grupos','grupos'],['Repescagem','repescagem'],['Final','final'],['Ranking MVP','mvp'],['Equipes','equipes'],['Estatísticas gerais','stats']])],
       ['sea','FFWS SEA 2026 S1',[['Visão geral','ffws-sea-2026-s1']]],
       ['latam','FFWS LATAM S1',[['Visão geral','ffws-latam-s1']]]
@@ -23,7 +24,12 @@
   const href = route => route==='mercado'?'/mercado.html':route.startsWith('/') ? route : (window.CFF_SEASON_ROUTES?.pathForPage(route) || '/index.html#' + route);
   const link = ([label,route]) => `<a class="cff-menu-link" href="${esc(href(route))}" data-cff-route="${esc(route)}" ${route==='/conta.html'?'data-account-entry':''}>${esc(label)}</a>`;
   const details = (key,title,body,extra='') => `<details class="cff-menu-group ${extra}" data-cff-group="${key}"><summary>${esc(title)}<span aria-hidden="true">⌄</span></summary><div class="cff-menu-items">${body}</div></details>`;
-  const featured = `<a class="cff-menu-link cff-menu-featured" data-cff-featured data-cff-route="ffws-global-2026-inicio" href="${esc(href('ffws-global-2026-inicio'))}"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="30" height="26" alt=""><span><small>EM DESTAQUE</small>FFWS GLOBAL FINALS 2026</span></a>`;
+  const featured = `<details class="cff-menu-group cff-menu-featured" data-cff-featured>
+    <summary><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="30" height="26" alt="">
+      <span class="cff-menu-featured-copy"><small>EM DESTAQUE</small>FFWS GLOBAL FINALS 2026</span>
+      <svg class="cff-menu-featured-chevron" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary><div class="cff-menu-items">${worldPages.map(link).join('')}</div>
+  </details>`;
   const menu = '<div class="cff-menu-label">Principal</div>' + mainLinks.map(link).join('') + featured + groups.map(([key,title,events]) => details(key,title,events.map(([id,name,entries]) => details(id,name,entries.map(link).join(''),'cff-menu-tournament')).join(''))).join('') + details('historico','Histórico',historyLinks.map(link).join('')) + details('contato','Contato',link(['Sobre','sobre'])) + '<div class="cff-menu-label">Sistema</div><button class="cff-menu-refresh" type="button">Atualizar dados</button>';
   const close = () => { window.closeSidebar?.(); document.getElementById('cff-public-menu-close')?.click(); };
   function go(event, route) {
@@ -84,10 +90,16 @@
   function setActive(page) {
     document.querySelectorAll('.cff-unified-menu').forEach(root => {
       root.querySelectorAll('[data-cff-route]').forEach(a => {
-        const route=a.dataset.cffRoute, active=route==='mercado'?location.pathname==='/mercado.html':route.startsWith('/') ? (route.includes('#')?location.pathname+location.hash:location.pathname)===route : document.getElementById('main-content') && route===page;
-        a.classList.toggle('active',Boolean(active)); if(active){a.setAttribute('aria-current','page'); for(let parent=a.parentElement; parent && parent!==root; parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;}else a.removeAttribute('aria-current');
-        if(a.hasAttribute('data-cff-featured'))a.classList.toggle('active',Boolean(document.getElementById('main-content') && page.startsWith('ffws-global-2026-')));
+        const route=a.dataset.cffRoute,isWorld=route.startsWith('ffws-global-2026-');
+        const active=route==='mercado'?location.pathname==='/mercado.html':route.startsWith('/') ? (route.includes('#')?location.pathname+location.hash:location.pathname)===route : (isWorld||document.getElementById('main-content')) && route===page;
+        a.classList.toggle('active',Boolean(active));
+        if(active){
+          a.setAttribute('aria-current','page');
+          // Only expand the featured copy automatically; the international menu can still be opened manually.
+          if(!isWorld||a.closest('[data-cff-featured]'))for(let parent=a.parentElement;parent&&parent!==root;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;
+        }else a.removeAttribute('aria-current');
       });
+      root.querySelector('[data-cff-featured]')?.classList.toggle('active',String(page).startsWith('ffws-global-2026-'));
     });
     const row=document.querySelector('.cff-mobile-return'); if(row)row.hidden=Boolean(document.getElementById('main-content') && page==='home');
     updateBottomNav(page);
