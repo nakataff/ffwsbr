@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="/css/team-standard.css?v=20260608-team-standard-v5">
 <link rel="stylesheet" href="/css/ffws-br-season-layout.css?v=20260728-shared-v1">
 <link rel="stylesheet" href="/ffws-br-2026-s2/s2.css?v=20261011-phase-navigation-v2">
+<link rel="stylesheet" href="/css/mvp-ranking.css?v=20261106-mvp-rankings-v1">
 <link rel="stylesheet" href="/css/ffws-br-s1-page.css?v=20261105-s1-page-v1">
 <script>
 window.cffLoadChartJS=window.cffLoadChartJS||function(){
@@ -151,57 +152,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 </div>
 
 <div id="mvp" class="page" data-team-date="2026-03-21">
-        <h2>Classificação Geral de Jogadores</h2>
- <div class="filters">
-            <label style="color: var(--text-muted); font-weight: bold;">Etapa:</label>
-            <select id="filter-stage-players" onchange="onPlayerStageFilterChanged()">
-                <option value="classificatoria">Classificatória</option>
-                <option value="final">Final</option>
-                <option value="geral">Geral</option>
-            </select>
-
-            <label style="color: var(--text-muted); font-weight: bold;">Equipe:</label>
-            <select id="filter-team-players" onchange="onPlayerTeamFilterChanged()">
-                <option value="all">Todas</option>
-            </select>
-
-            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Posição:</label>
-            <select id="filter-role-players" onchange="renderAllPlayers()">
-                <option value="all">Todas</option>
-                <option value="RUSH">Rush</option>
-                <option value="SUP">Suporte</option>
-                <option value="GRAN">Granadeiro</option>
-            </select>
-
-            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Novatos:</label>
-            <select id="filter-rookie-players" onchange="renderAllPlayers()">
-                <option value="all">Todos os Jogadores</option>
-                <option value="rookies">Apenas Novatos</option>
-            </select>
-            
-            <label style="color: var(--text-muted); font-weight: bold; margin-left: 15px;">Dias:</label>
-            <div class="day-filters" id="player-day-filters"></div>
-
-            <span style="margin-left:auto; color:#888; font-size:0.9em;">* Clique no título da coluna para ordenar</span>
-        </div>
-        <button class="btn-action hide-on-desktop" id="btn-players-details" onclick="document.getElementById('table-players').classList.toggle('full-view'); this.innerText = this.innerText === 'Ver Detalhes' ? 'Ocultar Detalhes' : 'Ver Detalhes';" style="width: 100%; margin-bottom: 12px;">Ver Detalhes</button>
-        <div class="table-container">
-<table id="table-players">
-    <thead>
-        <tr>
-            <th style="width: 24px;">#</th>
-            <th style="text-align:left;" onclick="sortTable('table-players', 1, false)"><span class="full-name-desktop">Jogador</span><span class="show-mobile-only">J</span> ↕</th>
-            <th onclick="sortTable('table-players', 2, false)"><span class="full-name-desktop">Equipe</span><span class="show-mobile-only">E</span> ↕</th>
-            <th onclick="sortTable('table-players', 3, true)"><span class="full-name-desktop">Abates</span><span class="show-mobile-only">K</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 4, true)"><span class="full-name-desktop">Dano</span><span class="show-mobile-only">D</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 5, true)"><span class="full-name-desktop">Assistências</span><span class="show-mobile-only">A</span> ↕</th>
-            <th onclick="sortTable('table-players', 6, true)"><span class="full-name-desktop">Quedas</span><span class="show-mobile-only">Q</span> ↕</th>
-            <th class="hide-mobile" onclick="sortTable('table-players', 7, true)"><span class="full-name-desktop">MVP</span><span class="show-mobile-only">👑</span> ↕</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-        </div>
+    <div id="cff-s1-mvp-root"></div>
 </div>
 
 <div id="equipes" class="page" data-team-date="2026-03-21">
@@ -747,7 +698,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <script defer src="/js/player-photo-resolver.min.js?v=20261029-laff-photos-v1"></script>
 <script defer src="/js/shared-navigation.js?v=20261105-s1-page-v1"></script>
 <script defer src="/js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-<script defer src="/js/site-shell-fast.min.js?v=20261105-s1-page-v1"></script>
+<script defer src="/js/site-shell-fast.min.js?v=20261106-mvp-rankings-v1"></script>
 <script defer src="/js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="/js/global-team-logos.js?v=20261104-lyon-gold-v1"></script>
 <script defer src="/js/tournament-logos.js?v=20261021-tournament-assets-v1"></script>

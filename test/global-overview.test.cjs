@@ -14,7 +14,7 @@ async function ui({search='',overrides={},now='2026-10-20T14:00:00-03:00'}={}) {
   return {w,calls,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await settle();},change:async(s,v)=>{const e=w.document.querySelector(s);e.value=v;e.dispatchEvent(new w.Event('change',{bubbles:true}));await settle();},tick:time=>{at=Date.parse(time);interval();},close:()=>w.close()};
 }
 test('compact summaries derive from existing sources and retain all 24 teams and exact rules',()=>{
-  const output=build(sources());
+  const output=build({...sources(),standingsDay1:read(BASE+'standings-day1.json')});
   for(const [name,data] of Object.entries(output))assert.deepEqual(JSON.parse(JSON.stringify(data)),read(BASE+name));
   const summary=output['inicio-resumo.json'];assert.equal(summary.teams.length,24);assert.equal(summary.rounds.length,18);
   for(const team of summary.teams)assert(fs.existsSync(team.logo),team.logo);

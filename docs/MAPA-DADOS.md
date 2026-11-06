@@ -136,12 +136,20 @@ Depois, regenere os perfis, o resumo das equipes e o modelo do Camp.
 `photos/*/staff/` guarda fotos da comissão ainda sem cadastro e
 `photos/*/pending/` guarda fotos sem correspondência confirmada no elenco.
 
+### Rankings MVP leves
+
+- WB 2026 S1: `ffws-br-2026-s1/mvp.js` usa só o resumo diário
+  `mvp-resumo.json`. Regenere com `node scripts/build-s1-mvp.cjs` após
+  alterar a base de quedas, as posições/novatos ou os times da edição.
+- As três tabelas ordenam o recorte antes de paginar, com setas nas colunas.
+  A base de quedas continua nas páginas que exibem os detalhes por partida.
+
 ### Início do Mundial 2026
 
 Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu).
 Reutiliza `ffws-global-2026/global.css` para manter a identidade das outras páginas.
 O módulo `ffws-global-2026/inicio.js` é independente de `global.js`: não baixa a
-base completa nem faz consultas ao Firebase/Durable Objects.
+base completa. O cartão Seleções usa o resumo estático e, em dias novos, o placar público compacto para escolher o coach.
 O cabeçalho oferece atalhos nativos para equipes, quatro etapas e calendário, com
 rankings, estatísticas, seleções, comparação, notas e formato em “Rankings, estatísticas e mais”.
 Os atalhos não antecipam o carregamento das páginas; o formato continua sendo a
@@ -152,7 +160,8 @@ primeira seção depois do cabeçalho.
 | `ffws-global-2026/inicio-resumo.json` | Formato, 24 equipes com logos/grupos, calendário e tabelas por fase/dia. Cerca de 10,4 KB antes dos resultados; único JSON inicial do módulo |
 | `ffws-global-2026/inicio-mvp-top10.json` | Top 10 Geral, Fase 1, Fase 2, Repescagem e Final. Buscado só na aba MVP |
 | `ffws-global-2026/inicio-elencos.json` | Jogadores/comissão cadastrados nesta edição, por ID de equipe. Buscado só na aba Equipes; nunca inferir elenco do Mundial a partir de outro torneio |
-| `scripts/build-global-overview.cjs` | Gera os três resumos offline a partir de `stages.json`, `dates.json`, `teams.json`, `groups.json` e `players.json` da mesma pasta |
+| `ffws-global-2026/selecoes-resumo.json` | Totais por jogador e dia, elencos e pontuação verificada de 06/11; compartilhado pela home, Início e Seleções |
+| `scripts/build-global-overview.cjs` | Gera os resumos offline a partir de `stages.json`, `dates.json`, `teams.json`, `groups.json`, `players.json` e `standings-day1.json` |
 
 Depois de cadastrar resultados ou elencos, execute `node scripts/build-global-overview.cjs`
 e `node scripts/build-global-players.cjs`; confira ambos com `--check`. A CI verifica se os resumos
@@ -710,7 +719,7 @@ No Worker Instagram, `global-prediction-service.js` reutiliza o ledger `awards` 
 - `js/global-camp-core.js`: regras puras compartilhadas: entrada pelos pools, classificação diária, importação balanceada de `TeamOpponent` + `MS`, Champion Rush 110 e resumo da home. Não consulta contas nem Durable Objects.
 - `admin-camp-ao-vivo/global-series.js`: modelo opcional exclusivamente no editor administrativo. Preserva um backup antes de trocar torneio/rodada, arquiva quedas por chave oficial e calcula os 12 participantes. Não migra nem substitui um torneio existente automaticamente. O editor público usa apenas `camp-ao-vivo/global-official.js`, que lê o resumo e uma rodada oficial sob demanda, sem nenhuma API de publicação; acompanhamento opcional a cada dois minutos com a página visível.
 - Publicação administrativa explícita em Firebase `ffwsLive/global-2026`: `rounds` guarda os resultados confirmados; `revisions` protege contra sobrescrever uma edição concorrente; `home` guarda somente Top 6 e seleções diárias. A transação recalcula classificados e resumo uma vez por publicação. As regras existentes de `ffwsLive` permitem escrita apenas ao administrador.
-- `js/home-global-results.js`: a home lê **somente** `/ffwsLive/global-2026/home.json`, deduplica chamadas em andamento e guarda cache de 90 segundos por aba. Atualiza periodicamente apenas com home visível. Não carrega as quedas, todos os jogadores nem a FFWS BR encerrada para esses blocos.
+- `js/home-global-results.js`: a home lê **somente** `/ffwsLive/global-2026/home.json`, deduplica chamadas em andamento e guarda cache de 90 segundos por aba. Atualiza periodicamente apenas com home visível. O resumo público inclui `dailyTeams` (totais compactos por equipe/dia) nas próximas publicações; a home usa isso e o resumo estático, sem ler rodadas completas.
 - `ffws-global-2026/global.js`: Classificatória e Estatísticas leem `/ffwsLive/global-2026/rounds.json` sob demanda (90 segundos em memória, sem consulta periódica). O calendário transforma a chave em rodada/dia, mantendo as duas sessões separadas no filtro de rodada e suas quedas distintas no dia. Os mesmos placares alimentam os totais, médias, recordes e relatórios de equipes. Dados individuais por queda vêm do arquivo de jogadores; totais individuais por rodada não são convertidos em quedas fictícias.
 - Fase 1: classificação geral; Fase 2: somente o dia mais recente, com pontuação zerada; repescagem/final: a própria etapa. Seleção diária: 2 rush/3º homem, 1 granadeiro, 1 suporte, sem completar funções ausentes com dados inventados. Dados individuais vazios ficam indisponíveis; rankings mostram cobertura parcial quando necessário.
 - O Wiki de equipes contém posição e abates por equipe, não dano/assistências individuais. Estes são lançados no quadro de jogadores da rodada. A importação tem prévia, validação e confirmação separadas e nunca publica automaticamente.

@@ -37,25 +37,48 @@ const number=v=>Number(v)||0,fmt=v=>Math.round(number(v)).toLocaleString('pt-BR'
 const shortDate=date=>String(date||'').slice(8,10)+'/'+String(date||'').slice(5,7);
 const url=v=>/^https:\/\//i.test(String(v||''))?String(v):'/'+String(v||'').replace(/^\/+/,'');
 const state={page:{tab:'semanal',mode:'day',day:'',week:''},home:{mode:'day',day:'',week:''},start:{mode:'day',day:'',week:''}};
-let DATA=null,teamCache=null,playersPromise=null,officialRecords=null,staticDay1=null,officialPromise=null,officialAt=0;
-let phaseCompletion={},remoteRosterPreferred=false,rosterCheckedAt=0,rosterRefresh=null;
+let DATA=null,playersPromise=null,officialRecords=null,staticDay1=null,officialPromise=null,officialAt=0;
+let phaseCompletion={},publishedDays=[],homeSummary=null,homeSummaryAt=0,homeSummaryPromise=null;
+const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261106-world-compact-v1';
 function setData(players,teams){
- if(!players||!Array.isArray(players.entries)||!Array.isArray(players.players))return false;
+ if(!Array.isArray(players?.entries)||!Array.isArray(players?.players))return false;
  const list=Array.isArray(teams?.teams)?teams.teams:Array.isArray(teams)?teams:[];
  if(!list.length)return false;
- // A cópia buscada diretamente do servidor prevalece sobre o cache do carregador da página.
- if(remoteRosterPreferred&&DATA&&players!==DATA.players&&players.entries.length<=DATA.entries.length)return true;
  DATA={players:players.players,entries:players.entries,teams:list};
  return true;
 }
 async function loadPlayers(){
  if(DATA)return DATA;
  if(playersPromise)return playersPromise;
- playersPromise=Promise.all([
-  fetch(BASE+'players.json?v=20261106-world-role-flags-v1',{cache:'default'}).then(r=>{if(!r.ok)throw Error('Falha no cadastro');return r.json()}),
-  fetch(BASE+'teams.json',{cache:'default'}).then(r=>{if(!r.ok)throw Error('Falha nas equipes');return r.json()})
- ]).then(([p,t])=>{setData(p,t);return DATA}).finally(()=>{playersPromise=null});
+ playersPromise=fetch(SUMMARY_URL,{cache:'default'}).then(r=>{if(!r.ok)throw Error('Falha no resumo de jogadores');return r.json()})
+  .then(data=>{
+   if(data.version!==1||!Array.isArray(data.days))throw Error('Resumo de jogadores inválido');
+   const entries=data.days.flatMap(({stage,date,players})=>players.map(([playerId,kills,damage,assists,matches])=>({stage,date,playerId,kills,damage,assists,matches})));
+   if(!setData({players:data.players,entries},data.teams))throw Error('Resumo de jogadores inválido');
+   staticDay1=data.fallback;
+   phaseCompletion=data.finished||{};
+   return DATA;
+  }).finally(()=>{playersPromise=null});
  return playersPromise;
+}
+function database(){
+ return String(window.CFF_CONFIG?.firebase?.databaseURL||'').replace(/\/$/,'');
+}
+function acceptPublishedSummary(summary){
+ if(Array.isArray(summary?.dailyTeams))publishedDays=summary.dailyTeams;
+}
+function getPublishedSummary(){
+ if(homeSummaryPromise)return homeSummaryPromise;
+ if(homeSummaryAt&&Date.now()-homeSummaryAt<90000)return Promise.resolve(homeSummary);
+ const base=database();
+ if(!base)return Promise.resolve(null);
+ homeSummaryPromise=fetch(base+'/ffwsLive/global-2026/home.json',{cache:'no-cache',signal:window.AbortSignal?.timeout?.(8000)})
+  .then(r=>{if(!r.ok)throw Error('Resumo indisponível');return r.json()}).then(summary=>{
+   homeSummary=summary;homeSummaryAt=Date.now();
+   acceptPublishedSummary(summary);
+   return summary;
+  }).finally(()=>{homeSummaryPromise=null});
+ return homeSummaryPromise;
 }
 function roundStage(key){if(key.startsWith('classificatoria-'))return 'classificatoria';if(key.startsWith('segundaFase-'))return 'segundaFase';if(key.startsWith('lastChance-'))return 'lastChance';if(key.startsWith('final-'))return 'final';return ''}
 function roundDate(key,rec){
@@ -66,31 +89,26 @@ function roundDate(key,rec){
 async function loadOfficial(force=false){
  if(!force&&officialAt&&Date.now()-officialAt<90000)return officialRecords;
  if(officialPromise)return officialPromise;
- const base=String(window.CFF_CONFIG?.firebase?.databaseURL||'').replace(/\/$/,'');
- officialPromise=Promise.all([
-  fetch(BASE+'standings-day1.json?v=20261106-garena-official-v1',{cache:'default'}).then(r=>r.ok?r.json():null).catch(()=>null),
-  base?fetch(base+'/ffwsLive/global-2026/rounds.json',{cache:'no-cache',signal:window.AbortSignal?.timeout?.(8000)})
-   .then(r=>r.ok?r.json():null).catch(()=>null):Promise.resolve(null)
- ]).then(([fallback,records])=>{
-   if(fallback?.date==='2026-11-06'&&Array.isArray(fallback.teams))staticDay1=fallback;
-   if(records&&typeof records==='object')officialRecords=records;
-   officialAt=Date.now();return officialRecords;
- }).catch(()=>{officialAt=Date.now();return officialRecords})
-   .finally(()=>{officialPromise=null});
+ const base=database();
+ if(!base)return null;
+ officialPromise=fetch(base+'/ffwsLive/global-2026/rounds.json',{cache:'no-cache',signal:window.AbortSignal?.timeout?.(8000)})
+  .then(r=>r.ok?r.json():null).then(records=>{if(records&&typeof records==='object')officialRecords=records;return officialRecords})
+  .catch(()=>officialRecords).finally(()=>{officialAt=Date.now();officialPromise=null});
  return officialPromise;
 }
-function collectStandings(filter){
+function collectStandings(filter,compact=false){
  if(!DATA)return [];
  const teams=new Map(DATA.teams.map(t=>[t.id,t])),totals=new Map();
  const usableDrop=(ids,drop)=>ids.length===12&&drop&&ids.every(id=>
    drop.points?.[id]!=null&&drop.kills?.[id]!=null&&drop.placements?.[id]!=null&&
    Number.isFinite(Number(drop.points[id]))&&Number.isFinite(Number(drop.kills[id]))&&
    Number.isInteger(Number(drop.placements[id]))&&Number(drop.placements[id])>=1&&Number(drop.placements[id])<=12);
- const records=Object.entries(officialRecords||{});
+ const records=compact?[]:Object.entries(officialRecords||{});
  const day1Good=records.filter(([key])=>roundStage(key)==='classificatoria'&&roundDate(key)==='2026-11-06')
   .reduce((n,[,rec])=>n+(Array.isArray(rec?.participants)&&Array.isArray(rec?.drops)?
    rec.drops.filter(drop=>usableDrop(rec.participants,drop)).length:0),0);
- const useStaticDay1=Boolean(staticDay1?.teams?.length&&day1Good<12);
+ const publishedDay1=compact&&publishedDays.some(d=>d.date==='2026-11-06'&&d.teams?.length===24&&d.teams.every(row=>row[4]>=6));
+ const useStaticDay1=Boolean(staticDay1?.teams?.length&&day1Good<12&&!publishedDay1);
  const add=(id,points,kills,booyahs,matches,lastPlace)=>{
    const team=teams.get(id);if(!team||!matches)return;
    let row=totals.get(id);
@@ -100,6 +118,12 @@ function collectStandings(filter){
  };
  if(useStaticDay1&&(!filter||filter('classificatoria','2026-11-06'))){
    for(const row of staticDay1.teams)add(row.id,row.points,row.kills,row.booyahs,row.matches,row.lastPlace);
+ }
+ if(compact){
+   for(const day of publishedDays){
+    if((useStaticDay1&&day.date===staticDay1.date)||(filter&&!filter(day.stage,day.date)))continue;
+    for(const [id,points,kills,booyahs,matches,lastPlace] of day.teams||[])add(id,points,kills,booyahs,matches,lastPlace);
+   }
  }
  for(const [key,rec] of records){
   const stage=roundStage(key),date=roundDate(key,rec);
@@ -127,12 +151,12 @@ function bucketEntries(selection){
  if(selection.type==='week')return DATA.entries.filter(e=>selection.days.some(day=>String(e.stage||'classificatoria')===day.stage&&e.date===day.date));
  return [];
 }
-function standingsForSelection(s){
+function standingsForSelection(s,compact){
  if(!s)return [];
- if(s.type==='all')return collectStandings();
- if(s.type==='stage')return collectStandings(stage=>stage===s.stage);
- if(s.type==='date')return collectStandings((stage,date)=>stage===s.stage&&date===s.date);
- if(s.type==='week')return collectStandings((stage,date)=>s.days.some(d=>d.stage===stage&&d.date===date));
+ if(s.type==='all')return collectStandings(null,compact);
+ if(s.type==='stage')return collectStandings(stage=>stage===s.stage,compact);
+ if(s.type==='date')return collectStandings((stage,date)=>stage===s.stage&&date===s.date,compact);
+ if(s.type==='week')return collectStandings((stage,date)=>s.days.some(d=>d.stage===stage&&d.date===date),compact);
  return [];
 }
 function roleType(role){
@@ -152,10 +176,10 @@ function playerRankings(entries){
   const id=meta.id;
   if(!byKey.has(id)){const team=DATA.teams.find(t=>norm(t.name)===norm(meta.team));byKey.set(id,{
    id,name:meta.name,role:meta.role,roleType:roleType(meta.role),
-   team:meta.team,teamId:team?.id||'',teamLogo:team?.logo||'',photo:meta.photoLarge||meta.photo,
+   team:meta.team,teamId:team?.id||'',teamLogo:team?.logo||'',photo:meta.photoLarge||meta.photo,photoSmall:meta.photo,
    kills:0,damage:0,assists:0,matches:0
   })}
-  const r=byKey.get(id);r.kills+=number(e.kills);r.damage+=number(e.damage);r.assists+=number(e.assists);r.matches++;
+  const r=byKey.get(id);r.kills+=number(e.kills);r.damage+=number(e.damage);r.assists+=number(e.assists);r.matches+=number(e.matches)||1;
  }
  return [...byKey.values()];
 }
@@ -165,7 +189,7 @@ function rankScore(p,slot){
  slot==='gran'?(p.kills*7+p.damage/260+p.assists*1.6)/n:
  (p.assists*4.2+p.damage/210+p.kills*4)/n;
 }
-function selectLineup(selection){
+function selectLineup(selection,compact=false){
  const entries=bucketEntries(selection),ranked=playerRankings(entries),used=new Set(),lineup=[];
  const slots=[['RUSH','rush'],['RUSH','rush'],['GRAN','gran'],['SUP','support']];
  for(const [label,type] of slots){
@@ -173,11 +197,12 @@ function selectLineup(selection){
   const p=pool[0];
   if(p){used.add(p.id);lineup.push({...p,slot:label})}else lineup.push({slot:label,missing:true});
  }
- const best=standingsForSelection(selection)[0];
+ const best=standingsForSelection(selection,compact)[0];
  if(best){
   const name=COACHES[best.id]||'Técnico não cadastrado';
   lineup.push({...best,slot:'COACH',name,coach:true,missingCoach:!COACHES[best.id],
     photo:COACH_PHOTOS[best.id]?BASE+'photos/480/staff/'+COACH_PHOTOS[best.id]:'',
+    photoSmall:COACH_PHOTOS[best.id]?BASE+'photos/160/staff/'+COACH_PHOTOS[best.id]:'',
     teamLogo:best.logo,teamId:best.id});
  }else lineup.push({slot:'COACH',missing:true,coach:true,reason:'Aguardando pontuação oficial da equipe'});
  return lineup;
@@ -238,23 +263,11 @@ function pageFilter(){
  ).join('')+'</div>';
 }
 
-function refreshRosterForSelections(root){
- if(rosterRefresh||Date.now()-rosterCheckedAt<300000)return;
- rosterCheckedAt=Date.now();
- rosterRefresh=fetch(BASE+'players.json?v=20261106-world-role-flags-v1',{cache:'no-cache'})
-  .then(r=>{if(!r.ok)throw Error('Atualização dos jogadores indisponível');return r.json()})
-  .then(players=>{
-   if(!DATA||!Array.isArray(players?.players)||!Array.isArray(players?.entries)||
-      players.entries.length<DATA.entries.length)return;
-   DATA={players:players.players,entries:players.entries,teams:DATA.teams};
-   remoteRosterPreferred=true;
-   if(root.isConnected!==false)renderPage(root,{players:DATA.players,entries:DATA.entries},{teams:DATA.teams});
-  }).catch(()=>{}).finally(()=>{rosterRefresh=null});
-}
 function renderPage(root,players,teams,stages){
  if(!root)return false;
  if(stages&&typeof stages==='object')phaseCompletion=stages;
- if(!setData(players,teams))return false;
+ if(players&&!setData(players,teams))return false;
+ if(!DATA)return false;
  const ui=state.page,tab=TABS.find(t=>t.key===ui.tab)||TABS[0],selection=getPageSelection();
  const entries=bucketEntries(selection),hasEntries=entries.length>0;
  const progress=ui.tab!=='semanal'&&ui.tab!=='torneio'?phaseProgress(ui.tab):null;
@@ -296,28 +309,26 @@ function renderPage(root,players,teams,stages){
    if(b.globalMode)ui.mode=b.globalMode;
    if(b.globalDay)ui.day=b.globalDay;
    if(b.globalWeek)ui.week=b.globalWeek;
-   renderPage(root,{players:DATA.players,entries:DATA.entries},{teams:DATA.teams});
+   renderPage(root);
   });
  }
- // Revalida a planilha publicada ao abrir Seleções, sem exigir atualização manual do CSS ou JS.
- refreshRosterForSelections(root);
- if(!root.dataset.cffGlobalProgressMonitor){
-  root.dataset.cffGlobalProgressMonitor='1';
-  window.setInterval?.(()=>{
-   if(!document.hidden&&root.closest?.('.page')?.classList?.contains('active'))refreshRosterForSelections(root);
-  },300000);
- }
- if(!officialAt){
-  loadOfficial().then(()=>{if(root.isConnected!==false&&DATA)renderPage(root,{players:DATA.players,entries:DATA.entries},{teams:DATA.teams})});
- }
  return true;
+}
+async function bootPage(root){
+ if(!root)return;
+ try{
+  await loadPlayers();
+  renderPage(root);
+  await loadOfficial();
+  if(root.isConnected)renderPage(root);
+ }catch(_){root.textContent='Não foi possível carregar as seleções. Recarregue para tentar novamente.'}
 }
 function miniCard(p,color){
  if(p.missing)return '<div class="cff-gsel-home-row"><b>'+html(p.slot)+'</b><span>'+html(p.reason||'Aguardando resultados')+'</span></div>';
  const link=p.coach?BASE+'equipe?time='+encodeURIComponent(p.teamId):BASE+'jogador?id='+encodeURIComponent(p.id);
  const detail=p.coach?'PONTOS '+fmt(p.points)+' · K '+fmt(p.kills)+' · B! '+fmt(p.booyahs):
   'K '+fmt(p.kills)+' · DANO '+(p.damage/1000).toFixed(1)+'K · Q '+fmt(p.matches);
- return '<a class="cff-gsel-home-row" href="'+html(link)+'" style="--selection-accent:'+color+'"><img src="'+html(url(p.photo||'/silhueta.webp'))+'" alt="" onerror="this.onerror=null;this.src=\'/silhueta.webp\'" loading="lazy">'+
+ return '<a class="cff-gsel-home-row" href="'+html(link)+'" style="--selection-accent:'+color+'"><img src="'+html(url(p.photoSmall||p.photo||'/silhueta.webp'))+'" alt="" onerror="this.onerror=null;this.src=\'/silhueta.webp\'" loading="lazy">'+
  '<span><em>'+html(p.slot)+'</em><b>'+html(p.name)+'</b><small>'+html(p.team||'')+'</small></span><strong>'+html(detail)+'</strong></a>';
 }
 function miniSelection(context){
@@ -327,7 +338,7 @@ function miniSelection(context){
  if(!candidates.some(c=>c.key===ui[attribute]))ui[attribute]=candidates.at(-1)?.key||choices[0]?.key||'';
  const selected=choices.find(c=>c.key===ui[attribute]);
  const filter=selected?(ui.mode==='week'?{type:'week',days:selected.days}:{type:'date',stage:selected.stage,date:selected.date}):null;
- const rows=filter?selectLineup(filter):[];
+ const rows=filter?selectLineup(filter,true):[];
  return {ui,choices,found,selected,rows};
 }
 function renderSmall(host,context){
@@ -349,9 +360,7 @@ function renderSmall(host,context){
   host.addEventListener('click',e=>{const b=e.target.closest('[data-cff-mode]');if(!b)return;d.ui.mode=b.dataset.cffMode;renderSmall(host,context)});
   host.addEventListener('change',e=>{if(!e.target.matches('[data-cff-period]'))return;d.ui[d.ui.mode==='week'?'week':'day']=e.target.value;renderSmall(host,context)});
  }
- if(!officialAt){
-  loadOfficial().then(()=>{if(DATA&&host.isConnected!==false)renderSmall(host,context)});
- }
+
 }
 async function renderHome(){
  const host=document.getElementById('global-selection-home-widget');if(!host)return;
@@ -359,18 +368,14 @@ async function renderHome(){
 }
 async function renderStart(){
  const host=document.getElementById('global-start-selection');if(!host)return;
- try{await loadPlayers();renderSmall(host,'start')}catch(_){host.textContent='Seleção indisponível no momento.'}
+ try{await loadPlayers();renderSmall(host,'start');if(DATA.entries.some(e=>e.date>staticDay1?.date)){await getPublishedSummary().catch(()=>null);renderSmall(host,'start')}}catch(_){host.textContent='Seleção indisponível no momento.'}
 }
 async function getStandings(){
- await loadPlayers();await loadOfficial();
- const stage=Object.keys(officialRecords||{}).filter(k=>roundStage(k)&&officialRecords[k]?.drops?.length)
-  .sort((a,b)=>roundDate(a,officialRecords[a]).localeCompare(roundDate(b,officialRecords[b]))).at(-1);
- const activeStage=stage?roundStage(stage):'classificatoria';
- const latestDate=stage?roundDate(stage,officialRecords[stage]):(staticDay1?.date||'');
- const filter=activeStage==='classificatoria'?s=>s==='classificatoria':
-  (s,d)=>s===activeStage&&d===latestDate;
- const standings=collectStandings(filter);
- return {teams:standings,stage:activeStage,date:latestDate,partial:false};
+ await loadPlayers();
+ const latest=publishedDays.at(-1);
+ const stage=latest?.stage||staticDay1?.stage||'classificatoria',date=latest?.date||staticDay1?.date||'';
+ const standings=collectStandings((s,d)=>s===stage&&(stage==='classificatoria'||d===date),true);
+ return {teams:standings,stage,date,partial:latest?!!homeSummary?.partial:false};
 }
 async function getHomeRankings(){
  await loadPlayers();const all=playerRankings(DATA.entries);const rank=metric=>[...all].sort((a,b)=>b[metric]-a[metric]||b.kills-a.kills).slice(0,6).map(p=>({
@@ -378,6 +383,5 @@ async function getHomeRankings(){
  }));
  return {kills:rank('kills'),damage:rank('damage'),assists:rank('assists')};
 }
-window.CFFGlobalSelections={renderPage,renderHome,renderStart,getStandings,getHomeRankings,selectLineup,loadOfficial,setData,coachNames:COACHES};
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderHome,{once:true});else renderHome();
+window.CFFGlobalSelections={bootPage,renderPage,renderHome,renderStart,getStandings,getHomeRankings,getPublishedSummary,acceptPublishedSummary,selectLineup,loadOfficial,setData,coachNames:COACHES};
 })();

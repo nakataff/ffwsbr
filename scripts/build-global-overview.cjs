@@ -33,7 +33,33 @@ function aggregate(events) {
 function compactRows(rows) {
   return rows.filter(r => !r.placeholder && num(r.matches) > 0).map((r,i) => ({team:r.team, position:num(r.position)||i+1, points:num(r.points), kills:num(r.kills), booyahs:num(r.booyahs), matches:num(r.matches)}));
 }
-function build({stages, dates, teams, groups, players}) {
+// Home and selections need totals per player/day, not one record for each drop.
+function selectionSummary(roster, entries, metadata, schedule, fallback, stages) {
+  const teamsByAlias = new Map(metadata.flatMap(t => [t.id,t.name,t.abbreviation].map(k => [norm(k),t])));
+  const peopleById = new Map(roster.map(p => [p.id,p]));
+  const dates = new Map(schedule.map(r => [r.stage+':'+r.day,r.date]));
+  const buckets = new Map(), played = new Set();
+  for (const e of entries) {
+    const p = peopleById.get(e.playerId), t = teamsByAlias.get(norm(e.team));
+    const date = e.date || dates.get(e.stage+':'+e.day);
+    if (!p || !t || teamsByAlias.get(norm(p.team)) !== t || !date || !keys.includes(e.stage) || e.matches === 0) continue;
+    const key = e.stage+':'+date;
+    if (!buckets.has(key)) buckets.set(key,{stage:e.stage,date,rows:new Map()});
+    const rows = buckets.get(key).rows;
+    if (!rows.has(p.id)) rows.set(p.id,[p.id,0,0,0,0]);
+    const row = rows.get(p.id);
+    for (const [i,field] of ['kills','damage','assists'].entries()) row[i+1]+=num(e[field]);
+    row[4]+=num(e.matches)||1;
+    played.add(p.id);
+  }
+  return {version:1,finished:Object.fromEntries(keys.map(k=>[k,{finished:stages[k]?.finished===true}])),
+    teams:metadata.map(({id,name,logo})=>({id,name,logo})),
+    players:roster.filter(p=>played.has(p.id)).map(({id,name,team,role,photo,photoLarge})=>({id,name,team,role,photo,photoLarge})),
+    days:[...buckets.values()].sort((a,b)=>a.date.localeCompare(b.date)).map(({stage,date,rows})=>({stage,date,players:[...rows.values()]})),
+    fallback:fallback?.teams?.length?{date:fallback.date,stage:fallback.stage,teams:fallback.teams}:null
+  };
+}
+function build({stages, dates, teams, groups, players, standingsDay1}) {
   const groupById = new Map(Object.entries(groups.groups).flatMap(([g,ids]) => ids.map(id => [id,g])));
   if (teams.teams.length !== 24 || groupById.size !== 24 || Object.values(groups.groups).some(ids => ids.length !== 6)) throw Error('Grupos incompletos ou duplicados');
   if (teams.teams.some(t => !groupById.has(t.id))) throw Error('Equipe sem grupo');
@@ -100,12 +126,13 @@ function build({stages, dates, teams, groups, players}) {
     'equipes-resumo.json':{updatedAt,teams:teamProfiles},
     'inicio-resumo.json':{tournament:stages.tournament,updatedAt,finished:!!stages.finished,format,teams:metadata,tables,rounds:dates.rounds.map(r=>({key:r.key,stage:r.stage,day:r.day,label:r.label,date:r.date,time24:r.time24,groups:r.groups,matches:r.matches}))},
     'inicio-mvp-top10.json':{updatedAt,top10},
-    'inicio-elencos.json':{updatedAt,teams:squads}
+    'inicio-elencos.json':{updatedAt,teams:squads},
+    'selecoes-resumo.json':selectionSummary(roster,entries,metadata,dates.rounds,standingsDay1,stages)
   };
 }
 if (require.main === module) {
   const read=name=>JSON.parse(fs.readFileSync(path.join(BASE,name+'.json'),'utf8'));
-  const output=build(Object.fromEntries(['stages','dates','teams','groups','players'].map(name=>[name,read(name)])));
+  const output=build({...Object.fromEntries(['stages','dates','teams','groups','players'].map(name=>[name,read(name)])),standingsDay1:read('standings-day1')});
   for (const [name,data] of Object.entries(output)) {
     const text=JSON.stringify(data)+'\n',file=path.join(BASE,name);
     if (process.argv.includes('--check')) {if (!fs.existsSync(file)||fs.readFileSync(file,'utf8')!==text) throw Error('Regere '+name);}

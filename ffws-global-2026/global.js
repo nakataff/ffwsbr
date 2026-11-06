@@ -43,6 +43,7 @@
     selectionTab: 'torneio',
     mvpPage: 0,
     mvpSort: 'kills',
+    mvpSortDirection: -1,
     mvpDetails: false,
     playerFilters: { stage: [], day: [], round: [], team: [], role: [], country: [] },
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
@@ -515,7 +516,7 @@
   const MVP_SORT_OPTIONS = {
     kills: { label: 'Abates', short: 'K', value: row => row.kills },
     damage: { label: 'Dano', short: 'Dano', value: row => row.damage, format: value => value.toLocaleString('pt-BR') },
-    assists: { label: 'Assistências', short: 'Assist.', value: row => row.assists },
+    assists: { label: 'Assistências', short: 'Ast', value: row => row.assists },
     killsPerDrop: { label: 'Abates por queda', short: 'K/Q', value: row => row.matches ? row.kills / row.matches : 0, format: value => value.toFixed(2) }
   };
   const mvpDayKey = entry => `${entry.stage}-${number(entry.day)}`;
@@ -528,16 +529,16 @@
     const label = selected.length === 1 ? (options.find(option => option.value === selected[0])?.label || selected[0])
       : selected.length ? `${selected.length} selecionados` : 'Todos';
     return `<div class="ffws-global-filter"><span id="mvp-filter-label-${key}">${title}</span>
-      <button type="button" data-mvp-filter="${key}" aria-haspopup="dialog" aria-controls="ffws-global-mvp-filter-dialog"
+      <button type="button" data-mvp-filter="${key}" aria-haspopup="dialog" aria-controls="cff-mvp-filter-dialog"
         aria-labelledby="mvp-filter-label-${key} mvp-filter-value-${key}"${options.length ? '' : ' disabled'}>
         <b id="mvp-filter-value-${key}">${escapeHtml(options.length ? label : 'Sem dados')}</b><span aria-hidden="true">⌄</span>
       </button></div>`;
   }
 
   function bindMvpFilters(root, options) {
-    const dialog = root.querySelector('.ffws-global-mvp-filter-dialog');
+    const dialog = root.querySelector('.cff-mvp-filter-dialog');
     const form = dialog.querySelector('form');
-    const optionList = form.querySelector('.ffws-global-mvp-filter-options');
+    const optionList = form.querySelector('.cff-mvp-filter-options');
     let trigger;
     for (const button of root.querySelectorAll('[data-mvp-filter]')) {
       button.addEventListener('click', () => {
@@ -624,7 +625,15 @@
       row.bestDrop = Math.max(row.bestDrop, number(entry.kills));
     });
     const { value } = MVP_SORT_OPTIONS[state.mvpSort];
-    return [...aggregate.values()].sort((a, b) => value(b) - value(a) || b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
+    return [...aggregate.values()].sort((a, b) => state.mvpSortDirection * (value(a) - value(b)) || b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
+  }
+
+  function mvpSortHeader(key, extraClass='') {
+    const active=state.mvpSort===key, direction=state.mvpSortDirection<0?'descending':'ascending';
+    const {label,short}=MVP_SORT_OPTIONS[key];
+    return `<th scope="col"${extraClass?' class="'+extraClass+'"':''}${active?' aria-sort="'+direction+'"':''}>
+      <button type="button" class="cff-mvp-sort" data-mvp-column="${key}" aria-label="Ordenar por ${label}"><b class="cff-mvp-long">${key==='killsPerDrop'?'K/Q':label}</b><b class="cff-mvp-short">${short}</b><span aria-hidden="true">${active?(direction==='descending'?'↓':'↑'):'↕'}</span></button>
+    </th>`;
   }
 
   function renderMvp() {
@@ -632,12 +641,6 @@
     if (!root) return;
     const options = playerFilterOptions();
     const rows = filteredPlayers();
-    const metric = MVP_SORT_OPTIONS[state.mvpSort];
-    const metricCell = row => {
-      const value = metric.value(row);
-      return metric.format ? metric.format(value) : value;
-    };
-    const sortHeader = key => state.mvpSort === key ? ' aria-sort="descending"' : '';
     const pageSize = 10;
     const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
     state.mvpPage = Math.max(0, Math.min(number(state.mvpPage), pageCount - 1));
@@ -652,25 +655,22 @@
     root.innerHTML = `<div class="ffws-global-shell">${hero('Ranking MVP', 'Classificação individual da FFWS Global Finals 2026')}
       <section class="ffws-global-panel ffws-global-mvp-panel${state.mvpDetails ? ' show-details' : ''}"><div class="ffws-global-panel-inner">
         <div class="ffws-global-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking por dia, rodada, etapa, equipe e mais.</p></div><span class="ffws-global-badge">${rows.length} jogadores</span></div>
-        <div class="ffws-global-filters ffws-global-mvp-filters">${Object.keys(MVP_FILTER_LABELS).map(key => mvpFilter(key, options[key])).join('')}</div>
-        <dialog class="ffws-global-mvp-filter-dialog" id="ffws-global-mvp-filter-dialog" aria-labelledby="ffws-global-mvp-filter-title">
+        <div class="ffws-global-filters cff-mvp-filters">${Object.keys(MVP_FILTER_LABELS).map(key => mvpFilter(key, options[key])).join('')}</div>
+        <dialog class="cff-mvp-filter-dialog" id="cff-mvp-filter-dialog" aria-labelledby="cff-mvp-filter-title">
           <form>
-            <div class="ffws-global-mvp-filter-heading"><h3 id="ffws-global-mvp-filter-title"></h3><button type="button" data-mvp-close aria-label="Fechar sem aplicar">×</button></div>
+            <div class="cff-mvp-filter-heading"><h3 id="cff-mvp-filter-title"></h3><button type="button" data-mvp-close aria-label="Fechar sem aplicar">×</button></div>
             <p>Selecione uma ou mais opções. Sem seleção, o filtro mostra tudo.</p>
-            <div class="ffws-global-mvp-filter-options"></div>
-            <div class="ffws-global-mvp-filter-actions"><button type="button" data-mvp-clear>Limpar seleção</button><button type="submit">Aplicar</button></div>
+            <div class="cff-mvp-filter-options"></div>
+            <div class="cff-mvp-filter-actions"><button type="button" data-mvp-clear>Limpar seleção</button><button type="submit">Aplicar</button></div>
           </form>
         </dialog>
         <div class="ffws-global-mvp-tools">
-          <label class="ffws-global-mvp-sort"><span>Ordenar por</span><select data-mvp-sort>
-            ${Object.entries(MVP_SORT_OPTIONS).map(([key, option]) => `<option value="${key}"${state.mvpSort === key ? ' selected' : ''}>${option.label}</option>`).join('')}
-          </select></label>
           <button type="button" class="ffws-global-mvp-details-toggle" aria-expanded="${state.mvpDetails}">${state.mvpDetails ? 'Ocultar detalhes' : 'Dados completos'}</button>
         </div>
-        <div class="ffws-global-table-wrap"><table class="ffws-global-table ffws-global-mvp-table"><thead><tr><th class="ffws-global-mvp-rank-col">#</th><th class="team-col ffws-global-mvp-player-col"><span class="ffws-global-desktop">Jogador</span><span class="ffws-global-mobile">J</span></th><th><span class="ffws-global-desktop">Eqp</span><span class="ffws-global-mobile">E</span></th><th${sortHeader('kills')}><span class="ffws-global-desktop">K</span><abbr class="ffws-global-mobile" title="${metric.label}">${metric.short}</abbr></th><th class="hide-mobile"${sortHeader('damage')}>Dano</th><th class="hide-mobile"${sortHeader('assists')}>Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile"${sortHeader('killsPerDrop')}>K/Q</th></tr></thead><tbody>
+        <div class="ffws-global-table-wrap"><table class="ffws-global-table ffws-global-mvp-table" data-mvp-table><thead><tr><th class="ffws-global-mvp-rank-col">#</th><th class="team-col ffws-global-mvp-player-col"><span class="ffws-global-desktop">Jogador</span><span class="ffws-global-mobile">J</span></th><th><span class="ffws-global-desktop">Eqp</span><span class="ffws-global-mobile">E</span></th>${mvpSortHeader('kills')}${mvpSortHeader('damage')}${mvpSortHeader('assists')}<th>Q</th><th class="hide-mobile">MVP</th>${mvpSortHeader('killsPerDrop','hide-mobile')}</tr></thead><tbody>
         ${pageRows.length ? pageRows.map((row, index) => {
           const rank = pageStart + index + 1;
-          return `<tr class="ffws-global-mvp-main-row"><td class="ffws-global-rank ffws-global-mvp-rank-col">${rank}º</td><td class="team-col ffws-global-mvp-player-col"><button type="button" class="ffws-global-inline-link" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-global-desktop">${row.kills}</span><span class="ffws-global-mobile ffws-global-mvp-metric">${metricCell(row)}</span></td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>
+          return `<tr class="ffws-global-mvp-main-row"><td class="ffws-global-rank ffws-global-mvp-rank-col">${rank}º</td><td class="team-col ffws-global-mvp-player-col"><button type="button" class="ffws-global-inline-link" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td>${row.damage.toLocaleString('pt-BR')}</td><td>${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>
           <tr class="ffws-global-mvp-details-row"><td colspan="9"><div class="ffws-global-mvp-details-grid">
             <div><span>Posição</span><strong>${rank}º</strong></div>
             <div><span>Abates</span><strong>${row.kills}</strong></div>
@@ -686,14 +686,13 @@
       </div></section></div>`;
 
     bindMvpFilters(root, options);
-    root.querySelector('[data-mvp-sort]').addEventListener('change', event => {
-      const key = event.target.value;
-      if (!Object.hasOwn(MVP_SORT_OPTIONS, key)) return;
-      state.mvpSort = key;
-      state.mvpPage = 0;
+    root.querySelectorAll('[data-mvp-column]').forEach(button=>button.addEventListener('click',()=>{
+      const key=button.dataset.mvpColumn;
+      state.mvpSortDirection=state.mvpSort===key?-state.mvpSortDirection:-1;
+      state.mvpSort=key;state.mvpPage=0;
       renderMvp();
-      root.querySelector('[data-mvp-sort]').focus({preventScroll:true});
-    });
+      root.querySelector(`[data-mvp-column="${key}"]`)?.focus({preventScroll:true});
+    }));
     const detailsButton = root.querySelector('.ffws-global-mvp-details-toggle');
     detailsButton.addEventListener('click', () => window.toggleFFWSGlobalMvpDetails(detailsButton));
   }
@@ -2456,7 +2455,11 @@
       root.dataset.s2Loading = '1';
       root.innerHTML = '<div class="ffws-global-empty"><div><strong>Carregando FFWS Global Finals 2026...</strong></div></div>';
     }
-    const needsPlayers = new Set(['ffws-global-2026-mvp', 'ffws-global-2026-equipes', 'ffws-global-2026-selecoes', 'ffws-global-2026-stats', 'ffws-global-2026-notas', 'ffws-global-2026-comparar', 'ffws-global-2026-formato']).has(pageId);
+    if(pageId==='ffws-global-2026-selecoes'&&window.CFFGlobalSelections?.bootPage){
+      window.CFFGlobalSelections.bootPage(root);
+      return;
+    }
+    const needsPlayers = new Set(['ffws-global-2026-mvp', 'ffws-global-2026-equipes', 'ffws-global-2026-selecoes', 'ffws-global-2026-stats', 'ffws-global-2026-notas', 'ffws-global-2026-comparar']).has(pageId);
     const needsPhotos = new Set(['ffws-global-2026-equipes', 'ffws-global-2026-selecoes']).has(pageId);
     loadData()
       .then(() => pageId === 'ffws-global-2026-classificatoria' ? loadGroupsData() : null)
@@ -2741,7 +2744,7 @@
   window.setFFWSGlobalMvpPage = page => { state.mvpPage = Math.max(0, number(page)); renderMvp(); };
 
   window.addEventListener('hashchange', () => {
-    const dialog = document.getElementById('ffws-global-mvp-filter-dialog');
+    const dialog = document.getElementById('cff-mvp-filter-dialog');
     if (dialog?.open && location.hash !== '#ffws-global-2026-mvp') dialog.close();
   });
 

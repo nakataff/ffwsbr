@@ -89,7 +89,12 @@ function summary(records,meta){const available=meta.rounds.filter(r=>records[r.k
  const agg=rs=>{const map=new Map();for(const rec of rs)for(const p of rec.players||[]){const row=map.get(p.id)||{...p,matches:0,kills:null,damage:null,assists:null,coverage:{kills:0,damage:0,assists:0}};row.matches+=p.matches;for(const k of ['kills','damage','assists'])if(number(p[k])!==null){row[k]=(row[k]||0)+p[k];row.coverage[k]+=p.matches}map.set(p.id,row)}return [...map.values()]};
  const ranked=agg(recs),top=k=>ranked.filter(p=>p[k]!==null).sort((a,b)=>b[k]-a[k]||(b.kills||0)-(a.kills||0)||(b.damage||0)-(a.damage||0)||a.name.localeCompare(b.name,'pt-BR')).slice(0,6);
  const dates=[...new Set(available.map(r=>r.date))];const days=dates.map(date=>{const rs=available.filter(r=>r.date===date),players=agg(rs.map(r=>records[r.key])).filter(p=>p.kills!==null).sort((a,b)=>b.kills-a.kills||(b.damage||0)-(a.damage||0));const used=new Set(),take=(test,n)=>players.filter(p=>!used.has(p.id)&&test(norm(p.role))).slice(0,n).map(p=>(used.add(p.id),p));const selection=[...take(r=>/rush|3/.test(r),2),...take(r=>/gran/.test(r),1),...take(r=>/sup/.test(r),1)];return{date,keys:rs.map(r=>r.key),players:selection,missingRoles:selection.length<4}});
- return{version:1,updatedAt:Date.now(),stage,roundKey:latest.key,date:latest.date,partial:recs.some(r=>!r.complete),teams:rank(recs,meta,stage==='final').slice(0,6),rankings:{kills:top('kills'),damage:top('damage'),assists:top('assists')},days};
+ // Small daily team totals let the homepage select a coach without reading all drops.
+ const dailyTeams=dates.map(date=>{
+  const rounds=available.filter(r=>r.date===date);
+  return {date,stage:rounds[0].stage,teams:rank(rounds.map(r=>records[r.key]),meta).map(r=>[r.id,r.points,r.kills,r.booyahs,r.matches,r.lastPlace])};
+ });
+ return{version:1,updatedAt:Date.now(),stage,roundKey:latest.key,date:latest.date,partial:recs.some(r=>!r.complete),teams:rank(recs,meta,stage==='final').slice(0,6),rankings:{kills:top('kills'),damage:top('damage'),assists:top('assists')},days,dailyTeams};
 }
 // Balanced templates: nested TeamOpponent / MS values are never split on inner pipes.
 function split(text){const out=[];let start=0,depth=0;for(let i=0;i<text.length;i++){if(text.slice(i,i+2)==='{{'){depth++;i++}else if(text.slice(i,i+2)==='}}'){depth--;i++}else if(text[i]==='|'&&depth===0){out.push(text.slice(start,i).trim());start=i+1}}out.push(text.slice(start).trim());return out}
