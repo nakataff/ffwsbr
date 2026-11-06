@@ -41,7 +41,7 @@
       "order": 4,
       "type": "player",
       "country": "cl",
-      "role": "Suporte",
+      "role": "Sniper",
       "id": "lyon-joacozd",
       "photo": "ffws-global-2026/photos/160/lyon-joacozd.webp",
       "photoLarge": "ffws-global-2026/photos/480/lyon-joacozd.webp"
@@ -52,7 +52,7 @@
       "order": 5,
       "type": "player",
       "country": "cl",
-      "role": "Suporte",
+      "role": "Sniper",
       "id": "lyon-joker",
       "photo": "ffws-global-2026/photos/160/lyon-joker.webp",
       "photoLarge": "ffws-global-2026/photos/480/lyon-joker.webp"
@@ -716,7 +716,7 @@
       "order": 4,
       "type": "player",
       "country": "pe",
-      "role": "Suporte",
+      "role": "Sniper",
       "id": "blue-cheese-stu",
       "photo": "ffws-global-2026/photos/160/blue-cheese-stu.webp",
       "photoLarge": "ffws-global-2026/photos/480/blue-cheese-stu.webp"
@@ -760,7 +760,7 @@
       "order": 3,
       "type": "player",
       "country": "ar",
-      "role": "Suporte",
+      "role": "Sniper",
       "wikiLink": "BNL",
       "id": "gundynasty-bnlxxy",
       "photo": "ffws-global-2026/photos/160/gundynasty-bnlxxy.webp",
