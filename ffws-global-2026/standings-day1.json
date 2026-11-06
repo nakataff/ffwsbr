@@ -1,0 +1,201 @@
+{
+  "tournament": "FFWS Global Finals 2026",
+  "date": "2026-11-06",
+  "stage": "classificatoria",
+  "source": "Stats - Nakata(1).xlsx / Rodada 1 e 2 06.11 - Week 1",
+  "note": "12 quedas (duas rodadas), seis quedas por equipe. Pontos = RankingScore + KillingScore.",
+  "teams": [
+    {
+      "id": "loud",
+      "points": 124,
+      "kills": 72,
+      "booyahs": 2,
+      "matches": 6,
+      "lastPlace": 3
+    },
+    {
+      "id": "team-flash",
+      "points": 123,
+      "kills": 74,
+      "booyahs": 1,
+      "matches": 6,
+      "lastPlace": 1
+    },
+    {
+      "id": "fx",
+      "points": 122,
+      "kills": 72,
+      "booyahs": 1,
+      "matches": 6,
+      "lastPlace": 2
+    },
+    {
+      "id": "p-esports",
+      "points": 121,
+      "kills": 73,
+      "booyahs": 3,
+      "matches": 6,
+      "lastPlace": 8
+    },
+    {
+      "id": "bru",
+      "points": 111,
+      "kills": 67,
+      "booyahs": 2,
+      "matches": 6,
+      "lastPlace": 1
+    },
+    {
+      "id": "rrq",
+      "points": 109,
+      "kills": 67,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 5
+    },
+    {
+      "id": "btr",
+      "points": 83,
+      "kills": 54,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 3
+    },
+    {
+      "id": "gow",
+      "points": 82,
+      "kills": 46,
+      "booyahs": 1,
+      "matches": 6,
+      "lastPlace": 4
+    },
+    {
+      "id": "ag-al",
+      "points": 78,
+      "kills": 39,
+      "booyahs": 1,
+      "matches": 6,
+      "lastPlace": 5
+    },
+    {
+      "id": "stellar-esport",
+      "points": 78,
+      "kills": 46,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 6
+    },
+    {
+      "id": "onic",
+      "points": 75,
+      "kills": 46,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 12
+    },
+    {
+      "id": "blue-cheese",
+      "points": 72,
+      "kills": 47,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 9
+    },
+    {
+      "id": "los",
+      "points": 71,
+      "kills": 43,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 7
+    },
+    {
+      "id": "lyon",
+      "points": 66,
+      "kills": 49,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 6
+    },
+    {
+      "id": "tag",
+      "points": 64,
+      "kills": 35,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 4
+    },
+    {
+      "id": "xprojekt",
+      "points": 61,
+      "kills": 48,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 7
+    },
+    {
+      "id": "team-inf",
+      "points": 50,
+      "kills": 32,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 9
+    },
+    {
+      "id": "horaa-esports",
+      "points": 49,
+      "kills": 27,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 8
+    },
+    {
+      "id": "gundynasty",
+      "points": 41,
+      "kills": 25,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 2
+    },
+    {
+      "id": "total-winner-esports",
+      "points": 37,
+      "kills": 21,
+      "booyahs": 1,
+      "matches": 6,
+      "lastPlace": 11
+    },
+    {
+      "id": "tsg-pros",
+      "points": 34,
+      "kills": 19,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 10
+    },
+    {
+      "id": "paradox-gaming",
+      "points": 32,
+      "kills": 18,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 10
+    },
+    {
+      "id": "resurrection-esports",
+      "points": 29,
+      "kills": 21,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 11
+    },
+    {
+      "id": "pe",
+      "points": 28,
+      "kills": 15,
+      "booyahs": 0,
+      "matches": 6,
+      "lastPlace": 12
+    }
+  ]
+}
