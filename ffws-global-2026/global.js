@@ -931,7 +931,7 @@
     if (!root) return;
     // O seletor novo respeita as funções da planilha, inclui o técnico e agrupa por dia/semana.
     // Fallback para a seleção anterior somente se o módulo compartilhado não estiver disponível.
-    if (window.CFFGlobalSelections?.renderPage(root, state.players, state.teams)) return;
+    if (window.CFFGlobalSelections?.renderPage(root, state.players, state.teams, state.stages)) return;
     const phaseKey = state.selectionTab || 'semanal';
     const config = selectionPhaseConfig(phaseKey);
     const finalUnlocked = selectionFinalComplete();
