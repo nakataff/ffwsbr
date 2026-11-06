@@ -70,7 +70,7 @@
   function loadWorkspace(){
     const workspace=document.createElement('script');workspace.src='admin-camp-ao-vivo/workspace.js?v=20261106-mobile-v1';
     const done=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos')};
-    workspace.onload=()=>{const core=document.createElement('script');core.src='js/global-camp-core.js?v=20261106-world-compact-v1';core.onload=()=>{const model=document.createElement('script');model.src='admin-camp-ao-vivo/global-series.js?v=20261106-camp-sync-v1';model.onload=done;model.onerror=done;document.body.appendChild(model)};core.onerror=done;document.body.appendChild(core)};workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
+    workspace.onload=()=>{const core=document.createElement('script');core.src='js/global-camp-core.js?v=20261106-world-compact-v1';core.onload=()=>{const model=document.createElement('script');model.src='admin-camp-ao-vivo/global-series.js?v=20261106-publication-review-v1';model.onload=done;model.onerror=done;document.body.appendChild(model)};core.onerror=done;document.body.appendChild(core)};workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
   }
   function loadTournamentSetup(){
     const setup=document.createElement('script');setup.src='admin-camp-ao-vivo/tournament-setup.js?v=20261104-camp-history-v5';

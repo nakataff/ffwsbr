@@ -5,6 +5,7 @@ const C=window.CFF_GLOBAL_CAMP_CORE,$=id=>document.getElementById(id),copy=x=>JS
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const storage=window.localStorage,version='20261104-camp-history-v5';
 const labels={classificatoria:'Classificatória · Fase 1',segundaFase:'Segunda fase · Pools',lastChance:'Repescagem',final:'Grande Final'};
+let publishedForReview=null;
 let meta,template,state=null,busy=false,preview=null,review=null,selectedStage='classificatoria',previousFocus=null,previousOverflow='',navDefaults=null;
 const originalCollect=window.collectBackupData,originalImport=window.importBackup;
 function restore(data){state=data?.config?.cffGlobalRound?{key:data.config.cffGlobalRound,archive:copy(data.config.cffGlobalArchive||{}),players:copy(data.config.cffGlobalPlayers||[]),revisions:copy(data.config.cffGlobalRevisions||{}),presentationVersion:Number(data.config.cffGlobalPresentationVersion)||0}:null}
@@ -76,10 +77,27 @@ function buildReview(){
 }
 function table(headers,rows){return `<div class="cff-global-review-table"><table><thead><tr>${headers.map(h=>`<th scope="col">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>'<tr>'+row.map(cell=>'<td>'+esc(cell)+'</td>').join('')+'</tr>').join('')}</tbody></table></div>`}
 function renderReviewDrop(){if(!review)return;const index=Number($('cff-global-review-drop').value)||0,d=review.current.drops[index],rows=review.current.participants.map(id=>({id,pos:Number(d.placements[id]),kills:Number(d.kills[id]),points:Number(d.points[id])})).sort((a,b)=>a.pos-b.pos);$('cff-global-review-drop-table').innerHTML=table(['Pos.','Equipe','Abates','Pontos'],rows.map(r=>[r.pos+'º',C.team(meta,r.id)?.name||r.id,r.kills,r.points]));}
+function renderPublicationDiff(r){
+ const entry=publishedForReview?.[r.current.key];
+ if(!entry){$('cff-global-review-changes').textContent=r.expected?'Para comparar com a revisão publicada, use “Puxar resultados publicados” antes de editar.':'Primeira publicação desta rodada.';return;}
+ const a=entry.drops||[],b=r.current.drops;
+ const same=(x,y)=>!!x&&x.map===y.map&&r.current.participants.every(id=>['points','kills','placements'].every(k=>Number(x[k]?.[id])===Number(y[k]?.[id])));
+ const changed=b.flatMap((drop,i)=>a[i]&&!same(a[i],drop)?[i+1]:[]);
+ const oldPlayers=new Map((entry.players||[]).map(p=>[p.id,p])),newPlayers=new Map(r.current.players.map(p=>[p.id,p]));
+ const playerFields=['matches','kills','damage','assists'];
+ const edits=[...new Set([...oldPlayers.keys(),...newPlayers.keys()])].filter(id=>!oldPlayers.has(id)||!newPlayers.has(id)||playerFields.some(k=>oldPlayers.get(id)[k]!==newPlayers.get(id)[k])).length;
+ $('cff-global-review-changes').textContent='Comparação com a revisão carregada: '+[
+  b.length>a.length?(b.length-a.length)+' queda(s) nova(s)':'',
+  changed.length?'quedas alteradas: '+changed.join(', '):'',
+  b.length<a.length?(a.length-b.length)+' queda(s) a menos no rascunho':'',
+  edits?edits+' registro(s) individual(is) alterado(s)':''
+ ].filter(Boolean).join(' · ') + (a.length===b.length&&!changed.length&&!edits?'nenhuma alteração.':'.');
+}
 function openReview(){
  const r=buildReview(),modal=$('cff-global-review');previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;
  $('cff-global-review-subtitle').textContent=labels[r.round.stage]+' · '+roundText(r.round);
  $('cff-global-review-note').textContent=`Serão enviadas as quedas 1 a ${r.current.drops.length} desta rodada, com substituição dos lançamentos anteriores, sem somar duas vezes.${r.hasDraft?' Há uma queda em rascunho que não será enviada.':''}`;
+ renderPublicationDiff(r);
  $('cff-global-review-drop').innerHTML=r.current.drops.map((d,i)=>`<option value="${i}">Queda ${i+1}${d.map?' · '+esc(d.map):''}</option>`).join('');$('cff-global-review-drop').value=String(r.current.drops.length-1);renderReviewDrop();
  $('cff-global-review-ranking-title').textContent=r.round.stage==='classificatoria'?'Classificação geral da Fase 1 após este envio':'Classificação desta rodada após este envio';
  $('cff-global-review-ranking').innerHTML=table(['#','Equipe','Pontos','Abates','Booyahs','Quedas'],r.ranking.map((t,i)=>[i+1+'º',t.name,t.points,t.kills,t.booyahs,t.matches]));
@@ -94,7 +112,7 @@ async function publishConfirmed(){
  await api.get(target); // Warm the transaction cache before checking an existing revision.
  const result=await api.runTransaction(target,root=>C.publication(root,approval.current,meta,approval.expected,approval.receipt,approval.ranking),{applyLocally:false});
  if(!result.committed)throw Error('Não foi possível confirmar o envio. Seu rascunho foi preservado.');
- const root=result.snapshot.val();state.archive=root.rounds||{};state.revisions=root.revisions||{};persist();closeReview(true);message('Resultados enviados! A home recebe a tabela e os destaques do Mundial. Atualização em até 90 segundos.');
+ const root=result.snapshot.val();publishedForReview=copy(root.rounds||{});state.archive=root.rounds||{};state.revisions=root.revisions||{};persist();closeReview(true);message('Resultados enviados! A home recebe a tabela e os destaques do Mundial. Atualização em até 90 segundos.');
  const storage=window.CFF_CAMP?.persistence;
  if(storage)void storage.saveRemoteAfterDrop(storage.saveLocalNow('global-publish',true)).then(ok=>{if(!ok)message('Resultados publicados. O rascunho segue neste navegador; confira o aviso em Continuar no celular ou no PC.');});
 }
@@ -104,7 +122,7 @@ async function pull(){
  if(!round)throw Error('Ainda não há rodadas publicadas.');
  if(!confirm('Abrir a rodada publicada de '+roundText(round)+'? As opções da tabela deste navegador serão mantidas. O rascunho atual ficará no backup anterior.'))return;
  checkpoint();const next=keepSummarySettings(C.backup(template,meta,round.key,root.rounds,true),data());
- next.config.cffGlobalRevisions=root.revisions||{};await apply(next,'Mundial publicado');message('Resultados publicados carregados: '+roundText(round)+'.');
+ next.config.cffGlobalRevisions=root.revisions||{};publishedForReview=copy(root.rounds||{});await apply(next,'Mundial publicado');message('Resultados publicados carregados: '+roundText(round)+'.');
 }
 function previewWiki(){if(!state)throw Error('Carregue uma rodada do Mundial primeiro.');const drops=C.wiki($('cff-global-wiki').value,meta,data().selectedTeams),validated=C.validate({...C.record(data(),state.key,meta),drops,players:[]},meta);preview=validated.drops;$('cff-global-wiki-preview').textContent=C.rank([validated],meta).map((r,i)=>`${i+1}º ${r.name}: ${r.points} pts / ${r.kills} abates`).join('\n');$('cff-global-wiki-apply').hidden=false;message(`${preview.length} queda(s) lida(s). Confira a prévia antes de aplicar. Nenhum dado foi alterado.`)}
 async function applyWiki(){if(!preview)throw Error('Faça a prévia primeiro.');if(!confirm('Aplicar estas quedas à rodada atual? O estado anterior será preservado.'))return;checkpoint();const next=data(),round=currentRound();next.drops=preview.map(d=>C.nativeDrop(d,meta));while(next.drops.length<(round.matches||preview.length+1))next.drops.push(C.emptyDrop(next.selectedTeams));next.config.quedas=String(next.drops.length);next.config.cffGlobalPlayers=[];await apply(next,'Wiki do Mundial');preview=null;$('cff-global-wiki-apply').hidden=true;message('Quedas aplicadas. Os dados individuais podem ser informados abaixo; envie em Resumos e códigos.');}
@@ -117,7 +135,7 @@ function prepareLayout(section){
  const api=window.CFF_TOURNAMENT_SETUP;if(api){const previous=api.getCurrentSummary;api.getCurrentSummary=function(){return state?{name:labels[currentRound()?.stage]||'Mundial'}:previous.apply(this,arguments)}}
  const summary=$('summary-section');summary.querySelector(':scope>summary').textContent='Resumos e códigos';
  const send=document.createElement('section');send.id='cff-global-send';send.className='cff-global-send';send.innerHTML='<div><strong>Enviar resultados do Mundial</strong><p>Confira a queda e a classificação em uma janela antes de publicar. Salvar o rascunho não envia os resultados ao site.</p></div><button type="button" id="cff-global-publish" class="cff-global-primary">Enviar resultados para o site</button><p id="cff-global-send-status" role="status" aria-live="polite"></p>';summary.querySelector('.collapsible-content').prepend(send);
- const modal=document.createElement('div');modal.id='cff-global-review';modal.className='cff-global-review';modal.hidden=true;modal.innerHTML='<section class="cff-global-review-dialog" role="dialog" aria-modal="true" aria-labelledby="cff-global-review-title" aria-describedby="cff-global-review-note"><header><div><small>CONFERÊNCIA ANTES DO ENVIO</small><h2 id="cff-global-review-title">Confirmar resultados do Mundial</h2><p id="cff-global-review-subtitle"></p></div><button type="button" id="cff-global-review-close" aria-label="Fechar conferência">×</button></header><div class="cff-global-review-body"><p id="cff-global-review-note"></p><h3>Resultados da queda</h3><label for="cff-global-review-drop">Conferir queda</label><select id="cff-global-review-drop"></select><div id="cff-global-review-drop-table"></div><h3 id="cff-global-review-ranking-title"></h3><div id="cff-global-review-ranking"></div><p id="cff-global-review-players"></p></div><footer><p id="cff-global-review-status" role="status" aria-live="polite"></p><div><button type="button" id="cff-global-review-cancel">Voltar para editar</button><button type="button" id="cff-global-review-confirm" class="cff-global-primary">Confirmar e enviar ao site</button></div></footer></section>';document.body.append(modal);
+ const modal=document.createElement('div');modal.id='cff-global-review';modal.className='cff-global-review';modal.hidden=true;modal.innerHTML='<section class="cff-global-review-dialog" role="dialog" aria-modal="true" aria-labelledby="cff-global-review-title" aria-describedby="cff-global-review-note"><header><div><small>CONFERÊNCIA ANTES DO ENVIO</small><h2 id="cff-global-review-title">Confirmar resultados do Mundial</h2><p id="cff-global-review-subtitle"></p></div><button type="button" id="cff-global-review-close" aria-label="Fechar conferência">×</button></header><div class="cff-global-review-body"><p id="cff-global-review-note"></p><p id="cff-global-review-changes"></p><h3>Resultados da queda</h3><label for="cff-global-review-drop">Conferir queda</label><select id="cff-global-review-drop"></select><div id="cff-global-review-drop-table"></div><h3 id="cff-global-review-ranking-title"></h3><div id="cff-global-review-ranking"></div><p id="cff-global-review-players"></p></div><footer><p id="cff-global-review-status" role="status" aria-live="polite"></p><div><button type="button" id="cff-global-review-cancel">Voltar para editar</button><button type="button" id="cff-global-review-confirm" class="cff-global-primary">Confirmar e enviar ao site</button></div></footer></section>';document.body.append(modal);
  modal.addEventListener('click',e=>{if(e.target===modal)closeReview()});for(const id of ['cff-global-review-close','cff-global-review-cancel'])$(id).addEventListener('click',()=>closeReview());
  $('cff-global-review-drop').addEventListener('change',renderReviewDrop);$('cff-global-review-confirm').addEventListener('click',()=>action(publishConfirmed));
  document.addEventListener('keydown',e=>{if(modal.hidden)return;if(e.key==='Escape'){e.preventDefault();closeReview()}if(e.key==='Tab'){const items=[...modal.querySelectorAll('button,select')].filter(el=>!el.disabled),first=items[0],last=items.at(-1);if(!first){e.preventDefault();return}if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});

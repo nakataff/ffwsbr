@@ -2,6 +2,7 @@
 // node scripts/build-s2-overview.cjs /path/to/ffwsLive-2026-s2.json [--check]
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm'), crypto = require('node:crypto');
+const {build:buildMvp}=require('./build-mvp-summary.cjs');
 const ROOT = path.resolve(__dirname, '..'), BASE = 'ffws-br-2026-s2/';
 const read = p => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
 const norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
@@ -90,6 +91,7 @@ async function main() {
   const live = JSON.parse(fs.readFileSync(input, 'utf8'));
   const players = await mergeSources(read(BASE + 'players.json'), live, read(BASE + 'player-name-map.json'));
   const outputs = buildSummaries({players, live, teams: read(BASE + 'teams.json'), summary: read(BASE + 'career-summary.json'), dates: read(BASE + 'dates.json'), photos: read('player-data/photo-map.json')});
+  outputs['mvp-resumo.json']=buildMvp({edition:'s2',stages:STAGES,teams:read(BASE+'teams.json').teams,roster:players.players,entries:players.entries});
   for (const [name, data] of Object.entries(outputs)) {
     const file = path.join(ROOT, BASE, name), content = JSON.stringify(data) + '\n';
     if (process.argv.includes('--check')) {

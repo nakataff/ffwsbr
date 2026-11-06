@@ -26,51 +26,62 @@ test('home waits for its route and uses a compact snapshot plus one Firebase sum
  }finally{w.close();}
 });
 
-test('S1 ranks daily totals with working filters and sortable columns without legacy requests',async()=>{
- const w=new JSDOM('<div id="cff-s1-mvp-root"></div>',{runScripts:'outside-only',url:'https://centralfreefire.com.br/ffws-br-s1.html#mvp'}).window;
- const calls=[],d=w.document;
- w.fetch=async url=>{calls.push(file(url));return response(read(file(url)));};
- try{
-  w.eval(code('ffws-br-2026-s1/mvp.js'));await w.cffS1MvpBoot();
-  const set=(key,value)=>{const control=d.querySelector(`[data-s1-mvp-filter="${key}"]`);control.value=value;control.dispatchEvent(new w.Event('change',{bubbles:true}));};
-  const first=()=>d.querySelector('.ffws-s2-mvp-main-row');
-  const sort=key=>d.querySelector(`[data-mvp-column="${key}"]`).click();
-  const published=Object.values(read('ffws-br-2026-s1/player-stats.json').players);
-  assert.equal(Number(first().cells[3].textContent),Math.max(...published.map(p=>p.stages.classificatoria?.kills||0)));
-  sort('damage');
-  assert.equal(d.querySelector('th[aria-sort]').getAttribute('aria-sort'),'descending');
-  const high=Number(first().cells[4].textContent.replace(/\./g,''));
-  sort('damage');assert(Number(first().cells[4].textContent.replace(/\./g,''))<high);
-  set('stage','1');set('team','0');set('role','RUSH');set('day','1:1');
-  assert(first());assert.equal(first().cells[2].textContent,'FX');
-  assert(Number(first().cells[6].textContent)<10);
-  assert.deepEqual(calls,['ffws-br-2026-s1/mvp-resumo.json']);
- }finally{w.close();}
-});
-
-for(const [edition,route,js] of [['Global','ffws-global-2026-mvp','ffws-global-2026/global.js'],['S2','ffws-br-s2-mvp','ffws-br-2026-s2/s2.js']]){
- test(edition+' sorts the entire result before pagination and keeps filters',async()=>{
-  const w=new JSDOM(`<section class="page active" id="${route}"><div id="${route}-content"></div></section>`,{runScripts:'outside-only',url:'https://centralfreefire.com.br/index.html#'+route}).window,d=w.document;
-  w.fetch=async url=>response(read(file(url)));
+const editions={s1:'ffws-br-2026-s1',s2:'ffws-br-2026-s2',global:'ffws-global-2026'};
+for(const [key,base] of Object.entries(editions)){
+ test(key+' shares the ranking UI and requests only one compact data file',async()=>{
+  const w=new JSDOM('<section class="page active"><div id="mvp"></div></section>',{runScripts:'outside-only',url:'https://centralfreefire.com.br/'}).window,d=w.document,calls=[];
+  const root=d.getElementById('mvp'),snapshot=read(base+'/mvp-resumo.json');
+  w.fetch=async url=>{calls.push(file(url));return response(snapshot);};
   w.HTMLDialogElement.prototype.showModal=function(){this.open=true};
   w.HTMLDialogElement.prototype.close=function(){this.open=false};
   try{
-   const config=js.replace(/[^/]+$/,'config.js');w.eval(code(config));w.eval(code(js));
-   await wait(()=>d.querySelector('[data-mvp-column="damage"]'));
-   assert(!d.querySelector('[data-mvp-sort]'));
-   d.querySelector('[data-mvp-filter="team"]').click();
-   const dialog=d.querySelector('dialog');assert(dialog.open);
-   const input=dialog.querySelector('input');assert(input);
-   input.checked=true;
-   dialog.querySelector('form').dispatchEvent(new w.Event('submit',{cancelable:true,bubbles:true}));
-   assert.match(d.querySelector('[data-mvp-filter="team"]').textContent,new RegExp(input.value,'i'));
-   const sort=key=>d.querySelector(`[data-mvp-column="${key}"]`).click();
-   sort('assists');assert.equal(d.querySelector('[aria-sort="descending"] [data-mvp-column]').dataset.mvpColumn,'assists');
-   const matches=[...d.querySelectorAll('[data-mvp-table] tbody tr[class$="mvp-main-row"]')];
-   assert(matches.length>1);
-   const high=Number(matches[0].cells[5].textContent);
-   sort('assists');assert.equal(d.querySelector('[aria-sort="ascending"] [data-mvp-column]').dataset.mvpColumn,'assists');
-   assert(Number(d.querySelector('[data-mvp-table] tbody tr').cells[5].textContent)<=high);
+   w.eval(code('js/mvp-ranking.js'));
+   await w.CFFMvpRanking.boot(root,key);await w.CFFMvpRanking.boot(root,key);
+   const sort=key=>root.querySelector(`[data-mvp-column="${key}"]`).click();
+   const first=()=>root.querySelector('tbody tr');
+   const n=(row,column)=>Number(row.cells[column].textContent.replace(/\./g,''));
+   const pick=(kind,...values)=>{
+    root.querySelector(`[data-mvp-filter="${kind}"]`).click();
+    const dialog=root.querySelector('dialog');assert(dialog.open);
+    dialog.querySelectorAll('input').forEach(input=>input.checked=values.includes(input.value));
+    dialog.querySelector('form').dispatchEvent(new w.Event('submit',{cancelable:true,bubbles:true}));
+   };
+   assert.equal(root.querySelector('th[aria-sort="descending"] [data-mvp-column]').dataset.mvpColumn,'kills');
+   const archive=key==='s1'?read(base+'/player-stats.json'):read(base+'/inicio-mvp-top10.json');
+   assert.equal(n(first(),3),key==='s1'?Math.max(...Object.values(archive.players).map(p=>p.stages.classificatoria?.kills||0)):archive.top10.geral[0].kills);
+   root.querySelector('[data-mvp-page="1"]').click();
+   assert.match(root.querySelector('tbody tr').textContent,/^11º/);
+   sort('damage');const high=n(first(),4);assert.match(first().textContent,/^1º/);
+   sort('damage');assert(n(first(),4)<high);
+   assert.equal(root.querySelector('[aria-sort="ascending"] [data-mvp-column]').dataset.mvpColumn,'damage');
+   const team=key==='s1'?0:snapshot.players[snapshot.rows[0][3]][1];
+   pick('team',String(team));assert.equal(first().cells[2].querySelector('img').alt,snapshot.teams[team][1]);
+   if(key==='global'){
+    pick('round','0:2');assert(root.querySelector('[data-mvp-filter="round"]').textContent.includes('C × D'));
+    assert(!root.querySelector('[data-mvp-filter="rookie"]'));
+   }
+   if(key==='s1'){pick('stage','1');pick('day','1:1');assert(n(first(),6)<10);}
+   assert.deepEqual(calls,[base+'/mvp-resumo.json']);
   }finally{w.close();}
  });
 }
+test('S2 compact totals match official team totals in all three stages',()=>{
+ const base=editions.s2,snapshot=read(base+'/mvp-resumo.json'),official=read(base+'/career-summary.json');
+ for(const [index,phase] of snapshot.stages.entries()){
+  const totals=new Map();
+  for(const r of snapshot.rows.filter(r=>r[0]===index)){
+   const team=snapshot.teams[snapshot.players[r[3]][1]][0];totals.set(team,(totals.get(team)||0)+r[4]);
+  }
+  for(const t of official[phase].rows)assert.equal(totals.get(t.team)||0,t.kills,phase+' / '+t.team);
+ }
+});
+test('publication rejects duplicate drop rows and a conflicting team total',()=>{
+ const {verifyWorld}=require('../scripts/prepare-competition-publication.cjs'),{build}=require('../scripts/build-mvp-summary.cjs');
+ const base=editions.global,data=Object.fromEntries(['dates','teams','groups','players'].map(k=>[k,read(base+'/'+k+'.json')]));
+ const standings=read(base+'/standings-day1.json');
+ assert.equal(verifyWorld(data,standings)[0].drops,12);
+ const entry=data.players.entries[0];
+ assert.throws(()=>build({edition:'global',stages:['classificatoria'],teams:data.teams.teams,roster:data.players.players,entries:[entry,entry],periods:data.dates.rounds}),/duplicado/);
+ entry.kills++;
+ assert.throws(()=>verifyWorld(data,standings),/Abates não batem/);
+});

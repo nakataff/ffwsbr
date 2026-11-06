@@ -136,13 +136,41 @@ Depois, regenere os perfis, o resumo das equipes e o modelo do Camp.
 `photos/*/staff/` guarda fotos da comissão ainda sem cadastro e
 `photos/*/pending/` guarda fotos sem correspondência confirmada no elenco.
 
-### Rankings MVP leves
+### Rankings MVP e publicação de dados
 
-- WB 2026 S1: `ffws-br-2026-s1/mvp.js` usa só o resumo diário
-  `mvp-resumo.json`. Regenere com `node scripts/build-s1-mvp.cjs` após
-  alterar a base de quedas, as posições/novatos ou os times da edição.
-- As três tabelas ordenam o recorte antes de paginar, com setas nas colunas.
-  A base de quedas continua nas páginas que exibem os detalhes por partida.
+- As rotas de MVP da WB 2026 S1, WB 2026 S2 e Mundial abrem o mesmo componente,
+  `js/mvp-ranking.js`, e baixam apenas o `mvp-resumo.json` da edição. Filtros,
+  ordenação e paginação ficam no navegador. Esses rankings não consultam Firebase.
+- Os três resumos usam o mesmo esquema versionado. Jogador e equipe vêm do
+  cadastro da edição. Mundial agrega por rodada, WB por dia; o maior abate em
+  uma queda é preservado. A base detalhada continua disponível para relatórios,
+  notas, comparações e histórico individual, fora da entrada do MVP.
+- S1: fonte em `players.json` e `player-meta.json`. S2: fonte da classificatória
+  combinada com uma exportação pública de `ffwsLive/2026-s2`; o export fica fora
+  do Git. Mundial: fonte por queda em `players.json`, calendário em `dates.json`
+  e placar verificado em `standings-day1.json`.
+- Para atualizar a publicação, faça a prévia na raiz do repositório:
+
+  ```sh
+  node scripts/prepare-competition-publication.cjs global
+  node scripts/prepare-competition-publication.cjs s1
+  node scripts/prepare-competition-publication.cjs s2 --live=/caminho/export-publico.json
+  ```
+
+  A prévia não grava nada. Ela informa cobertura, arquivos que mudam e bytes
+  brutos/gzip dos resumos. Acrescente `--write` para regenerar depois de validar
+  todas as saídas, e `--check` para conferir que os arquivos publicados refletem
+  as fontes. Revise e publique a fonte e os resumos no mesmo commit. Se for
+  necessário reverter resultados estáticos, reverta o commit da publicação
+  inteira para manter perfis, rankings e seleções na mesma versão.
+- O envio ao vivo é separado: o Admin Camp salva a rodada e o resumo da home na
+  mesma transação do Firebase. Na confirmação, compara o rascunho com a
+  última revisão carregada quando ela está disponível. Isso não republica os
+  arquivos estáticos por queda.
+- Para separar custo de desempenho: a prévia mede o peso dos arquivos; o teste
+  de MVP verifica quantas requisições ele faz; leituras faturadas do Firebase
+  e do Cloudflare devem ser medidas nos respectivos painéis. Não use tamanho
+  do JSON nem quantidade de requests como estimativa de `rows_read`.
 
 ### Início do Mundial 2026
 

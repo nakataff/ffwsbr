@@ -31,6 +31,11 @@ on:
       - 'index.html'
       - 'test/global-format-2026.test.cjs'
       - 'test/mvp-performance.test.cjs'
+      - 'js/mvp-ranking.js'
+      - 'css/mvp-ranking.css'
+      - 'scripts/build-mvp-summary.cjs'
+      - 'scripts/prepare-competition-publication.cjs'
+      - 'ffws-br-2026-s2/mvp-resumo.json'
       - 'scripts/build-s1-mvp.cjs'
       - 'ffws-br-2026-s1/mvp*'
       - 'test/global-published-results.test.cjs'
@@ -58,6 +63,11 @@ on:
       - 'ffws-global-2026/**'
       - 'test/global-format-2026.test.cjs'
       - 'test/mvp-performance.test.cjs'
+      - 'js/mvp-ranking.js'
+      - 'css/mvp-ranking.css'
+      - 'scripts/build-mvp-summary.cjs'
+      - 'scripts/prepare-competition-publication.cjs'
+      - 'ffws-br-2026-s2/mvp-resumo.json'
       - 'scripts/build-s1-mvp.cjs'
       - 'ffws-br-2026-s1/mvp*'
       - 'test/global-published-results.test.cjs'
@@ -95,6 +105,6 @@ jobs:
           NODE_PATH: /tmp/cff-global-tests/node_modules
         run: node --test test/mvp-performance.test.cjs test/global-published-results.test.cjs test/global-camp-review.test.cjs test/global-camp-home.test.cjs test/global-camp-browser.test.cjs test/global-players.test.cjs test/global-player-bridge.test.cjs test/copa-player-profile.test.cjs test/global-teams.test.cjs test/global-overview.test.cjs test/global-format-2026.test.cjs test/home-global-matchups.test.cjs test/global-team-logos.test.cjs test/tournament-logos.test.cjs test/home-support.test.cjs test/community-supporters-ui.test.cjs test/admin-dashboard.test.cjs
       - name: Check generated overview
-        run: node scripts/build-global-camp-model.cjs --check && node scripts/build-global-overview.cjs --check && node scripts/build-global-players.cjs --check && node scripts/build-s1-mvp.cjs --check && python3 scripts/build-copa-player-profiles.py --check
+        run: node scripts/prepare-competition-publication.cjs global --check && node scripts/prepare-competition-publication.cjs s1 --check && python3 scripts/build-copa-player-profiles.py --check
       - name: Check syntax
         run: node --check js/copa-player-profile.js && node --check ffws-global-2026/jogadores.js && node --check js/global-player-profile.js && node --check scripts/build-global-players.cjs && node --check js/player-page.min.js && node --check ffws-global-2026/equipes.js && node --check ffws-global-2026/inicio.js && node --check scripts/build-global-overview.cjs && node --check ffws-global-2026/global.js && node --check ffws-global-2026/config.js && node --check js/season-routes.js && node --check js/shared-navigation.js && node --check js/home-global-finals.js && node --check js/home-supporters.js && node --check js/admin-supporters.js && node --check js/supporters-admin.mjs && node --check js/home-support.js && node --check js/site-shell-fast.min.js

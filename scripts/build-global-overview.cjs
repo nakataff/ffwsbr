@@ -2,6 +2,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
+const {build:buildMvp}=require('./build-mvp-summary.cjs');
 const BASE = path.join(__dirname, '..', 'ffws-global-2026');
 const keys = ['classificatoria', 'segundaFase', 'lastChance', 'final'];
 const num = v => Number(v) || 0;
@@ -59,7 +60,7 @@ function selectionSummary(roster, entries, metadata, schedule, fallback, stages)
     fallback:fallback?.teams?.length?{date:fallback.date,stage:fallback.stage,teams:fallback.teams}:null
   };
 }
-function build({stages, dates, teams, groups, players, standingsDay1}) {
+function build({stages, dates, teams, groups, players, standingsDay1, includeMvp=false}) {
   const groupById = new Map(Object.entries(groups.groups).flatMap(([g,ids]) => ids.map(id => [id,g])));
   if (teams.teams.length !== 24 || groupById.size !== 24 || Object.values(groups.groups).some(ids => ids.length !== 6)) throw Error('Grupos incompletos ou duplicados');
   if (teams.teams.some(t => !groupById.has(t.id))) throw Error('Equipe sem grupo');
@@ -127,12 +128,13 @@ function build({stages, dates, teams, groups, players, standingsDay1}) {
     'inicio-resumo.json':{tournament:stages.tournament,updatedAt,finished:!!stages.finished,format,teams:metadata,tables,rounds:dates.rounds.map(r=>({key:r.key,stage:r.stage,day:r.day,label:r.label,date:r.date,time24:r.time24,groups:r.groups,matches:r.matches}))},
     'inicio-mvp-top10.json':{updatedAt,top10},
     'inicio-elencos.json':{updatedAt,teams:squads},
-    'selecoes-resumo.json':selectionSummary(roster,entries,metadata,dates.rounds,standingsDay1,stages)
+    'selecoes-resumo.json':selectionSummary(roster,entries,metadata,dates.rounds,standingsDay1,stages),
+    ...(includeMvp?{'mvp-resumo.json':buildMvp({edition:'global',stages:keys,teams:metadata,roster,entries,periods:dates.rounds.map(({stage,day,round,session,groups,date})=>({stage,day,round,session,groups,date}))})}:{})
   };
 }
 if (require.main === module) {
   const read=name=>JSON.parse(fs.readFileSync(path.join(BASE,name+'.json'),'utf8'));
-  const output=build({...Object.fromEntries(['stages','dates','teams','groups','players'].map(name=>[name,read(name)])),standingsDay1:read('standings-day1')});
+  const output=build({...Object.fromEntries(['stages','dates','teams','groups','players'].map(name=>[name,read(name)])),standingsDay1:read('standings-day1'),includeMvp:true});
   for (const [name,data] of Object.entries(output)) {
     const text=JSON.stringify(data)+'\n',file=path.join(BASE,name);
     if (process.argv.includes('--check')) {if (!fs.existsSync(file)||fs.readFileSync(file,'utf8')!==text) throw Error('Regere '+name);}
