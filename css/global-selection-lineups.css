@@ -1,0 +1,92 @@
+/* FFWS Global Finals 2026 | Seleções — day/week, players + coach */
+.cff-gsel-host{
+ --gsel-bg:#0a1222;--gsel-ink:#f5f8ff;--gsel-muted:#a8b9d1;--gsel-line:#233b58;--gsel-accent:#29d2ff;
+ width:100%;min-width:0;margin:20px 0;padding:clamp(16px,2vw,28px);
+ border:1px solid var(--gsel-line);border-radius:17px;
+ background:radial-gradient(ellipse at 10% -20%,rgba(25,128,190,.20),transparent 50%),var(--gsel-bg);
+ color:var(--gsel-ink);box-sizing:border-box
+}
+.cff-gsel-host *{box-sizing:border-box}
+.cff-gsel-heading{display:flex;align-items:start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.cff-gsel-kicker{display:block;color:var(--gsel-accent);font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.cff-gsel-heading h2{color:#fff;font-weight:950;line-height:1.12;font-size:clamp(23px,3vw,34px);margin:6px 0 8px}
+.cff-gsel-heading p{font-size:13px;color:var(--gsel-muted);margin:0}
+.cff-gsel-view-all{color:var(--gsel-accent);border:1px solid #28526f;border-radius:9px;padding:8px 11px;font-size:12px;font-weight:800;text-decoration:none}
+.cff-gsel-view-all[hidden]{display:none!important}
+.cff-gsel-controls{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:19px 0 10px}
+.cff-gsel-toggle{display:flex;gap:4px;padding:4px;border:1px solid #34465f;border-radius:10px;background:#070e1a}
+.cff-gsel-toggle button{border:0;border-radius:7px;background:transparent;color:#b8c9dd;min-height:38px;padding:8px 13px;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}
+.cff-gsel-toggle button[aria-pressed=true]{background:#126e98;color:#fff}
+.cff-gsel-period{display:grid;gap:5px;min-width:min(240px,100%);flex:1;font-size:11px;color:var(--gsel-muted);font-weight:800}
+.cff-gsel-period select{display:block;width:100%;max-width:400px;min-height:44px;padding:9px 12px;color:#f5f8ff!important;background:#121e31!important;border:1px solid #3b536d;border-radius:9px;outline-offset:3px;font-size:13px}
+.cff-gsel-period select option{background:#121e31;color:#f5f8ff}
+.cff-gsel-summary{color:#d4def0;font-size:12px;font-weight:700;margin:9px 0 15px}
+.cff-gsel-lineup{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:stretch}
+.cff-gsel-card{position:relative;display:flex;flex-direction:column;min-width:0;min-height:296px;overflow:hidden;border:1px solid #34516b;border-radius:13px;background:linear-gradient(155deg,#142945 0%,#0a1422 100%);color:#fff!important;text-decoration:none;transition:border-color .15s,transform .15s}
+.cff-gsel-card:hover{transform:translateY(-2px);border-color:#27c1f0}
+.cff-gsel-card.is-coach{border-color:#b68a46;background:linear-gradient(155deg,#3d2b1b,#111824)}
+.cff-gsel-card-top{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:10px 10px 0;z-index:2}
+.cff-gsel-slot{display:inline-flex;color:#a0e6ff;font-size:10px;letter-spacing:.05em;font-weight:950;text-transform:uppercase}
+.cff-gsel-card.is-coach .cff-gsel-slot{color:#ffd28b}
+.cff-gsel-team-logo{width:28px;height:28px;object-fit:contain;flex:none}
+.cff-gsel-photo-wrap{height:156px;display:grid;place-items:end center;min-width:0;overflow:hidden;position:relative}
+.cff-gsel-photo-wrap:after{content:"";position:absolute;inset:58% 0 0;background:linear-gradient(transparent,#0a1422);pointer-events:none}
+.cff-gsel-photo{display:block;max-width:100%;max-height:155px;width:auto;height:auto;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 6px 9px #0008)}
+.cff-gsel-card.is-coach .cff-gsel-photo{width:112px;height:112px;object-fit:contain;align-self:center}
+.cff-gsel-card-bottom{display:flex;flex-direction:column;align-items:start;gap:3px;padding:8px 11px 13px;flex:1}
+.cff-gsel-card-bottom>strong{max-width:100%;overflow-wrap:anywhere;font-size:clamp(14px,1.25vw,19px);line-height:1.18;text-transform:uppercase;font-weight:950}
+.cff-gsel-card-bottom>small{font-size:11px;color:#bfd0e3;overflow-wrap:anywhere}
+.cff-gsel-card-bottom>em{font-style:normal;font-size:10px;color:#85c9ee;margin:2px 0 6px}
+.cff-gsel-card.is-coach .cff-gsel-card-bottom>em{color:#ffd28b}
+.cff-gsel-numbers{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;border-top:1px solid #ffffff25;padding-top:9px;width:100%}
+.cff-gsel-numbers>span{display:grid;gap:2px;flex:1;min-width:44px}
+.cff-gsel-numbers b{font-size:15px;color:#fff;line-height:1.1}
+.cff-gsel-numbers small{color:#96a8be;font-size:9px;line-height:1.2}
+.cff-gsel-empty,.cff-gsel-missing{padding:20px;color:#b4c4d8}
+.cff-gsel-method{margin:13px 0 0;color:#9eafc4;font-size:11px;line-height:1.5}
+.cff-gsel-home{margin:0;padding:13px;border-radius:12px}
+.cff-gsel-home .cff-gsel-heading h2{font-size:20px}
+.cff-gsel-home .cff-gsel-heading p,.cff-gsel-home .cff-gsel-kicker{font-size:10px}
+.cff-gsel-home .cff-gsel-controls{margin:11px 0}
+.cff-gsel-home .cff-gsel-toggle{width:100%;display:grid;grid-template-columns:1fr 1fr}
+.cff-gsel-home .cff-gsel-toggle button{padding:7px 3px;font-size:10px}
+.cff-gsel-home .cff-gsel-lineup{grid-template-columns:1fr;gap:7px}
+.cff-gsel-home .cff-gsel-card{min-height:0;display:grid;grid-template-columns:46px minmax(0,1fr);grid-template-rows:auto auto;padding:7px 9px;gap:0 9px}
+.cff-gsel-home .cff-gsel-card-top{grid-column:2;grid-row:1;padding:0}
+.cff-gsel-home .cff-gsel-team-logo{width:20px;height:20px}
+.cff-gsel-home .cff-gsel-photo-wrap{grid-column:1;grid-row:1/3;height:60px;align-items:center}
+.cff-gsel-home .cff-gsel-photo-wrap:after{display:none}
+.cff-gsel-home .cff-gsel-photo{max-width:46px;max-height:59px}
+.cff-gsel-home .cff-gsel-card-bottom{grid-column:2;grid-row:2;padding:0;gap:2px}
+.cff-gsel-home .cff-gsel-card-bottom>strong{font-size:13px}
+.cff-gsel-home .cff-gsel-card-bottom>small{font-size:10px}
+.cff-gsel-home .cff-gsel-card-bottom>em{font-size:9px;margin:0}
+.cff-gsel-home .cff-gsel-numbers{margin-top:4px;padding-top:4px;gap:4px}
+.cff-gsel-home .cff-gsel-numbers b{font-size:12px}
+.cff-gsel-home .cff-gsel-numbers small{font-size:9px}
+.cff-gsel-home .cff-gsel-method{font-size:10px}
+.cff-gsel-start .cff-gsel-lineup{gap:9px}
+.cff-gsel-start .cff-gsel-card{min-height:250px}
+@media(max-width:1000px){.cff-gsel-page .cff-gsel-lineup,.cff-gsel-start .cff-gsel-lineup{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){
+ .cff-gsel-host{padding:14px;margin:13px 0}
+ .cff-gsel-heading h2{font-size:24px}
+ .cff-gsel-controls{flex-direction:column;align-items:stretch}
+ .cff-gsel-toggle{display:grid;grid-template-columns:1fr 1fr;width:100%}
+ .cff-gsel-toggle button{min-width:0;font-size:11px;padding:8px 4px}
+ .cff-gsel-period select{max-width:none;font-size:16px}
+ .cff-gsel-page .cff-gsel-lineup,.cff-gsel-start .cff-gsel-lineup{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .cff-gsel-page .cff-gsel-card,.cff-gsel-start .cff-gsel-card{min-height:254px}
+ .cff-gsel-card-top{padding:8px 8px 0}
+ .cff-gsel-slot{font-size:9px}
+ .cff-gsel-photo-wrap{height:120px}
+ .cff-gsel-photo{max-height:119px}
+ .cff-gsel-card-bottom{padding:6px 9px 10px}
+ .cff-gsel-card-bottom>strong{font-size:14px}
+ .cff-gsel-numbers{gap:4px}
+ .cff-gsel-numbers b{font-size:12px}
+ .cff-gsel-numbers small{font-size:8px}
+ .cff-gsel-home .cff-gsel-lineup{grid-template-columns:1fr}
+}
+@media(max-width:360px){.cff-gsel-lineup{grid-template-columns:1fr!important}}
+
