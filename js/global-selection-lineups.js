@@ -10,6 +10,7 @@ const COACHES={lyon:'Benja',btr:'Chrisjo',gow:'4Sure','p-esports':'HoangAnh','ag
  rrq:'Adi',onic:'Afm',bru:'D_LONG',loud:'JOKER',los:'LIPÃO',fx:'LUUUKING',
  gundynasty:'Sullivan','stellar-esport':'BRN','total-winner-esports':'CHACHA','horaa-esports':'RENICE',
  xprojekt:'MR ALI',tag:'Frois'};
+const COACH_PHOTOS={lyon:'lyon-benja.webp',btr:'btr-chrisjo.webp',gow:'gow-4sure.webp','p-esports':'p-esports-hoanganh.webp','ag-al':'ag-al-peponly.webp','team-flash':'team-flash-shin.webp',rrq:'rrq-ady.webp',onic:'onic-afm.webp',bru:'bru-dlong.webp',loud:'loud-joker.webp',los:'los-lipao.webp',fx:'fx-luuking.webp',gundynasty:'gundynasty-sullivan.webp','stellar-esport':'stellar-esport-brn.webp',xprojekt:'xprojekt-mrali.webp',tag:'tag-frois.webp'};
 const TABS=[
  {key:'semanal',title:'TIMES DA SEMANA',short:'SEMANA',color:'#ff0000',panel:'week',name:'Times da semana'},
  {key:'classificatoria',title:'PRIMEIRA FASE',short:'FASE 1',color:'#00c8ff',panel:'classificatoria',name:'Seleção da Primeira Fase'},
@@ -152,11 +153,8 @@ function selectLineup(selection){
  const best=standingsForSelection(selection)[0];
  if(best){
   const name=COACHES[best.id]||'Técnico não cadastrado';
-  const slug=norm(name).replace(/([a-z])([0-9])/g,'$1-$2');
-  const file=norm(name).replace(/[^a-z0-9]/g,'');
   lineup.push({...best,slot:'COACH',name,coach:true,missingCoach:!COACHES[best.id],
-    photo:COACHES[best.id]?BASE+'photos/480/staff/'+best.id+'-'+
-    String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.webp':'',
+    photo:COACH_PHOTOS[best.id]?BASE+'photos/480/staff/'+COACH_PHOTOS[best.id]:'',
     teamLogo:best.logo,teamId:best.id});
  }else lineup.push({slot:'COACH',missing:true,coach:true,reason:'Aguardando pontuação oficial da equipe'});
  return lineup;
