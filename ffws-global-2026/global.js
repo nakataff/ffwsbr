@@ -13,8 +13,14 @@
     'ffws-global-2026-mvp', 'ffws-global-2026-equipes', 'ffws-global-2026-datas', 'ffws-global-2026-selecoes',
     'ffws-global-2026-stats', 'ffws-global-2026-notas', 'ffws-global-2026-comparar', 'ffws-global-2026-formato'
   ]);
+  const LIVE_PAGES = new Set(['classificatoria', 'stats'].map(page => PAGE_PREFIX + page));
+  const LIVE_TTL = 90000;
   const state = {
     loading: null,
+    liveEvents: {},
+    liveLoading: null,
+    liveCheckedAt: 0,
+    liveError: false,
     loaded: false,
     statsInitialStageSet: false,
     playersLoading: null,
@@ -89,6 +95,54 @@
       return state;
     }).finally(() => { state.loading = null; });
     return state.loading;
+  }
+
+  // The Camp publishes canonical IDs and one complete result per drop.
+  // Adapt them to the public tables without treating round-level player totals as drop data.
+  function liveStageEvents(records) {
+    const byStage = {};
+    const names = new Map(state.teams.map(team => [team.id, team.name]));
+    for (const round of state.dates.rounds || []) {
+      const record = records?.[round.key];
+      const ids = record?.participants;
+      if (!Array.isArray(ids) || ids.length !== 12 || new Set(ids).size !== 12 || ids.some(id => !names.has(id)) || !Array.isArray(record.drops)) continue;
+      record.drops.forEach((drop, index) => {
+        if (!drop || (round.matches && index >= round.matches)) return;
+        const results = ids.map(id => {
+          const position = drop.placements?.[id], kills = drop.kills?.[id], points = drop.points?.[id];
+          if (!Number.isInteger(position) || position < 1 || position > 12 || !Number.isInteger(kills) || kills < 0 || !Number.isInteger(points) || points < kills) return null;
+          return {team: names.get(id), position, kills, points, placementPoints: points - kills, booyah: position === 1 ? 1 : 0};
+        });
+        if (results.some(row => !row) || new Set(results.map(row => row.position)).size !== 12) return;
+        const roundDrop = index + 1;
+        // Keep each drop unique within a calendar day, even when two sessions both start at Q1.
+        const dropNumber = round.stage === 'classificatoria' ? ((round.session || 1) - 1) * round.matches + roundDrop : roundDrop;
+        (byStage[round.stage] ||= []).push({day: round.day, round: round.round, session: round.session, roundDrop, drop: dropNumber, date: round.date, map: typeof drop.map === 'string' ? drop.map : '', results});
+      });
+    }
+    return byStage;
+  }
+
+  function loadLiveResults(force = false) {
+    if (state.liveLoading) return state.liveLoading;
+    if (!force && state.liveCheckedAt && Date.now() - state.liveCheckedAt < LIVE_TTL) return Promise.resolve();
+    const database = String(window.CFF_CONFIG?.firebase?.databaseURL || '').replace(/\/$/, '');
+    if (!database) return Promise.resolve();
+    state.liveLoading = fetch(database + '/ffwsLive/global-2026/rounds.json', {cache: 'no-cache', signal: window.AbortSignal?.timeout?.(7000)})
+      .then(response => { if (!response.ok) throw Error('Resultados indisponíveis'); return response.json(); })
+      .then(records => {
+        state.liveEvents = liveStageEvents(records);
+        state.liveError = false;
+        // Reports are computed from the latest results, including corrected drops.
+        window.__ffwsGlobalDropReportCache = null;
+      })
+      .catch(() => { state.liveError = true; })
+      .finally(() => { state.liveCheckedAt = Date.now(); state.liveLoading = null; });
+    return state.liveLoading;
+  }
+
+  function liveStatus() {
+    return state.liveError ? '<p class="ffws-global-format-intro" role="status">Não foi possível consultar os resultados agora. Os últimos dados carregados foram mantidos.</p>' : '';
   }
 
   function loadGroupsData() {
@@ -253,6 +307,7 @@
   }
 
   function stageEvents(stageKey) {
+    if (state.liveEvents[stageKey]?.length) return state.liveEvents[stageKey];
     const payload = state.stages?.[stageKey] || {};
     if (stageKey === 'final') {
       const direct = Array.isArray(payload.days) ? payload.days : [];
@@ -285,7 +340,7 @@
     return stageEvents(stageKey).filter((event, index) => {
       const periodValue = stageKey === 'final' ? (number(event.day) || 1) : stageKey === 'segundaFase' && stageFormat(stageKey).resetEachDay ? (number(event.day) || number(event.round) || number(event.number) || index + 1) : (number(event.round) || number(event.number) || index + 1);
       const eventMap = String(event.map || event.mapa || '').trim();
-      const eventDrop = number(event.drop) || number(event.queda) || number(event.number) || index + 1;
+      const eventDrop = number(event.roundDrop || event.drop) || number(event.queda) || number(event.number) || index + 1;
       return (!periods.length || periods.includes(String(periodValue)))
         && (!maps.length || maps.some(map => normalize(map) === normalize(eventMap)))
         && (!drops.length || drops.includes(String(eventDrop)));
@@ -302,7 +357,7 @@
       if (!map.has(key)) map.set(key, { team: name, position: null, points: 0, booyahs: 0, kills: 0, placementPoints: 0, matches: 0, bonus: 0, ...extra });
       return map.get(key);
     };
-    if (stageKey === 'classificatoria') state.teams.forEach(team => addTeam(team.name));
+    if (stageKey === 'classificatoria' && !stageFilterValues(stageKey, 'period').length) state.teams.forEach(team => addTeam(team.name));
     else if(!(stageKey==='segundaFase'&&stageFormat(stageKey).resetEachDay)) baseRows.forEach(row => addTeam(row.team, { bonus: number(row.bonus), placeholder: Boolean(row.placeholder) }));
     events.forEach(event => eventResults(event).forEach(result => {
       const row = addTeam(result.team || result.equipe);
@@ -312,6 +367,8 @@
       row.kills += number(result.kills ?? result.abates);
       row.placementPoints += number(result.placementPoints ?? result.pontosColocacao ?? result.pp);
       row.matches += number(result.matches || 1);
+      row.lastPlace = number(result.position || result.posicao) || 99;
+      row.lastPoints = number(result.points ?? result.pontos);
       if (stageKey === 'segundaFase') row.bonus = number(result.bonus ?? row.bonus);
       if (result.worldQualified) row.worldQualified = true;
     }));
@@ -319,8 +376,8 @@
     const hasEvents = events.some(event => eventResults(event).length);
     if (stageKey === 'segundaFase' && hasEvents && isOverallStageFilter(stageKey)) rows.forEach(row => { row.points += number(row.bonus); });
     if (hasEvents) {
-      rows.sort((a, b) => b.points - a.points || b.booyahs - a.booyahs || b.kills - a.kills || a.team.localeCompare(b.team, 'pt-BR'));
-      rows.forEach((row, index) => { row.position = index + 1; });
+      rows.sort((a, b) => Boolean(b.matches) - Boolean(a.matches) || b.points - a.points || b.booyahs - a.booyahs || b.kills - a.kills || (a.lastPlace || 99) - (b.lastPlace || 99) || (b.lastPoints || 0) - (a.lastPoints || 0) || a.team.localeCompare(b.team, 'pt-BR'));
+      rows.forEach((row, index) => { row.position = row.matches ? index + 1 : null; });
     }
     return rows;
   }
@@ -350,6 +407,7 @@
 
   function rowClass(stageKey,row){
     if(stageKey==='final'&&isOverallStageFilter('final')&&normalize(state.stages?.final?.champion||'')===normalize(row.team))return 'ffws-global-row-champion';
+    if(stageKey==='classificatoria'&&!isOverallStageFilter(stageKey))return '';
     const format=stageFormat(stageKey);if(stageKey==='classificatoria'){const pos=number(row.position);if(Array.isArray(format.lastChancePositions)&&format.lastChancePositions.includes(pos))return 'ffws-global-row-last-chance';if(Array.isArray(format.eliminatedPositions)&&format.eliminatedPositions.includes(pos))return 'ffws-global-row-eliminated';}
     if(stageKey==='segundaFase'&&format.resetEachDay&&stageFilterValues(stageKey,'period').length!==1)return '';
     const advance=number(format.advance),position=number(row.position);
@@ -381,7 +439,7 @@
     const selected = state.stageFilter[stageKey] || { period: 'all', map: 'all', drop: 'all' };
     const events = stageEvents(stageKey);
     const maps = [...new Set(events.map(event => String(event.map || event.mapa || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    const drops = [...new Set(events.map((event, index) => number(event.drop) || number(event.queda) || number(event.number) || index + 1).filter(Boolean))].sort((a, b) => a - b);
+    const drops = [...new Set(events.map((event, index) => number(event.roundDrop || event.drop) || number(event.queda) || number(event.number) || index + 1).filter(Boolean))].sort((a, b) => a - b);
 
     if (stageKey === 'segundaFase') {
       const periodsSelected = stageFilterValues(stageKey, 'period');
@@ -422,7 +480,7 @@
 
   function renderClassificatoria(rootId){
     const root=document.getElementById(rootId);if(!root)return;
-    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}${formatPanel('classificatoria')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação</h2></div>${stageFilters('classificatoria')}${stageTable('classificatoria')}</div></section></div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
   }
 
   function renderStage(stageKey, rootId, title, subtitle) {
@@ -1341,19 +1399,19 @@
       <div class="ffws-global-drop-summary-grid">
         ${s2DropReportMetricCard('Total de abates', report.totals.kills, period, rankOf(report.totals.kills, context.totalKills))}
         ${s2DropReportMetricCard('Total de pontos', report.totals.points, 'somando as equipes', rankOf(report.totals.points, context.totalPoints))}
-        ${s2DropReportMetricCard('Dano total', report.totals.damage.toLocaleString('pt-BR'), 'dos jogadores', rankOf(report.totals.damage, context.totalDamage))}
-        ${s2DropReportMetricCard('Assistências', report.totals.assists, period)}
+        ${report.players.length ? s2DropReportMetricCard('Dano total', report.totals.damage.toLocaleString('pt-BR'), 'dos jogadores', rankOf(report.totals.damage, context.totalDamage)) : ''}
+        ${report.players.length ? s2DropReportMetricCard('Assistências', report.totals.assists, period) : ''}
         ${s2DropReportMetricCard('Equipes', report.teams.length, 'participantes')}
         ${s2DropReportMetricCard('Pontos de colocação', report.totals.placementPoints, 'distribuídos')}
       </div>
       <div class="ffws-global-drop-report-subhead"><h4>Destaques ${isDay ? 'do dia' : 'da queda'}</h4><p>Comparação automática com ${isDay ? 'os outros dias' : 'todas as quedas'} já cadastrados no split.</p></div>
       <div class="ffws-global-drop-highlight-grid">
-        ${s2DropReportHighlightCard('Mais abates', leaders.playerKills, 'kills', value => `${value} K`, rankOf(leaders.playerKills?.kills, context.playerKills))}
-        ${s2DropReportHighlightCard('Mais dano', leaders.playerDamage, 'damage', value => number(value).toLocaleString('pt-BR'), rankOf(leaders.playerDamage?.damage, context.playerDamage))}
-        ${s2DropReportHighlightCard('Mais assistências', leaders.playerAssists, 'assists', value => `${value} AST`, rankOf(leaders.playerAssists?.assists, context.playerAssists))}
+        ${report.players.length ? s2DropReportHighlightCard('Mais abates', leaders.playerKills, 'kills', value => `${value} K`, rankOf(leaders.playerKills?.kills, context.playerKills)) : ''}
+        ${report.players.length ? s2DropReportHighlightCard('Mais dano', leaders.playerDamage, 'damage', value => number(value).toLocaleString('pt-BR'), rankOf(leaders.playerDamage?.damage, context.playerDamage)) : ''}
+        ${report.players.length ? s2DropReportHighlightCard('Mais assistências', leaders.playerAssists, 'assists', value => `${value} AST`, rankOf(leaders.playerAssists?.assists, context.playerAssists)) : ''}
         ${s2DropReportHighlightCard('Time com mais pontos', leaders.teamPoints, 'points', value => `${value} PTS`, rankOf(leaders.teamPoints?.points, context.teamPoints), true)}
         ${s2DropReportHighlightCard('Time com mais abates', leaders.teamKills, 'kills', value => `${value} K`, rankOf(leaders.teamKills?.kills, context.teamKills), true)}
-        ${s2DropReportHighlightCard('Time com mais dano', leaders.teamDamage, 'damage', value => number(value).toLocaleString('pt-BR'), rankOf(leaders.teamDamage?.damage, context.teamDamage), true)}
+        ${report.players.length ? s2DropReportHighlightCard('Time com mais dano', leaders.teamDamage, 'damage', value => number(value).toLocaleString('pt-BR'), rankOf(leaders.teamDamage?.damage, context.teamDamage), true) : ''}
       </div>
     </div>`;
   }
@@ -1378,8 +1436,8 @@
         ${s2DropReportMetricCard('Pontos', team.points)}
         ${s2DropReportMetricCard('Pontos colocação', team.placementPoints)}
         ${s2DropReportMetricCard('Abates', team.kills)}
-        ${s2DropReportMetricCard('Dano', team.damage.toLocaleString('pt-BR'))}
-        ${s2DropReportMetricCard('Assistências', team.assists)}
+        ${report.players.length ? s2DropReportMetricCard('Dano', team.damage.toLocaleString('pt-BR')) : ''}
+        ${report.players.length ? s2DropReportMetricCard('Assistências', team.assists) : ''}
         ${s2DropReportMetricCard('Booyahs', team.booyah || 0)}
       </div>
       <div class="ffws-global-drop-report-subhead"><h4>Jogadores da equipe</h4><p>${players.length} jogadores com dados neste recorte.</p></div>
@@ -1400,8 +1458,8 @@
       <div class="ffws-global-drop-team-list">${rows.map(row => `<div class="ffws-global-drop-team-row place-${Math.min(row.position || 12,12)}">
         <span class="ffws-global-drop-place">${row.position || '—'}º</span>
         <button type="button" class="ffws-global-drop-team-name" onclick="showFFWSGlobalDropReportTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" data-cff-global-team-logo="${escapeHtml(row.team)}" onerror="this.onerror=null;this.src='escudo.webp'"><span><strong>${escapeHtml(abbreviation(row.team))}</strong><small>${escapeHtml(abbreviation(row.team))}</small></span></button>
-        <strong class="ffws-global-drop-primary">${row.points}</strong><span class="ffws-global-drop-desktop-stat">${row.placementPoints}</span><strong>${row.kills}</strong><span class="ffws-global-drop-desktop-stat">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-global-drop-desktop-stat">${row.assists}</span>
-        <div class="ffws-global-drop-mobile-extra"><span>PC <b>${row.placementPoints}</b></span><span>Dano <b>${row.damage.toLocaleString('pt-BR')}</b></span><span>Ast <b>${row.assists}</b></span>${row.booyah ? `<span>B! <b>${row.booyah}</b></span>` : ''}</div>
+        <strong class="ffws-global-drop-primary">${row.points}</strong><span class="ffws-global-drop-desktop-stat">${row.placementPoints}</span><strong>${row.kills}</strong><span class="ffws-global-drop-desktop-stat">${report.players.length ? row.damage.toLocaleString('pt-BR') : '—'}</span><span class="ffws-global-drop-desktop-stat">${report.players.length ? row.assists : '—'}</span>
+        <div class="ffws-global-drop-mobile-extra"><span>PC <b>${row.placementPoints}</b></span>${report.players.length ? `<span>Dano <b>${row.damage.toLocaleString('pt-BR')}</b></span><span>Ast <b>${row.assists}</b></span>` : ''}${row.booyah ? `<span>B! <b>${row.booyah}</b></span>` : ''}</div>
       </div>`).join('')}</div></div>`;
   }
 
@@ -1512,7 +1570,7 @@
   let s2StatsEvolutionChart = null;
   let s2StatsEvolutionObserver = null;
 
-  function s2StatsStickyNavHtml() {
+  function s2StatsStickyNavHtml(hasTeams, hasPlayers) {
     const items = [
       ['anchor-s2-resumo','Resumo'], ['anchor-s2-filtros','Filtros'], ['anchor-s2-totais-equipe','Totais Equipe'],
       ['anchor-s2-medias-equipe','Médias Equipe'], ['anchor-s2-top3-equipe','Equipes/Queda'], ['anchor-s2-totais-jogador','Totais Jog.'],
@@ -1521,8 +1579,10 @@
       ['anchor-s2-rec-day-team','Rec. Dia Times'], ['anchor-s2-relatorio','Relatório'], ['anchor-s2-evolucao','Evolução'],
       ['anchor-s2-ranking-medias','Médias'], ['anchor-s2-ranking-totais','Totais']
     ];
-    const cut = Math.ceil(items.length / 2);
-    const rows = [items.slice(0, cut), items.slice(cut)];
+    const playerOnly = new Set(['anchor-s2-totais-jogador','anchor-s2-medias-jogador','anchor-s2-participacao','anchor-s2-novatos','anchor-s2-rec-drop-player','anchor-s2-rec-day-player']);
+    const visible = items.filter(([id]) => id === 'anchor-s2-filtros' || (hasTeams && (hasPlayers || !playerOnly.has(id))));
+    const cut = Math.ceil(visible.length / 2);
+    const rows = [visible.slice(0, cut), visible.slice(cut)];
     return `<div class="cff-stats-sticky-nav" data-stats-sticky-nav="s2"><span>Ir para:</span><div class="cff-stats-sticky-rows">${rows.map(row => `<div class="cff-stats-sticky-row">${row.map(([id,label]) => `<button type="button" onclick="scrollFFWSGlobalStatsSection('${id}')">${escapeHtml(label)}</button>`).join('')}</div>`).join('')}</div></div>`;
   }
 
@@ -1677,9 +1737,9 @@
     const summaryBlock = events.length ? `<section id="anchor-s2-resumo" class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Resumo do recorte</h2><p>Visão rápida do recorte atualmente selecionado.</p></div><span class="ffws-global-badge">${events.length} quedas</span></div>
       <div class="ffws-global-stats-grid">${[['Quedas disputadas',events.length],['Total de pontos',totalPoints],['Total de abates',totalKills],['Total de booyahs',totalBooyahs],['Média de pontos',totalResults ? (totalPoints / totalResults).toFixed(2) : '0.00'],['Colocação média',avgPosition ? `${avgPosition.toFixed(2)}º` : '—']].map(([label, value]) => `<div class="ffws-global-stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div></div></section>` : '';
 
-    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-global-panel ffws-global-stats-filter-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Filtros do torneio</h2><p>Escolha a etapa, o dia e o mapa.</p></div><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalStats()">↻ Atualizar</button><span class="ffws-global-badge">${activeStageMeta[1]} • ${events.length} quedas</span></div>
+    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-global-panel ffws-global-stats-filter-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Filtros do torneio</h2><p>Escolha a etapa, o dia e o mapa.</p></div><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('stats')">↻ Atualizar</button><span class="ffws-global-badge">${activeStageMeta[1]} • ${events.length} quedas</span></div>
       <nav class="ffws-global-stats-stage-switch" aria-label="Fase das estatísticas">${stageQuickOptions.map(([value,title,sub]) => `<button type="button" class="ffws-global-stats-stage-btn ${state.statsFilters.stage === value ? 'is-active' : ''} is-${value}" onclick="setFFWSGlobalStatsStage('${value}')"><strong>${title}</strong><small>${sub}</small></button>`).join('')}</nav>
-      <div class="ffws-global-filters"><label class="ffws-global-filter"><span>Etapa:</span><select onchange="setFFWSGlobalStatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('maps','Mapa',options.maps)}</div></div></section>`;
+      <div class="ffws-global-filters"><label class="ffws-global-filter"><span>Etapa:</span><select onchange="setFFWSGlobalStatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('maps','Mapa',options.maps)}</div>${liveStatus()}</div></section>`;
 
     const statsBlocks = events.length ? `<div class="ffws-global-stats-body" style="margin-top: 4px;">
         <h4 id="anchor-s2-totais-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Equipe</h4>
@@ -1703,7 +1763,7 @@
             <div class="card"><div class="card-top-border"></div><h3>+ Vezes em Último (12º)</h3>${s2StatsTeamDualValueCard('eq-top12-count', teams, row => row.top12, value => String(value), row => row.matches, '12º', 'Q')}</div>
         </div>
 
-        <h4 id="anchor-s2-totais-jogador" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Jogador</h4>
+        ${playerEntries.length ? `        <h4 id="anchor-s2-totais-jogador" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Jogador</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Top Abates</h3>${s2StatsPlayerCard('pl-totkills', players, row => row.kills, value => String(value), 'Kills')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Top Dano</h3>${s2StatsPlayerCard('pl-totdano', players, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
@@ -1745,18 +1805,19 @@
             <div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordPlayerCard('rec-pl-day-damage', records.playerDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>
         </div>
 
+` : '<p class="ffws-global-format-intro">As estatísticas individuais serão exibidas quando houver dados de jogadores neste recorte.</p>'}
         <h4 id="anchor-s2-rec-drop-team" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Times</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-points', records.teamDrop, row => row.points, value => String(value), 'Pts')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-kills', records.teamDrop, row => row.kills, value => String(value), 'Kills')}</div>
-            <div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-damage', records.teamDrop, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
+            ${playerEntries.length ? `<div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-damage', records.teamDrop, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>` : ''}
         </div>
 
         <h4 id="anchor-s2-rec-day-team" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Times</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-points', records.teamDay, row => row.points, value => String(value), 'Pts', true)}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-kills', records.teamDay, row => row.kills, value => String(value), 'Kills', true)}</div>
-            <div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-damage', records.teamDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>
+            ${playerEntries.length ? `<div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-damage', records.teamDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>` : ''}
         </div>
       </div>
       ${s2DropReportSelectorHtml(events)}
@@ -1765,7 +1826,7 @@
     ` : `<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-empty"><div><strong>Etapa ainda sem resultados</strong>As estatísticas aparecerão após o cadastro das quedas.</div></div></div></section>`;
 
     root.innerHTML = `<div class="ffws-global-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Global Finals 2026')}
-      ${s2StatsStickyNavHtml()}
+      ${s2StatsStickyNavHtml(events.length, playerEntries.length)}
       ${summaryBlock}
       ${filterBlock}
       ${statsBlocks}
@@ -2249,7 +2310,7 @@
   function globalEmptyStage(pageId){
     const section=pageId.slice(PAGE_PREFIX.length),key=section==='segunda-fase'?'segundaFase':section==='last-chance'?'lastChance':section,root=document.getElementById(pageId+'-content');if(!root)return;
     const title=stageLabel(key);
-    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${key==='classificatoria'?'':'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div></div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${key==='classificatoria'?'<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults(\'classificatoria\')">↻ Atualizar resultados</button>':'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div>${key==='classificatoria'?liveStatus():''}</div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
   }
   window.openFFWSGlobalTeam=function(name){const t=teamByName(name);const url=new URL(location.href);if(t)url.searchParams.set('time',t.id);else url.searchParams.delete('time');history.replaceState(null,'',url);navigate(t?'ffws-global-2026-equipe':'ffws-global-2026-equipes');};
   window.openFFWSGlobalPlayer=function(name,team){const target=teamByName(team);const person=(state.players.players||[]).find(p=>normalize(p.name)===normalize(name)&&(target?teamByName(p.team)?.id===target.id:normalize(p.team)===normalize(team)));location.href=person?.id?'/ffws-global-2026/jogador?id='+encodeURIComponent(person.id):'/ffws-global-2026/jogadores?q='+encodeURIComponent(name);};
@@ -2293,7 +2354,7 @@
     const needsPhotos = new Set(['ffws-global-2026-equipes', 'ffws-global-2026-selecoes']).has(pageId);
     loadData()
       .then(() => pageId === 'ffws-global-2026-classificatoria' ? loadGroupsData() : null)
-      .then(() => needsPlayers ? loadPlayersData() : null)
+      .then(() => Promise.all([LIVE_PAGES.has(pageId) ? loadLiveResults() : null, needsPlayers ? loadPlayersData().catch(error => { if (!LIVE_PAGES.has(pageId)) throw error; }) : null]))
       .then(() => needsPhotos && typeof window.cffLoadPlayerPhotoMap === 'function' ? window.cffLoadPlayerPhotoMap().catch(() => null) : null)
       .then(() => renderPage(pageId))
       .catch(error => {
@@ -2350,12 +2411,13 @@
   };
   window.setFFWSGlobalSelectionTab = tab => { state.selectionTab = S2_SELECTION_PHASES[tab] ? tab : 'semanal'; renderSelections(); };
   window.setFFWSGlobalStatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.maps = []; renderStats(); };
-  window.refreshFFWSGlobalStats = () => {
-    if (state.loading || state.playersLoading) return;
-    state.loaded = false;
-    state.playersLoaded = false;
-    activate('ffws-global-2026-stats');
+  window.refreshFFWSGlobalResults = page => {
+    const pageId = PAGE_PREFIX + page;
+    if (!LIVE_PAGES.has(pageId) || state.liveLoading) return;
+    if (page === 'stats') state.playersLoaded = false;
+    Promise.all([loadLiveResults(true), page === 'stats' ? loadPlayersData().catch(() => {}) : null]).then(() => renderPage(pageId));
   };
+  window.refreshFFWSGlobalStats = () => window.refreshFFWSGlobalResults('stats');
   window.toggleFFWSGlobalStatsMulti = key => { document.querySelectorAll('.ffws-global-multi-menu').forEach(menu => { if (menu.id !== `ffws-global-stats-multi-${key}`) menu.hidden = true; }); const menu = document.getElementById(`ffws-global-stats-multi-${key}`); if (menu) menu.hidden = !menu.hidden; };
   window.clearFFWSGlobalStatsMulti = key => { state.statsFilters[key] = []; renderStats(); };
   window.setFFWSGlobalStatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; renderStats(); };
