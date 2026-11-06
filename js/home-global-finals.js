@@ -43,6 +43,9 @@
   if(!countdown||!output)return;
   const label=countdown.querySelector('#home-global-countdown-label');
   const time=countdown.querySelector('time');
+  const tabUpcoming=board.querySelector('#home-global-tab-upcoming');
+  const watch=countdown.querySelector('.home-global-watch');
+  const liveLink=()=>'<a class="home-global-watch home-global-watch-live" href="'+esc(watch.href)+'" target="_blank" rel="noopener noreferrer">'+(watch.querySelector('svg')?.outerHTML||'')+'<span>ASSISTIR À TRANSMISSÃO<small>FF ESPORTS BR · YOUTUBE</small></span></a>';
   const units=['days','hours','minutes','seconds'];
   const numbers=units.map(unit=>countdown.querySelector('[data-countdown-unit="'+unit+'"]'));
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -65,20 +68,21 @@
     const [year,month,day]=round.date.split('-');
     return day+'/'+month+'/'+year+' · '+round.time24+'h';
   };
-  let rounds=[],groups=null,teams=new Map(),lastRoundKey='',timer=null,target=Date.parse(countdown.dataset.start);
-  let loaded=false;
+  let rounds=[],groups=null,teams=new Map(),lastRoundKey='',timer=null,boundary=null,target=Date.parse(countdown.dataset.start);
+  let loaded=false,showClock=true;
 
   function setCountdown(round,index,started=false){
-    if(!round){countdown.hidden=true;target=NaN;clearInterval(timer);timer=null;return;}
-    countdown.hidden=false;
-    target=started?estimatedEnd(round,index):startOf(round);
-    const localDate=new Date(target-3*60*60*1000);
-    const day=String(localDate.getUTCDate()).padStart(2,'0');
-    const hour=String(localDate.getUTCHours()).padStart(2,'0'),minute=String(localDate.getUTCMinutes()).padStart(2,'0');
-    const iso=localDate.toISOString().slice(0,16)+':00-03:00';
+    showClock=!!round&&!started;
+    countdown.hidden=!showClock;
+    target=!round?NaN:started?estimatedEnd(round,index):startOf(round);
+    if(tabUpcoming)tabUpcoming.textContent=started?'CONFRONTO ATUAL':round?'PRÓXIMOS CONFRONTOS':'CONFRONTOS';
+    if(!showClock){delete countdown.dataset.start;return;}
+    const [,,day]=round.date.split('-');
+    const [hour,minute]=round.time24.split(':');
+    const iso=round.date+'T'+round.time24+':00-03:00';
     countdown.dataset.start=iso;
-    if(time){time.setAttribute('datetime',iso);time.innerHTML=esc(day)+' NOV · '+esc(hour)+'H'+(minute==='00'?'':esc(minute))+' <small>'+(started?'ESTIMATIVA · ':'')+'BRASÍLIA</small>';}
-    if(label)label.textContent=started?'TROCA DE DESTAQUE PREVISTA':index===0?'CONTAGEM PARA A ESTREIA':'CONTAGEM PARA A PRÓXIMA RODADA';
+    if(time){time.setAttribute('datetime',iso);time.innerHTML=esc(day)+' NOV · '+esc(hour)+'H'+(minute==='00'?'':esc(minute))+' <small>BRASÍLIA</small>';}
+    if(label)label.textContent=index===0?'CONTAGEM PARA A ESTREIA':'CONTAGEM PARA A PRÓXIMA RODADA';
     countdown.classList.remove('has-started');
   }
 
@@ -116,7 +120,8 @@
     const next=idx>=0?rounds[idx]:null;
     const started=!!next&&Date.now()>=startOf(next);
     const key=(next?.key||'ended')+(started?':in-window':':upcoming');
-    if(key!==lastRoundKey){setCountdown(next,idx,started);lastRoundKey=key;}
+    if(key===lastRoundKey)return;
+    setCountdown(next,idx,started);lastRoundKey=key;
     if(!next){
       output.innerHTML='<div class="home-global-finished"><strong>CALENDÁRIO DO MUNDIAL ENCERRADO</strong><p>As datas programadas já passaram. Consulte a página do torneio para ver resultados e classificação.</p><a href="/ffws-global-2026/datas">VER CALENDÁRIO DO MUNDIAL →</a></div>';
       return;
@@ -125,35 +130,33 @@
     const headline=pair?'<div class="home-global-matchup">'+roster(pair[0])+'<div class="home-global-versus" aria-label="contra">×</div>'+roster(pair[1])+'</div>':
       '<p class="home-global-future-teams">Os participantes desta fase serão definidos pelos resultados anteriores. A data e o horário já estão no calendário.</p>';
     const after=rounds.slice(idx+1,idx+4);
-    output.innerHTML='<div class="home-global-match-head"><div><span class="home-global-match-eyebrow">'+(started?'RODADA NO HORÁRIO PROGRAMADO':'PRÓXIMO CONFRONTO')+'</span><h3>'+esc(pair?'GRUPO '+pair[0]+' × GRUPO '+pair[1]:next.stage==='segundaFase'?'KNOCKOUT · FASE 2':next.stage==='lastChance'?'REPESCAGEM · LAST CHANCE':'GRANDE FINAL')+'</h3><p>'+esc(next.label)+' · '+esc(displayDate(next))+' (Brasília)</p></div><span class="home-global-round-tag">'+esc(next.matches?next.matches+' QUEDAS':next.stage==='final'?'CHAMPION RUSH':'12 EQUIPES')+'</span></div>'+headline+
+    output.innerHTML='<div class="home-global-match-head'+(started?' is-live':'')+'"><div><span class="home-global-match-eyebrow">'+(started?'RODADA EM ANDAMENTO':'PRÓXIMO CONFRONTO')+'</span><h3>'+esc(pair?'GRUPO '+pair[0]+' × GRUPO '+pair[1]:next.stage==='segundaFase'?'KNOCKOUT · FASE 2':next.stage==='lastChance'?'REPESCAGEM · LAST CHANCE':'GRANDE FINAL')+'</h3><p>'+esc(next.label)+' · '+esc(displayDate(next))+' (Brasília)</p></div><span class="home-global-round-tag">'+esc(next.matches?next.matches+' QUEDAS':next.stage==='final'?'CHAMPION RUSH':'12 EQUIPES')+'</span></div>'+(started?liveLink():'')+headline+
       '<div class="home-global-next-list"><div class="home-global-next-list-title"><h3>PRÓXIMAS RODADAS</h3><small>HORÁRIO DE BRASÍLIA</small></div>'+(after.map(round=>renderRoundRow(round)).join('')||'<p class="home-global-no-more">Nenhuma outra rodada prevista no calendário.</p>')+'</div><a class="home-global-calendar-link" href="/ffws-global-2026/datas">VER CALENDÁRIO COMPLETO <span aria-hidden="true">→</span></a>';
   }
 
-  function tick(){
-    if(document.hidden)return;
-    if(loaded&&rounds.length&&Number.isFinite(target)&&Date.now()>=target){
-      renderUpcoming();
-    }
-    if(!Number.isFinite(target))return;
+  function updateClock(){
+    if(!showClock||!Number.isFinite(target))return;
     const total=Math.max(0,Math.ceil((target-Date.now())/1000));
     const values=[Math.floor(total/86400),Math.floor(total%86400/3600),Math.floor(total%3600/60),total%60];
     numbers.forEach((node,i)=>{if(node){const value=String(values[i]).padStart(2,'0');if(node.textContent!==value)node.textContent=value;}});
     if(!total&&!loaded){
       countdown.classList.add('has-started');
-      if(label)label.textContent='CHEGOU A ESTREIA';
-      clearInterval(timer);timer=null;
+      if(label)label.textContent='TRANSMISSÃO OFICIAL';
+      showClock=false;
     }
   }
   function resume(){
-    clearInterval(timer);timer=null;
-    tick();
-    if(!document.hidden&&Number.isFinite(target)&&Date.now()<target){
-      timer=setInterval(()=>{if(board.closest('.page')?.classList.contains('active'))tick();},1000);
-    }
+    clearInterval(timer);timer=null;clearTimeout(boundary);boundary=null;
+    if(document.hidden)return;
+    if(loaded)renderUpcoming();
+    updateClock();
+    const remaining=target-Date.now();
+    if(remaining>0)boundary=setTimeout(resume,Math.min(remaining,2147483647));
+    if(showClock&&remaining>0)timer=setInterval(updateClock,1000);
   }
   document.addEventListener('visibilitychange',resume);
-  window.addEventListener('hashchange',tick);
-  window.addEventListener('cff:pretty-route',tick);
+  window.addEventListener('hashchange',resume);
+  window.addEventListener('cff:pretty-route',resume);
   resume();
 
   async function loadSchedule(){

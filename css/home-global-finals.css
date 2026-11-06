@@ -132,3 +132,10 @@
 
 .home-global-day-label{display:block;margin:10px 12px 4px;color:#9cb6cd;font-size:12px}#home-global-selection-day{display:block;width:calc(100% - 24px);margin:0 12px 10px;padding:9px;border:1px solid #34536b;border-radius:8px;background:#0d1c2b;color:#eaf6ff;font:inherit;font-size:12px;min-height:38px}
 #home-ranking-teams .home-weekly-empty,#home-ranking-kills .home-weekly-empty,#home-ranking-damage .home-weekly-empty,#home-ranking-assists .home-weekly-empty{display:table-cell!important;width:auto!important;white-space:normal!important;line-height:1.5;text-align:center;padding:14px 10px!important}
+
+.home-global-match-head.is-live .home-global-match-eyebrow{display:inline-flex;align-items:center;gap:7px;color:#8cf6b5}
+.home-global-match-head.is-live .home-global-match-eyebrow::before{content:'';width:8px;height:8px;flex:none;border-radius:50%;background:#4ee388;box-shadow:0 0 9px #4ee38880}
+.home-global-board .home-global-watch-live{justify-content:center;min-height:46px;padding:9px 12px;background:#f0cc57;border-color:#f0cc57;color:#191405!important;font-size:12px;text-align:left}
+.home-global-board .home-global-watch-live small{display:block;color:#49370b}
+.home-global-board .home-global-watch-live:hover{background:#ffe286;border-color:#ffe286}
+.home-global-countdown.has-started .home-global-debut time{display:none}

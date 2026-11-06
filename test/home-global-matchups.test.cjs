@@ -5,11 +5,12 @@ const calendar=JSON.parse(read('ffws-global-2026/dates.json')),teamData=JSON.par
 const sleep=()=>new Promise(resolve=>setImmediate(resolve));
 async function mount(at,{mobile=false,offline=false}={}){
  const dom=new JSDOM(read('index.html'),{url:'https://centralfreefire.com.br/',runScripts:'outside-only'});
- const w=dom.window,requests=[];let now=Date.parse(at),interval=null;
+ const w=dom.window,requests=[];let now=Date.parse(at),interval=null,boundary=null;
  Object.defineProperty(w.document,'hidden',{get:()=>false});
  w.Date.now=()=>now;
  w.matchMedia=()=>({matches:mobile,addEventListener(){}});
  w.setInterval=fn=>{interval=fn;return 5;};w.clearInterval=()=>{interval=null;};
+ w.setTimeout=(fn,delay)=>{boundary={fn,at:now+delay};return 6;};w.clearTimeout=()=>{boundary=null;};
  w.fetch=async url=>{
   requests.push(String(url));
   if(offline)throw Error('Fora do ar');
@@ -19,7 +20,7 @@ async function mount(at,{mobile=false,offline=false}={}){
  w.document.getElementById('home').classList.add('active');
  vm.runInContext(read('js/home-global-finals.js'),dom.getInternalVMContext());
  await sleep();await sleep();
- return {w,requests,dom,get now(){return now;},setNow(value){now=Date.parse(value);},tick(){interval?.();},close(){dom.window.close();}};
+ return {w,requests,dom,get now(){return now;},setNow(value){now=Date.parse(value);},tick(){if(boundary&&boundary.at<=now)boundary.fn();else interval?.();},hasClock(){return interval!==null;},close(){dom.window.close();}};
 }
 test('official knockout groups use all 24 classified teams without duplicates or swapping P Esports and Pirate Esports',()=>{
  const teamIds=new Set(teamData.teams.map(t=>t.id)),groups=groupData.groups;
@@ -75,8 +76,8 @@ test('upcoming fixture cards are clickable and expand to the same two six-team g
   assert.equal(panels[0].tagName,'DETAILS');
   assert.equal(panels[0].querySelector('summary').tagName,'SUMMARY');
   assert.equal(panels[0].open,false);
-  panels[0].querySelector('summary').click();
-  await sleep();
+  const toggle=panel=>new Promise(resolve=>{panel.addEventListener('toggle',resolve,{once:true});panel.querySelector('summary').click();});
+  await toggle(panels[0]);
   assert.equal(panels[0].open,true);
   assert.equal(panels[0].querySelectorAll('.home-global-match-group').length,2);
   assert.equal(panels[0].querySelectorAll('.home-global-match-team').length,12);
@@ -84,11 +85,10 @@ test('upcoming fixture cards are clickable and expand to the same two six-team g
   assert.match(panels[0].querySelector('.home-global-fixture-expanded').textContent,/GRUPO C/);
   assert.match(panels[0].querySelector('.home-global-fixture-expanded').textContent,/GRUPO D/);
   assert.equal(d.querySelectorAll('.home-global-upcoming-content>.home-global-matchup .home-global-match-team').length,12);
-  panels[1].querySelector('summary').click();
-  await sleep();
+  await toggle(panels[1]);
   assert.equal(panels[1].open,true);
   assert.equal(panels[0].open,false);
-  panels[1].querySelector('summary').click();await sleep();
+  await toggle(panels[1]);
   assert.equal(panels[1].open,false);
   d.querySelector('#home-global-tab-slots').click();
   assert.equal(d.querySelector('#home-global-panel-slots').hidden,false);
@@ -112,28 +112,34 @@ test('tabs preserve original slot sections and support keyboard navigation on mo
   assert.equal(d.querySelector('#home-global-tab-upcoming').getAttribute('tabindex'),'0');
  }finally{x.close();}
 });
-test('scheduled 04:00 round stays highlighted until estimated 08:30 end, then the 09:00 matchup takes over automatically',async()=>{
+test('during each round the homepage highlights the matchup and stream instead of timing the switch',async()=>{
  const x=await mount('2026-11-06T03:59:59-03:00');
  try{
   const d=x.w.document,focus=()=>d.querySelector('.home-global-match-head').textContent,
-  start=()=>d.querySelector('.home-global-countdown').dataset.start;
-  assert.equal(start(),'2026-11-06T04:00:00-03:00');
-  assert.match(focus(),/GRUPO A × GRUPO B/);
-  x.setNow('2026-11-06T04:00:01-03:00');x.tick();
-  assert.equal(start(),'2026-11-06T08:30:00-03:00');
-  assert.match(focus(),/GRUPO A × GRUPO B/);
-  assert.match(d.querySelector('#home-global-countdown-label').textContent,/TROCA DE DESTAQUE PREVISTA/);
-  assert.match(d.querySelector('.home-global-countdown time').textContent,/ESTIMATIVA/);
+   clock=d.querySelector('.home-global-countdown'),watch=()=>d.querySelector('.home-global-watch-live');
+  assert.equal(clock.dataset.start,'2026-11-06T04:00:00-03:00');
+  assert.equal(clock.hidden,false);
+  x.setNow('2026-11-06T04:00:00-03:00');x.tick();
+  assert.equal(clock.hidden,true);
+  assert.equal(x.hasClock(),false);
+  assert.match(focus(),/RODADA EM ANDAMENTO.*GRUPO A × GRUPO B/);
+  assert.equal(watch().href,'https://www.youtube.com/@ffesportsbr/live');
+  assert.equal(d.querySelector('#home-global-tab-upcoming').textContent,'CONFRONTO ATUAL');
+  const previous=watch();
   x.setNow('2026-11-06T08:29:59-03:00');x.tick();
-  assert.match(focus(),/GRUPO A × GRUPO B/);
+  assert.equal(watch(),previous);
   x.setNow('2026-11-06T08:30:00-03:00');x.tick();
-  assert.equal(start(),'2026-11-06T09:00:00-03:00');
+  assert.equal(clock.hidden,false);
+  assert.equal(clock.dataset.start,'2026-11-06T09:00:00-03:00');
   assert.match(focus(),/GRUPO C × GRUPO D/);
-  x.setNow('2026-11-06T09:00:01-03:00');x.tick();
-  assert.equal(start(),'2026-11-06T13:30:00-03:00');
-  assert.match(focus(),/GRUPO C × GRUPO D/);
+  assert.equal(watch(),null);
+  x.setNow('2026-11-06T09:00:00-03:00');x.tick();
+  assert.equal(clock.hidden,true);
+  assert.equal(x.hasClock(),false);
+  assert.match(focus(),/RODADA EM ANDAMENTO.*GRUPO C × GRUPO D/);
+  assert(watch());
   assert.equal(d.querySelectorAll('.home-global-matchup')[0].querySelectorAll('.home-global-match-team').length,12);
-  assert(!focus().includes('AO VIVO'));
+  assert.equal(x.requests.length,3);
  }finally{x.close();}
 });
 test('later phase shows scheduled dates but does not guess team identities; after final it shows results shortcut',async()=>{
@@ -157,5 +163,16 @@ test('an unavailable static calendar gives a clear fallback and leaves qualifica
   d.querySelector('#home-global-tab-slots').click();
   assert.equal(d.querySelector('#home-global-panel-slots').hidden,false);
   assert.equal(d.querySelectorAll('.home-global-team').length,24);
+ }finally{x.close();}
+});
+
+test('an outage during the round leaves the official stream available without a timer',async()=>{
+ const x=await mount('2026-11-06T05:52:00-03:00',{mobile:true,offline:true});
+ try{
+  const d=x.w.document,clock=d.querySelector('.home-global-countdown');
+  assert(clock.classList.contains('has-started'));
+  assert.equal(x.hasClock(),false);
+  assert.equal(clock.querySelector('a').href,'https://www.youtube.com/@ffesportsbr/live');
+  assert(d.querySelector('.home-global-calendar-link'));
  }finally{x.close();}
 });
