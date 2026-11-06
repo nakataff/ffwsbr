@@ -248,7 +248,7 @@ function refreshRosterForSelections(root){
       players.entries.length<DATA.entries.length)return;
    DATA={players:players.players,entries:players.entries,teams:DATA.teams};
    remoteRosterPreferred=true;
-   if(root.isConnected!==false)renderPage(root,DATA.players,DATA.teams);
+   if(root.isConnected!==false)renderPage(root,{players:DATA.players,entries:DATA.entries},{teams:DATA.teams});
   }).catch(()=>{}).finally(()=>{rosterRefresh=null});
 }
 function renderPage(root,players,teams,stages){
@@ -296,7 +296,7 @@ function renderPage(root,players,teams,stages){
    if(b.globalMode)ui.mode=b.globalMode;
    if(b.globalDay)ui.day=b.globalDay;
    if(b.globalWeek)ui.week=b.globalWeek;
-   renderPage(root,DATA.players,DATA.teams);
+   renderPage(root,{players:DATA.players,entries:DATA.entries},{teams:DATA.teams});
   });
  }
  // Revalida a planilha publicada ao abrir Seleções, sem exigir atualização manual do CSS ou JS.
@@ -308,7 +308,7 @@ function renderPage(root,players,teams,stages){
   },300000);
  }
  if(!officialAt){
-  loadOfficial().then(()=>{if(root.isConnected!==false&&DATA)renderPage(root,DATA.players,DATA.teams)});
+  loadOfficial().then(()=>{if(root.isConnected!==false&&DATA)renderPage(root,{players:DATA.players,entries:DATA.entries},{teams:DATA.teams})});
  }
  return true;
 }
