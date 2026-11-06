@@ -34,10 +34,10 @@ test('MVP aggregates only the same player and team, sorts by kills/damage/assist
   const top=build(input)['inicio-mvp-top10.json'].top10;
   assert.equal(top.geral.length,10);assert.equal(top.geral[0].team,'LOUD');assert.equal(top.geral[0].kills,99);assert.equal(top.geral[1].kills,32);assert.equal(top.final.length,2);assert.equal(top.segundaFase.length,0);
 });
-test('format comes first, before upcoming fixtures and three tabs; initial visit fetches only 10 KB summary',async()=>{
+test('format comes first, before selections, fixtures and three tabs; the overview module only fetches its summary',async()=>{
   const u=await ui();try{
     assert.deepEqual(u.calls,[BASE+'inicio-resumo.json']);
-    const children=u.$('.global-start').children;assert(children[1].classList.contains('global-start-format'));assert(children[2].querySelector('#global-start-next'));
+    const children=u.$('.global-start').children;assert(children[1].classList.contains('global-start-format'));assert(children[2].querySelector('#global-start-selection'));assert(children[3].querySelector('#global-start-next'));
     assert.equal(u.all('.global-start-phase').length,4);assert.equal(u.all('.global-start-phase[open]').length,0);
     assert(u.$('.global-start-phase summary').textContent.includes('36 quedas'));
     assert.equal(u.all('.global-start-matchup .global-start-fixture-team').length,12);assert(u.$('#global-start-next-title').textContent.includes('Grupo A × Grupo B'));
@@ -49,7 +49,7 @@ test('tabs load once on demand, support filters, accessible keyboard navigation 
   const u=await ui();try{
     await u.click('[data-global-start-tab="mvp"]');assert(u.$('#global-start-pane').textContent.includes('Top 10 · Geral'));assert(u.$('[data-global-start-mvp-stage="geral"]').getAttribute('aria-pressed')==='true');
     await u.click('[data-global-start-mvp-stage="lastChance"]');assert.equal(new URL(u.w.location.href).searchParams.get('etapa'),'lastChance');
-    await u.click('[data-global-start-tab="equipes"]');assert.equal(u.all('.global-start-groups .global-start-group').length,4);assert.equal(u.all('.global-start-roster').length,24);assert.equal(u.all('.global-start-player-flag').length,119);assert.equal(u.all('.global-start-flag-pending').length,1);
+    await u.click('[data-global-start-tab="equipes"]');assert.equal(u.all('.global-start-groups .global-start-group').length,4);assert.equal(u.all('.global-start-roster').length,24);assert.equal(u.all('.global-start-player-flag').length,120);assert.equal(u.all('.global-start-flag-pending').length,0);
     await u.change('[data-global-start-group]','B');assert.equal(u.all('.global-start-roster').length,6);assert(u.$('.global-start-groups').textContent.includes('LOUD'));assert.equal(new URL(u.w.location.href).searchParams.get('grupo'),'B');
     u.$('[data-global-start-tab="equipes"]').dispatchEvent(new u.w.KeyboardEvent('keydown',{key:'Home',bubbles:true}));await settle();assert.equal(u.$('[role=tab][aria-selected=true]').textContent,'Tabela');
     await u.click('[data-global-start-tab="mvp"]');await u.click('[data-global-start-tab="equipes"]');

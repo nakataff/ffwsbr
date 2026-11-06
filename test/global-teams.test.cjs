@@ -70,7 +70,7 @@ test('compact cards show qualified teams, per-player local flags and independent
  }finally{u.close();}
 });
 test('flags use individual countries, valid local assets and a neutral fallback, never organization logos',async()=>{
- const input=read(base+'players.json');assert.equal(input.players.filter(p=>p.country).length,119);assert.deepEqual(input.players.filter(p=>!p.country).map(p=>p.name),['Ericka']);for(const p of input.players.filter(p=>p.country)){const asset=fs.readFileSync('flag/'+p.country+'.webp');assert.equal(asset.toString('ascii',8,12),'WEBP');}
+ const input=read(base+'players.json');assert.equal(input.players.filter(p=>p.country).length,120);for(const p of input.players.filter(p=>p.country)){const asset=fs.readFileSync('flag/'+p.country+'.webp');assert.equal(asset.toString('ascii',8,12),'WEBP');}
  const snapshot=read(base+'equipes-resumo.json'),btr=snapshot.teams.find(t=>t.id==='btr');btr.players[0].country='../../bad';
  const u=await ui({snapshot});try{
   const card=u.$('[data-gteam="btr"]');assert(!card.querySelector('img[src*="bad"]'));assert(card.querySelector('.gteam-flag-missing'));const flag=card.querySelector('[data-player-flag]');flag.dispatchEvent(new u.w.Event('error'));assert.equal(card.querySelectorAll('[data-player-flag]').length,3);assert(!card.querySelector('.gteam-card-roster img[src$="escudo.webp"]'));assert.equal(u.calls.length,1);
@@ -78,9 +78,9 @@ test('flags use individual countries, valid local assets and a neutral fallback,
  }finally{u.close();}
 });
 
-test('new mixed-nationality rosters preserve each person’s country and unknown Ericka stays neutral',async()=>{
+test('mixed-nationality rosters use the corrected flags for Stellar Esport',async()=>{
  const input=read(base+'players.json'),country=(team,name)=>input.players.find(p=>p.team===team&&p.name===name)?.country;
- for(const [team,name,flag] of [['LYON','Haax','br'],['LYON','SoyDella','ar'],['LYON','Joker','cl'],['Blue Cheese','Stu','pe'],['GunDynasty','David444','do'],['Stellar Esport','Lotex','ni'],['Stellar Esport','Lins7','br'],['Stellar Esport','Salami','us']])assert.equal(country(team,name),flag);
+ for(const [team,name,flag] of [['LYON','Haax','br'],['LYON','SoyDella','ar'],['LYON','Joker','cl'],['Blue Cheese','Stu','pe'],['GunDynasty','David444','do'],['Stellar Esport','Lotex','ni'],['Stellar Esport','Lins7','br'],['Stellar Esport','Loro','cu'],['Stellar Esport','Ericka','do'],['Stellar Esport','Salami','do']])assert.equal(country(team,name),flag);
  assert(input.players.filter(p=>p.team==='ParadoX Gaming').every(p=>p.country==='za'));
- const u=await ui({page:'equipe',search:'?time=stellar-esport'});try{assert.equal(u.all('.gteam-person-name [data-player-flag]').length,4);assert(u.$('.gteam-person-name .gteam-flag-missing'));assert(!u.$('.gteam-profile img[src="/flag/.webp"]'));assert(u.$('.gteam-person-name img[src="/flag/ni.webp"]'));assert.equal(u.calls.length,1)}finally{u.close()}
+ const u=await ui({page:'equipe',search:'?time=stellar-esport'});try{assert.equal(u.all('.gteam-person-name [data-player-flag]').length,5);assert.equal(u.all('.gteam-person-name img[src="/flag/do.webp"]').length,2);assert(u.$('.gteam-person-name img[src="/flag/cu.webp"]'));assert(u.$('.gteam-person-name img[src="/flag/ni.webp"]'));assert.equal(u.calls.length,1)}finally{u.close()}
 });

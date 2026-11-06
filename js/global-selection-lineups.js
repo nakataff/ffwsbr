@@ -52,7 +52,7 @@ async function loadPlayers(){
  if(DATA)return DATA;
  if(playersPromise)return playersPromise;
  playersPromise=Promise.all([
-  fetch(BASE+'players.json?v=20261106-roles-corrected-v3',{cache:'default'}).then(r=>{if(!r.ok)throw Error('Falha no cadastro');return r.json()}),
+  fetch(BASE+'players.json?v=20261106-world-role-flags-v1',{cache:'default'}).then(r=>{if(!r.ok)throw Error('Falha no cadastro');return r.json()}),
   fetch(BASE+'teams.json',{cache:'default'}).then(r=>{if(!r.ok)throw Error('Falha nas equipes');return r.json()})
  ]).then(([p,t])=>{setData(p,t);return DATA}).finally(()=>{playersPromise=null});
  return playersPromise;
@@ -137,9 +137,9 @@ function standingsForSelection(s){
 }
 function roleType(role){
  const r=norm(role);
- if(r.includes('rusher')||r==='rush')return 'rush';
+ if(['rusher','rush','rifler','suporte','support','3','3homem'].includes(r))return 'rush';
  if(r.includes('granadeiro')||r.includes('bomber')||r==='gran')return 'gran';
- if(r.includes('suporte')||r.includes('support')||r.includes('sniper')||r==='sup')return 'support';
+ if(r.includes('sniper')||r==='sup')return 'support';
  return '';
 }
 function playerRankings(entries){
@@ -241,7 +241,7 @@ function pageFilter(){
 function refreshRosterForSelections(root){
  if(rosterRefresh||Date.now()-rosterCheckedAt<300000)return;
  rosterCheckedAt=Date.now();
- rosterRefresh=fetch(BASE+'players.json?v=20261106-roles-corrected-v3',{cache:'no-cache'})
+ rosterRefresh=fetch(BASE+'players.json?v=20261106-world-role-flags-v1',{cache:'no-cache'})
   .then(r=>{if(!r.ok)throw Error('Atualização dos jogadores indisponível');return r.json()})
   .then(players=>{
    if(!DATA||!Array.isArray(players?.players)||!Array.isArray(players?.entries)||

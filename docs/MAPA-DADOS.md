@@ -124,6 +124,11 @@ para combinar com a tabela ao vivo; `roundDrop` exibe Q1–Q6 dentro de cada rod
 PRT é Pirate Esports; PE é P Esports. Confira os mapas e a soma dos abates por
 equipe/queda contra os placares publicados antes de incorporar novos dados.
 
+Para MVP e Seleções, as posições da planilha `RUSHER`, `RIFLER` e `SUPPORT`
+contam como Rush, `BOMBER` como Granadeiro e `SNIPER` como Suporte. Joker
+(LYON), Joacozd, Bnlxxy e Stu têm a função corrigida para Sniper no cadastro
+desta edição; o coach Joker da LOUD é outra pessoa.
+
 Fotos oficiais do Mundial ficam em `ffws-global-2026/photos/160/` (listas e
 elencos) e `photos/480/` (perfis e cards). Use `photo` e `photoLarge`
 em `players.json`, com o ID da pessoa **e** a equipe desta edição.

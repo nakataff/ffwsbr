@@ -44,7 +44,7 @@
     mvpPage: 0,
     mvpSort: 'kills',
     mvpDetails: false,
-    playerFilters: { stage: [], day: [], round: [], team: [], role: [], country: [], rookie: [] },
+    playerFilters: { stage: [], day: [], round: [], team: [], role: [], country: [] },
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
     statsEvolution: { metric: 'position', teams: [] },
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
@@ -501,7 +501,17 @@
     return Array.isArray(state.players?.entries) ? state.players.entries : [];
   }
 
-  const MVP_FILTER_LABELS = { stage: 'Etapa', day: 'Dia', round: 'Rodada', team: 'Equipe', role: 'Posição', country: 'País', rookie: 'Novatos' };
+  const MVP_FILTER_LABELS = { stage: 'Etapa', day: 'Dia', round: 'Rodada', team: 'Equipe', role: 'Posição', country: 'País' };
+  // The Mundial sheet uses Support for a second rush role; Sniper fills Suporte.
+  function worldMvpRole(role) {
+    switch (normalize(role)) {
+      case 'SNIPER': case 'SUP': return 'SUP';
+      case 'BOMBER': case 'GRANADEIRO': case 'GRAN': return 'GRAN';
+      case 'RUSH': case 'RUSHER': case 'RIFLER': case 'SUPPORT': case 'SUPORTE': case '3': case '3HOMEM': return 'RUSH';
+      default: return '';
+    }
+  }
+
   const MVP_SORT_OPTIONS = {
     kills: { label: 'Abates', short: 'K', value: row => row.kills },
     damage: { label: 'Dano', short: 'Dano', value: row => row.damage, format: value => value.toLocaleString('pt-BR') },
@@ -576,14 +586,13 @@
         : round.stage === 'segundaFase' ? `Fase 2 · Dia ${round.day}` : stageLabel(round.stage);
       return {value: mvpRoundKey(round), label: `${label} · ${mvpShortDate(round.date)}`};
     });
-    const countries = [...new Set(playerSource.map(entry => String(entry.country || rosterPlayerByName(entry.name || entry.player, entry.team)?.country || 'br').toLowerCase()).filter(Boolean))];
-    const countryNames = { br: 'Brasil' };
+    const countries = [...new Set(playerSource.map(entry => String(rosterPlayerByName(entry.name || entry.player, entry.team)?.country || entry.country || '').toLowerCase()).filter(Boolean))];
+    const countryNames = typeof Intl.DisplayNames === 'function' ? new Intl.DisplayNames(['pt-BR'], {type: 'region'}) : null;
     return {
       stage: [{ value: 'classificatoria', label: 'Knockout • Fase 1' }, { value: 'segundaFase', label: 'Knockout • Fase 2' }, { value: 'lastChance', label: 'Last Chance' }, { value: 'final', label: 'Grande Final' }],
       team: teams.map(team => ({ value: team, label: team })),
-      role: [{ value: 'RUSH', label: 'Rush' }, { value: 'SUP', label: 'Suporte' }, { value: 'GRAN', label: 'Granadeiro' }, { value: '3', label: '3º homem' }],
-      country: countries.map(country => ({ value: country, label: countryNames[country] || country.toUpperCase(), flag: country === 'br' ? '🇧🇷' : '' })),
-      rookie: [{ value: 'rookie', label: 'Apenas estreantes' }, { value: 'veteran', label: 'Sem estreantes' }],
+      role: [{ value: 'RUSH', label: 'Rush' }, { value: 'SUP', label: 'Suporte / Sniper' }, { value: 'GRAN', label: 'Granadeiro' }],
+      country: countries.filter(country => /^[a-z]{2}$/.test(country)).map(country => ({ value: country, label: countryNames?.of(country.toUpperCase()) || country.toUpperCase(), flag: country === 'br' ? '🇧🇷' : '' })).sort((a,b) => a.label.localeCompare(b.label, 'pt-BR')),
       day: days.map(([value, date], index) => ({value, label: `Dia ${index + 1} · ${mvpShortDate(date)}`})).filter(day => dayKeys.has(day.value)),
       round: roundOptions
     };
@@ -593,16 +602,12 @@
     const entries = allPlayerEntries().filter(entry => {
       const f = state.playerFilters;
       const meta = rosterPlayerByName(entry.name || entry.player, entry.team);
-      const isRookie = Boolean(meta?.rookie ?? entry.rookie);
-      const country = String(entry.country || meta?.country || 'br').toLowerCase();
-      const rookieMatch = !f.rookie.length
-        || (f.rookie.includes('rookie') && isRookie)
-        || (f.rookie.includes('veteran') && !isRookie);
+      const country = String(meta?.country || entry.country || '').toLowerCase();
+      const role = worldMvpRole(meta?.roleShort || meta?.role || entry.roleShort || entry.role);
       return (!f.stage.length || f.stage.includes(String(entry.stage)))
         && (!f.team.length || f.team.some(team => normalize(team) === normalize(entry.team)))
-        && (!f.role.length || f.role.includes(String(entry.roleShort || entry.role || meta?.roleShort || '').toUpperCase()))
+        && (!f.role.length || f.role.includes(role))
         && (!f.country.length || f.country.includes(country))
-        && rookieMatch
         && (!f.day.length || f.day.includes(mvpDayKey(entry)))
         && (!f.round.length || f.round.includes(mvpRoundKey(entry)));
     });
@@ -1683,12 +1688,12 @@
     const items = [
       ['anchor-s2-resumo','Resumo'], ['anchor-s2-filtros','Filtros'], ['anchor-s2-totais-equipe','Totais Equipe'],
       ['anchor-s2-medias-equipe','Médias Equipe'], ['anchor-s2-top3-equipe','Equipes/Queda'], ['anchor-s2-totais-jogador','Totais Jog.'],
-      ['anchor-s2-medias-jogador','Médias Jog.'], ['anchor-s2-participacao','Participação'], ['anchor-s2-novatos','Novatos'],
+      ['anchor-s2-medias-jogador','Médias Jog.'], ['anchor-s2-participacao','Participação'],
       ['anchor-s2-rec-drop-player','Rec. Q Jog.'], ['anchor-s2-rec-day-player','Rec. Dia Jog.'], ['anchor-s2-rec-drop-team','Rec. Q Times'],
       ['anchor-s2-rec-day-team','Rec. Dia Times'], ['anchor-s2-relatorio','Relatório'], ['anchor-s2-evolucao','Evolução'],
       ['anchor-s2-ranking-medias','Médias'], ['anchor-s2-ranking-totais','Totais']
     ];
-    const playerOnly = new Set(['anchor-s2-totais-jogador','anchor-s2-medias-jogador','anchor-s2-participacao','anchor-s2-novatos','anchor-s2-rec-drop-player','anchor-s2-rec-day-player']);
+    const playerOnly = new Set(['anchor-s2-totais-jogador','anchor-s2-medias-jogador','anchor-s2-participacao','anchor-s2-rec-drop-player','anchor-s2-rec-day-player']);
     const visible = items.filter(([id]) => id === 'anchor-s2-filtros' || (hasTeams && (hasPlayers || !playerOnly.has(id))));
     const cut = Math.ceil(visible.length / 2);
     const rows = [visible.slice(0, cut), visible.slice(cut)];
@@ -1840,7 +1845,6 @@
         avgPartAssists: total.assists ? (row.assists / total.assists) * 100 : 0
       };
     });
-    const rookieRows = players.filter(row => Boolean(rosterPlayerByName(row.name, row.team)?.rookie));
     const records = statsRecordRows(events, playerEntries);
 
     const summaryBlock = events.length ? `<section id="anchor-s2-resumo" class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Resumo do recorte</h2><p>Visão rápida do recorte atualmente selecionado.</p></div><span class="ffws-global-badge">${events.length} quedas</span></div>
@@ -1891,13 +1895,6 @@
             <div class="card"><div class="card-top-border"></div><h3>Part. Kills</h3>${s2StatsPlayerCard('pl-partkills', playerShareRows, row => row.avgPartKills, value => `${number(value).toFixed(1)}%`, '%')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Part. Dano</h3>${s2StatsPlayerCard('pl-partdano', playerShareRows, row => row.avgPartDamage, value => `${number(value).toFixed(1)}%`, '%')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Part. Assists</h3>${s2StatsPlayerCard('pl-partast', playerShareRows, row => row.avgPartAssists, value => `${number(value).toFixed(1)}%`, '%')}</div>
-        </div>
-
-        <h4 id="anchor-s2-novatos" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Jogadores Novatos</h4>
-        <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
-            <div class="card"><div class="card-top-border"></div><h3>Abates</h3>${s2StatsPlayerCard('rookie-kills', rookieRows, row => row.kills, value => String(value), 'Kills')}</div>
-            <div class="card"><div class="card-top-border"></div><h3>Dano</h3>${s2StatsPlayerCard('rookie-damage', rookieRows, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>
-            <div class="card"><div class="card-top-border"></div><h3>Assistências</h3>${s2StatsPlayerCard('rookie-assists', rookieRows, row => row.assists, value => String(value), 'Ast')}</div>
         </div>
 
         <h4 id="anchor-s2-rec-drop-player" style="color:var(--accent); margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Queda - Jogadores</h4>
