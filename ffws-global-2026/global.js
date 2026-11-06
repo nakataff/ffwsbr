@@ -42,6 +42,7 @@
     selectionWeekStage: 'segundaFase',
     selectionTab: 'torneio',
     mvpPage: 0,
+    mvpSort: 'kills',
     mvpDetails: false,
     playerFilters: { stage: [], day: [], round: [], team: [], role: [], country: [], rookie: [] },
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
@@ -501,6 +502,12 @@
   }
 
   const MVP_FILTER_LABELS = { stage: 'Etapa', day: 'Dia', round: 'Rodada', team: 'Equipe', role: 'Posição', country: 'País', rookie: 'Novatos' };
+  const MVP_SORT_OPTIONS = {
+    kills: { label: 'Abates', short: 'K', value: row => row.kills },
+    damage: { label: 'Dano', short: 'Dano', value: row => row.damage, format: value => value.toLocaleString('pt-BR') },
+    assists: { label: 'Assistências', short: 'Assist.', value: row => row.assists },
+    killsPerDrop: { label: 'Abates por queda', short: 'K/Q', value: row => row.matches ? row.kills / row.matches : 0, format: value => value.toFixed(2) }
+  };
   const mvpDayKey = entry => `${entry.stage}-${number(entry.day)}`;
   const mvpRoundKey = entry => number(entry.round) ? `${entry.stage}-${number(entry.round)}` : '';
   const mvpShortDate = date => String(date || '').slice(5).split('-').reverse().join('/');
@@ -611,7 +618,8 @@
       row.mvps += number(entry.mvp || entry.mvps);
       row.bestDrop = Math.max(row.bestDrop, number(entry.kills));
     });
-    return [...aggregate.values()].sort((a, b) => b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
+    const { value } = MVP_SORT_OPTIONS[state.mvpSort];
+    return [...aggregate.values()].sort((a, b) => value(b) - value(a) || b.kills - a.kills || b.damage - a.damage || b.assists - a.assists);
   }
 
   function renderMvp() {
@@ -619,6 +627,12 @@
     if (!root) return;
     const options = playerFilterOptions();
     const rows = filteredPlayers();
+    const metric = MVP_SORT_OPTIONS[state.mvpSort];
+    const metricCell = row => {
+      const value = metric.value(row);
+      return metric.format ? metric.format(value) : value;
+    };
+    const sortHeader = key => state.mvpSort === key ? ' aria-sort="descending"' : '';
     const pageSize = 10;
     const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
     state.mvpPage = Math.max(0, Math.min(number(state.mvpPage), pageCount - 1));
@@ -642,13 +656,19 @@
             <div class="ffws-global-mvp-filter-actions"><button type="button" data-mvp-clear>Limpar seleção</button><button type="submit">Aplicar</button></div>
           </form>
         </dialog>
-        <div class="ffws-global-mvp-mobile-tools"><span>Visual compacto: J · E · K · Q</span><button type="button" class="ffws-global-mvp-details-toggle" aria-expanded="${state.mvpDetails}">${state.mvpDetails ? 'Ocultar detalhes' : 'Dados completos'}</button></div>
-        <div class="ffws-global-table-wrap"><table class="ffws-global-table ffws-global-mvp-table"><thead><tr><th class="ffws-global-mvp-rank-col">#</th><th class="team-col ffws-global-mvp-player-col"><span class="ffws-global-desktop">Jogador</span><span class="ffws-global-mobile">J</span></th><th><span class="ffws-global-desktop">Eqp</span><span class="ffws-global-mobile">E</span></th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile">K/Q</th></tr></thead><tbody>
+        <div class="ffws-global-mvp-tools">
+          <label class="ffws-global-mvp-sort"><span>Ordenar por</span><select data-mvp-sort>
+            ${Object.entries(MVP_SORT_OPTIONS).map(([key, option]) => `<option value="${key}"${state.mvpSort === key ? ' selected' : ''}>${option.label}</option>`).join('')}
+          </select></label>
+          <button type="button" class="ffws-global-mvp-details-toggle" aria-expanded="${state.mvpDetails}">${state.mvpDetails ? 'Ocultar detalhes' : 'Dados completos'}</button>
+        </div>
+        <div class="ffws-global-table-wrap"><table class="ffws-global-table ffws-global-mvp-table"><thead><tr><th class="ffws-global-mvp-rank-col">#</th><th class="team-col ffws-global-mvp-player-col"><span class="ffws-global-desktop">Jogador</span><span class="ffws-global-mobile">J</span></th><th><span class="ffws-global-desktop">Eqp</span><span class="ffws-global-mobile">E</span></th><th${sortHeader('kills')}><span class="ffws-global-desktop">K</span><abbr class="ffws-global-mobile" title="${metric.label}">${metric.short}</abbr></th><th class="hide-mobile"${sortHeader('damage')}>Dano</th><th class="hide-mobile"${sortHeader('assists')}>Assist.</th><th>Q</th><th class="hide-mobile">MVP</th><th class="hide-mobile"${sortHeader('killsPerDrop')}>K/Q</th></tr></thead><tbody>
         ${pageRows.length ? pageRows.map((row, index) => {
           const rank = pageStart + index + 1;
-          return `<tr class="ffws-global-mvp-main-row"><td class="ffws-global-rank ffws-global-mvp-rank-col">${rank}º</td><td class="team-col ffws-global-mvp-player-col"><button type="button" class="ffws-global-inline-link" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>
+          return `<tr class="ffws-global-mvp-main-row"><td class="ffws-global-rank ffws-global-mvp-rank-col">${rank}º</td><td class="team-col ffws-global-mvp-player-col"><button type="button" class="ffws-global-inline-link" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}', '${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-global-desktop">${row.kills}</span><span class="ffws-global-mobile ffws-global-mvp-metric">${metricCell(row)}</span></td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.mvps}</td><td class="hide-mobile">${row.matches ? (row.kills / row.matches).toFixed(2) : '0.00'}</td></tr>
           <tr class="ffws-global-mvp-details-row"><td colspan="9"><div class="ffws-global-mvp-details-grid">
             <div><span>Posição</span><strong>${rank}º</strong></div>
+            <div><span>Abates</span><strong>${row.kills}</strong></div>
             <div><span>Dano</span><strong>${row.damage.toLocaleString('pt-BR')}</strong></div>
             <div><span>Assistências</span><strong>${row.assists}</strong></div>
             <div><span>MVP da queda</span><strong>${row.mvps}</strong></div>
@@ -661,6 +681,14 @@
       </div></section></div>`;
 
     bindMvpFilters(root, options);
+    root.querySelector('[data-mvp-sort]').addEventListener('change', event => {
+      const key = event.target.value;
+      if (!Object.hasOwn(MVP_SORT_OPTIONS, key)) return;
+      state.mvpSort = key;
+      state.mvpPage = 0;
+      renderMvp();
+      root.querySelector('[data-mvp-sort]').focus({preventScroll:true});
+    });
     const detailsButton = root.querySelector('.ffws-global-mvp-details-toggle');
     detailsButton.addEventListener('click', () => window.toggleFFWSGlobalMvpDetails(detailsButton));
   }

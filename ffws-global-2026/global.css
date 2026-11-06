@@ -54,11 +54,15 @@
 .ffws-global-mvp-filter-actions button{flex:1}
 .ffws-global-mvp-filter-actions button[type=submit]{background:#00b5e8;border-color:#00b5e8;color:#051221}
 @media(max-width:760px){.ffws-global-mvp-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.ffws-global-mvp-mobile-tools{display:none}
+.ffws-global-mvp-tools{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.ffws-global-mvp-sort{display:grid;gap:4px;font-size:.75rem;font-weight:800;color:#9bcfff}
+.ffws-global-mvp-sort select{font:inherit;color:#e6f2ff;background:#0b1426;border:1px solid #2b496f;border-radius:9px;padding:8px;min-height:44px;color-scheme:dark;cursor:pointer}
+.ffws-global-mvp-details-toggle{display:none}
+.ffws-global-mvp-table th[aria-sort],.ffws-global-mvp-table abbr,.ffws-global-mvp-metric{color:#7edfff}
+.ffws-global-mvp-table abbr{text-decoration:none}
 .ffws-global-mvp-details-row{display:none}
 @media(max-width:760px){
-  .ffws-global-mvp-mobile-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;color:#7f95b4;font-size:.72rem;font-weight:800}
-  .ffws-global-mvp-details-toggle{appearance:none;border:1px solid #2b496f;background:#0b1426;color:#bfe7ff;border-radius:9px;padding:8px 10px;font-size:.76rem;font-weight:900;white-space:nowrap;cursor:pointer}
+  .ffws-global-mvp-details-toggle{display:inline-flex;align-items:center;min-height:44px;appearance:none;border:1px solid #2b496f;background:#0b1426;color:#bfe7ff;border-radius:9px;padding:8px 10px;font-size:.76rem;font-weight:900;white-space:nowrap;cursor:pointer}
   .ffws-global-mvp-panel .ffws-global-table-wrap{overflow-x:hidden}
   .ffws-global-mvp-table{width:100%;min-width:0!important;table-layout:fixed}
   .ffws-global-mvp-table .ffws-global-mvp-rank-col{display:none}
@@ -84,7 +88,6 @@
   .ffws-global-mvp-table th:nth-child(2),.ffws-global-mvp-table td:nth-child(2){padding-left:9px;width:49%}
   .ffws-global-mvp-table th:nth-child(3),.ffws-global-mvp-table td:nth-child(3){width:17%}
   .ffws-global-mvp-table th:nth-child(4),.ffws-global-mvp-table td:nth-child(4),.ffws-global-mvp-table th:nth-child(7),.ffws-global-mvp-table td:nth-child(7){width:17%}
-  .ffws-global-mvp-mobile-tools>span{display:none}
 }
 
 /* ===== 2026-08-10: MVP paginado + seleções em andamento ===== */
@@ -356,13 +359,13 @@ body.ffws-global-drop-modal-open{overflow:hidden}
 
 /* ===== 2026-08-16: Ajuste de respiro no ranking MVP S2 ===== */
 @media(max-width:760px){
-  .ffws-global-mvp-mobile-tools{padding:0 10px 0 12px}
+  .ffws-global-mvp-tools{padding:0 10px 0 12px}
   .ffws-global-mvp-details-toggle{margin-right:2px}
   .ffws-global-mvp-table th:nth-child(2),.ffws-global-mvp-table td:nth-child(2){padding-left:24px}
   .ffws-global-mvp-details-row td{padding:0 14px 12px!important}
 }
 @media(max-width:390px){
-  .ffws-global-mvp-mobile-tools{padding:0 8px 0 10px}
+  .ffws-global-mvp-tools{padding:0 8px 0 10px}
   .ffws-global-mvp-table th:nth-child(2),.ffws-global-mvp-table td:nth-child(2){padding-left:18px}
   .ffws-global-mvp-details-row td{padding:0 12px 12px!important}
 }
