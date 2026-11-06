@@ -14,8 +14,8 @@ async function ui({search='',page='equipes',fail=false,snapshot}={}){
 test('supplied rosters cover all 24 teams and 120 players without guessed staff or statistics',()=>{
  const s=read(base+'equipes-resumo.json');assert.equal(s.teams.length,24);assert.equal(s.teams.flatMap(t=>t.players).length,120);assert(s.teams.every(t=>t.players.length===5));
  assert.deepEqual(s.teams.find(t=>t.id==='lyon').players.map(p=>p.name),['Haax','SoyDella','Gamezking','Joacozd','Joker']);
- assert(s.teams.every(t=>t.fixtures.length===6));assert(s.teams.every(t=>Object.values(t.statsByStage).every(v=>v===null)));assert(s.teams.flatMap(t=>t.players).every(p=>p.type==='player'&&p.statsByStage.geral===null));
- assert.equal(s.teams.find(t=>t.id==='btr').players[2].name,'C1b3nk');assert(Buffer.byteLength(JSON.stringify(s))<50000);
+ assert(s.teams.every(t=>t.fixtures.length===6));assert(s.teams.every(t=>Object.values(t.statsByStage).every(v=>v===null)));assert(s.teams.flatMap(t=>t.players).every(p=>p.type==='player'));
+ assert.equal(s.teams.find(t=>t.id==='btr').players[2].name,'C1b3nk');assert(Buffer.byteLength(JSON.stringify(s))<65000);
 });
 test('snapshot stats isolate name AND team, include real zero, and preserve independent daily phase-two tables',()=>{
  const i=sources(),team=i.teams.teams.find(t=>t.id==='btr');

@@ -1,6 +1,6 @@
 /* Explicit, optional Mundial bridge. Non-participants make no tournament request. */
 (()=>{'use strict';
-const VERSION='20261026-world-players-v1',pending=new Map(),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),n=v=>Number(v)||0;
+const VERSION='20261106-garena-day1-v1',pending=new Map(),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),n=v=>Number(v)||0;
 function isEdition(e){return e.eventId==='ffws-global-2026'||String(e.edition||e.name||'').toLowerCase().replace(/[^a-z0-9]/g,'')==='ffwsglobalfinals2026'}
 function load(route){const id=window.CFF_GLOBAL_2026_PLAYERS?.[route?.id];if(!id||route.profileType==='staff')return Promise.resolve(null);if(!pending.has(route.id))pending.set(route.id,fetch('/ffws-global-2026/player-data/'+id+'.json?v='+VERSION,{cache:'default'}).then(r=>{if(!r.ok)throw Error('Resumo indisponível');return r.json()}).then(data=>{if(data.id!==id||data.generalId!==route.id)throw Error('Identidade inválida');return data}).catch(()=>({id,generalId:route.id,failed:true})));return pending.get(route.id)}
 function merge(p,data){

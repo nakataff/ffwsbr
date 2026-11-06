@@ -117,6 +117,13 @@ ficam em `player-identities.json`. `scripts/build-global-players.cjs` gera o ín
 os perfis normais. Não somar resultados de homônimos. Guia:
 [JOGADORES-MUNDIAL-2026.md](JOGADORES-MUNDIAL-2026.md).
 
+Resultados individuais do Dia 1 (06/11) vieram da planilha da Garena.
+`players.json` guarda somente abates, assistências e dano por jogador e queda,
+ligados por ID e equipe. O campo `drop` identifica a queda dentro do dia (1–12)
+para combinar com a tabela ao vivo; `roundDrop` exibe Q1–Q6 dentro de cada rodada.
+PRT é Pirate Esports; PE é P Esports. Confira os mapas e a soma dos abates por
+equipe/queda contra os placares publicados antes de incorporar novos dados.
+
 Fotos oficiais do Mundial ficam em `ffws-global-2026/photos/160/` (listas e
 elencos) e `photos/480/` (perfis e cards). Use `photo` e `photoLarge`
 em `players.json`, com o ID da pessoa **e** a equipe desta edição.
