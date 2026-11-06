@@ -147,3 +147,24 @@
  .cff-global-card-stats b{font-size:11px}
 }
 @media(max-width:360px){.cff-global-selections-page .cff-global-selection-grid{grid-template-columns:1fr!important}}
+
+/* Status acumulativo das seleções por fase (FFWS Global 2026) */
+.cff-global-selections-page .season-selection-section-head{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.cff-global-phase-status{
+ display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;
+ padding:7px 11px;border:1px solid rgba(255,193,73,.46);border-radius:999px;
+ background:rgba(255,174,0,.10);color:#ffcf75;letter-spacing:.065em;
+ font-size:11px;line-height:1.2;font-weight:950;text-transform:uppercase
+}
+.cff-global-phase-status:before{
+ content:"";display:block;width:7px;height:7px;flex:none;border-radius:50%;
+ background:currentColor;box-shadow:0 0 9px currentColor
+}
+.cff-global-phase-status.is-complete{
+ border-color:rgba(40,214,132,.42);background:rgba(40,214,132,.09);color:#66eeb2
+}
+@media(max-width:640px){
+ .cff-global-selections-page .cff-global-phase-status{font-size:10px;padding:6px 9px}
+}
