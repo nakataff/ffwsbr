@@ -17,10 +17,10 @@ test('home waits for its route and uses a compact snapshot plus one Firebase sum
   d.getElementById('home').classList.add('active');
   await wait(()=>d.querySelector('#home-tbody-players tr a'));
   assert.deepEqual(calls.sort(),['ffws-global-2026/selecoes-resumo.json','ffwsLive/global-2026/home.json']);
-  assert.match(d.getElementById('home-tbody-teams').textContent,/LOUD/);
+  assert.match(d.getElementById('home-tbody-teams').querySelector('tr').textContent,/FLUXO W7M.*233/);
   assert.match(d.getElementById('home-tbody-players').textContent,/BuTziN/);
   assert.equal(d.querySelectorAll('.cff-gsel-home-row').length,5);
-  assert.match(d.getElementById('global-selection-home-widget').textContent,/COACH.*JOKER/i);
+  assert.match(d.getElementById('global-selection-home-widget').textContent,/COACH.*Adi/i);
   assert(d.querySelector('.cff-gsel-home-row img[src*="/160/"]'));
   w.cffHomeRenderFinalStats();w.cffHomeRenderFinalStats();assert.equal(calls.length,2);
  }finally{w.close();}

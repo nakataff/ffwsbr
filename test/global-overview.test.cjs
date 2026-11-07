@@ -19,7 +19,7 @@ test('compact summaries derive from existing sources and retain all 24 teams and
   const summary=output['inicio-resumo.json'];assert.equal(summary.teams.length,24);assert.equal(summary.rounds.length,18);
   for(const team of summary.teams)assert(fs.existsSync(team.logo),team.logo);
   assert(summary.format.classificatoria.description.includes('36 quedas'));assert(summary.format.final.description.includes('110'));
-  assert(Buffer.byteLength(JSON.stringify(summary))<14000);
+  assert(Buffer.byteLength(JSON.stringify(summary))<18000);
 });
 test('offline results keep independent phase-two days and official Champion Rush final order',()=>{
   const input=sources();
@@ -41,7 +41,7 @@ test('format comes first, before selections, fixtures and three tabs; the overvi
     assert.equal(u.all('.global-start-phase').length,4);assert.equal(u.all('.global-start-phase[open]').length,0);
     assert(u.$('.global-start-phase summary').textContent.includes('36 quedas'));
     assert.equal(u.all('.global-start-matchup .global-start-fixture-team').length,12);assert(u.$('#global-start-next-title').textContent.includes('Grupo A × Grupo B'));
-    assert(u.$('#global-start-pane').textContent.includes('Aguardando resultados'));assert.equal(u.all('#global-start-pane table').length,0);
+    assert(u.$('#global-start-pane').textContent.includes('FLUXO W7M'));assert.equal(u.all('#global-start-pane table').length,1);
     await u.click('[data-global-start-stage="segundaFase"]');assert.equal(u.$('[data-global-start-day]').options.length,4);assert(!u.$('[data-global-start-day]').textContent.includes('Geral'));assert.equal(u.calls.length,1);
   }finally{u.close();}
 });

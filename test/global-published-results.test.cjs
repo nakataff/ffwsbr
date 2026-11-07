@@ -16,7 +16,9 @@ test('Classificatória and Stats share published scores, preserve session filter
   w.CFF_CONFIG={firebase:{databaseURL:'https://fixture.invalid/'}};
   w.requestAnimationFrame=()=>0;
   w.fetch=async url=>{const path=String(url);if(path.includes('fixture.invalid')){calls++;assert.match(path,/\/ffwsLive\/global-2026\/rounds\.json$/);return {ok:!fail,json:async()=>published};}
-   return {ok:true,json:async()=>json(path.split('/').at(-1).split('.')[0])};
+   const name=path.split('/').at(-1).split('.')[0],data=json(name);
+   if(name==='stages')data.classificatoria.rounds=[];
+   return {ok:true,json:async()=>data};
   };
   const source=fs.readFileSync('ffws-global-2026/global.js','utf8').replace("  if (document.readyState === 'loading')","  window.__resultTest={state,loadData,loadLiveResults,stageEvents,renderPage,aggregateStatsTeams,statsStageEvents};\n  if (document.readyState === 'loading')");
   w.eval(source);
@@ -67,6 +69,20 @@ test('Classificatória and Stats share published scores, preserve session filter
    await api.loadLiveResults(true);
    assert.equal(api.stageEvents('classificatoria').length,2);
    assert.equal(api.stageEvents('classificatoria')[0].results[0].points,20);
+  }
+  if(!process.env.CFF_WORLD_LIVE_FIXTURE){
+   // The same live drops must not replace or duplicate the official workbook,
+   // and a newer live-only round still extends the static archive.
+   api.state.stages=json('stages');
+   assert.equal(api.stageEvents('classificatoria').length,24);
+   const archived=api.stageEvents('classificatoria')[0];
+   assert.equal(archived.results.find(row=>row.team==='LOUD').points,22);
+   published={...published,'classificatoria-5':makeRound('classificatoria-5',7)};
+   await api.loadLiveResults(true);
+   const merged=api.stageEvents('classificatoria');
+   assert.equal(merged.length,25);
+   assert.equal(merged.at(-1).round,5);
+   assert.equal(merged[0],archived);
   }
   fail=true;const count=api.stageEvents('classificatoria').length;
   await api.loadLiveResults(true);assert.equal(api.stageEvents('classificatoria').length,count);

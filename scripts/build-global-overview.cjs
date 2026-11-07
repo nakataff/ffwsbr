@@ -28,8 +28,9 @@ function aggregate(events) {
     row.points += num(r.points ?? r.pontos ?? (num(r.placementPoints ?? r.pp) + num(r.kills ?? r.abates)));
     row.booyahs += num(r.booyahs ?? r.booyah ?? (num(r.position ?? r.posicao) === 1 ? 1 : 0));
     row.matches += num(r.matches) || 1;
+    row.lastPlace = num(r.position ?? r.posicao) || 99;
   }
-  return [...teams.values()].sort((a,b) => b.points-a.points || b.booyahs-a.booyahs || b.kills-a.kills || a.team.localeCompare(b.team,'pt-BR')).map((r,i) => ({...r, position:i+1}));
+  return [...teams.values()].sort((a,b) => b.points-a.points || b.booyahs-a.booyahs || b.kills-a.kills || a.lastPlace-b.lastPlace || a.team.localeCompare(b.team,'pt-BR')).map((r,i) => ({...r, position:i+1}));
 }
 function compactRows(rows) {
   return rows.filter(r => !r.placeholder && num(r.matches) > 0).map((r,i) => ({team:r.team, position:num(r.position)||i+1, points:num(r.points), kills:num(r.kills), booyahs:num(r.booyahs), matches:num(r.matches)}));
@@ -69,7 +70,8 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
     const f=stages.format[key];
     return [key,Object.fromEntries(['label','dateLabel','description','timeLabel','rules','pools','matchdays'].filter(k=>f[k]!==undefined).map(k=>[k,f[k]]))];
   }));
-  const tables = {};
+  const tables = {}, teamDays=[];
+  const idByName=new Map(metadata.map(t=>[norm(t.name),t.id]));
   for (const key of keys) {
     const phase = stages[key] || {}, events = eventsFor(stages,key);
     const schedule = dates.rounds.filter(r=>r.stage===key);
@@ -77,7 +79,10 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
     const byDay = Object.fromEntries(days.map(day => {
       const entries = events.filter(e=>num(e.day || e.round)===day);
       const fallback = (phase.rows||[]).filter(r=>num(r.day || phase.day)===day);
-      return [day,compactRows(entries.some(e=>results(e).length) ? aggregate(entries) : fallback)];
+      const rows=entries.some(e=>results(e).length)?aggregate(entries):fallback;
+      const date=schedule.find(r=>num(r.day)===day)?.date;
+      if(date&&rows.length)teamDays.push({stage:key,date,teams:rows.map(r=>[idByName.get(norm(r.team)),r.points,r.kills,r.booyahs,r.matches,r.lastPlace||99]).filter(r=>r[0])});
+      return [day,compactRows(rows)];
     }));
     // Phase 2 resets every day; never sum its four independent standings.
     const rows = key==='segundaFase' ? [] : compactRows(phase.rows?.length ? phase.rows : aggregate(events));
@@ -128,7 +133,7 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
     'inicio-resumo.json':{tournament:stages.tournament,updatedAt,finished:!!stages.finished,format,teams:metadata,tables,rounds:dates.rounds.map(r=>({key:r.key,stage:r.stage,day:r.day,label:r.label,date:r.date,time24:r.time24,groups:r.groups,matches:r.matches}))},
     'inicio-mvp-top10.json':{updatedAt,top10},
     'inicio-elencos.json':{updatedAt,teams:squads},
-    'selecoes-resumo.json':selectionSummary(roster,entries,metadata,dates.rounds,standingsDay1,stages),
+    'selecoes-resumo.json':{...selectionSummary(roster,entries,metadata,dates.rounds,standingsDay1,stages),teamDays},
     ...(includeMvp?{'mvp-resumo.json':buildMvp({edition:'global',stages:keys,teams:metadata,roster,entries,periods:dates.rounds.map(({stage,day,round,session,groups,date})=>({stage,day,round,session,groups,date}))})}:{})
   };
 }

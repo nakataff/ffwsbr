@@ -3,8 +3,8 @@
 
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
-    stagesUrl: 'ffws-global-2026/stages.json?v=20261016-global-format-v1',
-    playersUrl: 'ffws-global-2026/players.json',
+    stagesUrl: 'ffws-global-2026/stages.json?v=20261107-mundial-dia2-v1',
+    playersUrl: 'ffws-global-2026/players.json?v=20261107-mundial-dia2-v1',
     datesUrl: 'ffws-global-2026/dates.json?v=20261016-global-format-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
@@ -305,9 +305,10 @@
   }
 
   function stageEvents(stageKey) {
-    if (state.liveEvents[stageKey]?.length) return state.liveEvents[stageKey];
+    const live=state.liveEvents[stageKey]||[];
     const payload = state.stages?.[stageKey] || {};
     if (stageKey === 'final') {
+      if(live.length)return live;
       const direct = Array.isArray(payload.days) ? payload.days : [];
       return direct.flatMap((day, dayIndex) => {
         if (!day || typeof day !== 'object') return [];
@@ -316,7 +317,13 @@
         return Array.isArray(day?.results) ? [{ ...day, day: number(day.day) || dayIndex + 1, number: number(day.number) || dayIndex + 1 }] : [];
       });
     }
-    return Array.isArray(payload.rounds) ? payload.rounds.filter(event => event && typeof event === 'object') : [];
+    const archived=Array.isArray(payload.rounds)?payload.rounds.filter(event=>event&&typeof event==='object'):[];
+    if(!archived.length)return live;
+    if(!live.length)return archived;
+    // Confirmed Garena drops replace their live copies; only new drops are appended.
+    const key=e=>[number(e.day),number(e.round),number(e.drop??e.number)].join(':');
+    const official=new Set(archived.map(key));
+    return [...archived,...live.filter(e=>!official.has(key(e)))].sort((a,b)=>number(a.day)-number(b.day)||number(a.round)-number(b.round)||number(a.drop)-number(b.drop));
   }
 
   function eventResults(event) {

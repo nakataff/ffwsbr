@@ -1,7 +1,7 @@
 /* Edition profiles: static summaries only; detailed records and card editor load on demand. */
 (()=>{'use strict';
 const root=document.getElementById('global-players-root');if(!root)return;
-const BASE='/ffws-global-2026/',V='20261106-world-role-flags-v1',STAGES=[['geral','Geral'],['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']],cache=new Map();
+const BASE='/ffws-global-2026/',V='20261107-mundial-dia2-v1',STAGES=[['geral','Geral'],['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']],cache=new Map();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),valid=id=>/^[a-z0-9-]{1,100}$/.test(id||''),fmt=v=>v==null?'—':Number(v).toLocaleString('pt-BR'),avg=v=>v==null?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const file=p=>'/'+String(p||'').replace(/^\//,''),safeImage=p=>p&&!/[:\\]|\.\./.test(p)?file(p):'',href=id=>BASE+'jogador?id='+encodeURIComponent(id),label=k=>STAGES.find(s=>s[0]===k)?.[1]||k;
 const params=new URLSearchParams(location.search),state={stage:STAGES.some(s=>s[0]===params.get('etapa'))?params.get('etapa'):'geral',tab:'summary',q:params.get('q')||'',team:params.get('time')||'',group:params.get('grupo')||'',country:'',role:'',sort:'name',visible:24};let player,index,seq=0,indexPromise,comparePlayer,opener;

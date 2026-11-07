@@ -37,9 +37,9 @@ const number=v=>Number(v)||0,fmt=v=>Math.round(number(v)).toLocaleString('pt-BR'
 const shortDate=date=>String(date||'').slice(8,10)+'/'+String(date||'').slice(5,7);
 const url=v=>/^https:\/\//i.test(String(v||''))?String(v):'/'+String(v||'').replace(/^\/+/,'');
 const state={page:{tab:'semanal',mode:'day',day:'',week:''},home:{mode:'day',day:'',week:''},start:{mode:'day',day:'',week:''}};
-let DATA=null,playersPromise=null,officialRecords=null,staticDay1=null,officialPromise=null,officialAt=0;
+let DATA=null,playersPromise=null,officialRecords=null,staticDays=[],officialPromise=null,officialAt=0;
 let phaseCompletion={},publishedDays=[],homeSummary=null,homeSummaryAt=0,homeSummaryPromise=null;
-const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261106-world-compact-v1';
+const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261107-mundial-dia2-v1';
 function setData(players,teams){
  if(!Array.isArray(players?.entries)||!Array.isArray(players?.players))return false;
  const list=Array.isArray(teams?.teams)?teams.teams:Array.isArray(teams)?teams:[];
@@ -55,7 +55,12 @@ async function loadPlayers(){
    if(data.version!==1||!Array.isArray(data.days))throw Error('Resumo de jogadores inválido');
    const entries=data.days.flatMap(({stage,date,players})=>players.map(([playerId,kills,damage,assists,matches])=>({stage,date,playerId,kills,damage,assists,matches})));
    if(!setData({players:data.players,entries},data.teams))throw Error('Resumo de jogadores inválido');
-   staticDay1=data.fallback;
+   staticDays=Array.isArray(data.teamDays)?data.teamDays:[];
+   if(data.fallback?.teams?.length&&!staticDays.some(d=>d.date===data.fallback.date)){
+    const d=data.fallback;
+    staticDays=[...staticDays,{date:d.date,stage:d.stage,teams:d.teams.map(r=>[r.id,r.points,r.kills,r.booyahs,r.matches,r.lastPlace])}];
+   }
+   staticDays.sort((a,b)=>a.date.localeCompare(b.date));
    phaseCompletion=data.finished||{};
    return DATA;
   }).finally(()=>{playersPromise=null});
@@ -104,11 +109,7 @@ function collectStandings(filter,compact=false){
    Number.isFinite(Number(drop.points[id]))&&Number.isFinite(Number(drop.kills[id]))&&
    Number.isInteger(Number(drop.placements[id]))&&Number(drop.placements[id])>=1&&Number(drop.placements[id])<=12);
  const records=compact?[]:Object.entries(officialRecords||{});
- const day1Good=records.filter(([key])=>roundStage(key)==='classificatoria'&&roundDate(key)==='2026-11-06')
-  .reduce((n,[,rec])=>n+(Array.isArray(rec?.participants)&&Array.isArray(rec?.drops)?
-   rec.drops.filter(drop=>usableDrop(rec.participants,drop)).length:0),0);
- const publishedDay1=compact&&publishedDays.some(d=>d.date==='2026-11-06'&&d.teams?.length===24&&d.teams.every(row=>row[4]>=6));
- const useStaticDay1=Boolean(staticDay1?.teams?.length&&day1Good<12&&!publishedDay1);
+ const confirmed=new Set(staticDays.map(day=>day.stage+'|'+day.date));
  const add=(id,points,kills,booyahs,matches,lastPlace)=>{
    const team=teams.get(id);if(!team||!matches)return;
    let row=totals.get(id);
@@ -116,19 +117,20 @@ function collectStandings(filter,compact=false){
    row.points+=Number(points)||0;row.kills+=Number(kills)||0;row.booyahs+=Number(booyahs)||0;
    row.matches+=Number(matches)||0;row.lastPlace=Number(lastPlace)||99;
  };
- if(useStaticDay1&&(!filter||filter('classificatoria','2026-11-06'))){
-   for(const row of staticDay1.teams)add(row.id,row.points,row.kills,row.booyahs,row.matches,row.lastPlace);
+ for(const day of staticDays){
+   if(filter&&!filter(day.stage,day.date))continue;
+   for(const row of day.teams)add(...row);
  }
  if(compact){
    for(const day of publishedDays){
-    if((useStaticDay1&&day.date===staticDay1.date)||(filter&&!filter(day.stage,day.date)))continue;
-    for(const [id,points,kills,booyahs,matches,lastPlace] of day.teams||[])add(id,points,kills,booyahs,matches,lastPlace);
+    if(confirmed.has(day.stage+'|'+day.date)||(filter&&!filter(day.stage,day.date)))continue;
+    for(const row of day.teams||[])add(...row);
    }
  }
  for(const [key,rec] of records){
   const stage=roundStage(key),date=roundDate(key,rec);
   if(!stage||!Array.isArray(rec?.participants)||!Array.isArray(rec?.drops))continue;
-  if(useStaticDay1&&stage==='classificatoria'&&date==='2026-11-06')continue;
+  if(confirmed.has(stage+'|'+date))continue;
   if(filter&&!filter(stage,date))continue;
   const ids=rec.participants.filter(id=>teams.has(id));
   for(const drop of rec.drops){
@@ -368,14 +370,14 @@ async function renderHome(){
 }
 async function renderStart(){
  const host=document.getElementById('global-start-selection');if(!host)return;
- try{await loadPlayers();renderSmall(host,'start');if(DATA.entries.some(e=>e.date>staticDay1?.date)){await getPublishedSummary().catch(()=>null);renderSmall(host,'start')}}catch(_){host.textContent='Seleção indisponível no momento.'}
+ try{await loadPlayers();renderSmall(host,'start');if(DATA.entries.some(e=>e.date>(staticDays.at(-1)?.date||''))){await getPublishedSummary().catch(()=>null);renderSmall(host,'start')}}catch(_){host.textContent='Seleção indisponível no momento.'}
 }
 async function getStandings(){
  await loadPlayers();
- const latest=publishedDays.at(-1);
- const stage=latest?.stage||staticDay1?.stage||'classificatoria',date=latest?.date||staticDay1?.date||'';
+ const live=publishedDays.at(-1),archived=staticDays.at(-1),latest=live?.date>archived?.date||!archived?live:archived;
+ const stage=latest?.stage||'classificatoria',date=latest?.date||'';
  const standings=collectStandings((s,d)=>s===stage&&(stage==='classificatoria'||d===date),true);
- return {teams:standings,stage,date,partial:latest?!!homeSummary?.partial:false};
+ return {teams:standings,stage,date,partial:latest===live&&!!homeSummary?.partial};
 }
 async function getHomeRankings(){
  await loadPlayers();const all=playerRankings(DATA.entries);const rank=metric=>[...all].sort((a,b)=>b[metric]-a[metric]||b.kills-a.kills).slice(0,6).map(p=>({

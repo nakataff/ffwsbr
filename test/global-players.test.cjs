@@ -25,9 +25,9 @@ test('official portraits use thumbnails in the directory and larger images in th
  }finally{dir.close();profile.close()}
 });
 
-test('Garena day 1 shows published individual totals and the original drop number within round 2',async()=>{
+test('Garena days 1 and 2 show published individual totals and the original drop number within round 2',async()=>{
  const u=await ui('jogador','?id=fx-butzin');
- try{const profile=getProfile('fx-butzin');assert.deepEqual(profile.stats.geral,{matches:6,kills:27,damage:11891,assists:22,average:4.5});
+ try{const profile=getProfile('fx-butzin');assert.deepEqual(profile.stats.geral,{matches:12,kills:55,damage:22658,assists:42,average:55/12});
  await u.click('[data-tab=history]');assert.match(u.$('#gp-pane').textContent,/Rodada 2 · Queda 1/);assert(!u.$('#gp-pane').textContent.includes('Queda 7'));}
  finally{u.close()}
 });

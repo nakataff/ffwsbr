@@ -117,12 +117,17 @@ ficam em `player-identities.json`. `scripts/build-global-players.cjs` gera o ín
 os perfis normais. Não somar resultados de homônimos. Guia:
 [JOGADORES-MUNDIAL-2026.md](JOGADORES-MUNDIAL-2026.md).
 
-Resultados individuais do Dia 1 (06/11) vieram da planilha da Garena.
+Resultados oficiais dos dias 1 e 2 (06 e 07/11) vieram da planilha da Garena.
 `players.json` guarda somente abates, assistências e dano por jogador e queda,
 ligados por ID e equipe. O campo `drop` identifica a queda dentro do dia (1–12)
 para combinar com a tabela ao vivo; `roundDrop` exibe Q1–Q6 dentro de cada rodada.
 PRT é Pirate Esports; PE é P Esports. Confira os mapas e a soma dos abates por
 equipe/queda contra os placares publicados antes de incorporar novos dados.
+Para atualizar: rode `python scripts/import-global-garena.py /caminho/planilha.xlsx`
+(requer openpyxl). A prévia valida as abas `Day N - Week N`, os confrontos,
+12 equipes e 4 jogadores por equipe por queda, mapas e abates. Repita com
+`--write` e rode `node scripts/prepare-competition-publication.cjs global --write`
+para gerar todos os resumos. O XLSX de origem não vai para o site.
 
 Para MVP e Seleções, as posições da planilha `RUSHER`, `RIFLER` e `SUPPORT`
 contam como Rush, `BOMBER` como Granadeiro e `SNIPER` como Suporte. Joker
@@ -188,7 +193,7 @@ primeira seção depois do cabeçalho.
 | `ffws-global-2026/inicio-resumo.json` | Formato, 24 equipes com logos/grupos, calendário e tabelas por fase/dia. Cerca de 10,4 KB antes dos resultados; único JSON inicial do módulo |
 | `ffws-global-2026/inicio-mvp-top10.json` | Top 10 Geral, Fase 1, Fase 2, Repescagem e Final. Buscado só na aba MVP |
 | `ffws-global-2026/inicio-elencos.json` | Jogadores/comissão cadastrados nesta edição, por ID de equipe. Buscado só na aba Equipes; nunca inferir elenco do Mundial a partir de outro torneio |
-| `ffws-global-2026/selecoes-resumo.json` | Totais por jogador e dia, elencos e pontuação verificada de 06/11; compartilhado pela home, Início e Seleções |
+| `ffws-global-2026/selecoes-resumo.json` | Totais por jogador e dia, elencos e pontuação verificada por dia; compartilhado pela home, Início e Seleções |
 | `scripts/build-global-overview.cjs` | Gera os resumos offline a partir de `stages.json`, `dates.json`, `teams.json`, `groups.json`, `players.json` e `standings-day1.json` |
 
 Depois de cadastrar resultados ou elencos, execute `node scripts/build-global-overview.cjs`
@@ -748,7 +753,7 @@ No Worker Instagram, `global-prediction-service.js` reutiliza o ledger `awards` 
 - `admin-camp-ao-vivo/global-series.js`: modelo opcional exclusivamente no editor administrativo. Preserva um backup antes de trocar torneio/rodada, arquiva quedas por chave oficial e calcula os 12 participantes. Não migra nem substitui um torneio existente automaticamente. O editor público usa apenas `camp-ao-vivo/global-official.js`, que lê o resumo e uma rodada oficial sob demanda, sem nenhuma API de publicação; acompanhamento opcional a cada dois minutos com a página visível.
 - Publicação administrativa explícita em Firebase `ffwsLive/global-2026`: `rounds` guarda os resultados confirmados; `revisions` protege contra sobrescrever uma edição concorrente; `home` guarda somente Top 6 e seleções diárias. A transação recalcula classificados e resumo uma vez por publicação. As regras existentes de `ffwsLive` permitem escrita apenas ao administrador.
 - `js/home-global-results.js`: a home lê **somente** `/ffwsLive/global-2026/home.json`, deduplica chamadas em andamento e guarda cache de 90 segundos por aba. Atualiza periodicamente apenas com home visível. O resumo público inclui `dailyTeams` (totais compactos por equipe/dia) nas próximas publicações; a home usa isso e o resumo estático, sem ler rodadas completas.
-- `ffws-global-2026/global.js`: Classificatória e Estatísticas leem `/ffwsLive/global-2026/rounds.json` sob demanda (90 segundos em memória, sem consulta periódica). O calendário transforma a chave em rodada/dia, mantendo as duas sessões separadas no filtro de rodada e suas quedas distintas no dia. Os mesmos placares alimentam os totais, médias, recordes e relatórios de equipes. Dados individuais por queda vêm do arquivo de jogadores; totais individuais por rodada não são convertidos em quedas fictícias.
+- `ffws-global-2026/global.js`: Classificatória e Estatísticas leem `/ffwsLive/global-2026/rounds.json` sob demanda (90 segundos em memória, sem consulta periódica). Resultados oficiais em `stages.json` substituem a mesma queda vinda do Camp; as novas quedas continuam aparecendo ao vivo. O calendário transforma a chave em rodada/dia, mantendo as duas sessões separadas no filtro de rodada e suas quedas distintas no dia. Os mesmos placares alimentam os totais, médias, recordes e relatórios de equipes. Dados individuais por queda vêm do arquivo de jogadores; totais individuais por rodada não são convertidos em quedas fictícias.
 - Fase 1: classificação geral; Fase 2: somente o dia mais recente, com pontuação zerada; repescagem/final: a própria etapa. Seleção diária: 2 rush/3º homem, 1 granadeiro, 1 suporte, sem completar funções ausentes com dados inventados. Dados individuais vazios ficam indisponíveis; rankings mostram cobertura parcial quando necessário.
 - O Wiki de equipes contém posição e abates por equipe, não dano/assistências individuais. Estes são lançados no quadro de jogadores da rodada. A importação tem prévia, validação e confirmação separadas e nunca publica automaticamente.
 
