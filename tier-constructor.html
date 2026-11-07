@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261104-chat-dock-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261105-fullscreen-desktop-v2"></script>
+  <script defer src="js/tier-constructor.js?v=20261106-row-limits-mobile-settings-v1"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261104-chat-dock-v1">
 <link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1">
-<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261105-fullscreen-desktop-v2"></head>
+<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261106-row-limits-mobile-settings-v1"></head>
 <body class="tier-constructor-page" data-cff-chat="off">
 
 <header class="cff-public-topbar">
@@ -48,7 +48,6 @@
             <button type="button" data-value="false">Desativado</button>
           </div>
         </div>
-        <button id="settingsBtn" class="toolbar-btn" type="button" title="Abrir ou fechar configurações" aria-expanded="false" aria-controls="settingsDialog">⚙ <span>Configurações</span></button>
         <details class="project-menu" id="projectMenu">
           <summary>Configurações de projeto ▾</summary>
           <div class="project-menu-panel">
@@ -132,6 +131,7 @@
         <div class="tier-board-quick-bar">
           <span>MINHA TIER LIST</span>
           <button type="button" id="previewTierBtn">Prévia e formatos</button>
+          <button id="settingsBtn" class="tier-board-settings-btn" type="button" title="Configurações da tier" aria-label="Abrir configurações" aria-expanded="false" aria-controls="settingsDialog">⚙</button>
           <button type="button" id="tierFocusEnterBtn" aria-label="Abrir apenas as tiers e equipes em tela cheia" aria-pressed="false">⛶ Tela cheia</button>
         </div>
         <button type="button" id="tierFocusPreviewBtn">Prévia e formatos</button>
@@ -233,10 +233,10 @@
     <div id="browserProjectsList" class="browser-projects-list"></div>
   </dialog>
 
-  <dialog id="settingsDialog" class="settings-drawer">
+  <dialog id="settingsDialog" class="settings-drawer" aria-labelledby="tierSettingsTitle">
     <div class="modal-header">
-      <h2>Configurações</h2>
-      <button id="closeSettingsBtn" class="icon">✕</button>
+      <h2 id="tierSettingsTitle">Configurações</h2>
+      <button id="closeSettingsBtn" class="icon" type="button" aria-label="Fechar configurações" title="Fechar configurações">✕</button>
     </div>
     <div class="modal-body">
       <div class="settings-grid">
