@@ -39,7 +39,8 @@ for(const [key,base] of Object.entries(editions)){
    await w.CFFMvpRanking.boot(root,key);await w.CFFMvpRanking.boot(root,key);
    const sort=key=>root.querySelector(`[data-mvp-column="${key}"]`).click();
    const first=()=>root.querySelector('tbody tr');
-   const n=(row,column)=>Number(row.cells[column].textContent.replace(/\./g,''));
+   const columns=row=>[...row.cells].filter(cell=>!cell.classList.contains('cff-mvp-role-col'));
+   const n=(row,column)=>Number(columns(row)[column].textContent.replace(/\./g,''));
    const pick=(kind,...values)=>{
     root.querySelector(`[data-mvp-filter="${kind}"]`).click();
     const dialog=root.querySelector('dialog');assert(dialog.open);
@@ -53,19 +54,24 @@ for(const [key,base] of Object.entries(editions)){
     const roleHeader=root.querySelector('th.cff-mvp-role-col');
     assert.equal(roleHeader.textContent,'Posição');
     assert(roleHeader.classList.contains('hide-mobile'));
+    assert(roleHeader.previousElementSibling.classList.contains('ffws-global-mvp-player-col'));
+    assert.match(roleHeader.nextElementSibling.textContent,/Equipe/);
     const rowRole=first().querySelector('.cff-mvp-role-col.hide-mobile');
-    assert.equal(rowRole.textContent,'Rush');
+    assert.equal(rowRole.textContent,'RUSH');
+    assert(rowRole.previousElementSibling.classList.contains('ffws-global-mvp-player-col'));
     assert(!root.querySelector('.ffws-global-mvp-panel').classList.contains('show-details'));
     root.querySelector('[data-mvp-details]').click();
     assert(root.querySelector('.ffws-global-mvp-panel').classList.contains('show-details'));
     const details=first().nextElementSibling;
     assert.equal(details.cells[0].colSpan,first().cells.length);
     assert.equal(details.querySelector('.cff-mvp-role-detail span').textContent,'Posição');
-    assert.equal(details.querySelector('.cff-mvp-role-detail strong').textContent,'Rush');
+    assert.equal(details.querySelector('.cff-mvp-role-detail strong').textContent,'RUSH');
     assert.match(details.textContent,/Colocação1º/);
     pick('role','SUP');
-    assert.equal(first().querySelector('.cff-mvp-role-col').textContent,'Suporte / Sniper');
-    assert.equal(first().nextElementSibling.querySelector('.cff-mvp-role-detail strong').textContent,'Suporte / Sniper');
+    assert.equal(first().querySelector('.cff-mvp-role-col').textContent,'SUP');
+    assert.equal(first().nextElementSibling.querySelector('.cff-mvp-role-detail strong').textContent,'SUP');
+    pick('role','GRAN');
+    assert.equal(first().querySelector('.cff-mvp-role-col').textContent,'GRAN');
     pick('role');
     root.querySelector('[data-mvp-details]').click();
     assert(!root.querySelector('.ffws-global-mvp-panel').classList.contains('show-details'));
@@ -78,7 +84,7 @@ for(const [key,base] of Object.entries(editions)){
    sort('damage');assert(n(first(),4)<high);
    assert.equal(root.querySelector('[aria-sort="ascending"] [data-mvp-column]').dataset.mvpColumn,'damage');
    const team=key==='s1'?0:snapshot.players[snapshot.rows[0][3]][1];
-   pick('team',String(team));assert.equal(first().cells[2].querySelector('img').alt,snapshot.teams[team][1]);
+   pick('team',String(team));assert.equal(columns(first())[2].querySelector('img').alt,snapshot.teams[team][1]);
    if(key==='global'){
     pick('round','0:2');assert(root.querySelector('[data-mvp-filter="round"]').textContent.includes('C × D'));
     assert(!root.querySelector('[data-mvp-filter="rookie"]'));

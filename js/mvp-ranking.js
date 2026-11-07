@@ -51,7 +51,7 @@
       })
     };
     const filters=Object.fromEntries(config.filters.map(name=>[name,new Set(name==='stage'?config.initial:[])]));
-    return {config,data,roles,options,filters,sort:'kills',direction:-1,page:0,details:false};
+    return {config,data,options,filters,sort:'kills',direction:-1,page:0,details:false};
   }
   function rowsOf(s){
     const totals=new Map(),{data,filters}=s;
@@ -86,8 +86,8 @@
     const tableRows=rows.slice(start,end).map((r,i)=>{
       const [team,abbr,logo]=s.data.teams[r.team],rank=start+i+1,average=(r.kills/r.matches).toFixed(2);
       const playerUrl=world?'/ffws-global-2026/jogador?id='+encodeURIComponent(r.profile):'/jogador.html?'+new URLSearchParams({jogador:r.name,time:team});
-      const position=esc(s.roles[r.role]||'—');
-      return `<tr class="${p}-mvp-main-row"><td class="${p}-rank ${p}-mvp-rank-col">${rank}º</td><td class="team-col ${p}-mvp-player-col"><a class="${p}-inline-link" href="${esc(playerUrl)}">${esc(r.name)}</a></td><td><span class="${p}-team-cell" title="${esc(team)}"><img src="${esc(asset(logo))}" data-team-logo="${esc(team)}" data-team-date="${c.date}" alt="${esc(abbr)}" loading="lazy" width="28" height="28"><span class="${p}-team-name">${esc(abbr)}</span></span></td><td>${r.kills}</td><td>${format.format(r.damage)}</td><td>${r.assists}</td><td>${r.matches}</td><td class="hide-mobile">${r.mvps}</td><td class="hide-mobile">${average}</td>${world?`<td class="hide-mobile cff-mvp-role-col">${position}</td>`:''}</tr>
+      const position=esc(r.role||'—');
+      return `<tr class="${p}-mvp-main-row"><td class="${p}-rank ${p}-mvp-rank-col">${rank}º</td><td class="team-col ${p}-mvp-player-col"><a class="${p}-inline-link" href="${esc(playerUrl)}">${esc(r.name)}</a></td>${world?`<td class="hide-mobile cff-mvp-role-col">${position}</td>`:''}<td><span class="${p}-team-cell" title="${esc(team)}"><img src="${esc(asset(logo))}" data-team-logo="${esc(team)}" data-team-date="${c.date}" alt="${esc(abbr)}" loading="lazy" width="28" height="28"><span class="${p}-team-name">${esc(abbr)}</span></span></td><td>${r.kills}</td><td>${format.format(r.damage)}</td><td>${r.assists}</td><td>${r.matches}</td><td class="hide-mobile">${r.mvps}</td><td class="hide-mobile">${average}</td></tr>
       <tr class="${p}-mvp-details-row"><td colspan="${columns}"><div class="${p}-mvp-details-grid">${[[world?'Colocação':'Posição',rank+'º'],['MVP da queda',r.mvps],['Abates por queda',average],['Recorde em queda',r.best??'—']].map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong></div>`).join('')}${world?`<div class="cff-mvp-role-detail"><span>Posição</span><strong>${position}</strong></div>`:''}</div></td></tr>`;
     }).join('');
     root.innerHTML=`<div class="${p}-shell"><section class="${p}-hero">${s.data.edition==='global'?'<div class="ffws-global-brand"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="86" height="67" alt=""><div class="ffws-global-kicker">'+c.kicker+'</div></div>':'<div class="ffws-s2-kicker">'+c.kicker+'</div>'}<h1>Ranking MVP</h1><p>Classificação individual da ${c.title}</p>${s.data.edition==='global'?'<a class="ffws-global-pred-link" href="/interacoes.html#palpites">🎯 Fazer meus palpites ↗</a>':''}</section>
@@ -101,8 +101,8 @@
       </form></dialog>
       <div class="${p}-mvp-mobile-tools ${p}-mvp-tools"><button type="button" class="${p}-mvp-details-toggle" data-mvp-details aria-expanded="${s.details}">${s.details?'Ocultar detalhes':'Dados completos'}</button></div>
       <div class="${p}-table-wrap"><table class="${p}-table ${p}-mvp-table" data-mvp-table><thead><tr>
-        <th class="${p}-mvp-rank-col">#</th><th class="team-col ${p}-mvp-player-col"><span class="${p}-desktop">Jogador</span><span class="${p}-mobile">J</span></th><th><span class="${p}-desktop">Equipe</span><span class="${p}-mobile">E</span></th>
-        ${header(s,'kills')}${header(s,'damage')}${header(s,'assists')}<th>Q</th><th class="hide-mobile">MVP</th>${header(s,'average','hide-mobile')}${world?'<th scope="col" class="hide-mobile cff-mvp-role-col">Posição</th>':''}</tr></thead>
+        <th class="${p}-mvp-rank-col">#</th><th class="team-col ${p}-mvp-player-col"><span class="${p}-desktop">Jogador</span><span class="${p}-mobile">J</span></th>${world?'<th scope="col" class="hide-mobile cff-mvp-role-col">Posição</th>':''}<th><span class="${p}-desktop">Equipe</span><span class="${p}-mobile">E</span></th>
+        ${header(s,'kills')}${header(s,'damage')}${header(s,'assists')}<th>Q</th><th class="hide-mobile">MVP</th>${header(s,'average','hide-mobile')}</tr></thead>
         <tbody>${tableRows||`<tr><td colspan="${columns}">Nenhum resultado para este recorte.</td></tr>`}</tbody></table></div>
       ${max?`<div class="${p}-mvp-pager"><button type="button" aria-label="Top 10 anterior" data-mvp-page="-1"${start?'':' disabled'}>‹</button><span>Top ${start+1}–${end} de ${rows.length}</span><button type="button" aria-label="Próximo Top 10" data-mvp-page="1"${s.page<max?'':' disabled'}>›</button></div>`:''}
     </div></section></div>`;

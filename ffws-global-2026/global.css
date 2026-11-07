@@ -45,12 +45,12 @@
   .ffws-global-mvp-table .team-col{min-width:0}
   .ffws-global-mvp-table th,.ffws-global-mvp-table td{padding:11px 5px;font-size:.82rem}
   .ffws-global-mvp-table th:nth-child(2),.ffws-global-mvp-table td:nth-child(2){width:48%;text-align:left;padding-left:12px}
-  .ffws-global-mvp-table th:nth-child(3),.ffws-global-mvp-table td:nth-child(3){width:16%}
-  .ffws-global-mvp-table th:nth-child(4),.ffws-global-mvp-table td:nth-child(4){width:18%}
-  .ffws-global-mvp-table th:nth-child(7),.ffws-global-mvp-table td:nth-child(7){width:18%}
-  .ffws-global-mvp-table td:nth-child(3) .ffws-global-team-cell{justify-content:center;gap:0}
-  .ffws-global-mvp-table td:nth-child(3) .ffws-global-team-name{display:none}
-  .ffws-global-mvp-table td:nth-child(3) .ffws-global-team-cell img{width:28px;height:28px}
+  .ffws-global-mvp-table th:nth-child(3 of :not(.cff-mvp-role-col)),.ffws-global-mvp-table td:nth-child(3 of :not(.cff-mvp-role-col)){width:16%}
+  .ffws-global-mvp-table th:nth-child(4 of :not(.cff-mvp-role-col)),.ffws-global-mvp-table td:nth-child(4 of :not(.cff-mvp-role-col)){width:18%}
+  .ffws-global-mvp-table th:nth-child(7 of :not(.cff-mvp-role-col)),.ffws-global-mvp-table td:nth-child(7 of :not(.cff-mvp-role-col)){width:18%}
+  .ffws-global-mvp-table td:nth-child(3 of :not(.cff-mvp-role-col)) .ffws-global-team-cell{justify-content:center;gap:0}
+  .ffws-global-mvp-table td:nth-child(3 of :not(.cff-mvp-role-col)) .ffws-global-team-name{display:none}
+  .ffws-global-mvp-table td:nth-child(3 of :not(.cff-mvp-role-col)) .ffws-global-team-cell img{width:28px;height:28px}
   .ffws-global-mvp-player-col .ffws-global-inline-link{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ffws-global-mvp-panel.show-details .ffws-global-mvp-details-row{display:table-row}
   .ffws-global-mvp-details-row td{padding:0 10px 12px!important;background:rgba(0,200,255,.018);border-bottom:1px solid var(--border)}
@@ -62,8 +62,8 @@
 @media(max-width:390px){
   .ffws-global-mvp-table th,.ffws-global-mvp-table td{padding-left:4px;padding-right:4px;font-size:.78rem}
   .ffws-global-mvp-table th:nth-child(2),.ffws-global-mvp-table td:nth-child(2){padding-left:9px;width:49%}
-  .ffws-global-mvp-table th:nth-child(3),.ffws-global-mvp-table td:nth-child(3){width:17%}
-  .ffws-global-mvp-table th:nth-child(4),.ffws-global-mvp-table td:nth-child(4),.ffws-global-mvp-table th:nth-child(7),.ffws-global-mvp-table td:nth-child(7){width:17%}
+  .ffws-global-mvp-table th:nth-child(3 of :not(.cff-mvp-role-col)),.ffws-global-mvp-table td:nth-child(3 of :not(.cff-mvp-role-col)){width:17%}
+  .ffws-global-mvp-table th:nth-child(4 of :not(.cff-mvp-role-col)),.ffws-global-mvp-table td:nth-child(4 of :not(.cff-mvp-role-col)),.ffws-global-mvp-table th:nth-child(7 of :not(.cff-mvp-role-col)),.ffws-global-mvp-table td:nth-child(7 of :not(.cff-mvp-role-col)){width:17%}
 }
 
 /* ===== 2026-08-10: MVP paginado + seleções em andamento ===== */
