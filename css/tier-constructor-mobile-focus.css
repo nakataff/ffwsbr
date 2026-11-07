@@ -559,3 +559,18 @@ body.tier-focus-mode .tier-constructor-app .tier-bank-panel .image-card .card-ac
     touch-action:pan-x;
   }
 }
+
+/* Mundial 2026: dedicated player photo gallery tab */
+.tier-constructor-app #tierAssetTypeButtons.tier-library-tabs{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;
+  min-width:0;width:100%
+}
+.tier-constructor-app #tierAssetTypeButtons.tier-library-tabs button{
+  min-width:0;padding:9px 5px;font-size:clamp(10px,1vw,12px);
+  line-height:1.2;white-space:nowrap
+}
+@media(max-width:760px){
+  .tier-constructor-app #tierAssetTypeButtons.tier-library-tabs button{
+    padding:10px 3px;font-size:11px
+  }
+}
