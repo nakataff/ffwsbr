@@ -10,6 +10,7 @@
   const names={stage:'Etapa',team:'Equipe',role:'Posição',country:'País',rookie:'Novatos',day:'Dia',round:'Rodada'};
   const phases={classificatoria:'Classificatória',segundaFase:'Segunda fase',lastChance:'Repescagem',final:'Final'};
   const worldPhases={classificatoria:'Knockout · Fase 1',segundaFase:'Knockout · Fase 2',lastChance:'Repescagem',final:'Grande Final'};
+  const roleLabels={RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'};
   const metrics={kills:['Abates','K',r=>r.kills],damage:['Dano','Dano',r=>r.damage],assists:['Assistências','Ast',r=>r.assists],average:['Abates por queda','K/Q',r=>r.kills/r.matches]};
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const format=new Intl.NumberFormat('pt-BR'),countries=typeof Intl.DisplayNames==='function'?new Intl.DisplayNames(['pt-BR'],{type:'region'}):null;
@@ -28,6 +29,7 @@
   }
   function setup(key,config,data){
     const phaseName=i=>(key==='global'?worldPhases:phases)[data.stages[i]]||data.stages[i];
+    const roles=key==='global'?{...roleLabels,SUP:'Suporte / Sniper'}:roleLabels;
     const stageOf=stage=>data.stages.indexOf(stage);
     const dayName=(stage,day)=>{
       if(key==='s2')return 'Dia '+(day+({segundaFase:14,final:20}[data.stages[stage]]||0));
@@ -39,7 +41,7 @@
     const options={
       stage:data.stages.map((_,i)=>[String(i),phaseName(i)]),
       team:data.teams.map(([name],i)=>[String(i),name]).sort((a,b)=>a[1].localeCompare(b[1],'pt-BR')),
-      role:Object.entries({RUSH:'Rush',SUP:key==='global'?'Suporte / Sniper':'Suporte',GRAN:'Granadeiro','3':'3º homem'}).filter(([value])=>data.players.some(p=>p[2]===value)),
+      role:Object.entries(roles).filter(([value])=>data.players.some(p=>p[2]===value)),
       rookie:[['1','Apenas novatos'],['0','Sem novatos']],
       country:[...new Set(data.players.map(p=>p[4]).filter(v=>/^[a-z]{2}$/.test(v)))].map(v=>[v,countries?.of(v.toUpperCase())||v.toUpperCase()]).sort((a,b)=>a[1].localeCompare(b[1],'pt-BR')),
       day:[...dayKeys.entries()].sort((a,b)=>a[1][0]-b[1][0]||a[1][1]-b[1][1]).map(([id,[stage,day]])=>[id,dayName(stage,day)]),
@@ -49,7 +51,7 @@
       })
     };
     const filters=Object.fromEntries(config.filters.map(name=>[name,new Set(name==='stage'?config.initial:[])]));
-    return {config,data,options,filters,sort:'kills',direction:-1,page:0,details:false};
+    return {config,data,roles,options,filters,sort:'kills',direction:-1,page:0,details:false};
   }
   function rowsOf(s){
     const totals=new Map(),{data,filters}=s;
@@ -58,7 +60,7 @@
       const [name,team,role,rookie,country,profile]=data.players[id];
       if(!allows('stage',stage)||!allows('day',stage+':'+day)||!allows('round',stage+':'+round)||!allows('team',team)||
          !allows('role',role)||!allows('rookie',rookie)||!allows('country',country))continue;
-      const row=totals.get(id)||{name,team,profile,kills:0,damage:0,assists:0,matches:0,mvps:0,best:null};
+      const row=totals.get(id)||{name,team,role,profile,kills:0,damage:0,assists:0,matches:0,mvps:0,best:null};
       row.kills+=kills;row.damage+=damage;row.assists+=assists;row.matches+=matches;row.mvps+=mvps;
       if(best!==null)row.best=Math.max(row.best??0,best);
       totals.set(id,row);
@@ -72,6 +74,7 @@
   }
   function render(root,s){
     const {config:c}=s,p=c.prefix,rows=rowsOf(s),id=c.path+'-mvp';
+    const world=s.data.edition==='global',columns=world?10:9;
     const max=Math.max(0,Math.ceil(rows.length/pageSize)-1);
     s.page=Math.max(0,Math.min(max,s.page));
     const start=s.page*pageSize,end=Math.min(start+pageSize,rows.length);
@@ -82,9 +85,10 @@
     }).join('');
     const tableRows=rows.slice(start,end).map((r,i)=>{
       const [team,abbr,logo]=s.data.teams[r.team],rank=start+i+1,average=(r.kills/r.matches).toFixed(2);
-      const playerUrl=s.data.edition==='global'?'/ffws-global-2026/jogador?id='+encodeURIComponent(r.profile):'/jogador.html?'+new URLSearchParams({jogador:r.name,time:team});
-      return `<tr class="${p}-mvp-main-row"><td class="${p}-rank ${p}-mvp-rank-col">${rank}º</td><td class="team-col ${p}-mvp-player-col"><a class="${p}-inline-link" href="${esc(playerUrl)}">${esc(r.name)}</a></td><td><span class="${p}-team-cell" title="${esc(team)}"><img src="${esc(asset(logo))}" data-team-logo="${esc(team)}" data-team-date="${c.date}" alt="${esc(abbr)}" loading="lazy" width="28" height="28"><span class="${p}-team-name">${esc(abbr)}</span></span></td><td>${r.kills}</td><td>${format.format(r.damage)}</td><td>${r.assists}</td><td>${r.matches}</td><td class="hide-mobile">${r.mvps}</td><td class="hide-mobile">${average}</td></tr>
-      <tr class="${p}-mvp-details-row"><td colspan="9"><div class="${p}-mvp-details-grid">${[['Posição',rank+'º'],['MVP da queda',r.mvps],['Abates por queda',average],['Recorde em queda',r.best??'—']].map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong></div>`).join('')}</div></td></tr>`;
+      const playerUrl=world?'/ffws-global-2026/jogador?id='+encodeURIComponent(r.profile):'/jogador.html?'+new URLSearchParams({jogador:r.name,time:team});
+      const position=esc(s.roles[r.role]||'—');
+      return `<tr class="${p}-mvp-main-row"><td class="${p}-rank ${p}-mvp-rank-col">${rank}º</td><td class="team-col ${p}-mvp-player-col"><a class="${p}-inline-link" href="${esc(playerUrl)}">${esc(r.name)}</a></td><td><span class="${p}-team-cell" title="${esc(team)}"><img src="${esc(asset(logo))}" data-team-logo="${esc(team)}" data-team-date="${c.date}" alt="${esc(abbr)}" loading="lazy" width="28" height="28"><span class="${p}-team-name">${esc(abbr)}</span></span></td><td>${r.kills}</td><td>${format.format(r.damage)}</td><td>${r.assists}</td><td>${r.matches}</td><td class="hide-mobile">${r.mvps}</td><td class="hide-mobile">${average}</td>${world?`<td class="hide-mobile cff-mvp-role-col">${position}</td>`:''}</tr>
+      <tr class="${p}-mvp-details-row"><td colspan="${columns}"><div class="${p}-mvp-details-grid">${[[world?'Colocação':'Posição',rank+'º'],['MVP da queda',r.mvps],['Abates por queda',average],['Recorde em queda',r.best??'—']].map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong></div>`).join('')}${world?`<div class="cff-mvp-role-detail"><span>Posição</span><strong>${position}</strong></div>`:''}</div></td></tr>`;
     }).join('');
     root.innerHTML=`<div class="${p}-shell"><section class="${p}-hero">${s.data.edition==='global'?'<div class="ffws-global-brand"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="86" height="67" alt=""><div class="ffws-global-kicker">'+c.kicker+'</div></div>':'<div class="ffws-s2-kicker">'+c.kicker+'</div>'}<h1>Ranking MVP</h1><p>Classificação individual da ${c.title}</p>${s.data.edition==='global'?'<a class="ffws-global-pred-link" href="/interacoes.html#palpites">🎯 Fazer meus palpites ↗</a>':''}</section>
     <section class="${p}-panel ${p}-mvp-panel${s.details?' show-details':''}"><div class="${p}-panel-inner">
@@ -98,8 +102,8 @@
       <div class="${p}-mvp-mobile-tools ${p}-mvp-tools"><button type="button" class="${p}-mvp-details-toggle" data-mvp-details aria-expanded="${s.details}">${s.details?'Ocultar detalhes':'Dados completos'}</button></div>
       <div class="${p}-table-wrap"><table class="${p}-table ${p}-mvp-table" data-mvp-table><thead><tr>
         <th class="${p}-mvp-rank-col">#</th><th class="team-col ${p}-mvp-player-col"><span class="${p}-desktop">Jogador</span><span class="${p}-mobile">J</span></th><th><span class="${p}-desktop">Equipe</span><span class="${p}-mobile">E</span></th>
-        ${header(s,'kills')}${header(s,'damage')}${header(s,'assists')}<th>Q</th><th class="hide-mobile">MVP</th>${header(s,'average','hide-mobile')}</tr></thead>
-        <tbody>${tableRows||'<tr><td colspan="9">Nenhum resultado para este recorte.</td></tr>'}</tbody></table></div>
+        ${header(s,'kills')}${header(s,'damage')}${header(s,'assists')}<th>Q</th><th class="hide-mobile">MVP</th>${header(s,'average','hide-mobile')}${world?'<th scope="col" class="hide-mobile cff-mvp-role-col">Posição</th>':''}</tr></thead>
+        <tbody>${tableRows||`<tr><td colspan="${columns}">Nenhum resultado para este recorte.</td></tr>`}</tbody></table></div>
       ${max?`<div class="${p}-mvp-pager"><button type="button" aria-label="Top 10 anterior" data-mvp-page="-1"${start?'':' disabled'}>‹</button><span>Top ${start+1}–${end} de ${rows.length}</span><button type="button" aria-label="Próximo Top 10" data-mvp-page="1"${s.page<max?'':' disabled'}>›</button></div>`:''}
     </div></section></div>`;
   }

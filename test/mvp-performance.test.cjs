@@ -49,6 +49,29 @@ for(const [key,base] of Object.entries(editions)){
    assert.equal(root.querySelector('th[aria-sort="descending"] [data-mvp-column]').dataset.mvpColumn,'kills');
    const archive=key==='s1'?read(base+'/player-stats.json'):read(base+'/inicio-mvp-top10.json');
    assert.equal(n(first(),3),key==='s1'?Math.max(...Object.values(archive.players).map(p=>p.stages.classificatoria?.kills||0)):archive.top10.geral[0].kills);
+   if(key==='global'){
+    const roleHeader=root.querySelector('th.cff-mvp-role-col');
+    assert.equal(roleHeader.textContent,'Posição');
+    assert(roleHeader.classList.contains('hide-mobile'));
+    const rowRole=first().querySelector('.cff-mvp-role-col.hide-mobile');
+    assert.equal(rowRole.textContent,'Rush');
+    assert(!root.querySelector('.ffws-global-mvp-panel').classList.contains('show-details'));
+    root.querySelector('[data-mvp-details]').click();
+    assert(root.querySelector('.ffws-global-mvp-panel').classList.contains('show-details'));
+    const details=first().nextElementSibling;
+    assert.equal(details.cells[0].colSpan,first().cells.length);
+    assert.equal(details.querySelector('.cff-mvp-role-detail span').textContent,'Posição');
+    assert.equal(details.querySelector('.cff-mvp-role-detail strong').textContent,'Rush');
+    assert.match(details.textContent,/Colocação1º/);
+    pick('role','SUP');
+    assert.equal(first().querySelector('.cff-mvp-role-col').textContent,'Suporte / Sniper');
+    assert.equal(first().nextElementSibling.querySelector('.cff-mvp-role-detail strong').textContent,'Suporte / Sniper');
+    pick('role');
+    root.querySelector('[data-mvp-details]').click();
+    assert(!root.querySelector('.ffws-global-mvp-panel').classList.contains('show-details'));
+   }else{
+    assert.equal(root.querySelector('.cff-mvp-role-col,.cff-mvp-role-detail'),null);
+   }
    root.querySelector('[data-mvp-page="1"]').click();
    assert.match(root.querySelector('tbody tr').textContent,/^11º/);
    sort('damage');const high=n(first(),4);assert.match(first().textContent,/^1º/);
