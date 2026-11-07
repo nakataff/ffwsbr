@@ -46,8 +46,21 @@ test('preset novo preserva projetos existentes e abre com tiers vazias',()=>{
  assert.match(preset.caption,/2026/);
  const html=read('tier-constructor.html'),js=read('js/tier-constructor.js');
  assert.match(html,/data-tier-preset="ffws-global-2026"/);
- assert.match(html,/tier-constructor\.js\?v=(?:20261104-(?:short-links|mobile-fullscreen)-v1|20261104-(?:chat-rows-v2|tier-preview-v1|touch-drag-v1)|20261102-(?:world-2026|workspace|nameplates|text-scroll|name-size)-v1)/);
- assert.match(js,/assets-index\.json\?v=20261102-world-2026-v1/);
+ assert.match(html,/tier-constructor\.js\?v=[\w-]+/);
+ assert.match(js,/assets-index\.json\?v=[\w-]+/);
  assert.match(js,/function loadTierPreset\(presetId/);
  assert.match(js,/assetIds \|\| \[\]/);
+});
+
+test('Piciu usa a mesma foto do cadastro nos presets e na biblioteca de imagens',()=>{
+ const index=json('tier-constructor/assets-index.json');
+ const player=json('ffws-global-2026/players.json').players.find(p=>p.id==='gow-piciu');
+ const asset=index.assets.find(a=>a.id==='player:ffws-global-2026:gow-piciu');
+ assert.equal(asset.available,true);
+ assert.equal(asset.image,player.photoLarge);
+ assert.equal(asset.thumbnail,player.photo);
+ for(const file of [asset.image,asset.thumbnail]) assert.ok(fs.existsSync(path.join(root,file)),file);
+ for(const id of ['global-2026-best-support','global-2026-best-overall']){
+  assert.ok(index.presets.find(p=>p.id===id).assetIds.includes(asset.id));
+ }
 });

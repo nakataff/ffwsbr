@@ -758,3 +758,9 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 .ffws-global-pool-legend b{display:block;color:#e6eef9;font-size:.74rem}
 .ffws-global-pool-legend small{display:block;margin-top:2px;color:#a9bdd5;font-size:.69rem}
 @media(max-width:480px){.ffws-global-pool-legend ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.ffws-global-classification-panel{overflow:visible}
+.ffws-global-classification-panel .ffws-global-stage-multi>button:disabled{opacity:.46;cursor:not-allowed}
+@media(max-width:760px){
+  .ffws-global-classification-panel .ffws-global-stage-multi .ffws-global-multi-menu{z-index:10000}
+}

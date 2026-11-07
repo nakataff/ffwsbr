@@ -4,10 +4,14 @@
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
     stagesUrl: 'ffws-global-2026/stages.json?v=20261107-mundial-dia2-v1',
-    playersUrl: 'ffws-global-2026/players.json?v=20261107-mundial-dia2-v1',
+    playersUrl: 'ffws-global-2026/players.json?v=20261107-mundial-filtros-piciu-v1',
     datesUrl: 'ffws-global-2026/dates.json?v=20261016-global-format-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
+  const STAGE_MULTI_PAGES = {
+    classificatoria: PAGE_PREFIX + 'classificatoria',
+    segundaFase: PAGE_PREFIX + 'segunda-fase'
+  };
   const PAGE_IDS = new Set([
     'ffws-global-2026-classificatoria', 'ffws-global-2026-segunda-fase', 'ffws-global-2026-final', 'ffws-global-2026-last-chance',
     'ffws-global-2026-equipes', 'ffws-global-2026-datas', 'ffws-global-2026-selecoes',
@@ -467,33 +471,38 @@
     const maps = [...new Set(events.map(event => String(event.map || event.mapa || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
     const drops = [...new Set(events.map((event, index) => number(event.roundDrop || event.drop) || number(event.queda) || number(event.number) || index + 1).filter(Boolean))].sort((a, b) => a - b);
 
-    if (stageKey === 'segundaFase') {
+    if (STAGE_MULTI_PAGES[stageKey]) {
+      const phaseOne = stageKey === 'classificatoria';
       const periodsSelected = stageFilterValues(stageKey, 'period');
       const mapsSelected = stageFilterValues(stageKey, 'map');
       const dropsSelected = stageFilterValues(stageKey, 'drop');
-      const periodOptions = Array.from({ length: total }, (_, index) => ({ value: String(index + 1), label: `Dia ${index + 1}` }));
+      const periodOptions = Array.from({ length: total }, (_, index) => ({ value: String(index + 1), label: `${label} ${index + 1}` }));
       const mapOptions = maps.map(map => ({ value: map, label: map }));
       const dropOptions = drops.map(drop => ({ value: String(drop), label: `Queda ${drop}` }));
       const multi = (type, title, values, options) => {
         const key = `${stageKey}:${type}`;
-        const buttonLabel = values.length ? (values.length === 1 ? (options.find(option => String(option.value) === String(values[0]))?.label || values[0]) : `${values.length} selecionados`) : 'Todos';
+        const menuId = `ffws-global-stage-multi-${stageKey}-${type}`;
+        const allLabel = phaseOne && type === 'period' ? 'Geral' : 'Todos';
+        const buttonLabel = values.length ? (values.length === 1 ? (options.find(option => option.value === values[0])?.label || values[0]) : `${values.length} selecionados`) : allLabel;
         return `<div class="ffws-global-filter"><span>${escapeHtml(title)}:</span><div class="ffws-global-multi ffws-global-stage-multi" data-global-stage-multi="${escapeHtml(type)}">
-          <button type="button" onclick="toggleFFWSGlobalStageMulti('${stageKey}','${type}')" aria-expanded="${state.stageOpenMulti === key ? 'true' : 'false'}"><b>${escapeHtml(buttonLabel)}</b><span>⌄</span></button>
-          <div class="ffws-global-multi-menu" id="ffws-global-stage-multi-${type}"${state.stageOpenMulti === key ? '' : ' hidden'}>
-            <label><input type="checkbox" ${values.length === 0 ? 'checked' : ''} onchange="clearFFWSGlobalStageMulti('${stageKey}','${type}')"> Todos</label>
+          <button type="button" onclick="toggleFFWSGlobalStageMulti('${stageKey}','${type}')" aria-label="${escapeHtml(title + ': ' + buttonLabel)}" aria-controls="${menuId}" aria-expanded="${state.stageOpenMulti === key ? 'true' : 'false'}"${phaseOne && !options.length ? ' disabled' : ''}><b>${escapeHtml(buttonLabel)}</b><span aria-hidden="true">⌄</span></button>
+          <div class="ffws-global-multi-menu" id="${menuId}"${state.stageOpenMulti === key ? '' : ' hidden'}>
+            <label><input type="checkbox" value="" ${values.length === 0 ? 'checked' : ''} onchange="clearFFWSGlobalStageMulti('${stageKey}','${type}')"> ${allLabel}</label>
             ${options.map(option => `<label><input type="checkbox" value="${escapeHtml(option.value)}" ${values.includes(String(option.value)) ? 'checked' : ''} onchange="setFFWSGlobalStageMulti('${stageKey}','${type}',this.value,this.checked)"> ${escapeHtml(option.label)}</label>`).join('')}
           </div>
         </div></div>`;
       };
       const summaryParts = [];
-      if (periodsSelected.length) summaryParts.push(periodsSelected.length === 1 ? `Dia ${periodsSelected[0]}` : `${periodsSelected.length} dias`);
+      if (periodsSelected.length) summaryParts.push(phaseOne
+        ? `${periodsSelected.length === 1 ? 'Rodada' : 'Rodadas'} ${[...periodsSelected].sort((a, b) => Number(a) - Number(b)).join(', ')}`
+        : periodsSelected.length === 1 ? `Dia ${periodsSelected[0]}` : `${periodsSelected.length} dias`);
       if (mapsSelected.length) summaryParts.push(mapsSelected.length === 1 ? mapsSelected[0] : `${mapsSelected.length} mapas`);
       if (dropsSelected.length) summaryParts.push(dropsSelected.length === 1 ? `Queda ${dropsSelected[0]}` : `${dropsSelected.length} quedas`);
       return `<div class="ffws-global-filters ffws-global-stage-multi-filters">
-        ${multi('period', 'Dia', periodsSelected, periodOptions)}
+        ${multi('period', label, periodsSelected, periodOptions)}
         ${multi('map', 'Mapa', mapsSelected, mapOptions)}
         ${multi('drop', 'Queda', dropsSelected, dropOptions)}
-      </div><div class="ffws-global-filter-summary">${summaryParts.length ? escapeHtml(summaryParts.join(' • ')) : 'Totais estatísticos • sem classificação acumulada'}${stageFormat(stageKey).resetEachDay&&periodsSelected.length!==1?' Os pontos zeram entre os dias. Selecione um único dia para ver sua classificação.':''}.</div>`;
+      </div><div class="ffws-global-filter-summary">${summaryParts.length ? escapeHtml(summaryParts.join(' • ')) : phaseOne ? 'Classificação geral' : 'Totais estatísticos • sem classificação acumulada'}${stageFormat(stageKey).resetEachDay&&periodsSelected.length!==1?' Os pontos zeram entre os dias. Selecione um único dia para ver sua classificação.':''}.</div>`;
     }
 
     return `<div class="ffws-global-filters">
@@ -506,7 +515,7 @@
 
   function renderClassificatoria(rootId){
     const root=document.getElementById(rootId);if(!root)return;
-    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? (isOverallStageFilter('classificatoria') ? phaseOneLegend() : '') + stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel ffws-global-classification-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? (isOverallStageFilter('classificatoria') ? phaseOneLegend() : '') + stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
   }
 
   function renderStage(stageKey, rootId, title, subtitle) {
@@ -2318,27 +2327,34 @@
   window.toggleFFWSGlobalStageMulti = (stageKey, type) => {
     const key = `${stageKey}:${type}`;
     state.stageOpenMulti = state.stageOpenMulti === key ? '' : key;
-    document.querySelectorAll('.ffws-global-multi-menu').forEach(menu => {
-      menu.hidden = menu.id !== `ffws-global-stage-multi-${type}` || !state.stageOpenMulti;
+    document.querySelectorAll('.ffws-global-stage-multi > button').forEach(button => {
+      const menu = document.getElementById(button.getAttribute('aria-controls'));
+      if (!menu) return;
+      const open = state.stageOpenMulti === key && menu.id === `ffws-global-stage-multi-${stageKey}-${type}`;
+      menu.hidden = !open;
+      button.setAttribute('aria-expanded', String(open));
     });
-    const button = document.querySelector(`[data-global-stage-multi="${type}"] > button`);
-    if (button) button.setAttribute('aria-expanded', String(Boolean(state.stageOpenMulti)));
   };
-  window.clearFFWSGlobalStageMulti = (stageKey, type) => {
-    if (stageKey !== 'segundaFase') return;
-    state.stageFilter.segundaFase = state.stageFilter.segundaFase || { period: [], map: [], drop: [] };
-    state.stageFilter.segundaFase[type] = [];
+  function updateStageMulti(stageKey, type, values, focusValue) {
+    const menuId = `ffws-global-stage-multi-${stageKey}-${type}`;
+    const scrollTop = document.getElementById(menuId)?.scrollTop || 0;
+    state.stageFilter[stageKey][type] = values;
     state.stageOpenMulti = `${stageKey}:${type}`;
-    renderPage('ffws-global-2026-segunda-fase');
+    renderPage(STAGE_MULTI_PAGES[stageKey]);
+    const menu = document.getElementById(menuId);
+    if (!menu) return;
+    menu.scrollTop = scrollTop;
+    Array.from(menu.querySelectorAll('input')).find(input => input.value === focusValue)?.focus({ preventScroll: true });
+  }
+  window.clearFFWSGlobalStageMulti = (stageKey, type) => {
+    if (!STAGE_MULTI_PAGES[stageKey]) return;
+    updateStageMulti(stageKey, type, [], '');
   };
   window.setFFWSGlobalStageMulti = (stageKey, type, value, checked) => {
-    if (stageKey !== 'segundaFase') return;
-    state.stageFilter.segundaFase = state.stageFilter.segundaFase || { period: [], map: [], drop: [] };
+    if (!STAGE_MULTI_PAGES[stageKey]) return;
     const selected = new Set(stageFilterValues(stageKey, type));
     checked ? selected.add(String(value)) : selected.delete(String(value));
-    state.stageFilter.segundaFase[type] = [...selected];
-    state.stageOpenMulti = `${stageKey}:${type}`;
-    renderPage('ffws-global-2026-segunda-fase');
+    updateStageMulti(stageKey, type, [...selected], String(value));
   };
   window.setFFWSGlobalSelectionWeek = week => { state.selectionTab = 'semanal'; state.selectionWeek = String(week || '1'); renderSelections(); };
   window.setFFWSGlobalSelectionWeekStage = stage => {
@@ -2565,6 +2581,7 @@
   document.addEventListener('click', event => {
     if (!event.target.closest('.ffws-global-multi')) {
       document.querySelectorAll('.ffws-global-multi-menu').forEach(menu => { menu.hidden = true; });
+      document.querySelectorAll('.ffws-global-stage-multi > button[aria-expanded="true"]').forEach(button => button.setAttribute('aria-expanded', 'false'));
       state.notesOpenMulti = '';
       state.stageOpenMulti = '';
     }
@@ -2573,7 +2590,14 @@
 
   window.addEventListener('scroll', () => window.updateGlobalStatsBackTopVisibility?.(), { passive: true });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !document.getElementById('ffws-global-drop-report-modal')?.hidden) closeFFWSGlobalDropReport();
+    if (event.key !== 'Escape') return;
+    if (!document.getElementById('ffws-global-drop-report-modal')?.hidden) closeFFWSGlobalDropReport();
+    if (state.stageOpenMulti) {
+      const [stageKey, type] = state.stageOpenMulti.split(':');
+      const button = document.querySelector(`[aria-controls="ffws-global-stage-multi-${stageKey}-${type}"]`);
+      window.toggleFFWSGlobalStageMulti(stageKey, type);
+      button?.focus();
+    }
   });
 
   function wrapNavigate() {

@@ -39,7 +39,7 @@ const url=v=>/^https:\/\//i.test(String(v||''))?String(v):'/'+String(v||'').repl
 const state={page:{tab:'semanal',mode:'day',day:'',week:''},home:{mode:'day',day:'',week:''},start:{mode:'day',day:'',week:''}};
 let DATA=null,playersPromise=null,officialRecords=null,staticDays=[],officialPromise=null,officialAt=0;
 let phaseCompletion={},publishedDays=[],homeSummary=null,homeSummaryAt=0,homeSummaryPromise=null;
-const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261107-mundial-dia2-v1';
+const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261107-mundial-filtros-piciu-v1';
 function setData(players,teams){
  if(!Array.isArray(players?.entries)||!Array.isArray(players?.players))return false;
  const list=Array.isArray(teams?.teams)?teams.teams:Array.isArray(teams)?teams:[];

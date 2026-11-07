@@ -14,7 +14,7 @@
 {"name":"Dyan","team":"GOW","order":2,"type":"player","country":"vn","role":"Granadeiro","id":"gow-dyan","photo":"ffws-global-2026/photos/160/gow-dyan.webp","photoLarge":"ffws-global-2026/photos/480/gow-dyan.webp"},
 {"name":"Gocu","team":"GOW","order":3,"type":"player","country":"vn","role":"Rusher","id":"gow-gocu","photo":"ffws-global-2026/photos/160/gow-gocu.webp","photoLarge":"ffws-global-2026/photos/480/gow-gocu.webp"},
 {"name":"Demon","team":"GOW","order":4,"type":"player","country":"vn","role":"Rusher","wikiLink":"Demon_(Vietnamese_Player)","id":"gow-demon","photo":"ffws-global-2026/photos/160/gow-demon.webp","photoLarge":"ffws-global-2026/photos/480/gow-demon.webp"},
-{"name":"Piciu","team":"GOW","order":5,"type":"player","country":"vn","role":"Suporte","id":"gow-piciu"},
+{"name":"Piciu","team":"GOW","order":5,"type":"player","country":"vn","role":"Suporte","id":"gow-piciu","photo":"ffws-global-2026/photos/160/gow-piciu.webp","photoLarge":"ffws-global-2026/photos/480/gow-piciu.webp"},
 {"name":"Alan","team":"P Esports","order":1,"type":"player","country":"vn","role":"Granadeiro","wikiLink":"Alan (Vietnamese Player)","id":"p-esports-alan","photo":"ffws-global-2026/photos/160/p-esports-alan.webp","photoLarge":"ffws-global-2026/photos/480/p-esports-alan.webp"},
 {"name":"BeDep","team":"P Esports","order":2,"type":"player","country":"vn","role":"Suporte","id":"p-esports-bedep","photo":"ffws-global-2026/photos/160/p-esports-bedep.webp","photoLarge":"ffws-global-2026/photos/480/p-esports-bedep.webp"},
 {"name":"CTuan","team":"P Esports","order":3,"type":"player","country":"vn","role":"Sniper","id":"p-esports-ctuan","photo":"ffws-global-2026/photos/160/p-esports-ctuan.webp","photoLarge":"ffws-global-2026/photos/480/p-esports-ctuan.webp"},
