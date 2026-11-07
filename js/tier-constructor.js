@@ -774,7 +774,7 @@
         card.className = "image-card";
         card.draggable = true;
         card.dataset.imageId = imageId;
-        card.title = data?.name || "Imagem";
+        card.title = `${data?.name || "Imagem"} — clique para selecionar e depois escolha uma row. Duplo clique para devolver ao banco.`;
 
         const img = document.createElement("img");
         img.src = data.previewSrc || data.src;
