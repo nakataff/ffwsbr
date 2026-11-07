@@ -525,8 +525,10 @@
           state.background = preset.background || "";
           state.settings = { ...DEFAULT_SETTINGS, ...(preset.settings || {}) };
           els.captionInput.value = state.caption;
-          for (let i = 0; i < assets.length; i += 5) {
-            await Promise.all(assets.slice(i, i + 5).map(registerTierAsset));
+          const batchSize = assets.length >= 75 ? 16 : 5;
+          for (let i = 0; i < assets.length; i += batchSize) {
+            await Promise.all(assets.slice(i, i + batchSize).map(registerTierAsset));
+            if (status && !silent) status.textContent = `Adicionando jogadores: ${Math.min(i + batchSize, assets.length)}/${assets.length}`;
             render();
             await new Promise(resolve => setTimeout(resolve, 0));
           }
@@ -545,11 +547,81 @@
         }
       }
 
+      function askTierPresetNames(preset, count) {
+        const dialog = document.getElementById("tierPresetNamesDialog");
+        if (!dialog || typeof dialog.showModal !== "function") {
+          return Promise.resolve(window.confirm("Deseja mostrar o nome dos jogadores abaixo das fotos?"));
+        }
+        const description = document.getElementById("tierPresetNamesDescription");
+        if (description) {
+          description.textContent = `${preset.name} · ${count} jogadores. Escolha se deseja uma legenda com o nome de cada jogador abaixo da foto. Você poderá alterar isso depois em Configurações.`;
+        }
+        dialog.returnValue = "cancel";
+        return new Promise(resolve => {
+          dialog.addEventListener("close", () => {
+            resolve(dialog.returnValue === "show" ? true : dialog.returnValue === "hide" ? false : null);
+          }, { once: true });
+          dialog.showModal();
+        });
+      }
+
+      async function tierPlayersForRolePreset(preset, data) {
+        const allowed = {
+          rush: new Set(["Rusher"]),
+          gran: new Set(["Granadeiro"]),
+          support: new Set(["Suporte", "Sniper"])
+        };
+        let ids = [...(preset.assetIds || [])];
+        try {
+          const response = await fetch("ffws-global-2026/players.json?v=20261107-tier-presets-v1", { cache: "no-cache" });
+          if (!response.ok) throw new Error("Cadastro do Mundial indisponível");
+          const current = await response.json();
+          if (!Array.isArray(current.players) || current.players.length < 50) throw new Error("Cadastro incompleto");
+          const selected = current.players.filter(player =>
+            player.type === "player" && (preset.roleFilter === "all" || allowed[preset.roleFilter]?.has(player.role))
+          );
+          if (!selected.length) throw new Error("Nenhum jogador encontrado para a função");
+          ids = selected.map(player => {
+            const id = `player:ffws-global-2026:${player.id}`;
+            if (!data.assetMap.has(id)) {
+              const asset = {
+                id, type: "player", name: player.name,
+                subtitle: `${player.team} · Mundial 2026 · ${player.role}`,
+                image: player.photoLarge || "silhueta.webp",
+                thumbnail: player.photo || "silhueta.webp",
+                available: Boolean(player.photoLarge),
+                sourceTournament: "ffws-global-2026",
+                aliases: [player.name, `${player.team} ${player.name}`]
+              };
+              data.assets.push(asset);
+              data.assetMap.set(id, asset);
+            }
+            return id;
+          });
+          tierRefreshAssetIndex(data);
+        } catch (error) {
+          console.warn("[Tier Constructor] Usando relação de jogadores salva no projeto:", error);
+        }
+        return ids.map(id => data.assetMap.get(id)).filter(Boolean);
+      }
+
       async function loadTierPreset(presetId, options = {}) {
         const data = await loadTierAssetData();
         const preset = (data.presets || []).find(item => item.id === presetId);
         if (!preset) return false;
-        const assets = (preset.assetIds || []).map(id => data.assetMap.get(id)).filter(Boolean);
+        const assets = preset.roleFilter
+          ? await tierPlayersForRolePreset(preset, data)
+          : (preset.assetIds || []).map(id => data.assetMap.get(id)).filter(Boolean);
+        if (!assets.length) throw new Error("Nenhuma foto disponível para este projeto.");
+        if (preset.nameplatePrompt) {
+          if (tierProjectHasContent() && !confirm(`Abrir “${preset.name}”? O projeto atual será substituído. Salve-o antes, caso queira mantê-lo.`)) return false;
+          const showNames = await askTierPresetNames(preset, assets.length);
+          if (showNames === null) return false;
+          return applyTierPreset({
+            ...preset,
+            settings: { ...(preset.settings || {}), nameplateEnabled: showNames }
+          }, assets, { ...options, skipConfirm: true });
+        }
         return applyTierPreset(preset, assets, options);
       }
 
