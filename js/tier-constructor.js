@@ -158,7 +158,8 @@
       const TIER_BANK_LAYOUT_KEY = "tier_constructor_bank_layout_v1";
       const TIER_EDIT_CONTROLS_KEY = "tier_constructor_hide_edit_controls_v1";
       let tierBankLayout = localStorage.getItem(TIER_BANK_LAYOUT_KEY) === "bottom" ? "bottom" : "left";
-      let editControlsHidden = localStorage.getItem(TIER_EDIT_CONTROLS_KEY) === "true";
+      // Interface limpa por padrão; quem optou por exibir controles mantém sua escolha.
+      let editControlsHidden = localStorage.getItem(TIER_EDIT_CONTROLS_KEY) !== "false";
 
       function applyTierWorkspacePreferences() {
         const layout = document.getElementById("tierEditorLayout");
@@ -1388,8 +1389,22 @@
         showToast("Logo restaurada.");
       }
 
+      function rowImageLimit(row) {
+        const value = Math.floor(Number(row?.maxImages) || 0);
+        return Math.max(0, Math.min(99, value));
+      }
+
       function moveImage(imageId, targetZone, beforeId = null) {
-        if (!state.images[imageId]) return;
+        if (!state.images[imageId]) return false;
+        // Enforce before removing the image from its original zone: failed drops lose nothing.
+        const targetRow = state.rows.find(row => row.id === targetZone);
+        if (targetRow && !targetRow.images.includes(imageId)) {
+          const max = rowImageLimit(targetRow);
+          if (max > 0 && targetRow.images.length >= max) {
+            showToast(`“${targetRow.name}” já atingiu o limite de ${max} imagens.`);
+            return false;
+          }
+        }
         removeFromAllZones(imageId);
 
         const target = targetZone === "bank"
@@ -1411,6 +1426,7 @@
         }
         render();
         pushHistory();
+        return true;
       }
 
       function deleteImage(imageId) {
@@ -1427,6 +1443,7 @@
           name,
           color,
           images: [],
+          maxImages: 0,
           height: state.settings.rowMinHeight
         });
         render();
@@ -1555,7 +1572,37 @@
           heightNumber.addEventListener('input', () => applyRowHeight(heightNumber.value));
           heightWrap.append(heightRange, heightNumberWrap);
 
-          main.append(input, palette, heightWrap);
+          const limitWrap = document.createElement("label");
+          limitWrap.className = "tier-row-limit-setting";
+          const limitTitle = document.createElement("span");
+          limitTitle.textContent = "Máximo de imagens nesta row";
+          const limitHelp = document.createElement("small");
+          limitHelp.textContent = "0 = sem limite. Ex.: use 3 para permitir só três logos.";
+          const limitInput = document.createElement("input");
+          limitInput.type = "number";
+          limitInput.min = "0";
+          limitInput.max = "99";
+          limitInput.step = "1";
+          limitInput.inputMode = "numeric";
+          limitInput.setAttribute("aria-label", `Máximo de imagens na row ${row.name}, zero sem limite`);
+          limitInput.value = String(rowImageLimit(row));
+          limitInput.addEventListener("change", () => {
+            const max = Math.max(0, Math.min(99, Math.floor(Number(limitInput.value) || 0)));
+            if (max === rowImageLimit(row)) {
+              limitInput.value = String(max);
+              return;
+            }
+            row.maxImages = max;
+            if (max > 0 && row.images.length > max) {
+              const extra = row.images.splice(max);
+              state.bank.push(...extra.filter(id => !state.bank.includes(id)));
+              showToast(`${extra.length} ${extra.length === 1 ? "imagem voltou" : "imagens voltaram"} ao banco para respeitar o limite de “${row.name}”.`);
+            }
+            render();
+            pushHistory();
+          });
+          limitWrap.append(limitTitle, limitHelp, limitInput);
+          main.append(input, palette, heightWrap, limitWrap);
 
           const buttons = document.createElement("div");
           buttons.className = "row-manager-buttons";
@@ -2003,6 +2050,7 @@
             id: String(legacyValue(row, ["id", "rowId", "key"], crypto.randomUUID())),
             name: String(legacyValue(row, ["name", "label", "title", "text"], `Row ${rowIndex + 1}`)),
             color: String(legacyValue(row, ["color", "background", "backgroundColor", "bg"], TIER_PRESET_COLORS[rowIndex % TIER_PRESET_COLORS.length])),
+            maxImages: Math.max(0, Math.min(99, Math.floor(Number(legacyValue(row, ["maxImages", "imageLimit"], 0)) || 0))),
             images: references.map((reference, index) => normalizeImageReference(reference, index)).filter(Boolean)
           };
         });
