@@ -24,7 +24,7 @@
       const BROWSER_AUTOSAVE_NAME = "__tierlist_autosave__";
       const CURRENT_PROJECT_KEY = "tierlist_current_browser_project";
 
-      const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20261102-world-2026-v1";
+      const TIER_ASSET_INDEX_URL = "tier-constructor/assets-index.json?v=20261107-global-finals-players-v2";
       const TIER_DEFAULT_PRESET_URL = "tier-constructor/default-wb-2026-s2.json?v=20260801-v1";
       const TIER_LOGO_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6Paknya4E3qRT2mLd0fQMIiBKhuGOPebF0pLK9c0Gk5nRnVWNdY4FxMJV42467JLmwNNumXSc4fCC/pub?gid=1308958099&single=true&output=tsv";
       const TIER_SHARE_HASH_KEY = "tier"; // compatibilidade com links antigos
@@ -346,16 +346,17 @@
         }
         const query = tierNormalizeSearch(tierAssetQuery);
         const addVisibleButton = document.getElementById("tierAssetAddVisible");
-        if (!query) {
+        const globalOnly = tierAssetType === "global-2026";
+        if (!query && !globalOnly) {
           tierVisibleAssets = [];
           root.replaceChildren();
-          if (status) status.textContent = "Digite um nome para pesquisar. Nenhuma logo é carregada enquanto o campo estiver vazio.";
+          if (status) status.textContent = "Digite um nome para pesquisar ou abra a aba Mundial 2026.";
           if (addVisibleButton) addVisibleButton.disabled = true;
           return;
         }
         const tokens = query.split(" ").filter(Boolean);
         tierVisibleAssets = tierAssetData.assets
-          .filter(asset => asset.type === tierAssetType)
+          .filter(asset => globalOnly ? (asset.type === "player" && asset.sourceTournament === "ffws-global-2026") : asset.type === tierAssetType)
           .map(asset => ({ asset, score: tierAssetScore(asset, query, tokens) }))
           .filter(entry => entry.score >= 0)
           .sort((a, b) => b.score - a.score || a.asset.name.localeCompare(b.asset.name, "pt-BR"))
@@ -382,7 +383,8 @@
           // Jogadores sem foto agora podem entrar na tier com a silhueta oficial.
 
           const image = document.createElement("img");
-          image.src = asset.image || (asset.type === "team" ? "escudo.webp" : "silhueta.webp");
+          // Show lightweight roster thumbnails; use high-resolution photos after adding to the tier.
+          image.src = asset.thumbnail || asset.image || (asset.type === "team" ? "escudo.webp" : "silhueta.webp");
           image.alt = "";
           image.loading = "lazy";
           image.decoding = "async";
@@ -407,7 +409,12 @@
         });
         root.appendChild(fragment);
         if (addVisibleButton) addVisibleButton.disabled = false;
-        if (status) status.textContent = `${tierVisibleAssets.length} ${tierAssetType === "team" ? "times" : "jogadores"} encontrados.`;
+        if (status) {
+          const totalGlobal = globalOnly ? tierAssetData.assets.filter(asset => asset.sourceTournament === "ffws-global-2026").length : 0;
+          status.textContent = globalOnly && !query
+            ? `Mostrando ${tierVisibleAssets.length} de ${totalGlobal} jogadores do Mundial 2026. Pesquise pelo jogador ou equipe.`
+            : `${tierVisibleAssets.length} ${tierAssetType === "team" ? "times" : "jogadores"} encontrados.`;
+        }
       }
 
       function tierBlobToDataUrl(blob) {
@@ -4328,7 +4335,7 @@
       tierAssetSearchInput?.addEventListener("input", event => {
         tierAssetQuery = event.target.value;
         clearTimeout(tierAssetTimer);
-        if (!tierNormalizeSearch(tierAssetQuery)) {
+        if (!tierNormalizeSearch(tierAssetQuery) && tierAssetType !== "global-2026") {
           renderTierAssetResults();
           return;
         }
@@ -4348,7 +4355,7 @@
         if (!button) return;
         tierAssetType = button.dataset.value;
         document.querySelectorAll("#tierAssetTypeButtons button[data-value]").forEach(item => item.classList.toggle("active", item === button));
-        if (!tierNormalizeSearch(tierAssetQuery)) {
+        if (!tierNormalizeSearch(tierAssetQuery) && tierAssetType !== "global-2026") {
           renderTierAssetResults();
           return;
         }
@@ -4367,7 +4374,7 @@
         if (asset) addTierAsset(asset).catch(() => showToast("Não foi possível adicionar a imagem."));
       });
       document.getElementById("tierAssetAddVisible")?.addEventListener("click", () => {
-        if (!tierNormalizeSearch(tierAssetQuery)) return;
+        if (!tierNormalizeSearch(tierAssetQuery) && tierAssetType !== "global-2026") return;
         loadTierAssetData().then(addVisibleTierAssets).catch(() => showToast("Biblioteca indisponível."));
       });
       document.querySelectorAll("[data-tier-preset]").forEach(button => {
