@@ -906,22 +906,29 @@
       function archivedImageCard(imageId) {
         const data = state.images[imageId];
         const card = document.createElement("div");
-        card.className = "image-card";
+        // The archived actions must remain visible even in the default clean-edit mode.
+        card.className = "tier-archived-item";
         card.dataset.imageId = imageId;
-        card.title = data?.name || "Imagem oculta";
 
         const img = document.createElement("img");
+        img.className = "tier-archived-image";
         img.src = data.previewSrc || data.src;
         img.alt = data.name || "Imagem oculta";
+        img.loading = "lazy";
+
+        const title = document.createElement("span");
+        title.className = "tier-archived-name";
+        title.textContent = data.name || "Imagem oculta";
 
         const actions = document.createElement("div");
-        actions.className = "card-actions";
+        actions.className = "tier-archived-actions";
 
         const restore = document.createElement("button");
         restore.type = "button";
         restore.className = "restore-image";
-        restore.title = "Restaurar para imagens não classificadas";
-        restore.textContent = "↩";
+        restore.title = "Restaurar para Imagens para classificar";
+        restore.setAttribute("aria-label", `Restaurar ${data.name || "imagem"} para Imagens para classificar`);
+        restore.textContent = "↩ Restaurar";
         restore.addEventListener("click", event => {
           event.stopPropagation();
           restoreArchivedImage(imageId);
@@ -930,15 +937,19 @@
         const removeForever = document.createElement("button");
         removeForever.type = "button";
         removeForever.className = "delete-forever-image";
-        removeForever.title = "Excluir definitivamente";
-        removeForever.textContent = "×";
+        removeForever.title = "Excluir definitivamente do projeto";
+        removeForever.setAttribute("aria-label", `Excluir ${data.name || "imagem"} definitivamente do projeto`);
+        removeForever.textContent = "🗑 Excluir";
         removeForever.addEventListener("click", event => {
           event.stopPropagation();
-          if (confirm("Excluir esta imagem definitivamente do projeto?")) deleteImage(imageId);
+          if (confirm(`Excluir “${data.name || "imagem"}” definitivamente deste projeto?\n\nA imagem poderá ser adicionada novamente pela biblioteca ou enviada outra vez.`)) {
+            deleteImage(imageId);
+            showToast("Imagem excluída do projeto.");
+          }
         });
 
         actions.append(restore, removeForever);
-        card.append(img, actions);
+        card.append(img, title, actions);
         return card;
       }
 
@@ -986,7 +997,7 @@
         });
         els.archivedBank.addEventListener("click", event => {
           if (!isMobileInteractionMode() || !touchSelectedImageId) return;
-          if (event.target.closest(".image-card") || event.target.closest("button")) return;
+          if (event.target.closest(".image-card,.tier-archived-item") || event.target.closest("button")) return;
           event.preventDefault();
           const imageId = touchSelectedImageId;
           touchSelectedImageId = null;
