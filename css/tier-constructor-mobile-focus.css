@@ -699,3 +699,124 @@ body.tier-focus-mode .tier-constructor-app .tier-bank-panel .image-card .card-ac
     overscroll-behavior-y:contain;
   }
 }
+
+/* FFWS Global Finals role preset nameplate choice dialog — 2026-11-07 */
+#tierPresetNamesDialog.tier-preset-names-dialog{
+  width:min(440px,calc(100vw - 28px));
+  max-width:calc(100vw - 28px);
+  max-height:min(85dvh,580px);
+  padding:0;
+  border:1px solid #375572;
+  border-radius:16px;
+  background:#0d182a;
+  color:#f7fbff;
+  box-shadow:0 22px 65px rgba(0,0,0,.7);
+  overflow-y:auto;
+}
+#tierPresetNamesDialog.tier-preset-names-dialog::backdrop{
+  background:rgba(2,7,16,.80);
+  backdrop-filter:blur(4px);
+}
+#tierPresetNamesDialog.tier-preset-names-dialog form{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:22px;
+  margin:0;
+}
+.tier-preset-names-header{
+  display:grid;
+  gap:9px;
+}
+.tier-preset-names-kicker{
+  color:#59c9fb;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.13em;
+}
+#tierPresetNamesDialog .tier-preset-names-header h2{
+  margin:0;
+  font-size:clamp(20px,5vw,25px);
+  line-height:1.12;
+  font-weight:900;
+  color:#fff;
+}
+#tierPresetNamesDialog .tier-preset-names-header p{
+  margin:0;
+  color:#b3c5d9;
+  font-size:13px;
+  line-height:1.5;
+}
+.tier-preset-names-preview{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:11px;
+  border:1px solid #304a66;
+  border-radius:11px;
+  background:#111f33;
+}
+.tier-preset-names-placeholder{
+  flex:0 0 60px;
+  display:grid;
+  place-items:center;
+  width:60px;
+  height:69px;
+  border-radius:8px;
+  background:linear-gradient(145deg,#24405d,#0c1728);
+  color:#9ccae7;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.tier-preset-names-preview>div{
+  display:grid;
+  gap:6px;
+  min-width:0;
+}
+.tier-preset-names-preview strong{
+  color:#f9fcff;
+  font-size:15px;
+  font-weight:900;
+}
+.tier-preset-names-preview small{
+  color:#9fb6cc;
+  font-size:12px;
+}
+#tierPresetNamesDialog .tier-preset-names-actions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+#tierPresetNamesDialog .tier-preset-names-actions button{
+  min-height:44px;
+  min-width:0;
+  padding:9px 12px;
+  border:1px solid #34516d;
+  border-radius:9px;
+  background:#18283b;
+  color:#f3f8ff;
+  font-size:12px;
+  font-weight:850;
+  line-height:1.3;
+  cursor:pointer;
+}
+#tierPresetNamesDialog .tier-preset-names-actions button.primary{
+  background:#10648e;
+  border-color:#198bbd;
+  color:#fff;
+}
+#tierPresetNamesDialog .tier-preset-names-actions .tier-preset-names-cancel{
+  grid-column:1/-1;
+  color:#9eb1c9;
+  background:transparent;
+}
+@media(max-width:480px){
+  #tierPresetNamesDialog.tier-preset-names-dialog form{
+    padding:16px;
+  }
+  #tierPresetNamesDialog .tier-preset-names-actions button{
+    padding:9px 6px;
+    font-size:11px;
+  }
+}
