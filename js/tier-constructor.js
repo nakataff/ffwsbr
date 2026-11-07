@@ -2945,8 +2945,17 @@
 
 
       function openSettingsPanel() {
+        if (els.settingsDialog.open) return;
+        settingsCheckpoint = snapshotState();
+        settingsHistoryCheckpoint = {stack: historyStack.slice(), index: historyIndex};
+        // Keep every subject collapsed until the person chooses to open it.
+        els.settingsDialog.querySelectorAll(".tier-settings-accordion").forEach(section => { section.open = false; });
+        const scroller = els.settingsDialog.querySelector(".modal-body");
+        if (scroller) scroller.scrollTop = 0;
         document.body.classList.add("settings-open");
-        if (!els.settingsDialog.open) els.settingsDialog.show();
+        // A true modal on mobile stays above the site header, image tray and browser-sized layers.
+        if (window.matchMedia("(max-width: 760px)").matches) els.settingsDialog.showModal();
+        else els.settingsDialog.show();
         document.getElementById("settingsBtn")?.setAttribute("aria-expanded", "true");
       }
 
@@ -2954,6 +2963,41 @@
         if (els.settingsDialog.open) els.settingsDialog.close();
         document.body.classList.remove("settings-open");
         document.getElementById("settingsBtn")?.setAttribute("aria-expanded", "false");
+      }
+
+      function saveSettingsPanel() {
+        if (!els.settingsDialog.open) return;
+        clearTimeout(historyTimer);
+        // Commit any changes made through range sliders, colors, row limits or batch actions.
+        pushHistory();
+        saveAutosave();
+        scheduleNamedProjectAutosave();
+        settingsCheckpoint = null;
+        settingsHistoryCheckpoint = null;
+        closeSettingsPanel();
+        showToast("Configurações salvas no projeto.");
+      }
+
+      function discardSettingsPanel(ask = false) {
+        if (!els.settingsDialog.open) return;
+        const checkpoint = settingsCheckpoint;
+        const changed = checkpoint && JSON.stringify(snapshotState()) !== JSON.stringify(checkpoint);
+        if (ask && changed && !window.confirm("Descartar as alterações feitas nas configurações?")) return;
+        clearTimeout(historyTimer);
+        clearTimeout(namedProjectSaveTimer);
+        namedProjectSaveTimer = null;
+        settingsCheckpoint = null;
+        const previousHistory = settingsHistoryCheckpoint;
+        settingsHistoryCheckpoint = null;
+        closeSettingsPanel();
+        if (checkpoint && changed) {
+          if (previousHistory) {
+            historyStack = previousHistory.stack;
+            historyIndex = previousHistory.index;
+          }
+          restoreSnapshot(checkpoint);
+          showToast("Alterações descartadas.");
+        }
       }
 
       function setCaptionPanelCollapsed(collapsed) {
@@ -3771,7 +3815,7 @@
       els.redoBtn.addEventListener("click", redoHistory);
       document.getElementById("settingsBtn").addEventListener("click", () => {
         if (els.settingsDialog.open) {
-          closeSettingsPanel();
+          discardSettingsPanel(true);
           return;
         }
         renderRowManager();
@@ -3799,8 +3843,10 @@
         applyTierWorkspacePreferences();
       });
       applyTierWorkspacePreferences();
-      document.getElementById("closeSettingsBtn").addEventListener("click", closeSettingsPanel);
-      document.getElementById("doneSettingsBtn").addEventListener("click", closeSettingsPanel);
+      document.getElementById("closeSettingsBtn").addEventListener("click", () => discardSettingsPanel(true));
+      document.getElementById("discardSettingsBtn").addEventListener("click", () => discardSettingsPanel(false));
+      document.getElementById("saveSettingsBtn").addEventListener("click", saveSettingsPanel);
+      document.getElementById("doneSettingsBtn").addEventListener("click", saveSettingsPanel);
 
       document.getElementById("browserSaveBtn").addEventListener("click", () => {
         closeProjectMenu();
@@ -4249,6 +4295,10 @@
       els.shareProjectDialog.addEventListener("cancel", event => {
         event.preventDefault();
         els.shareProjectDialog.close();
+      });
+      els.settingsDialog.addEventListener("cancel", event => {
+        event.preventDefault();
+        discardSettingsPanel(true);
       });
       els.settingsDialog.addEventListener("close", () => {
         document.body.classList.remove("settings-open");
