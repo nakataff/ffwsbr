@@ -687,3 +687,15 @@ body.tier-focus-mode .tier-constructor-app .tier-bank-panel .image-card .card-ac
     min-height:38px;
   }
 }
+
+/* Expanded mobile archive tray leaves room for the restore/delete buttons. */
+@media(max-width:760px){
+  body.tier-constructor-page:not(.tier-focus-mode):not(.settings-open) .tier-constructor-app .tier-editor-layout .tier-bank-panel:has(#trashPanel[open]),
+  body.tier-constructor-page:not(.tier-focus-mode):not(.settings-open) .tier-constructor-app .tier-editor-layout[data-bank-layout="bottom"] .tier-bank-panel:has(#trashPanel[open]){
+    max-height:min(52dvh,380px)!important;
+  }
+  .tier-constructor-app #trashPanel[open] #archivedBank{
+    max-height:min(31dvh,250px)!important;
+    overscroll-behavior-y:contain;
+  }
+}
