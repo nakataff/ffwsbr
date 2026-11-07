@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261104-chat-dock-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261107-archive-actions-v5"></script>
+  <script defer src="js/tier-constructor.js?v=20261107-global-player-tier-presets-v6"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261104-chat-dock-v1">
 <link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1">
-<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261107-archive-actions-v5"></head>
+<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261107-global-player-tier-presets-v6"></head>
 <body class="tier-constructor-page" data-cff-chat="off">
 
 <header class="cff-public-topbar">
@@ -58,6 +58,11 @@
               <button type="button" data-tier-preset="wb-2026-s2">WB 2026 S2 — Equipes</button>
               <button type="button" data-tier-preset="ewc-2026">EWC 2026 — Equipes</button>
               <button type="button" data-tier-preset="ffws-global-2026">Mundial FFWS 2026 — Equipes (24)</button>
+              <strong>Jogadores do Mundial 2026</strong>
+              <button type="button" data-tier-preset="global-2026-best-rush">Melhor Rush do Mundial</button>
+              <button type="button" data-tier-preset="global-2026-best-gran">Melhor Granadeiro do Mundial</button>
+              <button type="button" data-tier-preset="global-2026-best-support">Melhor Suporte do Mundial</button>
+              <button type="button" data-tier-preset="global-2026-best-overall">Melhor Jogador do Mundial</button>
               <small id="tierPresetStatus" aria-live="polite"></small>
             </div>
 
@@ -183,6 +188,25 @@
   <input id="editorBgInput" type="file" accept="image/*" class="hidden" />
   <input id="editorPipInput" type="file" accept="image/*" class="hidden" />
   <input id="applyAllBgInput" type="file" accept="image/*" class="hidden" />
+
+  <dialog id="tierPresetNamesDialog" class="tier-preset-names-dialog" aria-labelledby="tierPresetNamesTitle">
+    <form method="dialog">
+      <div class="tier-preset-names-header">
+        <span class="tier-preset-names-kicker">PROJETO PRONTO · MUNDIAL 2026</span>
+        <h2 id="tierPresetNamesTitle">Mostrar nomes dos jogadores?</h2>
+        <p id="tierPresetNamesDescription">As fotos serão adicionadas ao banco para você classificar nas faixas S, A, B, C e D.</p>
+      </div>
+      <div class="tier-preset-names-preview" aria-hidden="true">
+        <span class="tier-preset-names-placeholder">FOTO</span>
+        <div><strong>JOGADOR</strong><small>Legenda abaixo da foto</small></div>
+      </div>
+      <div class="tier-preset-names-actions">
+        <button type="submit" value="show" class="primary">Sim, mostrar nomes</button>
+        <button type="submit" value="hide">Não, só as fotos</button>
+        <button type="submit" value="cancel" class="tier-preset-names-cancel">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="tierPreviewDialog" aria-labelledby="tierPreviewTitle">
     <div class="modal-header"><h2 id="tierPreviewTitle">Prévia da imagem</h2><button type="button" id="closeTierPreviewBtn" aria-label="Fechar prévia">×</button></div>
