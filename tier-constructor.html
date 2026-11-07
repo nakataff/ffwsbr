@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="css/public-shell.css?v=20260901-nav-unified-v11">
   <script defer src="/js/shared-navigation.js?v=20261104-chat-dock-v1"></script>
 <script defer src="js/public-shell.min.js?v=20261011-header-actions-v2"></script>
-  <script defer src="js/tier-constructor.js?v=20261106-row-limits-mobile-settings-v1"></script>
+  <script defer src="js/tier-constructor.js?v=20261107-settings-accordion-desktop-select-v2"></script>
 <link rel="stylesheet" href="/css/shared-navigation.css?v=20261104-chat-dock-v1">
 <link rel="stylesheet" href="css/tier-constructor-workspace.css?v=20261102-name-size-v1">
-<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261106-row-limits-mobile-settings-v1"></head>
+<link rel="stylesheet" href="css/tier-constructor-mobile-focus.css?v=20261107-settings-accordion-mobile-dock-v2"></head>
 <body class="tier-constructor-page" data-cff-chat="off">
 
 <header class="cff-public-topbar">
@@ -234,14 +234,22 @@
   </dialog>
 
   <dialog id="settingsDialog" class="settings-drawer" aria-labelledby="tierSettingsTitle">
-    <div class="modal-header">
+    <div class="modal-header tier-settings-sticky-header">
       <h2 id="tierSettingsTitle">Configurações</h2>
-      <button id="closeSettingsBtn" class="icon" type="button" aria-label="Fechar configurações" title="Fechar configurações">✕</button>
+      <div class="tier-settings-header-actions">
+        <button id="saveSettingsBtn" class="tier-settings-save" type="button" aria-label="Salvar configurações">Salvar</button>
+        <button id="closeSettingsBtn" class="icon" type="button" aria-label="Fechar configurações sem salvar" title="Fechar sem salvar">✕</button>
+      </div>
     </div>
     <div class="modal-body">
       <div class="settings-grid">
-        <section class="settings-section">
-          <h3>Layout da tier</h3>
+        <details class="settings-section tier-settings-accordion">
+          <summary class="tier-settings-accordion-title"><span>Gerenciar rows</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
+          <div id="rowManager" class="row-manager"></div>
+        </details>
+
+        <details class="settings-section tier-settings-accordion">
+          <summary class="tier-settings-accordion-title"><span>Layout da tier</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
 
           <div class="setting">
             <div class="setting-info">
@@ -311,10 +319,10 @@
               <div class="unit-input"><input id="rowHeightNumber" type="number" min="60" max="320" step="5" /><span>px</span></div>
             </div>
           </div>
-        </section>
+        </details>
 
-        <section class="settings-section" id="nameplateSettings">
-          <h3>Nome embaixo das imagens</h3>
+        <details class="settings-section tier-settings-accordion" id="nameplateSettings">
+          <summary class="tier-settings-accordion-title"><span>Nome embaixo das imagens</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
           <div class="setting"><div class="setting-info"><strong>Mostrar nomes de times e jogadores</strong><small>Ex.: logo da LOUD com LOUD em uma faixa abaixo. Funciona também com silhuetas de atletas sem foto.</small></div>
             <div class="setting-control"><div class="segmented" id="nameplateButtons"><button type="button" data-value="false">Desativado</button><button type="button" data-value="true">Ativado</button></div><div></div></div>
           </div>
@@ -327,10 +335,10 @@
             <div class="setting-control"><input id="nameplateHeightRange" type="range" min="18" max="55" step="1"/><div class="unit-input"><input id="nameplateHeightNumber" type="number" min="18" max="55" step="1"/><span>px</span></div></div>
           </div>
           <p class="tier-nameplate-help">Para alterar o nome ou o tamanho de uma imagem específica, use o lápis da imagem → aba Texto. A exportação PNG respeita todas as legendas.</p>
-        </section>
+        </details>
 
-        <section class="settings-section" data-highlight-target="caption">
-          <h3>Texto da legenda do topo</h3>
+        <details class="settings-section tier-settings-accordion" data-highlight-target="caption">
+          <summary class="tier-settings-accordion-title"><span>Texto da legenda do topo</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
 
           <div class="setting">
             <div class="setting-info"><strong>Tamanho da legenda</strong><small>Aumenta ou diminui apenas o texto acima da tier.</small></div>
@@ -371,10 +379,10 @@
             <div class="setting-info"><strong>Tamanho da imagem da legenda</strong><small>Aumenta ou diminui somente a imagem da legenda.</small></div>
             <div class="setting-control"><input id="captionImageSizeRange" type="range" min="40" max="320" step="1" /><div class="unit-input"><input id="captionImageSizeNumber" type="number" min="40" max="320" step="1" /><span>px</span></div></div>
           </div>
-        </section>
+        </details>
 
-        <section class="settings-section" data-highlight-target="rows">
-          <h3>Texto das rows</h3>
+        <details class="settings-section tier-settings-accordion" data-highlight-target="rows">
+          <summary class="tier-settings-accordion-title"><span>Texto das rows</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
 
           <div class="setting">
             <div class="setting-info"><strong>Tamanho do texto das rows</strong><small>Controla apenas o texto dentro das colunas coloridas.</small></div>
@@ -415,10 +423,10 @@
             <div class="setting-info"><strong>Altura automática pelo texto</strong><small>Faz a row crescer quando o texto precisa de espaço.</small></div>
             <div class="setting-control"><div class="segmented" id="rowAutoHeightButtons"><button type="button" data-value="true">Ligado</button><button type="button" data-value="false">Desligado</button></div><div></div></div>
           </div>
-        </section>
+        </details>
 
-        <section class="settings-section" data-highlight-target="positions">
-          <h3>Modo posição</h3>
+        <details class="settings-section tier-settings-accordion" data-highlight-target="positions">
+          <summary class="tier-settings-accordion-title"><span>Modo posição</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
 
           <div class="setting">
             <div class="setting-info"><strong>Mostrar posição nas imagens</strong><small>Exibe [1º], [2º], [3º] sobre as imagens.</small></div>
@@ -479,10 +487,10 @@
             <div class="setting-info"><strong>Cor da sombra</strong><small>Cor da sombra do texto da posição.</small></div>
             <div class="setting-control"><input id="positionShadowColorInput" type="color" /><div></div></div>
           </div>
-        </section>
+        </details>
 
-        <section class="settings-section">
-          <h3>Imagem de fundo da coluna das imagens</h3>
+        <details class="settings-section tier-settings-accordion">
+          <summary class="tier-settings-accordion-title"><span>Imagem de fundo da coluna das imagens</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
 
           <div class="setting">
             <div class="setting-info">
@@ -585,10 +593,10 @@
               <button id="removeBackgroundBtn" class="danger">Remover fundo</button>
             </div>
           </div>
-        </section>
+        </details>
 
-        <section class="settings-section">
-          <h3>Visual em lote das imagens</h3>
+        <details class="settings-section tier-settings-accordion">
+          <summary class="tier-settings-accordion-title"><span>Visual em lote das imagens</span><span class="tier-settings-accordion-chevron" aria-hidden="true">⌄</span></summary>
           <div class="setting">
             <div class="setting-info">
               <strong>Ações rápidas</strong>
@@ -605,17 +613,13 @@
               <div></div>
             </div>
           </div>
-        </section>
-
-        <section class="settings-section">
-          <h3>Gerenciar rows</h3>
-          <div id="rowManager" class="row-manager"></div>
-        </section>
+        </details>
       </div>
 
-      <div class="modal-actions">
-        <button id="resetLayoutBtn" class="danger">Restaurar tamanhos</button>
-        <button id="doneSettingsBtn" class="primary">Concluir</button>
+      <div class="modal-actions tier-settings-footer">
+        <button id="resetLayoutBtn" class="danger" type="button">Restaurar tamanhos</button>
+        <button id="discardSettingsBtn" type="button">Descartar alterações</button>
+        <button id="doneSettingsBtn" class="primary" type="button">Salvar alterações</button>
       </div>
     </div>
   </dialog>
