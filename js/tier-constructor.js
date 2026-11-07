@@ -154,6 +154,9 @@
       let namedProjectSaveTimer = null;
       let touchSelectedImageId = null;
       let mobileMoveHintShown = false;
+      // Save/discard is transactional even though tier preview updates live inside settings.
+      let settingsCheckpoint = null;
+      let settingsHistoryCheckpoint = null;
       // UI-only preferences: do not change saved tier data or PNG export.
       const TIER_BANK_LAYOUT_KEY = "tier_constructor_bank_layout_v1";
       const TIER_EDIT_CONTROLS_KEY = "tier_constructor_hide_edit_controls_v1";
@@ -831,18 +834,28 @@
           document.querySelectorAll(".drag-over").forEach(el => el.classList.remove("drag-over"));
         });
 
-        card.addEventListener("click", (event) => {
-          if (!isMobileInteractionMode() && !document.body.classList.contains("tier-focus-mode")) return;
-          if (event.target.closest('.card-actions')) return;
+        card.addEventListener("click", event => {
+          if (event.target.closest(".card-actions")) return;
+          if (Date.now() < tierTouchClickUntil) return;
+          // Also works on desktop: select a logo, then click the destination row.
           event.preventDefault();
           event.stopPropagation();
           if (touchSelectedImageId && touchSelectedImageId !== imageId) {
-            const zone = card.closest('.dropzone');
-            const zoneId = zone?.dataset.zone || 'bank';
+            const zoneId = card.closest(".dropzone")?.dataset.zone || "bank";
             moveSelectedImageMobile(zoneId, imageId);
             return;
           }
           selectTouchImage(imageId);
+        });
+        card.addEventListener("dblclick", event => {
+          if (isMobileInteractionMode() || event.target.closest(".card-actions")) return;
+          const currentZone = card.closest(".dropzone")?.dataset.zone;
+          if (!currentZone || currentZone === "bank" || currentZone === "archive") return;
+          event.preventDefault();
+          event.stopPropagation();
+          clearTouchSelection();
+          moveImage(imageId, "bank");
+          showToast("Imagem devolvida para Imagens para classificar.");
         });
 
         return card;
@@ -874,9 +887,9 @@
           moveImage(draggedImageId, zone.dataset.zone, beforeId);
         });
 
-        zone.addEventListener("click", (event) => {
-          if ((!isMobileInteractionMode() && !document.body.classList.contains("tier-focus-mode")) || !touchSelectedImageId) return;
-          if (event.target.closest('.image-card') || event.target.closest('button') || event.target.closest('input')) return;
+        zone.addEventListener("click", event => {
+          if (!touchSelectedImageId) return;
+          if (event.target.closest(".image-card,button,input,textarea")) return;
           event.preventDefault();
           moveSelectedImageMobile(zone.dataset.zone);
         });
@@ -1039,6 +1052,13 @@
         makeDropzone(zone, row.images);
 
         rowEl.append(label, zone);
+        rowEl.addEventListener("click", event => {
+          if (!touchSelectedImageId || event.target.closest(".image-card,button,input,textarea")) return;
+          // Clicking the colored label should also count as choosing that row.
+          if (!event.target.closest(".row-label")) return;
+          event.preventDefault();
+          moveSelectedImageMobile(row.id);
+        });
         return rowEl;
       }
 
@@ -1357,9 +1377,11 @@
       function moveSelectedImageMobile(zoneId, beforeId = null) {
         if (!touchSelectedImageId) return false;
         const selectedId = touchSelectedImageId;
-        touchSelectedImageId = null;
-        moveImage(selectedId, zoneId, beforeId);
-        return true;
+        const moved = moveImage(selectedId, zoneId, beforeId);
+        // A filled row should not clear the selection; choose another row.
+        if (moved !== false) touchSelectedImageId = null;
+        updateTouchSelectionUI();
+        return moved !== false;
       }
 
       function removeFromAllZones(imageId) {
@@ -1415,7 +1437,7 @@
           state.bank.push(imageId);
           render();
           pushHistory();
-          return;
+          return true;
         }
 
         const beforeIndex = beforeId ? target.indexOf(beforeId) : -1;
