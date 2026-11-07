@@ -574,3 +574,113 @@ body.tier-focus-mode .tier-constructor-app .tier-bank-panel .image-card .card-ac
     padding:10px 3px;font-size:11px
   }
 }
+
+/* Tier Constructor: permanent visible actions for archived images (2026-11-07) */
+.tier-constructor-app #archivedBank.trash-dropzone{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))!important;
+  align-items:start;
+  align-content:start;
+  gap:8px!important;
+  padding:9px!important;
+  min-width:0;
+}
+.tier-constructor-app #archivedBank .tier-archived-item{
+  display:grid;
+  grid-template-columns:60px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  align-items:center;
+  gap:5px 9px;
+  width:100%;
+  min-width:0;
+  padding:8px;
+  box-sizing:border-box;
+  border:1px solid #314563;
+  border-radius:10px;
+  background:#101b2c;
+}
+.tier-constructor-app #archivedBank .tier-archived-image{
+  grid-column:1;
+  grid-row:1 / 3;
+  display:block;
+  width:60px;
+  height:68px;
+  max-width:100%;
+  object-fit:contain;
+  object-position:center;
+  pointer-events:none;
+}
+.tier-constructor-app #archivedBank .tier-archived-name{
+  grid-column:2;
+  grid-row:1;
+  color:#eff5ff;
+  font-size:12px;
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.tier-constructor-app #archivedBank .tier-archived-actions{
+  grid-column:2;
+  grid-row:2;
+  display:flex!important;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:5px;
+  width:100%;
+  opacity:1!important;
+  position:static!important;
+}
+.tier-constructor-app #archivedBank .tier-archived-actions button{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  flex:1 1 75px;
+  min-width:0;
+  min-height:36px;
+  width:auto!important;
+  height:auto!important;
+  padding:7px 8px!important;
+  border-radius:7px!important;
+  font:800 11px/1.2 inherit;
+  white-space:nowrap;
+  cursor:pointer;
+  opacity:1!important;
+  transform:none!important;
+}
+.tier-constructor-app #archivedBank .tier-archived-actions .restore-image{
+  background:#174766!important;
+  color:#d1f5ff!important;
+  border:1px solid #276b91!important;
+}
+.tier-constructor-app #archivedBank .tier-archived-actions .delete-forever-image{
+  background:#4e1923!important;
+  color:#ffe4e6!important;
+  border:1px solid #983447!important;
+}
+.tier-constructor-app #archivedBank .tier-archived-actions button:focus-visible{
+  outline:2px solid #f3cb63;
+  outline-offset:2px;
+}
+@media(max-width:760px){
+  .tier-constructor-app .tier-bank-panel .trash-panel .archived-bank{
+    max-height:min(34dvh,190px)!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+  .tier-constructor-app #archivedBank.trash-dropzone{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  .tier-constructor-app #archivedBank .tier-archived-item{
+    grid-template-columns:53px minmax(0,1fr);
+    padding:7px;
+  }
+  .tier-constructor-app #archivedBank .tier-archived-image{
+    width:53px;
+    height:67px;
+  }
+  .tier-constructor-app #archivedBank .tier-archived-actions button{
+    min-height:38px;
+  }
+}
