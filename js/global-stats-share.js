@@ -436,7 +436,7 @@ async function draw(payload){
   const facts=payload.facts.slice(0,compact?2:6);
   if(story&&facts.length){
    // Full-width statistic rows fill the vertical Story; these are NOT feed tiles.
-   const gap=facts.length>=5?13:19,maximum=facts.length>=5?172:facts.length===4?220:facts.length===3?260:340;
+   const gap=facts.length>=5?13:19,maximum=facts.length>=5?172:facts.length===4?236:facts.length===3?296:420;
    const fit=storyFit(facts.length,maximum,gap);
    facts.forEach((fact,i)=>{
     const x=pad,y=fit.top+i*(fit.height+gap),boxW=w-pad*2,boxH=fit.height;
