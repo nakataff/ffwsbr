@@ -704,6 +704,13 @@ function prepareModal(){
    '<label class="cff-share-entity-player">Jogador<select data-share-field="player"></select></label>',
    '<div class="cff-share-top-settings"><label>Ranking<select data-share-field="topEntity"><option value="team">Equipes</option><option value="player">Jogadores</option><option value="contribution">Participação individual</option></select></label><label>Indicador<select data-share-field="metric"></select></label></div>',
    '<label class="cff-share-record-setting">Recorde<select data-share-field="record"></select></label>',
+   '<fieldset class="cff-share-stat-settings" hidden><legend>Conteúdos do card · <span class="cff-share-stat-kind">jogador</span></legend>',
+    '<p>Escolha até 6 informações, na ordem em que devem aparecer. Selecione “Ocultar” para não exibir uma delas.</p>',
+    '<div class="cff-share-stat-slots">'+Array.from({length:6},(_,i)=>'<label>Informação '+(i+1)+'<select data-share-slot="'+i+'" aria-label="Informação '+(i+1)+'"></select></label>').join('')+'</div>',
+    '<div class="cff-share-stat-options"><label><input type="checkbox" data-share-field="showMainRank"> Mostrar posição do destaque principal</label>',
+    '<label><input type="checkbox" data-share-field="showFactRanks"> Mostrar posição de cada informação</label></div>',
+    '<p class="cff-share-stat-note">As posições usam os dados do recorte aberto no site. Dados indisponíveis aparecem como “—”, sem inventar números.</p>',
+   '</fieldset>',
    '<fieldset><legend>Formato da imagem</legend><div class="cff-share-formats"><label><input type="radio" name="cff-share-format" value="stories">Stories <small>1080 × 1920</small></label><label><input type="radio" name="cff-share-format" value="feed">Feed 4:5 <small>1080 × 1350</small></label><label><input type="radio" name="cff-share-format" value="square">Quadrado <small>1080 × 1080</small></label><label><input type="radio" name="cff-share-format" value="wide">16:9 <small>1280 × 720</small></label></div></fieldset>',
    '<div class="cff-share-options-grid"><label>Tema<select data-share-field="theme"><option value="dark">Escuro</option><option value="light">Claro</option></select></label><label>Cor de destaque<select data-share-field="accent"><option value="blue">Azul CFF</option><option value="red">Vermelho</option><option value="gold">Dourado</option><option value="green">Verde</option></select></label></div>',
    '<label>Título personalizado<input type="text" maxlength="85" placeholder="Usar título automático" class="cff-share-custom-title" data-share-field="title"><small class="cff-share-title-help"></small></label>',
@@ -722,10 +729,16 @@ function prepareModal(){
   control.addEventListener(control.tagName==='INPUT'&&control.type==='text'?'input':'change',()=>{
    state[prop]=control.type==='checkbox'?control.checked:control.value;
    if(prop==='kind'||prop==='topEntity'||prop==='metric'||prop==='record'||prop==='single'||prop==='team'||prop==='player'||prop==='teamB')currentSource=null;
+   if(prop==='kind')resetSlots(state.kind);
    if(prop==='topEntity')syncMetricOptions();
    refresh();
   });
  });
+ modal.querySelectorAll('[data-share-slot]').forEach(select=>select.addEventListener('change',()=>{
+  const index=Number(select.dataset.shareSlot);
+  if(Number.isInteger(index)&&index>=0&&index<6)state.slotMetrics[index]=select.value;
+  refresh();
+ }));
  modal.querySelectorAll('[name="cff-share-format"]').forEach(input=>input.addEventListener('change',()=>{
   if(input.checked){state.format=input.value;refresh()}
  }));
@@ -751,6 +764,7 @@ function open(source){
  if(source?.metric)state.metric=source.metric;
  if(source?.entity)state.topEntity=source.entity;
  if(source?.record)state.record=source.record[0]+'|'+source.record[1];
+ resetSlots(state.kind);
  state.title='';
  const teams=sorted(context.teams,'points');
  state.team=optionsFor(dlg.querySelector('[data-share-field="team"]'),teams,r=>r.team,r=>r.team,state.team);
