@@ -21,7 +21,7 @@ export function mountCodePromotions(host,{items,price,request,onSaved=()=>{},own
    if(base!==normalPrice)await request('setCodePrice',{title,normalPrice});
    const result=oldSale!==salePrice?await request('setCodePromotion',{title,salePrice}):{ok:true,originalPrice:normalPrice,price:salePrice||normalPrice,promotion:!!salePrice};
    if(!valid())return;dirty=false;
-   status.textContent='Preço salvo: '+number(result.price)+' CFF Coins'+(result.promotion?' (promoção ativa)':'')+'.';
+   status.textContent=salePrice===0&&oldSale>0?'Promoção removida. O prêmio voltou ao preço normal de '+number(result.price)+' CFF Coins.':'Preço salvo: '+number(result.price)+' CFF Coins'+(result.promotion?' (promoção ativa)':'')+'.';
    await onSaved(result);
   }catch(error){if(valid())status.textContent=error.message+' Confira o preço atual antes de tentar novamente.';}
   finally{busy=false;if(valid()){form.querySelectorAll('input,select,button').forEach(n=>n.disabled=false);render();}}
