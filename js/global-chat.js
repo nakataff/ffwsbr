@@ -1,7 +1,7 @@
 import {isChatVisible,watchChatVisibility,isChatPageAllowed} from './chat-visibility.mjs?v=20261020-chat-layout-v1';
 import {createEmblemDisplay,emblemSlot} from './profile-emblems.mjs?v=20261016-emblems-v1';
 import {selectedFrame,frameScaleFor} from './profile-frame-model.mjs?v=20261013-profile-frames-v1';
-const VERSION='20261020-chat-layout-v2';
+const VERSION='20261108-chat-shop-date-v3';
 const SERVICE='https://cff-camp-notifications.nakataffb4.workers.dev/api',ADMIN='admin@centralfreefire.com.br';
 const icon='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-4 3V11.5A7.5 7.5 0 0 1 9.5 4h3a7.5 7.5 0 0 1 7.5 7.5Z"/><path d="M7 10h8M7 14h5"/></svg>';
 if(isChatPageAllowed()&&document.documentElement.dataset.cffChat!=='off'&&document.body?.dataset.cffChat!=='off'&&!document.getElementById('cff-global-chat'))mountChat();
@@ -46,7 +46,7 @@ function mountChat(){
   if(account.dataset.markup!==markup){account.dataset.markup=markup;account.innerHTML=markup;}const wait=Math.max(0,Math.ceil((cooldownUntil-Date.now())/1000));$('[data-chat-counter]').textContent=wait?'Aguarde '+wait+'s':input.value.length+'/500';$('[data-chat-moderation]').hidden=!isModerator();
  }
  function loadAssets(ids){for(const id of ids){if(id==='default'||deps.images.findOption?.(options,id)||!/^[A-Za-z0-9_-]{1,128}$/.test(id||'')||assetStops.has(id))continue;assetStops.set(id,listen('communityProfileCatalog/'+id,item=>{catalog[id]=item;redraw();}));}}
- function reconcile(){const uids=new Set(),assets=new Set();for(const node of nodes.values()){const m=node._chatMessage;if(/^[A-Za-z0-9_-]{1,128}$/.test(m.uid||''))uids.add(m.uid);const identity=identities.get(m.uid)||m;assets.add(identity.avatarId||m.avatarId||defaults.avatarId);const frameId=userFrames.get(m.uid);if(frameId)assets.add(frameId);for(const id of identity.badgeIds||[])assets.add(id);}
+ function reconcile(){const uids=new Set(),assets=new Set();for(const node of nodes.values()){const m=node._chatMessage;if(m.kind==='shop-notice'||m.kind==='public-code')continue;if(/^[A-Za-z0-9_-]{1,128}$/.test(m.uid||''))uids.add(m.uid);const identity=identities.get(m.uid)||m;assets.add(identity.avatarId||m.avatarId||defaults.avatarId);const frameId=userFrames.get(m.uid);if(frameId)assets.add(frameId);for(const id of identity.badgeIds||[])assets.add(id);}
   for(const [uid,stop]of identityStops)if(!uids.has(uid)){stop();identityStops.delete(uid);identities.delete(uid);}
   for(const [uid,stop]of roleStops)if(!uids.has(uid)){stop();roleStops.delete(uid);accountRoles.delete(uid);}
   for(const [uid,stop]of frameStops)if(!uids.has(uid)){stop();frameStops.delete(uid);userFrames.delete(uid);}
@@ -57,6 +57,13 @@ function mountChat(){
   for(const [id,stop]of assetStops)if(!assets.has(id)){stop();assetStops.delete(id);delete catalog[id];}loadAssets(assets);
  }
  function renderMessage(id,m){let node=nodes.get(id);if(!node){node=document.createElement('article');node.className='cff-chat-message';node.dataset.chatMessage=id;nodes.set(id,node);}node._chatMessage=m;
+  if(m.kind==='shop-notice'){
+   const date=new Date(Number(m.at)||0),signature=JSON.stringify(m);
+   node.classList.add('is-system');node.classList.remove('is-own','is-mentioned');
+   if(node.dataset.signature===signature)return node;node.dataset.signature=signature;
+   node.innerHTML='<span class="cff-chat-photo cff-chat-system-icon" aria-hidden="true"><img src="/central%20free%20fire.webp" alt=""></span><div class="cff-chat-message-body"><div class="cff-chat-message-top"><strong class="cff-chat-name">Central Free Fire</strong><span class="cff-chat-role">LOJA · SISTEMA</span><time datetime="'+date.toISOString()+'">'+esc(date.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}))+'</time></div><p class="cff-chat-message-text">'+esc(m.text||'')+'</p><a class="cff-chat-shop-link" href="/conta.html?tab=points&shopSection=shop#eco-shop">Abrir lojinha ↗</a></div>';
+   return node;
+  }
   const author=identities.get(m.uid)||m,realAdministrator=identities.get(m.uid)?.realAdministrator===true||m.uid===user?.uid&&user?.email===ADMIN,currentRole=realAdministrator?{roleId:'administrator'}:accountRoles.get(m.uid)||{roleId:author.roleId||m.roleId||'member'},role=deps.roleData.roleForAccount(currentRole,roleCatalog),badgeIds=(author.badgeIds||[]).slice(0,2).filter(id=>catalog[id]?.enabled&&catalog[id]?.kind==='badge');
   const frame=selectedFrame({frameId:userFrames.get(m.uid)||''},options,catalog,item=>item.enabled===true),frameId=frame?.id||'',frameMarkup=frame?`<span class="cff-chat-frame-layer" aria-hidden="true" style="--cff-chat-frame-scale:${frameScaleFor(frame)}">${deps.images.approvedImage(options,catalog,frameId,'cff-chat-frame-image','')}</span>`:'';
   const signature=JSON.stringify([m,author,role,badgeIds.map(id=>catalog[id]),catalog[author.avatarId],frameId,frame,catalog[frameId],user?.uid]);if(node.dataset.signature===signature)return node;node.dataset.signature=signature;
@@ -64,7 +71,7 @@ function mountChat(){
   node.innerHTML=`<a class="cff-chat-photo" href="${path}" aria-label="Ver perfil de ${esc(name)}">${deps.images.approvedImage(options,catalog,author.avatarId||m.avatarId||defaults.avatarId||'default','cff-chat-avatar',name)}${frameMarkup}${emblemSlot(m.uid)}</a><div class="cff-chat-message-body"><div class="cff-chat-message-top"><a class="cff-chat-name" href="${path}" style="color:${color(author.nameColor)||role.color}">${esc(name)}</a><span class="cff-chat-role" style="color:${role.color}">${esc(role.label)}</span><span class="cff-chat-badges">${badgeIds.map(id=>`<button type="button" data-chat-badge="${esc(id)}" title="${esc(catalog[id].title)}" aria-label="${esc(catalog[id].title)}">${deps.images.approvedImage(options,catalog,id,'',catalog[id].title)}</button>`).join('')}</span><time datetime="${date.toISOString()}">${esc(date.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}))}</time></div>${m.reply?`<button type="button" class="cff-chat-quote" data-chat-jump="${esc(m.reply.id)}"><strong>${esc(m.reply.name)}</strong><span>${esc(m.reply.text)}</span></button>`:''}<p class="cff-chat-message-text"></p><div class="cff-chat-message-actions"><button type="button" data-chat-reply="${esc(id)}">Responder</button><button type="button" data-chat-options="${esc(id)}" aria-label="Ações da mensagem de ${esc(name)}">Mais ···</button></div></div>`;
   const text=node.querySelector('.cff-chat-message-text');let offset=0;for(const match of String(m.text||'').matchAll(/@[a-z0-9_]{3,24}\b/gi)){text.append(document.createTextNode(m.text.slice(offset,match.index)));const mention=document.createElement('span');mention.className='cff-chat-mention';mention.textContent=match[0];text.append(mention);offset=match.index+match[0].length;}text.append(document.createTextNode(String(m.text||'').slice(offset)));return node;
  }
- function redraw(){if(!deps)return;for(const [id,node]of nodes)renderMessage(id,node._chatMessage);emblems.mount([...nodes.values()].map(node=>node._chatMessage.uid));deps.images.hydrateProfileImages(timeline,db);}
+ function redraw(){if(!deps)return;for(const [id,node]of nodes)renderMessage(id,node._chatMessage);emblems.mount([...nodes.values()].filter(node=>node._chatMessage.kind!=='shop-notice').map(node=>node._chatMessage.uid));deps.images.hydrateProfileImages(timeline,db);}
  const saoDay=at=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Number(at)||0));
  const dayLabel=key=>{const today=saoDay(Date.now()),yesterday=saoDay(Date.now()-86400000);if(key===today)return 'Hoje';if(key===yesterday)return 'Ontem';return new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC',day:'numeric',month:'long',year:'numeric'}).format(new Date(key+'T12:00:00Z'));};
  function renderMessages(messages){
