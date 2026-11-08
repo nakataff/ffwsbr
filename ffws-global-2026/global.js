@@ -1584,7 +1584,7 @@
     const selected = new Set((state.statsEvolution.teams || []).map(normalize));
     return `<section id="anchor-s2-evolucao" class="ffws-global-panel ffws-global-stats-evolution"><div class="ffws-global-panel-inner">
       <div class="ffws-global-panel-head"><div><h2>Comparação de Evolução das Equipes</h2><p>Gráfico no mesmo estilo da S1, usando o recorte definido nos filtros acima.</p></div><span class="ffws-global-badge">até 5 equipes</span></div>
-      <div class="ffws-global-evolution-controls"><label class="ffws-global-filter"><span>Métrica do gráfico:</span><select onchange="setFFWSGlobalStatsEvolutionMetric(this.value)"><option value="position"${state.statsEvolution.metric==='position'?' selected':''}>Posição geral (acumulada)</option><option value="points"${state.statsEvolution.metric==='points'?' selected':''}>Pontos por dia</option><option value="kills"${state.statsEvolution.metric==='kills'?' selected':''}>Abates por dia</option></select></label><div class="ffws-global-evolution-team-wrap"><span>Equipes (máx. 5):</span><div class="ffws-global-evolution-team-buttons">${teams.map(team => `<button type="button" class="${selected.has(normalize(team)) ? 'active' : ''}" onclick="toggleFFWSGlobalStatsEvolutionTeam('${jsAttr(team)}')" title="${escapeHtml(team)}"><img src="${escapeHtml(logo(team))}" data-cff-global-team-logo="${escapeHtml(team)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><b>${escapeHtml(abbreviation(team))}</b></button>`).join('')}</div></div></div>
+      <div class="ffws-global-evolution-controls"><label class="ffws-global-filter"><span>Métrica do gráfico:</span><select onchange="setFFWSGlobalStatsEvolutionMetric(this.value)"><option value="position"${state.statsEvolution.metric==='position'?' selected':''}>Posição geral (acumulada)</option><option value="points"${state.statsEvolution.metric==='points'?' selected':''}>Pontos por dia</option><option value="kills"${state.statsEvolution.metric==='kills'?' selected':''}>Abates por dia</option></select></label><div class="ffws-global-evolution-team-wrap"><span>Equipes (máx. 5):</span><div class="ffws-global-evolution-team-carousel"><button type="button" class="ffws-global-evolution-arrow" data-direction="-1" onclick="scrollFFWSGlobalEvolutionTeams(-1)" aria-label="Ver equipes anteriores" title="Equipes anteriores" disabled>&#8249;</button><div class="ffws-global-evolution-team-buttons" id="ffws-global-evolution-team-buttons" role="group" aria-label="Selecione até cinco equipes" onscroll="updateFFWSGlobalEvolutionTeamArrows()">${teams.map(team => `<button type="button" class="${selected.has(normalize(team)) ? 'active' : ''}" onclick="toggleFFWSGlobalStatsEvolutionTeam('${jsAttr(team)}')" title="${escapeHtml(team)}"><img src="${escapeHtml(logo(team))}" data-cff-global-team-logo="${escapeHtml(team)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><b>${escapeHtml(abbreviation(team))}</b></button>`).join('')}</div><button type="button" class="ffws-global-evolution-arrow" data-direction="1" onclick="scrollFFWSGlobalEvolutionTeams(1)" aria-label="Ver próximas equipes" title="Próximas equipes">&#8250;</button></div></div></div>
       <div class="ffws-global-evolution-canvas-wrap"><canvas id="ffws-global-stats-evolution-chart"></canvas><div id="ffws-global-stats-evolution-empty" class="ffws-global-empty" hidden><div><strong>Sem dados suficientes</strong>Selecione ao menos uma equipe com resultados no recorte.</div></div></div>
     </div></section>`;
   }
@@ -1609,7 +1609,7 @@
 
   function s2StatsEvolutionPlayerSearchHtml(query) {
   const q=normalize(query||'');
-  if(!q)return '<p class="ffws-global-evolution-hint">Digite o nome de um jogador ou equipe para encontrar um atleta.</p>';
+  if(!q)return '';
   const items=s2StatsEvolutionPlayerOptions.filter(p=>normalize(p.name+' '+p.team).includes(q)).slice(0,12);
   if(!items.length)return '<p class="ffws-global-evolution-hint">Nenhum jogador encontrado. Tente outro nome.</p>';
   const selected=new Set(state.statsEvolutionPlayers.players||[]);
@@ -2024,7 +2024,7 @@
         return path ? (path.startsWith('/') ? path : '/' + path) : '';
       }
     });
-    requestAnimationFrame(() => { renderS2StatsEvolutionChart(); renderS2StatsEvolutionPlayerChart(); updateGlobalStatsBackTopVisibility(); });
+    requestAnimationFrame(() => { renderS2StatsEvolutionChart(); renderS2StatsEvolutionPlayerChart(); updateFFWSGlobalEvolutionTeamArrows(); updateGlobalStatsBackTopVisibility(); });
   }
   function calculateS2CffNote(kills, damage, assists, mvp, position) {
     kills = number(kills); damage = number(damage); assists = number(assists); position = number(position);
@@ -2626,6 +2626,22 @@
   window.ffwsS2StatsPageNav = (key, delta) => { const pages = s2StatsPageState(); pages[key] = delta === 'reset' ? 0 : number(pages[key]) + number(delta); renderStats(); };
   window.scrollFFWSGlobalStatsSection = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   window.setFFWSGlobalStatsEvolutionMetric = value => { state.statsEvolution.metric = ['position','points','kills'].includes(String(value)) ? String(value) : 'position'; renderS2StatsEvolutionChart(); };
+  window.updateFFWSGlobalEvolutionTeamArrows = () => {
+    const row = document.getElementById('ffws-global-evolution-team-buttons');
+    if (!row) return;
+    const prev = row.parentElement.querySelector('[data-direction="-1"]');
+    const next = row.parentElement.querySelector('[data-direction="1"]');
+    const end = Math.max(0, row.scrollWidth - row.clientWidth);
+    if (prev) prev.disabled = row.scrollLeft <= 2;
+    if (next) next.disabled = row.scrollLeft >= end - 2;
+  };
+  window.scrollFFWSGlobalEvolutionTeams = direction => {
+    const row = document.getElementById('ffws-global-evolution-team-buttons');
+    if (!row) return;
+    const step = Math.max(row.clientWidth * 0.8, row.querySelector('button')?.offsetWidth || 60);
+    row.scrollBy({ left: (direction > 0 ? 1 : -1) * step, behavior: 'smooth' });
+  };
+  window.addEventListener('resize', window.updateFFWSGlobalEvolutionTeamArrows, { passive: true });
   window.toggleFFWSGlobalStatsEvolutionTeam = team => {
     const selected = new Set(state.statsEvolution.teams || []);
     const current = [...selected].find(item => normalize(item) === normalize(team));
