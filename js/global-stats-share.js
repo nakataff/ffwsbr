@@ -311,7 +311,11 @@ async function draw(payload){
  textLine(ctx,payload.eyebrow,pad+brandSize+19,headY+29,600,compact?13:16,muted,'850');
  ctx.fillStyle=dark?'#34526c':'#b5cad9';ctx.fillRect(pad,headY+61,w-2*pad,2);
  // Canvas text coordinates are baselines: make headline, player, filters and score separate rows.
- const footerY=h-(compact?69:113),panelTop=compact?497:Math.floor(h*.58);
+ const footerY=h-(compact?69:113);
+ // Stories rankings: make the five rows fill the middle of the image, not
+ // begin below a huge empty gap. Other formats preserve their layout.
+ const storyRanking=h>=1800&&payload.rows.length>0;
+ const panelTop=compact?497:storyRanking?Math.round(h*.425):Math.floor(h*.58);
  const heroVisible=state.showImage&&(photo||emblem)&&!wideList;
  const portraitY=compact?175:210;
  const portraitSize=heroVisible?Math.min(w*(compact?.255:h>1700?.425:.38),panelTop-portraitY-(compact?14:30)):0;
@@ -361,15 +365,25 @@ async function draw(payload){
   });
  }else if(payload.rows.length){
   const items=payload.rows.slice(0,5);
-  const gap=compact?7:12,available=panelBottom-panelTop,rowH=clamp((available-gap*(items.length-1))/Math.max(1,items.length),compact?36:55,compact?70:95);
+  const gap=compact?7:storyRanking?16:12;
+  const available=panelBottom-panelTop-(storyRanking?95:0);
+  const rowH=clamp((available-gap*(items.length-1))/Math.max(1,items.length),
+   compact?36:storyRanking?95:55,compact?70:storyRanking?156:95);
+  if(storyRanking)textLine(ctx,'RANKING DO RECORTE',pad,panelTop-25,w-2*pad,19,muted,'900');
   items.forEach((row,i)=>{
    const y=panelTop+i*(rowH+gap);
    rounded(ctx,pad,y,w-pad*2,rowH,13,surface,dark?'#263e57':'#c6d6e4');
-   rounded(ctx,pad+12,y+8,rowH-16,rowH-16,8,i===0?accent:dark?'#1b3047':'#dce8f4');
-   textLine(ctx,String(row.rank),pad+12+(rowH-16)/2,y+rowH/2+8,rowH-18,compact?19:26,i===0?'#081a2a':ink,'950','center');
-   if(state.showImage&&rowImages[i])contain(ctx,rowImages[i],pad+rowH+19,y+8,rowH-15,rowH-15);
-   textLine(ctx,row.name,pad+rowH+(state.showImage?rowH+17:21),y+rowH/2+7,w*.43,compact?20:28,ink);
-   textLine(ctx,row.score,w-pad-17,y+rowH/2+8,w*.2,compact?23:31,accent,'950','right');
+   const badgeSize=storyRanking?Math.min(86,rowH-24):rowH-16;
+   const badgeY=storyRanking?y+(rowH-badgeSize)/2:y+8;
+   rounded(ctx,pad+12,badgeY,badgeSize,badgeSize,8,i===0?accent:dark?'#1b3047':'#dce8f4');
+   textLine(ctx,String(row.rank),pad+12+badgeSize/2,y+rowH/2+8,badgeSize-2,storyRanking?29:compact?19:26,i===0?'#081a2a':ink,'950','center');
+   const logoSize=storyRanking?Math.min(99,rowH-22):rowH-15;
+   if(state.showImage&&rowImages[i])contain(ctx,rowImages[i],pad+badgeSize+26,storyRanking?y+(rowH-logoSize)/2:y+8,logoSize,logoSize);
+   const nameX=storyRanking?pad+badgeSize+(state.showImage&&rowImages[i]?logoSize+43:38):pad+rowH+(state.showImage?rowH+17:21);
+   const nameWidth=storyRanking?Math.max(90,w-pad-155-nameX):w*.43;
+   textLine(ctx,row.name,nameX,y+rowH/2+(storyRanking&&row.team&&row.team!==row.name?-6:7),nameWidth,storyRanking?33:compact?20:28,ink);
+   if(storyRanking&&row.team&&row.team!==row.name)textLine(ctx,row.team,nameX,y+rowH/2+29,nameWidth,20,muted,'750');
+   textLine(ctx,row.score,w-pad-17,y+rowH/2+10,w*.2,storyRanking?35:compact?23:31,accent,'950','right');
   });
  }else if(payload.two){
   const rows=payload.two,colGap=14,colW=(w-2*pad-colGap)/2;
