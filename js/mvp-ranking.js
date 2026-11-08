@@ -21,10 +21,29 @@
     return path&&!/[:\\]/.test(path)&&!path.split('/').includes('..')?'/'+path:'/escudo.webp';
   };
   function load(key,config){
-    if(!cache.has(key))cache.set(key,fetch('/'+config.path+'/mvp-resumo.json?v='+(key==='global'?'20261108-mundial-dia3-v1':'20261106-shared-mvp-v1'),{cache:'default'})
-      .then(r=>{if(!r.ok)throw Error('Ranking indisponível');return r.json();})
-      .then(data=>{if(data.version!==2||data.edition!==key||!Array.isArray(data.rows))throw Error('Ranking inválido');return data;})
-      .catch(error=>{cache.delete(key);throw error;}));
+    if(!cache.has(key)){
+      const base='/'+config.path+'/mvp-resumo.json';
+      const version=key==='global'?'20261108-mvp-refresh-v3':'20261106-shared-mvp-v1';
+      const parse=async(url,mode)=>{
+        const response=await fetch(url,{cache:mode});
+        if(!response.ok)throw Error('Ranking indisponível');
+        const data=await response.json();
+        if(data.version!==2||data.edition!==key||!Array.isArray(data.rows))throw Error('Ranking inválido');
+        return data;
+      };
+      const promise=(async()=>{
+        let data=await parse(base+'?v='+version,'default');
+        // Detect the precise stale dataset (102 players / two days) instead of silently displaying it.
+        if(key==='global'&&!data.rows.some(row=>row[0]===0&&row[1]===3)){
+          data=await parse(base+'?v='+version+'&recheck='+Date.now(),'no-store');
+          if(!data.rows.some(row=>row[0]===0&&row[1]===3)){
+            throw Error('Ranking MVP desatualizado: dados do Dia 3 ainda não disponíveis nesta publicação');
+          }
+        }
+        return data;
+      })().catch(error=>{cache.delete(key);throw error;});
+      cache.set(key,promise);
+    }
     return cache.get(key);
   }
   function setup(key,config,data){
@@ -75,6 +94,7 @@
   function render(root,s){
     const {config:c}=s,p=c.prefix,rows=rowsOf(s),id=c.path+'-mvp';
     const world=s.data.edition==='global',columns=world?10:9;
+    const latestGlobalDate=world?s.data.periods.filter(period=>s.data.rows.some(row=>row[0]===s.data.stages.indexOf(period.stage)&&row[1]===period.day)).map(period=>period.date).sort().at(-1):'';
     const max=Math.max(0,Math.ceil(rows.length/pageSize)-1);
     s.page=Math.max(0,Math.min(max,s.page));
     const start=s.page*pageSize,end=Math.min(start+pageSize,rows.length);
@@ -92,7 +112,7 @@
     }).join('');
     root.innerHTML=`<div class="${p}-shell"><section class="${p}-hero">${s.data.edition==='global'?'<div class="ffws-global-brand"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="86" height="67" alt=""><div class="ffws-global-kicker">'+c.kicker+'</div></div>':'<div class="ffws-s2-kicker">'+c.kicker+'</div>'}<h1>Ranking MVP</h1><p>Classificação individual da ${c.title}</p>${s.data.edition==='global'?'<a class="ffws-global-pred-link" href="/interacoes.html#palpites">🎯 Fazer meus palpites ↗</a>':''}</section>
     <section class="${p}-panel ${p}-mvp-panel${s.details?' show-details':''}"><div class="${p}-panel-inner">
-      <div class="${p}-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking e toque nas setas das colunas para ordenar.</p></div><span class="${p}-badge" aria-live="polite">${rows.length} jogadores</span></div>
+      <div class="${p}-panel-head"><div><h2>Classificação Geral de Jogadores</h2><p>Filtre o ranking e toque nas setas das colunas para ordenar.${world&&latestGlobalDate?'<span style="display:block;margin-top:5px;color:#74d9f2">Dados até '+esc(latestGlobalDate.slice(8,10)+'/'+latestGlobalDate.slice(5,7))+' · classificação acumulada</span>':''}</p></div><span class="${p}-badge" aria-live="polite">${rows.length} jogadores</span></div>
       <div class="${p}-filters cff-mvp-filters">${filters}</div>
       <dialog class="cff-mvp-filter-dialog" id="${id}-dialog" aria-labelledby="${id}-dialog-title"><form>
         <div class="cff-mvp-filter-heading"><h3 id="${id}-dialog-title"></h3><button type="button" data-mvp-close aria-label="Fechar sem aplicar">×</button></div>
