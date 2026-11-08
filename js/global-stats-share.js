@@ -44,7 +44,7 @@ const TEAM_SLOTS=['kills','damage','assists','matches','avgKills','avgDamage'];
 const METRIC_GROUPS={
  player:[['kills','Abates'],['damage','Dano'],['assists','Assistências'],['matches','Quedas'],
   ['avgKills','Abates / queda'],['avgDamage','Dano / queda'],['avgAssists','Assistências / queda'],
-  ['avgPartKills','Participação nos abates da equipe'],['avgPartDamage','Participação no dano da equipe'],
+  ['mvps','MVPs da queda'],['avgPartKills','Participação nos abates da equipe'],['avgPartDamage','Participação no dano da equipe'],
   ['avgPartAssists','Participação nas assistências da equipe'],
   ['bestDropKills','Recorde de abates em uma queda'],['bestDayKills','Recorde de abates em um dia'],
   ['bestDropDamage','Recorde de dano em uma queda'],['bestDayDamage','Recorde de dano em um dia'],
@@ -139,6 +139,7 @@ function getTeamStats(row){
  return {...row,damage,assists,avgDamage:damage!==null?damage/Number(row.matches):null};
 }
 function recordValue(row,type,metric){
+ if(type==='team'&&metric.includes('Damage')&&getTeamStats(row).damage===null)return null;
  const scope=(type==='team'?'team':'player')+(metric.startsWith('bestDrop')?'Drop':'Day');
  const field=metric.includes('Damage')?'damage':metric.includes('Assists')?'assists':'kills';
  const matches=(context?.records?.[scope]||[]).filter(item=>
