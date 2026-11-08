@@ -137,3 +137,19 @@ test('the shared bootstrap skips public chat imports on admin pages and supports
  }
  for(const path of ['admin-chat.html','admin-perfis.html'])assert(!fs.readFileSync(path,'utf8').includes('src="/js/global-chat.js'));
 });
+
+test('chat separates Brasilia calendar days and renders shop notices without identity listeners',async()=>{
+ const f=await fixture();try{
+  const second='1791996400000-fedcba9876543210';
+  f.data['globalChat/messages'][second]={uid:'central-system',name:'Central Free Fire · Loja',kind:'shop-notice',text:'🎁 Skin X — 3 disponíveis · 750 Coins',at:1791996400000};
+  await f.open();
+  const d=f.w.document,days=[...d.querySelectorAll('.cff-chat-day')];
+  assert.equal(days.length,2);
+  assert(days.every(n=>n.getAttribute('role')==='separator'));
+  assert(d.querySelector('[data-chat-message="'+second+'"]').classList.contains('is-system'));
+  assert.match(d.querySelector('.cff-chat-shop-link').href,/tab=points&shopSection=shop/);
+  assert(!f.reads.includes('globalChat/identities/central-system'));
+  assert(!f.reads.includes('communityProfiles/central-system/frameId'));
+  assert(!d.querySelector('[data-chat-message="'+second+'"] [data-chat-reply]'));
+ }finally{f.close()}
+});
