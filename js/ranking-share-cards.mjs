@@ -34,12 +34,12 @@ function message(text,error=false){$('.cff-card-status').textContent=text;$('.cf
 function setBusy(busy){dialog.setAttribute('aria-busy',String(busy));dialog.querySelectorAll('[data-card-export]').forEach(b=>b.disabled=busy||!file);}
 function fieldOptions(){return active.rows.map((r,i)=>`<option value="${i}">${r.rank!=null?r.rank+'º ':''}${esc(r.name)}</option>`).join('');}
 function fieldVisibility(){
- const player=active.mode==='player',pstats=player&&['player','leader'].includes(options.template);
+ const player=active.mode==='player',pstats=player&&['player','leader','compare'].includes(options.template);
  $('[data-card-table-only]').hidden=options.template!=='table';
  $('[data-card-first]').hidden=['table','team','player'].includes(options.template)||(player&&active.rows.length===1);
  $('[data-card-second]').hidden=options.template!=='compare';
  $('[data-card-photo-option]').hidden=active.kind!=='players';
- $('[data-card-player-photo]').hidden=!player||options.template==='compare';
+ $('[data-card-player-photo]').hidden=!player;
  $('[data-card-featured]').hidden=!pstats;
  $('[name="highlight"]').querySelectorAll('option').forEach(o=>o.disabled=Number(o.value)>=Math.min(options.rowCount==='all'?active.rows.length:options.rowCount,active.rows.length));
  $('[name="accent"]').value=options.accent;
@@ -51,7 +51,7 @@ function fieldVisibility(){
  field.innerHTML='<legend>Dados no card'+(pstats?' · até 6':'')+'</legend>'+keys.map(key=>{
   const available=statValue(active.rows[options.first]||{},key)!=null;
   return '<label class="cff-card-check"><input type="checkbox" data-card-stat="'+key+'"'+(options.stats.includes(key)?' checked':'')+(available?'':' disabled')+'> '+esc(STAT_LABELS[key])+(available?'':' · indisponível')+'</label>';
- }).join('')+(pstats?'<p class="cff-card-hint">Destaque: até 4 dados. Ficha completa: até 6. Dados ausentes não são inventados.</p>':'');
+ }).join('')+(pstats?'<p class="cff-card-hint">Destaque: até 4 dados. Ficha e comparação: até 6. Dados ausentes não são inventados.</p>':'');
  $('[data-card-photo-size]').textContent=options.photoScale+'%';
  $('[data-card-context]').textContent=[active.event,active.stage].filter(Boolean).join(' · ');
 }
