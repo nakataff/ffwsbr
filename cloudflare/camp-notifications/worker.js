@@ -4,6 +4,7 @@ import livepixDiagnostic from '../../functions/livepix-diagnostic.js';
 import {createInteractionRanking} from './interaction-ranking.js';
 import economyMedia from '../../functions/economy-media.js';
 import economyCore from '../../functions/economy.js';
+import shopNoticeCore from '../../functions/economy-shop-notices.js';
 import quizCore from '../../functions/economy-quiz.js';
 import userInbox from '../../functions/user-inbox.js';
 import codeGifts from '../../functions/code-gifts.js';
@@ -70,6 +71,17 @@ export class NotificationHub extends DurableObject {
    this.sql.exec("INSERT INTO meta VALUES('pending-retention-v2','1')");
   });
   economyCore.initEconomy(this.sql);
+  shopNoticeCore.init(this.sql);
+ }
+ shopNotices(){
+  return shopNoticeCore.create({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn)});
+ }
+ async flushShopNotices(){
+  const store=this.shopNotices();
+  for(const row of store.pending()){
+   try{await globalChat.publishShopNotice(goalDatabase(this.goalSecret),row);store.delivered(row.id);}
+   catch(error){store.retry(row.id,row.attempts+1);}
+  }
  }
  economy(){
   return economyCore.createEconomy({sql:this.sql,transaction:fn=>this.ctx.storage.transactionSync(fn),db:goalDatabase(this.goalSecret),ranking:this.interactionRanking,communityCheckin:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session}),signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível registrar o check-in agora.');return r.json();},verifySession:async session=>{const r=await fetch('https://cff-instagram-community.nakataffb4.workers.dev/api/checkin/status?session='+encodeURIComponent(session),{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Não foi possível confirmar o Instagram agora.');return r.json();}});
@@ -124,7 +136,7 @@ export class NotificationHub extends DurableObject {
      this.sql.exec('DELETE FROM pending WHERE tournament=? AND day=? AND dropno=?',id,day,drop);this.sql.exec('DELETE FROM snapshots WHERE tournament=? AND day=? AND dropno=?',id,day,drop);return events.length;
     });return removed;
  }
- async schedule(){const jobs=this.rows('SELECT event FROM jobs LIMIT 1').length,pending=this.rows('SELECT check_at FROM pending ORDER BY check_at LIMIT 1')[0];const codeAt=economyCore.nextCodeDeadline(this.sql),times=[jobs?Date.now()+1000:0,pending?.check_at||0,codeAt].filter(Boolean);if(times.length)await this.ctx.storage.setAlarm(Math.max(Date.now()+1000,Math.min(...times)));else await this.ctx.storage.deleteAlarm();}
+ async schedule(){const jobs=this.rows('SELECT event FROM jobs LIMIT 1').length,pending=this.rows('SELECT check_at FROM pending ORDER BY check_at LIMIT 1')[0];const codeAt=economyCore.nextCodeDeadline(this.sql),shopAt=this.shopNotices().nextDue(),times=[jobs?Date.now()+1000:0,pending?.check_at||0,codeAt,shopAt].filter(Boolean);if(times.length)await this.ctx.storage.setAlarm(Math.max(Date.now()+1000,Math.min(...times)));else await this.ctx.storage.deleteAlarm();}
  async push(uid,event){
   const devices=this.rows('SELECT id,data FROM devices WHERE uid=?',uid),vapid=this.vapid();
   const {title,body}=notificationContent(event),prefix=event.status==='test'||event.kind==='start'?'':event.status==='official'?'Oficial · ':'Parcial · ';
@@ -162,6 +174,16 @@ export class NotificationHub extends DurableObject {
     return json(await this.interactionRanking.adminReport(b,Date.now()));
    }
    if(action==='careerAdmin'){admin();if(b.operation==='supporterLivepixTest'){this.livepixDiagnostic??=livepixDiagnostic.create({env:this.env});return json(await this.livepixDiagnostic.check());}return json(await this.careers().admin(user,b));}
+   if(action==='economyAdmin'&&['shopNoticeConfig','shopNoticeConfigSave','shopNoticeAnnounce'].includes(b.operation)){
+    admin();
+    const store=this.shopNotices();let result;
+    if(b.operation==='shopNoticeConfig'){store.scan();result={ok:true,settings:store.settings(),stock:store.stock()};}
+    else if(b.operation==='shopNoticeConfigSave')result=store.saveConfig(b.settings);
+    else result=store.announce(b.titles);
+    await this.flushShopNotices();
+    await this.schedule();
+    return json(result);
+   }
    if(action==='economy'||action==='economyAdmin'){
     const target=action==='economyAdmin'&&b.targetUid?b.targetUid:user.uid;return await this.withAccountLock(target,async()=>{
     const economy=this.economy();
@@ -169,6 +191,11 @@ export class NotificationHub extends DurableObject {
     // Reward delivery happens after committing quiz/coins, once the daily set is
     // complete. Failures leave progress intact and can be retried from objectives.
     if(action==='economy'&&['quizAnswer','quizSkip'].includes(b.operation)&&result.complete){try{result.goalRewards=await this.claimGoals(user,true);}catch{result.goalRewardsPending=true;}}
+    if(['redeem','returnCode','addStock','moveStock','updateStock','setCodePromotion','setCodePrice'].includes(b.operation)){
+     // The payment/stock mutation has already succeeded; a chat outage must never reverse it.
+     try{this.shopNotices().scan();await this.flushShopNotices();await this.schedule();}
+     catch(error){console.warn('[ShopNotices]',error);}
+    }
     return json(result);
    });
    }
@@ -287,6 +314,8 @@ export class NotificationHub extends DurableObject {
   try{
    this.economy().releaseCodes();
    await this.flushPublicCodes();
+   this.shopNotices().scan();
+   await this.flushShopNotices();
    const now=Date.now();this.sql.exec('DELETE FROM pending WHERE expires<?',now);
    for(const pending of this.rows('SELECT * FROM pending WHERE check_at<=? ORDER BY check_at LIMIT 3',now)){
     const t=this.config(pending.tournament);if(!t?.enabled||!t.officialStage){this.sql.exec('DELETE FROM pending WHERE id=?',pending.id);continue;}
