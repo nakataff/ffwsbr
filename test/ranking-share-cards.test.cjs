@@ -52,7 +52,7 @@ async function editor(){
  Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async t=>copies.push(t)}});w.navigator.share=async args=>shares.push(args);w.navigator.canShare=()=>true;
  w.__model=m;w.__renderer=r;
  let src=fs.readFileSync('js/ranking-share-cards.mjs','utf8').replace(/^import .*\n/gm,'').replace(/export (async )?function /g,(_,a)=>`${a||''}function `);
- src='const {FORMATS,normalizePayload,normalizeOptions,rememberedOptions,selectedRows,STAT_LABELS,statValue,captionFor,captionWithLink,cardFilename}=window.__model;const {renderRankingCard}=window.__renderer;\n'+src+'\nwindow.openRankingCard=openRankingCard;';w.eval(src);
+ src='const {FORMATS,normalizePayload,normalizeOptions,rememberedOptions,selectedRows,STAT_LABELS,PLAYER_STAT_KEYS,statValue,captionFor,captionWithLink,cardFilename}=window.__model;const {renderRankingCard}=window.__renderer;\n'+src+'\nwindow.openRankingCard=openRankingCard;';w.eval(src);
  const $=s=>w.document.querySelector(s),change=async(name,value)=>{const input=$(`[name="${name}"]`);if(input.type==='checkbox')input.checked=value;else input.value=value;input.dispatchEvent(new w.Event('change',{bubbles:true}));await wait(()=>$('[data-card-action="download"]')?.disabled===false);};
  return {w,$,requests,downloads,copies,shares,change,open:(payload=raw())=>w.openRankingCard(payload),close:()=>dom.window.close()};
 }
@@ -205,5 +205,52 @@ test('edition profiles choose individual or comparison on open while preserving 
   u.$('[data-card-action="close"]').click();
   await u.open({...raw(),rows:raw().rows.slice(0,2),initialOptions:{template:'compare',first:0,second:1}});
   assert.equal(u.$('[name="template"]').value,'compare');assert.equal(u.$('[name="first"]').value,'0');assert.equal(u.$('[name="second"]').value,'1');assert.equal(u.$('[name="format"]').value,'story');assert(!u.requests.some(x=>/firebase|workers|players\.json/.test(x)));
+ }finally{u.close()}
+});
+
+test('world player cards expose real damage and peak stats without inventing rank and render in all formats',async()=>{
+ const m=await modelPromise,{renderRankingCard}=await rendererPromise,p=read('ffws-global-2026/player-data/fx-butzin.json');
+ const base={id:'fx-butzin',kind:'players',mode:'player',event:'FFWS Global Finals 2026',stage:'Geral',title:'BuTziN · Desempenho',metric:'kills',url:'https://centralfreefire.com.br/ffws-global-2026/jogador/?id=fx-butzin'};
+ const original={name:p.name,team:p.team.name,photo:p.photoLarge,logo:p.team.logo,rank:p.ranks.geral,ranking:p.ranks.geral,bestDrop:p.highlights.geral.drop.kills,bestRound:p.highlights.geral.round.kills,...p.stats.geral};
+ const data=m.normalizePayload({...base,rows:[original]});
+ assert.equal(data.mode,'player');assert.equal(data.rows[0].ranking,1);assert.equal(m.statText(data.rows[0],'avgDamage'),'1.888,17');
+ assert.equal(m.statText(data.rows[0],'bestRound'),'28');
+ const noRank=m.normalizePayload({...base,rows:[{...original,rank:null,ranking:null,bestDrop:null,bestRound:null}]});
+ assert.equal(noRank.rows[0].rank,null);assert.equal(noRank.rows[0].ranking,null);
+ assert.equal(m.statValue(noRank.rows[0],'bestDrop'),null);
+ const photos=new Map([[p.photoLarge,await loadImage(p.photoLarge)],[p.team.logo,await loadImage(p.team.logo)]]);
+ for(const format of Object.keys(m.FORMATS))for(const template of ['player','leader','compare']){
+  const combined=template==='compare'?m.normalizePayload({...base,rows:[original,{...original,name:'Bops',rank:null,ranking:null,kills:40}]}):data;
+  const options=m.normalizeOptions({format,template,featuredStat:'kills',stats:['matches','average','damage','avgDamage','assists','bestDrop'],photoScale:115,showLogoWatermark:true},combined);
+  assert.equal(options.template,template);assert.equal(options.stats.length,6);
+  const c=createCanvas(1,1),ctx=c.getContext('2d'),painted=[],drawn=[];
+  const originalText=ctx.fillText.bind(ctx),originalImage=ctx.drawImage.bind(ctx);
+  ctx.fillText=(v,x,y)=>{painted.push({value:String(v),x,y});originalText(v,x,y);};
+  ctx.drawImage=(...args)=>{drawn.push(args[0]);originalImage(...args);};
+  renderRankingCard(c,combined,options,{images:photos});
+  assert.equal(c.width,m.FORMATS[format].width);assert.equal(c.height,m.FORMATS[format].height);
+  assert(painted.some(v=>v.value==='BuTziN'),format+' '+template);
+  assert(painted.some(v=>v.value==='55'),format+' '+template);
+  assert(painted.some(v=>v.value==='22.658'),format+' '+template);
+  assert(drawn.some(v=>v===photos.get(p.photoLarge)),format+' '+template+' photo');
+  assert(!painted.some(v=>v.value.includes('nullº')));
+ }
+});
+test('world player editor supports statistics, photo scaling and the full-ficha template',async()=>{
+ const u=await editor();try{
+  const p=read('ffws-global-2026/player-data/fx-butzin.json');
+  const profile={id:'profile-fx-butzin',kind:'players',mode:'player',title:'BuTziN',event:'FFWS Global Finals 2026',stage:'Geral',url:'https://centralfreefire.com.br/ffws-global-2026/jogador/?id=fx-butzin',
+   rows:[{name:p.name,team:p.team.name,logo:p.team.logo,photo:p.photoLarge,rank:1,ranking:1,bestDrop:10,bestRound:28,...p.stats.geral}],
+   initialOptions:{template:'player'}};
+  await u.open(profile);assert.equal(u.$('[name="template"]').value,'player');
+  assert(!u.$('[data-card-stats]').hidden);assert(!u.$('[data-card-featured]').hidden);
+  assert(!u.$('[data-card-player-photo]').hidden);
+  assert(!u.$('[data-card-stat="damage"]').disabled);
+  assert(!u.$('[data-card-stat="bestRound"]').disabled);
+  await u.change('photoScale','120');assert.equal(u.$('[data-card-photo-size]').textContent,'120%');
+  await u.change('featuredStat','damage');assert.equal(u.$('[name="featuredStat"]').value,'damage');
+  await u.change('showLogoWatermark',false);assert.equal(u.$('[name="showLogoWatermark"]').checked,false);
+  await u.change('format','wide');assert.equal(u.$('canvas').width,1200);
+  assert(!u.requests.some(x=>/firebase|workers|player-stats|players\.json/.test(x)));
  }finally{u.close()}
 });
