@@ -1,4 +1,4 @@
-import {mountCodePromotions} from './admin-code-promotions.mjs?v=20261026-code-promotions-v1';
+import {mountCodePromotions} from './admin-code-promotions.mjs?v=20261108-shop-pricing-v3';
 import {createStockBridge} from './admin-stock-bridge.mjs?v=20261019-admin-integration-v1';
 import {prepareEconomyPhoto} from './economy-photo.mjs?v=20261014-cff-coins-v1';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
