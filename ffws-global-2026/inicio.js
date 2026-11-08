@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261107-mundial-dia2-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261108-mundial-dia3-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
