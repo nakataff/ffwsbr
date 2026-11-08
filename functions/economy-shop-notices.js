@@ -22,7 +22,10 @@ function create({sql,transaction,now=()=>Date.now()}){
    return {title:row.title,quantity:row.quantity,expires:row.expires||0,price:sale||original,normalPrice:original,discount:sale};
   });
  function push(type,text,detail={}){
-  const at=now(),id=crypto.randomUUID();
+  const at=now();
+  // No more than five automated shop messages per hour; manual grouped posts have their own cooldown.
+  if(type!=='manual'&&rows("SELECT COUNT(*) AS n FROM eco_shop_notice_queue WHERE at>? AND json_extract(data,'$.type')!='manual'",at-3600000)[0].n>=5)return false;
+  const id=crypto.randomUUID();
   sql.exec('INSERT INTO eco_shop_notice_queue(id,at,data,sent,attempts,retryAt) VALUES(?,?,?,0,0,?)',id,at,JSON.stringify({type,text:String(text).slice(0,460),...detail}),at);
  }
  function scan(){
