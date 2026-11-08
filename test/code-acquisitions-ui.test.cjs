@@ -61,6 +61,6 @@ test('página administrativa insere relatório automático sem remover o manual'
  assert.match(ui,/eco-code-acquisitions-root/);
  assert.match(ui,/Relatório manual do estoque/);
  assert.match(html,/admin-code-acquisitions\.js\?v=20261102-code-report-v1/);
- assert.match(html,/admin-codiguinhos-ui\.css\?v=20261102-code-report-v1/);
+ assert.match(html,/admin-codiguinhos-ui\.css\?v=20261108-notice-checkbox-fix-v1/);
  assert.ok(!fs.readFileSync(path.join(root,'interacoes.html'),'utf8').includes('codeAcquisitions'),'API privada não aparece na página pública');
 });
