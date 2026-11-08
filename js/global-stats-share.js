@@ -236,7 +236,8 @@ async function draw(payload){
  const [w,h]=FORMATS[state.format]||FORMATS.feed;
  canvas.width=w;canvas.height=h;
  const generation=++renderSeq;
- const [brand,emblem,photo]=await Promise.all([image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null)]);
+ const [brand,emblem,photo,rowImages]=await Promise.all([image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
+  payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([])]);
  if(generation!==renderSeq)return;
  const dark=state.theme==='dark',accent=ACCENTS[state.accent]||ACCENTS.blue;
  const bg=dark?'#070e1b':'#e9f1f8',surface=dark?'#111c30':'#ffffff',ink=dark?'#f8fbff':'#122439',muted=dark?'#a2bad5':'#3e5872';
@@ -288,7 +289,8 @@ async function draw(payload){
    rounded(ctx,pad,y,w-pad*2,rowH,13,surface,dark?'#263e57':'#c6d6e4');
    rounded(ctx,pad+12,y+8,rowH-16,rowH-16,8,i===0?accent:dark?'#1b3047':'#dce8f4');
    textLine(ctx,String(row.rank),pad+12+(rowH-16)/2,y+rowH/2+8,rowH-18,compact?19:26,i===0?'#081a2a':ink,'950','center');
-   textLine(ctx,row.name,pad+rowH+21,y+rowH/2+7,w*.52,compact?20:28,ink);
+   if(state.showImage&&rowImages[i])contain(ctx,rowImages[i],pad+rowH+19,y+8,rowH-15,rowH-15);
+   textLine(ctx,row.name,pad+rowH+(state.showImage?rowH+17:21),y+rowH/2+7,w*.43,compact?20:28,ink);
    textLine(ctx,row.score,w-pad-17,y+rowH/2+8,w*.2,compact?23:31,accent,'950','right');
   });
  }else if(payload.two){
@@ -320,6 +322,9 @@ async function draw(payload){
 }
 function refresh(){
  if(!modal?.open)return;
+ livePayload=null;
+ const notice=modal.querySelector('[data-share-status]');
+ if(notice)notice.textContent='Gerando prévia…';
  settingsUI();
  const data=fromContext();
  if(!data){modal.querySelector('[data-share-status]').textContent='Selecione um recorte com resultados.';return}
@@ -513,6 +518,8 @@ function decorate(){
 function mount(root,model){
  if(!root||!model)return;
  context=model;modelRoot=root;
+ // renderStats may finish before the lazy script load: avoid duplicate buttons.
+ if(root.querySelector('.cff-stats-share-main'))return;
  decorate();
 }
 window.CFFGlobalStatsShare={mount,open};
