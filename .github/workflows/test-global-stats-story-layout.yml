@@ -1,0 +1,20 @@
+name: Test Mundial Stories Share Cards
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'js/global-stats-share.js'
+      - 'test/global-stats-story-layout.test.cjs'
+      - '.github/workflows/test-global-stats-story-layout.yml'
+jobs:
+  story-cards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate share renderer syntax
+        run: node --check js/global-stats-share.js
+      - name: Render Stories for all seven card topics and check other formats
+        run: node --test test/global-stats-story-layout.test.cjs
