@@ -1,0 +1,32 @@
+name: Test Player Competition and Annual History
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'jogador.html'
+      - 'js/player-page.min.js'
+      - 'js/player-year-history.js'
+      - 'js/global-player-profile.js'
+      - 'js/copa-player-profile.js'
+      - 'css/player-page.css'
+      - 'test/player-year-history.test.cjs'
+      - '.github/workflows/test-player-year-history.yml'
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install DOM test runtime
+        run: |
+          mkdir -p /tmp/cff-player-tests
+          cp test/game-gifts-browser-package.json /tmp/cff-player-tests/package.json
+          npm install --prefix /tmp/cff-player-tests --no-audit --no-fund
+      - name: Check player scripts
+        run: node --check js/player-page.min.js && node --check js/player-year-history.js && node --check js/copa-player-profile.js && node --check js/global-player-profile.js
+      - name: Verify player UI and historic totals
+        env:
+          NODE_PATH: /tmp/cff-player-tests/node_modules
+        run: node --test test/player-year-history.test.cjs test/global-player-bridge.test.cjs test/copa-player-profile.test.cjs
