@@ -70,7 +70,9 @@ function create({sql,transaction,now=()=>Date.now()}){
  function nextDue(){
   const q=rows('SELECT MIN(retryAt) AS at FROM eco_shop_notice_queue WHERE sent=0 AND attempts<5')[0]?.at||0;
   const exp=settings().expiring?rows('SELECT MIN(expires-?) AS at FROM eco_shop_notice_state WHERE quantity>0 AND expires>? AND expires>expirySent AND expires-?>?',DAY,now(),DAY,now())[0]?.at||0:0;
-  const times=[q,exp].filter(Number.isFinite).filter(v=>v>0);return times.length?Math.min(...times):0;
+  // Recheck at the actual expiration too, to notice sold-out and future restocks.
+  const finish=rows('SELECT MIN(expires+1000) AS at FROM eco_shop_notice_state WHERE quantity>0 AND expires>?',now())[0]?.at||0;
+  const times=[q,exp,finish].filter(Number.isFinite).filter(v=>v>0);return times.length?Math.min(...times):0;
  }
  function pending(){return rows('SELECT * FROM eco_shop_notice_queue WHERE sent=0 AND attempts<5 AND retryAt<=? ORDER BY at LIMIT 3',now()).map(x=>({...x,data:JSON.parse(x.data)}));}
  function delivered(id){sql.exec('UPDATE eco_shop_notice_queue SET sent=1 WHERE id=?',id);}
