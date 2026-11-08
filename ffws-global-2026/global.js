@@ -1639,6 +1639,43 @@
     return `<div class="ffws-global-table-wrap"><table class="ffws-global-table ffws-global-compact-table"><thead><tr><th>#</th><th>Eqp</th><th>PTS</th><th>K</th><th>${averages ? 'POS' : 'B!'}</th><th class="hide-mobile">Q</th></tr></thead><tbody>${rows.map((row,index)=>`<tr><td class="ffws-global-rank">${index+1}º</td>${teamCell(row.team)}<td>${averages ? row.avgPoints.toFixed(2) : row.points}</td><td>${averages ? row.avgKills.toFixed(2) : row.kills}</td><td>${averages ? `${row.avgPosition.toFixed(2)}º` : row.booyahs}</td><td class="hide-mobile">${row.matches}</td></tr>`).join('')}</tbody></table></div>`;
   }
 
+  // A single lightweight share studio is fetched only when someone visits /stats.
+  // No extra read of players/stages/Firebase: all card models come from renderStats().
+  let globalStatsShareLoader=null;
+  let globalStatsShareLatest=null;
+  function attachGlobalStatsShare(root, model) {
+    globalStatsShareLatest={root,model};
+    if (window.CFFGlobalStatsShare) {
+      window.CFFGlobalStatsShare.mount(root,model);
+      return;
+    }
+    if (!globalStatsShareLoader) {
+      if (!document.querySelector('link[data-cff-stats-share-css]')) {
+        const link=document.createElement('link');
+        link.rel='stylesheet';
+        link.href='/css/global-stats-share.css?v=20261108-share-studio-v1';
+        link.dataset.cffStatsShareCss='1';
+        document.head.append(link);
+      }
+      globalStatsShareLoader=new Promise((resolve,reject)=>{
+        const script=document.createElement('script');
+        script.src='/js/global-stats-share.js?v=20261108-share-studio-v1';
+        script.async=true;
+        script.onload=()=>resolve();
+        script.onerror=()=>reject(Error('Não foi possível carregar o editor de cards'));
+        document.head.append(script);
+      }).catch(error=>{
+        globalStatsShareLoader=null;
+        console.warn('[CFF Global] Compartilhamento indisponível',error);
+      });
+    }
+    globalStatsShareLoader.then(()=>{
+      const snapshot=globalStatsShareLatest;
+      if (!snapshot || !window.CFFGlobalStatsShare || !snapshot.root.isConnected) return;
+      window.CFFGlobalStatsShare.mount(snapshot.root,snapshot.model);
+    });
+  }
+
   function renderStats() {
     const root = document.getElementById('ffws-global-2026-stats-content');
     if (!root) return;
@@ -1776,6 +1813,17 @@
       ${statsBlocks}
       ${s2StatsBackTopButtonHtml()}
     </div>`;
+    attachGlobalStatsShare(root, {
+      teams, players, playerShareRows, records, events,
+      summary: {drops:events.length,points:totalPoints,kills:totalKills,booyahs:totalBooyahs},
+      filters: {stage:state.statsFilters.stage,days:[...state.statsFilters.days],maps:[...state.statsFilters.maps]},
+      logoForTeam: teamName => logo(teamName),
+      photoForPlayer: (playerName,teamName) => {
+        const item=rosterPlayerByName(playerName,teamName);
+        const path=item?.photoLarge || item?.photo || '';
+        return path ? (path.startsWith('/') ? path : '/' + path) : '';
+      }
+    });
     requestAnimationFrame(() => { renderS2StatsEvolutionChart(); updateGlobalStatsBackTopVisibility(); });
   }
   function calculateS2CffNote(kills, damage, assists, mvp, position) {
@@ -2630,7 +2678,20 @@
   }
   window.addEventListener('cff:account-preferences',restoreAccountCompare);
 
+  function readGlobalStatsLinkFilters() {
+    const query=new URLSearchParams(location.search);
+    if (![...query.keys()].some(key=>key==='statsStage'||key==='statsDays'||key==='statsMaps')) return;
+    const rawStage=query.get('statsStage');
+    if (['classificatoria','segundaFase','lastChance','final','geral'].includes(rawStage)) {
+      state.statsFilters.stage=rawStage;
+      state.statsInitialStageSet=true;
+    }
+    const split=(value,limit,maxLength)=>String(value||'').split(',').map(part=>part.trim()).filter(x=>x&&x.length<=maxLength).slice(0,limit);
+    state.statsFilters.days=split(query.get('statsDays'),8,2).filter(day=>/^\d{1,2}$/.test(day)&&Number(day)>0&&Number(day)<=15);
+    state.statsFilters.maps=split(query.get('statsMaps'),8,38);
+  }
   function init() {
+    readGlobalStatsLinkFilters();
     wrapNavigate();
     const hash = window.CFF_SEASON_ROUTES?.pageFromLocation() || String(location.hash || '').replace(/^#/, '');
     if (PAGE_IDS.has(hash)) {activate(hash);if(hash==='ffws-global-2026-comparar')loadData().then(loadPlayersData).then(restoreAccountCompare).catch(()=>{});}
