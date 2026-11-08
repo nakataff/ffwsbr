@@ -1525,6 +1525,7 @@
   let s2StatsPlayerEvolutionChart = null;
   let s2StatsPlayerEvolutionObserver = null;
   let s2StatsEvolutionPlayerOptions = [];
+  let s2StatsPlayerEvolutionDrawVersion = 0;
 
   function s2StatsStickyNavHtml(hasTeams, hasPlayers) {
     const items = [
@@ -1720,6 +1721,99 @@
     } else loadAndDraw();
   }
 
+  function s2StatsEvolutionPlayerDayData(events) {
+ const periods=s2StatsEvolutionPeriods(events);
+ const byDay=new Map(periods.map(p=>[p.stage+':'+p.day,{players:new Map(),teams:new Map()}]));
+ for(const entry of filteredStatsPlayerEntries(events)){
+  const stage=entry.stage||'classificatoria',key=stage+':'+number(entry.day);
+  const day=byDay.get(key);if(!day)continue;
+  const name=String(entry.name||''),team=String(entry.team||'');
+  if(!name||!team)continue;
+  const personKey=normalize(name)+'__'+normalize(team),teamKey=normalize(team);
+  if(!day.players.has(personKey))day.players.set(personKey,{name,team,matches:0,kills:0,damage:0,assists:0,mvps:0});
+  if(!day.teams.has(teamKey))day.teams.set(teamKey,{kills:0,damage:0,assists:0});
+  const p=day.players.get(personKey),t=day.teams.get(teamKey);
+  p.matches++;
+  for(const metric of ['kills','damage','assists']){
+   const value=number(entry[metric]);
+   p[metric]+=value;t[metric]+=value;
+  }
+  p.mvps+=number(entry.mvp??entry.mvps);
+ }
+ return periods.map(period=>({period,...byDay.get(period.stage+':'+period.day)}));
+}
+
+  function s2StatsEvolutionPlayerSeries(days,id,metric) {
+ return days.map(day=>{
+  const row=day.players.get(id);
+  if(!row)return null;
+  if(['kills','damage','assists','mvps'].includes(metric))return row[metric];
+  if(['avgKills','avgDamage','avgAssists'].includes(metric)){
+   const source={avgKills:'kills',avgDamage:'damage',avgAssists:'assists'}[metric];
+   return row.matches?Number((row[source]/row.matches).toFixed(2)):null;
+  }
+  const source={avgPartKills:'kills',avgPartDamage:'damage',avgPartAssists:'assists'}[metric];
+  if(source){
+   const total=day.teams.get(normalize(row.team))?.[source];
+   return total>0?Number((row[source]/total*100).toFixed(2)):null;
+  }
+  return null;
+ });
+}
+
+  function renderS2StatsEvolutionPlayerChart(){
+ const canvas=document.getElementById('ffws-global-stats-player-evolution-chart');
+ if(!canvas)return;
+ const events=filteredStatsEvents(),days=s2StatsEvolutionPlayerDayData(events);
+ const chosen=(state.statsEvolutionPlayers.players||[]).slice(0,5);
+ const options=new Map(s2StatsEvolutionPlayerOptions.map(p=>[p.id,p]));
+ const metric=state.statsEvolutionPlayers.metric||'kills';
+ const datasets=chosen.map((id,index)=>{
+  const person=options.get(id);
+  const colors=['#00c8ff','#ffd34d','#7fe29a','#ff7a90','#b68cff'];
+  const color=colors[index];
+  return {label:person?person.name+' · '+abbreviation(person.team):id,
+   data:s2StatsEvolutionPlayerSeries(days,id,metric),
+   borderColor:color,backgroundColor:color,tension:.2,borderWidth:2.25,
+   pointRadius:3,pointHoverRadius:5,spanGaps:false};
+ });
+ const empty=document.getElementById('ffws-global-stats-player-evolution-empty');
+ const hasData=days.length&&datasets.some(d=>d.data.some(v=>v!==null));
+ if(!hasData){
+  canvas.hidden=true;if(empty)empty.hidden=false;
+  if(s2StatsPlayerEvolutionObserver){s2StatsPlayerEvolutionObserver.disconnect();s2StatsPlayerEvolutionObserver=null;}
+  if(s2StatsPlayerEvolutionChart){s2StatsPlayerEvolutionChart.destroy();s2StatsPlayerEvolutionChart=null;}
+  return;
+ }
+ canvas.hidden=false;if(empty)empty.hidden=true;
+ const current=++s2StatsPlayerEvolutionDrawVersion;
+ const draw=()=>{
+  if(current!==s2StatsPlayerEvolutionDrawVersion||!window.Chart||!canvas.isConnected)return;
+  if(s2StatsPlayerEvolutionChart){try{s2StatsPlayerEvolutionChart.destroy();}catch(_){ }s2StatsPlayerEvolutionChart=null;}
+  const percentage=metric.startsWith('avgPart');
+  const labels=days.map(day=>`${s2StatsStageShortLabel(day.period.stage)} D${day.period.day}`);
+  s2StatsPlayerEvolutionChart=new window.Chart(canvas.getContext('2d'),{
+   type:'line',data:{labels,datasets},
+   options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false},
+    plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}}},
+    scales:{x:{ticks:{color:'#7893b5',maxRotation:0,autoSkip:true},grid:{color:'rgba(120,147,181,.10)'}},
+     y:{beginAtZero:true,ticks:{color:'#7893b5',callback:value=>percentage?`${value}%`:value},
+      grid:{color:'rgba(120,147,181,.10)'}}}}
+  });
+ };
+ const load=()=> (typeof window.cffLoadChartJS==='function'?window.cffLoadChartJS():Promise.resolve(window.Chart))
+  .then(draw).catch(()=>{});
+ if(s2StatsPlayerEvolutionObserver){s2StatsPlayerEvolutionObserver.disconnect();s2StatsPlayerEvolutionObserver=null;}
+ if('IntersectionObserver' in window){
+  s2StatsPlayerEvolutionObserver=new IntersectionObserver(entries=>{
+   if(entries.some(entry=>entry.isIntersecting)){
+    s2StatsPlayerEvolutionObserver?.disconnect();s2StatsPlayerEvolutionObserver=null;load();
+   }
+  },{rootMargin:'180px'});
+  s2StatsPlayerEvolutionObserver.observe(canvas);
+ }else load();
+}
+
   function s2StatsBackTopButtonHtml() {
     return '<button type="button" class="cff-stats-back-top" data-stats-back-top="s2" onclick="window.scrollTo({top:0,behavior:\'smooth\'})" aria-label="Voltar ao topo" title="Voltar ao topo">↑</button>';
   }
@@ -1770,6 +1864,9 @@
     if (!root) return;
     if (s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart = null; }
     if (s2StatsEvolutionObserver) { try { s2StatsEvolutionObserver.disconnect(); } catch (_) {} s2StatsEvolutionObserver = null; }
+    s2StatsPlayerEvolutionDrawVersion++;
+    if (s2StatsPlayerEvolutionChart) { try { s2StatsPlayerEvolutionChart.destroy(); } catch (_) {} s2StatsPlayerEvolutionChart = null; }
+    if (s2StatsPlayerEvolutionObserver) { try { s2StatsPlayerEvolutionObserver.disconnect(); } catch (_) {} s2StatsPlayerEvolutionObserver = null; }
     const options = statsFilterOptions();
     const events = filteredStatsEvents();
     const teams = aggregateStatsTeams(events);
@@ -1919,7 +2016,7 @@
         return path ? (path.startsWith('/') ? path : '/' + path) : '';
       }
     });
-    requestAnimationFrame(() => { renderS2StatsEvolutionChart(); updateGlobalStatsBackTopVisibility(); });
+    requestAnimationFrame(() => { renderS2StatsEvolutionChart(); renderS2StatsEvolutionPlayerChart(); updateGlobalStatsBackTopVisibility(); });
   }
   function calculateS2CffNote(kills, damage, assists, mvp, position) {
     kills = number(kills); damage = number(damage); assists = number(assists); position = number(position);
@@ -2530,6 +2627,24 @@
       const text = button.getAttribute('title') || ''; button.classList.toggle('active', state.statsEvolution.teams.some(item => normalize(item) === normalize(text)));
     });
     renderS2StatsEvolutionChart();
+  };
+  window.setFFWSGlobalStatsEvolutionPlayerMetric = metric => {
+    const allowed=['kills','damage','assists','mvps','avgKills','avgDamage','avgAssists',
+      'avgPartKills','avgPartDamage','avgPartAssists'];
+    state.statsEvolutionPlayers.metric=allowed.includes(metric)?metric:'kills';
+    renderS2StatsEvolutionPlayerChart();
+  };
+  window.searchFFWSGlobalStatsEvolutionPlayer = text => {
+    state.statsEvolutionPlayers.search=String(text||'').slice(0,80);
+    s2StatsEvolutionPlayerPickerUpdate();
+  };
+  window.toggleFFWSGlobalStatsEvolutionPlayer = id => {
+    if(!s2StatsEvolutionPlayerOptions.some(player=>player.id===id))return;
+    const selected=state.statsEvolutionPlayers.players||[];
+    state.statsEvolutionPlayers.players=selected.includes(id)?selected.filter(key=>key!==id)
+      :selected.length<5?[...selected,id]:selected;
+    s2StatsEvolutionPlayerPickerUpdate();
+    renderS2StatsEvolutionPlayerChart();
   };
   window.updateGlobalStatsBackTopVisibility = () => {
     document.querySelectorAll('.cff-stats-back-top').forEach(button => {
