@@ -137,7 +137,7 @@ test('Stories have dedicated responsive positions for rankings, stats, records a
  assert.match(source,/if\(story&&facts\.length\)/);
  assert.match(source,/Full-width panels stack the teams vertically/);
  assert.match(source,/const portraitSize=heroVisible\?\(story\?/);
- assert.match(source,/const panelBottom=footerY-\(story\?78:34\)/);
+ assert.match(source,/const panelBottom=footerY-\(story\?78:feed\?62:34\)/);
  assert(!source.includes('storyRanking'),'old ranking-only layout must not control Story geometry');
  const global=read('ffws-global-2026/global.js');
  assert.match(global,/global-stats-share\.js\?v=20261108-feed-stories-save-v8/);
