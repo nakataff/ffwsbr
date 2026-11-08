@@ -1659,7 +1659,7 @@
       }
       globalStatsShareLoader=new Promise((resolve,reject)=>{
         const script=document.createElement('script');
-        script.src='/js/global-stats-share.js?v=20261108-portrait-share-v3';
+        script.src='/js/global-stats-share.js?v=20261108-card-layout-v4';
         script.async=true;
         script.onload=()=>resolve();
         script.onerror=()=>reject(Error('Não foi possível carregar o editor de cards'));
