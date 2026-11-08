@@ -198,3 +198,18 @@ validade antecipada exige atualizar a loja, sem cobrar nem reservar. Repetir o m
 pedido preserva o pagamento original. O estorno continua baseado no débito real do
 ledger, mesmo que o administrador altere o preço depois. Vales continuam custando
 1 vale. A validação e o limite de um resgate com moedas a cada 30 dias permanecem.
+
+
+## Loja e Chat Global — preços e avisos (08/11/2026)
+
+No `admin-codiguinhos.html → Codiguinhos da loja` é possível:
+- Reservar vários códigos com caixas de seleção, busca, marcar visíveis e limpar seleção. O lote tem máximo de 20 por operação; cada código é validado individualmente pelo servidor e falhas ficam no relatório. As transações não divulgam códigos no chat.
+- Em **Preços e promoções**, configurar **preço normal por título** (1 a 100.000 CFF Coins), diferente dos 1.000 Coins de referência. A promoção continua opcional, inferior ao preço normal. `setCodePrice` e `setCodePromotion` exigem autenticação admin e o resgate usa os preços reais do banco, verificando `expectedPrice`.
+- Em **Avisos no Chat Global**, escolher de 1 a 8 títulos em estoque, visualizar a mensagem e publicar anúncio agrupado por botão (um anúncio manual a cada 2 minutos).
+- Configurar avisos automáticos: última unidade, validade em 24 horas, promoções, reposição e esgotamento. A opção de recompensas gratuitas fica preparada para quando houver um item gratuito elegível; os codiguinhos pagos exigem preço positivo.
+
+O servidor Cloudflare grava os avisos em `eco_shop_notice_queue` e somente o próprio Durable Object envia mensagens oficiais ao Firebase. A fila guarda IDs estáveis, tem limite de tentativas e atualiza `globalChat/latest`; nenhum código privado ou dado do comprador é incluído. A checagem ocorre apenas após modificações confirmadas no estoque/preço e por alarmes pontuais para validade, sem leituras de banco a cada mensagem.
+
+O Chat Global separa os dias conforme `America/Sao_Paulo` e apresenta mensagens da loja com um atalho para `/conta.html?tab=points&shopSection=shop#eco-shop`.
+
+Testes: `node --test functions/test/economy-shop-notices.test.cjs functions/test/economy.test.cjs`, `node --test test/admin-economy-tools.test.cjs test/global-chat-ui.test.cjs`.
