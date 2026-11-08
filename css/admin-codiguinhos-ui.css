@@ -188,7 +188,8 @@ body.codes-admin-page{background:#090e19;padding:26px;color:#edf3ff}
 }
 /* Higher specificity than the 100%-wide text-input rule above.
    Apply to stock batch reservation AND shop announcements/toggles. */
-.codes-admin-page .eco-stock-panel :is(.eco-stock-code-choices,.eco-stock-notice-toggles) input[type="checkbox"]{
+.codes-admin-page .eco-stock-panel .eco-stock-code-choices input[type="checkbox"],
+.codes-admin-page .eco-stock-panel .eco-stock-notice-toggles input[type="checkbox"]{
   display:block;
   appearance:auto;
   flex:0 0 18px;
