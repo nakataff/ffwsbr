@@ -24,6 +24,7 @@ on:
       - 'test/profile-emblems.test.cjs'
       - 'functions/global-chat.js'
       - 'js/global-chat.js'
+      - 'js/config.min.js'
       - 'js/admin-chat.js'
       - 'css/global-chat.css'
       - 'admin-chat.html'
