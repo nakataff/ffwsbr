@@ -424,13 +424,22 @@ async function draw(payload){
  const labelY=valueY+(compact?30:36);
  if(payload.main){
   const available=wideList?w*.38:contentWidth;
+  const rankShown=(payload.kind==='player'||payload.kind==='team')&&state.showMainRank&&Number.isInteger(payload.mainRank)&&payload.mainRank>0;
+  const rankWidth=rankShown?Math.min(190,Math.max(116,available*.34)):0;
+  const numberWidth=rankShown?Math.max(80,available-rankWidth-12):available;
   let font=compact?77:story?clamp(w*.118,84,143):clamp(w*.107,76,130);
   ctx.font='900 '+font+'px "Arial Narrow","Barlow Condensed",Arial,sans-serif';
-  while(font>42&&ctx.measureText(String(payload.main)).width>available){
+  while(font>42&&ctx.measureText(String(payload.main)).width>numberWidth){
    font-=4;ctx.font='900 '+font+'px "Arial Narrow","Barlow Condensed",Arial,sans-serif';
   }
-  textLine(ctx,payload.main,pad,valueY,available,font,accent);
-  textLine(ctx,payload.mainLabel,pad,labelY,available,compact?17:story?24:22,muted,'850');
+  textLine(ctx,payload.main,pad,valueY,numberWidth,font,accent);
+  textLine(ctx,payload.mainLabel,pad,labelY,numberWidth,compact?17:story?24:22,muted,'850');
+  if(rankShown){
+   const rankX=pad+available-4;
+   textLine(ctx,'#'+payload.mainRank,rankX,valueY-4,rankWidth,compact?60:story?85:70,accent,'950','right');
+   textLine(ctx,'RANKING DE',rankX,labelY-3,rankWidth,compact?13:16,muted,'900','right');
+   textLine(ctx,payload.mainRankLabel||payload.mainLabel||'INDICADOR',rankX,labelY+20,rankWidth,compact?12:15,ink,'850','right');
+  }
  }
  if(heroVisible&&portraitSize>80)drawHeroPortrait(ctx,photo,emblem,portraitX,portraitY,portraitSize,accent,dark,surface);
  const storyHeroEnd=Math.max(
@@ -536,7 +545,7 @@ async function draw(payload){
    });
   }
  }else{
-  const facts=payload.facts.slice(0,compact?2:6);
+  const facts=payload.facts.slice(0,6);
   if(story&&facts.length){
    // Full-width statistic rows fill the vertical Story; these are NOT feed tiles.
    const gap=facts.length>=5?13:19,maximum=facts.length>=5?172:facts.length===4?236:facts.length===3?296:420;
@@ -547,20 +556,31 @@ async function draw(payload){
     rounded(ctx,x+14,y+14,5,Math.max(5,boxH-28),2,accent);
     textLine(ctx,fact.label,x+37,y+boxH/2+8,boxW*.47,23,muted,'850');
     textLine(ctx,fact.value,x+boxW-24,y+boxH/2+15,boxW*.39,48,ink,'950','right');
+    if(state.showFactRanks&&Number.isInteger(fact.rank)&&fact.rank>0)
+     textLine(ctx,'#'+fact.rank,x+boxW-22,y+29,boxW*.3,23,accent,'900','right');
    });
   }else{
-   const feedStack=feed&&facts.length<=2,cols=feedStack?1:2;
-   const gap=compact?12:feed?18:17,usable=Math.max(0,panelBottom-panelTop),rows=Math.ceil(facts.length/cols);
-   const maxH=feed?(feedStack?245:rows>=3?190:235):compact?104:h>1700?190:144;
-   const boxH=Math.min(maxH,Math.max(0,(usable-gap*(rows-1)- (feed?24:0))/Math.max(1,rows)));
+   const feedStack=feed&&facts.length<=2,cols=compact?3:feedStack?1:2;
+   const gap=compact?8:feed?18:17,usable=Math.max(0,panelBottom-panelTop),rows=Math.ceil(facts.length/cols);
+   const maxH=feed?(feedStack?245:rows>=3?190:235):compact?76:h>1700?190:144;
+   const boxH=Math.min(maxH,Math.max(0,(usable-gap*(rows-1)-(feed?24:0))/Math.max(1,rows)));
    const totalH=rows*boxH+gap*(rows-1);
    const cardsTop=feed?panelTop+Math.max(0,(usable-totalH)/2):panelTop;
    facts.forEach((fact,index)=>{
     const column=index%cols,x=pad+column*((w-2*pad+gap)/cols);
     const y=cardsTop+Math.floor(index/cols)*(boxH+gap),boxW=(w-pad*2-gap*(cols-1))/cols;
-    rounded(ctx,x,y,boxW,boxH,14,surface,dark?'#263e57':'#c6d6e4');
-    textLine(ctx,fact.label,x+18,y+Math.min(boxH*.34,compact?24:feed?45:35),boxW-36,compact?13:20,muted,'850');
-    textLine(ctx,fact.value,x+18,y+boxH-19,boxW-36,boxH<75?23:compact?25:feed?44:39,ink);
+    rounded(ctx,x,y,boxW,boxH,compact?8:14,surface,dark?'#263e57':'#c6d6e4');
+    if(compact){
+     textLine(ctx,fact.label,x+11,y+Math.min(22,boxH*.38),boxW-46,12,muted,'850');
+     if(state.showFactRanks&&Number.isInteger(fact.rank)&&fact.rank>0)
+      textLine(ctx,'#'+fact.rank,x+boxW-10,y+18,41,13,accent,'900','right');
+     textLine(ctx,fact.value,x+11,y+boxH-9,boxW-22,Math.min(22,boxH*.43),ink);
+    }else{
+     textLine(ctx,fact.label,x+18,y+Math.min(boxH*.34,feed?45:35),boxW-(state.showFactRanks?87:36),20,muted,'850');
+     textLine(ctx,fact.value,x+18,y+boxH-19,boxW-36,boxH<75?23:feed?44:39,ink);
+     if(state.showFactRanks&&Number.isInteger(fact.rank)&&fact.rank>0)
+      textLine(ctx,'#'+fact.rank,x+boxW-17,y+32,65,23,accent,'950','right');
+    }
    });
   }
  }
