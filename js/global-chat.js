@@ -65,7 +65,23 @@ function mountChat(){
   const text=node.querySelector('.cff-chat-message-text');let offset=0;for(const match of String(m.text||'').matchAll(/@[a-z0-9_]{3,24}\b/gi)){text.append(document.createTextNode(m.text.slice(offset,match.index)));const mention=document.createElement('span');mention.className='cff-chat-mention';mention.textContent=match[0];text.append(mention);offset=match.index+match[0].length;}text.append(document.createTextNode(String(m.text||'').slice(offset)));return node;
  }
  function redraw(){if(!deps)return;for(const [id,node]of nodes)renderMessage(id,node._chatMessage);emblems.mount([...nodes.values()].map(node=>node._chatMessage.uid));deps.images.hydrateProfileImages(timeline,db);}
- function renderMessages(messages){const atBottom=timeline.scrollHeight-timeline.scrollTop-timeline.clientHeight<80,entries=Object.entries(messages||{}).sort(([a],[b])=>a.localeCompare(b)).slice(-100),ids=new Set(entries.map(([id])=>id));let added=false;timeline.querySelector('.cff-chat-empty')?.remove();for(const [id,node]of nodes)if(!ids.has(id)){node.remove();nodes.delete(id);}let cursor=timeline.firstElementChild;for(const [id,message]of entries){if(!nodes.has(id))added=true;const node=renderMessage(id,message);if(node!==cursor)timeline.insertBefore(node,cursor);cursor=node.nextElementSibling;}if(!entries.length){const p=document.createElement('p');p.className='cff-chat-empty';p.textContent='A conversa começa aqui. Mande a primeira mensagem!';timeline.append(p);}reconcile();deps.images.hydrateProfileImages(timeline,db);if(firstSnapshot||atBottom){timeline.scrollTop=timeline.scrollHeight;$('[data-chat-new]').hidden=true;}else if(added)$('[data-chat-new]').hidden=false;firstSnapshot=false;timeline.setAttribute('aria-live','polite');}
+ const saoDay=at=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Number(at)||0));
+ const dayLabel=key=>{const today=saoDay(Date.now()),yesterday=saoDay(Date.now()-86400000);if(key===today)return 'Hoje';if(key===yesterday)return 'Ontem';return new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC',day:'numeric',month:'long',year:'numeric'}).format(new Date(key+'T12:00:00Z'));};
+ function renderMessages(messages){
+  const atBottom=timeline.scrollHeight-timeline.scrollTop-timeline.clientHeight<80,entries=Object.entries(messages||{}).sort(([a],[b])=>a.localeCompare(b)).slice(-100),ids=new Set(entries.map(([id])=>id));let added=false;
+  timeline.querySelector('.cff-chat-empty')?.remove();
+  for(const [id,node]of nodes)if(!ids.has(id)){node.remove();nodes.delete(id);}
+  let cursor=timeline.firstElementChild,lastDay='';
+  for(const [id,message]of entries){
+   const day=saoDay(message?.at),tag='date-'+day;
+   if(day!==lastDay){let divider=timeline.querySelector('[data-chat-day="'+day+'"]');if(!divider){divider=document.createElement('div');divider.className='cff-chat-day';divider.dataset.chatDay=day;divider.setAttribute('role','separator');}divider.textContent=dayLabel(day);if(divider!==cursor)timeline.insertBefore(divider,cursor);cursor=divider.nextElementSibling;lastDay=day;}
+   if(!nodes.has(id))added=true;const node=renderMessage(id,message);if(node!==cursor)timeline.insertBefore(node,cursor);cursor=node.nextElementSibling;
+  }
+  timeline.querySelectorAll('[data-chat-day]').forEach(n=>{if(!entries.some(([,m])=>saoDay(m?.at)===n.dataset.chatDay))n.remove();});
+  if(!entries.length){const p=document.createElement('p');p.className='cff-chat-empty';p.textContent='A conversa começa aqui. Mande a primeira mensagem!';timeline.append(p);}
+  reconcile();deps.images.hydrateProfileImages(timeline,db);
+  if(firstSnapshot||atBottom){timeline.scrollTop=timeline.scrollHeight;$('[data-chat-new]').hidden=true;}else if(added)$('[data-chat-new]').hidden=false;firstSnapshot=false;timeline.setAttribute('aria-live','polite');
+ }
  function applySettings(value){config={slowSeconds:5,...value};for(const [key,variable]of [['accent','--chat-accent'],['background','--chat-bg'],['bubble','--chat-bubble']])host.style.setProperty(variable,color(config[key])||({'accent':'#6bd4ff','background':'#0c1422','bubble':'#142035'}[key]));}
  function setReply(id){const message=nodes.get(id)?._chatMessage;if(!message)return;if(!user){say('Entre com Google para responder.');return;}replyTo=id;$('[data-chat-replying]').hidden=false;$('[data-chat-replying] span').textContent='Respondendo a '+message.name+': '+String(message.text).slice(0,80);input.focus();}
  function resetReply(){replyTo=null;$('[data-chat-replying]').hidden=true;}
