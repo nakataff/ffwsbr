@@ -3,3 +3,160 @@
 .gp-root [hidden],.gp-compare [hidden]{display:none!important}
 
 .gp-photo img{opacity:0}.gp-photo img.gp-photo-ready{opacity:1}
+
+
+/* Perfil Mundial 2026 — visual de atleta, independente da listagem de jogadores. */
+.gp-profile-view{max-width:1300px}
+.gp-profile-view .gp-overline{color:#5bdcff;font-size:.67rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+.gp-profile-view .gp-player-hero{
+ position:relative;overflow:hidden;padding:28px 32px 0;
+ border:1px solid #29506c;border-top:3px solid #00c8ff;border-radius:20px;
+ background:radial-gradient(ellipse at 84% 32%,#143650 0%,transparent 46%),linear-gradient(125deg,#081928 10%,#0a1a2b 67%,#0b1e32 100%);
+}
+.gp-profile-view .gp-player-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(265px,.77fr);align-items:end;gap:26px;min-height:325px}
+.gp-profile-view .gp-player-hero-copy{padding:16px 0 32px;min-width:0;position:relative;z-index:2}
+.gp-profile-view .gp-hero-eyebrow{margin:9px 0 13px;font-size:.71rem;font-weight:800;letter-spacing:.09em;color:#9fbdd4}
+.gp-profile-view .gp-player-hero h1{font-size:clamp(2.7rem,6vw,5rem)!important;font-weight:1000;line-height:1.03!important;overflow-wrap:anywhere;margin:0 0 18px;color:#f4f9ff;text-shadow:0 2px 18px #00101c}
+.gp-profile-view .gp-identity{display:flex;flex-wrap:wrap;align-items:center;gap:11px 16px;font-size:.87rem;color:#c4def0}
+.gp-profile-view .gp-identity>span:first-child{display:inline-flex;align-items:center;gap:8px}
+.gp-profile-view .gp-identity .gp-flag{width:26px;height:18px}
+.gp-profile-view .gp-group-pill{border:1px solid #375e78;border-radius:6px;padding:6px 9px;background:#102d42;color:#bceaff;font-size:.67rem;font-weight:900;letter-spacing:.06em}
+.gp-profile-view .gp-team-identity{display:inline-flex;align-items:center;gap:13px;padding:10px 15px;margin-top:26px;border:1px solid #335772;border-radius:12px;background:#12283d;color:#f0faff!important;max-width:100%;transition:border-color .15s}
+.gp-profile-view .gp-team-identity:hover{border-color:#00c8ff}
+.gp-profile-view .gp-team-identity .gp-logo{width:47px;height:47px;object-fit:contain}
+.gp-profile-view .gp-team-identity span{display:grid;gap:3px;min-width:0}
+.gp-profile-view .gp-team-identity small{color:#89afc8;font-size:.58rem;font-weight:900;letter-spacing:.1em}
+.gp-profile-view .gp-team-identity strong{color:#f0faff;font-size:.98rem;overflow-wrap:anywhere}
+.gp-profile-view .gp-team-identity>b{margin-left:6px;color:#77dfff}
+.gp-profile-view .gp-hero-note{max-width:470px;font-size:.76rem;line-height:1.6;color:#a2c2da;margin:17px 0 0}
+.gp-profile-view .gp-hero-art{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:end;isolation:isolate;min-height:333px;overflow:hidden}
+.gp-profile-view .gp-hero-watermark{position:absolute;z-index:-1;top:9%;left:10%;width:80%;height:82%;object-fit:contain;opacity:.11;filter:grayscale(.15);pointer-events:none}
+.gp-profile-view .gp-hero-art::before{content:"";position:absolute;z-index:-1;bottom:0;width:85%;height:85%;border-radius:50%;background:radial-gradient(circle,#0b8dba33 0%,transparent 68%);pointer-events:none}
+.gp-profile-view .gp-hero .gp-photo{display:flex;width:min(100%,328px);height:320px;min-height:0;flex:0 1 auto;overflow:hidden;border:0;border-radius:0;background:transparent;align-items:end;justify-content:center;font-size:4rem}
+.gp-profile-view .gp-hero .gp-photo img{inset:0;object-fit:contain;object-position:center bottom;width:100%;height:100%;background:transparent}
+.gp-profile-view .gp-hero-art>span:last-child:not(.gp-photo){z-index:2;position:relative;display:block;width:100%;padding:10px 0 13px;border-top:1px solid #35607c;text-align:center;color:#b2e7fc;font-size:.63rem;letter-spacing:.09em;font-weight:900}
+.gp-profile-view .gp-player-actions{position:relative;z-index:3;margin:0 -32px;padding:17px 32px 20px;border-top:1px solid #29445b;background:#0b1a2bcc}
+.gp-profile-view .gp-player-actions :is(button,a){min-height:43px;padding:10px 17px;font-size:.77rem}
+.gp-profile-view .gp-player-actions .gp-primary{background:#00bde9;color:#061522;border-color:#00cbff;font-weight:900}
+.gp-profile-view .gp-performance-band{margin:0 0 20px;padding:23px 24px 26px;border:1px solid #294660;border-radius:17px;background:linear-gradient(135deg,#0b1c2e,#0c1828)}
+.gp-profile-view .gp-band-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:19px}
+.gp-profile-view .gp-band-top h2{color:#f0faff;font-size:1.37rem;margin:5px 0 0}
+.gp-profile-view .gp-stage{max-width:225px;margin:0;color:#aed4ec;font-weight:800}
+.gp-profile-view .gp-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0}
+.gp-profile-view .gp-stat{display:flex;flex-direction:column;justify-content:center;min-height:130px;padding:21px 18px;border:1px solid #2a4e69;border-top:3px solid #00c8ff;border-radius:12px;background:#111e31}
+.gp-profile-view .gp-stat-featured{background:linear-gradient(150deg,#0f3048,#122036)}
+.gp-profile-view .gp-stat>span{font-size:.69rem;font-weight:900;color:#83b7dc;letter-spacing:.055em}
+.gp-profile-view .gp-stat strong{font-size:clamp(1.45rem,3vw,2.35rem);line-height:1.08;margin:13px 0 7px;color:#f2f8ff;font-weight:900}
+.gp-profile-view .gp-stat-featured strong{color:#16d0ff}
+.gp-profile-view .gp-stat small{font-size:.66rem;color:#99b7d0}
+.gp-profile-view .gp-layout{grid-template-columns:minmax(0,1fr) 325px;gap:20px}
+.gp-profile-view .gp-panel{border-color:#2b435f;border-radius:15px;background:#0d192b;padding:21px}
+.gp-profile-view .gp-player-data-panel{min-height:335px}
+.gp-profile-view .gp-tabs{gap:4px;overflow-x:auto;scrollbar-width:thin;margin:-5px -4px 22px;padding:0 4px 4px}
+.gp-profile-view .gp-tabs button{flex:1 0 auto;min-width:116px;white-space:nowrap;padding:13px 10px;font-size:.73rem;color:#a8c8e0}
+.gp-profile-view .gp-tabs button[aria-selected=true]{color:#eafaff;border-bottom-color:#00c8ff;background:#123148}
+.gp-profile-view .gp-section-title{margin-bottom:19px}
+.gp-profile-view .gp-section-title h2{font-size:1.31rem;color:#f0f9ff;margin:6px 0 4px}
+.gp-profile-view .gp-section-title h3{font-size:1.05rem;color:#e4f7ff;margin:6px 0 3px}
+.gp-profile-view .gp-section-title p{font-size:.75rem;line-height:1.5;color:#94b5d0;margin:5px 0 0}
+.gp-profile-view .gp-section-split{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:27px 0 15px}
+.gp-profile-view .gp-section-split button{min-height:36px;color:#7adeff;background:transparent;border-color:#31546b}
+.gp-profile-view .gp-secondary-stats,.gp-profile-view .gp-record-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.gp-profile-view .gp-secondary-stat{display:flex;flex-direction:column;min-height:114px;padding:17px 19px;border:1px solid #314761;border-radius:12px;background:#101f32}
+.gp-profile-view .gp-secondary-stat small{color:#8fb4d3;font-size:.66rem;font-weight:900;letter-spacing:.06em}
+.gp-profile-view .gp-secondary-stat strong{font-size:1.92rem;color:#f1f9ff;margin:10px 0 4px}
+.gp-profile-view .gp-secondary-stat>span{font-size:.7rem;color:#a3c4db}
+.gp-profile-view .gp-record-card{display:flex;flex-direction:column;align-items:start;gap:7px;min-height:176px;padding:18px;border:1px solid #315471;border-radius:12px;background:linear-gradient(155deg,#133049,#101f32)}
+.gp-profile-view .gp-record-card strong{font-size:2.15rem;color:#16d0ff}
+.gp-profile-view .gp-record-card strong small{font-size:.73rem;color:#a8cae1}
+.gp-profile-view .gp-record-card p{margin:0;color:#a6c7de;font-size:.74rem;line-height:1.5}
+.gp-profile-view .gp-record-card button{margin-top:auto;min-height:35px;padding:8px 11px;background:#0c2336;color:#9de2ff;font-size:.68rem}
+.gp-profile-view .gp-benchmark{margin-top:24px;padding:20px;border:1px solid #31516b;border-radius:12px;background:#101e31}
+.gp-profile-view .gp-benchmark h3{font-size:1.02rem;margin:7px 0;color:#eef8ff}
+.gp-profile-view .gp-benchmark p{color:#9ebdd5;font-size:.74rem;line-height:1.6;margin:7px 0 13px}
+.gp-profile-view .gp-benchmark>button{min-height:37px;font-size:.74rem;color:#a4e9ff}
+.gp-profile-view .gp-benchmark-result:not(:empty){margin-top:16px}
+.gp-profile-view .gp-benchmark-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gp-profile-view .gp-benchmark-values>div{padding:13px;border:1px solid #35516d;background:#0e263b;border-radius:9px;min-width:0}
+.gp-profile-view .gp-benchmark-values small,.gp-profile-view .gp-benchmark-values span{display:block;color:#9bbdd6;font-size:.66rem;line-height:1.5}
+.gp-profile-view .gp-benchmark-values strong{display:block;color:#f2faff;margin:6px 0;font-size:1.45rem}
+.gp-profile-view .gp-benchmark-values .is-above strong{color:#5ee0b3}
+.gp-profile-view .gp-benchmark-values .is-below strong{color:#ffbd9d}
+.gp-profile-view .gp-chart-options{display:flex;flex-wrap:wrap;gap:12px;margin:13px 0 20px}
+.gp-profile-view .gp-chart-options label{flex:1 1 155px;max-width:220px}
+.gp-profile-view .gp-chart-scroll{max-width:100%;overflow-x:auto;border:1px solid #2b4560;border-radius:12px;background:#0b1a2c;padding:19px 16px 14px}
+.gp-profile-view .gp-chart{display:flex;gap:15px;align-items:stretch;min-width:max-content;height:260px}
+.gp-profile-view .gp-chart-col{display:flex;flex-direction:column;align-items:center;justify-content:end;gap:9px;width:84px;text-align:center}
+.gp-profile-view .gp-chart-col>strong{font-size:.85rem;color:#e4f7ff}
+.gp-profile-view .gp-chart-col>span{font-size:.72rem;font-weight:900;color:#b9daef;white-space:nowrap}
+.gp-profile-view .gp-chart-col>small{font-size:.61rem;color:#87a7c0}
+.gp-profile-view .gp-chart-track{position:relative;display:flex;align-items:end;justify-content:center;height:166px;width:100%;background:linear-gradient(to top,#18314744,transparent);border-bottom:1px solid #54708b}
+.gp-profile-view .gp-chart-bar{width:65%;min-height:0;border-radius:5px 5px 0 0;background:linear-gradient(to top,#0684b6,#16cdf4)}
+.gp-profile-view .gp-chart-bar.is-missing{height:0}
+.gp-profile-view .gp-team-campaign{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:13px;margin-bottom:16px}
+.gp-profile-view .gp-team-phase{min-width:0;border:1px solid #314f6b;border-radius:12px;padding:18px;background:#101f32}
+.gp-profile-view .gp-team-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:17px 0}
+.gp-profile-view .gp-team-metrics>div{min-width:0}
+.gp-profile-view .gp-team-metrics strong{font-size:1.34rem;display:block;color:#f0faff}
+.gp-profile-view .gp-team-metrics small{font-size:.58rem;color:#96b8d3}
+.gp-profile-view .gp-team-day{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:10px 0;border-top:1px solid #2b4460;font-size:.75rem}
+.gp-profile-view .gp-team-day strong{font-size:.75rem}
+.gp-profile-view .gp-team-position{font-size:.75rem;color:#a7c9de}
+.gp-profile-view .gp-team-position strong{color:#12ccf1}
+.gp-profile-view .gp-teammates .gp-peers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.gp-profile-view .gp-teammates .gp-peer{min-height:78px;gap:11px;border:1px solid #294660;background:#111f31;padding:11px}
+.gp-profile-view .gp-teammates .gp-peer:hover{border-color:#00c8ff}
+.gp-profile-view .gp-peer .gp-photo{width:58px;height:58px;flex:0 0 58px;border-radius:10px}
+.gp-profile-view .gp-peer-info{flex:1;display:block;min-width:0}
+.gp-profile-view .gp-peer-info strong{display:block;font-size:.88rem;color:#f4f9ff;overflow-wrap:anywhere}
+.gp-profile-view .gp-peer-info small{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px;font-size:.65rem;color:#9fbcd2}
+.gp-profile-view .gp-peer-arrow{font-size:.87rem;color:#8fcfe9}
+.gp-profile-view .gp-fixtures{display:grid;gap:10px}
+.gp-profile-view .gp-fixture{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid #2e4964;border-radius:10px;background:#111f31;min-width:0}
+.gp-profile-view .gp-fixture.is-next{border-color:#0797be;background:#103149}
+.gp-profile-view .gp-fixture time{display:flex;flex:0 0 47px;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:7px 4px;border-radius:7px;background:#1e3a52;color:#eefaff}
+.gp-profile-view .gp-fixture time b{font-size:1.18rem}
+.gp-profile-view .gp-fixture time small{font-size:.56rem;color:#a8d4ea}
+.gp-profile-view .gp-fixture>span{flex:1;min-width:0}
+.gp-profile-view .gp-fixture>span strong{display:block;overflow-wrap:anywhere;color:#eef9ff;font-size:.7rem;line-height:1.4}
+.gp-profile-view .gp-fixture>span small{display:block;color:#97bad1;margin-top:5px;font-size:.62rem;line-height:1.5}
+.gp-profile-view .gp-fixture em{align-self:start;font-size:.53rem;font-style:normal;color:#00d6ff;font-weight:900}
+.gp-profile-view .gp-more-fixtures{margin-top:12px}
+.gp-profile-view .gp-more-fixtures summary{font-size:.73rem;cursor:pointer;color:#9addff;padding:8px 0}
+.gp-profile-view .gp-more-fixtures>.gp-fixtures{margin-top:8px}
+.gp-profile-view .gp-more-links{display:grid;gap:12px}
+.gp-profile-view .gp-more-links h2{margin:0}
+.gp-profile-view .gp-more-links a{font-size:.76rem;padding:10px 0;border-bottom:1px solid #29435c}
+.gp-profile-view .gp-profile-source{margin:17px 0;color:#8eaec7}
+@media(max-width:1040px){
+ .gp-profile-view .gp-layout{grid-template-columns:minmax(0,1fr) 275px}
+ .gp-profile-view .gp-player-hero-grid{grid-template-columns:minmax(0,1fr) minmax(205px,.7fr)}
+ .gp-profile-view .gp-hero .gp-photo{height:280px}
+}
+@media(max-width:790px){
+ .gp-profile-view .gp-layout{grid-template-columns:minmax(0,1fr)}
+ .gp-profile-view .gp-player-hero{padding:23px 20px 0}
+ .gp-profile-view .gp-player-hero-grid{grid-template-columns:minmax(0,1fr) minmax(140px,.55fr);gap:9px}
+ .gp-profile-view .gp-hero .gp-photo{height:250px}
+ .gp-profile-view .gp-player-actions{margin:0 -20px;padding:15px 20px}
+ .gp-profile-view .gp-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .gp-profile-view .gp-performance-band{padding:18px}
+ .gp-profile-view .gp-tabs button{flex:0 0 auto;min-width:120px}
+}
+@media(max-width:520px){
+ .gp-profile-view .gp-player-hero-grid{grid-template-columns:1fr;gap:0}
+ .gp-profile-view .gp-player-hero-copy{padding:4px 0 10px}
+ .gp-profile-view .gp-player-hero h1{font-size:clamp(2.45rem,12vw,4.1rem)!important}
+ .gp-profile-view .gp-hero-art{min-height:240px;max-height:295px}
+ .gp-profile-view .gp-hero .gp-photo{height:255px;width:270px;max-width:100%}
+ .gp-profile-view .gp-hero-watermark{top:0;height:100%;opacity:.09}
+ .gp-profile-view .gp-player-actions>*{flex:1 1 calc(50% - 8px);text-align:center}
+ .gp-profile-view .gp-band-top{align-items:stretch;flex-direction:column}
+ .gp-profile-view .gp-stage{max-width:none}
+ .gp-profile-view .gp-stat{min-height:110px;padding:15px 13px}
+ .gp-profile-view .gp-stat strong{font-size:clamp(1.55rem,7vw,2.2rem)}
+ .gp-profile-view .gp-secondary-stats,.gp-profile-view .gp-record-grid{grid-template-columns:1fr}
+ .gp-profile-view .gp-benchmark-values{grid-template-columns:1fr}
+ .gp-profile-view .gp-teammates .gp-peers{grid-template-columns:1fr}
+ .gp-profile-view .gp-panel{padding:16px}
+}
