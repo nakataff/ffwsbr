@@ -1653,7 +1653,7 @@
       if (!document.querySelector('link[data-cff-stats-share-css]')) {
         const link=document.createElement('link');
         link.rel='stylesheet';
-        link.href='/css/global-stats-share.css?v=20261108-share-studio-v2';
+        link.href='/css/global-stats-share.css?v=20261108-mobile-preview-first-v3';
         link.dataset.cffStatsShareCss='1';
         document.head.append(link);
       }
