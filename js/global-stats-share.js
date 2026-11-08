@@ -378,47 +378,84 @@ async function draw(payload){
   });
  }else if(payload.rows.length){
   const items=payload.rows.slice(0,5);
-  const gap=compact?7:storyRanking?16:12;
-  const available=panelBottom-panelTop-(storyRanking?95:0);
-  const rowH=clamp((available-gap*(items.length-1))/Math.max(1,items.length),
-   compact?36:storyRanking?95:55,compact?70:storyRanking?156:95);
-  if(storyRanking)textLine(ctx,'RANKING DO RECORTE',pad,panelTop-25,w-2*pad,19,muted,'900');
+  const gap=compact?7:story?16:12;
+  const fit=story?storyFit(items.length,items.length<=2?300:items.length===3?245:items.length===4?215:185,gap):null;
+  const available=panelBottom-panelTop;
+  const rowH=story?fit.height:clamp((available-gap*(items.length-1))/Math.max(1,items.length),compact?36:55,compact?70:95);
+  const listY=story?fit.top:panelTop;
+  if(story)textLine(ctx,'RANKING DO RECORTE',pad,listY-18,w-2*pad,19,muted,'900');
   items.forEach((row,i)=>{
-   const y=panelTop+i*(rowH+gap);
+   const y=listY+i*(rowH+gap);
    rounded(ctx,pad,y,w-pad*2,rowH,13,surface,dark?'#263e57':'#c6d6e4');
-   const badgeSize=storyRanking?Math.min(86,rowH-24):rowH-16;
-   const badgeY=storyRanking?y+(rowH-badgeSize)/2:y+8;
+   const badgeSize=story?Math.min(90,rowH-24):rowH-16;
+   const badgeY=story?y+(rowH-badgeSize)/2:y+8;
    rounded(ctx,pad+12,badgeY,badgeSize,badgeSize,8,i===0?accent:dark?'#1b3047':'#dce8f4');
-   textLine(ctx,String(row.rank),pad+12+badgeSize/2,y+rowH/2+8,badgeSize-2,storyRanking?29:compact?19:26,i===0?'#081a2a':ink,'950','center');
-   const logoSize=storyRanking?Math.min(99,rowH-22):rowH-15;
-   if(state.showImage&&rowImages[i])contain(ctx,rowImages[i],pad+badgeSize+26,storyRanking?y+(rowH-logoSize)/2:y+8,logoSize,logoSize);
-   const nameX=storyRanking?pad+badgeSize+(state.showImage&&rowImages[i]?logoSize+43:38):pad+rowH+(state.showImage?rowH+17:21);
-   const nameWidth=storyRanking?Math.max(90,w-pad-155-nameX):w*.43;
-   textLine(ctx,row.name,nameX,y+rowH/2+(storyRanking&&row.team&&row.team!==row.name?-6:7),nameWidth,storyRanking?33:compact?20:28,ink);
-   if(storyRanking&&row.team&&row.team!==row.name)textLine(ctx,row.team,nameX,y+rowH/2+29,nameWidth,20,muted,'750');
-   textLine(ctx,row.score,w-pad-17,y+rowH/2+10,w*.2,storyRanking?35:compact?23:31,accent,'950','right');
+   textLine(ctx,String(row.rank),pad+12+badgeSize/2,y+rowH/2+8,badgeSize-2,story?29:compact?19:26,i===0?'#081a2a':ink,'950','center');
+   const logoSize=story?Math.min(105,rowH-22):rowH-15;
+   if(state.showImage&&rowImages[i])contain(ctx,rowImages[i],pad+badgeSize+26,story?y+(rowH-logoSize)/2:y+8,logoSize,logoSize);
+   const nameX=story?pad+badgeSize+(state.showImage&&rowImages[i]?logoSize+43:38):pad+rowH+(state.showImage?rowH+17:21);
+   const nameWidth=story?Math.max(90,w-pad-155-nameX):w*.43;
+   textLine(ctx,row.name,nameX,y+rowH/2+(story&&row.team&&row.team!==row.name?-6:7),nameWidth,story?33:compact?20:28,ink);
+   if(story&&row.team&&row.team!==row.name)textLine(ctx,row.team,nameX,y+rowH/2+29,nameWidth,20,muted,'750');
+   textLine(ctx,row.score,w-pad-17,y+rowH/2+10,w*.2,story?35:compact?23:31,accent,'950','right');
   });
  }else if(payload.two){
-  const rows=payload.two,colGap=14,colW=(w-2*pad-colGap)/2;
-  const boxH=Math.min(compact?122:210,panelBottom-panelTop);
-  rows.forEach((row,i)=>{
-   const x=pad+i*(colW+colGap),small=boxH<135;
-   rounded(ctx,x,panelTop,colW,boxH,16,surface,dark?'#263e57':'#c6d6e4');
-   textLine(ctx,row.team,x+18,panelTop+(small?28:42),colW-36,small?20:27,ink);
-   textLine(ctx,fmt(row.points,'points')+' PTS',x+18,panelTop+(small?68:110),colW-36,small?34:46,accent);
-   textLine(ctx,fmt(row.kills,'kills')+' ABATES',x+18,panelTop+boxH-17,colW-36,small?14:22,muted);
-  });
+  const rows=payload.two;
+  if(story){
+   // Full-width panels stack the teams vertically for a native 9:16 comparison.
+   const gap=25,fit=storyFit(rows.length,490,gap),boxH=fit.height;
+   rows.forEach((row,i)=>{
+    const x=pad,y=fit.top+i*(boxH+gap),boxW=w-2*pad,logo=compareImages[i];
+    rounded(ctx,x,y,boxW,boxH,16,surface,dark?'#263e57':'#c6d6e4');
+    ctx.fillStyle=accent;ctx.fillRect(x+18,y+22,5,Math.max(24,boxH-44));
+    textLine(ctx,'EQUIPE '+(i+1),x+40,y+48,boxW-80,19,muted,'850');
+    textLine(ctx,row.team,x+40,y+104,boxW-(logo?240:80),38,ink,'900');
+    if(logo)contain(ctx,logo,x+boxW-195,y+40,145,145);
+    textLine(ctx,fmt(row.points,'points'),x+40,y+225,boxW*.66,93,accent,'950');
+    textLine(ctx,'PONTOS',x+40,y+257,boxW*.55,20,muted,'850');
+    const fields=[['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
+    const cellW=(boxW-80)/3;
+    fields.forEach(([label,value],j)=>{
+     const xCell=x+40+cellW*j;
+     ctx.fillStyle=dark?'#29445e':'#c8d8e6';ctx.fillRect(xCell,y+boxH-120,cellW-15,2);
+     textLine(ctx,label,xCell,y+boxH-90,cellW-13,15,muted,'850');
+     textLine(ctx,value,xCell,y+boxH-36,cellW-13,36,ink,'900');
+    });
+   });
+  }else{
+   const colGap=14,colW=(w-2*pad-colGap)/2,boxH=Math.min(compact?122:210,panelBottom-panelTop);
+   rows.forEach((row,i)=>{
+    const x=pad+i*(colW+colGap),small=boxH<135;
+    rounded(ctx,x,panelTop,colW,boxH,16,surface,dark?'#263e57':'#c6d6e4');
+    textLine(ctx,row.team,x+18,panelTop+(small?28:42),colW-36,small?20:27,ink);
+    textLine(ctx,fmt(row.points,'points')+' PTS',x+18,panelTop+(small?68:110),colW-36,small?34:46,accent);
+    textLine(ctx,fmt(row.kills,'kills')+' ABATES',x+18,panelTop+boxH-17,colW-36,small?14:22,muted);
+   });
+  }
  }else{
-  const facts=payload.facts.slice(0,compact?2:6),cols=2,gap=compact?12:17;
-  const usable=Math.max(0,panelBottom-panelTop),rows=Math.ceil(facts.length/cols);
-  const boxH=Math.min(compact?104:h>1700?190:144,Math.max(0,(usable-gap*(rows-1))/Math.max(1,rows)));
-  facts.forEach((fact,index)=>{
-   const x=pad+(index%2)*( (w-2*pad+gap)/2 );
-   const y=panelTop+Math.floor(index/2)*(boxH+gap),boxW=(w-pad*2-gap)/2;
-   rounded(ctx,x,y,boxW,boxH,14,surface,dark?'#263e57':'#c6d6e4');
-   textLine(ctx,fact.label,x+18,y+Math.min(boxH*.34,compact?24:35),boxW-36,compact?13:20,muted,'850');
-   textLine(ctx,fact.value,x+18,y+boxH-16,boxW-36,boxH<75?23:compact?25:39,ink);
-  });
+  const facts=payload.facts.slice(0,compact?2:6);
+  if(story&&facts.length){
+   // Full-width statistic rows fill the vertical Story; these are NOT feed tiles.
+   const gap=facts.length>=5?13:19,maximum=facts.length>=5?172:facts.length===4?220:facts.length===3?260:340;
+   const fit=storyFit(facts.length,maximum,gap);
+   facts.forEach((fact,i)=>{
+    const x=pad,y=fit.top+i*(fit.height+gap),boxW=w-pad*2,boxH=fit.height;
+    rounded(ctx,x,y,boxW,boxH,14,surface,dark?'#263e57':'#c6d6e4');
+    rounded(ctx,x+14,y+14,5,Math.max(5,boxH-28),2,accent);
+    textLine(ctx,fact.label,x+37,y+boxH/2+8,boxW*.47,23,muted,'850');
+    textLine(ctx,fact.value,x+boxW-24,y+boxH/2+15,boxW*.39,48,ink,'950','right');
+   });
+  }else{
+   const cols=2,gap=compact?12:17,usable=Math.max(0,panelBottom-panelTop),rows=Math.ceil(facts.length/cols);
+   const boxH=Math.min(compact?104:h>1700?190:144,Math.max(0,(usable-gap*(rows-1))/Math.max(1,rows)));
+   facts.forEach((fact,index)=>{
+    const x=pad+(index%2)*((w-2*pad+gap)/2);
+    const y=panelTop+Math.floor(index/2)*(boxH+gap),boxW=(w-pad*2-gap)/2;
+    rounded(ctx,x,y,boxW,boxH,14,surface,dark?'#263e57':'#c6d6e4');
+    textLine(ctx,fact.label,x+18,y+Math.min(boxH*.34,compact?24:35),boxW-36,compact?13:20,muted,'850');
+    textLine(ctx,fact.value,x+18,y+boxH-16,boxW-36,boxH<75?23:compact?25:39,ink);
+   });
+  }
  }
  ctx.fillStyle=accent;ctx.fillRect(pad,footerY-22,w-2*pad,3);
  textLine(ctx,'centralfreefire.com.br',pad,footerY+18,w*.72,compact?21:28,ink);
