@@ -1588,6 +1588,75 @@
     </div></section>`;
   }
 
+
+  function s2StatsEvolutionPlayerCatalog(entries) {
+  const standing=aggregateStatsPlayers(entries).sort((a,b)=>b.kills-a.kills||b.damage-a.damage);
+  const points=new Map(standing.map(x=>[normalize(x.name)+'__'+normalize(x.team),x.kills]));
+  const roster=new Map();
+  for(const player of rosterPlayers()){
+    if(!player.name||!player.team)continue;
+    const id=normalize(player.name)+'__'+normalize(player.team);
+    if(!roster.has(id))roster.set(id,{id,name:player.name,team:player.team});
+  }
+  for(const player of standing){
+    const id=normalize(player.name)+'__'+normalize(player.team);
+    if(!roster.has(id))roster.set(id,{id,name:player.name,team:player.team});
+  }
+  return [...roster.values()].sort((a,b)=>(points.get(b.id)||0)-(points.get(a.id)||0)
+   ||a.name.localeCompare(b.name,'pt-BR')||a.team.localeCompare(b.team,'pt-BR'));
+}
+
+  function s2StatsEvolutionPlayerSearchHtml(query) {
+  const q=normalize(query||'');
+  if(!q)return '<p class="ffws-global-evolution-hint">Digite o nome de um jogador ou equipe para encontrar um atleta.</p>';
+  const items=s2StatsEvolutionPlayerOptions.filter(p=>normalize(p.name+' '+p.team).includes(q)).slice(0,12);
+  if(!items.length)return '<p class="ffws-global-evolution-hint">Nenhum jogador encontrado. Tente outro nome.</p>';
+  const selected=new Set(state.statsEvolutionPlayers.players||[]);
+  const full=selected.size>=5;
+  return items.map(p=>{
+    const active=selected.has(p.id);
+    return `<button type="button" class="ffws-global-evolution-player-result${active?' is-active':''}" onclick="toggleFFWSGlobalStatsEvolutionPlayer('${jsAttr(p.id)}')" ${!active&&full?'disabled':''} aria-pressed="${active}"><span><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.team)}</small></span><b>${active?'✓ Selecionado':full?'Máximo 5':'+ Adicionar'}</b></button>`;
+  }).join('');
+}
+
+  function s2StatsEvolutionPlayerSelectionsHtml() {
+  const selected=(state.statsEvolutionPlayers.players||[]).slice(0,5);
+  const names=new Map(s2StatsEvolutionPlayerOptions.map(p=>[p.id,p]));
+  const colors=['#00c8ff','#ffd34d','#7fe29a','#ff7a90','#b68cff'];
+  return selected.length?selected.map((id,i)=>{
+    const p=names.get(id);
+    return `<button type="button" class="ffws-global-evolution-player-chip" style="--chip-color:${colors[i]}" onclick="toggleFFWSGlobalStatsEvolutionPlayer('${jsAttr(id)}')" aria-label="Remover ${escapeHtml(p?.name||id)} da comparação"><span>${escapeHtml(p?.name||id)}</span><small>${escapeHtml(p?.team||'')}</small><b aria-hidden="true">×</b></button>`;
+  }).join(''):'<span class="ffws-global-evolution-hint">Escolha até cinco jogadores para comparar.</span>';
+}
+
+  function s2StatsEvolutionPlayerPickerUpdate() {
+  const list=document.getElementById('ffws-global-evolution-player-results');
+  const chosen=document.getElementById('ffws-global-evolution-player-selected');
+  const count=document.getElementById('ffws-global-evolution-player-count');
+  if(list)list.innerHTML=s2StatsEvolutionPlayerSearchHtml(state.statsEvolutionPlayers.search);
+  if(chosen)chosen.innerHTML=s2StatsEvolutionPlayerSelectionsHtml();
+  if(count)count.textContent=(state.statsEvolutionPlayers.players||[]).length+' de 5 selecionados';
+}
+
+  function s2StatsEvolutionPlayerHtml() {
+  const metric=state.statsEvolutionPlayers.metric||'kills';
+  const labels=[
+    ['kills','Abates por dia'],['damage','Dano por dia'],['assists','Assistências por dia'],
+    ['mvps','MVPs por dia'],['avgKills','Abates por queda'],['avgDamage','Dano por queda'],
+    ['avgAssists','Assistências por queda'],['avgPartKills','Participação nos abates (%)'],
+    ['avgPartDamage','Participação no dano (%)'],['avgPartAssists','Participação nas assistências (%)']
+  ];
+  return `<section id="anchor-s2-evolucao-jogadores" class="ffws-global-panel ffws-global-stats-evolution ffws-global-player-evolution"><div class="ffws-global-panel-inner">
+    <div class="ffws-global-panel-head"><div><h2>Comparação de Evolução dos Jogadores</h2><p>Compare as atuações por dia, usando a etapa, os dias e os mapas escolhidos acima.</p></div><span class="ffws-global-badge">até 5 jogadores</span></div>
+    <div class="ffws-global-evolution-player-controls"><label class="ffws-global-filter"><span>Métrica do gráfico:</span><select onchange="setFFWSGlobalStatsEvolutionPlayerMetric(this.value)">${labels.map(([id,text])=>`<option value="${id}"${metric===id?' selected':''}>${text}</option>`).join('')}</select></label>
+    <div class="ffws-global-evolution-player-picker"><label for="ffws-global-evolution-player-search">Pesquisar jogador</label><input id="ffws-global-evolution-player-search" type="search" placeholder="Nome do jogador ou equipe..." value="${escapeHtml(state.statsEvolutionPlayers.search||'')}" autocomplete="off" oninput="searchFFWSGlobalStatsEvolutionPlayer(this.value)" aria-controls="ffws-global-evolution-player-results">
+    <small id="ffws-global-evolution-player-count">${(state.statsEvolutionPlayers.players||[]).length} de 5 selecionados</small><div class="ffws-global-evolution-player-results" id="ffws-global-evolution-player-results">${s2StatsEvolutionPlayerSearchHtml(state.statsEvolutionPlayers.search)}</div></div></div>
+    <div class="ffws-global-evolution-player-selected" id="ffws-global-evolution-player-selected" aria-label="Jogadores selecionados">${s2StatsEvolutionPlayerSelectionsHtml()}</div>
+    <div class="ffws-global-evolution-canvas-wrap"><canvas id="ffws-global-stats-player-evolution-chart"></canvas><div id="ffws-global-stats-player-evolution-empty" class="ffws-global-empty" hidden><div><strong>Sem dados suficientes</strong>Selecione jogadores que disputaram partidas neste recorte.</div></div></div>
+    <p class="ffws-global-evolution-footnote">As médias são calculadas por queda do dia. Participação = percentual do atleta sobre os totais de jogadores da própria equipe no período. Dias sem resultados ficam sem ponto no gráfico.</p>
+  </div></section>`;
+}
+
   function s2StatsEvolutionSeries(events, teamName, metric) {
     const periods = s2StatsEvolutionPeriods(events);
     const target = normalize(teamName);
@@ -1706,6 +1775,10 @@
     const teams = aggregateStatsTeams(events);
     const playerEntries = filteredStatsPlayerEntries(events);
     const players = aggregateStatsPlayers(playerEntries);
+    s2StatsEvolutionPlayerOptions=s2StatsEvolutionPlayerCatalog(playerEntries);
+    if (state.statsEvolutionPlayers.players===null) state.statsEvolutionPlayers.players =
+      s2StatsEvolutionPlayerOptions.filter(player=>playerEntries.some(entry=>
+        normalize(entry.name)+'__'+normalize(entry.team)===player.id)).slice(0,3).map(player=>player.id);
     const totalResults = teams.reduce((sum, row) => sum + row.matches, 0);
     const totalPoints = teams.reduce((sum, row) => sum + row.points, 0);
     const totalKills = teams.reduce((sum, row) => sum + row.kills, 0);
@@ -1823,6 +1896,7 @@
       </div>
       ${s2DropReportSelectorHtml(events)}
       ${s2StatsEvolutionHtml(events)}
+      ${s2StatsEvolutionPlayerHtml()}
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-ranking-columns"><div id="anchor-s2-ranking-medias"><div class="ffws-global-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div id="anchor-s2-ranking-totais"><div class="ffws-global-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
     ` : `<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-empty"><div><strong>Etapa ainda sem resultados</strong>As estatísticas aparecerão após o cadastro das quedas.</div></div></div></section>`;
 
