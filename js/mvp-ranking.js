@@ -21,7 +21,7 @@
     return path&&!/[:\\]/.test(path)&&!path.split('/').includes('..')?'/'+path:'/escudo.webp';
   };
   function load(key,config){
-    if(!cache.has(key))cache.set(key,fetch('/'+config.path+'/mvp-resumo.json?v='+(key==='global'?'20261107-mundial-dia2-v1':'20261106-shared-mvp-v1'),{cache:'default'})
+    if(!cache.has(key))cache.set(key,fetch('/'+config.path+'/mvp-resumo.json?v='+(key==='global'?'20261108-mundial-dia3-v1':'20261106-shared-mvp-v1'),{cache:'default'})
       .then(r=>{if(!r.ok)throw Error('Ranking indisponível');return r.json();})
       .then(data=>{if(data.version!==2||data.edition!==key||!Array.isArray(data.rows))throw Error('Ranking inválido');return data;})
       .catch(error=>{cache.delete(key);throw error;}));
