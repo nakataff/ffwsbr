@@ -103,3 +103,26 @@ test('groups load once from a static file and a failed or incomplete map cannot 
   x.api.state.groups={groups:{A:['loud','loud']}};root=x.render('classificatoria');assert(!root.querySelector('.global-knockout-group'));
  }finally{x.w.close()}
 });
+
+
+test('Global Finals share studio previews the image BEFORE settings on mobile and keeps action buttons after',()=>{
+ const css=read('css/global-stats-share.css'),markup=read('js/global-stats-share.js');
+ const media=css.slice(css.indexOf('@media(max-width:780px)'));
+ assert.match(media,/\.cff-stats-share-result\s*\{\s*display:contents\s*\}/,'preview/result children must take part in mobile flex ordering');
+ for(const [selector,order] of [
+  ['.cff-stats-share-preview',-3],['.cff-stats-share-result>[data-share-status]',-2],
+  ['.cff-stats-share-controls',0],['.cff-stats-share-actions',1]
+ ]){
+  const cssSelector=selector.replace(/[.*+?^$()|[\]{}]/g,'\\$&');
+  const pattern=new RegExp(cssSelector+'\\s*\\{[^}]*order:\\s*'+order+'\\b');
+  assert.match(media,pattern,'Incorrect mobile ordering: '+selector);
+ }
+ assert.match(media,/height:min\(38dvh,335px\)/,'Preview height must fit within small viewports');
+ assert.match(markup,/cff-stats-share-preview"><canvas/);
+ assert.match(markup,/data-share-action="save"/);
+ assert.match(markup,/data-share-action="share"/);
+ const global=read('ffws-global-2026/global.js'),shell=read('js/site-shell-fast.min.js'),html=read('index.html');
+ assert.match(global,/global-stats-share\.css\?v=20261108-mobile-preview-first-v3/);
+ assert.match(shell,/global\.js\?v=20261108-mobile-preview-first-v5/);
+ assert.match(html,/site-shell-fast\.min\.js\?v=20261108-mobile-preview-first-v5/);
+});
