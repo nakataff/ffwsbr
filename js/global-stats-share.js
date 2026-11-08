@@ -790,9 +790,13 @@ function shareButton(title,onClick,small){
  return b;
 }
 function buildOpenSource(group,entry,title,row){
- const [id,scope,metric]=entry;
- if(group==='record')return {kind:'record',record:[scope,metric,title],row,title};
- if(row)return group==='team'?{kind:'team',row,team:row.team,metric:entry[1]}:{kind:'player',row,player:row.name,metric:entry[1]};
+ // Ordinary groups use [cardId, metric]; record groups use
+ // [cardId, recordScope, metric]. Never destructure the two-item groups
+ // as though they contained a third element: it drops the clicked metric.
+ const [,second,third]=entry;
+ if(group==='record')return {kind:'record',record:[second,third,title],row,title};
+ const metric=second;
+ if(row)return group==='team'?{kind:'team',row,team:row.team,metric}:{kind:'player',row,player:row.name,metric};
  return {kind:'top',entity:group==='contribution'?'contribution':group,metric,title};
 }
 function decorate(){
