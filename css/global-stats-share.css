@@ -190,11 +190,25 @@
  }
  .cff-stats-share-dialog .cff-stats-share-controls select,
  .cff-stats-share-dialog .cff-stats-share-controls input[type=text]{font-size:16px}
- .cff-stats-share-result{
-  min-height:unset;overflow:visible;flex:none;padding:14px 12px calc(20px + env(safe-area-inset-bottom,0px))
+ /* Keep one canvas and one action area, but place preview ABOVE all form fields.
+    display:contents promotes the result's children into the mobile flex flow. */
+ .cff-stats-share-result{display:contents}
+ .cff-stats-share-preview{
+  order:-3;flex:0 0 auto;min-height:0;
+  height:min(38dvh,335px);margin:12px 12px 0;padding:9px;
  }
- .cff-stats-share-preview canvas{max-height:410px}
- .cff-stats-share-preview{min-height:200px}
+ .cff-stats-share-preview canvas{
+  width:auto;height:auto;max-width:100%;max-height:min(34dvh,305px);
+ }
+ .cff-stats-share-result>[data-share-status]{
+  order:-2;margin:0;padding:8px 12px 12px;
+  flex:0 0 auto;min-height:30px;text-align:center;
+ }
+ .cff-stats-share-controls{order:0}
+ .cff-stats-share-actions{
+  order:1;flex:0 0 auto;
+  margin:0 12px;padding:14px 0 calc(20px + env(safe-area-inset-bottom,0px));
+ }
  .cff-stats-share-actions button{min-height:48px}
  #ffws-global-2026-stats-content .cff-stats-share-list-item{padding-right:34px!important}
  #ffws-global-2026-stats-content .cff-stats-share-list-item>.cff-stats-share-trigger{
