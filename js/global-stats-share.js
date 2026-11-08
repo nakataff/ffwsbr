@@ -236,6 +236,38 @@ function contain(ctx,pic,x,y,w,h){
  if(!iw||!ih)return;const scale=Math.min(w/iw,h/ih);const dw=iw*scale,dh=ih*scale;
  ctx.drawImage(pic,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
 }
+
+function drawHeroPortrait(ctx,photo,emblem,x,y,size,accent,dark,surface){
+ const radius=Math.max(14,Math.round(size*.085));
+ ctx.save();ctx.shadowColor=accent;ctx.shadowBlur=size*.07;ctx.globalAlpha=.25;
+ rounded(ctx,x,y,size,size,radius,surface);ctx.restore();
+ ctx.save();ctx.beginPath();ctx.roundRect(x,y,size,size,radius);ctx.clip();
+ const bg=ctx.createLinearGradient(x,y,x+size,y+size);
+ bg.addColorStop(0,dark?'#182b42':'#ffffff');
+ bg.addColorStop(1,dark?'#091625':'#dbe9f4');
+ ctx.fillStyle=bg;ctx.fillRect(x,y,size,size);
+ const halo=ctx.createRadialGradient(x+size*.56,y+size*.44,0,x+size*.56,y+size*.44,size*.75);
+ halo.addColorStop(0,accent+'30');halo.addColorStop(1,accent+'00');
+ ctx.fillStyle=halo;ctx.fillRect(x,y,size,size);
+ if(emblem){
+  ctx.save();ctx.globalAlpha=photo?(dark?.13:.11):.88;
+  contain(ctx,emblem,x+size*.1,y+size*.09,size*.8,size*.8);ctx.restore();
+ }
+ if(photo){
+  const iw=photo.naturalWidth||photo.width,ih=photo.naturalHeight||photo.height;
+  if(iw>0&&ih>0){
+   const scale=Math.min(size*.98/iw,size*1.14/ih);
+   const dw=iw*scale,dh=ih*scale;
+   ctx.drawImage(photo,x+(size-dw)/2,y+size*.045,dw,dh);
+  }
+  const fade=ctx.createLinearGradient(x,y+size*.74,x,y+size);
+  fade.addColorStop(0,dark?'#0b192600':'#e8f1f500');
+  fade.addColorStop(1,dark?'#0b1926db':'#e8f1f5c9');
+  ctx.fillStyle=fade;ctx.fillRect(x,y+size*.74,size,size*.26);
+ }
+ ctx.restore();
+ rounded(ctx,x,y,size,size,radius,null,dark?'#31516b':'#b5cbdc');
+}
 async function draw(payload){
  const canvas=modal.querySelector('canvas'),ctx=canvas.getContext('2d',{alpha:false});
  const [w,h]=FORMATS[state.format]||FORMATS.feed;
@@ -261,28 +293,30 @@ async function draw(payload){
  ctx.fillStyle=dark?'#34526c':'#b5cad9';ctx.fillRect(pad,headY+61,w-2*pad,2);
  const titleY=compact?206:257,titleSize=compact?46:64;
  const titleHeight=multiline(ctx,payload.title,pad,titleY,wideList?w*.42:w-2*pad,titleSize,ink,2,1.04);
+ const mainY=wideList?437:compact?416:Math.floor(h*.39);
+ const heroVisible=state.showImage&&(photo||emblem)&&!wideList;
+ const panelStart=compact?503:Math.floor(h*.58);
+ const heroTopBase=compact?mainY-170:mainY-(h<1200?168:206);
+ const heroTop=heroVisible&&titleHeight>titleSize*1.2?Math.max(heroTopBase,titleY+titleHeight+20):heroTopBase;
+ const heroSize=heroVisible?Math.min(w*(compact?.26:h>1700?.43:.4),Math.max(0,panelStart-heroTop-(compact?18:36))):0;
+ const heroX=w-pad-heroSize;
+ const heroTextWidth=heroVisible?Math.max(130,heroX-pad-22):w*.71;
  if(state.showSubtitle){
   const subtitle=state.showFilters?payload.subtitle:(payload.entity||payload.team||'');
-  textLine(ctx,subtitle,pad,titleY+titleHeight+24,wideList?w*.42:w-2*pad,compact?16:23,muted,'750');
+  textLine(ctx,subtitle,pad,titleY+titleHeight+24,wideList?w*.42:heroVisible?heroTextWidth:w-2*pad,compact?16:23,muted,'750');
  }
- const mainY=wideList?437:compact?416:Math.floor(h*.39);
  if(payload.entity&&!wideList){
-  textLine(ctx,payload.entity.toUpperCase(),pad,mainY-92,w*.71,compact?27:39,ink);
+  textLine(ctx,payload.entity.toUpperCase(),pad,mainY-92,Math.min(w*.71,heroTextWidth),compact?27:39,ink);
  }
  if(payload.main){
   let font=compact?79:clamp(w*.112,76,143);
-  while(font>47&&ctx.measureText(payload.main).width>(wideList?w*.38:w*.69))font-=5;
-  textLine(ctx,payload.main,pad,mainY+32,wideList?w*.38:w*.72,font,accent);
-  textLine(ctx,payload.mainLabel,pad,mainY+72,wideList?w*.40:w*.70,compact?16:22,muted,'850');
+  const available=wideList?w*.38:heroVisible?heroTextWidth:w*.69;
+  while(font>47&&ctx.measureText(payload.main).width>available)font-=5;
+  textLine(ctx,payload.main,pad,mainY+32,available,font,accent);
+  textLine(ctx,payload.mainLabel,pad,mainY+72,wideList?w*.4:heroVisible?heroTextWidth:w*.7,compact?16:22,muted,'850');
  }
- if(state.showImage&&(photo||emblem)&&!wideList){
-  const pic=photo||emblem;
-  const iw=compact?w*.24:w*.29,ih=compact?240:Math.min(360,h*.25);
-  const x=w-pad-iw,y=compact?mainY-175:mainY-175;
-  const radial=ctx.createRadialGradient(x+iw/2,y+ih/2,0,x+iw/2,y+ih/2,iw*.85);
-  radial.addColorStop(0,accent+'36');radial.addColorStop(1,'#00000000');
-  ctx.fillStyle=radial;ctx.fillRect(x-70,y-65,iw+140,ih+130);
-  contain(ctx,pic,x,y,iw,ih);
+ if(heroVisible&&heroSize>0){
+  drawHeroPortrait(ctx,photo,emblem,heroX,heroTop,heroSize,accent,dark,surface);
  }
  const footerY=h-(compact?69:113);
  const panelTop=compact?503:Math.floor(h*.58),panelBottom=footerY-34;
