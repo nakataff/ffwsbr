@@ -38,7 +38,7 @@ function create({sql,transaction,now=()=>Date.now()}){
     let sent=expirySent;
     if(config.expiring&&item.expires>now()&&item.expires<=now()+DAY&&expirySent!==item.expires){
      const date=new Date(item.expires).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-     push('expiring','⏰ VALIDADE PRÓXIMA! '+item.title+' · '+item.quantity+' disponível(is) · vence '+date+' (Brasília).',{title:item.title});sent=item.expires;
+     push('expiring','⏰ VALIDADE PRÓXIMA! Pelo menos 1 unidade de '+item.title+' vence '+date+' (Brasília) · '+item.quantity+' no estoque.',{title:item.title});sent=item.expires;
     }
     sql.exec('INSERT INTO eco_shop_notice_state(title,quantity,price,discount,expires,expirySent) VALUES(?,?,?,?,?,?) ON CONFLICT(title) DO UPDATE SET quantity=excluded.quantity,price=excluded.price,discount=excluded.discount,expires=excluded.expires,expirySent=excluded.expirySent',item.title,item.quantity,item.price,item.discount,item.expires,sent||0);
     map.delete(item.title);
