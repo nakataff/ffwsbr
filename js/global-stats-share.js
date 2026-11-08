@@ -467,6 +467,14 @@ async function draw(payload){
  textLine(ctx,'centralfreefire.com.br',pad,footerY+18,w*.72,compact?21:28,ink);
  textLine(ctx,'ESTATÍSTICAS · 2026',w-pad,footerY+18,w*.34,compact?12:17,muted,'800','right');
  previewBlob=null;livePayload=payload;
+ // Pre-encode the file while the preview is displayed so the mobile sharing
+ // sheet can be invoked from the user's click without waiting for toBlob().
+ if(typeof canvas.toBlob==='function'){
+  const readySeq=renderSeq;
+  canvas.toBlob(value=>{
+   if(value&&readySeq===renderSeq&&livePayload===payload)previewBlob=value;
+  },'image/png');
+ }
  const notice=modal.querySelector('[data-share-status]');
  if(notice)notice.textContent='Prévia pronta · '+w+' × '+h+' px';
 }
@@ -482,8 +490,23 @@ function refresh(){
 }
 async function blob(){
  if(!modal||!livePayload)throw Error('Prévia não disponível');
+ if(previewBlob)return previewBlob;
  const canvas=modal.querySelector('canvas');
- return new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(Error('Falha ao gerar PNG')),'image/png'));
+ return new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(Error('Falha ao gerar imagem')),'image/png'));
+}
+// Synchronous fallback preserves the original click for iOS native sharing.
+// It only runs if the asynchronous preview PNG has not finished encoding.
+function currentPNG(){
+ if(!modal||!livePayload)throw Error('Prévia não disponível');
+ if(previewBlob)return previewBlob;
+ const raw=modal.querySelector('canvas').toDataURL('image/png');
+ const bytes=atob(raw.slice(raw.indexOf(',')+1)),buffer=new Uint8Array(bytes.length);
+ for(let i=0;i<bytes.length;i++)buffer[i]=bytes.charCodeAt(i);
+ return new Blob([buffer],{type:'image/png'});
+}
+function isMobileDevice(){
+ return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'')||
+  (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 }
 function filename(){
  const name=(livePayload?.title||'estatisticas').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,55);
@@ -504,8 +527,29 @@ async function action(which){
   if(which==='link'){
    await navigator.clipboard.writeText(shareLink());message('Link do recorte copiado!');return;
   }
+  if(which==='save'){
+   const png=currentPNG();
+   if(isMobileDevice()&&typeof File==='function'&&typeof navigator.share==='function'){
+    const file=new File([png],filename(),{type:'image/png'});
+    let supportsImage=false;
+    try{supportsImage=Boolean(navigator.canShare?.({files:[file]}))}catch{}
+    if(supportsImage){
+     message('Escolha “Salvar Imagem” ou “Salvar em Fotos” nas opções do aparelho.');
+     try{
+      // No async encoder before share(): Safari requires a real user gesture.
+      await navigator.share({files:[file],title:livePayload.title||'Central Free Fire'});
+      message('Opções de imagem concluídas.');return;
+     }catch(error){
+      if(error?.name==='AbortError'){message('Salvamento cancelado.');return}
+      // Fall back to download if native sharing fails.
+     }
+    }
+   }
+   downloadPNG(png);
+   message(isMobileDevice()?'Download iniciado. Para salvar em Fotos, abra a imagem e escolha “Salvar Imagem”.':'Download da imagem iniciado.');
+   return;
+  }
   const png=await blob();
-  if(which==='save'){downloadPNG(png);message('Imagem PNG salva.');return}
   if(which==='copy'){
    if(!navigator.clipboard?.write||typeof ClipboardItem!=='function')throw Error('Seu navegador não permite copiar imagens. Use Salvar.');
    await navigator.clipboard.write([new ClipboardItem({'image/png':png})]);
@@ -545,7 +589,7 @@ function prepareModal(){
    '<div class="cff-share-switches"><label><input type="checkbox" data-share-field="showSubtitle"> Exibir subtítulo</label><label><input type="checkbox" data-share-field="showFilters"> Mostrar período/filtros</label><label><input type="checkbox" data-share-field="showImage"> Mostrar foto/escudo quando disponível</label></div>',
    '<p class="cff-share-locked">A logo Central Free Fire e o endereço centralfreefire.com.br aparecem em todos os cards.</p>',
   '</section>',
-  '<section class="cff-stats-share-result"><div class="cff-stats-share-preview"><canvas role="img" aria-label="Prévia do card de estatísticas"></canvas></div><p role="status" data-share-status>Preparando imagem…</p><div class="cff-stats-share-actions"><button type="button" data-share-action="save">Salvar PNG</button><button type="button" data-share-action="share" class="primary">Compartilhar</button><button type="button" data-share-action="copy">Copiar imagem</button><button type="button" data-share-action="link">Copiar link do recorte</button></div></section>',
+  '<section class="cff-stats-share-result"><div class="cff-stats-share-preview"><canvas role="img" aria-label="Prévia do card de estatísticas"></canvas></div><p role="status" data-share-status>Preparando imagem…</p><div class="cff-stats-share-actions"><button type="button" data-share-action="save">Salvar imagem</button><button type="button" data-share-action="share" class="primary">Compartilhar</button><button type="button" data-share-action="copy">Copiar imagem</button><button type="button" data-share-action="link">Copiar link do recorte</button></div></section>',
   '</div></div>'
  ].join('');
  document.body.append(modal);
