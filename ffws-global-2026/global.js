@@ -1881,7 +1881,7 @@
     const playerEntries = filteredStatsPlayerEntries(events);
     const players = aggregateStatsPlayers(playerEntries);
     s2StatsEvolutionPlayerOptions=s2StatsEvolutionPlayerCatalog(playerEntries);
-    if (state.statsEvolutionPlayers.players===null) state.statsEvolutionPlayers.players =
+    if (state.statsEvolutionPlayers.players===null && playerEntries.length) state.statsEvolutionPlayers.players =
       s2StatsEvolutionPlayerOptions.filter(player=>playerEntries.some(entry=>
         normalize(entry.name)+'__'+normalize(entry.team)===player.id)).slice(0,3).map(player=>player.id);
     const totalResults = teams.reduce((sum, row) => sum + row.matches, 0);
