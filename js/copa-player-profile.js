@@ -11,6 +11,16 @@ async function render(panel,p,stage='geral',current=()=>panel.isConnected){
  if(!cache.has(p.id))panel.innerHTML='<div class="player-season-loading"><span></span><strong>Carregando Copa FF 2026…</strong></div>';
  try{const data=await load(p);if(!valid())return;const s=data.stats[stage],fmt=v=>v==null?'—':Number(v).toLocaleString('pt-BR'),avg=s?.average==null?'—':Number(s.average).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   panel.innerHTML=`<nav class="player-stage-tabs" aria-label="Etapa da Copa FF 2026">${stages.map(([key,name])=>`<button type="button" data-copa-stage="${key}" aria-pressed="${stage===key}">${name}</button>`).join('')}</nav><div class="global-2026-summary" data-copa-2026-summary><div class="global-2026-summary-head"><div><small>COPA FF 2026</small><h2>Copa FF 2026</h2><p>${esc(data.team)}</p></div><a href="/index.html?torneio=copa-ff-2026#outros-torneios">Ver torneio →</a></div><div class="stats-grid global-2026-summary-stats">${[['Abates',fmt(s?.kills)],['Quedas',fmt(s?.matches)],['Média',avg],['Dano',fmt(s?.damage)],['Assistências',fmt(s?.assists)],['MVP da queda',fmt(s?.mvp)]].map(([label,value])=>`<div class="stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div><p class="global-2026-summary-note">${!s?'Não há linha deste jogador no CSV desta etapa. A ausência de registro não significa zero. ':''}${data.stageCoverage?.[stage]==='partial'?'Cobertura parcial: exportação incompleta. ':''}Dados agregados, sem detalhamento por queda.</p></div>`;
+  const shared=window.CFF_PLAYER_SEASON_MARKUP,panelBody=panel.querySelector('[data-copa-2026-summary]');
+  if(shared&&panelBody){
+   panelBody.className='player-unified-season';
+   panelBody.innerHTML=shared({name:p.name||data.sourceName||'Jogador',team:data.team||'',status:data.team||'',
+    ...(s?{kills:s.kills,matches:s.matches,damage:s.damage,assists:s.assists,mvp:s.mvp}:{}),
+    note:(!s?'Não há linha deste jogador no CSV desta etapa. A ausência de registro não significa zero. ':'')+
+    (data.stageCoverage?.[stage]==='partial'?'Cobertura parcial: exportação incompleta. ':'')+
+    'Dados agregados, sem detalhamento por queda.',
+    detailHref:'/index.html?torneio=copa-ff-2026#outros-torneios',detailLabel:'Ver torneio'},'copa2026');
+  }
   panel.querySelectorAll('[data-copa-stage]').forEach(button=>button.addEventListener('click',()=>render(panel,p,button.dataset.copaStage,current)));
  }catch{if(!valid())return;panel.innerHTML='<div class="season-empty">Não foi possível carregar a Copa FF 2026. <button type="button" data-copa-retry>Tentar novamente</button></div>';panel.querySelector('[data-copa-retry]').addEventListener('click',()=>render(panel,p,stage,current));}
 }
