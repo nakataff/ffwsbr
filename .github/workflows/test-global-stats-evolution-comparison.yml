@@ -1,0 +1,21 @@
+name: Test Mundial Team & Player Evolution
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ffws-global-2026/global.js'
+      - 'ffws-global-2026/global.css'
+      - 'test/global-stats-evolution-comparison.test.cjs'
+      - '.github/workflows/test-global-stats-evolution-comparison.yml'
+jobs:
+  evolution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check script syntax
+        run: node --check ffws-global-2026/global.js
+      - name: Verify team catalog, player search, daily metrics and filters
+        run: node --test test/global-stats-evolution-comparison.test.cjs
