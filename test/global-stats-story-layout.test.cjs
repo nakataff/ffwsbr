@@ -38,12 +38,12 @@ function mockCanvas(){
  };
  return {canvas:{width:0,height:0,getContext(){return ctx;}},rects,texts};
 }
-async function render(api,format,kind,showImage=true){
+async function render(api,format,kind,showImage=true,overrides={}){
  const item=samples.find(x=>x.kind===kind);assert(item);
  const result=mockCanvas();
  api.state.format=format;api.state.showImage=showImage;api.state.showSubtitle=true;api.state.showFilters=true;
  api.setModal({querySelector:key=>key==='canvas'?result.canvas:{textContent:''}});
- await api.draw({...common,...item});
+ await api.draw({...common,...item,...overrides});
  assert.deepEqual([result.canvas.width,result.canvas.height],formats[format]);
  return result;
 }
@@ -153,4 +153,22 @@ test('Save Image on desktop still downloads PNG; canceled iPhone share does not 
  await cancel.action('save');
  assert.equal(downloads,1,'canceling mobile share should not download anything');
  assert.match(status2.textContent,/Salvamento cancelado/);
+});
+
+test('main ranking badge and optional rank of each of six stats draw correctly in all four image formats',async()=>{
+ const api=setup(),rankedFacts=facts(6).map((fact,i)=>({...fact,rank:i+1}));
+ const payload={mainRank:1,mainRankLabel:'ABATES',facts:rankedFacts};
+ for(const format of ['stories','feed','square','wide']){
+  api.state.showMainRank=true;api.state.showFactRanks=true;
+  const {texts,canvas}=await render(api,format,'player',true,payload);
+  const scores=texts.filter(x=>/^#[1-6]$/.test(x.value)).map(x=>x.value);
+  assert(scores.includes('#1'),'featured rank badge missing in '+format);
+  for(let n=2;n<=6;n++)assert(scores.includes('#'+n),'metric rank #'+n+' missing in '+format);
+  assert(texts.some(x=>x.value==='RANKING DE'),'featured ranking description missing in '+format);
+  assert(texts.some(x=>x.value==='ABATES'),'featured metric rank label missing in '+format);
+  assert(texts.every(x=>x.x>=-1&&x.x<=canvas.width+1),'rank text spills out of '+format);
+  api.state.showMainRank=false;api.state.showFactRanks=false;
+  const plain=await render(api,format,'player',true,payload);
+  assert(!plain.texts.some(x=>/^#[1-6]$/.test(x.value)),'disabled rank badges must disappear in '+format);
+ }
 });
