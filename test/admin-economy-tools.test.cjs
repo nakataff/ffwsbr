@@ -31,3 +31,24 @@ test('promotion editor reuses supplied stock, previews real prices, persists onl
 test('promotion editor survives a failed save, blocks duplicate submits and never applies a late response to a different account',async()=>{
  const dom=new JSDOM('<div id="promos"></div>',{runScripts:'outside-only',url:'https://centralfreefire.com.br'}),w=dom.window,host=w.document.querySelector('#promos');w.eval(fs.readFileSync('js/admin-code-promotions.mjs','utf8').replace(/^export /gm,''));let owner='admin',resolve,calls=0,saved=0;const tools=w.mountCodePromotions(host,{items:()=>[{title:'Dino'}],price:()=>1000,owner:()=>owner,request:()=>{calls++;return new Promise(r=>resolve=r)},onSaved:()=>{saved++}});try{tools.select('Dino');const form=host.querySelector('form');form.elements.enabled.checked=true;form.elements.enabled.dispatchEvent(new w.Event('change',{bubbles:true}));form.elements.salePrice.value=700;for(let n=0;n<2;n++)form.dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));assert.equal(calls,1);owner='other';resolve({promotion:true,price:700,originalPrice:1000});await tick();assert.equal(saved,0);}finally{tools.stop();w.close()}
 });
+
+
+test('normal-price editor changes only the selected codiguinho title, independently from promotions',async()=>{
+ const dom=new JSDOM('<div id="prices"></div>',{url:'https://centralfreefire.com.br/admin-codiguinhos.html',runScripts:'outside-only'});
+ const w=dom.window,host=w.document.getElementById('prices'),stock=[{title:'Dragão',status:'available',normalPrice:1000},{title:'Gato',status:'available',normalPrice:1000}],calls=[];
+ w.eval(fs.readFileSync('js/admin-code-promotions.mjs','utf8').replace(/^export /gm,''));
+ const tool=w.mountCodePromotions(host,{items:()=>stock,price:()=>1000,owner:()=>true,request:async(operation,data)=>{
+  calls.push({operation,data});
+  if(operation==='setCodePrice')stock.filter(row=>row.title===data.title).forEach(row=>row.normalPrice=data.normalPrice);
+  return {ok:true,price:data.normalPrice,originalPrice:data.normalPrice,promotion:false};
+ }});
+ try{
+  tool.select('Dragão');const form=host.querySelector('form');assert.equal(form.elements.normalPrice.value,'1000');
+  form.elements.normalPrice.value='725';
+  form.elements.normalPrice.dispatchEvent(new w.Event('input',{bubbles:true}));
+  form.dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await tick();
+  assert.deepEqual(JSON.parse(JSON.stringify(calls)),[{operation:'setCodePrice',data:{title:'Dragão',normalPrice:725}}]);
+  assert.equal(stock.find(s=>s.title==='Dragão').normalPrice,725);
+  assert.equal(stock.find(s=>s.title==='Gato').normalPrice,1000);
+ }finally{tool.stop();w.close()}
+});
