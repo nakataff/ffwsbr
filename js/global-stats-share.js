@@ -111,8 +111,8 @@ function fromContext(){
   payload.facts=[stat('QUEDAS DISPUTADAS',totals.drops,'matches'),stat('PONTOS',totals.points,'points'),
     stat('BOOYAHS',totals.booyahs,'booyahs'),stat('EQUIPES',context.teams.length,'matches')];
  }else if(kind==='single'){
-  const all={drops:totals.drops,points:totals.points,kills:totals.kills,booyahs:totals.booyahs};
-  const metric=choice.metric||state.single,labels={drops:'QUEDAS DISPUTADAS',points:'PONTOS',kills:'ABATES',booyahs:'BOOYAHS'};
+  const all={drops:totals.drops,points:totals.points,kills:totals.kills,booyahs:totals.booyahs,avgPoints:totals.avgPoints,avgPosition:totals.avgPosition};
+  const metric=choice.metric||state.single,labels={drops:'QUEDAS DISPUTADAS',points:'PONTOS',kills:'ABATES',booyahs:'BOOYAHS',avgPoints:'MÉDIA DE PONTOS',avgPosition:'COLOCAÇÃO MÉDIA'};
   payload.title=labels[metric]||metric;
   payload.main=fmt(all[metric],metric);payload.mainLabel='TOTAL NO RECORTE';
   payload.facts=[stat('QUEDAS',totals.drops,'matches'),stat('ABATES',totals.kills,'kills'),stat('BOOYAHS',totals.booyahs,'booyahs')];
@@ -383,7 +383,7 @@ function prepareModal(){
   '<header class="cff-stats-share-header"><div><span>GERADOR DE CARDS</span><h2 id="cff-share-modal-title">Compartilhar estatísticas</h2></div><button type="button" data-share-close aria-label="Fechar">×</button></header>',
   '<div class="cff-stats-share-body"><section class="cff-stats-share-controls">',
    '<label>Tipo de card<select data-share-field="kind"><option value="summary">Resumo do recorte</option><option value="single">Estatística única</option><option value="team">Equipe</option><option value="player">Jogador</option><option value="top">Top 5 / ranking</option><option value="record">Recorde</option><option value="compare">Comparar equipes</option></select></label>',
-   '<label class="cff-share-single-setting">Estatística<select data-share-field="single"><option value="points">Pontos</option><option value="kills">Abates</option><option value="booyahs">Booyahs</option><option value="drops">Quedas</option></select></label>',
+   '<label class="cff-share-single-setting">Estatística<select data-share-field="single"><option value="points">Pontos</option><option value="kills">Abates</option><option value="booyahs">Booyahs</option><option value="drops">Quedas</option><option value="avgPoints">Média de pontos</option><option value="avgPosition">Colocação média</option></select></label>',
    '<label class="cff-share-entity-team">Equipe A<select data-share-field="team"></select></label>',
    '<label class="cff-share-team-b">Equipe B<select data-share-field="teamB"></select></label>',
    '<label class="cff-share-entity-player">Jogador<select data-share-field="player"></select></label>',
@@ -474,7 +474,7 @@ function decorate(){
   action.classList.add('cff-stats-share-main');filterHead.append(action);
  }
  root.querySelectorAll('#anchor-s2-resumo .ffws-global-stat-card').forEach((card,index)=>{
-  const metric=['drops','points','kills','booyahs',null,null][index];
+  const metric=['drops','points','kills','booyahs','avgPoints','avgPosition'][index];
   const title=card.querySelector('small')?.textContent||'Estatística';
   const btn=shareButton(title,()=>open(metric?{kind:'single',metric}:{kind:'summary'}),true);
   card.classList.add('cff-stats-share-card');card.append(btn);
