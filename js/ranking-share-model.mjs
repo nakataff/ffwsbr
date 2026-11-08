@@ -35,7 +35,7 @@ export function normalizeOptions(input={},data={rows:[]}) {
   const highlight=integer(input.highlight,-1);
   const rowCount=input.rowCount==='all'&&data.kind==='teams'&&data.mode!=='annual'?'all':[3,5,10].includes(Number(input.rowCount))?Number(input.rowCount):data.kind==='teams'&&data.mode!=='annual'?'all':10;
   const playerMode=data.mode==='player';
-  const keys=playerMode?PLAYER_STAT_KEYS:Object.keys(STAT_LABELS);
+  const keys=playerMode?PLAYER_STAT_KEYS:['kills','matches','average','assists','damage','points','booyahs'];
   const available=keys.filter(key=>statValue(data.rows[first]||{},key)!=null);
   const defaultStats=playerMode?['matches','average','damage','avgDamage','assists','bestDrop']:['kills','matches','average'];
   const requested=Array.isArray(input.stats)?input.stats:defaultStats;
