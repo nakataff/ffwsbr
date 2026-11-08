@@ -150,8 +150,8 @@ test('normal price can differ by skin and is always checked by server on purchas
  assert.equal((await s.core.state(user)).shop.find(x=>x.title==='Skin B').price,1000);
  await assert.rejects(s.core.adminHandle(admin,{operation:'setCodePrice',title:'Skin A',normalPrice:0}),{status:400});
  await s.core.adminHandle(admin,{operation:'adjust',targetUid:user.uid,delta:1000,reason:'Teste de preço',nonce:crypto.randomUUID()});
- await assert.rejects(s.core.handle(user,{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',nonce:crypto.randomUUID(),codeChoice:{title:'Skin A',imageUrl:'/edition/gift.webp'},expectedPrice:1000}),{status:409});
- const state=await s.core.state(user),item=state.shop.find(x=>x.title==='Skin A');
+ const item=(await s.core.state(user)).shop.find(x=>x.title==='Skin A');
+ await assert.rejects(s.core.handle(user,{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',nonce:crypto.randomUUID(),codeChoice:item.codeChoice,expectedPrice:1000}),{status:409});
  const receipt=await s.core.handle(user,{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',nonce:crypto.randomUUID(),codeChoice:item.codeChoice,expectedPrice:640});
  assert.equal(receipt.ok,true);assert.equal((await s.core.state(user)).wallet.balance,360);
 });
