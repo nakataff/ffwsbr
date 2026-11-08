@@ -133,7 +133,7 @@ test('the shared bootstrap skips public chat imports on admin pages and supports
  const source=fs.readFileSync('js/config.min.js','utf8').replaceAll('import(','window.__import(');
  for(const [path,disabled,expected]of [['/admin.html',false,0],['/admin-chat.html',false,0],['/admin/tarefas',false,0],['/index.html',false,1],['/sorteio-comunidade.html',false,1],['/conta.html',true,0]]){
   const dom=new JSDOM('<body></body>',{url:'https://centralfreefire.com.br'+path,runScripts:'outside-only'}),w=dom.window,calls=[];
-  try{if(disabled)w.document.documentElement.dataset.cffChat='off';w.__import=async url=>calls.push(url);w.eval(source);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));await tick();assert.equal(calls.length,expected,path);assert(calls.every(url=>url.includes('global-chat.js?v=20261020-chat-layout-v2')));}finally{w.close();}
+  try{if(disabled)w.document.documentElement.dataset.cffChat='off';w.__import=async url=>calls.push(url);w.eval(source);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));await tick();assert.equal(calls.length,expected,path);assert(calls.every(url=>url.includes('global-chat.js?v=20261108-chat-shop-date-v3')));}finally{w.close();}
  }
  for(const path of ['admin-chat.html','admin-perfis.html'])assert(!fs.readFileSync(path,'utf8').includes('src="/js/global-chat.js'));
 });
