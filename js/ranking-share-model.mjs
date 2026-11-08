@@ -15,10 +15,10 @@ function safeURL(value) {
 }
 export function normalizePayload(input={}) {
   input=input&&typeof input==='object'?input:{};
-  const annual=input.mode==='annual'&&input.kind==='teams';
+  const annual=input.mode==='annual'&&input.kind==='teams',playerMode=input.mode==='player'&&input.kind==='players';
   const metric=['points','kills','damage','assists'].includes(input.metric)?input.metric:'kills';
-  const rows=(Array.isArray(input.rows)?input.rows:[]).slice(0,100).map((r,i)=>({rank:Math.max(1,Math.floor(number(r.rank||r.position)||i+1)),name:clean(r.name||r.team),team:clean(r.team),logo:clean(r.logo,250),photo:clean(r.photo,250),...(annual?{annualValues:(Array.isArray(r.annualValues)?r.annualValues:[]).slice(0,5).map(v=>v==null?null:number(v))}:{}),...Object.fromEntries(['points','kills','damage','assists','matches','booyahs'].map(key=>[key,r[key]==null?null:number(r[key])]))})).filter(r=>r.name);
-  return {id:clean(input.id||'ranking',100),kind:input.kind==='teams'?'teams':'players',mode:annual?'annual':input.mode==='team'&&input.kind==='teams'?'team':'ranking',...(annual?{annualColumns:(Array.isArray(input.annualColumns)?input.annualColumns:[]).slice(0,5).map(v=>clean(v,16))}:{}),title:clean(input.title||'Ranking de abates'),event:clean(input.event||'Free Fire'),stage:clean(input.stage),updatedAt:/^\d{4}-\d{2}-\d{2}$/.test(input.updatedAt)?input.updatedAt:'',metric,url:safeURL(input.url),rows};
+  const rows=(Array.isArray(input.rows)?input.rows:[]).slice(0,100).map((r,i)=>({rank:playerMode?(Number(r.rank)>0?Math.floor(number(r.rank)):null):Math.max(1,Math.floor(number(r.rank||r.position)||i+1)),name:clean(r.name||r.team),team:clean(r.team),logo:clean(r.logo,250),photo:clean(r.photo,250),...(annual?{annualValues:(Array.isArray(r.annualValues)?r.annualValues:[]).slice(0,5).map(v=>v==null?null:number(v))}:{}),...(playerMode?{ranking:r.ranking!=null&&Number(r.ranking)>0?Math.floor(number(r.ranking)):null,bestDrop:r.bestDrop==null?null:number(r.bestDrop),bestRound:r.bestRound==null?null:number(r.bestRound)}:{}),...Object.fromEntries(['points','kills','damage','assists','matches','booyahs'].map(key=>[key,r[key]==null?null:number(r[key])]))})).filter(r=>r.name);
+  return {id:clean(input.id||'ranking',100),kind:input.kind==='teams'?'teams':'players',mode:annual?'annual':playerMode?'player':input.mode==='team'&&input.kind==='teams'?'team':'ranking',...(annual?{annualColumns:(Array.isArray(input.annualColumns)?input.annualColumns:[]).slice(0,5).map(v=>clean(v,16))}:{}),title:clean(input.title||'Ranking de abates'),event:clean(input.event||'Free Fire'),stage:clean(input.stage),updatedAt:/^\d{4}-\d{2}-\d{2}$/.test(input.updatedAt)?input.updatedAt:'',metric,url:safeURL(input.url),rows};
 }
 export function teamColor(team) {
   const name=String(team||'').toUpperCase();
@@ -34,28 +34,39 @@ export function normalizeOptions(input={},data={rows:[]}) {
   const theme=Object.hasOwn(THEMES,input.theme)?input.theme:'cff';
   const highlight=integer(input.highlight,-1);
   const rowCount=input.rowCount==='all'&&data.kind==='teams'&&data.mode!=='annual'?'all':[3,5,10].includes(Number(input.rowCount))?Number(input.rowCount):data.kind==='teams'&&data.mode!=='annual'?'all':10;
-  const available=Object.keys(STAT_LABELS).filter(key=>statValue(data.rows[first]||{},key)!=null),requested=Array.isArray(input.stats)?input.stats:['kills','matches','average'];
-  const stats=[...new Set(requested)].filter(key=>available.includes(key));if(!stats.length)stats.push(...available.slice(0,3));
-  return {format:Object.hasOwn(FORMATS,input.format)?input.format:'feed',template:data.mode==='annual'?(['table','leader'].includes(input.template)?input.template:'table'):data.mode==='team'?'team':['table','leader','compare'].includes(input.template)&&!(input.template==='compare'&&length<2)?input.template:'table',theme,accent:theme==='custom'&&/^#[a-f\d]{6}$/i.test(input.accent)?input.accent:theme==='team'?teamColor(data.rows[highlight>=0?highlight:first]?.team):THEMES[theme],rowCount,stats,showLogos:input.showLogos!==false,showPhotos:input.showPhotos!==false,showQR:input.showQR===true,highlight:highlight>=0&&highlight<Math.min(rowCount==='all'?length:rowCount,length)?highlight:-1,first,second};
+  const playerMode=data.mode==='player';
+  const keys=playerMode?PLAYER_STAT_KEYS:Object.keys(STAT_LABELS);
+  const available=keys.filter(key=>statValue(data.rows[first]||{},key)!=null);
+  const defaultStats=playerMode?['matches','average','damage','avgDamage','assists','bestDrop']:['kills','matches','average'];
+  const requested=Array.isArray(input.stats)?input.stats:defaultStats;
+  const stats=[...new Set(requested)].filter(key=>available.includes(key)).slice(0,playerMode?6:7);
+  if(!stats.length)stats.push(...available.slice(0,playerMode?4:3));
+  const featuredStat=playerMode&&available.includes(input.featuredStat)?input.featuredStat:playerMode&&available.includes('kills')?'kills':available[0]||'kills';
+  return {format:Object.hasOwn(FORMATS,input.format)?input.format:'feed',template:data.mode==='annual'?(['table','leader'].includes(input.template)?input.template:'table'):data.mode==='team'?'team':playerMode?(['player','leader','compare'].includes(input.template)&&!(input.template==='compare'&&length<2)?input.template:'player'):['table','leader','compare'].includes(input.template)&&!(input.template==='compare'&&length<2)?input.template:'table',theme,accent:theme==='custom'&&/^#[a-f\d]{6}$/i.test(input.accent)?input.accent:theme==='team'?teamColor(data.rows[highlight>=0?highlight:first]?.team):THEMES[theme],rowCount,stats,featuredStat,photoScale:playerMode?Math.min(130,Math.max(75,Number(input.photoScale)||105)):100,showLogoWatermark:input.showLogoWatermark!==false,showLogos:input.showLogos!==false,showPhotos:input.showPhotos!==false,showQR:input.showQR===true,highlight:highlight>=0&&highlight<Math.min(rowCount==='all'?length:rowCount,length)?highlight:-1,first,second};
 }
 export function rememberedOptions(options) {
-  const {format,template,theme,accent,rowCount,stats,showLogos,showPhotos,showQR}=options;
-  return {format,template,theme,accent,rowCount,stats,showLogos,showPhotos,showQR};
+  const {format,template,theme,accent,rowCount,stats,featuredStat,photoScale,showLogoWatermark,showLogos,showPhotos,showQR}=options;
+  return {format,template,theme,accent,rowCount,stats,featuredStat,photoScale,showLogoWatermark,showLogos,showPhotos,showQR};
 }
 export function selectedRows(data,options) {
-  if(options.template==='leader'||options.template==='team')return data.rows[options.first]?[data.rows[options.first]]:[];
+  if(options.template==='leader'||options.template==='team'||options.template==='player')return data.rows[options.first]?[data.rows[options.first]]:[];
   if(options.template==='compare')return [data.rows[options.first],data.rows[options.second]].filter(Boolean);
   return data.rows.slice(0,options.rowCount==='all'?data.rows.length:options.rowCount);
 }
-export const STAT_LABELS=Object.freeze({kills:'ABATES',matches:'QUEDAS',average:'ABATES / QUEDA',assists:'ASSISTÊNCIAS',damage:'DANO',points:'PONTOS',booyahs:'BOOYAHS'});
-export const statValue=(row,key)=>key==='average'?(row.matches>0&&row.kills!=null?row.kills/row.matches:null):row[key]??null;
-export const statText=(row,key)=>key==='average'&&statValue(row,key)!=null?statValue(row,key).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):formatValue(statValue(row,key));
+export const STAT_LABELS=Object.freeze({kills:'ABATES',matches:'QUEDAS',average:'ABATES / QUEDA',assists:'ASSISTÊNCIAS',damage:'DANO',avgDamage:'DANO / QUEDA',ranking:'RANKING DE ABATES',bestDrop:'MELHOR QUEDA',bestRound:'MELHOR RODADA',points:'PONTOS',booyahs:'BOOYAHS'});
+export const PLAYER_STAT_KEYS=Object.freeze(['kills','matches','average','damage','avgDamage','assists','ranking','bestDrop','bestRound']);
+export const statValue=(row,key)=>key==='average'?(row.matches>0&&row.kills!=null?row.kills/row.matches:null):key==='avgDamage'?(row.matches>0&&row.damage!=null?row.damage/row.matches:null):row[key]??null;
+export const statText=(row,key)=>key==='ranking'?statValue(row,key)!=null?statValue(row,key)+'º':'—':(key==='average'||key==='avgDamage')&&statValue(row,key)!=null?statValue(row,key).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):formatValue(statValue(row,key));
 export const metricLabel=metric=>({points:'PONTOS',kills:'ABATES',damage:'DANO',assists:'ASSISTÊNCIAS'}[metric]||'ABATES');
 export const formatValue=value=>value==null?'—':number(value).toLocaleString('pt-BR');
 export function dateText(value){return /^\d{4}-\d{2}-\d{2}$/.test(value)?value.split('-').reverse().join('/'):'';}
 export function captionFor(data,options) {
   const rows=selectedRows(data,options),one=rows[0];
   if(!one)return '';
+  if(data.mode==='player'){
+    const facts=options.template==='compare'?rows.map(r=>r.name+': '+formatValue(r.kills)+' abates · '+formatValue(r.matches)+' quedas').join('\n'):options.stats.map(key=>STAT_LABELS[key]+': '+statText(one,key)).join('\n');
+    return one.name.toLocaleUpperCase('pt-BR')+' | '+data.event+'\n'+data.stage+'\n\n'+facts+(data.updatedAt?'\nAtualizado em '+dateText(data.updatedAt):'')+'\n\nConfira o perfil na Central Free Fire\n'+data.url+'\n\n#FreeFire #CentralFreeFire';
+  }
   if(data.mode==='annual'){const facts=rows.map(r=>`${r.rank}º ${r.name}: ${formatValue(r.points)} pontos CFF${data.annualColumns.length?'\n'+data.annualColumns.map((c,i)=>`${c}: ${formatValue(r.annualValues[i])}`).join(' · '):''}`).join('\n');return `${options.template==='leader'?one.name+' EM DESTAQUE | ':''}RANKING ANUAL CFF | ${data.event}\n${data.stage}\n\n${facts}\n\nMetodologia própria da Central Free Fire${data.updatedAt?' · Atualizado em '+dateText(data.updatedAt):''}\n${data.url}\n\n#FreeFire #CentralFreeFire`;}
   const title=options.template==='team'?`${one.name} EM NÚMEROS | ${data.event}`:options.template==='compare'?`${rows.map(r=>r.name).join(' x ')} | ${data.event}`:options.template==='leader'?`${one.name} EM DESTAQUE | ${data.event}`:options.rowCount==='all'?`TABELA COMPLETA | ${data.event}`:`TOP ${rows.length} DE ${metricLabel(data.metric)} | ${data.event}`;
   const facts=options.template==='team'?options.stats.map(key=>`${STAT_LABELS[key]}: ${statText(one,key)}`).join('\n'):options.template==='table'?`${one.rank}º ${one.name}: ${formatValue(one[data.metric])} ${metricLabel(data.metric).toLowerCase()}`:rows.map(r=>`${r.name}${data.kind==='players'&&r.team?' ('+r.team+')':''}: ${formatValue(r[data.metric])} ${metricLabel(data.metric).toLowerCase()} em ${formatValue(r.matches)} quedas`).join('\n');
