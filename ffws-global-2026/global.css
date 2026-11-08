@@ -764,3 +764,92 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 @media(max-width:760px){
   .ffws-global-classification-panel .ffws-global-stage-multi .ffws-global-multi-menu{z-index:10000}
 }
+
+
+/* Mundial 2026 — full 24-team comparison + searchable 120-player evolution. */
+.ffws-global-stats-evolution .ffws-global-evolution-team-buttons{
+ display:flex;flex-wrap:wrap;overflow-x:visible;scrollbar-width:auto;align-content:start;
+ gap:7px;max-width:100%;
+}
+.ffws-global-stats-evolution .ffws-global-evolution-team-buttons button{
+ min-width:57px;height:44px;
+}
+.ffws-global-stats-evolution .ffws-global-evolution-team-buttons b{font-size:.67rem}
+.ffws-global-player-evolution .ffws-global-evolution-player-controls{
+ display:grid;grid-template-columns:minmax(190px,280px) minmax(0,1fr);
+ gap:16px;align-items:start;margin:4px 0 12px;
+}
+.ffws-global-evolution-player-picker{min-width:0;position:relative}
+.ffws-global-evolution-player-picker>label{
+ display:block;margin-bottom:7px;color:#79bfff;font-size:.76rem;font-weight:900;
+}
+.ffws-global-evolution-player-picker>input[type=search]{
+ width:100%;min-width:0;min-height:43px;border:1px solid #344b6d;border-radius:10px;
+ padding:10px 13px;background:#101e32;color:#f1f8ff;
+ font:inherit;font-size:.9rem;outline:0;
+}
+.ffws-global-evolution-player-picker>input[type=search]:focus{
+ border-color:#00c8ff;box-shadow:0 0 0 2px #00c8ff22;
+}
+.ffws-global-evolution-player-picker>small{
+ display:block;margin-top:7px;font-size:.68rem;color:#a2c3db;
+}
+.ffws-global-evolution-player-results{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:7px;max-height:230px;overflow:auto;margin-top:10px;
+ scrollbar-width:thin;
+}
+.ffws-global-evolution-player-result{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ min-width:0;min-height:54px;border:1px solid #263e60;border-radius:10px;
+ padding:9px 12px;background:#0d1c30;color:#e6f5ff;
+ cursor:pointer;text-align:left;transition:border-color .15s;
+}
+.ffws-global-evolution-player-result:hover:not(:disabled),
+.ffws-global-evolution-player-result.is-active{border-color:#00c8ff;background:#12314a}
+.ffws-global-evolution-player-result:disabled{opacity:.5;cursor:not-allowed}
+.ffws-global-evolution-player-result>span{display:grid;gap:3px;min-width:0}
+.ffws-global-evolution-player-result strong{
+ font-size:.77rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ffws-global-evolution-player-result small{
+ font-size:.64rem;color:#a6c7df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ffws-global-evolution-player-result>b{
+ flex:0 0 auto;font-size:.65rem;color:#00c8ff;white-space:nowrap;
+}
+.ffws-global-evolution-player-selected{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.ffws-global-evolution-player-chip{
+ display:flex;align-items:center;gap:8px;max-width:100%;
+ min-height:40px;padding:7px 10px;
+ border:1px solid var(--chip-color,#00c8ff);
+ border-radius:9px;background:#0b1d31;color:#f4f9ff;cursor:pointer;
+}
+.ffws-global-evolution-player-chip:before{
+ content:"";width:8px;height:8px;border-radius:99px;
+ background:var(--chip-color,#00c8ff);flex:0 0 8px;
+}
+.ffws-global-evolution-player-chip>span{
+ max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;font-weight:900;
+}
+.ffws-global-evolution-player-chip>small{
+ color:#97b6cf;font-size:.62rem;max-width:95px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ffws-global-evolution-player-chip>b{font-size:1.18rem;line-height:1;color:#e0f5ff}
+.ffws-global-evolution-hint{font-size:.75rem;color:#90aec9}
+.ffws-global-evolution-player-results .ffws-global-evolution-hint{
+ grid-column:1/-1;padding:12px 14px;border:1px dashed #294763;border-radius:9px;
+}
+.ffws-global-evolution-footnote{
+ margin:11px 0 0!important;color:#93b2cd;font-size:.72rem;line-height:1.5;
+}
+@media(max-width:860px){
+ .ffws-global-player-evolution .ffws-global-evolution-player-controls{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:540px){
+ .ffws-global-stats-evolution .ffws-global-evolution-team-buttons{gap:5px}
+ .ffws-global-stats-evolution .ffws-global-evolution-team-buttons button{min-width:52px}
+ .ffws-global-evolution-player-results{grid-template-columns:minmax(0,1fr);max-height:230px}
+ .ffws-global-evolution-player-chip>span{max-width:106px}
+ .ffws-global-evolution-canvas-wrap{height:320px}
+}
