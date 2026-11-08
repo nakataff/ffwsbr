@@ -67,13 +67,13 @@ test('real Rigby profile uses exactly the WB S2 stat grid for Global, Copa and W
   assert(root.querySelector('[data-player-year-history]'));
   assert.equal(root.querySelector('[data-player-year-history]').previousElementSibling?.classList.contains('profile-history-details'),true);
   assert(root.querySelector('[data-global-2026-summary] .current-grid'));
-  assert.equal(panel().querySelector('.current-grid .stat-card').length,4,'Global only shows its four registered metrics');
+  assert.equal(panel().querySelectorAll('.current-grid .stat-card').length,4,'Global only shows its four registered metrics');
   assert.match(panel().querySelector('.player-season-head h3').textContent,/Rigby245/i);
   root.querySelector('[data-player-season="s2"]').click();await settle();assert(panel().querySelector('.current-grid .stat-card'));
   root.querySelector('[data-player-season="s1"]').click();await settle();assert(panel().querySelector('.current-grid .stat-card'));
   root.querySelector('[data-player-season="copa2026"]').click();await settle();
   assert(panel().querySelector('[data-copa-2026-summary] .current-grid'));
-  assert.equal(panel().querySelector('.current-grid .stat-card').length,5,'Copa has five recorded metrics');
+  assert.equal(panel().querySelectorAll('.current-grid .stat-card').length,5,'Copa has five recorded metrics');
   const year=root.querySelector('[data-player-year-history]');
   year.open=true;year.dispatchEvent(new w.Event('toggle'));await settle();
   const rows=w.CFF_PLAYER_YEAR_HISTORY.collect({id:'rigby245',editions:read('player-data/s2/los.json').players.rigby245.editions,copa2026:read('copa-ff-2026/player-data/rigby245.json')});
