@@ -153,3 +153,28 @@ test('chat separates Brasilia calendar days and renders shop notices without ide
   assert(!d.querySelector('[data-chat-message="'+second+'"] [data-chat-reply]'));
  }finally{f.close()}
 });
+
+
+test('public codes and shop notices use the same yellow Central Free Fire SISTEMA identity',async()=>{
+ const f=await fixture();try{
+  const publicId='1791910006100-aaaaaaaaaaaaaaaa',shopId='1791910006200-bbbbbbbbbbbbbbbb';
+  f.data['globalChat/messages'][publicId]={uid:'central-system',name:'Central · Aviso automático',roleId:'member',kind:'public-code',text:'🎁 CODIGUINHO PÚBLICO · Skin X\nCODETEST123\nVenda proibida.',at:1791910006100};
+  f.data['globalChat/messages'][shopId]={uid:'central-system',name:'Central Free Fire · Loja',roleId:'member',kind:'shop-notice',text:'🎁 NOVIDADES NA LOJINHA CFF!',at:1791910006200};
+  await f.open();
+  const doc=f.w.document,style=doc.createElement('style');
+  style.textContent=fs.readFileSync('css/global-chat.css','utf8');doc.head.append(style);
+  for(const [id,type] of [[publicId,'public-code'],[shopId,'shop-notice']]){
+   const row=doc.querySelector('[data-chat-message="'+id+'"]');assert(row&&row.classList.contains('is-system'),type);
+   assert.equal(row.querySelector('.cff-chat-name').textContent,'Central Free Fire',type);
+   assert.equal(row.querySelector('.cff-chat-role').textContent,'SISTEMA',type);
+   assert.equal(f.w.getComputedStyle(row.querySelector('.cff-chat-name')).color,'rgb(255, 206, 126)',type);
+   assert.equal(f.w.getComputedStyle(row.querySelector('.cff-chat-role')).color,'rgb(255, 206, 126)',type);
+   assert.equal(row.querySelector('[data-chat-reply]'),null,type);
+   assert.equal(row.querySelector('[data-chat-options]'),null,type);
+  }
+  assert.match(doc.querySelector('[data-chat-message="'+publicId+'"] .cff-chat-message-text').textContent,/CODETEST123/);
+  assert.equal(doc.querySelector('[data-chat-message="'+publicId+'"] .cff-chat-shop-link'),null);
+  assert(doc.querySelector('[data-chat-message="'+shopId+'"] .cff-chat-shop-link'));
+  assert(!f.reads.includes('globalChat/identities/central-system'));
+ }finally{f.close();}
+});
