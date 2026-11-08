@@ -767,10 +767,24 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 
 
 /* Mundial 2026 — full 24-team comparison + searchable 120-player evolution. */
-.ffws-global-stats-evolution .ffws-global-evolution-team-buttons{
- display:flex;flex-wrap:wrap;overflow-x:visible;scrollbar-width:auto;align-content:start;
- gap:7px;max-width:100%;
+.ffws-global-stats-evolution .ffws-global-evolution-team-carousel{
+ display:grid;grid-template-columns:36px minmax(0,1fr) 36px;align-items:center;gap:8px;
+ min-width:0;max-width:100%;
 }
+.ffws-global-stats-evolution .ffws-global-evolution-team-buttons{
+ display:flex;flex-wrap:nowrap;align-items:center;overflow-x:auto;overflow-y:hidden;
+ gap:7px;min-width:0;max-width:100%;scrollbar-width:none;
+ scroll-behavior:smooth;overscroll-behavior-x:contain;
+}
+.ffws-global-stats-evolution .ffws-global-evolution-team-buttons::-webkit-scrollbar{display:none}
+.ffws-global-stats-evolution .ffws-global-evolution-arrow{
+ display:flex;align-items:center;justify-content:center;width:36px;height:44px;
+ border:1px solid #294763;border-radius:9px;background:#0a1a2e;color:#a8d9f5;
+ font:inherit;font-size:1.65rem;line-height:1;cursor:pointer;transition:background .15s,border-color .15s;
+}
+.ffws-global-stats-evolution .ffws-global-evolution-arrow:hover:not(:disabled){border-color:#00c8ff;background:#10314a;color:#fff}
+.ffws-global-stats-evolution .ffws-global-evolution-arrow:disabled{opacity:.28;cursor:default}
+.ffws-global-stats-evolution .ffws-global-evolution-arrow:focus-visible{outline:2px solid #00c8ff;outline-offset:2px}
 .ffws-global-stats-evolution .ffws-global-evolution-team-buttons button{
  min-width:57px;height:44px;
 }
@@ -837,6 +851,7 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 }
 .ffws-global-evolution-player-chip>b{font-size:1.18rem;line-height:1;color:#e0f5ff}
 .ffws-global-evolution-hint{font-size:.75rem;color:#90aec9}
+.ffws-global-evolution-player-results:empty{display:none}
 .ffws-global-evolution-player-results .ffws-global-evolution-hint{
  grid-column:1/-1;padding:12px 14px;border:1px dashed #294763;border-radius:9px;
 }
@@ -847,6 +862,8 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
  .ffws-global-player-evolution .ffws-global-evolution-player-controls{grid-template-columns:minmax(0,1fr)}
 }
 @media(max-width:540px){
+ .ffws-global-stats-evolution .ffws-global-evolution-team-carousel{grid-template-columns:30px minmax(0,1fr) 30px;gap:5px}
+ .ffws-global-stats-evolution .ffws-global-evolution-arrow{width:30px;height:41px;font-size:1.35rem}
  .ffws-global-stats-evolution .ffws-global-evolution-team-buttons{gap:5px}
  .ffws-global-stats-evolution .ffws-global-evolution-team-buttons button{min-width:52px}
  .ffws-global-evolution-player-results{grid-template-columns:minmax(0,1fr);max-height:230px}
