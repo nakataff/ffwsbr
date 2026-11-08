@@ -71,6 +71,11 @@ function contextLabel(){
  const f=context.filters||{};
  const terms=[STAGES[f.stage]||f.stage||'Mundial 2026'];
  if(f.days?.length)terms.push(f.days.map(x=>'Dia '+x).join(', '));
+ const dates=[...new Set((context.events||[]).map(row=>row.date).filter(x=>/^\\d{4}-\\d{2}-\\d{2}$/.test(x)))].sort();
+ if(dates.length){
+  const short=x=>x.slice(8,10)+'/'+x.slice(5,7);
+  terms.push(dates.length===1?short(dates[0]):short(dates[0])+' a '+short(dates.at(-1)));
+ }
  if(f.maps?.length)terms.push(f.maps.join(', '));
  terms.push(String(context.events?.length||0)+' quedas');
  return terms.filter(Boolean).join(' · ');
