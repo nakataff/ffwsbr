@@ -61,7 +61,7 @@ function create({sql,transaction,now=()=>Date.now()}){
   const current=stock(),picked=[...new Set(titles)].map(title=>current.find(item=>item.title===title));
   if(picked.some(x=>!x))throw fail(409,'Algum item está esgotado. Atualize o estoque antes de anunciar.');
   if(rows("SELECT id FROM eco_shop_notice_queue WHERE at>? AND json_extract(data,'$.type')='manual' LIMIT 1",now()-120000).length)throw fail(429,'Espere dois minutos antes de publicar outro anúncio.');
-  const lines=picked.map(x=>'• '+x.title+' — '+x.quantity+' disponível(is) · '+x.price.toLocaleString('pt-BR')+' Coins');
+  const lines=picked.map(x=>'• '+x.title+' — '+x.quantity+' disponível(is) · '+x.price.toLocaleString('pt-BR')+' CFF Coins');
   const text='🎁 NOVIDADES NA LOJINHA CFF!\n'+lines.join('\n')+'\nConfira as recompensas na loja.';
   if(text.length>460)throw fail(400,'Selecione menos itens para manter a mensagem legível.');
   push('manual',text,{titles:picked.map(x=>x.title)});
