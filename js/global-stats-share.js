@@ -204,9 +204,9 @@ function fromContext(){
   payload.title='DESEMPENHO DA EQUIPE';payload.entity=row.team;payload.team=row.team;payload.logo=logoSrc(row.team);
   const leading=choice.metric&&row[choice.metric]!==undefined?choice.metric:'points';
   payload.main=fmt(row[leading],leading);payload.mainLabel=LABELS[leading]||'PONTOS';
-  payload.facts=[stat('ABATES',row.kills,'kills'),stat('BOOYAHS',row.booyahs,'booyahs'),
-   stat('QUEDAS',row.matches,'matches'),stat('PTS / QUEDA',row.avgPoints,'avgPoints'),
-   stat('K / QUEDA',row.avgKills,'avgKills'),stat('TOP 3',row.top3,'top3')];
+  payload.facts=customFacts(row,'team');
+  payload.mainRank=rankFor(row,'team',leading);
+  payload.mainRankLabel=LABELS[leading]||SLOT_LABELS[leading]||'PONTOS';
   payload.subtitle=row.team+' · '+contextLabel();
  }else if(kind==='player'){
   const row=choice.row||findRow(state.player,'player');
@@ -215,10 +215,9 @@ function fromContext(){
   payload.photo=playerSrc(row.name,row.team);payload.logo=logoSrc(row.team);
   const leading=choice.metric&&row[choice.metric]!==undefined?choice.metric:'kills';
   payload.main=fmt(row[leading],leading);payload.mainLabel=LABELS[leading]||'ABATES';
-  payload.facts=[stat('DANO',row.damage,'damage'),stat('ASSISTÊNCIAS',row.assists,'assists'),
-   stat('QUEDAS',row.matches,'matches'),stat('K / QUEDA',row.avgKills,'avgKills'),
-   stat('DANO / QUEDA',row.avgDamage,'avgDamage'),
-   ...(row.avgPartKills!==undefined?[stat('PART. ABATES',row.avgPartKills,'avgPartKills'),stat('PART. DANO',row.avgPartDamage,'avgPartDamage')]:[])];
+  payload.facts=customFacts(row,'player');
+  payload.mainRank=rankFor(row,'player',leading);
+  payload.mainRankLabel=LABELS[leading]||SLOT_LABELS[leading]||'ABATES';
   payload.subtitle=row.team+' · '+contextLabel();
  }else if(kind==='top'){
   const entity=choice.entity||state.topEntity,metric=choice.metric||state.metric;
@@ -267,6 +266,16 @@ function settingsUI(){
  $('.cff-share-top-settings').hidden=kind!=='top';
  $('.cff-share-record-setting').hidden=kind!=='record';
  $('.cff-share-single-setting').hidden=kind!=='single';
+ const details=kind==='player'||kind==='team';
+ $('.cff-share-stat-settings').hidden=!details;
+ if(details){
+  const allowed=METRIC_GROUPS[kind];
+  const fields=modal.querySelectorAll('[data-share-slot]');
+  fields.forEach((select,i)=>{
+   optionsFor(select,[['','Ocultar esta informação'],...allowed],item=>item[0],item=>item[1],state.slotMetrics[i]||'');
+  });
+  $('.cff-share-stat-kind').textContent=kind==='player'?'jogador':'equipe';
+ }
  $('.cff-share-custom-title').value=state.title;
  $('.cff-share-title-help').textContent=currentSource?.title?'Título sugerido: '+currentSource.title:'Deixe vazio para usar o título automático';
 }
