@@ -39,8 +39,27 @@ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const STAGES={classificatoria:'Knockout · Fase 1',segundaFase:'Knockout · Fase 2',lastChance:'Last Chance',final:'Grande Final',geral:'Todas as fases'};
 let context=null,modal=null,livePayload=null,previewBlob=null,renderSeq=0,currentSource=null,modelRoot=null;
 const imgCache=new Map();
+const PLAYER_SLOTS=['kills','damage','assists','matches','avgKills','avgDamage'];
+const TEAM_SLOTS=['kills','points','booyahs','matches','avgKills','avgPoints'];
+const METRIC_GROUPS={
+ player:[['kills','Abates'],['damage','Dano'],['assists','Assistências'],['matches','Quedas'],
+  ['avgKills','Abates / queda'],['avgDamage','Dano / queda'],['avgAssists','Assistências / queda'],
+  ['avgPartKills','Participação nos abates da equipe'],['avgPartDamage','Participação no dano da equipe'],
+  ['avgPartAssists','Participação nas assistências da equipe'],
+  ['bestDropKills','Recorde de abates em uma queda'],['bestDayKills','Recorde de abates em um dia'],
+  ['bestDropDamage','Recorde de dano em uma queda'],['bestDayDamage','Recorde de dano em um dia'],
+  ['bestDropAssists','Recorde de assistências em uma queda']],
+ team:[['kills','Abates'],['points','Pontos'],['booyahs','Booyahs'],['matches','Quedas'],
+  ['avgKills','Abates / queda'],['avgPoints','Pontos / queda'],['top3','Top 3'],['top3Rate','Taxa Top 3'],
+  ['avgPosition','Posição média'],['damage','Dano da equipe (quando completo)'],
+  ['assists','Assistências da equipe (quando completo)'],['avgDamage','Dano / queda'],
+  ['bestDropKills','Recorde de abates em uma queda'],['bestDayKills','Recorde de abates em um dia'],
+  ['bestDropDamage','Recorde de dano em uma queda'],['bestDayDamage','Recorde de dano em um dia']]
+};
+const SLOT_LABELS=Object.fromEntries([...METRIC_GROUPS.player,...METRIC_GROUPS.team]);
 const state={kind:'summary',format:'feed',theme:'dark',accent:'blue',showSubtitle:true,showFilters:true,showImage:true,
- title:'',team:'',player:'',teamB:'',topEntity:'team',metric:'points',record:'teamDay|points',single:'points'};
+ title:'',team:'',player:'',teamB:'',topEntity:'team',metric:'points',record:'teamDay|points',single:'points',
+ showMainRank:true,showFactRanks:false,slotMetrics:PLAYER_SLOTS.slice()};
 function dataRows(entity){
  if(!context)return [];
  return entity==='team'?context.teams:entity==='player'?context.players:entity==='contribution'?context.playerShareRows:context.records?.[entity]||[];
@@ -105,6 +124,61 @@ function packRows(rows,metric,type,limit=5){
   logo:type==='team'?logoSrc(row.team):logoSrc(row.team),photo:type==='player'?playerSrc(row.name,row.team):''
  }));
 }
+// Ranks are computed only from the current filtered, already-loaded Mundial data.
+function known(value){return value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));}
+function entityId(row,type){return type==='team'?key(row.team):key(row.name)+'|'+key(row.team);}
+function getTeamStats(row){
+ if(!row)return {};
+ const players=(context?.players||[]).filter(p=>key(p.team)===key(row.team));
+ const appearances=players.reduce((n,p)=>n+(known(p.matches)?Number(p.matches):0),0);
+ // One squad has four players per played match; partial player exports must not
+ // be presented as complete team damage/assists.
+ const complete=players.length>0&&known(row.matches)&&Number(row.matches)>0&&appearances>=4*Number(row.matches);
+ const damage=complete&&players.every(p=>known(p.damage))?players.reduce((n,p)=>n+Number(p.damage),0):null;
+ const assists=complete&&players.every(p=>known(p.assists))?players.reduce((n,p)=>n+Number(p.assists),0):null;
+ return {...row,damage,assists,avgDamage:damage!==null?damage/Number(row.matches):null};
+}
+function recordValue(row,type,metric){
+ const scope=(type==='team'?'team':'player')+(metric.startsWith('bestDrop')?'Drop':'Day');
+ const field=metric.includes('Damage')?'damage':metric.includes('Assists')?'assists':'kills';
+ const matches=(context?.records?.[scope]||[]).filter(item=>
+  entityId(item,type)===entityId(row,type)&&known(item[field]));
+ return matches.length?Math.max(...matches.map(item=>Number(item[field]))):null;
+}
+function metricValue(row,type,metric){
+ if(!row)return null;
+ if(metric.startsWith('bestDrop')||metric.startsWith('bestDay'))return recordValue(row,type,metric);
+ if(type==='player'&&metric.startsWith('avgPart')){
+  const source=(context?.playerShareRows||[]).find(item=>entityId(item,'player')===entityId(row,'player'));
+  return source&&known(source[metric])?Number(source[metric]):null;
+ }
+ const source=type==='team'&&['damage','assists','avgDamage'].includes(metric)?getTeamStats(row):row;
+ return known(source[metric])?Number(source[metric]):null;
+}
+function metricText(value,metric){
+ if(!known(value))return '—';
+ return fmt(value,metric.startsWith('bestDrop')||metric.startsWith('bestDay')?'kills':metric);
+}
+function rankFor(row,type,metric){
+ if(!row)return null;
+ const actual=metricValue(row,type,metric);
+ if(actual===null||!Number.isFinite(actual))return null;
+ const all=(type==='team'?context?.teams:context?.players)||[];
+ const comparison=all.map(item=>metricValue(item,type,metric)).filter(value=>value!==null&&Number.isFinite(value));
+ if(!comparison.length)return null;
+ const lowFirst=metric==='avgPosition';
+ // Competition ranking: ties share the same position (#1, #1, #3).
+ return 1+comparison.filter(value=>lowFirst?value<actual-1e-7:value>actual+1e-7).length;
+}
+function customFacts(row,type){
+ const chosen=(Array.isArray(state.slotMetrics)?state.slotMetrics:[]).slice(0,6);
+ return chosen.filter(Boolean).map(metric=>{
+  const value=metricValue(row,type,metric),rank=rankFor(row,type,metric);
+  return {label:(SLOT_LABELS[metric]||LABELS[metric]||metric).toUpperCase(),value:metricText(value,metric),
+   rank,metric};
+ });
+}
+function resetSlots(kind){state.slotMetrics=(kind==='team'?TEAM_SLOTS:PLAYER_SLOTS).slice();}
 function fromContext(){
  if(!context)return null;
  const totals=context.summary||{};
