@@ -17,7 +17,7 @@ function preview(name,target){const row=name==='code'?rows.find(r=>r.code===host
 function refresh(){if(!host||busy||!isAdmin())return;const data=source()?.read();rows=(Array.isArray(data)?data:[]).filter(r=>!stock.has(r.code));inventory=source()?.inventory?.()||[];const select=host.querySelector('[name=code]'),current=select.value;select.innerHTML=`<option value="">${data===null?'Desbloqueie o controle para escolher':'Escolha um código disponível'}</option>`+rows.map(r=>`<option value="${esc(r.code)}">${esc(r.title)} · ${esc(r.code)}</option>`).join('');if(rows.some(r=>r.code===current))select.value=current;
  selectedCodes.forEach(code=>{if(!rows.some(row=>row.code===code))selectedCodes.delete(code);});renderBulkChoices();
  const edit=host.querySelector('[name=editCode]'),editCurrent=edit.value;edit.innerHTML='<option value="">Escolha um código do estoque</option>'+inventory.filter(r=>stock.has(r.code)).map(r=>{const item=stock.get(r.code);return `<option value="${esc(r.code)}">${esc(r.title)} · ${esc(r.code)} · ${item.status==='claimed'?'Já entregue':item.status==='pending'?'Entrega pendente':item.status==='expired'?'Expirado':names[item.bucket]}</option>`;}).join('');if(inventory.some(r=>r.code===editCurrent)&&stock.has(editCurrent))edit.value=editCurrent;
- host.querySelectorAll('select,button').forEach(n=>n.disabled=data===null);host.querySelector('[data-reserve-submit]').disabled=data===null||!select.value||loading;editFields();preview('code','[data-stock-photo]');promotionTools?.render();paint();}
+ host.querySelectorAll('select,button').forEach(n=>n.disabled=data===null);host.querySelector('[data-reserve-submit]').disabled=data===null||(!select.value&&!selectedCodes.size)||loading;renderNoticeItems();editFields();preview('code','[data-stock-photo]');promotionTools?.render();paint();}
 const NOTICE_LABELS={restock:'Reposição automática',last:'Última unidade na loja',expiring:'Validade próxima (24 horas)',promotion:'Promoções ativadas',soldout:'Item esgotado',free:'Recompensas gratuitas (quando disponíveis)'};
 function renderNoticeItems(){
  if(!host)return;const list=host.querySelector('[data-notice-stock-list]');if(!list)return;
@@ -56,7 +56,7 @@ async function announceSelected(){
   const result=await economyRequest(auth,'shopNoticeAnnounce',{titles},true);
   message.textContent='Aviso enviado ao Chat Global: '+result.items.map(x=>x.title+' ('+x.quantity+')').join(', ')+'.';
   noticeTitles.clear();
-  await loadNotices();
+  noticeInventory=noticeInventory.map(x=>result.items.find(item=>item.title===x.title)?{...x}:x);
  }catch(error){message.textContent=error.message||'Falha ao publicar aviso.';}
  finally{noticeBusy=false;renderNoticeItems();}
 }
