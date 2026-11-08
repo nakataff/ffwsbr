@@ -292,7 +292,7 @@ async function draw(payload){
  const [w,h]=FORMATS[state.format]||FORMATS.feed;
  canvas.width=w;canvas.height=h;
  const generation=++renderSeq;
- const story=state.format==='stories';
+ const story=state.format==='stories',feed=state.format==='feed';
  const [brand,emblem,photo,rowImages,compareImages]=await Promise.all([
   image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
   payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([]),
@@ -311,7 +311,7 @@ async function draw(payload){
  const headY=compact?71:99,brandSize=compact?67:85;
  if(brand)contain(ctx,brand,pad,headY-43,brandSize,brandSize);
  else{rounded(ctx,pad,headY-42,brandSize,brandSize,14,accent);textLine(ctx,'CFF',pad+brandSize/2,headY+8,brandSize-8,27,dark?'#081523':'#fff','950','center')}
- textLine(ctx,'CENTRAL FREE FIRE',pad+brandSize+19,headY,600,compact?23:28,ink);
+ textLine(ctx,'CENTRAL FREE FIRE',pad+brandSize+19,headY,600,compact?23:story?31:28,ink);
  textLine(ctx,payload.eyebrow,pad+brandSize+19,headY+29,600,compact?13:16,muted,'850');
  ctx.fillStyle=dark?'#34526c':'#b5cad9';ctx.fillRect(pad,headY+61,w-2*pad,2);
  // Canvas text coordinates are baselines: make headline, player, filters and score separate rows.
@@ -324,16 +324,16 @@ async function draw(payload){
  const portraitX=w-pad-portraitSize;
  const contentWidth=wideList?w*.42:heroVisible?portraitX-pad-22:w-2*pad;
  const titleY=compact?201:h<=1100?231:h<=1400?236:244;
- const headline=headlineLayout(ctx,payload.title,contentWidth,compact?44:h<=1100?48:h<=1400?52:57);
+ const headline=headlineLayout(ctx,payload.title,contentWidth,compact?44:story?63:h<=1100?48:h<=1400?52:57);
  const titleStep=headline.size*1.05;
  headline.lines.forEach((line,i)=>textLine(ctx,line,pad,titleY+i*titleStep,contentWidth,headline.size,ink));
  const titleBottom=titleY+(headline.lines.length-1)*titleStep;
  const shortMeta=state.showFilters?payload.subtitle:(payload.team||'');
  const nameY=titleBottom+(compact?42:54),metaY=nameY+(compact?25:30);
  const hasName=Boolean(payload.entity&&!wideList);
- if(hasName)textLine(ctx,payload.entity.toUpperCase(),pad,nameY,contentWidth,compact?28:36,ink);
+ if(hasName)textLine(ctx,payload.entity.toUpperCase(),pad,nameY,contentWidth,compact?28:story?40:36,ink);
  if(state.showSubtitle&&shortMeta){
-  textLine(ctx,shortMeta,pad,hasName?metaY:titleBottom+(compact?31:39),contentWidth,compact?17:20,muted,'750');
+  textLine(ctx,shortMeta,pad,hasName?metaY:titleBottom+(compact?31:39),contentWidth,compact?17:story?22:20,muted,'750');
  }
  const minValueY=hasName?(state.showSubtitle&&shortMeta?metaY:nameY)+(compact?76:99):
   titleBottom+(state.showSubtitle&&shortMeta?(compact?110:137):(compact?83:110));
@@ -341,20 +341,22 @@ async function draw(payload){
  const labelY=valueY+(compact?30:36);
  if(payload.main){
   const available=wideList?w*.38:contentWidth;
-  let font=compact?77:clamp(w*.107,76,130);
+  let font=compact?77:story?clamp(w*.118,84,143):clamp(w*.107,76,130);
   ctx.font='900 '+font+'px "Arial Narrow","Barlow Condensed",Arial,sans-serif';
   while(font>42&&ctx.measureText(String(payload.main)).width>available){
    font-=4;ctx.font='900 '+font+'px "Arial Narrow","Barlow Condensed",Arial,sans-serif';
   }
   textLine(ctx,payload.main,pad,valueY,available,font,accent);
-  textLine(ctx,payload.mainLabel,pad,labelY,available,compact?17:22,muted,'850');
+  textLine(ctx,payload.mainLabel,pad,labelY,available,compact?17:story?24:22,muted,'850');
  }
  if(heroVisible&&portraitSize>80)drawHeroPortrait(ctx,photo,emblem,portraitX,portraitY,portraitSize,accent,dark,surface);
  const storyHeroEnd=Math.max(
   heroVisible&&portraitSize>80?portraitY+portraitSize:0,
   payload.main?labelY+33:state.showSubtitle&&shortMeta?(hasName?metaY:titleBottom+39)+27:hasName?nameY+28:titleBottom+34
  );
- const panelTop=story?clamp(Math.ceil(storyHeroEnd+45),Math.round(h*.305),Math.round(h*.49)):legacyPanelTop;
+ // Feed 4:5 follows the actual portrait/number bottom instead of starting at 58%.
+ const panelTop=story?clamp(Math.ceil(storyHeroEnd+45),Math.round(h*.305),Math.round(h*.49))
+  :feed?clamp(Math.ceil(storyHeroEnd+38),Math.round(h*.41),Math.round(h*.61)):legacyPanelTop;
  const panelBottom=footerY-(story?78:34);
  const storyFit=(count,maximum,gap)=>{
   const available=Math.max(0,panelBottom-panelTop),n=Math.max(1,count);
@@ -378,26 +380,26 @@ async function draw(payload){
   });
  }else if(payload.rows.length){
   const items=payload.rows.slice(0,5);
-  const gap=compact?7:story?16:12;
+  const gap=compact?7:story?16:feed?11:12;
   const fit=story?storyFit(items.length,items.length<=2?300:items.length===3?245:items.length===4?215:185,gap):null;
   const available=panelBottom-panelTop;
-  const rowH=story?fit.height:clamp((available-gap*(items.length-1))/Math.max(1,items.length),compact?36:55,compact?70:95);
+  const rowH=story?fit.height:clamp((available-gap*(items.length-1))/Math.max(1,items.length),compact?36:feed?64:55,compact?70:feed?112:95);
   const listY=story?fit.top:panelTop;
-  if(story)textLine(ctx,'RANKING DO RECORTE',pad,listY-18,w-2*pad,19,muted,'900');
+  if(story)textLine(ctx,'RANKING DO RECORTE',pad,listY-23,w-2*pad,21,muted,'900');
   items.forEach((row,i)=>{
    const y=listY+i*(rowH+gap);
    rounded(ctx,pad,y,w-pad*2,rowH,13,surface,dark?'#263e57':'#c6d6e4');
    const badgeSize=story?Math.min(90,rowH-24):rowH-16;
    const badgeY=story?y+(rowH-badgeSize)/2:y+8;
    rounded(ctx,pad+12,badgeY,badgeSize,badgeSize,8,i===0?accent:dark?'#1b3047':'#dce8f4');
-   textLine(ctx,String(row.rank),pad+12+badgeSize/2,y+rowH/2+8,badgeSize-2,story?29:compact?19:26,i===0?'#081a2a':ink,'950','center');
+   textLine(ctx,String(row.rank),pad+12+badgeSize/2,y+rowH/2+8,badgeSize-2,story?33:compact?19:26,i===0?'#081a2a':ink,'950','center');
    const logoSize=story?Math.min(105,rowH-22):rowH-15;
    if(state.showImage&&rowImages[i])contain(ctx,rowImages[i],pad+badgeSize+26,story?y+(rowH-logoSize)/2:y+8,logoSize,logoSize);
    const nameX=story?pad+badgeSize+(state.showImage&&rowImages[i]?logoSize+43:38):pad+rowH+(state.showImage?rowH+17:21);
    const nameWidth=story?Math.max(90,w-pad-155-nameX):w*.43;
-   textLine(ctx,row.name,nameX,y+rowH/2+(story&&row.team&&row.team!==row.name?-6:7),nameWidth,story?33:compact?20:28,ink);
-   if(story&&row.team&&row.team!==row.name)textLine(ctx,row.team,nameX,y+rowH/2+29,nameWidth,20,muted,'750');
-   textLine(ctx,row.score,w-pad-17,y+rowH/2+10,w*.2,story?35:compact?23:31,accent,'950','right');
+   textLine(ctx,row.name,nameX,y+rowH/2+(story&&row.team&&row.team!==row.name?-6:7),nameWidth,story?37:compact?20:28,ink);
+   if(story&&row.team&&row.team!==row.name)textLine(ctx,row.team,nameX,y+rowH/2+29,nameWidth,22,muted,'750');
+   textLine(ctx,row.score,w-pad-17,y+rowH/2+10,w*.2,story?39:compact?23:31,accent,'950','right');
   });
  }else if(payload.two){
   const rows=payload.two;
@@ -446,14 +448,18 @@ async function draw(payload){
     textLine(ctx,fact.value,x+boxW-24,y+boxH/2+15,boxW*.39,48,ink,'950','right');
    });
   }else{
-   const cols=2,gap=compact?12:17,usable=Math.max(0,panelBottom-panelTop),rows=Math.ceil(facts.length/cols);
-   const boxH=Math.min(compact?104:h>1700?190:144,Math.max(0,(usable-gap*(rows-1))/Math.max(1,rows)));
+   const feedStack=feed&&facts.length<=2,cols=feedStack?1:2;
+   const gap=compact?12:feed?18:17,usable=Math.max(0,panelBottom-panelTop),rows=Math.ceil(facts.length/cols);
+   const maxH=feed?(feedStack?245:rows>=3?190:235):compact?104:h>1700?190:144;
+   const boxH=Math.min(maxH,Math.max(0,(usable-gap*(rows-1)- (feed?24:0))/Math.max(1,rows)));
+   const totalH=rows*boxH+gap*(rows-1);
+   const cardsTop=feed?panelTop+Math.max(0,(usable-totalH)/2):panelTop;
    facts.forEach((fact,index)=>{
-    const x=pad+(index%2)*((w-2*pad+gap)/2);
-    const y=panelTop+Math.floor(index/2)*(boxH+gap),boxW=(w-pad*2-gap)/2;
+    const column=index%cols,x=pad+column*((w-2*pad+gap)/cols);
+    const y=cardsTop+Math.floor(index/cols)*(boxH+gap),boxW=(w-pad*2-gap*(cols-1))/cols;
     rounded(ctx,x,y,boxW,boxH,14,surface,dark?'#263e57':'#c6d6e4');
-    textLine(ctx,fact.label,x+18,y+Math.min(boxH*.34,compact?24:35),boxW-36,compact?13:20,muted,'850');
-    textLine(ctx,fact.value,x+18,y+boxH-16,boxW-36,boxH<75?23:compact?25:39,ink);
+    textLine(ctx,fact.label,x+18,y+Math.min(boxH*.34,compact?24:feed?45:35),boxW-36,compact?13:20,muted,'850');
+    textLine(ctx,fact.value,x+18,y+boxH-19,boxW-36,boxH<75?23:compact?25:feed?44:39,ink);
    });
   }
  }
