@@ -122,9 +122,9 @@ test('Global Finals share studio previews the image BEFORE settings on mobile an
  assert.match(markup,/data-share-action="save"/);
  assert.match(markup,/data-share-action="share"/);
  const global=read('ffws-global-2026/global.js'),shell=read('js/site-shell-fast.min.js'),html=read('index.html');
- assert.match(global,/global-stats-share\.css\?v=20261108-mobile-preview-first-v3/);
- assert.match(shell,/global\.js\?v=20261108-feed-stories-save-v8/);
- assert.match(html,/site-shell-fast\.min\.js\?v=20261108-feed-stories-save-v8/);
+ assert.match(global,/global-stats-share\.css\?v=20261108-six-metrics-ranks-v9/);
+ assert.match(shell,/global\.js\?v=20261108-six-metrics-ranks-v9/);
+ assert.match(html,/site-shell-fast\.min\.js\?v=20261108-six-metrics-ranks-v9/);
 });
 
 test('Stories have dedicated responsive positions for rankings, stats, records and comparison',()=>{
@@ -140,7 +140,7 @@ test('Stories have dedicated responsive positions for rankings, stats, records a
  assert.match(source,/const panelBottom=footerY-\(story\?78:feed\?62:34\)/);
  assert(!source.includes('storyRanking'),'old ranking-only layout must not control Story geometry');
  const global=read('ffws-global-2026/global.js');
- assert.match(global,/global-stats-share\.js\?v=20261108-feed-stories-save-v8/);
+ assert.match(global,/global-stats-share\.js\?v=20261108-six-metrics-ranks-v9/);
 });
 
 test('4:5 Feed panels follow the actual header and Stories typography gets larger',()=>{
@@ -157,5 +157,5 @@ test('4:5 Feed panels follow the actual header and Stories typography gets large
  assert.match(source,/await navigator\.share\(\{files:\[file\],title:livePayload\.title/);
  assert.match(source,/function currentPNG\(\)/);
  const stats=read('ffws-global-2026/stats/index.html');
- assert.match(stats,/cff-global-build','20261108-feed-stories-save-v8/);
+ assert.match(stats,/cff-global-build','20261108-six-metrics-ranks-v9/);
 });
