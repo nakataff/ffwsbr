@@ -1534,7 +1534,7 @@
       ['anchor-s2-medias-jogador','Médias Jog.'], ['anchor-s2-participacao','Participação'],
       ['anchor-s2-rec-drop-player','Rec. Q Jog.'], ['anchor-s2-rec-day-player','Rec. Dia Jog.'], ['anchor-s2-rec-drop-team','Rec. Q Times'],
       ['anchor-s2-rec-day-team','Rec. Dia Times'], ['anchor-s2-relatorio','Relatório'], ['anchor-s2-evolucao','Evolução'],
-      ['anchor-s2-ranking-medias','Médias'], ['anchor-s2-ranking-totais','Totais']
+      ['anchor-s2-evolucao-jogadores','Evol. Jog.'], ['anchor-s2-ranking-medias','Médias'], ['anchor-s2-ranking-totais','Totais']
     ];
     const playerOnly = new Set(['anchor-s2-totais-jogador','anchor-s2-medias-jogador','anchor-s2-participacao','anchor-s2-rec-drop-player','anchor-s2-rec-day-player']);
     const visible = items.filter(([id]) => id === 'anchor-s2-filtros' || (hasTeams && (hasPlayers || !playerOnly.has(id))));
@@ -1699,17 +1699,25 @@
     const periods = s2StatsEvolutionPeriods(events);
     const selected = (state.statsEvolution.teams || []).slice(0,5);
     const empty = document.getElementById('ffws-global-stats-evolution-empty');
-    if (!periods.length || !selected.length) { canvas.hidden = true; if (empty) empty.hidden = false; return; }
+    const metric = state.statsEvolution.metric || 'position';
+    const data = selected.map((team,index) => ({
+      team,values:s2StatsEvolutionSeries(events,team,metric),index
+    }));
+    const hasData = periods.length && data.some(item => item.values.some(value => value !== null));
+    if (!hasData) {
+      canvas.hidden = true; if (empty) empty.hidden = false;
+      if(s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart=null; }
+      return;
+    }
     canvas.hidden = false; if (empty) empty.hidden = true;
     const draw = () => {
       if (!window.Chart || !document.getElementById('ffws-global-stats-evolution-chart')) return;
       if (s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart = null; }
       const labels = periods.map(period => `${s2StatsStageShortLabel(period.stage)} D${period.day}`);
       const palette = ['#00c8ff','#ffd34d','#7fe29a','#ff7a90','#b68cff'];
-      const metric = state.statsEvolution.metric || 'position';
       s2StatsEvolutionChart = new window.Chart(canvas.getContext('2d'), {
         type:'line',
-        data:{ labels, datasets:selected.map((team,index)=>({ label:abbreviation(team), data:s2StatsEvolutionSeries(events,team,metric), borderColor:palette[index%palette.length], backgroundColor:palette[index%palette.length], tension:.2, borderWidth:2.25, pointRadius:3, pointHoverRadius:5, spanGaps:true })) },
+        data:{ labels, datasets:data.map(({team,values,index})=>({ label:abbreviation(team), data:values, borderColor:palette[index%palette.length], backgroundColor:palette[index%palette.length], tension:.2, borderWidth:2.25, pointRadius:3, pointHoverRadius:5, spanGaps:false })) },
         options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'nearest',intersect:false}, plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}}}, scales:{x:{ticks:{color:'#7893b5',maxRotation:0,autoSkip:true},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
       });
     };
