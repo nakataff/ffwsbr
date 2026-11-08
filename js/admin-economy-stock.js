@@ -3,7 +3,7 @@ import {createStockBridge} from './admin-stock-bridge.mjs?v=20261019-admin-integ
 import {prepareEconomyPhoto} from './economy-photo.mjs?v=20261014-cff-coins-v1';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
-import {economyRequest,escapeEconomy as esc,loadEconomyStyle} from './economy-client.mjs?v=20261026-code-promotions-v1';
+import {economyRequest,escapeEconomy as esc,loadEconomyStyle} from './economy-client.mjs?v=20261108-shop-notices-v4';
 const app=getApps().find(a=>a.name==='[DEFAULT]')||initializeApp(window.CFF_CONFIG.firebase),auth=getAuth(app);
 const names={roulette:'Loja (estoque antigo)',shop:'Loja',both:'Loja (compartilhado)'},hashes=new Map(),photoSync=new Map(),photoAttempts=new Set();
 let promotionTools=null,codePrice=1000;
