@@ -123,8 +123,8 @@ test('Global Finals share studio previews the image BEFORE settings on mobile an
  assert.match(markup,/data-share-action="share"/);
  const global=read('ffws-global-2026/global.js'),shell=read('js/site-shell-fast.min.js'),html=read('index.html');
  assert.match(global,/global-stats-share\.css\?v=20261108-six-metrics-ranks-v9/);
- assert.match(shell,/global\.js\?v=20261108-stats-share-metric-routing-v10/);
- assert.match(html,/site-shell-fast\.min\.js\?v=20261108-stats-share-metric-routing-v10/);
+ assert.match(shell,/global\.js\?v=20261108-evolucao-equipes-jogadores-v11/);
+ assert.match(html,/site-shell-fast\.min\.js\?v=20261108-evolucao-equipes-jogadores-v11/);
 });
 
 test('Stories have dedicated responsive positions for rankings, stats, records and comparison',()=>{
@@ -157,5 +157,5 @@ test('4:5 Feed panels follow the actual header and Stories typography gets large
  assert.match(source,/await navigator\.share\(\{files:\[file\],title:livePayload\.title/);
  assert.match(source,/function currentPNG\(\)/);
  const stats=read('ffws-global-2026/stats/index.html');
- assert.match(stats,/cff-global-build','20261108-stats-share-metric-routing-v10/);
+ assert.match(stats,/cff-global-build','20261108-evolucao-equipes-jogadores-v11/);
 });
