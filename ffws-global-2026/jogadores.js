@@ -47,7 +47,22 @@ async function refreshProfile(){
 }
 function recordsTable(entries){return `<div class="gp-table-wrap"><table class="gp-table"><thead><tr><th>Recorte</th><th>Mapa</th><th>Abates</th><th>Quedas</th></tr></thead><tbody>${entries.map(e=>`<tr><td>${esc(recordLabel(e))}</td><td>${esc(e.map||'—')}</td><td>${fmt(e.kills)}</td><td>${fmt(e.matches)}</td></tr>`).join('')}</tbody></table></div>`}
 async function share(){try{const data={title:player.name+' · Mundial 2026',text:'Confira o desempenho de '+player.name+' na FFWS Global Finals 2026',url:profileURL()};if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(data.url);status('Link copiado!')}}catch(e){if(e.name!=='AbortError')status('Não foi possível compartilhar. Copie o endereço da página.',true)}}
-async function card(people=[player]){const rows=people.map(p=>({name:p.name,team:p.team.name,photo:p.photoLarge||p.photo,logo:p.team.logo,rank:p.ranks[state.stage]||1,...p.stats[state.stage]}));const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v='+V);await openRankingCard({id:'world-player-'+player.id,kind:'players',title:people.length===1?player.name+' · Desempenho':people.map(p=>p.name).join(' × '),event:'FFWS Global Finals 2026',stage:label(state.stage),updatedAt:player.updatedAt,metric:'kills',url:profileURL(),rows,initialOptions:{template:people.length===1?'leader':'compare',first:0,second:1}});}
+async function card(people=[player]){
+ const rows=people.map(p=>{
+  const stats=p.stats?.[state.stage]||{},highlight=p.highlights?.[state.stage]||{};
+  const ranking=p.ranks?.[state.stage]??null;
+  return {name:p.name,team:p.team.name,photo:p.photoLarge||p.photo,logo:p.team.logo,
+   rank:ranking,ranking,bestDrop:highlight.drop?.kills??null,bestRound:highlight.round?.kills??null,...stats};
+ });
+ const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v=20261108-profile-cards-v7');
+ await openRankingCard({
+  id:'world-player-'+player.id,kind:'players',mode:'player',
+  title:people.length===1?player.name+' · Desempenho':people.map(p=>p.name).join(' × '),
+  event:'FFWS Global Finals 2026',stage:label(state.stage),updatedAt:player.updatedAt,
+  metric:'kills',url:profileURL(),rows,
+  initialOptions:{template:people.length===1?'player':'compare',first:0,second:1}
+ });
+}
 async function comparison(){
  const data=await loadIndex();opener=document.activeElement;let dialog=document.getElementById('gp-comparison');if(!dialog){dialog=document.createElement('dialog');dialog.id='gp-comparison';dialog.className='gp-compare';dialog.innerHTML='<div class="gp-dialog-head"><h2>Comparar no Mundial</h2><button type="button" data-close aria-label="Fechar comparação">✕</button></div><p class="gp-subtle">Mesmo recorte para os dois jogadores. Etapa: <strong data-compare-stage></strong></p><label>Buscar outro jogador<input type="search" data-compare-search placeholder="Nick do jogador"></label><label>Jogador<select data-compare-pick></select></label><div data-compare-result role="status"></div><div class="gp-actions"><button type="button" data-compare-card disabled>Criar card da comparação</button></div>';document.body.append(dialog);dialog.querySelector('[data-close]').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});dialog.addEventListener('close',()=>opener?.focus());dialog.querySelector('[data-compare-search]').oninput=()=>fillCompareChoices(data,dialog);dialog.querySelector('[data-compare-pick]').onchange=()=>renderComparison(dialog);dialog.querySelector('[data-compare-card]').onclick=async()=>{try{await card([player,comparePlayer])}catch(e){dialog.querySelector('[data-compare-result]').textContent=e.message}}}
  dialog.querySelector('[data-compare-stage]').textContent=label(state.stage);dialog.querySelector('[data-compare-search]').value='';fillCompareChoices(data,dialog);dialog.showModal();renderComparison(dialog);
