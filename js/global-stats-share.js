@@ -292,7 +292,7 @@ async function draw(payload){
  const [w,h]=FORMATS[state.format]||FORMATS.feed;
  canvas.width=w;canvas.height=h;
  const generation=++renderSeq;
- const story=state.format==='story';
+ const story=state.format==='stories';
  const [brand,emblem,photo,rowImages,compareImages]=await Promise.all([
   image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
   payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([]),
