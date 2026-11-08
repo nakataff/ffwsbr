@@ -1659,7 +1659,7 @@
       }
       globalStatsShareLoader=new Promise((resolve,reject)=>{
         const script=document.createElement('script');
-        script.src='/js/global-stats-share.js?v=20261108-story-all-models-v7';
+        script.src='/js/global-stats-share.js?v=20261108-feed-stories-save-v8';
         script.async=true;
         script.onload=()=>resolve();
         script.onerror=()=>reject(Error('Não foi possível carregar o editor de cards'));
