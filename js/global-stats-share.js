@@ -292,8 +292,12 @@ async function draw(payload){
  const [w,h]=FORMATS[state.format]||FORMATS.feed;
  canvas.width=w;canvas.height=h;
  const generation=++renderSeq;
- const [brand,emblem,photo,rowImages]=await Promise.all([image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
-  payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([])]);
+ const story=state.format==='story';
+ const [brand,emblem,photo,rowImages,compareImages]=await Promise.all([
+  image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
+  payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([]),
+  story&&payload.two&&state.showImage?Promise.all(payload.two.map(row=>image(logoSrc(row.team)))):Promise.resolve([])
+ ]);
  if(generation!==renderSeq)return;
  const dark=state.theme==='dark',accent=ACCENTS[state.accent]||ACCENTS.blue;
  const bg=dark?'#070e1b':'#e9f1f8',surface=dark?'#111c30':'#ffffff',ink=dark?'#f8fbff':'#122439',muted=dark?'#a2bad5':'#3e5872';
@@ -312,13 +316,11 @@ async function draw(payload){
  ctx.fillStyle=dark?'#34526c':'#b5cad9';ctx.fillRect(pad,headY+61,w-2*pad,2);
  // Canvas text coordinates are baselines: make headline, player, filters and score separate rows.
  const footerY=h-(compact?69:113);
- // Stories rankings: make the five rows fill the middle of the image, not
- // begin below a huge empty gap. Other formats preserve their layout.
- const storyRanking=h>=1800&&payload.rows.length>0;
- const panelTop=compact?497:storyRanking?Math.round(h*.425):Math.floor(h*.58);
+ // All Stories now use their own 9:16 layout. Feed, square and wide stay unchanged.
+ const legacyPanelTop=compact?497:Math.floor(h*.58);
  const heroVisible=state.showImage&&(photo||emblem)&&!wideList;
- const portraitY=compact?175:210;
- const portraitSize=heroVisible?Math.min(w*(compact?.255:h>1700?.425:.38),panelTop-portraitY-(compact?14:30)):0;
+ const portraitY=compact?175:story?205:210;
+ const portraitSize=heroVisible?(story?Math.min(w*.45,500):Math.min(w*(compact?.255:h>1700?.425:.38),legacyPanelTop-portraitY-(compact?14:30))):0;
  const portraitX=w-pad-portraitSize;
  const contentWidth=wideList?w*.42:heroVisible?portraitX-pad-22:w-2*pad;
  const titleY=compact?201:h<=1100?231:h<=1400?236:244;
@@ -335,7 +337,7 @@ async function draw(payload){
  }
  const minValueY=hasName?(state.showSubtitle&&shortMeta?metaY:nameY)+(compact?76:99):
   titleBottom+(state.showSubtitle&&shortMeta?(compact?110:137):(compact?83:110));
- const valueY=Math.min(minValueY,compact?427:h<=1100?455:h<=1400?485:530);
+ const valueY=story?Math.max(minValueY,hasName?470:485):Math.min(minValueY,compact?427:h<=1100?455:h<=1400?485:530);
  const labelY=valueY+(compact?30:36);
  if(payload.main){
   const available=wideList?w*.38:contentWidth;
@@ -348,7 +350,18 @@ async function draw(payload){
   textLine(ctx,payload.mainLabel,pad,labelY,available,compact?17:22,muted,'850');
  }
  if(heroVisible&&portraitSize>80)drawHeroPortrait(ctx,photo,emblem,portraitX,portraitY,portraitSize,accent,dark,surface);
- const panelBottom=footerY-34;
+ const storyHeroEnd=Math.max(
+  heroVisible&&portraitSize>80?portraitY+portraitSize:0,
+  payload.main?labelY+33:state.showSubtitle&&shortMeta?(hasName?metaY:titleBottom+39)+27:hasName?nameY+28:titleBottom+34
+ );
+ const panelTop=story?clamp(Math.ceil(storyHeroEnd+45),Math.round(h*.305),Math.round(h*.49)):legacyPanelTop;
+ const panelBottom=footerY-(story?78:34);
+ const storyFit=(count,maximum,gap)=>{
+  const available=Math.max(0,panelBottom-panelTop),n=Math.max(1,count);
+  const height=Math.min(maximum,Math.max(0,(available-32-gap*(n-1))/n));
+  const total=n*height+gap*(n-1);
+  return {top:panelTop+Math.max(0,(available-total)/2),height,gap};
+ };
  if(wideList){
   const items=payload.rows.slice(0,5);
   const x=w*.515,rowW=w*.415,yStart=192,gap=9;
