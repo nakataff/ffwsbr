@@ -65,8 +65,8 @@ function renderBulkChoices(){
  const q=String(host.querySelector('[data-stock-code-filter]')?.value||'').trim().toLowerCase();
  const visible=rows.filter(r=>!q||r.title.toLowerCase().includes(q)||r.code.toLowerCase().includes(q)).slice(0,250);
  list.innerHTML=visible.map(row=>'<label class="eco-stock-check"><input type="checkbox" data-stock-multiple="'+esc(row.code)+'"'+(selectedCodes.has(row.code)?' checked':'')+'><span>'+esc(row.title)+'<small>'+esc(row.code)+'</small></span></label>').join('')||'<p>Nenhum código disponível neste filtro.</p>';
- const count=host.querySelector('[data-stock-selected]');if(count)count.textContent=selectedCodes.size+' selecionado(s) · máximo 50 por operação';
- const button=host.querySelector('[data-reserve-submit]');if(button)button.disabled=loading||(!selectedCodes.size&&!host.querySelector('[name=code]')?.value);
+ const count=host.querySelector('[data-stock-selected]');if(count)count.textContent=selectedCodes.size+' selecionado(s) · máximo 20 por operação';
+ const button=host.querySelector('[data-reserve-submit]');if(button)button.disabled=busy||loading||(!selectedCodes.size&&!host.querySelector('[name=code]')?.value);
 }
 function editFields(){const item=stock.get(host.querySelector('[name=editCode]').value);host.querySelector('[name=editBucket]').value='shop';host.querySelector('[name=editBucket]').disabled=busy||item?.status!=='available';host.querySelector('[data-move-submit]').disabled=busy||item?.status!=='available';preview('edit','[data-edit-photo]');}
 function paint(){document.querySelectorAll('[data-stock-overlay]').forEach(n=>n.remove());document.querySelectorAll('[data-stock-code]').forEach(card=>card.classList.remove('eco-reward-available','eco-reward-claimed'));if(!isAdmin())return;
@@ -82,10 +82,10 @@ async function save(e,edit){
  const picked=edit?[inventory.find(r=>r.code===form.elements.editCode.value)]:selectedCodes.size?rows.filter(r=>selectedCodes.has(r.code)):[rows.find(r=>r.code===form.elements.code.value)];
  const selected=picked.filter(Boolean);
  if(!selected.length)return;
- if(selected.length>50){status('Selecione até 50 códigos por vez.');return;}
+ if(selected.length>20){status('Selecione até 20 códigos por operação para evitar o limite de pedidos do servidor.');return;}
  if(edit&&stock.get(selected[0].code)?.status!=='available')return;
  if(!confirm((edit?'Mover ': 'Reservar ')+selected.length+' codiguinho(s) para '+names[bucket]+'?'))return;
- busy=true;host.querySelectorAll('select,button,input').forEach(n=>n.disabled=true);
+ busy=true;host.querySelectorAll('select,button').forEach(n=>n.disabled=true);
  const photos=new Map();let done=0,failed=0;const issues=[];
  try{
   for(let i=0;i<selected.length;i++){
@@ -113,7 +113,7 @@ function mount(){if(host)return;loadEconomyStyle();host=document.createElement('
  host.querySelector('[name=code]').addEventListener('change',()=>{renderBulkChoices();preview('code','[data-stock-photo]');});
  host.querySelector('[data-stock-code-filter]').addEventListener('input',renderBulkChoices);
  host.querySelector('[data-stock-code-choices]').addEventListener('change',e=>{const code=e.target?.dataset?.stockMultiple;if(!code)return;if(e.target.checked)selectedCodes.add(code);else selectedCodes.delete(code);renderBulkChoices();});
- host.querySelector('[data-stock-select-all]').addEventListener('click',()=>{host.querySelectorAll('[data-stock-multiple]').forEach(el=>{if(selectedCodes.size<50)selectedCodes.add(el.dataset.stockMultiple);});renderBulkChoices();});
+ host.querySelector('[data-stock-select-all]').addEventListener('click',()=>{host.querySelectorAll('[data-stock-multiple]').forEach(el=>{if(selectedCodes.size<20)selectedCodes.add(el.dataset.stockMultiple);});renderBulkChoices();});
  host.querySelector('[data-stock-select-none]').addEventListener('click',()=>{selectedCodes.clear();renderBulkChoices();});
  host.querySelector('[data-notice-stock-list]').addEventListener('change',e=>{const title=e.target?.dataset?.noticeItem;if(!title)return;if(e.target.checked){if(noticeTitles.size>=8){e.target.checked=false;host.querySelector('[data-notice-status]').textContent='No máximo 8 itens por aviso.';return;}noticeTitles.add(title);}else noticeTitles.delete(title);renderNoticeItems();});
  host.querySelector('[data-notice-send]').addEventListener('click',announceSelected);
