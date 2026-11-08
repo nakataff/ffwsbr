@@ -425,6 +425,7 @@ function open(source){
  currentSource=source||null;
  const dlg=prepareModal();
  if(source?.kind)state.kind=source.kind;
+ if(source?.kind==='single'&&source.metric)state.single=source.metric;
  if(source?.team)state.team=source.team;
  if(source?.player)state.player=source.player;
  if(source?.metric)state.metric=source.metric;
