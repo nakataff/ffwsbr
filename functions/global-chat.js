@@ -161,7 +161,7 @@ async function adminChat(db,identity,request,now=Date.now()){
 async function publishCodeNotice(db,publication){
  if(!/^[a-f0-9-]{36}$/.test(publication?.id||'')||!Number.isSafeInteger(publication.at)||!/^\d{13}$/.test(String(publication.at))||!(/^[A-Z0-9-]{5,64}$/).test(publication.code||''))throw fail(400,'Publicação de código inválida.');
  const id=publication.at+'-'+publication.id.replace(/-/g,'').slice(0,16),uid='central-system';
- const entry={uid,name:'Central · Aviso automático',avatarId:'default',roleId:'member',kind:'public-code',text:'🎁 CODIGUINHO PÚBLICO · '+String(publication.title).slice(0,100)+'\n'+publication.code+'\nCodiguinho enviado após o tempo limite de 3 minutos para resgatar. Testem: ele pode já ter sido resgatado. Venda proibida.',at:publication.at,username:'',badgeIds:[],nameColor:'#ffce7e'};
+ const entry={uid,name:'Central Free Fire',avatarId:'default',roleId:'member',kind:'public-code',text:'🎁 CODIGUINHO PÚBLICO · '+String(publication.title).slice(0,100)+'\n'+publication.code+'\nCodiguinho enviado após o tempo limite de 3 minutos para resgatar. Testem: ele pode já ter sido resgatado. Venda proibida.',at:publication.at,username:'',badgeIds:[],nameColor:'#ffce7e'};
  const recent=await db.recentChat(),keys=[...new Set([...Object.keys(recent||{}),id])].sort(),changes={['globalChat/messages/'+id]:entry};
  for(const old of keys.slice(0,Math.max(0,keys.length-100)))changes['globalChat/messages/'+old]=null;
  await db.update(changes);await db.transact('globalChat/latest',old=>old?.id&&old.id>id?old:{id,at:publication.at});return {ok:true,id};
@@ -172,7 +172,7 @@ async function publishShopNotice(db,notice){
  const type=notice.data?.type,text=String(notice.data?.text||'');
  if(!['manual','restock','last','expiring','promotion','soldout','free'].includes(type)||!text.trim()||text.length>460)throw fail(400,'Conteúdo do aviso inválido.');
  const id=notice.at+'-'+notice.id.replace(/-/g,'').slice(0,16);
- const entry={uid:'central-system',name:'Central Free Fire · Loja',avatarId:'default',roleId:'member',kind:'shop-notice',text,at:notice.at,username:'',badgeIds:[],nameColor:'#73ddff'};
+ const entry={uid:'central-system',name:'Central Free Fire',avatarId:'default',roleId:'member',kind:'shop-notice',text,at:notice.at,username:'',badgeIds:[],nameColor:'#ffce7e'};
  const recent=await db.recentChat(),keys=[...new Set([...Object.keys(recent||{}),id])].sort(),changes={['globalChat/messages/'+id]:entry};
  for(const old of keys.slice(0,Math.max(0,keys.length-100)))changes['globalChat/messages/'+old]=null;
  await db.update(changes);
