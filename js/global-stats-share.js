@@ -296,7 +296,7 @@ async function draw(payload){
  const [brand,emblem,photo,rowImages,compareImages]=await Promise.all([
   image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
   payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([]),
-  story&&payload.two&&state.showImage?Promise.all(payload.two.map(row=>image(logoSrc(row.team)))):Promise.resolve([])
+  (story||feed)&&payload.two&&state.showImage?Promise.all(payload.two.map(row=>image(logoSrc(row.team)))):Promise.resolve([])
  ]);
  if(generation!==renderSeq)return;
  const dark=state.theme==='dark',accent=ACCENTS[state.accent]||ACCENTS.blue;
@@ -357,7 +357,7 @@ async function draw(payload){
  // Feed 4:5 follows the actual portrait/number bottom instead of starting at 58%.
  const panelTop=story?clamp(Math.ceil(storyHeroEnd+45),Math.round(h*.305),Math.round(h*.49))
   :feed?clamp(Math.ceil(storyHeroEnd+38),Math.round(h*.41),Math.round(h*.61)):legacyPanelTop;
- const panelBottom=footerY-(story?78:34);
+ const panelBottom=footerY-(story?78:feed?62:34);
  const storyFit=(count,maximum,gap)=>{
   const available=Math.max(0,panelBottom-panelTop),n=Math.max(1,count);
   const height=Math.min(maximum,Math.max(0,(available-32-gap*(n-1))/n));
@@ -425,13 +425,31 @@ async function draw(payload){
     });
    });
   }else{
-   const colGap=14,colW=(w-2*pad-colGap)/2,boxH=Math.min(compact?122:210,panelBottom-panelTop);
+   const colGap=14,colW=(w-2*pad-colGap)/2;
+   const boxH=feed?Math.min(565,Math.max(225,panelBottom-panelTop-20)):Math.min(compact?122:210,panelBottom-panelTop);
    rows.forEach((row,i)=>{
-    const x=pad+i*(colW+colGap),small=boxH<135;
-    rounded(ctx,x,panelTop,colW,boxH,16,surface,dark?'#263e57':'#c6d6e4');
-    textLine(ctx,row.team,x+18,panelTop+(small?28:42),colW-36,small?20:27,ink);
-    textLine(ctx,fmt(row.points,'points')+' PTS',x+18,panelTop+(small?68:110),colW-36,small?34:46,accent);
-    textLine(ctx,fmt(row.kills,'kills')+' ABATES',x+18,panelTop+boxH-17,colW-36,small?14:22,muted);
+    const x=pad+i*(colW+colGap),small=boxH<135,y=panelTop;
+    rounded(ctx,x,y,colW,boxH,16,surface,dark?'#263e57':'#c6d6e4');
+    if(feed){
+     const logo=compareImages[i];
+     if(logo)contain(ctx,logo,x+colW-115,y+65,86,86);
+     textLine(ctx,'EQUIPE '+(i+1),x+22,y+35,colW-44,16,muted,'850');
+     textLine(ctx,row.team,x+22,y+80,logo?colW-150:colW-44,26,ink,'900');
+     textLine(ctx,fmt(row.points,'points'),x+22,y+205,colW-44,69,accent,'950');
+     textLine(ctx,'PONTOS',x+22,y+232,colW-44,18,muted,'850');
+     const details=[['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
+     const detailsY=y+boxH-204;
+     details.forEach(([title,value],j)=>{
+      const lineY=detailsY+j*63;
+      ctx.fillStyle=dark?'#29445e':'#c8d8e6';ctx.fillRect(x+22,lineY,colW-44,2);
+      textLine(ctx,title,x+24,lineY+34,colW*.46,19,muted,'850');
+      textLine(ctx,value,x+colW-23,lineY+35,colW*.44,30,ink,'900','right');
+     });
+    }else{
+     textLine(ctx,row.team,x+18,y+(small?28:42),colW-36,small?20:27,ink);
+     textLine(ctx,fmt(row.points,'points')+' PTS',x+18,y+(small?68:110),colW-36,small?34:46,accent);
+     textLine(ctx,fmt(row.kills,'kills')+' ABATES',x+18,y+boxH-17,colW-36,small?14:22,muted);
+    }
    });
   }
  }else{
