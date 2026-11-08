@@ -120,7 +120,8 @@ function fromContext(){
   const row=choice.row||findRow(state.team,'team');
   if(!row)return null;
   payload.title='DESEMPENHO DA EQUIPE';payload.entity=row.team;payload.team=row.team;payload.logo=logoSrc(row.team);
-  payload.main=fmt(row.points,'points');payload.mainLabel='PONTOS';
+  const leading=choice.metric&&row[choice.metric]!==undefined?choice.metric:'points';
+  payload.main=fmt(row[leading],leading);payload.mainLabel=LABELS[leading]||'PONTOS';
   payload.facts=[stat('ABATES',row.kills,'kills'),stat('BOOYAHS',row.booyahs,'booyahs'),
    stat('QUEDAS',row.matches,'matches'),stat('PTS / QUEDA',row.avgPoints,'avgPoints'),
    stat('K / QUEDA',row.avgKills,'avgKills'),stat('TOP 3',row.top3,'top3')];
@@ -130,10 +131,12 @@ function fromContext(){
   if(!row)return null;
   payload.title='DESEMPENHO INDIVIDUAL';payload.entity=row.name;payload.team=row.team;
   payload.photo=playerSrc(row.name,row.team);payload.logo=logoSrc(row.team);
-  payload.main=fmt(row.kills,'kills');payload.mainLabel='ABATES';
+  const leading=choice.metric&&row[choice.metric]!==undefined?choice.metric:'kills';
+  payload.main=fmt(row[leading],leading);payload.mainLabel=LABELS[leading]||'ABATES';
   payload.facts=[stat('DANO',row.damage,'damage'),stat('ASSISTÊNCIAS',row.assists,'assists'),
    stat('QUEDAS',row.matches,'matches'),stat('K / QUEDA',row.avgKills,'avgKills'),
-   stat('DANO / QUEDA',row.avgDamage,'avgDamage')];
+   stat('DANO / QUEDA',row.avgDamage,'avgDamage'),
+   ...(row.avgPartKills!==undefined?[stat('PART. ABATES',row.avgPartKills,'avgPartKills'),stat('PART. DANO',row.avgPartDamage,'avgPartDamage')]:[])];
   payload.subtitle=row.team+' · '+contextLabel();
  }else if(kind==='top'){
   const entity=choice.entity||state.topEntity,metric=choice.metric||state.metric;
@@ -453,7 +456,7 @@ function shareButton(title,onClick,small){
 function buildOpenSource(group,entry,title,row){
  const [id,scope,metric]=entry;
  if(group==='record')return {kind:'record',record:[scope,metric,title],row,title};
- if(row)return group==='team'?{kind:'team',row,team:row.team}:{kind:'player',row,player:row.name};
+ if(row)return group==='team'?{kind:'team',row,team:row.team,metric:entry[1]}:{kind:'player',row,player:row.name,metric:entry[1]};
  return {kind:'top',entity:group==='contribution'?'contribution':group,metric,title};
 }
 function decorate(){
@@ -502,7 +505,7 @@ function decorate(){
   [...panel.querySelectorAll('tbody tr')].forEach((tr,n)=>{
    const row=ranking[n];if(!row)return;
    const cell=tr.querySelector('td:last-child');if(!cell)return;
-   cell.append(shareButton(row.team,()=>open({kind:'team',row,team:row.team}),true));
+   cell.append(shareButton(row.team,()=>open({kind:'team',row,team:row.team,metric:id.endsWith('medias')?'avgPoints':'points'}),true));
   });
  });
 }
