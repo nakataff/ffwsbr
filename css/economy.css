@@ -225,3 +225,15 @@
 .eco-stock-selection-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
 .eco-stock-selection-actions button{padding:7px 11px!important;font-size:11px!important}
 .eco-stock-selection-actions small{color:#7dc9e7;font-size:11px}
+
+.eco-stock-notices{border:1px solid #325878;border-radius:14px;padding:17px;margin:14px 0;background:linear-gradient(135deg,#10263b,#0a1a2d);color:#dbeafa}
+.eco-stock-notices h3{margin:0 0 7px;color:#dbf7ff;font-size:17px}
+.eco-stock-notices p{color:#a9c8dc;font-size:12px;line-height:1.5}
+.eco-stock-notices [data-notice-selected]{font-size:11px;color:#77d5ef;margin:6px 0}
+.eco-stock-notices [data-notice-send]{background:#11729a;color:white;font-weight:800;padding:10px 16px;border-radius:8px;cursor:pointer}
+.eco-stock-notices details{margin-top:15px;border-top:1px solid #32506a;padding-top:12px}
+.eco-stock-notices summary{font-weight:800;color:#a8d8ed;cursor:pointer;font-size:13px}
+.eco-stock-notice-toggles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0}
+.eco-stock-notice-toggles label{display:flex;align-items:center;gap:9px;font-size:12px;color:#d9ebf5}
+.eco-stock-notice-toggles input{accent-color:#00c8ff;width:17px;height:17px}
+.eco-stock-notices [data-notice-status]{min-height:18px;color:#8fcbe0}
