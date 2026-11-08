@@ -26,7 +26,7 @@ function renderNoticeItems(){
  list.innerHTML=titles.map(item=>'<label class="eco-stock-check"><input type="checkbox" data-notice-item="'+esc(item.title)+'"'+(noticeTitles.has(item.title)?' checked':'')+'><span>'+esc(item.title)+'<small>'+item.quantity+' disponível(is) · '+Number(item.price).toLocaleString('pt-BR')+' Coins</small></span></label>').join('')||'<p>Não há itens da loja disponíveis para anunciar.</p>';
  host.querySelector('[data-notice-selected]').textContent=noticeTitles.size+' selecionado(s) · máximo 8';
  const preview=host.querySelector('[data-notice-preview]');
- if(preview)preview.textContent=noticeTitles.size?'Prévia do aviso:\n🎁 NOVIDADES NA LOJINHA CFF!\n'+titles.filter(x=>noticeTitles.has(x.title)).map(x=>'• '+x.title+' — '+x.quantity+' disponível(is) · '+Number(x.price).toLocaleString('pt-BR')+' Coins').join('\n')+'\nConfira as recompensas na loja.':'Marque as skins acima para visualizar a mensagem antes de anunciar.';
+ if(preview)preview.textContent=noticeTitles.size?'Prévia do aviso:\n🎁 NOVIDADES NA LOJINHA CFF!\n'+titles.filter(x=>noticeTitles.has(x.title)).map(x=>'• '+x.title+' — '+x.quantity+' disponível(is) · '+Number(x.price).toLocaleString('pt-BR')+' CFF Coins').join('\n')+'\nConfira as recompensas na loja.':'Marque as skins acima para visualizar a mensagem antes de anunciar.';
  host.querySelector('[data-notice-send]').disabled=noticeBusy||!noticeTitles.size;
 }
 async function loadNotices(){
