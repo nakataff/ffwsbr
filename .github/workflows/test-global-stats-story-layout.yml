@@ -6,6 +6,7 @@ on:
       - 'js/global-stats-share.js'
       - 'test/global-stats-story-layout.test.cjs'
       - 'test/global-stats-custom-facts.test.cjs'
+      - 'test/global-stats-share-routing.test.cjs'
       - '.github/workflows/test-global-stats-story-layout.yml'
 jobs:
   story-cards:
@@ -18,4 +19,4 @@ jobs:
       - name: Validate share renderer syntax
         run: node --check js/global-stats-share.js
       - name: Render Stories for all seven card topics and check other formats
-        run: node --test test/global-stats-story-layout.test.cjs test/global-stats-custom-facts.test.cjs
+        run: node --test test/global-stats-story-layout.test.cjs test/global-stats-custom-facts.test.cjs test/global-stats-share-routing.test.cjs
