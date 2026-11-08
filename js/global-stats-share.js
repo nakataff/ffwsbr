@@ -211,8 +211,8 @@ function multiline(ctx,text,x,y,max,size,color,maxLines=2,lineHeight=1.07){
  return Math.min(lines.length,maxLines)*size*lineHeight;
 }
 function image(path){
- if(!path||!/^https?:|^\//.test(String(path)))return Promise.resolve(null);
- const url=new URL(path,location.origin);
+ if(!path||!/^(https?:\/\/|\/|[a-z0-9][\w\-./% ]*\.(?:webp|png|jpe?g|svg)(?:\?.*)?$)/i.test(String(path)))return Promise.resolve(null);
+ const url=new URL(String(path).startsWith('/')||/^https?:/i.test(path)?path:'/'+path,location.origin);
  if(url.origin!==location.origin)return Promise.resolve(null);
  const href=url.href;
  if(imgCache.has(href))return imgCache.get(href);
