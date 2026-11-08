@@ -1,4 +1,4 @@
-import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText} from './ranking-share-model.mjs?v=20261020-cards-v6';
+import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText,statValue} from './ranking-share-model.mjs?v=20261108-profile-cards-v7';
 const INK='#f3f6fb',MUTED='#9bafc8';
 function rounded(ctx,x,y,w,h,r=12){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function box(ctx,x,y,w,h,fill,stroke){rounded(ctx,x,y,w,h);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}}
@@ -17,24 +17,76 @@ export function drawQR(ctx,qr,x,y,size){
   ctx.fillStyle='#fff';ctx.fillRect(x,y,outer,outer);ctx.fillStyle='#08101b';
   for(let r=0;r<count;r++)for(let c=0;c<count;c++)if(qr.isDark(r,c))ctx.fillRect(x+(c+4)*scale,y+(r+4)*scale,scale,scale);
 }
+
+function playerPortrait(ctx,photo,logo,x,y,size,accent,zoom=105,watermark=true){
+ ctx.save();rounded(ctx,x,y,size,size,Math.min(25,size*.085));ctx.clip();
+ const bg=ctx.createLinearGradient(x,y,x+size,y+size);bg.addColorStop(0,'#243c55');bg.addColorStop(1,'#0a172b');
+ ctx.fillStyle=bg;ctx.fillRect(x,y,size,size);
+ const halo=ctx.createRadialGradient(x+size*.55,y+size*.5,0,x+size*.55,y+size*.5,size*.8);
+ halo.addColorStop(0,accent+'45');halo.addColorStop(1,accent+'00');ctx.fillStyle=halo;ctx.fillRect(x,y,size,size);
+ if(logo&&watermark){ctx.save();ctx.globalAlpha=photo?.13:.72;picture(ctx,logo,x+size*.08,y+size*.08,size*.84,size*.84);ctx.restore();}
+ if(photo){
+  const iw=photo.naturalWidth||photo.width,ih=photo.naturalHeight||photo.height;
+  if(iw>0&&ih>0){const factor=Math.min(size*1.12/iw,size*1.14/ih)*zoom/100,dw=iw*factor,dh=ih*factor;
+   ctx.drawImage(photo,x+(size-dw)/2,y+size-dh+size*.025,dw,dh);}
+  const fade=ctx.createLinearGradient(x,y+size*.77,x,y+size);fade.addColorStop(0,'#0a172b00');fade.addColorStop(1,'#0a172bc9');
+  ctx.fillStyle=fade;ctx.fillRect(x,y+size*.77,size,size*.23);
+ }
+ ctx.restore();rounded(ctx,x,y,size,size,Math.min(25,size*.085));ctx.lineWidth=2;ctx.strokeStyle=accent+'65';ctx.stroke();
+}
+function playerProfileCard(ctx,data,options,rows,images,w,margin,contentY,contentHeight,wide,story){
+ const row=rows[0];if(!row)throw Error('Jogador sem dados para compartilhar.');
+ const frameX=margin,frameY=contentY,frameW=w-margin*2,frameH=contentHeight,inner=wide?22:30;
+ box(ctx,frameX,frameY,frameW,frameH,'#101e32','#294361');
+ const photo=options.showPhotos?images.get(row.photo):null,logo=options.showLogos?images.get(row.logo):null;
+ const featuredLabel=STAT_LABELS[options.featuredStat]||'ABATES';
+ const mainValue=statText(row,options.featuredStat);
+ const heroH=wide?frameH:story?Math.min(610,frameH*.53):Math.min(frameH*.55,options.format==='square'?350:440);
+ const photoSize=wide?Math.min(218,frameH-55):Math.min(story?430:options.format==='square'?290:360,heroH-35);
+ const photoX=wide?frameX+frameW*.275:frameX+frameW-photoSize-inner;
+ const photoY=wide?frameY+Math.max(15,(frameH-photoSize)/2):frameY+(story?48:24);
+ playerPortrait(ctx,photo,logo,photoX,photoY,photoSize,options.accent,options.photoScale,options.showLogoWatermark);
+ const left=frameX+inner,leftWidth=photoX-left-(wide?10:22);
+ text(ctx,row.name,left,frameY+(wide?55:90),leftWidth,wide?38:story?67:54);
+ text(ctx,row.team,left,frameY+(wide?81:135),leftWidth,wide?18:25,MUTED);
+ const valueY=frameY+(wide?184:story?312:options.format==='square'?230:274);
+ stat(ctx,mainValue,left,valueY,leftWidth,wide?90:story?147:133,options.accent);
+ text(ctx,featuredLabel,left,valueY+(wide?30:43),leftWidth,wide?19:22,MUTED);
+ const keys=options.stats.filter(key=>statValue(row,key)!=null&&key!==options.featuredStat).slice(0,wide?6:options.template==='leader'?4:6);
+ if(!keys.length)return;
+ const cols=wide?3:2,gap=wide?9:story?18:12;
+ const gridX=wide?frameX+frameW*.53:frameX+inner,gridY=wide?frameY+15:frameY+heroH+14;
+ const gridW=wide?frameW*.47-inner:frameW-inner*2;
+ const gridH=wide?frameH-30:frameH-heroH-14-inner;
+ const count=Math.ceil(keys.length/cols),cellW=(gridW-gap*(cols-1))/cols,cellH=(gridH-gap*(count-1))/count;
+ keys.forEach((key,i)=>{
+  const x=gridX+(i%cols)*(cellW+gap),y=gridY+Math.floor(i/cols)*(cellH+gap);
+  box(ctx,x,y,cellW,cellH,'#15263b','#36516c');
+  const small=wide||cellH<90;
+  text(ctx,STAT_LABELS[key],x+15,y+(small?27:Math.min(39,cellH*.33)),cellW-30,small?14:18,MUTED);
+  stat(ctx,statText(row,key),x+15,y+cellH-(small?17:24),cellW-30,small?29:Math.min(52,cellH*.4),INK);
+ });
+}
 export function renderRankingCard(canvas,data,options,assets={}) {
   const {width:w,height:h}=FORMATS[options.format];canvas.width=w;canvas.height=h;
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('Este navegador não conseguiu gerar a imagem.');
   const images=assets.images||new Map(),rows=selectedRows(data,options),wide=options.format==='wide',story=options.format==='story';
   const margin=Math.round(w*(story?.095:.05)),top=wide?38:story?132:58;
-  const bottom=Math.round(h*(story?.75:options.format==='feed'?.85:.92));
+  const bottom=Math.round(h*(data.mode==='player'?(story?.89:options.format==='feed'?.91:wide?.94:.92):(story?.75:options.format==='feed'?.85:.92)));
   const footerHeight=options.showQR?126:76,footerY=bottom-footerHeight;
   const bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#0c1a2e');bg.addColorStop(1,'#080d19');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
   const glow=ctx.createRadialGradient(w*.9,0,5,w*.9,0,w);glow.addColorStop(0,options.accent+'20');glow.addColorStop(1,options.accent+'00');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
   ctx.fillStyle=options.accent;ctx.fillRect(0,0,w,7);
   text(ctx,'CENTRAL FREE FIRE · ESTATÍSTICAS',margin,top,w-margin*2,wide?16:20,options.accent);
-  const heading=options.template==='team'?'EQUIPE EM NÚMEROS':options.template==='compare'?'COMPARAÇÃO':options.template==='leader'?'EM DESTAQUE':data.title.toLocaleUpperCase('pt-BR');
+  const heading=data.mode==='player'&&options.template==='player'?'FICHA DO JOGADOR':data.mode==='player'&&options.template==='leader'?'DESTAQUE INDIVIDUAL':options.template==='team'?'EQUIPE EM NÚMEROS':options.template==='compare'?'COMPARAÇÃO':options.template==='leader'?'EM DESTAQUE':data.title.toLocaleUpperCase('pt-BR');
   text(ctx,heading,margin,top+(wide?46:65),w-margin*2,wide?40:58);
   text(ctx,[data.event,data.stage].filter(Boolean).join(' · '),margin,top+(wide?77:107),w-margin*2,wide?20:25,MUTED);
   text(ctx,[options.template==='table'?(options.rowCount==='all'?'TABELA COMPLETA · '+rows.length+' EQUIPES':'TOP '+rows.length):options.template==='team'?'ESTATÍSTICAS DA EQUIPE':'RECORTE DO RANKING',data.updatedAt?'DADOS: '+dateText(data.updatedAt):''].filter(Boolean).join('  ·  '),margin,top+(wide?102:140),w-margin*2,wide?14:17,MUTED);
   const contentY=top+(wide?130:178),contentBottom=footerY-25,contentHeight=contentBottom-contentY;
   const getImage=row=>images.get(options.showPhotos&&data.kind==='players'?row.photo:options.showLogos?row.logo:'');
-  if(options.template==='team') {
+  if(data.mode==='player'&&options.template!=='compare'){
+    playerProfileCard(ctx,data,options,rows,images,w,margin,contentY,contentHeight,wide,story);
+  } else if(options.template==='team') {
     const row=rows[0];if(!row)throw Error('Equipe sem dados para este recorte.');
     const width=w-margin*2,identityH=wide?75:Math.min(155,contentHeight*.24),logoSize=wide?62:identityH-22;
     const image=getImage(row),nameX=margin+(image?logoSize+22:0);
