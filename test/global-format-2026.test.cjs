@@ -122,7 +122,7 @@ test('Global Finals share studio previews the image BEFORE settings on mobile an
  assert.match(markup,/data-share-action="save"/);
  assert.match(markup,/data-share-action="share"/);
  const global=read('ffws-global-2026/global.js'),shell=read('js/site-shell-fast.min.js'),html=read('index.html');
- assert.match(global,/global-stats-share\.css\?v=20261108-stats-share-metric-routing-v10/);
+ assert.match(global,/global-stats-share\.css\?v=20261108-six-metrics-ranks-v9/);
  assert.match(shell,/global\.js\?v=20261108-stats-share-metric-routing-v10/);
  assert.match(html,/site-shell-fast\.min\.js\?v=20261108-stats-share-metric-routing-v10/);
 });
