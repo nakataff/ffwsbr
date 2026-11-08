@@ -123,32 +123,22 @@ test('Global Finals share studio previews the image BEFORE settings on mobile an
  assert.match(markup,/data-share-action="share"/);
  const global=read('ffws-global-2026/global.js'),shell=read('js/site-shell-fast.min.js'),html=read('index.html');
  assert.match(global,/global-stats-share\.css\?v=20261108-mobile-preview-first-v3/);
- assert.match(shell,/global\.js\?v=20261108-story-balance-v6/);
- assert.match(html,/site-shell-fast\.min\.js\?v=20261108-story-balance-v6/);
+ assert.match(shell,/global\.js\?v=20261108-story-all-models-v7/);
+ assert.match(html,/site-shell-fast\.min\.js\?v=20261108-story-all-models-v7/);
 });
 
-test('Stories Top 5 ranking fills middle canvas without overlapping athlete or footer, other formats stay unchanged',()=>{
+test('Stories have dedicated responsive positions for rankings, stats, records and comparison',()=>{
  const source=read('js/global-stats-share.js');
- assert.match(source,/storyRanking=h>=1800&&payload\.rows\.length>0/);
- assert.match(source,/storyRanking\?Math\.round\(h\*\.425\):Math\.floor\(h\*\.58\)/);
- assert.match(source,/compact\?70:storyRanking\?156:95/);
- assert.match(source,/storyRanking\?Math\.min\(86,rowH-24\)/);
- assert.match(source,/RANKING DO RECORTE/);
- const h=1920,w=1080,pad=w*.07,storyRanking=true;
- const footerY=h-113,panelBottom=footerY-34,panelTop=Math.round(h*.425);
- const n=5,gap=16,available=panelBottom-panelTop-95;
- const rowH=Math.max(95,Math.min(156,(available-gap*(n-1))/n));
- const heroEnd=210+Math.min(w*.425,panelTop-210-30);
- const finalRowBottom=panelTop+n*rowH+(n-1)*gap;
- assert(panelTop>heroEnd+90,'Ranking should start comfortably after the portrait');
- assert(finalRowBottom<footerY-65,'Ranking should leave a clear gap above footer branding');
- assert(finalRowBottom>h*.84,'Ranking should use the bottom half of the canvas');
- assert(rowH>=145,'Ranking rows must remain readable on a 1080×1920 Story');
- const badge=Math.min(86,rowH-24),logo=Math.min(99,rowH-22);
- const nameX=pad+badge+logo+43,scoreStart=w-pad-17-200;
- assert(nameX+450<=scoreStart+50,'Name and score text should fit separate columns');
- assert.equal(storyRanking&&h>=1800,true);
- assert.match(source,/panelTop=compact\?497:storyRanking\?Math\.round\(h\*\.425\):Math\.floor\(h\*\.58\)/);
+ assert.match(source,/const story=state\.format==='stories'/);
+ assert.match(source,/const storyHeroEnd=Math\.max\(/);
+ assert.match(source,/const panelTop=story\?clamp\(/);
+ assert.match(source,/const storyFit=\(count,maximum,gap\)=>/);
+ assert.match(source,/const fit=story\?storyFit\(items\.length/);
+ assert.match(source,/if\(story&&facts\.length\)/);
+ assert.match(source,/Full-width panels stack the teams vertically/);
+ assert.match(source,/const portraitSize=heroVisible\?\(story\?/);
+ assert.match(source,/const panelBottom=footerY-\(story\?78:34\)/);
+ assert(!source.includes('storyRanking'),'old ranking-only layout must not control Story geometry');
  const global=read('ffws-global-2026/global.js');
- assert.match(global,/global-stats-share\.js\?v=20261108-story-balance-v5/);
+ assert.match(global,/global-stats-share\.js\?v=20261108-story-all-models-v7/);
 });
