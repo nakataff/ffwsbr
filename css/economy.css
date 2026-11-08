@@ -216,3 +216,12 @@
 .eco-code-deadline{border:2px solid #ffbb62;background:#a8521424;text-align:left}.eco-code-deadline>strong{display:block;font-size:1.15rem;line-height:1.35}.eco-code-deadline b{color:#ffdaa4}.eco-code-deadline p{font-size:.93rem;line-height:1.65}
 
 .eco-account-suspended{border:1px solid #d17a5b;background:#8f3f201a}.eco-account-suspended>strong{display:block;color:#ffc7a2;font-size:1.15rem}.eco-account-suspended p{color:#d1deeb;line-height:1.6}.eco-account-suspended a{color:#ffd398}
+
+.eco-stock-code-choices{max-height:225px;overflow:auto;border:1px solid #34516d;border-radius:10px;padding:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;margin:8px 0 13px}
+.eco-stock-check{display:flex!important;align-items:center!important;gap:9px!important;border:1px solid #29445b;border-radius:8px;padding:7px 9px;background:#0e2033;font-size:12px!important;margin:0!important;cursor:pointer}
+.eco-stock-check input{flex:none;width:17px;height:17px;accent-color:#00c8ff}
+.eco-stock-check span{min-width:0;overflow-wrap:anywhere}
+.eco-stock-check small{display:block;font-size:10px;color:#9fb8cd;margin-top:3px}
+.eco-stock-selection-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.eco-stock-selection-actions button{padding:7px 11px!important;font-size:11px!important}
+.eco-stock-selection-actions small{color:#7dc9e7;font-size:11px}
