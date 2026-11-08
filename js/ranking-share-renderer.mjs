@@ -1,4 +1,4 @@
-import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText,statValue} from './ranking-share-model.mjs?v=20261108-profile-cards-v7';
+import {FORMATS,selectedRows,metricLabel,formatValue,dateText,STAT_LABELS,statText,statValue} from './ranking-share-model.mjs?v=20261108-profile-cards-v8';
 const INK='#f3f6fb',MUTED='#9bafc8';
 function rounded(ctx,x,y,w,h,r=12){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function box(ctx,x,y,w,h,fill,stroke){rounded(ctx,x,y,w,h);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}}
