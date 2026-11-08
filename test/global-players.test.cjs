@@ -41,9 +41,9 @@ test('TheGod profile has a larger athlete hero, team watermark, accessible tabs 
   assert.match(u.$('.gp-hero-watermark').getAttribute('src'),/team-flash/);
   assert.match(u.$('.gp-hero [data-person-photo]').getAttribute('src'),/\/480\//);
   assert.equal(u.all('.gp-stat strong').length,4);
-  assert.equal(u.$('.gp-stat-featured strong').textContent,'33');
+  assert.equal(u.$('.gp-stat-featured strong').textContent,String(generated[BASE+'player-data/team-flash-thegod.json'].stats.geral.kills).toLocaleString('pt-BR'));
   assert.equal(u.all('.gp-secondary-stat').length,2);
-  assert.equal(u.$('.gp-secondary-stat strong').textContent,'27.120');
+  assert.equal(u.$('.gp-secondary-stat strong').textContent,Number(generated[BASE+'player-data/team-flash-thegod.json'].stats.geral.damage).toLocaleString('pt-BR'));
   assert.equal(u.all('.gp-record-card').length,2);
   assert.equal(u.all('[data-tab]').length,4);
   assert.equal(u.all('.gp-peer').length,4);
