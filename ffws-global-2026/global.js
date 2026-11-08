@@ -1817,7 +1817,7 @@
       teams, players, playerShareRows, records, events,
       summary: {drops:events.length,points:totalPoints,kills:totalKills,booyahs:totalBooyahs},
       filters: {stage:state.statsFilters.stage,days:[...state.statsFilters.days],maps:[...state.statsFilters.maps]},
-      logoForTeam: teamName => logo(teamName),
+      logoForTeam: teamName => teamByName(teamName)?.logo || logo(teamName),
       photoForPlayer: (playerName,teamName) => {
         const item=rosterPlayerByName(playerName,teamName);
         const path=item?.photoLarge || item?.photo || '';
