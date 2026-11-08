@@ -52,3 +52,27 @@ test('normal-price editor changes only the selected codiguinho title, independen
   assert.equal(stock.find(s=>s.title==='Gato').normalPrice,1000);
  }finally{tool.stop();w.close()}
 });
+
+
+test('codiguinho chat announcement checkboxes stay compact despite generic form input styles',()=>{
+ const dom=new JSDOM('<body class="codes-admin-page"><section class="eco-stock-panel"><div class="eco-stock-notices"><div class="eco-stock-code-choices"><label class="eco-stock-check"><input type="checkbox" data-notice-item="Skin A"><span>Skin A<small>3 disponíveis · 750 CFF Coins</small></span></label></div><div class="eco-stock-notice-toggles"><label><input type="checkbox" data-notice-toggle="last"> Última unidade na loja</label></div><pre class="eco-stock-notice-preview">Prévia do aviso</pre></div></section></body>',{url:'https://centralfreefire.com.br/admin-codiguinhos.html'});
+ try{
+  const doc=dom.window.document;
+  // Production order: page-specific CSS is loaded first; economy.css is injected later.
+  for(const name of ['css/admin-codiguinhos-ui.css','css/economy.css']){
+   const style=doc.createElement('style');style.textContent=fs.readFileSync(name,'utf8');doc.head.append(style);
+  }
+  for(const input of doc.querySelectorAll('.eco-stock-notices input[type=checkbox]')){
+   const css=dom.window.getComputedStyle(input);
+   assert.equal(css.width,'18px','checkbox width cannot inherit 100%-wide text inputs');
+   assert.equal(css.height,'18px','checkbox height should stay compact');
+   assert.equal(css.minHeight,'18px');
+   assert.equal(css.padding,'0px');
+  }
+  const list=dom.window.getComputedStyle(doc.querySelector('.eco-stock-code-choices'));
+  assert.equal(list.overflowX,'hidden','stock list cannot spill sideways');
+  assert.equal(list.overflowY,'auto');
+  assert.equal(dom.window.getComputedStyle(doc.querySelector('.eco-stock-check')).display,'flex');
+  assert.match(dom.window.getComputedStyle(doc.querySelector('.eco-stock-notice-preview')).fontFamily,/system-ui/);
+ }finally{dom.window.close();}
+});
