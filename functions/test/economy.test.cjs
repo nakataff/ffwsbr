@@ -138,3 +138,20 @@ test('relatório privado de codiguinhos reúne compras e vales, códigos exatos 
   await assert.rejects(s.core.adminHandle(admin,{operation:'codeAcquisitions',...input}),{status:400});
  }
 });
+
+
+test('normal price can differ by skin and is always checked by server on purchase',async()=>{
+ const s=setup();
+ await s.core.adminHandle(admin,{operation:'addStock',code:'DIFFPRICEAAA',title:'Skin A',bucket:'shop'});
+ await s.core.adminHandle(admin,{operation:'addStock',code:'DIFFPRICEBBB',title:'Skin B',bucket:'shop'});
+ const changed=await s.core.adminHandle(admin,{operation:'setCodePrice',title:'Skin A',normalPrice:640});
+ assert.equal(changed.originalPrice,640);
+ assert.equal((await s.core.state(user)).shop.find(x=>x.title==='Skin A').price,640);
+ assert.equal((await s.core.state(user)).shop.find(x=>x.title==='Skin B').price,1000);
+ await assert.rejects(s.core.adminHandle(admin,{operation:'setCodePrice',title:'Skin A',normalPrice:0}),{status:400});
+ await s.core.adminHandle(admin,{operation:'adjust',targetUid:user.uid,delta:1000,reason:'Teste de preço',nonce:crypto.randomUUID()});
+ await assert.rejects(s.core.handle(user,{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',nonce:crypto.randomUUID(),codeChoice:{title:'Skin A',imageUrl:'/edition/gift.webp'},expectedPrice:1000}),{status:409});
+ const state=await s.core.state(user),item=state.shop.find(x=>x.title==='Skin A');
+ const receipt=await s.core.handle(user,{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',nonce:crypto.randomUUID(),codeChoice:item.codeChoice,expectedPrice:640});
+ assert.equal(receipt.ok,true);assert.equal((await s.core.state(user)).wallet.balance,360);
+});
