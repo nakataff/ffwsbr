@@ -50,3 +50,15 @@
 }
 @media(max-width:360px){.cff-card-controls [data-card-panel=model],.cff-card-controls [data-card-table-only]{grid-template-columns:1fr}.cff-card-actions button{font-size:10px;flex:1 1 auto}.cff-card-header small{font-size:8px}}
 .cff-card-dialog .cff-card-stat-fields{border:1px solid #334458;border-radius:10px;padding:12px;margin:16px 0}.cff-card-dialog .cff-card-stat-fields legend{color:#aebfd1;font-size:12px;padding:0 6px}.cff-card-dialog .cff-card-stat-fields .cff-card-check{font-size:12px;margin:7px 0}.cff-card-dialog .cff-card-stat-fields label:has(input:disabled){opacity:.5}
+
+/* Player profile card studio: compact, selectable stats and portrait controls. */
+.cff-card-dialog .cff-card-stat-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 10px}
+.cff-card-dialog .cff-card-stat-fields legend{margin-bottom:6px}
+.cff-card-dialog .cff-card-stat-fields .cff-card-hint{grid-column:1/-1;margin:7px 0 0}
+.cff-card-dialog .cff-card-stat-fields .cff-card-check{min-width:0;overflow-wrap:anywhere;align-items:flex-start}
+.cff-card-dialog [data-card-player-photo]{border:1px solid #2b405d;border-radius:10px;padding:12px;margin:10px 0 14px}
+.cff-card-dialog [data-card-player-photo] label{margin:0 0 10px}
+.cff-card-dialog [data-card-player-photo] label:last-child{margin-bottom:0}
+.cff-card-dialog [data-card-player-photo] input[type=range]{width:100%;accent-color:#00c8ff;cursor:pointer}
+.cff-card-dialog [data-card-photo-size]{color:#5bd5fa;font-weight:800;margin-left:6px}
+@media(max-width:720px){.cff-card-controls [data-card-stats],.cff-card-controls [data-card-featured]{grid-column:1/-1}}
