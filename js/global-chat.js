@@ -1,7 +1,7 @@
 import {isChatVisible,watchChatVisibility,isChatPageAllowed} from './chat-visibility.mjs?v=20261020-chat-layout-v1';
 import {createEmblemDisplay,emblemSlot} from './profile-emblems.mjs?v=20261016-emblems-v1';
 import {selectedFrame,frameScaleFor} from './profile-frame-model.mjs?v=20261013-profile-frames-v1';
-const VERSION='20261108-chat-shop-date-v4';
+const VERSION='20261108-system-unified-v5';
 const SERVICE='https://cff-camp-notifications.nakataffb4.workers.dev/api',ADMIN='admin@centralfreefire.com.br';
 const icon='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-4 3V11.5A7.5 7.5 0 0 1 9.5 4h3a7.5 7.5 0 0 1 7.5 7.5Z"/><path d="M7 10h8M7 14h5"/></svg>';
 if(isChatPageAllowed()&&document.documentElement.dataset.cffChat!=='off'&&document.body?.dataset.cffChat!=='off'&&!document.getElementById('cff-global-chat'))mountChat();
@@ -57,11 +57,13 @@ function mountChat(){
   for(const [id,stop]of assetStops)if(!assets.has(id)){stop();assetStops.delete(id);delete catalog[id];}loadAssets(assets);
  }
  function renderMessage(id,m){let node=nodes.get(id);if(!node){node=document.createElement('article');node.className='cff-chat-message';node.dataset.chatMessage=id;nodes.set(id,node);}node._chatMessage=m;
-  if(m.kind==='shop-notice'){
-   const date=new Date(Number(m.at)||0),signature=JSON.stringify(m);
+  // Both public codiguinhos and shop alerts share the same official sender,
+  // including historical posts that still carry older backend names.
+  if(m.kind==='shop-notice'||m.kind==='public-code'){
+   const isShop=m.kind==='shop-notice',date=new Date(Number(m.at)||0),signature=JSON.stringify(m);
    node.classList.add('is-system');node.classList.remove('is-own','is-mentioned');
    if(node.dataset.signature===signature)return node;node.dataset.signature=signature;
-   node.innerHTML='<span class="cff-chat-photo cff-chat-system-icon" aria-hidden="true"><img src="/central%20free%20fire.webp" alt=""></span><div class="cff-chat-message-body"><div class="cff-chat-message-top"><strong class="cff-chat-name">Central Free Fire</strong><span class="cff-chat-role">LOJA · SISTEMA</span><time datetime="'+date.toISOString()+'">'+esc(date.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}))+'</time></div><p class="cff-chat-message-text">'+esc(m.text||'')+'</p><a class="cff-chat-shop-link" href="/conta.html?tab=points&shopSection=shop#eco-shop">Abrir lojinha ↗</a></div>';
+   node.innerHTML='<span class="cff-chat-photo cff-chat-system-icon" aria-hidden="true"><img src="/central%20free%20fire.webp" alt=""></span><div class="cff-chat-message-body"><div class="cff-chat-message-top"><strong class="cff-chat-name">Central Free Fire</strong><span class="cff-chat-role">SISTEMA</span><time datetime="'+date.toISOString()+'">'+esc(date.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}))+'</time></div><p class="cff-chat-message-text">'+esc(m.text||'')+'</p>'+(isShop?'<a class="cff-chat-shop-link" href="/conta.html?tab=points&shopSection=shop#eco-shop">Abrir lojinha ↗</a>':'')+'</div>';
    return node;
   }
   const author=identities.get(m.uid)||m,realAdministrator=identities.get(m.uid)?.realAdministrator===true||m.uid===user?.uid&&user?.email===ADMIN,currentRole=realAdministrator?{roleId:'administrator'}:accountRoles.get(m.uid)||{roleId:author.roleId||m.roleId||'member'},role=deps.roleData.roleForAccount(currentRole,roleCatalog),badgeIds=(author.badgeIds||[]).slice(0,2).filter(id=>catalog[id]?.enabled&&catalog[id]?.kind==='badge');
@@ -71,7 +73,7 @@ function mountChat(){
   node.innerHTML=`<a class="cff-chat-photo" href="${path}" aria-label="Ver perfil de ${esc(name)}">${deps.images.approvedImage(options,catalog,author.avatarId||m.avatarId||defaults.avatarId||'default','cff-chat-avatar',name)}${frameMarkup}${emblemSlot(m.uid)}</a><div class="cff-chat-message-body"><div class="cff-chat-message-top"><a class="cff-chat-name" href="${path}" style="color:${color(author.nameColor)||role.color}">${esc(name)}</a><span class="cff-chat-role" style="color:${role.color}">${esc(role.label)}</span><span class="cff-chat-badges">${badgeIds.map(id=>`<button type="button" data-chat-badge="${esc(id)}" title="${esc(catalog[id].title)}" aria-label="${esc(catalog[id].title)}">${deps.images.approvedImage(options,catalog,id,'',catalog[id].title)}</button>`).join('')}</span><time datetime="${date.toISOString()}">${esc(date.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}))}</time></div>${m.reply?`<button type="button" class="cff-chat-quote" data-chat-jump="${esc(m.reply.id)}"><strong>${esc(m.reply.name)}</strong><span>${esc(m.reply.text)}</span></button>`:''}<p class="cff-chat-message-text"></p><div class="cff-chat-message-actions"><button type="button" data-chat-reply="${esc(id)}">Responder</button><button type="button" data-chat-options="${esc(id)}" aria-label="Ações da mensagem de ${esc(name)}">Mais ···</button></div></div>`;
   const text=node.querySelector('.cff-chat-message-text');let offset=0;for(const match of String(m.text||'').matchAll(/@[a-z0-9_]{3,24}\b/gi)){text.append(document.createTextNode(m.text.slice(offset,match.index)));const mention=document.createElement('span');mention.className='cff-chat-mention';mention.textContent=match[0];text.append(mention);offset=match.index+match[0].length;}text.append(document.createTextNode(String(m.text||'').slice(offset)));return node;
  }
- function redraw(){if(!deps)return;for(const [id,node]of nodes)renderMessage(id,node._chatMessage);emblems.mount([...nodes.values()].filter(node=>node._chatMessage.kind!=='shop-notice').map(node=>node._chatMessage.uid));deps.images.hydrateProfileImages(timeline,db);}
+ function redraw(){if(!deps)return;for(const [id,node]of nodes)renderMessage(id,node._chatMessage);emblems.mount([...nodes.values()].filter(node=>!['shop-notice','public-code'].includes(node._chatMessage.kind)).map(node=>node._chatMessage.uid));deps.images.hydrateProfileImages(timeline,db);}
  const saoDay=at=>{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(Number(at)||0)),get=key=>parts.find(x=>x.type===key)?.value||'00';return get('year')+'-'+get('month')+'-'+get('day');};
  const dayLabel=key=>{const today=saoDay(Date.now()),yesterday=saoDay(Date.now()-86400000),date=new Date(key+'T12:00:00Z'),short=new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC',day:'numeric',month:'long'}).format(date);if(key===today)return 'Hoje, '+short;if(key===yesterday)return 'Ontem, '+short;return new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC',day:'numeric',month:'long',year:'numeric'}).format(date);};
  function renderMessages(messages){
