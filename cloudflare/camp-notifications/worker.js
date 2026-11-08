@@ -191,7 +191,7 @@ export class NotificationHub extends DurableObject {
     // Reward delivery happens after committing quiz/coins, once the daily set is
     // complete. Failures leave progress intact and can be retried from objectives.
     if(action==='economy'&&['quizAnswer','quizSkip'].includes(b.operation)&&result.complete){try{result.goalRewards=await this.claimGoals(user,true);}catch{result.goalRewardsPending=true;}}
-    if(['redeem','returnCode','addStock','moveStock','updateStock','setCodePromotion','setCodePrice'].includes(b.operation)){
+    if((b.operation==='redeem'&&b.itemId==='code-default')||['returnCode','addStock','moveStock','updateStock','setCodePromotion','setCodePrice'].includes(b.operation)){
      // The payment/stock mutation has already succeeded; a chat outage must never reverse it.
      try{this.shopNotices().scan();await this.flushShopNotices();await this.schedule();}
      catch(error){console.warn('[ShopNotices]',error);}
