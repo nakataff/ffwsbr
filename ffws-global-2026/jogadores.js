@@ -54,7 +54,7 @@ async function card(people=[player]){
   return {name:p.name,team:p.team.name,photo:p.photoLarge||p.photo,logo:p.team.logo,
    rank:ranking,ranking,bestDrop:highlight.drop?.kills??null,bestRound:highlight.round?.kills??null,...stats};
  });
- const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v=20261108-profile-cards-v7');
+ const {openRankingCard}=await import('/js/ranking-share-cards.mjs?v=20261108-profile-cards-v8');
  await openRankingCard({
   id:'world-player-'+player.id,kind:'players',mode:'player',
   title:people.length===1?player.name+' · Desempenho':people.map(p=>p.name).join(' × '),
