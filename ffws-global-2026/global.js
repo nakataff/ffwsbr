@@ -1815,7 +1815,8 @@
     </div>`;
     attachGlobalStatsShare(root, {
       teams, players, playerShareRows, records, events,
-      summary: {drops:events.length,points:totalPoints,kills:totalKills,booyahs:totalBooyahs},
+      summary: {drops:events.length,points:totalPoints,kills:totalKills,booyahs:totalBooyahs,
+        avgPoints:totalResults?totalPoints/totalResults:0,avgPosition:avgPosition},
       filters: {stage:state.statsFilters.stage,days:[...state.statsFilters.days],maps:[...state.statsFilters.maps]},
       logoForTeam: teamName => teamByName(teamName)?.logo || logo(teamName),
       photoForPlayer: (playerName,teamName) => {
