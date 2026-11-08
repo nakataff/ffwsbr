@@ -47,6 +47,7 @@
     selectionTab: 'torneio',
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
     statsEvolution: { metric: 'position', teams: [] },
+    statsEvolutionPlayers: { metric: 'kills', players: null, search: '' },
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
     notesOpenMulti: '',
     notesPage: 0,
@@ -1521,6 +1522,9 @@
 
   let s2StatsEvolutionChart = null;
   let s2StatsEvolutionObserver = null;
+  let s2StatsPlayerEvolutionChart = null;
+  let s2StatsPlayerEvolutionObserver = null;
+  let s2StatsEvolutionPlayerOptions = [];
 
   function s2StatsStickyNavHtml(hasTeams, hasPlayers) {
     const items = [
@@ -1551,10 +1555,26 @@
 
   function s2StatsEvolutionTeamList(events) {
     const ranking = aggregateStatsTeams(events).sort((a,b) => b.points - a.points || b.kills - a.kills);
-    const available = ranking.map(row => row.team);
+    const scores = new Map(ranking.map((row,index) => [normalize(row.team), { score:row.points, rank:index }]));
+    // The old selector only showed squads that already had results in this
+    // filter. Show the entire official 24-team roster, plus any valid aliases
+    // seen in the results, even before their first match.
+    const byTeam = new Map();
+    for (const team of state.teams || []) if (team?.name) byTeam.set(normalize(team.name),team.name);
+    for (const row of ranking) {
+      const local = teamByName(row.team);
+      const officialName = local?.name || row.team;
+      byTeam.set(normalize(officialName),officialName);
+    }
+    const available = [...byTeam.values()].sort((a,b) => {
+      const aa=scores.get(normalize(a)),bb=scores.get(normalize(b));
+      if (aa && bb) return aa.rank-bb.rank;
+      if (aa || bb) return aa?-1:1;
+      return a.localeCompare(b,'pt-BR');
+    });
     const allowed = new Set(available.map(normalize));
     state.statsEvolution.teams = (state.statsEvolution.teams || []).filter(team => allowed.has(normalize(team)));
-    if (!state.statsEvolution.teams.length) state.statsEvolution.teams = available.slice(0, Math.min(5, available.length));
+    if (!state.statsEvolution.teams.length) state.statsEvolution.teams = ranking.slice(0,5).map(row => teamByName(row.team)?.name || row.team);
     return available;
   }
 
