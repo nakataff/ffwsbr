@@ -1,0 +1,31 @@
+name: Test Mundial Player Profile UI
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ffws-global-2026/jogadores.js'
+      - 'ffws-global-2026/player-profile-ui.js'
+      - 'ffws-global-2026/jogadores.css'
+      - 'ffws-global-2026/jogador/index.html'
+      - 'ffws-global-2026/jogadores/index.html'
+      - 'test/global-players.test.cjs'
+      - '.github/workflows/test-world-player-profile.yml'
+jobs:
+  player-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install DOM test runtime
+        run: |
+          mkdir -p /tmp/cff-world-profile
+          cp test/game-gifts-browser-package.json /tmp/cff-world-profile/package.json
+          npm install --prefix /tmp/cff-world-profile --no-audit --no-fund
+      - name: Check syntax
+        run: node --check ffws-global-2026/jogadores.js && node --check ffws-global-2026/player-profile-ui.js
+      - name: Verify player pages, navigation and lightweight requests
+        env:
+          NODE_PATH: /tmp/cff-world-profile/node_modules
+        run: node --test test/global-players.test.cjs
