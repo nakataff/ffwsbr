@@ -3,7 +3,7 @@ const read=p=>JSON.parse(fs.readFileSync(p)),BASE='ffws-global-2026/';
 function sources(){return{...Object.fromEntries(['stages','dates','teams','groups','players'].map(k=>[k,read(BASE+k+'.json')])),identities:read(BASE+'player-identities.json'),routes:read('player-data/routes.json').routes}}
 const input=sources(),generated=build(input),pending=build({...input,players:{...input.players,entries:[]}}),getProfile=id=>read(BASE+'player-data/'+id+'.json');
 const settle=async()=>{for(let i=0;i<6;i++)await new Promise(r=>setImmediate(r))};
-async function ui(page='jogador',query='?id=loud-trap',files={}){const d=new JSDOM(`<main id="global-players-root" data-page="${page}"></main>`,{url:'https://centralfreefire.com.br/'+BASE+page+query,runScripts:'outside-only',pretendToBeVisual:true}),w=d.window,calls=[];w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'))};w.fetch=async url=>{const p=String(url).split('?')[0].replace(/^\//,'');calls.push(p);const value=files[p]??generated[p];if(typeof value==='function')return value();return{ok:!!value,json:async()=>value}};w.eval(fs.readFileSync(BASE+'jogadores.js','utf8'));await settle();return{w,calls,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await settle()},change:async(s,value,event='change')=>{const e=w.document.querySelector(s);e.value=value;e.dispatchEvent(new w.Event(event,{bubbles:true}));await settle()},close:()=>w.close()}}
+async function ui(page='jogador',query='?id=loud-trap',files={}){const d=new JSDOM(`<main id="global-players-root" data-page="${page}"></main>`,{url:'https://centralfreefire.com.br/'+BASE+page+query,runScripts:'outside-only',pretendToBeVisual:true}),w=d.window,calls=[];w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'))};w.fetch=async url=>{const p=String(url).split('?')[0].replace(/^\//,'');calls.push(p);const value=files[p]??generated[p];if(typeof value==='function')return value();return{ok:!!value,json:async()=>value}};if(page==='jogador')w.eval(fs.readFileSync(BASE+'player-profile-ui.js','utf8'));w.eval(fs.readFileSync(BASE+'jogadores.js','utf8'));await settle();return{w,calls,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],click:async s=>{w.document.querySelector(s).click();await settle()},change:async(s,value,event='change')=>{const e=w.document.querySelector(s);e.value=value;e.dispatchEvent(new w.Event(event,{bubbles:true}));await settle()},close:()=>w.close()}}
 test('all 120 edition IDs are unique, profiles are small and pending results never become zero; explicit normal links separate homonyms',()=>{const s=generated[BASE+'jogadores-resumo.json'];assert.equal(s.players.length,120);assert.equal(new Set(s.players.map(p=>p.id)).size,120);assert(Buffer.byteLength(JSON.stringify(s))<55000);for(const p of s.players){const full=generated[BASE+'player-data/'+p.id+'.json'];assert.equal(full.peers.length,4);assert.equal(full.fixtures.length,6);const waiting=pending[BASE+'player-data/'+p.id+'.json'];assert.equal(waiting.stats.geral,null);assert.equal(waiting.ranks.geral,undefined);assert.equal(waiting.historyFile,null);assert(Buffer.byteLength(JSON.stringify(full))<4500)}assert.equal(s.players.find(p=>p.id==='loud-nickz7').generalId,'nickz');assert.equal(s.players.find(p=>p.id==='lyon-joker').generalId,'joker');assert(!s.players.some(p=>p.generalId==='joker-coach'));assert.equal(s.players.find(p=>p.id==='stellar-esport-ericka').country,'do')});
 test('results isolate player AND team, preserve zero, derive per-stage highlights and reject duplicate games and staff links',()=>{const i=sources();i.players.entries=[{name:'Trap',team:'LOUD',stage:'classificatoria',round:1,day:1,drop:1,kills:0,damage:0,assists:0},{name:'Trap',team:'LOUD',stage:'classificatoria',round:1,day:1,drop:2,kills:7},{name:'Trap',team:'LOUD',stage:'final',day:1,drop:1,kills:2},{name:'Trap',team:'LOS',stage:'final',kills:999}];let o=build(i),p=o[BASE+'player-data/loud-trap.json'];assert.equal(p.stats.geral.kills,9);assert.equal(p.stats.classificatoria.matches,2);assert.equal(p.stats.classificatoria.damage,null);assert.equal(p.highlights.final.drop.kills,2);assert.equal(p.highlights.classificatoria.drop.kills,7);assert.equal(p.ranks.geral,1);assert(o[p.historyFile]);i.players.entries.push({...i.players.entries[0]});assert.throws(()=>build(i),/Duplicate game/);i.players.entries=[];i.identities.players.find(p=>p.id==='lyon-joker').generalId='joker-coach';assert.throws(()=>build(i),/Invalid.*general/)});
 test('aggregated entries are not treated as one-game records and phase-two team standings stay daily',()=>{const i=sources();i.players.entries=[{name:'Trap',team:'LOUD',stage:'segundaFase',day:1,matches:6,kills:24,damage:0,assists:0}];i.stages.segundaFase.rounds=[{day:1,results:[{team:'LOUD',points:10,kills:2,position:1}]},{day:2,results:[{team:'LOS',points:99,kills:20,position:1},{team:'LOUD',points:9,kills:1,position:2}]}];const p=build(i)[BASE+'player-data/loud-trap.json'];assert.equal(p.highlights.segundaFase.drop,null);assert.equal(p.stats.segundaFase.average,4);assert.equal(p.stats.segundaFase.damage,0);assert.equal(p.campaign.segundaFase.position,null);assert.deepEqual(p.campaign.segundaFase.days.map(d=>d.position),[1,2])});
@@ -30,4 +30,66 @@ test('Garena days 1 and 2 show published individual totals and the original drop
  try{const profile=getProfile('fx-butzin');assert.deepEqual(profile.stats.geral,{matches:12,kills:55,damage:22658,assists:42,average:55/12});
  await u.click('[data-tab=history]');assert.match(u.$('#gp-pane').textContent,/Rodada 2 · Queda 1/);assert(!u.$('#gp-pane').textContent.includes('Queda 7'));}
  finally{u.close()}
+});
+
+test('TheGod profile has a larger athlete hero, team watermark, accessible tabs and richer metrics',async()=>{
+ const u=await ui('jogador','?id=team-flash-thegod');
+ try{
+  assert(u.$('.gp-profile-view .gp-player-hero'));
+  assert.equal(u.$('h1').textContent,'TheGod');
+  assert.match(u.$('.gp-team-identity').textContent,/Team Flash/);
+  assert.match(u.$('.gp-hero-watermark').getAttribute('src'),/team-flash/);
+  assert.match(u.$('.gp-hero [data-person-photo]').getAttribute('src'),/\/480\//);
+  assert.equal(u.all('.gp-stat strong').length,4);
+  assert.equal(u.$('.gp-stat-featured strong').textContent,'33');
+  assert.equal(u.all('.gp-secondary-stat').length,2);
+  assert.equal(u.$('.gp-secondary-stat strong').textContent,'27.120');
+  assert.equal(u.all('.gp-record-card').length,2);
+  assert.equal(u.all('[data-tab]').length,4);
+  assert.equal(u.all('.gp-peer').length,4);
+  assert(u.$('[data-action=highlight-card]'));
+  assert.deepEqual(u.calls,[BASE+'player-data/team-flash-thegod.json'],'profile remains a single small static request');
+ }finally{u.close();}
+});
+test('evolution charts use existing stage rounds and change metrics locally without extra requests',async()=>{
+ const u=await ui('jogador','?id=team-flash-thegod');
+ try{
+  await u.click('[data-action=go-evolution]');
+  assert.equal(u.$('[data-tab=evolution]').getAttribute('aria-selected'),'true');
+  assert(u.all('.gp-chart-col').length>=2);
+  assert(u.$('.gp-chart').getAttribute('aria-label').includes('Abates'));
+  await u.change('[data-evolution-metric]','damage');
+  assert(u.$('.gp-chart').getAttribute('aria-label').includes('Dano'));
+  await u.change('[data-evolution-group]','day');
+  assert(u.$('.gp-chart').getAttribute('aria-label').includes('por dia'));
+  assert.deepEqual(u.calls,[BASE+'player-data/team-flash-thegod.json']);
+  await u.change('[data-stage]','final');
+  assert.match(u.$('#gp-pane').textContent,/Ainda não há rodadas/);
+ }finally{u.close();}
+});
+test('Mundial average comparison fetches index only on demand and honors stage',async()=>{
+ const u=await ui('jogador','?id=team-flash-thegod');
+ try{
+  assert.equal(u.calls.length,1);
+  await u.click('[data-action=benchmark]');
+  assert.equal(u.calls.length,2);
+  assert.equal(u.calls[1],BASE+'jogadores-resumo.json');
+  assert.equal(u.all('.gp-benchmark-values>div').length,3);
+  assert.match(u.$('.gp-benchmark-result').textContent,/abates \/ queda/);
+  assert(!u.$('.gp-benchmark-result').textContent.includes('NaN'));
+  await u.change('[data-stage]','final');
+  assert(!u.$('[data-action=benchmark]'),'no comparison button when stage has no stats');
+ }finally{u.close();}
+});
+test('all 120 published Mundial profiles share the same responsive UI with missing values as dashes',async()=>{
+ const u=await ui('jogador','?id=loud-trap',{[BASE+'player-data/loud-trap.json']:pending[BASE+'player-data/loud-trap.json']});
+ try{
+  assert(u.$('.gp-player-hero'));
+  assert(u.$('[data-action=card]').disabled);
+  assert.equal(u.all('.gp-stat strong').length,4);
+  assert(u.all('.gp-stat strong').every(x=>x.textContent==='—'));
+  assert.match(u.$('#gp-pane').textContent,/Ainda não há resultados/);
+  await u.click('[data-tab=team]');
+  assert.match(u.$('#gp-pane').textContent,/resultados da equipe/i);
+ }finally{u.close();}
 });
