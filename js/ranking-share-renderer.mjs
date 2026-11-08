@@ -67,6 +67,31 @@ function playerProfileCard(ctx,data,options,rows,images,w,margin,contentY,conten
   stat(ctx,statText(row,key),x+15,y+cellH-(small?17:24),cellW-30,small?29:Math.min(52,cellH*.4),INK);
  });
 }
+
+function playerCompareCard(ctx,data,options,rows,images,w,margin,contentY,contentHeight,wide){
+ const gap=wide?14:16,frameW=(w-margin*2-gap)/2,inner=wide?18:23;
+ rows.slice(0,2).forEach((row,i)=>{
+  const x=margin+i*(frameW+gap),y=contentY,h=contentHeight;
+  box(ctx,x,y,frameW,h,'#101e32',i===0?options.accent:'#294361');
+  const photo=options.showPhotos?images.get(row.photo):null,logo=options.showLogos?images.get(row.logo):null;
+  const photoSize=Math.min(wide?118:170,frameW*.36,wide?h*.39:h*.27);
+  playerPortrait(ctx,photo,logo,x+frameW-photoSize-inner,y+(wide?18:28),photoSize,options.accent,options.photoScale,options.showLogoWatermark);
+  const max=frameW-photoSize-inner*2-12;
+  text(ctx,row.name,x+inner,y+(wide?48:63),max,wide?30:40);
+  text(ctx,row.team,x+inner,y+(wide?72:98),max,wide?16:21,MUTED);
+  stat(ctx,statText(row,options.featuredStat),x+inner,y+(wide?113:182),max,wide?50:91,options.accent);
+  text(ctx,STAT_LABELS[options.featuredStat],x+inner,y+(wide?135:210),max,wide?13:17,MUTED);
+  const keys=options.stats.filter(key=>statValue(row,key)!=null&&key!==options.featuredStat).slice(0,6);
+  const cols=wide?3:2,gridY=y+(wide?148:248),gridH=h-(wide?161:267),gridW=frameW-inner*2,cellGap=wide?8:12;
+  const lines=Math.ceil(keys.length/cols)||1,cellW=(gridW-cellGap*(cols-1))/cols,cellH=(gridH-cellGap*(lines-1))/lines;
+  keys.forEach((key,j)=>{
+   const bx=x+inner+(j%cols)*(cellW+cellGap),by=gridY+Math.floor(j/cols)*(cellH+cellGap);
+   box(ctx,bx,by,cellW,cellH,'#17273d','#36516c');
+   text(ctx,STAT_LABELS[key],bx+11,by+(wide?19:Math.min(34,cellH*.3)),cellW-22,wide?11:16,MUTED);
+   stat(ctx,statText(row,key),bx+11,by+cellH-(wide?13:19),cellW-22,wide?24:Math.min(37,cellH*.36),INK);
+  });
+ });
+}
 export function renderRankingCard(canvas,data,options,assets={}) {
   const {width:w,height:h}=FORMATS[options.format];canvas.width=w;canvas.height=h;
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('Este navegador não conseguiu gerar a imagem.');
@@ -84,7 +109,9 @@ export function renderRankingCard(canvas,data,options,assets={}) {
   text(ctx,[options.template==='table'?(options.rowCount==='all'?'TABELA COMPLETA · '+rows.length+' EQUIPES':'TOP '+rows.length):options.template==='team'?'ESTATÍSTICAS DA EQUIPE':'RECORTE DO RANKING',data.updatedAt?'DADOS: '+dateText(data.updatedAt):''].filter(Boolean).join('  ·  '),margin,top+(wide?102:140),w-margin*2,wide?14:17,MUTED);
   const contentY=top+(wide?130:178),contentBottom=footerY-25,contentHeight=contentBottom-contentY;
   const getImage=row=>images.get(options.showPhotos&&data.kind==='players'?row.photo:options.showLogos?row.logo:'');
-  if(data.mode==='player'&&options.template!=='compare'){
+  if(data.mode==='player'&&options.template==='compare'){
+    playerCompareCard(ctx,data,options,rows,images,w,margin,contentY,contentHeight,wide);
+  } else if(data.mode==='player'){
     playerProfileCard(ctx,data,options,rows,images,w,margin,contentY,contentHeight,wide,story);
   } else if(options.template==='team') {
     const row=rows[0];if(!row)throw Error('Equipe sem dados para este recorte.');
