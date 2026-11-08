@@ -40,7 +40,7 @@ const STAGES={classificatoria:'Knockout · Fase 1',segundaFase:'Knockout · Fase
 let context=null,modal=null,livePayload=null,previewBlob=null,renderSeq=0,currentSource=null,modelRoot=null;
 const imgCache=new Map();
 const PLAYER_SLOTS=['kills','damage','assists','matches','avgKills','avgDamage'];
-const TEAM_SLOTS=['kills','points','booyahs','matches','avgKills','avgPoints'];
+const TEAM_SLOTS=['kills','damage','assists','matches','avgKills','avgDamage'];
 const METRIC_GROUPS={
  player:[['kills','Abates'],['damage','Dano'],['assists','Assistências'],['matches','Quedas'],
   ['avgKills','Abates / queda'],['avgDamage','Dano / queda'],['avgAssists','Assistências / queda'],
