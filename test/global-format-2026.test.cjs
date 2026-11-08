@@ -123,8 +123,8 @@ test('Global Finals share studio previews the image BEFORE settings on mobile an
  assert.match(markup,/data-share-action="share"/);
  const global=read('ffws-global-2026/global.js'),shell=read('js/site-shell-fast.min.js'),html=read('index.html');
  assert.match(global,/global-stats-share\.css\?v=20261108-mobile-preview-first-v3/);
- assert.match(shell,/global\.js\?v=20261108-story-all-models-v7/);
- assert.match(html,/site-shell-fast\.min\.js\?v=20261108-story-all-models-v7/);
+ assert.match(shell,/global\.js\?v=20261108-feed-stories-save-v8/);
+ assert.match(html,/site-shell-fast\.min\.js\?v=20261108-feed-stories-save-v8/);
 });
 
 test('Stories have dedicated responsive positions for rankings, stats, records and comparison',()=>{
@@ -140,5 +140,22 @@ test('Stories have dedicated responsive positions for rankings, stats, records a
  assert.match(source,/const panelBottom=footerY-\(story\?78:34\)/);
  assert(!source.includes('storyRanking'),'old ranking-only layout must not control Story geometry');
  const global=read('ffws-global-2026/global.js');
- assert.match(global,/global-stats-share\.js\?v=20261108-story-all-models-v7/);
+ assert.match(global,/global-stats-share\.js\?v=20261108-feed-stories-save-v8/);
+});
+
+test('4:5 Feed panels follow the actual header and Stories typography gets larger',()=>{
+ const source=read('js/global-stats-share.js');
+ assert.match(source,/const story=state\.format==='stories',feed=state\.format==='feed'/);
+ assert.match(source,/feed\?clamp\(Math\.ceil\(storyHeroEnd\+38\)/);
+ assert.match(source,/const cardsTop=feed\?panelTop\+Math\.max/);
+ assert.match(source,/feed\?112:95/);
+ assert.match(source,/story\?63:h<=1100/);
+ assert.match(source,/story\?40:36/);
+ assert.match(source,/story\?39:compact\?23:31/);
+ assert.match(source,/data-share-action="save">Salvar imagem/);
+ assert.match(source,/navigator\.canShare\?\.\(\{files:\[file\]\}\)/);
+ assert.match(source,/await navigator\.share\(\{files:\[file\],title:livePayload\.title/);
+ assert.match(source,/function currentPNG\(\)/);
+ const stats=read('ffws-global-2026/stats/index.html');
+ assert.match(stats,/cff-global-build','20261108-feed-stories-save-v8/);
 });
