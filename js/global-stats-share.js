@@ -247,7 +247,7 @@ async function draw(payload){
  for(let i=-7;i<14;i++){ctx.beginPath();ctx.moveTo(w*.55+i*95,-100);ctx.lineTo(w*.15+i*95,h+100);ctx.stroke()}
  ctx.globalAlpha=1;
  ctx.fillStyle=accent;ctx.fillRect(0,0,w,Math.max(9,w*.008));
- const pad=w*.07;const compact=h<=760;const scale=Math.min(w/1080,h/1050);
+ const pad=w*.07;const compact=h<=760;const wideList=compact&&payload.rows.length>0;
  const headY=compact?71:99,brandSize=compact?67:85;
  if(brand)contain(ctx,brand,pad,headY-43,brandSize,brandSize);
  else{rounded(ctx,pad,headY-42,brandSize,brandSize,14,accent);textLine(ctx,'CFF',pad+brandSize/2,headY+8,brandSize-8,27,dark?'#081523':'#fff','950','center')}
@@ -255,22 +255,22 @@ async function draw(payload){
  textLine(ctx,payload.eyebrow,pad+brandSize+19,headY+29,600,compact?13:16,muted,'850');
  ctx.fillStyle=dark?'#34526c':'#b5cad9';ctx.fillRect(pad,headY+61,w-2*pad,2);
  const titleY=compact?206:257,titleSize=compact?46:64;
- const titleHeight=multiline(ctx,payload.title,pad,titleY,w-2*pad,titleSize,ink,2,1.04);
+ const titleHeight=multiline(ctx,payload.title,pad,titleY,wideList?w*.42:w-2*pad,titleSize,ink,2,1.04);
  if(state.showSubtitle){
   const subtitle=state.showFilters?payload.subtitle:(payload.entity||payload.team||'');
-  textLine(ctx,subtitle,pad,titleY+titleHeight+24,w-2*pad,compact?16:23,muted,'750');
+  textLine(ctx,subtitle,pad,titleY+titleHeight+24,wideList?w*.42:w-2*pad,compact?16:23,muted,'750');
  }
- const mainY=compact?416:Math.floor(h*.39);
- if(payload.entity){
+ const mainY=wideList?437:compact?416:Math.floor(h*.39);
+ if(payload.entity&&!wideList){
   textLine(ctx,payload.entity.toUpperCase(),pad,mainY-92,w*.71,compact?27:39,ink);
  }
  if(payload.main){
   let font=compact?79:clamp(w*.112,76,143);
-  while(font>47&&ctx.measureText(payload.main).width>w*.69)font-=5;
-  textLine(ctx,payload.main,pad,mainY+32,w*.72,font,accent);
-  textLine(ctx,payload.mainLabel,pad,mainY+72,w*.70,compact?16:22,muted,'850');
+  while(font>47&&ctx.measureText(payload.main).width>(wideList?w*.38:w*.69))font-=5;
+  textLine(ctx,payload.main,pad,mainY+32,wideList?w*.38:w*.72,font,accent);
+  textLine(ctx,payload.mainLabel,pad,mainY+72,wideList?w*.40:w*.70,compact?16:22,muted,'850');
  }
- if(state.showImage&&(photo||emblem)){
+ if(state.showImage&&(photo||emblem)&&!wideList){
   const pic=photo||emblem;
   const iw=compact?w*.24:w*.29,ih=compact?240:Math.min(360,h*.25);
   const x=w-pad-iw,y=compact?mainY-175:mainY-175;
@@ -281,8 +281,22 @@ async function draw(payload){
  }
  const footerY=h-(compact?69:113);
  const panelTop=compact?503:Math.floor(h*.58),panelBottom=footerY-34;
- if(payload.rows.length){
-  const items=payload.rows.slice(0,compact?5:5);
+ if(wideList){
+  const items=payload.rows.slice(0,5);
+  const x=w*.515,rowW=w*.415,yStart=192,gap=9;
+  const rowH=(panelBottom-yStart-gap*(items.length-1))/Math.max(1,items.length);
+  items.forEach((row,i)=>{
+   const y=yStart+i*(rowH+gap);
+   rounded(ctx,x,y,rowW,rowH,11,surface,dark?'#263e57':'#c6d6e4');
+   rounded(ctx,x+9,y+13,44,rowH-26,8,i===0?accent:dark?'#1b3047':'#dce8f4');
+   textLine(ctx,String(row.rank),x+31,y+rowH/2+8,39,23,i===0?'#081a2a':ink,'950','center');
+   if(state.showImage&&rowImages[i])contain(ctx,rowImages[i],x+60,y+9,rowH-18,rowH-18);
+   const nameX=x+(state.showImage?rowH+64:66);
+   textLine(ctx,row.name,nameX,y+rowH/2+8,rowW-(nameX-x)-88,23,ink);
+   textLine(ctx,row.score,x+rowW-13,y+rowH/2+9,93,25,accent,'950','right');
+  });
+ }else if(payload.rows.length){
+  const items=payload.rows.slice(0,5);
   const gap=compact?7:12,available=panelBottom-panelTop,rowH=clamp((available-gap*(items.length-1))/Math.max(1,items.length),compact?36:55,compact?70:95);
   items.forEach((row,i)=>{
    const y=panelTop+i*(rowH+gap);
@@ -303,7 +317,7 @@ async function draw(payload){
    textLine(ctx,fmt(row.kills,'kills')+' ABATES',x+18,panelTop+boxH-20,colW-36,compact?16:22,muted);
   });
  }else{
-  const facts=payload.facts.slice(0,compact?3:6),cols=2,gap=compact?12:17;
+  const facts=payload.facts.slice(0,compact?2:6),cols=2,gap=compact?12:17;
   const usable=Math.max(0,panelBottom-panelTop),rows=Math.ceil(facts.length/cols),boxH=clamp((usable-gap*(rows-1))/Math.max(1,rows),compact?56:97,compact?104:144);
   facts.forEach((fact,index)=>{
    const x=pad+(index%2)*( (w-2*pad+gap)/2 );
