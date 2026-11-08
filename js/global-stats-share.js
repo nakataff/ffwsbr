@@ -56,7 +56,7 @@ const METRIC_GROUPS={
   ['bestDropKills','Recorde de abates em uma queda'],['bestDayKills','Recorde de abates em um dia'],
   ['bestDropDamage','Recorde de dano em uma queda'],['bestDayDamage','Recorde de dano em um dia']]
 };
-const SLOT_LABELS=Object.fromEntries([...METRIC_GROUPS.player,...METRIC_GROUPS.team]);
+const SLOT_LABELS=Object.fromEntries([...METRIC_GROUPS.team,...METRIC_GROUPS.player]);
 const state={kind:'summary',format:'feed',theme:'dark',accent:'blue',showSubtitle:true,showFilters:true,showImage:true,
  title:'',team:'',player:'',teamB:'',topEntity:'team',metric:'points',record:'teamDay|points',single:'points',
  showMainRank:true,showFactRanks:false,slotMetrics:PLAYER_SLOTS.slice()};
