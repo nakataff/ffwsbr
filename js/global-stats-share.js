@@ -308,6 +308,20 @@ function textLine(ctx,text,x,y,max,font,color,weight='900',align='left'){
   ctx.fillText(v+'…',x,y);
  }
 }
+// Rank labels must never become "#...": fit complete short values into their box.
+function fitRankLine(ctx,text,x,y,maxWidth,preferredSize,color,weight='900',align='right',minSize=18){
+ const value=String(text??'');
+ const width=Math.max(16,Number(maxWidth)||16);
+ let size=Math.max(minSize,Number(preferredSize)||minSize);
+ ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.fillStyle=color;
+ ctx.font=weight+' '+size+'px "Arial Narrow","Barlow Condensed",Arial,sans-serif';
+ while(size>minSize&&ctx.measureText(value).width>width){
+  size=Math.max(minSize,size-2);
+  ctx.font=weight+' '+size+'px "Arial Narrow","Barlow Condensed",Arial,sans-serif';
+ }
+ // Canvas maxWidth is a final safeguard for unusually long ranks or narrow viewports.
+ ctx.fillText(value,x,y,width);
+}
 function rounded(ctx,x,y,w,h,r,color,stroke){
  const radius=Math.min(r,w/2,h/2);
  ctx.beginPath();ctx.roundRect(x,y,w,h,radius);
@@ -454,9 +468,9 @@ async function draw(payload){
   textLine(ctx,payload.mainLabel,pad,labelY,numberWidth,compact?17:story?24:22,muted,'850');
   if(rankShown){
    const rankX=pad+available-4;
-   textLine(ctx,'#'+payload.mainRank,rankX,valueY-4,rankWidth,compact?60:story?85:70,accent,'950','right');
+   fitRankLine(ctx,'#'+payload.mainRank,rankX,valueY-4,rankWidth,compact?60:story?85:70,accent,'950','right',compact?22:story?28:24);
    textLine(ctx,'RANKING DE',rankX,labelY-3,rankWidth,compact?13:16,muted,'900','right');
-   textLine(ctx,payload.mainRankLabel||payload.mainLabel||'INDICADOR',rankX,labelY+20,rankWidth,compact?12:15,ink,'850','right');
+   fitRankLine(ctx,payload.mainRankLabel||payload.mainLabel||'INDICADOR',rankX,labelY+20,rankWidth,compact?12:15,ink,'850','right',11);
   }
  }
  if(heroVisible&&portraitSize>80)drawHeroPortrait(ctx,photo,emblem,portraitX,portraitY,portraitSize,accent,dark,surface);
