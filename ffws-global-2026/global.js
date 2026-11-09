@@ -2007,6 +2007,7 @@
 
     root.innerHTML = `<div class="ffws-global-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Global Finals 2026')}
       ${s2StatsStickyNavHtml(events.length, playerEntries.length)}
+      <div id="cff-stats-share-gallery-slot" class="cff-stats-gallery-slot" aria-hidden="true"></div>
       ${summaryBlock}
       ${filterBlock}
       ${statsBlocks}
