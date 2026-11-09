@@ -53,3 +53,19 @@
 .photo-editor-cff-safe{position:absolute;inset:0 5%;border-inline:1px dashed #61dcff}
 .photo-editor-cff-buffer{position:absolute;left:5%;right:5%;bottom:23%;border-top:1px dashed #ffe193}
 .photo-editor-cff-reserve{position:absolute;inset:auto 0 0;height:20%;border-top:1px solid #ffe193;background:linear-gradient(#ffc94a18,#ffc94a33);display:grid;place-items:center;color:#fff0be;font-size:clamp(8px,1.5vw,12px);font-weight:850;text-shadow:0 1px 3px #000}
+
+/* Copiar a arte pronta no mesmo painel de saída, sem conflitar com download. */
+.photo-editor-export .photo-editor-copy{
+ display:flex;align-items:center;justify-content:center;width:100%;
+ min-height:44px;margin-top:9px;padding:10px 14px;
+ border:1px solid rgba(0,200,255,.42);border-radius:9px;
+ background:rgba(0,200,255,.07);color:#a5e9ff;
+ font-weight:800;cursor:pointer;transition:background .15s,border-color .15s;
+}
+.photo-editor-export .photo-editor-copy:hover:not(:disabled){
+ background:rgba(0,200,255,.15);border-color:#00c8ff;color:#f4fdff;
+}
+.photo-editor-export .photo-editor-copy:focus-visible{
+ outline:2px solid #00c8ff;outline-offset:3px;
+}
+.photo-editor-export .photo-editor-copy:disabled{opacity:.48;cursor:not-allowed}
