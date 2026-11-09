@@ -376,3 +376,64 @@
 @media(prefers-reduced-motion:reduce){
   #ffws-global-2026-stats-content button.cff-share-gallery-item{transition:none}
 }
+
+/* O grid respeita a sequência hero > Ir para > vitrine, mesmo se a galeria for movida depois. */
+#ffws-global-2026-stats-content .ffws-global-shell>.ffws-global-hero{order:-30}
+#ffws-global-2026-stats-content .ffws-global-shell>[data-stats-sticky-nav="s2"]{order:-20}
+#ffws-global-2026-stats-content .ffws-global-shell>.cff-share-gallery{order:-10}
+#ffws-global-2026-stats-content .ffws-global-shell>.cff-stats-gallery-slot{display:none;order:-10}
+
+/* Busca rápida na geração de cards: jogadores e equipes, sem carregar dados adicionais. */
+.cff-stats-share-dialog .cff-share-player-field{display:grid;align-content:start;gap:6px;min-width:0}
+.cff-stats-share-dialog .cff-share-player-field>label{
+  color:#afc5dc;font-size:11px;font-weight:850;line-height:1.4;
+}
+.cff-stats-share-dialog .cff-share-player-field[hidden],
+.cff-stats-share-dialog select.cff-share-player-native{display:none!important}
+.cff-stats-share-dialog .cff-share-player-combobox{position:relative;min-width:0}
+.cff-stats-share-dialog .cff-stats-share-controls .cff-share-player-combobox input[type=search]{
+  display:block;box-sizing:border-box;width:100%;min-width:0;min-height:42px;
+  padding:10px 12px;border:1px solid #354d69;border-radius:9px;
+  background:#15263b;color:#fff;font:600 13px/1.25 system-ui,-apple-system,Arial,sans-serif;
+  outline-offset:2px;
+}
+.cff-stats-share-dialog .cff-share-player-combobox input[type=search]:focus{
+  border-color:#0ec4f5;box-shadow:0 0 0 2px #00c8ff30;
+}
+.cff-stats-share-dialog .cff-share-player-combobox input[type=search]::placeholder{color:#7e9cb7}
+.cff-stats-share-dialog .cff-share-player-results{
+  position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:120;
+  display:grid;gap:3px;max-height:268px;overflow-y:auto;
+  padding:5px;border:1px solid #355a75;border-radius:10px;
+  background:#0e2034;box-shadow:0 12px 28px #000a;
+  overscroll-behavior:contain;
+}
+.cff-stats-share-dialog .cff-share-player-results[hidden]{display:none!important}
+.cff-stats-share-dialog .cff-share-player-results button{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;min-height:44px;padding:8px 10px;
+  border:0;border-radius:7px;background:transparent;color:#fff;
+  text-align:left;font-family:inherit;cursor:pointer;
+}
+.cff-stats-share-dialog .cff-share-player-results button strong{
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:13px;font-weight:850;
+}
+.cff-stats-share-dialog .cff-share-player-results button small{
+  flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:11px;font-weight:650;color:#8cb7d7;
+}
+.cff-stats-share-dialog .cff-share-player-results button:hover,
+.cff-stats-share-dialog .cff-share-player-results button.is-active{
+  background:#173c56;
+}
+.cff-stats-share-dialog .cff-share-player-empty{
+  margin:0;padding:10px 8px;color:#9eb8d2;font-size:12px;
+}
+@media(max-width:780px){
+  .cff-stats-share-dialog .cff-stats-share-controls .cff-share-player-combobox input[type=search]{
+    min-height:47px;font-size:16px;
+  }
+  .cff-stats-share-dialog .cff-share-player-results{max-height:235px}
+  .cff-stats-share-dialog .cff-share-player-results button{min-height:48px}
+}
