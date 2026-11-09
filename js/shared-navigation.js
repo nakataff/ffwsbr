@@ -78,7 +78,35 @@
       const link=event.target.closest('a[data-cff-bottom-route]');
       if(link)go(event,link.dataset.cffBottomRoute);
     });
+    nav.id='cff-bottom-navigation';
     document.body.append(nav);
+    // O botão fica fora do nav para continuar acessível quando a barra é recolhida.
+    const toggle=document.createElement('button');
+    toggle.type='button';
+    toggle.className='cff-bottom-navigation-toggle';
+    toggle.setAttribute('aria-controls',nav.id);
+    toggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span></span>';
+    const preference='cff-bottom-navigation-collapsed-v1';
+    let collapsed=false;
+    try{collapsed=localStorage.getItem(preference)==='1';}catch(_){}
+    function syncCollapse(){
+      nav.classList.toggle('is-collapsed',collapsed);
+      nav.inert=collapsed;
+      nav.setAttribute('aria-hidden',String(collapsed));
+      toggle.classList.toggle('is-collapsed',collapsed);
+      toggle.setAttribute('aria-expanded',String(!collapsed));
+      const label=collapsed?'Mostrar menu inferior':'Ocultar menu inferior';
+      toggle.setAttribute('aria-label',label);
+      toggle.title=label;
+      toggle.querySelector('span').textContent=collapsed?'Mostrar menu':'Ocultar';
+    }
+    toggle.addEventListener('click',()=>{
+      collapsed=!collapsed;
+      try{localStorage.setItem(preference,collapsed?'1':'0');}catch(_){}
+      syncCollapse();
+    });
+    document.body.append(toggle);
+    syncCollapse();
     if(!document.querySelector('script[data-cff-mobile-dock]')){
       const script=document.createElement('script');
       script.src='/js/mobile-dock.js?v=20261104-chat-toggle-v1';
